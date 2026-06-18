@@ -7,8 +7,8 @@
  *
  * Key security checks:
  * - Teachers can only restrict students (not other teachers/admins)
- * - Global restrictions require teacher-student relationship
- * - Conversation restrictions require teacher participation
+ * - Option B (mono-teacher): the sole teacher may restrict ANY student, at
+ *   global or conversation scope, regardless of class membership
  * - All input is validated with Zod
  *
  * @module api/moderation/restrict-user.test
@@ -657,11 +657,10 @@ describe('POST /api/moderation/restrict-user - Conversation Scope', () => {
 		expect(data.success).toBe(true);
 	});
 
-	// Note: since e56f6ae2d (fix(moderation): allow restriction from reports without
-	// conversation access) the handler no longer verifies conversation existence.
-	// Conversation-scoped authorization = teacher is a participant OR target student
-	// is in the teacher's classes; otherwise 403 'You can only restrict students in your classes'.
-	it('should reject conversation restriction if teacher not participant and student not in their classes with 403', async () => {
+	// Option B (mono-teacher): the sole teacher may restrict ANY student at
+	// conversation scope, regardless of participation or class membership. Step 4
+	// already guarantees the target is a student.
+	it('should allow conversation restriction of any student (Option B)', async () => {
 		const { POST } = await import('../+server');
 
 		const mockSupabase = createMockSupabase();
@@ -673,17 +672,18 @@ describe('POST /api/moderation/restrict-user - Conversation Scope', () => {
 			error: null
 		});
 
-		// Mock teacher is NOT a conversation participant
-		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
-			data: null,
+		// Mock restriction insert (no class/participation check under Option B)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: {
+				...mockRestriction,
+				scope_type: 'conversation' as const,
+				scope_id: TEST_IDS.conversation
+			},
 			error: null
 		});
 
-		// Mock target student is NOT in teacher's classes
-		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
-			data: null,
-			error: null
-		});
+		// Mock moderation log RPC
+		mockSupabase.rpc = vi.fn().mockResolvedValue({ data: null, error: null });
 
 		const request = createMockRequest({
 			userId: TEST_IDS.student,
@@ -694,14 +694,11 @@ describe('POST /api/moderation/restrict-user - Conversation Scope', () => {
 			expiresAt: null
 		});
 
-		try {
-			await POST({ request, locals } as any);
-			expect.fail('Should have thrown 403 error');
-		} catch (err: unknown) {
-			const error = err as { status: number; body: { message: string } };
-			expect(error.status).toBe(403);
-			expect(error.body.message).toBe('You can only restrict students in your classes');
-		}
+		const response = await POST({ request, locals } as any);
+		const data = await response.json();
+
+		expect(response.status).toBe(201);
+		expect(data.success).toBe(true);
 	});
 
 	it('should allow conversation restriction if teacher is a participant', async () => {
@@ -800,23 +797,28 @@ describe('POST /api/moderation/restrict-user - Global Scope Authorization', () =
 		expect(data.success).toBe(true);
 	});
 
-	it('should reject global restriction when student not in teacher class with 403', async () => {
+	// Option B (mono-teacher): no class relationship is required — the sole teacher
+	// may globally restrict any student.
+	it('should allow global restriction of a student not in any class (Option B)', async () => {
 		const { POST } = await import('../+server');
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
 
-		// Mock target user fetch
+		// Mock target user fetch (student)
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: mockProfiles.student,
 			error: null
 		});
 
-		// Mock teacher-student relationship NOT found
-		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
-			data: null,
+		// Mock restriction insert (no class-membership check under Option B)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: mockRestriction,
 			error: null
 		});
+
+		// Mock moderation log RPC
+		mockSupabase.rpc = vi.fn().mockResolvedValue({ data: null, error: null });
 
 		const request = createMockRequest({
 			userId: TEST_IDS.student,
@@ -827,14 +829,11 @@ describe('POST /api/moderation/restrict-user - Global Scope Authorization', () =
 			expiresAt: null
 		});
 
-		try {
-			await POST({ request, locals } as any);
-			expect.fail('Should have thrown 403 error');
-		} catch (err: unknown) {
-			const error = err as { status: number; body: { message: string } };
-			expect(error.status).toBe(403);
-			expect(error.body.message).toBe('You can only restrict students in your classes');
-		}
+		const response = await POST({ request, locals } as any);
+		const data = await response.json();
+
+		expect(response.status).toBe(201);
+		expect(data.success).toBe(true);
 	});
 
 	it('should allow admin to globally restrict student not in their class', async () => {
