@@ -31,6 +31,7 @@ import {
 	Target,
 	ClipboardList,
 	Brain,
+	ShieldCheck,
 	User as UserIcon,
 	LogOut
 } from '@lucide/svelte';
@@ -132,6 +133,10 @@ export function getNavLinks(
 			{ href: '/dashboard/teacher/moderation', label: 'Modération', icon: ShieldAlert },
 			{ href: '/dashboard/friends', label: 'Amis', icon: Users },
 			{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
+			// Entry point to the admin section. Visible to teachers (who step up via
+			// the elevation screen) and admins; never to students. The route itself
+			// is guarded by /dashboard/admin/+layout.server.ts.
+			{ href: '/dashboard/admin', label: 'Administration', icon: ShieldCheck },
 			...footerLinks
 		];
 	}
@@ -139,6 +144,7 @@ export function getNavLinks(
 	if (role === 'admin') {
 		return [
 			...common,
+			{ href: '/dashboard/admin', label: 'Administration', icon: ShieldCheck },
 			{ href: '/dashboard/admin/schools', label: 'Schools', icon: School },
 			{ href: '/dashboard/admin/users', label: 'Users', icon: Users },
 			{ href: '/dashboard/admin/classes', label: 'Classes', icon: GraduationCap },
