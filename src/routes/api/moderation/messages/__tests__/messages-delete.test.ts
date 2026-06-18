@@ -8,7 +8,8 @@
  * Key security checks:
  * - Teachers can only moderate messages in their conversations
  * - Teachers must be participants in class channels
- * - Teachers can moderate 1-on-1 chats where both students are in their classes
+ * - Option B (mono-teacher): a teacher may moderate a 1-on-1 chat where both
+ *   participants are students, regardless of class membership
  * - Admins can moderate any message
  * - All input validated with Zod
  *
@@ -282,7 +283,7 @@ describe('DELETE /api/moderation/messages/[id] - 1-on-1 Chat Moderation', () => 
 		return import.meta.hot?.invalidate();
 	});
 
-	it('should allow teacher to moderate 1-on-1 chat where both students are in their class', async () => {
+	it('should allow teacher to moderate a 1-on-1 chat where both participants are students', async () => {
 		const { DELETE } = await import('../[id]/+server');
 
 		const mockSupabase = createMockSupabase();
@@ -316,9 +317,9 @@ describe('DELETE /api/moderation/messages/[id] - 1-on-1 Chat Moderation', () => 
 			);
 		});
 
-		// Mock class_members count check (both students in teacher's class).
-		// This query uses { count: 'exact', head: true } so it resolves via the
-		// thenable protocol (no .single()), hence the `then` mock — not `select`.
+		// Mock profiles count check (both participants are students). This query uses
+		// { count: 'exact', head: true } so it resolves via the thenable protocol
+		// (no .single()), hence the `then` mock — not `select`.
 		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(onFulfilled({ count: 2, error: null }));
 		});
@@ -350,7 +351,10 @@ describe('DELETE /api/moderation/messages/[id] - 1-on-1 Chat Moderation', () => 
 		expect(data.success).toBe(true);
 	});
 
-	it('should reject teacher moderating 1-on-1 chat where students not in their class with 403', async () => {
+	// Option B (mono-teacher): a teacher may moderate a student-only 1-on-1 chat,
+	// but NOT one where a participant is not a student (e.g. a teacher/admin) and
+	// the teacher isn't a participant.
+	it('should reject teacher moderating a 1-on-1 chat where a participant is not a student with 403', async () => {
 		const { DELETE } = await import('../[id]/+server');
 
 		const mockSupabase = createMockSupabase();
@@ -384,8 +388,9 @@ describe('DELETE /api/moderation/messages/[id] - 1-on-1 Chat Moderation', () => 
 			);
 		});
 
-		// Mock class_members count check (only 1 of 2 students in teacher's class).
-		// Resolves via the thenable protocol (count + head:true, no .single()).
+		// Mock profiles count check: only 1 of the 2 participants is a student →
+		// not all participants are students. Resolves via the thenable protocol
+		// (count + head:true, no .single()).
 		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(onFulfilled({ count: 1, error: null }));
 		});
@@ -408,7 +413,7 @@ describe('DELETE /api/moderation/messages/[id] - 1-on-1 Chat Moderation', () => 
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(403);
 			expect(error.body.message).toBe(
-				'You can only moderate conversations where all participants are your students'
+				'You can only moderate conversations where all participants are students'
 			);
 		}
 	});

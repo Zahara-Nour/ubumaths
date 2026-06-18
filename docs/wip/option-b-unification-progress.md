@@ -154,6 +154,24 @@ Remplacer `is_teacher_of_student(...)` par `is_my_student(...)` :
 - **(optionnel)** `restrict-user` scope `conversation` : valider que `scopeId` est une vraie conversation du destinataire (évite des restrictions orphelines ; inerte sous mono-prof).
 - **(cosmétique)** Corriger le COMMENT de `is_admin()` (« admin or teacher » → « admin only ») dans la migration de suivi.
 
+### Migration de suivi (Phase 5, destructive) — PRÊTE, à créer en PR séparée APRÈS deploy vérifié
+
+> ⚠️ NE PAS ajouter à `supabase/migrations/` sur cette branche (rendrait cette PR destructive). Créer une **nouvelle branche** après le deploy de la PR #26, coller ce SQL dans `supabase/migrations/<nouveau-timestamp>_drop_is_public_template_columns.sql`, puis `db:migrate` + `pnpm db:types` (+ commit `database.ts`).
+
+```sql
+-- Drop the now-unused is_public columns on the two template families.
+-- Inter-teacher sharing was removed (RLS + app) in the previous migration; the
+-- app no longer reads/writes these columns. Destructive → after deploy only.
+ALTER TABLE public.chapter_templates DROP COLUMN IF EXISTS is_public;
+ALTER TABLE public.worksheet_templates DROP COLUMN IF EXISTS is_public;
+
+-- Cosmetic: is_admin() COMMENT wrongly says "admin or teacher"; the body checks
+-- role = 'admin' only. Fix it while we're here (flagged in review).
+COMMENT ON FUNCTION public.is_admin() IS 'True when the current user has role = admin.';
+```
+
+Après application : retirer les champs `is_public` inertes restants dans `templates/__tests__/routes.test.ts` (mocks).
+
 ## Definition of Done
 
 - [ ] Tests d'intégration locaux verts (fixture hors-classe) — messagerie, modération, RLS features, retrait partage.
