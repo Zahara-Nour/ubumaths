@@ -9,6 +9,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import { updateSchoolConfigSchema } from '$lib/server/validation/school-config';
 import { DEFAULT_TIMEZONE } from '$lib/utils/timezones';
 import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
@@ -19,17 +20,9 @@ import type { SchoolTimetable } from '$lib/utils/timetable';
  * Admin only
  */
 export const PUT: RequestHandler = async ({ params, request, locals }) => {
-	const { user, profile, supabase } = locals;
-
-	// Authentication check
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Authorization check - admin only
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
-	}
+	// ✅ SECURITY: admin elevation OR real admin login. Privileged writes run via the
+	// returned admin-context client so RLS attributes them to the admin.
+	const { supabase } = await requireAdmin(locals);
 
 	const { schoolId } = params;
 
@@ -124,17 +117,9 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
  * Admin only
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
-	const { user, profile, supabase } = locals;
-
-	// Authentication check
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Authorization check - admin only
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
-	}
+	// ✅ SECURITY: admin elevation OR real admin login. Privileged reads run via the
+	// returned admin-context client so RLS attributes them to the admin.
+	const { supabase } = await requireAdmin(locals);
 
 	const { schoolId } = params;
 

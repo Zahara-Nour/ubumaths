@@ -1,10 +1,12 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { searchUsersSchema } from '$lib/server/validation/admin';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
-	await requireRole(locals, 'admin');
+	// ✅ SECURITY: admin elevation OR real admin login. Privileged search runs via the
+	// returned admin-context client so RLS attributes it to the admin.
+	const { supabase } = await requireAdmin(locals);
 
 	// ✅ SECURITY: Validate query parameters with Zod
 	const validation = searchUsersSchema.safeParse({
@@ -26,7 +28,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	// Use RPC function for accent-insensitive search (e.g., "zoe" finds "Zoé")
-	const { data: users, error: searchError } = await locals.supabase.rpc('search_users_unaccent', {
+	const { data: users, error: searchError } = await supabase.rpc('search_users_unaccent', {
 		search_term: searchTerm,
 		result_limit: limit
 	});

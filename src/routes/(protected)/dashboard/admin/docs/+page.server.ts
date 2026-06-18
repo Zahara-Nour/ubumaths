@@ -1,27 +1,13 @@
 import type { PageServerLoad } from './$types';
-import { error } from '@sveltejs/kit';
-import { requireAuth } from '$lib/server/auth';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import { scanDocumentation } from '$lib/server/docs-scanner';
 import { parseMarkdown } from '$lib/server/markdown-parser';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
-export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase }, url }) => {
-	const { user } = await safeGetSession();
-	requireAuth(user);
-
-	if (!user) throw error(401, 'Unauthorized');
-
-	// Only admins can access docs
-	const { data: profile } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (profile?.role !== 'admin') {
-		throw error(403, 'Admin access required');
-	}
+export const load: PageServerLoad = async ({ locals, url }) => {
+	// Admin gate (admin login OR step-up elevation)
+	await requireAdmin(locals);
 
 	// Scan all documentation
 	const categories = await scanDocumentation();

@@ -1,10 +1,12 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { removeFromClassSchema } from '$lib/server/validation/admin';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	await requireRole(locals, 'admin');
+	// ✅ SECURITY: admin elevation OR real admin login. Privileged ops run via the
+	// returned admin-context client so RLS attributes them to the admin.
+	const { supabase } = await requireAdmin(locals);
 
 	// ✅ SECURITY: Validate input with Zod
 	const body = await request.json();
@@ -17,7 +19,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { userId, classId } = validation.data;
 
 	// Remove from class_members table
-	const { error: deleteError } = await locals.supabase
+	const { error: deleteError } = await supabase
 		.from('class_members')
 		.delete()
 		.eq('student_id', userId)
@@ -29,7 +31,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// Fetch the updated profile with all classes
-	const { data: updatedProfile, error: fetchError } = await locals.supabase
+	const { data: updatedProfile, error: fetchError } = await supabase
 		.from('profiles')
 		.select('*, schools(name), class_members(class_id)')
 		.eq('id', userId)

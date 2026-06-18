@@ -1,7 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { classStudentsQuerySchema } from '$lib/server/validation/admin';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/admin/class-students
@@ -31,7 +31,9 @@ import { requireRole } from '$lib/server/middleware/auth';
  *   });
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
-	await requireRole(locals, 'admin');
+	// ✅ SECURITY: admin elevation OR real admin login. Privileged reads run via the
+	// returned admin-context client so RLS attributes them to the admin.
+	const { supabase } = await requireAdmin(locals);
 
 	// ✅ SECURITY: Validate query parameters with Zod
 	const validation = classStudentsQuerySchema.safeParse({
@@ -52,7 +54,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
 		// Query class_members table and join with profiles
 		// Filter for students only (role = 'student')
-		const { data: members, error: queryError } = await locals.supabase
+		const { data: members, error: queryError } = await supabase
 			.from('class_members')
 			.select(
 				`

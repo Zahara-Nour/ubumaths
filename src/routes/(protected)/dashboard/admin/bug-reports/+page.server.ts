@@ -5,28 +5,14 @@
  * Only accessible to admins.
  */
 
-import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { BugReportWithAuthor } from '$lib/types/bug-reports';
 import { signBugReportScreenshots } from '$lib/server/bug-report-screenshots';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
-	// Check authentication
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw redirect(302, '/auth');
-	}
-
-	// Check if user is admin
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Forbidden - Admin access required');
-	}
+	// Admin gate (admin login OR step-up elevation)
+	const { supabase } = await requireAdmin(locals);
 
 	// Parse filters from query params
 	const status = url.searchParams.get('status') || undefined;
@@ -34,7 +20,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const severity = url.searchParams.get('severity') || undefined;
 
 	// Fetch all bug reports with author info
-	let query = locals.supabase
+	let query = supabase
 		.from('bug_reports')
 		.select(
 			`
@@ -67,12 +53,12 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	}
 
 	// Get stats
-	const { data: allReports } = await locals.supabase
+	const { data: allReports } = await supabase
 		.from('bug_reports')
 		.select('status, severity, created_at');
 
 	// Replace stored screenshot_url with fresh signed URLs (private bucket)
-	await signBugReportScreenshots(locals.supabase, (reports ?? []) as BugReportWithAuthor[]);
+	await signBugReportScreenshots(supabase, (reports ?? []) as BugReportWithAuthor[]);
 
 	const today = new Date();
 	today.setHours(0, 0, 0, 0);

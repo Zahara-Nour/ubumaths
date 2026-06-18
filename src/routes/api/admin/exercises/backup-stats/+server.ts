@@ -10,6 +10,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import { getBackupStats } from '$lib/server/admin/exercise-backup';
 
 /**
@@ -26,18 +27,12 @@ import { getBackupStats } from '$lib/server/admin/exercise-backup';
  * }
  */
 export const GET: RequestHandler = async ({ locals }) => {
-	// 1. Authentication check
-	if (!locals.profile) {
-		throw error(401, 'Non authentifie');
-	}
-
-	// 2. Authorization check (admin only)
-	if (locals.profile.role !== 'admin') {
-		throw error(403, 'Acces reserve aux administrateurs');
-	}
+	// ✅ SECURITY: admin elevation OR real admin login. Privileged reads run via the
+	// returned admin-context client so RLS attributes them to the admin.
+	const { supabase } = await requireAdmin(locals);
 
 	try {
-		const stats = await getBackupStats(locals.supabase);
+		const stats = await getBackupStats(supabase);
 		return json(stats);
 	} catch (err) {
 		console.error('Error fetching backup stats:', err);

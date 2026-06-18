@@ -1,16 +1,13 @@
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const { profile } = locals;
-
-	// Check admin role
-	if (!profile || profile.role !== 'admin') {
-		throw redirect(303, '/dashboard');
-	}
+	// Check admin (real admin login OR step-up elevation)
+	const { supabase } = await requireAdmin(locals);
 
 	// Fetch all VIP card templates
-	const { data: templates, error: templatesError } = await locals.supabase
+	const { data: templates, error: templatesError } = await supabase
 		.from('vip_card_templates')
 		.select('*')
 		.order('rarity', { ascending: true })
@@ -22,7 +19,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Fetch all VIP card configs
-	const { data: configs, error: configsError } = await locals.supabase
+	const { data: configs, error: configsError } = await supabase
 		.from('vip_card_config')
 		.select('*')
 		.order('is_active', { ascending: false })
