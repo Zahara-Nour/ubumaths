@@ -6,6 +6,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import SchoolConfigModal from '$lib/components/admin/SchoolConfigModal.svelte';
+	import TypedConfirmDialog from '$lib/components/admin/TypedConfirmDialog.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 
 	let { data }: { data: PageData } = $props();
@@ -320,22 +321,27 @@
 								<Button variant="ghost" size="sm" onclick={() => openEditModal(school)}>
 									Modifier
 								</Button>
-								<form method="POST" action="?/delete" use:enhance class="inline">
-									<input type="hidden" name="id" value={school.id} />
-									<Button
-										type="submit"
-										variant="ghost"
-										size="sm"
-										class="text-destructive hover:text-destructive"
-										onclick={(e) => {
-											if (!confirm('Êtes-vous sûr de vouloir supprimer cette école ?')) {
-												e.preventDefault();
-											}
-										}}
-									>
-										Supprimer
-									</Button>
-								</form>
+								<TypedConfirmDialog
+									expected={school.name}
+									action="?/delete"
+									title="Supprimer l'école « {school.name} »"
+									description="Cette action est irréversible. L'école et sa configuration seront supprimées."
+									successMessage="École supprimée"
+								>
+									{#snippet trigger(props)}
+										<Button
+											{...props}
+											variant="ghost"
+											size="sm"
+											class="text-destructive hover:text-destructive"
+										>
+											Supprimer
+										</Button>
+									{/snippet}
+									{#snippet hiddenFields()}
+										<input type="hidden" name="id" value={school.id} />
+									{/snippet}
+								</TypedConfirmDialog>
 							</td>
 						</tr>
 					{:else}
