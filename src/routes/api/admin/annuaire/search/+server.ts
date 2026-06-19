@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import {
 	annuaireSearchQuerySchema,
 	annuaireResponseSchema,
@@ -12,8 +12,10 @@ import {
  * (Opendatasoft v2.1). Lets an admin look up an establishment by name and
  * auto-fill its UAI/RNE and contact details from the official source.
  *
- * Admin-only. The dataset is public (no API key), but we proxy server-side to
- * avoid CORS, validate the response, and normalize the payload.
+ * Admin-only via `requireAdmin` (real admin OR an elevated teacher — the route
+ * lives under /api/admin so the elevation handle is in scope). The dataset is
+ * public (no API key), but we proxy server-side to avoid CORS, validate the
+ * response, and normalize the payload.
  */
 const ANNUAIRE_URL =
 	'https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-annuaire-education/records';
@@ -29,7 +31,7 @@ const SELECT_FIELDS = [
 ].join(',');
 
 export const GET: RequestHandler = async ({ url, fetch, locals }) => {
-	await requireRole(locals, 'admin');
+	await requireAdmin(locals);
 
 	const parsed = annuaireSearchQuerySchema.safeParse({ q: url.searchParams.get('q') ?? '' });
 	if (!parsed.success) {
