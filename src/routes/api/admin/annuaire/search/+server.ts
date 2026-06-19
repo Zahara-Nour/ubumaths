@@ -9,8 +9,8 @@ import {
 
 /**
  * Proxy to the national "Annuaire de l'éducation nationale" open dataset
- * (Opendatasoft v2.1). Lets an admin look up an establishment by name and
- * auto-fill its UAI/RNE and contact details from the official source.
+ * (Opendatasoft v2.1). Lets an admin look up an establishment by name and/or
+ * commune (full-text, all fields) and auto-fill its UAI/RNE + contact details.
  *
  * Admin-only via `requireAdmin` (real admin OR an elevated teacher — the route
  * lives under /api/admin so the elevation handle is in scope). The dataset is
@@ -33,7 +33,10 @@ const SELECT_FIELDS = [
 export const GET: RequestHandler = async ({ url, fetch, locals }) => {
 	await requireAdmin(locals);
 
-	const parsed = annuaireSearchQuerySchema.safeParse({ q: url.searchParams.get('q') ?? '' });
+	const parsed = annuaireSearchQuerySchema.safeParse({
+		q: url.searchParams.get('q') ?? '',
+		page: url.searchParams.get('page') ?? '1'
+	});
 	if (!parsed.success) {
 		throw error(400, parsed.error.issues[0].message);
 	}
@@ -45,9 +48,16 @@ export const GET: RequestHandler = async ({ url, fetch, locals }) => {
 	}
 
 	const apiUrl = new URL(ANNUAIRE_URL);
-	apiUrl.searchParams.set('where', `search(nom_etablissement,"${term}")`);
+	// Record-level full-text search across ALL fields (accent-/case-insensitive) so
+	// the admin can disambiguate a common name by adding the city — e.g. "Blaise
+	// Pascal Segré" pinpoints the right one among the 57 "Blaise Pascal" schools.
+	apiUrl.searchParams.set('where', `search("${term}")`);
 	apiUrl.searchParams.set('select', SELECT_FIELDS);
-	apiUrl.searchParams.set('limit', '10');
+	// Paginated: PAGE_SIZE per page, offset = (page-1)*PAGE_SIZE. The client pages
+	// through with prev/next using the `total` returned below — no arbitrary cap.
+	const PAGE_SIZE = 20;
+	apiUrl.searchParams.set('limit', String(PAGE_SIZE));
+	apiUrl.searchParams.set('offset', String((parsed.data.page - 1) * PAGE_SIZE));
 
 	let res: Response;
 	try {
@@ -76,5 +86,10 @@ export const GET: RequestHandler = async ({ url, fetch, locals }) => {
 			academy: r.libelle_academie ?? ''
 		}));
 
-	return json({ schools });
+	return json({
+		schools,
+		total: validated.data.total_count,
+		page: parsed.data.page,
+		pageSize: PAGE_SIZE
+	});
 };
