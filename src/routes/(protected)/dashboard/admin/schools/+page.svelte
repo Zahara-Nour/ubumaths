@@ -53,6 +53,13 @@
 	let annuaireTimer: ReturnType<typeof setTimeout> | undefined;
 	// Monotonic token: drops responses from superseded (slower) requests.
 	let annuaireSeq = 0;
+	// Pagination of the Annuaire results.
+	let annuairePage = $state(1);
+	let annuaireTotal = $state(0);
+	let annuairePageSize = $state(20);
+	let annuaireTotalPages = $derived(
+		Math.min(50, Math.max(1, Math.ceil(annuaireTotal / annuairePageSize)))
+	);
 
 	function resetAnnuaire() {
 		clearTimeout(annuaireTimer);
@@ -60,6 +67,8 @@
 		annuaireResults = [];
 		annuaireOpen = false;
 		annuaireLoading = false;
+		annuairePage = 1;
+		annuaireTotal = 0;
 	}
 
 	function openCreateModal() {
@@ -105,25 +114,37 @@
 			annuaireOpen = false;
 			return;
 		}
-		annuaireTimer = setTimeout(searchAnnuaire, 300);
+		annuaireTimer = setTimeout(() => searchAnnuaire(1), 300);
 	}
 
-	async function searchAnnuaire() {
+	async function searchAnnuaire(page = 1) {
 		const q = annuaireQuery.trim();
 		if (q.length < 2) return;
 		const seq = ++annuaireSeq;
 		annuaireLoading = true;
 		annuaireOpen = true;
 		try {
-			const res = await fetch(`/api/admin/annuaire/search?q=${encodeURIComponent(q)}`);
-			const results = res.ok ? ((await res.json()).schools ?? []) : [];
+			const res = await fetch(`/api/admin/annuaire/search?q=${encodeURIComponent(q)}&page=${page}`);
+			const body = res.ok ? await res.json() : null;
 			if (seq !== annuaireSeq) return; // superseded by a newer search
-			annuaireResults = results;
+			annuaireResults = body?.schools ?? [];
+			annuaireTotal = body?.total ?? 0;
+			annuairePage = body?.page ?? page;
+			annuairePageSize = body?.pageSize ?? 20;
 		} catch {
-			if (seq === annuaireSeq) annuaireResults = [];
+			if (seq === annuaireSeq) {
+				annuaireResults = [];
+				annuaireTotal = 0;
+			}
 		} finally {
 			if (seq === annuaireSeq) annuaireLoading = false;
 		}
+	}
+
+	function goAnnuairePage(delta: number) {
+		const next = annuairePage + delta;
+		if (next < 1 || next > annuaireTotalPages) return;
+		searchAnnuaire(next);
 	}
 
 	function selectAnnuaireSchool(school: AnnuaireSchool) {
@@ -473,6 +494,31 @@
 															>
 														</button>
 													{/each}
+												{/if}
+												{#if annuaireTotal > annuairePageSize}
+													<div
+														class="sticky bottom-0 flex items-center justify-between border-t border-border bg-card px-2 py-1.5 text-xs text-muted-foreground"
+													>
+														<button
+															type="button"
+															class="rounded px-2 py-1 hover:bg-muted disabled:opacity-40"
+															disabled={annuairePage <= 1 || annuaireLoading}
+															onclick={() => goAnnuairePage(-1)}
+														>
+															‹ Précédent
+														</button>
+														<span
+															>Page {annuairePage} / {annuaireTotalPages} · {annuaireTotal} résultats</span
+														>
+														<button
+															type="button"
+															class="rounded px-2 py-1 hover:bg-muted disabled:opacity-40"
+															disabled={annuairePage >= annuaireTotalPages || annuaireLoading}
+															onclick={() => goAnnuairePage(1)}
+														>
+															Suivant ›
+														</button>
+													</div>
 												{/if}
 											</div>
 										{/if}
