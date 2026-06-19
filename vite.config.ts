@@ -114,7 +114,11 @@ export default defineConfig(({ mode }) => {
 		 */
 		build: {
 			// Increase chunk size warning limit
-			chunkSizeWarningLimit: 1000
+			chunkSizeWarningLimit: 1000,
+			// Skip the "computing gzip size" pass over every output chunk. We already
+			// get bundle sizes from the ANALYZE=1 visualizer, and the Safari-TDZ chunk
+			// guard reads RAW bytes — so the gzip report is dead weight on the prod build.
+			reportCompressedSize: false
 		},
 
 		test: {
