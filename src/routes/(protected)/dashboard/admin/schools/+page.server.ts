@@ -3,6 +3,7 @@ import type { PageServerLoad, Actions } from './$types';
 import { schoolUpsertSchema } from '$lib/server/validation/schools';
 import { uuidSchema } from '$lib/server/validation/common';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { assertTypedConfirmation } from '$lib/server/confirmAction';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Admin only (real admin login OR step-up elevation)
@@ -97,6 +98,18 @@ export const actions: Actions = {
 
 		const formData = await request.formData();
 		const id = formData.get('id') as string;
+
+		// Typed confirmation (destructive): the admin must type the exact school name.
+		// Enforced server-side — the dialog is only the friendly front door.
+		const { data: school, error: schoolError } = await supabase
+			.from('schools')
+			.select('name')
+			.eq('id', id)
+			.single();
+		if (schoolError || !school) {
+			return fail(404, { message: 'École introuvable' });
+		}
+		assertTypedConfirmation(formData.get('confirm'), school.name);
 
 		// Check if school has any profiles associated
 		const { data: profiles, error: checkError } = await supabase
