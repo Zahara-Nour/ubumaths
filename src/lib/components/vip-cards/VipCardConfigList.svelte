@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
+	import TypedConfirmDialog from '$lib/components/admin/TypedConfirmDialog.svelte';
 	import type { Database } from '$lib/types/database';
 
 	type VipCardConfig = Database['public']['Tables']['vip_card_config']['Row'];
@@ -7,15 +8,16 @@
 	interface Props {
 		configs: VipCardConfig[];
 		onActivate: (configId: string) => Promise<void>;
+		// Receives the config name so the caller can echo it as the typed-
+		// confirmation token. Throws on failure (the dialog reacts to it).
+		onDelete: (configId: string, configName: string) => Promise<void>;
 		onEdit: (config: VipCardConfig) => void;
-		onDelete: (configId: string) => Promise<void>;
 		onCreate: () => void;
 	}
 
 	let { configs, onActivate, onEdit, onDelete, onCreate }: Props = $props();
 
 	let activating = $state<string | null>(null);
-	let deleting = $state<string | null>(null);
 
 	async function handleActivate(configId: string) {
 		activating = configId;
@@ -23,17 +25,6 @@
 			await onActivate(configId);
 		} finally {
 			activating = null;
-		}
-	}
-
-	async function handleDelete(configId: string, configName: string) {
-		if (!confirm(`Supprimer la configuration "${configName}" ?`)) return;
-
-		deleting = configId;
-		try {
-			await onDelete(configId);
-		} finally {
-			deleting = null;
 		}
 	}
 
@@ -141,14 +132,19 @@
 
 							<Button size="sm" variant="outline" onclick={() => onEdit(config)}>Modifier</Button>
 
-							<Button
-								size="sm"
-								variant="destructive"
-								onclick={() => handleDelete(config.id, config.config_name)}
-								disabled={config.is_active || deleting === config.id}
+							<TypedConfirmDialog
+								expected={config.config_name}
+								onConfirm={() => onDelete(config.id, config.config_name)}
+								title="Supprimer la configuration « {config.config_name} »"
+								description="Cette action est irréversible. La configuration de probabilités sera définitivement supprimée."
+								successMessage="Configuration supprimée"
 							>
-								{deleting === config.id ? 'Suppression...' : 'Supprimer'}
-							</Button>
+								{#snippet trigger(props)}
+									<Button {...props} size="sm" variant="destructive" disabled={config.is_active}>
+										Supprimer
+									</Button>
+								{/snippet}
+							</TypedConfirmDialog>
 						</div>
 					</div>
 

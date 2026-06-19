@@ -9,6 +9,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Switch from '$lib/components/ui/switch';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import TypedConfirmDialog from '$lib/components/admin/TypedConfirmDialog.svelte';
 	import { MetricCard } from '$lib/components/admin/widgets';
 	import { cn } from '$lib/utils';
 	import {
@@ -43,10 +44,9 @@
 	let detailsModalOpen = $state(false);
 	let selectedJob = $state<CronJobRun | null>(null);
 
-	// Trigger confirmation state
-	let triggerDialogOpen = $state(false);
-	let jobToTrigger = $state<string | null>(null);
-	let triggering = $state(false);
+	// Typed-confirmation keyword for the (global, destructive) manual trigger.
+	// Re-enforced server-side via assertTypedConfirmation.
+	const TRIGGER_CONFIRM_KEYWORD = 'LANCER';
 
 	// Filter items
 	const jobNameItems = $derived([
@@ -203,45 +203,28 @@
 		detailsModalOpen = true;
 	}
 
-	function openTriggerDialog(jobName: string) {
-		const path = getJobPath(jobName);
-		if (!path) {
-			toaster.error('Ce job ne peut pas etre declenche manuellement');
+	// Triggers a job by path; sends the typed-confirmation keyword in the body.
+	// Throws on failure so the TypedConfirmDialog keeps itself open + toasts.
+	// On success it schedules a refresh and resolves (the dialog closes + toasts).
+	async function triggerJob(jobPath: string) {
+		const response = await fetch('/api/admin/cron/trigger', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ job_path: jobPath, confirm: TRIGGER_CONFIRM_KEYWORD })
+		});
+
+		const result = await response.json().catch(() => ({}));
+
+		if (response.ok && result.success) {
+			// Refresh after a short delay to see the new job run.
+			setTimeout(() => refresh(), 2000);
 			return;
 		}
-		jobToTrigger = path;
-		triggerDialogOpen = true;
-	}
 
-	async function confirmTrigger() {
-		if (!jobToTrigger) return;
-
-		triggering = true;
-		try {
-			const response = await fetch('/api/admin/cron/trigger', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ job_path: jobToTrigger })
-			});
-
-			const result = await response.json();
-
-			if (response.ok && result.success) {
-				toaster.success('Job declenche avec succes');
-				triggerDialogOpen = false;
-				// Refresh after a short delay to see the new job run
-				setTimeout(() => refresh(), 2000);
-			} else if (response.status === 429) {
-				toaster.warning(result.message || 'Rate limit atteint. Attendez avant de reessayer.');
-			} else {
-				toaster.error(result.message || 'Echec du declenchement du job');
-			}
-		} catch (err) {
-			toaster.error('Erreur lors du declenchement du job');
-			console.error('[CRON Trigger]', err);
-		} finally {
-			triggering = false;
+		if (response.status === 429) {
+			throw new Error(result.message || 'Rate limit atteint. Attendez avant de reessayer.');
 		}
+		throw new Error(result.message || 'Echec du declenchement du job');
 	}
 
 	// Auto-refresh effect
@@ -381,6 +364,7 @@
 				<div class="space-y-3">
 					{#each filteredJobs as job (job.id)}
 						{@const statusInfo = getStatusBadge(job.status)}
+						{@const jobPath = getJobPath(job.job_name)}
 						<div
 							class="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent/50"
 						>
@@ -415,14 +399,31 @@
 								<Button variant="outline" size="sm" onclick={() => openDetails(job)}>
 									Details
 								</Button>
-								<Button
-									variant="ghost"
-									size="sm"
-									onclick={() => openTriggerDialog(job.job_name)}
-									title="Relancer ce job"
-								>
-									<Play class="h-4 w-4" />
-								</Button>
+								{#if jobPath}
+									<TypedConfirmDialog
+										expected={TRIGGER_CONFIRM_KEYWORD}
+										onConfirm={() => triggerJob(jobPath)}
+										title="Declencher le job « {formatJobName(job.job_name)} »"
+										description="Le job sera execute immediatement. Vous ne pouvez declencher le meme job qu'une fois par minute."
+										confirmLabel="Declencher"
+										successMessage="Job declenche avec succes"
+									>
+										{#snippet trigger(props)}
+											<Button {...props} variant="ghost" size="sm" title="Relancer ce job">
+												<Play class="h-4 w-4" />
+											</Button>
+										{/snippet}
+									</TypedConfirmDialog>
+								{:else}
+									<Button
+										variant="ghost"
+										size="sm"
+										onclick={() => toaster.error('Ce job ne peut pas etre declenche manuellement')}
+										title="Relancer ce job"
+									>
+										<Play class="h-4 w-4" />
+									</Button>
+								{/if}
 							</div>
 						</div>
 					{/each}
@@ -507,53 +508,30 @@
 		<Dialog.Footer>
 			<Button variant="outline" onclick={() => (detailsModalOpen = false)}>Fermer</Button>
 			{#if selectedJob}
-				<Button
-					onclick={() => {
-						detailsModalOpen = false;
-						openTriggerDialog(selectedJob!.job_name);
-					}}
-				>
-					<Play class="mr-2 h-4 w-4" />
-					Relancer
-				</Button>
-			{/if}
-		</Dialog.Footer>
-	</Dialog.Content>
-</Dialog.Root>
-
-<!-- Trigger Confirmation Dialog -->
-<Dialog.Root bind:open={triggerDialogOpen}>
-	<Dialog.Content class="sm:max-w-[425px]">
-		<Dialog.Header>
-			<Dialog.Title>Confirmer le declenchement</Dialog.Title>
-			<Dialog.Description>
-				Voulez-vous vraiment declencher manuellement ce job CRON ?
-			</Dialog.Description>
-		</Dialog.Header>
-
-		<div class="py-4">
-			<div class="rounded-md bg-muted p-3">
-				<p class="font-mono text-sm">{jobToTrigger}</p>
-			</div>
-			<p class="mt-2 text-sm text-muted-foreground">
-				Le job sera execute immediatement. Vous ne pouvez declencher le meme job qu'une fois par
-				minute.
-			</p>
-		</div>
-
-		<Dialog.Footer>
-			<Button variant="outline" onclick={() => (triggerDialogOpen = false)} disabled={triggering}>
-				Annuler
-			</Button>
-			<Button onclick={confirmTrigger} disabled={triggering}>
-				{#if triggering}
-					<RefreshCw class="mr-2 h-4 w-4 animate-spin" />
-					Execution...
+				{@const selectedJobPath = getJobPath(selectedJob.job_name)}
+				{#if selectedJobPath}
+					<TypedConfirmDialog
+						expected={TRIGGER_CONFIRM_KEYWORD}
+						onConfirm={() => triggerJob(selectedJobPath)}
+						title="Declencher le job « {formatJobName(selectedJob.job_name)} »"
+						description="Le job sera execute immediatement. Vous ne pouvez declencher le meme job qu'une fois par minute."
+						confirmLabel="Declencher"
+						successMessage="Job declenche avec succes"
+					>
+						{#snippet trigger(props)}
+							<Button {...props}>
+								<Play class="mr-2 h-4 w-4" />
+								Relancer
+							</Button>
+						{/snippet}
+					</TypedConfirmDialog>
 				{:else}
-					<Play class="mr-2 h-4 w-4" />
-					Declencher
+					<Button onclick={() => toaster.error('Ce job ne peut pas etre declenche manuellement')}>
+						<Play class="mr-2 h-4 w-4" />
+						Relancer
+					</Button>
 				{/if}
-			</Button>
+			{/if}
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

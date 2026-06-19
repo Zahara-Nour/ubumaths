@@ -88,11 +88,16 @@ describe('cronJobsQuerySchema', () => {
 });
 
 describe('cronTriggerBodySchema', () => {
-	it('should accept allowed job paths', () => {
+	it('should accept allowed job paths (with the confirm token)', () => {
 		for (const path of ALLOWED_JOB_PATHS) {
-			const result = cronTriggerBodySchema.parse({ job_path: path });
+			const result = cronTriggerBodySchema.parse({ job_path: path, confirm: 'LANCER' });
 			expect(result.job_path).toBe(path);
 		}
+	});
+
+	it('should require the confirm field (typed confirmation)', () => {
+		const result = cronTriggerBodySchema.safeParse({ job_path: ALLOWED_JOB_PATHS[0] });
+		expect(result.success).toBe(false);
 	});
 
 	it('should reject empty job_path', () => {

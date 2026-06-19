@@ -13,8 +13,13 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { assertTypedConfirmation } from '$lib/server/confirmAction';
 import { getEnv } from '$lib/server/env';
-import { cronTriggerBodySchema, type CronTriggerResponse } from '$lib/server/validation/cron';
+import {
+	cronTriggerBodySchema,
+	CRON_TRIGGER_CONFIRM_KEYWORD,
+	type CronTriggerResponse
+} from '$lib/server/validation/cron';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 // Simple in-memory rate limit store
@@ -44,6 +49,9 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 	}
 
 	const { job_path } = validation.data;
+
+	// ✅ SECURITY: global destructive op → require the fixed keyword.
+	assertTypedConfirmation(validation.data.confirm, CRON_TRIGGER_CONFIRM_KEYWORD);
 
 	// Check rate limit
 	const lastTrigger = rateLimitStore.get(job_path);

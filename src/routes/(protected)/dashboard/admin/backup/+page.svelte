@@ -8,6 +8,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Alert from '$lib/components/ui/alert';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import TypedConfirmDialog from '$lib/components/admin/TypedConfirmDialog.svelte';
 	import {
 		Download,
 		Upload,
@@ -24,6 +25,10 @@
 	let { data } = $props();
 	// svelte-ignore state_referenced_locally
 	const initialData = data;
+
+	// Typed-confirmation keyword for the (destructive) restore; re-enforced
+	// server-side via assertTypedConfirmation.
+	const RESTORE_CONFIRM_KEYWORD = 'RESTAURER';
 
 	// Export state
 	let exportingJson = $state(false);
@@ -154,7 +159,11 @@
 		}
 	}
 
-	// Restore from backup
+	// Restore from backup. Invoked by the TypedConfirmDialog (callback mode);
+	// it echoes the 'RESTAURER' keyword in the body (re-enforced server-side).
+	// Throws on hard failure so the dialog stays open + toasts; resolves on a
+	// completed restore (the dialog closes + shows the success toast). Partial
+	// success (errors per record) still resolves and is surfaced via restoreResult.
 	async function restore() {
 		if (!importFile) return;
 
@@ -171,6 +180,7 @@
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
+					confirm: RESTORE_CONFIRM_KEYWORD,
 					backup,
 					options: {
 						conflict_strategy: conflictStrategy,
@@ -179,18 +189,23 @@
 				})
 			});
 
+			// Hard failure (e.g. 400 missing/invalid confirm, 413 too large, 500).
+			if (!response.ok && response.status !== 207) {
+				const errBody = await response.json().catch(() => ({}));
+				throw new Error(errBody.message || 'Erreur lors de la restauration');
+			}
+
 			const result: RestoreResult = await response.json();
 			restoreResult = result;
 
 			if (result.success) {
-				toaster.success('Restauration terminee avec succes');
 				await refreshStats();
 			} else {
+				// Completed with per-record errors: surface them, don't treat as a
+				// hard failure (the dialog still resolves/closes).
 				toaster.warning('Restauration terminee avec des erreurs');
+				await refreshStats();
 			}
-		} catch (err) {
-			console.error('Restore error:', err);
-			toaster.error('Erreur lors de la restauration');
 		} finally {
 			importing = false;
 		}
@@ -402,15 +417,26 @@
 					</p>
 				</div>
 
-				<Button onclick={restore} disabled={importing} class="w-full">
-					{#if importing}
-						<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-						Restauration en cours...
-					{:else}
-						<Upload class="mr-2 h-4 w-4" />
-						Restaurer
-					{/if}
-				</Button>
+				<TypedConfirmDialog
+					expected={RESTORE_CONFIRM_KEYWORD}
+					onConfirm={restore}
+					title="Restaurer depuis le backup"
+					description="Cette operation va importer les exercices du fichier selon la strategie de conflit choisie. Selon la strategie « Remplacer », des donnees existantes peuvent etre ecrasees."
+					confirmLabel="Restaurer"
+					successMessage="Restauration terminee avec succes"
+				>
+					{#snippet trigger(props)}
+						<Button {...props} disabled={importing} class="w-full">
+							{#if importing}
+								<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+								Restauration en cours...
+							{:else}
+								<Upload class="mr-2 h-4 w-4" />
+								Restaurer
+							{/if}
+						</Button>
+					{/snippet}
+				</TypedConfirmDialog>
 			{/if}
 		</Card.Content>
 	</Card.Root>
