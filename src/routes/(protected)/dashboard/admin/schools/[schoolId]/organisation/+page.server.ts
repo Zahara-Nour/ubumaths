@@ -3,6 +3,7 @@ import type { PageServerLoad, Actions } from './$types';
 import { validateTimetable, type SchoolTimetable } from '$lib/utils/timetable';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { assertTypedConfirmation } from '$lib/server/confirmAction';
 import {
 	createSchoolYearSchema,
 	updateSchoolYearSchema,
@@ -185,6 +186,18 @@ export const actions: Actions = {
 			return fail(400, { error: 'ID invalide' });
 		}
 
+		// Typed confirmation (destructive): fetch the year name so the admin must type it.
+		// Enforced server-side — the dialog is only the friendly front door.
+		const { data: year, error: yearError } = await supabase
+			.from('school_years')
+			.select('name')
+			.eq('id', validation.data.id)
+			.single();
+		if (yearError || !year) {
+			return fail(404, { error: 'Année scolaire introuvable' });
+		}
+		assertTypedConfirmation(formData.get('confirm'), year.name);
+
 		const { error: dbError } = await supabase
 			.from('school_years')
 			.delete()
@@ -340,6 +353,18 @@ export const actions: Actions = {
 			return fail(400, { error: 'ID invalide' });
 		}
 
+		// Typed confirmation (destructive): fetch the period name so the admin must type it.
+		// Enforced server-side — the dialog is only the friendly front door.
+		const { data: period, error: periodError } = await supabase
+			.from('academic_periods')
+			.select('name')
+			.eq('id', validation.data.id)
+			.single();
+		if (periodError || !period) {
+			return fail(404, { error: 'Période académique introuvable' });
+		}
+		assertTypedConfirmation(formData.get('confirm'), period.name);
+
 		const { error: dbError } = await supabase
 			.from('academic_periods')
 			.delete()
@@ -443,6 +468,18 @@ export const actions: Actions = {
 		if (!validation.success) {
 			return fail(400, { error: 'ID invalide' });
 		}
+
+		// Typed confirmation (destructive): fetch the holiday name so the admin must type it.
+		// Enforced server-side — the dialog is only the friendly front door.
+		const { data: holiday, error: holidayError } = await supabase
+			.from('school_holidays')
+			.select('name')
+			.eq('id', validation.data.id)
+			.single();
+		if (holidayError || !holiday) {
+			return fail(404, { error: 'Vacances scolaires introuvables' });
+		}
+		assertTypedConfirmation(formData.get('confirm'), holiday.name);
 
 		const { error: dbError } = await supabase
 			.from('school_holidays')
