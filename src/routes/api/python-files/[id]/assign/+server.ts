@@ -61,11 +61,10 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(403, 'Vous ne pouvez assigner que vos propres fichiers Python');
 	}
 
-	// Verify user is teacher of all specified classes
+	// Verify all specified classes exist
 	const { data: classes, error: classesError } = await locals.supabase
 		.from('classes')
 		.select('id')
-		.eq('teacher_id', user.id)
 		.in('id', class_ids);
 
 	if (classesError) {
@@ -76,10 +75,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	if (!classes || classes.length !== class_ids.length) {
 		const validClassIds = new Set(classes?.map((c) => c.id) ?? []);
 		const invalidClassIds = class_ids.filter((id) => !validClassIds.has(id));
-		throw error(
-			403,
-			`Vous n'etes pas le professeur de certaines classes: ${invalidClassIds.join(', ')}`
-		);
+		throw error(403, `Certaines classes sont introuvables: ${invalidClassIds.join(', ')}`);
 	}
 
 	// Create assignments (upsert to handle duplicates)

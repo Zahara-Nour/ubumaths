@@ -87,7 +87,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Verify teacher owns all classes
 	const { data: classes, error: classesError } = await locals.supabase
 		.from('classes')
-		.select('id, teacher_id')
+		.select('id')
 		.in('id', classIds)
 		.eq('is_active', true);
 
@@ -98,15 +98,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (!classes || classes.length !== classIds.length) {
 		throw error(400, 'One or more classes not found or inactive');
-	}
-
-	const invalidClasses = classes.filter((c) => c.teacher_id !== user.id);
-	if (invalidClasses.length > 0) {
-		console.error(
-			`[Bulk Coursework Share] Unauthorized class access attempt by teacher ${user.id}:`,
-			invalidClasses.map((c) => c.id)
-		);
-		throw error(403, 'You do not own all selected classes');
 	}
 
 	// Verify category ownership if provided (SECURITY: Prevent authorization bypass)

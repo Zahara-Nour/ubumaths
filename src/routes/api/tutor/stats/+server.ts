@@ -75,7 +75,7 @@ interface StatsResponse {
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	// 1. Auth check (require teacher or admin)
-	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
+	const { profile } = await requireRoles(locals, ['teacher', 'admin']);
 
 	// 2. Parse and validate query params
 	const validation = statsQuerySchema.safeParse({
@@ -140,10 +140,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	// For teachers (non-admins), only show conversations from their classes
 	if (profile.role === 'teacher') {
 		// Get teacher's class IDs first
-		const { data: teacherClasses } = await locals.supabase
-			.from('classes')
-			.select('id')
-			.eq('teacher_id', user.id);
+		const { data: teacherClasses } = await locals.supabase.from('classes').select('id');
 
 		if (teacherClasses && teacherClasses.length > 0) {
 			const classIds = teacherClasses.map((c) => c.id);

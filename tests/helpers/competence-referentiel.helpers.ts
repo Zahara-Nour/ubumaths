@@ -370,10 +370,11 @@ export async function createEvaluationTask(
 		niveauScolaire?: string;
 	}
 ): Promise<string> {
+	// Mono-teacher: evaluation_tasks.teacher_id was dropped (role-based ownership).
+	void params.teacherId;
 	const { data, error } = await service
 		.from('evaluation_tasks' as never)
 		.insert({
-			teacher_id: params.teacherId,
 			class_id: params.classId ?? null,
 			name: params.name ?? 'Test task',
 			niveau_scolaire: params.niveauScolaire ?? '6e'
@@ -413,7 +414,6 @@ export async function cleanupCompetenceTestData(): Promise<void> {
 	if (!profiles || profiles.length === 0) return;
 
 	const allIds = profiles.map((p) => p.id);
-	const teacherIds = profiles.filter((p) => p.role === 'teacher').map((p) => p.id);
 
 	// Step 2: delete attempts (leaf; ON DELETE CASCADE from profiles already handles it,
 	// but we do it explicitly to avoid trigger side-effects on non-existent cache rows)
@@ -438,29 +438,17 @@ export async function cleanupCompetenceTestData(): Promise<void> {
 			.in('student_id', allIds);
 	}
 
-	// Step 4: evaluation tasks created by test teachers
-	if (teacherIds.length > 0) {
-		// Collect task ids first so we can delete perimeter rows explicitly
-		// (defensive: even though evaluation_task_perimeter.task_id has ON DELETE CASCADE,
-		// we delete explicitly to avoid any trigger side-effects during cascade)
-		const { data: tasks } = await service
-			.from('evaluation_tasks' as never)
-			.select('id')
-			.in('teacher_id', teacherIds);
-		const allTaskIds = ((tasks ?? []) as Array<{ id: string }>).map((t) => t.id);
-
-		if (allTaskIds.length > 0) {
-			await service
-				.from('evaluation_task_perimeter' as never)
-				.delete()
-				.in('task_id', allTaskIds);
-		}
-
-		await service
-			.from('evaluation_tasks' as never)
-			.delete()
-			.in('teacher_id', teacherIds);
-	}
+	// Step 4: evaluation tasks. Mono-teacher dropped evaluation_tasks.teacher_id, so
+	// they no longer scope by teacher; purge all (test DB only — seed.sql has none).
+	// Delete perimeter first (defensive, even though task_id has ON DELETE CASCADE).
+	await service
+		.from('evaluation_task_perimeter' as never)
+		.delete()
+		.not('task_id', 'is', null);
+	await service
+		.from('evaluation_tasks' as never)
+		.delete()
+		.not('id', 'is', null);
 
 	// Step 5: fake templates (domain = 'test') — scoped to test users to avoid
 	// polluting parallel test sessions (B10: filter by created_by)
@@ -472,9 +460,8 @@ export async function cleanupCompetenceTestData(): Promise<void> {
 	if (allIds.length > 0) {
 		await service.from('class_members').delete().in('student_id', allIds);
 	}
-	if (teacherIds.length > 0) {
-		await service.from('classes').delete().in('teacher_id', teacherIds);
-	}
+	// classes no longer carry teacher_id; purge all (test DB only — seed.sql has none).
+	await service.from('classes').delete().not('id', 'is', null);
 
 	// Step 7: profiles + auth users — replica-mode deletion. A client-side
 	// `from('profiles').delete()` (or auth.admin.deleteUser) is silently aborted by

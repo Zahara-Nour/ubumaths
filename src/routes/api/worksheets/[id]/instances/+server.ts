@@ -57,11 +57,10 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			.from('classes')
 			.select('id, name')
 			.eq('id', classId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (classError || !classData) {
-			return error(403, 'Class not found or access denied');
+			return error(404, 'Class not found');
 		}
 
 		// Fetch worksheet details

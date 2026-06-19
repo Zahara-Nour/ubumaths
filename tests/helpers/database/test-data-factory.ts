@@ -116,10 +116,11 @@ export class ProfileBuilder {
 export class ClassBuilder {
 	private data: Partial<Tables['classes']['Insert']> = {};
 
-	constructor(teacherId: string) {
+	// teacherId kept for call-site compatibility but ignored: the mono-teacher
+	// refactor dropped classes.teacher_id (ownership is role-based now).
+	constructor(_teacherId?: string) {
 		this.data = {
 			id: generateTestId('class'),
-			teacher_id: teacherId,
 			name: 'Test Class',
 			join_code: `TEST${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
 			created_at: new Date().toISOString(),
@@ -414,7 +415,7 @@ export class ErrorLogBuilder {
 // Export factory functions for convenience
 export const TestData = {
 	profile: () => new ProfileBuilder(),
-	class: (teacherId: string) => new ClassBuilder(teacherId),
+	class: (teacherId?: string) => new ClassBuilder(teacherId),
 	exercise: (createdBy: string) => new ExerciseBuilder(createdBy),
 	gameCombat: (organizerId: string, monsterId?: string) =>
 		new GameCombatBuilder(organizerId, monsterId),

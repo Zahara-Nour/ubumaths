@@ -59,7 +59,6 @@ function convertJournalEntry(db: DbClassJournalEntry): ClassJournalEntry {
 	return {
 		id: db.id,
 		classId: db.class_id,
-		teacherId: db.teacher_id,
 		entryDate: db.entry_date,
 		lessonContent: db.lesson_content,
 		homeworkContent: db.homework_content,
@@ -78,25 +77,25 @@ function convertJournalEntry(db: DbClassJournalEntry): ClassJournalEntry {
  * Create a new journal entry
  *
  * @param supabase - Supabase client
- * @param teacherId - Teacher's user ID
+ * @param _teacherId - Unused (kept for API stability); ownership is role-based via RLS
  * @param input - Journal entry data
  * @returns Created journal entry
  */
 export async function createJournalEntry(
 	supabase: SupabaseClient<Database>,
-	teacherId: string,
+	_teacherId: string,
 	input: CreateJournalEntryInput
 ): Promise<OperationResult<ClassJournalEntry>> {
-	// Verify teacher owns the class
+	// Mono-teacher: the sole teacher/admin owns every class. RLS enforces write
+	// access on class_journal_entries; we just verify the class exists.
 	const { data: classData, error: classError } = await supabase
 		.from('classes')
-		.select('id, teacher_id')
+		.select('id')
 		.eq('id', input.classId)
-		.eq('teacher_id', teacherId)
 		.single();
 
 	if (classError || !classData) {
-		console.error('[createJournalEntry] Teacher does not own class:', classError);
+		console.error('[createJournalEntry] Class not found:', classError);
 		return {
 			data: null,
 			error: new Error("Vous n'etes pas autorise a creer des entrees pour cette classe")
@@ -108,7 +107,6 @@ export async function createJournalEntry(
 		.from('class_journal_entries')
 		.insert({
 			class_id: input.classId,
-			teacher_id: teacherId,
 			entry_date: input.entryDate,
 			lesson_content: input.lessonContent ?? null,
 			homework_content: input.homeworkContent ?? null,
@@ -138,14 +136,14 @@ export async function createJournalEntry(
  *
  * @param supabase - Supabase client
  * @param entryId - Journal entry ID
- * @param teacherId - Teacher's user ID (for authorization)
+ * @param _teacherId - Unused (kept for API stability); ownership is role-based via RLS
  * @param input - Update data
  * @returns Updated journal entry
  */
 export async function updateJournalEntry(
 	supabase: SupabaseClient<Database>,
 	entryId: string,
-	teacherId: string,
+	_teacherId: string,
 	input: UpdateJournalEntryInput
 ): Promise<OperationResult<ClassJournalEntry>> {
 	// Build update object
@@ -162,7 +160,6 @@ export async function updateJournalEntry(
 		.from('class_journal_entries')
 		.update(updateData)
 		.eq('id', entryId)
-		.eq('teacher_id', teacherId)
 		.select()
 		.single();
 
@@ -193,19 +190,15 @@ export async function updateJournalEntry(
  *
  * @param supabase - Supabase client
  * @param entryId - Journal entry ID
- * @param teacherId - Teacher's user ID (for authorization)
+ * @param _teacherId - Unused (kept for API stability); ownership is role-based via RLS
  * @returns Success status
  */
 export async function deleteJournalEntry(
 	supabase: SupabaseClient<Database>,
 	entryId: string,
-	teacherId: string
+	_teacherId: string
 ): Promise<{ error: Error | null }> {
-	const { error } = await supabase
-		.from('class_journal_entries')
-		.delete()
-		.eq('id', entryId)
-		.eq('teacher_id', teacherId);
+	const { error } = await supabase.from('class_journal_entries').delete().eq('id', entryId);
 
 	if (error) {
 		console.error('[deleteJournalEntry] Error:', error);
@@ -319,14 +312,14 @@ export async function getJournalEntriesForWeek(
  * Get all journal entries for a teacher, optionally filtered by class
  *
  * @param supabase - Supabase client
- * @param teacherId - Teacher's user ID
+ * @param _teacherId - Unused (kept for API stability); ownership is role-based via RLS
  * @param classId - Optional class ID filter
  * @param limit - Max number of entries to return
  * @returns List of journal entries with class info
  */
 export async function getTeacherJournalEntries(
 	supabase: SupabaseClient<Database>,
-	teacherId: string,
+	_teacherId: string,
 	classId?: string,
 	limit: number = 50
 ): Promise<ListResult<JournalEntryWithClass>> {
@@ -338,7 +331,6 @@ export async function getTeacherJournalEntries(
 			class:classes!inner(name, level)
 		`
 		)
-		.eq('teacher_id', teacherId)
 		.order('entry_date', { ascending: false })
 		.limit(limit);
 

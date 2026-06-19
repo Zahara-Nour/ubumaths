@@ -162,15 +162,15 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			return error(400, 'Un template de classe doit avoir un class_id');
 		}
 
-		// Verify teacher owns the class if changing class_id
+		// Verify the class exists if changing class_id
 		if (profile.role === 'teacher' && newScope === 'class') {
 			const { data: classData } = await supabase
 				.from('classes')
-				.select('teacher_id')
+				.select('id')
 				.eq('id', newClassId!)
 				.single();
 
-			if (!classData || classData.teacher_id !== user.id) {
+			if (!classData) {
 				return error(403, 'Vous ne pouvez utiliser que vos propres classes');
 			}
 		}

@@ -23,20 +23,15 @@ interface ActivationRequest {
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Require teacher/admin authentication
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 	const supabase = locals.supabase;
 
-	// Get all active students that this teacher teaches
+	// Mono-teacher: the sole teacher teaches every class, so all active members are
+	// this teacher's students (classes.teacher_id was dropped).
 	const { data: classMembers, error: classMembersError } = await supabase
 		.from('class_members')
-		.select(
-			`
-			student_id,
-			classes!inner(teacher_id)
-		`
-		)
-		.eq('status', 'active')
-		.eq('classes.teacher_id', user.id);
+		.select('student_id')
+		.eq('status', 'active');
 
 	if (classMembersError) {
 		console.error('[rewards] Error fetching class members:', classMembersError);

@@ -93,7 +93,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	// Verify teacher owns all classes
 	const { data: classes, error: classesError } = await locals.supabase
 		.from('classes')
-		.select('id, teacher_id')
+		.select('id')
 		.in('id', classIds)
 		.eq('is_active', true);
 
@@ -104,15 +104,6 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 	if (!classes || classes.length !== classIds.length) {
 		throw error(400, 'Invalid request');
-	}
-
-	const invalidClasses = classes.filter((c) => c.teacher_id !== user.id);
-	if (invalidClasses.length > 0) {
-		console.error(
-			`[Material Share] Unauthorized class access attempt by teacher ${user.id}:`,
-			invalidClasses.map((c) => c.id)
-		);
-		throw error(403, 'Access denied');
 	}
 
 	// Create shared_materials records

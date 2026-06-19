@@ -10,27 +10,22 @@ import { unlinkExercise } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
 
 /**
- * Verify the teacher owns the chapter and exercise link exists
+ * Verify the chapter exists and exercise link belongs to it
  */
 async function verifyExerciseLinkOwnership(
 	chapterId: string,
 	linkId: string,
-	teacherId: string,
 	supabase: App.Locals['supabase']
 ) {
-	// Verify chapter ownership
+	// Verify chapter exists
 	const { data: chapter, error: chapterError } = await supabase
 		.from('class_chapters')
-		.select('id, teacher_id')
+		.select('id')
 		.eq('id', chapterId)
 		.single();
 
 	if (chapterError || !chapter) {
 		throw error(404, 'Chapter not found');
-	}
-
-	if (chapter.teacher_id !== teacherId) {
-		throw error(403, 'Forbidden - Not your chapter');
 	}
 
 	// Verify link exists and belongs to chapter
@@ -56,7 +51,7 @@ async function verifyExerciseLinkOwnership(
  * Unlink an exercise from a chapter
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Validate IDs
 	const chapterIdValidation = uuidSchema.safeParse(params.id);
@@ -73,7 +68,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const linkId = linkIdValidation.data;
 
 	// Verify ownership
-	await verifyExerciseLinkOwnership(chapterId, linkId, user.id, locals.supabase);
+	await verifyExerciseLinkOwnership(chapterId, linkId, locals.supabase);
 
 	// Unlink exercise
 	const result = await unlinkExercise(linkId, locals.supabase);

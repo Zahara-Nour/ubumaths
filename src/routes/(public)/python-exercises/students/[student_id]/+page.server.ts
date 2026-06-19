@@ -75,10 +75,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const student: StudentSummary = studentRaw;
 
 	// 3. My classes
-	const { data: myClassesRaw } = await supabase
-		.from('classes')
-		.select('id, name')
-		.eq('teacher_id', user.id);
+	const { data: myClassesRaw } = await supabase.from('classes').select('id, name');
 	const myClassIds = (myClassesRaw ?? []).map((c) => c.id);
 
 	// 4. Class members of my classes (for the scope check)

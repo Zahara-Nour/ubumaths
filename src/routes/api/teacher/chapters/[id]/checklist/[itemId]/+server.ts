@@ -14,27 +14,22 @@ import { uuidSchema } from '$lib/server/validation/common';
 type ZodIssue = { path: (string | number)[]; message: string };
 
 /**
- * Verify the teacher owns the chapter and checklist item exists
+ * Verify the chapter exists and checklist item belongs to it
  */
 async function verifyChecklistItemOwnership(
 	chapterId: string,
 	itemId: string,
-	teacherId: string,
 	supabase: App.Locals['supabase']
 ) {
-	// Verify chapter ownership
+	// Verify chapter exists
 	const { data: chapter, error: chapterError } = await supabase
 		.from('class_chapters')
-		.select('id, teacher_id')
+		.select('id')
 		.eq('id', chapterId)
 		.single();
 
 	if (chapterError || !chapter) {
 		throw error(404, 'Chapter not found');
-	}
-
-	if (chapter.teacher_id !== teacherId) {
-		throw error(403, 'Forbidden - Not your chapter');
 	}
 
 	// Verify item exists and belongs to chapter
@@ -60,7 +55,7 @@ async function verifyChecklistItemOwnership(
  * Update a checklist item
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Validate IDs
 	const chapterIdValidation = uuidSchema.safeParse(params.id);
@@ -77,7 +72,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const itemId = itemIdValidation.data;
 
 	// Verify ownership
-	await verifyChecklistItemOwnership(chapterId, itemId, user.id, locals.supabase);
+	await verifyChecklistItemOwnership(chapterId, itemId, locals.supabase);
 
 	// Parse and validate request body
 	let body: unknown;
@@ -112,7 +107,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
  * Delete a checklist item
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Validate IDs
 	const chapterIdValidation = uuidSchema.safeParse(params.id);
@@ -129,7 +124,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const itemId = itemIdValidation.data;
 
 	// Verify ownership
-	await verifyChecklistItemOwnership(chapterId, itemId, user.id, locals.supabase);
+	await verifyChecklistItemOwnership(chapterId, itemId, locals.supabase);
 
 	// Delete item
 	const result = await deleteChecklistItem(itemId, locals.supabase);

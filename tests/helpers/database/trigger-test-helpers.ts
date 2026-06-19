@@ -164,6 +164,21 @@ export async function cleanupAllTestData(): Promise<void> {
 		console.debug('Cleanup schools:', error);
 	}
 
+	// Mono-teacher: classes/evaluation_tasks no longer FK to profiles via teacher_id,
+	// so they no longer cascade-delete with the test teacher's profile. Purge them
+	// explicitly (test DB only; seed.sql creates no classes/tasks). Cascades clear
+	// class_members, class_chapters, schedules, timeslots, evaluation_task_perimeter.
+	for (const table of ['classes', 'evaluation_tasks']) {
+		try {
+			await serviceClient
+				.from(table as never)
+				.delete()
+				.not('id', 'is', null);
+		} catch (error) {
+			console.debug(`Cleanup ${table}:`, error);
+		}
+	}
+
 	// Clean up auth.users table using direct PostgreSQL client
 	// (Supabase client cannot access auth schema)
 	await deleteTestAuthUsers();
@@ -227,9 +242,10 @@ export async function insertTestClass(params: {
 }): Promise<Database['public']['Tables']['classes']['Row']> {
 	const serviceClient = createServiceRoleClient();
 
+	// Mono-teacher: classes are no longer assigned to a teacher (teacher_id dropped).
+	void params.teacherId;
 	const classData = {
 		id: generateTestId('class'),
-		teacher_id: params.teacherId,
 		name: params.name || 'Test Class',
 		join_code: `TEST${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
 		created_at: new Date().toISOString()

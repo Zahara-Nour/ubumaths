@@ -226,16 +226,9 @@
 	}
 
 	async function loadClasses() {
-		const {
-			data: { user }
-		} = await data.supabase.auth.getUser();
-
-		if (!user) return;
-
 		const { data: classesData } = await data.supabase
 			.from('classes')
 			.select('id, name')
-			.eq('teacher_id', user.id)
 			.order('name');
 
 		if (classesData) {

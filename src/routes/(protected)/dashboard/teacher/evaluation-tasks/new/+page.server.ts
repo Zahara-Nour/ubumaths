@@ -27,13 +27,12 @@ export interface TeacherClassOption {
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Charger les classes du prof pour le selecteur
 	const { data: classes, error: err } = await locals.supabase
 		.from('classes')
 		.select('id, name')
-		.eq('teacher_id', user.id)
 		.eq('is_active', true)
 		.order('name');
 
@@ -46,7 +45,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
 	default: async ({ locals, request }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 
 		const formData = await request.formData();
 		const raw = {
@@ -67,7 +66,6 @@ export const actions: Actions = {
 		const { data, error: insertError } = await locals.supabase
 			.from('evaluation_tasks')
 			.insert({
-				teacher_id: user.id,
 				name: parsed.data.name,
 				niveau_scolaire: parsed.data.niveau_scolaire,
 				class_id: parsed.data.class_id || null,

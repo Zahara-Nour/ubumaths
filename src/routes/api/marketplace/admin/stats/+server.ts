@@ -72,14 +72,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	if (profile.role === 'teacher') {
 		if (class_id) {
-			// Verify teacher owns this class
+			// Verify class exists
 			const { data: classData } = await supabase
 				.from('classes')
-				.select('teacher_id')
+				.select('id')
 				.eq('id', class_id)
 				.single();
 
-			if (!classData || classData.teacher_id !== userId) {
+			if (!classData) {
 				throw error(403, 'Accès non autorisé à cette classe');
 			}
 
@@ -92,10 +92,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			studentIds = classStudents?.map((m: { student_id: string }) => m.student_id) || [];
 		} else {
 			// Get all students in teacher's classes
-			const { data: classMembers } = await supabase
-				.from('class_members')
-				.select('student_id, class:classes!class_members_class_id_fkey(teacher_id)')
-				.eq('class.teacher_id', userId);
+			const { data: classMembers } = await supabase.from('class_members').select('student_id');
 
 			studentIds = classMembers?.map((m: { student_id: string }) => m.student_id) || [];
 		}

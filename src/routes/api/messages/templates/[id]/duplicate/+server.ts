@@ -58,14 +58,14 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	// If class_id provided, update the duplicate
 	if (class_id) {
-		// Verify user owns the class
+		// Verify class exists
 		const { data: classData } = await supabase
 			.from('classes')
-			.select('teacher_id')
+			.select('id')
 			.eq('id', class_id)
 			.single();
 
-		if (classData && classData.teacher_id === user.id) {
+		if (classData) {
 			await supabase
 				.from('message_templates')
 				.update({ class_id: class_id })

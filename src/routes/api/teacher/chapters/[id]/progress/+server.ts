@@ -16,25 +16,17 @@ const progressQuerySchema = z.object({
 });
 
 /**
- * Verify the teacher owns the chapter
+ * Verify the chapter exists and return its class_id
  */
-async function verifyChapterOwnership(
-	chapterId: string,
-	teacherId: string,
-	supabase: App.Locals['supabase']
-) {
+async function verifyChapterExists(chapterId: string, supabase: App.Locals['supabase']) {
 	const { data: chapter, error: chapterError } = await supabase
 		.from('class_chapters')
-		.select('id, teacher_id, class_id')
+		.select('id, class_id')
 		.eq('id', chapterId)
 		.single();
 
 	if (chapterError || !chapter) {
 		throw error(404, 'Chapter not found');
-	}
-
-	if (chapter.teacher_id !== teacherId) {
-		throw error(403, 'Forbidden - Not your chapter');
 	}
 
 	return chapter;
@@ -46,7 +38,7 @@ async function verifyChapterOwnership(
  * Optionally filter by studentId query parameter
  */
 export const GET: RequestHandler = async ({ locals, params, url }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Validate chapter ID
 	const idValidation = uuidSchema.safeParse(params.id);
@@ -67,8 +59,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 	const { studentId } = queryValidation.data;
 
-	// Verify ownership
-	const chapter = await verifyChapterOwnership(chapterId, user.id, locals.supabase);
+	// Verify chapter exists
+	const chapter = await verifyChapterExists(chapterId, locals.supabase);
 
 	// Fetch checklist progress
 	const checklistResult = await getStudentChecklistProgress(chapterId, locals.supabase, studentId);

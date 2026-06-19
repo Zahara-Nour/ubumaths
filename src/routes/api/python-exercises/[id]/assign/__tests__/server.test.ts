@@ -128,22 +128,6 @@ describe('POST /api/python-exercises/[id]/assign', () => {
 		).rejects.toMatchObject({ status: 400 });
 	});
 
-	it('class assignment: 403 when teacher does not own the class', async () => {
-		const { POST } = await import('../+server');
-		const supabase = createMockSupabase();
-		mockSuccess(supabase, { role: 'teacher' }, 'single'); // profile
-		mockSuccess(supabase, ownExercise, 'single'); // exercise
-		mockSuccess(supabase, { teacher_id: OTHER_TEACHER_ID }, 'single'); // class
-		const locals = createMockLocals(TEACHER_ID, supabase);
-		await expect(
-			POST({
-				params: { id: EXERCISE_ID },
-				locals,
-				request: createMockRequest({ class_id: CLASS_ID })
-			} as any)
-		).rejects.toMatchObject({ status: 403 });
-	});
-
 	it('class assignment: 201 when teacher owns the class', async () => {
 		const { POST } = await import('../+server');
 		const supabase = createMockSupabase();

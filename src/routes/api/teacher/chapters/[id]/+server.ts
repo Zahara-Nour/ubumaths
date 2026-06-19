@@ -15,25 +15,17 @@ import { uuidSchema } from '$lib/server/validation/common';
 type ZodIssue = { path: (string | number)[]; message: string };
 
 /**
- * Verify the teacher owns the chapter
+ * Verify the chapter exists
  */
-async function verifyChapterOwnership(
-	chapterId: string,
-	teacherId: string,
-	supabase: App.Locals['supabase']
-) {
+async function verifyChapterExists(chapterId: string, supabase: App.Locals['supabase']) {
 	const { data: chapter, error: chapterError } = await supabase
 		.from('class_chapters')
-		.select('id, teacher_id, class_id')
+		.select('id')
 		.eq('id', chapterId)
 		.single();
 
 	if (chapterError || !chapter) {
 		throw error(404, 'Chapter not found');
-	}
-
-	if (chapter.teacher_id !== teacherId) {
-		throw error(403, 'Forbidden - Not your chapter');
 	}
 
 	return chapter;
@@ -44,7 +36,7 @@ async function verifyChapterOwnership(
  * Get a single chapter with all its content
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Validate ID
 	const idValidation = uuidSchema.safeParse(params.id);
@@ -55,7 +47,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const chapterId = idValidation.data;
 
 	// Verify ownership
-	await verifyChapterOwnership(chapterId, user.id, locals.supabase);
+	await verifyChapterExists(chapterId, locals.supabase);
 
 	// Fetch chapter with all related content
 	const { data: chapter, error: chapterError } = await locals.supabase
@@ -84,7 +76,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
  * Update a chapter
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Validate ID
 	const idValidation = uuidSchema.safeParse(params.id);
@@ -95,7 +87,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const chapterId = idValidation.data;
 
 	// Verify ownership
-	await verifyChapterOwnership(chapterId, user.id, locals.supabase);
+	await verifyChapterExists(chapterId, locals.supabase);
 
 	// Parse and validate request body
 	let body: unknown;
@@ -130,7 +122,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
  * Delete a chapter
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Validate ID
 	const idValidation = uuidSchema.safeParse(params.id);
@@ -141,7 +133,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const chapterId = idValidation.data;
 
 	// Verify ownership
-	await verifyChapterOwnership(chapterId, user.id, locals.supabase);
+	await verifyChapterExists(chapterId, locals.supabase);
 
 	// Delete chapter
 	const result = await deleteChapter(chapterId, locals.supabase);
