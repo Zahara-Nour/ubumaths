@@ -10,12 +10,19 @@
  */
 
 import { error, json } from '@sveltejs/kit';
+import { z } from 'zod';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { assertTypedConfirmation } from '$lib/server/confirmAction';
 import { updateTemplateSchema } from '$lib/server/validation/vip-card-admin';
 import type { VipCardTemplate } from '$lib/types/vip-card-admin';
 import { templateToResponse } from '$lib/types/vip-card-admin';
 import { validateSlugParam } from '$lib/server/validation/params';
+
+/**
+ * Body for the typed-confirmation DELETE: the admin must echo the template name.
+ */
+const deleteConfirmSchema = z.object({ confirm: z.string() });
 
 /**
  * PATCH /api/admin/vip-cards/templates/[id]
@@ -125,16 +132,29 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
  *   - 409: Cannot delete template with existing instances
  *   - 500: Server error
  */
-export const DELETE: RequestHandler = async ({ locals, params }) => {
+export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 	// ✅ SECURITY: admin elevation OR real admin login.
 	const { supabase } = await requireAdmin(locals);
 	const templateId = validateSlugParam(params.id, 'templateId');
+
+	// Typed-confirmation gate: parse the body defensively (a missing/invalid
+	// body fails the schema → 400) and require the echoed template name below.
+	let confirmBody: unknown;
+	try {
+		confirmBody = await request.json();
+	} catch {
+		confirmBody = null;
+	}
+	const confirmParsed = deleteConfirmSchema.safeParse(confirmBody);
+	if (!confirmParsed.success) {
+		throw error(400, confirmParsed.error.issues[0].message);
+	}
 
 	try {
 		// 3. Check if template exists
 		const { data: existing, error: checkError } = await supabase
 			.from('vip_card_templates')
-			.select('id')
+			.select('id, name')
 			.eq('id', templateId)
 			.maybeSingle();
 
@@ -146,6 +166,9 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		if (!existing) {
 			throw error(404, `Template with ID "${templateId}" not found`);
 		}
+
+		// ✅ SECURITY: require the admin to have typed the exact template name.
+		assertTypedConfirmation(confirmParsed.data.confirm, existing.name);
 
 		// 4. Check if template has instances (prevent deletion if in use)
 		const { count, error: countError } = await supabase

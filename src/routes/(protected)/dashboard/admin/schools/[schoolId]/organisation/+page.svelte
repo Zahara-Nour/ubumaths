@@ -26,6 +26,7 @@
 	} from '@lucide/svelte';
 	import { enhance } from '$app/forms';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import TypedConfirmDialog from '$lib/components/admin/TypedConfirmDialog.svelte';
 
 	// Types for the new academic tables
 	type SchoolYear = {
@@ -106,7 +107,6 @@
 	let periodDialog: HTMLDialogElement;
 	let holidayDialog: HTMLDialogElement;
 	let duplicateDialog: HTMLDialogElement;
-	let deleteYearDialog: HTMLDialogElement;
 
 	// ========================================
 	// Derived State
@@ -299,16 +299,6 @@
 		yearDialog?.close();
 	}
 
-	function openDeleteYearDialog(year: SchoolYear) {
-		editingYear = year;
-		deleteYearDialog?.showModal();
-	}
-
-	function closeDeleteYearDialog() {
-		editingYear = null;
-		deleteYearDialog?.close();
-	}
-
 	function openDuplicateDialog() {
 		if (!data.activeYear) {
 			toaster.warning('Aucune année active à dupliquer');
@@ -393,7 +383,6 @@
 			closePeriodDialog();
 			closeHolidayDialog();
 			closeDuplicateDialog();
-			closeDeleteYearDialog();
 			invalidateAll().then(() => {});
 		} else if (form?.error) {
 			toaster.error(form.error);
@@ -631,6 +620,27 @@
 								<Copy class="h-4 w-4" />
 								Dupliquer
 							</Button>
+							<TypedConfirmDialog
+								expected={selectedYear.name}
+								action="?/deleteYear"
+								title="Supprimer l'année « {selectedYear.name} »"
+								description="Cette action est irréversible. L'année scolaire ainsi que toutes ses périodes et vacances seront définitivement supprimées."
+								successMessage="Année scolaire supprimée"
+							>
+								{#snippet trigger(props)}
+									<Button
+										{...props}
+										variant="outline"
+										class="gap-2 text-destructive hover:text-destructive"
+									>
+										<Trash2 class="h-4 w-4" />
+										Supprimer
+									</Button>
+								{/snippet}
+								{#snippet hiddenFields()}
+									<input type="hidden" name="id" value={selectedYear.id} />
+								{/snippet}
+							</TypedConfirmDialog>
 						{/if}
 					</div>
 				</div>
@@ -713,27 +723,27 @@
 												<Button variant="ghost" size="sm" onclick={() => openPeriodDialog(period)}>
 													<Pencil class="h-4 w-4" />
 												</Button>
-												<form
-													method="POST"
+												<TypedConfirmDialog
+													expected={period.name}
 													action="?/deletePeriod"
-													use:enhance
-													class="inline-block"
+													title="Supprimer la période « {period.name} »"
+													description="Cette action est irréversible. La période sera définitivement supprimée."
+													successMessage="Période supprimée"
 												>
-													<input type="hidden" name="id" value={period.id} />
-													<Button
-														type="submit"
-														variant="ghost"
-														size="sm"
-														class="text-destructive hover:text-destructive"
-														onclick={(e) => {
-															if (!confirm('Êtes-vous sûr de vouloir supprimer cette période ?')) {
-																e.preventDefault();
-															}
-														}}
-													>
-														<Trash2 class="h-4 w-4" />
-													</Button>
-												</form>
+													{#snippet trigger(props)}
+														<Button
+															{...props}
+															variant="ghost"
+															size="sm"
+															class="text-destructive hover:text-destructive"
+														>
+															<Trash2 class="h-4 w-4" />
+														</Button>
+													{/snippet}
+													{#snippet hiddenFields()}
+														<input type="hidden" name="id" value={period.id} />
+													{/snippet}
+												</TypedConfirmDialog>
 											</td>
 										</tr>
 									{/each}
@@ -809,27 +819,27 @@
 												>
 													<Pencil class="h-4 w-4" />
 												</Button>
-												<form
-													method="POST"
+												<TypedConfirmDialog
+													expected={holiday.name}
 													action="?/deleteHoliday"
-													use:enhance
-													class="inline-block"
+													title="Supprimer les vacances « {holiday.name} »"
+													description="Cette action est irréversible. Les vacances seront définitivement supprimées."
+													successMessage="Vacances supprimées"
 												>
-													<input type="hidden" name="id" value={holiday.id} />
-													<Button
-														type="submit"
-														variant="ghost"
-														size="sm"
-														class="text-destructive hover:text-destructive"
-														onclick={(e) => {
-															if (!confirm('Êtes-vous sûr de vouloir supprimer ces vacances ?')) {
-																e.preventDefault();
-															}
-														}}
-													>
-														<Trash2 class="h-4 w-4" />
-													</Button>
-												</form>
+													{#snippet trigger(props)}
+														<Button
+															{...props}
+															variant="ghost"
+															size="sm"
+															class="text-destructive hover:text-destructive"
+														>
+															<Trash2 class="h-4 w-4" />
+														</Button>
+													{/snippet}
+													{#snippet hiddenFields()}
+														<input type="hidden" name="id" value={holiday.id} />
+													{/snippet}
+												</TypedConfirmDialog>
 											</td>
 										</tr>
 									{/each}
@@ -1093,63 +1103,11 @@
 				</div>
 			</div>
 
-			<div class="mt-6 flex items-center justify-between">
-				{#if editingYear}
-					<Button
-						type="button"
-						variant="destructive"
-						onclick={() => {
-							if (editingYear) {
-								closeYearDialog();
-								openDeleteYearDialog(editingYear);
-							}
-						}}
-						class="gap-2"
-					>
-						<Trash2 class="h-4 w-4" />
-						Supprimer
-					</Button>
-				{:else}
-					<div></div>
-				{/if}
-
+			<div class="mt-6 flex items-center justify-end">
 				<div class="flex gap-2">
 					<Button type="button" variant="outline" onclick={closeYearDialog}>Annuler</Button>
 					<Button type="submit">Enregistrer</Button>
 				</div>
-			</div>
-		</form>
-	</div>
-</dialog>
-
-<!-- ========================================
-     Delete Year Confirmation Dialog
-     ======================================== -->
-<dialog
-	bind:this={deleteYearDialog}
-	class="rounded-lg border border-border bg-card p-0 shadow-xl backdrop:bg-black/50"
->
-	<div class="w-full max-w-md min-w-[400px]">
-		<div class="border-b border-border px-6 pt-6 pb-4">
-			<h2 class="text-lg font-semibold text-foreground">Confirmer la suppression</h2>
-		</div>
-
-		<div class="px-6 py-4">
-			<p class="text-sm text-muted-foreground">
-				Êtes-vous sûr de vouloir supprimer l'année scolaire <strong class="text-foreground"
-					>{editingYear?.name}</strong
-				> ? Cette action supprimera également toutes les périodes et vacances associées.
-			</p>
-		</div>
-
-		<form method="POST" action="?/deleteYear" use:enhance class="border-t border-border px-6 py-4">
-			{#if editingYear}
-				<input type="hidden" name="id" value={editingYear.id} />
-			{/if}
-
-			<div class="flex justify-end gap-2">
-				<Button type="button" variant="outline" onclick={closeDeleteYearDialog}>Annuler</Button>
-				<Button type="submit" variant="destructive">Supprimer</Button>
 			</div>
 		</form>
 	</div>
@@ -1281,44 +1239,7 @@
 					</div>
 				</div>
 
-				<div class="mt-6 flex items-center justify-between">
-					{#if editingAcademicPeriod}
-						<Button
-							type="button"
-							variant="destructive"
-							class="gap-2"
-							onclick={async () => {
-								if (!confirm('Êtes-vous sûr de vouloir supprimer cette période ?')) {
-									return;
-								}
-								const formData = new FormData();
-								formData.append('id', editingAcademicPeriod?.id ?? '');
-								try {
-									const response = await fetch('?/deletePeriod', {
-										method: 'POST',
-										body: formData,
-										headers: { 'x-sveltekit-action': 'true' }
-									});
-									if (response.ok) {
-										await invalidateAll();
-										toaster.success('Période supprimée');
-										closePeriodDialog();
-									} else {
-										toaster.error('Erreur lors de la suppression');
-									}
-								} catch (error) {
-									console.error('Error deleting period:', error);
-									toaster.error('Erreur lors de la suppression');
-								}
-							}}
-						>
-							<Trash2 class="h-4 w-4" />
-							Supprimer
-						</Button>
-					{:else}
-						<div></div>
-					{/if}
-
+				<div class="mt-6 flex items-center justify-end">
 					<div class="flex gap-2">
 						<Button type="button" variant="outline" onclick={closePeriodDialog}>Annuler</Button>
 						<Button type="submit">Enregistrer</Button>
@@ -1400,44 +1321,7 @@
 					</div>
 				</div>
 
-				<div class="mt-6 flex items-center justify-between">
-					{#if editingHoliday}
-						<Button
-							type="button"
-							variant="destructive"
-							class="gap-2"
-							onclick={async () => {
-								if (!confirm('Êtes-vous sûr de vouloir supprimer ces vacances ?')) {
-									return;
-								}
-								const formData = new FormData();
-								formData.append('id', editingHoliday?.id ?? '');
-								try {
-									const response = await fetch('?/deleteHoliday', {
-										method: 'POST',
-										body: formData,
-										headers: { 'x-sveltekit-action': 'true' }
-									});
-									if (response.ok) {
-										await invalidateAll();
-										toaster.success('Vacances supprimées');
-										closeHolidayDialog();
-									} else {
-										toaster.error('Erreur lors de la suppression');
-									}
-								} catch (error) {
-									console.error('Error deleting holiday:', error);
-									toaster.error('Erreur lors de la suppression');
-								}
-							}}
-						>
-							<Trash2 class="h-4 w-4" />
-							Supprimer
-						</Button>
-					{:else}
-						<div></div>
-					{/if}
-
+				<div class="mt-6 flex items-center justify-end">
 					<div class="flex gap-2">
 						<Button type="button" variant="outline" onclick={closeHolidayDialog}>Annuler</Button>
 						<Button type="submit">Enregistrer</Button>

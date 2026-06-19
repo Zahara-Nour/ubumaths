@@ -67,6 +67,12 @@ const ALLOWED_JOB_PATHS = [
 ] as const;
 
 /**
+ * Typed-confirmation keyword the admin must echo to trigger a CRON job.
+ * Global destructive op → fixed keyword (not a resource name).
+ */
+export const CRON_TRIGGER_CONFIRM_KEYWORD = 'LANCER';
+
+/**
  * Request body for triggering a CRON job manually
  */
 export const cronTriggerBodySchema = z.object({
@@ -76,7 +82,9 @@ export const cronTriggerBodySchema = z.object({
 		.refine(
 			(path) => ALLOWED_JOB_PATHS.includes(path as (typeof ALLOWED_JOB_PATHS)[number]),
 			`Job path must be one of: ${ALLOWED_JOB_PATHS.join(', ')}`
-		)
+		),
+	// Typed-confirmation token; re-enforced server-side via assertTypedConfirmation.
+	confirm: z.string()
 });
 
 export type CronTriggerBody = z.infer<typeof cronTriggerBodySchema>;

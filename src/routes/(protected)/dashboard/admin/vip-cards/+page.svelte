@@ -7,6 +7,8 @@
 	import VipCardImageUploader from '$lib/components/vip-cards/VipCardImageUploader.svelte';
 	import VipCardConfigList from '$lib/components/vip-cards/VipCardConfigList.svelte';
 	import VipCardConfigEditor from '$lib/components/vip-cards/VipCardConfigEditor.svelte';
+	import TypedConfirmDialog from '$lib/components/admin/TypedConfirmDialog.svelte';
+	import { Trash2 } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { rarityLabel } from '$lib/components/vip-cards/utils';
 	import type { Database } from '$lib/types/database';
@@ -64,7 +66,6 @@
 	let creatingCard = $state(false);
 	let editingCard = $state<VipCardTemplate | null>(null);
 	let uploadingImageCard = $state<VipCardTemplate | null>(null);
-	let deletingCard = $state<VipCardTemplate | null>(null);
 	let creatingConfig = $state(false);
 	let editingConfig = $state<VipCardConfig | null>(null);
 
@@ -211,35 +212,22 @@
 		}
 	}
 
-	function handleDeleteCard(cardId: string) {
-		const card = templates.find((t) => t.id === cardId);
-		if (card) {
-			deletingCard = card;
+	// Typed-confirmation delete: echo the card name in the body; the server
+	// re-enforces it via assertTypedConfirmation. Throws on failure so the
+	// dialog keeps itself open + toasts; success → toast + close handled by it.
+	async function deleteCard(cardId: string, cardName: string) {
+		const response = await fetch(`/api/admin/vip-cards/templates/${cardId}`, {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ confirm: cardName })
+		});
+
+		if (!response.ok) {
+			const error = await response.json();
+			throw new Error(error.message || 'Failed to delete');
 		}
-	}
 
-	async function confirmDeleteCard() {
-		if (!deletingCard) return;
-
-		const cardId = deletingCard.id;
-
-		try {
-			const response = await fetch(`/api/admin/vip-cards/templates/${cardId}`, {
-				method: 'DELETE'
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.message || 'Failed to delete');
-			}
-
-			templates = templates.filter((t) => t.id !== cardId);
-			toaster.success('Carte supprimée');
-			deletingCard = null;
-		} catch (error) {
-			console.error('Delete error:', error);
-			toaster.error(error instanceof Error ? error.message : 'Échec de la suppression');
-		}
+		templates = templates.filter((t) => t.id !== cardId);
 	}
 
 	function handleImageUploaded(cardId: string, newImageUrl: string) {
@@ -348,23 +336,22 @@
 		}
 	}
 
-	async function handleDeleteConfig(configId: string) {
-		try {
-			const response = await fetch(`/api/admin/vip-cards/configs/${configId}`, {
-				method: 'DELETE'
-			});
+	async function handleDeleteConfig(configId: string, configName: string) {
+		// Typed-confirmation: echo the config name in the body; the server
+		// re-enforces it via assertTypedConfirmation. Errors propagate to the
+		// dialog (it keeps itself open + toasts on throw).
+		const response = await fetch(`/api/admin/vip-cards/configs/${configId}`, {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ confirm: configName })
+		});
 
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.message || 'Failed to delete');
-			}
-
-			configs = configs.filter((c) => c.id !== configId);
-			toaster.success('Configuration supprimée');
-		} catch (error) {
-			console.error('Delete config error:', error);
-			toaster.error(error instanceof Error ? error.message : 'Échec de la suppression');
+		if (!response.ok) {
+			const error = await response.json();
+			throw new Error(error.message || 'Failed to delete');
 		}
+
+		configs = configs.filter((c) => c.id !== configId);
 	}
 </script>
 
@@ -411,9 +398,29 @@
 									onInlineEdit={(name, description, action, rarity) =>
 										handleInlineEdit(card.id, name, description, action, rarity)}
 									onEdit={() => (editingCard = card)}
-									onDelete={() => handleDeleteCard(card.id)}
 									onUploadImage={() => (uploadingImageCard = card)}
-								/>
+								>
+									{#snippet deleteTrigger()}
+										<TypedConfirmDialog
+											expected={card.name}
+											onConfirm={() => deleteCard(card.id, card.name)}
+											title="Supprimer la carte « {card.name} »"
+											description="Cette action est irréversible. Les cartes déjà attribuées aux élèves resteront, mais cette carte ne sera plus disponible pour de nouveaux tirages."
+											successMessage="Carte supprimée"
+										>
+											{#snippet trigger(props)}
+												<button
+													{...props}
+													type="button"
+													class="rounded-full bg-destructive p-2 text-destructive-foreground shadow-lg transition-all hover:scale-110 hover:bg-destructive/90 active:scale-95"
+													aria-label="Supprimer la carte"
+												>
+													<Trash2 class="h-4 w-4" />
+												</button>
+											{/snippet}
+										</TypedConfirmDialog>
+									{/snippet}
+								</VipCardPreview>
 							{/each}
 						</div>
 					</div>
@@ -499,63 +506,6 @@
 				onComplete={(newUrl) => handleImageUploaded(cardId, newUrl)}
 				onCancel={() => (uploadingImageCard = null)}
 			/>
-		</Dialog.Content>
-	</Dialog.Root>
-{/if}
-
-<!-- Delete Card Confirmation Modal -->
-{#if deletingCard}
-	<Dialog.Root
-		open={true}
-		onOpenChange={() => {
-			deletingCard = null;
-		}}
-	>
-		<Dialog.Content class="max-w-md">
-			<Dialog.Header>
-				<Dialog.Title>Confirmer la suppression</Dialog.Title>
-				<Dialog.Description>
-					Êtes-vous sûr de vouloir supprimer la carte <strong class="font-semibold text-foreground"
-						>"{deletingCard.name}"</strong
-					> ?
-				</Dialog.Description>
-			</Dialog.Header>
-
-			<div class="space-y-4">
-				<!-- Warning message -->
-				<div class="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
-					<p class="text-sm text-destructive">
-						⚠️ Cette action est <strong>irréversible</strong>. Toutes les cartes déjà attribuées aux
-						élèves resteront, mais cette carte ne sera plus disponible pour de nouveaux tirages.
-					</p>
-				</div>
-
-				<!-- Card preview -->
-				<div class="rounded-lg border bg-muted/20 p-4">
-					<div class="flex items-center gap-3">
-						{#if deletingCard.image_path}
-							<img
-								src={deletingCard.image_path}
-								alt={deletingCard.name}
-								class="h-16 w-16 rounded-md object-cover"
-							/>
-						{/if}
-						<div class="flex-1">
-							<p class="font-medium">{deletingCard.name}</p>
-							<p class="text-sm text-muted-foreground">{deletingCard.description}</p>
-							<p class="mt-1 text-xs text-muted-foreground">
-								{rarityLabel(deletingCard.rarity)} • ID: {deletingCard.id}
-							</p>
-						</div>
-					</div>
-				</div>
-
-				<!-- Action buttons -->
-				<div class="flex justify-end gap-2">
-					<Button variant="outline" onclick={() => (deletingCard = null)}>Annuler</Button>
-					<Button variant="destructive" onclick={confirmDeleteCard}>Supprimer</Button>
-				</div>
-			</div>
 		</Dialog.Content>
 	</Dialog.Root>
 {/if}
