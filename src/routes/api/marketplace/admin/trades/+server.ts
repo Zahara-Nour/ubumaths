@@ -74,8 +74,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// First get teacher's classes
 		const { data: teacherClasses, error: classesError } = await supabase
 			.from('classes')
-			.select('id')
-			.eq('teacher_id', userId);
+			.select('id');
 
 		if (classesError) {
 			console.error('Error fetching teacher classes:', classesError);
@@ -130,14 +129,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		// If specific class_id is provided, further filter
 		if (class_id) {
-			// Verify teacher owns this class
+			// Verify class exists
 			const { data: classData } = await supabase
 				.from('classes')
-				.select('teacher_id')
+				.select('id')
 				.eq('id', class_id)
 				.single();
 
-			if (!classData || classData.teacher_id !== userId) {
+			if (!classData) {
 				throw error(403, 'Accès non autorisé à cette classe');
 			}
 

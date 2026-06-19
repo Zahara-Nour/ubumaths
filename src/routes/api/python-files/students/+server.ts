@@ -18,7 +18,7 @@ import { studentFilesQuerySchema } from '$lib/server/validation/python-files';
  * Teacher only - can filter by class_id or student_id
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Validate query parameters
 	const queryResult = studentFilesQuerySchema.safeParse({
@@ -39,18 +39,17 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const offset = (page - 1) * limit;
 
 	// Get all students in teacher's classes
+	// Mono-teacher: RLS scopes class_members to the teacher's own classes automatically.
 	let studentIdsQuery = locals.supabase
 		.from('class_members')
 		.select(
 			`
 			student_id,
 			classes!inner (
-				id,
-				teacher_id
+				id
 			)
 		`
 		)
-		.eq('classes.teacher_id', user.id)
 		.eq('status', 'active');
 
 	if (class_id) {
@@ -123,7 +122,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	// Enrich with class information for each student
 	const filesWithClasses = await Promise.all(
 		(files ?? []).map(async (file) => {
-			// Get classes where this student is enrolled (that belong to this teacher)
+			// Get classes where this student is enrolled
 			const { data: studentClasses } = await locals.supabase
 				.from('class_members')
 				.select(
@@ -136,8 +135,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				`
 				)
 				.eq('student_id', file.owner_id)
-				.eq('status', 'active')
-				.eq('classes.teacher_id', user.id);
+				.eq('status', 'active');
 
 			return {
 				...file,

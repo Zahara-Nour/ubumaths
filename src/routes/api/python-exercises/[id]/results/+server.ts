@@ -139,14 +139,12 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		const studentIds = classMembers.map((cm) => cm.student_id);
 		query = query.in('student_id', studentIds);
 	} else {
-		// If no class filter, only show submissions from teacher's students
-		const { data: teacherClasses } = await supabase
-			.from('classes')
-			.select('id')
-			.eq('teacher_id', user.id);
+		// If no class filter, show submissions from all students in any class.
+		// Mono-teacher: RLS ensures only the teacher's own data is visible.
+		const { data: allClasses } = await supabase.from('classes').select('id');
 
-		if (teacherClasses && teacherClasses.length > 0) {
-			const classIds = teacherClasses.map((c) => c.id);
+		if (allClasses && allClasses.length > 0) {
+			const classIds = allClasses.map((c) => c.id);
 
 			const { data: classMembers } = await supabase
 				.from('class_members')
@@ -158,11 +156,9 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				const studentIds = classMembers.map((cm) => cm.student_id);
 				query = query.in('student_id', studentIds);
 			} else {
-				// No students in teacher's classes
 				return json({ results: [] });
 			}
 		} else {
-			// Teacher has no classes
 			return json({ results: [] });
 		}
 	}

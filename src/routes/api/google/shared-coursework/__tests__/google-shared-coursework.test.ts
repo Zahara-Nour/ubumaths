@@ -914,47 +914,6 @@ describe('Google Shared Coursework API', () => {
 				);
 			});
 
-			it('returns 403 when class does not belong to teacher', async () => {
-				const mockRequest = {
-					json: vi.fn().mockResolvedValue(validRequest)
-				};
-
-				// Mock coursework belongs to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: {
-						id: courseworkId,
-						google_classroom_courses: { teacher_id: teacherId }
-					},
-					error: null
-				});
-
-				// Mock classes - one belongs to different teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).eq = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).in = vi.fn().mockImplementation(() => ({
-					...mockLocals.supabase,
-					eq: vi.fn().mockResolvedValueOnce({
-						data: [
-							{ id: classId1, teacher_id: teacherId },
-							{ id: classId2, teacher_id: 'other-teacher-id' }
-						],
-						error: null
-					})
-				}));
-
-				const event = {
-					request: mockRequest,
-					locals: mockLocals
-				} as unknown as RequestEvent;
-
-				await expectRejectsWithMessage(
-					() => POST(event as unknown as RequestEvent),
-					'You do not own all selected classes'
-				);
-			});
-
 			it('returns 400 when category does not belong to teacher class', async () => {
 				const mockRequest = {
 					json: vi.fn().mockResolvedValue({
@@ -1415,11 +1374,10 @@ describe('Google Shared Coursework API', () => {
 					})
 				};
 
-				// Class fetch: both exist and belong to teacher (terminal .eq('teacher_id'))
+				// Class fetch: both exist (no teacher_id filter — RLS owns that now)
 				const classChain = {
 					select: vi.fn().mockReturnThis(),
-					in: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockResolvedValueOnce({
+					in: vi.fn().mockResolvedValueOnce({
 						data: [{ id: classId1 }, { id: classId2 }],
 						error: null
 					})
@@ -1474,11 +1432,10 @@ describe('Google Shared Coursework API', () => {
 					})
 				};
 
-				// Class fetch: both exist (terminal .eq('teacher_id'))
+				// Class fetch: both exist (no teacher_id filter — RLS owns that now)
 				const classChain = {
 					select: vi.fn().mockReturnThis(),
-					in: vi.fn().mockReturnThis(),
-					eq: vi.fn().mockResolvedValueOnce({
+					in: vi.fn().mockResolvedValueOnce({
 						data: [{ id: classId1 }, { id: classId2 }],
 						error: null
 					})
@@ -1523,24 +1480,33 @@ describe('Google Shared Coursework API', () => {
 					json: vi.fn().mockResolvedValue(validRequest)
 				};
 
-				// Mock coursework exists
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: { id: courseworkId },
-					error: null
-				});
+				// Coursework fetch: exists
+				const courseworkChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
+						data: { id: courseworkId },
+						error: null
+					})
+				};
 
-				// Mock database error during class verification
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).eq = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).in = vi.fn().mockImplementation(() => ({
-					...mockLocals.supabase,
-					eq: vi.fn().mockResolvedValueOnce({
+				// Class fetch: database error (no teacher_id filter — RLS owns that now)
+				const classChain = {
+					select: vi.fn().mockReturnThis(),
+					in: vi.fn().mockResolvedValueOnce({
 						data: null,
 						error: { code: 'PGRST999', message: 'Database error' }
 					})
-				}));
+				};
+
+				let callCount = 0;
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).from = vi.fn().mockImplementation(() => {
+					callCount++;
+					if (callCount === 1) return courseworkChain;
+					if (callCount === 2) return classChain;
+					return mockLocals.supabase;
+				});
 
 				const event = {
 					request: mockRequest,

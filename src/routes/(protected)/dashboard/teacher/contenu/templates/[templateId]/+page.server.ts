@@ -50,7 +50,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const { data: classes } = await locals.supabase
 		.from('classes')
 		.select('id, name, grade, is_active')
-		.eq('teacher_id', user.id)
 		.eq('is_active', true)
 		.order('name');
 
@@ -224,14 +223,14 @@ export const actions: Actions = {
 			});
 		}
 
-		// Verify class ownership
+		// Verify class exists
 		const { data: classCheck } = await locals.supabase
 			.from('classes')
-			.select('teacher_id')
+			.select('id')
 			.eq('id', validation.data.classId)
 			.single();
 
-		if (!classCheck || classCheck.teacher_id !== user.id) {
+		if (!classCheck) {
 			return fail(403, { error: 'Accès refusé', action: 'instantiate' });
 		}
 

@@ -1031,9 +1031,9 @@ export async function getAssignmentStats(
 	supabase: TypedSupabaseClient,
 	teacherId: string
 ): Promise<{ data: AssignmentStats | null; error: string | null }> {
-	const { data, error } = await callUnknownRpc(supabase, 'get_teacher_assignment_stats', {
-		p_teacher_id: teacherId
-	});
+	// Mono-teacher: the RPC scopes to the sole teacher via auth.uid().
+	void teacherId;
+	const { data, error } = await callUnknownRpc(supabase, 'get_teacher_assignment_stats', {});
 
 	if (error) {
 		console.error('Error fetching assignment stats:', error);

@@ -84,17 +84,16 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(400, "Un template ne peut pas être partagé directement. Clonez-le d'abord.");
 	}
 
-	// Check if user is teacher of the class
+	// Verify the class exists
 	const { data: teacherClass, error: classError } = await locals.supabase
 		.from('classes')
 		.select('id, name')
 		.eq('id', class_id)
-		.eq('teacher_id', user.id)
 		.single();
 
 	if (classError || !teacherClass) {
 		if (classError?.code === 'PGRST116') {
-			throw error(404, "Classe introuvable ou vous n'en etes pas l'enseignant");
+			throw error(404, 'Classe introuvable');
 		}
 		console.error('Error fetching class for sharing:', classError);
 		throw error(500, 'Erreur lors de la verification de la classe');

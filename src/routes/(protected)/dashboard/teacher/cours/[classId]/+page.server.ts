@@ -32,12 +32,11 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	const { classId } = params;
 
-	// Verify teacher owns this class
+	// Verify class exists
 	const { data: classData, error: classError } = await locals.supabase
 		.from('classes')
 		.select('id, name, is_active')
 		.eq('id', classId)
-		.eq('teacher_id', user.id)
 		.single();
 
 	if (classError || !classData) {
@@ -106,15 +105,14 @@ export const actions: Actions = {
 	 * Create a new chapter
 	 */
 	create: async ({ request, locals, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 		const { classId } = params;
 
-		// Verify teacher owns this class
+		// Verify class exists
 		const { data: classData } = await locals.supabase
 			.from('classes')
 			.select('id')
 			.eq('id', classId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (!classData) {
@@ -158,18 +156,17 @@ export const actions: Actions = {
 	 * Update an existing chapter
 	 */
 	update: async ({ request, locals, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 		const { classId } = params;
 
 		const formData = await request.formData();
 		const chapterId = formData.get('chapterId') as string;
 
-		// Verify teacher owns this chapter
+		// Verify chapter exists and belongs to this class
 		const { data: chapterData } = await locals.supabase
 			.from('class_chapters')
 			.select('id, class_id')
 			.eq('id', chapterId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (!chapterData || chapterData.class_id !== classId) {
@@ -211,18 +208,17 @@ export const actions: Actions = {
 	 * Delete a chapter
 	 */
 	delete: async ({ request, locals, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 		const { classId } = params;
 
 		const formData = await request.formData();
 		const chapterId = formData.get('chapterId') as string;
 
-		// Verify teacher owns this chapter
+		// Verify chapter exists and belongs to this class
 		const { data: chapterData } = await locals.supabase
 			.from('class_chapters')
 			.select('id, class_id')
 			.eq('id', chapterId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (!chapterData || chapterData.class_id !== classId) {
@@ -244,15 +240,14 @@ export const actions: Actions = {
 	 * Reorder chapters
 	 */
 	reorder: async ({ request, locals, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 		const { classId } = params;
 
-		// Verify teacher owns this class
+		// Verify class exists
 		const { data: classData } = await locals.supabase
 			.from('classes')
 			.select('id')
 			.eq('id', classId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (!classData) {
@@ -300,19 +295,18 @@ export const actions: Actions = {
 	 * Toggle chapter visibility
 	 */
 	toggleVisibility: async ({ request, locals, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 		const { classId } = params;
 
 		const formData = await request.formData();
 		const chapterId = formData.get('chapterId') as string;
 		const isVisible = formData.get('isVisible') === 'true';
 
-		// Verify teacher owns this chapter
+		// Verify chapter exists and belongs to this class
 		const { data: chapterData } = await locals.supabase
 			.from('class_chapters')
 			.select('id, class_id')
 			.eq('id', chapterId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (!chapterData || chapterData.class_id !== classId) {
@@ -337,12 +331,11 @@ export const actions: Actions = {
 		const { user } = await requireRole(locals, 'teacher');
 		const { classId } = params;
 
-		// Verify teacher owns this class
+		// Verify class exists
 		const { data: classData } = await locals.supabase
 			.from('classes')
 			.select('id')
 			.eq('id', classId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (!classData) {

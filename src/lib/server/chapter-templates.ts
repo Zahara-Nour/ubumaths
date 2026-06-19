@@ -807,7 +807,6 @@ export async function instantiateTemplate(
 			.from('class_chapters')
 			.insert({
 				class_id: input.classId,
-				teacher_id: userId,
 				title: chapterTitle,
 				description: null,
 				is_visible: input.isVisible ?? false,

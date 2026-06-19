@@ -49,24 +49,22 @@ export interface TaskEditData {
 }
 
 export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEditData> => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// 1. Charger la tâche
 	const { data: task, error: taskErr } = await locals.supabase
 		.from('evaluation_tasks')
-		.select('id, name, description, niveau_scolaire, class_id, task_date, teacher_id')
+		.select('id, name, description, niveau_scolaire, class_id, task_date')
 		.eq('id', params.id)
 		.maybeSingle();
 
 	if (taskErr) throw error(500, `Erreur de chargement : ${taskErr.message}`);
 	if (!task) throw error(404, 'Tâche introuvable');
-	if (task.teacher_id !== user.id) throw error(403, "Cette tâche n'est pas la vôtre");
 
 	// 2. Classes du prof pour le selecteur
 	const { data: classes } = await locals.supabase
 		.from('classes')
 		.select('id, name')
-		.eq('teacher_id', user.id)
 		.eq('is_active', true)
 		.order('name');
 
@@ -159,7 +157,7 @@ const updateSchema = z.object({
 
 export const actions: Actions = {
 	update_meta: async ({ locals, request, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 		const formData = await request.formData();
 		const raw = {
 			name: formData.get('name'),
@@ -179,22 +177,21 @@ export const actions: Actions = {
 				class_id: parsed.data.class_id || null,
 				task_date: parsed.data.task_date || null
 			})
-			.eq('id', params.id)
-			.eq('teacher_id', user.id);
+			.eq('id', params.id);
 		if (updErr) return fail(500, { message: updErr.message });
 		return { success: true, message: 'Tâche mise à jour' };
 	},
 
 	save_perimeter: async ({ locals, request, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
-		// Vérifier la propriété de la tâche
+		await requireRole(locals, 'teacher');
+		// Vérifier l'existence de la tâche
 		const { data: task } = await locals.supabase
 			.from('evaluation_tasks')
-			.select('teacher_id')
+			.select('id')
 			.eq('id', params.id)
 			.maybeSingle();
-		if (!task || task.teacher_id !== user.id) {
-			return fail(403, { message: 'Tâche non accessible' });
+		if (!task) {
+			return fail(404, { message: 'Tâche introuvable' });
 		}
 
 		const formData = await request.formData();
@@ -218,12 +215,11 @@ export const actions: Actions = {
 	},
 
 	delete: async ({ locals, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 		const { error: delErr } = await locals.supabase
 			.from('evaluation_tasks')
 			.delete()
-			.eq('id', params.id)
-			.eq('teacher_id', user.id);
+			.eq('id', params.id);
 		if (delErr) return fail(500, { message: delErr.message });
 		throw redirect(303, '/dashboard/teacher/evaluation-tasks');
 	}

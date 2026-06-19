@@ -72,19 +72,15 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	const data = validation.data;
 
-	// Verify teacher owns the class
+	// Verify the class exists
 	const { data: classData, error: classError } = await locals.supabase
 		.from('classes')
-		.select('teacher_id')
+		.select('id')
 		.eq('id', data.classId)
 		.single();
 
 	if (classError || !classData) {
 		throw error(404, 'Class not found');
-	}
-
-	if (classData.teacher_id !== user.id) {
-		throw error(403, 'Forbidden - not your class');
 	}
 
 	// Instantiate template

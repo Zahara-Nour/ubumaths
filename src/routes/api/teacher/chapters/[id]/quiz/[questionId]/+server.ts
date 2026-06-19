@@ -10,27 +10,22 @@ import { removeQuizQuestion } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
 
 /**
- * Verify the teacher owns the chapter and quiz question exists
+ * Verify the chapter exists and quiz question belongs to it
  */
 async function verifyQuizQuestionOwnership(
 	chapterId: string,
 	questionId: string,
-	teacherId: string,
 	supabase: App.Locals['supabase']
 ) {
-	// Verify chapter ownership
+	// Verify chapter exists
 	const { data: chapter, error: chapterError } = await supabase
 		.from('class_chapters')
-		.select('id, teacher_id')
+		.select('id')
 		.eq('id', chapterId)
 		.single();
 
 	if (chapterError || !chapter) {
 		throw error(404, 'Chapter not found');
-	}
-
-	if (chapter.teacher_id !== teacherId) {
-		throw error(403, 'Forbidden - Not your chapter');
 	}
 
 	// Verify question exists and belongs to chapter
@@ -56,7 +51,7 @@ async function verifyQuizQuestionOwnership(
  * Remove a question from the chapter quiz
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Validate IDs
 	const chapterIdValidation = uuidSchema.safeParse(params.id);
@@ -73,7 +68,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const questionId = questionIdValidation.data;
 
 	// Verify ownership
-	await verifyQuizQuestionOwnership(chapterId, questionId, user.id, locals.supabase);
+	await verifyQuizQuestionOwnership(chapterId, questionId, locals.supabase);
 
 	// Remove question
 	const result = await removeQuizQuestion(questionId, locals.supabase);

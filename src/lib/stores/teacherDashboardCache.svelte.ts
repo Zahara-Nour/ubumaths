@@ -375,7 +375,6 @@ export class TeacherDashboardCache {
 			// Convert ClassInfo to ClassWithData format
 			classes.push({
 				id: cached.classInfo.id,
-				teacher_id: cached.classInfo.teacher_id,
 				name: cached.classInfo.name,
 				description: cached.classInfo.description,
 				join_code: cached.classInfo.join_code,

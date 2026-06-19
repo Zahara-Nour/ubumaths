@@ -38,19 +38,15 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	const chapterId = idValidation.data;
 
-	// Verify chapter ownership
+	// Verify chapter exists
 	const { data: chapter, error: chapterError } = await locals.supabase
 		.from('class_chapters')
-		.select('teacher_id')
+		.select('id')
 		.eq('id', chapterId)
 		.single();
 
 	if (chapterError || !chapter) {
 		throw error(404, 'Chapter not found');
-	}
-
-	if (chapter.teacher_id !== user.id) {
-		throw error(403, 'Forbidden - not the chapter owner');
 	}
 
 	// Parse and validate request body

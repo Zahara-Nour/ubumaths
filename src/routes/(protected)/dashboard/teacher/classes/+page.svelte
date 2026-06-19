@@ -72,7 +72,6 @@
 		for (const classItem of data.classes) {
 			const classInfo = {
 				id: classItem.id,
-				teacher_id: classItem.teacher_id,
 				name: classItem.name,
 				description: classItem.description,
 				join_code: classItem.join_code,
@@ -291,7 +290,6 @@
 		const optimisticEntry: ClassSchedule = {
 			id: `temp-${entryKey}`, // Temporary ID
 			class_id: classId,
-			teacher_id: data.profile.id,
 			day_of_week: day,
 			start_time: period.start_time,
 			end_time: period.end_time,

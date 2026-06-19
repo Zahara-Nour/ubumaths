@@ -34,14 +34,13 @@ export interface StudentBuddyInfo {
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 	const supabase = locals.supabase;
 
 	// Get teacher's classes
 	const { data: classes, error: classesError } = await supabase
 		.from('classes')
 		.select('id, name')
-		.eq('teacher_id', user.id)
 		.eq('is_active', true)
 		.order('name');
 

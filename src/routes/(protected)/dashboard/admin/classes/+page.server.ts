@@ -17,26 +17,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw error(500, 'Failed to load schools');
 	}
 
-	// Fetch all teachers (for teacher assignment dropdown)
-	const { data: teachers, error: teachersError } = await supabase
-		.from('profiles')
-		.select('id, firstname, lastname, email, school_id')
-		.eq('role', 'teacher')
-		.order('lastname')
-		.order('firstname');
-
-	if (teachersError) {
-		console.error('Error fetching teachers:', teachersError);
-		throw error(500, 'Failed to load teachers');
-	}
-
-	// Fetch all classes with teacher and school info
+	// Mono-teacher: classes are no longer assigned to a teacher (teacher_id dropped).
+	// Fetch all classes with school info.
 	const { data: classes, error: classesError } = await supabase
 		.from('classes')
 		.select(
 			`
 			*,
-			teacher:profiles!classes_teacher_id_fkey(id, firstname, lastname, email),
 			school:schools(id, name)
 		`
 		)
@@ -68,7 +55,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	return {
 		schools: schools || [],
-		teachers: teachers || [],
 		classes: classesWithCounts || []
 	};
 };
@@ -89,21 +75,6 @@ export const actions: Actions = {
 		if (!name) {
 			return fail(400, { message: 'Name is required' });
 		}
-
-		// Single-teacher invariant: always assign the sole teacher (any client value ignored).
-		const { data: soleTeacher, error: teacherError } = await supabase
-			.from('profiles')
-			.select('id')
-			.eq('role', 'teacher')
-			.maybeSingle();
-
-		if (teacherError || !soleTeacher) {
-			console.error('Error resolving sole teacher:', teacherError);
-			return fail(400, {
-				message: 'Aucun professeur trouvé pour assigner la classe (configuration mono-professeur).'
-			});
-		}
-		const teacher_id = soleTeacher.id;
 
 		// Generate or use custom join code
 		let join_code = custom_join_code?.trim().toUpperCase();
@@ -141,7 +112,6 @@ export const actions: Actions = {
 		const { error: insertError } = await supabase.from('classes').insert({
 			name,
 			description: description || null,
-			teacher_id,
 			school_id: school_id || null,
 			grade: grade || null,
 			join_code,
@@ -173,7 +143,6 @@ export const actions: Actions = {
 		if (!id || !name) {
 			return fail(400, { message: 'ID and name are required' });
 		}
-		// Single-teacher invariant: teacher_id is never changed on update (stays the sole teacher).
 
 		// If join code changed, validate it's unique
 		const { data: currentClass, error: fetchError } = await supabase

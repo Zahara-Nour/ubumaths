@@ -63,7 +63,6 @@ export interface StudentFull extends Student {
  */
 export interface ClassWithStudents {
 	id: string;
-	teacher_id: string;
 	name: string;
 	description: string | null;
 	join_code: string;
@@ -78,7 +77,6 @@ export interface ClassWithStudents {
  */
 export interface ClassWithData {
 	id: string;
-	teacher_id: string;
 	name: string;
 	description: string | null;
 	join_code: string;
@@ -90,7 +88,6 @@ export interface ClassWithData {
 	schedules: Array<{
 		id: string;
 		class_id: string;
-		teacher_id: string;
 		day_of_week: number;
 		start_time: string;
 		end_time: string;
@@ -256,12 +253,10 @@ export async function getTeacherClassesWithStudents(
 	// Get teacher's test mode preference
 	const isTestMode = await getTeacherTestMode(userId, supabase);
 
-	// Call optimized RPC function
-	// Note: p_is_test_mode parameter exists in the database but types may be stale
+	// Call optimized RPC function (mono-teacher: scoped to the sole teacher via auth.uid())
 	const { data, error } = await supabase.rpc('get_teacher_classes_with_students', {
-		p_teacher_id: userId,
 		p_is_test_mode: isTestMode
-	} as unknown as { p_teacher_id: string });
+	});
 
 	if (error) {
 		console.error('[getTeacherClassesWithStudents] Error fetching classes:', error);
@@ -295,12 +290,10 @@ export async function getTeacherClassesWithCounts(
 	// Get teacher's test mode preference
 	const isTestMode = await getTeacherTestMode(userId, supabase);
 
-	// Call optimized RPC function
-	// Note: p_is_test_mode parameter exists in the database but types may be stale
+	// Call optimized RPC function (mono-teacher: scoped to the sole teacher via auth.uid())
 	const { data, error } = await supabase.rpc('get_teacher_classes_with_data', {
-		p_teacher_id: userId,
 		p_is_test_mode: isTestMode
-	} as unknown as { p_teacher_id: string });
+	});
 
 	if (error) {
 		console.error('[getTeacherClassesWithCounts] Error fetching classes:', error);

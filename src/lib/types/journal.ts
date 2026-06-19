@@ -48,7 +48,6 @@ export type DbClassJournalEntryUpdate =
 export interface ClassJournalEntry {
 	id: string;
 	classId: string;
-	teacherId: string;
 	entryDate: string; // DATE format YYYY-MM-DD
 	lessonContent: string | null;
 	homeworkContent: string | null;

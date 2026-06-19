@@ -46,22 +46,21 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		// Get teacher's test mode preference
 		const isTestMode = await getTeacherTestMode(user.id, locals.supabase);
 
-		// Verify teacher owns the class (security check)
+		// Verify class exists
 		const { data: classCheck, error: classError } = await locals.supabase
 			.from('classes')
 			.select('id')
 			.eq('id', classId)
-			.eq('teacher_id', user.id)
 			.maybeSingle();
 
 		if (classError) {
-			console.error('[GET /api/classes/students] Error verifying class ownership:', classError);
-			throw error(500, `Failed to verify class ownership: ${classError.message}`);
+			console.error('[GET /api/classes/students] Error verifying class:', classError);
+			throw error(500, `Failed to verify class: ${classError.message}`);
 		}
 
 		if (!classCheck) {
-			console.error('[GET /api/classes/students] Teacher does not own class:', classId);
-			throw error(403, 'You do not have permission to view this class');
+			console.error('[GET /api/classes/students] Class not found:', classId);
+			throw error(404, 'Class not found');
 		}
 
 		// Fetch active student profiles via class_members join

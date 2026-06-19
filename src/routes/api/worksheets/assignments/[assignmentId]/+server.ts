@@ -239,7 +239,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			if (class_ids.length > 0) {
 				const { data: classesData, error: classesError } = await locals.supabase
 					.from('classes')
-					.select('id, name, teacher_id')
+					.select('id, name')
 					.in('id', class_ids);
 
 				if (classesError) {
@@ -252,14 +252,6 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 				const missingIds = class_ids.filter((id) => !foundIds.has(id));
 				if (missingIds.length > 0) {
 					throw error(404, `Classes non trouvees: ${missingIds.length} classe(s) invalide(s)`);
-				}
-
-				// Verify user has access to all classes
-				if (profile?.role !== 'admin') {
-					const unauthorizedClasses = classesData?.filter((c) => c.teacher_id !== user.id) || [];
-					if (unauthorizedClasses.length > 0) {
-						throw error(403, `Acces non autorise a ${unauthorizedClasses.length} classe(s)`);
-					}
 				}
 			}
 

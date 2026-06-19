@@ -208,11 +208,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.eq('course_state', 'ACTIVE')
 		.order('name');
 
-	// Fetch which courses are already associated with classes (for filtering)
+	// Fetch which courses are already associated with classes (for filtering).
+	// Mono-teacher: the sole teacher owns every class; RLS scopes the read.
 	const { data: associatedCourseIds } = await supabase
 		.from('classes')
 		.select('google_classroom_course_id')
-		.eq('teacher_id', user.id)
 		.not('google_classroom_course_id', 'is', null);
 
 	// Single-teacher (Option B): students not enrolled in any active class.
@@ -276,10 +276,11 @@ export const actions: Actions = {
 			notes
 		} = validation.data;
 
-		// Verify teacher owns this class
+		// Mono-teacher: the sole teacher/admin owns every class; RLS enforces write
+		// access. Just verify the class exists.
 		const { data: classData, error: classError } = await supabase
 			.from('classes')
-			.select('teacher_id')
+			.select('id')
 			.eq('id', classId)
 			.single();
 
@@ -287,14 +288,9 @@ export const actions: Actions = {
 			return fail(404, { message: 'Class not found' });
 		}
 
-		if (classData.teacher_id !== user.id) {
-			return fail(403, { message: 'You do not own this class' });
-		}
-
 		// Insert schedule entry
 		const { error: insertError } = await supabase.from('class_schedules').insert({
 			class_id: classId,
-			teacher_id: user.id,
 			day_of_week: dayOfWeek,
 			period_number: periodNumber,
 			start_time: startTime,
@@ -351,19 +347,16 @@ export const actions: Actions = {
 			notes
 		} = validation.data;
 
-		// Verify teacher owns this schedule entry
+		// Mono-teacher: the sole teacher/admin owns every schedule entry; RLS enforces
+		// write access. Just verify the entry exists.
 		const { data: scheduleData, error: scheduleError } = await supabase
 			.from('class_schedules')
-			.select('teacher_id')
+			.select('id')
 			.eq('id', id)
 			.single();
 
 		if (scheduleError || !scheduleData) {
 			return fail(404, { message: 'Schedule entry not found' });
-		}
-
-		if (scheduleData.teacher_id !== user.id) {
-			return fail(403, { message: 'You do not own this schedule entry' });
 		}
 
 		// Update schedule entry
@@ -416,19 +409,16 @@ export const actions: Actions = {
 
 		const { id } = validation.data;
 
-		// Verify teacher owns this schedule entry
+		// Mono-teacher: the sole teacher/admin owns every schedule entry; RLS enforces
+		// write access. Just verify the entry exists.
 		const { data: scheduleData, error: scheduleError } = await supabase
 			.from('class_schedules')
-			.select('teacher_id')
+			.select('id')
 			.eq('id', id)
 			.single();
 
 		if (scheduleError || !scheduleData) {
 			return fail(404, { message: 'Schedule entry not found' });
-		}
-
-		if (scheduleData.teacher_id !== user.id) {
-			return fail(403, { message: 'You do not own this schedule entry' });
 		}
 
 		// Delete schedule entry
@@ -468,19 +458,16 @@ export const actions: Actions = {
 
 		const { classId, courseId } = validation.data;
 
-		// Verify teacher owns this class
+		// Mono-teacher: the sole teacher/admin owns every class; RLS enforces write
+		// access. Just verify the class exists.
 		const { data: classData, error: classError } = await locals.supabase
 			.from('classes')
-			.select('teacher_id')
+			.select('id')
 			.eq('id', classId)
 			.single();
 
 		if (classError || !classData) {
 			return fail(404, { message: 'Classe introuvable' });
-		}
-
-		if (classData.teacher_id !== user.id) {
-			return fail(403, { message: 'Vous ne possédez pas cette classe' });
 		}
 
 		// If courseId provided, verify teacher owns this course
@@ -500,12 +487,11 @@ export const actions: Actions = {
 			}
 		}
 
-		// Update the class
+		// Update the class (mono-teacher: RLS scopes write access to the teacher/admin)
 		const { error: updateError } = await locals.supabase
 			.from('classes')
 			.update({ google_classroom_course_id: courseId })
-			.eq('id', classId)
-			.eq('teacher_id', user.id);
+			.eq('id', classId);
 
 		if (updateError) {
 			console.error('Error updating class association:', updateError);
