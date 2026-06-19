@@ -11,7 +11,7 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// Mirrors the normalized payload from GET /api/annuaire/search.
+	// Mirrors the normalized payload from GET /api/admin/annuaire/search.
 	type AnnuaireSchool = {
 		uai: string;
 		name: string;
@@ -115,7 +115,7 @@
 		annuaireLoading = true;
 		annuaireOpen = true;
 		try {
-			const res = await fetch(`/api/annuaire/search?q=${encodeURIComponent(q)}`);
+			const res = await fetch(`/api/admin/annuaire/search?q=${encodeURIComponent(q)}`);
 			const results = res.ok ? ((await res.json()).schools ?? []) : [];
 			if (seq !== annuaireSeq) return; // superseded by a newer search
 			annuaireResults = results;
