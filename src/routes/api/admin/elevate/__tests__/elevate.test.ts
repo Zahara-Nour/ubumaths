@@ -3,20 +3,21 @@
  * ========================================
  *
  * Server-side admin elevation (Pattern 2). An authenticated teacher/admin POSTs
- * the **admin account's** email+password; the server verifies the credentials
+ * only the **admin account's password** (mono-admin); the server resolves the admin
+ * email, verifies the credentials
  * with an EPHEMERAL Supabase client (so the caller's own sb-* session cookies
  * are never touched), confirms the credentials belong to an admin, and on
  * success sets the short-lived httpOnly `ubu-admin-elevation` cookie.
  *
  * Cases:
- *   - 400 invalid body (bad email / missing password)
+ *   - 400 invalid body (missing password)
  *   - 401 bad credentials (signInWithPassword fails)
  *   - 403 credentials belong to a NON-admin account
  *   - 200 + cookie set on valid admin credentials
  *   - 401/403 when the CALLER is not an authenticated teacher/admin
  *
- * The ephemeral client is mocked at the @supabase/supabase-js boundary; the
- * role-confirmation query runs through the mock locals.supabase.
+ * The ephemeral client is mocked (sign-in + role confirmation); the admin-email
+ * lookup runs through the mock locals.supabase.
  *
  * @module api/admin/elevate.test
  */
@@ -108,6 +109,11 @@ function signInSuccess(userId: string, email: string) {
 	};
 }
 
+/** Mono-admin model: stub the single-admin email lookup on the caller client. */
+function mockAdminLookup(supabase: any) {
+	supabase._mockChain.single.mockResolvedValueOnce({ data: { email: ADMIN_EMAIL }, error: null });
+}
+
 describe('POST /api/admin/elevate', () => {
 	beforeEach(() => {
 		signInWithPassword.mockReset();
@@ -123,7 +129,7 @@ describe('POST /api/admin/elevate', () => {
 		const { POST } = await import('../+server');
 		const supabase = createMockSupabase();
 		const locals = createMockLocals(undefined, supabase) as any; // no user
-		const request = createMockRequest({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD });
+		const request = createMockRequest({ password: ADMIN_PASSWORD });
 		const { event } = makeEvent(request, locals);
 
 		try {
@@ -141,7 +147,7 @@ describe('POST /api/admin/elevate', () => {
 		const locals = createMockLocals(TEST_IDS.teacher, supabase, 'student') as any;
 		locals.user = { id: TEST_IDS.teacher };
 		locals.profile = { id: TEST_IDS.teacher, role: 'student' };
-		const request = createMockRequest({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD });
+		const request = createMockRequest({ password: ADMIN_PASSWORD });
 		const { event } = makeEvent(request, locals);
 
 		try {
@@ -157,11 +163,11 @@ describe('POST /api/admin/elevate', () => {
 	// Body validation
 	// -------------------------------------------------------------------------
 
-	it('returns 400 for a malformed body (bad email)', async () => {
+	it('returns 400 when the password is missing', async () => {
 		const { POST } = await import('../+server');
 		const supabase = createMockSupabase();
 		const locals = teacherCaller(supabase);
-		const request = createMockRequest({ email: 'not-an-email', password: ADMIN_PASSWORD });
+		const request = createMockRequest({});
 		const { event } = makeEvent(request, locals);
 
 		try {
@@ -197,12 +203,13 @@ describe('POST /api/admin/elevate', () => {
 		const supabase = createMockSupabase();
 		const locals = teacherCaller(supabase);
 
+		mockAdminLookup(supabase);
 		signInWithPassword.mockResolvedValueOnce({
 			data: { user: null, session: null },
 			error: { message: 'Invalid login credentials' }
 		});
 
-		const request = createMockRequest({ email: ADMIN_EMAIL, password: 'wrong' });
+		const request = createMockRequest({ password: 'wrong' });
 		const { event } = makeEvent(request, locals);
 
 		try {
@@ -220,6 +227,7 @@ describe('POST /api/admin/elevate', () => {
 		const locals = teacherCaller(supabase);
 
 		// Credentials are valid but for a teacher account.
+		mockAdminLookup(supabase);
 		signInWithPassword.mockResolvedValueOnce(signInSuccess(TEST_IDS.teacher, ADMIN_EMAIL));
 		// Role confirmation via the ephemeral (candidate) client → role 'teacher'.
 		ephemeralSingle.mockResolvedValueOnce({
@@ -227,7 +235,7 @@ describe('POST /api/admin/elevate', () => {
 			error: null
 		});
 
-		const request = createMockRequest({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD });
+		const request = createMockRequest({ password: ADMIN_PASSWORD });
 		const { event, cookieSet } = makeEvent(request, locals);
 
 		try {
@@ -249,13 +257,14 @@ describe('POST /api/admin/elevate', () => {
 		const supabase = createMockSupabase();
 		const locals = teacherCaller(supabase);
 
+		mockAdminLookup(supabase);
 		signInWithPassword.mockResolvedValueOnce(signInSuccess(TEST_IDS.admin, ADMIN_EMAIL));
 		ephemeralSingle.mockResolvedValueOnce({
 			data: { id: TEST_IDS.admin, role: 'admin' },
 			error: null
 		});
 
-		const request = createMockRequest({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD });
+		const request = createMockRequest({ password: ADMIN_PASSWORD });
 		const { event, cookieSet } = makeEvent(request, locals);
 
 		const response = await POST(event);
@@ -283,13 +292,14 @@ describe('POST /api/admin/elevate', () => {
 		const supabase = createMockSupabase();
 		const locals = teacherCaller(supabase);
 
+		mockAdminLookup(supabase);
 		signInWithPassword.mockResolvedValueOnce(signInSuccess(TEST_IDS.admin, ADMIN_EMAIL));
 		ephemeralSingle.mockResolvedValueOnce({
 			data: { id: TEST_IDS.admin, role: 'admin' },
 			error: null
 		});
 
-		const request = createMockRequest({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD });
+		const request = createMockRequest({ password: ADMIN_PASSWORD });
 		const { event, cookieSet } = makeEvent(request, locals);
 
 		await POST(event);
