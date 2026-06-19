@@ -91,9 +91,20 @@
 	let freezePromptOpen = $state(false);
 	let freezePromptDuration = $state(0);
 
+	// An elevated teacher keeps role 'teacher' but, while inside the admin section,
+	// must see the ADMIN nav (Schools, VIP, CRON…) — not the teacher rail. The
+	// elevation state is exposed by dashboard/admin/+layout.server.ts and reaches
+	// us through the merged page.data (present only on /dashboard/admin/* routes).
+	let adminElevationActive = $derived(
+		Boolean((page.data as { adminElevation?: { active?: boolean } | null }).adminElevation?.active)
+	);
+	let navRole = $derived(
+		data.profile.role === 'admin' || adminElevationActive ? 'admin' : data.profile.role
+	);
+
 	// Navigation links — extracted to $lib/config/dashboard-nav.ts for testability
 	let allLinks = $derived(
-		getNavLinks(data.profile.role, data.pendingVipRequestsCount, data.marketplaceEnabled)
+		getNavLinks(navRole, data.pendingVipRequestsCount, data.marketplaceEnabled)
 	);
 	let mainLinks = $derived(allLinks.filter((l) => !l.footer));
 	let footerLinks = $derived(allLinks.filter((l) => l.footer));
@@ -332,7 +343,7 @@
 				<!-- Zone title - hidden on very small screens -->
 				<div class="hidden sm:block">
 					<h1 class="text-2xl font-bold tracking-tight text-foreground">
-						{getZoneTitle(data.profile.role)}
+						{getZoneTitle(navRole)}
 					</h1>
 				</div>
 			</div>
