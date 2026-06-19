@@ -10,11 +10,18 @@
  */
 
 import { error, json } from '@sveltejs/kit';
+import { z } from 'zod';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { assertTypedConfirmation } from '$lib/server/confirmAction';
 import { updateConfigSchema } from '$lib/server/validation/vip-card-admin';
 import type { VipCardConfig } from '$lib/types/vip-card-admin';
 import { configToResponse } from '$lib/types/vip-card-admin';
+
+/**
+ * Body for the typed-confirmation DELETE: the admin must echo the config name.
+ */
+const deleteConfirmSchema = z.object({ confirm: z.string() });
 
 /**
  * PATCH /api/admin/vip-cards/configs/[id]
@@ -129,13 +136,26 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
  *   - 404: Config not found
  *   - 500: Server error
  */
-export const DELETE: RequestHandler = async ({ locals, params }) => {
+export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 	// ✅ SECURITY: admin elevation OR real admin login.
 	const { supabase } = await requireAdmin(locals);
 	const configId = parseInt(params.id, 10);
 
 	if (isNaN(configId)) {
 		throw error(400, 'Invalid config ID');
+	}
+
+	// Typed-confirmation gate: parse the body defensively (a missing/invalid
+	// body fails the schema → 400) and require the echoed config name below.
+	let confirmBody: unknown;
+	try {
+		confirmBody = await request.json();
+	} catch {
+		confirmBody = null;
+	}
+	const confirmParsed = deleteConfirmSchema.safeParse(confirmBody);
+	if (!confirmParsed.success) {
+		throw error(400, confirmParsed.error.issues[0].message);
 	}
 
 	try {
@@ -158,6 +178,9 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		if (existing.is_active) {
 			throw error(400, 'Cannot delete active config. Deactivate it first.');
 		}
+
+		// ✅ SECURITY: require the admin to have typed the exact config name.
+		assertTypedConfirmation(confirmParsed.data.confirm, existing.config_name);
 
 		// 4. Delete config
 		const { error: deleteError } = await supabase

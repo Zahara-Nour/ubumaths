@@ -5,6 +5,7 @@
 	import type { VipCardAction } from '$lib/types/vip-card';
 	import { categoryIcon } from './utils';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import type { Snippet } from 'svelte';
 	type ActionType = VipCardAction['type'];
 
 	// Typed action interface (Database stores as Json, but we know the structure)
@@ -40,6 +41,12 @@
 		onEdit?: () => void;
 		onDelete?: () => void;
 		onUploadImage?: () => void;
+		/**
+		 * Optional override for the delete affordance. When provided it replaces
+		 * the built-in delete button (e.g. to host a TypedConfirmDialog trigger).
+		 * Takes precedence over `onDelete`.
+		 */
+		deleteTrigger?: Snippet;
 	}
 
 	// Action display utilities
@@ -90,7 +97,8 @@
 		onInlineEdit,
 		onEdit,
 		onDelete,
-		onUploadImage
+		onUploadImage,
+		deleteTrigger
 	}: Props = $props();
 
 	const currentEnabled = $derived(isEnabled ?? card.is_enabled);
@@ -359,7 +367,11 @@
 			{/if}
 
 			<!-- Delete Button (Bottom Right) -->
-			{#if onDelete}
+			{#if deleteTrigger}
+				<div class="absolute right-2 bottom-2 z-10">
+					{@render deleteTrigger()}
+				</div>
+			{:else if onDelete}
 				<button
 					type="button"
 					class="absolute right-2 bottom-2 z-10 rounded-full bg-destructive p-2 text-destructive-foreground shadow-lg transition-all hover:scale-110 hover:bg-destructive/90 active:scale-95"

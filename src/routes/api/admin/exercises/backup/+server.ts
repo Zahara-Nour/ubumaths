@@ -13,6 +13,7 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { assertTypedConfirmation } from '$lib/server/confirmAction';
 import {
 	exportBackupJSON,
 	exportBackupSQL,
@@ -24,11 +25,19 @@ import { isBackupSizeValid, getMaxFileSizeDisplay } from '$lib/server/validation
 // VALIDATION SCHEMAS
 // ============================================================================
 
+/**
+ * Typed-confirmation keyword the admin must echo to restore a backup.
+ * Global destructive op → fixed keyword (not a resource name).
+ */
+const RESTORE_CONFIRM_KEYWORD = 'RESTAURER';
+
 const exportQuerySchema = z.object({
 	format: z.enum(['json', 'sql']).default('json')
 });
 
 const restoreBodySchema = z.object({
+	// Typed-confirmation token; re-enforced server-side via assertTypedConfirmation.
+	confirm: z.string(),
 	backup: z.unknown(),
 	options: z.object({
 		conflict_strategy: z.enum(['skip', 'replace']).default('skip'),
@@ -150,7 +159,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, bodyValidation.error.issues[0].message);
 	}
 
-	const { backup, options } = bodyValidation.data;
+	const { confirm, backup, options } = bodyValidation.data;
+
+	// ✅ SECURITY: global destructive op → require the fixed keyword.
+	assertTypedConfirmation(confirm, RESTORE_CONFIRM_KEYWORD);
 
 	try {
 		// Add admin_id to options for orphan reassignment.
