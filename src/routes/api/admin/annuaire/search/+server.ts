@@ -33,7 +33,10 @@ const SELECT_FIELDS = [
 export const GET: RequestHandler = async ({ url, fetch, locals }) => {
 	await requireAdmin(locals);
 
-	const parsed = annuaireSearchQuerySchema.safeParse({ q: url.searchParams.get('q') ?? '' });
+	const parsed = annuaireSearchQuerySchema.safeParse({
+		q: url.searchParams.get('q') ?? '',
+		page: url.searchParams.get('page') ?? '1'
+	});
 	if (!parsed.success) {
 		throw error(400, parsed.error.issues[0].message);
 	}
@@ -50,9 +53,11 @@ export const GET: RequestHandler = async ({ url, fetch, locals }) => {
 	// Pascal Segré" pinpoints the right one among the 57 "Blaise Pascal" schools.
 	apiUrl.searchParams.set('where', `search("${term}")`);
 	apiUrl.searchParams.set('select', SELECT_FIELDS);
-	// 20 (not 10): a precise name+city query returns a handful, but a name-only
-	// query for a common name needs headroom in the autocomplete list.
-	apiUrl.searchParams.set('limit', '20');
+	// Paginated: PAGE_SIZE per page, offset = (page-1)*PAGE_SIZE. The client pages
+	// through with prev/next using the `total` returned below — no arbitrary cap.
+	const PAGE_SIZE = 20;
+	apiUrl.searchParams.set('limit', String(PAGE_SIZE));
+	apiUrl.searchParams.set('offset', String((parsed.data.page - 1) * PAGE_SIZE));
 
 	let res: Response;
 	try {
@@ -81,5 +86,10 @@ export const GET: RequestHandler = async ({ url, fetch, locals }) => {
 			academy: r.libelle_academie ?? ''
 		}));
 
-	return json({ schools });
+	return json({
+		schools,
+		total: validated.data.total_count,
+		page: parsed.data.page,
+		pageSize: PAGE_SIZE
+	});
 };

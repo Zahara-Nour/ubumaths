@@ -84,7 +84,9 @@ export type SchoolUpsert = z.infer<typeof schoolUpsertSchema>;
 
 /** Query for the Annuaire search proxy endpoint. */
 export const annuaireSearchQuerySchema = z.object({
-	q: z.string().trim().min(2).max(100)
+	q: z.string().trim().min(2).max(100),
+	// 1-based page; capped at 50 (×20 = 1000 results) as a sane upper bound.
+	page: z.coerce.number().int().min(1).max(50).default(1)
 });
 
 /** Raw record shape returned by the Opendatasoft `fr-en-annuaire-education` dataset. */
