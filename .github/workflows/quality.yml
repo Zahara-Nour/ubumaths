@@ -50,17 +50,22 @@ jobs:
       # The key is unique per commit (always saves a fresh cache); restore-keys
       # fall back to the most recent compatible cache. eslint invalidates entries
       # itself when a file or the config changes, so this is correctness-safe.
+      # Key prefix is versioned (-content) so the new content-strategy cache
+      # starts clean and never restores a stale metadata-strategy cache.
       - name: Restore ESLint cache
         uses: actions/cache@v4
         with:
           path: .eslintcache
-          key: eslint-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'eslint.config.*') }}-${{ github.sha }}
+          key: eslint-content-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'eslint.config.*') }}-${{ github.sha }}
           restore-keys: |
-            eslint-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'eslint.config.*') }}-
-            eslint-${{ runner.os }}-
+            eslint-content-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'eslint.config.*') }}-
+            eslint-content-${{ runner.os }}-
 
+      # --cache-strategy content (NOT the default mtime): CI checkouts rewrite
+      # every file's mtime, so the default strategy treats all files as changed
+      # and the cache is useless. Hashing content is stable across checkouts.
       - name: Run ESLint
-        run: pnpm eslint . --cache
+        run: pnpm eslint . --cache --cache-strategy content
 
   typecheck:
     name: Type Check
