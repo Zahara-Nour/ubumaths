@@ -2,12 +2,14 @@
  * POST /api/admin/elevate
  * =======================
  *
- * Server-side admin elevation (Pattern 2 — "step-up"). An authenticated
- * teacher/admin POSTs the **admin account's** email + password. The server:
+ * Server-side admin elevation (Pattern 2 — "step-up"). Mono-admin model: an
+ * authenticated teacher/admin POSTs ONLY the **admin account's password** — the
+ * server resolves the single admin account's email itself. The server:
  *
  *   1. confirms the CALLER is a teacher/admin (requireRoles),
  *   2. validates the body (Zod) + rate-limits like the login route,
- *   3. verifies the admin credentials with an EPHEMERAL client
+ *   3. resolves the single admin account's email, then verifies the credentials
+ *      with an EPHEMERAL client
  *      (`signInWithPassword`) — this NEVER touches the caller's `sb-*` session
  *      because the ephemeral client persists nothing and writes no cookies,
  *   4. confirms the signed-in user's `profiles.role === 'admin'` (role from DB),
@@ -69,28 +71,45 @@ export const POST: RequestHandler = async ({ request, locals, cookies, getClient
 	if (!validation.success) {
 		throw error(400, validation.error.issues[0].message);
 	}
-	const { email, password } = validation.data;
+	const { password } = validation.data;
 
-	// 3. Rate limit. Same dual IP + email scheme as the login route, but on
-	//    DEDICATED buckets (ratelimit:elevate:*) so a fat-fingered admin password
-	//    can't burn the /auth/login budget and lock the admin out of the real
-	//    login page (also avoids a targeted-lockout vector against login).
+	// 3. Rate limit by IP first — a cheap guard on DEDICATED buckets
+	//    (ratelimit:elevate:*) so a fat-fingered admin password can't burn the
+	//    /auth/login budget or lock the admin out of the real login page.
 	const ip = getClientAddress();
 	const ipLimit = await checkElevationRateLimitByIP(ip);
 	if (!ipLimit.allowed) {
 		throw error(429, ipLimit.message ?? 'Trop de tentatives. Réessayez plus tard.');
 	}
-	const emailLimit = await checkElevationRateLimitByEmail(email);
+
+	// 4. Mono-admin model: the caller submits only the password. Resolve the
+	//    single admin account's email server-side. `.single()` enforces exactly
+	//    one admin row (0 or >1 → error). profiles is readable here via the broad
+	//    leaderboard SELECT policy; the email is used only to drive the
+	//    server-side sign-in below and is never returned to the client.
+	const { data: adminProfile, error: adminLookupError } = await locals.supabase
+		.from('profiles')
+		.select('email')
+		.eq('role', 'admin')
+		.single();
+	if (adminLookupError || !adminProfile?.email) {
+		logger.error('Could not resolve the admin account for elevation:', adminLookupError);
+		throw error(500, 'Compte administrateur introuvable');
+	}
+	const adminEmail = adminProfile.email;
+
+	// Brute-force protection on the admin account itself (dedicated email bucket).
+	const emailLimit = await checkElevationRateLimitByEmail(adminEmail);
 	if (!emailLimit.allowed) {
 		throw error(429, emailLimit.message ?? 'Trop de tentatives. Réessayez plus tard.');
 	}
 
-	// 4. Verify the ADMIN credentials with an ephemeral client. This client
+	// 5. Verify the ADMIN credentials with an ephemeral client. This client
 	//    persists no session and writes no cookies → the caller's sb-* session
 	//    is untouched.
 	const ephemeral = createEphemeralAuthClient();
 	const { data: signInData, error: signInError } = await ephemeral.auth.signInWithPassword({
-		email,
+		email: adminEmail,
 		password
 	});
 
@@ -105,7 +124,7 @@ export const POST: RequestHandler = async ({ request, locals, cookies, getClient
 	const expiresAtSec =
 		signInData.session.expires_at ?? Math.floor(Date.now() / 1000) + MAX_ELEVATION_MAX_AGE;
 
-	// 5. Confirm the signed-in account is actually an admin (role from the DB).
+	// 6. Confirm the signed-in account is actually an admin (role from the DB).
 	//    We read the role through the EPHEMERAL client — which is now authed as
 	//    the candidate — so the check uses the candidate's own "view own profile"
 	//    RLS path and never depends on the caller's (teacher's) RLS visibility of
@@ -126,7 +145,7 @@ export const POST: RequestHandler = async ({ request, locals, cookies, getClient
 		throw error(403, 'Compte non administrateur');
 	}
 
-	// 6. Mint the elevation cookie. Cap the TTL at the token lifetime (≤ 1h).
+	// 7. Mint the elevation cookie. Cap the TTL at the token lifetime (≤ 1h).
 	const expiresAtMs = expiresAtSec * 1000;
 	const maxAge = Math.min(
 		MAX_ELEVATION_MAX_AGE,
