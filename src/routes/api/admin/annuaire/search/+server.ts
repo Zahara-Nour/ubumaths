@@ -9,8 +9,8 @@ import {
 
 /**
  * Proxy to the national "Annuaire de l'éducation nationale" open dataset
- * (Opendatasoft v2.1). Lets an admin look up an establishment by name and
- * auto-fill its UAI/RNE and contact details from the official source.
+ * (Opendatasoft v2.1). Lets an admin look up an establishment by name and/or
+ * commune (full-text, all fields) and auto-fill its UAI/RNE + contact details.
  *
  * Admin-only via `requireAdmin` (real admin OR an elevated teacher — the route
  * lives under /api/admin so the elevation handle is in scope). The dataset is
@@ -45,9 +45,14 @@ export const GET: RequestHandler = async ({ url, fetch, locals }) => {
 	}
 
 	const apiUrl = new URL(ANNUAIRE_URL);
-	apiUrl.searchParams.set('where', `search(nom_etablissement,"${term}")`);
+	// Record-level full-text search across ALL fields (accent-/case-insensitive) so
+	// the admin can disambiguate a common name by adding the city — e.g. "Blaise
+	// Pascal Segré" pinpoints the right one among the 57 "Blaise Pascal" schools.
+	apiUrl.searchParams.set('where', `search("${term}")`);
 	apiUrl.searchParams.set('select', SELECT_FIELDS);
-	apiUrl.searchParams.set('limit', '10');
+	// 20 (not 10): a precise name+city query returns a handful, but a name-only
+	// query for a common name needs headroom in the autocomplete list.
+	apiUrl.searchParams.set('limit', '20');
 
 	let res: Response;
 	try {
