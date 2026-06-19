@@ -7,8 +7,11 @@
 	success the server sets an httpOnly elevation cookie and the parallel admin
 	state becomes active — the teacher session is never modified.
 
+	Mono-admin model: only the admin PASSWORD is asked — the server resolves the
+	single admin account's email itself.
+
 	Flow:
-	  submit → POST /api/admin/elevate { email, password }
+	  submit → POST /api/admin/elevate { password }
 	    200 → invalidateAll() (re-runs layout loads so adminElevation is live)
 	         → goto(data.redirect) (server-validated, open-redirect-safe target)
 	    error → toaster with the server message; the form stays so the user can
@@ -28,7 +31,6 @@
 	let { data }: { data: PageData } = $props();
 
 	// Form state
-	let email = $state('');
 	let password = $state('');
 	let submitting = $state(false);
 
@@ -41,7 +43,7 @@
 			const response = await fetch('/api/admin/elevate', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email, password })
+				body: JSON.stringify({ password })
 			});
 
 			if (response.ok) {
@@ -89,28 +91,14 @@
 			</div>
 			<Card.Title class="text-2xl">Accès administration</Card.Title>
 			<Card.Description>
-				Connexion admin requise. Saisissez les identifiants du compte administrateur pour accéder à
-				cet espace.
+				Saisissez le mot de passe du compte administrateur pour accéder à cet espace.
 			</Card.Description>
 		</Card.Header>
 
 		<Card.Content>
 			<form class="space-y-4" onsubmit={handleSubmit}>
 				<div class="space-y-2">
-					<Label for="admin-email">Adresse e-mail administrateur</Label>
-					<Input
-						id="admin-email"
-						type="email"
-						autocomplete="email"
-						bind:value={email}
-						placeholder="admin@exemple.fr"
-						required
-						disabled={submitting}
-					/>
-				</div>
-
-				<div class="space-y-2">
-					<Label for="admin-password">Mot de passe</Label>
+					<Label for="admin-password">Mot de passe administrateur</Label>
 					<Input
 						id="admin-password"
 						type="password"
