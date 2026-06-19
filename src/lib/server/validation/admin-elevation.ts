@@ -13,14 +13,13 @@ import { z } from 'zod';
 /**
  * Body schema for POST /api/admin/elevate.
  *
- * - `email`: the admin account's email (validated, length-capped).
- * - `password`: the admin account's password (non-empty, length-capped to
- *   prevent oversized-payload abuse). We deliberately do NOT enforce a
- *   minimum-length policy here — the credential is checked against Supabase
- *   auth, not created — so a `.min(1)` is the correct guard.
+ * Mono-admin model: the caller submits ONLY the password — the server resolves
+ * the single admin account's email itself. `password` is non-empty and
+ * length-capped (oversized-payload guard); we deliberately do NOT enforce a
+ * minimum-length policy — the credential is checked against Supabase auth, not
+ * created — so `.min(1)` is the correct guard.
  */
 export const adminElevateSchema = z.object({
-	email: z.string().trim().email('Email invalide').max(254, 'Email trop long'),
 	password: z.string().min(1, 'Mot de passe requis').max(200, 'Mot de passe trop long')
 });
 
