@@ -36,8 +36,8 @@
  * Security:
  * - Teacher role required
  * - Verify coursework ownership via RLS + explicit checks
- * - Verify class ownership
- * - Verify category belongs to teacher's classes
+ * - Verify the class is accessible (mono-teacher: RLS scopes to teacher/admin)
+ * - Verify category is accessible via the teacher's/admin's classes
  * - All inputs validated with Zod
  * - Array size limits to prevent DoS
  */
@@ -388,7 +388,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				throw error(400, 'Category not found');
 			}
 
-			// Verify the category's class belongs to the teacher
+			// Verify the category's class is accessible (mono-teacher: RLS-scoped)
 			const { data: categoryClass, error: categoryClassError } = await locals.supabase
 				.from('classes')
 				.select('id')

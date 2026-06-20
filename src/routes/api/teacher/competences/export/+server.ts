@@ -14,7 +14,8 @@
  *   - last_obs       ('true' to add a derniere_observation column — longue only)
  *   - period_label   (optional, used only in the filename)
  *
- * AuthZ: teacher (or admin) owning the class — `requireTeacherOfClass`.
+ * AuthZ: teacher or admin (role-based) — `requireTeacherOfClass`. Mono-teacher:
+ * classes are not owned by a teacher; the role gate + RLS scope the access.
  */
 
 import { error } from '@sveltejs/kit';
@@ -67,7 +68,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	}
 	const q = parsed.data;
 
-	// AuthN + AuthZ + ownership (teacher of the class, or admin).
+	// AuthN + AuthZ (teacher or admin, role-based; class existence checked).
 	const { user, classRow } = await requireTeacherOfClass(locals, q.class_id);
 
 	const { competences, rows } = await loadClassCompetenceExport(

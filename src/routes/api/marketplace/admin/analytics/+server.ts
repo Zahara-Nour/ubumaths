@@ -67,7 +67,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const classIds = teacherClasses?.map((c: { id: string }) => c.id) || [];
 
 		if (class_id) {
-			// Verify teacher owns this class
+			// Verify the requested class is accessible (mono-teacher: RLS returns the teacher's/admin's classes)
 			if (!classIds.includes(class_id)) {
 				throw error(403, 'Accès non autorisé à cette classe');
 			}

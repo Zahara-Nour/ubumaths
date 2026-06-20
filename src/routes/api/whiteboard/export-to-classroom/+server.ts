@@ -17,7 +17,7 @@
  *
  * Security:
  * - Teacher role required
- * - Class ownership verified
+ * - Class access scoped by RLS (mono-teacher: teacher/admin)
  * - PDF content validated (magic bytes)
  * - Google integration with drive.file scope required
  */

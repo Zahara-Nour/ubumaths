@@ -30,7 +30,8 @@
 
 	SECURITY:
 	- Only teachers can access this page
-	- All CRUD operations verify teacher owns the class
+	- All CRUD operations require the teacher/admin role; RLS scopes the writes
+	  (mono-teacher: classes have no per-teacher owner)
 	- Server-side validation on all mutations
 -->
 
