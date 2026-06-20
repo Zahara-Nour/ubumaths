@@ -1999,7 +1999,7 @@ describe('VIP Card Action Validation', () => {
 				category: 'power',
 				isEnabled: true,
 				imagePath:
-					'https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images/tirage-epique@0.5x.webp',
+					'https://cnevnzsvixxpnurautls.supabase.co/storage/v1/object/public/vip-card-images/tirage-epique@0.5x.webp',
 				action: {
 					type: 'draw_cards',
 					count: 5,
@@ -2021,7 +2021,7 @@ describe('VIP Card Action Validation', () => {
 				category: 'privilege',
 				isEnabled: true,
 				imagePath:
-					'https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images/choix-vip@0.5x.webp',
+					'https://cnevnzsvixxpnurautls.supabase.co/storage/v1/object/public/vip-card-images/choix-vip@0.5x.webp',
 				action: {
 					type: 'choose_card',
 					count: 3,
@@ -2041,7 +2041,7 @@ describe('VIP Card Action Validation', () => {
 				category: 'bonus',
 				isEnabled: true,
 				imagePath:
-					'https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images/bonus-50@0.5x.webp',
+					'https://cnevnzsvixxpnurautls.supabase.co/storage/v1/object/public/vip-card-images/bonus-50@0.5x.webp',
 				action: {
 					type: 'add_gidouilles',
 					amount: 50
@@ -2060,7 +2060,7 @@ describe('VIP Card Action Validation', () => {
 				category: 'privilege',
 				isEnabled: true,
 				imagePath:
-					'https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images/warning-eraser@0.5x.webp',
+					'https://cnevnzsvixxpnurautls.supabase.co/storage/v1/object/public/vip-card-images/warning-eraser@0.5x.webp',
 				action: {
 					type: 'remove_warnings',
 					count: 2,
@@ -2080,7 +2080,7 @@ describe('VIP Card Action Validation', () => {
 				category: 'power',
 				isEnabled: true,
 				imagePath:
-					'https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images/exchange-master@0.5x.webp',
+					'https://cnevnzsvixxpnurautls.supabase.co/storage/v1/object/public/vip-card-images/exchange-master@0.5x.webp',
 				action: {
 					type: 'exchange_cards',
 					exchange: {
@@ -2103,7 +2103,7 @@ describe('VIP Card Action Validation', () => {
 				category: 'social',
 				isEnabled: true,
 				imagePath:
-					'https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images/vip-status@0.5x.webp',
+					'https://cnevnzsvixxpnurautls.supabase.co/storage/v1/object/public/vip-card-images/vip-status@0.5x.webp',
 				sortOrder: 30
 			});
 			expect(result.success).toBe(true);
