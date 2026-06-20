@@ -20,16 +20,15 @@ Ce sont des **marqueurs de propriété d'une ressource**, pas une « assignation
 | `orphaned_documents`         | owner du doc supprimé           | **trace d'audit**                                                 |
 | `teacher_vip_card_overrides` | owner de l'override             | préférences cartes VIP du prof — voir §3                          |
 
-## 2. 🟢 Params `p_teacher_id` gardés sur les RPC
+## 2. ✅ FAIT — Params `p_teacher_id` retirés (PR #46, en prod 2026-06-20)
 
-Gardés (contrairement aux RPC de classes dont on a **retiré** le param : `get_teacher_classes_with_data` / `_with_students` / `_for_messaging` / `_assignment_stats`) :
+Finalement **tous nettoyés** (vérifié : 0 param `p_teacher_id` restant en prod). L'investigation a montré qu'ils étaient redondants (« le prof appelant » = `auth.uid()`), et que 3 des fonctions étaient **mortes**.
 
-- `award_achievement_manual(p_teacher_id, …)`
-- `validate_riddle_attempt(…, p_teacher_id, …)`
-- `teacher_owns_riddle(p_teacher_id, p_riddle_id)` — via `riddles.created_by`
-- `get_teacher_override_impact(p_teacher_id, p_card_id)` — via `teacher_vip_card_overrides`
-- `get_teacher_overrides_summary(p_teacher_id)` — idem
-- `is_class_teacher_of(p_teacher_id)` — **param gardé, corps déjà réécrit role-based**
+- ✂️ `award_achievement_manual` / `validate_riddle_attempt` : param retiré → estampillent `unlocked_by` / `validated_by` via `auth.uid()`.
+- ✂️ `teacher_owns_riddle(p_teacher_id, p_riddle_id)` → `teacher_owns_riddle(p_riddle_id)` (`created_by = auth.uid()`) + 3 policies `riddle_assignments` réécrites.
+- 🗑️ **DROP** (0 appelant) : `is_class_teacher_of` (mort depuis Option B), `get_teacher_override_impact`, `get_teacher_overrides_summary`.
+
+> 🐛 **Bonus** : le test award de #46 a révélé un bug prod indépendant — le trigger `log_achievements_to_events` lisait `NEW.metadata` (colonne inexistante sur `student_achievements`) → décerner un succès était cassé. Corrigé par **PR #47** (en prod).
 
 ## 3. 🟡 Aplatir `teacher_vip_card_overrides` en table **globale**
 
@@ -62,4 +61,4 @@ SELECT proname, pg_get_function_identity_arguments(oid)
     AND pg_get_function_identity_arguments(oid) ~ 'p_teacher_id' ORDER BY 1;
 ```
 
-**En clair** : §1-2 sont **légitimement gardés** (pas une dette). Les seuls vrais « à reprendre un jour » sont **§3** (aplatir `teacher_vip_card_overrides`) et accessoirement **§4** (caches élève). §5 = simple doc.
+**En clair** : **§1** légitimement gardé (pas une dette), **§2 FAIT** (PR #46/#47, en prod). Restent, si on veut : **§3** (aplatir `teacher_vip_card_overrides`) et accessoirement **§4** (caches élève). §5 = simple doc.
