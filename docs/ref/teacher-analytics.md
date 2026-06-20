@@ -16,7 +16,7 @@ Le prof accède à une vue unifiée de l'**état d'acquisition** de sa classe su
 | 📘 Connaissances | A (FSRS knowledge)   | `srs_card_stats` + `skill_attempts` + `question_template_skills` | A, B, C, D, E |
 | 🎯 Compétences   | B (compétences math) | `student_competence_level` + `student_observable_state`          | F, G          |
 
-**Sécurité** : seul le `teacher_id` de la classe (ou un admin) peut accéder via la garde `requireTeacherOfClass`.
+**Sécurité** : la garde `requireTeacherOfClass` autorise **tout `teacher` ou `admin`** (role-based via `requireRoles(['teacher','admin'])`), puis vérifie l'existence de la classe (404 sinon). Mono-prof : les classes ne sont plus assignées à un prof — l'autorisation ne dépend d'aucun `teacher_id` de classe.
 
 ---
 
@@ -181,7 +181,7 @@ Analyse critique des items reportés (revue 2026-06-10) : sur 7 candidats, **1 s
 7. Onglet **🎯 Compétences** : vérifier Widget F + G
 8. Clic "Voir" sur une ligne Widget E ou G → modal liste des élèves concernés
 9. Classe vide → message "Aucun élève dans cette classe"
-10. Tentative d'accès via URL d'une classe non-owner → 403
+10. Tentative d'accès par un compte non-prof/non-admin (p.ex. élève) → 403 ; classe inexistante → 404
 
 ---
 

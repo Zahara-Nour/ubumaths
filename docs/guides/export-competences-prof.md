@@ -93,6 +93,6 @@ Marche à suivre côté Sacoche :
 ## Confidentialité
 
 L'export contient des données scolaires nominatives (nom, prénom, classe,
-résultats). Seul l'enseignant de la classe (ou un administrateur) peut générer
-l'export. Le fichier est produit à la volée et **n'est pas stocké** sur le
+résultats). Seul un professeur ou un administrateur peut générer l'export
+(contrôle d'accès role-based — la classe n'est plus rattachée à un prof). Le fichier est produit à la volée et **n'est pas stocké** sur le
 serveur — pensez à le supprimer de votre poste une fois la saisie terminée.

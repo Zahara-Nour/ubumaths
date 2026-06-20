@@ -103,13 +103,13 @@ CREATE TYPE user_status AS ENUM ('pending', 'approved', 'rejected');
 RLS active des `001`. Politiques principales (les migrations ulterieures durcissent
 l'auto-update) :
 
-| Politique                                             | Operation | Condition                                                                            |
-| ----------------------------------------------------- | --------- | ------------------------------------------------------------------------------------ |
-| `Users can view their own profile`                    | SELECT    | `auth.uid() = id`                                                                    |
-| `Users can update own profile`                        | UPDATE    | `auth.uid() = id` **ET** `role` inchange **ET** `status` inchange (`20251208100001`) |
-| `Teachers can view student profiles in their classes` | SELECT    | enseignant de la classe de l'eleve                                                   |
-| `Teachers can view pending users for approval`        | SELECT    | `status = 'pending'` ET `is_teacher_or_admin()` (`20251208100001`)                   |
-| `Teachers and admins can update user status`          | UPDATE    | `auth.uid() != id` ET `is_teacher_or_admin()` (`20251208100001`)                     |
+| Politique                                             | Operation | Condition                                                                                                                                                                 |
+| ----------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Users can view their own profile`                    | SELECT    | `auth.uid() = id`                                                                                                                                                         |
+| `Users can update own profile`                        | UPDATE    | `auth.uid() = id` **ET** `role` inchange **ET** `status` inchange (`20251208100001`)                                                                                      |
+| `Teachers can view student profiles in their classes` | SELECT    | `role = 'student'` ET `is_my_student(id)` — mono-prof : `is_my_student` delegue a `is_teacher_or_admin()`, donc le prof unique / l'admin voit **tous** les profils eleves |
+| `Teachers can view pending users for approval`        | SELECT    | `status = 'pending'` ET `is_teacher_or_admin()` (`20251208100001`)                                                                                                        |
+| `Teachers and admins can update user status`          | UPDATE    | `auth.uid() != id` ET `is_teacher_or_admin()` (`20251208100001`)                                                                                                          |
 
 > **Point de securite cle.** La politique `Users can update own profile` empeche un
 > utilisateur de modifier **son propre `role` ou `status`** : le `WITH CHECK` exige que
@@ -117,6 +117,13 @@ l'auto-update) :
 > `SECURITY DEFINER` `get_user_status(uuid)` pour eviter la recursion RLS). Un eleve ne peut
 > donc pas s'auto-promouvoir `admin` ni s'auto-approuver. La fonction `get_user_status` est
 > definie dans `20251208100001_add_status_rls_policies.sql`.
+
+> **Modele mono-professeur.** Un seul `teacher` (+ un seul `admin`). Les classes ne sont
+> plus assignees a un prof (colonne `teacher_id` supprimee des tables de classes) ; les
+> helpers d'autorisation de classe (`is_class_teacher`, `is_my_student`) **delèguent a
+> `is_teacher_or_admin()`** et sont donc admin-inclusifs. La frontiere sociale = l'**ecole**,
+> la classe = sous-groupe d'organisation. Detail : `docs/architecture/database-schema.md`
+> § « Mono-teacher RLS model ».
 
 ### Trigger `handle_new_user` → `on_auth_user_created`
 
