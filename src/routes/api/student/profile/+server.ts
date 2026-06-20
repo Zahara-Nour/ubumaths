@@ -57,7 +57,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 	try {
 		// Fetch active class memberships with class details.
-		// Mono-teacher: teacher_id was dropped from classes; resolve the sole teacher once below.
 		const { data: memberships, error: membershipError } = await supabase
 			.from('class_members')
 			.select(
@@ -80,13 +79,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 			throw error(500, 'Failed to fetch class memberships');
 		}
 
-		// Resolve the sole teacher once for display attribution.
-		const { data: soleTeacher } = await supabase
-			.from('profiles')
-			.select('id, full_name')
-			.eq('role', 'teacher')
-			.maybeSingle();
-
 		// Transform database response to ClassMembership[]
 		const classes: ClassMembership[] = (memberships || [])
 			.filter((m) => m.classes) // Filter out null classes
@@ -95,8 +87,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 				return {
 					class_id: m.class_id,
 					class_name: classData.name,
-					teacher_name: soleTeacher?.full_name || 'Unknown Teacher',
-					teacher_id: soleTeacher?.id || '',
 					joined_at: m.joined_at,
 					is_active: classData.is_active
 				};
