@@ -7,10 +7,30 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.5"
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -14549,7 +14569,6 @@ export type Database = {
           p_achievement_id: string
           p_reason?: string
           p_student_id: string
-          p_teacher_id: string
         }
         Returns: boolean
       }
@@ -15544,23 +15563,6 @@ export type Database = {
           variations: Json
         }[]
       }
-      get_teacher_override_impact: {
-        Args: { p_card_id: string; p_teacher_id: string }
-        Returns: {
-          class_count: number
-          student_count: number
-        }[]
-      }
-      get_teacher_overrides_summary: {
-        Args: { p_teacher_id: string }
-        Returns: {
-          disabled_count: number
-          enabled_count: number
-          no_override_count: number
-          rarity: string
-          total_cards: number
-        }[]
-      }
       get_template_statistics: {
         Args: { p_template_id: string }
         Returns: {
@@ -15746,7 +15748,6 @@ export type Database = {
       is_class_member: { Args: { p_class_id: string }; Returns: boolean }
       is_class_student: { Args: { p_class_id: string }; Returns: boolean }
       is_class_teacher: { Args: { p_class_id: string }; Returns: boolean }
-      is_class_teacher_of: { Args: { p_teacher_id: string }; Returns: boolean }
       is_classmate: { Args: { p_class_id: string }; Returns: boolean }
       is_conversation_participant: {
         Args: { p_conversation_id: string; p_user_id: string }
@@ -16181,10 +16182,7 @@ export type Database = {
           week_best_reward: number
         }[]
       }
-      teacher_owns_riddle: {
-        Args: { p_riddle_id: string; p_teacher_id: string }
-        Returns: boolean
-      }
+      teacher_owns_riddle: { Args: { p_riddle_id: string }; Returns: boolean }
       toggle_message_star: {
         Args: { p_message_id: string; p_user_id: string }
         Returns: boolean
@@ -16385,11 +16383,7 @@ export type Database = {
         Returns: boolean
       }
       validate_riddle_attempt: {
-        Args: {
-          p_attempt_id: string
-          p_is_correct: boolean
-          p_teacher_id: string
-        }
+        Args: { p_attempt_id: string; p_is_correct: boolean }
         Returns: {
           actual_reward: number
           is_first_win: boolean
@@ -16566,6 +16560,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       consent_status: ["pending", "granted", "expired"],
@@ -16617,3 +16614,4 @@ export const Constants = {
     },
   },
 } as const
+
