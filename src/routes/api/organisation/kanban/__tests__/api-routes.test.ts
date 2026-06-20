@@ -219,9 +219,9 @@ describe('POST /api/organisation/kanban/boards', () => {
 		const locals = createMockLocals(TEST_IDS.user, supabase);
 		const request = createMockRequest({ title: 'Tableau classe', class_id: TEST_IDS.class });
 
-		// isClassTeacher → classes.maybeSingle() → teacher_id matches user
+		// isClassTeacher → profiles.maybeSingle() → role is 'teacher'
 		supabase._mockChain.maybeSingle.mockResolvedValueOnce({
-			data: { teacher_id: TEST_IDS.user },
+			data: { role: 'teacher' },
 			error: null
 		});
 

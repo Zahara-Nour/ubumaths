@@ -87,7 +87,6 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			.from('classes')
 			.select('id')
 			.eq('id', classId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (classError || !classData) {
@@ -115,7 +114,6 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 				.from('classes')
 				.select('id')
 				.eq('id', category.class_id)
-				.eq('teacher_id', user.id)
 				.single();
 
 			if (categoryClassError || !categoryClass) {
@@ -239,7 +237,6 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 				.from('classes')
 				.select('id')
 				.eq('id', validClassId)
-				.eq('teacher_id', user.id)
 				.single();
 
 			if (classError || !classData) {
@@ -312,7 +309,6 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 				.from('classes')
 				.select('id')
 				.eq('id', validClassId)
-				.eq('teacher_id', user.id)
 				.single();
 
 			if (classError || !classData) {

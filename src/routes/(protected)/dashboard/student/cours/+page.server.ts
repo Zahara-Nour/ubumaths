@@ -42,7 +42,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw error(500, 'Erreur lors du chargement des chapitres');
 	}
 
-	// Get student's class memberships with class details
+	// Get student's class memberships with class details.
+	// Mono-teacher: teacher_id was dropped from classes; resolve the sole teacher once below.
 	const { data: memberships, error: membershipError } = await locals.supabase
 		.from('class_members')
 		.select(
@@ -50,10 +51,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			class_id,
 			classes:class_id (
 				id,
-				name,
-				teacher:teacher_id (
-					full_name
-				)
+				name
 			)
 		`
 		)
@@ -64,6 +62,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 		console.error('[Student Cours] Error fetching memberships:', membershipError);
 	}
 
+	// Resolve the sole teacher once for display attribution.
+	const { data: soleTeacher } = await locals.supabase
+		.from('profiles')
+		.select('id, full_name')
+		.eq('role', 'teacher')
+		.maybeSingle();
+
 	// Build class info map and set of enrolled class IDs
 	const classMap = new Map<string, { className: string; teacherName: string }>();
 	const enrolledClassIds = new Set<string>();
@@ -71,10 +76,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 	for (const m of memberships || []) {
 		const classData = Array.isArray(m.classes) ? m.classes[0] : m.classes;
 		if (classData) {
-			const teacher = Array.isArray(classData.teacher) ? classData.teacher[0] : classData.teacher;
 			classMap.set(m.class_id, {
 				className: classData.name,
-				teacherName: teacher?.full_name || 'Professeur'
+				teacherName: soleTeacher?.full_name || 'Professeur'
 			});
 			enrolledClassIds.add(m.class_id);
 		}
@@ -86,7 +90,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.map((row) => ({
 			id: row.id,
 			classId: row.class_id,
-			teacherId: row.teacher_id,
+			teacherId: soleTeacher?.id || '',
 			title: row.title,
 			description: row.description,
 			displayOrder: row.display_order,

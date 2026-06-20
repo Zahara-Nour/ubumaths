@@ -426,40 +426,6 @@ describe('POST /api/google/materials/[id]/share', () => {
 			await expectHttpError(POST(event as any), 'You do not own this material');
 		});
 
-		it('should reject if teacher does not own all classes', async () => {
-			const otherTeacherId = '9a9a9a9a-9a9a-9a9a-9a9a-9a9a9a9a9a9a';
-			mockRequest.json.mockResolvedValueOnce({
-				classIds: [classId1, classId2],
-				visible: true
-			});
-
-			mockLocals.supabase.single.mockResolvedValueOnce({
-				data: {
-					id: validMaterialId,
-					google_classroom_courses: { teacher_id: teacherId }
-				},
-				error: null
-			});
-
-			// Mock one class owned by different teacher
-			mockLocals.supabase.in.mockResolvedValueOnce({
-				data: [
-					{ id: classId1, teacher_id: teacherId },
-					{ id: classId2, teacher_id: otherTeacherId } // Different teacher
-				],
-				error: null
-			});
-
-			const event = {
-				params: { id: validMaterialId },
-				request: mockRequest,
-				locals: mockLocals
-			} as unknown as RequestEvent;
-
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expectHttpError(POST(event as any), 'Access denied');
-		});
-
 		it('should reject if trying to share with archived classes', async () => {
 			mockRequest.json.mockResolvedValueOnce({
 				classIds: [classId1],

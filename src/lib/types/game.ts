@@ -316,7 +316,6 @@ export interface GameLeaderboard {
 export interface GameTimeslot {
 	id: string;
 	class_id: string;
-	teacher_id: string;
 	name: string;
 	challenge_ids: string[];
 	difficulty: number; // 1-5

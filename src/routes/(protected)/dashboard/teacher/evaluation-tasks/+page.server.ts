@@ -26,7 +26,7 @@ export interface EvaluationTaskListItem {
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	const { data, error: err } = await locals.supabase
 		.from('evaluation_tasks')
@@ -46,7 +46,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 				perimeter:evaluation_task_perimeter (skill_id)
 			`
 		)
-		.eq('teacher_id', user.id)
 		.order('task_date', { ascending: false, nullsFirst: false })
 		.order('created_at', { ascending: false });
 

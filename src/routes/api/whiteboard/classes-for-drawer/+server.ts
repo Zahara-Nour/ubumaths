@@ -33,7 +33,7 @@ import { requireRole } from '$lib/server/middleware/auth';
  */
 export const GET: RequestHandler = async ({ locals }) => {
 	// Require teacher role
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	try {
 		// Fetch all active classes with schedules
@@ -55,7 +55,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 				)
 			`
 			)
-			.eq('teacher_id', user.id)
 			.eq('is_active', true)
 			.order('name');
 

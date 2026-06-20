@@ -62,8 +62,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// Get teacher's classes
 		const { data: teacherClasses, error: classesError } = await supabase
 			.from('classes')
-			.select('id')
-			.eq('teacher_id', userId);
+			.select('id');
 
 		if (classesError) {
 			throw error(500, 'Erreur lors de la récupération des classes');

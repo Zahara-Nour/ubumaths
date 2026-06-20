@@ -135,7 +135,6 @@ export type ChapterColor =
 export interface ClassChapter {
 	id: string;
 	classId: string;
-	teacherId: string;
 	title: string;
 	description: string | null;
 	displayOrder: number;
@@ -339,7 +338,6 @@ export function dbChapterToApp(db: DbClassChapter): ClassChapter {
 	return {
 		id: db.id,
 		classId: db.class_id,
-		teacherId: db.teacher_id,
 		title: db.title,
 		description: db.description,
 		displayOrder: db.display_order,

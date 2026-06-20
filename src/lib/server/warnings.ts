@@ -160,14 +160,14 @@ export async function getClassWarnings(options: {
 	teacherId: string;
 	supabase: SupabaseClient<Database>;
 }): Promise<ClassWarningsMap> {
-	const { classId, periodId, teacherId, supabase } = options;
+	const { classId, periodId, supabase } = options;
 
-	// Verify teacher owns the class (will fail if not via RLS)
+	// Mono-teacher: the sole teacher/admin owns every class; RLS enforces access.
+	// Just verify the class exists.
 	const { data: classCheck, error: classError } = await supabase
 		.from('classes')
 		.select('id')
 		.eq('id', classId)
-		.eq('teacher_id', teacherId)
 		.maybeSingle();
 
 	if (classError) {

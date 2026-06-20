@@ -84,10 +84,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// 4. Build the teacher's student scope.
-	const { data: teacherClassesRaw } = await supabase
-		.from('classes')
-		.select('id, name')
-		.eq('teacher_id', user.id);
+	const { data: teacherClassesRaw } = await supabase.from('classes').select('id, name');
 	const teacherClassIds = (teacherClassesRaw ?? []).map((c) => c.id);
 
 	const scope = new Set<string>();

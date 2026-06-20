@@ -28,7 +28,7 @@ import { requireRole } from '$lib/server/middleware/auth';
  */
 export const GET: RequestHandler = async ({ locals }) => {
 	// Require teacher role
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	try {
 		// Fetch classes with course association and schedules
@@ -51,7 +51,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 				)
 			`
 			)
-			.eq('teacher_id', user.id)
 			.eq('is_active', true)
 			.not('google_classroom_course_id', 'is', null)
 			.order('name');

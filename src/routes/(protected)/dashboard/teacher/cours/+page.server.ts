@@ -37,7 +37,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { data: classes, error: classesError } = await locals.supabase
 		.from('classes')
 		.select('id, name, is_active')
-		.eq('teacher_id', user.id)
 		.order('name');
 
 	if (classesError) {

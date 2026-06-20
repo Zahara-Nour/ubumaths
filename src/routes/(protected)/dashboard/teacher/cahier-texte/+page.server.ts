@@ -27,13 +27,12 @@ function getWeekStart(date: Date = new Date()): string {
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// Only teachers can view this page
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Get teacher's classes
 	const { data: classes, error: classesError } = await locals.supabase
 		.from('classes')
 		.select('id, name, grade, is_active')
-		.eq('teacher_id', user.id)
 		.order('name');
 
 	if (classesError) {

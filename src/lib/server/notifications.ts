@@ -58,12 +58,9 @@ export async function createNotification(
 			}
 
 			if (data.target_type === 'class' && data.target_class_ids) {
-				// Verify teacher owns these classes (ownership lives on `classes.teacher_id`,
-				// not on `class_members` which only links students to classes)
-				const { data: teacherClasses } = await supabase
-					.from('classes')
-					.select('id')
-					.eq('teacher_id', createdBy);
+				// Mono-teacher: the sole teacher owns every class. Targets just have to
+				// reference existing classes.
+				const { data: teacherClasses } = await supabase.from('classes').select('id');
 
 				const teacherClassIds = teacherClasses?.map((c) => c.id) || [];
 				const invalidClasses = data.target_class_ids.filter((id) => !teacherClassIds.includes(id));
@@ -77,12 +74,9 @@ export async function createNotification(
 			}
 
 			if (data.target_type === 'users' && data.target_user_ids) {
-				// Verify teacher has access to these students: students enrolled in a class
-				// owned by this teacher (join class_members → classes.teacher_id)
-				const { data: teacherStudents } = await supabase
-					.from('class_members')
-					.select('student_id, classes!inner(teacher_id)')
-					.eq('classes.teacher_id', createdBy);
+				// Mono-teacher: every enrolled student is "ours". Targets just have to be
+				// students enrolled in some class.
+				const { data: teacherStudents } = await supabase.from('class_members').select('student_id');
 
 				const teacherStudentIds = teacherStudents?.map((cm) => cm.student_id) || [];
 				const invalidStudents = data.target_user_ids.filter(
