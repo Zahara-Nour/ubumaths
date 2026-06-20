@@ -81,12 +81,12 @@ CHECK `chk_srs_anti_fraud_resolved_coherent` : garantit `resolved=true ⟺ resol
 
 ### Endpoints
 
-| Méthode | Route                                                      | Auth                            |
-| ------- | ---------------------------------------------------------- | ------------------------------- |
-| POST    | `/api/admin/anti-fraud/run`                                | admin                           |
-| GET     | `/api/teacher/classes/[classId]/anti-fraud/flags`          | teacher (owner classe) ou admin |
-| PATCH   | `/api/teacher/classes/[classId]/anti-fraud/flags/[flagId]` | teacher (owner classe) ou admin |
-| GET     | `/api/teacher/classes/[classId]/anti-fraud/count`          | teacher (owner classe) ou admin |
+| Méthode | Route                                                      | Auth                          |
+| ------- | ---------------------------------------------------------- | ----------------------------- |
+| POST    | `/api/admin/anti-fraud/run`                                | admin                         |
+| GET     | `/api/teacher/classes/[classId]/anti-fraud/flags`          | teacher ou admin (role-based) |
+| PATCH   | `/api/teacher/classes/[classId]/anti-fraud/flags/[flagId]` | teacher ou admin (role-based) |
+| GET     | `/api/teacher/classes/[classId]/anti-fraud/count`          | teacher ou admin (role-based) |
 
 ### UI
 
