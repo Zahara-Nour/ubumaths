@@ -20,7 +20,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const OLD_BUCKET_BASE = 'https://vlqgmctfhesdhaifmyab.supabase.co/storage/v1/object/public/mental';
 const NEW_SUPABASE_URL =
-	process.env.PUBLIC_SUPABASE_URL || 'https://aqtijumsgfufoztohdua.supabase.co';
+	process.env.PUBLIC_SUPABASE_URL || 'https://cnevnzsvixxpnurautls.supabase.co';
 const NEW_SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const NEW_BUCKET = 'question-images';
 const MAPPING_FILE = 'scripts/image-url-mapping.json';
