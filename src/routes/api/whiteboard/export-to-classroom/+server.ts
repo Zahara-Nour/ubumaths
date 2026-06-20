@@ -7,7 +7,7 @@
  *
  * Simplified Flow:
  * 1. Validate inputs (classId, date, pdfBase64)
- * 2. Get class and verify ownership + google_classroom_course_id
+ * 2. Get class (RLS-scoped: teacher/admin) + google_classroom_course_id
  * 3. Find "Notes de cours" topic for the course
  * 4. Get next export counter from DB (atomic increment)
  * 5. Generate title (French date) and filename
@@ -89,7 +89,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { pdfBase64, classId, date } = validation.data;
 
 	try {
-		// Step 1: Get class and verify ownership + google_classroom_course_id
+		// Step 1: Get class (RLS-scoped: teacher/admin) + google_classroom_course_id
 		const { data: classData, error: classError } = await locals.supabase
 			.from('classes')
 			.select(

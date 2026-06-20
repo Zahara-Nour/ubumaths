@@ -8,7 +8,7 @@
  * - Load teacher's classes with student counts
  * - Load schedule entries for each class
  * - Create, update, and delete schedule entries
- * - Security: Verify teacher ownership before modifications
+ * - Security: teacher/admin role + RLS scope modifications (mono-teacher: no per-class owner)
  *
  * ROUTES:
  * - Load: GET /dashboard/teacher/classes
@@ -314,12 +314,12 @@ export const actions: Actions = {
 	 * SECURITY:
 	 * - Verifies user is authenticated
 	 * - Validates day_of_week is 0-4 (Sunday-Thursday)
-	 * - Confirms teacher owns the schedule entry before updating
+	 * - Requires the teacher role; RLS scopes the write (mono-teacher: no per-teacher owner)
 	 *
 	 * PROCESS:
 	 * 1. Extract form data (id, day_of_week, times, optional fields)
 	 * 2. Validate required fields and day range
-	 * 3. Verify schedule entry ownership
+	 * 3. Verify teacher/admin role (RLS scopes the write)
 	 * 4. Update schedule entry in database
 	 */
 	updateScheduleEntry: async ({ request, locals: { safeGetSession, supabase } }) => {
@@ -386,11 +386,11 @@ export const actions: Actions = {
 	 *
 	 * SECURITY:
 	 * - Verifies user is authenticated
-	 * - Confirms teacher owns the schedule entry before deletion
+	 * - Requires the teacher role; RLS scopes the write (mono-teacher: no per-teacher owner)
 	 *
 	 * PROCESS:
 	 * 1. Extract schedule entry ID from form data
-	 * 2. Verify schedule entry ownership
+	 * 2. Verify teacher/admin role (RLS scopes the write)
 	 * 3. Delete entry from database (cascades automatically)
 	 */
 	deleteScheduleEntry: async ({ request, locals: { safeGetSession, supabase } }) => {

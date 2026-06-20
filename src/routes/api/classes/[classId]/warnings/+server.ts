@@ -4,7 +4,7 @@
  *
  * Security:
  * - Requires authentication
- * - Teacher ownership verified via helper function (RLS)
+ * - Access scoped via RLS helper (teacher/admin; mono-teacher, no per-class owner)
  * - Input validated (classId, period_id query param)
  *
  * Query params:

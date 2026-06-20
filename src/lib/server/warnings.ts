@@ -19,7 +19,7 @@
  * ```
  *
  * PATTERNS:
- * - All functions verify teacher ownership via RLS
+ * - All functions scope access via RLS (teacher/admin; mono-teacher, no per-class owner)
  * - Warning types: C (Comportement), M (Matériel), R (Retard), T (Travail)
  * - Score calculation: 20 - total_warnings (max 20, min 0)
  */
