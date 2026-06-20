@@ -10,15 +10,14 @@
 
 ## 1. 🟢 Colonnes `teacher_id` du Cluster 2 (gardées exprès)
 
-Ce sont des **marqueurs de propriété d'une ressource**, pas une « assignation de classe ». En mono-prof elles valent toujours David, mais les retirer apporte peu et complique (clé de lookup, distinction NULL, audit).
+Ce sont des **marqueurs de propriété d'une ressource**, pas une « assignation de classe ». En mono-prof elles valent toujours David, mais les retirer apporte peu et complique (clé de lookup, distinction NULL, audit). _(`teacher_vip_card_overrides` n'est plus dans cette liste : table supprimée — voir §3.)_
 
-| Table                        | Rôle de `teacher_id`            | Pourquoi gardée                                                   |
-| ---------------------------- | ------------------------------- | ----------------------------------------------------------------- |
-| `google_classroom_courses`   | owner de l'intégration (UNIQUE) | clé naturelle de l'intégration ; 1 ligne/prof                     |
-| `google_integrations`        | owner des jetons OAuth (UNIQUE) | **clé de lookup** des tokens ; l'enlever = table singleton tordue |
-| `rag_documents`              | owner (NULLABLE)                | `NULL` = doc **système** vs doc du prof — vraie distinction       |
-| `orphaned_documents`         | owner du doc supprimé           | **trace d'audit**                                                 |
-| `teacher_vip_card_overrides` | owner de l'override             | préférences cartes VIP du prof — voir §3                          |
+| Table                      | Rôle de `teacher_id`            | Pourquoi gardée                                                   |
+| -------------------------- | ------------------------------- | ----------------------------------------------------------------- |
+| `google_classroom_courses` | owner de l'intégration (UNIQUE) | clé naturelle de l'intégration ; 1 ligne/prof                     |
+| `google_integrations`      | owner des jetons OAuth (UNIQUE) | **clé de lookup** des tokens ; l'enlever = table singleton tordue |
+| `rag_documents`            | owner (NULLABLE)                | `NULL` = doc **système** vs doc du prof — vraie distinction       |
+| `orphaned_documents`       | owner du doc supprimé           | **trace d'audit**                                                 |
 
 ## 2. ✅ FAIT — Params `p_teacher_id` retirés (PR #46, en prod 2026-06-20)
 
