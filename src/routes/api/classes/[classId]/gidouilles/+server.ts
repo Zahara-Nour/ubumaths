@@ -15,7 +15,7 @@ import { requireRole } from '$lib/server/middleware/auth';
  * SECURITY:
  * - Verifies user is authenticated
  * - Verifies user is a teacher
- * - Verifies teacher owns the class
+ * - Mono-teacher: classes have no per-teacher owner; RLS scopes the read
  *
  * RETURNS:
  * Array of { student_id, gidouilles, bonus, vip_cards } objects

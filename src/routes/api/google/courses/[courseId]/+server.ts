@@ -220,7 +220,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 		// Fetch ALL sharing data in one query
 		// Note: shared_coursework uses 'shared_by' column, not 'teacher_id'
-		// But we filter by class ownership via RLS, so we don't need explicit filter here
+		// But RLS scopes access (mono-teacher: teacher/admin), so we don't need explicit filter here
 		const { data: allSharedData, error: sharedError } = await locals.supabase
 			.from('shared_coursework')
 			.select(

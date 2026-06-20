@@ -48,7 +48,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		throw error(400, 'Format de date invalide');
 	}
 
-	// Verify teacher owns this class
+	// Verify the class exists (mono-teacher: RLS scopes access to teacher/admin)
 	const { data: classData, error: classError } = await locals.supabase
 		.from('classes')
 		.select('id, name, grade')

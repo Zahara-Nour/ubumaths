@@ -24,8 +24,8 @@
  *
  * Security:
  * - Teacher role required
- * - Verify record ownership via RLS (class belongs to teacher)
- * - Verify category/topic belongs to teacher's classes/courses
+ * - Verify record access via RLS (mono-teacher: teacher/admin)
+ * - Verify category/topic is accessible via the teacher's/admin's classes/courses
  * - All inputs validated with Zod
  */
 
@@ -53,7 +53,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	const sharedMaterialId = idValidation.data;
 
-	// Verify record exists and belongs to teacher (via RLS - class ownership)
+	// Verify record exists (via RLS - mono-teacher: scoped to teacher/admin)
 	// Note: RLS policy ensures only teacher's shared materials are accessible
 	const { data: existingRecord, error: fetchError } = await locals.supabase
 		.from('shared_materials')
@@ -151,7 +151,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			throw error(400, 'Category not found');
 		}
 
-		// Verify the category's class belongs to the teacher
+		// Verify the category's class is accessible (mono-teacher: RLS-scoped)
 		const { data: categoryClass, error: categoryClassError } = await locals.supabase
 			.from('classes')
 			.select('id')

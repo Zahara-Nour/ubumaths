@@ -24,8 +24,8 @@
  *
  * Security:
  * - Teacher role required
- * - Verify record ownership via class ownership
- * - Verify category belongs to teacher's classes (if updated)
+ * - Verify record access via RLS (mono-teacher: teacher/admin)
+ * - Verify category is accessible via the teacher's/admin's classes (if updated)
  * - All inputs validated with Zod
  */
 
@@ -106,7 +106,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				throw error(400, 'Category not found');
 			}
 
-			// Verify the category's class belongs to the teacher
+			// Verify the category's class is accessible (mono-teacher: RLS-scoped)
 			const { data: categoryClass, error: categoryClassError } = await locals.supabase
 				.from('classes')
 				.select('id')

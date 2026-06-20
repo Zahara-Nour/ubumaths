@@ -243,12 +243,12 @@ export const actions: Actions = {
 	 * SECURITY:
 	 * - Verifies user is authenticated
 	 * - Validates day_of_week is 0-4 (Sunday-Thursday)
-	 * - Confirms teacher owns the class before creating entry
+	 * - Requires the teacher role (mono-teacher: classes have no per-teacher owner; RLS scopes the write)
 	 *
 	 * PROCESS:
 	 * 1. Extract form data (class_id, day_of_week, times, optional fields)
 	 * 2. Validate required fields and day range
-	 * 3. Verify class ownership
+	 * 3. Verify teacher/admin role (RLS scopes the write)
 	 * 4. Insert new schedule entry into database
 	 */
 	createScheduleEntry: async ({ request, locals: { safeGetSession, supabase } }) => {
@@ -437,12 +437,12 @@ export const actions: Actions = {
 	 *
 	 * SECURITY:
 	 * - Verifies user is authenticated teacher
-	 * - Validates class belongs to teacher
-	 * - Validates course belongs to teacher (if provided)
+	 * - Requires the teacher role (mono-teacher: classes have no per-teacher owner)
+	 * - Validates course belongs to teacher (if provided) — google_classroom_courses.teacher_id
 	 *
 	 * PROCESS:
 	 * 1. Extract and validate classId and courseId from form data
-	 * 2. Verify class ownership
+	 * 2. Verify teacher/admin role (RLS scopes the write)
 	 * 3. Verify course ownership (if courseId provided)
 	 * 4. Update class with google_classroom_course_id
 	 */
