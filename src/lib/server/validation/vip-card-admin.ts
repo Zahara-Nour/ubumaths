@@ -5,7 +5,6 @@
  * Comprehensive Zod validation schemas for VIP card administration:
  * - Template management (create, update, image upload)
  * - Config management (create, update, activate)
- * - Teacher overrides (bulk update)
  */
 
 import { z } from 'zod';
@@ -515,36 +514,6 @@ export const updateConfigSchema = z
 	);
 
 /**
- * Schema for individual teacher override
- */
-const teacherOverrideSchema = z
-	.object({
-		cardId: z.string().min(1, 'Card ID is required'),
-		isEnabled: z.boolean()
-	})
-	.strict();
-
-/**
- * Schema for bulk updating teacher VIP card overrides
- *
- * @example
- * {
- *   overrides: [
- *     { cardId: "super-bonus", isEnabled: true },
- *     { cardId: "warning-remover", isEnabled: false }
- *   ]
- * }
- */
-export const updateOverridesSchema = z
-	.object({
-		overrides: z
-			.array(teacherOverrideSchema)
-			.min(1, 'At least one override is required')
-			.max(50, 'Cannot update more than 50 overrides at once')
-	})
-	.strict();
-
-/**
  * TypeScript types inferred from schemas
  */
 export type CreateTemplateInput = z.infer<typeof createTemplateSchema>;
@@ -552,4 +521,3 @@ export type UpdateTemplateInput = z.infer<typeof updateTemplateSchema>;
 export type UploadImageInput = z.infer<typeof uploadImageSchema>;
 export type CreateConfigInput = z.infer<typeof createConfigSchema>;
 export type UpdateConfigInput = z.infer<typeof updateConfigSchema>;
-export type UpdateOverridesInput = z.infer<typeof updateOverridesSchema>;
