@@ -45,9 +45,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	}
 
 	try {
-		// Fetch class memberships with class details. Mono-teacher: classes are no
-		// longer linked to a teacher (teacher_id dropped), so the teacher is resolved
-		// once below — every class is taught by the sole teacher.
+		// Fetch class memberships with class details.
 		const { data: memberships, error: membershipError } = await supabase
 			.from('class_members')
 			.select(
@@ -70,13 +68,6 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			// Non-critical - continue with empty classes
 		}
 
-		// Mono-teacher: resolve the sole teacher once for display attribution.
-		const { data: soleTeacher } = await supabase
-			.from('profiles')
-			.select('id, full_name')
-			.eq('role', 'teacher')
-			.maybeSingle();
-
 		// Transform to ClassMembership[]
 		const classes: ClassMembership[] = (memberships || [])
 			.filter((m) => m.classes)
@@ -86,8 +77,6 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 				return {
 					class_id: m.class_id,
 					class_name: classData.name,
-					teacher_name: soleTeacher?.full_name || 'Unknown Teacher',
-					teacher_id: soleTeacher?.id || '',
 					joined_at: m.joined_at,
 					is_active: classData.is_active
 				};

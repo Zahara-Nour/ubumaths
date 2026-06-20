@@ -88,7 +88,7 @@ export interface StudentProfile {
  * Usage:
  * ```typescript
  * profile.classes.forEach(membership => {
- *   console.log(`${membership.class_name} - ${membership.teacher_name}`);
+ *   console.log(`${membership.class_name} (joined ${membership.joined_at})`);
  * });
  * ```
  */
@@ -97,10 +97,6 @@ export interface ClassMembership {
 	class_id: string;
 	/** Human-readable class name (e.g., "Mathématiques 6ème A") */
 	class_name: string;
-	/** Full name of the teacher (computed from profile) */
-	teacher_name: string;
-	/** UUID of the teacher */
-	teacher_id: string;
 	/** ISO timestamp of when student joined this class */
 	joined_at: string;
 	/** Whether the class is currently active */
