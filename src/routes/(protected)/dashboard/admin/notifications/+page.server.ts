@@ -23,7 +23,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Get all classes
 	const { data: classes } = await supabase
 		.from('classes')
-		.select('id, name, teacher_id')
+		.select('id, name')
 		.eq('is_active', true)
 		.order('name');
 

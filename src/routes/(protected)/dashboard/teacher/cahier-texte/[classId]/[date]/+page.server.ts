@@ -33,7 +33,7 @@ const dateParamSchema = z
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	// Only teachers can view this page
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	const { classId, date } = params;
 
@@ -53,7 +53,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.from('classes')
 		.select('id, name, grade')
 		.eq('id', classId)
-		.eq('teacher_id', user.id)
 		.single();
 
 	if (classError || !classData) {
@@ -78,7 +77,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		? {
 				id: existingEntry.id,
 				classId: existingEntry.class_id,
-				teacherId: existingEntry.teacher_id,
 				entryDate: existingEntry.entry_date,
 				lessonContent: existingEntry.lesson_content,
 				homeworkContent: existingEntry.homework_content,

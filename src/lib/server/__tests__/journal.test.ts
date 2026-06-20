@@ -122,7 +122,6 @@ describe('createJournalEntry', () => {
 		expect(result.error).toBeNull();
 		expect(result.data).toBeDefined();
 		expect(result.data?.classId).toBe(mockClassId);
-		expect(result.data?.teacherId).toBe(mockTeacherId);
 		expect(result.data?.entryDate).toBe('2024-01-15');
 		expect(result.data?.lessonContent).toBe('Nous avons etudie les fractions');
 		expect(result.data?.homeworkContent).toBe('Exercices 1-5 page 42');
@@ -334,14 +333,12 @@ describe('deleteJournalEntry', () => {
 	it('should delete journal entry successfully', async () => {
 		const mockSupabase = createMockSupabase();
 
-		// First .eq() returns this for chaining, second .eq() resolves with data
-		mockSupabase._mockChain.eq
-			.mockReturnValueOnce(mockSupabase._mockChain) // First .eq() returns this
-			.mockResolvedValueOnce({
-				// Second .eq() resolves
-				data: null,
-				error: null
-			});
+		// Mono-teacher: deleteJournalEntry ends at a single .eq('id', ...) (no
+		// teacher_id ownership filter — RLS enforces it), which resolves here.
+		mockSupabase._mockChain.eq.mockResolvedValueOnce({
+			data: null,
+			error: null
+		});
 
 		const result = await journal.deleteJournalEntry(mockSupabase, mockEntryId, mockTeacherId);
 
@@ -352,7 +349,7 @@ describe('deleteJournalEntry', () => {
 	it('should handle delete error', async () => {
 		const mockSupabase = createMockSupabase();
 
-		mockSupabase._mockChain.eq.mockReturnValueOnce(mockSupabase._mockChain).mockResolvedValueOnce({
+		mockSupabase._mockChain.eq.mockResolvedValueOnce({
 			data: null,
 			error: { message: 'Delete failed', code: 'ERROR' }
 		});

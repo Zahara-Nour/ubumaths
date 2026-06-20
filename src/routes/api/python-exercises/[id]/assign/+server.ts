@@ -78,42 +78,29 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(400, 'Vous devez fournir soit class_id soit student_id, mais pas les deux');
 	}
 
-	// If assigning to class, verify teacher owns the class
+	// If assigning to class, verify the class exists
 	if (data.class_id) {
 		const { data: classData, error: classError } = await supabase
 			.from('classes')
-			.select('teacher_id')
+			.select('id')
 			.eq('id', data.class_id)
 			.single();
 
 		if (classError || !classData) {
 			throw error(404, 'Classe introuvable');
 		}
-
-		if (classData.teacher_id !== user.id) {
-			throw error(403, "Vous ne pouvez assigner qu'à vos propres classes");
-		}
 	}
 
-	// If assigning to student, verify student is in one of teacher's classes
+	// If assigning to student, verify student is enrolled in at least one class
 	if (data.student_id) {
 		const { data: studentClasses } = await supabase
 			.from('class_members')
-			.select('class_id, classes!inner(teacher_id)')
+			.select('class_id')
 			.eq('student_id', data.student_id)
 			.eq('status', 'active');
 
 		if (!studentClasses || studentClasses.length === 0) {
-			throw error(404, 'Étudiant introuvable dans vos classes');
-		}
-
-		const isInTeacherClass = studentClasses.some((sc) => {
-			const classes = sc.classes as unknown as { teacher_id: string };
-			return classes.teacher_id === user.id;
-		});
-
-		if (!isInTeacherClass) {
-			throw error(403, "Vous ne pouvez assigner qu'à vos propres étudiants");
+			throw error(404, 'Étudiant introuvable dans une classe');
 		}
 	}
 

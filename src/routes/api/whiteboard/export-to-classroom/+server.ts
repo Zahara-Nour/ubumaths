@@ -107,7 +107,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			`
 			)
 			.eq('id', classId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (classError) {

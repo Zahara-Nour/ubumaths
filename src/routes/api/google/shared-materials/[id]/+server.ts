@@ -156,7 +156,6 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			.from('classes')
 			.select('id')
 			.eq('id', category.class_id)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (categoryClassError || !categoryClass) {

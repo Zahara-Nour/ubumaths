@@ -81,20 +81,15 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 	const data: CreateChapterInput = validation.data;
 
-	// Verify the teacher owns the class
+	// Verify the class exists
 	const { data: classData, error: classError } = await locals.supabase
 		.from('classes')
-		.select('teacher_id')
+		.select('id')
 		.eq('id', data.classId)
 		.single();
 
 	if (classError || !classData) {
 		throw error(404, 'Class not found');
-	}
-
-	const { user } = await locals.safeGetSession();
-	if (classData.teacher_id !== user?.id) {
-		throw error(403, 'Forbidden - Not your class');
 	}
 
 	// Create chapter

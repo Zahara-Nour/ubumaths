@@ -14,27 +14,22 @@ import { uuidSchema } from '$lib/server/validation/common';
 type ZodIssue = { path: (string | number)[]; message: string };
 
 /**
- * Verify the teacher owns the chapter and document exists
+ * Verify the chapter exists and document belongs to it
  */
 async function verifyDocumentOwnership(
 	chapterId: string,
 	docId: string,
-	teacherId: string,
 	supabase: App.Locals['supabase']
 ) {
-	// Verify chapter ownership
+	// Verify chapter exists
 	const { data: chapter, error: chapterError } = await supabase
 		.from('class_chapters')
-		.select('id, teacher_id')
+		.select('id')
 		.eq('id', chapterId)
 		.single();
 
 	if (chapterError || !chapter) {
 		throw error(404, 'Chapter not found');
-	}
-
-	if (chapter.teacher_id !== teacherId) {
-		throw error(403, 'Forbidden - Not your chapter');
 	}
 
 	// Verify document exists and belongs to chapter
@@ -60,7 +55,7 @@ async function verifyDocumentOwnership(
  * Update a document
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Validate IDs
 	const chapterIdValidation = uuidSchema.safeParse(params.id);
@@ -77,7 +72,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const docId = docIdValidation.data;
 
 	// Verify ownership
-	await verifyDocumentOwnership(chapterId, docId, user.id, locals.supabase);
+	await verifyDocumentOwnership(chapterId, docId, locals.supabase);
 
 	// Parse and validate request body
 	let body: unknown;
@@ -112,7 +107,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
  * Delete a document
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Validate IDs
 	const chapterIdValidation = uuidSchema.safeParse(params.id);
@@ -129,7 +124,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const docId = docIdValidation.data;
 
 	// Verify ownership
-	await verifyDocumentOwnership(chapterId, docId, user.id, locals.supabase);
+	await verifyDocumentOwnership(chapterId, docId, locals.supabase);
 
 	// Delete document
 	const result = await deleteChapterDocument(docId, locals.supabase);

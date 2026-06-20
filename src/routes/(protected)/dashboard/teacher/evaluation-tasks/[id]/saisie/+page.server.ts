@@ -45,14 +45,14 @@ export interface SaisieData {
 }
 
 export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieData> => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// 1. Charger la tâche + vérifier propriété
 	const { data: task, error: taskErr } = await locals.supabase
 		.from('evaluation_tasks')
 		.select(
 			`
-				id, name, task_date, class_id, teacher_id,
+				id, name, task_date, class_id,
 				class:classes (id, name)
 			`
 		)
@@ -61,7 +61,6 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 
 	if (taskErr) throw error(500, `Erreur tâche : ${taskErr.message}`);
 	if (!task) throw error(404, 'Tâche introuvable');
-	if (task.teacher_id !== user.id) throw error(403, "Cette tâche n'est pas la vôtre");
 
 	const cls = Array.isArray(task.class) ? task.class[0] : task.class;
 	if (!task.class_id) {
@@ -172,16 +171,16 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 
 export const actions: Actions = {
 	save: async ({ locals, request, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 
-		// Re-vérifier la propriété
+		// Re-vérifier l'existence
 		const { data: task } = await locals.supabase
 			.from('evaluation_tasks')
-			.select('id, teacher_id, class_id')
+			.select('id, class_id')
 			.eq('id', params.id)
 			.maybeSingle();
-		if (!task || task.teacher_id !== user.id) {
-			return fail(403, { message: 'Tâche non accessible' });
+		if (!task) {
+			return fail(404, { message: 'Tâche introuvable' });
 		}
 
 		// Récupérer le périmètre (skill_ids autorisés)

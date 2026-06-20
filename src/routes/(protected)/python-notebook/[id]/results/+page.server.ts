@@ -108,10 +108,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		}));
 
 	// 5. Teacher's classes (for the class-filter dropdown + scoping students)
-	const { data: teacherClassesRaw } = await supabase
-		.from('classes')
-		.select('id, name')
-		.eq('teacher_id', user.id);
+	const { data: teacherClassesRaw } = await supabase.from('classes').select('id, name');
 	const teacherClasses: TeacherClass[] = teacherClassesRaw ?? [];
 	const teacherClassIds = teacherClasses.map((c) => c.id);
 

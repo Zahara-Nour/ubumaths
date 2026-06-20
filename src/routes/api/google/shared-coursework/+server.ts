@@ -363,7 +363,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Verify teacher owns all classes
 		const { data: classes, error: classesError } = await locals.supabase
 			.from('classes')
-			.select('id, teacher_id')
+			.select('id')
 			.in('id', classIds)
 			.eq('is_active', true);
 
@@ -374,15 +374,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (!classes || classes.length !== classIds.length) {
 			throw error(400, 'One or more classes not found or inactive');
-		}
-
-		const invalidClasses = classes.filter((c) => c.teacher_id !== user.id);
-		if (invalidClasses.length > 0) {
-			console.error(
-				`[Share Coursework] Unauthorized class access attempt by teacher ${user.id}:`,
-				invalidClasses.map((c) => c.id)
-			);
-			throw error(403, 'You do not own all selected classes');
 		}
 
 		// If categoryId is provided, verify it belongs to one of the teacher's classes
@@ -402,7 +393,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.from('classes')
 				.select('id')
 				.eq('id', category.class_id)
-				.eq('teacher_id', user.id)
 				.single();
 
 			if (categoryClassError || !categoryClass) {
@@ -517,8 +507,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 		const { data: classes, error: classesError } = await locals.supabase
 			.from('classes')
 			.select('id')
-			.in('id', classIds)
-			.eq('teacher_id', user.id);
+			.in('id', classIds);
 
 		if (classesError) {
 			console.error('[Unshare Coursework] Error fetching classes:', classesError);

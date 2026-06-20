@@ -23,7 +23,7 @@ import { uuidSchema } from '$lib/server/validation/common';
  * - This action is reversible (can be re-attached manually in DB if needed)
  */
 export const POST: RequestHandler = async ({ locals, params }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Validate chapter ID
 	const idValidation = uuidSchema.safeParse(params.id);
@@ -33,19 +33,15 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 
 	const chapterId = idValidation.data;
 
-	// Verify chapter ownership
+	// Verify chapter exists
 	const { data: chapter, error: chapterError } = await locals.supabase
 		.from('class_chapters')
-		.select('teacher_id')
+		.select('id')
 		.eq('id', chapterId)
 		.single();
 
 	if (chapterError || !chapter) {
 		throw error(404, 'Chapter not found');
-	}
-
-	if (chapter.teacher_id !== user.id) {
-		throw error(403, 'Forbidden - not the chapter owner');
 	}
 
 	// Check if chapter is linked to a template

@@ -47,12 +47,11 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const { user } = await requireRole(locals, 'teacher');
 	const { classId, chapterId } = params;
 
-	// Verify teacher owns this chapter
+	// Verify chapter exists
 	const { data: chapter, error: chapterError } = await locals.supabase
 		.from('class_chapters')
 		.select('*')
 		.eq('id', chapterId)
-		.eq('teacher_id', user.id)
 		.single();
 
 	if (chapterError || !chapter) {
@@ -190,7 +189,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const { data: availableExercises } = await locals.supabase
 		.from('exercises')
 		.select('id, title, description')
-		.eq('teacher_id', user.id)
+		.eq('created_by', user.id)
 		.order('created_at', { ascending: false })
 		.limit(100);
 
@@ -227,7 +226,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		chapter: {
 			id: chapter.id,
 			classId: chapter.class_id,
-			teacherId: chapter.teacher_id,
 			title: chapter.title,
 			description: chapter.description,
 			displayOrder: chapter.display_order,
@@ -257,15 +255,14 @@ export const actions: Actions = {
 	// ============ CHECKLIST ACTIONS ============
 
 	addChecklistItem: async ({ request, locals, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 		const { chapterId } = params;
 
-		// Verify ownership
+		// Verify chapter exists (RLS enforces ownership)
 		const { data: chapter } = await locals.supabase
 			.from('class_chapters')
 			.select('id')
 			.eq('id', chapterId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (!chapter) {
@@ -293,20 +290,19 @@ export const actions: Actions = {
 	},
 
 	updateChecklistItem: async ({ request, locals, params: _params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 
 		const formData = await request.formData();
 		const itemId = formData.get('itemId') as string;
 
-		// Verify ownership via chapter
+		// Verify item exists (RLS enforces ownership)
 		const { data: item } = await locals.supabase
 			.from('chapter_checklist_items')
-			.select('id, chapter:chapter_id!inner(teacher_id)')
+			.select('id')
 			.eq('id', itemId)
 			.single();
 
-		const chapterData = item?.chapter as unknown as { teacher_id: string } | null;
-		if (!item || chapterData?.teacher_id !== user.id) {
+		if (!item) {
 			return fail(403, { error: 'Acces refuse', action: 'updateChecklistItem' });
 		}
 
@@ -339,20 +335,19 @@ export const actions: Actions = {
 	},
 
 	deleteChecklistItem: async ({ request, locals }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 
 		const formData = await request.formData();
 		const itemId = formData.get('itemId') as string;
 
-		// Verify ownership
+		// Verify item exists (RLS enforces ownership)
 		const { data: item } = await locals.supabase
 			.from('chapter_checklist_items')
-			.select('id, chapter:chapter_id!inner(teacher_id)')
+			.select('id')
 			.eq('id', itemId)
 			.single();
 
-		const chapterData = item?.chapter as unknown as { teacher_id: string } | null;
-		if (!item || chapterData?.teacher_id !== user.id) {
+		if (!item) {
 			return fail(403, { error: 'Acces refuse', action: 'deleteChecklistItem' });
 		}
 
@@ -368,15 +363,14 @@ export const actions: Actions = {
 	// ============ QUIZ ACTIONS ============
 
 	addQuizQuestion: async ({ request, locals, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 		const { chapterId } = params;
 
-		// Verify ownership
+		// Verify chapter exists (RLS enforces ownership)
 		const { data: chapter } = await locals.supabase
 			.from('class_chapters')
 			.select('id')
 			.eq('id', chapterId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (!chapter) {
@@ -404,20 +398,19 @@ export const actions: Actions = {
 	},
 
 	removeQuizQuestion: async ({ request, locals }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 
 		const formData = await request.formData();
 		const quizQuestionId = formData.get('quizQuestionId') as string;
 
-		// Verify ownership
+		// Verify question exists (RLS enforces ownership)
 		const { data: question } = await locals.supabase
 			.from('chapter_quiz_questions')
-			.select('id, chapter:chapter_id!inner(teacher_id)')
+			.select('id')
 			.eq('id', quizQuestionId)
 			.single();
 
-		const chapterData = question?.chapter as unknown as { teacher_id: string } | null;
-		if (!question || chapterData?.teacher_id !== user.id) {
+		if (!question) {
 			return fail(403, { error: 'Acces refuse', action: 'removeQuizQuestion' });
 		}
 
@@ -433,15 +426,14 @@ export const actions: Actions = {
 	// ============ EXERCISE ACTIONS ============
 
 	linkExercise: async ({ request, locals, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 		const { chapterId } = params;
 
-		// Verify ownership
+		// Verify chapter exists (RLS enforces ownership)
 		const { data: chapter } = await locals.supabase
 			.from('class_chapters')
 			.select('id')
 			.eq('id', chapterId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (!chapter) {
@@ -465,20 +457,19 @@ export const actions: Actions = {
 	},
 
 	unlinkExercise: async ({ request, locals }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 
 		const formData = await request.formData();
 		const chapterExerciseId = formData.get('chapterExerciseId') as string;
 
-		// Verify ownership
+		// Verify link exists (RLS enforces ownership)
 		const { data: link } = await locals.supabase
 			.from('chapter_exercises')
-			.select('id, chapter:chapter_id!inner(teacher_id)')
+			.select('id')
 			.eq('id', chapterExerciseId)
 			.single();
 
-		const chapterData = link?.chapter as unknown as { teacher_id: string } | null;
-		if (!link || chapterData?.teacher_id !== user.id) {
+		if (!link) {
 			return fail(403, { error: 'Acces refuse', action: 'unlinkExercise' });
 		}
 
@@ -494,15 +485,14 @@ export const actions: Actions = {
 	// ============ DOCUMENT ACTIONS ============
 
 	uploadDocument: async ({ request, locals, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 		const { chapterId } = params;
 
-		// Verify ownership
+		// Verify chapter exists (RLS enforces ownership)
 		const { data: chapter } = await locals.supabase
 			.from('class_chapters')
 			.select('id')
 			.eq('id', chapterId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (!chapter) {
@@ -588,15 +578,14 @@ export const actions: Actions = {
 	},
 
 	addGoogleDriveDocument: async ({ request, locals, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 		const { chapterId } = params;
 
-		// Verify ownership
+		// Verify chapter exists (RLS enforces ownership)
 		const { data: chapter } = await locals.supabase
 			.from('class_chapters')
 			.select('id')
 			.eq('id', chapterId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (!chapter) {
@@ -653,7 +642,7 @@ export const actions: Actions = {
 	},
 
 	deleteDocument: async ({ request, locals }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 
 		const formData = await request.formData();
 		const documentId = formData.get('documentId') as string;
@@ -662,15 +651,14 @@ export const actions: Actions = {
 			return fail(400, { error: 'Document ID requis', action: 'deleteDocument' });
 		}
 
-		// Get document info and verify ownership
+		// Get document info and verify it exists (RLS enforces ownership)
 		const { data: document } = await locals.supabase
 			.from('chapter_documents')
-			.select('id, storage_path, source_type, chapter:chapter_id!inner(teacher_id)')
+			.select('id, storage_path, source_type')
 			.eq('id', documentId)
 			.single();
 
-		const chapterData = document?.chapter as unknown as { teacher_id: string } | null;
-		if (!document || chapterData?.teacher_id !== user.id) {
+		if (!document) {
 			return fail(403, { error: 'Acces refuse', action: 'deleteDocument' });
 		}
 
@@ -700,15 +688,14 @@ export const actions: Actions = {
 	// ============ TEMPLATE ACTIONS ============
 
 	migrateToVersion: async ({ request, locals, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 		const { chapterId } = params;
 
-		// Verify ownership
+		// Verify chapter exists (RLS enforces ownership)
 		const { data: chapter } = await locals.supabase
 			.from('class_chapters')
 			.select('id')
 			.eq('id', chapterId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (!chapter) {
@@ -738,15 +725,14 @@ export const actions: Actions = {
 	},
 
 	detachFromTemplate: async ({ locals, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
+		await requireRole(locals, 'teacher');
 		const { chapterId } = params;
 
-		// Verify ownership
+		// Verify chapter exists (RLS enforces ownership)
 		const { data: chapter } = await locals.supabase
 			.from('class_chapters')
 			.select('id')
 			.eq('id', chapterId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (!chapter) {

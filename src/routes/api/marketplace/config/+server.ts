@@ -133,14 +133,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	} else if (profile.role === 'teacher') {
 		// Teacher can only see configs for their classes
 		if (class_id) {
-			// Verify teacher owns this class
+			// Verify class exists
 			const { data: classData, error: classError } = await supabase
 				.from('classes')
-				.select('teacher_id')
+				.select('id')
 				.eq('id', class_id)
 				.single();
 
-			if (classError || !classData || classData.teacher_id !== userId) {
+			if (classError || !classData) {
 				throw error(403, 'Accès non autorisé à cette classe');
 			}
 
@@ -168,8 +168,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
             grade
           )
         `
-				)
-				.eq('class.teacher_id', userId);
+				);
 
 			if (configsError) {
 				console.error('Error fetching configs:', configsError);
@@ -231,14 +230,14 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 	if (classId) {
 		// Updating class-level config
 		if (profile.role === 'teacher') {
-			// Verify teacher owns this class
+			// Verify class exists
 			const { data: classData, error: classError } = await supabase
 				.from('classes')
-				.select('teacher_id, school_id')
+				.select('school_id')
 				.eq('id', classId)
 				.single();
 
-			if (classError || !classData || classData.teacher_id !== userId) {
+			if (classError || !classData) {
 				throw error(403, 'Vous ne pouvez pas modifier la configuration de cette classe');
 			}
 

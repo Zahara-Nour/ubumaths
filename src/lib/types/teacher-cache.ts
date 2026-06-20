@@ -47,7 +47,6 @@ export interface StudentRewards {
 export interface ClassSchedule {
 	id: string;
 	class_id: string;
-	teacher_id: string;
 	day_of_week: number;
 	period_number: number | null;
 	start_time: string;
@@ -64,7 +63,6 @@ export interface ClassSchedule {
  */
 export interface ClassInfo {
 	id: string;
-	teacher_id: string;
 	name: string;
 	description: string | null;
 	join_code: string;

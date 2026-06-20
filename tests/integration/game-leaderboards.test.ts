@@ -69,12 +69,13 @@ async function createClass(
 	schoolId: string,
 	grade: string | null
 ): Promise<string> {
+	// Mono-teacher: classes are no longer assigned to a teacher (teacher_id dropped).
+	void teacherId;
 	const { data, error } = await svc
 		.from('classes')
 		.insert({
 			name: 'Classe Test',
 			join_code: `LBT${codeCounter++}${Math.random().toString(36).slice(2, 7)}`,
-			teacher_id: teacherId,
 			school_id: schoolId,
 			grade
 		})

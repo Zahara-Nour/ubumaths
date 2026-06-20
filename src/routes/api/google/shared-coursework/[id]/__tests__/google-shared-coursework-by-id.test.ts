@@ -28,7 +28,6 @@ vi.mock('$lib/server/middleware/auth', () => ({
 
 describe('Google Shared Coursework by ID API', () => {
 	const teacherId = '550e8400-e29b-41d4-a716-446655440000';
-	const otherTeacherId = '660e9500-f39c-52e5-b827-557766551111';
 	const sharedCourseworkId = 'bbbbbb99-bb68-44ab-849b-b4bbe5b34eb1';
 	const classId = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
 	const _categoryId = 'aaaa1111-aaaa-11aa-aaaa-111111111111';
@@ -143,35 +142,6 @@ describe('Google Shared Coursework by ID API', () => {
 
 				await expect(PATCH(event as unknown as RequestEvent)).rejects.toThrow(
 					'Unauthorized: teacher role required'
-				);
-			});
-
-			it('returns 403 when record does not belong to teacher', async () => {
-				const mockParams = { id: sharedCourseworkId };
-				const mockRequest = {
-					json: vi.fn().mockResolvedValue({ visible: false })
-				};
-
-				// Mock record exists but belongs to different teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: {
-						id: sharedCourseworkId,
-						class_id: classId,
-						classes: { id: classId, teacher_id: otherTeacherId }
-					},
-					error: null
-				});
-
-				const event = {
-					params: mockParams,
-					request: mockRequest,
-					locals: mockLocals
-				} as unknown as RequestEvent;
-
-				await expectRejectsWithMessage(
-					() => PATCH(event as unknown as RequestEvent),
-					'You do not have permission to update this record'
 				);
 			});
 		});
@@ -1086,30 +1056,6 @@ describe('Google Shared Coursework by ID API', () => {
 
 				await expect(DELETE(event as unknown as RequestEvent)).rejects.toThrow(
 					'Unauthorized: teacher role required'
-				);
-			});
-
-			it('returns 403 when record does not belong to teacher', async () => {
-				const mockParams = { id: sharedCourseworkId };
-
-				// Mock record exists but belongs to different teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: {
-						id: sharedCourseworkId,
-						classes: { id: classId, teacher_id: otherTeacherId }
-					},
-					error: null
-				});
-
-				const event = {
-					params: mockParams,
-					locals: mockLocals
-				} as unknown as RequestEvent;
-
-				await expectRejectsWithMessage(
-					() => DELETE(event as unknown as RequestEvent),
-					'You do not have permission to delete this record'
 				);
 			});
 		});

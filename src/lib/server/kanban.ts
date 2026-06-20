@@ -489,19 +489,23 @@ export async function assertBoardAccess(
 }
 
 /**
- * Verify that `userId` is the teacher of `classId`. Returns true/false; the
+ * Verify that `userId` may manage `classId`'s board. Returns true/false; the
  * handler decides whether to throw 403 (when creating a class board) or
  * return a different code (e.g. 404 to mask existence).
+ *
+ * Mono-teacher: classes are no longer assigned to a teacher; the sole teacher
+ * (or admin) owns every class, so this is a role check.
  */
 export async function isClassTeacher(
 	supabase: AnySupabase,
 	classId: string,
 	userId: string
 ): Promise<boolean> {
+	void classId;
 	const { data, error: dbError } = await supabase
-		.from('classes')
-		.select('teacher_id')
-		.eq('id', classId)
+		.from('profiles')
+		.select('role')
+		.eq('id', userId)
 		.maybeSingle();
 
 	if (dbError) {
@@ -510,5 +514,6 @@ export async function isClassTeacher(
 	}
 
 	if (!data) return false;
-	return (data as { teacher_id: string }).teacher_id === userId;
+	const role = (data as { role: string }).role;
+	return role === 'teacher' || role === 'admin';
 }

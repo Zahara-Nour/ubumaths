@@ -30,7 +30,7 @@ import { uuidSchema } from '$lib/server/validation';
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
 	// Only teachers can fetch categories
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Validate classId parameter
 	const validation = uuidSchema.safeParse(params.classId);
@@ -41,20 +41,19 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const classId = validation.data;
 
 	try {
-		// Verify class belongs to teacher
+		// Verify class exists
 		const { data: classData, error: classError } = await locals.supabase
 			.from('classes')
 			.select('id')
 			.eq('id', classId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (classError || !classData) {
 			if (classError?.code === 'PGRST116') {
-				throw error(404, 'Class not found or access denied');
+				throw error(404, 'Class not found');
 			}
 			console.error('[Categories] Class verification error:', classError);
-			throw error(403, 'Class does not belong to you');
+			throw error(500, 'Failed to verify class');
 		}
 
 		// Fetch categories for this class

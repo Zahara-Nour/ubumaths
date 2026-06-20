@@ -58,8 +58,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 				chapter:chapter_id!inner(
 					id,
 					is_visible,
-					class_id,
-					teacher_id
+					class_id
 				)
 			`
 			)
@@ -75,7 +74,6 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			id: string;
 			is_visible: boolean;
 			class_id: string;
-			teacher_id: string;
 		}>;
 		const chapter = Array.isArray(chapterArray) ? chapterArray[0] : chapterArray;
 
@@ -86,8 +84,8 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		if (profile.role === 'admin') {
 			hasAccess = true;
 		}
-		// Teacher has access to their own chapters
-		else if (profile.role === 'teacher' && chapter.teacher_id === profile.id) {
+		// Teacher has access to all chapters (mono-teacher owns every chapter)
+		else if (profile.role === 'teacher') {
 			hasAccess = true;
 		}
 		// Student has access to visible chapters in their enrolled classes

@@ -76,8 +76,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				id,
 				class_id,
 				classes!inner(
-					id,
-					teacher_id
+					id
 				)
 			`
 			)
@@ -92,20 +91,8 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			throw error(404, 'Shared coursework not found');
 		}
 
-		// Verify the teacher owns the class
-		const classDataForAuth = existingRecord.classes as unknown as
-			| { id: string; teacher_id: string }
-			| { id: string; teacher_id: string }[];
-		const teacherId = Array.isArray(classDataForAuth)
-			? classDataForAuth[0]?.teacher_id
-			: classDataForAuth?.teacher_id;
-
-		if (teacherId !== user.id) {
-			console.error(
-				`[Update Shared Coursework] Unauthorized access attempt by teacher ${user.id}: record ${sharedCourseworkId}`
-			);
-			throw error(403, 'You do not have permission to update this record');
-		}
+		// Mono-teacher: the sole teacher owns every class; RLS on shared_coursework
+		// enforces ownership via class_id. The inner join above proves the class exists.
 
 		// If categoryId is being updated and is not null, verify it belongs to teacher (via class)
 		if (updates.categoryId !== undefined && updates.categoryId !== null) {
@@ -124,7 +111,6 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				.from('classes')
 				.select('id')
 				.eq('id', category.class_id)
-				.eq('teacher_id', user.id)
 				.single();
 
 			if (categoryClassError || !categoryClass) {
@@ -290,7 +276,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	// Only teachers can delete shared coursework
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	// Validate ID parameter
 	const paramValidation = sharedCourseworkIdParamSchema.safeParse(params);
@@ -308,8 +294,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 				`
 				id,
 				classes!inner(
-					id,
-					teacher_id
+					id
 				)
 			`
 			)
@@ -324,20 +309,8 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw error(404, 'Shared coursework not found');
 		}
 
-		// Verify the teacher owns the class
-		const classDataForDelete = existingRecord.classes as unknown as
-			| { id: string; teacher_id: string }
-			| { id: string; teacher_id: string }[];
-		const teacherId = Array.isArray(classDataForDelete)
-			? classDataForDelete[0]?.teacher_id
-			: classDataForDelete?.teacher_id;
-
-		if (teacherId !== user.id) {
-			console.error(
-				`[Delete Shared Coursework] Unauthorized access attempt by teacher ${user.id}: record ${sharedCourseworkId}`
-			);
-			throw error(403, 'You do not have permission to delete this record');
-		}
+		// Mono-teacher: the sole teacher owns every class; RLS on shared_coursework
+		// enforces ownership via class_id. The inner join above proves the class exists.
 
 		// Delete the record
 		const { error: deleteError } = await locals.supabase

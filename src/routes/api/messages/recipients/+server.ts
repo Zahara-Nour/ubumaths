@@ -41,11 +41,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// If teacher, also get classes for group messaging
 		let classes = null;
 		if (profile.role === 'teacher') {
+			// Mono-teacher: the RPC scopes to the sole teacher via auth.uid().
 			const { data: classesData, error: classesError } = await supabase.rpc(
-				'get_teacher_classes_for_messaging',
-				{
-					p_teacher_id: user.id
-				}
+				'get_teacher_classes_for_messaging'
 			);
 
 			if (classesError) {

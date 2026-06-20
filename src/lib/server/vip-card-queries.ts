@@ -253,11 +253,10 @@ export async function getPendingActivationRequests(
 	supabase: SupabaseClient<Database>,
 	teacherId: string
 ): Promise<VipCardActivationRequest[]> {
-	// Step 1: Get all class IDs where teacher teaches
-	const { data: teacherClasses, error: classesError } = await supabase
-		.from('classes')
-		.select('id')
-		.eq('teacher_id', teacherId);
+	// Step 1: Get all class IDs (mono-teacher: the sole teacher owns every class;
+	// RLS already scopes reads to the teacher/admin).
+	void teacherId;
+	const { data: teacherClasses, error: classesError } = await supabase.from('classes').select('id');
 
 	if (classesError) {
 		console.error('❌ [vip-card-queries] Error fetching teacher classes:', classesError);

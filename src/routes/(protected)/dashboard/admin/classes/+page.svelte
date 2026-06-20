@@ -42,17 +42,6 @@
 			.filter((c) => !showActiveOnly || c.is_active)
 	);
 
-	// Get teacher display name
-	function getTeacherName(
-		teacher: { firstname?: string; lastname?: string; email?: string } | null
-	): string {
-		if (!teacher) return '—';
-		if (teacher.firstname && teacher.lastname) {
-			return `${teacher.firstname} ${teacher.lastname}`;
-		}
-		return teacher.email || '—';
-	}
-
 	// Items for MySelect components
 	let schoolFilterItems = $derived([
 		{ value: '', label: 'Toutes les écoles' },
@@ -211,11 +200,6 @@
 						<th
 							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>
-							Enseignant
-						</th>
-						<th
-							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
-						>
 							Étudiants
 						</th>
 						<th
@@ -267,11 +251,6 @@
 											<Copy class="h-4 w-4" />
 										{/if}
 									</button>
-								</div>
-							</td>
-							<td class="px-6 py-4 whitespace-nowrap">
-								<div class="text-sm text-muted-foreground">
-									{getTeacherName(classItem.teacher)}
 								</div>
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap">
@@ -489,14 +468,6 @@
 									placeholder="Aucune école"
 									triggerClass="h-9 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
 								/>
-							</div>
-
-							<!-- Teacher -->
-							<div>
-								<span class="mb-1 block text-sm font-medium text-foreground">Enseignant</span>
-								<p class="text-sm text-muted-foreground">
-									{data.teachers[0] ? getTeacherName(data.teachers[0]) : '—'} — assigné automatiquement
-								</p>
 							</div>
 
 							<!-- Grade -->

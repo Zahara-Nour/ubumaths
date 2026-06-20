@@ -79,7 +79,6 @@ function convertChapter(db: DbClassChapter): ClassChapter {
 	return {
 		id: db.id,
 		classId: db.class_id,
-		teacherId: db.teacher_id,
 		title: db.title,
 		description: db.description,
 		displayOrder: db.display_order,
@@ -198,7 +197,6 @@ export async function getTeacherChapters(
 			exercises:chapter_exercises(count)
 		`
 		)
-		.eq('teacher_id', teacherId)
 		.order('display_order', { ascending: true });
 
 	if (classId) {
@@ -237,10 +235,11 @@ export async function createChapter(
 	data: CreateChapterInput,
 	supabase: SupabaseClient<Database>
 ): Promise<OperationResult<ClassChapter>> {
-	// Get teacher_id from the class (required for DB type even though trigger sets it)
+	// Verify the class exists (chapter ownership is role-based via RLS now;
+	// class_chapters.teacher_id was dropped in the mono-teacher refactor).
 	const { data: classData, error: classError } = await supabase
 		.from('classes')
-		.select('teacher_id')
+		.select('id')
 		.eq('id', data.classId)
 		.single();
 
@@ -267,7 +266,6 @@ export async function createChapter(
 		.from('class_chapters')
 		.insert({
 			class_id: data.classId,
-			teacher_id: classData.teacher_id,
 			title: data.title,
 			description: data.description ?? null,
 			display_order: displayOrder,

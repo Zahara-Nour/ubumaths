@@ -209,15 +209,15 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		return error(400, 'Un template de classe doit avoir un class_id');
 	}
 
-	// If teacher creating class template, verify they own the class
+	// If teacher creating class template, verify the class exists
 	if (profile.role === 'teacher' && templateInput.scope === 'class') {
 		const { data: classData } = await supabase
 			.from('classes')
-			.select('teacher_id')
+			.select('id')
 			.eq('id', templateInput.class_id!)
 			.single();
 
-		if (!classData || classData.teacher_id !== user.id) {
+		if (!classData) {
 			return error(403, 'Vous ne pouvez créer des templates que pour vos propres classes');
 		}
 	}
