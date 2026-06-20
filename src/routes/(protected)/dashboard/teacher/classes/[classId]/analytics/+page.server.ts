@@ -1,5 +1,5 @@
 /**
- * Analytics page — load class header + verify ownership.
+ * Analytics page — load class header + verify access (role-based: teacher/admin).
  *
  * Les widgets fetchent leurs données via les endpoints `/api/teacher/...`
  * en client-side (lazy). On charge ici juste le nom de la classe pour le header.
