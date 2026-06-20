@@ -30,11 +30,15 @@ Finalement **tous nettoyés** (vérifié : 0 param `p_teacher_id` restant en pro
 
 > 🐛 **Bonus** : le test award de #46 a révélé un bug prod indépendant — le trigger `log_achievements_to_events` lisait `NEW.metadata` (colonne inexistante sur `student_achievements`) → décerner un succès était cassé. Corrigé par **PR #47** (en prod).
 
-## 3. 🟡 Aplatir `teacher_vip_card_overrides` en table **globale**
+## 3. ✅ FAIT — Couche `teacher_vip_card_overrides` SUPPRIMÉE (PR #48)
 
-Seul vrai « résidu multi-prof » du Cluster 2. La logique d'intersection (`tvo.teacher_id IN (SELECT … DISTINCT …)`) supposait plusieurs profs ; on l'a seulement **réécrite in-place** dans la migration (sous-requête → `SELECT id FROM profiles WHERE role='teacher'`, donc « le prof unique »), **sans aplatir la table**. La dimension multi-prof subsiste structurellement.
+Décision **B pur** (pas « aplatir » mais **supprimer** la couche) : en mono-prof l'override est **redondant** avec le flag global `vip_card_templates.is_enabled` (il était **soustractif** → ne pouvait qu'éteindre une carte déjà active ; même personne prof=admin pilote les deux). Constat prod : 1 seul override (`candy`=TRUE) qui était un **no-op** (candy globalement OFF) → 0 changement de comportement.
 
-→ **Candidat n°1** si on veut finir le ménage : supprimer `teacher_id` de `teacher_vip_card_overrides`, en faire des overrides globaux, et simplifier `get_teacher_override_impact`/`_overrides_summary` + le tirage VIP. Migration destructive sur prod (mineurs/RGPD, sous `maintenance:on`) — même prudence que le Cluster 1. Gain : faible/cosmétique.
+- DROP TABLE `teacher_vip_card_overrides` (+ 6 policies) ; DROP `get_available_cards_for_student` (morte) ; `draw_multiple_vip_cards` ne consulte plus d'override (tirable ssi `is_enabled=TRUE`).
+- App : endpoints `overrides`/`global-config`, page prof `gamification/vip-cards`, composants `VipCardOverrideGrid`/`VipCardGlobalConfigDisplay` supprimés → gestion ON/OFF des cartes **via la page admin uniquement**.
+- ⚠️ Migration `20260620140000` **mergée mais PAS encore en prod** : déploiement destructif à faire (deploy code → `maintenance:on` → `db:migrate` → `db:types`).
+
+_(`get_teacher_override_impact`/`_overrides_summary` étaient déjà droppées en #46.)_
 
 ## 4. 🟡 Champ client `ClassMembership.teacher_id` / `teacher_name`
 
@@ -61,4 +65,4 @@ SELECT proname, pg_get_function_identity_arguments(oid)
     AND pg_get_function_identity_arguments(oid) ~ 'p_teacher_id' ORDER BY 1;
 ```
 
-**En clair** : **§1** légitimement gardé (pas une dette), **§2 FAIT** (PR #46/#47, en prod). Restent, si on veut : **§3** (aplatir `teacher_vip_card_overrides`) et accessoirement **§4** (caches élève). §5 = simple doc.
+**En clair** : **§1** légitimement gardé (pas une dette), **§2 FAIT** (PR #46/#47, en prod), **§3 FAIT** (PR #48, mergé — déploiement destructif en attente). Restent, si on veut : **§4** (caches élève, cosmétique) et **§5** (simple doc). Le Cluster 2 est quasi soldé.
