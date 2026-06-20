@@ -45,7 +45,7 @@
  * ```
  *
  * SECURITY:
- * - All functions verify teacher owns the student's class via RPC functions
+ * - All functions verify the teacher/admin teaches the student via RPC functions (role-based, mono-teacher)
  * - Uses SECURITY DEFINER RPC functions for database operations
  */
 

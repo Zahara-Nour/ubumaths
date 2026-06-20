@@ -155,7 +155,7 @@ export async function updateJournalEntry(
 	if (input.homeworkDueDate !== undefined) updateData.homework_due_date = input.homeworkDueDate;
 	if (input.isPublished !== undefined) updateData.is_published = input.isPublished;
 
-	// Update (RLS policy ensures teacher owns the entry)
+	// Update (RLS scopes access to teacher/admin; mono-teacher: entries have no per-teacher owner)
 	const { data: entry, error } = await supabase
 		.from('class_journal_entries')
 		.update(updateData)
