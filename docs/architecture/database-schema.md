@@ -16,6 +16,33 @@ game, kanban, etc.).
 
 ---
 
+## Mono-teacher RLS model
+
+A single `teacher` (+ a single `admin`); see the mono-teacher refactor
+(`20260618093000_*`, `20260620090000_*`). The class-scoped authorization helpers
+all **delegate to `is_teacher_or_admin()`**, so they are **admin-inclusive**:
+
+| Helper                         | Body (prod)                                                                                                |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `is_teacher_or_admin()`        | `EXISTS (… profiles WHERE id = auth.uid() AND role IN ('teacher','admin'))`                                |
+| `is_class_teacher(p_class_id)` | `RETURN is_teacher_or_admin()` — the `p_class_id` arg is ignored (every class belongs to the sole teacher) |
+| `is_my_student(p_student_id)`  | delegates to `is_teacher_or_admin()` plus an enrolment (`class_members`) check                             |
+
+Two consequences worth knowing (security-audit notes):
+
+- **`student_warnings` insert/delete are admin-inclusive.** The policies
+  `teachers_insert_own_class_warnings` / `teachers_delete_own_warnings` are
+  `is_class_teacher(class_id) AND created_by = auth.uid()`; since
+  `is_class_teacher` → `is_teacher_or_admin()`, an admin (not just the teacher)
+  may create/delete the warnings they authored.
+- **Student-scoped `SECURITY DEFINER` RPCs check class membership without a
+  `status = 'active'` filter.** e.g. `draw_multiple_vip_cards` authorizes via
+  `EXISTS (… class_members WHERE student_id = p_student_id)`. In mono-teacher this
+  only widens the sole teacher's reach (any enrolled student, regardless of
+  membership status).
+
+---
+
 ## Kanban
 
 Introduced by `supabase/migrations/20260526190624_create_kanban_tables.sql`.
