@@ -11560,69 +11560,6 @@ export type Database = {
         }
         Relationships: []
       }
-      teacher_vip_card_overrides: {
-        Row: {
-          card_id: string
-          created_at: string
-          id: string
-          is_enabled: boolean
-          teacher_id: string
-          updated_at: string
-        }
-        Insert: {
-          card_id: string
-          created_at?: string
-          id?: string
-          is_enabled: boolean
-          teacher_id: string
-          updated_at?: string
-        }
-        Update: {
-          card_id?: string
-          created_at?: string
-          id?: string
-          is_enabled?: boolean
-          teacher_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "teacher_vip_card_overrides_card_id_fkey"
-            columns: ["card_id"]
-            isOneToOne: false
-            referencedRelation: "vip_card_templates"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "teacher_vip_card_overrides_teacher_id_fkey"
-            columns: ["teacher_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "teacher_vip_card_overrides_teacher_id_fkey"
-            columns: ["teacher_id"]
-            isOneToOne: false
-            referencedRelation: "minesweeper_student_achievement_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "teacher_vip_card_overrides_teacher_id_fkey"
-            columns: ["teacher_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "teacher_vip_card_overrides_teacher_id_fkey"
-            columns: ["teacher_id"]
-            isOneToOne: false
-            referencedRelation: "riddle_progress"
-            referencedColumns: ["student_id"]
-          },
-        ]
-      }
       template_audit_log: {
         Row: {
           action: string
@@ -15120,16 +15057,6 @@ export type Database = {
           students_viewed: number
           total_target_students: number
           total_views: number
-        }[]
-      }
-      get_available_cards_for_student: {
-        Args: { p_student_id: string }
-        Returns: {
-          blocked_by_teachers: string[]
-          card_id: string
-          card_name: string
-          is_globally_enabled: boolean
-          rarity: string
         }[]
       }
       get_classes_by_user_grade: {

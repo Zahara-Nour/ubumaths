@@ -97,13 +97,6 @@ const redirectHandle: Handle = async ({ event, resolve }) => {
 		);
 		throw redirect(308, newPath + event.url.search);
 	}
-	if (pathname.startsWith('/dashboard/teacher/vip-cards')) {
-		const newPath = pathname.replace(
-			'/dashboard/teacher/vip-cards',
-			'/dashboard/teacher/gamification/vip-cards'
-		);
-		throw redirect(308, newPath + event.url.search);
-	}
 	if (pathname.startsWith('/dashboard/teacher/marketplace')) {
 		const newPath = pathname.replace(
 			'/dashboard/teacher/marketplace',
