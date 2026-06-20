@@ -3566,6 +3566,34 @@ CREATE POLICY "evaluation_task_perimeter_update_teacher" ON "public"."evaluation
   WHERE (("t"."id" = "evaluation_task_perimeter"."task_id") AND ("public"."is_teacher_or_admin"())))));
 
 
+-- ===== 5c. storage.objects chapter-document policies (prod-only) =====
+-- These RLS policies live in the storage schema (created out-of-band via the
+-- Supabase dashboard) and reference class_chapters.teacher_id, so they block the
+-- column drop on prod. They do NOT exist on fresh local DBs, hence DROP ... IF
+-- EXISTS. Rewrite the teacher-ownership predicate to role-based; the
+-- orphaned-documents path branch (keyed on auth.uid()) and is_admin() are kept.
+
+DROP POLICY IF EXISTS "Teachers can read chapter documents" ON "storage"."objects";
+CREATE POLICY "Teachers can read chapter documents" ON "storage"."objects" FOR SELECT TO "authenticated" USING (((bucket_id = 'chapter-documents'::"text") AND ((((string_to_array(name, '/'::"text"))[1] = 'chapters'::"text") AND (EXISTS ( SELECT 1
+   FROM "public"."class_chapters" "ch"
+  WHERE ((("ch"."id")::"text" = (string_to_array("objects"."name", '/'::"text"))[2]) AND "public"."is_teacher_or_admin"())))) OR (((string_to_array(name, '/'::"text"))[1] = 'orphaned-documents'::"text") AND ((string_to_array(name, '/'::"text"))[2] = ("auth"."uid"())::"text")) OR "public"."is_admin"())));
+
+DROP POLICY IF EXISTS "Teachers can upload chapter documents" ON "storage"."objects";
+CREATE POLICY "Teachers can upload chapter documents" ON "storage"."objects" FOR INSERT TO "authenticated" WITH CHECK (((bucket_id = 'chapter-documents'::"text") AND ((((string_to_array(name, '/'::"text"))[1] = 'chapters'::"text") AND (EXISTS ( SELECT 1
+   FROM "public"."class_chapters" "ch"
+  WHERE ((("ch"."id")::"text" = (string_to_array("objects"."name", '/'::"text"))[2]) AND "public"."is_teacher_or_admin"())))) OR (((string_to_array(name, '/'::"text"))[1] = 'orphaned-documents'::"text") AND "public"."is_admin"()))));
+
+DROP POLICY IF EXISTS "Teachers can update chapter documents" ON "storage"."objects";
+CREATE POLICY "Teachers can update chapter documents" ON "storage"."objects" FOR UPDATE TO "authenticated" USING (((bucket_id = 'chapter-documents'::"text") AND ((string_to_array(name, '/'::"text"))[1] = 'chapters'::"text") AND (EXISTS ( SELECT 1
+   FROM "public"."class_chapters" "ch"
+  WHERE ((("ch"."id")::"text" = (string_to_array("objects"."name", '/'::"text"))[2]) AND "public"."is_teacher_or_admin"())))));
+
+DROP POLICY IF EXISTS "Teachers can delete chapter documents" ON "storage"."objects";
+CREATE POLICY "Teachers can delete chapter documents" ON "storage"."objects" FOR DELETE TO "authenticated" USING (((bucket_id = 'chapter-documents'::"text") AND ((((string_to_array(name, '/'::"text"))[1] = 'chapters'::"text") AND (EXISTS ( SELECT 1
+   FROM "public"."class_chapters" "ch"
+  WHERE ((("ch"."id")::"text" = (string_to_array("objects"."name", '/'::"text"))[2]) AND "public"."is_teacher_or_admin"())))) OR (((string_to_array(name, '/'::"text"))[1] = 'orphaned-documents'::"text") AND ((string_to_array(name, '/'::"text"))[2] = ("auth"."uid"())::"text")))));
+
+
 -- ===== 6. Drop teacher_id columns =====
 -- FK constraints referencing these columns are dropped automatically with them.
 
