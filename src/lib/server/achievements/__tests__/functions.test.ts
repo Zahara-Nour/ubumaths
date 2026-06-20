@@ -661,7 +661,6 @@ describe('award_achievement_manual()', () => {
 		});
 
 		const { data, error } = await supabase.rpc('award_achievement_manual', {
-			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'special_achievement',
 			p_reason: 'Outstanding participation in class'
@@ -670,7 +669,6 @@ describe('award_achievement_manual()', () => {
 		expect(data).toBe(true);
 		expect(error).toBeNull();
 		expect(supabase.rpc).toHaveBeenCalledWith('award_achievement_manual', {
-			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'special_achievement',
 			p_reason: 'Outstanding participation in class'
@@ -684,7 +682,6 @@ describe('award_achievement_manual()', () => {
 		});
 
 		const { data, error } = await supabase.rpc('award_achievement_manual', {
-			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'special_achievement',
 			p_reason: undefined
@@ -706,7 +703,6 @@ describe('award_achievement_manual()', () => {
 		});
 
 		const { data, error } = await supabase.rpc('award_achievement_manual', {
-			p_teacher_id: 'other-teacher-uuid',
 			p_student_id: mockStudentId,
 			p_achievement_id: 'special_achievement',
 			p_reason: undefined
@@ -729,7 +725,6 @@ describe('award_achievement_manual()', () => {
 		});
 
 		const { data, error } = await supabase.rpc('award_achievement_manual', {
-			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'non_existent_achievement',
 			p_reason: undefined
@@ -751,7 +746,6 @@ describe('award_achievement_manual()', () => {
 		});
 
 		const { data, error } = await supabase.rpc('award_achievement_manual', {
-			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'minesweeper_first_win', // Automatic only
 			p_reason: undefined
@@ -768,7 +762,6 @@ describe('award_achievement_manual()', () => {
 		});
 
 		const { data, error } = await supabase.rpc('award_achievement_manual', {
-			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'special_achievement',
 			p_reason: undefined
