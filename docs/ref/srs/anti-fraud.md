@@ -120,9 +120,9 @@ Badge count sur l'onglet alimenté par `+page.server.ts` au load + `refreshUnres
 
 Un flag concerne **(élève, capacité)**, pas (élève, capacité, classe). Conséquences :
 
-- Élève dans 2 classes → flag visible par les 2 profs.
-- Résoudre d'un côté → masque l'autre.
-- Cohérence simple, pas de divergence de vue inter-profs.
+- Élève dans 2 classes → un seul flag (pas de doublon par classe).
+- Le flag est le même quelle que soit la classe consultée ; le résoudre le masque partout.
+- Cohérence simple : vue unique (mono-prof), pas de divergence par classe.
 
 ---
 
