@@ -26,7 +26,7 @@ const shareNotebookSchema = z.object({
  * POST /api/python-notebooks/[id]/share
  * Share notebook with a class
  * Teachers only
- * Must be the notebook author and teacher of the class
+ * Must be the notebook author; teacher/admin role required (mono-teacher)
  */
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user } = await requireRole(locals, 'teacher');

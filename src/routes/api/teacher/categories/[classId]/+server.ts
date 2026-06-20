@@ -7,13 +7,13 @@
  *
  * Flow:
  * 1. Verify user is a teacher
- * 2. Verify class belongs to teacher
+ * 2. Verify the class is accessible (mono-teacher: RLS scopes to teacher/admin)
  * 3. Fetch categories for class
  * 4. Return categories ordered by display_order
  *
  * Security:
  * - Teacher role required
- * - Verify class ownership
+ * - Class access scoped by RLS (mono-teacher: teacher/admin)
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -24,7 +24,7 @@ import { uuidSchema } from '$lib/server/validation';
 /**
  * Fetch categories for a specific class
  *
- * Security: Teacher role required, class ownership verified
+ * Security: Teacher role required; class access scoped by RLS (mono-teacher)
  *
  * Returns categories ordered by display_order
  */
