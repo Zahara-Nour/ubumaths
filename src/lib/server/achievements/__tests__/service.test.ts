@@ -420,7 +420,6 @@ describe('awardAchievement', () => {
 		);
 
 		expect(mockSupabase.rpc).toHaveBeenCalledWith('award_achievement_manual', {
-			p_teacher_id: teacherId,
 			p_student_id: studentId,
 			p_achievement_id: achievementId,
 			p_reason: 'Excellent work'
@@ -436,7 +435,6 @@ describe('awardAchievement', () => {
 		// service.ts passes `reason ?? undefined`: an undefined field is dropped
 		// from the JSON-RPC payload, letting the SQL default (NULL) apply.
 		expect(mockSupabase.rpc).toHaveBeenCalledWith('award_achievement_manual', {
-			p_teacher_id: teacherId,
 			p_student_id: studentId,
 			p_achievement_id: achievementId,
 			p_reason: undefined

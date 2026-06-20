@@ -83,10 +83,9 @@ export const actions: Actions = {
 		const isCorrect = formData.get('is_correct') === 'true';
 		const feedback = formData.get('feedback')?.toString();
 
-		// Validate using RPC function
+		// Validate using RPC function (mono-teacher: validated_by = auth.uid() internally)
 		const { error: validateError } = await supabase.rpc('validate_riddle_attempt', {
 			p_attempt_id: id,
-			p_teacher_id: user.id,
 			p_is_correct: isCorrect
 		});
 

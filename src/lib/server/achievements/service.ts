@@ -389,14 +389,14 @@ export async function processEvent(
  */
 export async function awardAchievement(
 	supabase: TypedSupabaseClient,
-	teacherId: string,
+	_teacherId: string,
 	studentId: string,
 	achievementId: string,
 	reason?: string
 ): Promise<boolean> {
 	try {
+		// Mono-teacher: the RPC stamps unlocked_by = auth.uid() internally.
 		const { data, error } = await supabase.rpc('award_achievement_manual', {
-			p_teacher_id: teacherId,
 			p_student_id: studentId,
 			p_achievement_id: achievementId,
 			// The RPC types p_reason as optional (string | undefined); omitting it lets

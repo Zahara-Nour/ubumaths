@@ -38,7 +38,6 @@ type MockSupabaseClient = ReturnType<typeof createMockSupabase>;
 // ============================================================================
 
 const mockStudentId = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
-const mockTeacherId = 'teacher-uuid-123';
 const mockAchievementId = 'test_achievement';
 
 // Expected RPC response types for testing
@@ -661,7 +660,6 @@ describe('award_achievement_manual()', () => {
 		});
 
 		const { data, error } = await supabase.rpc('award_achievement_manual', {
-			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'special_achievement',
 			p_reason: 'Outstanding participation in class'
@@ -670,7 +668,6 @@ describe('award_achievement_manual()', () => {
 		expect(data).toBe(true);
 		expect(error).toBeNull();
 		expect(supabase.rpc).toHaveBeenCalledWith('award_achievement_manual', {
-			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'special_achievement',
 			p_reason: 'Outstanding participation in class'
@@ -684,7 +681,6 @@ describe('award_achievement_manual()', () => {
 		});
 
 		const { data, error } = await supabase.rpc('award_achievement_manual', {
-			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'special_achievement',
 			p_reason: undefined
@@ -706,7 +702,6 @@ describe('award_achievement_manual()', () => {
 		});
 
 		const { data, error } = await supabase.rpc('award_achievement_manual', {
-			p_teacher_id: 'other-teacher-uuid',
 			p_student_id: mockStudentId,
 			p_achievement_id: 'special_achievement',
 			p_reason: undefined
@@ -729,7 +724,6 @@ describe('award_achievement_manual()', () => {
 		});
 
 		const { data, error } = await supabase.rpc('award_achievement_manual', {
-			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'non_existent_achievement',
 			p_reason: undefined
@@ -751,7 +745,6 @@ describe('award_achievement_manual()', () => {
 		});
 
 		const { data, error } = await supabase.rpc('award_achievement_manual', {
-			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'minesweeper_first_win', // Automatic only
 			p_reason: undefined
@@ -768,7 +761,6 @@ describe('award_achievement_manual()', () => {
 		});
 
 		const { data, error } = await supabase.rpc('award_achievement_manual', {
-			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'special_achievement',
 			p_reason: undefined
