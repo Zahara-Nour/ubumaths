@@ -53,18 +53,6 @@ export interface VipCardConfig {
 }
 
 /**
- * Teacher VIP Card Override (from teacher_vip_card_overrides table)
- */
-export interface TeacherVipCardOverride {
-	id: number;
-	teacher_id: string;
-	card_id: string;
-	is_enabled: boolean;
-	created_at: string;
-	updated_at: string;
-}
-
-/**
  * API Request/Response Types
  */
 
@@ -147,33 +135,6 @@ export interface ConfigResponse {
 	validUntil: string | null;
 	createdAt: string;
 	updatedAt: string;
-}
-
-/**
- * Individual teacher override
- */
-export interface TeacherOverride {
-	cardId: string;
-	cardName: string;
-	isEnabled: boolean;
-}
-
-/**
- * Request body for bulk updating teacher overrides
- */
-export interface UpdateOverridesRequest {
-	overrides: Array<{
-		cardId: string;
-		isEnabled: boolean;
-	}>;
-}
-
-/**
- * Response when fetching teacher overrides
- */
-export interface TeacherOverridesResponse {
-	overrides: TeacherOverride[];
-	templates: TemplateResponse[];
 }
 
 /**

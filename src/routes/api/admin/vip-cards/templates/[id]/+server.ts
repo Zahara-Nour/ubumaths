@@ -188,7 +188,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			);
 		}
 
-		// 5. Delete template (CASCADE will handle teacher_vip_card_overrides)
+		// 5. Delete template
 		const { error: deleteError } = await supabase
 			.from('vip_card_templates')
 			.delete()
