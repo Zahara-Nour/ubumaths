@@ -38,7 +38,6 @@ type MockSupabaseClient = ReturnType<typeof createMockSupabase>;
 // ============================================================================
 
 const mockStudentId = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
-const mockTeacherId = 'teacher-uuid-123';
 const mockAchievementId = 'test_achievement';
 
 // Expected RPC response types for testing
