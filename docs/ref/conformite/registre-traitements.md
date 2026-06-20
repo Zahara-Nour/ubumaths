@@ -69,17 +69,17 @@ coexister : responsable pour le grand public, sous-traitant pour les établissem
 
 ### T2 — Suivi pédagogique et progression
 
-| Champ                              | Contenu                                                                                                                                                  |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Finalité(s)**                    | Enregistrer les réponses aux exercices, scores, progression, statistiques et historique d'apprentissage ; permettre à l'enseignant de suivre ses élèves. |
-| **Base légale**                    | [À CONFIRMER] — intérêt légitime (art. 6.1.f) ou mission d'intérêt public (art. 6.1.e) selon le cas établissement.                                       |
-| **Personnes concernées**           | Élèves, enseignants.                                                                                                                                     |
-| **Catégories de données**          | Réponses aux questions, scores, niveaux de maîtrise par compétence, historique d'activité, statistiques agrégées (achievements).                         |
-| **Source**                         | Activité de l'élève sur l'application.                                                                                                                   |
-| **Destinataires / sous-traitants** | Supabase (BDD).                                                                                                                                          |
-| **Transferts hors UE**             | Néant (UE/France).                                                                                                                                       |
-| **Durée de conservation**          | 5 ans après la dernière activité, puis anonymisation/suppression.                                                                                        |
-| **Mesures de sécurité**            | RLS (un élève ne voit que ses données, un enseignant que ses classes), chiffrement, journalisation des accès.                                            |
+| Champ                              | Contenu                                                                                                                                                                                                      |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Finalité(s)**                    | Enregistrer les réponses aux exercices, scores, progression, statistiques et historique d'apprentissage ; permettre à l'enseignant de suivre ses élèves.                                                     |
+| **Base légale**                    | [À CONFIRMER] — intérêt légitime (art. 6.1.f) ou mission d'intérêt public (art. 6.1.e) selon le cas établissement.                                                                                           |
+| **Personnes concernées**           | Élèves, enseignants.                                                                                                                                                                                         |
+| **Catégories de données**          | Réponses aux questions, scores, niveaux de maîtrise par compétence, historique d'activité, statistiques agrégées (achievements).                                                                             |
+| **Source**                         | Activité de l'élève sur l'application.                                                                                                                                                                       |
+| **Destinataires / sous-traitants** | Supabase (BDD).                                                                                                                                                                                              |
+| **Transferts hors UE**             | Néant (UE/France).                                                                                                                                                                                           |
+| **Durée de conservation**          | 5 ans après la dernière activité, puis anonymisation/suppression.                                                                                                                                            |
+| **Mesures de sécurité**            | RLS (un élève ne voit que ses données ; le professeur unique / l'admin accède aux données des élèves de l'école — modèle mono-professeur, frontière sociale = école), chiffrement, journalisation des accès. |
 
 ### T3 — Gamification et récompenses
 
