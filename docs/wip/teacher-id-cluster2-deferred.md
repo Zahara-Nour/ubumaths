@@ -39,9 +39,11 @@ Décision **B pur** (pas « aplatir » mais **supprimer** la couche) : en mono-p
 
 _(`get_teacher_override_impact`/`_overrides_summary` étaient déjà droppées en #46.)_
 
-## 4. 🟡 Champ client `ClassMembership.teacher_id` / `teacher_name`
+## 4. ✅ FAIT — Champ client `ClassMembership.teacher_id` / `teacher_name` retiré (PR #49)
 
-Côté élève (`src/lib/types/student-cache.ts`), `ClassMembership` garde `teacher_id` + `teacher_name`, **peuplés via le prof unique** (`student/+layout.server.ts`, `student/cours`, `api/student/profile` résolvent `profiles WHERE role='teacher'`). Vestigial mais inoffensif (affichage « ton prof »). Pourrait être aplati (un seul prof affiché) si on veut simplifier les caches élève.
+Vestige multi-prof : `ClassMembership` (cache élève) portait `teacher_id` + `teacher_name`, peuplés via le prof unique mais **jamais lus** par aucune UI (vérifié : 0 consommateur). Retirés du type + des 2 producteurs (`student/+layout.server.ts`, `api/student/profile`) ; la requête `soleTeacher` morte est partie avec. Client-only, pas de migration, 0 changement de comportement.
+
+> ℹ️ La page `student/cours` garde son **propre** `teacherName`/`teacherId` (camelCase) qui, lui, **est affiché** (`cours/+page.svelte:84`) — laissé exprès.
 
 ## 5. 📝 Notes « Low » de l'audit sécurité (à documenter)
 
@@ -64,4 +66,4 @@ SELECT proname, pg_get_function_identity_arguments(oid)
     AND pg_get_function_identity_arguments(oid) ~ 'p_teacher_id' ORDER BY 1;
 ```
 
-**En clair** : **§1** légitimement gardé (pas une dette), **§2 FAIT** (PR #46/#47, en prod), **§3 FAIT** (PR #48, mergé — déploiement destructif en attente). Restent, si on veut : **§4** (caches élève, cosmétique) et **§5** (simple doc). Le Cluster 2 est quasi soldé.
+**En clair** : **§1** légitimement gardé (pas une dette), **§2 FAIT** (PR #46/#47, en prod), **§3 FAIT** (PR #48, en prod), **§4 FAIT** (PR #49). Reste seulement **§5** (pure doc à reporter dans `database-schema.md`). **Le Cluster 2 est soldé** côté code.
