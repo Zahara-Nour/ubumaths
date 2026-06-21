@@ -169,17 +169,17 @@ alter table public.journal_entry_activities enable row level security;
 alter table public.journal_entry_points enable row level security;
 
 create policy "Teachers manage curriculum themes" on public.curriculum_themes
-	for all using (public.is_teacher_or_admin()) with check (public.is_teacher_or_admin());
+	for all to authenticated using (public.is_teacher_or_admin()) with check (public.is_teacher_or_admin());
 create policy "Teachers manage curriculum items" on public.curriculum_items
-	for all using (public.is_teacher_or_admin()) with check (public.is_teacher_or_admin());
+	for all to authenticated using (public.is_teacher_or_admin()) with check (public.is_teacher_or_admin());
 create policy "Teachers manage curriculum points" on public.curriculum_points
-	for all using (public.is_teacher_or_admin()) with check (public.is_teacher_or_admin());
+	for all to authenticated using (public.is_teacher_or_admin()) with check (public.is_teacher_or_admin());
 create policy "Teachers manage exercise curriculum tags" on public.exercise_curriculum_points
-	for all using (public.is_teacher_or_admin()) with check (public.is_teacher_or_admin());
+	for all to authenticated using (public.is_teacher_or_admin()) with check (public.is_teacher_or_admin());
 create policy "Teachers manage journal entry activities" on public.journal_entry_activities
-	for all using (public.is_teacher_or_admin()) with check (public.is_teacher_or_admin());
+	for all to authenticated using (public.is_teacher_or_admin()) with check (public.is_teacher_or_admin());
 create policy "Teachers manage journal entry points" on public.journal_entry_points
-	for all using (public.is_teacher_or_admin()) with check (public.is_teacher_or_admin());
+	for all to authenticated using (public.is_teacher_or_admin()) with check (public.is_teacher_or_admin());
 
 -- ---------------------------------------------------------------------------
 -- Grants (RLS still gates real access; anon has no policy → denied)

@@ -35,6 +35,8 @@ export function curriculumDbError(err: DbErrorLike, uniqueMsg = 'Doublon'): Resp
 			return json({ error: 'Valeur invalide' }, { status: 400 });
 		case '23503': // foreign_key_violation (e.g. unknown theme_id/item_id)
 			return json({ error: 'Référence introuvable' }, { status: 400 });
+		case '22P02': // invalid_text_representation (e.g. malformed UUID path param)
+			return json({ error: 'Identifiant invalide' }, { status: 400 });
 		default:
 			return null;
 	}

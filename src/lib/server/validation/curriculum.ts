@@ -115,3 +115,84 @@ export type CreateItemInput = z.infer<typeof createItemSchema>;
 export type UpdateItemInput = z.infer<typeof updateItemSchema>;
 export type CreatePointInput = z.infer<typeof createPointSchema>;
 export type UpdatePointInput = z.infer<typeof updatePointSchema>;
+
+// ---------------------------------------------------------------------------
+// Brique 2 — Tagging des exercices & alimentation (cahier de texte)
+// ---------------------------------------------------------------------------
+
+const uuidSchema = z.string().uuid();
+
+/** Tag / untag a system exercise with a curriculum point. */
+export const exerciseTagSchema = z.object({
+	exercise_id: uuidSchema,
+	point_id: uuidSchema
+});
+
+export const exerciseTagListQuerySchema = z.object({
+	exercise_id: uuidSchema
+});
+
+/** Free-form textbook reference (manuel scolaire). */
+const textbookRefSchema = z
+	.object({
+		label: z.string().trim().min(1, 'Référence requise').max(200),
+		manuel: z.string().trim().max(200).optional(),
+		page: z.string().trim().max(50).optional(),
+		numero: z.string().trim().max(50).optional()
+	})
+	.strict();
+
+/** Add an activity to a cahier de texte entry (3 kinds). */
+export const createActivitySchema = z
+	.discriminatedUnion('kind', [
+		z.object({
+			entry_id: uuidSchema,
+			kind: z.literal('exercise'),
+			exercise_id: uuidSchema,
+			display_order: displayOrderSchema.optional()
+		}),
+		z.object({
+			entry_id: uuidSchema,
+			kind: z.literal('course'),
+			chapter_id: uuidSchema.optional(),
+			label: z.string().trim().min(1).max(200).optional(),
+			display_order: displayOrderSchema.optional()
+		}),
+		z.object({
+			entry_id: uuidSchema,
+			kind: z.literal('textbook'),
+			textbook_ref: textbookRefSchema,
+			display_order: displayOrderSchema.optional()
+		})
+	])
+	.superRefine((d, ctx) => {
+		if (d.kind === 'course' && d.chapter_id === undefined && d.label === undefined) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: 'Un point de cours requiert un chapitre ou un libellé'
+			});
+		}
+	});
+
+export const activityListQuerySchema = z.object({
+	entry_id: uuidSchema
+});
+
+/** Manually add / remove a curriculum point on an entry (coverage). */
+export const coveragePointSchema = z.object({
+	entry_id: uuidSchema,
+	point_id: uuidSchema
+});
+
+export const coverageListQuerySchema = z.object({
+	entry_id: uuidSchema
+});
+
+export const coveragePointQuerySchema = z.object({
+	entry_id: uuidSchema,
+	point_id: uuidSchema
+});
+
+export type ExerciseTagInput = z.infer<typeof exerciseTagSchema>;
+export type CreateActivityInput = z.infer<typeof createActivitySchema>;
+export type CoveragePointInput = z.infer<typeof coveragePointSchema>;
