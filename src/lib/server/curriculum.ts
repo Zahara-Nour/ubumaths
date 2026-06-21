@@ -2,9 +2,8 @@
  * Server helpers — Curriculum tracking (suivi du programme).
  *
  * Centralizes the Postgres-error → HTTP-status mapping shared by the
- * curriculum CRUD endpoints. The curriculum_* tables are not yet in the
- * generated database.ts, so endpoints use `.from('table' as never)` and cast
- * results to the helper types in `$lib/types/database-helpers`.
+ * curriculum CRUD endpoints. Result rows are narrowed to the helper types in
+ * `$lib/types/database-helpers` (constrained columns: grade/kind/source).
  */
 
 import { json } from '@sveltejs/kit';

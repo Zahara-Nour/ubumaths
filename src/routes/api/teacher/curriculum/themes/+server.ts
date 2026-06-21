@@ -24,7 +24,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	const { data, error: dbErr } = await locals.supabase
-		.from('curriculum_themes' as never)
+		.from('curriculum_themes')
 		.select(THEME_COLS)
 		.eq('grade', parsed.data.grade)
 		.order('display_order', { ascending: true })
@@ -54,12 +54,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const { data, error: dbErr } = await locals.supabase
-		.from('curriculum_themes' as never)
+		.from('curriculum_themes')
 		.insert({
 			grade: parsed.data.grade,
 			name: parsed.data.name,
 			display_order: parsed.data.display_order ?? 0
-		} as never)
+		})
 		.select(THEME_COLS)
 		.single();
 

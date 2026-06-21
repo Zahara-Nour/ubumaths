@@ -13,6 +13,7 @@ import { requireRoles } from '$lib/server/middleware/auth';
 import { updateItemSchema } from '$lib/server/validation/curriculum';
 import { curriculumDbError, ITEM_COLS } from '$lib/server/curriculum';
 import type { CurriculumItem } from '$lib/types/database-helpers';
+import type { TablesUpdate } from '$lib/types/database';
 
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
@@ -29,13 +30,13 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		return json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
-	const updates: Record<string, unknown> = {};
+	const updates: TablesUpdate<'curriculum_items'> = {};
 	if (parsed.data.name !== undefined) updates.name = parsed.data.name;
 	if (parsed.data.display_order !== undefined) updates.display_order = parsed.data.display_order;
 
 	const { data, error: dbErr } = await locals.supabase
-		.from('curriculum_items' as never)
-		.update(updates as never)
+		.from('curriculum_items')
+		.update(updates)
 		.eq('id', params.itemId)
 		.select(ITEM_COLS)
 		.single();
@@ -57,7 +58,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
 
 	const { error: dbErr } = await locals.supabase
-		.from('curriculum_items' as never)
+		.from('curriculum_items')
 		.delete()
 		.eq('id', params.itemId);
 

@@ -23,7 +23,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	const { data, error: dbErr } = await locals.supabase
-		.from('curriculum_items' as never)
+		.from('curriculum_items')
 		.select(ITEM_COLS)
 		.eq('theme_id', parsed.data.theme_id)
 		.order('display_order', { ascending: true })
@@ -53,12 +53,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const { data, error: dbErr } = await locals.supabase
-		.from('curriculum_items' as never)
+		.from('curriculum_items')
 		.insert({
 			theme_id: parsed.data.theme_id,
 			name: parsed.data.name,
 			display_order: parsed.data.display_order ?? 0
-		} as never)
+		})
 		.select(ITEM_COLS)
 		.single();
 

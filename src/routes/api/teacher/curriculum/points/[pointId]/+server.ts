@@ -14,6 +14,7 @@ import { requireRoles } from '$lib/server/middleware/auth';
 import { updatePointSchema } from '$lib/server/validation/curriculum';
 import { curriculumDbError, POINT_COLS } from '$lib/server/curriculum';
 import type { CurriculumPoint } from '$lib/types/database-helpers';
+import type { TablesUpdate } from '$lib/types/database';
 
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
@@ -30,7 +31,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		return json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
-	const updates: Record<string, unknown> = {};
+	const updates: TablesUpdate<'curriculum_points'> = {};
 	if (parsed.data.name !== undefined) updates.name = parsed.data.name;
 	if (parsed.data.display_order !== undefined) updates.display_order = parsed.data.display_order;
 	if (parsed.data.kind !== undefined) updates.kind = parsed.data.kind;
@@ -39,8 +40,8 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	const { data, error: dbErr } = await locals.supabase
-		.from('curriculum_points' as never)
-		.update(updates as never)
+		.from('curriculum_points')
+		.update(updates)
 		.eq('id', params.pointId)
 		.select(POINT_COLS)
 		.single();
@@ -62,7 +63,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
 
 	const { error: dbErr } = await locals.supabase
-		.from('curriculum_points' as never)
+		.from('curriculum_points')
 		.delete()
 		.eq('id', params.pointId);
 

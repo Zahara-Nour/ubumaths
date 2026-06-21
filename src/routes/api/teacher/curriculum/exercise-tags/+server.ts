@@ -26,7 +26,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	const { data, error: dbErr } = await locals.supabase
-		.from('exercise_curriculum_points' as never)
+		.from('exercise_curriculum_points')
 		.select('exercise_id, point_id, created_at')
 		.eq('exercise_id', parsed.data.exercise_id);
 
@@ -54,8 +54,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const { error: dbErr } = await locals.supabase
-		.from('exercise_curriculum_points' as never)
-		.insert({ exercise_id: parsed.data.exercise_id, point_id: parsed.data.point_id } as never);
+		.from('exercise_curriculum_points')
+		.insert({ exercise_id: parsed.data.exercise_id, point_id: parsed.data.point_id });
 
 	if (dbErr) {
 		// 23505 = already tagged → idempotent success
@@ -83,7 +83,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 	}
 
 	const { error: dbErr } = await locals.supabase
-		.from('exercise_curriculum_points' as never)
+		.from('exercise_curriculum_points')
 		.delete()
 		.eq('exercise_id', parsed.data.exercise_id)
 		.eq('point_id', parsed.data.point_id);

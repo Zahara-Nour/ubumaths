@@ -31,7 +31,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	const { data, error: dbErr } = await locals.supabase
-		.from('journal_entry_points' as never)
+		.from('journal_entry_points')
 		.select(COVERAGE_COLS)
 		.eq('entry_id', parsed.data.entry_id);
 
@@ -59,12 +59,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const { data, error: dbErr } = await locals.supabase
-		.from('journal_entry_points' as never)
+		.from('journal_entry_points')
 		.insert({
 			entry_id: parsed.data.entry_id,
 			point_id: parsed.data.point_id,
 			source: 'manual'
-		} as never)
+		})
 		.select(COVERAGE_COLS)
 		.single();
 
@@ -74,8 +74,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// dropped on the next reconcile). Promote the row to source='manual'.
 		if (dbErr.code === '23505') {
 			const { data: promoted, error: upErr } = await locals.supabase
-				.from('journal_entry_points' as never)
-				.update({ source: 'manual' } as never)
+				.from('journal_entry_points')
+				.update({ source: 'manual' })
 				.eq('entry_id', parsed.data.entry_id)
 				.eq('point_id', parsed.data.point_id)
 				.select(COVERAGE_COLS)
@@ -107,7 +107,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 	}
 
 	const { error: dbErr } = await locals.supabase
-		.from('journal_entry_points' as never)
+		.from('journal_entry_points')
 		.delete()
 		.eq('entry_id', parsed.data.entry_id)
 		.eq('point_id', parsed.data.point_id);

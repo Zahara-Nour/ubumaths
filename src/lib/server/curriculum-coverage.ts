@@ -15,7 +15,7 @@ type Sb = App.Locals['supabase'];
 export async function reconcileAutoCoverage(supabase: Sb, entryId: string): Promise<void> {
 	// 1. exercises referenced by this entry's 'exercise' activities
 	const { data: acts, error: actErr } = await supabase
-		.from('journal_entry_activities' as never)
+		.from('journal_entry_activities')
 		.select('exercise_id')
 		.eq('entry_id', entryId)
 		.eq('kind', 'exercise');
@@ -33,7 +33,7 @@ export async function reconcileAutoCoverage(supabase: Sb, entryId: string): Prom
 	let desired: string[] = [];
 	if (exerciseIds.length > 0) {
 		const { data: tags, error: tagErr } = await supabase
-			.from('exercise_curriculum_points' as never)
+			.from('exercise_curriculum_points')
 			.select('point_id')
 			.in('exercise_id', exerciseIds);
 		if (tagErr) throw new Error(`reconcileAutoCoverage tags: ${tagErr.message}`);
@@ -42,7 +42,7 @@ export async function reconcileAutoCoverage(supabase: Sb, entryId: string): Prom
 
 	// 3. existing coverage rows for the entry
 	const { data: existing, error: exErr } = await supabase
-		.from('journal_entry_points' as never)
+		.from('journal_entry_points')
 		.select('point_id, source')
 		.eq('entry_id', entryId);
 	if (exErr) throw new Error(`reconcileAutoCoverage existing: ${exErr.message}`);
@@ -56,7 +56,7 @@ export async function reconcileAutoCoverage(supabase: Sb, entryId: string): Prom
 		.map((r) => r.point_id);
 	if (staleAuto.length > 0) {
 		const { error } = await supabase
-			.from('journal_entry_points' as never)
+			.from('journal_entry_points')
 			.delete()
 			.eq('entry_id', entryId)
 			.eq('source', 'auto')
@@ -70,8 +70,8 @@ export async function reconcileAutoCoverage(supabase: Sb, entryId: string): Prom
 		.map((pid) => ({ entry_id: entryId, point_id: pid, source: 'auto' }));
 	if (toInsert.length > 0) {
 		const { error } = await supabase
-			.from('journal_entry_points' as never)
-			.upsert(toInsert as never, { onConflict: 'entry_id,point_id', ignoreDuplicates: true });
+			.from('journal_entry_points')
+			.upsert(toInsert, { onConflict: 'entry_id,point_id', ignoreDuplicates: true });
 		if (error) throw new Error(`reconcileAutoCoverage insert: ${error.message}`);
 	}
 }
