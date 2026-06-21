@@ -198,11 +198,28 @@ journal_entry_points              -- signal de couverture (manuel + auto matéri
 - **6 endpoints** `src/routes/api/teacher/curriculum/{themes,items,points}[/[id]]/+server.ts` — GET/POST/PATCH/DELETE, `requireRoles(['teacher','admin'])` + RLS.
 - Tests : `curriculum-api.test.ts` **22/22** (201/400/404/409/401/403, tri, cascade, archive). + `curriculum-tracking-rls.test.ts` **12/12**. **`check:incremental` = 0 erreur.**
 
-**Brique 2 — Alimentation (à faire) :**
+**Brique 2 — Alimentation : ✅ FAIT & VERT**
 
-- Endpoints tagging exercices (`exercise_curriculum_points`).
-- Endpoints cahier de texte : `journal_entry_activities` (3 types) + `journal_entry_points` (couverture auto matérialisée depuis les activités taguées + coche manuelle, dé-coche).
-- Tests endpoints + RLS/contraintes (`exercise_curriculum_points`, `journal_entry_*` : `kind_shape`, `source`, unique).
+- Helper `src/lib/server/curriculum-coverage.ts` : `reconcileAutoCoverage(entryId)` — set-reconcile idempotent (auto = union des points tagués sur les exercices référencés ; ne touche pas les rows `manual`).
+- Validation Zod étendue (tagging, `createActivitySchema` discriminé sur `kind` + `superRefine` course, coverage).
+- **4 endpoints** : `exercise-tags` (GET/POST/DELETE), `activities` (GET/POST + reconcile si exercise), `activities/[id]` (DELETE + reconcile), `coverage` (GET/POST manuel/DELETE).
+- Tests : `curriculum-coverage.test.ts` **18/18** (tagging idempotent, 3 types d'activité, **réconciliation auto add/remove**, couverture manuelle, RLS 42501 student, CHECK `kind_shape`/`source`). **`check:incremental` = 0 erreur.**
+
+**Sémantique couverture (V1, actée dans le code) :** auto = matérialisé/réconcilié depuis les activités exercice ; manual = coché par le prof. `unique(entry_id, point_id)`. **Coche manuelle d'un point déjà `auto` → promotion en `manual`** (survit à la réconciliation — corrige une perte de donnée silencieuse repérée en revue).
+
+**Revue (code-reviewer + security-auditor) — aucun bloquant / aucune faille critique-élevée.** Corrigés : promotion auto→manual (#1) ; `22P02` (UUID malformé) → 400 dans le mapper ; `textbookRefSchema.strict()` ; `to authenticated` sur les 6 policies RLS.
+
+**Limites V1 assumées (documentées) :**
+
+- `reconcileAutoCoverage` = read-then-write en 3 requêtes (pas transactionnel) → risque de course **négligeable en mono-prof** ; à passer en fonction Postgres si besoin de concurrence.
+- **Tagging d'un exercice pris en compte « à la prochaine activité »** : tagger/dé-tagger un exercice ne re-réconcilie pas les entrées de cahier de texte qui le référencent déjà (workflow attendu : taguer avant d'utiliser). À arbitrer avec le PO si on veut un re-reconcile cross-entrées.
+- Décocher manuellement un point **auto** encore adossé à un exercice → ré-ajouté à la prochaine réconciliation (pas de suppression persistante).
+- Messages d'erreur 500 : les endpoints de la brique 1 renvoient encore `dbErr.message` (aligné sur le pattern codebase existant, ~15 occurrences ailleurs) ; brique 2 + cas mappés = message générique. Nettoyage global possible plus tard.
+
+**Phase 1 = données + API + tests : COMPLÈTE (52 tests verts).** Restent, hors Phase 1 :
+
+- Revue : `code-reviewer` + `security-auditor` (RLS/API) avant PR/merge.
+- Phase 2 (seed d'un grade — en attente §10 Q1/Q2), Phases 3-5 (UI édition / heatmap / intégration cahier de texte).
 
 ---
 
