@@ -15,6 +15,7 @@ import { createActivitySchema, activityListQuerySchema } from '$lib/server/valid
 import { curriculumDbError } from '$lib/server/curriculum';
 import { reconcileAutoCoverage } from '$lib/server/curriculum-coverage';
 import type { JournalEntryActivity } from '$lib/types/database-helpers';
+import type { TablesInsert } from '$lib/types/database';
 
 const ACTIVITY_COLS =
 	'id, entry_id, kind, exercise_id, chapter_id, textbook_ref, label, display_order, created_at';
@@ -28,7 +29,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	const { data, error: dbErr } = await locals.supabase
-		.from('journal_entry_activities' as never)
+		.from('journal_entry_activities')
 		.select(ACTIVITY_COLS)
 		.eq('entry_id', parsed.data.entry_id)
 		.order('display_order', { ascending: true })
@@ -75,8 +76,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const { data, error: dbErr } = await locals.supabase
-		.from('journal_entry_activities' as never)
-		.insert(row as never)
+		.from('journal_entry_activities')
+		.insert(row as TablesInsert<'journal_entry_activities'>)
 		.select(ACTIVITY_COLS)
 		.single();
 

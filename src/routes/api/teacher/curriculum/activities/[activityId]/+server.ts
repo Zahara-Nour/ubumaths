@@ -19,7 +19,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 	// Fetch entry_id + kind first (needed to reconcile after delete).
 	const { data: activity, error: fetchErr } = await locals.supabase
-		.from('journal_entry_activities' as never)
+		.from('journal_entry_activities')
 		.select('entry_id, kind')
 		.eq('id', params.activityId)
 		.maybeSingle();
@@ -35,7 +35,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const { entry_id, kind } = activity as { entry_id: string; kind: string };
 
 	const { error: dbErr } = await locals.supabase
-		.from('journal_entry_activities' as never)
+		.from('journal_entry_activities')
 		.delete()
 		.eq('id', params.activityId);
 

@@ -575,10 +575,9 @@ export type {
 // Référentiel de programme (Thème → Item → Point), DISTINCT du référentiel
 // d'évaluation (skills/objectives). Couverture alimentée par le cahier de texte.
 //
-// NOTE: standalone types — les tables `curriculum_*` / `journal_entry_*` /
-// `exercise_curriculum_points` ne sont pas encore dans le `database.ts` généré
-// (migration 20260621100000 non poussée en prod). Après le push prod +
-// `pnpm db:types`, remplacer ces interfaces par `Tables<'curriculum_themes'>` etc.
+// Rows dérivées du `database.ts` généré ; on resserre seulement les colonnes
+// contraintes que le générateur expose en `string`/`Json` (grade, kind, source,
+// textbook_ref) vers leurs unions/formes réelles.
 
 /** A curriculum point can be a knowledge item or a know-how (neutral by default). */
 export type CurriculumPointKind = 'connaissance' | 'savoir_faire';
@@ -598,62 +597,26 @@ export interface TextbookRef {
 }
 
 /** Level 1 — Thème (per grade). e.g. "Calcul". */
-export interface CurriculumTheme {
-	id: string;
-	grade: GradeCode;
-	name: string;
-	display_order: number;
-	created_at: string;
-	updated_at: string;
-}
+export type CurriculumTheme = Omit<Tables<'curriculum_themes'>, 'grade'> & { grade: GradeCode };
 
 /** Level 2 — Item (under a Thème). e.g. "Fractions". */
-export interface CurriculumItem {
-	id: string;
-	theme_id: string;
-	name: string;
-	display_order: number;
-	created_at: string;
-	updated_at: string;
-}
+export type CurriculumItem = Tables<'curriculum_items'>;
 
 /** Level 3 — Point (tracking grain). e.g. "Additionner deux fractions". */
-export interface CurriculumPoint {
-	id: string;
-	item_id: string;
-	name: string;
-	display_order: number;
+export type CurriculumPoint = Omit<Tables<'curriculum_points'>, 'kind'> & {
 	kind: CurriculumPointKind | null;
-	archived_at: string | null;
-	created_at: string;
-	updated_at: string;
-}
+};
 
 /** Tags a system exercise with a curriculum point it covers. */
-export interface ExerciseCurriculumPoint {
-	exercise_id: string;
-	point_id: string;
-	created_at: string;
-}
+export type ExerciseCurriculumPoint = Tables<'exercise_curriculum_points'>;
 
 /** An activity attached to a journal entry (system exercise / textbook / course point). */
-export interface JournalEntryActivity {
-	id: string;
-	entry_id: string;
-	kind: JournalActivityKind;
-	exercise_id: string | null;
-	chapter_id: string | null;
-	textbook_ref: TextbookRef | null;
-	label: string | null;
-	display_order: number;
-	created_at: string;
-}
+export type JournalEntryActivity = Omit<
+	Tables<'journal_entry_activities'>,
+	'kind' | 'textbook_ref'
+> & { kind: JournalActivityKind; textbook_ref: TextbookRef | null };
 
 /** Coverage signal: a curriculum point worked on in a journal entry. */
-export interface JournalEntryPoint {
-	id: string;
-	entry_id: string;
-	point_id: string;
+export type JournalEntryPoint = Omit<Tables<'journal_entry_points'>, 'source'> & {
 	source: CoverageSource;
-	created_at: string;
-}
+};
