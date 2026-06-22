@@ -1,0 +1,11 @@
+echo "pre-push : prettier --check…"
+if ! pnpm format:check; then
+	echo ""
+	echo "❌ Formatage : des fichiers ne sont pas formatés → la CI échouerait (job Lint)."
+	echo "   Corrige puis re-push :  pnpm format:all"
+	exit 1
+fi
+
+# Note : le full ESLint reste volontairement CI-only — il est type-aware, donc
+# lent (~25 s même sur 1 fichier) et gourmand en RAM (OOM sur machine 8 Go).
+# Le job "Lint" en CI le couvre.
