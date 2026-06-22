@@ -175,7 +175,7 @@ journal_entry_points              -- signal de couverture (manuel + auto matéri
 
 ## 11. Phase 1 — progression (crash-recovery)
 
-> Branche : **`feat/suivi-programme`**. **Non commité** (en attente d'accord).
+> Branche : **`feat/suivi-programme`** — 3 commits (briques 1 & 2 + nettoyage types). **Migration POUSSÉE EN PROD le 2026-06-21** (`db:migrate` par David, vérifiée : 6 tables, RLS activée). `database.ts` régénéré (`db:types`) → tables typées, `as never` retirés du code (types `Tables<'…'>`). **Branche non mergée / code non déployé.**
 
 **Fait & vérifié (local Supabase) :**
 
@@ -216,17 +216,18 @@ journal_entry_points              -- signal de couverture (manuel + auto matéri
 - Décocher manuellement un point **auto** encore adossé à un exercice → ré-ajouté à la prochaine réconciliation (pas de suppression persistante).
 - Messages d'erreur 500 : les endpoints de la brique 1 renvoient encore `dbErr.message` (aligné sur le pattern codebase existant, ~15 occurrences ailleurs) ; brique 2 + cas mappés = message générique. Nettoyage global possible plus tard.
 
-**Phase 1 = données + API + tests : COMPLÈTE (52 tests verts).** Restent, hors Phase 1 :
+**Phase 1 = données + API + tests : COMPLÈTE (53 tests verts).** Revue code+sécurité passée (aucun bloquant). Migration en prod, `database.ts` régénéré, types nettoyés. Restent, hors Phase 1 :
 
-- Revue : `code-reviewer` + `security-auditor` (RLS/API) avant PR/merge.
-- Phase 2 (seed d'un grade — en attente §10 Q1/Q2), Phases 3-5 (UI édition / heatmap / intégration cahier de texte).
+- **Merge de la branche + déploiement du code** (la migration additive est déjà en prod, aucun code `main` ne s'en sert → pas de casse en attendant).
+- **Phase 2 (seed 6ᵉ) : ✅ FAIT & VÉRIFIÉ** — migration `20260621160000_seed_curriculum_6e.sql` : 6 thèmes · 20 items · **95 points** (BO cycle 3, « Connaissances et capacités attendues » 6ᵉ), tag `kind` connaissance/savoir-faire. Source de vérité : `docs/wip/referentiel/6e-programme-curriculum.md`. Appliquée en local (`db:reset`), comptes vérifiés (42/14/23/7/5/4), 53 tests verts. **Non poussée en prod.**
+- Phases 3-5 (UI édition / heatmap / intégration cahier de texte).
 
 ---
 
 ## 10. Questions ouvertes (à trancher avec David)
 
-1. **Grade de démarrage** : quel(s) niveau(x) enseignes-tu, et lequel pré-remplit-on en premier ? (6ᵉ ?)
-2. **Source du pré-remplissage** : ta **progression perso 2016** (« echelles descriptives connaissance 6 2016.pdf », tableau ~15 items × colonnes, intitulés simples) ? le **BO** ? l'arbre **éval 6ᵉ existant** (6 thèmes / 18 items) comme ossature ? Une combinaison ?
+1. ~~Grade de démarrage~~ — **ACTÉ : 6ᵉ.**
+2. ~~Source du pré-remplissage~~ — **ACTÉ : BO cycle 3** (PDF officiel) + ossature éval 6ᵉ en référence. Seed livré (Phase 2).
 3. **Référence manuel** : structurée (`manuel`, `page`, `numéro`) ou simple texte libre (label) ? Proposition : `jsonb` souple (label obligatoire, le reste optionnel).
 4. **`kind` sur le Point** (connaissance / savoir-faire) : utile ou superflu vu le grain fin ? Proposition : champ **optionnel** (null par défaut).
 5. ~~Vocabulaire~~ — **ACTÉ** (2026-06-21) : `Thème → Item → Point`, niveau 3 neutre + champ `kind` optionnel (cf. §3).
