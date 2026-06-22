@@ -4,6 +4,7 @@
 	import { browser } from '$app/environment';
 	import ExerciseForm from '$lib/components/exercises/ExerciseForm.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -23,7 +24,10 @@
 		Clock,
 		Globe,
 		Download,
-		Loader2
+		Loader2,
+		ListTodo,
+		ChevronRight,
+		ChevronDown
 	} from '@lucide/svelte';
 	import { generateExerciseTypst } from '$lib/exercises/typst/exercise-typst-generator';
 	import { getTypstService, PRIORITY } from '$lib/typst/service';
@@ -83,6 +87,63 @@
 	// PDF download state
 	let isPdfLoading = $state(false);
 	let showPdfDialog = $state(false);
+
+	// --- Points de programme (tagging) ---------------------------------------
+	// svelte-ignore state_referenced_locally
+	const initialTaggedIds = data.taggedPointIds;
+	const initialTags: Record<string, boolean> = {};
+	for (const pid of initialTaggedIds) initialTags[pid] = true;
+	let taggedSet = $state<Record<string, boolean>>(initialTags);
+	let openTagThemes = $state<Record<string, boolean>>({});
+	let openTagItems = $state<Record<string, boolean>>({});
+
+	function isTagged(pointId: string): boolean {
+		return taggedSet[pointId] === true;
+	}
+
+	async function tagApi(url: string, method: string, body?: unknown): Promise<boolean> {
+		try {
+			const res = await fetch(url, {
+				method,
+				headers: body ? { 'Content-Type': 'application/json' } : undefined,
+				body: body ? JSON.stringify(body) : undefined
+			});
+			if (!res.ok) {
+				const j = await res.json().catch(() => ({}));
+				toaster.error(j?.error ?? 'Une erreur est survenue');
+				return false;
+			}
+			return true;
+		} catch {
+			toaster.error('Erreur réseau');
+			return false;
+		}
+	}
+
+	async function toggleTag(pointId: string) {
+		const exId = data.exercise.id;
+		if (isTagged(pointId)) {
+			const next = { ...taggedSet };
+			delete next[pointId];
+			taggedSet = next;
+			const ok = await tagApi(
+				`/api/teacher/curriculum/exercise-tags?exercise_id=${exId}&point_id=${pointId}`,
+				'DELETE'
+			);
+			if (!ok) taggedSet = { ...taggedSet, [pointId]: true };
+		} else {
+			taggedSet = { ...taggedSet, [pointId]: true };
+			const ok = await tagApi('/api/teacher/curriculum/exercise-tags', 'POST', {
+				exercise_id: exId,
+				point_id: pointId
+			});
+			if (!ok) {
+				const next = { ...taggedSet };
+				delete next[pointId];
+				taggedSet = next;
+			}
+		}
+	}
 
 	// Expiration options for token creation
 	const expirationOptions = [
@@ -518,6 +579,76 @@
 		{initialVariation}
 		onvariationchange={handleVariationChange}
 	/>
+
+	<!-- Points de programme (tagging → couverture auto dans le cahier de texte) -->
+	{#if data.curriculumByGrade.length > 0}
+		<Card.Root class="mt-6">
+			<Card.Header>
+				<Card.Title class="flex items-center gap-2">
+					<ListTodo class="h-5 w-5 text-primary" />
+					Points de programme
+				</Card.Title>
+				<Card.Description>
+					Tague les points du programme couverts par cet exercice. Quand il est référencé dans une
+					entrée de cahier de texte, ces points sont cochés automatiquement.
+				</Card.Description>
+			</Card.Header>
+			<Card.Content class="space-y-4">
+				{#each data.curriculumByGrade as { grade, tree } (grade)}
+					{#if data.curriculumByGrade.length > 1}
+						<p class="text-sm font-semibold text-muted-foreground">Niveau {grade}</p>
+					{/if}
+					<div class="space-y-1">
+						{#each tree as theme (theme.id)}
+							<div class="rounded-md border">
+								<button
+									class="flex w-full items-center gap-2 p-2 text-left text-sm font-medium"
+									onclick={() => (openTagThemes[theme.id] = !openTagThemes[theme.id])}
+								>
+									{#if openTagThemes[theme.id]}
+										<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
+									{:else}
+										<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
+									{/if}
+									{theme.name}
+								</button>
+								{#if openTagThemes[theme.id]}
+									<div class="space-y-1 border-t p-2 pl-4">
+										{#each theme.items as item (item.id)}
+											<div>
+												<button
+													class="flex w-full items-center gap-2 py-1 text-left text-sm"
+													onclick={() => (openTagItems[item.id] = !openTagItems[item.id])}
+												>
+													{#if openTagItems[item.id]}
+														<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
+													{:else}
+														<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
+													{/if}
+													<span class="font-medium">{item.name}</span>
+												</button>
+												{#if openTagItems[item.id]}
+													<div class="space-y-1 py-1 pl-6">
+														{#each item.points as point (point.id)}
+															<MyCheckbox
+																checked={isTagged(point.id)}
+																label={point.name}
+																onchange={() => toggleTag(point.id)}
+															/>
+														{/each}
+													</div>
+												{/if}
+											</div>
+										{/each}
+									</div>
+								{/if}
+							</div>
+						{/each}
+					</div>
+				{/each}
+			</Card.Content>
+		</Card.Root>
+	{/if}
 </div>
 
 <!-- JSON Debug Dialog -->
