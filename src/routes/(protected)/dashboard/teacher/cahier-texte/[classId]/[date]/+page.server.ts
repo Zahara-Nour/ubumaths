@@ -94,12 +94,44 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		: [];
 
 	let coveredPoints: { point_id: string; source: string }[] = [];
+	let activities: {
+		id: string;
+		kind: string;
+		exercise_id: string | null;
+		chapter_id: string | null;
+		textbook_ref: unknown;
+		label: string | null;
+		display_order: number;
+	}[] = [];
 	if (entry) {
 		const { data: cov } = await locals.supabase
 			.from('journal_entry_points')
 			.select('point_id, source')
 			.eq('entry_id', entry.id);
 		coveredPoints = (cov ?? []) as { point_id: string; source: string }[];
+
+		const { data: acts } = await locals.supabase
+			.from('journal_entry_activities')
+			.select('id, kind, exercise_id, chapter_id, textbook_ref, label, display_order')
+			.eq('entry_id', entry.id)
+			.order('display_order', { ascending: true })
+			.order('created_at', { ascending: true });
+		activities = (acts ?? []) as typeof activities;
+	}
+
+	// Exercises selectable for this class's grade (for the activity picker).
+	let exerciseOptions: { value: string; label: string }[] = [];
+	if (classData.grade) {
+		const { data: exs } = await locals.supabase
+			.from('exercises')
+			.select('id, title, slug, topic')
+			.contains('grades', [classData.grade])
+			.order('title', { ascending: true })
+			.limit(500);
+		exerciseOptions = (exs ?? []).map((e) => ({
+			value: e.id,
+			label: e.title || e.topic || e.slug || 'Exercice sans titre'
+		}));
 	}
 
 	return {
@@ -107,7 +139,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		entry,
 		entryDate: date,
 		curriculumTree,
-		coveredPoints
+		coveredPoints,
+		activities,
+		exerciseOptions
 	};
 };
 
