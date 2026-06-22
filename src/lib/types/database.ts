@@ -2100,6 +2100,109 @@ export type Database = {
           },
         ]
       }
+      curriculum_items: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          name: string
+          theme_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          name: string
+          theme_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          name?: string
+          theme_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curriculum_items_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "curriculum_themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      curriculum_points: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          display_order: number
+          id: string
+          item_id: string
+          kind: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          display_order?: number
+          id?: string
+          item_id: string
+          kind?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          display_order?: number
+          id?: string
+          item_id?: string
+          kind?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curriculum_points_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "curriculum_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      curriculum_themes: {
+        Row: {
+          created_at: string
+          display_order: number
+          grade: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          grade: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          grade?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       daily_game_rewards: {
         Row: {
           actual_reward: number
@@ -2769,6 +2872,39 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      exercise_curriculum_points: {
+        Row: {
+          created_at: string
+          exercise_id: string
+          point_id: string
+        }
+        Insert: {
+          created_at?: string
+          exercise_id: string
+          point_id: string
+        }
+        Update: {
+          created_at?: string
+          exercise_id?: string
+          point_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercise_curriculum_points_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exercise_curriculum_points_point_id_fkey"
+            columns: ["point_id"]
+            isOneToOne: false
+            referencedRelation: "curriculum_points"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -4582,6 +4718,103 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      journal_entry_activities: {
+        Row: {
+          chapter_id: string | null
+          created_at: string
+          display_order: number
+          entry_id: string
+          exercise_id: string | null
+          id: string
+          kind: string
+          label: string | null
+          textbook_ref: Json | null
+        }
+        Insert: {
+          chapter_id?: string | null
+          created_at?: string
+          display_order?: number
+          entry_id: string
+          exercise_id?: string | null
+          id?: string
+          kind: string
+          label?: string | null
+          textbook_ref?: Json | null
+        }
+        Update: {
+          chapter_id?: string | null
+          created_at?: string
+          display_order?: number
+          entry_id?: string
+          exercise_id?: string | null
+          id?: string
+          kind?: string
+          label?: string | null
+          textbook_ref?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journal_entry_activities_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "class_chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_entry_activities_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "class_journal_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_entry_activities_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercises"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      journal_entry_points: {
+        Row: {
+          created_at: string
+          entry_id: string
+          id: string
+          point_id: string
+          source: string
+        }
+        Insert: {
+          created_at?: string
+          entry_id: string
+          id?: string
+          point_id: string
+          source?: string
+        }
+        Update: {
+          created_at?: string
+          entry_id?: string
+          id?: string
+          point_id?: string
+          source?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journal_entry_points_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "class_journal_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_entry_points_point_id_fkey"
+            columns: ["point_id"]
+            isOneToOne: false
+            referencedRelation: "curriculum_points"
+            referencedColumns: ["id"]
           },
         ]
       }

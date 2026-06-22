@@ -12,6 +12,7 @@
 
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
@@ -19,6 +20,8 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import MySelect from '$lib/components/MySelect.svelte';
+	import { Badge } from '$lib/components/ui/badge';
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -31,7 +34,11 @@
 		ClipboardList,
 		Globe,
 		EyeOff,
-		Calendar
+		Calendar,
+		ListTodo,
+		ChevronRight,
+		ChevronDown,
+		Plus
 	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 
@@ -56,6 +63,164 @@
 
 	// Delete confirmation dialog
 	let showDeleteDialog = $state(false);
+
+	// --- Programme travaillé (coverage) --------------------------------------
+	const initialCovered: Record<string, string> = {};
+	for (const c of initialData.coveredPoints) initialCovered[c.point_id] = c.source;
+	let coveredSource = $state<Record<string, string>>(initialCovered);
+	let openProgThemes = $state<Record<string, boolean>>({});
+	let openProgItems = $state<Record<string, boolean>>({});
+	let coveredCount = $derived(Object.keys(coveredSource).length);
+
+	function isCovered(pointId: string): boolean {
+		return coveredSource[pointId] !== undefined;
+	}
+
+	async function covApi(url: string, method: string, body?: unknown): Promise<boolean> {
+		try {
+			const res = await fetch(url, {
+				method,
+				headers: body ? { 'Content-Type': 'application/json' } : undefined,
+				body: body ? JSON.stringify(body) : undefined
+			});
+			if (!res.ok) {
+				const j = await res.json().catch(() => ({}));
+				toaster.error(j?.error ?? 'Une erreur est survenue');
+				return false;
+			}
+			return true;
+		} catch {
+			toaster.error('Erreur réseau');
+			return false;
+		}
+	}
+
+	/** Optimistically toggle a curriculum point's coverage for this entry. */
+	async function togglePoint(point: { id: string }) {
+		const entryId = data.entry?.id;
+		if (!entryId) return;
+
+		if (isCovered(point.id)) {
+			const prev = coveredSource[point.id];
+			const next = { ...coveredSource };
+			delete next[point.id];
+			coveredSource = next;
+			const ok = await covApi(
+				`/api/teacher/curriculum/coverage?entry_id=${entryId}&point_id=${point.id}`,
+				'DELETE'
+			);
+			if (!ok) coveredSource = { ...coveredSource, [point.id]: prev };
+		} else {
+			coveredSource = { ...coveredSource, [point.id]: 'manual' };
+			const ok = await covApi('/api/teacher/curriculum/coverage', 'POST', {
+				entry_id: entryId,
+				point_id: point.id
+			});
+			if (!ok) {
+				const next = { ...coveredSource };
+				delete next[point.id];
+				coveredSource = next;
+			}
+		}
+	}
+
+	// --- Activités (5b) -------------------------------------------------------
+	let activities = $state(initialData.activities);
+	let selectedExercise = $state('');
+	let tbLabel = $state('');
+	let courseLabel = $state('');
+
+	function exerciseLabel(id: string | null): string {
+		if (!id) return 'Exercice';
+		return data.exerciseOptions.find((o) => o.value === id)?.label ?? 'Exercice';
+	}
+
+	function activityLabel(a: PageData['activities'][number]): string {
+		if (a.kind === 'exercise') return exerciseLabel(a.exercise_id);
+		if (a.kind === 'textbook')
+			return (a.textbook_ref as { label?: string } | null)?.label ?? 'Référence manuel';
+		return a.label ?? 'Point de cours';
+	}
+
+	function kindShort(kind: string): string {
+		if (kind === 'exercise') return 'Exo';
+		if (kind === 'textbook') return 'Manuel';
+		return 'Cours';
+	}
+
+	async function refreshActivities() {
+		const entryId = data.entry?.id;
+		if (!entryId) return;
+		const res = await fetch(`/api/teacher/curriculum/activities?entry_id=${entryId}`);
+		if (res.ok) activities = (await res.json()).activities ?? [];
+	}
+
+	async function refreshCoverage() {
+		const entryId = data.entry?.id;
+		if (!entryId) return;
+		const res = await fetch(`/api/teacher/curriculum/coverage?entry_id=${entryId}`);
+		if (!res.ok) return;
+		const next: Record<string, string> = {};
+		for (const c of (await res.json()).coverage ?? []) next[c.point_id] = c.source;
+		coveredSource = next;
+	}
+
+	async function addExercise() {
+		const entryId = data.entry?.id;
+		if (!entryId || !selectedExercise) return;
+		const ok = await covApi('/api/teacher/curriculum/activities', 'POST', {
+			entry_id: entryId,
+			kind: 'exercise',
+			exercise_id: selectedExercise
+		});
+		if (ok) {
+			selectedExercise = '';
+			toaster.success('Exercice ajouté');
+			await refreshActivities();
+			await refreshCoverage();
+		}
+	}
+
+	async function addTextbook() {
+		const entryId = data.entry?.id;
+		const label = tbLabel.trim();
+		if (!entryId || !label) return;
+		const ok = await covApi('/api/teacher/curriculum/activities', 'POST', {
+			entry_id: entryId,
+			kind: 'textbook',
+			textbook_ref: { label }
+		});
+		if (ok) {
+			tbLabel = '';
+			toaster.success('Référence ajoutée');
+			await refreshActivities();
+		}
+	}
+
+	async function addCourse() {
+		const entryId = data.entry?.id;
+		const label = courseLabel.trim();
+		if (!entryId || !label) return;
+		const ok = await covApi('/api/teacher/curriculum/activities', 'POST', {
+			entry_id: entryId,
+			kind: 'course',
+			label
+		});
+		if (ok) {
+			courseLabel = '';
+			toaster.success('Point de cours ajouté');
+			await refreshActivities();
+		}
+	}
+
+	async function deleteActivity(a: PageData['activities'][number]) {
+		const ok = await covApi(`/api/teacher/curriculum/activities/${a.id}`, 'DELETE');
+		if (ok) {
+			toaster.success('Activité retirée');
+			await refreshActivities();
+			if (a.kind === 'exercise') await refreshCoverage();
+		}
+	}
 
 	// Derived values
 	let isEditing = $derived(!!data.entry);
@@ -331,6 +496,159 @@
 			</div>
 		</div>
 	</form>
+
+	<!-- Programme travaillé (coverage) -->
+	{#if isEditing}
+		<div class="mt-6">
+			<Card.Root>
+				<Card.Header>
+					<Card.Title class="flex items-center gap-2">
+						<ListTodo class="h-5 w-5 text-primary" />
+						Programme travaillé
+					</Card.Title>
+					<Card.Description>
+						Cochez les points du programme abordés pendant cette séance.
+						{#if coveredCount > 0}
+							<span class="font-medium text-foreground">
+								{coveredCount} point{coveredCount > 1 ? 's' : ''} coché{coveredCount > 1
+									? 's'
+									: ''}.
+							</span>
+						{/if}
+					</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<!-- Activités de la séance -->
+					<div class="mb-4 space-y-3">
+						<p class="text-sm font-medium">Activités</p>
+						{#if activities.length > 0}
+							<ul class="space-y-1">
+								{#each activities as a (a.id)}
+									<li class="flex items-center gap-2 text-sm">
+										<Badge variant="secondary" class="shrink-0">{kindShort(a.kind)}</Badge>
+										<span class="flex-1 truncate">{activityLabel(a)}</span>
+										<Button variant="ghost" size="sm" onclick={() => deleteActivity(a)}>
+											<Trash2 class="h-4 w-4 text-destructive" />
+										</Button>
+									</li>
+								{/each}
+							</ul>
+						{/if}
+						<div class="space-y-2">
+							{#if data.exerciseOptions.length > 0}
+								<div class="flex gap-2">
+									<MySelect
+										type="single"
+										bind:value={selectedExercise}
+										items={data.exerciseOptions}
+										placeholder="Exercice du système…"
+										triggerClass="flex-1"
+									/>
+									<Button
+										variant="outline"
+										size="sm"
+										disabled={!selectedExercise}
+										onclick={addExercise}
+									>
+										<Plus class="h-4 w-4" />
+									</Button>
+								</div>
+							{/if}
+							<div class="flex gap-2">
+								<Input
+									bind:value={tbLabel}
+									placeholder="Référence manuel (ex. Sésamath p.42 n°12)"
+								/>
+								<Button
+									variant="outline"
+									size="sm"
+									disabled={!tbLabel.trim()}
+									onclick={addTextbook}
+								>
+									<Plus class="h-4 w-4" />
+								</Button>
+							</div>
+							<div class="flex gap-2">
+								<Input bind:value={courseLabel} placeholder="Point de cours abordé…" />
+								<Button
+									variant="outline"
+									size="sm"
+									disabled={!courseLabel.trim()}
+									onclick={addCourse}
+								>
+									<Plus class="h-4 w-4" />
+								</Button>
+							</div>
+						</div>
+					</div>
+					<Separator class="mb-4" />
+
+					{#if data.curriculumTree.length === 0}
+						<p class="text-sm text-muted-foreground">
+							Aucun programme défini pour le niveau de cette classe.
+							<a class="underline" href={resolve('/dashboard/teacher/programme')}
+								>Le créer dans Programme</a
+							>.
+						</p>
+					{:else}
+						<div class="space-y-1">
+							{#each data.curriculumTree as theme (theme.id)}
+								<div class="rounded-md border">
+									<button
+										class="flex w-full items-center gap-2 p-2 text-left font-medium"
+										onclick={() => (openProgThemes[theme.id] = !openProgThemes[theme.id])}
+									>
+										{#if openProgThemes[theme.id]}
+											<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
+										{:else}
+											<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
+										{/if}
+										{theme.name}
+									</button>
+									{#if openProgThemes[theme.id]}
+										<div class="space-y-1 border-t p-2 pl-4">
+											{#each theme.items as item (item.id)}
+												<div>
+													<button
+														class="flex w-full items-center gap-2 py-1 text-left text-sm"
+														onclick={() => (openProgItems[item.id] = !openProgItems[item.id])}
+													>
+														{#if openProgItems[item.id]}
+															<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
+														{:else}
+															<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
+														{/if}
+														<span class="font-medium">{item.name}</span>
+														<span class="text-xs text-muted-foreground">
+															({item.points.filter((p) => isCovered(p.id)).length}/{item.points
+																.length})
+														</span>
+													</button>
+													{#if openProgItems[item.id]}
+														<div class="space-y-1 py-1 pl-6">
+															{#each item.points as point (point.id)}
+																<MyCheckbox
+																	checked={isCovered(point.id)}
+																	label={coveredSource[point.id] === 'auto'
+																		? `${point.name} (auto)`
+																		: point.name}
+																	onchange={() => togglePoint(point)}
+																/>
+															{/each}
+														</div>
+													{/if}
+												</div>
+											{/each}
+										</div>
+									{/if}
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+		</div>
+	{/if}
 
 	<!-- Hidden delete form -->
 	{#if isEditing}

@@ -1,0 +1,198 @@
+/**
+ * Zod validation — Curriculum tracking (suivi du programme)
+ * =========================================================
+ *
+ * Referential tree: Thème → Item → Point. All inputs validated here.
+ * Mirrors the DB constraints in migration 20260621100000_curriculum_tracking.sql.
+ */
+
+import { z } from 'zod';
+import { gradeCodeSchema } from './grades';
+
+// ---------------------------------------------------------------------------
+// Shared field schemas
+// ---------------------------------------------------------------------------
+
+const nameSchema = z
+	.string()
+	.trim()
+	.min(1, 'Le nom ne peut pas être vide')
+	.max(200, 'Le nom ne peut pas dépasser 200 caractères');
+
+const displayOrderSchema = z.number().int().min(0).max(100000);
+
+const pointKindSchema = z.enum(['connaissance', 'savoir_faire']);
+
+// ---------------------------------------------------------------------------
+// Thème (level 1)
+// ---------------------------------------------------------------------------
+
+export const createThemeSchema = z.object({
+	grade: gradeCodeSchema,
+	name: nameSchema,
+	display_order: displayOrderSchema.optional()
+});
+
+export const updateThemeSchema = z
+	.object({
+		name: nameSchema.optional(),
+		display_order: displayOrderSchema.optional()
+	})
+	.refine((d) => d.name !== undefined || d.display_order !== undefined, {
+		message: 'Au moins un champ à mettre à jour'
+	});
+
+// ---------------------------------------------------------------------------
+// Item (level 2)
+// ---------------------------------------------------------------------------
+
+export const createItemSchema = z.object({
+	theme_id: z.string().uuid(),
+	name: nameSchema,
+	display_order: displayOrderSchema.optional()
+});
+
+export const updateItemSchema = z
+	.object({
+		name: nameSchema.optional(),
+		display_order: displayOrderSchema.optional()
+	})
+	.refine((d) => d.name !== undefined || d.display_order !== undefined, {
+		message: 'Au moins un champ à mettre à jour'
+	});
+
+// ---------------------------------------------------------------------------
+// Point (level 3, tracking grain)
+// ---------------------------------------------------------------------------
+
+export const createPointSchema = z.object({
+	item_id: z.string().uuid(),
+	name: nameSchema,
+	display_order: displayOrderSchema.optional(),
+	kind: pointKindSchema.nullable().optional()
+});
+
+export const updatePointSchema = z
+	.object({
+		name: nameSchema.optional(),
+		display_order: displayOrderSchema.optional(),
+		kind: pointKindSchema.nullable().optional(),
+		// soft-archive toggle: true → set archived_at = now(), false → clear
+		archived: z.boolean().optional()
+	})
+	.refine(
+		(d) =>
+			d.name !== undefined ||
+			d.display_order !== undefined ||
+			d.kind !== undefined ||
+			d.archived !== undefined,
+		{ message: 'Au moins un champ à mettre à jour' }
+	);
+
+// ---------------------------------------------------------------------------
+// Query-param schemas (GET filters)
+// ---------------------------------------------------------------------------
+
+export const themeListQuerySchema = z.object({
+	grade: gradeCodeSchema
+});
+
+export const itemListQuerySchema = z.object({
+	theme_id: z.string().uuid()
+});
+
+export const pointListQuerySchema = z.object({
+	item_id: z.string().uuid()
+});
+
+// ---------------------------------------------------------------------------
+// Inferred input types
+// ---------------------------------------------------------------------------
+
+export type CreateThemeInput = z.infer<typeof createThemeSchema>;
+export type UpdateThemeInput = z.infer<typeof updateThemeSchema>;
+export type CreateItemInput = z.infer<typeof createItemSchema>;
+export type UpdateItemInput = z.infer<typeof updateItemSchema>;
+export type CreatePointInput = z.infer<typeof createPointSchema>;
+export type UpdatePointInput = z.infer<typeof updatePointSchema>;
+
+// ---------------------------------------------------------------------------
+// Brique 2 — Tagging des exercices & alimentation (cahier de texte)
+// ---------------------------------------------------------------------------
+
+const uuidSchema = z.string().uuid();
+
+/** Tag / untag a system exercise with a curriculum point. */
+export const exerciseTagSchema = z.object({
+	exercise_id: uuidSchema,
+	point_id: uuidSchema
+});
+
+export const exerciseTagListQuerySchema = z.object({
+	exercise_id: uuidSchema
+});
+
+/** Free-form textbook reference (manuel scolaire). */
+const textbookRefSchema = z
+	.object({
+		label: z.string().trim().min(1, 'Référence requise').max(200),
+		manuel: z.string().trim().max(200).optional(),
+		page: z.string().trim().max(50).optional(),
+		numero: z.string().trim().max(50).optional()
+	})
+	.strict();
+
+/** Add an activity to a cahier de texte entry (3 kinds). */
+export const createActivitySchema = z
+	.discriminatedUnion('kind', [
+		z.object({
+			entry_id: uuidSchema,
+			kind: z.literal('exercise'),
+			exercise_id: uuidSchema,
+			display_order: displayOrderSchema.optional()
+		}),
+		z.object({
+			entry_id: uuidSchema,
+			kind: z.literal('course'),
+			chapter_id: uuidSchema.optional(),
+			label: z.string().trim().min(1).max(200).optional(),
+			display_order: displayOrderSchema.optional()
+		}),
+		z.object({
+			entry_id: uuidSchema,
+			kind: z.literal('textbook'),
+			textbook_ref: textbookRefSchema,
+			display_order: displayOrderSchema.optional()
+		})
+	])
+	.superRefine((d, ctx) => {
+		if (d.kind === 'course' && d.chapter_id === undefined && d.label === undefined) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: 'Un point de cours requiert un chapitre ou un libellé'
+			});
+		}
+	});
+
+export const activityListQuerySchema = z.object({
+	entry_id: uuidSchema
+});
+
+/** Manually add / remove a curriculum point on an entry (coverage). */
+export const coveragePointSchema = z.object({
+	entry_id: uuidSchema,
+	point_id: uuidSchema
+});
+
+export const coverageListQuerySchema = z.object({
+	entry_id: uuidSchema
+});
+
+export const coveragePointQuerySchema = z.object({
+	entry_id: uuidSchema,
+	point_id: uuidSchema
+});
+
+export type ExerciseTagInput = z.infer<typeof exerciseTagSchema>;
+export type CreateActivityInput = z.infer<typeof createActivitySchema>;
+export type CoveragePointInput = z.infer<typeof coveragePointSchema>;

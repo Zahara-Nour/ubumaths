@@ -1,0 +1,412 @@
+/**
+ * Integration Tests: Curriculum tracking — CRUD API (Phase 1)
+ * ===========================================================
+ *
+ * Exercises the curriculum tree endpoints (Thème → Item → Point):
+ *   - /api/teacher/curriculum/themes            (GET, POST)
+ *   - /api/teacher/curriculum/themes/[themeId]  (PATCH, DELETE)
+ *   - /api/teacher/curriculum/items             (GET, POST)
+ *   - /api/teacher/curriculum/items/[itemId]    (PATCH, DELETE)
+ *   - /api/teacher/curriculum/points            (GET, POST)
+ *   - /api/teacher/curriculum/points/[pointId]  (PATCH, DELETE)
+ *
+ * Requires local Supabase (`pnpm db:start` + `pnpm db:reset`).
+ *
+ * @vitest-environment node
+ */
+
+import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
+import type { SupabaseClient, User } from '@supabase/supabase-js';
+import type { Database } from '$lib/types/database';
+
+import {
+	GET as themesGET,
+	POST as themesPOST
+} from '../../src/routes/api/teacher/curriculum/themes/+server';
+import {
+	PATCH as themePATCH,
+	DELETE as themeDELETE
+} from '../../src/routes/api/teacher/curriculum/themes/[themeId]/+server';
+import {
+	GET as itemsGET,
+	POST as itemsPOST
+} from '../../src/routes/api/teacher/curriculum/items/+server';
+import {
+	PATCH as itemPATCH,
+	DELETE as itemDELETE
+} from '../../src/routes/api/teacher/curriculum/items/[itemId]/+server';
+import {
+	GET as pointsGET,
+	POST as pointsPOST
+} from '../../src/routes/api/teacher/curriculum/points/+server';
+import { PATCH as pointPATCH } from '../../src/routes/api/teacher/curriculum/points/[pointId]/+server';
+
+import {
+	createServiceRoleClient,
+	TestData,
+	cleanupCompetenceTestData
+} from '../helpers/competence-referentiel.helpers';
+
+// ---------------------------------------------------------------------------
+// Shared service client + cleanup
+// ---------------------------------------------------------------------------
+
+let service: SupabaseClient<Database>;
+
+beforeAll(() => {
+	service = createServiceRoleClient();
+});
+
+afterAll(async () => {
+	await cleanupCurriculum();
+	await cleanupCompetenceTestData();
+});
+
+beforeEach(async () => {
+	await cleanupCurriculum();
+	await cleanupCompetenceTestData();
+});
+
+async function cleanupCurriculum() {
+	await service
+		.from('curriculum_themes' as never)
+		.delete()
+		.not('id', 'is', null);
+}
+
+// ---------------------------------------------------------------------------
+// Service-role fixtures (parents created directly to keep tests focused)
+// ---------------------------------------------------------------------------
+
+async function svcTheme(grade = '6', name?: string): Promise<{ id: string }> {
+	const { data, error } = await service
+		.from('curriculum_themes' as never)
+		.insert({ grade, name: name ?? `Thème ${crypto.randomUUID().slice(0, 8)}` } as never)
+		.select('id')
+		.single();
+	if (error) throw new Error(error.message);
+	return data as { id: string };
+}
+
+async function svcItem(themeId: string, name?: string): Promise<{ id: string }> {
+	const { data, error } = await service
+		.from('curriculum_items' as never)
+		.insert({ theme_id: themeId, name: name ?? `Item ${crypto.randomUUID().slice(0, 8)}` } as never)
+		.select('id')
+		.single();
+	if (error) throw new Error(error.message);
+	return data as { id: string };
+}
+
+async function svcPoint(itemId: string, name?: string): Promise<{ id: string }> {
+	const { data, error } = await service
+		.from('curriculum_points' as never)
+		.insert({ item_id: itemId, name: name ?? `Point ${crypto.randomUUID().slice(0, 8)}` } as never)
+		.select('id')
+		.single();
+	if (error) throw new Error(error.message);
+	return data as { id: string };
+}
+
+// ---------------------------------------------------------------------------
+// Locals + request/url helpers
+// ---------------------------------------------------------------------------
+
+function buildLocals(userOrNull: User | null): App.Locals {
+	return {
+		supabase: service as unknown as App.Locals['supabase'],
+		safeGetSession: vi.fn().mockResolvedValue({ user: userOrNull }),
+		user: userOrNull,
+		profile: null,
+		requestId: crypto.randomUUID()
+	} as unknown as App.Locals;
+}
+
+function req(body: unknown, method: 'POST' | 'PATCH' = 'POST'): Request {
+	return new Request('http://localhost/api/teacher/curriculum', {
+		method,
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(body)
+	});
+}
+
+function urlWith(query: Record<string, string>): URL {
+	const u = new URL('http://localhost/api/teacher/curriculum');
+	for (const [k, v] of Object.entries(query)) u.searchParams.set(k, v);
+	return u;
+}
+
+async function teacherUser(): Promise<User> {
+	const t = await TestData.profile().withRole('teacher').create();
+	return { id: t.id } as User;
+}
+
+// ============================================================================
+// Thèmes
+// ============================================================================
+
+describe('POST /api/teacher/curriculum/themes', () => {
+	it('creates a theme and returns 201', async () => {
+		expect.assertions(2);
+		const locals = buildLocals(await teacherUser());
+		const res = await themesPOST({ request: req({ grade: '6', name: 'Calcul' }), locals } as never);
+		expect(res.status).toBe(201);
+		const data = await res.json();
+		expect(data.theme).toMatchObject({ grade: '6', name: 'Calcul', display_order: 0 });
+	});
+
+	it('returns 400 for an invalid grade code', async () => {
+		expect.assertions(1);
+		const locals = buildLocals(await teacherUser());
+		const res = await themesPOST({ request: req({ grade: '6e', name: 'X' }), locals } as never);
+		expect(res.status).toBe(400);
+	});
+
+	it('returns 400 for a blank name', async () => {
+		expect.assertions(1);
+		const locals = buildLocals(await teacherUser());
+		const res = await themesPOST({ request: req({ grade: '6', name: '   ' }), locals } as never);
+		expect(res.status).toBe(400);
+	});
+
+	it('returns 409 for a duplicate (grade, name)', async () => {
+		expect.assertions(1);
+		const locals = buildLocals(await teacherUser());
+		await themesPOST({ request: req({ grade: '6', name: 'Calcul' }), locals } as never);
+		const res = await themesPOST({ request: req({ grade: '6', name: 'Calcul' }), locals } as never);
+		expect(res.status).toBe(409);
+	});
+
+	it('rejects 401 when unauthenticated', async () => {
+		expect.assertions(1);
+		const locals = buildLocals(null);
+		await expect(
+			themesPOST({ request: req({ grade: '6', name: 'X' }), locals } as never)
+		).rejects.toMatchObject({ status: 401 });
+	});
+
+	it('rejects 403 for a student', async () => {
+		expect.assertions(1);
+		const s = await TestData.profile().withRole('student').create();
+		const locals = buildLocals({ id: s.id } as User);
+		await expect(
+			themesPOST({ request: req({ grade: '6', name: 'X' }), locals } as never)
+		).rejects.toMatchObject({ status: 403 });
+	});
+});
+
+describe('GET /api/teacher/curriculum/themes', () => {
+	it('lists themes of a grade sorted by display_order then name', async () => {
+		expect.assertions(3);
+		await svcTheme('6', 'Beta');
+		await svcTheme('6', 'Alpha');
+		await svcTheme('5', 'Other grade');
+		const locals = buildLocals(await teacherUser());
+
+		const res = await themesGET({ url: urlWith({ grade: '6' }), locals } as never);
+		expect(res.status).toBe(200);
+		const data = await res.json();
+		expect(data.themes).toHaveLength(2);
+		expect(data.themes.map((t: { name: string }) => t.name)).toEqual(['Alpha', 'Beta']);
+	});
+
+	it('returns 400 when grade query param is missing/invalid', async () => {
+		expect.assertions(1);
+		const locals = buildLocals(await teacherUser());
+		const res = await themesGET({ url: urlWith({}), locals } as never);
+		expect(res.status).toBe(400);
+	});
+});
+
+describe('PATCH/DELETE /api/teacher/curriculum/themes/[themeId]', () => {
+	it('renames a theme', async () => {
+		expect.assertions(2);
+		const theme = await svcTheme('6', 'Old');
+		const locals = buildLocals(await teacherUser());
+		const res = await themePATCH({
+			request: req({ name: 'New' }, 'PATCH'),
+			locals,
+			params: { themeId: theme.id }
+		} as never);
+		expect(res.status).toBe(200);
+		const data = await res.json();
+		expect(data.theme.name).toBe('New');
+	});
+
+	it('returns 404 when patching a missing theme', async () => {
+		expect.assertions(1);
+		const locals = buildLocals(await teacherUser());
+		const res = await themePATCH({
+			request: req({ name: 'X' }, 'PATCH'),
+			locals,
+			params: { themeId: crypto.randomUUID() }
+		} as never);
+		expect(res.status).toBe(404);
+	});
+
+	it('returns 400 when PATCH body has no updatable fields', async () => {
+		expect.assertions(1);
+		const theme = await svcTheme('6');
+		const locals = buildLocals(await teacherUser());
+		const res = await themePATCH({
+			request: req({}, 'PATCH'),
+			locals,
+			params: { themeId: theme.id }
+		} as never);
+		expect(res.status).toBe(400);
+	});
+
+	it('deletes a theme and cascades to items and points', async () => {
+		expect.assertions(2);
+		const theme = await svcTheme('6');
+		const item = await svcItem(theme.id);
+		const point = await svcPoint(item.id);
+		const locals = buildLocals(await teacherUser());
+
+		const res = await themeDELETE({ locals, params: { themeId: theme.id } } as never);
+		expect(res.status).toBe(200);
+
+		const { data: rows } = await service
+			.from('curriculum_points' as never)
+			.select('id')
+			.eq('id', point.id);
+		expect(rows ?? []).toHaveLength(0);
+	});
+});
+
+// ============================================================================
+// Items
+// ============================================================================
+
+describe('Items CRUD', () => {
+	it('creates an item under a theme (201)', async () => {
+		expect.assertions(2);
+		const theme = await svcTheme('6');
+		const locals = buildLocals(await teacherUser());
+		const res = await itemsPOST({
+			request: req({ theme_id: theme.id, name: 'Fractions' }),
+			locals
+		} as never);
+		expect(res.status).toBe(201);
+		const data = await res.json();
+		expect(data.item).toMatchObject({ theme_id: theme.id, name: 'Fractions' });
+	});
+
+	it('returns 400 when theme_id does not exist (FK violation)', async () => {
+		expect.assertions(1);
+		const locals = buildLocals(await teacherUser());
+		const res = await itemsPOST({
+			request: req({ theme_id: crypto.randomUUID(), name: 'Orphan' }),
+			locals
+		} as never);
+		expect(res.status).toBe(400);
+	});
+
+	it('returns 409 for a duplicate (theme_id, name)', async () => {
+		expect.assertions(1);
+		const theme = await svcTheme('6');
+		await svcItem(theme.id, 'Fractions');
+		const locals = buildLocals(await teacherUser());
+		const res = await itemsPOST({
+			request: req({ theme_id: theme.id, name: 'Fractions' }),
+			locals
+		} as never);
+		expect(res.status).toBe(409);
+	});
+
+	it('lists items of a theme', async () => {
+		expect.assertions(2);
+		const theme = await svcTheme('6');
+		await svcItem(theme.id, 'Fractions');
+		await svcItem(theme.id, 'Décimaux');
+		const locals = buildLocals(await teacherUser());
+		const res = await itemsGET({ url: urlWith({ theme_id: theme.id }), locals } as never);
+		expect(res.status).toBe(200);
+		const data = await res.json();
+		expect(data.items).toHaveLength(2);
+	});
+
+	it('deletes an item', async () => {
+		expect.assertions(1);
+		const theme = await svcTheme('6');
+		const item = await svcItem(theme.id);
+		const locals = buildLocals(await teacherUser());
+		const res = await itemDELETE({ locals, params: { itemId: item.id } } as never);
+		expect(res.status).toBe(200);
+	});
+
+	it('renames an item', async () => {
+		expect.assertions(1);
+		const theme = await svcTheme('6');
+		const item = await svcItem(theme.id, 'Old');
+		const locals = buildLocals(await teacherUser());
+		const res = await itemPATCH({
+			request: req({ name: 'New' }, 'PATCH'),
+			locals,
+			params: { itemId: item.id }
+		} as never);
+		const data = await res.json();
+		expect(data.item.name).toBe('New');
+	});
+});
+
+// ============================================================================
+// Points
+// ============================================================================
+
+describe('Points CRUD', () => {
+	it('creates a point with a kind (201)', async () => {
+		expect.assertions(2);
+		const theme = await svcTheme('6');
+		const item = await svcItem(theme.id);
+		const locals = buildLocals(await teacherUser());
+		const res = await pointsPOST({
+			request: req({ item_id: item.id, name: 'Additionner deux fractions', kind: 'savoir_faire' }),
+			locals
+		} as never);
+		expect(res.status).toBe(201);
+		const data = await res.json();
+		expect(data.point).toMatchObject({ name: 'Additionner deux fractions', kind: 'savoir_faire' });
+	});
+
+	it('returns 400 for an invalid kind', async () => {
+		expect.assertions(1);
+		const theme = await svcTheme('6');
+		const item = await svcItem(theme.id);
+		const locals = buildLocals(await teacherUser());
+		const res = await pointsPOST({
+			request: req({ item_id: item.id, name: 'X', kind: 'competence' }),
+			locals
+		} as never);
+		expect(res.status).toBe(400);
+	});
+
+	it('archives a point (sets archived_at)', async () => {
+		expect.assertions(2);
+		const theme = await svcTheme('6');
+		const item = await svcItem(theme.id);
+		const point = await svcPoint(item.id);
+		const locals = buildLocals(await teacherUser());
+		const res = await pointPATCH({
+			request: req({ archived: true }, 'PATCH'),
+			locals,
+			params: { pointId: point.id }
+		} as never);
+		expect(res.status).toBe(200);
+		const data = await res.json();
+		expect(data.point.archived_at).not.toBeNull();
+	});
+
+	it('lists points of an item', async () => {
+		expect.assertions(2);
+		const theme = await svcTheme('6');
+		const item = await svcItem(theme.id);
+		await svcPoint(item.id, 'A');
+		await svcPoint(item.id, 'B');
+		const locals = buildLocals(await teacherUser());
+		const res = await pointsGET({ url: urlWith({ item_id: item.id }), locals } as never);
+		expect(res.status).toBe(200);
+		const data = await res.json();
+		expect(data.points).toHaveLength(2);
+	});
+});
