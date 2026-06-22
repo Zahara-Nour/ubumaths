@@ -7,6 +7,7 @@
  */
 
 import { json } from '@sveltejs/kit';
+import type { CurriculumTheme, CurriculumItem, CurriculumPoint } from '$lib/types/database-helpers';
 
 /** Minimal shape of a PostgREST/Postgres error (code is what we branch on). */
 export interface DbErrorLike {
@@ -39,4 +40,56 @@ export function curriculumDbError(err: DbErrorLike, uniqueMsg = 'Doublon'): Resp
 		default:
 			return null;
 	}
+}
+
+/** A theme with its items, each with its points (nested tree). */
+export type CurriculumTreeTheme = CurriculumTheme & {
+	items: (CurriculumItem & { points: CurriculumPoint[] })[];
+};
+
+/**
+ * Load the full Thème → Item → Point tree for a grade (ordered by display_order
+ * then name at each level). Shared by the programme editor and the
+ * cahier-de-texte coverage block.
+ */
+export async function getCurriculumTree(
+	supabase: App.Locals['supabase'],
+	grade: string
+): Promise<CurriculumTreeTheme[]> {
+	const { data: themes } = await supabase
+		.from('curriculum_themes')
+		.select(THEME_COLS)
+		.eq('grade', grade)
+		.order('display_order', { ascending: true })
+		.order('name', { ascending: true });
+	const themeList = (themes ?? []) as CurriculumTheme[];
+	const themeIds = themeList.map((t) => t.id);
+	if (themeIds.length === 0) return [];
+
+	const { data: items } = await supabase
+		.from('curriculum_items')
+		.select(ITEM_COLS)
+		.in('theme_id', themeIds)
+		.order('display_order', { ascending: true })
+		.order('name', { ascending: true });
+	const itemList = (items ?? []) as CurriculumItem[];
+	const itemIds = itemList.map((i) => i.id);
+
+	let pointList: CurriculumPoint[] = [];
+	if (itemIds.length > 0) {
+		const { data: points } = await supabase
+			.from('curriculum_points')
+			.select(POINT_COLS)
+			.in('item_id', itemIds)
+			.order('display_order', { ascending: true })
+			.order('name', { ascending: true });
+		pointList = (points ?? []) as CurriculumPoint[];
+	}
+
+	return themeList.map((theme) => ({
+		...theme,
+		items: itemList
+			.filter((i) => i.theme_id === theme.id)
+			.map((item) => ({ ...item, points: pointList.filter((p) => p.item_id === item.id) }))
+	}));
 }

@@ -12,6 +12,7 @@
 
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
@@ -31,7 +32,10 @@
 		ClipboardList,
 		Globe,
 		EyeOff,
-		Calendar
+		Calendar,
+		ListTodo,
+		ChevronRight,
+		ChevronDown
 	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 
@@ -56,6 +60,66 @@
 
 	// Delete confirmation dialog
 	let showDeleteDialog = $state(false);
+
+	// --- Programme travaillé (coverage) --------------------------------------
+	const initialCovered: Record<string, string> = {};
+	for (const c of initialData.coveredPoints) initialCovered[c.point_id] = c.source;
+	let coveredSource = $state<Record<string, string>>(initialCovered);
+	let openProgThemes = $state<Record<string, boolean>>({});
+	let openProgItems = $state<Record<string, boolean>>({});
+	let coveredCount = $derived(Object.keys(coveredSource).length);
+
+	function isCovered(pointId: string): boolean {
+		return coveredSource[pointId] !== undefined;
+	}
+
+	async function covApi(url: string, method: string, body?: unknown): Promise<boolean> {
+		try {
+			const res = await fetch(url, {
+				method,
+				headers: body ? { 'Content-Type': 'application/json' } : undefined,
+				body: body ? JSON.stringify(body) : undefined
+			});
+			if (!res.ok) {
+				const j = await res.json().catch(() => ({}));
+				toaster.error(j?.error ?? 'Une erreur est survenue');
+				return false;
+			}
+			return true;
+		} catch {
+			toaster.error('Erreur réseau');
+			return false;
+		}
+	}
+
+	/** Optimistically toggle a curriculum point's coverage for this entry. */
+	async function togglePoint(point: { id: string }) {
+		const entryId = data.entry?.id;
+		if (!entryId) return;
+
+		if (isCovered(point.id)) {
+			const prev = coveredSource[point.id];
+			const next = { ...coveredSource };
+			delete next[point.id];
+			coveredSource = next;
+			const ok = await covApi(
+				`/api/teacher/curriculum/coverage?entry_id=${entryId}&point_id=${point.id}`,
+				'DELETE'
+			);
+			if (!ok) coveredSource = { ...coveredSource, [point.id]: prev };
+		} else {
+			coveredSource = { ...coveredSource, [point.id]: 'manual' };
+			const ok = await covApi('/api/teacher/curriculum/coverage', 'POST', {
+				entry_id: entryId,
+				point_id: point.id
+			});
+			if (!ok) {
+				const next = { ...coveredSource };
+				delete next[point.id];
+				coveredSource = next;
+			}
+		}
+	}
 
 	// Derived values
 	let isEditing = $derived(!!data.entry);
@@ -331,6 +395,92 @@
 			</div>
 		</div>
 	</form>
+
+	<!-- Programme travaillé (coverage) -->
+	{#if isEditing}
+		<div class="mt-6">
+			<Card.Root>
+				<Card.Header>
+					<Card.Title class="flex items-center gap-2">
+						<ListTodo class="h-5 w-5 text-primary" />
+						Programme travaillé
+					</Card.Title>
+					<Card.Description>
+						Cochez les points du programme abordés pendant cette séance.
+						{#if coveredCount > 0}
+							<span class="font-medium text-foreground">
+								{coveredCount} point{coveredCount > 1 ? 's' : ''} coché{coveredCount > 1
+									? 's'
+									: ''}.
+							</span>
+						{/if}
+					</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					{#if data.curriculumTree.length === 0}
+						<p class="text-sm text-muted-foreground">
+							Aucun programme défini pour le niveau de cette classe.
+							<a class="underline" href={resolve('/dashboard/teacher/programme')}
+								>Le créer dans Programme</a
+							>.
+						</p>
+					{:else}
+						<div class="space-y-1">
+							{#each data.curriculumTree as theme (theme.id)}
+								<div class="rounded-md border">
+									<button
+										class="flex w-full items-center gap-2 p-2 text-left font-medium"
+										onclick={() => (openProgThemes[theme.id] = !openProgThemes[theme.id])}
+									>
+										{#if openProgThemes[theme.id]}
+											<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
+										{:else}
+											<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
+										{/if}
+										{theme.name}
+									</button>
+									{#if openProgThemes[theme.id]}
+										<div class="space-y-1 border-t p-2 pl-4">
+											{#each theme.items as item (item.id)}
+												<div>
+													<button
+														class="flex w-full items-center gap-2 py-1 text-left text-sm"
+														onclick={() => (openProgItems[item.id] = !openProgItems[item.id])}
+													>
+														{#if openProgItems[item.id]}
+															<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
+														{:else}
+															<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
+														{/if}
+														<span class="font-medium">{item.name}</span>
+														<span class="text-xs text-muted-foreground">
+															({item.points.filter((p) => isCovered(p.id)).length}/{item.points
+																.length})
+														</span>
+													</button>
+													{#if openProgItems[item.id]}
+														<div class="space-y-1 py-1 pl-6">
+															{#each item.points as point (point.id)}
+																<MyCheckbox
+																	checked={isCovered(point.id)}
+																	label={point.name}
+																	onchange={() => togglePoint(point)}
+																/>
+															{/each}
+														</div>
+													{/if}
+												</div>
+											{/each}
+										</div>
+									{/if}
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+		</div>
+	{/if}
 
 	<!-- Hidden delete form -->
 	{#if isEditing}

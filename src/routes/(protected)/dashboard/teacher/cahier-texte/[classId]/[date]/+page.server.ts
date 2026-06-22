@@ -14,6 +14,7 @@ import {
 	validateCreateJournalEntry,
 	validateUpdateJournalEntry
 } from '$lib/server/validation/journal';
+import { getCurriculumTree } from '$lib/server/curriculum';
 import { z } from 'zod';
 
 // UUID validation schema
@@ -87,10 +88,26 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			}
 		: null;
 
+	// Programme travaillé — curriculum tree (class grade) + this entry's coverage.
+	const curriculumTree = classData.grade
+		? await getCurriculumTree(locals.supabase, classData.grade)
+		: [];
+
+	let coveredPoints: { point_id: string; source: string }[] = [];
+	if (entry) {
+		const { data: cov } = await locals.supabase
+			.from('journal_entry_points')
+			.select('point_id, source')
+			.eq('entry_id', entry.id);
+		coveredPoints = (cov ?? []) as { point_id: string; source: string }[];
+	}
+
 	return {
 		classData,
 		entry,
-		entryDate: date
+		entryDate: date,
+		curriculumTree,
+		coveredPoints
 	};
 };
 
