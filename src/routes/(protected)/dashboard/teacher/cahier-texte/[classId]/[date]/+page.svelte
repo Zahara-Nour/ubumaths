@@ -20,6 +20,8 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import MySelect from '$lib/components/MySelect.svelte';
+	import { Badge } from '$lib/components/ui/badge';
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -35,7 +37,8 @@
 		Calendar,
 		ListTodo,
 		ChevronRight,
-		ChevronDown
+		ChevronDown,
+		Plus
 	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 
@@ -118,6 +121,104 @@
 				delete next[point.id];
 				coveredSource = next;
 			}
+		}
+	}
+
+	// --- Activités (5b) -------------------------------------------------------
+	let activities = $state(initialData.activities);
+	let selectedExercise = $state('');
+	let tbLabel = $state('');
+	let courseLabel = $state('');
+
+	function exerciseLabel(id: string | null): string {
+		if (!id) return 'Exercice';
+		return data.exerciseOptions.find((o) => o.value === id)?.label ?? 'Exercice';
+	}
+
+	function activityLabel(a: PageData['activities'][number]): string {
+		if (a.kind === 'exercise') return exerciseLabel(a.exercise_id);
+		if (a.kind === 'textbook')
+			return (a.textbook_ref as { label?: string } | null)?.label ?? 'Référence manuel';
+		return a.label ?? 'Point de cours';
+	}
+
+	function kindShort(kind: string): string {
+		if (kind === 'exercise') return 'Exo';
+		if (kind === 'textbook') return 'Manuel';
+		return 'Cours';
+	}
+
+	async function refreshActivities() {
+		const entryId = data.entry?.id;
+		if (!entryId) return;
+		const res = await fetch(`/api/teacher/curriculum/activities?entry_id=${entryId}`);
+		if (res.ok) activities = (await res.json()).activities ?? [];
+	}
+
+	async function refreshCoverage() {
+		const entryId = data.entry?.id;
+		if (!entryId) return;
+		const res = await fetch(`/api/teacher/curriculum/coverage?entry_id=${entryId}`);
+		if (!res.ok) return;
+		const next: Record<string, string> = {};
+		for (const c of (await res.json()).coverage ?? []) next[c.point_id] = c.source;
+		coveredSource = next;
+	}
+
+	async function addExercise() {
+		const entryId = data.entry?.id;
+		if (!entryId || !selectedExercise) return;
+		const ok = await covApi('/api/teacher/curriculum/activities', 'POST', {
+			entry_id: entryId,
+			kind: 'exercise',
+			exercise_id: selectedExercise
+		});
+		if (ok) {
+			selectedExercise = '';
+			toaster.success('Exercice ajouté');
+			await refreshActivities();
+			await refreshCoverage();
+		}
+	}
+
+	async function addTextbook() {
+		const entryId = data.entry?.id;
+		const label = tbLabel.trim();
+		if (!entryId || !label) return;
+		const ok = await covApi('/api/teacher/curriculum/activities', 'POST', {
+			entry_id: entryId,
+			kind: 'textbook',
+			textbook_ref: { label }
+		});
+		if (ok) {
+			tbLabel = '';
+			toaster.success('Référence ajoutée');
+			await refreshActivities();
+		}
+	}
+
+	async function addCourse() {
+		const entryId = data.entry?.id;
+		const label = courseLabel.trim();
+		if (!entryId || !label) return;
+		const ok = await covApi('/api/teacher/curriculum/activities', 'POST', {
+			entry_id: entryId,
+			kind: 'course',
+			label
+		});
+		if (ok) {
+			courseLabel = '';
+			toaster.success('Point de cours ajouté');
+			await refreshActivities();
+		}
+	}
+
+	async function deleteActivity(a: PageData['activities'][number]) {
+		const ok = await covApi(`/api/teacher/curriculum/activities/${a.id}`, 'DELETE');
+		if (ok) {
+			toaster.success('Activité retirée');
+			await refreshActivities();
+			if (a.kind === 'exercise') await refreshCoverage();
 		}
 	}
 
@@ -417,6 +518,71 @@
 					</Card.Description>
 				</Card.Header>
 				<Card.Content>
+					<!-- Activités de la séance -->
+					<div class="mb-4 space-y-3">
+						<p class="text-sm font-medium">Activités</p>
+						{#if activities.length > 0}
+							<ul class="space-y-1">
+								{#each activities as a (a.id)}
+									<li class="flex items-center gap-2 text-sm">
+										<Badge variant="secondary" class="shrink-0">{kindShort(a.kind)}</Badge>
+										<span class="flex-1 truncate">{activityLabel(a)}</span>
+										<Button variant="ghost" size="sm" onclick={() => deleteActivity(a)}>
+											<Trash2 class="h-4 w-4 text-destructive" />
+										</Button>
+									</li>
+								{/each}
+							</ul>
+						{/if}
+						<div class="space-y-2">
+							{#if data.exerciseOptions.length > 0}
+								<div class="flex gap-2">
+									<MySelect
+										type="single"
+										bind:value={selectedExercise}
+										items={data.exerciseOptions}
+										placeholder="Exercice du système…"
+										triggerClass="flex-1"
+									/>
+									<Button
+										variant="outline"
+										size="sm"
+										disabled={!selectedExercise}
+										onclick={addExercise}
+									>
+										<Plus class="h-4 w-4" />
+									</Button>
+								</div>
+							{/if}
+							<div class="flex gap-2">
+								<Input
+									bind:value={tbLabel}
+									placeholder="Référence manuel (ex. Sésamath p.42 n°12)"
+								/>
+								<Button
+									variant="outline"
+									size="sm"
+									disabled={!tbLabel.trim()}
+									onclick={addTextbook}
+								>
+									<Plus class="h-4 w-4" />
+								</Button>
+							</div>
+							<div class="flex gap-2">
+								<Input bind:value={courseLabel} placeholder="Point de cours abordé…" />
+								<Button
+									variant="outline"
+									size="sm"
+									disabled={!courseLabel.trim()}
+									onclick={addCourse}
+								>
+									<Plus class="h-4 w-4" />
+								</Button>
+							</div>
+						</div>
+					</div>
+					<Separator class="mb-4" />
+
 					{#if data.curriculumTree.length === 0}
 						<p class="text-sm text-muted-foreground">
 							Aucun programme défini pour le niveau de cette classe.
@@ -463,7 +629,9 @@
 															{#each item.points as point (point.id)}
 																<MyCheckbox
 																	checked={isCovered(point.id)}
-																	label={point.name}
+																	label={coveredSource[point.id] === 'auto'
+																		? `${point.name} (auto)`
+																		: point.name}
 																	onchange={() => togglePoint(point)}
 																/>
 															{/each}
