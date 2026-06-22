@@ -65,6 +65,7 @@
 
 import type { Database, Tables } from './database';
 import type { QuestionTemplate } from '$lib/questions/types';
+import type { GradeCode } from '$lib/types/grades';
 
 // ============================================================================
 // Table Row Type Aliases
@@ -565,4 +566,57 @@ export type {
 	MissingForNext,
 	ValidatedObservables,
 	PhaseBlocage
+};
+
+// ============================================================================
+// CURRICULUM TRACKING (suivi du programme — Phase 1)
+// ============================================================================
+//
+// Référentiel de programme (Thème → Item → Point), DISTINCT du référentiel
+// d'évaluation (skills/objectives). Couverture alimentée par le cahier de texte.
+//
+// Rows dérivées du `database.ts` généré ; on resserre seulement les colonnes
+// contraintes que le générateur expose en `string`/`Json` (grade, kind, source,
+// textbook_ref) vers leurs unions/formes réelles.
+
+/** A curriculum point can be a knowledge item or a know-how (neutral by default). */
+export type CurriculumPointKind = 'connaissance' | 'savoir_faire';
+
+/** How a journal entry came to cover a point. */
+export type CoverageSource = 'auto' | 'manual';
+
+/** The kind of activity attached to a cahier de texte entry. */
+export type JournalActivityKind = 'exercise' | 'textbook' | 'course';
+
+/** Free-form textbook reference (manuel scolaire). `label` is required. */
+export interface TextbookRef {
+	label: string;
+	manuel?: string;
+	page?: string;
+	numero?: string;
+}
+
+/** Level 1 — Thème (per grade). e.g. "Calcul". */
+export type CurriculumTheme = Omit<Tables<'curriculum_themes'>, 'grade'> & { grade: GradeCode };
+
+/** Level 2 — Item (under a Thème). e.g. "Fractions". */
+export type CurriculumItem = Tables<'curriculum_items'>;
+
+/** Level 3 — Point (tracking grain). e.g. "Additionner deux fractions". */
+export type CurriculumPoint = Omit<Tables<'curriculum_points'>, 'kind'> & {
+	kind: CurriculumPointKind | null;
+};
+
+/** Tags a system exercise with a curriculum point it covers. */
+export type ExerciseCurriculumPoint = Tables<'exercise_curriculum_points'>;
+
+/** An activity attached to a journal entry (system exercise / textbook / course point). */
+export type JournalEntryActivity = Omit<
+	Tables<'journal_entry_activities'>,
+	'kind' | 'textbook_ref'
+> & { kind: JournalActivityKind; textbook_ref: TextbookRef | null };
+
+/** Coverage signal: a curriculum point worked on in a journal entry. */
+export type JournalEntryPoint = Omit<Tables<'journal_entry_points'>, 'source'> & {
+	source: CoverageSource;
 };
