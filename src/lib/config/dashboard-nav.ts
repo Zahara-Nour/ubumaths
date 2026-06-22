@@ -23,6 +23,7 @@ import {
 	Book,
 	Layers,
 	ListTodo,
+	Gauge,
 	Code,
 	ShieldAlert,
 	Package,
@@ -118,6 +119,7 @@ export function getNavLinks(
 				icon: BookOpen
 			},
 			{ href: '/dashboard/teacher/programme', label: 'Programme', icon: ListTodo },
+			{ href: '/dashboard/teacher/avancement', label: 'Avancement', icon: Gauge },
 			{ href: '/dashboard/teacher/contenu', label: 'Mes contenus', icon: Layers },
 			{
 				href: '/dashboard/teacher/evaluation-tasks',
