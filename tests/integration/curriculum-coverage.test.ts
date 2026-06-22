@@ -474,13 +474,11 @@ describe('RLS & constraints', () => {
 		const client = (await createAuthenticatedClient(
 			student.email
 		)) as unknown as SupabaseClient<Database>;
-		const { error } = await client
-			.from('journal_entry_points' as never)
-			.insert({
-				entry_id: crypto.randomUUID(),
-				point_id: crypto.randomUUID(),
-				source: 'manual'
-			} as never);
+		const { error } = await client.from('journal_entry_points' as never).insert({
+			entry_id: crypto.randomUUID(),
+			point_id: crypto.randomUUID(),
+			source: 'manual'
+		} as never);
 		expect(error?.code).toBe('42501');
 	});
 
