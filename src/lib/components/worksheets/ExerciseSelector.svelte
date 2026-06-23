@@ -33,6 +33,7 @@
 	```
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -525,7 +526,7 @@
 		</div>
 
 		<Dialog.Footer class="gap-2 sm:gap-0">
-			<Button variant="outline" onclick={cancelSelection}>Annuler</Button>
+			<Button variant="outline" onclick={cancelSelection}>{lore.actions.cancel}</Button>
 			<Button onclick={confirmSelection} disabled={selectionCount === 0}>
 				Ajouter {selectionCount} exercice(s)
 			</Button>

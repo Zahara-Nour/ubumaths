@@ -14,6 +14,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import * as Table from '$lib/components/ui/table';
@@ -588,7 +589,7 @@
 	title="Approuver les demandes selectionnees"
 	description={`Vous etes sur le point d'approuver ${selectedRequestDetails.length} demande${selectedRequestDetails.length > 1 ? 's' : ''} d'activation VIP :\n\n${selectedRequestDetails.map((r) => `- ${r.studentName} - ${r.cardName}`).join('\n')}\n\nApres approbation, les eleves pourront activer leurs cartes eux-memes.`}
 	confirmLabel="Approuver tout"
-	cancelLabel="Annuler"
+	cancelLabel={lore.actions.cancel}
 	variant="default"
 	onConfirm={handleBulkApprove}
 />
@@ -599,7 +600,7 @@
 	title="Rejeter les demandes selectionnees"
 	description={`Vous etes sur le point de rejeter ${selectedRequestDetails.length} demande${selectedRequestDetails.length > 1 ? 's' : ''} d'activation VIP :\n\n${selectedRequestDetails.map((r) => `- ${r.studentName} - ${r.cardName}`).join('\n')}\n\nLes cartes retourneront dans la collection des eleves sans effet.`}
 	confirmLabel="Rejeter tout"
-	cancelLabel="Annuler"
+	cancelLabel={lore.actions.cancel}
 	variant="destructive"
 	onConfirm={handleBulkReject}
 />

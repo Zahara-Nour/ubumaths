@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -572,11 +573,11 @@
 														{:else}
 															<Trash2 class="h-4 w-4" />
 														{/if}
-														<span class="sr-only">Supprimer</span>
+														<span class="sr-only">{lore.actions.delete}</span>
 													</Button>
 												</Tooltip.Trigger>
 												<Tooltip.Content>
-													<p>Supprimer</p>
+													<p>{lore.actions.delete}</p>
 												</Tooltip.Content>
 											</Tooltip.Root>
 										</div>
@@ -623,7 +624,7 @@
 	bind:open={deleteDialogOpen}
 	title="Supprimer cet exercice ?"
 	description={`Vous allez supprimer l'exercice "${exerciseToDelete?.title || ''}". Cette action est irréversible.`}
-	confirmLabel="Supprimer"
+	confirmLabel={lore.actions.delete}
 	variant="destructive"
 	onConfirm={handleDelete}
 />

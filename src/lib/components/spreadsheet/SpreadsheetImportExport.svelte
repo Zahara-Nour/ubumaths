@@ -14,6 +14,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { spreadsheetStore } from '$lib/spreadsheet/store.svelte';
 	import {
 		downloadCsv,
@@ -325,7 +326,7 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={closeImportDialog}>Annuler</Button>
+			<Button variant="outline" onclick={closeImportDialog}>{lore.actions.cancel}</Button>
 			<Button onclick={handleImport} disabled={!importFile || isImporting}>
 				{#if isImporting}
 					Import en cours...

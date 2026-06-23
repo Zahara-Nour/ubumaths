@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
@@ -339,7 +340,9 @@
 
 						<!-- Submit -->
 						<div class="flex justify-end gap-2">
-							<Button type="button" variant="outline" onclick={resetForm}>Annuler</Button>
+							<Button type="button" variant="outline" onclick={resetForm}
+								>{lore.actions.cancel}</Button
+							>
 							<Button type="submit" disabled={isSubmitting}>
 								<Send class="mr-2 h-4 w-4" />
 								{isSubmitting ? 'Envoi...' : 'Envoyer la notification'}

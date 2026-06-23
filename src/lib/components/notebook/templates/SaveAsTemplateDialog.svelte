@@ -9,6 +9,7 @@
 	default to avoid accidental publication.
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -125,14 +126,16 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => (open = false)} disabled={isSaving}>Annuler</Button>
+			<Button variant="outline" onclick={() => (open = false)} disabled={isSaving}
+				>{lore.actions.cancel}</Button
+			>
 			<Button onclick={handleSave} disabled={!canSubmit} class="gap-1.5">
 				{#if isSaving}
 					<Loader2 class="size-4 animate-spin" />
 					<span>Création…</span>
 				{:else}
 					<Sparkles class="size-4" />
-					<span>Enregistrer</span>
+					<span>{lore.actions.save}</span>
 				{/if}
 			</Button>
 		</Dialog.Footer>

@@ -24,6 +24,7 @@
 	- onCancel?: callback for cancel
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
@@ -368,7 +369,9 @@
 	<!-- Form actions -->
 	<div class="flex justify-end gap-4">
 		{#if onCancel}
-			<Button variant="outline" onclick={onCancel} disabled={isSubmitting}>Annuler</Button>
+			<Button variant="outline" onclick={onCancel} disabled={isSubmitting}
+				>{lore.actions.cancel}</Button
+			>
 		{/if}
 		<Button onclick={handleSubmit} disabled={!isValid || isSubmitting}>
 			{#if isSubmitting}

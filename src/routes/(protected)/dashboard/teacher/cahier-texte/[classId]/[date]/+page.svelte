@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Teacher Class Journal Entry Editor Page
 	 * ========================================
@@ -487,7 +488,7 @@
 				</div>
 
 				<div class="flex items-center gap-3">
-					<Button type="button" variant="outline" onclick={goBack}>Annuler</Button>
+					<Button type="button" variant="outline" onclick={goBack}>{lore.actions.cancel}</Button>
 					<Button type="submit" disabled={isSaving}>
 						<Save class="mr-2 h-4 w-4" />
 						{isSaving ? 'Enregistrement...' : 'Enregistrer'}
@@ -665,7 +666,7 @@
 	description="Cette action est irreversible. L'entree du {formatDateLong(
 		data.entryDate
 	)} sera definitivement supprimee."
-	confirmLabel="Supprimer"
+	confirmLabel={lore.actions.delete}
 	variant="destructive"
 	onConfirm={handleDeleteConfirm}
 />

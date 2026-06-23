@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { invalidateAll } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { formatDistanceToNow } from 'date-fns';
@@ -289,8 +290,8 @@
 	description={pendingDelete
 		? `« ${pendingDelete.title} » sera supprimé définitivement avec toutes ses colonnes et ses cartes.`
 		: ''}
-	confirmLabel="Supprimer"
-	cancelLabel="Annuler"
+	confirmLabel={lore.actions.delete}
+	cancelLabel={lore.actions.cancel}
 	variant="destructive"
 	onConfirm={performDelete}
 	onCancel={() => (pendingDelete = null)}

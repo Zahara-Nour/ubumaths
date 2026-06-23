@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -238,7 +239,7 @@
 							disabled={deletingFriendshipId === friendship.id}
 						>
 							<Trash2 class="size-4" />
-							<span class="sr-only">Supprimer</span>
+							<span class="sr-only">{lore.actions.delete}</span>
 						</Button>
 					</form>
 				</div>

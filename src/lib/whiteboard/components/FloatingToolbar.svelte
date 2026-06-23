@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * FloatingToolbar - Floating bottom toolbar with drawing tools
 	 *
@@ -374,7 +375,7 @@
 		<ToolButton
 			icon={Undo2}
 			disabled={!canUndo}
-			label="Annuler"
+			label={lore.actions.cancel}
 			shortcut="Ctrl+Z"
 			onclick={handleUndo}
 		/>

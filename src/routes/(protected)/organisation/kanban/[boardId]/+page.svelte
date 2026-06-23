@@ -28,6 +28,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import {
 		dndzone,
 		SHADOW_PLACEHOLDER_ITEM_ID,
@@ -757,7 +758,9 @@
 									aria-label="Titre de la nouvelle colonne"
 								/>
 								<div class="flex justify-end gap-2">
-									<Button variant="ghost" size="sm" onclick={cancelCreateColumn}>Annuler</Button>
+									<Button variant="ghost" size="sm" onclick={cancelCreateColumn}
+										>{lore.actions.cancel}</Button
+									>
 									<Button size="sm" onclick={commitCreateColumn} disabled={!newColumnTitle.trim()}
 										>Ajouter</Button
 									>

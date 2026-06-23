@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Teacher — Programme (curriculum tree editor).
 	 *
@@ -446,7 +447,8 @@
 				</div>
 			{/if}
 			<Dialog.Footer>
-				<Button type="button" variant="outline" onclick={() => (dialogOpen = false)}>Annuler</Button
+				<Button type="button" variant="outline" onclick={() => (dialogOpen = false)}
+					>{lore.actions.cancel}</Button
 				>
 				<Button type="submit" disabled={busy}>
 					{dialogMode === 'create' ? 'Ajouter' : 'Enregistrer'}

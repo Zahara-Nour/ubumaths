@@ -12,6 +12,7 @@
 	- Send button (API to be implemented in Phase 5)
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -182,7 +183,7 @@
 			</Card.Content>
 
 			<Card.Footer class="flex justify-end gap-2">
-				<Button variant="outline" href="/dashboard/teacher/classes">Annuler</Button>
+				<Button variant="outline" href="/dashboard/teacher/classes">{lore.actions.cancel}</Button>
 				<Button onclick={handleSendEmail} disabled={!data.hasGmailAccess || isSending}>
 					<Send class="mr-2 h-4 w-4" />
 					{#if isSending}

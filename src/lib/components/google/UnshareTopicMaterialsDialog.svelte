@@ -20,6 +20,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
@@ -274,7 +275,9 @@
 		{/if}
 
 		<Dialog.Footer class="gap-2">
-			<Button variant="outline" onclick={onClose} disabled={submitting}>Annuler</Button>
+			<Button variant="outline" onclick={onClose} disabled={submitting}
+				>{lore.actions.cancel}</Button
+			>
 			<Button
 				variant="destructive"
 				onclick={handleUnshare}

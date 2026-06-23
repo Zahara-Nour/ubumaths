@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import type { Component } from 'svelte';
 	import type { PageData } from './$types';
@@ -187,7 +188,7 @@ montre(M)
 		</Button>
 
 		{#if selectedSource.startsWith('saved:')}
-			<Button size="sm" variant="destructive" onclick={handleDelete}>Supprimer</Button>
+			<Button size="sm" variant="destructive" onclick={handleDelete}>{lore.actions.delete}</Button>
 		{/if}
 	</div>
 

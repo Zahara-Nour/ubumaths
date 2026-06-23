@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * ContextMenu - Right-click menu for whiteboard elements
 	 *
@@ -412,7 +413,7 @@
 				onclick={handleDelete}
 			>
 				<Trash2 class="h-4 w-4" />
-				<span class="flex-1">Supprimer</span>
+				<span class="flex-1">{lore.actions.delete}</span>
 				<span class="text-xs text-muted-foreground">Suppr</span>
 			</button>
 		{/if}

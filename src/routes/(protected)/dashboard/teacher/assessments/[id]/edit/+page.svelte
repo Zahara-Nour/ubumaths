@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { enhance as _enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
@@ -87,7 +88,7 @@
 				}}
 				onSubmit={handleSubmit}
 				onCancel={handleBack}
-				submitLabel="Enregistrer"
+				submitLabel={lore.actions.save}
 			/>
 		</Card.Content>
 	</Card.Root>

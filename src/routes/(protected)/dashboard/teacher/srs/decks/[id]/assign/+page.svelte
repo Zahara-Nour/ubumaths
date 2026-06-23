@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
@@ -339,7 +340,7 @@
 
 	<!-- Actions -->
 	<div class="mt-6 flex items-center justify-between">
-		<Button onclick={goBack} variant="outline">Annuler</Button>
+		<Button onclick={goBack} variant="outline">{lore.actions.cancel}</Button>
 
 		<Button onclick={assignDeck} disabled={!hasSelection || isAssigning} size="lg">
 			{#if isAssigning}

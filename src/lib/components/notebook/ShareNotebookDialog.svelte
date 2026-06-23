@@ -20,6 +20,7 @@
 		- French UI text
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
@@ -298,7 +299,9 @@
 		</div>
 
 		<Dialog.Footer class="mt-4 flex gap-2">
-			<Button variant="outline" onclick={() => (open = false)} disabled={isSharing}>Annuler</Button>
+			<Button variant="outline" onclick={() => (open = false)} disabled={isSharing}
+				>{lore.actions.cancel}</Button
+			>
 			<Button onclick={handleShare} disabled={!hasSelectedClasses || isSharing || isLoadingClasses}>
 				{#if isSharing}
 					Partage en cours...

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -910,7 +911,7 @@
 	<!-- Actions -->
 	<div class="flex justify-end gap-4">
 		<Button type="button" variant="outline" href="/dashboard/teacher/contenu/exercices"
-			>Annuler</Button
+			>{lore.actions.cancel}</Button
 		>
 		<Button type="submit" disabled={submitting}>
 			{submitting ? 'Enregistrement...' : exercise ? 'Mettre a jour' : "Creer l'exercice"}

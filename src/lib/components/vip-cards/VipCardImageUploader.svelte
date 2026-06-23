@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
@@ -171,7 +172,9 @@
 	<!-- Action Buttons -->
 	<div class="flex justify-end gap-2">
 		{#if onCancel}
-			<Button variant="outline" onclick={onCancel} disabled={uploading}>Annuler</Button>
+			<Button variant="outline" onclick={onCancel} disabled={uploading}
+				>{lore.actions.cancel}</Button
+			>
 		{/if}
 		<Button onclick={handleUpload} disabled={!selectedFile || uploading}>
 			{uploading ? 'Upload en cours...' : "Uploader l'image"}

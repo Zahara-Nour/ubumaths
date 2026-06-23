@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { enhance } from '$app/forms';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -345,7 +346,9 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => (showDefaultsDialog = false)}>Annuler</Button>
+			<Button variant="outline" onclick={() => (showDefaultsDialog = false)}
+				>{lore.actions.cancel}</Button
+			>
 			{#if selectedDefault}
 				<form
 					method="POST"

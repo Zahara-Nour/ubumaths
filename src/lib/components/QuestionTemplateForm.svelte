@@ -22,6 +22,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type {
 		QuestionTemplate,
 		QuestionVariation,
@@ -1807,9 +1808,8 @@
 				>
 			{/if}
 			<Button variant="outline" onclick={handleCancel} disabled={isSubmitting}>
-				<X class="mr-2 h-4 w-4" />
-				Annuler
-			</Button>
+				<X class="mr-2 h-4 w-4" />{lore.actions.cancel}</Button
+			>
 			<Button
 				variant="secondary"
 				onclick={handleSaveDraft}
@@ -1863,7 +1863,9 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => (showDuplicateDialog = false)}>Annuler</Button>
+			<Button variant="outline" onclick={() => (showDuplicateDialog = false)}
+				>{lore.actions.cancel}</Button
+			>
 			<Button onclick={duplicateVariation}>
 				<Copy class="mr-2 h-4 w-4" />
 				Dupliquer
@@ -1922,7 +1924,9 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => (showPublishDialog = false)}>Annuler</Button>
+			<Button variant="outline" onclick={() => (showPublishDialog = false)}
+				>{lore.actions.cancel}</Button
+			>
 			<Button onclick={confirmPublishWithAdjustedLevel} class="bg-green-600 hover:bg-green-700">
 				<CheckCircle2 class="mr-2 h-4 w-4" />
 				Publier au niveau {suggestedLevel}

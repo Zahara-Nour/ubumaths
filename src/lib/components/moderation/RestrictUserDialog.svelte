@@ -27,6 +27,7 @@
 		- Toast notifications
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as RadioGroup from '$lib/components/ui/radio-group';
 	import { Label } from '$lib/components/ui/label';
@@ -370,7 +371,9 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={closeDialog} disabled={isSubmitting}>Annuler</Button>
+			<Button variant="outline" onclick={closeDialog} disabled={isSubmitting}
+				>{lore.actions.cancel}</Button
+			>
 			<Button onclick={submitRestriction} disabled={!isValid || isSubmitting} variant="destructive">
 				{#if isSubmitting}
 					<Loader2 class="mr-2 h-4 w-4 animate-spin" />

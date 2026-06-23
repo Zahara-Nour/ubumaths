@@ -21,6 +21,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
@@ -621,7 +622,9 @@
 						selectedClassCount} partage{selectedMaterialCount * selectedClassCount > 1 ? 's' : ''}
 				</p>
 				<div class="flex gap-2">
-					<Button variant="outline" onclick={onClose} disabled={submitting}>Annuler</Button>
+					<Button variant="outline" onclick={onClose} disabled={submitting}
+						>{lore.actions.cancel}</Button
+					>
 					<Button onclick={handleShare} disabled={!hasChanges || submitting}>
 						{#if submitting}
 							<Loader2 class="mr-2 h-4 w-4 animate-spin" />

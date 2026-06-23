@@ -5,6 +5,7 @@
 	Demo page to test ExerciseMarkdownEditor and ExerciseDisplay components.
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import ExerciseMarkdownEditor from '$lib/components/exercises/ExerciseMarkdownEditor.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -104,7 +105,7 @@ $$f(x) = f(a) + f'(a)(x-a) + \\frac{f''(a)}{2!}(x-a)^2 + \\cdots$$
 					{#if showSaved}
 						<span class="self-center text-sm text-green-600">Enregistré !</span>
 					{/if}
-					<Button onclick={handleSave}>Enregistrer</Button>
+					<Button onclick={handleSave}>{lore.actions.save}</Button>
 				</div>
 			</Card.Footer>
 		</Card.Root>
