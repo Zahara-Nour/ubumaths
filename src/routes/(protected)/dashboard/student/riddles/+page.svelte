@@ -15,7 +15,7 @@
 </script>
 
 <svelte:head>
-	<title>Énigmes - UbuMaths</title>
+	<title>Énigmes - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl p-4 sm:p-6">

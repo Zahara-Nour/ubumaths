@@ -434,7 +434,7 @@ import gc
 from io import StringIO
 
 # Helper function to reformat the last exception for JavaScript
-def _ubumaths_reformat_exception():
+def _chiphre_reformat_exception():
     """Reformat the last Python exception for JavaScript consumption.
     Returns only the essential error message (last line of traceback).
     """
@@ -479,7 +479,7 @@ def _ubumaths_reformat_exception():
     return "".join(full_tb)
 
 # Helper function to check if result is a sympy expression and convert to LaTeX
-def _ubumaths_check_sympy_result(result):
+def _chiphre_check_sympy_result(result):
     """Check if result is a sympy expression and convert to LaTeX."""
     if result is None:
         return None
@@ -496,7 +496,7 @@ def _ubumaths_check_sympy_result(result):
     return None
 
 # Helper function for Python autocompletion
-def _ubumaths_get_completions(code, cursor_pos, namespace=None):
+def _chiphre_get_completions(code, cursor_pos, namespace=None):
     """Get completions for Python code at cursor position.
 
     Args:
@@ -601,7 +601,7 @@ def _ubumaths_get_completions(code, cursor_pos, namespace=None):
         return completions[:MAX_COMPLETIONS]
 
 # Helper function to validate Python code syntax
-def _ubumaths_validate_syntax(code):
+def _chiphre_validate_syntax(code):
     """Validate Python code syntax using AST.
 
     Returns a dict with:
@@ -653,45 +653,45 @@ def _ubumaths_validate_syntax(code):
 # =============================================================================
 
 # Debug configuration constants
-_UBUMATHS_DEBUG_MAX_SERIALIZE_DEPTH = 5
-_UBUMATHS_DEBUG_MAX_SERIALIZE_ITEMS = 50
-_UBUMATHS_DEBUG_MAX_STRING_LENGTH = 200
-_UBUMATHS_DEBUG_MAX_KEY_LENGTH = 500
+_CHIPHRE_DEBUG_MAX_SERIALIZE_DEPTH = 5
+_CHIPHRE_DEBUG_MAX_SERIALIZE_ITEMS = 50
+_CHIPHRE_DEBUG_MAX_STRING_LENGTH = 200
+_CHIPHRE_DEBUG_MAX_KEY_LENGTH = 500
 
 # Built-in types for type classification
-_UBUMATHS_BUILTIN_TYPES = {'int', 'float', 'str', 'bool', 'list', 'dict', 'tuple', 'set', 'frozenset', 'NoneType', 'bytes', 'complex'}
+_CHIPHRE_BUILTIN_TYPES = {'int', 'float', 'str', 'bool', 'list', 'dict', 'tuple', 'set', 'frozenset', 'NoneType', 'bytes', 'complex'}
 
 # Types that should NOT be treated as user-class instances even if they have __dict__
-import types as _ubumaths_types
-_UBUMATHS_NON_INSTANCE_TYPES = (
+import types as _chiphre_types
+_CHIPHRE_NON_INSTANCE_TYPES = (
     type,                                       # classes themselves
-    _ubumaths_types.ModuleType,                 # modules
-    _ubumaths_types.FunctionType,               # def-based functions
-    _ubumaths_types.MethodType,                 # bound methods
-    _ubumaths_types.BuiltinFunctionType,        # builtins
-    _ubumaths_types.BuiltinMethodType,          # bound builtin methods
+    _chiphre_types.ModuleType,                 # modules
+    _chiphre_types.FunctionType,               # def-based functions
+    _chiphre_types.MethodType,                 # bound methods
+    _chiphre_types.BuiltinFunctionType,        # builtins
+    _chiphre_types.BuiltinMethodType,          # bound builtin methods
 )
 
 
-def _ubumaths_truncate_key(key_str):
+def _chiphre_truncate_key(key_str):
     """Truncate dict keys / instance attr names for safe serialization."""
-    if len(key_str) > _UBUMATHS_DEBUG_MAX_KEY_LENGTH:
-        return key_str[:_UBUMATHS_DEBUG_MAX_KEY_LENGTH] + '...'
+    if len(key_str) > _CHIPHRE_DEBUG_MAX_KEY_LENGTH:
+        return key_str[:_CHIPHRE_DEBUG_MAX_KEY_LENGTH] + '...'
     return key_str
 
 
-def _ubumaths_is_user_instance(value):
+def _chiphre_is_user_instance(value):
     """Detect a user-class instance (vs builtin / function / module / class)."""
-    if isinstance(value, _UBUMATHS_NON_INSTANCE_TYPES):
+    if isinstance(value, _CHIPHRE_NON_INSTANCE_TYPES):
         return False
     if not hasattr(value, '__dict__'):
         return False
     # Builtins and stdlib types (int, str, dict, ...) are excluded by the
-    # isinstance checks performed before us in _ubumaths_serialize_with_heap.
+    # isinstance checks performed before us in _chiphre_serialize_with_heap.
     return True
 
 
-def _ubumaths_serialize_with_heap(value, heap, depth=0):
+def _chiphre_serialize_with_heap(value, heap, depth=0):
     """Serialize a Python value with a shared heap dict.
 
     Primitives (int, float, str, bool, None, complex, bytes) stay inline as
@@ -715,7 +715,7 @@ def _ubumaths_serialize_with_heap(value, heap, depth=0):
 
     # Depth limit applies to the contents of containers; the container itself
     # remains addressable via its HeapRef even when deep entries are truncated.
-    if depth >= _UBUMATHS_DEBUG_MAX_SERIALIZE_DEPTH:
+    if depth >= _CHIPHRE_DEBUG_MAX_SERIALIZE_DEPTH:
         return {'type': 'truncated', 'value': 'depth'}
 
     # --- Primitives (inline) --------------------------------------------------
@@ -732,18 +732,18 @@ def _ubumaths_serialize_with_heap(value, heap, depth=0):
         return {'type': 'complex', 'value': str(value)}
 
     if isinstance(value, str):
-        if len(value) > _UBUMATHS_DEBUG_MAX_STRING_LENGTH:
-            return {'type': 'str', 'value': repr(value[:_UBUMATHS_DEBUG_MAX_STRING_LENGTH] + '...')}
+        if len(value) > _CHIPHRE_DEBUG_MAX_STRING_LENGTH:
+            return {'type': 'str', 'value': repr(value[:_CHIPHRE_DEBUG_MAX_STRING_LENGTH] + '...')}
         return {'type': 'str', 'value': repr(value)}
 
     if isinstance(value, bytes):
-        if len(value) > _UBUMATHS_DEBUG_MAX_STRING_LENGTH:
-            return {'type': 'bytes', 'value': repr(value[:_UBUMATHS_DEBUG_MAX_STRING_LENGTH]) + '...'}
+        if len(value) > _CHIPHRE_DEBUG_MAX_STRING_LENGTH:
+            return {'type': 'bytes', 'value': repr(value[:_CHIPHRE_DEBUG_MAX_STRING_LENGTH]) + '...'}
         return {'type': 'bytes', 'value': repr(value)}
 
     # --- Heap objects (containers + user-class instances) ---------------------
     is_container = isinstance(value, (list, tuple, set, frozenset, dict))
-    is_instance = _ubumaths_is_user_instance(value)
+    is_instance = _chiphre_is_user_instance(value)
 
     if is_container or is_instance:
         obj_id = str(id(value))
@@ -783,13 +783,13 @@ def _ubumaths_serialize_with_heap(value, heap, depth=0):
             if isinstance(value, dict):
                 length = len(value)
                 for i, (k, v) in enumerate(value.items()):
-                    if i >= _UBUMATHS_DEBUG_MAX_SERIALIZE_ITEMS:
+                    if i >= _CHIPHRE_DEBUG_MAX_SERIALIZE_ITEMS:
                         entries.append({'value': {'type': 'truncated', 'value': 'items'}})
                         break
-                    key_str = _ubumaths_truncate_key(str(k))
+                    key_str = _chiphre_truncate_key(str(k))
                     entries.append({
                         'key': key_str,
-                        'value': _ubumaths_serialize_with_heap(v, heap, depth + 1)
+                        'value': _chiphre_serialize_with_heap(v, heap, depth + 1)
                     })
             elif isinstance(value, (set, frozenset)):
                 # Sort by repr for stable visual ordering across snapshots.
@@ -799,11 +799,11 @@ def _ubumaths_serialize_with_heap(value, heap, depth=0):
                     items = list(value)
                 length = len(items)
                 for i, item in enumerate(items):
-                    if i >= _UBUMATHS_DEBUG_MAX_SERIALIZE_ITEMS:
+                    if i >= _CHIPHRE_DEBUG_MAX_SERIALIZE_ITEMS:
                         entries.append({'value': {'type': 'truncated', 'value': 'items'}})
                         break
                     entries.append({
-                        'value': _ubumaths_serialize_with_heap(item, heap, depth + 1)
+                        'value': _chiphre_serialize_with_heap(item, heap, depth + 1)
                     })
             elif is_instance:
                 try:
@@ -812,22 +812,22 @@ def _ubumaths_serialize_with_heap(value, heap, depth=0):
                     attrs = {}
                 length = len(attrs)
                 for i, (attr_name, attr_value) in enumerate(attrs.items()):
-                    if i >= _UBUMATHS_DEBUG_MAX_SERIALIZE_ITEMS:
+                    if i >= _CHIPHRE_DEBUG_MAX_SERIALIZE_ITEMS:
                         entries.append({'value': {'type': 'truncated', 'value': 'items'}})
                         break
                     entries.append({
-                        'key': _ubumaths_truncate_key(str(attr_name)),
-                        'value': _ubumaths_serialize_with_heap(attr_value, heap, depth + 1)
+                        'key': _chiphre_truncate_key(str(attr_name)),
+                        'value': _chiphre_serialize_with_heap(attr_value, heap, depth + 1)
                     })
             else:
                 # list, tuple
                 length = len(value)
                 for i, item in enumerate(value):
-                    if i >= _UBUMATHS_DEBUG_MAX_SERIALIZE_ITEMS:
+                    if i >= _CHIPHRE_DEBUG_MAX_SERIALIZE_ITEMS:
                         entries.append({'value': {'type': 'truncated', 'value': 'items'}})
                         break
                     entries.append({
-                        'value': _ubumaths_serialize_with_heap(item, heap, depth + 1)
+                        'value': _chiphre_serialize_with_heap(item, heap, depth + 1)
                     })
 
             placeholder['length'] = length
@@ -842,12 +842,12 @@ def _ubumaths_serialize_with_heap(value, heap, depth=0):
 
     # --- Fallback: functions, modules, classes, exotic types — inline repr ---
     repr_str = repr(value)
-    if len(repr_str) > _UBUMATHS_DEBUG_MAX_STRING_LENGTH:
-        repr_str = repr_str[:_UBUMATHS_DEBUG_MAX_STRING_LENGTH] + '...'
+    if len(repr_str) > _CHIPHRE_DEBUG_MAX_STRING_LENGTH:
+        repr_str = repr_str[:_CHIPHRE_DEBUG_MAX_STRING_LENGTH] + '...'
     return {'type': type_name, 'value': repr_str}
 
 
-def _ubumaths_get_variables(namespace, prev_namespace=None, heap=None):
+def _chiphre_get_variables(namespace, prev_namespace=None, heap=None):
     """Extract variables from a namespace, populating the heap along the way.
 
     Args:
@@ -871,8 +871,8 @@ def _ubumaths_get_variables(namespace, prev_namespace=None, heap=None):
     variables = []
 
     for name, value in namespace.items():
-        # Skip internal _ubumaths_ variables
-        if name.startswith('_ubumaths_'):
+        # Skip internal _chiphre_ variables
+        if name.startswith('_chiphre_'):
             continue
 
         # Skip dunder variables
@@ -880,10 +880,10 @@ def _ubumaths_get_variables(namespace, prev_namespace=None, heap=None):
             continue
 
         type_name = type(value).__name__
-        is_builtin = type_name in _UBUMATHS_BUILTIN_TYPES
+        is_builtin = type_name in _CHIPHRE_BUILTIN_TYPES
 
         # Serialize the value (may insert into heap)
-        serialized = _ubumaths_serialize_with_heap(value, heap)
+        serialized = _chiphre_serialize_with_heap(value, heap)
 
         # Check if value changed
         is_changed = False
@@ -909,7 +909,7 @@ def _ubumaths_get_variables(namespace, prev_namespace=None, heap=None):
     return variables
 
 
-def _ubumaths_debug_generator(code, breakpoints_json):
+def _chiphre_debug_generator(code, breakpoints_json):
     """Generator that yields control at each step for true pause.
 
     This generator parses code into AST and executes statement-by-statement,
@@ -917,7 +917,7 @@ def _ubumaths_debug_generator(code, breakpoints_json):
     to truly pause execution by not calling next() on the generator.
 
     Usage:
-        gen = _ubumaths_debug_generator(code, breakpoints)
+        gen = _chiphre_debug_generator(code, breakpoints)
         snapshot = next(gen)  # Get first snapshot (paused at first line)
 
         # To continue:
@@ -961,7 +961,7 @@ def _ubumaths_debug_generator(code, breakpoints_json):
         nonlocal snapshot_id, prev_namespace
         snapshot_id += 1
 
-        # Shared heap dict — populated by _ubumaths_serialize_with_heap as we
+        # Shared heap dict — populated by _chiphre_serialize_with_heap as we
         # extract variables from each frame. Same Python id() across multiple
         # variables / frames produces a single HeapObject entry so aliases
         # naturally collapse to one node in the visualization.
@@ -971,7 +971,7 @@ def _ubumaths_debug_generator(code, breakpoints_json):
         frames = []
 
         # Add module frame
-        module_vars = _ubumaths_get_variables(namespace, prev_namespace, heap)
+        module_vars = _chiphre_get_variables(namespace, prev_namespace, heap)
         frames.append({
             'functionName': '<module>',
             'filename': '<exec>',
@@ -982,7 +982,7 @@ def _ubumaths_debug_generator(code, breakpoints_json):
 
         # Add function frames from call stack
         for i, frame_info in enumerate(call_stack):
-            frame_vars = _ubumaths_get_variables(
+            frame_vars = _chiphre_get_variables(
                 frame_info.get('locals', {}),
                 frame_info.get('prev_locals', {}),
                 heap
@@ -1381,7 +1381,7 @@ def _ubumaths_debug_generator(code, breakpoints_json):
         # Shared heap dict for the exception snapshot — same semantics as
         # create_snapshot above (one HeapObject per Python id, aliases collapse).
         _err_heap = {}
-        _err_vars = _ubumaths_get_variables(namespace, None, _err_heap)
+        _err_vars = _chiphre_get_variables(namespace, None, _err_heap)
         yield {
             'id': f'snap_{snapshot_id + 1}',
             'lineNumber': lineno or 1,
@@ -1440,7 +1440,7 @@ import warnings
 warnings.filterwarnings('ignore', message='.*Matplotlib.*using.*agg.*cannot show.*', category=UserWarning)
 
 # Helper function to get plot as base64
-def _ubumaths_get_plot_base64():
+def _chiphre_get_plot_base64():
     """Extract current matplotlib figure as base64 PNG."""
     if len(plt.get_fignums()) == 0:
         return None
@@ -1452,7 +1452,7 @@ def _ubumaths_get_plot_base64():
     return result
 
 # Helper function to clean up matplotlib figures
-def _ubumaths_cleanup_matplotlib():
+def _chiphre_cleanup_matplotlib():
     """Clean up matplotlib figures."""
     plt.close('all')
 `);
@@ -1466,28 +1466,28 @@ async function setupPlotly(): Promise<void> {
 
 	await pyodide.runPythonAsync(`
 # Initialize global variable for storing plotly figure
-_ubumaths_plotly_fig = None
+_chiphre_plotly_fig = None
 
-def _ubumaths_get_plotly_json():
+def _chiphre_get_plotly_json():
     """Get current Plotly figure as JSON specification."""
-    global _ubumaths_plotly_fig
+    global _chiphre_plotly_fig
     try:
         import plotly.io as pio
-        if _ubumaths_plotly_fig is not None:
-            result = pio.to_json(_ubumaths_plotly_fig)
-            _ubumaths_plotly_fig = None  # Clear after export
+        if _chiphre_plotly_fig is not None:
+            result = pio.to_json(_chiphre_plotly_fig)
+            _chiphre_plotly_fig = None  # Clear after export
             return result
     except Exception as e:
         print(f"Plotly error: {e}")
     return None
 
-def _ubumaths_check_plotly_result(result):
+def _chiphre_check_plotly_result(result):
     """Check if result is a Plotly figure and store it for export."""
-    global _ubumaths_plotly_fig
+    global _chiphre_plotly_fig
     try:
         from plotly.graph_objs import Figure
         if isinstance(result, Figure):
-            _ubumaths_plotly_fig = result
+            _chiphre_plotly_fig = result
             return True
     except ImportError:
         pass
@@ -1664,17 +1664,17 @@ async function executeCode(code: string, id: string, contextId?: string): Promis
 import sys
 from io import StringIO
 
-_ubumaths_stdout = StringIO()
-_ubumaths_stderr = StringIO()
-_ubumaths_old_stdout = sys.stdout
-_ubumaths_old_stderr = sys.stderr
-sys.stdout = _ubumaths_stdout
-sys.stderr = _ubumaths_stderr
+_chiphre_stdout = StringIO()
+_chiphre_stderr = StringIO()
+_chiphre_old_stdout = sys.stdout
+_chiphre_old_stderr = sys.stderr
+sys.stdout = _chiphre_stdout
+sys.stderr = _chiphre_stderr
 `);
 
 		// Prepare the namespace for execution
 		if (useNamespace) {
-			pyodide.globals.set('_ubumaths_exec_namespace', namespace);
+			pyodide.globals.set('_chiphre_exec_namespace', namespace);
 		}
 
 		// Execute the user code and capture the last expression result for sympy detection
@@ -1684,30 +1684,30 @@ sys.stderr = _ubumaths_stderr
 			? `
 import ast
 
-_ubumaths_last_result = None
-_ubumaths_user_code = ${JSON.stringify(code)}
-_ubumaths_ns = _ubumaths_exec_namespace
+_chiphre_last_result = None
+_chiphre_user_code = ${JSON.stringify(code)}
+_chiphre_ns = _chiphre_exec_namespace
 
 # Parse the code to separate statements from the final expression
 try:
-    _ubumaths_tree = ast.parse(_ubumaths_user_code)
+    _chiphre_tree = ast.parse(_chiphre_user_code)
 
-    if _ubumaths_tree.body:
+    if _chiphre_tree.body:
         # Check if the last item is an expression (not assignment, etc.)
-        _ubumaths_last_node = _ubumaths_tree.body[-1]
+        _chiphre_last_node = _chiphre_tree.body[-1]
 
-        if isinstance(_ubumaths_last_node, ast.Expr):
+        if isinstance(_chiphre_last_node, ast.Expr):
             # Execute all but the last statement
-            if len(_ubumaths_tree.body) > 1:
-                _ubumaths_init_tree = ast.Module(body=_ubumaths_tree.body[:-1], type_ignores=[])
-                exec(compile(_ubumaths_init_tree, '<exec>', 'exec'), _ubumaths_ns, _ubumaths_ns)
+            if len(_chiphre_tree.body) > 1:
+                _chiphre_init_tree = ast.Module(body=_chiphre_tree.body[:-1], type_ignores=[])
+                exec(compile(_chiphre_init_tree, '<exec>', 'exec'), _chiphre_ns, _chiphre_ns)
 
             # Evaluate the last expression and capture result
-            _ubumaths_expr_tree = ast.Expression(body=_ubumaths_last_node.value)
-            _ubumaths_last_result = eval(compile(_ubumaths_expr_tree, '<expr>', 'eval'), _ubumaths_ns, _ubumaths_ns)
+            _chiphre_expr_tree = ast.Expression(body=_chiphre_last_node.value)
+            _chiphre_last_result = eval(compile(_chiphre_expr_tree, '<expr>', 'eval'), _chiphre_ns, _chiphre_ns)
         else:
             # No trailing expression, just execute everything
-            exec(_ubumaths_user_code, _ubumaths_ns, _ubumaths_ns)
+            exec(_chiphre_user_code, _chiphre_ns, _chiphre_ns)
     else:
         # Empty code
         pass
@@ -1718,29 +1718,29 @@ except SyntaxError as e:
 			: `
 import ast
 
-_ubumaths_last_result = None
-_ubumaths_user_code = ${JSON.stringify(code)}
+_chiphre_last_result = None
+_chiphre_user_code = ${JSON.stringify(code)}
 
 # Parse the code to separate statements from the final expression
 try:
-    _ubumaths_tree = ast.parse(_ubumaths_user_code)
+    _chiphre_tree = ast.parse(_chiphre_user_code)
 
-    if _ubumaths_tree.body:
+    if _chiphre_tree.body:
         # Check if the last item is an expression (not assignment, etc.)
-        _ubumaths_last_node = _ubumaths_tree.body[-1]
+        _chiphre_last_node = _chiphre_tree.body[-1]
 
-        if isinstance(_ubumaths_last_node, ast.Expr):
+        if isinstance(_chiphre_last_node, ast.Expr):
             # Execute all but the last statement
-            if len(_ubumaths_tree.body) > 1:
-                _ubumaths_init_tree = ast.Module(body=_ubumaths_tree.body[:-1], type_ignores=[])
-                exec(compile(_ubumaths_init_tree, '<exec>', 'exec'))
+            if len(_chiphre_tree.body) > 1:
+                _chiphre_init_tree = ast.Module(body=_chiphre_tree.body[:-1], type_ignores=[])
+                exec(compile(_chiphre_init_tree, '<exec>', 'exec'))
 
             # Evaluate the last expression and capture result
-            _ubumaths_expr_tree = ast.Expression(body=_ubumaths_last_node.value)
-            _ubumaths_last_result = eval(compile(_ubumaths_expr_tree, '<expr>', 'eval'))
+            _chiphre_expr_tree = ast.Expression(body=_chiphre_last_node.value)
+            _chiphre_last_result = eval(compile(_chiphre_expr_tree, '<expr>', 'eval'))
         else:
             # No trailing expression, just execute everything
-            exec(_ubumaths_user_code)
+            exec(_chiphre_user_code)
     else:
         # Empty code
         pass
@@ -1758,8 +1758,8 @@ except SyntaxError as e:
 
 		// Capture stdout
 		const stdout = pyodide.runPython(`
-_stdout_value = _ubumaths_stdout.getvalue()
-sys.stdout = _ubumaths_old_stdout
+_stdout_value = _chiphre_stdout.getvalue()
+sys.stdout = _chiphre_old_stdout
 _stdout_value
 `) as string;
 
@@ -1769,8 +1769,8 @@ _stdout_value
 
 		// Capture stderr
 		const stderr = pyodide.runPython(`
-_stderr_value = _ubumaths_stderr.getvalue()
-sys.stderr = _ubumaths_old_stderr
+_stderr_value = _chiphre_stderr.getvalue()
+sys.stderr = _chiphre_old_stderr
 _stderr_value
 `) as string;
 
@@ -1779,7 +1779,7 @@ _stderr_value
 		}
 
 		// Check for sympy LaTeX output
-		const latexResult = pyodide.runPython('_ubumaths_check_sympy_result(_ubumaths_last_result)') as
+		const latexResult = pyodide.runPython('_chiphre_check_sympy_result(_chiphre_last_result)') as
 			| string
 			| null;
 		if (latexResult) {
@@ -1789,10 +1789,10 @@ _stderr_value
 		// Check for Plotly output (only if plotly was loaded)
 		if (loadedPackages.has('plotly')) {
 			const isPlotlyFig = pyodide.runPython(
-				'_ubumaths_check_plotly_result(_ubumaths_last_result)'
+				'_chiphre_check_plotly_result(_chiphre_last_result)'
 			) as boolean;
 			if (isPlotlyFig) {
-				const plotlyJson = pyodide.runPython('_ubumaths_get_plotly_json()') as string | null;
+				const plotlyJson = pyodide.runPython('_chiphre_get_plotly_json()') as string | null;
 				if (plotlyJson) {
 					postMessage({ type: 'plotly', jsonSpec: plotlyJson, id });
 				}
@@ -1801,7 +1801,7 @@ _stderr_value
 
 		// Check for matplotlib plots (only if matplotlib was loaded)
 		if (loadedPackages.has('matplotlib')) {
-			const plotData = pyodide.runPython('_ubumaths_get_plot_base64()') as string | null;
+			const plotData = pyodide.runPython('_chiphre_get_plot_base64()') as string | null;
 			if (plotData) {
 				postMessage({ type: 'plot', imageData: plotData, id });
 			}
@@ -1809,7 +1809,7 @@ _stderr_value
 
 		// Clean up (only if matplotlib was loaded)
 		if (loadedPackages.has('matplotlib')) {
-			pyodide.runPython('_ubumaths_cleanup_matplotlib()');
+			pyodide.runPython('_chiphre_cleanup_matplotlib()');
 		}
 
 		// General garbage collection
@@ -1827,12 +1827,12 @@ _stderr_value
 		// Restore stdout/stderr
 		try {
 			pyodide.runPython(`
-sys.stdout = _ubumaths_old_stdout
-sys.stderr = _ubumaths_old_stderr
+sys.stdout = _chiphre_old_stdout
+sys.stderr = _chiphre_old_stderr
 `);
 			// Clean up matplotlib if loaded
 			if (loadedPackages.has('matplotlib')) {
-				pyodide.runPython('_ubumaths_cleanup_matplotlib()');
+				pyodide.runPython('_chiphre_cleanup_matplotlib()');
 			}
 			pyodide.runPython('gc.collect()');
 		} catch (cleanupError) {
@@ -1846,7 +1846,7 @@ sys.stderr = _ubumaths_old_stderr
 
 		try {
 			// Try to get the formatted exception from Python's sys.last_exc
-			const formattedException = pyodide.runPython('_ubumaths_reformat_exception()') as
+			const formattedException = pyodide.runPython('_chiphre_reformat_exception()') as
 				| string
 				| null;
 			if (formattedException && formattedException.trim()) {
@@ -1965,9 +1965,9 @@ async function validateCode(code: string, config: ValidationConfig, id: string):
 
 		// Check syntax using Python AST
 		if (config.checkSyntax) {
-			pyodide.globals.set('_ubumaths_validate_code', code);
+			pyodide.globals.set('_chiphre_validate_code', code);
 			try {
-				const result = pyodide.runPython(`_ubumaths_validate_syntax(_ubumaths_validate_code)`);
+				const result = pyodide.runPython(`_chiphre_validate_syntax(_chiphre_validate_code)`);
 
 				// Convert PyProxy to JS
 				const jsResult = (result as { toJs: () => Record<string, unknown> }).toJs();
@@ -2000,7 +2000,7 @@ async function validateCode(code: string, config: ValidationConfig, id: string):
 				}
 			} finally {
 				// Clean up global variable to prevent memory leaks
-				pyodide.globals.delete('_ubumaths_validate_code');
+				pyodide.globals.delete('_chiphre_validate_code');
 			}
 		}
 
@@ -2340,15 +2340,15 @@ async function detectSyntaxError(code: string, namespace: PyProxy): Promise<stri
 		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
 	}
 
-	namespace.set('_ubumaths_syntax_code', code);
+	namespace.set('_chiphre_syntax_code', code);
 	try {
 		const message = (await pyodide.runPythonAsync(
 			`
-import ast as _ubumaths_ast
+import ast as _chiphre_ast
 
 _msg = None
 try:
-    _ubumaths_ast.parse(_ubumaths_syntax_code)
+    _chiphre_ast.parse(_chiphre_syntax_code)
 except SyntaxError as _e:
     _line = _e.lineno or 0
     _detail = _e.msg or 'erreur de syntaxe'
@@ -2360,7 +2360,7 @@ _msg
 		return message ?? null;
 	} finally {
 		try {
-			namespace.delete('_ubumaths_syntax_code');
+			namespace.delete('_chiphre_syntax_code');
 		} catch {
 			// Ignore cleanup errors
 		}
@@ -2413,27 +2413,27 @@ async function compareWithCustomScript(
 		}
 
 		// Inject args into the namespace (no string interpolation, safe).
-		namespace.set('_ubumaths_cmp_expected', expected);
-		namespace.set('_ubumaths_cmp_actual', actual);
-		namespace.set('_ubumaths_cmp_stdin', stdin);
+		namespace.set('_chiphre_cmp_expected', expected);
+		namespace.set('_chiphre_cmp_actual', actual);
+		namespace.set('_chiphre_cmp_stdin', stdin);
 
 		const compareCall = pyodide.runPythonAsync(
 			`
-import json as _ubumaths_json
-_ubumaths_raw = compare(_ubumaths_cmp_expected, _ubumaths_cmp_actual, _ubumaths_cmp_stdin)
-if isinstance(_ubumaths_raw, bool):
-    _ubumaths_payload = {'passed': _ubumaths_raw}
-elif isinstance(_ubumaths_raw, dict):
-    _ubumaths_payload = {
-        'passed': bool(_ubumaths_raw.get('passed', False)),
+import json as _chiphre_json
+_chiphre_raw = compare(_chiphre_cmp_expected, _chiphre_cmp_actual, _chiphre_cmp_stdin)
+if isinstance(_chiphre_raw, bool):
+    _chiphre_payload = {'passed': _chiphre_raw}
+elif isinstance(_chiphre_raw, dict):
+    _chiphre_payload = {
+        'passed': bool(_chiphre_raw.get('passed', False)),
     }
-    if 'diff' in _ubumaths_raw and _ubumaths_raw['diff'] is not None:
-        _ubumaths_payload['diff'] = str(_ubumaths_raw['diff'])
-    if 'error' in _ubumaths_raw and _ubumaths_raw['error'] is not None:
-        _ubumaths_payload['error'] = str(_ubumaths_raw['error'])
+    if 'diff' in _chiphre_raw and _chiphre_raw['diff'] is not None:
+        _chiphre_payload['diff'] = str(_chiphre_raw['diff'])
+    if 'error' in _chiphre_raw and _chiphre_raw['error'] is not None:
+        _chiphre_payload['error'] = str(_chiphre_raw['error'])
 else:
-    _ubumaths_payload = {'passed': False, 'error': "Le comparateur doit retourner True/False ou un dict {'passed': ..., 'diff'?: ...}."}
-_ubumaths_json.dumps(_ubumaths_payload)
+    _chiphre_payload = {'passed': False, 'error': "Le comparateur doit retourner True/False ou un dict {'passed': ..., 'diff'?: ...}."}
+_chiphre_json.dumps(_chiphre_payload)
 `,
 			{ globals: namespace }
 		);
@@ -2445,9 +2445,9 @@ _ubumaths_json.dumps(_ubumaths_payload)
 		const jsonStr = (await Promise.race([compareCall, timeoutPromise])) as string;
 
 		try {
-			namespace.delete('_ubumaths_cmp_expected');
-			namespace.delete('_ubumaths_cmp_actual');
-			namespace.delete('_ubumaths_cmp_stdin');
+			namespace.delete('_chiphre_cmp_expected');
+			namespace.delete('_chiphre_cmp_actual');
+			namespace.delete('_chiphre_cmp_stdin');
 		} catch {
 			// Ignore cleanup errors (keys may not exist on early failure)
 		}
@@ -2496,7 +2496,7 @@ function redactIfHidden(result: TestCaseResult, hidden: boolean): TestCaseResult
  * Validate using output comparison strategy.
  *
  * @param namespace Isolated Python dict where the student code runs and
- *   `_ubumaths_test_*` scaffolding lives. Must be a fresh empty dict
+ *   `_chiphre_test_*` scaffolding lives. Must be a fresh empty dict
  *   provided by the caller; not shared with the playground namespace.
  */
 async function runOutputBehavior(
@@ -2521,12 +2521,12 @@ async function runOutputBehavior(
 import sys
 from io import StringIO
 
-_ubumaths_test_stdin = StringIO(${JSON.stringify(testCase.input)})
-_ubumaths_test_stdout = StringIO()
-_ubumaths_old_stdin = sys.stdin
-_ubumaths_old_stdout = sys.stdout
-sys.stdin = _ubumaths_test_stdin
-sys.stdout = _ubumaths_test_stdout
+_chiphre_test_stdin = StringIO(${JSON.stringify(testCase.input)})
+_chiphre_test_stdout = StringIO()
+_chiphre_old_stdin = sys.stdin
+_chiphre_old_stdout = sys.stdout
+sys.stdin = _chiphre_test_stdin
+sys.stdout = _chiphre_test_stdout
 `,
 				{ globals: namespace }
 			);
@@ -2537,9 +2537,9 @@ sys.stdout = _ubumaths_test_stdout
 			// Capture output
 			const actualOutput = (await pyodide.runPythonAsync(
 				`
-_actual = _ubumaths_test_stdout.getvalue()
-sys.stdin = _ubumaths_old_stdin
-sys.stdout = _ubumaths_old_stdout
+_actual = _chiphre_test_stdout.getvalue()
+sys.stdin = _chiphre_old_stdin
+sys.stdout = _chiphre_old_stdout
 _actual
 `,
 				{ globals: namespace }
@@ -2592,8 +2592,8 @@ _actual
 				await pyodide.runPythonAsync(
 					`
 import sys
-sys.stdin = _ubumaths_old_stdin
-sys.stdout = _ubumaths_old_stdout
+sys.stdin = _chiphre_old_stdin
+sys.stdout = _chiphre_old_stdout
 `,
 					{ globals: namespace }
 				);
@@ -2659,10 +2659,10 @@ async function runUnitTestBehavior(
 		for (const testCase of behavior.test_cases) {
 			try {
 				// Inject test args/expected into the isolated namespace
-				namespace.set('_ubumaths_test_args', testCase.args);
-				namespace.set('_ubumaths_test_expected', testCase.expected);
-				namespace.set('_ubumaths_eps_abs', behavior.tolerance?.eps_abs ?? 0);
-				namespace.set('_ubumaths_eps_rel', behavior.tolerance?.eps_rel ?? 0);
+				namespace.set('_chiphre_test_args', testCase.args);
+				namespace.set('_chiphre_test_expected', testCase.expected);
+				namespace.set('_chiphre_eps_abs', behavior.tolerance?.eps_abs ?? 0);
+				namespace.set('_chiphre_eps_rel', behavior.tolerance?.eps_rel ?? 0);
 
 				// Call function and compare result, all within the namespace.
 				// Recursive comparison handles:
@@ -2675,23 +2675,23 @@ async function runUnitTestBehavior(
 				//   - everything else: strict `==`.
 				const result = (await pyodide.runPythonAsync(
 					`
-def _ubumaths_to_py(v):
+def _chiphre_to_py(v):
     """Force-convert a Pyodide JsProxy (JS array/object) into a real
     Python list/dict so that subsequent isinstance(..., (list, dict))
     checks recognise it. Plain Python values pass through."""
     return v.to_py() if hasattr(v, 'to_py') else v
 
-def _ubumaths_compare(a, b, eps_abs, eps_rel):
-    a = _ubumaths_to_py(a)
-    b = _ubumaths_to_py(b)
+def _chiphre_compare(a, b, eps_abs, eps_rel):
+    a = _chiphre_to_py(a)
+    b = _chiphre_to_py(b)
     if isinstance(a, (tuple, list)) and isinstance(b, (tuple, list)):
         if len(a) != len(b):
             return False
-        return all(_ubumaths_compare(x, y, eps_abs, eps_rel) for x, y in zip(a, b))
+        return all(_chiphre_compare(x, y, eps_abs, eps_rel) for x, y in zip(a, b))
     if isinstance(a, dict) and isinstance(b, dict):
         if set(a.keys()) != set(b.keys()):
             return False
-        return all(_ubumaths_compare(a[k], b[k], eps_abs, eps_rel) for k in a)
+        return all(_chiphre_compare(a[k], b[k], eps_abs, eps_rel) for k in a)
     # Booleans must be excluded from the numeric branch (bool is a subclass of int)
     if (
         isinstance(a, (int, float))
@@ -2704,10 +2704,10 @@ def _ubumaths_compare(a, b, eps_abs, eps_rel):
         return diff <= threshold
     return a == b
 
-_args = _ubumaths_test_args
-_expected = _ubumaths_test_expected
+_args = _chiphre_test_args
+_expected = _chiphre_test_expected
 _actual = ${behavior.function_name}(*_args)
-_passed = _ubumaths_compare(_actual, _expected, _ubumaths_eps_abs, _ubumaths_eps_rel)
+_passed = _chiphre_compare(_actual, _expected, _chiphre_eps_abs, _chiphre_eps_rel)
 {
     'passed': _passed,
     'actual': _actual,
@@ -2743,10 +2743,10 @@ _passed = _ubumaths_compare(_actual, _expected, _ubumaths_eps_abs, _ubumaths_eps
 				);
 
 				// Clean up test args/expected from namespace
-				namespace.delete('_ubumaths_test_args');
-				namespace.delete('_ubumaths_test_expected');
-				namespace.delete('_ubumaths_eps_abs');
-				namespace.delete('_ubumaths_eps_rel');
+				namespace.delete('_chiphre_test_args');
+				namespace.delete('_chiphre_test_expected');
+				namespace.delete('_chiphre_eps_abs');
+				namespace.delete('_chiphre_eps_rel');
 			} catch (error) {
 				allPassed = false;
 				testResults.push(
@@ -2763,10 +2763,10 @@ _passed = _ubumaths_compare(_actual, _expected, _ubumaths_eps_abs, _ubumaths_eps
 
 				// Clean up test args/expected on error too
 				try {
-					namespace.delete('_ubumaths_test_args');
-					namespace.delete('_ubumaths_test_expected');
-					namespace.delete('_ubumaths_eps_abs');
-					namespace.delete('_ubumaths_eps_rel');
+					namespace.delete('_chiphre_test_args');
+					namespace.delete('_chiphre_test_expected');
+					namespace.delete('_chiphre_eps_abs');
+					namespace.delete('_chiphre_eps_rel');
 				} catch {
 					// Ignore cleanup errors (key may not exist)
 				}
@@ -2845,7 +2845,7 @@ async function runVariableCheckBehavior(
 	for (const [name, expected] of Object.entries(behavior.expected_vars)) {
 		const expectedDisplay = serializeForDisplay(expected);
 		try {
-			namespace.set('_ubumaths_var_name', name);
+			namespace.set('_chiphre_var_name', name);
 
 			// Look up the variable inside the isolated namespace.
 			// `dir()` with no args lists the namespace's keys when invoked
@@ -2855,12 +2855,12 @@ async function runVariableCheckBehavior(
 			// value in a REPL.
 			const lookup = (await pyodide.runPythonAsync(
 				`
-_ubumaths_name = _ubumaths_var_name
-if _ubumaths_name in dir():
-    _ubumaths_lookup_result = {'exists': True, 'value': eval(_ubumaths_name)}
+_chiphre_name = _chiphre_var_name
+if _chiphre_name in dir():
+    _chiphre_lookup_result = {'exists': True, 'value': eval(_chiphre_name)}
 else:
-    _ubumaths_lookup_result = {'exists': False, 'value': None}
-_ubumaths_lookup_result
+    _chiphre_lookup_result = {'exists': False, 'value': None}
+_chiphre_lookup_result
 `,
 				{ globals: namespace }
 			)) as PyProxy;
@@ -2881,9 +2881,9 @@ _ubumaths_lookup_result
 			// student's namespace (same approach as the AST checker — keeps
 			// the student's namespace pristine between iterations and avoids
 			// surprising hits when `dir()` is consulted later).
-			namespace.delete('_ubumaths_var_name');
-			namespace.delete('_ubumaths_name');
-			namespace.delete('_ubumaths_lookup_result');
+			namespace.delete('_chiphre_var_name');
+			namespace.delete('_chiphre_name');
+			namespace.delete('_chiphre_lookup_result');
 
 			if (!jsLookup.exists) {
 				allPassed = false;
@@ -2914,9 +2914,9 @@ _ubumaths_lookup_result
 			});
 		} catch (error) {
 			try {
-				namespace.delete('_ubumaths_var_name');
-				namespace.delete('_ubumaths_name');
-				namespace.delete('_ubumaths_lookup_result');
+				namespace.delete('_chiphre_var_name');
+				namespace.delete('_chiphre_name');
+				namespace.delete('_chiphre_lookup_result');
 			} catch {
 				// Ignore cleanup errors
 			}
@@ -2973,7 +2973,7 @@ function serializeForDisplay(v: unknown): string {
  * Reference code runs in a separate namespace (`refNs`) so the student's
  * code cannot inspect or shadow the teacher's helpers. The reference
  * function object is then injected back into the student's namespace
- * under `_ubumaths_ref_func` for the per-case snippets to invoke side by
+ * under `_chiphre_ref_func` for the per-case snippets to invoke side by
  * side.
  *
  * @param namespace Isolated Python dict for the student code.
@@ -3063,29 +3063,29 @@ async function runReferenceSolutionBehavior(
 		// 4. Inject the reference function + helpers into the student
 		//    namespace so per-case snippets can call both side by side.
 		const refFunc = refNs.get(fnName) as unknown;
-		namespace.set('_ubumaths_ref_func', refFunc as never);
-		namespace.set('_ubumaths_eps_abs', epsAbs);
-		namespace.set('_ubumaths_eps_rel', epsRel);
+		namespace.set('_chiphre_ref_func', refFunc as never);
+		namespace.set('_chiphre_eps_abs', epsAbs);
+		namespace.set('_chiphre_eps_rel', epsRel);
 
 		await pyodide.runPythonAsync(
 			`
-import copy as _ubumaths_copy
-import random as _ubumaths_random
+import copy as _chiphre_copy
+import random as _chiphre_random
 
-def _ubumaths_to_py(v):
+def _chiphre_to_py(v):
     return v.to_py() if hasattr(v, 'to_py') else v
 
-def _ubumaths_compare(a, b, eps_abs, eps_rel):
-    a = _ubumaths_to_py(a)
-    b = _ubumaths_to_py(b)
+def _chiphre_compare(a, b, eps_abs, eps_rel):
+    a = _chiphre_to_py(a)
+    b = _chiphre_to_py(b)
     if isinstance(a, (tuple, list)) and isinstance(b, (tuple, list)):
         if len(a) != len(b):
             return False
-        return all(_ubumaths_compare(x, y, eps_abs, eps_rel) for x, y in zip(a, b))
+        return all(_chiphre_compare(x, y, eps_abs, eps_rel) for x, y in zip(a, b))
     if isinstance(a, dict) and isinstance(b, dict):
         if set(a.keys()) != set(b.keys()):
             return False
-        return all(_ubumaths_compare(a[k], b[k], eps_abs, eps_rel) for k in a)
+        return all(_chiphre_compare(a[k], b[k], eps_abs, eps_rel) for k in a)
     if (
         isinstance(a, (int, float))
         and isinstance(b, (int, float))
@@ -3182,9 +3182,9 @@ def _ubumaths_compare(a, b, eps_abs, eps_rel):
 
 		// Cleanup the helpers injected into the student namespace.
 		try {
-			namespace.delete('_ubumaths_ref_func');
-			namespace.delete('_ubumaths_eps_abs');
-			namespace.delete('_ubumaths_eps_rel');
+			namespace.delete('_chiphre_ref_func');
+			namespace.delete('_chiphre_eps_abs');
+			namespace.delete('_chiphre_eps_rel');
 		} catch {
 			// Ignore cleanup errors
 		}
@@ -3200,7 +3200,7 @@ def _ubumaths_compare(a, b, eps_abs, eps_rel):
 /**
  * Run a single fixed-case for the reference_solution layer. Behaves like
  * the unit_test path: inject args + expected into the namespace, call the
- * student function, compare via `_ubumaths_compare` (already injected by
+ * student function, compare via `_chiphre_compare` (already injected by
  * the caller), and return `{passed, actualJson?, diff?, error?}`.
  */
 async function runOneFixedRefCase(
@@ -3213,14 +3213,14 @@ async function runOneFixedRefCase(
 	}
 
 	try {
-		namespace.set('_ubumaths_fc_args', tc.args);
-		namespace.set('_ubumaths_fc_expected', tc.expected);
+		namespace.set('_chiphre_fc_args', tc.args);
+		namespace.set('_chiphre_fc_expected', tc.expected);
 
 		const result = (await pyodide.runPythonAsync(
 			`
-_ubumaths_fc_actual = ${fnName}(*_ubumaths_fc_args)
-_ubumaths_fc_passed = _ubumaths_compare(_ubumaths_fc_actual, _ubumaths_fc_expected, _ubumaths_eps_abs, _ubumaths_eps_rel)
-{'passed': _ubumaths_fc_passed, 'actual': _ubumaths_fc_actual}
+_chiphre_fc_actual = ${fnName}(*_chiphre_fc_args)
+_chiphre_fc_passed = _chiphre_compare(_chiphre_fc_actual, _chiphre_fc_expected, _chiphre_eps_abs, _chiphre_eps_rel)
+{'passed': _chiphre_fc_passed, 'actual': _chiphre_fc_actual}
 `,
 			{ globals: namespace }
 		)) as PyProxy;
@@ -3230,10 +3230,10 @@ _ubumaths_fc_passed = _ubumaths_compare(_ubumaths_fc_actual, _ubumaths_fc_expect
 			(result as { destroy: () => void }).destroy();
 		}
 
-		namespace.delete('_ubumaths_fc_args');
-		namespace.delete('_ubumaths_fc_expected');
-		namespace.delete('_ubumaths_fc_actual');
-		namespace.delete('_ubumaths_fc_passed');
+		namespace.delete('_chiphre_fc_args');
+		namespace.delete('_chiphre_fc_expected');
+		namespace.delete('_chiphre_fc_actual');
+		namespace.delete('_chiphre_fc_passed');
 
 		return {
 			passed: jsResult.passed,
@@ -3246,10 +3246,10 @@ _ubumaths_fc_passed = _ubumaths_compare(_ubumaths_fc_actual, _ubumaths_fc_expect
 		};
 	} catch (error) {
 		try {
-			namespace.delete('_ubumaths_fc_args');
-			namespace.delete('_ubumaths_fc_expected');
-			namespace.delete('_ubumaths_fc_actual');
-			namespace.delete('_ubumaths_fc_passed');
+			namespace.delete('_chiphre_fc_args');
+			namespace.delete('_chiphre_fc_expected');
+			namespace.delete('_chiphre_fc_actual');
+			namespace.delete('_chiphre_fc_passed');
 		} catch {
 			// Ignore cleanup
 		}
@@ -3295,25 +3295,25 @@ async function runOneGeneratorRefCase(
 		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
 	}
 
-	namespace.set('_ubumaths_seed_value', seedValue);
+	namespace.set('_chiphre_seed_value', seedValue);
 
 	// Step A — generate args + call reference (teacher-side errors flagged here).
 	let argsRepr: string;
 	try {
 		const phaseA = (await pyodide.runPythonAsync(
 			`
-_ubumaths_random.seed(_ubumaths_seed_value)
+_chiphre_random.seed(_chiphre_seed_value)
 
-def _ubumaths_gen_inputs():
+def _chiphre_gen_inputs():
     return ${generatorCode}
 
-_ubumaths_args = _ubumaths_gen_inputs()
-if not isinstance(_ubumaths_args, tuple):
+_chiphre_args = _chiphre_gen_inputs()
+if not isinstance(_chiphre_args, tuple):
     raise TypeError('Le générateur doit renvoyer un tuple d\\'arguments (utilise une virgule, ex: (x,))')
 
-_ubumaths_ref_args = _ubumaths_copy.deepcopy(_ubumaths_args)
-_ubumaths_expected = _ubumaths_ref_func(*_ubumaths_ref_args)
-{'args_repr': repr(_ubumaths_args), 'expected_repr': repr(_ubumaths_expected)}
+_chiphre_ref_args = _chiphre_copy.deepcopy(_chiphre_args)
+_chiphre_expected = _chiphre_ref_func(*_chiphre_ref_args)
+{'args_repr': repr(_chiphre_args), 'expected_repr': repr(_chiphre_expected)}
 `,
 			{ globals: namespace }
 		)) as PyProxy;
@@ -3328,10 +3328,10 @@ _ubumaths_expected = _ubumaths_ref_func(*_ubumaths_ref_args)
 		try {
 			const phaseB = (await pyodide.runPythonAsync(
 				`
-_ubumaths_stu_args = _ubumaths_copy.deepcopy(_ubumaths_args)
-_ubumaths_actual = ${fnName}(*_ubumaths_stu_args)
-_ubumaths_passed = _ubumaths_compare(_ubumaths_actual, _ubumaths_expected, _ubumaths_eps_abs, _ubumaths_eps_rel)
-{'passed': _ubumaths_passed, 'actual_repr': repr(_ubumaths_actual)}
+_chiphre_stu_args = _chiphre_copy.deepcopy(_chiphre_args)
+_chiphre_actual = ${fnName}(*_chiphre_stu_args)
+_chiphre_passed = _chiphre_compare(_chiphre_actual, _chiphre_expected, _chiphre_eps_abs, _chiphre_eps_rel)
+{'passed': _chiphre_passed, 'actual_repr': repr(_chiphre_actual)}
 `,
 				{ globals: namespace }
 			)) as PyProxy;
@@ -3370,18 +3370,18 @@ _ubumaths_passed = _ubumaths_compare(_ubumaths_actual, _ubumaths_expected, _ubum
 }
 
 function cleanupGenCaseScratch(namespace: PyProxy): void {
-	// `_ubumaths_gen_inputs` is the `def` injected per case — without
+	// `_chiphre_gen_inputs` is the `def` injected per case — without
 	// deleting it here, the function persists in the student's namespace
-	// past the validation run, holding a closure over `_ubumaths_ref_func`.
+	// past the validation run, holding a closure over `_chiphre_ref_func`.
 	for (const k of [
-		'_ubumaths_seed_value',
-		'_ubumaths_args',
-		'_ubumaths_ref_args',
-		'_ubumaths_stu_args',
-		'_ubumaths_expected',
-		'_ubumaths_actual',
-		'_ubumaths_passed',
-		'_ubumaths_gen_inputs'
+		'_chiphre_seed_value',
+		'_chiphre_args',
+		'_chiphre_ref_args',
+		'_chiphre_stu_args',
+		'_chiphre_expected',
+		'_chiphre_actual',
+		'_chiphre_passed',
+		'_chiphre_gen_inputs'
 	]) {
 		try {
 			namespace.delete(k);
@@ -3414,17 +3414,17 @@ async function runASTChecks(
 
 	for (const requirement of requirements) {
 		try {
-			namespace.set('_ubumaths_ast_code', code);
-			namespace.set('_ubumaths_ast_requirement_type', requirement.type);
-			namespace.set('_ubumaths_ast_requirement_name', requirement.name || '');
+			namespace.set('_chiphre_ast_code', code);
+			namespace.set('_chiphre_ast_requirement_type', requirement.type);
+			namespace.set('_chiphre_ast_requirement_name', requirement.name || '');
 
 			const passed = (await pyodide.runPythonAsync(
 				`
 import ast
 
-_code = _ubumaths_ast_code
-_req_type = _ubumaths_ast_requirement_type
-_req_name = _ubumaths_ast_requirement_name
+_code = _chiphre_ast_code
+_req_type = _chiphre_ast_requirement_type
+_req_name = _chiphre_ast_requirement_name
 _passed = False
 
 try:
@@ -3523,18 +3523,18 @@ _passed
 				{ globals: namespace }
 			)) as boolean;
 
-			namespace.delete('_ubumaths_ast_code');
-			namespace.delete('_ubumaths_ast_requirement_type');
-			namespace.delete('_ubumaths_ast_requirement_name');
+			namespace.delete('_chiphre_ast_code');
+			namespace.delete('_chiphre_ast_requirement_type');
+			namespace.delete('_chiphre_ast_requirement_name');
 
 			if (!passed) {
 				astIssues.push(requirement.message);
 			}
 		} catch (error) {
 			try {
-				namespace.delete('_ubumaths_ast_code');
-				namespace.delete('_ubumaths_ast_requirement_type');
-				namespace.delete('_ubumaths_ast_requirement_name');
+				namespace.delete('_chiphre_ast_code');
+				namespace.delete('_chiphre_ast_requirement_type');
+				namespace.delete('_chiphre_ast_requirement_name');
 			} catch {
 				// Ignore cleanup errors (key may not exist)
 			}
@@ -3581,14 +3581,14 @@ async function handleAutocomplete(
 	const namespace = getContextNamespace(contextId);
 
 	// Set the code, cursor position, and optional namespace for the Python helper
-	pyodide.globals.set('_ubumaths_autocomplete_code', code);
-	pyodide.globals.set('_ubumaths_autocomplete_cursor', cursor);
-	pyodide.globals.set('_ubumaths_autocomplete_namespace', namespace);
+	pyodide.globals.set('_chiphre_autocomplete_code', code);
+	pyodide.globals.set('_chiphre_autocomplete_cursor', cursor);
+	pyodide.globals.set('_chiphre_autocomplete_namespace', namespace);
 
 	try {
 		// Call the Python completion function with namespace
 		const result = await pyodide.runPythonAsync(`
-_ubumaths_get_completions(_ubumaths_autocomplete_code, _ubumaths_autocomplete_cursor, _ubumaths_autocomplete_namespace)
+_chiphre_get_completions(_chiphre_autocomplete_code, _chiphre_autocomplete_cursor, _chiphre_autocomplete_namespace)
 `);
 
 		// Convert PyProxy to JavaScript - result should be unknown
@@ -3659,9 +3659,9 @@ _ubumaths_get_completions(_ubumaths_autocomplete_code, _ubumaths_autocomplete_cu
 		});
 	} finally {
 		// Clean up global variables to prevent memory leaks
-		pyodide.globals.delete('_ubumaths_autocomplete_code');
-		pyodide.globals.delete('_ubumaths_autocomplete_cursor');
-		pyodide.globals.delete('_ubumaths_autocomplete_namespace');
+		pyodide.globals.delete('_chiphre_autocomplete_code');
+		pyodide.globals.delete('_chiphre_autocomplete_cursor');
+		pyodide.globals.delete('_chiphre_autocomplete_namespace');
 	}
 }
 
@@ -3815,16 +3815,16 @@ async function debugStartExecution(
 		const breakpointsJson = JSON.stringify(breakpoints);
 
 		// Create the generator
-		pyodide.globals.set('_ubumaths_debug_code', code);
-		pyodide.globals.set('_ubumaths_debug_breakpoints_json', breakpointsJson);
+		pyodide.globals.set('_chiphre_debug_code', code);
+		pyodide.globals.set('_chiphre_debug_breakpoints_json', breakpointsJson);
 
 		const generator = pyodide.runPython(`
-_ubumaths_debug_generator(_ubumaths_debug_code, _ubumaths_debug_breakpoints_json)
+_chiphre_debug_generator(_chiphre_debug_code, _chiphre_debug_breakpoints_json)
 `) as PyProxy;
 
 		// Clean up globals
-		pyodide.globals.delete('_ubumaths_debug_code');
-		pyodide.globals.delete('_ubumaths_debug_breakpoints_json');
+		pyodide.globals.delete('_chiphre_debug_code');
+		pyodide.globals.delete('_chiphre_debug_breakpoints_json');
 
 		debugState.generator = generator;
 

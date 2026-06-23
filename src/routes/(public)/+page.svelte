@@ -3,10 +3,10 @@
 </script>
 
 <svelte:head>
-	<title>UbuMaths - Les maths de la chandelle verte</title>
+	<title>Chiphre - Les maths de la chandelle verte</title>
 	<meta
 		name="description"
-		content="UbuMaths est une application educative de mathematiques pour eleves francophones. Exercices interactifs, jeux et outils pour apprendre les maths."
+		content="Chiphre est une application educative de mathematiques pour eleves francophones. Exercices interactifs, jeux et outils pour apprendre les maths."
 	/>
 </svelte:head>
 

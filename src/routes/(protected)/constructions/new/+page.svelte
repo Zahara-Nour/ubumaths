@@ -63,7 +63,7 @@ segment(A, B)
 </script>
 
 <svelte:head>
-	<title>Nouvelle construction - UbuMaths</title>
+	<title>Nouvelle construction - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl p-4 sm:p-6">

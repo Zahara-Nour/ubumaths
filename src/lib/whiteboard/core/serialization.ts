@@ -11,7 +11,7 @@ import type { WhiteboardDocument, ArrowElement, ArrowType } from '../types/docum
 import { validateDocument, isVersionCompatible } from '../types/file-format';
 
 /** MIME type for .ubw files */
-export const UBW_MIME_TYPE = 'application/vnd.ubumaths.whiteboard+json';
+export const UBW_MIME_TYPE = 'application/vnd.chiphre.whiteboard+json';
 
 /** File extension */
 export const UBW_EXTENSION = '.ubw';

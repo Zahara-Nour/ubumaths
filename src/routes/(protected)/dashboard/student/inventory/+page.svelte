@@ -244,7 +244,7 @@
 </script>
 
 <svelte:head>
-	<title>Mon Inventaire - UbuMaths</title>
+	<title>Mon Inventaire - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl space-y-6 p-4 sm:p-6">

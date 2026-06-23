@@ -415,7 +415,7 @@
 
 								<!-- Category Selection -->
 								<div class="space-y-2">
-									<Label for="category-{record.classId}">Catégorie (UbuMaths)</Label>
+									<Label for="category-{record.classId}">Catégorie (Chiphre)</Label>
 									{#if record.loadingCategories}
 										<div class="h-10 animate-pulse rounded-md bg-muted"></div>
 									{:else}

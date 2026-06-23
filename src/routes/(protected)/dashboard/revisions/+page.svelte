@@ -78,7 +78,7 @@
 </script>
 
 <svelte:head>
-	<title>Révisions SRS - UbuMaths</title>
+	<title>Révisions SRS - Chiphre</title>
 </svelte:head>
 
 <div class="revisions-page">

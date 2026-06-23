@@ -25,7 +25,7 @@ describe('Backup Validation', () => {
 		it('should validate a complete valid backup', () => {
 			const validBackup: ExerciseBackup = {
 				version: '1.0',
-				format: 'ubumaths-backup',
+				format: 'chiphre-backup',
 				created_at: new Date().toISOString(),
 				created_by: 'admin@test.com',
 				metadata: {
@@ -58,7 +58,7 @@ describe('Backup Validation', () => {
 		it('should reject invalid version', () => {
 			const invalidBackup = {
 				version: '2.0', // Invalid
-				format: 'ubumaths-backup',
+				format: 'chiphre-backup',
 				created_at: new Date().toISOString(),
 				created_by: 'admin@test.com',
 				metadata: {
@@ -114,7 +114,7 @@ describe('Backup Validation', () => {
 		it('should reject invalid email', () => {
 			const invalidBackup = {
 				version: '1.0',
-				format: 'ubumaths-backup',
+				format: 'chiphre-backup',
 				created_at: new Date().toISOString(),
 				created_by: 'not-an-email', // Invalid
 				metadata: {
@@ -142,7 +142,7 @@ describe('Backup Validation', () => {
 		it('should reject missing data field', () => {
 			const invalidBackup = {
 				version: '1.0',
-				format: 'ubumaths-backup',
+				format: 'chiphre-backup',
 				created_at: new Date().toISOString(),
 				created_by: 'admin@test.com',
 				metadata: {
@@ -232,7 +232,7 @@ describe('Backup Validation', () => {
 		it('should validate a complete exercise record', () => {
 			const validBackup: ExerciseBackup = {
 				version: '1.0',
-				format: 'ubumaths-backup',
+				format: 'chiphre-backup',
 				created_at: new Date().toISOString(),
 				created_by: 'admin@test.com',
 				metadata: {
@@ -283,7 +283,7 @@ describe('Backup Validation', () => {
 		it('should accept any category string (lenient backup restoration)', () => {
 			const invalidBackup = {
 				version: '1.0' as const,
-				format: 'ubumaths-backup' as const,
+				format: 'chiphre-backup' as const,
 				created_at: new Date().toISOString(),
 				created_by: 'admin@test.com',
 				metadata: {
@@ -336,7 +336,7 @@ describe('Backup Validation', () => {
 		it('should reject exercise with invalid UUID', () => {
 			const invalidBackup = {
 				version: '1.0' as const,
-				format: 'ubumaths-backup' as const,
+				format: 'chiphre-backup' as const,
 				created_at: new Date().toISOString(),
 				created_by: 'admin@test.com',
 				metadata: {
@@ -430,7 +430,7 @@ describe('Constants', () => {
 	});
 
 	it('should have correct backup format', () => {
-		expect(BACKUP_FORMAT).toBe('ubumaths-backup');
+		expect(BACKUP_FORMAT).toBe('chiphre-backup');
 	});
 
 	it('should have correct max backup size', () => {
@@ -446,7 +446,7 @@ describe('Template Record Validation', () => {
 	it('should validate a system template', () => {
 		const validBackup: ExerciseBackup = {
 			version: '1.0',
-			format: 'ubumaths-backup',
+			format: 'chiphre-backup',
 			created_at: new Date().toISOString(),
 			created_by: 'admin@test.com',
 			metadata: {
@@ -490,7 +490,7 @@ describe('Template Record Validation', () => {
 	it('should validate a user template', () => {
 		const validBackup: ExerciseBackup = {
 			version: '1.0',
-			format: 'ubumaths-backup',
+			format: 'chiphre-backup',
 			created_at: new Date().toISOString(),
 			created_by: 'admin@test.com',
 			metadata: {
@@ -541,7 +541,7 @@ describe('Favorite Record Validation', () => {
 	it('should validate a favorite record', () => {
 		const validBackup: ExerciseBackup = {
 			version: '1.0',
-			format: 'ubumaths-backup',
+			format: 'chiphre-backup',
 			created_at: new Date().toISOString(),
 			created_by: 'admin@test.com',
 			metadata: {
@@ -581,7 +581,7 @@ describe('Share Token Record Validation', () => {
 	it('should validate a share token record', () => {
 		const validBackup: ExerciseBackup = {
 			version: '1.0',
-			format: 'ubumaths-backup',
+			format: 'chiphre-backup',
 			created_at: new Date().toISOString(),
 			created_by: 'admin@test.com',
 			metadata: {
@@ -621,7 +621,7 @@ describe('Share Token Record Validation', () => {
 	it('should validate a share token with expiration', () => {
 		const validBackup: ExerciseBackup = {
 			version: '1.0',
-			format: 'ubumaths-backup',
+			format: 'chiphre-backup',
 			created_at: new Date().toISOString(),
 			created_by: 'admin@test.com',
 			metadata: {

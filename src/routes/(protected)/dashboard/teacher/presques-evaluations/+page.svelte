@@ -131,7 +131,7 @@
 </script>
 
 <svelte:head>
-	<title>Les presques évaluations · UbuMaths</title>
+	<title>Les presques évaluations · Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl space-y-6 p-4 md:p-6">

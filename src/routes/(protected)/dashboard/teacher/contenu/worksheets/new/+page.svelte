@@ -138,7 +138,7 @@
 </script>
 
 <svelte:head>
-	<title>Nouvelle feuille - UbuMaths</title>
+	<title>Nouvelle feuille - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-3xl py-6">

@@ -191,7 +191,7 @@
 </script>
 
 <svelte:head>
-	<title>Matériel pédagogique | UbuMaths</title>
+	<title>Matériel pédagogique | Chiphre</title>
 </svelte:head>
 
 <main class="container mx-auto max-w-7xl px-4 py-8">
@@ -227,7 +227,7 @@
 						<!-- Category filter (only if class selected and has categories) -->
 						{#if selectedClass && data.categories.length > 0}
 							<div class="space-y-2">
-								<span class="text-sm font-medium">Categorie UbuMaths</span>
+								<span class="text-sm font-medium">Categorie Chiphre</span>
 								<MySelect
 									type="single"
 									bind:value={selectedCategory}

@@ -1113,7 +1113,7 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
       text(size: 8pt, weight: "bold", fill: accent)[
         #context(counter(page).display())
       ],
-      text(size: 7pt, fill: rgb("#9ca3af"))[ubumaths.fr]
+      text(size: 7pt, fill: rgb("#9ca3af"))[chiph.re]
     )
   ]
 )
@@ -1354,7 +1354,7 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
     #line(length: 100%, stroke: 0.3pt)
     #v(0.2cm)
     #text(size: 8pt, fill: rgb("#6b7280"))[
-      Document généré par UbuMaths
+      Document généré par Chiphre
       #h(1fr)
       Page #context(counter(page).display()) sur #context(counter(page).final().first())
     ]

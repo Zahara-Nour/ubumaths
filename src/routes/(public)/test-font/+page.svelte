@@ -113,7 +113,7 @@
 </script>
 
 <svelte:head>
-	<title>Test Police ShantellMath | UbuMaths</title>
+	<title>Test Police ShantellMath | Chiphre</title>
 	<style>
 		@font-face {
 			font-family: 'ShantellSans';

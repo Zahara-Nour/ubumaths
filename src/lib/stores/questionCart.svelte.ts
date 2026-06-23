@@ -26,7 +26,7 @@ export interface CartItem {
  */
 class QuestionCartStore {
 	private items = $state<CartItem[]>([]);
-	private readonly storageKey = 'ubumaths_question_cart';
+	private readonly storageKey = 'chiphre_question_cart';
 
 	constructor() {
 		// Load from localStorage on initialization (client-side only)

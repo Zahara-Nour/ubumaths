@@ -91,7 +91,7 @@
 </script>
 
 <svelte:head>
-	<title>Export compétences | UbuMaths</title>
+	<title>Export compétences | Chiphre</title>
 </svelte:head>
 
 <main class="container mx-auto max-w-6xl px-4 py-6">

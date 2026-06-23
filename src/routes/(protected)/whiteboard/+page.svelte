@@ -20,7 +20,7 @@
 </script>
 
 <svelte:head>
-	<title>Whiteboard - Tableau interactif | UbuMaths</title>
+	<title>Whiteboard - Tableau interactif | Chiphre</title>
 	<meta
 		name="description"
 		content="Tableau blanc interactif pour écrire des cours de mathématiques avec des instruments de géométrie"

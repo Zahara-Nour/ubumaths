@@ -110,8 +110,8 @@
 </script>
 
 <svelte:head>
-	<title>Démineur - UbuMaths</title>
-	<meta name="description" content="Jouez au Démineur sur UbuMaths et gagnez des gidouilles !" />
+	<title>Démineur - Chiphre</title>
+	<meta name="description" content="Jouez au Démineur sur Chiphre et gagnez des gidouilles !" />
 </svelte:head>
 
 <main class="min-h-screen bg-gradient-to-br from-background to-muted p-4 md:p-8">

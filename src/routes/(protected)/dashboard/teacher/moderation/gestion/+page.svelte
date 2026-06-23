@@ -61,7 +61,7 @@
 </script>
 
 <svelte:head>
-	<title>Modération - UbuMaths</title>
+	<title>Modération - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl space-y-6 p-6">

@@ -338,7 +338,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.exercise.title || 'Exercice'} | UbuMaths</title>
+	<title>{data.exercise.title || 'Exercice'} | Chiphre</title>
 	<meta name="description" content={metaDescription} />
 </svelte:head>
 

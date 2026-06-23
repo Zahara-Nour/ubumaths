@@ -2,7 +2,7 @@
  * Ubumark Library - Main Entry Point
  * ===========================================
  *
- * Complete markdown processing library for UbuMaths educational content.
+ * Complete markdown processing library for Chiphre educational content.
  * Provides parsing, parameterization, and template resolution for mathematical exercises.
  *
  * @module ubumark

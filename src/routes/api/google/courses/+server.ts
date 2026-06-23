@@ -18,7 +18,7 @@
  * Response:
  * {
  *   courses: Array<{
- *     id: string,                // UbuMaths course ID
+ *     id: string,                // Chiphre course ID
  *     googleCourseId: string,    // Google Classroom course ID
  *     name: string,              // Course name
  *     section: string | null,    // Course section

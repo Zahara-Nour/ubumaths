@@ -192,7 +192,7 @@
 </script>
 
 <svelte:head>
-	<title>Panier - Automaths | UbuMaths</title>
+	<title>Panier - Automaths | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">

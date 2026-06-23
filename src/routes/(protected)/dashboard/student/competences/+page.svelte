@@ -27,7 +27,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes compétences mathématiques | UbuMaths</title>
+	<title>Mes compétences mathématiques | Chiphre</title>
 </svelte:head>
 
 <main class="container mx-auto max-w-4xl px-4 py-6">

@@ -115,7 +115,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.spreadsheet?.name ?? 'Tableur'} - UbuMaths</title>
+	<title>{data.spreadsheet?.name ?? 'Tableur'} - Chiphre</title>
 </svelte:head>
 
 <div class="spreadsheet-edit-page">

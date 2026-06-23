@@ -7,7 +7,7 @@
 	 * License: AGPL-3.0-or-later
 	 *
 	 * Renders a semi-transparent triangular set square with a cutout,
-	 * lighter border bands, and UbuMaths branding.
+	 * lighter border bands, and Chiphre branding.
 	 *
 	 * Dimensions scale with `pixelsPerUnit` (math units → screen pixels)
 	 * so the équerre's horizontal/vertical legs always span the same
@@ -103,14 +103,14 @@
 		<!-- Inner lighter area (double layer for transparency effect) -->
 		<path d={innerPath} stroke-width="0" fill="#c6cbe8" fill-opacity="0.5" />
 
-		<!-- UbuMaths branding in bottom bar -->
+		<!-- Chiphre branding in bottom bar -->
 		<text
 			pointer-events="none"
 			x={LARGEUR_GAUCHE}
 			y={-LARGEUR_BANDE / 2 - 5}
 			style="font-family: Arial; font-size: 8pt; font-weight: bold; fill: maroon;"
 		>
-			UbuMaths
+			Chiphre
 		</text>
 	</g>
 {/if}

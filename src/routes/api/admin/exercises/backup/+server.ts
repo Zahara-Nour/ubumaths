@@ -91,7 +91,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			return new Response(sqlDump, {
 				headers: {
 					'Content-Type': 'text/plain; charset=utf-8',
-					'Content-Disposition': `attachment; filename="ubumaths-exercises-backup-${timestamp}.sql"`
+					'Content-Disposition': `attachment; filename="chiphre-exercises-backup-${timestamp}.sql"`
 				}
 			});
 		}
@@ -103,7 +103,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		return new Response(JSON.stringify(backup, null, 2), {
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8',
-				'Content-Disposition': `attachment; filename="ubumaths-exercises-backup-${timestamp}.json"`
+				'Content-Disposition': `attachment; filename="chiphre-exercises-backup-${timestamp}.json"`
 			}
 		});
 	} catch (err) {

@@ -102,7 +102,7 @@
 </script>
 
 <svelte:head>
-	<title>Gestion des decks SRS - UbuMaths</title>
+	<title>Gestion des decks SRS - Chiphre</title>
 </svelte:head>
 
 <div class="teacher-srs-decks-page">

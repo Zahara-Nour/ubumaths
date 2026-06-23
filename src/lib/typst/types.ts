@@ -433,7 +433,7 @@ export interface GeneratorConfig {
  * const result: GenerateResult = {
  *   typstContent: '// Typst document\n#set page...',
  *   metadata: {
- *     generator: 'ubumaths-typst-generator',
+ *     generator: 'chiphre-typst-generator',
  *     generatedAt: new Date(),
  *     pageCount: 3
  *   }

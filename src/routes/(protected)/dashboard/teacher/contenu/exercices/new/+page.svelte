@@ -46,7 +46,7 @@
 </script>
 
 <svelte:head>
-	<title>Nouvel exercice - UbuMaths</title>
+	<title>Nouvel exercice - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto py-6">

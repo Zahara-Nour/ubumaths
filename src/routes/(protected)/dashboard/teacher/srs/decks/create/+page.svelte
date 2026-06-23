@@ -206,7 +206,7 @@
 </script>
 
 <svelte:head>
-	<title>Créer un deck SRS - UbuMaths</title>
+	<title>Créer un deck SRS - Chiphre</title>
 </svelte:head>
 
 <div class="create-deck-page">

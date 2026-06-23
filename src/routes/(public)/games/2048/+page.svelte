@@ -16,7 +16,7 @@
 </script>
 
 <svelte:head>
-	<title>2048 - UbuMaths</title>
+	<title>2048 - Chiphre</title>
 	<meta
 		name="description"
 		content="Jeu 2048 éducatif - Apprenez les puissances de 2 en vous amusant !"

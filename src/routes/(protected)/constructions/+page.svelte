@@ -93,7 +93,7 @@
 </script>
 
 <svelte:head>
-	<title>Constructions geometriques - UbuMaths</title>
+	<title>Constructions geometriques - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl p-4 sm:p-6">

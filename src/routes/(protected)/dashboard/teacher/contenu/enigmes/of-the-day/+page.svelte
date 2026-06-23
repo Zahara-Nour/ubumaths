@@ -44,7 +44,7 @@
 </script>
 
 <svelte:head>
-	<title>Gestion Énigme du Jour - UbuMaths</title>
+	<title>Gestion Énigme du Jour - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl p-4 sm:p-6">

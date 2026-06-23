@@ -1,6 +1,6 @@
 /**
  * Google Classroom Sync Service
- * Synchronizes courses and coursework from Google Classroom to UbuMaths database
+ * Synchronizes courses and coursework from Google Classroom to Chiphre database
  *
  * Features:
  * - Initial full sync of all courses and coursework
@@ -63,7 +63,7 @@ export interface FullSyncResult {
  * Get access token for teacher with automatic refresh if needed
  * Fetches from database, checks expiry, and refreshes if necessary
  *
- * @param teacherId - UbuMaths teacher ID
+ * @param teacherId - Chiphre teacher ID
  * @param supabase - Supabase client
  * @returns Decrypted access token ready for API calls
  * @throws {Error} if teacher has no Google integration or token refresh fails
@@ -134,7 +134,7 @@ export async function getTeacherAccessToken(
  * Sync all courses for a teacher from Google Classroom
  * Fetches all courses and upserts them into database
  *
- * @param teacherId - UbuMaths teacher ID
+ * @param teacherId - Chiphre teacher ID
  * @param supabase - Supabase client
  * @returns Sync result with count and errors
  *
@@ -267,9 +267,9 @@ export async function syncTeacherCourses(
  * Sync topics for a specific Google Classroom course
  * Fetches topics from Google Classroom and upserts them into database
  *
- * @param courseId - UbuMaths course ID (google_classroom_courses.id)
+ * @param courseId - Chiphre course ID (google_classroom_courses.id)
  * @param googleCourseId - Google Classroom course ID
- * @param teacherId - UbuMaths teacher ID
+ * @param teacherId - Chiphre teacher ID
  * @param supabase - Supabase client
  * @returns Sync result with count and errors
  *
@@ -393,9 +393,9 @@ export async function syncTopics(
  * Sync coursework for a specific Google Classroom course
  * Fetches all coursework and materials, upserts into database
  *
- * @param courseId - UbuMaths course ID (google_classroom_courses.id)
+ * @param courseId - Chiphre course ID (google_classroom_courses.id)
  * @param googleCourseId - Google Classroom course ID
- * @param teacherId - UbuMaths teacher ID
+ * @param teacherId - Chiphre teacher ID
  * @param supabase - Supabase client
  * @returns Sync result with count and errors
  *
@@ -591,9 +591,9 @@ export async function syncCoursework(
  * Sync course work materials (non-graded educational content) for a course
  * Fetches materials from Google Classroom and upserts them with attachments
  *
- * @param courseId - UbuMaths course ID (google_classroom_courses.id)
+ * @param courseId - Chiphre course ID (google_classroom_courses.id)
  * @param googleCourseId - Google Classroom course ID
- * @param teacherId - UbuMaths teacher ID
+ * @param teacherId - Chiphre teacher ID
  * @param supabase - Supabase client
  * @returns Sync result with count and errors
  *
@@ -774,7 +774,7 @@ export async function syncCourseWorkMaterials(
  * Perform full sync of all courses and coursework for a teacher
  * This is the main sync function called on initial setup and periodic full syncs
  *
- * @param teacherId - UbuMaths teacher ID
+ * @param teacherId - Chiphre teacher ID
  * @param supabase - Supabase client
  * @returns Full sync result with counts and errors
  *
@@ -879,7 +879,7 @@ export async function fullSync(
  * Convenience function for syncing one specific course
  *
  * @param googleCourseId - Google Classroom course ID
- * @param teacherId - UbuMaths teacher ID
+ * @param teacherId - Chiphre teacher ID
  * @param supabase - Supabase client
  * @returns Sync result
  *
@@ -973,7 +973,7 @@ export async function syncSingleCourse(
  * Check if teacher has a valid Google integration
  * Useful for checking prerequisites before syncing
  *
- * @param teacherId - UbuMaths teacher ID
+ * @param teacherId - Chiphre teacher ID
  * @param supabase - Supabase client
  * @returns true if teacher has valid integration
  *

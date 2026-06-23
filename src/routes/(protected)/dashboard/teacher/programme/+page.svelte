@@ -198,7 +198,7 @@
 	}
 </script>
 
-<svelte:head><title>Programme | UbuMaths</title></svelte:head>
+<svelte:head><title>Programme | Chiphre</title></svelte:head>
 
 <div class="container mx-auto max-w-4xl space-y-6 p-4">
 	<!-- Header -->

@@ -493,7 +493,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes Classes - UbuMaths</title>
+	<title>Mes Classes - Chiphre</title>
 </svelte:head>
 
 <div class="space-y-6">

@@ -8,7 +8,7 @@
 </script>
 
 <svelte:head>
-	<title>Evoland | UbuMaths</title>
+	<title>Evoland | Chiphre</title>
 	<meta name="description" content="Evoland - Un jeu d'aventure rétro éducatif" />
 	<!-- Press Start 2P font for pixel-art aesthetic -->
 	<link rel="preconnect" href="https://fonts.googleapis.com" />

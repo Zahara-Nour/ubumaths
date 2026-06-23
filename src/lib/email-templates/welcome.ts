@@ -5,7 +5,7 @@
  * Used by both the preview page and the Gmail sending function.
  */
 
-export const WELCOME_EMAIL_SUBJECT = 'Bienvenue sur UbuMaths !';
+export const WELCOME_EMAIL_SUBJECT = 'Bienvenue sur Chiphre !';
 export const SITE_URL = 'https://www.chiph.re/';
 
 /**
@@ -22,7 +22,7 @@ export function getWelcomeEmailText(firstname: string | null | undefined): strin
 	const greeting = getGreeting(firstname);
 	return `Bonjour ${greeting},
 
-Ton compte UbuMaths a été validé. Tu peux maintenant te connecter sur ${SITE_URL}.
+Ton compte Chiphre a été validé. Tu peux maintenant te connecter sur ${SITE_URL}.
 
 Bonne année mathématique !`;
 }
@@ -39,7 +39,7 @@ export function getWelcomeEmailHtml(firstname: string | null | undefined): strin
 </head>
 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
   <p>Bonjour ${greeting},</p>
-  <p>Ton compte UbuMaths a été validé. Tu peux maintenant te connecter sur <a href="${SITE_URL}" style="color: #2563eb; text-decoration: underline;">${SITE_URL}</a>.</p>
+  <p>Ton compte Chiphre a été validé. Tu peux maintenant te connecter sur <a href="${SITE_URL}" style="color: #2563eb; text-decoration: underline;">${SITE_URL}</a>.</p>
   <p>Bonne année mathématique !</p>
 </body>
 </html>`;

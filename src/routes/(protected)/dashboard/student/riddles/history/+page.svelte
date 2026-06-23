@@ -64,7 +64,7 @@
 </script>
 
 <svelte:head>
-	<title>Mon Historique Énigmes - UbuMaths</title>
+	<title>Mon Historique Énigmes - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl p-4 sm:p-6">

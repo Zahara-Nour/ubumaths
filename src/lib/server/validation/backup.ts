@@ -17,7 +17,7 @@ import { z } from 'zod';
 export const BACKUP_VERSION = '1.0' as const;
 
 /** Backup format identifier */
-export const BACKUP_FORMAT = 'ubumaths-backup' as const;
+export const BACKUP_FORMAT = 'chiphre-backup' as const;
 
 /** Maximum file size in bytes (50 MB) */
 export const MAX_BACKUP_SIZE_BYTES = 50 * 1024 * 1024;

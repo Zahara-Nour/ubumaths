@@ -111,7 +111,7 @@
 <div class="flex h-screen flex-col">
 	<!-- Header - only show on non-dashboard routes -->
 	{#if !isDashboardRoute}
-		<Header title="UbuMaths" user={data.user} profile={data.profile} />
+		<Header title="Chiphre" user={data.user} profile={data.profile} />
 	{/if}
 
 	<!-- Main content area with sidebar -->
@@ -160,7 +160,7 @@
 			<div
 				class="container mx-auto flex flex-col items-center justify-between gap-2 px-4 text-sm text-muted-foreground sm:flex-row"
 			>
-				<p>&copy; {new Date().getFullYear()} UbuMaths. Tous droits reserves.</p>
+				<p>&copy; {new Date().getFullYear()} Chiphre. Tous droits reserves.</p>
 				<nav class="flex items-center gap-4">
 					<a href={resolve('/legal/confidentialite')} class="hover:text-foreground hover:underline">
 						Confidentialite

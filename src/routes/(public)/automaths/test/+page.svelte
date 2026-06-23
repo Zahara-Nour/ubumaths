@@ -267,7 +267,7 @@
 </script>
 
 <svelte:head>
-	<title>Test - Automaths | UbuMaths</title>
+	<title>Test - Automaths | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">

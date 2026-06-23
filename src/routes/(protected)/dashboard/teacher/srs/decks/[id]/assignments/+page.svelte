@@ -122,7 +122,7 @@
 </script>
 
 <svelte:head>
-	<title>Attributions du deck - UbuMaths</title>
+	<title>Attributions du deck - Chiphre</title>
 </svelte:head>
 
 <div class="assignments-page">

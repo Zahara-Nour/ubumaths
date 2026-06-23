@@ -31,7 +31,7 @@
 	} = $props();
 
 	// Constants
-	const STORAGE_KEY = 'ubumaths-python-splitter';
+	const STORAGE_KEY = 'chiphre-python-splitter';
 	const DEFAULT_WIDTH = 50;
 	const MIN_WIDTH = 20;
 	const MAX_WIDTH = 80;

@@ -30,7 +30,7 @@
 </script>
 
 <svelte:head>
-	<title>Signalements - {assignmentTitle} - UbuMaths</title>
+	<title>Signalements - {assignmentTitle} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-5xl py-6">

@@ -92,7 +92,7 @@ export function renderMaintenancePage(opts: { until?: string } = {}): string {
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="robots" content="noindex" />
-		<title>Maintenance · UbuMaths</title>
+		<title>Maintenance · Chiphre</title>
 		<style>
 			:root { color-scheme: light dark; }
 			* { box-sizing: border-box; }
@@ -126,10 +126,10 @@ export function renderMaintenancePage(opts: { until?: string } = {}): string {
 		<main class="card">
 			<div class="emoji" aria-hidden="true">🛠️</div>
 			<h1>Maintenance en cours</h1>
-			<p>UbuMaths est momentanément indisponible pendant une mise à jour technique.</p>
+			<p>Chiphre est momentanément indisponible pendant une mise à jour technique.</p>
 			<p>On revient très vite&nbsp;!</p>
 			${etaLine}
-			<div class="brand">UbuMaths</div>
+			<div class="brand">Chiphre</div>
 		</main>
 	</body>
 </html>`;

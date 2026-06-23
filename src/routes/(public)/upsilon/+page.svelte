@@ -39,7 +39,7 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <svelte:head>
-	<title>Calculatrice graphique Upsilon | UbuMaths</title>
+	<title>Calculatrice graphique Upsilon | Chiphre</title>
 	<meta
 		name="description"
 		content="Simulateur de la calculatrice graphique Upsilon (fork d'Epsilon par NumWorks). Disponible directement dans le navigateur, accessible à tous."

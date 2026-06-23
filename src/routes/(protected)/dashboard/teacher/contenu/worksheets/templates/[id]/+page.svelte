@@ -53,7 +53,7 @@
 </script>
 
 <svelte:head>
-	<title>{isNew ? 'Nouveau template' : data.template?.name || 'Template'} - UbuMaths</title>
+	<title>{isNew ? 'Nouveau template' : data.template?.name || 'Template'} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-5xl py-6">

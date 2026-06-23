@@ -120,6 +120,7 @@ const COMMON_PASSWORDS = new Set([
 	'math',
 	'mathematics',
 	'ubumaths',
+	'chiphre',
 	// Simple variations
 	'passw0rd',
 	'p@ssword',

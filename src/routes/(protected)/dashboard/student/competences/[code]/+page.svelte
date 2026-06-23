@@ -40,7 +40,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.name} | Mes compétences | UbuMaths</title>
+	<title>{data.name} | Mes compétences | Chiphre</title>
 </svelte:head>
 
 <main class="container mx-auto max-w-4xl px-4 py-6">
