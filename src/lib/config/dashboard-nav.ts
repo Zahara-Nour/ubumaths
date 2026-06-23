@@ -37,6 +37,7 @@ import {
 	LogOut
 } from '@lucide/svelte';
 import type { LucideIcon } from '@lucide/svelte';
+import { lore } from '$lib/config/lore';
 
 export type DashboardNavLink = {
 	href: string;
@@ -63,8 +64,8 @@ export function getZoneTitle(role: DashboardRole | string): string {
 }
 
 const footerLinks: DashboardNavLink[] = [
-	{ href: '/dashboard/profile', label: 'Mon profil', icon: UserIcon, footer: true },
-	{ href: '/auth/logout', label: 'Déconnexion', icon: LogOut, footer: true, logout: true }
+	{ href: '/dashboard/profile', label: `Mon ${lore.nav.profile}`, icon: UserIcon, footer: true },
+	{ href: '/auth/logout', label: lore.nav.logout, icon: LogOut, footer: true, logout: true }
 ];
 
 export function getNavLinks(
@@ -73,7 +74,7 @@ export function getNavLinks(
 	marketplaceEnabled: boolean = false
 ): DashboardNavLink[] {
 	const common: DashboardNavLink[] = [
-		{ href: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard }
+		{ href: '/dashboard', label: lore.nav.dashboard, icon: LayoutDashboard }
 	];
 
 	if (role === 'student') {
@@ -88,20 +89,20 @@ export function getNavLinks(
 				label: 'Cahier de textes',
 				icon: BookOpen
 			},
-			{ href: '/dashboard/friends', label: 'Amis', icon: Users },
+			{ href: '/dashboard/friends', label: lore.entities.friends, icon: Users },
 			{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle }
 		];
 
 		if (marketplaceEnabled) {
 			links.push({
 				href: '/dashboard/student/marketplace',
-				label: 'Boutique',
+				label: lore.nav.shop,
 				icon: ShoppingBag
 			});
 		}
 
 		links.push(
-			{ href: '/dashboard/student/inventory', label: 'Inventaire', icon: Package },
+			{ href: '/dashboard/student/inventory', label: lore.nav.inventory, icon: Package },
 			{ href: '/dashboard/bug-reports', label: 'Mes Signalements', icon: Bug },
 			...footerLinks
 		);
@@ -134,7 +135,7 @@ export function getNavLinks(
 				badge: pendingVipRequestsCount > 0 ? pendingVipRequestsCount : undefined
 			},
 			{ href: '/dashboard/teacher/moderation', label: 'Modération', icon: ShieldAlert },
-			{ href: '/dashboard/friends', label: 'Amis', icon: Users },
+			{ href: '/dashboard/friends', label: lore.entities.friends, icon: Users },
 			{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
 			// Entry point to the admin section. Visible to teachers (who step up via
 			// the elevation screen) and admins; never to students. The route itself
