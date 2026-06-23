@@ -292,7 +292,7 @@ describe('createTemplateMatch', () => {
 				student_name: 'Marie Dubois',
 				teacher_name: 'M. Martin',
 				assessment_title: 'Devoir Maison #3',
-				assessment_link: 'https://ubumaths.com/assessments/123'
+				assessment_link: 'https://chiph.re/assessments/123'
 			}
 		};
 

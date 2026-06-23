@@ -60,12 +60,12 @@ All request bodies and query parameters are validated using Zod schemas. Invalid
 			`.trim(),
 			contact: {
 				name: 'Chiphre Team',
-				url: 'https://ubumaths.com'
+				url: 'https://chiph.re'
 			}
 		},
 		servers: [
 			{
-				url: 'https://ubumaths.com',
+				url: 'https://chiph.re',
 				description: 'Production server'
 			},
 			{

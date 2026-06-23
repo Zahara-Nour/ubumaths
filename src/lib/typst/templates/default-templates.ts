@@ -1113,7 +1113,7 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
       text(size: 8pt, weight: "bold", fill: accent)[
         #context(counter(page).display())
       ],
-      text(size: 7pt, fill: rgb("#9ca3af"))[ubumaths.fr]
+      text(size: 7pt, fill: rgb("#9ca3af"))[chiph.re]
     )
   ]
 )
