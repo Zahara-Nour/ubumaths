@@ -3,10 +3,10 @@
 </script>
 
 <svelte:head>
-	<title>Conditions Generales d'Utilisation - UbuMaths</title>
+	<title>Conditions Generales d'Utilisation - Chiphre</title>
 	<meta
 		name="description"
-		content="Conditions Generales d'Utilisation d'UbuMaths. Regles d'utilisation de la plateforme educative de mathematiques."
+		content="Conditions Generales d'Utilisation d'Chiphre. Regles d'utilisation de la plateforme educative de mathematiques."
 	/>
 </svelte:head>
 
@@ -22,8 +22,8 @@
 			<h2>1. Objet</h2>
 			<p>
 				Les presentes Conditions Generales d'Utilisation (ci-apres "CGU") ont pour objet de definir
-				les modalites et conditions d'utilisation de la plateforme <strong>UbuMaths</strong>,
-				accessible a l'adresse <a href={resolve('/')}>ubumaths.fr</a>.
+				les modalites et conditions d'utilisation de la plateforme <strong>Chiphre</strong>,
+				accessible a l'adresse <a href={resolve('/')}>chiph.re</a>.
 			</p>
 			<p class="rounded-lg bg-muted p-4">
 				<strong
@@ -35,7 +35,7 @@
 		<section>
 			<h2>2. Presentation du Service</h2>
 			<p>
-				UbuMaths est une plateforme educative de mathematiques destinee aux eleves du secondaire
+				Chiphre est une plateforme educative de mathematiques destinee aux eleves du secondaire
 				(college et lycee) et a leurs enseignants.
 			</p>
 
@@ -115,11 +115,11 @@
 			<h2>5. Propriete intellectuelle</h2>
 			<p>
 				L'ensemble des elements du Service (exercices, textes, images, logos, code source) sont la
-				propriete exclusive d'UbuMaths et sont proteges par les lois relatives a la propriete
+				propriete exclusive d'Chiphre et sont proteges par les lois relatives a la propriete
 				intellectuelle.
 			</p>
 			<p>
-				UbuMaths accorde a l'utilisateur une licence personnelle, non exclusive et non transferable
+				Chiphre accorde a l'utilisateur une licence personnelle, non exclusive et non transferable
 				pour utiliser le Service dans le cadre de son usage pedagogique.
 			</p>
 		</section>
@@ -142,8 +142,8 @@
 		<section>
 			<h2>7. Responsabilites</h2>
 
-			<h3>7.1 Responsabilite d'UbuMaths</h3>
-			<p>UbuMaths s'engage a :</p>
+			<h3>7.1 Responsabilite d'Chiphre</h3>
+			<p>Chiphre s'engage a :</p>
 			<ul>
 				<li>Assurer la disponibilite du Service dans la mesure du possible</li>
 				<li>Mettre en oeuvre des mesures de securite appropriees</li>
@@ -172,7 +172,7 @@
 				Les enseignants ont acces aux messages de leurs eleves dans le cadre du suivi pedagogique.
 				Les contenus contraires aux CGU peuvent etre supprimes sans preavis.
 			</p>
-			<p>En cas de non-respect des CGU, UbuMaths se reserve le droit de :</p>
+			<p>En cas de non-respect des CGU, Chiphre se reserve le droit de :</p>
 			<ul>
 				<li>Adresser un avertissement a l'utilisateur</li>
 				<li>Suspendre temporairement l'acces au Service</li>
@@ -183,7 +183,7 @@
 		<section>
 			<h2>9. Disponibilite du Service</h2>
 			<p>
-				UbuMaths peut interrompre temporairement le Service pour des operations de maintenance. Ces
+				Chiphre peut interrompre temporairement le Service pour des operations de maintenance. Ces
 				interruptions seront, dans la mesure du possible, planifiees en dehors des heures de cours.
 			</p>
 			<p>
@@ -195,7 +195,7 @@
 		<section>
 			<h2>10. Modification des CGU</h2>
 			<p>
-				UbuMaths se reserve le droit de modifier les presentes CGU a tout moment. Les utilisateurs
+				Chiphre se reserve le droit de modifier les presentes CGU a tout moment. Les utilisateurs
 				seront informes des modifications substantielles par une notification dans l'application.
 			</p>
 			<p>
@@ -217,7 +217,7 @@
 			<h2>12. Contact</h2>
 			<p>Pour toute question relative aux presentes CGU :</p>
 			<ul>
-				<li><strong>Email</strong> : contact@ubumaths.fr</li>
+				<li><strong>Email</strong> : contact@chiph.re</li>
 			</ul>
 		</section>
 

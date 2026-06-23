@@ -3,10 +3,10 @@
 </script>
 
 <svelte:head>
-	<title>Politique de Confidentialite - UbuMaths</title>
+	<title>Politique de Confidentialite - Chiphre</title>
 	<meta
 		name="description"
-		content="Politique de confidentialite d'UbuMaths. Decouvrez comment nous collectons, utilisons et protegeons vos donnees personnelles."
+		content="Politique de confidentialite d'Chiphre. Decouvrez comment nous collectons, utilisons et protegeons vos donnees personnelles."
 	/>
 </svelte:head>
 
@@ -20,19 +20,19 @@
 
 		<section>
 			<h2>1. Identite du responsable de traitement</h2>
-			<p><strong>UbuMaths</strong> est edite par :</p>
+			<p><strong>Chiphre</strong> est edite par :</p>
 			<ul>
 				<li><strong>Responsable</strong> : [A COMPLETER]</li>
 				<li><strong>Adresse</strong> : [A COMPLETER]</li>
-				<li><strong>Email de contact</strong> : contact@ubumaths.fr</li>
-				<li><strong>Site web</strong> : <a href={resolve('/')}>ubumaths.fr</a></li>
+				<li><strong>Email de contact</strong> : contact@chiph.re</li>
+				<li><strong>Site web</strong> : <a href={resolve('/')}>chiph.re</a></li>
 			</ul>
 		</section>
 
 		<section>
 			<h2>2. Objet du service</h2>
 			<p>
-				UbuMaths est une plateforme educative de mathematiques destinee aux eleves du secondaire
+				Chiphre est une plateforme educative de mathematiques destinee aux eleves du secondaire
 				(college et lycee) et a leurs enseignants. Le service permet :
 			</p>
 			<ul>
@@ -161,7 +161,7 @@
 
 			<h3>5.1 Age des utilisateurs</h3>
 			<p>
-				UbuMaths est destine principalement aux eleves ages de <strong>11 a 18 ans</strong>.
+				Chiphre est destine principalement aux eleves ages de <strong>11 a 18 ans</strong>.
 				Conformement a l'article 8 du RGPD et aux recommandations de la CNIL :
 			</p>
 			<ul>
@@ -338,7 +338,7 @@
 
 		<section>
 			<h2>10. Cookies</h2>
-			<p>UbuMaths utilise uniquement des <strong>cookies strictement necessaires</strong> :</p>
+			<p>Chiphre utilise uniquement des <strong>cookies strictement necessaires</strong> :</p>
 			<div class="overflow-x-auto">
 				<table>
 					<thead>
@@ -368,8 +368,8 @@
 				</table>
 			</div>
 			<p class="rounded-lg bg-muted p-4">
-				<strong>UbuMaths n'utilise aucun cookie d'analyse ou de publicite.</strong> La mesure de
-				performance (Vercel) fonctionne sans cookie. UbuMaths utilise par ailleurs le
+				<strong>Chiphre n'utilise aucun cookie d'analyse ou de publicite.</strong> La mesure de
+				performance (Vercel) fonctionne sans cookie. Chiphre utilise par ailleurs le
 				<strong>stockage local</strong> du navigateur a des fins strictement fonctionnelles (sauvegarde
 				de vos documents tableur / tableau blanc et preferences d'affichage), conservees sur votre appareil.
 			</p>
@@ -379,7 +379,7 @@
 			<h2>11. Contact</h2>
 			<p>Pour toute question relative a cette politique ou pour exercer vos droits :</p>
 			<ul>
-				<li><strong>Email</strong> : contact@ubumaths.fr</li>
+				<li><strong>Email</strong> : contact@chiph.re</li>
 			</ul>
 			<p>Nous nous engageons a repondre dans un delai d'un mois conformement au RGPD.</p>
 		</section>
