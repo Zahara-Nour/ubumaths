@@ -13,7 +13,7 @@ import type { WhiteboardDocument } from '../types/document';
 // =============================================================================
 
 /** MIME type for whiteboard documents on Drive */
-export const DRIVE_MIME_TYPE = 'application/vnd.ubumaths.whiteboard+json';
+export const DRIVE_MIME_TYPE = 'application/vnd.chiphre.whiteboard+json';
 
 /** Folder name for whiteboard documents on Drive */
 export const DRIVE_FOLDER_NAME = 'Chiphre Whiteboards';

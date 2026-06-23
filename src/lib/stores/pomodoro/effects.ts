@@ -122,7 +122,7 @@ export function showPhaseNotification(phase: PomodoroPhase): void {
 		new Notification(NOTIFICATION_TITLES[phase], {
 			body: NOTIFICATION_BODIES[phase],
 			silent: true,
-			tag: 'ubumaths-pomodoro'
+			tag: 'chiphre-pomodoro'
 		});
 	} catch {
 		// Some browsers (e.g. mobile Chrome) reject `new Notification`

@@ -215,7 +215,7 @@ describe('GoogleDriveClient', () => {
 		const validOptions = {
 			name: 'test.ubw',
 			content: '{"version":1}',
-			mimeType: 'application/vnd.ubumaths.whiteboard+json',
+			mimeType: 'application/vnd.chiphre.whiteboard+json',
 			folderId: 'folder-123'
 		};
 
@@ -224,7 +224,7 @@ describe('GoogleDriveClient', () => {
 				createMockResponse({
 					id: 'file-123',
 					name: 'test.ubw',
-					mimeType: 'application/vnd.ubumaths.whiteboard+json',
+					mimeType: 'application/vnd.chiphre.whiteboard+json',
 					modifiedTime: '2025-01-12T00:00:00Z',
 					createdTime: '2025-01-12T00:00:00Z'
 				})
@@ -277,7 +277,7 @@ describe('GoogleDriveClient', () => {
 				createMockResponse({
 					id: 'file-123',
 					name: 'test.ubw',
-					mimeType: 'application/vnd.ubumaths.whiteboard+json',
+					mimeType: 'application/vnd.chiphre.whiteboard+json',
 					modifiedTime: '2025-01-12T01:00:00Z'
 				})
 			);
@@ -344,7 +344,7 @@ describe('GoogleDriveClient', () => {
 		it('should filter by mimeType when provided', async () => {
 			mockFetch.mockResolvedValueOnce(createMockResponse({ files: [] }));
 
-			await client.listFiles('folder-123', 'application/vnd.ubumaths.whiteboard+json');
+			await client.listFiles('folder-123', 'application/vnd.chiphre.whiteboard+json');
 
 			expect(mockFetch.mock.calls[0][0]).toContain('mimeType');
 		});

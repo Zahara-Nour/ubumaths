@@ -31,18 +31,32 @@
 - Docs : `chiphr.es → chiph.re` (lore + lexique).
 - `check:incremental` = 0 erreur.
 
-**Volontairement NON touché (identifiants runtime — casseraient la prod, lowercase non matchés par le sweep) :**
+## Renommage des identifiants internes (catégorie A) — FAIT cette session
 
-| Élément                                             | Fichier                                      | Raison                                                        |
-| --------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------- |
-| `ubumaths_auth_user_id` / `_last_refresh`           | `routes/+layout.ts`                          | clés localStorage de session ; renommer invalide les sessions |
-| `ubumaths-exercise-${id}`                           | `python-exercises/[id]/+page.svelte`         | clé localStorage du code Python sauvegardé des élèves         |
-| `type: 'ubumaths-theme'`                            | `upsilon/+page.svelte`                       | **protocole postMessage** avec le sous-module Upsilon         |
-| `ubumaths-python-splitter` / `-migration-dismissed` | `PythonPlayground` / `PythonMigrationPrompt` | clés storage de prefs                                         |
-| `UBUMATHS_THEME`, `_UBUMATHS_*`                     | `shared/blockly/*`, `pyodide.worker.ts`      | identifiants de code / debug Python                           |
-| `defineTheme('ubumaths', …)`                        | `shared/blockly/config.ts`                   | id de thème Blockly enregistré                                |
+David : fenêtre de maintenance + vacances → on assainit, on accepte de casser l'état transitoire. `ubumaths` → `chiphre` sur **les identifiants**, tests mis à jour en lockstep :
 
-→ Renommages de ces identifiants = chantier séparé (avec shim de migration si jamais souhaité). Pas prioritaire.
+- **Clés localStorage/session** : auth (`+layout.ts`), spreadsheet, grapheur, calculator, repl, blocklyPlayground, pythonPlayground (+splitter, +migration-dismissed), code Python par exercice, panier de questions, freezeData, **whiteboard** (autosave/index/legacy/sync-state).
+- **Pomodoro** : BroadcastChannel + clé + tag (`chiphre:pomodoro:v1`, `chiphre-pomodoro`).
+- **Thème Blockly** : `UBUMATHS_THEME` → `CHIPHRE_THEME`, `defineTheme('chiphre')`, `name:'chiphre'`.
+- **Boundary multipart Drive** + **métadonnée générateur Typst**.
+- **Filenames de download serveur** : `chiphre-exercises-backup-*`, `chiphre-export-*`.
+- **Sandbox Python** : `_ubumaths_*` → `_chiphre_*`, `_UBUMATHS_*` → `_CHIPHRE_*` (~200 occ. dans `pyodide.worker.ts` + test debug).
+
+**4 décisions sur les items à conséquence durable :**
+
+| Item                                           | Décision                                     | Conséquence                                                                         |
+| ---------------------------------------------- | -------------------------------------------- | ----------------------------------------------------------------------------------- |
+| MIME whiteboard `vnd.ubumaths.whiteboard+json` | **Renommé franchement** → `vnd.chiphre…`     | anciens `.ubw` sur Google Drive **non reconnus**                                    |
+| Tag `BACKUP_FORMAT = 'ubumaths-backup'`        | **Renommé franchement** → `'chiphre-backup'` | anciens backups d'exos **non ré-importables**                                       |
+| postMessage `type:'ubumaths-theme'` (Upsilon)  | **Gardé**                                    | protocole inter-dépôts ; à renommer **avec le rebuild du submodule Upsilon** (TODO) |
+| Préfixe sandbox `_ubumaths_`                   | **Renommé** → `_chiphre_`                    | interne worker, invisible                                                           |
+
+**Gardé volontairement (le reste) :**
+
+- `type:'ubumaths-theme'` (`upsilon/+page.svelte`) → cf. décision ci-dessus.
+- `'ubumaths'` dans `passwordPolicy.ts` → **conservé** (toujours interdit) + `'chiphre'` **ajouté**.
+
+**Vérif** : `check:incremental` = 0 erreur ; **7 fichiers de tests serveur impactés = 236 tests verts**. Tests **client** (calculator, pythonPlayground, exercise-validation-real) **non exécutés en local** (Playwright/Chromium absent) → **CI** ; littéraux renommés source+test en lockstep donc cohérents.
 
 ## À FAIRE — lots restants du renommage (avant Sprint 1)
 
@@ -50,10 +64,11 @@
   - `routes/(public)/legal/{cgu,confidentialite,mentions-legales}/+page.svelte`
   - `routes/(public)/consent/{[token],success}/+page.svelte`, `dashboard/teacher/consent/+page.svelte`
   - `components/ConsentBanner.svelte`, `lib/email-templates/parental-consent.ts`
-- **Sécurité / domaine (à coordonner avec le passage en prod de chiph.re)** :
-  - `lib/server/csrfProtection.ts` : allow-list CSRF (`https://ubumaths.com`…) → ajouter `chiph.re`, garder les anciens pendant la fenêtre de redirection 301. + `csrfProtection.test.ts`.
+- **Lot B — domaine / sécurité (à coordonner avec le passage en prod de chiph.re)** — `ubumaths.com`/`.fr` → `chiph.re` :
+  - `lib/server/csrfProtection.ts` : allow-list + **heuristique `origin.includes('ubumaths') && .vercel.app`** (sinon les preview deploys `chiphre-*.vercel.app` seront **bloqués**). + `csrfProtection.test.ts`.
+  - `lib/server/email/brevo.ts` (sender `noreply@ubumaths.fr`), `lib/server/openapi/generator.ts`, `lib/typst/templates/default-templates.ts` (footer PDF), `lib/templates/templateVariables.ts` (URLs d'exemple), tests associés.
 - **Hors app (follow-ups)** : `static/openapi.json`, `scripts/*`, `docs/**` (hors Compendium), `CHANGELOG.md`.
-- **À toi (infra, hors code)** : DNS, redirection 301 ubumaths.\* → chiph.re, renommage comptes Stripe / Supabase / Vercel / sociaux, favicon/logo définitifs.
+- **À toi (infra, hors code)** : DNS, redirection 301 ubumaths.\* → chiph.re, renommage comptes Stripe / Supabase / Vercel / sociaux, favicon/logo définitifs. ⚠️ Le renommage du projet Vercel changera l'URL des preview deploys → synchroniser avec la garde CSRF ci-dessus.
 
 ## Roadmap (Compendium §XIV) — mapping
 

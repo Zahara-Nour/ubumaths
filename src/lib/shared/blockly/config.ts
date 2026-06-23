@@ -85,8 +85,8 @@ export const DEFAULT_WORKSPACE_OPTIONS = {
 /**
  * Custom Blockly theme with dark category text for better contrast
  */
-export const UBUMATHS_THEME = Blockly.Theme.defineTheme('ubumaths', {
-	name: 'ubumaths',
+export const CHIPHRE_THEME = Blockly.Theme.defineTheme('chiphre', {
+	name: 'chiphre',
 	base: Blockly.Themes.Classic,
 	componentStyles: {
 		// Toolbox category text color - black for better contrast on colored backgrounds

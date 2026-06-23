@@ -14,7 +14,7 @@
 import { browser } from '$app/environment';
 import type { PomodoroPhase, PomodoroSettings, PomodoroState } from './logic';
 
-const CHANNEL_NAME = 'ubumaths:pomodoro:v1';
+const CHANNEL_NAME = 'chiphre:pomodoro:v1';
 
 /**
  * Wire-format message exchanged between tabs. A transition field that's

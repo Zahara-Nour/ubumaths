@@ -109,16 +109,16 @@ import {
 // =============================================================================
 
 /** LocalStorage key prefix for autosave (followed by document ID) */
-const AUTOSAVE_KEY_PREFIX = 'ubumaths-whiteboard-autosave-';
+const AUTOSAVE_KEY_PREFIX = 'chiphre-whiteboard-autosave-';
 
 /** LocalStorage key for autosave index (list of saved document IDs with metadata) */
-const AUTOSAVE_INDEX_KEY = 'ubumaths-whiteboard-autosave-index';
+const AUTOSAVE_INDEX_KEY = 'chiphre-whiteboard-autosave-index';
 
 /** Legacy autosave key (for migration) */
-const LEGACY_AUTOSAVE_KEY = 'ubumaths-whiteboard-autosave';
+const LEGACY_AUTOSAVE_KEY = 'chiphre-whiteboard-autosave';
 
 /** LocalStorage key for sync state (Drive file/folder IDs) */
-const SYNC_STATE_KEY = 'ubumaths-whiteboard-sync-state';
+const SYNC_STATE_KEY = 'chiphre-whiteboard-sync-state';
 
 /** Autosave delay in milliseconds (1 minute) */
 const AUTOSAVE_DELAY_MS = 60_000;

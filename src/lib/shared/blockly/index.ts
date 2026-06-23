@@ -27,7 +27,7 @@ export {
 	ERROR_MESSAGES,
 	CODE_TEMPLATES,
 	DISPLAY_CONFIG,
-	UBUMATHS_THEME
+	CHIPHRE_THEME
 } from './config';
 
 // Export toolbox definitions

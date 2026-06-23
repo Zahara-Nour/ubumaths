@@ -14,7 +14,7 @@ import { z } from 'zod';
 // Constants
 // =============================================================================
 
-const STORAGE_KEY = 'ubumaths-calc-history';
+const STORAGE_KEY = 'chiphre-calc-history';
 const MAX_HISTORY = 100;
 const MAX_EXPRESSION_LENGTH = 1000;
 

@@ -261,7 +261,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Return with appropriate headers for download
 		return json(exportData, {
 			headers: {
-				'Content-Disposition': `attachment; filename="ubumaths-export-${userId.slice(0, 8)}-${new Date().toISOString().split('T')[0]}.json"`,
+				'Content-Disposition': `attachment; filename="chiphre-export-${userId.slice(0, 8)}-${new Date().toISOString().split('T')[0]}.json"`,
 				'Cache-Control': 'no-store, no-cache, must-revalidate'
 			}
 		});

@@ -32,7 +32,7 @@
 	const submissions = $derived(data.submissions);
 	const canSubmit = $derived(data.canSubmit);
 	const isAuthenticated = $derived(data.isAuthenticated);
-	const localStorageKey = $derived(`ubumaths-exercise-${exercise.id}`);
+	const localStorageKey = $derived(`chiphre-exercise-${exercise.id}`);
 
 	let executor = $state<PlaygroundExecutor | null>(null);
 	let code = $state('');

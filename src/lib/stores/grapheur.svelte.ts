@@ -27,7 +27,7 @@ import { graphStateSchema, GRAPH_STATE_VERSION } from '$lib/grapheur/types';
 // Constants
 // =============================================================================
 
-const STORAGE_KEY = 'ubumaths-grapheur-state';
+const STORAGE_KEY = 'chiphre-grapheur-state';
 const DEBOUNCE_MS = 500;
 
 // =============================================================================

@@ -24,7 +24,7 @@
 	} = $props();
 
 	// Constants
-	const SESSION_KEY = 'ubumaths-python-migration-dismissed';
+	const SESSION_KEY = 'chiphre-python-migration-dismissed';
 
 	// State
 	let isDismissed = $state(false);
