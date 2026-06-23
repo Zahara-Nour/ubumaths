@@ -1,5 +1,5 @@
 /**
- * UbuSlides - Slide presentation system for UbuMaths
+ * UbuSlides - Slide presentation system for Chiphre
  * Native Svelte 5 implementation (no reveal.js dependency)
  */
 

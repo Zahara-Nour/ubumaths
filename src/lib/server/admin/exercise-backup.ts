@@ -361,7 +361,7 @@ export async function exportBackupSQL(
 	const timestamp = new Date().toISOString();
 
 	lines.push('-- ============================================================================');
-	lines.push('-- UbuMaths Exercise Backup - SQL Dump');
+	lines.push('-- Chiphre Exercise Backup - SQL Dump');
 	lines.push(`-- Generated: ${timestamp}`);
 	lines.push('-- Tables: exercises, exercise_templates, exercise_favorites, exercise_share_tokens');
 	lines.push('-- ============================================================================');

@@ -31,7 +31,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes Évaluations | UbuMaths</title>
+	<title>Mes Évaluations | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">

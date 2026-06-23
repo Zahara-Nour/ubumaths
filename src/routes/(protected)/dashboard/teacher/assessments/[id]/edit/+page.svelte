@@ -55,7 +55,7 @@
 </script>
 
 <svelte:head>
-	<title>Modifier l'Évaluation | UbuMaths</title>
+	<title>Modifier l'Évaluation | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">

@@ -16,7 +16,7 @@ import { createEmptyDocument } from '../types/document';
 const DRIVE_MIME_TYPE = 'application/vnd.ubumaths.whiteboard+json';
 
 /** Folder name for whiteboard documents */
-const DRIVE_FOLDER_NAME = 'UbuMaths Whiteboards';
+const DRIVE_FOLDER_NAME = 'Chiphre Whiteboards';
 
 // =============================================================================
 // Helper Types
@@ -611,6 +611,6 @@ describe('Drive Constants', () => {
 	});
 
 	it('uses correct folder name', () => {
-		expect(DRIVE_FOLDER_NAME).toBe('UbuMaths Whiteboards');
+		expect(DRIVE_FOLDER_NAME).toBe('Chiphre Whiteboards');
 	});
 });

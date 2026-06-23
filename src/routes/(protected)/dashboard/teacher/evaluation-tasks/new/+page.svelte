@@ -29,7 +29,7 @@
 </script>
 
 <svelte:head>
-	<title>Nouvelle tâche d'évaluation | UbuMaths</title>
+	<title>Nouvelle tâche d'évaluation | Chiphre</title>
 </svelte:head>
 
 <main class="container mx-auto max-w-2xl px-4 py-6">

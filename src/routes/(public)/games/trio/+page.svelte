@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Trio - Jeu Mathématique | UbuMaths</title>
+	<title>Trio - Jeu Mathématique | Chiphre</title>
 	<meta
 		name="description"
 		content="Trouvez trois nombres alignés qui satisfont une équation mathématique. Entraînez-vous au calcul mental tout en résolvant des puzzles !"

@@ -173,7 +173,7 @@
 </script>
 
 <svelte:head>
-	<title>{tournament.name} - Tournoi Demineur | UbuMaths</title>
+	<title>{tournament.name} - Tournoi Demineur | Chiphre</title>
 	<meta name="description" content="Participez au tournoi {tournament.name}" />
 </svelte:head>
 

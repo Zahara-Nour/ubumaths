@@ -8,7 +8,7 @@
 	FEATURES:
 	- List all synced Google Classroom courses
 	- Expand/collapse course to view coursework
-	- Show coursework sharing status (which UbuMaths classes)
+	- Show coursework sharing status (which Chiphre classes)
 	- Manual sync button
 	- Links to Google Classroom and settings
 	- Responsive card layout
@@ -418,7 +418,7 @@
 </script>
 
 <svelte:head>
-	<title>Google Classroom - UbuMaths</title>
+	<title>Google Classroom - Chiphre</title>
 </svelte:head>
 
 <!-- Screen reader announcements for loading states -->
@@ -541,7 +541,7 @@
 				<BookOpen class="mb-4 h-12 w-12 text-muted-foreground" />
 				<h3 class="mb-2 text-lg font-semibold text-foreground">Aucun cours synchronisé</h3>
 				<p class="mb-6 max-w-md text-muted-foreground">
-					Synchronisez vos cours Google Classroom pour commencer à les gérer dans UbuMaths.
+					Synchronisez vos cours Google Classroom pour commencer à les gérer dans Chiphre.
 				</p>
 				<div class="flex flex-col gap-2 sm:flex-row">
 					<Button onclick={handleSync} disabled={syncing}>

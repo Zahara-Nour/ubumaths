@@ -15,7 +15,7 @@
  * Environment variables required:
  * - BREVO_API_KEY: API key from Brevo dashboard
  * - BREVO_SENDER_EMAIL: Verified sender email (e.g., noreply@ubumaths.fr)
- * - BREVO_SENDER_NAME: Sender display name (e.g., UbuMaths)
+ * - BREVO_SENDER_NAME: Sender display name (e.g., Chiphre)
  */
 
 import * as Brevo from '@getbrevo/brevo';
@@ -56,7 +56,7 @@ function getBrevoClient(): Brevo.TransactionalEmailsApi {
  */
 function getSenderConfig(): { email: string; name: string } {
 	const email = env.BREVO_SENDER_EMAIL || 'noreply@ubumaths.fr';
-	const name = env.BREVO_SENDER_NAME || 'UbuMaths';
+	const name = env.BREVO_SENDER_NAME || 'Chiphre';
 	return { email, name };
 }
 

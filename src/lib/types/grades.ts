@@ -1,5 +1,5 @@
 /**
- * Unified Grade System for UbuMaths
+ * Unified Grade System for Chiphre
  * Single source of truth for French educational grade levels
  */
 

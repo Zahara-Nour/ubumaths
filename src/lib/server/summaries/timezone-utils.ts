@@ -121,7 +121,7 @@ export function getWeekRangeInTimezone(
 
 /**
  * Format a date for display in notifications
- * Uses French locale by default for UbuMaths
+ * Uses French locale by default for Chiphre
  *
  * @example
  * formatDateForDisplay(new Date('2025-11-13')) // Returns "13 novembre 2025"

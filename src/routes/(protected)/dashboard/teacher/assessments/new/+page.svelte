@@ -138,7 +138,7 @@
 </script>
 
 <svelte:head>
-	<title>Nouvelle Évaluation | UbuMaths</title>
+	<title>Nouvelle Évaluation | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">

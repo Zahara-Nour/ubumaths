@@ -41,7 +41,7 @@
 </script>
 
 <svelte:head>
-	<title>Père Ubu - Professeur Pataphysique | UbuMaths</title>
+	<title>Père Ubu - Professeur Pataphysique | Chiphre</title>
 	<meta
 		name="description"
 		content="Discutez avec le Père Ubu, votre professeur de mathématiques le plus absurde ! Posez vos questions et recevez des explications... pataphysiques."

@@ -356,7 +356,7 @@
 </script>
 
 <svelte:head>
-	<title>Gestion des Cartes VIP - Admin | UbuMaths</title>
+	<title>Gestion des Cartes VIP - Admin | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto space-y-6 py-8">

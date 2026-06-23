@@ -12,7 +12,7 @@
 </script>
 
 <svelte:head>
-	<title>Messages - UbuMaths</title>
+	<title>Messages - Chiphre</title>
 </svelte:head>
 
 <div class="h-screen">

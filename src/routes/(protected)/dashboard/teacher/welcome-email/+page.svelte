@@ -85,7 +85,7 @@
 </script>
 
 <svelte:head>
-	<title>Envoyer un email de bienvenue - UbuMaths</title>
+	<title>Envoyer un email de bienvenue - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-2xl space-y-6 p-6">
@@ -133,7 +133,7 @@
 			</Card.Header>
 			<Card.Content>
 				<p class="text-sm text-muted-foreground">
-					L'élève a reçu toutes les informations nécessaires pour se connecter à UbuMaths.
+					L'élève a reçu toutes les informations nécessaires pour se connecter à Chiphre.
 				</p>
 			</Card.Content>
 			<Card.Footer>

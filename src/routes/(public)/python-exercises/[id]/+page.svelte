@@ -331,7 +331,7 @@
 </script>
 
 <svelte:head>
-	<title>{exercise.title} – UbuMaths</title>
+	<title>{exercise.title} – Chiphre</title>
 	{#if exercise.description}
 		<meta name="description" content={exercise.description} />
 	{/if}

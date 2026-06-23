@@ -36,7 +36,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.doc?.metadata?.title || 'Documentation'} - Admin | UbuMaths</title>
+	<title>{data.doc?.metadata?.title || 'Documentation'} - Admin | Chiphre</title>
 	<!-- Highlight.js theme -->
 	<link
 		rel="stylesheet"

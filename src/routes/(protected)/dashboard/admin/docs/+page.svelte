@@ -39,7 +39,7 @@
 </script>
 
 <svelte:head>
-	<title>Documentation - Admin | UbuMaths</title>
+	<title>Documentation - Admin | Chiphre</title>
 	<!-- Highlight.js theme -->
 	<link
 		rel="stylesheet"
@@ -51,7 +51,7 @@
 	<div class="mb-6">
 		<h1 class="text-3xl font-bold">📚 Documentation</h1>
 		<p class="mt-2 text-muted-foreground">
-			Documentation complète d'UbuMaths - Architecture, guides, et références
+			Documentation complète d'Chiphre - Architecture, guides, et références
 		</p>
 	</div>
 

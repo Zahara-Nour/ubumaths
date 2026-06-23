@@ -268,7 +268,7 @@
 </script>
 
 <svelte:head>
-	<title>Banque d'exercices - UbuMaths</title>
+	<title>Banque d'exercices - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto space-y-6 py-6">

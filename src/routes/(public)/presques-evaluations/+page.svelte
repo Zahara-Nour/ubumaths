@@ -81,10 +81,10 @@
 </script>
 
 <svelte:head>
-	<title>Les presques évaluations · UbuMaths</title>
+	<title>Les presques évaluations · Chiphre</title>
 	<meta
 		name="description"
-		content="Collection de parodies d'évaluations de mathématiques, partagées par les enseignants UbuMaths."
+		content="Collection de parodies d'évaluations de mathématiques, partagées par les enseignants Chiphre."
 	/>
 </svelte:head>
 

@@ -103,7 +103,7 @@
 			<h1 class="text-4xl font-bold text-foreground">Démonstrations de Composants</h1>
 		</div>
 		<p class="mx-auto max-w-2xl text-lg text-muted-foreground">
-			Explorez les différents composants et fonctionnalités de l'application UbuMaths
+			Explorez les différents composants et fonctionnalités de l'application Chiphre
 		</p>
 	</div>
 

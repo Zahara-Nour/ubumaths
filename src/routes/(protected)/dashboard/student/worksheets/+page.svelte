@@ -69,7 +69,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes Feuilles de Travail | UbuMaths</title>
+	<title>Mes Feuilles de Travail | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">

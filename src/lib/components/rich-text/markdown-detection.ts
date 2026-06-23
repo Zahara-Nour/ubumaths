@@ -55,7 +55,7 @@ const MARKDOWN_PATTERNS = [
 	// Math inline (LaTeX): $...$
 	{ regex: /\$[^$\n]+\$/, weight: 3 },
 
-	// Math inline (custom): ~...~ (Ubumaths specific)
+	// Math inline (custom): ~...~ (Chiphre specific)
 	{ regex: /~[^~\n]+~/, weight: 3 },
 
 	// Math block: $$...$$ or ~~...~~

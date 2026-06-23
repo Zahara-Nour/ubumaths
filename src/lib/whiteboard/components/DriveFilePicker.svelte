@@ -3,7 +3,7 @@
 	 * DriveFilePicker - Modal dialog to select whiteboard file from Google Drive
 	 *
 	 * Features:
-	 * - Lists .ubw files from UbuMaths Whiteboards folder
+	 * - Lists .ubw files from Chiphre Whiteboards folder
 	 * - Shows file name and modification date
 	 * - Sorted by modification time (newest first)
 	 */

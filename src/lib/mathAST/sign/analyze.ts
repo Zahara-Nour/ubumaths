@@ -45,7 +45,7 @@
  * ## Continuity assumption
  *
  * The algorithm assumes the expression is continuous on each sub-interval.
- * This holds for standard school-level functions (the target of UbuMaths).
+ * This holds for standard school-level functions (the target of Chiphre).
  * Functions with jump discontinuities inside their domain (floor, piecewise)
  * are not supported and could yield incorrect sign results.
  *

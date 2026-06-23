@@ -51,7 +51,7 @@
 			}
 
 			const contentDisposition = response.headers.get('Content-Disposition');
-			let filename = 'ubumaths-export.json';
+			let filename = 'chiphre-export.json';
 			if (contentDisposition) {
 				const match = contentDisposition.match(/filename="(.+)"/);
 				if (match) filename = match[1];
@@ -78,7 +78,7 @@
 </script>
 
 <svelte:head>
-	<title>Mon profil — UbuMaths</title>
+	<title>Mon profil — Chiphre</title>
 </svelte:head>
 
 <div class="space-y-6">

@@ -148,7 +148,7 @@
 </script>
 
 <svelte:head>
-	<title>{fullName()} — Vue d'ensemble | UbuMaths</title>
+	<title>{fullName()} — Vue d'ensemble | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">

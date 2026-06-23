@@ -29,7 +29,7 @@
 </script>
 
 <svelte:head>
-	<title>Grapheur - Calculatrice graphique | UbuMaths</title>
+	<title>Grapheur - Calculatrice graphique | Chiphre</title>
 	<meta
 		name="description"
 		content="Calculatrice graphique interactive pour tracer et analyser des fonctions mathématiques"

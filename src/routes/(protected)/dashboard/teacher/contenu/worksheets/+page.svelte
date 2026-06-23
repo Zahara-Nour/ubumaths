@@ -209,7 +209,7 @@
 </script>
 
 <svelte:head>
-	<title>Feuilles d'exercices - UbuMaths</title>
+	<title>Feuilles d'exercices - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto space-y-6 py-6">

@@ -71,7 +71,7 @@
 </script>
 
 <svelte:head>
-	<title>Modifier - {data.construction.title} - UbuMaths</title>
+	<title>Modifier - {data.construction.title} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl p-4 sm:p-6">

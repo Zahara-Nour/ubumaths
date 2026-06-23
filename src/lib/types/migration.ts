@@ -1,5 +1,5 @@
 /**
- * TypeScript types for the TinyMath to UbuMaths v2 question migration
+ * TypeScript types for the TinyMath to Chiphre v2 question migration
  * These types support the migration tracking and state management system
  */
 

@@ -268,7 +268,7 @@
 </script>
 
 <svelte:head>
-	<title>Integration Google - UbuMaths</title>
+	<title>Integration Google - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl space-y-6 p-6">

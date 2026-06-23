@@ -3,7 +3,7 @@
  * ==============================================
  *
  * Endpoint: POST/DELETE /api/google/courses/[courseId]/share
- * Purpose: Share or unshare coursework with UbuMaths classes
+ * Purpose: Share or unshare coursework with Chiphre classes
  *
  * POST - Share coursework with a class
  * Flow:

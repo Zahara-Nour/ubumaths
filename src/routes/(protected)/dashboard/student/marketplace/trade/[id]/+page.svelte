@@ -233,7 +233,7 @@
 </script>
 
 <svelte:head>
-	<title>Echange en cours - Ubumaths</title>
+	<title>Echange en cours - Chiphre</title>
 </svelte:head>
 
 <div class="flex h-[calc(100vh-4rem)] flex-col overflow-hidden bg-background">

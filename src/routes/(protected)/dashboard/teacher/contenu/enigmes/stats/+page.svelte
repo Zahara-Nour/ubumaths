@@ -29,7 +29,7 @@
 </script>
 
 <svelte:head>
-	<title>Statistiques Énigmes - UbuMaths</title>
+	<title>Statistiques Énigmes - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl p-4 sm:p-6">

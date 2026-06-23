@@ -19,7 +19,7 @@
 </script>
 
 <svelte:head>
-	<title>Calculatrice NumWorks | UbuMaths</title>
+	<title>Calculatrice NumWorks | Chiphre</title>
 </svelte:head>
 
 <div class="flex h-full flex-col">

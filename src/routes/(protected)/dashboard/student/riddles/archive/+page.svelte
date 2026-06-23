@@ -50,7 +50,7 @@
 </script>
 
 <svelte:head>
-	<title>Archive Énigmes du Jour - UbuMaths</title>
+	<title>Archive Énigmes du Jour - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl p-4 sm:p-6">

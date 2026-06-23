@@ -24,7 +24,7 @@
 </script>
 
 <svelte:head>
-	<title>Tournois - Demineur | UbuMaths</title>
+	<title>Tournois - Demineur | Chiphre</title>
 	<meta
 		name="description"
 		content="Participez aux tournois de demineur et affrontez d'autres joueurs"

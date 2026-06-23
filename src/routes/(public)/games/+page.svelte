@@ -69,7 +69,7 @@
 </script>
 
 <svelte:head>
-	<title>Jeux Mathématiques | UbuMaths</title>
+	<title>Jeux Mathématiques | Chiphre</title>
 	<meta
 		name="description"
 		content="Apprenez les mathématiques en vous amusant avec nos jeux éducatifs : Trio, Mathémo, 2048 et Navadra."

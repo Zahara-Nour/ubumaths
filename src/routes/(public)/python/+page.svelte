@@ -27,7 +27,7 @@
 </script>
 
 <svelte:head>
-	<title>Python Playground - UbuMaths</title>
+	<title>Python Playground - Chiphre</title>
 	<meta
 		name="description"
 		content="Environnement Python interactif avec NumPy et Matplotlib pour les mathématiques"

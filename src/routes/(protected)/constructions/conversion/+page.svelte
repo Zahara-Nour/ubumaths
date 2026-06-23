@@ -2,7 +2,7 @@
 	InstrumenPoche XML Conversion Page
 	===================================
 	Allows teachers and admins to import InstrumenPoche XML files
-	and convert them to UbuMaths construction format.
+	and convert them to Chiphre construction format.
 -->
 
 <script lang="ts">
@@ -366,7 +366,7 @@
 </script>
 
 <svelte:head>
-	<title>Importer une construction - UbuMaths</title>
+	<title>Importer une construction - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl p-4 sm:p-6">
@@ -382,7 +382,7 @@
 			Importer une construction InstrumenPoche
 		</h1>
 		<p class="mt-2 text-muted-foreground">
-			Convertissez un fichier XML InstrumenPoche au format UbuMaths
+			Convertissez un fichier XML InstrumenPoche au format Chiphre
 		</p>
 	</div>
 
@@ -688,7 +688,7 @@
 				Comparaison XML / JSON
 			</Card.Title>
 			<Card.Description>
-				Correspondance entre les instructions XML InstrumenPoche et le format JSON UbuMaths
+				Correspondance entre les instructions XML InstrumenPoche et le format JSON Chiphre
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>

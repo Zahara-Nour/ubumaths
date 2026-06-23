@@ -2,7 +2,7 @@
  * Tutor Components
  * ================
  *
- * AI-powered pedagogical tutor system for UbuMaths.
+ * AI-powered pedagogical tutor system for Chiphre.
  * Provides context-aware mathematical tutoring with progressive help levels.
  *
  * COMPONENTS:

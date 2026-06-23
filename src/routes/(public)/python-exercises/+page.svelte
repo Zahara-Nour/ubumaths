@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-	<title>Exercices Python – UbuMaths</title>
+	<title>Exercices Python – Chiphre</title>
 	<meta
 		name="description"
 		content="Crée des exercices Python avec validation automatique et partage-les via un simple lien."

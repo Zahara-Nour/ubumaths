@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Calculatrice Symbolique | UbuMaths</title>
+	<title>Calculatrice Symbolique | Chiphre</title>
 	<meta
 		name="description"
 		content="Calculatrice symbolique en ligne pour analyser et simplifier des expressions mathématiques."

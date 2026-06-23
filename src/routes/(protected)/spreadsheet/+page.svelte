@@ -100,7 +100,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes tableurs - UbuMaths</title>
+	<title>Mes tableurs - Chiphre</title>
 	<meta name="description" content="Mes feuilles de calcul enregistrees" />
 </svelte:head>
 

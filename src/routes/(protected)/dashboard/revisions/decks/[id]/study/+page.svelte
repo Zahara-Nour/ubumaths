@@ -42,7 +42,7 @@
 </script>
 
 <svelte:head>
-	<title>Session de révision - UbuMaths</title>
+	<title>Session de révision - Chiphre</title>
 </svelte:head>
 
 <div class="study-session-page">

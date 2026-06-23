@@ -99,7 +99,7 @@
 </script>
 
 <svelte:head>
-	<title>Tournois Demineur | UbuMaths</title>
+	<title>Tournois Demineur | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">

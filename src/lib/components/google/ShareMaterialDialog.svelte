@@ -2,11 +2,11 @@
 	Share Material Dialog
 	======================
 
-	Dialog for sharing Google Classroom course work materials with UbuMaths classes
+	Dialog for sharing Google Classroom course work materials with Chiphre classes
 
 	FEATURES:
 	- Select which classes to share with
-	- Hybrid organization: Choose between Google Topics OR UbuMaths Categories
+	- Hybrid organization: Choose between Google Topics OR Chiphre Categories
 	- Configure visibility and custom description per class
 	- Handle multiple class sharing at once
 	- Real-time API calls to share materials
@@ -397,7 +397,7 @@
 																role="radio"
 																aria-checked={!config.useTopics}
 															>
-																Par catégorie UbuMaths
+																Par catégorie Chiphre
 															</Button>
 														</div>
 													</div>
@@ -437,7 +437,7 @@
 													{:else}
 														<!-- Category Selection -->
 														<div class="space-y-2">
-															<Label for="category-{cls.id}">Catégorie UbuMaths (optionnel)</Label>
+															<Label for="category-{cls.id}">Catégorie Chiphre (optionnel)</Label>
 															{#if config.loadingCategories}
 																<div class="h-10 animate-pulse rounded-md bg-muted"></div>
 															{:else}

@@ -25,7 +25,7 @@
 </script>
 
 <svelte:head>
-	<title>Résultats - {data.assessment.title} | UbuMaths</title>
+	<title>Résultats - {data.assessment.title} | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">

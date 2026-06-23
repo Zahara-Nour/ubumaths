@@ -4,7 +4,7 @@
 	Buckets:
 	  - "Mes templates"      : authored by currentUserId
 	  - "Templates partagés" : public, authored by someone else
-	  - "Templates UbuMaths" : system (empty in V1)
+	  - "Templates Chiphre" : system (empty in V1)
 
 	Empty sections collapse silently. If every bucket is empty, render a
 	full-section empty state pointing the teacher at "Enregistrer comme

@@ -98,7 +98,7 @@
 </script>
 
 <svelte:head>
-	<title>Templates - UbuMaths</title>
+	<title>Templates - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto space-y-6 py-6">
