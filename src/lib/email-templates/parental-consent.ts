@@ -5,7 +5,7 @@
  * The email contains a unique link for the parent to grant consent.
  */
 
-export const CONSENT_EMAIL_SUBJECT = 'Consentement parental requis - UbuMaths';
+export const CONSENT_EMAIL_SUBJECT = 'Consentement parental requis - Chiphre';
 
 /**
  * Get the base URL for consent links.
@@ -103,7 +103,7 @@ export function getConsentEmailText(data: ConsentEmailData): string {
 
 	let text = `Bonjour,
 
-${studentName} souhaite utiliser UbuMaths, une plateforme éducative de mathématiques.
+${studentName} souhaite utiliser Chiphre, une plateforme éducative de mathématiques.
 
 Informations de l'élève :
 - Nom : ${studentName}
@@ -128,7 +128,7 @@ Ce lien expire le ${expiryDate}.
 Si vous n'avez pas demandé ce consentement, vous pouvez ignorer cet email.
 
 Cordialement,
-L'équipe UbuMaths`;
+L'équipe Chiphre`;
 
 	return text;
 }
@@ -164,7 +164,7 @@ export function getConsentEmailHtml(data: ConsentEmailData): string {
   <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
     <h1 style="color: #1e40af; margin-top: 0;">Consentement parental requis</h1>
     <p>Bonjour,</p>
-    <p><strong>${studentName}</strong> souhaite utiliser <strong>UbuMaths</strong>, une plateforme éducative de mathématiques.</p>
+    <p><strong>${studentName}</strong> souhaite utiliser <strong>Chiphre</strong>, une plateforme éducative de mathématiques.</p>
   </div>
 
   <div style="background-color: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
@@ -197,7 +197,7 @@ export function getConsentEmailHtml(data: ConsentEmailData): string {
 
   <p style="color: #64748b; font-size: 0.9em;">
     Cordialement,<br>
-    L'équipe UbuMaths
+    L'équipe Chiphre
   </p>
 </body>
 </html>`;

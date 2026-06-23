@@ -57,7 +57,7 @@
 			<ShieldAlert class="h-4 w-4" />
 			<Alert.Title>Accès limité</Alert.Title>
 			<Alert.Description>
-				Le consentement parental est requis pour utiliser toutes les fonctionnalités d'UbuMaths. Tu
+				Le consentement parental est requis pour utiliser toutes les fonctionnalités d'Chiphre. Tu
 				peux consulter tes cours et devoirs, mais tu ne peux pas soumettre de réponses, envoyer de
 				messages ou jouer aux jeux. Contacte ton enseignant pour qu'il envoie un email à tes
 				parents.

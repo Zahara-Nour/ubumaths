@@ -125,7 +125,7 @@
 </script>
 
 <svelte:head>
-	<title>Gestion du consentement parental - UbuMaths</title>
+	<title>Gestion du consentement parental - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto space-y-6 p-6">
