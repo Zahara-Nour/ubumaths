@@ -30,7 +30,7 @@ export type PythonFile = Database['public']['Tables']['python_files']['Row'];
 // Constants
 // =============================================================================
 
-const STORAGE_KEY = 'ubumaths-python-playground';
+const STORAGE_KEY = 'chiphre-python-playground';
 
 /** Debounce delay for saving to localStorage (ms) */
 const STORAGE_SAVE_DEBOUNCE_MS = 500;

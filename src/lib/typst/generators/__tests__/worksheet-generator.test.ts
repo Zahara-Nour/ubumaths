@@ -120,7 +120,7 @@ describe('WorksheetGenerator', () => {
 
 			expect(result).toHaveProperty('typstContent');
 			expect(result).toHaveProperty('metadata');
-			expect(result.metadata.generator).toBe('ubumaths-worksheet-generator');
+			expect(result.metadata.generator).toBe('chiphre-worksheet-generator');
 			expect(result.metadata.generatedAt).toBeInstanceOf(Date);
 		});
 

@@ -13,7 +13,7 @@ import type { ReplInputMode, TabStyle, ReplHistoryEntry } from '$lib/mathAST/cli
 // Constants
 // =============================================================================
 
-const STORAGE_KEY = 'ubumaths-cas-repl';
+const STORAGE_KEY = 'chiphre-cas-repl';
 const MAX_HISTORY = 100;
 
 // =============================================================================

@@ -763,7 +763,7 @@ export class GoogleDriveClient {
 	 * const file = await client.createFile({
 	 *   name: 'whiteboard.ubw',
 	 *   content: JSON.stringify(document),
-	 *   mimeType: 'application/vnd.ubumaths.whiteboard+json',
+	 *   mimeType: 'application/vnd.chiphre.whiteboard+json',
 	 *   folderId: 'folder123'
 	 * });
 	 * console.log('Created file:', file.id);
@@ -777,7 +777,7 @@ export class GoogleDriveClient {
 		}
 
 		// Build multipart request
-		const boundary = '-------ubumaths-multipart-boundary';
+		const boundary = '-------chiphre-multipart-boundary';
 		const metadata: Record<string, unknown> = {
 			name,
 			mimeType,
@@ -844,7 +844,7 @@ export class GoogleDriveClient {
 
 		// If renaming, we need to use multipart upload
 		if (newName) {
-			const boundary = '-------ubumaths-multipart-boundary';
+			const boundary = '-------chiphre-multipart-boundary';
 			const metadata = { name: newName };
 
 			const body = [
@@ -881,7 +881,7 @@ export class GoogleDriveClient {
 	 *
 	 * @example
 	 * ```typescript
-	 * const files = await client.listFiles(folderId, 'application/vnd.ubumaths.whiteboard+json');
+	 * const files = await client.listFiles(folderId, 'application/vnd.chiphre.whiteboard+json');
 	 * files.forEach(f => console.log(f.name, f.modifiedTime));
 	 * ```
 	 */

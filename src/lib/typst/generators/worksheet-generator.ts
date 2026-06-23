@@ -127,7 +127,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		return {
 			typstContent,
 			metadata: {
-				generator: 'ubumaths-worksheet-generator',
+				generator: 'chiphre-worksheet-generator',
 				generatedAt: new Date()
 			}
 		};

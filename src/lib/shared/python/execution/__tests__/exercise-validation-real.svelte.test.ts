@@ -609,13 +609,13 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 					}
 				};
 				await executor.validateExercise(
-					'_ubumaths_validation_marker = "polluted"\nprint("done")\n',
+					'_chiphre_validation_marker = "polluted"\nprint("done")\n',
 					config
 				);
 
 				// Probe the playground namespace for the marker. Before the fix,
 				// the marker would still be in pyodide.globals here.
-				executor.execute('print("LEAK" if "_ubumaths_validation_marker" in dir() else "CLEAN")');
+				executor.execute('print("LEAK" if "_chiphre_validation_marker" in dir() else "CLEAN")');
 				await waitForExecuteComplete(executor);
 
 				expect(executor.stdout.trim()).toBe('CLEAN');

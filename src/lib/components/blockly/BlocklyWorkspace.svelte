@@ -31,7 +31,7 @@
 		STANDARD_TOOLBOX,
 		DEFAULT_WORKSPACE_OPTIONS,
 		ERROR_MESSAGES,
-		UBUMATHS_THEME,
+		CHIPHRE_THEME,
 		type ToolboxDefinition
 	} from '$lib/shared/blockly';
 
@@ -115,7 +115,7 @@
 				toolbox: toolbox as unknown as Blockly.utils.toolbox.ToolboxDefinition,
 				readOnly: readonly,
 				// Use custom theme with black category text, or provided theme
-				theme: theme ?? UBUMATHS_THEME
+				theme: theme ?? CHIPHRE_THEME
 			};
 
 			// Inject Blockly into the container

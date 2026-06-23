@@ -19,7 +19,7 @@ import type { ExecutionLanguage, OutputLine } from '$lib/shared/blockly/types';
 // Constants
 // =============================================================================
 
-const STORAGE_KEY = 'ubumaths-blockly-playground';
+const STORAGE_KEY = 'chiphre-blockly-playground';
 
 /** Debounce delay for saving to localStorage (ms) */
 const STORAGE_SAVE_DEBOUNCE_MS = 500;
