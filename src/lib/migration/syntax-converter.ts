@@ -1,7 +1,7 @@
 /**
- * TinyCAS to UbuMaths v2 Syntax Converter
+ * TinyCAS to Chiphre v2 Syntax Converter
  *
- * Converts old TinyMath/TinyCAS syntax patterns to new UbuMaths v2 syntax.
+ * Converts old TinyMath/TinyCAS syntax patterns to new Chiphre v2 syntax.
  * This converter handles all variable patterns, random generation, evaluation,
  * and special modifiers used in the legacy system.
  */
@@ -95,7 +95,7 @@ export class TinyCASConverter {
 	private errors: string[] = [];
 
 	/**
-	 * Convert TinyCAS syntax to UbuMaths v2 syntax
+	 * Convert TinyCAS syntax to Chiphre v2 syntax
 	 * @param oldSyntax - String containing old TinyCAS patterns
 	 * @returns Conversion result with converted string or errors
 	 */
@@ -779,7 +779,7 @@ export function convertBatch(oldSyntaxArray: string[]): ConversionResult[] {
 /**
  * Validate that a conversion is correct by checking structure
  * @param original - Original TinyCAS string
- * @param converted - Converted UbuMaths v2 string
+ * @param converted - Converted Chiphre v2 string
  * @returns Whether conversion appears valid
  */
 export function validateConversion(original: string, converted: string): boolean {

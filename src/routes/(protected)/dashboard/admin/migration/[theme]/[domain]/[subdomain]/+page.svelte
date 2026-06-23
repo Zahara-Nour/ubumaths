@@ -293,7 +293,7 @@
 </script>
 
 <svelte:head>
-	<title>Migration: {data.subdomain} - UbuMaths</title>
+	<title>Migration: {data.subdomain} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto space-y-6 py-6">

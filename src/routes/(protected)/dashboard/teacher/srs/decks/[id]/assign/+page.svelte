@@ -177,7 +177,7 @@
 </script>
 
 <svelte:head>
-	<title>Attribuer un deck - UbuMaths</title>
+	<title>Attribuer un deck - Chiphre</title>
 </svelte:head>
 
 <div class="assign-deck-page">

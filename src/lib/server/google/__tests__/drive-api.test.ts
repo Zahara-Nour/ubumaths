@@ -84,16 +84,16 @@ describe('GoogleDriveClient', () => {
 		it('should find existing folder by name', async () => {
 			mockFetch.mockResolvedValueOnce(
 				createMockResponse({
-					files: [{ id: 'folder-123', name: 'UbuMaths Whiteboards' }]
+					files: [{ id: 'folder-123', name: 'Chiphre Whiteboards' }]
 				})
 			);
 
-			const result = await client.findFolder('UbuMaths Whiteboards');
+			const result = await client.findFolder('Chiphre Whiteboards');
 
 			expect(result).toBe('folder-123');
 			expect(mockFetch).toHaveBeenCalledTimes(1);
 			expect(mockFetch.mock.calls[0][0]).toContain('files?q=');
-			expect(mockFetch.mock.calls[0][0]).toContain('UbuMaths%20Whiteboards');
+			expect(mockFetch.mock.calls[0][0]).toContain('Chiphre%20Whiteboards');
 		});
 
 		it('should return null when folder not found', async () => {
@@ -170,7 +170,7 @@ describe('GoogleDriveClient', () => {
 		it('should return existing folder if found', async () => {
 			mockFetch.mockResolvedValueOnce(
 				createMockResponse({
-					files: [{ id: 'existing-folder', name: 'UbuMaths Whiteboards' }]
+					files: [{ id: 'existing-folder', name: 'Chiphre Whiteboards' }]
 				})
 			);
 
@@ -195,7 +195,7 @@ describe('GoogleDriveClient', () => {
 		it('should be idempotent - always return same folder', async () => {
 			mockFetch.mockResolvedValue(
 				createMockResponse({
-					files: [{ id: 'same-folder', name: 'UbuMaths Whiteboards' }]
+					files: [{ id: 'same-folder', name: 'Chiphre Whiteboards' }]
 				})
 			);
 

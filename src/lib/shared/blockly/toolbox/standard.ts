@@ -1,5 +1,5 @@
 /**
- * Standard Blockly toolbox configuration for UbuMaths.
+ * Standard Blockly toolbox configuration for Chiphre.
  *
  * Provides a comprehensive set of programming blocks organized into French-labeled categories:
  * - Logique (Logic): Conditionals, comparisons, boolean operations

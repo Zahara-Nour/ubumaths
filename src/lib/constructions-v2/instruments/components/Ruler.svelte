@@ -140,14 +140,14 @@
 			</g>
 		{/if}
 
-		<!-- UbuMaths branding -->
+		<!-- Chiphre branding -->
 		<text
 			pointer-events="none"
 			x={internalLength / 2 - RAY - 3}
 			y={WIDTH - 5}
 			style="font-family: Arial; font-size: 8pt; font-weight: bold; fill: maroon; text-anchor: middle;"
 		>
-			Ubumaths
+			Chiphre
 		</text>
 	</g>
 {/if}

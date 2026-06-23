@@ -193,7 +193,7 @@ async function sendEmail(
  * Send a welcome email to a student via Gmail API
  *
  * Sends a pre-formatted welcome email informing the student that their
- * UbuMaths account has been activated and they can now log in.
+ * Chiphre account has been activated and they can now log in.
  *
  * @param accessToken - Decrypted Google OAuth access token
  * @param toEmail - Student's email address

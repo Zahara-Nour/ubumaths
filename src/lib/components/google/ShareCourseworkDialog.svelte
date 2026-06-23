@@ -2,7 +2,7 @@
 	Share Coursework Dialog
 	=======================
 
-	Dialog for sharing Google Classroom coursework with UbuMaths classes
+	Dialog for sharing Google Classroom coursework with Chiphre classes
 
 	FEATURES:
 	- Select which classes to share with

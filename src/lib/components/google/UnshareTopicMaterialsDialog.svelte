@@ -2,7 +2,7 @@
 	Unshare Topic Materials Dialog
 	===============================
 
-	Dialog for bulk unsharing Google Classroom materials from a topic with UbuMaths classes
+	Dialog for bulk unsharing Google Classroom materials from a topic with Chiphre classes
 
 	FEATURES:
 	- Removes ALL materials in a topic from selected classes

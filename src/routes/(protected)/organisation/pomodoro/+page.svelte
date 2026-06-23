@@ -37,10 +37,10 @@
 
 	let pageTitle = $derived.by(() => {
 		const status = pomodoroStore.state.status;
-		if (status === 'ready') return 'Pomodoro | UbuMaths';
+		if (status === 'ready') return 'Pomodoro | Chiphre';
 		const time = formatTime(pomodoroStore.remainingMs);
 		const phase = PHASE_TITLE_LABELS[pomodoroStore.state.phase];
-		return `${time} — ${phase} | UbuMaths`;
+		return `${time} — ${phase} | Chiphre`;
 	});
 </script>
 

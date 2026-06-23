@@ -1,6 +1,6 @@
 /**
  * API Route: /api/constructions/convert
- * POST - Convert InstrumenPoche XML to UbuMaths JSON
+ * POST - Convert InstrumenPoche XML to Chiphre JSON
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -34,7 +34,7 @@ const convertRequestSchema = z.object({
 
 /**
  * POST /api/constructions/convert
- * Convert InstrumenPoche XML to UbuMaths JSON
+ * Convert InstrumenPoche XML to Chiphre JSON
  * Teachers and admins only
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
@@ -60,7 +60,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 	const { xml, title, description } = validation.data;
 
-	// Convert XML to UbuMaths JSON
+	// Convert XML to Chiphre JSON
 	try {
 		const result = await convertInstrumenPoche(xml, {
 			title,

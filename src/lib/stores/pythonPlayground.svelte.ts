@@ -35,7 +35,7 @@ const STORAGE_KEY = 'ubumaths-python-playground';
 /** Debounce delay for saving to localStorage (ms) */
 const STORAGE_SAVE_DEBOUNCE_MS = 500;
 
-const DEFAULT_CODE = `# Python Playground - UbuMaths
+const DEFAULT_CODE = `# Python Playground - Chiphre
 # Exécute avec Ctrl+Entrée
 
 import numpy as np

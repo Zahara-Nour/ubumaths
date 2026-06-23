@@ -2,13 +2,13 @@
 	Share Multiple Materials Dialog
 	================================
 
-	Dialog for bulk sharing Google Classroom course work materials with UbuMaths classes
+	Dialog for bulk sharing Google Classroom course work materials with Chiphre classes
 
 	FEATURES:
 	- Select which materials to share (all selected by default)
 	- Select which classes to share with
 	- Shared configuration applies to ALL selected materials
-	- Hybrid organization: Choose between Google Topics OR UbuMaths Categories
+	- Hybrid organization: Choose between Google Topics OR Chiphre Categories
 	- Configure visibility and custom description per class
 	- Single bulk API call to share all materials at once
 	- Loading states and error handling
@@ -519,7 +519,7 @@
 																	role="radio"
 																	aria-checked={!config.useTopics}
 																>
-																	Par catégorie UbuMaths
+																	Par catégorie Chiphre
 																</Button>
 															</div>
 														</div>
@@ -559,8 +559,7 @@
 														{:else}
 															<!-- Category Selection -->
 															<div class="space-y-2">
-																<Label for="category-{cls.id}">Catégorie UbuMaths (optionnel)</Label
-																>
+																<Label for="category-{cls.id}">Catégorie Chiphre (optionnel)</Label>
 																{#if config.loadingCategories}
 																	<div class="h-10 animate-pulse rounded-md bg-muted"></div>
 																{:else}

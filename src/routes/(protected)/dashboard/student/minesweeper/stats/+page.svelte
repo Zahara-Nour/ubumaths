@@ -75,7 +75,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes statistiques - Démineur | UbuMaths</title>
+	<title>Mes statistiques - Démineur | Chiphre</title>
 	<meta name="description" content="Voir mes statistiques au jeu Démineur" />
 </svelte:head>
 

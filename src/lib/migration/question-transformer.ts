@@ -1,9 +1,9 @@
 /**
- * Question Transformer - TinyMath to UbuMaths v2
+ * Question Transformer - TinyMath to Chiphre v2
  * ===============================================
  *
  * Comprehensive transformer for converting old TinyMath QuestionBase objects
- * to new UbuMaths v2 QuestionTemplate objects as part of Phase 1.4 of the
+ * to new Chiphre v2 QuestionTemplate objects as part of Phase 1.4 of the
  * migration project.
  *
  * Features:

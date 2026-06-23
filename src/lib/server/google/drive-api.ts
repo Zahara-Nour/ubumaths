@@ -40,7 +40,7 @@ const DRIVE_FOLDER_MIME = 'application/vnd.google-apps.folder';
 /**
  * Default folder name for whiteboard documents
  */
-const WHITEBOARD_FOLDER_NAME = 'UbuMaths Whiteboards';
+const WHITEBOARD_FOLDER_NAME = 'Chiphre Whiteboards';
 
 /**
  * Escape single quotes for Google Drive API queries
@@ -667,7 +667,7 @@ export class GoogleDriveClient {
 	 *
 	 * @example
 	 * ```typescript
-	 * const folderId = await client.findFolder('UbuMaths Whiteboards');
+	 * const folderId = await client.findFolder('Chiphre Whiteboards');
 	 * if (folderId) {
 	 *   console.log('Found folder:', folderId);
 	 * }
@@ -731,7 +731,7 @@ export class GoogleDriveClient {
 
 	/**
 	 * Get or create the app's whiteboard folder
-	 * Creates "UbuMaths Whiteboards" folder if it doesn't exist
+	 * Creates "Chiphre Whiteboards" folder if it doesn't exist
 	 *
 	 * @returns Folder ID
 	 *

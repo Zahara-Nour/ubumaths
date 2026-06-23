@@ -76,7 +76,7 @@
 </script>
 
 <svelte:head>
-	<title>Accès administration — UbuMaths</title>
+	<title>Accès administration — Chiphre</title>
 </svelte:head>
 
 <div class="flex min-h-[60vh] items-center justify-center p-4">

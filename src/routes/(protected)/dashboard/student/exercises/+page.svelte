@@ -59,7 +59,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes Exercices | UbuMaths</title>
+	<title>Mes Exercices | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">

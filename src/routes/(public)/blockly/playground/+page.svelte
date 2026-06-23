@@ -17,7 +17,7 @@
 </script>
 
 <svelte:head>
-	<title>Blockly Playground - UbuMaths</title>
+	<title>Blockly Playground - Chiphre</title>
 	<meta
 		name="description"
 		content="Environnement de programmation visuelle avec Blockly pour apprendre JavaScript et Python"

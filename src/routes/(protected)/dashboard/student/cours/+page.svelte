@@ -26,7 +26,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes cours | UbuMaths</title>
+	<title>Mes cours | Chiphre</title>
 </svelte:head>
 
 <main class="container mx-auto max-w-5xl px-4 py-8">

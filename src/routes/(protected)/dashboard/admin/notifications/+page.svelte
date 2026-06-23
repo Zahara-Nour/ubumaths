@@ -113,7 +113,7 @@
 </script>
 
 <svelte:head>
-	<title>Notifications - Admin - UbuMaths</title>
+	<title>Notifications - Admin - Chiphre</title>
 </svelte:head>
 
 <div class="space-y-6">

@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes succès - Démineur - UbuMaths</title>
+	<title>Mes succès - Démineur - Chiphre</title>
 	<meta name="description" content="Consultez tous vos succès débloqués au Démineur" />
 </svelte:head>
 

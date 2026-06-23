@@ -391,7 +391,7 @@
 </script>
 
 <svelte:head>
-	<title>Organisation - {data.school.name} - UbuMaths</title>
+	<title>Organisation - {data.school.name} - Chiphre</title>
 </svelte:head>
 
 <div class="space-y-6">

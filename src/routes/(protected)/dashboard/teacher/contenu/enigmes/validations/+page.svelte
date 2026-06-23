@@ -28,7 +28,7 @@
 </script>
 
 <svelte:head>
-	<title>Validations en attente - UbuMaths</title>
+	<title>Validations en attente - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl p-4 sm:p-6">

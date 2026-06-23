@@ -78,7 +78,7 @@
 </script>
 
 <svelte:head>
-	<title>Notebooks Python | UbuMaths</title>
+	<title>Notebooks Python | Chiphre</title>
 </svelte:head>
 
 <div class="space-y-6">

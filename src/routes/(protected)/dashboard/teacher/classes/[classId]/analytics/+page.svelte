@@ -68,7 +68,7 @@
 </script>
 
 <svelte:head>
-	<title>Analytics — {data.className} | UbuMaths</title>
+	<title>Analytics — {data.className} | Chiphre</title>
 </svelte:head>
 
 <main class="container mx-auto max-w-7xl px-4 py-6">

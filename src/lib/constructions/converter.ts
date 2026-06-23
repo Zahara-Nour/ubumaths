@@ -1,7 +1,7 @@
 /**
- * InstrumenPoche XML to UbuMaths JSON Converter
+ * InstrumenPoche XML to Chiphre JSON Converter
  *
- * Converts InstrumenPoche XML construction scripts to UbuMaths flat JSON format.
+ * Converts InstrumenPoche XML construction scripts to Chiphre flat JSON format.
  * This module is browser/server compatible - no Node.js-specific APIs.
  *
  * New format examples:
@@ -256,7 +256,7 @@ type LineStyle = 'solid' | 'dashed' | 'dotted';
 
 interface ConversionContext {
 	objectIdCounter: number;
-	pointMap: Map<string, string>; // Maps IEP id to UbuMaths id
+	pointMap: Map<string, string>; // Maps IEP id to Chiphre id
 	pointPositions: Map<string, Position>; // Tracks point positions by IEP id
 	currentPosition: { x: number; y: number }; // Current pencil position (for tracer without target)
 	currentPointId?: string; // Current point ID the pencil is at (IEP id, e.g., "A", "B1")
@@ -405,12 +405,12 @@ function convertLineStyle(pointille: string | undefined): LineStyle {
 // =============================================================================
 
 /**
- * Generate a valid UbuMaths object ID
+ * Generate a valid Chiphre object ID
  * IDs must start with a letter and contain only alphanumeric characters and underscores
  */
 function generateObjectId(ctx: ConversionContext, prefix: string, iepId?: string): string {
 	if (iepId) {
-		// Clean up IEP id to be valid for UbuMaths
+		// Clean up IEP id to be valid for Chiphre
 		let cleanId = iepId.replace(/[^a-zA-Z0-9_]/g, '_');
 
 		// If ID starts with a number, prepend the prefix
@@ -431,7 +431,7 @@ function generateObjectId(ctx: ConversionContext, prefix: string, iepId?: string
 // =============================================================================
 
 /**
- * Convert IEP action to UbuMaths steps
+ * Convert IEP action to Chiphre steps
  */
 function convertAction(action: IepAction, ctx: ConversionContext): void {
 	const attrs = action.$;
@@ -1332,7 +1332,7 @@ function convertMarkAction(attrs: IepAction['$'], mouvement: string, ctx: Conver
 // =============================================================================
 
 /**
- * Convert a parsed InstrumenPoche XML document to UbuMaths flat format
+ * Convert a parsed InstrumenPoche XML document to Chiphre flat format
  */
 function convertDocument(
 	doc: IepDocument,
@@ -1429,9 +1429,9 @@ function convertDocument(
 // =============================================================================
 
 /**
- * Convert an InstrumenPoche XML string to a UbuMaths ConstructionScript.
+ * Convert an InstrumenPoche XML string to a Chiphre ConstructionScript.
  *
- * This function parses the XML content and converts it to the UbuMaths format.
+ * This function parses the XML content and converts it to the Chiphre format.
  * It handles all InstrumenPoche action types including points, segments, arcs,
  * compass operations, ruler operations, and text.
  *

@@ -168,7 +168,7 @@
 </script>
 
 <svelte:head>
-	<title>Cours - {data.classData.name} | UbuMaths</title>
+	<title>Cours - {data.classData.name} | Chiphre</title>
 </svelte:head>
 
 <main class="container mx-auto max-w-5xl px-4 py-6">

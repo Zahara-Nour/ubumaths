@@ -100,7 +100,7 @@
 	// Props received from parent layout (+layout.svelte)
 	// These are automatically reactive in Svelte 5
 	let {
-		title = 'UbuMaths',
+		title = 'Chiphre',
 		user = null,
 		profile = null,
 		sidebarItems = [

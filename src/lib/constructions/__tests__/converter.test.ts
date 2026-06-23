@@ -1,7 +1,7 @@
 /**
- * Unit tests for InstrumenPoche XML to UbuMaths JSON Converter
+ * Unit tests for InstrumenPoche XML to Chiphre JSON Converter
  *
- * Tests the conversion of InstrumenPoche XML construction scripts to UbuMaths format.
+ * Tests the conversion of InstrumenPoche XML construction scripts to Chiphre format.
  * Covers main conversion paths, validation, error handling, and options.
  *
  * New flat format:

@@ -4,7 +4,7 @@
  *
  * Type definitions for the legacy TinyMath question system.
  * These types represent the exact structure of questions stored
- * in the old system, used for migration to UbuMaths v2.
+ * in the old system, used for migration to Chiphre v2.
  *
  * @module migration/old-question-types
  */

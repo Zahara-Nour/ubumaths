@@ -89,7 +89,7 @@
 </script>
 
 <svelte:head>
-	<title>Assigner l'Évaluation | UbuMaths</title>
+	<title>Assigner l'Évaluation | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-5xl px-4 py-8">

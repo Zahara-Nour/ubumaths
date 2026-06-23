@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Calculatrice | UbuMaths</title>
+	<title>Calculatrice | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto p-4">

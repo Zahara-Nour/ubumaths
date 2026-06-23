@@ -28,7 +28,7 @@
 </script>
 
 <svelte:head>
-	<title>Templates Python | UbuMaths</title>
+	<title>Templates Python | Chiphre</title>
 </svelte:head>
 
 <div class="space-y-6">

@@ -1,7 +1,7 @@
 <!--
   BlocklyWorkspace.svelte
 
-  Reusable Blockly workspace wrapper component for UbuMaths visual programming.
+  Reusable Blockly workspace wrapper component for Chiphre visual programming.
   Provides initialization, auto-resize, state persistence, and event forwarding.
 
   @example

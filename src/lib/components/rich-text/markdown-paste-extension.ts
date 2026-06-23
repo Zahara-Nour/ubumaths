@@ -9,7 +9,7 @@
  * - Detects Markdown patterns in pasted plain text
  * - Converts Markdown to TipTap JSON using markdownToTipTap()
  * - Preserves native HTML paste behavior (from rich text copies)
- * - Supports all Ubumaths Markdown features (math, templates, etc.)
+ * - Supports all Chiphre Markdown features (math, templates, etc.)
  *
  * @module rich-text/markdown-paste-extension
  */

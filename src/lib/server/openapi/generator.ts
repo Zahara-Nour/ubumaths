@@ -12,10 +12,10 @@ export function generateOpenAPISpec(): OpenAPIObject {
 	return {
 		openapi: '3.1.0',
 		info: {
-			title: 'UbuMaths API',
+			title: 'Chiphre API',
 			version: '1.0.0',
 			description: `
-# UbuMaths API Documentation
+# Chiphre API Documentation
 
 Educational mathematics platform API with comprehensive Zod validation.
 
@@ -59,7 +59,7 @@ All errors follow a consistent format:
 All request bodies and query parameters are validated using Zod schemas. Invalid requests will return a 400 status code with detailed validation errors.
 			`.trim(),
 			contact: {
-				name: 'UbuMaths Team',
+				name: 'Chiphre Team',
 				url: 'https://ubumaths.com'
 			}
 		},

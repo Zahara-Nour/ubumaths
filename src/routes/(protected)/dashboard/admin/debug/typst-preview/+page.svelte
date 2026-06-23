@@ -232,7 +232,7 @@ Typst permet de créer facilement des documents mathématiques professionnels av
 </script>
 
 <svelte:head>
-	<title>Typst PDF Preview - UbuMaths Debug</title>
+	<title>Typst PDF Preview - Chiphre Debug</title>
 </svelte:head>
 
 <div class="space-y-6">

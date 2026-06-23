@@ -469,7 +469,7 @@
 </script>
 
 <svelte:head>
-	<title>Modifier {data.exercise.title || "l'exercice"} - UbuMaths</title>
+	<title>Modifier {data.exercise.title || "l'exercice"} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto py-6">

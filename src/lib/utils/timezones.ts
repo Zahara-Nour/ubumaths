@@ -1,5 +1,5 @@
 /**
- * Timezone utilities for UbuMaths
+ * Timezone utilities for Chiphre
  * Provides IANA timezone lists and helpers for timezone selection UI
  */
 

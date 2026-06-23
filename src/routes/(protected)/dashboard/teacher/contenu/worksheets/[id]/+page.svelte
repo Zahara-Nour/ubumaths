@@ -400,7 +400,7 @@
 </script>
 
 <svelte:head>
-	<title>{worksheet.title || 'Feuille'} - UbuMaths</title>
+	<title>{worksheet.title || 'Feuille'} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-5xl py-6">

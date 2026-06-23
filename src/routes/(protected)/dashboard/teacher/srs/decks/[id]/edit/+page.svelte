@@ -199,7 +199,7 @@
 </script>
 
 <svelte:head>
-	<title>Éditer deck SRS - UbuMaths</title>
+	<title>Éditer deck SRS - Chiphre</title>
 </svelte:head>
 
 <div class="edit-deck-page">

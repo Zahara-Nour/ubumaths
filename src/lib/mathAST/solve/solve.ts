@@ -41,7 +41,7 @@
  *    Product-form equations (x·sin(x)=0) are decomposed via zero-product property.
  *    Non-product mixed equations still require numeric methods.
  *
- * For the UbuMaths pedagogical scope (high school level), the most impactful
+ * For the Chiphre pedagogical scope (high school level), the most impactful
  * gap is trigonometric periodic solutions: derivatives like cos(x) have infinitely
  * many zeros and the current solver only returns one.
  *

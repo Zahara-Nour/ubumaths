@@ -20,7 +20,7 @@
 		<div class="flex-1">
 			<h3 class="mb-2 text-lg font-bold">Débloquez toutes les fonctionnalités !</h3>
 			<p class="mb-4 text-sm text-muted-foreground">
-				Créez un compte gratuit pour profiter de tous les avantages du démineur UbuMaths :
+				Créez un compte gratuit pour profiter de tous les avantages du démineur Chiphre :
 			</p>
 
 			<ul class="mb-4 space-y-2">
