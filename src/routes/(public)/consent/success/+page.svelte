@@ -5,14 +5,14 @@
 </script>
 
 <svelte:head>
-	<title>Consentement accordé - UbuMaths</title>
+	<title>Consentement accordé - Chiphre</title>
 </svelte:head>
 
 <div class="min-h-screen bg-gradient-to-b from-green-50 to-white px-4 py-8">
 	<div class="mx-auto max-w-lg">
 		<!-- Logo/Header -->
 		<div class="mb-8 text-center">
-			<h1 class="text-3xl font-bold text-blue-600">UbuMaths</h1>
+			<h1 class="text-3xl font-bold text-blue-600">Chiphre</h1>
 			<p class="mt-2 text-muted-foreground">Plateforme éducative de mathématiques</p>
 		</div>
 
@@ -29,7 +29,7 @@
 			</CardHeader>
 			<CardContent class="space-y-6 text-center">
 				<p class="text-muted-foreground">
-					Merci ! Votre enfant peut maintenant utiliser toutes les fonctionnalités d'UbuMaths.
+					Merci ! Votre enfant peut maintenant utiliser toutes les fonctionnalités d'Chiphre.
 				</p>
 
 				<div class="rounded-lg bg-blue-50 p-4 text-left">
@@ -48,7 +48,7 @@
 
 				<div class="pt-4">
 					<Button variant="outline" href="/" class="inline-flex items-center gap-2">
-						Découvrir UbuMaths
+						Découvrir Chiphre
 						<ExternalLink class="h-4 w-4" />
 					</Button>
 				</div>

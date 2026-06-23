@@ -3,10 +3,10 @@
 </script>
 
 <svelte:head>
-	<title>Mentions Legales - UbuMaths</title>
+	<title>Mentions Legales - Chiphre</title>
 	<meta
 		name="description"
-		content="Mentions legales d'UbuMaths. Informations sur l'editeur, l'hebergement et les conditions d'utilisation."
+		content="Mentions legales d'Chiphre. Informations sur l'editeur, l'hebergement et les conditions d'utilisation."
 	/>
 </svelte:head>
 
@@ -21,14 +21,14 @@
 		<section>
 			<h2>1. Editeur du site</h2>
 			<p>
-				Le site <strong>UbuMaths</strong> accessible a l'adresse
-				<a href={resolve('/')}>ubumaths.fr</a> est edite par :
+				Le site <strong>Chiphre</strong> accessible a l'adresse
+				<a href={resolve('/')}>chiph.re</a> est edite par :
 			</p>
 			<ul>
 				<li><strong>Responsable de publication</strong> : [A COMPLETER]</li>
 				<li><strong>Statut</strong> : [A COMPLETER]</li>
 				<li><strong>Adresse</strong> : [A COMPLETER]</li>
-				<li><strong>Email</strong> : contact@ubumaths.fr</li>
+				<li><strong>Email</strong> : contact@chiph.re</li>
 			</ul>
 		</section>
 
@@ -61,7 +61,7 @@
 			<h2>3. Propriete intellectuelle</h2>
 			<p>
 				L'ensemble des elements presents sur le site (textes, exercices, images, logos, code source,
-				design) sont la propriete exclusive d'UbuMaths, sauf mention contraire.
+				design) sont la propriete exclusive d'Chiphre, sauf mention contraire.
 			</p>
 			<p>
 				Toute reproduction, representation, modification ou publication du site ou de son contenu,
@@ -75,7 +75,7 @@
 			<h3>4.1 Responsable du traitement</h3>
 			<ul>
 				<li><strong>Nom</strong> : [A COMPLETER]</li>
-				<li><strong>Email</strong> : contact@ubumaths.fr</li>
+				<li><strong>Email</strong> : contact@chiph.re</li>
 			</ul>
 
 			<h3>4.2 Politique de confidentialite</h3>
@@ -94,7 +94,7 @@
 				<li>Droit a la portabilite</li>
 				<li>Droit d'opposition</li>
 			</ul>
-			<p>Pour exercer ces droits, contactez-nous a : <strong>contact@ubumaths.fr</strong></p>
+			<p>Pour exercer ces droits, contactez-nous a : <strong>contact@chiph.re</strong></p>
 
 			<h3>4.4 Reclamation</h3>
 			<p>En cas de difficulte, vous pouvez adresser une reclamation a la CNIL :</p>
@@ -142,7 +142,7 @@
 			</div>
 			<p class="rounded-lg bg-muted p-4">
 				Le site n'utilise <strong>aucun cookie</strong> de mesure d'audience, de publicite ou de
-				suivi. La mesure de performance (Vercel) fonctionne <strong>sans cookie</strong>. UbuMaths
+				suivi. La mesure de performance (Vercel) fonctionne <strong>sans cookie</strong>. Chiphre
 				utilise par ailleurs le <strong>stockage local</strong> du navigateur a des fins strictement
 				fonctionnelles (sauvegarde de vos documents tableur / tableau blanc et preferences d'affichage)
 				; ces donnees restent sur votre appareil.
@@ -152,12 +152,12 @@
 		<section>
 			<h2>6. Limitation de responsabilite</h2>
 			<p>
-				UbuMaths s'efforce d'assurer la disponibilite du site 24h/24 et 7j/7, mais ne peut garantir
+				Chiphre s'efforce d'assurer la disponibilite du site 24h/24 et 7j/7, mais ne peut garantir
 				une disponibilite permanente. Des interruptions pour maintenance peuvent survenir.
 			</p>
 			<p>
 				Les informations presentes sur le site sont fournies a titre indicatif et pedagogique.
-				UbuMaths ne saurait etre tenue responsable des erreurs ou omissions eventuelles.
+				Chiphre ne saurait etre tenue responsable des erreurs ou omissions eventuelles.
 			</p>
 		</section>
 
@@ -174,7 +174,7 @@
 			<h2>8. Contact</h2>
 			<p>Pour toute question concernant ces mentions legales :</p>
 			<ul>
-				<li><strong>Email</strong> : contact@ubumaths.fr</li>
+				<li><strong>Email</strong> : contact@chiph.re</li>
 			</ul>
 		</section>
 

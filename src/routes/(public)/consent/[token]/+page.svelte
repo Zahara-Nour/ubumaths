@@ -46,14 +46,14 @@
 </script>
 
 <svelte:head>
-	<title>Consentement parental - UbuMaths</title>
+	<title>Consentement parental - Chiphre</title>
 </svelte:head>
 
 <div class="min-h-screen bg-gradient-to-b from-blue-50 to-white px-4 py-8">
 	<div class="mx-auto max-w-lg">
 		<!-- Logo/Header -->
 		<div class="mb-8 text-center">
-			<h1 class="text-3xl font-bold text-blue-600">UbuMaths</h1>
+			<h1 class="text-3xl font-bold text-blue-600">Chiphre</h1>
 			<p class="mt-2 text-muted-foreground">Plateforme éducative de mathématiques</p>
 		</div>
 
@@ -172,7 +172,7 @@
 					</form>
 
 					<p class="text-center text-xs text-muted-foreground">
-						En cliquant sur ce bouton, vous acceptez que votre enfant utilise UbuMaths dans le cadre
+						En cliquant sur ce bouton, vous acceptez que votre enfant utilise Chiphre dans le cadre
 						de son éducation.
 					</p>
 				</CardContent>
