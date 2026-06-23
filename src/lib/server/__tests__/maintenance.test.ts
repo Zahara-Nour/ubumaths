@@ -95,7 +95,7 @@ describe('createMaintenanceHandle', () => {
 	it('passes through when MAINTENANCE_MODE is off', async () => {
 		const handle = handleWith({});
 		const resolve = makeResolve();
-		const { event } = makeEvent('https://ubumaths.fr/dashboard');
+		const { event } = makeEvent('https://chiph.re/dashboard');
 		const res = await call(handle, event, resolve);
 		expect(resolve).toHaveBeenCalledOnce();
 		expect(res).toBe(SENTINEL);
@@ -104,7 +104,7 @@ describe('createMaintenanceHandle', () => {
 	it('returns 503 + Retry-After for a normal route under maintenance, without resolving', async () => {
 		const handle = handleWith({ MAINTENANCE_MODE: 'true', MAINTENANCE_UNTIL: undefined });
 		const resolve = makeResolve();
-		const { event } = makeEvent('https://ubumaths.fr/dashboard');
+		const { event } = makeEvent('https://chiph.re/dashboard');
 		const res = await call(handle, event, resolve);
 		expect(resolve).not.toHaveBeenCalled();
 		expect(res.status).toBe(503);
@@ -116,7 +116,7 @@ describe('createMaintenanceHandle', () => {
 	it('lets static assets through even under maintenance', async () => {
 		const handle = handleWith({ MAINTENANCE_MODE: 'true' });
 		const resolve = makeResolve();
-		const { event } = makeEvent('https://ubumaths.fr/_app/immutable/x.js');
+		const { event } = makeEvent('https://chiph.re/_app/immutable/x.js');
 		const res = await call(handle, event, resolve);
 		expect(resolve).toHaveBeenCalledOnce();
 		expect(res).toBe(SENTINEL);
@@ -128,7 +128,7 @@ describe('createMaintenanceHandle', () => {
 			MAINTENANCE_BYPASS_SECRET: 'open-sesame'
 		});
 		const resolve = makeResolve();
-		const { event, set } = makeEvent('https://ubumaths.fr/dashboard?bypass=open-sesame');
+		const { event, set } = makeEvent('https://chiph.re/dashboard?bypass=open-sesame');
 		let thrown: unknown;
 		try {
 			await call(handle, event, resolve);
@@ -152,7 +152,7 @@ describe('createMaintenanceHandle', () => {
 			MAINTENANCE_BYPASS_SECRET: 'open-sesame'
 		});
 		const resolve = makeResolve();
-		const { event } = makeEvent('https://ubumaths.fr/dashboard', {
+		const { event } = makeEvent('https://chiph.re/dashboard', {
 			[MAINTENANCE_BYPASS_COOKIE]: 'open-sesame'
 		});
 		const res = await call(handle, event, resolve);
@@ -166,7 +166,7 @@ describe('createMaintenanceHandle', () => {
 			MAINTENANCE_BYPASS_SECRET: 'open-sesame'
 		});
 		const resolve = makeResolve();
-		const { event } = makeEvent('https://ubumaths.fr/dashboard?bypass=guess', {
+		const { event } = makeEvent('https://chiph.re/dashboard?bypass=guess', {
 			[MAINTENANCE_BYPASS_COOKIE]: 'also-wrong'
 		});
 		const res = await call(handle, event, resolve);

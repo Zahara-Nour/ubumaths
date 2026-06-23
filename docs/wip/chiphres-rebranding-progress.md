@@ -21,7 +21,7 @@
 
 ## PR1 — Renommage marque (app non-légal) — branche `chore/rebrand-chiphres-app`
 
-**Fait** (working tree, **non committé**) :
+**Fait** (commit `5760dcc2a`) :
 
 - Sweep `UbuMaths` / `Ubumaths` → `Chiphre` sur **203 fichiers** `src/**/*.{ts,svelte}` (titres de pages, header, footer, labels, commentaires, `\author{}` LaTeX, api-docs…).
 - `package.json` : `name` → `chiphre`.
@@ -58,21 +58,17 @@ David : fenêtre de maintenance + vacances → on assainit, on accepte de casser
 
 **Vérif** : `check:incremental` = 0 erreur ; **7 fichiers de tests serveur impactés = 236 tests verts**. Tests **client** (calculator, pythonPlayground, exercise-validation-real) **non exécutés en local** (Playwright/Chromium absent) → **CI** ; littéraux renommés source+test en lockstep donc cohérents.
 
-## À FAIRE — lots restants du renommage (avant Sprint 1)
+## Lots du renommage — état
 
-- **PR2 — Légal + RGPD/consent** (relecture dédiée, texte légal inchangé, seul le nom bouge) :
-  - `routes/(public)/legal/{cgu,confidentialite,mentions-legales}/+page.svelte`
-  - `routes/(public)/consent/{[token],success}/+page.svelte`, `dashboard/teacher/consent/+page.svelte`
-  - `components/ConsentBanner.svelte`, `lib/email-templates/parental-consent.ts`
-- **Lot B — domaine / sécurité (à coordonner avec le passage en prod de chiph.re)** — `ubumaths.com`/`.fr` → `chiph.re` :
-  - `lib/server/csrfProtection.ts` : allow-list + **heuristique `origin.includes('ubumaths') && .vercel.app`** (sinon les preview deploys `chiphre-*.vercel.app` seront **bloqués**). + `csrfProtection.test.ts`.
-  - `lib/server/email/brevo.ts` (sender `noreply@ubumaths.fr`), `lib/server/openapi/generator.ts`, `lib/typst/templates/default-templates.ts` (footer PDF), `lib/templates/templateVariables.ts` (URLs d'exemple), tests associés.
+- **PR2 — Légal + RGPD/consent** : ✅ **FAIT** sur la branche `chore/rebrand-chiphres-legal` (commit `c0cbc6eba`). Nom → Chiphre, domaine légal → `chiph.re` (apex), contact/DPO → `contact@chiph.re`, texte légal inchangé. ⚠️ vérifier que `contact@chiph.re` reçoit (obligation RGPD).
+- **Lot B — domaine / sécurité** : ✅ **FAIT** (cette branche). `ubumaths.com`/`.fr` → `chiph.re` dans `openapi/generator.ts`, footer PDF Typst, `templateVariables.ts` (URLs d'exemple), fixtures `maintenance`/`env`/`templateEngine`. **CSRF** : anciens domaines `ubumaths.com`/www retirés, URL Vercel statique retirée, heuristique preview → `origin.includes('chiphre')` (projet Vercel renommé « chiphre »), `csrfProtection.test.ts` réécrit (14 tests verts).
+  - **Gardé volontairement** : `noreply@ubumaths.fr` (`brevo.ts`) → TODO quand le sender `chiph.re` est **vérifié dans Brevo** (SPF/DKIM) + env `BREVO_SENDER_EMAIL` à jour. `'ubumaths-theme'` (Upsilon) → TODO avec le **rebuild du submodule Upsilon**.
 - **Hors app (follow-ups)** : `static/openapi.json`, `scripts/*`, `docs/**` (hors Compendium), `CHANGELOG.md`.
-- **À toi (infra, hors code)** : DNS, redirection 301 ubumaths.\* → chiph.re, renommage comptes Stripe / Supabase / Vercel / sociaux, favicon/logo définitifs. ⚠️ Le renommage du projet Vercel changera l'URL des preview deploys → synchroniser avec la garde CSRF ci-dessus.
+- **À toi (infra, hors code)** : DNS ✅, projet Vercel renommé « chiphre » ✅. Reste : redirection 301 ubumaths.\* → chiph.re, comptes Stripe / Supabase / sociaux, favicon/logo, vérif sender Brevo `chiph.re`.
 
 ## Roadmap (Compendium §XIV) — mapping
 
-- **Sprint 0 — Renommage marque** : 🟡 en cours (PR1 prête, PR2 légal/RGPD à suivre).
+- **Sprint 0 — Renommage marque** : 🟢 quasi terminé. Branche `chore/rebrand-chiphres-app` (marque + identifiants internes + Lot B domaine) + branche `chore/rebrand-chiphres-legal` (légal/RGPD). Reste : TODO Brevo (sender chiph.re), TODO Upsilon (submodule), infra (301, comptes). **Non poussé** (en attente « envoie »).
 - **Sprint 1 — Lexique partout** : créer `src/lib/config/lore.ts` (source unique), swap wording (Empocher, Cabinet des Phynances, Cornegidouille…), `chiffres → chiphres`, `maths → Mathres`, sous-titre officiel « les Chiphres de la Chandelle Verte », pages 404/500 ubuesques.
 - **Sprint 2** — voix tutorales (Père Ubu / Mère Ubu / Prudhomme / Tristan Bernard / Czar Alexis) + prompts LLM.
 - **Sprint 3** — grades OGP + 7 niveaux scolaires (Syz'esme→Phinalle) + Galopin + Czar Alexis (lore net-neuf).

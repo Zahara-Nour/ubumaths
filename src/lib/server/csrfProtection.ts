@@ -19,11 +19,6 @@ const ALLOWED_ORIGINS = [
 	// Production
 	'https://chiph.re',
 	'https://www.chiph.re',
-	'https://ubumaths.com',
-	'https://www.ubumaths.com',
-
-	// Vercel deployments
-	'https://ubumaths-6op8.vercel.app',
 
 	// Development
 	'http://localhost:5173',
@@ -100,7 +95,7 @@ export function validateRequestOrigin(event: RequestEvent): void {
  */
 function isAllowedOrigin(origin: string): boolean {
 	// Handle Vercel preview deployments (pr-*.vercel.app)
-	if (origin.includes('ubumaths') && origin.endsWith('.vercel.app')) {
+	if (origin.includes('chiphre') && origin.endsWith('.vercel.app')) {
 		return true;
 	}
 
