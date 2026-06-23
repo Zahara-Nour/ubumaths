@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * PythonFileManager - Dialog for managing Python files
 	 *
@@ -445,7 +446,7 @@
 	title="Modifications non sauvegardées"
 	description="Charger cet exemple va remplacer votre code actuel non sauvegardé. Continuer ?"
 	confirmLabel="Charger l'exemple"
-	cancelLabel="Annuler"
+	cancelLabel={lore.actions.cancel}
 	variant="destructive"
 	onConfirm={confirmLoadExample}
 	onCancel={cancelLoadExample}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * PythonMigrationPrompt - Prompt to migrate local code to cloud
 	 *
@@ -73,7 +74,7 @@
 			<p class="text-sm">Vous avez du code local. Voulez-vous le sauvegarder dans le cloud ?</p>
 		</div>
 		<div class="flex items-center gap-2">
-			<Button variant="default" size="sm" onclick={handleSave}>Sauvegarder</Button>
+			<Button variant="default" size="sm" onclick={handleSave}>{lore.actions.save}</Button>
 			<Button variant="ghost" size="icon" class="size-8" onclick={dismiss} aria-label="Fermer">
 				<X class="size-4" />
 			</Button>

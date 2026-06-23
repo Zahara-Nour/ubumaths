@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -567,7 +568,7 @@
 	bind:open={deleteDialogOpen}
 	title="Supprimer l'assignation"
 	description="Êtes-vous sûr de vouloir supprimer cette assignation ? Cette action ne peut pas être annulée."
-	confirmLabel="Supprimer"
+	confirmLabel={lore.actions.delete}
 	variant="destructive"
 	onConfirm={performDelete}
 />

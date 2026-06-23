@@ -23,6 +23,7 @@
 	```
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -295,7 +296,9 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={handleCancel} disabled={isSaving}>Annuler</Button>
+			<Button variant="outline" onclick={handleCancel} disabled={isSaving}
+				>{lore.actions.cancel}</Button
+			>
 			<Button onclick={handleSave} disabled={isSaving}>
 				{#if isSaving}
 					<Loader2 class="mr-2 h-4 w-4 animate-spin" />

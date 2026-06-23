@@ -13,6 +13,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -383,7 +384,7 @@
 
 	<!-- Actions -->
 	<div class="mt-6 flex items-center justify-between">
-		<Button onclick={goBack} variant="outline">Annuler</Button>
+		<Button onclick={goBack} variant="outline">{lore.actions.cancel}</Button>
 
 		<Button onclick={createDeck} disabled={!canSave || isSaving} size="lg">
 			<Save class="mr-2 h-5 w-5" />

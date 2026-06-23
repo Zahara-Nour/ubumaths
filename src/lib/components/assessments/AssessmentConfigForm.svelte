@@ -11,6 +11,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -228,7 +229,7 @@
 	<!-- Actions -->
 	<div class="flex justify-end gap-3">
 		{#if onCancel}
-			<Button type="button" variant="outline" onclick={onCancel}>Annuler</Button>
+			<Button type="button" variant="outline" onclick={onCancel}>{lore.actions.cancel}</Button>
 		{/if}
 		<Button type="submit">
 			{submitLabel}

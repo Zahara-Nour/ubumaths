@@ -7,6 +7,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PalotinType } from '$lib/config/buddy-messages';
 	import type { BuddyState } from '$lib/types/buddy';
 	import { PALOTIN_INFO } from '$lib/config/buddy-quiz';
@@ -135,7 +136,7 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={handleCancel}>Annuler</Button>
+			<Button variant="outline" onclick={handleCancel}>{lore.actions.cancel}</Button>
 			<Button onclick={handleChange} disabled={!selectedPalotin || !canAfford || isSubmitting}>
 				{#if isSubmitting}
 					Changement...

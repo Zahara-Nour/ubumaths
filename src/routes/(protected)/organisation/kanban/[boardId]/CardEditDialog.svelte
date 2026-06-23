@@ -19,6 +19,7 @@
 -->
 
 <script lang="ts" module>
+	import { lore } from '$lib/config/lore';
 	// No module-level state — kept for symmetry with other dialogs in the
 	// project that expose imperative open helpers via module-scoped APIs.
 </script>
@@ -239,8 +240,8 @@
 	bind:open={deleteConfirmOpen}
 	title="Supprimer la carte"
 	description={card ? `« ${card.title} » sera supprimée définitivement.` : ''}
-	confirmLabel="Supprimer"
-	cancelLabel="Annuler"
+	confirmLabel={lore.actions.delete}
+	cancelLabel={lore.actions.cancel}
 	variant="destructive"
 	onConfirm={performDelete}
 />

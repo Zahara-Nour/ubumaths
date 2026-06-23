@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { lore } from '$lib/config/lore';
 	// Re-export the form-state helpers so existing consumers
 	// (`import { emptyExerciseForm } from '.../ExerciseForm.svelte'`) still
 	// resolve. The actual definitions live in `form-mapping.ts` to keep them
@@ -395,7 +396,7 @@
 	{/if}
 
 	<div class="flex items-center justify-end gap-2">
-		<Button type="button" variant="outline" href={cancelTo}>Annuler</Button>
+		<Button type="button" variant="outline" href={cancelTo}>{lore.actions.cancel}</Button>
 		<Button type="submit" disabled={!canSubmit}>
 			{#if isSubmitting}
 				<Loader2 class="mr-1 h-4 w-4 animate-spin" />

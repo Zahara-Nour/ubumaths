@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * DriveFilePicker - Modal dialog to select whiteboard file from Google Drive
 	 *
@@ -144,7 +145,7 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={handleClose}>Annuler</Button>
+			<Button variant="outline" onclick={handleClose}>{lore.actions.cancel}</Button>
 			<Button onclick={handleSelect} disabled={!selectedFileId || loading}>Ouvrir</Button>
 		</Dialog.Footer>
 	</Dialog.Content>

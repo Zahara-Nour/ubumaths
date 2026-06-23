@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * SaveAsDialog - Modal dialog to save whiteboard with a new name to Google Drive
 	 *
@@ -124,7 +125,9 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={handleClose} disabled={saving}>Annuler</Button>
+			<Button variant="outline" onclick={handleClose} disabled={saving}
+				>{lore.actions.cancel}</Button
+			>
 			<Button onclick={handleSave} disabled={saving || !fileName.trim()}>
 				{#if saving}
 					<Loader2 class="mr-2 h-4 w-4 animate-spin" />

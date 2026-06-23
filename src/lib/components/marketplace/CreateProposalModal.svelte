@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
 	import type { MarketplaceListing, CreateProposalData } from '$lib/types/marketplace';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -248,7 +249,7 @@
 		</form>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => (open = false)}>Annuler</Button>
+			<Button variant="outline" onclick={() => (open = false)}>{lore.actions.cancel}</Button>
 			<Button onclick={handleSubmit} disabled={!isValid || isSubmitting}>
 				{isSubmitting ? 'Envoi...' : 'Envoyer la proposition'}
 			</Button>

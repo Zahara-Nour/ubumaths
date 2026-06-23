@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -169,8 +170,8 @@
 		open={confirmingDelete !== null}
 		title="Supprimer cet exercice ?"
 		description={`« ${exerciseToDelete.title} » sera définitivement supprimé. Le lien partagé cessera de fonctionner.`}
-		confirmLabel="Supprimer"
-		cancelLabel="Annuler"
+		confirmLabel={lore.actions.delete}
+		cancelLabel={lore.actions.cancel}
 		variant="destructive"
 		onConfirm={handleDelete}
 		onCancel={() => (confirmingDelete = null)}

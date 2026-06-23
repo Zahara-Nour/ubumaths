@@ -23,6 +23,7 @@
 	```
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -429,8 +430,8 @@
 		</div>
 
 		<Dialog.Footer class="gap-2 sm:gap-0">
-			<Button variant="outline" onclick={cancelSelection}>Annuler</Button>
-			<Button onclick={confirmSelection}>Confirmer</Button>
+			<Button variant="outline" onclick={cancelSelection}>{lore.actions.cancel}</Button>
+			<Button onclick={confirmSelection}>{lore.actions.confirm}</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

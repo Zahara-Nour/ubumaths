@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
@@ -543,7 +544,9 @@
 					</div>
 
 					<div class="flex justify-end gap-2 bg-muted px-6 py-3">
-						<Button type="button" variant="outline" onclick={closeModal}>Annuler</Button>
+						<Button type="button" variant="outline" onclick={closeModal}
+							>{lore.actions.cancel}</Button
+						>
 						<Button type="submit">
 							{editingClass ? 'Mettre à jour' : 'Créer'}
 						</Button>

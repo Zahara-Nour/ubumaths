@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Student Import Page
 	 *
@@ -463,7 +464,9 @@
 							<Button type="submit" disabled={isProcessing}>
 								{isProcessing ? 'Importation...' : 'Importer les élèves'}
 							</Button>
-							<Button type="button" variant="outline" onclick={handleClearPreview}>Annuler</Button>
+							<Button type="button" variant="outline" onclick={handleClearPreview}
+								>{lore.actions.cancel}</Button
+							>
 						</div>
 					</form>
 				</div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
@@ -447,7 +448,7 @@
 	bind:open={deleteDialogOpen}
 	title="Supprimer cette feuille ?"
 	description={`Vous allez supprimer la feuille "${worksheetToDelete?.title || '(Sans titre)'}". Cette action est irreversible.`}
-	confirmLabel="Supprimer"
+	confirmLabel={lore.actions.delete}
 	variant="destructive"
 	onConfirm={handleDelete}
 />
