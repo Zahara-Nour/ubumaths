@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getNavLinks, getZoneTitle } from '../dashboard-nav';
+import { lore } from '$lib/config/lore';
 
 describe('getZoneTitle', () => {
 	it('retourne "Mon espace" pour student', () => {
@@ -27,7 +28,7 @@ describe('getNavLinks', () => {
 	describe('student', () => {
 		it('inclut "Tableau de bord" en premier (jamais "Dashboard")', () => {
 			const links = getNavLinks('student');
-			expect(links[0].label).toBe('Tableau de bord');
+			expect(links[0].label).toBe(lore.nav.dashboard);
 			expect(labels(links)).not.toContain('Dashboard');
 		});
 
@@ -45,14 +46,14 @@ describe('getNavLinks', () => {
 		});
 
 		it('expose Boutique uniquement quand marketplaceEnabled=true', () => {
-			expect(labels(getNavLinks('student', 0, false))).not.toContain('Boutique');
-			expect(labels(getNavLinks('student', 0, true))).toContain('Boutique');
+			expect(labels(getNavLinks('student', 0, false))).not.toContain(lore.nav.shop);
+			expect(labels(getNavLinks('student', 0, true))).toContain(lore.nav.shop);
 		});
 
 		it('inclut Mon profil et Déconnexion en footer', () => {
 			const links = getNavLinks('student');
-			const profil = links.find((l) => l.label === 'Mon profil');
-			const logout = links.find((l) => l.label === 'Déconnexion');
+			const profil = links.find((l) => l.label === `Mon ${lore.nav.profile}`);
+			const logout = links.find((l) => l.label === lore.nav.logout);
 			expect(profil?.footer).toBe(true);
 			expect(logout?.footer).toBe(true);
 			expect(logout?.logout).toBe(true);
@@ -60,8 +61,8 @@ describe('getNavLinks', () => {
 
 		it('footer items sont les deux derniers de la liste', () => {
 			const links = getNavLinks('student');
-			expect(links[links.length - 2].label).toBe('Mon profil');
-			expect(links[links.length - 1].label).toBe('Déconnexion');
+			expect(links[links.length - 2].label).toBe(`Mon ${lore.nav.profile}`);
+			expect(links[links.length - 1].label).toBe(lore.nav.logout);
 		});
 	});
 
@@ -94,8 +95,8 @@ describe('getNavLinks', () => {
 
 		it('footer items présents en fin de liste', () => {
 			const links = getNavLinks('teacher');
-			expect(links[links.length - 2].label).toBe('Mon profil');
-			expect(links[links.length - 1].label).toBe('Déconnexion');
+			expect(links[links.length - 2].label).toBe(`Mon ${lore.nav.profile}`);
+			expect(links[links.length - 1].label).toBe(lore.nav.logout);
 		});
 	});
 
@@ -111,15 +112,19 @@ describe('getNavLinks', () => {
 
 		it('inclut Tableau de bord en premier et footer en dernier', () => {
 			const links = getNavLinks('admin');
-			expect(links[0].label).toBe('Tableau de bord');
-			expect(links[links.length - 1].label).toBe('Déconnexion');
+			expect(links[0].label).toBe(lore.nav.dashboard);
+			expect(links[links.length - 1].label).toBe(lore.nav.logout);
 		});
 	});
 
 	describe('rôle inconnu', () => {
 		it('retourne seulement Tableau de bord + footer', () => {
 			const links = getNavLinks('unknown');
-			expect(labels(links)).toEqual(['Tableau de bord', 'Mon profil', 'Déconnexion']);
+			expect(labels(links)).toEqual([
+				lore.nav.dashboard,
+				`Mon ${lore.nav.profile}`,
+				lore.nav.logout
+			]);
 		});
 	});
 });
