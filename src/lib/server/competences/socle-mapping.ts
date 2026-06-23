@@ -1,5 +1,5 @@
 /**
- * Read-only mapping from UbuMaths math competences (famille B) to the socle
+ * Read-only mapping from Chiphre math competences (famille B) to the socle
  * commun domains, as listed by the official programme de mathématiques cycle 4
  * (BO spécial n°11 du 26/11/2015 — mention « Domaines du socle » de chaque
  * fiche compétence).

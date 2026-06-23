@@ -23,7 +23,7 @@
 \\newtheorem{theorem}{Théorème}
 
 \\title{Démonstration LaTeX}
-\\author{UbuMaths}
+\\author{Chiphre}
 \\date{\\today}
 
 \\begin{document}
@@ -202,7 +202,7 @@ Exemple de matrice :
 </script>
 
 <svelte:head>
-	<title>LaTeX PDF Preview - UbuMaths Debug</title>
+	<title>LaTeX PDF Preview - Chiphre Debug</title>
 </svelte:head>
 
 <div class="space-y-6">

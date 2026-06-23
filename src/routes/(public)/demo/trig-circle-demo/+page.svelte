@@ -157,7 +157,7 @@ color: red
 </script>
 
 <svelte:head>
-	<title>Cercle Trigonométrique - Demo | UbuMaths</title>
+	<title>Cercle Trigonométrique - Demo | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">

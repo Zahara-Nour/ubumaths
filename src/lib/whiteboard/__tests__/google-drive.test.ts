@@ -13,10 +13,10 @@ import { createEmptyDocument } from '../types/document';
 // =============================================================================
 
 /** MIME type for whiteboard documents on Drive */
-const DRIVE_MIME_TYPE = 'application/vnd.ubumaths.whiteboard+json';
+const DRIVE_MIME_TYPE = 'application/vnd.chiphre.whiteboard+json';
 
 /** Folder name for whiteboard documents */
-const DRIVE_FOLDER_NAME = 'UbuMaths Whiteboards';
+const DRIVE_FOLDER_NAME = 'Chiphre Whiteboards';
 
 // =============================================================================
 // Helper Types
@@ -607,10 +607,10 @@ describe('Auto-Sync Logic', () => {
 
 describe('Drive Constants', () => {
 	it('uses correct MIME type', () => {
-		expect(DRIVE_MIME_TYPE).toBe('application/vnd.ubumaths.whiteboard+json');
+		expect(DRIVE_MIME_TYPE).toBe('application/vnd.chiphre.whiteboard+json');
 	});
 
 	it('uses correct folder name', () => {
-		expect(DRIVE_FOLDER_NAME).toBe('UbuMaths Whiteboards');
+		expect(DRIVE_FOLDER_NAME).toBe('Chiphre Whiteboards');
 	});
 });

@@ -5,7 +5,7 @@
  *   - own templates (the teacher's personal library)
  *   - shared templates (is_public = true, authored by other teachers)
  *
- * A third "system" bucket is reserved for UbuMaths-shipped templates; for
+ * A third "system" bucket is reserved for Chiphre-shipped templates; for
  * V1 it stays empty (the page handles the empty case gracefully).
  *
  * Permissions: teacher / admin only — students don't see templates at all.

@@ -980,7 +980,7 @@ describe('PythonPlaygroundStore', () => {
 			await vi.advanceTimersByTimeAsync(600);
 
 			expect(localStorage.setItem).toHaveBeenCalledWith(
-				'ubumaths-python-playground',
+				'chiphre-python-playground',
 				expect.stringContaining('new code')
 			);
 		});
@@ -994,7 +994,7 @@ describe('PythonPlaygroundStore', () => {
 			await vi.advanceTimersByTimeAsync(600);
 
 			expect(localStorage.setItem).toHaveBeenCalledWith(
-				'ubumaths-python-playground',
+				'chiphre-python-playground',
 				expect.stringContaining('"showPedagogicErrors":false')
 			);
 		});
@@ -1006,7 +1006,7 @@ describe('PythonPlaygroundStore', () => {
 
 			expect(success).toBe(true);
 			expect(localStorage.setItem).toHaveBeenCalledWith(
-				'ubumaths-python-playground',
+				'chiphre-python-playground',
 				expect.stringContaining('immediate save test')
 			);
 		});

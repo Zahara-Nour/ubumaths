@@ -67,8 +67,8 @@
 </script>
 
 <svelte:head>
-	<title>UbuMaths API Documentation</title>
-	<meta name="description" content="Comprehensive API documentation for the UbuMaths platform" />
+	<title>Chiphre API Documentation</title>
+	<meta name="description" content="Comprehensive API documentation for the Chiphre platform" />
 
 	<!-- Swagger UI CSS -->
 	<link
@@ -189,13 +189,13 @@
 </svelte:head>
 
 <div class="api-docs-header">
-	<h1>UbuMaths API Documentation</h1>
+	<h1>Chiphre API Documentation</h1>
 	<p>Comprehensive REST API documentation with interactive testing</p>
 	<div class="api-docs-links">
 		<a href="/api/openapi.json" target="_blank" rel="noopener noreferrer"
 			>Download OpenAPI Spec (JSON)</a
 		>
-		<a href="/" target="_blank" rel="noopener noreferrer">Return to UbuMaths</a>
+		<a href="/" target="_blank" rel="noopener noreferrer">Return to Chiphre</a>
 	</div>
 </div>
 

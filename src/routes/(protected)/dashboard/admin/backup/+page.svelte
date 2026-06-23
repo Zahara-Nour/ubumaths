@@ -92,7 +92,7 @@
 			// Get filename from Content-Disposition header
 			const disposition = response.headers.get('Content-Disposition');
 			const filenameMatch = disposition?.match(/filename="(.+)"/);
-			const filename = filenameMatch?.[1] ?? 'ubumaths-exercises-backup.json';
+			const filename = filenameMatch?.[1] ?? 'chiphre-exercises-backup.json';
 
 			// Download file
 			const blob = await response.blob();
@@ -118,7 +118,7 @@
 			// Get filename from Content-Disposition header
 			const disposition = response.headers.get('Content-Disposition');
 			const filenameMatch = disposition?.match(/filename="(.+)"/);
-			const filename = filenameMatch?.[1] ?? 'ubumaths-exercises-backup.sql';
+			const filename = filenameMatch?.[1] ?? 'chiphre-exercises-backup.sql';
 
 			// Download file
 			const blob = await response.blob();

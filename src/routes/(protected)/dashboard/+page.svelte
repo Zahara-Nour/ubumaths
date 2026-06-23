@@ -78,7 +78,7 @@
 
 <!-- Set page title for browser tab -->
 <svelte:head>
-	<title>Dashboard - UbuMaths</title>
+	<title>Dashboard - Chiphre</title>
 </svelte:head>
 
 <!--

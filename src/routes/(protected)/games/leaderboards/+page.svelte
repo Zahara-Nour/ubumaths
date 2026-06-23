@@ -23,8 +23,8 @@
 </script>
 
 <svelte:head>
-	<title>Classements | UbuMaths</title>
-	<meta name="description" content="Classements des jeux UbuMaths (classe, niveau, école)" />
+	<title>Classements | Chiphre</title>
+	<meta name="description" content="Classements des jeux Chiphre (classe, niveau, école)" />
 </svelte:head>
 
 <div class="mx-auto max-w-4xl p-4 md:p-6">

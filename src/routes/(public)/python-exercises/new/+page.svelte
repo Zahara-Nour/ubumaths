@@ -28,7 +28,7 @@
 </script>
 
 <svelte:head>
-	<title>Créer un exercice Python – UbuMaths</title>
+	<title>Créer un exercice Python – Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-3xl p-4">

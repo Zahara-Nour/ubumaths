@@ -92,7 +92,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes notifications - Professeur - UbuMaths</title>
+	<title>Mes notifications - Professeur - Chiphre</title>
 </svelte:head>
 
 <div class="space-y-6">

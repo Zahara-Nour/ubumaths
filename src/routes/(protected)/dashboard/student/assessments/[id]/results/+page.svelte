@@ -40,7 +40,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes Résultats - {data.assignment.assessment.title} | UbuMaths</title>
+	<title>Mes Résultats - {data.assignment.assessment.title} | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">

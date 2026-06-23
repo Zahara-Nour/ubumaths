@@ -53,7 +53,7 @@ const FREEZE_AUTO_REPORT_THRESHOLD_MS = 30000; // 30s - auto report
 const MAX_ACTIONS = 20; // Keep last 20 actions
 const MAX_FREEZE_EVENTS = 50; // Keep last 50 freeze events
 const FREEZE_RETENTION_MS = 15 * 60 * 1000; // 15 minutes
-const SESSION_STORAGE_KEY = 'ubumaths_freeze_data';
+const SESSION_STORAGE_KEY = 'chiphre_freeze_data';
 
 // =============================================================================
 // Types

@@ -104,7 +104,7 @@ export class GoogleClassroomClient {
 	 * Create a new Google Classroom API client
 	 *
 	 * @param accessToken - Decrypted Google OAuth access token
-	 * @param teacherId - UbuMaths teacher ID (for error tracking)
+	 * @param teacherId - Chiphre teacher ID (for error tracking)
 	 *
 	 * @example
 	 * ```typescript

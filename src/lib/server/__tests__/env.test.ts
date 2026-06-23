@@ -285,7 +285,7 @@ describe('Environment validation', () => {
 				EMAIL_FROM: z.string().email('Invalid from email').optional()
 			});
 
-			const valid = schema.safeParse({ EMAIL_FROM: 'noreply@ubumaths.com' });
+			const valid = schema.safeParse({ EMAIL_FROM: 'noreply@chiph.re' });
 			expect(valid.success).toBe(true);
 
 			const invalid = schema.safeParse({ EMAIL_FROM: 'not-an-email' });

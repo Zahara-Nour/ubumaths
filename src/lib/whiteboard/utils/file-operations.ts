@@ -17,7 +17,7 @@ import type { WhiteboardDocument } from '../types/document';
 export const FILE_EXTENSION = '.ubw';
 
 /** MIME type for whiteboard documents */
-export const MIME_TYPE = 'application/vnd.ubumaths.whiteboard+json';
+export const MIME_TYPE = 'application/vnd.chiphre.whiteboard+json';
 
 /** Current file format version */
 export const CURRENT_VERSION = 1;

@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-	<title>Documents RAG | UbuMaths</title>
+	<title>Documents RAG | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl space-y-6 p-4">

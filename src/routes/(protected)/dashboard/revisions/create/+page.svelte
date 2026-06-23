@@ -145,7 +145,7 @@
 </script>
 
 <svelte:head>
-	<title>Créer un deck - UbuMaths</title>
+	<title>Créer un deck - Chiphre</title>
 </svelte:head>
 
 <div class="create-deck-page">

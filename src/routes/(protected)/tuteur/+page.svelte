@@ -32,7 +32,7 @@
 </script>
 
 <svelte:head>
-	<title>Père Ubu - Tuteur | UbuMaths</title>
+	<title>Père Ubu - Tuteur | Chiphre</title>
 	<meta
 		name="description"
 		content="Pose tes questions de mathématiques au Père Ubu. Ton tuteur personnel t'aidera à comprendre sans te donner les réponses."

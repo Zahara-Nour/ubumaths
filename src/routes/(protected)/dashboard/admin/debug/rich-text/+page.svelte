@@ -201,7 +201,7 @@ function hello() {
 
 ## Liens
 
-Lien simple : [Ubumaths](https://ubumaths.fr)
+Lien simple : [Chiphre](https://chiph.re)
 
 Lien avec titre : [Documentation](https://docs.example.com "Lire la documentation")
 
@@ -240,7 +240,7 @@ Image avec width personnalisé (60%) :
 
 Image simple cliquable :
 
-[![Click me](https://picsum.photos/200/100)](https://ubumaths.fr)
+[![Click me](https://picsum.photos/200/100)](https://chiph.re)
 
 Image cliquable avec attributs :
 
@@ -1178,7 +1178,7 @@ Utilisez la fonction \`calculate()\` pour obtenir le resultat.`
 
 ## Lien simple
 
-Visitez [Ubumaths](https://ubumaths.fr) pour apprendre les maths.
+Visitez [Chiphre](https://chiph.re) pour apprendre les maths.
 
 ## Lien avec titre
 

@@ -149,7 +149,7 @@ function formatConsoleArgs(args: unknown[]): string {
 }
 
 // =============================================================================
-// Math Helpers (UbuMaths specific)
+// Math Helpers (Chiphre specific)
 // =============================================================================
 
 /**
@@ -306,7 +306,7 @@ interface SafeGlobals {
 	decodeURI: typeof decodeURI;
 	encodeURIComponent: typeof encodeURIComponent;
 	decodeURIComponent: typeof decodeURIComponent;
-	// UbuMaths helpers
+	// Chiphre helpers
 	gcd: typeof gcd;
 	lcm: typeof lcm;
 	isPrime: typeof isPrime;
@@ -412,7 +412,7 @@ function createSafeGlobals(id: string): SafeGlobals {
 		decodeURI,
 		encodeURIComponent,
 		decodeURIComponent,
-		// UbuMaths helpers
+		// Chiphre helpers
 		gcd,
 		lcm,
 		isPrime,

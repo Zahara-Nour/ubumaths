@@ -22,7 +22,7 @@ import { evaluateFormula } from './parser/evaluator';
 // Constants
 // =============================================================================
 
-const STORAGE_KEY = 'ubumaths-spreadsheet-state';
+const STORAGE_KEY = 'chiphre-spreadsheet-state';
 const DEBOUNCE_MS = 500;
 
 // =============================================================================

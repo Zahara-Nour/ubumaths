@@ -156,7 +156,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.chapter.title} - Edition | UbuMaths</title>
+	<title>{data.chapter.title} - Edition | Chiphre</title>
 </svelte:head>
 
 <main class="container mx-auto max-w-5xl px-4 py-6">

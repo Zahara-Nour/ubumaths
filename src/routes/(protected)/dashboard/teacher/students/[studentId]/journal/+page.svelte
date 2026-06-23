@@ -94,7 +94,7 @@
 </script>
 
 <svelte:head>
-	<title>Journal de {studentName} - Ubumaths</title>
+	<title>Journal de {studentName} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl px-4 py-6">

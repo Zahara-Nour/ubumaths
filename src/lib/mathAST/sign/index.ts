@@ -61,7 +61,7 @@
  * The module assumes that the expression is **continuous on each interval
  * of its domain**. This is guaranteed for standard mathematical expressions
  * (polynomials, rational functions, exp, ln, sin, cos, sqrt, …) which are
- * the target of UbuMaths. Functions with jump discontinuities inside their
+ * the target of Chiphre. Functions with jump discontinuities inside their
  * domain (floor, piecewise, …) are NOT supported and could produce incorrect
  * results, since the sampling might miss a sign change between sample points.
  *

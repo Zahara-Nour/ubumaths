@@ -428,7 +428,7 @@ describe('transpile (end-to-end)', () => {
 		});
 	});
 
-	describe('Real-world examples from UbuMaths', () => {
+	describe('Real-world examples from Chiphre', () => {
 		it('should handle equation with template and operations', () => {
 			const result = transpile('{{a}}*x+{{b}}={{c}}');
 			expect(result.success).toBe(true);

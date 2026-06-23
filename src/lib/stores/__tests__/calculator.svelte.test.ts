@@ -416,7 +416,7 @@ describe('Calculator Store', () => {
 			calculatorStore.clearHistory();
 
 			// localStorage should be updated with empty array
-			expect(localStorageMock.setItem).toHaveBeenCalledWith('ubumaths-calc-history', '[]');
+			expect(localStorageMock.setItem).toHaveBeenCalledWith('chiphre-calc-history', '[]');
 		});
 	});
 
@@ -515,7 +515,7 @@ describe('Calculator Store', () => {
 			await calculatorStore.execute({ type: 'expression', expression: '2+3' });
 
 			expect(localStorageMock.setItem).toHaveBeenCalledWith(
-				'ubumaths-calc-history',
+				'chiphre-calc-history',
 				expect.any(String)
 			);
 

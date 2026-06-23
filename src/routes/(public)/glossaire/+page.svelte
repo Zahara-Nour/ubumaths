@@ -151,7 +151,7 @@
 </script>
 
 <svelte:head>
-	<title>Glossaire Mathématique | UbuMaths</title>
+	<title>Glossaire Mathématique | Chiphre</title>
 	<meta
 		name="description"
 		content="Glossaire de vocabulaire mathématique - Définitions, exemples et histoire des termes de la 6ème à la Terminale"

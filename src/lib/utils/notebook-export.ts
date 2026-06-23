@@ -164,7 +164,7 @@ export function exportToIpynb(notebook: NotebookContent): string {
 		nbformat_minor: 5,
 		metadata: {
 			kernelspec: {
-				display_name: 'Python 3 (UbuMaths)',
+				display_name: 'Python 3 (Chiphre)',
 				language: 'python',
 				name: 'python3'
 			},
@@ -181,7 +181,7 @@ export function exportToIpynb(notebook: NotebookContent): string {
 				version: notebook.metadata.kernel_info?.version ?? '3.11.0'
 			}
 		},
-		// 'checkpoint' cells are UbuMaths-internal and have no Jupyter equivalent — skip them.
+		// 'checkpoint' cells are Chiphre-internal and have no Jupyter equivalent — skip them.
 		cells: notebook.cells.filter((c) => c.type !== 'checkpoint').map(convertCell)
 	};
 

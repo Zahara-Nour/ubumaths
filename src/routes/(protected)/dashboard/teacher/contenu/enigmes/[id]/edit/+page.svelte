@@ -74,7 +74,7 @@
 </script>
 
 <svelte:head>
-	<title>Modifier l'énigme #{data.riddle.riddle_number} - UbuMaths</title>
+	<title>Modifier l'énigme #{data.riddle.riddle_number} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl p-4 sm:p-6">

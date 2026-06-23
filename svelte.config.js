@@ -12,7 +12,7 @@ const config = {
 		// Protection is enabled by default - requests from different origins are blocked
 		// Add trusted origins here if you need to allow specific cross-origin requests
 		csrf: {
-			// trustedOrigins: ['https://mobile-app.ubumaths.com']
+			// trustedOrigins: ['https://mobile-app.chiph.re']
 		},
 		alias: {
 			$tests: './tests'

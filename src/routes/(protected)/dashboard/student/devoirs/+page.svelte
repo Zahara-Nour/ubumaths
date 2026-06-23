@@ -173,7 +173,7 @@
 </script>
 
 <svelte:head>
-	<title>Devoirs Google Classroom | UbuMaths</title>
+	<title>Devoirs Google Classroom | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">

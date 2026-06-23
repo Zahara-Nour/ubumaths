@@ -103,7 +103,7 @@
 </script>
 
 <svelte:head>
-	<title>{formatDateLong(data.entry.entryDate)} - {data.classData.name} | UbuMaths</title>
+	<title>{formatDateLong(data.entry.entryDate)} - {data.classData.name} | Chiphre</title>
 </svelte:head>
 
 <main class="container mx-auto max-w-4xl px-4 py-8">

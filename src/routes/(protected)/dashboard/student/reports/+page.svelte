@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes Signalements - UbuMaths</title>
+	<title>Mes Signalements - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-5xl py-6">

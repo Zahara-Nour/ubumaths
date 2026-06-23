@@ -71,8 +71,8 @@ import type { LayoutLoad } from './$types';
 
 let authListenerInitialized = false;
 
-const STORAGE_KEY_USER_ID = 'ubumaths_auth_user_id';
-const STORAGE_KEY_LAST_REFRESH = 'ubumaths_auth_last_refresh';
+const STORAGE_KEY_USER_ID = 'chiphre_auth_user_id';
+const STORAGE_KEY_LAST_REFRESH = 'chiphre_auth_last_refresh';
 const REFRESH_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
 
 /** Get persisted user ID from sessionStorage (survives Vite HMR) */

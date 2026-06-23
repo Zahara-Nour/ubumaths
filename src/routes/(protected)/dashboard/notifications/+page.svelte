@@ -86,7 +86,7 @@
 </script>
 
 <svelte:head>
-	<title>Notifications - UbuMaths</title>
+	<title>Notifications - Chiphre</title>
 </svelte:head>
 
 <div class="space-y-6">

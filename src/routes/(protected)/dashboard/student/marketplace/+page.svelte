@@ -52,7 +52,7 @@
 </script>
 
 <svelte:head>
-	<title>Marketplace - Ubumaths</title>
+	<title>Marketplace - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-6">

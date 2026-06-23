@@ -68,7 +68,7 @@
 </script>
 
 <svelte:head>
-	<title>Programme | Mes révisions | UbuMaths</title>
+	<title>Programme | Mes révisions | Chiphre</title>
 </svelte:head>
 
 <main class="container mx-auto max-w-4xl px-4 py-6">

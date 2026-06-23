@@ -70,7 +70,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes exercices Python – UbuMaths</title>
+	<title>Mes exercices Python – Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto p-4">

@@ -183,7 +183,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.tournament.name} | UbuMaths</title>
+	<title>{data.tournament.name} | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">

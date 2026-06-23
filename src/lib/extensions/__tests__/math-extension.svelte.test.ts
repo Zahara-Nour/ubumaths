@@ -10,7 +10,7 @@
  *
  * The extension supports two syntaxes:
  * - LaTeX: Direct LaTeX notation ($x^2$)
- * - Custom: UbuMaths custom syntax (~x^2~) transpiled to LaTeX
+ * - Custom: Chiphre custom syntax (~x^2~) transpiled to LaTeX
  *
  * Both are stored as LaTeX internally but preserve original syntax
  * for round-trip markdown export.

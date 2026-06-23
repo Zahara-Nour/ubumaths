@@ -287,7 +287,7 @@
 
 <svelte:head>
 	<title>
-		{isEditing ? 'Modifier' : 'Nouvelle'} entree - {data.classData.name} | UbuMaths
+		{isEditing ? 'Modifier' : 'Nouvelle'} entree - {data.classData.name} | Chiphre
 	</title>
 </svelte:head>
 

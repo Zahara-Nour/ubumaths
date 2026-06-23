@@ -2,7 +2,7 @@
  * Skills System — Business Types
  * ================================
  *
- * Types métier du système de compétences UbuMaths. Indépendants de la table
+ * Types métier du système de compétences Chiphre. Indépendants de la table
  * auto-générée `database.ts` (les unions de valeurs viennent des CHECK
  * constraints SQL, mais sont copiées ici pour la lisibilité et la stabilité).
  *
@@ -78,7 +78,7 @@ export type SubdimensionLetter = 'A' | 'B' | 'C' | 'D';
 
 /**
  * Source d'une saisie d'attempt.
- * - `'auto'`          : générée par le système quand l'élève répond à une question UbuMaths en quiz interactif (Monde 1)
+ * - `'auto'`          : générée par le système quand l'élève répond à une question Chiphre en quiz interactif (Monde 1)
  * - `'srs'`           : générée quand l'élève s'auto-évalue lors d'une review SRS (Monde 2 — décision 2026-06-10)
  * - `'teacher'`       : saisie manuelle prof après évaluation ou observation (famille B)
  * - `'student_self'`  : auto-évaluation élève (décision 16 — non contributive au calcul officiel)

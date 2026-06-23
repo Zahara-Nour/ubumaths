@@ -245,7 +245,7 @@ describe('GET /api/account/export', () => {
 
 			const contentDisposition = response.headers.get('Content-Disposition');
 			expect(contentDisposition).toContain('attachment');
-			expect(contentDisposition).toContain('ubumaths-export');
+			expect(contentDisposition).toContain('chiphre-export');
 			expect(contentDisposition).toContain('.json');
 		});
 

@@ -76,7 +76,7 @@
 </script>
 
 <svelte:head>
-	<title>Automaths - Banque de questions | UbuMaths</title>
+	<title>Automaths - Banque de questions | Chiphre</title>
 	<meta
 		name="description"
 		content="Sélectionnez des questions de mathématiques pour créer des exercices personnalisés."

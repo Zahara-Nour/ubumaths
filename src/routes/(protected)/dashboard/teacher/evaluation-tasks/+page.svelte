@@ -26,7 +26,7 @@
 </script>
 
 <svelte:head>
-	<title>Tâches d'évaluation | UbuMaths</title>
+	<title>Tâches d'évaluation | Chiphre</title>
 </svelte:head>
 
 <main class="container mx-auto max-w-5xl px-4 py-6">

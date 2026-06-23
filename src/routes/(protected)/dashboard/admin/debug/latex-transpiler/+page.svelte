@@ -276,7 +276,7 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 </script>
 
 <svelte:head>
-	<title>Debug LaTeX Transpiler - UbuMaths</title>
+	<title>Debug LaTeX Transpiler - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto p-6">

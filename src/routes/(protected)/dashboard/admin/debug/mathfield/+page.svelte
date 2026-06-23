@@ -292,7 +292,7 @@
 </script>
 
 <svelte:head>
-	<title>MathField Debug - UbuMaths</title>
+	<title>MathField Debug - Chiphre</title>
 </svelte:head>
 
 <div class="space-y-6">

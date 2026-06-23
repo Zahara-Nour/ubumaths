@@ -13,10 +13,10 @@
  *    - TypeScript logic that doesn't depend on Python runtime
  *
  * 2. Integration Tests (requires Pyodide - not in this file):
- *    - Serialization functions (_ubumaths_serialize_value)
- *    - Variable extraction (_ubumaths_get_variables)
- *    - Snapshot creation (_ubumaths_debug_create_snapshot)
- *    - Trace function behavior (_ubumaths_debug_trace_function)
+ *    - Serialization functions (_chiphre_serialize_value)
+ *    - Variable extraction (_chiphre_get_variables)
+ *    - Snapshot creation (_chiphre_debug_create_snapshot)
+ *    - Trace function behavior (_chiphre_debug_trace_function)
  *    - Debug session lifecycle (debug-start -> debug-step -> debug-stop)
  *
  * 3. E2E Tests (recommended):
@@ -169,7 +169,7 @@ describe('convertMapToObject', () => {
  */
 
 describe('Python Serialization Specification', () => {
-	describe('_ubumaths_serialize_value', () => {
+	describe('_chiphre_serialize_value', () => {
 		it('should serialize primitives', () => {
 			// Expected behavior:
 			// - None -> {type: 'NoneType', value: 'None'}
@@ -218,9 +218,9 @@ describe('Python Serialization Specification', () => {
 		});
 	});
 
-	describe('_ubumaths_get_variables', () => {
-		it('should skip internal _ubumaths_ variables', () => {
-			// Expected: variables starting with '_ubumaths_' are filtered out
+	describe('_chiphre_get_variables', () => {
+		it('should skip internal _chiphre_ variables', () => {
+			// Expected: variables starting with '_chiphre_' are filtered out
 			expect(true).toBe(true); // Placeholder
 		});
 
@@ -251,7 +251,7 @@ describe('Python Serialization Specification', () => {
 		});
 	});
 
-	describe('_ubumaths_debug_create_snapshot', () => {
+	describe('_chiphre_debug_create_snapshot', () => {
 		it('should build call stack with correct order', () => {
 			// Expected: call stack is reversed (bottom first)
 			// Last frame has isCurrentFrame=true
@@ -279,7 +279,7 @@ describe('Python Serialization Specification', () => {
 		});
 	});
 
-	describe('_ubumaths_debug_should_pause', () => {
+	describe('_chiphre_debug_should_pause', () => {
 		it('should pause on enabled breakpoint at matching line', () => {
 			// Expected: returns (true, 'breakpoint')
 			expect(true).toBe(true); // Placeholder

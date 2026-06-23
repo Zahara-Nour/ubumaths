@@ -7,7 +7,7 @@
  *
  * Features:
  * - Creates new file or updates existing
- * - Stores in "UbuMaths Whiteboards" folder
+ * - Stores in "Chiphre Whiteboards" folder
  * - Validates document structure
  * - Uses custom MIME type for .ubw files
  *

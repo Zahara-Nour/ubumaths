@@ -2,13 +2,13 @@
 	Share Coursework Bulk Dialog
 	=============================
 
-	Dialog for sharing a single Google Classroom coursework item with multiple UbuMaths classes
+	Dialog for sharing a single Google Classroom coursework item with multiple Chiphre classes
 
 	FEATURES:
 	- Share 1 coursework with N classes (1-50)
 	- Multi-select classes with "Select All" functionality
 	- Configure visibility (default: true)
-	- Optional category selection per class (UbuMaths categories)
+	- Optional category selection per class (Chiphre categories)
 	- Optional description override (shared across all classes)
 	- Single bulk API call to share coursework
 	- Loading states and error handling
@@ -434,7 +434,7 @@
 
 							<!-- Category selection (optional) -->
 							<div class="space-y-2">
-								<Label for="category">Catégorie UbuMaths (optionnel)</Label>
+								<Label for="category">Catégorie Chiphre (optionnel)</Label>
 								{#if loadingCategories.size > 0}
 									<div class="h-10 animate-pulse rounded-md bg-muted"></div>
 								{:else}

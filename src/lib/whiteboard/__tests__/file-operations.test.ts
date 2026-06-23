@@ -16,7 +16,7 @@ import { createEmptyDocument, createEmptyPage } from '../types/document';
 const FILE_EXTENSION = '.ubw';
 
 /** MIME type for whiteboard documents */
-const MIME_TYPE = 'application/vnd.ubumaths.whiteboard+json';
+const MIME_TYPE = 'application/vnd.chiphre.whiteboard+json';
 
 /** Current file format version */
 const CURRENT_VERSION = 1;
@@ -609,7 +609,7 @@ describe('File Constants', () => {
 	});
 
 	it('uses correct MIME type', () => {
-		expect(MIME_TYPE).toBe('application/vnd.ubumaths.whiteboard+json');
+		expect(MIME_TYPE).toBe('application/vnd.chiphre.whiteboard+json');
 	});
 
 	it('current version is 1', () => {

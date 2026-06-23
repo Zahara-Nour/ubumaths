@@ -11,7 +11,7 @@
 -->
 
 <svelte:head>
-	<title>Administration — UbuMaths</title>
+	<title>Administration — Chiphre</title>
 </svelte:head>
 
 <section class="mx-auto max-w-3xl p-6">

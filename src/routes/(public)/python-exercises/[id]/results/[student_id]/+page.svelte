@@ -64,7 +64,7 @@
 </script>
 
 <svelte:head>
-	<title>{fullName()} — {data.exercise.title} | UbuMaths</title>
+	<title>{fullName()} — {data.exercise.title} | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-5xl px-4 py-8">

@@ -84,7 +84,7 @@ export const ASSESSMENT_VARIABLES: TemplateVariable[] = [
 	{
 		name: 'assessment_link',
 		label: "Lien vers l'évaluation",
-		example: 'https://ubumaths.com/assessments/123',
+		example: 'https://chiph.re/assessments/123',
 		description: "URL vers la page de l'évaluation",
 		required: true
 	},
@@ -124,7 +124,7 @@ export const SRS_VARIABLES: TemplateVariable[] = [
 	{
 		name: 'deck_link',
 		label: 'Lien vers le deck',
-		example: 'https://ubumaths.com/srs/decks/456',
+		example: 'https://chiph.re/srs/decks/456',
 		description: 'URL vers la page du deck',
 		required: true
 	},
@@ -170,7 +170,7 @@ export const ENIGMA_VARIABLES: TemplateVariable[] = [
 	{
 		name: 'enigma_link',
 		label: "Lien vers l'énigme",
-		example: 'https://ubumaths.com/enigma/789',
+		example: 'https://chiph.re/enigma/789',
 		description: "URL vers la page de l'énigme avec correction",
 		required: true
 	},
@@ -211,7 +211,7 @@ export const NOTIFICATION_VARIABLES: TemplateVariable[] = [
 	{
 		name: 'notification_link',
 		label: "Lien d'action",
-		example: 'https://ubumaths.com/dashboard',
+		example: 'https://chiph.re/dashboard',
 		description: "Lien vers l'action concernée"
 	},
 	{

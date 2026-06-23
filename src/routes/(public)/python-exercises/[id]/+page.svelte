@@ -32,7 +32,7 @@
 	const submissions = $derived(data.submissions);
 	const canSubmit = $derived(data.canSubmit);
 	const isAuthenticated = $derived(data.isAuthenticated);
-	const localStorageKey = $derived(`ubumaths-exercise-${exercise.id}`);
+	const localStorageKey = $derived(`chiphre-exercise-${exercise.id}`);
 
 	let executor = $state<PlaygroundExecutor | null>(null);
 	let code = $state('');
@@ -331,7 +331,7 @@
 </script>
 
 <svelte:head>
-	<title>{exercise.title} – UbuMaths</title>
+	<title>{exercise.title} – Chiphre</title>
 	{#if exercise.description}
 		<meta name="description" content={exercise.description} />
 	{/if}

@@ -78,7 +78,7 @@
 </script>
 
 <svelte:head>
-	<title>Valider la réponse - UbuMaths</title>
+	<title>Valider la réponse - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl p-4 sm:p-6">
