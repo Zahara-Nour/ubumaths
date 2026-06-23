@@ -5,7 +5,7 @@
 > Document de référence canonique du lore. À versionner dans le repo.
 > Toute incohérence avec ce document doit être considérée comme une erreur, à corriger ou à canoniser après débat.
 
-> **📌 Note de rebranding (mai 2026)** : ce projet s'appelait précédemment **Ubumaths** (ubumaths.fr). Décision prise de **rupture nette** : le nom de marque est désormais **Chiphres** (chiphr.es), avec pour sous-titre **« les Chiphres de la Chandelle Verte »**. Motif : le mot _maths_ étant repoussoir pour beaucoup d'élèves et de parents, le rebranding adopte un terme déguisé (_chiphres_ = _chiffres_ avec la signature pataphysique _ph_ canon Jarry, comme _phynance_). L'ancien nom **Ubumaths n'est plus utilisé nulle part**. Le terme **Ubu** lui-même (canon Jarry — Père Ubu, Mère Ubu, _Ubu Roi_) reste évidemment intact partout : c'est le nom du **personnage**, pas de la **marque**.
+> **📌 Note de rebranding (mai 2026)** : ce projet s'appelait précédemment **Ubumaths** (ubumaths.fr). Décision prise de **rupture nette** : le nom de marque est désormais **Chiphres** (chiph.re), avec pour sous-titre **« les Chiphres de la Chandelle Verte »**. Motif : le mot _maths_ étant repoussoir pour beaucoup d'élèves et de parents, le rebranding adopte un terme déguisé (_chiphres_ = _chiffres_ avec la signature pataphysique _ph_ canon Jarry, comme _phynance_). L'ancien nom **Ubumaths n'est plus utilisé nulle part**. Le terme **Ubu** lui-même (canon Jarry — Père Ubu, Mère Ubu, _Ubu Roi_) reste évidemment intact partout : c'est le nom du **personnage**, pas de la **marque**.
 >
 > **Vocabulaire hybride Chiphres / Mathres** : pour désigner spécifiquement la **discipline scolaire** (= les mathématiques), le lore utilise le néologisme **Mathres** (déformation R potache canon — modèle _merdre_). Distinction sémantique : **Chiphres** = la plateforme + le côté concret/calculatoire ; **Mathres** = la discipline enseignée. Phrase-clé : _« Les Galopins apprennent les Mathres sur Chiphres. »_
 
@@ -722,7 +722,7 @@ La province algorithmique de **Glitchistan** est suffisamment importante (algori
 
 | Terme générique              | Terme Chiphres                | Notes                                                                                                                                   |
 | ---------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| **La plateforme**            | **Chiphres**                  | Marque publique. URL : chiphr.es. Sous-titre : _« les Chiphres de la Chandelle Verte »_.                                                |
+| **La plateforme**            | **Chiphres**                  | Marque publique. URL : chiph.re. Sous-titre : _« les Chiphres de la Chandelle Verte »_.                                                 |
 | **La discipline enseignée**  | **Mathres**                   | Déformation R potache canon (modèle _merdre_). Remplace « mathématiques » dans tout le wording interne. Voir règle d'écriture ubuesque. |
 | Élève                        | **Galopin** / **Galopine**    | Le Galopin est apprenti-aventurier. Étymologie : jeune marmiton médiéval + enfant espiègle moderne. Voir Section III. Pas de péjoratif. |
 | Élèves (collectif)           | Les Polonais                  | « Le tableau des Polonais » = leaderboard.                                                                                              |
@@ -2235,12 +2235,12 @@ Ordre suggéré, en partant de l'effort minimal et de l'impact maximal.
 
 **Travail préalable de mise en cohérence avec le nouveau nom de marque.** Doit être effectué avant tout autre sprint pour éviter les divergences.
 
-1. Acquisition du domaine **chiphr.es** et configuration DNS.
+1. Acquisition du domaine **chiph.re** et configuration DNS.
 2. Mise à jour de toutes les variables d'environnement et configurations (`SITE_NAME`, `BASE_URL`, métadonnées Open Graph, etc.).
 3. Renommage du package npm si applicable.
 4. Recherche & remplacement global dans le code : _Ubumaths_ → _Chiphres_, _Salopin_ → _Galopin_, _Czar Mathématique_ → _Czar Alexis_.
 5. Mise à jour de tous les comptes externes (Stripe, Supabase, Vercel, Cloudflare, comptes sociaux).
-6. Configuration de la redirection 301 ubumaths.fr → chiphr.es.
+6. Configuration de la redirection 301 ubumaths.fr → chiph.re.
 7. Mise à jour du favicon et des manifestes PWA avec le nouveau logo.
 
 ### 🟢 Sprint 1 — Lexique partout (1 semaine)
@@ -2403,9 +2403,9 @@ Voir Section III du Compendium et **Section X du Lexique Pataphysique des Chiphr
 
 ### Sites du projet
 
-- **Site officiel** : <https://chiphr.es>
+- **Site officiel** : <https://chiph.re>
 - **Documentation interne** : `lexique-pataphysique.md` (Lexique technique) + `lore-pataphysique.md` (présent Compendium)
-- **Ancien site Ubumaths** : <https://ubumaths.fr> (redirection 301 vers chiphr.es)
+- **Ancien site Ubumaths** : <https://ubumaths.fr> (redirection 301 vers chiph.re)
 
 ---
 
