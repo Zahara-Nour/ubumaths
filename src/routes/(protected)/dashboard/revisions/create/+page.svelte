@@ -200,7 +200,7 @@
 		<div>
 			<Card.Root>
 				<Card.Header>
-					<Card.Title>Paramètres</Card.Title>
+					<Card.Title>{lore.nav.settings}</Card.Title>
 				</Card.Header>
 				<Card.Content class="space-y-4">
 					<div class="space-y-2">

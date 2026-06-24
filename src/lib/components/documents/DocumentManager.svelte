@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -122,7 +123,7 @@
 						class="pl-10"
 					/>
 				</div>
-				<Button variant="outline" onclick={handleSearch}>Rechercher</Button>
+				<Button variant="outline" onclick={handleSearch}>{lore.actions.search}</Button>
 				<Button variant="ghost" size="icon" onclick={() => loadDocuments(pagination.page)}>
 					<RefreshCw class="h-4 w-4 {isLoading ? 'animate-spin' : ''}" />
 				</Button>

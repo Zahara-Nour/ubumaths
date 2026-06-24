@@ -152,7 +152,7 @@
 
 				<!-- Actions -->
 				<div class="flex gap-2">
-					<Button type="submit">Filtrer</Button>
+					<Button type="submit">{lore.actions.filter}</Button>
 					<Button type="button" variant="outline" onclick={clearFilters}>Effacer</Button>
 				</div>
 			</form>
