@@ -17,10 +17,10 @@ export const lore = {
 		save: 'Empocher',
 		delete: 'Passer à la trappe',
 		cancel: 'Renoncer',
-		confirm: 'Décréter',
+		confirm: 'Sceller',
 		restart: 'Remettre le couvert',
 		search: 'Fouiller',
-		filter: 'Trier dans la trappe'
+		filter: 'Tamiser'
 	},
 	/** Navigation / places (bare terms — callers compose "Mon …" etc.) */
 	nav: {
