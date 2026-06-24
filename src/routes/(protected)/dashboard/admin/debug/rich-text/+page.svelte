@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -94,7 +95,7 @@
 <h3>Formule utilisée</h3>
 <p>Formule générale : <span data-math-inline>ax^2 + bx + c = 0</span></p>
 <p>Discriminant : <span data-math-inline>\\Delta = b^2 - 4ac</span></p>
-<h3>Paramètres</h3>
+<h3>{lore.nav.settings}</h3>
 <ul>
 <li><code>a</code> : coefficient de x² (entier de 1 à 5)</li>
 <li><code>b</code> : coefficient de x (entier de -10 à 10)</li>

@@ -986,7 +986,7 @@
 									<DropdownMenu.Label>Mon Compte</DropdownMenu.Label>
 									<DropdownMenu.Separator />
 									<DropdownMenu.Item>Profil</DropdownMenu.Item>
-									<DropdownMenu.Item>Paramètres</DropdownMenu.Item>
+									<DropdownMenu.Item>{lore.nav.settings}</DropdownMenu.Item>
 									<DropdownMenu.Separator />
 									<DropdownMenu.Item class="text-destructive">Se déconnecter</DropdownMenu.Item>
 								</DropdownMenu.Content>

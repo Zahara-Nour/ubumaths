@@ -172,7 +172,7 @@
 
 	<!-- Settings Section -->
 	<div class="space-y-4 rounded-lg border p-4">
-		<h3 class="font-semibold">Paramètres</h3>
+		<h3 class="font-semibold">{lore.nav.settings}</h3>
 
 		<!-- Deadline -->
 		<div class="space-y-2">
