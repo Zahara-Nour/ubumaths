@@ -44,7 +44,7 @@ jobs:
         # runner needs it explicitly before `supabase start`. Pinned to the version
         # used locally — `latest` pulled a build whose storage-api image tag
         # (fix-object-level) is unpublished → "manifest unknown".
-        uses: supabase/setup-cli@v1
+        uses: supabase/setup-cli@v3
         with:
           version: 2.105.0
 
