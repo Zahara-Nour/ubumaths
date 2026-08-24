@@ -272,7 +272,7 @@
 				<p class="mt-2 text-sm text-muted-foreground">
 					{hasFilters
 						? 'Essayez de modifier les filtres pour voir plus de Corvées Domestiques'
-						: "Vos {lore.entities.teacher}s n'ont pas encore partagé de Corvées Domestiques"}
+						: `Vos ${lore.entities.teacher}s n'ont pas encore partagé de Corvées Domestiques`}
 				</p>
 				{#if hasFilters}
 					<Button variant="outline" class="mt-4" onclick={clearFilters}>Effacer les filtres</Button>

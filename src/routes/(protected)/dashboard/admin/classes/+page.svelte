@@ -397,8 +397,8 @@
 				<div class="border-b border-border bg-card px-6 pt-6 pb-4">
 					<h3 class="text-lg font-medium text-foreground" id="modal-title">
 						{editingClass
-							? 'Modifier la {lore.entities.class}'
-							: 'Ajouter une {lore.entities.class}'}
+							? `Modifier la ${lore.entities.class}`
+							: `Ajouter une ${lore.entities.class}`}
 					</h3>
 				</div>
 
