@@ -77,7 +77,7 @@
 					<p class="text-red-600">{data.message}</p>
 					{#if data.error === 'TOKEN_EXPIRED'}
 						<p class="mt-4 text-sm text-muted-foreground">
-							Contactez l'enseignant de votre enfant pour recevoir un nouveau lien de consentement.
+							Contactez le {lore.entities.teacher} de votre enfant pour recevoir un nouveau lien de consentement.
 						</p>
 					{/if}
 				</CardContent>
@@ -112,7 +112,7 @@
 							{#if data.teacherName}
 								<li class="flex items-center gap-2">
 									<User class="h-4 w-4 text-blue-600" />
-									<span>Enseignant : {data.teacherName}</span>
+									<span>{lore.entities.teacher} : {data.teacherName}</span>
 								</li>
 							{/if}
 						</ul>
@@ -132,7 +132,7 @@
 						<ul class="ml-4 list-disc space-y-1 text-sm text-muted-foreground">
 							<li>Réaliser des exercices de mathématiques</li>
 							<li>Suivre sa progression scolaire</li>
-							<li>Communiquer avec son enseignant</li>
+							<li>Communiquer avec son {lore.entities.teacher}</li>
 							<li>Participer aux activités pédagogiques de la plateforme</li>
 						</ul>
 					</div>

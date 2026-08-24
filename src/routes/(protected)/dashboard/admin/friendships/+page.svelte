@@ -178,7 +178,9 @@
 							<div>
 								<p class="font-medium">{friendship.requester_name}</p>
 								<p class="text-sm text-muted-foreground">
-									{friendship.requester_role === 'teacher' ? 'Enseignant' : lore.entities.student}
+									{friendship.requester_role === 'teacher'
+										? lore.entities.teacher
+										: lore.entities.student}
 								</p>
 							</div>
 						</div>
@@ -201,7 +203,9 @@
 							<div>
 								<p class="font-medium">{friendship.addressee_name}</p>
 								<p class="text-sm text-muted-foreground">
-									{friendship.addressee_role === 'teacher' ? 'Enseignant' : lore.entities.student}
+									{friendship.addressee_role === 'teacher'
+										? lore.entities.teacher
+										: lore.entities.student}
 								</p>
 							</div>
 						</div>

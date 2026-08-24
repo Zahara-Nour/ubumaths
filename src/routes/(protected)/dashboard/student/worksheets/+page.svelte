@@ -158,7 +158,7 @@
 					<p class="mt-2 text-sm text-muted-foreground">
 						{hasFilters
 							? 'Essayez de modifier les filtres pour voir plus de fiches'
-							: "Vos professeurs n'ont pas encore partage de fiches de travail"}
+							: "Vos {lore.entities.teacher}s n'ont pas encore partage de fiches de travail"}
 					</p>
 					{#if hasFilters}
 						<Button variant="outline" class="mt-4" onclick={clearFilters}>

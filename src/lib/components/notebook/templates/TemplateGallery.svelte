@@ -11,6 +11,7 @@
 	template" from the notebook editor.
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import TemplateCard from './TemplateCard.svelte';
 	import { Sparkles } from '@lucide/svelte';
 
@@ -74,7 +75,7 @@
 			<section class="space-y-3">
 				<h2 class="text-lg font-semibold">Templates partagés</h2>
 				<p class="text-xs text-muted-foreground">
-					Templates publics créés par d'autres enseignants.
+					Templates publics créés par d'autres {lore.entities.teacher}s.
 				</p>
 				<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 					{#each shared as template (template.id)}

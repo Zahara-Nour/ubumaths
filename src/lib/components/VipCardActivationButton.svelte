@@ -16,6 +16,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { VipCard, VipCardInstance, StudentVipCards } from '$lib/types/vip-card';
 	import { getActionDescription } from '$lib/utils/vip-cards';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -163,6 +164,8 @@
 			<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 			En attente...
 		</Button>
-		<p class="mt-1 text-center text-xs text-muted-foreground">Un enseignant doit approuver</p>
+		<p class="mt-1 text-center text-xs text-muted-foreground">
+			Un {lore.entities.teacher} doit approuver
+		</p>
 	</div>
 {/if}

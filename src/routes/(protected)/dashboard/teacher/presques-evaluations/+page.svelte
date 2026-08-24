@@ -237,7 +237,7 @@
 							</Button>
 						{:else}
 							<span class="w-full text-xs text-muted-foreground italic">
-								Uploadé par un autre enseignant
+								Uploadé par un autre {lore.entities.teacher}
 							</span>
 						{/if}
 					</Card.Footer>

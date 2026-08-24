@@ -21,6 +21,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { DbRiddle, DbRiddleAttempt } from '$lib/types/riddle';
 	import {
 		getDifficultyLabel,
@@ -310,7 +311,7 @@
 						<div>
 							<p class="font-semibold text-blue-700 dark:text-blue-300">En attente de validation</p>
 							<p class="text-sm text-blue-600 dark:text-blue-400">
-								Votre professeur validera votre réponse prochainement
+								Votre {lore.entities.teacher} validera votre réponse prochainement
 							</p>
 						</div>
 					</div>
@@ -321,7 +322,7 @@
 			{#if showCorrection}
 				<div class="correction-section">
 					<h3 class="mb-3 text-lg font-semibold text-primary">
-						Correction (visible professeur uniquement)
+						Correction (visible {lore.entities.teacher} uniquement)
 					</h3>
 					<div
 						class="correction-content rounded-lg border border-primary/30 bg-primary/5 p-4 dark:bg-primary/10"

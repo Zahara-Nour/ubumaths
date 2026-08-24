@@ -141,7 +141,9 @@
 										{message.sender_name || 'Expéditeur inconnu'}
 									</div>
 									<div class="text-sm text-muted-foreground">
-										{message.sender_role === 'teacher' ? 'Professeur' : lore.entities.student}
+										{message.sender_role === 'teacher'
+											? lore.entities.teacher
+											: lore.entities.student}
 									</div>
 									<div class="mt-1 text-xs text-muted-foreground">
 										{formatDate(message.sent_at)}

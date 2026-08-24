@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -218,7 +219,7 @@
 						<!-- Teacher notes -->
 						{#if exercise.assignment?.notes}
 							<div class="mb-3 rounded-md bg-muted p-3">
-								<p class="mb-1 text-sm font-medium">Note du professeur :</p>
+								<p class="mb-1 text-sm font-medium">Note du {lore.entities.teacher} :</p>
 								<p class="text-sm italic">{exercise.assignment.notes}</p>
 							</div>
 						{/if}

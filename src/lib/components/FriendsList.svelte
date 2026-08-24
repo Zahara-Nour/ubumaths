@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { friendsManager } from '$lib/stores/friends.svelte';
 	import OnlineStatus from './OnlineStatus.svelte';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
@@ -73,7 +74,7 @@
 							<p class="text-sm text-muted-foreground">
 								{getFriendshipTypeLabel()}
 								{#if friend.friend_profile?.role === 'teacher'}
-									• Enseignant
+									• {lore.entities.teacher}
 								{/if}
 							</p>
 						</div>

@@ -93,7 +93,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes notifications - Professeur - Chiphre</title>
+	<title>Mes notifications - {lore.entities.teacher} - Chiphre</title>
 </svelte:head>
 
 <div class="space-y-6">

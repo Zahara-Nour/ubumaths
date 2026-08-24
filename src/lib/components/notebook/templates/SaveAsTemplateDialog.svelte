@@ -121,7 +121,7 @@
 
 			<MyCheckbox
 				bind:checked={isPublic}
-				label="Partager publiquement (visible par les autres enseignants)"
+				label="Partager publiquement (visible par les autres {lore.entities.teacher}s)"
 			/>
 		</div>
 

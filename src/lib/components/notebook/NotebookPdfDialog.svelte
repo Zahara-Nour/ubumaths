@@ -16,6 +16,7 @@
 	  - student → hints OFF, checkbox disabled
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
@@ -82,7 +83,7 @@
 			{#if canRevealHints}
 				<MyCheckbox
 					bind:checked={includeHints}
-					label="Inclure les indices des checkpoints (correction prof)"
+					label="Inclure les indices des checkpoints (correction {lore.entities.teacher})"
 				/>
 			{:else}
 				<!-- Students can't reveal hints from a PDF — preserves the
@@ -90,7 +91,7 @@
 				<MyCheckbox
 					checked={false}
 					disabled
-					label="Inclure les indices (réservé aux enseignants)"
+					label="Inclure les indices (réservé aux {lore.entities.teacher}s)"
 				/>
 			{/if}
 

@@ -19,6 +19,7 @@
 	- Auto-navigation to next pending report
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import { z } from 'zod';
@@ -420,7 +421,7 @@
 	{:else if responseContent}
 		<Card.Root class="mb-6 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
 			<Card.Header class="pb-2">
-				<Card.Title class="text-base">Reponse du professeur</Card.Title>
+				<Card.Title class="text-base">Reponse du {lore.entities.teacher}</Card.Title>
 			</Card.Header>
 			<Card.Content>
 				<RichTextDisplay

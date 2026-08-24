@@ -39,7 +39,7 @@ export const lore = {
 		student: 'Galopin',
 		studentFeminine: 'Galopine',
 		studentsCollective: 'les Polonais',
-		teacher: 'Maître Phynancier',
+		teacher: 'Capitaine',
 		class: 'Bataillon',
 		friends: 'Conjurés'
 	},

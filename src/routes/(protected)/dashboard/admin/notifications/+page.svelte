@@ -97,7 +97,7 @@
 	// Role labels
 	const roleLabels: Record<string, string> = {
 		admin: 'Administrateurs',
-		teacher: 'Professeurs',
+		teacher: `${lore.entities.teacher}s`,
 		student: `${lore.entities.student}s`
 	};
 
