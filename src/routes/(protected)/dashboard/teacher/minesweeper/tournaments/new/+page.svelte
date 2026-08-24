@@ -118,7 +118,7 @@
 		}
 
 		if (selectedClassIds.length === 0) {
-			validationErrors['class_ids'] = 'Au moins une classe doit etre selectionnee';
+			validationErrors['class_ids'] = `Au moins un ${lore.entities.class} doit etre selectionne`;
 		}
 
 		// Validate podium rewards

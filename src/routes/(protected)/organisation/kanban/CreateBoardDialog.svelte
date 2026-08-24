@@ -46,7 +46,7 @@
 
 	const boardTypeItems = [
 		{ value: 'personal', label: 'Personnel' },
-		{ value: 'class', label: 'Classe' }
+		{ value: 'class', label: lore.entities.class }
 	];
 
 	const classItems = $derived(classes.map((c) => ({ value: c.id, label: c.name })));

@@ -167,7 +167,7 @@
 			classes = data.classes || [];
 		} catch (err) {
 			console.error('[ShareMultipleCourseworkDialog] Error fetching classes:', err);
-			toaster.error('Erreur lors du chargement des classes');
+			toaster.error(`Erreur lors du chargement des ${lore.entities.class}s`);
 		} finally {
 			fetchingClasses = false;
 		}

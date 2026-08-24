@@ -116,7 +116,7 @@
 		try {
 			const response = await fetch(`/api/classes/${classId}/students`);
 			if (!response.ok) {
-				throw new Error('Impossible de charger les eleves de la classe');
+				throw new Error(`Impossible de charger les eleves du ${lore.entities.class}`);
 			}
 			const data = await response.json();
 			classStudents = data.students ?? [];

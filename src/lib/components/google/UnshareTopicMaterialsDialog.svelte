@@ -116,7 +116,7 @@
 			}));
 		} catch (err) {
 			console.error('[UnshareTopicMaterialsDialog] Error fetching classes:', err);
-			toaster.error('Erreur lors du chargement des classes');
+			toaster.error(`Erreur lors du chargement des ${lore.entities.class}s`);
 		} finally {
 			fetchingClasses = false;
 		}

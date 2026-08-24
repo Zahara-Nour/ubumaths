@@ -250,7 +250,7 @@
 			initializeSelectedClass();
 		} catch (err) {
 			console.error('[TeacherDashboard] ❌ Failed to load classes:', err);
-			toaster.error('Erreur lors du chargement des classes');
+			toaster.error(`Erreur lors du chargement des ${lore.entities.class}s`);
 		} finally {
 			isLoadingClasses = false;
 		}
@@ -380,7 +380,7 @@
 	function handleFindCurrentClass() {
 		// Edge case 1: Teacher has no classes assigned
 		if (classes.length === 0) {
-			toaster.error('Aucune classe assignée');
+			toaster.error(`Aucun ${lore.entities.class} assigné`);
 			return;
 		}
 
@@ -440,7 +440,7 @@
 	 */
 	async function handleOpenWheel() {
 		if (!selectedClassId) {
-			toaster.error('Veuillez sélectionner une classe');
+			toaster.error(`Veuillez sélectionner un ${lore.entities.class}`);
 			return;
 		}
 

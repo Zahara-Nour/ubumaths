@@ -18,7 +18,7 @@
 
 	// Class items for MySelect
 	const classItems = $derived([
-		{ value: 'all', label: 'Toutes les classes' },
+		{ value: 'all', label: `Tous les ${lore.entities.class}s` },
 		...data.classes.map((c: { id: string; name: string }) => ({ value: c.id, label: c.name }))
 	]);
 

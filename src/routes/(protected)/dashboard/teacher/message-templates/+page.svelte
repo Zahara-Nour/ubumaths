@@ -108,7 +108,7 @@
 
 	const scopeOptions = [
 		{ value: 'system', label: 'Système' },
-		{ value: 'class', label: 'Mes classes' }
+		{ value: 'class', label: `Mes ${lore.entities.class}s` }
 	];
 
 	// Computed
@@ -359,7 +359,7 @@
 		}
 
 		if (!formClassId) {
-			toaster.error('Veuillez sélectionner une classe');
+			toaster.error(`Veuillez sélectionner un ${lore.entities.class}`);
 			return;
 		}
 
@@ -483,7 +483,9 @@
 		if (!newTitle) return;
 
 		if (!formClassId && classes.length === 0) {
-			toaster.error('Vous devez avoir au moins une classe pour dupliquer un template');
+			toaster.error(
+				`Vous devez avoir au moins un ${lore.entities.class} pour dupliquer un template`
+			);
 			return;
 		}
 

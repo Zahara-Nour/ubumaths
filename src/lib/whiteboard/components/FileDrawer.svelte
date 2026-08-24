@@ -117,7 +117,7 @@
 
 	/** Class items for MySelect */
 	const classItems = $derived([
-		{ value: '', label: 'Toutes les classes' },
+		{ value: '', label: `Tous les ${lore.entities.class}s` },
 		...classes.map((c) => ({
 			value: c.id,
 			label: c.name
@@ -586,7 +586,7 @@
 				if (classesResponse.status === 401) {
 					toaster.error('Veuillez vous connecter');
 				} else {
-					toaster.error('Impossible de charger les classes');
+					toaster.error(`Impossible de charger les ${lore.entities.class}s`);
 				}
 				return;
 			}

@@ -80,7 +80,7 @@
 				const response = await fetch('/api/classes');
 
 				if (!response.ok) {
-					throw new Error('Erreur lors du chargement des classes');
+					throw new Error(`Erreur lors du chargement des ${lore.entities.class}s`);
 				}
 
 				const data = await response.json();
@@ -88,7 +88,7 @@
 			}
 		} catch (error) {
 			console.error('Error loading classes:', error);
-			toaster.error('Erreur lors du chargement des classes');
+			toaster.error(`Erreur lors du chargement des ${lore.entities.class}s`);
 		} finally {
 			isLoadingClasses = false;
 		}
@@ -131,7 +131,7 @@
 		const selectedClasses = classes.filter((c) => c.isSelected && !c.isShared);
 
 		if (selectedClasses.length === 0) {
-			toaster.warning('Veuillez sélectionner au moins une classe');
+			toaster.warning(`Veuillez sélectionner au moins un ${lore.entities.class}`);
 			return;
 		}
 

@@ -17,6 +17,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
@@ -239,7 +240,7 @@
 					students.forEach((student) => {
 						teacherCache.updateGidouillesOptimistic(classId, student.id, -accumulatedDelta);
 					});
-					toaster.error('Echec de la mise a jour de la classe');
+					toaster.error(`Echec de la mise a jour du ${lore.entities.class}`);
 				}
 			} catch {
 				// Rollback all students

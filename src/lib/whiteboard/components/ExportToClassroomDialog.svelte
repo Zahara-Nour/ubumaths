@@ -211,7 +211,7 @@
 			classesWithCourse = data.classes || [];
 
 			if (classesWithCourse.length === 0) {
-				classesError = "Aucune classe n'est associée à un cours Google Classroom.";
+				classesError = `Aucun ${lore.entities.class} n'est associé à un cours Google Classroom.`;
 				return;
 			}
 
