@@ -225,7 +225,7 @@
 			<Card.Description>
 				{isEditMode
 					? `Modifier l'assignation de "${worksheetTitle}"`
-					: `Assigner "${worksheetTitle}" a un ou plusieurs {lore.entities.class}s`}
+					: `Assigner "${worksheetTitle}" a un ou plusieurs ${lore.entities.class}s`}
 			</Card.Description>
 		</Card.Header>
 		<Card.Content class="space-y-6">

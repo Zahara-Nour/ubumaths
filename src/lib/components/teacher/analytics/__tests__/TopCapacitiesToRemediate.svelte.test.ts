@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { lore } from '$lib/config/lore';
 import { render } from 'vitest-browser-svelte';
 import { page } from '@vitest/browser/context';
 import TopCapacitiesToRemediate from '../TopCapacitiesToRemediate.svelte';
@@ -37,13 +38,17 @@ describe('TopCapacitiesToRemediate', () => {
 		});
 		render(TopCapacitiesToRemediate, { classId: 'class-1' });
 		await expect.element(page.getByText('Calcul fractions')).toBeVisible();
-		await expect.element(page.getByText(/75% des élèves concernés/)).toBeVisible();
+		await expect
+			.element(page.getByText(new RegExp(`75% des ${lore.entities.student}s concernés`)))
+			.toBeVisible();
 	});
 
 	it('shows congratulations when no rows', async () => {
 		mockFetch({ rows: [] });
 		render(TopCapacitiesToRemediate, { classId: 'class-1' });
-		await expect.element(page.getByText(/Bravo, votre classe/)).toBeVisible();
+		await expect
+			.element(page.getByText(new RegExp(`Bravo, votre ${lore.entities.class}`)))
+			.toBeVisible();
 	});
 
 	it('handles fetch error', async () => {

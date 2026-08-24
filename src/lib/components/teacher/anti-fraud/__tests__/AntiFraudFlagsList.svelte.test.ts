@@ -5,6 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { lore } from '$lib/config/lore';
 import { render } from 'vitest-browser-svelte';
 import { page } from '@vitest/browser/context';
 import AntiFraudFlagsList from '../AntiFraudFlagsList.svelte';
@@ -69,14 +70,16 @@ describe('AntiFraudFlagsList', () => {
 	it('shows empty state when no flags', async () => {
 		mockFetch({ flags: [], total: 0, resolved_count: 0 });
 		render(AntiFraudFlagsList, { classId: 'class-1' });
-		await expect.element(page.getByText(/Aucun élève à surveiller/)).toBeVisible();
+		await expect
+			.element(page.getByText(new RegExp(`Aucun ${lore.entities.student} à surveiller`)))
+			.toBeVisible();
 	});
 
 	it('anonymizes student names when anonymized=true', async () => {
 		mockFetch(sampleFlags);
 		render(AntiFraudFlagsList, { classId: 'class-1', anonymized: true });
-		await expect.element(page.getByText('Élève 1')).toBeVisible();
-		await expect.element(page.getByText('Élève 2')).toBeVisible();
+		await expect.element(page.getByText(`${lore.entities.student} 1`)).toBeVisible();
+		await expect.element(page.getByText(`${lore.entities.student} 2`)).toBeVisible();
 	});
 
 	it('renders flag type labels and score', async () => {
