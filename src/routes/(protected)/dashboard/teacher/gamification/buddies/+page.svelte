@@ -6,6 +6,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import * as Card from '$lib/components/ui/card';
 	import { Progress } from '$lib/components/ui/progress';
@@ -43,7 +44,7 @@
 	{#if data.classesData.length === 0}
 		<Card.Root>
 			<Card.Content class="py-8 text-center text-muted-foreground">
-				Aucune classe active.
+				Aucun {lore.entities.class} actif.
 			</Card.Content>
 		</Card.Root>
 	{:else}

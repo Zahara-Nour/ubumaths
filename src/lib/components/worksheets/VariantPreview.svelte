@@ -182,7 +182,7 @@
 			{#if classId && students.length > 0}
 				<Button onclick={generateClassInstances} disabled={isLoading} variant="default">
 					<Users class="mr-2 h-4 w-4" />
-					Générer pour la classe
+					Générer pour le {lore.entities.class}
 				</Button>
 			{/if}
 		</div>

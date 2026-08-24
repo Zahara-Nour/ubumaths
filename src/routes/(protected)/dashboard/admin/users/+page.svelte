@@ -1270,7 +1270,7 @@
 					<Card.Root>
 						<Card.Content class="py-12 text-center">
 							<p class="text-muted-foreground">
-								Recherchez un utilisateur ou sélectionnez une classe pour commencer
+								Recherchez un utilisateur ou sélectionnez un {lore.entities.class} pour commencer
 							</p>
 						</Card.Content>
 					</Card.Root>

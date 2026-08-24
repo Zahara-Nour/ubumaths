@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
@@ -615,7 +616,7 @@
 								<div class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
 									<Users class="h-4 w-4" />
 									{#if selectedClasses.length === 0}
-										<span>Aucune classe</span>
+										<span>Aucun {lore.entities.class}</span>
 									{:else if selectedClasses.length === 1}
 										<span>{selectedClasses[0].name}</span>
 									{:else}

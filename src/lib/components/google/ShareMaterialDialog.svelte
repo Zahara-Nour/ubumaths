@@ -316,7 +316,7 @@
 		<Dialog.Header>
 			<Dialog.Title>Partager : {material.title}</Dialog.Title>
 			<Dialog.Description>
-				Sélectionnez les classes avec lesquelles partager ce matériel pédagogique
+				Sélectionnez les {lore.entities.class}s avec lesquelles partager ce matériel pédagogique
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -338,7 +338,7 @@
 				</div>
 			{:else if classes.length === 0}
 				<div class="py-8 text-center text-muted-foreground">
-					<p>Aucune classe disponible</p>
+					<p>Aucun {lore.entities.class} disponible</p>
 					<p class="text-sm">Créez une classe pour partager du contenu</p>
 				</div>
 			{:else}

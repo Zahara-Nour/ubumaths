@@ -406,7 +406,7 @@
 		<Dialog.Header>
 			<Dialog.Title>Partager plusieurs travaux</Dialog.Title>
 			<Dialog.Description>
-				Sélectionnez les travaux et les classes avec lesquelles les partager
+				Sélectionnez les travaux et les {lore.entities.class}s avec lesquelles les partager
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -487,7 +487,7 @@
 			<!-- Class Selection Section -->
 			<Card.Root>
 				<Card.Header>
-					<Card.Title>2. Sélectionnez les classes</Card.Title>
+					<Card.Title>2. Sélectionnez les {lore.entities.class}s</Card.Title>
 				</Card.Header>
 				<Card.Content class="space-y-3">
 					{#if fetchingClasses}
@@ -498,7 +498,7 @@
 						</div>
 					{:else if classes.length === 0}
 						<div class="py-8 text-center text-muted-foreground">
-							<p>Aucune classe disponible</p>
+							<p>Aucun {lore.entities.class} disponible</p>
 							<p class="text-sm">Créez une classe pour partager du contenu</p>
 						</div>
 					{:else}

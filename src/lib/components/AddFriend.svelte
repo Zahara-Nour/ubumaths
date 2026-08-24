@@ -191,7 +191,7 @@
 				</div>
 			{:else if studentsInClass.length === 0}
 				<p class="py-4 text-center text-sm text-muted-foreground italic">
-					Aucun {lore.entities.student} dans cette classe
+					Aucun {lore.entities.student} dans ce {lore.entities.class}
 				</p>
 			{:else}
 				<div class="space-y-2">

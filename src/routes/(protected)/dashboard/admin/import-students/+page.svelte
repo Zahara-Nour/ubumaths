@@ -481,9 +481,10 @@
 	<!-- Available Classes Reference -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Codes de classe disponibles</Card.Title>
+			<Card.Title>Codes de {lore.entities.class} disponibles</Card.Title>
 			<Card.Description
-				>Utilisez ces codes pour assigner des {lore.entities.student}s aux classes</Card.Description
+				>Utilisez ces codes pour assigner des {lore.entities.student}s aux {lore.entities
+					.class}s</Card.Description
 			>
 		</Card.Header>
 		<Card.Content>

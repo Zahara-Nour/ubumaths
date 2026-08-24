@@ -5,6 +5,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -325,16 +326,18 @@
 		<!-- Classes -->
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Classes participantes *</Card.Title>
-				<Card.Description>Selectionnez les classes qui participeront au tournoi</Card.Description>
+				<Card.Title>{lore.entities.class}s participants *</Card.Title>
+				<Card.Description
+					>Selectionnez les {lore.entities.class}s qui participeront au tournoi</Card.Description
+				>
 			</Card.Header>
 			<Card.Content class="space-y-4">
 				{#if data.classes.length === 0}
 					<Alert.Root variant="destructive">
 						<AlertTriangle class="h-4 w-4" />
-						<Alert.Title>Aucune classe</Alert.Title>
+						<Alert.Title>Aucun {lore.entities.class}</Alert.Title>
 						<Alert.Description>
-							Vous devez avoir au moins une classe pour creer un tournoi.
+							Vous devez avoir au moins un {lore.entities.class} pour creer un tournoi.
 						</Alert.Description>
 					</Alert.Root>
 				{:else}

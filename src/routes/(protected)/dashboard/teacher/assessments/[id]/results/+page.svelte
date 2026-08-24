@@ -125,7 +125,7 @@
 					<Table.Header>
 						<Table.Row>
 							<Table.Head>{lore.entities.student}</Table.Head>
-							<Table.Head>Classe</Table.Head>
+							<Table.Head>{lore.entities.class}</Table.Head>
 							<Table.Head class="text-center">Statut</Table.Head>
 							<Table.Head class="text-center">Tentatives</Table.Head>
 							<Table.Head class="text-center">Meilleure Note</Table.Head>

@@ -640,7 +640,7 @@
 				<Badge variant={isClassBoard ? 'default' : 'secondary'} class="shrink-0 gap-1">
 					{#if isClassBoard}
 						<Users class="h-3 w-3" aria-hidden="true" />
-						Classe
+						{lore.entities.class}
 					{:else}
 						<User class="h-3 w-3" aria-hidden="true" />
 						Personnel

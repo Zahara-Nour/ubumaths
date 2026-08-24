@@ -111,7 +111,7 @@
 			<p class="text-sm text-destructive">⚠ {error}</p>
 		{:else if rows.length === 0}
 			<p class="py-8 text-center text-sm text-muted-foreground">
-				Bravo, votre classe ne présente aucune capacité à remédier 🎉
+				Bravo, votre {lore.entities.class} ne présente aucune capacité à remédier 🎉
 			</p>
 		{:else}
 			<ul class="space-y-3">

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * FileDrawer - Sheet overlay for file management
 	 *
@@ -949,7 +950,7 @@
 				<div class="flex-1">
 					<span class="mb-3 block text-sm text-muted-foreground">
 						{#if selectedClassId && !isInSubfolder}
-							Documents de la classe
+							Documents du {lore.entities.class}
 						{:else if isInSubfolder}
 							Documents du dossier
 						{:else}

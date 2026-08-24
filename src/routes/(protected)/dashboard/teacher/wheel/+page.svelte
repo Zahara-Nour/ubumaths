@@ -67,7 +67,7 @@
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold text-foreground">Roue de la Fortune</h1>
 		<p class="mt-2 text-muted-foreground">
-			Sélectionnez aléatoirement un {lore.entities.student} de votre classe
+			Sélectionnez aléatoirement un {lore.entities.student} de votre {lore.entities.class}
 		</p>
 	</div>
 
@@ -79,7 +79,7 @@
 			<!-- Class Selector -->
 			<div>
 				<label for="class-select" class="mb-2 block text-sm font-medium text-foreground">
-					Classe
+					{lore.entities.class}
 				</label>
 				<select
 					id="class-select"
@@ -141,9 +141,9 @@
 		<div class="rounded-lg border border-dashed border-border bg-muted/50 p-12 text-center">
 			<p class="text-lg text-muted-foreground">
 				{#if !selectedClassId}
-					Sélectionnez une classe pour commencer
+					Sélectionnez un {lore.entities.class} pour commencer
 				{:else}
-					Cette classe ne contient aucun {lore.entities.student}
+					Ce {lore.entities.class} ne contient aucun {lore.entities.student}
 				{/if}
 			</p>
 		</div>

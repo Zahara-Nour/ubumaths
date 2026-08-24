@@ -22,6 +22,7 @@
 	```
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import { Input } from '$lib/components/ui/input';
@@ -341,7 +342,7 @@
 		<div class="max-h-[400px] space-y-2 overflow-y-auto rounded-lg border p-2">
 			{#if filteredClasses.length > 0}
 				<p class="px-2 text-xs font-medium text-muted-foreground uppercase">
-					Classes selectionnees
+					{lore.entities.class}s sélectionnés
 				</p>
 
 				{#each filteredClasses as cls (cls.id)}

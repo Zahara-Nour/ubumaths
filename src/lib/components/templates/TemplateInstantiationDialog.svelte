@@ -115,7 +115,8 @@
 				Utiliser le template
 			</Dialog.Title>
 			<Dialog.Description>
-				Créez un nouveau chapitre basé sur ce template. Le contenu sera copié dans la classe
+				Créez un nouveau chapitre basé sur ce template. Le contenu sera copié dans le {lore.entities
+					.class}
 				sélectionnée.
 			</Dialog.Description>
 		</Dialog.Header>
@@ -208,7 +209,7 @@
 					maxlength={100}
 				/>
 				<p class="text-xs text-muted-foreground">
-					Vous pouvez personnaliser le titre pour cette classe
+					Vous pouvez personnaliser le titre pour ce {lore.entities.class}
 				</p>
 			</div>
 

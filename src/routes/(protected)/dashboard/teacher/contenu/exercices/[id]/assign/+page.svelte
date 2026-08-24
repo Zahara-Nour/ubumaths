@@ -277,7 +277,7 @@
 					</Tabs.Trigger>
 					<Tabs.Trigger value="classes">
 						<Users class="mr-2 h-4 w-4" />
-						Classes
+						{lore.entities.class}s
 					</Tabs.Trigger>
 					<Tabs.Trigger value="public">
 						<Globe class="mr-2 h-4 w-4" />
@@ -369,9 +369,9 @@
 				<Tabs.Content value="classes">
 					<Card.Root>
 						<Card.Header>
-							<Card.Title>Assigner à des classes</Card.Title>
+							<Card.Title>Assigner à des {lore.entities.class}s</Card.Title>
 							<Card.Description>
-								Sélectionnez les classes qui auront accès à cet exercice
+								Sélectionnez les {lore.entities.class}s qui auront accès à cet exercice
 							</Card.Description>
 						</Card.Header>
 						<Card.Content>
@@ -379,14 +379,14 @@
 								<!-- Class selection -->
 								<div>
 									<Label class="mb-2 block text-sm font-medium">
-										Classes ({data.classes.length} disponibles)
+										{lore.entities.class}s ({data.classes.length} disponibles)
 									</Label>
 									{#if data.classes.length === 0}
 										<div
 											class="rounded-md border border-dashed p-8 text-center text-muted-foreground"
 										>
 											<Users class="mx-auto mb-2 h-8 w-8 opacity-50" />
-											<p>Aucune classe trouvée</p>
+											<p>Aucun {lore.entities.class} trouvé</p>
 											<p class="mt-1 text-sm">Créez une classe pour commencer</p>
 										</div>
 									{:else}
@@ -508,7 +508,7 @@
 							<Users class="mx-auto mb-3 h-12 w-12 opacity-50" />
 							<p class="font-medium">Aucune assignation</p>
 							<p class="mt-2 text-sm">
-								Sélectionnez des {lore.entities.student}s ou classes pour commencer
+								Sélectionnez des {lore.entities.student}s ou {lore.entities.class}s pour commencer
 							</p>
 						</div>
 					{:else}

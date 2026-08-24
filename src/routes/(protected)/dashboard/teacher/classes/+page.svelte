@@ -494,7 +494,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes Classes - Chiphre</title>
+	<title>Mes {lore.entities.class}s - Chiphre</title>
 </svelte:head>
 
 <div class="space-y-6">
@@ -618,7 +618,7 @@
 						<Card.Content>
 							{#if students.length === 0}
 								<p class="py-4 text-center text-muted-foreground">
-									Aucun {lore.entities.student} dans cette classe
+									Aucun {lore.entities.student} dans ce {lore.entities.class}
 								</p>
 							{:else}
 								<div class="divide-y divide-border">

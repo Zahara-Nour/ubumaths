@@ -340,7 +340,7 @@
 				Partager : {coursework.title}
 			</Dialog.Title>
 			<Dialog.Description>
-				Sélectionnez les classes avec lesquelles partager ce travail
+				Sélectionnez les {lore.entities.class}s avec lesquelles partager ce travail
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -367,7 +367,7 @@
 					<Users class="mb-4 h-12 w-12 text-muted-foreground" />
 					<p class="text-lg font-medium">Aucune classe disponible</p>
 					<p class="mt-2 text-sm text-muted-foreground">
-						Créez une classe pour pouvoir partager du contenu
+						Créez un {lore.entities.class} pour pouvoir partager du contenu
 					</p>
 				</div>
 			{:else}
@@ -375,7 +375,7 @@
 				<div class="space-y-3">
 					<div class="flex items-center justify-between">
 						<Label class="text-base font-semibold">
-							Classes ({classes.length})
+							{lore.entities.class}s ({classes.length})
 						</Label>
 						<Button size="sm" variant="outline" onclick={toggleAll} disabled={submitting}>
 							{allSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
