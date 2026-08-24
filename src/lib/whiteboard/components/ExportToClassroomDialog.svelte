@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * ExportToClassroomDialog - Unified dialog for document creation and Classroom export
 	 *
@@ -448,7 +449,7 @@
 			</Dialog.Title>
 			<Dialog.Description>
 				{#if mode === 'create'}
-					Créez un nouveau document avec un nom basé sur la classe et la date.
+					Créez un nouveau document avec un nom basé sur le {lore.entities.class} et la date.
 				{:else}
 					Publiez ce document dans la rubrique "Notes de cours" d'un cours Google Classroom.
 				{/if}
@@ -467,7 +468,7 @@
 					</p>
 					{#if successClassName}
 						<p class="mt-1 text-sm text-green-600 dark:text-green-400">
-							Classe : {successClassName}
+							{lore.entities.class} : {successClassName}
 						</p>
 					{/if}
 				</div>
@@ -500,9 +501,9 @@
 							</div>
 							<p class="text-xs text-muted-foreground">
 								Pour utiliser cette fonctionnalité, associez d'abord un cours Google Classroom à vos
-								classes dans
+								{lore.entities.class}s dans
 								<a href="/dashboard/teacher/classes" class="text-primary hover:underline">
-									Mes Classes
+									Mes {lore.entities.class}s
 								</a>.
 							</p>
 						</div>

@@ -7,6 +7,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import type { PageData, ActionData } from './$types';
@@ -238,7 +239,7 @@
 			<CardHeader>
 				<CardTitle>Utiliser ce Template</CardTitle>
 				<CardDescription>
-					Créez un chapitre depuis ce template dans une de vos classes
+					Créez un chapitre depuis ce template dans une de vos {lore.entities.class}s
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
@@ -290,7 +291,8 @@
 		<Dialog.Header>
 			<Dialog.Title>Créer un Chapitre</Dialog.Title>
 			<Dialog.Description>
-				Instanciez ce template dans une de vos classes pour créer un nouveau chapitre.
+				Instanciez ce template dans une de vos {lore.entities.class}s pour créer un nouveau
+				chapitre.
 			</Dialog.Description>
 		</Dialog.Header>
 

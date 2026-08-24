@@ -191,7 +191,7 @@
 
 		<h1 class="mb-2 text-3xl font-bold">Attribuer un deck</h1>
 		<p class="text-muted-foreground">
-			Sélectionnez les {lore.entities.student}s ou classes qui recevront ce deck
+			Sélectionnez les {lore.entities.student}s ou {lore.entities.class}s qui recevront ce deck
 		</p>
 	</div>
 
@@ -231,7 +231,7 @@
 			</TabsTrigger>
 			<TabsTrigger value="classes" class="flex-1">
 				<UserCheck class="mr-2 h-4 w-4" />
-				Classes ({data.classes?.length || 0})
+				{lore.entities.class}s ({data.classes?.length || 0})
 			</TabsTrigger>
 		</TabsList>
 
@@ -292,7 +292,7 @@
 			<Card.Root>
 				<Card.Header>
 					<div class="flex items-center justify-between">
-						<Card.Title>Sélectionner des classes</Card.Title>
+						<Card.Title>Sélectionner des {lore.entities.class}s</Card.Title>
 						<Button onclick={selectAllClasses} variant="outline" size="sm">
 							{selectedClasses.length === data.classes.length
 								? 'Tout désélectionner'

@@ -109,14 +109,14 @@
 		<!-- Available Classes -->
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Vos Classes</Card.Title>
-				<Card.Description>Sélectionnez les classes à assigner</Card.Description>
+				<Card.Title>Vos {lore.entities.class}s</Card.Title>
+				<Card.Description>Sélectionnez les {lore.entities.class}s à assigner</Card.Description>
 			</Card.Header>
 			<Card.Content>
 				{#if data.classes.length === 0}
 					<div class="py-12 text-center text-muted-foreground">
 						<Users class="mx-auto mb-3 h-12 w-12 opacity-50" />
-						<p>Aucune classe trouvée</p>
+						<p>Aucun {lore.entities.class} trouvé</p>
 					</div>
 				{:else}
 					<div class="space-y-3">

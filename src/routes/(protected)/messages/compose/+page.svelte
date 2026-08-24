@@ -488,7 +488,7 @@
 											selectedRecipients = [];
 										}}
 									/>
-									<span>Groupe (classe entière)</span>
+									<span>Groupe ({lore.entities.class} entier)</span>
 								</label>
 							</div>
 						</div>
@@ -548,8 +548,8 @@
 								{#if privateMessages.recipients.length === 0}
 									<p class="py-4 text-center text-sm text-muted-foreground">
 										{#if privateMessages.userRole === 'student'}
-											Aucun professeur disponible. Vous devez être inscrit dans une classe pour
-											envoyer des messages.
+											Aucun professeur disponible. Vous devez être inscrit dans un {lore.entities
+												.class} pour envoyer des messages.
 										{:else if privateMessages.userRole === 'teacher'}
 											Aucun {lore.entities.student} disponible. Les {lore.entities.student}s doivent
 											être inscrits dans vos classes.

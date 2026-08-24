@@ -610,7 +610,8 @@
 		<div>
 			<h1 class="text-3xl font-bold">Mes Templates de Messages</h1>
 			<p class="text-muted-foreground">
-				Créez des templates personnalisés pour vos classes et utilisez les templates système
+				Créez des templates personnalisés pour vos {lore.entities.class}s et utilisez les templates
+				système
 			</p>
 		</div>
 		<Button onclick={openCreateDialog} disabled={classes.length === 0}>
@@ -891,7 +892,7 @@
 
 					<!-- Class Selection -->
 					<div class="space-y-2">
-						<Label>Classe *</Label>
+						<Label>{lore.entities.class} *</Label>
 						<MySelect
 							type="single"
 							bind:value={formClassId}

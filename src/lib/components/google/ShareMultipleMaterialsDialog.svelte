@@ -390,7 +390,7 @@
 		<Dialog.Header>
 			<Dialog.Title>{dialogTitle}</Dialog.Title>
 			<Dialog.Description>
-				Sélectionnez les matériels et les classes avec lesquelles les partager
+				Sélectionnez les matériels et les {lore.entities.class}s avec lesquelles les partager
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -460,7 +460,7 @@
 					</div>
 				{:else if classes.length === 0}
 					<div class="py-8 text-center text-muted-foreground">
-						<p>Aucune classe disponible</p>
+						<p>Aucun {lore.entities.class} disponible</p>
 						<p class="text-sm">Créez une classe pour partager du contenu</p>
 					</div>
 				{:else}

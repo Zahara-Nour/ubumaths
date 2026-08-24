@@ -128,8 +128,8 @@
 							.entities.student} doit avoir un problème différent
 					</p>
 					<p>
-						<strong>Par groupe :</strong> Idéal pour les travaux en classe où tous les {lore
-							.entities.student}s travaillent sur le même problème
+						<strong>Par groupe :</strong> Idéal pour les travaux en {lore.entities.class} où tous les
+						{lore.entities.student}s travaillent sur le même problème
 					</p>
 				</div>
 			</Card.Content>

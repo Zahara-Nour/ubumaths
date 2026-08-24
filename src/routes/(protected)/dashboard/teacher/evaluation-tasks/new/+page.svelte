@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Teacher Evaluation Tasks — creation form
 	 * ========================================
@@ -73,7 +74,7 @@
 				</div>
 
 				<div>
-					<Label>Classe (optionnel)</Label>
+					<Label>{lore.entities.class} (optionnel)</Label>
 					<MySelect type="single" bind:value={classId} items={classItems} />
 					<input type="hidden" name="class_id" value={classId ?? ''} />
 				</div>

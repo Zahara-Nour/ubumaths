@@ -203,7 +203,7 @@
 			<Dialog.Title>Retirer le partage - {topicName}</Dialog.Title>
 			<Dialog.Description>
 				Les {materials.length} matériel{materials.length > 1 ? 's' : ''} de ce topic seront retirés des
-				classes sélectionnées
+				{lore.entities.class}s sélectionnés
 			</Dialog.Description>
 		</Dialog.Header>
 

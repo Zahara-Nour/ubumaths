@@ -360,7 +360,9 @@
 	<Dialog.Content class="max-h-[90vh] max-w-3xl overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title>Gérer : {coursework.title}</Dialog.Title>
-			<Dialog.Description>Modifiez les paramètres de partage pour chaque classe</Dialog.Description>
+			<Dialog.Description
+				>Modifiez les paramètres de partage pour chaque {lore.entities.class}</Dialog.Description
+			>
 		</Dialog.Header>
 
 		<div class="space-y-4 py-4">

@@ -76,7 +76,7 @@
 	<div class="mb-4">
 		<Button variant="ghost" size="sm" href="/dashboard/teacher/classes">
 			<ChevronLeft class="mr-1 h-4 w-4" />
-			Retour aux classes
+			Retour aux {lore.entities.class}s
 		</Button>
 	</div>
 

@@ -176,7 +176,7 @@
 	{:else if showSettings}
 		<Card>
 			<CardContent class="py-8 text-center text-muted-foreground">
-				Sélectionnez une classe pour configurer le marketplace
+				Sélectionnez un {lore.entities.class} pour configurer le marketplace
 			</CardContent>
 		</Card>
 	{:else}

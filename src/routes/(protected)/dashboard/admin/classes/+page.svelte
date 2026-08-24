@@ -149,7 +149,7 @@
 			<h1 class="text-3xl font-bold text-foreground">Gestion des Classes</h1>
 			<p class="mt-2 text-muted-foreground">Gérer les classes du système</p>
 		</div>
-		<Button onclick={openCreateModal}>+ Ajouter une Classe</Button>
+		<Button onclick={openCreateModal}>+ Ajouter une {lore.entities.class}</Button>
 	</div>
 
 	<!-- Filters -->
@@ -171,7 +171,7 @@
 			<div class="flex items-center gap-2">
 				<Switch bind:checked={showActiveOnly} id="active-filter" />
 				<label for="active-filter" class="cursor-pointer text-sm font-medium text-foreground">
-					Classes actives uniquement
+					{lore.entities.class}s actifs uniquement
 				</label>
 			</div>
 		</div>
@@ -186,7 +186,7 @@
 						<th
 							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>
-							Nom de la Classe
+							Nom de la {lore.entities.class}
 						</th>
 						<th
 							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
@@ -432,7 +432,7 @@
 							<!-- Class Name -->
 							<div>
 								<label for="name" class="mb-1 block text-sm font-medium text-foreground">
-									Nom de la Classe *
+									Nom de la {lore.entities.class} *
 								</label>
 								<Input
 									type="text"
@@ -536,7 +536,7 @@
 										class="h-4 w-4 rounded border-input"
 									/>
 									<label for="is_active" class="text-sm text-foreground">
-										La classe est active
+										Le {lore.entities.class} est actif
 									</label>
 								</div>
 							{/if}

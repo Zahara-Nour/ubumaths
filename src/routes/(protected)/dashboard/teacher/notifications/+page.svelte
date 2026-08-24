@@ -116,7 +116,8 @@
 			<Card.Header>
 				<Card.Title>Créer une notification</Card.Title>
 				<Card.Description>
-					Envoyez une notification à vos classes ou à des {lore.entities.student}s spécifiques
+					Envoyez une notification à vos {lore.entities.class}s ou à des {lore.entities.student}s
+					spécifiques
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
@@ -182,7 +183,7 @@
 							<div class="flex gap-4">
 								<label class="flex items-center gap-2">
 									<input type="radio" bind:group={targetType} value="classes" class="h-4 w-4" />
-									<span>Classes entières</span>
+									<span>{lore.entities.class}s entiers</span>
 								</label>
 								<label class="flex items-center gap-2">
 									<input type="radio" bind:group={targetType} value="users" class="h-4 w-4" />

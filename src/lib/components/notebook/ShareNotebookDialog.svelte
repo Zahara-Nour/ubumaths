@@ -307,11 +307,8 @@
 				{#if isSharing}
 					Partage en cours...
 				{:else}
-					Partager avec {classes.filter((c) => c.isSelected).length || 0} classe{classes.filter(
-						(c) => c.isSelected
-					).length !== 1
-						? 's'
-						: ''}
+					Partager avec {classes.filter((c) => c.isSelected).length || 0}
+					{lore.entities.class}{classes.filter((c) => c.isSelected).length !== 1 ? 's' : ''}
 				{/if}
 			</Button>
 		</Dialog.Footer>

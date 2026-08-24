@@ -211,7 +211,7 @@
 								</label>
 								<label class="flex items-center gap-2 rounded border p-2 hover:bg-muted">
 									<input type="radio" bind:group={targetType} value="class" class="h-4 w-4" />
-									<span>Par classe</span>
+									<span>Par {lore.entities.class}</span>
 								</label>
 								<label class="flex items-center gap-2 rounded border p-2 hover:bg-muted">
 									<input type="radio" bind:group={targetType} value="users" class="h-4 w-4" />
@@ -254,7 +254,7 @@
 						<!-- Class selection -->
 						{#if targetType === 'class'}
 							<div class="space-y-2">
-								<Label>Sélectionner les classes</Label>
+								<Label>Sélectionner les {lore.entities.class}s</Label>
 								<div class="max-h-48 overflow-y-auto rounded border p-2">
 									<div class="grid gap-2 sm:grid-cols-2">
 										{#each data.classes as cls (cls.id)}

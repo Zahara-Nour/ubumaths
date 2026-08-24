@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { lore } from '$lib/config/lore';
 	interface StatsForCSV {
 		overview: {
 			total_uses: number;
@@ -272,7 +273,7 @@
 												{#if template.scope === 'system'}
 													• Système
 												{:else}
-													• Classe
+													• {lore.entities.class}
 												{/if}
 											</div>
 										</div>
