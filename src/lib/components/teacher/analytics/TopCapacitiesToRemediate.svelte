@@ -96,7 +96,7 @@
 	<Card.Header>
 		<Card.Title>Top capacités à remédier</Card.Title>
 		<Card.Description
-			>Capacités où le pourcentage d'élèves en difficulté est le plus élevé.</Card.Description
+			>Capacités où le pourcentage de {lore.entities.student}s en difficulté est le plus élevé.</Card.Description
 		>
 	</Card.Header>
 

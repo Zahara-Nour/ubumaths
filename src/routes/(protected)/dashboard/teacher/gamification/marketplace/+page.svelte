@@ -200,7 +200,7 @@
 			<CardContent>
 				<div class="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
 					<div>
-						<span class="text-muted-foreground">Nombre d'élèves:</span>
+						<span class="text-muted-foreground">Nombre de {lore.entities.student}s:</span>
 						<span class="ml-2 font-semibold">{formatNumber(data.studentCount)}</span>
 					</div>
 					<div>

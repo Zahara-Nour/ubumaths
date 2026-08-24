@@ -230,7 +230,7 @@
 					<AlertCircle class="mx-auto mb-3 h-12 w-12 opacity-50" />
 					<p>Aucune activité pour le moment</p>
 					<p class="mt-2 text-sm">
-						Les résultats apparaîtront dès qu'un élève aura été assigné ou aura soumis.
+						Les résultats apparaîtront dès qu'un {lore.entities.student} aura été assigné ou aura soumis.
 					</p>
 				</div>
 			{:else}

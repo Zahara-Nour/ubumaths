@@ -5,6 +5,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import {
 		getDifficultyLabel,
@@ -38,7 +39,9 @@
 			<FileCheck class="h-8 w-8 text-primary" />
 			Validations en attente
 		</h1>
-		<p class="mt-2 text-muted-foreground">Réponses d'élèves nécessitant votre validation</p>
+		<p class="mt-2 text-muted-foreground">
+			Réponses de {lore.entities.student}s nécessitant votre validation
+		</p>
 	</div>
 
 	<!-- Stats Card -->
@@ -125,7 +128,7 @@
 						<!-- Student Answer Preview -->
 						<div class="rounded-lg border bg-muted/30 p-4">
 							<p class="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
-								Réponse de l'élève
+								Réponse du {lore.entities.student}
 							</p>
 							<div class="prose prose-sm line-clamp-3 max-w-none dark:prose-invert">
 								{#if attempt.submitted_answer?.value}

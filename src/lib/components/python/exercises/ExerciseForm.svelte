@@ -267,7 +267,7 @@
 		<div>
 			<label class="mb-1 block text-sm font-medium" for="ex-starter">
 				Code initial <span class="text-xs font-normal text-muted-foreground"
-					>(vu par l'élève au démarrage)</span
+					>(vu par le {lore.entities.student} au démarrage)</span
 				>
 			</label>
 			<div class="h-40 overflow-hidden rounded-md border border-border">
@@ -279,9 +279,9 @@
 				</summary>
 				<div class="mt-2 space-y-1 rounded-md border border-border bg-muted/30 p-3">
 					<p>
-						Insère des marqueurs <code>{'{{nom | "valeur"}}'}</code> dans le code initial pour délimiter
-						les seules zones que l'élève pourra modifier (le reste est verrouillé). Les marqueurs tiennent
-						sur une seule ligne, le nom doit être un identifiant Python.
+						Insère des marqueurs <code>{'{{nom | "valeur"}}'}</code> dans le code initial pour
+						délimiter les seules zones que le {lore.entities.student} pourra modifier (le reste est verrouillé).
+						Les marqueurs tiennent sur une seule ligne, le nom doit être un identifiant Python.
 					</p>
 					<p>Exemple&nbsp;:</p>
 					<pre class="rounded bg-background p-2 font-mono text-[11px]">{`while {{cond | "False"}}:
@@ -289,8 +289,8 @@
     n = n + 1`}</pre>
 					<p>
 						À la soumission, le code envoyé à Pyodide est reconstruit en remplaçant chaque marqueur
-						par la valeur saisie par l'élève (ou par la valeur par défaut s'il l'a laissée telle
-						quelle).
+						par la valeur saisie par le {lore.entities.student} (ou par la valeur par défaut s'il l'a
+						laissée telle quelle).
 					</p>
 				</div>
 			</details>
@@ -335,8 +335,8 @@
 				Solution de référence <span class="text-destructive">*</span>
 			</label>
 			<p class="mb-1 text-xs text-muted-foreground">
-				Sert à vérifier que la validation passe avec une solution correcte. Jamais montrée à
-				l'élève.
+				Sert à vérifier que la validation passe avec une solution correcte. Jamais montrée à le {lore
+					.entities.student}.
 			</p>
 			<div class="h-40 overflow-hidden rounded-md border border-border">
 				<PythonEditor bind:value={form.solution_code} {executor} />

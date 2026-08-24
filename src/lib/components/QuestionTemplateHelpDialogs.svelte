@@ -196,8 +196,8 @@
 				<h4 class="mb-2 font-semibold">À quoi sert la consigne ?</h4>
 				<p class="text-sm text-muted-foreground">
 					La consigne d'exercice est une instruction partagée par toutes les variations de la
-					question. Elle permet d'indiquer ce que l'élève doit faire (ex: "Calculer", "Résoudre",
-					"Simplifier").
+					question. Elle permet d'indiquer ce que le {lore.entities.student} doit faire (ex: "Calculer",
+					"Résoudre", "Simplifier").
 				</p>
 			</section>
 
@@ -207,8 +207,8 @@
 					<li class="flex gap-2">
 						<span class="text-primary">•</span>
 						<span
-							><strong>Dans les cartes/flashcards</strong> : La consigne apparaît avant l'énoncé pour
-							guider l'élève</span
+							><strong>Dans les cartes/flashcards</strong> : La consigne apparaît avant l'énoncé
+							pour guider le {lore.entities.student}</span
 						>
 					</li>
 					<li class="flex gap-2">
@@ -484,8 +484,8 @@
 			<section>
 				<h4 class="mb-2 font-semibold">Qu'est-ce que l'énoncé ?</h4>
 				<p class="text-sm text-muted-foreground">
-					L'énoncé est la question posée à l'élève. Il peut contenir du texte, des formules
-					mathématiques (LaTeX), des images, et faire référence aux variables définies.
+					L'énoncé est la question posée au {lore.entities.student}. Il peut contenir du texte, des
+					formules mathématiques (LaTeX), des images, et faire référence aux variables définies.
 				</p>
 			</section>
 
@@ -535,7 +535,7 @@
 					<p class="mb-2 font-semibold">Énoncé :</p>
 					<p class="font-mono text-xs">Calculer $$&#123;@:a&#125; + &#123;@:b&#125;$$</p>
 					<p class="mt-3 text-xs text-muted-foreground">
-						→ Si a=3 et b=5, l'élève verra : "Calculer $$3 + 5$$"
+						→ Si a=3 et b=5, le {lore.entities.student} verra : "Calculer $$3 + 5$$"
 					</p>
 				</div>
 			</section>
@@ -627,7 +627,8 @@
 			<section>
 				<h4 class="mb-2 font-semibold">Qu'est-ce que la correction ?</h4>
 				<p class="text-sm text-muted-foreground">
-					La correction est une explication détaillée de la solution qui sera montrée à l'élève
+					La correction est une explication détaillée de la solution qui sera montrée au {lore
+						.entities.student}
 					après qu'il ait répondu à la question. Elle est <strong>optionnelle</strong>.
 				</p>
 			</section>

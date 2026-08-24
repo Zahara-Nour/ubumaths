@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -91,7 +92,7 @@
 					<!-- Student info -->
 					<div class="rounded-lg bg-blue-50 p-4">
 						<h3 class="mb-3 text-sm font-medium tracking-wide text-muted-foreground uppercase">
-							Informations de l'élève
+							Informations du {lore.entities.student}
 						</h3>
 						<ul class="space-y-2">
 							<li class="flex items-center gap-2">

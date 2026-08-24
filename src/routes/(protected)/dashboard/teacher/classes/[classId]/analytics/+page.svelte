@@ -93,7 +93,7 @@
 				size="sm"
 				onclick={toggleAnonymized}
 				aria-pressed={anonymized}
-				title="Anonymise les noms d'élèves pour la projection"
+				title="Anonymise les noms de {lore.entities.student}s pour la projection"
 			>
 				{#if anonymized}
 					<Eye class="mr-1 h-4 w-4" />

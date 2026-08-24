@@ -154,7 +154,9 @@
 	<!-- Student Answer -->
 	<Card.Root class="mb-6 border-2 border-blue-500">
 		<Card.Header>
-			<Card.Title class="text-blue-700 dark:text-blue-300">Réponse de l'élève</Card.Title>
+			<Card.Title class="text-blue-700 dark:text-blue-300"
+				>Réponse du {lore.entities.student}</Card.Title
+			>
 		</Card.Header>
 		<Card.Content>
 			<div class="rounded-lg bg-blue-50 p-4 dark:bg-blue-950">
@@ -188,9 +190,9 @@
 	<!-- Feedback (Optional) -->
 	<Card.Root class="mb-6">
 		<Card.Header>
-			<Card.Title>Commentaire pour l'élève (optionnel)</Card.Title>
+			<Card.Title>Commentaire pour le {lore.entities.student} (optionnel)</Card.Title>
 			<Card.Description>
-				Ajoutez un commentaire qui sera envoyé à l'élève avec votre validation
+				Ajoutez un commentaire qui sera envoyé au {lore.entities.student} avec votre validation
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
