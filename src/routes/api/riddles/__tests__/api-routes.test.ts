@@ -3,7 +3,7 @@
  * Tests submission endpoint and auto-select endpoint
  */
 
-import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Import the handlers (we'll mock dependencies)
@@ -549,6 +549,13 @@ describe('POST /api/riddles/auto-select-daily', () => {
 		mockSupabase = {
 			from: vi.fn()
 		} as unknown as SupabaseClient;
+	});
+
+	// Clear env vars stubbed inside individual tests even if a test times out
+	// before its inline cleanup runs — otherwise a stubbed API key leaks into the
+	// next test and it wrongly returns 401 (flaky cascade). See issue #43.
+	afterEach(() => {
+		vi.unstubAllEnvs();
 	});
 
 	it('should successfully auto-select riddle', async () => {
