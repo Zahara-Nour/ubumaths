@@ -2,6 +2,142 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.10.5...v0.11.0) (2026-08-24)
+
+### ⚠ BREAKING CHANGES
+
+- **vip-cards:** deploy the code first, then run db:migrate under maintenance
+  (destructive DROP TABLE).
+- **db:** 4 RPC signatures change (param dropped). Forward-incompatible:
+  deploy the code, then run db:migrate promptly (under maintenance).
+- classes.teacher_id and the 5 denormalized class-cluster
+  teacher_id columns are dropped. Destructive migration: deploy the code
+  first, then run db:migrate under maintenance mode.
+
+### ⚡ Performance Improvements
+
+- **build:** skip gzip-size reporting (reportCompressedSize: false) ([3b8f645](https://github.com/Zahara-Nour/ubumaths/commit/3b8f6459c0ae915823e1ecaf23b378100733ce42))
+- conditional svelte-kit sync in check:incremental (skip when unchanged) ([5cb466e](https://github.com/Zahara-Nour/ubumaths/commit/5cb466ee25a4b0cc13faa3683bf30ae10ca5fd87))
+
+### ♻️ Code Refactoring
+
+- **db:** drop redundant p_teacher_id RPC params + dead teacher RPCs ([53c79ef](https://github.com/Zahara-Nour/ubumaths/commit/53c79efd90dcd9c16a48c342fcffb7e8e0491b97))
+- drop class-cluster teacher_id, move ownership to roles (mono-teacher) ([790c3ad](https://github.com/Zahara-Nour/ubumaths/commit/790c3ad71682053274dde7c7b441d901d4d69085))
+- **vip-cards:** drop the teacher override layer (mono-teacher cleanup) ([2b2e90d](https://github.com/Zahara-Nour/ubumaths/commit/2b2e90d439c0cc99a5ce78c9a35f2bf1d7fa8c6c))
+
+### ✨ Features
+
+- **annuaire:** paginate results (prev/next + total) instead of a hard cap ([15f9bab](https://github.com/Zahara-Nour/ubumaths/commit/15f9bab7516db18eee17d0a0f7f766de28fef518))
+- **auth:** admin elevation — password only (mono-admin) ([bb44379](https://github.com/Zahara-Nour/ubumaths/commit/bb44379690d059c7272f9ddd1d71695a36cce760))
+- **auth:** admin elevation UI — elevate page, banner, nav, guard redirect (Phase 4) ([c3aa7b8](https://github.com/Zahara-Nour/ubumaths/commit/c3aa7b84680e60b7a99d3b907df6de91cdd2f3ce))
+- **auth:** extend typed-confirmation to remaining destructive admin ops (Phase 4b) ([3007581](https://github.com/Zahara-Nour/ubumaths/commit/300758188603c812496be316cd17601679b69f4c))
+- **auth:** server-side admin elevation core (step-up, Pattern 2) ([5af69ad](https://github.com/Zahara-Nour/ubumaths/commit/5af69adf193cef26140ccaddfd27d4e3a038c77f))
+- **auth:** typed-confirmation for destructive admin actions (Phase 4b) ([f5b4b5c](https://github.com/Zahara-Nour/ubumaths/commit/f5b4b5c6ffb19011cda43477eec0caaa05433c99))
+- **auth:** wire requireAdmin into admin routes (elevation Phase 3) ([d52462d](https://github.com/Zahara-Nour/ubumaths/commit/d52462dfb4ddeddf5f0e2d9c66587bd0c80b4d77))
+- **curriculum:** activités du cahier de texte + dérivation auto (Phase 5b) ([4333e85](https://github.com/Zahara-Nour/ubumaths/commit/4333e85e0a1d272c90c14e23d06a8d11271d1979))
+- **curriculum:** bloc « Programme travaillé » dans le cahier de texte (Phase 5a) ([adf1e46](https://github.com/Zahara-Nour/ubumaths/commit/adf1e460badef6e157d27dd575eaaef267417c35))
+- **curriculum:** heatmap d'avancement du programme par classe (Phase 4) ([1423067](https://github.com/Zahara-Nour/ubumaths/commit/142306761048ec3c9893404f1e5fe10a60fc4169))
+- **curriculum:** schéma, RLS et API CRUD de l'arborescence programme (Phase 1) ([351b47d](https://github.com/Zahara-Nour/ubumaths/commit/351b47d30456891dfe895477bd8b26fae5db869f))
+- **curriculum:** seed du programme 6e (95 points, BO cycle 3) ([9bd4f04](https://github.com/Zahara-Nour/ubumaths/commit/9bd4f043b195b6dd9f3df6d1660c22b626050e4d))
+- **curriculum:** tagging des exercices avec des points de programme ([9a1fdc3](https://github.com/Zahara-Nour/ubumaths/commit/9a1fdc32afb34fd3d6386340ca082f50fb412850))
+- **curriculum:** tagging exercices + alimentation cahier de texte (Phase 1 brique 2) ([1f74a8c](https://github.com/Zahara-Nour/ubumaths/commit/1f74a8c48ce95131ca454f036d608cf5a94cc57f))
+- **curriculum:** UI d'édition du programme (Phase 3) ([beae594](https://github.com/Zahara-Nour/ubumaths/commit/beae59462d15be1e2ae74fef56a82599b82077e2))
+- **leaderboards:** Migration A — game_scores_unified + game_leaderboard (audite, school-bounded) ([6f1d6f4](https://github.com/Zahara-Nour/ubumaths/commit/6f1d6f4ca5749dd92875bfd7d32e3b28decb7c04))
+- **leaderboards:** Phase 2 serveur (schema/type/load + 7 tests) + Migration A2 demineur scope ([7b17150](https://github.com/Zahara-Nour/ubumaths/commit/7b171500fb1b3cd2568b4a4325b0ede61c5072fd))
+- **leaderboards:** Phase 3 prep — consts client-safe, type demineur, load câble RPC démineur ([c1b1563](https://github.com/Zahara-Nour/ubumaths/commit/c1b1563da31c2b0d7b34b908e27fd6fcc88aef5f))
+- **leaderboards:** Phase 3 UI — page 3 portees + tables (prenom+avatar), retrait public, liens nav ([30e3c5f](https://github.com/Zahara-Nour/ubumaths/commit/30e3c5f132f9083d6b1d3bf471ac4b24d4749e8c))
+- **leaderboards:** Phase 5 — AIPD rev 0.4 + Migration B (DROP public, deferred au release) ([77d9e1e](https://github.com/Zahara-Nour/ubumaths/commit/77d9e1e91c5dc289cd97e9683066c05200a7cd6e))
+- **lore:** actions recherche/filtre/paramètres → lexique (13 composants) ([9453b71](https://github.com/Zahara-Nour/ubumaths/commit/9453b71b54380a61a6c686e0cd9d1792e27bcd5d))
+- **lore:** boutons d'action → lexique (Empocher/Renoncer/Décréter…) sur 80 composants ([d2d04eb](https://github.com/Zahara-Nour/ubumaths/commit/d2d04eb4a0bde5e91ca3d37a547fd79eef501f2b)), closes [#3](https://github.com/Zahara-Nour/ubumaths/issues/3)
+- **lore:** classe → Bataillon (lot script — toasts/labels/erreurs, ~35 strings) ([c1a2dd4](https://github.com/Zahara-Nour/ubumaths/commit/c1a2dd49c2e90642f38c0636b0e85a4c2bc90c27))
+- **lore:** classe → Bataillon (lot string/attr — ~150 libellés, ~65 composants) ([72b8114](https://github.com/Zahara-Nour/ubumaths/commit/72b8114d12c0e192dfa6545fd17c65b6e4e5e299))
+- **lore:** classe → Bataillon (lot texte — ~77 libellés, 40 composants) ([93aeb91](https://github.com/Zahara-Nour/ubumaths/commit/93aeb9170b6cb6860c0833b158aeef0a1ece47c8))
+- **lore:** classe → Bataillon (pilote — 5 composants, gender-flip) ([674f241](https://github.com/Zahara-Nour/ubumaths/commit/674f24144fc8659c118023f45cc9d73e5150c8ad))
+- **lore:** devoir → Corvée Domestique (learning.homework — ~30 libellés) ([1dcb52f](https://github.com/Zahara-Nour/ubumaths/commit/1dcb52fe03dde53cc98bd006283b9c4afb407fd3))
+- **lore:** élève → Galopin (complément texte — 46 libellés, 22 composants) ([9d3658b](https://github.com/Zahara-Nour/ubumaths/commit/9d3658b23472f911e70f4dfa5c281dbd2f4e3c79))
+- **lore:** élève → Galopin (lot élision — 41 libellés, 21 composants) ([cd5e79c](https://github.com/Zahara-Nour/ubumaths/commit/cd5e79cf4761e5842a8f82f30eb1460477590ee5))
+- **lore:** élève → Galopin (lot quoted — strings JS/attributs/ternaires, 40 composants) ([76c638d](https://github.com/Zahara-Nour/ubumaths/commit/76c638d4e0310cb49d1ba5883b94ac66696e4178))
+- **lore:** élève → Galopin (lot texte quotté — 99 libellés, 49 composants) ([a4f1fe5](https://github.com/Zahara-Nour/ubumaths/commit/a4f1fe55bf00fbac77e0152da5c9bd4f9d314e04))
+- **lore:** élève → Galopin (lot texte-pur — 89 libellés, 47 composants) ([65b7fd7](https://github.com/Zahara-Nour/ubumaths/commit/65b7fd71c9937eb978e7d5b46cfc9c63b487aeb1))
+- **lore:** élève → Galopin (pilote espace élève — 3 composants) ([fd0631e](https://github.com/Zahara-Nour/ubumaths/commit/fd0631e335be12c03a6bb00d41de02c8577ca151))
+- **lore:** enseignant/professeur/prof → Capitaine (teacher='Capitaine') ([65f9eb7](https://github.com/Zahara-Nour/ubumaths/commit/65f9eb7cfa9946617b67d8aabeb4be7797e5f7f7))
+- **lore:** examen → Décervelage (learning.exam — 8 libellés, 6 composants) ([49d438c](https://github.com/Zahara-Nour/ubumaths/commit/49d438c52ecb30b44d929e48428e8a2e096da0c0))
+- **lore:** exercice → Corvée (lot script + nettoyage — toasts/labels + stragglers) ([5ce6c86](https://github.com/Zahara-Nour/ubumaths/commit/5ce6c862bcf157019f68bac5a45b7425fb140e5e))
+- **lore:** exercice → Corvée (lot string/attr — ~100 libellés, 48 composants) ([52b56ac](https://github.com/Zahara-Nour/ubumaths/commit/52b56ac465e2673a07dc8a450282a59ea5de51f7))
+- **lore:** exercice → Corvée (lot texte — ~101 libellés, 49 composants) ([dfe5ede](https://github.com/Zahara-Nour/ubumaths/commit/dfe5ede80bf8cf5798c6364453722e147bae2b49))
+- **lore:** lexique ubuesque — fondation lore.ts + nav + ConfirmDialog (pilote) ([915a759](https://github.com/Zahara-Nour/ubumaths/commit/915a7595421bed3c6d0c43df803d1a6a54b558e1))
+- **rgpd:** export Art. 20 inclut l'evaluation referentielle (connaissances + competences) ([2e903ef](https://github.com/Zahara-Nour/ubumaths/commit/2e903ef9c1b116acfab2022ab3501b10c9805fd1))
+- **rls:** unify messaging/moderation on Option B, drop inter-teacher sharing ([e7f394b](https://github.com/Zahara-Nour/ubumaths/commit/e7f394b4d1c38d76984fa94de4ca149616c69505))
+- **single-teacher:** le prof voit tous les eleves — RLS Option B (Lot 3) ([441785c](https://github.com/Zahara-Nour/ubumaths/commit/441785cd871c1261a77d4437fea9221d59b03424))
+- **single-teacher:** miroir serveur — prof voit tout eleve + bucket non assignes (Lot 4) ([e7e8684](https://github.com/Zahara-Nour/ubumaths/commit/e7e868438e2a1c7854f2c4a09e6c9ae0562c8d89))
+- **single-teacher:** social ecole-scope — marketplace + amities (Lot 6) ([2cee068](https://github.com/Zahara-Nour/ubumaths/commit/2cee068b907c18464ce552888bcd8fbcc074a685))
+- **single-teacher:** UI « Non assignés » dans le dashboard prof (Lot 5) ([c769952](https://github.com/Zahara-Nour/ubumaths/commit/c76995213c669d965c4c73fb4c1cc06ab325d0de))
+- **single-teacher:** verrou mono-professeur (Lot 2) ([310ad98](https://github.com/Zahara-Nour/ubumaths/commit/310ad9821d84322e90a891723617be0923a08623))
+
+### 📚 Documentation
+
+- **chiphres:** domaine chiph.re + doc de progression rebranding ([bcff7e8](https://github.com/Zahara-Nour/ubumaths/commit/bcff7e8224673ce837ef33759b3d86fed0b1f9c8))
+- **chiphres:** révision du Compendium — marque Chiphre singulier + refonte lore ([f07f822](https://github.com/Zahara-Nour/ubumaths/commit/f07f8221dad2265054d520a1b71a6ce260648820))
+- **claude:** corrige le bloc runes regle 3 (svelte->ts, prettier le re-cassait) ([14ebda5](https://github.com/Zahara-Nour/ubumaths/commit/14ebda54911e81053ca25fe2acc668e835b50c45))
+- **claude:** reecriture CLAUDE.md (191 l, 0 contradiction, contexte prod + mono-prof) ([966c052](https://github.com/Zahara-Nour/ubumaths/commit/966c052896f539de3d53f0e32a918891a4e90b6b))
+- **claude:** rewrite 6 synthetic reference docs (grounded in current code) ([018e780](https://github.com/Zahara-Nour/ubumaths/commit/018e7802db7037dd46a2475ff55baf428ade94aa))
+- **comments:** fix remaining class-cluster ownership comments (mono-teacher) ([4282944](https://github.com/Zahara-Nour/ubumaths/commit/42829448301956ecc458a5e343b547933add75d2))
+- **comments:** fix stale "teacher owns/of the class" code comments (mono-teacher) ([fd7e05d](https://github.com/Zahara-Nour/ubumaths/commit/fd7e05d19c252e31ef7c3e2f9e9882a6bb9a1fbe))
+- **conformite:** assemble la doc RGPD dans docs/ref/conformite + confronte au code ([726d42e](https://github.com/Zahara-Nour/ubumaths/commit/726d42e43e7c35ab213c71e53ebdc0a1a2dce564))
+- **conformite:** contenu réel — README confrontation + 4 docs récupérés + corrections ([72fb48b](https://github.com/Zahara-Nour/ubumaths/commit/72fb48bbc3079cbc22b574bc914fcb10e2730f91))
+- **db:** chantier baseline migrations local (session séparée) — diagnostic replay cassé ([a4da18d](https://github.com/Zahara-Nour/ubumaths/commit/a4da18d25f47223193067b359143f4264dd179ee))
+- **db:** document the mono-teacher RLS model (admin-inclusive helpers) ([c545206](https://github.com/Zahara-Nour/ubumaths/commit/c5452063ddae7c8b74f578707fce39040f7f3b2f))
+- **db:** journal de finalisation — reconciliation historique EU (baseline applied + 619 reverted, db push verifie) ([e0e743b](https://github.com/Zahara-Nour/ubumaths/commit/e0e743b712076cfe90c665c7535ce714b1e79f14))
+- fix remaining stale class-ownership wording (srs anti-fraud, export guide) ([8448728](https://github.com/Zahara-Nour/ubumaths/commit/8448728f2ae358232e2dd08fdbbc9880cf63a227))
+- **leaderboards:** §6 decisions actees (recos 1-4 + prof hors-classement) ; fonction maj ([38b4c30](https://github.com/Zahara-Nour/ubumaths/commit/38b4c30645fec85319ac2c48f96be893c5d1964d))
+- **leaderboards:** plan d'implementation detaille (5 phases, branche refactor/single-teacher) ([5ad71ff](https://github.com/Zahara-Nour/ubumaths/commit/5ad71ff28cfabac836ab936e53cfeadd614942c0))
+- **leaderboards:** remplace le risque 'variantes' (obsolete) par 'heterogeneite des scores' ([6cc684c](https://github.com/Zahara-Nour/ubumaths/commit/6cc684ca838cac1c0881a778e7db63dbc4647d0b))
+- **leaderboards:** retire la dimension variant (un score par jeu/eleve) + 6->5 questions ([300d578](https://github.com/Zahara-Nour/ubumaths/commit/300d5781fb1ac70c4bddbb91c10f3fae5384a5c0))
+- **leaderboards:** spec Phase 0 — classements jeux 3 niveaux (classe/niveau/ecole) ([4e8cbab](https://github.com/Zahara-Nour/ubumaths/commit/4e8cbab764fdbe3246fd4267197479c9e14b9d59))
+- **legal:** registre des traitements RGPD (art. 30) ([ea7903f](https://github.com/Zahara-Nour/ubumaths/commit/ea7903f2a76c72cb90b1a60b8a556167849cb78e))
+- **legal:** squelette AIPD/DPIA RGPD (art. 35) ([5daac3c](https://github.com/Zahara-Nour/ubumaths/commit/5daac3c1cd379fcb537c5345424ce6b78b688c72))
+- **legal:** tableau cookies conforme à l'inventaire réel + durées de conservation alignées ([9dea03e](https://github.com/Zahara-Nour/ubumaths/commit/9dea03e6cbcb67945e32bae16f5c67f51dbfe41b))
+- **lore:** doc de progression Sprint 1 lexique (crash-recovery) ([4693c2c](https://github.com/Zahara-Nour/ubumaths/commit/4693c2cefaad8f9d951ae6b7355cacd2fd65cdfc))
+- **lore:** Lexique — entrée rôle-prof → Capitaine (cohérence Compendium) ([9af0e25](https://github.com/Zahara-Nour/ubumaths/commit/9af0e25e028620ddf4efc73ebc169af63043450d))
+- **lore:** maj roadmap rebranding — Sprint 1 lexique 🟡 en cours (+ lien doc détaillé) ([f5324f5](https://github.com/Zahara-Nour/ubumaths/commit/f5324f5d1cb9198268c2b7f03f13ff272a27a485)), closes [#65](https://github.com/Zahara-Nour/ubumaths/issues/65)
+- **mathast:** add docs/ref/mathast reference (generated via /doc-ref) ([38d7e93](https://github.com/Zahara-Nour/ubumaths/commit/38d7e934005a8da26c58d1772a18091b90ab4ff7))
+- pre-commit is now light (oxlint+prettier), drop --no-verify guidance ([ec4da87](https://github.com/Zahara-Nour/ubumaths/commit/ec4da8719e03aabb57ce3009b092eeb62d63a6ef))
+- **ref:** align docs with the mono-teacher refactor ([e3edf74](https://github.com/Zahara-Nour/ubumaths/commit/e3edf742c65809e3523c89672e93d55ccec2661a))
+- **single-teacher:** AIPD rev 0.3 + finding tests/seed (Lot 7 closing) ([a986f46](https://github.com/Zahara-Nour/ubumaths/commit/a986f46620b1c44c81134bfaad69999e5be2de3d))
+- **single-teacher:** Lot 6 applique EU + decision differer classement/jeu/ajustements ([30e93c4](https://github.com/Zahara-Nour/ubumaths/commit/30e93c461bd22019defc8fe67ff6a015ce03d2e2))
+- **srs:** fix multi-teacher framing in anti-fraud cross-class section ([248c1e9](https://github.com/Zahara-Nour/ubumaths/commit/248c1e9afe731996e21995cb4bedf7d7b1406556))
+- **test:** suite integration entierement verte (77 -> 285 passants, 0 echec) ([8fa5ab3](https://github.com/Zahara-Nour/ubumaths/commit/8fa5ab3fbb56da7fb9859f09b5ee6dc2b08eae57))
+- **test:** triage MAJ — A+C+B1 (77->184 passants), reste contamination residuelle ([3bc4c88](https://github.com/Zahara-Nour/ubumaths/commit/3bc4c88cbbcee5dcab73af2c2a40fad9e7acdade))
+- **test:** triage MAJ — B2 contamination resolue (77->204), reste problemes par fichier ([f2f121b](https://github.com/Zahara-Nour/ubumaths/commit/f2f121bed314f7b040ca99b3a14627e5efab1191))
+- update icon import snippets to @lucide/svelte ([0239e8a](https://github.com/Zahara-Nour/ubumaths/commit/0239e8a43ff1c07fe9fa063b9ee3b5def1159372))
+- **wip:** drop teacher_vip_card_overrides from kept-columns table (consistency) ([7a37e1e](https://github.com/Zahara-Nour/ubumaths/commit/7a37e1ed109c03b3d3ad6472a580084c12bff7e1))
+- **wip:** mark Cluster 2 §3 (VIP overrides) done via PR [#48](https://github.com/Zahara-Nour/ubumaths/issues/48) ([0e7e791](https://github.com/Zahara-Nour/ubumaths/commit/0e7e79175f8dcf4bc9b86ba5603e1b005df936b1))
+- **wip:** mark Cluster 2 §4 (ClassMembership fields) done via PR [#49](https://github.com/Zahara-Nour/ubumaths/issues/49) ([ed2c0b8](https://github.com/Zahara-Nour/ubumaths/commit/ed2c0b89df7e9122f04658379338095a2bc55cb6))
+- **wip:** phase 0 spec for server-side admin elevation (pattern 2) ([5e688fd](https://github.com/Zahara-Nour/ubumaths/commit/5e688fd5f6b1171f30f960d76383c023940fd881))
+- **wip:** track deferred teacher_id Cluster 2 leftovers (mono-teacher) ([bf2b6fd](https://github.com/Zahara-Nour/ubumaths/commit/bf2b6fd0194f95d7a2bd423ff391320b964cf983)), closes [#42](https://github.com/Zahara-Nour/ubumaths/issues/42) [#44](https://github.com/Zahara-Nour/ubumaths/issues/44)
+- **workflow:** git workflow obligatoire (PR/CI/merge/deploy) + cable CLAUDE.md ([658538a](https://github.com/Zahara-Nour/ubumaths/commit/658538a21cd1361e1071fd95de560a1b7b331523))
+
+### 🐛 Bug Fixes
+
+- **admin:** annuaire (UAI/RNE) search works when a teacher is elevated ([eca8488](https://github.com/Zahara-Nour/ubumaths/commit/eca84881e04fed1d463ef91f11354d628da98bf6))
+- **admin:** show the admin nav rail when a teacher is elevated ([a060688](https://github.com/Zahara-Nour/ubumaths/commit/a060688d9bf159e6154952717b29ddd12c665221))
+- **annuaire:** search all fields (name + commune) + raise limit to 20 ([4117b00](https://github.com/Zahara-Nour/ubumaths/commit/4117b0023de141e6cda3f45f3d29f8cb75de4d42))
+- **ci:** prettier format + unblock-achievements test cherche aussi migrations_archive ([82d5b9e](https://github.com/Zahara-Nour/ubumaths/commit/82d5b9e71e352d44b1fd438fb2cab52a4d69f611))
+- **ci:** prettier format des docs wip (integration-tests-\*) ([32fd621](https://github.com/Zahara-Nour/ubumaths/commit/32fd6213da66b1efad9be8edbae912671c88482b))
+- **constructions:** décodage correct des noms indicés IEP dans le converter v1 ([7787775](https://github.com/Zahara-Nour/ubumaths/commit/7787775b12e53a79c6063b1ac9fc90b527ac2636))
+- **db:** add storage chapter-doc policy rewrites to mono-teacher migration ([06fc65e](https://github.com/Zahara-Nour/ubumaths/commit/06fc65e955372eedf05bad2ff3ff475efec13a95))
+- **db:** log_achievements_to_events reads metadata from achievements catalog ([82e0d51](https://github.com/Zahara-Nour/ubumaths/commit/82e0d511e679c194a99e5a47d896cd09d4a9a4af))
+- **db:** private_messages.sender_id FK SET NULL -> CASCADE (NOT NULL incompatible) ([12b6956](https://github.com/Zahara-Nour/ubumaths/commit/12b695624c1d1043f027999d4c058c810bd93d00))
+- **deps:** bump @sveltejs/adapter-vercel 5 -> 6.3.3 (cache poisoning) ([461b3c1](https://github.com/Zahara-Nour/ubumaths/commit/461b3c17df73bc730a19495dc6441f43f34067ed))
+- **deps:** pin dompurify/form-data/js-yaml patchees (XSS/CRLF/DoS via overrides) ([97fc98f](https://github.com/Zahara-Nour/ubumaths/commit/97fc98fd2d7cbc5b3a94c3e2f7e789bcf74f2cb1))
+- **lint:** retire OTHER_TEACHER_ID inutilise (erreur eslint pre-existante, scenario cross-prof obsolete) ([9c5be41](https://github.com/Zahara-Nour/ubumaths/commit/9c5be413cb1a80bb58a1035bd74c90806ced0063))
+- **lore:** {lore} dans strings JS (single/double-quote) → template literals ([49fdf53](https://github.com/Zahara-Nour/ubumaths/commit/49fdf53ec8ef32278971e59130681203401fd83a))
+- **lore:** filter→Tamiser, confirm→Sceller (évite collision « décret ») ([db4b46a](https://github.com/Zahara-Nour/ubumaths/commit/db4b46a0de67cd7b6df72438f353e3bad8cc4c58))
+- **lore:** lint (imports morts + backticks sans $) + tests browser alignés sur lore ([1461ba1](https://github.com/Zahara-Nour/ubumaths/commit/1461ba19890b65ab813e83a5a07679f45f2e843a))
+- **rgpd:** export Art. 20 repointe sur le schema actuel (donnees pedagogiques vides) ([e6a62cd](https://github.com/Zahara-Nour/ubumaths/commit/e6a62cd05f8fb453321c2c510767263a27456d90))
+- **scripts:** remove dead code flagged by eslint (no-unused-vars) ([15df129](https://github.com/Zahara-Nour/ubumaths/commit/15df129eb4d6864171285d2c129d79496b945f07))
+- **test:** anti-fraud runner — ancre les dates de review sur Date.now() ([b9e243a](https://github.com/Zahara-Nour/ubumaths/commit/b9e243aa5562cf5fb8a1d71af21cb27f418a6319))
+
 ### [0.10.5](https://github.com/Zahara-Nour/ubumaths/compare/v0.10.3...v0.10.5) (2026-06-15)
 
 ### 🐛 Bug Fixes
