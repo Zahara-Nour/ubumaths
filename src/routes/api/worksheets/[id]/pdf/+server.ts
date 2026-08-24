@@ -24,7 +24,7 @@ import type {
 } from '$lib/types/worksheets';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { writeFile, unlink, readFile } from 'fs/promises';
+import { writeFile, readFile, mkdtemp, rm } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
@@ -196,11 +196,12 @@ async function isTypstAvailable(): Promise<boolean> {
  * Creates a temporary .typ file, compiles it to PDF, and returns the result
  */
 async function generatePdfWithTypstCli(typstContent: string): Promise<Uint8Array> {
-	const timestamp = Date.now();
-	const random = Math.random().toString(36).substring(7);
-	const baseFilename = `worksheet_${timestamp}_${random}`;
-	const typFilePath = join(tmpdir(), `${baseFilename}.typ`);
-	const pdfFilePath = join(tmpdir(), `${baseFilename}.pdf`);
+	// mkdtemp atomically creates a uniquely-named directory with 0700 perms, so we
+	// avoid the predictable-filename race a Date.now()/Math.random() name in the
+	// shared tmpdir would allow (CodeQL js/insecure-temporary-file).
+	const workDir = await mkdtemp(join(tmpdir(), 'worksheet-'));
+	const typFilePath = join(workDir, 'worksheet.typ');
+	const pdfFilePath = join(workDir, 'worksheet.pdf');
 
 	try {
 		// Write Typst content to temp file
@@ -214,17 +215,10 @@ async function generatePdfWithTypstCli(typstContent: string): Promise<Uint8Array
 
 		return new Uint8Array(pdfData);
 	} finally {
-		// Cleanup temp files
-		try {
-			await unlink(typFilePath);
-		} catch {
+		// Cleanup the temp dir and everything inside it.
+		await rm(workDir, { recursive: true, force: true }).catch(() => {
 			// Ignore cleanup errors
-		}
-		try {
-			await unlink(pdfFilePath);
-		} catch {
-			// Ignore cleanup errors
-		}
+		});
 	}
 }
 
