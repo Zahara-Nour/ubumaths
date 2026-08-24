@@ -256,7 +256,7 @@
 					{:else if variantMode === 'individual'}
 						Chaque eleve recevra une variante unique
 					{:else if variantMode === 'n_versions'}
-						L'exercice aura un nombre fixe de versions differentes
+						La {lore.learning.exercise} aura un nombre fixe de versions differentes
 					{:else if variantMode === 'group'}
 						Les eleves d'un meme groupe recevront la meme variante
 					{/if}
@@ -268,7 +268,9 @@
 				<div class="space-y-2">
 					<Label for="n-versions">Nombre de versions</Label>
 					<Input id="n-versions" type="number" min={2} max={100} bind:value={nVersions} />
-					<p class="text-xs text-muted-foreground">Nombre de versions differentes de l'exercice</p>
+					<p class="text-xs text-muted-foreground">
+						Nombre de versions differentes de la {lore.learning.exercise}
+					</p>
 				</div>
 			{/if}
 
@@ -289,11 +291,11 @@
 				<Textarea
 					id="custom-instructions"
 					bind:value={customInstructions}
-					placeholder="Instructions supplementaires pour cet exercice..."
+					placeholder="Instructions supplementaires pour cette {lore.learning.exercise}..."
 					rows={3}
 				/>
 				<p class="text-xs text-muted-foreground">
-					Ces instructions s'afficheront avant l'enonce de l'exercice
+					Ces instructions s'afficheront avant l'enonce de la {lore.learning.exercise}
 				</p>
 			</div>
 		</div>

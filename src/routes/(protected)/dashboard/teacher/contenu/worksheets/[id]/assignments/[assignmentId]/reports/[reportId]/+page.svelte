@@ -250,7 +250,7 @@
 			}
 
 			if (status === 'fixed') {
-				toaster.success('Signalement valide et exercice mis a jour');
+				toaster.success(`Signalement valide et ${lore.learning.exercise} mise a jour`);
 			} else {
 				toaster.info('Signalement rejete');
 			}

@@ -183,7 +183,7 @@
 				throw new Error(result.error || 'Échec de publication');
 			}
 
-			toaster.success('Exercice rendu public');
+			toaster.success(`${lore.learning.exercise} rendue publique`);
 
 			// Reset form
 			publicNotes = '';
@@ -467,7 +467,7 @@
 								>
 									<div class="flex items-center gap-2">
 										<Globe class="h-5 w-5" />
-										<p class="font-medium">Cet exercice est déjà public</p>
+										<p class="font-medium">Cette {lore.learning.exercise} est déjà publique</p>
 									</div>
 								</div>
 							{:else}

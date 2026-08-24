@@ -30,13 +30,13 @@
 		type="button"
 		{onclick}
 		class="flex flex-1 items-center gap-3 text-left transition-colors hover:opacity-80"
-		aria-label="Ouvrir l'exercice {index}"
+		aria-label="Ouvrir la {lore.learning.exercise} {index}"
 	>
 		<!-- Essential star indicator -->
 		{#if exercise.is_essential}
 			<Star
 				class="h-5 w-5 flex-shrink-0 fill-amber-500 text-amber-500"
-				aria-label="Exercice indispensable"
+				aria-label="{lore.learning.exercise} indispensable"
 			/>
 		{/if}
 

@@ -283,7 +283,9 @@
 								{:else if sections.length > 0}
 									<!-- Unsectioned exercises header (only if there are sections) -->
 									<div class="mb-4 border-l-4 border-muted pl-4">
-										<h3 class="text-lg font-semibold text-muted-foreground">Autres exercices</h3>
+										<h3 class="text-lg font-semibold text-muted-foreground">
+											Autres {lore.learning.exercise}s
+										</h3>
 									</div>
 								{/if}
 

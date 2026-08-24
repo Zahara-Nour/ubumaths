@@ -145,7 +145,7 @@
 						onValueChange={handleSchemeChange}
 					/>
 					<p class="text-xs text-muted-foreground">
-						En mode Auto, le schema est choisi selon la structure de l'exercice.
+						En mode Auto, le schema est choisi selon la structure de la {lore.learning.exercise}.
 					</p>
 				</div>
 

@@ -147,13 +147,13 @@
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold tracking-tight">Ma progression</h1>
-		<p class="mt-2 text-muted-foreground">Tes exercices Python et où tu en es.</p>
+		<p class="mt-2 text-muted-foreground">Tes {lore.learning.exercise}s Python et où tu en es.</p>
 	</div>
 
 	<div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-4">
 		<Card.Root>
 			<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-				<Card.Title class="text-sm font-medium">Exercices</Card.Title>
+				<Card.Title class="text-sm font-medium">{lore.learning.exercise}s</Card.Title>
 				<BookOpen class="h-4 w-4 text-muted-foreground" />
 			</Card.Header>
 			<Card.Content>
@@ -220,7 +220,8 @@
 		<Card.Header>
 			<Card.Title>Détails</Card.Title>
 			<Card.Description>
-				{sortedRows.length} exercice{sortedRows.length > 1 ? 's' : ''}
+				{sortedRows.length}
+				{lore.learning.exercise}{sortedRows.length > 1 ? 's' : ''}
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
@@ -228,7 +229,7 @@
 				<div class="py-12 text-center text-muted-foreground">
 					<AlertCircle class="mx-auto mb-3 h-12 w-12 opacity-50" />
 					{#if data.rows.length === 0}
-						<p>Tu n'as pas encore travaillé d'exercice Python.</p>
+						<p>Tu n'as pas encore travaillé de {lore.learning.exercise} Python.</p>
 						<p class="mt-2 text-sm">
 							Va sur <a href={resolve('/python-exercises')} class="text-primary hover:underline"
 								>la liste des {lore.learning.exercise}s</a

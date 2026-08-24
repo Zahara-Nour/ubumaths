@@ -66,7 +66,7 @@
 				}
 
 				isCompleted = true;
-				toaster.success('Exercice complété ! 🎉');
+				toaster.success(`${lore.learning.exercise} complétée ! 🎉`);
 			}
 		} catch (err) {
 			toaster.error(formatUserError(err));

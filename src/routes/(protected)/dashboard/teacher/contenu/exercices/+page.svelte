@@ -121,7 +121,7 @@
 		});
 
 		if (response.ok) {
-			toaster.success('Exercice supprimé');
+			toaster.success(`${lore.learning.exercise} supprimée`);
 			// Refresh exercises list via fetch
 			await fetchExercises(pagination.page);
 		} else {
@@ -209,7 +209,7 @@
 			pagination = result.pagination;
 		} catch (err) {
 			console.error('Error fetching exercises:', err);
-			toaster.error('Erreur lors du chargement des exercices');
+			toaster.error(`Erreur lors du chargement des ${lore.learning.exercise}s`);
 		} finally {
 			isLoading = false;
 		}
@@ -629,7 +629,7 @@
 <ConfirmDialog
 	bind:open={deleteDialogOpen}
 	title="Supprimer cette {lore.learning.exercise} ?"
-	description={`Vous allez supprimer l'exercice "${exerciseToDelete?.title || ''}". Cette action est irréversible.`}
+	description={`Vous allez supprimer la {lore.learning.exercise} "${exerciseToDelete?.title || ''}". Cette action est irréversible.`}
 	confirmLabel={lore.actions.delete}
 	variant="destructive"
 	onConfirm={handleDelete}
@@ -640,7 +640,7 @@
 	<Dialog.Content class="max-h-[90vh] max-w-3xl overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title>{previewExercise?.title || 'Prévisualisation'}</Dialog.Title>
-			<Dialog.Description>Prévisualisation de l'exercice</Dialog.Description>
+			<Dialog.Description>Prévisualisation de la {lore.learning.exercise}</Dialog.Description>
 		</Dialog.Header>
 		<div class="py-4">
 			{#if previewExercise}

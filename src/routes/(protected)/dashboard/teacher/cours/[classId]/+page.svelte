@@ -275,7 +275,9 @@
 										? 's'
 										: ''}</span
 								>
-								<span>{chapter.exerciseCount} exercice{chapter.exerciseCount !== 1 ? 's' : ''}</span
+								<span
+									>{chapter.exerciseCount}
+									{lore.learning.exercise}{chapter.exerciseCount !== 1 ? 's' : ''}</span
 								>
 							</div>
 						</div>

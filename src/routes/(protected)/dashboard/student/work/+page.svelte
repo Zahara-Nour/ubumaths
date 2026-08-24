@@ -81,7 +81,7 @@
 					<div class="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
 						<Button href="/dashboard/student/exercises" variant="default">
 							<BookOpen class="mr-2 h-4 w-4" />
-							Pratique d'exercices
+							Pratique de {lore.learning.exercise}s
 						</Button>
 						<Button href="/python-exercises" variant="outline">
 							<Code class="mr-2 h-4 w-4" />

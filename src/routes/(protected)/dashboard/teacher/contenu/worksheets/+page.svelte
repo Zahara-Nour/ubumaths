@@ -122,7 +122,7 @@
 	// Type filter options
 	const typeOptions = [
 		{ value: '', label: 'Tous les types' },
-		{ value: 'worksheet', label: "Feuille d'exercices" },
+		{ value: 'worksheet', label: `Feuille de ${lore.learning.exercise}s` },
 		{ value: 'assessment', label: 'Evaluation' },
 		{ value: 'exam', label: lore.learning.exam },
 		{ value: 'quiz', label: 'Quiz' },

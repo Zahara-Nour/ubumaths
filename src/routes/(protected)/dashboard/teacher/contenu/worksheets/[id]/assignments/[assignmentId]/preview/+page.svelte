@@ -511,7 +511,7 @@
 												href="/dashboard/teacher/contenu/exercices/{exercise.exercise_id}"
 												onclick={(e) => e.stopPropagation()}
 												class="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
-												title="Modifier l'exercice"
+												title="Modifier la {lore.learning.exercise}"
 											>
 												<Pencil class="h-4 w-4" />
 											</a>
@@ -545,7 +545,7 @@
 								{#if exercise.is_essential}
 									<Star
 										class="h-4 w-4 shrink-0 fill-amber-500 text-amber-500"
-										aria-label="Exercice indispensable"
+										aria-label="{lore.learning.exercise} indispensable"
 									/>
 								{/if}
 								<span class="font-medium">
@@ -672,7 +672,7 @@
 				{/if}
 			{:else}
 				<div class="flex flex-1 items-center justify-center p-8">
-					<p class="text-muted-foreground">Exercice non disponible</p>
+					<p class="text-muted-foreground">{lore.learning.exercise} non disponible</p>
 				</div>
 			{/if}
 		</div>
@@ -685,7 +685,7 @@
 					size="sm"
 					onclick={goPrev}
 					disabled={!canGoPrev}
-					aria-label="Exercice precedent"
+					aria-label="{lore.learning.exercise} precedente"
 				>
 					<ChevronLeft class="mr-1 h-4 w-4" />
 					Precedent
@@ -700,7 +700,7 @@
 					size="sm"
 					onclick={goNext}
 					disabled={!canGoNext}
-					aria-label="Exercice suivant"
+					aria-label="{lore.learning.exercise} suivante"
 				>
 					Suivant
 					<ChevronRight class="ml-1 h-4 w-4" />
