@@ -472,7 +472,7 @@
 </script>
 
 <svelte:head>
-	<title>Modifier {data.exercise.title || 'la {lore.learning.exercise}'} - Chiphre</title>
+	<title>Modifier {data.exercise.title || `la ${lore.learning.exercise}`} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto py-6">

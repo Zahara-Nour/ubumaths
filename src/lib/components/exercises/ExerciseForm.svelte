@@ -918,7 +918,7 @@
 				? 'Enregistrement...'
 				: exercise
 					? 'Mettre a jour'
-					: 'Creer la {lore.learning.exercise}'}
+					: `Creer la ${lore.learning.exercise}`}
 		</Button>
 	</div>
 </form>

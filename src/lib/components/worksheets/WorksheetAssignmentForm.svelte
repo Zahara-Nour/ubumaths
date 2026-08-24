@@ -220,7 +220,7 @@
 		<Card.Header>
 			<Card.Title class="flex items-center gap-2">
 				<Users class="h-5 w-5" />
-				{isEditMode ? "Modifier l'assignation" : 'Assigner a des {lore.entities.class}s'}
+				{isEditMode ? "Modifier l'assignation" : `Assigner a des ${lore.entities.class}s`}
 			</Card.Title>
 			<Card.Description>
 				{isEditMode
