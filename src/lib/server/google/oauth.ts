@@ -102,12 +102,21 @@ const googleAPIErrorSchema = z.object({
 function generateCodeVerifier(): string {
 	const length = 64; // Will result in 86 characters when base64 encoded
 	const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+	// Reject bytes in the final partial block of 256 so every character is drawn with
+	// exactly equal probability. A plain `byte % 65` would over-represent the first
+	// (256 mod 65 = 61) characters (CodeQL js/biased-cryptographic-random). The source
+	// is already a CSPRNG (crypto.getRandomValues); this only removes the modulo skew.
+	const cutoff = 256 - (256 % possible.length);
 	let verifier = '';
 
-	// Generate random string
-	const randomBytes = crypto.getRandomValues(new Uint8Array(length));
-	for (let i = 0; i < length; i++) {
-		verifier += possible.charAt(randomBytes[i] % possible.length);
+	while (verifier.length < length) {
+		const randomBytes = crypto.getRandomValues(new Uint8Array(length));
+		for (const byte of randomBytes) {
+			if (verifier.length >= length) break;
+			if (byte < cutoff) {
+				verifier += possible.charAt(byte % possible.length);
+			}
+		}
 	}
 
 	return verifier;
