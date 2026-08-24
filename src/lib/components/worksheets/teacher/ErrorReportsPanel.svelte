@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -212,7 +213,7 @@
 						{#if isWorksheetWide}
 							Aucun signalement pour cette feuille.
 						{:else}
-							Aucun signalement pour ce devoir.
+							Aucun signalement pour cette {lore.learning.homework}.
 						{/if}
 					{:else}
 						Aucun signalement {currentFilter === 'pending'

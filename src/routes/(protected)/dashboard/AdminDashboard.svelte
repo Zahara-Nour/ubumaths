@@ -400,7 +400,7 @@
 						</div>
 						<div class="space-y-3">
 							<div class="flex items-center justify-between">
-								<span class="text-sm text-muted-foreground">Devoirs assignés</span>
+								<span class="text-sm text-muted-foreground">Corvées Domestiques assignées</span>
 								<span class="text-xl font-bold text-foreground">{stats.content.assignments24h}</span
 								>
 							</div>

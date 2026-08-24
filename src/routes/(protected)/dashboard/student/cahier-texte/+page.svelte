@@ -253,7 +253,7 @@
 											{#if entry.homeworkContent}
 												<Badge variant="outline" class="text-orange-600">
 													<ClipboardList class="mr-1 h-3 w-3" />
-													Devoirs
+													Corvées Domestiques
 												</Badge>
 											{/if}
 										</div>
@@ -286,11 +286,15 @@
 							<ClipboardList class="h-5 w-5 text-orange-500" />
 							Travail a faire
 						</Card.Title>
-						<Card.Description>Prochains devoirs et {lore.learning.exercise}s</Card.Description>
+						<Card.Description
+							>Prochaines Corvées Domestiques et {lore.learning.exercise}s</Card.Description
+						>
 					</Card.Header>
 					<Card.Content>
 						{#if data.upcomingHomework.length === 0}
-							<p class="py-4 text-center text-sm text-muted-foreground">Aucun devoir a venir</p>
+							<p class="py-4 text-center text-sm text-muted-foreground">
+								Aucune {lore.learning.homework} a venir
+							</p>
 						{:else}
 							<div class="space-y-3">
 								{#each data.upcomingHomework as homework (homework.id)}

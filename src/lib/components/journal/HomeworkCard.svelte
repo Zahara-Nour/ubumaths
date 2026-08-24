@@ -17,6 +17,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { ClipboardList, Calendar, Clock, AlertCircle } from '@lucide/svelte';
@@ -121,7 +122,7 @@
 			{:else}
 				<Badge variant="secondary" class="gap-1 text-xs">
 					<ClipboardList class="h-3 w-3" />
-					Devoir
+					{lore.learning.homework}
 				</Badge>
 			{/if}
 		</div>

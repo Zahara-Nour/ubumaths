@@ -55,7 +55,7 @@
 		{ value: 'assessment', label: 'Evaluation' },
 		{ value: 'exam', label: lore.learning.exam },
 		{ value: 'quiz', label: 'Quiz' },
-		{ value: 'homework', label: 'Devoirs' }
+		{ value: 'homework', label: 'Corvées Domestiques' }
 	];
 
 	// Numbering style options

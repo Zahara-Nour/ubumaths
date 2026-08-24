@@ -19,6 +19,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { FileText, BookCheck, Globe, Calendar, ClipboardList } from '@lucide/svelte';
@@ -152,7 +153,9 @@
 			<div class="flex items-start gap-2 rounded-md bg-orange-50 p-2 dark:bg-orange-950/20">
 				<ClipboardList class="mt-0.5 h-4 w-4 shrink-0 text-orange-600 dark:text-orange-400" />
 				<div class="flex-1 space-y-1">
-					<p class="text-sm font-medium text-orange-900 dark:text-orange-100">Devoir assigné</p>
+					<p class="text-sm font-medium text-orange-900 dark:text-orange-100">
+						{lore.learning.homework} assignée
+					</p>
 					{#if homeworkDueDateText}
 						<p class="text-xs text-orange-700 dark:text-orange-300">{homeworkDueDateText}</p>
 					{/if}

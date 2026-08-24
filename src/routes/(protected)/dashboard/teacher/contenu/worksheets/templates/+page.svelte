@@ -37,7 +37,7 @@
 		assessment: 'Evaluation',
 		exam: lore.learning.exam,
 		quiz: 'Quiz',
-		homework: 'Devoirs'
+		homework: 'Corvées Domestiques'
 	};
 
 	/**

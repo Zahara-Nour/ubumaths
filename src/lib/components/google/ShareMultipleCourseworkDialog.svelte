@@ -378,7 +378,7 @@
 
 	function formatWorkType(workType: string): string {
 		const types: Record<string, string> = {
-			ASSIGNMENT: 'Devoir',
+			ASSIGNMENT: lore.learning.homework,
 			SHORT_ANSWER_QUESTION: 'Question courte',
 			MULTIPLE_CHOICE_QUESTION: 'QCM',
 			COURSE_WORK_TYPE_UNSPECIFIED: 'Non spécifié'

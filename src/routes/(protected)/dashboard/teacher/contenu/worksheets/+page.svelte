@@ -126,7 +126,7 @@
 		{ value: 'assessment', label: 'Evaluation' },
 		{ value: 'exam', label: lore.learning.exam },
 		{ value: 'quiz', label: 'Quiz' },
-		{ value: 'homework', label: 'Devoirs' }
+		{ value: 'homework', label: 'Corvées Domestiques' }
 	];
 
 	// Type label map
@@ -135,7 +135,7 @@
 		assessment: 'Evaluation',
 		exam: lore.learning.exam,
 		quiz: 'Quiz',
-		homework: 'Devoirs'
+		homework: 'Corvées Domestiques'
 	};
 
 	// Type icon map
