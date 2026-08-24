@@ -311,7 +311,7 @@
 				<!-- Class selection -->
 				<div class="space-y-2">
 					<Label for="classId">
-						Classe<span class="text-destructive">*</span>
+						{lore.entities.class}<span class="text-destructive">*</span>
 					</Label>
 					<MySelect
 						type="single"
@@ -320,7 +320,7 @@
 							value: cls.id,
 							label: `${cls.name} (${cls.grade})`
 						}))}
-						placeholder="Sélectionnez une classe"
+						placeholder="Sélectionnez un {lore.entities.class}"
 					/>
 					<input type="hidden" name="classId" value={selectedClassId} />
 				</div>

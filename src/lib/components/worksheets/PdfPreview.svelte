@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -758,8 +759,8 @@ INFORMATIONS
 								<div class="flex-1">
 									<p class="font-medium">Aucun eleve disponible</p>
 									<p class="mt-1 text-sm text-muted-foreground">
-										La generation en lot necessite qu'une classe avec des eleves soit associee a
-										cette feuille de travail.
+										La generation en lot necessite qu'un {lore.entities.class} avec des eleves soit associee
+										a cette feuille de travail.
 									</p>
 								</div>
 							</div>

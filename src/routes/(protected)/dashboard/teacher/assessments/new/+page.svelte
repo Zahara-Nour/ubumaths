@@ -150,7 +150,7 @@
 		</Button>
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Nouvelle Évaluation</h1>
-			<p class="mt-2 text-muted-foreground">Créez une évaluation pour vos classes</p>
+			<p class="mt-2 text-muted-foreground">Créez une évaluation pour vos {lore.entities.class}s</p>
 		</div>
 	</div>
 

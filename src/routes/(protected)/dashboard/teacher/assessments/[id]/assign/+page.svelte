@@ -125,7 +125,7 @@
 								type="button"
 								class="flex w-full cursor-pointer items-center justify-between rounded-lg border p-4 text-left transition-colors hover:bg-accent/50"
 								onclick={() => toggleClass(classData.id)}
-								aria-label="Sélectionner la classe {classData.name}"
+								aria-label="Sélectionner le {lore.entities.class} {classData.name}"
 							>
 								<div class="flex items-center gap-4">
 									<Checkbox checked={selectedClassIds.includes(classData.id)} />
@@ -173,7 +173,7 @@
 				{#if data.existingAssignments.length === 0}
 					<div class="py-12 text-center text-muted-foreground">
 						<p>Aucune assignation</p>
-						<p class="mt-2 text-sm">Sélectionnez des classes pour commencer</p>
+						<p class="mt-2 text-sm">Sélectionnez des {lore.entities.class}s pour commencer</p>
 					</div>
 				{:else}
 					<div class="space-y-3">
@@ -181,8 +181,8 @@
 							<div class="flex items-center justify-between rounded-lg border bg-accent/20 p-4">
 								<div>
 									{#if assignment.class_id}
-										<div class="font-medium">{assignment.class?.name || 'Classe'}</div>
-										<div class="text-sm text-muted-foreground">Classe entière</div>
+										<div class="font-medium">{assignment.class?.name || lore.entities.class}</div>
+										<div class="text-sm text-muted-foreground">{lore.entities.class} entier</div>
 									{:else if assignment.student_id}
 										<div class="font-medium">
 											{assignment.student?.firstname}

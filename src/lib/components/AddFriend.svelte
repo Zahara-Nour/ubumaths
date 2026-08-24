@@ -176,7 +176,7 @@
 					value={selectedClassId}
 					onValueChange={handleClassChange}
 					items={classSelectItems}
-					placeholder="Sélectionner une classe"
+					placeholder="Sélectionner un {lore.entities.class}"
 					triggerClass="h-9 min-w-48 rounded-md border border-input bg-background px-3 text-sm font-medium"
 				/>
 			</div>

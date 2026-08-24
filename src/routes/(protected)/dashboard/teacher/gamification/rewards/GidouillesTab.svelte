@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Tooltip from '$lib/components/ui/tooltip';
@@ -173,9 +174,12 @@
 		<!-- No classes -->
 		<div class="rounded-lg border border-border bg-card p-12 text-center">
 			<img src={gidouilleImg} alt="Gidouille" class="mx-auto mb-4 h-16 w-16 opacity-50" />
-			<h2 class="mb-2 text-xl font-semibold text-foreground">Aucune classe trouvee</h2>
+			<h2 class="mb-2 text-xl font-semibold text-foreground">
+				Aucun {lore.entities.class} trouvee
+			</h2>
 			<p class="text-muted-foreground">
-				Vous devez d'abord creer des classes pour gerer les recompenses de vos eleves.
+				Vous devez d'abord creer des {lore.entities.class}s pour gerer les recompenses de vos
+				eleves.
 			</p>
 		</div>
 	{:else}
@@ -289,7 +293,7 @@
 							</div>
 						{:else if currentStudents.length === 0}
 							<div class="rounded-lg border border-border bg-card p-12 text-center">
-								<p class="text-lg font-medium">Aucun eleve dans cette classe</p>
+								<p class="text-lg font-medium">Aucun eleve dans ce {lore.entities.class}</p>
 								<p class="mt-2 text-sm text-muted-foreground">
 									Ajoutez des eleves pour commencer a gerer leurs recompenses
 								</p>

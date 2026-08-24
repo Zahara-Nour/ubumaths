@@ -188,14 +188,16 @@
 
 			<!-- Class selection -->
 			<div class="space-y-2">
-				<Label for="class-select">Classe cible *</Label>
+				<Label for="class-select">{lore.entities.class} cible *</Label>
 				<MySelect
 					id="class-select"
 					bind:value={selectedClassId}
 					items={classItems}
-					placeholder="Sélectionner une classe"
+					placeholder="Sélectionner un {lore.entities.class}"
 				/>
-				<p class="text-xs text-muted-foreground">Le chapitre sera créé dans cette classe</p>
+				<p class="text-xs text-muted-foreground">
+					Le chapitre sera créé dans ce {lore.entities.class}
+				</p>
 			</div>
 
 			<!-- Title -->

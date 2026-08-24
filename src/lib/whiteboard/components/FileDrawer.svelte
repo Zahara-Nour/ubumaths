@@ -888,20 +888,20 @@
 				<!-- Class Selector -->
 				{#if classes.length > 0}
 					<div class="mb-4 flex items-center gap-3">
-						<Label class="shrink-0 text-sm text-muted-foreground">Classe</Label>
+						<Label class="shrink-0 text-sm text-muted-foreground">{lore.entities.class}</Label>
 						<div class="flex-1">
 							<MySelect
 								type="single"
 								value={selectedClassId ?? ''}
 								items={classItems}
 								onValueChange={handleClassChange}
-								placeholder="Toutes les classes"
+								placeholder="Tous les {lore.entities.class}s"
 							/>
 						</div>
 						{#if wasAutoDetected && selectedClassId}
 							<div
 								class="flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs text-primary"
-								title="Classe auto-détectée selon l'horaire"
+								title="{lore.entities.class} auto-détecté selon l'horaire"
 							>
 								<Sparkles class="h-3 w-3" />
 								<span>Auto</span>

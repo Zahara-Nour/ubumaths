@@ -499,7 +499,7 @@
 					{:else if classes.length === 0}
 						<div class="py-8 text-center text-muted-foreground">
 							<p>Aucun {lore.entities.class} disponible</p>
-							<p class="text-sm">Créez une classe pour partager du contenu</p>
+							<p class="text-sm">Créez un {lore.entities.class} pour partager du contenu</p>
 						</div>
 					{:else}
 						<div class="flex items-center justify-between">

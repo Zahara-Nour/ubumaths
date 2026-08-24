@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Teacher Class Journal (Cahier de Texte) Main Page
 	 * ==================================================
@@ -144,11 +145,13 @@
 		<Card.Root>
 			<Card.Content class="py-16 text-center">
 				<GraduationCap class="mx-auto mb-4 h-16 w-16 text-muted-foreground/50" />
-				<h2 class="text-xl font-semibold">Aucune classe</h2>
+				<h2 class="text-xl font-semibold">Aucun {lore.entities.class}</h2>
 				<p class="mt-2 text-muted-foreground">
-					Vous devez d'abord creer une classe pour utiliser le cahier de texte.
+					Vous devez d'abord creer un {lore.entities.class} pour utiliser le cahier de texte.
 				</p>
-				<Button href="/dashboard/teacher/classes" class="mt-4">Gerer les classes</Button>
+				<Button href="/dashboard/teacher/classes" class="mt-4"
+					>Gerer les {lore.entities.class}s</Button
+				>
 			</Card.Content>
 		</Card.Root>
 	{:else}
@@ -156,13 +159,13 @@
 		<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
 			<!-- Class selector -->
 			<div class="flex items-center gap-3">
-				<span class="text-sm font-medium text-muted-foreground">Classe :</span>
+				<span class="text-sm font-medium text-muted-foreground">{lore.entities.class} :</span>
 				<MySelect
 					type="single"
 					value={data.selectedClassId || ''}
 					items={classItems}
 					onValueChange={handleClassChange}
-					placeholder="Selectionner une classe"
+					placeholder="Selectionner un {lore.entities.class}"
 				/>
 			</div>
 
@@ -196,7 +199,9 @@
 			<Card.Root>
 				<Card.Content class="py-12 text-center">
 					<Calendar class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-					<p class="text-muted-foreground">Selectionnez une classe pour voir le cahier de texte</p>
+					<p class="text-muted-foreground">
+						Selectionnez un {lore.entities.class} pour voir le cahier de texte
+					</p>
 				</Card.Content>
 			</Card.Root>
 		{/if}

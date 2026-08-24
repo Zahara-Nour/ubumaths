@@ -220,28 +220,28 @@
 		<Card.Header>
 			<Card.Title class="flex items-center gap-2">
 				<Users class="h-5 w-5" />
-				{isEditMode ? "Modifier l'assignation" : 'Assigner a des classes'}
+				{isEditMode ? "Modifier l'assignation" : 'Assigner a des {lore.entities.class}s'}
 			</Card.Title>
 			<Card.Description>
 				{isEditMode
 					? `Modifier l'assignation de "${worksheetTitle}"`
-					: `Assigner "${worksheetTitle}" a une ou plusieurs classes`}
+					: `Assigner "${worksheetTitle}" a un ou plusieurs {lore.entities.class}s`}
 			</Card.Description>
 		</Card.Header>
 		<Card.Content class="space-y-6">
 			<!-- Multi-class selection -->
 			<div class="space-y-2">
-				<Label for="class-select">Classes *</Label>
+				<Label for="class-select">{lore.entities.class}s *</Label>
 				{#if classes.length === 0}
 					<p class="text-sm text-muted-foreground">
-						Aucune classe disponible. Creez d'abord une classe.
+						Aucun {lore.entities.class} disponible. Creez d'abord un {lore.entities.class}.
 					</p>
 				{:else}
 					<MySelect
 						type="multiple"
 						bind:value={selectedClassIds}
 						items={classItems}
-						placeholder="Selectionnez une ou plusieurs classes"
+						placeholder="Selectionnez un ou plusieurs {lore.entities.class}s"
 					/>
 					<p class="text-xs text-muted-foreground">
 						{selectedClassIds.length} classe(s) selectionnee(s)
@@ -261,7 +261,9 @@
 
 			<!-- Validation message -->
 			{#if selectedClassIds.length === 0 && selectedStudentIds.length === 0}
-				<p class="text-sm text-destructive">Selectionnez au moins une classe ou un eleve.</p>
+				<p class="text-sm text-destructive">
+					Selectionnez au moins un {lore.entities.class} ou un eleve.
+				</p>
 			{/if}
 
 			<!-- Optional title override -->

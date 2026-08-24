@@ -86,7 +86,7 @@
 					bind:value={selectedClassId}
 					class="w-full rounded-md border border-input bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 				>
-					<option value="">Sélectionner une classe</option>
+					<option value="">Sélectionner un {lore.entities.class}</option>
 					{#each data.classes as classItem (classItem.id)}
 						<option value={classItem.id}>
 							{classItem.name} ({classItem.students.length}
@@ -121,7 +121,8 @@
 			<div class="mt-4 rounded-md bg-muted p-3">
 				<p class="text-sm text-muted-foreground">
 					<span class="font-semibold">{selectedStudents().length}</span>
-					{lore.entities.student}{selectedStudents().length > 1 ? 's' : ''} dans cette classe
+					{lore.entities.student}{selectedStudents().length > 1 ? 's' : ''} dans ce {lore.entities
+						.class}
 				</p>
 			</div>
 		{/if}

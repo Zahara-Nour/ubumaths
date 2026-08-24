@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { navigating } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
@@ -215,7 +216,7 @@
 					<div class="grid gap-4 md:grid-cols-3">
 						<!-- Class filter -->
 						<div class="space-y-2">
-							<span class="text-sm font-medium">Classe</span>
+							<span class="text-sm font-medium">{lore.entities.class}</span>
 							<MySelect
 								type="single"
 								bind:value={selectedClass}

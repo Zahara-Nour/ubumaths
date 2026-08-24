@@ -216,8 +216,8 @@
 				<ShieldCheck class="mx-auto h-12 w-12 text-muted-foreground" />
 				<h3 class="mt-4 text-lg font-semibold">Aucun {lore.entities.student} concerné</h3>
 				<p class="mt-2 text-muted-foreground">
-					Vous n'avez pas de {lore.entities.student}s nécessitant un consentement parental (classes
-					6ème à 2nde).
+					Vous n'avez pas de {lore.entities.student}s nécessitant un consentement parental ({lore
+						.entities.class}s 6ème à 2nde).
 				</p>
 			</Card.Content>
 		</Card.Root>

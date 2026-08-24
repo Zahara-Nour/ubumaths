@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -276,7 +277,7 @@
 								<MyCheckbox bind:checked={showTitle} label="Afficher le titre" />
 								<MyCheckbox bind:checked={showDate} label="Afficher la date" />
 								<MyCheckbox bind:checked={showStudentName} label="Nom de l'eleve" />
-								<MyCheckbox bind:checked={showClass} label="Classe" />
+								<MyCheckbox bind:checked={showClass} label={lore.entities.class} />
 								<MyCheckbox bind:checked={showPoints} label="Points par exercice" />
 							</div>
 						</div>

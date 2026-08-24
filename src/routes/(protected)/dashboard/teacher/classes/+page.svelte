@@ -500,8 +500,10 @@
 <div class="space-y-6">
 	<!-- Page Header -->
 	<div>
-		<h1 class="text-3xl font-bold text-foreground">Mes Classes</h1>
-		<p class="mt-2 text-muted-foreground">Gérez vos classes et leurs emplois du temps</p>
+		<h1 class="text-3xl font-bold text-foreground">Mes {lore.entities.class}s</h1>
+		<p class="mt-2 text-muted-foreground">
+			Gérez vos {lore.entities.class}s et leurs emplois du temps
+		</p>
 	</div>
 
 	<!-- Warning if no timetable configured -->
@@ -538,7 +540,8 @@
 									<p class="mt-1 text-sm text-muted-foreground">{classItem.description}</p>
 								{/if}
 								<p class="mt-2 text-sm text-muted-foreground">
-									Code de classe: <span class="font-mono font-semibold">{classItem.join_code}</span>
+									Code de {lore.entities.class}:
+									<span class="font-mono font-semibold">{classItem.join_code}</span>
 								</p>
 							</div>
 							<Button variant="outline" href="/dashboard/teacher/cahier-texte?class={classItem.id}">
@@ -611,8 +614,8 @@
 								<Badge variant="secondary">{students.length}</Badge>
 							</Card.Title>
 							<Card.Description>
-								Liste des {lore.entities.student}s de cette classe avec leur statut d'email de
-								bienvenue
+								Liste des {lore.entities.student}s de ce {lore.entities.class} avec leur statut d'email
+								de bienvenue
 							</Card.Description>
 						</Card.Header>
 						<Card.Content>
@@ -688,7 +691,7 @@
 	{:else}
 		<!-- Empty State -->
 		<div class="rounded-lg border border-border bg-card p-12 text-center shadow-sm">
-			<h3 class="mb-2 text-lg font-semibold text-foreground">Aucune classe</h3>
+			<h3 class="mb-2 text-lg font-semibold text-foreground">Aucun {lore.entities.class}</h3>
 			<p class="text-muted-foreground">
 				Vous n'avez pas encore de classes. Contactez un administrateur pour créer une classe.
 			</p>

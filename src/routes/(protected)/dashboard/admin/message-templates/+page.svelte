@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -411,7 +412,7 @@
 	<div class="mb-6 flex items-center justify-between">
 		<div>
 			<h1 class="text-3xl font-bold">Templates de Messages</h1>
-			<p class="text-muted-foreground">Gérez les templates système et de classe</p>
+			<p class="text-muted-foreground">Gérez les templates système et de {lore.entities.class}</p>
 		</div>
 		<div class="flex gap-2">
 			<Button
@@ -576,7 +577,7 @@
 								variant={template.scope === 'system' ? 'default' : 'secondary'}
 								class="text-xs"
 							>
-								{template.scope === 'system' ? 'Système' : 'Classe'}
+								{template.scope === 'system' ? 'Système' : lore.entities.class}
 							</Badge>
 						</div>
 						{#if template.tags && template.tags.length > 0}

@@ -450,7 +450,7 @@
 
 			<!-- Class Selection Section -->
 			<div class="space-y-3">
-				<Label class="text-base font-semibold">Classes destinataires</Label>
+				<Label class="text-base font-semibold">{lore.entities.class}s destinataires</Label>
 
 				{#if fetchingClasses}
 					<div class="space-y-3">
@@ -461,7 +461,7 @@
 				{:else if classes.length === 0}
 					<div class="py-8 text-center text-muted-foreground">
 						<p>Aucun {lore.entities.class} disponible</p>
-						<p class="text-sm">Créez une classe pour partager du contenu</p>
+						<p class="text-sm">Créez un {lore.entities.class} pour partager du contenu</p>
 					</div>
 				{:else}
 					<div class="space-y-3">
@@ -607,7 +607,8 @@
 				{/if}
 
 				<p class="text-sm text-muted-foreground">
-					{selectedClassCount} classe{selectedClassCount > 1 ? 's' : ''} sélectionnée{selectedClassCount >
+					{selectedClassCount}
+					{lore.entities.class}{selectedClassCount > 1 ? 's' : ''} sélectionnée{selectedClassCount >
 					1
 						? 's'
 						: ''}

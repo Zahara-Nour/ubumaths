@@ -307,7 +307,9 @@
 										>
 											<Users class="mx-auto mb-2 h-8 w-8 opacity-50" />
 											<p>Aucun {lore.entities.student} trouvé</p>
-											<p class="mt-1 text-sm">Ajoutez des {lore.entities.student}s à vos classes</p>
+											<p class="mt-1 text-sm">
+												Ajoutez des {lore.entities.student}s à vos {lore.entities.class}s
+											</p>
 										</div>
 									{:else}
 										<div class="max-h-60 overflow-y-auto rounded-md border">
@@ -387,7 +389,7 @@
 										>
 											<Users class="mx-auto mb-2 h-8 w-8 opacity-50" />
 											<p>Aucun {lore.entities.class} trouvé</p>
-											<p class="mt-1 text-sm">Créez une classe pour commencer</p>
+											<p class="mt-1 text-sm">Créez un {lore.entities.class} pour commencer</p>
 										</div>
 									{:else}
 										<div class="space-y-2">
@@ -396,7 +398,7 @@
 													type="button"
 													class="flex w-full cursor-pointer items-center gap-3 rounded-lg border p-3 text-left transition-colors hover:bg-accent"
 													onclick={() => toggleClass(classItem.id)}
-													aria-label="Sélectionner la classe {classItem.name}"
+													aria-label="Sélectionner le {lore.entities.class} {classItem.name}"
 												>
 													<Checkbox checked={selectedClasses.includes(classItem.id)} />
 													<div class="flex-1">
@@ -527,7 +529,7 @@
 													{assignment.assigned_to_type === 'student'
 														? lore.entities.student
 														: assignment.assigned_to_type === 'class'
-															? 'Classe'
+															? lore.entities.class
 															: 'Public'}
 												</Badge>
 												{#if assignment.optional_deadline}

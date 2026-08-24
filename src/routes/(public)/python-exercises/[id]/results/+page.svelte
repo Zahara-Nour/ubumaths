@@ -204,7 +204,7 @@
 	<!-- Class filter -->
 	{#if data.teacherClasses.length > 1}
 		<div class="mb-4 flex items-center gap-2">
-			<span class="text-sm font-medium text-muted-foreground">Classe :</span>
+			<span class="text-sm font-medium text-muted-foreground">{lore.entities.class} :</span>
 			<MySelect
 				type="single"
 				bind:value={selectedClassId}

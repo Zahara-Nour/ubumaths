@@ -249,8 +249,8 @@
 				</div>
 			{:else if classes.length === 0}
 				<div class="py-8 text-center text-muted-foreground">
-					<p class="mb-2">Aucune classe trouvée</p>
-					<p class="text-sm">Créez une classe pour partager vos notebooks</p>
+					<p class="mb-2">Aucun {lore.entities.class} trouvé</p>
+					<p class="text-sm">Créez un {lore.entities.class} pour partager vos notebooks</p>
 				</div>
 			{:else}
 				<div class="divide-y divide-border">

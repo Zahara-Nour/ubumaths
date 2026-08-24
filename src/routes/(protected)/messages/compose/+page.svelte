@@ -497,7 +497,7 @@
 					<!-- Class selector (for group messages) -->
 					{#if isGroupMessage}
 						<div class="space-y-2">
-							<Label for="class-select">Classe</Label>
+							<Label for="class-select">{lore.entities.class}</Label>
 							<MySelect
 								type="single"
 								bind:value={selectedClassId}

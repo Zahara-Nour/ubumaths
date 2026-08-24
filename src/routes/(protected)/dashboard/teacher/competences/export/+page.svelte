@@ -107,7 +107,7 @@
 	{#if data.classes.length === 0}
 		<Card.Root>
 			<Card.Content class="py-12 text-center text-muted-foreground">
-				Vous n'avez aucune classe pour le moment.
+				Vous n'avez aucun {lore.entities.class} pour le moment.
 			</Card.Content>
 		</Card.Root>
 	{:else}
@@ -119,13 +119,13 @@
 				</Card.Header>
 				<Card.Content class="space-y-4">
 					<div class="space-y-1.5">
-						<span class="text-sm font-medium">Classe</span>
+						<span class="text-sm font-medium">{lore.entities.class}</span>
 						<MySelect
 							type="single"
 							value={selectedClassId ?? ''}
 							items={classItems}
 							onValueChange={handleClassChange}
-							placeholder="Choisir une classe"
+							placeholder="Choisir un {lore.entities.class}"
 						/>
 					</div>
 

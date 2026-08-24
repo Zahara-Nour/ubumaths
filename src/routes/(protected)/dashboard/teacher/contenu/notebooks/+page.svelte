@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -87,7 +88,8 @@
 		<div>
 			<h2 class="text-xl font-semibold">Mes notebooks Python</h2>
 			<p class="text-sm text-muted-foreground">
-				Notebooks que vous avez créés. Partagez-les avec une classe depuis la page d'un notebook.
+				Notebooks que vous avez créés. Partagez-les avec un {lore.entities.class} depuis la page d'un
+				notebook.
 			</p>
 		</div>
 		<div class="flex items-center gap-2">

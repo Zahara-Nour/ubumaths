@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Student Class Journal (Cahier de Texte) Page
 	 * =============================================
@@ -174,8 +175,10 @@
 		<Card.Root>
 			<Card.Content class="py-16 text-center">
 				<BookOpen class="mx-auto mb-4 h-16 w-16 text-muted-foreground/50" />
-				<h2 class="text-xl font-semibold">Aucune classe</h2>
-				<p class="mt-2 text-muted-foreground">Tu n'es inscrit dans aucune classe pour le moment.</p>
+				<h2 class="text-xl font-semibold">Aucun {lore.entities.class}</h2>
+				<p class="mt-2 text-muted-foreground">
+					Tu n'es inscrit dans aucun {lore.entities.class} pour le moment.
+				</p>
 			</Card.Content>
 		</Card.Root>
 	{:else}
@@ -187,13 +190,13 @@
 					<!-- Class selector (only if multiple classes) -->
 					{#if hasMultipleClasses}
 						<div class="flex items-center gap-3">
-							<span class="text-sm font-medium text-muted-foreground">Classe :</span>
+							<span class="text-sm font-medium text-muted-foreground">{lore.entities.class} :</span>
 							<MySelect
 								type="single"
 								value={data.selectedClassId || ''}
 								items={classItems}
 								onValueChange={handleClassChange}
-								placeholder="Toutes les classes"
+								placeholder="Tous les {lore.entities.class}s"
 							/>
 						</div>
 					{/if}

@@ -109,7 +109,7 @@
 					>
 						<option value="on_demand"> À la demande (pratique illimitée) </option>
 						<option value="per_student"> Par {lore.entities.student} (devoir personnalisé) </option>
-						<option value="per_group"> Par groupe (travail de classe) </option>
+						<option value="per_group"> Par groupe (travail de {lore.entities.class}) </option>
 					</select>
 				</div>
 
