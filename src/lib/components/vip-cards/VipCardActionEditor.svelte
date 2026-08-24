@@ -547,7 +547,8 @@
 				class="w-32"
 			/>
 			<p class="text-sm text-muted-foreground">
-				Ajoute {addGidouillesAmount} gidouille{addGidouillesAmount > 1 ? 's' : ''} au solde de l'élève.
+				Ajoute {addGidouillesAmount} gidouille{addGidouillesAmount > 1 ? 's' : ''} au solde du {lore
+					.entities.student}.
 			</p>
 		</div>
 	{:else if actionType === 'exchange_cards'}
@@ -574,7 +575,7 @@
 				<div class="space-y-3">
 					<MyCheckbox
 						bind:checked={replaceRandomFlexible}
-						label="Nombre flexible (l'élève choisit entre 1 et 10 cartes)"
+						label="Nombre flexible (le {lore.entities.student} choisit entre 1 et 10 cartes)"
 					/>
 					{#if !replaceRandomFlexible}
 						<div class="space-y-2">
@@ -749,8 +750,8 @@
 	{:else if actionType === 'hint'}
 		<div class="rounded-md bg-muted p-3">
 			<p class="text-sm text-muted-foreground">
-				Donne un indice à l'élève pendant une partie (ex : révèle une case sûre au démineur). Le jeu
-				concerné est déterminé par le contexte d'activation.
+				Donne un indice au {lore.entities.student} pendant une partie (ex : révèle une case sûre au démineur).
+				Le jeu concerné est déterminé par le contexte d'activation.
 			</p>
 		</div>
 	{:else if actionType === 'undo'}

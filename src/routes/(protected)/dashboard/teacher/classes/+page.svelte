@@ -726,7 +726,7 @@
 								variant="ghost"
 								size="sm"
 								href="/dashboard/teacher/students/{student.id}/journal"
-								title="Voir la fiche de l'élève"
+								title="Voir la fiche du {lore.entities.student}"
 							>
 								<ScrollText class="h-4 w-4" />
 							</Button>

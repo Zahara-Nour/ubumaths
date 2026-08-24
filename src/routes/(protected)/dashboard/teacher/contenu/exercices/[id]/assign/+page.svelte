@@ -316,7 +316,7 @@
 													type="button"
 													class="flex w-full cursor-pointer items-center gap-3 border-b p-3 text-left transition-colors last:border-b-0 hover:bg-accent"
 													onclick={() => toggleStudent(student.id)}
-													aria-label="Sélectionner l'élève {student.full_name}"
+													aria-label="Sélectionner le {lore.entities.student} {student.full_name}"
 												>
 													<Checkbox checked={selectedStudents.includes(student.id)} />
 													<div class="flex-1">

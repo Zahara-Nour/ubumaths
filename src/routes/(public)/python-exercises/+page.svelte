@@ -30,14 +30,15 @@
 			<FileCode2 class="mb-2 h-6 w-6 text-primary" />
 			<h2 class="mb-1 font-medium">Comparaison de sortie</h2>
 			<p class="text-sm text-muted-foreground">
-				Le code de l'élève doit produire un texte attendu sur stdout.
+				Le code du {lore.entities.student} doit produire un texte attendu sur stdout.
 			</p>
 		</div>
 		<div class="rounded-lg border border-border bg-card p-4">
 			<FileCode2 class="mb-2 h-6 w-6 text-primary" />
 			<h2 class="mb-1 font-medium">Test de fonction</h2>
 			<p class="text-sm text-muted-foreground">
-				Tu fournis des cas de test ; la fonction de l'élève doit retourner les bonnes valeurs.
+				Tu fournis des cas de test ; la fonction du {lore.entities.student} doit retourner les bonnes
+				valeurs.
 			</p>
 		</div>
 		<div class="rounded-lg border border-border bg-card p-4">

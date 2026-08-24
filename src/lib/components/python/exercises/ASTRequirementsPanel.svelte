@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Editor for the `ast_requirements` array of a python exercise validation
 	 * config. Receives `requirements` as a regular prop and notifies the
@@ -137,7 +138,7 @@
 				{/if}
 				<div>
 					<label class="mb-1 block text-xs text-muted-foreground" for="ast-msg-{i}">
-						Message d'erreur affiché à l'élève
+						Message d'erreur affiché au {lore.entities.student}
 					</label>
 					<Input
 						id="ast-msg-{i}"

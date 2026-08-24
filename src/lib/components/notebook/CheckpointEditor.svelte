@@ -248,7 +248,8 @@
 			<Textarea
 				id="checkpoint-hint-{cell.id}"
 				rows={2}
-				placeholder="ex : pense à la formule moyenne = somme / nombre. Affiché à l'élève après 2 échecs."
+				placeholder="ex : pense à la formule moyenne = somme / nombre. Affiché au {lore.entities
+					.student} après 2 échecs."
 				value={cell.hint ?? ''}
 				oninput={(e) => updateHint((e.target as HTMLTextAreaElement).value)}
 			/>

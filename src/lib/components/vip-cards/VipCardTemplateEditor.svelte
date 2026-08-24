@@ -419,7 +419,7 @@
 			<p class="text-sm text-destructive">{errors.max_owned_per_student}</p>
 		{/if}
 		<p class="text-xs text-muted-foreground">
-			Nombre maximum de copies de cette carte qu'un élève peut posséder.
+			Nombre maximum de copies de cette carte qu'un {lore.entities.student} peut posséder.
 		</p>
 	</div>
 
