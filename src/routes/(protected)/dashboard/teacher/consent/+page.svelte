@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
@@ -137,7 +138,7 @@
 				<h1 class="text-3xl font-bold tracking-tight">Consentement parental</h1>
 			</div>
 			<p class="text-muted-foreground">
-				Gestion du consentement RGPD pour les élèves de moins de 15 ans
+				Gestion du consentement RGPD pour les {lore.entities.student}s de moins de 15 ans
 			</p>
 		</div>
 	</div>
@@ -240,7 +241,8 @@
 								{classItem.name}
 							</Card.Title>
 							<Card.Description>
-								{classItem.students.length} élève(s) nécessitant un consentement parental
+								{classItem.students.length}
+								{lore.entities.student}(s) nécessitant un consentement parental
 							</Card.Description>
 						</Card.Header>
 						<Card.Content>
@@ -396,8 +398,8 @@
 					<strong>Accordé</strong> : L'élève a un accès complet à toutes les fonctionnalités.
 				</li>
 				<li>
-					<strong>Période de grâce</strong> : Accès complet temporaire pendant 30 jours pour les élèves
-					existants.
+					<strong>Période de grâce</strong> : Accès complet temporaire pendant 30 jours pour les {lore
+						.entities.student}s existants.
 				</li>
 				<li>
 					<strong>En attente</strong> : L'élève a un accès en lecture seule (ne peut pas soumettre de

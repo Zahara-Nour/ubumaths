@@ -13,6 +13,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { invalidate } from '$app/navigation';
 	import * as Card from '$lib/components/ui/card';
@@ -112,7 +113,7 @@
 			<div>
 				<h1 class="mb-2 text-3xl font-bold">Gestion des decks SRS</h1>
 				<p class="text-muted-foreground">
-					Créez et gérez vos decks de révision espacée pour vos élèves
+					Créez et gérez vos decks de révision espacée pour vos {lore.entities.student}s
 				</p>
 			</div>
 

@@ -6,6 +6,7 @@
 	Mode projection (anonymisation) reçu via prop pour cohérence page.
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { ArrowUpDown, AlertCircle, RefreshCw, Clock, CheckCircle, Circle } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Skeleton } from '$lib/components/ui/skeleton';
@@ -102,7 +103,7 @@
 	<Card.Header>
 		<div class="flex flex-wrap items-center justify-between gap-2">
 			<div>
-				<Card.Title>Grille capacités × élèves</Card.Title>
+				<Card.Title>Grille capacités × {lore.entities.student}s</Card.Title>
 				<Card.Description>État actuel agrégé via FSRS-6 (famille A).</Card.Description>
 			</div>
 			<div class="flex flex-wrap items-center gap-3">
@@ -141,7 +142,7 @@
 					<thead>
 						<tr class="border-b border-border">
 							<th class="sticky left-0 z-10 bg-background px-2 py-2 text-left font-medium">
-								Élève
+								{lore.entities.student}
 							</th>
 							{#each orderedCapacities as cap (cap.id)}
 								<th

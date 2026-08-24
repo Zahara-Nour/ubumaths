@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
@@ -198,7 +199,7 @@
 	<!-- Assignments List -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Liste des élèves</Card.Title>
+			<Card.Title>Liste des {lore.entities.student}s</Card.Title>
 			<Card.Description>
 				{totalAssignments} élève{totalAssignments > 1 ? 's' : ''}
 				{totalAssignments > 1 ? 'ont' : 'a'} reçu ce deck

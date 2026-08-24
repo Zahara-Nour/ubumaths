@@ -56,6 +56,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	// ============================================================================
 	// IMPORTS
 	// ============================================================================
@@ -586,9 +587,8 @@
 				{#if selectedClass}
 					<Badge variant="outline" class="text-sm">
 						<Users class="mr-1.5 h-3.5 w-3.5" />
-						{selectedClass.student_count || 0} élève{(selectedClass.student_count || 0) > 1
-							? 's'
-							: ''}
+						{selectedClass.student_count || 0}
+						{lore.entities.student}{(selectedClass.student_count || 0) > 1 ? 's' : ''}
 					</Badge>
 				{/if}
 			</div>
@@ -698,7 +698,7 @@
 			<div>
 				<h3 class="text-lg font-semibold text-foreground">Decks SRS (Révision Espacée)</h3>
 				<p class="mt-1 text-sm text-muted-foreground">
-					Créez et gérez des decks de révision espacée pour vos élèves
+					Créez et gérez des decks de révision espacée pour vos {lore.entities.student}s
 				</p>
 			</div>
 			<a href="/dashboard/teacher/srs/decks" data-sveltekit-preload-data="hover">
@@ -726,9 +726,9 @@
 			</Dialog.Title>
 			<Dialog.Description>
 				{#if selectedClass}
-					Sélectionnez aléatoirement un élève de {selectedClass.name}
+					Sélectionnez aléatoirement un {lore.entities.student} de {selectedClass.name}
 				{:else}
-					Sélectionnez aléatoirement un élève
+					Sélectionnez aléatoirement un {lore.entities.student}
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>

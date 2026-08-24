@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import {
 		Card,
@@ -228,7 +229,8 @@
 					</div>
 					<Progress value={analytics.engagement.percentageActive} class="mt-2 h-2" />
 					<p class="mt-2 text-xs text-muted-foreground">
-						{analytics.engagement.activeTraders}/{analytics.engagement.totalStudents} élèves actifs
+						{analytics.engagement.activeTraders}/{analytics.engagement.totalStudents}
+						{lore.entities.student}s actifs
 					</p>
 				</CardContent>
 			</Card>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Progress } from '$lib/components/ui/progress';
@@ -153,7 +154,7 @@
 		<CardHeader>
 			<CardTitle class="flex items-center gap-2">
 				<Trophy class="h-5 w-5 text-yellow-500" />
-				Élèves les plus actifs
+				{lore.entities.student}s les plus actifs
 			</CardTitle>
 		</CardHeader>
 		<CardContent>

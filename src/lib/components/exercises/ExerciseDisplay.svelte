@@ -26,6 +26,7 @@
 	@see src/lib/components/markdown/MarkdownRenderer.svelte
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import {
 		generateExerciseInstance,
 		generateStudentSeed,
@@ -206,7 +207,7 @@
 				<h4 class="font-semibold text-blue-900 dark:text-blue-100">Aperçu du template</h4>
 				<p class="text-sm text-blue-700 dark:text-blue-300">
 					{#if exercise.variables && exercise.variables.length > 0}
-						Les élèves verront des valeurs différentes à chaque instance.
+						Les {lore.entities.student}s verront des valeurs différentes à chaque instance.
 					{:else}
 						Exercice statique (sans paramètres).
 					{/if}

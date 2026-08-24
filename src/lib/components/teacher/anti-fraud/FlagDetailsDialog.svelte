@@ -4,6 +4,7 @@
 	Affiche le breakdown JSONB des signaux qui ont déclenché le drapeau.
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
 
@@ -117,8 +118,8 @@
 				{/if}
 
 				<p class="text-xs text-muted-foreground">
-					Ce drapeau n'est PAS visible côté élève. Si vous estimez qu'il s'agit d'un faux positif
-					(élève très rapide, séance de révision pure, etc.), marquez-le comme OK.
+					Ce drapeau n'est PAS visible côté élève. Si vous estimez qu'il s'agit d'un faux positif ({lore
+						.entities.student} très rapide, séance de révision pure, etc.), marquez-le comme OK.
 				</p>
 			</div>
 		</Dialog.Content>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -122,7 +123,7 @@
 				<Table.Root>
 					<Table.Header>
 						<Table.Row>
-							<Table.Head>Élève</Table.Head>
+							<Table.Head>{lore.entities.student}</Table.Head>
 							<Table.Head>Classe</Table.Head>
 							<Table.Head class="text-center">Statut</Table.Head>
 							<Table.Head class="text-center">Tentatives</Table.Head>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
@@ -217,7 +218,7 @@
 	<!-- Results Table -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Détails par élève</Card.Title>
+			<Card.Title>Détails par {lore.entities.student}</Card.Title>
 			<Card.Description>
 				{sortedRows.length} élève{sortedRows.length > 1 ? 's' : ''}
 			</Card.Description>
@@ -241,7 +242,7 @@
 									class="flex items-center gap-1 hover:text-foreground"
 									onclick={() => toggleSort('name')}
 								>
-									Élève
+									{lore.entities.student}
 									{#if sortBy === 'name'}
 										{#if sortDir === 'asc'}
 											<ArrowUp class="h-3 w-3" />

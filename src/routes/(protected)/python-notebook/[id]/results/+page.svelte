@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -227,7 +228,7 @@
 				<Card.Header class="pb-2">
 					<Card.Title class="flex items-center gap-2 text-sm font-medium text-muted-foreground">
 						<Users class="size-4" />
-						Élèves concernés
+						{lore.entities.student}s concernés
 					</Card.Title>
 				</Card.Header>
 				<Card.Content>
@@ -319,7 +320,7 @@
 			<Card.Content class="pt-6">
 				{#if sortedRows.length === 0}
 					<p class="py-8 text-center text-sm text-muted-foreground">
-						Aucun élève dans la sélection actuelle.
+						Aucun {lore.entities.student} dans la sélection actuelle.
 					</p>
 				{:else}
 					<div class="overflow-x-auto">

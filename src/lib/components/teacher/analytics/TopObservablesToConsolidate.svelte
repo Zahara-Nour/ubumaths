@@ -2,6 +2,7 @@
 	Widget G — Top observables famille B où le % minus est le plus élevé.
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Users } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -115,10 +116,9 @@
 								</div>
 								<Progress value={row.minus_pct} class="mt-2 h-2" />
 								<p class="mt-1 text-xs text-muted-foreground">
-									{row.minus_pct}% des élèves observés en minus ({row.students_concerned.length} élève{row
-										.students_concerned.length > 1
-										? 's'
-										: ''})
+									{row.minus_pct}% des {lore.entities.student}s observés en minus ({row
+										.students_concerned.length}
+									{lore.entities.student}{row.students_concerned.length > 1 ? 's' : ''})
 								</p>
 							</div>
 							<Button variant="outline" size="sm" onclick={() => openModal(row)}>

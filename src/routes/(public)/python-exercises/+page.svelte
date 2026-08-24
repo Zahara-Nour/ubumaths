@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Plus, BookOpen, FileCode2 } from '@lucide/svelte';
 
@@ -18,8 +19,9 @@
 		<h1 class="mb-2 text-3xl font-bold">Exercices Python</h1>
 		<p class="text-muted-foreground">
 			Crée un exercice Python avec une validation automatique (comparaison de sortie, test de
-			fonction, ou analyse syntaxique) et partage-le via un simple lien. Les élèves écrivent leur
-			code dans le navigateur — tout tourne en local, pas besoin d'installer Python.
+			fonction, ou analyse syntaxique) et partage-le via un simple lien. Les {lore.entities
+				.student}s écrivent leur code dans le navigateur — tout tourne en local, pas besoin
+			d'installer Python.
 		</p>
 	</header>
 

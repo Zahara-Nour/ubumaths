@@ -36,6 +36,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import type { Tables } from '$lib/types/database';
 	import type { SchoolPeriod } from '$lib/utils/timetable';
@@ -606,7 +607,7 @@
 					<Card.Root>
 						<Card.Header>
 							<Card.Title class="flex items-center gap-2">
-								Élèves
+								{lore.entities.student}s
 								<Badge variant="secondary">{students.length}</Badge>
 							</Card.Title>
 							<Card.Description>

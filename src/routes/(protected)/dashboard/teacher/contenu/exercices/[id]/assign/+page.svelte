@@ -273,7 +273,7 @@
 				<Tabs.List class="grid w-full grid-cols-3">
 					<Tabs.Trigger value="students">
 						<User class="mr-2 h-4 w-4" />
-						Élèves
+						{lore.entities.student}s
 					</Tabs.Trigger>
 					<Tabs.Trigger value="classes">
 						<Users class="mr-2 h-4 w-4" />
@@ -289,9 +289,9 @@
 				<Tabs.Content value="students">
 					<Card.Root>
 						<Card.Header>
-							<Card.Title>Assigner à des élèves</Card.Title>
+							<Card.Title>Assigner à des {lore.entities.student}s</Card.Title>
 							<Card.Description>
-								Sélectionnez les élèves qui auront accès à cet exercice
+								Sélectionnez les {lore.entities.student}s qui auront accès à cet exercice
 							</Card.Description>
 						</Card.Header>
 						<Card.Content>
@@ -299,14 +299,14 @@
 								<!-- Student selection -->
 								<div>
 									<Label class="mb-2 block text-sm font-medium">
-										Élèves ({data.students.length} disponibles)
+										{lore.entities.student}s ({data.students.length} disponibles)
 									</Label>
 									{#if data.students.length === 0}
 										<div
 											class="rounded-md border border-dashed p-8 text-center text-muted-foreground"
 										>
 											<Users class="mx-auto mb-2 h-8 w-8 opacity-50" />
-											<p>Aucun élève trouvé</p>
+											<p>Aucun {lore.entities.student} trouvé</p>
 											<p class="mt-1 text-sm">Ajoutez des élèves à vos classes</p>
 										</div>
 									{:else}
@@ -340,7 +340,7 @@
 								<!-- Notes -->
 								<div>
 									<Label for="student-notes" class="mb-2 block text-sm font-medium">
-										Notes pour les élèves
+										Notes pour les {lore.entities.student}s
 									</Label>
 									<Textarea
 										id="student-notes"
@@ -400,9 +400,8 @@
 													<div class="flex-1">
 														<div class="font-medium">{classItem.name}</div>
 														<div class="text-xs text-muted-foreground">
-															{classItem.student_count} élève{classItem.student_count > 1
-																? 's'
-																: ''}
+															{classItem.student_count}
+															{lore.entities.student}{classItem.student_count > 1 ? 's' : ''}
 														</div>
 													</div>
 												</button>
@@ -422,7 +421,7 @@
 								<!-- Notes -->
 								<div>
 									<Label for="class-notes" class="mb-2 block text-sm font-medium">
-										Notes pour les élèves
+										Notes pour les {lore.entities.student}s
 									</Label>
 									<Textarea
 										id="class-notes"
@@ -451,7 +450,7 @@
 						<Card.Header>
 							<Card.Title>Rendre public</Card.Title>
 							<Card.Description>
-								Tous les élèves de la plateforme pourront accéder à cet exercice
+								Tous les {lore.entities.student}s de la plateforme pourront accéder à cet exercice
 							</Card.Description>
 						</Card.Header>
 						<Card.Content>
@@ -468,7 +467,7 @@
 								<div class="space-y-4">
 									<div>
 										<Label for="public-notes" class="mb-2 block text-sm font-medium">
-											Notes pour les élèves
+											Notes pour les {lore.entities.student}s
 										</Label>
 										<Textarea
 											id="public-notes"

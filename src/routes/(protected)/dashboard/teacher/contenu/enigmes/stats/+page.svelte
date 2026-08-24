@@ -5,6 +5,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { getDifficultyLabel, getDifficultyColor } from '$lib/types/riddle';
 	import { Badge } from '$lib/components/ui/badge';
@@ -196,9 +197,11 @@
 		<Card.Header>
 			<Card.Title class="flex items-center gap-2">
 				<Trophy class="h-5 w-5" />
-				Top 10 Élèves
+				Top 10 {lore.entities.student}s
 			</Card.Title>
-			<Card.Description>Classement des élèves ayant résolu vos énigmes</Card.Description>
+			<Card.Description
+				>Classement des {lore.entities.student}s ayant résolu vos énigmes</Card.Description
+			>
 		</Card.Header>
 		<Card.Content>
 			{#if data.topStudents.length > 0}

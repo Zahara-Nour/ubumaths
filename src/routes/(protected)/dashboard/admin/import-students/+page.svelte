@@ -308,7 +308,8 @@
 	<div class="space-y-2">
 		<h1 class="text-3xl font-bold">Importer des élèves</h1>
 		<p class="text-muted-foreground">
-			Pré-remplissez les données des élèves avant leur première connexion avec Google
+			Pré-remplissez les données des {lore.entities.student}s avant leur première connexion avec
+			Google
 		</p>
 	</div>
 
@@ -478,7 +479,9 @@
 	<Card.Root>
 		<Card.Header>
 			<Card.Title>Codes de classe disponibles</Card.Title>
-			<Card.Description>Utilisez ces codes pour assigner des élèves aux classes</Card.Description>
+			<Card.Description
+				>Utilisez ces codes pour assigner des {lore.entities.student}s aux classes</Card.Description
+			>
 		</Card.Header>
 		<Card.Content>
 			{#if data.classes.length === 0}
@@ -503,9 +506,9 @@
 	<!-- Pending Students List -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Élèves en attente</Card.Title>
+			<Card.Title>{lore.entities.student}s en attente</Card.Title>
 			<Card.Description>
-				Ces élèves ne se sont pas encore connectés pour la première fois
+				Ces {lore.entities.student}s ne se sont pas encore connectés pour la première fois
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
@@ -553,8 +556,10 @@
 	<!-- Activated Students List -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Élèves activés</Card.Title>
-			<Card.Description>Ces élèves se sont déjà connectés avec Google</Card.Description>
+			<Card.Title>{lore.entities.student}s activés</Card.Title>
+			<Card.Description
+				>Ces {lore.entities.student}s se sont déjà connectés avec Google</Card.Description
+			>
 		</Card.Header>
 		<Card.Content>
 			{#if data.activatedStudents.length === 0}

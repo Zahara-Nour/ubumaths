@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { lore } from '$lib/config/lore';
 	function getDateFromPeriod(period: string): string {
 		let dateFrom = new Date();
 
@@ -317,7 +318,9 @@
 			<Card>
 				<CardHeader>
 					<CardTitle>Historique des échanges</CardTitle>
-					<CardDescription>Consultez tous les échanges entre élèves</CardDescription>
+					<CardDescription
+						>Consultez tous les échanges entre {lore.entities.student}s</CardDescription
+					>
 				</CardHeader>
 				<CardContent>
 					<TradeHistoryTable classId={selectedClassId} />
@@ -330,7 +333,9 @@
 			<Card>
 				<CardHeader>
 					<CardTitle>Annonces actives</CardTitle>
-					<CardDescription>Surveillez les annonces créées par vos élèves</CardDescription>
+					<CardDescription
+						>Surveillez les annonces créées par vos {lore.entities.student}s</CardDescription
+					>
 				</CardHeader>
 				<CardContent>
 					<ListingsMonitor classId={selectedClassId} />
