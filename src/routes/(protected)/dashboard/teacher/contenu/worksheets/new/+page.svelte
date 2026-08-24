@@ -53,7 +53,7 @@
 	const typeOptions = [
 		{ value: 'worksheet', label: "Feuille d'exercices" },
 		{ value: 'assessment', label: 'Evaluation' },
-		{ value: 'exam', label: 'Examen' },
+		{ value: 'exam', label: lore.learning.exam },
 		{ value: 'quiz', label: 'Quiz' },
 		{ value: 'homework', label: 'Devoirs' }
 	];

@@ -35,7 +35,7 @@
 	const typeLabels: Record<string, string> = {
 		worksheet: 'Feuille',
 		assessment: 'Evaluation',
-		exam: 'Examen',
+		exam: lore.learning.exam,
 		quiz: 'Quiz',
 		homework: 'Devoirs'
 	};

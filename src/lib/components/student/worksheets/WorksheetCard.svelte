@@ -8,6 +8,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -40,7 +41,7 @@
 			case 'assessment':
 				return { icon: ClipboardList, label: 'Evaluation' };
 			case 'exam':
-				return { icon: GraduationCap, label: 'Examen' };
+				return { icon: GraduationCap, label: lore.learning.exam };
 			case 'quiz':
 				return { icon: FileQuestion, label: 'Quiz' };
 			case 'homework':
