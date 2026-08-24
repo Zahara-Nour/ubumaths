@@ -680,7 +680,7 @@ Chiphre revendique une **généalogie pataphysique** explicite : les patanautes 
 | **La discipline enseignée**  | **Mathres**                   | Déformation R potache canon (modèle _merdre_). Remplace « mathématiques » dans tout le wording interne. Voir règle d'écriture ubuesque. |
 | Élève                        | **Galopin** / **Galopine**    | Le Galopin est apprenti-aventurier. Étymologie : jeune marmiton médiéval + enfant espiègle moderne. Voir Section III. Pas de péjoratif. |
 | Élèves (collectif)           | Les Polonais                  | « Le tableau des Polonais » = leaderboard.                                                                                              |
-| Professeur                   | Maître Phynancier             | Ou « Maître » court. Jamais « prof ».                                                                                                   |
+| Professeur                   | Capitaine                     | Commande le Bataillon (la classe) de Galopins. Jamais « prof ».                                                                         |
 | Compte / profil              | Guérite                       | « Ma Guérite » = Mon Profil.                                                                                                            |
 | Tableau de bord              | Cabinet des Phynances         | Cabinet = bureau privé.                                                                                                                 |
 | Argent virtuel               | Gidouille (déjà acquis)       | Symbole : 🌀 ou spirale. Ne jamais dire « points ».                                                                                     |
@@ -822,7 +822,7 @@ Pour les fiches détaillées de chaque néologisme, voir le **Lexique Pataphysiq
 2. **« Phynance(s) »** — toujours avec « ph » et « y ». Jamais « finance ». Vaut pour tout dérivé : _phynancier_, _phynancière_, _Cornefinance_.
 3. **« Mathres » n'est pas « maths ».** Le R potache est la signature de la discipline à Chiphre. Vaut pour tous les dérivés : _mathres royales_, _mathresque_, _mathrer_, _mathrologie_.
 4. **« Chiphre » n'est pas « chiffres ».** Le _ph_ est la signature de la plateforme. Le mot « chiffres » au sens calculatoire reste possible avec son orthographe standard (« le Galopin manipule les chiffres »), mais **Chiphre** majuscule désigne uniquement la plateforme.
-5. **Majuscules royales.** Père Ubu, Mère Ubu, Maître Phynancier, Galopin, Polonais, Royaume — tous capitalisés. De même pour les noms des Niveaux Scolaires (Syz'esme, Phinalle, etc.) et des Provinces (Nombrilie, Glitchistan, etc.).
+5. **Majuscules royales.** Père Ubu, Mère Ubu, Capitaine, Galopin, Polonais, Royaume — tous capitalisés. De même pour les noms des Niveaux Scolaires (Syz'esme, Phinalle, etc.) et des Provinces (Nombrilie, Glitchistan, etc.).
 6. **Pas d'anglicismes.** Pas de « XP », pas de « level », pas de « streak ». Tout doit être traduit dans la langue pataphysique.
 7. **Pas d'emojis dans la voix d'Ubu.** Père Ubu n'utilise pas d'emojis (anachronique). En revanche, l'interface peut, sobrement, et **la gidouille (🌀) est l'emoji canonique**. **Phi grec minuscule (φ)** est l'autre symbole canonique de Chiphre (abréviation de Phinalle).
 
