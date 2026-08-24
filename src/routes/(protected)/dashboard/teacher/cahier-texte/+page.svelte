@@ -135,7 +135,7 @@
 			</div>
 			<div>
 				<h1 class="text-3xl font-bold tracking-tight">Cahier de Texte</h1>
-				<p class="text-muted-foreground">Gerez le contenu des seances et les devoirs</p>
+				<p class="text-muted-foreground">Gerez le contenu des seances et les Corvées Domestiques</p>
 			</div>
 		</div>
 	</div>

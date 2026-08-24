@@ -45,7 +45,7 @@
 			case 'quiz':
 				return { icon: FileQuestion, label: 'Quiz' };
 			case 'homework':
-				return { icon: PenLine, label: 'Devoir' };
+				return { icon: PenLine, label: lore.learning.homework };
 			default:
 				return { icon: BookOpen, label: 'Fiche' };
 		}

@@ -34,6 +34,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -718,7 +719,9 @@
 															<div class="mb-3 flex items-start justify-between gap-4">
 																<div class="min-w-0 flex-1">
 																	<div class="mb-1 flex items-center gap-2">
-																		<Badge variant="default" class="bg-blue-600">Devoir</Badge>
+																		<Badge variant="default" class="bg-blue-600"
+																			>{lore.learning.homework}</Badge
+																		>
 																		{#if work.maxPoints !== null}
 																			<span class="text-sm text-muted-foreground"
 																				>{work.maxPoints} pts</span
@@ -921,7 +924,9 @@
 														<div class="mb-3 flex items-start justify-between gap-4">
 															<div class="min-w-0 flex-1">
 																<div class="mb-1 flex items-center gap-2">
-																	<Badge variant="default" class="bg-blue-600">Devoir</Badge>
+																	<Badge variant="default" class="bg-blue-600"
+																		>{lore.learning.homework}</Badge
+																	>
 																	{#if work.maxPoints !== null}
 																		<span class="text-sm text-muted-foreground"
 																			>{work.maxPoints} pts</span
@@ -1102,7 +1107,9 @@
 													<div class="mb-3 flex items-start justify-between gap-4">
 														<div class="min-w-0 flex-1">
 															<div class="mb-1 flex items-center gap-2">
-																<Badge variant="default" class="bg-blue-600">Devoir</Badge>
+																<Badge variant="default" class="bg-blue-600"
+																	>{lore.learning.homework}</Badge
+																>
 																{#if work.maxPoints !== null}
 																	<span class="text-sm text-muted-foreground"
 																		>{work.maxPoints} pts</span

@@ -59,9 +59,9 @@
 			<Alert.Title>Accès limité</Alert.Title>
 			<Alert.Description>
 				Le consentement parental est requis pour utiliser toutes les fonctionnalités d'Chiphre. Tu
-				peux consulter tes cours et devoirs, mais tu ne peux pas soumettre de réponses, envoyer de
-				messages ou jouer aux jeux. Contacte ton {lore.entities.teacher} pour qu'il envoie un email à
-				tes parents.
+				peux consulter tes cours et Corvées Domestiques, mais tu ne peux pas soumettre de réponses,
+				envoyer de messages ou jouer aux jeux. Contacte ton {lore.entities.teacher} pour qu'il envoie
+				un email à tes parents.
 			</Alert.Description>
 		</Alert.Root>
 	{/if}

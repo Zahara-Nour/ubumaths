@@ -108,7 +108,9 @@
 						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						<option value="on_demand"> À la demande (pratique illimitée) </option>
-						<option value="per_student"> Par {lore.entities.student} (devoir personnalisé) </option>
+						<option value="per_student">
+							Par {lore.entities.student} ({lore.learning.homework} personnalisée)
+						</option>
 						<option value="per_group"> Par groupe (travail de {lore.entities.class}) </option>
 					</select>
 				</div>
@@ -124,8 +126,8 @@
 				<div class="space-y-2 text-xs text-muted-foreground">
 					<p><strong>À la demande :</strong> Idéal pour l'entraînement et la pratique autonome</p>
 					<p>
-						<strong>Par {lore.entities.student} :</strong> Idéal pour les devoirs où chaque {lore
-							.entities.student} doit avoir un problème différent
+						<strong>Par {lore.entities.student} :</strong> Idéal pour les Corvées Domestiques où
+						chaque {lore.entities.student} doit avoir un problème différent
 					</p>
 					<p>
 						<strong>Par groupe :</strong> Idéal pour les travaux en {lore.entities.class} où tous les

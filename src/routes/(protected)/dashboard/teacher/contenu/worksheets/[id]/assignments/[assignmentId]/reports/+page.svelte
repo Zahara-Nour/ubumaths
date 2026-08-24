@@ -11,6 +11,7 @@
 	- Review dialog with approve/reject actions
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import ErrorReportsPanel from '$lib/components/worksheets/teacher/ErrorReportsPanel.svelte';
@@ -19,7 +20,9 @@
 	let { data }: { data: PageData } = $props();
 
 	// Derive display values
-	let assignmentTitle = $derived(data.assignment.title || data.worksheet.title || 'Devoir');
+	let assignmentTitle = $derived(
+		data.assignment.title || data.worksheet.title || lore.learning.homework
+	);
 
 	// Format class names
 	let classNames = $derived.by(() => {
