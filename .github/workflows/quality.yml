@@ -212,6 +212,34 @@ jobs:
       - name: Run client tests
         run: pnpm exec vitest run --project client
 
+  # Security gate: fails (red) when a production high/critical vuln appears,
+  # including the transitive ones Dependabot can't auto-PR for (pnpm overrides).
+  # Standalone (NOT in the `summary` needs) → visible but non-blocking; add it
+  # to the branch's required status checks to make it gate merges.
+  audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit production dependencies (high + critical)
+        run: pnpm audit --audit-level high --prod
+
   summary:
     name: CI Summary
     runs-on: ubuntu-latest
