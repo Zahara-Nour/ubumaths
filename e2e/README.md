@@ -19,14 +19,15 @@ End-to-end tests for UbuMaths (Playwright), organisés par rôle.
 
 2. **Create test users** in Supabase (voir docs/ref/tests/architecture.md)
 
-3. **Set environment variables** (`.env.test`):
+3. **Set environment variables** in `.env.test` (git-ignored — never commit real
+   credentials). Use dedicated **test** accounts, not real staff/student logins:
    ```bash
-   TEST_TEACHER_EMAIL=teacher@voltairedoha.com
-   TEST_TEACHER_PASSWORD=test-password-secure-123
-   TEST_STUDENT_EMAIL=student@voltairedoha.com
-   TEST_STUDENT_PASSWORD=test-password-secure-123
-   TEST_ADMIN_EMAIL=admin@voltairedoha.com
-   TEST_ADMIN_PASSWORD=test-password-secure-123
+   TEST_TEACHER_EMAIL=<test-teacher-email>
+   TEST_TEACHER_PASSWORD=<test-teacher-password>
+   TEST_STUDENT_EMAIL=<test-student-email>
+   TEST_STUDENT_PASSWORD=<test-student-password>
+   TEST_ADMIN_EMAIL=<test-admin-email>
+   TEST_ADMIN_PASSWORD=<test-admin-password>
    ```
 
 ### Run Tests
