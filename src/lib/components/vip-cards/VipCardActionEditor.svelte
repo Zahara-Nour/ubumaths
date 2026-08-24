@@ -175,7 +175,7 @@
 
 	// Activation context options (shared for all action types)
 	const activationContextItems = [
-		{ value: '', label: 'Approbation enseignant (défaut)' },
+		{ value: '', label: `Approbation ${lore.entities.teacher} (défaut)` },
 		{ value: 'any', label: 'Auto-activation libre' },
 		{ value: 'minesweeper', label: 'Pendant une partie de démineur' }
 	];
@@ -796,9 +796,10 @@
 			/>
 			<p class="text-xs text-muted-foreground">
 				{#if actionContext}
-					Le {lore.entities.student} peut activer cette carte sans approbation de l'enseignant
+					Le {lore.entities.student} peut activer cette carte sans approbation du {lore.entities
+						.teacher}
 				{:else}
-					Le {lore.entities.student} doit demander l'approbation de l'enseignant avant d'activer
+					Le {lore.entities.student} doit demander l'approbation du {lore.entities.teacher} avant d'activer
 				{/if}
 			</p>
 		</div>

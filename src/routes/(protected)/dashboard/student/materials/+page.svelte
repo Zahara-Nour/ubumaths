@@ -286,7 +286,7 @@
 				<p class="mt-2 text-sm text-muted-foreground">
 					{hasFilters
 						? 'Essayez de modifier les filtres pour voir plus de documents'
-						: "Vos professeurs n'ont pas encore partagé de documents"}
+						: "Vos {lore.entities.teacher}s n'ont pas encore partagé de documents"}
 				</p>
 				{#if hasFilters}
 					<Button variant="outline" class="mt-4" onclick={clearFilters}>Effacer les filtres</Button>
@@ -338,7 +338,9 @@
 										<!-- Teacher's override description (priority) -->
 										{#if material.descriptionOverride}
 											<div class="mb-3 rounded-md bg-primary/5 p-3">
-												<p class="text-sm font-medium text-primary">Note de l'enseignant :</p>
+												<p class="text-sm font-medium text-primary">
+													Note du {lore.entities.teacher} :
+												</p>
 												<p class="mt-1 text-sm">{material.descriptionOverride}</p>
 											</div>
 										{/if}

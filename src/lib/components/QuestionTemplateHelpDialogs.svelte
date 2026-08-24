@@ -82,7 +82,8 @@
 					<li class="flex gap-2">
 						<span class="text-primary">•</span>
 						<span
-							><strong>Pour les enseignants</strong> : Notes internes, objectifs pédagogiques, prérequis</span
+							><strong>Pour les {lore.entities.teacher}s</strong> : Notes internes, objectifs pédagogiques,
+							prérequis</span
 						>
 					</li>
 					<li class="flex gap-2">

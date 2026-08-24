@@ -33,6 +33,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import RewardsBlock from '$lib/components/RewardsBlock.svelte';
 	import InboxWidget from '$lib/components/student-inbox/InboxWidget.svelte';
@@ -167,7 +168,7 @@
 						</div>
 						{#if comps.with_data === 0}
 							<p class="text-sm text-muted-foreground">
-								Pas encore d'évaluation famille B. Ton prof commencera bientôt.
+								Pas encore d'évaluation famille B. Ton {lore.entities.teacher} commencera bientôt.
 							</p>
 						{:else}
 							<div class="mb-2 flex items-center gap-3 text-sm">

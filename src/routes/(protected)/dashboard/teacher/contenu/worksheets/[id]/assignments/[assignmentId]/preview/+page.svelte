@@ -73,7 +73,7 @@
 
 	// Build student options for selector (sorted alphabetically)
 	let studentOptions = $derived([
-		{ value: '', label: 'Vue enseignant (corrections visibles)' },
+		{ value: '', label: `Vue ${lore.entities.teacher} (corrections visibles)` },
 		...data.students
 			.map((s) => ({
 				value: s.id,
@@ -336,7 +336,7 @@
 			<Badge variant={previewMode === 'teacher' ? 'default' : 'secondary'} class="gap-1">
 				{#if previewMode === 'teacher'}
 					<Eye class="h-3 w-3" />
-					Vue enseignant
+					Vue {lore.entities.teacher}
 				{:else}
 					<User class="h-3 w-3" />
 					Vue eleve
@@ -612,7 +612,7 @@
 					</Button>
 				{/if}
 				<Badge variant={previewMode === 'teacher' ? 'default' : 'secondary'} class="text-xs">
-					{previewMode === 'teacher' ? 'Vue enseignant' : previewStudentName}
+					{previewMode === 'teacher' ? `Vue ${lore.entities.teacher}` : previewStudentName}
 				</Badge>
 				<Button variant="ghost" size="icon" onclick={() => (modalOpen = false)} aria-label="Fermer">
 					<X class="h-5 w-5" />

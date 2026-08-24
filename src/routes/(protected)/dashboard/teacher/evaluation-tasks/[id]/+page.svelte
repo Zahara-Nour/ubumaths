@@ -201,7 +201,7 @@
 													<span class="ml-1">{ob.name}</span>
 													{#if ob.teacher_grid_text}
 														<div class="mt-0.5 text-xs text-muted-foreground italic">
-															prof : {ob.teacher_grid_text}
+															{lore.entities.teacher} : {ob.teacher_grid_text}
 														</div>
 													{/if}
 												</div>

@@ -61,7 +61,7 @@
 		</div>
 	{:else}
 		<p class="text-sm text-muted-foreground">
-			La création d'exercices est réservée aux enseignants.
+			La création d'exercices est réservée aux {lore.entities.teacher}s.
 		</p>
 	{/if}
 </div>

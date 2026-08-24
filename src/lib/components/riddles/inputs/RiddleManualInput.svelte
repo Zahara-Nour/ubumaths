@@ -5,6 +5,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
 	import { Info } from '@lucide/svelte';
@@ -32,8 +33,8 @@
 	>
 		<Info class="mt-0.5 h-4 w-4 shrink-0" />
 		<p>
-			Votre réponse sera envoyée à votre professeur pour validation. Soyez précis et détaillez votre
-			raisonnement.
+			Votre réponse sera envoyée à votre {lore.entities.teacher} pour validation. Soyez précis et détaillez
+			votre raisonnement.
 		</p>
 	</div>
 </div>

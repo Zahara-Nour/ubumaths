@@ -90,7 +90,7 @@
 		selectedUser?.role === 'teacher'
 			? [
 					{ value: 'student', label: 'Étudiant' },
-					{ value: 'teacher', label: 'Enseignant' },
+					{ value: 'teacher', label: lore.entities.teacher },
 					{ value: 'admin', label: 'Administrateur' }
 				]
 			: [
@@ -783,7 +783,9 @@
 	<div class="flex items-center justify-between">
 		<div>
 			<h1 class="text-3xl font-bold text-foreground">Gestion des Utilisateurs</h1>
-			<p class="mt-2 text-muted-foreground">Gérer les profils des étudiants et enseignants</p>
+			<p class="mt-2 text-muted-foreground">
+				Gérer les profils des étudiants et {lore.entities.teacher}s
+			</p>
 		</div>
 		<Button href="/dashboard/admin/import-students">
 			<Upload class="mr-2 h-4 w-4" />

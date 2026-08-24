@@ -33,7 +33,7 @@
 		role === 'student'
 			? lore.entities.student
 			: role === 'teacher'
-				? 'Enseignant'
+				? lore.entities.teacher
 				: 'Administrateur'
 	);
 

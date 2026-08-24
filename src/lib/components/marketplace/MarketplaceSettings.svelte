@@ -192,7 +192,8 @@
 						<Info class="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
 						<p class="text-sm text-blue-800">
 							Le marché permet aux {lore.entities.student}s d'échanger des cartes VIP et des
-							gidouilles entre eux. Les enseignants peuvent surveiller toutes les transactions.
+							gidouilles entre eux. Les {lore.entities.teacher}s peuvent surveiller toutes les
+							transactions.
 						</p>
 					</div>
 				</div>

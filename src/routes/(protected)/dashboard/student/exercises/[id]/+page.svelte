@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
@@ -97,7 +98,7 @@
 				<div class="space-y-3">
 					{#if data.assignment.notes}
 						<div>
-							<p class="text-sm font-medium">Note du professeur :</p>
+							<p class="text-sm font-medium">Note du {lore.entities.teacher} :</p>
 							<p class="mt-1 text-sm text-muted-foreground italic">{data.assignment.notes}</p>
 						</div>
 					{/if}

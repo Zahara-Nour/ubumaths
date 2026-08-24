@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import AssessmentCard from '$lib/components/assessments/AssessmentCard.svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -31,7 +32,9 @@
 	<!-- Header -->
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold tracking-tight">Mes Évaluations</h1>
-		<p class="mt-2 text-muted-foreground">Vos évaluations assignées par vos professeurs</p>
+		<p class="mt-2 text-muted-foreground">
+			Vos évaluations assignées par vos {lore.entities.teacher}s
+		</p>
 	</div>
 
 	<!-- To Do Section -->
@@ -92,7 +95,7 @@
 					<FileQuestion class="mx-auto mb-4 h-16 w-16 text-muted-foreground/50" />
 					<h2 class="text-xl font-semibold text-muted-foreground">Aucune évaluation</h2>
 					<p class="mt-2 text-sm text-muted-foreground">
-						Vos professeurs n'ont pas encore assigné d'évaluations
+						Vos {lore.entities.teacher}s n'ont pas encore assigné d'évaluations
 					</p>
 				</div>
 			</Card.Content>

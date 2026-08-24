@@ -206,7 +206,7 @@
 		<Card.Header>
 			<Card.Title>Correction *</Card.Title>
 			<Card.Description>
-				La solution et l'explication (visible uniquement par les professeurs)
+				La solution et l'explication (visible uniquement par les {lore.entities.teacher}s)
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>

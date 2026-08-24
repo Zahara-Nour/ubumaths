@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * LockedPythonEditor — CodeMirror editor for "fill in the blanks"
 	 * Python exercises.
@@ -401,7 +402,9 @@
 					<li>{err.message}</li>
 				{/each}
 			</ul>
-			<p class="mt-2 text-xs text-red-700 dark:text-red-300">Signale-le à ton enseignant·e.</p>
+			<p class="mt-2 text-xs text-red-700 dark:text-red-300">
+				Signale-le à ton {lore.entities.teacher}.
+			</p>
 		</div>
 	{/if}
 </div>

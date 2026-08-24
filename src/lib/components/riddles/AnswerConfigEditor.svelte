@@ -304,7 +304,7 @@
 	{:else}
 		<Card.Content>
 			<div class="rounded-lg bg-muted/50 p-4 text-center text-sm text-muted-foreground">
-				Validation manuelle par le professeur via la messagerie interne
+				Validation manuelle par le {lore.entities.teacher} via la messagerie interne
 			</div>
 		</Card.Content>
 	{/if}

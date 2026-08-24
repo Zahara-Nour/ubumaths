@@ -15,6 +15,7 @@
 	- Shows error for students without consent (read-only mode)
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Alert from '$lib/components/ui/alert';
 	import { Clock, ShieldAlert } from '@lucide/svelte';
 	import type { ConsentStatus } from '$lib/utils/consent';
@@ -48,7 +49,7 @@
 				Tu as un accès complet pendant encore
 				<strong>{daysRemaining} jour{daysRemaining > 1 ? 's' : ''}</strong>. Après cette date, ton
 				accès sera limité jusqu'à ce que tes parents donnent leur consentement. Contacte ton
-				enseignant pour plus d'informations.
+				{lore.entities.teacher} pour plus d'informations.
 			</Alert.Description>
 		</Alert.Root>
 	{:else}
@@ -59,8 +60,8 @@
 			<Alert.Description>
 				Le consentement parental est requis pour utiliser toutes les fonctionnalités d'Chiphre. Tu
 				peux consulter tes cours et devoirs, mais tu ne peux pas soumettre de réponses, envoyer de
-				messages ou jouer aux jeux. Contacte ton enseignant pour qu'il envoie un email à tes
-				parents.
+				messages ou jouer aux jeux. Contacte ton {lore.entities.teacher} pour qu'il envoie un email à
+				tes parents.
 			</Alert.Description>
 		</Alert.Root>
 	{/if}

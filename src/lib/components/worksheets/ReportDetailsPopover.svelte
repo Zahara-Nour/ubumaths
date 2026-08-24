@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
@@ -104,7 +105,7 @@
 
 			{#if responseContent}
 				<div>
-					<p class="mb-1 text-sm font-medium">Réponse de l'enseignant</p>
+					<p class="mb-1 text-sm font-medium">Réponse du {lore.entities.teacher}</p>
 					<RichTextDisplay content={responseContent} class="text-sm text-muted-foreground" />
 				</div>
 			{/if}

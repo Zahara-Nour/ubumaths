@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -117,7 +118,7 @@
 					<div class="space-y-1 rounded-md bg-muted/50 p-3">
 						<div class="flex items-center gap-1.5 text-sm font-medium">
 							<MessageSquare class="h-4 w-4" />
-							<span>Réponse de l'enseignant:</span>
+							<span>Réponse du {lore.entities.teacher}:</span>
 						</div>
 						<RichTextDisplay content={responseContent} class="text-sm" />
 					</div>

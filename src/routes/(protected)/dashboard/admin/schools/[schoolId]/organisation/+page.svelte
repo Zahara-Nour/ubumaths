@@ -426,9 +426,9 @@
 			<!-- Info Banner -->
 			<div class="rounded-lg border border-info/30 bg-info/10 p-4 text-info">
 				<p class="text-sm">
-					<strong>Information:</strong> Les périodes définies ici seront utilisées par tous les enseignants
-					lors de la création de leurs emplois du temps de classe. Les périodes doivent être identiques
-					pour tous les jours de la semaine.
+					<strong>Information:</strong> Les périodes définies ici seront utilisées par tous les {lore
+						.entities.teacher}s lors de la création de leurs emplois du temps de classe. Les
+					périodes doivent être identiques pour tous les jours de la semaine.
 				</p>
 			</div>
 
