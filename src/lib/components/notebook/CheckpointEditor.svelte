@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * CheckpointEditor — Teacher-facing editor for a checkpoint cell.
 	 *
@@ -252,7 +253,7 @@
 				oninput={(e) => updateHint((e.target as HTMLTextAreaElement).value)}
 			/>
 			<p class="text-xs text-muted-foreground">
-				L'élève peut afficher cet indice après 2 tentatives infructueuses.
+				Le {lore.entities.student} peut afficher cet indice après 2 tentatives infructueuses.
 			</p>
 		</div>
 
@@ -423,7 +424,7 @@
 
 	<!-- Live preview = exactly what the student will see -->
 	<div class="space-y-1 px-4 py-3">
-		<Label class="text-xs text-muted-foreground">Aperçu (vue élève)</Label>
+		<Label class="text-xs text-muted-foreground">Aperçu (vue {lore.entities.student})</Label>
 		<CheckpointCellPreview {cell} {notebook} isReadonly={true} />
 	</div>
 </div>

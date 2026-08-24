@@ -5,6 +5,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import {
 		getDifficultyLabel,
@@ -206,7 +207,7 @@
 		<AlertTriangle class="h-4 w-4" />
 		<Alert.Title>Attention</Alert.Title>
 		<Alert.Description>
-			Cette action est définitive. L'élève sera notifié de votre décision par message.
+			Cette action est définitive. Le {lore.entities.student} sera notifié de votre décision par message.
 		</Alert.Description>
 	</Alert.Root>
 

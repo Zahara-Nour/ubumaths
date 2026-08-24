@@ -82,6 +82,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Table from '$lib/components/ui/table';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Badge } from '$lib/components/ui/badge';
@@ -508,19 +509,19 @@
 		<!-- Loading State -->
 		<div class="flex flex-col items-center justify-center p-8 text-center">
 			<Loader2 class="h-8 w-8 animate-spin text-primary" />
-			<p class="mt-2 text-sm text-muted-foreground">Chargement des élèves...</p>
+			<p class="mt-2 text-sm text-muted-foreground">Chargement des {lore.entities.student}s...</p>
 		</div>
 	{:else if studentsData.length === 0}
 		<!-- Empty State -->
 		<div class="flex flex-col items-center justify-center p-8 text-center">
-			<p class="text-muted-foreground">Aucun élève dans cette classe</p>
+			<p class="text-muted-foreground">Aucun {lore.entities.student} dans cette classe</p>
 		</div>
 	{:else}
 		<!-- Student Table -->
 		<Table.Root>
 			<Table.Header>
 				<Table.Row>
-					<Table.Head class="w-[200px]">Élève</Table.Head>
+					<Table.Head class="w-[200px]">{lore.entities.student}</Table.Head>
 					<Table.Head class="w-[80px] text-center">
 						<img src={gidouilleImg} alt="Gidouilles" class="mx-auto h-5 w-5" />
 					</Table.Head>

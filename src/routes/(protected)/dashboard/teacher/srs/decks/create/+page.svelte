@@ -219,7 +219,9 @@
 		</Button>
 
 		<h1 class="mb-2 text-3xl font-bold">Créer un deck SRS</h1>
-		<p class="text-muted-foreground">Créez un deck de révision espacée pour vos élèves</p>
+		<p class="text-muted-foreground">
+			Créez un deck de révision espacée pour vos {lore.entities.student}s
+		</p>
 	</div>
 
 	<!-- Deck Configuration -->

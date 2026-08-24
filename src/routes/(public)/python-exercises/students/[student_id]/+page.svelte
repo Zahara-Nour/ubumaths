@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
@@ -231,8 +232,8 @@
 					<AlertCircle class="mx-auto mb-3 h-12 w-12 opacity-50" />
 					<p>Aucun exercice à afficher</p>
 					<p class="mt-2 text-sm">
-						Soit cet élève n'a pas encore travaillé vos exercices, soit vous ne lui en avez pas
-						encore assigné.
+						Soit ce {lore.entities.student} n'a pas encore travaillé vos exercices, soit vous ne lui
+						en avez pas encore assigné.
 					</p>
 				</div>
 			{:else}

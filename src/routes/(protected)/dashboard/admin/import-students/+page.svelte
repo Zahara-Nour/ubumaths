@@ -306,7 +306,7 @@
 
 <div class="container mx-auto space-y-8 p-6">
 	<div class="space-y-2">
-		<h1 class="text-3xl font-bold">Importer des élèves</h1>
+		<h1 class="text-3xl font-bold">Importer des {lore.entities.student}s</h1>
 		<p class="text-muted-foreground">
 			Pré-remplissez les données des {lore.entities.student}s avant leur première connexion avec
 			Google

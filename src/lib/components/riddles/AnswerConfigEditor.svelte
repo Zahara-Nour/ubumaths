@@ -9,6 +9,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { AnswerConfig, AnswerType } from '$lib/types/riddle';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -295,7 +296,8 @@
 			<!-- Preview -->
 			<div class="rounded-lg bg-primary/5 p-3">
 				<p class="text-xs font-medium text-primary">
-					✓ Validation automatique activée - Les élèves recevront un feedback immédiat
+					✓ Validation automatique activée - Les {lore.entities.student}s recevront un feedback
+					immédiat
 				</p>
 			</div>
 		</Card.Content>

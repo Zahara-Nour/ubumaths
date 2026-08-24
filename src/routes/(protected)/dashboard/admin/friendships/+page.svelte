@@ -87,7 +87,7 @@
 	<div class="mb-6">
 		<h1 class="text-3xl font-bold">Modération des amitiés</h1>
 		<p class="mt-1 text-muted-foreground">
-			Visualisez et gérez toutes les relations d'amitié entre élèves
+			Visualisez et gérez toutes les relations d'amitié entre {lore.entities.student}s
 		</p>
 	</div>
 

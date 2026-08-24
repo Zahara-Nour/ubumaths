@@ -307,7 +307,8 @@
 						{/each}
 					</ul>
 					<p class="mt-1 text-red-700 dark:text-red-300">
-						Tant que les marqueurs sont en erreur, l'exercice s'ouvrira en édition libre côté élève
+						Tant que les marqueurs sont en erreur, l'exercice s'ouvrira en édition libre côté {lore
+							.entities.student}
 						(mode dégradé).
 					</p>
 				</div>

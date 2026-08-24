@@ -134,7 +134,7 @@
 			</Card.Header>
 			<Card.Content>
 				<p class="text-sm text-muted-foreground">
-					L'élève a reçu toutes les informations nécessaires pour se connecter à Chiphre.
+					Le {lore.entities.student} a reçu toutes les informations nécessaires pour se connecter à Chiphre.
 				</p>
 			</Card.Content>
 			<Card.Footer>

@@ -400,7 +400,8 @@
 									/>
 									{#if cls.studentCount !== undefined}
 										<p class="mt-1 ml-6 text-sm text-muted-foreground">
-											{cls.studentCount} élève{cls.studentCount > 1 ? 's' : ''}
+											{cls.studentCount}
+											{lore.entities.student}{cls.studentCount > 1 ? 's' : ''}
 										</p>
 									{/if}
 								</div>
