@@ -746,7 +746,7 @@
 				<!-- Empty state -->
 				<div class="py-16 text-center">
 					<p class="text-lg text-muted-foreground">
-						Cette classe ne contient aucun {lore.entities.student}.
+						Ce {lore.entities.class} ne contient aucun {lore.entities.student}.
 					</p>
 				</div>
 			{:else}

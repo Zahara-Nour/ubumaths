@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Teacher Evaluation Task — edit page
 	 * ===================================
@@ -127,7 +128,7 @@
 						<Input id="task_date" name="task_date" type="date" value={data.task_date ?? ''} />
 					</div>
 					<div>
-						<Label>Classe</Label>
+						<Label>{lore.entities.class}</Label>
 						<MySelect type="single" bind:value={classId} items={classItems} />
 						<input type="hidden" name="class_id" value={classId ?? ''} />
 					</div>
