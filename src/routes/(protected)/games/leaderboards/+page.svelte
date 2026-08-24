@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { resolve } from '$app/paths';
 	import { Card } from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
@@ -17,8 +18,8 @@
 		data.scope === 'class'
 			? 'Aucun camarade classé pour l’instant.'
 			: data.scope === 'grade'
-				? 'Aucun élève de ton niveau classé pour l’instant.'
-				: 'Aucun élève de ton école classé pour l’instant.'
+				? `Aucun ${lore.entities.student} de ton niveau classé pour l’instant.`
+				: `Aucun ${lore.entities.student} de ton école classé pour l’instant.`
 	);
 </script>
 
