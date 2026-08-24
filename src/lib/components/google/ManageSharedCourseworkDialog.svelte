@@ -18,6 +18,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
@@ -405,7 +406,9 @@
 								<div>
 									<MyCheckbox
 										checked={record.visible}
-										label={record.visible ? 'Visible pour les élèves' : 'Masqué aux élèves'}
+										label={record.visible
+											? `Visible pour les ${lore.entities.student}s`
+											: `Masqué aux ${lore.entities.student}s`}
 										onCheckedChange={(checked) => {
 											const isChecked = typeof checked === 'boolean' ? checked : false;
 											handleVisibilityChange(record.classId, isChecked);

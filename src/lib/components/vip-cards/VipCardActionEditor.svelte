@@ -796,9 +796,9 @@
 			/>
 			<p class="text-xs text-muted-foreground">
 				{#if actionContext}
-					L'élève peut activer cette carte sans approbation de l'enseignant
+					Le {lore.entities.student} peut activer cette carte sans approbation de l'enseignant
 				{:else}
-					L'élève doit demander l'approbation de l'enseignant avant d'activer
+					Le {lore.entities.student} doit demander l'approbation de l'enseignant avant d'activer
 				{/if}
 			</p>
 		</div>

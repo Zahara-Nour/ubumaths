@@ -33,6 +33,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { untrack } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Avatar from '$lib/components/ui/avatar';
@@ -786,7 +787,7 @@
 
 					{#if message.role === 'user'}
 						<Avatar.Root class="h-12 w-12 flex-shrink-0">
-							<Avatar.Image src="" alt="Élève" />
+							<Avatar.Image src="" alt={lore.entities.student} />
 							<Avatar.Fallback class="bg-muted">
 								<User class="h-6 w-6 text-muted-foreground" />
 							</Avatar.Fallback>

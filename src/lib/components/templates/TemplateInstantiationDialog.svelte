@@ -8,6 +8,7 @@
 	@module components/templates/TemplateInstantiationDialog
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { ChapterTemplate } from '$lib/types/chapter-templates';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
@@ -214,7 +215,7 @@
 			<!-- Visibility -->
 			<div class="space-y-2">
 				<Label>Visibilité</Label>
-				<MyCheckbox bind:checked={isVisible} label="Visible pour les élèves" />
+				<MyCheckbox bind:checked={isVisible} label="Visible pour les {lore.entities.student}s" />
 				<p class="text-xs text-muted-foreground">Vous pourrez modifier cette option plus tard</p>
 			</div>
 

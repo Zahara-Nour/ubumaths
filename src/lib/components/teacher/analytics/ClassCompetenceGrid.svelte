@@ -70,7 +70,7 @@
 	});
 
 	function displayName(s: ClassStudent, idx: number): string {
-		return anonymized ? `Élève ${idx + 1}` : s.display_name;
+		return anonymized ? `${lore.entities.student} ${idx + 1}` : s.display_name;
 	}
 
 	function freshnessLabel(iso: string | null): string {
@@ -110,7 +110,10 @@
 			</p>
 		{:else}
 			<div class="overflow-x-auto">
-				<table class="w-full border-collapse text-sm" aria-label="Grille compétences × élèves">
+				<table
+					class="w-full border-collapse text-sm"
+					aria-label="Grille compétences × {lore.entities.student}s"
+				>
 					<thead>
 						<tr class="border-b border-border">
 							<th class="sticky left-0 z-10 bg-background px-2 py-2 text-left font-medium">

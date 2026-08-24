@@ -325,7 +325,7 @@
 												<div>
 													<MyCheckbox
 														bind:checked={config.visible}
-														label="Visible pour les élèves"
+														label="Visible pour les {lore.entities.student}s"
 													/>
 												</div>
 

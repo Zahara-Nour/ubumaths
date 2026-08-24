@@ -147,6 +147,6 @@
 <AnalyticsModal
 	bind:open={modalOpen}
 	title={modalTitle}
-	description="Élèves concernés par cette capacité."
+	description="{lore.entities.student}s concernés par cette capacité."
 	students={modalStudents}
 />

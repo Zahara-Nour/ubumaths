@@ -305,7 +305,7 @@
 						<div>
 							<p class="font-medium">{getDisplayName(user)}</p>
 							<p class="text-sm text-muted-foreground">
-								{user.role === 'teacher' ? 'Enseignant' : 'Élève'}
+								{user.role === 'teacher' ? 'Enseignant' : lore.entities.student}
 							</p>
 						</div>
 					</div>

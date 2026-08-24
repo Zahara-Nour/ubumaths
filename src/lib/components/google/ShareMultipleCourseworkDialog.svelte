@@ -552,7 +552,7 @@
 						<div>
 							<MyCheckbox
 								bind:checked={visible}
-								label="Visible pour les élèves"
+								label="Visible pour les {lore.entities.student}s"
 								disabled={submitting}
 							/>
 							<p class="mt-1 ml-6 text-xs text-muted-foreground">

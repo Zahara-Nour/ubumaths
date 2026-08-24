@@ -161,7 +161,9 @@
 			const text = await file.text();
 			pasteText = text; // Update textarea with file content
 			await processData(text);
-			toaster.success(`${csvPreview.length} élève(s) chargé(s) depuis le fichier`);
+			toaster.success(
+				`${csvPreview.length} ${lore.entities.student}(s) chargé(s) depuis le fichier`
+			);
 		} catch (error) {
 			toaster.error('Erreur lors de la lecture du fichier');
 			console.error(error);
@@ -210,7 +212,7 @@
 
 		try {
 			await processData(pasteText);
-			toaster.success(`${csvPreview.length} élève(s) chargé(s)`);
+			toaster.success(`${csvPreview.length} ${lore.entities.student}(s) chargé(s)`);
 		} catch (error) {
 			toaster.error('Erreur lors du traitement des données');
 			console.error(error);
@@ -354,7 +356,8 @@
 						<Label for="drop-zone">Données des {lore.entities.student}s</Label>
 						<div
 							role="region"
-							aria-label="Zone de saisie ou glisser-déposer pour importer des élèves"
+							aria-label="Zone de saisie ou glisser-déposer pour importer des {lore.entities
+								.student}s"
 							class="relative rounded-lg border-2 border-dashed transition-all {isDragging
 								? 'border-primary bg-primary/5'
 								: 'border-border hover:border-primary/50'}"
@@ -450,7 +453,7 @@
 							return async ({ result, update }) => {
 								isProcessing = false;
 								if (result.type === 'success') {
-									toaster.success('Élèves importés avec succès');
+									toaster.success(`${lore.entities.student}s importés avec succès`);
 									handleClearPreview();
 								} else if (result.type === 'failure') {
 									toaster.error((result.data?.message as string) || "Erreur lors de l'importation");
@@ -463,7 +466,7 @@
 						<input type="hidden" name="school_id" value={selectedSchoolId} />
 						<div class="flex gap-2">
 							<Button type="submit" disabled={isProcessing}>
-								{isProcessing ? 'Importation...' : 'Importer les élèves'}
+								{isProcessing ? 'Importation...' : `Importer les ${lore.entities.student}s`}
 							</Button>
 							<Button type="button" variant="outline" onclick={handleClearPreview}
 								>{lore.actions.cancel}</Button

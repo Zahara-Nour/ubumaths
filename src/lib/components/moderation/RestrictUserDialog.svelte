@@ -260,7 +260,7 @@
 						type="single"
 						bind:value={selectedUserId}
 						items={studentItems}
-						placeholder="Sélectionner un élève..."
+						placeholder="Sélectionner un {lore.entities.student}..."
 					/>
 				</div>
 			{/if}

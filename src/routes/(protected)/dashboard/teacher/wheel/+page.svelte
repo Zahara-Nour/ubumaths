@@ -47,7 +47,7 @@
 
 			// Find student name
 			const student = selectedStudents().find((s) => s.id === studentId);
-			const studentName = student?.firstname || 'Élève';
+			const studentName = student?.firstname || lore.entities.student;
 
 			toaster.success(`+${amount} gidouilles pour ${studentName} !`);
 		} catch (error) {

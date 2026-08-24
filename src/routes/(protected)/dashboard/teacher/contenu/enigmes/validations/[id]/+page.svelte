@@ -39,8 +39,8 @@
 		if (isSubmitting) return;
 
 		const confirmMessage = isCorrect
-			? `Confirmer la validation de la réponse ? L'élève recevra ${potentialGidouilles} gidouilles.`
-			: "Confirmer le refus de la réponse ? L'élève pourra réessayer.";
+			? `Confirmer la validation de la réponse ? Le ${lore.entities.student} recevra ${potentialGidouilles} gidouilles.`
+			: `Confirmer le refus de la réponse ? Le ${lore.entities.student} pourra réessayer.`;
 
 		if (!confirm(confirmMessage)) return;
 

@@ -375,7 +375,7 @@
 		if (student.firstname && student.lastname) {
 			return `${student.firstname} ${student.lastname}`;
 		}
-		return student.firstname || student.email || 'Élève';
+		return student.firstname || student.email || lore.entities.student;
 	}
 
 	/**
@@ -669,7 +669,8 @@
 												{:else}
 													<Badge
 														variant="secondary"
-														title="L'élève doit avoir une adresse email pour recevoir le message de bienvenue"
+														title="Le {lore.entities
+															.student} doit avoir une adresse email pour recevoir le message de bienvenue"
 													>
 														Email requis
 													</Badge>
