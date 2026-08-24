@@ -626,8 +626,11 @@ function convertTextAction(attrs: IepAction['$'], mouvement: string, ctx: Conver
 				.replace(/£lt£/g, '<')
 				.replace(/£gt£/g, '>')
 				.replace(/£guillemet£/g, '"')
-				.replace(/£i\(/g, '(')
-				.replace(/\)/g, ')');
+				// IEP encodes indexed names as £i(NAME,INDEX): decode £i(A,1) → A1
+				// (same handling as constructions-v2/converter.ts). The previous
+				// `£i(`→`(` + `)`→`)` (a no-op) left a stray "£i" prefix on any label
+				// containing a closing paren.
+				.replace(/£i\(([^,)]+),\s*(\d+)\)/g, '$1$2');
 			// Note: Not stripping HTML tags as it would remove intentional < > chars
 
 			// Skip empty text content
