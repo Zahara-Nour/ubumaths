@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
@@ -444,7 +445,7 @@
 			<Popover.Content class="w-80 p-0" align="end">
 				<div class="border-b px-3 py-2">
 					<div class="flex items-center justify-between">
-						<span class="text-sm font-medium">Exercices visibles</span>
+						<span class="text-sm font-medium">{lore.learning.exercise}s visibles</span>
 						<div class="flex gap-1">
 							<Button
 								variant="ghost"
@@ -473,7 +474,7 @@
 							<div class="flex items-center justify-between rounded px-2 py-1.5 hover:bg-muted/50">
 								<span class="text-sm">
 									<span class="text-muted-foreground">#{exercise.position}</span>
-									{exercise.title || `Exercice ${exercise.position}`}
+									{exercise.title || `${lore.learning.exercise} ${exercise.position}`}
 								</span>
 								<MyCheckbox
 									checked={exercise.show_correction}

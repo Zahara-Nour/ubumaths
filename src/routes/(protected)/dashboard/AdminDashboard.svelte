@@ -47,6 +47,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -372,7 +373,7 @@
 						<div class="grid grid-cols-2 gap-3">
 							<div>
 								<p class="text-2xl font-bold text-foreground">{stats.content.exercises}</p>
-								<p class="text-xs text-muted-foreground">Exercices</p>
+								<p class="text-xs text-muted-foreground">{lore.learning.exercise}s</p>
 							</div>
 							<div>
 								<p class="text-2xl font-bold text-foreground">{stats.content.assessments}</p>

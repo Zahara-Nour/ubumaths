@@ -168,7 +168,7 @@
 	<div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-4">
 		<Card.Root>
 			<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-				<Card.Title class="text-sm font-medium">Exercices concernés</Card.Title>
+				<Card.Title class="text-sm font-medium">{lore.learning.exercise}s concernées</Card.Title>
 				<BookOpen class="h-4 w-4 text-muted-foreground" />
 			</Card.Header>
 			<Card.Content>
@@ -223,7 +223,8 @@
 		<Card.Header>
 			<Card.Title>Détails par {lore.learning.exercise}</Card.Title>
 			<Card.Description>
-				{sortedRows.length} exercice{sortedRows.length > 1 ? 's' : ''}
+				{sortedRows.length}
+				{lore.learning.exercise}{sortedRows.length > 1 ? 's' : ''}
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
@@ -232,8 +233,8 @@
 					<AlertCircle class="mx-auto mb-3 h-12 w-12 opacity-50" />
 					<p>Aucune {lore.learning.exercise} à afficher</p>
 					<p class="mt-2 text-sm">
-						Soit ce {lore.entities.student} n'a pas encore travaillé vos exercices, soit vous ne lui
-						en avez pas encore assigné.
+						Soit ce {lore.entities.student} n'a pas encore travaillé vos {lore.learning.exercise}s,
+						soit vous ne lui en avez pas encore assigné.
 					</p>
 				</div>
 			{:else}

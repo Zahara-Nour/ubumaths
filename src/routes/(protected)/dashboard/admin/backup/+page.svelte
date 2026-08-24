@@ -253,7 +253,7 @@
 <div class="container mx-auto max-w-4xl space-y-6 p-6">
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-2xl font-bold">Backup & Restauration des Exercices</h1>
+			<h1 class="text-2xl font-bold">Backup & Restauration des {lore.learning.exercise}s</h1>
 			<p class="text-muted-foreground">Sauvegardez et restaurez les donnees d'exercices</p>
 		</div>
 		<Button variant="outline" size="sm" onclick={refreshStats}>

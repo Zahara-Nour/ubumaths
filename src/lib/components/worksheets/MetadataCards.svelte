@@ -579,7 +579,7 @@
 						<MyCheckbox
 							checked={worksheet.config?.shuffle_exercises ?? false}
 							onchange={(v) => handleConfigChange('shuffle_exercises', v)}
-							label="Melanger exercices"
+							label="Melanger {lore.learning.exercise}s"
 						/>
 						<MyCheckbox
 							checked={worksheet.config?.shuffle_within_sections ?? false}

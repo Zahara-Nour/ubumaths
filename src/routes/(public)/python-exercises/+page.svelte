@@ -10,13 +10,14 @@
 	<title>{lore.learning.exercise}s Python – Chiphre</title>
 	<meta
 		name="description"
-		content="Crée des exercices Python avec validation automatique et partage-les via un simple lien."
+		content="Crée des {lore.learning
+			.exercise}s Python avec validation automatique et partage-les via un simple lien."
 	/>
 </svelte:head>
 
 <div class="container mx-auto max-w-3xl p-4 py-8">
 	<header class="mb-6">
-		<h1 class="mb-2 text-3xl font-bold">Exercices Python</h1>
+		<h1 class="mb-2 text-3xl font-bold">{lore.learning.exercise}s Python</h1>
 		<p class="text-muted-foreground">
 			Crée une {lore.learning.exercise} Python avec une validation automatique (comparaison de sortie,
 			test de fonction, ou analyse syntaxique) et partage-le via un simple lien. Les {lore.entities
@@ -53,15 +54,15 @@
 	{#if data.isTeacher}
 		<div class="flex flex-wrap gap-2">
 			<Button href="/python-exercises/new">
-				<Plus class="mr-1 h-4 w-4" /> Créer un exercice
+				<Plus class="mr-1 h-4 w-4" /> Créer une {lore.learning.exercise}
 			</Button>
 			<Button variant="outline" href="/python-exercises/mine">
-				<BookOpen class="mr-1 h-4 w-4" /> Mes exercices
+				<BookOpen class="mr-1 h-4 w-4" /> Mes {lore.learning.exercise}s
 			</Button>
 		</div>
 	{:else}
 		<p class="text-sm text-muted-foreground">
-			La création d'exercices est réservée aux {lore.entities.teacher}s.
+			La création de {lore.learning.exercise}s est réservée aux {lore.entities.teacher}s.
 		</p>
 	{/if}
 </div>

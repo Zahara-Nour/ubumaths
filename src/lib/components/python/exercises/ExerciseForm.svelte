@@ -307,8 +307,8 @@
 						{/each}
 					</ul>
 					<p class="mt-1 text-red-700 dark:text-red-300">
-						Tant que les marqueurs sont en erreur, l'exercice s'ouvrira en édition libre côté {lore
-							.entities.student}
+						Tant que les marqueurs sont en erreur, la {lore.learning.exercise} s'ouvrira en édition libre
+						côté {lore.entities.student}
 						(mode dégradé).
 					</p>
 				</div>
@@ -380,7 +380,7 @@
 		{#if verifyResult && !verifyResult.valid}
 			<p class="text-xs text-amber-700 dark:text-amber-400">
 				La solution doit passer la validation avant que tu puisses {mode === 'create'
-					? "créer l'exercice"
+					? `créer la ${lore.learning.exercise}`
 					: 'enregistrer'}.
 			</p>
 		{/if}

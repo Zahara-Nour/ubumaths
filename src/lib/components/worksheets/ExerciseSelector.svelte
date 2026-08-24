@@ -406,7 +406,7 @@
 				{:else if exercises.length === 0}
 					<div class="py-12 text-center text-muted-foreground">
 						<FileText class="mx-auto h-12 w-12 opacity-50" />
-						<p class="mt-2">Aucun exercice trouve</p>
+						<p class="mt-2">Aucune {lore.learning.exercise} trouve</p>
 						{#if hasActiveFilters || searchQuery}
 							<Button variant="link" size="sm" onclick={clearFilters}>Effacer les filtres</Button>
 						{/if}
@@ -431,7 +431,7 @@
 										checked={selected}
 										onCheckedChange={() => toggleExercise(exercise)}
 										{disabled}
-										aria-label="Selectionner {exercise.title || 'exercice'}"
+										aria-label="Selectionner {exercise.title || lore.learning.exercise}"
 									/>
 								</div>
 
@@ -455,7 +455,7 @@
 											size="icon"
 											class="h-8 w-8 shrink-0"
 											onclick={() => openPreview(exercise)}
-											aria-label="Apercu de l'exercice"
+											aria-label="Apercu de la {lore.learning.exercise}"
 										>
 											<Eye class="h-4 w-4" />
 										</Button>

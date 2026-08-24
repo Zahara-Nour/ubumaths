@@ -78,9 +78,9 @@ $$f(x) = f(a) + f'(a)(x-a) + \\frac{f''(a)}{2!}(x-a)^2 + \\cdots$$
 
 <div class="container mx-auto p-6">
 	<div class="mb-6">
-		<h1 class="text-3xl font-bold">Test - Système d'exercices</h1>
+		<h1 class="text-3xl font-bold">Test - Système de {lore.learning.exercise}s</h1>
 		<p class="mt-2 text-muted-foreground">
-			Testez l'éditeur markdown et l'affichage des exercices avec MathLive
+			Testez l'éditeur markdown et l'affichage des {lore.learning.exercise}s avec MathLive
 		</p>
 	</div>
 

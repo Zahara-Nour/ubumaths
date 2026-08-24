@@ -210,16 +210,17 @@
 </script>
 
 <svelte:head>
-	<title>Feuilles d'exercices - Chiphre</title>
+	<title>Feuilles de {lore.learning.exercise}s - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto space-y-6 py-6">
 	<!-- Header -->
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-3xl font-bold">Feuilles d'exercices</h1>
+			<h1 class="text-3xl font-bold">Feuilles de {lore.learning.exercise}s</h1>
 			<p class="text-muted-foreground">
-				Creez et gerez vos feuilles d'exercices, evaluations et {lore.learning.exam}s
+				Creez et gerez vos feuilles de {lore.learning.exercise}s, evaluations et {lore.learning
+					.exam}s
 			</p>
 		</div>
 		<div class="flex gap-2">
@@ -315,7 +316,7 @@
 					{#if data.worksheets.length === 0}
 						<Table.Row>
 							<Table.Cell colspan={7} class="py-8 text-center text-muted-foreground">
-								Aucune feuille trouvee. Creez votre premiere feuille d'exercices !
+								Aucune feuille trouvee. Creez votre premiere feuille de {lore.learning.exercise}s !
 							</Table.Cell>
 						</Table.Row>
 					{:else}

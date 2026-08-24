@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
@@ -96,8 +97,9 @@
 		<Dialog.Header>
 			<Dialog.Title>Signaler une erreur</Dialog.Title>
 			<Dialog.Description>
-				Exercice {exercisePosition + 1} - Décrivez l'erreur que vous avez trouvée (faute de frappe, énoncé
-				incorrect, erreur dans la correction, etc.)
+				{lore.learning.exercise}
+				{exercisePosition + 1} - Décrivez l'erreur que vous avez trouvée (faute de frappe, énoncé incorrect,
+				erreur dans la correction, etc.)
 			</Dialog.Description>
 		</Dialog.Header>
 

@@ -246,7 +246,7 @@
 							<div class="space-y-2">
 								<div class="flex items-center gap-2">
 									<Dumbbell class="h-4 w-4 text-muted-foreground" />
-									<h4 class="text-sm font-medium">Exercices</h4>
+									<h4 class="text-sm font-medium">{lore.learning.exercise}s</h4>
 								</div>
 								<div class="flex flex-wrap gap-2 text-xs">
 									{#if stats.exercisesAdded > 0}

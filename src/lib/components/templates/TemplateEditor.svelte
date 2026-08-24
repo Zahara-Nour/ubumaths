@@ -8,6 +8,7 @@
 	@module components/templates/TemplateEditor
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type {
 		ChapterTemplate,
 		TemplateContentSnapshot,
@@ -278,7 +279,7 @@
 				</Tabs.Trigger>
 				<Tabs.Trigger value="exercises" class="flex items-center gap-1">
 					<Dumbbell class="h-4 w-4" />
-					<span class="hidden sm:inline">Exercices</span>
+					<span class="hidden sm:inline">{lore.learning.exercise}s</span>
 					<Badge variant="secondary" class="ml-1 text-xs">
 						{contentSnapshot.exercises.length}
 					</Badge>
@@ -483,9 +484,9 @@
 					class="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-12"
 				>
 					<Dumbbell class="mb-3 h-12 w-12 text-muted-foreground/50" />
-					<h3 class="mb-1 text-lg font-semibold">Gestion des exercices</h3>
+					<h3 class="mb-1 text-lg font-semibold">Gestion des {lore.learning.exercise}s</h3>
 					<p class="text-sm text-muted-foreground">
-						L'éditeur d'exercices sera disponible prochainement.
+						L'éditeur de {lore.learning.exercise}s sera disponible prochainement.
 					</p>
 				</div>
 			</Tabs.Content>

@@ -339,7 +339,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.exercise.title || 'Exercice'} | Chiphre</title>
+	<title>{data.exercise.title || lore.learning.exercise} | Chiphre</title>
 	<meta name="description" content={metaDescription} />
 </svelte:head>
 
@@ -410,7 +410,9 @@
 					<Card.Header>
 						<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 							<div class="flex-1">
-								<Card.Title class="text-2xl">{data.exercise.title || 'Exercice'}</Card.Title>
+								<Card.Title class="text-2xl"
+									>{data.exercise.title || lore.learning.exercise}</Card.Title
+								>
 
 								<!-- Exercise metadata -->
 								<div class="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
@@ -580,7 +582,9 @@
 				<Card.Header>
 					<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 						<div class="flex-1">
-							<Card.Title class="text-2xl">{data.exercise.title || 'Exercice'}</Card.Title>
+							<Card.Title class="text-2xl"
+								>{data.exercise.title || lore.learning.exercise}</Card.Title
+							>
 
 							<!-- Exercise metadata -->
 							<div class="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
@@ -755,7 +759,8 @@
 			<Card.Header>
 				<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 					<div class="flex-1">
-						<Card.Title class="text-2xl">{data.exercise.title || 'Exercice'}</Card.Title>
+						<Card.Title class="text-2xl">{data.exercise.title || lore.learning.exercise}</Card.Title
+						>
 
 						<!-- Exercise metadata -->
 						<div class="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">

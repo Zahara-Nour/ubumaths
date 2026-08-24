@@ -20,6 +20,7 @@
 	```
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
@@ -141,7 +142,7 @@
 			class="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950"
 		>
 			<p class="text-sm text-blue-700 dark:text-blue-300">
-				<span class="font-medium">Exercice parametrable:</span>
+				<span class="font-medium">{lore.learning.exercise} parametrable:</span>
 				{exercise.variables?.length} variable(s) definies. Chaque eleve recevra des valeurs differentes.
 			</p>
 		</div>

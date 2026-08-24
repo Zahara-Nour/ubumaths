@@ -827,7 +827,7 @@ INFORMATIONS
 							</h4>
 							<ul class="space-y-1 text-sm text-muted-foreground">
 								<li>- PDF personnalise avec le nom de chaque eleve</li>
-								<li>- Variantes d'exercices selon la configuration</li>
+								<li>- Variantes de {lore.learning.exercise}s selon la configuration</li>
 								<li>- Fichier ZIP contenant tous les PDFs</li>
 								<li>- Document de synthese avec la liste des eleves</li>
 								{#if mode === 'correction'}

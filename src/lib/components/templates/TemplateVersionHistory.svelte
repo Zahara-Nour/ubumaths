@@ -8,6 +8,7 @@
 	@module components/templates/TemplateVersionHistory
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { ChapterTemplateVersion } from '$lib/types/chapter-templates';
 	import * as Card from '$lib/components/ui/card';
@@ -250,7 +251,7 @@
 
 											{#if stats.exercisesAdded + stats.exercisesRemoved + stats.exercisesModified > 0}
 												<div class="rounded-md bg-muted p-2">
-													<p class="font-medium">Exercices</p>
+													<p class="font-medium">{lore.learning.exercise}s</p>
 													<ul class="mt-1 space-y-0.5 text-muted-foreground">
 														{#if stats.exercisesAdded > 0}
 															<li class="text-green-600 dark:text-green-400">

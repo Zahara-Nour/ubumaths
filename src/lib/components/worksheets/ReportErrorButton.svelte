@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Separator } from '$lib/components/ui/separator';
@@ -154,7 +155,7 @@
 			size="sm"
 			onclick={handleOpenDialog}
 			class="h-8 gap-1 text-muted-foreground hover:text-foreground"
-			aria-label="Signaler une erreur dans cet exercice"
+			aria-label="Signaler une erreur dans cette {lore.learning.exercise}"
 		>
 			<AlertTriangle class="h-4 w-4" />
 			<span class="text-xs">Signaler</span>

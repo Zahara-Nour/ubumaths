@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * CreateFolderDialog - Dialog for creating a new subfolder
 	 *
@@ -111,7 +112,7 @@
 				<Input
 					id="folder-name"
 					bind:value={folderName}
-					placeholder="Ex: Chapitre 1, Exercices..."
+					placeholder="Ex: Chapitre 1, {lore.learning.exercise}s..."
 					onkeydown={handleKeydown}
 					disabled={isCreating}
 				/>

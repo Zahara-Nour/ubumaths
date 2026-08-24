@@ -52,7 +52,7 @@
 
 <div class="container mx-auto py-6">
 	<div class="mb-6">
-		<h1 class="text-3xl font-bold">Nouvel exercice</h1>
+		<h1 class="text-3xl font-bold">Nouvelle {lore.learning.exercise}</h1>
 		<p class="text-muted-foreground">Créez un nouvel exercice avec support LaTeX</p>
 	</div>
 

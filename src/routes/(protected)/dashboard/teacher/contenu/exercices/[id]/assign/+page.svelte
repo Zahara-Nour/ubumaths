@@ -251,7 +251,7 @@
 </script>
 
 <svelte:head>
-	<title>Assigner l'exercice - Chiphre</title>
+	<title>Assigner la {lore.learning.exercise} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
@@ -261,7 +261,7 @@
 			<ArrowLeft class="h-5 w-5" />
 		</Button>
 		<div class="flex-1">
-			<h1 class="text-3xl font-bold tracking-tight">Assigner l'exercice</h1>
+			<h1 class="text-3xl font-bold tracking-tight">Assigner la {lore.learning.exercise}</h1>
 			<p class="mt-2 text-muted-foreground">{data.exercise.title || '(Sans titre)'}</p>
 		</div>
 	</div>

@@ -218,7 +218,7 @@
 					<BookOpen class="h-5 w-5 text-muted-foreground" />
 					<div>
 						<p class="text-2xl font-bold">{contentCounts.exerciseCount}</p>
-						<p class="text-xs text-muted-foreground">Exercices</p>
+						<p class="text-xs text-muted-foreground">{lore.learning.exercise}s</p>
 					</div>
 				</div>
 			</div>

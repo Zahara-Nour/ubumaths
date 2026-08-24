@@ -151,7 +151,8 @@
 		<div class="flex items-center gap-2 text-sm text-muted-foreground">
 			<ListChecks class="h-4 w-4 flex-shrink-0" />
 			<span>
-				{worksheet.exercise_count} exercice{worksheet.exercise_count > 1 ? 's' : ''}
+				{worksheet.exercise_count}
+				{lore.learning.exercise}{worksheet.exercise_count > 1 ? 's' : ''}
 			</span>
 		</div>
 

@@ -23,6 +23,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import {
 		TUTOR_MAX_PER_EXERCISE,
 		TUTOR_MAX_PER_HOUR,
@@ -80,7 +81,7 @@
 		{#if remaining.exercise !== null}
 			<span
 				class="flex items-center gap-1 {getColorClass(exercisePercent ?? 0)}"
-				title="Messages restants sur cet exercice ({TUTOR_MAX_PER_EXERCISE} max)"
+				title="Messages restants sur cette {lore.learning.exercise} ({TUTOR_MAX_PER_EXERCISE} max)"
 			>
 				<span class="text-sm">📝</span>
 				<span class="font-medium">{remaining.exercise}/{TUTOR_MAX_PER_EXERCISE}</span>
