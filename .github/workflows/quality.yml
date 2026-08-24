@@ -53,7 +53,7 @@ jobs:
       # Key prefix is versioned (-content) so the new content-strategy cache
       # starts clean and never restores a stale metadata-strategy cache.
       - name: Restore ESLint cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .eslintcache
           key: eslint-content-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'eslint.config.*') }}-${{ github.sha }}
