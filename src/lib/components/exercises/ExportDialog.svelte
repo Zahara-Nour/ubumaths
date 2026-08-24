@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
@@ -37,7 +38,7 @@
 	 */
 	async function handleExport() {
 		if (exerciseIds.length === 0) {
-			toaster.error('Aucun exercice sélectionné');
+			toaster.error(`Aucune ${lore.learning.exercise} sélectionnée`);
 			return;
 		}
 
@@ -71,7 +72,7 @@
 			} else {
 				// Single file
 				downloadFile(result.filename, result.content, result.mime_type);
-				toaster.success('Exercice(s) exporté(s) avec succès');
+				toaster.success(`${lore.learning.exercise}(s) exportée(s) avec succès`);
 			}
 
 			// Close dialog
@@ -103,12 +104,12 @@
 <Dialog.Root {open} onOpenChange={handleOpenChange}>
 	<Dialog.Content class="sm:max-w-[500px]">
 		<Dialog.Header>
-			<Dialog.Title>Exporter des exercices</Dialog.Title>
+			<Dialog.Title>Exporter des {lore.learning.exercise}s</Dialog.Title>
 			<Dialog.Description>
 				{#if exerciseIds.length === 1}
-					Exporter 1 exercice
+					Exporter 1 {lore.learning.exercise}
 				{:else}
-					Exporter {exerciseIds.length} exercices
+					Exporter {exerciseIds.length} {lore.learning.exercise}s
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
@@ -164,11 +165,11 @@
 			>
 				<p class="text-sm text-blue-900 dark:text-blue-100">
 					{#if exerciseIds.length === 1}
-						L'exercice sera téléchargé au format {selectedFormat.toUpperCase()}.
+						La {lore.learning.exercise} sera téléchargée au format {selectedFormat.toUpperCase()}.
 					{:else if selectedFormat === 'json'}
-						Les exercices seront combinés dans un seul fichier JSON.
+						Les {lore.learning.exercise}s seront combinées dans un seul fichier JSON.
 					{:else}
-						Chaque exercice sera téléchargé dans un fichier Markdown séparé.
+						Chaque {lore.learning.exercise} sera téléchargée dans un fichier Markdown séparé.
 					{/if}
 				</p>
 			</div>

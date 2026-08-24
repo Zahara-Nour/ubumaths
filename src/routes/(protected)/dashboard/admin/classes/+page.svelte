@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
@@ -145,10 +146,10 @@
 	<!-- Header -->
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-3xl font-bold text-foreground">Gestion des Classes</h1>
-			<p class="mt-2 text-muted-foreground">Gérer les classes du système</p>
+			<h1 class="text-3xl font-bold text-foreground">Gestion des {lore.entities.class}s</h1>
+			<p class="mt-2 text-muted-foreground">Gérer les {lore.entities.class}s du système</p>
 		</div>
-		<Button onclick={openCreateModal}>+ Ajouter une Classe</Button>
+		<Button onclick={openCreateModal}>+ Ajouter une {lore.entities.class}</Button>
 	</div>
 
 	<!-- Filters -->
@@ -170,7 +171,7 @@
 			<div class="flex items-center gap-2">
 				<Switch bind:checked={showActiveOnly} id="active-filter" />
 				<label for="active-filter" class="cursor-pointer text-sm font-medium text-foreground">
-					Classes actives uniquement
+					{lore.entities.class}s actifs uniquement
 				</label>
 			</div>
 		</div>
@@ -185,7 +186,7 @@
 						<th
 							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>
-							Nom de la Classe
+							Nom de la {lore.entities.class}
 						</th>
 						<th
 							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
@@ -285,7 +286,7 @@
 												deactivatingClassId = null;
 												classToDeactivate = null;
 												if (result.type === 'success') {
-													toaster.success('Classe désactivée avec succès');
+													toaster.success(`${lore.entities.class} désactivé avec succès`);
 												} else if (result.type === 'failure') {
 													const message =
 														(result.data as unknown as { message?: string })?.message ||
@@ -323,7 +324,7 @@
 												await update();
 												activatingClassId = null;
 												if (result.type === 'success') {
-													toaster.success('Classe activée avec succès');
+													toaster.success(`${lore.entities.class} activé avec succès`);
 												} else if (result.type === 'failure') {
 													const message =
 														(result.data as unknown as { message?: string })?.message ||
@@ -357,10 +358,11 @@
 						<tr>
 							<td colspan="7" class="px-6 py-8 text-center text-muted-foreground">
 								{#if selectedSchool}
-									Aucune classe trouvée pour cette école. Cliquez sur "Ajouter une Classe" pour en
-									créer une.
+									Aucun {lore.entities.class} trouvé pour cette école. Cliquez sur "Ajouter une {lore
+										.entities.class}" pour en créer une.
 								{:else}
-									Aucune classe trouvée. Cliquez sur "Ajouter une Classe" pour en créer une.
+									Aucun {lore.entities.class} trouvé. Cliquez sur "Ajouter une {lore.entities
+										.class}" pour en créer une.
 								{/if}
 							</td>
 						</tr>
@@ -394,7 +396,9 @@
 				<!-- Modal Header -->
 				<div class="border-b border-border bg-card px-6 pt-6 pb-4">
 					<h3 class="text-lg font-medium text-foreground" id="modal-title">
-						{editingClass ? 'Modifier la Classe' : 'Ajouter une Classe'}
+						{editingClass
+							? `Modifier la ${lore.entities.class}`
+							: `Ajouter une ${lore.entities.class}`}
 					</h3>
 				</div>
 
@@ -409,9 +413,9 @@
 								const wasEditing = !!editingClass;
 								closeModal();
 								if (wasEditing) {
-									toaster.success('Classe mise à jour avec succès');
+									toaster.success(`${lore.entities.class} mis à jour avec succès`);
 								} else {
-									toaster.success('Classe créée avec succès');
+									toaster.success(`${lore.entities.class} créé avec succès`);
 								}
 							} else if (result.type === 'failure') {
 								const message =
@@ -431,7 +435,7 @@
 							<!-- Class Name -->
 							<div>
 								<label for="name" class="mb-1 block text-sm font-medium text-foreground">
-									Nom de la Classe *
+									Nom de la {lore.entities.class} *
 								</label>
 								<Input
 									type="text"
@@ -453,7 +457,7 @@
 									id="description"
 									rows={2}
 									bind:value={formData.description}
-									placeholder="Description de la classe (optionnel)"
+									placeholder="Description du {lore.entities.class} (optionnel)"
 								/>
 							</div>
 
@@ -535,7 +539,7 @@
 										class="h-4 w-4 rounded border-input"
 									/>
 									<label for="is_active" class="text-sm text-foreground">
-										La classe est active
+										Le {lore.entities.class} est actif
 									</label>
 								</div>
 							{/if}
@@ -543,7 +547,9 @@
 					</div>
 
 					<div class="flex justify-end gap-2 bg-muted px-6 py-3">
-						<Button type="button" variant="outline" onclick={closeModal}>Annuler</Button>
+						<Button type="button" variant="outline" onclick={closeModal}
+							>{lore.actions.cancel}</Button
+						>
 						<Button type="submit">
 							{editingClass ? 'Mettre à jour' : 'Créer'}
 						</Button>
@@ -557,8 +563,8 @@
 <!-- Deactivate Confirmation Dialog -->
 <ConfirmDialog
 	bind:open={deactivateDialogOpen}
-	title="Désactiver cette classe ?"
-	description={`Vous allez désactiver la classe "${classToDeactivate?.name || ''}". Les étudiants ne pourront plus y accéder.`}
+	title="Désactiver ce {lore.entities.class} ?"
+	description={`Vous allez désactiver le ${lore.entities.class} "${classToDeactivate?.name || ''}". Les étudiants ne pourront plus y accéder.`}
 	confirmLabel="Désactiver"
 	variant="destructive"
 	onConfirm={handleDeactivateConfirm}

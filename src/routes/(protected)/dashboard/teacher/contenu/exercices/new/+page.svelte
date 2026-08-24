@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import ExerciseForm from '$lib/components/exercises/ExerciseForm.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -32,12 +33,14 @@
 			}
 
 			const result = await response.json();
-			toaster.success('Exercice créé avec succès');
+			toaster.success(`${lore.learning.exercise} créée avec succès`);
 			goto(`/dashboard/teacher/contenu/exercices/${result.exercise.id}`);
 		} catch (error) {
 			console.error('Error creating exercise:', error);
 			toaster.error(
-				error instanceof Error ? error.message : "Erreur lors de la création de l'exercice"
+				error instanceof Error
+					? error.message
+					: `Erreur lors de la création de la ${lore.learning.exercise}`
 			);
 		} finally {
 			submitting = false;
@@ -46,13 +49,15 @@
 </script>
 
 <svelte:head>
-	<title>Nouvel exercice - Chiphre</title>
+	<title>Nouvelle {lore.learning.exercise} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto py-6">
 	<div class="mb-6">
-		<h1 class="text-3xl font-bold">Nouvel exercice</h1>
-		<p class="text-muted-foreground">Créez un nouvel exercice avec support LaTeX</p>
+		<h1 class="text-3xl font-bold">Nouvelle {lore.learning.exercise}</h1>
+		<p class="text-muted-foreground">
+			Créez un nouvelle {lore.learning.exercise} avec support LaTeX
+		</p>
 	</div>
 
 	<ExerciseForm

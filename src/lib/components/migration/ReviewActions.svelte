@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * ReviewActions Component
 	 * =======================
@@ -116,7 +117,7 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={handleCancel}>Annuler</Button>
+			<Button variant="outline" onclick={handleCancel}>{lore.actions.cancel}</Button>
 			<Button variant="destructive" onclick={handleRejectSubmit} disabled={!isRejectValid}>
 				<XCircle class="mr-2 h-4 w-4" />
 				Confirmer le rejet

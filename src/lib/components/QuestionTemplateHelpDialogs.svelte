@@ -15,6 +15,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 
@@ -81,13 +82,15 @@
 					<li class="flex gap-2">
 						<span class="text-primary">•</span>
 						<span
-							><strong>Pour les enseignants</strong> : Notes internes, objectifs pédagogiques, prérequis</span
+							><strong>Pour les {lore.entities.teacher}s</strong> : Notes internes, objectifs pédagogiques,
+							prérequis</span
 						>
 					</li>
 					<li class="flex gap-2">
 						<span class="text-primary">•</span>
 						<span
-							><strong>Pour les élèves</strong> : Instructions supplémentaires, rappels de cours, conseils</span
+							><strong>Pour les {lore.entities.student}s</strong> : Instructions supplémentaires, rappels
+							de cours, conseils</span
 						>
 					</li>
 				</ul>
@@ -95,8 +98,8 @@
 					<p class="font-medium">Exemple de description :</p>
 					<p class="text-xs italic">
 						"Ce template permet de travailler sur la dérivation de polynômes de degré 2 et 3. Les
-						élèves doivent appliquer les règles de dérivation apprises en cours. Rappel : la dérivée
-						de x^n est nx^(n-1)."
+						{lore.entities.student}s doivent appliquer les règles de dérivation apprises en cours.
+						Rappel : la dérivée de x^n est nx^(n-1)."
 					</p>
 				</div>
 			</section>
@@ -183,9 +186,9 @@
 <Dialog.Root bind:open={exerciseInstructionHelpOpen}>
 	<Dialog.Content class="max-h-[85vh] max-w-2xl overflow-y-auto">
 		<Dialog.Header>
-			<Dialog.Title>Consigne d'exercice</Dialog.Title>
+			<Dialog.Title>Consigne de {lore.learning.exercise}</Dialog.Title>
 			<Dialog.Description>
-				Guide pour utiliser efficacement la consigne d'exercice
+				Guide pour utiliser efficacement la consigne de {lore.learning.exercise}
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -193,9 +196,9 @@
 			<section>
 				<h4 class="mb-2 font-semibold">À quoi sert la consigne ?</h4>
 				<p class="text-sm text-muted-foreground">
-					La consigne d'exercice est une instruction partagée par toutes les variations de la
-					question. Elle permet d'indiquer ce que l'élève doit faire (ex: "Calculer", "Résoudre",
-					"Simplifier").
+					La consigne de {lore.learning.exercise} est une instruction partagée par toutes les variations
+					de la question. Elle permet d'indiquer ce que le {lore.entities.student} doit faire (ex: "Calculer",
+					"Résoudre", "Simplifier").
 				</p>
 			</section>
 
@@ -205,15 +208,15 @@
 					<li class="flex gap-2">
 						<span class="text-primary">•</span>
 						<span
-							><strong>Dans les cartes/flashcards</strong> : La consigne apparaît avant l'énoncé pour
-							guider l'élève</span
+							><strong>Dans les cartes/flashcards</strong> : La consigne apparaît avant l'énoncé
+							pour guider le {lore.entities.student}</span
 						>
 					</li>
 					<li class="flex gap-2">
 						<span class="text-primary">•</span>
 						<span
-							><strong>Dans les feuilles d'exercices</strong> : Elle sert de titre d'exercice et n'est
-							pas répétée devant chaque question</span
+							><strong>Dans les feuilles de {lore.learning.exercise}s</strong> : Elle sert de titre
+							de {lore.learning.exercise} et n'est pas répétée devant chaque question</span
 						>
 					</li>
 				</ul>
@@ -275,7 +278,7 @@
 					</li>
 					<li class="flex gap-2">
 						<span class="text-primary">•</span>
-						<span>Créer des exercices ciblés sur un sujet précis</span>
+						<span>Créer des {lore.learning.exercise}s ciblées sur un sujet précis</span>
 					</li>
 				</ul>
 			</section>
@@ -367,7 +370,8 @@
 					<li class="flex gap-2">
 						<span class="text-primary">•</span>
 						<span
-							><strong>Diversité</strong> : Éviter que les élèves tombent toujours sur la même formulation</span
+							><strong>Diversité</strong> : Éviter que les {lore.entities.student}s tombent toujours
+							sur la même formulation</span
 						>
 					</li>
 					<li class="flex gap-2">
@@ -419,7 +423,7 @@
 					<div class="rounded border bg-blue-50 p-3 text-sm dark:bg-blue-950">
 						<p class="mb-1 font-semibold">Partagés (même pour toutes les variations) :</p>
 						<ul class="ml-4 space-y-0.5 text-xs">
-							<li>• Consigne d'exercice</li>
+							<li>• Consigne de {lore.learning.exercise}</li>
 							<li>• Catégorisation (thème, domaine, niveau)</li>
 							<li>• Niveaux scolaires</li>
 							<li>• Type de question</li>
@@ -481,8 +485,8 @@
 			<section>
 				<h4 class="mb-2 font-semibold">Qu'est-ce que l'énoncé ?</h4>
 				<p class="text-sm text-muted-foreground">
-					L'énoncé est la question posée à l'élève. Il peut contenir du texte, des formules
-					mathématiques (LaTeX), des images, et faire référence aux variables définies.
+					L'énoncé est la question posée au {lore.entities.student}. Il peut contenir du texte, des
+					formules mathématiques (LaTeX), des images, et faire référence aux variables définies.
 				</p>
 			</section>
 
@@ -532,7 +536,7 @@
 					<p class="mb-2 font-semibold">Énoncé :</p>
 					<p class="font-mono text-xs">Calculer $$&#123;@:a&#125; + &#123;@:b&#125;$$</p>
 					<p class="mt-3 text-xs text-muted-foreground">
-						→ Si a=3 et b=5, l'élève verra : "Calculer $$3 + 5$$"
+						→ Si a=3 et b=5, le {lore.entities.student} verra : "Calculer $$3 + 5$$"
 					</p>
 				</div>
 			</section>
@@ -624,7 +628,8 @@
 			<section>
 				<h4 class="mb-2 font-semibold">Qu'est-ce que la correction ?</h4>
 				<p class="text-sm text-muted-foreground">
-					La correction est une explication détaillée de la solution qui sera montrée à l'élève
+					La correction est une explication détaillée de la solution qui sera montrée au {lore
+						.entities.student}
 					après qu'il ait répondu à la question. Elle est <strong>optionnelle</strong>.
 				</p>
 			</section>

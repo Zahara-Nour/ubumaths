@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData, ActionData } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -425,9 +426,9 @@
 			<!-- Info Banner -->
 			<div class="rounded-lg border border-info/30 bg-info/10 p-4 text-info">
 				<p class="text-sm">
-					<strong>Information:</strong> Les périodes définies ici seront utilisées par tous les enseignants
-					lors de la création de leurs emplois du temps de classe. Les périodes doivent être identiques
-					pour tous les jours de la semaine.
+					<strong>Information:</strong> Les périodes définies ici seront utilisées par tous les {lore
+						.entities.teacher}s lors de la création de leurs emplois du temps de classe. Les
+					périodes doivent être identiques pour tous les jours de la semaine.
 				</p>
 			</div>
 
@@ -633,9 +634,8 @@
 										variant="outline"
 										class="gap-2 text-destructive hover:text-destructive"
 									>
-										<Trash2 class="h-4 w-4" />
-										Supprimer
-									</Button>
+										<Trash2 class="h-4 w-4" />{lore.actions.delete}</Button
+									>
 								{/snippet}
 								{#snippet hiddenFields()}
 									<input type="hidden" name="id" value={selectedYear.id} />
@@ -965,17 +965,16 @@
 								onclick={() => editingPeriod && handleDeleteTimetablePeriod(editingPeriod.number)}
 								class="gap-2"
 							>
-								<Trash2 class="h-4 w-4" />
-								Supprimer
-							</Button>
+								<Trash2 class="h-4 w-4" />{lore.actions.delete}</Button
+							>
 						{:else}
 							<div></div>
 						{/if}
 
 						<div class="flex gap-2">
-							<Button type="button" variant="outline" onclick={() => (showTimetableModal = false)}>
-								Annuler
-							</Button>
+							<Button type="button" variant="outline" onclick={() => (showTimetableModal = false)}
+								>{lore.actions.cancel}</Button
+							>
 							<Button type="submit">
 								{timetableModalMode === 'create' ? 'Créer' : 'Enregistrer'}
 							</Button>
@@ -1105,8 +1104,10 @@
 
 			<div class="mt-6 flex items-center justify-end">
 				<div class="flex gap-2">
-					<Button type="button" variant="outline" onclick={closeYearDialog}>Annuler</Button>
-					<Button type="submit">Enregistrer</Button>
+					<Button type="button" variant="outline" onclick={closeYearDialog}
+						>{lore.actions.cancel}</Button
+					>
+					<Button type="submit">{lore.actions.save}</Button>
 				</div>
 			</div>
 		</form>
@@ -1241,8 +1242,10 @@
 
 				<div class="mt-6 flex items-center justify-end">
 					<div class="flex gap-2">
-						<Button type="button" variant="outline" onclick={closePeriodDialog}>Annuler</Button>
-						<Button type="submit">Enregistrer</Button>
+						<Button type="button" variant="outline" onclick={closePeriodDialog}
+							>{lore.actions.cancel}</Button
+						>
+						<Button type="submit">{lore.actions.save}</Button>
 					</div>
 				</div>
 			</form>
@@ -1323,8 +1326,10 @@
 
 				<div class="mt-6 flex items-center justify-end">
 					<div class="flex gap-2">
-						<Button type="button" variant="outline" onclick={closeHolidayDialog}>Annuler</Button>
-						<Button type="submit">Enregistrer</Button>
+						<Button type="button" variant="outline" onclick={closeHolidayDialog}
+							>{lore.actions.cancel}</Button
+						>
+						<Button type="submit">{lore.actions.save}</Button>
 					</div>
 				</div>
 			</form>
@@ -1418,7 +1423,9 @@
 			</div>
 
 			<div class="mt-6 flex justify-end gap-2">
-				<Button type="button" variant="outline" onclick={closeDuplicateDialog}>Annuler</Button>
+				<Button type="button" variant="outline" onclick={closeDuplicateDialog}
+					>{lore.actions.cancel}</Button
+				>
 				<Button type="submit" class="gap-2">
 					<Copy class="h-4 w-4" />
 					Dupliquer

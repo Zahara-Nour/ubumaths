@@ -5,6 +5,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -117,7 +118,7 @@
 		}
 
 		if (selectedClassIds.length === 0) {
-			validationErrors['class_ids'] = 'Au moins une classe doit etre selectionnee';
+			validationErrors['class_ids'] = `Au moins un ${lore.entities.class} doit etre selectionne`;
 		}
 
 		// Validate podium rewards
@@ -206,7 +207,9 @@
 		</Button>
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Nouveau Tournoi</h1>
-			<p class="mt-2 text-muted-foreground">Creez un tournoi de demineur pour vos classes</p>
+			<p class="mt-2 text-muted-foreground">
+				Creez un tournoi de demineur pour vos {lore.entities.class}s
+			</p>
 		</div>
 	</div>
 
@@ -325,16 +328,18 @@
 		<!-- Classes -->
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Classes participantes *</Card.Title>
-				<Card.Description>Selectionnez les classes qui participeront au tournoi</Card.Description>
+				<Card.Title>{lore.entities.class}s participants *</Card.Title>
+				<Card.Description
+					>Selectionnez les {lore.entities.class}s qui participeront au tournoi</Card.Description
+				>
 			</Card.Header>
 			<Card.Content class="space-y-4">
 				{#if data.classes.length === 0}
 					<Alert.Root variant="destructive">
 						<AlertTriangle class="h-4 w-4" />
-						<Alert.Title>Aucune classe</Alert.Title>
+						<Alert.Title>Aucun {lore.entities.class}</Alert.Title>
 						<Alert.Description>
-							Vous devez avoir au moins une classe pour creer un tournoi.
+							Vous devez avoir au moins un {lore.entities.class} pour creer un tournoi.
 						</Alert.Description>
 					</Alert.Root>
 				{:else}
@@ -351,7 +356,8 @@
 					</div>
 					{#if selectedClassIds.length > 0}
 						<p class="text-sm text-muted-foreground">
-							{selectedClassIds.length} classe{selectedClassIds.length > 1 ? 's' : ''} selectionnee{selectedClassIds.length >
+							{selectedClassIds.length}
+							{lore.entities.class}{selectedClassIds.length > 1 ? 's' : ''} selectionnee{selectedClassIds.length >
 							1
 								? 's'
 								: ''} ({totalStudents} eleves au total)

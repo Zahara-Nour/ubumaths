@@ -7,6 +7,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import type { PageData, ActionData } from './$types';
@@ -217,7 +218,7 @@
 					<BookOpen class="h-5 w-5 text-muted-foreground" />
 					<div>
 						<p class="text-2xl font-bold">{contentCounts.exerciseCount}</p>
-						<p class="text-xs text-muted-foreground">Exercices</p>
+						<p class="text-xs text-muted-foreground">{lore.learning.exercise}s</p>
 					</div>
 				</div>
 			</div>
@@ -238,7 +239,7 @@
 			<CardHeader>
 				<CardTitle>Utiliser ce Template</CardTitle>
 				<CardDescription>
-					Créez un chapitre depuis ce template dans une de vos classes
+					Créez un chapitre depuis ce template dans une de vos {lore.entities.class}s
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
@@ -290,7 +291,8 @@
 		<Dialog.Header>
 			<Dialog.Title>Créer un Chapitre</Dialog.Title>
 			<Dialog.Description>
-				Instanciez ce template dans une de vos classes pour créer un nouveau chapitre.
+				Instanciez ce template dans une de vos {lore.entities.class}s pour créer un nouveau
+				chapitre.
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -309,7 +311,7 @@
 				<!-- Class selection -->
 				<div class="space-y-2">
 					<Label for="classId">
-						Classe<span class="text-destructive">*</span>
+						{lore.entities.class}<span class="text-destructive">*</span>
 					</Label>
 					<MySelect
 						type="single"
@@ -318,7 +320,7 @@
 							value: cls.id,
 							label: `${cls.name} (${cls.grade})`
 						}))}
-						placeholder="Sélectionnez une classe"
+						placeholder="Sélectionnez un {lore.entities.class}"
 					/>
 					<input type="hidden" name="classId" value={selectedClassId} />
 				</div>

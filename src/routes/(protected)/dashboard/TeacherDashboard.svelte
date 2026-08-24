@@ -56,6 +56,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	// ============================================================================
 	// IMPORTS
 	// ============================================================================
@@ -249,7 +250,7 @@
 			initializeSelectedClass();
 		} catch (err) {
 			console.error('[TeacherDashboard] ❌ Failed to load classes:', err);
-			toaster.error('Erreur lors du chargement des classes');
+			toaster.error(`Erreur lors du chargement des ${lore.entities.class}s`);
 		} finally {
 			isLoadingClasses = false;
 		}
@@ -379,7 +380,7 @@
 	function handleFindCurrentClass() {
 		// Edge case 1: Teacher has no classes assigned
 		if (classes.length === 0) {
-			toaster.error('Aucune classe assignée');
+			toaster.error(`Aucun ${lore.entities.class} assigné`);
 			return;
 		}
 
@@ -439,7 +440,7 @@
 	 */
 	async function handleOpenWheel() {
 		if (!selectedClassId) {
-			toaster.error('Veuillez sélectionner une classe');
+			toaster.error(`Veuillez sélectionner un ${lore.entities.class}`);
 			return;
 		}
 
@@ -461,7 +462,7 @@
 			wheelStudents = data.students || [];
 		} catch (error) {
 			console.error('Failed to fetch students for wheel:', error);
-			toaster.error('Erreur lors du chargement des élèves');
+			toaster.error(`Erreur lors du chargement des ${lore.entities.student}s`);
 			wheelModalOpen = false; // Close modal on error
 		} finally {
 			isLoadingStudents = false;
@@ -582,13 +583,12 @@
 		<div class="rounded-lg bg-card p-6 shadow">
 			<!-- Header row: Title + Period badge (mobile) -->
 			<div class="mb-4 flex items-center justify-between">
-				<h3 class="text-lg font-semibold text-foreground">Ma Classe</h3>
+				<h3 class="text-lg font-semibold text-foreground">Ma {lore.entities.class}</h3>
 				{#if selectedClass}
 					<Badge variant="outline" class="text-sm">
 						<Users class="mr-1.5 h-3.5 w-3.5" />
-						{selectedClass.student_count || 0} élève{(selectedClass.student_count || 0) > 1
-							? 's'
-							: ''}
+						{selectedClass.student_count || 0}
+						{lore.entities.student}{(selectedClass.student_count || 0) > 1 ? 's' : ''}
 					</Badge>
 				{/if}
 			</div>
@@ -687,7 +687,9 @@
 	<!-- STUDENT QUICK ACTIONS TABLE -->
 	{#if selectedClassId && selectedPeriodId}
 		<div class="rounded-lg bg-card p-6 shadow">
-			<h3 class="mb-4 text-lg font-semibold text-foreground">Actions Rapides - Élèves</h3>
+			<h3 class="mb-4 text-lg font-semibold text-foreground">
+				Actions Rapides - {lore.entities.student}s
+			</h3>
 			<StudentQuickActionsTable classId={selectedClassId} periodId={selectedPeriodId} />
 		</div>
 	{/if}
@@ -698,7 +700,7 @@
 			<div>
 				<h3 class="text-lg font-semibold text-foreground">Decks SRS (Révision Espacée)</h3>
 				<p class="mt-1 text-sm text-muted-foreground">
-					Créez et gérez des decks de révision espacée pour vos élèves
+					Créez et gérez des decks de révision espacée pour vos {lore.entities.student}s
 				</p>
 			</div>
 			<a href="/dashboard/teacher/srs/decks" data-sveltekit-preload-data="hover">
@@ -726,9 +728,9 @@
 			</Dialog.Title>
 			<Dialog.Description>
 				{#if selectedClass}
-					Sélectionnez aléatoirement un élève de {selectedClass.name}
+					Sélectionnez aléatoirement un {lore.entities.student} de {selectedClass.name}
 				{:else}
-					Sélectionnez aléatoirement un élève
+					Sélectionnez aléatoirement un {lore.entities.student}
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
@@ -738,12 +740,14 @@
 				<!-- Loading state -->
 				<div class="flex flex-col items-center justify-center py-16">
 					<div class="mb-4 h-16 w-16 animate-spin rounded-full border-b-4 border-primary"></div>
-					<p class="text-muted-foreground">Chargement des élèves...</p>
+					<p class="text-muted-foreground">Chargement des {lore.entities.student}s...</p>
 				</div>
 			{:else if wheelStudents.length === 0}
 				<!-- Empty state -->
 				<div class="py-16 text-center">
-					<p class="text-lg text-muted-foreground">Cette classe ne contient aucun élève.</p>
+					<p class="text-lg text-muted-foreground">
+						Ce {lore.entities.class} ne contient aucun {lore.entities.student}.
+					</p>
 				</div>
 			{:else}
 				<!-- Wheel component (includes winner display and controls) -->

@@ -13,6 +13,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -45,7 +46,7 @@
 
 	const boardTypeItems = [
 		{ value: 'personal', label: 'Personnel' },
-		{ value: 'class', label: 'Classe' }
+		{ value: 'class', label: lore.entities.class }
 	];
 
 	const classItems = $derived(classes.map((c) => ({ value: c.id, label: c.name })));
@@ -147,11 +148,11 @@
 
 				{#if boardType === 'class'}
 					<div class="flex flex-col gap-2">
-						<Label for="board-class">Classe</Label>
+						<Label for="board-class">{lore.entities.class}</Label>
 						{#if classItems.length === 0}
 							<p class="text-sm text-muted-foreground">
-								Vous n'avez aucune classe. Créez d'abord une classe pour pouvoir partager un
-								tableau.
+								Vous n'avez aucun {lore.entities.class}. Créez d'abord un {lore.entities.class} pour
+								pouvoir partager un tableau.
 							</p>
 						{:else}
 							<MySelect
@@ -159,7 +160,7 @@
 								type="single"
 								bind:value={selectedClassId}
 								items={classItems}
-								placeholder="Choisir une classe"
+								placeholder="Choisir un {lore.entities.class}"
 							/>
 						{/if}
 					</div>

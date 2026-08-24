@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { StudentVipCards, VipCardInstance } from '$lib/types/vip-card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -186,11 +187,13 @@
 			{#if isLoading}
 				<div class="flex flex-col items-center justify-center py-8">
 					<div class="mb-4 h-10 w-10 animate-spin rounded-full border-b-2 border-primary"></div>
-					<p class="text-sm text-muted-foreground">Recherche des élèves...</p>
+					<p class="text-sm text-muted-foreground">Recherche des {lore.entities.student}s...</p>
 				</div>
 			{:else if students.length === 0}
 				<div class="py-8 text-center">
-					<p class="text-muted-foreground">Aucun élève n'a de carte "{title}" disponible.</p>
+					<p class="text-muted-foreground">
+						Aucun {lore.entities.student} n'a de carte "{title}" disponible.
+					</p>
 				</div>
 			{:else if showWheelOption && showWheel}
 				<!-- Wheel view -->

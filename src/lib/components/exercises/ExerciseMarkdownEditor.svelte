@@ -25,6 +25,7 @@
 	@see src/lib/shared/parameterization for variable system
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { MarkdownEditor } from '$lib/components/markdown';
 	import ImageAttributePanel from './ImageAttributePanel.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -60,7 +61,7 @@
 
 	let {
 		value = $bindable(''),
-		placeholder = 'Ecrivez votre exercice en markdown...',
+		placeholder = `Ecrivez votre ${lore.learning.exercise} en markdown...`,
 		showPreview = true,
 		supabase,
 		userId,

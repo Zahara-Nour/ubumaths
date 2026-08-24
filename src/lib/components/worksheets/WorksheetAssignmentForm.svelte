@@ -24,6 +24,7 @@
 	- onCancel?: callback for cancel
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
@@ -219,28 +220,28 @@
 		<Card.Header>
 			<Card.Title class="flex items-center gap-2">
 				<Users class="h-5 w-5" />
-				{isEditMode ? "Modifier l'assignation" : 'Assigner a des classes'}
+				{isEditMode ? "Modifier l'assignation" : `Assigner a des ${lore.entities.class}s`}
 			</Card.Title>
 			<Card.Description>
 				{isEditMode
 					? `Modifier l'assignation de "${worksheetTitle}"`
-					: `Assigner "${worksheetTitle}" a une ou plusieurs classes`}
+					: `Assigner "${worksheetTitle}" a un ou plusieurs ${lore.entities.class}s`}
 			</Card.Description>
 		</Card.Header>
 		<Card.Content class="space-y-6">
 			<!-- Multi-class selection -->
 			<div class="space-y-2">
-				<Label for="class-select">Classes *</Label>
+				<Label for="class-select">{lore.entities.class}s *</Label>
 				{#if classes.length === 0}
 					<p class="text-sm text-muted-foreground">
-						Aucune classe disponible. Creez d'abord une classe.
+						Aucun {lore.entities.class} disponible. Creez d'abord un {lore.entities.class}.
 					</p>
 				{:else}
 					<MySelect
 						type="multiple"
 						bind:value={selectedClassIds}
 						items={classItems}
-						placeholder="Selectionnez une ou plusieurs classes"
+						placeholder="Selectionnez un ou plusieurs {lore.entities.class}s"
 					/>
 					<p class="text-xs text-muted-foreground">
 						{selectedClassIds.length} classe(s) selectionnee(s)
@@ -260,7 +261,9 @@
 
 			<!-- Validation message -->
 			{#if selectedClassIds.length === 0 && selectedStudentIds.length === 0}
-				<p class="text-sm text-destructive">Selectionnez au moins une classe ou un eleve.</p>
+				<p class="text-sm text-destructive">
+					Selectionnez au moins un {lore.entities.class} ou un eleve.
+				</p>
 			{/if}
 
 			<!-- Optional title override -->
@@ -290,7 +293,7 @@
 					<MyCheckbox id="individualized" bind:checked={individualized} />
 					<div class="space-y-1">
 						<Label for="individualized" class="cursor-pointer font-normal">
-							Exercices individualises
+							{lore.learning.exercise}s individualises
 						</Label>
 						<p class="text-xs text-muted-foreground">
 							Chaque eleve recevra une version personnalisee avec des valeurs differentes
@@ -344,7 +347,8 @@
 						Activer la consultation en ligne
 					</Label>
 					<p class="text-xs text-muted-foreground">
-						Les eleves pourront faire les exercices directement depuis leur tableau de bord.
+						Les eleves pourront faire les {lore.learning.exercise}s directement depuis leur tableau
+						de bord.
 					</p>
 				</div>
 			</div>
@@ -368,7 +372,9 @@
 	<!-- Form actions -->
 	<div class="flex justify-end gap-4">
 		{#if onCancel}
-			<Button variant="outline" onclick={onCancel} disabled={isSubmitting}>Annuler</Button>
+			<Button variant="outline" onclick={onCancel} disabled={isSubmitting}
+				>{lore.actions.cancel}</Button
+			>
 		{/if}
 		<Button onclick={handleSubmit} disabled={!isValid || isSubmitting}>
 			{#if isSubmitting}

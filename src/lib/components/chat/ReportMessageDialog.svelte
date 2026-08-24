@@ -18,6 +18,7 @@
 		- Loading state during submission
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -129,7 +130,7 @@
 					<ul class="list-inside list-disc space-y-1">
 						<li>Assurez-vous que le message viole les règles de la communauté</li>
 						<li>Les fausses accusations peuvent avoir des conséquences</li>
-						<li>Un enseignant examinera votre signalement</li>
+						<li>Un {lore.entities.teacher} examinera votre signalement</li>
 					</ul>
 				</div>
 			</div>

@@ -4,6 +4,7 @@
 	Spec : docs/wip/srs-anti-fraud-spec-tdd.md §B9
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -82,11 +83,11 @@
 	});
 
 	function displayName(flag: FlagListItem, idx: number): string {
-		if (anonymized) return `Élève ${idx + 1}`;
+		if (anonymized) return `${lore.entities.student} ${idx + 1}`;
 		const fn = flag.student.first_name?.trim() ?? '';
 		const ln = flag.student.last_name?.trim() ?? '';
 		const full = `${fn} ${ln}`.trim();
-		return full.length > 0 ? full : 'Élève sans nom';
+		return full.length > 0 ? full : `${lore.entities.student} sans nom`;
 	}
 
 	function flagTypeLabel(type: string): string {
@@ -156,7 +157,7 @@
 
 <Card.Root>
 	<Card.Header>
-		<Card.Title>Élèves à surveiller</Card.Title>
+		<Card.Title>{lore.entities.student}s à surveiller</Card.Title>
 		<Card.Description>
 			Drapeaux générés par le système de détection anti-fraud SRS. Cliquez sur « Voir détails » pour
 			le breakdown du signal.
@@ -174,7 +175,7 @@
 			<p class="text-sm text-destructive">⚠ {error}</p>
 		{:else if !data || data.flags.length === 0}
 			<p class="py-8 text-center text-sm text-muted-foreground">
-				Aucun élève à surveiller en ce moment 🎉
+				Aucun {lore.entities.student} à surveiller en ce moment 🎉
 			</p>
 		{:else}
 			<ul class="divide-y divide-border">

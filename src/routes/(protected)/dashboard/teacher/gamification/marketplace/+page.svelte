@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { lore } from '$lib/config/lore';
 	function getDateFromPeriod(period: string): string {
 		let dateFrom = new Date();
 
@@ -141,7 +142,9 @@
 	<div class="flex items-center justify-between">
 		<div>
 			<h1 class="text-3xl font-bold">Marché d'échange</h1>
-			<p class="text-muted-foreground">Surveillez et gérez les échanges de vos élèves</p>
+			<p class="text-muted-foreground">
+				Surveillez et gérez les échanges de vos {lore.entities.student}s
+			</p>
 		</div>
 		<div class="flex gap-2">
 			<Button onclick={refreshData} variant="outline" disabled={isLoading}>
@@ -173,7 +176,7 @@
 	{:else if showSettings}
 		<Card>
 			<CardContent class="py-8 text-center text-muted-foreground">
-				Sélectionnez une classe pour configurer le marketplace
+				Sélectionnez un {lore.entities.class} pour configurer le marketplace
 			</CardContent>
 		</Card>
 	{:else}
@@ -197,11 +200,11 @@
 			<CardContent>
 				<div class="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
 					<div>
-						<span class="text-muted-foreground">Nombre d'élèves:</span>
+						<span class="text-muted-foreground">Nombre de {lore.entities.student}s:</span>
 						<span class="ml-2 font-semibold">{formatNumber(data.studentCount)}</span>
 					</div>
 					<div>
-						<span class="text-muted-foreground">Max annonces/élève:</span>
+						<span class="text-muted-foreground">Max annonces/{lore.entities.student}:</span>
 						<span class="ml-2 font-semibold">{currentConfig?.max_listings_per_student ?? 5}</span>
 					</div>
 					<div>
@@ -218,7 +221,9 @@
 		<CardContent class="pt-6">
 			<div class="flex flex-wrap gap-4">
 				<div class="min-w-[200px] flex-1">
-					<label for="class-filter" class="mb-1 block text-sm font-medium">Classe</label>
+					<label for="class-filter" class="mb-1 block text-sm font-medium"
+						>{lore.entities.class}</label
+					>
 					<MySelect
 						type="single"
 						value={selectedClassId}
@@ -317,7 +322,9 @@
 			<Card>
 				<CardHeader>
 					<CardTitle>Historique des échanges</CardTitle>
-					<CardDescription>Consultez tous les échanges entre élèves</CardDescription>
+					<CardDescription
+						>Consultez tous les échanges entre {lore.entities.student}s</CardDescription
+					>
 				</CardHeader>
 				<CardContent>
 					<TradeHistoryTable classId={selectedClassId} />
@@ -330,7 +337,9 @@
 			<Card>
 				<CardHeader>
 					<CardTitle>Annonces actives</CardTitle>
-					<CardDescription>Surveillez les annonces créées par vos élèves</CardDescription>
+					<CardDescription
+						>Surveillez les annonces créées par vos {lore.entities.student}s</CardDescription
+					>
 				</CardHeader>
 				<CardContent>
 					<ListingsMonitor classId={selectedClassId} />

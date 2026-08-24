@@ -7,6 +7,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -106,7 +107,7 @@
 						class="pl-9"
 					/>
 				</div>
-				<Button onclick={applyFilters}>Rechercher</Button>
+				<Button onclick={applyFilters}>{lore.actions.search}</Button>
 			</div>
 
 			<!-- Grade filters -->

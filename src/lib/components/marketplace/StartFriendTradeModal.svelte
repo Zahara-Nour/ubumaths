@@ -14,6 +14,7 @@
 		- userId: string - Current authenticated user ID
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Input } from '$lib/components/ui/input';
@@ -286,7 +287,9 @@
 		</div>
 
 		<Dialog.Footer class="mt-4">
-			<Button variant="outline" onclick={onClose} disabled={isCreatingTrade}>Annuler</Button>
+			<Button variant="outline" onclick={onClose} disabled={isCreatingTrade}
+				>{lore.actions.cancel}</Button
+			>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

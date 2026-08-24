@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -225,7 +226,7 @@
 				mdParts.push(`${worksheet.description}\n`);
 			}
 			instanceData.exercises.forEach((ex, i) => {
-				mdParts.push(`## Exercice ${i + 1}\n`);
+				mdParts.push(`## ${lore.learning.exercise} ${i + 1}\n`);
 				mdParts.push(ex.statement || '');
 				if (mode === 'correction' && ex.solution) {
 					mdParts.push(`\n### Solution\n${ex.solution}`);
@@ -470,7 +471,7 @@ INFORMATIONS
 ========================================
 
 - Chaque PDF est personnalise avec le nom de l'eleve
-- Les exercices peuvent etre melanges selon la configuration
+- Les ${lore.learning.exercise}s peuvent etre melangees selon la configuration
 - ${mode === 'correction' ? 'Les solutions sont incluses' : 'Les solutions ne sont pas incluses'}
 - Generation effectuee cote client (navigateur)
 
@@ -758,8 +759,8 @@ INFORMATIONS
 								<div class="flex-1">
 									<p class="font-medium">Aucun eleve disponible</p>
 									<p class="mt-1 text-sm text-muted-foreground">
-										La generation en lot necessite qu'une classe avec des eleves soit associee a
-										cette feuille de travail.
+										La generation en lot necessite qu'un {lore.entities.class} avec des eleves soit associee
+										a cette feuille de travail.
 									</p>
 								</div>
 							</div>
@@ -826,7 +827,7 @@ INFORMATIONS
 							</h4>
 							<ul class="space-y-1 text-sm text-muted-foreground">
 								<li>- PDF personnalise avec le nom de chaque eleve</li>
-								<li>- Variantes d'exercices selon la configuration</li>
+								<li>- Variantes de {lore.learning.exercise}s selon la configuration</li>
 								<li>- Fichier ZIP contenant tous les PDFs</li>
 								<li>- Document de synthese avec la liste des eleves</li>
 								{#if mode === 'correction'}

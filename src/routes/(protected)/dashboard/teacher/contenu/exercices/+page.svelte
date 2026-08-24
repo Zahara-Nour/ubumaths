@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -120,7 +121,7 @@
 		});
 
 		if (response.ok) {
-			toaster.success('Exercice supprimé');
+			toaster.success(`${lore.learning.exercise} supprimée`);
 			// Refresh exercises list via fetch
 			await fetchExercises(pagination.page);
 		} else {
@@ -208,7 +209,7 @@
 			pagination = result.pagination;
 		} catch (err) {
 			console.error('Error fetching exercises:', err);
-			toaster.error('Erreur lors du chargement des exercices');
+			toaster.error(`Erreur lors du chargement des ${lore.learning.exercise}s`);
 		} finally {
 			isLoading = false;
 		}
@@ -268,19 +269,23 @@
 </script>
 
 <svelte:head>
-	<title>Banque d'exercices - Chiphre</title>
+	<title>Banque de {lore.learning.exercise}s - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto space-y-6 py-6">
 	<!-- Header -->
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-3xl font-bold">Banque d'exercices</h1>
-			<p class="text-muted-foreground">Gérez vos exercices de mathématiques avec support LaTeX</p>
+			<h1 class="text-3xl font-bold">Banque de {lore.learning.exercise}s</h1>
+			<p class="text-muted-foreground">
+				Gérez vos {lore.learning.exercise}s de mathématiques avec support LaTeX
+			</p>
 		</div>
 		<div class="flex gap-2">
 			<Button variant="outline" onclick={() => (importDialogOpen = true)}>Importer</Button>
-			<Button href="/dashboard/teacher/contenu/exercices/new">Nouvel exercice</Button>
+			<Button href="/dashboard/teacher/contenu/exercices/new"
+				>Nouvelle {lore.learning.exercise}</Button
+			>
 		</div>
 	</div>
 
@@ -331,7 +336,7 @@
 
 				<!-- Actions -->
 				<div class="flex items-end gap-2">
-					<Button type="submit" class="flex-1">Filtrer</Button>
+					<Button type="submit" class="flex-1">{lore.actions.filter}</Button>
 					<Button type="button" variant="outline" onclick={clearFilters}>Effacer</Button>
 				</div>
 			</form>
@@ -344,7 +349,8 @@
 			{#if isLoading}
 				Chargement...
 			{:else}
-				{pagination.total} exercice{pagination.total > 1 ? 's' : ''} trouvé{pagination.total > 1
+				{pagination.total}
+				{lore.learning.exercise}{pagination.total > 1 ? 's' : ''} trouvé{pagination.total > 1
 					? 's'
 					: ''}
 			{/if}
@@ -430,7 +436,8 @@
 					{#if exercises.length === 0}
 						<Table.Row>
 							<Table.Cell colspan={7} class="py-8 text-center text-muted-foreground">
-								Aucun exercice trouvé. Créez votre premier exercice !
+								Aucune {lore.learning.exercise} trouvée. Créez votre première {lore.learning
+									.exercise} !
 							</Table.Cell>
 						</Table.Row>
 					{:else}
@@ -454,7 +461,7 @@
 														<Globe class="h-4 w-4 text-green-600" />
 													</Tooltip.Trigger>
 													<Tooltip.Content>
-														<p>Exercice public</p>
+														<p>{lore.learning.exercise} publique</p>
 													</Tooltip.Content>
 												</Tooltip.Root>
 											</Tooltip.Provider>
@@ -572,11 +579,11 @@
 														{:else}
 															<Trash2 class="h-4 w-4" />
 														{/if}
-														<span class="sr-only">Supprimer</span>
+														<span class="sr-only">{lore.actions.delete}</span>
 													</Button>
 												</Tooltip.Trigger>
 												<Tooltip.Content>
-													<p>Supprimer</p>
+													<p>{lore.actions.delete}</p>
 												</Tooltip.Content>
 											</Tooltip.Root>
 										</div>
@@ -621,9 +628,9 @@
 <!-- Delete Confirmation Dialog -->
 <ConfirmDialog
 	bind:open={deleteDialogOpen}
-	title="Supprimer cet exercice ?"
-	description={`Vous allez supprimer l'exercice "${exerciseToDelete?.title || ''}". Cette action est irréversible.`}
-	confirmLabel="Supprimer"
+	title="Supprimer cette {lore.learning.exercise} ?"
+	description={`Vous allez supprimer la ${lore.learning.exercise} "${exerciseToDelete?.title || ''}". Cette action est irréversible.`}
+	confirmLabel={lore.actions.delete}
 	variant="destructive"
 	onConfirm={handleDelete}
 />
@@ -633,7 +640,7 @@
 	<Dialog.Content class="max-h-[90vh] max-w-3xl overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title>{previewExercise?.title || 'Prévisualisation'}</Dialog.Title>
-			<Dialog.Description>Prévisualisation de l'exercice</Dialog.Description>
+			<Dialog.Description>Prévisualisation de la {lore.learning.exercise}</Dialog.Description>
 		</Dialog.Header>
 		<div class="py-4">
 			{#if previewExercise}

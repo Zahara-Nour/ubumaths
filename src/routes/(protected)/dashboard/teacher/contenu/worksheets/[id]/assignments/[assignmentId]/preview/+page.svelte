@@ -8,6 +8,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -72,7 +73,7 @@
 
 	// Build student options for selector (sorted alphabetically)
 	let studentOptions = $derived([
-		{ value: '', label: 'Vue enseignant (corrections visibles)' },
+		{ value: '', label: `Vue ${lore.entities.teacher} (corrections visibles)` },
 		...data.students
 			.map((s) => ({
 				value: s.id,
@@ -172,11 +173,11 @@
 			case 'assessment':
 				return { icon: ClipboardList, label: 'Evaluation' };
 			case 'exam':
-				return { icon: GraduationCap, label: 'Examen' };
+				return { icon: GraduationCap, label: lore.learning.exam };
 			case 'quiz':
 				return { icon: FileQuestion, label: 'Quiz' };
 			case 'homework':
-				return { icon: PenLine, label: 'Devoir' };
+				return { icon: PenLine, label: lore.learning.homework };
 			default:
 				return { icon: BookOpen, label: 'Fiche' };
 		}
@@ -335,7 +336,7 @@
 			<Badge variant={previewMode === 'teacher' ? 'default' : 'secondary'} class="gap-1">
 				{#if previewMode === 'teacher'}
 					<Eye class="h-3 w-3" />
-					Vue enseignant
+					Vue {lore.entities.teacher}
 				{:else}
 					<User class="h-3 w-3" />
 					Vue eleve
@@ -447,7 +448,7 @@
 
 		<!-- Exercises list -->
 		<div class="space-y-3">
-			<h2 class="text-lg font-semibold">Exercices ({exercises.length})</h2>
+			<h2 class="text-lg font-semibold">{lore.learning.exercise}s ({exercises.length})</h2>
 
 			{#if hasSections}
 				<!-- Exercise List grouped by sections -->
@@ -468,7 +469,9 @@
 							{:else if sections.length > 0}
 								<!-- Unsectioned exercises header -->
 								<div class="mb-4 border-l-4 border-muted pl-4">
-									<h3 class="text-lg font-semibold text-muted-foreground">Autres exercices</h3>
+									<h3 class="text-lg font-semibold text-muted-foreground">
+										Autres {lore.learning.exercise}s
+									</h3>
 								</div>
 							{/if}
 
@@ -489,11 +492,12 @@
 											{#if exercise.is_essential}
 												<Star
 													class="h-4 w-4 shrink-0 fill-amber-500 text-amber-500"
-													aria-label="Exercice indispensable"
+													aria-label="{lore.learning.exercise} indispensable"
 												/>
 											{/if}
 											<span class="font-medium">
-												Exercice {visualIndex + 1}{#if exercise.title}:&ensp;<InlineMarkdown
+												{lore.learning.exercise}
+												{visualIndex + 1}{#if exercise.title}:&ensp;<InlineMarkdown
 														content={exercise.title}
 													/>{/if}
 											</span>
@@ -507,7 +511,7 @@
 												href="/dashboard/teacher/contenu/exercices/{exercise.exercise_id}"
 												onclick={(e) => e.stopPropagation()}
 												class="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
-												title="Modifier l'exercice"
+												title="Modifier la {lore.learning.exercise}"
 											>
 												<Pencil class="h-4 w-4" />
 											</a>
@@ -541,13 +545,12 @@
 								{#if exercise.is_essential}
 									<Star
 										class="h-4 w-4 shrink-0 fill-amber-500 text-amber-500"
-										aria-label="Exercice indispensable"
+										aria-label="{lore.learning.exercise} indispensable"
 									/>
 								{/if}
 								<span class="font-medium">
-									Exercice {i + 1}{#if exercise.title}:&ensp;<InlineMarkdown
-											content={exercise.title}
-										/>{/if}
+									{lore.learning.exercise}
+									{i + 1}{#if exercise.title}:&ensp;<InlineMarkdown content={exercise.title} />{/if}
 								</span>
 								{#if exercise.correction_visible && exercise.correction}
 									<BookOpen
@@ -559,7 +562,7 @@
 									href="/dashboard/teacher/contenu/exercices/{exercise.exercise_id}"
 									onclick={(e) => e.stopPropagation()}
 									class="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
-									title="Modifier l'exercice"
+									title="Modifier la {lore.learning.exercise}"
 								>
 									<Pencil class="h-4 w-4" />
 								</a>
@@ -588,7 +591,8 @@
 		<div class="flex items-center justify-between gap-4 border-b border-border bg-card px-6 py-4">
 			<div class="flex items-center gap-3">
 				<Dialog.Title class="flex items-center gap-3 text-xl font-semibold">
-					Exercice {currentExerciseIndex + 1}{#if currentExercise?.title}:&ensp;<InlineMarkdown
+					{lore.learning.exercise}
+					{currentExerciseIndex + 1}{#if currentExercise?.title}:&ensp;<InlineMarkdown
 							content={currentExercise.title}
 						/>{/if}
 					{#if currentExercise?.points !== null}
@@ -611,7 +615,7 @@
 					</Button>
 				{/if}
 				<Badge variant={previewMode === 'teacher' ? 'default' : 'secondary'} class="text-xs">
-					{previewMode === 'teacher' ? 'Vue enseignant' : previewStudentName}
+					{previewMode === 'teacher' ? `Vue ${lore.entities.teacher}` : previewStudentName}
 				</Badge>
 				<Button variant="ghost" size="icon" onclick={() => (modalOpen = false)} aria-label="Fermer">
 					<X class="h-5 w-5" />
@@ -668,7 +672,7 @@
 				{/if}
 			{:else}
 				<div class="flex flex-1 items-center justify-center p-8">
-					<p class="text-muted-foreground">Exercice non disponible</p>
+					<p class="text-muted-foreground">{lore.learning.exercise} non disponible</p>
 				</div>
 			{/if}
 		</div>
@@ -681,7 +685,7 @@
 					size="sm"
 					onclick={goPrev}
 					disabled={!canGoPrev}
-					aria-label="Exercice precedent"
+					aria-label="{lore.learning.exercise} precedente"
 				>
 					<ChevronLeft class="mr-1 h-4 w-4" />
 					Precedent
@@ -696,7 +700,7 @@
 					size="sm"
 					onclick={goNext}
 					disabled={!canGoNext}
-					aria-label="Exercice suivant"
+					aria-label="{lore.learning.exercise} suivante"
 				>
 					Suivant
 					<ChevronRight class="ml-1 h-4 w-4" />

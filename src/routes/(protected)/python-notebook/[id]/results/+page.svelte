@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -203,7 +204,9 @@
 		</Button>
 		<div class="flex-1">
 			<h1 class="text-2xl font-bold">Résultats : {data.notebook.title}</h1>
-			<p class="text-sm text-muted-foreground">Statut des checkpoints par élève</p>
+			<p class="text-sm text-muted-foreground">
+				Statut des checkpoints par {lore.entities.student}
+			</p>
 		</div>
 	</div>
 
@@ -227,7 +230,7 @@
 				<Card.Header class="pb-2">
 					<Card.Title class="flex items-center gap-2 text-sm font-medium text-muted-foreground">
 						<Users class="size-4" />
-						Élèves concernés
+						{lore.entities.student}s concernés
 					</Card.Title>
 				</Card.Header>
 				<Card.Content>
@@ -302,7 +305,9 @@
 		<div class="mb-4 flex flex-wrap items-center gap-4">
 			{#if data.teacherClasses.length > 1}
 				<div class="flex items-center gap-2">
-					<label for="class-filter" class="text-sm font-medium">Filtrer par classe :</label>
+					<label for="class-filter" class="text-sm font-medium"
+						>Filtrer par {lore.entities.class} :</label
+					>
 					<div class="w-64">
 						<MySelect type="single" bind:value={selectedClassId} items={classItems} />
 					</div>
@@ -319,14 +324,14 @@
 			<Card.Content class="pt-6">
 				{#if sortedRows.length === 0}
 					<p class="py-8 text-center text-sm text-muted-foreground">
-						Aucun élève dans la sélection actuelle.
+						Aucun {lore.entities.student} dans la sélection actuelle.
 					</p>
 				{:else}
 					<div class="overflow-x-auto">
 						<Table.Root>
 							<Table.Header>
 								<Table.Row>
-									<Table.Head class="min-w-48">Élève</Table.Head>
+									<Table.Head class="min-w-48">{lore.entities.student}</Table.Head>
 									{#each data.checkpoints as cp (cp.cell_id)}
 										<Table.Head class="min-w-32 text-center">
 											{checkpointLabel(cp)}

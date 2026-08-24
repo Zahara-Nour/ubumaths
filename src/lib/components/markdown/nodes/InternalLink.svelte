@@ -21,6 +21,7 @@
 	@module components/markdown/nodes/InternalLink
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { InternalLinkReferenceType } from '$lib/ubumark';
 	import { cn } from '$lib/utils';
 	import { BookOpen, FileText, PencilRuler, ClipboardCheck } from '@lucide/svelte';
@@ -89,7 +90,7 @@
 			case 'document':
 				return 'Document';
 			case 'exercise':
-				return 'Exercice';
+				return lore.learning.exercise;
 			case 'assessment':
 				return 'Evaluation';
 			default:

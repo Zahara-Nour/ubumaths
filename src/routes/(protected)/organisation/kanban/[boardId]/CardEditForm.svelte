@@ -13,6 +13,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { CalendarDays, Settings2, X } from '@lucide/svelte';
 	import { CalendarDate, type DateValue } from '@internationalized/date';
 	import { Input } from '$lib/components/ui/input';
@@ -298,7 +299,7 @@
 			</ul>
 			{#if !canManageAllAssignees}
 				<p class="text-xs text-muted-foreground">
-					Vous pouvez vous (dé)assigner ; seul l'enseignant peut modifier les autres.
+					Vous pouvez vous (dé)assigner ; seul le {lore.entities.teacher} peut modifier les autres.
 				</p>
 			{/if}
 		{/if}

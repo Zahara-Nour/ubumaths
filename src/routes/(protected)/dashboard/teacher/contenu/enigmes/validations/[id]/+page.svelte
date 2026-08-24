@@ -5,6 +5,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import {
 		getDifficultyLabel,
@@ -38,8 +39,8 @@
 		if (isSubmitting) return;
 
 		const confirmMessage = isCorrect
-			? `Confirmer la validation de la réponse ? L'élève recevra ${potentialGidouilles} gidouilles.`
-			: "Confirmer le refus de la réponse ? L'élève pourra réessayer.";
+			? `Confirmer la validation de la réponse ? Le ${lore.entities.student} recevra ${potentialGidouilles} gidouilles.`
+			: `Confirmer le refus de la réponse ? Le ${lore.entities.student} pourra réessayer.`;
 
 		if (!confirm(confirmMessage)) return;
 
@@ -153,7 +154,9 @@
 	<!-- Student Answer -->
 	<Card.Root class="mb-6 border-2 border-blue-500">
 		<Card.Header>
-			<Card.Title class="text-blue-700 dark:text-blue-300">Réponse de l'élève</Card.Title>
+			<Card.Title class="text-blue-700 dark:text-blue-300"
+				>Réponse du {lore.entities.student}</Card.Title
+			>
 		</Card.Header>
 		<Card.Content>
 			<div class="rounded-lg bg-blue-50 p-4 dark:bg-blue-950">
@@ -187,9 +190,9 @@
 	<!-- Feedback (Optional) -->
 	<Card.Root class="mb-6">
 		<Card.Header>
-			<Card.Title>Commentaire pour l'élève (optionnel)</Card.Title>
+			<Card.Title>Commentaire pour le {lore.entities.student} (optionnel)</Card.Title>
 			<Card.Description>
-				Ajoutez un commentaire qui sera envoyé à l'élève avec votre validation
+				Ajoutez un commentaire qui sera envoyé au {lore.entities.student} avec votre validation
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
@@ -206,7 +209,7 @@
 		<AlertTriangle class="h-4 w-4" />
 		<Alert.Title>Attention</Alert.Title>
 		<Alert.Description>
-			Cette action est définitive. L'élève sera notifié de votre décision par message.
+			Cette action est définitive. Le {lore.entities.student} sera notifié de votre décision par message.
 		</Alert.Description>
 	</Alert.Root>
 

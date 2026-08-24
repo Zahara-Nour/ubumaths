@@ -5,6 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { lore } from '$lib/config/lore';
 import { render } from 'vitest-browser-svelte';
 import { page } from '@vitest/browser/context';
 import ClassCapacityGrid from '../ClassCapacityGrid.svelte';
@@ -60,7 +61,9 @@ describe('ClassCapacityGrid', () => {
 	it('shows empty state when class has no students', async () => {
 		mockFetch({ students: [], capacities: [], cells: {}, columnStats: {} });
 		render(ClassCapacityGrid, { classId: 'class-1' });
-		await expect.element(page.getByText('Aucun élève dans cette classe.')).toBeVisible();
+		await expect
+			.element(page.getByText(`Aucun ${lore.entities.student} dans cette classe.`))
+			.toBeVisible();
 	});
 
 	it('shows "no capacities" message when students have no skill_attempts', async () => {
@@ -83,8 +86,8 @@ describe('ClassCapacityGrid', () => {
 	it('replaces student names by anonymized labels in projection mode', async () => {
 		mockFetch(sampleGrid);
 		render(ClassCapacityGrid, { classId: 'class-1', anonymized: true });
-		await expect.element(page.getByText('Élève 1')).toBeVisible();
-		await expect.element(page.getByText('Élève 2')).toBeVisible();
+		await expect.element(page.getByText(`${lore.entities.student} 1`)).toBeVisible();
+		await expect.element(page.getByText(`${lore.entities.student} 2`)).toBeVisible();
 	});
 
 	it('renders error message when fetch fails', async () => {

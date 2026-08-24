@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import NotebookView from '$lib/components/notebook/NotebookView.svelte';
 	import ShareNotebookDialog from '$lib/components/notebook/ShareNotebookDialog.svelte';
@@ -49,15 +50,15 @@
 					variant={previewMode ? 'default' : 'outline'}
 					onclick={togglePreviewMode}
 					title={previewMode
-						? "Quitter la vue élève et revenir à l'édition"
-						: "Voir et tester le notebook tel qu'un élève le verra (sans enregistrer les vérifications)"}
+						? `Quitter la vue ${lore.entities.student} et revenir à l'édition`
+						: `Voir et tester le notebook tel qu'un ${lore.entities.student} le verra (sans enregistrer les vérifications)`}
 				>
 					{#if previewMode}
 						<Pencil class="mr-2 h-4 w-4" />
 						Retour édition
 					{:else}
 						<Eye class="mr-2 h-4 w-4" />
-						Vue élève
+						Vue {lore.entities.student}
 					{/if}
 				</Button>
 				<Button variant="outline" onclick={handleResults}>

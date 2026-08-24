@@ -22,6 +22,7 @@
 	```
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -438,7 +439,9 @@
 			<div class="py-6 text-center text-muted-foreground">
 				<p>Aucune section</p>
 				{#if !readonly}
-					<p class="mt-1 text-sm">Les exercices sans section apparaitront dans "Sans section"</p>
+					<p class="mt-1 text-sm">
+						Les {lore.learning.exercise}s sans section apparaitront dans "Sans section"
+					</p>
 				{/if}
 			</div>
 		{:else}
@@ -576,7 +579,8 @@
 <ConfirmDialog
 	bind:open={deleteConfirmOpen}
 	title="Supprimer la section"
-	description="Cette action est irreversible. Les exercices de cette section seront deplaces vers 'Sans section'."
+	description="Cette action est irreversible. Les {lore.learning
+		.exercise}s de cette section seront deplaces vers 'Sans section'."
 	confirmLabel={isDeleting ? 'Suppression...' : 'Supprimer'}
 	onConfirm={deleteSection}
 	onCancel={() => (deletingSectionId = null)}

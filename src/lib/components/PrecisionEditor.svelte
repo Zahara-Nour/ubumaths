@@ -16,6 +16,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PrecisionType } from '$lib/questions/types';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
@@ -71,7 +72,7 @@
 	<Card.Header>
 		<Card.Title>Précision de la réponse</Card.Title>
 		<Card.Description>
-			Configurez comment la réponse de l'élève sera comparée à la réponse attendue
+			Configurez comment la réponse du {lore.entities.student} sera comparée à la réponse attendue
 		</Card.Description>
 	</Card.Header>
 	<Card.Content class="space-y-4">
@@ -174,8 +175,8 @@
 
 		{#if precision.type === 'none'}
 			<p class="text-sm text-muted-foreground">
-				La réponse de l'élève doit être exactement égale à la réponse attendue. Aucune tolérance
-				n'est accordée.
+				La réponse du {lore.entities.student} doit être exactement égale à la réponse attendue. Aucune
+				tolérance n'est accordée.
 			</p>
 		{/if}
 	</Card.Content>

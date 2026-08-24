@@ -14,6 +14,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
@@ -168,7 +169,7 @@
 		{/if}
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={handleClose}>Annuler</Button>
+			<Button variant="outline" onclick={handleClose}>{lore.actions.cancel}</Button>
 			<Button onclick={handleStart} disabled={!canStart}>
 				<Rocket class="mr-2 h-4 w-4" />
 				Commencer le test

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -59,13 +60,16 @@
 </script>
 
 <svelte:head>
-	<title>Mes Exercices | Chiphre</title>
+	<title>Mes {lore.learning.exercise}s | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<div class="mb-6">
-		<h1 class="text-3xl font-bold tracking-tight">Mes exercices</h1>
-		<p class="mt-2 text-muted-foreground">{data.exercises.length} exercice(s) accessible(s)</p>
+		<h1 class="text-3xl font-bold tracking-tight">Mes {lore.learning.exercise}s</h1>
+		<p class="mt-2 text-muted-foreground">
+			{data.exercises.length}
+			{lore.learning.exercise}(s) accessible(s)
+		</p>
 	</div>
 
 	<!-- Filters -->
@@ -136,9 +140,9 @@
 	{:else if sortedExercises.length === 0}
 		<Card.Root class="border-dashed">
 			<Card.Content class="py-12 text-center">
-				<p class="text-muted-foreground">Aucun exercice trouvé</p>
+				<p class="text-muted-foreground">Aucune {lore.learning.exercise} trouvée</p>
 				<p class="mt-2 text-sm text-muted-foreground">
-					Modifiez les filtres pour voir plus d'exercices
+					Modifiez les filtres pour voir plus de {lore.learning.exercise}s
 				</p>
 			</Card.Content>
 		</Card.Root>
@@ -218,7 +222,7 @@
 						<!-- Teacher notes -->
 						{#if exercise.assignment?.notes}
 							<div class="mb-3 rounded-md bg-muted p-3">
-								<p class="mb-1 text-sm font-medium">Note du professeur :</p>
+								<p class="mb-1 text-sm font-medium">Note du {lore.entities.teacher} :</p>
 								<p class="text-sm italic">{exercise.assignment.notes}</p>
 							</div>
 						{/if}

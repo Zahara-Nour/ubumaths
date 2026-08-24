@@ -25,6 +25,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
@@ -120,7 +121,7 @@
 			return 'Partage en cours...';
 		}
 		if (count === 0) {
-			return 'Sélectionnez des classes';
+			return `Sélectionnez des ${lore.entities.class}s`;
 		}
 		return `Partager avec ${count} classe${count > 1 ? 's' : ''}`;
 	});
@@ -144,7 +145,7 @@
 			classes = data.classes || [];
 		} catch (err) {
 			console.error('[ShareCourseworkBulkDialog] Error fetching classes:', err);
-			toaster.error('Erreur lors du chargement des classes');
+			toaster.error(`Erreur lors du chargement des ${lore.entities.class}s`);
 			classes = [];
 		} finally {
 			loading = false;
@@ -238,7 +239,7 @@
 							`mais ${errorCount} échec${errorCount > 1 ? 's' : ''}`
 					);
 				} else {
-					toaster.error('Échec du partage avec toutes les classes sélectionnées');
+					toaster.error(`Échec du partage avec tous les ${lore.entities.class}s sélectionnés`);
 				}
 			} else {
 				const count = result.shared || selectedClassIds.size;
@@ -339,7 +340,7 @@
 				Partager : {coursework.title}
 			</Dialog.Title>
 			<Dialog.Description>
-				Sélectionnez les classes avec lesquelles partager ce travail
+				Sélectionnez les {lore.entities.class}s avec lesquelles partager ce travail
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -364,9 +365,9 @@
 				<!-- Empty state -->
 				<div class="flex flex-col items-center justify-center py-8 text-center">
 					<Users class="mb-4 h-12 w-12 text-muted-foreground" />
-					<p class="text-lg font-medium">Aucune classe disponible</p>
+					<p class="text-lg font-medium">Aucun {lore.entities.class} disponible</p>
 					<p class="mt-2 text-sm text-muted-foreground">
-						Créez une classe pour pouvoir partager du contenu
+						Créez un {lore.entities.class} pour pouvoir partager du contenu
 					</p>
 				</div>
 			{:else}
@@ -374,7 +375,7 @@
 				<div class="space-y-3">
 					<div class="flex items-center justify-between">
 						<Label class="text-base font-semibold">
-							Classes ({classes.length})
+							{lore.entities.class}s ({classes.length})
 						</Label>
 						<Button size="sm" variant="outline" onclick={toggleAll} disabled={submitting}>
 							{allSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
@@ -382,7 +383,7 @@
 					</div>
 
 					<fieldset class="space-y-2" disabled={submitting}>
-						<legend class="sr-only">Sélection des classes</legend>
+						<legend class="sr-only">Sélection des {lore.entities.class}s</legend>
 						{#each classes as cls (cls.id)}
 							<div
 								class={`rounded-lg border transition-colors ${
@@ -399,7 +400,8 @@
 									/>
 									{#if cls.studentCount !== undefined}
 										<p class="mt-1 ml-6 text-sm text-muted-foreground">
-											{cls.studentCount} élève{cls.studentCount > 1 ? 's' : ''}
+											{cls.studentCount}
+											{lore.entities.student}{cls.studentCount > 1 ? 's' : ''}
 										</p>
 									{/if}
 								</div>
@@ -408,7 +410,8 @@
 					</fieldset>
 
 					<p class="text-sm text-muted-foreground">
-						{selectedClassIds.size} classe{selectedClassIds.size > 1 ? 's' : ''}
+						{selectedClassIds.size}
+						{lore.entities.class}{selectedClassIds.size > 1 ? 's' : ''}
 						sélectionnée{selectedClassIds.size > 1 ? 's' : ''}
 					</p>
 				</div>
@@ -424,11 +427,11 @@
 							<div>
 								<MyCheckbox
 									bind:checked={visible}
-									label="Visible pour les élèves"
+									label="Visible pour les {lore.entities.student}s"
 									disabled={submitting}
 								/>
 								<p class="mt-1 ml-6 text-xs text-muted-foreground">
-									Les élèves pourront voir ce travail immédiatement
+									Les {lore.entities.student}s pourront voir ce travail immédiatement
 								</p>
 							</div>
 
@@ -493,7 +496,9 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={onClose} disabled={submitting}>Annuler</Button>
+			<Button variant="outline" onclick={onClose} disabled={submitting}
+				>{lore.actions.cancel}</Button
+			>
 			<Button onclick={handleShare} disabled={!hasSelection || submitting} class="min-w-[200px]">
 				{#if submitting}
 					<Loader2 class="mr-2 h-4 w-4 animate-spin" />

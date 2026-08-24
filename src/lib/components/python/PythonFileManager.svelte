@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * PythonFileManager - Dialog for managing Python files
 	 *
@@ -379,7 +380,9 @@
 						<div class="py-12 text-center text-muted-foreground">
 							<BookOpen class="mx-auto size-12 opacity-50" />
 							<p class="mt-4 font-medium">Aucun fichier assigne</p>
-							<p class="text-sm">Les fichiers assignes par vos professeurs apparaitront ici</p>
+							<p class="text-sm">
+								Les fichiers assignes par vos {lore.entities.teacher}s apparaitront ici
+							</p>
 						</div>
 					{:else}
 						<div class="space-y-2">
@@ -445,7 +448,7 @@
 	title="Modifications non sauvegardées"
 	description="Charger cet exemple va remplacer votre code actuel non sauvegardé. Continuer ?"
 	confirmLabel="Charger l'exemple"
-	cancelLabel="Annuler"
+	cancelLabel={lore.actions.cancel}
 	variant="destructive"
 	onConfirm={confirmLoadExample}
 	onCancel={cancelLoadExample}

@@ -11,6 +11,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { CalendarClock, Users } from '@lucide/svelte';
 
@@ -32,7 +33,7 @@
 					<Users class="h-6 w-6 text-primary" />
 				</div>
 				<div>
-					<p class="text-sm font-medium text-muted-foreground">Élèves</p>
+					<p class="text-sm font-medium text-muted-foreground">{lore.entities.student}s</p>
 					<p class="text-2xl font-bold text-foreground">{studentCount}</p>
 				</div>
 			</div>
@@ -44,7 +45,7 @@
 					<ClipboardList class="w-6 h-6 text-secondary" />
 				</div>
 				<div>
-					<p class="text-sm font-medium text-muted-foreground">Devoirs Actifs</p>
+					<p class="text-sm font-medium text-muted-foreground">Corvées Domestiques Actives</p>
 					<p class="text-2xl font-bold text-foreground">12</p>
 				</div>
 			</div>

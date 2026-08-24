@@ -13,6 +13,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -218,7 +219,9 @@
 		</Button>
 
 		<h1 class="mb-2 text-3xl font-bold">Créer un deck SRS</h1>
-		<p class="text-muted-foreground">Créez un deck de révision espacée pour vos élèves</p>
+		<p class="text-muted-foreground">
+			Créez un deck de révision espacée pour vos {lore.entities.student}s
+		</p>
 	</div>
 
 	<!-- Deck Configuration -->
@@ -383,7 +386,7 @@
 
 	<!-- Actions -->
 	<div class="mt-6 flex items-center justify-between">
-		<Button onclick={goBack} variant="outline">Annuler</Button>
+		<Button onclick={goBack} variant="outline">{lore.actions.cancel}</Button>
 
 		<Button onclick={createDeck} disabled={!canSave || isSaving} size="lg">
 			<Save class="mr-2 h-5 w-5" />

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Student Chapter Detail Page
 	 * ============================
@@ -123,7 +124,7 @@
 			</Tabs.Trigger>
 			<Tabs.Trigger value="exercices" class="flex items-center gap-2">
 				<BookOpen class="h-4 w-4" />
-				<span class="hidden sm:inline">Exercices</span>
+				<span class="hidden sm:inline">{lore.learning.exercise}s</span>
 				{#if exerciseCount > 0}
 					<Badge variant="secondary" class="ml-1">{exerciseCount}</Badge>
 				{/if}
@@ -188,7 +189,7 @@
 				<Card.Root>
 					<Card.Content class="py-12 text-center">
 						<BookOpen class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-						<p class="text-muted-foreground">Aucun exercice pour ce chapitre</p>
+						<p class="text-muted-foreground">Aucune {lore.learning.exercise} pour ce chapitre</p>
 					</Card.Content>
 				</Card.Root>
 			{:else}
@@ -227,7 +228,7 @@
 				<Card.Root>
 					<Card.Content class="py-12 text-center">
 						<ClipboardList class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-						<p class="text-muted-foreground">Aucune fiche pour cette classe</p>
+						<p class="text-muted-foreground">Aucune fiche pour ce {lore.entities.class}</p>
 					</Card.Content>
 				</Card.Root>
 			{:else}

@@ -20,6 +20,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { modalStack } from '$lib/stores/modalStack.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -253,7 +254,9 @@
 	<!-- Footer -->
 	{#if !success}
 		<div class="mt-6 flex justify-end gap-3">
-			<Button variant="outline" onclick={handleClose} disabled={submitting}>Annuler</Button>
+			<Button variant="outline" onclick={handleClose} disabled={submitting}
+				>{lore.actions.cancel}</Button
+			>
 			<Button variant="destructive" onclick={handleRemove} disabled={submitting}>
 				{#if submitting}
 					<div

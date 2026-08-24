@@ -21,6 +21,7 @@
 	</script>
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { Editor } from '@tiptap/core';
 	import { Button } from '$lib/components/ui/button';
@@ -1761,7 +1762,7 @@
 					onclick={() => {
 						showLinkDialog = false;
 						linkUrl = '';
-					}}>Annuler</Button
+					}}>{lore.actions.cancel}</Button
 				>
 			</div>
 		{/if}

@@ -37,6 +37,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
@@ -342,7 +343,7 @@
 									<strong>Google Classroom</strong> : Synchronisation de vos cours et travaux
 								</li>
 								<li>
-									<strong>Gmail</strong> : Envoi d'emails de bienvenue aux élèves
+									<strong>Gmail</strong> : Envoi d'emails de bienvenue aux {lore.entities.student}s
 								</li>
 								<li>La synchronisation ne modifie jamais vos données Google</li>
 							</ul>
@@ -361,7 +362,8 @@
 							<ul class="ml-5 list-disc space-y-2 text-sm text-muted-foreground">
 								<li><strong>Google Classroom</strong> : Importez vos cours et travaux existants</li>
 								<li>
-									<strong>Gmail</strong> : Envoyez des emails de bienvenue aux nouveaux élèves
+									<strong>Gmail</strong> : Envoyez des emails de bienvenue aux nouveaux {lore
+										.entities.student}s
 								</li>
 								<li>Synchronisation automatique de vos données</li>
 								<li>Vos données Google ne sont jamais modifiées</li>

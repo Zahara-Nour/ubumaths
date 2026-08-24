@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
@@ -202,12 +203,14 @@
 				throw new Error(errorData.message || 'Erreur lors de la mise à jour');
 			}
 
-			toaster.success('Exercice mis à jour avec succès');
+			toaster.success(`${lore.learning.exercise} mise à jour avec succès`);
 			await invalidateAll();
 		} catch (error) {
 			console.error('Error updating exercise:', error);
 			toaster.error(
-				error instanceof Error ? error.message : "Erreur lors de la mise à jour de l'exercice"
+				error instanceof Error
+					? error.message
+					: `Erreur lors de la mise à jour de la ${lore.learning.exercise}`
 			);
 		} finally {
 			submitting = false;
@@ -469,7 +472,7 @@
 </script>
 
 <svelte:head>
-	<title>Modifier {data.exercise.title || "l'exercice"} - Chiphre</title>
+	<title>Modifier {data.exercise.title || `la ${lore.learning.exercise}`} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto py-6">
@@ -477,7 +480,7 @@
 		<div class="flex items-center gap-3">
 			<div>
 				<div class="flex items-center gap-2">
-					<h1 class="text-3xl font-bold">Modifier l'exercice</h1>
+					<h1 class="text-3xl font-bold">Modifier la {lore.learning.exercise}</h1>
 					{#if data.exercise.is_public}
 						<Badge variant="success" class="flex items-center gap-1">
 							<Globe class="h-3 w-3" />
@@ -589,8 +592,8 @@
 					Points de programme
 				</Card.Title>
 				<Card.Description>
-					Tague les points du programme couverts par cet exercice. Quand il est référencé dans une
-					entrée de cahier de texte, ces points sont cochés automatiquement.
+					Tague les points du programme couverts par cette {lore.learning.exercise}. Quand elle est
+					référencée dans une entrée de cahier de texte, ces points sont cochés automatiquement.
 				</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-4">
@@ -657,7 +660,7 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<Braces class="h-5 w-5" />
-				JSON de l'exercice
+				JSON de la {lore.learning.exercise}
 			</Dialog.Title>
 			<Dialog.Description class="flex items-center justify-between">
 				<span>Donnees brutes importees de la base de donnees</span>
@@ -673,7 +676,12 @@
 			</Dialog.Description>
 		</Dialog.Header>
 
-		<CodeViewer value={formattedJson} language="json" height="60vh" label="JSON de l'exercice" />
+		<CodeViewer
+			value={formattedJson}
+			language="json"
+			height="60vh"
+			label="JSON de la {lore.learning.exercise}"
+		/>
 	</Dialog.Content>
 </Dialog.Root>
 
@@ -683,7 +691,7 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<FileText class="h-5 w-5" />
-				Markdown de l'exercice
+				Markdown de la {lore.learning.exercise}
 			</Dialog.Title>
 			<Dialog.Description>
 				Visualisation du markdown brut et rendu de l'énoncé et de la solution
@@ -767,13 +775,13 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<Share2 class="h-5 w-5" />
-				Partager l'exercice
+				Partager la {lore.learning.exercise}
 			</Dialog.Title>
 			<Dialog.Description>
 				{#if data.exercise.is_public}
-					Cet exercice est public. Copiez simplement le lien pour le partager.
+					Cette {lore.learning.exercise} est publique. Copiez simplement le lien pour le partager.
 				{:else}
-					Creez des liens de partage pour donner acces a cet exercice sans authentification.
+					Creez des liens de partage pour donner acces a cette {lore.learning.exercise} sans authentification.
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
@@ -783,7 +791,7 @@
 			<div class="mt-4 space-y-3">
 				<div class="flex items-center gap-2">
 					<Globe class="h-4 w-4 text-green-600" />
-					<span class="text-sm font-medium text-green-600">Exercice public</span>
+					<span class="text-sm font-medium text-green-600">{lore.learning.exercise} publique</span>
 				</div>
 				<div class="space-y-2">
 					<div class="overflow-hidden rounded-lg border bg-muted/50 p-3">
@@ -905,7 +913,7 @@
 			</div>
 		{:else}
 			<div class="mt-6 py-8 text-center text-sm text-muted-foreground">
-				Aucun lien de partage créé pour cet exercice.
+				Aucun lien de partage créé pour cette {lore.learning.exercise}.
 			</div>
 		{/if}
 	</Dialog.Content>

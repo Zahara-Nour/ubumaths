@@ -37,6 +37,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -177,7 +178,7 @@
 		const name = [firstname, lastname].filter(Boolean).join(' ');
 		if (name) return name;
 		if (fullname) return fullname;
-		return 'Élève sans nom';
+		return `${lore.entities.student} sans nom`;
 	}
 
 	/**
@@ -455,9 +456,10 @@
 	{#if classes.length === 0}
 		<!-- No classes -->
 		<div class="rounded-lg border border-border bg-card p-12 text-center">
-			<h2 class="mb-2 text-xl font-semibold text-foreground">Aucune classe trouvée</h2>
+			<h2 class="mb-2 text-xl font-semibold text-foreground">Aucun {lore.entities.class} trouvé</h2>
 			<p class="text-muted-foreground">
-				Vous devez d'abord créer des classes pour gérer les avertissements de vos élèves.
+				Vous devez d'abord créer des {lore.entities.class}s pour gérer les avertissements de vos {lore
+					.entities.student}s.
 			</p>
 		</div>
 	{:else}
@@ -495,7 +497,9 @@
 					<!-- STUDENTS LIST -->
 					{#if currentStudents.length === 0}
 						<div class="rounded-lg border border-border bg-card p-12 text-center">
-							<p class="text-muted-foreground">Aucun élève dans cette classe</p>
+							<p class="text-muted-foreground">
+								Aucun {lore.entities.student} dans ce {lore.entities.class}
+							</p>
 						</div>
 					{:else if !selectedPeriodId}
 						<div class="rounded-lg border border-border bg-card p-12 text-center">
@@ -505,7 +509,7 @@
 						<div class="overflow-hidden rounded-lg border border-border bg-card">
 							<div class="border-b border-border bg-muted/30 px-6 py-4">
 								<h3 class="text-lg font-semibold text-foreground">
-									Élèves ({currentStudents.length})
+									{lore.entities.student}s ({currentStudents.length})
 								</h3>
 							</div>
 
@@ -612,7 +616,8 @@
 											<DropdownMenu.Content>
 												<DropdownMenu.Item
 													onclick={() => {
-														const name = student.firstname || student.full_name || 'Élève';
+														const name =
+															student.firstname || student.full_name || lore.entities.student;
 														addWarning(student.id, 'C', name);
 													}}
 												>
@@ -620,7 +625,8 @@
 												</DropdownMenu.Item>
 												<DropdownMenu.Item
 													onclick={() => {
-														const name = student.firstname || student.full_name || 'Élève';
+														const name =
+															student.firstname || student.full_name || lore.entities.student;
 														addWarning(student.id, 'M', name);
 													}}
 												>
@@ -628,7 +634,8 @@
 												</DropdownMenu.Item>
 												<DropdownMenu.Item
 													onclick={() => {
-														const name = student.firstname || student.full_name || 'Élève';
+														const name =
+															student.firstname || student.full_name || lore.entities.student;
 														addWarning(student.id, 'R', name);
 													}}
 												>
@@ -636,7 +643,8 @@
 												</DropdownMenu.Item>
 												<DropdownMenu.Item
 													onclick={() => {
-														const name = student.firstname || student.full_name || 'Élève';
+														const name =
+															student.firstname || student.full_name || lore.entities.student;
 														addWarning(student.id, 'T', name);
 													}}
 												>

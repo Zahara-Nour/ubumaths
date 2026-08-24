@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
@@ -93,7 +94,8 @@
 		<Dialog.Header>
 			<Dialog.Title>Traiter le signalement</Dialog.Title>
 			<Dialog.Description>
-				Marquez ce signalement comme corrigé ou rejeté, avec une réponse optionnelle pour l'élève.
+				Marquez ce signalement comme corrigé ou rejeté, avec une réponse optionnelle pour le {lore
+					.entities.student}.
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -109,7 +111,7 @@
 					<span class="text-muted-foreground">•</span>
 					<div class="flex items-center gap-1.5 text-sm text-muted-foreground">
 						<Hash class="h-4 w-4" />
-						<span>Exercice {report.exercise_position}</span>
+						<span>{lore.learning.exercise} {report.exercise_position}</span>
 					</div>
 				</div>
 
@@ -128,13 +130,14 @@
 				<Textarea
 					id="teacher-response"
 					bind:value={teacherResponse}
-					placeholder="Ajoutez une réponse pour expliquer votre décision à l'élève..."
+					placeholder="Ajoutez une réponse pour expliquer votre décision au {lore.entities
+						.student}..."
 					rows={4}
 					class="resize-none"
 					disabled={submitting}
 				/>
 				<p class="text-xs text-muted-foreground">
-					Cette réponse sera envoyée à l'élève avec votre décision.
+					Cette réponse sera envoyée au {lore.entities.student} avec votre décision.
 				</p>
 			</div>
 		</div>

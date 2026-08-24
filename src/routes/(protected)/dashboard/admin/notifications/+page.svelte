@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
@@ -96,8 +97,8 @@
 	// Role labels
 	const roleLabels: Record<string, string> = {
 		admin: 'Administrateurs',
-		teacher: 'Professeurs',
-		student: 'Élèves'
+		teacher: `${lore.entities.teacher}s`,
+		student: `${lore.entities.student}s`
 	};
 
 	// Items for MySelect dropdowns
@@ -210,7 +211,7 @@
 								</label>
 								<label class="flex items-center gap-2 rounded border p-2 hover:bg-muted">
 									<input type="radio" bind:group={targetType} value="class" class="h-4 w-4" />
-									<span>Par classe</span>
+									<span>Par {lore.entities.class}</span>
 								</label>
 								<label class="flex items-center gap-2 rounded border p-2 hover:bg-muted">
 									<input type="radio" bind:group={targetType} value="users" class="h-4 w-4" />
@@ -253,7 +254,7 @@
 						<!-- Class selection -->
 						{#if targetType === 'class'}
 							<div class="space-y-2">
-								<Label>Sélectionner les classes</Label>
+								<Label>Sélectionner les {lore.entities.class}s</Label>
 								<div class="max-h-48 overflow-y-auto rounded border p-2">
 									<div class="grid gap-2 sm:grid-cols-2">
 										{#each data.classes as cls (cls.id)}
@@ -339,7 +340,9 @@
 
 						<!-- Submit -->
 						<div class="flex justify-end gap-2">
-							<Button type="button" variant="outline" onclick={resetForm}>Annuler</Button>
+							<Button type="button" variant="outline" onclick={resetForm}
+								>{lore.actions.cancel}</Button
+							>
 							<Button type="submit" disabled={isSubmitting}>
 								<Send class="mr-2 h-4 w-4" />
 								{isSubmitting ? 'Envoi...' : 'Envoyer la notification'}

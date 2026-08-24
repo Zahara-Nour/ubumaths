@@ -9,6 +9,7 @@
 	@module components/cours/ChapterCard
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type {
 		ChapterSummary,
 		ChapterProgress,
@@ -260,7 +261,10 @@
 					{#if chapter.exerciseCount > 0}
 						<div class="flex items-center gap-1">
 							<BookOpen class="h-3.5 w-3.5" />
-							<span>{chapter.exerciseCount} exercice{chapter.exerciseCount > 1 ? 's' : ''}</span>
+							<span
+								>{chapter.exerciseCount}
+								{lore.learning.exercise}{chapter.exerciseCount > 1 ? 's' : ''}</span
+							>
 						</div>
 					{/if}
 					{#if chapter.checklistItemCount > 0}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -27,7 +28,7 @@
 
 	async function handleAssign() {
 		if (selectedClassIds.length === 0) {
-			toaster.error('Sélectionnez au moins une classe');
+			toaster.error(`Sélectionnez au moins un ${lore.entities.class}`);
 			return;
 		}
 
@@ -108,14 +109,14 @@
 		<!-- Available Classes -->
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Vos Classes</Card.Title>
-				<Card.Description>Sélectionnez les classes à assigner</Card.Description>
+				<Card.Title>Vos {lore.entities.class}s</Card.Title>
+				<Card.Description>Sélectionnez les {lore.entities.class}s à assigner</Card.Description>
 			</Card.Header>
 			<Card.Content>
 				{#if data.classes.length === 0}
 					<div class="py-12 text-center text-muted-foreground">
 						<Users class="mx-auto mb-3 h-12 w-12 opacity-50" />
-						<p>Aucune classe trouvée</p>
+						<p>Aucun {lore.entities.class} trouvé</p>
 					</div>
 				{:else}
 					<div class="space-y-3">
@@ -124,14 +125,15 @@
 								type="button"
 								class="flex w-full cursor-pointer items-center justify-between rounded-lg border p-4 text-left transition-colors hover:bg-accent/50"
 								onclick={() => toggleClass(classData.id)}
-								aria-label="Sélectionner la classe {classData.name}"
+								aria-label="Sélectionner le {lore.entities.class} {classData.name}"
 							>
 								<div class="flex items-center gap-4">
 									<Checkbox checked={selectedClassIds.includes(classData.id)} />
 									<div>
 										<div class="font-medium">{classData.name}</div>
 										<div class="text-sm text-muted-foreground">
-											{classData.student_count} élève{classData.student_count > 1 ? 's' : ''}
+											{classData.student_count}
+											{lore.entities.student}{classData.student_count > 1 ? 's' : ''}
 										</div>
 									</div>
 								</div>
@@ -171,7 +173,7 @@
 				{#if data.existingAssignments.length === 0}
 					<div class="py-12 text-center text-muted-foreground">
 						<p>Aucune assignation</p>
-						<p class="mt-2 text-sm">Sélectionnez des classes pour commencer</p>
+						<p class="mt-2 text-sm">Sélectionnez des {lore.entities.class}s pour commencer</p>
 					</div>
 				{:else}
 					<div class="space-y-3">
@@ -179,14 +181,16 @@
 							<div class="flex items-center justify-between rounded-lg border bg-accent/20 p-4">
 								<div>
 									{#if assignment.class_id}
-										<div class="font-medium">{assignment.class?.name || 'Classe'}</div>
-										<div class="text-sm text-muted-foreground">Classe entière</div>
+										<div class="font-medium">{assignment.class?.name || lore.entities.class}</div>
+										<div class="text-sm text-muted-foreground">{lore.entities.class} entier</div>
 									{:else if assignment.student_id}
 										<div class="font-medium">
 											{assignment.student?.firstname}
 											{assignment.student?.lastname}
 										</div>
-										<div class="text-sm text-muted-foreground">Élève individuel</div>
+										<div class="text-sm text-muted-foreground">
+											{lore.entities.student} individuel
+										</div>
 									{/if}
 								</div>
 								<Button variant="ghost" size="icon" onclick={() => handleUnassign(assignment.id)}>

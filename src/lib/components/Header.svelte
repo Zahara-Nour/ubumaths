@@ -35,6 +35,7 @@
      - Updated props flow to this component → Login button appears
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import * as Sheet from '$lib/components/ui/sheet';
@@ -316,7 +317,7 @@
 
 		<!-- Settings section at bottom -->
 		<div class="border-t border-border px-4 py-3">
-			<p class="mb-2 text-xs font-medium text-muted-foreground uppercase">Paramètres</p>
+			<p class="mb-2 text-xs font-medium text-muted-foreground uppercase">{lore.nav.settings}</p>
 			<div class="flex items-center justify-between gap-4">
 				<!-- Dark mode toggle -->
 				<button

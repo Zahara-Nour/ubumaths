@@ -26,6 +26,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { X, Star } from '@lucide/svelte';
@@ -89,10 +90,9 @@
 	</Card.Content>
 
 	<Card.Footer class="flex justify-end gap-2">
-		<Button variant="outline" onclick={onCancel}>Annuler</Button>
+		<Button variant="outline" onclick={onCancel}>{lore.actions.cancel}</Button>
 		<Button onclick={handleConfirm} class="bg-amber-500 hover:bg-amber-600">
-			<Star class="mr-1 h-4 w-4" />
-			Confirmer
-		</Button>
+			<Star class="mr-1 h-4 w-4" />{lore.actions.confirm}</Button
+		>
 	</Card.Footer>
 </Card.Root>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { invalidateAll } from '$app/navigation';
 	import Wheel from '$lib/components/Wheel.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -46,7 +47,7 @@
 
 			// Find student name
 			const student = selectedStudents().find((s) => s.id === studentId);
-			const studentName = student?.firstname || 'Élève';
+			const studentName = student?.firstname || lore.entities.student;
 
 			toaster.success(`+${amount} gidouilles pour ${studentName} !`);
 		} catch (error) {
@@ -65,7 +66,9 @@
 	<!-- Header -->
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold text-foreground">Roue de la Fortune</h1>
-		<p class="mt-2 text-muted-foreground">Sélectionnez aléatoirement un élève de votre classe</p>
+		<p class="mt-2 text-muted-foreground">
+			Sélectionnez aléatoirement un {lore.entities.student} de votre {lore.entities.class}
+		</p>
 	</div>
 
 	<!-- Class Selection -->
@@ -76,17 +79,18 @@
 			<!-- Class Selector -->
 			<div>
 				<label for="class-select" class="mb-2 block text-sm font-medium text-foreground">
-					Classe
+					{lore.entities.class}
 				</label>
 				<select
 					id="class-select"
 					bind:value={selectedClassId}
 					class="w-full rounded-md border border-input bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 				>
-					<option value="">Sélectionner une classe</option>
+					<option value="">Sélectionner un {lore.entities.class}</option>
 					{#each data.classes as classItem (classItem.id)}
 						<option value={classItem.id}>
-							{classItem.name} ({classItem.students.length} élèves)
+							{classItem.name} ({classItem.students.length}
+							{lore.entities.student}s)
 						</option>
 					{/each}
 				</select>
@@ -117,7 +121,8 @@
 			<div class="mt-4 rounded-md bg-muted p-3">
 				<p class="text-sm text-muted-foreground">
 					<span class="font-semibold">{selectedStudents().length}</span>
-					élève{selectedStudents().length > 1 ? 's' : ''} dans cette classe
+					{lore.entities.student}{selectedStudents().length > 1 ? 's' : ''} dans ce {lore.entities
+						.class}
 				</p>
 			</div>
 		{/if}
@@ -137,9 +142,9 @@
 		<div class="rounded-lg border border-dashed border-border bg-muted/50 p-12 text-center">
 			<p class="text-lg text-muted-foreground">
 				{#if !selectedClassId}
-					Sélectionnez une classe pour commencer
+					Sélectionnez un {lore.entities.class} pour commencer
 				{:else}
-					Cette classe ne contient aucun élève
+					Ce {lore.entities.class} ne contient aucun {lore.entities.student}
 				{/if}
 			</p>
 		</div>

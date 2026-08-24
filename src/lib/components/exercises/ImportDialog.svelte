@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
@@ -120,12 +121,12 @@
 			if (result.success) {
 				if (result.imported > 0) {
 					toaster.success(
-						`${result.imported} exercice${result.imported > 1 ? 's' : ''} importé${result.imported > 1 ? 's' : ''}`
+						`${result.imported} ${lore.learning.exercise}${result.imported > 1 ? 's' : ''} importée${result.imported > 1 ? 's' : ''}`
 					);
 				}
 				if (result.skipped > 0) {
 					toaster.info(
-						`${result.skipped} exercice${result.skipped > 1 ? 's' : ''} ignoré${result.skipped > 1 ? 's' : ''} (doublons)`
+						`${result.skipped} ${lore.learning.exercise}${result.skipped > 1 ? 's' : ''} ignorée${result.skipped > 1 ? 's' : ''} (doublons)`
 					);
 				}
 
@@ -174,9 +175,9 @@
 <Dialog.Root {open} onOpenChange={handleOpenChange}>
 	<Dialog.Content class="sm:max-w-[600px]">
 		<Dialog.Header>
-			<Dialog.Title>Importer des exercices</Dialog.Title>
+			<Dialog.Title>Importer des {lore.learning.exercise}s</Dialog.Title>
 			<Dialog.Description>
-				Importez des exercices depuis un fichier JSON ou Markdown
+				Importez des {lore.learning.exercise}s depuis un fichier JSON ou Markdown
 			</Dialog.Description>
 		</Dialog.Header>
 

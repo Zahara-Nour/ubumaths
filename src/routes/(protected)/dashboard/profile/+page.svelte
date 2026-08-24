@@ -15,6 +15,7 @@
 	Migré depuis l'ancien dropdown de l'avatar (Phase 3 refonte sidebar).
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { LayoutData } from '../$types';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -29,7 +30,11 @@
 
 	const role = $derived(data.profile.role);
 	const roleLabel = $derived(
-		role === 'student' ? 'Élève' : role === 'teacher' ? 'Enseignant' : 'Administrateur'
+		role === 'student'
+			? lore.entities.student
+			: role === 'teacher'
+				? lore.entities.teacher
+				: 'Administrateur'
 	);
 
 	let isExporting = $state(false);

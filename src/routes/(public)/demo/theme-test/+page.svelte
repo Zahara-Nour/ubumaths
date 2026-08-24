@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -901,8 +902,8 @@
 								<p class="text-sm text-muted-foreground">Contenu avec toutes les sections.</p>
 							</Card.Content>
 							<Card.Footer class="flex justify-between">
-								<Button variant="outline" size="sm">Annuler</Button>
-								<Button size="sm">Confirmer</Button>
+								<Button variant="outline" size="sm">{lore.actions.cancel}</Button>
+								<Button size="sm">{lore.actions.confirm}</Button>
 							</Card.Footer>
 						</Card.Root>
 					</div>
@@ -985,7 +986,7 @@
 									<DropdownMenu.Label>Mon Compte</DropdownMenu.Label>
 									<DropdownMenu.Separator />
 									<DropdownMenu.Item>Profil</DropdownMenu.Item>
-									<DropdownMenu.Item>Paramètres</DropdownMenu.Item>
+									<DropdownMenu.Item>{lore.nav.settings}</DropdownMenu.Item>
 									<DropdownMenu.Separator />
 									<DropdownMenu.Item class="text-destructive">Se déconnecter</DropdownMenu.Item>
 								</DropdownMenu.Content>
@@ -1017,8 +1018,8 @@
 										</Dialog.Description>
 									</Dialog.Header>
 									<Dialog.Footer>
-										<Button variant="outline">Annuler</Button>
-										<Button>Confirmer</Button>
+										<Button variant="outline">{lore.actions.cancel}</Button>
+										<Button>{lore.actions.confirm}</Button>
 									</Dialog.Footer>
 								</Dialog.Content>
 							</Dialog.Root>

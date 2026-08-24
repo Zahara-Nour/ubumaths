@@ -19,6 +19,7 @@
 	- Auto-navigation to next pending report
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import { z } from 'zod';
@@ -249,7 +250,7 @@
 			}
 
 			if (status === 'fixed') {
-				toaster.success('Signalement valide et exercice mis a jour');
+				toaster.success(`Signalement valide et ${lore.learning.exercise} mise a jour`);
 			} else {
 				toaster.info('Signalement rejete');
 			}
@@ -282,7 +283,7 @@
 </script>
 
 <svelte:head>
-	<title>Signalement - Exercice {context.exercise_position + 1} - Chiphre</title>
+	<title>Signalement - {lore.learning.exercise} {context.exercise_position + 1} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl py-6">
@@ -312,7 +313,7 @@
 					{formatDate(report.created_at)}
 				</span>
 				<span>
-					<span class="font-medium text-foreground">Exercice :</span>
+					<span class="font-medium text-foreground">{lore.learning.exercise} :</span>
 					{context.exercise_position + 1}
 				</span>
 				{#if report.variation_index !== null}
@@ -420,7 +421,7 @@
 	{:else if responseContent}
 		<Card.Root class="mb-6 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
 			<Card.Header class="pb-2">
-				<Card.Title class="text-base">Reponse du professeur</Card.Title>
+				<Card.Title class="text-base">Reponse du {lore.entities.teacher}</Card.Title>
 			</Card.Header>
 			<Card.Content>
 				<RichTextDisplay
@@ -434,9 +435,9 @@
 	<!-- Variations Editor -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Variations de l'exercice</Card.Title>
+			<Card.Title>Variations de la {lore.learning.exercise}</Card.Title>
 			<Card.Description>
-				Modifiez les variations de l'exercice. La variation signalee est marquee.
+				Modifiez les variations de la {lore.learning.exercise}. La variation signalee est marquee.
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { friendsManager } from '$lib/stores/friends.svelte';
 	import { presenceManager } from '$lib/stores/presence.svelte';
@@ -116,7 +117,7 @@
 			<Dialog.Header>
 				<Dialog.Title>Ajouter un ami</Dialog.Title>
 				<Dialog.Description>
-					Ajoutez des camarades de classe ou recherchez d'autres utilisateurs
+					Ajoutez des camarades de {lore.entities.class} ou recherchez d'autres utilisateurs
 				</Dialog.Description>
 			</Dialog.Header>
 			{#if addFriendModalOpen}

@@ -24,6 +24,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { X } from '@lucide/svelte';
 	import VipCard from '$lib/components/VipCard.svelte';
@@ -593,7 +594,9 @@
 	<!-- Footer with action buttons -->
 	{#if !loading && !error && !result}
 		<div class="mt-6 flex justify-end gap-2">
-			<Button variant="outline" onclick={handleClose} disabled={submitting}>Annuler</Button>
+			<Button variant="outline" onclick={handleClose} disabled={submitting}
+				>{lore.actions.cancel}</Button
+			>
 			<Button onclick={handleExchange} disabled={!canExchange || submitting}>
 				{#if submitting}
 					<div

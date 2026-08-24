@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Teacher Chapters Overview Page
 	 * ===============================
@@ -61,11 +62,13 @@
 		<Card.Root>
 			<Card.Content class="py-16 text-center">
 				<GraduationCap class="mx-auto mb-4 h-16 w-16 text-muted-foreground/50" />
-				<h2 class="text-xl font-semibold">Aucune classe</h2>
+				<h2 class="text-xl font-semibold">Aucun {lore.entities.class}</h2>
 				<p class="mt-2 text-muted-foreground">
-					Vous devez d'abord creer une classe pour ajouter des chapitres.
+					Vous devez d'abord creer un {lore.entities.class} pour ajouter des chapitres.
 				</p>
-				<Button href="/dashboard/teacher/classes" class="mt-4">Gerer les classes</Button>
+				<Button href="/dashboard/teacher/classes" class="mt-4"
+					>Gerer les {lore.entities.class}s</Button
+				>
 			</Card.Content>
 		</Card.Root>
 	{:else}
@@ -97,7 +100,7 @@
 						<Card.Root class="border-dashed">
 							<Card.Content class="py-8 text-center">
 								<FolderOpen class="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
-								<p class="text-muted-foreground">Aucun chapitre pour cette classe</p>
+								<p class="text-muted-foreground">Aucun chapitre pour ce {lore.entities.class}</p>
 								<Button
 									href="/dashboard/teacher/cours/{classData.classId}"
 									variant="ghost"

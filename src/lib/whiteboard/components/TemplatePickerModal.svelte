@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * TemplatePickerModal - Dialog for selecting and creating whiteboard templates
 	 *
@@ -636,7 +637,7 @@
 		</Tabs.Root>
 
 		<Dialog.Footer class="border-t pt-4">
-			<Button variant="outline" onclick={handleClose}>Annuler</Button>
+			<Button variant="outline" onclick={handleClose}>{lore.actions.cancel}</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
@@ -707,7 +708,9 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => (showCustomizeDialog = false)}>Annuler</Button>
+			<Button variant="outline" onclick={() => (showCustomizeDialog = false)}
+				>{lore.actions.cancel}</Button
+			>
 			<Button onclick={applyCustomizedTemplate}>Creer la page</Button>
 		</Dialog.Footer>
 	</Dialog.Content>

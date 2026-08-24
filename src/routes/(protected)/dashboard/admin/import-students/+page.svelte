@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Student Import Page
 	 *
@@ -160,7 +161,9 @@
 			const text = await file.text();
 			pasteText = text; // Update textarea with file content
 			await processData(text);
-			toaster.success(`${csvPreview.length} élève(s) chargé(s) depuis le fichier`);
+			toaster.success(
+				`${csvPreview.length} ${lore.entities.student}(s) chargé(s) depuis le fichier`
+			);
 		} catch (error) {
 			toaster.error('Erreur lors de la lecture du fichier');
 			console.error(error);
@@ -187,7 +190,9 @@
 				toaster.error(`${validation.invalidEmails} email(s) invalide(s) détecté(s)`);
 			}
 			if (validation.invalidClassCodes.length > 0) {
-				toaster.error(`Code(s) de classe invalide(s): ${validation.invalidClassCodes.join(', ')}`);
+				toaster.error(
+					`Code(s) de ${lore.entities.class} invalide(s): ${validation.invalidClassCodes.join(', ')}`
+				);
 			}
 			return;
 		}
@@ -209,7 +214,7 @@
 
 		try {
 			await processData(pasteText);
-			toaster.success(`${csvPreview.length} élève(s) chargé(s)`);
+			toaster.success(`${csvPreview.length} ${lore.entities.student}(s) chargé(s)`);
 		} catch (error) {
 			toaster.error('Erreur lors du traitement des données');
 			console.error(error);
@@ -305,9 +310,10 @@
 
 <div class="container mx-auto space-y-8 p-6">
 	<div class="space-y-2">
-		<h1 class="text-3xl font-bold">Importer des élèves</h1>
+		<h1 class="text-3xl font-bold">Importer des {lore.entities.student}s</h1>
 		<p class="text-muted-foreground">
-			Pré-remplissez les données des élèves avant leur première connexion avec Google
+			Pré-remplissez les données des {lore.entities.student}s avant leur première connexion avec
+			Google
 		</p>
 	</div>
 
@@ -349,10 +355,11 @@
 
 					<!-- Drop zone with textarea -->
 					<div class="space-y-2">
-						<Label for="drop-zone">Données des élèves</Label>
+						<Label for="drop-zone">Données des {lore.entities.student}s</Label>
 						<div
 							role="region"
-							aria-label="Zone de saisie ou glisser-déposer pour importer des élèves"
+							aria-label="Zone de saisie ou glisser-déposer pour importer des {lore.entities
+								.student}s"
 							class="relative rounded-lg border-2 border-dashed transition-all {isDragging
 								? 'border-primary bg-primary/5'
 								: 'border-border hover:border-primary/50'}"
@@ -402,7 +409,7 @@
 				<div class="space-y-4">
 					<Separator />
 					<div class="space-y-2">
-						<h3 class="font-semibold">Aperçu ({csvPreview.length} élèves)</h3>
+						<h3 class="font-semibold">Aperçu ({csvPreview.length} {lore.entities.student}s)</h3>
 						<div class="max-h-96 overflow-y-auto rounded-md border">
 							<table class="w-full text-sm">
 								<thead class="sticky top-0 bg-muted">
@@ -411,7 +418,7 @@
 										<th class="p-2 text-left">Prénom</th>
 										<th class="p-2 text-left">Nom</th>
 										<th class="p-2 text-left">Niveau</th>
-										<th class="p-2 text-left">Classes</th>
+										<th class="p-2 text-left">{lore.entities.class}s</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -448,7 +455,7 @@
 							return async ({ result, update }) => {
 								isProcessing = false;
 								if (result.type === 'success') {
-									toaster.success('Élèves importés avec succès');
+									toaster.success(`${lore.entities.student}s importés avec succès`);
 									handleClearPreview();
 								} else if (result.type === 'failure') {
 									toaster.error((result.data?.message as string) || "Erreur lors de l'importation");
@@ -461,9 +468,11 @@
 						<input type="hidden" name="school_id" value={selectedSchoolId} />
 						<div class="flex gap-2">
 							<Button type="submit" disabled={isProcessing}>
-								{isProcessing ? 'Importation...' : 'Importer les élèves'}
+								{isProcessing ? 'Importation...' : `Importer les ${lore.entities.student}s`}
 							</Button>
-							<Button type="button" variant="outline" onclick={handleClearPreview}>Annuler</Button>
+							<Button type="button" variant="outline" onclick={handleClearPreview}
+								>{lore.actions.cancel}</Button
+							>
 						</div>
 					</form>
 				</div>
@@ -474,12 +483,15 @@
 	<!-- Available Classes Reference -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Codes de classe disponibles</Card.Title>
-			<Card.Description>Utilisez ces codes pour assigner des élèves aux classes</Card.Description>
+			<Card.Title>Codes de {lore.entities.class} disponibles</Card.Title>
+			<Card.Description
+				>Utilisez ces codes pour assigner des {lore.entities.student}s aux {lore.entities
+					.class}s</Card.Description
+			>
 		</Card.Header>
 		<Card.Content>
 			{#if data.classes.length === 0}
-				<p class="py-4 text-center text-muted-foreground">Aucune classe disponible</p>
+				<p class="py-4 text-center text-muted-foreground">Aucun {lore.entities.class} disponible</p>
 			{:else}
 				<div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
 					{#each data.classes as classItem (classItem.id)}
@@ -500,14 +512,16 @@
 	<!-- Pending Students List -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Élèves en attente</Card.Title>
+			<Card.Title>{lore.entities.student}s en attente</Card.Title>
 			<Card.Description>
-				Ces élèves ne se sont pas encore connectés pour la première fois
+				Ces {lore.entities.student}s ne se sont pas encore connectés pour la première fois
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
 			{#if data.pendingStudents.length === 0}
-				<p class="py-8 text-center text-muted-foreground">Aucun élève en attente</p>
+				<p class="py-8 text-center text-muted-foreground">
+					Aucun {lore.entities.student} en attente
+				</p>
 			{:else}
 				<div class="space-y-2">
 					{#each data.pendingStudents as student (student.email)}
@@ -550,12 +564,14 @@
 	<!-- Activated Students List -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Élèves activés</Card.Title>
-			<Card.Description>Ces élèves se sont déjà connectés avec Google</Card.Description>
+			<Card.Title>{lore.entities.student}s activés</Card.Title>
+			<Card.Description
+				>Ces {lore.entities.student}s se sont déjà connectés avec Google</Card.Description
+			>
 		</Card.Header>
 		<Card.Content>
 			{#if data.activatedStudents.length === 0}
-				<p class="py-8 text-center text-muted-foreground">Aucun élève activé</p>
+				<p class="py-8 text-center text-muted-foreground">Aucun {lore.entities.student} activé</p>
 			{:else}
 				<div class="space-y-2">
 					{#each data.activatedStudents as student (student.email)}

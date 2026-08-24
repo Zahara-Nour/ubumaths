@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -50,11 +51,11 @@
 
 	// Type options
 	const typeOptions = [
-		{ value: 'worksheet', label: "Feuille d'exercices" },
+		{ value: 'worksheet', label: `Feuille de ${lore.learning.exercise}s` },
 		{ value: 'assessment', label: 'Evaluation' },
-		{ value: 'exam', label: 'Examen' },
+		{ value: 'exam', label: lore.learning.exam },
 		{ value: 'quiz', label: 'Quiz' },
-		{ value: 'homework', label: 'Devoirs' }
+		{ value: 'homework', label: 'Corvées Domestiques' }
 	];
 
 	// Numbering style options
@@ -149,7 +150,7 @@
 		</Button>
 		<div>
 			<h1 class="text-3xl font-bold">Nouvelle feuille</h1>
-			<p class="text-muted-foreground">Creez une nouvelle feuille d'exercices</p>
+			<p class="text-muted-foreground">Creez une nouvelle feuille de {lore.learning.exercise}s</p>
 		</div>
 	</div>
 
@@ -184,7 +185,7 @@
 					<Label for="description">Description</Label>
 					<Textarea
 						id="description"
-						placeholder="Description de la feuille d'exercices..."
+						placeholder="Description de la feuille de {lore.learning.exercise}s..."
 						bind:value={description}
 						rows={3}
 					/>
@@ -276,8 +277,8 @@
 								<MyCheckbox bind:checked={showTitle} label="Afficher le titre" />
 								<MyCheckbox bind:checked={showDate} label="Afficher la date" />
 								<MyCheckbox bind:checked={showStudentName} label="Nom de l'eleve" />
-								<MyCheckbox bind:checked={showClass} label="Classe" />
-								<MyCheckbox bind:checked={showPoints} label="Points par exercice" />
+								<MyCheckbox bind:checked={showClass} label={lore.entities.class} />
+								<MyCheckbox bind:checked={showPoints} label="Points par {lore.learning.exercise}" />
 							</div>
 						</div>
 
@@ -297,7 +298,10 @@
 						<div class="space-y-4">
 							<h4 class="text-sm font-medium">Options de melange</h4>
 							<div class="grid gap-4 sm:grid-cols-2">
-								<MyCheckbox bind:checked={shuffleExercises} label="Melanger les exercices" />
+								<MyCheckbox
+									bind:checked={shuffleExercises}
+									label="Melanger les {lore.learning.exercise}s"
+								/>
 								<MyCheckbox
 									bind:checked={shuffleWithinSections}
 									label="Melanger dans les sections"
@@ -313,7 +317,7 @@
 		<Card.Root class="border-dashed">
 			<Card.Content class="py-8 text-center">
 				<p class="text-muted-foreground">
-					Les exercices seront ajoutes apres la creation de la feuille.
+					Les {lore.learning.exercise}s seront ajoutes apres la creation de la feuille.
 				</p>
 			</Card.Content>
 		</Card.Root>

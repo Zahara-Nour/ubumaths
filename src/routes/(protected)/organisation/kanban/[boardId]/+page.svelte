@@ -28,6 +28,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import {
 		dndzone,
 		SHADOW_PLACEHOLDER_ITEM_ID,
@@ -639,7 +640,7 @@
 				<Badge variant={isClassBoard ? 'default' : 'secondary'} class="shrink-0 gap-1">
 					{#if isClassBoard}
 						<Users class="h-3 w-3" aria-hidden="true" />
-						Classe
+						{lore.entities.class}
 					{:else}
 						<User class="h-3 w-3" aria-hidden="true" />
 						Personnel
@@ -757,7 +758,9 @@
 									aria-label="Titre de la nouvelle colonne"
 								/>
 								<div class="flex justify-end gap-2">
-									<Button variant="ghost" size="sm" onclick={cancelCreateColumn}>Annuler</Button>
+									<Button variant="ghost" size="sm" onclick={cancelCreateColumn}
+										>{lore.actions.cancel}</Button
+									>
 									<Button size="sm" onclick={commitCreateColumn} disabled={!newColumnTitle.trim()}
 										>Ajouter</Button
 									>

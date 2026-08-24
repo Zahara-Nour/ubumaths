@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
@@ -84,7 +85,8 @@
 	<title>Les presques évaluations · Chiphre</title>
 	<meta
 		name="description"
-		content="Collection de parodies d'évaluations de mathématiques, partagées par les enseignants Chiphre."
+		content="Collection de parodies d'évaluations de mathématiques, partagées par les {lore.entities
+			.teacher}s Chiphre."
 	/>
 </svelte:head>
 

@@ -16,6 +16,7 @@
 	/>
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Upload, ImageIcon, Loader2 } from '@lucide/svelte';
@@ -65,7 +66,7 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<ImageIcon class="h-5 w-5" />
-				Images de l'exercice
+				Images de la {lore.learning.exercise}
 			</Dialog.Title>
 			<Dialog.Description>
 				Selectionnez une image existante ou ajoutez-en une nouvelle.
@@ -82,7 +83,7 @@
 				<!-- No images -->
 				<div class="flex flex-col items-center justify-center py-12 text-center">
 					<ImageIcon class="mb-4 h-12 w-12 text-muted-foreground" />
-					<p class="text-muted-foreground">Aucune image pour cet exercice.</p>
+					<p class="text-muted-foreground">Aucune image pour cette {lore.learning.exercise}.</p>
 				</div>
 			{:else}
 				<!-- Image gallery grid -->

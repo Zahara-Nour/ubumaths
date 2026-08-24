@@ -20,6 +20,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { FileText, BookCheck, Globe, Plus, Calendar } from '@lucide/svelte';
@@ -137,7 +138,7 @@
 						{#if day.entry.homeworkContent}
 							<div class="flex items-center gap-1 text-xs text-orange-600">
 								<FileText class="h-3 w-3" />
-								<span>Devoir</span>
+								<span>{lore.learning.homework}</span>
 							</div>
 						{/if}
 					</div>

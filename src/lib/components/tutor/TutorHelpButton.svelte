@@ -31,6 +31,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { HelpCircle } from '@lucide/svelte';
@@ -74,7 +75,8 @@
 			aria-describedby="tutor-dialog-description"
 		>
 			<p id="tutor-dialog-description" class="sr-only">
-				Interface de discussion avec le tuteur Père Ubu pour obtenir de l'aide sur l'exercice.
+				Interface de discussion avec le tuteur Père Ubu pour obtenir de l'aide sur la {lore.learning
+					.exercise}.
 			</p>
 			<div class="flex h-[calc(85vh-2rem)] flex-col">
 				<TutorChat {exerciseContext} {assignmentId} />

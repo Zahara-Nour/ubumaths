@@ -12,6 +12,7 @@
 	- Send button (API to be implemented in Phase 5)
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -133,11 +134,11 @@
 			</Card.Header>
 			<Card.Content>
 				<p class="text-sm text-muted-foreground">
-					L'élève a reçu toutes les informations nécessaires pour se connecter à Chiphre.
+					Le {lore.entities.student} a reçu toutes les informations nécessaires pour se connecter à Chiphre.
 				</p>
 			</Card.Content>
 			<Card.Footer>
-				<Button href="/dashboard/teacher/classes">Retour aux classes</Button>
+				<Button href="/dashboard/teacher/classes">Retour aux {lore.entities.class}s</Button>
 			</Card.Footer>
 		</Card.Root>
 	{:else}
@@ -182,7 +183,7 @@
 			</Card.Content>
 
 			<Card.Footer class="flex justify-end gap-2">
-				<Button variant="outline" href="/dashboard/teacher/classes">Annuler</Button>
+				<Button variant="outline" href="/dashboard/teacher/classes">{lore.actions.cancel}</Button>
 				<Button onclick={handleSendEmail} disabled={!data.hasGmailAccess || isSending}>
 					<Send class="mr-2 h-4 w-4" />
 					{#if isSending}

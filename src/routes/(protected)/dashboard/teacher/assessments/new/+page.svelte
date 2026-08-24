@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -149,7 +150,7 @@
 		</Button>
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Nouvelle Évaluation</h1>
-			<p class="mt-2 text-muted-foreground">Créez une évaluation pour vos classes</p>
+			<p class="mt-2 text-muted-foreground">Créez une évaluation pour vos {lore.entities.class}s</p>
 		</div>
 	</div>
 
@@ -281,7 +282,7 @@
 						</div>
 
 						<div>
-							<h3 class="mb-2 font-semibold">Paramètres</h3>
+							<h3 class="mb-2 font-semibold">{lore.nav.settings}</h3>
 							<dl class="space-y-2 text-sm">
 								<div>
 									<dt class="text-muted-foreground">Tentatives max</dt>

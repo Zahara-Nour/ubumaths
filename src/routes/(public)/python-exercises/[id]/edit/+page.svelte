@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import ExerciseForm, {
 		buildInitialForm,
@@ -36,7 +37,7 @@
 
 <div class="container mx-auto max-w-3xl p-4">
 	<header class="mb-6">
-		<h1 class="text-2xl font-bold">Modifier l'exercice</h1>
+		<h1 class="text-2xl font-bold">Modifier la {lore.learning.exercise}</h1>
 		<p class="mt-1 text-sm text-muted-foreground">
 			Modifie le formulaire, vérifie que la solution passe toujours, puis enregistre.
 		</p>

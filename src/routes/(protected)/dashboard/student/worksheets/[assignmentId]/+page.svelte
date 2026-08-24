@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import WorksheetHeader from '$lib/components/student/worksheets/WorksheetHeader.svelte';
 	import ExerciseListItem from '$lib/components/student/worksheets/ExerciseListItem.svelte';
 	import ExerciseModal from '$lib/components/student/worksheets/ExerciseModal.svelte';
@@ -236,7 +237,7 @@
 			<Tabs.List>
 				<Tabs.Trigger value="exercises" class="gap-2">
 					<FileText class="h-4 w-4" />
-					Exercices ({exerciseCount})
+					{lore.learning.exercise}s ({exerciseCount})
 				</Tabs.Trigger>
 				<Tabs.Trigger value="reports" class="gap-2">
 					<AlertTriangle class="h-4 w-4" />
@@ -250,7 +251,7 @@
 				{#if hasEssentialExercises}
 					<div class="flex items-center gap-2 text-sm text-muted-foreground">
 						<Star class="h-4 w-4 fill-amber-500 text-amber-500" />
-						<span>= Exercices indispensables</span>
+						<span>= {lore.learning.exercise}s indispensables</span>
 					</div>
 				{/if}
 
@@ -259,7 +260,7 @@
 					<Card.Root class="border-dashed">
 						<Card.Content class="flex min-h-48 items-center justify-center p-6">
 							<p class="text-center text-muted-foreground">
-								Aucun exercice disponible pour cette fiche.
+								Aucune {lore.learning.exercise} disponible pour cette fiche.
 							</p>
 						</Card.Content>
 					</Card.Root>
@@ -282,7 +283,9 @@
 								{:else if sections.length > 0}
 									<!-- Unsectioned exercises header (only if there are sections) -->
 									<div class="mb-4 border-l-4 border-muted pl-4">
-										<h3 class="text-lg font-semibold text-muted-foreground">Autres exercices</h3>
+										<h3 class="text-lg font-semibold text-muted-foreground">
+											Autres {lore.learning.exercise}s
+										</h3>
 									</div>
 								{/if}
 

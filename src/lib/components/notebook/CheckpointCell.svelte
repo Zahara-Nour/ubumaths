@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * CheckpointCell — Student-facing view of a checkpoint cell.
 	 *
@@ -187,7 +188,7 @@
 					size="sm"
 					onclick={handleRevealHint}
 					class="mt-2 h-auto gap-1.5 px-2 py-1 text-xs text-amber-700 hover:bg-amber-100 dark:text-amber-300 dark:hover:bg-amber-900/40"
-					aria-label="Afficher l'indice du professeur"
+					aria-label="Afficher l'indice du {lore.entities.teacher}"
 				>
 					<Lightbulb class="size-3.5" />
 					Voir l'indice

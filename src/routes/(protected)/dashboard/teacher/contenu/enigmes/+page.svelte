@@ -5,6 +5,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import type { DbRiddle } from '$lib/types/riddle';
 	import {
@@ -92,7 +93,7 @@
 				Énigmes Mathématiques
 			</h1>
 			<p class="mt-2 text-muted-foreground">
-				Gérez votre banque d'énigmes et créez des défis pour vos élèves
+				Gérez votre banque d'énigmes et créez des défis pour vos {lore.entities.student}s
 			</p>
 		</div>
 		<Button href="/dashboard/teacher/contenu/enigmes/new">

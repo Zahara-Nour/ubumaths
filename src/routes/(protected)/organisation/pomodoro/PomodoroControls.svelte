@@ -7,6 +7,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Play, Pause, SkipForward, RotateCcw } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
@@ -103,7 +104,7 @@
 	title="Réinitialiser le cycle"
 	description="Réinitialiser le cycle en cours ? Le compteur du jour est conservé."
 	confirmLabel="Réinitialiser"
-	cancelLabel="Annuler"
+	cancelLabel={lore.actions.cancel}
 	variant="destructive"
 	onConfirm={performReset}
 />

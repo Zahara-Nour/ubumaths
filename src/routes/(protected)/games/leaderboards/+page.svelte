@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { resolve } from '$app/paths';
 	import { Card } from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
@@ -17,14 +18,17 @@
 		data.scope === 'class'
 			? 'Aucun camarade classé pour l’instant.'
 			: data.scope === 'grade'
-				? 'Aucun élève de ton niveau classé pour l’instant.'
-				: 'Aucun élève de ton école classé pour l’instant.'
+				? `Aucun ${lore.entities.student} de ton niveau classé pour l’instant.`
+				: `Aucun ${lore.entities.student} de ton école classé pour l’instant.`
 	);
 </script>
 
 <svelte:head>
 	<title>Classements | Chiphre</title>
-	<meta name="description" content="Classements des jeux Chiphre (classe, niveau, école)" />
+	<meta
+		name="description"
+		content="Classements des jeux Chiphre ({lore.entities.class}, niveau, école)"
+	/>
 </svelte:head>
 
 <div class="mx-auto max-w-4xl p-4 md:p-6">
@@ -38,7 +42,7 @@
 		</div>
 		<h1 class="mb-1 text-2xl font-bold text-foreground md:text-3xl">Classements</h1>
 		<p class="text-sm text-muted-foreground">
-			Compare tes scores dans ta classe, ton niveau et ton école
+			Compare tes scores dans ton {lore.entities.class}, ton niveau et ton école
 		</p>
 	</div>
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -40,7 +41,7 @@
 
 	// Class items for MySelect
 	let classItems = $derived([
-		{ value: '', label: 'Toutes les classes' },
+		{ value: '', label: `Tous les ${lore.entities.class}s` },
 		...data.classes.map((c) => ({ value: c.id, label: c.name }))
 	]);
 
@@ -132,7 +133,7 @@
 	function getWorkTypeLabel(workType: string): string {
 		switch (workType) {
 			case 'ASSIGNMENT':
-				return 'Devoir';
+				return lore.learning.homework;
 			case 'SHORT_ANSWER_QUESTION':
 				return 'Question courte';
 			case 'MULTIPLE_CHOICE_QUESTION':
@@ -173,18 +174,18 @@
 </script>
 
 <svelte:head>
-	<title>Devoirs Google Classroom | Chiphre</title>
+	<title>Corvées Domestiques Google Classroom | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<!-- Header -->
 	<div class="mb-6">
-		<h1 class="text-3xl font-bold tracking-tight">Devoirs Google Classroom</h1>
+		<h1 class="text-3xl font-bold tracking-tight">Corvées Domestiques Google Classroom</h1>
 		<p class="mt-2 text-muted-foreground">
-			{data.pagination.total} devoir{data.pagination.total > 1 ? 's' : ''} partagé{data.pagination
-				.total > 1
+			{data.pagination.total} Corvée{data.pagination.total > 1 ? 's' : ''} Domestique{data
+				.pagination.total > 1
 				? 's'
-				: ''}
+				: ''} partagée{data.pagination.total > 1 ? 's' : ''}
 		</p>
 	</div>
 
@@ -199,11 +200,13 @@
 					<!-- Class Filter (only show if multiple classes) -->
 					{#if data.classes.length > 1}
 						<div class="flex-1">
-							<label for="class-select" class="mb-2 block text-sm font-medium">Classe</label>
+							<label for="class-select" class="mb-2 block text-sm font-medium"
+								>{lore.entities.class}</label
+							>
 							<MySelect
 								bind:value={selectedClass}
 								items={classItems}
-								placeholder="Sélectionner une classe"
+								placeholder="Sélectionner un {lore.entities.class}"
 								triggerClass="w-full h-10 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
 							/>
 						</div>
@@ -262,12 +265,14 @@
 			<Card.Content class="py-12 text-center">
 				<BookOpen class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
 				<p class="text-lg font-medium">
-					{hasFilters ? 'Aucun devoir trouvé avec ces filtres' : 'Aucun devoir partagé'}
+					{hasFilters
+						? `Aucune ${lore.learning.homework} trouvée avec ces filtres`
+						: `Aucune ${lore.learning.homework} partagée`}
 				</p>
 				<p class="mt-2 text-sm text-muted-foreground">
 					{hasFilters
-						? 'Essayez de modifier les filtres pour voir plus de devoirs'
-						: "Vos professeurs n'ont pas encore partagé de devoirs"}
+						? 'Essayez de modifier les filtres pour voir plus de Corvées Domestiques'
+						: `Vos ${lore.entities.teacher}s n'ont pas encore partagé de Corvées Domestiques`}
 				</p>
 				{#if hasFilters}
 					<Button variant="outline" class="mt-4" onclick={clearFilters}>Effacer les filtres</Button>

@@ -25,6 +25,7 @@
 	```
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -367,7 +368,7 @@
 			const newExercises = exercises.filter((e) => e.id !== deletingExerciseId);
 			onExercisesChange?.(newExercises);
 
-			toaster.success('Exercice retire de la feuille');
+			toaster.success(`${lore.learning.exercise} retirée de la feuille`);
 		} catch (err) {
 			console.error('Error deleting exercise:', err);
 			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la suppression');
@@ -419,7 +420,11 @@
 				throw new Error(error.message || 'Erreur lors de la mise a jour');
 			}
 
-			toaster.success(newValue ? 'Exercice marque indispensable' : 'Exercice non indispensable');
+			toaster.success(
+				newValue
+					? `${lore.learning.exercise} marquée indispensable`
+					: `${lore.learning.exercise} non indispensable`
+			);
 		} catch (err) {
 			console.error('Error toggling essential:', err);
 			// Rollback - update locally AND notify parent
@@ -436,9 +441,10 @@
 	<Card.Header>
 		<div class="flex items-center justify-between">
 			<div>
-				<Card.Title>Exercices</Card.Title>
+				<Card.Title>{lore.learning.exercise}s</Card.Title>
 				<Card.Description>
-					{exercises.length} exercice(s) dans cette feuille
+					{exercises.length}
+					{lore.learning.exercise}(s) dans cette feuille
 					{#if isSaving}
 						<span class="ml-2 inline-flex items-center text-primary">
 							<Loader2 class="mr-1 h-3 w-3 animate-spin" />
@@ -452,9 +458,11 @@
 	<Card.Content>
 		{#if exercises.length === 0}
 			<div class="py-8 text-center text-muted-foreground">
-				<p>Aucun exercice dans cette feuille</p>
+				<p>Aucune {lore.learning.exercise} dans cette feuille</p>
 				{#if !readonly}
-					<p class="mt-1 text-sm">Utilisez "Ajouter des exercices" pour commencer</p>
+					<p class="mt-1 text-sm">
+						Utilisez "Ajouter des {lore.learning.exercise}s" pour commencer
+					</p>
 				{/if}
 			</div>
 		{:else}
@@ -476,7 +484,7 @@
 								? 'border-primary bg-primary/5'
 								: 'border-transparent'}"
 							role="list"
-							aria-label="Liste des exercices pour {getSectionTitle(sectionId)}"
+							aria-label="Liste des {lore.learning.exercise}s pour {getSectionTitle(sectionId)}"
 							ondragover={(e) => handleDragOverSection(e, sectionId)}
 							ondragleave={handleDragLeave}
 							ondrop={(e) => handleDrop(e, sectionId)}
@@ -486,7 +494,7 @@
 									{#if !readonly && draggedExercise}
 										Deposer ici
 									{:else}
-										Aucun exercice
+										Aucune {lore.learning.exercise}
 									{/if}
 								</div>
 							{:else}
@@ -510,7 +518,8 @@
 												: ''} {isSaving ? 'cursor-not-allowed opacity-70' : ''}"
 											draggable={!readonly && !isSaving}
 											role="listitem"
-											aria-label="Exercice {exercise.exercise?.title || 'sans titre'}"
+											aria-label="{lore.learning.exercise} {exercise.exercise?.title ||
+												'sans titre'}"
 											ondragstart={(e) => handleDragStart(e, exercise)}
 											ondragend={handleDragEnd}
 											ondragover={(e) => handleDragOverExercise(e, sectionId, index)}
@@ -614,8 +623,10 @@
 <!-- Delete confirmation dialog -->
 <ConfirmDialog
 	bind:open={deleteConfirmOpen}
-	title="Retirer l'exercice"
-	description="L'exercice sera retire de la feuille mais restera disponible dans la base d'exercices."
+	title="Retirer la {lore.learning.exercise}"
+	description="La {lore.learning
+		.exercise} sera retire de la feuille mais restera disponible dans la base de {lore.learning
+		.exercise}s."
 	confirmLabel={isDeleting ? 'Suppression...' : 'Retirer'}
 	onConfirm={deleteExercise}
 	onCancel={() => (deletingExerciseId = null)}

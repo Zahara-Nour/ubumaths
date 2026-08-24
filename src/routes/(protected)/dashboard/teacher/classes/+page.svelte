@@ -36,6 +36,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import type { Tables } from '$lib/types/database';
 	import type { SchoolPeriod } from '$lib/utils/timetable';
@@ -374,7 +375,7 @@
 		if (student.firstname && student.lastname) {
 			return `${student.firstname} ${student.lastname}`;
 		}
-		return student.firstname || student.email || 'Élève';
+		return student.firstname || student.email || lore.entities.student;
 	}
 
 	/**
@@ -493,14 +494,16 @@
 </script>
 
 <svelte:head>
-	<title>Mes Classes - Chiphre</title>
+	<title>Mes {lore.entities.class}s - Chiphre</title>
 </svelte:head>
 
 <div class="space-y-6">
 	<!-- Page Header -->
 	<div>
-		<h1 class="text-3xl font-bold text-foreground">Mes Classes</h1>
-		<p class="mt-2 text-muted-foreground">Gérez vos classes et leurs emplois du temps</p>
+		<h1 class="text-3xl font-bold text-foreground">Mes {lore.entities.class}s</h1>
+		<p class="mt-2 text-muted-foreground">
+			Gérez vos {lore.entities.class}s et leurs emplois du temps
+		</p>
 	</div>
 
 	<!-- Warning if no timetable configured -->
@@ -537,7 +540,8 @@
 									<p class="mt-1 text-sm text-muted-foreground">{classItem.description}</p>
 								{/if}
 								<p class="mt-2 text-sm text-muted-foreground">
-									Code de classe: <span class="font-mono font-semibold">{classItem.join_code}</span>
+									Code de {lore.entities.class}:
+									<span class="font-mono font-semibold">{classItem.join_code}</span>
 								</p>
 							</div>
 							<Button variant="outline" href="/dashboard/teacher/cahier-texte?class={classItem.id}">
@@ -606,16 +610,19 @@
 					<Card.Root>
 						<Card.Header>
 							<Card.Title class="flex items-center gap-2">
-								Élèves
+								{lore.entities.student}s
 								<Badge variant="secondary">{students.length}</Badge>
 							</Card.Title>
 							<Card.Description>
-								Liste des élèves de cette classe avec leur statut d'email de bienvenue
+								Liste des {lore.entities.student}s de ce {lore.entities.class} avec leur statut d'email
+								de bienvenue
 							</Card.Description>
 						</Card.Header>
 						<Card.Content>
 							{#if students.length === 0}
-								<p class="py-4 text-center text-muted-foreground">Aucun élève dans cette classe</p>
+								<p class="py-4 text-center text-muted-foreground">
+									Aucun {lore.entities.student} dans ce {lore.entities.class}
+								</p>
 							{:else}
 								<div class="divide-y divide-border">
 									{#each students as student (student.id)}
@@ -665,7 +672,8 @@
 												{:else}
 													<Badge
 														variant="secondary"
-														title="L'élève doit avoir une adresse email pour recevoir le message de bienvenue"
+														title="Le {lore.entities
+															.student} doit avoir une adresse email pour recevoir le message de bienvenue"
 													>
 														Email requis
 													</Badge>
@@ -683,7 +691,7 @@
 	{:else}
 		<!-- Empty State -->
 		<div class="rounded-lg border border-border bg-card p-12 text-center shadow-sm">
-			<h3 class="mb-2 text-lg font-semibold text-foreground">Aucune classe</h3>
+			<h3 class="mb-2 text-lg font-semibold text-foreground">Aucun {lore.entities.class}</h3>
 			<p class="text-muted-foreground">
 				Vous n'avez pas encore de classes. Contactez un administrateur pour créer une classe.
 			</p>
@@ -699,7 +707,7 @@
 					<Badge variant="secondary">{data.unassignedStudents.length}</Badge>
 				</Card.Title>
 				<Card.Description>
-					Élèves que vous suivez sans qu'ils soient inscrits dans une classe.
+					{lore.entities.student}s que vous suivez sans qu'ils soient inscrits dans une classe.
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
@@ -722,7 +730,7 @@
 								variant="ghost"
 								size="sm"
 								href="/dashboard/teacher/students/{student.id}/journal"
-								title="Voir la fiche de l'élève"
+								title="Voir la fiche du {lore.entities.student}"
 							>
 								<ScrollText class="h-4 w-4" />
 							</Button>

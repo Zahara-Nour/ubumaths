@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -81,7 +82,7 @@
 			<Card.Content>
 				<p class="text-muted-foreground">
 					L'intégration Google Classroom nécessite l'application des migrations de base de données.
-					Contactez votre enseignant ou administrateur.
+					Contactez votre {lore.entities.teacher} ou administrateur.
 				</p>
 			</Card.Content>
 		</Card.Root>
@@ -92,7 +93,7 @@
 			</Card.Header>
 			<Card.Content>
 				<p class="text-muted-foreground">
-					Votre enseignant n'a pas encore partagé de travaux depuis Google Classroom.
+					Votre {lore.entities.teacher} n'a pas encore partagé de travaux depuis Google Classroom.
 				</p>
 			</Card.Content>
 		</Card.Root>
@@ -141,7 +142,7 @@
 								<Card.Content>
 									{#if item.description_override}
 										<p class="mb-3 text-sm text-muted-foreground italic">
-											Note de l'enseignant : {item.description_override}
+											Note du {lore.entities.teacher} : {item.description_override}
 										</p>
 									{/if}
 

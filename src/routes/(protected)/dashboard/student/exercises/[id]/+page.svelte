@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
@@ -65,7 +66,7 @@
 				}
 
 				isCompleted = true;
-				toaster.success('Exercice complété ! 🎉');
+				toaster.success(`${lore.learning.exercise} complétée ! 🎉`);
 			}
 		} catch (err) {
 			toaster.error(formatUserError(err));
@@ -76,14 +77,14 @@
 </script>
 
 <svelte:head>
-	<title>{data.exercise.title || 'Exercice'} | Chiphre</title>
+	<title>{data.exercise.title || lore.learning.exercise} | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<!-- Header -->
 	<div class="mb-6">
 		<Button variant="ghost" onclick={() => goto('/dashboard/student/exercises')}>
-			← Retour aux exercices
+			← Retour aux {lore.learning.exercise}s
 		</Button>
 	</div>
 
@@ -97,7 +98,7 @@
 				<div class="space-y-3">
 					{#if data.assignment.notes}
 						<div>
-							<p class="text-sm font-medium">Note du professeur :</p>
+							<p class="text-sm font-medium">Note du {lore.entities.teacher} :</p>
 							<p class="mt-1 text-sm text-muted-foreground italic">{data.assignment.notes}</p>
 						</div>
 					{/if}
@@ -137,7 +138,7 @@
 		<Card.Header>
 			<div class="flex items-start justify-between">
 				<div class="flex-1">
-					<Card.Title class="text-2xl">{data.exercise.title || 'Exercice'}</Card.Title>
+					<Card.Title class="text-2xl">{data.exercise.title || lore.learning.exercise}</Card.Title>
 
 					{#if data.exercise.tags && data.exercise.tags.length > 0}
 						<div class="mt-2 flex flex-wrap gap-1">

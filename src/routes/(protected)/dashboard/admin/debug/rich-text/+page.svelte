@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -84,7 +85,7 @@
 		math: `<h3>Formule mathématique</h3>
 <p>L'équation du second degré : <span data-math-inline>ax^2 + bx + c = 0</span></p>
 <p>Sa solution est donnée par : <span data-math-inline>x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}</span></p>`,
-		emojis: `<h3>Feedback élève ⭐</h3>
+		emojis: `<h3>Feedback ${lore.entities.student} ⭐</h3>
 <p>Excellent travail ! 👏 Tu as bien compris les fractions. 🎯</p>
 <p>Points forts :</p>
 <ul><li>✅ Calcul correct</li><li>✅ Présentation soignée</li></ul>
@@ -94,7 +95,7 @@
 <h3>Formule utilisée</h3>
 <p>Formule générale : <span data-math-inline>ax^2 + bx + c = 0</span></p>
 <p>Discriminant : <span data-math-inline>\\Delta = b^2 - 4ac</span></p>
-<h3>Paramètres</h3>
+<h3>{lore.nav.settings}</h3>
 <ul>
 <li><code>a</code> : coefficient de x² (entier de 1 à 5)</li>
 <li><code>b</code> : coefficient de x (entier de -10 à 10)</li>

@@ -12,6 +12,7 @@
 	@see VariationTable.svelte for the rendering component
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { NodeViewWrapper } from 'svelte-tiptap';
 	import type { Editor } from '@tiptap/core';
 
@@ -462,8 +463,8 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={closeDialog}>Annuler</Button>
-			<Button onclick={handleDialogSave}>Enregistrer</Button>
+			<Button variant="outline" onclick={closeDialog}>{lore.actions.cancel}</Button>
+			<Button onclick={handleDialogSave}>{lore.actions.save}</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

@@ -5,6 +5,7 @@
 	sans review depuis > 5 jours (paramétré).
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { AlertTriangle } from '@lucide/svelte';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { Badge } from '$lib/components/ui/badge';
@@ -93,7 +94,7 @@
 	}
 
 	function studentDisplay(s: HeatmapStudent, idx: number): string {
-		return anonymized ? `Élève ${idx + 1}` : s.display_name;
+		return anonymized ? `${lore.entities.student} ${idx + 1}` : s.display_name;
 	}
 
 	function alertChip(days: number | null): string {
@@ -117,13 +118,17 @@
 		{:else if error}
 			<p class="text-sm text-destructive">⚠ {error}</p>
 		{:else if !data || data.students.length === 0}
-			<p class="py-8 text-center text-sm text-muted-foreground">Aucun élève dans cette classe.</p>
+			<p class="py-8 text-center text-sm text-muted-foreground">
+				Aucun {lore.entities.student} dans cette classe.
+			</p>
 		{:else}
 			<div class="overflow-x-auto">
 				<table class="border-collapse text-xs" aria-label="Heatmap d'activité">
 					<thead>
 						<tr>
-							<th class="sticky left-0 z-10 bg-background px-2 py-1 text-left">Élève</th>
+							<th class="sticky left-0 z-10 bg-background px-2 py-1 text-left"
+								>{lore.entities.student}</th
+							>
 							<th class="sticky left-[5rem] z-10 bg-background px-2 py-1 text-left">Alerte</th>
 							{#each data.days as day, i (day)}
 								<th

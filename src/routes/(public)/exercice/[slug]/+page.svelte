@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Public Exercise Viewer
 	 *
@@ -338,7 +339,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.exercise.title || 'Exercice'} | Chiphre</title>
+	<title>{data.exercise.title || lore.learning.exercise} | Chiphre</title>
 	<meta name="description" content={metaDescription} />
 </svelte:head>
 
@@ -409,7 +410,9 @@
 					<Card.Header>
 						<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 							<div class="flex-1">
-								<Card.Title class="text-2xl">{data.exercise.title || 'Exercice'}</Card.Title>
+								<Card.Title class="text-2xl"
+									>{data.exercise.title || lore.learning.exercise}</Card.Title
+								>
 
 								<!-- Exercise metadata -->
 								<div class="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
@@ -495,7 +498,7 @@
 								<span
 									class="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-200"
 								>
-									Exercice public
+									{lore.learning.exercise} publique
 								</span>
 							</span>
 						{/if}
@@ -579,7 +582,9 @@
 				<Card.Header>
 					<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 						<div class="flex-1">
-							<Card.Title class="text-2xl">{data.exercise.title || 'Exercice'}</Card.Title>
+							<Card.Title class="text-2xl"
+								>{data.exercise.title || lore.learning.exercise}</Card.Title
+							>
 
 							<!-- Exercise metadata -->
 							<div class="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
@@ -665,7 +670,7 @@
 							<span
 								class="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-200"
 							>
-								Exercice public
+								{lore.learning.exercise} publique
 							</span>
 						</span>
 					{/if}
@@ -754,7 +759,8 @@
 			<Card.Header>
 				<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 					<div class="flex-1">
-						<Card.Title class="text-2xl">{data.exercise.title || 'Exercice'}</Card.Title>
+						<Card.Title class="text-2xl">{data.exercise.title || lore.learning.exercise}</Card.Title
+						>
 
 						<!-- Exercise metadata -->
 						<div class="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
@@ -840,7 +846,7 @@
 						<span
 							class="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-200"
 						>
-							Exercice public
+							{lore.learning.exercise} publique
 						</span>
 					</span>
 				{/if}

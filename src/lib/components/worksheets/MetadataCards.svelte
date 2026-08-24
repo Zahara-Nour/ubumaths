@@ -17,6 +17,7 @@
 	```
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
@@ -476,7 +477,7 @@
 									<Badge variant="secondary" class="text-xs">Nom</Badge>
 								{/if}
 								{#if worksheet.config?.show_class ?? true}
-									<Badge variant="secondary" class="text-xs">Classe</Badge>
+									<Badge variant="secondary" class="text-xs">{lore.entities.class}</Badge>
 								{/if}
 								{#if worksheet.config?.show_points ?? true}
 									<Badge variant="secondary" class="text-xs">Points</Badge>
@@ -504,7 +505,7 @@
 										{#if worksheet.config?.shuffle_exercises && worksheet.config?.shuffle_within_sections}
 											Tout
 										{:else if worksheet.config?.shuffle_exercises}
-											Exercices
+											{lore.learning.exercise}s
 										{:else}
 											Sections
 										{/if}
@@ -543,7 +544,7 @@
 							<MyCheckbox
 								checked={worksheet.config?.show_class ?? true}
 								onchange={(v) => handleConfigChange('show_class', v)}
-								label="Classe"
+								label={lore.entities.class}
 							/>
 							<MyCheckbox
 								checked={worksheet.config?.show_points ?? true}
@@ -578,7 +579,7 @@
 						<MyCheckbox
 							checked={worksheet.config?.shuffle_exercises ?? false}
 							onchange={(v) => handleConfigChange('shuffle_exercises', v)}
-							label="Melanger exercices"
+							label="Melanger {lore.learning.exercise}s"
 						/>
 						<MyCheckbox
 							checked={worksheet.config?.shuffle_within_sections ?? false}

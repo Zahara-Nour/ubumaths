@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { CheckCircle2, ExternalLink } from '@lucide/svelte';
@@ -35,7 +36,7 @@
 				<div class="rounded-lg bg-blue-50 p-4 text-left">
 					<h3 class="mb-2 font-medium">Votre enfant peut désormais :</h3>
 					<ul class="ml-4 list-disc space-y-1 text-sm text-muted-foreground">
-						<li>Réaliser et soumettre des exercices</li>
+						<li>Réaliser et soumettre des {lore.learning.exercise}s</li>
 						<li>Communiquer avec son enseignant</li>
 						<li>Gagner des récompenses pour ses progrès</li>
 						<li>Participer aux jeux éducatifs</li>

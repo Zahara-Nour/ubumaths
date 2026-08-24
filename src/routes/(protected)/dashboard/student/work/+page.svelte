@@ -15,6 +15,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { Inbox, BookOpen, Code } from '@lucide/svelte';
@@ -80,11 +81,11 @@
 					<div class="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
 						<Button href="/dashboard/student/exercises" variant="default">
 							<BookOpen class="mr-2 h-4 w-4" />
-							Pratique d'exercices
+							Pratique de {lore.learning.exercise}s
 						</Button>
 						<Button href="/python-exercises" variant="outline">
 							<Code class="mr-2 h-4 w-4" />
-							Exercices Python
+							{lore.learning.exercise}s Python
 						</Button>
 					</div>
 				</div>

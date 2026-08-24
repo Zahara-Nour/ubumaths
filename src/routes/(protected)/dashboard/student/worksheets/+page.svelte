@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -26,7 +27,7 @@
 
 	// Class items for MySelect
 	let classItems = $derived([
-		{ value: '', label: 'Toutes les classes' },
+		{ value: '', label: `Tous les ${lore.entities.class}s` },
 		...data.classes.map((c) => ({ value: c.id, label: c.name }))
 	]);
 
@@ -97,11 +98,13 @@
 				<div class="flex flex-col gap-4 sm:flex-row sm:items-end">
 					<!-- Class Filter -->
 					<div class="flex-1">
-						<label for="class-select" class="mb-2 block text-sm font-medium">Classe</label>
+						<label for="class-select" class="mb-2 block text-sm font-medium"
+							>{lore.entities.class}</label
+						>
 						<MySelect
 							bind:value={selectedClass}
 							items={classItems}
-							placeholder="Selectionner une classe"
+							placeholder="Selectionner un {lore.entities.class}"
 							triggerClass="w-full h-10 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
 						/>
 					</div>
@@ -155,7 +158,7 @@
 					<p class="mt-2 text-sm text-muted-foreground">
 						{hasFilters
 							? 'Essayez de modifier les filtres pour voir plus de fiches'
-							: "Vos professeurs n'ont pas encore partage de fiches de travail"}
+							: `Vos ${lore.entities.teacher}s n'ont pas encore partage de fiches de travail`}
 					</p>
 					{#if hasFilters}
 						<Button variant="outline" class="mt-4" onclick={clearFilters}>

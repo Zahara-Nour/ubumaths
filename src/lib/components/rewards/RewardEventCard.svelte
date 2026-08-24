@@ -7,6 +7,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { RewardEvent, RewardType } from '$lib/types/reward-journal';
 	import { cn } from '$lib/utils';
 	import { Badge } from '$lib/components/ui/badge';
@@ -83,12 +84,12 @@
 				return `Retiré grâce à une carte ${deletionContext.card_name}`;
 			}
 			if (deletionContext?.source === 'teacher') {
-				return 'Retiré par le professeur';
+				return `Retiré par le ${lore.entities.teacher}`;
 			}
 
 			// Fallback for old events without deletion_context
 			const isVipCard = event.created_by === event.student_id;
-			return isVipCard ? 'Retiré grâce à une carte VIP' : 'Retiré par le professeur';
+			return isVipCard ? 'Retiré grâce à une carte VIP' : `Retiré par le ${lore.entities.teacher}`;
 		}
 
 		return event.description;

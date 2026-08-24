@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { AlertCircle, Check, Sparkles } from '@lucide/svelte';
@@ -174,7 +175,9 @@
 
 		{#if !sellSuccess}
 			<Dialog.Footer>
-				<Button variant="outline" onclick={handleClose} disabled={isSelling}>Annuler</Button>
+				<Button variant="outline" onclick={handleClose} disabled={isSelling}
+					>{lore.actions.cancel}</Button
+				>
 				<Button
 					onclick={handleSell}
 					disabled={isSelling}
