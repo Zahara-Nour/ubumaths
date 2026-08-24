@@ -152,7 +152,7 @@
 			pagination = data.pagination;
 		} catch (err) {
 			console.error('Error fetching exercises:', err);
-			loadError = 'Impossible de charger les exercices';
+			loadError = `Impossible de charger les ${lore.learning.exercise}s`;
 		} finally {
 			isLoading = false;
 		}
@@ -541,7 +541,7 @@
 	<Dialog.Content class="max-h-[90vh] max-w-3xl overflow-hidden">
 		<Dialog.Header>
 			<div class="flex items-center justify-between">
-				<Dialog.Title>Apercu de l'exercice</Dialog.Title>
+				<Dialog.Title>Apercu de la {lore.learning.exercise}</Dialog.Title>
 				<Button variant="ghost" size="icon" onclick={closePreview} class="h-8 w-8">
 					<X class="h-4 w-4" />
 				</Button>

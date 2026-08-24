@@ -38,7 +38,7 @@
 	 */
 	async function handleExport() {
 		if (exerciseIds.length === 0) {
-			toaster.error('Aucun exercice sélectionné');
+			toaster.error(`Aucune ${lore.learning.exercise} sélectionnée`);
 			return;
 		}
 
@@ -72,7 +72,7 @@
 			} else {
 				// Single file
 				downloadFile(result.filename, result.content, result.mime_type);
-				toaster.success('Exercice(s) exporté(s) avec succès');
+				toaster.success(`${lore.learning.exercise}(s) exportée(s) avec succès`);
 			}
 
 			// Close dialog
@@ -165,7 +165,7 @@
 			>
 				<p class="text-sm text-blue-900 dark:text-blue-100">
 					{#if exerciseIds.length === 1}
-						L'exercice sera téléchargé au format {selectedFormat.toUpperCase()}.
+						La {lore.learning.exercise} sera téléchargée au format {selectedFormat.toUpperCase()}.
 					{:else if selectedFormat === 'json'}
 						Les {lore.learning.exercise}s seront combinées dans un seul fichier JSON.
 					{:else}

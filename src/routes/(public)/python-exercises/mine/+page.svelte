@@ -43,7 +43,7 @@
 				const message = await res.text();
 				throw new Error(`HTTP ${res.status} : ${message || res.statusText}`);
 			}
-			toaster.success('Exercice supprimé');
+			toaster.success(`${lore.learning.exercise} supprimée`);
 			confirmingDelete = null;
 			await invalidateAll();
 		} catch (e) {

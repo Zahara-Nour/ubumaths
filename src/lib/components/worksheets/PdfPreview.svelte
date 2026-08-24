@@ -226,7 +226,7 @@
 				mdParts.push(`${worksheet.description}\n`);
 			}
 			instanceData.exercises.forEach((ex, i) => {
-				mdParts.push(`## Exercice ${i + 1}\n`);
+				mdParts.push(`## ${lore.learning.exercise} ${i + 1}\n`);
 				mdParts.push(ex.statement || '');
 				if (mode === 'correction' && ex.solution) {
 					mdParts.push(`\n### Solution\n${ex.solution}`);
@@ -471,7 +471,7 @@ INFORMATIONS
 ========================================
 
 - Chaque PDF est personnalise avec le nom de l'eleve
-- Les exercices peuvent etre melanges selon la configuration
+- Les ${lore.learning.exercise}s peuvent etre melangees selon la configuration
 - ${mode === 'correction' ? 'Les solutions sont incluses' : 'Les solutions ne sont pas incluses'}
 - Generation effectuee cote client (navigateur)
 

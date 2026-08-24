@@ -206,7 +206,7 @@
 						{/if}
 					{:else}
 						<div class="flex flex-1 items-center justify-center p-8">
-							<p class="text-muted-foreground">Exercice non disponible</p>
+							<p class="text-muted-foreground">{lore.learning.exercise} non disponible</p>
 						</div>
 					{/if}
 				</div>
@@ -220,7 +220,7 @@
 							size="sm"
 							onclick={goPrev}
 							disabled={!canGoPrev}
-							aria-label="Exercice precedent (fleche gauche)"
+							aria-label="{lore.learning.exercise} precedente (fleche gauche)"
 						>
 							<ChevronLeft class="h-4 w-4" />
 						</Button>
@@ -280,7 +280,7 @@
 								size="sm"
 								onclick={goNext}
 								disabled={!canGoNext}
-								aria-label="Exercice suivant (fleche droite)"
+								aria-label="{lore.learning.exercise} suivante (fleche droite)"
 							>
 								<ChevronRight class="h-4 w-4" />
 							</Button>
@@ -377,7 +377,7 @@
 					{/if}
 				{:else}
 					<div class="flex flex-1 items-center justify-center p-8">
-						<p class="text-muted-foreground">Exercice non disponible</p>
+						<p class="text-muted-foreground">{lore.learning.exercise} non disponible</p>
 					</div>
 				{/if}
 			</div>

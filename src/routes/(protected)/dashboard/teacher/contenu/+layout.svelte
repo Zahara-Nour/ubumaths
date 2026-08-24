@@ -16,7 +16,7 @@
 		},
 		{
 			href: '/dashboard/teacher/contenu/exercices',
-			label: 'Exercices',
+			label: `${lore.learning.exercise}s`,
 			icon: BookOpen as unknown as Component
 		},
 		{

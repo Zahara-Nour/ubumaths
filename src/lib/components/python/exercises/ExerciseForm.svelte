@@ -114,7 +114,9 @@
 			!isSubmitting
 	);
 
-	const submitLabel = $derived(mode === 'create' ? "Créer l'exercice" : 'Enregistrer');
+	const submitLabel = $derived(
+		mode === 'create' ? `Créer la ${lore.learning.exercise}` : 'Enregistrer'
+	);
 	const fallbackCancel = $derived(mode === 'create' ? '/python-exercises' : '/python-exercises');
 	const cancelTo = $derived(cancelHref ?? fallbackCancel);
 

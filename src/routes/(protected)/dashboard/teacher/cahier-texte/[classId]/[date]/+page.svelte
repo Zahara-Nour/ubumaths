@@ -132,8 +132,8 @@
 	let courseLabel = $state('');
 
 	function exerciseLabel(id: string | null): string {
-		if (!id) return 'Exercice';
-		return data.exerciseOptions.find((o) => o.value === id)?.label ?? 'Exercice';
+		if (!id) return lore.learning.exercise;
+		return data.exerciseOptions.find((o) => o.value === id)?.label ?? lore.learning.exercise;
 	}
 
 	function activityLabel(a: PageData['activities'][number]): string {
@@ -176,7 +176,7 @@
 		});
 		if (ok) {
 			selectedExercise = '';
-			toaster.success('Exercice ajouté');
+			toaster.success(`${lore.learning.exercise} ajoutée`);
 			await refreshActivities();
 			await refreshCoverage();
 		}

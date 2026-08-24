@@ -89,7 +89,7 @@
 	]);
 
 	let exerciseItems = $derived([
-		{ value: '', label: 'Choisir un exercice...' },
+		{ value: '', label: `Choisir une ${lore.learning.exercise}...` },
 		...data.availableExercises
 			.filter((e) => !data.exercises.some((ex) => ex.exerciseId === e.id))
 			.map((e) => ({
@@ -107,8 +107,8 @@
 				deleteChecklistItem: 'Objectif supprime',
 				addQuizQuestion: 'Question ajoutee',
 				removeQuizQuestion: 'Question supprimee',
-				linkExercise: 'Exercice lie',
-				unlinkExercise: 'Exercice retire',
+				linkExercise: `${lore.learning.exercise} liée`,
+				unlinkExercise: `${lore.learning.exercise} retirée`,
 				uploadDocument: 'Document uploade',
 				addGoogleDriveDocument: 'Document Google Drive ajoute',
 				deleteDocument: 'Document supprime',
@@ -226,7 +226,7 @@
 			</Tabs.Trigger>
 			<Tabs.Trigger value="exercises" class="flex items-center gap-2">
 				<BookOpen class="h-4 w-4" />
-				<span class="hidden sm:inline">Exercices</span>
+				<span class="hidden sm:inline">{lore.learning.exercise}s</span>
 				<Badge variant="secondary" class="ml-1">{exerciseCount}</Badge>
 			</Tabs.Trigger>
 			<Tabs.Trigger value="documents" class="flex items-center gap-2">
@@ -322,7 +322,7 @@
 					<Card.Root class="border-dashed">
 						<Card.Content class="py-12 text-center">
 							<BookOpen class="mx-auto mb-4 h-12 w-12 text-muted-foreground/40" />
-							<p class="text-muted-foreground">Aucun exercice lie</p>
+							<p class="text-muted-foreground">Aucune {lore.learning.exercise} lie</p>
 							<Button
 								onclick={() => (showLinkExerciseDialog = true)}
 								variant="ghost"

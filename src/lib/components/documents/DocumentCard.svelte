@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
@@ -32,7 +33,7 @@
 		manual_upload: 'Téléversé',
 		google_drive: 'Google Drive',
 		markdown_doc: 'Documentation',
-		exercise: 'Exercice',
+		exercise: lore.learning.exercise,
 		question_template: 'Question'
 	};
 

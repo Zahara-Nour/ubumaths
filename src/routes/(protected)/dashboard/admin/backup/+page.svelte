@@ -254,7 +254,9 @@
 	<div class="flex items-center justify-between">
 		<div>
 			<h1 class="text-2xl font-bold">Backup & Restauration des {lore.learning.exercise}s</h1>
-			<p class="text-muted-foreground">Sauvegardez et restaurez les donnees d'exercices</p>
+			<p class="text-muted-foreground">
+				Sauvegardez et restaurez les donnees de {lore.learning.exercise}s
+			</p>
 		</div>
 		<Button variant="outline" size="sm" onclick={refreshStats}>
 			<RefreshCw class="mr-2 h-4 w-4" />
@@ -268,7 +270,7 @@
 			<Card.Content class="pt-4">
 				<div class="text-center">
 					<div class="text-2xl font-bold">{stats.exercises}</div>
-					<div class="text-sm text-muted-foreground">Exercices</div>
+					<div class="text-sm text-muted-foreground">{lore.learning.exercise}s</div>
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -409,12 +411,12 @@
 
 					<MyCheckbox
 						bind:checked={reassignOrphans}
-						label="Reassigner les exercices orphelins a l'admin actuel"
+						label="Reassigner les {lore.learning.exercise}s orphelines a l'admin actuel"
 					/>
 
 					<p class="text-sm text-muted-foreground">
-						Les exercices dont le createur n'existe plus seront reassignes a votre compte si cette
-						option est activee.
+						Les {lore.learning.exercise}s dont le createur n'existe plus seront reassignes a votre
+						compte si cette option est activee.
 					</p>
 				</div>
 
@@ -422,7 +424,8 @@
 					expected={RESTORE_CONFIRM_KEYWORD}
 					onConfirm={restore}
 					title="Restaurer depuis le backup"
-					description="Cette operation va importer les exercices du fichier selon la strategie de conflit choisie. Selon la strategie « Remplacer », des donnees existantes peuvent etre ecrasees."
+					description="Cette operation va importer les {lore.learning
+						.exercise}s du fichier selon la strategie de conflit choisie. Selon la strategie « Remplacer », des donnees existantes peuvent etre ecrasees."
 					confirmLabel="Restaurer"
 					successMessage="Restauration terminee avec succes"
 				>
