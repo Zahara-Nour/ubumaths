@@ -191,7 +191,7 @@
 		<!-- Controls -->
 		<div class="grid gap-4 md:grid-cols-3">
 			<div>
-				<span class="mb-2 block text-sm font-medium">Élève</span>
+				<span class="mb-2 block text-sm font-medium">{lore.entities.student}</span>
 				<MySelect
 					type="single"
 					bind:value={selectedStudentId}

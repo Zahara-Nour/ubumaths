@@ -40,7 +40,9 @@
 			<BarChart3 class="h-8 w-8 text-primary" />
 			Statistiques des Énigmes
 		</h1>
-		<p class="mt-2 text-muted-foreground">Vue d'ensemble de vos énigmes et performances élèves</p>
+		<p class="mt-2 text-muted-foreground">
+			Vue d'ensemble de vos énigmes et performances {lore.entities.student}s
+		</p>
 	</div>
 
 	<!-- Overview Cards -->
@@ -101,7 +103,7 @@
 			<Card.Content class="pt-6">
 				<div class="flex items-center justify-between">
 					<div>
-						<p class="text-sm font-medium text-muted-foreground">Élèves actifs</p>
+						<p class="text-sm font-medium text-muted-foreground">{lore.entities.student}s actifs</p>
 						<p class="mt-1 text-3xl font-bold">{data.topStudents.length}</p>
 						<p class="mt-1 text-xs text-muted-foreground">Ont résolu au moins une énigme</p>
 					</div>
@@ -260,7 +262,7 @@
 				</div>
 			{:else}
 				<p class="py-8 text-center text-muted-foreground">
-					Aucun élève n'a encore résolu vos énigmes.
+					Aucun {lore.entities.student} n'a encore résolu vos énigmes.
 				</p>
 			{/if}
 		</Card.Content>

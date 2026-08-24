@@ -343,7 +343,7 @@
 									<strong>Google Classroom</strong> : Synchronisation de vos cours et travaux
 								</li>
 								<li>
-									<strong>Gmail</strong> : Envoi d'emails de bienvenue aux élèves
+									<strong>Gmail</strong> : Envoi d'emails de bienvenue aux {lore.entities.student}s
 								</li>
 								<li>La synchronisation ne modifie jamais vos données Google</li>
 							</ul>

@@ -79,9 +79,11 @@
 	<div class="mb-4">
 		<h1 class="text-2xl font-bold tracking-tight">Saisie : {data.task_name}</h1>
 		<p class="text-sm text-muted-foreground">
-			{data.class_name ?? 'Classe inconnue'} · {data.students.length} élève{data.students.length > 1
+			{data.class_name ?? 'Classe inconnue'} · {data.students.length}
+			{lore.entities.student}{data.students.length > 1 ? 's' : ''} · {data.observables.length} observable{data
+				.observables.length > 1
 				? 's'
-				: ''} · {data.observables.length} observable{data.observables.length > 1 ? 's' : ''} au périmètre
+				: ''} au périmètre
 		</p>
 	</div>
 

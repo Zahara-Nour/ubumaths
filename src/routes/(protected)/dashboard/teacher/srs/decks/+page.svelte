@@ -161,7 +161,7 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="text-2xl font-bold">{assignedDecks.length}</div>
-				<p class="text-xs text-muted-foreground">Envoyés à vos élèves</p>
+				<p class="text-xs text-muted-foreground">Envoyés à vos {lore.entities.student}s</p>
 			</Card.Content>
 		</Card.Root>
 	</div>

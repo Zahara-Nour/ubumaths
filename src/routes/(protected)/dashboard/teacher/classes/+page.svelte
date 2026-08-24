@@ -611,12 +611,15 @@
 								<Badge variant="secondary">{students.length}</Badge>
 							</Card.Title>
 							<Card.Description>
-								Liste des élèves de cette classe avec leur statut d'email de bienvenue
+								Liste des {lore.entities.student}s de cette classe avec leur statut d'email de
+								bienvenue
 							</Card.Description>
 						</Card.Header>
 						<Card.Content>
 							{#if students.length === 0}
-								<p class="py-4 text-center text-muted-foreground">Aucun élève dans cette classe</p>
+								<p class="py-4 text-center text-muted-foreground">
+									Aucun {lore.entities.student} dans cette classe
+								</p>
 							{:else}
 								<div class="divide-y divide-border">
 									{#each students as student (student.id)}
@@ -700,7 +703,7 @@
 					<Badge variant="secondary">{data.unassignedStudents.length}</Badge>
 				</Card.Title>
 				<Card.Description>
-					Élèves que vous suivez sans qu'ils soient inscrits dans une classe.
+					{lore.entities.student}s que vous suivez sans qu'ils soient inscrits dans une classe.
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>

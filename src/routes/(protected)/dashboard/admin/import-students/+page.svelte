@@ -351,7 +351,7 @@
 
 					<!-- Drop zone with textarea -->
 					<div class="space-y-2">
-						<Label for="drop-zone">Données des élèves</Label>
+						<Label for="drop-zone">Données des {lore.entities.student}s</Label>
 						<div
 							role="region"
 							aria-label="Zone de saisie ou glisser-déposer pour importer des élèves"
@@ -404,7 +404,7 @@
 				<div class="space-y-4">
 					<Separator />
 					<div class="space-y-2">
-						<h3 class="font-semibold">Aperçu ({csvPreview.length} élèves)</h3>
+						<h3 class="font-semibold">Aperçu ({csvPreview.length} {lore.entities.student}s)</h3>
 						<div class="max-h-96 overflow-y-auto rounded-md border">
 							<table class="w-full text-sm">
 								<thead class="sticky top-0 bg-muted">
@@ -513,7 +513,9 @@
 		</Card.Header>
 		<Card.Content>
 			{#if data.pendingStudents.length === 0}
-				<p class="py-8 text-center text-muted-foreground">Aucun élève en attente</p>
+				<p class="py-8 text-center text-muted-foreground">
+					Aucun {lore.entities.student} en attente
+				</p>
 			{:else}
 				<div class="space-y-2">
 					{#each data.pendingStudents as student (student.email)}
@@ -563,7 +565,7 @@
 		</Card.Header>
 		<Card.Content>
 			{#if data.activatedStudents.length === 0}
-				<p class="py-8 text-center text-muted-foreground">Aucun élève activé</p>
+				<p class="py-8 text-center text-muted-foreground">Aucun {lore.entities.student} activé</p>
 			{:else}
 				<div class="space-y-2">
 					{#each data.activatedStudents as student (student.email)}

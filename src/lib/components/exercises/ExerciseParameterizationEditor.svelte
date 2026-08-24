@@ -109,7 +109,7 @@
 						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						<option value="on_demand"> À la demande (pratique illimitée) </option>
-						<option value="per_student"> Par élève (devoir personnalisé) </option>
+						<option value="per_student"> Par {lore.entities.student} (devoir personnalisé) </option>
 						<option value="per_group"> Par groupe (travail de classe) </option>
 					</select>
 				</div>

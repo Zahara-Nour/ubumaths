@@ -206,7 +206,8 @@
 					{:else}
 						<div class="overflow-x-auto">
 							<table class="w-full border-collapse text-sm">
-								<caption class="sr-only">Niveaux de compétences par élève</caption>
+								<caption class="sr-only">Niveaux de compétences par {lore.entities.student}</caption
+								>
 								<thead>
 									<tr class="border-b border-border">
 										<th

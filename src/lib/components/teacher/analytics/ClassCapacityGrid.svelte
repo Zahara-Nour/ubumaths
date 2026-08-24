@@ -131,7 +131,9 @@
 		{:else if error}
 			<p class="text-sm text-destructive">⚠ {error}</p>
 		{:else if !data || data.students.length === 0}
-			<p class="py-8 text-center text-sm text-muted-foreground">Aucun élève dans cette classe.</p>
+			<p class="py-8 text-center text-sm text-muted-foreground">
+				Aucun {lore.entities.student} dans cette classe.
+			</p>
 		{:else if orderedCapacities.length === 0}
 			<p class="py-8 text-center text-sm text-muted-foreground">
 				Aucune capacité famille A travaillée pour le moment.

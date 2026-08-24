@@ -458,7 +458,8 @@
 		<div class="rounded-lg border border-border bg-card p-12 text-center">
 			<h2 class="mb-2 text-xl font-semibold text-foreground">Aucune classe trouvée</h2>
 			<p class="text-muted-foreground">
-				Vous devez d'abord créer des classes pour gérer les avertissements de vos élèves.
+				Vous devez d'abord créer des classes pour gérer les avertissements de vos {lore.entities
+					.student}s.
 			</p>
 		</div>
 	{:else}
@@ -496,7 +497,7 @@
 					<!-- STUDENTS LIST -->
 					{#if currentStudents.length === 0}
 						<div class="rounded-lg border border-border bg-card p-12 text-center">
-							<p class="text-muted-foreground">Aucun élève dans cette classe</p>
+							<p class="text-muted-foreground">Aucun {lore.entities.student} dans cette classe</p>
 						</div>
 					{:else if !selectedPeriodId}
 						<div class="rounded-lg border border-border bg-card p-12 text-center">
