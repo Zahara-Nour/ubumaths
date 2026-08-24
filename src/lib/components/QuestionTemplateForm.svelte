@@ -1409,12 +1409,12 @@
 		<!-- Exercise Instruction (Optional, Shared) -->
 		<div class="space-y-2">
 			<div class="flex items-center gap-2">
-				<Label for="exercise-instruction">Consigne d'exercice</Label>
+				<Label for="exercise-instruction">Consigne de {lore.learning.exercise}</Label>
 				<button
 					type="button"
 					onclick={() => (exerciseInstructionHelpOpen = true)}
 					class="text-muted-foreground transition-colors hover:text-foreground"
-					aria-label="Aide sur la consigne d'exercice"
+					aria-label="Aide sur la consigne de {lore.learning.exercise}"
 				>
 					<CircleQuestionMark class="h-4 w-4" />
 				</button>

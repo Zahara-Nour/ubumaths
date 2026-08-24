@@ -345,7 +345,9 @@
 										{index + 1}
 									</div>
 									<div class="min-w-0 flex-1">
-										<p class="font-medium">{details?.title || 'Exercice non trouve'}</p>
+										<p class="font-medium">
+											{details?.title || `${lore.learning.exercise} non trouvée`}
+										</p>
 										{#if details?.description}
 											<p class="truncate text-sm text-muted-foreground">
 												{details.description}

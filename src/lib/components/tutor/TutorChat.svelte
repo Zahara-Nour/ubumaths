@@ -630,7 +630,7 @@
 							class="opacity-90"
 							style="font-size: calc(0.75rem * var(--font-scale)); line-height: calc(1rem * var(--font-scale));"
 						>
-							Aide sur l'exercice
+							Aide sur la {lore.learning.exercise}
 						</p>
 					{/if}
 				</div>

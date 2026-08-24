@@ -448,7 +448,7 @@
 
 		<!-- Exercises list -->
 		<div class="space-y-3">
-			<h2 class="text-lg font-semibold">Exercices ({exercises.length})</h2>
+			<h2 class="text-lg font-semibold">{lore.learning.exercise}s ({exercises.length})</h2>
 
 			{#if hasSections}
 				<!-- Exercise List grouped by sections -->
@@ -469,7 +469,9 @@
 							{:else if sections.length > 0}
 								<!-- Unsectioned exercises header -->
 								<div class="mb-4 border-l-4 border-muted pl-4">
-									<h3 class="text-lg font-semibold text-muted-foreground">Autres exercices</h3>
+									<h3 class="text-lg font-semibold text-muted-foreground">
+										Autres {lore.learning.exercise}s
+									</h3>
 								</div>
 							{/if}
 
@@ -490,7 +492,7 @@
 											{#if exercise.is_essential}
 												<Star
 													class="h-4 w-4 shrink-0 fill-amber-500 text-amber-500"
-													aria-label="Exercice indispensable"
+													aria-label="{lore.learning.exercise} indispensable"
 												/>
 											{/if}
 											<span class="font-medium">
@@ -560,7 +562,7 @@
 									href="/dashboard/teacher/contenu/exercices/{exercise.exercise_id}"
 									onclick={(e) => e.stopPropagation()}
 									class="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
-									title="Modifier l'exercice"
+									title="Modifier la {lore.learning.exercise}"
 								>
 									<Pencil class="h-4 w-4" />
 								</a>

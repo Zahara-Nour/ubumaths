@@ -150,7 +150,7 @@
 		</Button>
 		<div>
 			<h1 class="text-3xl font-bold">Nouvelle feuille</h1>
-			<p class="text-muted-foreground">Creez une nouvelle feuille d'exercices</p>
+			<p class="text-muted-foreground">Creez une nouvelle feuille de {lore.learning.exercise}s</p>
 		</div>
 	</div>
 
@@ -185,7 +185,7 @@
 					<Label for="description">Description</Label>
 					<Textarea
 						id="description"
-						placeholder="Description de la feuille d'exercices..."
+						placeholder="Description de la feuille de {lore.learning.exercise}s..."
 						bind:value={description}
 						rows={3}
 					/>
@@ -278,7 +278,7 @@
 								<MyCheckbox bind:checked={showDate} label="Afficher la date" />
 								<MyCheckbox bind:checked={showStudentName} label="Nom de l'eleve" />
 								<MyCheckbox bind:checked={showClass} label={lore.entities.class} />
-								<MyCheckbox bind:checked={showPoints} label="Points par exercice" />
+								<MyCheckbox bind:checked={showPoints} label="Points par {lore.learning.exercise}" />
 							</div>
 						</div>
 
@@ -298,7 +298,10 @@
 						<div class="space-y-4">
 							<h4 class="text-sm font-medium">Options de melange</h4>
 							<div class="grid gap-4 sm:grid-cols-2">
-								<MyCheckbox bind:checked={shuffleExercises} label="Melanger les exercices" />
+								<MyCheckbox
+									bind:checked={shuffleExercises}
+									label="Melanger les {lore.learning.exercise}s"
+								/>
 								<MyCheckbox
 									bind:checked={shuffleWithinSections}
 									label="Melanger dans les sections"

@@ -313,7 +313,7 @@
 					{formatDate(report.created_at)}
 				</span>
 				<span>
-					<span class="font-medium text-foreground">Exercice :</span>
+					<span class="font-medium text-foreground">{lore.learning.exercise} :</span>
 					{context.exercise_position + 1}
 				</span>
 				{#if report.variation_index !== null}
@@ -435,9 +435,9 @@
 	<!-- Variations Editor -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Variations de l'exercice</Card.Title>
+			<Card.Title>Variations de la {lore.learning.exercise}</Card.Title>
 			<Card.Description>
-				Modifiez les variations de l'exercice. La variation signalee est marquee.
+				Modifiez les variations de la {lore.learning.exercise}. La variation signalee est marquee.
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>

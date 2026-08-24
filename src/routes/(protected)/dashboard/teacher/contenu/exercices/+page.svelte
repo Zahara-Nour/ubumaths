@@ -269,19 +269,23 @@
 </script>
 
 <svelte:head>
-	<title>Banque d'exercices - Chiphre</title>
+	<title>Banque de {lore.learning.exercise}s - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto space-y-6 py-6">
 	<!-- Header -->
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-3xl font-bold">Banque d'exercices</h1>
-			<p class="text-muted-foreground">Gérez vos exercices de mathématiques avec support LaTeX</p>
+			<h1 class="text-3xl font-bold">Banque de {lore.learning.exercise}s</h1>
+			<p class="text-muted-foreground">
+				Gérez vos {lore.learning.exercise}s de mathématiques avec support LaTeX
+			</p>
 		</div>
 		<div class="flex gap-2">
 			<Button variant="outline" onclick={() => (importDialogOpen = true)}>Importer</Button>
-			<Button href="/dashboard/teacher/contenu/exercices/new">Nouvel exercice</Button>
+			<Button href="/dashboard/teacher/contenu/exercices/new"
+				>Nouvelle {lore.learning.exercise}</Button
+			>
 		</div>
 	</div>
 
@@ -345,7 +349,8 @@
 			{#if isLoading}
 				Chargement...
 			{:else}
-				{pagination.total} exercice{pagination.total > 1 ? 's' : ''} trouvé{pagination.total > 1
+				{pagination.total}
+				{lore.learning.exercise}{pagination.total > 1 ? 's' : ''} trouvé{pagination.total > 1
 					? 's'
 					: ''}
 			{/if}
@@ -623,7 +628,7 @@
 <!-- Delete Confirmation Dialog -->
 <ConfirmDialog
 	bind:open={deleteDialogOpen}
-	title="Supprimer cet exercice ?"
+	title="Supprimer cette {lore.learning.exercise} ?"
 	description={`Vous allez supprimer l'exercice "${exerciseToDelete?.title || ''}". Cette action est irréversible.`}
 	confirmLabel={lore.actions.delete}
 	variant="destructive"

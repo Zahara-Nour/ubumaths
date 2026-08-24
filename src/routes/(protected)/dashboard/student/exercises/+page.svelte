@@ -65,8 +65,11 @@
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<div class="mb-6">
-		<h1 class="text-3xl font-bold tracking-tight">Mes exercices</h1>
-		<p class="mt-2 text-muted-foreground">{data.exercises.length} exercice(s) accessible(s)</p>
+		<h1 class="text-3xl font-bold tracking-tight">Mes {lore.learning.exercise}s</h1>
+		<p class="mt-2 text-muted-foreground">
+			{data.exercises.length}
+			{lore.learning.exercise}(s) accessible(s)
+		</p>
 	</div>
 
 	<!-- Filters -->
@@ -137,9 +140,9 @@
 	{:else if sortedExercises.length === 0}
 		<Card.Root class="border-dashed">
 			<Card.Content class="py-12 text-center">
-				<p class="text-muted-foreground">Aucun exercice trouvé</p>
+				<p class="text-muted-foreground">Aucune {lore.learning.exercise} trouvée</p>
 				<p class="mt-2 text-sm text-muted-foreground">
-					Modifiez les filtres pour voir plus d'exercices
+					Modifiez les filtres pour voir plus de {lore.learning.exercise}s
 				</p>
 			</Card.Content>
 		</Card.Root>

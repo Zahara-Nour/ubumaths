@@ -284,7 +284,7 @@
 		<Textarea
 			id="description"
 			bind:value={formData.description}
-			placeholder="Double les points gagnés lors du prochain exercice"
+			placeholder="Double les points gagnés lors du prochain {lore.learning.exercise}"
 			rows={3}
 			class={errors.description ? 'border-destructive' : ''}
 		/>

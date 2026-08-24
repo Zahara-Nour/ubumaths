@@ -183,12 +183,12 @@
 <Dialog.Root bind:open>
 	<Dialog.Content class="max-w-lg">
 		<Dialog.Header>
-			<Dialog.Title>Configuration de l'exercice</Dialog.Title>
+			<Dialog.Title>Configuration de la {lore.learning.exercise}</Dialog.Title>
 			<Dialog.Description>
 				{#if exercise?.exercise?.title}
 					{exercise.exercise.title}
 				{:else}
-					Modifier les parametres de l'exercice
+					Modifier les parametres de la {lore.learning.exercise}
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
@@ -218,7 +218,9 @@
 					bind:value={points}
 					placeholder="Ex: 10"
 				/>
-				<p class="text-xs text-muted-foreground">Nombre de points attribues a cet exercice</p>
+				<p class="text-xs text-muted-foreground">
+					Nombre de points attribues a cette {lore.learning.exercise}
+				</p>
 			</div>
 
 			<!-- Essential exercise -->

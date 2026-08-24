@@ -620,7 +620,7 @@
 							: 'bg-muted/30'}"
 					>
 						<div class="flex items-start gap-3">
-							<MyCheckbox bind:checked={isPublic} label="Exercice public" />
+							<MyCheckbox bind:checked={isPublic} label="{lore.learning.exercise} publique" />
 						</div>
 						<p class="mt-2 text-sm text-muted-foreground">
 							{#if isPublic}
@@ -914,7 +914,11 @@
 			>{lore.actions.cancel}</Button
 		>
 		<Button type="submit" disabled={submitting}>
-			{submitting ? 'Enregistrement...' : exercise ? 'Mettre a jour' : "Creer l'exercice"}
+			{submitting
+				? 'Enregistrement...'
+				: exercise
+					? 'Mettre a jour'
+					: 'Creer la {lore.learning.exercise}'}
 		</Button>
 	</div>
 </form>

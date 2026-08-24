@@ -186,9 +186,9 @@
 <Dialog.Root bind:open={exerciseInstructionHelpOpen}>
 	<Dialog.Content class="max-h-[85vh] max-w-2xl overflow-y-auto">
 		<Dialog.Header>
-			<Dialog.Title>Consigne d'exercice</Dialog.Title>
+			<Dialog.Title>Consigne de {lore.learning.exercise}</Dialog.Title>
 			<Dialog.Description>
-				Guide pour utiliser efficacement la consigne d'exercice
+				Guide pour utiliser efficacement la consigne de {lore.learning.exercise}
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -196,8 +196,8 @@
 			<section>
 				<h4 class="mb-2 font-semibold">À quoi sert la consigne ?</h4>
 				<p class="text-sm text-muted-foreground">
-					La consigne d'exercice est une instruction partagée par toutes les variations de la
-					question. Elle permet d'indiquer ce que le {lore.entities.student} doit faire (ex: "Calculer",
+					La consigne de {lore.learning.exercise} est une instruction partagée par toutes les variations
+					de la question. Elle permet d'indiquer ce que le {lore.entities.student} doit faire (ex: "Calculer",
 					"Résoudre", "Simplifier").
 				</p>
 			</section>
@@ -215,8 +215,8 @@
 					<li class="flex gap-2">
 						<span class="text-primary">•</span>
 						<span
-							><strong>Dans les feuilles d'exercices</strong> : Elle sert de titre d'exercice et n'est
-							pas répétée devant chaque question</span
+							><strong>Dans les feuilles de {lore.learning.exercise}s</strong> : Elle sert de titre
+							de {lore.learning.exercise} et n'est pas répétée devant chaque question</span
 						>
 					</li>
 				</ul>
@@ -423,7 +423,7 @@
 					<div class="rounded border bg-blue-50 p-3 text-sm dark:bg-blue-950">
 						<p class="mb-1 font-semibold">Partagés (même pour toutes les variations) :</p>
 						<ul class="ml-4 space-y-0.5 text-xs">
-							<li>• Consigne d'exercice</li>
+							<li>• Consigne de {lore.learning.exercise}</li>
 							<li>• Catégorisation (thème, domaine, niveau)</li>
 							<li>• Niveaux scolaires</li>
 							<li>• Type de question</li>

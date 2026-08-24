@@ -12,6 +12,7 @@
 	@see ImageAttributePanel.svelte for the editing UI
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { z } from 'zod';
 	import { NodeViewWrapper } from 'svelte-tiptap';
 	import type { Editor } from '@tiptap/core';
@@ -470,7 +471,7 @@
 			{/if}
 
 			<!-- Image -->
-			<img {src} alt={alt || "Image de l'exercice"} {title} class="node-image" />
+			<img {src} alt={alt || 'Image de la {lore.learning.exercise}'} {title} class="node-image" />
 
 			<!-- Caption -->
 			{#if caption}

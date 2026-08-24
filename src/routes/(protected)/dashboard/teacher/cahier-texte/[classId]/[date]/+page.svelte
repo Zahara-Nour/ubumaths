@@ -542,7 +542,7 @@
 										type="single"
 										bind:value={selectedExercise}
 										items={data.exerciseOptions}
-										placeholder="Exercice du système…"
+										placeholder="{lore.learning.exercise} du système…"
 										triggerClass="flex-1"
 									/>
 									<Button
