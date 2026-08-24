@@ -306,7 +306,7 @@
 						<Table.Head>Type</Table.Head>
 						<Table.Head>Statut</Table.Head>
 						<Table.Head>Niveaux</Table.Head>
-						<Table.Head>Exercices</Table.Head>
+						<Table.Head>{lore.learning.exercise}s</Table.Head>
 						<Table.Head>Cree le</Table.Head>
 						<Table.Head class="w-16"></Table.Head>
 					</Table.Row>

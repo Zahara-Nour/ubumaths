@@ -521,7 +521,7 @@
 			<Tabs.List class="grid w-full grid-cols-4">
 				<Tabs.Trigger value="exercises">
 					<FileText class="mr-2 h-4 w-4" />
-					Exercices
+					{lore.learning.exercise}s
 				</Tabs.Trigger>
 				<Tabs.Trigger value="assignments" disabled={worksheet.status === 'draft'}>
 					<Users class="mr-2 h-4 w-4" />

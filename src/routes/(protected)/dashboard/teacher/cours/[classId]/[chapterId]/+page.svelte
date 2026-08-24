@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Teacher Chapter Content Editor Page
 	 * ====================================
@@ -313,7 +314,7 @@
 				<div class="flex justify-end">
 					<Button onclick={() => (showLinkExerciseDialog = true)} size="sm">
 						<Plus class="mr-2 h-4 w-4" />
-						Lier un exercice
+						Lier une {lore.learning.exercise}
 					</Button>
 				</div>
 
@@ -328,7 +329,7 @@
 								size="sm"
 								class="mt-2"
 							>
-								Lier un exercice
+								Lier une {lore.learning.exercise}
 							</Button>
 						</Card.Content>
 					</Card.Root>
@@ -476,9 +477,9 @@
 <Dialog.Root bind:open={showLinkExerciseDialog}>
 	<Dialog.Content class="max-w-lg">
 		<Dialog.Header>
-			<Dialog.Title>Lier un exercice</Dialog.Title>
+			<Dialog.Title>Lier une {lore.learning.exercise}</Dialog.Title>
 			<Dialog.Description>
-				Selectionnez un exercice existant pour le lier a ce chapitre.
+				Selectionnez une {lore.learning.exercise} existant pour le lier a ce chapitre.
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -494,7 +495,7 @@
 			class="space-y-4"
 		>
 			<div class="space-y-2">
-				<Label>Exercice</Label>
+				<Label>{lore.learning.exercise}</Label>
 				<MySelect type="single" bind:value={selectedExerciseId} items={exerciseItems} />
 				<input type="hidden" name="exerciseId" value={selectedExerciseId} />
 			</div>

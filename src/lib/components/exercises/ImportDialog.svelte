@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
@@ -174,9 +175,9 @@
 <Dialog.Root {open} onOpenChange={handleOpenChange}>
 	<Dialog.Content class="sm:max-w-[600px]">
 		<Dialog.Header>
-			<Dialog.Title>Importer des exercices</Dialog.Title>
+			<Dialog.Title>Importer des {lore.learning.exercise}s</Dialog.Title>
 			<Dialog.Description>
-				Importez des exercices depuis un fichier JSON ou Markdown
+				Importez des {lore.learning.exercise}s depuis un fichier JSON ou Markdown
 			</Dialog.Description>
 		</Dialog.Header>
 

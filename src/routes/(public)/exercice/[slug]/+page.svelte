@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Public Exercise Viewer
 	 *
@@ -495,7 +496,7 @@
 								<span
 									class="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-200"
 								>
-									Exercice public
+									{lore.learning.exercise} publique
 								</span>
 							</span>
 						{/if}
@@ -665,7 +666,7 @@
 							<span
 								class="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-200"
 							>
-								Exercice public
+								{lore.learning.exercise} publique
 							</span>
 						</span>
 					{/if}
@@ -840,7 +841,7 @@
 						<span
 							class="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-200"
 						>
-							Exercice public
+							{lore.learning.exercise} publique
 						</span>
 					</span>
 				{/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Admin Settings Page
 	 *
@@ -128,7 +129,8 @@
 				Numerotation des listes
 			</Card.Title>
 			<Card.Description>
-				Configurer le style de numerotation pour les listes ordonnees dans les exercices
+				Configurer le style de numerotation pour les listes ordonnees dans les {lore.learning
+					.exercise}s
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>

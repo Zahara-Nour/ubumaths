@@ -10,6 +10,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -44,7 +45,8 @@
 		<div class="flex flex-wrap items-center justify-between gap-2">
 			<!-- Exercise Number and Title -->
 			<Card.Title class="text-lg">
-				Exercice {index}{#if exercise.title}&nbsp;: {exercise.title}{/if}
+				{lore.learning.exercise}
+				{index}{#if exercise.title}&nbsp;: {exercise.title}{/if}
 			</Card.Title>
 
 			<!-- Points Badge -->

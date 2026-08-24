@@ -283,7 +283,7 @@
 </script>
 
 <svelte:head>
-	<title>Signalement - Exercice {context.exercise_position + 1} - Chiphre</title>
+	<title>Signalement - {lore.learning.exercise} {context.exercise_position + 1} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl py-6">

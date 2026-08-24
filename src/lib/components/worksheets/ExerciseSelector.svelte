@@ -294,21 +294,21 @@
 		{#snippet child({ props })}
 			<Button {...props} variant="outline" class="gap-2">
 				<Plus class="h-4 w-4" />
-				Ajouter des exercices
+				Ajouter des {lore.learning.exercise}s
 			</Button>
 		{/snippet}
 	</Dialog.Trigger>
 
 	<Dialog.Content class="max-h-[90vh] max-w-4xl overflow-hidden">
 		<Dialog.Header>
-			<Dialog.Title>Selectionner des exercices</Dialog.Title>
+			<Dialog.Title>Selectionner des {lore.learning.exercise}s</Dialog.Title>
 			<Dialog.Description>
 				{#if limit}
-					{selectionCount} / {limit} exercice(s) selectionne(s)
+					{selectionCount} / {limit} {lore.learning.exercise}(s) selectionne(s)
 				{:else if selectionCount > 0}
-					{selectionCount} exercice(s) selectionne(s)
+					{selectionCount} {lore.learning.exercise}(s) selectionne(s)
 				{:else}
-					Recherchez et selectionnez les exercices a ajouter
+					Recherchez et selectionnez les {lore.learning.exercise}s a ajouter
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
@@ -499,7 +499,8 @@
 			{#if pagination.totalPages > 1}
 				<div class="flex items-center justify-between border-t pt-4">
 					<p class="text-sm text-muted-foreground">
-						Page {pagination.page} sur {pagination.totalPages} ({pagination.total} exercices)
+						Page {pagination.page} sur {pagination.totalPages} ({pagination.total}
+						{lore.learning.exercise}s)
 					</p>
 					<div class="flex gap-2">
 						<Button
@@ -528,7 +529,8 @@
 		<Dialog.Footer class="gap-2 sm:gap-0">
 			<Button variant="outline" onclick={cancelSelection}>{lore.actions.cancel}</Button>
 			<Button onclick={confirmSelection} disabled={selectionCount === 0}>
-				Ajouter {selectionCount} exercice(s)
+				Ajouter {selectionCount}
+				{lore.learning.exercise}(s)
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>

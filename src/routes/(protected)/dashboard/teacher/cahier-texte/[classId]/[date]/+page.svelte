@@ -412,7 +412,7 @@
 						Travail a faire
 					</Card.Title>
 					<Card.Description>
-						Devoirs et exercices a faire pour le prochain cours (optionnel)
+						Devoirs et {lore.learning.exercise}s a faire pour le prochain cours (optionnel)
 					</Card.Description>
 				</Card.Header>
 				<Card.Content class="space-y-4">

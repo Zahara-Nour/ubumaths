@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head>
-	<title>Exercices Python – Chiphre</title>
+	<title>{lore.learning.exercise}s Python – Chiphre</title>
 	<meta
 		name="description"
 		content="Crée des exercices Python avec validation automatique et partage-les via un simple lien."
@@ -18,8 +18,8 @@
 	<header class="mb-6">
 		<h1 class="mb-2 text-3xl font-bold">Exercices Python</h1>
 		<p class="text-muted-foreground">
-			Crée un exercice Python avec une validation automatique (comparaison de sortie, test de
-			fonction, ou analyse syntaxique) et partage-le via un simple lien. Les {lore.entities
+			Crée une {lore.learning.exercise} Python avec une validation automatique (comparaison de sortie,
+			test de fonction, ou analyse syntaxique) et partage-le via un simple lien. Les {lore.entities
 				.student}s écrivent leur code dans le navigateur — tout tourne en local, pas besoin
 			d'installer Python.
 		</p>

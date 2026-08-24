@@ -286,7 +286,7 @@
 							<ClipboardList class="h-5 w-5 text-orange-500" />
 							Travail a faire
 						</Card.Title>
-						<Card.Description>Prochains devoirs et exercices</Card.Description>
+						<Card.Description>Prochains devoirs et {lore.learning.exercise}s</Card.Description>
 					</Card.Header>
 					<Card.Content>
 						{#if data.upcomingHomework.length === 0}

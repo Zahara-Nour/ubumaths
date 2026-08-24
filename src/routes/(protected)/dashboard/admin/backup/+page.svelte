@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -246,7 +247,7 @@
 </script>
 
 <svelte:head>
-	<title>Backup Exercices - Admin</title>
+	<title>Backup {lore.learning.exercise}s - Admin</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl space-y-6 p-6">
@@ -305,8 +306,8 @@
 				Exporter un backup
 			</Card.Title>
 			<Card.Description>
-				Telechargez une sauvegarde complete des exercices. Le format JSON peut etre restaure via
-				cette interface, le SQL est pour backup technique.
+				Telechargez une sauvegarde complete des {lore.learning.exercise}s. Le format JSON peut etre
+				restaure via cette interface, le SQL est pour backup technique.
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
@@ -343,7 +344,7 @@
 				Restaurer depuis un backup
 			</Card.Title>
 			<Card.Description>
-				Importez un fichier de backup JSON pour restaurer les exercices.
+				Importez un fichier de backup JSON pour restaurer les {lore.learning.exercise}s.
 			</Card.Description>
 		</Card.Header>
 		<Card.Content class="space-y-4">
@@ -470,7 +471,7 @@
 				<!-- Details per table -->
 				<div class="grid gap-2 text-sm">
 					<div class="flex justify-between">
-						<span>Exercices:</span>
+						<span>{lore.learning.exercise}s:</span>
 						<span>
 							{restoreResult.stats.exercises.imported} /
 							{restoreResult.stats.exercises.skipped} /

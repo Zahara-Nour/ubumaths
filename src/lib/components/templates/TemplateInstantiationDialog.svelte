@@ -168,10 +168,8 @@
 						<div class="flex items-center gap-2">
 							<Dumbbell class="h-4 w-4 text-muted-foreground" />
 							<span>
-								{template.contentSnapshot.exercises.length} exercice{template.contentSnapshot
-									.exercises.length > 1
-									? 's'
-									: ''}
+								{template.contentSnapshot.exercises.length}
+								{lore.learning.exercise}{template.contentSnapshot.exercises.length > 1 ? 's' : ''}
 							</span>
 						</div>
 					</div>
@@ -232,7 +230,7 @@
 						<p class="font-medium text-orange-900 dark:text-orange-100">Template vide</p>
 						<p class="mt-1 text-orange-700 dark:text-orange-200">
 							Ce template ne contient aucun contenu. Vous pourrez ajouter des documents, quiz et
-							exercices après la création.
+							{lore.learning.exercise}s après la création.
 						</p>
 					</div>
 				</div>

@@ -624,10 +624,10 @@
 						</div>
 						<p class="mt-2 text-sm text-muted-foreground">
 							{#if isPublic}
-								Cet exercice est accessible a tous via son lien direct.
+								Cette {lore.learning.exercise} est accessible a tous via son lien direct.
 							{:else}
-								Cet exercice est prive. Seuls les eleves assignes ou avec un lien de partage peuvent
-								y acceder.
+								Cette {lore.learning.exercise} est privée. Seuls les eleves assignes ou avec un lien
+								de partage peuvent y acceder.
 							{/if}
 						</p>
 					</div>
