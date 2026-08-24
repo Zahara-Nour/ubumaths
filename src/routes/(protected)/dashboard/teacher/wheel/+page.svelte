@@ -66,7 +66,9 @@
 	<!-- Header -->
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold text-foreground">Roue de la Fortune</h1>
-		<p class="mt-2 text-muted-foreground">Sélectionnez aléatoirement un élève de votre classe</p>
+		<p class="mt-2 text-muted-foreground">
+			Sélectionnez aléatoirement un {lore.entities.student} de votre classe
+		</p>
 	</div>
 
 	<!-- Class Selection -->
@@ -119,7 +121,7 @@
 			<div class="mt-4 rounded-md bg-muted p-3">
 				<p class="text-sm text-muted-foreground">
 					<span class="font-semibold">{selectedStudents().length}</span>
-					élève{selectedStudents().length > 1 ? 's' : ''} dans cette classe
+					{lore.entities.student}{selectedStudents().length > 1 ? 's' : ''} dans cette classe
 				</p>
 			</div>
 		{/if}

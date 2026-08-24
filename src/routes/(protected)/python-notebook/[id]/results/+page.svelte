@@ -204,7 +204,9 @@
 		</Button>
 		<div class="flex-1">
 			<h1 class="text-2xl font-bold">Résultats : {data.notebook.title}</h1>
-			<p class="text-sm text-muted-foreground">Statut des checkpoints par élève</p>
+			<p class="text-sm text-muted-foreground">
+				Statut des checkpoints par {lore.entities.student}
+			</p>
 		</div>
 	</div>
 
@@ -327,7 +329,7 @@
 						<Table.Root>
 							<Table.Header>
 								<Table.Row>
-									<Table.Head class="min-w-48">Élève</Table.Head>
+									<Table.Head class="min-w-48">{lore.entities.student}</Table.Head>
 									{#each data.checkpoints as cp (cp.cell_id)}
 										<Table.Head class="min-w-32 text-center">
 											{checkpointLabel(cp)}

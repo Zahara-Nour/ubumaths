@@ -167,7 +167,7 @@
 				</div>
 				<div>
 					<p class="text-2xl font-bold">{data.stats.total}</p>
-					<p class="text-sm text-muted-foreground">Élèves concernés</p>
+					<p class="text-sm text-muted-foreground">{lore.entities.student}s concernés</p>
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -214,7 +214,7 @@
 		<Card.Root>
 			<Card.Content class="py-12 text-center">
 				<ShieldCheck class="mx-auto h-12 w-12 text-muted-foreground" />
-				<h3 class="mt-4 text-lg font-semibold">Aucun élève concerné</h3>
+				<h3 class="mt-4 text-lg font-semibold">Aucun {lore.entities.student} concerné</h3>
 				<p class="mt-2 text-muted-foreground">
 					Vous n'avez pas d'élèves nécessitant un consentement parental (classes 6ème à 2nde).
 				</p>
@@ -395,15 +395,15 @@
 			</p>
 			<ul class="ml-4 list-disc space-y-1">
 				<li>
-					<strong>Accordé</strong> : L'élève a un accès complet à toutes les fonctionnalités.
+					<strong>Accordé</strong> : Le {lore.entities.student} a un accès complet à toutes les fonctionnalités.
 				</li>
 				<li>
 					<strong>Période de grâce</strong> : Accès complet temporaire pendant 30 jours pour les {lore
 						.entities.student}s existants.
 				</li>
 				<li>
-					<strong>En attente</strong> : L'élève a un accès en lecture seule (ne peut pas soumettre de
-					réponses, envoyer de messages, etc.).
+					<strong>En attente</strong> : Le {lore.entities.student} a un accès en lecture seule (ne peut
+					pas soumettre de réponses, envoyer de messages, etc.).
 				</li>
 				<li>
 					<strong>Expiré</strong> : Le lien de consentement a expiré. Renvoyez un email.

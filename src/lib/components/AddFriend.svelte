@@ -169,7 +169,7 @@
 			<div class="flex flex-wrap items-center gap-3">
 				<div class="flex items-center gap-2">
 					<Users class="size-5 text-primary" />
-					<h2 class="text-lg font-semibold">Élèves de</h2>
+					<h2 class="text-lg font-semibold">{lore.entities.student}s de</h2>
 				</div>
 				<MySelect
 					type="single"
@@ -185,7 +185,9 @@
 			{#if isLoadingStudents}
 				<div class="py-4 text-center">
 					<Loader2 class="mx-auto size-6 animate-spin text-muted-foreground" />
-					<p class="mt-2 text-sm text-muted-foreground">Chargement des élèves...</p>
+					<p class="mt-2 text-sm text-muted-foreground">
+						Chargement des {lore.entities.student}s...
+					</p>
 				</div>
 			{:else if studentsInClass.length === 0}
 				<p class="py-4 text-center text-sm text-muted-foreground italic">

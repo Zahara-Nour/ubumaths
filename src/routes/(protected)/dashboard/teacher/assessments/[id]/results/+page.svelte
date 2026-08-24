@@ -51,7 +51,7 @@
 				</Card.Header>
 				<Card.Content>
 					<div class="text-2xl font-bold">{data.statistics.total_assigned}</div>
-					<p class="text-xs text-muted-foreground">élèves</p>
+					<p class="text-xs text-muted-foreground">{lore.entities.student}s</p>
 				</Card.Content>
 			</Card.Root>
 
@@ -109,7 +109,8 @@
 		<Card.Header>
 			<Card.Title>Détails des Résultats</Card.Title>
 			<Card.Description>
-				{sortedResults.length} élève{sortedResults.length > 1 ? 's' : ''}
+				{sortedResults.length}
+				{lore.entities.student}{sortedResults.length > 1 ? 's' : ''}
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>

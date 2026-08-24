@@ -142,7 +142,9 @@
 	<div class="flex items-center justify-between">
 		<div>
 			<h1 class="text-3xl font-bold">Marché d'échange</h1>
-			<p class="text-muted-foreground">Surveillez et gérez les échanges de vos élèves</p>
+			<p class="text-muted-foreground">
+				Surveillez et gérez les échanges de vos {lore.entities.student}s
+			</p>
 		</div>
 		<div class="flex gap-2">
 			<Button onclick={refreshData} variant="outline" disabled={isLoading}>
@@ -202,7 +204,7 @@
 						<span class="ml-2 font-semibold">{formatNumber(data.studentCount)}</span>
 					</div>
 					<div>
-						<span class="text-muted-foreground">Max annonces/élève:</span>
+						<span class="text-muted-foreground">Max annonces/{lore.entities.student}:</span>
 						<span class="ml-2 font-semibold">{currentConfig?.max_listings_per_student ?? 5}</span>
 					</div>
 					<div>

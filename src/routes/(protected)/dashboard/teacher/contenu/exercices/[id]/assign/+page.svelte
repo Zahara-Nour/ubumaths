@@ -505,7 +505,9 @@
 						<div class="py-12 text-center text-muted-foreground">
 							<Users class="mx-auto mb-3 h-12 w-12 opacity-50" />
 							<p class="font-medium">Aucune assignation</p>
-							<p class="mt-2 text-sm">Sélectionnez des élèves ou classes pour commencer</p>
+							<p class="mt-2 text-sm">
+								Sélectionnez des {lore.entities.student}s ou classes pour commencer
+							</p>
 						</div>
 					{:else}
 						<div class="space-y-3">
