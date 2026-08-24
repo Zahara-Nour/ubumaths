@@ -35,28 +35,43 @@ export interface TestUser {
 // ============================================================================
 
 /**
- * Get test user credentials from environment variables
- * Falls back to defaults if environment variables are not set
+ * Require an env var, throwing a clear error if missing. Never hardcode
+ * credentials as fallbacks — real prod-domain accounts must not live in the
+ * versioned source (see issue #8). Set them in `.env.test` (git-ignored).
+ */
+function requireEnv(name: string): string {
+	const value = process.env[name];
+	if (!value) {
+		throw new Error(
+			`Missing required env var ${name} — define it in .env.test (see e2e/README.md).`
+		);
+	}
+	return value;
+}
+
+/**
+ * Get test user credentials from environment variables.
+ * Throws if a required variable is missing (no hardcoded fallbacks).
  */
 export function getTestUsers(): Record<UserRole, TestUser> {
 	return {
 		teacher: {
-			email: process.env.TEST_TEACHER_EMAIL || 'teacher@voltairedoha.com',
-			password: process.env.TEST_TEACHER_PASSWORD || 'test-password-secure-123',
+			email: requireEnv('TEST_TEACHER_EMAIL'),
+			password: requireEnv('TEST_TEACHER_PASSWORD'),
 			role: 'teacher',
 			firstname: 'John',
 			lastname: 'Doe'
 		},
 		student: {
-			email: process.env.TEST_STUDENT_EMAIL || 'student@voltairedoha.com',
-			password: process.env.TEST_STUDENT_PASSWORD || 'test-password-secure-123',
+			email: requireEnv('TEST_STUDENT_EMAIL'),
+			password: requireEnv('TEST_STUDENT_PASSWORD'),
 			role: 'student',
 			firstname: 'Alice',
 			lastname: 'Smith'
 		},
 		admin: {
-			email: process.env.TEST_ADMIN_EMAIL || 'admin@voltairedoha.com',
-			password: process.env.TEST_ADMIN_PASSWORD || 'test-password-secure-123',
+			email: requireEnv('TEST_ADMIN_EMAIL'),
+			password: requireEnv('TEST_ADMIN_PASSWORD'),
 			role: 'admin',
 			firstname: 'Admin',
 			lastname: 'User'

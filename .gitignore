@@ -23,7 +23,7 @@ Thumbs.db
 .env
 .env.*
 !.env.example
-!.env.test
+# .env.test holds real test credentials (see e2e/README.md) → must stay ignored (issue #8).
 
 # Vite
 vite.config.js.timestamp-*
