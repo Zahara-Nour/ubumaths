@@ -347,25 +347,19 @@ test.describe('UI Interactions', () => {
 		await expect(registerLink).toHaveCount(0);
 	});
 
-	test('can switch between Google and Email/Password tabs', async ({ page }) => {
-		// Verify Email/Password tab is accessible
-		const emailTab = page.locator('button[role="tab"]:has-text("Email")');
-		await expect(emailTab).toBeVisible();
-
-		// Click Email/Password tab
-		await emailTab.click();
-
-		// Verify email and password fields are visible
+	test('shows email/password directly and does not offer Google sign-in', async ({ page }) => {
+		/**
+		 * Google OAuth login is disabled (GOOGLE_LOGIN_ENABLED = false) after the school
+		 * change. The server infrastructure is kept, but the button is hidden, so
+		 * email/password is the only method and is shown directly (no reveal step).
+		 */
+		// Email and password fields are visible on load, no reveal step needed
 		await expect(page.locator('input[type="email"]')).toBeVisible();
 		await expect(page.locator('input[type="password"]')).toBeVisible();
 
-		// Switch back to Google tab
-		const googleTab = page.locator('button[role="tab"]:has-text("Voltaire")');
-		await googleTab.click();
-
-		// Verify Google sign-in button is visible
-		const googleButton = page.locator('button[type="submit"]:has-text("Se connecter")');
-		await expect(googleButton).toBeVisible();
+		// No Google / Voltaire sign-in option is present
+		await expect(page.locator('form[action*="googleSignIn"]')).toHaveCount(0);
+		await expect(page.getByText('Lycée Voltaire')).toHaveCount(0);
 	});
 
 	test('preserves email value after failed login attempt', async ({ page }) => {
