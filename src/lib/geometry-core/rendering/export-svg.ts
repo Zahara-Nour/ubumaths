@@ -454,6 +454,15 @@ function r(n: number): string {
 }
 
 /** Escape XML special characters for text content. */
+// Escapes for XML/SVG. Includes the quote characters because this is also used
+// inside double-quoted attribute values (e.g. `href="${escapeXml(url)}"`); without
+// escaping `"` a value could break out of the attribute (CodeQL
+// js/incomplete-html-attribute-sanitization). Harmless in text-content contexts too.
 function escapeXml(s: string): string {
-	return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+	return s
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
 }
