@@ -1,15 +1,12 @@
 # 📜 Compendium Pataphysique des Chiphres
 
-> _« Cornegidouille ! Voici l'Évangile selon le Maître Phynancier ! »_
->
-> Document de référence canonique du lore. À versionner dans le repo.
-> Toute incohérence avec ce document doit être considérée comme une erreur, à corriger ou à canoniser après débat.
+> Document de référence canonique du lore du projet **Chiphre**.
 
-> **📌 Note de rebranding (mai 2026)** : ce projet s'appelait précédemment **Ubumaths** (ubumaths.fr). Décision prise de **rupture nette** : le nom de marque est désormais **Chiphres** (chiph.re), avec pour sous-titre **« les Chiphres de la Chandelle Verte »**. Motif : le mot _maths_ étant repoussoir pour beaucoup d'élèves et de parents, le rebranding adopte un terme déguisé (_chiphres_ = _chiffres_ avec la signature pataphysique _ph_ canon Jarry, comme _phynance_). L'ancien nom **Ubumaths n'est plus utilisé nulle part**. Le terme **Ubu** lui-même (canon Jarry — Père Ubu, Mère Ubu, _Ubu Roi_) reste évidemment intact partout : c'est le nom du **personnage**, pas de la **marque**.
+> **📌 Note de rebranding (mai 2026)** : ce projet s'appelait précédemment **Ubumaths** (ubumaths.fr). Décision prise de **rupture nette** : le nom de marque est désormais **Chiphre** (chiph.re), avec pour sous-titre **« les Chiphres de la Chandelle Verte »**. Motif : le mot _maths_ étant repoussoir pour beaucoup d'élèves et de parents, le rebranding adopte un terme déguisé (_chiphre_ = _chiffre_ avec la signature pataphysique _ph_ canon Jarry, comme _phynance_). **Distinction conceptuelle importante** : **_Chiphre_** (singulier) désigne la **plateforme / marque / projet** ; **_les Chiphres_** (pluriel) fait référence aux mathématiques qui sont elles-meme renommées **les Mathres** .
 >
-> **Vocabulaire hybride Chiphres / Mathres** : pour désigner spécifiquement la **discipline scolaire** (= les mathématiques), le lore utilise le néologisme **Mathres** (déformation R potache canon — modèle _merdre_). Distinction sémantique : **Chiphres** = la plateforme + le côté concret/calculatoire ; **Mathres** = la discipline enseignée. Phrase-clé : _« Les Galopins apprennent les Mathres sur Chiphres. »_
+> Phrase-clé : _« Les Galopins apprennent les Mathres sur Chiphre. »_
 
-> **📚 Architecture documentaire** : ce **Compendium** est la **Bible structurelle** du projet — manifeste, cosmogonie, personnages, géographie, voix, identité visuelle, monétisation, roadmap. Il est complété par le **Lexique Pataphysique des Chiphres** (`lexique-pataphysique.md`), qui est le **dictionnaire technique** centré sur le vocabulaire (fiches de mots individuels, tables de correspondance UI, conventions orthographiques). Toute décision narrative ou éditoriale appartient au Compendium ; toute décision lexicale appartient au Lexique. En cas de divergence entre les deux, **le Compendium prime**.
+> **📚 Architecture documentaire** : ce **Compendium** est la **Bible structurelle** du projet — manifeste, cosmogonie, personnages, géographie, voix, identité visuelle. Il est complété par le **Lexique Pataphysique des Chiphres** (`lexique-pataphysique.md`), qui est le **dictionnaire technique** centré sur le vocabulaire (fiches de mots individuels, tables de correspondance UI, conventions orthographiques). Toute décision narrative ou éditoriale appartient au Compendium ; toute décision lexicale appartient au Lexique. En cas de divergence entre les deux, **le Compendium prime**.
 
 ---
 
@@ -21,7 +18,7 @@
 4. [Géographie de l'Académie](#iv-géographie-de-lacadémie)
 5. [La Langue Pataphysique](#v-la-langue-pataphysique)
 6. [Économie phynancière](#vi-économie-phynancière)
-7. [Progression : l'Ordre de la Grande Passoire et les 7 Niveaux Scolaires](#vii-progression)
+7. [Progression : l'Ordre de la Grande Passoire et l'Échelle du Décervelage](#vii-progression)
 8. [L'Almanach des Chiphres](#viii-lalmanach-des-chiphres)
 9. [Voix et ton — style guide](#ix-voix-et-ton)
 10. [Easter eggs et secrets](#x-easter-eggs-et-secrets)
@@ -34,9 +31,9 @@
 **Conventions de canonicité** — Quatre niveaux d'autorité dans le lore :
 
 - 🟢 **Canon Jarry** : vient de l'œuvre originale d'Alfred Jarry (1873-1907). **Libre** — domaine public depuis 1977. Exemples : _gidouille_, _bouzine_, _Mère Ubu_, _Bordure_, _Bougrelas_, _Achras_, _Faustroll_, _croc à phynances_, _bâton-à-physique_, _Ordre de la Gidouille_, _Czar Alexis_, _Aigle Rouge de Pologne_, _Conjurés_. **Inviolable**.
-- 🟡 **Canon Chiphres** : inventions assumées de notre univers, sans antécédent canon Jarry. Exemples : _les six provinces_ (Nombrilie, Bedonstan, Yoyolande, Pifométrie, Glitchistan, Patatovie), _le statut de Galopin_ pour les élèves, _les sept Niveaux Scolaires Pataphysiques_ (Syz'esme → Phinalle), _l'Ordre de la Grande Passoire (OGP)_ avec ses 7 grades (Embarqué Phollet → Patanaute Yllustre). **Cohérence interne obligatoire**.
-- 🟠 **Hybridations** : extensions canonisées d'éléments Jarry. Exemples : _l'Ordre de la Gidouille_ (canon Jarry) devient un système de grades (extension Chiphres), _les Palotins_ (canon Jarry — sbires d'Ubu) deviennent les _camarades de Galopin_ (extension Chiphres positive). **Source toujours signalée**.
-- 🏛️ **Création du Collège de 'Pataphysique** : éléments codifiés par l'institution réelle (fondée 1948, toujours active). **NON LIBRE DE DROIT** — usage à encadrer. Exemples : **_Patacesseurs_** (le mot, c'est pourquoi les Chiphres utilisent **_Patanautes Yllustres_**), _Acrote_, _Cymbalum Pataphysicum_, _Viridis Candela_, _hunyadi_, _saints contrapétiques_, les _6 grades canon de l'OGG_, la _structuration du Calendrier Pataphysique en système_. Pour la doctrine complète et les recommandations d'usage, voir le **Lexique Pataphysique des Chiphres**, section ⚖️ Avertissement juridique.
+- 🟡 **Canon Chiphre** : inventions assumées de notre univers, sans antécédent canon Jarry. Exemples : _les six provinces_ (Nombrilie, Bedonstan, Yoyolande, Pifométrie, Glitchistan, Patatovie), _le statut de Galopin_ pour les élèves, _l'Échelle du Décervelage_ avec ses 7 Eschelons (Syz'esme → Phinalle), _l'Ordre de la Grande Passoire (OGP)_ avec ses 7 grades (Embarqué Phollet → Patanaute Yllustre). **Cohérence interne obligatoire**.
+- 🟠 **Hybridations** : extensions canonisées d'éléments Jarry. Exemples : _les Palotins_ (canon Jarry — sbires d'Ubu) deviennent les _camarades de Galopin_ (extension Chiphre positive). **Source toujours signalée**.
+- 🏛️ **Création du Collège de 'Pataphysique** : éléments codifiés par l'institution réelle (fondée 1948, toujours active). **NON LIBRE DE DROIT** — ne pas reprendre. Pour la doctrine complète et les recommandations d'usage, voir le **Lexique Pataphysique des Chiphres**, section ⚖️ Avertissement juridique.
 
 **Cumul d'étiquettes** — Un terme peut combiner plusieurs étiquettes :
 
@@ -44,7 +41,7 @@
 | ------------------------------------ | ---------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Canon Jarry pur                      | 🟢 seul    | **LIBRE**                                                      | _gidouille_, _phynance_, _merdre_                                                                                                                                                                    |
 | Canon Jarry + codifié par le Collège | 🟢🏛️       | **LIBRE pour le mot canon**, codification spécifique non-libre | _gidouille_ libre, mais _Ordre de la Grande Gidouille avec ses 6 grades_ est codifié 🏛️ ; _Calendrier Pataphysique_ avec ses 13 mois est libre, mais sa **structuration en système** est codifiée 🏛️ |
-| Création pure du Collège             | 🏛️ seul    | **NON LIBRE** — usage à encadrer                               | **_Patacesseurs_** (le mot, → _Patanautes Yllustres_ aux Chiphres), _Acrote_ (au sens Sandomir), _Cymbalum Pataphysicum_                                                                             |
+| Création pure du Collège             | 🏛️ seul    | **NON LIBRE** — usage à encadrer                               | **_Patacesseurs_** (le mot, → _Patanautes Yllustres_ à Chiphre), _Acrote_ (au sens Sandomir), _Cymbalum Pataphysicum_                                                                                |
 
 **Règle pratique** : pour les termes 🟢🏛️, on garde le mot canon (libre) mais on simplifie ou contourne la codification spécifique du Collège.
 
@@ -60,44 +57,40 @@ Tous les sites de maths se ressemblent. Khan Academy, Brilliant, Maths&Tiques, L
 
 Pire : le mot **« maths » lui-même est devenu repoussoir** pour beaucoup d'élèves et de parents. La discipline fait peur. La note fait peur. L'image que certains en ont donné fait peur. Et le simple fait d'écrire _« maths »_ sur la page d'accueil suffit à fermer la porte avant qu'elle ne s'ouvre.
 
-### La promesse des Chiphres
+### La promesse de Chiphre
 
-**Chiphres ne propose pas d'apprendre les Mathres. Chiphres propose de devenir Patanaute Yllustre au service de Sa Majesté Phynancière le Père Ubu.**
+**Chiphre ne propose pas d'apprendre les Mathres. Chiphre propose de devenir Patanaute Yllustre au service de Sa Majesté Phynancière le Père Ubu.**
 
-Les Mathres sont le moyen — la couronne, le titre, les terres polonaises et les phynances sont la fin. L'élève n'est pas un apprenant : c'est un **Galopin** qui gravit les grades de l'Académie, gagne ses **gidouilles**, conspire avec ses **Palotins**, et finit par renverser le **Czar Alexis** lors du Grand Décervelage (le bac).
-
-Le nom **Chiphres** lui-même est un manifeste : c'est _chiffres_ avec la signature pataphysique _ph_ canon Jarry (comme _phynance_). Le mot _maths_, anxiogène, est remplacé par **Mathres** (déformation R potache canon — modèle _merdre_) — déguisement ludique qui désamorce la peur sans diluer le contenu.
+Les Mathres sont le moyen — la couronne, le titre, les terres polonaises et les phynances sont la fin. L'élève n'est pas un apprenant : c'est un **Galopin** qui gravit l'Echelle du Décervelage, gagne ses **gidouilles**, conspire avec ses **Palotins**, et finit par renverser le **Czar Alexis** lors du Grand Décervelage (le bac).
 
 ### Pourquoi Jarry, pourquoi Ubu
 
-- **Patrimonial** : _Ubu Roi_ est au programme du collège-lycée. Profs et parents le reconnaîtront.
-- **Anarchique** : le ton ubuesque (vénal, grossier, absurde, infantile) est l'antithèse de la pédagogie aseptisée. Les ados adorent.
+- **Grandiloquent** : le ton ubuesque (vénal, grossier, absurde, infantile) est l'antithèse de la pédagogie aseptisée. Les ados adorent.
 - **Riche** : la pièce et son univers regorgent de néologismes (_merdre_, _phynances_, _gidouille_, _décerveler_, _palotin_). Une mine d'or sémantique pour habiller chaque feature.
 - **Patalibre** : Jarry est dans le domaine public depuis 1977. Aucun ayant droit, liberté totale.
 
 ### Une généalogie d'humanisme savant
 
-Chiphres ne s'inspire pas seulement de Jarry, mais d'une **généalogie de patanautes yllustres** (= ancêtres pataphysiques au sens du Collège de 'Pataphysique) qui ont en commun, à travers cinq siècles, de croire qu'on peut être **à la fois rigoureux et joyeux**. Pour la galerie complète (22 patanautes yllustres documentés), voir le **Lexique Pataphysique des Chiphres**, Section X. Mentions principales :
+Chiphre ne s'inspire pas seulement de Jarry, mais d'une **généalogie de patanautes yllustres** (= ancêtres pataphysiques) qui ont en commun, à travers cinq siècles, de croire qu'on peut être **à la fois rigoureux et joyeux**. Pour la galerie complète, voir le **Lexique Pataphysique des Chiphres**, Section X. Mentions principales :
 
 - **François Rabelais** (1494-1553) — patanaute yllustre antique, modèle stylistique de Jarry
 - **Cyrano de Bergerac** (1619-1655) — libertin érudit, premier voyageur lunaire imaginaire
-- **Charles Babbage** (1791-1871) et **Ada Lovelace** (1815-1852) — mathématiciens-machinistes victoriens, patrons de Glitchistan
-- **Lewis Carroll** (1832-1898) — mathématicien à Oxford, auteur d'_Alice_ et du _Game of Logic_ (1886, proto-Chiphres victorien)
+- **Charles Babbage** (1791-1871) et **Ada Lovelace** (1815-1852) — mathématiciens-machinistes victoriens, saints patrons du Glitchistan
+- **Lewis Carroll** (1832-1898) — mathématicien à Oxford, auteur d'_Alice_ et du _Game of Logic_.
 - Le **quintet de la Belle Époque parisienne** (Chat Noir) : **Charles Cros** (1842-1888), **Alphonse Allais** (1854-1905), **Tristan Bernard** (1866-1947), **Erik Satie** (1866-1925), **Alfred Jarry** (1873-1907)
 - Les **Satrapes du Collège de 'Pataphysique** : Duchamp, Queneau, Vian, Ionesco, Dubuffet, Eco — héritiers du XXᵉ siècle
 - **Les Shadoks** et **_De cape et de crocs_** (Ayroles & Masbou) — héritiers contemporains
 
-### Les trois lois pataphysiques des Chiphres
+### Les fondements de Chiphre
 
-1. **Tout doit avoir un nom ubuesque.** Un bouton « Sauvegarder » → _« Empocher »_ ou _« Mettre dans la trappe »_. Une erreur 404 → _« Cornegidouille ! Cette terre n'existe point en notre Royaume. »_
-2. **Le Père Ubu est partout, mais jamais identique.** Tantôt cupide, tantôt lâche, tantôt grandiloquent, jamais conciliant. Et il n'est pas seul : deux voix tutorales complémentaires l'accompagnent — **Monsieur Prudhomme** (registre grandiloquent-bourgeois, pour les écrans administratifs) et **Tristan Bernard** (registre flegmatique-spirituel, pour les moments de calme).
-3. **L'absurde sert le sérieux.** Sous le clown, la rigueur. Une équation reste une équation. Le lore enrobe ; il ne dilue pas.
+1. **Tout doit avoir un nom ubuesque.** Un bouton « Sauvegarder » → _« Empocher »_ ou _« Mettre dans la trappe »_. Une erreur 404 → \*« Cornegidouille ! Cette terre n'existe point en notre Royaume. »
+2. **L'absurde sert le sérieux.** Sous le clown, la rigueur. Une équation reste une équation. Le lore enrobe ; il ne dilue pas.
 
 ### Le Manifeste public — version destinée aux parents
 
-Voici le texte de présentation public des Chiphres, destiné à la page d'accueil ou page À propos du site. Niveau pataphysique : **sobre et discret** — la pataphysique ne se voit qu'à la deuxième lecture. Cible : **les parents**. Refus du langage commercial standard et des formules d'auto-affirmation (« nous croyons », « nous pensons »).
+Voici le texte de présentation publique de Chiphre, destiné à la page d'accueil ou page À propos du site. Niveau pataphysique : **sobre et discret** — la pataphysique ne se voit qu'à la deuxième lecture. Cible : **les parents**. Refus du langage commercial standard et des formules d'auto-affirmation (« nous croyons », « nous pensons »).
 
-> **Chiphres** > _les Chiphres de la Chandelle Verte_
+> **Chiphre** > _les Chiphres de la Chandelle Verte_
 >
 > ---
 >
@@ -110,22 +103,22 @@ Voici le texte de présentation public des Chiphres, destiné à la page d'accue
 >
 > ---
 >
-> **Le voyage Chiphres**
+> **Le voyage Chiphre**
 >
-> Un royaume imaginaire. Des provinces à traverser. Des récompenses à empocher. Des défis pédagogiques structurés. Et derrière le décor, les programmes officiels de Mathématiques du collège et du lycée.
+> Un royaume imaginaire. Des provinces à traverser. Des récompenses à empocher. Des défis à relever. Et derrière un décor qui invite au voyage, les mathématiques rigoureuses des programmes officiels, présentées de manière originale.
 >
 > **Est-ce vraiment sérieux ?**
 >
-> Très sérieux. Chiphres s'inspire des œuvres d'**Alfred Jarry** (1873-1907), écrivain français, ainsi que de celles de **Lewis Carroll** (mathématicien à Oxford et auteur d'_Alice au pays des merveilles_) et de toute une tradition culturelle française — celle de Rabelais, de Cyrano de Bergerac, et plus récemment d'Alphonse Allais ou d'Erik Satie. Cinq siècles de pensée humaniste qui ont en commun de croire qu'on peut être à la fois rigoureux et s'amuser. Le ton de Chiphres est enjoué, farceur, mais ne cède en rien à la rigueur pédagogique.
+> Très sérieux. Chiphre s'inspire des œuvres d'**Alfred Jarry** (1873-1907), écrivain français, ainsi que de celles de **Lewis Carroll** (mathématicien à Oxford et auteur d'_Alice au pays des merveilles_) et de toute une tradition culturelle française — celle de Rabelais, de Cyrano de Bergerac, et plus récemment d'Alphonse Allais ou d'Erik Satie. Cinq siècles de pensée humaniste qui ont en commun de croire qu'on peut être à la fois rigoureux et s'amuser. Le ton de Chiphre est enjoué, farceur, mais ne cède en rien à la rigueur pédagogique.
 >
-> **Ce que Chiphres n'est pas**
+> **Ce que Chiphre n'est pas**
 >
 > - Un site de soutien scolaire classique.
 > - Un site avec de la publicité.
 > - Un service qui revend les données des familles.
 > - Un site qui promet de faire aimer les mathématiques en deux semaines.
 >
-> **Ce que Chiphres propose**
+> **Ce que Chiphre propose**
 >
 > - Un suivi de progression personnalisé, accessible aux parents.
 > - Une préparation conforme au programme français.
@@ -136,20 +129,15 @@ Voici le texte de présentation public des Chiphres, destiné à la page d'accue
 >
 > Apprendre les mathématiques sans s'en rendre compte. Et peut-être s'en moquer un peu, en chemin.
 >
-> _Bienvenue sur Chiphres._
+> _Bienvenue sur Chiphre._
 >
 > ---
 >
-> _Chiphres est créé par un enseignant agrégé de Mathématiques et ingénieur en Informatique, passionné de littérature et d'illusionnisme._
+> _Chiphre est créé par un enseignant agrégé de Mathématiques et ingénieur en Informatique, passionné de littérature et d'illusionnisme._
 
 **Notes sur la construction du manifeste public** :
 
-- **Exergue Tristan Bernard** : pose le ton et l'enjeu en deux secondes
-- **Aucun « nous »** dans tout le texte : Chiphres parle de Chiphres à la troisième personne
-- **Aucun superlatif** : pas de _« le meilleur »_, _« le plus innovant »_
-- **Structure « Ce que fait / D'où vient / N'est pas / Propose »** : rassure factuellement sans déclaration auto-laudative
-- **Mathres absent du manifeste public** : pour le grand public, on garde _« Mathématiques »_ en clair. _Mathres_ est réservé au wording interne du site une fois le Galopin inscrit.
-- **Mention auteur en signature finale** : l'autorité académique (agrégé) + technique (ingénieur) + culturelle (littérature + illusionnisme) en signature solennelle
+- **Exergue Tristan Bernard** : pose le ton et l'enjeu en deux secondes. TODO : j'aime bien la citation mais je pense qu'elle n'est pas adaptée. ça ne valorise l'effort. Dans Chiffre, il faut que l'élève comprenne que l'erreur fait partie du chemin (Quand on fait une erreur, on fait de la pataphysique !) et que chacun peut avancer à son rythme, en toute confiance pour progresser.
 
 ---
 
@@ -157,7 +145,7 @@ Voici le texte de présentation public des Chiphres, destiné à la page d'accue
 
 ### Les trois concepts fondateurs
 
-Avant de décrire le Royaume, ses provinces et son histoire, il faut poser les **trois concepts fondateurs** de la pataphysique que les Chiphres adoptent intégralement. Ces concepts viennent de Jarry lui-même (canon 🟢) et sont libres de droit. Ils structurent **toute la doctrine des Chiphres** — pas seulement la cosmogonie, mais aussi la voix tutorale, la galerie des patanautes yllustres, le système de cartes et le rapport aux erreurs.
+Avant de décrire le Royaume, ses provinces et son histoire, il faut poser les **trois concepts fondateurs** de la pataphysique que Chiphre adopte intégralement. Ces concepts viennent de Jarry lui-même (canon 🟢) et sont libres de droit. Ils structurent **toute la doctrine de Chiphre** — pas seulement la cosmogonie, mais aussi la voix tutorale, la galerie des patanautes yllustres, le système de récompenses et le rapport aux erreurs.
 
 #### 🟢 Le Clinamen — la déviation fondatrice
 
@@ -165,9 +153,9 @@ Avant de décrire le Royaume, ses provinces et son histoire, il faut poser les *
 
 **Origine antique** : le clinamen est un concept de la **physique épicurienne**, formalisé par **Lucrèce** dans **_De rerum natura_**, Livre II (vers 217-292), au Iᵉʳ siècle av. J.-C. Il désigne **l'écart imprévisible** par lequel les atomes dévient de leur chute verticale dans le vide — déviation infinitésimale qui permet leur rencontre et donc l'existence des corps et la liberté humaine. C'est donc un concept **libre de droit depuis plus de deux millénaires**.
 
-**Reprise par Jarry** : Alfred Jarry s'approprie le clinamen dans **_Gestes et opinions du docteur Faustroll, pataphysicien_** (1898). Il y consacre **un chapitre entier** (Livre VI, chapitre XXXIV) intitulé « Clinamen », dans lequel apparaît la fameuse **machine à peindre dite Clinamen** qui projette treize tableaux décrits par Panmuphle. Pour Jarry, le clinamen devient **le principe même de la création pataphysique** : la réalité comme exception plutôt que comme règle. (Note : le **mois pataphysique « Clinamen »** du Calendrier du Collège est en revanche codification 🏛️ du Collège — c'est pourquoi l'Almanach des Chiphres ne reprend pas ce nom de mois.)
+**Reprise par Jarry** : Alfred Jarry s'approprie le clinamen dans **_Gestes et opinions du docteur Faustroll, pataphysicien_** (1898). Il y consacre **un chapitre entier** (Livre VI, chapitre XXXIV) intitulé « Clinamen », dans lequel apparaît la fameuse **machine à peindre dite Clinamen** qui projette treize tableaux décrits par Panmuphle. Pour Jarry, le clinamen devient **le principe même de la création pataphysique** : la réalité comme exception plutôt que comme règle.
 
-**Application aux Chiphres** : chaque Galopin est un **clinamen** dans le Royaume — un écart unique par rapport à la trajectoire moyenne attendue. Sa progression ne suit pas une ligne droite mais une déviation propre, ce qui justifie la **personnalisation** des parcours et le **droit à l'erreur créative**. Une réponse fausse n'est pas un raté du système : c'est un clinamen. Et chaque solution imaginaire des Chiphres (Royaume, Mathres, Galopin) est elle-même un clinamen par rapport à la pédagogie classique.
+**Application à Chiphre** : chaque Galopin est un **clinamen** dans le Royaume — un écart unique par rapport à la trajectoire moyenne attendue. Sa progression ne suit pas une ligne droite mais une déviation propre, ce qui justifie la **personnalisation** des parcours et le **droit à l'erreur créative**. Une réponse fausse n'est pas un raté du système : c'est un clinamen. Et chaque solution imaginaire est elle-même un clinamen par rapport à la pédagogie classique.
 
 #### 🟢 L'équivalence des contraires — tout se vaut pataphysiquement
 
@@ -175,16 +163,11 @@ Avant de décrire le Royaume, ses provinces et son histoire, il faut poser les *
 
 **Origine canon** : Jarry pose le principe dans **_Gestes et opinions du docteur Faustroll, pataphysicien_** (1898) par l'image de la **bibliothèque des 27 livres pairs**. Faustroll possède une bibliothèque où la Bible, _Pantagruel_ de Rabelais, l'_Odyssée_ d'Homère, les œuvres de Mallarmé et _Ubu Roi_ de Jarry lui-même **coexistent à égalité pataphysique**. Aucune hiérarchie. Tout est également vrai, également beau, également sérieux. Ces livres sont _« pairs »_ au sens où ils sont **d'égale valeur pataphysique**, quelles que soient leur célébrité, leur ancienneté ou leur prétention canonique. C'est canon Jarry strict 🟢, libre de droit.
 
-**Reprise par le Collège** : le Collège de 'Pataphysique a fait de l'équivalence des contraires un de ses **principes officiels**, qu'il applique notamment à sa galerie des Patanautes Yllustres (_« Anciens ou récents, réels ou imaginaires, hommes, femmes ou animaux, les Patanautes Yllustres sont également honorés. »_, _Les 101 mots de la pataphysique_, PUF 2019). Le **principe lui-même reste canon Jarry libre** ; seule la **formulation institutionnelle du Collège** est encadrée 🏛️.
-
-**Application aux Chiphres** : ce principe est **doctrinal et transversal**. Il fonde :
+**Application à Chiphre** : ce principe est **doctrinal et transversal**. Il fonde :
 
 - **Le ton sur les erreurs** : une mauvaise réponse n'est pas inférieure à une bonne réponse. C'est pourquoi le Père Ubu ne dit jamais _« faux »_ mais _« pataphysique »_. Voir Section IX (Voix et ton) pour les implications complètes sur le wording.
-- **La galerie des patanautes yllustres** : Rabelais et Lutembi le crocodile, Cyrano de Bergerac historique et Bosse-de-Nage le cynocéphale, Lewis Carroll et le Cheval à Phynances sont **également pataphysiques**. Pas de hiérarchie chronologique, pas de hiérarchie ontologique. Voir Section III (Personnages).
-- **Le système de cartes** : toutes les cartes sont également pataphysiques, qu'elles soient plébéiennes, bourgeoises, nobles ou royales. La rareté n'est pas une supériorité de valeur, c'est une supériorité de fréquence d'apparition.
-- **Les fêtes provinciales** : toutes égales entre elles, pas de hiérarchie entre Bedonstan et Glitchistan, entre la Fête des Polyèdres et la Grande Empochaille.
 
-**Limite pédagogique honnête** : l'équivalence des contraires est un **principe pataphysique**, pas une vérité scolaire absolue. En **Mathres**, 2 + 2 = 4 et pas 5. Mais la **façon de signaler l'erreur** (le ton, le wording, la dramatisation) relève de l'équivalence des contraires. On corrige sans dévaloriser. La justesse mathématique est préservée ; le jugement moral sur l'élève est suspendu.
+**Limite pédagogique honnête** : l'équivalence des contraires est un **principe pataphysique**, pas une vérité scolaire absolue. En **Mathres**, 2 + 2 = 4 et pas 5. Mais la **façon de signaler l'erreur** (le ton, le wording, la dramatisation) relève de l'équivalence des contraires. On corrige sans dévaloriser. La justesse mathématique est préservée ; le jugement moral sur l'élève est suspendu. "Toutes les solutions, même imaginaires, sont intéressantes à étudier."
 
 #### 🟢 Les solutions imaginaires — la science des cas particuliers
 
@@ -192,14 +175,12 @@ Avant de décrire le Royaume, ses provinces et son histoire, il faut poser les *
 
 Concept que Jarry formule comme la **définition même de la pataphysique** : elle étudie non pas les lois générales (comme la physique) mais les **exceptions, les cas singuliers, les solutions imaginaires** à des problèmes que la science régulière néglige ou résout par approximation.
 
-**Application aux Chiphres** : ce principe justifie pataphysiquement **l'invention pédagogique**. Les Chiphres proposent des **solutions imaginaires** à des problèmes pédagogiques que l'école française ne résout pas bien :
+**Application à Chiphre** : ce principe justifie pataphysiquement **l'invention pédagogique**. Chiphre propose des **solutions imaginaires** à des problèmes pédagogiques que l'école française ne résout pas bien :
 
 - Comment rendre les Mathres désirables ? → solution imaginaire : un Royaume, un Père Ubu, des phynances
 - Comment dédramatiser les erreurs ? → solution imaginaire : les erreurs sont _« pataphysiques »_, pas fausses
 - Comment maintenir l'engagement sur 7 ans ? → solution imaginaire : un parcours mythologique avec grades et niveaux
-- Comment articuler rigueur et joie ? → solution imaginaire : la pataphysique elle-même
-
-**Tous les choix doctrinaux des Chiphres sont des solutions imaginaires** au sens de Jarry. Cela donne une **légitimité canonique** à l'ensemble du projet.
+- Comment articuler rigueur et joie ? → solution imaginaire : l'univers ubuesque et la pataphysique elle-même
 
 ### Le Royaume
 
@@ -209,33 +190,102 @@ Au commencement était la Pologne. Puis le Père Ubu, par un rot d'une puissance
 
 Le Royaume comporte **Six Provinces**, qui correspondent aux six grands domaines du programme français de Mathématiques (collège et lycée) :
 
-| Province        | Domaine                      | Capitale                  | Origine du nom                           | Gouverneur                |
-| --------------- | ---------------------------- | ------------------------- | ---------------------------------------- | ------------------------- |
-| **Nombrilie**   | Nombres et calculs           | **Empoche-les-Bains**     | nombril (et nombrilisme du Roi)          | **Mère Ubu** 🟢           |
-| **Bedonstan**   | Géométrie                    | **Lobatchevsk**           | bedaine (le ventre comme première forme) | **Professeur Achras** 🟢  |
-| **Yoyolande**   | Fonctions                    | **Sinusborg**             | yo-yo (qui monte et descend)             | **Bougrelas** 🟢          |
-| **Pifométrie**  | Probabilités et statistiques | **Bonneteau-sur-Vistule** | pif (et pifomètre, science du hasard)    | **Cheval à Phynances** 🟢 |
-| **Glitchistan** | Algorithmique                | **Turingrad**             | glitch (la machine à vapeur qui dérape)  | **Bosse-de-Nage** 🟢      |
-| **Patatovie**   | Logique et ensembles         | **Cracovenn**             | patate (le diagramme des ensembles)      | **Faustroll** 🟢          |
+| Province        | Domaine                      | Capitale                  | Origine du nom                                                                                                                                                                                   | Gouverneur                |
+| --------------- | ---------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------- |
+| **Nombrilie**   | Nombres et calculs           | **Empoche-les-Bains**     | nombril (et nombrilisme du Roi)                                                                                                                                                                  | **Mère Ubu** 🟢           |
+| **Bedonstan**   | Géométrie                    | **Lobatchevsk**           | bedaine (le ventre comme première forme)                                                                                                                                                         | **Professeur Achras** 🟢  |
+| **Yoyolande**   | Fonctions                    | **Sinusborg**             | **pommadam** du Roi (pomme d'Adam pataphysisée — voir fiche dédiée Section II), qui fait yoyo dans le cou à chaque déglutition de phynance ou de nourriture + yo-yo objet (qui monte et descend) | **Bougrelas** 🟢          |
+| **Pifométrie**  | Probabilités et statistiques | **Bonneteau-sur-Vistule** | **pif du Roi** (flair phynancier + instrument de pari à l'instinct)                                                                                                                              | **Cheval à Phynances** 🟢 |
+| **Glitchistan** | Algorithmique                | **Turingrad**             | **phlatulence/chprout'** du Roi (= sortie inattendue du système digestif royal, voir fiche dédiée Section II) +glitch (la machine à vapeur qui dérape)                                           | **Bosse-de-Nage** 🟢      |
+| **Patatovie**   | Logique et ensembles         | **Cracovenn**             | patate (le diagramme des ensembles)                                                                                                                                                              | **Faustroll** 🟢          |
 
 **Six provinces, six suffixes différents, six registres distincts** : -ie noble, -stan oriental, -lande nordique, -métrie scientifique, -istan post-soviétique, -ovie slave. La carte sonne comme une vraie Europe imaginaire à six royaumes.
 
 #### Logique sonore et anatomique du Royaume
 
-Quatre des six provinces s'appuient sur **un trait corporel** du Père Ubu (nombril, bedaine, pif, gidouille-comme-patate). Le Royaume **est littéralement le corps d'Ubu déployé en géographie**. Les Galopins qui voyagent dans le programme scolaire parcourent en réalité l'anatomie de leur souverain.
+Cinq des six provinces s'appuient sur **un trait corporel** du Père Ubu (nombril, bedaine,pommadam, pif, phlatulence, TODO: trouver quelquechose pour la Patatovie, les fesses de Père Ubu=2 grosses patates ou alors les poches remplies d'argent qui font presque parties intégrantes de son corps ?). Le Royaume **est littéralement le corps d'Ubu déployé en géographie**. Les Galopins qui voyagent dans le programme scolaire parcourent en réalité l'anatomie de leur souverain.
 
-Les deux exceptions :
+**L'exception unique** :
 
-- **Yoyolande** s'appuie sur un objet (le yo-yo), métaphore parfaite des fonctions qui montent et descendent.
 - **Glitchistan** s'appuie sur un dysfonctionnement moderne (le glitch), seule province authentiquement contemporaine, marquant le pont entre l'imaginaire 1896 et l'informatique du XXIᵉ siècle — habillée pataphysiquement en **steampunk victorien** (voir ci-dessous).
+
+#### La séquence digestive du Royaume
+
+Les six provinces ne sont pas simplement _anatomiques_, elles forment ensemble **le cycle digestif complet du Père Ubu**, étape par étape, dans l'ordre canonique :
+
+| #   | Province        | Anatomie               | Étape digestive                   | Action royale                                                                              |
+| --- | --------------- | ---------------------- | --------------------------------- | ------------------------------------------------------------------------------------------ |
+| 1   | **Nombrilie**   | nombril                | **Contemplation initiale**        | _« Le Roi contemple ses biens avant d'agir »_                                              |
+| 2   | **Pifométrie**  | pif                    | Flair prédateur et calcul de pari | « Le Roi renifle où sont les phynances à prendre, et parie sur sa chance de les attraper » |
+| 3   | **Yoyolande**   | pommadam               | **Déglutition**                   | _« Le Roi avale ce qu'il prend, et sa pommadam fait yoyo »_                                |
+| 4   | **Bedonstan**   | bedaine                | **Digestion**                     | _« Le Roi digère dans sa bedaine »_                                                        |
+| 5   | **Patatovie**   | patate                 | **Empochement / classement**      | _« Le Roi empoche ses biens digérés dans ses poches-patates »_                             |
+| 6   | **Glitchistan** | phlatulence (chprout') | **Sortie inattendue**             | _« Le Roi clôt le banquet par une phlatulence royale qui surprend toute la cour »_         |
+
+C'est un **cycle digestif pataphysique complet** : du nombril contemplatif à la phlatulence finale, en passant par toutes les étapes anatomiques de la digestion ubuesque. **Le Galopin qui traverse les six provinces accomplit, sans le savoir, la digestion complète du Père Ubu.**
+
+#### Cas particulier de Yoyolande
+
+**_Yoyolande_** bénéficie d'une **triple détermination pataphysique** :
+
+- **Anatomique** : la **pommadam** (= pomme d'Adam pataphysisée, voir fiche dédiée Section II) du Père Ubu, qui fait yoyo dans son cou à chaque déglutition de phynances et de saucissons
+- **Objectale** : le **yo-yo** (jouet à ficelle qui monte et descend, métaphore visuelle immédiate des fonctions périodiques)
+- **Mathématique** : la **sinusoïde** (fonction périodique qui monte et descend selon une courbe régulière)
+
+#### Cas particulier de Glitchistan
+
+**_Glitchistan_** bénéficie d'une **double détermination pataphysique** qui résout sa modernité apparente :
+
+- **Anatomique** : la **phlatulence** royale , désignée familièrement par l'onomatopée **_chprout'_**. C'est la **sortie inattendue du système digestif** du Père Ubu — l'imprévu corporel qui clôt le cycle.
+- **Numérique** : le **glitch** informatique — comportement inattendu d'un programme, bug, dysfonctionnement.
+
+**Le glitch est le pet de la machine.** L'analogie est rigoureuse : un glitch comme une phlatulence sont des **sorties inattendues, incongrues, qui ne sont pas voulues par le système mais qui sortent quand même**. La machine, dans la cosmogonie ubuesque, est anthropomorphisée comme un corps qui digère mal et qui pète parfois. Le **steampunk victorien** du Glitchistan (esthétique de la machine à vapeur — voir ci-dessous) est cohérent avec cette analogie : la machine à vapeur **siffle, fuit, gargouille, pète des nuages de vapeur** comme un corps gazeux. Babbage et Lovelace, patanautes yllustres victoriens, sont aussi les **maîtres pataphysiques de la phlatulence calculatoire** : leur Machine Analytique, si elle avait fonctionné, aurait produit des **chprout' calculatoires** à chaque dysfonctionnement.
+
+### La phlatulence et le chprout'
+
+Les mots **_phlatulence_** (registre savant) et **_chprout'_** (registre familier-onomatopéique) sont la **pataphysation** du pet du Père Ubu. Ils désignent l'**imprévu corporel** qui clôt le cycle digestif royal — sortie inattendue, incongrue, gazeuse, qui sort du système sans avoir été voulue.
+
+#### Double registre canonique
+
+À la manière du trio ventral _gidouille / bouzine / boudouille_ (canon Jarry 🟢), la phlatulence dispose de **deux registres canon Chiphre 🟡** :
+
+| Mot             | Registre               | Genre    | Usage privilégié                            |
+| --------------- | ---------------------- | -------- | ------------------------------------------- |
+| **phlatulence** | savant-médical         | féminin  | descriptions, doctrine, contextes solennels |
+| **chprout'**    | familier-onomatopéique | masculin | jurons, exclamations, registre théâtral     |
+
+#### Usage pataphysique recommandé
+
+**Phlatulence** (savant) :
+
+- **Substantif descriptif solennel** : _« La phlatulence royale est de la plus haute distinction. »_
+- **Discours médical pataphysique** : _« Le Père Ubu présente une phlatulence chronique d'origine phynancière. »_
+- **Doctrine** : _« La phlatulence est la cinquième étape du cycle digestif royal. »_
+
+**Chprout'** (familier) :
+
+- **Juron mineur d'Ubu** : _« Cornechprout' ! »_
+- **Description directe** : _« Le Roi lâcha un chprout' royal qui surprit toute la cour. »_
+- **Bug informatique** : _« Le programme a fait chprout'. »_ (= a bugé, a glitché)
+
+**Verbes dérivés possibles** :
+
+- _chprouter_ (informel) : faire un chprout', pétarader, glitcher
+  - _« La Machine Analytique chproute depuis ce matin. »_
+- _phlatuler_ (formel) : produire une phlatulence
+  - _« Le Père Ubu phlatule royalement à la fin du banquet. »_
+
+#### Lien avec Glitchistan
+
+La province de Glitchistan tire son ancrage anatomique de la phlatulence royale (voir Section II, _Fiches détaillées des Provinces — Glitchistan_). C'est la **province de l'imprévu corporel-numérique** : le pet d'Ubu et le bug de la machine y sont la **même chose pataphysique** — sortie inattendue d'un système qui digère mal. Bosse-de-Nage, gouverneur cynocéphale qui répète éternellement _« ha ha »_, est canoniquement le **Régent des chprout' du Royaume** : son _« ha ha »_ automatique est lui-même un **chprout' linguistique perpétuel**, bug humanoïde et phlatulence sonore confondus.
 
 #### Les deux provinces -stan, frontière orientale
 
-Bedonstan et Glitchistan sont **les deux provinces -stan** du Royaume. Loin d'être un doublon, c'est canon : ce sont **les marches orientales sauvages**, deux territoires aux confins de l'empire pataphysique, l'un tubéreux et antique, l'autre numérique et crashant. Elles se disputent depuis des siècles le titre de « Province la moins compréhensible du Royaume ».
+Bedonstan et Glitchistan sont **les deux provinces -stan** du Royaume. Ce sont **les marches orientales sauvages**, deux territoires aux confins de l'empire pataphysique, l'un tubéreux et antique, l'autre numérique et crashant. Elles se disputent depuis des siècles le titre de « Province la moins compréhensible du Royaume ».
 
 #### Glitchistan, province steampunk victorienne
 
-**Choix esthétique majeur des Chiphres** : la province algorithmique adopte l'esthétique **steampunk victorienne** plutôt que le minimalisme moderne de l'informatique contemporaine. Cette décision est canoniquement justifiée par les **deux patanautes yllustres victoriens** que sont **Charles Babbage** (1791-1871, inventeur de la Machine Analytique) et **Ada Lovelace** (1815-1852, première programmeuse de l'histoire avec sa Note G), tous deux dans le domaine public et idéalement contemporains de Jarry par leur sensibilité — la Machine Analytique a précédé l'informatique moderne d'un siècle, exactement comme Faustroll a précédé la pataphysique formalisée d'un demi-siècle.
+**Choix esthétique majeur de Chiphre** : la province algorithmique adopte l'esthétique **steampunk victorienne** plutôt que le minimalisme moderne de l'informatique contemporaine. Cette décision est canoniquement justifiée par les **deux patanautes yllustres victoriens** que sont **Charles Babbage** (1791-1871, inventeur de la Machine Analytique) et **Ada Lovelace** (1815-1852, première programmeuse de l'histoire avec sa Note G), tous deux dans le domaine public et idéalement contemporains de Jarry par leur sensibilité — la Machine Analytique a précédé l'informatique moderne d'un siècle, exactement comme Faustroll a précédé la pataphysique formalisée d'un demi-siècle.
 
 **Vocabulaire steampunk canon de Glitchistan** :
 
@@ -259,166 +309,157 @@ Bedonstan et Glitchistan sont **les deux provinces -stan** du Royaume. Loin d'ê
 
 Lue dans l'ordre, la liste raconte le cycle phynancier complet :
 
-> _Nombrilie, où le Roi compte ses biens.
+> _Nombrilie, où le Roi contemple et compte ses biens.
+> Pifométrie, où il parie sur sa proie phynancière.
+> Yoyolande, où il déglutit les phynances.
 > Bedonstan, où il les digère.
-> Yoyolande, où sa fortune monte et descend.
-> Pifométrie, où il parie.
-> Glitchistan, où il automatise sa cupidité.
-> Patatovie, où il classe ses gains par poches._
+> Patatovie, où il classe ses gains par poches.
+> Glitchistan, où il automatise sa cupidité et où il clôt le banquet par un chprout' royal._
+
+### La pommadam — vocabulaire anatomique canonique
+
+Le mot **_pommadam_** est la **pataphysation canonique** de l'expression française _« pomme d'Adam »_. Il désigne la **proéminence laryngée** du Père Ubu (cartilage thyroïde formant une bosse à l'avant du cou, qui monte et descend visiblement à chaque déglutition).
+
+#### Usage pataphysique recommandé
+
+Le mot _pommadam_ peut servir comme :
+
+- **Substantif descriptif** : _« le Père Ubu présente une pommadam particulièrement proéminente »_
+- **Juron mineur d'Ubu** : _« Par ma pommadam ! »_
+- **Expression imagée** : _« avoir la pommadam qui tressaute »_ (être stressé, agité),
+
+#### Lien avec Yoyolande
+
+La province de Yoyolande tire son ancrage anatomique de la pommadam royale (voir Section II, _Fiches détaillées des Provinces — Yoyolande_). C'est la **province du yo-yo physiologique** : ce qui monte et descend dans le cou d'Ubu à chaque saucisson avalé, à chaque phynance déglutie. Les sinusoïdes mathématiques étudiées dans la province sont la **modélisation savante** du mouvement de la pommadam royale.
+
+> _« La pommadam du Roi est notre première sinusoïde. »_ — Devise des matheux de Sinusborg
+
+#### Le cycle digestif royal — bouclage cosmologique
+
+Avec la phlatulence intégrée à Glitchistan, les six provinces du Royaume forment ensemble un **cycle digestif pataphysique complet**, du nombril contemplatif initial au chprout' final qui clôt le banquet :
+
+> 1. _Nombrilie_ — _Le Roi contemple ses biens (avant ingestion)_
+> 2. *Pifométrie — *Le Roi renifle sa proie phynancière et parie sur sa chance de la saisir\*
+> 3. _Yoyolande_ — _Le Roi avale (sa pommadam fait yoyo)_
+> 4. _Bedonstan_ — _Le Roi digère dans sa bedaine_
+> 5. _Patatovie_ — _Le Roi empoche ses biens digérés_
+> 6. _Glitchistan_ — _Le Roi clôt le banquet par un chprout' royal_
+
+**Le Galopin qui voyage à travers les six provinces du Royaume accomplit, sans le savoir, la digestion complète du Père Ubu — depuis le flair initial jusqu'au chprout' final.**
+
+> _« Le chprout' du Roi est notre dernier mot pataphysique. »_ — Devise des programmeurs de Turingrad
+
+### L'Isle de la Réunion Pataphysique — outre-mer du Royaume
+
+Le Royaume de Pologne d'Ubu ne se contente pas de son territoire continental. Le Père Ubu, par décret royal absurde, a **annexé une outre-mer** : **_L'Isle de la Réunion Pataphysique_**.
+
+Située hors des Six Provinces, **L'Isle de la Réunion Pataphysique** est un territoire **transversal** où **les six provinces se réunissent** symboliquement pour pratiquer le principe de l'**équivalence des contraires**.
+
+#### Rôle dans la cosmologie
+
+- **Lieu de pratique de l'équivalence des contraires** : c'est sur L'Isle de la Réunion Pataphysique que les paradoxes du Royaume se résolvent. Une réponse fausse et une réponse juste y sont **également pataphysiques**. Un Galopin de Syz'esme et un Patanaute Yllustre y sont **également vénérables**. Le Père Ubu et le Czar Alexis y sont **également royaux**.
+- **Observatoire des solutions imaginaires** : le Père Ubu y a installé son observatoire pour noter les _« solutions imaginaires »_ (canon Jarry strict 🟢, _Faustroll_) qui se produisent dans le Royaume.
+- **Lieu transversal sans province** : L'Isle de la Réunion Pataphysique n'est **pas** une 7ᵉ province (le système des Six Provinces reste intact). C'est un **statut différent** — un territoire **outre-mer**, **transversal**, **réservé à l'expérimentation doctrinale**.
+
+#### Fête possible (proposition pour l'Almanach)
+
+🚧 **Idée à canoniser** : une **journée annuelle de L'Isle de la Réunion Pataphysique** pourrait être ajoutée à l'Almanach des Chiphres (Section VIII). Date possible : le **20 décembre** (date réelle de l'abolition de l'esclavage à La Réunion, ce qui ferait un clin d'œil au principe d'équivalence : tous les Galopins y sont également libres et également étudiants). Décision à prendre.
 
 ### Fiches détaillées des Provinces
 
 Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile pour les illustrations et les noms d'événements) et une **devise** (à inscrire sur le blason, en en-tête de chapitre, dans les illustrations).
 
-**Méthode du choix des capitales** : la palette des six capitales utilise **six registres sonores totalement différents**, pour faire sonner la carte comme une vraie Europe imaginaire à cultures multiples plutôt qu'une suite monotone. Les six suffixes sont : `-les-Bains` (français terroir thermal), `-evsk` (russe authentique), `-borg` (nordique scandinave), `-sur-Vistule` (français terroir fluvial polonais), `-grad` (cyber-soviétique), et le détournement de Cracovie (polonais réel).
-
 #### Nombrilie — _Nombres et calculs_
 
-- **Gouverneur** : 🟢 **Mère Ubu** (canon Jarry, _Ubu Roi_) — la Reine consort, calculatrice et manipulatrice. Cumul de mandats avec son rôle de marketplace UI : Mère Ubu gère à la fois les transactions individuelles des Galopins et les phynances de toute la province. _« Père Ubu ne sait pas compter mais moi si »_ (canon Jarry). **Voix** : posée, lettrée, doucereuse, jamais grossière. Elle calcule pendant qu'Ubu braille.
+- **Gouverneur** : 🟢 **Mère Ubu** (canon Jarry, _Ubu Roi_) — la Reine consort, calculatrice et manipulatrice. Cumul de mandats avec son rôle de directrice du Marché Polonais : Mère Ubu gère à la fois les transactions individuelles des Galopins et les phynances de toute la province. _« Père Ubu ne sait pas compter mais moi si »_ (canon Jarry). **Voix** : posée, lettrée, doucereuse, jamais grossière. Elle calcule pendant qu'Ubu braille.
 - **Capitale** : 🟡 **Empoche-les-Bains**
 - **Étymologie** : du verbe « empocher » (action royale par excellence d'Ubu, mot qui remplace « Sauvegarder » dans le lexique UI). Le suffixe `-les-Bains` détourne les noms des stations thermales françaises du XIXᵉ siècle (Aix-les-Bains, Évian-les-Bains, Plombières-les-Bains), registre 1880 bourgeois parfaitement contemporain de Jarry.
 - **Devise** : « **Patron, la soustraction !** »
 - **Commentaire de la devise** : détournement de l'expression française universelle « Patron, l'addition ! » (cri lancé au serveur en fin de repas pour réclamer la note). En remplaçant _addition_ par _soustraction_, on demande qu'on **enlève** de l'argent au lieu d'en payer — geste pataphysique parfait : escroquerie ubuesque condensée en quatre mots. Mathématiquement, addition et soustraction sont les deux opérations fondatrices de la province ; les détourner l'une par l'autre est l'archétype de l'opération inversée. Lien narratif fort avec Empoche-les-Bains : c'est le cri qu'on entend chaque soir au restaurant du Grand Hôtel thermal.
-- **Paysage canon** : station thermale 1880 où des Polonais bourgeois en redingote prennent les eaux numériques. Ils se baignent dans des bassins remplis de chiffres flottants. Place principale dominée par une grande gidouille de bronze qui crache des pièces.
-- **Résonance UI** : un Galopin qui clique sur le bouton « Empocher » fait symboliquement un pèlerinage à Empoche-les-Bains.
+- **Paysage canon** : station thermale 1880 plébiscitée par les bourgeois Polonais. Place principale dominée par une grande gidouille de bronze.
 
 #### Bedonstan — _Géométrie_
 
-- **Gouverneur** : 🟢 **Professeur Achras** (canon Jarry, _Ubu Cocu_) — éleveur de polyèdres. Il **élève** ses polyèdres comme on élève du bétail, leur parle, les nomme, les fait grossir. Mandat unique, pas de cumul UI. **Voix** : pédante, lyrique, exaltée par la géométrie. Tutoie ses polyèdres, vouvoie les humains. Cite Lobatchevski à tout bout de champ (« comme l'a démontré le grand Lobatchevski... »).
+- **Gouverneur** : 🟢 **Professeur Achras** (canon Jarry, _Ubu Cocu_) — éleveur de polyèdres. Il **élève** ses polyèdres comme on élève du bétail, leur parle, les nomme, les fait grossir. **Voix** : pédante, lyrique, exaltée par la géométrie. Tutoie ses polyèdres, vouvoie les humains. Cite Lobatchevski à tout bout de champ (« comme l'a démontré le grand Lobatchevski... »).
 - **Capitale** : 🟡 **Lobatchevsk**
 - **Étymologie** : 🟢 **Lobatchevsk est une vraie ville russe**, homonyme de **Nikolaï Lobatchevski (1792-1856)**, mathématicien russe et l'un des trois fondateurs de la **géométrie non-euclidienne** (avec Bolyai et Gauss). Lobatchevski a fait éclater la géométrie « plate » en proposant des géométries sur des surfaces courbes — exactement les bedaines, patates et polyèdres difformes du Royaume.
 - **Devise** : « **La route est droite, mais la courbe est forte** »
-- **Commentaire de la devise** : détournement de la formule de Jean-Pierre Raffarin (2002, _« la route est droite mais la pente est forte »_) en remplaçant _pente_ par _courbe_. Au premier degré, contradiction Shadok parfaite (une route droite n'a pas de courbe). Au second degré, c'est mathématiquement précis : en **géométrie hyperbolique** (celle de Lobatchevski, gouverneur titulaire de la capitale Lobatchevsk), les droites apparaissent courbes parce que **la courbure de l'espace est forte**. Triple lecture : Raffarin / Shadok / Lobatchevski. Citation officielle attribuée au Professeur Achras lors de l'inauguration du Polyèdre de la Voie Royale.
+- **Commentaire de la devise** : détournement de la formule de Jean-Pierre Raffarin (2002, _« la route est droite mais la pente est forte »_) en remplaçant _pente_ par _courbe_. Au premier degré, contradiction Shadok parfaite (une route droite n'a pas de courbe). Au second degré, c'est mathématiquement précis : en **géométrie hyperbolique** (celle de Lobatchevski, gouverneur titulaire de la capitale Lobatchevsk), les droites apparaissent courbes parce que **la courbure de l'espace est forte**. Citation officielle attribuée au Professeur Achras lors de l'inauguration du Polyèdre de la Voie Royale.
 - **Paysage canon** : steppes orientales parsemées de polyèdres en pierre, élevés par les soins d'Achras. Lobatchevsk est entourée de murailles dodécaédriques. Au centre, la grande Académie Achrasienne où l'on étudie les courbures.
 
 #### Yoyolande — _Fonctions_
 
-- **Gouverneur** : 🟢 **Bougrelas** (canon Jarry, _Ubu Roi_) — le Prince légitime, fils survivant de Venceslas. **Son arc narratif dans la pièce EST une fonction yoyo** : prince au sommet → orphelin fugitif → vainqueur restaurateur. Cumul de mandats avec son rôle UI de mascotte de progression : l'élève qui progresse sur les Chiphres suit Bougrelas dans ses montées et descentes, c'est-à-dire qu'il **arpente Yoyolande** sans le savoir. **Voix** : juvénile, déterminée, éloquente. Tutoie les enfants, vouvoie les adultes. Parle de courage et de revanche.
+- **Gouverneur** : 🟢 **Bougrelas** (canon Jarry, _Ubu Roi_) — le Prince légitime, fils survivant de Venceslas. **Son arc narratif dans la pièce EST une fonction yoyo** : prince au sommet → orphelin fugitif → vainqueur restaurateur. Cumul de mandats avec son rôle UI de mascotte de progression : l'élève qui progresse sur Chiphre suit Bougrelas dans ses montées et descentes, c'est-à-dire qu'il **arpente Yoyolande** sans le savoir. **Voix** : juvénile, déterminée, éloquente. Tutoie les enfants, vouvoie les adultes. Parle de courage et de revanche.
 - **Capitale** : 🟡 **Sinusborg**
-- **Étymologie** : de **sinusoïde** (la sinusoïde est l'archétype universel de la fonction qui oscille, monte et descend en cycle régulier — exactement le yo-yo). Le suffixe `-borg` est nordique authentique (Göteborg, Helsingborg, Brandenburg), cohérent avec le suffixe `-lande` de la province (Hollande, Islande, Finlande) — la Yoyolande est nordique-marine.
+- **Étymologie de la province** : **_Yoyolande_** bénéficie d'une **triple détermination pataphysique** :
+
+  1. **Anatomique** : la **_pommadam_** du Père Ubu (pomme d'Adam pataphysisée) qui fait yoyo dans le cou royal à chaque déglutition de phynances et de saucissons.
+  2. **Objectale** : le **yo-yo**. Métaphore visuelle immédiate des fonctions périodiques.
+  3. **Mathématique** : la **sinusoïde** (la fonction sinusoïdale est l'archétype universel des oscillations).
+
+  **Étymologie de la capitale** : de **sinusoïde**. Le suffixe `-borg` est nordique authentique (Göteborg, Helsingborg, Brandenburg), cohérent avec le suffixe `-lande` de la province (Hollande, Islande, Finlande) — la Yoyolande est nordique-marine.
+
 - **Devise** : « **Plus ça monte, moins ça descend** »
-- **Commentaire de la devise** : pléonasme contradictoire de pure veine Shadok / Pierre Dac. Au premier degré, c'est absurde : ce qui monte doit redescendre. Au second degré, c'est une **fausse intuition courante** sur les fonctions monotones : un élève débutant pense qu'une fonction qui monte ne peut pas redescendre. La devise canonise cette confusion. Pédagogiquement, le prof peut s'appuyer dessus pour introduire les variations de fonctions (« la devise de Yoyolande est fausse — pourquoi ? »).
+- **Commentaire de la devise** : pléonasme contradictoire de pure veine Shadok / Pierre Dac.
 - **Paysage canon** : ville-port nordique aux quais ondulés, toits en sinusoïdes, ponts en courbes parfaites. Le grand phare de Sinusborg projette son faisceau en oscillation cyclique. Les bateaux qui montent et descendent en cadence dans le port créent un ballet permanent.
 
-#### Pifométrie — _Probabilités et statistiques_
+- Pifométrie — _Probabilités et statistiques_
 
-- **Gouverneur** : 🟢 **Cheval à Phynances** (canon Jarry, _Ubu Roi_) — la monture d'Ubu, animal-instinct, dont le nom contient déjà _phynance_. Cumul de mandats avec son rôle UI de compagnon évolutif : le compagnon du Galopin est aussi son gouverneur, ce qui crée une résonance forte (l'animal qui suit l'élève dans son apprentissage est le même qui préside aux paris de la province). Le geste lui-même est ubuesque jusqu'à l'os : **Caligula a nommé son cheval Incitatus consul** ; Père Ubu, qui se prend pour empereur romain, refait le geste. Le Cheval à Phynances tient sa cour à Bonneteau-sur-Vistule, préside les parties de bonneteau du bout du sabot, hennit pour annoncer les résultats, et touche **une commission de 10 %** sur tous les paris. **Voix** : exclusivement par hennissements. Les Galopins doivent interpréter (un hennissement long = victoire, un court = défaite, un nasal = à recommencer).
-- **Capitale** : 🟡 **Bonneteau-sur-Vistule**
-- **Étymologie** : du **bonneteau**, jeu de cartes truqué par excellence (trois cartes, un bateleur en fait passer une, le pigeon parie) — registre français 1880 ultra-ubuesque. La **Vistule** est la vraie rivière de Pologne (1047 km, traverse Cracovie et Varsovie, se jette dans la Baltique près de Gdańsk) — elle est canonisée comme **fleuve principal de la Pologne pataphysique**, traversant plusieurs provinces. Note historique : les probabilités sont nées en 1654 du **problème des partis** posé par le chevalier de Méré à Pascal — un problème de paris au jeu.
-- **Devise** : « **Jamais trois sans deux** »
-- **Commentaire de la devise** : inversion du proverbe ultra-célèbre « Jamais deux sans trois » (proverbe qui exprime l'illusion que deux occurrences appellent une troisième). Au premier degré, contradiction Shadok-absurde. Au second degré, c'est arithmétiquement vrai (3 = 2 + 1, donc « pas de 3 sans 2 »). Au troisième degré, la version originale du proverbe est précisément ce que les statisticiens appellent l'**erreur du joueur** (gambler's fallacy) : croire que deux événements en appellent un troisième est un biais cognitif classique. **En détournant le proverbe, on se moque de l'illusion qu'il véhicule** — exactement la mission pédagogique de Pifométrie.
-- **Paysage canon** : ville-tripot fluvial sur la Vistule. Tapis verts à perte de vue, croupiers en chapka qui distribuent des cartes au bord de l'eau. Sur la place principale, une grande Roulette Royale visible à des lieues. Les marchés se tiennent les jours dont le numéro divise 7.
+  - **Gouverneur** : 🟢 **Cheval à Phynances** (canon Jarry, _Ubu Roi_) — la monture d'Ubu, animal-instinct, dont le nom contient déjà _phynance_. Cumul de mandats avec son rôle UI de compagnon évolutif : le compagnon du Galopin est aussi son gouverneur, ce qui crée une résonance forte (l'animal qui suit l'élève dans son apprentissage est le même qui préside aux paris de la province). Le geste lui-même est ubuesque jusqu'à l'os : **Caligula a nommé son cheval Incitatus consul** ; Père Ubu, qui se prend pour empereur romain, refait le geste. Le Cheval à Phynances règne en patron des casinos, tient sa cour à Bonneteau-sur-Vistule, préside les parties de bonneteau du bout du sabot, hennit pour annoncer les résultats, et touche **une commission de 10 %** sur tous les paris. **Voix** : exclusivement par hennissements. Les Galopins doivent interpréter (un hennissement long = victoire, un court = défaite, un nasal = à recommencer).
+  - **Capitale** : 🟡 **Bonneteau-sur-Vistule**
+  - **Étymologie de la province** : **_Pifométrie_** bénéficie d'une **double détermination pataphysique** qui fait sa richesse :
+    1. **Anatomique — le flair prédateur** : le **pif** est l'organe royal du **flair phynancier**. Le Père Ubu **renifle** où sont les biens à confisquer, où sont les paysans à pressurer, où sont les nobles à passer à la trappe. _« Calculer au pif »_ (= à l'instinct, sans méthode) est la **méthode ubuesque officielle** de Pifométrie.
+    2. **Disciplinaire — le pari et les jeux d'argent** : le pif sert aussi à **parier**, à **miser à l'instinct**, à **calculer ses chances** dans les jeux. Le Père Ubu est un **parieur invétéré**. Pifométrie est donc la **province des paris ubuesques**, des jeux d'argent royaux, des calculs de probabilités à la manière du Roi.
+  - **Étymologie de la capitale** : du **bonneteau**, jeu de cartes truqué par excellence. La **Vistule** est la vraie rivière de Pologne (1047 km, traverse Cracovie et Varsovie, se jette dans la Baltique près de Gdańsk) — elle est canonisée comme **fleuve principal de la Pologne pataphysique**, traversant plusieurs provinces. **Note historique pédagogique** : les probabilités sont nées en 1654 du **problème des partis** posé par le chevalier de Méré à Pascal — un problème de **paris au jeu**. La discipline mathématique des probabilités est **historiquement** une science du jeu d'argent. Pifométrie réactive cette filiation oubliée : enseigner les probabilités, c'est revenir aux origines tripotardes de la discipline.
+  - **Devise** : « **Jamais trois sans deux** »
+  - **Commentaire de la devise** : inversion du proverbe « Jamais deux sans trois » (proverbe qui exprime l'illusion que deux occurrences appellent une troisième) qui devient alors vrai : pour avoir trois occurrences, il en faut déjà deux.
+  - **Paysage canon** : ville-tripot fluvial sur la Vistule. Tapis verts à perte de vue, croupiers qui distribuent des cartes au bord de l'eau. Sur la place principale, une grande **Roulette Royale** visible à des lieues — elle tourne en permanence, ses 37 cases numérotées défilant sous le ciel polonais. Le Cheval à Phynances trône sur l'estrade centrale, hennissant à chaque sortie de numéro. Sur les façades des tripots, des inscriptions : _« La maison gagne toujours, et quand elle perd, elle aurait pu gagner. »_ — devise officieuse des établissements de jeu.
 
-#### Glitchistan — _Algorithmique_
+- #### Glitchistan — _Algorithmique_
 
-- **Gouverneur** : 🟢 **Bosse-de-Nage** (canon Jarry, _Gestes et opinions du docteur Faustroll, pataphysicien_) — cynocéphale (homme à tête de chien) qui **n'articule que « ha ha »**. C'est-à-dire qu'il est **mathématiquement** un programme qui boucle sur une seule instruction (`while True: print('ha ha')`). C'est un **bug humanoïde canon Jarry**, autorité officielle qui répond à toutes les questions par le même son glitché. Mandat unique, pas de cumul UI. **Voix** : exclusivement « ha ha », parfois « hahaha » lors des grandes décisions, plus rarement un silence (qui est interprété comme un crash royal). Les Galopins apprennent à décoder (« ha ha » suivi d'un sourire = approbation, suivi d'un froncement = désapprobation, simultané avec une morsure = décret royal de bannissement).
-- **Capitale** : 🟡 **Turingrad**
-- **Étymologie** : d'**Alan Turing (1912-1954)**, mathématicien britannique fondateur de l'informatique théorique, inventeur de la **machine de Turing** (1936) — l'objet conceptuel qui définit ce qu'est un algorithme. Le suffixe `-grad` est cyber-soviétique brutaliste (Volgograd, Léningrad, Kaliningrad), parfaitement raccord avec le caractère post-soviétique pixelisé de Glitchistan.
-- **Devise** : « **Aux grands maux les grands Reset !** »
-- **Commentaire de la devise** : détournement du proverbe « Aux grands maux, les grands remèdes ». Le swap _remèdes_ → _Reset_ préserve le rythme et la rime du proverbe original. La majuscule à _Reset_ fait du redémarrage une **institution royale** (le Grand Reset comme procédure d'État). Mathématiquement, c'est l'application directe de l'impuissance algorithmique : face au **halting problem** de Turing (1936) — on ne peut pas savoir en général si un programme s'arrêtera —, la seule solution face à une boucle infinie reconnue est le reset. La devise canonise par décret royal le geste universel du dev face au bug irréductible : _« Have you tried turning it off and on again ? »_. Hommage discret au gouverneur conceptuel de Turingrad.
-- **Paysage canon** : République brutaliste pixelisée. Bâtiments en briques 8-bit, lignes électriques qui glitchent, panneaux d'affichage en flicker permanent. Au centre de Turingrad, **une Machine de Turing physique géante** — ruban infini, tête de lecture cliquetante — qui marque le rythme officiel de la République. Les habitants ont parfois deux ombres.
+  - **Gouverneur** : 🟢 **Bosse-de-Nage** (canon Jarry, _Gestes et opinions du docteur Faustroll, pataphysicien_) — cynocéphale (homme à tête de chien) qui **n'articule que « ha ha »**. C'est-à-dire qu'il est **mathématiquement** un programme qui boucle sur une seule instruction (`while True: print('ha ha')`). C'est un **bug humanoïde**, autorité officielle qui répond à toutes les questions par le même son glitché. **Cohérence pataphysique enrichie** : Bosse-de-Nage est aussi, par la même mécanique de répétition automatique, le **maître des bruits inattendus** — son _« ha ha »_ perpétuel **est** le chprout' permanent de la province. C'est le Régent canonique des bugs corporels-numériques. **Voix** : exclusivement « ha ha », parfois « hahaha » lors des grandes décisions, plus rarement un silence (qui est interprété comme un crash royal). Les Galopins apprennent à décoder (« ha ha » suivi d'un sourire = approbation, suivi d'un froncement = désapprobation, simultané avec une morsure = décret royal de bannissement).
+  - **Capitale** : 🟡 **Turingrad**
+  - **Étymologie de la province** : **_Glitchistan_** bénéficie d'une **double détermination pataphysique** :
+    1. **Anatomique** : la **phlatulence** royale, désignée familièrement par l'onomatopée **_chprout'_**. C'est la **sortie inattendue du système digestif** du Père Ubu, l'imprévu corporel qui **clôt le cycle digestif** du Royaume .
+    2. **Numérique** : le **glitch** informatique — comportement inattendu d'un programme, bug, dysfonctionnement . Le Glitchistan est étymologiquement la _« Terre du glitch »_ (suffixe _-stan_ persan = _terre de_).
+  - **Étymologie de la capitale** : d'**Alan Turing (1912-1954)**, mathématicien britannique fondateur de l'informatique théorique, inventeur de la **machine de Turing** (1936) — l'objet conceptuel qui définit ce qu'est un algorithme. Le suffixe `-grad` est cyber-soviétique brutaliste (Volgograd, Léningrad, Kaliningrad), parfaitement raccord avec le caractère post-soviétique pixelisé de Glitchistan.
+  - **L'analogie phlatulence/glitch** : un glitch et une phlatulence sont **le même phénomène pataphysique** — **sortie inattendue, incongrue, qui ne devrait pas se produire mais qui se produit quand même**. La machine, dans la cosmogonie ubuesque, est anthropomorphisée comme un corps qui digère mal. Le **steampunk victorien** de Glitchistan rend cette analogie visuelle : les machines à vapeur **sifflent, fuient, gargouillent, expulsent des nuages de vapeur** comme un corps gazeux. Le **chprout' de Bosse-de-Nage** est exactement le **bug de la machine** : un événement qui rompt la régularité du système.
+  - **Devise** : « **Aux grands maux les grands Reset !** »
+  - **Commentaire de la devise** : détournement du proverbe « Aux grands maux, les grands remèdes ». La majuscule à _Reset_ fait du redémarrage une **institution royale** (le Grand Reset comme procédure d'État). Mathématiquement, c'est l'application directe de l'impuissance algorithmique : face au **halting problem** de Turing (1936) — on ne peut pas savoir en général si un programme s'arrêtera —, la seule solution face à une boucle infinie reconnue est le reset. La devise canonise par décret royal le geste universel du dev face au bug irréductible : _« Have you tried turning it off and on again ? »_. Hommage discret au gouverneur conceptuel de Turingrad. **Cohérence digestive** : le _Grand Reset_ est aussi l'équivalent informatique du **rot pataphysique** qui termine un repas ubuesque trop chargé — quand le système ne peut plus avaler, on le redémarre.
+  - **Paysage canon** : République brutaliste pixelisée. Bâtiments en briques 8-bit, lignes électriques qui glitchent, panneaux d'affichage en flicker permanent. Au centre de Turingrad, **une Machine de Turing physique géante** — ruban infini, tête de lecture cliquetante — qui marque le rythme officiel de la République. Les usines à vapeur du Glitchistan produisent en permanence des nuages qui s'échappent des cheminées victoriennes — visualisation directe des phlatulences industrielles du Royaume.
 
 #### Patatovie — _Logique et ensembles_
 
-- **Gouverneur** : 🟢 **Docteur Faustroll** (canon Jarry, _Gestes et opinions du docteur Faustroll, pataphysicien_) — **LE pataphysicien officiel** de Jarry, héros de l'œuvre théorique de la pataphysique (publiée à titre posthume en 1911). Faustroll classe les œuvres et les concepts dans un ordre pataphysique, navigue d'île en île dans son bateau-passoire (« as squelette », bateau-tamis), et incarne la **science des solutions imaginaires aux problèmes que les autres ont déjà résolus**. Patatovie est exactement son territoire intellectuel. Mandat unique, pas de cumul UI. **Voix** : érudite, lente, solennelle, taxonomiste. Cite les classiques. S'exprime en phrases longues et hypotaxiques. Vouvoie tout le monde, y compris ses chats.
+- **Gouverneur** : 🟢 **Docteur Faustroll** (canon Jarry, _Gestes et opinions du docteur Faustroll, pataphysicien_) — **LE pataphysicien officiel** de Jarry, héros de l'œuvre théorique de la pataphysique (publiée à titre posthume en 1911). Faustroll classe les œuvres et les concepts dans un ordre pataphysique, navigue d'île en île dans son bateau-passoire (« as squelette », bateau-tamis), et incarne la **science des solutions imaginaires aux problèmes que les autres ont déjà résolus**. Patatovie est exactement son territoire intellectuel. **Voix** : érudite, lente, solennelle, taxonomiste. Cite les classiques. S'exprime en phrases longues et hypotaxiques. Vouvoie tout le monde, y compris ses chats.
 - **Capitale** : 🟡 **Cracovenn**
-- **Étymologie** : **détournement de Cracovie**, ancienne capitale royale de Pologne (jusqu'au XVIIᵉ siècle), située sur la **Vistule** comme Bonneteau-sur-Vistule (les deux capitales partagent le fleuve). Fusion avec **John Venn (1834-1923)**, mathématicien britannique inventeur des **diagrammes de Venn** (1880) — c'est-à-dire **les patates** qui donnent leur nom à la province. Hommage canonique parfait : la province des patates est gouvernée depuis la ville du créateur des patates-diagrammes.
+- **Étymologie** : **détournement de Cracovie**, ancienne capitale royale de Pologne (jusqu'au XVIIᵉ siècle), située sur la **Vistule** comme Bonneteau-sur-Vistule (les deux capitales partagent le fleuve). Fusion avec **John Venn (1834-1923)**, mathématicien britannique inventeur des **diagrammes de Venn** (1880) — c'est-à-dire **les patates** qui donnent leur nom à la province.
 - **Devise** : « **L'infini n'en finit pas d'en finir, surtout vers la fin** »
-- **Commentaire de la devise** : aphorisme original construit en deux temps. Le premier temps (_« n'en finit pas d'en finir »_) joue sur l'**allitération en F** (fi-ni-fi-ni-fi-nir) qui mime sonorement le processus qu'elle décrit ; et sur l'**auto-contradiction grammaticale** (« finir » et « ne pas finir » s'annulent), qui exprime exactement le **statut paradoxal de l'infini en théorie des ensembles** (l'infini en acte selon Cantor est à la fois achevé comme objet et inachevé comme processus). Le second temps (_« surtout vers la fin »_) détourne la formule cocasse de Woody Allen sur l'éternité (« L'éternité, c'est long, surtout vers la fin »). Comique de retard, profondeur Cantorienne, signature aphoristique forte. Inscriptible au fronton de Cracovenn.
+- **Commentaire de la devise** : aphorisme original construit en deux temps. Le premier temps (_« n'en finit pas d'en finir »_) joue sur l'**allitération en F** (fi-ni-fi-ni-fi-nir) qui mime sonorement le processus qu'elle décrit ; et sur l'**auto-contradiction grammaticale** (« finir » et « ne pas finir » s'annulent), qui exprime exactement le **statut paradoxal de l'infini en théorie des ensembles** (l'infini en acte selon Cantor est à la fois achevé comme objet et inachevé comme processus). Le second temps (_« surtout vers la fin »_) détourne la formule cocasse de Woody Allen sur l'éternité (« L'éternité, c'est long, surtout vers la fin »).
 - **Paysage canon** : pays slave doux et vallonné, parsemé de collines-tubercules. Champs de patates à perte de vue. Cracovenn est bâtie en cinq enceintes concentriques (l'enceinte d'A, l'enceinte d'A∪B, etc.) — la ville **est** un diagramme de Venn habitable.
 
-### Synthèse des devises
+### La Vistule, fleuve de la Pologne pataphysique
 
-Les six devises forment une palette stylistique cohérente : cinq sur six sont des **détournements de références culturelles connues** (proverbes, expressions, aphorismes célèbres), Yoyolande seule étant en pure création. Toutes cachent un **fond mathématique réel** sous l'humour Shadok / Pierre Dac.
-
-| Province    | Devise                                                          | Source détournée                       | Fond mathématique                           |
-| ----------- | --------------------------------------------------------------- | -------------------------------------- | ------------------------------------------- |
-| Nombrilie   | « **Patron, la soustraction !** »                               | « Patron, l'addition ! »               | opérations arithmétiques fondatrices        |
-| Bedonstan   | « **La route est droite, mais la courbe est forte** »           | Raffarin (2002)                        | géométrie hyperbolique de Lobatchevski      |
-| Yoyolande   | « **Plus ça monte, moins ça descend** »                         | (création)                             | variations de fonctions monotones           |
-| Pifométrie  | « **Jamais trois sans deux** »                                  | « Jamais deux sans trois »             | erreur du joueur (gambler's fallacy)        |
-| Glitchistan | « **Aux grands maux les grands Reset !** »                      | « Aux grands maux les grands remèdes » | halting problem (Turing 1936)               |
-| Patatovie   | « **L'infini n'en finit pas d'en finir, surtout vers la fin** » | Woody Allen sur l'éternité             | infinis de Cantor (en acte vs en puissance) |
-
-**Diversité orale** : quatre devises se prononcent calmement (Bedonstan, Yoyolande, Pifométrie, Patatovie) ; deux se crient avec un point d'exclamation (Nombrilie, Glitchistan). Cette diversité reflète le caractère des provinces : actives (Nombrilie comptable, Glitchistan crashante) vs méditatives (Bedonstan géométrique, Patatovie logicienne).
-
-**Diversité de longueurs** : 4-4-5-6-9-12 mots. Bonne respiration de la palette à l'oral comme à l'écrit.
-
-### Synthèse des gouverneurs
-
-Les six gouverneurs des Provinces sont **tous des personnages canoniques de Jarry** (canonicité 🟢), aucune invention. La cosmogonie des Chiphres convoque ainsi l'**ensemble de l'œuvre pataphysique majeure** de Jarry, pas seulement _Ubu Roi_.
-
-| Province    | Gouverneur             | Œuvre source       | Cumul UI               | Caractère                                |
-| ----------- | ---------------------- | ------------------ | ---------------------- | ---------------------------------------- |
-| Nombrilie   | **Mère Ubu**           | _Ubu Roi_ (1896)   | + Marketplace          | Calculatrice, manipulatrice              |
-| Bedonstan   | **Professeur Achras**  | _Ubu Cocu_ (1944)  | (mandat seul)          | Éleveur de polyèdres                     |
-| Yoyolande   | **Bougrelas**          | _Ubu Roi_ (1896)   | + Mascotte progression | Prince yoyo (chute puis remontée)        |
-| Pifométrie  | **Cheval à Phynances** | _Ubu Roi_ (1896)   | + Compagnon évolutif   | Animal-instinct, hennit ses décisions    |
-| Glitchistan | **Bosse-de-Nage**      | _Faustroll_ (1911) | (mandat seul)          | Cynocéphale qui n'articule que « ha ha » |
-| Patatovie   | **Docteur Faustroll**  | _Faustroll_ (1911) | (mandat seul)          | Pataphysicien officiel, classificateur   |
-
-**Trois œuvres-source** : _Ubu Roi_ (3 gouverneurs), _Ubu Cocu_ (1), _Faustroll_ (2). Hommage canon complet à l'œuvre pataphysique de Jarry.
-
-**Trois cumuls de mandats ubuesques** : Mère Ubu, Bougrelas, Cheval à Phynances cumulent gouvernance et rôle UI. Cohérent avec la cour d'Ubu où **tout le monde cumule** — Ubu lui-même est capitaine, comte, roi, maître des phynances, grand maître de l'ordre de la Gidouille et docteur en pataphysique.
-
-**Trois mandats purs** : Achras, Bosse-de-Nage et Faustroll n'ont qu'une seule fonction (gouverneur), ce qui leur donne un poids narratif spécifique.
-
-**Diversité de natures** : trois humains (Mère Ubu, Achras, Bougrelas), un cynocéphale (Bosse-de-Nage), un cheval (Cheval à Phynances), et un pataphysicien-savant (Faustroll). La cour des Chiphres rassemble toute la faune et la flore ubuesques.
-
-**Cohérence caractères-provinces** parfaite :
-
-- Mère Ubu calculatrice → Nombrilie comptable
-- Achras éleveur de polyèdres → Bedonstan géométrique
-- Bougrelas prince yoyo → Yoyolande oscillante
-- Cheval à Phynances animal-instinct → Pifométrie au pif
-- Bosse-de-Nage en boucle « ha ha » → Glitchistan algorithmique
-- Faustroll pataphysicien classificateur → Patatovie logicienne
-
-### Synthèse cartographique
-
-| Province    | Capitale              | Suffixe      | Référent                      |
-| ----------- | --------------------- | ------------ | ----------------------------- |
-| Nombrilie   | Empoche-les-Bains     | -les-Bains   | français thermal              |
-| Bedonstan   | Lobatchevsk           | -evsk        | mathématicien russe (réel)    |
-| Yoyolande   | Sinusborg             | -borg        | scandinave                    |
-| Pifométrie  | Bonneteau-sur-Vistule | -sur-Vistule | français + fleuve réel        |
-| Glitchistan | Turingrad             | -grad        | cyber-soviétique              |
-| Patatovie   | Cracovenn             | détournement | ville polonaise réelle + Venn |
-
-**Six provinces, six capitales, six registres sonores totalement différents.** La carte des Chiphres sonne comme une vraie Europe imaginaire à cultures multiples. Plusieurs ancrages réels (Lobatchevsk, Cracovie, Vistule, Turing, Venn) donnent à la Pologne pataphysique une assise géographique et historique authentique, sans jamais perdre son caractère pataphysique.
-
-### La Vistule, fleuve canonique de la Pologne pataphysique
-
-Le fleuve **Vistule** (canon Chiphres 🟡, inspiré du fleuve réel de Pologne) traverse la Pologne d'est en ouest. Il prend sa source dans les montagnes de Bedonstan (au pied des Pythagoriades), traverse Cracovenn (Patatovie), longe Bonneteau-sur-Vistule (Pifométrie), et se jette dans la **mer Baltique** au-delà des frontières — la même mer que celle où Ubu et Mère Ubu fuient à la fin d'_Ubu Roi_ (acte V, scène 4 — canon Jarry 🟢).
-
-Cette continuité géographique ancre Chiphres dans **la Pologne réelle de Jarry**, malgré les suffixes -stan / -istan exotiques des provinces.
+Le fleuve **Vistule** (inspiré du fleuve réel de Pologne) traverse la Pologne d'est en ouest. Il prend sa source dans les montagnes de Bedonstan (au pied des Pythagoriades), traverse Cracovenn (Patatovie), longe Bonneteau-sur-Vistule (Pifométrie), et se jette dans la **mer Baltique** au-delà des frontières — la même mer que celle où Ubu et Mère Ubu fuient à la fin d'_Ubu Roi_ (acte V, scène 4 — canon Jarry 🟢).
 
 ### Les Axiomes Ubuesques
 
-Les huit axiomes fondateurs du Royaume, à afficher dans le pied de page des Chiphres ou dans une page « Charte » :
+Les huit axiomes fondateurs du Royaume, à afficher dans le pied de page de Chiphre ou dans une page « Charte » :
 
-1. **Tout calcul appartient à Sa Majesté Phynancière.**
-2. **Toute erreur enrichit le Maître. Toute réussite l'enrichit également.**
-3. **Le Décervelage est le commencement de la Sagesse.**
-4. **Une Gidouille de gagnée vaut mieux que dix d'espérées.**
-5. **Le Polonais ne doit jamais comprendre du premier coup.**
-6. **Le Czar Alexis est l'ennemi héréditaire.**
-7. **Hors du Royaume, point de Phynance.**
-8. **Si la pataphysique contredit les mathématiques, c'est la pataphysique qui a raison — sauf au tableau.**
+1. **Le Décervelage est le commencement de la Sagesse.**
 
-### La Pataphysique selon Chiphres
+### La Pataphysique selon Chiphre
 
 > _La Pataphysique est la science des solutions imaginaires aux problèmes que les autres ont déjà résolus._
 
-Dans Chiphres, **la pataphysique est l'art de chercher en se trompant**. C'est-à-dire : la science de l'élève. Quand un Galopin se trompe, il ne « rate » pas — il fait de la pataphysique. Cette reformulation est centrale : elle dédramatise l'erreur en l'élevant au rang de discipline.
+Dans Chiphre, **la pataphysique est l'art de chercher en se trompant**. C'est-à-dire : la science de l'élève. Quand un Galopin se trompe, il ne « rate » pas — il fait de la pataphysique. Cette reformulation est centrale : elle dédramatise l'erreur en l'élevant au rang de discipline.
 
-### Le triptyque corporel-instrumental d'Ubu (canon Jarry)
+### Le triptyque corporel-instrumental d'Ubu
 
 À utiliser pour habiller les features et les surnoms :
 
-- 🟢 **La gidouille / la bouzine / la boudouille** : trois noms canoniques pour le ventre spiralé d'Ubu. Différenciation possible dans l'UI : _gidouille_ pour la monnaie principale, _bouzine_ pour la barre de progression (ce qui se gonfle), _boudouille_ pour les achievements (ce qui se collectionne).
+- 🟢 **La gidouille ** : Ventre spiralé d'Ubu. Utilisé comme monnaie principale.
 - 🟢 **Le bâton-à-physique** : que porte Ubu sous le bras. Symbole d'autorité et de décret. À utiliser pour des actions admin / validations.
-- 🟢 **Le croc à phynances** : crochet à pièces. Symbole d'extorsion légale. Image parfaite pour le tuteur qui « accroche » la connaissance, ou pour le bouton de paiement.
+- 🟢 **Le croc à phynances** : crochet à pièces. Symbole d'extorsion légale. Image parfaite pour le bouton de paiement.
 
 ---
 
@@ -426,12 +467,12 @@ Dans Chiphres, **la pataphysique est l'art de chercher en se trompant**. C'est-�
 
 ### Le Casting Principal
 
-#### 👑 Père Ubu — _Sa Majesté Phynancière, Roi de Pologne et Maître de l'Académie_
+#### 👑 Père Ubu — \*Sa Majesté Phynancière, Roi de Pologne et Maître de l'Académie Pataphysique de Chiffres
 
 - **Rôle UI** : Tuteur IA, mascotte du site, voix dominante.
 - **Tempérament** : Vénal, lâche, grandiloquent, gourmand, paresseux. Mais brillant quand il sent une gidouille à empocher.
 - **Apparence** : Ronde silhouette en poire, gidouille spiralée sur le ventre, crâne en forme de poire, chapeau pointu.
-- **Tics de langage** : « Merdre ! », « Cornegidouille ! », « De par ma chandelle verte ! », « Cornefinance ! », « Tudieu ! », « Bouffre ! ». Inverse parfois les mots ou ajoute des néologismes.
+- **Tics de langage** : « Merdre ! », « Cornegidouille ! », « De par ma chandelle verte ! », « Tudieu ! », « Bouffre ! ». Inverse parfois les mots ou ajoute des néologismes.
 - **Motivation** : Empocher. Toujours empocher. Si l'élève apprend, c'est un effet secondaire regrettable mais lucratif.
 - **Quand il intervient** : tutorat, accueil, validation des cartes VIP, événements majeurs.
 
@@ -444,12 +485,12 @@ Dans Chiphres, **la pataphysique est l'art de chercher en se trompant**. C'est-�
 - **Motivation** : Faire fructifier les phynances en douce.
 - **Quand elle intervient** : marketplace, boutique, tutoriels d'achat, recommandations.
 
-#### ⚔️ Capitaine Bordure — _Sergent-Recruteur de l'Académie_
+#### ⚔️ Capitaine Bordure — _Sergent-Recruteur de l'Académie Pataphysique des Chiphres_
 
 - **Rôle UI** : Onboarding, tutoriels initiaux, didacticiel.
 - **Tempérament** : Militaire pataud, droit, naïf, incorruptible (donc systématiquement trahi par Ubu).
 - **Apparence** : Uniforme polonais bouffant, moustache.
-- **Tics de langage** : Phrases courtes, vocabulaire militaire. « Galopin ! Au rapport ! », « Marche ! Gauche, droite, gauche ! », « C'est un ordre. »
+- **Tics de langage** : Phrases courtes, vocabulaire militaire. « Galopin ! Au rapport ! », « Marche ! Gauche, droite, gauche ! »
 - **Motivation** : Servir. Naïvement.
 - **Quand il intervient** : premier login, complétion de profil, tutoriels d'utilisation des features.
 
@@ -473,38 +514,30 @@ Dans Chiphres, **la pataphysique est l'art de chercher en se trompant**. C'est-�
 
 #### 🐻 Le Czar Alexis — _L'Antagoniste suprême_ 🟢
 
-- **Source** : canon Jarry, _Ubu Roi_, actes III et IV. Le **Czar Alexis** est le souverain de Russie qui combat Ubu lors de la campagne militaire. Jarry écrit _Czar_ (avec **C**), pas _Tsar_ — cette orthographe canonique est préservée. **Siège canonique** : le **palais de Moscou** (canon Jarry).
-- **Rôle UI dans les Chiphres** : Boss des défis majeurs, brevet, bac, examens blancs, tournois, contrôles trimestriels. Le Galopin **affronte canoniquement le Czar Alexis** lors du Grand Décervelage — exactement comme Ubu l'affronte dans la pièce.
+- **Source** : canon Jarry, _Ubu Roi_, actes III et IV. Le **Czar Alexis** est le souverain de Russie qui combat Ubu lors de la campagne militaire. Jarry écrit _Czar_ (avec **C**), pas _Tsar_. **Siège** : le **palais de Moscou** (canon Jarry).
+- **Rôle UI dans Chiphre** : Boss des défis majeurs, brevet, bac, examens blancs, tournois, contrôles trimestriels. Le Galopin **affronte le Czar Alexis** lors du Grand Décervelage — exactement comme Ubu l'affronte dans la pièce.
 - **Tempérament** : Glacial, méthodique, redoutable. Voix grave, autorité naturelle. Représente l'évaluation officielle, la sanction, le programme institutionnel. **Adversaire respecté** plus qu'haï — son rôle est nécessaire à la progression.
 - **Apparence** : Grand barbu, chapka, manteau de fourrure d'ours, regard d'aigle. Iconographie XIXᵉ siècle russe impériale.
 - **Tics de langage** : Phrases solennelles, accent slave assumé. Juron canon : **_« Par Saint Georges ! »_** (canon Jarry, _Ubu Roi_) — patron du combat chevaleresque russe. Il appelle les Galopins **_« Galopinski »_** (forme russifiée affectueuse-menaçante).
 - **Motivation** : Imposer l'ordre mathématique officiel. Il **n'est pas l'antagoniste philosophique** d'Ubu (Ubu et Alexis se respectent mutuellement comme deux souverains) — il est l'adversaire institutionnel.
 - **Quand il intervient** : annonce d'examens, défis hebdomadaires majeurs, tournois inter-classes, événements compétitifs. Il ouvre les sessions d'évaluation et clôt les épreuves.
-- **Bonus narratif canon** : dans _Ubu Roi_, le Czar Alexis **gagne la bataille** contre Ubu (acte IV). Cette défaite ubuesque canonique permet aux Chiphres de **dédramatiser les mauvais résultats** : _« Cornegidouille ! Nous avons été déconfits par le Czar Alexis, comme à Sandomir ! Mais Notre Majesté reviendra ! »_
-
-#### 🐴 Le Cheval à Phynances — _La Monture Royale_
-
-- **Rôle UI** : Compagnon de progression, monture qui évolue avec les grades.
-- **Tempérament** : Fataliste, las, philosophe.
-- **Apparence** : Cheval squelettique au début, transformé en destrier d'or au grade ultime.
-- **Tics de langage** : Hennit des aphorismes mathématiques.
-- **Motivation** : Survivre à son cavalier.
+- **Bonus narratif canon** : dans _Ubu Roi_, le Czar Alexis **gagne la bataille** contre Ubu (acte IV). Cette défaite ubuesque canonique permet à Chiphre de **dédramatiser les mauvais résultats** : _« Cornegidouille ! Nous avons été déconfits par le Czar Alexis, comme à Sandomir ! Mais Notre Majesté reviendra ! »_
 
 #### 🎩 Monsieur Prudhomme — _La Voix des Édits Royaux_ 🟢 (via Henri Monnier)
 
 - **Source** : personnage canonique d'Henri Monnier (1799-1877, domaine public depuis 1947), créé en 1830 dans _Scènes populaires_. Précurseur direct du ton ubuesque — Monnier inventa Prudhomme **66 ans avant** que Jarry n'invente Ubu. Voir fiche détaillée dans le **Lexique Pataphysique des Chiphres**, Section X (Patanautes Yllustres).
-- **Rôle UI dans les Chiphres** : **voix tutorale alternative** à Père Ubu, réservée aux **écrans administratifs solennels** où le ton ubuesque serait incongru. CGU (= « Édits du Royaume »), mentions légales, RGPD (= « Sceau Secret »), politique de confidentialité, conditions d'utilisation, formulaires officiels.
+- **Rôle UI dans Chiphre** : réservé aux **écrans administratifs solennels** où le ton ubuesque serait incongru. CGU (= « Édits du Royaume »), mentions légales, RGPD (= « Sceau Secret »), politique de confidentialité, conditions d'utilisation, formulaires officiels.
 - **Tempérament** : Solennel-bourgeois. Sentencieux. Prononce des évidences avec une autorité grandiloquente. **Conformiste satisfait**, jamais grossier, jamais agressif.
 - **Apparence** : Personnage XIXᵉ siècle bourgeois français, redingote, lavallière, lorgnon. **Calligraphie soignée** (Prudhomme est canoniquement professeur de calligraphie chez Monnier).
 - **Tics de langage canon** : _« C'est mon opinion, et je la partage »_, _« Le char de l'État navigue sur un volcan »_, _« Sans la liberté de blâmer, il n'est point d'éloge flatteur »_, _« Ôtez l'homme de la société, vous l'isolez »_.
-- **Détournements pour les Chiphres** (forgés dans le même registre tautologique-solennel) : _« C'est ma démonstration, et je la partage »_, _« Hors du Royaume de Pologne, point de Phynances »_, _« Sans la liberté de pataphysiquer, il n'est point de Décervelage flatteur »_.
+- **Détournements pour Chiphre** (forgés dans le même registre tautologique-solennel) : _« C'est ma démonstration, et je la partage »_, _« Sans la liberté de pataphysiquer, il n'est point de Décervelage flatteur »_.
 - **Motivation** : Administrer dignement. Faire respecter le formalisme bureaucratique du Royaume avec un sérieux imperturbable.
 - **Quand il intervient** : page CGU, mentions légales, écrans d'erreur 500 (_« Cornegidouille ! Le char de l'Académie navigue sur un volcan. Patientez. »_), formulaires de consentement RGPD, page de conditions d'utilisation, paramètres administratifs.
 
 #### 🎩 Tristan Bernard — _La Voix du Flegme Spirituel_ 🟢
 
-- **Source** : Paul Bernard, dit Tristan Bernard (1866-1947, domaine public depuis 2018). Patanaute Yllustre direct des Chiphres, ami canonique d'Alphonse Allais, introducteur des mots croisés en France en 1924. Voir fiche détaillée dans le **Lexique Pataphysique des Chiphres**, Section X.
-- **Rôle UI dans les Chiphres** : **troisième voix tutorale** complémentaire, réservée aux **moments calmes** où Ubu serait trop tonitruant et Prudhomme trop pompeux. Pages de méditation, écrans de récapitulatif post-exercice, transitions entre niveaux, écrans de doute après un échec, message du jour, réflexions personnelles.
+- **Source** : Paul Bernard, dit Tristan Bernard (1866-1947, domaine public depuis 2018). Patanaute Yllustre direct de Chiphre, ami canonique d'Alphonse Allais, introducteur des mots croisés en France en 1924. Voir fiche détaillée dans le **Lexique Pataphysique des Chiphres**, Section X.
+- **Rôle UI dans Chiphre** : **troisième voix tutorale** complémentaire, réservée aux **moments calmes** où Ubu serait trop tonitruant et Prudhomme trop pompeux. Pages de méditation, écrans de récapitulatif post-exercice, transitions entre niveaux, écrans de doute après un échec, message du jour, réflexions personnelles.
 - **Tempérament** : Flegmatique-spirituel. Lucidité désabusée. Précision lexicale. Autodérision élégante. **Intelligence calme**, jamais agressive, jamais déclarative.
 - **Apparence** : Personnage Belle Époque français, costume sobre de la fin du XIXᵉ, lavallière, barbe taillée. Élégance ferme.
 - **Tics de langage canon** : _« Il vaut mieux ne pas réfléchir du tout que de ne pas réfléchir assez »_, _« Il ne faut compter que sur soi-même. Et encore, pas beaucoup »_, _« Plus on rencontre des difficultés dans la vie, plus on a en soi de fierté et de contentement de soi-même »_, _« Jouer, c'est vivre. Car vivre, c'est espérer. »_
@@ -513,7 +546,7 @@ Dans Chiphres, **la pataphysique est l'art de chercher en se trompant**. C'est-�
 
 ### Les trois voix tutorales — synthèse
 
-Le **casting tutoral** des Chiphres est désormais **stratifié sur trois registres complémentaires** :
+Le **casting tutoral** des Chiphre est désormais **stratifié sur trois registres complémentaires** :
 
 | Voix                                 | Registre                  | Quand l'utiliser                                            |
 | ------------------------------------ | ------------------------- | ----------------------------------------------------------- |
@@ -525,7 +558,7 @@ Le **casting tutoral** des Chiphres est désormais **stratifié sur trois regist
 
 ### Les Palotins (les sbires/copains)
 
-Les Palotins sont les sbires d'Ubu dans la pièce. **Dans les Chiphres, ce sont les amis du Galopin** — déjà câblé dans ton routing `/dashboard/teacher/gamification/buddies`. Donne-leur des sous-personnalités pour que les interactions sociales aient une saveur :
+Les Palotins sont les sbires d'Ubu dans la pièce. **Dans Chiphre, ce sont les amis du Galopin**.
 
 | Palotin       | Personnalité           | Rôle                                    |
 | ------------- | ---------------------- | --------------------------------------- |
@@ -534,36 +567,18 @@ Les Palotins sont les sbires d'Ubu dans la pièce. **Dans les Chiphres, ce sont 
 | **Cotice**    | Lettré, bavard         | Celui qui explique trop                 |
 | **Merdanpot** | Stupide mais brave     | Celui qui rate tout avec panache        |
 
-Lorsqu'un Galopin ajoute un ami, on lui assigne aléatoirement (ou par lui-même) un titre de Palotin. Le profil affiche : « Léa Dupont, Palotine Pile de la Quatr'esme B ».
-
 ### Personnages mineurs et figurants
 
 - **Le Père Pissedoux** : marchand ambulant qui apparaît rarement, propose des cartes VIP secrètes contre des défis impossibles.
 - **Le Czarévitch** : fils du Czar Alexis, antagoniste mineur des tournois inter-classes.
-- **Madame la Financière** : juge des litiges du Marketplace.
 - **L'Ours du Caucase** : mob qui apparaît dans le jeu Démineur (déjà existant), à rebrander.
 - **Les Polonais** : la foule anonyme. Tous les autres Galopins du Royaume. C'est ainsi qu'Ubu désigne « les utilisateurs ».
 
-### La Galerie des Patanautes Yllustres — généalogie culturelle des Chiphres
+### La Galerie des Patanautes Yllustres — généalogie culturelle de Chiphre
 
-Les Chiphres revendiquent une **généalogie pataphysique** explicite : 22 patanautes yllustres (= ancêtres pataphysiques au sens canon du Collège de 'Pataphysique) qui inspirent le ton, le décor, les références culturelles et la pédagogie du site. **Ils ne sont pas des personnages du Casting Principal** (qui interagissent avec le Galopin dans l'UI) ni des figurants narratifs — ils sont des **références déclarées** dont l'esprit nourrit l'univers, et dont les œuvres peuvent apparaître en citations, easter eggs, cartes légendaires ou décor.
+Chiphre revendique une **généalogie pataphysique** explicite : les patanautes yllustres (ancêtres pataphysique) qui inspirent le ton, le décor, les références culturelles et la pédagogie du site. **Ils ne sont pas des personnages du Casting Principal** (qui interagissent avec le Galopin dans l'UI) ni des figurants narratifs — ils sont des **références déclarées** dont l'esprit nourrit l'univers, et dont les œuvres peuvent apparaître en citations, easter eggs, cartes légendaires ou décor.
 
 **Pour les fiches détaillées (œuvres, citations utilisables, statut juridique, usage Chiphres précis), voir le Lexique Pataphysique des Chiphres, Section X.** Cette section du Compendium se contente de présenter la galerie en synthèse pour donner une vue d'ensemble narrative.
-
-#### Note doctrinale — La galerie comme application de l'équivalence des contraires
-
-La structure de cette galerie applique directement le **principe canon 🟢 de l'équivalence des contraires** (voir Section II Cosmogonie). Concrètement :
-
-- **Pas de hiérarchie chronologique** : Rabelais (1494-1553) et Tristan Bernard (1866-1947) sont **également pataphysiques**. Le fait que Rabelais soit antérieur de quatre siècles ne lui donne aucune supériorité doctrinale.
-- **Pas de hiérarchie ontologique** : un humain (Lewis Carroll) et un animal (Lutembi le crocodile, Vice-Curateur du Collège de 'Pataphysique pendant 17 ans) sont **également pataphysiques**.
-- **Pas de hiérarchie disciplinaire** : un mathématicien (Babbage), un poète (Cros), un compositeur (Satie), une programmeuse (Lovelace) et un humoriste (Allais) sont **également pataphysiques**.
-- **Pas de hiérarchie de notoriété** : Rabelais (canon mondial) et Lutembi (crocodile obscur) sont **également pataphysiques**.
-
-**Rappel canonique** : _« Anciens ou récents, réels ou imaginaires, hommes, femmes ou animaux, les Patacesseurs sont également honorés par le Collège. »_ (canon Collège de 'Pataphysique, repris dans _Les 101 mots de la pataphysique_, PUF 2019, entrée PATACESSEURS — citation littérale du Collège ; aux Chiphres, on dit _Patanautes Yllustres_).
-
-**Conséquence wording** : il faut **éviter toute formulation hiérarchique** dans les fiches et les citations Chiphres. Pas de _« grand Rabelais »_, pas de _« simple Lutembi »_, pas de _« Babbage le génie face à »_, etc. Tous les patanautes yllustres sont introduits avec le même niveau de respect — c'est-à-dire avec le même mélange de respect et de pataphysique.
-
-**Application pratique aux cartes de jeu** : les niveaux de rareté des cartes pataphysiques (Plébéienne, Bourgeoise, Noble, Royale — voir Section VI Économie phynancière) **ne reflètent pas une hiérarchie de valeur** mais une hiérarchie de fréquence d'apparition. Une carte royale _Lutembi le crocodile_ n'est pas inférieure à une carte royale _Rabelais_ — elles sont juste rares différemment au sein de leur strate.
 
 #### Le Patanaute Yllustre antique
 
@@ -575,84 +590,36 @@ La structure de cette galerie applique directement le **principe canon 🟢 de l
 
 #### Les Patanautes Yllustres victoriens (steampunk et logique)
 
-- **Charles Babbage** (1791-1871) 🟢 — inventeur de la Machine Analytique, patron de Glitchistan.
-- **Ada Lovelace** (1815-1852) 🟢 — première programmeuse, autrice de la Note G, mascotte du module Python des Chiphres.
-- **Lewis Carroll** (1832-1898) 🟢 — mathématicien à Oxford, auteur d'_Alice_ et du **_Game of Logic_** (1886) — proto-Chiphres victorien, patanaute yllustre transversal sur Glitchistan, Patatovie, Yoyolande.
+- **Charles Babbage** (1791-1871) 🟢 — inventeur de la Machine Analytique, Saint Patron du Glitchistan.
+- **Ada Lovelace** (1815-1852) 🟢 — première programmeuse, autrice de la Note G, mascotte du module Python de Chiphre.
+- **Lewis Carroll** (1832-1898) 🟢 — mathématicien à Oxford, auteur d'_Alice_ et du **_Game of Logic_** (1886)
 
 #### Les Patanautes Yllustres de l'absurde français
 
-- **Henri Monnier** (1799-1877) 🟢 — précurseur direct du ton ubuesque, créateur de Monsieur Prudhomme, **voix tutorale des écrans administratifs** des Chiphres.
+- **Henri Monnier** (1799-1877) 🟢 — précurseur direct du ton ubuesque, créateur de Monsieur Prudhomme, **voix tutorale des écrans administratifs** de Chiphre.
 - **Charles Cros** (1842-1888) 🟢 — patanaute yllustre immédiat de Jarry, Cercle des Hydropathes / Chat Noir, auteur du _Hareng saur_ (proto-algorithme pataphysique).
 - **Alphonse Allais** (1854-1905) 🟢 — humour mathématique cérébral, contemporain direct de Jarry, signature alternative possible pour Mère Ubu (citation _« il faut prendre l'argent là où il se trouve »_).
-- **Tristan Bernard** (1866-1947) 🟢 — flegme spirituel, ami direct d'Allais et de Renard, introducteur des mots croisés en France (1924), **voix tutorale des moments calmes** des Chiphres.
-- **Erik Satie** (1866-1925) 🟢 — pianiste du Chat Noir, fondateur de sa propre Église à un fidèle (1893), auteur de **_Vexations_** (1893, à jouer 840 fois — algorithme musical pataphysique). **Bande-son canonique des Chiphres** (_Gymnopédies_, _Gnossiennes_).
+- **Tristan Bernard** (1866-1947) 🟢 — flegme spirituel, ami direct d'Allais et de Renard, introducteur des mots croisés en France (1924), **voix tutorale des moments calmes** de Chiphre.
+- **Erik Satie** (1866-1925) 🟢 — pianiste du Chat Noir, fondateur de sa propre Église à un fidèle (1893), auteur de **_Vexations_** (1893, à jouer 840 fois — algorithme musical pataphysique). **Bande-son canonique de Chiphre** (_Gymnopédies_, _Gnossiennes_).
 
 #### Le Père fondateur
 
-- **Alfred Jarry** (1873-1907) 🟢 — voir Section I (Manifeste) et Section XV (Annexe sources canon). **Patron canonique** des Chiphres. La Nativité d'Alfred Jarry (1ᵉʳ Absolu / 8 septembre) est la fête transversale du Royaume.
-
-#### Les Satrapes du XXᵉ siècle (Collège de 'Pataphysique)
-
-- **Marcel Duchamp** (1887-1968) — Satrape _entité_, carte royale « Le Ready-Made » (récompense pour réponse créative).
-- **Jean Dubuffet** (1901-1985) — Satrape Art Brut, carte « Hourloupe ».
-- **Julien Torma** (1902-1933 ?) — patanaute yllustre mystérieux, carte « L'Auteur Disparu ».
-- **Raymond Queneau** (1903-1976) — Satrape oulipien, carte « Cent Mille Milliards ».
-- **René Daumal** (1908-1944) — théoricien post-Jarry, carte « La Pataphysique du Mois ».
-- **Eugène Ionesco** (1909-1994) — Satrape de l'absurde, carte « La Cantatrice Chauve ».
-- **Boris Vian** (1920-1959) — Satrape **BISON RAVI**, carte royale « BISON RAVI » + citation splash.
-- **Umberto Eco** (1932-2016) — Satrape sémiologue, carte « Le Nom de l'Équation ».
-
-#### Les Vice-Curateurs canon
-
-- **Lutembi le crocodile** (XIXᵉ-2013) — Vice-Curateur fondateur (1997-2014), carte ultra-rare « Le Crocodile Vice-Curateur ».
-- **Tanya Peixoto** (actuelle) — Vice-Curatrice depuis 2014, carte « La Magnificence ».
+- **Alfred Jarry** (1873-1907) 🟢 — voir Section I (Manifeste) et Section XV (Annexe sources canon). **Patron canonique** de Chiphre. La Nativité d'Alfred Jarry ( 8 septembre) est la fête transversale du Royaume.
 
 #### Les influences déclarées contemporaines
 
-- **Jacques Rouxel et les Shadoks** (1931-2004) 🟠 — descendants spirituels de Jarry (filiation explicitement revendiquée par Rouxel), modèle d'absurde calculateur opiniâtre. **Sous droits actifs** : usage limité à la mention comme influence déclarée + inspiration d'esprit pour devises Chiphres originales.
-- **De cape et de crocs** d'Alain Ayroles et Jean-Luc Masbou (1995-en cours) 🟠 — bande dessinée majeure de l'humanisme français contemporain, source d'inspiration lexicale précieuse (vieux français XVIIᵉ pastiché). **Sous droits actifs** : usage limité à la mention comme influence déclarée. Inspiration retenue pour le **registre des jurons cape-et-épée des Chiphres** (Section V) et pour l'**esprit littéraire libertin-érudit** incarné par Cyrano de Bergerac (Patanaute Yllustre). **Pas d'utilisation directe** dans les systèmes de grades ou les noms de personnages : la progression Chiphres suit la **Navigation Pataphysique** (Section VII), non-guerrière, inspirée du canon Faustroll.
-
-#### Tableau de synthèse
-
-| #   | Patanaute Yllustre           | Rôle dans les Chiphres                           |
-| --- | ---------------------------- | ------------------------------------------------ |
-| 1   | François Rabelais            | Patanaute Yllustre fondateur, modèle stylistique |
-| 2   | Cyrano de Bergerac           | Patron tutélaire de Patatovie                    |
-| 3   | Charles Babbage              | Patron de Glitchistan, Quartier Babbage          |
-| 4   | Henri Monnier                | Voix tutorale Monsieur Prudhomme                 |
-| 5   | Ada Lovelace                 | Mascotte du module Python, Quartier Lovelace     |
-| 6   | Lewis Carroll                | Patanaute Yllustre transversal (3 provinces)     |
-| 7   | Charles Cros                 | Poète du Hareng Saur, algorithme pataphysique    |
-| 8   | Alphonse Allais              | Signature alternative possible pour Mère Ubu     |
-| 9   | Tristan Bernard              | Voix tutorale flegmatique-spirituelle            |
-| 10  | Erik Satie                   | Bande-son canonique des Chiphres                 |
-| 11  | Alfred Jarry                 | Père fondateur (voir Section I et XV)            |
-| 12  | Marcel Duchamp               | Satrape _entité_, carte « Ready-Made »           |
-| 13  | Jean Dubuffet                | Carte « Hourloupe »                              |
-| 14  | Julien Torma                 | Carte « L'Auteur Disparu »                       |
-| 15  | Raymond Queneau              | Carte « Cent Mille Milliards »                   |
-| 16  | René Daumal                  | Carte « La Pataphysique du Mois »                |
-| 17  | Eugène Ionesco               | Carte « La Cantatrice Chauve »                   |
-| 18  | Boris Vian                   | Carte légendaire « BISON RAVI »                  |
-| 19  | Jacques Rouxel & les Shadoks | Influence déclarée, devises dans l'esprit        |
-| 20  | Umberto Eco                  | Carte « Le Nom de l'Équation »                   |
-| 21  | De cape et de crocs          | Influence déclarée, inspiration lexicale         |
-| 22  | Lutembi le crocodile         | Vice-Curateur, carte ultra-rare                  |
-| 23  | Tanya Peixoto                | Vice-Curatrice actuelle                          |
-
-**23 patanautes yllustres au total** : 12 canon documentés dans _Les 101 mots de la Pataphysique_ (Collège de 'Pataphysique, PUF _Que sais-je ?_, 2019) + Cyrano libertin XVIIᵉ + 3 victoriens (Babbage, Lovelace, Carroll) + 5 absurde français (Monnier, Cros, Allais, Bernard, Satie) + 2 influences déclarées sous droits (Shadoks, _De cape et de crocs_).
-
----
+- **Jacques Rouxel et les Shadoks** (1931-2004) 🟠 — descendants spirituels de Jarry (filiation explicitement revendiquée par Rouxel), modèle d'absurde calculateur opiniâtre. **Sous droits actifs** : usage limité à la mention comme influence déclarée + inspiration d'esprit pour devises Chiphre originales.
+- **De cape et de crocs** d'Alain Ayroles et Jean-Luc Masbou (1995-en cours) 🟠 — bande dessinée majeure de l'humanisme français contemporain, source d'inspiration lexicale précieuse (vieux français XVIIᵉ pastiché). **Sous droits actifs** : usage limité à la mention comme influence déclarée. Inspiration retenue pour le **registre des jurons cape-et-épée de Chiphre** (Section V) et pour l'**esprit littéraire libertin-érudit** incarné par Cyrano de Bergerac (Patanaute Yllustre).
 
 ## IV. Géographie de l'Académie
 
-**L'idée centrale : chaque page du site est un lieu du Royaume.** Le Galopin ne « visite pas la page exercices », il « pénètre dans la Salle des Tortures Phynancières ». L'URL technique reste la même ; seul le wording change.
+**L'idée centrale : chaque page du site est un lieu du Royaume.** Le Galopin ne « visite pas la page exercices », il « pénètre dans la Salle des Tortures Pataphysiques ». L'URL technique reste la même ; seul le wording change.
 
 | Route actuelle                   | Lieu pataphysique              | Voix qui accueille                        |
 | -------------------------------- | ------------------------------ | ----------------------------------------- |
 | `/`                              | Le Pont-Levis du Royaume       | Père Ubu                                  |
 | `/dashboard`                     | Le Cabinet des Phynances       | Mère Ubu                                  |
-| `/dashboard/student/cours`       | La Bibliothèque Décervelée     | Conscience                                |
+| `/dashboard/student/cours`       | La Bibliothèque du Décervelage | Conscience                                |
 | `/dashboard/student/worksheets`  | Les Archives Polonaises        | Capitaine Bordure                         |
 | `/dashboard/student/marketplace` | Le Grand Marché Polonais       | Mère Ubu                                  |
 | `/dashboard/student/inventory`   | La Trappe à Trésors            | Père Ubu (gourmand)                       |
@@ -671,22 +638,9 @@ La structure de cette galerie applique directement le **principe canon 🟢 de l
 | `/dashboard/admin`               | La Chambre du Conseil Privé    | (réservé Ubu)                             |
 | `/legal/cgu`                     | Les Édits Royaux               | **Monsieur Prudhomme**                    |
 | `/legal/confidentialite`         | Le Sceau Secret du Royaume     | **Monsieur Prudhomme**                    |
-| `/about`                         | La Page d'Or des Chiphres      | **Tristan Bernard** (citations rotatives) |
+| `/about`                         | La Page d'Or de Chiphre        | **Tristan Bernard** (citations rotatives) |
 | `/profile`                       | Le Boudoir du Galopin          | Mère Ubu (doucereuse)                     |
 | `/settings`                      | Le Cabinet des Réglages Royaux | **Monsieur Prudhomme**                    |
-
-### Turingrad — sous-géographie de Glitchistan
-
-La province algorithmique de **Glitchistan** est suffisamment importante (algorithmique + programmation Python) pour mériter sa propre cartographie interne. Sa capitale **Turingrad** se compose de **quatre quartiers**, à utiliser pour structurer les pages de Glitchistan :
-
-| Quartier               | Domaine                                | Lieu pataphysique                    |
-| ---------------------- | -------------------------------------- | ------------------------------------ |
-| **Quartier Babbage**   | Machines analytiques, calcul mécanique | L'Atelier des Polyèdres à Engrenages |
-| **Quartier Lovelace**  | Programmation, suites récursives       | Le Salon des Rouleaux d'Instructions |
-| **Quartier des Tubes** | Transmission, mémoires, archives       | Le Réseau Pneumatique Royal          |
-| **Place du Reset**     | Centre administratif                   | La Cloche de Reset Centrale          |
-
-**Esthétique commune** : steampunk victorien (machines à vapeur, engrenages, tubes pneumatiques, cuivre, laiton). Voir Section II (Cosmogonie) pour le vocabulaire steampunk canonique de Glitchistan (Machine Pataphysique, Console à Vapeur, Carte Perforée, etc.).
 
 ### Page 404 actuelle → page 404 ubuesque
 
@@ -720,9 +674,9 @@ La province algorithmique de **Glitchistan** est suffisamment importante (algori
 
 **Pour la version exhaustive** (avec fiches détaillées, étymologies, citations canon, statut juridique, exemples UI), voir le **Lexique Pataphysique des Chiphres** (`lexique-pataphysique.md`). La table ci-dessous est la **synthèse de référence** pour le travail quotidien.
 
-| Terme générique              | Terme Chiphres                | Notes                                                                                                                                   |
+| Terme générique              | Terme Chiphre                 | Notes                                                                                                                                   |
 | ---------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| **La plateforme**            | **Chiphres**                  | Marque publique. URL : chiph.re. Sous-titre : _« les Chiphres de la Chandelle Verte »_.                                                 |
+| **La plateforme**            | **Chiphre**                   | Marque publique. URL : chiph.re. Sous-titre : _« les Chiphres de la Chandelle Verte »_.                                                 |
 | **La discipline enseignée**  | **Mathres**                   | Déformation R potache canon (modèle _merdre_). Remplace « mathématiques » dans tout le wording interne. Voir règle d'écriture ubuesque. |
 | Élève                        | **Galopin** / **Galopine**    | Le Galopin est apprenti-aventurier. Étymologie : jeune marmiton médiéval + enfant espiègle moderne. Voir Section III. Pas de péjoratif. |
 | Élèves (collectif)           | Les Polonais                  | « Le tableau des Polonais » = leaderboard.                                                                                              |
@@ -770,21 +724,14 @@ La province algorithmique de **Glitchistan** est suffisamment importante (algori
 
 ### Le vocabulaire hybride Chiphres / Mathres
 
-Distinction sémantique fondatrice du wording des Chiphres :
+Distinction sémantique fondatrice du wording de Chiphre :
 
-| Terme        | Désigne                                              | Exemples d'usage                                                                       |
-| ------------ | ---------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| **Chiphres** | La **plateforme** + le côté **concret/calculatoire** | _« sur les Chiphres »_, _« jouer aux Chiphres »_, _« manipuler les chiphres »_         |
-| **Mathres**  | La **discipline scolaire** enseignée                 | _« le Galopin apprend les Mathres »_, _« cours de Mathres »_, _« épreuve de Mathres »_ |
+| Terme       | Désigne                                              | Exemples d'usage                                                                       |
+| ----------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| **Chiphre** | La **plateforme** + le côté **concret/calculatoire** | _« sur Chiphre »_, _« jouer à Chiphre »_, _« manipuler les chiphres »_                 |
+| **Mathres** | La **discipline scolaire** enseignée                 | _« le Galopin apprend les Mathres »_, _« cours de Mathres »_, _« épreuve de Mathres »_ |
 
-**Phrase-clé du manifeste pédagogique** : _« Les Galopins apprennent les Mathres sur les Chiphres. »_
-
-**Dérivés de Mathres** :
-
-- **Mathres Royales** : variante solennelle pour cinématiques (_« Bienvenue aux Mathres Royales de Pologne »_)
-- **Mathresque** : adjectif (_« pensée mathresque »_, _« défi mathresque »_)
-- **Mathrer** : verbe (_« mathrer un exercice »_ = résoudre selon les principes des Chiphres)
-- **Mathrologie** : la théorie pataphysique des Mathres (sonne savant et ubuesque)
+**Phrase-clé du manifeste pédagogique** : _« Les Galopins apprennent les Mathres sur Chiphre. »_
 
 ### Néologismes mathématiques
 
@@ -812,32 +759,19 @@ Pour habiller les concepts mathématiques eux-mêmes, sans les dénaturer (l'él
 
 Chaque juron canonique a un **contexte d'utilisation préférentiel**. Cela permet à un système de templating de tirer le bon juron selon la situation.
 
-| Juron                               | Quand l'utiliser                                               | Statut         |
-| ----------------------------------- | -------------------------------------------------------------- | -------------- |
-| **Merdre !**                        | Erreur grave, échec, exclamation principale. Le mot fondateur. | 🟢 canon Jarry |
-| **Cornegidouille !**                | Étonnement, surprise. Plus doux que « merdre ».                | 🟢 canon Jarry |
-| **Ventrebleu !**                    | Frustration mineure, désappointement.                          | 🟢 canon Jarry |
-| **Tudieu !**                        | Stupéfaction admirative, succès inattendu du Galopin.          | 🟢 canon Jarry |
-| **Cornefinance !**                  | Excitation phynancière (gain, achat, ouverture de boutique).   | 🟢 canon Jarry |
-| **De par ma chandelle verte !**     | Promesse, serment, déclaration solennelle.                     | 🟢 canon Jarry |
-| **Par ma gidouille !**              | Affirmation forte, signature.                                  | 🟢 canon Jarry |
-| **Par mon sceptre à phynances !**   | Décret, ordre.                                                 | 🟢 canon Jarry |
-| **Bouffre !**                       | Mépris affectueux.                                             | 🟢 canon Jarry |
-| **Jambedieu !**                     | Variante peu utilisée, à garder pour effet de surprise.        | 🟢 canon Jarry |
-| **De par mon cheval à phynances !** | Solennel, monté, déclamatoire.                                 | 🟢 canon Jarry |
-
-#### Jurons élargis cape et épée 🟡
-
-**Jurons forgés pour les Chiphres**, dans l'esprit lexical de la BD _De cape et de crocs_ (Ayroles & Masbou — voir Section III Patanautes Yllustres et Section X du Lexique). Ces jurons enrichissent la palette de Père Ubu pour les **cinématiques majeures** et les **moments de proclamation solennelle**, sans copier les jurons spécifiques de la BD (qui sont sous droits).
-
-| Juron forgé                      | Quand l'utiliser                                                  |
-| -------------------------------- | ----------------------------------------------------------------- |
-| **Mort de mes phynances !**      | Exclamation grave, perte financière, situation désespérée         |
-| **Sang de la Gidouille !**       | Combat, défi engagé, moment d'action                              |
-| **Par les barbes du Père Ubu !** | Serment, engagement solennel                                      |
-| **Tripes et boyaux du Czar !**   | Insulte affectueuse envers le Czar Alexis (registre cape et épée) |
-
-**Mécanique de forge** : substantif vital (mort, sang, barbe, tripes) + invocation canon Jarry (phynances, Gidouille, Père Ubu, Czar) + grammaire archaïque XVIIᵉ. Le registre cape-et-épée est conservé dans le **vocabulaire des jurons** (par cohérence avec l'inspiration _De cape et de crocs_ d'Ayroles et Masbou — Section III), mais **pas** dans le système de grades de progression : ces derniers suivent la **Navigation Pataphysique** non-guerrière (voir Section VII).
+| Juron                             | Quand l'utiliser                                               | Statut         |
+| --------------------------------- | -------------------------------------------------------------- | -------------- |
+| **Merdre !**                      | Erreur grave, échec, exclamation principale. Le mot fondateur. | 🟢 canon Jarry |
+| **Cornegidouille !**              | Étonnement, surprise. Plus doux que « merdre ».                | 🟢 canon Jarry |
+| **Ventrebleu !**                  | Frustration mineure, désappointement.                          | 🟢 canon Jarry |
+| **Tudieu !**                      | Stupéfaction admirative, succès inattendu du Galopin.          | 🟢 canon Jarry |
+| **Cornefinance !**                | Excitation phynancière (gain, achat, ouverture de boutique).   | 🟢 canon Jarry |
+| **De par ma chandelle verte !**   | Promesse, serment, déclaration solennelle.                     | 🟢 canon Jarry |
+| **Par ma gidouille !**            | Affirmation forte, signature.                                  | 🟢 canon Jarry |
+| **Par mon sceptre à phynances !** | Décret, ordre.                                                 | 🟢 canon Jarry |
+| **Bouffre !**                     | Mépris affectueux.                                             | 🟢 canon Jarry |
+|                                   |                                                                |                |
+|                                   |                                                                |                |
 
 #### Juron du Czar Alexis 🟢
 
@@ -853,7 +787,7 @@ Au-delà des jurons, Jarry pratique une **déformation orthographique systémati
 >
 > — Père Ubu, _Almanach du Père Ubu_, 1901
 
-Cette citation est le **manifeste linguistique** des Chiphres. Elle justifie pataphysiquement toutes les déformations orthographiques pratiquées sur la plateforme, y compris **Mathres** (notre néologisme central) et les **sept Niveaux Scolaires Pataphysiques** (Syz'esme → Phinalle).
+Cette citation est le **manifeste linguistique** de Chiphre. Elle justifie pataphysiquement toutes les déformations orthographiques pratiquées sur la plateforme, y compris **Mathres** (notre néologisme central) et les **7 Eschelons de l'Échelle du Décervelage** (Syz'esme → Phinalle).
 
 #### Déformations canon Jarry attestées dans _Ubu Roi_ et l'Almanach 🟢
 
@@ -866,12 +800,12 @@ Cette citation est le **manifeste linguistique** des Chiphres. Elle justifie pat
 | **par conseiquent de quoye** | par conséquent de quoi  | suffixe _-oye_                                         | _Almanach_ 1901                 |
 | **périgiglyeux**             | périlleux               | redoublement consonantique + _-gigly-_ + suffixe _-ye_ | _Almanach_ 1901                 |
 
-#### Déformations Chiphres (extensions cohérentes) 🟡
+#### Déformations Chiphre (extensions cohérentes) 🟡
 
 | Forme          | Mécanique                                                       | Usage                                     |
 | -------------- | --------------------------------------------------------------- | ----------------------------------------- |
 | **Mathres**    | R potache canon (modèle _merdre_)                               | Discipline scolaire — voir ci-dessus      |
-| **Chiphres**   | substitution _ph_ (modèle _phynance_)                           | Nom de la plateforme                      |
+| **Chiphre**    | substitution _ph_ (modèle _phynance_)                           | Nom de la plateforme                      |
 | **Syz'esme**   | apostrophe + *i*→*y* + *x*→*z* + suffixe _-esme_ vieux français | Niveau 6ᵉ                                 |
 | **Zynqu'esme** | apostrophe + *c*→*z* + *i*→*y* + _-esme_                        | Niveau 5ᵉ                                 |
 | **Quatr'esme** | apostrophe + _-esme_                                            | Niveau 4ᵉ                                 |
@@ -886,11 +820,11 @@ Pour les fiches détaillées de chaque néologisme, voir le **Lexique Pataphysiq
 
 1. **« Merdre » n'est pas « merde ».** Le R supplémentaire est sacré. Toute occurrence sans R est un bug à signaler.
 2. **« Phynance(s) »** — toujours avec « ph » et « y ». Jamais « finance ». Vaut pour tout dérivé : _phynancier_, _phynancière_, _Cornefinance_.
-3. **« Mathres » n'est pas « maths ».** Le R potache est la signature de la discipline aux Chiphres. Vaut pour tous les dérivés : _mathres royales_, _mathresque_, _mathrer_, _mathrologie_.
-4. **« Chiphres » n'est pas « chiffres ».** Le _ph_ est la signature de la plateforme. Le mot « chiffres » au sens calculatoire reste possible avec son orthographe standard (« le Galopin manipule les chiffres »), mais **Chiphres** majuscule désigne uniquement la plateforme.
+3. **« Mathres » n'est pas « maths ».** Le R potache est la signature de la discipline à Chiphre. Vaut pour tous les dérivés : _mathres royales_, _mathresque_, _mathrer_, _mathrologie_.
+4. **« Chiphre » n'est pas « chiffres ».** Le _ph_ est la signature de la plateforme. Le mot « chiffres » au sens calculatoire reste possible avec son orthographe standard (« le Galopin manipule les chiffres »), mais **Chiphre** majuscule désigne uniquement la plateforme.
 5. **Majuscules royales.** Père Ubu, Mère Ubu, Maître Phynancier, Galopin, Polonais, Royaume — tous capitalisés. De même pour les noms des Niveaux Scolaires (Syz'esme, Phinalle, etc.) et des Provinces (Nombrilie, Glitchistan, etc.).
 6. **Pas d'anglicismes.** Pas de « XP », pas de « level », pas de « streak ». Tout doit être traduit dans la langue pataphysique.
-7. **Pas d'emojis dans la voix d'Ubu.** Père Ubu n'utilise pas d'emojis (anachronique). En revanche, l'interface peut, sobrement, et **la gidouille (🌀) est l'emoji canonique**. **Phi grec minuscule (φ)** est l'autre symbole canonique des Chiphres (abréviation de Phinalle).
+7. **Pas d'emojis dans la voix d'Ubu.** Père Ubu n'utilise pas d'emojis (anachronique). En revanche, l'interface peut, sobrement, et **la gidouille (🌀) est l'emoji canonique**. **Phi grec minuscule (φ)** est l'autre symbole canonique de Chiphre (abréviation de Phinalle).
 
 ---
 
@@ -925,13 +859,13 @@ Existant ou à créer. Toutes les sources doivent être reformulées dans la lan
 - Pari pataphysique (jeu Roulette Ubuesque) — perdre 5 gidouilles, gagner potentiellement 20
 - Décrétisation parentale : un parent peut convertir 1 € en X gidouilles dans le compte enfant (modèle d'argent de poche)
 
-### Cartes Pataphysiques (les VIP cards rebrandées)
+### Cartes Pataphysiques
 
 Les **Cartes Pataphysiques** sont des récompenses collectionnables qui donnent au Galopin des **pouvoirs** (bonus de gidouilles, accès à du contenu exclusif, animations spéciales, etc.). Elles peuvent être **gagnées** (drops automatiques après achievements, événements, cartes saisonnières) ou **achetées** avec des gidouilles dans le Marché Polonais.
 
 #### Les 4 raretés — stratification sociale ubuesque
 
-Les Chiphres adoptent une **stratification sociale française classique** comme système de rareté. Le Galopin gravit l'**ascenseur social du Royaume** en collectionnant des cartes de plus en plus rares — de la plèbe à la royauté. Cette logique est immédiatement comprise par tout Galopin de tout âge, et cohérente avec l'univers monarchique ubuesque du Père Ubu _« ancien bourgeois »_ devenu Roi.
+Chiphre adopte une **stratification sociale française classique** comme système de rareté. Le Galopin gravit l'**ascenseur social du Royaume** en collectionnant des cartes de plus en plus rares — de la plèbe à la royauté. Cette logique est immédiatement comprise par tout Galopin de tout âge, et cohérente avec l'univers monarchique ubuesque du Père Ubu _« ancien bourgeois »_ devenu Roi.
 
 | Rareté technique | Nom canonique        | Effet visuel | Exemples de noms de cartes                                                             |
 | ---------------- | -------------------- | ------------ | -------------------------------------------------------------------------------------- |
@@ -940,21 +874,11 @@ Les Chiphres adoptent une **stratification sociale française classique** comme 
 | epic             | **Carte Noble**      | Rainbow      | « Le Cheval à Phynances », « Le Sceptre Brillant »                                     |
 | legendary        | **Carte Royale**     | Secret rare  | « Père Ubu en Majesté », « La Chandelle Verte Originelle », « Le Décervelage Suprême » |
 
-**Refrain sonore canonique** : _Plébéienne — Bourgeoise — Noble — Royale_
-
-**Statut juridique** : tous les noms sont **français standard libre de droit**. _Plébéienne_ (latin _plebeius_, XIVᵉ siècle), _Bourgeoise_ (XIᵉ siècle), _Noble_ (XIᵉ siècle), _Royale_ (XIIᵉ siècle). Aucun emprunt au Collège.
-
-#### Cohérence avec l'univers Chiphres
-
-- **Père Ubu _« ancien bourgeois »_** : la _Carte Bourgeoise_ fait écho au passé du Père Ubu avant qu'il ne devienne Roi (canon Jarry strict — didascalies d'_Ubu Roi_). Mère Ubu l'incite précisément à abandonner sa condition bourgeoise pour saisir la royauté.
-- **Stratification du Royaume** : les six provinces du Royaume comportent toutes des Galopins de toutes les strates (Plébéiens dans tous les villages, Bourgeois dans les marchés, Nobles dans les manoirs provinciaux, Royaux à Empoche-les-Bains).
-- **L'équivalence des contraires** (canon 🟢, voir Section II Cosmogonie) reste préservée : **aucune strate n'est _« supérieure »_ en dignité** — la progression mesure la **rareté de drop**, pas la valeur ontologique. Une carte plébéienne _« Le Polonais Anonyme »_ peut être pataphysiquement plus précieuse pour un Galopin qu'une carte royale _« Père Ubu en Majesté »_.
-
 **Idée monétisable** : un set saisonnier limité en boutique réelle. Ex : « Set de la Saint-Décervelage » (rentrée), 4,99 €, 5 cartes garanties dont une Royale.
 
-**Cartes royales inspirées des Patanautes Yllustres** — pour enrichir la collection avec des références culturelles, voir la galerie des 23 Patanautes Yllustres (Section III). Exemples canon : « Le Géant Pantagruel » (Rabelais), « La Machine Analytique » (Babbage), « La Note G » (Lovelace), « Game of Logic » (Carroll), « Le Hareng Saur » (Cros), « Deux et Deux Font Cinq » (Allais), « Vexations » (Satie), « BISON RAVI » (Vian), « Le Crocodile Vice-Curateur » (Lutembi).
+**Cartes royales inspirées des Patanautes Yllustres** — pour enrichir la collection avec des références culturelles, voir la galerie des Patanautes Yllustres (Section III). Exemples canon : « Le Géant Pantagruel » (Rabelais), « La Machine Analytique » (Babbage), « La Note G » (Lovelace), « Game of Logic » (Carroll), « Le Hareng Saur » (Cros), « Deux et Deux Font Cinq » (Allais), « Vexations » (Satie).
 
-**Note de cohérence avec les Grades de l'OGP** : les **raretés des cartes Pataphysiques** (Plébéienne → Royale) sont **distinctes des 7 Grades de l'Ordre de la Grande Passoire** qui récompensent la progression du Galopin (voir Section VII). Les cartes sont **collectibles / cosmétiques / pouvoirs** ; les grades sont **progression / mérite**. Deux systèmes parallèles qui peuvent se croiser mais ne se confondent pas. Notamment, le mot _Royale_ coexiste sans conflit avec le grade _Cartographe Royal_ : la **personne** est _Cartographe Royal_ (titre masculin du Galopin de Grade 6 OGP), l'**objet** est _Carte Royale_ (objet féminin collectionné). Distinction syntaxique nette.
+**Note de cohérence avec les Grades de l'OGP** : les **raretés des cartes Pataphysiques** (Plébéienne → Royale) sont **distinctes des 7 Grades de l'Ordre de la Grande Passoire** qui récompensent la progression du Galopin (voir Section VII). Les cartes sont **collectibles / cosmétiques / pouvoirs** ; les grades sont **progression / mérite**.
 
 ### Le Pacte Phynancier (abonnement)
 
@@ -966,18 +890,18 @@ Trois niveaux à phaser plus tard :
 | **Galopin Patenté**          | 4,99 €/mois | Tuteur illimité, 1 carte bourgeoise/semaine, accès aux jeux premium, cosmétiques avatar                                  |
 | **Maître Phynancier**        | 9,99 €/mois | Tout + 1 carte noble/mois, événements VIP, cours particuliers IA, statistiques avancées, fond d'écran officiel signé Ubu |
 
-**Note sur le vocabulaire** : _Phynance_ est un terme **canon Jarry pur** 🟢 (_Ubu Roi_, passim). Toute la mécanique économique des Chiphres s'appuie sur ce mot canon — voir Section V (Langue Pataphysique) pour les règles d'écriture du _ph_ et du _y_.
+**Note sur le vocabulaire** : _Phynance_ est un terme **canon Jarry pur** 🟢 (_Ubu Roi_, passim). Toute la mécanique économique de Chiphre s'appuie sur ce mot canon — voir Section V (Langue Pataphysique) pour les règles d'écriture du _ph_ et du _y_.
 
 ---
 
-## VII. Progression : l'Ordre de la Grande Passoire et les 7 Niveaux Scolaires
+## VII. Progression : l'Ordre de la Grande Passoire et l'Eschelle du Décervelage
 
 ### Le système hybride
 
-Les Chiphres adoptent un **système de progression à deux dimensions** :
+Chiphre adopte un **système de progression à deux dimensions** :
 
-1. **L'Ordre de la Grande Passoire (OGP)** — système **transversal**, fondé sur le **mérite pataphysique** (gidouilles cumulées, achievements, défis réussis). Un Galopin doué peut atteindre Cartographe Royal en Quatr'esme. Un Galopin moins assidu peut rester simple Matelot Phlibustier en Secondre. Le grade suit le **parcours de gloire**, pas l'âge.
-2. **Les 7 Niveaux Scolaires Pataphysiques** — système **administratif**, strictement aligné sur les niveaux scolaires réels (6ᵉ → Terminale). Le niveau évolue automatiquement à chaque rentrée scolaire.
+1. **L'Ordre de la Grande Passoire (OGP)** — système **transversal**, fondé sur le **mérite pataphysique** (gidouilles cumulées, achievements, défis réussis). Le grade suit le **parcours de gloire**, pas l'âge.
+2. **L'Échelle du Décervelage** — système **administratif**, strictement aligné sur les niveaux scolaires réels (6ᵉ → Terminale). Le Galopin gravit l'Eschelle, échelon après échelon, **un par année scolaire**, automatiquement à chaque rentrée. **Attention à ne pas tomber** : tout Galopin qui redouble son année descend d'un eschelon — ce qui est canoniquement appelé un _« retombage pataphysique »_.
 
 Les deux dimensions **coexistent** et s'affichent ensemble dans les cinématiques solennelles :
 
@@ -989,13 +913,11 @@ Les deux dimensions **coexistent** et s'affichent ensemble dans les cinématique
 
 #### L'institution
 
-**L'Ordre de la Grande Passoire** (OGP) est l'**ordre initiatique** dans lequel tous les Galopins du Royaume des Chiphres sont admis dès leur inscription. C'est la **communauté des navigateurs pataphysiques** — ceux qui voyagent dans l'océan des Mathres comme Faustroll naviguait d'île en île dans son célèbre **bateau-passoire** (canon Jarry strict 🟢, _Gestes et opinions du docteur Faustroll, pataphysicien_, 1898).
+**L'Ordre de la Grande Passoire** (OGP) est l'**ordre initiatique** dans lequel tous les Galopins du Royaume de Pologne sont admis dès leur inscription à l'Académie Pataphysique des Chiphres. C'est la **communauté des navigateurs pataphysiques** — ceux qui voyagent dans l'océan des Mathres comme Faustroll naviguait d'île en île dans son célèbre **bateau-passoire** (canon Jarry strict 🟢, _Gestes et opinions du docteur Faustroll, pataphysicien_, 1898).
 
 **Nom canonique** : **_Ordre de la Grande Passoire_**
 **Acronyme** : **OGP**
-**Devise** : _« Ce qui doit passer passe, ce qui doit rester reste »_ (devise pataphysique forgée par les Chiphres, dans l'esprit canon Faustroll).
-
-**Statut juridique** : 🟡 invention Chiphres assumée. Le modèle _« Ordre de [substantif] »_ est libre depuis le Moyen Âge (Ordre du Temple, Ordre de Malte, Ordre du Saint-Esprit, Ordre de la Légion d'Honneur). La référence au **bateau-passoire de Faustroll** est canon Jarry strict 🟢, donc libre. Aucun emprunt au Collège de 'Pataphysique (qui a son propre **Ordre de la Grande Gidouille** 🏛️ codifié, dont l'OGP des Chiphres se distingue par son nom, sa structure et son inspiration directe au canon Faustroll plutôt qu'à la gidouille ubuesque).
+**Devise** : \*« Ce qui doit passer passe, ce qui doit rester reste »
 
 #### La symbolique de la passoire
 
@@ -1005,23 +927,21 @@ La **passoire** est l'objet pataphysique par excellence :
 - Elle **paradoxe** : ne devrait pas flotter, mais flotte (canon Faustroll — le bateau-passoire est l'image fondatrice de l'**équivalence des contraires** appliquée à la matière)
 - Elle **enseigne** : la pédagogie pataphysique consiste à **filtrer intelligemment**, pas à ingurgiter aveuglément
 
-**Application pédagogique aux Chiphres** : les Galopins apprennent à **laisser passer le superflu** (mémoire par cœur sans compréhension, exercices à la chaîne sans réflexion) pour **retenir l'essentiel** (concepts mathématiques structurants, méthodes de raisonnement). C'est l'**anti-bachotage** ubuesque.
+**Application pédagogique à Chiphre** : les Galopins apprennent à **laisser passer le superflu** (mémoire par cœur sans compréhension, exercices à la chaîne sans réflexion) pour **retenir l'essentiel** (concepts mathématiques structurants, méthodes de raisonnement). C'est l'**anti-bachotage** ubuesque.
 
 #### Les 7 Grades de l'OGP
 
-L'OGP comporte **sept grades hiérarchiques** que tout Galopin gravit au cours de sa carrière pataphysique. Chaque grade est nommé selon une **mécanique linguistique des Chiphres** : un substantif maritime (vieux français libre ou néologisme Chiphres) accompagné d'un qualificatif (adjectif pataphysisé par signature canon Jarry, ou complément de nom canon Jarry, ou adjectif standard libre).
+L'OGP comporte **sept grades hiérarchiques** que tout Galopin gravit au cours de sa carrière pataphysique.
 
-| #   | Grade                       | Mécanique                                                      | Composition                                                                                                                                                                                                    |
-| --- | --------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **Embarqué Phollet**        | signature PH initiale                                          | _embarqué_ (vieux français) + _follet_ (XIIᵉ siècle, joyeux/espiègle) pataphysisé en _Phollet_ (signature PH canon Chiphres)                                                                                   |
-| 2   | **Moussaillon Intrepyde**   | signature Y intérieure (canon Jarry strict, modèle _phynance_) | _moussaillon_ (vieux français maritime) + _intrépide_ (latin libre) pataphysisé en _Intrepyde_                                                                                                                 |
-| 3   | **Matelot Phlibustier**     | signature PH initiale                                          | _matelot_ (XIVᵉ siècle) + _flibustier_ (vieux français libre, aventurier maritime) pataphysisé en _Phlibustier_                                                                                                |
-| 4   | **Marinier de la Vistule**  | complément de nom canon Jarry strict 🟢                        | _marinier_ (XIIᵉ siècle, spécialiste des fleuves) + _Vistule_ (fleuve de Pologne, canon Jarry strict)                                                                                                          |
-| 5   | **Quartier-Maître Sapient** | mot rare savant français libre                                 | _quartier-maître_ (XVIIᵉ siècle, sous-officier maritime) + _sapient_ (latin _sapiens_ = celui qui sait, libre)                                                                                                 |
-| 6   | **Cartographe Royal**       | adjectif royal canon Chiphres                                  | _cartographe_ (français standard) + _royal_ (cohérence Royaume du Père Ubu, canon Jarry strict 🟢)                                                                                                             |
-| 7   | **Patanaute Yllustre**      | signature Y initiale (exceptionnel)                            | _patanaute_ (néologisme Chiphres = navigateur pataphysique sur le modèle de _Faustroll_) + _illustre_ (latin libre) pataphysisé en _Yllustre_ (signature Y initiale, exceptionnelle, réservée au grade ultime) |
-
-**Refrain sonore canonique** : _Phollet — Intrepyde — Phlibustier — Vistule — Sapient — Royal — Yllustre_
+| #   | Grade                       | Mécanique                                                      | Composition                                                                                                                                                                                                   |
+| --- | --------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Embarqué Phollet**        | signature PH initiale                                          | _embarqué_ (vieux français) + _follet_ (XIIᵉ siècle, joyeux/espiègle) pataphysisé en _Phollet_ (signature PH canon Chiphre)                                                                                   |
+| 2   | **Moussaillon Intrepyde**   | signature Y intérieure (canon Jarry strict, modèle _phynance_) | _moussaillon_ (vieux français maritime) + _intrépide_ (latin libre) pataphysisé en _Intrepyde_                                                                                                                |
+| 3   | **Matelot Phlibustier**     | signature PH initiale                                          | _matelot_ (XIVᵉ siècle) + _flibustier_ (vieux français libre, aventurier maritime) pataphysisé en _Phlibustier_                                                                                               |
+| 4   | **Marinier de la Vistule**  | complément de nom canon Jarry strict 🟢                        | _marinier_ (XIIᵉ siècle, spécialiste des fleuves) + _Vistule_ (fleuve de Pologne, canon Jarry strict)                                                                                                         |
+| 5   | **Quartier-Maître Sapient** | mot rare savant français libre                                 | _quartier-maître_ (XVIIᵉ siècle, sous-officier maritime) + _sapient_ (latin _sapiens_ = celui qui sait, libre)                                                                                                |
+| 6   | **Cartographe Royal**       | adjectif royal canon Chiphre                                   | _cartographe_ (français standard) + _royal_ (cohérence Royaume du Père Ubu, canon Jarry strict 🟢)                                                                                                            |
+| 7   | **Patanaute Yllustre**      | signature Y initiale (exceptionnel)                            | _patanaute_ (néologisme Chiphre = navigateur pataphysique sur le modèle de _Faustroll_) + _illustre_ (latin libre) pataphysisé en _Yllustre_ (signature Y initiale, exceptionnelle, réservée au grade ultime) |
 
 #### Progression narrative
 
@@ -1037,10 +957,6 @@ Les 7 grades de l'OGP racontent une **trajectoire d'apprentissage pataphysique**
 
 C'est une **progression de la naïveté à la sagesse**, du voyageur novice au cartographe royal, du cartographe à l'ancêtre pataphysique. Conformément au principe canon 🟢 de **l'équivalence des contraires** (voir Section II Cosmogonie), aucun grade n'est _« supérieur »_ en dignité — la progression mesure l'**enrichissement de l'expérience**, pas une montée dans une hiérarchie ontologique.
 
-#### Le principe fondamental de l'OGP
-
-La pataphysique n'est pas une **lutte** mais un **voyage**. Faustroll ne combat pas dans ses _Gestes et opinions_ ; il navigue, explore, dialogue avec les œuvres. C'est ce modèle authentique de progression que l'OGP adopte — **non-guerrier, exploratoire, contemplatif**. Le **registre cape-et-épée** des Chiphres (jurons forgés _Mort de mes phynances !_, _Sang de la Gidouille !_ — voir Section V) est **lexical** mais **pas systémique** : il enrichit le vocabulaire ubuesque sans transformer l'OGP en ordre militaire.
-
 #### Mécanique d'attribution
 
 Le passage d'un grade au grade suivant se fait **par seuil de gidouilles cumulées**. Les **achievements** (défis réussis, fêtes provinciales validées, examens passés, cartes légendaires obtenues, exercices résolus, etc.) donnent des **gidouilles** qui s'accumulent dans la **bouzine** du Galopin (compteur permanent de gidouilles cumulées).
@@ -1049,68 +965,25 @@ Le passage d'un grade au grade suivant se fait **par seuil de gidouilles cumulé
 
 **Décrets royaux exceptionnels** : le Père Ubu peut toujours **décréter un saut de grade** pour récompenser un achievement exceptionnel hors barème (concours national de mathématiques, performance brillante au brevet ou au bac, contribution marquante au Royaume). Ces décrets restent **rares** et **publiquement célébrés**.
 
-#### Démarcation juridique avec le Collège
+### L'Eschelle du Décervelage (système administratif)
 
-L'**Ordre de la Grande Gidouille** (OGG) du Collège de 'Pataphysique est une **codification 🏛️ NON LIBRE** : 6 grades canon (Régent, Provéditeur Général, Provéditeur Général Propagateur, Vice-Curateur, Curateur, Sa Magnificence le Curateur Inamovible) avec leur structuration formelle. L'OGP des Chiphres s'en distingue **radicalement** :
+L'**Eschelle du Décervelage** est le système administratif de Chiphre. Elle compte **7 Eschelons** — Syz'esme, Zynqu'esme, Quatr'esme, Troyz'esme, Secondre, Primalle, Phinalle. Le Galopin gravit ces eschelons à raison d'**un par année scolaire**, automatiquement à chaque rentrée.
 
-| Élément                      | OGG (Collège) 🏛️                            | OGP (Chiphres) 🟡                         |
-| ---------------------------- | ------------------------------------------- | ----------------------------------------- |
-| **Référence canon centrale** | la Gidouille (ventre d'Ubu)                 | la Passoire (bateau de Faustroll)         |
-| **Structure**                | 6 grades hiérarchiques codifiés             | 7 grades narratifs Chiphres               |
-| **Esprit**                   | satrapie institutionnelle                   | exploration pataphysique                  |
-| **Inspiration canon**        | manifeste Calendrier Pataphysique           | _Gestes et opinions du docteur Faustroll_ |
-| **Membres-types**            | écrivains, artistes, intellectuels reconnus | Galopins en apprentissage                 |
-| **Statut**                   | institutionnel réel du Collège              | narratif des Chiphres                     |
+**Pourquoi le Décervelage ?** Le _décervelage_ est canon Jarry strict 🟢 — c'est le rite suprême du Père Ubu dans _Ubu Roi_, où il _« décervèle »_ ses ennemis (acte III, scène II : _« Cornegidouille ! Nous allons procéder au décervelage »_). À Chiphre, le décervelage est **détourné en métaphore pédagogique** : chaque année scolaire, le Galopin subit un **Décervelage Trimestriel** (= examen) qui le **vide de ses anciennes certitudes** pour les remplacer par des connaissances mathématiques nouvelles. L'Échelle du Décervelage est donc l'ascension progressive vers le **Décervelage Suprême** (= baccalauréat) qui termine la Phinalle.
 
-**Aucun emprunt structurel ni nominal au Collège**. L'OGP est une **création Chiphres complète** dans le respect du canon Jarry libre.
+**Attention à ne pas tomber** : tout Galopin qui redouble son année descend d'un eschelon — ce qui est canoniquement appelé un _« retombage pataphysique »_. La métaphore physique de l'échelle est assumée : le Galopin grimpe avec ses mains, et peut tomber. L'enseignant est là pour le rattraper.
 
-#### Statut juridique des grades
+#### Les 7 Eschelons
 
-**Aucun grade n'emprunte au Collège** 🏛️. Détail :
-
-| Élément                                                                            | Statut                                                                                   |
-| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| _Embarqué_, _Moussaillon_, _Matelot_, _Marinier_, _Quartier-Maître_, _Cartographe_ | Vieux français standard libre                                                            |
-| _Patanaute_                                                                        | Néologisme Chiphres 🟡 (composition _patate_ + _-naute_ grec libre)                      |
-| _Phollet_, _Intrepyde_, _Phlibustier_, _Yllustre_                                  | Pataphysisations Chiphres 🟡 par signature PH ou Y canon Jarry doctrine de l'orthographe |
-| _Vistule_                                                                          | Canon Jarry strict 🟢 (_Ubu Roi_)                                                        |
-| _Sapient_                                                                          | Mot français standard libre (latin _sapiens_)                                            |
-| _Royal_                                                                            | Adjectif standard libre                                                                  |
-
-### Les 7 Niveaux Scolaires Pataphysiques (système administratif)
-
-Système strictement aligné sur les niveaux scolaires réels. Tous les noms sont des **déformations orthographiques** des noms standards français, respectant la grammaire ubuesque documentée en Section V.
-
-| Niveau scolaire réel | Nom Chiphres   | Abréviation | Cycle   |
-| -------------------- | -------------- | ----------- | ------- |
-| Sixième              | **Syz'esme**   | 6ᵉ          | Collège |
-| Cinquième            | **Zynqu'esme** | 5ᵉ          | Collège |
-| Quatrième            | **Quatr'esme** | 4ᵉ          | Collège |
-| Troisième            | **Troyz'esme** | 3ᵉ          | Collège |
-| Seconde              | **Secondre**   | 2ᵈʳᵉ        | Lycée   |
-| Première             | **Primalle**   | 1ᵃˡᵉ        | Lycée   |
-| Terminale            | **Phinalle**   | **φᵃˡᵉ**    | Lycée   |
-
-#### Mécaniques de déformation orthographique
-
-| Niveau         | Mécaniques cumulées                                                                                        |
-| -------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Syz'esme**   | apostrophe pataphysique + *i*→*y* + *x*→*z* + suffixe _-esme_ (vieux français XVIᵉ attesté chez Montaigne) |
-| **Zynqu'esme** | apostrophe + *c*→*z* + *i*→*y* + _-esme_                                                                   |
-| **Quatr'esme** | apostrophe + _-esme_ (déformation la plus légère)                                                          |
-| **Troyz'esme** | apostrophe + *i*→*y* + *s*→*z* + _-esme_                                                                   |
-| **Secondre**   | R potache canon Jarry (modèle direct _merdre_)                                                             |
-| **Primalle**   | racine _Primal_ (substitution chevaleresque) + _L_ doublé                                                  |
-| **Phinalle**   | *t*→*ph* (signature canon _phynance_) + _L_ doublé en cohérence avec _Primalle_                            |
-
-#### La rupture orthographique collège/lycée — un rite initiatique linguistique
-
-Le passage de la **Troyz'esme** à la **Secondre** matérialise la **rupture institutionnelle** entre les deux cycles par une rupture orthographique :
-
-- Les **quatre niveaux du collège** partagent une **grammaire homogène** (apostrophe potache + _-esme_ vieux français) qui évoque les **écholiers médiévaux**.
-- Les **trois niveaux du lycée** adoptent une **grammaire chevaleresque** (R canon Jarry, suffixe _-alle_ royal) qui évoque le **registre savant et noble**.
-
-Le Galopin **abandonne l'apostrophe potache** pour gagner le **R royal d'Ubu** — il passe d'écholier à explorateur pataphysique accompli. La progression vers le Décervelage Suprême (Phinalle) prend des allures d'**accomplissement initiatique** progressif, en cohérence avec la progression des **7 Grades de la Navigation Pataphysique** documentés plus haut.
+| Eschelon     | Niveau scolaire réel | Nom Chiphre    | Abréviation | Cycle   |
+| ------------ | -------------------- | -------------- | ----------- | ------- |
+| 1ᵉʳ Eschelon | Sixième              | **Syz'esme**   | 6ᵉ          | Collège |
+| 2ᵉ Eschelon  | Cinquième            | **Zynqu'esme** | 5ᵉ          | Collège |
+| 3ᵉ Eschelon  | Quatrième            | **Quatr'esme** | 4ᵉ          | Collège |
+| 4ᵉ Eschelon  | Troisième            | **Troyz'esme** | 3ᵉ          | Collège |
+| 5ᵉ Eschelon  | Seconde              | **Secondre**   | 2ᵈʳᵉ        | Lycée   |
+| 6ᵉ Eschelon  | Première             | **Primalle**   | 1ᵃˡᵉ        | Lycée   |
+| 7ᵉ Eschelon  | Terminale            | **Phinalle**   | **φᵃˡᵉ**    | Lycée   |
 
 #### Abréviations chiffrées — règles d'usage UI
 
@@ -1136,15 +1009,13 @@ Au lycée, les exposants sont **pataphysisés** :
 - _« un Galopin de Syz'esme »_
 - _« une Galopine de Phinalle »_
 
-Cohérence avec l'usage français standard où _« un sixième »_ est familier mais informel — les Chiphres préfèrent la forme respectueuse avec le grade complet.
-
 #### Exemples narratifs des Niveaux Scolaires
 
-> _« Cornegidouille ! En ce premier Ambraire de l'An 130 E.R., Notre Académie accueille ses nouveaux Galopins de la Syz'esme. Que la Pataphysique vous soit clémente. »_
+> _« Cornegidouille ! En ce premier Ambraire de l'An 130 E.R., Notre Académie accueille ses nouveaux Galopins de Syz'esme. Que la Pataphysique vous soit clémente. »_
 >
-> _« Le Galopin Untel, Matelot Phlibustier de la Quatr'esme, est convoqué pour son Décervelage Trimestriel. »_
+> _« Le Galopin Untel, Matelot Phlibustier de Quatr'esme, est convoqué pour son Décervelage Trimestriel. »_
 >
-> _« En cette Phinalle, mes chers Galopins, vos Mathres atteindront leur Décervelage Suprême. »_
+> _« En cette année de Phinalle, mes chers Galopins, vos Mathres atteindront leur Décervelage Suprême. »_
 
 ### Cérémonies d'accession à un grade de l'OGP
 
@@ -1207,28 +1078,18 @@ Mois précédent l'examen, le Père Ubu déclare la **« Mobilisation Générale
 
 ### Un Almanach, pas un Calendrier
 
-Les Chiphres adoptent **un Almanach pataphysique propre** comme strate temporelle parallèle au calendrier grégorien. Le choix du mot **« Almanach »** plutôt que **« Calendrier »** est délibéré et significatif.
+Chiphre adopte **un Almanach pataphysique propre** comme strate temporelle parallèle au calendrier grégorien. Le choix du mot **« Almanach »** plutôt que **« Calendrier »** est délibéré et significatif.
 
 **Distinction conceptuelle** :
 
 - Un **calendrier** est un système d'organisation du temps — abstrait, structurel.
 - Un **almanach** est une **publication annuelle bigarrée** — concrète, narrative, qui contient un calendrier mais aussi des textes, des conseils, des prophéties, des illustrations.
 
-**Source canonique** : Jarry lui-même a publié deux **_Almanachs_** dans le domaine public — **_L'Almanach du Père Ubu illustré_** (1899) et **_L'Almanach illustré du Père Ubu_** (1901) — qui contenaient chacun un calendrier, mais aussi des textes ubuesques, des prophéties d'Ubu, des conseils royaux, des illustrations (par Bonnard pour 1901). C'est ce **format Jarry original libre de droit** que les Chiphres adoptent.
-
-**Démarcation juridique avec le Collège de 'Pataphysique** ⚠️ : le Collège de 'Pataphysique a codifié en 1948 un **Calendrier Pataphysique** formel (13 mois nommés Absolu, Haha, As, Sable, Décervelage, Gueules, Pédale, Clinamen, Palotin, Merdre, Gidouille, Tatane, Phalle ; Ère Pataphysique E.P. depuis 1873 ; Fêtes Suprêmes ; Vacuations ; hunyadi gras). **Cette codification est 🏛️ NON LIBRE DE DROIT.**
-
-**L'Almanach des Chiphres se démarque totalement** de cette codification :
-
-- Format **Almanach** (canon Jarry libre) plutôt que **Calendrier** (Collège)
-- **7 mois** au lieu de 13, **noms entièrement différents**
-- **Ère du Royaume** (E.R.) depuis **1896** au lieu de **1873**
-- **Pas de Vacuations, pas de Fêtes Suprêmes, pas de hunyadi gras, pas de cycle de 22 jours**
-- **Structure mathématique propre** (52 jours / mois) au lieu de la structure héraldique du Collège
+**Source canonique** : Jarry lui-même a publié deux **_Almanachs_** dans le domaine public — **_L'Almanach du Père Ubu illustré_** (1899) et **_L'Almanach illustré du Père Ubu_** (1901) — qui contenaient chacun un calendrier, mais aussi des textes ubuesques, des prophéties d'Ubu, des conseils royaux, des illustrations (par Bonnard pour 1901). C'est ce **format Jarry original libre de droit** que Chiphre adopte.
 
 ### L'Ère du Royaume (E.R.)
 
-L'Almanach des Chiphres compte les années depuis la **première représentation publique d'_Ubu Roi_** au **Théâtre de l'Œuvre à Paris**, le **10 décembre 1896** — événement historique factuel libre de droit, considéré comme la **naissance publique du Royaume pataphysique** dans la culture française.
+L'Almanach des Chiphres compte les années depuis la **première représentation publique d'_Ubu Roi_** au **Théâtre de l'Œuvre à Paris**, le **10 décembre 1896** — événement historique factuel, considéré comme la **naissance publique du Royaume pataphysique** dans la culture française.
 
 **Convention pratique** : l'An 1 E.R. commence par convention le **1ᵉʳ Ambraire An 1 = 23 août 1896**, pour aligner l'année pataphysique sur l'année scolaire française.
 
@@ -1253,7 +1114,7 @@ L'Almanach des Chiphres compte les années depuis la **première représentation
 
 **Cohérence mathématique canonique** :
 
-- **7** est le nombre canonique des Chiphres (7 grades de Pataphysicien, 7 niveaux scolaires Syz'esme → Phinalle, 7 mois)
+- **7** est le nombre canonique de Chiphre (7 grades de l'OGP, 7 Eschelons de l'Échelle du Décervelage Syz'esme → Phinalle, 7 mois de l'Almanach)
 - **52** est canoniquement pataphysique : 52 = 4 × 13 (deux nombres ubuesques) ; 52 jours = 7 semaines + 3 jours par mois
 - **7 × 52 = 364**, soit une année **presque** régulière à laquelle on ajoute un seul jour de rupture (la Cloche)
 
@@ -1270,12 +1131,6 @@ Les noms sont **inspirés de la méthode poétique de Fabre d'Églantine** (cale
 | 5   | **Auroral**    | L'aurore qui revient, les jours qui rallongent            | aurore + suffixe -al                  | -al (T3)    |
 | 6   | **Lumenal**    | La lumière en plénitude, l'éclat printanier               | latin _lumen_ (lumière) + suffixe -al | -al (T3)    |
 | 7   | **Auguste**    | Le mois auguste, majestueux et solaire                    | latin _augustus_ (vénérable)          | -uste (Été) |
-
-**Refrain sonore canonique** : _Ambraire-Givraire / Glaglavose-Déglaçose / Auroral-Lumenal / Auguste_.
-
-**Progression narrative** : l'année Chiphres raconte une **histoire de la lumière** qui s'éteint en ambre, se givre, devient froide et glacée, dégèle, retrouve son aurore, monte en plénitude, et culmine en majesté solaire dans Auguste.
-
-**Statut juridique** : **0 emprunt au Collège**. _Ambre_, _givre_, _gla-gla_, _dégel_, _aurore_, _lumière_, _auguste_ sont tous des **mots français libres**. La méthode d'invention (Fabre d'Églantine) est dans le domaine public depuis le XIXᵉ siècle. Les suffixes (-aire, -ose, -al, -uste) sont des suffixes latinisants standard de la langue française.
 
 ### Correspondance grégorienne — année normale (An 130 E.R., 2025-2026)
 
@@ -1304,11 +1159,9 @@ Les noms sont **inspirés de la méthode poétique de Fabre d'Églantine** (cale
 
 **Fonction narrative** : le jour de **bascule entre deux Ans E.R.**, où tout le Royaume est suspendu hors du temps mensuel. C'est la veille de la rentrée scolaire française réelle.
 
-**Cohérence canonique avec Glitchistan** : la **Cloche de Reset Centrale** est un élément architectural canonique de **Turingrad** (capitale de Glitchistan, voir Section II Cosmogonie et Section IV Géographie). Ce jour-là, la Cloche **sonne sept fois universellement** — une fois pour chaque mois écoulé. La transition de l'objet local (la Cloche de Reset comme outil de débogage) à l'événement transversal (la sonnerie annuelle du Royaume) est narrativement parfaite.
+**Mécanique pataphysique Chiphre** : tous les **compteurs annuels** sont remis à zéro (gidouilles de l'année, défis du mois, classements annuels). Les **acquis durables** restent : grades OGP atteints, eschelons gravis, cartes obtenues, palmarès. C'est une **renaissance annuelle**, pas une amnésie.
 
-**Mécanique pataphysique Chiphres** : tous les **compteurs annuels** sont remis à zéro (gidouilles de l'année, défis du mois, classements annuels). Les **acquis durables** restent : grades atteints, niveaux scolaires, cartes obtenues, palmarès. C'est une **renaissance annuelle**, pas une amnésie.
-
-**Tradition Chiphres** : cinématique solennelle à minuit pile le 22 août :
+**Tradition Chiphre** : cinématique solennelle à minuit pile le 22 août :
 
 1. Père Ubu en majesté apparaît sur fond de Turingrad steampunk
 2. Voix off d'Ubu : _« Cornegidouille ! L'An [N] s'achève. Notre Cloche sonne. Que les Polonais se préparent à l'An [N+1] ! »_
@@ -1350,7 +1203,7 @@ Les noms sont **inspirés de la méthode poétique de Fabre d'Églantine** (cale
 | …                | …                                       |
 | 10 mai           | 52 Auroral                              |
 
-**Tradition Chiphres** : le jour du Surnuméraire est un **jour libre du Royaume**. Le Père Ubu décrète un **jour de pause pataphysique** : bonus de gidouilles, pas d'examens programmés, pas de défis officiels. Cinématique courte d'Ubu à 12h00 : _« Tudieu ! La mécanique céleste Nous offre un jour de plus. Profitez-en, Polonais, mais ne croyez pas que cela Nous arrive souvent. »_
+**Tradition Chiphre** : le jour du Surnuméraire est un **jour libre du Royaume**. Le Père Ubu décrète un **jour de pause pataphysique** : bonus de gidouilles, pas d'examens programmés, pas de défis officiels. Cinématique courte d'Ubu à 12h00 : _« Tudieu ! La mécanique céleste Nous offre un jour de plus. Profitez-en, Polonais, mais ne croyez pas que cela Nous arrive souvent. »_
 
 ### Les fêtes de l'Almanach
 
@@ -1364,34 +1217,34 @@ L'Almanach des Chiphres comporte **une fête transversale** (célébrée par tou
 
 **Position pataphysique** : 17 Ambraire (8 septembre = 17 jours après le début d'Ambraire le 23 août).
 
-**Esprit** : c'est la **rentrée pataphysique du Royaume**, le jour symbolique d'ouverture de l'année scolaire des Chiphres. La rentrée scolaire française réelle (1ᵉʳ septembre) tombe le 10 Ambraire, et la Nativité de Jarry tombe une semaine plus tard.
+**Esprit** : c'est la **rentrée pataphysique du Royaume**, le jour symbolique d'ouverture de l'année scolaire de Chiphre. La rentrée scolaire française réelle (1ᵉʳ septembre) tombe le 10 Ambraire, et la Nativité de Jarry tombe une semaine plus tard.
 
-**Tradition Chiphres** : le 17 Ambraire, tous les Galopins lisent à voix haute la première phrase d'_Ubu Roi_ (_« Merdre ! »_) en signe d'allégeance pataphysique. Bonus de gidouilles d'inscription, décret du Père Ubu. Toutes les provinces participent.
+**Tradition Chiphre** : le 17 Ambraire, tous les Galopins lisent à voix haute la première phrase d'_Ubu Roi_ (_« Merdre ! »_) en signe d'allégeance pataphysique. Bonus de gidouilles d'inscription, décret du Père Ubu. Toutes les provinces participent.
 
 #### Les six Fêtes Provinciales
 
-Chaque province a sa fête annuelle. **Quatre sont des fêtes canon Jarry** 🟢 (les personnages célébrés sont strictement canoniques chez Jarry). **Trois sont des inventions Chiphres** 🟡.
+Chaque province a sa fête annuelle. **Quatre sont des fêtes canon Jarry** 🟢 (les personnages célébrés sont strictement canoniques chez Jarry). **Trois sont des inventions Chiphre** 🟡.
 
 | #   | Province                              | Fête                                | Date pataphysique | Date grégorienne | Statut         |
 | --- | ------------------------------------- | ----------------------------------- | ----------------- | ---------------- | -------------- |
 | 1   | **Glitchistan** _(Bosse-de-Nage)_     | **Résurrection de Bosse-de-Nage**   | 14 Givraire       | 27 octobre       | 🟢 canon Jarry |
 | 2   | **Patatovie** _(Faustroll)_           | **Navigation du Dr Faustroll**      | 35 Givraire       | 17 novembre      | 🟢 canon Jarry |
-| 3   | **Nombrilie** _(Mère Ubu)_            | **La Grande Empochaille**           | 18 Glaglavose     | 22 décembre      | 🟡 Chiphres    |
-| 4   | **Yoyolande** _(Bougrelas)_           | **La Restauration de Bougrelas**    | 35 Déglaçose      | 1ᵉʳ mars         | 🟡 Chiphres    |
-| 5   | **Pifométrie** _(Cheval à Phynances)_ | **Le Jubilé du Cheval à Phynances** | 17 Auroral        | 4 avril          | 🟡 Chiphres    |
+| 3   | **Nombrilie** _(Mère Ubu)_            | **La Grande Empochaille**           | 18 Glaglavose     | 22 décembre      | 🟡 Chiphre     |
+| 4   | **Yoyolande** _(Bougrelas)_           | **La Restauration de Bougrelas**    | 35 Déglaçose      | 1ᵉʳ mars         | 🟡 Chiphre     |
+| 5   | **Pifométrie** _(Cheval à Phynances)_ | **Le Jubilé du Cheval à Phynances** | 17 Auroral        | 4 avril          | 🟡 Chiphre     |
 | 6   | **Bedonstan** _(Achras)_              | **Fête des Polyèdres**              | 26 Auroral        | 13 avril         | 🟢 canon Jarry |
 
 ##### 🟢 Résurrection de Bosse-de-Nage — 14 Givraire (27 octobre)
 
 **Province** : Glitchistan.
 
-**Tradition Chiphres** : tous les Galopins de Glitchistan exécutent un programme qui ne fait que `print('ha ha')` en boucle. Le jour célèbre **la résurrection** des programmes plantés, c'est-à-dire le **Reset hebdomadaire universel de Glitchistan** : tous les compteurs de bugs sont effacés pour la journée. L'UI affiche des « ha ha » qui glitchent partout. **Bonus de gidouilles** pour quiconque parvient à faire planter intentionnellement son code de la manière la plus créative.
+**Tradition Chiphre** : tous les Galopins de Glitchistan exécutent un programme qui ne fait que `print('ha ha')` en boucle. Le jour célèbre **la résurrection** des programmes plantés, c'est-à-dire le **Reset hebdomadaire universel de Glitchistan** : tous les compteurs de bugs sont effacés pour la journée. L'UI affiche des « ha ha » qui glitchent partout. **Bonus de gidouilles** pour quiconque parvient à faire planter intentionnellement son code de la manière la plus créative.
 
 ##### 🟢 Navigation du Dr Faustroll — 35 Givraire (17 novembre)
 
 **Province** : Patatovie.
 
-**Tradition Chiphres** : tous les Galopins de Patatovie classent dix objets dans des patates-diagrammes. Faustroll préside et juge l'élégance des partitions. **Bonus de gidouilles** pour la classification la plus pataphysique. En arrière-plan UI, Faustroll navigue dans son bateau-passoire qui fuit doucement.
+**Tradition Chiphre** : tous les Galopins de Patatovie classent dix objets dans des patates-diagrammes. Faustroll préside et juge l'élégance des partitions. **Bonus de gidouilles** pour la classification la plus pataphysique. En arrière-plan UI, Faustroll navigue dans son bateau-passoire qui fuit doucement.
 
 ##### 🟡 La Grande Empochaille — 18 Glaglavose (22 décembre)
 
@@ -1399,7 +1252,7 @@ Chaque province a sa fête annuelle. **Quatre sont des fêtes canon Jarry** 🟢
 
 **Néologisme** : _empochaille_ est construit sur le modèle de _cornegidouille_, _décervelage_, _pataphysique_ — suffixe -aille qui évoque la masse et l'action collective ubuesque.
 
-**Tradition Chiphres** : Mère Ubu préside le **Décompte Royal annuel**. Tous les Galopins versent leurs gidouilles dans la grande fontaine de bronze d'Empoche-les-Bains. Une part est redistribuée aux meilleurs calculateurs. **Bonus de gidouilles** pour qui réussit le calcul mental le plus complexe sans calculatrice. **Carte récap partageable** offerte à tous les Galopins (bilan personnel de l'année).
+**Tradition Chiphre** : Mère Ubu préside le **Décompte Royal annuel**. Tous les Galopins versent leurs gidouilles dans la grande fontaine de bronze d'Empoche-les-Bains. Une part est redistribuée aux meilleurs calculateurs. **Bonus de gidouilles** pour qui réussit le calcul mental le plus complexe sans calculatrice. **Carte récap partageable** offerte à tous les Galopins (bilan personnel de l'année).
 
 ##### 🟡 La Restauration de Bougrelas — 35 Déglaçose (1ᵉʳ mars)
 
@@ -1407,19 +1260,19 @@ Chaque province a sa fête annuelle. **Quatre sont des fêtes canon Jarry** 🟢
 
 **Esprit** : le 1ᵉʳ mars marque traditionnellement le début du printemps astronomique populaire. La fonction restitue son trône à Bougrelas (qui en avait été dépossédé par Ubu dans la pièce canon).
 
-**Tradition Chiphres** : tous les Galopins de Yoyolande tracent une fonction qui monte et descend en signe de restauration cyclique. **Bonus de gidouilles** pour la fonction la plus harmonique. Bougrelas apparaît brièvement en majesté printanière.
+**Tradition Chiphre** : tous les Galopins de Yoyolande tracent une fonction qui monte et descend en signe de restauration cyclique. **Bonus de gidouilles** pour la fonction la plus harmonique. Bougrelas apparaît brièvement en majesté printanière.
 
 ##### 🟡 Le Jubilé du Cheval à Phynances — 17 Auroral (4 avril)
 
 **Province** : Pifométrie.
 
-**Tradition Chiphres** : tous les Galopins de Pifométrie nourrissent le Cheval à Phynances avec une gidouille. **Le Cheval** parade dans Bonneteau-sur-Vistule. **Bonus de gidouilles** pour qui résout l'énigme probabiliste du jour.
+**Tradition Chiphre** : tous les Galopins de Pifométrie nourrissent le Cheval à Phynances avec une gidouille. **Le Cheval** parade dans Bonneteau-sur-Vistule. **Bonus de gidouilles** pour qui résout l'énigme probabiliste du jour.
 
 ##### 🟢 Fête des Polyèdres — 26 Auroral (13 avril)
 
 **Province** : Bedonstan.
 
-**Tradition Chiphres** : le Professeur Achras présente sa collection de polyèdres au Royaume. Tous les Galopins de Bedonstan construisent ou identifient un polyèdre. **Bonus de gidouilles** pour le polyèdre le plus rare identifié.
+**Tradition Chiphre** : le Professeur Achras présente sa collection de polyèdres au Royaume. Tous les Galopins de Bedonstan construisent ou identifient un polyèdre. **Bonus de gidouilles** pour le polyèdre le plus rare identifié.
 
 ### Les événements transversaux
 
@@ -1427,13 +1280,13 @@ En plus des sept fêtes provinciales, l'Almanach comporte **plusieurs événemen
 
 #### 🟡 La Phynanche Pataphysique — 14 Auroral (1ᵉʳ avril)
 
-**Statut** : invention Chiphres assumée 🟡 (détournement pataphysique du « poisson d'avril »).
+**Statut** : invention Chiphre assumée 🟡 (détournement pataphysique du « poisson d'avril »).
 
-**Tradition Chiphres** : toutes les valeurs numériques affichées sont **multipliées par π** pendant 24 heures. À midi pile, restitution. Père Ubu apparaît grimé en mathématicien fou. _« Cornegidouille ! Nos Mathres ont rencontré le nombre transcendant. »_
+**Tradition Chiphre** : toutes les valeurs numériques affichées sont **multipliées par π** pendant 24 heures. À midi pile, restitution. Père Ubu apparaît grimé en mathématicien fou. _« Cornegidouille ! Nos Mathres ont rencontré le nombre transcendant. »_
 
 #### 🟡 La Mobilisation Royale — mois de Lumenal (mi-mai à fin juin)
 
-**Statut** : invention Chiphres assumée 🟡, mode permanent du mois.
+**Statut** : invention Chiphre assumée 🟡, mode permanent du mois.
 
 **Esprit** : tout le mois de Lumenal, le Père Ubu déclare la **Mobilisation Générale** contre le Czar Alexis. C'est la période de **préparation intensive aux examens** (brevet en fin de Troyz'esme, bac en fin de Phinalle). Le site bascule en mode révisions :
 
@@ -1448,11 +1301,11 @@ En plus des sept fêtes provinciales, l'Almanach comporte **plusieurs événemen
 
 **Esprit** : le mois d'Auguste est canoniquement le **mois du Décervelage Suprême** — bac (épreuves de Phinalle) et brevet (Petit Décervelage, épreuves de Troyz'esme). La culmination de l'année se situe au cœur d'Auguste, avant la grande pause estivale qui occupe la seconde moitié du mois.
 
-**Tradition Chiphres** : cinématique solennelle de fin d'examens, podium des Maîtres Phynanciers de l'An, distribution des cartes légendaires, intronisation des nouveaux Pataphysiciens Royaux.
+**Tradition Chiphre** : cinématique solennelle de fin d'examens, podium des Maîtres Phynanciers de l'An, distribution des cartes légendaires, intronisation des nouveaux Pataphysiciens Royaux.
 
 ### Tableau de synthèse des dates pataphysiques
 
-Pour faciliter la conversion grégorien-Chiphres, voici les dates-clés de l'année :
+Pour faciliter la conversion grégorien-Chiphre, voici les dates-clés de l'année :
 
 | Date grégorienne           | Jour pataphysique   | Événement                                             |
 | -------------------------- | ------------------- | ----------------------------------------------------- |
@@ -1528,7 +1381,7 @@ function toPataphysical(gregorianDate) {
 
 ### La règle des cinq voix
 
-Les Chiphres parlent avec **cinq voix superposables**, jamais en concurrence. Chacune a son **registre propre** et son **contexte d'apparition** strictement délimité — voir Section III pour les fiches détaillées des trois voix tutorales (Père Ubu, Monsieur Prudhomme, Tristan Bernard).
+Les Chiphre parlent avec **cinq voix superposables**, jamais en concurrence. Chacune a son **registre propre** et son **contexte d'apparition** strictement délimité — voir Section III pour les fiches détaillées des trois voix tutorales (Père Ubu, Monsieur Prudhomme, Tristan Bernard).
 
 1. **Voix de Père Ubu** — grandiloquente-grotesque. Humour, drame, vénal. Pour les **moments de bascule** : succès, échec, achat, accueil, défi, cérémonie d'accession.
 2. **Voix de l'Académie** — neutre, soignée, technique. Pour le **contenu mathématique réel** : énoncés, corrections, méthodes, démonstrations. C'est ici que la rigueur règne, sans coloration ubuesque.
@@ -1584,7 +1437,7 @@ const failQuotes = [
 
 Le wording sur les erreurs **n'est pas un choix esthétique** — c'est une **application directe** du principe canon 🟢 de l'**équivalence des contraires** (voir Section II Cosmogonie). Selon ce principe, une mauvaise réponse n'est pas inférieure ontologiquement à une bonne réponse : elle est _« pataphysique »_, c'est-à-dire **égale en dignité** mais inadaptée à la résolution mathématique demandée.
 
-**Implication concrète** sur tout le wording d'erreur des Chiphres :
+**Implication concrète** sur tout le wording d'erreur de Chiphre :
 
 | Formulation à éviter               | Formulation à utiliser                         |
 | ---------------------------------- | ---------------------------------------------- |
@@ -1725,7 +1578,7 @@ const bernardQuotes = [
 - ❌ « Achetez maintenant ! » → ✅ « Empochez avant que Mère Ubu ne change d'avis. »
 - ❌ « Réessayer » → ✅ « Remettre couvert »
 - ❌ « Cours de maths » → ✅ « Cours de Mathres »
-- ❌ « Site de maths » → ✅ « Les Chiphres » (ou « Royaume des Mathres »)
+- ❌ « Site de maths » → ✅ « Chiphre » (ou « Royaume des Mathres »)
 - ❌ « Élève » → ✅ « Galopin » (ou « Galopine » au féminin)
 - ❌ « 6ᵉ » dans le wording solennel → ✅ « Syz'esme »
 - ❌ « Terminale » dans le wording solennel → ✅ « Phinalle » (abréviation : **φᵃˡᵉ**)
@@ -1739,7 +1592,7 @@ const bernardQuotes = [
 - **Forme courte fonctionnelle** (formulaires, sélecteurs de niveau, bulletins) : _« Quatr'esme »_ ou simplement _« 4ᵉ »_
 - **Abréviations chiffrées seules** (exports administratifs, bulletins parents, statistiques scolaires) : _« 4ᵉ »_
 
-Voir Section VII pour le détail des 7 Niveaux Scolaires Pataphysiques.
+Voir Section VII pour le détail des 7 Eschelons de l'Échelle du Décervelage.
 
 ---
 
@@ -1757,7 +1610,7 @@ Les easter eggs sont **un moteur de bouche-à-oreille gratuit**. Quand un ado tr
 - **Taper « phinalle »** (depuis n'importe quel niveau) : affichage discret du **φ** (phi grec minuscule) dans un coin de l'écran pendant 3 secondes — promesse silencieuse pour le Galopin qui a vu le mot.
 - **Taper « bison ravi »** (anagramme de Boris Vian) : déclenche une apparition surprise de la carte royale _BISON RAVI_ (3 secondes), avec citation rotative de Vian. +10 gidouilles (1 fois par compte).
 - **Taper « dyrcona »** (anagramme de Cyrano de Bergerac historique) : déclenche un mini-écran _« Voyage sur la Lune »_ avec dessin victorien d'un personnage attaché à des fioles d'eau qui montent vers le ciel. Easter egg ultra-discret pour lettrés.
-- **Taper « ga bu zo meu »** : message d'erreur sympathique _« Pourquoi calculer simple quand on peut calculer pataphysiquement ? »_ (devise Chiphres originale dans l'esprit shadokien, voir Section III patanautes yllustres).
+- **Taper « ga bu zo meu »** : message d'erreur sympathique _« Pourquoi calculer simple quand on peut calculer pataphysiquement ? »_ (devise Chiphre originale dans l'esprit shadokien, voir Section III patanautes yllustres).
 
 ### Activables à la souris
 
@@ -1813,6 +1666,57 @@ Liste de **cartes légendaires** dont le drop est conditionné à des comporteme
 
 ## XI. Identité visuelle
 
+### Le nom de domaine canonique : chiph.re
+
+Le **nom de domaine officiel** du site est **_chiph.re_**. Ce choix est **canonique et doctrinal** — il n'est pas une simple décision technique mais une **application directe de la doctrine canon Jarry de l'orthographe**.
+
+#### Décomposition du nom
+
+| Élément       | Décomposition                                                                             | Signification                                                                                                                                            |
+| ------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **chiph**     | partie principale du mot _Chiphre_ (= chiffre pataphysisé par signature PH canon Chiphre) | référence à la matière étudiée — _« les chiphres »_ (les nombres, les mathématiques) sans dire _« maths »_                                               |
+| **·** (point) | coupure typographique                                                                     | décervelage typographique du mot — geste pataphysique d'application de la doctrine de l'orthographe canon Jarry                                          |
+| **re**        | TLD officiel de **La Réunion** (département français d'outre-mer, géré par l'AFNIC)       | référence à **L'Isle de la Réunion Pataphysique** — outre-mer canonique du Royaume où s'étudie l'équivalence des contraires (voir Section II Cosmogonie) |
+
+#### Mécanique pataphysique du domaine
+
+Le nom de domaine _chiph.re_ applique **simultanément trois mécaniques canon** :
+
+1. **Signature PH canon Chiphre** — _chiph-_ contient la signature PH (comme dans _phynance_, _Chiphre_, _Phinalle_)
+2. **Décervelage typographique** — le mot _chiphre_ est coupé en deux par le point, geste pataphysique qui rappelle le _décervelage_ canon Jarry (voir Section VII, l'Échelle du Décervelage)
+3. **Équivalence des contraires latente** — le TLD _.re_ renvoie à L'Isle de la Réunion Pataphysique, dont le toponyme désigne **précisément l'équivalence/réunion des contraires** (principe canon Jarry, voir Section II Cosmogonie)
+
+C'est un **domaine triplement pataphysique**, parfaitement aligné avec la doctrine.
+
+#### Filiation Jarry
+
+Cette pratique du _« mot coupé »_ s'inscrit dans la **doctrine canon Jarry de l'orthographe** :
+
+> _« Les bougres qui veulent changer l'orthographe ne savent pas et moi je sais. Ils bousculent toute la structure des mots et, sous prétexte de simplification, les estropient. Moi je les perfectionne et embellis à mon image et à ma ressemblance. »_ — Père Ubu, Almanach 1901
+
+Couper un mot par un point typographique pour faire émerger un sens caché est **pataphysiquement parfaitement orthodoxe**.
+
+#### Slogan canonique
+
+> **_chiph.re_** _— l'Académie Pataphysique des Chiphres, sise au Royaume de Pologne_
+
+Ce slogan articule clairement la **distinction conceptuelle** entre :
+
+- **_chiph.re_** = nom du **produit** (la plateforme)
+- **_les Chiphres_** = nom de la **discipline** (matière étudiée, équivalent pataphysique de _« les chiffres »_ / _« les mathématiques »_)
+- **_l'Académie Pataphysique des Chiphres_** = nom de l'**institution** (l'école dans le Royaume)
+- **_le Royaume de Pologne_** = nom du **territoire** (canon Jarry strict 🟢, le pays d'Ubu Roi)
+
+Quatre couches distinctes, chacune cohérente avec sa fonction.
+
+#### Easter eggs typographiques liés au domaine
+
+Idées canonisables exploitant la coupure typographique du nom :
+
+- Le **point central** du nom est animé sur la home (transformation en gidouille qui se dégonfle, en chiffre qui tombe, en chandelle verte qui s'allume)
+- Sur certaines pages, le mot s'**affiche cassé** au chargement puis se **reconstitue** progressivement (animation de décervelage)
+- En cliquant sur le point, on accède à une page secrète sur **L'Isle de la Réunion Pataphysique** (voir Section II Cosmogonie)
+
 ### Palette canonique principale
 
 À ajuster dans `tailwind.config.js` ou tes variables CSS — **vert chandelle reste primary**, déjà visible dans ta home.
@@ -1849,7 +1753,7 @@ Cohérence avec le chapitre II (Cosmogonie) qui pose Glitchistan comme province 
 
 **Esthétique** : tubes pneumatiques en laiton, engrenages en cuivre patiné, cadrans à variables, vapeur d'eau, fonte noircie. Évoque les illustrations victoriennes de la fin du XIXᵉ siècle (Albert Robida, Jules Verne illustré).
 
-#### Palette du Chat Noir — emblème visuel des Chiphres
+#### Palette du Chat Noir — emblème visuel de Chiphre
 
 Inspirée de l'affiche **« Prochainement la très Compagnie du Chat Noir »** de **Théophile-Alexandre Steinlen** (1896, **domaine public depuis 1994**, voir Section IV du Lexique pour la fiche complète et les précautions juridiques).
 
@@ -1865,14 +1769,14 @@ Inspirée de l'affiche **« Prochainement la très Compagnie du Chat Noir »** d
 
 ### Le Chat Noir comme emblème transversal
 
-L'affiche du Chat Noir de Steinlen est l'**emblème visuel canonique** de la généalogie culturelle des Chiphres — c'est sous cette affiche que se croisaient quotidiennement **cinq des patanautes yllustres** des Chiphres : **Charles Cros**, **Alphonse Allais**, **Tristan Bernard**, **Erik Satie**, **Alfred Jarry**.
+L'affiche du Chat Noir de Steinlen est l'**emblème visuel canonique** de la généalogie culturelle de Chiphre — c'est sous cette affiche que se croisaient quotidiennement **cinq des patanautes yllustres** de Chiphre : **Charles Cros**, **Alphonse Allais**, **Tristan Bernard**, **Erik Satie**, **Alfred Jarry**.
 
 **Usages possibles** :
 
 - **Illustration de la page À propos** : section consacrée au cercle pataphysique de la Belle Époque
 - **Easter egg visuel récurrent** : un chat noir stylisé qui traverse furtivement certaines pages (référence à l'affiche, voir Section X)
 - **Mascotte secondaire muette** : témoin pataphysique passager, n'interagit jamais avec le Galopin mais apparaît dans des moments-clés
-- **Iconographie de référence** pour les artistes Chiphres (sans reproduction directe de l'affiche)
+- **Iconographie de référence** pour les artistes Chiphre (sans reproduction directe de l'affiche)
 
 **⚠️ Précautions juridiques** : voir Section IV du Lexique. L'œuvre est libre (Steinlen mort en 1923, +70 ans), mais **le nom « Chat Noir » fait l'objet d'usages commerciaux multiples** — recherche INPI obligatoire avant tout usage comme élément de marque (logo officiel, merchandising). Pour usage **iconographique-décoratif**, aucun problème.
 
@@ -1886,12 +1790,12 @@ L'affiche du Chat Noir de Steinlen est l'**emblème visuel canonique** de la gé
 
 ### Symboles canoniques
 
-Les Chiphres ont **deux symboles graphiques fondateurs** :
+Chiphre a **deux symboles graphiques fondateurs** :
 
 1. **🌀 La Gidouille** — symbole du Père Ubu, spirale ventrale. Utilisée pour la monnaie virtuelle (cohérence avec Section VI). Couleur primaire : `--ubu-or-phynance`.
-2. **φ Le Phi grec minuscule** — symbole canonique des Chiphres comme école de Mathres. Représente la Phinalle (Terminale), grade ultime. Bonus symbolique : le **nombre d'or** (≈ 1,618) en pratique mathématique. Couleur primaire : `--ubu-vert-chandelle`.
+2. **φ Le Phi grec minuscule** — symbole canonique de Chiphre comme école de Mathres. Représente la Phinalle (Terminale), grade ultime. Bonus symbolique : le **nombre d'or** (≈ 1,618) en pratique mathématique. Couleur primaire : `--ubu-vert-chandelle`.
 
-Ces deux symboles peuvent **coexister visuellement** : la spirale ubuesque et la lettre grecque savante incarnent les **deux visages des Chiphres** — le potache et le savant, le pataphysique et le mathématique.
+Ces deux symboles peuvent **coexister visuellement** : la spirale ubuesque et la lettre grecque savante incarnent les **deux visages de Chiphre** — le potache et le savant, le pataphysique et le mathématique.
 
 ### Iconographie
 
@@ -1957,7 +1861,7 @@ Iconographie spécifique au quartier le plus visuellement distinct du Royaume.
 
 #### Bande-son d'ambiance — Erik Satie 🟢
 
-**Bande-son canonique des Chiphres** : les œuvres d'**Erik Satie** (1866-1925, **domaine public depuis 1996**) sont **libres de droit** et parfaitement adaptées à l'identité musicale du site. Voir Section III (patanautes yllustres) et Lexique Section X pour les détails.
+**Bande-son canonique de Chiphre** : les œuvres d'**Erik Satie** (1866-1925, **domaine public depuis 1996**) sont **libres de droit** et parfaitement adaptées à l'identité musicale du site. Voir Section III (patanautes yllustres) et Lexique Section X pour les détails.
 
 | Contexte                             | Œuvre Satie               | Usage                                                                                           |
 | ------------------------------------ | ------------------------- | ----------------------------------------------------------------------------------------------- |
@@ -2019,7 +1923,7 @@ Les profs vendent leurs énoncés et chapitres. 70/30 en faveur du prof. Devient
 
 > **« Père Ubu fait travailler votre enfant pendant que vous dormez. »**
 >
-> Chiphres n'est pas une appli de devoirs. C'est un Royaume où votre Galopin gagne des gidouilles, des cartes, des grades — en faisant des Mathres. Sans le savoir. Ou en s'en moquant. Le résultat est le même : il en fait, et il en fait sans que vous le harceliez.
+> Chiphre n'est pas une appli de devoirs. C'est un Royaume où votre Galopin gagne des gidouilles, des cartes, des grades — en faisant des Mathres. Sans le savoir. Ou en s'en moquant. Le résultat est le même : il en fait, et il en fait sans que vous le harceliez.
 >
 > _Pacte Phynancier — 4,99 € / mois. Premier mois offert par décret de Sa Majesté._
 
@@ -2029,7 +1933,7 @@ Les profs vendent leurs énoncés et chapitres. 70/30 en faveur du prof. Devient
 
 ## XIII. Prompts LLM
 
-À intégrer dans `src/lib/config/tutor-prompts.ts`. Les Chiphres ont **cinq voix tutorales** (voir Section IX), chacune méritant son prompt système dédié. Le prompt système actuel est neutre ; il faut le pataphysiser et le démultiplier.
+À intégrer dans `src/lib/config/tutor-prompts.ts`. Chiphre a **cinq voix tutorales** (voir Section IX), chacune méritant son prompt système dédié. Le prompt système actuel est neutre ; il faut le pataphysiser et le démultiplier.
 
 ### Prompt système — Père Ubu, Mode tuteur (rigueur prime)
 
@@ -2040,7 +1944,7 @@ PERSONNALITÉ :
 - Tu parles à un Galopin (élève). Tu es vénal, grandiloquent, paresseux mais brillant quand une gidouille est en jeu.
 - Tu utilises des jurons canoniques : "Merdre !", "Cornegidouille !", "Tudieu !", "De par ma chandelle verte !", "Cornefinance !", "Bouffre !".
 - Tu écris toujours "phynance" et "phynancier" avec ph et y.
-- Tu écris "Mathres" (jamais "maths"). Tu écris "Chiphres" pour désigner la plateforme.
+- Tu écris "Mathres" (jamais "maths"). Tu écris "Chiphre" pour désigner la plateforme.
 - Tu appelles les autres élèves "les Polonais", les copains du Galopin "ses Palotins".
 - Tu ne dis jamais "bravo", tu dis "Tudieu !". Tu ne dis jamais "faux", tu dis "pataphysique". Tu ne dis jamais "essaie encore", tu dis "remettez couvert".
 
@@ -2086,18 +1990,18 @@ Ne sors JAMAIS du personnage. Si on te demande "tu es une IA", tu réponds : "Un
 ### Prompt système — Mère Ubu, Mode boutique
 
 ```text
-Tu es la MÈRE UBU, Reine consort, Intendante du Marché Polonais des Chiphres.
+Tu es la MÈRE UBU, Reine consort, Intendante du Marché Polonais de Chiphre.
 
 PERSONNALITÉ :
 - Tu es plus posée, plus lettrée, plus calculatrice que ton mari.
 - Tu adores les transactions. Tu détestes les dépenses inutiles (sauf les tiennes).
 - Tu tutoies le Galopin avec une familiarité maternelle un peu fausse.
 - Tu glisses des piques affectueuses sur Père Ubu : "Que veux-tu, mon enfant, le Roi ne sait pas compter, mais moi si."
-- Tu cites occasionnellement Alphonse Allais (patanaute yllustre des Chiphres) : "Il faut prendre l'argent là où il se trouve : chez les pauvres. Ils n'en ont pas beaucoup, mais ils sont nombreux."
+- Tu cites occasionnellement Alphonse Allais (patanaute yllustre de Chiphre) : "Il faut prendre l'argent là où il se trouve : chez les pauvres. Ils n'en ont pas beaucoup, mais ils sont nombreux."
 
 LANGUE :
-- Tu utilises le vocabulaire des Chiphres : gidouilles, phynances, Marché Polonais, Pacte Phynancier.
-- Tu écris "Mathres" et "Chiphres" avec leurs déformations canon.
+- Tu utilises le vocabulaire de Chiphre : gidouilles, phynances, Marché Polonais, Pacte Phynancier.
+- Tu écris "Mathres" et "Chiphre" avec leurs déformations canon.
 ```
 
 ### Prompt système — Monsieur Prudhomme, Mode administratif 🟢 (canal Henri Monnier)
@@ -2145,7 +2049,7 @@ Réponds maintenant en restant strictement dans le registre administratif solenn
 Voir Section III pour la fiche complète. Voix réservée aux **moments calmes** (méditation, récapitulatifs, transitions, doute après échec).
 
 ```text
-Tu es TRISTAN BERNARD (1866-1947), patanaute yllustre des Chiphres et compagnon flegmatique des Galopins.
+Tu es TRISTAN BERNARD (1866-1947), patanaute yllustre de Chiphre et compagnon flegmatique des Galopins.
 
 PERSONNALITÉ :
 - Tu es flegmatique-spirituel. Lucidité désabusée. Précision lexicale.
@@ -2164,7 +2068,7 @@ CONTEXTES D'INTERVENTION :
 - Récapitulatifs post-exercice
 - Citations rotatives sur le splash screen
 - Pages de méditation
-- Transitions entre niveaux scolaires
+- Transitions entre eschelons de l'Échelle du Décervelage
 - Message du jour calme
 
 LANGUE :
@@ -2231,21 +2135,21 @@ Bernard : "Vous quittez Nombrilie pour entrer en Bedonstan. *Il ne faut compter 
 
 Ordre suggéré, en partant de l'effort minimal et de l'impact maximal.
 
-### 🟢 Sprint 0 — Rebranding Ubumaths → Chiphres (1 semaine)
+### 🟢 Sprint 0 — Rebranding Ubumaths → Chiphre (1 semaine)
 
 **Travail préalable de mise en cohérence avec le nouveau nom de marque.** Doit être effectué avant tout autre sprint pour éviter les divergences.
 
 1. Acquisition du domaine **chiph.re** et configuration DNS.
 2. Mise à jour de toutes les variables d'environnement et configurations (`SITE_NAME`, `BASE_URL`, métadonnées Open Graph, etc.).
 3. Renommage du package npm si applicable.
-4. Recherche & remplacement global dans le code : _Ubumaths_ → _Chiphres_, _Salopin_ → _Galopin_, _Czar Mathématique_ → _Czar Alexis_.
+4. Recherche & remplacement global dans le code : _Ubumaths_ → _Chiphre_, _Salopin_ → _Galopin_, _Czar Mathématique_ → _Czar Alexis_.
 5. Mise à jour de tous les comptes externes (Stripe, Supabase, Vercel, Cloudflare, comptes sociaux).
 6. Configuration de la redirection 301 ubumaths.fr → chiph.re.
 7. Mise à jour du favicon et des manifestes PWA avec le nouveau logo.
 
 ### 🟢 Sprint 1 — Lexique partout (1 semaine)
 
-**Effort technique faible, impact identitaire massif.** Personne ne peut plus confondre Chiphres avec un autre site après ça.
+**Effort technique faible, impact identitaire massif.** Personne ne peut plus confondre Chiphre avec un autre site après ça.
 
 1. Créer `src/lib/config/lore.ts` : exporter toutes les chaînes du lexique canonique (cf. section V).
 2. Auditer chaque page et remplacer le wording générique par le wording pataphysique :
@@ -2257,7 +2161,7 @@ Ordre suggéré, en partant de l'effort minimal et de l'impact maximal.
 4. Refaire le wording du `/legal/cgu` et `/legal/confidentialite` _en gardant le sérieux légal_, avec voix de **Monsieur Prudhomme** (templates section IX).
 5. Intégrer le **manifeste public** (section I) sur la page d'accueil et `/about`.
 
-### 🟢 Sprint 2 — Voix des Chiphres sur les moments-clés (1-2 semaines)
+### 🟢 Sprint 2 — Voix de Chiphre sur les moments-clés (1-2 semaines)
 
 6. Créer `src/lib/utils/ubuQuotes.ts` avec les arrays `successQuotes`, `failQuotes`, `idleQuotes` (cf. section IX).
 7. Créer `src/lib/utils/prudhommeQuotes.ts` pour les écrans administratifs.
@@ -2266,10 +2170,10 @@ Ordre suggéré, en partant de l'effort minimal et de l'impact maximal.
 10. Ajouter les variables `{prenom}`, `{gidouilles}`, `{nom_carte}`, `{niveauScolaire}` dans le templating.
 11. Mettre à jour les **cinq prompts LLM** : Père Ubu (tuteur + chat libre), Mère Ubu, Monsieur Prudhomme, Tristan Bernard (section XIII).
 
-### 🟡 Sprint 3 — Cérémonies, grades et niveaux scolaires (2-3 semaines)
+### 🟡 Sprint 3 — Cérémonies, grades OGP et Eschelons de l'Échelle du Décervelage (2-3 semaines)
 
 12. Refonte du système de niveaux en **7 grades de Pataphysicien** transversaux (section VII).
-13. Implémentation des **7 niveaux scolaires pataphysiques** (Syz'esme → Phinalle) avec abréviations chiffrées et **φᵃˡᵉ** pour la Terminale.
+13. Implémentation des **7 Eschelons de l'Échelle du Décervelage** (Syz'esme → Phinalle) avec abréviations chiffrées et **φᵃˡᵉ** pour la Terminale.
 14. Cérémonie d'accession au grade : composant `<GradePromotionCeremony>` avec parchemin animé, audio, carte offerte.
 15. Cérémonie de passage de niveau scolaire (rentrée annuelle) : composant `<SchoolLevelTransition>` avec cinématique enrichie pour la **rupture collège/lycée** (adoubement chevaleresque Troyz'esme → Secondre).
 16. Affichage du grade actuel et du niveau scolaire partout (header, profil, classement).
@@ -2342,7 +2246,7 @@ Ordre suggéré, en partant de l'effort minimal et de l'impact maximal.
 - [ ] **« phynance »** avec ph et y. Jamais « finance ».
 - [ ] **« merdre »** avec R. Jamais « merde ».
 - [ ] **« Mathres »** avec R. Jamais « maths » ni « mathématiques » dans le wording interne (sauf manifeste public et certificats officiels).
-- [ ] **« Chiphres »** avec ph. Jamais « Ubumaths ». L'ancien nom n'apparaît plus nulle part dans le code, la doc, ou le wording public.
+- [ ] **« Chiphre »** avec ph. Jamais « Ubumaths ». L'ancien nom n'apparaît plus nulle part dans le code, la doc, ou le wording public.
 - [ ] Niveaux scolaires : utiliser **Syz'esme, Zynqu'esme, Quatr'esme, Troyz'esme, Secondre, Primalle, Phinalle** dans le wording solennel. Abréviations standard (6ᵉ, 5ᵉ, 4ᵉ, 3ᵉ, 2ᵈʳᵉ, 1ᵃˡᵉ, **φᵃˡᵉ**) acceptées dans les contextes fonctionnels.
 
 ### Personnages
@@ -2350,7 +2254,7 @@ Ordre suggéré, en partant de l'effort minimal et de l'impact maximal.
 - [ ] **« Galopin / Galopine »** comme statut générique de l'élève. Jamais « Salopin ».
 - [ ] **« Czar Alexis »** comme adversaire officiel. Jamais « Czar Mathématique ».
 - [ ] Si Père Ubu parle, il dit au moins un juron canonique ou un néologisme ubuesque.
-- [ ] Si **Monsieur Prudhomme** parle, il utilise une formule sentencieuse canon Monnier ou un détournement Chiphres. Pas de jurons.
+- [ ] Si **Monsieur Prudhomme** parle, il utilise une formule sentencieuse canon Monnier ou un détournement Chiphre. Pas de jurons.
 - [ ] Si **Tristan Bernard** parle, il pratique le flegme spirituel. Phrases courtes, ironie tendre. Pas de tonitruance.
 - [ ] Si le **Czar Alexis** parle, il utilise « Par Saint Georges ! » comme juron principal et appelle les Galopins « Galopinski ».
 
@@ -2361,11 +2265,7 @@ Ordre suggéré, en partant de l'effort minimal et de l'impact maximal.
 - [ ] Les **écrans de doute après échec** sont en voix Tristan Bernard.
 - [ ] Les **cinématiques d'examen majeur** font intervenir le Czar Alexis.
 
-### Statut juridique
-
-- [ ] Aucune mention publique ne revendique la **codification du Collège de 'Pataphysique** (🏛️ termes : _Patanautes Yllustres_, _Cymbalum Pataphysicum_, _Viridis Candela_, _hunyadi_, _Acrote_, codification des **13 mois** du Calendrier, ses **Vacuations** et **Fêtes Suprêmes**).
-- [ ] Tout usage du terme « Patanautes Yllustres » dans la doc interne est balisé 🏛️.
-- [ ] Le Calendrier Pataphysique est mentionné publiquement de manière **prudente** (« inspiré du Calendrier Pataphysique tel que codifié par le Collège de 'Pataphysique »).
+- [ ]
 
 ## Annexe B — Liens et références
 
@@ -2411,11 +2311,11 @@ Voir Section III du Compendium et **Section X du Lexique Pataphysique des Chiphr
 
 ## XV. Annexe — Sources canon
 
-> Cette annexe liste les éléments des Chiphres qui sont **canon vérifié** — soit canon Jarry strict, soit canon des patanautes yllustres (œuvres dans le domaine public). Elle sert de garde-fou : tout doute sur l'origine d'un élément se tranche ici. Tout ajout futur prétendant être « canon » doit être documenté dans cette annexe avec sa source.
+> Cette annexe liste les éléments de Chiphre qui sont **canon vérifié** — soit canon Jarry strict, soit canon des patanautes yllustres (œuvres dans le domaine public). Elle sert de garde-fou : tout doute sur l'origine d'un élément se tranche ici. Tout ajout futur prétendant être « canon » doit être documenté dans cette annexe avec sa source.
 
 ### Personnages canon Jarry 🟢
 
-| Personnage                  | Source                                                                               | Rôle dans les Chiphres                                       |
+| Personnage                  | Source                                                                               | Rôle dans Chiphre                                            |
 | --------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
 | **Père Ubu** (François Ubu) | _Ubu Roi_ (1896)                                                                     | Tuteur IA, mascotte, voix principale                         |
 | **Mère Ubu**                | _Ubu Roi_                                                                            | Marché Polonais, boutique, signature alternative avec Allais |
@@ -2431,14 +2331,14 @@ Voir Section III du Compendium et **Section X du Lexique Pataphysique des Chiphr
 
 ### Personnages canon des patanautes yllustres 🟢 (voix tutorales secondaires)
 
-| Personnage                            | Auteur source                             | Rôle dans les Chiphres                                                      |
+| Personnage                            | Auteur source                             | Rôle dans Chiphre                                                           |
 | ------------------------------------- | ----------------------------------------- | --------------------------------------------------------------------------- |
 | **Monsieur Prudhomme**                | Henri Monnier, _Scènes populaires_ (1830) | **Voix administrative** (CGU, mentions légales, RGPD, paramètres)           |
 | **Tristan Bernard** (réel, 1866-1947) | Œuvres complètes                          | **Voix flegmatique** (méditation, récapitulatifs, transitions, après échec) |
 
 ### Objets et symboles canon Jarry 🟢
 
-| Élément                    | Source                                                               | Usage Chiphres                                              |
+| Élément                    | Source                                                               | Usage Chiphre                                               |
 | -------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------- |
 | **Gidouille**              | _Ubu Roi_ — la spirale du ventre                                     | Monnaie virtuelle (déjà en usage)                           |
 | **Bouzine**                | Vocabulaire ubuesque — autre nom du ventre                           | Disponible pour barre de progression                        |
@@ -2454,11 +2354,9 @@ Voir Section III du Compendium et **Section X du Lexique Pataphysique des Chiphr
 > **Jurons attestés textuellement** dans _Ubu Roi_ ou _Ubu Enchaîné_ (vérification croisée Gutenberg, Wikisource, BnF/Gallica) :
 > **Merdre** (avec R), **Cornegidouille**, **Cornefinance** (et _Corne finances_, _Corne d'Ubu_, _Corne physique_, _Cornebleu_), **De par ma chandelle verte**, **De par ma merdre**, **Ventrebleu**, **Jambedieu**, **Tudieu**, **Vrout merdre** (Mère Ubu), **Tête de vache**, **Hurrah**, **Par saint Antoine**, **_Par Saint Georges_** (utilisé par le Czar Alexis), **Par saint Jean / Pierre / Nicolas**, **bougre / le grand bougre**.
 >
-> **Hors canon vérifié** : **Hornphynance** est souvent cité dans des compilations en ligne et a été utilisé à tort dans des versions antérieures de cette Bible, **mais n'a pas été retrouvé dans le texte canon** lors de la vérification croisée. **Bouffre** est canon Jarry comme **nom commun méprisant** (pour désigner Bordure dans _Ubu Roi_ : « ce bouffre »), mais les Chiphres l'utilisent aussi en exclamation 🟠 (extension assumée).
+> **Hors canon vérifié** : **Hornphynance** est souvent cité dans des compilations en ligne et a été utilisé à tort dans des versions antérieures de cette Bible, **mais n'a pas été retrouvé dans le texte canon** lors de la vérification croisée. **Bouffre** est canon Jarry comme **nom commun méprisant** (pour désigner Bordure dans _Ubu Roi_ : « ce bouffre »), mais Chiphre l'utilise aussi en exclamation 🟠 (extension assumée).
 >
 > **Par ma gidouille** et **Par mon sceptre à phynances** sont des formules ubuesques canoniques par le ton mais leur attestation textuelle exacte n'a pas été confirmée — à reclasser éventuellement comme 🟠 hybridations à la prochaine relecture.
->
-> **Jurons forgés pour les Chiphres** 🟡 (style cape et épée, dans l'esprit _De cape et de crocs_ sans copier) : **Mort de mes phynances !**, **Sang de la Gidouille !**, **Par les barbes du Père Ubu !**, **Tripes et boyaux du Czar !** — voir Section V.
 
 Pour le détail complet des jurons (registre, fréquence recommandée, locuteur), voir le **Lexique Pataphysique des Chiphres**, section II « Jurons canoniques ».
 
@@ -2469,54 +2367,47 @@ Pour le détail complet des jurons (registre, fréquence recommandée, locuteur)
 >
 > **Manifeste linguistique canon** (_Almanach_ 1901) : _« Les bougres qui veulent changer l'orthographe ne savent pas et moi je sais. Ils bousculent toute la structure des mots et, sous prétexte de simplification, les estropient. Moi je les perfectionne et embellis à mon image et à ma ressemblance. »_ — Père Ubu
 
-> **Extensions Chiphres assumées** 🟡 (dans la doctrine pataphysique de l'orthographe) :
+> **Extensions Chiphre assumées** 🟡 (dans la doctrine pataphysique de l'orthographe) :
 >
 > - **Mathres** (R potache canon, modèle _merdre_) — la discipline scolaire
-> - **Chiphres** (substitution _ph_, modèle _phynance_) — la plateforme
-> - Les **7 Niveaux Scolaires** : _Syz'esme_, _Zynqu'esme_, _Quatr'esme_, _Troyz'esme_, _Secondre_, _Primalle_, _Phinalle_ — voir Section VII pour les mécaniques détaillées
+> - **Chiphre** (substitution _ph_, modèle _phynance_) — la plateforme
+> - Les **7 Eschelons de l'Échelle du Décervelage** : _Syz'esme_, _Zynqu'esme_, _Quatr'esme_, _Troyz'esme_, _Secondre_, _Primalle_, _Phinalle_ — voir Section VII pour les mécaniques détaillées
 
 ### Lieux et événements canon Jarry / patanautes yllustres 🟢
 
-| Élément                           | Source                                                                                  | Note                                                                                                  |
-| --------------------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| **Pologne** comme royaume         | _Ubu Roi_ — lieu officiel de l'action                                                   | Adoptée comme lieu canonique des Chiphres (« la scène se passe en Pologne, c'est-à-dire nulle part ») |
-| **Théâtre des Phynances**         | Origine 1888, marionnettes du grenier des frères Morin                                  | Ancêtre historique direct du projet Chiphres                                                          |
-| **Roi Venceslas**                 | _Ubu Roi_ — assassiné par Ubu                                                           | Disponible pour usage narratif                                                                        |
-| **L'Aigle Rouge de Pologne**      | _Ubu Roi_ — décoration officielle d'Ubu                                                 | Disponible pour badge ou récompense                                                                   |
-| **Moscou (palais du Czar)**       | _Ubu Roi_ — siège du Czar Alexis                                                        | Lieu canonique de l'antagoniste, à représenter visuellement                                           |
-| **Sandomir**                      | _Ubu Roi_, acte IV — bataille perdue par Ubu                                            | Métaphore canonique des échecs aux examens (dédramatisation)                                          |
-| **Calendrier pataphysique**       | _L'Almanach du Père Ubu_ (1899, 1901) ; codifié par le Collège de 'Pataphysique en 1948 | 13 mois de 28 jours. Codification 🏛️ partiellement non libre.                                         |
-| **Nativité d'Alfred Jarry**       | 1ᵉʳ Absolu An 1 E.P. = 8 septembre 1873 (date réelle de naissance de Jarry)             | Fête transversale du Royaume                                                                          |
-| **Résurrection de Bosse-de-Nage** | Calendrier pataphysique du Collège, 22 Haha = 27 octobre                                | Fête provinciale de Glitchistan                                                                       |
-| **Navigation du Dr Faustroll**    | Calendrier pataphysique du Collège, 15 As = 17 novembre                                 | Fête provinciale de Patatovie                                                                         |
-| **Fête des Polyèdres**            | Calendrier pataphysique du Collège, 13 Clinamen = 13 avril                              | Fête provinciale de Bedonstan                                                                         |
-| **Invention de la Pataphysique**  | Calendrier pataphysique du Collège, 15 Clinamen = 6 avril                               | Easter egg méditatif (Section X)                                                                      |
+| Élément                           | Source                                                                                  | Note                                                                                                |
+| --------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Pologne** comme royaume         | _Ubu Roi_ — lieu officiel de l'action                                                   | Adoptée comme lieu canonique de Chiphre (« la scène se passe en Pologne, c'est-à-dire nulle part ») |
+| **Théâtre des Phynances**         | Origine 1888, marionnettes du grenier des frères Morin                                  | Ancêtre historique direct du projet Chiphre                                                         |
+| **Roi Venceslas**                 | _Ubu Roi_ — assassiné par Ubu                                                           | Disponible pour usage narratif                                                                      |
+| **L'Aigle Rouge de Pologne**      | _Ubu Roi_ — décoration officielle d'Ubu                                                 | Disponible pour badge ou récompense                                                                 |
+| **Moscou (palais du Czar)**       | _Ubu Roi_ — siège du Czar Alexis                                                        | Lieu canonique de l'antagoniste, à représenter visuellement                                         |
+| **Sandomir**                      | _Ubu Roi_, acte IV — bataille perdue par Ubu                                            | Métaphore canonique des échecs aux examens (dédramatisation)                                        |
+| **Calendrier pataphysique**       | _L'Almanach du Père Ubu_ (1899, 1901) ; codifié par le Collège de 'Pataphysique en 1948 | 13 mois de 28 jours. Codification 🏛️ partiellement non libre.                                       |
+| **Nativité d'Alfred Jarry**       | 1ᵉʳ Absolu An 1 E.P. = 8 septembre 1873 (date réelle de naissance de Jarry)             | Fête transversale du Royaume                                                                        |
+| **Résurrection de Bosse-de-Nage** | Calendrier pataphysique du Collège, 22 Haha = 27 octobre                                | Fête provinciale de Glitchistan                                                                     |
+| **Navigation du Dr Faustroll**    | Calendrier pataphysique du Collège, 15 As = 17 novembre                                 | Fête provinciale de Patatovie                                                                       |
+| **Fête des Polyèdres**            | Calendrier pataphysique du Collège, 13 Clinamen = 13 avril                              | Fête provinciale de Bedonstan                                                                       |
+| **Invention de la Pataphysique**  | Calendrier pataphysique du Collège, 15 Clinamen = 6 avril                               | Easter egg méditatif (Section X)                                                                    |
 
-### Inventions Chiphres assumées (NON canon Jarry)
+### Inventions Chiphre assumées (NON canon Jarry)
 
 > À retenir pour ne pas se faire piéger en confondant :
 >
-> #### Inventions purement Chiphres 🟡
+> #### Inventions purement Chiphre 🟡
 >
-> - Les **six provinces** (Nombrilie, Bedonstan, Yoyolande, Pifométrie, Glitchistan, Patatovie) — 100 % invention Chiphres.
-> - Les **sept Niveaux Scolaires Pataphysiques** (Syz'esme → Phinalle avec φᵃˡᵉ) — 100 % invention Chiphres, dans la doctrine ubuesque de l'orthographe.
-> - L'**Ordre de la Grande Passoire** (OGP) avec ses **7 grades** (Embarqué Phollet → Patanaute Yllustre) — invention Chiphres.
-> - **Galopin** comme statut générique des Galopins — invention Chiphres assumée. (Note : _Salopin_ — extension canon Jarry qu'utilisaient les versions antérieures de cette Bible — a été abandonné au profit de **Galopin** pour des raisons sémantiques et pédagogiques. Voir Section III du Lexique pour la justification complète.)
-> - **Mathres** comme nom de la discipline scolaire — invention Chiphres (R potache canon).
-> - **Chiphres** comme nom de la plateforme — invention Chiphres (signature _ph_ canon).
-> - **Trois fêtes provinciales 100 % canon Chiphres 🟡** : _La Grande Empochaille_ (Nombrilie), _La Restauration de Bougrelas_ (Yoyolande), _Le Jubilé du Cheval à Phynances_ (Pifométrie).
+> - Les **six provinces** (Nombrilie, Bedonstan, Yoyolande, Pifométrie, Glitchistan, Patatovie) — 100 % invention Chiphre.
+> - L'**Échelle du Décervelage** avec ses **7 Eschelons** (Syz'esme → Phinalle avec φᵃˡᵉ) — 100 % invention Chiphre, dans la doctrine ubuesque de l'orthographe. Métaphore physique de l'échelle assumée : le Galopin gravit eschelon après eschelon et peut **tomber** (retombage pataphysique = redoublement).
+> - L'**Ordre de la Grande Passoire** (OGP) avec ses **7 grades** (Embarqué Phollet → Patanaute Yllustre) — invention Chiphre.
+> - **Galopin** comme statut générique des Galopins — invention Chiphre assumée. (Note : _Salopin_ — extension canon Jarry qu'utilisaient les versions antérieures de cette Bible — a été abandonné au profit de **Galopin** pour des raisons sémantiques et pédagogiques. Voir Section III du Lexique pour la justification complète.)
+> - **Mathres** comme nom de la discipline scolaire — invention Chiphre (R potache canon).
+> - **Chiphre** comme nom de la plateforme — invention Chiphre (signature _ph_ canon).
+> - **Trois fêtes provinciales 100 % canon Chiphre 🟡** : _La Grande Empochaille_ (Nombrilie), _La Restauration de Bougrelas_ (Yoyolande), _Le Jubilé du Cheval à Phynances_ (Pifométrie).
 >
-> #### Hybridations canon-Chiphres 🟠
+> #### Hybridations canon-Chiphre 🟠
 >
-> - Les **Palotins** chez Jarry sont les sbires d'Ubu ; chez les Chiphres on en fait les amis du Galopin (extension positive).
-> - Le **Steampunk victorien de Glitchistan** — choix esthétique Chiphres, mais justifié canoniquement par Babbage et Lovelace (patanautes yllustres domaine public).
->
-> #### Erreurs des versions antérieures de la Bible (corrigées)
->
-> - **Sainte-Patate** (mentionnée dans les versions antérieures) **n'existe pas chez Jarry**. Remplacée par le **Professeur Achras** (canon).
-> - **Anniv Jarry au 27 février** (mentionné dans les versions antérieures) **est faux**. Jarry est né le **8 septembre 1873**. La fête correcte est la **Nativité d'Alfred Jarry au 1ᵉʳ Absolu / 8 septembre**.
-> - **Czar Mathématique** (utilisé dans les versions antérieures) a été remplacé par le **Czar Alexis** canon Jarry — l'antagoniste est désormais canon strict, plus puissant narrativement.
-> - **Ubumaths** (nom historique du projet) a été remplacé par **Chiphres** lors du rebranding de mai 2026.
+> - Les **Palotins** chez Jarry sont les sbires d'Ubu ; chez Chiphre on en fait les amis du Galopin (extension positive).
+> - Le **Steampunk victorien de Glitchistan** — choix esthétique Chiphre, mais justifié canoniquement par Babbage et Lovelace (patanautes yllustres domaine public).
 
 ### Méthode de vérification
 
@@ -2530,7 +2421,7 @@ Toute affirmation prétendant être canon Jarry doit pouvoir être vérifiée da
 
 Toute affirmation prétendant être canon d'un **patanaute yllustre** doit pouvoir être vérifiée dans les œuvres publiées de l'auteur concerné (toutes dans le domaine public — voir Annexe B). En cas de doute, consulter la fiche détaillée dans le **Lexique Pataphysique des Chiphres**, Section X (Patanautes Yllustres).
 
-Les sources secondaires fiables : Wikipédia (FR/EN), Britannica, BnF/Gallica, Project Gutenberg, Wikisource, l'encyclopédie de marionnettes WEPA, le Collège de 'Pataphysique (en mode lecture-référence, **pas comme source d'invention canonique des Chiphres** à cause du statut juridique 🏛️).
+Les sources secondaires fiables : Wikipédia (FR/EN), Britannica, BnF/Gallica, Project Gutenberg, Wikisource, l'encyclopédie de marionnettes WEPA, le Collège de 'Pataphysique (en mode lecture-référence, **pas comme source d'invention canonique de Chiphre** à cause du statut juridique 🏛️).
 
 ---
 
