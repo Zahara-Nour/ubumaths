@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { privateMessages } from '$lib/stores/privateMessages.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -502,7 +503,7 @@
 								bind:value={selectedClassId}
 								items={privateMessages.classes.map((c) => ({
 									value: c.class_id,
-									label: `${c.class_name} (${c.student_count} élèves)`
+									label: `${c.class_name} (${c.student_count} ${lore.entities.student}s)`
 								}))}
 								triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
 							/>
@@ -550,7 +551,8 @@
 											Aucun professeur disponible. Vous devez être inscrit dans une classe pour
 											envoyer des messages.
 										{:else if privateMessages.userRole === 'teacher'}
-											Aucun élève disponible. Les élèves doivent être inscrits dans vos classes.
+											Aucun {lore.entities.student} disponible. Les {lore.entities.student}s doivent
+											être inscrits dans vos classes.
 										{:else}
 											Aucun destinataire disponible.
 										{/if}

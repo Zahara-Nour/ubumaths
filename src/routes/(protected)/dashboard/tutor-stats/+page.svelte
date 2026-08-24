@@ -5,6 +5,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import * as Card from '$lib/components/ui/card';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
@@ -164,7 +165,8 @@
 			Statistiques du Tuteur IA
 		</h1>
 		<p class="mt-2 text-muted-foreground">
-			Vue d'ensemble des conversations et de l'engagement des élèves avec le tuteur
+			Vue d'ensemble des conversations et de l'engagement des {lore.entities.student}s avec le
+			tuteur
 		</p>
 	</div>
 
@@ -235,7 +237,7 @@
 			<Card.Content class="pt-6">
 				<div class="flex items-center justify-between">
 					<div>
-						<p class="text-sm font-medium text-muted-foreground">Élèves actifs</p>
+						<p class="text-sm font-medium text-muted-foreground">{lore.entities.student}s actifs</p>
 						<p class="mt-1 text-3xl font-bold">{stats.overview.activeStudents}</p>
 						<p class="mt-1 text-xs text-muted-foreground">Ont utilisé le tuteur</p>
 					</div>
@@ -268,9 +270,11 @@
 		<Card.Header>
 			<Card.Title class="flex items-center gap-2">
 				<Users class="h-5 w-5" />
-				Statistiques par élève
+				Statistiques par {lore.entities.student}
 			</Card.Title>
-			<Card.Description>Engagement et performance de chaque élève avec le tuteur</Card.Description>
+			<Card.Description
+				>Engagement et performance de chaque {lore.entities.student} avec le tuteur</Card.Description
+			>
 		</Card.Header>
 		<Card.Content>
 			{#if stats.byStudent.length > 0}
@@ -278,7 +282,7 @@
 					<table class="w-full">
 						<thead>
 							<tr class="border-b">
-								<th class="pb-3 text-left text-sm font-medium">Élève</th>
+								<th class="pb-3 text-left text-sm font-medium">{lore.entities.student}</th>
 								<th class="pb-3 text-center text-sm font-medium">Conversations</th>
 								<th class="pb-3 text-center text-sm font-medium">Messages</th>
 								<th class="pb-3 text-center text-sm font-medium">Score d'effort</th>
