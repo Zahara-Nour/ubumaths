@@ -687,7 +687,9 @@
 	<!-- STUDENT QUICK ACTIONS TABLE -->
 	{#if selectedClassId && selectedPeriodId}
 		<div class="rounded-lg bg-card p-6 shadow">
-			<h3 class="mb-4 text-lg font-semibold text-foreground">Actions Rapides - Élèves</h3>
+			<h3 class="mb-4 text-lg font-semibold text-foreground">
+				Actions Rapides - {lore.entities.student}s
+			</h3>
 			<StudentQuickActionsTable classId={selectedClassId} periodId={selectedPeriodId} />
 		</div>
 	{/if}
@@ -738,12 +740,14 @@
 				<!-- Loading state -->
 				<div class="flex flex-col items-center justify-center py-16">
 					<div class="mb-4 h-16 w-16 animate-spin rounded-full border-b-4 border-primary"></div>
-					<p class="text-muted-foreground">Chargement des élèves...</p>
+					<p class="text-muted-foreground">Chargement des {lore.entities.student}s...</p>
 				</div>
 			{:else if wheelStudents.length === 0}
 				<!-- Empty state -->
 				<div class="py-16 text-center">
-					<p class="text-lg text-muted-foreground">Cette classe ne contient aucun élève.</p>
+					<p class="text-lg text-muted-foreground">
+						Cette classe ne contient aucun {lore.entities.student}.
+					</p>
 				</div>
 			{:else}
 				<!-- Wheel component (includes winner display and controls) -->

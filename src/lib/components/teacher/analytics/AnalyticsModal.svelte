@@ -3,6 +3,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 
 	interface StudentEntry {
@@ -39,7 +40,9 @@
 			</Dialog.Header>
 
 			{#if students.length === 0}
-				<p class="py-4 text-center text-sm text-muted-foreground">Aucun élève à afficher.</p>
+				<p class="py-4 text-center text-sm text-muted-foreground">
+					Aucun {lore.entities.student} à afficher.
+				</p>
 			{:else}
 				<ul class="divide-y divide-border">
 					{#each students as student (student.student_id)}

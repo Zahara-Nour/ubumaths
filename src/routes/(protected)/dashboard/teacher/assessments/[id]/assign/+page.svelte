@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -131,7 +132,8 @@
 									<div>
 										<div class="font-medium">{classData.name}</div>
 										<div class="text-sm text-muted-foreground">
-											{classData.student_count} élève{classData.student_count > 1 ? 's' : ''}
+											{classData.student_count}
+											{lore.entities.student}{classData.student_count > 1 ? 's' : ''}
 										</div>
 									</div>
 								</div>
@@ -186,7 +188,9 @@
 											{assignment.student?.firstname}
 											{assignment.student?.lastname}
 										</div>
-										<div class="text-sm text-muted-foreground">Élève individuel</div>
+										<div class="text-sm text-muted-foreground">
+											{lore.entities.student} individuel
+										</div>
 									{/if}
 								</div>
 								<Button variant="ghost" size="icon" onclick={() => handleUnassign(assignment.id)}>

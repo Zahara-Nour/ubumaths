@@ -85,7 +85,7 @@
 		math: `<h3>Formule mathématique</h3>
 <p>L'équation du second degré : <span data-math-inline>ax^2 + bx + c = 0</span></p>
 <p>Sa solution est donnée par : <span data-math-inline>x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}</span></p>`,
-		emojis: `<h3>Feedback élève ⭐</h3>
+		emojis: `<h3>Feedback {lore.entities.student} ⭐</h3>
 <p>Excellent travail ! 👏 Tu as bien compris les fractions. 🎯</p>
 <p>Points forts :</p>
 <ul><li>✅ Calcul correct</li><li>✅ Présentation soignée</li></ul>

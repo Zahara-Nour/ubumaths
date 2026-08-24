@@ -190,7 +190,9 @@
 		</Button>
 
 		<h1 class="mb-2 text-3xl font-bold">Attribuer un deck</h1>
-		<p class="text-muted-foreground">Sélectionnez les élèves ou classes qui recevront ce deck</p>
+		<p class="text-muted-foreground">
+			Sélectionnez les {lore.entities.student}s ou classes qui recevront ce deck
+		</p>
 	</div>
 
 	<!-- Deck Info -->
@@ -246,7 +248,8 @@
 						</Button>
 					</div>
 					<Card.Description>
-						{selectedStudents.length} élève{selectedStudents.length > 1 ? 's' : ''} sélectionné{selectedStudents.length >
+						{selectedStudents.length}
+						{lore.entities.student}{selectedStudents.length > 1 ? 's' : ''} sélectionné{selectedStudents.length >
 						1
 							? 's'
 							: ''}
@@ -255,7 +258,7 @@
 				<Card.Content>
 					{#if !data.students || data.students.length === 0}
 						<div class="rounded-lg border-2 border-dashed border-muted bg-muted/20 p-8 text-center">
-							<p class="text-muted-foreground">Aucun élève disponible</p>
+							<p class="text-muted-foreground">Aucun {lore.entities.student} disponible</p>
 						</div>
 					{:else}
 						<div class="space-y-2">

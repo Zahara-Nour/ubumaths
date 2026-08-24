@@ -307,7 +307,7 @@
 										>
 											<Users class="mx-auto mb-2 h-8 w-8 opacity-50" />
 											<p>Aucun {lore.entities.student} trouvé</p>
-											<p class="mt-1 text-sm">Ajoutez des élèves à vos classes</p>
+											<p class="mt-1 text-sm">Ajoutez des {lore.entities.student}s à vos classes</p>
 										</div>
 									{:else}
 										<div class="max-h-60 overflow-y-auto rounded-md border">

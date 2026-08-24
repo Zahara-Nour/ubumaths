@@ -88,7 +88,7 @@
 			<Dialog.Title>Enregistrer comme template</Dialog.Title>
 			<Dialog.Description>
 				Crée une copie de ce notebook marquée comme template. Le notebook actuel reste utilisable
-				normalement (les élèves continuent à y accéder s'il était partagé).
+				normalement (les {lore.entities.student}s continuent à y accéder s'il était partagé).
 			</Dialog.Description>
 		</Dialog.Header>
 

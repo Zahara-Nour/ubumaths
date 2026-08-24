@@ -406,7 +406,7 @@
 
 	<!-- Max Owned Per Student (always visible) -->
 	<div class="space-y-2">
-		<Label for="max_owned_per_student">Copies max par élève</Label>
+		<Label for="max_owned_per_student">Copies max par {lore.entities.student}</Label>
 		<Input
 			id="max_owned_per_student"
 			type="number"

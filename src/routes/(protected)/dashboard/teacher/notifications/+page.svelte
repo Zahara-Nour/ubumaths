@@ -247,7 +247,7 @@
 										</div>
 									{:else}
 										<p class="text-sm text-muted-foreground">
-											Sélectionnez d'abord une classe pour afficher les élèves
+											Sélectionnez d'abord une classe pour afficher les {lore.entities.student}s
 										</p>
 									{/if}
 								</div>

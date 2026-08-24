@@ -216,8 +216,8 @@
 		<Dialog.Header>
 			<Dialog.Title>Partager le notebook</Dialog.Title>
 			<Dialog.Description>
-				Partagez "{notebookTitle}" avec vos classes. Les élèves pourront accéder au notebook selon
-				les permissions définies.
+				Partagez "{notebookTitle}" avec vos classes. Les {lore.entities.student}s pourront accéder
+				au notebook selon les permissions définies.
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -276,7 +276,8 @@
 								<div class="flex items-center gap-2 text-sm text-muted-foreground">
 									<Users class="h-3.5 w-3.5" />
 									<span
-										>{classItem.studentCount} élève{classItem.studentCount !== 1 ? 's' : ''}</span
+										>{classItem.studentCount}
+										{lore.entities.student}{classItem.studentCount !== 1 ? 's' : ''}</span
 									>
 								</div>
 							</div>

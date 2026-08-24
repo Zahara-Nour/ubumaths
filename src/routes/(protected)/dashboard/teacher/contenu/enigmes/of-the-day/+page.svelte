@@ -5,6 +5,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { getDifficultyLabel, getDifficultyColor, type DbRiddle } from '$lib/types/riddle';
 	import { Button } from '$lib/components/ui/button';
@@ -54,7 +55,9 @@
 			<Sparkles class="h-8 w-8 text-primary" />
 			Gestion de l'Énigme du Jour
 		</h1>
-		<p class="mt-2 text-muted-foreground">Définissez l'énigme quotidienne pour tous les élèves</p>
+		<p class="mt-2 text-muted-foreground">
+			Définissez l'énigme quotidienne pour tous les {lore.entities.student}s
+		</p>
 	</div>
 
 	<!-- Current Riddle of the Day -->
