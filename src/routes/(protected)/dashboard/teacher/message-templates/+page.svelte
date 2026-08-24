@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -623,7 +624,7 @@
 			<Info class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
 			<p class="text-lg font-medium">Aucune classe disponible</p>
 			<p class="text-muted-foreground">
-				Vous devez avoir au moins une classe pour créer des templates
+				Vous devez avoir au moins un {lore.entities.class} pour créer des templates
 			</p>
 		</div>
 	{:else}

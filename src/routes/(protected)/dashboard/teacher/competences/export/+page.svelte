@@ -99,7 +99,8 @@
 	<header class="mb-6">
 		<h1 class="text-2xl font-bold">Export des compétences</h1>
 		<p class="text-muted-foreground">
-			Consultez les niveaux de compétences de la classe et exportez-les en CSV pour votre ENT.
+			Consultez les niveaux de compétences du {lore.entities.class} et exportez-les en CSV pour votre
+			ENT.
 		</p>
 	</header>
 

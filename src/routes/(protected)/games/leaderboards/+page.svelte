@@ -39,7 +39,7 @@
 		</div>
 		<h1 class="mb-1 text-2xl font-bold text-foreground md:text-3xl">Classements</h1>
 		<p class="text-sm text-muted-foreground">
-			Compare tes scores dans ta classe, ton niveau et ton école
+			Compare tes scores dans ton {lore.entities.class}, ton niveau et ton école
 		</p>
 	</div>
 
