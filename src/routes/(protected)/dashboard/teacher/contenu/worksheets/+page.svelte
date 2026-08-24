@@ -124,7 +124,7 @@
 		{ value: '', label: 'Tous les types' },
 		{ value: 'worksheet', label: "Feuille d'exercices" },
 		{ value: 'assessment', label: 'Evaluation' },
-		{ value: 'exam', label: 'Examen' },
+		{ value: 'exam', label: lore.learning.exam },
 		{ value: 'quiz', label: 'Quiz' },
 		{ value: 'homework', label: 'Devoirs' }
 	];
@@ -133,7 +133,7 @@
 	const typeLabels: Record<WorksheetType, string> = {
 		worksheet: 'Feuille',
 		assessment: 'Evaluation',
-		exam: 'Examen',
+		exam: lore.learning.exam,
 		quiz: 'Quiz',
 		homework: 'Devoirs'
 	};
@@ -219,7 +219,7 @@
 		<div>
 			<h1 class="text-3xl font-bold">Feuilles d'exercices</h1>
 			<p class="text-muted-foreground">
-				Creez et gerez vos feuilles d'exercices, evaluations et examens
+				Creez et gerez vos feuilles d'exercices, evaluations et {lore.learning.exam}s
 			</p>
 		</div>
 		<div class="flex gap-2">
