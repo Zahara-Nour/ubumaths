@@ -5,6 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { lore } from '$lib/config/lore';
 import { render } from 'vitest-browser-svelte';
 import { page } from '@vitest/browser/context';
 import AnalyticsModal from '../AnalyticsModal.svelte';
@@ -39,7 +40,9 @@ describe('AnalyticsModal', () => {
 			title: 'Vide',
 			students: []
 		});
-		await expect.element(page.getByText('Aucun élève à afficher.')).toBeVisible();
+		await expect
+			.element(page.getByText(`Aucun ${lore.entities.student} à afficher.`))
+			.toBeVisible();
 	});
 
 	it('renders student names', async () => {

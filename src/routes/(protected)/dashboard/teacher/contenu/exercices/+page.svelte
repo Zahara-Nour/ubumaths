@@ -629,7 +629,7 @@
 <ConfirmDialog
 	bind:open={deleteDialogOpen}
 	title="Supprimer cette {lore.learning.exercise} ?"
-	description={`Vous allez supprimer la {lore.learning.exercise} "${exerciseToDelete?.title || ''}". Cette action est irréversible.`}
+	description={`Vous allez supprimer la ${lore.learning.exercise} "${exerciseToDelete?.title || ''}". Cette action est irréversible.`}
 	confirmLabel={lore.actions.delete}
 	variant="destructive"
 	onConfirm={handleDelete}

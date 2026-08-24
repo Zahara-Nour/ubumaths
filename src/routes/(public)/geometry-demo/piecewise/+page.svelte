@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
 	import DslDemo from '../DslDemo.svelte';
 
 	// =============================================================================

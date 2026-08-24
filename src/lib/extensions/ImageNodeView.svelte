@@ -471,7 +471,7 @@
 			{/if}
 
 			<!-- Image -->
-			<img {src} alt={alt || 'Image de la {lore.learning.exercise}'} {title} class="node-image" />
+			<img {src} alt={alt || `Image de la ${lore.learning.exercise}`} {title} class="node-image" />
 
 			<!-- Caption -->
 			{#if caption}

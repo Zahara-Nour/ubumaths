@@ -11,6 +11,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { lore } from '$lib/config/lore';
 import { render } from 'vitest-browser-svelte';
 import { page } from '@vitest/browser/context';
 import WorkItemCard from '../WorkItemCard.svelte';
@@ -64,7 +65,7 @@ describe('WorkItemCard - title', () => {
 describe('WorkItemCard - badge per source', () => {
 	const cases: ReadonlyArray<[WorkSource, string]> = [
 		['assessment', 'Test'],
-		['exercise', 'Exercice'],
+		['exercise', lore.learning.exercise],
 		['worksheet', 'Fiche'],
 		['python', 'Python']
 	];
