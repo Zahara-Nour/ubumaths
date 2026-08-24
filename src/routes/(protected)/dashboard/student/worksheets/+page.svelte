@@ -27,7 +27,7 @@
 
 	// Class items for MySelect
 	let classItems = $derived([
-		{ value: '', label: 'Toutes les classes' },
+		{ value: '', label: `Tous les ${lore.entities.class}s` },
 		...data.classes.map((c) => ({ value: c.id, label: c.name }))
 	]);
 

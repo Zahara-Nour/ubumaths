@@ -84,7 +84,7 @@
 
 	const scopeOptions = [
 		{ value: 'system', label: 'Système' },
-		{ value: 'class', label: 'Classe' }
+		{ value: 'class', label: lore.entities.class }
 	];
 
 	const tagSuggestions = [

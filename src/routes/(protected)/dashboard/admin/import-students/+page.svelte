@@ -190,7 +190,9 @@
 				toaster.error(`${validation.invalidEmails} email(s) invalide(s) détecté(s)`);
 			}
 			if (validation.invalidClassCodes.length > 0) {
-				toaster.error(`Code(s) de classe invalide(s): ${validation.invalidClassCodes.join(', ')}`);
+				toaster.error(
+					`Code(s) de ${lore.entities.class} invalide(s): ${validation.invalidClassCodes.join(', ')}`
+				);
 			}
 			return;
 		}

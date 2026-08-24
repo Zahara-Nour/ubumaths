@@ -93,7 +93,7 @@
 	function getClassLabel(board: KanbanBoardWithCounts): string {
 		if (!board.class_id) return 'Personnel';
 		const name = classNameById[board.class_id];
-		return name ? `Classe : ${name}` : 'Classe';
+		return name ? `${lore.entities.class} : ${name}` : lore.entities.class;
 	}
 
 	function formatRelative(iso: string): string {

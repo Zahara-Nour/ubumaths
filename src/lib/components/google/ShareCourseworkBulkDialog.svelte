@@ -121,7 +121,7 @@
 			return 'Partage en cours...';
 		}
 		if (count === 0) {
-			return 'Sélectionnez des classes';
+			return `Sélectionnez des ${lore.entities.class}s`;
 		}
 		return `Partager avec ${count} classe${count > 1 ? 's' : ''}`;
 	});
@@ -145,7 +145,7 @@
 			classes = data.classes || [];
 		} catch (err) {
 			console.error('[ShareCourseworkBulkDialog] Error fetching classes:', err);
-			toaster.error('Erreur lors du chargement des classes');
+			toaster.error(`Erreur lors du chargement des ${lore.entities.class}s`);
 			classes = [];
 		} finally {
 			loading = false;
@@ -239,7 +239,7 @@
 							`mais ${errorCount} échec${errorCount > 1 ? 's' : ''}`
 					);
 				} else {
-					toaster.error('Échec du partage avec toutes les classes sélectionnées');
+					toaster.error(`Échec du partage avec tous les ${lore.entities.class}s sélectionnés`);
 				}
 			} else {
 				const count = result.shared || selectedClassIds.size;

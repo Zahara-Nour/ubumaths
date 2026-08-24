@@ -28,7 +28,7 @@
 
 	async function handleAssign() {
 		if (selectedClassIds.length === 0) {
-			toaster.error('Sélectionnez au moins une classe');
+			toaster.error(`Sélectionnez au moins un ${lore.entities.class}`);
 			return;
 		}
 

@@ -203,7 +203,7 @@
 		}
 
 		if (isGroupMessage && !selectedClassId) {
-			toaster.error('Veuillez sélectionner une classe');
+			toaster.error(`Veuillez sélectionner un ${lore.entities.class}`);
 			return;
 		}
 

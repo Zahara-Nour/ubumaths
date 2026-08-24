@@ -126,7 +126,7 @@
 	// Generate instances for the whole class
 	async function generateClassInstances() {
 		if (!classId) {
-			toaster.error('Aucune classe sélectionnée');
+			toaster.error(`Aucun ${lore.entities.class} sélectionné`);
 			return;
 		}
 
