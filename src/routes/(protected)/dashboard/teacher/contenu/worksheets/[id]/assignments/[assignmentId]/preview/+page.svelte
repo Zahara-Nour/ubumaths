@@ -494,7 +494,8 @@
 												/>
 											{/if}
 											<span class="font-medium">
-												Exercice {visualIndex + 1}{#if exercise.title}:&ensp;<InlineMarkdown
+												{lore.learning.exercise}
+												{visualIndex + 1}{#if exercise.title}:&ensp;<InlineMarkdown
 														content={exercise.title}
 													/>{/if}
 											</span>
@@ -546,9 +547,8 @@
 									/>
 								{/if}
 								<span class="font-medium">
-									Exercice {i + 1}{#if exercise.title}:&ensp;<InlineMarkdown
-											content={exercise.title}
-										/>{/if}
+									{lore.learning.exercise}
+									{i + 1}{#if exercise.title}:&ensp;<InlineMarkdown content={exercise.title} />{/if}
 								</span>
 								{#if exercise.correction_visible && exercise.correction}
 									<BookOpen
@@ -589,7 +589,8 @@
 		<div class="flex items-center justify-between gap-4 border-b border-border bg-card px-6 py-4">
 			<div class="flex items-center gap-3">
 				<Dialog.Title class="flex items-center gap-3 text-xl font-semibold">
-					Exercice {currentExerciseIndex + 1}{#if currentExercise?.title}:&ensp;<InlineMarkdown
+					{lore.learning.exercise}
+					{currentExerciseIndex + 1}{#if currentExercise?.title}:&ensp;<InlineMarkdown
 							content={currentExercise.title}
 						/>{/if}
 					{#if currentExercise?.points !== null}

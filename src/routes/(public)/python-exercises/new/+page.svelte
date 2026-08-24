@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import ExerciseForm, {
 		emptyExerciseForm,
@@ -28,7 +29,7 @@
 </script>
 
 <svelte:head>
-	<title>Créer un exercice Python – Chiphre</title>
+	<title>Créer une {lore.learning.exercise} Python – Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-3xl p-4">

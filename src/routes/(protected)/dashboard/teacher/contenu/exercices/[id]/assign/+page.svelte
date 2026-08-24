@@ -291,7 +291,8 @@
 						<Card.Header>
 							<Card.Title>Assigner à des {lore.entities.student}s</Card.Title>
 							<Card.Description>
-								Sélectionnez les {lore.entities.student}s qui auront accès à cet exercice
+								Sélectionnez les {lore.entities.student}s qui auront accès à cette {lore.learning
+									.exercise}
 							</Card.Description>
 						</Card.Header>
 						<Card.Content>
@@ -373,7 +374,8 @@
 						<Card.Header>
 							<Card.Title>Assigner à des {lore.entities.class}s</Card.Title>
 							<Card.Description>
-								Sélectionnez les {lore.entities.class}s qui auront accès à cet exercice
+								Sélectionnez les {lore.entities.class}s qui auront accès à cette {lore.learning
+									.exercise}
 							</Card.Description>
 						</Card.Header>
 						<Card.Content>
@@ -454,7 +456,8 @@
 						<Card.Header>
 							<Card.Title>Rendre public</Card.Title>
 							<Card.Description>
-								Tous les {lore.entities.student}s de la plateforme pourront accéder à cet exercice
+								Tous les {lore.entities.student}s de la plateforme pourront accéder à cette {lore
+									.learning.exercise}
 							</Card.Description>
 						</Card.Header>
 						<Card.Content>

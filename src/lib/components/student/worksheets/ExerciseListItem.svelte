@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Badge } from '$lib/components/ui/badge';
 	import { CheckCircle, AlertCircle, BookOpen, Star } from '@lucide/svelte';
 	import type { StudentExerciseView } from '$lib/types/worksheets';
@@ -48,7 +49,8 @@
 		<div class="flex-1">
 			<div class="flex items-center gap-2">
 				<span class="font-medium"
-					>Exercice {index}{#if exercise.title}&nbsp;: {exercise.title}{/if}</span
+					>{lore.learning.exercise}
+					{index}{#if exercise.title}&nbsp;: {exercise.title}{/if}</span
 				>
 				{#if hasCorrection}
 					<BookOpen

@@ -71,7 +71,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes exercices Python – Chiphre</title>
+	<title>Mes {lore.learning.exercise}s Python – Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto p-4">

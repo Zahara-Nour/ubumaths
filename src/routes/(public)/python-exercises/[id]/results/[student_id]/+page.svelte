@@ -98,7 +98,7 @@
 			</Card.Title>
 			<Card.Description>
 				{#if data.submissions.length === 0}
-					Aucune tentative pour ce {lore.entities.student} sur cet exercice.
+					Aucune tentative pour ce {lore.entities.student} sur cette {lore.learning.exercise}.
 				{:else}
 					Cliquez sur une tentative pour voir le code et le verdict détaillé.
 				{/if}

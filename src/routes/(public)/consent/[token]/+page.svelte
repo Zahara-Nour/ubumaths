@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -129,7 +130,7 @@
 					<div class="space-y-2">
 						<h3 class="font-medium">En autorisant l'accès, vous permettez à votre enfant de :</h3>
 						<ul class="ml-4 list-disc space-y-1 text-sm text-muted-foreground">
-							<li>Réaliser des exercices de mathématiques</li>
+							<li>Réaliser des {lore.learning.exercise}s de mathématiques</li>
 							<li>Suivre sa progression scolaire</li>
 							<li>Communiquer avec son enseignant</li>
 							<li>Participer aux activités pédagogiques de la plateforme</li>

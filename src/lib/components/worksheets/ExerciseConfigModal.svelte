@@ -203,7 +203,7 @@
 					placeholder="Selectionner une section"
 				/>
 				<p class="text-xs text-muted-foreground">
-					Choisissez dans quelle section placer cet exercice
+					Choisissez dans quelle section placer cette {lore.learning.exercise}
 				</p>
 			</div>
 
@@ -229,12 +229,13 @@
 				<div class="flex-1 space-y-2">
 					<div class="flex items-center justify-between">
 						<Label for="is-essential" class="cursor-pointer font-medium"
-							>Exercice indispensable</Label
+							>{lore.learning.exercise} indispensable</Label
 						>
 						<MyCheckbox id="is-essential" bind:checked={isEssential} />
 					</div>
 					<p class="text-xs text-muted-foreground">
-						Les exercices indispensables sont mis en evidence avec une etoile doree pour les eleves
+						Les {lore.learning.exercise}s indispensables sont mis en evidence avec une etoile doree
+						pour les eleves
 					</p>
 				</div>
 			</div>
@@ -249,7 +250,7 @@
 				/>
 				<p class="text-xs text-muted-foreground">
 					{#if variantMode === 'none'}
-						Tous les eleves recevront le meme exercice
+						Tous les eleves recevront le meme {lore.learning.exercise}
 					{:else if variantMode === 'individual'}
 						Chaque eleve recevra une variante unique
 					{:else if variantMode === 'n_versions'}

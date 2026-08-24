@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
@@ -589,8 +590,8 @@
 					Points de programme
 				</Card.Title>
 				<Card.Description>
-					Tague les points du programme couverts par cet exercice. Quand il est référencé dans une
-					entrée de cahier de texte, ces points sont cochés automatiquement.
+					Tague les points du programme couverts par cette {lore.learning.exercise}. Quand elle est
+					référencée dans une entrée de cahier de texte, ces points sont cochés automatiquement.
 				</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-4">
@@ -771,9 +772,9 @@
 			</Dialog.Title>
 			<Dialog.Description>
 				{#if data.exercise.is_public}
-					Cet exercice est public. Copiez simplement le lien pour le partager.
+					Cette {lore.learning.exercise} est publique. Copiez simplement le lien pour le partager.
 				{:else}
-					Creez des liens de partage pour donner acces a cet exercice sans authentification.
+					Creez des liens de partage pour donner acces a cette {lore.learning.exercise} sans authentification.
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
@@ -905,7 +906,7 @@
 			</div>
 		{:else}
 			<div class="mt-6 py-8 text-center text-sm text-muted-foreground">
-				Aucun lien de partage créé pour cet exercice.
+				Aucun lien de partage créé pour cette {lore.learning.exercise}.
 			</div>
 		{/if}
 	</Dialog.Content>

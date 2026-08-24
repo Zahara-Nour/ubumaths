@@ -314,7 +314,7 @@
 		<Card.Root class="border-dashed">
 			<Card.Content class="py-8 text-center">
 				<p class="text-muted-foreground">
-					Les exercices seront ajoutes apres la creation de la feuille.
+					Les {lore.learning.exercise}s seront ajoutes apres la creation de la feuille.
 				</p>
 			</Card.Content>
 		</Card.Root>

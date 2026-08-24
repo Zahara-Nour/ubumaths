@@ -293,7 +293,7 @@
 					<MyCheckbox id="individualized" bind:checked={individualized} />
 					<div class="space-y-1">
 						<Label for="individualized" class="cursor-pointer font-normal">
-							Exercices individualises
+							{lore.learning.exercise}s individualises
 						</Label>
 						<p class="text-xs text-muted-foreground">
 							Chaque eleve recevra une version personnalisee avec des valeurs differentes
@@ -347,7 +347,8 @@
 						Activer la consultation en ligne
 					</Label>
 					<p class="text-xs text-muted-foreground">
-						Les eleves pourront faire les exercices directement depuis leur tableau de bord.
+						Les eleves pourront faire les {lore.learning.exercise}s directement depuis leur tableau
+						de bord.
 					</p>
 				</div>
 			</div>

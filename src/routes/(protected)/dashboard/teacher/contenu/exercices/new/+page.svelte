@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import ExerciseForm from '$lib/components/exercises/ExerciseForm.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -46,7 +47,7 @@
 </script>
 
 <svelte:head>
-	<title>Nouvel exercice - Chiphre</title>
+	<title>Nouvelle {lore.learning.exercise} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto py-6">

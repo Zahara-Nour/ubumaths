@@ -278,7 +278,7 @@
 					</li>
 					<li class="flex gap-2">
 						<span class="text-primary">•</span>
-						<span>Créer des exercices ciblés sur un sujet précis</span>
+						<span>Créer des {lore.learning.exercise}s ciblées sur un sujet précis</span>
 					</li>
 				</ul>
 			</section>

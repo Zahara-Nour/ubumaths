@@ -73,7 +73,7 @@ $$f(x) = f(a) + f'(a)(x-a) + \\frac{f''(a)}{2!}(x-a)^2 + \\cdots$$
 </script>
 
 <svelte:head>
-	<title>Test Exercices - Chiphre</title>
+	<title>Test {lore.learning.exercise}s - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto p-6">
@@ -90,8 +90,8 @@ $$f(x) = f(a) + f'(a)(x-a) + \\frac{f''(a)}{2!}(x-a)^2 + \\cdots$$
 			<Card.Header>
 				<Card.Title>Éditeur Markdown</Card.Title>
 				<Card.Description>
-					Éditez votre exercice en markdown avec support LaTeX. La prévisualisation se met à jour
-					automatiquement.
+					Éditez votre {lore.learning.exercise} en markdown avec support LaTeX. La prévisualisation se
+					met à jour automatiquement.
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>

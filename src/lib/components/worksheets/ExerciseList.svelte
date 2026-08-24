@@ -25,6 +25,7 @@
 	```
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -436,9 +437,10 @@
 	<Card.Header>
 		<div class="flex items-center justify-between">
 			<div>
-				<Card.Title>Exercices</Card.Title>
+				<Card.Title>{lore.learning.exercise}s</Card.Title>
 				<Card.Description>
-					{exercises.length} exercice(s) dans cette feuille
+					{exercises.length}
+					{lore.learning.exercise}(s) dans cette feuille
 					{#if isSaving}
 						<span class="ml-2 inline-flex items-center text-primary">
 							<Loader2 class="mr-1 h-3 w-3 animate-spin" />
@@ -452,7 +454,7 @@
 	<Card.Content>
 		{#if exercises.length === 0}
 			<div class="py-8 text-center text-muted-foreground">
-				<p>Aucun exercice dans cette feuille</p>
+				<p>Aucune {lore.learning.exercise} dans cette feuille</p>
 				{#if !readonly}
 					<p class="mt-1 text-sm">Utilisez "Ajouter des exercices" pour commencer</p>
 				{/if}
@@ -486,7 +488,7 @@
 									{#if !readonly && draggedExercise}
 										Deposer ici
 									{:else}
-										Aucun exercice
+										Aucune {lore.learning.exercise}
 									{/if}
 								</div>
 							{:else}

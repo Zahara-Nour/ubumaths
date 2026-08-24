@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Teacher Class Chapters Page
 	 * ============================
@@ -594,9 +595,8 @@
 							<div class="flex items-center gap-2">
 								<Dumbbell class="h-4 w-4 text-muted-foreground" />
 								<span
-									>{selectedTemplate.exerciseCount} exercice{selectedTemplate.exerciseCount > 1
-										? 's'
-										: ''}</span
+									>{selectedTemplate.exerciseCount}
+									{lore.learning.exercise}{selectedTemplate.exerciseCount > 1 ? 's' : ''}</span
 								>
 							</div>
 						</div>

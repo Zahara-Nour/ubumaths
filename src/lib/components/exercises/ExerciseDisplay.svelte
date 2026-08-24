@@ -209,7 +209,7 @@
 					{#if exercise.variables && exercise.variables.length > 0}
 						Les {lore.entities.student}s verront des valeurs différentes à chaque instance.
 					{:else}
-						Exercice statique (sans paramètres).
+						{lore.learning.exercise} statique (sans paramètres).
 					{/if}
 				</p>
 			</div>

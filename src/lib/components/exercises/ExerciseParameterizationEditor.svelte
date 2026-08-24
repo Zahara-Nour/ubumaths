@@ -66,7 +66,7 @@
 					<div class="flex items-center gap-2">
 						<Card.Title>Variables</Card.Title>
 						<span class="text-sm text-muted-foreground">
-							(optionnel - pour exercices paramétrés)
+							(optionnel - pour {lore.learning.exercise}s paramétrées)
 						</span>
 					</div>
 					<ChevronDown
@@ -80,8 +80,8 @@
 
 						{#if variables.length === 0}
 							<p class="mt-4 text-sm text-muted-foreground">
-								💡 Les variables permettent de créer des exercices avec des valeurs aléatoires.
-								Cliquez sur "Ajouter une variable" pour commencer.
+								💡 Les variables permettent de créer des {lore.learning.exercise}s avec des valeurs
+								aléatoires. Cliquez sur "Ajouter une variable" pour commencer.
 							</p>
 						{/if}
 					</Card.Content>

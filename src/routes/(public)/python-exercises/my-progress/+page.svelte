@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { resolve } from '$app/paths';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
@@ -230,11 +231,11 @@
 						<p>Tu n'as pas encore travaillé d'exercice Python.</p>
 						<p class="mt-2 text-sm">
 							Va sur <a href={resolve('/python-exercises')} class="text-primary hover:underline"
-								>la liste des exercices</a
+								>la liste des {lore.learning.exercise}s</a
 							> pour démarrer.
 						</p>
 					{:else}
-						<p>Aucun exercice ne correspond à tes filtres.</p>
+						<p>Aucune {lore.learning.exercise} ne correspond à tes filtres.</p>
 					{/if}
 				</div>
 			{:else}
@@ -247,7 +248,7 @@
 									class="flex items-center gap-1 hover:text-foreground"
 									onclick={() => toggleSort('title')}
 								>
-									Exercice
+									{lore.learning.exercise}
 									{#if sortBy === 'title'}
 										{#if sortDir === 'asc'}
 											<ArrowUp class="h-3 w-3" />

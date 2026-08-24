@@ -431,7 +431,8 @@
 					{#if exercises.length === 0}
 						<Table.Row>
 							<Table.Cell colspan={7} class="py-8 text-center text-muted-foreground">
-								Aucun exercice trouvé. Créez votre premier exercice !
+								Aucune {lore.learning.exercise} trouvée. Créez votre première {lore.learning
+									.exercise} !
 							</Table.Cell>
 						</Table.Row>
 					{:else}
@@ -455,7 +456,7 @@
 														<Globe class="h-4 w-4 text-green-600" />
 													</Tooltip.Trigger>
 													<Tooltip.Content>
-														<p>Exercice public</p>
+														<p>{lore.learning.exercise} publique</p>
 													</Tooltip.Content>
 												</Tooltip.Root>
 											</Tooltip.Provider>

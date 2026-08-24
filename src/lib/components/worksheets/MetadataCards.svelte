@@ -505,7 +505,7 @@
 										{#if worksheet.config?.shuffle_exercises && worksheet.config?.shuffle_within_sections}
 											Tout
 										{:else if worksheet.config?.shuffle_exercises}
-											Exercices
+											{lore.learning.exercise}s
 										{:else}
 											Sections
 										{/if}

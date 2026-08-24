@@ -221,7 +221,7 @@
 
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Détails par exercice</Card.Title>
+			<Card.Title>Détails par {lore.learning.exercise}</Card.Title>
 			<Card.Description>
 				{sortedRows.length} exercice{sortedRows.length > 1 ? 's' : ''}
 			</Card.Description>
@@ -230,7 +230,7 @@
 			{#if sortedRows.length === 0}
 				<div class="py-12 text-center text-muted-foreground">
 					<AlertCircle class="mx-auto mb-3 h-12 w-12 opacity-50" />
-					<p>Aucun exercice à afficher</p>
+					<p>Aucune {lore.learning.exercise} à afficher</p>
 					<p class="mt-2 text-sm">
 						Soit ce {lore.entities.student} n'a pas encore travaillé vos exercices, soit vous ne lui
 						en avez pas encore assigné.
@@ -246,7 +246,7 @@
 									class="flex items-center gap-1 hover:text-foreground"
 									onclick={() => toggleSort('title')}
 								>
-									Exercice
+									{lore.learning.exercise}
 									{#if sortBy === 'title'}
 										{#if sortDir === 'asc'}
 											<ArrowUp class="h-3 w-3" />

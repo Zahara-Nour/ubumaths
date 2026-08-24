@@ -84,7 +84,7 @@
 	<!-- Header -->
 	<div class="mb-6">
 		<Button variant="ghost" onclick={() => goto('/dashboard/student/exercises')}>
-			← Retour aux exercices
+			← Retour aux {lore.learning.exercise}s
 		</Button>
 	</div>
 

@@ -15,6 +15,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { Inbox, BookOpen, Code } from '@lucide/svelte';
@@ -84,7 +85,7 @@
 						</Button>
 						<Button href="/python-exercises" variant="outline">
 							<Code class="mr-2 h-4 w-4" />
-							Exercices Python
+							{lore.learning.exercise}s Python
 						</Button>
 					</div>
 				</div>

@@ -271,7 +271,8 @@
 					</Badge>
 				{/if}
 				<Badge variant="outline">
-					{previewData.metadata.totalExercises} exercices
+					{previewData.metadata.totalExercises}
+					{lore.learning.exercise}s
 				</Badge>
 				{#if previewData.student}
 					<Badge variant="outline">
@@ -308,7 +309,8 @@
 								<Card class="mb-4">
 									<CardHeader class="pb-2">
 										<CardTitle class="text-base">
-											Exercice {i + 1}
+											{lore.learning.exercise}
+											{i + 1}
 										</CardTitle>
 									</CardHeader>
 									<CardContent>
@@ -336,7 +338,8 @@
 								<Card class="mb-4">
 									<CardHeader class="pb-2">
 										<CardTitle class="text-base">
-											Exercice {i + 1}
+											{lore.learning.exercise}
+											{i + 1}
 										</CardTitle>
 									</CardHeader>
 									<CardContent>
@@ -364,7 +367,8 @@
 						<Card>
 							<CardHeader class="pb-2">
 								<CardTitle class="text-base">
-									Exercice {i + 1}
+									{lore.learning.exercise}
+									{i + 1}
 									{#if exercise.position !== i}
 										<Badge variant="outline" class="ml-2">
 											Position originale: {exercise.position + 1}
