@@ -462,7 +462,7 @@
 			wheelStudents = data.students || [];
 		} catch (error) {
 			console.error('Failed to fetch students for wheel:', error);
-			toaster.error('Erreur lors du chargement des élèves');
+			toaster.error(`Erreur lors du chargement des ${lore.entities.student}s`);
 			wheelModalOpen = false; // Close modal on error
 		} finally {
 			isLoadingStudents = false;

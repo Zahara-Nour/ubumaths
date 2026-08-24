@@ -136,6 +136,6 @@
 <AnalyticsModal
 	bind:open={modalOpen}
 	title={modalTitle}
-	description="Élèves observés en minus sur cet observable."
+	description="{lore.entities.student}s observés en minus sur cet observable."
 	students={modalStudents}
 />

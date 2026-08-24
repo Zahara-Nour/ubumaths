@@ -52,7 +52,7 @@
 		...data.periods.map((p) => ({ value: p.id, label: p.name }))
 	]);
 	const dispositionItems = [
-		{ value: 'large', label: 'Large — élèves × compétences (Pronote)' },
+		{ value: 'large', label: `Large — ${lore.entities.student}s × compétences (Pronote)` },
 		{ value: 'longue', label: 'Longue — 1 ligne par compétence (archivage)' }
 	];
 	const niveauFormatItems = [

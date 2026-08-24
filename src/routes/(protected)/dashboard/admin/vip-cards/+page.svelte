@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -405,7 +406,9 @@
 											expected={card.name}
 											onConfirm={() => deleteCard(card.id, card.name)}
 											title="Supprimer la carte « {card.name} »"
-											description="Cette action est irréversible. Les cartes déjà attribuées aux élèves resteront, mais cette carte ne sera plus disponible pour de nouveaux tirages."
+											description="Cette action est irréversible. Les cartes déjà attribuées aux {lore
+												.entities
+												.student}s resteront, mais cette carte ne sera plus disponible pour de nouveaux tirages."
 											successMessage="Carte supprimée"
 										>
 											{#snippet trigger(props)}
@@ -467,7 +470,7 @@
 				<Dialog.Description>
 					{editingCard
 						? 'Modifiez les informations de la carte VIP'
-						: 'Créez une nouvelle carte VIP pour vos élèves'}
+						: `Créez une nouvelle carte VIP pour vos ${lore.entities.student}s`}
 				</Dialog.Description>
 			</Dialog.Header>
 			<VipCardTemplateEditor

@@ -50,8 +50,8 @@
 					variant={previewMode ? 'default' : 'outline'}
 					onclick={togglePreviewMode}
 					title={previewMode
-						? "Quitter la vue élève et revenir à l'édition"
-						: "Voir et tester le notebook tel qu'un élève le verra (sans enregistrer les vérifications)"}
+						? `Quitter la vue ${lore.entities.student} et revenir à l'édition`
+						: `Voir et tester le notebook tel qu'un ${lore.entities.student} le verra (sans enregistrer les vérifications)`}
 				>
 					{#if previewMode}
 						<Pencil class="mr-2 h-4 w-4" />

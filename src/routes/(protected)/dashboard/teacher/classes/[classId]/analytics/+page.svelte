@@ -143,7 +143,7 @@
 									type="single"
 									items={studentItems}
 									bind:value={selectedStudentId}
-									placeholder="Choisir un élève"
+									placeholder="Choisir un {lore.entities.student}"
 								/>
 							</div>
 							<div class="min-w-[12rem]">
@@ -162,14 +162,18 @@
 								<StudentRetentionCurve
 									classId={data.classId}
 									studentId={selectedStudentId}
-									studentName={anonymized ? 'Élève sélectionné' : selectedStudentName}
+									studentName={anonymized
+										? `${lore.entities.student} sélectionné`
+										: selectedStudentName}
 									theme={selectedTheme}
 									{refreshNonce}
 								/>
 								<StudentGradeHistogram
 									classId={data.classId}
 									studentId={selectedStudentId}
-									studentName={anonymized ? 'Élève sélectionné' : selectedStudentName}
+									studentName={anonymized
+										? `${lore.entities.student} sélectionné`
+										: selectedStudentName}
 									{refreshNonce}
 								/>
 							</div>

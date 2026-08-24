@@ -425,7 +425,10 @@
 
 	<!-- Purchase Section -->
 	<div class="space-y-3 rounded-lg border p-4">
-		<MyCheckbox bind:checked={formData.is_purchasable} label="Achetable par les élèves" />
+		<MyCheckbox
+			bind:checked={formData.is_purchasable}
+			label="Achetable par les {lore.entities.student}s"
+		/>
 
 		{#if formData.is_purchasable}
 			<div class="space-y-2">

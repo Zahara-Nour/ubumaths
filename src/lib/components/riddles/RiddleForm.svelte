@@ -128,7 +128,7 @@
 			<Card.Description>
 				{riddle
 					? 'Modifiez les informations de cette énigme'
-					: 'Créez une nouvelle énigme mathématique pour vos élèves'}
+					: `Créez une nouvelle énigme mathématique pour vos ${lore.entities.student}s`}
 			</Card.Description>
 		</Card.Header>
 

@@ -78,7 +78,7 @@
 	 */
 	async function assignToStudents() {
 		if (selectedStudents.length === 0) {
-			toaster.error('Sélectionnez au moins un élève');
+			toaster.error(`Sélectionnez au moins un ${lore.entities.student}`);
 			return;
 		}
 
@@ -357,7 +357,9 @@
 								disabled={loading || selectedStudents.length === 0}
 								class="w-full"
 							>
-								{loading ? 'Assignation...' : `Assigner à ${selectedStudents.length} élève(s)`}
+								{loading
+									? 'Assignation...'
+									: `Assigner à ${selectedStudents.length} ${lore.entities.student}(s)`}
 							</Button>
 						</Card.Footer>
 					</Card.Root>
@@ -473,7 +475,7 @@
 											id="public-notes"
 											bind:value={publicNotes}
 											rows={3}
-											placeholder="Informations pour tous les élèves..."
+											placeholder="Informations pour tous les {lore.entities.student}s..."
 										/>
 									</div>
 								</div>
@@ -523,7 +525,7 @@
 											<div class="mt-1 flex items-center gap-2">
 												<Badge variant="outline" class="text-xs">
 													{assignment.assigned_to_type === 'student'
-														? 'Élève'
+														? lore.entities.student
 														: assignment.assigned_to_type === 'class'
 															? 'Classe'
 															: 'Public'}

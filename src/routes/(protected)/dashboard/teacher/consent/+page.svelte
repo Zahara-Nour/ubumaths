@@ -121,7 +121,7 @@
 		if (student.firstname && student.lastname) {
 			return `${student.firstname} ${student.lastname}`;
 		}
-		return student.firstname || student.lastname || 'Élève';
+		return student.firstname || student.lastname || lore.entities.student;
 	}
 </script>
 

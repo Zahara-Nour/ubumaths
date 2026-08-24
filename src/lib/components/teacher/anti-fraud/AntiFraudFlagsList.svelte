@@ -83,11 +83,11 @@
 	});
 
 	function displayName(flag: FlagListItem, idx: number): string {
-		if (anonymized) return `Élève ${idx + 1}`;
+		if (anonymized) return `${lore.entities.student} ${idx + 1}`;
 		const fn = flag.student.first_name?.trim() ?? '';
 		const ln = flag.student.last_name?.trim() ?? '';
 		const full = `${fn} ${ln}`.trim();
-		return full.length > 0 ? full : 'Élève sans nom';
+		return full.length > 0 ? full : `${lore.entities.student} sans nom`;
 	}
 
 	function flagTypeLabel(type: string): string {

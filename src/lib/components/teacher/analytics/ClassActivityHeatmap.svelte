@@ -94,7 +94,7 @@
 	}
 
 	function studentDisplay(s: HeatmapStudent, idx: number): string {
-		return anonymized ? `Élève ${idx + 1}` : s.display_name;
+		return anonymized ? `${lore.entities.student} ${idx + 1}` : s.display_name;
 	}
 
 	function alertChip(days: number | null): string {

@@ -47,7 +47,8 @@
 	const studentOptions = $derived(
 		students.map((s) => ({
 			value: s.id,
-			label: `${s.first_name || ''} ${s.last_name || ''}`.trim() || 'Élève inconnu'
+			label:
+				`${s.first_name || ''} ${s.last_name || ''}`.trim() || `${lore.entities.student} inconnu`
 		}))
 	);
 
@@ -147,7 +148,7 @@
 			toaster.success(`${result.created} instances créées pour la classe ${result.class.name}`);
 
 			if (result.skipped > 0) {
-				toaster.info(`${result.skipped} élèves avaient déjà une instance`);
+				toaster.info(`${result.skipped} ${lore.entities.student}s avaient déjà une instance`);
 			}
 		} catch (error) {
 			toaster.error(
@@ -196,7 +197,7 @@
 					type="single"
 					bind:value={selectedStudentId}
 					items={previewOptions}
-					placeholder="Sélectionner un élève"
+					placeholder="Sélectionner un {lore.entities.student}"
 				/>
 			</div>
 

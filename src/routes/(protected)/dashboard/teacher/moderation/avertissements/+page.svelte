@@ -178,7 +178,7 @@
 		const name = [firstname, lastname].filter(Boolean).join(' ');
 		if (name) return name;
 		if (fullname) return fullname;
-		return 'Élève sans nom';
+		return `${lore.entities.student} sans nom`;
 	}
 
 	/**
@@ -614,7 +614,8 @@
 											<DropdownMenu.Content>
 												<DropdownMenu.Item
 													onclick={() => {
-														const name = student.firstname || student.full_name || 'Élève';
+														const name =
+															student.firstname || student.full_name || lore.entities.student;
 														addWarning(student.id, 'C', name);
 													}}
 												>
@@ -622,7 +623,8 @@
 												</DropdownMenu.Item>
 												<DropdownMenu.Item
 													onclick={() => {
-														const name = student.firstname || student.full_name || 'Élève';
+														const name =
+															student.firstname || student.full_name || lore.entities.student;
 														addWarning(student.id, 'M', name);
 													}}
 												>
@@ -630,7 +632,8 @@
 												</DropdownMenu.Item>
 												<DropdownMenu.Item
 													onclick={() => {
-														const name = student.firstname || student.full_name || 'Élève';
+														const name =
+															student.firstname || student.full_name || lore.entities.student;
 														addWarning(student.id, 'R', name);
 													}}
 												>
@@ -638,7 +641,8 @@
 												</DropdownMenu.Item>
 												<DropdownMenu.Item
 													onclick={() => {
-														const name = student.firstname || student.full_name || 'Élève';
+														const name =
+															student.firstname || student.full_name || lore.entities.student;
 														addWarning(student.id, 'T', name);
 													}}
 												>

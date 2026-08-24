@@ -49,10 +49,9 @@
 
 	// Distribution mode descriptions
 	const distributionModeDescriptions: Record<DistributionMode, string> = {
-		on_demand:
-			'Les élèves peuvent cliquer "Nouveau problème" pour obtenir différentes valeurs à chaque fois.',
-		per_student: 'Chaque élève reçoit des valeurs uniques, cohérentes entre les sessions.',
-		per_group: "Tous les élèves d'un groupe voient les mêmes valeurs."
+		on_demand: `Les ${lore.entities.student}s peuvent cliquer "Nouveau problème" pour obtenir différentes valeurs à chaque fois.`,
+		per_student: `Chaque ${lore.entities.student} reçoit des valeurs uniques, cohérentes entre les sessions.`,
+		per_group: `Tous les ${lore.entities.student}s d'un groupe voient les mêmes valeurs.`
 	};
 </script>
 

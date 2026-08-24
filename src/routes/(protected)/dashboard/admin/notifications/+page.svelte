@@ -98,7 +98,7 @@
 	const roleLabels: Record<string, string> = {
 		admin: 'Administrateurs',
 		teacher: 'Professeurs',
-		student: 'Élèves'
+		student: `${lore.entities.student}s`
 	};
 
 	// Items for MySelect dropdowns
