@@ -21,6 +21,7 @@
 	@see src/lib/exercises/types for DistributionMode
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import * as Collapsible from '$lib/components/ui/collapsible';
@@ -96,7 +97,7 @@
 			<Card.Header>
 				<Card.Title>Mode de distribution</Card.Title>
 				<Card.Description>
-					Comment les valeurs des variables sont-elles attribuées aux élèves ?
+					Comment les valeurs des variables sont-elles attribuées aux {lore.entities.student}s ?
 				</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-3">
@@ -124,12 +125,12 @@
 				<div class="space-y-2 text-xs text-muted-foreground">
 					<p><strong>À la demande :</strong> Idéal pour l'entraînement et la pratique autonome</p>
 					<p>
-						<strong>Par élève :</strong> Idéal pour les devoirs où chaque élève doit avoir un problème
-						différent
+						<strong>Par {lore.entities.student} :</strong> Idéal pour les devoirs où chaque {lore
+							.entities.student} doit avoir un problème différent
 					</p>
 					<p>
-						<strong>Par groupe :</strong> Idéal pour les travaux en classe où tous les élèves travaillent
-						sur le même problème
+						<strong>Par groupe :</strong> Idéal pour les travaux en classe où tous les {lore
+							.entities.student}s travaillent sur le même problème
 					</p>
 				</div>
 			</Card.Content>

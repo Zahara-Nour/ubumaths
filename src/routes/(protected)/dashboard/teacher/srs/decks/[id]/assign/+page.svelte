@@ -225,7 +225,7 @@
 		<TabsList class="mb-6 w-full">
 			<TabsTrigger value="students" class="flex-1">
 				<Users class="mr-2 h-4 w-4" />
-				Élèves ({data.students?.length || 0})
+				{lore.entities.student}s ({data.students?.length || 0})
 			</TabsTrigger>
 			<TabsTrigger value="classes" class="flex-1">
 				<UserCheck class="mr-2 h-4 w-4" />
@@ -238,7 +238,7 @@
 			<Card.Root>
 				<Card.Header>
 					<div class="flex items-center justify-between">
-						<Card.Title>Sélectionner des élèves</Card.Title>
+						<Card.Title>Sélectionner des {lore.entities.student}s</Card.Title>
 						<Button onclick={selectAllStudents} variant="outline" size="sm">
 							{selectedStudents.length === data.students.length
 								? 'Tout désélectionner'
@@ -325,9 +325,8 @@
 										{/if}
 									</div>
 									<Badge variant="outline">
-										{classItem.student_count || 0} élève{(classItem.student_count || 0) > 1
-											? 's'
-											: ''}
+										{classItem.student_count || 0}
+										{lore.entities.student}{(classItem.student_count || 0) > 1 ? 's' : ''}
 									</Badge>
 								</div>
 							{/each}

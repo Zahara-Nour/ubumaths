@@ -179,7 +179,7 @@
 			<Label for="deadline">Date limite (optionnel)</Label>
 			<Input id="deadline" type="datetime-local" bind:value={deadline} min={minDeadline} />
 			<p class="text-xs text-muted-foreground">
-				Si définie, les élèves ne pourront plus commencer après cette date
+				Si définie, les {lore.entities.student}s ne pourront plus commencer après cette date
 			</p>
 		</div>
 

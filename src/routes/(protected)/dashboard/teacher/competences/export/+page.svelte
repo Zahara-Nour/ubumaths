@@ -6,6 +6,7 @@
 	Visuels de niveau cohérents avec ClassCompetenceGrid (◯/🟠/🟢/✨).
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
@@ -183,7 +184,7 @@
 				<Card.Header>
 					<Card.Title>Aperçu</Card.Title>
 					<Card.Description>
-						Tableau large (élèves × compétences). Le CSV reprend ce contenu.
+						Tableau large ({lore.entities.student}s × compétences). Le CSV reprend ce contenu.
 					</Card.Description>
 				</Card.Header>
 				<Card.Content>
@@ -200,7 +201,7 @@
 
 					{#if !hasStudents}
 						<p class="py-8 text-center text-sm text-muted-foreground">
-							Aucun élève dans cette classe.
+							Aucun {lore.entities.student} dans cette classe.
 						</p>
 					{:else}
 						<div class="overflow-x-auto">
@@ -212,7 +213,7 @@
 											scope="col"
 											class="sticky left-0 z-10 bg-background px-2 py-2 text-left font-medium"
 										>
-											Élève
+											{lore.entities.student}
 										</th>
 										{#each data.competences as comp (comp.code)}
 											<th

@@ -314,7 +314,7 @@
 			{:else if hasStarterMarkers}
 				<div class="mt-2">
 					<p class="mb-1 text-xs text-muted-foreground">
-						Aperçu côté élève ({starterParse.markers.length}
+						Aperçu côté {lore.entities.student} ({starterParse.markers.length}
 						{starterParse.markers.length > 1 ? 'zones modifiables' : 'zone modifiable'})
 					</p>
 					{#key debouncedStarterCode}

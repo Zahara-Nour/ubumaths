@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { friendsManager, type ClassmateInfo } from '$lib/stores/friends.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -188,7 +189,7 @@
 				</div>
 			{:else if studentsInClass.length === 0}
 				<p class="py-4 text-center text-sm text-muted-foreground italic">
-					Aucun élève dans cette classe
+					Aucun {lore.entities.student} dans cette classe
 				</p>
 			{:else}
 				<div class="space-y-2">

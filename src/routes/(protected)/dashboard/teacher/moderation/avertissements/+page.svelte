@@ -37,6 +37,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -505,7 +506,7 @@
 						<div class="overflow-hidden rounded-lg border border-border bg-card">
 							<div class="border-b border-border bg-muted/30 px-6 py-4">
 								<h3 class="text-lg font-semibold text-foreground">
-									Élèves ({currentStudents.length})
+									{lore.entities.student}s ({currentStudents.length})
 								</h3>
 							</div>
 

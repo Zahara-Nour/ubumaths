@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import {
 		Card,
@@ -174,7 +175,7 @@
 					Aperçu des Variantes
 				</CardTitle>
 				<CardDescription>
-					Visualisez ce que les élèves verront avec les paramètres résolus
+					Visualisez ce que les {lore.entities.student}s verront avec les paramètres résolus
 				</CardDescription>
 			</div>
 			{#if classId && students.length > 0}

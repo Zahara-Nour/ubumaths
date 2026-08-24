@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { DocumentManager } from '$lib/components/documents';
 	import { FileText } from '@lucide/svelte';
 </script>
@@ -16,7 +17,8 @@
 		<div>
 			<h1 class="text-2xl font-bold">Documents RAG</h1>
 			<p class="text-muted-foreground">
-				Gérez les documents utilisés par le tuteur pédagogique pour fournir du contexte aux élèves
+				Gérez les documents utilisés par le tuteur pédagogique pour fournir du contexte aux {lore
+					.entities.student}s
 			</p>
 		</div>
 	</div>

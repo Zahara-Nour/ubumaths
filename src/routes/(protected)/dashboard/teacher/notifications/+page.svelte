@@ -116,7 +116,7 @@
 			<Card.Header>
 				<Card.Title>Créer une notification</Card.Title>
 				<Card.Description>
-					Envoyez une notification à vos classes ou à des élèves spécifiques
+					Envoyez une notification à vos classes ou à des {lore.entities.student}s spécifiques
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
@@ -186,7 +186,7 @@
 								</label>
 								<label class="flex items-center gap-2">
 									<input type="radio" bind:group={targetType} value="users" class="h-4 w-4" />
-									<span>Élèves spécifiques</span>
+									<span>{lore.entities.student}s spécifiques</span>
 								</label>
 							</div>
 							<input type="hidden" name="targetType" value={targetType} />
@@ -223,7 +223,7 @@
 						<!-- Student selection (if targetType is users) -->
 						{#if targetType === 'users'}
 							<div class="space-y-2">
-								<Label>Sélectionner les élèves</Label>
+								<Label>Sélectionner les {lore.entities.student}s</Label>
 								<div class="max-h-48 overflow-y-auto rounded border p-2">
 									{#if availableStudents.length > 0}
 										<div class="grid gap-2 sm:grid-cols-2">

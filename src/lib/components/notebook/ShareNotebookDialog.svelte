@@ -229,12 +229,12 @@
 					{#if readonly}
 						<div class="flex items-center gap-2 text-sm text-muted-foreground">
 							<Lock class="h-4 w-4" />
-							<span>Les élèves peuvent uniquement consulter le notebook</span>
+							<span>Les {lore.entities.student}s peuvent uniquement consulter le notebook</span>
 						</div>
 					{:else}
 						<div class="flex items-center gap-2 text-sm text-muted-foreground">
 							<Unlock class="h-4 w-4" />
-							<span>Les élèves peuvent exécuter et modifier le code</span>
+							<span>Les {lore.entities.student}s peuvent exécuter et modifier le code</span>
 						</div>
 					{/if}
 				</div>

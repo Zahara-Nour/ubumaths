@@ -19,6 +19,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type {
 		DbRiddle,
 		CreateRiddleData,
@@ -191,7 +192,8 @@
 		<Card.Header>
 			<Card.Title>Énoncé *</Card.Title>
 			<Card.Description>
-				Le problème ou la question posée aux élèves (supporte le rich text et LaTeX)
+				Le problème ou la question posée aux {lore.entities.student}s (supporte le rich text et
+				LaTeX)
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>

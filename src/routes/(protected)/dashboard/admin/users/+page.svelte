@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * User Management Page
 	 *
@@ -865,7 +866,7 @@
 					<div class="flex items-center gap-2 pb-1">
 						<Switch bind:checked={showTestUsers} id="test-filter" />
 						<label for="test-filter" class="cursor-pointer text-sm font-medium text-foreground">
-							Afficher élèves tests
+							Afficher {lore.entities.student}s tests
 						</label>
 					</div>
 				</div>

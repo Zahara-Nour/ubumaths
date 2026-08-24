@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import NotebookView from '$lib/components/notebook/NotebookView.svelte';
 	import ShareNotebookDialog from '$lib/components/notebook/ShareNotebookDialog.svelte';
@@ -57,7 +58,7 @@
 						Retour édition
 					{:else}
 						<Eye class="mr-2 h-4 w-4" />
-						Vue élève
+						Vue {lore.entities.student}
 					{/if}
 				</Button>
 				<Button variant="outline" onclick={handleResults}>

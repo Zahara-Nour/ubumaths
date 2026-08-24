@@ -15,6 +15,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 
@@ -87,7 +88,8 @@
 					<li class="flex gap-2">
 						<span class="text-primary">•</span>
 						<span
-							><strong>Pour les élèves</strong> : Instructions supplémentaires, rappels de cours, conseils</span
+							><strong>Pour les {lore.entities.student}s</strong> : Instructions supplémentaires, rappels
+							de cours, conseils</span
 						>
 					</li>
 				</ul>
@@ -95,8 +97,8 @@
 					<p class="font-medium">Exemple de description :</p>
 					<p class="text-xs italic">
 						"Ce template permet de travailler sur la dérivation de polynômes de degré 2 et 3. Les
-						élèves doivent appliquer les règles de dérivation apprises en cours. Rappel : la dérivée
-						de x^n est nx^(n-1)."
+						{lore.entities.student}s doivent appliquer les règles de dérivation apprises en cours.
+						Rappel : la dérivée de x^n est nx^(n-1)."
 					</p>
 				</div>
 			</section>
@@ -367,7 +369,8 @@
 					<li class="flex gap-2">
 						<span class="text-primary">•</span>
 						<span
-							><strong>Diversité</strong> : Éviter que les élèves tombent toujours sur la même formulation</span
+							><strong>Diversité</strong> : Éviter que les {lore.entities.student}s tombent toujours
+							sur la même formulation</span
 						>
 					</li>
 					<li class="flex gap-2">

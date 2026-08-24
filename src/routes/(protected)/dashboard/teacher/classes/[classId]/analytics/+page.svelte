@@ -10,6 +10,7 @@
 	disponible — l'interaction "click sur cellule pour focus" sera V2.1.
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { ChevronLeft, RefreshCw, EyeOff, Eye } from '@lucide/svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -132,7 +133,7 @@
 			{#if data.students.length > 0}
 				<Card.Root>
 					<Card.Header>
-						<Card.Title>Détail par élève</Card.Title>
+						<Card.Title>Détail par {lore.entities.student}</Card.Title>
 						<Card.Description>
 							Rétention sur un thème + distribution des grades sur les 7 derniers jours.
 						</Card.Description>
@@ -174,7 +175,7 @@
 							</div>
 						{:else}
 							<p class="py-4 text-center text-sm text-muted-foreground">
-								Sélectionnez un élève et un thème pour afficher le détail.
+								Sélectionnez un {lore.entities.student} et un thème pour afficher le détail.
 							</p>
 						{/if}
 					</Card.Content>

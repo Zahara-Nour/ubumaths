@@ -429,7 +429,7 @@
 									disabled={submitting}
 								/>
 								<p class="mt-1 ml-6 text-xs text-muted-foreground">
-									Les élèves pourront voir ce travail immédiatement
+									Les {lore.entities.student}s pourront voir ce travail immédiatement
 								</p>
 							</div>
 

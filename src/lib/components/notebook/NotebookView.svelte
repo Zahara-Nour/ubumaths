@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * NotebookView Component
 	 *
@@ -433,7 +434,7 @@
 		{#if previewMode}
 			<div class="border-b border-amber-500/40 bg-amber-50/50 px-4 py-2 dark:bg-amber-950/20">
 				<p class="text-center text-xs text-amber-800 dark:text-amber-200">
-					<strong>Vue élève (dry-run)</strong>
+					<strong>Vue {lore.entities.student} (dry-run)</strong>
 					— les vérifications de checkpoint sont exécutées localement et ne sont pas enregistrées dans
 					le tableau des résultats.
 				</p>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { invalidateAll } from '$app/navigation';
 	import Wheel from '$lib/components/Wheel.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -86,7 +87,8 @@
 					<option value="">Sélectionner une classe</option>
 					{#each data.classes as classItem (classItem.id)}
 						<option value={classItem.id}>
-							{classItem.name} ({classItem.students.length} élèves)
+							{classItem.name} ({classItem.students.length}
+							{lore.entities.student}s)
 						</option>
 					{/each}
 				</select>
@@ -139,7 +141,7 @@
 				{#if !selectedClassId}
 					Sélectionnez une classe pour commencer
 				{:else}
-					Cette classe ne contient aucun élève
+					Cette classe ne contient aucun {lore.entities.student}
 				{/if}
 			</p>
 		</div>

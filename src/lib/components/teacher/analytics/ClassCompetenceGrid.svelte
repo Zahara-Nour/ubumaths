@@ -5,6 +5,7 @@
 	Chip de fraîcheur "dernière saisie il y a X jours".
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
@@ -85,7 +86,7 @@
 	<Card.Header>
 		<div class="flex flex-wrap items-center justify-between gap-2">
 			<div>
-				<Card.Title>Grille compétences math × élèves</Card.Title>
+				<Card.Title>Grille compétences math × {lore.entities.student}s</Card.Title>
 				<Card.Description>Niveaux famille B saisis par le prof (6 compétences).</Card.Description>
 			</div>
 			{#if data}
@@ -111,7 +112,7 @@
 					<thead>
 						<tr class="border-b border-border">
 							<th class="sticky left-0 z-10 bg-background px-2 py-2 text-left font-medium">
-								Élève
+								{lore.entities.student}
 							</th>
 							{#each data.competences as comp (comp.id)}
 								<th
