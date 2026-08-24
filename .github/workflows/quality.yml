@@ -212,10 +212,11 @@ jobs:
       - name: Run client tests
         run: pnpm exec vitest run --project client
 
-  # Security gate: fails (red) when a production high/critical vuln appears,
-  # including the transitive ones Dependabot can't auto-PR for (pnpm overrides).
-  # Standalone (NOT in the `summary` needs) → visible but non-blocking; add it
-  # to the branch's required status checks to make it gate merges.
+  # Security gate for production dependencies (incl. transitive vulns Dependabot
+  # can't auto-PR for pnpm — those need `pnpm.overrides`). Tuned to avoid locking
+  # a solo maintainer out of merges over an unfixable/upstream-lagging advisory:
+  #   - CRITICAL → job fails → wired into `summary.needs` → BLOCKS the merge.
+  #   - HIGH     → warning annotation only → visible, never blocks.
   audit:
     name: Security Audit
     runs-on: ubuntu-latest
@@ -237,13 +238,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Audit production dependencies (high + critical)
-        run: pnpm audit --audit-level high --prod
+      # High severity → warning only (visible in the run, never fails the job).
+      - name: Report high-severity prod vulns (non-blocking)
+        run: |
+          pnpm audit --audit-level high --prod \
+            || echo "::warning title=Security::Production high-severity vulnerabilities present — run 'pnpm audit --prod' and consider a pnpm.overrides bump."
+
+      # Critical → fails the job. `audit` is in `summary.needs`, and CI Summary is
+      # a required check, so a critical prod vuln blocks the merge.
+      - name: Fail on critical prod vulns (blocking)
+        run: pnpm audit --audit-level critical --prod
 
   summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, build, test-server, test-client]
+    needs: [lint, typecheck, build, test-server, test-client, audit]
     if: always()
 
     steps:
@@ -254,12 +263,14 @@ jobs:
           echo "Build: ${{ needs.build.result }}"
           echo "Server Tests: ${{ needs.test-server.result }}"
           echo "Client Tests: ${{ needs.test-client.result }}"
+          echo "Security Audit (critical): ${{ needs.audit.result }}"
 
           if [ "${{ needs.lint.result }}" != "success" ] || \
              [ "${{ needs.typecheck.result }}" != "success" ] || \
              [ "${{ needs.build.result }}" != "success" ] || \
              [ "${{ needs.test-server.result }}" != "success" ] || \
-             [ "${{ needs.test-client.result }}" != "success" ]; then
+             [ "${{ needs.test-client.result }}" != "success" ] || \
+             [ "${{ needs.audit.result }}" != "success" ]; then
             echo "::error::Some checks failed"
             exit 1
           else
