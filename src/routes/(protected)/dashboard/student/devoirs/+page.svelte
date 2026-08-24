@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -199,11 +200,13 @@
 					<!-- Class Filter (only show if multiple classes) -->
 					{#if data.classes.length > 1}
 						<div class="flex-1">
-							<label for="class-select" class="mb-2 block text-sm font-medium">Classe</label>
+							<label for="class-select" class="mb-2 block text-sm font-medium"
+								>{lore.entities.class}</label
+							>
 							<MySelect
 								bind:value={selectedClass}
 								items={classItems}
-								placeholder="Sélectionner une classe"
+								placeholder="Sélectionner un {lore.entities.class}"
 								triggerClass="w-full h-10 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
 							/>
 						</div>

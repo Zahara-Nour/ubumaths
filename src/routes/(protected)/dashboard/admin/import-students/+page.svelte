@@ -416,7 +416,7 @@
 										<th class="p-2 text-left">Prénom</th>
 										<th class="p-2 text-left">Nom</th>
 										<th class="p-2 text-left">Niveau</th>
-										<th class="p-2 text-left">Classes</th>
+										<th class="p-2 text-left">{lore.entities.class}s</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -489,7 +489,7 @@
 		</Card.Header>
 		<Card.Content>
 			{#if data.classes.length === 0}
-				<p class="py-4 text-center text-muted-foreground">Aucune classe disponible</p>
+				<p class="py-4 text-center text-muted-foreground">Aucun {lore.entities.class} disponible</p>
 			{:else}
 				<div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
 					{#each data.classes as classItem (classItem.id)}

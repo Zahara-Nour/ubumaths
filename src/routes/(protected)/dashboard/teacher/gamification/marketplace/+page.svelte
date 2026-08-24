@@ -221,7 +221,9 @@
 		<CardContent class="pt-6">
 			<div class="flex flex-wrap gap-4">
 				<div class="min-w-[200px] flex-1">
-					<label for="class-filter" class="mb-1 block text-sm font-medium">Classe</label>
+					<label for="class-filter" class="mb-1 block text-sm font-medium"
+						>{lore.entities.class}</label
+					>
 					<MySelect
 						type="single"
 						value={selectedClassId}

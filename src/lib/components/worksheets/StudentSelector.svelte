@@ -23,6 +23,7 @@
 	```
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Separator } from '$lib/components/ui/separator';
@@ -301,7 +302,7 @@
 				{:else if classStudents.length === 0}
 					<div class="py-12 text-center text-muted-foreground">
 						<Users class="mx-auto h-12 w-12 opacity-50" />
-						<p class="mt-2">Aucun eleve dans cette classe</p>
+						<p class="mt-2">Aucun eleve dans ce {lore.entities.class}</p>
 					</div>
 				{:else if filteredStudents.length === 0}
 					<div class="py-8 text-center text-muted-foreground">

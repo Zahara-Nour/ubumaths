@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -272,7 +273,7 @@
 							<ClipboardList class="h-6 w-6" />
 							<div class="text-center">
 								<div class="font-semibold">Créer une évaluation</div>
-								<div class="text-xs font-normal opacity-80">Pour vos classes</div>
+								<div class="text-xs font-normal opacity-80">Pour vos {lore.entities.class}s</div>
 							</div>
 						</Button>
 					{/if}

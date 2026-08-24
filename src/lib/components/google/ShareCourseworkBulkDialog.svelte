@@ -365,7 +365,7 @@
 				<!-- Empty state -->
 				<div class="flex flex-col items-center justify-center py-8 text-center">
 					<Users class="mb-4 h-12 w-12 text-muted-foreground" />
-					<p class="text-lg font-medium">Aucune classe disponible</p>
+					<p class="text-lg font-medium">Aucun {lore.entities.class} disponible</p>
 					<p class="mt-2 text-sm text-muted-foreground">
 						Créez un {lore.entities.class} pour pouvoir partager du contenu
 					</p>
@@ -383,7 +383,7 @@
 					</div>
 
 					<fieldset class="space-y-2" disabled={submitting}>
-						<legend class="sr-only">Sélection des classes</legend>
+						<legend class="sr-only">Sélection des {lore.entities.class}s</legend>
 						{#each classes as cls (cls.id)}
 							<div
 								class={`rounded-lg border transition-colors ${
@@ -410,7 +410,8 @@
 					</fieldset>
 
 					<p class="text-sm text-muted-foreground">
-						{selectedClassIds.size} classe{selectedClassIds.size > 1 ? 's' : ''}
+						{selectedClassIds.size}
+						{lore.entities.class}{selectedClassIds.size > 1 ? 's' : ''}
 						sélectionnée{selectedClassIds.size > 1 ? 's' : ''}
 					</p>
 				</div>

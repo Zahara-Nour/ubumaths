@@ -583,7 +583,7 @@
 		<div class="rounded-lg bg-card p-6 shadow">
 			<!-- Header row: Title + Period badge (mobile) -->
 			<div class="mb-4 flex items-center justify-between">
-				<h3 class="text-lg font-semibold text-foreground">Ma Classe</h3>
+				<h3 class="text-lg font-semibold text-foreground">Ma {lore.entities.class}</h3>
 				{#if selectedClass}
 					<Badge variant="outline" class="text-sm">
 						<Users class="mr-1.5 h-3.5 w-3.5" />

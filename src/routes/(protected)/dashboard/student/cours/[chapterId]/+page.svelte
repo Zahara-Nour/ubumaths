@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Student Chapter Detail Page
 	 * ============================
@@ -227,7 +228,7 @@
 				<Card.Root>
 					<Card.Content class="py-12 text-center">
 						<ClipboardList class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-						<p class="text-muted-foreground">Aucune fiche pour cette classe</p>
+						<p class="text-muted-foreground">Aucune fiche pour ce {lore.entities.class}</p>
 					</Card.Content>
 				</Card.Root>
 			{:else}

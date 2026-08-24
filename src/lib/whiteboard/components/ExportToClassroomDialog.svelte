@@ -487,7 +487,7 @@
 			<div class="space-y-4 py-4">
 				<!-- Class Selection -->
 				<div class="space-y-2">
-					<Label for="class">Classe</Label>
+					<Label for="class">{lore.entities.class}</Label>
 					{#if isLoadingClasses}
 						<div class="flex items-center gap-2 text-sm text-muted-foreground">
 							<Loader2 class="h-4 w-4 animate-spin" />
@@ -516,7 +516,7 @@
 										value={selectedClassId}
 										items={classItems}
 										onValueChange={handleClassChange}
-										placeholder="Sélectionnez une classe"
+										placeholder="Sélectionnez un {lore.entities.class}"
 									/>
 								</div>
 								{#if wasAutoDetected && selectedClass}

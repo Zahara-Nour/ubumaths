@@ -300,7 +300,8 @@
 						</Button>
 					</div>
 					<Card.Description>
-						{selectedClasses.length} classe{selectedClasses.length > 1 ? 's' : ''} sélectionnée{selectedClasses.length >
+						{selectedClasses.length}
+						{lore.entities.class}{selectedClasses.length > 1 ? 's' : ''} sélectionnée{selectedClasses.length >
 						1
 							? 's'
 							: ''}
@@ -309,7 +310,7 @@
 				<Card.Content>
 					{#if !data.classes || data.classes.length === 0}
 						<div class="rounded-lg border-2 border-dashed border-muted bg-muted/20 p-8 text-center">
-							<p class="text-muted-foreground">Aucune classe disponible</p>
+							<p class="text-muted-foreground">Aucun {lore.entities.class} disponible</p>
 						</div>
 					{:else}
 						<div class="space-y-2">

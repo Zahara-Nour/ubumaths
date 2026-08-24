@@ -818,13 +818,13 @@
 
 					<!-- Browse by Class -->
 					<div class="flex-1">
-						<Label class="mb-2 block">Parcourir par classe</Label>
+						<Label class="mb-2 block">Parcourir par {lore.entities.class}</Label>
 						<div class="relative">
 							<MySelect
 								type="single"
 								bind:value={selectedClassFilter}
 								items={[
-									{ value: 'none', label: 'Aucune classe' },
+									{ value: 'none', label: 'Aucun {lore.entities.class}' },
 									...data.classes
 										.filter((c) => c.is_active)
 										.map((c) => ({ value: c.id, label: c.name }))
@@ -888,7 +888,8 @@
 									Résultats de recherche ({filteredSearchResults.length})
 								{:else if filteredClassResults.length > 0}
 									{@const className =
-										data.classes.find((c) => c.id === selectedClassFilter)?.name || 'Classe'}
+										data.classes.find((c) => c.id === selectedClassFilter)?.name ||
+										lore.entities.class}
 									Étudiants de {className} ({filteredClassResults.length})
 								{/if}
 							</Card.Title>
@@ -1034,7 +1035,9 @@
 															{/snippet}
 														</Tooltip.Trigger>
 														<Tooltip.Content>
-															<p>Veuillez assigner au moins une classe avant d'approuver</p>
+															<p>
+																Veuillez assigner au moins un {lore.entities.class} avant d'approuver
+															</p>
 														</Tooltip.Content>
 													</Tooltip.Root>
 												</Tooltip.Provider>
@@ -1182,7 +1185,9 @@
 								<div class="space-y-2">
 									<!-- Header with label and add controls -->
 									<div class="flex items-center gap-2">
-										<Label class="text-sm font-medium text-muted-foreground">Classes</Label>
+										<Label class="text-sm font-medium text-muted-foreground"
+											>{lore.entities.class}s</Label
+										>
 
 										{#if editingClasses}
 											<div class="flex flex-1 gap-2">
@@ -1190,7 +1195,7 @@
 													type="single"
 													bind:value={classToAdd}
 													items={[
-														{ value: '', label: 'Sélectionner une classe' },
+														{ value: '', label: 'Sélectionner un {lore.entities.class}' },
 														...data.classes
 															.filter((c) => !selectedUser?.class_ids?.includes(c.id))
 															.map((c) => ({ value: c.id, label: c.name }))
@@ -1215,8 +1220,8 @@
 										class="min-h-[40px] w-full cursor-pointer text-left"
 										onclick={() => (editingClasses = true)}
 										aria-label={editingClasses
-											? "Classes en cours d'édition"
-											: 'Cliquez pour éditer les classes'}
+											? "{lore.entities.class}s en cours d'édition"
+											: 'Cliquez pour éditer les {lore.entities.class}s'}
 									>
 										<div class="flex flex-wrap gap-2">
 											{#if selectedUser.class_ids && selectedUser.class_ids.length > 0}
@@ -1242,7 +1247,7 @@
 													</Badge>
 												{/each}
 											{:else}
-												<p class="text-sm text-muted-foreground">Aucune classe</p>
+												<p class="text-sm text-muted-foreground">Aucun {lore.entities.class}</p>
 											{/if}
 										</div>
 									</button>

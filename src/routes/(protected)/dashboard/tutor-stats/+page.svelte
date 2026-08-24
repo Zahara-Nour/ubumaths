@@ -180,7 +180,7 @@
 				</div>
 
 				<div class="flex items-center gap-2">
-					<label for="class-select" class="text-sm font-medium">Classe:</label>
+					<label for="class-select" class="text-sm font-medium">{lore.entities.class}:</label>
 					<MySelect type="single" bind:value={selectedClassId} items={classItems} />
 				</div>
 

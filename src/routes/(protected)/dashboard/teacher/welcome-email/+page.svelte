@@ -138,7 +138,7 @@
 				</p>
 			</Card.Content>
 			<Card.Footer>
-				<Button href="/dashboard/teacher/classes">Retour aux classes</Button>
+				<Button href="/dashboard/teacher/classes">Retour aux {lore.entities.class}s</Button>
 			</Card.Footer>
 		</Card.Root>
 	{:else}

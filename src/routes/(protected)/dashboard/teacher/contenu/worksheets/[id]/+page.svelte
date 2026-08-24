@@ -728,7 +728,9 @@
 													<div class="flex flex-wrap items-center gap-1.5">
 														<Users class="h-4 w-4 text-muted-foreground" />
 														{#if assignmentClasses.length === 0}
-															<span class="text-sm text-muted-foreground">Aucune classe</span>
+															<span class="text-sm text-muted-foreground"
+																>Aucun {lore.entities.class}</span
+															>
 														{:else if assignmentClasses.length === 1}
 															<span class="text-sm text-muted-foreground">
 																{assignmentClasses[0].name}

@@ -623,7 +623,7 @@
 	{#if classes.length === 0}
 		<div class="rounded-lg border border-border bg-card p-12 text-center">
 			<Info class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-			<p class="text-lg font-medium">Aucune classe disponible</p>
+			<p class="text-lg font-medium">Aucun {lore.entities.class} disponible</p>
 			<p class="text-muted-foreground">
 				Vous devez avoir au moins un {lore.entities.class} pour créer des templates
 			</p>
@@ -744,7 +744,7 @@
 										<span
 											class="rounded bg-green-100 px-2 py-1 text-xs text-green-700 dark:bg-green-900/30 dark:text-green-300"
 										>
-											{template.class_name || 'Ma classe'}
+											{template.class_name || `Mon ${lore.entities.class}`}
 										</span>
 									{/if}
 

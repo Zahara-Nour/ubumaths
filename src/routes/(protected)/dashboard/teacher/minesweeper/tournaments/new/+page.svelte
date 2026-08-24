@@ -207,7 +207,9 @@
 		</Button>
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Nouveau Tournoi</h1>
-			<p class="mt-2 text-muted-foreground">Creez un tournoi de demineur pour vos classes</p>
+			<p class="mt-2 text-muted-foreground">
+				Creez un tournoi de demineur pour vos {lore.entities.class}s
+			</p>
 		</div>
 	</div>
 
@@ -354,7 +356,8 @@
 					</div>
 					{#if selectedClassIds.length > 0}
 						<p class="text-sm text-muted-foreground">
-							{selectedClassIds.length} classe{selectedClassIds.length > 1 ? 's' : ''} selectionnee{selectedClassIds.length >
+							{selectedClassIds.length}
+							{lore.entities.class}{selectedClassIds.length > 1 ? 's' : ''} selectionnee{selectedClassIds.length >
 							1
 								? 's'
 								: ''} ({totalStudents} eleves au total)

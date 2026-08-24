@@ -161,9 +161,9 @@
 				</CardTitle>
 				<CardDescription>
 					{#if isTeacher && className}
-						Configurez le marché d'échange pour la classe {className}
+						Configurez le marché d'échange pour le {lore.entities.class} {className}
 					{:else if isTeacher}
-						Configurez le marché d'échange pour cette classe
+						Configurez le marché d'échange pour ce {lore.entities.class}
 					{:else}
 						Gérez les paramètres du marché d'échange
 					{/if}

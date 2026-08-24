@@ -514,7 +514,9 @@
 	{:else if studentsData.length === 0}
 		<!-- Empty State -->
 		<div class="flex flex-col items-center justify-center p-8 text-center">
-			<p class="text-muted-foreground">Aucun {lore.entities.student} dans cette classe</p>
+			<p class="text-muted-foreground">
+				Aucun {lore.entities.student} dans ce {lore.entities.class}
+			</p>
 		</div>
 	{:else}
 		<!-- Student Table -->

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Teacher — Avancement du programme (coverage heatmap).
 	 *
@@ -92,7 +93,7 @@
 				value={data.selectedClassId}
 				items={data.classOptions}
 				onValueChange={changeClass}
-				placeholder="Classe…"
+				placeholder="{lore.entities.class}…"
 				triggerClass="w-48"
 			/>
 		{/if}

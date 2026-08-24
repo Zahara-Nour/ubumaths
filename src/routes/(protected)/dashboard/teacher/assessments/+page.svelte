@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -39,7 +40,9 @@
 	<div class="mb-8 flex items-center justify-between">
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Mes Évaluations</h1>
-			<p class="mt-2 text-muted-foreground">Créez et gérez vos évaluations pour vos classes</p>
+			<p class="mt-2 text-muted-foreground">
+				Créez et gérez vos évaluations pour vos {lore.entities.class}s
+			</p>
 		</div>
 		<Button onclick={handleCreateNew}>
 			<Plus class="mr-2 h-4 w-4" />

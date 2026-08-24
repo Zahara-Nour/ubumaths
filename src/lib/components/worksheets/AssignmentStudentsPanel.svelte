@@ -22,6 +22,7 @@
 	```
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -178,7 +179,7 @@
 		</div>
 		<Card.Description>
 			Eleves assignes a cette feuille en plus de ceux de la classe. Ces assignations permettent
-			d'ajouter des eleves specifiques qui ne sont pas dans la classe assignee.
+			d'ajouter des eleves specifiques qui ne sont pas dans le {lore.entities.class} assignee.
 		</Card.Description>
 	</Card.Header>
 	<Card.Content>

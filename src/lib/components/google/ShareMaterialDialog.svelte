@@ -339,7 +339,7 @@
 			{:else if classes.length === 0}
 				<div class="py-8 text-center text-muted-foreground">
 					<p>Aucun {lore.entities.class} disponible</p>
-					<p class="text-sm">Créez une classe pour partager du contenu</p>
+					<p class="text-sm">Créez un {lore.entities.class} pour partager du contenu</p>
 				</div>
 			{:else}
 				<div class="space-y-3">
@@ -488,7 +488,8 @@
 		<Dialog.Footer>
 			<div class="flex items-center justify-between gap-4">
 				<p class="text-sm text-muted-foreground">
-					{selectedCount} classe{selectedCount > 1 ? 's' : ''} sélectionnée{selectedCount > 1
+					{selectedCount}
+					{lore.entities.class}{selectedCount > 1 ? 's' : ''} sélectionnée{selectedCount > 1
 						? 's'
 						: ''}
 				</p>

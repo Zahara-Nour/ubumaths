@@ -305,7 +305,9 @@
 		<div class="mb-4 flex flex-wrap items-center gap-4">
 			{#if data.teacherClasses.length > 1}
 				<div class="flex items-center gap-2">
-					<label for="class-filter" class="text-sm font-medium">Filtrer par classe :</label>
+					<label for="class-filter" class="text-sm font-medium"
+						>Filtrer par {lore.entities.class} :</label
+					>
 					<div class="w-64">
 						<MySelect type="single" bind:value={selectedClassId} items={classItems} />
 					</div>

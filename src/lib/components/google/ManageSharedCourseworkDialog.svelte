@@ -373,12 +373,13 @@
 				</div>
 			{:else if recordsList.length === 0}
 				<div class="py-8 text-center text-muted-foreground">
-					<p>Ce travail n'est partagé avec aucune classe</p>
+					<p>Ce travail n'est partagé avec aucun {lore.entities.class}</p>
 				</div>
 			{:else}
 				<div class="space-y-3">
 					<p class="text-sm text-muted-foreground">
-						Partagé avec {recordsList.length} classe{recordsList.length > 1 ? 's' : ''} :
+						Partagé avec {recordsList.length}
+						{lore.entities.class}{recordsList.length > 1 ? 's' : ''} :
 					</p>
 
 					{#each recordsList as record (record.classId)}

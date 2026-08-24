@@ -196,7 +196,9 @@
 						<!-- Class selection (always show to filter students) -->
 						<div class="space-y-2">
 							<Label>
-								{targetType === 'classes' ? 'Sélectionner les classes' : 'Filtrer par classe'}
+								{targetType === 'classes'
+									? `Sélectionner les ${lore.entities.class}s`
+									: `Filtrer par ${lore.entities.class}`}
 							</Label>
 							<div class="grid gap-2 sm:grid-cols-2">
 								{#each data.classes as cls (cls.id)}
@@ -248,7 +250,8 @@
 										</div>
 									{:else}
 										<p class="text-sm text-muted-foreground">
-											Sélectionnez d'abord une classe pour afficher les {lore.entities.student}s
+											Sélectionnez d'abord un {lore.entities.class} pour afficher les {lore.entities
+												.student}s
 										</p>
 									{/if}
 								</div>
