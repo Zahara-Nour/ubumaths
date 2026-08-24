@@ -47,7 +47,10 @@ const WHITEBOARD_FOLDER_NAME = 'Chiphre Whiteboards';
  * Prevents query failures and injection issues with special characters
  */
 function escapeQueryValue(value: string): string {
-	return value.replace(/'/g, "\\'");
+	// Escape the backslash FIRST — otherwise a literal backslash already present in
+	// `value` would pair with the quote we add and defeat the escaping (CodeQL
+	// js/incomplete-sanitization).
+	return value.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 
 /**

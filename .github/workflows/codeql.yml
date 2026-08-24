@@ -29,8 +29,12 @@ jobs:
         uses: github/codeql-action/init@v4
         with:
           languages: javascript-typescript
-          # 'security-and-quality' adds maintainability queries on top of security.
-          queries: security-and-quality
+          # 'security-extended' = the security queries plus lower-severity / lower-
+          # precision security ones, WITHOUT the maintainability/quality queries.
+          # Those quality queries (unused-var, semicolon-insertion, trivial-conditional…)
+          # duplicate what prettier + eslint already enforce and only drown the security
+          # findings in ~100+ style alerts, so we drop them here.
+          queries: security-extended
 
       # No build step needed for JS/TS — CodeQL analyzes source directly.
       - name: Perform CodeQL analysis
