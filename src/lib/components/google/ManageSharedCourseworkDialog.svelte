@@ -18,6 +18,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
@@ -359,7 +360,9 @@
 	<Dialog.Content class="max-h-[90vh] max-w-3xl overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title>Gérer : {coursework.title}</Dialog.Title>
-			<Dialog.Description>Modifiez les paramètres de partage pour chaque classe</Dialog.Description>
+			<Dialog.Description
+				>Modifiez les paramètres de partage pour chaque {lore.entities.class}</Dialog.Description
+			>
 		</Dialog.Header>
 
 		<div class="space-y-4 py-4">
@@ -370,12 +373,13 @@
 				</div>
 			{:else if recordsList.length === 0}
 				<div class="py-8 text-center text-muted-foreground">
-					<p>Ce travail n'est partagé avec aucune classe</p>
+					<p>Ce travail n'est partagé avec aucun {lore.entities.class}</p>
 				</div>
 			{:else}
 				<div class="space-y-3">
 					<p class="text-sm text-muted-foreground">
-						Partagé avec {recordsList.length} classe{recordsList.length > 1 ? 's' : ''} :
+						Partagé avec {recordsList.length}
+						{lore.entities.class}{recordsList.length > 1 ? 's' : ''} :
 					</p>
 
 					{#each recordsList as record (record.classId)}
@@ -405,7 +409,9 @@
 								<div>
 									<MyCheckbox
 										checked={record.visible}
-										label={record.visible ? 'Visible pour les élèves' : 'Masqué aux élèves'}
+										label={record.visible
+											? `Visible pour les ${lore.entities.student}s`
+											: `Masqué aux ${lore.entities.student}s`}
 										onCheckedChange={(checked) => {
 											const isChecked = typeof checked === 'boolean' ? checked : false;
 											handleVisibilityChange(record.classId, isChecked);

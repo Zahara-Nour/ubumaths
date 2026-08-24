@@ -19,6 +19,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { buttonVariants } from '$lib/components/ui/button/button.svelte';
@@ -63,7 +64,7 @@
 			icon: ClipboardList
 		},
 		exercise: {
-			label: 'Exercice',
+			label: lore.learning.exercise,
 			badgeVariant: 'default',
 			cta: 'Travailler',
 			icon: BookOpen

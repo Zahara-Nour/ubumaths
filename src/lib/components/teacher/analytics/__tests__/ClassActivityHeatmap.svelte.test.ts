@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { lore } from '$lib/config/lore';
 import { render } from 'vitest-browser-svelte';
 import { page } from '@vitest/browser/context';
 import ClassActivityHeatmap from '../ClassActivityHeatmap.svelte';
@@ -48,13 +49,15 @@ describe('ClassActivityHeatmap', () => {
 	it('shows "no students" empty state', async () => {
 		mockFetch({ days: [], students: [], cells: [] });
 		render(ClassActivityHeatmap, { classId: 'class-1' });
-		await expect.element(page.getByText('Aucun élève dans cette classe.')).toBeVisible();
+		await expect
+			.element(page.getByText(`Aucun ${lore.entities.student} dans cette classe.`))
+			.toBeVisible();
 	});
 
 	it('anonymizes names when anonymized=true', async () => {
 		mockFetch(sampleHeatmap);
 		render(ClassActivityHeatmap, { classId: 'class-1', anonymized: true });
-		await expect.element(page.getByText('Élève 1')).toBeVisible();
-		await expect.element(page.getByText('Élève 2')).toBeVisible();
+		await expect.element(page.getByText(`${lore.entities.student} 1`)).toBeVisible();
+		await expect.element(page.getByText(`${lore.entities.student} 2`)).toBeVisible();
 	});
 });

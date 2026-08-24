@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { page } from '$app/state';
 	import { privateMessages } from '$lib/stores/privateMessages.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -203,7 +204,7 @@
 								{message.sender_name || 'Expéditeur inconnu'}
 							</div>
 							<div class="text-sm text-muted-foreground">
-								{message.sender_role === 'teacher' ? 'Professeur' : 'Élève'}
+								{message.sender_role === 'teacher' ? lore.entities.teacher : lore.entities.student}
 							</div>
 							<div class="mt-1 text-xs text-muted-foreground">
 								{formatDate(message.sent_at)}

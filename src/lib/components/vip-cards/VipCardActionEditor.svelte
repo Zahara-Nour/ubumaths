@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import MySelect from '$lib/components/MySelect.svelte';
@@ -174,7 +175,7 @@
 
 	// Activation context options (shared for all action types)
 	const activationContextItems = [
-		{ value: '', label: 'Approbation enseignant (défaut)' },
+		{ value: '', label: `Approbation ${lore.entities.teacher} (défaut)` },
 		{ value: 'any', label: 'Auto-activation libre' },
 		{ value: 'minesweeper', label: 'Pendant une partie de démineur' }
 	];
@@ -428,10 +429,9 @@
 					class="w-32"
 				/>
 				<p class="text-sm text-muted-foreground">
-					L'élève piochera {drawCardsCount} nouvelle{drawCardsCount > 1 ? 's' : ''} carte{drawCardsCount >
-					1
+					Le {lore.entities.student} piochera {drawCardsCount} nouvelle{drawCardsCount > 1
 						? 's'
-						: ''} VIP aléatoire{drawCardsCount > 1 ? 's' : ''}.
+						: ''} carte{drawCardsCount > 1 ? 's' : ''} VIP aléatoire{drawCardsCount > 1 ? 's' : ''}.
 				</p>
 			</div>
 
@@ -547,7 +547,8 @@
 				class="w-32"
 			/>
 			<p class="text-sm text-muted-foreground">
-				Ajoute {addGidouillesAmount} gidouille{addGidouillesAmount > 1 ? 's' : ''} au solde de l'élève.
+				Ajoute {addGidouillesAmount} gidouille{addGidouillesAmount > 1 ? 's' : ''} au solde du {lore
+					.entities.student}.
 			</p>
 		</div>
 	{:else if actionType === 'exchange_cards'}
@@ -574,7 +575,7 @@
 				<div class="space-y-3">
 					<MyCheckbox
 						bind:checked={replaceRandomFlexible}
-						label="Nombre flexible (l'élève choisit entre 1 et 10 cartes)"
+						label="Nombre flexible (le {lore.entities.student} choisit entre 1 et 10 cartes)"
 					/>
 					{#if !replaceRandomFlexible}
 						<div class="space-y-2">
@@ -588,19 +589,18 @@
 								class="w-32"
 							/>
 							<p class="text-sm text-muted-foreground">
-								L'élève échange {replaceRandomCount} carte{replaceRandomCount > 1 ? 's' : ''} aléatoire{replaceRandomCount >
+								Le {lore.entities.student} échange {replaceRandomCount} carte{replaceRandomCount > 1
+									? 's'
+									: ''} aléatoire{replaceRandomCount > 1 ? 's' : ''} contre {replaceRandomCount} nouvelle{replaceRandomCount >
 								1
 									? 's'
-									: ''} contre {replaceRandomCount} nouvelle{replaceRandomCount > 1 ? 's' : ''} carte{replaceRandomCount >
-								1
-									? 's'
-									: ''}.
+									: ''} carte{replaceRandomCount > 1 ? 's' : ''}.
 							</p>
 						</div>
 					{:else}
 						<p class="text-sm text-muted-foreground">
-							L'élève peut sélectionner entre 1 et 10 cartes à échanger contre le même nombre de
-							nouvelles cartes aléatoires.
+							Le {lore.entities.student} peut sélectionner entre 1 et 10 cartes à échanger contre le
+							même nombre de nouvelles cartes aléatoires.
 						</p>
 					{/if}
 				</div>
@@ -620,8 +620,8 @@
 							Système de points : Commune=1, Rare=3, Épique=9, Légendaire=27
 						</p>
 						<p class="mt-1 text-xs text-muted-foreground">
-							L'élève peut échanger plusieurs cartes dont la somme des points correspond à la rareté
-							cible.
+							Le {lore.entities.student} peut échanger plusieurs cartes dont la somme des points correspond
+							à la rareté cible.
 						</p>
 					</div>
 				</div>
@@ -648,7 +648,8 @@
 							class="w-full"
 						/>
 						<p class="text-sm text-muted-foreground">
-							L'élève échange {discardForSpecificCount} carte{discardForSpecificCount > 1
+							Le {lore.entities.student} échange {discardForSpecificCount} carte{discardForSpecificCount >
+							1
 								? 's'
 								: ''} contre une carte spécifique (ID : {discardForSpecificTargetCardId ||
 								'à définir'}).
@@ -671,7 +672,9 @@
 					class="w-32"
 				/>
 				<p class="text-sm text-muted-foreground">
-					L'élève pourra choisir {chooseCardCount} carte{chooseCardCount > 1 ? 's' : ''} VIP.
+					Le {lore.entities.student} pourra choisir {chooseCardCount} carte{chooseCardCount > 1
+						? 's'
+						: ''} VIP.
 				</p>
 			</div>
 
@@ -691,7 +694,7 @@
 			{#if chooseCardFilterMode === 'all'}
 				<div class="rounded-md bg-muted p-3">
 					<p class="text-sm text-muted-foreground">
-						L'élève pourra choisir parmi toutes les cartes VIP disponibles.
+						Le {lore.entities.student} pourra choisir parmi toutes les cartes VIP disponibles.
 					</p>
 				</div>
 			{:else if chooseCardFilterMode === 'maxRarity'}
@@ -707,16 +710,17 @@
 					<div class="rounded-md bg-muted p-3">
 						<p class="text-sm text-muted-foreground">
 							{#if chooseCardMaxRarity === 'common'}
-								L'élève ne pourra choisir que des cartes <strong>communes</strong>.
+								Le {lore.entities.student} ne pourra choisir que des cartes
+								<strong>communes</strong>.
 							{:else if chooseCardMaxRarity === 'rare'}
-								L'élève pourra choisir des cartes <strong>communes</strong> ou
+								Le {lore.entities.student} pourra choisir des cartes <strong>communes</strong> ou
 								<strong>rares</strong>.
 							{:else if chooseCardMaxRarity === 'epic'}
-								L'élève pourra choisir des cartes <strong>communes</strong>,
+								Le {lore.entities.student} pourra choisir des cartes <strong>communes</strong>,
 								<strong>rares</strong> ou <strong>épiques</strong>.
 							{:else}
-								L'élève pourra choisir parmi toutes les raretés (communes, rares, épiques,
-								légendaires).
+								Le {lore.entities.student} pourra choisir parmi toutes les raretés (communes, rares,
+								épiques, légendaires).
 							{/if}
 						</p>
 					</div>
@@ -736,8 +740,8 @@
 							Cartes autorisées : {chooseCardPossibleIds || 'aucune'}
 						</p>
 						<p class="mt-1 text-xs text-muted-foreground">
-							Séparez les IDs de cartes par des virgules. L'élève ne pourra choisir que parmi ces
-							cartes spécifiques.
+							Séparez les IDs de cartes par des virgules. Le {lore.entities.student} ne pourra choisir
+							que parmi ces cartes spécifiques.
 						</p>
 					</div>
 				</div>
@@ -746,8 +750,8 @@
 	{:else if actionType === 'hint'}
 		<div class="rounded-md bg-muted p-3">
 			<p class="text-sm text-muted-foreground">
-				Donne un indice à l'élève pendant une partie (ex : révèle une case sûre au démineur). Le jeu
-				concerné est déterminé par le contexte d'activation.
+				Donne un indice au {lore.entities.student} pendant une partie (ex : révèle une case sûre au démineur).
+				Le jeu concerné est déterminé par le contexte d'activation.
 			</p>
 		</div>
 	{:else if actionType === 'undo'}
@@ -792,9 +796,10 @@
 			/>
 			<p class="text-xs text-muted-foreground">
 				{#if actionContext}
-					L'élève peut activer cette carte sans approbation de l'enseignant
+					Le {lore.entities.student} peut activer cette carte sans approbation du {lore.entities
+						.teacher}
 				{:else}
-					L'élève doit demander l'approbation de l'enseignant avant d'activer
+					Le {lore.entities.student} doit demander l'approbation du {lore.entities.teacher} avant d'activer
 				{/if}
 			</p>
 		</div>

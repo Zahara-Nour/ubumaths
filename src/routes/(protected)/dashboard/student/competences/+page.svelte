@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Student Competences Math — list page
 	 */
@@ -38,8 +39,8 @@
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Mes compétences mathématiques</h1>
 			<p class="text-muted-foreground">
-				Les 6 compétences transversales du socle — évaluées par ton prof sur des tâches à prise
-				d'initiative
+				Les 6 compétences transversales du socle — évaluées par ton {lore.entities.teacher} sur des tâches
+				à prise d'initiative
 			</p>
 		</div>
 	</div>
@@ -49,8 +50,8 @@
 			<Card.Content class="py-10 text-center text-muted-foreground">
 				<Brain class="mx-auto mb-3 h-10 w-10 opacity-40" />
 				<p>
-					Aucune évaluation famille B saisie pour le moment. Ton prof commencera à coder tes
-					compétences lors de tâches dédiées (problèmes ouverts, modélisation, débats…).
+					Aucune évaluation famille B saisie pour le moment. Ton {lore.entities.teacher} commencera à
+					coder tes compétences lors de tâches dédiées (problèmes ouverts, modélisation, débats…).
 				</p>
 			</Card.Content>
 		</Card.Root>

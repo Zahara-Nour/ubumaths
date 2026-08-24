@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
@@ -226,7 +227,7 @@
 			}
 
 			if (addedCount > 0) {
-				toaster.success(`${addedCount} exercice(s) ajoute(s)`);
+				toaster.success(`${addedCount} ${lore.learning.exercise}(s) ajoutée(s)`);
 				// Refresh the page data to show new exercises
 				await invalidateAll();
 			}
@@ -236,7 +237,7 @@
 			}
 		} catch (err) {
 			console.error('Error adding exercises:', err);
-			toaster.error("Erreur lors de l'ajout des exercices");
+			toaster.error(`Erreur lors de l'ajout des ${lore.learning.exercise}s`);
 		} finally {
 			addingExercises = false;
 			exerciseSelectorOpen = false;
@@ -520,7 +521,7 @@
 			<Tabs.List class="grid w-full grid-cols-4">
 				<Tabs.Trigger value="exercises">
 					<FileText class="mr-2 h-4 w-4" />
-					Exercices
+					{lore.learning.exercise}s
 				</Tabs.Trigger>
 				<Tabs.Trigger value="assignments" disabled={worksheet.status === 'draft'}>
 					<Users class="mr-2 h-4 w-4" />
@@ -615,7 +616,7 @@
 								<div class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
 									<Users class="h-4 w-4" />
 									{#if selectedClasses.length === 0}
-										<span>Aucune classe</span>
+										<span>Aucun {lore.entities.class}</span>
 									{:else if selectedClasses.length === 1}
 										<span>{selectedClasses[0].name}</span>
 									{:else}
@@ -727,7 +728,9 @@
 													<div class="flex flex-wrap items-center gap-1.5">
 														<Users class="h-4 w-4 text-muted-foreground" />
 														{#if assignmentClasses.length === 0}
-															<span class="text-sm text-muted-foreground">Aucune classe</span>
+															<span class="text-sm text-muted-foreground"
+																>Aucun {lore.entities.class}</span
+															>
 														{:else if assignmentClasses.length === 1}
 															<span class="text-sm text-muted-foreground">
 																{assignmentClasses[0].name}

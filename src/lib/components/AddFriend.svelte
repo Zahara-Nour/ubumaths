@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { friendsManager, type ClassmateInfo } from '$lib/stores/friends.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -168,14 +169,14 @@
 			<div class="flex flex-wrap items-center gap-3">
 				<div class="flex items-center gap-2">
 					<Users class="size-5 text-primary" />
-					<h2 class="text-lg font-semibold">Élèves de</h2>
+					<h2 class="text-lg font-semibold">{lore.entities.student}s de</h2>
 				</div>
 				<MySelect
 					type="single"
 					value={selectedClassId}
 					onValueChange={handleClassChange}
 					items={classSelectItems}
-					placeholder="Sélectionner une classe"
+					placeholder="Sélectionner un {lore.entities.class}"
 					triggerClass="h-9 min-w-48 rounded-md border border-input bg-background px-3 text-sm font-medium"
 				/>
 			</div>
@@ -184,11 +185,13 @@
 			{#if isLoadingStudents}
 				<div class="py-4 text-center">
 					<Loader2 class="mx-auto size-6 animate-spin text-muted-foreground" />
-					<p class="mt-2 text-sm text-muted-foreground">Chargement des élèves...</p>
+					<p class="mt-2 text-sm text-muted-foreground">
+						Chargement des {lore.entities.student}s...
+					</p>
 				</div>
 			{:else if studentsInClass.length === 0}
 				<p class="py-4 text-center text-sm text-muted-foreground italic">
-					Aucun élève dans cette classe
+					Aucun {lore.entities.student} dans ce {lore.entities.class}
 				</p>
 			{:else}
 				<div class="space-y-2">
@@ -302,7 +305,7 @@
 						<div>
 							<p class="font-medium">{getDisplayName(user)}</p>
 							<p class="text-sm text-muted-foreground">
-								{user.role === 'teacher' ? 'Enseignant' : 'Élève'}
+								{user.role === 'teacher' ? lore.entities.teacher : lore.entities.student}
 							</p>
 						</div>
 					</div>

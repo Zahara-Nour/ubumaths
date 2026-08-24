@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import ExerciseForm, {
 		emptyExerciseForm,
@@ -28,15 +29,15 @@
 </script>
 
 <svelte:head>
-	<title>Créer un exercice Python – Chiphre</title>
+	<title>Créer une {lore.learning.exercise} Python – Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-3xl p-4">
 	<header class="mb-6">
-		<h1 class="text-2xl font-bold">Créer un exercice Python</h1>
+		<h1 class="text-2xl font-bold">Créer une {lore.learning.exercise} Python</h1>
 		<p class="mt-1 text-sm text-muted-foreground">
-			Remplis le formulaire, vérifie que ta solution passe la validation, puis crée l'exercice. Tu
-			obtiens un lien partageable.
+			Remplis le formulaire, vérifie que ta solution passe la validation, puis crée la {lore
+				.learning.exercise}. Tu obtiens un lien partageable.
 		</p>
 	</header>
 

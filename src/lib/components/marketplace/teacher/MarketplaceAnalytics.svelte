@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import {
 		Card,
@@ -228,32 +229,33 @@
 					</div>
 					<Progress value={analytics.engagement.percentageActive} class="mt-2 h-2" />
 					<p class="mt-2 text-xs text-muted-foreground">
-						{analytics.engagement.activeTraders}/{analytics.engagement.totalStudents} élèves actifs
+						{analytics.engagement.activeTraders}/{analytics.engagement.totalStudents}
+						{lore.entities.student}s actifs
 					</p>
 				</CardContent>
 			</Card>
 
 			<Card>
 				<CardHeader class="pb-3">
-					<CardTitle class="text-sm font-medium">Moy. annonces/élève</CardTitle>
+					<CardTitle class="text-sm font-medium">Moy. annonces/{lore.entities.student}</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<div class="text-2xl font-bold">
 						{analytics.engagement.averageListingsPerStudent.toFixed(1)}
 					</div>
-					<p class="mt-2 text-xs text-muted-foreground">Par élève actif</p>
+					<p class="mt-2 text-xs text-muted-foreground">Par {lore.entities.student} actif</p>
 				</CardContent>
 			</Card>
 
 			<Card>
 				<CardHeader class="pb-3">
-					<CardTitle class="text-sm font-medium">Moy. échanges/élève</CardTitle>
+					<CardTitle class="text-sm font-medium">Moy. échanges/{lore.entities.student}</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<div class="text-2xl font-bold">
 						{analytics.engagement.averageTradesPerStudent.toFixed(1)}
 					</div>
-					<p class="mt-2 text-xs text-muted-foreground">Par élève actif</p>
+					<p class="mt-2 text-xs text-muted-foreground">Par {lore.entities.student} actif</p>
 				</CardContent>
 			</Card>
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Teacher Chapter Content Editor Page
 	 * ====================================
@@ -88,7 +89,7 @@
 	]);
 
 	let exerciseItems = $derived([
-		{ value: '', label: 'Choisir un exercice...' },
+		{ value: '', label: `Choisir une ${lore.learning.exercise}...` },
 		...data.availableExercises
 			.filter((e) => !data.exercises.some((ex) => ex.exerciseId === e.id))
 			.map((e) => ({
@@ -106,8 +107,8 @@
 				deleteChecklistItem: 'Objectif supprime',
 				addQuizQuestion: 'Question ajoutee',
 				removeQuizQuestion: 'Question supprimee',
-				linkExercise: 'Exercice lie',
-				unlinkExercise: 'Exercice retire',
+				linkExercise: `${lore.learning.exercise} liée`,
+				unlinkExercise: `${lore.learning.exercise} retirée`,
 				uploadDocument: 'Document uploade',
 				addGoogleDriveDocument: 'Document Google Drive ajoute',
 				deleteDocument: 'Document supprime',
@@ -225,7 +226,7 @@
 			</Tabs.Trigger>
 			<Tabs.Trigger value="exercises" class="flex items-center gap-2">
 				<BookOpen class="h-4 w-4" />
-				<span class="hidden sm:inline">Exercices</span>
+				<span class="hidden sm:inline">{lore.learning.exercise}s</span>
 				<Badge variant="secondary" class="ml-1">{exerciseCount}</Badge>
 			</Tabs.Trigger>
 			<Tabs.Trigger value="documents" class="flex items-center gap-2">
@@ -313,7 +314,7 @@
 				<div class="flex justify-end">
 					<Button onclick={() => (showLinkExerciseDialog = true)} size="sm">
 						<Plus class="mr-2 h-4 w-4" />
-						Lier un exercice
+						Lier une {lore.learning.exercise}
 					</Button>
 				</div>
 
@@ -321,14 +322,14 @@
 					<Card.Root class="border-dashed">
 						<Card.Content class="py-12 text-center">
 							<BookOpen class="mx-auto mb-4 h-12 w-12 text-muted-foreground/40" />
-							<p class="text-muted-foreground">Aucun exercice lie</p>
+							<p class="text-muted-foreground">Aucune {lore.learning.exercise} lie</p>
 							<Button
 								onclick={() => (showLinkExerciseDialog = true)}
 								variant="ghost"
 								size="sm"
 								class="mt-2"
 							>
-								Lier un exercice
+								Lier une {lore.learning.exercise}
 							</Button>
 						</Card.Content>
 					</Card.Root>
@@ -344,7 +345,9 @@
 										{index + 1}
 									</div>
 									<div class="min-w-0 flex-1">
-										<p class="font-medium">{details?.title || 'Exercice non trouve'}</p>
+										<p class="font-medium">
+											{details?.title || `${lore.learning.exercise} non trouvée`}
+										</p>
 										{#if details?.description}
 											<p class="truncate text-sm text-muted-foreground">
 												{details.description}
@@ -476,9 +479,9 @@
 <Dialog.Root bind:open={showLinkExerciseDialog}>
 	<Dialog.Content class="max-w-lg">
 		<Dialog.Header>
-			<Dialog.Title>Lier un exercice</Dialog.Title>
+			<Dialog.Title>Lier une {lore.learning.exercise}</Dialog.Title>
 			<Dialog.Description>
-				Selectionnez un exercice existant pour le lier a ce chapitre.
+				Selectionnez une {lore.learning.exercise} existant pour le lier a ce chapitre.
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -494,7 +497,7 @@
 			class="space-y-4"
 		>
 			<div class="space-y-2">
-				<Label>Exercice</Label>
+				<Label>{lore.learning.exercise}</Label>
 				<MySelect type="single" bind:value={selectedExerciseId} items={exerciseItems} />
 				<input type="hidden" name="exerciseId" value={selectedExerciseId} />
 			</div>

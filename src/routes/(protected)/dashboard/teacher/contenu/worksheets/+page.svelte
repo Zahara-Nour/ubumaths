@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
@@ -121,20 +122,20 @@
 	// Type filter options
 	const typeOptions = [
 		{ value: '', label: 'Tous les types' },
-		{ value: 'worksheet', label: "Feuille d'exercices" },
+		{ value: 'worksheet', label: `Feuille de ${lore.learning.exercise}s` },
 		{ value: 'assessment', label: 'Evaluation' },
-		{ value: 'exam', label: 'Examen' },
+		{ value: 'exam', label: lore.learning.exam },
 		{ value: 'quiz', label: 'Quiz' },
-		{ value: 'homework', label: 'Devoirs' }
+		{ value: 'homework', label: 'Corvées Domestiques' }
 	];
 
 	// Type label map
 	const typeLabels: Record<WorksheetType, string> = {
 		worksheet: 'Feuille',
 		assessment: 'Evaluation',
-		exam: 'Examen',
+		exam: lore.learning.exam,
 		quiz: 'Quiz',
-		homework: 'Devoirs'
+		homework: 'Corvées Domestiques'
 	};
 
 	// Type icon map
@@ -209,16 +210,17 @@
 </script>
 
 <svelte:head>
-	<title>Feuilles d'exercices - Chiphre</title>
+	<title>Feuilles de {lore.learning.exercise}s - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto space-y-6 py-6">
 	<!-- Header -->
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-3xl font-bold">Feuilles d'exercices</h1>
+			<h1 class="text-3xl font-bold">Feuilles de {lore.learning.exercise}s</h1>
 			<p class="text-muted-foreground">
-				Creez et gerez vos feuilles d'exercices, evaluations et examens
+				Creez et gerez vos feuilles de {lore.learning.exercise}s, evaluations et {lore.learning
+					.exam}s
 			</p>
 		</div>
 		<div class="flex gap-2">
@@ -280,7 +282,7 @@
 
 				<!-- Actions -->
 				<div class="flex items-end gap-2">
-					<Button type="submit" class="flex-1">Filtrer</Button>
+					<Button type="submit" class="flex-1">{lore.actions.filter}</Button>
 					<Button type="button" variant="outline" onclick={clearFilters}>Effacer</Button>
 				</div>
 			</form>
@@ -305,7 +307,7 @@
 						<Table.Head>Type</Table.Head>
 						<Table.Head>Statut</Table.Head>
 						<Table.Head>Niveaux</Table.Head>
-						<Table.Head>Exercices</Table.Head>
+						<Table.Head>{lore.learning.exercise}s</Table.Head>
 						<Table.Head>Cree le</Table.Head>
 						<Table.Head class="w-16"></Table.Head>
 					</Table.Row>
@@ -314,7 +316,7 @@
 					{#if data.worksheets.length === 0}
 						<Table.Row>
 							<Table.Cell colspan={7} class="py-8 text-center text-muted-foreground">
-								Aucune feuille trouvee. Creez votre premiere feuille d'exercices !
+								Aucune feuille trouvee. Creez votre premiere feuille de {lore.learning.exercise}s !
 							</Table.Cell>
 						</Table.Row>
 					{:else}
@@ -447,7 +449,7 @@
 	bind:open={deleteDialogOpen}
 	title="Supprimer cette feuille ?"
 	description={`Vous allez supprimer la feuille "${worksheetToDelete?.title || '(Sans titre)'}". Cette action est irreversible.`}
-	confirmLabel="Supprimer"
+	confirmLabel={lore.actions.delete}
 	variant="destructive"
 	onConfirm={handleDelete}
 />

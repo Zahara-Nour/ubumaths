@@ -13,6 +13,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import DeckCard from '$lib/components/srs/DeckCard.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -181,7 +182,9 @@
 			{#if assignedDecks.length === 0}
 				<Card.Root>
 					<Card.Content class="py-12 text-center">
-						<p class="text-muted-foreground">Aucun deck attribué par vos professeurs.</p>
+						<p class="text-muted-foreground">
+							Aucun deck attribué par vos {lore.entities.teacher}s.
+						</p>
 					</Card.Content>
 				</Card.Root>
 			{:else}

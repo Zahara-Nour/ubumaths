@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { browser } from '$app/environment';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -138,7 +139,8 @@
 				>
 					<div class="flex items-center gap-3">
 						<Dialog.Title class="flex items-center gap-3 text-xl font-semibold">
-							Exercice {currentIndex + 1}{#if exercise?.title}&nbsp;: {exercise.title}{/if}
+							{lore.learning.exercise}
+							{currentIndex + 1}{#if exercise?.title}&nbsp;: {exercise.title}{/if}
 							{#if pointsLabel}
 								<Badge variant="outline" class="font-normal">
 									{pointsLabel}
@@ -204,7 +206,7 @@
 						{/if}
 					{:else}
 						<div class="flex flex-1 items-center justify-center p-8">
-							<p class="text-muted-foreground">Exercice non disponible</p>
+							<p class="text-muted-foreground">{lore.learning.exercise} non disponible</p>
 						</div>
 					{/if}
 				</div>
@@ -218,7 +220,7 @@
 							size="sm"
 							onclick={goPrev}
 							disabled={!canGoPrev}
-							aria-label="Exercice precedent (fleche gauche)"
+							aria-label="{lore.learning.exercise} precedente (fleche gauche)"
 						>
 							<ChevronLeft class="h-4 w-4" />
 						</Button>
@@ -278,7 +280,7 @@
 								size="sm"
 								onclick={goNext}
 								disabled={!canGoNext}
-								aria-label="Exercice suivant (fleche droite)"
+								aria-label="{lore.learning.exercise} suivante (fleche droite)"
 							>
 								<ChevronRight class="h-4 w-4" />
 							</Button>
@@ -296,7 +298,7 @@
 					{/key}
 				{:else if isDesktop}
 					<div class="flex h-full items-center justify-center text-muted-foreground">
-						<p>Selectionnez un exercice pour commencer</p>
+						<p>Selectionnez une {lore.learning.exercise} pour commencer</p>
 					</div>
 				{/if}
 			</div>
@@ -308,7 +310,8 @@
 			<div class="flex items-center justify-between gap-4 border-b border-border bg-card px-4 py-3">
 				<div class="flex items-center gap-2">
 					<Dialog.Title class="flex items-center gap-2 text-lg font-semibold">
-						Exercice {currentIndex + 1}{#if exercise?.title}&nbsp;: {exercise.title}{/if}
+						{lore.learning.exercise}
+						{currentIndex + 1}{#if exercise?.title}&nbsp;: {exercise.title}{/if}
 						{#if pointsLabel}
 							<Badge variant="outline" class="text-xs font-normal">
 								{pointsLabel}
@@ -374,7 +377,7 @@
 					{/if}
 				{:else}
 					<div class="flex flex-1 items-center justify-center p-8">
-						<p class="text-muted-foreground">Exercice non disponible</p>
+						<p class="text-muted-foreground">{lore.learning.exercise} non disponible</p>
 					</div>
 				{/if}
 			</div>
@@ -466,7 +469,7 @@
 						{/key}
 					{:else}
 						<div class="flex h-full items-center justify-center text-muted-foreground">
-							<p>Selectionnez un exercice pour commencer</p>
+							<p>Selectionnez une {lore.learning.exercise} pour commencer</p>
 						</div>
 					{/if}
 				</TutorDrawer>

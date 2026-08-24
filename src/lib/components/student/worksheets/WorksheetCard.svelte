@@ -8,6 +8,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -40,11 +41,11 @@
 			case 'assessment':
 				return { icon: ClipboardList, label: 'Evaluation' };
 			case 'exam':
-				return { icon: GraduationCap, label: 'Examen' };
+				return { icon: GraduationCap, label: lore.learning.exam };
 			case 'quiz':
 				return { icon: FileQuestion, label: 'Quiz' };
 			case 'homework':
-				return { icon: PenLine, label: 'Devoir' };
+				return { icon: PenLine, label: lore.learning.homework };
 			default:
 				return { icon: BookOpen, label: 'Fiche' };
 		}
@@ -150,7 +151,8 @@
 		<div class="flex items-center gap-2 text-sm text-muted-foreground">
 			<ListChecks class="h-4 w-4 flex-shrink-0" />
 			<span>
-				{worksheet.exercise_count} exercice{worksheet.exercise_count > 1 ? 's' : ''}
+				{worksheet.exercise_count}
+				{lore.learning.exercise}{worksheet.exercise_count > 1 ? 's' : ''}
 			</span>
 		</div>
 

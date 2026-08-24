@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { lore } from '$lib/config/lore';
 	// Re-export the form-state helpers so existing consumers
 	// (`import { emptyExerciseForm } from '.../ExerciseForm.svelte'`) still
 	// resolve. The actual definitions live in `form-mapping.ts` to keep them
@@ -113,7 +114,9 @@
 			!isSubmitting
 	);
 
-	const submitLabel = $derived(mode === 'create' ? "Créer l'exercice" : 'Enregistrer');
+	const submitLabel = $derived(
+		mode === 'create' ? `Créer la ${lore.learning.exercise}` : 'Enregistrer'
+	);
 	const fallbackCancel = $derived(mode === 'create' ? '/python-exercises' : '/python-exercises');
 	const cancelTo = $derived(cancelHref ?? fallbackCancel);
 
@@ -266,7 +269,7 @@
 		<div>
 			<label class="mb-1 block text-sm font-medium" for="ex-starter">
 				Code initial <span class="text-xs font-normal text-muted-foreground"
-					>(vu par l'élève au démarrage)</span
+					>(vu par le {lore.entities.student} au démarrage)</span
 				>
 			</label>
 			<div class="h-40 overflow-hidden rounded-md border border-border">
@@ -278,9 +281,9 @@
 				</summary>
 				<div class="mt-2 space-y-1 rounded-md border border-border bg-muted/30 p-3">
 					<p>
-						Insère des marqueurs <code>{'{{nom | "valeur"}}'}</code> dans le code initial pour délimiter
-						les seules zones que l'élève pourra modifier (le reste est verrouillé). Les marqueurs tiennent
-						sur une seule ligne, le nom doit être un identifiant Python.
+						Insère des marqueurs <code>{'{{nom | "valeur"}}'}</code> dans le code initial pour
+						délimiter les seules zones que le {lore.entities.student} pourra modifier (le reste est verrouillé).
+						Les marqueurs tiennent sur une seule ligne, le nom doit être un identifiant Python.
 					</p>
 					<p>Exemple&nbsp;:</p>
 					<pre class="rounded bg-background p-2 font-mono text-[11px]">{`while {{cond | "False"}}:
@@ -288,8 +291,8 @@
     n = n + 1`}</pre>
 					<p>
 						À la soumission, le code envoyé à Pyodide est reconstruit en remplaçant chaque marqueur
-						par la valeur saisie par l'élève (ou par la valeur par défaut s'il l'a laissée telle
-						quelle).
+						par la valeur saisie par le {lore.entities.student} (ou par la valeur par défaut s'il l'a
+						laissée telle quelle).
 					</p>
 				</div>
 			</details>
@@ -306,14 +309,15 @@
 						{/each}
 					</ul>
 					<p class="mt-1 text-red-700 dark:text-red-300">
-						Tant que les marqueurs sont en erreur, l'exercice s'ouvrira en édition libre côté élève
+						Tant que les marqueurs sont en erreur, la {lore.learning.exercise} s'ouvrira en édition libre
+						côté {lore.entities.student}
 						(mode dégradé).
 					</p>
 				</div>
 			{:else if hasStarterMarkers}
 				<div class="mt-2">
 					<p class="mb-1 text-xs text-muted-foreground">
-						Aperçu côté élève ({starterParse.markers.length}
+						Aperçu côté {lore.entities.student} ({starterParse.markers.length}
 						{starterParse.markers.length > 1 ? 'zones modifiables' : 'zone modifiable'})
 					</p>
 					{#key debouncedStarterCode}
@@ -333,8 +337,8 @@
 				Solution de référence <span class="text-destructive">*</span>
 			</label>
 			<p class="mb-1 text-xs text-muted-foreground">
-				Sert à vérifier que la validation passe avec une solution correcte. Jamais montrée à
-				l'élève.
+				Sert à vérifier que la validation passe avec une solution correcte. Jamais montrée à le {lore
+					.entities.student}.
 			</p>
 			<div class="h-40 overflow-hidden rounded-md border border-border">
 				<PythonEditor bind:value={form.solution_code} {executor} />
@@ -378,7 +382,7 @@
 		{#if verifyResult && !verifyResult.valid}
 			<p class="text-xs text-amber-700 dark:text-amber-400">
 				La solution doit passer la validation avant que tu puisses {mode === 'create'
-					? "créer l'exercice"
+					? `créer la ${lore.learning.exercise}`
 					: 'enregistrer'}.
 			</p>
 		{/if}
@@ -395,7 +399,7 @@
 	{/if}
 
 	<div class="flex items-center justify-end gap-2">
-		<Button type="button" variant="outline" href={cancelTo}>Annuler</Button>
+		<Button type="button" variant="outline" href={cancelTo}>{lore.actions.cancel}</Button>
 		<Button type="submit" disabled={!canSubmit}>
 			{#if isSubmitting}
 				<Loader2 class="mr-1 h-4 w-4 animate-spin" />

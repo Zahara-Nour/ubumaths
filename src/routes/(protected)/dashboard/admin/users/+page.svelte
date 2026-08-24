@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * User Management Page
 	 *
@@ -89,7 +90,7 @@
 		selectedUser?.role === 'teacher'
 			? [
 					{ value: 'student', label: 'Étudiant' },
-					{ value: 'teacher', label: 'Enseignant' },
+					{ value: 'teacher', label: lore.entities.teacher },
 					{ value: 'admin', label: 'Administrateur' }
 				]
 			: [
@@ -782,7 +783,9 @@
 	<div class="flex items-center justify-between">
 		<div>
 			<h1 class="text-3xl font-bold text-foreground">Gestion des Utilisateurs</h1>
-			<p class="mt-2 text-muted-foreground">Gérer les profils des étudiants et enseignants</p>
+			<p class="mt-2 text-muted-foreground">
+				Gérer les profils des étudiants et {lore.entities.teacher}s
+			</p>
 		</div>
 		<Button href="/dashboard/admin/import-students">
 			<Upload class="mr-2 h-4 w-4" />
@@ -817,13 +820,13 @@
 
 					<!-- Browse by Class -->
 					<div class="flex-1">
-						<Label class="mb-2 block">Parcourir par classe</Label>
+						<Label class="mb-2 block">Parcourir par {lore.entities.class}</Label>
 						<div class="relative">
 							<MySelect
 								type="single"
 								bind:value={selectedClassFilter}
 								items={[
-									{ value: 'none', label: 'Aucune classe' },
+									{ value: 'none', label: `Aucun ${lore.entities.class}` },
 									...data.classes
 										.filter((c) => c.is_active)
 										.map((c) => ({ value: c.id, label: c.name }))
@@ -865,7 +868,7 @@
 					<div class="flex items-center gap-2 pb-1">
 						<Switch bind:checked={showTestUsers} id="test-filter" />
 						<label for="test-filter" class="cursor-pointer text-sm font-medium text-foreground">
-							Afficher élèves tests
+							Afficher {lore.entities.student}s tests
 						</label>
 					</div>
 				</div>
@@ -887,7 +890,8 @@
 									Résultats de recherche ({filteredSearchResults.length})
 								{:else if filteredClassResults.length > 0}
 									{@const className =
-										data.classes.find((c) => c.id === selectedClassFilter)?.name || 'Classe'}
+										data.classes.find((c) => c.id === selectedClassFilter)?.name ||
+										lore.entities.class}
 									Étudiants de {className} ({filteredClassResults.length})
 								{/if}
 							</Card.Title>
@@ -1033,7 +1037,9 @@
 															{/snippet}
 														</Tooltip.Trigger>
 														<Tooltip.Content>
-															<p>Veuillez assigner au moins une classe avant d'approuver</p>
+															<p>
+																Veuillez assigner au moins un {lore.entities.class} avant d'approuver
+															</p>
 														</Tooltip.Content>
 													</Tooltip.Root>
 												</Tooltip.Provider>
@@ -1181,7 +1187,9 @@
 								<div class="space-y-2">
 									<!-- Header with label and add controls -->
 									<div class="flex items-center gap-2">
-										<Label class="text-sm font-medium text-muted-foreground">Classes</Label>
+										<Label class="text-sm font-medium text-muted-foreground"
+											>{lore.entities.class}s</Label
+										>
 
 										{#if editingClasses}
 											<div class="flex flex-1 gap-2">
@@ -1189,7 +1197,7 @@
 													type="single"
 													bind:value={classToAdd}
 													items={[
-														{ value: '', label: 'Sélectionner une classe' },
+														{ value: '', label: `Sélectionner un ${lore.entities.class}` },
 														...data.classes
 															.filter((c) => !selectedUser?.class_ids?.includes(c.id))
 															.map((c) => ({ value: c.id, label: c.name }))
@@ -1214,8 +1222,8 @@
 										class="min-h-[40px] w-full cursor-pointer text-left"
 										onclick={() => (editingClasses = true)}
 										aria-label={editingClasses
-											? "Classes en cours d'édition"
-											: 'Cliquez pour éditer les classes'}
+											? `${lore.entities.class}s en cours d'édition`
+											: `Cliquez pour éditer les ${lore.entities.class}s`}
 									>
 										<div class="flex flex-wrap gap-2">
 											{#if selectedUser.class_ids && selectedUser.class_ids.length > 0}
@@ -1241,7 +1249,7 @@
 													</Badge>
 												{/each}
 											{:else}
-												<p class="text-sm text-muted-foreground">Aucune classe</p>
+												<p class="text-sm text-muted-foreground">Aucun {lore.entities.class}</p>
 											{/if}
 										</div>
 									</button>
@@ -1269,7 +1277,7 @@
 					<Card.Root>
 						<Card.Content class="py-12 text-center">
 							<p class="text-muted-foreground">
-								Recherchez un utilisateur ou sélectionnez une classe pour commencer
+								Recherchez un utilisateur ou sélectionnez un {lore.entities.class} pour commencer
 							</p>
 						</Card.Content>
 					</Card.Root>

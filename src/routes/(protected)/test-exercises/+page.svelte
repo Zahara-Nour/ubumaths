@@ -5,6 +5,7 @@
 	Demo page to test ExerciseMarkdownEditor and ExerciseDisplay components.
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import ExerciseMarkdownEditor from '$lib/components/exercises/ExerciseMarkdownEditor.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -72,14 +73,14 @@ $$f(x) = f(a) + f'(a)(x-a) + \\frac{f''(a)}{2!}(x-a)^2 + \\cdots$$
 </script>
 
 <svelte:head>
-	<title>Test Exercices - Chiphre</title>
+	<title>Test {lore.learning.exercise}s - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto p-6">
 	<div class="mb-6">
-		<h1 class="text-3xl font-bold">Test - Système d'exercices</h1>
+		<h1 class="text-3xl font-bold">Test - Système de {lore.learning.exercise}s</h1>
 		<p class="mt-2 text-muted-foreground">
-			Testez l'éditeur markdown et l'affichage des exercices avec MathLive
+			Testez l'éditeur markdown et l'affichage des {lore.learning.exercise}s avec MathLive
 		</p>
 	</div>
 
@@ -89,8 +90,8 @@ $$f(x) = f(a) + f'(a)(x-a) + \\frac{f''(a)}{2!}(x-a)^2 + \\cdots$$
 			<Card.Header>
 				<Card.Title>Éditeur Markdown</Card.Title>
 				<Card.Description>
-					Éditez votre exercice en markdown avec support LaTeX. La prévisualisation se met à jour
-					automatiquement.
+					Éditez votre {lore.learning.exercise} en markdown avec support LaTeX. La prévisualisation se
+					met à jour automatiquement.
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
@@ -104,7 +105,7 @@ $$f(x) = f(a) + f'(a)(x-a) + \\frac{f''(a)}{2!}(x-a)^2 + \\cdots$$
 					{#if showSaved}
 						<span class="self-center text-sm text-green-600">Enregistré !</span>
 					{/if}
-					<Button onclick={handleSave}>Enregistrer</Button>
+					<Button onclick={handleSave}>{lore.actions.save}</Button>
 				</div>
 			</Card.Footer>
 		</Card.Root>

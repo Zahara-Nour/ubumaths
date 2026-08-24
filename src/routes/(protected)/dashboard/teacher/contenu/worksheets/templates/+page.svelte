@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { enhance } from '$app/forms';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -34,9 +35,9 @@
 	const typeLabels: Record<string, string> = {
 		worksheet: 'Feuille',
 		assessment: 'Evaluation',
-		exam: 'Examen',
+		exam: lore.learning.exam,
 		quiz: 'Quiz',
-		homework: 'Devoirs'
+		homework: 'Corvées Domestiques'
 	};
 
 	/**
@@ -151,7 +152,7 @@
 
 				<!-- Actions -->
 				<div class="flex gap-2">
-					<Button type="submit">Filtrer</Button>
+					<Button type="submit">{lore.actions.filter}</Button>
 					<Button type="button" variant="outline" onclick={clearFilters}>Effacer</Button>
 				</div>
 			</form>
@@ -345,7 +346,9 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => (showDefaultsDialog = false)}>Annuler</Button>
+			<Button variant="outline" onclick={() => (showDefaultsDialog = false)}
+				>{lore.actions.cancel}</Button
+			>
 			{#if selectedDefault}
 				<form
 					method="POST"

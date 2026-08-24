@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -17,7 +18,7 @@
 
 	// Class items for MySelect
 	const classItems = $derived([
-		{ value: 'all', label: 'Toutes les classes' },
+		{ value: 'all', label: `Tous les ${lore.entities.class}s` },
 		...data.classes.map((c: { id: string; name: string }) => ({ value: c.id, label: c.name }))
 	]);
 
@@ -86,7 +87,7 @@
 	<div class="mb-6">
 		<h1 class="text-3xl font-bold">Modération des amitiés</h1>
 		<p class="mt-1 text-muted-foreground">
-			Visualisez et gérez toutes les relations d'amitié entre élèves
+			Visualisez et gérez toutes les relations d'amitié entre {lore.entities.student}s
 		</p>
 	</div>
 
@@ -177,7 +178,9 @@
 							<div>
 								<p class="font-medium">{friendship.requester_name}</p>
 								<p class="text-sm text-muted-foreground">
-									{friendship.requester_role === 'teacher' ? 'Enseignant' : 'Élève'}
+									{friendship.requester_role === 'teacher'
+										? lore.entities.teacher
+										: lore.entities.student}
 								</p>
 							</div>
 						</div>
@@ -200,7 +203,9 @@
 							<div>
 								<p class="font-medium">{friendship.addressee_name}</p>
 								<p class="text-sm text-muted-foreground">
-									{friendship.addressee_role === 'teacher' ? 'Enseignant' : 'Élève'}
+									{friendship.addressee_role === 'teacher'
+										? lore.entities.teacher
+										: lore.entities.student}
 								</p>
 							</div>
 						</div>
@@ -238,7 +243,7 @@
 							disabled={deletingFriendshipId === friendship.id}
 						>
 							<Trash2 class="size-4" />
-							<span class="sr-only">Supprimer</span>
+							<span class="sr-only">{lore.actions.delete}</span>
 						</Button>
 					</form>
 				</div>

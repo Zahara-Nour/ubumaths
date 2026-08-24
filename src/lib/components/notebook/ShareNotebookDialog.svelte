@@ -20,6 +20,7 @@
 		- French UI text
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
@@ -79,7 +80,7 @@
 				const response = await fetch('/api/classes');
 
 				if (!response.ok) {
-					throw new Error('Erreur lors du chargement des classes');
+					throw new Error(`Erreur lors du chargement des ${lore.entities.class}s`);
 				}
 
 				const data = await response.json();
@@ -87,7 +88,7 @@
 			}
 		} catch (error) {
 			console.error('Error loading classes:', error);
-			toaster.error('Erreur lors du chargement des classes');
+			toaster.error(`Erreur lors du chargement des ${lore.entities.class}s`);
 		} finally {
 			isLoadingClasses = false;
 		}
@@ -130,7 +131,7 @@
 		const selectedClasses = classes.filter((c) => c.isSelected && !c.isShared);
 
 		if (selectedClasses.length === 0) {
-			toaster.warning('Veuillez sélectionner au moins une classe');
+			toaster.warning(`Veuillez sélectionner au moins un ${lore.entities.class}`);
 			return;
 		}
 
@@ -215,8 +216,8 @@
 		<Dialog.Header>
 			<Dialog.Title>Partager le notebook</Dialog.Title>
 			<Dialog.Description>
-				Partagez "{notebookTitle}" avec vos classes. Les élèves pourront accéder au notebook selon
-				les permissions définies.
+				Partagez "{notebookTitle}" avec vos classes. Les {lore.entities.student}s pourront accéder
+				au notebook selon les permissions définies.
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -228,12 +229,12 @@
 					{#if readonly}
 						<div class="flex items-center gap-2 text-sm text-muted-foreground">
 							<Lock class="h-4 w-4" />
-							<span>Les élèves peuvent uniquement consulter le notebook</span>
+							<span>Les {lore.entities.student}s peuvent uniquement consulter le notebook</span>
 						</div>
 					{:else}
 						<div class="flex items-center gap-2 text-sm text-muted-foreground">
 							<Unlock class="h-4 w-4" />
-							<span>Les élèves peuvent exécuter et modifier le code</span>
+							<span>Les {lore.entities.student}s peuvent exécuter et modifier le code</span>
 						</div>
 					{/if}
 				</div>
@@ -248,8 +249,8 @@
 				</div>
 			{:else if classes.length === 0}
 				<div class="py-8 text-center text-muted-foreground">
-					<p class="mb-2">Aucune classe trouvée</p>
-					<p class="text-sm">Créez une classe pour partager vos notebooks</p>
+					<p class="mb-2">Aucun {lore.entities.class} trouvé</p>
+					<p class="text-sm">Créez un {lore.entities.class} pour partager vos notebooks</p>
 				</div>
 			{:else}
 				<div class="divide-y divide-border">
@@ -275,7 +276,8 @@
 								<div class="flex items-center gap-2 text-sm text-muted-foreground">
 									<Users class="h-3.5 w-3.5" />
 									<span
-										>{classItem.studentCount} élève{classItem.studentCount !== 1 ? 's' : ''}</span
+										>{classItem.studentCount}
+										{lore.entities.student}{classItem.studentCount !== 1 ? 's' : ''}</span
 									>
 								</div>
 							</div>
@@ -298,16 +300,15 @@
 		</div>
 
 		<Dialog.Footer class="mt-4 flex gap-2">
-			<Button variant="outline" onclick={() => (open = false)} disabled={isSharing}>Annuler</Button>
+			<Button variant="outline" onclick={() => (open = false)} disabled={isSharing}
+				>{lore.actions.cancel}</Button
+			>
 			<Button onclick={handleShare} disabled={!hasSelectedClasses || isSharing || isLoadingClasses}>
 				{#if isSharing}
 					Partage en cours...
 				{:else}
-					Partager avec {classes.filter((c) => c.isSelected).length || 0} classe{classes.filter(
-						(c) => c.isSelected
-					).length !== 1
-						? 's'
-						: ''}
+					Partager avec {classes.filter((c) => c.isSelected).length || 0}
+					{lore.entities.class}{classes.filter((c) => c.isSelected).length !== 1 ? 's' : ''}
 				{/if}
 			</Button>
 		</Dialog.Footer>

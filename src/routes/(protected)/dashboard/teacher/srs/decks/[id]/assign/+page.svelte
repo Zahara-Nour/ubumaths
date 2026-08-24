@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
@@ -189,7 +190,9 @@
 		</Button>
 
 		<h1 class="mb-2 text-3xl font-bold">Attribuer un deck</h1>
-		<p class="text-muted-foreground">Sélectionnez les élèves ou classes qui recevront ce deck</p>
+		<p class="text-muted-foreground">
+			Sélectionnez les {lore.entities.student}s ou {lore.entities.class}s qui recevront ce deck
+		</p>
 	</div>
 
 	<!-- Deck Info -->
@@ -224,11 +227,11 @@
 		<TabsList class="mb-6 w-full">
 			<TabsTrigger value="students" class="flex-1">
 				<Users class="mr-2 h-4 w-4" />
-				Élèves ({data.students?.length || 0})
+				{lore.entities.student}s ({data.students?.length || 0})
 			</TabsTrigger>
 			<TabsTrigger value="classes" class="flex-1">
 				<UserCheck class="mr-2 h-4 w-4" />
-				Classes ({data.classes?.length || 0})
+				{lore.entities.class}s ({data.classes?.length || 0})
 			</TabsTrigger>
 		</TabsList>
 
@@ -237,7 +240,7 @@
 			<Card.Root>
 				<Card.Header>
 					<div class="flex items-center justify-between">
-						<Card.Title>Sélectionner des élèves</Card.Title>
+						<Card.Title>Sélectionner des {lore.entities.student}s</Card.Title>
 						<Button onclick={selectAllStudents} variant="outline" size="sm">
 							{selectedStudents.length === data.students.length
 								? 'Tout désélectionner'
@@ -245,7 +248,8 @@
 						</Button>
 					</div>
 					<Card.Description>
-						{selectedStudents.length} élève{selectedStudents.length > 1 ? 's' : ''} sélectionné{selectedStudents.length >
+						{selectedStudents.length}
+						{lore.entities.student}{selectedStudents.length > 1 ? 's' : ''} sélectionné{selectedStudents.length >
 						1
 							? 's'
 							: ''}
@@ -254,7 +258,7 @@
 				<Card.Content>
 					{#if !data.students || data.students.length === 0}
 						<div class="rounded-lg border-2 border-dashed border-muted bg-muted/20 p-8 text-center">
-							<p class="text-muted-foreground">Aucun élève disponible</p>
+							<p class="text-muted-foreground">Aucun {lore.entities.student} disponible</p>
 						</div>
 					{:else}
 						<div class="space-y-2">
@@ -288,7 +292,7 @@
 			<Card.Root>
 				<Card.Header>
 					<div class="flex items-center justify-between">
-						<Card.Title>Sélectionner des classes</Card.Title>
+						<Card.Title>Sélectionner des {lore.entities.class}s</Card.Title>
 						<Button onclick={selectAllClasses} variant="outline" size="sm">
 							{selectedClasses.length === data.classes.length
 								? 'Tout désélectionner'
@@ -296,7 +300,8 @@
 						</Button>
 					</div>
 					<Card.Description>
-						{selectedClasses.length} classe{selectedClasses.length > 1 ? 's' : ''} sélectionnée{selectedClasses.length >
+						{selectedClasses.length}
+						{lore.entities.class}{selectedClasses.length > 1 ? 's' : ''} sélectionnée{selectedClasses.length >
 						1
 							? 's'
 							: ''}
@@ -305,7 +310,7 @@
 				<Card.Content>
 					{#if !data.classes || data.classes.length === 0}
 						<div class="rounded-lg border-2 border-dashed border-muted bg-muted/20 p-8 text-center">
-							<p class="text-muted-foreground">Aucune classe disponible</p>
+							<p class="text-muted-foreground">Aucun {lore.entities.class} disponible</p>
 						</div>
 					{:else}
 						<div class="space-y-2">
@@ -324,9 +329,8 @@
 										{/if}
 									</div>
 									<Badge variant="outline">
-										{classItem.student_count || 0} élève{(classItem.student_count || 0) > 1
-											? 's'
-											: ''}
+										{classItem.student_count || 0}
+										{lore.entities.student}{(classItem.student_count || 0) > 1 ? 's' : ''}
 									</Badge>
 								</div>
 							{/each}
@@ -339,7 +343,7 @@
 
 	<!-- Actions -->
 	<div class="mt-6 flex items-center justify-between">
-		<Button onclick={goBack} variant="outline">Annuler</Button>
+		<Button onclick={goBack} variant="outline">{lore.actions.cancel}</Button>
 
 		<Button onclick={assignDeck} disabled={!hasSelection || isAssigning} size="lg">
 			{#if isAssigning}

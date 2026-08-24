@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -199,7 +200,7 @@
 									</div>
 								{/if}
 								{#if notebook.assignment?.class_name}
-									<div>Classe: {notebook.assignment.class_name}</div>
+									<div>{lore.entities.class}: {notebook.assignment.class_name}</div>
 								{/if}
 								{#if notebook.assignment?.readonly}
 									<span class="rounded bg-yellow-100 px-2 py-1 text-yellow-800">

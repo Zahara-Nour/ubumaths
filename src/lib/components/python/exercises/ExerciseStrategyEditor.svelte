@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Editor for the new ValidationConfig shape (`{ ast_requirements?,
 	 * behavior?, timeout_ms? }`). Two independent panels — "Forme du code"
@@ -661,8 +662,8 @@
 		/>
 		{#if astEnabled && config.ast_requirements}
 			<p class="text-xs text-muted-foreground">
-				Le code de l'élève est analysé sans être exécuté. Si une exigence n'est pas remplie, le
-				comportement attendu n'est pas testé.
+				Le code du {lore.entities.student} est analysé sans être exécuté. Si une exigence n'est pas remplie,
+				le comportement attendu n'est pas testé.
 			</p>
 			<ASTRequirementsPanel requirements={config.ast_requirements} onchange={setAstRequirements} />
 		{/if}
@@ -1083,8 +1084,8 @@
 		{#if isVariableCheckBehavior(config.behavior)}
 			<div class="space-y-3">
 				<p class="text-xs text-muted-foreground">
-					Après exécution du code de l'élève, chaque variable listée ci-dessous doit exister dans le
-					namespace avec la valeur attendue. La valeur est saisie en JSON (ex&nbsp;:
+					Après exécution du code du {lore.entities.student}, chaque variable listée ci-dessous doit
+					exister dans le namespace avec la valeur attendue. La valeur est saisie en JSON (ex&nbsp;:
 					<code>6</code>, <code>"hello"</code>, <code>[1, 2]</code>, <code>null</code> pour
 					<code>None</code>).
 				</p>
@@ -1152,9 +1153,9 @@
 			{@const refBehavior = config.behavior}
 			<div class="space-y-4">
 				<p class="text-xs text-muted-foreground">
-					Test différentiel : fournis ta solution (cachée à l'élève) et le worker compare la
-					fonction de l'élève à la tienne sur des cas fixes (sentinelles que tu choisis) et/ou des
-					cas générés aléatoirement (couverture large, reproductible via le seed).
+					Test différentiel : fournis ta solution (cachée au {lore.entities.student}) et le worker
+					compare la fonction du {lore.entities.student} à la tienne sur des cas fixes (sentinelles que
+					tu choisis) et/ou des cas générés aléatoirement (couverture large, reproductible via le seed).
 				</p>
 
 				<div>
@@ -1191,7 +1192,8 @@
 							}))}
 					></textarea>
 					<p class="mt-1 text-xs text-muted-foreground">
-						Cachée à l'élève. C'est ta solution officielle ; elle sera comparée à celle de l'élève
+						Cachée au {lore.entities.student}. C'est ta solution officielle ; elle sera comparée à
+						celle du {lore.entities.student}
 						sur chaque cas.
 					</p>
 				</div>

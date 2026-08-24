@@ -22,6 +22,7 @@
 	```
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import { Input } from '$lib/components/ui/input';
@@ -328,7 +329,9 @@
 	{:else if classIds.length === 0}
 		<div class="rounded-lg border border-dashed p-6 text-center text-muted-foreground">
 			<Users class="mx-auto h-8 w-8 opacity-50" />
-			<p class="mt-2 text-sm">Selectionnez d'abord au moins une classe pour voir les eleves.</p>
+			<p class="mt-2 text-sm">
+				Selectionnez d'abord au moins un {lore.entities.class} pour voir les eleves.
+			</p>
 		</div>
 	{:else if filteredClasses.length === 0 && filteredOtherClasses.length === 0}
 		<div class="py-4 text-center text-muted-foreground">
@@ -341,7 +344,7 @@
 		<div class="max-h-[400px] space-y-2 overflow-y-auto rounded-lg border p-2">
 			{#if filteredClasses.length > 0}
 				<p class="px-2 text-xs font-medium text-muted-foreground uppercase">
-					Classes selectionnees
+					{lore.entities.class}s sélectionnés
 				</p>
 
 				{#each filteredClasses as cls (cls.id)}
@@ -413,7 +416,9 @@
 			<!-- Other classes (not in selection) -->
 			{#if filteredOtherClasses.length > 0}
 				<Separator class="my-3" />
-				<p class="px-2 text-xs font-medium text-muted-foreground uppercase">Autres classes</p>
+				<p class="px-2 text-xs font-medium text-muted-foreground uppercase">
+					Autres {lore.entities.class}s
+				</p>
 
 				{#each filteredOtherClasses as cls (cls.id)}
 					{@const selectedCount = getSelectedCountForClass(cls)}
@@ -487,7 +492,7 @@
 
 	<!-- Help text -->
 	<p class="text-xs text-muted-foreground">
-		Les eleves selectionnes individuellement recevront l'assignation en plus des classes
-		selectionnees.
+		Les eleves selectionnes individuellement recevront l'assignation en plus des {lore.entities
+			.class}s selectionnees.
 	</p>
 </div>

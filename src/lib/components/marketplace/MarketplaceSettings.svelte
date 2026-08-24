@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import {
 		Card,
 		CardContent,
@@ -160,9 +161,9 @@
 				</CardTitle>
 				<CardDescription>
 					{#if isTeacher && className}
-						Configurez le marché d'échange pour la classe {className}
+						Configurez le marché d'échange pour le {lore.entities.class} {className}
 					{:else if isTeacher}
-						Configurez le marché d'échange pour cette classe
+						Configurez le marché d'échange pour ce {lore.entities.class}
 					{:else}
 						Gérez les paramètres du marché d'échange
 					{/if}
@@ -190,8 +191,9 @@
 					<div class="flex gap-2">
 						<Info class="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
 						<p class="text-sm text-blue-800">
-							Le marché permet aux élèves d'échanger des cartes VIP et des gidouilles entre eux. Les
-							enseignants peuvent surveiller toutes les transactions.
+							Le marché permet aux {lore.entities.student}s d'échanger des cartes VIP et des
+							gidouilles entre eux. Les {lore.entities.teacher}s peuvent surveiller toutes les
+							transactions.
 						</p>
 					</div>
 				</div>
@@ -200,8 +202,8 @@
 					<div class="flex gap-2">
 						<AlertCircle class="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600" />
 						<p class="text-sm text-yellow-800">
-							Le marché est actuellement désactivé. Les élèves ne peuvent pas créer d'annonces ni
-							effectuer d'échanges.
+							Le marché est actuellement désactivé. Les {lore.entities.student}s ne peuvent pas
+							créer d'annonces ni effectuer d'échanges.
 						</p>
 					</div>
 				</div>
@@ -213,7 +215,7 @@
 			<div class="space-y-4">
 				<div class="space-y-2">
 					<Label for="max-listings">
-						Maximum d'annonces par élève
+						Maximum d'annonces par {lore.entities.student}
 						<span class="ml-1 text-xs text-muted-foreground">
 							(nombre d'annonces actives simultanément)
 						</span>
@@ -231,7 +233,9 @@
 				<div class="space-y-2">
 					<Label for="max-trades">
 						Maximum d'échanges par jour
-						<span class="ml-1 text-xs text-muted-foreground"> (limite quotidienne par élève) </span>
+						<span class="ml-1 text-xs text-muted-foreground">
+							(limite quotidienne par {lore.entities.student})
+						</span>
 					</Label>
 					<Input
 						id="max-trades"

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -266,7 +267,9 @@
 
 	<!-- Action Buttons -->
 	<div class="flex justify-end gap-2 border-t pt-4">
-		<Button type="button" variant="outline" onclick={onCancel} disabled={saving}>Annuler</Button>
+		<Button type="button" variant="outline" onclick={onCancel} disabled={saving}
+			>{lore.actions.cancel}</Button
+		>
 		<Button type="submit" disabled={!isFormValid() || saving}>
 			{saving ? 'Enregistrement...' : config ? 'Modifier' : 'Créer'}
 		</Button>

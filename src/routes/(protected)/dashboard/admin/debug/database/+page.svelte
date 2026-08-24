@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
@@ -57,7 +58,7 @@
 					<p class="text-3xl font-bold text-red-600 dark:text-red-400">{data.counts.admins}</p>
 				</div>
 				<div class="space-y-1">
-					<p class="text-sm text-muted-foreground">Classes</p>
+					<p class="text-sm text-muted-foreground">{lore.entities.class}s</p>
 					<p class="text-2xl font-bold">{data.counts.classes}</p>
 				</div>
 				<div class="space-y-1">
@@ -195,7 +196,7 @@
 			<!-- Students Without Classes -->
 			<div>
 				<div class="mb-2 flex items-center justify-between">
-					<h3 class="text-sm font-semibold">Students Without Classes</h3>
+					<h3 class="text-sm font-semibold">Students Without {lore.entities.class}s</h3>
 					<Badge variant="outline">{data.integrity.noClasses.length} found</Badge>
 				</div>
 				{#if data.integrity.noClasses.length > 0}

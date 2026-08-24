@@ -8,6 +8,7 @@
 	@module components/templates/TemplateInstantiationDialog
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { ChapterTemplate } from '$lib/types/chapter-templates';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
@@ -114,7 +115,8 @@
 				Utiliser le template
 			</Dialog.Title>
 			<Dialog.Description>
-				Créez un nouveau chapitre basé sur ce template. Le contenu sera copié dans la classe
+				Créez un nouveau chapitre basé sur ce template. Le contenu sera copié dans le {lore.entities
+					.class}
 				sélectionnée.
 			</Dialog.Description>
 		</Dialog.Header>
@@ -166,10 +168,8 @@
 						<div class="flex items-center gap-2">
 							<Dumbbell class="h-4 w-4 text-muted-foreground" />
 							<span>
-								{template.contentSnapshot.exercises.length} exercice{template.contentSnapshot
-									.exercises.length > 1
-									? 's'
-									: ''}
+								{template.contentSnapshot.exercises.length}
+								{lore.learning.exercise}{template.contentSnapshot.exercises.length > 1 ? 's' : ''}
 							</span>
 						</div>
 					</div>
@@ -186,14 +186,16 @@
 
 			<!-- Class selection -->
 			<div class="space-y-2">
-				<Label for="class-select">Classe cible *</Label>
+				<Label for="class-select">{lore.entities.class} cible *</Label>
 				<MySelect
 					id="class-select"
 					bind:value={selectedClassId}
 					items={classItems}
-					placeholder="Sélectionner une classe"
+					placeholder="Sélectionner un {lore.entities.class}"
 				/>
-				<p class="text-xs text-muted-foreground">Le chapitre sera créé dans cette classe</p>
+				<p class="text-xs text-muted-foreground">
+					Le chapitre sera créé dans ce {lore.entities.class}
+				</p>
 			</div>
 
 			<!-- Title -->
@@ -207,14 +209,14 @@
 					maxlength={100}
 				/>
 				<p class="text-xs text-muted-foreground">
-					Vous pouvez personnaliser le titre pour cette classe
+					Vous pouvez personnaliser le titre pour ce {lore.entities.class}
 				</p>
 			</div>
 
 			<!-- Visibility -->
 			<div class="space-y-2">
 				<Label>Visibilité</Label>
-				<MyCheckbox bind:checked={isVisible} label="Visible pour les élèves" />
+				<MyCheckbox bind:checked={isVisible} label="Visible pour les {lore.entities.student}s" />
 				<p class="text-xs text-muted-foreground">Vous pourrez modifier cette option plus tard</p>
 			</div>
 
@@ -228,7 +230,7 @@
 						<p class="font-medium text-orange-900 dark:text-orange-100">Template vide</p>
 						<p class="mt-1 text-orange-700 dark:text-orange-200">
 							Ce template ne contient aucun contenu. Vous pourrez ajouter des documents, quiz et
-							exercices après la création.
+							{lore.learning.exercise}s après la création.
 						</p>
 					</div>
 				</div>

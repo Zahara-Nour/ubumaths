@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * MigrationQuestionEditForm Component
 	 * ====================================
@@ -824,7 +825,7 @@
 
 	<!-- Actions -->
 	<div class="flex items-center justify-end gap-3 border-t pt-4">
-		<Button variant="outline" onclick={onCancel} disabled={isSaving}>Annuler</Button>
+		<Button variant="outline" onclick={onCancel} disabled={isSaving}>{lore.actions.cancel}</Button>
 		<Button onclick={handleSave} disabled={!isValid || isSaving}>
 			<Save class="mr-2 h-4 w-4" />
 			{isSaving ? 'Sauvegarde...' : 'Sauvegarder'}

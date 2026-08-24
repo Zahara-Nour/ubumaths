@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { friendsManager } from '$lib/stores/friends.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
@@ -72,7 +73,7 @@
 								<p class="text-sm text-muted-foreground">
 									{getFriendshipTypeLabel()}
 									{#if request.friend_profile?.role === 'teacher'}
-										• Enseignant
+										• {lore.entities.teacher}
 									{/if}
 								</p>
 							</div>
@@ -136,7 +137,7 @@
 								<p class="text-sm text-muted-foreground">
 									{getFriendshipTypeLabel()}
 									{#if request.friend_profile?.role === 'teacher'}
-										• Enseignant
+										• {lore.entities.teacher}
 									{/if}
 								</p>
 							</div>

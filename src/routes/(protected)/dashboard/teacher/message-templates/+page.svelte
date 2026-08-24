@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -107,7 +108,7 @@
 
 	const scopeOptions = [
 		{ value: 'system', label: 'Système' },
-		{ value: 'class', label: 'Mes classes' }
+		{ value: 'class', label: `Mes ${lore.entities.class}s` }
 	];
 
 	// Computed
@@ -358,7 +359,7 @@
 		}
 
 		if (!formClassId) {
-			toaster.error('Veuillez sélectionner une classe');
+			toaster.error(`Veuillez sélectionner un ${lore.entities.class}`);
 			return;
 		}
 
@@ -482,7 +483,9 @@
 		if (!newTitle) return;
 
 		if (!formClassId && classes.length === 0) {
-			toaster.error('Vous devez avoir au moins une classe pour dupliquer un template');
+			toaster.error(
+				`Vous devez avoir au moins un ${lore.entities.class} pour dupliquer un template`
+			);
 			return;
 		}
 
@@ -609,7 +612,8 @@
 		<div>
 			<h1 class="text-3xl font-bold">Mes Templates de Messages</h1>
 			<p class="text-muted-foreground">
-				Créez des templates personnalisés pour vos classes et utilisez les templates système
+				Créez des templates personnalisés pour vos {lore.entities.class}s et utilisez les templates
+				système
 			</p>
 		</div>
 		<Button onclick={openCreateDialog} disabled={classes.length === 0}>
@@ -621,9 +625,9 @@
 	{#if classes.length === 0}
 		<div class="rounded-lg border border-border bg-card p-12 text-center">
 			<Info class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-			<p class="text-lg font-medium">Aucune classe disponible</p>
+			<p class="text-lg font-medium">Aucun {lore.entities.class} disponible</p>
 			<p class="text-muted-foreground">
-				Vous devez avoir au moins une classe pour créer des templates
+				Vous devez avoir au moins un {lore.entities.class} pour créer des templates
 			</p>
 		</div>
 	{:else}
@@ -742,7 +746,7 @@
 										<span
 											class="rounded bg-green-100 px-2 py-1 text-xs text-green-700 dark:bg-green-900/30 dark:text-green-300"
 										>
-											{template.class_name || 'Ma classe'}
+											{template.class_name || `Mon ${lore.entities.class}`}
 										</span>
 									{/if}
 
@@ -890,7 +894,7 @@
 
 					<!-- Class Selection -->
 					<div class="space-y-2">
-						<Label>Classe *</Label>
+						<Label>{lore.entities.class} *</Label>
 						<MySelect
 							type="single"
 							bind:value={formClassId}

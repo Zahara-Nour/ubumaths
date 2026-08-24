@@ -8,6 +8,7 @@
 	@module components/templates/TemplateMigrationDialog
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { MigrationPreview } from '$lib/types/chapter-templates';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
@@ -245,7 +246,7 @@
 							<div class="space-y-2">
 								<div class="flex items-center gap-2">
 									<Dumbbell class="h-4 w-4 text-muted-foreground" />
-									<h4 class="text-sm font-medium">Exercices</h4>
+									<h4 class="text-sm font-medium">{lore.learning.exercise}s</h4>
 								</div>
 								<div class="flex flex-wrap gap-2 text-xs">
 									{#if stats.exercisesAdded > 0}
@@ -303,11 +304,11 @@
 						<AlertTriangle class="h-5 w-5 shrink-0 text-red-600" />
 						<div class="text-sm">
 							<p class="font-semibold text-red-900 dark:text-red-100">
-								Perte de progression des élèves
+								Perte de progression des {lore.entities.student}s
 							</p>
 							<p class="mt-1 text-red-700 dark:text-red-200">
-								Les modifications des objectifs entraîneront la perte de la progression des élèves
-								sur ces objectifs.
+								Les modifications des objectifs entraîneront la perte de la progression des {lore
+									.entities.student}s sur ces objectifs.
 							</p>
 						</div>
 					</div>

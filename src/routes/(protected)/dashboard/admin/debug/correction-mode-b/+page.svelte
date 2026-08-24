@@ -11,6 +11,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { generateInstance } from '$lib/questions/generator/instance-generator';
 	import {
 		additionGroupingDemo,
@@ -627,8 +628,8 @@
 			<code class="text-base">&lt;CorrectionCard&gt;</code> — flux complet
 		</h2>
 		<p class="text-sm text-muted-foreground">
-			Recto : énoncé + réponse de l'élève + réponse correcte. Cliquer sur ↻ (en bas à droite) pour
-			afficher la correction Mode B.
+			Recto : énoncé + réponse du {lore.entities.student} + réponse correcte. Cliquer sur ↻ (en bas à
+			droite) pour afficher la correction Mode B.
 		</p>
 
 		<div class="grid gap-6 md:grid-cols-2">

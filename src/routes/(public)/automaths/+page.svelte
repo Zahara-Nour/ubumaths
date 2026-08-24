@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Accordion from '$lib/components/ui/accordion';
 	import QuestionPreviewCard from '$lib/components/QuestionPreviewCard.svelte';
@@ -79,7 +80,8 @@
 	<title>Automaths - Banque de questions | Chiphre</title>
 	<meta
 		name="description"
-		content="Sélectionnez des questions de mathématiques pour créer des exercices personnalisés."
+		content="Sélectionnez des questions de mathématiques pour créer des {lore.learning
+			.exercise}s personnalisées."
 	/>
 </svelte:head>
 

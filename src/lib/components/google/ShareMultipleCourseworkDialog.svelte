@@ -20,6 +20,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
@@ -166,7 +167,7 @@
 			classes = data.classes || [];
 		} catch (err) {
 			console.error('[ShareMultipleCourseworkDialog] Error fetching classes:', err);
-			toaster.error('Erreur lors du chargement des classes');
+			toaster.error(`Erreur lors du chargement des ${lore.entities.class}s`);
 		} finally {
 			fetchingClasses = false;
 		}
@@ -377,7 +378,7 @@
 
 	function formatWorkType(workType: string): string {
 		const types: Record<string, string> = {
-			ASSIGNMENT: 'Devoir',
+			ASSIGNMENT: lore.learning.homework,
 			SHORT_ANSWER_QUESTION: 'Question courte',
 			MULTIPLE_CHOICE_QUESTION: 'QCM',
 			COURSE_WORK_TYPE_UNSPECIFIED: 'Non spécifié'
@@ -405,7 +406,7 @@
 		<Dialog.Header>
 			<Dialog.Title>Partager plusieurs travaux</Dialog.Title>
 			<Dialog.Description>
-				Sélectionnez les travaux et les classes avec lesquelles les partager
+				Sélectionnez les travaux et les {lore.entities.class}s avec lesquelles les partager
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -486,7 +487,7 @@
 			<!-- Class Selection Section -->
 			<Card.Root>
 				<Card.Header>
-					<Card.Title>2. Sélectionnez les classes</Card.Title>
+					<Card.Title>2. Sélectionnez les {lore.entities.class}s</Card.Title>
 				</Card.Header>
 				<Card.Content class="space-y-3">
 					{#if fetchingClasses}
@@ -497,8 +498,8 @@
 						</div>
 					{:else if classes.length === 0}
 						<div class="py-8 text-center text-muted-foreground">
-							<p>Aucune classe disponible</p>
-							<p class="text-sm">Créez une classe pour partager du contenu</p>
+							<p>Aucun {lore.entities.class} disponible</p>
+							<p class="text-sm">Créez un {lore.entities.class} pour partager du contenu</p>
 						</div>
 					{:else}
 						<div class="flex items-center justify-between">
@@ -526,7 +527,8 @@
 									/>
 									{#if cls.studentCount !== undefined}
 										<p class="mt-1 ml-6 text-xs text-muted-foreground">
-											{cls.studentCount} élève{cls.studentCount > 1 ? 's' : ''}
+											{cls.studentCount}
+											{lore.entities.student}{cls.studentCount > 1 ? 's' : ''}
 										</p>
 									{/if}
 								</div>
@@ -550,11 +552,11 @@
 						<div>
 							<MyCheckbox
 								bind:checked={visible}
-								label="Visible pour les élèves"
+								label="Visible pour les {lore.entities.student}s"
 								disabled={submitting}
 							/>
 							<p class="mt-1 ml-6 text-xs text-muted-foreground">
-								Les élèves pourront voir ces travaux immédiatement
+								Les {lore.entities.student}s pourront voir ces travaux immédiatement
 							</p>
 						</div>
 
@@ -661,7 +663,9 @@
 					partage{totalShares > 1 ? 's' : ''}
 				</p>
 				<div class="flex gap-2">
-					<Button variant="outline" onclick={onClose} disabled={submitting}>Annuler</Button>
+					<Button variant="outline" onclick={onClose} disabled={submitting}
+						>{lore.actions.cancel}</Button
+					>
 					<Button onclick={handleShare} disabled={!hasChanges || submitting}>
 						{#if submitting}
 							<Loader2 class="mr-2 h-4 w-4 animate-spin" />

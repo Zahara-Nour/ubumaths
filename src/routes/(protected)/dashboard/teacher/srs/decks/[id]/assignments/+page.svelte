@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
@@ -134,7 +135,9 @@
 		</Button>
 
 		<h1 class="mb-2 text-3xl font-bold">Attributions du deck</h1>
-		<p class="text-muted-foreground">Vérifier quels élèves ont reçu ce deck et leur progression</p>
+		<p class="text-muted-foreground">
+			Vérifier quels {lore.entities.student}s ont reçu ce deck et leur progression
+		</p>
 	</div>
 
 	<!-- Deck Info -->
@@ -164,7 +167,7 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="text-2xl font-bold">{totalAssignments}</div>
-				<p class="text-xs text-muted-foreground">Élèves ciblés</p>
+				<p class="text-xs text-muted-foreground">{lore.entities.student}s ciblés</p>
 			</Card.Content>
 		</Card.Root>
 
@@ -198,9 +201,10 @@
 	<!-- Assignments List -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Liste des élèves</Card.Title>
+			<Card.Title>Liste des {lore.entities.student}s</Card.Title>
 			<Card.Description>
-				{totalAssignments} élève{totalAssignments > 1 ? 's' : ''}
+				{totalAssignments}
+				{lore.entities.student}{totalAssignments > 1 ? 's' : ''}
 				{totalAssignments > 1 ? 'ont' : 'a'} reçu ce deck
 			</Card.Description>
 		</Card.Header>

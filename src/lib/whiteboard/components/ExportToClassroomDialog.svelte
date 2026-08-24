@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * ExportToClassroomDialog - Unified dialog for document creation and Classroom export
 	 *
@@ -210,7 +211,7 @@
 			classesWithCourse = data.classes || [];
 
 			if (classesWithCourse.length === 0) {
-				classesError = "Aucune classe n'est associée à un cours Google Classroom.";
+				classesError = `Aucun ${lore.entities.class} n'est associé à un cours Google Classroom.`;
 				return;
 			}
 
@@ -448,7 +449,7 @@
 			</Dialog.Title>
 			<Dialog.Description>
 				{#if mode === 'create'}
-					Créez un nouveau document avec un nom basé sur la classe et la date.
+					Créez un nouveau document avec un nom basé sur le {lore.entities.class} et la date.
 				{:else}
 					Publiez ce document dans la rubrique "Notes de cours" d'un cours Google Classroom.
 				{/if}
@@ -467,7 +468,7 @@
 					</p>
 					{#if successClassName}
 						<p class="mt-1 text-sm text-green-600 dark:text-green-400">
-							Classe : {successClassName}
+							{lore.entities.class} : {successClassName}
 						</p>
 					{/if}
 				</div>
@@ -486,7 +487,7 @@
 			<div class="space-y-4 py-4">
 				<!-- Class Selection -->
 				<div class="space-y-2">
-					<Label for="class">Classe</Label>
+					<Label for="class">{lore.entities.class}</Label>
 					{#if isLoadingClasses}
 						<div class="flex items-center gap-2 text-sm text-muted-foreground">
 							<Loader2 class="h-4 w-4 animate-spin" />
@@ -500,9 +501,9 @@
 							</div>
 							<p class="text-xs text-muted-foreground">
 								Pour utiliser cette fonctionnalité, associez d'abord un cours Google Classroom à vos
-								classes dans
+								{lore.entities.class}s dans
 								<a href="/dashboard/teacher/classes" class="text-primary hover:underline">
-									Mes Classes
+									Mes {lore.entities.class}s
 								</a>.
 							</p>
 						</div>
@@ -515,7 +516,7 @@
 										value={selectedClassId}
 										items={classItems}
 										onValueChange={handleClassChange}
-										placeholder="Sélectionnez une classe"
+										placeholder="Sélectionnez un {lore.entities.class}"
 									/>
 								</div>
 								{#if wasAutoDetected && selectedClass}

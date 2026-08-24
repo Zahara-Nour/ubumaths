@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Teacher Class Journal Entry Editor Page
 	 * ========================================
@@ -131,8 +132,8 @@
 	let courseLabel = $state('');
 
 	function exerciseLabel(id: string | null): string {
-		if (!id) return 'Exercice';
-		return data.exerciseOptions.find((o) => o.value === id)?.label ?? 'Exercice';
+		if (!id) return lore.learning.exercise;
+		return data.exerciseOptions.find((o) => o.value === id)?.label ?? lore.learning.exercise;
 	}
 
 	function activityLabel(a: PageData['activities'][number]): string {
@@ -175,7 +176,7 @@
 		});
 		if (ok) {
 			selectedExercise = '';
-			toaster.success('Exercice ajouté');
+			toaster.success(`${lore.learning.exercise} ajoutée`);
 			await refreshActivities();
 			await refreshCoverage();
 		}
@@ -411,7 +412,8 @@
 						Travail a faire
 					</Card.Title>
 					<Card.Description>
-						Devoirs et exercices a faire pour le prochain cours (optionnel)
+						Corvées Domestiques et {lore.learning.exercise}s a faire pour le prochain cours
+						(optionnel)
 					</Card.Description>
 				</Card.Header>
 				<Card.Content class="space-y-4">
@@ -487,7 +489,7 @@
 				</div>
 
 				<div class="flex items-center gap-3">
-					<Button type="button" variant="outline" onclick={goBack}>Annuler</Button>
+					<Button type="button" variant="outline" onclick={goBack}>{lore.actions.cancel}</Button>
 					<Button type="submit" disabled={isSaving}>
 						<Save class="mr-2 h-4 w-4" />
 						{isSaving ? 'Enregistrement...' : 'Enregistrer'}
@@ -541,7 +543,7 @@
 										type="single"
 										bind:value={selectedExercise}
 										items={data.exerciseOptions}
-										placeholder="Exercice du système…"
+										placeholder="{lore.learning.exercise} du système…"
 										triggerClass="flex-1"
 									/>
 									<Button
@@ -665,7 +667,7 @@
 	description="Cette action est irreversible. L'entree du {formatDateLong(
 		data.entryDate
 	)} sera definitivement supprimee."
-	confirmLabel="Supprimer"
+	confirmLabel={lore.actions.delete}
 	variant="destructive"
 	onConfirm={handleDeleteConfirm}
 />

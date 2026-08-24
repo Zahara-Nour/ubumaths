@@ -6,6 +6,7 @@
 	Visuels de niveau cohérents avec ClassCompetenceGrid (◯/🟠/🟢/✨).
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
@@ -51,7 +52,7 @@
 		...data.periods.map((p) => ({ value: p.id, label: p.name }))
 	]);
 	const dispositionItems = [
-		{ value: 'large', label: 'Large — élèves × compétences (Pronote)' },
+		{ value: 'large', label: `Large — ${lore.entities.student}s × compétences (Pronote)` },
 		{ value: 'longue', label: 'Longue — 1 ligne par compétence (archivage)' }
 	];
 	const niveauFormatItems = [
@@ -98,14 +99,15 @@
 	<header class="mb-6">
 		<h1 class="text-2xl font-bold">Export des compétences</h1>
 		<p class="text-muted-foreground">
-			Consultez les niveaux de compétences de la classe et exportez-les en CSV pour votre ENT.
+			Consultez les niveaux de compétences du {lore.entities.class} et exportez-les en CSV pour votre
+			ENT.
 		</p>
 	</header>
 
 	{#if data.classes.length === 0}
 		<Card.Root>
 			<Card.Content class="py-12 text-center text-muted-foreground">
-				Vous n'avez aucune classe pour le moment.
+				Vous n'avez aucun {lore.entities.class} pour le moment.
 			</Card.Content>
 		</Card.Root>
 	{:else}
@@ -117,13 +119,13 @@
 				</Card.Header>
 				<Card.Content class="space-y-4">
 					<div class="space-y-1.5">
-						<span class="text-sm font-medium">Classe</span>
+						<span class="text-sm font-medium">{lore.entities.class}</span>
 						<MySelect
 							type="single"
 							value={selectedClassId ?? ''}
 							items={classItems}
 							onValueChange={handleClassChange}
-							placeholder="Choisir une classe"
+							placeholder="Choisir un {lore.entities.class}"
 						/>
 					</div>
 
@@ -183,7 +185,7 @@
 				<Card.Header>
 					<Card.Title>Aperçu</Card.Title>
 					<Card.Description>
-						Tableau large (élèves × compétences). Le CSV reprend ce contenu.
+						Tableau large ({lore.entities.student}s × compétences). Le CSV reprend ce contenu.
 					</Card.Description>
 				</Card.Header>
 				<Card.Content>
@@ -200,19 +202,20 @@
 
 					{#if !hasStudents}
 						<p class="py-8 text-center text-sm text-muted-foreground">
-							Aucun élève dans cette classe.
+							Aucun {lore.entities.student} dans cette classe.
 						</p>
 					{:else}
 						<div class="overflow-x-auto">
 							<table class="w-full border-collapse text-sm">
-								<caption class="sr-only">Niveaux de compétences par élève</caption>
+								<caption class="sr-only">Niveaux de compétences par {lore.entities.student}</caption
+								>
 								<thead>
 									<tr class="border-b border-border">
 										<th
 											scope="col"
 											class="sticky left-0 z-10 bg-background px-2 py-2 text-left font-medium"
 										>
-											Élève
+											{lore.entities.student}
 										</th>
 										{#each data.competences as comp (comp.code)}
 											<th

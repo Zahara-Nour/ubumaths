@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -77,7 +78,7 @@
 	 */
 	async function assignToStudents() {
 		if (selectedStudents.length === 0) {
-			toaster.error('Sélectionnez au moins un élève');
+			toaster.error(`Sélectionnez au moins un ${lore.entities.student}`);
 			return;
 		}
 
@@ -121,7 +122,7 @@
 	 */
 	async function assignToClasses() {
 		if (selectedClasses.length === 0) {
-			toaster.error('Sélectionnez au moins une classe');
+			toaster.error(`Sélectionnez au moins un ${lore.entities.class}`);
 			return;
 		}
 
@@ -182,7 +183,7 @@
 				throw new Error(result.error || 'Échec de publication');
 			}
 
-			toaster.success('Exercice rendu public');
+			toaster.success(`${lore.learning.exercise} rendue publique`);
 
 			// Reset form
 			publicNotes = '';
@@ -250,7 +251,7 @@
 </script>
 
 <svelte:head>
-	<title>Assigner l'exercice - Chiphre</title>
+	<title>Assigner la {lore.learning.exercise} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
@@ -260,7 +261,7 @@
 			<ArrowLeft class="h-5 w-5" />
 		</Button>
 		<div class="flex-1">
-			<h1 class="text-3xl font-bold tracking-tight">Assigner l'exercice</h1>
+			<h1 class="text-3xl font-bold tracking-tight">Assigner la {lore.learning.exercise}</h1>
 			<p class="mt-2 text-muted-foreground">{data.exercise.title || '(Sans titre)'}</p>
 		</div>
 	</div>
@@ -272,11 +273,11 @@
 				<Tabs.List class="grid w-full grid-cols-3">
 					<Tabs.Trigger value="students">
 						<User class="mr-2 h-4 w-4" />
-						Élèves
+						{lore.entities.student}s
 					</Tabs.Trigger>
 					<Tabs.Trigger value="classes">
 						<Users class="mr-2 h-4 w-4" />
-						Classes
+						{lore.entities.class}s
 					</Tabs.Trigger>
 					<Tabs.Trigger value="public">
 						<Globe class="mr-2 h-4 w-4" />
@@ -288,9 +289,10 @@
 				<Tabs.Content value="students">
 					<Card.Root>
 						<Card.Header>
-							<Card.Title>Assigner à des élèves</Card.Title>
+							<Card.Title>Assigner à des {lore.entities.student}s</Card.Title>
 							<Card.Description>
-								Sélectionnez les élèves qui auront accès à cet exercice
+								Sélectionnez les {lore.entities.student}s qui auront accès à cette {lore.learning
+									.exercise}
 							</Card.Description>
 						</Card.Header>
 						<Card.Content>
@@ -298,15 +300,17 @@
 								<!-- Student selection -->
 								<div>
 									<Label class="mb-2 block text-sm font-medium">
-										Élèves ({data.students.length} disponibles)
+										{lore.entities.student}s ({data.students.length} disponibles)
 									</Label>
 									{#if data.students.length === 0}
 										<div
 											class="rounded-md border border-dashed p-8 text-center text-muted-foreground"
 										>
 											<Users class="mx-auto mb-2 h-8 w-8 opacity-50" />
-											<p>Aucun élève trouvé</p>
-											<p class="mt-1 text-sm">Ajoutez des élèves à vos classes</p>
+											<p>Aucun {lore.entities.student} trouvé</p>
+											<p class="mt-1 text-sm">
+												Ajoutez des {lore.entities.student}s à vos {lore.entities.class}s
+											</p>
 										</div>
 									{:else}
 										<div class="max-h-60 overflow-y-auto rounded-md border">
@@ -315,7 +319,7 @@
 													type="button"
 													class="flex w-full cursor-pointer items-center gap-3 border-b p-3 text-left transition-colors last:border-b-0 hover:bg-accent"
 													onclick={() => toggleStudent(student.id)}
-													aria-label="Sélectionner l'élève {student.full_name}"
+													aria-label="Sélectionner le {lore.entities.student} {student.full_name}"
 												>
 													<Checkbox checked={selectedStudents.includes(student.id)} />
 													<div class="flex-1">
@@ -339,7 +343,7 @@
 								<!-- Notes -->
 								<div>
 									<Label for="student-notes" class="mb-2 block text-sm font-medium">
-										Notes pour les élèves
+										Notes pour les {lore.entities.student}s
 									</Label>
 									<Textarea
 										id="student-notes"
@@ -356,7 +360,9 @@
 								disabled={loading || selectedStudents.length === 0}
 								class="w-full"
 							>
-								{loading ? 'Assignation...' : `Assigner à ${selectedStudents.length} élève(s)`}
+								{loading
+									? 'Assignation...'
+									: `Assigner à ${selectedStudents.length} ${lore.entities.student}(s)`}
 							</Button>
 						</Card.Footer>
 					</Card.Root>
@@ -366,9 +372,10 @@
 				<Tabs.Content value="classes">
 					<Card.Root>
 						<Card.Header>
-							<Card.Title>Assigner à des classes</Card.Title>
+							<Card.Title>Assigner à des {lore.entities.class}s</Card.Title>
 							<Card.Description>
-								Sélectionnez les classes qui auront accès à cet exercice
+								Sélectionnez les {lore.entities.class}s qui auront accès à cette {lore.learning
+									.exercise}
 							</Card.Description>
 						</Card.Header>
 						<Card.Content>
@@ -376,15 +383,15 @@
 								<!-- Class selection -->
 								<div>
 									<Label class="mb-2 block text-sm font-medium">
-										Classes ({data.classes.length} disponibles)
+										{lore.entities.class}s ({data.classes.length} disponibles)
 									</Label>
 									{#if data.classes.length === 0}
 										<div
 											class="rounded-md border border-dashed p-8 text-center text-muted-foreground"
 										>
 											<Users class="mx-auto mb-2 h-8 w-8 opacity-50" />
-											<p>Aucune classe trouvée</p>
-											<p class="mt-1 text-sm">Créez une classe pour commencer</p>
+											<p>Aucun {lore.entities.class} trouvé</p>
+											<p class="mt-1 text-sm">Créez un {lore.entities.class} pour commencer</p>
 										</div>
 									{:else}
 										<div class="space-y-2">
@@ -393,15 +400,14 @@
 													type="button"
 													class="flex w-full cursor-pointer items-center gap-3 rounded-lg border p-3 text-left transition-colors hover:bg-accent"
 													onclick={() => toggleClass(classItem.id)}
-													aria-label="Sélectionner la classe {classItem.name}"
+													aria-label="Sélectionner le {lore.entities.class} {classItem.name}"
 												>
 													<Checkbox checked={selectedClasses.includes(classItem.id)} />
 													<div class="flex-1">
 														<div class="font-medium">{classItem.name}</div>
 														<div class="text-xs text-muted-foreground">
-															{classItem.student_count} élève{classItem.student_count > 1
-																? 's'
-																: ''}
+															{classItem.student_count}
+															{lore.entities.student}{classItem.student_count > 1 ? 's' : ''}
 														</div>
 													</div>
 												</button>
@@ -421,7 +427,7 @@
 								<!-- Notes -->
 								<div>
 									<Label for="class-notes" class="mb-2 block text-sm font-medium">
-										Notes pour les élèves
+										Notes pour les {lore.entities.student}s
 									</Label>
 									<Textarea
 										id="class-notes"
@@ -450,7 +456,8 @@
 						<Card.Header>
 							<Card.Title>Rendre public</Card.Title>
 							<Card.Description>
-								Tous les élèves de la plateforme pourront accéder à cet exercice
+								Tous les {lore.entities.student}s de la plateforme pourront accéder à cette {lore
+									.learning.exercise}
 							</Card.Description>
 						</Card.Header>
 						<Card.Content>
@@ -460,20 +467,20 @@
 								>
 									<div class="flex items-center gap-2">
 										<Globe class="h-5 w-5" />
-										<p class="font-medium">Cet exercice est déjà public</p>
+										<p class="font-medium">Cette {lore.learning.exercise} est déjà publique</p>
 									</div>
 								</div>
 							{:else}
 								<div class="space-y-4">
 									<div>
 										<Label for="public-notes" class="mb-2 block text-sm font-medium">
-											Notes pour les élèves
+											Notes pour les {lore.entities.student}s
 										</Label>
 										<Textarea
 											id="public-notes"
 											bind:value={publicNotes}
 											rows={3}
-											placeholder="Informations pour tous les élèves..."
+											placeholder="Informations pour tous les {lore.entities.student}s..."
 										/>
 									</div>
 								</div>
@@ -505,7 +512,9 @@
 						<div class="py-12 text-center text-muted-foreground">
 							<Users class="mx-auto mb-3 h-12 w-12 opacity-50" />
 							<p class="font-medium">Aucune assignation</p>
-							<p class="mt-2 text-sm">Sélectionnez des élèves ou classes pour commencer</p>
+							<p class="mt-2 text-sm">
+								Sélectionnez des {lore.entities.student}s ou {lore.entities.class}s pour commencer
+							</p>
 						</div>
 					{:else}
 						<div class="space-y-3">
@@ -521,9 +530,9 @@
 											<div class="mt-1 flex items-center gap-2">
 												<Badge variant="outline" class="text-xs">
 													{assignment.assigned_to_type === 'student'
-														? 'Élève'
+														? lore.entities.student
 														: assignment.assigned_to_type === 'class'
-															? 'Classe'
+															? lore.entities.class
 															: 'Public'}
 												</Badge>
 												{#if assignment.optional_deadline}
@@ -567,7 +576,7 @@
 	bind:open={deleteDialogOpen}
 	title="Supprimer l'assignation"
 	description="Êtes-vous sûr de vouloir supprimer cette assignation ? Cette action ne peut pas être annulée."
-	confirmLabel="Supprimer"
+	confirmLabel={lore.actions.delete}
 	variant="destructive"
 	onConfirm={performDelete}
 />

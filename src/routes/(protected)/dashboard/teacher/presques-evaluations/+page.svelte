@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -232,11 +233,11 @@
 								onclick={() => openDeleteDialog(evaluation)}
 							>
 								<Trash2 class="h-3.5 w-3.5" />
-								<span class="sr-only">Supprimer</span>
+								<span class="sr-only">{lore.actions.delete}</span>
 							</Button>
 						{:else}
 							<span class="w-full text-xs text-muted-foreground italic">
-								Uploadé par un autre enseignant
+								Uploadé par un autre {lore.entities.teacher}
 							</span>
 						{/if}
 					</Card.Footer>
@@ -344,10 +345,8 @@
 					type="button"
 					variant="outline"
 					onclick={() => (showUploadDialog = false)}
-					disabled={isUploading}
+					disabled={isUploading}>{lore.actions.cancel}</Button
 				>
-					Annuler
-				</Button>
 				<Button
 					type="submit"
 					disabled={isUploading ||
@@ -438,10 +437,8 @@
 						type="button"
 						variant="outline"
 						onclick={() => (showEditDialog = false)}
-						disabled={isEditing}
+						disabled={isEditing}>{lore.actions.cancel}</Button
 					>
-						Annuler
-					</Button>
 					<Button
 						type="submit"
 						disabled={isEditing || !editTitle.trim() || editGradeLevels.length === 0}
@@ -497,10 +494,8 @@
 						type="button"
 						variant="outline"
 						onclick={() => (showDeleteDialog = false)}
-						disabled={isDeleting}
+						disabled={isDeleting}>{lore.actions.cancel}</Button
 					>
-						Annuler
-					</Button>
 					<Button type="submit" variant="destructive" disabled={isDeleting}>
 						{#if isDeleting}
 							<Loader2 class="mr-2 h-4 w-4 animate-spin" />

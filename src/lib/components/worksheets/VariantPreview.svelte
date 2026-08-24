@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import {
 		Card,
@@ -46,7 +47,8 @@
 	const studentOptions = $derived(
 		students.map((s) => ({
 			value: s.id,
-			label: `${s.first_name || ''} ${s.last_name || ''}`.trim() || 'Élève inconnu'
+			label:
+				`${s.first_name || ''} ${s.last_name || ''}`.trim() || `${lore.entities.student} inconnu`
 		}))
 	);
 
@@ -124,7 +126,7 @@
 	// Generate instances for the whole class
 	async function generateClassInstances() {
 		if (!classId) {
-			toaster.error('Aucune classe sélectionnée');
+			toaster.error(`Aucun ${lore.entities.class} sélectionné`);
 			return;
 		}
 
@@ -146,7 +148,7 @@
 			toaster.success(`${result.created} instances créées pour la classe ${result.class.name}`);
 
 			if (result.skipped > 0) {
-				toaster.info(`${result.skipped} élèves avaient déjà une instance`);
+				toaster.info(`${result.skipped} ${lore.entities.student}s avaient déjà une instance`);
 			}
 		} catch (error) {
 			toaster.error(
@@ -174,13 +176,13 @@
 					Aperçu des Variantes
 				</CardTitle>
 				<CardDescription>
-					Visualisez ce que les élèves verront avec les paramètres résolus
+					Visualisez ce que les {lore.entities.student}s verront avec les paramètres résolus
 				</CardDescription>
 			</div>
 			{#if classId && students.length > 0}
 				<Button onclick={generateClassInstances} disabled={isLoading} variant="default">
 					<Users class="mr-2 h-4 w-4" />
-					Générer pour la classe
+					Générer pour le {lore.entities.class}
 				</Button>
 			{/if}
 		</div>
@@ -190,12 +192,12 @@
 		<!-- Controls -->
 		<div class="grid gap-4 md:grid-cols-3">
 			<div>
-				<span class="mb-2 block text-sm font-medium">Élève</span>
+				<span class="mb-2 block text-sm font-medium">{lore.entities.student}</span>
 				<MySelect
 					type="single"
 					bind:value={selectedStudentId}
 					items={previewOptions}
-					placeholder="Sélectionner un élève"
+					placeholder="Sélectionner un {lore.entities.student}"
 				/>
 			</div>
 
@@ -269,7 +271,8 @@
 					</Badge>
 				{/if}
 				<Badge variant="outline">
-					{previewData.metadata.totalExercises} exercices
+					{previewData.metadata.totalExercises}
+					{lore.learning.exercise}s
 				</Badge>
 				{#if previewData.student}
 					<Badge variant="outline">
@@ -306,7 +309,8 @@
 								<Card class="mb-4">
 									<CardHeader class="pb-2">
 										<CardTitle class="text-base">
-											Exercice {i + 1}
+											{lore.learning.exercise}
+											{i + 1}
 										</CardTitle>
 									</CardHeader>
 									<CardContent>
@@ -334,7 +338,8 @@
 								<Card class="mb-4">
 									<CardHeader class="pb-2">
 										<CardTitle class="text-base">
-											Exercice {i + 1}
+											{lore.learning.exercise}
+											{i + 1}
 										</CardTitle>
 									</CardHeader>
 									<CardContent>
@@ -362,7 +367,8 @@
 						<Card>
 							<CardHeader class="pb-2">
 								<CardTitle class="text-base">
-									Exercice {i + 1}
+									{lore.learning.exercise}
+									{i + 1}
 									{#if exercise.position !== i}
 										<Badge variant="outline" class="ml-2">
 											Position originale: {exercise.position + 1}

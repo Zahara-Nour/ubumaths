@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
@@ -120,7 +121,7 @@
 		if (student.firstname && student.lastname) {
 			return `${student.firstname} ${student.lastname}`;
 		}
-		return student.firstname || student.lastname || 'Élève';
+		return student.firstname || student.lastname || lore.entities.student;
 	}
 </script>
 
@@ -137,7 +138,7 @@
 				<h1 class="text-3xl font-bold tracking-tight">Consentement parental</h1>
 			</div>
 			<p class="text-muted-foreground">
-				Gestion du consentement RGPD pour les élèves de moins de 15 ans
+				Gestion du consentement RGPD pour les {lore.entities.student}s de moins de 15 ans
 			</p>
 		</div>
 	</div>
@@ -166,7 +167,7 @@
 				</div>
 				<div>
 					<p class="text-2xl font-bold">{data.stats.total}</p>
-					<p class="text-sm text-muted-foreground">Élèves concernés</p>
+					<p class="text-sm text-muted-foreground">{lore.entities.student}s concernés</p>
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -213,9 +214,10 @@
 		<Card.Root>
 			<Card.Content class="py-12 text-center">
 				<ShieldCheck class="mx-auto h-12 w-12 text-muted-foreground" />
-				<h3 class="mt-4 text-lg font-semibold">Aucun élève concerné</h3>
+				<h3 class="mt-4 text-lg font-semibold">Aucun {lore.entities.student} concerné</h3>
 				<p class="mt-2 text-muted-foreground">
-					Vous n'avez pas d'élèves nécessitant un consentement parental (classes 6ème à 2nde).
+					Vous n'avez pas de {lore.entities.student}s nécessitant un consentement parental ({lore
+						.entities.class}s 6ème à 2nde).
 				</p>
 			</Card.Content>
 		</Card.Root>
@@ -240,7 +242,8 @@
 								{classItem.name}
 							</Card.Title>
 							<Card.Description>
-								{classItem.students.length} élève(s) nécessitant un consentement parental
+								{classItem.students.length}
+								{lore.entities.student}(s) nécessitant un consentement parental
 							</Card.Description>
 						</Card.Header>
 						<Card.Content>
@@ -393,15 +396,15 @@
 			</p>
 			<ul class="ml-4 list-disc space-y-1">
 				<li>
-					<strong>Accordé</strong> : L'élève a un accès complet à toutes les fonctionnalités.
+					<strong>Accordé</strong> : Le {lore.entities.student} a un accès complet à toutes les fonctionnalités.
 				</li>
 				<li>
-					<strong>Période de grâce</strong> : Accès complet temporaire pendant 30 jours pour les élèves
-					existants.
+					<strong>Période de grâce</strong> : Accès complet temporaire pendant 30 jours pour les {lore
+						.entities.student}s existants.
 				</li>
 				<li>
-					<strong>En attente</strong> : L'élève a un accès en lecture seule (ne peut pas soumettre de
-					réponses, envoyer de messages, etc.).
+					<strong>En attente</strong> : Le {lore.entities.student} a un accès en lecture seule (ne peut
+					pas soumettre de réponses, envoyer de messages, etc.).
 				</li>
 				<li>
 					<strong>Expiré</strong> : Le lien de consentement a expiré. Renvoyez un email.

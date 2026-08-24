@@ -11,6 +11,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -171,14 +172,14 @@
 
 	<!-- Settings Section -->
 	<div class="space-y-4 rounded-lg border p-4">
-		<h3 class="font-semibold">Paramètres</h3>
+		<h3 class="font-semibold">{lore.nav.settings}</h3>
 
 		<!-- Deadline -->
 		<div class="space-y-2">
 			<Label for="deadline">Date limite (optionnel)</Label>
 			<Input id="deadline" type="datetime-local" bind:value={deadline} min={minDeadline} />
 			<p class="text-xs text-muted-foreground">
-				Si définie, les élèves ne pourront plus commencer après cette date
+				Si définie, les {lore.entities.student}s ne pourront plus commencer après cette date
 			</p>
 		</div>
 
@@ -228,7 +229,7 @@
 	<!-- Actions -->
 	<div class="flex justify-end gap-3">
 		{#if onCancel}
-			<Button type="button" variant="outline" onclick={onCancel}>Annuler</Button>
+			<Button type="button" variant="outline" onclick={onCancel}>{lore.actions.cancel}</Button>
 		{/if}
 		<Button type="submit">
 			{submitLabel}

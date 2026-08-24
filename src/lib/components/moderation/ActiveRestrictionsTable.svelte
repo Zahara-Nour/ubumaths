@@ -18,6 +18,7 @@
 		- Responsive design
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Table from '$lib/components/ui/table';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { Badge } from '$lib/components/ui/badge';
@@ -233,7 +234,7 @@
 		? `Êtes-vous sûr de vouloir retirer cette restriction pour ${getUserName(selectedRestriction.user)} ? Cette action ne peut pas être annulée.`
 		: ''}
 	confirmLabel={isRemoving ? 'Retrait...' : 'Retirer'}
-	cancelLabel="Annuler"
+	cancelLabel={lore.actions.cancel}
 	variant="destructive"
 	onConfirm={removeRestriction}
 	onCancel={closeConfirmDialog}

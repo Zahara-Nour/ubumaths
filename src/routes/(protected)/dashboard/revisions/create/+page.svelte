@@ -11,6 +11,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -199,7 +200,7 @@
 		<div>
 			<Card.Root>
 				<Card.Header>
-					<Card.Title>Paramètres</Card.Title>
+					<Card.Title>{lore.nav.settings}</Card.Title>
 				</Card.Header>
 				<Card.Content class="space-y-4">
 					<div class="space-y-2">
@@ -288,7 +289,7 @@
 
 	<!-- Actions -->
 	<div class="mt-6 flex items-center justify-between">
-		<Button onclick={goBack} variant="outline">Annuler</Button>
+		<Button onclick={goBack} variant="outline">{lore.actions.cancel}</Button>
 
 		<Button onclick={createDeck} disabled={!canSave || isSaving} size="lg">
 			<Save class="mr-2 h-5 w-5" />

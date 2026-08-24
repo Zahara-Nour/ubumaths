@@ -20,6 +20,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
@@ -115,7 +116,7 @@
 			}));
 		} catch (err) {
 			console.error('[UnshareTopicMaterialsDialog] Error fetching classes:', err);
-			toaster.error('Erreur lors du chargement des classes');
+			toaster.error(`Erreur lors du chargement des ${lore.entities.class}s`);
 		} finally {
 			fetchingClasses = false;
 		}
@@ -202,7 +203,7 @@
 			<Dialog.Title>Retirer le partage - {topicName}</Dialog.Title>
 			<Dialog.Description>
 				Les {materials.length} matériel{materials.length > 1 ? 's' : ''} de ce topic seront retirés des
-				classes sélectionnées
+				{lore.entities.class}s sélectionnés
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -232,7 +233,7 @@
 							</p>
 							<p class="mt-1 text-xs text-orange-700 dark:text-orange-300">
 								{materials.length} matériel{materials.length > 1 ? 's' : ''} × {selectedClassCount}
-								classe{selectedClassCount > 1 ? 's' : ''}
+								{lore.entities.class}{selectedClassCount > 1 ? 's' : ''}
 							</p>
 						</div>
 					</Card.Content>
@@ -241,7 +242,7 @@
 				<!-- Class selection -->
 				<div class="space-y-3">
 					<div class="flex items-center justify-between">
-						<Label class="text-base font-semibold">Classes</Label>
+						<Label class="text-base font-semibold">{lore.entities.class}s</Label>
 						<div class="flex gap-2">
 							<Button variant="ghost" size="sm" onclick={selectAll} disabled={submitting}>
 								Tout sélectionner
@@ -254,7 +255,9 @@
 
 					<div class="max-h-64 space-y-2 overflow-y-auto rounded-md border p-3">
 						{#if classSelections.length === 0}
-							<p class="py-4 text-center text-sm text-muted-foreground">Aucune classe disponible</p>
+							<p class="py-4 text-center text-sm text-muted-foreground">
+								Aucun {lore.entities.class} disponible
+							</p>
 						{:else}
 							{#each classSelections as selection (selection.classId)}
 								<div class="flex items-center gap-2 rounded-md p-2 hover:bg-muted">
@@ -274,7 +277,9 @@
 		{/if}
 
 		<Dialog.Footer class="gap-2">
-			<Button variant="outline" onclick={onClose} disabled={submitting}>Annuler</Button>
+			<Button variant="outline" onclick={onClose} disabled={submitting}
+				>{lore.actions.cancel}</Button
+			>
 			<Button
 				variant="destructive"
 				onclick={handleUnshare}

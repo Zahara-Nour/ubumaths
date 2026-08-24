@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Loader2, AlertTriangle } from '@lucide/svelte';
@@ -45,7 +46,10 @@
 		{#if report}
 			<div class="rounded-md border bg-muted/30 p-3 text-sm">
 				<p class="font-medium">{report.assignment_title || report.worksheet_title}</p>
-				<p class="mt-1 text-muted-foreground">Exercice {report.exercise_position}</p>
+				<p class="mt-1 text-muted-foreground">
+					{lore.learning.exercise}
+					{report.exercise_position}
+				</p>
 			</div>
 		{/if}
 

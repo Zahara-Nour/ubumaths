@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { ShoppingCart, AlertCircle, Check } from '@lucide/svelte';
@@ -221,7 +222,9 @@
 
 		{#if !purchaseSuccess}
 			<Dialog.Footer>
-				<Button variant="outline" onclick={handleClose} disabled={isPurchasing}>Annuler</Button>
+				<Button variant="outline" onclick={handleClose} disabled={isPurchasing}
+					>{lore.actions.cancel}</Button
+				>
 				<Button onclick={handlePurchase} disabled={!canAfford || isPurchasing} class="gap-2">
 					{#if isPurchasing}
 						<span

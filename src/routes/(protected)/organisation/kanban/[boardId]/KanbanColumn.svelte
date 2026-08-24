@@ -19,6 +19,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import {
 		dndzone,
 		SHADOW_PLACEHOLDER_ITEM_ID,
@@ -332,7 +333,7 @@
 				aria-label="Titre de la nouvelle carte"
 			/>
 			<div class="flex justify-end gap-2">
-				<Button variant="ghost" size="sm" onclick={cancelCreateCard}>Annuler</Button>
+				<Button variant="ghost" size="sm" onclick={cancelCreateCard}>{lore.actions.cancel}</Button>
 				<Button size="sm" onclick={commitCreateCard} disabled={!newCardTitle.trim()}>Ajouter</Button
 				>
 			</div>
@@ -354,8 +355,8 @@
 	bind:open={deleteConfirmOpen}
 	title="Supprimer la colonne"
 	description={deleteDescription}
-	confirmLabel="Supprimer"
-	cancelLabel="Annuler"
+	confirmLabel={lore.actions.delete}
+	cancelLabel={lore.actions.cancel}
 	variant="destructive"
 	onConfirm={performDelete}
 />

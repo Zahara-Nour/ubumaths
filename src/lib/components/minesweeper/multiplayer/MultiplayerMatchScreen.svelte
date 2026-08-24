@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import OpponentProgressIndicator from './OpponentProgressIndicator.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Card } from '$lib/components/ui/card';
@@ -195,7 +196,7 @@
 				</Dialog.Description>
 			</Dialog.Header>
 			<Dialog.Footer>
-				<Button onclick={closeAbandonDialog} variant="outline">Annuler</Button>
+				<Button onclick={closeAbandonDialog} variant="outline">{lore.actions.cancel}</Button>
 				<Button onclick={handleAbandonMatch} variant="destructive">Abandonner</Button>
 			</Dialog.Footer>
 		</Dialog.Content>

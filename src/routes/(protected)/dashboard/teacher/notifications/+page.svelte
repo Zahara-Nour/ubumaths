@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
@@ -92,7 +93,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes notifications - Professeur - Chiphre</title>
+	<title>Mes notifications - {lore.entities.teacher} - Chiphre</title>
 </svelte:head>
 
 <div class="space-y-6">
@@ -115,7 +116,8 @@
 			<Card.Header>
 				<Card.Title>Créer une notification</Card.Title>
 				<Card.Description>
-					Envoyez une notification à vos classes ou à des élèves spécifiques
+					Envoyez une notification à vos {lore.entities.class}s ou à des {lore.entities.student}s
+					spécifiques
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
@@ -181,11 +183,11 @@
 							<div class="flex gap-4">
 								<label class="flex items-center gap-2">
 									<input type="radio" bind:group={targetType} value="classes" class="h-4 w-4" />
-									<span>Classes entières</span>
+									<span>{lore.entities.class}s entiers</span>
 								</label>
 								<label class="flex items-center gap-2">
 									<input type="radio" bind:group={targetType} value="users" class="h-4 w-4" />
-									<span>Élèves spécifiques</span>
+									<span>{lore.entities.student}s spécifiques</span>
 								</label>
 							</div>
 							<input type="hidden" name="targetType" value={targetType} />
@@ -194,7 +196,9 @@
 						<!-- Class selection (always show to filter students) -->
 						<div class="space-y-2">
 							<Label>
-								{targetType === 'classes' ? 'Sélectionner les classes' : 'Filtrer par classe'}
+								{targetType === 'classes'
+									? `Sélectionner les ${lore.entities.class}s`
+									: `Filtrer par ${lore.entities.class}`}
 							</Label>
 							<div class="grid gap-2 sm:grid-cols-2">
 								{#each data.classes as cls (cls.id)}
@@ -222,7 +226,7 @@
 						<!-- Student selection (if targetType is users) -->
 						{#if targetType === 'users'}
 							<div class="space-y-2">
-								<Label>Sélectionner les élèves</Label>
+								<Label>Sélectionner les {lore.entities.student}s</Label>
 								<div class="max-h-48 overflow-y-auto rounded border p-2">
 									{#if availableStudents.length > 0}
 										<div class="grid gap-2 sm:grid-cols-2">
@@ -246,7 +250,8 @@
 										</div>
 									{:else}
 										<p class="text-sm text-muted-foreground">
-											Sélectionnez d'abord une classe pour afficher les élèves
+											Sélectionnez d'abord un {lore.entities.class} pour afficher les {lore.entities
+												.student}s
 										</p>
 									{/if}
 								</div>
@@ -272,7 +277,9 @@
 
 						<!-- Submit -->
 						<div class="flex justify-end gap-2">
-							<Button type="button" variant="outline" onclick={resetForm}>Annuler</Button>
+							<Button type="button" variant="outline" onclick={resetForm}
+								>{lore.actions.cancel}</Button
+							>
 							<Button type="submit" disabled={isSubmitting}>
 								<Send class="mr-2 h-4 w-4" />
 								{isSubmitting ? 'Envoi...' : 'Envoyer la notification'}

@@ -33,6 +33,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import RewardsBlock from '$lib/components/RewardsBlock.svelte';
 	import InboxWidget from '$lib/components/student-inbox/InboxWidget.svelte';
@@ -167,7 +168,7 @@
 						</div>
 						{#if comps.with_data === 0}
 							<p class="text-sm text-muted-foreground">
-								Pas encore d'évaluation famille B. Ton prof commencera bientôt.
+								Pas encore d'évaluation famille B. Ton {lore.entities.teacher} commencera bientôt.
 							</p>
 						{:else}
 							<div class="mb-2 flex items-center gap-3 text-sm">
@@ -268,11 +269,11 @@
 	<!-- <div class="rounded-lg bg-card shadow">
 		<div class="border-b border-border px-6 py-4">
 			<div class="flex items-center justify-between">
-				<h3 class="text-lg font-semibold text-foreground">Mes exercices</h3>
+				<h3 class="text-lg font-semibold text-foreground">Mes {lore.learning.exercise}s</h3>
 				<a href="/dashboard/student/exercises" data-sveltekit-preload-data="hover">
 					<Button size="sm">
 						<FileText class="mr-2 h-4 w-4" />
-						Voir tous les exercices
+						Voir toutes les {lore.learning.exercise}s
 					</Button>
 				</a>
 			</div>
@@ -348,7 +349,7 @@
 					{/each}
 				</div>
 			{:else}
-				<p class="py-8 text-center text-muted-foreground">Aucun exercice assigné pour le moment</p>
+				<p class="py-8 text-center text-muted-foreground">Aucune {lore.learning.exercise} assignée pour le moment</p>
 			{/if}
 		</div>
 	</div> -->

@@ -5,6 +5,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import RiddleCard from '$lib/components/riddles/RiddleCard.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -49,7 +50,10 @@
 					toaster.error(result.message || 'Réponse incorrecte. Réessaye !');
 				} else {
 					// Manual validation
-					toaster.info(result.message || 'Ta réponse a été envoyée au professeur pour validation.');
+					toaster.info(
+						result.message ||
+							`Ta réponse a été envoyée au ${lore.entities.teacher} pour validation.`
+					);
 				}
 
 				// Navigate back to riddles list (no full page reload)

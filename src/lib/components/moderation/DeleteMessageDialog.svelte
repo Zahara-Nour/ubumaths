@@ -18,6 +18,7 @@
 		- Toast notifications
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -116,7 +117,9 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={closeDialog} disabled={isDeleting}>Annuler</Button>
+			<Button variant="outline" onclick={closeDialog} disabled={isDeleting}
+				>{lore.actions.cancel}</Button
+			>
 			<Button variant="destructive" onclick={deleteMessage} disabled={!isValid || isDeleting}>
 				{#if isDeleting}
 					<Loader2 class="mr-2 h-4 w-4 animate-spin" />

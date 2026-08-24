@@ -25,6 +25,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { X } from '@lucide/svelte';
 	import VipCard from '$lib/components/VipCard.svelte';
@@ -325,7 +326,9 @@
 			class="absolute right-0 bottom-0 left-0 border-t bg-white/80 p-6 pt-4 backdrop-blur-md dark:bg-gray-950/70"
 		>
 			<div class="flex justify-end gap-2">
-				<Button variant="secondary" onclick={handleClose} disabled={submitting}>Annuler</Button>
+				<Button variant="secondary" onclick={handleClose} disabled={submitting}
+					>{lore.actions.cancel}</Button
+				>
 				<Button onclick={handleChoose} disabled={!canConfirm || submitting}>
 					{#if submitting}
 						<div

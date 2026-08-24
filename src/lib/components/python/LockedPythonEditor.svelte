@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * LockedPythonEditor — CodeMirror editor for "fill in the blanks"
 	 * Python exercises.
@@ -394,14 +395,16 @@
 			class="m-4 rounded-md border border-red-500 bg-red-50 p-3 text-sm dark:bg-red-950/40"
 		>
 			<div class="mb-2 font-medium text-red-900 dark:text-red-100">
-				Cet exercice est mal configuré
+				Cette {lore.learning.exercise} est mal configurée
 			</div>
 			<ul class="list-disc pl-5 text-red-800 dark:text-red-200">
 				{#each parseErrors as err (err.index)}
 					<li>{err.message}</li>
 				{/each}
 			</ul>
-			<p class="mt-2 text-xs text-red-700 dark:text-red-300">Signale-le à ton enseignant·e.</p>
+			<p class="mt-2 text-xs text-red-700 dark:text-red-300">
+				Signale-le à ton {lore.entities.teacher}.
+			</p>
 		</div>
 	{/if}
 </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { resolve } from '$app/paths';
 </script>
 
@@ -6,7 +7,8 @@
 	<title>Chiphre - Les maths de la chandelle verte</title>
 	<meta
 		name="description"
-		content="Chiphre est une application educative de mathematiques pour eleves francophones. Exercices interactifs, jeux et outils pour apprendre les maths."
+		content="Chiphre est une application educative de mathematiques pour eleves francophones. {lore
+			.learning.exercise}s interactifs, jeux et outils pour apprendre les maths."
 	/>
 </svelte:head>
 

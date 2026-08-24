@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
@@ -86,7 +87,7 @@
 			onkeydown={(e) => e.key === 'Enter' && handleSearch()}
 			class="flex-1"
 		/>
-		<Button onclick={handleSearch}>Rechercher</Button>
+		<Button onclick={handleSearch}>{lore.actions.search}</Button>
 	</div>
 
 	<div class="grid grid-cols-1 gap-6 lg:grid-cols-4">

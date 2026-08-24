@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Card } from '$lib/components/ui/card';
@@ -59,7 +60,7 @@
 								</Avatar.Root>
 								<span class="text-foreground">{row.firstname}</span>
 								{#if row.is_teacher}
-									<Badge variant="secondary">Prof</Badge>
+									<Badge variant="secondary">{lore.entities.teacher}</Badge>
 								{:else if row.is_me}
 									<Badge variant="secondary">Vous</Badge>
 								{/if}

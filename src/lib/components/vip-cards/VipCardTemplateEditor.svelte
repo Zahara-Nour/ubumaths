@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -283,7 +284,7 @@
 		<Textarea
 			id="description"
 			bind:value={formData.description}
-			placeholder="Double les points gagnés lors du prochain exercice"
+			placeholder="Double les points gagnés lors du prochain {lore.learning.exercise}"
 			rows={3}
 			class={errors.description ? 'border-destructive' : ''}
 		/>
@@ -405,7 +406,7 @@
 
 	<!-- Max Owned Per Student (always visible) -->
 	<div class="space-y-2">
-		<Label for="max_owned_per_student">Copies max par élève</Label>
+		<Label for="max_owned_per_student">Copies max par {lore.entities.student}</Label>
 		<Input
 			id="max_owned_per_student"
 			type="number"
@@ -418,13 +419,16 @@
 			<p class="text-sm text-destructive">{errors.max_owned_per_student}</p>
 		{/if}
 		<p class="text-xs text-muted-foreground">
-			Nombre maximum de copies de cette carte qu'un élève peut posséder.
+			Nombre maximum de copies de cette carte qu'un {lore.entities.student} peut posséder.
 		</p>
 	</div>
 
 	<!-- Purchase Section -->
 	<div class="space-y-3 rounded-lg border p-4">
-		<MyCheckbox bind:checked={formData.is_purchasable} label="Achetable par les élèves" />
+		<MyCheckbox
+			bind:checked={formData.is_purchasable}
+			label="Achetable par les {lore.entities.student}s"
+		/>
 
 		{#if formData.is_purchasable}
 			<div class="space-y-2">
@@ -486,7 +490,9 @@
 
 	<!-- Action Buttons -->
 	<div class="flex justify-end gap-2 pt-4">
-		<Button type="button" variant="outline" onclick={onCancel} disabled={saving}>Annuler</Button>
+		<Button type="button" variant="outline" onclick={onCancel} disabled={saving}
+			>{lore.actions.cancel}</Button
+		>
 		<Button type="submit" disabled={!isFormValid || saving}>
 			{saving ? 'Enregistrement...' : card ? 'Modifier' : 'Créer'}
 		</Button>

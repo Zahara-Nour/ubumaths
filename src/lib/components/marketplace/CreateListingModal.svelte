@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
 	import { vipCardTemplates, type VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
 	import type { CreateListingData } from '$lib/types/marketplace';
@@ -326,7 +327,7 @@
 		</form>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => (open = false)}>Annuler</Button>
+			<Button variant="outline" onclick={() => (open = false)}>{lore.actions.cancel}</Button>
 			<Button onclick={handleSubmit} disabled={!isValid || isSubmitting}>
 				{isSubmitting ? 'Création...' : "Créer l'annonce"}
 			</Button>

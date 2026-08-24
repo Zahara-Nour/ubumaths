@@ -27,6 +27,7 @@
 		- Toast notifications
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as RadioGroup from '$lib/components/ui/radio-group';
 	import { Label } from '$lib/components/ui/label';
@@ -243,7 +244,7 @@
 			</Dialog.Title>
 			<Dialog.Description>
 				{#if isSelectionMode}
-					Sélectionnez un élève et configurez la restriction.
+					Sélectionnez un {lore.entities.student} et configurez la restriction.
 				{:else}
 					Choisissez le type de restriction et fournissez une raison.
 				{/if}
@@ -254,12 +255,12 @@
 			<!-- Student Selector (selection mode only) -->
 			{#if isSelectionMode}
 				<div class="space-y-2">
-					<Label>Élève à restreindre</Label>
+					<Label>{lore.entities.student} à restreindre</Label>
 					<MySelect
 						type="single"
 						bind:value={selectedUserId}
 						items={studentItems}
-						placeholder="Sélectionner un élève..."
+						placeholder="Sélectionner un {lore.entities.student}..."
 					/>
 				</div>
 			{/if}
@@ -370,7 +371,9 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={closeDialog} disabled={isSubmitting}>Annuler</Button>
+			<Button variant="outline" onclick={closeDialog} disabled={isSubmitting}
+				>{lore.actions.cancel}</Button
+			>
 			<Button onclick={submitRestriction} disabled={!isValid || isSubmitting} variant="destructive">
 				{#if isSubmitting}
 					<Loader2 class="mr-2 h-4 w-4 animate-spin" />

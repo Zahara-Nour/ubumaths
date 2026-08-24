@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { lore } from '$lib/config/lore';
 import { render } from 'vitest-browser-svelte';
 import { page } from '@vitest/browser/context';
 import TopObservablesToConsolidate from '../TopObservablesToConsolidate.svelte';
@@ -41,7 +42,9 @@ describe('TopObservablesToConsolidate', () => {
 		render(TopObservablesToConsolidate, { classId: 'class-1' });
 		await expect.element(page.getByText('Modéliser un problème')).toBeVisible();
 		await expect.element(page.getByText('CHER-A1')).toBeVisible();
-		await expect.element(page.getByText(/80% des élèves observés/)).toBeVisible();
+		await expect
+			.element(page.getByText(new RegExp(`80% des ${lore.entities.student}s observés`)))
+			.toBeVisible();
 	});
 
 	it('shows congratulations when no rows', async () => {

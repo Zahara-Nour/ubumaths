@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Dialog } from 'bits-ui';
 	import { Button } from '$lib/components/ui/button';
+	import { lore } from '$lib/config/lore';
 	import DialogContent from '$lib/components/ui/dialog/dialog-content.svelte';
 	import DialogHeader from '$lib/components/ui/dialog/dialog-header.svelte';
 	import DialogFooter from '$lib/components/ui/dialog/dialog-footer.svelte';
@@ -11,8 +12,8 @@
 		open = $bindable(false),
 		title,
 		description,
-		confirmLabel = 'Confirmer',
-		cancelLabel = 'Annuler',
+		confirmLabel = lore.actions.confirm,
+		cancelLabel = lore.actions.cancel,
 		variant = 'destructive',
 		onConfirm,
 		onCancel

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * FileDrawer - Sheet overlay for file management
 	 *
@@ -116,7 +117,7 @@
 
 	/** Class items for MySelect */
 	const classItems = $derived([
-		{ value: '', label: 'Toutes les classes' },
+		{ value: '', label: `Tous les ${lore.entities.class}s` },
 		...classes.map((c) => ({
 			value: c.id,
 			label: c.name
@@ -585,7 +586,7 @@
 				if (classesResponse.status === 401) {
 					toaster.error('Veuillez vous connecter');
 				} else {
-					toaster.error('Impossible de charger les classes');
+					toaster.error(`Impossible de charger les ${lore.entities.class}s`);
 				}
 				return;
 			}
@@ -887,20 +888,20 @@
 				<!-- Class Selector -->
 				{#if classes.length > 0}
 					<div class="mb-4 flex items-center gap-3">
-						<Label class="shrink-0 text-sm text-muted-foreground">Classe</Label>
+						<Label class="shrink-0 text-sm text-muted-foreground">{lore.entities.class}</Label>
 						<div class="flex-1">
 							<MySelect
 								type="single"
 								value={selectedClassId ?? ''}
 								items={classItems}
 								onValueChange={handleClassChange}
-								placeholder="Toutes les classes"
+								placeholder="Tous les {lore.entities.class}s"
 							/>
 						</div>
 						{#if wasAutoDetected && selectedClassId}
 							<div
 								class="flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs text-primary"
-								title="Classe auto-détectée selon l'horaire"
+								title="{lore.entities.class} auto-détecté selon l'horaire"
 							>
 								<Sparkles class="h-3 w-3" />
 								<span>Auto</span>
@@ -949,7 +950,7 @@
 				<div class="flex-1">
 					<span class="mb-3 block text-sm text-muted-foreground">
 						{#if selectedClassId && !isInSubfolder}
-							Documents de la classe
+							Documents du {lore.entities.class}
 						{:else if isInSubfolder}
 							Documents du dossier
 						{:else}

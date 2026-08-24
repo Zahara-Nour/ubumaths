@@ -16,6 +16,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Plus, Trash2, Check } from '@lucide/svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
@@ -256,8 +257,8 @@
 	bind:open={deleteConfirmOpen}
 	title="Supprimer ce tag ?"
 	description={deleteDescription}
-	confirmLabel="Supprimer"
-	cancelLabel="Annuler"
+	confirmLabel={lore.actions.delete}
+	cancelLabel={lore.actions.cancel}
 	variant="destructive"
 	onConfirm={performDelete}
 />

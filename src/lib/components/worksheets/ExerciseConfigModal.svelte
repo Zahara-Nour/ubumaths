@@ -23,6 +23,7 @@
 	```
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -182,12 +183,12 @@
 <Dialog.Root bind:open>
 	<Dialog.Content class="max-w-lg">
 		<Dialog.Header>
-			<Dialog.Title>Configuration de l'exercice</Dialog.Title>
+			<Dialog.Title>Configuration de la {lore.learning.exercise}</Dialog.Title>
 			<Dialog.Description>
 				{#if exercise?.exercise?.title}
 					{exercise.exercise.title}
 				{:else}
-					Modifier les parametres de l'exercice
+					Modifier les parametres de la {lore.learning.exercise}
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
@@ -202,7 +203,7 @@
 					placeholder="Selectionner une section"
 				/>
 				<p class="text-xs text-muted-foreground">
-					Choisissez dans quelle section placer cet exercice
+					Choisissez dans quelle section placer cette {lore.learning.exercise}
 				</p>
 			</div>
 
@@ -217,7 +218,9 @@
 					bind:value={points}
 					placeholder="Ex: 10"
 				/>
-				<p class="text-xs text-muted-foreground">Nombre de points attribues a cet exercice</p>
+				<p class="text-xs text-muted-foreground">
+					Nombre de points attribues a cette {lore.learning.exercise}
+				</p>
 			</div>
 
 			<!-- Essential exercise -->
@@ -228,12 +231,13 @@
 				<div class="flex-1 space-y-2">
 					<div class="flex items-center justify-between">
 						<Label for="is-essential" class="cursor-pointer font-medium"
-							>Exercice indispensable</Label
+							>{lore.learning.exercise} indispensable</Label
 						>
 						<MyCheckbox id="is-essential" bind:checked={isEssential} />
 					</div>
 					<p class="text-xs text-muted-foreground">
-						Les exercices indispensables sont mis en evidence avec une etoile doree pour les eleves
+						Les {lore.learning.exercise}s indispensables sont mis en evidence avec une etoile doree
+						pour les eleves
 					</p>
 				</div>
 			</div>
@@ -248,11 +252,11 @@
 				/>
 				<p class="text-xs text-muted-foreground">
 					{#if variantMode === 'none'}
-						Tous les eleves recevront le meme exercice
+						Tous les eleves recevront le meme {lore.learning.exercise}
 					{:else if variantMode === 'individual'}
 						Chaque eleve recevra une variante unique
 					{:else if variantMode === 'n_versions'}
-						L'exercice aura un nombre fixe de versions differentes
+						La {lore.learning.exercise} aura un nombre fixe de versions differentes
 					{:else if variantMode === 'group'}
 						Les eleves d'un meme groupe recevront la meme variante
 					{/if}
@@ -264,7 +268,9 @@
 				<div class="space-y-2">
 					<Label for="n-versions">Nombre de versions</Label>
 					<Input id="n-versions" type="number" min={2} max={100} bind:value={nVersions} />
-					<p class="text-xs text-muted-foreground">Nombre de versions differentes de l'exercice</p>
+					<p class="text-xs text-muted-foreground">
+						Nombre de versions differentes de la {lore.learning.exercise}
+					</p>
 				</div>
 			{/if}
 
@@ -285,17 +291,19 @@
 				<Textarea
 					id="custom-instructions"
 					bind:value={customInstructions}
-					placeholder="Instructions supplementaires pour cet exercice..."
+					placeholder="Instructions supplementaires pour cette {lore.learning.exercise}..."
 					rows={3}
 				/>
 				<p class="text-xs text-muted-foreground">
-					Ces instructions s'afficheront avant l'enonce de l'exercice
+					Ces instructions s'afficheront avant l'enonce de la {lore.learning.exercise}
 				</p>
 			</div>
 		</div>
 
 		<Dialog.Footer>
-			<Button variant="outline" onclick={handleCancel} disabled={isSaving}>Annuler</Button>
+			<Button variant="outline" onclick={handleCancel} disabled={isSaving}
+				>{lore.actions.cancel}</Button
+			>
 			<Button onclick={handleSave} disabled={isSaving}>
 				{#if isSaving}
 					<Loader2 class="mr-2 h-4 w-4 animate-spin" />

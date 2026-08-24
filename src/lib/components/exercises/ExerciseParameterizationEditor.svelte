@@ -21,6 +21,7 @@
 	@see src/lib/exercises/types for DistributionMode
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import * as Collapsible from '$lib/components/ui/collapsible';
@@ -48,10 +49,9 @@
 
 	// Distribution mode descriptions
 	const distributionModeDescriptions: Record<DistributionMode, string> = {
-		on_demand:
-			'Les élèves peuvent cliquer "Nouveau problème" pour obtenir différentes valeurs à chaque fois.',
-		per_student: 'Chaque élève reçoit des valeurs uniques, cohérentes entre les sessions.',
-		per_group: "Tous les élèves d'un groupe voient les mêmes valeurs."
+		on_demand: `Les ${lore.entities.student}s peuvent cliquer "Nouveau problème" pour obtenir différentes valeurs à chaque fois.`,
+		per_student: `Chaque ${lore.entities.student} reçoit des valeurs uniques, cohérentes entre les sessions.`,
+		per_group: `Tous les ${lore.entities.student}s d'un groupe voient les mêmes valeurs.`
 	};
 </script>
 
@@ -66,7 +66,7 @@
 					<div class="flex items-center gap-2">
 						<Card.Title>Variables</Card.Title>
 						<span class="text-sm text-muted-foreground">
-							(optionnel - pour exercices paramétrés)
+							(optionnel - pour {lore.learning.exercise}s paramétrées)
 						</span>
 					</div>
 					<ChevronDown
@@ -80,8 +80,8 @@
 
 						{#if variables.length === 0}
 							<p class="mt-4 text-sm text-muted-foreground">
-								💡 Les variables permettent de créer des exercices avec des valeurs aléatoires.
-								Cliquez sur "Ajouter une variable" pour commencer.
+								💡 Les variables permettent de créer des {lore.learning.exercise}s avec des valeurs
+								aléatoires. Cliquez sur "Ajouter une variable" pour commencer.
 							</p>
 						{/if}
 					</Card.Content>
@@ -96,7 +96,7 @@
 			<Card.Header>
 				<Card.Title>Mode de distribution</Card.Title>
 				<Card.Description>
-					Comment les valeurs des variables sont-elles attribuées aux élèves ?
+					Comment les valeurs des variables sont-elles attribuées aux {lore.entities.student}s ?
 				</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-3">
@@ -108,8 +108,10 @@
 						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						<option value="on_demand"> À la demande (pratique illimitée) </option>
-						<option value="per_student"> Par élève (devoir personnalisé) </option>
-						<option value="per_group"> Par groupe (travail de classe) </option>
+						<option value="per_student">
+							Par {lore.entities.student} ({lore.learning.homework} personnalisée)
+						</option>
+						<option value="per_group"> Par groupe (travail de {lore.entities.class}) </option>
 					</select>
 				</div>
 
@@ -124,12 +126,12 @@
 				<div class="space-y-2 text-xs text-muted-foreground">
 					<p><strong>À la demande :</strong> Idéal pour l'entraînement et la pratique autonome</p>
 					<p>
-						<strong>Par élève :</strong> Idéal pour les devoirs où chaque élève doit avoir un problème
-						différent
+						<strong>Par {lore.entities.student} :</strong> Idéal pour les Corvées Domestiques où
+						chaque {lore.entities.student} doit avoir un problème différent
 					</p>
 					<p>
-						<strong>Par groupe :</strong> Idéal pour les travaux en classe où tous les élèves travaillent
-						sur le même problème
+						<strong>Par groupe :</strong> Idéal pour les travaux en {lore.entities.class} où tous les
+						{lore.entities.student}s travaillent sur le même problème
 					</p>
 				</div>
 			</Card.Content>

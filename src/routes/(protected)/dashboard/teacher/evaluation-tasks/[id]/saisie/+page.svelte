@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Teacher Evaluation Task — saisie en séance
 	 * ==========================================
@@ -78,16 +79,18 @@
 	<div class="mb-4">
 		<h1 class="text-2xl font-bold tracking-tight">Saisie : {data.task_name}</h1>
 		<p class="text-sm text-muted-foreground">
-			{data.class_name ?? 'Classe inconnue'} · {data.students.length} élève{data.students.length > 1
+			{data.class_name ?? `${lore.entities.class} inconnu`} · {data.students.length}
+			{lore.entities.student}{data.students.length > 1 ? 's' : ''} · {data.observables.length} observable{data
+				.observables.length > 1
 				? 's'
-				: ''} · {data.observables.length} observable{data.observables.length > 1 ? 's' : ''} au périmètre
+				: ''} au périmètre
 		</p>
 	</div>
 
 	{#if data.students.length === 0}
 		<Card.Root>
 			<Card.Content class="py-12 text-center text-muted-foreground">
-				<p>Aucun élève dans cette classe.</p>
+				<p>Aucun {lore.entities.student} dans cette classe.</p>
 			</Card.Content>
 		</Card.Root>
 	{:else if data.observables.length === 0}
@@ -177,7 +180,7 @@
 							<thead>
 								<tr class="border-b bg-muted/50">
 									<th class="sticky left-0 z-10 bg-muted/50 px-3 py-2 text-left font-medium">
-										Élève
+										{lore.entities.student}
 									</th>
 									{#each data.observables as ob (ob.skill_id)}
 										<th class="px-2 py-2 text-center font-medium" title={ob.name}>

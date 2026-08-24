@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -369,7 +370,7 @@
 										class="resize-none font-mono text-sm"
 									/>
 									<p class="text-xs text-muted-foreground">
-										Supporte les formules LaTeX et les variables de l'exercice
+										Supporte les formules LaTeX et les variables de la {lore.learning.exercise}
 									</p>
 								</div>
 							{:else}
@@ -518,7 +519,7 @@
 						class="resize-none font-mono text-sm"
 					/>
 					<p class="text-xs text-muted-foreground">
-						Supporte les formules LaTeX et les variables de l'exercice
+						Supporte les formules LaTeX et les variables de la {lore.learning.exercise}
 					</p>
 				</div>
 			{:else}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
@@ -150,7 +151,7 @@
 		</Button>
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">{data.exercise.title}</h1>
-			<p class="mt-2 text-muted-foreground">Résultats des élèves</p>
+			<p class="mt-2 text-muted-foreground">Résultats des {lore.entities.student}s</p>
 		</div>
 	</div>
 
@@ -158,7 +159,7 @@
 	<div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-4">
 		<Card.Root>
 			<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-				<Card.Title class="text-sm font-medium">Élèves concernés</Card.Title>
+				<Card.Title class="text-sm font-medium">{lore.entities.student}s concernés</Card.Title>
 				<Users class="h-4 w-4 text-muted-foreground" />
 			</Card.Header>
 			<Card.Content>
@@ -203,7 +204,7 @@
 	<!-- Class filter -->
 	{#if data.teacherClasses.length > 1}
 		<div class="mb-4 flex items-center gap-2">
-			<span class="text-sm font-medium text-muted-foreground">Classe :</span>
+			<span class="text-sm font-medium text-muted-foreground">{lore.entities.class} :</span>
 			<MySelect
 				type="single"
 				bind:value={selectedClassId}
@@ -217,9 +218,10 @@
 	<!-- Results Table -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Détails par élève</Card.Title>
+			<Card.Title>Détails par {lore.entities.student}</Card.Title>
 			<Card.Description>
-				{sortedRows.length} élève{sortedRows.length > 1 ? 's' : ''}
+				{sortedRows.length}
+				{lore.entities.student}{sortedRows.length > 1 ? 's' : ''}
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
@@ -228,7 +230,7 @@
 					<AlertCircle class="mx-auto mb-3 h-12 w-12 opacity-50" />
 					<p>Aucune activité pour le moment</p>
 					<p class="mt-2 text-sm">
-						Les résultats apparaîtront dès qu'un élève aura été assigné ou aura soumis.
+						Les résultats apparaîtront dès qu'un {lore.entities.student} aura été assigné ou aura soumis.
 					</p>
 				</div>
 			{:else}
@@ -241,7 +243,7 @@
 									class="flex items-center gap-1 hover:text-foreground"
 									onclick={() => toggleSort('name')}
 								>
-									Élève
+									{lore.entities.student}
 									{#if sortBy === 'name'}
 										{#if sortDir === 'asc'}
 											<ArrowUp class="h-3 w-3" />

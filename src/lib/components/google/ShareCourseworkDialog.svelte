@@ -19,6 +19,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
@@ -147,7 +148,7 @@
 			}
 		} catch (err) {
 			console.error('[ShareDialog] Error fetching classes:', err);
-			toaster.error('Erreur lors du chargement des classes');
+			toaster.error(`Erreur lors du chargement des ${lore.entities.class}s`);
 		} finally {
 			fetchingClasses = false;
 		}
@@ -284,7 +285,7 @@
 		<Dialog.Header>
 			<Dialog.Title>Partager : {coursework.title}</Dialog.Title>
 			<Dialog.Description>
-				Sélectionnez les classes avec lesquelles partager ce travail
+				Sélectionnez les {lore.entities.class}s avec lesquelles partager ce travail
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -297,8 +298,8 @@
 				</div>
 			{:else if classes.length === 0}
 				<div class="py-8 text-center text-muted-foreground">
-					<p>Aucune classe disponible</p>
-					<p class="text-sm">Créez une classe pour partager du contenu</p>
+					<p>Aucun {lore.entities.class} disponible</p>
+					<p class="text-sm">Créez un {lore.entities.class} pour partager du contenu</p>
 				</div>
 			{:else}
 				<div class="space-y-3">
@@ -324,7 +325,7 @@
 												<div>
 													<MyCheckbox
 														bind:checked={config.visible}
-														label="Visible pour les élèves"
+														label="Visible pour les {lore.entities.student}s"
 													/>
 												</div>
 
@@ -374,12 +375,15 @@
 		<Dialog.Footer>
 			<div class="flex items-center justify-between gap-4">
 				<p class="text-sm text-muted-foreground">
-					{selectedCount} classe{selectedCount > 1 ? 's' : ''} sélectionnée{selectedCount > 1
+					{selectedCount}
+					{lore.entities.class}{selectedCount > 1 ? 's' : ''} sélectionnée{selectedCount > 1
 						? 's'
 						: ''}
 				</p>
 				<div class="flex gap-2">
-					<Button variant="outline" onclick={onClose} disabled={submitting}>Annuler</Button>
+					<Button variant="outline" onclick={onClose} disabled={submitting}
+						>{lore.actions.cancel}</Button
+					>
 					<Button onclick={handleShare} disabled={!hasChanges || submitting}>
 						{#if submitting}
 							<Loader2 class="mr-2 h-4 w-4 animate-spin" />

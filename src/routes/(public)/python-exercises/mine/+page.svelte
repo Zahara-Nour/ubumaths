@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -42,7 +43,7 @@
 				const message = await res.text();
 				throw new Error(`HTTP ${res.status} : ${message || res.statusText}`);
 			}
-			toaster.success('Exercice supprimé');
+			toaster.success(`${lore.learning.exercise} supprimée`);
 			confirmingDelete = null;
 			await invalidateAll();
 		} catch (e) {
@@ -70,27 +71,28 @@
 </script>
 
 <svelte:head>
-	<title>Mes exercices Python – Chiphre</title>
+	<title>Mes {lore.learning.exercise}s Python – Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto p-4">
 	<header class="mb-4 flex flex-wrap items-center justify-between gap-2">
 		<div>
-			<h1 class="text-2xl font-bold">Mes exercices Python</h1>
+			<h1 class="text-2xl font-bold">Mes {lore.learning.exercise}s Python</h1>
 			<p class="text-sm text-muted-foreground">
-				{exercises.length} exercice{exercises.length > 1 ? 's' : ''}
+				{exercises.length}
+				{lore.learning.exercise}{exercises.length > 1 ? 's' : ''}
 			</p>
 		</div>
 		<Button href="/python-exercises/new">
-			<Plus class="mr-1 h-4 w-4" /> Créer un exercice
+			<Plus class="mr-1 h-4 w-4" /> Créer une {lore.learning.exercise}
 		</Button>
 	</header>
 
 	{#if exercises.length === 0}
 		<div class="rounded-lg border border-dashed border-border p-8 text-center">
-			<p class="mb-4 text-muted-foreground">Tu n'as pas encore créé d'exercice.</p>
+			<p class="mb-4 text-muted-foreground">Tu n'as pas encore créé de {lore.learning.exercise}.</p>
 			<Button href="/python-exercises/new">
-				<Plus class="mr-1 h-4 w-4" /> Créer mon premier exercice
+				<Plus class="mr-1 h-4 w-4" /> Créer mon première {lore.learning.exercise}
 			</Button>
 		</div>
 	{:else}
@@ -132,8 +134,8 @@
 								variant="ghost"
 								size="sm"
 								href="/python-exercises/{exercise.id}"
-								aria-label="Ouvrir l'exercice"
-								title="Ouvrir l'exercice"
+								aria-label="Ouvrir la {lore.learning.exercise}"
+								title="Ouvrir la {lore.learning.exercise}"
 							>
 								<ExternalLink class="h-4 w-4" />
 							</Button>
@@ -141,8 +143,8 @@
 								variant="ghost"
 								size="sm"
 								href="/python-exercises/{exercise.id}/edit"
-								aria-label="Modifier l'exercice"
-								title="Modifier l'exercice"
+								aria-label="Modifier la {lore.learning.exercise}"
+								title="Modifier la {lore.learning.exercise}"
 							>
 								<Pencil class="h-4 w-4" />
 							</Button>
@@ -167,10 +169,10 @@
 {#if exerciseToDelete}
 	<ConfirmDialog
 		open={confirmingDelete !== null}
-		title="Supprimer cet exercice ?"
+		title="Supprimer cette {lore.learning.exercise} ?"
 		description={`« ${exerciseToDelete.title} » sera définitivement supprimé. Le lien partagé cessera de fonctionner.`}
-		confirmLabel="Supprimer"
-		cancelLabel="Annuler"
+		confirmLabel={lore.actions.delete}
+		cancelLabel={lore.actions.cancel}
 		variant="destructive"
 		onConfirm={handleDelete}
 		onCancel={() => (confirmingDelete = null)}

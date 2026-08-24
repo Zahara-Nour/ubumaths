@@ -12,6 +12,7 @@
 -->
 
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import VipCard from '$lib/components/VipCard.svelte';
 	import VipCardSellModal from '$lib/components/vip-cards/VipCardSellModal.svelte';
@@ -168,7 +169,7 @@
 
 			// 3. SUCCESS: Cache and local state already correct
 			toaster.success(
-				`Demande d'activation envoyee ! Ton enseignant recevra la demande pour : ${result.cardName}`
+				`Demande d'activation envoyee ! Ton ${lore.entities.teacher} recevra la demande pour : ${result.cardName}`
 			);
 		} catch (err) {
 			// 4. ERROR: Rollback optimistic update

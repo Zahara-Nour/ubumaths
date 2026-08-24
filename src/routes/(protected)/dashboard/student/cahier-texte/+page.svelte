@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	/**
 	 * Student Class Journal (Cahier de Texte) Page
 	 * =============================================
@@ -33,7 +34,7 @@
 
 	// Class items for the selector
 	let classItems = $derived([
-		{ value: '', label: 'Toutes les classes' },
+		{ value: '', label: `Tous les ${lore.entities.class}s` },
 		...data.classes.map((c) => ({
 			value: c.id,
 			label: c.name
@@ -174,8 +175,10 @@
 		<Card.Root>
 			<Card.Content class="py-16 text-center">
 				<BookOpen class="mx-auto mb-4 h-16 w-16 text-muted-foreground/50" />
-				<h2 class="text-xl font-semibold">Aucune classe</h2>
-				<p class="mt-2 text-muted-foreground">Tu n'es inscrit dans aucune classe pour le moment.</p>
+				<h2 class="text-xl font-semibold">Aucun {lore.entities.class}</h2>
+				<p class="mt-2 text-muted-foreground">
+					Tu n'es inscrit dans aucun {lore.entities.class} pour le moment.
+				</p>
 			</Card.Content>
 		</Card.Root>
 	{:else}
@@ -187,13 +190,13 @@
 					<!-- Class selector (only if multiple classes) -->
 					{#if hasMultipleClasses}
 						<div class="flex items-center gap-3">
-							<span class="text-sm font-medium text-muted-foreground">Classe :</span>
+							<span class="text-sm font-medium text-muted-foreground">{lore.entities.class} :</span>
 							<MySelect
 								type="single"
 								value={data.selectedClassId || ''}
 								items={classItems}
 								onValueChange={handleClassChange}
-								placeholder="Toutes les classes"
+								placeholder="Tous les {lore.entities.class}s"
 							/>
 						</div>
 					{/if}
@@ -250,7 +253,7 @@
 											{#if entry.homeworkContent}
 												<Badge variant="outline" class="text-orange-600">
 													<ClipboardList class="mr-1 h-3 w-3" />
-													Devoirs
+													Corvées Domestiques
 												</Badge>
 											{/if}
 										</div>
@@ -283,11 +286,15 @@
 							<ClipboardList class="h-5 w-5 text-orange-500" />
 							Travail a faire
 						</Card.Title>
-						<Card.Description>Prochains devoirs et exercices</Card.Description>
+						<Card.Description
+							>Prochaines Corvées Domestiques et {lore.learning.exercise}s</Card.Description
+						>
 					</Card.Header>
 					<Card.Content>
 						{#if data.upcomingHomework.length === 0}
-							<p class="py-4 text-center text-sm text-muted-foreground">Aucun devoir a venir</p>
+							<p class="py-4 text-center text-sm text-muted-foreground">
+								Aucune {lore.learning.homework} a venir
+							</p>
 						{:else}
 							<div class="space-y-3">
 								{#each data.upcomingHomework as homework (homework.id)}

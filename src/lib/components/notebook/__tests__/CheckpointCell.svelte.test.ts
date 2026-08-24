@@ -7,6 +7,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
+import { lore } from '$lib/config/lore';
 import { render } from 'vitest-browser-svelte';
 import { page } from '@vitest/browser/context';
 import CheckpointCell from '../CheckpointCell.svelte';
@@ -209,7 +210,7 @@ describe('CheckpointCell — hint reveal', () => {
 		const cell = makeAssertCell();
 		const store = makeMockStore({ status: 'failed', failedAttempts: 5 });
 		render(CheckpointCell, { cell, notebook: store as never });
-		const buttons = page.getByLabelText("Afficher l'indice du professeur");
+		const buttons = page.getByLabelText(`Afficher l'indice du ${lore.entities.teacher}`);
 		expect(await buttons.elements()).toHaveLength(0);
 	});
 
@@ -217,7 +218,7 @@ describe('CheckpointCell — hint reveal', () => {
 		const cell = makeAssertCell({ hint: 'Pense à la formule moyenne = somme / nombre.' });
 		const store = makeMockStore({ status: 'failed', failedAttempts: 1 });
 		render(CheckpointCell, { cell, notebook: store as never });
-		const buttons = page.getByLabelText("Afficher l'indice du professeur");
+		const buttons = page.getByLabelText(`Afficher l'indice du ${lore.entities.teacher}`);
 		expect(await buttons.elements()).toHaveLength(0);
 	});
 
@@ -225,7 +226,9 @@ describe('CheckpointCell — hint reveal', () => {
 		const cell = makeAssertCell({ hint: 'Pense à la formule moyenne = somme / nombre.' });
 		const store = makeMockStore({ status: 'failed', failedAttempts: 2 });
 		render(CheckpointCell, { cell, notebook: store as never });
-		await expect.element(page.getByLabelText("Afficher l'indice du professeur")).toBeVisible();
+		await expect
+			.element(page.getByLabelText(`Afficher l'indice du ${lore.entities.teacher}`))
+			.toBeVisible();
 	});
 
 	it('reveals the hint text when the button is clicked', async () => {
@@ -233,7 +236,7 @@ describe('CheckpointCell — hint reveal', () => {
 		const store = makeMockStore({ status: 'failed', failedAttempts: 2 });
 		render(CheckpointCell, { cell, notebook: store as never });
 
-		const button = page.getByLabelText("Afficher l'indice du professeur");
+		const button = page.getByLabelText(`Afficher l'indice du ${lore.entities.teacher}`);
 		await button.click();
 
 		await expect
@@ -245,7 +248,7 @@ describe('CheckpointCell — hint reveal', () => {
 		const cell = makeAssertCell({ hint: '   \n  ' });
 		const store = makeMockStore({ status: 'failed', failedAttempts: 5 });
 		render(CheckpointCell, { cell, notebook: store as never });
-		const buttons = page.getByLabelText("Afficher l'indice du professeur");
+		const buttons = page.getByLabelText(`Afficher l'indice du ${lore.entities.teacher}`);
 		expect(await buttons.elements()).toHaveLength(0);
 	});
 });
