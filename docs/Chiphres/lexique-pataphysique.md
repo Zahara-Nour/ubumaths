@@ -2268,7 +2268,7 @@ Jarry utilise quatre grands procédés orthographiques. Les comprendre permet d'
 | ------------------- | ------------------------- | ---------- | ---------------------------------------------------------------- |
 | Élève               | **Galopin**               | 🟠         | Statut de base. Pas péjoratif dans l'univers. Voir section I.    |
 | Élèves (collectif)  | **Les Polonais**          | 🟠         | « Le Tableau des Polonais » = leaderboard global.                |
-| Professeur          | **Maître Phynancier**     | 🟡         | Ou « Maître » court. Jamais « prof ».                            |
+| Professeur          | **Capitaine**             | 🟡         | Commande le Bataillon de Galopins. Jamais « prof ».              |
 | Tuteur IA           | **Père Ubu**              | 🟢         | Voix principale du tutorat.                                      |
 | Tuteur secondaire   | **Conscience**            | 🟢         | Voix des indices détaillés (« sortir Conscience de la valise »). |
 | Compte / profil     | **Guérite**               | 🟡         | « Ma Guérite » = Mon Profil. Métaphore militaire ubuesque.       |
