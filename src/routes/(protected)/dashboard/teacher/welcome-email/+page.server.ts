@@ -11,7 +11,7 @@
  *
  * DATA LOADED:
  * - Student profile (id, firstname, lastname, email)
- * - Gmail access status (google_integrations with gmail.send scope)
+ * - Email service status (Brevo configured)
  * - Previous email sent status (welcome_emails_sent table)
  */
 
@@ -20,6 +20,7 @@ import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
 import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
+import { isBrevoConfigured } from '$lib/server/email/brevo';
 
 // Validate student_id query parameter
 const querySchema = z.object({
@@ -61,21 +62,9 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		throw error(404, 'Eleve non trouve');
 	}
 
-	// Check if teacher has Gmail integration with gmail.send scope
-	const { data: googleIntegration, error: integrationError } = await supabase
-		.from('google_integrations')
-		.select('id, scopes')
-		.eq('teacher_id', user.id)
-		.single();
-
-	if (integrationError && integrationError.code !== 'PGRST116') {
-		// PGRST116 = no rows returned, which is expected if no integration
-		console.error('[Welcome Email] Error fetching Google integration:', integrationError);
-	}
-
-	// Check if gmail.send scope is present
-	const hasGmailAccess =
-		googleIntegration?.scopes?.includes('https://www.googleapis.com/auth/gmail.send') ?? false;
+	// Check the transactional email service (Brevo) is configured. The email is sent
+	// server-side via Brevo, so no per-teacher Google/Gmail integration is required.
+	const emailServiceReady = isBrevoConfigured();
 
 	// Check if welcome email was already sent
 	let previousEmail: { sent_at: string } | null = null;
@@ -99,7 +88,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 			lastname: student.lastname,
 			email: student.email
 		},
-		hasGmailAccess,
+		emailServiceReady,
 		previousEmail
 	};
 };
