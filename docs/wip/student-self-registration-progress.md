@@ -1,6 +1,6 @@
 # Auto-inscription élève par code de classe — Spec Phase 0 (TDD)
 
-> **Statut : Phases 1 ✅ + 2 ✅ + 3 ✅ (locales vertes). Phases 4-5 à venir. Non commité, prod non touchée.**
+> **Statut : Phases 1-3 ✅ + 5 ✅ (reviews+corrections). Reste : Phase 4 = config Supabase (David). Sur branche `feat/student-self-registration`, PR à ouvrir, prod non touchée.**
 > Convention : comportements en français (cas nominal / limite / erreur).
 
 ## Journal d'avancement
@@ -28,8 +28,29 @@
   - `classes/+page.server.ts` : load enrichi avec `registration_open` par classe ; 2 actions **`regenerateJoinCode`** (via `generate_join_code()`, unicité garantie) et **`toggleRegistration`** (requireRole teacher + RLS mono-prof + Zod).
   - `classes/+page.svelte` : code affiché + **Copier** (clipboard) + **Régénérer** + bouton **Ouvrir/Fermer les inscriptions** + libellé d'état. `svelte-autofixer` : 0 nouveau souci (2 warnings pré-existants hors périmètre : `defaultTime` eslint-disable, lien Google Classroom).
   - **`database.ts` régénéré depuis le LOCAL** (`supabase gen types --local`, car `db:types` pointe la prod qui n'a pas encore la migration). Diff = **uniquement** `registration_open`, `terms_acceptances`, `resolve_open_class_by_code` (bloc `__InternalSupabase` restauré à la main). `check:incremental` 0 erreur. ⚠️ **Après `db:migrate` en prod, relancer `pnpm db:types`** (depuis la prod) pour régénérer proprement.
-- **Phase 4 (à venir, action David)** — config SMTP Brevo dans Supabase Auth (dashboard) + activer l'email de confirmation.
-- **Phase 5 (à venir)** — `security-auditor` + `code-reviewer` + branche → PR (migration prod avec accord explicite).
+- **Phase 5 ✅ (reviews + corrections)** — `security-auditor` + `code-reviewer` passés. Corrections **appliquées en code** :
+  - **E1** : RPC `resolve_open_class_by_code` **retirée de `anon`/`authenticated`** (GRANT `service_role` seul) → plus d'énumération directe de codes via PostgREST. L'action `/auth/register` l'appelle via le **client service-role**.
+  - **E2** : rate-limit signup **par email ajouté** (`checkSignupRateLimitByEmail`, 3/h) en plus de l'IP ; limite **IP relevée 3→40/h** (classe entière derrière l'IP de l'école).
+  - **C1 (part code)** : garde `data.session` — si confirmation OFF, `signUp` renvoie une session → redirection `/dashboard` au lieu du message trompeur ; note de **pré-requis dur** en tête d'action.
+  - **F3** : colonnes `terms_acceptances.ip/user_agent` **retirées** (minimisation RGPD ; jamais peuplables par le trigger). `database.ts` régénéré.
+  - **F1** : commentaire anti-régression dans le trigger (« ne jamais lire role/status/school_id/grade des métadonnées »).
+  - Revalidé : **12/12 tests d'intégration** + `check:incremental` 0 erreur.
+  - Points positifs confirmés par les deux audits : trigger non-attaquable, deny-by-default (`pending`→`/auth/pending-approval`), actions prof double-protégées, RLS testée, anti-énumération applicative.
+
+### ⚙️ À FAIRE PAR DAVID — config Supabase (hors code), AVANT prod
+
+- **C1 (bloquant)** : Authentication → **activer « Confirm email »** + brancher le **SMTP Brevo** (`smtp-relay.brevo.com:587`, user = login SMTP, pass = clé `xsmtpsib-`, sender `noreply@chiph.re`). Sans ça le modèle de sécurité ne tient pas.
+- **M2** : activer **« Leaked password protection »** (HaveIBeenPwned) + passer `minimum_password_length` à **8** (prod à 6).
+- **E2** : vérifier la **confiance proxy Vercel** pour `getClientAddress()` (sinon `X-Forwarded-For` spoofable).
+
+### ⏭️ Suivi séparé (post-PR, non bloquant)
+
+- **CAPTCHA** sur `/auth/register` (hCaptcha/Turnstile) — défense indépendante du rate-limit.
+- Allonger le keyspace des codes (`generate_join_code` 6→8-10 car.).
+- **M1** : log exploitable des échecs silencieux du trigger (`WHEN OTHERS`).
+- **M4** : autoriser l'admin sur `regenerateJoinCode`/`toggleRegistration` (`requireRoles(['teacher','admin'])`) — actuellement teacher-only (sûr mais restrictif).
+
+- **Phase 4 (action David)** — voir « config Supabase » ci-dessus (SMTP + confirmation).
 
 ## 1. Contexte & besoin
 

@@ -25,13 +25,15 @@ COMMENT ON COLUMN public.classes.registration_open IS
   'When true, students can self-register into this class via its join_code. Controlled by the teacher; independent from is_active.';
 
 -- 2. RGPD: record of terms/privacy acceptance --------------------------------------
+-- Data minimization: we store only (user_id, terms_version, accepted_at). We intentionally
+-- do NOT store IP / user-agent — the acceptance is written by the handle_new_user trigger
+-- (GoTrue context, no HTTP request), and an IP is itself a minor's personal data we avoid
+-- collecting. (user_id, version, timestamp) is a legally sufficient proof of consent.
 CREATE TABLE IF NOT EXISTS public.terms_acceptances (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id     uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   terms_version text NOT NULL,
-  accepted_at timestamptz NOT NULL DEFAULT now(),
-  ip          text,
-  user_agent  text
+  accepted_at timestamptz NOT NULL DEFAULT now()
 );
 
 COMMENT ON TABLE public.terms_acceptances IS
@@ -96,6 +98,10 @@ BEGIN
 
     IF FOUND AND v_class.is_active AND v_class.registration_open THEN
       -- Valid, open class → create an approved student and enroll them.
+      -- SECURITY: role/status/school_id/grade are NEVER read from raw_user_meta_data
+      -- (attacker-controlled). `role` is hardcoded 'student', `status` is derived from the
+      -- real class state, and school_id/grade come from the resolved class (v_class). Only
+      -- firstname/lastname/terms_version come from metadata (non-authorization data).
       INSERT INTO public.profiles (id, email, firstname, lastname, role, school_id, grade, avatar_url, status)
       VALUES (
         NEW.id,
@@ -239,10 +245,10 @@ COMMENT ON FUNCTION public.handle_new_user() IS
   'Creates a profile when a user signs up. PRIORITY: if raw_user_meta_data.class_id is set (student self-registration by class code), enroll into that class when it is active AND registration_open (status approved) and record CGU acceptance; if the class is invalid/closed, create a non-enrolled pending profile. Otherwise: pending_students match → approved + enrolled; else default profile (@voltairedoha.com → pending, others → approved).';
 
 -- 4. Resolve a class join code -> class id, but ONLY if the class is active and open ----
--- to self-registration. Used by the PUBLIC /auth/register action to validate the code
--- (and obtain class_id for the signup metadata) BEFORE creating an account, without
--- exposing the classes table to anonymous visitors. Least privilege: returns just the id
--- (or NULL), never class data. Code matching is case-insensitive and trims whitespace.
+-- to self-registration. Called SERVER-SIDE by the /auth/register action with the
+-- service-role client (NOT exposed to anon/authenticated) so anonymous visitors cannot
+-- hit it directly via PostgREST to brute-force/enumerate open class codes. Least
+-- privilege: returns just the id (or NULL), never class data. Case-insensitive, trimmed.
 CREATE OR REPLACE FUNCTION public.resolve_open_class_by_code(p_code text)
     RETURNS uuid
     LANGUAGE sql
@@ -261,4 +267,6 @@ COMMENT ON FUNCTION public.resolve_open_class_by_code(text) IS
   'Returns the id of the class whose join_code matches p_code (case-insensitive, trimmed) IF it is active and registration_open, else NULL. SECURITY DEFINER so the public /auth/register route can validate a class code without read access to classes.';
 
 REVOKE ALL ON FUNCTION public.resolve_open_class_by_code(text) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.resolve_open_class_by_code(text) TO anon, authenticated, service_role;
+-- service_role only: the register action calls this server-side. Not callable by anon
+-- (prevents direct PostgREST enumeration of class codes, bypassing the app rate limit).
+GRANT EXECUTE ON FUNCTION public.resolve_open_class_by_code(text) TO service_role;

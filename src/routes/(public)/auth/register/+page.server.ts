@@ -17,8 +17,16 @@
  * 5. The handle_new_user() trigger creates the approved student profile, enrolls them in
  *    the class, and records the CGU acceptance.
  *
+ * ⚠️ DEPLOYMENT PREREQUISITE: email confirmations MUST be enabled in Supabase Auth (with a
+ * working SMTP sender). The anti-enumeration + proof-of-email-possession model depends on it.
+ * With confirmations OFF, signUp logs the user in immediately (no possession check) and anyone
+ * holding a class code could register a third party's email. The `data.session` guard below
+ * degrades gracefully, but prod MUST run with confirmations ON.
+ *
  * SECURITY / RGPD:
- * - Rate limited by IP (ratelimit:signup).
+ * - Rate limited by IP (class-sized burst) AND by email (survives IP rotation).
+ * - Class code resolved with the service-role client (RPC not exposed to anon → no direct
+ *   PostgREST enumeration of class codes).
  * - Anti-enumeration: signUp errors are masked; the client always gets the neutral
  *   "check your email" outcome (never reveals whether an email already exists).
  * - CGU + privacy acceptance is mandatory (schema) and recorded (terms_acceptances).
@@ -26,8 +34,9 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { createLogger } from '$lib/utils/logger';
-import { checkSignupRateLimitByIP } from '$lib/server/rateLimiter';
+import { checkSignupRateLimitByIP, checkSignupRateLimitByEmail } from '$lib/server/rateLimiter';
 import { validateFormData, registerFormSchema } from '$lib/server/validation';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 const logger = createLogger('auth/register/+page.server.ts');
 
@@ -64,16 +73,24 @@ export const actions = {
 
 		const { firstname, lastname, email, password, classCode } = validation.data;
 
-		// 2. Rate limit signups by IP
+		// 2. Rate limit signups by IP (a whole class shares one school IP) AND by email
+		//    (per-email cap survives IP rotation).
 		const ip = getClientAddress();
-		const limit = await checkSignupRateLimitByIP(ip);
-		if (!limit.allowed) {
-			return fail(429, { error: limit.message, ...echo });
+		const ipLimit = await checkSignupRateLimitByIP(ip);
+		if (!ipLimit.allowed) {
+			return fail(429, { error: ipLimit.message, ...echo });
+		}
+		const emailLimit = await checkSignupRateLimitByEmail(email);
+		if (!emailLimit.allowed) {
+			return fail(429, { error: emailLimit.message, ...echo });
 		}
 
-		// 3. Resolve + validate the class code (active AND registration_open). This runs a
-		//    SECURITY DEFINER RPC so the anonymous visitor never reads the classes table.
-		const { data: classId, error: rpcError } = await supabase.rpc('resolve_open_class_by_code', {
+		// 3. Resolve + validate the class code (active AND registration_open) with the
+		//    SERVICE-ROLE client. The RPC is granted to service_role only, so it is never
+		//    reachable directly by anonymous visitors via PostgREST — this keeps class-code
+		//    resolution behind the app (and its rate limits), preventing code enumeration.
+		const service = createServiceRoleClient();
+		const { data: classId, error: rpcError } = await service.rpc('resolve_open_class_by_code', {
 			p_code: classCode
 		});
 
@@ -93,7 +110,7 @@ export const actions = {
 
 		// 4. Create the account. The class_id in metadata drives handle_new_user(); Supabase
 		//    sends the confirmation email whose link lands on /auth/confirm (type=signup).
-		const { error: signUpError } = await supabase.auth.signUp({
+		const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
 			email,
 			password,
 			options: {
@@ -113,9 +130,16 @@ export const actions = {
 			logger.warn('signUp error (masked to client):', signUpError.message);
 		}
 
+		// Defensive: this flow REQUIRES email confirmations = ON (see header). If they are OFF,
+		// signUp returns an active session (the student is already logged in) — redirect to the
+		// dashboard rather than showing the misleading "check your email" message.
+		if (signUpData?.session) {
+			throw redirect(303, '/dashboard');
+		}
+
 		logger.info('Registration submitted (confirmation email sent or masked)');
 
-		// 5. Always return the neutral "check your email" state.
+		// 5. Always return the neutral "check your email" state (anti-enumeration).
 		return { success: true, email };
 	}
 } satisfies Actions;
