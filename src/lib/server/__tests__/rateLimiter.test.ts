@@ -39,6 +39,7 @@ import {
 	checkLoginRateLimitByIP,
 	checkLoginRateLimitByEmail,
 	checkSignupRateLimitByIP,
+	checkSignupRateLimitByEmail,
 	checkOAuthRateLimitByIP,
 	checkNotificationCreateRateLimit,
 	checkNotificationMarkRateLimit,
@@ -308,27 +309,27 @@ describe('Rate Limiter (Database-backed)', () => {
 			expect(result.allowed).toBe(true);
 		});
 
-		it('should block after 3 attempts', async () => {
+		it('should block after 40 attempts (class-sized burst from one shared school IP)', async () => {
 			const testIP = '192.168.1.201';
 
-			// Attempts 1-3 should be allowed
-			for (let i = 1; i <= 3; i++) {
+			// Attempts 1-40 should be allowed
+			for (let i = 1; i <= 40; i++) {
 				const result = await checkSignupRateLimitByIP(testIP);
 				expect(result.allowed).toBe(true);
 			}
 
-			// 4th attempt should be blocked
+			// 41st attempt should be blocked
 			const blocked = await checkSignupRateLimitByIP(testIP);
 			expect(blocked.allowed).toBe(false);
-			expect(blocked.message).toContain('Trop de tentatives');
-			expect(blocked.message).toContain('inscription');
+			expect(blocked.message).toContain('inscriptions');
+			expect(blocked.message).toContain('réseau');
 		});
 
 		it('should have 1 hour block duration (not 30 minutes)', async () => {
 			const testIP = '192.168.1.202';
 
-			// Exceed limit
-			for (let i = 0; i < 4; i++) {
+			// Exceed limit (41 > 40)
+			for (let i = 0; i < 41; i++) {
 				await checkSignupRateLimitByIP(testIP);
 			}
 
@@ -336,6 +337,42 @@ describe('Rate Limiter (Database-backed)', () => {
 			const result = await checkSignupRateLimitByIP(testIP);
 			expect(result.allowed).toBe(false);
 			expect(result.message).toContain('1 heure');
+		});
+	});
+
+	describe('Signup Rate Limiting by Email', () => {
+		it('should allow first signup attempt for an email', async () => {
+			const result = await checkSignupRateLimitByEmail('new@example.com');
+			expect(result.allowed).toBe(true);
+		});
+
+		it('should block a single email after 3 attempts (survives IP rotation)', async () => {
+			const email = 'spam@example.com';
+
+			for (let i = 1; i <= 3; i++) {
+				const result = await checkSignupRateLimitByEmail(email);
+				expect(result.allowed).toBe(true);
+			}
+
+			const blocked = await checkSignupRateLimitByEmail(email);
+			expect(blocked.allowed).toBe(false);
+			expect(blocked.message).toContain('inscription');
+			expect(blocked.message).toContain('email');
+		});
+
+		it('should track emails case-insensitively', async () => {
+			// Fill the bucket with the lowercase form...
+			for (let i = 0; i < 4; i++) {
+				await checkSignupRateLimitByEmail('mixed@example.com');
+			}
+			// ...an uppercase variant hits the SAME bucket and is blocked.
+			const result = await checkSignupRateLimitByEmail('MIXED@Example.com');
+			expect(result.allowed).toBe(false);
+		});
+
+		it('should fail open on missing email', async () => {
+			const result = await checkSignupRateLimitByEmail('');
+			expect(result.allowed).toBe(true);
 		});
 	});
 
@@ -411,14 +448,14 @@ describe('Rate Limiter (Database-backed)', () => {
 		it('should return French error messages for signup', async () => {
 			const testIP = '192.168.1.900';
 
-			// Exceed limit
-			for (let i = 0; i < 4; i++) {
+			// Exceed limit (41 > 40)
+			for (let i = 0; i < 41; i++) {
 				await checkSignupRateLimitByIP(testIP);
 			}
 
 			const result = await checkSignupRateLimitByIP(testIP);
-			expect(result.message).toContain('Trop de tentatives');
-			expect(result.message).toContain('inscription');
+			expect(result.message).toContain('inscriptions');
+			expect(result.message).toContain('réseau');
 		});
 	});
 
