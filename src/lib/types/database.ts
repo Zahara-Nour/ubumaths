@@ -11970,25 +11970,19 @@ export type Database = {
         Row: {
           accepted_at: string
           id: string
-          ip: string | null
           terms_version: string
-          user_agent: string | null
           user_id: string
         }
         Insert: {
           accepted_at?: string
           id?: string
-          ip?: string | null
           terms_version: string
-          user_agent?: string | null
           user_id: string
         }
         Update: {
           accepted_at?: string
           id?: string
-          ip?: string | null
           terms_version?: string
-          user_agent?: string | null
           user_id?: string
         }
         Relationships: []
