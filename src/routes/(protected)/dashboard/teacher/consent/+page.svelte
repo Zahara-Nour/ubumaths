@@ -19,7 +19,6 @@
 		CheckCircle2,
 		XCircle,
 		Users,
-		ExternalLink,
 		Edit2,
 		Save,
 		X
@@ -143,17 +142,14 @@
 		</div>
 	</div>
 
-	<!-- Gmail Access Warning -->
-	{#if !data.hasGmailAccess}
+	<!-- Email Service Warning -->
+	{#if !data.emailServiceReady}
 		<Alert.Root variant="destructive">
 			<AlertTriangle class="h-4 w-4" />
-			<Alert.Title>Accès Gmail requis</Alert.Title>
-			<Alert.Description class="flex items-center gap-2">
-				Pour envoyer des emails de consentement, connectez votre compte Google avec Gmail.
-				<Button variant="outline" size="sm" href="/dashboard/teacher/settings/google">
-					<ExternalLink class="mr-2 h-4 w-4" />
-					Paramètres Google
-				</Button>
+			<Alert.Title>Service d'envoi d'emails non configuré</Alert.Title>
+			<Alert.Description>
+				L'envoi d'emails de consentement n'est pas disponible : le service de messagerie
+				transactionnelle n'est pas configuré. Contactez l'administrateur pour l'activer.
 			</Alert.Description>
 		</Alert.Root>
 	{/if}
@@ -352,7 +348,7 @@
 													<Button
 														size="sm"
 														variant={student.parent_email ? 'default' : 'outline'}
-														disabled={!data.hasGmailAccess ||
+														disabled={!data.emailServiceReady ||
 															!student.parent_email ||
 															sendingEmails[student.id] ||
 															student.email_count >= 5}
