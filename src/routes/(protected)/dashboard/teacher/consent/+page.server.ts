@@ -18,6 +18,7 @@ import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
 import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
 import { GRADES_REQUIRING_CONSENT } from '$lib/utils/consent';
+import { isBrevoConfigured } from '$lib/server/email/brevo';
 
 /**
  * Student with consent information
@@ -69,7 +70,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (classIds.length === 0) {
 		return {
 			classes: [] as ClassWithConsentStudents[],
-			hasGmailAccess: false,
+			emailServiceReady: isBrevoConfigured(),
 			stats: { total: 0, granted: 0, pending: 0, graceCount: 0 }
 		};
 	}
@@ -221,16 +222,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 			students: classStudentMap.get(c.id) || []
 		}));
 
-	// Check Gmail access
-	const { data: integration } = await supabase
-		.from('google_integrations')
-		.select('scopes')
-		.eq('teacher_id', user.id)
-		.single();
-
-	const hasGmailAccess = integration?.scopes?.includes(
-		'https://www.googleapis.com/auth/gmail.send'
-	);
+	// The consent email is sent server-side via Brevo (see api/consent/send-email),
+	// so availability depends on the transactional email service, not a per-teacher
+	// Google/Gmail integration.
+	const emailServiceReady = isBrevoConfigured();
 
 	// Calculate stats
 	const allStudents = classesWithStudents.flatMap((c) => c.students);
@@ -245,7 +240,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	return {
 		classes: classesWithStudents,
-		hasGmailAccess: !!hasGmailAccess,
+		emailServiceReady,
 		stats
 	};
 };
