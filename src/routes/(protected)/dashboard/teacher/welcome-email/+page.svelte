@@ -7,9 +7,8 @@
 	Features:
 	- Displays student information (name, email)
 	- Shows email template preview
-	- Warns if Gmail integration is missing
+	- Warns if the transactional email service (Brevo) is not configured
 	- Shows previous email status if already sent
-	- Send button (API to be implemented in Phase 5)
 -->
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
@@ -18,7 +17,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Alert from '$lib/components/ui/alert';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Mail, AlertTriangle, CheckCircle2, ExternalLink, Send } from '@lucide/svelte';
+	import { Mail, AlertTriangle, CheckCircle2, Send } from '@lucide/svelte';
 	import { WELCOME_EMAIL_SUBJECT, getWelcomeEmailText } from '$lib/email-templates/welcome';
 
 	let { data }: { data: PageData } = $props();
@@ -52,8 +51,8 @@
 
 	// Handle send button click
 	async function handleSendEmail() {
-		if (!data.hasGmailAccess) {
-			toaster.error("Veuillez d'abord connecter votre compte Google avec Gmail");
+		if (!data.emailServiceReady) {
+			toaster.error("Le service d'envoi d'emails n'est pas configuré. Contactez l'administrateur.");
 			return;
 		}
 
@@ -98,20 +97,16 @@
 		</div>
 	</div>
 
-	<!-- Gmail Access Warning -->
-	{#if !data.hasGmailAccess}
+	<!-- Email Service Warning -->
+	{#if !data.emailServiceReady}
 		<Alert.Root variant="destructive">
 			<AlertTriangle class="h-4 w-4" />
-			<Alert.Title>Integration Gmail requise</Alert.Title>
-			<Alert.Description class="space-y-2">
+			<Alert.Title>Service d'envoi d'emails non configuré</Alert.Title>
+			<Alert.Description>
 				<p>
-					Pour envoyer des emails, vous devez d'abord connecter votre compte Google avec les
-					permissions Gmail.
+					L'envoi d'emails n'est pas disponible : le service de messagerie transactionnelle n'est
+					pas configuré. Contactez l'administrateur pour l'activer.
 				</p>
-				<Button variant="outline" size="sm" href="/dashboard/teacher/settings/google" class="mt-2">
-					<ExternalLink class="mr-2 h-4 w-4" />
-					Configurer l'intégration Google
-				</Button>
 			</Alert.Description>
 		</Alert.Root>
 	{/if}
@@ -184,7 +179,7 @@
 
 			<Card.Footer class="flex justify-end gap-2">
 				<Button variant="outline" href="/dashboard/teacher/classes">{lore.actions.cancel}</Button>
-				<Button onclick={handleSendEmail} disabled={!data.hasGmailAccess || isSending}>
+				<Button onclick={handleSendEmail} disabled={!data.emailServiceReady || isSending}>
 					<Send class="mr-2 h-4 w-4" />
 					{#if isSending}
 						Envoi en cours...
