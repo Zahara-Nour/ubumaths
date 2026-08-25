@@ -327,24 +327,16 @@ test.describe('UI Interactions', () => {
 		expect(href).toContain('/auth/reset-password');
 	});
 
-	test('does NOT display sign up link (controlled registration only)', async ({ page }) => {
+	test('displays a controlled self-registration link (class-code based)', async ({ page }) => {
 		/**
-		 * SECURITY: No public registration
+		 * Controlled self-registration
 		 *
-		 * Students without Google (@voltairedoha.com) accounts must be created
-		 * by teachers. This prevents unauthorized signups.
-		 *
-		 * Flow for non-Google students:
-		 * 1. Teacher creates student account manually
-		 * 2. Teacher gives credentials to student
-		 * 3. Student logs in with provided credentials
+		 * Students self-register via /auth/register using a class join code the teacher
+		 * distributes. The login page exposes a discoverable link to it. Access stays
+		 * controlled: without a valid, open class code the registration cannot complete.
 		 */
-		const signupLink = page.locator('a:has-text("S\'inscrire")');
-		await expect(signupLink).not.toBeVisible();
-
-		// Also verify no other signup/register links exist
-		const registerLink = page.locator('a[href*="/signup"], a[href*="/register"]');
-		await expect(registerLink).toHaveCount(0);
+		const registerLink = page.locator('a[href*="/auth/register"]');
+		await expect(registerLink).toBeVisible();
 	});
 
 	test('shows email/password directly and does not offer Google sign-in', async ({ page }) => {

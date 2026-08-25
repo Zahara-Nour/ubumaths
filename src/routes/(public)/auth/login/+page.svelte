@@ -222,6 +222,12 @@
 					</form>
 				</div>
 			{/if}
+
+			<!-- Controlled self-registration: students create an account with their class code -->
+			<p class="text-center text-sm text-muted-foreground">
+				Nouvel élève ?
+				<a href={resolve('/auth/register')} class="text-primary hover:underline">Créer un compte</a>
+			</p>
 		</Card.Content>
 	</Card.Root>
 </div>
