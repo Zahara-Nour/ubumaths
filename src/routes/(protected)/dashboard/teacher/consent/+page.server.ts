@@ -49,7 +49,9 @@ export interface ClassWithConsentStudents {
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	// Auth guard (throws if not a teacher). Queries below are scoped by RLS, so the
+	// user id isn't needed directly here.
+	await requireRole(locals, 'teacher');
 	const supabase = locals.supabase;
 
 	// Get all classes for this teacher
