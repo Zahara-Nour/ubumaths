@@ -56,8 +56,28 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { invalidateAll } from '$app/navigation';
+	import { enhance } from '$app/forms';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-	import { Mail, CheckCircle2, BookOpen, GraduationCap, Loader2, ScrollText } from '@lucide/svelte';
+	import {
+		Mail,
+		CheckCircle2,
+		BookOpen,
+		GraduationCap,
+		Loader2,
+		ScrollText,
+		Copy,
+		RefreshCw
+	} from '@lucide/svelte';
+
+	// Copy a class join code to the clipboard (teacher shares it with students).
+	async function copyJoinCode(code: string) {
+		try {
+			await navigator.clipboard.writeText(code);
+			toaster.success('Code copié');
+		} catch {
+			toaster.error('Impossible de copier le code');
+		}
+	}
 
 	let { data }: { data: PageData } = $props();
 
@@ -539,10 +559,80 @@
 								{#if classItem.description}
 									<p class="mt-1 text-sm text-muted-foreground">{classItem.description}</p>
 								{/if}
-								<p class="mt-2 text-sm text-muted-foreground">
-									Code de {lore.entities.class}:
-									<span class="font-mono font-semibold">{classItem.join_code}</span>
-								</p>
+								<div class="mt-2 space-y-2">
+									<div class="flex flex-wrap items-center gap-2">
+										<span class="text-sm text-muted-foreground"
+											>Code de {lore.entities.class} :</span
+										>
+										<span class="rounded bg-background px-2 py-0.5 font-mono font-semibold"
+											>{classItem.join_code}</span
+										>
+										<Button
+											variant="ghost"
+											size="sm"
+											onclick={() => copyJoinCode(classItem.join_code)}
+										>
+											<Copy class="mr-1 h-3.5 w-3.5" /> Copier
+										</Button>
+										<form
+											method="POST"
+											action="?/regenerateJoinCode"
+											use:enhance={() => {
+												return async ({ result, update }) => {
+													await update();
+													if (result.type === 'success') toaster.success('Nouveau code généré');
+												};
+											}}
+										>
+											<input type="hidden" name="classId" value={classItem.id} />
+											<Button variant="ghost" size="sm" type="submit">
+												<RefreshCw class="mr-1 h-3.5 w-3.5" /> Régénérer
+											</Button>
+										</form>
+									</div>
+
+									<div class="flex flex-wrap items-center gap-2">
+										<form
+											method="POST"
+											action="?/toggleRegistration"
+											use:enhance={() => {
+												const wasOpen = classItem.registration_open;
+												return async ({ result, update }) => {
+													await update();
+													if (result.type === 'success') {
+														toaster.success(
+															wasOpen ? 'Inscriptions fermées' : 'Inscriptions ouvertes'
+														);
+													}
+												};
+											}}
+										>
+											<input type="hidden" name="classId" value={classItem.id} />
+											<input
+												type="hidden"
+												name="open"
+												value={classItem.registration_open ? 'false' : 'true'}
+											/>
+											<Button
+												variant={classItem.registration_open ? 'default' : 'outline'}
+												size="sm"
+												type="submit"
+											>
+												{classItem.registration_open
+													? 'Fermer les inscriptions'
+													: 'Ouvrir les inscriptions'}
+											</Button>
+										</form>
+										{#if classItem.registration_open}
+											<span class="text-xs text-green-600">
+												Inscription ouverte — tes {lore.entities.student}s peuvent créer leur compte
+												avec ce code.
+											</span>
+										{:else}
+											<span class="text-xs text-muted-foreground">Inscription fermée.</span>
+										{/if}
+									</div>
+								</div>
 							</div>
 							<Button variant="outline" href="/dashboard/teacher/cahier-texte?class={classItem.id}">
 								<BookOpen class="mr-2 h-4 w-4" />

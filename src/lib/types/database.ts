@@ -11,6 +11,31 @@ export type Database = {
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.5"
+  },
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -1642,6 +1667,7 @@ export type Database = {
           is_active: boolean
           join_code: string
           name: string
+          registration_open: boolean
           school_id: string | null
           tutor_config: Json | null
           updated_at: string
@@ -1655,6 +1681,7 @@ export type Database = {
           is_active?: boolean
           join_code: string
           name: string
+          registration_open?: boolean
           school_id?: string | null
           tutor_config?: Json | null
           updated_at?: string
@@ -1668,6 +1695,7 @@ export type Database = {
           is_active?: boolean
           join_code?: string
           name?: string
+          registration_open?: boolean
           school_id?: string | null
           tutor_config?: Json | null
           updated_at?: string
@@ -11938,6 +11966,27 @@ export type Database = {
           },
         ]
       }
+      terms_acceptances: {
+        Row: {
+          accepted_at: string
+          id: string
+          terms_version: string
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          id?: string
+          terms_version: string
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          id?: string
+          terms_version?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       test_answers: {
         Row: {
           attempts: number | null
@@ -16197,6 +16246,7 @@ export type Database = {
         }
         Returns: number
       }
+      resolve_open_class_by_code: { Args: { p_code: string }; Returns: string }
       review_report: {
         Args: {
           p_delete_message?: boolean
@@ -16700,6 +16750,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       consent_status: ["pending", "granted", "expired"],
@@ -16751,3 +16804,4 @@ export const Constants = {
     },
   },
 } as const
+

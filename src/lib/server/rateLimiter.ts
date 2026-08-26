@@ -562,15 +562,52 @@ export async function checkSignupRateLimitByIP(ip: string): Promise<RateLimitRes
 	}
 
 	const key = `ratelimit:signup:${ip}`;
+	// A whole class typically self-registers together from ONE shared school IP, so the
+	// per-IP cap is generous (a class-sized burst). Abuse is bounded further by the
+	// per-email limit (checkSignupRateLimitByEmail) and by GoTrue's native signup limit.
 	const result = await checkRateLimitWithMessage(
 		key,
-		3,
+		40,
 		3600, // 1 hour
-		"Trop de tentatives d'inscription. Réessayez dans 1 heure."
+		"Trop d'inscriptions depuis ce réseau. Réessayez dans 1 heure."
 	);
 
 	if (!result.allowed) {
 		logger.warn('Signup rate limit exceeded by IP', { ip: maskKey(key) });
+	}
+
+	return result;
+}
+
+/**
+ * Check signup rate limit by email address
+ *
+ * Mirrors {@link checkLoginRateLimitByEmail}: a DISTINCT per-email bucket so a single
+ * email cannot be used for repeated signup attempts (spam / enumeration probing), even
+ * when the attacker rotates IPs to dodge {@link checkSignupRateLimitByIP}.
+ *
+ * @param email - Email address attempting to sign up
+ * @returns Rate limit result object (fails open on missing email)
+ */
+export async function checkSignupRateLimitByEmail(email: string): Promise<RateLimitResult> {
+	if (!email) {
+		logger.warn('Missing email for signup rate limit check');
+		return { allowed: true }; // Fail open
+	}
+
+	// Normalize email to lowercase for consistent tracking (matches login limiter).
+	const normalizedEmail = email.toLowerCase().trim();
+	const key = `ratelimit:signup:email:${normalizedEmail}`;
+
+	const result = await checkRateLimitWithMessage(
+		key,
+		3,
+		3600, // 1 hour
+		"Trop de tentatives d'inscription pour cet email. Réessayez dans 1 heure."
+	);
+
+	if (!result.allowed) {
+		logger.warn('Signup rate limit exceeded by email', { email: maskKey(key) });
 	}
 
 	return result;
