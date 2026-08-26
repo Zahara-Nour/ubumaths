@@ -2568,7 +2568,11 @@ _actual
 						input: testCase.input,
 						expected: testCase.expected_output,
 						actual: actualOutput,
-						...(compareResult.diff ? { diff: compareResult.diff } : {})
+						...(compareResult.diff ? { diff: compareResult.diff } : {}),
+						// Surface the comparator's error (crash / missing compare() /
+						// timeout) — otherwise a buggy teacher comparator shows the
+						// student a bare "failed" with no explanation.
+						...(compareResult.error ? { error: compareResult.error } : {})
 					},
 					testCase.hidden === true
 				)
