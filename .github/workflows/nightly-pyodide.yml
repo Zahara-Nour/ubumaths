@@ -41,4 +41,13 @@ jobs:
       - name: Run real-Pyodide tests
         env:
           RUN_PYODIDE_REAL: '1'
-        run: pnpm exec vitest run --project client src/**/*-real.svelte.test.ts
+        # `globstar` makes bash expand `**` recursively into the actual test file
+        # paths. Without it (bash's default), `**` collapses to `*` (one level),
+        # the deep `-real.svelte.test.ts` files never match, and the literal glob
+        # is handed to vitest — which treats positional args as substring filters,
+        # not globs, so it finds nothing and exits 1 ("No test files found").
+        # `failglob` turns a genuinely-empty match into a loud error instead of a
+        # silent full-suite run.
+        run: |
+          shopt -s globstar failglob
+          pnpm exec vitest run --project client src/**/*-real.svelte.test.ts
