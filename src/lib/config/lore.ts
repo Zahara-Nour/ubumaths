@@ -24,7 +24,7 @@ export const lore = {
 	},
 	/** Navigation / places (bare terms — callers compose "Mon …" etc.) */
 	nav: {
-		dashboard: 'Cabinet des Phynances',
+		dashboard: 'Mon Cabinet',
 		shop: 'Marché Polonais',
 		inventory: 'Trappe à Trésors',
 		settings: 'Décrets Royaux',
