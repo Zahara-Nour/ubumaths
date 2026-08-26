@@ -880,3 +880,105 @@ describe('getStudentWorkInbox — python notebooks', () => {
 		expect(inbox.noDeadline).toEqual([]);
 	});
 });
+
+describe('getStudentWorkInbox — python files', () => {
+	it('surfaces a class-assigned file with its due_date in the thisWeek bucket', async () => {
+		const mock = createMockSupabase();
+		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
+		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('exercise_assignments', []);
+		mock.enqueue('worksheet_assignments', []);
+		mock.enqueue('worksheet_assignment_students', []);
+		mock.enqueue('python_exercise_assignments', []);
+		mock.enqueue('python_file_assignments', [
+			{
+				id: 'pfa-1',
+				file_id: 'pf-1',
+				class_id: CLASS_A,
+				assigned_by: 'teacher-1',
+				instructions: 'Complète la fonction moyenne().',
+				due_date: ISO.threeDaysFromNow,
+				assigned_at: ISO.twoDaysAgo
+			}
+		]);
+		mock.enqueue('python_files', [{ id: 'pf-1', title: 'Squelette moyenne' }]);
+		mock.enqueue('classes', [{ id: CLASS_A, name: '3eme A' }]);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+
+		// Files carry a real due_date (unlike notebooks) → bucketed by deadline.
+		expect(inbox.thisWeek).toHaveLength(1);
+		const item = inbox.thisWeek[0];
+		expect(item.source).toBe('python_file');
+		expect(item.itemId).toBe('pf-1');
+		expect(item.title).toBe('Squelette moyenne');
+		expect(item.href).toBe('/python?file=pf-1');
+		expect(item.classId).toBe(CLASS_A);
+		expect(item.className).toBe('3eme A');
+		expect(item.status).toBe('todo');
+		expect(item.dueAt).toBe(ISO.threeDaysFromNow);
+		expect(item.doneAt).toBeNull();
+	});
+
+	it('lands a file with no due_date in the noDeadline bucket', async () => {
+		const mock = createMockSupabase();
+		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
+		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('exercise_assignments', []);
+		mock.enqueue('worksheet_assignments', []);
+		mock.enqueue('worksheet_assignment_students', []);
+		mock.enqueue('python_exercise_assignments', []);
+		mock.enqueue('python_file_assignments', [
+			{
+				id: 'pfa-2',
+				file_id: 'pf-2',
+				class_id: CLASS_A,
+				assigned_by: 'teacher-1',
+				instructions: null,
+				due_date: null,
+				assigned_at: ISO.twoDaysAgo
+			}
+		]);
+		mock.enqueue('python_files', [{ id: 'pf-2', title: 'Bac à sable' }]);
+		mock.enqueue('classes', [{ id: CLASS_A, name: '3eme A' }]);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+
+		expect(inbox.noDeadline).toHaveLength(1);
+		expect(inbox.noDeadline[0].source).toBe('python_file');
+		expect(inbox.noDeadline[0].dueAt).toBeNull();
+	});
+
+	it('does not query python_file_assignments when the student has no classes', async () => {
+		const mock = createMockSupabase();
+		mock.enqueue('class_members', []); // no classes
+		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('exercise_assignments', []);
+		mock.enqueue('worksheet_assignments', []);
+		mock.enqueue('worksheet_assignment_students', []);
+		mock.enqueue('python_exercise_assignments', []);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+
+		// Files are class-only → without any class, the table is never read.
+		expect(mock.calls('python_file_assignments')).toBe(0);
+		expect(inbox.noDeadline).toEqual([]);
+	});
+
+	it('returns empty when the class has no file assignments', async () => {
+		const mock = createMockSupabase();
+		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
+		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('exercise_assignments', []);
+		mock.enqueue('worksheet_assignments', []);
+		mock.enqueue('worksheet_assignment_students', []);
+		mock.enqueue('python_exercise_assignments', []);
+		mock.enqueue('python_file_assignments', []);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+
+		expect(mock.calls('python_file_assignments')).toBe(1);
+		expect(mock.calls('python_files')).toBe(0);
+		expect(inbox.noDeadline).toEqual([]);
+	});
+});
