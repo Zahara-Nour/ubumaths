@@ -35,7 +35,7 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
 // Password used everywhere so createAuthenticatedClient() can sign in.
@@ -476,6 +476,37 @@ describe('Student self-registration by class code - Integration Tests', () => {
 		it('returns null for an unknown code', async () => {
 			const { data } = await service.rpc('resolve_open_class_by_code', { p_code: 'NOSUCHCODE' });
 			expect(data).toBeNull();
+		});
+
+		// Security (E1): the RPC must be callable ONLY by service_role. Supabase default
+		// privileges auto-grant EXECUTE to anon/authenticated; migration 20260826090000
+		// revokes it so anonymous visitors cannot enumerate class codes directly via PostgREST.
+		it('is NOT callable by an anonymous client (service-role only)', async () => {
+			await ensureTeacher();
+			const cls = await createClass({ isActive: true, registrationOpen: true });
+
+			// Bare anonymous client (anon key, no sign-in) — same config as the browser.
+			const url = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
+			const anonKey =
+				process.env.SUPABASE_TEST_ANON_KEY ||
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
+			const anon = createClient<Database>(url, anonKey, {
+				auth: { persistSession: false, autoRefreshToken: false }
+			});
+
+			// Anon is denied (EXECUTE revoked) — must NOT get the class id.
+			const { data: anonData, error: anonError } = await anon.rpc('resolve_open_class_by_code', {
+				p_code: cls.join_code
+			});
+			expect(anonError).not.toBeNull();
+			expect(anonData ?? null).toBeNull();
+
+			// service_role still resolves it (this is how the register action calls it).
+			const { data: svcData, error: svcError } = await service.rpc('resolve_open_class_by_code', {
+				p_code: cls.join_code
+			});
+			expect(svcError).toBeNull();
+			expect(svcData).toBe(cls.id);
 		});
 	});
 });
