@@ -28,6 +28,7 @@
 		BookOpen,
 		FileText,
 		Code,
+		FileCode,
 		GraduationCap,
 		Clock,
 		NotebookPen
@@ -86,6 +87,12 @@
 			badgeVariant: 'outline',
 			cta: 'Ouvrir',
 			icon: NotebookPen
+		},
+		python_file: {
+			label: 'Fichier Python',
+			badgeVariant: 'outline',
+			cta: 'Ouvrir',
+			icon: FileCode
 		}
 	};
 

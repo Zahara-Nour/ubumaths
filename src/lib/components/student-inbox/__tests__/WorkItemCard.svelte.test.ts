@@ -67,7 +67,8 @@ describe('WorkItemCard - badge per source', () => {
 		['assessment', 'Test'],
 		['exercise', lore.learning.exercise],
 		['worksheet', 'Fiche'],
-		['python', 'Python']
+		['python', 'Python'],
+		['python_file', 'Fichier Python']
 	];
 
 	for (const [source, expectedLabel] of cases) {
@@ -89,7 +90,8 @@ describe('WorkItemCard - CTA verb per source', () => {
 		['assessment', 'Commencer'],
 		['exercise', 'Travailler'],
 		['worksheet', 'Consulter'],
-		['python', 'Coder']
+		['python', 'Coder'],
+		['python_file', 'Ouvrir']
 	];
 
 	for (const [source, expectedCta] of cases) {
