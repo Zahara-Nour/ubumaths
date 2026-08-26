@@ -42,21 +42,29 @@ export async function getStudentWorkInbox(
 ): Promise<StudentWorkInbox> {
 	const classIds = await fetchActiveClassIds(supabase, userId);
 
-	const [assessmentItems, exerciseItems, worksheetItems, pythonItems, pythonNotebookItems] =
-		await Promise.all([
-			fetchAssessmentItems(supabase, userId, classIds),
-			fetchExerciseItems(supabase, userId, classIds),
-			fetchWorksheetItems(supabase, userId, classIds),
-			fetchPythonItems(supabase, userId, classIds),
-			fetchPythonNotebookItems(supabase, userId, classIds)
-		]);
+	const [
+		assessmentItems,
+		exerciseItems,
+		worksheetItems,
+		pythonItems,
+		pythonNotebookItems,
+		pythonFileItems
+	] = await Promise.all([
+		fetchAssessmentItems(supabase, userId, classIds),
+		fetchExerciseItems(supabase, userId, classIds),
+		fetchWorksheetItems(supabase, userId, classIds),
+		fetchPythonItems(supabase, userId, classIds),
+		fetchPythonNotebookItems(supabase, userId, classIds),
+		fetchPythonFileItems(supabase, userId, classIds)
+	]);
 
 	const all = [
 		...assessmentItems,
 		...exerciseItems,
 		...worksheetItems,
 		...pythonItems,
-		...pythonNotebookItems
+		...pythonNotebookItems,
+		...pythonFileItems
 	];
 	const deduped = dedupItems(all);
 	const now = new Date();
@@ -579,6 +587,76 @@ async function fetchPythonNotebookItems(
 			doneAt: null,
 			href: `/python-notebook/${assignment.notebook_id}`,
 			assignedAt: assignment.created_at
+		};
+	});
+}
+
+// ============================================================================
+// PYTHON FILES
+// ============================================================================
+
+type PythonFileAssignmentRow = Tables<'python_file_assignments'>;
+
+/**
+ * Python files are view-only cloud scripts assigned to a class (`python_file_assignments`
+ * is class-only, no per-student row, no submission). Like worksheets, each
+ * surfaces as `todo` with the assignment's `due_date` as its deadline (nullable
+ * → "Sans échéance") and stays in the inbox until that deadline passes or the
+ * teacher deletes the assignment.
+ *
+ * The href deep-links the playground to the file (`/python?file=<id>`), which
+ * fetches it (RLS-scoped) and loads it into the editor on mount.
+ */
+async function fetchPythonFileItems(
+	supabase: TypedSupabaseClient,
+	userId: string,
+	classIds: string[]
+): Promise<WorkItem[]> {
+	void userId; // Class-only assignments; kept for signature symmetry.
+	if (classIds.length === 0) return [];
+
+	const { data: assignmentsRaw, error: assignmentsErr } = await supabase
+		.from('python_file_assignments')
+		.select('*')
+		.in('class_id', classIds);
+	logError('python_file.assignments', assignmentsErr);
+
+	const assignments = (assignmentsRaw ?? []) as PythonFileAssignmentRow[];
+	if (assignments.length === 0) return [];
+
+	const fileIds = Array.from(new Set(assignments.map((a) => a.file_id)));
+	const referencedClassIds = Array.from(
+		new Set(assignments.map((a) => a.class_id).filter((id): id is string => id !== null))
+	);
+
+	const [filesRes, classNames] = await Promise.all([
+		supabase.from('python_files').select('id, title').in('id', fileIds),
+		fetchClassNames(supabase, referencedClassIds)
+	]);
+	logError('python_file.files', filesRes.error);
+
+	const fileById = new Map(
+		((filesRes.data ?? []) as Pick<Tables<'python_files'>, 'id' | 'title'>[]).map((row) => [
+			row.id,
+			row
+		])
+	);
+
+	return assignments.map<WorkItem>((assignment) => {
+		const file = fileById.get(assignment.file_id);
+		return {
+			source: 'python_file' satisfies WorkSource,
+			itemId: assignment.file_id,
+			assignmentId: assignment.id,
+			title: file?.title ?? '',
+			classId: assignment.class_id,
+			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
+			dueAt: assignment.due_date,
+			status: 'todo',
+			viewed: false,
+			doneAt: null,
+			href: `/python?file=${assignment.file_id}`,
+			assignedAt: assignment.assigned_at
 		};
 	});
 }

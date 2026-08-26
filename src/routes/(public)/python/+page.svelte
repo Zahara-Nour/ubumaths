@@ -7,21 +7,43 @@
 	// Props from page server
 	let { data } = $props();
 
-	// Load code from URL on mount
+	// Deep-link support: open a specific cloud file (e.g. from the student work
+	// inbox, `/python?file=<uuid>`). Fetches the file RLS-scoped and loads it into
+	// the editor. Silent no-op on failure (unauthenticated / not assigned / gone).
+	async function openFileFromUrl(fileId: string): Promise<void> {
+		try {
+			const res = await fetch(`/api/python-files/${fileId}`);
+			if (res.ok) {
+				const { file } = await res.json();
+				if (file) pythonStore.loadCloudFile(file);
+			}
+		} catch {
+			// Non-fatal: leave the playground on its default draft.
+		} finally {
+			// Keep the URL clean whether or not the load succeeded.
+			window.history.replaceState({}, '', window.location.pathname);
+		}
+	}
+
+	// Load code / file from URL on mount
 	onMount(() => {
 		// Register Service Worker for CDN caching (Pyodide, packages, Plotly)
 		if ('serviceWorker' in navigator) {
 			navigator.serviceWorker.register('/service-worker.js');
 		}
 
-		if (browser && window.location.search.includes('code=')) {
-			const url = new URL(window.location.href);
-			const loaded = pythonStore.loadFromUrl(url);
+		if (!browser) return;
 
-			// Clear the URL parameter after loading to keep URL clean
-			if (loaded) {
-				window.history.replaceState({}, '', window.location.pathname);
-			}
+		const url = new URL(window.location.href);
+		const codeParam = url.searchParams.get('code');
+		const fileParam = url.searchParams.get('file');
+
+		// `?code=` — shared snippet (LZString-compressed); `?file=` — cloud file.
+		if (codeParam) {
+			const loaded = pythonStore.loadFromUrl(url);
+			if (loaded) window.history.replaceState({}, '', window.location.pathname);
+		} else if (fileParam) {
+			void openFileFromUrl(fileParam);
 		}
 	});
 </script>
