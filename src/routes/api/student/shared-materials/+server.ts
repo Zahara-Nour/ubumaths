@@ -30,12 +30,16 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { listStudentSharedMaterialsSchema } from '$lib/server/validation';
+import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
 
 /**
  * GET /api/student/shared-materials
  * Fetch course work materials shared with student's classes
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
+	// Google Classroom access is disabled — defense in depth for direct API hits.
+	if (!GOOGLE_CLASSROOM_ENABLED) throw error(403, 'Google Classroom est désactivé');
+
 	// Require student role
 	const { user } = await requireRole(locals, 'student');
 

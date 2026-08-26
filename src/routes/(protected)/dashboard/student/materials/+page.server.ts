@@ -1,11 +1,16 @@
 import type { PageServerLoad } from './$types';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { listStudentSharedMaterialsSchema } from '$lib/server/validation';
+import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
 
 const DEFAULT_PAGE_SIZE = 20;
 
 export const load: PageServerLoad = async ({ locals, url, fetch }) => {
+	// Google Classroom access is disabled: keep students out of the shared
+	// materials view while all the plumbing stays in place.
+	if (!GOOGLE_CLASSROOM_ENABLED) throw redirect(302, '/dashboard');
+
 	// Only students can view shared materials
 	const { user } = await requireRole(locals, 'student');
 
