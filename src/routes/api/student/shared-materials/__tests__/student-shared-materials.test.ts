@@ -22,6 +22,14 @@ vi.mock('$lib/server/middleware/auth', () => ({
 	requireRole: vi.fn()
 }));
 
+// Google Classroom is disabled in production via a hardcoded flag (the endpoint
+// short-circuits with 403 when off). Force it on here so the real pagination /
+// validation / RLS logic is exercised — the plumbing must keep working for when
+// the feature is re-enabled.
+vi.mock('$lib/config/google-classroom', () => ({
+	GOOGLE_CLASSROOM_ENABLED: true
+}));
+
 /**
  * Mock harness notes
  * ------------------
