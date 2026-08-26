@@ -1,8 +1,14 @@
 import type { PageServerLoad } from './$types';
+import { redirect } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { listStudentSharedCourseworkSchema } from '$lib/server/validation/google';
+import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
 
 export const load: PageServerLoad = async ({ locals, url, fetch }) => {
+	// Google Classroom access is disabled: keep students out of the shared
+	// coursework view while all the plumbing stays in place.
+	if (!GOOGLE_CLASSROOM_ENABLED) throw redirect(302, '/dashboard');
+
 	// Only students can view shared coursework
 	const { user } = await requireRole(locals, 'student');
 
