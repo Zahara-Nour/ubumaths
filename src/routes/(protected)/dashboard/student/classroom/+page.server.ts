@@ -1,7 +1,13 @@
 import type { PageServerLoad } from './$types';
+import { redirect } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
+import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
 
 export const load: PageServerLoad = async ({ locals }) => {
+	// Google Classroom access is disabled: keep students out of this view while
+	// all the plumbing stays in place.
+	if (!GOOGLE_CLASSROOM_ENABLED) throw redirect(302, '/dashboard');
+
 	// Ensure user is a student
 	await requireRole(locals, 'student');
 

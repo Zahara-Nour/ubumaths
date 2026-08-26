@@ -37,6 +37,7 @@
 
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
+	import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
 	import type { PageData } from './$types';
 	import type { Tables } from '$lib/types/database';
 	import type { SchoolPeriod } from '$lib/utils/timetable';
@@ -641,42 +642,44 @@
 						</div>
 					</div>
 
-					<!-- Google Classroom Association -->
-					<div class="rounded-lg border border-border bg-muted/30 p-4">
-						<div class="flex items-center justify-between gap-4">
-							<div class="flex-1 space-y-2">
-								<Label class="flex items-center gap-2 text-base">
-									<GraduationCap class="h-4 w-4" />
-									Cours Google Classroom
-								</Label>
-								{#if data.googleCourses.length === 0}
-									<p class="text-sm text-muted-foreground">
-										Aucun cours Google Classroom synchronisé.
-										<a
-											href="/dashboard/teacher/settings/google"
-											class="text-primary hover:underline"
-										>
-											Connecter votre compte Google
-										</a>
-									</p>
-								{:else}
-									<div class="flex items-center gap-2">
-										<MySelect
-											type="single"
-											value={classItem.google_classroom_course_id || ''}
-											items={getAvailableCourseItems(classItem.id)}
-											onValueChange={(v) => handleAssociateCourse(classItem.id, v)}
-											placeholder="Aucun cours associé"
-											triggerClass="w-64"
-										/>
-										{#if isUpdatingAssociation[classItem.id]}
-											<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
-										{/if}
-									</div>
-								{/if}
+					{#if GOOGLE_CLASSROOM_ENABLED}
+						<!-- Google Classroom Association -->
+						<div class="rounded-lg border border-border bg-muted/30 p-4">
+							<div class="flex items-center justify-between gap-4">
+								<div class="flex-1 space-y-2">
+									<Label class="flex items-center gap-2 text-base">
+										<GraduationCap class="h-4 w-4" />
+										Cours Google Classroom
+									</Label>
+									{#if data.googleCourses.length === 0}
+										<p class="text-sm text-muted-foreground">
+											Aucun cours Google Classroom synchronisé.
+											<a
+												href="/dashboard/teacher/settings/google"
+												class="text-primary hover:underline"
+											>
+												Connecter votre compte Google
+											</a>
+										</p>
+									{:else}
+										<div class="flex items-center gap-2">
+											<MySelect
+												type="single"
+												value={classItem.google_classroom_course_id || ''}
+												items={getAvailableCourseItems(classItem.id)}
+												onValueChange={(v) => handleAssociateCourse(classItem.id, v)}
+												placeholder="Aucun cours associé"
+												triggerClass="w-64"
+											/>
+											{#if isUpdatingAssociation[classItem.id]}
+												<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
+											{/if}
+										</div>
+									{/if}
+								</div>
 							</div>
 						</div>
-					</div>
+					{/if}
 
 					<!-- Stats Card -->
 					<ClassStatsCard
