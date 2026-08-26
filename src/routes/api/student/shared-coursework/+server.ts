@@ -27,6 +27,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { listStudentSharedCourseworkSchema } from '$lib/server/validation';
+import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
 
 /**
  * List all visible coursework shared with student's classes
@@ -36,6 +37,9 @@ import { listStudentSharedCourseworkSchema } from '$lib/server/validation';
  * Supports pagination and filtering by class and category
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
+	// Google Classroom access is disabled — defense in depth for direct API hits.
+	if (!GOOGLE_CLASSROOM_ENABLED) throw error(403, 'Google Classroom est désactivé');
+
 	// Only students can list shared coursework
 	const { user } = await requireRole(locals, 'student');
 

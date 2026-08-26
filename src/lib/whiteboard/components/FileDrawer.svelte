@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
+	import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
 	/**
 	 * FileDrawer - Sheet overlay for file management
 	 *
@@ -1085,22 +1086,24 @@
 						{/if}
 						<span class="text-[10px]">Drive</span>
 					</Button>
-					<Button
-						type="button"
-						variant="ghost"
-						size="sm"
-						onclick={handleExportToClassroom}
-						disabled={isExportingToClassroom}
-						class="h-9 flex-col gap-1 p-1"
-						title="Publier sur Classroom"
-					>
-						{#if isExportingToClassroom}
-							<Loader2 class="h-4 w-4 animate-spin" />
-						{:else}
-							<GraduationCap class="h-4 w-4" />
-						{/if}
-						<span class="text-[10px]">Classroom</span>
-					</Button>
+					{#if GOOGLE_CLASSROOM_ENABLED}
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onclick={handleExportToClassroom}
+							disabled={isExportingToClassroom}
+							class="h-9 flex-col gap-1 p-1"
+							title="Publier sur Classroom"
+						>
+							{#if isExportingToClassroom}
+								<Loader2 class="h-4 w-4 animate-spin" />
+							{:else}
+								<GraduationCap class="h-4 w-4" />
+							{/if}
+							<span class="text-[10px]">Classroom</span>
+						</Button>
+					{/if}
 					<Button
 						type="button"
 						variant="ghost"
