@@ -3,8 +3,8 @@ import { getNavLinks, getZoneTitle } from '../dashboard-nav';
 import { lore } from '$lib/config/lore';
 
 describe('getZoneTitle', () => {
-	it('retourne "Mon espace" pour student', () => {
-		expect(getZoneTitle('student')).toBe('Mon espace');
+	it('retourne "Mon cabinet" pour student', () => {
+		expect(getZoneTitle('student')).toBe('Mon cabinet');
 	});
 
 	it('retourne "Espace enseignant" pour teacher', () => {
@@ -15,8 +15,8 @@ describe('getZoneTitle', () => {
 		expect(getZoneTitle('admin')).toBe('Administration');
 	});
 
-	it('fallback "Mon espace" pour rôle inconnu', () => {
-		expect(getZoneTitle('unknown')).toBe('Mon espace');
+	it('fallback "Mon cabinet" pour rôle inconnu', () => {
+		expect(getZoneTitle('unknown')).toBe('Mon cabinet');
 	});
 });
 
