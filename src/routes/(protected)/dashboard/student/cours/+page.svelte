@@ -66,7 +66,7 @@
 				<FolderOpen class="mx-auto mb-4 h-16 w-16 text-muted-foreground/50" />
 				<h2 class="text-xl font-semibold">Aucun chapitre disponible</h2>
 				<p class="mt-2 text-muted-foreground">
-					Vos {lore.entities.teacher}s n'ont pas encore publié de chapitres pour vos cours.
+					Ton {lore.entities.teacher} n'a pas encore publié de chapitres.
 				</p>
 			</Card.Content>
 		</Card.Root>
