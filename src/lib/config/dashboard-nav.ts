@@ -54,13 +54,13 @@ export type DashboardRole = 'student' | 'teacher' | 'admin';
 
 /**
  * Zone title displayed in the dashboard header, replacing the generic
- * "Dashboard" label. Drives the mental model "you are in Mon espace".
+ * "Dashboard" label. Drives the mental model "you are in Mon cabinet".
  */
 export function getZoneTitle(role: DashboardRole | string): string {
-	if (role === 'student') return 'Mon espace';
+	if (role === 'student') return 'Mon cabinet';
 	if (role === 'teacher') return 'Espace enseignant';
 	if (role === 'admin') return 'Administration';
-	return 'Mon espace';
+	return 'Mon cabinet';
 }
 
 const footerLinks: DashboardNavLink[] = [

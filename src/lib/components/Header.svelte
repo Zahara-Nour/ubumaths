@@ -182,11 +182,6 @@
 			<img src={gidouille} alt="Gidouille" class="h-6 w-6" />
 			<div class="flex flex-col leading-none">
 				<h1 class="text-xl font-bold tracking-tight text-foreground md:text-2xl">{title}</h1>
-				<span
-					class="text-[10px] font-medium tracking-wider text-muted-foreground uppercase md:text-xs"
-				>
-					Outils libres
-				</span>
 			</div>
 		</a>
 
@@ -195,7 +190,7 @@
 
 		<!-- Navigation -->
 		<nav class="flex items-center gap-2">
-			<!-- Auth section: avatar links directly to /dashboard (Mon espace).
+			<!-- Auth section: avatar links directly to /dashboard (Mon cabinet).
 				 Dropdown menu was removed in Phase 3 of the sidebar reorganization;
 				 logout + GDPR features moved to /dashboard/profile. -->
 			{#if user}
@@ -203,7 +198,7 @@
 					<a
 						href={resolve('/dashboard')}
 						class="relative block h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-						aria-label="Aller à mon espace"
+						aria-label="Aller à mon cabinet"
 					>
 						<UserAvatar
 							avatar_url={profile?.avatar_url}
@@ -368,7 +363,7 @@
 						class="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
 					>
 						<LayoutDashboard class="h-5 w-5 shrink-0" />
-						<span>Mon espace</span>
+						<span>Mon cabinet</span>
 					</a>
 					<button
 						type="button"
