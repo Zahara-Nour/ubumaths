@@ -1,7 +1,20 @@
 # Auto-inscription élève par code de classe — Spec Phase 0 (TDD)
 
-> **Statut : Phases 1-3 ✅ + 5 ✅ (reviews+corrections). Reste : Phase 4 = config Supabase (David). Sur branche `feat/student-self-registration`, PR à ouvrir, prod non touchée.**
+> **Statut : ✅ LIVRÉ ET VÉRIFIÉ EN PROD (2026-08-26).** Inscription bout-en-bout OK (test : profil `approved`, inscrit en classe, CGU enregistrée, game profile créé). PR #73 (feature) + #75 (durcissement E1) + #76 (trigger manquant) mergées et migrées.
 > Convention : comportements en français (cas nominal / limite / erreur).
+
+## Bugs prod déterrés par la mise en service (corrigés)
+
+1. **`on_auth_user_created` manquant en prod EU** (PR #76) — le trigger sur `auth.users` qui exécute `handle_new_user` avait disparu (probablement à la migration EU de juin) → **aucun profil créé pour tout nouveau compte** ; invisible car aucun nouveau compte depuis (Google-only). Cause du « Profil non trouvé ». Recréé (migration idempotente). ⚠️ **Le baseline local crée des objets du schéma `auth` qui ne sont pas en prod** — se méfier pour tout futur objet auth.
+2. **Fix `gender`** (PR #73) — refs à la colonne `gender` (droppée jan.) dans la branche `pending_students` → activation d'élève pré-importé cassée en silence depuis jan.
+3. **E1 grant** (PR #75) — les _default privileges_ Supabase re-grantent `anon`/`authenticated` sur toute fonction `public` ; `REVOKE FROM PUBLIC` ne suffit pas → il faut `REVOKE FROM anon, authenticated` explicite.
+
+## À faire par David (plus tard, non bloquant)
+
+**Réécrire l'email de bienvenue** (`src/lib/email-templates/welcome.ts`) — le texte actuel (« ton compte a été validé, tu peux te connecter ») date de l'ancien flux et est redondant pour un élève auto-inscrit. Brouillon pataphysique proposé (à ajuster à la main) :
+
+> **Objet** : Cornegidouille, bienvenue sur Chiphre !
+> Bonjour {prénom}, Te voilà enrôlé dans ton **Bataillon**, Galopin ! Ton compte est scellé et bien vivant. File au **Cabinet des Phynances** sur **chiph.re** : des **Corvées** à dompter, des **Gidouilles** à empocher, et quelques **Médailles de la Gidouille** à décrocher. Bonne année de **Mathres** — et gare au Décervelage ! ⚙️
 
 ## Journal d'avancement
 
