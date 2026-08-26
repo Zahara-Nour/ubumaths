@@ -20,6 +20,10 @@ import type { OutputComparison, TextComparison, NumericComparison } from '$lib/s
 export interface CompareResult {
 	passed: boolean;
 	diff?: string;
+	// Set when the comparison itself failed to run (e.g. a teacher-defined custom
+	// comparator crashed, is missing, or timed out). Surfaced to the student so a
+	// buggy comparator explains itself instead of showing a bare "failed".
+	error?: string;
 }
 
 export function compareOutputs(
