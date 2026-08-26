@@ -218,8 +218,15 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Single-teacher (Option B): students not enrolled in any active class.
 	const unassignedStudents = await getUnassignedStudents(user.id, supabase);
 
+	// registration_open flag per class (not returned by the classes RPC).
+	const { data: regRows } = await supabase.from('classes').select('id, registration_open');
+	const registrationOpenById = new Map((regRows ?? []).map((r) => [r.id, r.registration_open]));
+
 	return {
-		classes: classesWithData,
+		classes: classesWithData.map((c) => ({
+			...c,
+			registration_open: registrationOpenById.get(c.id) ?? false
+		})),
 		unassignedStudents,
 		school,
 		classStudentsMap,
@@ -229,6 +236,21 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.filter((id): id is string => id !== null)
 	};
 };
+
+/**
+ * Schema for regenerating a class join code.
+ */
+const regenerateJoinCodeSchema = z.object({
+	classId: formDataTransforms.uuid
+});
+
+/**
+ * Schema for toggling a class's self-registration (registration_open).
+ */
+const toggleRegistrationSchema = z.object({
+	classId: formDataTransforms.uuid,
+	open: z.enum(['true', 'false']).transform((v) => v === 'true')
+});
 
 /**
  * Form Actions
@@ -496,6 +518,64 @@ export const actions: Actions = {
 		if (updateError) {
 			console.error('Error updating class association:', updateError);
 			return fail(500, { message: "Erreur lors de la mise à jour de l'association" });
+		}
+
+		return { success: true };
+	},
+
+	/**
+	 * Regenerate a class's join code (invalidates the previous code for new sign-ups;
+	 * already-enrolled students are unaffected).
+	 */
+	regenerateJoinCode: async ({ request, locals }) => {
+		await requireRole(locals, 'teacher');
+
+		const validation = validateFormData(regenerateJoinCodeSchema, await request.formData());
+		if (!validation.success) {
+			return fail(400, { errors: validation.errors });
+		}
+		const { classId } = validation.data;
+
+		// New unique code from the DB helper (loops until unique).
+		const { data: newCode, error: genError } = await locals.supabase.rpc('generate_join_code');
+		if (genError || !newCode) {
+			console.error('Error generating join code:', genError);
+			return fail(500, { message: 'Erreur lors de la génération du code' });
+		}
+
+		// Mono-teacher: RLS scopes write access to the sole teacher/admin.
+		const { error: updateError } = await locals.supabase
+			.from('classes')
+			.update({ join_code: newCode })
+			.eq('id', classId);
+		if (updateError) {
+			console.error('Error updating join code:', updateError);
+			return fail(500, { message: 'Erreur lors de la mise à jour du code' });
+		}
+
+		return { success: true, joinCode: newCode };
+	},
+
+	/**
+	 * Open/close self-registration for a class (controls whether a student can create an
+	 * account with this class's join code).
+	 */
+	toggleRegistration: async ({ request, locals }) => {
+		await requireRole(locals, 'teacher');
+
+		const validation = validateFormData(toggleRegistrationSchema, await request.formData());
+		if (!validation.success) {
+			return fail(400, { errors: validation.errors });
+		}
+		const { classId, open } = validation.data;
+
+		const { error: updateError } = await locals.supabase
+			.from('classes')
+			.update({ registration_open: open })
+			.eq('id', classId);
+		if (updateError) {
+			console.error('Error toggling registration:', updateError);
+			return fail(500, { message: "Erreur lors du changement d'état de l'inscription" });
 		}
 
 		return { success: true };
