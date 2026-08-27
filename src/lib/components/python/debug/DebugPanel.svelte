@@ -13,12 +13,14 @@
 	import CallStackPanel from './CallStackPanel.svelte';
 	import LoopIndicator from './LoopIndicator.svelte';
 	import MemoryDiagramView from './MemoryDiagramView.svelte';
+	import RecursionTreeView from './RecursionTreeView.svelte';
 	import { cn } from '$lib/utils';
 	import Bug from '@lucide/svelte/icons/bug';
 	import Info from '@lucide/svelte/icons/info';
 	import Table from '@lucide/svelte/icons/table';
 	import List from '@lucide/svelte/icons/list';
 	import Network from '@lucide/svelte/icons/network';
+	import Waypoints from '@lucide/svelte/icons/waypoints';
 
 	// Types
 	interface Props {
@@ -32,7 +34,12 @@
 	let { onSelectFrame, class: className }: Props = $props();
 
 	// Local state for view toggle
-	let viewMode = $state<'list' | 'table' | 'heap'>('list');
+	let viewMode = $state<'list' | 'table' | 'heap' | 'tree'>('list');
+
+	// Whole-trace data for the call-tree view.
+	let trace = $derived(debugStore.trace);
+	let stepIndex = $derived(debugStore.stepIndex);
+	let hasCalls = $derived(trace.some((s) => s.event === 'call'));
 
 	// Derived state from debug store
 	let currentSnapshot = $derived(debugStore.currentSnapshot);
@@ -170,6 +177,22 @@
 					<Network class="size-3.5" aria-hidden="true" />
 					Diagramme mémoire
 				</button>
+				{#if hasCalls}
+					<button
+						type="button"
+						onclick={() => (viewMode = 'tree')}
+						class={cn(
+							'flex items-center gap-1.5 px-2.5 py-1 text-xs transition-colors',
+							viewMode === 'tree'
+								? 'bg-primary text-primary-foreground'
+								: 'bg-background text-muted-foreground hover:bg-muted'
+						)}
+						aria-pressed={viewMode === 'tree'}
+					>
+						<Waypoints class="size-3.5" aria-hidden="true" />
+						Arbre d'appels
+					</button>
+				{/if}
 			</div>
 		</div>
 
@@ -191,6 +214,11 @@
 			<!-- Memory diagram view: Python Tutor-style frames + heap with arrows -->
 			<div class="min-h-[400px]">
 				<MemoryDiagramView {callStack} {heap} />
+			</div>
+		{:else if viewMode === 'tree'}
+			<!-- Call / recursion tree over the whole trace -->
+			<div class="min-h-[400px]">
+				<RecursionTreeView {trace} currentStepIndex={stepIndex} />
 			</div>
 		{:else}
 			<!-- Table view: Variables history -->

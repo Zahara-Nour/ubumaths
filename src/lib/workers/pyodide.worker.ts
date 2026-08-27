@@ -951,7 +951,7 @@ def _chiphre_record_trace(code, step_budget):
         chain.reverse()
         return chain
 
-    def build_snapshot(frame, event):
+    def build_snapshot(frame, event, arg=None):
         state['sid'] += 1
         heap = {}
         chain = user_chain(frame)
@@ -970,7 +970,7 @@ def _chiphre_record_trace(code, step_budget):
         if frames:
             frames[-1]['isCurrentFrame'] = True
         globals_vars = frames[0]['locals'] if frames else []
-        return {
+        snapshot = {
             'id': 'snap_' + str(state['sid']),
             'lineNumber': max(1, frame.f_lineno),
             'timestamp': _t.time() * 1000,
@@ -981,6 +981,15 @@ def _chiphre_record_trace(code, step_budget):
             'event': event,
             'heap': list(heap.values())
         }
+        # Capture the returned value (settrace passes it as 'arg' on 'return')
+        # so the call/recursion tree can show f(args) -> result.
+        if event == 'return':
+            try:
+                r = repr(arg)
+            except Exception:
+                r = '<non affichable>'
+            snapshot['returnValue'] = r if len(r) <= 80 else r[:77] + '...'
+        return snapshot
 
     def tracer(frame, event, arg):
         if frame.f_code.co_filename != filename:
@@ -993,7 +1002,7 @@ def _chiphre_record_trace(code, step_budget):
             if len(snapshots) >= step_budget:
                 state['truncated'] = True
                 raise _BudgetExceeded()
-            snapshots.append(build_snapshot(frame, event))
+            snapshots.append(build_snapshot(frame, event, arg))
             for fr in user_chain(frame):
                 prev_by_frame[id(fr)] = dict(fr.f_locals)
         return tracer

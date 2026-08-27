@@ -140,6 +140,8 @@ export interface DebugSnapshot {
 	 * snapshot, so aliases naturally collapse to a single HeapObject entry.
 	 */
 	heap: HeapObject[];
+	/** repr of the returned value — set only on `return` events (for the call tree). */
+	returnValue?: string;
 }
 
 // =============================================================================
