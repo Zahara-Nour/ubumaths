@@ -901,30 +901,134 @@ def _chiphre_get_variables(namespace, prev_namespace=None, heap=None):
     return variables
 
 
-def _chiphre_debug_generator(code, breakpoints_json):
-    """Generator that yields control at each step for true pause.
+def _chiphre_record_trace(code, step_budget):
+    """Record a full execution trace using sys.settrace.
 
-    This generator parses code into AST and executes statement-by-statement,
-    yielding a snapshot BEFORE each statement executes. This allows JavaScript
-    to truly pause execution by not calling next() on the generator.
+    Unlike the legacy AST interpreter, this steps INTO user-defined function
+    calls (real frames via the frame chain), so the call stack, recursion and
+    call/return events all work. Only frames from the compiled user code are
+    traced (library internals are skipped via the co_filename filter).
 
-    Usage:
-        gen = _chiphre_debug_generator(code, breakpoints)
-        snapshot = next(gen)  # Get first snapshot (paused at first line)
-
-        # To continue:
-        snapshot = gen.send('step')  # or 'step-over', 'continue', etc.
-
-        # To stop:
-        gen.close()
-
-    Args:
-        code: Python code to debug
-        breakpoints_json: JSON string of breakpoints list
-
-    Yields:
-        dict: Debug snapshot with lineNumber, variables, callStack, etc.
+    Returns {'snapshots': [...], 'truncated': bool, 'error': str|None}.
     """
+    import sys
+    import time as _t
+    import io
+
+    filename = '<chiphre-debug>'
+    snapshots = []
+    state = {'truncated': False, 'sid': 0}
+    prev_by_frame = {}
+
+    class _BudgetExceeded(Exception):
+        pass
+
+    try:
+        compiled = compile(code, filename, 'exec')
+    except SyntaxError as e:
+        return {
+            'snapshots': [{
+                'id': 'snap_1',
+                'lineNumber': e.lineno or 1,
+                'timestamp': _t.time() * 1000,
+                'callStack': [{'functionName': '<module>', 'filename': '<exec>', 'lineNumber': e.lineno or 1, 'locals': [], 'isCurrentFrame': True}],
+                'globals': [], 'loops': [], 'stdout': '', 'event': 'exception', 'heap': []
+            }],
+            'truncated': False,
+            'error': 'SyntaxError: ' + (e.msg or '')
+        }
+
+    exec_globals = {'__name__': '__main__', '__builtins__': __builtins__}
+    buffer = io.StringIO()
+
+    def user_chain(frame):
+        chain = []
+        f = frame
+        while f is not None:
+            if f.f_code.co_filename == filename:
+                chain.append(f)
+            f = f.f_back
+        chain.reverse()
+        return chain
+
+    def build_snapshot(frame, event):
+        state['sid'] += 1
+        heap = {}
+        chain = user_chain(frame)
+        frames = []
+        for idx, fr in enumerate(chain):
+            name = '<module>' if idx == 0 else fr.f_code.co_name
+            prev = prev_by_frame.get(id(fr))
+            local_vars = _chiphre_get_variables(fr.f_locals, prev, heap)
+            frames.append({
+                'functionName': name,
+                'filename': '<exec>',
+                'lineNumber': max(1, fr.f_lineno),
+                'locals': local_vars,
+                'isCurrentFrame': False
+            })
+        if frames:
+            frames[-1]['isCurrentFrame'] = True
+        globals_vars = frames[0]['locals'] if frames else []
+        return {
+            'id': 'snap_' + str(state['sid']),
+            'lineNumber': max(1, frame.f_lineno),
+            'timestamp': _t.time() * 1000,
+            'callStack': frames,
+            'globals': globals_vars,
+            'loops': [],
+            'stdout': buffer.getvalue(),
+            'event': event,
+            'heap': list(heap.values())
+        }
+
+    def tracer(frame, event, arg):
+        if frame.f_code.co_filename != filename:
+            return None
+        if event in ('call', 'line', 'return', 'exception'):
+            if frame.f_lineno < 1:
+                # The module-level 'call' fires before any line runs (lineno 0);
+                # skip it so the first recorded step is line 1.
+                return tracer
+            if len(snapshots) >= step_budget:
+                state['truncated'] = True
+                raise _BudgetExceeded()
+            snapshots.append(build_snapshot(frame, event))
+            for fr in user_chain(frame):
+                prev_by_frame[id(fr)] = dict(fr.f_locals)
+        return tracer
+
+    old_stdout = sys.stdout
+    old_trace = sys.gettrace()
+    sys.stdout = buffer
+    error = None
+    sys.settrace(tracer)
+    try:
+        exec(compiled, exec_globals)
+    except _BudgetExceeded:
+        state['truncated'] = True
+    except Exception as e:
+        error = type(e).__name__ + ': ' + str(e)
+    finally:
+        sys.settrace(old_trace)
+        sys.stdout = old_stdout
+
+    return {'snapshots': snapshots, 'truncated': state['truncated'], 'error': error}
+
+
+def _chiphre_debug_generator(code, breakpoints_json):
+    """Record the whole execution via sys.settrace, then replay snapshots.
+
+    The step action sent via .send() is ignored — the record-then-replay model
+    drives this to completion. Breakpoints are ignored here (the UI navigates to
+    breakpoints in the recorded trace, client-side). The legacy AST interpreter
+    below is kept but is unreachable (after the return).
+    """
+    _rec = _chiphre_record_trace(code, 1000)
+    for _snap in _rec['snapshots']:
+        yield _snap
+    return
+
     import ast
     import json
     import time

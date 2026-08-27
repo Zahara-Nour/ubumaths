@@ -394,6 +394,17 @@ class PythonPlaygroundStore {
 	}
 
 	/**
+	 * Record the whole execution as an immutable trace (record-then-replay).
+	 * Delegates to the executor's full-trace recorder; the resulting trace is
+	 * navigable via the debug store's scrubber.
+	 *
+	 * @param code - The Python code to record
+	 */
+	recordDebugSession(code: string): void {
+		this._executor.recordDebugSession(code);
+	}
+
+	/**
 	 * Send a step command during an active debug session.
 	 */
 	debugStep(action: DebugStepAction): void {
