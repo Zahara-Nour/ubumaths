@@ -14,6 +14,7 @@ import {
 import type { Database } from '$lib/types/database';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { scheduleRecheck } from '$lib/server/python/recheck';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -183,6 +184,10 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 		throw error(500, 'Erreur lors de la création de la soumission');
 	}
+
+	// Trusted-server re-check (fire-and-forget via waitUntil). Only fires for
+	// correct submissions; never blocks the response and never mutates mastery.
+	scheduleRecheck(submission.id, submission.is_correct);
 
 	return json(
 		{

@@ -11,7 +11,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
 	createMockSupabase,
 	createMockLocals,
@@ -19,6 +19,13 @@ import {
 	mockSuccess,
 	mockError
 } from '$tests/helpers';
+import { scheduleRecheck } from '$lib/server/python/recheck';
+
+// The submit endpoint fires the trusted-server re-check via scheduleRecheck.
+// Mock it so unit tests never spin up Pyodide / a real service-role client.
+vi.mock('$lib/server/python/recheck', () => ({
+	scheduleRecheck: vi.fn()
+}));
 
 const EXERCISE_ID = '550e8400-e29b-41d4-a716-446655440003';
 const STUDENT_ID = '550e8400-e29b-41d4-a716-446655440010';
@@ -177,6 +184,8 @@ describe('POST /api/python-exercises/[id]/submit', () => {
 		expect(response.status).toBe(201);
 		const data = (await response.json()) as { submission: typeof insertedSubmission };
 		expect(data.submission.assignment_id).toBeNull();
+		// The trusted-server re-check is scheduled for this correct submission.
+		expect(scheduleRecheck).toHaveBeenCalledWith(insertedSubmission.id, true);
 	});
 
 	it('assigned: 201 with assignment_id when an active assignment exists', async () => {
