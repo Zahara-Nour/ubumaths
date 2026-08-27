@@ -2,16 +2,20 @@
 	/**
 	 * Memory Diagram View — Python Tutor-style visualization, laid out by elkjs.
 	 *
-	 * Pipeline: snapshot → `buildDiagramGraph` → measure each card → `layoutDiagram`
-	 * (ELK layered, orthogonal routing) → render cards at absolute positions with
-	 * SVG polyline edges. If ELK fails, we fall back to the previous two-column
-	 * (frames | heap) rendering so the debugger never breaks.
+	 * Pipeline: snapshot → `buildDiagramGraph` → measure each card (hidden layer)
+	 * → `layoutDiagram` (ELK layered, orthogonal routing) → render cards at
+	 * absolute positions with SVG polyline edges. Cards **slide** between steps
+	 * (`animate:flip`) and fade in/out, giving object-constancy as the trace
+	 * advances. If ELK fails, we fall back to the previous two-column rendering so
+	 * the debugger never breaks.
 	 *
 	 * ELK runs in-thread via a lazy import for V1 (fast on these small graphs);
 	 * moving it to a Web Worker is a follow-up (swap the `getElk` instance).
 	 */
 
-	import { tick } from 'svelte';
+	import { tick, onMount } from 'svelte';
+	import { flip } from 'svelte/animate';
+	import { fade } from 'svelte/transition';
 	import type { DebugStackFrame, HeapObject } from '$lib/shared/python/debug/types';
 	import { cn } from '$lib/utils';
 	import { colorForHeapId } from './heap-utils';
@@ -32,6 +36,19 @@
 
 	const CANVAS_PADDING = 24;
 
+	// Respect the user's motion preference (disable slide/fade when reduced).
+	let reducedMotion = $state(false);
+	let flipDuration = $derived(reducedMotion ? 0 : 300);
+	let fadeDuration = $derived(reducedMotion ? 0 : 200);
+
+	onMount(() => {
+		const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+		reducedMotion = mq.matches;
+		const handler = (e: MediaQueryListEvent) => (reducedMotion = e.matches);
+		mq.addEventListener('change', handler);
+		return () => mq.removeEventListener('change', handler);
+	});
+
 	// Cross-panel hover highlight.
 	let hoveredObjectId = $state<string | null>(null);
 
@@ -43,7 +60,7 @@
 	let layout = $state<DiagramLayout | null>(null);
 	let failed = $state(false);
 
-	// Card element refs, keyed by node id, for measurement.
+	// Card element refs (measuring layer), keyed by node id.
 	let cardEls: Record<string, HTMLElement | undefined> = {};
 
 	// Lazy in-thread ELK instance.
@@ -64,7 +81,7 @@
 			failed = false;
 			return;
 		}
-		// Wait for the cards to render so we can measure them.
+		// Wait for the measuring cards to render so we can size them.
 		await tick();
 		const sizes: SizeMap = {};
 		for (const node of g.nodes) {
@@ -91,11 +108,6 @@
 		void runLayout(g);
 	});
 
-	function nodePos(id: string): { x: number; y: number } {
-		const n = layout?.nodes.find((ln) => ln.id === id);
-		return { x: n?.x ?? 0, y: n?.y ?? 0 };
-	}
-
 	let canvasWidth = $derived((layout?.width ?? 0) + CANVAS_PADDING * 2);
 	let canvasHeight = $derived((layout?.height ?? 0) + CANVAS_PADDING * 2);
 
@@ -109,6 +121,22 @@
 	let isEmpty = $derived(heap.length === 0 && callStack.every((f) => f.locals.length === 0));
 </script>
 
+{#snippet cardFor(node: { kind: 'frame' | 'heap'; frameIndex?: number; objectId?: string })}
+	{#if node.kind === 'frame' && node.frameIndex !== undefined && callStack[node.frameIndex]}
+		<FrameCard
+			frame={callStack[node.frameIndex]}
+			{hoveredObjectId}
+			onVariableHover={handleVariableHover}
+		/>
+	{:else if node.kind === 'heap' && node.objectId && heapById.get(node.objectId)}
+		<HeapCard
+			obj={heapById.get(node.objectId)!}
+			highlighted={hoveredObjectId === node.objectId}
+			onHover={handleObjectHover}
+		/>
+	{/if}
+{/snippet}
+
 <div
 	class={cn('relative h-full overflow-auto', className)}
 	role="region"
@@ -121,68 +149,67 @@
 			<HeapPanel {heap} {hoveredObjectId} onObjectHover={handleObjectHover} />
 		</div>
 	{:else}
-		<div class="relative" style="width: {canvasWidth}px; height: {canvasHeight}px;">
-			<!-- Edges (orthogonal polylines from ELK) -->
-			<svg
-				class="pointer-events-none absolute z-10"
-				style="left: {CANVAS_PADDING}px; top: {CANVAS_PADDING}px;"
-				width={layout?.width ?? 0}
-				height={layout?.height ?? 0}
-				aria-hidden="true"
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				<defs>
-					<marker
-						id="elk-arrowhead"
-						viewBox="0 0 10 10"
-						refX="9"
-						refY="5"
-						markerWidth="6"
-						markerHeight="6"
-						orient="auto-start-reverse"
-					>
-						<path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
-					</marker>
-				</defs>
-				{#each layout?.edges ?? [] as edge (edge.id)}
-					{@const color = colorForHeapId(edge.toObjectId)}
-					{@const isHighlighted = hoveredObjectId === edge.toObjectId}
-					<polyline
-						points={edge.points.map((p) => `${p.x},${p.y}`).join(' ')}
-						class={cn('fill-none', color.stroke)}
-						style="color: currentColor"
-						stroke-width={isHighlighted ? 2.5 : 1.5}
-						marker-end="url(#elk-arrowhead)"
-					/>
-				{/each}
-			</svg>
-
-			<!-- Node cards, absolutely positioned per ELK layout -->
+		<!-- Measuring layer: hidden cards rendered at natural size to size ELK nodes. -->
+		<div class="invisible absolute top-0 left-0" aria-hidden="true">
 			{#each graph.nodes as node (node.id)}
-				{@const pos = nodePos(node.id)}
-				<div
-					bind:this={cardEls[node.id]}
-					class="absolute"
-					style="left: {CANVAS_PADDING + pos.x}px; top: {CANVAS_PADDING + pos.y}px; opacity: {layout
-						? 1
-						: 0};"
-				>
-					{#if node.kind === 'frame' && node.frameIndex !== undefined && callStack[node.frameIndex]}
-						<FrameCard
-							frame={callStack[node.frameIndex]}
-							{hoveredObjectId}
-							onVariableHover={handleVariableHover}
-						/>
-					{:else if node.kind === 'heap' && node.objectId && heapById.get(node.objectId)}
-						<HeapCard
-							obj={heapById.get(node.objectId)!}
-							highlighted={hoveredObjectId === node.objectId}
-							onHover={handleObjectHover}
-						/>
-					{/if}
+				<div bind:this={cardEls[node.id]} class="absolute top-0 left-0">
+					{@render cardFor(node)}
 				</div>
 			{/each}
 		</div>
+
+		<!-- Visible layer: cards positioned by ELK, sliding between steps. -->
+		{#if layout}
+			<div class="relative" style="width: {canvasWidth}px; height: {canvasHeight}px;">
+				<!-- Edges (orthogonal polylines from ELK) -->
+				<svg
+					class="pointer-events-none absolute z-10"
+					style="left: {CANVAS_PADDING}px; top: {CANVAS_PADDING}px;"
+					width={layout.width}
+					height={layout.height}
+					aria-hidden="true"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<defs>
+						<marker
+							id="elk-arrowhead"
+							viewBox="0 0 10 10"
+							refX="9"
+							refY="5"
+							markerWidth="6"
+							markerHeight="6"
+							orient="auto-start-reverse"
+						>
+							<path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+						</marker>
+					</defs>
+					{#each layout.edges as edge (edge.id)}
+						{@const color = colorForHeapId(edge.toObjectId)}
+						{@const isHighlighted = hoveredObjectId === edge.toObjectId}
+						<polyline
+							points={edge.points.map((p) => `${p.x},${p.y}`).join(' ')}
+							class={cn('fill-none', color.stroke)}
+							style="color: currentColor"
+							stroke-width={isHighlighted ? 2.5 : 1.5}
+							marker-end="url(#elk-arrowhead)"
+						/>
+					{/each}
+				</svg>
+
+				<!-- Node cards, absolutely positioned per ELK layout -->
+				{#each layout.nodes as ln (ln.id)}
+					<div
+						class="absolute"
+						style="left: {CANVAS_PADDING + ln.x}px; top: {CANVAS_PADDING + ln.y}px;"
+						animate:flip={{ duration: flipDuration }}
+						in:fade={{ duration: fadeDuration }}
+						out:fade={{ duration: fadeDuration }}
+					>
+						{@render cardFor(ln)}
+					</div>
+				{/each}
+			</div>
+		{/if}
 	{/if}
 
 	{#if isEmpty}
