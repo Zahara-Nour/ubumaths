@@ -321,7 +321,7 @@ dans la trace (avant/arrière) via un scrubber.
 | Navigation         | ◄ ► pas précédent/suivant (**entre** dans les fonctions) · ►► **enjamber** (step-over) · saut au point d'arrêt précédent/suivant                                                   |
 | Points d'arrêt     | **Gouttière cliquable** dans l'éditeur (point rouge) → saut au prochain/précédent dans la trace                                                                                    |
 | Variables / Frames | Locals/globals par frame, badges type, indicateurs new/modified ; panneau _Frames_ réel                                                                                            |
-| Heap Visualization | Frames + Heap + flèches SVG cubic-Bézier (style Python Tutor), couleur stable par `id()`                                                                                           |
+| Heap Visualization | Layout **elkjs** (layered, arêtes orthogonales, croisements minimisés) — cartes positionnées + flèches SVG ; couleur stable par `id()` ; fallback 2 colonnes si ELK indisponible   |
 | Highlight ligne    | Fond jaune de la ligne courante ; **ne déplace pas le curseur** ; scroll seulement si l'éditeur n'a pas le focus                                                                   |
 | Raccourcis         | F5 (forcer un ré-enregistrement) · F10 / F11 (pas suivant / précédent dans la trace)                                                                                               |
 
@@ -333,7 +333,7 @@ dans la trace (avant/arrière) via un scrubber.
 
 ### Composants (`src/lib/components/python/debug/`)
 
-`DebugToolbar`, `DebugPanel`, `VariablesPanel`, `VariablesHistory`, `CallStackPanel`, `LoopIndicator` (inutilisé — `loops` vide en settrace V1), `FramesPanel`, `HeapPanel`, `MemoryDiagramView`.
+`DebugToolbar`, `DebugPanel`, `VariablesPanel`, `VariablesHistory`, `CallStackPanel`, `LoopIndicator` (inutilisé — `loops` vide en settrace V1), `MemoryDiagramView` (rendu **elkjs** : `diagram-graph.ts` + `diagram-layout.ts`, cartes `FrameCard`/`HeapCard`), `FramesPanel`/`HeapPanel` (désormais le fallback 2 colonnes).
 
 ### Progression
 
