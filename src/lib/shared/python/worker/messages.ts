@@ -177,7 +177,8 @@ export const debugSnapshotSchema = z.object({
 	loops: z.array(debugLoopInfoSchema).max(20),
 	stdout: z.string().max(100_000),
 	event: debugTraceEventSchema,
-	heap: z.array(heapObjectSchema).max(2000)
+	heap: z.array(heapObjectSchema).max(2000),
+	returnValue: z.string().max(200).optional()
 });
 
 // =============================================================================

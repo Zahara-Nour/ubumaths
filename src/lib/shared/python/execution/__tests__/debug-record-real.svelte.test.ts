@@ -168,4 +168,27 @@ describe('Debug trace recording (real Pyodide, sys.settrace)', () => {
 		},
 		RECORD_TIMEOUT_MS
 	);
+
+	it(
+		'captures return values on return events (for the call tree)',
+		async () => {
+			const code = [
+				'def fact(n):',
+				'    if n <= 1:',
+				'        return 1',
+				'    return n * fact(n - 1)',
+				'r = fact(3)'
+			].join('\n');
+
+			const snapshots = await record(executor, code);
+			const returns = snapshots.filter((s) => s.event === 'return');
+
+			expect(returns.length).toBeGreaterThan(0);
+			expect(returns.every((s) => typeof s.returnValue === 'string')).toBe(true);
+			// fact(3) = 6, and the base case returns 1.
+			expect(returns.some((s) => s.returnValue === '6')).toBe(true);
+			expect(returns.some((s) => s.returnValue === '1')).toBe(true);
+		},
+		RECORD_TIMEOUT_MS
+	);
 });

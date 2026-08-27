@@ -333,7 +333,7 @@ dans la trace (avant/arrière) via un scrubber.
 
 ### Composants (`src/lib/components/python/debug/`)
 
-`DebugToolbar`, `DebugPanel`, `VariablesPanel`, `VariablesHistory`, `CallStackPanel`, `LoopIndicator` (inutilisé — `loops` vide en settrace V1), `MemoryDiagramView` (rendu **elkjs** : `diagram-graph.ts` + `diagram-layout.ts`, cartes `FrameCard`/`HeapCard`), `FramesPanel`/`HeapPanel` (désormais le fallback 2 colonnes).
+`DebugToolbar`, `DebugPanel`, `VariablesPanel`, `VariablesHistory`, `CallStackPanel`, `LoopIndicator` (inutilisé — `loops` vide en settrace V1), `MemoryDiagramView` (rendu **elkjs** : `diagram-graph.ts` + `diagram-layout.ts`, cartes `FrameCard`/`HeapCard`), `FramesPanel`/`HeapPanel` (désormais le fallback 2 colonnes), `RecursionTreeView` (onglet « Arbre d'appels » : `call-tree.ts` + `call-tree-layout.ts` elkjs mrtree, `f(args)→retour`, construction progressive au scrub, sous-problèmes dupliqués teintés).
 
 ### Progression
 
