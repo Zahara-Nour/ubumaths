@@ -85,12 +85,54 @@ export class PlaygroundExecutor extends BasePythonExecutor {
 	}
 
 	// ===========================================================================
+	// Record-then-replay
+	// ===========================================================================
+
+	/** True while a full-trace recording ("Exécuter & enregistrer") is in flight. */
+	private recording = false;
+
+	/**
+	 * Record the whole execution as an immutable trace, then let the student
+	 * scrub through it.
+	 *
+	 * Reuses the existing debug protocol: starts a debug session and auto-drives
+	 * `debugStep('step')` on every pause until the worker reports `debug-finished`
+	 * (or the store's step budget is reached). No breakpoints are set — every line
+	 * is recorded. The interactive `startDebugSession` path is left untouched.
+	 *
+	 * @param code - The Python code to record
+	 */
+	recordDebugSession(code: string): void {
+		this.recording = true;
+		debugStore.startSession();
+		debugStore.isRecording = true;
+		// Empty breakpoints: `step` records every line regardless of breakpoints.
+		this.startDebugSession(code, []);
+	}
+
+	/**
+	 * Wrap up a recording: stop driving the worker, mark the session finished, and
+	 * place the scrubber at the first step so replay starts from the beginning.
+	 * Idempotent — safe to call from both the normal-completion and budget paths.
+	 */
+	private finishRecording(): void {
+		if (!this.recording) return;
+		this.recording = false;
+		// A budget bail-out may leave the worker session live; normal completion has
+		// already cleared it, so this is a no-op there.
+		this.stopDebugSession();
+		debugStore.isRecording = false;
+		debugStore.finishSession();
+		debugStore.goToStep(0);
+	}
+
+	// ===========================================================================
 	// Debug Hook Implementations
 	// ===========================================================================
 
 	/**
 	 * Hook called when a debug snapshot is received.
-	 * Updates the debugStore with the new snapshot.
+	 * Appends it to the debugStore trace.
 	 *
 	 * @param snapshot - The debug snapshot from the worker
 	 */
@@ -100,22 +142,37 @@ export class PlaygroundExecutor extends BasePythonExecutor {
 
 	/**
 	 * Hook called when execution is paused.
-	 * Updates the debugStore session state.
+	 *
+	 * Interactive mode: surface the paused state for stepping. Recording mode:
+	 * don't surface it — auto-advance to the next step (or stop if the trace is
+	 * full).
 	 *
 	 * @param reason - Why execution paused (breakpoint, step, etc.)
 	 */
 	protected onDebugPaused(reason: DebugPauseReason): void {
+		if (this.recording) {
+			if (debugStore.isTraceFull) {
+				this.finishRecording();
+			} else {
+				this.debugStep('step');
+			}
+			return;
+		}
+
 		const currentLine = debugStore.currentSnapshot?.lineNumber ?? 1;
 		debugStore.pauseSession(reason, currentLine);
 	}
 
 	/**
 	 * Hook called when debug session finishes.
-	 * Updates the debugStore to finished state.
 	 *
 	 * @param _duration - Execution time in milliseconds (unused)
 	 */
 	protected onDebugFinished(_duration: number): void {
+		if (this.recording) {
+			this.finishRecording();
+			return;
+		}
 		debugStore.finishSession();
 	}
 }
