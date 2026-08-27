@@ -388,7 +388,7 @@ describe('Verdict table is not student-writable', () => {
 
 		const studentClient = await createAuthenticatedClient(student.email!);
 		// No student SELECT/UPDATE policy → the UPDATE matches no visible row.
-		const { data: updated, error } = await studentClient
+		const { data: updated } = await studentClient
 			.from(VERDICTS)
 			.update({ verification_status: 'match' } as never)
 			.eq('submission_id', sub.id)
