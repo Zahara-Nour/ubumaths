@@ -310,20 +310,20 @@ Outil de **visualisation d'exécution style Python Tutor**, en **enregistrer-pui
 Debug l'exécution est enregistrée automatiquement (mode live), puis l'élève **navigue** librement
 dans la trace (avant/arrière) via un scrubber.
 
-| Fonctionnalité     | Détails                                                                                                                                                                            |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Moteur             | Tracer **`sys.settrace`** (`_chiphre_record_trace`) — **entre dans les fonctions** user (vraies frames, récursion, events `call`/`return`), ignore les libs (filtre `co_filename`) |
-| Modèle             | **Enregistrer-puis-rejouer** : record de toute la trace, puis navigation. Plus de step live                                                                                        |
-| Mode live          | Auto-record à l'entrée en Debug + ré-enregistrement débouncé (600 ms) à chaque modif du code                                                                                       |
-| Trace              | Immuable, complète (budget `STEP_BUDGET = 1000` pas ; au-delà = tronquée)                                                                                                          |
-| Scrubber           | Slider sur toute la trace + play/pause (autoplay) + compteur « pas i/N »                                                                                                           |
-| Marqueurs          | Verts (appel) / bleus (retour) / rouges (exception) sur la timeline, dérivés de la profondeur de pile                                                                              |
-| Navigation         | ◄ ► pas précédent/suivant (**entre** dans les fonctions) · ►► **enjamber** (step-over) · saut au point d'arrêt précédent/suivant                                                   |
-| Points d'arrêt     | **Gouttière cliquable** dans l'éditeur (point rouge) → saut au prochain/précédent dans la trace                                                                                    |
-| Variables / Frames | Locals/globals par frame, badges type, indicateurs new/modified ; panneau _Frames_ réel                                                                                            |
-| Heap Visualization | Frames + Heap + flèches SVG cubic-Bézier (style Python Tutor), couleur stable par `id()`                                                                                           |
-| Highlight ligne    | Fond jaune de la ligne courante ; **ne déplace pas le curseur** ; scroll seulement si l'éditeur n'a pas le focus                                                                   |
-| Raccourcis         | F5 (forcer un ré-enregistrement) · F10 / F11 (pas suivant / précédent dans la trace)                                                                                               |
+| Fonctionnalité     | Détails                                                                                                                                                                                                                                  |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Moteur             | Tracer **`sys.settrace`** (`_chiphre_record_trace`) — **entre dans les fonctions** user (vraies frames, récursion, events `call`/`return`), ignore les libs (filtre `co_filename`)                                                       |
+| Modèle             | **Enregistrer-puis-rejouer** : record de toute la trace, puis navigation. Plus de step live                                                                                                                                              |
+| Mode live          | Auto-record à l'entrée en Debug + ré-enregistrement débouncé (600 ms) à chaque modif du code                                                                                                                                             |
+| Trace              | Immuable, complète (budget `STEP_BUDGET = 1000` pas ; au-delà = tronquée)                                                                                                                                                                |
+| Scrubber           | Slider sur toute la trace + play/pause (autoplay) + compteur « pas i/N »                                                                                                                                                                 |
+| Marqueurs          | Verts (appel) / bleus (retour) / rouges (exception) sur la timeline, dérivés de la profondeur de pile                                                                                                                                    |
+| Navigation         | ◄ ► pas précédent/suivant (**entre** dans les fonctions) · ►► **enjamber** (step-over) · saut au point d'arrêt précédent/suivant                                                                                                         |
+| Points d'arrêt     | **Gouttière cliquable** dans l'éditeur (point rouge) → saut au prochain/précédent dans la trace                                                                                                                                          |
+| Variables / Frames | Locals/globals par frame, badges type, indicateurs new/modified ; panneau _Frames_ réel                                                                                                                                                  |
+| Heap Visualization | Layout **elkjs** (layered, arêtes orthogonales, croisements minimisés) — cartes positionnées + flèches SVG, **animées** (`animate:flip` + fondu, `reduced-motion`) ; couleur stable par `id()` ; fallback 2 colonnes si ELK indisponible |
+| Highlight ligne    | Fond jaune de la ligne courante ; **ne déplace pas le curseur** ; scroll seulement si l'éditeur n'a pas le focus                                                                                                                         |
+| Raccourcis         | F5 (forcer un ré-enregistrement) · F10 / F11 (pas suivant / précédent dans la trace)                                                                                                                                                     |
 
 ### Périmètre Heap
 
@@ -333,7 +333,7 @@ dans la trace (avant/arrière) via un scrubber.
 
 ### Composants (`src/lib/components/python/debug/`)
 
-`DebugToolbar`, `DebugPanel`, `VariablesPanel`, `VariablesHistory`, `CallStackPanel`, `LoopIndicator` (inutilisé — `loops` vide en settrace V1), `FramesPanel`, `HeapPanel`, `MemoryDiagramView`.
+`DebugToolbar`, `DebugPanel`, `VariablesPanel`, `VariablesHistory`, `CallStackPanel`, `LoopIndicator` (inutilisé — `loops` vide en settrace V1), `MemoryDiagramView` (rendu **elkjs** : `diagram-graph.ts` + `diagram-layout.ts`, cartes `FrameCard`/`HeapCard`), `FramesPanel`/`HeapPanel` (désormais le fallback 2 colonnes).
 
 ### Progression
 
