@@ -1,7 +1,26 @@
 # Re-vérification serveur des soumissions Python — progress
 
-> Crash-recovery + gel des décisions. Créé le 2026-08-27. Branche : `feat/python-server-recheck`.
-> Statut global : **Phase 1a en cours** (extraction du noyau de validation headless).
+> Crash-recovery + gel des décisions. Créé le 2026-08-27.
+> **STATUT : ❌ NO-GO (2026-08-27).** Phase 1a mergée en prod (PR #82, valeur indépendante conservée).
+> Phase 1b **ABANDONNÉE** : le ROI ne justifie pas la productionisation Vercel (bundling Pyodide +
+> worker H-1 + itérations deploy en aveugle) face à une menace étroite (forge de POST par un élève
+> pointu ; le prof voit déjà le code ; mastery formatif ; tout-ou-rien). Draft PR #83 laissée en l'état.
+> ⚠️ **La migration `20260827120000` est EN PROD mais désormais INUTILISÉE** (table verdict + balai
+> inertes). Décision de nettoyage en attente : la laisser (inerte, réactivable) ou la rollback.
+
+## Si on revisite un jour — par où reprendre
+
+1. **Trancher le ROI d'abord** (cf. dernier point du Journal) : le re-check attrape un élève qui forge
+   `valid:true`, mais le prof voit déjà le code réel soumis et le mastery est formatif. Est-ce que ça
+   vaut le chantier infra ci-dessous ? C'est **tout-ou-rien** (sans le moteur Pyodide qui tourne, la
+   table + le balai ne servent à rien).
+2. Si oui : **option 1 en mode expérience bornée** — forcer @vercel/nft à tracer les data files Pyodide
+   via `require.resolve`, régler `PYODIDE_INDEX_URL` sur ce chemin, + **fix H-1** (worker_thread avec
+   `setInterruptBuffer`), + **un** déploiement de vérif (flip temporaire de l'`ignoreCommand` de la
+   branche, ou `vercel` CLI). Si le bundling **ou** le worker résistent à adapter-vercel → **bascule
+   vers l'option 2 (Vercel Sandbox)** (règle H-1 + bundling nativement ; re-valider la fidélité).
+3. Puis **Phase 1c** (UI prof : badge incohérence sur les pages résultats ; ne jamais exposer
+   `server_validation_result` à l'élève — M-3).
 
 ## Problème
 
@@ -90,9 +109,32 @@ nécessite des **privilèges colonne** (REVOKE au rôle `authenticated`) **ou** 
 - **E2** quota/worker indisponible → reste `pending`, rejoué plus tard (idempotent).
 - **E3** divergence de moteur suspectée → conservateur, on n'accuse pas.
 
+## ⚠️ Blocage productionisation Vercel (découvert 2026-08-27, après PR draft #83)
+
+- **Pyodide-in-Node exige les fichiers data EN LOCAL** : `loadPyodide({indexURL: CDN})` échoue en
+  Node (`ENOENT …/https:/cdn.jsdelivr.net/…/python_stdlib.zip` — l'indexURL est traité comme un
+  chemin local, PAS une URL). → **M-2 = bloquant dur** : bundler `pyodide.asm.wasm` +
+  `python_stdlib.zip` + `pyodide-lock.json` dans la fonction Vercel + `PYODIDE_INDEX_URL` = ce chemin.
+  Sans ça : tout re-check → `error`.
+- **Previews Vercel désactivés** : `vercel.json` `ignoreCommand` fait `exit 0` si `VERCEL_ENV != production`
+  → aucun preview deploy sur les PR (cf. #82 « Canceled by Ignored Build Step »). Donc pas de moyen
+  simple de vérifier le runtime re-check (bundling data + worker_thread H-1) avant merge=prod.
+- Conséquence : « productioniser le re-check » = bundling data (adapter-vercel) + fix H-1
+  (worker_thread bundlé) + **un déploiement de vérification** (activer temporairement le preview de
+  cette branche, ou `vercel` CLI). **Décision en attente.** Alternative rappelée : Vercel Sandbox
+  (Plan B) réglerait bundling + H-1 nativement mais au prix de la fidélité (interpréteur ≠ Pyodide client).
+
+- **2026-08-27 — PAUSE ASSUMÉE (décision David : « je suis tes recommandations »).** 1b DB+logique
+  acquis et validé en local ; draft PR #83 ; migration en prod (additive/inerte, le code re-check ne
+  s'active qu'au merge). Reste = **chantier infra Vercel incertain, en aveugle** (bundling data +
+  worker H-1 + déploiement de vérif, previews désactivés). Décidé de **s'arrêter là** et de **rouvrir
+  la question ROI** avant d'y investir (menace étroite : forge de POST par un élève pointu ; le prof
+  voit déjà le code ; mastery formatif). Reprise = §REPRISE en tête de doc. Rien à merger, rien à
+  déployer, aucun résidu half-deployed.
+
 ## Risques ouverts
 
-1. Faisabilité **Pyodide-in-Node** en fonction Vercel (mémoire Hobby, cold start) — spike en 1b.
+1. ~~Faisabilité **Pyodide-in-Node**~~ → **SPIKE VALIDÉ 2026-08-27** (`src/lib/server/python/__tests__/pyodide-node-spike.test.ts`). `pyodide@0.26.2` (épinglé exact = build CDN client) chargé en Node en **~1,8 s** ; noyau `runExerciseValidation` exécuté fidèlement (nominal valid / forgé invalid / variable_check tolérance) ; validation à chaud ~23 ms. ⚠️ **Contrainte déploiement** : passer `indexURL` explicite + **bundler les fichiers data** (`pyodide.asm.wasm`, `python_stdlib.zip`, `pyodide-lock.json`) via `outputFileTracingIncludes` sur la route de re-check, sinon `ENOENT` au runtime.
 2. **Masquage colonnes** élève (privilèges colonne vs vue) — `supabase-expert` en 1b.
 3. Extraction d'un fichier de ~4100 lignes — préserver le comportement à l'identique (garde-fou :
    tests réels existants).
@@ -100,6 +142,44 @@ nécessite des **privilèges colonne** (REVOKE au rôle `authenticated`) **ou** 
 ## Journal
 
 - **2026-08-27** — Phase 0 validée. Doc créé. Branche `feat/python-server-recheck`. Début 1a.
+- **2026-08-27** — Phase 1a **mergée en prod** (PR #82, CI verte dont le test navigateur réel).
+  Branche 1b : `feat/python-recheck-1b`. **Spike Pyodide-in-Node VALIDÉ** (cf. Risques §1) ;
+  `pyodide@0.26.2` ajouté (dep prod, exact). Reste 1b : migration + `recheck.ts` + `waitUntil` +
+  balai pg_cron + masquage colonnes. ⏸️ Checkpoint avant la partie migration (accord prod requis).
+- **2026-08-27** — **1b code écrit** : `recheck.ts` (+ `scheduleRecheck` via `waitUntil`), submit
+  câblé (`verification_status` insert + trigger) + test unitaire **vert** (9/9, recheck mocké).
+  Migration `20260827120000_…` (supabase-expert) : 4 colonnes + masquage colonne (REVOKE table
+  SELECT authenticated/anon puis GRANT colonne-par-colonne des 10 existantes ; RPC prof
+  `get_python_submission_server_verdicts` SECURITY DEFINER ; balai `run_flag_stale_python_rechecks`).
+  Deps ajoutées : `pyodide@0.26.2`, `@vercel/functions@3.9.5`. Tests d'intégration écrits
+  (`tests/integration/python-server-verification.test.ts`). **En attente** : `db:reset`+`db:types`
+  (regen colonnes) + `check:incremental` + `test:integration` → **bloqué : OrbStack/Docker arrêté**.
+- **2026-08-27** — **PIVOT masquage → table séparée** (décidé par David). Le test d'intégration a
+  prouvé que le REVOKE table-level casse tout `select('*')` élève (**42501**), dont le count du submit
+  à chaque soumission. Nouvelle migration : table dédiée **`python_submission_server_verdicts`**
+  (PK/FK `submission_id` ON DELETE CASCADE, statut `pending|match|mismatch|indeterminate|error`),
+  **RLS ligne** : SELECT prof/admin (`is_teacher_or_admin()`), écritures service_role only, élève =
+  aucune policy. Plus de masquage colonne ni de RPC (prof lit la table en direct). `recheck.ts`
+  réécrit (upsert pending → update terminal), submit revenu à l'insert d'origine + `scheduleRecheck`.
+  **Validation locale VERTE** : migration OK, `check:incremental` 0 erreur, **15/15 intégration**
+  (dont régression `select('*')`/count submit OK, verdict invisible élève / lisible prof /
+  non-écrivable, cascade, CHECK, balai), submit unit 9/9.
+- **Audit sécurité** (sur la V colonnes, encore pertinent pour le runtime) : 0 Critical. **Ouverts** :
+  **H-1** (code élève CPU-bound bloque l'event loop → timeout JS inopérant côté serveur ; mitigation
+  worker_thread+interrupt vs Sandbox vs maxDuration bas+risque accepté ; NB le balai surface les
+  `pending` bloqués). **M-2** (`PYODIDE_INDEX_URL`=dist bundlé en prod, pas le CDN). **M-3** (1c ne
+  doit pas exposer `server_validation_result` à l'élève). M-1 (durabilité masquage) **caduc** (table
+  séparée). ⚠️ `database.ts` : types locaux temporaires en place ; finalisation propre = `db:migrate`
+  prod (accord requis) puis `db:types`. Reste : décisions H-1/M-2 + `database.ts` + commit/PR + 1c.
+- **2026-08-27** — **Migration POUSSÉE EN PROD** (`db:migrate`, accord David ; dry-run = 1 seule
+  migration `20260827120000`, pas de dérive). `database.ts` régénéré **depuis la prod** (propre :
+  hors ajouts, seul diff = PostgREST 14.5→14.17 + reformat cosmétique graphql_public). `check:incremental`
+  0 erreur avec types prod. **1b DB+code complet et validé en local.**
+  Décisions David : **H-1 = fix propre worker_thread+interrupt**, mais découverte : ce fix (+ M-2)
+  ne se valide que sur **déploiement Vercel** (worker_thread bundlé sous adapter-vercel + chargement
+  Pyodide dans la fonction). Plan : commit + **PR draft** → preview Vercel → vérifier le re-check en
+  réel → finir M-2 + fix H-1 sur la branche → ready + merge (accord). Le re-check ne s'active qu'au
+  merge (migration déjà en prod = DB prête, sans risque).
 - **2026-08-27** — **Phase 1a extraite** (agent backend-developer/Opus). Worker `pyodide.worker.ts`
   4132 → 2677 lignes ; nouveau module `src/lib/shared/python/validation-core/` (`index.ts` 202 +
   `runners.ts` 1125 + `ast.ts` 201 = 1528 l.). `validateExercise` = mince wrapper transport ;
@@ -109,3 +189,10 @@ nécessite des **privilèges colonne** (REVOKE au rôle `authenticated`) **ou** 
   résidu postMessage/global pyodide, wrapper correct). ⏳ Le test réel
   `exercise-validation-real.svelte.test.ts` (@vitest/browser) **ne tourne pas en local** (Playwright
   Chromium non installé) → **validation en CI**. Rien de commité/PR (attente accord David).
+- **2026-08-27 — ❌ NO-GO (décision David).** ROI jugé insuffisant vs le coût/incertitude de la
+  productionisation Vercel. Phase 1b abandonnée (draft #83 laissée en l'état, CI verte). Phase 1a
+  reste en prod = valeur conservée. **À trancher** : (1) migration `20260827120000` en prod
+  **inutilisée** → laisser inerte ou rollback ; (2) `docs/architecture/database-schema.md` documente
+  la table verdict → annoter « parquée » ou retirer selon (1). ⚠️ **Dette doc indépendante du no-go** :
+  `docs/ref/python/worker.md` **périmé depuis 1a** (décrit `validateExercise`/runners « ligne 2056 »
+  dans le worker alors qu'ils sont dans `validation-core/` ; cite `_ubumaths_compare` pré-rebrand).

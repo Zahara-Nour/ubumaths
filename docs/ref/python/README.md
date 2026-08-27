@@ -147,11 +147,11 @@ Interface Jupyter/Colab-like avec cellules code+markdown+checkpoint, exécution 
 
 Cellules de vérification d'exercice intégrées au flux notebook. Le prof crée un checkpoint, l'élève clique « Vérifier » et obtient un verdict immédiat sans quitter la page.
 
-| Mode             | Vérification                                                                       |
-| ---------------- | ---------------------------------------------------------------------------------- |
-| `assert`         | Exécute un bloc Python d'assertions contre le namespace de l'élève                 |
-| `unit_test`      | Appelle `function_name(*args)` sur N cas de test, compare avec `_ubumaths_compare` |
-| `variable_check` | Vérifie la valeur de variables du namespace (`expected_vars: { x: 6 }`)            |
+| Mode             | Vérification                                                                      |
+| ---------------- | --------------------------------------------------------------------------------- |
+| `assert`         | Exécute un bloc Python d'assertions contre le namespace de l'élève                |
+| `unit_test`      | Appelle `function_name(*args)` sur N cas de test, compare avec `_chiphre_compare` |
+| `variable_check` | Vérifie la valeur de variables du namespace (`expected_vars: { x: 6 }`)           |
 
 Le worker réutilise `validateExercise(code, config, contextId)` côté NotebookExecutor (la même brique que les exercices Python). Persistance des verdicts dans `python_notebook_checkpoint_runs` (PK `(notebook_id, user_id, cell_id)`, latest only, UPSERT via `ON CONFLICT DO UPDATE`).
 
@@ -361,7 +361,7 @@ Système d'exercices Python complet : création teacher, soumission élève (ass
      - `numeric` : tolérance abs+rel, shapes flat/lines/grid, support virgule décimale
      - `custom` : _special judge_ — fonction Python `compare(expected, actual, stdin)` exécutée en namespace isolé pour chaque test case
      - 8 presets nommés + panneau "Personnaliser"
-   - **`'unit_test'`** — appel positionnel d'une fonction nommée, comparé via une fonction Python récursive `_ubumaths_compare` :
+   - **`'unit_test'`** — appel positionnel d'une fonction nommée, comparé via une fonction Python récursive `_chiphre_compare` :
      - tuple ↔ list (la fonction peut retourner un tuple, l'attendu est une liste JSON — comparaison structurelle)
      - dict ↔ dict (clés + valeurs récursives)
      - numérique : tolérance configurable via le champ optionnel `tolerance: { eps_abs, eps_rel }` (compare avec `|a-b| ≤ max(eps_abs, eps_rel * max(|a|, |b|))`). Indispensable pour les algorithmes utilisant des transcendantales (`math.exp`, `math.log`) qui ne sont **pas** mandatées correctly-rounded par IEEE 754 — Pyodide et l'environnement de référence peuvent diverger de quelques ULP.

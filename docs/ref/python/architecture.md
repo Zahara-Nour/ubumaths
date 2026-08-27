@@ -330,7 +330,7 @@ this.worker.onerror = (event: ErrorEvent) => {
 ### Layer 2: Python Errors
 
 ```python
-def _ubumaths_reformat_exception():
+def _chiphre_reformat_exception():
     """Extract concise error message from Python traceback."""
     # Returns: "File '<exec>', line 5\nNameError: name 'x' is not defined"
 ```
@@ -429,7 +429,7 @@ https://ubumaths.fr/python?code=NobwRAxg9gJgpmAXGA9CgBAFQBYEsDO...
 ### Python Introspection
 
 ```python
-def _ubumaths_get_completions(code, cursor_pos):
+def _chiphre_get_completions(code, cursor_pos):
     """Get completions at cursor position."""
 
     # For "np.lin" → complete np attributes starting with "lin"
@@ -477,7 +477,7 @@ const DEFAULT_WIDTH = 50;
 ### Worker Cleanup
 
 ```python
-def _ubumaths_cleanup():
+def _chiphre_cleanup():
     """Clean up after execution."""
     plt.close('all')  # Close matplotlib figures
     gc.collect()      # Force garbage collection
