@@ -304,21 +304,26 @@ Notebooks marqués `is_template = true` — réutilisables via clonage.
 
 ## 3. Debugger
 
-**Intégré dans le Playground** (toggle Execute/Debug).
+**Intégré dans le Playground** (mode Debug via le toggle Execute/Debug).
 
-Système complet de débogage step-by-step avec **visualisation mémoire style Python Tutor**.
+Outil de **visualisation d'exécution style Python Tutor**, en **enregistrer-puis-rejouer** : en mode
+Debug l'exécution est enregistrée automatiquement (mode live), puis l'élève **navigue** librement
+dans la trace (avant/arrière) via un scrubber.
 
-| Fonctionnalité     | Détails                                                                                |
-| ------------------ | -------------------------------------------------------------------------------------- |
-| Approche           | Tracer **par générateur** (pas `sys.settrace`), AST statement-par-statement            |
-| Contrôles          | Step Into, Step Over, Step Out, Continue, Run-to-End                                   |
-| Historique         | Buffer circulaire de 10 snapshots, Step Back/Forward                                   |
-| Variables          | Locals/globals, badges type colorés, indicateurs new/modified                          |
-| Call Stack         | Visualisation pile, sélection frame                                                    |
-| Loops              | Indicateur d'itération avec barre de progression                                       |
-| Heap Visualization | Frames + Heap + flèches SVG cubic-Bezier (style Python Tutor)                          |
-| Highlight ligne    | Fond jaune + flèche dans le gutter de l'éditeur                                        |
-| Raccourcis         | F5 (Continue), F10 (Step Over), F11 (Step Into), Shift+F11 (Step Out), Shift+F5 (Stop) |
+| Fonctionnalité     | Détails                                                                                                                                                                            |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Moteur             | Tracer **`sys.settrace`** (`_chiphre_record_trace`) — **entre dans les fonctions** user (vraies frames, récursion, events `call`/`return`), ignore les libs (filtre `co_filename`) |
+| Modèle             | **Enregistrer-puis-rejouer** : record de toute la trace, puis navigation. Plus de step live                                                                                        |
+| Mode live          | Auto-record à l'entrée en Debug + ré-enregistrement débouncé (600 ms) à chaque modif du code                                                                                       |
+| Trace              | Immuable, complète (budget `STEP_BUDGET = 1000` pas ; au-delà = tronquée)                                                                                                          |
+| Scrubber           | Slider sur toute la trace + play/pause (autoplay) + compteur « pas i/N »                                                                                                           |
+| Marqueurs          | Verts (appel) / bleus (retour) / rouges (exception) sur la timeline, dérivés de la profondeur de pile                                                                              |
+| Navigation         | ◄ ► pas précédent/suivant (**entre** dans les fonctions) · ►► **enjamber** (step-over) · saut au point d'arrêt précédent/suivant                                                   |
+| Points d'arrêt     | **Gouttière cliquable** dans l'éditeur (point rouge) → saut au prochain/précédent dans la trace                                                                                    |
+| Variables / Frames | Locals/globals par frame, badges type, indicateurs new/modified ; panneau _Frames_ réel                                                                                            |
+| Heap Visualization | Frames + Heap + flèches SVG cubic-Bézier (style Python Tutor), couleur stable par `id()`                                                                                           |
+| Highlight ligne    | Fond jaune de la ligne courante ; **ne déplace pas le curseur** ; scroll seulement si l'éditeur n'a pas le focus                                                                   |
+| Raccourcis         | F5 (forcer un ré-enregistrement) · F10 / F11 (pas suivant / précédent dans la trace)                                                                                               |
 
 ### Périmètre Heap
 
@@ -328,16 +333,19 @@ Système complet de débogage step-by-step avec **visualisation mémoire style P
 
 ### Composants (`src/lib/components/python/debug/`)
 
-`DebugToolbar`, `DebugPanel`, `VariablesPanel`, `VariablesHistory`, `CallStackPanel`, `LoopIndicator`, `FramesPanel`, `HeapPanel`, `MemoryDiagramView`.
+`DebugToolbar`, `DebugPanel`, `VariablesPanel`, `VariablesHistory`, `CallStackPanel`, `LoopIndicator` (inutilisé — `loops` vide en settrace V1), `FramesPanel`, `HeapPanel`, `MemoryDiagramView`.
 
 ### Progression
 
 - [progress/python-debugger-progress.md](./progress/python-debugger-progress.md) — Phases 1-6 (heap viz incluse)
+- [../../wip/python-debugger-scrubber-progress.md](../../wip/python-debugger-scrubber-progress.md) — scrubber + moteur settrace + mode live
+- [../../wip/python-debugger-improvements-roadmap.md](../../wip/python-debugger-improvements-roadmap.md) — **roadmap des améliorations** (#1→#7)
 
-### TODO follow-up
+### Dette / suites (settrace V1)
 
-- Breakpoint gutter dans CodeMirror (clic pour toggle)
-- Touche F9 pour toggle breakpoint au curseur
+- **Indicateur de boucle** (`LoopIndicator`) : `loops` vide depuis le passage à `sys.settrace` — à réimplémenter si besoin.
+- **Code mort** : l'ancien interpréteur AST (`_chiphre_debug_generator` legacy, après `return`) — à retirer.
+- **Perf** : record-then-replay pilote ~1000 aller-retours `postMessage` — optimisable en un message `debug-record`.
 
 ---
 
