@@ -1,7 +1,23 @@
 # Re-vérification serveur des soumissions Python — progress
 
-> Crash-recovery + gel des décisions. Créé le 2026-08-27. Branche : `feat/python-server-recheck`.
-> Statut global : **Phase 1a en cours** (extraction du noyau de validation headless).
+> Crash-recovery + gel des décisions. Créé le 2026-08-27.
+> **Statut global : Phase 1a MERGÉE EN PROD (PR #82). Phase 1b (DB+logique) EN DRAFT (PR #83),
+> migration déjà en prod. EN PAUSE ASSUMÉE sur la productionisation Vercel du re-check — voir
+> §Blocage + le dernier point du Journal.**
+
+## ⏸️ REPRISE — par où recommencer (lire en premier)
+
+1. **Trancher le ROI d'abord** (cf. dernier point du Journal) : le re-check attrape un élève qui forge
+   `valid:true`, mais le prof voit déjà le code réel soumis et le mastery est formatif. Est-ce que ça
+   vaut le chantier infra ci-dessous ? C'est **tout-ou-rien** (sans le moteur Pyodide qui tourne, la
+   table + le balai ne servent à rien).
+2. Si oui : **option 1 en mode expérience bornée** — forcer @vercel/nft à tracer les data files Pyodide
+   via `require.resolve`, régler `PYODIDE_INDEX_URL` sur ce chemin, + **fix H-1** (worker_thread avec
+   `setInterruptBuffer`), + **un** déploiement de vérif (flip temporaire de l'`ignoreCommand` de la
+   branche, ou `vercel` CLI). Si le bundling **ou** le worker résistent à adapter-vercel → **bascule
+   vers l'option 2 (Vercel Sandbox)** (règle H-1 + bundling nativement ; re-valider la fidélité).
+3. Puis **Phase 1c** (UI prof : badge incohérence sur les pages résultats ; ne jamais exposer
+   `server_validation_result` à l'élève — M-3).
 
 ## Problème
 
@@ -89,6 +105,29 @@ nécessite des **privilèges colonne** (REVOKE au rôle `authenticated`) **ou** 
 - **E1** exécution serveur échoue (timeout/paquet/OOM) → `error`, pas d'alerte de fraude.
 - **E2** quota/worker indisponible → reste `pending`, rejoué plus tard (idempotent).
 - **E3** divergence de moteur suspectée → conservateur, on n'accuse pas.
+
+## ⚠️ Blocage productionisation Vercel (découvert 2026-08-27, après PR draft #83)
+
+- **Pyodide-in-Node exige les fichiers data EN LOCAL** : `loadPyodide({indexURL: CDN})` échoue en
+  Node (`ENOENT …/https:/cdn.jsdelivr.net/…/python_stdlib.zip` — l'indexURL est traité comme un
+  chemin local, PAS une URL). → **M-2 = bloquant dur** : bundler `pyodide.asm.wasm` +
+  `python_stdlib.zip` + `pyodide-lock.json` dans la fonction Vercel + `PYODIDE_INDEX_URL` = ce chemin.
+  Sans ça : tout re-check → `error`.
+- **Previews Vercel désactivés** : `vercel.json` `ignoreCommand` fait `exit 0` si `VERCEL_ENV != production`
+  → aucun preview deploy sur les PR (cf. #82 « Canceled by Ignored Build Step »). Donc pas de moyen
+  simple de vérifier le runtime re-check (bundling data + worker_thread H-1) avant merge=prod.
+- Conséquence : « productioniser le re-check » = bundling data (adapter-vercel) + fix H-1
+  (worker_thread bundlé) + **un déploiement de vérification** (activer temporairement le preview de
+  cette branche, ou `vercel` CLI). **Décision en attente.** Alternative rappelée : Vercel Sandbox
+  (Plan B) réglerait bundling + H-1 nativement mais au prix de la fidélité (interpréteur ≠ Pyodide client).
+
+- **2026-08-27 — PAUSE ASSUMÉE (décision David : « je suis tes recommandations »).** 1b DB+logique
+  acquis et validé en local ; draft PR #83 ; migration en prod (additive/inerte, le code re-check ne
+  s'active qu'au merge). Reste = **chantier infra Vercel incertain, en aveugle** (bundling data +
+  worker H-1 + déploiement de vérif, previews désactivés). Décidé de **s'arrêter là** et de **rouvrir
+  la question ROI** avant d'y investir (menace étroite : forge de POST par un élève pointu ; le prof
+  voit déjà le code ; mastery formatif). Reprise = §REPRISE en tête de doc. Rien à merger, rien à
+  déployer, aucun résidu half-deployed.
 
 ## Risques ouverts
 
