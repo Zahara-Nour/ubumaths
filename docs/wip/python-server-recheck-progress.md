@@ -1,11 +1,14 @@
 # Re-vérification serveur des soumissions Python — progress
 
 > Crash-recovery + gel des décisions. Créé le 2026-08-27.
-> **Statut global : Phase 1a MERGÉE EN PROD (PR #82). Phase 1b (DB+logique) EN DRAFT (PR #83),
-> migration déjà en prod. EN PAUSE ASSUMÉE sur la productionisation Vercel du re-check — voir
-> §Blocage + le dernier point du Journal.**
+> **STATUT : ❌ NO-GO (2026-08-27).** Phase 1a mergée en prod (PR #82, valeur indépendante conservée).
+> Phase 1b **ABANDONNÉE** : le ROI ne justifie pas la productionisation Vercel (bundling Pyodide +
+> worker H-1 + itérations deploy en aveugle) face à une menace étroite (forge de POST par un élève
+> pointu ; le prof voit déjà le code ; mastery formatif ; tout-ou-rien). Draft PR #83 laissée en l'état.
+> ⚠️ **La migration `20260827120000` est EN PROD mais désormais INUTILISÉE** (table verdict + balai
+> inertes). Décision de nettoyage en attente : la laisser (inerte, réactivable) ou la rollback.
 
-## ⏸️ REPRISE — par où recommencer (lire en premier)
+## Si on revisite un jour — par où reprendre
 
 1. **Trancher le ROI d'abord** (cf. dernier point du Journal) : le re-check attrape un élève qui forge
    `valid:true`, mais le prof voit déjà le code réel soumis et le mastery est formatif. Est-ce que ça
@@ -186,3 +189,10 @@ nécessite des **privilèges colonne** (REVOKE au rôle `authenticated`) **ou** 
   résidu postMessage/global pyodide, wrapper correct). ⏳ Le test réel
   `exercise-validation-real.svelte.test.ts` (@vitest/browser) **ne tourne pas en local** (Playwright
   Chromium non installé) → **validation en CI**. Rien de commité/PR (attente accord David).
+- **2026-08-27 — ❌ NO-GO (décision David).** ROI jugé insuffisant vs le coût/incertitude de la
+  productionisation Vercel. Phase 1b abandonnée (draft #83 laissée en l'état, CI verte). Phase 1a
+  reste en prod = valeur conservée. **À trancher** : (1) migration `20260827120000` en prod
+  **inutilisée** → laisser inerte ou rollback ; (2) `docs/architecture/database-schema.md` documente
+  la table verdict → annoter « parquée » ou retirer selon (1). ⚠️ **Dette doc indépendante du no-go** :
+  `docs/ref/python/worker.md` **périmé depuis 1a** (décrit `validateExercise`/runners « ligne 2056 »
+  dans le worker alors qu'ils sont dans `validation-core/` ; cite `_ubumaths_compare` pré-rebrand).
