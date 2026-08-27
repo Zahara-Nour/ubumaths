@@ -529,3 +529,120 @@ RLS : SELECT tout authenticated, écriture admin uniquement.
 
 - `docs/wip/srs-fsrs-security-audit-findings.md` — audit sécurité security-auditor (5 findings, 3 P2 traités, 2 P1 documentés pour V2 dont la spec anti-fraud).
 - Perf : 3 findings traités (cf. commit `9389de4bc`), 2 reportés V2 (refonte PL/pgSQL update_student_skill_state_a + RPC ensureProgrammeDeck).
+
+---
+
+## Re-vérification serveur des soumissions Python (Phase 1b, 2026-08-27)
+
+Migration `20260827120000_python_submission_server_verification.sql`. Contexte
+complet : `docs/wip/python-server-recheck-progress.md`. Le verdict Python est
+aujourd'hui calculé **côté client** (Pyodide dans le navigateur de l'élève) →
+l'élève peut forger `valid: true`. On rejoue côté **serveur de confiance**
+(service_role, Pyodide-in-Node) les soumissions `is_correct=true` et on écrit un
+**verdict serveur** que seul le prof/admin peut lire. Le mastery n'est **jamais**
+modifié.
+
+### Pourquoi une table dédiée (pas de colonnes `server_*`)
+
+La RLS filtre les **lignes**, pas les **colonnes**. Le premier design masquait 4
+colonnes `server_*` sur `python_exercise_submissions` via `REVOKE SELECT` +
+re-`GRANT` colonne par colonne. **Il casse PostgREST** : un rôle sans SELECT
+table-level reçoit `42501 permission denied for table` sur un `select('*')` — or
+le endpoint submit fait `.select('*', {count:'exact', head:true})` **en tant
+qu'élève à chaque soumission** → toutes les soumissions casseraient. Abandonné.
+
+Design retenu : **table annexe** `python_submission_server_verdicts` (1:1 avec la
+soumission). `python_exercise_submissions` reste **intacte** (aucune colonne,
+aucun changement de grant). Le masquage à l'élève = **absence de policy SELECT
+élève** sur la table annexe (RLS → 0 ligne, pas d'erreur qui fuit). Le prof lit
+la table **directement** (plus de RPC `SECURITY DEFINER`).
+
+### Table `python_submission_server_verdicts`
+
+| Colonne                    | Type          | Notes                                                                                       |
+| -------------------------- | ------------- | ------------------------------------------------------------------------------------------- |
+| `submission_id`            | `UUID` PK/FK  | -> `python_exercise_submissions(id)` ON DELETE CASCADE. 1:1.                                |
+| `verification_status`      | `TEXT`        | NOT NULL DEFAULT `'pending'`. CHECK ∈ `pending / match / mismatch / indeterminate / error`. |
+| `server_is_correct`        | `BOOLEAN`     | Verdict rejoué serveur. NULL tant que `pending`.                                            |
+| `server_validation_result` | `JSONB`       | Verdict complet serveur (même forme que `validation_result`), pour le diff prof.            |
+| `verified_at`              | `TIMESTAMPTZ` | Horodatage du verdict terminal. NULL tant que `pending`.                                    |
+| `created_at`               | `TIMESTAMPTZ` | NOT NULL DEFAULT `now()`. Base du balai stale-pending.                                      |
+
+Sémantique du statut : `pending` = à rejouer ; `match` = serveur d'accord avec le
+client ; `mismatch` = serveur **pas** d'accord (fraude possible → flag prof) ;
+`indeterminate` = code non déterministe ou exercice édité après coup (jamais
+classé fraude) ; `error` = échec d'exécution serveur. **Pas de `skipped`** : une
+soumission hors périmètre (`is_correct=false`) n'a simplement **aucune ligne**.
+
+### RLS
+
+- **SELECT** : `CREATE POLICY "Teachers read python server verdicts" … FOR SELECT
+TO authenticated USING (is_teacher_or_admin())`. Mono-prof → voit tout. **Aucune
+  policy élève** → l'élève lit 0 ligne (pas d'erreur). C'est ce qui remplace le
+  masquage colonne.
+- **Écritures** : **aucune** policy INSERT/UPDATE/DELETE pour `authenticated` →
+  élève **et** prof sont bloqués (`42501` à l'INSERT, 0 ligne à l'UPDATE). Le
+  verdict est calculé serveur et immuable côté humain. Le `service_role` **bypass
+  la RLS** et est l'unique writer. `GRANT ALL … TO anon, authenticated,
+service_role` (convention `curriculum_*`) ; la RLS reste le vrai garde.
+
+### Chemin de lecture prof (Phase 1c) — SELECT direct sous RLS
+
+Les pages résultats (`/python-exercises/[id]/results` et `.../[student_id]`)
+lisent déjà les soumissions par `exercise_id`/`student_id` sous leur propre RLS,
+puis récupèrent les verdicts correspondants par `submission_id` :
+
+```ts
+// avec le client authenticated du prof (RLS is_teacher_or_admin → autorisé)
+const { data } = await supabase
+	.from('python_submission_server_verdicts')
+	.select(
+		'submission_id, verification_status, server_is_correct, server_validation_result, verified_at'
+	)
+	.in('submission_id', submissionIds); // les ids déjà chargés depuis la page
+```
+
+### Flux d'écriture `recheck.ts` (service_role)
+
+1. **Upsert pending** au moment du submit (waitUntil) :
+   `INSERT INTO python_submission_server_verdicts (submission_id) VALUES (<id>)`
+   (`verification_status` prend le DEFAULT `'pending'`).
+2. **Update terminal** après le replay Pyodide-in-Node :
+   ```sql
+   UPDATE public.python_submission_server_verdicts
+      SET verification_status = <'match'|'mismatch'|'indeterminate'|'error'>,
+          server_is_correct = <bool>,
+          server_validation_result = <jsonb>,
+          verified_at = now()
+    WHERE submission_id = <id>;
+   ```
+
+⚠️ **Suivi hors-scope de cette migration** : le endpoint submit
+(`src/routes/api/python-exercises/[id]/submit/+server.ts`) écrit encore
+`verification_status` **sur la soumission** (colonne qui n'existe plus dans ce
+design) — à migrer vers l'upsert de la table annexe (Phase 1b backend).
+
+### Balai pg_cron (SQL) — `run_flag_stale_python_rechecks()`
+
+Calqué sur `cleanup_stuck_job_runs()` : `start_job_run('flag_stale_python_rechecks', …)`
+→ travail → `complete_job_run(…)`, `SECURITY DEFINER`, `OWNER TO postgres`. Il
+**compte** (ne modifie rien) les verdicts `verification_status='pending' AND
+created_at < now() - interval '1 hour'` et met le compte dans le metadata du job
+run (monitoring via `admin_pg_cron_jobs` / `background_job_runs`). Les lignes
+restent `pending` et idempotemment rejouables. **Le cron n'est pas planifié dans
+la migration** (hors-migration comme les autres jobs) ; cadence visée ~horaire :
+
+```sql
+SELECT cron.schedule('flag_stale_python_rechecks', '15 * * * *',
+                     'SELECT public.run_flag_stale_python_rechecks();');
+```
+
+### Tests
+
+- `tests/integration/python-server-verification.test.ts` : (régression) l'élève
+  peut TOUJOURS `select('*')` sur `python_exercise_submissions` (plus jamais 42501) ; (a) l'élève lit 0 ligne sur `python_submission_server_verdicts`,
+  prof/admin OUI (SELECT direct RLS) ; (b) l'élève ne peut ni INSERT (42501) ni
+  UPDATE (0 ligne) ; (c) `service_role` INSERT pending + UPDATE terminal +
+  cascade delete ; (d) CHECK enum rejette `skipped` ; (e) le balai logge un run
+  avec le bon compte. Contexte utilisateur réel partout (jamais de smoke-test
+  `auth.uid()` NULL).

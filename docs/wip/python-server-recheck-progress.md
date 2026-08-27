@@ -92,7 +92,7 @@ nécessite des **privilèges colonne** (REVOKE au rôle `authenticated`) **ou** 
 
 ## Risques ouverts
 
-1. Faisabilité **Pyodide-in-Node** en fonction Vercel (mémoire Hobby, cold start) — spike en 1b.
+1. ~~Faisabilité **Pyodide-in-Node**~~ → **SPIKE VALIDÉ 2026-08-27** (`src/lib/server/python/__tests__/pyodide-node-spike.test.ts`). `pyodide@0.26.2` (épinglé exact = build CDN client) chargé en Node en **~1,8 s** ; noyau `runExerciseValidation` exécuté fidèlement (nominal valid / forgé invalid / variable_check tolérance) ; validation à chaud ~23 ms. ⚠️ **Contrainte déploiement** : passer `indexURL` explicite + **bundler les fichiers data** (`pyodide.asm.wasm`, `python_stdlib.zip`, `pyodide-lock.json`) via `outputFileTracingIncludes` sur la route de re-check, sinon `ENOENT` au runtime.
 2. **Masquage colonnes** élève (privilèges colonne vs vue) — `supabase-expert` en 1b.
 3. Extraction d'un fichier de ~4100 lignes — préserver le comportement à l'identique (garde-fou :
    tests réels existants).
@@ -100,6 +100,44 @@ nécessite des **privilèges colonne** (REVOKE au rôle `authenticated`) **ou** 
 ## Journal
 
 - **2026-08-27** — Phase 0 validée. Doc créé. Branche `feat/python-server-recheck`. Début 1a.
+- **2026-08-27** — Phase 1a **mergée en prod** (PR #82, CI verte dont le test navigateur réel).
+  Branche 1b : `feat/python-recheck-1b`. **Spike Pyodide-in-Node VALIDÉ** (cf. Risques §1) ;
+  `pyodide@0.26.2` ajouté (dep prod, exact). Reste 1b : migration + `recheck.ts` + `waitUntil` +
+  balai pg_cron + masquage colonnes. ⏸️ Checkpoint avant la partie migration (accord prod requis).
+- **2026-08-27** — **1b code écrit** : `recheck.ts` (+ `scheduleRecheck` via `waitUntil`), submit
+  câblé (`verification_status` insert + trigger) + test unitaire **vert** (9/9, recheck mocké).
+  Migration `20260827120000_…` (supabase-expert) : 4 colonnes + masquage colonne (REVOKE table
+  SELECT authenticated/anon puis GRANT colonne-par-colonne des 10 existantes ; RPC prof
+  `get_python_submission_server_verdicts` SECURITY DEFINER ; balai `run_flag_stale_python_rechecks`).
+  Deps ajoutées : `pyodide@0.26.2`, `@vercel/functions@3.9.5`. Tests d'intégration écrits
+  (`tests/integration/python-server-verification.test.ts`). **En attente** : `db:reset`+`db:types`
+  (regen colonnes) + `check:incremental` + `test:integration` → **bloqué : OrbStack/Docker arrêté**.
+- **2026-08-27** — **PIVOT masquage → table séparée** (décidé par David). Le test d'intégration a
+  prouvé que le REVOKE table-level casse tout `select('*')` élève (**42501**), dont le count du submit
+  à chaque soumission. Nouvelle migration : table dédiée **`python_submission_server_verdicts`**
+  (PK/FK `submission_id` ON DELETE CASCADE, statut `pending|match|mismatch|indeterminate|error`),
+  **RLS ligne** : SELECT prof/admin (`is_teacher_or_admin()`), écritures service_role only, élève =
+  aucune policy. Plus de masquage colonne ni de RPC (prof lit la table en direct). `recheck.ts`
+  réécrit (upsert pending → update terminal), submit revenu à l'insert d'origine + `scheduleRecheck`.
+  **Validation locale VERTE** : migration OK, `check:incremental` 0 erreur, **15/15 intégration**
+  (dont régression `select('*')`/count submit OK, verdict invisible élève / lisible prof /
+  non-écrivable, cascade, CHECK, balai), submit unit 9/9.
+- **Audit sécurité** (sur la V colonnes, encore pertinent pour le runtime) : 0 Critical. **Ouverts** :
+  **H-1** (code élève CPU-bound bloque l'event loop → timeout JS inopérant côté serveur ; mitigation
+  worker_thread+interrupt vs Sandbox vs maxDuration bas+risque accepté ; NB le balai surface les
+  `pending` bloqués). **M-2** (`PYODIDE_INDEX_URL`=dist bundlé en prod, pas le CDN). **M-3** (1c ne
+  doit pas exposer `server_validation_result` à l'élève). M-1 (durabilité masquage) **caduc** (table
+  séparée). ⚠️ `database.ts` : types locaux temporaires en place ; finalisation propre = `db:migrate`
+  prod (accord requis) puis `db:types`. Reste : décisions H-1/M-2 + `database.ts` + commit/PR + 1c.
+- **2026-08-27** — **Migration POUSSÉE EN PROD** (`db:migrate`, accord David ; dry-run = 1 seule
+  migration `20260827120000`, pas de dérive). `database.ts` régénéré **depuis la prod** (propre :
+  hors ajouts, seul diff = PostgREST 14.5→14.17 + reformat cosmétique graphql_public). `check:incremental`
+  0 erreur avec types prod. **1b DB+code complet et validé en local.**
+  Décisions David : **H-1 = fix propre worker_thread+interrupt**, mais découverte : ce fix (+ M-2)
+  ne se valide que sur **déploiement Vercel** (worker_thread bundlé sous adapter-vercel + chargement
+  Pyodide dans la fonction). Plan : commit + **PR draft** → preview Vercel → vérifier le re-check en
+  réel → finir M-2 + fix H-1 sur la branche → ready + merge (accord). Le re-check ne s'active qu'au
+  merge (migration déjà en prod = DB prête, sans risque).
 - **2026-08-27** — **Phase 1a extraite** (agent backend-developer/Opus). Worker `pyodide.worker.ts`
   4132 → 2677 lignes ; nouveau module `src/lib/shared/python/validation-core/` (`index.ts` 202 +
   `runners.ts` 1125 + `ast.ts` 201 = 1528 l.). `validateExercise` = mince wrapper transport ;

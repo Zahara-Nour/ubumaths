@@ -10,32 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
-  },
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -9141,6 +9116,41 @@ export type Database = {
           },
         ]
       }
+      python_submission_server_verdicts: {
+        Row: {
+          created_at: string
+          server_is_correct: boolean | null
+          server_validation_result: Json | null
+          submission_id: string
+          verification_status: string
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          server_is_correct?: boolean | null
+          server_validation_result?: Json | null
+          submission_id: string
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          server_is_correct?: boolean | null
+          server_validation_result?: Json | null
+          submission_id?: string
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "python_submission_server_verdicts_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: true
+            referencedRelation: "python_exercise_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       python_tags: {
         Row: {
           created_at: string
@@ -16259,6 +16269,7 @@ export type Database = {
       run_cleanup_all: { Args: never; Returns: undefined }
       run_cleanup_expired_data: { Args: never; Returns: undefined }
       run_daily_summaries: { Args: never; Returns: undefined }
+      run_flag_stale_python_rechecks: { Args: never; Returns: undefined }
       run_recalculate_minesweeper_ref_times: { Args: never; Returns: undefined }
       run_weekly_best_bonuses: { Args: never; Returns: undefined }
       run_weekly_rewards: { Args: never; Returns: undefined }
@@ -16750,9 +16761,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       consent_status: ["pending", "granted", "expired"],
@@ -16804,4 +16812,3 @@ export const Constants = {
     },
   },
 } as const
-

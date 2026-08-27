@@ -30,6 +30,8 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Cron jobs
 	'/api/cron/',
 	'/riddles/auto-select',
+	// Server-side re-check of Python submissions (runs via waitUntil after submit)
+	'python/recheck.ts',
 	// Server utilities that need RLS bypass
 	'rateLimiter.ts',
 	'errorMonitoring.ts',
