@@ -113,15 +113,16 @@ onDestroy(() => {
 
 ### Exécution
 
-| Méthode                                | Action                                                         |
-| -------------------------------------- | -------------------------------------------------------------- |
-| `execute()`                            | Exécute `this.code` via l'executor                             |
-| `cancel()`                             | Annule l'exécution courante                                    |
-| `clearOutput()`                        | Vide stdout/stderr/plot/latex/plotly                           |
-| `requestCompletion(code, cursor)`      | Auto-complétion (`Promise<CompletionItem[]>`, debounce 150 ms) |
-| `startDebugSession(code, breakpoints)` | Démarre session debug                                          |
-| `debugStep(action)`                    | Step Into / Over / Out / Continue                              |
-| `stopDebugSession()`                   | Stoppe session debug                                           |
+| Méthode                                | Action                                                             |
+| -------------------------------------- | ------------------------------------------------------------------ |
+| `execute()`                            | Exécute `this.code` via l'executor                                 |
+| `cancel()`                             | Annule l'exécution courante                                        |
+| `clearOutput()`                        | Vide stdout/stderr/plot/latex/plotly                               |
+| `requestCompletion(code, cursor)`      | Auto-complétion (`Promise<CompletionItem[]>`, debounce 150 ms)     |
+| `recordDebugSession(code)`             | Enregistre toute l'exécution (record-then-replay) → scrubber       |
+| `startDebugSession(code, breakpoints)` | Démarre une session debug (pilotée par le record)                  |
+| `debugStep(action)`                    | Fait avancer le rejeu (l'action est ignorée en record-then-replay) |
+| `stopDebugSession()`                   | Stoppe la session (peu utilisé en mode live)                       |
 
 ### Édition
 

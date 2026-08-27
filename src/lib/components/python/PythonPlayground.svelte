@@ -15,7 +15,6 @@
 	import { browser } from '$app/environment';
 	import { onMount, onDestroy } from 'svelte';
 	import type { Database } from '$lib/types/database';
-	import type { DebugStepAction } from '$lib/shared/python/debug/types';
 
 	// Types
 	type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -35,6 +34,9 @@
 	const DEFAULT_WIDTH = 50;
 	const MIN_WIDTH = 20;
 	const MAX_WIDTH = 80;
+	// Live-record debounce (Python Tutor style): re-record this long after the
+	// last keystroke while in debug mode.
+	const LIVE_RECORD_DEBOUNCE_MS = 600;
 
 	// Derived state from store
 	let canExecute = $derived(pythonStore.isReady);
@@ -50,6 +52,8 @@
 	let isDebugPaused = $derived(debugStore.isPaused);
 	let isDebugRunning = $derived(debugStore.isRunning);
 	let isDebugActive = $derived(debugStore.sessionState !== 'idle');
+	let isRecordingTrace = $derived(debugStore.isRecording);
+	let breakpointLines = $derived(debugStore.breakpoints.map((b) => b.lineNumber));
 
 	// Fullscreen state
 	let isFullscreen = $state(false);
@@ -58,6 +62,11 @@
 	let leftPanelWidth = $state(DEFAULT_WIDTH);
 	let containerRef: HTMLDivElement | null = $state(null);
 
+	// Live-record state (non-reactive): debounce timer + last code we recorded,
+	// so identical code isn't re-run.
+	let liveRecordTimer: ReturnType<typeof setTimeout> | null = null;
+	let lastRecordedCode: string | null = null;
+
 	// Dialog state
 	let saveDialogOpen = $state(false);
 	let fileManagerOpen = $state(false);
@@ -65,16 +74,11 @@
 
 	// Functions
 	// Route every Run trigger (toolbar button, Ctrl+Enter in the editor) through
-	// the debug-aware handler so it does the right thing in all states:
-	//   - Execute mode               → plain pythonStore.execute()
-	//   - Debug mode + idle          → start a debug session
-	//   - Debug mode + paused        → continue (resume until next breakpoint)
+	// the debug-aware handler:
+	//   - Execute mode → plain pythonStore.execute()
+	//   - Debug mode   → record the whole execution, then scrub (record-then-replay)
 	function handleExecute(): void {
-		if (debugStore.isDebugging && debugStore.isPaused) {
-			handleDebugStep('continue');
-		} else {
-			handleDebugRun();
-		}
+		handleDebugRun();
 	}
 
 	function handleToggleDebug(): void {
@@ -142,50 +146,48 @@
 	}
 
 	// Debug handlers
+	// In debug mode, running = record the whole execution (record-then-replay);
+	// the student then scrubs / steps through the recorded trace.
 	function handleDebugRun(): void {
 		if (!pythonStore.isReady) return;
 
-		// Capture current mode at time of click to avoid race conditions
-		const currentMode = debugStore.mode;
-
-		if (currentMode === 'debug') {
+		if (debugStore.mode === 'debug') {
 			try {
-				// Start debug session - set store state BEFORE executor
-				const breakpoints = debugStore.getBreakpointsForWorker();
-				debugStore.startSession();
-				pythonStore.startDebugSession(pythonStore.code, breakpoints);
+				lastRecordedCode = pythonStore.code;
+				pythonStore.recordDebugSession(pythonStore.code);
 			} catch (error) {
-				console.error('[PythonPlayground] Debug start failed:', error);
-				toaster.error('Erreur lors du démarrage du débogage');
+				console.error('[PythonPlayground] Debug record failed:', error);
+				toaster.error("Erreur lors de l'enregistrement de l'exécution");
 				debugStore.resetSession();
 			}
 		} else {
-			// Normal execution
 			pythonStore.execute();
 		}
 	}
 
-	function handleDebugStep(action: DebugStepAction): void {
-		if (!debugStore.canStep()) return;
-		try {
-			debugStore.resumeSession(action !== 'continue' && action !== 'run-to-end');
-			pythonStore.debugStep(action);
-		} catch (error) {
-			console.error('[PythonPlayground] Debug step failed:', error);
-			toaster.error('Erreur lors du débogage');
-			debugStore.resetSession();
-		}
+	// Live mode: (re)record the trace ~LIVE_RECORD_DEBOUNCE_MS after the last
+	// code change while in debug mode (Python Tutor style). The program runs in
+	// the sandboxed worker; the step budget bounds it.
+	function scheduleLiveRecord(): void {
+		if (liveRecordTimer) clearTimeout(liveRecordTimer);
+		liveRecordTimer = setTimeout(function attempt() {
+			liveRecordTimer = null;
+			if (!debugStore.isDebugging || !pythonStore.isReady) return;
+			const code = pythonStore.code;
+			if (!code.trim()) return;
+			if (code === lastRecordedCode) return; // unchanged since last record
+			if (debugStore.isRecording) {
+				// A record is in flight — retry shortly.
+				liveRecordTimer = setTimeout(attempt, 200);
+				return;
+			}
+			handleDebugRun(); // records and updates lastRecordedCode
+		}, LIVE_RECORD_DEBOUNCE_MS);
 	}
 
-	function handleDebugStop(): void {
-		try {
-			pythonStore.stopDebugSession();
-		} catch (error) {
-			console.error('[PythonPlayground] Debug stop failed:', error);
-		} finally {
-			// Always reset session, even if stop fails
-			debugStore.resetSession();
-		}
+	// Toggle a breakpoint from the editor gutter (click in the margin).
+	function handleToggleBreakpoint(line: number): void {
+		debugStore.toggleBreakpoint(line);
 	}
 
 	// Handle keyboard shortcuts
@@ -200,43 +202,24 @@
 		if (debugStore.isDebugging) {
 			switch (event.key) {
 				case 'F5':
+					// F5: force a re-record now (recording is otherwise automatic)
 					event.preventDefault();
-					if (event.shiftKey) {
-						// Shift+F5: Stop debug
-						handleDebugStop();
-					} else {
-						// F5: Continue / Start debug
-						if (debugStore.isPaused) {
-							handleDebugStep('continue');
-						} else if (debugStore.sessionState === 'idle') {
-							handleDebugRun();
-						}
+					if (!debugStore.isRunning) {
+						handleDebugRun();
 					}
 					break;
 				case 'F10':
+					// F10: next step in the recorded trace
 					event.preventDefault();
-					// F10: Step over
-					if (debugStore.canStep()) {
-						handleDebugStep('step-over');
-					}
+					debugStore.stepForward();
 					break;
 				case 'F11':
+					// F11: previous step in the recorded trace
 					event.preventDefault();
-					if (event.shiftKey) {
-						// Shift+F11: Step out
-						if (debugStore.canStep()) {
-							handleDebugStep('step-out');
-						}
-					} else {
-						// F11: Step into
-						if (debugStore.canStep()) {
-							handleDebugStep('step');
-						}
-					}
+					debugStore.stepBack();
 					break;
 				case 'F9':
 					// F9: Toggle breakpoint (handled by editor via onToggleBreakpoint)
-					// This is a fallback if the editor doesn't handle it
 					break;
 			}
 		}
@@ -260,6 +243,28 @@
 	$effect(() => {
 		if (!browser) return;
 		localStorage.setItem(STORAGE_KEY, String(leftPanelWidth));
+	});
+
+	// Live recording: schedule a (re)record on entering debug mode and on every
+	// code change; cancel + reset when leaving debug mode or on teardown.
+	$effect(() => {
+		void pythonStore.code;
+		const active = debugStore.isDebugging && pythonStore.isReady;
+		if (active) {
+			scheduleLiveRecord();
+		} else {
+			lastRecordedCode = null;
+			if (liveRecordTimer) {
+				clearTimeout(liveRecordTimer);
+				liveRecordTimer = null;
+			}
+		}
+		return () => {
+			if (liveRecordTimer) {
+				clearTimeout(liveRecordTimer);
+				liveRecordTimer = null;
+			}
+		};
 	});
 
 	// Initialize Pyodide when component mounts
@@ -340,11 +345,7 @@
 	<!-- Debug Toolbar (only visible in debug mode) -->
 	{#if isDebugging}
 		<div class="border-b border-border px-4 py-2">
-			<DebugToolbar
-				onStep={handleDebugStep}
-				onStop={handleDebugStop}
-				disabled={!canExecute || isExecuting}
-			/>
+			<DebugToolbar disabled={!canExecute || isExecuting} />
 		</div>
 	{/if}
 
@@ -361,12 +362,14 @@
 					bind:value={pythonStore.code}
 					errorLine={pythonStore.errorLine}
 					debugLine={debugStore.currentLine}
+					breakpoints={breakpointLines}
 					disabled={isExecuting}
 					fontSize={pythonStore.fontSize}
 					theme={pythonStore.editorTheme}
 					executor={pythonStore}
 					onExecute={handleExecute}
 					onSave={handleSave}
+					onToggleBreakpoint={handleToggleBreakpoint}
 				/>
 			</div>
 		</div>
@@ -385,8 +388,20 @@
 				aria-live="polite"
 			>
 				{#if isDebugActive}
-					<!-- Debug panel -->
-					<DebugPanel />
+					{#if isRecordingTrace}
+						<!-- Recording indicator (skips per-step diagram re-render) -->
+						<div class="flex flex-col items-center justify-center gap-3 py-8">
+							<div
+								class="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent"
+							></div>
+							<p class="text-sm text-muted-foreground">
+								Enregistrement de l'exécution… ({debugStore.stepCount} pas)
+							</p>
+						</div>
+					{:else}
+						<!-- Debug panel -->
+						<DebugPanel />
+					{/if}
 				{:else if pythonStore.isLoading}
 					<!-- Loading state -->
 					<div class="flex flex-col items-center justify-center gap-4 py-8">
@@ -442,12 +457,14 @@
 					bind:value={pythonStore.code}
 					errorLine={pythonStore.errorLine}
 					debugLine={debugStore.currentLine}
+					breakpoints={breakpointLines}
 					disabled={isExecuting}
 					fontSize={pythonStore.fontSize}
 					theme={pythonStore.editorTheme}
 					executor={pythonStore}
 					onExecute={handleExecute}
 					onSave={handleSave}
+					onToggleBreakpoint={handleToggleBreakpoint}
 				/>
 			</div>
 		</div>
@@ -469,8 +486,20 @@
 				aria-live="polite"
 			>
 				{#if isDebugActive}
-					<!-- Debug panel -->
-					<DebugPanel />
+					{#if isRecordingTrace}
+						<!-- Recording indicator (skips per-step diagram re-render) -->
+						<div class="flex flex-col items-center justify-center gap-3 py-8">
+							<div
+								class="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent"
+							></div>
+							<p class="text-sm text-muted-foreground">
+								Enregistrement de l'exécution… ({debugStore.stepCount} pas)
+							</p>
+						</div>
+					{:else}
+						<!-- Debug panel -->
+						<DebugPanel />
+					{/if}
 				{:else if pythonStore.isLoading}
 					<!-- Loading state -->
 					<div class="flex flex-col items-center justify-center gap-4 py-8">

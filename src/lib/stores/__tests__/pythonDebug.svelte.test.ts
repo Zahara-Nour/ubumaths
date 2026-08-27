@@ -452,32 +452,38 @@ describe('PythonDebugStore', () => {
 				expect(debugStore.currentLine).toBe(5);
 			});
 
-			it('should respect MAX_HISTORY_SIZE limit', () => {
-				// Push more than MAX_HISTORY_SIZE snapshots
-				for (let i = 1; i <= DEBUG_CONFIG.MAX_HISTORY_SIZE + 5; i++) {
+			it('should keep the full trace without dropping the oldest step', () => {
+				// Push well beyond the old 10-item cap; nothing should be dropped.
+				for (let i = 1; i <= 50; i++) {
 					debugStore.pushSnapshot(createSnapshot(i));
 				}
 
-				expect(debugStore.snapshotCount).toBe(DEBUG_CONFIG.MAX_HISTORY_SIZE);
+				expect(debugStore.snapshotCount).toBe(50);
+				expect(debugStore.traceTruncated).toBe(false);
+
+				// Oldest step (line 1) is still reachable.
+				debugStore.goToStep(0);
+				expect(debugStore.currentSnapshot?.lineNumber).toBe(1);
 			});
 
-			it('should remove oldest snapshot when exceeding MAX_HISTORY_SIZE', () => {
-				// Push MAX_HISTORY_SIZE + 1 snapshots
-				for (let i = 1; i <= DEBUG_CONFIG.MAX_HISTORY_SIZE + 1; i++) {
+			it('should stop at STEP_BUDGET and flag the trace as truncated', () => {
+				for (let i = 1; i <= DEBUG_CONFIG.STEP_BUDGET + 5; i++) {
 					debugStore.pushSnapshot(createSnapshot(i));
 				}
 
-				// Should have removed the first snapshot (line 1)
-				// Current snapshot should be most recent (line 11)
-				expect(debugStore.currentSnapshot?.lineNumber).toBe(DEBUG_CONFIG.MAX_HISTORY_SIZE + 1);
+				expect(debugStore.snapshotCount).toBe(DEBUG_CONFIG.STEP_BUDGET);
+				expect(debugStore.traceTruncated).toBe(true);
+				expect(debugStore.isTraceFull).toBe(true);
+			});
 
-				// Step back to oldest snapshot
-				for (let i = 0; i < DEBUG_CONFIG.MAX_HISTORY_SIZE - 1; i++) {
-					debugStore.stepBack();
+			it('should preserve the earliest steps when truncating (drop the overflow, not the head)', () => {
+				for (let i = 1; i <= DEBUG_CONFIG.STEP_BUDGET + 5; i++) {
+					debugStore.pushSnapshot(createSnapshot(i));
 				}
 
-				// Oldest should be line 2, not line 1
-				expect(debugStore.currentSnapshot?.lineNumber).toBe(2);
+				// First recorded step (line 1) is retained; the overflow is dropped.
+				debugStore.goToStep(0);
+				expect(debugStore.currentSnapshot?.lineNumber).toBe(1);
 			});
 		});
 
@@ -714,6 +720,208 @@ describe('PythonDebugStore', () => {
 				debugStore.stepBack();
 
 				expect(debugStore.currentSnapshot?.lineNumber).toBe(1);
+			});
+		});
+
+		describe('Trace scrubbing (chronological)', () => {
+			it('stepIndex should be 0 for the first step and grow with the trace', () => {
+				debugStore.pushSnapshot(createSnapshot(10));
+				expect(debugStore.stepIndex).toBe(0);
+
+				debugStore.pushSnapshot(createSnapshot(20));
+				debugStore.pushSnapshot(createSnapshot(30));
+
+				// Newest step is the last chronological index.
+				expect(debugStore.stepIndex).toBe(2);
+				expect(debugStore.stepCount).toBe(3);
+			});
+
+			it('goToStep should jump to a chronological index (0 = first step)', () => {
+				for (let i = 1; i <= 5; i++) debugStore.pushSnapshot(createSnapshot(i * 10));
+
+				debugStore.goToStep(0);
+				expect(debugStore.currentSnapshot?.lineNumber).toBe(10);
+				expect(debugStore.stepIndex).toBe(0);
+
+				debugStore.goToStep(4);
+				expect(debugStore.currentSnapshot?.lineNumber).toBe(50);
+				expect(debugStore.stepIndex).toBe(4);
+			});
+
+			it('goToStep should ignore out-of-range indices', () => {
+				debugStore.pushSnapshot(createSnapshot(10));
+				debugStore.pushSnapshot(createSnapshot(20));
+
+				debugStore.goToStep(-1);
+				expect(debugStore.currentSnapshot?.lineNumber).toBe(20);
+
+				debugStore.goToStep(99);
+				expect(debugStore.currentSnapshot?.lineNumber).toBe(20);
+			});
+
+			it('stepBack/stepForward should move along the chronological stepIndex', () => {
+				for (let i = 1; i <= 3; i++) debugStore.pushSnapshot(createSnapshot(i));
+
+				expect(debugStore.stepIndex).toBe(2);
+				debugStore.stepBack();
+				expect(debugStore.stepIndex).toBe(1);
+				debugStore.stepForward();
+				expect(debugStore.stepIndex).toBe(2);
+			});
+
+			it('eventMarkers derives call/return from call-stack depth', () => {
+				const withDepth = (line: number, depth: number): DebugSnapshot => ({
+					...createSnapshot(line),
+					callStack: Array.from({ length: depth }, (_unused, i) => ({
+						functionName: i === 0 ? '<module>' : 'f',
+						filename: '<exec>',
+						lineNumber: line,
+						locals: [],
+						isCurrentFrame: i === depth - 1
+					}))
+				});
+				// depths 1,1,2,2,1 → call at index 2 (1→2), return at index 4 (2→1)
+				debugStore.pushSnapshot(withDepth(1, 1));
+				debugStore.pushSnapshot(withDepth(2, 1));
+				debugStore.pushSnapshot(withDepth(3, 2));
+				debugStore.pushSnapshot(withDepth(4, 2));
+				debugStore.pushSnapshot(withDepth(5, 1));
+
+				expect(debugStore.eventMarkers).toEqual([
+					{ index: 2, event: 'call' },
+					{ index: 4, event: 'return' }
+				]);
+			});
+
+			it('eventMarkers surfaces exception steps', () => {
+				debugStore.pushSnapshot(createSnapshot(1));
+				debugStore.pushSnapshot({ ...createSnapshot(2), event: 'exception' });
+
+				expect(debugStore.eventMarkers).toContainEqual({ index: 1, event: 'exception' });
+			});
+
+			it('traceTruncated should reset on a new session', () => {
+				for (let i = 1; i <= DEBUG_CONFIG.STEP_BUDGET + 2; i++) {
+					debugStore.pushSnapshot(createSnapshot(i));
+				}
+				expect(debugStore.traceTruncated).toBe(true);
+
+				debugStore.startSession();
+
+				expect(debugStore.traceTruncated).toBe(false);
+				expect(debugStore.isTraceFull).toBe(false);
+				expect(debugStore.stepCount).toBe(0);
+			});
+
+			it('isRecording should reset on start/reset session', () => {
+				debugStore.isRecording = true;
+				debugStore.startSession();
+				expect(debugStore.isRecording).toBe(false);
+
+				debugStore.isRecording = true;
+				debugStore.resetSession();
+				expect(debugStore.isRecording).toBe(false);
+			});
+		});
+
+		describe('Breakpoint navigation in trace', () => {
+			// createSnapshot(i) → lineNumber i; chronological trace lines [1..6] at index [0..5].
+			const seedSixSteps = () => {
+				for (let i = 1; i <= 6; i++) debugStore.pushSnapshot(createSnapshot(i));
+			};
+
+			it('goToNextBreakpointStep jumps to the next step on a breakpoint line', () => {
+				seedSixSteps();
+				debugStore.addBreakpoint(4); // line 4 → chronological index 3
+				debugStore.goToStep(0);
+
+				debugStore.goToNextBreakpointStep();
+
+				expect(debugStore.currentSnapshot?.lineNumber).toBe(4);
+				expect(debugStore.stepIndex).toBe(3);
+			});
+
+			it('goToPrevBreakpointStep jumps to the previous breakpoint step', () => {
+				seedSixSteps();
+				debugStore.addBreakpoint(2); // line 2 → chronological index 1
+				debugStore.goToStep(5);
+
+				debugStore.goToPrevBreakpointStep();
+
+				expect(debugStore.stepIndex).toBe(1);
+			});
+
+			it('breakpoint navigation is a no-op without a matching breakpoint', () => {
+				for (let i = 1; i <= 3; i++) debugStore.pushSnapshot(createSnapshot(i));
+				debugStore.goToStep(1);
+
+				debugStore.goToNextBreakpointStep();
+				expect(debugStore.stepIndex).toBe(1);
+
+				debugStore.addBreakpoint(99); // no step is on line 99
+				debugStore.goToNextBreakpointStep();
+				expect(debugStore.stepIndex).toBe(1);
+			});
+
+			it('disabled breakpoints are ignored', () => {
+				seedSixSteps();
+				debugStore.addBreakpoint(4);
+				debugStore.toggleBreakpointEnabled(4);
+				debugStore.goToStep(0);
+
+				debugStore.goToNextBreakpointStep();
+
+				expect(debugStore.stepIndex).toBe(0);
+			});
+
+			it('hasBreakpointInTrace reflects whether a breakpoint matches a step', () => {
+				for (let i = 1; i <= 3; i++) debugStore.pushSnapshot(createSnapshot(i));
+				expect(debugStore.hasBreakpointInTrace).toBe(false);
+
+				debugStore.addBreakpoint(2);
+				expect(debugStore.hasBreakpointInTrace).toBe(true);
+			});
+		});
+
+		describe('Step over (skip function internals)', () => {
+			const withDepth = (line: number, depth: number): DebugSnapshot => ({
+				...createSnapshot(line),
+				callStack: Array.from({ length: depth }, (_unused, i) => ({
+					functionName: i === 0 ? '<module>' : 'f',
+					filename: '<exec>',
+					lineNumber: line,
+					locals: [],
+					isCurrentFrame: i === depth - 1
+				}))
+			});
+
+			it('skips deeper frames and lands on the next same-depth step', () => {
+				// depths 1,1,2,2,1,1 (function entered at index 2, returns at index 4)
+				[1, 1, 2, 2, 1, 1].forEach((depth, i) => debugStore.pushSnapshot(withDepth(i + 1, depth)));
+				debugStore.goToStep(1); // depth 1, the "call" line
+
+				debugStore.goToStepOver();
+
+				// indices 2,3 (depth 2) are skipped → land on index 4 (depth 1)
+				expect(debugStore.stepIndex).toBe(4);
+			});
+
+			it('behaves like a normal next step on a non-call line', () => {
+				[1, 1, 1].forEach((depth, i) => debugStore.pushSnapshot(withDepth(i + 1, depth)));
+				debugStore.goToStep(0);
+
+				debugStore.goToStepOver();
+
+				expect(debugStore.stepIndex).toBe(1);
+			});
+
+			it('falls back to the last step when nothing shallower lies ahead', () => {
+				[1, 2, 3].forEach((depth, i) => debugStore.pushSnapshot(withDepth(i + 1, depth)));
+				debugStore.goToStep(0); // depth 1
+
+				debugStore.goToStepOver();
+
+				expect(debugStore.stepIndex).toBe(2);
 			});
 		});
 	});
@@ -1157,12 +1365,12 @@ describe('PythonDebugStore', () => {
 			expect(debugStore.getBreakpointAt(10)?.condition).toBeUndefined();
 		});
 
-		it('should maintain circular buffer when exceeding history limit', () => {
+		it('should record a full trace and stop at the step budget', () => {
 			debugStore.setMode('debug');
 			debugStore.startSession();
 
-			// Push exactly MAX_HISTORY_SIZE snapshots
-			for (let i = 1; i <= DEBUG_CONFIG.MAX_HISTORY_SIZE; i++) {
+			// Record a long trace, past the budget.
+			for (let i = 1; i <= DEBUG_CONFIG.STEP_BUDGET + 10; i++) {
 				debugStore.pushSnapshot({
 					id: `snapshot-${i}`,
 					lineNumber: i,
@@ -1176,30 +1384,15 @@ describe('PythonDebugStore', () => {
 				});
 			}
 
-			expect(debugStore.snapshotCount).toBe(DEBUG_CONFIG.MAX_HISTORY_SIZE);
+			expect(debugStore.snapshotCount).toBe(DEBUG_CONFIG.STEP_BUDGET);
+			expect(debugStore.traceTruncated).toBe(true);
 
-			// Push one more - should remove oldest
-			debugStore.pushSnapshot({
-				id: `snapshot-${DEBUG_CONFIG.MAX_HISTORY_SIZE + 1}`,
-				lineNumber: DEBUG_CONFIG.MAX_HISTORY_SIZE + 1,
-				timestamp: Date.now(),
-				callStack: [],
-				globals: [],
-				loops: [],
-				stdout: '',
-				event: 'line',
-				heap: []
-			});
+			// The scrubber can reach both ends of the recorded range.
+			debugStore.goToStep(0);
+			expect(debugStore.currentSnapshot?.lineNumber).toBe(1);
 
-			expect(debugStore.snapshotCount).toBe(DEBUG_CONFIG.MAX_HISTORY_SIZE);
-			expect(debugStore.currentSnapshot?.lineNumber).toBe(DEBUG_CONFIG.MAX_HISTORY_SIZE + 1);
-
-			// Step back to oldest - should be line 2, not line 1
-			for (let i = 0; i < DEBUG_CONFIG.MAX_HISTORY_SIZE - 1; i++) {
-				debugStore.stepBack();
-			}
-
-			expect(debugStore.currentSnapshot?.lineNumber).toBe(2);
+			debugStore.goToStep(DEBUG_CONFIG.STEP_BUDGET - 1);
+			expect(debugStore.currentSnapshot?.lineNumber).toBe(DEBUG_CONFIG.STEP_BUDGET);
 		});
 	});
 });

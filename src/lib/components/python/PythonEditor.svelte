@@ -28,22 +28,26 @@
 		value = $bindable(''),
 		errorLine = null as number | null,
 		debugLine = null as number | null,
+		breakpoints = [] as number[],
 		disabled = false,
 		fontSize = 14,
 		theme = 'default' as EditorTheme,
 		executor = null as CompletionProvider | null,
 		onExecute = () => {},
-		onSave = () => {}
+		onSave = () => {},
+		onToggleBreakpoint = (_line: number) => {}
 	}: {
 		value?: string;
 		errorLine?: number | null;
 		debugLine?: number | null;
+		breakpoints?: number[];
 		disabled?: boolean;
 		fontSize?: number;
 		theme?: EditorTheme;
 		executor?: CompletionProvider | null;
 		onExecute?: () => void;
 		onSave?: () => void;
+		onToggleBreakpoint?: (line: number) => void;
 	} = $props();
 
 	/**
@@ -129,6 +133,14 @@
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let debugLineEffectType: { of: (value: number | null) => any } | null = null;
 
+	// Breakpoint effect type - stored after CodeMirror is loaded
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let breakpointEffectType: { of: (value: number[]) => any } | null = null;
+
+	// EditorView class (stored after lazy load) for static helpers such as
+	// scrollIntoView (scroll without moving the selection).
+	let editorViewClass: typeof EditorView | null = null;
+
 	// Resolve the actual theme to apply: when the user has 'default' selected
 	// and the app is in dark mode, fall back to oneDark. Other themes are
 	// passed through unchanged (explicit user choice). See editor-theme.ts.
@@ -182,17 +194,27 @@
 		const effects = [debugLineEffectType.of(line)];
 
 		if (line !== null && line > 0 && line <= editor.state.doc.lines) {
-			// Scroll to debug line and highlight it
 			const lineInfo = editor.state.doc.line(line);
-			editor.dispatch({
-				effects,
-				selection: { anchor: lineInfo.from },
-				scrollIntoView: true
-			});
+			// Never move the selection — that steals the user's cursor (bad while
+			// live-editing). Only scroll the debug line into view when the editor is
+			// NOT focused (i.e. the user is scrubbing/stepping, not typing).
+			if (!editor.hasFocus && editorViewClass) {
+				effects.push(editorViewClass.scrollIntoView(lineInfo.from, { y: 'center' }));
+			}
+			editor.dispatch({ effects });
 		} else {
 			// Clear debug highlighting
 			editor.dispatch({ effects });
 		}
+	}
+
+	/**
+	 * Update breakpoint markers in CodeMirror. Called whenever the breakpoints
+	 * prop changes.
+	 */
+	function updateBreakpoints(lines: number[]): void {
+		if (!editor || !breakpointEffectType) return;
+		editor.dispatch({ effects: [breakpointEffectType.of(lines)] });
 	}
 
 	// Initialize CodeMirror with lazy loading
@@ -358,6 +380,47 @@
 				}
 			});
 
+			// Create breakpoint gutter system (clickable: toggle on mousedown)
+			const breakpointEffect = StateEffect.define<number[]>();
+
+			const { BreakpointGutterMarker } = await import('$lib/utils/codemirror-breakpoint-marker');
+			const breakpointGutterMarker = new BreakpointGutterMarker();
+
+			const breakpointsFieldDef = StateField.define<number[]>({
+				create() {
+					return [];
+				},
+				update(value, tr) {
+					for (const effect of tr.effects) {
+						if (effect.is(breakpointEffect)) {
+							return effect.value;
+						}
+					}
+					return value;
+				}
+			});
+
+			const breakpointGutter = gutter({
+				class: 'cm-breakpointGutter',
+				markers: (view) => {
+					const lines = view.state.field(breakpointsFieldDef);
+					if (lines.length === 0) return RangeSet.empty;
+					const doc = view.state.doc;
+					const ranges = lines
+						.filter((l) => l >= 1 && l <= doc.lines)
+						.sort((a, b) => a - b)
+						.map((l) => breakpointGutterMarker.range(doc.line(l).from));
+					return ranges.length > 0 ? RangeSet.of(ranges) : RangeSet.empty;
+				},
+				domEventHandlers: {
+					mousedown: (view, lineBlock) => {
+						const lineNum = view.state.doc.lineAt(lineBlock.from).number;
+						onToggleBreakpoint(lineNum);
+						return true;
+					}
+				}
+			});
+
 			// Track the resolved theme (so dark-mode toggles trigger a reinit)
 			currentTheme = effectiveTheme;
 
@@ -385,6 +448,10 @@
 				// Debug line highlighting
 				debugLineFieldDef,
 				debugGutter,
+
+				// Breakpoint gutter (clickable to toggle)
+				breakpointsFieldDef,
+				breakpointGutter,
 
 				// Key bindings
 				keymap.of([
@@ -470,6 +537,8 @@
 			// Store effect types for later use
 			errorLineEffectType = errorEffectType;
 			debugLineEffectType = debugEffectType;
+			breakpointEffectType = breakpointEffect;
+			editorViewClass = EditorView;
 
 			isLoading = false;
 
@@ -479,6 +548,9 @@
 			}
 			if (debugLine !== null) {
 				updateDebugHighlight(debugLine);
+			}
+			if (breakpoints.length > 0) {
+				updateBreakpoints(breakpoints);
 			}
 		} catch (error) {
 			console.error('[PythonEditor] Failed to load CodeMirror:', error);
@@ -518,6 +590,16 @@
 		// Only update if editor is ready
 		if (editor && debugLineEffectType) {
 			updateDebugHighlight(line);
+		}
+	});
+
+	// React to breakpoints prop changes - sync breakpoint markers to CodeMirror
+	$effect(() => {
+		// Read breakpoints to track it
+		const lines = breakpoints;
+		// Only update if editor is ready
+		if (editor && breakpointEffectType) {
+			updateBreakpoints(lines);
 		}
 	});
 
@@ -658,6 +740,30 @@
 		color: #f59e0b;
 		font-size: 14px;
 		font-weight: bold;
+		line-height: 1;
+	}
+
+	/* Breakpoint gutter - clickable red dot */
+	:global(.cm-breakpointGutter) {
+		width: 16px;
+	}
+
+	:global(.cm-breakpointGutter .cm-gutterElement) {
+		cursor: pointer;
+	}
+
+	/* Faint dot on hover (only on lines without a breakpoint) to hint clickability */
+	:global(
+			.cm-breakpointGutter .cm-gutterElement:hover:not(:has(.cm-breakpointGutterMarker))
+		)::before {
+		content: '●';
+		color: rgba(239, 68, 68, 0.35);
+		font-size: 12px;
+	}
+
+	:global(.cm-breakpointGutterMarker) {
+		color: #ef4444;
+		font-size: 12px;
 		line-height: 1;
 	}
 </style>
