@@ -1,20 +1,24 @@
 <script lang="ts">
 	/**
-	 * Memory Diagram View — Python Tutor-style visualization.
+	 * Memory Diagram View — Python Tutor-style visualization, laid out by elkjs.
 	 *
-	 * Layout: Frames on the left, Heap on the right, with cubic-Bezier SVG
-	 * arrows drawn from each variable bound to a heap object to its target
-	 * card. Aliases (e.g. `b = a`) naturally show two arrows landing on the
-	 * same card.
+	 * Pipeline: snapshot → `buildDiagramGraph` → measure each card → `layoutDiagram`
+	 * (ELK layered, orthogonal routing) → render cards at absolute positions with
+	 * SVG polyline edges. If ELK fails, we fall back to the previous two-column
+	 * (frames | heap) rendering so the debugger never breaks.
 	 *
-	 * The arrow geometry is recomputed on snapshot change, container resize
-	 * (ResizeObserver), and internal scroll. Each objectId gets a stable
-	 * color from `colorForHeapId`, shared with FramesPanel and HeapPanel.
+	 * ELK runs in-thread via a lazy import for V1 (fast on these small graphs);
+	 * moving it to a Web Worker is a follow-up (swap the `getElk` instance).
 	 */
 
+	import { tick } from 'svelte';
 	import type { DebugStackFrame, HeapObject } from '$lib/shared/python/debug/types';
 	import { cn } from '$lib/utils';
 	import { colorForHeapId } from './heap-utils';
+	import { buildDiagramGraph } from './diagram-graph';
+	import { layoutDiagram, type DiagramLayout, type ElkLike, type SizeMap } from './diagram-layout';
+	import FrameCard from './FrameCard.svelte';
+	import HeapCard from './HeapCard.svelte';
 	import FramesPanel from './FramesPanel.svelte';
 	import HeapPanel from './HeapPanel.svelte';
 
@@ -26,190 +30,162 @@
 
 	let { callStack, heap, class: className }: Props = $props();
 
-	// Hover state lives here so it can highlight on both sides.
+	const CANVAS_PADDING = 24;
+
+	// Cross-panel hover highlight.
 	let hoveredObjectId = $state<string | null>(null);
 
-	// DOM refs for geometry computation
-	let containerEl: HTMLDivElement | null = $state(null);
-	let framesEl: HTMLDivElement | null = $state(null);
-	let heapEl: HTMLDivElement | null = $state(null);
+	// Graph derived from the snapshot; heap lookup for card rendering.
+	let graph = $derived(buildDiagramGraph(callStack, heap));
+	let heapById = $derived(new Map(heap.map((o) => [o.id, o])));
 
-	interface Arrow {
-		key: string;
-		fromObjectId: string;
-		path: string;
-		strokeClass: string;
-		strokeWidth: number;
+	// Layout result + failure flag (→ fallback rendering).
+	let layout = $state<DiagramLayout | null>(null);
+	let failed = $state(false);
+
+	// Card element refs, keyed by node id, for measurement.
+	let cardEls: Record<string, HTMLElement | undefined> = {};
+
+	// Lazy in-thread ELK instance.
+	let elkInstance: ElkLike | null = null;
+	async function getElk(): Promise<ElkLike> {
+		if (!elkInstance) {
+			const mod = (await import('elkjs/lib/elk.bundled.js')) as unknown as {
+				default: new () => ElkLike;
+			};
+			elkInstance = new mod.default();
+		}
+		return elkInstance;
 	}
 
-	let arrows = $state<Arrow[]>([]);
-	// Snapshot key: changes when the snapshot meaningfully changes (callStack
-	// shape, heap shape). Used as a $effect dependency to trigger a recompute.
-	let snapshotKey = $derived(
-		callStack.map((f) => `${f.functionName}:${f.locals.length}`).join('|') +
-			'#' +
-			heap.map((o) => `${o.id}:${o.length}`).join(',')
-	);
-
-	function computeArrows(): void {
-		if (!containerEl || !framesEl || !heapEl) {
-			arrows = [];
+	async function runLayout(g: typeof graph): Promise<void> {
+		if (g.nodes.length === 0) {
+			layout = { nodes: [], edges: [], width: 0, height: 0 };
+			failed = false;
 			return;
 		}
-
-		const containerRect = containerEl.getBoundingClientRect();
-
-		// Map each heap object id to its left-anchor point (left edge, vertical center).
-		const heapAnchors = new Map<string, { x: number; y: number }>();
-		const heapCards = heapEl.querySelectorAll<HTMLElement>('[data-heap-id]');
-		for (const card of heapCards) {
-			const id = card.dataset.heapId;
-			if (!id) continue;
-			const r = card.getBoundingClientRect();
-			heapAnchors.set(id, {
-				x: r.left - containerRect.left,
-				y: r.top - containerRect.top + r.height / 2
-			});
+		// Wait for the cards to render so we can measure them.
+		await tick();
+		const sizes: SizeMap = {};
+		for (const node of g.nodes) {
+			const el = cardEls[node.id];
+			if (el) sizes[node.id] = { width: el.offsetWidth, height: el.offsetHeight };
 		}
-
-		// For each variable bound to a heap object, compute right-anchor.
-		const newArrows: Arrow[] = [];
-		const refButtons = framesEl.querySelectorAll<HTMLElement>('[data-heap-ref]');
-		let arrowIndex = 0;
-		for (const btn of refButtons) {
-			const objectId = btn.dataset.heapRef;
-			if (!objectId) continue;
-			const target = heapAnchors.get(objectId);
-			if (!target) continue;
-
-			const r = btn.getBoundingClientRect();
-			const sx = r.right - containerRect.left;
-			const sy = r.top - containerRect.top + r.height / 2;
-
-			// Cubic bezier with horizontal control points so the curve flows
-			// nicely between the two columns regardless of vertical distance.
-			const dx = target.x - sx;
-			const cx1 = sx + Math.max(40, dx * 0.4);
-			const cx2 = target.x - Math.max(40, dx * 0.4);
-			const path = `M ${sx} ${sy} C ${cx1} ${sy}, ${cx2} ${target.y}, ${target.x} ${target.y}`;
-
-			const color = colorForHeapId(objectId);
-			const isHighlighted = hoveredObjectId === objectId;
-
-			newArrows.push({
-				key: `${objectId}-${arrowIndex++}-${btn.dataset.frameVar ?? ''}`,
-				fromObjectId: objectId,
-				path,
-				strokeClass: color.stroke,
-				strokeWidth: isHighlighted ? 2.5 : 1.5
-			});
-		}
-
-		arrows = newArrows;
-	}
-
-	let resizeObserver: ResizeObserver | null = null;
-	let rafId: number | null = null;
-
-	function scheduleRecompute(): void {
-		if (rafId !== null) return;
-		rafId = requestAnimationFrame(() => {
-			rafId = null;
-			computeArrows();
-		});
-	}
-
-	$effect(() => {
-		// Re-run whenever the snapshot shape changes or the hover changes
-		// (hover only affects stroke width, but we keep both in one pass for
-		// simplicity).
-		void snapshotKey;
-		void hoveredObjectId;
-		scheduleRecompute();
-	});
-
-	$effect(() => {
-		if (!containerEl) return;
-
-		resizeObserver = new ResizeObserver(() => scheduleRecompute());
-		resizeObserver.observe(containerEl);
-
-		const onScroll = () => scheduleRecompute();
-		containerEl.addEventListener('scroll', onScroll, { passive: true });
-
-		// Recompute once after mount to grab initial positions.
-		scheduleRecompute();
-
-		return () => {
-			resizeObserver?.disconnect();
-			resizeObserver = null;
-			containerEl?.removeEventListener('scroll', onScroll);
-			if (rafId !== null) {
-				cancelAnimationFrame(rafId);
-				rafId = null;
+		try {
+			const elk = await getElk();
+			const result = await layoutDiagram(g, sizes, elk);
+			// Guard against a stale result if the snapshot changed while awaiting.
+			if (graph === g) {
+				layout = result;
+				failed = false;
 			}
-		};
+		} catch (err) {
+			console.error('[MemoryDiagramView] ELK layout failed, falling back:', err);
+			failed = true;
+		}
+	}
+
+	// Re-layout whenever the graph (snapshot) changes.
+	$effect(() => {
+		const g = graph;
+		void runLayout(g);
 	});
+
+	function nodePos(id: string): { x: number; y: number } {
+		const n = layout?.nodes.find((ln) => ln.id === id);
+		return { x: n?.x ?? 0, y: n?.y ?? 0 };
+	}
+
+	let canvasWidth = $derived((layout?.width ?? 0) + CANVAS_PADDING * 2);
+	let canvasHeight = $derived((layout?.height ?? 0) + CANVAS_PADDING * 2);
 
 	function handleVariableHover(objectId: string | null): void {
 		hoveredObjectId = objectId;
 	}
-
 	function handleObjectHover(objectId: string | null): void {
 		hoveredObjectId = objectId;
 	}
+
+	let isEmpty = $derived(heap.length === 0 && callStack.every((f) => f.locals.length === 0));
 </script>
 
 <div
-	bind:this={containerEl}
 	class={cn('relative h-full overflow-auto', className)}
 	role="region"
 	aria-label="Diagramme mémoire Python"
 >
-	<!-- SVG overlay with arrows. pointer-events-none so it never steals
-	     hovers from the panels. -->
-	<svg
-		class="pointer-events-none absolute inset-0 z-10 h-full w-full"
-		aria-hidden="true"
-		xmlns="http://www.w3.org/2000/svg"
-	>
-		<defs>
-			<!-- Generic arrowhead. We tint via the parent <path> currentColor
-			     to keep marker definitions to a minimum. -->
-			<marker
-				id="heap-arrowhead"
-				viewBox="0 0 10 10"
-				refX="9"
-				refY="5"
-				markerWidth="6"
-				markerHeight="6"
-				orient="auto-start-reverse"
-			>
-				<path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
-			</marker>
-		</defs>
-		{#each arrows as arrow (arrow.key)}
-			<path
-				d={arrow.path}
-				class={cn('fill-none transition-[stroke-width]', arrow.strokeClass)}
-				style="color: currentColor"
-				stroke-width={arrow.strokeWidth}
-				marker-end="url(#heap-arrowhead)"
-			/>
-		{/each}
-	</svg>
-
-	<!-- The two columns -->
-	<div class="grid min-h-full grid-cols-2 gap-12 p-4">
-		<div bind:this={framesEl}>
+	{#if failed}
+		<!-- Fallback: previous two-column rendering (ELK unavailable). -->
+		<div class="grid min-h-full grid-cols-2 gap-12 p-4">
 			<FramesPanel {callStack} {hoveredObjectId} onVariableHover={handleVariableHover} />
-		</div>
-		<div bind:this={heapEl}>
 			<HeapPanel {heap} {hoveredObjectId} onObjectHover={handleObjectHover} />
 		</div>
-	</div>
+	{:else}
+		<div class="relative" style="width: {canvasWidth}px; height: {canvasHeight}px;">
+			<!-- Edges (orthogonal polylines from ELK) -->
+			<svg
+				class="pointer-events-none absolute z-10"
+				style="left: {CANVAS_PADDING}px; top: {CANVAS_PADDING}px;"
+				width={layout?.width ?? 0}
+				height={layout?.height ?? 0}
+				aria-hidden="true"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<defs>
+					<marker
+						id="elk-arrowhead"
+						viewBox="0 0 10 10"
+						refX="9"
+						refY="5"
+						markerWidth="6"
+						markerHeight="6"
+						orient="auto-start-reverse"
+					>
+						<path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+					</marker>
+				</defs>
+				{#each layout?.edges ?? [] as edge (edge.id)}
+					{@const color = colorForHeapId(edge.toObjectId)}
+					{@const isHighlighted = hoveredObjectId === edge.toObjectId}
+					<polyline
+						points={edge.points.map((p) => `${p.x},${p.y}`).join(' ')}
+						class={cn('fill-none', color.stroke)}
+						style="color: currentColor"
+						stroke-width={isHighlighted ? 2.5 : 1.5}
+						marker-end="url(#elk-arrowhead)"
+					/>
+				{/each}
+			</svg>
 
-	{#if heap.length === 0 && callStack.every((f) => f.locals.length === 0)}
+			<!-- Node cards, absolutely positioned per ELK layout -->
+			{#each graph.nodes as node (node.id)}
+				{@const pos = nodePos(node.id)}
+				<div
+					bind:this={cardEls[node.id]}
+					class="absolute"
+					style="left: {CANVAS_PADDING + pos.x}px; top: {CANVAS_PADDING + pos.y}px; opacity: {layout
+						? 1
+						: 0};"
+				>
+					{#if node.kind === 'frame' && node.frameIndex !== undefined && callStack[node.frameIndex]}
+						<FrameCard
+							frame={callStack[node.frameIndex]}
+							{hoveredObjectId}
+							onVariableHover={handleVariableHover}
+						/>
+					{:else if node.kind === 'heap' && node.objectId && heapById.get(node.objectId)}
+						<HeapCard
+							obj={heapById.get(node.objectId)!}
+							highlighted={hoveredObjectId === node.objectId}
+							onHover={handleObjectHover}
+						/>
+					{/if}
+				</div>
+			{/each}
+		</div>
+	{/if}
+
+	{#if isEmpty}
 		<div class="absolute inset-0 flex items-center justify-center">
 			<p class="text-sm text-muted-foreground italic">
 				Aucune variable, aucun objet. Lancez le débogueur pour voir le diagramme.
