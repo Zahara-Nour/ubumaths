@@ -585,8 +585,8 @@ describe('DebugSnapshot.heap', () => {
 });
 
 describe('DEBUG_CONFIG', () => {
-	it('has correct MAX_HISTORY_SIZE', () => {
-		expect(DEBUG_CONFIG.MAX_HISTORY_SIZE).toBe(10);
+	it('has correct STEP_BUDGET', () => {
+		expect(DEBUG_CONFIG.STEP_BUDGET).toBe(1000);
 	});
 
 	it('has correct MAX_SERIALIZE_DEPTH', () => {
@@ -609,6 +609,6 @@ describe('DEBUG_CONFIG', () => {
 		// TypeScript will prevent modification at compile time
 		// This test verifies the values are correct at runtime
 		expect(Object.isFrozen(DEBUG_CONFIG)).toBe(false); // const assertion doesn't freeze
-		expect(typeof DEBUG_CONFIG.MAX_HISTORY_SIZE).toBe('number');
+		expect(typeof DEBUG_CONFIG.STEP_BUDGET).toBe('number');
 	});
 });

@@ -233,9 +233,9 @@ Discriminée sur `kind` :
 
 Documenté plus en détail dans [`README.md § 3. Debugger`](./README.md#3-debugger). Côté worker :
 
-- `debugStartExecution(code, breakpoints, id)` (ligne 3624) compile le code en AST et installe un **tracer Python par générateur** (pas de `sys.settrace`).
-- À chaque statement, le tracer yield un `DebugSnapshot` (frames + locals + heap + last-line) → `processSnapshot()` → message `debug-snapshot` au main thread.
-- `debugStep(id, action)` route les actions `step-into` / `step-over` / `step-out` / `continue` / `run-to-end` / `step-back` / `step-forward` (l'historique back/forward est géré côté store).
+- `_chiphre_record_trace(code, budget)` enregistre **toute** l'exécution via **`sys.settrace`** : il entre dans les fonctions user (vraies frames, récursion, events `call`/`return`) et ignore les libs (filtre `co_filename`). Le générateur `_chiphre_debug_generator` rejoue ensuite les snapshots un par un (l'ancien interpréteur AST maison est devenu code mort, après `return`).
+- Chaque snapshot (`DebugSnapshot` : frames + locals + heap + `event`) passe par `processSnapshot()` → message `debug-snapshot` au main thread.
+- Modèle **enregistrer-puis-rejouer** : `debugStep(id, action)` fait juste avancer le rejeu (l'`action` est ignorée) ; toute la navigation (avant/arrière, scrubber, step-over, saut aux points d'arrêt) est gérée **côté store** sur la trace immuable.
 - La heap est segmentée : containers (`list`, `dict`, `set`, `tuple`, `frozenset`) + instances de classes utilisateur (cycles gérés via placeholder pré-inséré). Primitives en inline.
 
 ---

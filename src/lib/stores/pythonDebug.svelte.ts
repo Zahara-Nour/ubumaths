@@ -61,6 +61,13 @@ class PythonDebugStore {
 	/** Current debug session state */
 	sessionState = $state<DebugSessionState>('idle');
 
+	/**
+	 * True while a full-trace recording is in flight ("Exécuter & enregistrer").
+	 * Lets the UI show a lightweight progress indicator instead of re-rendering
+	 * the (expensive) memory diagram on every recorded step.
+	 */
+	isRecording = $state(false);
+
 	// ===========================================================================
 	// Breakpoints
 	// ===========================================================================
@@ -72,8 +79,11 @@ class PythonDebugStore {
 	// Snapshot History (Circular Buffer)
 	// ===========================================================================
 
-	/** Execution snapshots for step-back functionality */
+	/** Execution snapshots for the full trace (stored most-recent-first) */
 	private _snapshots = $state<DebugSnapshot[]>([]);
+
+	/** True when the recording hit STEP_BUDGET and the trace was cut short */
+	private _traceTruncated = $state(false);
 
 	/** Current position in snapshot history (0 = most recent, higher = older) */
 	historyIndex = $state(0);
@@ -118,6 +128,63 @@ class PythonDebugStore {
 
 	/** All snapshots (most recent first) - for history visualization */
 	allSnapshots = $derived([...this._snapshots]);
+
+	// ---------------------------------------------------------------------------
+	// Chronological scrubbing layer (first step first). Sits on top of the
+	// internal most-recent-first storage so existing consumers keep working.
+	// ---------------------------------------------------------------------------
+
+	/** Chronological trace (first step first) — the scrubber timeline */
+	trace = $derived([...this._snapshots].reverse());
+
+	/** Current position as a chronological step index (0 = first step) */
+	stepIndex = $derived(
+		this._snapshots.length > 0 ? this._snapshots.length - 1 - this.historyIndex : 0
+	);
+
+	/** Total number of recorded steps (chronological alias of snapshotCount) */
+	stepCount = $derived(this._snapshots.length);
+
+	/** True when the recording was cut short at STEP_BUDGET */
+	traceTruncated = $derived(this._traceTruncated);
+
+	/** True when the trace has reached the step budget (no room left to record) */
+	isTraceFull = $derived(this._snapshots.length >= DEBUG_CONFIG.STEP_BUDGET);
+
+	/**
+	 * Chronological event markers for the scrubber track.
+	 *
+	 * The worker's tracer tags every step `'line'` (or `'start'`/`'exception'`); it
+	 * does NOT emit `'call'`/`'return'`. So we DERIVE those from call-stack depth
+	 * changes between consecutive steps: depth up = a function was entered (call),
+	 * depth down = a function returned. Exceptions come straight from the event
+	 * field. Line steps are not surfaced (they would clutter the timeline).
+	 */
+	eventMarkers = $derived.by(() => {
+		const chrono = this.trace;
+		const markers: { index: number; event: 'call' | 'return' | 'exception' }[] = [];
+		let prevDepth = 0;
+		for (let i = 0; i < chrono.length; i++) {
+			const snapshot = chrono[i];
+			const depth = snapshot.callStack.length;
+			if (snapshot.event === 'exception') {
+				markers.push({ index: i, event: 'exception' });
+			} else if (i > 0 && depth > prevDepth) {
+				markers.push({ index: i, event: 'call' });
+			} else if (i > 0 && depth < prevDepth) {
+				markers.push({ index: i, event: 'return' });
+			}
+			prevDepth = depth;
+		}
+		return markers;
+	});
+
+	/** True when an enabled breakpoint matches at least one step in the trace. */
+	hasBreakpointInTrace = $derived.by(() => {
+		const lines = new Set(this.breakpoints.filter((b) => b.enabled).map((b) => b.lineNumber));
+		if (lines.size === 0) return false;
+		return this.trace.some((s) => lines.has(s.lineNumber));
+	});
 
 	/** Number of enabled breakpoints */
 	enabledBreakpointCount = $derived(this.breakpoints.filter((bp) => bp.enabled).length);
@@ -267,22 +334,28 @@ class PythonDebugStore {
 	// ===========================================================================
 
 	/**
-	 * Add a new snapshot to the history.
-	 * Uses a circular buffer with MAX_HISTORY_SIZE limit.
-	 * Resets history index to 0 (most recent) when adding.
+	 * Append a new snapshot to the trace.
+	 *
+	 * The trace is a full chronological recording (no circular dropping) so the
+	 * scrubber can jump to any past step. It is bounded by STEP_BUDGET: once the
+	 * budget is reached, further snapshots are ignored and `traceTruncated` flips
+	 * to true (the executor stops recording at that point).
+	 *
+	 * Internally snapshots are stored most-recent-first (index 0 = newest) to keep
+	 * the existing step-back/forward semantics; chronological access goes through
+	 * `stepIndex` / `goToStep` / `eventMarkers`.
 	 *
 	 * @param snapshot - The debug snapshot to add
 	 */
 	pushSnapshot(snapshot: DebugSnapshot): void {
-		// Add to front of array (most recent first)
-		const newSnapshots = [snapshot, ...this._snapshots];
-
-		// Trim to max size (circular buffer)
-		if (newSnapshots.length > DEBUG_CONFIG.MAX_HISTORY_SIZE) {
-			newSnapshots.pop();
+		// Full trace: stop at the step budget instead of dropping the oldest step.
+		if (this._snapshots.length >= DEBUG_CONFIG.STEP_BUDGET) {
+			this._traceTruncated = true;
+			return;
 		}
 
-		this._snapshots = newSnapshots;
+		// Add to front of array (most recent first)
+		this._snapshots = [snapshot, ...this._snapshots];
 		this.historyIndex = 0;
 
 		// Update current line from snapshot
@@ -333,11 +406,75 @@ class PythonDebugStore {
 	}
 
 	/**
+	 * Jump to a chronological step index (0 = first step). Thin wrapper over
+	 * `goToSnapshot` that converts from chronological to internal (newest-first)
+	 * indexing. Used by the scrubber slider.
+	 *
+	 * @param stepIndex - Chronological step index (0 = first step)
+	 */
+	goToStep(stepIndex: number): void {
+		if (this._snapshots.length === 0) return;
+		this.goToSnapshot(this._snapshots.length - 1 - stepIndex);
+	}
+
+	/**
+	 * Move the scrubber to the next step (chronologically after the current one)
+	 * whose line carries an enabled breakpoint. No-op if there is no such step.
+	 */
+	goToNextBreakpointStep(): void {
+		const lines = new Set(this.breakpoints.filter((b) => b.enabled).map((b) => b.lineNumber));
+		if (lines.size === 0) return;
+		const chrono = this.trace;
+		for (let i = this.stepIndex + 1; i < chrono.length; i++) {
+			if (lines.has(chrono[i].lineNumber)) {
+				this.goToStep(i);
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Move the scrubber to the previous step (chronologically before the current
+	 * one) whose line carries an enabled breakpoint. No-op if there is none.
+	 */
+	goToPrevBreakpointStep(): void {
+		const lines = new Set(this.breakpoints.filter((b) => b.enabled).map((b) => b.lineNumber));
+		if (lines.size === 0) return;
+		const chrono = this.trace;
+		for (let i = this.stepIndex - 1; i >= 0; i--) {
+			if (lines.has(chrono[i].lineNumber)) {
+				this.goToStep(i);
+				return;
+			}
+		}
+	}
+
+	/**
+	 * "Step over": advance to the next step at the current call-stack depth or
+	 * shallower. If the current line calls a function, its internals (deeper
+	 * frames) are skipped and the scrubber lands on the next line in the current
+	 * frame. Falls back to the last step when nothing shallower lies ahead.
+	 */
+	goToStepOver(): void {
+		const chrono = this.trace;
+		if (chrono.length === 0) return;
+		const currentDepth = chrono[this.stepIndex]?.callStack.length ?? 0;
+		for (let i = this.stepIndex + 1; i < chrono.length; i++) {
+			if (chrono[i].callStack.length <= currentDepth) {
+				this.goToStep(i);
+				return;
+			}
+		}
+		this.goToStep(chrono.length - 1);
+	}
+
+	/**
 	 * Clear all snapshots in history.
 	 */
 	clearSnapshots(): void {
 		this._snapshots = [];
 		this.historyIndex = 0;
+		this._traceTruncated = false;
 	}
 
 	// ===========================================================================
@@ -353,6 +490,7 @@ class PythonDebugStore {
 		this.clearSnapshots();
 		this.pauseReason = null;
 		this.currentLine = null;
+		this.isRecording = false;
 	}
 
 	/**
@@ -397,6 +535,7 @@ class PythonDebugStore {
 		this.clearSnapshots();
 		this.currentLine = null;
 		this.pauseReason = null;
+		this.isRecording = false;
 	}
 
 	// ===========================================================================

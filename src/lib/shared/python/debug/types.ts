@@ -250,8 +250,12 @@ export type DebugPauseReason = 'breakpoint' | 'step' | 'exception' | 'start';
  * Debug configuration constants
  */
 export const DEBUG_CONFIG = {
-	/** Maximum number of snapshots to keep in history (for step-back) */
-	MAX_HISTORY_SIZE: 10,
+	/**
+	 * Maximum number of steps recorded in a single debug trace (the scrubber
+	 * range). Beyond this, recording stops and the trace is flagged truncated.
+	 * Matches Python Tutor's ~1000-step cap — bounds memory and record time.
+	 */
+	STEP_BUDGET: 1000,
 	/** Maximum depth for serializing nested objects */
 	MAX_SERIALIZE_DEPTH: 5,
 	/** Maximum items to serialize in containers (list, dict) */
