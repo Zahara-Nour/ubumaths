@@ -44,8 +44,16 @@ orthogonales).
 > l'instance dans `getElk`). Bonus : le positionnement absolu est le **socle prêt pour l'animation
 > #2** (tween des coords entre pas).
 
+### Étape 4 — Animation #2 (bonus, même branche) ✅ FAIT + vérifié
+
+Le positionnement absolu (Étape 3) a rendu #2 quasi gratuit : couche de mesure cachée + couche
+visible via un snippet partagé ; **`animate:flip`** (glissement des cartes entre pas) +
+**`transition:fade`** (apparition/disparition) ; **`prefers-reduced-motion`** respecté. Vérifié OK.
+Limite V1 : les flèches ne suivent pas le glissement (se replacent d'un coup) — raffinement à voir.
+
 ## DoD
 
 - [x] Tests graphe + layout verts (10) · `check:incremental` 0 erreur · `svelte-autofixer` 0 issue
-- [x] Vérif visuelle sur `/python` (arêtes orthogonales, ELK actif)
-- [ ] MAJ roadmap (#5 → livré) + `docs/ref/python/` (au commit/merge)
+- [x] Vérif visuelle sur `/python` (arêtes orthogonales, ELK actif ; #2 : glissement + fondu)
+- [x] MAJ roadmap (#5 → livré, #2 → livré)
+- [ ] MAJ `docs/ref/python/` (au merge)
