@@ -133,8 +133,8 @@ Aucun package tiers n'est préchargé. Avant chaque `execute`, le worker :
 3. Filtre les packages déjà présents dans le `Set<string>` global `loadedPackages` du worker.
 4. Envoie `packages-loading` au main thread, appelle `pyodide.loadPackagesFromImports(code)` (Pyodide gère les dépendances transitives), puis envoie `packages-loaded`.
 5. Pour les packages avec setup spécifique, appelle un hook après chargement :
-   - `matplotlib` → `setupMatplotlib()` (backend AGG, helpers `_ubumaths_get_plot_base64`, suppression warning)
-   - `plotly` → `setupPlotly()` (helpers `_ubumaths_get_plotly_json`, `_ubumaths_check_plotly_result`)
+   - `matplotlib` → `setupMatplotlib()` (backend AGG, helpers `_chiphre_get_plot_base64`, suppression warning)
+   - `plotly` → `setupPlotly()` (helpers `_chiphre_get_plotly_json`, `_chiphre_check_plotly_result`)
 
 `loadedPackages` est cumulatif sur la durée de vie du worker : un 2e `execute` qui importe NumPy ne recharge rien.
 
@@ -142,23 +142,23 @@ Aucun package tiers n'est préchargé. Avant chaque `execute`, le worker :
 
 ## Helpers Python injectés
 
-Tous préfixés `_ubumaths_` pour ne pas polluer le namespace de l'utilisateur.
+Tous préfixés `_chiphre_` pour ne pas polluer le namespace de l'utilisateur.
 
-| Helper                                             | Rôle                                                                      |
-| -------------------------------------------------- | ------------------------------------------------------------------------- |
-| `_ubumaths_reformat_exception()`                   | Réduit le traceback à `File "<exec>", line N\n<ExceptionType>: <msg>`     |
-| `_ubumaths_get_completions(code, pos, namespace?)` | Auto-complétion via `dir()` + `getattr()` + `builtins` + `keyword.kwlist` |
-| `_ubumaths_get_plot_base64()`                      | Sérialise la figure matplotlib courante en base64 PNG (DPI 100, AGG)      |
-| `_ubumaths_cleanup_matplotlib()`                   | `plt.close('all')` après chaque exécution                                 |
-| `_ubumaths_get_plotly_json()`                      | Sérialise `_ubumaths_plotly_fig` en JSON spec et reset                    |
-| `_ubumaths_check_plotly_result(result)`            | Détecte une `plotly.graph_objs.Figure` et la stocke pour export           |
-| `_ubumaths_check_sympy_result(result)`             | Détecte une expression SymPy et renvoie `sympy.latex(result)`             |
+| Helper                                            | Rôle                                                                      |
+| ------------------------------------------------- | ------------------------------------------------------------------------- |
+| `_chiphre_reformat_exception()`                   | Réduit le traceback à `File "<exec>", line N\n<ExceptionType>: <msg>`     |
+| `_chiphre_get_completions(code, pos, namespace?)` | Auto-complétion via `dir()` + `getattr()` + `builtins` + `keyword.kwlist` |
+| `_chiphre_get_plot_base64()`                      | Sérialise la figure matplotlib courante en base64 PNG (DPI 100, AGG)      |
+| `_chiphre_cleanup_matplotlib()`                   | `plt.close('all')` après chaque exécution                                 |
+| `_chiphre_get_plotly_json()`                      | Sérialise `_chiphre_plotly_fig` en JSON spec et reset                     |
+| `_chiphre_check_plotly_result(result)`            | Détecte une `plotly.graph_objs.Figure` et la stocke pour export           |
+| `_chiphre_check_sympy_result(result)`             | Détecte une expression SymPy et renvoie `sympy.latex(result)`             |
 
 ### Détection de l'expression finale (SymPy / Plotly)
 
 Le worker parse `code` avec `ast.parse()`, puis :
 
-- si le dernier nœud est une `ast.Expr`, il `exec()` tout sauf le dernier et `eval()` le dernier → `_ubumaths_last_result`
+- si le dernier nœud est une `ast.Expr`, il `exec()` tout sauf le dernier et `eval()` le dernier → `_chiphre_last_result`
 - sinon `exec()` tout le code
 
 Ce mécanisme permet d'afficher la valeur d'une expression finale style REPL (utilisé par les notebooks et la sortie LaTeX).
@@ -175,12 +175,12 @@ Ce mécanisme permet d'afficher la valeur d'une expression finale style REPL (ut
 4. Redirige `sys.stdout` / `sys.stderr` vers des `StringIO` capturables.
 5. Exécute le code (split AST trailing expression, voir au-dessus).
 6. Pousse `stdout` / `stderr` accumulés vers le main thread.
-7. Détecte LaTeX SymPy (`_ubumaths_check_sympy_result`) → `latex`.
+7. Détecte LaTeX SymPy (`_chiphre_check_sympy_result`) → `latex`.
 8. Détecte matplotlib (`plt.get_fignums()`) → `plot`.
-9. Détecte Plotly (`_ubumaths_plotly_fig`) → `plotly`.
-10. `_ubumaths_cleanup_matplotlib()`.
+9. Détecte Plotly (`_chiphre_plotly_fig`) → `plotly`.
+10. `_chiphre_cleanup_matplotlib()`.
 11. Envoie `complete` avec la durée.
-12. En cas d'erreur Python : `_ubumaths_reformat_exception` + `extractLineNumber(...)` regex sur `File "<exec>"|"<expr>"|"<unknown>", line N` → `error`.
+12. En cas d'erreur Python : `_chiphre_reformat_exception` + `extractLineNumber(...)` regex sur `File "<exec>"|"<expr>"|"<unknown>", line N` → `error`.
 
 Le namespace éphémère n'est jamais réutilisé : il est détruit (`PyProxy.destroy()`) entre exécutions playground.
 
@@ -188,7 +188,15 @@ Le namespace éphémère n'est jamais réutilisé : il est détruit (`PyProxy.de
 
 ## Validation d'exercices
 
-Couvert par la fonction `validateExercise(code, config, id)` (ligne 2056). La config est un `ExerciseValidationConfig` avec **deux axes orthogonaux** :
+> ℹ️ **Depuis PR #82 (2026-08-27)**, la logique de validation a été **extraite du worker** vers un
+> module agnostique du runtime `src/lib/shared/python/validation-core/` (`index.ts` orchestration +
+> `runners.ts` les 5 runners + `ast.ts`), afin de pouvoir aussi tourner **headless en Node**. Dans le
+> worker, `validateExercise(code, config, id, contextId?)` n'est plus qu'un **mince wrapper de
+> transport** (check `pyodide`, résolution du namespace via `getContextNamespace`, `postMessage`) qui
+> délègue à **`runExerciseValidation(pyodide, code, config, { namespace?, skipCodeExec? })`**. Les noms
+> de fonctions ci-dessous vivent désormais dans `validation-core/`, pas dans `pyodide.worker.ts`.
+
+Le pipeline (`runExerciseValidation`) prend un `ExerciseValidationConfig` avec **deux axes orthogonaux** :
 
 ```typescript
 interface ExerciseValidationConfig {
@@ -211,7 +219,7 @@ Discriminée sur `kind` :
 | `kind`               | Runner                         | Notes                                                                                                                                                                                                                               |
 | -------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `output`             | `runOutputBehavior`            | Compare `stdout` à `expected_output`. Stratégies `exact`/`text`/`numeric`/`custom`. Le `custom` lance un script Python tiers (`compareWithCustomScript`) dans un namespace isolé.                                                   |
-| `unit_test`          | `runUnitTestBehavior`          | Appelle `function_name(*args)` et compare au `expected` via une fonction Python `_ubumaths_compare` (tuple↔list, dict↔dict, tolérance `eps_abs`+`eps_rel`).                                                                       |
+| `unit_test`          | `runUnitTestBehavior`          | Appelle `function_name(*args)` et compare au `expected` via une fonction Python `_chiphre_compare` (tuple↔list, dict↔dict, tolérance `eps_abs`+`eps_rel`).                                                                        |
 | `variable_check`     | `runVariableCheckBehavior`     | Exécute le code dans un namespace neuf et lit les variables nommées, comparaison via `validation/variable-compare.ts` (récursif, type-strict pour scalaires).                                                                       |
 | `reference_solution` | `runReferenceSolutionBehavior` | Test différentiel : compare l'élève contre une solution de référence cachée sur des cas fixes (`runOneFixedRefCase`) + cas générés aléatoirement (`runOneGeneratorRefCase`, seed reproductible). Args deep-copy avant chaque appel. |
 
