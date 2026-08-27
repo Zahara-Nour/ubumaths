@@ -1,8 +1,8 @@
 # Débogueur Python / visualisation d'exécution — Roadmap des améliorations
 
 > **Vue d'ensemble** du chantier « meilleur outil de visualisation façon Python Tutor » pour le
-> playground `/python`. Détail d'exécution de la phase en cours : [python-debugger-scrubber-progress.md](./python-debugger-scrubber-progress.md).
-> Progress docs : [scrubber (#1)](./python-debugger-scrubber-progress.md) · [elkjs + animation (#5, #2)](./python-debugger-elk-layout-progress.md).
+> playground `/python`.
+> Progress docs : [scrubber (#1)](./python-debugger-scrubber-progress.md) · [elkjs + animation (#5, #2)](./python-debugger-elk-layout-progress.md) · [arbre d'appels (#4)](./python-debugger-recursion-tree-progress.md).
 
 ## Objectif
 
@@ -31,7 +31,7 @@ reste.** Vérifié Pyodide réel (`debug-record-real.svelte.test.ts`).
 | 1   | **Scrubber temporel** sur trace immuable complète (slider + marqueurs call/return/exception + play/pause + nav pas-à-pas + saut aux points d'arrêt + gouttière cliquable + step-over + mode live) | ✅ **LIVRÉ** (commit `452dc6fc0`)                                                                                                |
 | 2   | **Transitions animées** des cartes mémoire (`animate:flip` + `crossfade`, clé = `id()`, respect `reduced-motion`)                                                                                 | ✅ **LIVRÉ** (`animate:flip` + fade, reduced-motion ; même branche que #5)                                                       |
 | 3   | **IA « explique ce pas »** ancrée sur la trace + teach-back gate                                                                                                                                  | ⏸️ **ÉCARTÉ pour l'instant** (RGPD — code d'élèves mineurs → API externe à cadrer). Runtime = Haiku/Sonnet, pas Fable/Opus live. |
-| 4   | **Vue arbre de récursion** (Reingold–Tilford, nœuds args→retour, sous-problèmes teintés)                                                                                                          | ⏳ planifié — débloqué par settrace (vraies frames)                                                                              |
+| 4   | **Vue arbre de récursion** (Reingold–Tilford, nœuds args→retour, sous-problèmes teintés)                                                                                                          | ✅ **LIVRÉ** (buildCallTree + elkjs mrtree ; construction progressive au scrub)                                                  |
 | 5   | **Layout heap via `elkjs`** (Sugiyama + routage orthogonal, en worker) — remplace l'empilement DOM + flèches Bézier à la main                                                                     | ✅ **LIVRÉ** (ELK en-thread V1 ; worker = follow-up) — socle prêt pour #2                                                        |
 | 6   | **UX grosses structures** (`np.array2string`/pandas repr, fetch-on-expand, sparklines)                                                                                                            | ⏳ planifié                                                                                                                      |
 | 7   | **Enregistrement par sous-expression** (réécriture AST style birdseye)                                                                                                                            | ⏳ phase ultérieure (gros changement archi)                                                                                      |
@@ -49,7 +49,7 @@ reste.** Vérifié Pyodide réel (`debug-record-real.svelte.test.ts`).
 - **Code mort** : l'ancien interpréteur AST (`_chiphre_debug_generator` legacy) est devenu inatteignable (après `return`) — à retirer au nettoyage.
 - **Perf** : record-then-replay pilote ~1000 aller-retours `postMessage` (drive `step`) — optimisable en un seul message `debug-record` synchrone plus tard.
 - **a11y** : flèches SVG du diagramme `aria-hidden` (dette existante).
-- **Doc de référence** : `docs/ref/python/README.md` (section Debugger) à mettre à jour **au merge** (tracer settrace, scrubber, mode live, gouttière breakpoint livrée).
+- **Doc de référence** : `docs/ref/python/` maintenue à jour (settrace, scrubber, mode live, gouttière, elkjs, arbre d'appels) ; à compléter au fil de #6/#7.
 
 ## Maintenance de ce document
 
