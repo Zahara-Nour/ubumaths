@@ -3,6 +3,7 @@
 > **Vue d'ensemble** du chantier « meilleur outil de visualisation façon Python Tutor » pour le
 > playground `/python`.
 > Progress docs : [scrubber (#1)](./python-debugger-scrubber-progress.md) · [elkjs + animation (#5, #2)](./python-debugger-elk-layout-progress.md) · [arbre d'appels (#4)](./python-debugger-recursion-tree-progress.md).
+> **État des lieux + recherches améliorations futures (#6, #7)** : [doc compagnon](./python-debugger-future-improvements-research.md).
 
 ## Objectif
 
@@ -26,15 +27,15 @@ reste.** Vérifié Pyodide réel (`debug-record-real.svelte.test.ts`).
 
 ## Les améliorations, classées (impact ÷ effort) + statut
 
-| #   | Amélioration                                                                                                                                                                                      | Statut                                                                                                                           |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **Scrubber temporel** sur trace immuable complète (slider + marqueurs call/return/exception + play/pause + nav pas-à-pas + saut aux points d'arrêt + gouttière cliquable + step-over + mode live) | ✅ **LIVRÉ** (commit `452dc6fc0`)                                                                                                |
-| 2   | **Transitions animées** des cartes mémoire (`animate:flip` + `crossfade`, clé = `id()`, respect `reduced-motion`)                                                                                 | ✅ **LIVRÉ** (`animate:flip` + fade, reduced-motion ; même branche que #5)                                                       |
-| 3   | **IA « explique ce pas »** ancrée sur la trace + teach-back gate                                                                                                                                  | ⏸️ **ÉCARTÉ pour l'instant** (RGPD — code d'élèves mineurs → API externe à cadrer). Runtime = Haiku/Sonnet, pas Fable/Opus live. |
-| 4   | **Vue arbre de récursion** (Reingold–Tilford, nœuds args→retour, sous-problèmes teintés)                                                                                                          | ✅ **LIVRÉ** (buildCallTree + elkjs mrtree ; construction progressive au scrub)                                                  |
-| 5   | **Layout heap via `elkjs`** (Sugiyama + routage orthogonal, en worker) — remplace l'empilement DOM + flèches Bézier à la main                                                                     | ✅ **LIVRÉ** (ELK en-thread V1 ; worker = follow-up) — socle prêt pour #2                                                        |
-| 6   | **UX grosses structures** (`np.array2string`/pandas repr, fetch-on-expand, sparklines)                                                                                                            | ⏳ planifié                                                                                                                      |
-| 7   | **Enregistrement par sous-expression** (réécriture AST style birdseye)                                                                                                                            | ⏳ phase ultérieure (gros changement archi)                                                                                      |
+| #   | Amélioration                                                                                                                                                                                      | Statut                                                                                                                                                                               |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | **Scrubber temporel** sur trace immuable complète (slider + marqueurs call/return/exception + play/pause + nav pas-à-pas + saut aux points d'arrêt + gouttière cliquable + step-over + mode live) | ✅ **LIVRÉ** (commit `452dc6fc0`)                                                                                                                                                    |
+| 2   | **Transitions animées** des cartes mémoire (`animate:flip` + `crossfade`, clé = `id()`, respect `reduced-motion`)                                                                                 | ✅ **LIVRÉ** (`animate:flip` + fade, reduced-motion ; même branche que #5)                                                                                                           |
+| 3   | **IA « explique ce pas »** ancrée sur la trace + teach-back gate                                                                                                                                  | ⏸️ **ÉCARTÉ pour l'instant** (RGPD — code d'élèves mineurs → API externe à cadrer). Runtime = Haiku/Sonnet, pas Fable/Opus live.                                                     |
+| 4   | **Vue arbre de récursion** (Reingold–Tilford, nœuds args→retour, sous-problèmes teintés)                                                                                                          | ✅ **LIVRÉ** (buildCallTree + elkjs mrtree ; construction progressive au scrub)                                                                                                      |
+| 5   | **Layout heap via `elkjs`** (Sugiyama + routage orthogonal, en worker) — remplace l'empilement DOM + flèches Bézier à la main                                                                     | ✅ **LIVRÉ** (ELK en-thread V1 ; worker = follow-up) — socle prêt pour #2                                                                                                            |
+| 6   | **UX grosses structures** (`np.array2string`/pandas repr, fetch-on-expand, sparklines)                                                                                                            | ⏳ recherche faite, EN PAUSE — priorité listes/dicts natifs, MVP reprs+résumé ([recherche](./python-debugger-future-improvements-research.md))                                       |
+| 7   | **Enregistrement par sous-expression** (réécriture AST style birdseye)                                                                                                                            | ⏳ phase ultérieure — **faisabilité étudiée** : `birdseye@futurecoder` réutilisable (store mémoire, Pyodide-prouvé) ([recherche](./python-debugger-future-improvements-research.md)) |
 
 ## Décisions actées
 
@@ -42,14 +43,16 @@ reste.** Vérifié Pyodide réel (`debug-record-real.svelte.test.ts`).
 - **Mode live** : en mode Debug, auto-enregistrement à l'entrée + ré-enregistrement débouncé (600 ms) à chaque modif du code. Plus de bouton « Lancer » ni « Effacer ».
 - **Moteur `sys.settrace`** plutôt qu'étendre l'interpréteur AST (plafond bas) — voir ci-dessus.
 - **Modèle IA** : construire avec Opus 4.8 ; narration IA runtime (si un jour) = Haiku 4.5 / Sonnet 4.6 + précalcul, **jamais Fable/Opus en live** (coût/latence à l'échelle).
+- **#6 (grosses structures)** : priorité **listes/dicts natifs** (numpy/pandas secondaire) ; MVP = **reprs dédiées + résumé**, sans « voir plus » ni sparklines (`fetch-on-expand` live impossible en enregistrer-puis-rejouer). Détail : [recherche](./python-debugger-future-improvements-research.md).
+- **#7 (sous-expression)** : si un jour, **réutiliser `birdseye@futurecoder`** (tracer AST éprouvé, store mémoire, MIT), **pas** réimplémenter. Mode à part. POC worker de dé-risquage en premier. Détail : [recherche](./python-debugger-future-improvements-research.md).
 
 ## Dette / suites connues
 
 - **Indicateur de boucle** (`loops`) : vide depuis le passage à settrace — à réimplémenter si besoin pédagogique.
-- ~~**Code mort** : ancien interpréteur AST inatteignable dans `_chiphre_debug_generator`~~ → **retiré** (worker : ~469 lignes ; specs placeholder périmées du test worker debug supprimées).
 - **Perf** : record-then-replay pilote ~1000 aller-retours `postMessage` (drive `step`) — optimisable en un seul message `debug-record` synchrone plus tard.
+- **Code mort** : ✅ retiré (PR #88 — ancien interpréteur AST inatteignable + specs placeholder périmées).
 - **a11y** : flèches SVG du diagramme `aria-hidden` (dette existante).
-- **Doc de référence** : `docs/ref/python/` maintenue à jour (settrace, scrubber, mode live, gouttière, elkjs, arbre d'appels) ; à compléter au fil de #6/#7.
+- **Doc de référence** : `docs/ref/python/` maintenue à jour (settrace, scrubber, mode live, gouttière, elkjs, arbre d'appels) ; recherches #6/#7 dans [le doc compagnon](./python-debugger-future-improvements-research.md).
 
 ## Maintenance de ce document
 
