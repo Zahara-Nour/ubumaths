@@ -46,7 +46,7 @@ reste.** Vérifié Pyodide réel (`debug-record-real.svelte.test.ts`).
 ## Dette / suites connues
 
 - **Indicateur de boucle** (`loops`) : vide depuis le passage à settrace — à réimplémenter si besoin pédagogique.
-- **Code mort** : l'ancien interpréteur AST (`_chiphre_debug_generator` legacy) est devenu inatteignable (après `return`) — à retirer au nettoyage.
+- ~~**Code mort** : ancien interpréteur AST inatteignable dans `_chiphre_debug_generator`~~ → **retiré** (worker : ~469 lignes ; specs placeholder périmées du test worker debug supprimées).
 - **Perf** : record-then-replay pilote ~1000 aller-retours `postMessage` (drive `step`) — optimisable en un seul message `debug-record` synchrone plus tard.
 - **a11y** : flèches SVG du diagramme `aria-hidden` (dette existante).
 - **Doc de référence** : `docs/ref/python/` maintenue à jour (settrace, scrubber, mode live, gouttière, elkjs, arbre d'appels) ; à compléter au fil de #6/#7.

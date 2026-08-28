@@ -15,14 +15,15 @@
  * 2. Integration Tests (requires Pyodide - not in this file):
  *    - Serialization functions (_chiphre_serialize_value)
  *    - Variable extraction (_chiphre_get_variables)
- *    - Snapshot creation (_chiphre_debug_create_snapshot)
- *    - Trace function behavior (_chiphre_debug_trace_function)
- *    - Debug session lifecycle (debug-start -> debug-step -> debug-stop)
+ *    - Snapshot creation (build_snapshot, inside _chiphre_record_trace)
+ *    - Trace recording via sys.settrace (_chiphre_record_trace)
+ *    - Record-then-replay lifecycle (debug-start records the whole run,
+ *      the scrubber replays snapshots client-side)
+ *    → covered by debug-record-real.svelte.test.ts (real Pyodide)
  *
  * 3. E2E Tests (recommended):
- *    - Full debug sessions with breakpoints
- *    - Step actions (step, step-over, step-out, continue)
- *    - Conditional breakpoints
+ *    - Full debug sessions (auto-record on entering Debug mode)
+ *    - Scrubber navigation (forward/back, jump to call/return/breakpoint)
  *    - Call stack tracking
  *    - Variable change detection
  *
@@ -43,7 +44,7 @@
  * 2. Set breakpoints
  * 3. Execute code
  * 4. Verify debug snapshots contain correct data
- * 5. Test step actions
+ * 5. Navigate the scrubber (forward/back)
  * 6. Verify variable tracking and change detection
  */
 
@@ -250,127 +251,6 @@ describe('Python Serialization Specification', () => {
 			expect(true).toBe(true); // Placeholder
 		});
 	});
-
-	describe('_chiphre_debug_create_snapshot', () => {
-		it('should build call stack with correct order', () => {
-			// Expected: call stack is reversed (bottom first)
-			// Last frame has isCurrentFrame=true
-			expect(true).toBe(true); // Placeholder
-		});
-
-		it('should extract globals from <module> frame', () => {
-			// Expected: global variables come from the <module> frame
-			expect(true).toBe(true); // Placeholder
-		});
-
-		it('should only include user code frames', () => {
-			// Expected: only frames with filename in ('<exec>', '<expr>', '<unknown>')
-			expect(true).toBe(true); // Placeholder
-		});
-
-		it('should track stdout during debug session', () => {
-			// Expected: snapshot.stdout contains captured output
-			expect(true).toBe(true); // Placeholder
-		});
-
-		it('should increment snapshot ID', () => {
-			// Expected: each snapshot has unique ID like 'snap_1', 'snap_2', etc.
-			expect(true).toBe(true); // Placeholder
-		});
-	});
-
-	describe('_chiphre_debug_should_pause', () => {
-		it('should pause on enabled breakpoint at matching line', () => {
-			// Expected: returns (true, 'breakpoint')
-			expect(true).toBe(true); // Placeholder
-		});
-
-		it('should not pause on disabled breakpoint', () => {
-			// Expected: returns (false, None)
-			expect(true).toBe(true); // Placeholder
-		});
-
-		it('should evaluate conditional breakpoint', () => {
-			// Expected: pauses only if condition evaluates to True
-			expect(true).toBe(true); // Placeholder
-		});
-
-		it('should pause on every line in step mode', () => {
-			// Expected: mode='step' pauses at every line event
-			expect(true).toBe(true); // Placeholder
-		});
-
-		it('should pause at same/shallower depth in step-over mode', () => {
-			// Expected: step-over pauses when depth <= initial depth
-			expect(true).toBe(true); // Placeholder
-		});
-
-		it('should pause at shallower depth in step-out mode', () => {
-			// Expected: step-out pauses when depth < initial depth
-			expect(true).toBe(true); // Placeholder
-		});
-
-		it('should only pause at breakpoints in continue mode', () => {
-			// Expected: mode='continue' ignores steps, only breaks at breakpoints
-			expect(true).toBe(true); // Placeholder
-		});
-
-		it('should never pause in run-to-end mode', () => {
-			// Expected: mode='run-to-end' never pauses
-			expect(true).toBe(true); // Placeholder
-		});
-	});
-});
-
-// =============================================================================
-// Debug Session Lifecycle Specification
-// =============================================================================
-
-describe('Debug Session Lifecycle Specification', () => {
-	it('should send debug-paused with reason "start" on debug-start', () => {
-		// Expected flow:
-		// 1. Client sends debug-start message
-		// 2. Worker initializes debug session
-		// 3. Worker sends debug-paused with reason='start'
-		// 4. Worker sends debug-snapshot with initial state
-		expect(true).toBe(true); // Placeholder - requires E2E test
-	});
-
-	it('should advance one line on debug-step with action "step"', () => {
-		// Expected flow:
-		// 1. Client sends debug-step with action='step'
-		// 2. Worker advances to next line
-		// 3. Worker sends debug-paused with reason='step'
-		// 4. Worker sends debug-snapshot with new state
-		expect(true).toBe(true); // Placeholder - requires E2E test
-	});
-
-	it('should run until breakpoint on debug-step with action "continue"', () => {
-		// Expected flow:
-		// 1. Client sends debug-step with action='continue'
-		// 2. Worker runs until breakpoint or end
-		// 3. If breakpoint: sends debug-paused with reason='breakpoint'
-		// 4. If end: sends debug-finished
-		expect(true).toBe(true); // Placeholder - requires E2E test
-	});
-
-	it('should send debug-finished on debug-stop', () => {
-		// Expected flow:
-		// 1. Client sends debug-stop
-		// 2. Worker cleans up debug state
-		// 3. Worker sends debug-finished with duration
-		expect(true).toBe(true); // Placeholder - requires E2E test
-	});
-
-	it('should timeout after 60 seconds', () => {
-		// Expected: if debug session runs longer than 60s, sends timeout message
-		expect(true).toBe(true); // Placeholder - requires E2E test
-	});
-
-	it('should handle multiple breakpoints correctly', () => {
-		// Expected: pauses at each enabled breakpoint in sequence
-		expect(true).toBe(true); // Placeholder - requires E2E test
-	});
 });
 
 // =============================================================================
@@ -390,10 +270,6 @@ describe('Integration Testing Requirements', () => {
 			'New variable detection (isNew flag)',
 			'Snapshot creation with correct call stack',
 			'Global variable extraction',
-			'Breakpoint pause logic',
-			'Conditional breakpoint evaluation',
-			'Step mode behavior (step, step-over, step-out)',
-			'Continue mode behavior',
 			'Frame depth tracking',
 			'Trace function installation and removal',
 			'Debug state initialization and reset',
@@ -407,9 +283,9 @@ describe('Integration Testing Requirements', () => {
 
 	it('documents what needs E2E tests', () => {
 		const e2eTestRequirements = [
-			'Full debug session: start -> step -> stop',
-			'Breakpoint setting and hitting',
-			'Step action execution (all 5 types)',
+			'Full debug session: auto-record -> scrub -> stop',
+			'Breakpoint setting and jump-to-breakpoint',
+			'Scrubber navigation (forward/back, jump to markers)',
 			'Variable inspection in UI',
 			'Call stack display',
 			'Stdout display during debug',
