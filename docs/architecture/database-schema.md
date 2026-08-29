@@ -385,20 +385,22 @@ VIEW plate `student_point_state_v` (`security_invoker = on`).
 
 ### Fonctions PL/pgSQL
 
-| Fonction                                      | Type                   | Rôle                                                                                                                                                                                                                               |
-| --------------------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `next_curriculum_point_code(grade)`           | `VOLATILE` def         | Prochain code libre du niveau. `pg_advisory_xact_lock` sur le préfixe pour sérialiser les attributions concurrentes.                                                                                                               |
-| `assign_curriculum_point_code()`              | `trigger`              | BEFORE INSERT : remplit `code` s'il est vide, depuis le grade de l'objectif.                                                                                                                                                       |
-| `place_curriculum_point_last()`               | `trigger`              | BEFORE INSERT : `display_order = max + 1` dans l'objectif quand il vaut 0. Sans ça un point créé dans l'app arrivait **en premier**, les points seedés commençant à 1.                                                             |
-| `reorder_curriculum_points(objective, ids[])` | `VOLATILE` **invoker** | Renumérote 1..N en une transaction. Refuse une liste qui ne couvre pas exactement l'objectif (archivés compris) : un sous-ensemble laisserait le reste sur ses anciennes valeurs. INVOKER pour que la RLS s'applique à l'écriture. |
-| `curriculum_point_reference_counts(point_id)` | `STABLE` def           | `{}` si le point est libre, sinon les compteurs non nuls par nature (questions, exercices, séances, élèves, listes, flags SRS).                                                                                                    |
-| `curriculum_referenced_points(grade)`         | `STABLE` def           | Les points d'un niveau qu'on ne peut plus supprimer sans perte — une requête pour tout l'arbre.                                                                                                                                    |
-| `update_student_point_state(student, point)`  | `VOLATILE` def         | Recalcule le cache selon `regime_acquisition`. Retrouve les tentatives via `question_template_points` (pas de FK directe attempt → point). Supprime la ligne si plus aucune tentative.                                             |
-| `update_student_observable_state`             | `VOLATILE` def         | Recalcule le cache observable, puis cascade vers le niveau de compétence.                                                                                                                                                          |
-| `update_student_competence_level`             | `VOLATILE` def         | UPSERT du cache compétence avec les garde-fous §6.4.                                                                                                                                                                               |
-| `compute_<code>_level` × 6                    | `STABLE` def           | Règle conjonctive par compétence (chercher, calculer, raisonner, communiquer, modeliser, representer).                                                                                                                             |
-| `compute_competence_level`                    | `STABLE` def           | Dispatcher sur `math_competences.code`.                                                                                                                                                                                            |
-| `skill_attempts_after_insert`                 | `trigger`              | Régime contenus : boucle sur `question_template_points`. Régime compétences : cascade observable.                                                                                                                                  |
+| Fonction                                                                                  | Type                   | Rôle                                                                                                                                                                                                                               |
+| ----------------------------------------------------------------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `next_curriculum_point_code(grade)`                                                       | `VOLATILE` def         | Prochain code libre du niveau. `pg_advisory_xact_lock` sur le préfixe pour sérialiser les attributions concurrentes.                                                                                                               |
+| `assign_curriculum_point_code()`                                                          | `trigger`              | BEFORE INSERT : remplit `code` s'il est vide, depuis le grade de l'objectif.                                                                                                                                                       |
+| `place_curriculum_point_last()`                                                           | `trigger`              | BEFORE INSERT : `display_order = max + 1` dans l'objectif quand il vaut 0. Sans ça un point créé dans l'app arrivait **en premier**, les points seedés commençant à 1.                                                             |
+| `reorder_curriculum_points(objective, ids[])`                                             | `VOLATILE` **invoker** | Renumérote 1..N en une transaction. Refuse une liste qui ne couvre pas exactement l'objectif (archivés compris) : un sous-ensemble laisserait le reste sur ses anciennes valeurs. INVOKER pour que la RLS s'applique à l'écriture. |
+| `place_curriculum_theme_last()` · `place_curriculum_objective_last()`                     | `trigger`              | Mêmes triggers pour les deux niveaux au-dessus. Ajoutés le 2026-09-01 : ils manquaient, et deux objectifs à 0 rendaient un thème entier impossible à réordonner.                                                                   |
+| `reorder_curriculum_themes(grade, ids[])` · `reorder_curriculum_objectives(theme, ids[])` | `VOLATILE` **invoker** | Idem pour les thèmes et les objectifs.                                                                                                                                                                                             |
+| `curriculum_point_reference_counts(point_id)`                                             | `STABLE` def           | `{}` si le point est libre, sinon les compteurs non nuls par nature (questions, exercices, séances, élèves, listes, flags SRS).                                                                                                    |
+| `curriculum_referenced_points(grade)`                                                     | `STABLE` def           | Les points d'un niveau qu'on ne peut plus supprimer sans perte — une requête pour tout l'arbre.                                                                                                                                    |
+| `update_student_point_state(student, point)`                                              | `VOLATILE` def         | Recalcule le cache selon `regime_acquisition`. Retrouve les tentatives via `question_template_points` (pas de FK directe attempt → point). Supprime la ligne si plus aucune tentative.                                             |
+| `update_student_observable_state`                                                         | `VOLATILE` def         | Recalcule le cache observable, puis cascade vers le niveau de compétence.                                                                                                                                                          |
+| `update_student_competence_level`                                                         | `VOLATILE` def         | UPSERT du cache compétence avec les garde-fous §6.4.                                                                                                                                                                               |
+| `compute_<code>_level` × 6                                                                | `STABLE` def           | Règle conjonctive par compétence (chercher, calculer, raisonner, communiquer, modeliser, representer).                                                                                                                             |
+| `compute_competence_level`                                                                | `STABLE` def           | Dispatcher sur `math_competences.code`.                                                                                                                                                                                            |
+| `skill_attempts_after_insert`                                                             | `trigger`              | Régime contenus : boucle sur `question_template_points`. Régime compétences : cascade observable.                                                                                                                                  |
 
 Toutes `SECURITY DEFINER` avec `SET search_path = public, pg_temp` (décision 72),
 sauf `reorder_curriculum_points()` — qui écrit, et doit donc rester soumise à la
@@ -408,11 +410,35 @@ calculé sur toute la table même si une RLS masquait des lignes à l'appelant.
 
 ### Triggers
 
-| Trigger                           | Table               | Quand                      | Action                           |
-| --------------------------------- | ------------------- | -------------------------- | -------------------------------- |
-| `curriculum_points_assign_code`   | `curriculum_points` | BEFORE INSERT FOR EACH ROW | `assign_curriculum_point_code()` |
-| `curriculum_points_place_last`    | `curriculum_points` | BEFORE INSERT FOR EACH ROW | `place_curriculum_point_last()`  |
-| `trg_skill_attempts_after_insert` | `skill_attempts`    | AFTER INSERT FOR EACH ROW  | `skill_attempts_after_insert()`  |
+| Trigger                            | Table                   | Quand                      | Action                              |
+| ---------------------------------- | ----------------------- | -------------------------- | ----------------------------------- |
+| `curriculum_points_assign_code`    | `curriculum_points`     | BEFORE INSERT FOR EACH ROW | `assign_curriculum_point_code()`    |
+| `curriculum_points_place_last`     | `curriculum_points`     | BEFORE INSERT FOR EACH ROW | `place_curriculum_point_last()`     |
+| `curriculum_themes_place_last`     | `curriculum_themes`     | BEFORE INSERT FOR EACH ROW | `place_curriculum_theme_last()`     |
+| `curriculum_objectives_place_last` | `curriculum_objectives` | BEFORE INSERT FOR EACH ROW | `place_curriculum_objective_last()` |
+| `trg_skill_attempts_after_insert`  | `skill_attempts`        | AFTER INSERT FOR EACH ROW  | `skill_attempts_after_insert()`     |
+
+### Position d'affichage — les trois niveaux
+
+`display_order` est **local à sa fratrie** (1..N dans le thème, dans l'objectif,
+dans le niveau) et n'a aucun rapport avec le `code` : rien ne trie par code, et
+un nœud déplacé garde le sien.
+
+Trois invariants, tenus par la base et non par le client :
+
+- un nœud créé sans position se place **en dernier** (`display_order = 0` à
+  l'insertion signifie « à la fin ») ;
+- réordonner **renumérote la fratrie entière 1..N** en une transaction, via
+  `reorder_curriculum_*`, qui refuse une liste ne couvrant pas exactement la
+  fratrie ;
+- les positions existantes ont été remises à plat par les migrations
+  `20260901090000` (points) et `20260901120000` (thèmes et objectifs).
+
+L'échange deux-à-deux qu'utilisait l'UI n'était pas seulement lent — deux
+requêtes et un rechargement par cran — il était **faux** dès que deux frères
+partageaient une position : troquer 0 contre 0 ne fait rien, et la fratrie
+paraissait bloquée. C'est arrivé en vrai sur « Probabilités et statistiques » de
+1ʳᵉ spé.
 
 ### Suppression d'un point — garde applicative
 

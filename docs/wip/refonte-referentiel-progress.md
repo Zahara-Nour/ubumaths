@@ -275,16 +275,97 @@ objet que TypeScript croyait complet.
 
 ---
 
-## 8. Point de reprise
+## 8. Durcissement de la page Programme (2026-08-29 → 09-01)
 
-**Tout est commité, arbre de travail propre.** Neuf commits sur
-`feat/refonte-referentiel`. Rien n'est poussé, aucune PR, aucune migration
-appliquée en prod — les trois choses qui demandent l'accord explicite de David.
+Une fois le référentiel éditable, l'usage réel a sorti une série de défauts que
+les tests ne voyaient pas. Ils tiennent tous à la même cause : **les tests
+d'intégration importent les handlers par leur chemin de fichier**, ils ne
+traversent jamais l'URL que le client construit ni le rendu de la page.
 
-Dernier état vérifié : `pnpm check:incremental` 1721 fichiers / 0 erreur ·
-`pnpm test:server` 825 fichiers / 31 865 tests · `pnpm test:integration`
-398 passés, **2 échecs pré-existants** (`admin-elevation`, `bad_jwt` — reproduits
-sur le schéma de `main`, dérive de version gotrue v2.190.0 / v2.195.0).
+### L'édition d'un objectif était morte
+
+La fusion a renommé la route `items` → `objectives` ; le ternaire qui
+construisait l'URL côté page ne l'a pas suivi. Renommer, réordonner et supprimer
+un objectif répondaient **404** depuis le 2026-08-29, sans que rien ne le
+signale — seule la création marchait, parce qu'elle appelle `objectives` en dur.
+
+La table niveau → chemin vit désormais dans `$lib/config/curriculum-levels.ts`,
+avec un test qui vérifie que chaque chemin correspond à une route réelle,
+collection **et** détail. Le vocabulaire suit : « item » est mort avec
+`curriculum_items`, l'UI dit « objectif » partout (les dialogues affichaient
+« Nouveau item »).
+
+### Le réordonnancement était faux, pas seulement lent
+
+Voir `database-schema.md` § « Position d'affichage ». L'échange deux-à-deux ne
+faisait rien dès que deux frères partageaient une position — ce qui arrivait dès
+la première création, puisque rien ne plaçait un nouveau nœud en dernier.
+
+La logique de réinsertion part dans `$lib/utils/reorder.ts` avec ses tests :
+c'est la partie qui se trompe en silence, le retrait décalant la cible d'un cran
+quand on descend mais pas quand on monte.
+
+### Ergonomie du glisser-déposer
+
+Deux reproches de David, tous deux justes : on ne voyait pas où l'insertion se
+ferait (contour, qui ne dit pas de quel côté), et la liste ne bougeait qu'après
+l'aller-retour serveur suivi d'un `invalidateAll()`.
+
+Une barre se dessine désormais du côté survolé, et c'est ce côté qui est
+appliqué. L'ordre est posé localement au dépôt, l'écriture suit, l'ordre d'avant
+revient en cas d'échec. Plus d'`invalidateAll` sur succès : l'écran est déjà
+juste.
+
+### Confirmations
+
+La page utilisait le `confirm()` natif. Remplacé par `ConfirmDialog`, le
+composant du projet. **35 autres fichiers** l'utilisent encore : chantier à part,
+inventorié dans [`confirm-dialog-uniformisation.md`](confirm-dialog-uniformisation.md).
+
+### Environnement de développement local
+
+`.env` pointe sur la **prod** : `pnpm dev` parlait donc à une base sans aucune
+migration de la refonte, d'où une page Programme vide. Un `.env.local`
+(hors dépôt) redirige les 5 variables Supabase vers le local.
+
+La base locale n'avait par ailleurs **aucun profil** — 82 comptes `auth.users`
+sans profil, donc sans rôle. Deux comptes de dev sont désormais seedés
+(`teacher@local.test` / `student@local.test`, domaine réservé par la RFC 2606).
+
+⚠️ `pnpm test:integration` **détruit le compte prof** : son global-setup supprime
+tous les comptes `teacher`, l'invariant mono-professeur n'en tolérant qu'un et
+chaque test devant créer le sien. `pnpm db:dev-accounts` le restaure.
+
+### Le seed contenait des données personnelles réelles
+
+`supabase/seed.sql` se voulait « non-PII » et l'annonçait, mais
+`supabase db dump --data-only` avait aussi vidé les schémas `auth` et `storage` :
+82 comptes réels d'élèves mineurs, 79 identités Google, 8 jetons de
+rafraîchissement, dans un dépôt **public**, depuis le 2026-06-16.
+
+Traité le 2026-08-29 : jetons révoqués en prod (aucun des 8 n'est plus
+utilisable, vérifié), fichier nettoyé (354 Ko → 48 Ko), historique réécrit au
+`git filter-repo` et force-pushé sur les 17 branches et 189 tags. Reste que
+GitHub sert les objets devenus inatteignables jusqu'à son propre ramassage ;
+David a évalué le risque résiduel comme acceptable (0 fork, 0 star, 0 watcher) et
+choisi de garder le dépôt public.
+
+**Effet de bord inattendu** : les deux échecs `admin-elevation` que j'attribuais
+depuis des semaines à une dérive de version gotrue venaient de ce seed, qui
+injectait les `auth.sessions` et `auth.refresh_tokens` de la prod dans le GoTrue
+local et corrompait son état. Ils passent depuis le nettoyage.
+
+---
+
+## 9. Point de reprise
+
+**Tout est commité, arbre de travail propre.** 18 commits sur
+`feat/refonte-referentiel`, poussée sur origin. Aucune migration appliquée en
+prod — la seule des trois qui demande encore l'accord explicite de David.
+
+Dernier état vérifié : `pnpm check:incremental` 1724 fichiers / 0 erreur ·
+`pnpm test:server` 31 881 tests · `pnpm test:integration` **412 tests, zéro
+échec** (les 2 `admin-elevation` sont réparés, cf. §8).
 
 L'isolation des tests est réparée et vérifiée : après une suite complète, le
 grade 6 reste à 6 thèmes / 20 objectifs / 95 points (il montait à 11 thèmes
@@ -296,7 +377,7 @@ réintégrées — leur contenu reste dans `docs/wip/referentiel/6e-savoirs.md`.
 
 ---
 
-## 9. Reste du chantier
+## 10. Reste du chantier
 
 **Phase 4 — banque de questions.** ⚠️ **Le stock legacy ne résout pas la 1ʳᵉ spé** : sur les 633 questions converties, **31 seulement sont de niveau 1ʳᵉ spé** (27 seconde, 1 terminale, 574 primaire/collège). Le pipeline d'import (`scripts/import-questions-to-db.ts` + UI de revue admin) existe et n'a jamais tourné en prod (2 templates en base).
 
@@ -308,7 +389,11 @@ Dimensionnement : la convention « 1 template = 1 variation canonique, 2-3 par p
 
 ---
 
-## 10. Pièges de vérification (appris à la dure)
+## 11. Pièges de vérification (appris à la dure)
+
+- **Tests ciblés pendant l'itération, suite complète une seule fois avant de commiter.** Déjà écrit dans `docs/claude/quality-standards.md`, oublié le 2026-08-29 : une dizaine de suites complètes (~180 s) dans une seule session, dont trois ou quatre uniquement pour relire un message d'erreur non capturé. Rediriger la sortie vers un fichier, puis la filtrer.
+- **Lire la configuration avant de théoriser sur un échec.** `singleFork: true` dans `vitest.base.config.ts` invalidait à lui seul deux hypothèses (parallélisme, rejeu du fichier) poursuivies plusieurs minutes chacune.
+- **Un test vert ne prouve pas que l'UI marche.** Les tests d'intégration importent les handlers par leur chemin de fichier : ils ne traversent ni l'URL construite par le client, ni le rendu. Trois actions de la page Programme étaient mortes avec une suite entièrement verte.
 
 - **`pnpm db:types` vise la PROD** (`--project-id`), pas le local. En dev local-first, utiliser `npx supabase gen types typescript --local`, sinon on écrase les bons types par les anciens.
 - **`check:incremental` exclut les tests** (`tsconfig.check.json`) et **`test:integration` ne couvre pas les unitaires**. Des tests unitaires serveur sont restés cassés une phase entière sans être vus. **Toujours lancer `pnpm test:server`** (825 fichiers, ~31 900 tests, ~2 min, pas d'OOM).
