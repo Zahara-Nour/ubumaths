@@ -39,6 +39,8 @@ Plus un troisième jeu d'étiquettes libres (`question_templates.theme/domain/su
 10. **`exigence`** : `attendu` · `approfondissement`.
 11. **Séparation `regime_acquisition` / listes d'automatismes** (cf. §5) — un champ confondait _comment on mesure_ et _d'où vient le point_.
 12. **Pas de thème « Automatismes »** dans l'arbre de 1ʳᵉ : ses points sont des acquis des années antérieures. Ils vivront dans l'arbre du niveau où ils sont introduits, reliés par `curriculum_point_automatismes`.
+13. **Le markdown amorce, l'application fait foi** (cf. §7) — le seed devient un `DO` gardé qui ne remplit qu'un niveau vide. Corriger le markdown d'un niveau déjà en base ne produit plus rien : la correction se fait dans la page Programme.
+14. **Le code est attribué par la base** (cf. §7) — trigger, série continue par niveau, colonne `NOT NULL`. C'est le seul identifiant d'un point à la fois lisible et stable d'un environnement à l'autre, donc le seul citable dans une fiche.
 
 ---
 
@@ -157,11 +159,105 @@ Corriger le markdown, relancer `pnpm tsx scripts/generate-curriculum-1re-spe-see
 
 ---
 
-## 7. Point de reprise
+## 7. Le markdown amorce, l'application fait foi
 
-**Tout est commité, arbre de travail propre.** Cinq commits sur
+**Décidé le 2026-08-29.** Le référentiel ne se modifie plus en éditant un
+fichier et en relançant une commande : tout se fait dans la page Programme.
+
+### Ce que le markdown fait encore
+
+Amorcer un niveau **qui n'existe pas encore** — 2de, terminale, une 6ᵉ refaite.
+Saisir 153 points à la main dans un formulaire serait une punition ; l'import en
+masse reste son bon usage. Passé l'amorçage il n'a plus voix au chapitre.
+
+### Ce qui a changé dans le seed
+
+Il **synchronisait** : `ON CONFLICT (code) DO UPDATE`, plus archivage de ce qui
+avait disparu du markdown. Sur une base où le prof avait travaillé dans l'app,
+le rejeu défaisait son travail. Il **amorce** désormais — tout le corps est dans
+un `DO` gardé par `IF EXISTS (… WHERE grade = '1_SPE') THEN RETURN`. Rejouer ne
+fait plus rien du tout.
+
+Vérifié de bout en bout : libellé de `1SPE-047` modifié en base, seed rejoué →
+la modification tient, 153 points, 0 archivé. Sous l'ancien seed elle était
+écrasée par le texte du BO.
+
+### Le code, désormais attribué par la base
+
+Le `code` avait été introduit pour que le rejeu du seed retrouve un point après
+renommage. Ce rôle disparaît avec la synchronisation ; il en garde un autre, qui
+devient le principal : **le seul identifiant d'un point à la fois lisible et
+stable d'un environnement à l'autre**. Les UUID diffèrent entre le local et la
+prod, `1SPE-047` non — c'est donc lui qu'on écrit dans une fiche, dans une URL,
+ou qu'on donne à un élève.
+
+- Attribué par **trigger** (`curriculum_points_assign_code`) : aucun chemin
+  d'insertion ne peut l'oublier — ni l'API, ni un seed, ni un `INSERT` à la main.
+- **Une série continue par niveau** : les points créés dans l'app prennent la
+  suite (`1SPE-154`…), sans marqueur distinctif — leur provenance n'a plus
+  d'effet sur rien maintenant que le seed ne rejoue plus.
+- Les 95 points de 6ᵉ, seedés avant l'existence de la colonne, ont été
+  **rattrapés** (`6-001`…`6-095`) ; la colonne est ensuite passée `NOT NULL`.
+- Un point archivé **garde son numéro** : archiver ne libère rien. Seule une
+  suppression définitive le rend disponible — et l'API la refuse dès qu'il y a
+  la moindre référence.
+
+`curriculum_points.code` est `NOT NULL` sans défaut, ce que Postgres ne sait pas
+distinguer de « fourni par l'appelant » : le type généré exige donc `code` à
+l'insertion. Le cast vit à un seul endroit, `pointInsert()` dans
+`src/lib/server/curriculum.ts`.
+
+### La suppression, enfin gardée
+
+Cinq des six clés étrangères vers `curriculum_points` sont en `CASCADE`. Un clic
+sur « Supprimer » effaçait donc sans un mot la couverture du cahier de texte et
+l'acquisition des élèves attachées au point.
+
+`DELETE` renvoie maintenant **409** dès qu'une référence existe, avec la phrase
+qui dit laquelle (« Ce point est utilisé par 3 exercices et 12 élèves… archivez-le
+plutôt »). Comptage côté base en `SECURITY DEFINER` : compter à travers les RLS
+de l'appelant renverrait zéro là où un élève a de l'historique que le prof ne
+voit pas, et laisserait passer la suppression.
+
+### Effet de bord réparé
+
+`getCurriculumTree()` renvoyait les points archivés à ses quatre appelants —
+l'archivage n'avait donc **aucun effet** sur le tagging d'exercices, la
+couverture du cahier de texte ni la heatmap Avancement. Ils sont désormais
+exclus par défaut ; seule la page Programme les demande, pour pouvoir les
+restaurer.
+
+### Ce que la page Programme sait faire
+
+|                                          | avant                            | après                              |
+| ---------------------------------------- | -------------------------------- | ---------------------------------- |
+| Nom, ordre, `kind`                       | ✅                               | ✅                                 |
+| `exigence`, `rang`, `regime_acquisition` | ❌                               | ✅                                 |
+| Code                                     | invisible                        | affiché, non modifiable            |
+| Déplacer un point sous un autre objectif | ❌                               | ✅ (garde code et historique)      |
+| Archiver / restaurer                     | ❌                               | ✅                                 |
+| Supprimer                                | toujours, en cascade silencieuse | seulement si rien n'y est accroché |
+
+Trois bugs trouvés en chemin : le sélecteur de `kind` proposait encore
+`— non précisé` et ignorait `demonstration`, alors que la colonne est `NOT NULL`
+à trois valeurs depuis la fusion ; l'API ignorait `exigence`,
+`regime_acquisition` et `rang` à la création (le schéma Zod les acceptait,
+l'`INSERT` ne les passait pas) ; et `POINT_COLS` ne projetait ni `code`, ni
+`exigence`, ni `regime_acquisition`, ni `rang` — des champs `undefined` sur un
+objet que TypeScript croyait complet.
+
+---
+
+## 8. Point de reprise
+
+**Tout est commité, arbre de travail propre.** Neuf commits sur
 `feat/refonte-referentiel`. Rien n'est poussé, aucune PR, aucune migration
 appliquée en prod — les trois choses qui demandent l'accord explicite de David.
+
+Dernier état vérifié : `pnpm check:incremental` 1721 fichiers / 0 erreur ·
+`pnpm test:server` 825 fichiers / 31 865 tests · `pnpm test:integration`
+398 passés, **2 échecs pré-existants** (`admin-elevation`, `bad_jwt` — reproduits
+sur le schéma de `main`, dérive de version gotrue v2.190.0 / v2.195.0).
 
 L'isolation des tests est réparée et vérifiée : après une suite complète, le
 grade 6 reste à 6 thèmes / 20 objectifs / 95 points (il montait à 11 thèmes
@@ -173,7 +269,7 @@ réintégrées — leur contenu reste dans `docs/wip/referentiel/6e-savoirs.md`.
 
 ---
 
-## 8. Reste du chantier
+## 9. Reste du chantier
 
 **Phase 4 — banque de questions.** ⚠️ **Le stock legacy ne résout pas la 1ʳᵉ spé** : sur les 633 questions converties, **31 seulement sont de niveau 1ʳᵉ spé** (27 seconde, 1 terminale, 574 primaire/collège). Le pipeline d'import (`scripts/import-questions-to-db.ts` + UI de revue admin) existe et n'a jamais tourné en prod (2 templates en base).
 
@@ -185,7 +281,7 @@ Dimensionnement : la convention « 1 template = 1 variation canonique, 2-3 par p
 
 ---
 
-## 9. Pièges de vérification (appris à la dure)
+## 10. Pièges de vérification (appris à la dure)
 
 - **`pnpm db:types` vise la PROD** (`--project-id`), pas le local. En dev local-first, utiliser `npx supabase gen types typescript --local`, sinon on écrase les bons types par les anciens.
 - **`check:incremental` exclut les tests** (`tsconfig.check.json`) et **`test:integration` ne couvre pas les unitaires**. Des tests unitaires serveur sont restés cassés une phase entière sans être vus. **Toujours lancer `pnpm test:server`** (825 fichiers, ~31 900 tests, ~2 min, pas d'OOM).

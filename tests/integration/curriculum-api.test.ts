@@ -39,7 +39,10 @@ import {
 	GET as pointsGET,
 	POST as pointsPOST
 } from '../../src/routes/api/teacher/curriculum/points/+server';
-import { PATCH as pointPATCH } from '../../src/routes/api/teacher/curriculum/points/[pointId]/+server';
+import {
+	PATCH as pointPATCH,
+	DELETE as pointDELETE
+} from '../../src/routes/api/teacher/curriculum/points/[pointId]/+server';
 
 import {
 	createServiceRoleClient,
@@ -430,5 +433,144 @@ describe('Points CRUD', () => {
 		expect(res.status).toBe(200);
 		const data = await res.json();
 		expect(data.points).toHaveLength(2);
+	});
+});
+
+// ============================================================================
+// Code, déplacement, garde de suppression
+// ============================================================================
+// Depuis le 2026-08-31 la page Programme fait foi sur le référentiel : le
+// markdown n'amorce plus qu'un niveau vide. Ces trois propriétés sont ce qui
+// rend cette bascule sûre.
+
+describe('Points — code attribué par la base', () => {
+	it('donne au point créé un code de la série du niveau', async () => {
+		expect.assertions(2);
+		const locals = buildLocals(await teacherUser());
+		const item = await svcItem((await svcTheme()).id);
+
+		const res = await pointsPOST({
+			request: req({ objective_id: item.id, name: 'Premier point', kind: 'savoir_faire' }),
+			locals
+		} as never);
+		const body = await res.json();
+
+		expect(res.status).toBe(201);
+		// Préfixe = le grade sans underscore ; TEST_GRADE vaut '5'.
+		expect(body.point.code).toMatch(/^5-\d{3}$/);
+	});
+
+	it('donne au suivant le numéro d’après, sans trou ni collision', async () => {
+		expect.assertions(1);
+		const locals = buildLocals(await teacherUser());
+		const item = await svcItem((await svcTheme()).id);
+
+		const first = await (
+			await pointsPOST({
+				request: req({ objective_id: item.id, name: 'Point A', kind: 'connaissance' }),
+				locals
+			} as never)
+		).json();
+		const second = await (
+			await pointsPOST({
+				request: req({ objective_id: item.id, name: 'Point B', kind: 'connaissance' }),
+				locals
+			} as never)
+		).json();
+
+		const n = (code: string) => Number(code.split('-')[1]);
+		expect(n(second.point.code)).toBe(n(first.point.code) + 1);
+	});
+
+	it('honore exigence, régime et rang à la création', async () => {
+		expect.assertions(3);
+		const locals = buildLocals(await teacherUser());
+		const item = await svcItem((await svcTheme()).id);
+
+		const res = await pointsPOST({
+			request: req({
+				objective_id: item.id,
+				name: 'Point paramétré',
+				kind: 'savoir_faire',
+				exigence: 'approfondissement',
+				regime_acquisition: 'fluence',
+				rang: 3
+			}),
+			locals
+		} as never);
+		const { point } = await res.json();
+
+		expect(point.exigence).toBe('approfondissement');
+		expect(point.regime_acquisition).toBe('fluence');
+		expect(point.rang).toBe(3);
+	});
+});
+
+describe('PATCH /points/[pointId] — déplacement', () => {
+	it('déplace un point sous un autre objectif en lui gardant son code', async () => {
+		expect.assertions(3);
+		const locals = buildLocals(await teacherUser());
+		const theme = await svcTheme();
+		const from = await svcItem(theme.id, 'Objectif de départ');
+		const to = await svcItem(theme.id, 'Objectif d’arrivée');
+
+		const created = await (
+			await pointsPOST({
+				request: req({ objective_id: from.id, name: 'Point voyageur', kind: 'savoir_faire' }),
+				locals
+			} as never)
+		).json();
+
+		const res = await pointPATCH({
+			params: { pointId: created.point.id },
+			request: req({ objective_id: to.id }, 'PATCH'),
+			locals
+		} as never);
+		const { point } = await res.json();
+
+		expect(res.status).toBe(200);
+		expect(point.objective_id).toBe(to.id);
+		// Le code survit au déplacement : c'est l'identité du point, pas sa place.
+		expect(point.code).toBe(created.point.code);
+	});
+});
+
+describe('DELETE /points/[pointId] — garde de suppression', () => {
+	it('supprime un point que rien ne référence', async () => {
+		expect.assertions(2);
+		const locals = buildLocals(await teacherUser());
+		const point = await svcPoint((await svcItem((await svcTheme()).id)).id);
+
+		const res = await pointDELETE({ params: { pointId: point.id }, locals } as never);
+		expect(res.status).toBe(200);
+
+		const { data } = await service
+			.from('curriculum_points' as never)
+			.select('id')
+			.eq('id', point.id)
+			.maybeSingle();
+		expect(data).toBeNull();
+	});
+
+	// Cinq des six clés étrangères vers curriculum_points sont en CASCADE : sans
+	// cette garde, un clic sur « Supprimer » effacerait sans un mot la couverture
+	// du cahier de texte et l'acquisition des élèves attachées au point.
+	it('refuse 409 quand quelque chose y est accroché, et dit quoi', async () => {
+		expect.assertions(4);
+		const locals = buildLocals(await teacherUser());
+		const point = await svcPoint((await svcItem((await svcTheme()).id)).id);
+
+		// La référence la moins coûteuse à fabriquer ; la garde ne distingue pas.
+		const { error: linkErr } = await service
+			.from('curriculum_point_automatismes' as never)
+			.insert({ point_id: point.id, grade: TEST_GRADE } as never);
+		expect(linkErr).toBeNull();
+
+		const res = await pointDELETE({ params: { pointId: point.id }, locals } as never);
+		const body = await res.json();
+
+		expect(res.status).toBe(409);
+		expect(body.references).toEqual({ automatisme_lists: 1 });
+		expect(body.error).toMatch(/archivez-le plutôt/);
 	});
 });

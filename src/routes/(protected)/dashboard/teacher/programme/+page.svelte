@@ -3,8 +3,12 @@
 	/**
 	 * Teacher — Programme (curriculum tree editor).
 	 *
-	 * Editable Thème → Item → Point tree for a grade. Mutations go through the
-	 * /api/teacher/curriculum endpoints; the page reloads via invalidateAll().
+	 * Editable Thème → Item → Point tree for a grade. This page is the source of
+	 * truth for the referential: the markdown under docs/wip/referentiel/ only
+	 * bootstraps a level that doesn't exist yet, everything after happens here.
+	 *
+	 * Mutations go through the /api/teacher/curriculum endpoints; the page
+	 * reloads via invalidateAll().
 	 */
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
@@ -14,11 +18,14 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		Plus,
 		Pencil,
 		Trash2,
+		Archive,
+		ArchiveRestore,
 		ChevronRight,
 		ChevronDown,
 		ArrowUp,
@@ -28,29 +35,80 @@
 	import type { PageData } from './$types';
 
 	type Level = 'theme' | 'item' | 'point';
-	type DialogKind = 'none' | 'connaissance' | 'savoir_faire';
+	type PointKind = 'connaissance' | 'savoir_faire' | 'demonstration';
+	type Exigence = 'attendu' | 'approfondissement';
+	type Regime = 'fluence' | 'diversite';
+	type Point = PageData['tree'][number]['objectives'][number]['points'][number];
 
 	let { data }: { data: PageData } = $props();
 
 	// --- expansion (keyed by id; $state proxy → reactive) ---------------------
 	let openThemes = $state<Record<string, boolean>>({});
 	let openItems = $state<Record<string, boolean>>({});
+	let showArchived = $state(false);
 
 	// --- dialog state ---------------------------------------------------------
 	let dialogOpen = $state(false);
 	let dialogMode = $state<'create' | 'edit'>('create');
 	let dialogLevel = $state<Level>('theme');
 	let dialogName = $state('');
-	let dialogKind = $state<DialogKind>('none');
+	let dialogKind = $state<PointKind>('savoir_faire');
+	let dialogExigence = $state<Exigence>('attendu');
+	let dialogRegime = $state<Regime>('diversite');
+	/** '' = aucun rang ; sinon '1'..'4' (MySelect ne manipule que des chaînes). */
+	let dialogRang = $state('');
+	/** Édition d'un point : l'objectif où il vit — le changer le déplace. */
+	let dialogObjectiveId = $state('');
+	/** Édition d'un point : affiché en lecture seule, jamais modifiable. */
+	let dialogCode = $state('');
 	/** Edit: id of the node. Create: id of the parent ('' for a theme). */
 	let dialogTargetId = $state('');
 	let busy = $state(false);
 
 	const kindItems = [
-		{ value: 'none', label: '— non précisé' },
 		{ value: 'connaissance', label: 'Connaissance' },
-		{ value: 'savoir_faire', label: 'Savoir-faire' }
+		{ value: 'savoir_faire', label: 'Savoir-faire' },
+		{ value: 'demonstration', label: 'Démonstration' }
 	];
+
+	const exigenceItems = [
+		{ value: 'attendu', label: 'Attendu' },
+		{ value: 'approfondissement', label: 'Approfondissement' }
+	];
+
+	const regimeItems = [
+		{ value: 'diversite', label: 'Diversité — des cas variés' },
+		{ value: 'fluence', label: 'Fluence — vite, souvent, durablement' }
+	];
+
+	const rangItems = [
+		{ value: '', label: '— aucun (simple liste)' },
+		{ value: '1', label: 'Rang 1' },
+		{ value: '2', label: 'Rang 2' },
+		{ value: '3', label: 'Rang 3' },
+		{ value: '4', label: 'Rang 4' }
+	];
+
+	/** Les points qu'une suppression amputerait : tags, couverture, acquisition. */
+	const referenced = $derived(new Set(data.referencedPointIds));
+
+	/** Destination possible d'un déplacement : tous les objectifs du niveau. */
+	const objectiveItems = $derived(
+		data.tree.flatMap((theme) =>
+			theme.objectives.map((obj) => ({
+				value: obj.id,
+				label: `${theme.name} › ${obj.name}`
+			}))
+		)
+	);
+
+	const archivedCount = $derived(
+		data.tree.reduce(
+			(sum, t) =>
+				sum + t.objectives.reduce((s, i) => s + i.points.filter((p) => p.archived_at).length, 0),
+			0
+		)
+	);
 
 	const dialogTitle = $derived.by(() => {
 		const noun = dialogLevel === 'theme' ? 'thème' : dialogLevel === 'item' ? 'item' : 'point';
@@ -62,14 +120,19 @@
 		return level === 'theme' ? 'themes' : level === 'item' ? 'items' : 'points';
 	}
 
-	function kindLabel(kind: string | null): string | null {
+	function kindLabel(kind: string): string {
 		if (kind === 'connaissance') return 'connaissance';
-		if (kind === 'savoir_faire') return 'savoir-faire';
-		return null;
+		if (kind === 'demonstration') return 'démonstration';
+		return 'savoir-faire';
 	}
 
 	function pointCount(theme: PageData['tree'][number]): number {
 		return theme.objectives.reduce((sum, i) => sum + i.points.length, 0);
+	}
+
+	/** Masque les archivés tant que la case n'est pas cochée. */
+	function visiblePoints(points: Point[]): Point[] {
+		return showArchived ? points : points.filter((p) => !p.archived_at);
 	}
 
 	// --- API helper -----------------------------------------------------------
@@ -111,16 +174,34 @@
 		dialogLevel = level;
 		dialogTargetId = parentId;
 		dialogName = '';
-		dialogKind = 'none';
+		dialogKind = 'savoir_faire';
+		dialogExigence = 'attendu';
+		dialogRegime = 'diversite';
+		dialogRang = '';
+		dialogObjectiveId = parentId;
+		dialogCode = '';
 		dialogOpen = true;
 	}
 
-	function openEdit(level: Level, node: { id: string; name: string; kind?: string | null }) {
+	function openEditNode(level: 'theme' | 'item', node: { id: string; name: string }) {
 		dialogMode = 'edit';
 		dialogLevel = level;
 		dialogTargetId = node.id;
 		dialogName = node.name;
-		dialogKind = (node.kind as DialogKind) ?? 'none';
+		dialogOpen = true;
+	}
+
+	function openEditPoint(point: Point) {
+		dialogMode = 'edit';
+		dialogLevel = 'point';
+		dialogTargetId = point.id;
+		dialogName = point.name;
+		dialogKind = point.kind as PointKind;
+		dialogExigence = point.exigence as Exigence;
+		dialogRegime = point.regime_acquisition as Regime;
+		dialogRang = point.rang === null ? '' : String(point.rang);
+		dialogObjectiveId = point.objective_id;
+		dialogCode = point.code;
 		dialogOpen = true;
 	}
 
@@ -131,7 +212,17 @@
 			toaster.error('Le nom ne peut pas être vide');
 			return;
 		}
-		const kind = dialogKind === 'none' ? null : dialogKind;
+
+		// Tous les champs d'un point voyagent ensemble : l'API n'applique que ce
+		// qu'elle reçoit, un champ omis garderait son ancienne valeur.
+		const pointFields = {
+			name,
+			kind: dialogKind,
+			exigence: dialogExigence,
+			regime_acquisition: dialogRegime,
+			rang: dialogRang === '' ? null : Number(dialogRang)
+		};
+
 		let ok = false;
 
 		if (dialogMode === 'create') {
@@ -144,22 +235,37 @@
 				});
 				if (ok) openThemes[dialogTargetId] = true;
 			} else {
+				// `code` absent volontairement : la base attribue le suivant de la série.
 				ok = await api('/api/teacher/curriculum/points', 'POST', {
 					objective_id: dialogTargetId,
-					name,
-					kind
+					...pointFields
 				});
 				if (ok) openItems[dialogTargetId] = true;
 			}
 		} else {
 			const url = `/api/teacher/curriculum/${basePath(dialogLevel)}/${dialogTargetId}`;
-			const payload = dialogLevel === 'point' ? { name, kind } : { name };
+			const payload =
+				dialogLevel === 'point' ? { ...pointFields, objective_id: dialogObjectiveId } : { name };
 			ok = await api(url, 'PATCH', payload);
 		}
 
 		if (ok) {
 			dialogOpen = false;
 			toaster.success(dialogMode === 'create' ? 'Ajouté' : 'Modifié');
+			await invalidateAll();
+		}
+	}
+
+	// --- archive / restore ----------------------------------------------------
+	// Le geste normal pour retirer un point : il sort des vues, du tagging et du
+	// calcul de couverture, mais son historique reste attaché.
+	async function toggleArchive(point: Point) {
+		const archiving = !point.archived_at;
+		const ok = await api(`/api/teacher/curriculum/points/${point.id}`, 'PATCH', {
+			archived: archiving
+		});
+		if (ok) {
+			toaster.success(archiving ? 'Archivé' : 'Restauré');
 			await invalidateAll();
 		}
 	}
@@ -171,7 +277,7 @@
 				? '\n\nTous ses items et points seront aussi supprimés.'
 				: level === 'item'
 					? '\n\nTous ses points seront aussi supprimés.'
-					: '';
+					: '\n\nDéfinitif. Pour garder l’historique, archivez plutôt.';
 		if (!confirm(`Supprimer « ${node.name} » ?${warn}`)) return;
 		const ok = await api(`/api/teacher/curriculum/${basePath(level)}/${node.id}`, 'DELETE');
 		if (ok) {
@@ -229,6 +335,15 @@
 		</div>
 	</div>
 
+	{#if archivedCount > 0}
+		<MyCheckbox
+			bind:checked={showArchived}
+			label="Afficher les {archivedCount} point{archivedCount > 1
+				? 's'
+				: ''} archivé{archivedCount > 1 ? 's' : ''}"
+		/>
+	{/if}
+
 	<!-- Tree -->
 	{#if data.tree.length === 0}
 		<div class="rounded-lg border border-dashed p-10 text-center text-muted-foreground">
@@ -258,6 +373,8 @@
 							<Button
 								variant="ghost"
 								size="sm"
+								title="Monter"
+								aria-label="Monter le thème"
 								disabled={busy || ti === 0}
 								onclick={() => reorder('theme', data.tree, ti, 'up')}
 							>
@@ -266,6 +383,8 @@
 							<Button
 								variant="ghost"
 								size="sm"
+								title="Descendre"
+								aria-label="Descendre le thème"
 								disabled={busy || ti === data.tree.length - 1}
 								onclick={() => reorder('theme', data.tree, ti, 'down')}
 							>
@@ -274,14 +393,18 @@
 							<Button
 								variant="ghost"
 								size="sm"
+								title="Renommer"
+								aria-label="Renommer le thème"
 								disabled={busy}
-								onclick={() => openEdit('theme', theme)}
+								onclick={() => openEditNode('theme', theme)}
 							>
 								<Pencil class="h-4 w-4" />
 							</Button>
 							<Button
 								variant="ghost"
 								size="sm"
+								title="Supprimer"
+								aria-label="Supprimer le thème"
 								disabled={busy}
 								onclick={() => deleteNode('theme', theme)}
 							>
@@ -312,6 +435,8 @@
 											<Button
 												variant="ghost"
 												size="sm"
+												title="Monter"
+												aria-label="Monter l'item"
 												disabled={busy || ii === 0}
 												onclick={() => reorder('item', theme.objectives, ii, 'up')}
 											>
@@ -320,6 +445,8 @@
 											<Button
 												variant="ghost"
 												size="sm"
+												title="Descendre"
+												aria-label="Descendre l'item"
 												disabled={busy || ii === theme.objectives.length - 1}
 												onclick={() => reorder('item', theme.objectives, ii, 'down')}
 											>
@@ -328,14 +455,18 @@
 											<Button
 												variant="ghost"
 												size="sm"
+												title="Renommer"
+												aria-label="Renommer l'item"
 												disabled={busy}
-												onclick={() => openEdit('item', item)}
+												onclick={() => openEditNode('item', item)}
 											>
 												<Pencil class="h-4 w-4" />
 											</Button>
 											<Button
 												variant="ghost"
 												size="sm"
+												title="Supprimer"
+												aria-label="Supprimer l'item"
 												disabled={busy}
 												onclick={() => deleteNode('item', item)}
 											>
@@ -346,14 +477,41 @@
 
 									<!-- Points -->
 									{#if openItems[item.id]}
+										{@const points = visiblePoints(item.points)}
 										<div class="space-y-1 border-t p-2 pl-6">
-											{#each item.points as point, pi (point.id)}
-												<div class="flex items-center gap-2 rounded px-1 py-1 hover:bg-muted/50">
-													<span class="flex-1 text-sm">
+											{#each points as point, pi (point.id)}
+												<div
+													class="flex items-start gap-2 rounded px-1 py-1 hover:bg-muted/50"
+													class:opacity-60={point.archived_at}
+												>
+													<code
+														class="mt-1 shrink-0 font-mono text-[11px] text-muted-foreground tabular-nums"
+													>
+														{point.code}
+													</code>
+													<span class="flex-1 text-sm" class:line-through={point.archived_at}>
 														{point.name}
-														{#if kindLabel(point.kind)}
-															<Badge variant="outline" class="ml-2 align-middle text-[10px]">
-																{kindLabel(point.kind)}
+														<Badge variant="outline" class="ml-2 align-middle text-[10px]">
+															{kindLabel(point.kind)}
+														</Badge>
+														{#if point.exigence === 'approfondissement'}
+															<Badge variant="outline" class="ml-1 align-middle text-[10px]">
+																approfondissement
+															</Badge>
+														{/if}
+														{#if point.regime_acquisition === 'fluence'}
+															<Badge variant="secondary" class="ml-1 align-middle text-[10px]">
+																fluence
+															</Badge>
+														{/if}
+														{#if point.rang !== null}
+															<Badge variant="secondary" class="ml-1 align-middle text-[10px]">
+																rang {point.rang}
+															</Badge>
+														{/if}
+														{#if point.archived_at}
+															<Badge variant="outline" class="ml-1 align-middle text-[10px]">
+																archivé
 															</Badge>
 														{/if}
 													</span>
@@ -361,35 +519,63 @@
 														<Button
 															variant="ghost"
 															size="sm"
+															title="Monter"
+															aria-label="Monter le point"
 															disabled={busy || pi === 0}
-															onclick={() => reorder('point', item.points, pi, 'up')}
+															onclick={() => reorder('point', points, pi, 'up')}
 														>
 															<ArrowUp class="h-4 w-4" />
 														</Button>
 														<Button
 															variant="ghost"
 															size="sm"
-															disabled={busy || pi === item.points.length - 1}
-															onclick={() => reorder('point', item.points, pi, 'down')}
+															title="Descendre"
+															aria-label="Descendre le point"
+															disabled={busy || pi === points.length - 1}
+															onclick={() => reorder('point', points, pi, 'down')}
 														>
 															<ArrowDown class="h-4 w-4" />
 														</Button>
 														<Button
 															variant="ghost"
 															size="sm"
+															title="Modifier"
+															aria-label="Modifier le point"
 															disabled={busy}
-															onclick={() => openEdit('point', point)}
+															onclick={() => openEditPoint(point)}
 														>
 															<Pencil class="h-4 w-4" />
 														</Button>
 														<Button
 															variant="ghost"
 															size="sm"
+															title={point.archived_at ? 'Restaurer' : 'Archiver'}
+															aria-label={point.archived_at
+																? 'Restaurer le point'
+																: 'Archiver le point'}
 															disabled={busy}
-															onclick={() => deleteNode('point', point)}
+															onclick={() => toggleArchive(point)}
 														>
-															<Trash2 class="h-4 w-4 text-destructive" />
+															{#if point.archived_at}
+																<ArchiveRestore class="h-4 w-4" />
+															{:else}
+																<Archive class="h-4 w-4" />
+															{/if}
 														</Button>
+														{#if !referenced.has(point.id)}
+															<!-- Uniquement tant que rien n'y est accroché : passé là,
+															     l'API refuse et l'archivage est la bonne action. -->
+															<Button
+																variant="ghost"
+																size="sm"
+																title="Supprimer"
+																aria-label="Supprimer le point"
+																disabled={busy}
+																onclick={() => deleteNode('point', point)}
+															>
+																<Trash2 class="h-4 w-4 text-destructive" />
+															</Button>
+														{/if}
 													</div>
 												</div>
 											{/each}
@@ -425,9 +611,15 @@
 
 <!-- Create / edit dialog -->
 <Dialog.Root bind:open={dialogOpen}>
-	<Dialog.Content class="max-w-lg">
+	<Dialog.Content class="max-h-[85vh] max-w-lg overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title>{dialogTitle}</Dialog.Title>
+			{#if dialogLevel === 'point' && dialogMode === 'edit'}
+				<Dialog.Description>
+					Code <code class="font-mono">{dialogCode}</code> — attribué par l'application, jamais modifiable
+					: c'est lui qui identifie ce point dans les fiches et les tags.
+				</Dialog.Description>
+			{/if}
 		</Dialog.Header>
 		<form
 			class="space-y-4"
@@ -440,12 +632,62 @@
 				<Label for="curriculum-name">Nom</Label>
 				<Input id="curriculum-name" bind:value={dialogName} placeholder="Intitulé…" autofocus />
 			</div>
+
 			{#if dialogLevel === 'point'}
 				<div class="space-y-2">
 					<Label>Type</Label>
 					<MySelect type="single" bind:value={dialogKind} items={kindItems} triggerClass="w-full" />
 				</div>
+
+				<div class="space-y-2">
+					<Label>Exigence</Label>
+					<MySelect
+						type="single"
+						bind:value={dialogExigence}
+						items={exigenceItems}
+						triggerClass="w-full"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<Label>Ce qui prouve la maîtrise</Label>
+					<MySelect
+						type="single"
+						bind:value={dialogRegime}
+						items={regimeItems}
+						triggerClass="w-full"
+					/>
+					<p class="text-xs text-muted-foreground">
+						Diversité : réussi sur au moins 2 questions différentes, sans échec récent. Fluence : 5
+						réussites et 3 sur les 5 dernières — pour ce qui doit rester rapide et fiable.
+					</p>
+				</div>
+
+				<div class="space-y-2">
+					<Label>Rang</Label>
+					<MySelect type="single" bind:value={dialogRang} items={rangItems} triggerClass="w-full" />
+					<p class="text-xs text-muted-foreground">
+						Sans rang, l'objectif s'affiche en simple liste. Avec, ses points forment une échelle de
+						difficulté croissante.
+					</p>
+				</div>
+
+				{#if dialogMode === 'edit'}
+					<div class="space-y-2">
+						<Label>Objectif</Label>
+						<MySelect
+							type="single"
+							bind:value={dialogObjectiveId}
+							items={objectiveItems}
+							triggerClass="w-full"
+						/>
+						<p class="text-xs text-muted-foreground">
+							En changer déplace le point. Il garde son code et tout ce qui y est accroché.
+						</p>
+					</div>
+				{/if}
 			{/if}
+
 			<Dialog.Footer>
 				<Button type="button" variant="outline" onclick={() => (dialogOpen = false)}
 					>{lore.actions.cancel}</Button

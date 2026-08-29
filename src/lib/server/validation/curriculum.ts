@@ -82,6 +82,10 @@ export const createPointSchema = z.object({
 
 export const updatePointSchema = z
 	.object({
+		// Déplacer un point sous un autre objectif — y compris d'un thème à
+		// l'autre. Le point garde son id et son code : ses tags d'exercices, sa
+		// couverture et l'acquisition des élèves suivent le déplacement.
+		objective_id: z.string().uuid().optional(),
 		name: nameSchema.optional(),
 		display_order: displayOrderSchema.optional(),
 		kind: pointKindSchema.optional(),
@@ -91,17 +95,9 @@ export const updatePointSchema = z
 		// soft-archive toggle: true → set archived_at = now(), false → clear
 		archived: z.boolean().optional()
 	})
-	.refine(
-		(d) =>
-			d.name !== undefined ||
-			d.display_order !== undefined ||
-			d.kind !== undefined ||
-			d.regime_acquisition !== undefined ||
-			d.exigence !== undefined ||
-			d.rang !== undefined ||
-			d.archived !== undefined,
-		{ message: 'Au moins un champ à mettre à jour' }
-	);
+	.refine((d) => Object.values(d).some((v) => v !== undefined), {
+		message: 'Au moins un champ à mettre à jour'
+	});
 
 // ---------------------------------------------------------------------------
 // Query-param schemas (GET filters)
