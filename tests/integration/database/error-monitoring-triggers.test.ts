@@ -34,6 +34,14 @@ describe('Error Monitoring Triggers', () => {
 
 	beforeEach(async () => {
 		await cleanupAllTestData();
+
+		// `cleanupAllTestData()` ne connaît ni `error_logs` ni `error_occurrences` :
+		// ce fichier dépendait donc d'être le seul à y écrire ET de partir d'une
+		// table vide. Il passait seul après un `db:reset`, et comptait double dans
+		// la suite complète — un autre fichier (`admin-elevation`) crée lui aussi
+		// des logs d'erreur, et les compteurs d'occurrences s'additionnent.
+		await serviceClient.from('error_occurrences').delete().not('id', 'is', null);
+		await serviceClient.from('error_logs').delete().not('id', 'is', null);
 	});
 
 	describe('trigger_set_error_signature (BEFORE INSERT)', () => {

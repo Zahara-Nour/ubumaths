@@ -16178,8 +16178,16 @@ export type Database = {
         }
         Returns: Json
       }
+      reorder_curriculum_objectives: {
+        Args: { p_objective_ids: string[]; p_theme_id: string }
+        Returns: undefined
+      }
       reorder_curriculum_points: {
         Args: { p_objective_id: string; p_point_ids: string[] }
+        Returns: undefined
+      }
+      reorder_curriculum_themes: {
+        Args: { p_grade: string; p_theme_ids: string[] }
         Returns: undefined
       }
       reorder_worksheet_exercises: {

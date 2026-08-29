@@ -107,6 +107,22 @@ export const updatePointSchema = z
  * des positions sur leurs anciennes valeurs. Les points archivés en font partie :
  * l'UI les masque, elle ne les sort pas de l'objectif.
  */
+export const reorderThemesSchema = z.object({
+	grade: gradeCodeSchema,
+	theme_ids: z
+		.array(z.string().uuid())
+		.min(1, 'Aucun thème à réordonner')
+		.max(100, 'Trop de thèmes pour un seul niveau')
+});
+
+export const reorderObjectivesSchema = z.object({
+	theme_id: z.string().uuid(),
+	objective_ids: z
+		.array(z.string().uuid())
+		.min(1, 'Aucun objectif à réordonner')
+		.max(200, 'Trop d’objectifs pour un seul thème')
+});
+
 export const reorderPointsSchema = z.object({
 	objective_id: z.string().uuid(),
 	point_ids: z
@@ -141,6 +157,8 @@ export type CreateItemInput = z.infer<typeof createItemSchema>;
 export type UpdateItemInput = z.infer<typeof updateItemSchema>;
 export type CreatePointInput = z.infer<typeof createPointSchema>;
 export type UpdatePointInput = z.infer<typeof updatePointSchema>;
+export type ReorderThemesInput = z.infer<typeof reorderThemesSchema>;
+export type ReorderObjectivesInput = z.infer<typeof reorderObjectivesSchema>;
 export type ReorderPointsInput = z.infer<typeof reorderPointsSchema>;
 
 // ---------------------------------------------------------------------------

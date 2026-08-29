@@ -71,6 +71,9 @@
 	 * On réordonne tout de suite et on rétablit si l'écriture échoue.
 	 */
 	let pendingOrder = $state<Record<string, string[]>>({});
+	/** Idem pour les thèmes du niveau affiché et les objectifs de chaque thème. */
+	let pendingThemeOrder = $state<string[] | null>(null);
+	let pendingObjectiveOrder = $state<Record<string, string[]>>({});
 
 	// --- confirmation de suppression ---------------------------------------
 	// `confirm()` natif : hors charte, non stylable, bloquant. Le projet a son
@@ -170,12 +173,23 @@
 	 * Un point créé après le déplacement n'est pas dans la liste mémorisée : on
 	 * le remet à la fin plutôt que de le faire disparaître.
 	 */
+	function applyOrder<T extends { id: string }>(ids: string[] | null | undefined, list: T[]): T[] {
+		if (!ids) return list;
+		const byId = new Map(list.map((x) => [x.id, x]));
+		const known = ids.map((id) => byId.get(id)).filter((x): x is T => x !== undefined);
+		return [...known, ...list.filter((x) => !ids.includes(x.id))];
+	}
+
 	function orderedPoints(objectiveId: string, points: Point[]): Point[] {
-		const ids = pendingOrder[objectiveId];
-		if (!ids) return points;
-		const byId = new Map(points.map((p) => [p.id, p]));
-		const known = ids.map((id) => byId.get(id)).filter((p): p is Point => p !== undefined);
-		return [...known, ...points.filter((p) => !ids.includes(p.id))];
+		return applyOrder(pendingOrder[objectiveId], points);
+	}
+
+	/** Les thèmes du niveau, dans l'ordre local s'il y en a un. */
+	const themes = $derived(applyOrder(pendingThemeOrder, data.tree));
+
+	/** Les objectifs d'un thème, dans l'ordre local s'il y en a un. */
+	function objectivesOf(theme: PageData['tree'][number]) {
+		return applyOrder(pendingObjectiveOrder[theme.id], theme.objectives);
 	}
 
 	/** Masque les archivés tant que la case n'est pas cochée. */
@@ -444,22 +458,61 @@
 		if (ids) await commitOrder(objectiveId, ids);
 	}
 
-	/** Réordonnancement des thèmes et des objectifs : toujours l'échange deux-à-deux. */
-	async function reorder(
-		level: 'theme' | 'objective',
-		list: { id: string; display_order: number }[],
+	/**
+	 * Réordonnancement des thèmes et des objectifs.
+	 *
+	 * L'échange deux-à-deux d'avant n'était pas seulement lent : il était FAUX
+	 * dès que deux frères partageaient une position. Troquer 0 contre 0 ne fait
+	 * rien, et le thème paraissait bloqué — c'est arrivé en vrai sur
+	 * « Probabilités et statistiques ». On renumérote la fratrie entière.
+	 */
+	async function moveTheme(index: number, dir: 'up' | 'down') {
+		const list = themes;
+		const to = list[index + (dir === 'up' ? -1 : 1)];
+		if (!to) return;
+		const ids = reorderIds(
+			list.map((t) => t.id),
+			list[index].id,
+			to.id,
+			dir === 'up' ? 'before' : 'after'
+		);
+		if (!ids) return;
+
+		const previous = pendingThemeOrder;
+		pendingThemeOrder = ids;
+		const ok = await api('/api/teacher/curriculum/themes/reorder', 'POST', {
+			grade: data.grade,
+			theme_ids: ids
+		});
+		if (!ok) pendingThemeOrder = previous;
+	}
+
+	async function moveObjective(
+		themeId: string,
+		list: { id: string }[],
 		index: number,
 		dir: 'up' | 'down'
 	) {
-		const target = index + (dir === 'up' ? -1 : 1);
-		if (target < 0 || target >= list.length) return;
-		const a = list[index];
-		const b = list[target];
-		const path = (id: string) => `/api/teacher/curriculum/${basePath(level)}/${id}`;
-		const ok1 = await api(path(a.id), 'PATCH', { display_order: b.display_order });
-		if (!ok1) return;
-		const ok2 = await api(path(b.id), 'PATCH', { display_order: a.display_order });
-		if (ok2) await invalidateAll();
+		const to = list[index + (dir === 'up' ? -1 : 1)];
+		if (!to) return;
+		const ids = reorderIds(
+			list.map((o) => o.id),
+			list[index].id,
+			to.id,
+			dir === 'up' ? 'before' : 'after'
+		);
+		if (!ids) return;
+
+		const previous = pendingObjectiveOrder[themeId];
+		pendingObjectiveOrder[themeId] = ids;
+		const ok = await api('/api/teacher/curriculum/objectives/reorder', 'POST', {
+			theme_id: themeId,
+			objective_ids: ids
+		});
+		if (!ok) {
+			if (previous) pendingObjectiveOrder[themeId] = previous;
+			else delete pendingObjectiveOrder[themeId];
+		}
 	}
 </script>
 
@@ -509,7 +562,7 @@
 		</div>
 	{:else}
 		<div class="space-y-2">
-			{#each data.tree as theme, ti (theme.id)}
+			{#each themes as theme, ti (theme.id)}
 				<div class="rounded-lg border bg-card">
 					<!-- Theme row -->
 					<div class="flex items-center gap-2 p-2">
@@ -534,7 +587,7 @@
 								title="Monter"
 								aria-label="Monter le thème"
 								disabled={busy || ti === 0}
-								onclick={() => reorder('theme', data.tree, ti, 'up')}
+								onclick={() => moveTheme(ti, 'up')}
 							>
 								<ArrowUp class="h-4 w-4" />
 							</Button>
@@ -543,8 +596,8 @@
 								size="sm"
 								title="Descendre"
 								aria-label="Descendre le thème"
-								disabled={busy || ti === data.tree.length - 1}
-								onclick={() => reorder('theme', data.tree, ti, 'down')}
+								disabled={busy || ti === themes.length - 1}
+								onclick={() => moveTheme(ti, 'down')}
 							>
 								<ArrowDown class="h-4 w-4" />
 							</Button>
@@ -573,8 +626,9 @@
 
 					<!-- Objectifs -->
 					{#if openThemes[theme.id]}
+						{@const objectives = objectivesOf(theme)}
 						<div class="space-y-1 border-t bg-muted/30 p-2 pl-6">
-							{#each theme.objectives as item, ii (item.id)}
+							{#each objectives as item, ii (item.id)}
 								<div class="rounded-md border bg-card">
 									<div class="flex items-center gap-2 p-2">
 										<button
@@ -596,7 +650,7 @@
 												title="Monter"
 												aria-label="Monter l'objectif"
 												disabled={busy || ii === 0}
-												onclick={() => reorder('objective', theme.objectives, ii, 'up')}
+												onclick={() => moveObjective(theme.id, objectives, ii, 'up')}
 											>
 												<ArrowUp class="h-4 w-4" />
 											</Button>
@@ -605,8 +659,8 @@
 												size="sm"
 												title="Descendre"
 												aria-label="Descendre l'objectif"
-												disabled={busy || ii === theme.objectives.length - 1}
-												onclick={() => reorder('objective', theme.objectives, ii, 'down')}
+												disabled={busy || ii === objectives.length - 1}
+												onclick={() => moveObjective(theme.id, objectives, ii, 'down')}
 											>
 												<ArrowDown class="h-4 w-4" />
 											</Button>

@@ -44,6 +44,8 @@ import {
 	DELETE as pointDELETE
 } from '../../src/routes/api/teacher/curriculum/points/[pointId]/+server';
 import { POST as reorderPOST } from '../../src/routes/api/teacher/curriculum/points/reorder/+server';
+import { POST as reorderThemesPOST } from '../../src/routes/api/teacher/curriculum/themes/reorder/+server';
+import { POST as reorderObjectivesPOST } from '../../src/routes/api/teacher/curriculum/objectives/reorder/+server';
 
 import {
 	createServiceRoleClient,
@@ -168,7 +170,10 @@ describe('POST /api/teacher/curriculum/themes', () => {
 		} as never);
 		expect(res.status).toBe(201);
 		const data = await res.json();
-		expect(data.theme).toMatchObject({ grade: TEST_GRADE, name: 'Calcul', display_order: 0 });
+		// `display_order: 1` et non 0 : un thème créé sans position se place en
+		// dernier (trigger `curriculum_themes_place_last`). Tout laisser à 0
+		// rendait le réordonnancement impossible — échanger 0 contre 0 ne fait rien.
+		expect(data.theme).toMatchObject({ grade: TEST_GRADE, name: 'Calcul', display_order: 1 });
 	});
 
 	it('returns 400 for an invalid grade code', async () => {
@@ -218,8 +223,11 @@ describe('POST /api/teacher/curriculum/themes', () => {
 });
 
 describe('GET /api/teacher/curriculum/themes', () => {
-	it('lists themes of a grade sorted by display_order then name', async () => {
-		expect.assertions(3);
+	// L'ordre de CRÉATION fait foi, pas l'alphabet : chaque thème se place en
+	// dernier, donc Beta créé avant Alpha reste devant. Le tri par nom ne sert
+	// plus que de départage, et il n'y a plus d'égalité à départager.
+	it('liste les thèmes d’un niveau dans leur ordre d’affichage', async () => {
+		expect.assertions(4);
 		await svcTheme(TEST_GRADE, 'Beta');
 		await svcTheme(TEST_GRADE, 'Alpha');
 		await svcTheme(TEST_GRADE_ALT, 'Other grade');
@@ -229,7 +237,8 @@ describe('GET /api/teacher/curriculum/themes', () => {
 		expect(res.status).toBe(200);
 		const data = await res.json();
 		expect(data.themes).toHaveLength(2);
-		expect(data.themes.map((t: { name: string }) => t.name)).toEqual(['Alpha', 'Beta']);
+		expect(data.themes.map((t: { name: string }) => t.name)).toEqual(['Beta', 'Alpha']);
+		expect(data.themes.map((t: { display_order: number }) => t.display_order)).toEqual([1, 2]);
 	});
 
 	it('returns 400 when grade query param is missing/invalid', async () => {
@@ -703,6 +712,138 @@ describe('POST /points/reorder', () => {
 		await expect(
 			reorderPOST({
 				request: req({ objective_id: item.id, point_ids: [point.id] }),
+				locals: buildLocals({ id: student.id } as User)
+			} as never)
+		).rejects.toMatchObject({ status: 403 });
+	});
+});
+
+// ============================================================================
+// Position d'affichage — thèmes et objectifs
+// ============================================================================
+// Les trois correctifs de position n'avaient d'abord visé que les points. Les
+// niveaux au-dessus gardaient le défaut, et ça s'est vu : dans « Probabilités
+// et statistiques » de 1ʳᵉ spé, deux objectifs portaient l'ordre 0 — un du seed,
+// un créé depuis l'app. L'échange deux-à-deux troquait 0 contre 0, et le thème
+// paraissait bloqué.
+
+async function objectiveOrderOf(themeId: string) {
+	const { data } = await service
+		.from('curriculum_objectives' as never)
+		.select('id, name, display_order')
+		.eq('theme_id', themeId)
+		.order('display_order', { ascending: true });
+	return (data ?? []) as { id: string; name: string; display_order: number }[];
+}
+
+describe('Thèmes et objectifs — placement à la création', () => {
+	it('place un nouvel objectif en dernier, sans jamais réutiliser 0', async () => {
+		expect.assertions(2);
+		const locals = buildLocals(await teacherUser());
+		const theme = await svcTheme();
+
+		for (const name of ['Premier', 'Deuxième', 'Troisième']) {
+			await itemsPOST({ request: req({ theme_id: theme.id, name }), locals } as never);
+		}
+
+		const rows = await objectiveOrderOf(theme.id);
+		expect(rows.map((r) => r.display_order)).toEqual([1, 2, 3]);
+		expect(rows.map((r) => r.name)).toEqual(['Premier', 'Deuxième', 'Troisième']);
+	});
+});
+
+describe('POST /objectives/reorder', () => {
+	it('renumérote tout le thème en une requête', async () => {
+		expect.assertions(3);
+		const locals = buildLocals(await teacherUser());
+		const theme = await svcTheme();
+		for (const n of ['A', 'B', 'C', 'D']) await svcItem(theme.id, `Objectif ${n}`);
+
+		const before = await objectiveOrderOf(theme.id);
+		const reversed = [...before].reverse().map((r) => r.id);
+
+		const res = await reorderObjectivesPOST({
+			request: req({ theme_id: theme.id, objective_ids: reversed }),
+			locals
+		} as never);
+		expect(res.status).toBe(200);
+
+		const after = await objectiveOrderOf(theme.id);
+		expect(after.map((r) => r.id)).toEqual(reversed);
+		expect(after.map((r) => r.display_order)).toEqual([1, 2, 3, 4]);
+	});
+
+	it('refuse 400 une liste incomplète', async () => {
+		expect.assertions(2);
+		const locals = buildLocals(await teacherUser());
+		const theme = await svcTheme();
+		for (const n of ['A', 'B', 'C']) await svcItem(theme.id, `Objectif ${n}`);
+
+		const rows = await objectiveOrderOf(theme.id);
+		const res = await reorderObjectivesPOST({
+			request: req({ theme_id: theme.id, objective_ids: [rows[0].id, rows[1].id] }),
+			locals
+		} as never);
+		const body = await res.json();
+
+		expect(res.status).toBe(400);
+		expect(body.error).toMatch(/incomplète/);
+	});
+
+	it('refuse 400 un objectif étranger au thème', async () => {
+		expect.assertions(2);
+		const locals = buildLocals(await teacherUser());
+		const a = await svcTheme(TEST_GRADE, 'Thème cible');
+		const b = await svcTheme(TEST_GRADE, 'Autre thème');
+		const own = await svcItem(a.id, 'Le sien');
+		const intrus = await svcItem(b.id, 'L’intrus');
+
+		const res = await reorderObjectivesPOST({
+			request: req({ theme_id: a.id, objective_ids: [own.id, intrus.id] }),
+			locals
+		} as never);
+		const body = await res.json();
+
+		expect(res.status).toBe(400);
+		expect(body.error).toMatch(/étranger/);
+	});
+});
+
+describe('POST /themes/reorder', () => {
+	it('renumérote tout le niveau en une requête', async () => {
+		expect.assertions(2);
+		const locals = buildLocals(await teacherUser());
+		for (const n of ['A', 'B', 'C']) await svcTheme(TEST_GRADE, `Thème ${n}`);
+
+		const { data: before } = await service
+			.from('curriculum_themes' as never)
+			.select('id, display_order')
+			.eq('grade', TEST_GRADE)
+			.order('display_order', { ascending: true });
+		const reversed = ((before ?? []) as { id: string }[]).reverse().map((r) => r.id);
+
+		const res = await reorderThemesPOST({
+			request: req({ grade: TEST_GRADE, theme_ids: reversed }),
+			locals
+		} as never);
+		expect(res.status).toBe(200);
+
+		const { data: after } = await service
+			.from('curriculum_themes' as never)
+			.select('id, display_order')
+			.eq('grade', TEST_GRADE)
+			.order('display_order', { ascending: true });
+		expect(((after ?? []) as { id: string }[]).map((r) => r.id)).toEqual(reversed);
+	});
+
+	it('rejette 403 un élève', async () => {
+		expect.assertions(1);
+		const student = await TestData.profile().withRole('student').create();
+		const theme = await svcTheme();
+
+		await expect(
+			reorderThemesPOST({
+				request: req({ grade: TEST_GRADE, theme_ids: [theme.id] }),
 				locals: buildLocals({ id: student.id } as User)
 			} as never)
 		).rejects.toMatchObject({ status: 403 });
