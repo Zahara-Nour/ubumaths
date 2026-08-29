@@ -35,6 +35,7 @@ function buildMock(tableHandlers: MockSpec) {
 			eq: vi.fn(),
 			in: vi.fn(),
 			not: vi.fn(),
+			is: vi.fn(),
 			gte: vi.fn(),
 			order: vi.fn(),
 			maybeSingle: vi.fn(),
@@ -45,6 +46,7 @@ function buildMock(tableHandlers: MockSpec) {
 		queryBuilder.eq.mockReturnValue(queryBuilder);
 		queryBuilder.in.mockReturnValue(queryBuilder);
 		queryBuilder.not.mockReturnValue(queryBuilder);
+		queryBuilder.is.mockReturnValue(queryBuilder);
 		queryBuilder.gte.mockReturnValue(queryBuilder);
 		queryBuilder.order.mockReturnValue(queryBuilder);
 		queryBuilder.maybeSingle.mockImplementation(handler);
@@ -74,7 +76,7 @@ describe('getClassCapacityGrid', () => {
 				data: [
 					{
 						student_id: 's1',
-						profiles: { id: 's1', first_name: 'Alice', last_name: 'Z' }
+						profiles: { id: 's1', firstname: 'Alice', lastname: 'Z' }
 					}
 				],
 				error: null
@@ -94,7 +96,7 @@ describe('getClassCapacityGrid', () => {
 				data: [
 					{
 						student_id: 's1',
-						profiles: { id: 's1', first_name: 'Alice', last_name: 'Z' }
+						profiles: { id: 's1', firstname: 'Alice', lastname: 'Z' }
 					}
 				],
 				error: null
@@ -153,7 +155,7 @@ describe('getClassCapacityGrid', () => {
 				data: [
 					{
 						student_id: 's1',
-						profiles: { id: 's1', first_name: 'Bob', last_name: 'A' }
+						profiles: { id: 's1', firstname: 'Bob', lastname: 'A' }
 					}
 				],
 				error: null
@@ -209,8 +211,8 @@ describe('getClassCapacityGrid', () => {
 		const supabase = buildMock({
 			class_members: () => ({
 				data: [
-					{ student_id: 's2', profiles: { id: 's2', first_name: 'Zoé', last_name: '' } },
-					{ student_id: 's1', profiles: { id: 's1', first_name: 'Alice', last_name: '' } }
+					{ student_id: 's2', profiles: { id: 's2', firstname: 'Zoé', lastname: '' } },
+					{ student_id: 's1', profiles: { id: 's1', firstname: 'Alice', lastname: '' } }
 				],
 				error: null
 			}),
@@ -223,7 +225,7 @@ describe('getClassCapacityGrid', () => {
 	it('falls back to "Élève sans nom" when both first and last are null', async () => {
 		const supabase = buildMock({
 			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', first_name: null, last_name: null } }],
+				data: [{ student_id: 's1', profiles: { id: 's1', firstname: null, lastname: null } }],
 				error: null
 			}),
 			skill_attempts: () => ({ data: [], error: null })
@@ -250,7 +252,7 @@ describe('getClassTopCapacitiesToRemediate', () => {
 		const future = new Date(Date.now() + 86400000).toISOString();
 		const supabase = buildMock({
 			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', first_name: 'A', last_name: '' } }],
+				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
 				error: null
 			}),
 			skill_attempts: () => ({
@@ -286,7 +288,7 @@ describe('getClassTopCapacitiesToRemediate', () => {
 		const past = new Date(Date.now() - 86400000).toISOString();
 		const supabase = buildMock({
 			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', first_name: 'Alice', last_name: '' } }],
+				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'Alice', lastname: '' } }],
 				error: null
 			}),
 			skill_attempts: () => ({
@@ -322,7 +324,7 @@ describe('getClassTopCapacitiesToRemediate', () => {
 
 	it('respects topN limit', async () => {
 		const past = new Date(Date.now() - 86400000).toISOString();
-		const students = [{ student_id: 's1', profiles: { id: 's1', first_name: 'A', last_name: '' } }];
+		const students = [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }];
 		const attempts = Array.from({ length: 5 }, (_, i) => ({
 			student_id: 's1',
 			template_id: `t${i}`
@@ -433,7 +435,7 @@ describe('getClassActivityHeatmap', () => {
 	it('builds N days × M students cells with zeros when no attempts', async () => {
 		const supabase = buildMock({
 			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', first_name: 'A', last_name: '' } }],
+				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
 				error: null
 			}),
 			skill_attempts: () => ({ data: [], error: null })
@@ -450,7 +452,7 @@ describe('getClassActivityHeatmap', () => {
 		const old = new Date(Date.now() - 10 * 86400000).toISOString();
 		const supabase = buildMock({
 			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', first_name: 'A', last_name: '' } }],
+				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
 				error: null
 			}),
 			skill_attempts: () => ({
@@ -467,7 +469,7 @@ describe('getClassActivityHeatmap', () => {
 		const today = new Date().toISOString();
 		const supabase = buildMock({
 			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', first_name: 'A', last_name: '' } }],
+				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
 				error: null
 			}),
 			skill_attempts: () => ({

@@ -1085,6 +1085,39 @@ export async function getAssignmentStats(
  * }
  * ```
  */
+/** Stats de complétion d'UNE assignation : ciblés / vus / terminés / taux. */
+export interface AssignmentCompletionStats {
+	total_target_students: number;
+	students_viewed: number;
+	students_completed: number;
+	total_views: number;
+	avg_views_per_student: number;
+	completion_rate: number;
+}
+
+/**
+ * Complétion d'une assignation précise (RPC `get_assignment_completion_stats`).
+ *
+ * La RPC existait en base sans aucun appelant : le prof n'avait donc aucun moyen
+ * de savoir qui avait ouvert ou terminé un exercice qu'il venait d'assigner.
+ */
+export async function getAssignmentCompletionStats(
+	supabase: TypedSupabaseClient,
+	assignmentId: string
+): Promise<AssignmentCompletionStats | null> {
+	const { data, error } = await callUnknownRpc(supabase, 'get_assignment_completion_stats', {
+		p_assignment_id: assignmentId
+	});
+
+	if (error) {
+		console.error('[exercise-assignments] get_assignment_completion_stats failed:', error);
+		return null;
+	}
+
+	const row = Array.isArray(data) ? data[0] : data;
+	return (row as AssignmentCompletionStats | undefined) ?? null;
+}
+
 export async function getExerciseCompletionStats(
 	supabase: TypedSupabaseClient,
 	exerciseId: string

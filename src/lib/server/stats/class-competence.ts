@@ -63,7 +63,7 @@ export async function getClassCompetenceGrid(
 ): Promise<ClassCompetenceGrid> {
 	const { data: members, error: membersErr } = await supabase
 		.from('class_members')
-		.select('student_id, profiles!class_members_student_id_fkey(id, first_name, last_name)')
+		.select('student_id, profiles!class_members_student_id_fkey(id, firstname, lastname)')
 		.eq('class_id', classId)
 		.eq('status', 'active');
 
@@ -80,14 +80,14 @@ export async function getClassCompetenceGrid(
 
 	type MemberRow = {
 		student_id: string;
-		profiles: { id: string; first_name: string | null; last_name: string | null } | null;
+		profiles: { id: string; firstname: string | null; lastname: string | null } | null;
 	};
 	const memberRows = (members ?? []) as unknown as MemberRow[];
 	const students: ClassStudent[] = memberRows
 		.filter((m) => m.profiles)
 		.map((m) => ({
 			id: m.student_id,
-			display_name: formatName(m.profiles!.first_name, m.profiles!.last_name)
+			display_name: formatName(m.profiles!.firstname, m.profiles!.lastname)
 		}))
 		.sort((a, b) => a.display_name.localeCompare(b.display_name, 'fr'));
 
@@ -176,13 +176,13 @@ export async function getClassTopObservablesToConsolidate(
 ): Promise<TopObservableToConsolidate[]> {
 	const { data: members } = await supabase
 		.from('class_members')
-		.select('student_id, profiles!class_members_student_id_fkey(id, first_name, last_name)')
+		.select('student_id, profiles!class_members_student_id_fkey(id, firstname, lastname)')
 		.eq('class_id', classId)
 		.eq('status', 'active');
 
 	type MemberRow = {
 		student_id: string;
-		profiles: { id: string; first_name: string | null; last_name: string | null } | null;
+		profiles: { id: string; firstname: string | null; lastname: string | null } | null;
 	};
 	const memberRows = (members ?? []) as unknown as MemberRow[];
 
@@ -191,7 +191,7 @@ export async function getClassTopObservablesToConsolidate(
 		if (!m.profiles) continue;
 		studentById.set(m.student_id, {
 			id: m.student_id,
-			display_name: formatName(m.profiles.first_name, m.profiles.last_name)
+			display_name: formatName(m.profiles.firstname, m.profiles.lastname)
 		});
 	}
 

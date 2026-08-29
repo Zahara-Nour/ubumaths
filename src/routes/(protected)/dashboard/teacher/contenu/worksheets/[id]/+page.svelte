@@ -30,6 +30,7 @@
 		Pencil,
 		UserPlus,
 		AlertCircle,
+		Gauge,
 		Eye
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
@@ -787,6 +788,15 @@
 														>
 															<Eye class="h-4 w-4" />
 															<span class="sr-only">Previsualiser</span>
+														</Button>
+														<Button
+															variant="ghost"
+															size="sm"
+															href="/dashboard/teacher/contenu/worksheets/{worksheet.id}/assignments/{assignment.id}/progress"
+															onclick={(e) => e.stopPropagation()}
+															title="Voir l'avancement des élèves"
+														>
+															<Gauge class="h-4 w-4" />
 														</Button>
 														<Button
 															variant="ghost"

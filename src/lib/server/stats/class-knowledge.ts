@@ -99,7 +99,7 @@ export async function getClassCapacityGrid(
 ): Promise<ClassCapacityGrid> {
 	const { data: members, error: membersErr } = await supabase
 		.from('class_members')
-		.select('student_id, profiles!class_members_student_id_fkey(id, first_name, last_name)')
+		.select('student_id, profiles!class_members_student_id_fkey(id, firstname, lastname)')
 		.eq('class_id', classId)
 		.eq('status', 'active');
 
@@ -110,14 +110,14 @@ export async function getClassCapacityGrid(
 
 	type MemberRow = {
 		student_id: string;
-		profiles: { id: string; first_name: string | null; last_name: string | null } | null;
+		profiles: { id: string; firstname: string | null; lastname: string | null } | null;
 	};
 	const studentRows = (members ?? []) as unknown as MemberRow[];
 	const students: ClassStudent[] = studentRows
 		.filter((m) => m.profiles)
 		.map((m) => ({
 			id: m.student_id,
-			display_name: formatName(m.profiles!.first_name, m.profiles!.last_name)
+			display_name: formatName(m.profiles!.firstname, m.profiles!.lastname)
 		}))
 		.sort((a, b) => a.display_name.localeCompare(b.display_name, 'fr'));
 
@@ -436,7 +436,7 @@ export async function getClassActivityHeatmap(
 ): Promise<ClassActivityHeatmap> {
 	const { data: members, error: membersErr } = await supabase
 		.from('class_members')
-		.select('student_id, profiles!class_members_student_id_fkey(id, first_name, last_name)')
+		.select('student_id, profiles!class_members_student_id_fkey(id, firstname, lastname)')
 		.eq('class_id', classId)
 		.eq('status', 'active');
 
@@ -447,7 +447,7 @@ export async function getClassActivityHeatmap(
 
 	type MemberRow = {
 		student_id: string;
-		profiles: { id: string; first_name: string | null; last_name: string | null } | null;
+		profiles: { id: string; firstname: string | null; lastname: string | null } | null;
 	};
 	const memberRows = (members ?? []) as unknown as MemberRow[];
 
@@ -499,7 +499,7 @@ export async function getClassActivityHeatmap(
 				: null;
 			return {
 				id: m.student_id,
-				display_name: formatName(m.profiles!.first_name, m.profiles!.last_name),
+				display_name: formatName(m.profiles!.firstname, m.profiles!.lastname),
 				days_since_last_review: daysSince,
 				is_alert: daysSince === null || daysSince > alertThresholdDays
 			};

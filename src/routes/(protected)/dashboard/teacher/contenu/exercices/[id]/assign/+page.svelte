@@ -520,6 +520,7 @@
 						<div class="space-y-3">
 							{#each data.assignments as assignment (assignment.id)}
 								{@const TypeIcon = getTypeIcon(assignment.assigned_to_type)}
+								{@const stats = data.completionByAssignment[assignment.id]}
 								<div class="rounded-lg border bg-accent/20 p-4">
 									<div class="flex items-start justify-between gap-4">
 										<div class="flex-1">
@@ -548,6 +549,29 @@
 											{#if assignment.notes}
 												<div class="mt-2 text-sm text-muted-foreground italic">
 													"{assignment.notes}"
+												</div>
+											{/if}
+											{#if stats && stats.total_target_students > 0}
+												<!-- Complétion réelle de cette assignation : sans ça, le prof
+													 assignait sans jamais savoir qui avait ouvert ni terminé. -->
+												<div
+													class="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted-foreground"
+												>
+													<span class="tabular-nums">
+														{stats.students_completed}/{stats.total_target_students} terminé{stats.students_completed >
+														1
+															? 's'
+															: ''}
+													</span>
+													<span class="tabular-nums">
+														{stats.students_viewed} ouvert{stats.students_viewed > 1 ? 's' : ''}
+													</span>
+													<div class="h-1.5 w-20 overflow-hidden rounded-full bg-muted">
+														<div
+															class="h-full rounded-full bg-primary"
+															style="width: {Math.round(stats.completion_rate)}%"
+														></div>
+													</div>
 												</div>
 											{/if}
 										</div>

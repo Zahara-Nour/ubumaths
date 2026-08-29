@@ -9,6 +9,10 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getAssignmentTargets } from '$lib/server/students';
 import { validateUuidParam } from '$lib/server/validation/params';
+import {
+	getAssignmentCompletionStats,
+	type AssignmentCompletionStats
+} from '$lib/server/exercise-assignments';
 
 export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const supabase = locals.supabase;
@@ -79,9 +83,19 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 
 	const students = Array.from(studentsMap.values());
 
+	// Complétion par assignation : qui a ouvert, qui a terminé. Sans ça, le prof
+	// assignait à l'aveugle — la RPC existait en base sans aucun appelant.
+	const completionByAssignment: Record<string, AssignmentCompletionStats | null> = {};
+	await Promise.all(
+		(assignments as { id: string }[]).map(async (a) => {
+			completionByAssignment[a.id] = await getAssignmentCompletionStats(locals.supabase, a.id);
+		})
+	);
+
 	return {
 		exercise,
 		assignments,
+		completionByAssignment,
 		classes: classesWithCount,
 		students
 	};
