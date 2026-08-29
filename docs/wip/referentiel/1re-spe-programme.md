@@ -73,9 +73,10 @@ page Programme, Avancement, cahier de texte, « Mes objectifs ».
 
 Trois règles :
 
-- **Jamais deux formules collées.** `$x$$y$` produit la séquence `$$`, qui casse
-  le dollar-quoting du seed généré. Toujours un mot ou une ponctuation entre
-  deux formules — le générateur refuse le fichier sinon.
+- **Jamais deux formules collées.** `$x$$y$` est ambigu pour le parser ubumark,
+  qui ne peut pas savoir où finit la première. Toujours un mot ou une ponctuation
+  entre deux formules. (Ce n'est plus un problème côté SQL : le générateur écrit
+  désormais en quoting standard, insensible aux `$`.)
 - **Convention française pour les vecteurs** : `\vec{u}` pour un vecteur d'une
   lettre, `\overrightarrow{MA}` pour un vecteur défini par deux points.
 - **Pas de maths d'affichage** (`$$…$$`) dans un libellé : un point de programme

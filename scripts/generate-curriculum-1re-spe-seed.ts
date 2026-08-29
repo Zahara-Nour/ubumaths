@@ -102,11 +102,22 @@ function parse(md: string) {
 	return { themes, objectives, points };
 }
 
-/** Dollar-quoting comme le seed 6ᵉ : les libellés contiennent apostrophes et accents. */
-const q = (s: string) => {
-	if (s.includes('$$')) throw new Error(`libellé contenant $$ : ${s}`);
-	return `$$${s}$$`;
-};
+/**
+ * Quoting SQL standard : apostrophes doublées.
+ *
+ * Le seed de 6ᵉ utilisait le dollar-quoting (`$$…$$`) pour éviter de doubler les
+ * 123 apostrophes des libellés français. Sa promesse est conditionnelle au
+ * contenu : « rien à échapper, à condition que le contenu ne contienne jamais le
+ * délimiteur ». Le passage aux formules ubumark a introduit 208 `$` et cassé
+ * cette condition — un libellé finissant par une formule collait son `$` au
+ * délimiteur de fermeture.
+ *
+ * Le quoting standard promet autre chose : « un seul caractère est toujours
+ * doublé ». Cette règle ne dépend d'aucun contenu, donc rien n'est à vérifier
+ * quand le contenu change de nature. Les apostrophes doublées sont écrites par
+ * ce script, dans un fichier que personne n'édite à la main.
+ */
+const q = (s: string) => `'${s.replace(/'/g, "''")}'`;
 
 const md = readFileSync(SRC, 'utf8');
 const { themes, objectives, points } = parse(md);
