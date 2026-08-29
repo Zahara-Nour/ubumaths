@@ -144,6 +144,8 @@ afterEach(() => {
  *   - worksheet_assignments (up to 2x: class + direct)
  *   - worksheet_assignment_students (1x)
  *   - worksheets (1x, only when worksheet rows exist)
+ *   - worksheet_exercises (1x, only when worksheet rows exist)
+ *   - student_exercise_mastery (1x, only when the worksheets have exercises)
  *   - python_exercise_assignments (1x)
  *   - python_exercises (1x, only when python rows exist)
  *   - python_exercise_submissions (1x, only when python rows exist)
@@ -164,6 +166,94 @@ function queueEmptyBaseline(mock: MockSupabase, classIds: string[] = []) {
 // ============================================================================
 // TESTS
 // ============================================================================
+
+describe('getStudentWorkInbox — complétion des fiches (auto-évaluation)', () => {
+	/** Prépare une fiche assignée à la classe, avec 2 exercices. */
+	function queueWorksheetWithTwoExercises(mock: MockSupabase, masteryRows: unknown[]) {
+		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
+		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('exercise_assignments', []);
+		mock.enqueue('worksheet_assignments', [
+			{
+				id: 'wa-1',
+				worksheet_id: 'w-1',
+				class_id: CLASS_A,
+				title: 'Fiche fractions',
+				status: 'active',
+				closes_at: null,
+				assigned_at: '2026-01-01T00:00:00Z'
+			}
+		]);
+		mock.enqueue('worksheet_assignment_students', []);
+		mock.enqueue('python_exercise_assignments', []);
+		mock.enqueue('worksheets', [{ id: 'w-1', title: 'Fiche fractions' }]);
+		mock.enqueue('worksheet_exercises', [
+			{ worksheet_id: 'w-1', exercise_id: 'ex-1' },
+			{ worksheet_id: 'w-1', exercise_id: 'ex-2' }
+		]);
+		mock.enqueue('student_exercise_mastery', masteryRows);
+		mock.enqueue('classes', [{ id: CLASS_A, name: '1re spé' }]);
+	}
+
+	it('marque la fiche « faite » quand tous ses exercices sont auto-évalués', async () => {
+		// Dates relatives : « fait » n'est conservé que 7 jours (bucketize).
+		const older = new Date(Date.now() - 3 * 24 * 3600 * 1000).toISOString();
+		const latest = new Date(Date.now() - 1 * 24 * 3600 * 1000).toISOString();
+		const mock = createMockSupabase();
+		queueWorksheetWithTwoExercises(mock, [
+			{ exercise_id: 'ex-1', updated_at: older },
+			{ exercise_id: 'ex-2', updated_at: latest }
+		]);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+		const item = inbox.doneRecently.find((i) => i.source === 'worksheet');
+
+		expect(item?.status).toBe('done');
+		// La date retenue est la plus récente des auto-évaluations.
+		expect(item?.doneAt).toBe(latest);
+	});
+
+	it('laisse la fiche « à faire » quand un seul exercice reste non positionné', async () => {
+		const mock = createMockSupabase();
+		queueWorksheetWithTwoExercises(mock, [
+			{ exercise_id: 'ex-1', updated_at: new Date().toISOString() }
+		]);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+		const all = [...inbox.doneRecently, ...inbox.noDeadline, ...inbox.late];
+		const item = all.find((i) => i.source === 'worksheet');
+
+		expect(item?.status).toBe('todo');
+		expect(item?.doneAt).toBeNull();
+	});
+
+	it('laisse la fiche « à faire » quand elle ne contient aucun exercice', async () => {
+		const mock = createMockSupabase();
+		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
+		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('exercise_assignments', []);
+		mock.enqueue('worksheet_assignments', [
+			{
+				id: 'wa-1',
+				worksheet_id: 'w-1',
+				class_id: CLASS_A,
+				title: 'Fiche vide',
+				status: 'active',
+				closes_at: null,
+				assigned_at: '2026-01-01T00:00:00Z'
+			}
+		]);
+		mock.enqueue('worksheet_assignment_students', []);
+		mock.enqueue('python_exercise_assignments', []);
+		mock.enqueue('worksheets', [{ id: 'w-1', title: 'Fiche vide' }]);
+		mock.enqueue('worksheet_exercises', []);
+		mock.enqueue('classes', [{ id: CLASS_A, name: '1re spé' }]);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+		const all = [...inbox.doneRecently, ...inbox.noDeadline, ...inbox.late];
+		expect(all.find((i) => i.source === 'worksheet')?.status).toBe('todo');
+	});
+});
 
 describe('getStudentWorkInbox — E1 (empty)', () => {
 	it('returns empty inbox when no assignments at all', async () => {

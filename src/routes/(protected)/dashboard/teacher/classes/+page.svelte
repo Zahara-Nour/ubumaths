@@ -63,6 +63,7 @@
 		Mail,
 		CheckCircle2,
 		BookOpen,
+		Gauge,
 		GraduationCap,
 		Loader2,
 		ScrollText,
@@ -635,10 +636,22 @@
 									</div>
 								</div>
 							</div>
-							<Button variant="outline" href="/dashboard/teacher/cahier-texte?class={classItem.id}">
-								<BookOpen class="mr-2 h-4 w-4" />
-								Cahier de Texte
-							</Button>
+							<div class="flex flex-wrap gap-2">
+								<Button
+									variant="outline"
+									href="/dashboard/teacher/cahier-texte?class={classItem.id}"
+								>
+									<BookOpen class="mr-2 h-4 w-4" />
+									Cahier de Texte
+								</Button>
+								<Button
+									variant="outline"
+									href="/dashboard/teacher/classes/{classItem.id}/analytics"
+								>
+									<Gauge class="mr-2 h-4 w-4" />
+									Acquisition
+								</Button>
+							</div>
 						</div>
 					</div>
 

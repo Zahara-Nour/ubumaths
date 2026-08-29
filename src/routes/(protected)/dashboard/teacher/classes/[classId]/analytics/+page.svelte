@@ -12,7 +12,7 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
-	import { ChevronLeft, RefreshCw, EyeOff, Eye } from '@lucide/svelte';
+	import { ChevronLeft, RefreshCw, EyeOff, Eye, Download } from '@lucide/svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
 	import MySelect from '$lib/components/MySelect.svelte';
@@ -88,6 +88,12 @@
 			{/if}
 		</div>
 		<div class="flex flex-wrap items-center gap-2">
+			<!-- Export vers l'ENT : action de fin de trimestre, sa place est ici (là où
+				 vivent les données) plutôt que dans le menu principal. -->
+			<Button variant="outline" size="sm" href="/dashboard/teacher/competences/export">
+				<Download class="mr-2 h-4 w-4" />
+				Exporter les compétences
+			</Button>
 			<Button
 				variant="outline"
 				size="sm"
