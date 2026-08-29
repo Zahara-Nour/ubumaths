@@ -16178,6 +16178,10 @@ export type Database = {
         }
         Returns: Json
       }
+      reorder_curriculum_points: {
+        Args: { p_objective_id: string; p_point_ids: string[] }
+        Returns: undefined
+      }
       reorder_worksheet_exercises: {
         Args: { p_exercises: Json; p_worksheet_id: string }
         Returns: number

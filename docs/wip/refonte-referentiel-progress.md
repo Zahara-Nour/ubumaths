@@ -219,6 +219,33 @@ plutôt »). Comptage côté base en `SECURITY DEFINER` : compter à travers les
 de l'appelant renverrait zéro là où un élève a de l'historique que le prof ne
 voit pas, et laisserait passer la suppression.
 
+### Position d'affichage — indépendante du code
+
+Question de David : peut-on réordonner sans que les codes se suivent ? C'était
+**déjà le cas** — `display_order` est local à l'objectif (1..N, pas 1..153) et
+rien ne trie par `code`. Vérifié en base : `1SPE-027` déplacé en tête donne
+l'ordre 027, 023, 024, 025, codes inchangés. Si les deux séries coïncidaient,
+c'est seulement que le seed a créé les points dans l'ordre du BO.
+
+Trois manques comblés (`20260901090000_curriculum_point_ordering.sql`) :
+
+- **Un point créé dans l'app arrivait en premier.** L'API posait
+  `display_order = 0` faute de valeur, alors que les points seedés commencent à
+  1 ; et deux créations successives se retrouvaient toutes deux à 0, départagées
+  par ordre alphabétique. Un trigger le place désormais en dernier.
+- **Réordonner coûtait deux `PATCH` et un rechargement complet par cran** —
+  vingt requêtes pour remonter de dix places. `POST /points/reorder` renumérote
+  l'objectif entier en une transaction ; l'UI gagne le glisser-déposer par
+  poignée, les flèches ↑↓ restant le pendant clavier et tactile (HTML5 drag ne
+  fonctionne pas au doigt).
+- **Rien ne garantissait des positions 1..N** : une passe de remise à plat
+  rattrape zéros, égalités et trous.
+
+La fonction refuse une liste qui ne couvre pas exactement l'objectif, archivés
+compris. Un sous-ensemble renumèroterait une moitié en laissant l'autre sur ses
+anciennes valeurs — doublons et ordre final imprévisible. C'est pourquoi l'UI
+calcule le déplacement sur la liste complète et non sur ce qu'elle affiche.
+
 ### Effet de bord réparé
 
 `getCurriculumTree()` renvoyait les points archivés à ses quatre appelants —

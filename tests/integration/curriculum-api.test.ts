@@ -43,6 +43,7 @@ import {
 	PATCH as pointPATCH,
 	DELETE as pointDELETE
 } from '../../src/routes/api/teacher/curriculum/points/[pointId]/+server';
+import { POST as reorderPOST } from '../../src/routes/api/teacher/curriculum/points/reorder/+server';
 
 import {
 	createServiceRoleClient,
@@ -572,5 +573,138 @@ describe('DELETE /points/[pointId] — garde de suppression', () => {
 		expect(res.status).toBe(409);
 		expect(body.references).toEqual({ automatisme_lists: 1 });
 		expect(body.error).toMatch(/archivez-le plutôt/);
+	});
+});
+
+// ============================================================================
+// Position d'affichage
+// ============================================================================
+// `display_order` est local à l'objectif et sans rapport avec le `code` : un
+// point déplacé garde le sien. Si les deux séries coïncident sur le seed, c'est
+// seulement qu'il a créé les points dans l'ordre du BO.
+
+/** Les points d'un objectif, dans l'ordre affiché. */
+async function orderOf(objectiveId: string) {
+	const { data } = await service
+		.from('curriculum_points' as never)
+		.select('id, code, display_order')
+		.eq('objective_id', objectiveId)
+		.order('display_order', { ascending: true });
+	return (data ?? []) as { id: string; code: string; display_order: number }[];
+}
+
+describe('Points — placement à la création', () => {
+	it('place un nouveau point EN DERNIER, pas en premier', async () => {
+		expect.assertions(2);
+		const locals = buildLocals(await teacherUser());
+		const item = await svcItem((await svcTheme()).id);
+
+		for (const name of ['Premier', 'Deuxième', 'Troisième']) {
+			await pointsPOST({
+				request: req({ objective_id: item.id, name, kind: 'savoir_faire' }),
+				locals
+			} as never);
+		}
+
+		const rows = await orderOf(item.id);
+		// L'API posait `display_order = 0` faute de valeur, alors que les points
+		// seedés commencent à 1 : chaque nouveau passait devant tout le monde.
+		expect(rows.map((r) => r.display_order)).toEqual([1, 2, 3]);
+		expect(rows).toHaveLength(3);
+	});
+});
+
+describe('POST /points/reorder', () => {
+	it('renumérote tout l’objectif en une requête', async () => {
+		expect.assertions(3);
+		const locals = buildLocals(await teacherUser());
+		const item = await svcItem((await svcTheme()).id);
+		for (const n of ['A', 'B', 'C', 'D']) await svcPoint(item.id, `Point ${n}`);
+
+		const before = await orderOf(item.id);
+		const reversed = [...before].reverse().map((r) => r.id);
+
+		const res = await reorderPOST({
+			request: req({ objective_id: item.id, point_ids: reversed }),
+			locals
+		} as never);
+		expect(res.status).toBe(200);
+
+		const after = await orderOf(item.id);
+		expect(after.map((r) => r.id)).toEqual(reversed);
+		// Toujours 1..N : ni trou, ni doublon, ni zéro.
+		expect(after.map((r) => r.display_order)).toEqual([1, 2, 3, 4]);
+	});
+
+	it('garde les codes intacts : déplacer n’est pas renommer', async () => {
+		expect.assertions(1);
+		const locals = buildLocals(await teacherUser());
+		const item = await svcItem((await svcTheme()).id);
+		for (const n of ['A', 'B', 'C']) await svcPoint(item.id, `Point ${n}`);
+
+		const before = await orderOf(item.id);
+		await reorderPOST({
+			request: req({
+				objective_id: item.id,
+				point_ids: [...before].reverse().map((r) => r.id)
+			}),
+			locals
+		} as never);
+
+		const after = await orderOf(item.id);
+		const codeById = new Map(after.map((r) => [r.id, r.code]));
+		expect(before.every((r) => codeById.get(r.id) === r.code)).toBe(true);
+	});
+
+	// Une liste partielle renumèroterait une moitié en laissant l'autre sur ses
+	// anciennes valeurs — donc des doublons et un ordre final imprévisible.
+	it('refuse 400 une liste incomplète', async () => {
+		expect.assertions(2);
+		const locals = buildLocals(await teacherUser());
+		const item = await svcItem((await svcTheme()).id);
+		for (const n of ['A', 'B', 'C']) await svcPoint(item.id, `Point ${n}`);
+
+		const rows = await orderOf(item.id);
+		const res = await reorderPOST({
+			request: req({ objective_id: item.id, point_ids: [rows[0].id, rows[1].id] }),
+			locals
+		} as never);
+		const body = await res.json();
+
+		expect(res.status).toBe(400);
+		expect(body.error).toMatch(/incomplète/);
+	});
+
+	it('refuse 400 un point étranger à l’objectif', async () => {
+		expect.assertions(2);
+		const locals = buildLocals(await teacherUser());
+		const theme = await svcTheme();
+		const item = await svcItem(theme.id, 'Objectif cible');
+		const other = await svcItem(theme.id, 'Autre objectif');
+		const a = await svcPoint(item.id, 'Point A');
+		const intrus = await svcPoint(other.id, 'Point intrus');
+
+		const res = await reorderPOST({
+			request: req({ objective_id: item.id, point_ids: [a.id, intrus.id] }),
+			locals
+		} as never);
+		const body = await res.json();
+
+		expect(res.status).toBe(400);
+		expect(body.error).toMatch(/étranger/);
+	});
+
+	it('rejette 403 un élève', async () => {
+		expect.assertions(1);
+		const student = await TestData.profile().withRole('student').create();
+		const item = await svcItem((await svcTheme()).id);
+		const point = await svcPoint(item.id);
+
+		await expect(
+			reorderPOST({
+				request: req({ objective_id: item.id, point_ids: [point.id] }),
+				locals: buildLocals({ id: student.id } as User)
+			} as never)
+		).rejects.toMatchObject({ status: 403 });
 	});
 });

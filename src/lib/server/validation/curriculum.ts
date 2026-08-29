@@ -99,6 +99,22 @@ export const updatePointSchema = z
 		message: 'Au moins un champ à mettre à jour'
 	});
 
+/**
+ * Réordonnancement d'un objectif entier, en une requête.
+ *
+ * La liste doit couvrir exactement les points de l'objectif — la fonction PG
+ * `reorder_curriculum_points` refuse un sous-ensemble, qui laisserait une partie
+ * des positions sur leurs anciennes valeurs. Les points archivés en font partie :
+ * l'UI les masque, elle ne les sort pas de l'objectif.
+ */
+export const reorderPointsSchema = z.object({
+	objective_id: z.string().uuid(),
+	point_ids: z
+		.array(z.string().uuid())
+		.min(1, 'Aucun point à réordonner')
+		.max(500, 'Trop de points pour un seul objectif')
+});
+
 // ---------------------------------------------------------------------------
 // Query-param schemas (GET filters)
 // ---------------------------------------------------------------------------
@@ -125,6 +141,7 @@ export type CreateItemInput = z.infer<typeof createItemSchema>;
 export type UpdateItemInput = z.infer<typeof updateItemSchema>;
 export type CreatePointInput = z.infer<typeof createPointSchema>;
 export type UpdatePointInput = z.infer<typeof updatePointSchema>;
+export type ReorderPointsInput = z.infer<typeof reorderPointsSchema>;
 
 // ---------------------------------------------------------------------------
 // Brique 2 — Tagging des exercices & alimentation (cahier de texte)
