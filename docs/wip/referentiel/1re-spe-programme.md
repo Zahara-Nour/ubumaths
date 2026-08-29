@@ -129,11 +129,17 @@ difficulté. Les objectifs s'afficheront donc en liste avec un compteur `n/m`.
 Une échelle 1-4 pourra être ajoutée plus tard, objectif par objectif, depuis la
 page Programme.
 
-> ⚠️ **Choix à confirmer** — les « **Exemples d'algorithmes** » du BO ne sont ni
-> des attendus ni des approfondissements : ce sont des illustrations proposées à
-> l'enseignant. Je les intègre en `[SF+]` parce que ce sont concrètement des
-> choses que l'élève fait, et que tu voudras pouvoir cocher que tu les as
-> traitées. **11 points** dans tout le programme. Dis-le si tu préfères les exclure.
+> ⚠️ **Choix à confirmer** — les « **Exemples d'algorithmes** » du BO sont des
+> illustrations proposées à l'enseignant, pas des attendus. Je les intègre en
+> `[SF+]` parce que ce sont concrètement des choses que l'élève fait, et que tu
+> voudras pouvoir cocher que tu les as traitées. **11 points** dans tout le
+> programme. Dis-le si tu préfères les exclure.
+>
+> Ils partagent donc la valeur `approfondissement` avec les 17
+> « Approfondissements possibles », et c'est correct : `exigence` ne répond qu'à
+> une question — _ce point est-il exigible ?_ — et les deux rubriques y répondent
+> non. Ce qui les distingue est leur nature, pas leur niveau d'exigence ; un axe
+> séparé serait nécessaire pour ça, pas une troisième valeur ici.
 
 > ⚠️ **Découpage des puces** — le point est le **grain de suivi** : plus il est
 > fin, mieux on repère les trous. Quand une puce du BO enchaîne deux gestes

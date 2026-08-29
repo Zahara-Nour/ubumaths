@@ -155,7 +155,13 @@ Corriger le markdown, relancer `pnpm tsx scripts/generate-curriculum-1re-spe-see
 
 49 connaissances · 65 savoir-faire attendus · 11 démonstrations · 28 approfondissements. `rang` NULL partout (le programme ne propose aucune échelle).
 
-**Trois écarts assumés avec le texte**, documentés dans le markdown : les 11 « Exemples d'algorithmes » comptés comme approfondissements · trois puces du BO coupées en deux là où un élève peut réussir un geste sans l'autre · typage interprétatif du thème « Vocabulaire ensembliste et logique » (rédigé en prose continue, sans rubriques).
+**Deux écarts assumés avec le texte**, documentés dans le markdown : trois puces du BO coupées en deux là où un élève peut réussir un geste sans l'autre · typage interprétatif du thème « Vocabulaire ensembliste et logique » (rédigé en prose continue, sans rubriques).
+
+**Et un choix éditorial, à ne pas confondre avec un écart** (corrigé le 2026-08-29) : les 11 « Exemples d'algorithmes » du BO partagent la valeur `approfondissement` avec les 17 « Approfondissements possibles ». Ce n'est pas une approximation — `exigence` répond à une seule question, _ce point est-il exigible ?_, et les deux rubriques y répondent pareil : non. Ce qui les distingue est leur **nature** (maths poussées d'un côté, programmation de l'autre), pas leur niveau d'exigence.
+
+Ajouter une troisième valeur à `exigence` pour les séparer referait l'erreur de `knowledge_type` — un champ portant deux questions à la fois, dont la frontière paraît arbitraire au moment de remplir. Si le besoin d'isoler le travail de programmation devient réel, la forme juste est une table de jonction, sur le modèle de `curriculum_point_automatismes`. Six points concernés en 1ʳᵉ : une recherche sur le libellé suffit aujourd'hui.
+
+Reste ouverte la vraie question éditoriale, posée dans le markdown : faut-il **inclure** ces exemples d'algorithmes, qui sont des illustrations proposées à l'enseignant plutôt que des attendus ? À trancher pendant la relecture.
 
 ---
 
