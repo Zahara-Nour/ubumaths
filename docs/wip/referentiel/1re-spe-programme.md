@@ -129,11 +129,11 @@ difficulté. Les objectifs s'afficheront donc en liste avec un compteur `n/m`.
 Une échelle 1-4 pourra être ajoutée plus tard, objectif par objectif, depuis la
 page Programme.
 
-> ⚠️ **Choix à confirmer** — les « **Exemples d'algorithmes** » du BO sont des
-> illustrations proposées à l'enseignant, pas des attendus. Je les intègre en
-> `[SF+]` parce que ce sont concrètement des choses que l'élève fait, et que tu
-> voudras pouvoir cocher que tu les as traitées. **11 points** dans tout le
-> programme. Dis-le si tu préfères les exclure.
+> ✅ **Acté (David, 2026-08-29)** — les « **Exemples d'algorithmes** » du BO sont
+> des illustrations proposées à l'enseignant, pas des attendus. Ils sont
+> **conservés**, en `[SF+]` : ce sont concrètement des choses que l'élève fait, et
+> le prof veut pouvoir cocher qu'il les a traitées. **11 points** dans tout le
+> programme, sans quoi il n'en resterait que 142.
 >
 > Ils partagent donc la valeur `approfondissement` avec les 17
 > « Approfondissements possibles », et c'est correct : `exigence` ne répond qu'à
