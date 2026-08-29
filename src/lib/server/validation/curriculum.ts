@@ -22,7 +22,7 @@ const nameSchema = z
 const displayOrderSchema = z.number().int().min(0).max(100000);
 
 const pointKindSchema = z.enum(['connaissance', 'savoir_faire', 'demonstration']);
-const knowledgeTypeSchema = z.enum(['automatisme', 'capacite_attendue']);
+const regimeAcquisitionSchema = z.enum(['fluence', 'diversite']);
 const exigenceSchema = z.enum(['attendu', 'approfondissement']);
 const rangSchema = z.number().int().min(1).max(4);
 
@@ -75,7 +75,7 @@ export const createPointSchema = z.object({
 	// `kind` est obligatoire depuis la fusion des référentiels : c'est lui qui
 	// garantit que la liste des connaissances d'un niveau est toujours complète.
 	kind: pointKindSchema,
-	knowledge_type: knowledgeTypeSchema.optional(),
+	regime_acquisition: regimeAcquisitionSchema.optional(),
 	exigence: exigenceSchema.optional(),
 	rang: rangSchema.nullable().optional()
 });
@@ -85,7 +85,7 @@ export const updatePointSchema = z
 		name: nameSchema.optional(),
 		display_order: displayOrderSchema.optional(),
 		kind: pointKindSchema.optional(),
-		knowledge_type: knowledgeTypeSchema.optional(),
+		regime_acquisition: regimeAcquisitionSchema.optional(),
 		exigence: exigenceSchema.optional(),
 		rang: rangSchema.nullable().optional(),
 		// soft-archive toggle: true → set archived_at = now(), false → clear
@@ -96,7 +96,7 @@ export const updatePointSchema = z
 			d.name !== undefined ||
 			d.display_order !== undefined ||
 			d.kind !== undefined ||
-			d.knowledge_type !== undefined ||
+			d.regime_acquisition !== undefined ||
 			d.exigence !== undefined ||
 			d.rang !== undefined ||
 			d.archived !== undefined,

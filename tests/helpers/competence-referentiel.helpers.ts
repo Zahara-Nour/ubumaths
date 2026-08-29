@@ -27,7 +27,7 @@ export type SkillRow = {
 	family: 'knowledge' | 'competence';
 	objective_id: string | null;
 	subdimension_id: string | null;
-	knowledge_type: 'automatisme' | 'capacite_attendue';
+	regime_acquisition: 'fluence' | 'diversite';
 	observable_code: string | null;
 	name: string;
 	display_order: number;
@@ -127,16 +127,16 @@ export async function getKnowledgeSkill(
  * héritent du défaut `capacite_attendue`. Les tests qui exercent la règle
  * `automatisme` (§6.1) posent donc elles-mêmes le champ sur le point ciblé.
  */
-export async function setPointKnowledgeType(
+export async function setPointRegime(
 	service: SupabaseClient<Database>,
 	pointId: string,
-	knowledgeType: 'automatisme' | 'capacite_attendue'
+	regime: 'fluence' | 'diversite'
 ): Promise<void> {
 	const { error } = await service
 		.from('curriculum_points' as never)
-		.update({ knowledge_type: knowledgeType } as never)
+		.update({ regime_acquisition: regime } as never)
 		.eq('id', pointId);
-	if (error) throw new Error(`setPointKnowledgeType failed: ${error.message}`);
+	if (error) throw new Error(`setPointRegime failed: ${error.message}`);
 }
 
 /** Fetch a competence observable by (competence code, observable_code). */

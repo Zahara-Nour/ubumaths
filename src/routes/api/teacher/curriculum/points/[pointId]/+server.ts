@@ -35,7 +35,9 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	if (parsed.data.name !== undefined) updates.name = parsed.data.name;
 	if (parsed.data.display_order !== undefined) updates.display_order = parsed.data.display_order;
 	if (parsed.data.kind !== undefined) updates.kind = parsed.data.kind;
-	if (parsed.data.knowledge_type !== undefined) updates.knowledge_type = parsed.data.knowledge_type;
+	if (parsed.data.regime_acquisition !== undefined) {
+		updates.regime_acquisition = parsed.data.regime_acquisition;
+	}
 	if (parsed.data.exigence !== undefined) updates.exigence = parsed.data.exigence;
 	if (parsed.data.rang !== undefined) updates.rang = parsed.data.rang;
 	if (parsed.data.archived !== undefined) {

@@ -79,7 +79,7 @@ async function createTheme(
 	const { data, error } = await service
 		.from('curriculum_themes' as never)
 		.insert({
-			grade: overrides.grade ?? '6',
+			grade: overrides.grade ?? TEST_GRADE,
 			name: overrides.name ?? `Thème ${crypto.randomUUID().slice(0, 8)}`,
 			display_order: overrides.display_order ?? 0
 		} as never)
@@ -139,7 +139,7 @@ describe('Curriculum RLS — mono-teacher gating', () => {
 		const { data: rows } = await client
 			.from('curriculum_themes' as never)
 			.select('id')
-			.eq('grade', '6');
+			.eq('grade', TEST_GRADE);
 		expect((rows ?? []).length).toBeGreaterThanOrEqual(1);
 	});
 

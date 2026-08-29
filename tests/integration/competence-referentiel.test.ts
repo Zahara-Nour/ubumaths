@@ -29,7 +29,7 @@ import {
 	TestData,
 	createAuthenticatedClient,
 	getKnowledgeSkill,
-	setPointKnowledgeType,
+	setPointRegime,
 	getObservableSkill,
 	getMathCompetenceId,
 	insertKnowledgeAttempt,
@@ -144,7 +144,7 @@ describe('Trigger famille knowledge', () => {
 		// Arrange: pick a capacite_attendue skill (Fractions rank 1)
 		const student = await TestData.profile().withRole('student').create();
 		const skill = await getKnowledgeSkill(service, 'Fractions', 1);
-		expect(skill.knowledge_type).toBe('capacite_attendue');
+		expect(skill.regime_acquisition).toBe('diversite');
 
 		const tpl1 = await createFakeTemplate(service, student.id);
 		const tpl2 = await createFakeTemplate(service, student.id);
@@ -170,14 +170,14 @@ describe('Trigger famille knowledge', () => {
 		expect(state.needs_remediation).toBe(false);
 	});
 
-	it('marks is_acquired=true for automatisme after 5 successes including >=3 in last 5', async () => {
+	it('marks is_acquired=true for fluence after 5 successes including >=3 in last 5', async () => {
 		// Arrange : le seed du programme ne distingue pas les automatismes (tous les
 		// points héritent du défaut capacite_attendue) → on pose le régime sur le
 		// point ciblé, en fixture de test.
 		const student = await TestData.profile().withRole('student').create();
 		const skill = await getKnowledgeSkill(service, 'Organisation et gestion de données', 1);
-		await setPointKnowledgeType(service, skill.id, 'automatisme');
-		skill.knowledge_type = 'automatisme';
+		await setPointRegime(service, skill.id, 'fluence');
+		skill.regime_acquisition = 'fluence';
 
 		const tpl = await createFakeTemplate(service, student.id);
 
@@ -201,7 +201,7 @@ describe('Trigger famille knowledge', () => {
 		// Arrange
 		const student = await TestData.profile().withRole('student').create();
 		const skill = await getKnowledgeSkill(service, 'Nombres décimaux', 1);
-		expect(skill.knowledge_type).toBe('capacite_attendue');
+		expect(skill.regime_acquisition).toBe('diversite');
 
 		const tpl1 = await createFakeTemplate(service, student.id);
 		const tpl2 = await createFakeTemplate(service, student.id);

@@ -141,8 +141,14 @@
 							{capacityStatusLabel(cap)}
 						</Badge>
 						<CapacityFsrsBadge badge={cap.badge} showLabel />
-						{#if cap.knowledge_type === 'automatisme'}
-							<Badge variant="outline" class="text-xs">⚡ automatisme</Badge>
+						{#if cap.automatisme_grades.length > 0}
+							<Badge
+								variant="outline"
+								class="text-xs"
+								title="Au programme des automatismes — évalué à l'examen"
+							>
+								⚡ automatisme
+							</Badge>
 						{/if}
 					</div>
 				</Card.Content>

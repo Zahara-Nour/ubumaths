@@ -456,7 +456,7 @@ describe('End-to-end : answer → attempt → trigger → cache', () => {
 		// Arrange: student + 2 fake templates both tagged on the same skill
 		const student = await TestData.profile().withRole('student').create();
 		const skill = await getKnowledgeSkill(service, 'Fractions', 1);
-		expect(skill.knowledge_type).toBe('capacite_attendue');
+		expect(skill.regime_acquisition).toBe('diversite');
 
 		// Create 2 distinct templates and tag them both to the same skill
 		const tpl1 = await createFakeTemplate(service, student.id);
@@ -517,7 +517,7 @@ describe('End-to-end : answer → attempt → trigger → cache', () => {
 	it('needs_remediation=true after 2 failures via endpoint', async () => {
 		const student = await TestData.profile().withRole('student').create();
 		const skill = await getKnowledgeSkill(service, 'Nombres décimaux', 1);
-		expect(skill.knowledge_type).toBe('capacite_attendue');
+		expect(skill.regime_acquisition).toBe('diversite');
 
 		const tpl1 = await createFakeTemplate(service, student.id);
 		const tpl2 = await createFakeTemplate(service, student.id);

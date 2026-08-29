@@ -2161,6 +2161,32 @@ export type Database = {
           },
         ]
       }
+      curriculum_point_automatismes: {
+        Row: {
+          created_at: string
+          grade: string
+          point_id: string
+        }
+        Insert: {
+          created_at?: string
+          grade: string
+          point_id: string
+        }
+        Update: {
+          created_at?: string
+          grade?: string
+          point_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curriculum_point_automatismes_point_id_fkey"
+            columns: ["point_id"]
+            isOneToOne: false
+            referencedRelation: "curriculum_points"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       curriculum_points: {
         Row: {
           archived_at: string | null
@@ -2169,10 +2195,10 @@ export type Database = {
           exigence: string
           id: string
           kind: string
-          knowledge_type: string
           name: string
           objective_id: string
           rang: number | null
+          regime_acquisition: string
           updated_at: string
         }
         Insert: {
@@ -2182,10 +2208,10 @@ export type Database = {
           exigence?: string
           id?: string
           kind: string
-          knowledge_type?: string
           name: string
           objective_id: string
           rang?: number | null
+          regime_acquisition?: string
           updated_at?: string
         }
         Update: {
@@ -2195,10 +2221,10 @@ export type Database = {
           exigence?: string
           id?: string
           kind?: string
-          knowledge_type?: string
           name?: string
           objective_id?: string
           rang?: number | null
+          regime_acquisition?: string
           updated_at?: string
         }
         Relationships: [

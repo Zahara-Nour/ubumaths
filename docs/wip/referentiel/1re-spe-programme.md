@@ -5,7 +5,7 @@
 > ⚠️ **Ce n'est PAS le programme de l'arrêté du 17 janvier 2019** que la spec Phase 0 mentionnait : c'est le programme en vigueur, qui introduit notamment une partie transversale **« Automatismes »**.
 >
 > **Statut** : rédaction complète, **en attente de relecture David** avant le seed.
-> **7 thèmes · 19 objectifs · 170 points.**
+> **6 thèmes · 14 objectifs · 153 points.**
 >
 > L'ordre suit celui du sommaire du BO (3 parties transversales, puis les 4 thématiques) et donne le `display_order`.
 
@@ -23,9 +23,37 @@ typologie, on ne l'invente pas.
 | `[D]`   | `demonstration` | `attendu`           | **Démonstrations**                                             |
 | `[SF+]` | `savoir_faire`  | `approfondissement` | **Approfondissements possibles** et **Exemples d'algorithmes** |
 
-`knowledge_type` vaut `capacite_attendue` partout, **sauf dans le thème 3
-« Automatismes »** où il vaut `automatisme` pour tous les points — c'est le BO
-lui-même qui isole cette partie.
+**Deux axes distincts, à ne pas confondre** (c'est la confusion que portait
+l'ancien champ `knowledge_type`) :
+
+- `regime_acquisition` — **ce qui prouve la maîtrise**. `fluence` (≥ 5 réussites
+  dont ≥ 3 sur les 5 dernières : le geste doit être rapide, fiable, et le rester)
+  ou `diversite` (≥ 2 templates distincts, aucun échec récent : la maîtrise se
+  prouve sur des cas variés). C'est une décision de mesure, éditable point par
+  point.
+- `curriculum_point_automatismes` (table de liaison) — **de quel programme ce
+  point est un automatisme attendu**. « Automatisme » n'est pas une propriété du
+  point : c'est une liste publiée par un programme donné, et un même point peut
+  figurer dans plusieurs listes (1ʳᵉ et terminale, par exemple). D'où une
+  liaison `(point, niveau)` plutôt qu'un drapeau.
+
+**La partie « Automatismes » du BO ne figure pas dans cet arbre.** Ses points
+ne sont pas des contenus de 1ʳᵉ : ce sont des acquis des années antérieures
+(seconde pour l'essentiel) que le programme demande d'entretenir. Les créer ici
+en dupliquerait la définition — l'erreur même que la refonte du référentiel a
+corrigée. Ils vivront dans l'arbre du niveau où ils sont introduits, marqués
+une ligne dans `curriculum_point_automatismes` pour le niveau dont ils sont
+un attendu d'examen — ce qui permet de les retrouver à travers les programmes
+des différentes années.
+
+Au seed, donc : aucune liste d'automatismes, et `regime_acquisition = diversite`
+partout. Tu bascules en `fluence` les points que tu décides de travailler par
+répétition — « déterminer l'équation de la tangente en un point », par exemple.
+
+> ⏳ **Suite à prévoir** : la couverture du cahier de texte est filtrée sur le
+> niveau de la classe (`getCurriculumTree(grade)`). Une fois l'arbre de seconde
+> créé, cocher un automatisme de seconde depuis une classe de 1ʳᵉ demandera
+> d'étendre cette vue aux points tagués des niveaux antérieurs.
 
 `rang` reste **vide partout** : le programme ne propose aucune échelle de
 difficulté. Les objectifs s'afficheront donc en liste avec un compteur `n/m`.
@@ -43,10 +71,10 @@ page Programme.
 > qu'un élève peut réussir séparément, je la coupe. Écart assumé avec le texte,
 > listé ici pour que tu le voies en relisant. **4 occurrences** :
 >
-> - §4.1 « Proposer, modéliser une situation… **Déterminer** une relation explicite ou de récurrence… » → 2 points
-> - §5.1 « Déterminer graphiquement un nombre dérivé… **Construire** la tangente… » → 2 points
-> - §7.2 « Interpréter en situation et utiliser les notations… **Passer** du registre de la langue naturelle au registre symbolique… » → 2 points
-> - §6.1 les 4 méthodes de calcul du produit scalaire restent **un seul** point (c'est le choix de méthode qui est l'attendu, pas chaque méthode)
+> - §3.1 « Proposer, modéliser une situation… **Déterminer** une relation explicite ou de récurrence… » → 2 points
+> - §4.1 « Déterminer graphiquement un nombre dérivé… **Construire** la tangente… » → 2 points
+> - §6.2 « Interpréter en situation et utiliser les notations… **Passer** du registre de la langue naturelle au registre symbolique… » → 2 points
+> - §5.1 les 4 méthodes de calcul du produit scalaire restent **un seul** point (c'est le choix de méthode qui est l'attendu, pas chaque méthode)
 
 > ⚠️ **Thème 1 : typage interprétatif.** « Vocabulaire ensembliste et logique »
 > est rédigé en prose continue dans le BO, **sans** les rubriques
@@ -94,47 +122,9 @@ page Programme.
 
 ---
 
-## 3. Automatismes
+## 3. Algèbre
 
-> `knowledge_type = automatisme` pour **tous** les points de ce thème.
-
-### 3.1 Évolutions et variations
-
-- [SF] Appliquer un taux d'évolution pour calculer une valeur finale ou initiale
-- [SF] Calculer un taux d'évolution, l'exprimer en pourcentage
-- [SF] Calculer le taux d'évolution équivalent à plusieurs évolutions successives
-- [SF] Calculer un taux d'évolution réciproque
-
-### 3.2 Calcul numérique et algébrique
-
-- [SF] Déterminer les solutions d'une équation produit nul
-- [SF] Déterminer le signe d'une expression du premier degré, d'une expression factorisée du second degré
-- [SF] Développer, factoriser, réduire une expression algébrique simple
-
-### 3.3 Fonctions et représentations
-
-- [SF] Résoudre graphiquement une équation, une inéquation du type `f(x) = k`, `f(x) < k`, etc.
-- [SF] Déterminer graphiquement le signe d'une fonction ou son tableau de variations
-- [SF] Tracer une droite donnée par son équation réduite ou par un point et son coefficient directeur
-- [SF] Lire graphiquement l'équation réduite d'une droite
-- [SF] Déterminer le coefficient directeur d'une droite à partir des coordonnées de deux de ses points
-
-### 3.4 Statistiques
-
-- [SF] Lire un graphique, un histogramme, un diagramme en barres ou circulaire, un diagramme en boite ou toute autre représentation (repérer l'origine du repère, les unités de graduation ou les échelles)
-- [SF] Passer du graphique aux données et vice-versa
-- [SF] Calculer et interpréter des indicateurs statistiques pour une série statistique
-
-### 3.5 Probabilités
-
-- [SF] Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs ou d'arbres pondérés
-- [SF] Distinguer `P(A ∩ B)`, `P_A(B)`, `P_B(A)`
-
----
-
-## 4. Algèbre
-
-### 4.1 Suites numériques, modèles discrets
+### 3.1 Suites numériques, modèles discrets
 
 **Contenus**
 
@@ -173,7 +163,7 @@ page Programme.
 - [SF+] Somme des n premiers carrés, des n premiers cubes
 - [SF+] Remboursement d'un emprunt par annuités constantes
 
-### 4.2 Équations, fonctions polynômes du second degré
+### 3.2 Équations, fonctions polynômes du second degré
 
 **Contenus**
 
@@ -199,9 +189,9 @@ page Programme.
 
 ---
 
-## 5. Analyse
+## 4. Analyse
 
-### 5.1 Dérivation
+### 4.1 Dérivation
 
 **Contenus — point de vue local**
 
@@ -239,7 +229,7 @@ page Programme.
 
 - [SF+] Écrire la liste des coefficients directeurs des sécantes pour un pas donné
 
-### 5.2 Variations et courbes représentatives des fonctions
+### 4.2 Variations et courbes représentatives des fonctions
 
 **Contenus**
 
@@ -258,7 +248,7 @@ page Programme.
 
 - [SF+] Méthode de Newton, en se limitant à des cas favorables
 
-### 5.3 Fonction exponentielle
+### 4.3 Fonction exponentielle
 
 **Contenus**
 
@@ -284,7 +274,7 @@ page Programme.
 - [SF+] Pour tous réels `x` et `y`, `exp(x + y) = exp(x)exp(y)`
 - [SF+] La fonction exponentielle est strictement positive et croissante
 
-### 5.4 Trigonométrie
+### 4.4 Trigonométrie
 
 **Contenus**
 
@@ -307,9 +297,9 @@ page Programme.
 
 ---
 
-## 6. Géométrie
+## 5. Géométrie
 
-### 6.1 Calcul vectoriel et produit scalaire
+### 5.1 Calcul vectoriel et produit scalaire
 
 **Contenus**
 
@@ -335,7 +325,7 @@ page Programme.
 - [SF+] Concourance des hauteurs d'un triangle
 - [SF+] Les médianes d'un triangle concourent au centre de gravité
 
-### 6.2 Géométrie repérée
+### 5.2 Géométrie repérée
 
 > Dans cette section, le plan est rapporté à un repère orthonormé.
 
@@ -360,9 +350,9 @@ page Programme.
 
 ---
 
-## 7. Probabilités et statistiques
+## 6. Probabilités et statistiques
 
-### 7.1 Probabilités conditionnelles et indépendance
+### 6.1 Probabilités conditionnelles et indépendance
 
 **Contenus**
 
@@ -387,7 +377,7 @@ page Programme.
 - [SF+] Exemples de succession de plusieurs épreuves indépendantes
 - [SF+] Exemples de marches aléatoires
 
-### 7.2 Variables aléatoires réelles
+### 6.2 Variables aléatoires réelles
 
 > Le programme ne considère que des univers finis et des variables aléatoires réelles.
 
@@ -417,7 +407,7 @@ page Programme.
 
 - [SF+] Pour `X` variable aléatoire, étude de la fonction du second degré `x ↦ E((X − x)²)`
 
-### 7.3 Expérimentations
+### 6.3 Expérimentations
 
 - [SF] Simuler une variable aléatoire avec Python ou un tableur
 - [SF] Lire, comprendre et écrire une fonction Python renvoyant la moyenne d'un échantillon de taille `n` d'une variable aléatoire
@@ -441,9 +431,8 @@ page Programme.
 
 > Chiffres **comptés dans le fichier**, pas estimés.
 >
-> Les 5 sous-parties des Automatismes et les 2 de la logique comptent chacune
-> comme un objectif — d'où 19 et non 7.
+> Les 2 sous-parties de la logique comptent chacune comme un objectif — d'où 14
+> et non 6.
 >
-> Les **17 points du thème 3** portent `knowledge_type = automatisme` ; les
-> **153 autres** `capacite_attendue`. Les **28 `[SF+]`** portent
-> `exigence = approfondissement` ; les **142 autres** `attendu`.
+> Les **28 `[SF+]`** portent `exigence = approfondissement` ; les **125 autres** > `attendu`. `regime_acquisition = diversite` partout au seed, et aucune liste
+> d'automatismes (cf. convention ci-dessus).

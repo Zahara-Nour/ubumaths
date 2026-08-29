@@ -83,7 +83,7 @@ async function cleanupCurriculum() {
 // Service-role fixtures (parents created directly to keep tests focused)
 // ---------------------------------------------------------------------------
 
-async function svcTheme(grade = '6', name?: string): Promise<{ id: string }> {
+async function svcTheme(grade = TEST_GRADE, name?: string): Promise<{ id: string }> {
 	const { data, error } = await service
 		.from('curriculum_themes' as never)
 		.insert({ grade, name: name ?? `Thème ${crypto.randomUUID().slice(0, 8)}` } as never)

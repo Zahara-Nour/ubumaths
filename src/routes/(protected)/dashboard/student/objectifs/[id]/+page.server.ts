@@ -22,7 +22,9 @@ export interface CapacityDetail {
 	/** Rang dans l'échelle descriptive, ou null si l'objectif n'en porte pas. */
 	rang: 1 | 2 | 3 | 4 | null;
 	kind: 'connaissance' | 'savoir_faire' | 'demonstration';
-	knowledge_type: 'automatisme' | 'capacite_attendue';
+	regime_acquisition: 'fluence' | 'diversite';
+	/** Niveaux dont ce point figure dans la liste des « Automatismes ». */
+	automatisme_grades: string[];
 	is_acquired: boolean;
 	needs_remediation: boolean;
 	badge: CapacityBadge;
@@ -63,7 +65,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Objectiv
 					name,
 					rang,
 					kind,
-					knowledge_type,
+					regime_acquisition,
 					archived_at
 				)
 			`
@@ -107,6 +109,20 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Objectiv
 	}
 
 	// 3. Calcul des badges FSRS agrégés
+	// Listes d'automatismes : de quel programme chacun de ces points est un
+	// attendu d'examen. Un point peut figurer dans plusieurs listes.
+	const { data: automatismeRows } = await locals.supabase
+		.from('curriculum_point_automatismes')
+		.select('point_id, grade')
+		.in('point_id', pointIds);
+
+	const automatismeGradesByPoint = new Map<string, string[]>();
+	for (const row of automatismeRows ?? []) {
+		const list = automatismeGradesByPoint.get(row.point_id) ?? [];
+		list.push(row.grade);
+		automatismeGradesByPoint.set(row.point_id, list);
+	}
+
 	const badges = await computePointBadges(locals.supabase, user.id, pointIds);
 
 	// 4. Construire les points. Les objectifs à échelle sont triés par rang ;
@@ -121,7 +137,8 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Objectiv
 				name: p.name,
 				rang: (p.rang as 1 | 2 | 3 | 4 | null) ?? null,
 				kind: p.kind as 'connaissance' | 'savoir_faire' | 'demonstration',
-				knowledge_type: p.knowledge_type as 'automatisme' | 'capacite_attendue',
+				regime_acquisition: p.regime_acquisition as 'fluence' | 'diversite',
+				automatisme_grades: automatismeGradesByPoint.get(p.id) ?? [],
 				is_acquired: state?.is_acquired ?? false,
 				needs_remediation: state?.needs_remediation ?? false,
 				badge: badges.get(p.id) ?? 'non_commencee'

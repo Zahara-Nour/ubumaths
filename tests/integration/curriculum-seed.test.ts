@@ -42,49 +42,67 @@ async function pointsOfGrade(grade: string) {
 	const objectiveIds = (objectives ?? []).map((o) => o.id);
 	const { data: points } = await service
 		.from('curriculum_points')
-		.select('id, objective_id, name, kind, knowledge_type, exigence, rang')
+		.select('id, objective_id, name, kind, regime_acquisition, exigence, rang')
 		.in('objective_id', objectiveIds);
 
 	return { themes: themes ?? [], objectives: objectives ?? [], points: points ?? [] };
 }
 
 describe('Seed du programme — 1ʳᵉ spécialité', () => {
-	it('pose 7 thèmes, 19 objectifs et 170 points', async () => {
+	it('pose 6 thèmes, 14 objectifs et 153 points', async () => {
 		const { themes, objectives, points } = await pointsOfGrade('1_SPE');
-		expect(themes).toHaveLength(7);
-		expect(objectives).toHaveLength(19);
-		expect(points).toHaveLength(170);
+		expect(themes).toHaveLength(6);
+		expect(objectives).toHaveLength(14);
+		expect(points).toHaveLength(153);
 	});
 
 	it('reproduit la typologie du BO (Contenus / Capacités attendues / Démonstrations)', async () => {
 		const { points } = await pointsOfGrade('1_SPE');
 		const by = (k: string) => points.filter((p) => p.kind === k).length;
 		expect(by('connaissance')).toBe(49); // Contenus
-		expect(by('savoir_faire')).toBe(110); // Capacités attendues + approfondissements
+		expect(by('savoir_faire')).toBe(93); // Capacités attendues + approfondissements
 		expect(by('demonstration')).toBe(11); // Démonstrations
 	});
 
-	it('marque comme automatismes les 17 points du thème « Automatismes », et eux seuls', async () => {
-		const { themes, objectives, points } = await pointsOfGrade('1_SPE');
-		const automatismesTheme = themes.find((t) => t.name === 'Automatismes');
-		expect(automatismesTheme).toBeDefined();
-
-		const objIds = new Set(
-			objectives.filter((o) => o.theme_id === automatismesTheme!.id).map((o) => o.id)
+	// La partie « Automatismes » du BO n'est PAS un thème de cet arbre : ses points
+	// sont des acquis des années antérieures (seconde pour l'essentiel) que le
+	// programme demande d'entretenir. Les créer ici en dupliquerait la définition.
+	// Ils vivront dans l'arbre du niveau où ils sont introduits, marqués
+	// leur appartenance à la liste de 1ʳᵉ (`curriculum_point_automatismes`).
+	it('ne crée pas de thème « Automatismes »', async () => {
+		const { themes } = await pointsOfGrade('1_SPE');
+		expect(themes.map((t) => t.name)).not.toContain('Automatismes');
+		expect(themes.map((t) => t.name).sort()).toEqual(
+			[
+				'Algorithmique et programmation',
+				'Algèbre',
+				'Analyse',
+				'Géométrie',
+				'Probabilités et statistiques',
+				'Vocabulaire ensembliste et logique'
+			].sort()
 		);
-		const automatismes = points.filter((p) => p.knowledge_type === 'automatisme');
+	});
 
-		expect(automatismes).toHaveLength(17);
-		// Aucun automatisme en dehors de ce thème.
-		expect(automatismes.every((p) => objIds.has(p.objective_id))).toBe(true);
-		// Et tous les points de ce thème en sont.
-		expect(points.filter((p) => objIds.has(p.objective_id))).toHaveLength(17);
+	it('laisse regime_acquisition au défaut et ne crée aucune liste d’automatismes', async () => {
+		const { points } = await pointsOfGrade('1_SPE');
+		// Le prof bascule en `fluence` les points qu'il décide de travailler par
+		// répétition ; le seed ne présume de rien.
+		expect(points.every((p) => p.regime_acquisition === 'diversite')).toBe(true);
+
+		// Aucune liste d'automatismes : les points concernés appartiennent aux
+		// programmes des années antérieures, dont les arbres n'existent pas encore.
+		const { data: listes } = await service
+			.from('curriculum_point_automatismes')
+			.select('point_id')
+			.eq('grade', '1_SPE');
+		expect(listes ?? []).toHaveLength(0);
 	});
 
 	it('marque en approfondissement les 28 points hors attendus', async () => {
 		const { points } = await pointsOfGrade('1_SPE');
 		expect(points.filter((p) => p.exigence === 'approfondissement')).toHaveLength(28);
-		expect(points.filter((p) => p.exigence === 'attendu')).toHaveLength(142);
+		expect(points.filter((p) => p.exigence === 'attendu')).toHaveLength(125);
 	});
 
 	it('ne pose aucun rang : le programme ne propose pas d’échelle de difficulté', async () => {

@@ -303,11 +303,10 @@ export type KanbanTagUpdate = Partial<Pick<KanbanTag, 'name' | 'color'>>;
 // ============================================================================
 // Spec      : docs/wip/skills-referentiel-design.md (décisions 57-72)
 // Migrations: supabase/migrations/20260609120000..02_competence_referentiel_*.sql
-// Business types stables (KnowledgeType, MathCompetenceLevel, ...) : src/lib/types/skills.ts
+// Business types stables (MathCompetenceLevel, SkillSource, ...) : src/lib/types/skills.ts
 // ============================================================================
 
 import type {
-	KnowledgeType,
 	MathCompetenceCode,
 	MathCompetenceLevel,
 	SkillAttemptCode,
@@ -514,7 +513,6 @@ export type MinesweeperLeaderboardRow = Omit<
 // (so consumers can import everything from database-helpers without two paths)
 
 export type {
-	KnowledgeType,
 	MathCompetenceCode,
 	MathCompetenceLevel,
 	SkillAttemptCode,
@@ -545,6 +543,27 @@ export type CurriculumPointKind = 'connaissance' | 'savoir_faire' | 'demonstrati
 /** Whether a point is part of the expected programme or goes beyond it. */
 export type CurriculumExigence = 'attendu' | 'approfondissement';
 
+/**
+ * Ce qui prouve la maîtrise d'un point — pilote la règle d'acquisition (§6.1) :
+ * - `fluence`   : ≥ 5 réussites ET ≥ 3 sur les 5 dernières (rapide, fiable, et le reste)
+ * - `diversite` : ≥ 2 templates distincts ET aucun échec sur les 3 dernières (cas variés)
+ *
+ * Orthogonal aux listes `curriculum_point_automatismes`, qui disent de quel
+ * programme le point est un automatisme attendu — pas comment on le mesure.
+ */
+export type RegimeAcquisition = 'fluence' | 'diversite';
+
+/**
+ * Appartenance d'un point à la liste des « Automatismes » d'un programme donné.
+ *
+ * « Automatisme » n'est pas une propriété du point : c'est une liste publiée par
+ * un programme. Les automatismes attendus à l'examen de 1ʳᵉ sont pour l'essentiel
+ * des acquis de seconde — le point vit donc dans l'arbre de seconde, et une ligne
+ * ici dit qu'il figure dans la liste de 1ʳᵉ. Un même point peut être dans
+ * plusieurs listes.
+ */
+export type CurriculumPointAutomatisme = Tables<'curriculum_point_automatismes'>;
+
 /** How a journal entry came to cover a point. */
 export type CoverageSource = 'auto' | 'manual';
 
@@ -574,10 +593,10 @@ export type CurriculumObjective = Tables<'curriculum_objectives'>;
  */
 export type CurriculumPoint = Omit<
 	Tables<'curriculum_points'>,
-	'kind' | 'knowledge_type' | 'exigence'
+	'kind' | 'regime_acquisition' | 'exigence'
 > & {
 	kind: CurriculumPointKind;
-	knowledge_type: KnowledgeType;
+	regime_acquisition: RegimeAcquisition;
 	exigence: CurriculumExigence;
 };
 

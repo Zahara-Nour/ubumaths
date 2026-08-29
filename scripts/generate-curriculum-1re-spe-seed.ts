@@ -26,7 +26,7 @@ type Point = {
 	name: string;
 	ord: number;
 	kind: Kind;
-	knowledgeType: 'automatisme' | 'capacite_attendue';
+	regime: 'fluence' | 'diversite';
 	exigence: 'attendu' | 'approfondissement';
 };
 
@@ -55,7 +55,9 @@ function parse(md: string) {
 	let objective = '';
 	let objOrdInTheme = 0;
 	let pointOrdInObjective = 0;
-	// Le thème « Automatismes » est le seul où le BO isole des automatismes.
+	// La partie « Automatismes » du BO : provenance + enjeu d'examen. Ces points
+	// se mesurent par la fluence ; le tag permet de les retrouver à travers les
+	// programmes des différentes années, indépendamment du thème qui les porte.
 	let isAutomatismes = false;
 
 	for (const line of body(md)) {
@@ -88,7 +90,7 @@ function parse(md: string) {
 				name: mPoint[2].trim(),
 				ord: pointOrdInObjective,
 				kind: tag.kind,
-				knowledgeType: isAutomatismes ? 'automatisme' : 'capacite_attendue',
+				regime: isAutomatismes ? 'fluence' : 'diversite',
 				exigence: tag.exigence
 			});
 		}
@@ -136,7 +138,7 @@ const sql = `-- ================================================================
 --   ${themes.length} thèmes · ${objectives.length} objectifs · ${points.length} points
 --   kind        : ${points.filter((p) => p.kind === 'connaissance').length} connaissance · ${points.filter((p) => p.kind === 'savoir_faire').length} savoir_faire · ${points.filter((p) => p.kind === 'demonstration').length} demonstration
 --   exigence    : ${points.filter((p) => p.exigence === 'attendu').length} attendu · ${points.filter((p) => p.exigence === 'approfondissement').length} approfondissement
---   knowledge_type : ${points.filter((p) => p.knowledgeType === 'automatisme').length} automatisme · ${points.filter((p) => p.knowledgeType === 'capacite_attendue').length} capacite_attendue
+--   regime_acquisition : ${points.filter((p) => p.regime === 'fluence').length} fluence · ${points.filter((p) => p.regime === 'diversite').length} diversite
 --
 -- \`rang\` reste NULL partout : le programme ne propose aucune échelle de
 -- difficulté. Les objectifs s'affichent en liste avec un compteur n/m ; une
@@ -167,16 +169,16 @@ on conflict (theme_id, name) do nothing;
 -- ---------------------------------------------------------------------------
 -- 3. Points
 -- ---------------------------------------------------------------------------
-insert into public.curriculum_points (objective_id, name, display_order, kind, knowledge_type, exigence)
-select o.id, v.point_name, v.ord, v.kind, v.knowledge_type, v.exigence
+insert into public.curriculum_points (objective_id, name, display_order, kind, regime_acquisition, exigence)
+select o.id, v.point_name, v.ord, v.kind, v.regime_acquisition, v.exigence
 from (values
 ${points
 	.map(
 		(p) =>
-			`\t(${q(p.theme)}, ${q(p.objective)}, ${q(p.name)}, ${p.ord}, ${q(p.kind)}, ${q(p.knowledgeType)}, ${q(p.exigence)})`
+			`\t(${q(p.theme)}, ${q(p.objective)}, ${q(p.name)}, ${p.ord}, ${q(p.kind)}, ${q(p.regime)}, ${q(p.exigence)})`
 	)
 	.join(',\n')}
-) as v(theme_name, objective_name, point_name, ord, kind, knowledge_type, exigence)
+) as v(theme_name, objective_name, point_name, ord, kind, regime_acquisition, exigence)
 join public.curriculum_themes t on t.grade = '${GRADE}' and t.name = v.theme_name
 join public.curriculum_objectives o on o.theme_id = t.id and o.name = v.objective_name
 on conflict (objective_id, name) do nothing;
@@ -190,5 +192,5 @@ console.log(
 		`SF=${points.filter((p) => p.kind === 'savoir_faire').length} ` +
 		`D=${points.filter((p) => p.kind === 'demonstration').length}\n` +
 		`  approfondissement=${points.filter((p) => p.exigence === 'approfondissement').length} · ` +
-		`automatisme=${points.filter((p) => p.knowledgeType === 'automatisme').length}`
+		`fluence=${points.filter((p) => p.regime === 'fluence').length}`
 );
