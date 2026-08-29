@@ -28,9 +28,9 @@ describe('TopObservablesToConsolidate', () => {
 		mockFetch({
 			rows: [
 				{
-					skill_id: 'sk1',
+					observable_id: 'sk1',
 					observable_code: 'CHER-A1',
-					skill_name: 'Modéliser un problème',
+					observable_name: 'Modéliser un problème',
 					subdimension_letter: 'A',
 					subdimension_name: 'Sous-A',
 					competence_code: 'CHER',
