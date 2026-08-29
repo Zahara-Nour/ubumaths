@@ -25,6 +25,7 @@
 		CURRICULUM_LEVEL_NOUNS,
 		type CurriculumLevel
 	} from '$lib/config/curriculum-levels';
+	import { reorderIds } from '$lib/utils/reorder';
 	import {
 		Plus,
 		Pencil,
@@ -58,7 +59,17 @@
 	// compris) : l'API refuse une liste partielle, qui laisserait une partie des
 	// positions sur leurs anciennes valeurs.
 	let dragging = $state<{ objectiveId: string; pointId: string } | null>(null);
-	let dragOverId = $state('');
+	/** Où la ligne d'insertion se dessine : au-dessus ou au-dessous de la cible. */
+	let dropTarget = $state<{ pointId: string; where: 'before' | 'after' } | null>(null);
+	/**
+	 * Ordre appliqué localement dès le dépôt, par objectif.
+	 *
+	 * Sans lui, la liste ne bougeait qu'au retour du serveur suivi d'un
+	 * `invalidateAll()` : un temps mort de plusieurs centaines de millisecondes
+	 * pendant lequel le point restait à sa place, comme si le geste avait raté.
+	 * On réordonne tout de suite et on rétablit si l'écriture échoue.
+	 */
+	let pendingOrder = $state<Record<string, string[]>>({});
 
 	// --- dialog state ---------------------------------------------------------
 	let dialogOpen = $state(false);
@@ -144,6 +155,20 @@
 
 	function pointCount(theme: PageData['tree'][number]): number {
 		return theme.objectives.reduce((sum, i) => sum + i.points.length, 0);
+	}
+
+	/**
+	 * La liste d'un objectif, dans l'ordre local s'il y en a un.
+	 *
+	 * Un point créé après le déplacement n'est pas dans la liste mémorisée : on
+	 * le remet à la fin plutôt que de le faire disparaître.
+	 */
+	function orderedPoints(objectiveId: string, points: Point[]): Point[] {
+		const ids = pendingOrder[objectiveId];
+		if (!ids) return points;
+		const byId = new Map(points.map((p) => [p.id, p]));
+		const known = ids.map((id) => byId.get(id)).filter((p): p is Point => p !== undefined);
+		return [...known, ...points.filter((p) => !ids.includes(p.id))];
 	}
 
 	/** Masque les archivés tant que la case n'est pas cochée. */
@@ -307,32 +332,38 @@
 	// d'avant coûtait deux PATCH et un rechargement PAR CRAN : remonter un point
 	// de dix places demandait vingt requêtes.
 
-	/** La liste des ids de l'objectif, `fromId` replacé autour de `toId`. */
+	/** Les ids de l'objectif, `fromId` replacé du côté annoncé de `toId`. */
 	function reordered(
 		points: Point[],
 		fromId: string,
 		toId: string,
-		place: 'before' | 'after' | 'auto'
+		place: 'before' | 'after'
 	): string[] | null {
-		const ids = points.map((p) => p.id);
-		const from = ids.indexOf(fromId);
-		const to = ids.indexOf(toId);
-		if (from < 0 || to < 0 || from === to) return null;
-
-		// 'auto' (glisser-déposer) : descendre dépose après la cible, monter avant.
-		const after = place === 'auto' ? from < to : place === 'after';
-		ids.splice(from, 1);
-		const target = ids.indexOf(toId);
-		ids.splice(after ? target + 1 : target, 0, fromId);
-		return ids;
+		return reorderIds(
+			points.map((p) => p.id),
+			fromId,
+			toId,
+			place
+		);
 	}
 
 	async function commitOrder(objectiveId: string, orderedIds: string[]) {
+		const previous = pendingOrder[objectiveId];
+		pendingOrder[objectiveId] = orderedIds; // visible immédiatement
+
 		const ok = await api('/api/teacher/curriculum/points/reorder', 'POST', {
 			objective_id: objectiveId,
 			point_ids: orderedIds
 		});
-		if (ok) await invalidateAll();
+
+		if (!ok) {
+			// Rétablir l'ordre d'avant plutôt que de laisser l'écran mentir.
+			if (previous) pendingOrder[objectiveId] = previous;
+			else delete pendingOrder[objectiveId];
+			return;
+		}
+		// Pas d'invalidateAll : l'écran est déjà juste, et un rechargement
+		// ferait clignoter la liste pour rien — seul l'ordre a changé.
 	}
 
 	/**
@@ -369,16 +400,26 @@
 		// passe par le dialogue, qui l'annonce.
 		if (!dragging || dragging.objectiveId !== objectiveId || dragging.pointId === pointId) return;
 		event.preventDefault();
-		dragOverId = pointId;
+
+		// La moitié survolée décide du côté : au-dessus de la ligne médiane on
+		// insère avant, au-dessous après. C'est ce que dessine la barre bleue.
+		const box = (event.currentTarget as HTMLElement).getBoundingClientRect();
+		dropTarget = {
+			pointId,
+			where: event.clientY < box.top + box.height / 2 ? 'before' : 'after'
+		};
 	}
 
 	async function dropOn(event: DragEvent, objectiveId: string, all: Point[], pointId: string) {
 		event.preventDefault();
 		const from = dragging;
+		const where = dropTarget?.where ?? 'before';
 		dragging = null;
-		dragOverId = '';
+		dropTarget = null;
 		if (!from || from.objectiveId !== objectiveId) return;
-		const ids = reordered(all, from.pointId, pointId, 'auto');
+		// `where` vient de la barre que l'utilisateur voyait : le résultat est
+		// exactement ce qui était annoncé, pas une déduction sur les index.
+		const ids = reordered(all, from.pointId, pointId, where);
 		if (ids) await commitOrder(objectiveId, ids);
 	}
 
@@ -573,19 +614,30 @@
 
 									<!-- Points -->
 									{#if openItems[item.id]}
-										{@const points = visiblePoints(item.points)}
+										{@const allPoints = orderedPoints(item.id, item.points)}
+										{@const points = visiblePoints(allPoints)}
 										<div class="space-y-1 border-t p-2 pl-6">
 											{#each points as point, pi (point.id)}
 												<div
-													class="flex items-start gap-2 rounded border border-transparent px-1 py-1 hover:bg-muted/50"
+													class="relative flex items-start gap-2 rounded border border-transparent px-1 py-1 hover:bg-muted/50"
 													class:opacity-60={point.archived_at}
-													class:border-primary={dragOverId === point.id}
 													class:opacity-40={dragging?.pointId === point.id}
 													ondragover={(e) => allowDrop(e, item.id, point.id)}
-													ondragleave={() => (dragOverId = '')}
-													ondrop={(e) => dropOn(e, item.id, item.points, point.id)}
+													ondragleave={() => (dropTarget = null)}
+													ondrop={(e) => dropOn(e, item.id, allPoints, point.id)}
 													role="listitem"
 												>
+													<!-- Barre d'insertion : dit exactement où le point va tomber.
+													     Positionnée en absolu pour ne décaler aucune ligne, et
+													     `pointer-events-none` pour ne pas intercepter le survol. -->
+													{#if dropTarget?.pointId === point.id}
+														<span
+															class="pointer-events-none absolute inset-x-0 z-10 h-0.5 rounded-full bg-primary {dropTarget.where ===
+															'before'
+																? '-top-px'
+																: '-bottom-px'}"
+														></span>
+													{/if}
 													<!-- Poignée : le glissement part d'ici et non de la ligne entière,
 													     sinon un clic sur le code ou un bouton amorce un déplacement.
 													     Souris uniquement — les flèches ↑↓ couvrent clavier et tactile. -->
@@ -595,7 +647,7 @@
 														ondragstart={(e) => startDrag(e, item.id, point.id)}
 														ondragend={() => {
 															dragging = null;
-															dragOverId = '';
+															dropTarget = null;
 														}}
 														aria-hidden="true"
 													>
@@ -639,7 +691,7 @@
 															title="Monter"
 															aria-label="Monter le point"
 															disabled={busy || pi === 0}
-															onclick={() => movePoint(item.id, item.points, points, pi, 'up')}
+															onclick={() => movePoint(item.id, allPoints, points, pi, 'up')}
 														>
 															<ArrowUp class="h-4 w-4" />
 														</Button>
@@ -649,7 +701,7 @@
 															title="Descendre"
 															aria-label="Descendre le point"
 															disabled={busy || pi === points.length - 1}
-															onclick={() => movePoint(item.id, item.points, points, pi, 'down')}
+															onclick={() => movePoint(item.id, allPoints, points, pi, 'down')}
 														>
 															<ArrowDown class="h-4 w-4" />
 														</Button>
