@@ -47,7 +47,7 @@ import {
 	cleanupCompetenceTestData
 } from '../helpers/competence-referentiel.helpers';
 
-// Grade dédié aux fixtures : le seed du programme ne peuple que la 6ᵉ, donc
+// Grade dédié aux fixtures : les seeds du programme peuplent la 6ᵉ et la 1ʳᵉ spé, donc
 // poser les tests sur '5' les isole du référentiel réel (et de sa purge).
 const TEST_GRADE = '5';
 const TEST_GRADE_ALT = '4';
