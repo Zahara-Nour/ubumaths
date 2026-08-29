@@ -20,6 +20,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		CURRICULUM_LEVEL_PATHS,
@@ -575,7 +576,7 @@
 							{:else}
 								<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 							{/if}
-							<span class="font-semibold">{theme.name}</span>
+							<span class="font-semibold"><InlineMarkdown content={theme.name} /></span>
 							<span class="text-xs text-muted-foreground">
 								{theme.objectives.length} objectifs · {pointCount(theme)} points
 							</span>
@@ -640,7 +641,7 @@
 											{:else}
 												<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 											{/if}
-											<span class="font-medium">{item.name}</span>
+											<span class="font-medium"><InlineMarkdown content={item.name} /></span>
 											<span class="text-xs text-muted-foreground">{item.points.length} points</span>
 										</button>
 										<div class="flex items-center gap-1">
@@ -734,7 +735,7 @@
 														{point.code}
 													</code>
 													<span class="flex-1 text-sm" class:line-through={point.archived_at}>
-														{point.name}
+														<InlineMarkdown content={point.name} />
 														<Badge variant="outline" class="ml-2 align-middle text-[10px]">
 															{kindLabel(point.kind)}
 														</Badge>
