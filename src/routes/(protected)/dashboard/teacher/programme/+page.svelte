@@ -19,6 +19,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		CURRICULUM_LEVEL_PATHS,
@@ -70,6 +71,12 @@
 	 * On réordonne tout de suite et on rétablit si l'écriture échoue.
 	 */
 	let pendingOrder = $state<Record<string, string[]>>({});
+
+	// --- confirmation de suppression ---------------------------------------
+	// `confirm()` natif : hors charte, non stylable, bloquant. Le projet a son
+	// ConfirmDialog, utilisé partout ailleurs.
+	let confirmOpen = $state(false);
+	let pendingDelete = $state<{ level: Level; id: string; name: string } | null>(null);
 
 	// --- dialog state ---------------------------------------------------------
 	let dialogOpen = $state(false);
@@ -312,15 +319,29 @@
 	}
 
 	// --- delete ---------------------------------------------------------------
-	async function deleteNode(level: Level, node: { id: string; name: string }) {
-		const warn =
-			level === 'theme'
-				? '\n\nTous ses objectifs et points seront aussi supprimés.'
-				: level === 'objective'
-					? '\n\nTous ses points seront aussi supprimés.'
-					: '\n\nDéfinitif. Pour garder l’historique, archivez plutôt.';
-		if (!confirm(`Supprimer « ${node.name} » ?${warn}`)) return;
-		const ok = await api(`/api/teacher/curriculum/${basePath(level)}/${node.id}`, 'DELETE');
+	function askDelete(level: Level, node: { id: string; name: string }) {
+		pendingDelete = { level, id: node.id, name: node.name };
+		confirmOpen = true;
+	}
+
+	/** Ce que la suppression emporte avec elle, dit avant et non après. */
+	const deleteDescription = $derived.by(() => {
+		if (!pendingDelete) return '';
+		const { level, name } = pendingDelete;
+		if (level === 'theme')
+			return `« ${name} » disparaîtra, ainsi que tous ses objectifs et tous leurs points.`;
+		if (level === 'objective') return `« ${name} » disparaîtra, ainsi que tous ses points.`;
+		return `« ${name} » sera supprimé définitivement. Pour en garder l'historique, archivez-le plutôt.`;
+	});
+
+	async function confirmDelete() {
+		const target = pendingDelete;
+		pendingDelete = null;
+		if (!target) return;
+		const ok = await api(
+			`/api/teacher/curriculum/${basePath(target.level)}/${target.id}`,
+			'DELETE'
+		);
 		if (ok) {
 			toaster.success('Supprimé');
 			await invalidateAll();
@@ -543,7 +564,7 @@
 								title="Supprimer"
 								aria-label="Supprimer le thème"
 								disabled={busy}
-								onclick={() => deleteNode('theme', theme)}
+								onclick={() => askDelete('theme', theme)}
 							>
 								<Trash2 class="h-4 w-4 text-destructive" />
 							</Button>
@@ -605,7 +626,7 @@
 												title="Supprimer"
 												aria-label="Supprimer l'objectif"
 												disabled={busy}
-												onclick={() => deleteNode('objective', item)}
+												onclick={() => askDelete('objective', item)}
 											>
 												<Trash2 class="h-4 w-4 text-destructive" />
 											</Button>
@@ -740,7 +761,7 @@
 																title="Supprimer"
 																aria-label="Supprimer le point"
 																disabled={busy}
-																onclick={() => deleteNode('point', point)}
+																onclick={() => askDelete('point', point)}
 															>
 																<Trash2 class="h-4 w-4 text-destructive" />
 															</Button>
@@ -868,3 +889,13 @@
 		</form>
 	</Dialog.Content>
 </Dialog.Root>
+
+<ConfirmDialog
+	bind:open={confirmOpen}
+	title={pendingDelete ? `Supprimer « ${pendingDelete.name} » ?` : ''}
+	description={deleteDescription}
+	confirmLabel={lore.actions.delete}
+	variant="destructive"
+	onConfirm={confirmDelete}
+	onCancel={() => (pendingDelete = null)}
+/>
