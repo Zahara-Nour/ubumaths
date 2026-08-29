@@ -3,7 +3,7 @@
 	/**
 	 * Teacher — Programme (curriculum tree editor).
 	 *
-	 * Editable Thème → Item → Point tree for a grade. This page is the source of
+	 * Editable Thème → Objectif → Point tree for a grade. This page is the source of
 	 * truth for the referential: the markdown under docs/wip/referentiel/ only
 	 * bootstraps a level that doesn't exist yet, everything after happens here.
 	 *
@@ -21,6 +21,11 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
+		CURRICULUM_LEVEL_PATHS,
+		CURRICULUM_LEVEL_NOUNS,
+		type CurriculumLevel
+	} from '$lib/config/curriculum-levels';
+	import {
 		Plus,
 		Pencil,
 		Trash2,
@@ -35,7 +40,7 @@
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
 
-	type Level = 'theme' | 'item' | 'point';
+	type Level = CurriculumLevel;
 	type PointKind = 'connaissance' | 'savoir_faire' | 'demonstration';
 	type Exigence = 'attendu' | 'approfondissement';
 	type Regime = 'fluence' | 'diversite';
@@ -119,13 +124,16 @@
 	);
 
 	const dialogTitle = $derived.by(() => {
-		const noun = dialogLevel === 'theme' ? 'thème' : dialogLevel === 'item' ? 'item' : 'point';
+		const noun = CURRICULUM_LEVEL_NOUNS[dialogLevel];
 		if (dialogMode === 'create') return `Nouveau ${noun}`;
 		return `Modifier le ${noun}`;
 	});
 
+	// La table vit dans $lib/config : un test vérifie que chaque chemin
+	// correspond à une route réelle. Le ternaire qui était ici a survécu au
+	// renommage `items` → `objectives` de la fusion, et cassait silencieusement.
 	function basePath(level: Level): string {
-		return level === 'theme' ? 'themes' : level === 'item' ? 'items' : 'points';
+		return CURRICULUM_LEVEL_PATHS[level];
 	}
 
 	function kindLabel(kind: string): string {
@@ -191,7 +199,7 @@
 		dialogOpen = true;
 	}
 
-	function openEditNode(level: 'theme' | 'item', node: { id: string; name: string }) {
+	function openEditNode(level: 'theme' | 'objective', node: { id: string; name: string }) {
 		dialogMode = 'edit';
 		dialogLevel = level;
 		dialogTargetId = node.id;
@@ -236,7 +244,7 @@
 		if (dialogMode === 'create') {
 			if (dialogLevel === 'theme') {
 				ok = await api('/api/teacher/curriculum/themes', 'POST', { grade: data.grade, name });
-			} else if (dialogLevel === 'item') {
+			} else if (dialogLevel === 'objective') {
 				ok = await api('/api/teacher/curriculum/objectives', 'POST', {
 					theme_id: dialogTargetId,
 					name
@@ -282,8 +290,8 @@
 	async function deleteNode(level: Level, node: { id: string; name: string }) {
 		const warn =
 			level === 'theme'
-				? '\n\nTous ses items et points seront aussi supprimés.'
-				: level === 'item'
+				? '\n\nTous ses objectifs et points seront aussi supprimés.'
+				: level === 'objective'
 					? '\n\nTous ses points seront aussi supprimés.'
 					: '\n\nDéfinitif. Pour garder l’historique, archivez plutôt.';
 		if (!confirm(`Supprimer « ${node.name} » ?${warn}`)) return;
@@ -374,9 +382,9 @@
 		if (ids) await commitOrder(objectiveId, ids);
 	}
 
-	/** Réordonnancement des thèmes et des items : toujours l'échange deux-à-deux. */
+	/** Réordonnancement des thèmes et des objectifs : toujours l'échange deux-à-deux. */
 	async function reorder(
-		level: 'theme' | 'item',
+		level: 'theme' | 'objective',
 		list: { id: string; display_order: number }[],
 		index: number,
 		dir: 'up' | 'down'
@@ -405,7 +413,7 @@
 			<div>
 				<h1 class="text-2xl font-bold tracking-tight">Programme</h1>
 				<p class="text-sm text-muted-foreground">
-					Référentiel de suivi — thèmes, items et points par niveau.
+					Référentiel de suivi — thèmes, objectifs et points par niveau.
 				</p>
 			</div>
 		</div>
@@ -454,7 +462,7 @@
 							{/if}
 							<span class="font-semibold">{theme.name}</span>
 							<span class="text-xs text-muted-foreground">
-								{theme.objectives.length} items · {pointCount(theme)} points
+								{theme.objectives.length} objectifs · {pointCount(theme)} points
 							</span>
 						</button>
 						<div class="flex items-center gap-1">
@@ -501,7 +509,7 @@
 						</div>
 					</div>
 
-					<!-- Items -->
+					<!-- Objectifs -->
 					{#if openThemes[theme.id]}
 						<div class="space-y-1 border-t bg-muted/30 p-2 pl-6">
 							{#each theme.objectives as item, ii (item.id)}
@@ -524,9 +532,9 @@
 												variant="ghost"
 												size="sm"
 												title="Monter"
-												aria-label="Monter l'item"
+												aria-label="Monter l'objectif"
 												disabled={busy || ii === 0}
-												onclick={() => reorder('item', theme.objectives, ii, 'up')}
+												onclick={() => reorder('objective', theme.objectives, ii, 'up')}
 											>
 												<ArrowUp class="h-4 w-4" />
 											</Button>
@@ -534,9 +542,9 @@
 												variant="ghost"
 												size="sm"
 												title="Descendre"
-												aria-label="Descendre l'item"
+												aria-label="Descendre l'objectif"
 												disabled={busy || ii === theme.objectives.length - 1}
-												onclick={() => reorder('item', theme.objectives, ii, 'down')}
+												onclick={() => reorder('objective', theme.objectives, ii, 'down')}
 											>
 												<ArrowDown class="h-4 w-4" />
 											</Button>
@@ -544,9 +552,9 @@
 												variant="ghost"
 												size="sm"
 												title="Renommer"
-												aria-label="Renommer l'item"
+												aria-label="Renommer l'objectif"
 												disabled={busy}
-												onclick={() => openEditNode('item', item)}
+												onclick={() => openEditNode('objective', item)}
 											>
 												<Pencil class="h-4 w-4" />
 											</Button>
@@ -554,9 +562,9 @@
 												variant="ghost"
 												size="sm"
 												title="Supprimer"
-												aria-label="Supprimer l'item"
+												aria-label="Supprimer l'objectif"
 												disabled={busy}
-												onclick={() => deleteNode('item', item)}
+												onclick={() => deleteNode('objective', item)}
 											>
 												<Trash2 class="h-4 w-4 text-destructive" />
 											</Button>
@@ -706,9 +714,9 @@
 								size="sm"
 								class="mt-1"
 								disabled={busy}
-								onclick={() => openCreate('item', theme.id)}
+								onclick={() => openCreate('objective', theme.id)}
 							>
-								<Plus class="mr-1 h-4 w-4" /> Item
+								<Plus class="mr-1 h-4 w-4" /> Objectif
 							</Button>
 						</div>
 					{/if}
