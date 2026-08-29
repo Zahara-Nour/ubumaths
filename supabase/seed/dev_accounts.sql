@@ -3,6 +3,17 @@
 -- ==============================================================================
 -- Recréés à chaque `pnpm db:reset`, qui repart d'une base vide.
 --
+-- ⚠️ `pnpm test:integration` DÉTRUIT le compte prof. Son global-setup supprime
+-- tous les comptes `teacher` de la base locale, parce que le trigger
+-- `enforce_single_teacher` (modèle mono-professeur) n'en tolère qu'un seul et
+-- que chaque test a besoin de créer le sien. Le compte élève, lui, survit.
+--
+--   Après une suite d'intégration :  pnpm db:dev-accounts
+--
+-- Ce n'est pas un défaut à corriger : c'est l'invariant métier qui rencontre le
+-- design des tests. Seeder un prof permanent et laisser les tests en créer un
+-- autre sont deux choses incompatibles par construction.
+--
 -- Pourquoi ils existent : la connexion Google ne fonctionne pas contre un
 -- Supabase local, et les pages prof exigent le rôle `teacher`. Sans compte
 -- mot de passe, /dashboard/teacher/* est inatteignable en développement.
