@@ -170,10 +170,10 @@ for (const [label, seen] of [
 }
 
 const sql = `-- ============================================================================
--- Seed — Programme de suivi 1ʳᵉ spécialité mathématiques (grade '${GRADE}')
+-- Amorçage — Programme de suivi 1ʳᵉ spécialité mathématiques (grade '${GRADE}')
 -- ============================================================================
--- GÉNÉRÉ par scripts/generate-curriculum-1re-spe-seed.ts — ne pas éditer à la
--- main : corriger docs/wip/referentiel/1re-spe-programme.md puis relancer.
+-- GÉNÉRÉ par scripts/generate-curriculum-1re-spe-seed.ts depuis
+-- docs/wip/referentiel/1re-spe-programme.md — ne pas éditer à la main.
 --
 -- Source : « Programme de spécialité de mathématiques de la classe de première
 -- de la voie générale » (programme en vigueur, avec la partie transversale
@@ -182,77 +182,72 @@ const sql = `-- ================================================================
 --   ${themes.length} thèmes · ${objectives.length} objectifs · ${points.length} points
 --   kind        : ${points.filter((p) => p.kind === 'connaissance').length} connaissance · ${points.filter((p) => p.kind === 'savoir_faire').length} savoir_faire · ${points.filter((p) => p.kind === 'demonstration').length} demonstration
 --   exigence    : ${points.filter((p) => p.exigence === 'attendu').length} attendu · ${points.filter((p) => p.exigence === 'approfondissement').length} approfondissement
---   regime_acquisition : ${points.filter((p) => p.regime === 'fluence').length} fluence · ${points.filter((p) => p.regime === 'diversite').length} diversite
 --
--- \`rang\` reste NULL partout : le programme ne propose aucune échelle de
--- difficulté. Les objectifs s'affichent en liste avec un compteur n/m ; une
--- échelle 1-4 peut être ajoutée plus tard depuis la page Programme.
+-- AMORÇAGE, PAS SYNCHRONISATION.
 --
--- SYNCHRONISATION, pas simple ajout. Le rejeu du seed après correction du
--- markdown met à jour ce qui vient du programme et archive ce qui en a disparu,
--- en s'appuyant sur le \`code\` (stable) et non sur le libellé.
+-- Ce fichier remplit un niveau VIDE, une fois. Ensuite c'est la page Programme
+-- qui fait foi : ajouts, renommages, déplacements, archivages s'y font, et le
+-- markdown n'a plus voix au chapitre. Corriger le markdown après coup ne
+-- produit donc plus rien sur une base déjà amorcée — la correction se fait
+-- dans l'app.
 --
--- Partage de responsabilité, délibéré :
---   · le markdown fait foi pour  objectif · libellé · kind · exigence · ordre
---     (c'est le texte du BO)
---   · l'application fait foi pour  regime_acquisition · rang · archived_at
---     (ce sont les choix pédagogiques du prof)
--- Le seed ne touche JAMAIS à la seconde colonne.
+-- D'où la garde ci-dessous : le rejeu (un \`db:reset\` en local, une migration
+-- relancée) ne peut rien écraser, il ne fait rien du tout. C'est la différence
+-- avec la version précédente, qui re-synchronisait depuis le markdown et
+-- archivait ce qui en avait disparu — elle aurait défait le travail fait dans
+-- l'app.
+--
+-- Le markdown garde un seul rôle : amorcer un niveau NEUF (2de, terminale…).
+-- Y saisir 153 points à la main dans un formulaire serait une punition.
+--
+-- Ce que le seed ne renseigne pas, volontairement :
+--   · \`regime_acquisition\` — au défaut ('diversite') ; c'est un choix de prof
+--   · \`rang\` — NULL ; le programme ne propose aucune échelle de difficulté
 -- ============================================================================
+
+do $bootstrap$
+BEGIN
+
+IF EXISTS (SELECT 1 FROM public.curriculum_themes WHERE grade = '${GRADE}') THEN
+	RAISE NOTICE 'Référentiel ${GRADE} déjà amorcé — aucune modification.';
+	RETURN;
+END IF;
 
 -- ---------------------------------------------------------------------------
 -- 1. Thèmes
 -- ---------------------------------------------------------------------------
-insert into public.curriculum_themes (grade, name, display_order) values
-${themes.map((t) => `\t('${GRADE}', ${q(t.name)}, ${t.ord})`).join(',\n')}
-on conflict (grade, name) do nothing;
+INSERT INTO public.curriculum_themes (grade, name, display_order) VALUES
+${themes.map((t) => `\t('${GRADE}', ${q(t.name)}, ${t.ord})`).join(',\n')};
 
 -- ---------------------------------------------------------------------------
 -- 2. Objectifs
 -- ---------------------------------------------------------------------------
-insert into public.curriculum_objectives (theme_id, name, display_order)
-select t.id, v.objective_name, v.ord
-from (values
+INSERT INTO public.curriculum_objectives (theme_id, name, display_order)
+SELECT t.id, v.objective_name, v.ord
+FROM (VALUES
 ${objectives.map((o) => `\t(${q(o.theme)}, ${q(o.name)}, ${o.ord})`).join(',\n')}
-) as v(theme_name, objective_name, ord)
-join public.curriculum_themes t on t.grade = '${GRADE}' and t.name = v.theme_name
-on conflict (theme_id, name) do nothing;
+) AS v(theme_name, objective_name, ord)
+JOIN public.curriculum_themes t ON t.grade = '${GRADE}' AND t.name = v.theme_name;
 
 -- ---------------------------------------------------------------------------
 -- 3. Points
 -- ---------------------------------------------------------------------------
-insert into public.curriculum_points (objective_id, code, name, display_order, kind, exigence)
-select o.id, v.code, v.point_name, v.ord, v.kind, v.exigence
-from (values
+-- \`code\` explicite : la série du markdown. Le trigger d'attribution ne prend
+-- la main que pour les points créés ensuite depuis l'app, qui prennent la suite.
+INSERT INTO public.curriculum_points (objective_id, code, name, display_order, kind, exigence)
+SELECT o.id, v.code, v.point_name, v.ord, v.kind, v.exigence
+FROM (VALUES
 ${points
 	.map(
 		(p) =>
 			`\t(${q(p.code)}, ${q(p.theme)}, ${q(p.objective)}, ${q(p.name)}, ${p.ord}, ${q(p.kind)}, ${q(p.exigence)})`
 	)
 	.join(',\n')}
-) as v(code, theme_name, objective_name, point_name, ord, kind, exigence)
-join public.curriculum_themes t on t.grade = '${GRADE}' and t.name = v.theme_name
-join public.curriculum_objectives o on o.theme_id = t.id and o.name = v.objective_name
-on conflict (code) do update set
-	objective_id  = excluded.objective_id,
-	name          = excluded.name,
-	display_order = excluded.display_order,
-	kind          = excluded.kind,
-	exigence      = excluded.exigence,
-	updated_at    = now();
--- \`regime_acquisition\`, \`rang\` et \`archived_at\` sont volontairement absents :
--- ce sont les choix du prof, pas le texte du programme.
+) AS v(code, theme_name, objective_name, point_name, ord, kind, exigence)
+JOIN public.curriculum_themes t     ON t.grade = '${GRADE}' AND t.name = v.theme_name
+JOIN public.curriculum_objectives o ON o.theme_id = t.id AND o.name = v.objective_name;
 
--- ---------------------------------------------------------------------------
--- 4. Points disparus du markdown → archivés (jamais supprimés)
--- ---------------------------------------------------------------------------
--- Supprimer effacerait la couverture du cahier de texte et l'acquisition des
--- élèves. On archive : le point sort des vues, l'historique reste.
-update public.curriculum_points
-set archived_at = now()
-where code like '${GRADE.replace('_', '')}-%'
-  and archived_at is null
-  and code not in (${points.map((pt) => q(pt.code)).join(', ')});
+END $bootstrap$;
 `;
 
 writeFileSync(OUT, sql);

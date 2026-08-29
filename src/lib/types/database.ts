@@ -2190,6 +2190,7 @@ export type Database = {
       curriculum_points: {
         Row: {
           archived_at: string | null
+          code: string
           created_at: string
           display_order: number
           exigence: string
@@ -2203,6 +2204,7 @@ export type Database = {
         }
         Insert: {
           archived_at?: string | null
+          code: string
           created_at?: string
           display_order?: number
           exigence?: string
@@ -2216,6 +2218,7 @@ export type Database = {
         }
         Update: {
           archived_at?: string | null
+          code?: string
           created_at?: string
           display_order?: number
           exigence?: string
@@ -15032,6 +15035,16 @@ export type Database = {
         }
         Returns: string
       }
+      curriculum_point_reference_counts: {
+        Args: { p_point_id: string }
+        Returns: Json
+      }
+      curriculum_referenced_points: {
+        Args: { p_grade: string }
+        Returns: {
+          point_id: string
+        }[]
+      }
       delete_all_resolved_errors: { Args: never; Returns: number }
       delete_attachment: { Args: { p_attachment_id: string }; Returns: string }
       delete_user_account: { Args: { p_user_id: string }; Returns: Json }
@@ -16021,6 +16034,7 @@ export type Database = {
         Returns: undefined
       }
       my_school: { Args: never; Returns: string }
+      next_curriculum_point_code: { Args: { p_grade: string }; Returns: string }
       normalize_grade_array: {
         Args: { input_grades: string[] }
         Returns: string[]

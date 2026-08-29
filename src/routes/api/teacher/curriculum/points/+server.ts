@@ -11,7 +11,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { createPointSchema, pointListQuerySchema } from '$lib/server/validation/curriculum';
-import { curriculumDbError, POINT_COLS } from '$lib/server/curriculum';
+import { curriculumDbError, POINT_COLS, pointInsert } from '$lib/server/curriculum';
 import type { CurriculumPoint } from '$lib/types/database-helpers';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
@@ -54,14 +54,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
+	// `code` est absent volontairement : le trigger le calcule depuis le niveau
+	// de l'objectif et attribue le suivant de la série (1SPE-154, 6-096, …).
+	// Les champs omis par l'appelant retombent sur les défauts de la table
+	// ('diversite', 'attendu', rang NULL) plutôt que sur `null`.
 	const { data, error: dbErr } = await locals.supabase
 		.from('curriculum_points')
-		.insert({
-			objective_id: parsed.data.objective_id,
-			name: parsed.data.name,
-			display_order: parsed.data.display_order ?? 0,
-			kind: parsed.data.kind ?? null
-		})
+		.insert(
+			pointInsert({
+				objective_id: parsed.data.objective_id,
+				name: parsed.data.name,
+				display_order: parsed.data.display_order ?? 0,
+				kind: parsed.data.kind,
+				...(parsed.data.regime_acquisition !== undefined && {
+					regime_acquisition: parsed.data.regime_acquisition
+				}),
+				...(parsed.data.exigence !== undefined && { exigence: parsed.data.exigence }),
+				...(parsed.data.rang !== undefined && { rang: parsed.data.rang })
+			})
+		)
 		.select(POINT_COLS)
 		.single();
 

@@ -12,6 +12,7 @@
  * erreur, ou la typologie du BO qui ne se retrouve plus en base.
  */
 
+import { readFileSync } from 'node:fs';
 import { describe, it, expect, beforeAll } from 'vitest';
 import { createServiceRoleClient } from '../helpers/competence-referentiel.helpers';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -125,6 +126,57 @@ describe('Seed du programme — code stable', () => {
 		expect(codes).toHaveLength(153);
 		expect(new Set(codes).size).toBe(153);
 		expect(codes.every((c) => /^1SPE-\d{3}$/.test(c!))).toBe(true);
+	});
+
+	// La 6ᵉ a été seedée avant l'existence de la colonne : ses points ont été
+	// rattrapés par le backfill de 20260831090000. Sans code, ils seraient
+	// incitables dans une fiche et non transportables d'un environnement à
+	// l'autre — et l'insertion échouerait désormais (colonne NOT NULL).
+	it('a rattrapé les 95 points de 6ᵉ, série indépendante', async () => {
+		const { points } = await pointsOfGrade('6');
+		const codes = points.map((p) => p.code);
+		expect(codes).toHaveLength(95);
+		expect(codes.every((c) => /^6-\d{3}$/.test(c!))).toBe(true);
+		expect(new Set(codes).size).toBe(95);
+	});
+});
+
+/**
+ * L'amorçage doit être rejouable sans rien écraser.
+ *
+ * On ne peut pas relancer une migration depuis vitest, mais on peut verrouiller
+ * la forme qui rend le rejeu inoffensif — c'est elle, et non le contenu, qui a
+ * changé le 2026-08-31 : le seed synchronisait depuis le markdown (`ON CONFLICT
+ * … DO UPDATE`) et archivait ce qui en avait disparu. Sur une base où le prof a
+ * travaillé dans la page Programme, ce rejeu défaisait son travail.
+ */
+describe('Seed du programme — amorçage et non synchronisation', () => {
+	const seed = readFileSync(
+		new URL(
+			'../../supabase/migrations/20260830090000_seed_curriculum_1re_spe.sql',
+			import.meta.url
+		),
+		'utf8'
+	);
+
+	it('sort sans rien faire si le niveau existe déjà', () => {
+		expect(seed).toMatch(
+			/IF EXISTS \(SELECT 1 FROM public\.curriculum_themes WHERE grade = '1_SPE'\) THEN/
+		);
+		expect(seed).toMatch(/RETURN;/);
+	});
+
+	it('ne met à jour ni n’archive quoi que ce soit', () => {
+		expect(seed).not.toMatch(/on conflict/i);
+		expect(seed).not.toMatch(/archived_at/i);
+		expect(seed).not.toMatch(/^\s*update\s/im);
+	});
+
+	it('ne renseigne pas les colonnes qui appartiennent au prof', () => {
+		// `regime_acquisition` et `rang` sont ses choix pédagogiques : le seed les
+		// laisse aux défauts de la table plutôt que de les imposer.
+		expect(seed).not.toMatch(/regime_acquisition\s*[,)]/);
+		expect(seed).not.toMatch(/\brang\b\s*[,)]/);
 	});
 });
 

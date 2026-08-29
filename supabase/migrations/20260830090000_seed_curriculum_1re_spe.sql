@@ -1,8 +1,8 @@
 -- ============================================================================
--- Seed — Programme de suivi 1ʳᵉ spécialité mathématiques (grade '1_SPE')
+-- Amorçage — Programme de suivi 1ʳᵉ spécialité mathématiques (grade '1_SPE')
 -- ============================================================================
--- GÉNÉRÉ par scripts/generate-curriculum-1re-spe-seed.ts — ne pas éditer à la
--- main : corriger docs/wip/referentiel/1re-spe-programme.md puis relancer.
+-- GÉNÉRÉ par scripts/generate-curriculum-1re-spe-seed.ts depuis
+-- docs/wip/referentiel/1re-spe-programme.md — ne pas éditer à la main.
 --
 -- Source : « Programme de spécialité de mathématiques de la classe de première
 -- de la voie générale » (programme en vigueur, avec la partie transversale
@@ -11,42 +11,54 @@
 --   6 thèmes · 14 objectifs · 153 points
 --   kind        : 49 connaissance · 93 savoir_faire · 11 demonstration
 --   exigence    : 125 attendu · 28 approfondissement
---   regime_acquisition : 0 fluence · 153 diversite
 --
--- `rang` reste NULL partout : le programme ne propose aucune échelle de
--- difficulté. Les objectifs s'affichent en liste avec un compteur n/m ; une
--- échelle 1-4 peut être ajoutée plus tard depuis la page Programme.
+-- AMORÇAGE, PAS SYNCHRONISATION.
 --
--- SYNCHRONISATION, pas simple ajout. Le rejeu du seed après correction du
--- markdown met à jour ce qui vient du programme et archive ce qui en a disparu,
--- en s'appuyant sur le `code` (stable) et non sur le libellé.
+-- Ce fichier remplit un niveau VIDE, une fois. Ensuite c'est la page Programme
+-- qui fait foi : ajouts, renommages, déplacements, archivages s'y font, et le
+-- markdown n'a plus voix au chapitre. Corriger le markdown après coup ne
+-- produit donc plus rien sur une base déjà amorcée — la correction se fait
+-- dans l'app.
 --
--- Partage de responsabilité, délibéré :
---   · le markdown fait foi pour  objectif · libellé · kind · exigence · ordre
---     (c'est le texte du BO)
---   · l'application fait foi pour  regime_acquisition · rang · archived_at
---     (ce sont les choix pédagogiques du prof)
--- Le seed ne touche JAMAIS à la seconde colonne.
+-- D'où la garde ci-dessous : le rejeu (un `db:reset` en local, une migration
+-- relancée) ne peut rien écraser, il ne fait rien du tout. C'est la différence
+-- avec la version précédente, qui re-synchronisait depuis le markdown et
+-- archivait ce qui en avait disparu — elle aurait défait le travail fait dans
+-- l'app.
+--
+-- Le markdown garde un seul rôle : amorcer un niveau NEUF (2de, terminale…).
+-- Y saisir 153 points à la main dans un formulaire serait une punition.
+--
+-- Ce que le seed ne renseigne pas, volontairement :
+--   · `regime_acquisition` — au défaut ('diversite') ; c'est un choix de prof
+--   · `rang` — NULL ; le programme ne propose aucune échelle de difficulté
 -- ============================================================================
+
+do $bootstrap$
+BEGIN
+
+IF EXISTS (SELECT 1 FROM public.curriculum_themes WHERE grade = '1_SPE') THEN
+	RAISE NOTICE 'Référentiel 1_SPE déjà amorcé — aucune modification.';
+	RETURN;
+END IF;
 
 -- ---------------------------------------------------------------------------
 -- 1. Thèmes
 -- ---------------------------------------------------------------------------
-insert into public.curriculum_themes (grade, name, display_order) values
+INSERT INTO public.curriculum_themes (grade, name, display_order) VALUES
 	('1_SPE', $$Vocabulaire ensembliste et logique$$, 1),
 	('1_SPE', $$Algorithmique et programmation$$, 2),
 	('1_SPE', $$Algèbre$$, 3),
 	('1_SPE', $$Analyse$$, 4),
 	('1_SPE', $$Géométrie$$, 5),
-	('1_SPE', $$Probabilités et statistiques$$, 6)
-on conflict (grade, name) do nothing;
+	('1_SPE', $$Probabilités et statistiques$$, 6);
 
 -- ---------------------------------------------------------------------------
 -- 2. Objectifs
 -- ---------------------------------------------------------------------------
-insert into public.curriculum_objectives (theme_id, name, display_order)
-select t.id, v.objective_name, v.ord
-from (values
+INSERT INTO public.curriculum_objectives (theme_id, name, display_order)
+SELECT t.id, v.objective_name, v.ord
+FROM (VALUES
 	($$Vocabulaire ensembliste et logique$$, $$Ensembles$$, 1),
 	($$Vocabulaire ensembliste et logique$$, $$Logique et raisonnement$$, 2),
 	($$Algorithmique et programmation$$, $$Notion de liste$$, 1),
@@ -61,16 +73,17 @@ from (values
 	($$Probabilités et statistiques$$, $$Probabilités conditionnelles et indépendance$$, 1),
 	($$Probabilités et statistiques$$, $$Variables aléatoires réelles$$, 2),
 	($$Probabilités et statistiques$$, $$Expérimentations$$, 3)
-) as v(theme_name, objective_name, ord)
-join public.curriculum_themes t on t.grade = '1_SPE' and t.name = v.theme_name
-on conflict (theme_id, name) do nothing;
+) AS v(theme_name, objective_name, ord)
+JOIN public.curriculum_themes t ON t.grade = '1_SPE' AND t.name = v.theme_name;
 
 -- ---------------------------------------------------------------------------
 -- 3. Points
 -- ---------------------------------------------------------------------------
-insert into public.curriculum_points (objective_id, code, name, display_order, kind, exigence)
-select o.id, v.code, v.point_name, v.ord, v.kind, v.exigence
-from (values
+-- `code` explicite : la série du markdown. Le trigger d'attribution ne prend
+-- la main que pour les points créés ensuite depuis l'app, qui prennent la suite.
+INSERT INTO public.curriculum_points (objective_id, code, name, display_order, kind, exigence)
+SELECT o.id, v.code, v.point_name, v.ord, v.kind, v.exigence
+FROM (VALUES
 	($$1SPE-001$$, $$Vocabulaire ensembliste et logique$$, $$Ensembles$$, $$Notions d'élément d'un ensemble, de sous-ensemble, d'ensemble vide, d'appartenance et d'inclusion, de réunion, d'intersection et de complémentaire$$, 1, $$connaissance$$, $$attendu$$),
 	($$1SPE-002$$, $$Vocabulaire ensembliste et logique$$, $$Ensembles$$, $$Symboles de base correspondants : `Ø`, `∈`, `⊂`, `∩`, `∪`, `{ … }`$$, 2, $$connaissance$$, $$attendu$$),
 	($$1SPE-003$$, $$Vocabulaire ensembliste et logique$$, $$Ensembles$$, $$Notation des ensembles de nombres et des intervalles$$, 3, $$connaissance$$, $$attendu$$),
@@ -224,26 +237,8 @@ from (values
 	($$1SPE-151$$, $$Probabilités et statistiques$$, $$Expérimentations$$, $$Lire, comprendre et écrire une fonction Python renvoyant la moyenne d'un échantillon de taille `n` d'une variable aléatoire$$, 2, $$savoir_faire$$, $$attendu$$),
 	($$1SPE-152$$, $$Probabilités et statistiques$$, $$Expérimentations$$, $$Étudier sur des exemples la distance entre la moyenne d'un échantillon simulé de taille `n` d'une variable aléatoire et l'espérance de cette variable aléatoire$$, 3, $$savoir_faire$$, $$attendu$$),
 	($$1SPE-153$$, $$Probabilités et statistiques$$, $$Expérimentations$$, $$Simuler, avec Python ou un tableur, `N` échantillons de taille `n` d'une variable aléatoire d'espérance `μ` et d'écart type `σ` ; si `m` désigne la moyenne d'un échantillon, calculer la proportion des cas où l'écart entre `m` et `μ` est inférieur ou égal à `2σ/√n`$$, 4, $$savoir_faire$$, $$attendu$$)
-) as v(code, theme_name, objective_name, point_name, ord, kind, exigence)
-join public.curriculum_themes t on t.grade = '1_SPE' and t.name = v.theme_name
-join public.curriculum_objectives o on o.theme_id = t.id and o.name = v.objective_name
-on conflict (code) do update set
-	objective_id  = excluded.objective_id,
-	name          = excluded.name,
-	display_order = excluded.display_order,
-	kind          = excluded.kind,
-	exigence      = excluded.exigence,
-	updated_at    = now();
--- `regime_acquisition`, `rang` et `archived_at` sont volontairement absents :
--- ce sont les choix du prof, pas le texte du programme.
+) AS v(code, theme_name, objective_name, point_name, ord, kind, exigence)
+JOIN public.curriculum_themes t     ON t.grade = '1_SPE' AND t.name = v.theme_name
+JOIN public.curriculum_objectives o ON o.theme_id = t.id AND o.name = v.objective_name;
 
--- ---------------------------------------------------------------------------
--- 4. Points disparus du markdown → archivés (jamais supprimés)
--- ---------------------------------------------------------------------------
--- Supprimer effacerait la couverture du cahier de texte et l'acquisition des
--- élèves. On archive : le point sort des vues, l'historique reste.
-update public.curriculum_points
-set archived_at = now()
-where code like '1SPE-%'
-  and archived_at is null
-  and code not in ($$1SPE-001$$, $$1SPE-002$$, $$1SPE-003$$, $$1SPE-004$$, $$1SPE-005$$, $$1SPE-006$$, $$1SPE-007$$, $$1SPE-008$$, $$1SPE-009$$, $$1SPE-010$$, $$1SPE-011$$, $$1SPE-012$$, $$1SPE-013$$, $$1SPE-014$$, $$1SPE-015$$, $$1SPE-016$$, $$1SPE-017$$, $$1SPE-018$$, $$1SPE-019$$, $$1SPE-020$$, $$1SPE-021$$, $$1SPE-022$$, $$1SPE-023$$, $$1SPE-024$$, $$1SPE-025$$, $$1SPE-026$$, $$1SPE-027$$, $$1SPE-028$$, $$1SPE-029$$, $$1SPE-030$$, $$1SPE-031$$, $$1SPE-032$$, $$1SPE-033$$, $$1SPE-034$$, $$1SPE-035$$, $$1SPE-036$$, $$1SPE-037$$, $$1SPE-038$$, $$1SPE-039$$, $$1SPE-040$$, $$1SPE-041$$, $$1SPE-042$$, $$1SPE-043$$, $$1SPE-044$$, $$1SPE-045$$, $$1SPE-046$$, $$1SPE-047$$, $$1SPE-048$$, $$1SPE-049$$, $$1SPE-050$$, $$1SPE-051$$, $$1SPE-052$$, $$1SPE-053$$, $$1SPE-054$$, $$1SPE-055$$, $$1SPE-056$$, $$1SPE-057$$, $$1SPE-058$$, $$1SPE-059$$, $$1SPE-060$$, $$1SPE-061$$, $$1SPE-062$$, $$1SPE-063$$, $$1SPE-064$$, $$1SPE-065$$, $$1SPE-066$$, $$1SPE-067$$, $$1SPE-068$$, $$1SPE-069$$, $$1SPE-070$$, $$1SPE-071$$, $$1SPE-072$$, $$1SPE-073$$, $$1SPE-074$$, $$1SPE-075$$, $$1SPE-076$$, $$1SPE-077$$, $$1SPE-078$$, $$1SPE-079$$, $$1SPE-080$$, $$1SPE-081$$, $$1SPE-082$$, $$1SPE-083$$, $$1SPE-084$$, $$1SPE-085$$, $$1SPE-086$$, $$1SPE-087$$, $$1SPE-088$$, $$1SPE-089$$, $$1SPE-090$$, $$1SPE-091$$, $$1SPE-092$$, $$1SPE-093$$, $$1SPE-094$$, $$1SPE-095$$, $$1SPE-096$$, $$1SPE-097$$, $$1SPE-098$$, $$1SPE-099$$, $$1SPE-100$$, $$1SPE-101$$, $$1SPE-102$$, $$1SPE-103$$, $$1SPE-104$$, $$1SPE-105$$, $$1SPE-106$$, $$1SPE-107$$, $$1SPE-108$$, $$1SPE-109$$, $$1SPE-110$$, $$1SPE-111$$, $$1SPE-112$$, $$1SPE-113$$, $$1SPE-114$$, $$1SPE-115$$, $$1SPE-116$$, $$1SPE-117$$, $$1SPE-118$$, $$1SPE-119$$, $$1SPE-120$$, $$1SPE-121$$, $$1SPE-122$$, $$1SPE-123$$, $$1SPE-124$$, $$1SPE-125$$, $$1SPE-126$$, $$1SPE-127$$, $$1SPE-128$$, $$1SPE-129$$, $$1SPE-130$$, $$1SPE-131$$, $$1SPE-132$$, $$1SPE-133$$, $$1SPE-134$$, $$1SPE-135$$, $$1SPE-136$$, $$1SPE-137$$, $$1SPE-138$$, $$1SPE-139$$, $$1SPE-140$$, $$1SPE-141$$, $$1SPE-142$$, $$1SPE-143$$, $$1SPE-144$$, $$1SPE-145$$, $$1SPE-146$$, $$1SPE-147$$, $$1SPE-148$$, $$1SPE-149$$, $$1SPE-150$$, $$1SPE-151$$, $$1SPE-152$$, $$1SPE-153$$);
+END $bootstrap$;
