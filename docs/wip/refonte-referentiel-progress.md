@@ -78,6 +78,7 @@ student_point_state           (ex-student_skill_state_a)
 | `bccb1f87a` | **Phase 2a** — rebranchement de 4 fils cassés (6 fichiers)                              |
 | `fead34fd8` | **Phase 2b** — auto-évaluation visible au prof + complétion d'assignation (11 fichiers) |
 | `21932c4ad` | **Phase 3** — seed 1ʳᵉ spé (7 fichiers)                                                 |
+| `a2f27644e` | **Amendement** — régime d'acquisition / listes d'automatismes (18 fichiers)             |
 
 ### Phase 2 — les fils qui étaient débranchés
 
@@ -96,9 +97,10 @@ student_point_state           (ex-student_skill_state_a)
 
 ---
 
-## 5. Ce qui est EN COURS (non commité)
+## 5. Amendement `a2f27644e` — régime d'acquisition et automatismes
 
-⚠️ **17 fichiers modifiés + 1 migration non suivie.** Typecheck vert, 31 865 tests unitaires serveur verts. **La dernière passe d'intégration n'a pas été relancée après le dernier correctif** (voir §7).
+Vérifié : typecheck 1721 fichiers 0 erreur · 31 865 tests unitaires serveur ·
+intégration **387/389** (les 2 `admin-elevation` pré-existants).
 
 ### 5a. `knowledge_type` → `regime_acquisition`
 
@@ -155,11 +157,19 @@ Corriger le markdown, relancer `pnpm tsx scripts/generate-curriculum-1re-spe-see
 
 ---
 
-## 7. Reprise — à faire en premier
+## 7. Point de reprise
 
-1. **Relancer l'intégration après un `db:reset` propre.** Le dernier correctif (isolation : `svcTheme(grade = TEST_GRADE)` dans `curriculum-api.test.ts` et `overrides.grade ?? TEST_GRADE` dans `curriculum-tracking-rls.test.ts`) n'a pas été vérifié. Il corrige deux fixtures qui créaient encore des thèmes sur le **grade 6 réel**, polluant le seed (11 thèmes au lieu de 6 après la suite).
-2. Si vert → commiter le lot en cours (§5).
-3. Décider quoi faire de la 6ᵉ : son arbre a encore un `kind` hérité sur 95 points, et les 72 capacités famille A n'ont pas été réintégrées.
+**Tout est commité, arbre de travail propre.** Cinq commits sur
+`feat/refonte-referentiel`. Rien n'est poussé, aucune PR, aucune migration
+appliquée en prod — les trois choses qui demandent l'accord explicite de David.
+
+L'isolation des tests est réparée et vérifiée : après une suite complète, le
+grade 6 reste à 6 thèmes / 20 objectifs / 95 points (il montait à 11 thèmes
+avant le correctif).
+
+Question ouverte, sans urgence : que faire de l'arbre 6ᵉ. Ses 95 points ont un
+`kind` hérité du seed d'origine, et les 72 capacités famille A n'ont pas été
+réintégrées — leur contenu reste dans `docs/wip/referentiel/6e-savoirs.md`.
 
 ---
 
