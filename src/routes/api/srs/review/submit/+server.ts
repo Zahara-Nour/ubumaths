@@ -4,7 +4,7 @@
  * Refonte 2026-06-10 (Phase 2, lot L5) :
  * - À chaque review d'une carte template-based, insère 1 row dans `skill_attempts`
  *   avec `source='srs'` et le `grade` brut conservé.
- * - Le trigger PG recalcule `student_skill_state_a` pour chaque skill tagué.
+ * - Le trigger PG recalcule `student_point_state` pour chaque point tagué.
  * - Si la carte est dans un deck autre que Programme, on l'ajoute aussi au Programme
  *   pour cohérence (idempotent).
  * - Pour les cartes custom (front/back libre), aucun skill_attempts n'est créé.
@@ -38,11 +38,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Récupération carte + deck (auth ownership)
 		// Refactor 2026-06-10 (code-quality #2.3) : nested select sur
-		// question_templates(question_template_skills(...)) pour récupérer en 1 RTT
+		// question_templates(question_template_points(...)) pour récupérer en 1 RTT
 		// les skills tagués famille knowledge — économise 1 SELECT vs isTemplateTaggedFamilyA.
 		const { data: card, error: cardError } = await supabase
 			.from('srs_cards')
-			.select('*, question_templates(question_template_skills(skill_id, skills(family)))')
+			.select('*, question_templates(question_template_points(point_id))')
 			.eq('id', body.cardId)
 			.single();
 
@@ -111,19 +111,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				console.error('[srs/review/submit] skill_attempts INSERT failed:', skillAttemptErr);
 				// Non bloquant : la review FSRS reste enregistrée.
 			} else {
-				// Auto-ajout au deck Programme si template tagué famille knowledge.
+				// Auto-ajout au deck Programme si le template est tagué sur un point.
 				// Le tagging est déjà disponible via la nested query du card SELECT
 				// (cf. refactor #2.3), aucune query supplémentaire nécessaire.
-				type LinkRow = { skill_id: string; skills: { family: string } | null };
-				type TemplateNested = { question_template_skills?: LinkRow[] };
-				const taggedKnowledgeSkillIds = (
-					(card.question_templates as unknown as TemplateNested | null)?.question_template_skills ??
+				type LinkRow = { point_id: string };
+				type TemplateNested = { question_template_points?: LinkRow[] };
+				const taggedPointIds = (
+					(card.question_templates as unknown as TemplateNested | null)?.question_template_points ??
 					[]
-				)
-					.filter((l) => l.skills?.family === 'knowledge')
-					.map((l) => l.skill_id);
+				).map((l) => l.point_id);
 
-				if (taggedKnowledgeSkillIds.length > 0) {
+				if (taggedPointIds.length > 0) {
 					try {
 						await ensureProgrammeDeckCard(supabase, user.id, card.template_id);
 					} catch (progErr) {

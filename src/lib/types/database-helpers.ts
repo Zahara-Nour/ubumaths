@@ -303,12 +303,10 @@ export type KanbanTagUpdate = Partial<Pick<KanbanTag, 'name' | 'color'>>;
 // ============================================================================
 // Spec      : docs/wip/skills-referentiel-design.md (décisions 57-72)
 // Migrations: supabase/migrations/20260609120000..02_competence_referentiel_*.sql
-// Business types stables (Family, KnowledgeType, ...) : src/lib/types/skills.ts
+// Business types stables (MathCompetenceLevel, SkillSource, ...) : src/lib/types/skills.ts
 // ============================================================================
 
 import type {
-	Family,
-	KnowledgeType,
 	MathCompetenceCode,
 	MathCompetenceLevel,
 	SkillAttemptCode,
@@ -319,15 +317,11 @@ import type {
 	PhaseBlocage
 } from './skills';
 
-// --- Family A (knowledge) hierarchy ---------------------------------------
+// --- Contenus disciplinaires ----------------------------------------------
+// Depuis la refonte 2026-08-29, ils vivent dans l'arbre `curriculum_*`
+// (voir plus bas). `skill_themes` / `skill_objectives` ont été supprimées.
 
-/** Theme = top-level BO discipline grouping (Nombres et calcul, Géométrie, ...). */
-export type SkillTheme = Tables<'skill_themes'>;
-
-/** Objective = "item" visible to student (≈ attendu BO). Has exactly 4 capacities. */
-export type SkillObjective = Tables<'skill_objectives'>;
-
-// --- Family B (competence) hierarchy --------------------------------------
+// --- Compétences mathématiques transversales ------------------------------
 
 /** One of the 6 transversal math competences (Chercher, Calculer, ...). */
 export type MathCompetence = Tables<'math_competences'>;
@@ -335,59 +329,23 @@ export type MathCompetence = Tables<'math_competences'>;
 /** Structural subdimension (A/B/C/D) under a math competence. No state of its own (décision 50). */
 export type MathCompetenceSubdimension = Tables<'math_competence_subdimensions'>;
 
-// --- Shared skill unit (polymorphic family) --------------------------------
+// --- Observable (unité de saisie famille B) --------------------------------
 
 /**
- * Raw skill row from DB. Either a capacity (objective_id set, family='knowledge')
- * or an observable (subdimension_id set, family='competence'). Mutually exclusive
- * via CHECK constraint chk_skill_family.
+ * An observable of a math competence (ex-`skills` famille B).
  *
- * Note: `family` is `string | null` in the generated type because Supabase doesn't
- * mark GENERATED columns as NOT NULL, but it is always populated in practice.
- * Prefer the discriminated alias `Skill` below for safer narrowing.
+ * Refonte 2026-08-29 : la table ne contient plus que des observables — la
+ * discrimination `family` et les capacités disciplinaires ont disparu (ces
+ * dernières sont devenues des `curriculum_points`).
  */
-type SkillRaw = Tables<'skills'>;
+export type Observable = Tables<'observables'>;
 
-/**
- * Discriminated skill type. Use this everywhere you read a skill from DB.
- * The `family` field is narrowed to `Family` (non-null) and the variants
- * tighten the other nullable fields accordingly.
- */
-export type Skill =
-	| (Omit<
-			SkillRaw,
-			| 'family'
-			| 'objective_id'
-			| 'subdimension_id'
-			| 'knowledge_type'
-			| 'observable_code'
-			| 'teacher_grid_text'
-	  > & {
-			family: 'knowledge';
-			objective_id: string;
-			subdimension_id: null;
-			knowledge_type: KnowledgeType;
-			observable_code: null;
-			teacher_grid_text: null;
-	  })
-	| (Omit<
-			SkillRaw,
-			'family' | 'objective_id' | 'subdimension_id' | 'knowledge_type' | 'observable_code'
-	  > & {
-			family: 'competence';
-			objective_id: null;
-			subdimension_id: string;
-			knowledge_type: null;
-			observable_code: string;
-			teacher_grid_text: string | null;
-	  });
+// --- Tagging junction (template ↔ point de programme) ----------------------
 
-// --- Tagging junction (template ↔ skill) -----------------------------------
+/** Junction question_template → curriculum point (décision 59 — tagging at template level). */
+export type QuestionTemplatePoint = Tables<'question_template_points'>;
 
-/** Junction question_template → skill (décision 59 — tagging at template level). */
-export type QuestionTemplateSkill = Tables<'question_template_skills'>;
-
-// --- Family B evaluation tasks ---------------------------------------------
+// --- Tâches d'évaluation (compétences math) --------------------------------
 
 /** A teacher-declared evaluation context for family-B observation. */
 export type EvaluationTask = Tables<'evaluation_tasks'>;
@@ -399,10 +357,13 @@ export type EvaluationTaskPerimeter = Tables<'evaluation_task_perimeter'>;
 
 /**
  * Raw skill_attempts row. The actual shape splits in two regimes via CHECK
- * constraint chk_attempt_family_regime:
- * - Family knowledge: `success` boolean + `template_id` non-null, `code`/`task_id` null
- * - Family competence: `code` 'plus'|'minus' + `task_id` non-null, `success` null
- * Use the discriminated `SkillAttempt` for safer narrowing.
+ * constraint chk_attempt_regime:
+ * - Contenus:    `success` boolean + `template_id` non-null, `observable_id`/`code`/`task_id` null
+ * - Compétences: `observable_id` + `code` 'plus'|'minus' + `task_id` non-null, `success` null
+ *
+ * Le régime contenus ne porte pas de FK vers le point : l'état de chaque point
+ * est dérivé via `question_template_points` (refonte per-template 2026-06-10,
+ * 1 ligne par réponse). Use the discriminated `SkillAttempt` for safer narrowing.
  */
 type SkillAttemptRaw = Tables<'skill_attempts'>;
 
@@ -413,23 +374,25 @@ type SkillAttemptRaw = Tables<'skill_attempts'>;
 export type SkillAttempt =
 	| (Omit<
 			SkillAttemptRaw,
-			'success' | 'code' | 'task_id' | 'template_id' | 'source' | 'phase_blocage'
+			'success' | 'code' | 'task_id' | 'template_id' | 'observable_id' | 'source' | 'phase_blocage'
 	  > & {
 			success: boolean;
 			code: null;
 			task_id: null;
 			template_id: string;
+			observable_id: null;
 			source: SkillSource;
 			phase_blocage: PhaseBlocage | null;
 	  })
 	| (Omit<
 			SkillAttemptRaw,
-			'success' | 'code' | 'task_id' | 'template_id' | 'source' | 'phase_blocage'
+			'success' | 'code' | 'task_id' | 'template_id' | 'observable_id' | 'source' | 'phase_blocage'
 	  > & {
 			success: null;
 			code: SkillAttemptCode;
 			task_id: string;
-			template_id: string | null;
+			template_id: null;
+			observable_id: string;
 			source: SkillSource;
 			phase_blocage: PhaseBlocage | null;
 	  });
@@ -437,18 +400,18 @@ export type SkillAttempt =
 // --- Caches (recomputed by trigger) ----------------------------------------
 
 /**
- * Cache row for family knowledge per (student, skill). Recomputed by trigger
- * on INSERT skill_attempts (cf. décision 70 — `to_review` lives in the VIEW).
+ * Cache row per (student, curriculum point). Recomputed by trigger on INSERT
+ * skill_attempts (cf. décision 70 — `to_review` lives in the VIEW).
  */
-export type StudentSkillStateA = Tables<'student_skill_state_a'>;
+export type StudentPointState = Tables<'student_point_state'>;
 
 /**
- * VIEW exposing student_skill_state_a + computed `to_review` flag (décision 70).
- * Use this from the client; never read directly from `student_skill_state_a`.
+ * VIEW exposing student_point_state + computed `to_review` flag (décision 70).
+ * Use this from the client; never read directly from `student_point_state`.
  */
-export type StudentSkillStateAV = Tables<'student_skill_state_a_v'>;
+export type StudentPointStateV = Tables<'student_point_state_v'>;
 
-/** Cache row for family competence per (student, observable). */
+/** Cache row for math competences per (student, observable). */
 export type StudentObservableState = Tables<'student_observable_state'>;
 
 /**
@@ -472,20 +435,14 @@ export type StudentCompetenceLevel = Omit<
 
 // --- Composite/enriched types (joined) ------------------------------------
 
-/** Skill enriched with its parent objective (family knowledge) or subdimension+competence (family competence). */
-export interface SkillWithParent {
-	skill: Skill;
-	parent_name: string; // objective.name OR subdimension.name + competence code
-}
-
 /** Math competence with its full subdimensions (≈ 22 across the 6 competences). */
 export interface MathCompetenceWithSubdimensions extends MathCompetence {
 	subdimensions: MathCompetenceSubdimension[];
 }
 
-/** Observable (family competence skill) joined with its subdimension and competence. */
+/** Observable joined with its subdimension and parent math competence. */
 export interface ObservableWithContext {
-	skill: Skill & { family: 'competence' };
+	observable: Observable;
 	subdimension: MathCompetenceSubdimension;
 	competence: MathCompetence;
 }
@@ -556,8 +513,6 @@ export type MinesweeperLeaderboardRow = Omit<
 // (so consumers can import everything from database-helpers without two paths)
 
 export type {
-	Family,
-	KnowledgeType,
 	MathCompetenceCode,
 	MathCompetenceLevel,
 	SkillAttemptCode,
@@ -579,8 +534,35 @@ export type {
 // contraintes que le générateur expose en `string`/`Json` (grade, kind, source,
 // textbook_ref) vers leurs unions/formes réelles.
 
-/** A curriculum point can be a knowledge item or a know-how (neutral by default). */
-export type CurriculumPointKind = 'connaissance' | 'savoir_faire';
+/**
+ * Nature of a curriculum point — mirrors the three BO rubrics
+ * (Contenus / Capacités attendues / Démonstrations).
+ */
+export type CurriculumPointKind = 'connaissance' | 'savoir_faire' | 'demonstration';
+
+/** Whether a point is part of the expected programme or goes beyond it. */
+export type CurriculumExigence = 'attendu' | 'approfondissement';
+
+/**
+ * Ce qui prouve la maîtrise d'un point — pilote la règle d'acquisition (§6.1) :
+ * - `fluence`   : ≥ 5 réussites ET ≥ 3 sur les 5 dernières (rapide, fiable, et le reste)
+ * - `diversite` : ≥ 2 templates distincts ET aucun échec sur les 3 dernières (cas variés)
+ *
+ * Orthogonal aux listes `curriculum_point_automatismes`, qui disent de quel
+ * programme le point est un automatisme attendu — pas comment on le mesure.
+ */
+export type RegimeAcquisition = 'fluence' | 'diversite';
+
+/**
+ * Appartenance d'un point à la liste des « Automatismes » d'un programme donné.
+ *
+ * « Automatisme » n'est pas une propriété du point : c'est une liste publiée par
+ * un programme. Les automatismes attendus à l'examen de 1ʳᵉ sont pour l'essentiel
+ * des acquis de seconde — le point vit donc dans l'arbre de seconde, et une ligne
+ * ici dit qu'il figure dans la liste de 1ʳᵉ. Un même point peut être dans
+ * plusieurs listes.
+ */
+export type CurriculumPointAutomatisme = Tables<'curriculum_point_automatismes'>;
 
 /** How a journal entry came to cover a point. */
 export type CoverageSource = 'auto' | 'manual';
@@ -599,12 +581,23 @@ export interface TextbookRef {
 /** Level 1 — Thème (per grade). e.g. "Calcul". */
 export type CurriculumTheme = Omit<Tables<'curriculum_themes'>, 'grade'> & { grade: GradeCode };
 
-/** Level 2 — Item (under a Thème). e.g. "Fractions". */
-export type CurriculumItem = Tables<'curriculum_items'>;
+/** Level 2 — Objectif (under a Thème). e.g. "Fractions". What the student sees. */
+export type CurriculumObjective = Tables<'curriculum_objectives'>;
 
-/** Level 3 — Point (tracking grain). e.g. "Additionner deux fractions". */
-export type CurriculumPoint = Omit<Tables<'curriculum_points'>, 'kind'> & {
-	kind: CurriculumPointKind | null;
+/**
+ * Level 3 — Point: the single grain for programme coverage, resource tagging
+ * and student acquisition (refonte 2026-08-29 — absorbed family A capacities).
+ *
+ * `rang` is optional: 1-4 renders the objective as a descriptive scale
+ * (référentiel 2016 style), NULL renders it as a plain checklist.
+ */
+export type CurriculumPoint = Omit<
+	Tables<'curriculum_points'>,
+	'kind' | 'regime_acquisition' | 'exigence'
+> & {
+	kind: CurriculumPointKind;
+	regime_acquisition: RegimeAcquisition;
+	exigence: CurriculumExigence;
 };
 
 /** Tags a system exercise with a curriculum point it covers. */

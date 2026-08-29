@@ -9,9 +9,9 @@
  *   pnpm db:migrate
  *
  * Coverage:
- *   - Trigger famille knowledge  : student_skill_state_a UPSERT after INSERT skill_attempts
+ *   - Trigger famille knowledge  : student_point_state UPSERT after INSERT skill_attempts
  *   - Trigger famille competence : student_observable_state + student_competence_level cascade
- *   - VIEW student_skill_state_a_v : to_review flag based on last_success_at age
+ *   - VIEW student_point_state_v : to_review flag based on last_success_at age
  *   - 6 conjunctive rules : Chercher, Calculer, Raisonner, Communiquer, Modéliser, Représenter
  *   - RLS scope élève    : own data visible, other student's data invisible
  *   - RLS scope prof     : class-scoped access; insert teacher-source attempts
@@ -29,6 +29,7 @@ import {
 	TestData,
 	createAuthenticatedClient,
 	getKnowledgeSkill,
+	setPointRegime,
 	getObservableSkill,
 	getMathCompetenceId,
 	insertKnowledgeAttempt,
@@ -117,7 +118,7 @@ async function pollCompetenceLevel(
 // ============================================================================
 
 describe('Trigger famille knowledge', () => {
-	it('creates student_skill_state_a with total_successes=1 after first success', async () => {
+	it('creates student_point_state with total_successes=1 after first success', async () => {
 		// Arrange
 		const student = await TestData.profile().withRole('student').create();
 		const skill = await getKnowledgeSkill(service, 'Nombres entiers', 1);
@@ -143,7 +144,7 @@ describe('Trigger famille knowledge', () => {
 		// Arrange: pick a capacite_attendue skill (Fractions rank 1)
 		const student = await TestData.profile().withRole('student').create();
 		const skill = await getKnowledgeSkill(service, 'Fractions', 1);
-		expect(skill.knowledge_type).toBe('capacite_attendue');
+		expect(skill.regime_acquisition).toBe('diversite');
 
 		const tpl1 = await createFakeTemplate(service, student.id);
 		const tpl2 = await createFakeTemplate(service, student.id);
@@ -169,11 +170,14 @@ describe('Trigger famille knowledge', () => {
 		expect(state.needs_remediation).toBe(false);
 	});
 
-	it('marks is_acquired=true for automatisme after 5 successes including >=3 in last 5', async () => {
-		// Arrange: pick an automatisme skill (Organiser et lire des données rank 1)
+	it('marks is_acquired=true for fluence after 5 successes including >=3 in last 5', async () => {
+		// Arrange : le seed du programme ne distingue pas les automatismes (tous les
+		// points héritent du défaut capacite_attendue) → on pose le régime sur le
+		// point ciblé, en fixture de test.
 		const student = await TestData.profile().withRole('student').create();
-		const skill = await getKnowledgeSkill(service, 'Organiser et lire des données', 1);
-		expect(skill.knowledge_type).toBe('automatisme');
+		const skill = await getKnowledgeSkill(service, 'Organisation et gestion de données', 1);
+		await setPointRegime(service, skill.id, 'fluence');
+		skill.regime_acquisition = 'fluence';
 
 		const tpl = await createFakeTemplate(service, student.id);
 
@@ -197,7 +201,7 @@ describe('Trigger famille knowledge', () => {
 		// Arrange
 		const student = await TestData.profile().withRole('student').create();
 		const skill = await getKnowledgeSkill(service, 'Nombres décimaux', 1);
-		expect(skill.knowledge_type).toBe('capacite_attendue');
+		expect(skill.regime_acquisition).toBe('diversite');
 
 		const tpl1 = await createFakeTemplate(service, student.id);
 		const tpl2 = await createFakeTemplate(service, student.id);
@@ -410,10 +414,10 @@ describe('Trigger famille competence', () => {
 });
 
 // ============================================================================
-// VIEW student_skill_state_a_v — to_review flag
+// VIEW student_point_state_v — to_review flag
 // ============================================================================
 
-describe('VIEW student_skill_state_a_v to_review', () => {
+describe('VIEW student_point_state_v to_review', () => {
 	it('returns to_review=false for a recent success (today)', async () => {
 		// Arrange
 		const student = await TestData.profile().withRole('student').create();
@@ -445,7 +449,7 @@ describe('VIEW student_skill_state_a_v to_review', () => {
 		expect(view!.needs_remediation).toBe(false); // last_success_at is recent
 	});
 
-	// Skipped: needs_remediation is a STORED column of student_skill_state_a (set by the
+	// Skipped: needs_remediation is a STORED column of student_point_state (set by the
 	// attempt logic), not recomputed from last_success_at age at query time. Backdating
 	// last_success_at does not flip it, so the age-based "to_review" behaviour this test
 	// assumed no longer exists in the view.
@@ -476,7 +480,7 @@ describe('VIEW student_skill_state_a_v to_review', () => {
 		// Backdate last_success_at to 31 days ago via service role (admin bypass)
 		const ago31 = new Date(Date.now() - 31 * 24 * 60 * 60 * 1000).toISOString();
 		const { error: patchErr } = await service
-			.from('student_skill_state_a' as never)
+			.from('student_point_state' as never)
 			.update({ last_success_at: ago31 } as never)
 			.eq('student_id', student.id)
 			.eq('skill_id', skill.id);
@@ -1205,7 +1209,7 @@ describe('RLS — scope prof', () => {
 		// Act
 		const { error } = await teacherClient.from('skill_attempts' as never).insert({
 			student_id: student.id,
-			skill_id: obsA1.id,
+			observable_id: obsA1.id,
 			task_id: taskId,
 			code: 'plus',
 			source: 'teacher'
@@ -1255,7 +1259,9 @@ describe('RLS — référentiel lecture publique', () => {
 		const student = await TestData.profile().withRole('student').create();
 		const studentClient = await createAuthenticatedClient(student.email);
 
-		const { data, error } = await studentClient.from('skill_themes' as never).select('id, name');
+		const { data, error } = await studentClient
+			.from('curriculum_themes' as never)
+			.select('id, name');
 
 		expect(error).toBeNull();
 		expect((data as Array<unknown>).length).toBeGreaterThanOrEqual(6);
@@ -1266,21 +1272,31 @@ describe('RLS — référentiel lecture publique', () => {
 		const studentClient = await createAuthenticatedClient(student.email);
 
 		const { data, error } = await studentClient
-			.from('skill_objectives' as never)
+			.from('curriculum_objectives' as never)
 			.select('id, name');
 
 		expect(error).toBeNull();
 		expect((data as Array<unknown>).length).toBeGreaterThanOrEqual(18);
 	});
 
-	it('authenticated student can SELECT skills (seed count >= 72 + 56)', async () => {
+	it('authenticated student can SELECT observables (seed count >= 56)', async () => {
 		const student = await TestData.profile().withRole('student').create();
 		const studentClient = await createAuthenticatedClient(student.email);
 
-		const { data, error } = await studentClient.from('skills' as never).select('id, family');
+		const { data, error } = await studentClient.from('observables' as never).select('id');
 
 		expect(error).toBeNull();
-		expect((data as Array<unknown>).length).toBeGreaterThanOrEqual(128);
+		expect((data as Array<unknown>).length).toBeGreaterThanOrEqual(56);
+	});
+
+	it('authenticated student can SELECT curriculum points (contenus disciplinaires)', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const studentClient = await createAuthenticatedClient(student.email);
+
+		const { data, error } = await studentClient.from('curriculum_points' as never).select('id');
+
+		expect(error).toBeNull();
+		expect((data as Array<unknown>).length).toBeGreaterThanOrEqual(95);
 	});
 
 	it('authenticated student can SELECT math_competences (seed count = 6)', async () => {
@@ -1307,7 +1323,7 @@ describe('RLS — référentiel lecture publique', () => {
 			auth: { persistSession: false, autoRefreshToken: false }
 		});
 
-		const { data, error } = await anonClient.from('skill_themes' as never).select('id');
+		const { data, error } = await anonClient.from('curriculum_themes' as never).select('id');
 
 		// RLS policy is FOR SELECT TO authenticated → anon role gets 0 rows, no error.
 		// (The USING clause is simply never evaluated for the anon role — 0 rows returned silently.)
@@ -1321,7 +1337,7 @@ describe('RLS — référentiel lecture publique', () => {
 // ============================================================================
 
 describe('RLS — scope élève (caches + VIEW)', () => {
-	it('student A cannot SELECT student_skill_state_a rows belonging to student B (0 rows)', async () => {
+	it('student A cannot SELECT student_point_state rows belonging to student B (0 rows)', async () => {
 		// Arrange
 		const studentA = await TestData.profile().withRole('student').create();
 		const studentB = await TestData.profile().withRole('student').create();
@@ -1341,16 +1357,16 @@ describe('RLS — scope élève (caches + VIEW)', () => {
 
 		// Act
 		const { data, error } = await studentAClient
-			.from('student_skill_state_a' as never)
+			.from('student_point_state' as never)
 			.select('student_id')
 			.eq('student_id', studentB.id);
 
-		// Assert: RLS policy "student_skill_state_a_select_own" filters out other students
+		// Assert: RLS policy "student_point_state_select_own" filters out other students
 		expect(error).toBeNull();
 		expect((data as Array<unknown>).length).toBe(0);
 	});
 
-	it('student A cannot SELECT student_skill_state_a_v (VIEW) rows belonging to student B (0 rows — fix C1)', async () => {
+	it('student A cannot SELECT student_point_state_v (VIEW) rows belonging to student B (0 rows — fix C1)', async () => {
 		// Arrange: VIEW has security_invoker=on so RLS of the underlying table is enforced
 		const studentA = await TestData.profile().withRole('student').create();
 		const studentB = await TestData.profile().withRole('student').create();
@@ -1376,7 +1392,7 @@ describe('RLS — scope élève (caches + VIEW)', () => {
 
 		// Act: query the VIEW, not the raw table
 		const { data, error } = await studentAClient
-			.from('student_skill_state_a_v' as never)
+			.from('student_point_state_v' as never)
 			.select('student_id')
 			.eq('student_id', studentB.id);
 
@@ -1476,7 +1492,7 @@ describe('RLS — scope élève (caches + VIEW)', () => {
 describe('RLS — scope prof (caches)', () => {
 	// Obsolete under single-teacher + Option B: the sole teacher reads ALL students'
 	// cache rows (is_my_student) ; no second teacher to isolate against.
-	it.skip("teacher B cannot SELECT student_skill_state_a for a student in teacher A's class (0 rows)", async () => {
+	it.skip("teacher B cannot SELECT student_point_state for a student in teacher A's class (0 rows)", async () => {
 		// Arrange: student is only in teacherA's class
 		const teacherA = await TestData.profile().withRole('teacher').create();
 		const teacherB = await TestData.profile().withRole('teacher').create();
@@ -1498,7 +1514,7 @@ describe('RLS — scope prof (caches)', () => {
 
 		// Act
 		const { data, error } = await teacherBClient
-			.from('student_skill_state_a' as never)
+			.from('student_point_state' as never)
 			.select('student_id')
 			.eq('student_id', student.id);
 

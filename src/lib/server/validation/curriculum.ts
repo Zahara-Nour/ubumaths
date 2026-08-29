@@ -21,7 +21,10 @@ const nameSchema = z
 
 const displayOrderSchema = z.number().int().min(0).max(100000);
 
-const pointKindSchema = z.enum(['connaissance', 'savoir_faire']);
+const pointKindSchema = z.enum(['connaissance', 'savoir_faire', 'demonstration']);
+const regimeAcquisitionSchema = z.enum(['fluence', 'diversite']);
+const exigenceSchema = z.enum(['attendu', 'approfondissement']);
+const rangSchema = z.number().int().min(1).max(4);
 
 // ---------------------------------------------------------------------------
 // Thème (level 1)
@@ -66,28 +69,67 @@ export const updateItemSchema = z
 // ---------------------------------------------------------------------------
 
 export const createPointSchema = z.object({
-	item_id: z.string().uuid(),
+	objective_id: z.string().uuid(),
 	name: nameSchema,
 	display_order: displayOrderSchema.optional(),
-	kind: pointKindSchema.nullable().optional()
+	// `kind` est obligatoire depuis la fusion des référentiels : c'est lui qui
+	// garantit que la liste des connaissances d'un niveau est toujours complète.
+	kind: pointKindSchema,
+	regime_acquisition: regimeAcquisitionSchema.optional(),
+	exigence: exigenceSchema.optional(),
+	rang: rangSchema.nullable().optional()
 });
 
 export const updatePointSchema = z
 	.object({
+		// Déplacer un point sous un autre objectif — y compris d'un thème à
+		// l'autre. Le point garde son id et son code : ses tags d'exercices, sa
+		// couverture et l'acquisition des élèves suivent le déplacement.
+		objective_id: z.string().uuid().optional(),
 		name: nameSchema.optional(),
 		display_order: displayOrderSchema.optional(),
-		kind: pointKindSchema.nullable().optional(),
+		kind: pointKindSchema.optional(),
+		regime_acquisition: regimeAcquisitionSchema.optional(),
+		exigence: exigenceSchema.optional(),
+		rang: rangSchema.nullable().optional(),
 		// soft-archive toggle: true → set archived_at = now(), false → clear
 		archived: z.boolean().optional()
 	})
-	.refine(
-		(d) =>
-			d.name !== undefined ||
-			d.display_order !== undefined ||
-			d.kind !== undefined ||
-			d.archived !== undefined,
-		{ message: 'Au moins un champ à mettre à jour' }
-	);
+	.refine((d) => Object.values(d).some((v) => v !== undefined), {
+		message: 'Au moins un champ à mettre à jour'
+	});
+
+/**
+ * Réordonnancement d'un objectif entier, en une requête.
+ *
+ * La liste doit couvrir exactement les points de l'objectif — la fonction PG
+ * `reorder_curriculum_points` refuse un sous-ensemble, qui laisserait une partie
+ * des positions sur leurs anciennes valeurs. Les points archivés en font partie :
+ * l'UI les masque, elle ne les sort pas de l'objectif.
+ */
+export const reorderThemesSchema = z.object({
+	grade: gradeCodeSchema,
+	theme_ids: z
+		.array(z.string().uuid())
+		.min(1, 'Aucun thème à réordonner')
+		.max(100, 'Trop de thèmes pour un seul niveau')
+});
+
+export const reorderObjectivesSchema = z.object({
+	theme_id: z.string().uuid(),
+	objective_ids: z
+		.array(z.string().uuid())
+		.min(1, 'Aucun objectif à réordonner')
+		.max(200, 'Trop d’objectifs pour un seul thème')
+});
+
+export const reorderPointsSchema = z.object({
+	objective_id: z.string().uuid(),
+	point_ids: z
+		.array(z.string().uuid())
+		.min(1, 'Aucun point à réordonner')
+		.max(500, 'Trop de points pour un seul objectif')
+});
 
 // ---------------------------------------------------------------------------
 // Query-param schemas (GET filters)
@@ -97,12 +139,12 @@ export const themeListQuerySchema = z.object({
 	grade: gradeCodeSchema
 });
 
-export const itemListQuerySchema = z.object({
+export const objectiveListQuerySchema = z.object({
 	theme_id: z.string().uuid()
 });
 
 export const pointListQuerySchema = z.object({
-	item_id: z.string().uuid()
+	objective_id: z.string().uuid()
 });
 
 // ---------------------------------------------------------------------------
@@ -115,6 +157,9 @@ export type CreateItemInput = z.infer<typeof createItemSchema>;
 export type UpdateItemInput = z.infer<typeof updateItemSchema>;
 export type CreatePointInput = z.infer<typeof createPointSchema>;
 export type UpdatePointInput = z.infer<typeof updatePointSchema>;
+export type ReorderThemesInput = z.infer<typeof reorderThemesSchema>;
+export type ReorderObjectivesInput = z.infer<typeof reorderObjectivesSchema>;
+export type ReorderPointsInput = z.infer<typeof reorderPointsSchema>;
 
 // ---------------------------------------------------------------------------
 // Brique 2 — Tagging des exercices & alimentation (cahier de texte)

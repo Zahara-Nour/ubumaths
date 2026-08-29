@@ -860,7 +860,7 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 									front_content: null,
 									back_content: null,
 									// no tagged skills → Programme auto-add skipped
-									question_templates: { question_template_skills: [] },
+									question_templates: { question_template_points: [] },
 									created_at: new Date().toISOString(),
 									updated_at: new Date().toISOString()
 								},

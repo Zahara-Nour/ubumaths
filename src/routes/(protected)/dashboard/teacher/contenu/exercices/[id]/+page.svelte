@@ -617,7 +617,7 @@
 								</button>
 								{#if openTagThemes[theme.id]}
 									<div class="space-y-1 border-t p-2 pl-4">
-										{#each theme.items as item (item.id)}
+										{#each theme.objectives as item (item.id)}
 											<div>
 												<button
 													class="flex w-full items-center gap-2 py-1 text-left text-sm"

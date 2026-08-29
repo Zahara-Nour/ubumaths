@@ -1,8 +1,8 @@
 /**
  * API — Curriculum item (level 2) — update & delete.
  *
- * PATCH  /api/teacher/curriculum/items/[itemId]   — rename / reorder
- * DELETE /api/teacher/curriculum/items/[itemId]   — delete (cascade points)
+ * PATCH  /api/teacher/curriculum/items/[objectiveId]   — rename / reorder
+ * DELETE /api/teacher/curriculum/items/[objectiveId]   — delete (cascade points)
  *
  * Teacher/admin only (RLS also enforces is_teacher_or_admin()).
  */
@@ -11,8 +11,8 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { updateItemSchema } from '$lib/server/validation/curriculum';
-import { curriculumDbError, ITEM_COLS } from '$lib/server/curriculum';
-import type { CurriculumItem } from '$lib/types/database-helpers';
+import { curriculumDbError, OBJECTIVE_COLS } from '$lib/server/curriculum';
+import type { CurriculumObjective } from '$lib/types/database-helpers';
 import type { TablesUpdate } from '$lib/types/database';
 
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
@@ -30,15 +30,15 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		return json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
-	const updates: TablesUpdate<'curriculum_items'> = {};
+	const updates: TablesUpdate<'curriculum_objectives'> = {};
 	if (parsed.data.name !== undefined) updates.name = parsed.data.name;
 	if (parsed.data.display_order !== undefined) updates.display_order = parsed.data.display_order;
 
 	const { data, error: dbErr } = await locals.supabase
-		.from('curriculum_items')
+		.from('curriculum_objectives')
 		.update(updates)
-		.eq('id', params.itemId)
-		.select(ITEM_COLS)
+		.eq('id', params.objectiveId)
+		.select(OBJECTIVE_COLS)
 		.single();
 
 	if (dbErr) {
@@ -51,16 +51,16 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		return json({ error: dbErr.message }, { status: 500 });
 	}
 
-	return json({ item: data as CurriculumItem });
+	return json({ item: data as CurriculumObjective });
 };
 
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
 
 	const { error: dbErr } = await locals.supabase
-		.from('curriculum_items')
+		.from('curriculum_objectives')
 		.delete()
-		.eq('id', params.itemId);
+		.eq('id', params.objectiveId);
 
 	if (dbErr) {
 		const mapped = curriculumDbError(dbErr);

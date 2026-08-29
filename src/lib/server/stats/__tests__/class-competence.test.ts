@@ -24,6 +24,7 @@ function buildMock(tableHandlers: MockSpec) {
 			eq: vi.fn(),
 			in: vi.fn(),
 			not: vi.fn(),
+			is: vi.fn(),
 			gte: vi.fn(),
 			order: vi.fn(),
 			maybeSingle: vi.fn(),
@@ -34,6 +35,7 @@ function buildMock(tableHandlers: MockSpec) {
 		queryBuilder.eq.mockReturnValue(queryBuilder);
 		queryBuilder.in.mockReturnValue(queryBuilder);
 		queryBuilder.not.mockReturnValue(queryBuilder);
+		queryBuilder.is.mockReturnValue(queryBuilder);
 		queryBuilder.gte.mockReturnValue(queryBuilder);
 		queryBuilder.order.mockReturnValue(queryBuilder);
 		queryBuilder.maybeSingle.mockImplementation(handler);
@@ -72,7 +74,7 @@ describe('getClassCompetenceGrid', () => {
 	it('returns null for cells when no saisie exists', async () => {
 		const supabase = buildMock({
 			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', first_name: 'Alice', last_name: '' } }],
+				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'Alice', lastname: '' } }],
 				error: null
 			}),
 			math_competences: () => ({ data: mathCompetences, error: null }),
@@ -88,7 +90,7 @@ describe('getClassCompetenceGrid', () => {
 		const lastRecalc = '2026-06-09T12:00:00Z';
 		const supabase = buildMock({
 			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', first_name: 'Alice', last_name: '' } }],
+				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'Alice', lastname: '' } }],
 				error: null
 			}),
 			math_competences: () => ({ data: mathCompetences, error: null }),
@@ -113,10 +115,10 @@ describe('getClassCompetenceGrid', () => {
 		const supabase = buildMock({
 			class_members: () => ({
 				data: [
-					{ student_id: 's1', profiles: { id: 's1', first_name: 'A', last_name: '' } },
-					{ student_id: 's2', profiles: { id: 's2', first_name: 'B', last_name: '' } },
-					{ student_id: 's3', profiles: { id: 's3', first_name: 'C', last_name: '' } },
-					{ student_id: 's4', profiles: { id: 's4', first_name: 'D', last_name: '' } }
+					{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } },
+					{ student_id: 's2', profiles: { id: 's2', firstname: 'B', lastname: '' } },
+					{ student_id: 's3', profiles: { id: 's3', firstname: 'C', lastname: '' } },
+					{ student_id: 's4', profiles: { id: 's4', firstname: 'D', lastname: '' } }
 				],
 				error: null
 			}),
@@ -154,7 +156,7 @@ describe('getClassCompetenceGrid', () => {
 	it('keeps last_saisie_at as the MAX of last_recalc_at across rows', async () => {
 		const supabase = buildMock({
 			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', first_name: 'A', last_name: '' } }],
+				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
 				error: null
 			}),
 			math_competences: () => ({ data: mathCompetences, error: null }),
@@ -184,9 +186,9 @@ describe('getClassCompetenceGrid', () => {
 		const supabase = buildMock({
 			class_members: () => ({
 				data: [
-					{ student_id: 's3', profiles: { id: 's3', first_name: 'Zoé', last_name: '' } },
-					{ student_id: 's1', profiles: { id: 's1', first_name: 'Alice', last_name: '' } },
-					{ student_id: 's2', profiles: { id: 's2', first_name: 'Bob', last_name: '' } }
+					{ student_id: 's3', profiles: { id: 's3', firstname: 'Zoé', lastname: '' } },
+					{ student_id: 's1', profiles: { id: 's1', firstname: 'Alice', lastname: '' } },
+					{ student_id: 's2', profiles: { id: 's2', firstname: 'Bob', lastname: '' } }
 				],
 				error: null
 			}),
@@ -214,7 +216,7 @@ describe('getClassTopObservablesToConsolidate', () => {
 	it('returns empty when no observable_state rows', async () => {
 		const supabase = buildMock({
 			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', first_name: 'A', last_name: '' } }],
+				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
 				error: null
 			}),
 			student_observable_state: () => ({ data: [], error: null })
@@ -226,14 +228,14 @@ describe('getClassTopObservablesToConsolidate', () => {
 	it('only includes observables observed ≥1 time (filter out empty rows)', async () => {
 		const supabase = buildMock({
 			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', first_name: 'A', last_name: '' } }],
+				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
 				error: null
 			}),
 			student_observable_state: () => ({
 				data: [
 					{
 						student_id: 's1',
-						skill_id: 'sk1',
+						observable_id: 'sk1',
 						count_minus: 0,
 						count_plus: 0,
 						last_attempt_at: null
@@ -250,8 +252,8 @@ describe('getClassTopObservablesToConsolidate', () => {
 		const supabase = buildMock({
 			class_members: () => ({
 				data: [
-					{ student_id: 's1', profiles: { id: 's1', first_name: 'A', last_name: '' } },
-					{ student_id: 's2', profiles: { id: 's2', first_name: 'B', last_name: '' } }
+					{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } },
+					{ student_id: 's2', profiles: { id: 's2', firstname: 'B', lastname: '' } }
 				],
 				error: null
 			}),
@@ -259,28 +261,28 @@ describe('getClassTopObservablesToConsolidate', () => {
 				data: [
 					{
 						student_id: 's1',
-						skill_id: 'sk1',
+						observable_id: 'sk1',
 						count_minus: 1,
 						count_plus: 0,
 						last_attempt_at: '2026-06-09'
 					},
 					{
 						student_id: 's2',
-						skill_id: 'sk1',
+						observable_id: 'sk1',
 						count_minus: 1,
 						count_plus: 0,
 						last_attempt_at: '2026-06-09'
 					},
 					{
 						student_id: 's1',
-						skill_id: 'sk2',
+						observable_id: 'sk2',
 						count_minus: 1,
 						count_plus: 0,
 						last_attempt_at: '2026-06-09'
 					},
 					{
 						student_id: 's2',
-						skill_id: 'sk2',
+						observable_id: 'sk2',
 						count_minus: 0,
 						count_plus: 1,
 						last_attempt_at: '2026-06-09'
@@ -288,7 +290,7 @@ describe('getClassTopObservablesToConsolidate', () => {
 				],
 				error: null
 			}),
-			skills: () => ({
+			observables: () => ({
 				data: [
 					{
 						id: 'sk1',
@@ -322,9 +324,9 @@ describe('getClassTopObservablesToConsolidate', () => {
 		expect(rows.length).toBe(2);
 		// sk1: 2 minus / 2 observed = 100%
 		// sk2: 1 minus / 2 observed = 50%
-		expect(rows[0].skill_id).toBe('sk1');
+		expect(rows[0].observable_id).toBe('sk1');
 		expect(rows[0].minus_pct).toBe(100);
-		expect(rows[1].skill_id).toBe('sk2');
+		expect(rows[1].observable_id).toBe('sk2');
 		expect(rows[1].minus_pct).toBe(50);
 	});
 
@@ -332,8 +334,8 @@ describe('getClassTopObservablesToConsolidate', () => {
 		const supabase = buildMock({
 			class_members: () => ({
 				data: [
-					{ student_id: 's2', profiles: { id: 's2', first_name: 'Bob', last_name: '' } },
-					{ student_id: 's1', profiles: { id: 's1', first_name: 'Alice', last_name: '' } }
+					{ student_id: 's2', profiles: { id: 's2', firstname: 'Bob', lastname: '' } },
+					{ student_id: 's1', profiles: { id: 's1', firstname: 'Alice', lastname: '' } }
 				],
 				error: null
 			}),
@@ -341,14 +343,14 @@ describe('getClassTopObservablesToConsolidate', () => {
 				data: [
 					{
 						student_id: 's1',
-						skill_id: 'sk1',
+						observable_id: 'sk1',
 						count_minus: 2,
 						count_plus: 0,
 						last_attempt_at: '2026-06-09'
 					},
 					{
 						student_id: 's2',
-						skill_id: 'sk1',
+						observable_id: 'sk1',
 						count_minus: 2,
 						count_plus: 0,
 						last_attempt_at: '2026-06-09'
@@ -356,7 +358,7 @@ describe('getClassTopObservablesToConsolidate', () => {
 				],
 				error: null
 			}),
-			skills: () => ({
+			observables: () => ({
 				data: [
 					{
 						id: 'sk1',
@@ -376,7 +378,7 @@ describe('getClassTopObservablesToConsolidate', () => {
 	it('respects topN limit', async () => {
 		const obs = Array.from({ length: 5 }, (_, i) => ({
 			student_id: 's1',
-			skill_id: `sk${i}`,
+			observable_id: `sk${i}`,
 			count_minus: 1,
 			count_plus: 0,
 			last_attempt_at: '2026-06-09'
@@ -391,11 +393,11 @@ describe('getClassTopObservablesToConsolidate', () => {
 
 		const supabase = buildMock({
 			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', first_name: 'A', last_name: '' } }],
+				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
 				error: null
 			}),
 			student_observable_state: () => ({ data: obs, error: null }),
-			skills: () => ({ data: skills, error: null })
+			observables: () => ({ data: skills, error: null })
 		});
 		const rows = await getClassTopObservablesToConsolidate(supabase, 'class-1', 3);
 		expect(rows.length).toBe(3);

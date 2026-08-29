@@ -19,33 +19,33 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	const { data: memberRows } = await locals.supabase
 		.from('class_members')
-		.select('student_id, profiles!class_members_student_id_fkey(id, first_name, last_name)')
+		.select('student_id, profiles!class_members_student_id_fkey(id, firstname, lastname)')
 		.eq('class_id', classId)
 		.eq('status', 'active');
 
 	type MemberRow = {
 		student_id: string;
-		profiles: { id: string; first_name: string | null; last_name: string | null } | null;
+		profiles: { id: string; firstname: string | null; lastname: string | null } | null;
 	};
 	const students = ((memberRows ?? []) as unknown as MemberRow[])
 		.filter((m) => m.profiles)
 		.map((m) => ({
 			id: m.student_id,
 			display_name:
-				[m.profiles!.first_name, m.profiles!.last_name]
+				[m.profiles!.firstname, m.profiles!.lastname]
 					.filter((x): x is string => !!x?.trim())
 					.join(' ') || 'Élève sans nom'
 		}))
 		.sort((a, b) => a.display_name.localeCompare(b.display_name, 'fr'));
 
 	const { data: themeRows } = await locals.supabase
-		.from('skill_themes')
-		.select('id, name, bo_reference')
+		.from('curriculum_themes')
+		.select('id, name, code')
 		.order('display_order', { ascending: true });
 
 	const themes = (themeRows ?? [])
-		.filter((t) => t.bo_reference)
-		.map((t) => ({ name: t.name, bo_reference: t.bo_reference as string }));
+		.filter((t) => t.code)
+		.map((t) => ({ name: t.name, code: t.code as string }));
 
 	// Compteur des flags anti-fraud non-résolus pour le badge de l'onglet Surveillance.
 	let unresolvedFlagsCount = 0;

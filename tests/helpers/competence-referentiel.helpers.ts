@@ -27,7 +27,7 @@ export type SkillRow = {
 	family: 'knowledge' | 'competence';
 	objective_id: string | null;
 	subdimension_id: string | null;
-	knowledge_type: 'automatisme' | 'capacite_attendue' | null;
+	regime_acquisition: 'fluence' | 'diversite';
 	observable_code: string | null;
 	name: string;
 	display_order: number;
@@ -36,7 +36,7 @@ export type SkillRow = {
 
 export type StudentSkillStateARow = {
 	student_id: string;
-	skill_id: string;
+	point_id: string;
 	is_acquired: boolean;
 	total_successes: number;
 	distinct_template_successes: number;
@@ -52,7 +52,7 @@ export type StudentSkillStateAViewRow = StudentSkillStateARow & {
 
 export type StudentObservableStateRow = {
 	student_id: string;
-	skill_id: string;
+	observable_id: string;
 	count_plus: number;
 	count_minus: number;
 	is_acquis: boolean;
@@ -86,10 +86,10 @@ export type EvaluationTaskRow = {
 export async function getKnowledgeSkill(
 	service: SupabaseClient<Database>,
 	objectiveNameFragment: string,
-	displayOrder: number
+	nth: number
 ): Promise<SkillRow> {
 	const { data, error } = await service
-		.from('skill_objectives' as never)
+		.from('curriculum_objectives' as never)
 		.select('id, name')
 		.ilike('name', `%${objectiveNameFragment}%`)
 		.limit(1)
@@ -101,20 +101,42 @@ export async function getKnowledgeSkill(
 		);
 	}
 
-	const { data: skill, error: skillErr } = await service
-		.from('skills' as never)
+	const { data: points, error: pointErr } = await service
+		.from('curriculum_points' as never)
 		.select('*')
 		.eq('objective_id', (data as { id: string }).id)
-		.eq('display_order', displayOrder)
-		.single();
+		.is('archived_at', null)
+		.order('display_order', { ascending: true });
 
-	if (skillErr || !skill) {
+	const list = (points ?? []) as SkillRow[];
+	const point = list[nth - 1];
+
+	if (pointErr || !point) {
 		throw new Error(
-			`getKnowledgeSkill: no skill at rank ${displayOrder} for objective '${objectiveNameFragment}': ${skillErr?.message}`
+			`getKnowledgeSkill: no point #${nth} for objective '${objectiveNameFragment}' (${list.length} found): ${pointErr?.message}`
 		);
 	}
 
-	return skill as SkillRow;
+	return point;
+}
+
+/**
+ * Force le régime de validation d'un point (fixture de test).
+ *
+ * Le seed du programme ne distingue pas les automatismes — tous les points
+ * héritent du défaut `capacite_attendue`. Les tests qui exercent la règle
+ * `automatisme` (§6.1) posent donc elles-mêmes le champ sur le point ciblé.
+ */
+export async function setPointRegime(
+	service: SupabaseClient<Database>,
+	pointId: string,
+	regime: 'fluence' | 'diversite'
+): Promise<void> {
+	const { error } = await service
+		.from('curriculum_points' as never)
+		.update({ regime_acquisition: regime } as never)
+		.eq('id', pointId);
+	if (error) throw new Error(`setPointRegime failed: ${error.message}`);
 }
 
 /** Fetch a competence observable by (competence code, observable_code). */
@@ -136,10 +158,9 @@ export async function getObservableSkill(
 
 	// Find skill via subdimension (skills carry observable_code per subdimension)
 	const { data: skill, error: skillErr } = await service
-		.from('skills' as never)
-		.select('*, math_competence_subdimensions!skills_subdimension_id_fkey(math_competence_id)')
+		.from('observables' as never)
+		.select('*, math_competence_subdimensions!observables_subdimension_id_fkey(math_competence_id)')
 		.eq('observable_code', observableCode)
-		.eq('family', 'competence')
 		.limit(20);
 
 	if (skillErr || !skill) {
@@ -199,12 +220,12 @@ export async function insertKnowledgeAttempt(
 ): Promise<void> {
 	// Family A: the attempt references a template; the after-insert trigger derives
 	// the skill from the template's tags. Tag the template with skillId first, then
-	// insert WITHOUT skill_id (chk_attempt_family_regime requires skill_id NULL when
+	// insert WITHOUT skill_id (chk_attempt_regime requires observable_id NULL when
 	// template_id is set).
 	const { error: tagErr } = await service
-		.from('question_template_skills' as never)
-		.upsert({ template_id: params.templateId, skill_id: params.skillId } as never, {
-			onConflict: 'template_id,skill_id'
+		.from('question_template_points' as never)
+		.upsert({ template_id: params.templateId, point_id: params.skillId } as never, {
+			onConflict: 'template_id,point_id'
 		});
 	if (tagErr) {
 		throw new Error(`insertKnowledgeAttempt tag failed: ${tagErr.message}`);
@@ -235,7 +256,7 @@ export async function insertCompetenceAttempt(
 ): Promise<void> {
 	const { error } = await service.from('skill_attempts' as never).insert({
 		student_id: params.studentId,
-		skill_id: params.skillId,
+		observable_id: params.skillId,
 		task_id: params.taskId,
 		code: params.code,
 		source: params.source ?? 'teacher'
@@ -257,10 +278,10 @@ export async function getSkillStateA(
 	skillId: string
 ): Promise<StudentSkillStateARow | null> {
 	const { data, error } = await service
-		.from('student_skill_state_a' as never)
+		.from('student_point_state' as never)
 		.select('*')
 		.eq('student_id', studentId)
-		.eq('skill_id', skillId)
+		.eq('point_id', skillId)
 		.maybeSingle();
 
 	if (error) throw new Error(`getSkillStateA failed: ${error.message}`);
@@ -274,10 +295,10 @@ export async function getSkillStateAView(
 	skillId: string
 ): Promise<StudentSkillStateAViewRow | null> {
 	const { data, error } = await service
-		.from('student_skill_state_a_v' as never)
+		.from('student_point_state_v' as never)
 		.select('*')
 		.eq('student_id', studentId)
-		.eq('skill_id', skillId)
+		.eq('point_id', skillId)
 		.maybeSingle();
 
 	if (error) throw new Error(`getSkillStateAView failed: ${error.message}`);
@@ -294,7 +315,7 @@ export async function getObservableState(
 		.from('student_observable_state' as never)
 		.select('*')
 		.eq('student_id', studentId)
-		.eq('skill_id', skillId)
+		.eq('observable_id', skillId)
 		.maybeSingle();
 
 	if (error) throw new Error(`getObservableState failed: ${error.message}`);
@@ -425,7 +446,7 @@ export async function cleanupCompetenceTestData(): Promise<void> {
 
 		// Step 3: caches
 		await service
-			.from('student_skill_state_a' as never)
+			.from('student_point_state' as never)
 			.delete()
 			.in('student_id', allIds);
 		await service
@@ -490,8 +511,8 @@ export async function tagTemplateWithSkill(
 	skillId: string
 ): Promise<void> {
 	const { error } = await service
-		.from('question_template_skills' as never)
-		.insert({ template_id: templateId, skill_id: skillId } as never);
+		.from('question_template_points' as never)
+		.insert({ template_id: templateId, point_id: skillId } as never);
 
 	if (error) {
 		// ON CONFLICT DO NOTHING — duplicate tags are silently accepted
@@ -506,7 +527,7 @@ export async function tagTemplateWithSkill(
  */
 export type SkillAttemptsEndpointResult = {
 	status: number;
-	body: { inserted: number; skill_ids: string[] } | { error: string; detail?: string };
+	body: { inserted: number; point_ids: string[] } | { error: string; detail?: string };
 };
 
 /**
@@ -569,10 +590,10 @@ export async function getTaggedKnowledgeTemplate(
 	service: SupabaseClient<Database>,
 	domain: string,
 	subdomain: string
-): Promise<{ template_id: string; skill_id: string } | null> {
+): Promise<{ template_id: string; point_id: string } | null> {
 	const { data, error } = await service
-		.from('question_template_skills' as never)
-		.select('template_id, skill_id, question_templates!inner(domain, subdomain)')
+		.from('question_template_points' as never)
+		.select('template_id, point_id, question_templates!inner(domain, subdomain)')
 		.eq('question_templates.domain', domain)
 		.eq('question_templates.subdomain', subdomain)
 		.limit(1)
@@ -583,8 +604,8 @@ export async function getTaggedKnowledgeTemplate(
 	}
 
 	if (!data) return null;
-	const row = data as { template_id: string; skill_id: string };
-	return { template_id: row.template_id, skill_id: row.skill_id };
+	const row = data as { template_id: string; point_id: string };
+	return { template_id: row.template_id, point_id: row.point_id };
 }
 
 // ---------------------------------------------------------------------------

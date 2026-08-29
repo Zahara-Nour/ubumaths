@@ -45,13 +45,13 @@ export interface ClassCapacityGrid {
 	capacities: ClassCapacity[];
 	/** Map clé `${studentId}:${capacityId}` → badge. */
 	cells: Record<string, CapacityBadge>;
-	/** Stats colonne : skillId → { acquise_pct, remediate_pct }. */
+	/** Stats colonne : pointId → { acquise_pct, remediate_pct }. */
 	columnStats: Record<string, { acquise_pct: number; remediate_pct: number }>;
 }
 
 export interface TopCapacityToRemediate {
-	skill_id: string;
-	skill_name: string;
+	point_id: string;
+	point_name: string;
 	theme_code: string | null;
 	students_concerned: { student_id: string; display_name: string; badge: CapacityBadge }[];
 	remediate_pct: number;
@@ -99,7 +99,7 @@ export async function getClassCapacityGrid(
 ): Promise<ClassCapacityGrid> {
 	const { data: members, error: membersErr } = await supabase
 		.from('class_members')
-		.select('student_id, profiles!class_members_student_id_fkey(id, first_name, last_name)')
+		.select('student_id, profiles!class_members_student_id_fkey(id, firstname, lastname)')
 		.eq('class_id', classId)
 		.eq('status', 'active');
 
@@ -110,14 +110,14 @@ export async function getClassCapacityGrid(
 
 	type MemberRow = {
 		student_id: string;
-		profiles: { id: string; first_name: string | null; last_name: string | null } | null;
+		profiles: { id: string; firstname: string | null; lastname: string | null } | null;
 	};
 	const studentRows = (members ?? []) as unknown as MemberRow[];
 	const students: ClassStudent[] = studentRows
 		.filter((m) => m.profiles)
 		.map((m) => ({
 			id: m.student_id,
-			display_name: formatName(m.profiles!.first_name, m.profiles!.last_name)
+			display_name: formatName(m.profiles!.firstname, m.profiles!.lastname)
 		}))
 		.sort((a, b) => a.display_name.localeCompare(b.display_name, 'fr'));
 
@@ -141,32 +141,29 @@ export async function getClassCapacityGrid(
 	const templateIds = [...new Set((attemptsRaw ?? []).map((a) => a.template_id as string))];
 
 	let capacities: ClassCapacity[] = [];
-	const templateToSkillIds = new Map<string, string[]>();
+	const templateToPointIds = new Map<string, string[]>();
 
 	if (templateIds.length > 0) {
 		const { data: tagRows, error: tagErr } = await supabase
-			.from('question_template_skills')
+			.from('question_template_points')
 			.select(
-				'template_id, skill_id, skills!inner(id, name, family, objective_id, skill_objectives(theme_id, skill_themes(name, bo_reference)))'
+				'template_id, point_id, curriculum_points!inner(id, name, curriculum_objectives!inner(theme_id, curriculum_themes!inner(name, code)))'
 			)
-			.in('template_id', templateIds)
-			.eq('skills.family', 'knowledge');
+			.in('template_id', templateIds);
 
 		if (tagErr) {
-			console.error('[class-knowledge] question_template_skills lookup failed:', tagErr);
+			console.error('[class-knowledge] question_template_points lookup failed:', tagErr);
 		}
 
 		type TagRow = {
 			template_id: string;
-			skill_id: string;
-			skills: {
+			point_id: string;
+			curriculum_points: {
 				id: string;
 				name: string;
-				family: string | null;
-				objective_id: string | null;
-				skill_objectives: {
+				curriculum_objectives: {
 					theme_id: string;
-					skill_themes: { name: string; bo_reference: string | null } | null;
+					curriculum_themes: { name: string; code: string | null } | null;
 				} | null;
 			} | null;
 		};
@@ -174,16 +171,16 @@ export async function getClassCapacityGrid(
 
 		const capById = new Map<string, ClassCapacity>();
 		for (const r of tagged) {
-			if (!r.skills) continue;
-			capById.set(r.skill_id, {
-				id: r.skill_id,
-				name: r.skills.name,
-				theme_code: r.skills.skill_objectives?.skill_themes?.bo_reference ?? null,
-				theme_name: r.skills.skill_objectives?.skill_themes?.name ?? null
+			if (!r.curriculum_points) continue;
+			capById.set(r.point_id, {
+				id: r.point_id,
+				name: r.curriculum_points.name,
+				theme_code: r.curriculum_points.curriculum_objectives?.curriculum_themes?.code ?? null,
+				theme_name: r.curriculum_points.curriculum_objectives?.curriculum_themes?.name ?? null
 			});
-			const list = templateToSkillIds.get(r.template_id) ?? [];
-			list.push(r.skill_id);
-			templateToSkillIds.set(r.template_id, list);
+			const list = templateToPointIds.get(r.template_id) ?? [];
+			list.push(r.point_id);
+			templateToPointIds.set(r.template_id, list);
 		}
 		capacities = [...capById.values()].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
 	}
@@ -198,32 +195,34 @@ export async function getClassCapacityGrid(
 			.maybeSingle();
 
 		if (classRow?.grade) {
-			const { data: cycleSkills } = await supabase
-				.from('skills')
+			// Le grade vit désormais sur le thème, en code canonique — le même que
+			// `classes.grade`. (Avant la refonte, `skills.niveau_scolaire` valait
+			// '6e' alors que `classes.grade` vaut '6' : le filtre ne matchait jamais.)
+			const { data: cyclePoints } = await supabase
+				.from('curriculum_points')
 				.select(
-					'id, name, objective_id, skill_objectives(theme_id, skill_themes(name, bo_reference))'
+					'id, name, curriculum_objectives!inner(theme_id, curriculum_themes!inner(name, code, grade))'
 				)
-				.eq('family', 'knowledge')
-				.eq('niveau_scolaire', classRow.grade);
+				.eq('curriculum_objectives.curriculum_themes.grade', classRow.grade)
+				.is('archived_at', null);
 
 			type CycleRow = {
 				id: string;
 				name: string;
-				objective_id: string | null;
-				skill_objectives: {
+				curriculum_objectives: {
 					theme_id: string;
-					skill_themes: { name: string; bo_reference: string | null } | null;
+					curriculum_themes: { name: string; code: string | null; grade: string } | null;
 				} | null;
 			};
 			const existing = new Set(capacities.map((c) => c.id));
-			for (const s of ((cycleSkills ?? []) as unknown as CycleRow[]).filter(
-				(s) => !existing.has(s.id)
+			for (const p of ((cyclePoints ?? []) as unknown as CycleRow[]).filter(
+				(p) => !existing.has(p.id)
 			)) {
 				capacities.push({
-					id: s.id,
-					name: s.name,
-					theme_code: s.skill_objectives?.skill_themes?.bo_reference ?? null,
-					theme_name: s.skill_objectives?.skill_themes?.name ?? null
+					id: p.id,
+					name: p.name,
+					theme_code: p.curriculum_objectives?.curriculum_themes?.code ?? null,
+					theme_name: p.curriculum_objectives?.curriculum_themes?.name ?? null
 				});
 			}
 			capacities.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
@@ -268,7 +267,7 @@ export async function getClassCapacityGrid(
 		const tplSeen = studentTemplateIds.get(student.id) ?? new Set<string>();
 		for (const cap of capacities) {
 			const taggedTemplates = [...tplSeen].filter((tplId) =>
-				(templateToSkillIds.get(tplId) ?? []).includes(cap.id)
+				(templateToPointIds.get(tplId) ?? []).includes(cap.id)
 			);
 			let badge: CapacityBadge = 'non_commencee';
 			if (taggedTemplates.length > 0) {
@@ -326,8 +325,8 @@ export async function getClassTopCapacitiesToRemediate(
 			.filter((r) => r.badge === 'a_remedier' || r.badge === 'a_renforcer');
 
 		return {
-			skill_id: cap.id,
-			skill_name: cap.name,
+			point_id: cap.id,
+			point_name: cap.name,
 			theme_code: cap.theme_code,
 			students_concerned: studentsConcerned,
 			remediate_pct: grid.columnStats[cap.id]?.remediate_pct ?? 0
@@ -347,23 +346,23 @@ export async function getClassTopCapacitiesToRemediate(
 export async function getStudentRetentionCurve(
 	supabase: SB,
 	studentId: string,
-	themeBoReference: string,
+	themeCode: string,
 	weeks = 8
 ): Promise<RetentionPoint[]> {
-	const { data: skillRows } = await supabase
-		.from('skills')
-		.select('id, skill_objectives!inner(skill_themes!inner(bo_reference))')
-		.eq('family', 'knowledge')
-		.eq('skill_objectives.skill_themes.bo_reference', themeBoReference);
+	const { data: pointRows } = await supabase
+		.from('curriculum_points')
+		.select('id, curriculum_objectives!inner(curriculum_themes!inner(code))')
+		.eq('curriculum_objectives.curriculum_themes.code', themeCode)
+		.is('archived_at', null);
 
-	type SkillRow = { id: string };
-	const skillIds = ((skillRows ?? []) as unknown as SkillRow[]).map((s) => s.id);
-	if (skillIds.length === 0) return [];
+	type PointRow = { id: string };
+	const pointIds = ((pointRows ?? []) as unknown as PointRow[]).map((p) => p.id);
+	if (pointIds.length === 0) return [];
 
 	const { data: tagRows } = await supabase
-		.from('question_template_skills')
+		.from('question_template_points')
 		.select('template_id')
-		.in('skill_id', skillIds);
+		.in('point_id', pointIds);
 
 	const templateIds = [...new Set((tagRows ?? []).map((r) => r.template_id))];
 	if (templateIds.length === 0) return [];
@@ -437,7 +436,7 @@ export async function getClassActivityHeatmap(
 ): Promise<ClassActivityHeatmap> {
 	const { data: members, error: membersErr } = await supabase
 		.from('class_members')
-		.select('student_id, profiles!class_members_student_id_fkey(id, first_name, last_name)')
+		.select('student_id, profiles!class_members_student_id_fkey(id, firstname, lastname)')
 		.eq('class_id', classId)
 		.eq('status', 'active');
 
@@ -448,7 +447,7 @@ export async function getClassActivityHeatmap(
 
 	type MemberRow = {
 		student_id: string;
-		profiles: { id: string; first_name: string | null; last_name: string | null } | null;
+		profiles: { id: string; firstname: string | null; lastname: string | null } | null;
 	};
 	const memberRows = (members ?? []) as unknown as MemberRow[];
 
@@ -500,7 +499,7 @@ export async function getClassActivityHeatmap(
 				: null;
 			return {
 				id: m.student_id,
-				display_name: formatName(m.profiles!.first_name, m.profiles!.last_name),
+				display_name: formatName(m.profiles!.firstname, m.profiles!.lastname),
 				days_since_last_review: daysSince,
 				is_alert: daysSince === null || daysSince > alertThresholdDays
 			};

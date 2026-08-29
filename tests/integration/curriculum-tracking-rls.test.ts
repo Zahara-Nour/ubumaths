@@ -5,7 +5,7 @@
  * Validates migration 20260621100000_curriculum_tracking.sql:
  *   - RLS mono-teacher: teacher/admin can manage; students cannot (is_teacher_or_admin()).
  *   - CHECK constraints: valid grade, non-blank name, valid kind.
- *   - UNIQUE constraints: (grade, name) themes, (theme_id, name) items, (item_id, name) points.
+ *   - UNIQUE constraints: (grade, name) themes, (theme_id, name) items, (objective_id, name) points.
  *   - Cascade delete: theme → items → points.
  *
  * Requires local Supabase (`pnpm db:start` + `pnpm db:reset`) then `pnpm test:integration`.
@@ -23,6 +23,11 @@ import {
 	TestData,
 	cleanupCompetenceTestData
 } from '../helpers/competence-referentiel.helpers';
+
+// Grade dédié aux fixtures : les seeds du programme peuplent la 6ᵉ et la 1ʳᵉ spé, donc
+// poser les tests sur '5' les isole du référentiel réel (et de sa purge).
+const TEST_GRADE = '5';
+const TEST_GRADE_ALT = '4';
 
 // ---------------------------------------------------------------------------
 // Shared service client + fixtures
@@ -49,7 +54,7 @@ async function cleanupCurriculum() {
 	await service
 		.from('curriculum_themes' as never)
 		.delete()
-		.not('id', 'is', null);
+		.in('grade', [TEST_GRADE, TEST_GRADE_ALT]);
 }
 
 interface ThemeRow {
@@ -64,7 +69,7 @@ interface ItemRow {
 }
 interface PointRow {
 	id: string;
-	item_id: string;
+	objective_id: string;
 	name: string;
 }
 
@@ -74,7 +79,7 @@ async function createTheme(
 	const { data, error } = await service
 		.from('curriculum_themes' as never)
 		.insert({
-			grade: overrides.grade ?? '6',
+			grade: overrides.grade ?? TEST_GRADE,
 			name: overrides.name ?? `Thème ${crypto.randomUUID().slice(0, 8)}`,
 			display_order: overrides.display_order ?? 0
 		} as never)
@@ -86,7 +91,7 @@ async function createTheme(
 
 async function createItem(themeId: string, name?: string): Promise<ItemRow> {
 	const { data, error } = await service
-		.from('curriculum_items' as never)
+		.from('curriculum_objectives' as never)
 		.insert({ theme_id: themeId, name: name ?? `Item ${crypto.randomUUID().slice(0, 8)}` } as never)
 		.select('id, theme_id, name')
 		.single();
@@ -95,17 +100,17 @@ async function createItem(themeId: string, name?: string): Promise<ItemRow> {
 }
 
 async function createPoint(
-	itemId: string,
+	objectiveId: string,
 	overrides: { name?: string; kind?: string | null } = {}
 ): Promise<PointRow> {
 	const { data, error } = await service
 		.from('curriculum_points' as never)
 		.insert({
-			item_id: itemId,
+			objective_id: objectiveId,
 			name: overrides.name ?? `Point ${crypto.randomUUID().slice(0, 8)}`,
-			kind: overrides.kind ?? null
+			kind: overrides.kind ?? 'savoir_faire'
 		} as never)
-		.select('id, item_id, name')
+		.select('id, objective_id, name')
 		.single();
 	if (error) throw new Error(`createPoint failed: ${error.message}`);
 	return data as PointRow;
@@ -125,7 +130,7 @@ describe('Curriculum RLS — mono-teacher gating', () => {
 
 		const { data: inserted, error: insErr } = await client
 			.from('curriculum_themes' as never)
-			.insert({ grade: '6', name: 'Calcul', display_order: 0 } as never)
+			.insert({ grade: TEST_GRADE, name: 'Calcul', display_order: 0 } as never)
 			.select('id, name')
 			.single();
 		expect(insErr).toBeNull();
@@ -134,7 +139,7 @@ describe('Curriculum RLS — mono-teacher gating', () => {
 		const { data: rows } = await client
 			.from('curriculum_themes' as never)
 			.select('id')
-			.eq('grade', '6');
+			.eq('grade', TEST_GRADE);
 		expect((rows ?? []).length).toBeGreaterThanOrEqual(1);
 	});
 
@@ -147,20 +152,25 @@ describe('Curriculum RLS — mono-teacher gating', () => {
 
 		const { error } = await client
 			.from('curriculum_themes' as never)
-			.insert({ grade: '6', name: 'Hack', display_order: 0 } as never);
+			.insert({ grade: TEST_GRADE, name: 'Hack', display_order: 0 } as never);
 		expect(error?.code).toBe('42501');
 	});
 
-	it('hides curriculum themes from students on SELECT (RLS filters to empty)', async () => {
+	// Contrat changé par la fusion des référentiels (2026-08-29) : l'arbre porte
+	// désormais l'acquisition élève en plus du suivi de programme, donc lecture
+	// publique authentifiée (décision Q3, héritée de skill_themes). Sans elle,
+	// « Mes objectifs » serait vide. L'écriture reste réservée au prof/admin —
+	// vérifié par les tests d'INSERT/UPDATE/DELETE ci-dessous.
+	it('lets students SELECT curriculum themes (lecture publique authentifiée)', async () => {
 		expect.assertions(1);
-		await createTheme({ name: 'Géométrie' }); // created via service role
+		await createTheme({ name: `Géométrie ${crypto.randomUUID().slice(0, 8)}` }); // service role
 		const student = await TestData.profile().withRole('student').create();
 		const client = (await createAuthenticatedClient(
 			student.email
 		)) as unknown as SupabaseClient<Database>;
 
 		const { data } = await client.from('curriculum_themes' as never).select('id');
-		expect(data ?? []).toHaveLength(0);
+		expect((data ?? []).length).toBeGreaterThan(0);
 	});
 
 	it('lets an admin manage curriculum points (is_admin ⊂ is_teacher_or_admin)', async () => {
@@ -172,9 +182,11 @@ describe('Curriculum RLS — mono-teacher gating', () => {
 			admin.email
 		)) as unknown as SupabaseClient<Database>;
 
-		const { error } = await client
-			.from('curriculum_points' as never)
-			.insert({ item_id: item.id, name: 'Additionner deux fractions' } as never);
+		const { error } = await client.from('curriculum_points' as never).insert({
+			objective_id: item.id,
+			name: 'Additionner deux fractions',
+			kind: 'savoir_faire'
+		} as never);
 		expect(error).toBeNull();
 	});
 });
@@ -197,7 +209,7 @@ describe('Curriculum CHECK constraints', () => {
 		expect.assertions(1);
 		const { error } = await service
 			.from('curriculum_themes' as never)
-			.insert({ grade: '6', name: '   ', display_order: 0 } as never);
+			.insert({ grade: TEST_GRADE, name: '   ', display_order: 0 } as never);
 		expect(error?.code).toBe('23514');
 	});
 
@@ -207,7 +219,7 @@ describe('Curriculum CHECK constraints', () => {
 		const item = await createItem(theme.id);
 		const { error } = await service
 			.from('curriculum_points' as never)
-			.insert({ item_id: item.id, name: 'X', kind: 'competence' } as never);
+			.insert({ objective_id: item.id, name: 'X', kind: 'competence' } as never);
 		expect(error?.code).toBe('23514');
 	});
 
@@ -217,10 +229,10 @@ describe('Curriculum CHECK constraints', () => {
 		const item = await createItem(theme.id);
 		const a = await service
 			.from('curriculum_points' as never)
-			.insert({ item_id: item.id, name: 'Connaissance X', kind: 'connaissance' } as never);
+			.insert({ objective_id: item.id, name: 'Connaissance X', kind: 'connaissance' } as never);
 		const b = await service
 			.from('curriculum_points' as never)
-			.insert({ item_id: item.id, name: 'Savoir-faire Y', kind: 'savoir_faire' } as never);
+			.insert({ objective_id: item.id, name: 'Savoir-faire Y', kind: 'savoir_faire' } as never);
 		expect(a.error).toBeNull();
 		expect(b.error).toBeNull();
 	});
@@ -233,30 +245,32 @@ describe('Curriculum CHECK constraints', () => {
 describe('Curriculum UNIQUE constraints', () => {
 	it('forbids two themes with the same (grade, name)', async () => {
 		expect.assertions(1);
-		await createTheme({ grade: '6', name: 'Calcul' });
+		await createTheme({ grade: TEST_GRADE, name: 'Calcul' });
 		const { error } = await service
 			.from('curriculum_themes' as never)
-			.insert({ grade: '6', name: 'Calcul', display_order: 1 } as never);
+			.insert({ grade: TEST_GRADE, name: 'Calcul', display_order: 1 } as never);
 		expect(error?.code).toBe('23505');
 	});
 
 	it('allows the same theme name in two different grades', async () => {
 		expect.assertions(1);
-		await createTheme({ grade: '6', name: 'Calcul' });
+		await createTheme({ grade: TEST_GRADE, name: 'Calcul' });
 		const { error } = await service
 			.from('curriculum_themes' as never)
-			.insert({ grade: '5', name: 'Calcul', display_order: 0 } as never);
+			.insert({ grade: TEST_GRADE_ALT, name: 'Calcul', display_order: 0 } as never);
 		expect(error).toBeNull();
 	});
 
-	it('forbids two points with the same (item_id, name)', async () => {
+	it('forbids two points with the same (objective_id, name)', async () => {
 		expect.assertions(1);
 		const theme = await createTheme();
 		const item = await createItem(theme.id);
 		await createPoint(item.id, { name: 'Additionner deux fractions' });
-		const { error } = await service
-			.from('curriculum_points' as never)
-			.insert({ item_id: item.id, name: 'Additionner deux fractions' } as never);
+		const { error } = await service.from('curriculum_points' as never).insert({
+			objective_id: item.id,
+			name: 'Additionner deux fractions',
+			kind: 'savoir_faire'
+		} as never);
 		expect(error?.code).toBe('23505');
 	});
 });

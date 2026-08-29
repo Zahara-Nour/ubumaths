@@ -43,6 +43,10 @@ import {
 	cleanupCompetenceTestData
 } from '../helpers/competence-referentiel.helpers';
 
+// Grade dédié aux fixtures : les seeds du programme peuplent la 6ᵉ et la 1ʳᵉ spé, donc
+// poser les tests sur '5' les isole du référentiel réel (et de sa purge).
+const TEST_GRADE = '5';
+
 let service: SupabaseClient<Database>;
 
 beforeAll(() => {
@@ -63,17 +67,21 @@ async function cleanupCurriculum() {
 	await service
 		.from('curriculum_themes' as never)
 		.delete()
-		.not('id', 'is', null);
+		.eq('grade', TEST_GRADE);
 }
 
 // ---------------------------------------------------------------------------
 // Fixtures
 // ---------------------------------------------------------------------------
 
-async function svcPoint(itemId: string, name?: string): Promise<string> {
+async function svcPoint(objectiveId: string, name?: string): Promise<string> {
 	const { data, error } = await service
 		.from('curriculum_points' as never)
-		.insert({ item_id: itemId, name: name ?? `Point ${crypto.randomUUID().slice(0, 8)}` } as never)
+		.insert({
+			objective_id: objectiveId,
+			name: name ?? `Point ${crypto.randomUUID().slice(0, 8)}`,
+			kind: 'savoir_faire'
+		} as never)
 		.select('id')
 		.single();
 	if (error) throw new Error(error.message);
@@ -84,12 +92,12 @@ async function svcPoint(itemId: string, name?: string): Promise<string> {
 async function makeItem(): Promise<string> {
 	const { data: theme, error: tErr } = await service
 		.from('curriculum_themes' as never)
-		.insert({ grade: '6', name: `T ${crypto.randomUUID().slice(0, 8)}` } as never)
+		.insert({ grade: TEST_GRADE, name: `T ${crypto.randomUUID().slice(0, 8)}` } as never)
 		.select('id')
 		.single();
 	if (tErr) throw new Error(tErr.message);
 	const { data: item, error: iErr } = await service
-		.from('curriculum_items' as never)
+		.from('curriculum_objectives' as never)
 		.insert({ theme_id: (theme as { id: string }).id, name: 'Fractions' } as never)
 		.select('id')
 		.single();

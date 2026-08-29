@@ -1,5 +1,11 @@
 # Handoff — Référentiel famille A (6ᵉ) — décision modèle en suspens
 
+> ⚠️ **Clos.** La décision en suspens a été tranchée (modèle B, 18 items × 4
+> capacités), puis la famille A elle-même a disparu à la fusion du 2026-08-29 :
+> ses capacités vivent maintenant dans `curriculum_points`, avec un `rang`
+> facultatif qui rend le « exactement 4 » optionnel. Rien à reprendre ici. Cf.
+> [`refonte-referentiel-progress.md`](refonte-referentiel-progress.md).
+
 > **Créé le** : 2026-06-07
 > **Origine** : session de discussion sur la structure de `6e-savoirs.md` (famille A — Connaissances et savoir-faire) qui s'est étendue trop longtemps. Document pour redémarrer proprement dans une nouvelle session.
 

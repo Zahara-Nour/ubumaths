@@ -1,8 +1,33 @@
 # Système de compétences UbuMaths — Design
 
 **Date** : 2026-05-27
-**Statut** : Design en cours — pas d'implémentation démarrée
+**Statut** : ⚠️ **partiellement dépassé** — livré, puis refondu le 2026-08-29
 **Phase** : 0 — Spécification
+
+> **Ce qui tient toujours** : la famille B (6 compétences mathématiques,
+> sous-dimensions A-D, observables, codage `+`/`−`, règle conjonctive,
+> consolidation, cœur d'excellence) et les décisions 40-56 et 58-72.
+>
+> **Ce qui a été défait** : la famille A. Elle vivait dans `skill_themes` →
+> `skill_objectives` → `skills`, un second arbre de contenus rival de
+> `curriculum_*`, sans clé étrangère entre les deux. La fusion du 2026-08-29 les
+> réduit à un seul arbre par niveau (`curriculum_points` absorbe les 72
+> capacités), et `skills` est renommée `observables` puisqu'elle n'héberge plus
+> que la famille B.
+>
+> La cause racine est la **décision 57** — « exactement 4 capacités ordonnées par
+> objectif ». Cette rigidité rendait impossible d'y loger un programme quelconque,
+> d'où le second arbre. `curriculum_points.rang` nullable la dissout : l'échelle
+> descriptive 1-4 reste possible, sans être imposée.
+>
+> Deux autres décisions sont mortes avec elle : `knowledge_type`
+> (`automatisme` / `capacite_attendue`) confondait _comment on mesure_ et _d'où
+> vient le point_ → `regime_acquisition` (`fluence` / `diversite`) plus la table
+> `curriculum_point_automatismes` ; et le tagging `question_template_skills` est
+> devenu `question_template_points`.
+>
+> Suite : [`docs/wip/refonte-referentiel-progress.md`](refonte-referentiel-progress.md).
+> Schéma à jour : [`docs/architecture/database-schema.md`](../architecture/database-schema.md#référentiel--contenus-et-compétences-fusion-2026-08-29).
 
 ---
 

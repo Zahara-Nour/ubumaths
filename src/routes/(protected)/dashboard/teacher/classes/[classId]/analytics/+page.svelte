@@ -12,7 +12,7 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
-	import { ChevronLeft, RefreshCw, EyeOff, Eye } from '@lucide/svelte';
+	import { ChevronLeft, RefreshCw, EyeOff, Eye, Download } from '@lucide/svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
 	import MySelect from '$lib/components/MySelect.svelte';
@@ -39,10 +39,10 @@
 	// svelte-ignore state_referenced_locally
 	let selectedStudentId = $state<string>(data.students[0]?.id ?? '');
 	// svelte-ignore state_referenced_locally
-	let selectedTheme = $state<string>(data.themes[0]?.bo_reference ?? '');
+	let selectedTheme = $state<string>(data.themes[0]?.code ?? '');
 
 	const studentItems = $derived(data.students.map((s) => ({ value: s.id, label: s.display_name })));
-	const themeItems = $derived(data.themes.map((t) => ({ value: t.bo_reference, label: t.name })));
+	const themeItems = $derived(data.themes.map((t) => ({ value: t.code, label: t.name })));
 	const selectedStudentName = $derived(
 		data.students.find((s) => s.id === selectedStudentId)?.display_name ?? '?'
 	);
@@ -88,6 +88,12 @@
 			{/if}
 		</div>
 		<div class="flex flex-wrap items-center gap-2">
+			<!-- Export vers l'ENT : action de fin de trimestre, sa place est ici (là où
+				 vivent les données) plutôt que dans le menu principal. -->
+			<Button variant="outline" size="sm" href="/dashboard/teacher/competences/export">
+				<Download class="mr-2 h-4 w-4" />
+				Exporter les compétences
+			</Button>
 			<Button
 				variant="outline"
 				size="sm"

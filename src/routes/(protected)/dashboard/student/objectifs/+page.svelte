@@ -31,8 +31,17 @@
 	let showNonCommence = $state(false);
 
 	// Helpers de présentation
+	//
+	// Deux formes d'objectif depuis la fusion des référentiels :
+	//  · avec échelle → le niveau EST le rang max acquis (0-4) ;
+	//  · sans échelle → on projette la couverture sur la même échelle visuelle.
+	//    Pas de niveau 4 : « aller au-delà de l'attendu » n'a de sens que si une
+	//    échelle le définit.
 	function objectiveLevel(o: ObjectiveSummary): ObjectiveLevel {
-		return o.rang_max_acquired;
+		if (o.has_scale) return o.rang_max_acquired;
+		if (o.total_count === 0) return 0;
+		if (o.acquired_count === o.total_count) return 3;
+		return o.acquired_count > 0 ? 1 : 0;
 	}
 
 	function visualBgClass(level: ObjectiveLevel): string {
@@ -137,7 +146,7 @@
 	{#if data.themes.length > 1}
 		<div class="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
 			{#each data.themes as theme (theme.id)}
-				{@const themeAtteint = theme.objectives.filter((o) => o.rang_max_acquired >= 3).length}
+				{@const themeAtteint = theme.objectives.filter((o) => objectiveLevel(o) >= 3).length}
 				{@const themeTotal = theme.objectives.length}
 				{@const themeRatio = themeTotal > 0 ? themeAtteint / themeTotal : 0}
 				<a
@@ -174,7 +183,7 @@
 	<!-- Liste par thème -->
 	{#each data.themes as theme (theme.id)}
 		{@const visibleObjectives = theme.objectives.filter(
-			(o) => o.rang_max_acquired > 0 || showNonCommence
+			(o) => objectiveLevel(o) > 0 || showNonCommence
 		)}
 		{#if visibleObjectives.length > 0}
 			<section id="theme-{theme.id}" class="mb-6 scroll-mt-4">
@@ -197,15 +206,27 @@
 									>
 										<span>{getObjectiveLevelVisual(level)}</span>
 									</div>
-									<!-- Mini-barre 4 segments (capacités acquises) -->
-									<div class="flex shrink-0 gap-0.5" aria-label="{obj.acquired_count}/4 capacités">
-										{#each [1, 2, 3, 4] as rang (rang)}
-											<div
-												class="h-6 w-2 rounded-sm {rang <= obj.rang_max_acquired
-													? progressBarColor(obj.rang_max_acquired)
-													: 'bg-muted'}"
-											></div>
-										{/each}
+									<!-- Objectif à échelle : mini-barre 4 segments (rang atteint).
+										 Sans échelle : compteur n/m des points acquis. -->
+									<div
+										class="flex shrink-0 gap-0.5"
+										aria-label="{obj.acquired_count}/{obj.total_count} acquis"
+									>
+										{#if obj.has_scale}
+											{#each [1, 2, 3, 4] as rang (rang)}
+												<div
+													class="h-6 w-2 rounded-sm {rang <= obj.rang_max_acquired
+														? progressBarColor(obj.rang_max_acquired)
+														: 'bg-muted'}"
+												></div>
+											{/each}
+										{:else}
+											<span
+												class="rounded-sm bg-muted px-1.5 py-0.5 font-mono text-xs tabular-nums"
+											>
+												{obj.acquired_count}/{obj.total_count}
+											</span>
+										{/if}
 									</div>
 									<!-- Nom + badges -->
 									<div class="min-w-0 flex-1">

@@ -9,7 +9,7 @@
  * Spec : `docs/wip/skills-referentiel-design.md` (décisions 57-72)
  * Phase 1 progress : `docs/wip/competence-referentiel-phase1-progress.md`
  *
- * Pour les types DERIVED de la base (`Tables<'skills'>`, etc.), voir
+ * Pour les types DERIVED de la base (`Tables<'observables'>`, etc.), voir
  * `database-helpers.ts` (aliases) et `database.ts` (auto-généré).
  */
 
@@ -24,21 +24,6 @@
  * - `'competence'` : famille B (observables, compétences mathématiques transversales)
  */
 export type Family = 'knowledge' | 'competence';
-
-// ============================================================================
-// KnowledgeType — type d'acquisition famille knowledge (décisions 56, 66, 68)
-// ============================================================================
-
-/**
- * Type d'une capacité famille knowledge, reprend la rubrique BO 2026.
- * Détermine la règle d'acquisition (cf. design §3 + §6.1).
- * En DB : colonne `skills.knowledge_type`, NULL pour famille competence.
- * - `'automatisme'`        : geste à automatiser (calcul mental, lexique...)
- *   Règle : ≥ 5 réussites totales + ≥ 3 sur les 5 dernières tentatives
- * - `'capacite_attendue'`  : compétence réfléchie à mobiliser
- *   Règle : ≥ 1 réussite sur ≥ 2 templates distincts + aucun échec dans les 3 dernières
- */
-export type KnowledgeType = 'automatisme' | 'capacite_attendue';
 
 // ============================================================================
 // MathCompetence — les 6 compétences mathématiques transversales (famille B)
@@ -152,15 +137,6 @@ export function formatMathCompetenceLevel(level: MathCompetenceLevel): string {
 
 export function getMathCompetenceLevelVisual(level: MathCompetenceLevel): string {
 	return MATH_COMPETENCE_LEVEL_VISUALS[level];
-}
-
-const KNOWLEDGE_TYPE_LABELS: Record<KnowledgeType, string> = {
-	automatisme: 'Automatisme',
-	capacite_attendue: 'Capacité attendue'
-};
-
-export function formatKnowledgeType(type: KnowledgeType): string {
-	return KNOWLEDGE_TYPE_LABELS[type];
 }
 
 const MATH_COMPETENCE_NAMES: Record<MathCompetenceCode, string> = {

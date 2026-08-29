@@ -1,5 +1,14 @@
 # Suivi du programme & cahier de texte — Spec Phase 0 (TDD)
 
+> ⚠️ **Écrit avant la fusion du 2026-08-29.** Ce document oppose un « référentiel
+> de programme » (`curriculum_*`) à un « référentiel d'évaluation »
+> (`skills` / `skill_objectives`) : c'est exactement la séparation qui a été
+> défaite depuis. Il n'y a plus qu'un arbre par niveau, et `curriculum_items` s'y
+> appelle `curriculum_objectives`. La fonctionnalité décrite (programme éditable,
+> tagging, couverture, heatmap Avancement) est livrée et fonctionne ; seule la
+> nomenclature a bougé. Cf.
+> [`refonte-referentiel-progress.md`](refonte-referentiel-progress.md).
+
 > **Statut** : Phase 0 — spécification, **en attente de validation David**. Aucun code écrit.
 > **Créé le** : 2026-06-21
 > **Feature** : référentiel de programme (distinct de l'évaluation) + suivi de couverture alimenté par le cahier de texte.

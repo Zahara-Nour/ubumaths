@@ -14,6 +14,28 @@ Référentiel BO famille A via `skill_attempts` comme source unique des faits.
 Trois mondes cohabitent autour de `question_templates` (Quiz interactif,
 SRS self-graded, Référentiel BO). Refonte 2026-06-10 (livrée v0.9.9).
 
+> ⚠️ **Renommages de la fusion du référentiel (2026-08-29).** Ce module est
+> inchangé, mais ce sur quoi il s'accroche a changé de nom. La « famille A » n'est
+> plus une famille de `skills` : c'est l'**arbre de contenus** `curriculum_themes`
+> → `curriculum_objectives` → `curriculum_points`, un seul par niveau.
+>
+> | Avant                                                      | Maintenant                                                                              |
+> | ---------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+> | `skill_themes` / `skill_objectives` / `skills` (famille A) | `curriculum_themes` / `curriculum_objectives` / `curriculum_points`                     |
+> | `skills` (famille B)                                       | `observables`                                                                           |
+> | `question_template_skills`                                 | `question_template_points`                                                              |
+> | `student_skill_state_a` (+ `_v`)                           | `student_point_state` (+ `_v`)                                                          |
+> | `update_student_skill_state_a()`                           | `update_student_point_state()`                                                          |
+> | `skill_attempts.skill_id`                                  | `skill_attempts.observable_id` (famille B ; le régime contenus passe par `template_id`) |
+> | `knowledge_type` (`automatisme`/`capacite_attendue`)       | `regime_acquisition` (`fluence`/`diversite`)                                            |
+>
+> Ce README et `architecture.md` sont à jour. Les quatre rapports d'audit datés du
+> 2026-06-10 (`code-quality.md`, `performance.md`, `security.md`, `tests.md`)
+> gardent les anciens noms : ce sont des instantanés, pas de la référence — lire
+> ce tableau avant de chasser un identifiant qui n'existe plus.
+>
+> Schéma à jour : [`docs/architecture/database-schema.md`](../../architecture/database-schema.md#référentiel--contenus-et-compétences-fusion-2026-08-29).
+
 ---
 
 ## Chiffres clés (2026-06-10, post-livraison v0.9.9)
@@ -98,7 +120,7 @@ Angles morts critiques :
 
 Restants — **documentés V2** (non rentables sans tests d'intégration PG) :
 
-- ⏳ **P0#1 — Refonte CTE `update_student_skill_state_a`** : 1 CTE avec `ROW_NUMBER()` au lieu de 2 scans séquentiels. Gain trigger ~25 ms vs ~50 ms. Risque élevé sans tests PG dédiés.
+- ⏳ **P0#1 — Refonte CTE `update_student_point_state`** : 1 CTE avec `ROW_NUMBER()` au lieu de 2 scans séquentiels. Gain trigger ~25 ms vs ~50 ms. Risque élevé sans tests PG dédiés.
 - ⏳ **P2 — `ensureProgrammeDeck` en `INSERT ON CONFLICT DO UPDATE RETURNING`** : -1 SELECT hot path nominal. Bémol : déclenche le trigger `update_updated_at`.
 
 ### 5. [security.md](./security.md) — Audit sécurité
@@ -161,13 +183,13 @@ Pour chaque cluster du module, les documents qui en parlent :
 
 ### Suite logique V1.x
 
-5. **[PRÉ-REQUIS PÉDAGOGIQUE]** Étendre le tagging `question_template_skills` à ≥ 20-30 templates 6ᵉ. Sans ça, le deck Programme reste quasi-vide en pratique et la triche P1 #1 reste limitée mais inutile.
+5. **[PRÉ-REQUIS PÉDAGOGIQUE]** Étendre le tagging `question_template_points` à ≥ 20-30 templates 6ᵉ. Sans ça, le deck Programme reste quasi-vide en pratique et la triche P1 #1 reste limitée mais inutile.
 6. **[QUALITÉ MAJEURE]** Factoriser duplication entre `/api/skill-attempts` et `/api/srs/review/submit` (init FSRS + ensureProgrammeDeckCard) dans un helper partagé.
 7. **[TESTS MAJEURE]** Ajouter tests `programme-deck.test.ts` avec mock Supabase : race condition handling (23505), ownership, idempotence.
 
 ### V2 (effort significatif)
 
-8. **[PERF P0]** Refonte CTE `update_student_skill_state_a` — ~25 ms vs ~50 ms. **Pré-requis** : suite tests d'intégration PG pour fonction critique.
+8. **[PERF P0]** Refonte CTE `update_student_point_state` — ~25 ms vs ~50 ms. **Pré-requis** : suite tests d'intégration PG pour fonction critique.
 9. **[SÉCURITÉ P1]** RPC `SECURITY DEFINER` pour `srs_card_stats` writes — fix le risque préexistant amplifié par badges FSRS.
 10. **[SÉCURITÉ P1 — livré 2026-06-10]** Détection anti-fraud pattern. Voir [`anti-fraud.md`](./anti-fraud.md). Désactivée par défaut, à activer dès que tagging atteint ≥ 20 templates 6ᵉ.
 
@@ -272,7 +294,7 @@ Refonte SRS / FSRS / Référentiel famille A en 17 commits, livrée en release v
 | `skill_attempts` : 1 row par skill tagué (N rows par attempt) | 1 row par attempt (per-template)              |
 | `skill_id` NOT NULL                                           | nullable (NULL en famille A)                  |
 | `to_review` calculé (seuil 30j arbitraire)                    | Supprimé, remplacé par badge FSRS-derived     |
-| Trigger PG : recompute via `skill_id`                         | recompute via JOIN `question_template_skills` |
+| Trigger PG : recompute via `skill_id`                         | recompute via JOIN `question_template_points` |
 | `srs_card_stats` : seulement Monde 2                          | Maintenu aussi par Monde 1                    |
 | Deck Programme                                                | N/A → auto-géré (1 par élève)                 |
 | Sections manuelles                                            | N/A → table `srs_deck_sections` + CRUD        |
@@ -298,8 +320,8 @@ Puis suite logique : **étendre le tagging des templates 6ᵉ** (chantier pédag
 
 - [`anti-fraud.md`](./anti-fraud.md) — système anti-cheat livré 2026-06-10, désactivé par défaut.
 - [`docs/wip/srs-fsrs-spec-tdd.md`](../../wip/srs-fsrs-spec-tdd.md) — spec TDD originale (comportements attendus).
-- [`docs/wip/srs-fsrs-progress.md`](../../wip/srs-fsrs-progress.md) — historique d'exécution du chantier.
+- [`docs/archive/wip/srs-fsrs-progress.md`](../../archive/wip/srs-fsrs-progress.md) — historique d'exécution du chantier (archivé).
 - [`docs/wip/srs-fsrs-security-audit-findings.md`](../../wip/srs-fsrs-security-audit-findings.md) — audit sécurité + spec V2 anti-fraud + backlog V2.
 - [`docs/architecture/database-schema.md`](../../architecture/database-schema.md) — schéma DB global (sections « Compétences » + « SRS / FSRS »).
 - [`CLAUDE.md`](../../../CLAUDE.md) — instructions projet pour Claude Code.
-- [`MEMORY.md`](../../../../.claude/projects/-Users-david-Coding-js-ubumaths/memory/MEMORY.md) — mémoire persistante.
+- `MEMORY.md` — mémoire persistante de Claude Code (hors dépôt, machine locale).

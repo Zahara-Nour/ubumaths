@@ -62,11 +62,11 @@ export const GET: RequestHandler = async ({ locals }) => {
 			// Profile data
 			supabase.from('profiles').select('*').eq('id', userId).single(),
 
-			// Évaluation — référentiel de CONNAISSANCES (famille A) : état acquis par capacité
+			// Évaluation — contenus disciplinaires : état acquis par point de programme
 			supabase
-				.from('student_skill_state_a')
+				.from('student_point_state')
 				.select(
-					'skill_id, is_acquired, total_successes, distinct_template_successes, needs_remediation, last_success_at, last_attempt_at'
+					'point_id, is_acquired, total_successes, distinct_template_successes, needs_remediation, last_success_at, last_attempt_at'
 				)
 				.eq('student_id', userId),
 

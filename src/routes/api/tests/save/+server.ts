@@ -70,6 +70,37 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Note: session is already saved, so we return success but log the error
 		}
 
+		// ----- Alimentation du référentiel (régime contenus) --------------------
+		// Sans ça, répondre à une évaluation ou à un entraînement ne validait AUCUN
+		// point de programme : seule la révision SRS alimentait le référentiel.
+		//
+		// Une ligne par réponse portant un template (le régime contenus est
+		// identifié par `template_id` ; le trigger `skill_attempts_after_insert`
+		// remonte ensuite aux points via `question_template_points`). Les réponses
+		// sans template — questions non migrées — ne produisent rien.
+		//
+		// Non bloquant : la session est déjà enregistrée, un échec ici ne doit pas
+		// faire perdre le résultat du test à l'élève.
+		const attemptsToInsert = result.answers
+			.filter((answer) => answer.instance.templateId)
+			.map((answer) => ({
+				student_id: user.id,
+				template_id: answer.instance.templateId as string,
+				success: answer.isCorrect,
+				source: 'auto' as const,
+				with_help: false
+			}));
+
+		if (attemptsToInsert.length > 0) {
+			const { error: attemptsError } = await supabase
+				.from('skill_attempts')
+				.insert(attemptsToInsert);
+
+			if (attemptsError) {
+				console.error('[tests/save] skill_attempts INSERT failed:', attemptsError);
+			}
+		}
+
 		// Award buddy XP for each answer
 		let buddyXp = null;
 		try {

@@ -5,7 +5,7 @@
  *
  * Refonte 2026-06-10 (Phase 3 chantier SRS/FSRS) :
  * - Suppression du flag `to_review` (issu de la VIEW, basé sur seuil 30j).
- * - Ajout du badge FSRS agrégé calculé via `computeCapacityBadges` à partir
+ * - Ajout du badge FSRS agrégé calculé via `computePointBadges` à partir
  *   de l'état `srs_card_stats` des templates tagués sur chaque capacité.
  *
  * Spec : docs/wip/srs-fsrs-spec-tdd.md §5
@@ -14,13 +14,17 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
-import { computeCapacityBadges, type CapacityBadge } from '$lib/server/srs/capacity-badge';
+import { computePointBadges, type CapacityBadge } from '$lib/server/srs/capacity-badge';
 
 export interface CapacityDetail {
 	id: string;
 	name: string;
-	display_order: 1 | 2 | 3 | 4;
-	knowledge_type: 'automatisme' | 'capacite_attendue' | null;
+	/** Rang dans l'échelle descriptive, ou null si l'objectif n'en porte pas. */
+	rang: 1 | 2 | 3 | 4 | null;
+	kind: 'connaissance' | 'savoir_faire' | 'demonstration';
+	regime_acquisition: 'fluence' | 'diversite';
+	/** Niveaux dont ce point figure dans la liste des « Automatismes ». */
+	automatisme_grades: string[];
 	is_acquired: boolean;
 	needs_remediation: boolean;
 	badge: CapacityBadge;
@@ -33,8 +37,12 @@ export interface ObjectiveDetailData {
 	theme_name: string;
 	theme_id: string;
 	capacities: CapacityDetail[];
+	/** true si l'objectif porte une échelle descriptive (points rangés 1-4). */
+	has_scale: boolean;
+	/** Rang max acquis. Toujours 0 quand `has_scale` est false. */
 	rang_max_acquired: 0 | 1 | 2 | 3 | 4;
 	acquired_count: number;
+	total_count: number;
 }
 
 export const load: PageServerLoad = async ({ locals, params }): Promise<ObjectiveDetailData> => {
@@ -42,21 +50,23 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Objectiv
 
 	// 1. Charger l'objectif + ses capacités + thème parent
 	const { data: objData, error: objError } = await locals.supabase
-		.from('skill_objectives')
+		.from('curriculum_objectives')
 		.select(
 			`
 				id,
 				name,
 				description,
-				theme:skill_themes!skill_objectives_theme_id_fkey (
+				theme:curriculum_themes!curriculum_objectives_theme_id_fkey (
 					id,
 					name
 				),
-				skills!skills_objective_id_fkey (
+				curriculum_points (
 					id,
 					name,
-					display_order,
-					knowledge_type
+					rang,
+					kind,
+					regime_acquisition,
+					archived_at
 				)
 			`
 		)
@@ -75,57 +85,74 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Objectiv
 		throw error(500, 'Thème parent introuvable');
 	}
 
-	const skills = objData.skills ?? [];
-	const skillIds = skills.map((s) => s.id);
+	const points = (objData.curriculum_points ?? []).filter((p) => !p.archived_at);
+	const pointIds = points.map((p) => p.id);
 
 	// 2. Charger l'état BO des capacités (is_acquired, needs_remediation)
 	const { data: stateData, error: stateError } = await locals.supabase
-		.from('student_skill_state_a_v')
-		.select('skill_id, is_acquired, needs_remediation')
+		.from('student_point_state_v')
+		.select('point_id, is_acquired, needs_remediation')
 		.eq('student_id', user.id)
-		.in('skill_id', skillIds);
+		.in('point_id', pointIds);
 
 	if (stateError) {
 		throw error(500, `Erreur de chargement de l'état : ${stateError.message}`);
 	}
 
-	const stateBySkill = new Map<string, { is_acquired: boolean; needs_remediation: boolean }>();
+	const stateByPoint = new Map<string, { is_acquired: boolean; needs_remediation: boolean }>();
 	for (const row of stateData ?? []) {
-		if (!row.skill_id) continue;
-		stateBySkill.set(row.skill_id, {
+		if (!row.point_id) continue;
+		stateByPoint.set(row.point_id, {
 			is_acquired: row.is_acquired ?? false,
 			needs_remediation: row.needs_remediation ?? false
 		});
 	}
 
 	// 3. Calcul des badges FSRS agrégés
-	const badges = await computeCapacityBadges(locals.supabase, user.id, skillIds);
+	// Listes d'automatismes : de quel programme chacun de ces points est un
+	// attendu d'examen. Un point peut figurer dans plusieurs listes.
+	const { data: automatismeRows } = await locals.supabase
+		.from('curriculum_point_automatismes')
+		.select('point_id, grade')
+		.in('point_id', pointIds);
 
-	// 4. Construire les 4 capacités ordonnées (rang 1-4)
-	const capacities: CapacityDetail[] = skills
-		.filter((s) => s.display_order >= 1 && s.display_order <= 4)
-		.sort((a, b) => a.display_order - b.display_order)
-		.map((s) => {
-			const state = stateBySkill.get(s.id);
+	const automatismeGradesByPoint = new Map<string, string[]>();
+	for (const row of automatismeRows ?? []) {
+		const list = automatismeGradesByPoint.get(row.point_id) ?? [];
+		list.push(row.grade);
+		automatismeGradesByPoint.set(row.point_id, list);
+	}
+
+	const badges = await computePointBadges(locals.supabase, user.id, pointIds);
+
+	// 4. Construire les points. Les objectifs à échelle sont triés par rang ;
+	//    ceux sans échelle gardent l'ordre d'affichage du référentiel.
+	const has_scale = points.some((p) => p.rang !== null);
+	const capacities: CapacityDetail[] = points
+		.sort((a, b) => (a.rang ?? Number.MAX_SAFE_INTEGER) - (b.rang ?? Number.MAX_SAFE_INTEGER))
+		.map((p) => {
+			const state = stateByPoint.get(p.id);
 			return {
-				id: s.id,
-				name: s.name,
-				display_order: s.display_order as 1 | 2 | 3 | 4,
-				knowledge_type: (s.knowledge_type as 'automatisme' | 'capacite_attendue' | null) ?? null,
+				id: p.id,
+				name: p.name,
+				rang: (p.rang as 1 | 2 | 3 | 4 | null) ?? null,
+				kind: p.kind as 'connaissance' | 'savoir_faire' | 'demonstration',
+				regime_acquisition: p.regime_acquisition as 'fluence' | 'diversite',
+				automatisme_grades: automatismeGradesByPoint.get(p.id) ?? [],
 				is_acquired: state?.is_acquired ?? false,
 				needs_remediation: state?.needs_remediation ?? false,
-				badge: badges.get(s.id) ?? 'non_commencee'
+				badge: badges.get(p.id) ?? 'non_commencee'
 			};
 		});
 
-	// 5. Niveau atteint
+	// 5. Niveau atteint — seulement sur les objectifs à échelle.
 	let rang_max: 0 | 1 | 2 | 3 | 4 = 0;
 	let acquired_count = 0;
 	for (const c of capacities) {
 		if (c.is_acquired) {
 			acquired_count += 1;
-			if (c.display_order > rang_max) {
-				rang_max = c.display_order;
+			if (c.rang !== null && c.rang > rang_max) {
+				rang_max = c.rang;
 			}
 		}
 	}
@@ -137,7 +164,9 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Objectiv
 		theme_name: theme.name,
 		theme_id: theme.id,
 		capacities,
-		rang_max_acquired: rang_max,
-		acquired_count
+		has_scale,
+		rang_max_acquired: has_scale ? rang_max : 0,
+		acquired_count,
+		total_count: capacities.length
 	};
 };

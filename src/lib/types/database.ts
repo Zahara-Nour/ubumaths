@@ -7,11 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.5"
-  },
   graphql_public: {
     Tables: {
       [_ in never]: never
@@ -2128,9 +2123,10 @@ export type Database = {
           },
         ]
       }
-      curriculum_items: {
+      curriculum_objectives: {
         Row: {
           created_at: string
+          description: string | null
           display_order: number
           id: string
           name: string
@@ -2139,6 +2135,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          description?: string | null
           display_order?: number
           id?: string
           name: string
@@ -2147,6 +2144,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          description?: string | null
           display_order?: number
           id?: string
           name?: string
@@ -2155,7 +2153,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "curriculum_items_theme_id_fkey"
+            foreignKeyName: "curriculum_objectives_theme_id_fkey"
             columns: ["theme_id"]
             isOneToOne: false
             referencedRelation: "curriculum_themes"
@@ -2163,49 +2161,88 @@ export type Database = {
           },
         ]
       }
+      curriculum_point_automatismes: {
+        Row: {
+          created_at: string
+          grade: string
+          point_id: string
+        }
+        Insert: {
+          created_at?: string
+          grade: string
+          point_id: string
+        }
+        Update: {
+          created_at?: string
+          grade?: string
+          point_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curriculum_point_automatismes_point_id_fkey"
+            columns: ["point_id"]
+            isOneToOne: false
+            referencedRelation: "curriculum_points"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       curriculum_points: {
         Row: {
           archived_at: string | null
+          code: string
           created_at: string
           display_order: number
+          exigence: string
           id: string
-          item_id: string
-          kind: string | null
+          kind: string
           name: string
+          objective_id: string
+          rang: number | null
+          regime_acquisition: string
           updated_at: string
         }
         Insert: {
           archived_at?: string | null
+          code: string
           created_at?: string
           display_order?: number
+          exigence?: string
           id?: string
-          item_id: string
-          kind?: string | null
+          kind: string
           name: string
+          objective_id: string
+          rang?: number | null
+          regime_acquisition?: string
           updated_at?: string
         }
         Update: {
           archived_at?: string | null
+          code?: string
           created_at?: string
           display_order?: number
+          exigence?: string
           id?: string
-          item_id?: string
-          kind?: string | null
+          kind?: string
           name?: string
+          objective_id?: string
+          rang?: number | null
+          regime_acquisition?: string
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "curriculum_points_item_id_fkey"
-            columns: ["item_id"]
+            foreignKeyName: "curriculum_points_objective_id_fkey"
+            columns: ["objective_id"]
             isOneToOne: false
-            referencedRelation: "curriculum_items"
+            referencedRelation: "curriculum_objectives"
             referencedColumns: ["id"]
           },
         ]
       }
       curriculum_themes: {
         Row: {
+          code: string | null
           created_at: string
           display_order: number
           grade: string
@@ -2214,6 +2251,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          code?: string | null
           created_at?: string
           display_order?: number
           grade: string
@@ -2222,6 +2260,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          code?: string | null
           created_at?: string
           display_order?: number
           grade?: string
@@ -2618,23 +2657,23 @@ export type Database = {
       }
       evaluation_task_perimeter: {
         Row: {
-          skill_id: string
+          observable_id: string
           task_id: string
         }
         Insert: {
-          skill_id: string
+          observable_id: string
           task_id: string
         }
         Update: {
-          skill_id?: string
+          observable_id?: string
           task_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "evaluation_task_perimeter_skill_id_fkey"
-            columns: ["skill_id"]
+            foreignKeyName: "evaluation_task_perimeter_observable_id_fkey"
+            columns: ["observable_id"]
             isOneToOne: false
-            referencedRelation: "skills"
+            referencedRelation: "observables"
             referencedColumns: ["id"]
           },
           {
@@ -7941,6 +7980,47 @@ export type Database = {
           },
         ]
       }
+      observables: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          name: string
+          observable_code: string
+          subdimension_id: string
+          teacher_grid_text: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order: number
+          id?: string
+          name: string
+          observable_code: string
+          subdimension_id: string
+          teacher_grid_text?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          name?: string
+          observable_code?: string
+          subdimension_id?: string
+          teacher_grid_text?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "observables_subdimension_id_fkey"
+            columns: ["subdimension_id"]
+            isOneToOne: false
+            referencedRelation: "math_competence_subdimensions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orphaned_documents: {
         Row: {
           file_name: string
@@ -9162,29 +9242,29 @@ export type Database = {
         }
         Relationships: []
       }
-      question_template_skills: {
+      question_template_points: {
         Row: {
-          skill_id: string
+          point_id: string
           template_id: string
         }
         Insert: {
-          skill_id: string
+          point_id: string
           template_id: string
         }
         Update: {
-          skill_id?: string
+          point_id?: string
           template_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "question_template_skills_skill_id_fkey"
-            columns: ["skill_id"]
+            foreignKeyName: "question_template_points_point_id_fkey"
+            columns: ["point_id"]
             isOneToOne: false
-            referencedRelation: "skills"
+            referencedRelation: "curriculum_points"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "question_template_skills_template_id_fkey"
+            foreignKeyName: "question_template_points_template_id_fkey"
             columns: ["template_id"]
             isOneToOne: false
             referencedRelation: "question_templates"
@@ -10341,8 +10421,8 @@ export type Database = {
           created_at: string
           grade: number | null
           id: string
+          observable_id: string | null
           phase_blocage: string | null
-          skill_id: string | null
           source: string
           source_ref: string | null
           student_id: string
@@ -10356,8 +10436,8 @@ export type Database = {
           created_at?: string
           grade?: number | null
           id?: string
+          observable_id?: string | null
           phase_blocage?: string | null
-          skill_id?: string | null
           source: string
           source_ref?: string | null
           student_id: string
@@ -10371,8 +10451,8 @@ export type Database = {
           created_at?: string
           grade?: number | null
           id?: string
+          observable_id?: string | null
           phase_blocage?: string | null
-          skill_id?: string | null
           source?: string
           source_ref?: string | null
           student_id?: string
@@ -10383,10 +10463,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "skill_attempts_skill_id_fkey"
-            columns: ["skill_id"]
+            foreignKeyName: "skill_attempts_observable_id_fkey"
+            columns: ["observable_id"]
             isOneToOne: false
-            referencedRelation: "skills"
+            referencedRelation: "observables"
             referencedColumns: ["id"]
           },
           {
@@ -10429,137 +10509,6 @@ export type Database = {
             columns: ["template_id"]
             isOneToOne: false
             referencedRelation: "question_templates"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      skill_objectives: {
-        Row: {
-          created_at: string
-          description: string | null
-          display_order: number
-          id: string
-          name: string
-          theme_id: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          display_order: number
-          id?: string
-          name: string
-          theme_id: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          display_order?: number
-          id?: string
-          name?: string
-          theme_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "skill_objectives_theme_id_fkey"
-            columns: ["theme_id"]
-            isOneToOne: false
-            referencedRelation: "skill_themes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      skill_themes: {
-        Row: {
-          bo_reference: string | null
-          created_at: string
-          description: string | null
-          display_order: number
-          id: string
-          name: string
-          niveau_scolaire: string
-          updated_at: string
-        }
-        Insert: {
-          bo_reference?: string | null
-          created_at?: string
-          description?: string | null
-          display_order: number
-          id?: string
-          name: string
-          niveau_scolaire: string
-          updated_at?: string
-        }
-        Update: {
-          bo_reference?: string | null
-          created_at?: string
-          description?: string | null
-          display_order?: number
-          id?: string
-          name?: string
-          niveau_scolaire?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      skills: {
-        Row: {
-          created_at: string
-          display_order: number
-          family: string | null
-          id: string
-          knowledge_type: string | null
-          name: string
-          niveau_scolaire: string | null
-          objective_id: string | null
-          observable_code: string | null
-          subdimension_id: string | null
-          teacher_grid_text: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          display_order: number
-          family?: string | null
-          id?: string
-          knowledge_type?: string | null
-          name: string
-          niveau_scolaire?: string | null
-          objective_id?: string | null
-          observable_code?: string | null
-          subdimension_id?: string | null
-          teacher_grid_text?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          display_order?: number
-          family?: string | null
-          id?: string
-          knowledge_type?: string | null
-          name?: string
-          niveau_scolaire?: string | null
-          objective_id?: string | null
-          observable_code?: string | null
-          subdimension_id?: string | null
-          teacher_grid_text?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "skills_objective_id_fkey"
-            columns: ["objective_id"]
-            isOneToOne: false
-            referencedRelation: "skill_objectives"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "skills_subdimension_id_fkey"
-            columns: ["subdimension_id"]
-            isOneToOne: false
-            referencedRelation: "math_competence_subdimensions"
             referencedColumns: ["id"]
           },
         ]
@@ -10625,7 +10574,7 @@ export type Database = {
       }
       srs_anti_fraud_flags: {
         Row: {
-          capacity_skill_id: string | null
+          capacity_point_id: string | null
           created_at: string
           details: Json
           flag_type: string
@@ -10641,7 +10590,7 @@ export type Database = {
           window_start: string
         }
         Insert: {
-          capacity_skill_id?: string | null
+          capacity_point_id?: string | null
           created_at?: string
           details?: Json
           flag_type: string
@@ -10657,7 +10606,7 @@ export type Database = {
           window_start: string
         }
         Update: {
-          capacity_skill_id?: string | null
+          capacity_point_id?: string | null
           created_at?: string
           details?: Json
           flag_type?: string
@@ -10674,10 +10623,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "srs_anti_fraud_flags_capacity_skill_id_fkey"
-            columns: ["capacity_skill_id"]
+            foreignKeyName: "srs_anti_fraud_flags_capacity_point_id_fkey"
+            columns: ["capacity_point_id"]
             isOneToOne: false
-            referencedRelation: "skills"
+            referencedRelation: "curriculum_points"
             referencedColumns: ["id"]
           },
           {
@@ -11527,7 +11476,7 @@ export type Database = {
           count_plus: number
           is_acquis: boolean
           last_attempt_at: string | null
-          skill_id: string
+          observable_id: string
           student_id: string
           updated_at: string
         }
@@ -11536,7 +11485,7 @@ export type Database = {
           count_plus?: number
           is_acquis?: boolean
           last_attempt_at?: string | null
-          skill_id: string
+          observable_id: string
           student_id: string
           updated_at?: string
         }
@@ -11545,16 +11494,16 @@ export type Database = {
           count_plus?: number
           is_acquis?: boolean
           last_attempt_at?: string | null
-          skill_id?: string
+          observable_id?: string
           student_id?: string
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "student_observable_state_skill_id_fkey"
-            columns: ["skill_id"]
+            foreignKeyName: "student_observable_state_observable_id_fkey"
+            columns: ["observable_id"]
             isOneToOne: false
-            referencedRelation: "skills"
+            referencedRelation: "observables"
             referencedColumns: ["id"]
           },
           {
@@ -11587,14 +11536,14 @@ export type Database = {
           },
         ]
       }
-      student_skill_state_a: {
+      student_point_state: {
         Row: {
           distinct_template_successes: number
           is_acquired: boolean
           last_attempt_at: string | null
           last_success_at: string | null
           needs_remediation: boolean
-          skill_id: string
+          point_id: string
           student_id: string
           total_successes: number
           updated_at: string
@@ -11605,7 +11554,7 @@ export type Database = {
           last_attempt_at?: string | null
           last_success_at?: string | null
           needs_remediation?: boolean
-          skill_id: string
+          point_id: string
           student_id: string
           total_successes?: number
           updated_at?: string
@@ -11616,42 +11565,42 @@ export type Database = {
           last_attempt_at?: string | null
           last_success_at?: string | null
           needs_remediation?: boolean
-          skill_id?: string
+          point_id?: string
           student_id?: string
           total_successes?: number
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "student_skill_state_a_skill_id_fkey"
-            columns: ["skill_id"]
+            foreignKeyName: "student_point_state_point_id_fkey"
+            columns: ["point_id"]
             isOneToOne: false
-            referencedRelation: "skills"
+            referencedRelation: "curriculum_points"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "student_skill_state_a_student_id_fkey"
+            foreignKeyName: "student_point_state_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "assessment_results"
             referencedColumns: ["student_user_id"]
           },
           {
-            foreignKeyName: "student_skill_state_a_student_id_fkey"
+            foreignKeyName: "student_point_state_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
           {
-            foreignKeyName: "student_skill_state_a_student_id_fkey"
+            foreignKeyName: "student_point_state_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "student_skill_state_a_student_id_fkey"
+            foreignKeyName: "student_point_state_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "riddle_progress"
@@ -14558,14 +14507,14 @@ export type Database = {
           },
         ]
       }
-      student_skill_state_a_v: {
+      student_point_state_v: {
         Row: {
           distinct_template_successes: number | null
           is_acquired: boolean | null
           last_attempt_at: string | null
           last_success_at: string | null
           needs_remediation: boolean | null
-          skill_id: string | null
+          point_id: string | null
           student_id: string | null
           total_successes: number | null
           updated_at: string | null
@@ -14576,7 +14525,7 @@ export type Database = {
           last_attempt_at?: string | null
           last_success_at?: string | null
           needs_remediation?: boolean | null
-          skill_id?: string | null
+          point_id?: string | null
           student_id?: string | null
           total_successes?: number | null
           updated_at?: string | null
@@ -14587,42 +14536,42 @@ export type Database = {
           last_attempt_at?: string | null
           last_success_at?: string | null
           needs_remediation?: boolean | null
-          skill_id?: string | null
+          point_id?: string | null
           student_id?: string | null
           total_successes?: number | null
           updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "student_skill_state_a_skill_id_fkey"
-            columns: ["skill_id"]
+            foreignKeyName: "student_point_state_point_id_fkey"
+            columns: ["point_id"]
             isOneToOne: false
-            referencedRelation: "skills"
+            referencedRelation: "curriculum_points"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "student_skill_state_a_student_id_fkey"
+            foreignKeyName: "student_point_state_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "assessment_results"
             referencedColumns: ["student_user_id"]
           },
           {
-            foreignKeyName: "student_skill_state_a_student_id_fkey"
+            foreignKeyName: "student_point_state_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
           {
-            foreignKeyName: "student_skill_state_a_student_id_fkey"
+            foreignKeyName: "student_point_state_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "student_skill_state_a_student_id_fkey"
+            foreignKeyName: "student_point_state_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "riddle_progress"
@@ -15085,6 +15034,16 @@ export type Database = {
           p_top_x_games?: number
         }
         Returns: string
+      }
+      curriculum_point_reference_counts: {
+        Args: { p_point_id: string }
+        Returns: Json
+      }
+      curriculum_referenced_points: {
+        Args: { p_grade: string }
+        Returns: {
+          point_id: string
+        }[]
       }
       delete_all_resolved_errors: { Args: never; Returns: number }
       delete_attachment: { Args: { p_attachment_id: string }; Returns: string }
@@ -16075,6 +16034,7 @@ export type Database = {
         Returns: undefined
       }
       my_school: { Args: never; Returns: string }
+      next_curriculum_point_code: { Args: { p_grade: string }; Returns: string }
       normalize_grade_array: {
         Args: { input_grades: string[] }
         Returns: string[]
@@ -16217,6 +16177,18 @@ export type Database = {
           p_warning_types: string[]
         }
         Returns: Json
+      }
+      reorder_curriculum_objectives: {
+        Args: { p_objective_ids: string[]; p_theme_id: string }
+        Returns: undefined
+      }
+      reorder_curriculum_points: {
+        Args: { p_objective_id: string; p_point_ids: string[] }
+        Returns: undefined
+      }
+      reorder_curriculum_themes: {
+        Args: { p_grade: string; p_theme_ids: string[] }
+        Returns: undefined
       }
       reorder_worksheet_exercises: {
         Args: { p_exercises: Json; p_worksheet_id: string }
@@ -16441,11 +16413,11 @@ export type Database = {
           }
         | { Args: { p_delta: number; p_student_id: string }; Returns: number }
       update_student_observable_state: {
-        Args: { p_skill_id: string; p_student_id: string }
+        Args: { p_observable_id: string; p_student_id: string }
         Returns: undefined
       }
-      update_student_skill_state_a: {
-        Args: { p_skill_id: string; p_student_id: string }
+      update_student_point_state: {
+        Args: { p_point_id: string; p_student_id: string }
         Returns: undefined
       }
       update_tutor_conversation_stats: {

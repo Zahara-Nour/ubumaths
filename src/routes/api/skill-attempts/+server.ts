@@ -8,12 +8,12 @@
  *   1. UPSERT `srs_card_stats` via FSRS-6 (le grade est dérivé de `success`).
  *   2. INSERT 1 row dans `skill_attempts` (au lieu de N comme avant).
  *   3. Si template tagué famille A : auto-ajout au deck Programme.
- *   4. Le trigger PG recalcule `student_skill_state_a` pour chaque skill tagué.
+ *   4. Le trigger PG recalcule `student_point_state` pour chaque point tagué.
  *
  * Famille B : non gérée ici (passe par evaluation_tasks côté prof).
  *
  * Réponse :
- *   200 { inserted: 1, skill_ids: [...skill_ids tagués...] }
+ *   200 { inserted: 1, point_ids: [...points tagués...] }
  *
  * Codes d'erreur :
  *   400 — JSON ou Zod invalide
@@ -55,11 +55,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const { template_id, success, with_help, phase_blocage } = validation.data;
 
-	// Vérification existence du template + récupération des skills tagués famille A
+	// Vérification existence du template + récupération des points de programme tagués
 	// en 1 seul round-trip (perf P0#2 — économise 1 SELECT vs 2 séparés).
 	const { data: templateRow, error: templateError } = await locals.supabase
 		.from('question_templates')
-		.select('id, question_template_skills(skill_id, skills(family))')
+		.select('id, question_template_points(point_id)')
 		.eq('id', template_id)
 		.maybeSingle();
 
@@ -72,17 +72,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(404, 'template_not_found');
 	}
 
-	// Extraction des skill_ids famille knowledge (les seuls qui comptent pour Programme + réponse API).
-	type LinkRow = { skill_id: string; skills: { family: string } | null };
-	const links = (templateRow.question_template_skills ?? []) as unknown as LinkRow[];
-	const skillIds = links.filter((l) => l.skills?.family === 'knowledge').map((l) => l.skill_id);
+	// Points de programme tagués sur ce template (Programme deck + réponse API).
+	type LinkRow = { point_id: string };
+	const links = (templateRow.question_template_points ?? []) as unknown as LinkRow[];
+	const pointIds = links.map((l) => l.point_id);
 
 	// Mapping success → grade (cf. spec §1.1)
 	const grade: Grade = success ? Grade.GOOD : Grade.AGAIN;
 
 	// ----- FSRS update synchrone côté TS (AVANT l'INSERT skill_attempts) -----
 	// Fail-loud : si FSRS UPSERT échoue, on n'insère PAS skill_attempts pour
-	// éviter une désynchro durable srs_card_stats ↔ student_skill_state_a.
+	// éviter une désynchro durable srs_card_stats ↔ student_point_state.
 	// Le client peut retenter ; un échec persistant signale un vrai bug à fixer.
 	try {
 		await applyFsrsReview(locals.supabase, new FSRS(), user.id, 'template', template_id, grade);
@@ -97,8 +97,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// ----- INSERT skill_attempts (per-template) -----
-	// 1 row par attempt. Le trigger boucle ensuite sur question_template_skills
-	// pour recalculer chaque student_skill_state_a impactée.
+	// 1 row par attempt. Le trigger boucle ensuite sur question_template_points
+	// pour recalculer chaque student_point_state impactée.
 	const { error: insertError } = await locals.supabase.from('skill_attempts').insert({
 		student_id: user.id,
 		template_id,
@@ -115,7 +115,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// ----- Auto-ajout au deck Programme si template tagué -----
-	if (skillIds.length > 0) {
+	if (pointIds.length > 0) {
 		try {
 			await ensureProgrammeDeckCard(locals.supabase, user.id, template_id);
 		} catch (progErr) {
@@ -124,5 +124,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 	}
 
-	return json({ inserted: 1, skill_ids: skillIds });
+	return json({ inserted: 1, point_ids: pointIds });
 };

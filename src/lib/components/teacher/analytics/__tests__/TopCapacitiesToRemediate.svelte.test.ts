@@ -28,8 +28,8 @@ describe('TopCapacitiesToRemediate', () => {
 		mockFetch({
 			rows: [
 				{
-					skill_id: 'cap1',
-					skill_name: 'Calcul fractions',
+					point_id: 'cap1',
+					point_name: 'Calcul fractions',
 					theme_code: 'CALC',
 					students_concerned: [{ student_id: 's1', display_name: 'Alice', badge: 'a_remedier' }],
 					remediate_pct: 75

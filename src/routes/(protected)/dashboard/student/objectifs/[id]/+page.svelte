@@ -79,32 +79,46 @@
 		<!-- Niveau atteint global -->
 		<div class="mt-4 flex flex-wrap items-center gap-3">
 			<div class="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-2">
-				<span class="text-2xl">{getObjectiveLevelVisual(data.rang_max_acquired)}</span>
+				{#if data.has_scale}
+					<span class="text-2xl">{getObjectiveLevelVisual(data.rang_max_acquired)}</span>
+				{/if}
 				<div>
-					<div class="font-semibold">{formatObjectiveLevel(data.rang_max_acquired)}</div>
+					<div class="font-semibold">
+						{data.has_scale ? formatObjectiveLevel(data.rang_max_acquired) : 'Progression'}
+					</div>
 					<div class="text-xs text-muted-foreground">
-						{data.acquired_count}/4 capacités acquises
+						{data.acquired_count}/{data.total_count} acquis
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<!-- Tableau 4 colonnes (desktop) / 4 lignes (mobile) -->
-	<div class="mb-6 grid grid-cols-1 gap-3 md:grid-cols-4">
+	<!-- Objectif à échelle : tableau 4 colonnes. Sans échelle : liste en 2 colonnes. -->
+	<div class="mb-6 grid grid-cols-1 gap-3 {data.has_scale ? 'md:grid-cols-4' : 'md:grid-cols-2'}">
 		{#each data.capacities as cap (cap.id)}
 			<Card.Root class="relative {capacityBgClass(cap)}">
 				<Card.Header class="pb-2">
 					<div class="flex items-center justify-between">
 						<div class="flex items-center gap-1.5">
-							<span class="text-sm font-bold text-muted-foreground">Rang {cap.display_order}</span>
-							{#if cap.display_order === 3}
+							{#if cap.rang !== null}
+								<span class="text-sm font-bold text-muted-foreground">Rang {cap.rang}</span>
+							{:else}
+								<span class="text-sm font-medium text-muted-foreground">
+									{cap.kind === 'connaissance'
+										? 'Connaissance'
+										: cap.kind === 'demonstration'
+											? 'Démonstration'
+											: 'Savoir-faire'}
+								</span>
+							{/if}
+							{#if cap.rang === 3}
 								<Star
 									class="h-4 w-4 fill-amber-400 text-amber-400"
 									aria-label="Attendu pour tous"
 								/>
 							{/if}
-							{#if cap.display_order === 4}
+							{#if cap.rang === 4}
 								<Sparkles class="h-4 w-4 text-amber-500" aria-label="Expert" />
 							{/if}
 						</div>
@@ -127,8 +141,14 @@
 							{capacityStatusLabel(cap)}
 						</Badge>
 						<CapacityFsrsBadge badge={cap.badge} showLabel />
-						{#if cap.knowledge_type === 'automatisme'}
-							<Badge variant="outline" class="text-xs">⚡ automatisme</Badge>
+						{#if cap.automatisme_grades.length > 0}
+							<Badge
+								variant="outline"
+								class="text-xs"
+								title="Au programme des automatismes — évalué à l'examen"
+							>
+								⚡ automatisme
+							</Badge>
 						{/if}
 					</div>
 				</Card.Content>

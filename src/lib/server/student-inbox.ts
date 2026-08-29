@@ -260,7 +260,14 @@ async function fetchAssessmentItems(
 			status: doneAt ? 'done' : 'todo',
 			viewed: false,
 			doneAt,
-			href: `/dashboard/student/assessments/${assessment.id}`,
+			// Deux erreurs se superposaient ici : la route `/dashboard/student/assessments/[id]`
+			// n'existe pas (seul `[id]/results` existe), et l'identifiant utilisé était
+			// celui de l'ÉVALUATION alors que le point d'entrée attend celui de
+			// l'ASSIGNATION. Un test assigné était donc injoignable depuis l'inbox.
+			// Même cible que le bouton « Commencer » de /dashboard/student/assessments.
+			href: doneAt
+				? `/dashboard/student/assessments/${assignment.id}/results`
+				: `/automaths/test?assignment=${assignment.id}&mode=interactive`,
 			assignedAt: assignment.assigned_at
 		};
 	});
@@ -413,16 +420,63 @@ async function fetchWorksheetItems(
 		new Set(assignments.map((a) => a.class_id).filter((id): id is string => id !== null))
 	);
 
-	const [worksheetsRes, classNames] = await Promise.all([
+	const [worksheetsRes, classNames, exercisesRes] = await Promise.all([
 		supabase.from('worksheets').select('id, title').in('id', worksheetIds),
-		fetchClassNames(supabase, referencedClassIds)
+		fetchClassNames(supabase, referencedClassIds),
+		supabase
+			.from('worksheet_exercises')
+			.select('worksheet_id, exercise_id')
+			.in('worksheet_id', worksheetIds)
 	]);
 	logError('worksheet.worksheets', worksheetsRes.error);
+	logError('worksheet.exercises', exercisesRes.error);
+
+	// Complétion d'une fiche : les fiches sont en consultation seule (pas de rendu,
+	// pas d'échéance), donc le seul signal disponible est l'auto-évaluation que
+	// l'élève pose exercice par exercice dans la vue fiche. Une fiche est « faite »
+	// quand il a positionné TOUS ses exercices (maîtrisé / à retravailler / non
+	// travaillé). Avant ce correctif, une fiche assignée restait indéfiniment
+	// « à faire ».
+	const exerciseIdsByWorksheet = new Map<string, Set<string>>();
+	for (const row of exercisesRes.data ?? []) {
+		const set = exerciseIdsByWorksheet.get(row.worksheet_id) ?? new Set<string>();
+		set.add(row.exercise_id);
+		exerciseIdsByWorksheet.set(row.worksheet_id, set);
+	}
+
+	const allExerciseIds = Array.from(
+		new Set([...exerciseIdsByWorksheet.values()].flatMap((set) => [...set]))
+	);
+
+	const masteryByExercise = new Map<string, string>();
+	if (allExerciseIds.length > 0) {
+		const { data: masteryRows, error: masteryErr } = await supabase
+			.from('student_exercise_mastery')
+			.select('exercise_id, updated_at')
+			.eq('student_id', userId)
+			.in('exercise_id', allExerciseIds);
+		logError('worksheet.mastery', masteryErr);
+		for (const row of masteryRows ?? []) masteryByExercise.set(row.exercise_id, row.updated_at);
+	}
+
+	/** Dernière auto-évaluation si la fiche est entièrement positionnée, sinon null. */
+	function worksheetDoneAt(worksheetId: string): string | null {
+		const exerciseIds = exerciseIdsByWorksheet.get(worksheetId);
+		if (!exerciseIds || exerciseIds.size === 0) return null;
+		let latest: string | null = null;
+		for (const id of exerciseIds) {
+			const at = masteryByExercise.get(id);
+			if (!at) return null; // un exercice non positionné → fiche non terminée
+			if (latest === null || at > latest) latest = at;
+		}
+		return latest;
+	}
 
 	const worksheetById = new Map((worksheetsRes.data ?? []).map((row) => [row.id, row]));
 
 	return assignments.map<WorkItem>((assignment) => {
 		const worksheet = worksheetById.get(assignment.worksheet_id);
+		const doneAt = worksheetDoneAt(assignment.worksheet_id);
 		return {
 			source: 'worksheet' satisfies WorkSource,
 			itemId: assignment.worksheet_id,
@@ -431,9 +485,9 @@ async function fetchWorksheetItems(
 			classId: assignment.class_id,
 			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
 			dueAt: assignment.closes_at,
-			status: 'todo',
-			viewed: false,
-			doneAt: null,
+			status: doneAt ? 'done' : 'todo',
+			viewed: masteryByExercise.size > 0,
+			doneAt,
 			href: `/dashboard/student/worksheets/${assignment.id}`,
 			assignedAt: assignment.assigned_at
 		};

@@ -17,9 +17,9 @@
 		last_attempt_at: string | null;
 	}
 	interface TopRow {
-		skill_id: string;
+		observable_id: string;
 		observable_code: string | null;
-		skill_name: string;
+		observable_name: string;
 		subdimension_letter: string | null;
 		subdimension_name: string | null;
 		competence_code: string | null;
@@ -70,7 +70,7 @@
 	});
 
 	function openModal(row: TopRow) {
-		modalTitle = row.skill_name;
+		modalTitle = row.observable_name;
 		modalStudents = row.students_concerned.map((s) => ({
 			student_id: s.student_id,
 			display_name: s.display_name,
@@ -101,12 +101,12 @@
 			</p>
 		{:else}
 			<ul class="space-y-3">
-				{#each rows as row (row.skill_id)}
+				{#each rows as row (row.observable_id)}
 					<li class="rounded-md border border-border p-3">
 						<div class="flex items-center justify-between gap-2">
 							<div class="min-w-0 flex-1">
 								<div class="flex items-center gap-2">
-									<span class="truncate font-medium">{row.skill_name}</span>
+									<span class="truncate font-medium">{row.observable_name}</span>
 									{#if row.observable_code}
 										<Badge variant="outline" class="text-xs">{row.observable_code}</Badge>
 									{/if}

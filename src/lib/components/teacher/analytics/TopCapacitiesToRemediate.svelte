@@ -20,8 +20,8 @@
 		badge: string;
 	}
 	interface TopRow {
-		skill_id: string;
-		skill_name: string;
+		point_id: string;
+		point_name: string;
 		theme_code: string | null;
 		students_concerned: StudentRef[];
 		remediate_pct: number;
@@ -70,7 +70,7 @@
 	});
 
 	function openModal(row: TopRow) {
-		modalTitle = row.skill_name;
+		modalTitle = row.point_name;
 		modalStudents = row.students_concerned.map((s) => ({
 			student_id: s.student_id,
 			display_name: s.display_name,
@@ -115,12 +115,12 @@
 			</p>
 		{:else}
 			<ul class="space-y-3">
-				{#each rows as row (row.skill_id)}
+				{#each rows as row (row.point_id)}
 					<li class="rounded-md border border-border p-3">
 						<div class="flex items-center justify-between gap-2">
 							<div class="min-w-0 flex-1">
 								<div class="flex items-center gap-2">
-									<span class="truncate font-medium">{row.skill_name}</span>
+									<span class="truncate font-medium">{row.point_name}</span>
 									{#if row.theme_code}
 										<Badge variant="outline" class="text-xs">{row.theme_code}</Badge>
 									{/if}

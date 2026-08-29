@@ -10,21 +10,21 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
-import { createItemSchema, itemListQuerySchema } from '$lib/server/validation/curriculum';
-import { curriculumDbError, ITEM_COLS } from '$lib/server/curriculum';
-import type { CurriculumItem } from '$lib/types/database-helpers';
+import { createItemSchema, objectiveListQuerySchema } from '$lib/server/validation/curriculum';
+import { curriculumDbError, OBJECTIVE_COLS } from '$lib/server/curriculum';
+import type { CurriculumObjective } from '$lib/types/database-helpers';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
 
-	const parsed = itemListQuerySchema.safeParse({ theme_id: url.searchParams.get('theme_id') });
+	const parsed = objectiveListQuerySchema.safeParse({ theme_id: url.searchParams.get('theme_id') });
 	if (!parsed.success) {
 		return json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
 	const { data, error: dbErr } = await locals.supabase
-		.from('curriculum_items')
-		.select(ITEM_COLS)
+		.from('curriculum_objectives')
+		.select(OBJECTIVE_COLS)
 		.eq('theme_id', parsed.data.theme_id)
 		.order('display_order', { ascending: true })
 		.order('name', { ascending: true });
@@ -34,7 +34,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		return json({ error: 'Échec du chargement des items' }, { status: 500 });
 	}
 
-	return json({ items: (data ?? []) as CurriculumItem[] });
+	return json({ items: (data ?? []) as CurriculumObjective[] });
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -53,13 +53,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const { data, error: dbErr } = await locals.supabase
-		.from('curriculum_items')
+		.from('curriculum_objectives')
 		.insert({
 			theme_id: parsed.data.theme_id,
 			name: parsed.data.name,
 			display_order: parsed.data.display_order ?? 0
 		})
-		.select(ITEM_COLS)
+		.select(OBJECTIVE_COLS)
 		.single();
 
 	if (dbErr) {
@@ -69,5 +69,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ error: dbErr.message }, { status: 500 });
 	}
 
-	return json({ item: data as CurriculumItem }, { status: 201 });
+	return json({ item: data as CurriculumObjective }, { status: 201 });
 };
