@@ -13,7 +13,7 @@ Le prof accède à une vue unifiée de l'**état d'acquisition** de sa classe su
 
 | Onglet           | Famille              | Données source                                                   | Widgets       |
 | ---------------- | -------------------- | ---------------------------------------------------------------- | ------------- |
-| 📘 Connaissances | A (FSRS knowledge)   | `srs_card_stats` + `skill_attempts` + `question_template_skills` | A, B, C, D, E |
+| 📘 Connaissances | A (FSRS knowledge)   | `srs_card_stats` + `skill_attempts` + `question_template_points` | A, B, C, D, E |
 | 🎯 Compétences   | B (compétences math) | `student_competence_level` + `student_observable_state`          | F, G          |
 
 **Sécurité** : la garde `requireTeacherOfClass` autorise **tout `teacher` ou `admin`** (role-based via `requireRoles(['teacher','admin'])`), puis vérifie l'existence de la classe (404 sinon). Mono-prof : les classes ne sont plus assignées à un prof — l'autorisation ne dépend d'aucun `teacher_id` de classe.

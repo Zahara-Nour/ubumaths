@@ -40,7 +40,7 @@ Trois sous-systèmes cohabitent autour de `question_templates` comme pivot :
 
 ### 2.1 `skill_attempts` est la source unique des faits
 
-Toute interaction (Mondes 1 et 2) écrit dans `skill_attempts`. Les tables `srs_card_stats`, `student_skill_state_a`, `student_observable_state`, `student_competence_level` sont des **caches dérivés** — recomputables depuis `skill_attempts`.
+Toute interaction (Mondes 1 et 2) écrit dans `skill_attempts`. Les tables `srs_card_stats`, `student_point_state`, `student_observable_state`, `student_competence_level` sont des **caches dérivés** — recomputables depuis `skill_attempts`.
 
 ### 2.2 FSRS pilote le timing de révision
 
@@ -54,7 +54,7 @@ L'algo FSRS n'est **pas** porté en PL/pgSQL. Il vit dans `src/lib/srs/fsrs.ts:3
 
 ### 2.4 Stratégie fail-loud côté FSRS
 
-Si l'UPSERT `srs_card_stats` échoue, l'INSERT `skill_attempts` n'a pas lieu (HTTP 500). Évite la désynchro durable `srs_card_stats` ↔ `student_skill_state_a`.
+Si l'UPSERT `srs_card_stats` échoue, l'INSERT `skill_attempts` n'a pas lieu (HTTP 500). Évite la désynchro durable `srs_card_stats` ↔ `student_point_state`.
 
 Cf. `src/routes/api/skill-attempts/+server.ts:86-96`.
 
@@ -150,7 +150,7 @@ Mapping (success ↔ grade) :
 - Monde 1 : `success=true → grade=3 (Good)` ; `success=false → grade=1 (Again)`.
 - Monde 2 : `success = (grade >= 2)` (Hard compte comme succès).
 
-Index notable : `idx_skill_attempts_student_template_time(student_id, template_id, created_at DESC) WHERE template_id IS NOT NULL` — couvre les queries de `update_student_skill_state_a` (JOIN `question_template_skills` à la lecture).
+Index notable : `idx_skill_attempts_student_template_time(student_id, template_id, created_at DESC) WHERE template_id IS NOT NULL` — couvre les queries de `update_student_point_state` (JOIN `question_template_points` à la lecture).
 
 ### 4.2 Deck "Programme" auto-géré
 
@@ -207,7 +207,7 @@ L'état actuel résulte de **11 migrations** (séquentielles dans `supabase/migr
 ```
 1. Auth check (requireAuth).
 2. Validation Zod (skillAttemptInputSchema).
-3. SELECT question_templates + question_template_skills + skills(family) en 1 round-trip.
+3. SELECT question_templates + question_template_points + skills(family) en 1 round-trip.
    (Optim P0#2 — économise 1 SELECT vs 2 séparés.)
 4. Extract skill_ids famille knowledge depuis les nested rows.
 5. Mapping success→grade : true→3 (Good), false→1 (Again).
@@ -218,9 +218,9 @@ L'état actuel résulte de **11 migrations** (séquentielles dans `supabase/migr
    - FAIL-LOUD : si erreur → 500, pas d'INSERT skill_attempts.
 7. INSERT 1 row skill_attempts (per-template, source='auto').
 8. Trigger PG skill_attempts_after_insert :
-   - Boucle FOR v_skill_id IN question_template_skills WHERE template_id = NEW.template_id
+   - Boucle FOR v_point_id IN question_template_points WHERE template_id = NEW.template_id
      AND s.family = 'knowledge'.
-   - PERFORM update_student_skill_state_a(NEW.student_id, v_skill_id).
+   - PERFORM update_student_point_state(NEW.student_id, v_point_id).
 9. Si skill_ids non vide : ensureProgrammeDeckCard(supabase, user.id, template_id).
    (Idempotent via UNIQUE deck_id, template_id.)
 10. Return { inserted: 1, skill_ids }.
@@ -254,7 +254,7 @@ Prof saisit via endpoints `/api/teacher/...` (hors scope chantier). Le trigger P
 ```
 IF NEW.template_id IS NOT NULL AND NEW.success IS NOT NULL THEN
   -- Famille A
-  FOR v_skill_id IN ... LOOP PERFORM update_student_skill_state_a(...); END LOOP;
+  FOR v_point_id IN ... LOOP PERFORM update_student_point_state(...); END LOOP;
 ELSIF NEW.skill_id IS NOT NULL AND NEW.code IS NOT NULL THEN
   -- Famille B
   PERFORM update_student_observable_state(NEW.student_id, NEW.skill_id);
@@ -275,7 +275,7 @@ Server load (`+page.server.ts`, 248 L) :
 2. Lookup deck Programme (is_auto_managed=true).
 3. Si pas trouvé : return emptyResult avec 4 sections vides.
 4. SELECT srs_cards (id, template_id) WHERE deck_id.
-5. SELECT srs_card_stats + question_templates + question_template_skills
+5. SELECT srs_card_stats + question_templates + question_template_points
    EN PARALLÈLE via Promise.all (optim P1 — économise 2 RTT, ~90-180 ms p95).
 6. Pour chaque card :
    - Lookup state + next_review depuis statsByTemplate.
@@ -292,7 +292,7 @@ UI (`+page.svelte`) : 4 sections déroulantes avec bouton "Lancer une session" p
 
 Server load récupère pour chaque capacité :
 
-- Verdict BO (`is_acquired`, `needs_remediation`) depuis `student_skill_state_a_v`.
+- Verdict BO (`is_acquired`, `needs_remediation`) depuis `student_point_state_v`.
 - Badge FSRS (`templateToBadge` agrégé via `computeCapacityBadges`).
 
 UI affiche les deux côte à côte (composant `CapacityFsrsBadge.svelte` pour le badge dynamique).

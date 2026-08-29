@@ -1,46 +1,60 @@
 # Programme de suivi 1ʳᵉ spécialité maths — Thème → Objectif → Point (à relire)
 
-> **But** : source de vérité pour le **seed** du référentiel de programme (tables `curriculum_*`), grade `'1_SPE'`.
+> **But** : **amorçage** du référentiel de programme (tables `curriculum_*`), grade `'1_SPE'`.
+> ⚠️ **Ce fichier ne fait plus foi** depuis le 2026-08-31 : il a rempli la base une fois, et c'est désormais la page **Programme** (`/dashboard/teacher/programme`) qui fait autorité. Le corriger ici ne produit plus rien — cf. la section ci-dessous.
 > **Source** : « Programme de spécialité de mathématiques de la classe de première de la voie générale » — PDF fourni par David le 2026-08-29 (`Annexe – Programme d'enseignement de spécialité… -515408 (1).pdf`).
 > ⚠️ **Ce n'est PAS le programme de l'arrêté du 17 janvier 2019** que la spec Phase 0 mentionnait : c'est le programme en vigueur, qui introduit notamment une partie transversale **« Automatismes »**.
 >
-> **Statut** : rédaction complète, **en attente de relecture David** avant le seed.
+> **Statut** : rédaction complète, seed écrit et appliqué en local. Relecture David toujours utile — mais une correction se fait maintenant dans l'app, pas ici.
 > **6 thèmes · 14 objectifs · 153 points.**
 >
 > L'ordre suit celui du sommaire du BO (3 parties transversales, puis les 4 thématiques) et donne le `display_order`.
 
 ---
 
-## Code stable et re-synchronisation
+## Ce fichier amorce, l'application fait foi
 
-Chaque point porte un **code** (`1SPE-001` … `1SPE-153`) écrit entre backticks
-juste après son tag. Il est attribué une fois par le générateur et **ne change
-jamais** — y compris si le libellé est corrigé, si le point est réordonné, ou
-s'il passe sous un autre objectif. C'est lui, et non le libellé, qui identifie
-le point en base.
+Ce markdown a rempli la base **une fois**. Depuis, le référentiel se modifie
+dans la page **Programme** : ajouter, renommer, retyper, déplacer, archiver,
+poser un `rang` ou passer un point en `fluence` s'y font tous, sans toucher à un
+fichier ni lancer de commande.
 
-Sans code, corriger une coquille ici produirait au rejeu un point **neuf** :
-l'ancien resterait en base avec ses tags d'exercices, sa couverture de cahier
-de texte et l'historique d'acquisition des élèves.
+Le seed généré depuis ce fichier est un **amorçage gardé** : son corps entier est
+dans un `DO … IF EXISTS (SELECT 1 FROM curriculum_themes WHERE grade = '1_SPE')
+THEN RETURN`. Le rejouer sur une base déjà remplie ne fait **rien** — c'est ce
+qui protège le travail fait dans l'app.
 
-**Qui fait foi sur quoi** — le seed re-synchronise la première colonne et ne
-touche jamais la seconde :
+> Jusqu'au 2026-08-31 le seed re-synchronisait depuis ce markdown et archivait ce
+> qui en avait disparu. Sur une base où le prof avait travaillé, le rejeu défaisait
+> son travail : un libellé corrigé dans l'app était réécrit par le texte du BO.
 
-| Le markdown fait foi                                             | L'application fait foi                        |
-| ---------------------------------------------------------------- | --------------------------------------------- |
-| objectif de rattachement · libellé · `kind` · `exigence` · ordre | `regime_acquisition` · `rang` · `archived_at` |
-| _c'est le texte du BO_                                           | _ce sont tes choix pédagogiques_              |
+### À quoi sert encore ce fichier
 
-Un point retiré du markdown est **archivé**, jamais supprimé : effacer ferait
-disparaître la couverture et l'acquisition qui s'y rattachent.
+À **amorcer un niveau qui n'existe pas encore**. Saisir 153 points à la main dans
+un formulaire serait une punition : pour la 2de ou la terminale, écrire un
+markdown sur ce modèle et générer le seed reste la bonne façon de faire.
 
-Pour modifier le référentiel : corrige le markdown, puis
-`pnpm tsx scripts/generate-curriculum-1re-spe-seed.ts`. Les codes existants sont
-préservés, les nouveaux points prennent le numéro suivant le plus haut attribué
-— jamais un trou laissé par une suppression, pour qu'un code ne désigne jamais
-deux choses différentes.
+### Les codes
 
----
+Chaque point porte un **code** (`1SPE-001` … `1SPE-153`) entre backticks juste
+après son tag. Il identifie le point en base — pas le libellé, qui peut changer.
+
+Sa raison d'être a évolué avec l'amorçage : il ne sert plus à re-synchroniser,
+mais reste **le seul identifiant d'un point à la fois lisible et stable d'un
+environnement à l'autre**. Les UUID diffèrent entre le local et la prod,
+`1SPE-047` non — c'est donc lui qu'on écrit dans une fiche d'exercices, dans une
+URL, ou qu'on donne à un élève.
+
+Il est désormais attribué **par la base**, via le trigger
+`curriculum_points_assign_code` : un point créé dans l'app prend la suite de la
+même série (`1SPE-154`…). Ne jamais modifier un code à la main.
+
+Pour un **nouveau** niveau, le générateur attribue les codes manquants et
+réécrit le markdown :
+
+```bash
+pnpm tsx scripts/generate-curriculum-<niveau>-seed.ts && pnpm db:reset
+```
 
 ## Convention de tags
 

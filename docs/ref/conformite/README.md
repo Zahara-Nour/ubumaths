@@ -94,7 +94,7 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 >
 > 🔎 **Complété (2ᵉ passe).** L'export restait à côté de l'essentiel : **aucune évaluation
 > référentielle**. Ajout d'une section **`evaluation`** — référentiel de **connaissances** (famille A,
-> `student_skill_state_a`), référentiel de **compétences** (famille B, `student_competence_level`),
+> `student_point_state`), référentiel de **compétences** (famille B, `student_competence_level`),
 > tentatives (`skill_attempts`) et indicateurs observables (`student_observable_state`). L'activité
 > exercices (`exercise_completions`/`student_exercise_mastery`/`srs_decks`) passe dans une section
 > **`activite`** distincte. `format_version` → `1.2`.

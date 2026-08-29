@@ -137,277 +137,332 @@ a `Tables<'kanban_boards'>` alias and keep the `*Insert` / `*Update` and
 
 ---
 
-## Compétences (référentiel d'évaluation — Phase 1, 2026-06-09)
+## Référentiel — contenus et compétences (fusion 2026-08-29)
 
-Introduit par trois migrations couplées :
+Deux référentiels coexistaient : `curriculum_themes/objectives/points` pour le
+suivi du programme et `skill_themes/skill_objectives/skills` (famille A) pour
+l'acquisition, sans clé étrangère entre les deux. La fusion les réduit à **un
+seul arbre par niveau** ; la famille B (compétences mathématiques) reste à côté,
+transversale.
 
-- `supabase/migrations/20260609120000_competence_referentiel_schema.sql` — tables + RLS + indexes + VIEW
-- `supabase/migrations/20260609120001_competence_referentiel_functions.sql` — fonctions PL/pgSQL + trigger
-- `supabase/migrations/20260609120002_competence_referentiel_seeds.sql` — seeds 6ᵉ (généré par `scripts/generate-competence-seeds.ts`)
+Migrations : `20260829100000_refonte_referentiel_fusion.sql` ·
+`20260830080000_regime_acquisition_et_listes_automatismes.sql` ·
+`20260830085000_curriculum_point_code.sql` ·
+`20260831090000_curriculum_point_code_auto.sql` ·
+`20260831093000_curriculum_point_delete_guard.sql`.
 
-Spec : `docs/wip/skills-referentiel-design.md` (décisions actées 57-72). Types métier : `src/lib/types/skills.ts` + aliases dans `src/lib/types/database-helpers.ts`.
+Spec : `docs/wip/refonte-referentiel-progress.md` (décisions 1-14). Historique
+famille A : `docs/wip/skills-referentiel-design.md` (décisions 57-72), dont la
+décision 57 (« exactement 4 capacités par objectif ») est la cause racine du
+dédoublement — c'est elle que `rang` nullable dissout.
 
-### Deux familles de skills
+### Deux référentiels, deux usages
 
-| Famille                                | Code DB `family` | Hiérarchie                                                                                  | 6ᵉ V1 (volume)                               |
-| -------------------------------------- | ---------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| **A — Connaissances et savoir-faire**  | `'knowledge'`    | `skill_themes` → `skill_objectives` → `skills` (4 capacités ordonnées)                      | 6 thèmes / 18 objectifs / 72 capacités       |
-| **B — Compétences math transversales** | `'competence'`   | `math_competences` (6) → `math_competence_subdimensions` (A/B/C/D) → `skills` (observables) | 6 compétences / 22 sous-dim / 56 observables |
+|            | Arbre de contenus                                                   | Compétences mathématiques                                            |
+| ---------- | ------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Hiérarchie | `curriculum_themes` → `curriculum_objectives` → `curriculum_points` | `math_competences` → `math_competence_subdimensions` → `observables` |
+| Portée     | par niveau (`grade`)                                                | transversale, non découpée par niveau                                |
+| Sert à     | couverture du programme **et** acquisition de l'élève               | évaluation par compétences (`+`/`−`, règle conjonctive)              |
+| Saisie     | `skill_attempts.template_id` (réussite auto)                        | `skill_attempts.observable_id` (jugement du prof)                    |
+| Cache      | `student_point_state`                                               | `student_observable_state` → `student_competence_level`              |
+| Volume     | 6ᵉ : 6/20/95 · 1ʳᵉ spé : 6/14/153                                   | 6 compétences / 22 sous-dim / 56 observables                         |
 
-Asymétrie volontaire : en famille `knowledge` l'élève voit l'objectif (2ᵉ niveau) ; en famille `competence` il voit la compétence math elle-même (1ᵉʳ niveau). Cf. design doc §1.
+### Arbre de contenus (lecture publique authentifiée, écriture prof/admin)
 
-### Tables référentiel (lecture publique authentifiée — décision Q3 partagé global)
+#### `curriculum_themes`
 
-#### `skill_themes`
+| Column                      | Type          | Notes                                                                                                         |
+| --------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------- |
+| `id`                        | `UUID` PK     | Default `gen_random_uuid()`.                                                                                  |
+| `grade`                     | `TEXT`        | NOT NULL. CHECK sur la liste fermée (`'CP'`…`'6'`…`'1_SPE'`, `'T_SPE'`, …).                                   |
+| `name`                      | `TEXT`        | NOT NULL, non blanc. UNIQUE par `grade`.                                                                      |
+| `display_order`             | `INTEGER`     | NOT NULL DEFAULT `0`.                                                                                         |
+| `code`                      | `TEXT`        | NULLable. **Jamais renseigné** (0/12 en base) — lu par `class-knowledge.ts`, qui reçoit donc toujours `null`. |
+| `created_at` / `updated_at` | `TIMESTAMPTZ` | Default `NOW()`.                                                                                              |
 
-| Column            | Type          | Notes                                                                |
-| ----------------- | ------------- | -------------------------------------------------------------------- |
-| `id`              | `UUID` PK     | Default `gen_random_uuid()`.                                         |
-| `niveau_scolaire` | `TEXT`        | NOT NULL. `'6e'` pour V1 ; `'5e'`, ..., `'terminale-spe'` plus tard. |
-| `name`            | `TEXT`        | NOT NULL. UNIQUE par `niveau_scolaire`.                              |
-| `description`     | `TEXT`        | NULLable.                                                            |
-| `display_order`   | `INTEGER`     | NOT NULL.                                                            |
-| `bo_reference`    | `TEXT`        | NULLable. Citation libre BO pour traçabilité.                        |
-| `created_at`      | `TIMESTAMPTZ` | Default `NOW()`.                                                     |
-| `updated_at`      | `TIMESTAMPTZ` | Default `NOW()`.                                                     |
+#### `curriculum_objectives`
 
-#### `skill_objectives`
+| Column                      | Type          | Notes                                        |
+| --------------------------- | ------------- | -------------------------------------------- |
+| `id`                        | `UUID` PK     | Default `gen_random_uuid()`.                 |
+| `theme_id`                  | `UUID` FK     | → `curriculum_themes(id)` ON DELETE CASCADE. |
+| `name`                      | `TEXT`        | NOT NULL, non blanc. UNIQUE par `theme_id`.  |
+| `description`               | `TEXT`        | NULLable.                                    |
+| `display_order`             | `INTEGER`     | NOT NULL DEFAULT `0`.                        |
+| `created_at` / `updated_at` | `TIMESTAMPTZ` | Default `NOW()`.                             |
 
-| Column          | Type          | Notes                                   |
-| --------------- | ------------- | --------------------------------------- |
-| `id`            | `UUID` PK     | Default `gen_random_uuid()`.            |
-| `theme_id`      | `UUID` FK     | → `skill_themes(id)` ON DELETE CASCADE. |
-| `name`          | `TEXT`        | NOT NULL. UNIQUE par `theme_id`.        |
-| `description`   | `TEXT`        | NULLable.                               |
-| `display_order` | `INTEGER`     | NOT NULL.                               |
-| `created_at`    | `TIMESTAMPTZ` | Default `NOW()`.                        |
-| `updated_at`    | `TIMESTAMPTZ` | Default `NOW()`.                        |
+#### `curriculum_points` — le grain unique
 
-#### `skills` — unité de saisie polymorphe (famille knowledge OU competence)
+Couverture du programme, tagging de ressources et acquisition élève s'accrochent
+tous ici (il absorbe les 72 capacités famille A).
 
-| Column              | Type          | Notes                                                                                                 |
-| ------------------- | ------------- | ----------------------------------------------------------------------------------------------------- |
-| `id`                | `UUID` PK     | Default `gen_random_uuid()`.                                                                          |
-| `objective_id`      | `UUID` FK     | NULLable → `skill_objectives(id)`. Set ssi famille knowledge.                                         |
-| `subdimension_id`   | `UUID` FK     | NULLable → `math_competence_subdimensions(id)`. Set ssi famille competence.                           |
-| `family`            | `TEXT`        | **GENERATED** STORED : `CASE WHEN objective_id IS NOT NULL THEN 'knowledge' ELSE 'competence' END`.   |
-| `name`              | `TEXT`        | NOT NULL. Famille A : nom court capacité ; famille B : énoncé élève 1ʳᵉ personne.                     |
-| `teacher_grid_text` | `TEXT`        | NULLable. Famille B : grille enseignant (reformulation observable opérationnelle).                    |
-| `knowledge_type`    | `TEXT`        | NULLable. Famille knowledge uniquement : `'automatisme'` \| `'capacite_attendue'` (rubrique BO 2026). |
-| `observable_code`   | `TEXT`        | NULLable. Famille competence uniquement : code court `'A1'`, `'B3'`, ...                              |
-| `niveau_scolaire`   | `TEXT`        | NULLable. Famille A : `'6e'` ; famille B : `'college'`.                                               |
-| `display_order`     | `INTEGER`     | NOT NULL. Famille A : rang 1-4 sous l'objectif ; famille B : ordre dans la sous-dim.                  |
-| `created_at`        | `TIMESTAMPTZ` | Default `NOW()`.                                                                                      |
-| `updated_at`        | `TIMESTAMPTZ` | Default `NOW()`.                                                                                      |
+| Column                      | Type          | Notes                                                                                                                                                                                                                                                       |
+| --------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                        | `UUID` PK     | Default `gen_random_uuid()`.                                                                                                                                                                                                                                |
+| `objective_id`              | `UUID` FK     | NOT NULL → `curriculum_objectives(id)` ON DELETE CASCADE. Le changer **déplace** le point (code et historique suivent).                                                                                                                                     |
+| `code`                      | `TEXT`        | **NOT NULL, UNIQUE**, attribué par trigger. `<PRÉFIXE>-<NNN>` où préfixe = grade sans underscore (`1SPE-047`, `6-012`). Seul identifiant lisible **et** stable d'un environnement à l'autre.                                                                |
+| `name`                      | `TEXT`        | NOT NULL, non blanc. UNIQUE par `objective_id`.                                                                                                                                                                                                             |
+| `kind`                      | `TEXT`        | NOT NULL. `'connaissance'` \| `'savoir_faire'` \| `'demonstration'` — les trois rubriques du BO lycée.                                                                                                                                                      |
+| `exigence`                  | `TEXT`        | NOT NULL DEFAULT `'attendu'`. `'attendu'` \| `'approfondissement'`.                                                                                                                                                                                         |
+| `regime_acquisition`        | `TEXT`        | NOT NULL DEFAULT `'diversite'`. `'fluence'` \| `'diversite'` — **ce qui prouve la maîtrise**, pas la provenance du point.                                                                                                                                   |
+| `rang`                      | `SMALLINT`    | NULLable, 1-4. UNIQUE partiel `(objective_id, rang) WHERE rang IS NOT NULL`. NULL → l'objectif s'affiche en liste ; 1-4 → échelle descriptive style référentiel 2016. **C'est le geste central de la fusion** : l'échelle reste possible sans être imposée. |
+| `display_order`             | `INTEGER`     | NOT NULL DEFAULT `0`.                                                                                                                                                                                                                                       |
+| `archived_at`               | `TIMESTAMPTZ` | NULLable. Le point sort des vues, du tagging et de la couverture ; son historique reste.                                                                                                                                                                    |
+| `created_at` / `updated_at` | `TIMESTAMPTZ` | Default `NOW()`.                                                                                                                                                                                                                                            |
 
-CHECK constraints :
+**Régimes d'acquisition** (seuils inchangés depuis le design doc §6.1) :
 
-- `chk_skill_family` : `(objective_id IS NOT NULL) <> (subdimension_id IS NOT NULL)` (XOR strict).
-- `chk_skill_knowledge_rang` : famille knowledge → `display_order BETWEEN 1 AND 4 AND knowledge_type IS NOT NULL`.
-- `chk_skill_competence_code` : famille competence → `observable_code IS NOT NULL`.
+- `fluence` — ≥ 5 réussites **et** ≥ 3 sur les 5 dernières. Le geste doit être
+  rapide, fiable, et le **rester**.
+- `diversite` — ≥ 2 templates distincts réussis **et** aucun échec sur les 3
+  dernières. La maîtrise se prouve sur des cas **variés**.
 
-Partial unique indexes : `(objective_id, display_order)` famille A, `(subdimension_id, observable_code)` famille B.
+#### `curriculum_point_automatismes`
+
+| Column       | Type          | Notes                                                             |
+| ------------ | ------------- | ----------------------------------------------------------------- |
+| `point_id`   | `UUID` FK     | PK composite. → `curriculum_points(id)` ON DELETE CASCADE.        |
+| `grade`      | `TEXT`        | PK composite. NOT NULL, même CHECK que `curriculum_themes.grade`. |
+| `created_at` | `TIMESTAMPTZ` | Default `NOW()`.                                                  |
+
+« Automatisme » n'est **pas** une propriété du point : c'est une liste publiée
+par un programme. Un point de seconde peut figurer dans la liste de 1ʳᵉ _et_
+celle de terminale — un booléen ne saurait ni l'exprimer, ni dire pour quel
+examen. Croise `regime_acquisition` sans s'y confondre : un point hors liste BO
+peut parfaitement se mesurer en fluence.
+
+### Compétences mathématiques (famille B)
+
+Inchangée par la fusion, hors renommage `skills` → **`observables`** (la table
+n'héberge plus que la famille B, la colonne GENERATED `family` a disparu).
 
 #### `math_competences`
 
-| Column              | Type          | Notes                                                                       |
-| ------------------- | ------------- | --------------------------------------------------------------------------- |
-| `id`                | `UUID` PK     | Default `gen_random_uuid()`.                                                |
-| `code`              | `TEXT`        | NOT NULL UNIQUE. Snake-case sans accents : `'chercher'`, `'modeliser'`, ... |
-| `name`              | `TEXT`        | NOT NULL. Libellé affiché (`Chercher`, `Modéliser`, ...).                   |
-| `description`       | `TEXT`        | NULLable. Vocabulaire BO/IGÉSR.                                             |
-| `gloss_for_student` | `TEXT`        | NOT NULL. Glose pédagogique visible élève (ex. « essayer des pistes »).     |
-| `display_order`     | `INTEGER`     | NOT NULL.                                                                   |
-| `created_at`        | `TIMESTAMPTZ` | Default `NOW()`.                                                            |
-| `updated_at`        | `TIMESTAMPTZ` | Default `NOW()`.                                                            |
+| Column                      | Type          | Notes                                                                     |
+| --------------------------- | ------------- | ------------------------------------------------------------------------- |
+| `id`                        | `UUID` PK     | Default `gen_random_uuid()`.                                              |
+| `code`                      | `TEXT`        | NOT NULL UNIQUE. Snake-case sans accents : `'chercher'`, `'modeliser'`, … |
+| `name`                      | `TEXT`        | NOT NULL. Libellé affiché (`Chercher`, `Modéliser`, …).                   |
+| `description`               | `TEXT`        | NULLable. Vocabulaire BO/IGÉSR.                                           |
+| `gloss_for_student`         | `TEXT`        | NOT NULL. Glose visible élève (« essayer des pistes »).                   |
+| `display_order`             | `INTEGER`     | NOT NULL.                                                                 |
+| `created_at` / `updated_at` | `TIMESTAMPTZ` | Default `NOW()`.                                                          |
 
 #### `math_competence_subdimensions`
 
-| Column               | Type          | Notes                                                               |
-| -------------------- | ------------- | ------------------------------------------------------------------- |
-| `id`                 | `UUID` PK     | Default `gen_random_uuid()`.                                        |
-| `math_competence_id` | `UUID` FK     | → `math_competences(id)` ON DELETE CASCADE.                         |
-| `letter`             | `CHAR(1)`     | NOT NULL CHECK in (`'A'`,`'B'`,`'C'`,`'D'`). UNIQUE par compétence. |
-| `name`               | `TEXT`        | NOT NULL. Ex. « S'approprier le problème ».                         |
-| `description`        | `TEXT`        | NULLable.                                                           |
-| `display_order`      | `INTEGER`     | NOT NULL.                                                           |
-| `created_at`         | `TIMESTAMPTZ` | Default `NOW()`.                                                    |
-| `updated_at`         | `TIMESTAMPTZ` | Default `NOW()`.                                                    |
+| Column                      | Type          | Notes                                                               |
+| --------------------------- | ------------- | ------------------------------------------------------------------- |
+| `id`                        | `UUID` PK     | Default `gen_random_uuid()`.                                        |
+| `math_competence_id`        | `UUID` FK     | → `math_competences(id)` ON DELETE CASCADE.                         |
+| `letter`                    | `CHAR(1)`     | NOT NULL CHECK in (`'A'`,`'B'`,`'C'`,`'D'`). UNIQUE par compétence. |
+| `name`                      | `TEXT`        | NOT NULL. Ex. « S'approprier le problème ».                         |
+| `description`               | `TEXT`        | NULLable.                                                           |
+| `display_order`             | `INTEGER`     | NOT NULL.                                                           |
+| `created_at` / `updated_at` | `TIMESTAMPTZ` | Default `NOW()`.                                                    |
 
-Pas d'état propre (décision 50) — sert au regroupement structurel des observables.
+Pas d'état propre (décision 50) — regroupement structurel des observables.
 
-### Junction tagging templates ↔ skills
+#### `observables`
 
-#### `question_template_skills`
+| Column                      | Type          | Notes                                                             |
+| --------------------------- | ------------- | ----------------------------------------------------------------- |
+| `id`                        | `UUID` PK     | Default `gen_random_uuid()`.                                      |
+| `subdimension_id`           | `UUID` FK     | NOT NULL → `math_competence_subdimensions(id)`.                   |
+| `observable_code`           | `TEXT`        | NOT NULL. Code court `'A1'`, `'B3'`, … UNIQUE par sous-dimension. |
+| `name`                      | `TEXT`        | NOT NULL. Énoncé élève à la 1ʳᵉ personne.                         |
+| `teacher_grid_text`         | `TEXT`        | NULLable. Grille enseignant (reformulation opérationnelle).       |
+| `display_order`             | `INTEGER`     | NOT NULL.                                                         |
+| `created_at` / `updated_at` | `TIMESTAMPTZ` | Default `NOW()`.                                                  |
 
-| Column        | Type          | Notes                                         |
-| ------------- | ------------- | --------------------------------------------- |
-| `template_id` | `UUID` FK     | → `question_templates(id)` ON DELETE CASCADE. |
-| `skill_id`    | `UUID` FK     | → `skills(id)` ON DELETE RESTRICT.            |
-| `created_at`  | `TIMESTAMPTZ` | Default `NOW()`.                              |
+### Jonctions de tagging
 
-PK composite `(template_id, skill_id)`. Décision 59 — tagging au niveau **template** (pas instance) ; toutes les instances héritent du tag.
+Une jonction par type de ressource (décision 5 — pas de polymorphisme manuel).
+Toutes en PK composite.
 
-### Tâches d'évaluation famille competence
+| Table                           | Colonnes                   | ON DELETE                 | Rôle                                                                                              |
+| ------------------------------- | -------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------- |
+| `question_template_points`      | `(template_id, point_id)`  | **RESTRICT** sur le point | Tagging au niveau template (décision 59) ; toutes les instances héritent. Pivot de l'acquisition. |
+| `exercise_curriculum_points`    | `(exercise_id, point_id)`  | CASCADE                   | Exercices système tagués ; alimente la couverture automatique.                                    |
+| `journal_entry_points`          | `(entry_id, point_id)`     | CASCADE                   | Couverture du cahier de texte (manuelle ou réconciliée depuis les exercices).                     |
+| `curriculum_point_automatismes` | `(point_id, grade)`        | CASCADE                   | Cf. ci-dessus.                                                                                    |
+| `evaluation_task_perimeter`     | `(task_id, observable_id)` | CASCADE / RESTRICT        | Périmètre d'une tâche d'évaluation famille B.                                                     |
+
+Fiche, chapitre et évaluation ne sont **pas** tagués : leur couverture est
+l'union **calculée** de celle de leurs exercices (décision 4).
+
+### Tâches d'évaluation (famille compétence)
 
 #### `evaluation_tasks`
 
-| Column            | Type          | Notes                                                                                   |
-| ----------------- | ------------- | --------------------------------------------------------------------------------------- |
-| `id`              | `UUID` PK     | Default `gen_random_uuid()`.                                                            |
-| `teacher_id`      | `UUID` FK     | → `profiles(id)` ON DELETE CASCADE.                                                     |
-| `class_id`        | `UUID` FK     | NULLable → `classes(id)` ON DELETE SET NULL.                                            |
-| `niveau_scolaire` | `TEXT`        | NOT NULL.                                                                               |
-| `name`            | `TEXT`        | NOT NULL.                                                                               |
-| `description`     | `TEXT`        | NULLable.                                                                               |
-| `assessment_id`   | `UUID` FK     | NULLable → `assessments(id)` ON DELETE SET NULL. Lien optionnel à une source existante. |
-| `exercise_id`     | `UUID` FK     | NULLable → `exercises(id)` ON DELETE SET NULL. Idem.                                    |
-| `worksheet_id`    | `UUID` FK     | NULLable → `worksheets(id)` ON DELETE SET NULL. Idem.                                   |
-| `task_date`       | `DATE`        | NULLable.                                                                               |
-| `created_at`      | `TIMESTAMPTZ` | Default `NOW()`.                                                                        |
-| `updated_at`      | `TIMESTAMPTZ` | Default `NOW()`.                                                                        |
-
-CHECK `chk_evaluation_task_source` : au plus 1 parmi `assessment_id`/`exercise_id`/`worksheet_id` non-null (décision 71 — polymorphisme via 3 FK distinctes).
+| Column                                           | Type          | Notes                                                                                                      |
+| ------------------------------------------------ | ------------- | ---------------------------------------------------------------------------------------------------------- |
+| `id`                                             | `UUID` PK     | Default `gen_random_uuid()`.                                                                               |
+| `teacher_id`                                     | `UUID` FK     | → `profiles(id)` ON DELETE CASCADE.                                                                        |
+| `class_id`                                       | `UUID` FK     | NULLable → `classes(id)` ON DELETE SET NULL.                                                               |
+| `niveau_scolaire`                                | `TEXT`        | NOT NULL.                                                                                                  |
+| `name` / `description`                           | `TEXT`        | `name` NOT NULL.                                                                                           |
+| `assessment_id` / `exercise_id` / `worksheet_id` | `UUID` FK     | NULLables, ON DELETE SET NULL. CHECK `chk_evaluation_task_source` : **au plus un** non-null (décision 71). |
+| `task_date`                                      | `DATE`        | NULLable.                                                                                                  |
+| `created_at` / `updated_at`                      | `TIMESTAMPTZ` | Default `NOW()`.                                                                                           |
 
 #### `evaluation_task_perimeter`
 
-| Column       | Type          | Notes                                                                |
-| ------------ | ------------- | -------------------------------------------------------------------- |
-| `task_id`    | `UUID` FK     | → `evaluation_tasks(id)` ON DELETE CASCADE.                          |
-| `skill_id`   | `UUID` FK     | → `skills(id)` ON DELETE RESTRICT. Doit être famille `'competence'`. |
-| `created_at` | `TIMESTAMPTZ` | Default `NOW()`.                                                     |
+PK composite `(task_id, observable_id)`. Le trigger de garde
+`check_perimeter_skill_is_competence()` a **disparu avec la fusion** : la
+colonne pointe désormais `observables`, qui n'héberge que la famille B — la clé
+étrangère suffit.
 
-PK composite `(task_id, skill_id)`. Trigger BEFORE INSERT/UPDATE `check_perimeter_skill_is_competence()` rejette les skills famille knowledge (M2 patch sécurité).
+### Saisies — `skill_attempts`
 
-### Saisies — `skill_attempts` (double régime — refonte per-template 2026-06-10)
+| Column          | Type          | Notes                                                                                                                    |
+| --------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `id`            | `UUID` PK     | Default `gen_random_uuid()`.                                                                                             |
+| `student_id`    | `UUID` FK     | → `profiles(id)` ON DELETE CASCADE.                                                                                      |
+| `template_id`   | `UUID` FK     | NULLable → `question_templates(id)`. **Pivot du régime contenus** : le point se retrouve via `question_template_points`. |
+| `observable_id` | `UUID` FK     | NULLable → `observables(id)`. Régime compétences uniquement.                                                             |
+| `success`       | `BOOLEAN`     | NULLable. Régime contenus uniquement.                                                                                    |
+| `grade`         | `SMALLINT`    | NULLable, 1-4 (FSRS : Again/Hard/Good/Easy). Régime contenus.                                                            |
+| `code`          | `TEXT`        | NULLable. Régime compétences : `'plus'` \| `'minus'`.                                                                    |
+| `task_id`       | `UUID` FK     | NULLable → `evaluation_tasks(id)` ON DELETE CASCADE. Régime compétences.                                                 |
+| `source`        | `TEXT`        | NOT NULL. `'auto'` \| `'srs'` \| `'teacher'` \| `'student_self'`.                                                        |
+| `source_ref`    | `UUID`        | NULLable. Origine libre (session, assignment, …).                                                                        |
+| `with_help`     | `BOOLEAN`     | NOT NULL DEFAULT `FALSE`. Décision 58 — ignoré dans la règle d'acquisition.                                              |
+| `phase_blocage` | `TEXT`        | NULLable. BO cycle 3 : `'comprendre'` \| `'modeliser'` \| `'calculer'` \| `'repondre'` \| `'regulation'`.                |
+| `created_at`    | `TIMESTAMPTZ` | Default `NOW()`.                                                                                                         |
 
-| Column          | Type          | Notes                                                                                                          |
-| --------------- | ------------- | -------------------------------------------------------------------------------------------------------------- |
-| `id`            | `UUID` PK     | Default `gen_random_uuid()`.                                                                                   |
-| `student_id`    | `UUID` FK     | → `profiles(id)` ON DELETE CASCADE.                                                                            |
-| `skill_id`      | `UUID` FK     | **Nullable depuis refonte** → `skills(id)` ON DELETE RESTRICT. Famille competence uniquement.                  |
-| `template_id`   | `UUID` FK     | Nullable → `question_templates(id)` ON DELETE SET NULL. **Pivot Famille knowledge** (per-template).            |
-| `success`       | `BOOLEAN`     | NULLable. Famille knowledge uniquement.                                                                        |
-| `grade`         | `SMALLINT`    | NULLable. Famille knowledge uniquement : 1=Again, 2=Hard, 3=Good, 4=Easy (FSRS). NULL pour Famille B.          |
-| `code`          | `TEXT`        | NULLable. Famille competence uniquement : `'plus'` \| `'minus'`.                                               |
-| `task_id`       | `UUID` FK     | NULLable → `evaluation_tasks(id)` ON DELETE CASCADE. Famille competence.                                       |
-| `source`        | `TEXT`        | NOT NULL. `'auto'` \| `'srs'` \| `'teacher'` \| `'student_self'`. `'srs'` ajouté 2026-06-10.                   |
-| `source_ref`    | `UUID`        | NULLable. Référence libre vers l'origine (session, assignment, ...).                                           |
-| `with_help`     | `BOOLEAN`     | NOT NULL DEFAULT `FALSE`. Décision 58 — ignoré dans la règle d'acquisition.                                    |
-| `phase_blocage` | `TEXT`        | NULLable. BO 2026 cycle 3 : `'comprendre'` \| `'modeliser'` \| `'calculer'` \| `'repondre'` \| `'regulation'`. |
-| `created_at`    | `TIMESTAMPTZ` | Default `NOW()`.                                                                                               |
+XOR strict entre les deux régimes (CHECK `chk_attempt_family_regime`) :
 
-CHECK `chk_attempt_family_regime` (**refonte 2026-06-10**) : XOR strict
+- contenus : `template_id NOT NULL AND success NOT NULL AND observable_id NULL AND code NULL AND task_id NULL`
+- compétences : `observable_id NOT NULL AND code NOT NULL AND task_id NOT NULL AND template_id NULL AND success NULL AND grade NULL`
 
-- Famille A : `template_id NOT NULL AND success NOT NULL AND skill_id NULL AND code NULL AND task_id NULL` (grade libre)
-- Famille B : `skill_id NOT NULL AND code NOT NULL AND task_id NOT NULL AND template_id NULL AND success NULL AND grade NULL`
+**Mapping (success ↔ grade) côté application** — quiz interactif :
+`success=true → grade=3`, `success=false → grade=1` ; review SRS : grade transmis
+brut, `success = (grade >= 2)`.
 
-CHECK `chk_attempt_grade_range` : `grade IS NULL OR grade BETWEEN 1 AND 4`.
+**Immutable** : aucune policy UPDATE/DELETE hors admin (décision 72).
 
-**Mapping (success ↔ grade) côté application** :
+### Caches (recalculés par `trg_skill_attempts_after_insert`)
 
-- Monde 1 (quiz interactif) : `success=true → grade=3 (Good)` ; `success=false → grade=1 (Again)`.
-- Monde 2 (review SRS) : grade transmis brut ; `success = (grade >= 2)`.
+#### `student_point_state` (remplace `student_skill_state_a`)
 
-**Immutable** : pas de policy UPDATE/DELETE hors admin (décision 72).
+| Column                                | Type          | Notes                                                                |
+| ------------------------------------- | ------------- | -------------------------------------------------------------------- |
+| `student_id`                          | `UUID`        | PK composite. FK → `profiles(id)`.                                   |
+| `point_id`                            | `UUID`        | PK composite. FK → `curriculum_points(id)` ON DELETE CASCADE.        |
+| `is_acquired`                         | `BOOLEAN`     | NOT NULL DEFAULT `FALSE`.                                            |
+| `total_successes`                     | `INTEGER`     | NOT NULL DEFAULT `0`. Seuil du régime `fluence`.                     |
+| `distinct_template_successes`         | `INTEGER`     | NOT NULL DEFAULT `0`. Seuil du régime `diversite`.                   |
+| `last_success_at` / `last_attempt_at` | `TIMESTAMPTZ` | NULLables.                                                           |
+| `needs_remediation`                   | `BOOLEAN`     | NOT NULL DEFAULT `FALSE`. 🆘 : ≥ 2 échecs récents (décisions 63-64). |
+| `updated_at`                          | `TIMESTAMPTZ` | Default `NOW()`.                                                     |
 
-Index notable : `idx_skill_attempts_student_template_time(student_id, template_id, created_at DESC) WHERE template_id IS NOT NULL` — couvre les queries de `update_student_skill_state_a` (JOIN `question_template_skills` à la lecture).
-
-### Caches (recalculés par trigger `trg_skill_attempts_after_insert`)
-
-#### `student_skill_state_a`
-
-| Column                        | Type          | Notes                                                                  |
-| ----------------------------- | ------------- | ---------------------------------------------------------------------- |
-| `student_id`                  | `UUID`        | PK composite avec `skill_id`. FK → `profiles(id)`.                     |
-| `skill_id`                    | `UUID`        | PK composite. FK → `skills(id)` (famille knowledge).                   |
-| `is_acquired`                 | `BOOLEAN`     | NOT NULL DEFAULT `FALSE`.                                              |
-| `total_successes`             | `INTEGER`     | NOT NULL DEFAULT `0`.                                                  |
-| `distinct_template_successes` | `INTEGER`     | NOT NULL DEFAULT `0`. Pour la règle `capacite_attendue` (décision 60). |
-| `last_success_at`             | `TIMESTAMPTZ` | NULLable.                                                              |
-| `last_attempt_at`             | `TIMESTAMPTZ` | NULLable.                                                              |
-| `needs_remediation`           | `BOOLEAN`     | NOT NULL DEFAULT `FALSE`. 🆘 : ≥ 2 échecs récents (décisions 63-64).   |
-| `created_at`                  | `TIMESTAMPTZ` | Default `NOW()`.                                                       |
-| `updated_at`                  | `TIMESTAMPTZ` | Default `NOW()`.                                                       |
-
-Note (décision 70) : pas de colonne `to_review` ici — calculée à la lecture via la VIEW ci-dessous.
-
-#### VIEW `student_skill_state_a_v` (avec `security_invoker = on`)
-
-Vue plate de `student_skill_state_a` (les colonnes telles quelles).
-
-**Refonte 2026-06-10** : la colonne calculée `to_review` (basée sur le seuil arbitraire 30 jours) a été **supprimée** et remplacée par un badge FSRS-agrégé calculé à la lecture côté serveur via `srs_card_stats`. Voir `src/lib/server/srs/capacity-badge.ts` (`computeCapacityBadges`).
+Pas de colonne `to_review` (décision 70) — le badge est calculé à la lecture
+depuis `srs_card_stats`, cf. `src/lib/server/srs/capacity-badge.ts`.
+VIEW plate `student_point_state_v` (`security_invoker = on`).
 
 #### `student_observable_state`
 
-| Column            | Type          | Notes                                                                                      |
-| ----------------- | ------------- | ------------------------------------------------------------------------------------------ |
-| `student_id`      | `UUID`        | PK composite. FK → `profiles(id)`.                                                         |
-| `skill_id`        | `UUID`        | PK composite. FK → `skills(id)` (famille competence).                                      |
-| `count_plus`      | `INTEGER`     | NOT NULL DEFAULT `0`.                                                                      |
-| `count_minus`     | `INTEGER`     | NOT NULL DEFAULT `0`.                                                                      |
-| `is_acquis`       | `BOOLEAN`     | NOT NULL DEFAULT `FALSE`. `(count_plus ≥ 2) AND (count_plus > count_minus)` (décision 47). |
-| `last_attempt_at` | `TIMESTAMPTZ` | NULLable.                                                                                  |
-| `updated_at`      | `TIMESTAMPTZ` | Default `NOW()`.                                                                           |
+| Column                       | Type          | Notes                                                                                      |
+| ---------------------------- | ------------- | ------------------------------------------------------------------------------------------ |
+| `student_id`                 | `UUID`        | PK composite. FK → `profiles(id)`.                                                         |
+| `observable_id`              | `UUID`        | PK composite. FK → `observables(id)`.                                                      |
+| `count_plus` / `count_minus` | `INTEGER`     | NOT NULL DEFAULT `0`.                                                                      |
+| `is_acquis`                  | `BOOLEAN`     | NOT NULL DEFAULT `FALSE`. `(count_plus ≥ 2) AND (count_plus > count_minus)` (décision 47). |
+| `last_attempt_at`            | `TIMESTAMPTZ` | NULLable.                                                                                  |
+| `updated_at`                 | `TIMESTAMPTZ` | Default `NOW()`.                                                                           |
 
 #### `student_competence_level`
 
-| Column                  | Type          | Notes                                                                                                                                     |
-| ----------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `student_id`            | `UUID`        | PK composite. FK → `profiles(id)`.                                                                                                        |
-| `math_competence_id`    | `UUID`        | PK composite. FK → `math_competences(id)`.                                                                                                |
-| `niveau`                | `TEXT`        | NOT NULL CHECK in (`'insuffisante'`,`'fragile'`,`'satisfaisante'`,`'tres_bonne'`).                                                        |
-| `validated_observables` | `JSONB`       | Array de codes observables acquis qui valident le niveau actuel.                                                                          |
-| `missing_for_next`      | `JSONB`       | Array d'objets typés `{kind, code/letter/codes/name}` — exigences pour passer au niveau supérieur (décision 70 + format typé 2026-06-09). |
-| `task_count`            | `INTEGER`     | NULLable. Nombre distinct de tâches d'évaluation observées (garde-fou §6.4).                                                              |
-| `last_recalc_at`        | `TIMESTAMPTZ` | NULLable.                                                                                                                                 |
+| Column                  | Type          | Notes                                                                                |
+| ----------------------- | ------------- | ------------------------------------------------------------------------------------ |
+| `student_id`            | `UUID`        | PK composite. FK → `profiles(id)`.                                                   |
+| `math_competence_id`    | `UUID`        | PK composite. FK → `math_competences(id)`.                                           |
+| `niveau`                | `TEXT`        | NOT NULL CHECK in (`'insuffisante'`,`'fragile'`,`'satisfaisante'`,`'tres_bonne'`).   |
+| `validated_observables` | `JSONB`       | Codes observables acquis qui valident le niveau actuel.                              |
+| `missing_for_next`      | `JSONB`       | Objets typés `{kind, code/letter/codes/name}` — exigences pour monter (décision 70). |
+| `task_count`            | `INTEGER`     | NULLable. Tâches distinctes observées (garde-fou §6.4).                              |
+| `last_recalc_at`        | `TIMESTAMPTZ` | NULLable.                                                                            |
 
 ### Fonctions PL/pgSQL
 
-| Fonction                              | Type           | Rôle                                                                                                                                                            |
-| ------------------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `compute_chercher_level`              | `STABLE` def   | Règle conjonctive Chercher → `(niveau, validated, missing)`.                                                                                                    |
-| `compute_calculer_level`              | `STABLE` def   | Règle conjonctive Calculer.                                                                                                                                     |
-| `compute_raisonner_level`             | `STABLE` def   | Règle conjonctive Raisonner.                                                                                                                                    |
-| `compute_communiquer_level`           | `STABLE` def   | Règle conjonctive Communiquer.                                                                                                                                  |
-| `compute_modeliser_level`             | `STABLE` def   | Règle conjonctive Modéliser.                                                                                                                                    |
-| `compute_representer_level`           | `STABLE` def   | Règle conjonctive Représenter.                                                                                                                                  |
-| `compute_competence_level`            | `STABLE` def   | Dispatcher : appelle la fonction `compute_<code>_level` selon `math_competences.code`.                                                                          |
-| `update_student_skill_state_a`        | `VOLATILE` def | Recalcule la ligne cache famille A. **Refonte 2026-06-10** : query JOIN `question_template_skills` (skill_id NULL en régime A).                                 |
-| `update_student_observable_state`     | `VOLATILE` def | Recalcule la ligne cache observable + cascade vers `update_student_competence_level`.                                                                           |
-| `update_student_competence_level`     | `VOLATILE` def | UPSERT cache compétence avec garde-fous §6.4.                                                                                                                   |
-| `skill_attempts_after_insert`         | `trigger`      | **Refonte 2026-06-10** : Famille A boucle sur `question_template_skills` et appelle `update_student_skill_state_a` pour chaque skill tagué. Famille B inchangé. |
-| `check_perimeter_skill_is_competence` | `trigger`      | Rejette skill_id famille knowledge dans `evaluation_task_perimeter` (M2).                                                                                       |
+| Fonction                                      | Type           | Rôle                                                                                                                                                                                   |
+| --------------------------------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `next_curriculum_point_code(grade)`           | `VOLATILE` def | Prochain code libre du niveau. `pg_advisory_xact_lock` sur le préfixe pour sérialiser les attributions concurrentes.                                                                   |
+| `assign_curriculum_point_code()`              | `trigger`      | BEFORE INSERT : remplit `code` s'il est vide, depuis le grade de l'objectif.                                                                                                           |
+| `curriculum_point_reference_counts(point_id)` | `STABLE` def   | `{}` si le point est libre, sinon les compteurs non nuls par nature (questions, exercices, séances, élèves, listes, flags SRS).                                                        |
+| `curriculum_referenced_points(grade)`         | `STABLE` def   | Les points d'un niveau qu'on ne peut plus supprimer sans perte — une requête pour tout l'arbre.                                                                                        |
+| `update_student_point_state(student, point)`  | `VOLATILE` def | Recalcule le cache selon `regime_acquisition`. Retrouve les tentatives via `question_template_points` (pas de FK directe attempt → point). Supprime la ligne si plus aucune tentative. |
+| `update_student_observable_state`             | `VOLATILE` def | Recalcule le cache observable, puis cascade vers le niveau de compétence.                                                                                                              |
+| `update_student_competence_level`             | `VOLATILE` def | UPSERT du cache compétence avec les garde-fous §6.4.                                                                                                                                   |
+| `compute_<code>_level` × 6                    | `STABLE` def   | Règle conjonctive par compétence (chercher, calculer, raisonner, communiquer, modeliser, representer).                                                                                 |
+| `compute_competence_level`                    | `STABLE` def   | Dispatcher sur `math_competences.code`.                                                                                                                                                |
+| `skill_attempts_after_insert`                 | `trigger`      | Régime contenus : boucle sur `question_template_points`. Régime compétences : cascade observable.                                                                                      |
 
-Toutes `SECURITY DEFINER` avec `SET search_path = public, pg_temp` (décision 72 — anti schema-hijacking).
+Toutes `SECURITY DEFINER` avec `SET search_path = public, pg_temp` (décision 72),
+sauf `assign_curriculum_point_code()` qui tourne en INVOKER — elle délègue le
+comptage à `next_curriculum_point_code()`, DEFINER, pour que le maximum soit
+calculé sur toute la table même si une RLS masquait des lignes à l'appelant.
 
 ### Triggers
 
-| Trigger                           | Table                       | Quand                     | Action                                  |
-| --------------------------------- | --------------------------- | ------------------------- | --------------------------------------- |
-| `trg_skill_attempts_after_insert` | `skill_attempts`            | AFTER INSERT FOR EACH ROW | `skill_attempts_after_insert()`         |
-| `trg_perimeter_skill_family`      | `evaluation_task_perimeter` | BEFORE INSERT/UPDATE      | `check_perimeter_skill_is_competence()` |
+| Trigger                           | Table               | Quand                      | Action                           |
+| --------------------------------- | ------------------- | -------------------------- | -------------------------------- |
+| `curriculum_points_assign_code`   | `curriculum_points` | BEFORE INSERT FOR EACH ROW | `assign_curriculum_point_code()` |
+| `trg_skill_attempts_after_insert` | `skill_attempts`    | AFTER INSERT FOR EACH ROW  | `skill_attempts_after_insert()`  |
 
-### Row Level Security (décision 72)
+### Suppression d'un point — garde applicative
 
-| Table / VIEW                | SELECT                                                                    | INSERT                                                                                              | UPDATE/DELETE                               |
-| --------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| Référentiel (5 tables)      | Lecture publique authentifiée (Q3 = partagé global)                       | Admin / service role uniquement                                                                     | Admin uniquement                            |
-| `question_template_skills`  | Idem référentiel                                                          | Admin uniquement (à étendre prof V2)                                                                | Admin uniquement                            |
-| `skill_attempts`            | Élève propre (`student_id = auth.uid()`) OU prof via `classes.teacher_id` | Élève propre + `code IS NULL AND task_id IS NULL` ; prof + `is_teacher_or_admin()` + task ownership | **Aucune** (immutable, admin override only) |
-| 3 caches `student_*`        | Idem `skill_attempts`                                                     | **Trigger uniquement** (pas accessible utilisateurs)                                                | Trigger uniquement                          |
-| `evaluation_tasks`          | Prof créateur OU élèves de la classe ciblée                               | Prof : `teacher_id = auth.uid() AND is_teacher_or_admin()`                                          | Prof créateur uniquement                    |
-| `evaluation_task_perimeter` | Hérite de `evaluation_tasks` via JOIN                                     | Prof créateur de la tâche                                                                           | Prof créateur de la tâche                   |
+Cinq des six clés étrangères vers `curriculum_points` sont en `CASCADE`
+(`exercise_curriculum_points`, `journal_entry_points`, `student_point_state`,
+`curriculum_point_automatismes`, `srs_anti_fraud_flags`) ; seule
+`question_template_points` est en `RESTRICT`. Une suppression effacerait donc
+sans un mot la couverture du cahier de texte et l'acquisition des élèves.
 
-Tous les admins `is_admin()` ont une policy `FOR ALL` qui surclasse les règles ci-dessus. Note : le filtre `classes.is_active` n'est **pas** appliqué (décision David 2026-06-09 : un prof garde l'accès historique aux ex-élèves même après archivage).
+`DELETE /api/teacher/curriculum/points/[pointId]` refuse en **409** dès qu'une
+référence existe, en nommant laquelle. L'archivage (`archived_at`) est le geste
+normal. Le comptage passe par la fonction DEFINER : compter sous les RLS de
+l'appelant renverrait zéro là où un élève a de l'historique invisible du prof.
+
+### Row Level Security
+
+| Table / VIEW                 | SELECT                                           | INSERT                                                                                                     | UPDATE/DELETE                          |
+| ---------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| Arbre de contenus (3 tables) | Authentifiés (l'élève doit voir ses objectifs)   | `is_teacher_or_admin()`                                                                                    | `is_teacher_or_admin()`                |
+| Famille B (3 tables)         | Authentifiés (Q3 = partagé global)               | Admin / service role                                                                                       | Admin                                  |
+| Jonctions de tagging         | Idem référentiel                                 | Prof/admin                                                                                                 | Prof/admin                             |
+| `skill_attempts`             | Élève propre (`student_id = auth.uid()`) OU prof | Élève propre + `code IS NULL AND task_id IS NULL` ; prof + `is_teacher_or_admin()` + ownership de la tâche | **Aucune** (immutable, admin override) |
+| Caches `student_*`           | Idem `skill_attempts`                            | **Trigger uniquement**                                                                                     | Trigger uniquement                     |
+| `evaluation_tasks`           | Prof créateur OU élèves de la classe ciblée      | Prof : `teacher_id = auth.uid() AND is_teacher_or_admin()`                                                 | Prof créateur                          |
+| `evaluation_task_perimeter`  | Hérite via JOIN                                  | Prof créateur de la tâche                                                                                  | Prof créateur                          |
+
+Les admins ont une policy `FOR ALL` qui surclasse. Le filtre `classes.is_active`
+n'est **pas** appliqué (décision David 2026-06-09 : le prof garde l'accès
+historique aux ex-élèves après archivage).
+
+### Amorçage des niveaux
+
+Les seeds (`20260621160000_seed_curriculum_6e.sql`,
+`20260830090000_seed_curriculum_1re_spe.sql`) sont générés depuis les markdown
+de `docs/wip/referentiel/` et **amorcent un niveau vide, une fois** : tout leur
+corps est dans un `DO` gardé par `IF EXISTS (… WHERE grade = …) THEN RETURN`.
+
+Passé l'amorçage, la page `/dashboard/teacher/programme` fait foi. Corriger le
+markdown d'un niveau déjà en base ne produit plus rien — c'était l'inverse
+jusqu'au 2026-08-31, et le rejeu défaisait le travail fait dans l'app.
 
 ### TypeScript types
 
-Aliases derived dans `src/lib/types/database-helpers.ts` (section « Skills System »). Types métier stables (unions, helpers UI) dans `src/lib/types/skills.ts`.
+Aliases dérivés dans `src/lib/types/database-helpers.ts` ; types métier (unions,
+helpers UI) dans `src/lib/types/skills.ts`.
 
-Pour les attempts, **toujours** utiliser le type discriminé `SkillAttempt` (pas `Tables<'skill_attempts'>`) — il renforce le XOR famille au type level.
-
-Pour les niveaux de compétence math, **toujours** caster `missing_for_next` en `MissingForNext` (alias de `MissingForNextItem[]`) — l'array contient des objets typés discriminés par `kind`.
+- Attempts : **toujours** le type discriminé `SkillAttempt`, pas
+  `Tables<'skill_attempts'>` — il porte le XOR des deux régimes au niveau du type.
+- `missing_for_next` : **toujours** casté en `MissingForNext` (objets discriminés
+  par `kind`).
+- Insertion d'un point : `pointInsert()` de `src/lib/server/curriculum.ts`.
+  `code` est NOT NULL sans défaut, ce que Postgres ne distingue pas de « fourni
+  par l'appelant » — le type généré l'exige donc, alors que c'est le trigger qui
+  le remplit. Le cast vit là et nulle part ailleurs.
 
 ---
 
@@ -463,10 +518,10 @@ RLS : owner du deck uniquement, ET deck non-assigné, ET deck non-auto-managé (
 
 Les caches dérivés sont :
 
-- `student_skill_state_a` (Référentiel famille A — règles BO §6.1) — recalculé par trigger PG sur INSERT `skill_attempts`.
+- `student_point_state` (arbre de contenus — règles §6.1, `regime_acquisition`) — recalculé par trigger PG sur INSERT `skill_attempts`.
 - `srs_card_stats` (FSRS-6 — état D/S/R par template) — UPSERT côté API en TypeScript (avant l'INSERT `skill_attempts`). FSRS n'est pas porté en PL/pgSQL.
 
-Le deck Programme est auto-géré : la fonction TypeScript `ensureProgrammeDeckCard` ajoute idempotemment une carte au Programme pour chaque template **tagué famille A** rencontré par l'élève.
+Le deck Programme est auto-géré : la fonction TypeScript `ensureProgrammeDeckCard` ajoute idempotemment une carte au Programme pour chaque template **tagué à un point de programme** (`question_template_points`) rencontré par l'élève.
 
 ### Badges UI dérivés
 
@@ -528,7 +583,7 @@ RLS : SELECT tout authenticated, écriture admin uniquement.
 ### Audits
 
 - `docs/wip/srs-fsrs-security-audit-findings.md` — audit sécurité security-auditor (5 findings, 3 P2 traités, 2 P1 documentés pour V2 dont la spec anti-fraud).
-- Perf : 3 findings traités (cf. commit `9389de4bc`), 2 reportés V2 (refonte PL/pgSQL update_student_skill_state_a + RPC ensureProgrammeDeck).
+- Perf : 3 findings traités (cf. commit `9389de4bc`), 2 reportés V2 (refonte PL/pgSQL `update_student_skill_state_a`, devenue `update_student_point_state` à la fusion 2026-08-29 + RPC ensureProgrammeDeck).
 
 ---
 
