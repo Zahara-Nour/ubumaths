@@ -21,6 +21,7 @@ const GRADE = '1_SPE';
 
 type Kind = 'connaissance' | 'savoir_faire' | 'demonstration';
 type Point = {
+	code: string;
 	theme: string;
 	objective: string;
 	name: string;
@@ -79,15 +80,17 @@ function parse(md: string) {
 			continue;
 		}
 
-		const mPoint = /^- \[(C|SF\+|SF|D)\]\s+(.+)$/.exec(line);
+		// `- [SF] \`1SPE-047\` libellé…` — le code, s'il est déjà là, fait foi.
+		const mPoint = /^- \[(C|SF\+|SF|D)\]\s+(?:`([A-Z0-9_]+-\d+)`\s+)?(.+)$/.exec(line);
 		if (mPoint) {
 			if (!theme || !objective) throw new Error(`point hors objectif : ${line}`);
 			const tag = TAGS[mPoint[1]];
 			pointOrdInObjective += 1;
 			points.push({
+				code: mPoint[2] ?? '',
 				theme,
 				objective,
-				name: mPoint[2].trim(),
+				name: mPoint[3].trim(),
 				ord: pointOrdInObjective,
 				kind: tag.kind,
 				regime: isAutomatismes ? 'fluence' : 'diversite',
@@ -105,7 +108,48 @@ const q = (s: string) => {
 	return `$$${s}$$`;
 };
 
-const { themes, objectives, points } = parse(readFileSync(SRC, 'utf8'));
+const md = readFileSync(SRC, 'utf8');
+const { themes, objectives, points } = parse(md);
+
+/**
+ * Attribue un code aux points qui n'en ont pas et RÉÉCRIT le markdown.
+ *
+ * Les codes existants ne bougent jamais : c'est toute leur raison d'être. Un
+ * nouveau point prend le numéro suivant le plus haut déjà attribué — jamais un
+ * trou laissé par un point supprimé, pour qu'un code ne soit jamais réutilisé
+ * pour désigner autre chose.
+ */
+function assignMissingCodes(markdown: string): string {
+	const used = points.map((pt) => pt.code).filter(Boolean);
+	let next =
+		used.reduce((max, c) => Math.max(max, Number.parseInt(c.split('-')[1] ?? '0', 10)), 0) + 1;
+
+	const missing = points.filter((pt) => !pt.code);
+	if (missing.length === 0) return markdown;
+
+	const lines = markdown.split('\n');
+	let cursor = 0;
+	for (const pt of points) {
+		// On retrouve la ligne du point dans l'ordre du document.
+		while (cursor < lines.length) {
+			const m = /^- \[(C|SF\+|SF|D)\]\s+(?:`([A-Z0-9_]+-\d+)`\s+)?(.+)$/.exec(lines[cursor]);
+			if (m && m[3].trim() === pt.name) break;
+			cursor++;
+		}
+		if (cursor >= lines.length) throw new Error(`ligne introuvable pour : ${pt.name}`);
+		if (!pt.code) {
+			pt.code = `${GRADE.replace('_', '')}-${String(next++).padStart(3, '0')}`;
+			const m = /^(- \[(?:C|SF\+|SF|D)\]\s+)(.+)$/.exec(lines[cursor])!;
+			lines[cursor] = `${m[1]}\`${pt.code}\` ${m[2]}`;
+		}
+		cursor++;
+	}
+	console.log(`  ${missing.length} code(s) attribué(s), markdown réécrit`);
+	return lines.join('\n');
+}
+
+const updatedMd = assignMissingCodes(md);
+if (updatedMd !== md) writeFileSync(SRC, updatedMd);
 
 // Garde-fous : les contraintes UNIQUE de la base doivent tenir.
 for (const [label, seen] of [
@@ -144,8 +188,16 @@ const sql = `-- ================================================================
 -- difficulté. Les objectifs s'affichent en liste avec un compteur n/m ; une
 -- échelle 1-4 peut être ajoutée plus tard depuis la page Programme.
 --
--- Idempotent : jointures par nom + ON CONFLICT DO NOTHING. Le prof peut éditer
--- l'arbre dans l'app ensuite sans qu'un rejeu écrase ses modifications.
+-- SYNCHRONISATION, pas simple ajout. Le rejeu du seed après correction du
+-- markdown met à jour ce qui vient du programme et archive ce qui en a disparu,
+-- en s'appuyant sur le \`code\` (stable) et non sur le libellé.
+--
+-- Partage de responsabilité, délibéré :
+--   · le markdown fait foi pour  objectif · libellé · kind · exigence · ordre
+--     (c'est le texte du BO)
+--   · l'application fait foi pour  regime_acquisition · rang · archived_at
+--     (ce sont les choix pédagogiques du prof)
+-- Le seed ne touche JAMAIS à la seconde colonne.
 -- ============================================================================
 
 -- ---------------------------------------------------------------------------
@@ -169,19 +221,38 @@ on conflict (theme_id, name) do nothing;
 -- ---------------------------------------------------------------------------
 -- 3. Points
 -- ---------------------------------------------------------------------------
-insert into public.curriculum_points (objective_id, name, display_order, kind, regime_acquisition, exigence)
-select o.id, v.point_name, v.ord, v.kind, v.regime_acquisition, v.exigence
+insert into public.curriculum_points (objective_id, code, name, display_order, kind, exigence)
+select o.id, v.code, v.point_name, v.ord, v.kind, v.exigence
 from (values
 ${points
 	.map(
 		(p) =>
-			`\t(${q(p.theme)}, ${q(p.objective)}, ${q(p.name)}, ${p.ord}, ${q(p.kind)}, ${q(p.regime)}, ${q(p.exigence)})`
+			`\t(${q(p.code)}, ${q(p.theme)}, ${q(p.objective)}, ${q(p.name)}, ${p.ord}, ${q(p.kind)}, ${q(p.exigence)})`
 	)
 	.join(',\n')}
-) as v(theme_name, objective_name, point_name, ord, kind, regime_acquisition, exigence)
+) as v(code, theme_name, objective_name, point_name, ord, kind, exigence)
 join public.curriculum_themes t on t.grade = '${GRADE}' and t.name = v.theme_name
 join public.curriculum_objectives o on o.theme_id = t.id and o.name = v.objective_name
-on conflict (objective_id, name) do nothing;
+on conflict (code) do update set
+	objective_id  = excluded.objective_id,
+	name          = excluded.name,
+	display_order = excluded.display_order,
+	kind          = excluded.kind,
+	exigence      = excluded.exigence,
+	updated_at    = now();
+-- \`regime_acquisition\`, \`rang\` et \`archived_at\` sont volontairement absents :
+-- ce sont les choix du prof, pas le texte du programme.
+
+-- ---------------------------------------------------------------------------
+-- 4. Points disparus du markdown → archivés (jamais supprimés)
+-- ---------------------------------------------------------------------------
+-- Supprimer effacerait la couverture du cahier de texte et l'acquisition des
+-- élèves. On archive : le point sort des vues, l'historique reste.
+update public.curriculum_points
+set archived_at = now()
+where code like '${GRADE.replace('_', '')}-%'
+  and archived_at is null
+  and code not in (${points.map((pt) => q(pt.code)).join(', ')});
 `;
 
 writeFileSync(OUT, sql);

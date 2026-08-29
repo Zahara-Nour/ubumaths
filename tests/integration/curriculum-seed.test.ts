@@ -42,7 +42,7 @@ async function pointsOfGrade(grade: string) {
 	const objectiveIds = (objectives ?? []).map((o) => o.id);
 	const { data: points } = await service
 		.from('curriculum_points')
-		.select('id, objective_id, name, kind, regime_acquisition, exigence, rang')
+		.select('id, objective_id, name, code, kind, regime_acquisition, exigence, rang')
 		.in('objective_id', objectiveIds);
 
 	return { themes: themes ?? [], objectives: objectives ?? [], points: points ?? [] };
@@ -115,6 +115,16 @@ describe('Seed du programme — 1ʳᵉ spécialité', () => {
 		const valid = new Set(['connaissance', 'savoir_faire', 'demonstration']);
 		expect(points.every((p) => valid.has(p.kind))).toBe(true);
 		expect(points.every((p) => p.name.trim().length > 0)).toBe(true);
+	});
+});
+
+describe('Seed du programme — code stable', () => {
+	it('donne un code unique à chacun des 153 points', async () => {
+		const { points } = await pointsOfGrade('1_SPE');
+		const codes = points.map((p) => p.code).filter(Boolean);
+		expect(codes).toHaveLength(153);
+		expect(new Set(codes).size).toBe(153);
+		expect(codes.every((c) => /^1SPE-\d{3}$/.test(c!))).toBe(true);
 	});
 });
 
