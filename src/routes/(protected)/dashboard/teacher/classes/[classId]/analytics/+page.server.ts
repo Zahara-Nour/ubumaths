@@ -39,13 +39,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.sort((a, b) => a.display_name.localeCompare(b.display_name, 'fr'));
 
 	const { data: themeRows } = await locals.supabase
-		.from('skill_themes')
-		.select('id, name, bo_reference')
+		.from('curriculum_themes')
+		.select('id, name, code')
 		.order('display_order', { ascending: true });
 
 	const themes = (themeRows ?? [])
-		.filter((t) => t.bo_reference)
-		.map((t) => ({ name: t.name, bo_reference: t.bo_reference as string }));
+		.filter((t) => t.code)
+		.map((t) => ({ name: t.name, code: t.code as string }));
 
 	// Compteur des flags anti-fraud non-résolus pour le badge de l'onglet Surveillance.
 	let unresolvedFlagsCount = 0;

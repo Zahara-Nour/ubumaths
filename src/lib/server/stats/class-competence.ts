@@ -39,9 +39,9 @@ export interface ClassCompetenceGrid {
 }
 
 export interface TopObservableToConsolidate {
-	skill_id: string;
+	observable_id: string;
 	observable_code: string | null;
-	skill_name: string;
+	observable_name: string;
 	subdimension_letter: string | null;
 	subdimension_name: string | null;
 	competence_code: string | null;
@@ -200,7 +200,7 @@ export async function getClassTopObservablesToConsolidate(
 
 	const { data: stateRows, error: stateErr } = await supabase
 		.from('student_observable_state')
-		.select('student_id, skill_id, count_minus, count_plus, last_attempt_at')
+		.select('student_id, observable_id, count_minus, count_plus, last_attempt_at')
 		.in('student_id', studentIds);
 
 	if (stateErr) {
@@ -210,14 +210,14 @@ export async function getClassTopObservablesToConsolidate(
 
 	type StateRow = {
 		student_id: string;
-		skill_id: string;
+		observable_id: string;
 		count_minus: number;
 		count_plus: number;
 		last_attempt_at: string | null;
 	};
 	const rows = (stateRows ?? []) as StateRow[];
 
-	const skillStats = new Map<
+	const observableStats = new Map<
 		string,
 		{
 			minusStudents: { id: string; last_attempt_at: string | null }[];
@@ -228,7 +228,7 @@ export async function getClassTopObservablesToConsolidate(
 	for (const r of rows) {
 		const total = r.count_minus + r.count_plus;
 		if (total === 0) continue;
-		const entry = skillStats.get(r.skill_id) ?? {
+		const entry = observableStats.get(r.observable_id) ?? {
 			minusStudents: [],
 			seenStudents: new Set<string>()
 		};
@@ -236,25 +236,24 @@ export async function getClassTopObservablesToConsolidate(
 		if (r.count_minus > r.count_plus) {
 			entry.minusStudents.push({ id: r.student_id, last_attempt_at: r.last_attempt_at });
 		}
-		skillStats.set(r.skill_id, entry);
+		observableStats.set(r.observable_id, entry);
 	}
 
-	const observedSkillIds = [...skillStats.keys()];
-	if (observedSkillIds.length === 0) return [];
+	const observedObservableIds = [...observableStats.keys()];
+	if (observedObservableIds.length === 0) return [];
 
-	const { data: skillsRows } = await supabase
-		.from('skills')
+	const { data: observableRows } = await supabase
+		.from('observables')
 		.select(
 			'id, name, observable_code, subdimension_id, math_competence_subdimensions(letter, name, math_competence_id, math_competences(code))'
 		)
-		.in('id', observedSkillIds)
-		.eq('family', 'competence');
+		.in('id', observedObservableIds);
 
-	type SkillRow = {
+	type ObservableRow = {
 		id: string;
 		name: string;
-		observable_code: string | null;
-		subdimension_id: string | null;
+		observable_code: string;
+		subdimension_id: string;
 		math_competence_subdimensions: {
 			letter: string;
 			name: string;
@@ -262,10 +261,10 @@ export async function getClassTopObservablesToConsolidate(
 			math_competences: { code: string } | null;
 		} | null;
 	};
-	const skills = (skillsRows ?? []) as unknown as SkillRow[];
+	const observables = (observableRows ?? []) as unknown as ObservableRow[];
 
-	const result: TopObservableToConsolidate[] = skills.map((sk) => {
-		const stats = skillStats.get(sk.id);
+	const result: TopObservableToConsolidate[] = observables.map((sk) => {
+		const stats = observableStats.get(sk.id);
 		const minusList = stats?.minusStudents ?? [];
 		const observedCount = stats?.seenStudents.size ?? 0;
 		const concerned = minusList
@@ -277,9 +276,9 @@ export async function getClassTopObservablesToConsolidate(
 			.sort((a, b) => a.display_name.localeCompare(b.display_name, 'fr'));
 
 		return {
-			skill_id: sk.id,
+			observable_id: sk.id,
 			observable_code: sk.observable_code,
-			skill_name: sk.name,
+			observable_name: sk.name,
 			subdimension_letter: sk.math_competence_subdimensions?.letter ?? null,
 			subdimension_name: sk.math_competence_subdimensions?.name ?? null,
 			competence_code: sk.math_competence_subdimensions?.math_competences?.code ?? null,

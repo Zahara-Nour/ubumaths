@@ -7,7 +7,11 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { CurriculumTheme, CurriculumItem, CurriculumPoint } from '$lib/types/database-helpers';
+import type {
+	CurriculumTheme,
+	CurriculumObjective,
+	CurriculumPoint
+} from '$lib/types/database-helpers';
 
 /** Minimal shape of a PostgREST/Postgres error (code is what we branch on). */
 export interface DbErrorLike {
@@ -17,9 +21,9 @@ export interface DbErrorLike {
 
 /** Column lists (single source of truth for SELECT projections). */
 export const THEME_COLS = 'id, grade, name, display_order, created_at, updated_at';
-export const ITEM_COLS = 'id, theme_id, name, display_order, created_at, updated_at';
+export const OBJECTIVE_COLS = 'id, theme_id, name, display_order, created_at, updated_at';
 export const POINT_COLS =
-	'id, item_id, name, display_order, kind, archived_at, created_at, updated_at';
+	'id, objective_id, name, display_order, kind, archived_at, created_at, updated_at';
 
 /**
  * Map a known Postgres error code to an HTTP JSON Response.
@@ -33,7 +37,7 @@ export function curriculumDbError(err: DbErrorLike, uniqueMsg = 'Doublon'): Resp
 			return json({ error: 'Accès refusé' }, { status: 403 });
 		case '23514': // check_violation
 			return json({ error: 'Valeur invalide' }, { status: 400 });
-		case '23503': // foreign_key_violation (e.g. unknown theme_id/item_id)
+		case '23503': // foreign_key_violation (e.g. unknown theme_id/objective_id)
 			return json({ error: 'Référence introuvable' }, { status: 400 });
 		case '22P02': // invalid_text_representation (e.g. malformed UUID path param)
 			return json({ error: 'Identifiant invalide' }, { status: 400 });
@@ -42,9 +46,9 @@ export function curriculumDbError(err: DbErrorLike, uniqueMsg = 'Doublon'): Resp
 	}
 }
 
-/** A theme with its items, each with its points (nested tree). */
+/** A theme with its objectives, each with its points (nested tree). */
 export type CurriculumTreeTheme = CurriculumTheme & {
-	items: (CurriculumItem & { points: CurriculumPoint[] })[];
+	objectives: (CurriculumObjective & { points: CurriculumPoint[] })[];
 };
 
 /**
@@ -66,21 +70,21 @@ export async function getCurriculumTree(
 	const themeIds = themeList.map((t) => t.id);
 	if (themeIds.length === 0) return [];
 
-	const { data: items } = await supabase
-		.from('curriculum_items')
-		.select(ITEM_COLS)
+	const { data: objectives } = await supabase
+		.from('curriculum_objectives')
+		.select(OBJECTIVE_COLS)
 		.in('theme_id', themeIds)
 		.order('display_order', { ascending: true })
 		.order('name', { ascending: true });
-	const itemList = (items ?? []) as CurriculumItem[];
-	const itemIds = itemList.map((i) => i.id);
+	const objectiveList = (objectives ?? []) as CurriculumObjective[];
+	const objectiveIds = objectiveList.map((i) => i.id);
 
 	let pointList: CurriculumPoint[] = [];
-	if (itemIds.length > 0) {
+	if (objectiveIds.length > 0) {
 		const { data: points } = await supabase
 			.from('curriculum_points')
 			.select(POINT_COLS)
-			.in('item_id', itemIds)
+			.in('objective_id', objectiveIds)
 			.order('display_order', { ascending: true })
 			.order('name', { ascending: true });
 		pointList = (points ?? []) as CurriculumPoint[];
@@ -88,8 +92,8 @@ export async function getCurriculumTree(
 
 	return themeList.map((theme) => ({
 		...theme,
-		items: itemList
+		objectives: objectiveList
 			.filter((i) => i.theme_id === theme.id)
-			.map((item) => ({ ...item, points: pointList.filter((p) => p.item_id === item.id) }))
+			.map((obj) => ({ ...obj, points: pointList.filter((p) => p.objective_id === obj.id) }))
 	}));
 }

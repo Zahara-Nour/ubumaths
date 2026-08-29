@@ -2,7 +2,7 @@
  * Calcul du badge FSRS agrégé pour une capacité famille A.
  *
  * Le badge dérive des états FSRS (`srs_card_stats`) des templates tagués sur
- * une `skill` (capacité). Règle d'agrégation par priorité décroissante :
+ * un `curriculum_point`. Règle d'agrégation par priorité décroissante :
  *
  *   1. 🆘 a_remedier        — ≥ 1 template due ET state ∈ {learning, relearning}
  *   2. 🔁 a_renforcer       — ≥ 1 template due ET state = 'review'
@@ -39,43 +39,43 @@ interface FsrsStateRow {
 }
 
 /**
- * Récupère et agrège les badges FSRS pour une liste de skill_ids et un élève.
+ * Récupère et agrège les badges FSRS pour une liste de point_ids et un élève.
  *
- * Retourne une Map skill_id → badge. Les capacités sans aucun template tagué
+ * Retourne une Map point_id → badge. Les capacités sans aucun template tagué
  * (ou sans srs_card_stats sur leurs templates) reçoivent `non_commencee`.
  */
-export async function computeCapacityBadges(
+export async function computePointBadges(
 	supabase: SB,
 	studentId: string,
-	skillIds: string[]
+	pointIds: string[]
 ): Promise<Map<string, CapacityBadge>> {
 	const result = new Map<string, CapacityBadge>();
-	if (skillIds.length === 0) return result;
+	if (pointIds.length === 0) return result;
 
-	// 1. Mapping skill → templates (M2M)
+	// 1. Mapping point → templates (M2M)
 	const { data: tagMappings, error: tagErr } = await supabase
-		.from('question_template_skills')
-		.select('skill_id, template_id')
-		.in('skill_id', skillIds);
+		.from('question_template_points')
+		.select('point_id, template_id')
+		.in('point_id', pointIds);
 
 	if (tagErr) {
 		console.error('[capacity-badge] tag lookup failed:', tagErr);
-		for (const id of skillIds) result.set(id, 'non_commencee');
+		for (const id of pointIds) result.set(id, 'non_commencee');
 		return result;
 	}
 
-	const tagsBySkill = new Map<string, string[]>();
+	const tagsByPoint = new Map<string, string[]>();
 	for (const row of tagMappings ?? []) {
-		const list = tagsBySkill.get(row.skill_id) ?? [];
+		const list = tagsByPoint.get(row.point_id) ?? [];
 		list.push(row.template_id);
-		tagsBySkill.set(row.skill_id, list);
+		tagsByPoint.set(row.point_id, list);
 	}
 
 	// 2. États FSRS pour tous les templates concernés
 	const allTemplateIds = [...new Set((tagMappings ?? []).map((r) => r.template_id))];
 
 	if (allTemplateIds.length === 0) {
-		for (const id of skillIds) result.set(id, 'non_commencee');
+		for (const id of pointIds) result.set(id, 'non_commencee');
 		return result;
 	}
 
@@ -88,7 +88,7 @@ export async function computeCapacityBadges(
 
 	if (fsrsErr) {
 		console.error('[capacity-badge] fsrs lookup failed:', fsrsErr);
-		for (const id of skillIds) result.set(id, 'non_commencee');
+		for (const id of pointIds) result.set(id, 'non_commencee');
 		return result;
 	}
 
@@ -97,15 +97,15 @@ export async function computeCapacityBadges(
 		stateByTemplate.set(row.card_reference_id, row);
 	}
 
-	// 3. Agrégation par skill
+	// 3. Agrégation par point
 	const now = Date.now();
-	for (const skillId of skillIds) {
-		const templateIds = tagsBySkill.get(skillId) ?? [];
+	for (const pointId of pointIds) {
+		const templateIds = tagsByPoint.get(pointId) ?? [];
 		const states = templateIds
 			.map((tid) => stateByTemplate.get(tid))
 			.filter((s): s is FsrsStateRow => Boolean(s));
 
-		result.set(skillId, aggregateBadge(states, now));
+		result.set(pointId, aggregateBadge(states, now));
 	}
 
 	return result;

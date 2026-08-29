@@ -69,7 +69,7 @@
 	}
 
 	function pointCount(theme: PageData['tree'][number]): number {
-		return theme.items.reduce((sum, i) => sum + i.points.length, 0);
+		return theme.objectives.reduce((sum, i) => sum + i.points.length, 0);
 	}
 
 	// --- API helper -----------------------------------------------------------
@@ -138,14 +138,14 @@
 			if (dialogLevel === 'theme') {
 				ok = await api('/api/teacher/curriculum/themes', 'POST', { grade: data.grade, name });
 			} else if (dialogLevel === 'item') {
-				ok = await api('/api/teacher/curriculum/items', 'POST', {
+				ok = await api('/api/teacher/curriculum/objectives', 'POST', {
 					theme_id: dialogTargetId,
 					name
 				});
 				if (ok) openThemes[dialogTargetId] = true;
 			} else {
 				ok = await api('/api/teacher/curriculum/points', 'POST', {
-					item_id: dialogTargetId,
+					objective_id: dialogTargetId,
 					name,
 					kind
 				});
@@ -251,7 +251,7 @@
 							{/if}
 							<span class="font-semibold">{theme.name}</span>
 							<span class="text-xs text-muted-foreground">
-								{theme.items.length} items · {pointCount(theme)} points
+								{theme.objectives.length} items · {pointCount(theme)} points
 							</span>
 						</button>
 						<div class="flex items-center gap-1">
@@ -293,7 +293,7 @@
 					<!-- Items -->
 					{#if openThemes[theme.id]}
 						<div class="space-y-1 border-t bg-muted/30 p-2 pl-6">
-							{#each theme.items as item, ii (item.id)}
+							{#each theme.objectives as item, ii (item.id)}
 								<div class="rounded-md border bg-card">
 									<div class="flex items-center gap-2 p-2">
 										<button
@@ -313,15 +313,15 @@
 												variant="ghost"
 												size="sm"
 												disabled={busy || ii === 0}
-												onclick={() => reorder('item', theme.items, ii, 'up')}
+												onclick={() => reorder('item', theme.objectives, ii, 'up')}
 											>
 												<ArrowUp class="h-4 w-4" />
 											</Button>
 											<Button
 												variant="ghost"
 												size="sm"
-												disabled={busy || ii === theme.items.length - 1}
-												onclick={() => reorder('item', theme.items, ii, 'down')}
+												disabled={busy || ii === theme.objectives.length - 1}
+												onclick={() => reorder('item', theme.objectives, ii, 'down')}
 											>
 												<ArrowDown class="h-4 w-4" />
 											</Button>

@@ -9,7 +9,7 @@
  * Spec : `docs/wip/skills-referentiel-design.md` (décisions 57-72)
  * Phase 1 progress : `docs/wip/competence-referentiel-phase1-progress.md`
  *
- * Pour les types DERIVED de la base (`Tables<'skills'>`, etc.), voir
+ * Pour les types DERIVED de la base (`Tables<'observables'>`, etc.), voir
  * `database-helpers.ts` (aliases) et `database.ts` (auto-généré).
  */
 

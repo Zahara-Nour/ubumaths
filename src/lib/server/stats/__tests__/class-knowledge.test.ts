@@ -103,19 +103,19 @@ describe('getClassCapacityGrid', () => {
 				data: [{ student_id: 's1', template_id: 't1' }],
 				error: null
 			}),
-			question_template_skills: () => ({
+			question_template_points: () => ({
 				data: [
 					{
 						template_id: 't1',
-						skill_id: 'cap1',
-						skills: {
+						point_id: 'cap1',
+						curriculum_points: {
 							id: 'cap1',
 							name: 'Additionner',
 							family: 'knowledge',
 							objective_id: 'obj1',
-							skill_objectives: {
+							curriculum_objectives: {
 								theme_id: 'th1',
-								skill_themes: { name: 'Nombres', bo_reference: 'NUM' }
+								curriculum_themes: { name: 'Nombres', code: 'NUM' }
 							}
 						}
 					}
@@ -165,28 +165,28 @@ describe('getClassCapacityGrid', () => {
 				],
 				error: null
 			}),
-			question_template_skills: () => ({
+			question_template_points: () => ({
 				data: [
 					{
 						template_id: 't1',
-						skill_id: 'cap1',
-						skills: {
+						point_id: 'cap1',
+						curriculum_points: {
 							id: 'cap1',
 							name: 'Capacité X',
 							family: 'knowledge',
 							objective_id: null,
-							skill_objectives: null
+							curriculum_objectives: null
 						}
 					},
 					{
 						template_id: 't2',
-						skill_id: 'cap1',
-						skills: {
+						point_id: 'cap1',
+						curriculum_points: {
 							id: 'cap1',
 							name: 'Capacité X',
 							family: 'knowledge',
 							objective_id: null,
-							skill_objectives: null
+							curriculum_objectives: null
 						}
 					}
 				],
@@ -257,17 +257,17 @@ describe('getClassTopCapacitiesToRemediate', () => {
 				data: [{ student_id: 's1', template_id: 't1' }],
 				error: null
 			}),
-			question_template_skills: () => ({
+			question_template_points: () => ({
 				data: [
 					{
 						template_id: 't1',
-						skill_id: 'cap1',
-						skills: {
+						point_id: 'cap1',
+						curriculum_points: {
 							id: 'cap1',
 							name: 'X',
 							family: 'knowledge',
 							objective_id: null,
-							skill_objectives: null
+							curriculum_objectives: null
 						}
 					}
 				],
@@ -293,17 +293,17 @@ describe('getClassTopCapacitiesToRemediate', () => {
 				data: [{ student_id: 's1', template_id: 't1' }],
 				error: null
 			}),
-			question_template_skills: () => ({
+			question_template_points: () => ({
 				data: [
 					{
 						template_id: 't1',
-						skill_id: 'cap1',
-						skills: {
+						point_id: 'cap1',
+						curriculum_points: {
 							id: 'cap1',
 							name: 'X',
 							family: 'knowledge',
 							objective_id: null,
-							skill_objectives: null
+							curriculum_objectives: null
 						}
 					}
 				],
@@ -329,13 +329,13 @@ describe('getClassTopCapacitiesToRemediate', () => {
 		}));
 		const tagMappings = Array.from({ length: 5 }, (_, i) => ({
 			template_id: `t${i}`,
-			skill_id: `cap${i}`,
-			skills: {
+			point_id: `cap${i}`,
+			curriculum_points: {
 				id: `cap${i}`,
 				name: `C${i}`,
 				family: 'knowledge',
 				objective_id: null,
-				skill_objectives: null
+				curriculum_objectives: null
 			}
 		}));
 		const fsrs = Array.from({ length: 5 }, (_, i) => ({
@@ -348,7 +348,7 @@ describe('getClassTopCapacitiesToRemediate', () => {
 		const supabase = buildMock({
 			class_members: () => ({ data: students, error: null }),
 			skill_attempts: () => ({ data: attempts, error: null }),
-			question_template_skills: () => ({ data: tagMappings, error: null }),
+			question_template_points: () => ({ data: tagMappings, error: null }),
 			srs_card_stats: () => ({ data: fsrs, error: null })
 		});
 
@@ -364,7 +364,7 @@ describe('getClassTopCapacitiesToRemediate', () => {
 describe('getStudentRetentionCurve', () => {
 	it('returns empty when no skill matches the theme', async () => {
 		const supabase = buildMock({
-			skills: () => ({ data: [], error: null })
+			curriculum_points: () => ({ data: [], error: null })
 		});
 		const points = await getStudentRetentionCurve(supabase, 'student-1', 'NUM');
 		expect(points).toEqual([]);
@@ -372,8 +372,8 @@ describe('getStudentRetentionCurve', () => {
 
 	it('returns 8 weeks of zeros when no review history', async () => {
 		const supabase = buildMock({
-			skills: () => ({ data: [{ id: 'cap1' }], error: null }),
-			question_template_skills: () => ({ data: [{ template_id: 't1' }], error: null }),
+			curriculum_points: () => ({ data: [{ id: 'cap1' }], error: null }),
+			question_template_points: () => ({ data: [{ template_id: 't1' }], error: null }),
 			srs_card_stats: () => ({ data: [], error: null })
 		});
 		const points = await getStudentRetentionCurve(supabase, 'student-1', 'NUM');
@@ -385,8 +385,8 @@ describe('getStudentRetentionCurve', () => {
 	it('aggregates retrievability_avg from review_history', async () => {
 		const now = Date.now();
 		const supabase = buildMock({
-			skills: () => ({ data: [{ id: 'cap1' }], error: null }),
-			question_template_skills: () => ({ data: [{ template_id: 't1' }], error: null }),
+			curriculum_points: () => ({ data: [{ id: 'cap1' }], error: null }),
+			question_template_points: () => ({ data: [{ template_id: 't1' }], error: null }),
 			srs_card_stats: () => ({
 				data: [
 					{

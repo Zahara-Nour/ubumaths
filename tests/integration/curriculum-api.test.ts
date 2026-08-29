@@ -6,7 +6,7 @@
  *   - /api/teacher/curriculum/themes            (GET, POST)
  *   - /api/teacher/curriculum/themes/[themeId]  (PATCH, DELETE)
  *   - /api/teacher/curriculum/items             (GET, POST)
- *   - /api/teacher/curriculum/items/[itemId]    (PATCH, DELETE)
+ *   - /api/teacher/curriculum/items/[objectiveId]    (PATCH, DELETE)
  *   - /api/teacher/curriculum/points            (GET, POST)
  *   - /api/teacher/curriculum/points/[pointId]  (PATCH, DELETE)
  *
@@ -30,11 +30,11 @@ import {
 import {
 	GET as itemsGET,
 	POST as itemsPOST
-} from '../../src/routes/api/teacher/curriculum/items/+server';
+} from '../../src/routes/api/teacher/curriculum/objectives/+server';
 import {
 	PATCH as itemPATCH,
 	DELETE as itemDELETE
-} from '../../src/routes/api/teacher/curriculum/items/[itemId]/+server';
+} from '../../src/routes/api/teacher/curriculum/objectives/[objectiveId]/+server';
 import {
 	GET as pointsGET,
 	POST as pointsPOST
@@ -46,6 +46,11 @@ import {
 	TestData,
 	cleanupCompetenceTestData
 } from '../helpers/competence-referentiel.helpers';
+
+// Grade dédié aux fixtures : le seed du programme ne peuple que la 6ᵉ, donc
+// poser les tests sur '5' les isole du référentiel réel (et de sa purge).
+const TEST_GRADE = '5';
+const TEST_GRADE_ALT = '4';
 
 // ---------------------------------------------------------------------------
 // Shared service client + cleanup
@@ -71,7 +76,7 @@ async function cleanupCurriculum() {
 	await service
 		.from('curriculum_themes' as never)
 		.delete()
-		.not('id', 'is', null);
+		.in('grade', [TEST_GRADE, TEST_GRADE_ALT]);
 }
 
 // ---------------------------------------------------------------------------
@@ -90,7 +95,7 @@ async function svcTheme(grade = '6', name?: string): Promise<{ id: string }> {
 
 async function svcItem(themeId: string, name?: string): Promise<{ id: string }> {
 	const { data, error } = await service
-		.from('curriculum_items' as never)
+		.from('curriculum_objectives' as never)
 		.insert({ theme_id: themeId, name: name ?? `Item ${crypto.randomUUID().slice(0, 8)}` } as never)
 		.select('id')
 		.single();
@@ -98,10 +103,14 @@ async function svcItem(themeId: string, name?: string): Promise<{ id: string }> 
 	return data as { id: string };
 }
 
-async function svcPoint(itemId: string, name?: string): Promise<{ id: string }> {
+async function svcPoint(objectiveId: string, name?: string): Promise<{ id: string }> {
 	const { data, error } = await service
 		.from('curriculum_points' as never)
-		.insert({ item_id: itemId, name: name ?? `Point ${crypto.randomUUID().slice(0, 8)}` } as never)
+		.insert({
+			objective_id: objectiveId,
+			name: name ?? `Point ${crypto.randomUUID().slice(0, 8)}`,
+			kind: 'savoir_faire'
+		} as never)
 		.select('id')
 		.single();
 	if (error) throw new Error(error.message);
@@ -149,10 +158,13 @@ describe('POST /api/teacher/curriculum/themes', () => {
 	it('creates a theme and returns 201', async () => {
 		expect.assertions(2);
 		const locals = buildLocals(await teacherUser());
-		const res = await themesPOST({ request: req({ grade: '6', name: 'Calcul' }), locals } as never);
+		const res = await themesPOST({
+			request: req({ grade: TEST_GRADE, name: 'Calcul' }),
+			locals
+		} as never);
 		expect(res.status).toBe(201);
 		const data = await res.json();
-		expect(data.theme).toMatchObject({ grade: '6', name: 'Calcul', display_order: 0 });
+		expect(data.theme).toMatchObject({ grade: TEST_GRADE, name: 'Calcul', display_order: 0 });
 	});
 
 	it('returns 400 for an invalid grade code', async () => {
@@ -165,15 +177,21 @@ describe('POST /api/teacher/curriculum/themes', () => {
 	it('returns 400 for a blank name', async () => {
 		expect.assertions(1);
 		const locals = buildLocals(await teacherUser());
-		const res = await themesPOST({ request: req({ grade: '6', name: '   ' }), locals } as never);
+		const res = await themesPOST({
+			request: req({ grade: TEST_GRADE, name: '   ' }),
+			locals
+		} as never);
 		expect(res.status).toBe(400);
 	});
 
 	it('returns 409 for a duplicate (grade, name)', async () => {
 		expect.assertions(1);
 		const locals = buildLocals(await teacherUser());
-		await themesPOST({ request: req({ grade: '6', name: 'Calcul' }), locals } as never);
-		const res = await themesPOST({ request: req({ grade: '6', name: 'Calcul' }), locals } as never);
+		await themesPOST({ request: req({ grade: TEST_GRADE, name: 'Calcul' }), locals } as never);
+		const res = await themesPOST({
+			request: req({ grade: TEST_GRADE, name: 'Calcul' }),
+			locals
+		} as never);
 		expect(res.status).toBe(409);
 	});
 
@@ -181,7 +199,7 @@ describe('POST /api/teacher/curriculum/themes', () => {
 		expect.assertions(1);
 		const locals = buildLocals(null);
 		await expect(
-			themesPOST({ request: req({ grade: '6', name: 'X' }), locals } as never)
+			themesPOST({ request: req({ grade: TEST_GRADE, name: 'X' }), locals } as never)
 		).rejects.toMatchObject({ status: 401 });
 	});
 
@@ -190,7 +208,7 @@ describe('POST /api/teacher/curriculum/themes', () => {
 		const s = await TestData.profile().withRole('student').create();
 		const locals = buildLocals({ id: s.id } as User);
 		await expect(
-			themesPOST({ request: req({ grade: '6', name: 'X' }), locals } as never)
+			themesPOST({ request: req({ grade: TEST_GRADE, name: 'X' }), locals } as never)
 		).rejects.toMatchObject({ status: 403 });
 	});
 });
@@ -198,12 +216,12 @@ describe('POST /api/teacher/curriculum/themes', () => {
 describe('GET /api/teacher/curriculum/themes', () => {
 	it('lists themes of a grade sorted by display_order then name', async () => {
 		expect.assertions(3);
-		await svcTheme('6', 'Beta');
-		await svcTheme('6', 'Alpha');
-		await svcTheme('5', 'Other grade');
+		await svcTheme(TEST_GRADE, 'Beta');
+		await svcTheme(TEST_GRADE, 'Alpha');
+		await svcTheme(TEST_GRADE_ALT, 'Other grade');
 		const locals = buildLocals(await teacherUser());
 
-		const res = await themesGET({ url: urlWith({ grade: '6' }), locals } as never);
+		const res = await themesGET({ url: urlWith({ grade: TEST_GRADE }), locals } as never);
 		expect(res.status).toBe(200);
 		const data = await res.json();
 		expect(data.themes).toHaveLength(2);
@@ -221,7 +239,7 @@ describe('GET /api/teacher/curriculum/themes', () => {
 describe('PATCH/DELETE /api/teacher/curriculum/themes/[themeId]', () => {
 	it('renames a theme', async () => {
 		expect.assertions(2);
-		const theme = await svcTheme('6', 'Old');
+		const theme = await svcTheme(TEST_GRADE, 'Old');
 		const locals = buildLocals(await teacherUser());
 		const res = await themePATCH({
 			request: req({ name: 'New' }, 'PATCH'),
@@ -246,7 +264,7 @@ describe('PATCH/DELETE /api/teacher/curriculum/themes/[themeId]', () => {
 
 	it('returns 400 when PATCH body has no updatable fields', async () => {
 		expect.assertions(1);
-		const theme = await svcTheme('6');
+		const theme = await svcTheme(TEST_GRADE);
 		const locals = buildLocals(await teacherUser());
 		const res = await themePATCH({
 			request: req({}, 'PATCH'),
@@ -258,7 +276,7 @@ describe('PATCH/DELETE /api/teacher/curriculum/themes/[themeId]', () => {
 
 	it('deletes a theme and cascades to items and points', async () => {
 		expect.assertions(2);
-		const theme = await svcTheme('6');
+		const theme = await svcTheme(TEST_GRADE);
 		const item = await svcItem(theme.id);
 		const point = await svcPoint(item.id);
 		const locals = buildLocals(await teacherUser());
@@ -281,7 +299,7 @@ describe('PATCH/DELETE /api/teacher/curriculum/themes/[themeId]', () => {
 describe('Items CRUD', () => {
 	it('creates an item under a theme (201)', async () => {
 		expect.assertions(2);
-		const theme = await svcTheme('6');
+		const theme = await svcTheme(TEST_GRADE);
 		const locals = buildLocals(await teacherUser());
 		const res = await itemsPOST({
 			request: req({ theme_id: theme.id, name: 'Fractions' }),
@@ -304,7 +322,7 @@ describe('Items CRUD', () => {
 
 	it('returns 409 for a duplicate (theme_id, name)', async () => {
 		expect.assertions(1);
-		const theme = await svcTheme('6');
+		const theme = await svcTheme(TEST_GRADE);
 		await svcItem(theme.id, 'Fractions');
 		const locals = buildLocals(await teacherUser());
 		const res = await itemsPOST({
@@ -316,7 +334,7 @@ describe('Items CRUD', () => {
 
 	it('lists items of a theme', async () => {
 		expect.assertions(2);
-		const theme = await svcTheme('6');
+		const theme = await svcTheme(TEST_GRADE);
 		await svcItem(theme.id, 'Fractions');
 		await svcItem(theme.id, 'Décimaux');
 		const locals = buildLocals(await teacherUser());
@@ -328,22 +346,22 @@ describe('Items CRUD', () => {
 
 	it('deletes an item', async () => {
 		expect.assertions(1);
-		const theme = await svcTheme('6');
+		const theme = await svcTheme(TEST_GRADE);
 		const item = await svcItem(theme.id);
 		const locals = buildLocals(await teacherUser());
-		const res = await itemDELETE({ locals, params: { itemId: item.id } } as never);
+		const res = await itemDELETE({ locals, params: { objectiveId: item.id } } as never);
 		expect(res.status).toBe(200);
 	});
 
 	it('renames an item', async () => {
 		expect.assertions(1);
-		const theme = await svcTheme('6');
+		const theme = await svcTheme(TEST_GRADE);
 		const item = await svcItem(theme.id, 'Old');
 		const locals = buildLocals(await teacherUser());
 		const res = await itemPATCH({
 			request: req({ name: 'New' }, 'PATCH'),
 			locals,
-			params: { itemId: item.id }
+			params: { objectiveId: item.id }
 		} as never);
 		const data = await res.json();
 		expect(data.item.name).toBe('New');
@@ -357,11 +375,15 @@ describe('Items CRUD', () => {
 describe('Points CRUD', () => {
 	it('creates a point with a kind (201)', async () => {
 		expect.assertions(2);
-		const theme = await svcTheme('6');
+		const theme = await svcTheme(TEST_GRADE);
 		const item = await svcItem(theme.id);
 		const locals = buildLocals(await teacherUser());
 		const res = await pointsPOST({
-			request: req({ item_id: item.id, name: 'Additionner deux fractions', kind: 'savoir_faire' }),
+			request: req({
+				objective_id: item.id,
+				name: 'Additionner deux fractions',
+				kind: 'savoir_faire'
+			}),
 			locals
 		} as never);
 		expect(res.status).toBe(201);
@@ -371,11 +393,11 @@ describe('Points CRUD', () => {
 
 	it('returns 400 for an invalid kind', async () => {
 		expect.assertions(1);
-		const theme = await svcTheme('6');
+		const theme = await svcTheme(TEST_GRADE);
 		const item = await svcItem(theme.id);
 		const locals = buildLocals(await teacherUser());
 		const res = await pointsPOST({
-			request: req({ item_id: item.id, name: 'X', kind: 'competence' }),
+			request: req({ objective_id: item.id, name: 'X', kind: 'competence' }),
 			locals
 		} as never);
 		expect(res.status).toBe(400);
@@ -383,7 +405,7 @@ describe('Points CRUD', () => {
 
 	it('archives a point (sets archived_at)', async () => {
 		expect.assertions(2);
-		const theme = await svcTheme('6');
+		const theme = await svcTheme(TEST_GRADE);
 		const item = await svcItem(theme.id);
 		const point = await svcPoint(item.id);
 		const locals = buildLocals(await teacherUser());
@@ -399,12 +421,12 @@ describe('Points CRUD', () => {
 
 	it('lists points of an item', async () => {
 		expect.assertions(2);
-		const theme = await svcTheme('6');
+		const theme = await svcTheme(TEST_GRADE);
 		const item = await svcItem(theme.id);
 		await svcPoint(item.id, 'A');
 		await svcPoint(item.id, 'B');
 		const locals = buildLocals(await teacherUser());
-		const res = await pointsGET({ url: urlWith({ item_id: item.id }), locals } as never);
+		const res = await pointsGET({ url: urlWith({ objective_id: item.id }), locals } as never);
 		expect(res.status).toBe(200);
 		const data = await res.json();
 		expect(data.points).toHaveLength(2);

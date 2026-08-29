@@ -48,7 +48,7 @@ async function isAntiFraudEnabled(supabase: SBClient): Promise<boolean> {
 }
 
 /**
- * Liste les paires (student_id, capacity_skill_id) ayant des reviews SRS sur la fenêtre.
+ * Liste les paires (student_id, capacity_point_id) ayant des reviews SRS sur la fenêtre.
  * Implémentation : lecture batchée des `srs_card_stats` + tagging templates.
  */
 async function listScanPairs(
@@ -82,11 +82,11 @@ async function listScanPairs(
 	if (templateIds.length === 0) return new Map();
 
 	const { data: tagRows, error: tagErr } = await supabase
-		.from('question_template_skills')
+		.from('question_template_points')
 		.select('template_id, skill_id, skills!inner(family)')
 		.in('template_id', templateIds);
 
-	if (tagErr) throw new Error(`Failed to load question_template_skills: ${tagErr.message}`);
+	if (tagErr) throw new Error(`Failed to load question_template_points: ${tagErr.message}`);
 
 	type TagRow = {
 		template_id: string;
@@ -94,7 +94,7 @@ async function listScanPairs(
 		skills: { family: string } | null;
 	};
 
-	// Map template_id → liste de capacity_skill_id (famille A).
+	// Map template_id → liste de capacity_point_id (famille A).
 	const templateToSkills = new Map<string, string[]>();
 	for (const tag of (tagRows ?? []) as unknown as TagRow[]) {
 		if (tag.skills?.family !== 'knowledge') continue;
@@ -138,14 +138,14 @@ async function listScanPairs(
 async function loadAttempts(
 	supabase: SBClient,
 	studentId: string,
-	capacitySkillId: string,
+	capacityPointId: string,
 	windowStart: Date
 ): Promise<{ srs: AttemptEntry[]; quiz: AttemptEntry[] }> {
 	// Templates tagués avec cette capacité.
 	const { data: tagRows } = await supabase
-		.from('question_template_skills')
+		.from('question_template_points')
 		.select('template_id')
-		.eq('skill_id', capacitySkillId);
+		.eq('point_id', capacityPointId);
 
 	const templateIds = [...new Set((tagRows ?? []).map((t) => t.template_id))];
 	if (templateIds.length === 0) return { srs: [], quiz: [] };
@@ -184,9 +184,9 @@ async function hasRecentFlag(
 		.gte('created_at', dedupeCutoff.toISOString());
 
 	if (capacityId === null) {
-		q = q.is('capacity_skill_id', null);
+		q = q.is('capacity_point_id', null);
 	} else {
-		q = q.eq('capacity_skill_id', capacityId);
+		q = q.eq('capacity_point_id', capacityId);
 	}
 
 	const { data, error } = await q.limit(1);
@@ -212,7 +212,7 @@ async function insertFlag(
 ): Promise<boolean> {
 	const { error } = await supabase.from('srs_anti_fraud_flags').insert({
 		student_id: studentId,
-		capacity_skill_id: capacityId,
+		capacity_point_id: capacityId,
 		flag_type: signal.flag_type,
 		severity: signal.severity,
 		score: signal.score,

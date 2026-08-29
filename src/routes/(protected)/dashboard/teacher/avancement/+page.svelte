@@ -15,7 +15,7 @@
 	import type { PageData } from './$types';
 
 	type Theme = PageData['tree'][number];
-	type Item = Theme['items'][number];
+	type Item = Theme['objectives'][number];
 
 	let { data }: { data: PageData } = $props();
 
@@ -52,7 +52,7 @@
 	function themeStats(theme: Theme): { vus: number; total: number } {
 		let vus = 0;
 		let total = 0;
-		for (const item of theme.items) {
+		for (const item of theme.objectives) {
 			const s = itemStats(item);
 			vus += s.vus;
 			total += s.total;
@@ -69,7 +69,7 @@
 	}
 
 	function themeHasUncovered(theme: Theme): boolean {
-		return theme.items.some((item) => uncoveredPoints(item).length > 0);
+		return theme.objectives.some((item) => uncoveredPoints(item).length > 0);
 	}
 </script>
 
@@ -145,7 +145,7 @@
 
 						{#if onlyUncovered || openThemes[theme.id]}
 							<div class="space-y-1 border-t p-2 pl-4">
-								{#each theme.items as item (item.id)}
+								{#each theme.objectives as item (item.id)}
 									{@const is = itemStats(item)}
 									{#if !onlyUncovered || uncoveredPoints(item).length > 0}
 										<div class="rounded-md border">

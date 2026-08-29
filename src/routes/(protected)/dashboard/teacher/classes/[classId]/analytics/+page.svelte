@@ -39,10 +39,10 @@
 	// svelte-ignore state_referenced_locally
 	let selectedStudentId = $state<string>(data.students[0]?.id ?? '');
 	// svelte-ignore state_referenced_locally
-	let selectedTheme = $state<string>(data.themes[0]?.bo_reference ?? '');
+	let selectedTheme = $state<string>(data.themes[0]?.code ?? '');
 
 	const studentItems = $derived(data.students.map((s) => ({ value: s.id, label: s.display_name })));
-	const themeItems = $derived(data.themes.map((t) => ({ value: t.bo_reference, label: t.name })));
+	const themeItems = $derived(data.themes.map((t) => ({ value: t.code, label: t.name })));
 	const selectedStudentName = $derived(
 		data.students.find((s) => s.id === selectedStudentId)?.display_name ?? '?'
 	);

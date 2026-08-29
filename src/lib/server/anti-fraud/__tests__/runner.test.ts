@@ -112,7 +112,7 @@ describe('runAntiFraudJob — désactivé', () => {
 			{
 				app_config: () => ({ data: { value: 'TRUE' }, error: null }),
 				srs_card_stats: () => ({ data: [], error: null }),
-				question_template_skills: () => ({ data: [], error: null })
+				question_template_points: () => ({ data: [], error: null })
 			},
 			state
 		);
@@ -133,7 +133,7 @@ describe('runAntiFraudJob — activé sans données', () => {
 			{
 				app_config: () => ({ data: { value: 'true' }, error: null }),
 				srs_card_stats: () => ({ data: [], error: null }),
-				question_template_skills: () => ({ data: [], error: null })
+				question_template_points: () => ({ data: [], error: null })
 			},
 			state
 		);
@@ -153,7 +153,7 @@ describe('runAntiFraudJob — activé sans données', () => {
 					data: [{ user_id: 's1', card_reference_id: 't1', review_history: reviews }],
 					error: null
 				}),
-				question_template_skills: () => ({ data: [], error: null })
+				question_template_points: () => ({ data: [], error: null })
 			},
 			state
 		);
@@ -178,7 +178,7 @@ describe('runAntiFraudJob — activé sans données', () => {
 					data: [{ user_id: 's1', card_reference_id: 't1', review_history: oldReviews }],
 					error: null
 				}),
-				question_template_skills: () => ({
+				question_template_points: () => ({
 					data: [{ template_id: 't1', skill_id: 'cap1', skills: { family: 'knowledge' } }],
 					error: null
 				})
@@ -207,7 +207,7 @@ describe('runAntiFraudJob — activé avec données nominales', () => {
 					data: [{ user_id: 's1', card_reference_id: 't1', review_history: reviews }],
 					error: null
 				}),
-				question_template_skills: () => ({
+				question_template_points: () => ({
 					data: [{ template_id: 't1', skill_id: 'cap1', skills: { family: 'knowledge' } }],
 					error: null
 				}),
@@ -238,7 +238,7 @@ describe('runAntiFraudJob — activé avec données nominales', () => {
 					data: [{ user_id: 's1', card_reference_id: 't1', review_history: reviews }],
 					error: null
 				}),
-				question_template_skills: () => ({
+				question_template_points: () => ({
 					data: [{ template_id: 't1', skill_id: 'cap1', skills: { family: 'knowledge' } }],
 					error: null
 				}),
@@ -263,7 +263,7 @@ describe('runAntiFraudJob — activé avec données nominales', () => {
 			{
 				app_config: () => ({ data: { value: 'true' }, error: null }),
 				srs_card_stats: () => ({ data: [], error: null }),
-				question_template_skills: () => ({ data: [], error: null })
+				question_template_points: () => ({ data: [], error: null })
 			},
 			state
 		);
@@ -292,7 +292,7 @@ describe('runAntiFraudJob — dédoublonnage', () => {
 					data: [{ user_id: 's1', card_reference_id: 't1', review_history: reviews }],
 					error: null
 				}),
-				question_template_skills: () => ({
+				question_template_points: () => ({
 					data: [{ template_id: 't1', skill_id: 'cap1', skills: { family: 'knowledge' } }],
 					error: null
 				}),
@@ -327,7 +327,7 @@ describe('runAntiFraudJob — dry_run', () => {
 					data: [{ user_id: 's1', card_reference_id: 't1', review_history: reviews }],
 					error: null
 				}),
-				question_template_skills: () => ({
+				question_template_points: () => ({
 					data: [{ template_id: 't1', skill_id: 'cap1', skills: { family: 'knowledge' } }],
 					error: null
 				}),

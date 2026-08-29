@@ -126,13 +126,13 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 			.in('card_reference_id', templateIds),
 		locals.supabase.from('question_templates').select('id, subdomain').in('id', templateIds),
 		locals.supabase
-			.from('question_template_skills')
+			.from('question_template_points')
 			.select(
-				'template_id, skills!inner(objective_id, skill_objectives!inner(id, name, display_order))'
+				'template_id, curriculum_points!inner(objective_id, curriculum_objectives!inner(id, name, display_order))'
 			)
 			.in('template_id', templateIds)
 			// Cast nécessaire : Supabase JS ne type pas la syntaxe d'ordre sur jointure nested.
-			.order('skill_objectives(display_order)' as never, { ascending: true })
+			.order('curriculum_objectives(display_order)' as never, { ascending: true })
 	]);
 
 	if (statsRes.error) throw error(500, `Erreur stats FSRS : ${statsRes.error.message}`);
@@ -166,15 +166,15 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 
 	type LinkRow = {
 		template_id: string;
-		skills: {
-			objective_id: string | null;
-			skill_objectives: { id: string; name: string; display_order: number } | null;
+		curriculum_points: {
+			objective_id: string;
+			curriculum_objectives: { id: string; name: string; display_order: number } | null;
 		} | null;
 	};
 	const objectiveByTemplate = new Map<string, { id: string; name: string }>();
 	// On garde le 1er objectif rencontré (le plus petit display_order grâce au tri ci-dessus)
 	for (const l of (links ?? []) as unknown as LinkRow[]) {
-		const obj = l.skills?.skill_objectives;
+		const obj = l.curriculum_points?.curriculum_objectives;
 		if (obj && !objectiveByTemplate.has(l.template_id)) {
 			objectiveByTemplate.set(l.template_id, { id: obj.id, name: obj.name });
 		}

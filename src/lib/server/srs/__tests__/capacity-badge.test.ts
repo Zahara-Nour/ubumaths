@@ -9,7 +9,7 @@
  *     pour 5 sorties possibles + cas spéciaux (state='new', nextReview=null).
  *   - worstBadge (pure) : agrégation par priorité descendante.
  *   - aggregateBadge (pure) : composition templateToBadge + worstBadge.
- *   - computeCapacityBadges (avec mock Supabase) : 2 round-trips DB + agrégation.
+ *   - computePointBadges (avec mock Supabase) : 2 round-trips DB + agrégation.
  *
  * Source : src/lib/server/srs/capacity-badge.ts (refonte chantier 2026-06-10)
  * Spec    : docs/wip/srs-fsrs-spec-tdd.md §5 + docs/ref/srs/architecture.md §5
@@ -20,7 +20,7 @@ import {
 	templateToBadge,
 	worstBadge,
 	aggregateBadge,
-	computeCapacityBadges,
+	computePointBadges,
 	BADGE_LABEL,
 	BADGE_VISUAL,
 	BADGE_PRIORITY,
@@ -240,20 +240,20 @@ describe('aggregateBadge', () => {
 });
 
 // ============================================================================
-// computeCapacityBadges — query DB + agrégation (mock Supabase)
+// computePointBadges — query DB + agrégation (mock Supabase)
 // ============================================================================
 
-describe('computeCapacityBadges', () => {
+describe('computePointBadges', () => {
 	/**
 	 * Helper : crée un mock Supabase qui retourne les données fournies.
 	 * Le mock chaîne `.from().select().in()` puis renvoie `{ data, error }`.
 	 */
 	function buildMockSupabase(
-		tagMappings: Array<{ skill_id: string; template_id: string }>,
+		tagMappings: Array<{ point_id: string; template_id: string }>,
 		fsrsRows: Array<{ card_reference_id: string; state: string; next_review: string }>
-	): Parameters<typeof computeCapacityBadges>[0] {
+	): Parameters<typeof computePointBadges>[0] {
 		const fromMock = vi.fn().mockImplementation((table: string) => {
-			if (table === 'question_template_skills') {
+			if (table === 'question_template_points') {
 				return {
 					select: vi.fn().mockReturnThis(),
 					in: vi.fn().mockResolvedValue({ data: tagMappings, error: null })
@@ -268,28 +268,28 @@ describe('computeCapacityBadges', () => {
 			}
 			throw new Error(`Unexpected table in mock: ${table}`);
 		});
-		return { from: fromMock } as unknown as Parameters<typeof computeCapacityBadges>[0];
+		return { from: fromMock } as unknown as Parameters<typeof computePointBadges>[0];
 	}
 
-	it('returns empty Map when skillIds is empty', async () => {
+	it('returns empty Map when pointIds is empty', async () => {
 		const supabase = buildMockSupabase([], []);
-		const result = await computeCapacityBadges(supabase, 'student-uuid', []);
+		const result = await computePointBadges(supabase, 'student-uuid', []);
 		expect(result.size).toBe(0);
 	});
 
 	it('returns non_commencee for skills with no template tagged', async () => {
 		const supabase = buildMockSupabase([], []); // pas de mappings → pas de templates
-		const result = await computeCapacityBadges(supabase, 'student-uuid', ['skill-1', 'skill-2']);
+		const result = await computePointBadges(supabase, 'student-uuid', ['skill-1', 'skill-2']);
 		expect(result.get('skill-1')).toBe('non_commencee');
 		expect(result.get('skill-2')).toBe('non_commencee');
 	});
 
 	it('returns non_commencee for skills tagged on templates without FSRS state', async () => {
 		const supabase = buildMockSupabase(
-			[{ skill_id: 'skill-1', template_id: 'tpl-1' }], // skill tagué
+			[{ point_id: 'skill-1', template_id: 'tpl-1' }], // skill tagué
 			[] // mais aucun FSRS row
 		);
-		const result = await computeCapacityBadges(supabase, 'student-uuid', ['skill-1']);
+		const result = await computePointBadges(supabase, 'student-uuid', ['skill-1']);
 		expect(result.get('skill-1')).toBe('non_commencee');
 	});
 
@@ -299,15 +299,15 @@ describe('computeCapacityBadges', () => {
 		const future = new Date(now + 86_400_000 * 7).toISOString();
 		const supabase = buildMockSupabase(
 			[
-				{ skill_id: 'skill-A', template_id: 'tpl-1' },
-				{ skill_id: 'skill-A', template_id: 'tpl-2' }
+				{ point_id: 'skill-A', template_id: 'tpl-1' },
+				{ point_id: 'skill-A', template_id: 'tpl-2' }
 			],
 			[
 				{ card_reference_id: 'tpl-1', state: 'review', next_review: future }, // acquise_en_memoire
 				{ card_reference_id: 'tpl-2', state: 'learning', next_review: past } // a_remedier
 			]
 		);
-		const result = await computeCapacityBadges(supabase, 'student-uuid', ['skill-A']);
+		const result = await computePointBadges(supabase, 'student-uuid', ['skill-A']);
 		// Priorité descendante : a_remedier l emporte
 		expect(result.get('skill-A')).toBe('a_remedier');
 	});
@@ -316,38 +316,38 @@ describe('computeCapacityBadges', () => {
 		const future = new Date(Date.now() + 86_400_000 * 7).toISOString();
 		const supabase = buildMockSupabase(
 			[
-				{ skill_id: 'skill-A', template_id: 'tpl-1' },
-				{ skill_id: 'skill-B', template_id: 'tpl-2' }
+				{ point_id: 'skill-A', template_id: 'tpl-1' },
+				{ point_id: 'skill-B', template_id: 'tpl-2' }
 			],
 			[
 				{ card_reference_id: 'tpl-1', state: 'review', next_review: future }, // skill-A : acquise
 				{ card_reference_id: 'tpl-2', state: 'learning', next_review: future } // skill-B : apprentissage
 			]
 		);
-		const result = await computeCapacityBadges(supabase, 'student-uuid', ['skill-A', 'skill-B']);
+		const result = await computePointBadges(supabase, 'student-uuid', ['skill-A', 'skill-B']);
 		expect(result.get('skill-A')).toBe('acquise_en_memoire');
 		expect(result.get('skill-B')).toBe('en_apprentissage');
 	});
 
-	it('returns non_commencee for all skillIds when tag lookup fails', async () => {
+	it('returns non_commencee for all pointIds when tag lookup fails', async () => {
 		const supabase = {
 			from: vi.fn().mockReturnValue({
 				select: vi.fn().mockReturnThis(),
 				in: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB connection lost' } })
 			})
-		} as unknown as Parameters<typeof computeCapacityBadges>[0];
-		const result = await computeCapacityBadges(supabase, 'student-uuid', ['skill-1', 'skill-2']);
+		} as unknown as Parameters<typeof computePointBadges>[0];
+		const result = await computePointBadges(supabase, 'student-uuid', ['skill-1', 'skill-2']);
 		expect(result.get('skill-1')).toBe('non_commencee');
 		expect(result.get('skill-2')).toBe('non_commencee');
 	});
 
-	it('returns non_commencee for all skillIds when FSRS lookup fails', async () => {
+	it('returns non_commencee for all pointIds when FSRS lookup fails', async () => {
 		const fromMock = vi.fn().mockImplementation((table: string) => {
-			if (table === 'question_template_skills') {
+			if (table === 'question_template_points') {
 				return {
 					select: vi.fn().mockReturnThis(),
 					in: vi.fn().mockResolvedValue({
-						data: [{ skill_id: 'skill-1', template_id: 'tpl-1' }],
+						data: [{ point_id: 'skill-1', template_id: 'tpl-1' }],
 						error: null
 					})
 				};
@@ -361,8 +361,8 @@ describe('computeCapacityBadges', () => {
 			}
 			throw new Error(`Unexpected table: ${table}`);
 		});
-		const supabase = { from: fromMock } as unknown as Parameters<typeof computeCapacityBadges>[0];
-		const result = await computeCapacityBadges(supabase, 'student-uuid', ['skill-1']);
+		const supabase = { from: fromMock } as unknown as Parameters<typeof computePointBadges>[0];
+		const result = await computePointBadges(supabase, 'student-uuid', ['skill-1']);
 		expect(result.get('skill-1')).toBe('non_commencee');
 	});
 
@@ -371,13 +371,13 @@ describe('computeCapacityBadges', () => {
 		const past = new Date(Date.now() - 86_400_000).toISOString();
 		let fsrsLookupTemplateIds: string[] = [];
 		const fromMock = vi.fn().mockImplementation((table: string) => {
-			if (table === 'question_template_skills') {
+			if (table === 'question_template_points') {
 				return {
 					select: vi.fn().mockReturnThis(),
 					in: vi.fn().mockResolvedValue({
 						data: [
-							{ skill_id: 'skill-A', template_id: 'tpl-shared' },
-							{ skill_id: 'skill-B', template_id: 'tpl-shared' }
+							{ point_id: 'skill-A', template_id: 'tpl-shared' },
+							{ point_id: 'skill-B', template_id: 'tpl-shared' }
 						],
 						error: null
 					})
@@ -398,8 +398,8 @@ describe('computeCapacityBadges', () => {
 			}
 			throw new Error(`Unexpected table: ${table}`);
 		});
-		const supabase = { from: fromMock } as unknown as Parameters<typeof computeCapacityBadges>[0];
-		const result = await computeCapacityBadges(supabase, 'student-uuid', ['skill-A', 'skill-B']);
+		const supabase = { from: fromMock } as unknown as Parameters<typeof computePointBadges>[0];
+		const result = await computePointBadges(supabase, 'student-uuid', ['skill-A', 'skill-B']);
 
 		// 1 seul template id passé au SELECT FSRS (déduplication)
 		expect(fsrsLookupTemplateIds).toHaveLength(1);

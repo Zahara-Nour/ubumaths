@@ -200,11 +200,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 					.order('unlocked_at', { ascending: false }),
 				// Fetch unified work inbox (aggregates all 4 assignment sources)
 				getStudentWorkInbox(supabase, profile.id),
-				// Phase 6 widget — état des objectifs famille A (capacités knowledge)
+				// Phase 6 widget — état des objectifs (points de programme acquis)
 				supabase
-					.from('student_skill_state_a_v')
+					.from('student_point_state_v')
 					.select(
-						'skill_id, is_acquired, needs_remediation, skills!inner(objective_id, display_order)'
+						'point_id, is_acquired, needs_remediation, curriculum_points!inner(objective_id, rang)'
 					)
 					.eq('student_id', profile.id),
 				// Phase 6 widget — niveaux des 6 compétences math (famille B)
@@ -256,22 +256,24 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 		// Phase 6 — Agréger les états en stats par objectif (niveau atteint = max rang acquis)
 		type StateRow = {
-			skill_id: string | null;
+			point_id: string | null;
 			is_acquired: boolean | null;
 			needs_remediation: boolean | null;
-			skills:
-				| { objective_id: string | null; display_order: number }
-				| { objective_id: string | null; display_order: number }[]
+			curriculum_points:
+				| { objective_id: string; rang: number | null }
+				| { objective_id: string; rang: number | null }[]
 				| null;
 		};
 		const rangMaxByObjective = new Map<string, number>();
 		const remediationObjectives = new Set<string>();
 		for (const row of (objectivesState.data ?? []) as StateRow[]) {
-			const sk = Array.isArray(row.skills) ? row.skills[0] : row.skills;
+			const sk = Array.isArray(row.curriculum_points)
+				? row.curriculum_points[0]
+				: row.curriculum_points;
 			const objId = sk?.objective_id;
 			if (!objId) continue;
 			if (row.is_acquired) {
-				const r = sk?.display_order ?? 0;
+				const r = sk?.rang ?? 0;
 				const cur = rangMaxByObjective.get(objId) ?? 0;
 				if (r > cur) rangMaxByObjective.set(objId, r);
 			}

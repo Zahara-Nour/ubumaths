@@ -1,7 +1,7 @@
 /**
  * API — Curriculum points (level 3, tracking grain).
  *
- * GET  /api/teacher/curriculum/points?item_id=<uuid>   — list points of an item
+ * GET  /api/teacher/curriculum/points?objective_id=<uuid>   — list points of an item
  * POST /api/teacher/curriculum/points                  — create a point
  *
  * Teacher/admin only (RLS also enforces is_teacher_or_admin()).
@@ -17,7 +17,9 @@ import type { CurriculumPoint } from '$lib/types/database-helpers';
 export const GET: RequestHandler = async ({ url, locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
 
-	const parsed = pointListQuerySchema.safeParse({ item_id: url.searchParams.get('item_id') });
+	const parsed = pointListQuerySchema.safeParse({
+		objective_id: url.searchParams.get('objective_id')
+	});
 	if (!parsed.success) {
 		return json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
@@ -25,7 +27,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const { data, error: dbErr } = await locals.supabase
 		.from('curriculum_points')
 		.select(POINT_COLS)
-		.eq('item_id', parsed.data.item_id)
+		.eq('objective_id', parsed.data.objective_id)
 		.order('display_order', { ascending: true })
 		.order('name', { ascending: true });
 
@@ -55,7 +57,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { data, error: dbErr } = await locals.supabase
 		.from('curriculum_points')
 		.insert({
-			item_id: parsed.data.item_id,
+			objective_id: parsed.data.objective_id,
 			name: parsed.data.name,
 			display_order: parsed.data.display_order ?? 0,
 			kind: parsed.data.kind ?? null

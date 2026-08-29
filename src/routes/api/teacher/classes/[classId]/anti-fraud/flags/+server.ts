@@ -55,7 +55,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	let q = locals.supabase
 		.from('srs_anti_fraud_flags')
 		.select(
-			'id, student_id, capacity_skill_id, flag_type, severity, score, sample_size, details, resolved, resolved_by, resolved_at, created_at, profiles!srs_anti_fraud_flags_student_id_fkey(id, first_name, last_name), skills(id, name)'
+			'id, student_id, capacity_point_id, flag_type, severity, score, sample_size, details, resolved, resolved_by, resolved_at, created_at, profiles!srs_anti_fraud_flags_student_id_fkey(id, first_name, last_name), curriculum_points(id, name)'
 		)
 		.in('student_id', studentIds)
 		.gte('created_at', sinceIso)
@@ -65,7 +65,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		.limit(MAX_FLAGS_PER_REQUEST);
 
 	if (type) q = q.eq('flag_type', type);
-	if (capacity) q = q.eq('capacity_skill_id', capacity);
+	if (capacity) q = q.eq('capacity_point_id', capacity);
 
 	const { data: flagRows, error: flagErr } = await q;
 	if (flagErr) {
@@ -75,7 +75,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	type FlagRow = {
 		id: string;
 		student_id: string;
-		capacity_skill_id: string | null;
+		capacity_point_id: string | null;
 		flag_type: string;
 		severity: number;
 		score: number;
@@ -92,7 +92,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const flags = ((flagRows ?? []) as unknown as FlagRow[]).map((row) => ({
 		id: row.id,
 		student_id: row.student_id,
-		capacity_skill_id: row.capacity_skill_id,
+		capacity_point_id: row.capacity_point_id,
 		flag_type: row.flag_type,
 		severity: row.severity,
 		score: row.score,

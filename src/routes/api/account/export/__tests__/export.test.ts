@@ -391,7 +391,7 @@ describe('GET /api/account/export', () => {
 
 			expect(fromCalls).toContain('profiles');
 			// Évaluation référentielle (connaissances famille A + compétences famille B)
-			expect(fromCalls).toContain('student_skill_state_a');
+			expect(fromCalls).toContain('student_point_state');
 			expect(fromCalls).toContain('student_competence_level');
 			expect(fromCalls).toContain('skill_attempts');
 			expect(fromCalls).toContain('student_observable_state');
