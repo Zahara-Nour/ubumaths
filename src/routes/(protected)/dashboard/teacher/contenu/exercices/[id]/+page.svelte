@@ -44,6 +44,7 @@
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import type { ExerciseShareToken } from '$lib/exercises/types';
 	import { getExerciseContentSafe } from '$lib/exercises/types';
+	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
@@ -613,7 +614,7 @@
 									{:else}
 										<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 									{/if}
-									{theme.name}
+									<InlineMarkdown content={theme.name} />
 								</button>
 								{#if openTagThemes[theme.id]}
 									<div class="space-y-1 border-t p-2 pl-4">
@@ -628,16 +629,17 @@
 													{:else}
 														<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 													{/if}
-													<span class="font-medium">{item.name}</span>
+													<span class="font-medium"><InlineMarkdown content={item.name} /></span>
 												</button>
 												{#if openTagItems[item.id]}
 													<div class="space-y-1 py-1 pl-6">
 														{#each item.points as point (point.id)}
 															<MyCheckbox
 																checked={isTagged(point.id)}
-																label={point.name}
 																onchange={() => toggleTag(point.id)}
-															/>
+															>
+																<InlineMarkdown content={point.name} />
+															</MyCheckbox>
 														{/each}
 													</div>
 												{/if}

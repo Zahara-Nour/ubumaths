@@ -13,6 +13,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Gauge, ChevronRight, ChevronDown } from '@lucide/svelte';
 	import type { PageData } from './$types';
+	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 
 	type Theme = PageData['tree'][number];
 	type Item = Theme['objectives'][number];
@@ -137,7 +138,7 @@
 							{:else}
 								<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 							{/if}
-							<span class="flex-1 font-semibold">{theme.name}</span>
+							<span class="flex-1 font-semibold"><InlineMarkdown content={theme.name} /></span>
 							<span class="text-xs text-muted-foreground">
 								{ts.vus}/{ts.total} · {pct(ts.vus, ts.total)}%
 							</span>
@@ -158,7 +159,9 @@
 												{:else}
 													<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 												{/if}
-												<span class="flex-1 font-medium">{item.name}</span>
+												<span class="flex-1 font-medium"
+													><InlineMarkdown content={item.name} /></span
+												>
 												<span class="text-xs text-muted-foreground">{is.vus}/{is.total}</span>
 											</button>
 
@@ -174,7 +177,9 @@
 															>
 																{c}
 															</span>
-															<span class:text-muted-foreground={c === 0}>{point.name}</span>
+															<span class:text-muted-foreground={c === 0}
+																><InlineMarkdown content={point.name} /></span
+															>
 														</div>
 													{/each}
 												</div>
