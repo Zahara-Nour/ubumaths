@@ -475,8 +475,8 @@
 	 * Called by the Wheel component when a student is selected.
 	 * Currently just logs the winner (Wheel component displays it internally).
 	 */
-	function handleWinner(student: { id: string; firstname: string }) {
-		console.log('Winner selected:', student.firstname);
+	function handleWinner(_student: { id: string; firstname: string }) {
+		// SECURITY (finding M2): do not log student PII to the browser console (ships in prod).
 	}
 
 	/**

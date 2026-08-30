@@ -105,12 +105,17 @@ Suite d'intégration complète : **426 passed / 0 failed / 12 skipped** après l
 - [x] M11 templates preview : clés de `data` contraintes `[A-Za-z0-9_]{1,64}` (anti RegExp DoS) + escape regex dans templateEngine + garde de rôle teacher/admin + `validateUuidParam`
 - [x] M16 `generate_join_code` : CSPRNG (`gen_random_bytes`) + 8 caractères (32 bits) au lieu de `md5(random())` 6 car (24 bits). Tests M11 (unit) + M16 (integration).
 
-**Reste Vague 2** (PR à venir) :
+**PR 2c (`fix/security-vague2c`)** — M2 + M23 + M5 :
 
-- [ ] cluster RGPD (M13 audit PII, M19 cron, M20 retention, M23 error_logs redaction, M18 consent evidence)
-- [ ] storage (M1 — dashboard + signed URLs)
-- [ ] endpoints defense-in-depth (M4 form actions, M5 teacher endpoints, M8 achievement events, M9 rate limiting)
-- [ ] client (M2 console PII, M3 analytics consent, M17 trigger assertion)
+- [x] M2 : suppression des `console.log` d'objets/prénoms élèves (wheel prof/admin, TeacherDashboard) — plus de PII dans la console prod
+- [x] M23 : ajout de `cookie`/`bearer` aux patterns de redaction `error_logs` (`errorMonitoring.sanitizeObject` masquait déjà password/token/auth/etc.)
+- [x] M5 : garde de rôle teacher/admin sur les 8 endpoints teacher (rewards ×3, warnings ×3, periods, classes/[id]/warnings) — défense en profondeur (les RPC gardaient déjà `is_teacher_or_admin`)
+
+**Reste Vague 2** (à faire / ops) :
+
+- [ ] M4 form actions (12) `requireRoles` — défense en profondeur (RLS + trigger role protègent déjà le chemin critique)
+- [ ] M8 achievement events — nécessite `reference_id` vers ligne serveur + re-dérivation métriques dans la RPC (chantier)
+- [ ] **Ops/reproductibilité** : M1 (vérifier flags `public` des buckets au dashboard + signed URLs), M3 (gate consentement analytics Vercel), M13 (audit_trigger_func : ne stocker que les clés changées + scrub delete), M17 (assertion CI `pg_trigger` prod), M18 (consent evidence : capturer IP/UA serveur + rate limit), M19 (`cron.schedule` en migration), M20 (matrice de rétention + `run_cleanup_expired_data`)
 
 ### Vague 3 — nettoyage (L1-L7)
 

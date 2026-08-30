@@ -25,6 +25,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 	if (!user || !profile) {
 		throw error(401, 'Authentication required');
 	}
+	// SECURITY (finding M5): teacher/admin only (defense in depth over the RPC guard).
+	if (profile.role !== 'teacher' && profile.role !== 'admin') {
+		throw error(403, 'Réservé aux enseignants');
+	}
 
 	// School check
 	const schoolId = profile.school_id;

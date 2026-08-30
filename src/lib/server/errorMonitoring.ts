@@ -136,7 +136,11 @@ const SENSITIVE_PATTERNS = [
 	/api[_-]?key/i,
 	/auth/i,
 	/credential/i,
-	/session/i
+	/session/i,
+	// SECURITY (finding M23): `cookie` (session cookies) and `bearer` were not
+	// redacted — request_headers/request_body could persist them in error_logs.
+	/cookie/i,
+	/bearer/i
 ];
 
 /**

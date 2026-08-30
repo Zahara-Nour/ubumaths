@@ -18,10 +18,14 @@ const schema = z.object({
 });
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user } = locals;
+	const { user, profile } = locals;
 
 	if (!user) {
 		throw error(401, 'Authentication required');
+	}
+	// SECURITY (finding M5): teacher/admin only (defense in depth over the RPC guard).
+	if (profile?.role !== 'teacher' && profile?.role !== 'admin') {
+		throw error(403, 'Réservé aux enseignants');
 	}
 
 	// Validate input

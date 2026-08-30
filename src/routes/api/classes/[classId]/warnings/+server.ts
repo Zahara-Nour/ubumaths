@@ -19,10 +19,10 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getClassWarnings } from '$lib/server/warnings';
 import { getClassWarningsSchema } from '$lib/server/validation/classes';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireRoles } from '$lib/server/middleware/auth';
 
 export const GET: RequestHandler = async ({ params, url, locals }) => {
-	const { user } = await requireAuth(locals);
+	const { user } = await requireRoles(locals, ['teacher', 'admin']);
 
 	try {
 		// ✅ SECURITY: Validate parameters with Zod

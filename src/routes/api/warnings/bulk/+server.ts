@@ -24,10 +24,10 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { addWarningsBulkSchema } from '$lib/server/validation/warnings';
 import { addWarningsBulk } from '$lib/server/warnings';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireRoles } from '$lib/server/middleware/auth';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	await requireAuth(locals);
+	await requireRoles(locals, ['teacher', 'admin']);
 	const supabase = locals.supabase;
 
 	try {
