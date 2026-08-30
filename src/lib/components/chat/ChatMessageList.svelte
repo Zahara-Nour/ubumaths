@@ -33,6 +33,8 @@
 	import { MoreVertical, Flag, Download, Trash2 } from '@lucide/svelte';
 	import DeleteMessageDialog from '$lib/components/moderation/DeleteMessageDialog.svelte';
 	import type { Message } from '$lib/stores/chat.svelte';
+	import { chatStore } from '$lib/stores/chat.svelte';
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
 	import type { JSONContent } from '@tiptap/core';
 
@@ -90,6 +92,19 @@
 			onDelete(messageToDelete);
 		}
 		messageToDelete = null;
+	}
+
+	/**
+	 * Open a chat attachment (finding M1): chat-attachments is a private bucket, so
+	 * we mint a fresh short-lived signed URL on click instead of a (now-dead) public URL.
+	 */
+	async function openAttachment(storagePath: string, fileName: string): Promise<void> {
+		const url = await chatStore.getAttachmentSignedUrl(storagePath);
+		if (!url) {
+			toaster.error(`Impossible d'ouvrir « ${fileName} »`);
+			return;
+		}
+		window.open(url, '_blank', 'noopener,noreferrer');
 	}
 
 	/**
@@ -308,19 +323,18 @@
 								{#if message.attachments && message.attachments.length > 0}
 									<div class="mt-2 space-y-2">
 										{#each message.attachments as attachment (attachment.id)}
-											<a
-												href={attachment.public_url}
-												target="_blank"
-												rel="noopener noreferrer"
-												data-sveltekit-preload-data="off"
-												class="flex items-center gap-2 rounded border border-border bg-background/50 p-2 text-sm hover:bg-background"
+											<button
+												type="button"
+												onclick={() =>
+													openAttachment(attachment.storage_path, attachment.file_name)}
+												class="flex w-full items-center gap-2 rounded border border-border bg-background/50 p-2 text-left text-sm hover:bg-background"
 											>
-												<Download class="h-4 w-4" />
+												<Download class="h-4 w-4 shrink-0" />
 												<span class="truncate">{attachment.file_name}</span>
 												<span class="text-xs text-muted-foreground">
 													({Math.round(attachment.file_size / 1024)}KB)
 												</span>
-											</a>
+											</button>
 										{/each}
 									</div>
 								{/if}
