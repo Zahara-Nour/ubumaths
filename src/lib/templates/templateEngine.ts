@@ -138,7 +138,11 @@ export function previewTemplate(
 	let body = template.body_template;
 
 	Object.entries(data).forEach(([key, value]) => {
-		const placeholder = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+		// SECURITY (finding M11): escape regex metacharacters in the key (defense in
+		// depth alongside the schema key-charset constraint) so it can't build an
+		// invalid or catastrophically-backtracking pattern.
+		const safeKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		const placeholder = new RegExp(`\\{\\{${safeKey}\\}\\}`, 'g');
 		subject = subject.replace(placeholder, String(value));
 		body = body.replace(placeholder, String(value));
 	});

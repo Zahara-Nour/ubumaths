@@ -12,17 +12,27 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { previewTemplate } from '$lib/templates/templateEngine';
 import { previewTemplateSchema } from '$lib/server/validation/message-templates';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 // =====================================================
 // POST - Generate preview
 // =====================================================
 export const POST: RequestHandler = async ({ locals, params, request }) => {
-	const { supabase, user } = locals;
-	const { id } = params;
+	const { supabase, user, profile } = locals;
 
 	if (!user) {
 		return error(401, 'Non authentifié');
 	}
+
+	// SECURITY (finding M11): message templates are a teacher/admin tool — every
+	// sibling route gates on role; this one only checked `!user`.
+	if (profile?.role !== 'teacher' && profile?.role !== 'admin') {
+		return error(403, 'Réservé aux enseignants');
+	}
+
+	// SECURITY (finding M11): validate the id as a UUID (was passed straight into
+	// .eq('id', id), yielding raw 22P02 errors on malformed input).
+	const id = validateUuidParam(params.id);
 
 	// Get template
 	const { data: template, error: dbError } = await supabase

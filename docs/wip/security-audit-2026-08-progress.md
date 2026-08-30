@@ -100,12 +100,16 @@ Suite d'intégration complète : **426 passed / 0 failed / 12 skipped** après l
 - [x] M24 énumération login : message générique fixe (plus de passthrough GoTrue « Email not confirmed »)
 - Tests : `security-classmate-expiry.test.ts` (M14). Suite complète **442 passed / 0 failed**.
 
+**PR 2b (`fix/security-vague2b`)** — M11 + M16 :
+
+- [x] M11 templates preview : clés de `data` contraintes `[A-Za-z0-9_]{1,64}` (anti RegExp DoS) + escape regex dans templateEngine + garde de rôle teacher/admin + `validateUuidParam`
+- [x] M16 `generate_join_code` : CSPRNG (`gen_random_bytes`) + 8 caractères (32 bits) au lieu de `md5(random())` 6 car (24 bits). Tests M11 (unit) + M16 (integration).
+
 **Reste Vague 2** (PR à venir) :
 
 - [ ] cluster RGPD (M13 audit PII, M19 cron, M20 retention, M23 error_logs redaction, M18 consent evidence)
 - [ ] storage (M1 — dashboard + signed URLs)
-- [ ] endpoints defense-in-depth (M4 form actions, M5 teacher endpoints, M8 achievement events, M9 rate limiting, M11 templates preview)
-- [ ] frontières (M16 entropie code classe)
+- [ ] endpoints defense-in-depth (M4 form actions, M5 teacher endpoints, M8 achievement events, M9 rate limiting)
 - [ ] client (M2 console PII, M3 analytics consent, M17 trigger assertion)
 
 ### Vague 3 — nettoyage (L1-L7)
