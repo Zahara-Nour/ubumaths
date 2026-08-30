@@ -7772,7 +7772,7 @@ export type Database = {
           created_at: string
           id: string
           metadata: Json | null
-          moderator_id: string
+          moderator_id: string | null
           reason: string | null
           target_id: string
           target_type: string
@@ -7782,7 +7782,7 @@ export type Database = {
           created_at?: string
           id?: string
           metadata?: Json | null
-          moderator_id: string
+          moderator_id?: string | null
           reason?: string | null
           target_id: string
           target_type: string
@@ -7792,7 +7792,7 @@ export type Database = {
           created_at?: string
           id?: string
           metadata?: Json | null
-          moderator_id?: string
+          moderator_id?: string | null
           reason?: string | null
           target_id?: string
           target_type?: string
@@ -9221,6 +9221,41 @@ export type Database = {
           },
         ]
       }
+      python_submission_server_verdicts: {
+        Row: {
+          created_at: string
+          server_is_correct: boolean | null
+          server_validation_result: Json | null
+          submission_id: string
+          verification_status: string
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          server_is_correct?: boolean | null
+          server_validation_result?: Json | null
+          submission_id: string
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          server_is_correct?: boolean | null
+          server_validation_result?: Json | null
+          submission_id?: string
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "python_submission_server_verdicts_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: true
+            referencedRelation: "python_exercise_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       python_tags: {
         Row: {
           created_at: string
@@ -9244,14 +9279,17 @@ export type Database = {
       }
       question_template_points: {
         Row: {
+          created_at: string
           point_id: string
           template_id: string
         }
         Insert: {
+          created_at?: string
           point_id: string
           template_id: string
         }
         Update: {
+          created_at?: string
           point_id?: string
           template_id?: string
         }
@@ -15354,6 +15392,34 @@ export type Database = {
           unresolved_errors: number
         }[]
       }
+      get_exercise_by_share_token: {
+        Args: { p_token: string }
+        Returns: {
+          category: string
+          created_at: string
+          created_by: string
+          distribution_mode: string
+          generic_functions: string[] | null
+          grades: string[] | null
+          id: string
+          is_public: boolean
+          resources: Json | null
+          shared: Json | null
+          slug: string | null
+          source: string | null
+          title: string | null
+          topic: string | null
+          updated_at: string
+          variables: Json
+          variations: Json | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "exercises"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_exercise_completion_stats: {
         Args: { p_exercise_id: string }
         Returns: {
@@ -16231,6 +16297,7 @@ export type Database = {
       run_cleanup_all: { Args: never; Returns: undefined }
       run_cleanup_expired_data: { Args: never; Returns: undefined }
       run_daily_summaries: { Args: never; Returns: undefined }
+      run_flag_stale_python_rechecks: { Args: never; Returns: undefined }
       run_recalculate_minesweeper_ref_times: { Args: never; Returns: undefined }
       run_weekly_best_bonuses: { Args: never; Returns: undefined }
       run_weekly_rewards: { Args: never; Returns: undefined }

@@ -160,6 +160,7 @@ export type UpdatePointInput = z.infer<typeof updatePointSchema>;
 export type ReorderThemesInput = z.infer<typeof reorderThemesSchema>;
 export type ReorderObjectivesInput = z.infer<typeof reorderObjectivesSchema>;
 export type ReorderPointsInput = z.infer<typeof reorderPointsSchema>;
+export type TemplateTagInput = z.infer<typeof templateTagSchema>;
 
 // ---------------------------------------------------------------------------
 // Brique 2 — Tagging des exercices & alimentation (cahier de texte)
@@ -171,6 +172,23 @@ const uuidSchema = z.string().uuid();
 export const exerciseTagSchema = z.object({
 	exercise_id: uuidSchema,
 	point_id: uuidSchema
+});
+
+/**
+ * Tag / untag d'une question (template) avec un point de programme.
+ *
+ * Pas de contrainte de niveau : on n'exige pas que le point appartienne à un
+ * `grades[]` du template. Une question de seconde peut légitimement valider un
+ * point de 1ʳᵉ, et l'inverse pour de la remédiation. L'UI ne propose que les
+ * niveaux déclarés ; l'API ne l'impose pas.
+ */
+export const templateTagSchema = z.object({
+	template_id: uuidSchema,
+	point_id: uuidSchema
+});
+
+export const templateTagListQuerySchema = z.object({
+	template_id: uuidSchema
 });
 
 export const exerciseTagListQuerySchema = z.object({

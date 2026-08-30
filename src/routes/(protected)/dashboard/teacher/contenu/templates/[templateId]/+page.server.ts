@@ -22,6 +22,7 @@ import {
 	instantiateTemplateSchema
 } from '$lib/server/validation/chapter-templates';
 import { hasContent, parseContentSnapshot } from '$lib/types/chapter-templates';
+import { getCurriculumTree, type CurriculumTreeTheme } from '$lib/server/curriculum';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const { user } = await requireRole(locals, 'teacher');
@@ -53,11 +54,28 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.eq('is_active', true)
 		.order('name');
 
+	// Arbres du référentiel pour les niveaux de la question, et ses tags actuels.
+	// `question_template_points` est le pivot de l'acquisition : sans tag, aucun
+	// point ne peut se valider, quel que soit le nombre de réponses de l'élève.
+	const grades = (template.grades ?? []) as string[];
+	const curriculumByGrade: { grade: string; tree: CurriculumTreeTheme[] }[] = [];
+	for (const g of grades) {
+		const tree = await getCurriculumTree(locals.supabase, g);
+		if (tree.length > 0) curriculumByGrade.push({ grade: g, tree });
+	}
+
+	const { data: tagRows } = await locals.supabase
+		.from('question_template_points')
+		.select('point_id')
+		.eq('template_id', templateId);
+
 	return {
 		template,
 		versions: versions || [],
 		classes: classes || [],
-		isOwner
+		isOwner,
+		curriculumByGrade,
+		taggedPointIds: (tagRows ?? []).map((r) => r.point_id)
 	};
 };
 
