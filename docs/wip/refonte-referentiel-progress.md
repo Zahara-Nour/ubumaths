@@ -41,6 +41,7 @@ Plus un troisième jeu d'étiquettes libres (`question_templates.theme/domain/su
 12. **Pas de thème « Automatismes »** dans l'arbre de 1ʳᵉ : ses points sont des acquis des années antérieures. Ils vivront dans l'arbre du niveau où ils sont introduits, reliés par `curriculum_point_automatismes`.
 13. **Le markdown amorce, l'application fait foi** (cf. §7) — le seed devient un `DO` gardé qui ne remplit qu'un niveau vide. Corriger le markdown d'un niveau déjà en base ne produit plus rien : la correction se fait dans la page Programme.
 14. **Le code est attribué par la base** (cf. §7) — trigger, série continue par niveau, colonne `NOT NULL`. C'est le seul identifiant d'un point à la fois lisible et stable d'un environnement à l'autre, donc le seul citable dans une fiche.
+15. **Les « Exemples d'algorithmes » du BO sont conservés** (David, 2026-08-29) — 11 points, en `approfondissement` comme les 17 « Approfondissements possibles ». Ce sont des illustrations proposées à l'enseignant, pas des attendus, mais le prof veut pouvoir cocher qu'il les a traitées. Sans eux, le programme tomberait à 142 points.
 
 ---
 
@@ -155,7 +156,13 @@ Corriger le markdown, relancer `pnpm tsx scripts/generate-curriculum-1re-spe-see
 
 49 connaissances · 65 savoir-faire attendus · 11 démonstrations · 28 approfondissements. `rang` NULL partout (le programme ne propose aucune échelle).
 
-**Trois écarts assumés avec le texte**, documentés dans le markdown : les 11 « Exemples d'algorithmes » comptés comme approfondissements · trois puces du BO coupées en deux là où un élève peut réussir un geste sans l'autre · typage interprétatif du thème « Vocabulaire ensembliste et logique » (rédigé en prose continue, sans rubriques).
+**Deux écarts assumés avec le texte**, documentés dans le markdown : trois puces du BO coupées en deux là où un élève peut réussir un geste sans l'autre · typage interprétatif du thème « Vocabulaire ensembliste et logique » (rédigé en prose continue, sans rubriques).
+
+**Et un choix éditorial, à ne pas confondre avec un écart** (corrigé le 2026-08-29) : les 11 « Exemples d'algorithmes » du BO partagent la valeur `approfondissement` avec les 17 « Approfondissements possibles ». Ce n'est pas une approximation — `exigence` répond à une seule question, _ce point est-il exigible ?_, et les deux rubriques y répondent pareil : non. Ce qui les distingue est leur **nature** (maths poussées d'un côté, programmation de l'autre), pas leur niveau d'exigence.
+
+Ajouter une troisième valeur à `exigence` pour les séparer referait l'erreur de `knowledge_type` — un champ portant deux questions à la fois, dont la frontière paraît arbitraire au moment de remplir. Si le besoin d'isoler le travail de programmation devient réel, la forme juste est une table de jonction, sur le modèle de `curriculum_point_automatismes`. Six points concernés en 1ʳᵉ : une recherche sur le libellé suffit aujourd'hui.
+
+La question éditoriale qui restait — faut-il les **inclure** ? — est tranchée : oui (décision 15). Ce sont des illustrations et non des attendus, mais le prof veut pouvoir cocher qu'il les a traitées.
 
 ---
 

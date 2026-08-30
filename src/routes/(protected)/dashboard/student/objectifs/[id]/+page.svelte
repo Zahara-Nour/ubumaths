@@ -26,6 +26,7 @@
 	import CapacityFsrsBadge from '$lib/components/srs/CapacityFsrsBadge.svelte';
 	import type { PageData } from './$types';
 	import type { CapacityDetail } from './+page.server';
+	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 
 	interface Props {
 		data: PageData;
@@ -135,7 +136,7 @@
 					</div>
 				</Card.Header>
 				<Card.Content class="pt-0">
-					<p class="text-sm leading-relaxed">{cap.name}</p>
+					<p class="text-sm leading-relaxed"><InlineMarkdown content={cap.name} /></p>
 					<div class="mt-3 flex flex-wrap items-center gap-2">
 						<Badge variant={capacityBadgeVariant(cap)} class="text-xs">
 							{capacityStatusLabel(cap)}

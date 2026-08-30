@@ -42,6 +42,7 @@
 		Plus
 	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
+	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 
 	interface Props {
 		data: PageData;
@@ -605,7 +606,7 @@
 										{:else}
 											<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 										{/if}
-										{theme.name}
+										<InlineMarkdown content={theme.name} />
 									</button>
 									{#if openProgThemes[theme.id]}
 										<div class="space-y-1 border-t p-2 pl-4">
@@ -620,7 +621,7 @@
 														{:else}
 															<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 														{/if}
-														<span class="font-medium">{item.name}</span>
+														<span class="font-medium"><InlineMarkdown content={item.name} /></span>
 														<span class="text-xs text-muted-foreground">
 															({item.points.filter((p) => isCovered(p.id)).length}/{item.points
 																.length})
@@ -631,11 +632,13 @@
 															{#each item.points as point (point.id)}
 																<MyCheckbox
 																	checked={isCovered(point.id)}
-																	label={coveredSource[point.id] === 'auto'
-																		? `${point.name} (auto)`
-																		: point.name}
 																	onchange={() => togglePoint(point)}
-																/>
+																>
+																	<InlineMarkdown content={point.name} />
+																	{#if coveredSource[point.id] === 'auto'}
+																		<span class="text-muted-foreground">(auto)</span>
+																	{/if}
+																</MyCheckbox>
 															{/each}
 														</div>
 													{/if}

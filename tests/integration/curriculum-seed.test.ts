@@ -50,18 +50,18 @@ async function pointsOfGrade(grade: string) {
 }
 
 describe('Seed du programme — 1ʳᵉ spécialité', () => {
-	it('pose 6 thèmes, 14 objectifs et 153 points', async () => {
+	it('pose 6 thèmes, 14 objectifs et 173 points', async () => {
 		const { themes, objectives, points } = await pointsOfGrade('1_SPE');
 		expect(themes).toHaveLength(6);
 		expect(objectives).toHaveLength(14);
-		expect(points).toHaveLength(153);
+		expect(points).toHaveLength(173);
 	});
 
 	it('reproduit la typologie du BO (Contenus / Capacités attendues / Démonstrations)', async () => {
 		const { points } = await pointsOfGrade('1_SPE');
 		const by = (k: string) => points.filter((p) => p.kind === k).length;
-		expect(by('connaissance')).toBe(49); // Contenus
-		expect(by('savoir_faire')).toBe(93); // Capacités attendues + approfondissements
+		expect(by('connaissance')).toBe(64); // Contenus
+		expect(by('savoir_faire')).toBe(98); // Capacités attendues + approfondissements
 		expect(by('demonstration')).toBe(11); // Démonstrations
 	});
 
@@ -103,7 +103,7 @@ describe('Seed du programme — 1ʳᵉ spécialité', () => {
 	it('marque en approfondissement les 28 points hors attendus', async () => {
 		const { points } = await pointsOfGrade('1_SPE');
 		expect(points.filter((p) => p.exigence === 'approfondissement')).toHaveLength(28);
-		expect(points.filter((p) => p.exigence === 'attendu')).toHaveLength(125);
+		expect(points.filter((p) => p.exigence === 'attendu')).toHaveLength(145);
 	});
 
 	it('ne pose aucun rang : le programme ne propose pas d’échelle de difficulté', async () => {
@@ -120,11 +120,11 @@ describe('Seed du programme — 1ʳᵉ spécialité', () => {
 });
 
 describe('Seed du programme — code stable', () => {
-	it('donne un code unique à chacun des 153 points', async () => {
+	it('donne un code unique à chacun des 173 points', async () => {
 		const { points } = await pointsOfGrade('1_SPE');
 		const codes = points.map((p) => p.code).filter(Boolean);
-		expect(codes).toHaveLength(153);
-		expect(new Set(codes).size).toBe(153);
+		expect(codes).toHaveLength(173);
+		expect(new Set(codes).size).toBe(173);
 		expect(codes.every((c) => /^1SPE-\d{3}$/.test(c!))).toBe(true);
 	});
 
