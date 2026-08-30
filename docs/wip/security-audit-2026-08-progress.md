@@ -51,14 +51,21 @@ Suite d'intégration complète : **426 passed / 0 failed / 12 skipped** après l
 - [x] H13 latex compile : `requireAuth` (fermait le seul endpoint sans auth = proxy ouvert)
 - [x] Tests : `security-hardening.test.ts` (5) + unit rate-limiter/password/login verts
 
+**PR DB RGPD (`fix/security-vague1b`, stacked sur vague1)** — H14/H15 :
+
+- [x] H14 pending_students : trigger AFTER INSERT sur profiles purge la ligne PII à l'activation + backfill (retention des jamais-activés = cron, différé M19). Test self-registration mis à jour (purge au lieu de « marked activated »).
+- [x] H15 moderation_logs FK : `moderator_id` nullable + `ON DELETE SET NULL` (débloque la suppression staff, garde le log anonymisé).
+- [x] Test `security-rgpd-erasure.test.ts` (2). Suite complète : 433 passed + 2 nouveaux (1 flake pré-existant `vip-card-enabled-filtering` funding-race, vert en isolation).
+
 **PR DB (à venir, stacked)** :
 
-- [ ] H1 sweep `REVOKE … FROM anon` + `ALTER DEFAULT PRIVILEGES` + whitelist
-- [ ] H2/H3 cookies HTML, CSP, maxAge
-- [ ] H8 share-tokens
-- [ ] H9/H10 auto-inscription par code
-- [ ] H12 thread CTE filtre
-- [ ] H14/H15 RGPD erasure (pending_students, moderation_logs FK)
+- [ ] H8 share-tokens (drop policies blanket + RPC par token + crypto.randomUUID)
+- [ ] H9/H10 auto-inscription par code (handle_new_user re-résout le code ; drop `students_can_join`)
+- [ ] H12 thread CTE filtre (reprend la version vague0 gardée + filtre par destinataire)
+- [ ] H1 sweep `REVOKE … FROM anon` + `ALTER DEFAULT PRIVILEGES` + whitelist (RISQUÉ)
+- [ ] H2/H3 cookies HTML (retirer `cookies` du +layout.server.ts), CSP (retirer unsafe-eval/inline), maxAge
+
+> ⚠️ **Flake de test connu** (pré-existant, non lié à la sécu) : `vip-card-enabled-filtering > all cards disabled` échoue par intermittence en suite complète (« Insufficient gidouilles: available 0 » = race de funding dans ProfileBuilder), vert en isolation. À traiter côté test-infra.
 
 ### Vague 2 — durcissement + RGPD (M1-M24)
 

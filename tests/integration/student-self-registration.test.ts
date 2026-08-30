@@ -301,7 +301,7 @@ describe('Student self-registration by class code - Integration Tests', () => {
 	// 20260825170000 removes those `gender` references, so this branch works again:
 	// a teacher-added student, on first login, gets an approved profile, is enrolled
 	// in the pre-assigned classes, and the pending_students row is marked activated.
-	it('regression: pending_students match (no class_id) → approved, enrolled in pre-assigned classes, marked activated', async () => {
+	it('regression: pending_students match (no class_id) → approved, enrolled in pre-assigned classes, PII purged', async () => {
 		await ensureTeacher();
 		const schoolId = await createSchool();
 		// Pre-assigned class the student should be enrolled into on first login.
@@ -350,14 +350,14 @@ describe('Student self-registration by class code - Integration Tests', () => {
 		expect(members).toHaveLength(1);
 		expect(members[0].class_id).toBe(cls.id);
 
-		// pending_students marked activated.
+		// RGPD (finding H14): the pending_students PII row is PURGED on activation
+		// (a real profile now holds the data), via the AFTER INSERT trigger on
+		// profiles — no longer merely marked `is_activated = true`.
 		const { data: after } = await service
 			.from('pending_students')
-			.select('is_activated, activated_at')
-			.eq('id', pending!.id)
-			.single();
-		expect(after!.is_activated).toBe(true);
-		expect(after!.activated_at).not.toBeNull();
+			.select('id')
+			.eq('id', pending!.id);
+		expect(after ?? []).toHaveLength(0);
 
 		// No terms recorded via this branch.
 		expect(await getTerms(id)).toHaveLength(0);
