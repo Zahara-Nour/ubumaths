@@ -10,7 +10,7 @@
  * Usage : pnpm tsx scripts/generate-curriculum-1re-spe-seed.ts
  */
 
-import { readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -162,6 +162,48 @@ function assignMissingCodes(markdown: string): string {
 const updatedMd = assignMissingCodes(md);
 if (updatedMd !== md) writeFileSync(SRC, updatedMd);
 
+/**
+ * Garde-fou : toute commande LaTeX doit être connue de MathLive.
+ *
+ * Les libellés sont rendus par MathLive (`math-span`), qui ne couvre pas tout
+ * LaTeX. Une commande inconnue s'affiche en clair au milieu de la phrase — c'est
+ * ce qui est arrivé le 2026-08-30 avec `\dots` et `\overrightarrow`, écrites à la
+ * main et découvertes par David à l'écran, pas par un test.
+ *
+ * On lit la table de MathLive plutôt que d'en figer une copie : elle suit alors
+ * les montées de version du paquet.
+ */
+function assertMathLiveKnowsEveryCommand(points: { code: string; name: string }[]) {
+	const bundle = join(ROOT, 'node_modules/mathlive/mathlive.mjs');
+	if (!existsSync(bundle)) {
+		console.warn('  ⚠ mathlive introuvable — vérification des commandes LaTeX sautée');
+		return;
+	}
+	const src = readFileSync(bundle, 'utf8');
+	const unknown = new Map<string, string[]>();
+
+	for (const pt of points) {
+		for (const formula of pt.name.match(/\$[^$]+\$/g) ?? []) {
+			for (const [, cmd] of formula.matchAll(/\\([a-zA-Z]+)/g)) {
+				// Dans le bundle, les commandes sont écrites avec un antislash échappé.
+				if (src.includes(`\\\\${cmd}"`) || src.includes(`\\\\${cmd}'`)) continue;
+				const codes = unknown.get(cmd) ?? [];
+				if (!codes.includes(pt.code)) codes.push(pt.code);
+				unknown.set(cmd, codes);
+			}
+		}
+	}
+
+	if (unknown.size > 0) {
+		const detail = [...unknown]
+			.map(([cmd, codes]) => `  \\${cmd} — ${codes.slice(0, 4).join(', ')}`)
+			.join('\n');
+		throw new Error(
+			`Commandes LaTeX inconnues de MathLive (elles s'afficheraient en clair) :\n${detail}`
+		);
+	}
+}
+
 // Garde-fous : les contraintes UNIQUE de la base doivent tenir.
 for (const [label, seen] of [
 	['thème', new Set<string>()],
@@ -179,6 +221,8 @@ for (const [label, seen] of [
 		seen.add(k);
 	}
 }
+
+assertMathLiveKnowsEveryCommand(points);
 
 const sql = `-- ============================================================================
 -- Amorçage — Programme de suivi 1ʳᵉ spécialité mathématiques (grade '${GRADE}')

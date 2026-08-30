@@ -77,8 +77,11 @@ Trois règles :
   qui ne peut pas savoir où finit la première. Toujours un mot ou une ponctuation
   entre deux formules. (Ce n'est plus un problème côté SQL : le générateur écrit
   désormais en quoting standard, insensible aux `$`.)
-- **Convention française pour les vecteurs** : `\vec{u}` pour un vecteur d'une
-  lettre, `\overrightarrow{MA}` pour un vecteur défini par deux points.
+- **Seules les commandes connues de MathLive.** Le générateur refuse le fichier
+  sinon, en nommant les points fautifs — une commande inconnue s'afficherait en
+  clair à l'élève. En particulier `\ldots` ou `\cdots`, jamais `\dots` ; et
+  `\vec{MA}` plutôt que `\overrightarrow{MA}`, malgré la convention française
+  pour un vecteur défini par deux points — MathLive ne connaît pas la seconde.
 - **Pas de maths d'affichage** (`$$…$$`) dans un libellé : un point de programme
   est une ligne, pas un paragraphe.
 
@@ -163,7 +166,7 @@ page Programme.
 ### 1.1 Ensembles
 
 - [C] `1SPE-001` Notions d'élément d'un ensemble, de sous-ensemble, d'ensemble vide, d'appartenance et d'inclusion, de réunion, d'intersection et de complémentaire
-- [C] `1SPE-002` Symboles de base correspondants : $\varnothing$, $\in$, $\subset$, $\cap$, $\cup$, $\{\,\dots\,\}$. Notation du complémentaire d'un sous-ensemble $A$ de $E$ : $\bar{A}$ (notation des probabilités) ou $E \setminus A$
+- [C] `1SPE-002` Symboles de base correspondants : $\varnothing$, $\in$, $\subset$, $\cap$, $\cup$, $\{\,\ldots\,\}$. Notation du complémentaire d'un sous-ensemble $A$ de $E$ : $\bar{A}$ (notation des probabilités) ou $E \setminus A$
 - [C] `1SPE-003` Notation des ensembles de nombres et des intervalles
 - [C] `1SPE-004` Notion de couple et de produit cartésien de deux ensembles
 - [C] `1SPE-005` Notation $\operatorname{Card}(A)$ pour le cardinal d'un ensemble fini
@@ -206,10 +209,10 @@ page Programme.
 - [C] `1SPE-023` Notations : $u(n)$, $u_n$, $(u(n))$, $(u_n)$
 - [C] `1SPE-024` Suites arithmétiques : exemples, définition, calcul du terme général
 - [C] `1SPE-025` Suites arithmétiques : lien avec l'étude d'évolutions successives à accroissements constants ; lien avec les fonctions affines
-- [C] `1SPE-026` Suites arithmétiques : calcul de $1 + 2 + \dots + n$
+- [C] `1SPE-026` Suites arithmétiques : calcul de $1 + 2 + \cdots + n$
 - [C] `1SPE-027` Suites géométriques : exemples, définition, calcul du terme général
 - [C] `1SPE-028` Suites géométriques : lien avec l'étude d'évolutions successives à taux constant ; lien avec la fonction exponentielle
-- [C] `1SPE-029` Suites géométriques : calcul de $1 + q + \dots + q^n$
+- [C] `1SPE-029` Suites géométriques : calcul de $1 + q + \cdots + q^n$
 - [C] `1SPE-030` Sens de variation d'une suite
 - [C] `1SPE-031` Introduction intuitive, sur des exemples, de la notion de limite finie ou infinie, ou de l'absence de limite d'une suite
 
@@ -228,8 +231,8 @@ page Programme.
 **Démonstrations**
 
 - [D] `1SPE-041` Calcul du terme général d'une suite arithmétique, d'une suite géométrique
-- [D] `1SPE-042` Calcul de $1 + 2 + \dots + n$
-- [D] `1SPE-043` Calcul de $1 + q + \dots + q^n$
+- [D] `1SPE-042` Calcul de $1 + 2 + \cdots + n$
+- [D] `1SPE-043` Calcul de $1 + q + \cdots + q^n$
 
 **Exemples d'algorithmes**
 
@@ -399,7 +402,7 @@ page Programme.
 - [C] `1SPE-121` Expression des coordonnées dans une base orthonormée en termes de produits scalaires avec les vecteurs de la base
 - [C] `1SPE-122` Développement de $\|\vec{u} + \vec{v}\|^2$ et $\|\vec{u} - \vec{v}\|^2$
 - [C] `1SPE-123` Formule d'Al-Kashi
-- [C] `1SPE-124` Transformation de l'expression $\overrightarrow{MA} \cdot \overrightarrow{MB}$
+- [C] `1SPE-124` Transformation de l'expression $\vec{MA} \cdot \vec{MB}$
 
 **Capacités attendues**
 
@@ -412,7 +415,7 @@ page Programme.
 **Démonstrations**
 
 - [D] `1SPE-130` Formule d'Al-Kashi (démonstration avec le produit scalaire)
-- [D] `1SPE-131` Ensemble des points $M$ tels que $\overrightarrow{MA} \cdot \overrightarrow{MB} = 0$ (démonstration avec le produit scalaire)
+- [D] `1SPE-131` Ensemble des points $M$ tels que $\vec{MA} \cdot \vec{MB} = 0$ (démonstration avec le produit scalaire)
 
 **Approfondissements possibles**
 

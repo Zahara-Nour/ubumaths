@@ -26,6 +26,12 @@
 --
 --   teacher@local.test / local-teacher   → rôle teacher
 --   student@local.test / local-student   → rôle student
+--   admin@local.test   / local-admin     → rôle admin
+--
+-- L'admin est indispensable : l'édition des questions
+-- (`/dashboard/admin/questions/[id]/edit`), donc le tagging au programme, exige
+-- `requireAdmin`. Il survit à `pnpm test:integration`, dont le global-setup ne
+-- supprime que les comptes `teacher`.
 -- ==============================================================================
 
 -- Les triggers sont neutralisés par seed.sql (session_replication_role) ; on
@@ -41,7 +47,9 @@ BEGIN
             ('11111111-1111-4111-8111-111111111111'::uuid,
              'teacher@local.test', 'local-teacher', 'teacher', 'Prof Local'),
             ('22222222-2222-4222-8222-222222222222'::uuid,
-             'student@local.test', 'local-student', 'student', 'Élève Local')
+             'student@local.test', 'local-student', 'student', 'Élève Local'),
+            ('33333333-3333-4333-8333-333333333333'::uuid,
+             'admin@local.test', 'local-admin', 'admin', 'Admin Local')
         ) AS t(id, email, password, role, full_name)
     LOOP
         -- Les colonnes de jetons doivent valoir '' et non NULL : GoTrue les lit
