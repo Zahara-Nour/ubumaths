@@ -158,9 +158,11 @@ export const actions = {
 
 		if (error) {
 			logger.error('Email/password login failed:', error.message);
-			// Return error to display in form
+			// SECURITY (finding M24): never surface the raw GoTrue message. It returns
+			// "Email not confirmed" only when the account EXISTS but is unverified,
+			// disclosing registered emails (enumeration). Return a fixed generic string.
 			return fail(400, {
-				error: error.message,
+				error: 'Identifiants invalides.',
 				email // Preserve email for convenience
 			});
 		}

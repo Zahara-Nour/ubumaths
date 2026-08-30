@@ -87,11 +87,26 @@ Suite d'intégration complète : **426 passed / 0 failed / 12 skipped** après l
 
 ### Vague 2 — durcissement + RGPD (M1-M24)
 
-- [ ] cluster RGPD (M13, M19, M20, M23)
-- [ ] storage (M1)
-- [ ] endpoints defense-in-depth (M4-M12)
-- [ ] frontières (M14, M16, M21, M22)
-- [ ] client (M2, M3, M17, M24)
+**PR 2a (`fix/security-vague2a`)** — 9 mediums (app + frontières DB) :
+
+- [x] M6 XSS Content-Type documents : allowlist MIME inline (pdf/images), sinon octet-stream+attachment
+- [x] M7 traversée de chemin docs admin : `resolve()` + assert containment DOCS_ROOT
+- [x] M10 injection filtre PostgREST : strip `,()` du `search` (worksheets + templates)
+- [x] M12 marketplace : strip `proposer.vip_cards` (inventaire) de la réponse aux propriétaires d'annonce
+- [x] M14 classmates : `are_classmates`/`is_classmate` filtrent `status='active'` + `classes.is_active` (relation n'expire plus). ⚠️ bénéfice masqué tant que le narrowing C2 authenticated n'est pas fait
+- [x] M15 matview `student_achievement_stats` : `REVOKE SELECT FROM anon, authenticated`
+- [x] M21 `shares_tournament` : `AND same_school()` (frontière école)
+- [x] M22 `get_achievement_leaderboard` : `p_limit` clampé [1,50]
+- [x] M24 énumération login : message générique fixe (plus de passthrough GoTrue « Email not confirmed »)
+- Tests : `security-classmate-expiry.test.ts` (M14). Suite complète **442 passed / 0 failed**.
+
+**Reste Vague 2** (PR à venir) :
+
+- [ ] cluster RGPD (M13 audit PII, M19 cron, M20 retention, M23 error_logs redaction, M18 consent evidence)
+- [ ] storage (M1 — dashboard + signed URLs)
+- [ ] endpoints defense-in-depth (M4 form actions, M5 teacher endpoints, M8 achievement events, M9 rate limiting, M11 templates preview)
+- [ ] frontières (M16 entropie code classe)
+- [ ] client (M2 console PII, M3 analytics consent, M17 trigger assertion)
 
 ### Vague 3 — nettoyage (L1-L7)
 

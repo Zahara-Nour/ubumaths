@@ -59,7 +59,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	}
 
 	if (search) {
-		query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+		// SECURITY (finding M10): `search` is spliced into PostgREST's filter grammar;
+		// strip the metacharacters (`,` `(` `)`) that could inject extra OR-branches.
+		const safe = search.replace(/[,()]/g, ' ');
+		query = query.or(`title.ilike.%${safe}%,description.ilike.%${safe}%`);
 	}
 
 	// Apply pagination

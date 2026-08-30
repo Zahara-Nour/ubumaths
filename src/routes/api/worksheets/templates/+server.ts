@@ -45,7 +45,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	// Apply search filter
 	if (search) {
-		query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
+		// SECURITY (finding M10): strip PostgREST filter metacharacters from `search`.
+		const safe = search.replace(/[,()]/g, ' ');
+		query = query.or(`name.ilike.%${safe}%,description.ilike.%${safe}%`);
 	}
 
 	// Apply pagination
