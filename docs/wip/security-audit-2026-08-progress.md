@@ -57,12 +57,16 @@ Suite d'intégration complète : **426 passed / 0 failed / 12 skipped** après l
 - [x] H15 moderation_logs FK : `moderator_id` nullable + `ON DELETE SET NULL` (débloque la suppression staff, garde le log anonymisé).
 - [x] Test `security-rgpd-erasure.test.ts` (2). Suite complète : 433 passed + 2 nouveaux (1 flake pré-existant `vip-card-enabled-filtering` funding-race, vert en isolation).
 
+**PR DB exposition (`fix/security-vague1c`, stacked sur vague1b)** — H8/H12 :
+
+- [x] H8 share-tokens : RPC definer `get_exercise_by_share_token(p_token)` (token requis → pas d'énumération/dump) + DROP des 2 policies blanket PUBLIC (`exercises` / `exercise_share_tokens`) + `getExerciseByShareToken` passe par la RPC + génération de token en CSPRNG (crypto). Policies propriétaire + `is_public` conservées.
+- [x] H12 thread : `get_message_thread` filtre la sortie aux messages dont l'appelant est expéditeur OU destinataire (plus de fuite inter-destinataires). Reprend la garde `auth.uid()` de vague0.
+- [x] Tests `security-share-tokens.test.ts` (1) + `security-message-thread.test.ts` (2). Suite complète **437 passed / 0 failed**.
+
 **PR DB (à venir, stacked)** :
 
-- [ ] H8 share-tokens (drop policies blanket + RPC par token + crypto.randomUUID)
-- [ ] H9/H10 auto-inscription par code (handle_new_user re-résout le code ; drop `students_can_join`)
-- [ ] H12 thread CTE filtre (reprend la version vague0 gardée + filtre par destinataire)
-- [ ] H1 sweep `REVOKE … FROM anon` + `ALTER DEFAULT PRIVILEGES` + whitelist (RISQUÉ)
+- [ ] H9/H10 auto-inscription par code (handle_new_user re-résout le code ; drop `students_can_join`) — ⚠️ touche le trigger de signup (fragile)
+- [ ] H1 sweep `REVOKE … FROM anon` + `ALTER DEFAULT PRIVILEGES` + whitelist (⚠️ RISQUÉ, blast radius large)
 - [ ] H2/H3 cookies HTML (retirer `cookies` du +layout.server.ts), CSP (retirer unsafe-eval/inline), maxAge
 
 > ⚠️ **Flake de test connu** (pré-existant, non lié à la sécu) : `vip-card-enabled-filtering > all cards disabled` échoue par intermittence en suite complète (« Insufficient gidouilles: available 0 » = race de funding dans ProfileBuilder), vert en isolation. À traiter côté test-infra.
