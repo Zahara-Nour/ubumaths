@@ -126,16 +126,30 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			throw error(500, 'Erreur lors du chargement du document');
 		}
 
-		// Determine content disposition
+		// SECURITY (finding M6): the mime_type is stored unvalidated. Serving a
+		// `text/html` (or SVG) document `inline` executes on our origin (stored XSS).
+		// Only serve a small allowlist of safe types inline; anything else is forced
+		// to download as an opaque octet-stream.
+		const INLINE_SAFE_MIMES = new Set([
+			'application/pdf',
+			'image/png',
+			'image/jpeg',
+			'image/jpg',
+			'image/gif',
+			'image/webp'
+		]);
+		const rawMime = document.mime_type || 'application/octet-stream';
+		const canInline = !isDownload && INLINE_SAFE_MIMES.has(rawMime);
+
 		const fileName = document.file_name || 'document';
-		const contentDisposition = isDownload
-			? `attachment; filename="${encodeURIComponent(fileName)}"`
-			: `inline; filename="${encodeURIComponent(fileName)}"`;
+		const contentDisposition = canInline
+			? `inline; filename="${encodeURIComponent(fileName)}"`
+			: `attachment; filename="${encodeURIComponent(fileName)}"`;
 
 		// Return the file
 		return new Response(fileData, {
 			headers: {
-				'Content-Type': document.mime_type || 'application/octet-stream',
+				'Content-Type': canInline ? rawMime : 'application/octet-stream',
 				'Content-Disposition': contentDisposition,
 				'Cache-Control': 'private, max-age=3600'
 			}

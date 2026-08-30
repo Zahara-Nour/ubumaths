@@ -1,12 +1,18 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { compileLatexSchema } from '$lib/server/validation/latex';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * Server-side proxy for LaTeX compilation via TeXLive.net
  * This avoids CORS issues by making the request from the server
  */
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
+	// SECURITY (finding H13): this endpoint proxies arbitrary payloads to
+	// texlive.net under the app's IP. It was the only endpoint with no auth marker
+	// (an open proxy). Require authentication so abuse needs an account.
+	await requireAuth(locals);
+
 	try {
 		// Get the form data from the client
 		const formData = await request.formData();

@@ -142,6 +142,16 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.join(' + ');
 	}
 
+	// SECURITY (finding M12): proposer.vip_cards was fetched only to build the
+	// instanceId→template map above. Strip each bidder's full inventory now so it
+	// never reaches the listing owner in the response.
+	for (const p of proposals ?? []) {
+		const proposer = p.proposer as { vip_cards?: unknown } | null;
+		if (proposer && typeof proposer === 'object') {
+			delete proposer.vip_cards;
+		}
+	}
+
 	// Build summary for each proposal (from listing owner's perspective)
 	// Format: "[ce que j'ai reçu] contre [ce que j'ai donné]"
 	const enrichedProposals = await enrichProposalsWithCardData(supabase, proposals);

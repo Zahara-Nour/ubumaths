@@ -26,9 +26,20 @@ const TOKEN_LENGTH = 16;
  * @returns 16-character alphanumeric string
  */
 export function generateShareTokenString(): string {
+	// SECURITY (finding H8): use a CSPRNG, not Math.random() (V8 xorshift128+ is
+	// predictable — a couple of issued tokens let an attacker recover the state).
+	// Rejection sampling avoids modulo bias over the 54-char alphabet.
+	const n = TOKEN_CHARS.length;
+	const max = Math.floor(256 / n) * n;
 	let result = '';
-	for (let i = 0; i < TOKEN_LENGTH; i++) {
-		result += TOKEN_CHARS.charAt(Math.floor(Math.random() * TOKEN_CHARS.length));
+	while (result.length < TOKEN_LENGTH) {
+		const buf = new Uint8Array(TOKEN_LENGTH);
+		crypto.getRandomValues(buf);
+		for (let i = 0; i < buf.length && result.length < TOKEN_LENGTH; i++) {
+			if (buf[i] < max) {
+				result += TOKEN_CHARS.charAt(buf[i] % n);
+			}
+		}
 	}
 	return result;
 }
@@ -98,43 +109,24 @@ export async function getExerciseByShareToken(
 	supabase: SupabaseClient,
 	token: string
 ): Promise<{ data: Exercise | null; error: string | null }> {
-	// Find token record
-	const { data: tokenRecord, error: tokenError } = await supabase
-		.from('exercise_share_tokens')
-		.select('*')
-		.eq('token', token)
+	// SECURITY (finding H8): resolve the token through the SECURITY DEFINER RPC,
+	// which requires the exact token and bypasses RLS. The old direct reads of
+	// exercise_share_tokens + exercises relied on two PUBLIC blanket policies that
+	// let anon dump every shared exercise (solution included) and every live token;
+	// those policies are dropped. Access accounting is done inside the RPC.
+	// A single generic error is returned (never leak whether a token is revoked vs
+	// expired vs unknown).
+	const { data, error: rpcError } = await supabase
+		.rpc('get_exercise_by_share_token', { p_token: token })
 		.maybeSingle();
 
-	if (tokenError) {
-		return { data: null, error: tokenError.message };
+	if (rpcError) {
+		return { data: null, error: rpcError.message };
 	}
-
-	if (!tokenRecord) {
+	if (!data) {
 		return { data: null, error: 'Token invalide' };
 	}
-
-	// Check if token is active
-	if (!tokenRecord.is_active) {
-		return { data: null, error: 'Token révoqué' };
-	}
-
-	// Check if token is expired
-	if (tokenRecord.expires_at && new Date(tokenRecord.expires_at) < new Date()) {
-		return { data: null, error: 'Token expiré' };
-	}
-
-	// Get exercise
-	const { data: exercise, error: exerciseError } = await supabase
-		.from('exercises')
-		.select('*')
-		.eq('id', tokenRecord.exercise_id)
-		.single();
-
-	if (exerciseError) {
-		return { data: null, error: exerciseError.message };
-	}
-
-	return { data: exercise as Exercise, error: null };
+	return { data: data as Exercise, error: null };
 }
 
 /**

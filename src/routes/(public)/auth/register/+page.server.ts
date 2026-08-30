@@ -108,15 +108,19 @@ export const actions = {
 			return fail(400, { errors, ...echo });
 		}
 
-		// 4. Create the account. The class_id in metadata drives handle_new_user(); Supabase
-		//    sends the confirmation email whose link lands on /auth/confirm (type=signup).
+		// 4. Create the account. SECURITY (finding H9): pass the join CODE, not the
+		//    resolved class_id — handle_new_user() re-resolves it via
+		//    resolve_open_class_by_code() so enrollment requires possession of the code
+		//    at the DB boundary (a direct GoTrue signup can't enroll with a bare class
+		//    UUID). `classId` is still resolved above for early UX validation only.
+		void classId;
 		const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
 			email,
 			password,
 			options: {
 				emailRedirectTo: `${url.origin}/auth/confirm`,
 				data: {
-					class_id: classId,
+					class_code: classCode,
 					firstname,
 					lastname,
 					terms_version: CURRENT_TERMS_VERSION

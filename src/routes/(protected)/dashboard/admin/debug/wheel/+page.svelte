@@ -407,7 +407,6 @@
 				gidouilleReward={gidouilleReward > 0 ? gidouilleReward : undefined}
 				onWinner={(student) => {
 					selectedStudent = student;
-					console.log('Winner:', student);
 				}}
 			/>
 		</div>

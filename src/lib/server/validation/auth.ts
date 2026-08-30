@@ -4,6 +4,22 @@
 
 import { z } from 'zod';
 import { formDataTransforms } from './common';
+import { validatePasswordPolicy } from '$lib/server/passwordPolicy';
+
+/**
+ * SECURITY (finding H6): the server-side password policy was dead code — real
+ * enforcement was only `min(8)`. This superRefine wires it into every schema that
+ * sets a new password (register, update after reset), so complexity + common-
+ * password checks are actually applied server-side.
+ */
+function enforcePasswordPolicy(password: string, ctx: z.RefinementCtx): void {
+	const result = validatePasswordPolicy(password);
+	if (!result.valid) {
+		for (const message of result.errors) {
+			ctx.addIssue({ code: z.ZodIssueCode.custom, message, path: ['password'] });
+		}
+	}
+}
 
 // ============================================================================
 // LOGIN SCHEMAS
@@ -40,8 +56,11 @@ export const signupFormSchema = z.object({
  */
 export const registerFormSchema = z
 	.object({
-		firstname: z.string().trim().min(1, 'Prénom requis').max(100),
-		lastname: z.string().trim().min(1, 'Nom requis').max(100),
+		// SECURITY (finding L6/#23): cap at 50 to match the DB CHECK (length <= 50) —
+		// a 51-100 char name passed Zod then failed the handle_new_user INSERT, leaving
+		// an orphaned auth.users row with no profile (email permanently burned).
+		firstname: z.string().trim().min(1, 'Prénom requis').max(50),
+		lastname: z.string().trim().min(1, 'Nom requis').max(50),
 		email: formDataTransforms.email,
 		password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères').max(72),
 		confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise'),
@@ -57,7 +76,8 @@ export const registerFormSchema = z
 	.refine((d) => d.password === d.confirmPassword, {
 		message: 'Les mots de passe ne correspondent pas',
 		path: ['confirmPassword']
-	});
+	})
+	.superRefine((d, ctx) => enforcePasswordPolicy(d.password, ctx));
 
 // ============================================================================
 // PASSWORD RESET SCHEMAS
@@ -73,10 +93,12 @@ export const requestPasswordResetSchema = z.object({
 /**
  * Update password schema (after reset link)
  */
-export const updatePasswordSchema = z.object({
-	password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
-	confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise')
-});
+export const updatePasswordSchema = z
+	.object({
+		password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
+		confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise')
+	})
+	.superRefine((d, ctx) => enforcePasswordPolicy(d.password, ctx));
 
 // ============================================================================
 // PROFILE UPDATE SCHEMAS

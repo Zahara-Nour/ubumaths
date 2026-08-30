@@ -162,7 +162,7 @@ describe('Student self-registration by class code - Integration Tests', () => {
 		});
 
 		const { id } = await signUp({
-			class_id: cls.id,
+			class_code: cls.join_code,
 			firstname: 'Alice',
 			lastname: 'Martin',
 			terms_version: TERMS_VERSION
@@ -201,7 +201,7 @@ describe('Student self-registration by class code - Integration Tests', () => {
 		});
 
 		const { id } = await signUp({
-			class_id: cls.id,
+			class_code: cls.join_code,
 			firstname: 'Bob',
 			lastname: 'Durand',
 			terms_version: TERMS_VERSION
@@ -229,7 +229,7 @@ describe('Student self-registration by class code - Integration Tests', () => {
 		});
 
 		const { id } = await signUp({
-			class_id: cls.id,
+			class_code: cls.join_code,
 			firstname: 'Chloe',
 			lastname: 'Petit',
 			terms_version: TERMS_VERSION
@@ -242,11 +242,11 @@ describe('Student self-registration by class code - Integration Tests', () => {
 	});
 
 	// ------------------------------------------------------------------
-	// 4. Non-existent class_id → pending, not enrolled
+	// 4. Non-existent class code → pending, not enrolled
 	// ------------------------------------------------------------------
-	it('non-existent class_id → pending student, not enrolled', async () => {
+	it('non-existent class code → pending student, not enrolled', async () => {
 		const { id } = await signUp({
-			class_id: crypto.randomUUID(),
+			class_code: 'NOSUCHCODE1',
 			firstname: 'David',
 			lastname: 'Roux',
 			terms_version: TERMS_VERSION
@@ -273,7 +273,7 @@ describe('Student self-registration by class code - Integration Tests', () => {
 		});
 
 		const { id } = await signUp({
-			class_id: cls.id,
+			class_code: cls.join_code,
 			firstname: 'Emma',
 			lastname: 'Blanc'
 			// no terms_version
@@ -301,7 +301,7 @@ describe('Student self-registration by class code - Integration Tests', () => {
 	// 20260825170000 removes those `gender` references, so this branch works again:
 	// a teacher-added student, on first login, gets an approved profile, is enrolled
 	// in the pre-assigned classes, and the pending_students row is marked activated.
-	it('regression: pending_students match (no class_id) → approved, enrolled in pre-assigned classes, marked activated', async () => {
+	it('regression: pending_students match (no class_id) → approved, enrolled in pre-assigned classes, PII purged', async () => {
 		await ensureTeacher();
 		const schoolId = await createSchool();
 		// Pre-assigned class the student should be enrolled into on first login.
@@ -350,14 +350,14 @@ describe('Student self-registration by class code - Integration Tests', () => {
 		expect(members).toHaveLength(1);
 		expect(members[0].class_id).toBe(cls.id);
 
-		// pending_students marked activated.
+		// RGPD (finding H14): the pending_students PII row is PURGED on activation
+		// (a real profile now holds the data), via the AFTER INSERT trigger on
+		// profiles — no longer merely marked `is_activated = true`.
 		const { data: after } = await service
 			.from('pending_students')
-			.select('is_activated, activated_at')
-			.eq('id', pending!.id)
-			.single();
-		expect(after!.is_activated).toBe(true);
-		expect(after!.activated_at).not.toBeNull();
+			.select('id')
+			.eq('id', pending!.id);
+		expect(after ?? []).toHaveLength(0);
 
 		// No terms recorded via this branch.
 		expect(await getTerms(id)).toHaveLength(0);
@@ -392,13 +392,13 @@ describe('Student self-registration by class code - Integration Tests', () => {
 
 		// Student A and B both self-register (each gets a terms row).
 		const a = await signUp({
-			class_id: cls.id,
+			class_code: cls.join_code,
 			firstname: 'StudentA',
 			lastname: 'Test',
 			terms_version: TERMS_VERSION
 		});
 		const b = await signUp({
-			class_id: cls.id,
+			class_code: cls.join_code,
 			firstname: 'StudentB',
 			lastname: 'Test',
 			terms_version: TERMS_VERSION

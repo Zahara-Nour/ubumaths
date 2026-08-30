@@ -41,24 +41,97 @@ Suite d'intégration complète : **426 passed / 0 failed / 12 skipped** après l
 
 ### Vague 1 — sweep systémique + haute sévérité (H1-H15)
 
-- [ ] H1 sweep `REVOKE … FROM anon` + `ALTER DEFAULT PRIVILEGES` + whitelist
-- [ ] H2/H3 cookies HTML, CSP, maxAge
-- [ ] H4/H11 XSS notebook + schéma chat
-- [ ] H5 flag Google login
-- [ ] H6/H7 password policy + reset
-- [ ] H8 share-tokens
-- [ ] H9/H10 auto-inscription par code
-- [ ] H12 thread CTE filtre
-- [ ] H13 latex compile auth
-- [ ] H14/H15 RGPD erasure (pending_students, moderation_logs FK)
+**PR app-layer (`fix/security-vague1`, stacked sur vague0)** — H4/H5/H6/H7/H11/H13 :
+
+- [x] H4 XSS notebook : `{@html sanitizeHtml(...)}` sur la sortie de cellule (`CellOutputs.svelte`)
+- [x] H5 flag Google login : `$lib/config/google-login.ts` + hard-fail server dans `googleSignIn` action ET `/auth/callback` (le flag UI ne gardait rien). ⚠️ **à faire côté ops** : confirmer le provider Google désactivé dans le dashboard Supabase Auth.
+- [x] H6 password policy : `validatePasswordPolicy` branché via `.superRefine()` dans `registerFormSchema` + `updatePasswordSchema` (était du code mort). ⚠️ activer aussi « leaked password protection » au dashboard.
+- [x] H7 reset password : Zod (`requestPasswordResetSchema`) + rate limit dédié (email 3/h, IP 20/h) avant l'envoi, réponse générique conservée (anti-énumération)
+- [x] H11 chat : `chatMessageSchema` restreint à `user|assistant` (plus de `system` côté client → anti prompt-injection)
+- [x] H13 latex compile : `requireAuth` (fermait le seul endpoint sans auth = proxy ouvert)
+- [x] Tests : `security-hardening.test.ts` (5) + unit rate-limiter/password/login verts
+
+**PR DB RGPD (`fix/security-vague1b`, stacked sur vague1)** — H14/H15 :
+
+- [x] H14 pending_students : trigger AFTER INSERT sur profiles purge la ligne PII à l'activation + backfill (retention des jamais-activés = cron, différé M19). Test self-registration mis à jour (purge au lieu de « marked activated »).
+- [x] H15 moderation_logs FK : `moderator_id` nullable + `ON DELETE SET NULL` (débloque la suppression staff, garde le log anonymisé).
+- [x] Test `security-rgpd-erasure.test.ts` (2). Suite complète : 433 passed + 2 nouveaux (1 flake pré-existant `vip-card-enabled-filtering` funding-race, vert en isolation).
+
+**PR DB exposition (`fix/security-vague1c`, stacked sur vague1b)** — H8/H12 :
+
+- [x] H8 share-tokens : RPC definer `get_exercise_by_share_token(p_token)` (token requis → pas d'énumération/dump) + DROP des 2 policies blanket PUBLIC (`exercises` / `exercise_share_tokens`) + `getExerciseByShareToken` passe par la RPC + génération de token en CSPRNG (crypto). Policies propriétaire + `is_public` conservées.
+- [x] H12 thread : `get_message_thread` filtre la sortie aux messages dont l'appelant est expéditeur OU destinataire (plus de fuite inter-destinataires). Reprend la garde `auth.uid()` de vague0.
+- [x] Tests `security-share-tokens.test.ts` (1) + `security-message-thread.test.ts` (2). Suite complète **437 passed / 0 failed**.
+
+**PR session hardening (`fix/security-vague1d`, stacked sur vague1c)** — H2/H3 (partiel) :
+
+- [x] H2 (partie sûre) : `Cache-Control: private, no-store` sur le HTML authentifié (empêche un cache intermédiaire de stocker la page porteuse du refresh token).
+- [x] H3 (partie sûre) : maxAge des cookies de session cappé à **30 jours** (était 400 j par défaut `@supabase/ssr`).
+- [ ] **DIFFÉRÉ** H2 retrait de `cookies` du `+layout.server.ts` : le client SSR de `+layout.ts` (fichier sensible au bug WebKit TDZ, garde CI sur la taille du chunk) lit `data.cookies` ; le retirer exige de vérifier qu'aucun load universel SSR ne dépend du client authentifié. À faire à part.
+- [ ] **DIFFÉRÉ** H3 CSP : retirer `unsafe-inline`/`unsafe-eval` de `script-src` exige des nonces + scoping `unsafe-eval` aux routes Typst/Pyodide + test de toutes les pages (risque white-screen). À faire à part.
+
+**PR signup anchor (`fix/security-vague1e`, stacked sur vague1d)** — H9/H10 :
+
+- [x] H9 : `handle_new_user` re-résout le **code** (`resolve_open_class_by_code`) au lieu de faire confiance à `raw_user_meta_data.class_id` — un signup GoTrue direct avec un simple UUID de classe n'enrôle plus. L'app passe `class_code` (au lieu de `class_id`) dans les metadata. Reproduction fidèle du trigger (agent), seule la branche self-registration change.
+- [x] H10 : DROP policy `students_can_join` (aucun flux app ne fait d'INSERT `class_members` authentifié direct ; l'enrôlement passe par le trigger).
+- [x] Tests `security-signup-anchor.test.ts` (2) + `student-self-registration.test.ts` migré `class_id`→`class_code`. Suite complète **439 passed / 0 failed**.
+
+**PR sweep anon (`fix/security-vague1f`, stacked sur vague1e)** — H1 :
+
+- [x] H1 : neutralise `ALTER DEFAULT PRIVILEGES … GRANT … TO anon` (cause racine) + boucle `REVOKE EXECUTE FROM PUBLIC, anon` sur les 295 fonctions SECURITY DEFINER (via `regprocedure`) + re-grant anon de la whitelist (3 RPC : `get_consent_info`, `grant_parental_consent`, `get_exercise_by_share_token` — audit exhaustif Explore). `authenticated`/`service_role` gardent leurs grants explicites (293/295 directs + 1 défaut). Vérifié : **suite complète 441 passed / 0 failed** (aucune régression d'accès authentifié).
+- [x] Test `security-anon-function-sweep.test.ts` (2) : whitelist appelable par anon, non-whitelisté bloqué.
+
+### ✅ Vague 1 TERMINÉE — 15 highs (H1-H15). Reste H2/H3 parties différées (voir vague1d).
+
+> ⚠️ **Flake de test connu** (pré-existant, non lié à la sécu) : `vip-card-enabled-filtering > all cards disabled` échoue par intermittence en suite complète (« Insufficient gidouilles: available 0 » = race de funding dans ProfileBuilder), vert en isolation. À traiter côté test-infra.
 
 ### Vague 2 — durcissement + RGPD (M1-M24)
 
-- [ ] cluster RGPD (M13, M19, M20, M23)
-- [ ] storage (M1)
-- [ ] endpoints defense-in-depth (M4-M12)
-- [ ] frontières (M14, M16, M21, M22)
-- [ ] client (M2, M3, M17, M24)
+**PR 2a (`fix/security-vague2a`)** — 9 mediums (app + frontières DB) :
+
+- [x] M6 XSS Content-Type documents : allowlist MIME inline (pdf/images), sinon octet-stream+attachment
+- [x] M7 traversée de chemin docs admin : `resolve()` + assert containment DOCS_ROOT
+- [x] M10 injection filtre PostgREST : strip `,()` du `search` (worksheets + templates)
+- [x] M12 marketplace : strip `proposer.vip_cards` (inventaire) de la réponse aux propriétaires d'annonce
+- [x] M14 classmates : `are_classmates`/`is_classmate` filtrent `status='active'` + `classes.is_active` (relation n'expire plus). ⚠️ bénéfice masqué tant que le narrowing C2 authenticated n'est pas fait
+- [x] M15 matview `student_achievement_stats` : `REVOKE SELECT FROM anon, authenticated`
+- [x] M21 `shares_tournament` : `AND same_school()` (frontière école)
+- [x] M22 `get_achievement_leaderboard` : `p_limit` clampé [1,50]
+- [x] M24 énumération login : message générique fixe (plus de passthrough GoTrue « Email not confirmed »)
+- Tests : `security-classmate-expiry.test.ts` (M14). Suite complète **442 passed / 0 failed**.
+
+**PR 2b (`fix/security-vague2b`)** — M11 + M16 :
+
+- [x] M11 templates preview : clés de `data` contraintes `[A-Za-z0-9_]{1,64}` (anti RegExp DoS) + escape regex dans templateEngine + garde de rôle teacher/admin + `validateUuidParam`
+- [x] M16 `generate_join_code` : CSPRNG (`gen_random_bytes`) + 8 caractères (32 bits) au lieu de `md5(random())` 6 car (24 bits). Tests M11 (unit) + M16 (integration).
+
+**PR 2c (`fix/security-vague2c`)** — M2 + M23 + M5 :
+
+- [x] M2 : suppression des `console.log` d'objets/prénoms élèves (wheel prof/admin, TeacherDashboard) — plus de PII dans la console prod
+- [x] M23 : ajout de `cookie`/`bearer` aux patterns de redaction `error_logs` (`errorMonitoring.sanitizeObject` masquait déjà password/token/auth/etc.)
+- [x] M5 : garde de rôle teacher/admin sur les 8 endpoints teacher (rewards ×3, warnings ×3, periods, classes/[id]/warnings) — défense en profondeur (les RPC gardaient déjà `is_teacher_or_admin`)
+
+**PR 2d (`fix/security-vague2d`)** — L2 + L4 + M13 :
+
+- [x] L2 : `/api/openapi.json` gardé `requireAdmin` + `Cache-Control: private, no-store` (était public → reconnaissance de toute la surface API)
+- [x] L4 : `validateRedirectUrl` rejette les `\` (`/\evil.com` → `//evil.com` open redirect). Test unit ajouté.
+- [x] M13 : `audit_trigger_func` ne stocke que les clés changées sur UPDATE + `NULL` sur DELETE (plus de snapshot PII complet). Test `security-audit-minimize.test.ts`. Suite complète **444 passed / 0 failed**.
+
+### Reste — items nécessitant décision produit/ops ou chantier (remédiation documentée)
+
+Non traités en code car ils requièrent une décision humaine (dashboard, base légale, fenêtres de rétention) ou sont des chantiers ; **remédiation précise** ci-dessous :
+
+- **M4** (défense en profondeur, NON exploitable) — 12 form actions teacher gardent `!user` seul ; ajouter `requireRoles(locals, ['teacher','admin'])` (comme M5). La RLS + le trigger `guard_profile_role_change` + les RPC `is_teacher_or_admin` protègent déjà le chemin critique. Mécanique, à appliquer par lot.
+- **M8** (chantier) — scores de jeux / achievement events forgeables : exiger un `reference_id` vers une ligne de jeu **appartenant au serveur** et re-dériver `score/time/perfect` dans la RPC (idem `complete_minesweeper_game`). Concerne aussi `api/games/2048|mathemo/scores`, `tournaments/…/complete`, `vip-cards/exchange` (C8c).
+- **M1** (dashboard + code) — vérifier le flag `public` de chaque bucket au dashboard Supabase ; passer `chat-attachments`/`message-attachments` en privé + `createSignedUrl()` (au lieu de `getPublicUrl` dans `file-upload.ts:75,235`) ; codifier les buckets + policies `storage.objects` en migration.
+- **M3** (produit/légal) — Vercel Analytics + Speed Insights chargés pour les mineurs sans base légale : gate derrière un consentement télémétrie explicite dans `+layout.svelte:27-37`, ou retirer.
+- **M18** (code + coordination app) — `grant_parental_consent(p_token,p_ip,p_user_agent)` : retirer `p_ip`/`p_user_agent` de la signature (preuve forgeable) et les capturer côté serveur ; ajouter un rate limit sur `get_consent_info`. La page `consent/[token]` passe ces params → à changer ensemble.
+- **M17** (ops/CI) — `on_auth_user_created` invisible au dump (déjà perdu une fois) : assertion post-deploy (`SELECT … pg_trigger` sur prod en CI) + job de réconciliation des `auth.users` sans profil.
+- **M19 / M20** (ops + décision rétention) — committer les `cron.schedule(...)` des fonctions de cleanup existantes ; définir la matrice de rétention par table (fenêtres = décision RGPD) et étendre `run_cleanup_expired_data()` ; corriger le COMMENT trompeur.
+- **Vague 3 (lows)** — PR `fix/security-vague3` :
+  - [x] L6 (partiel) : suppression du `preconnect`/`dns-prefetch` périmé vers `umamathsprod.supabase.co` (host non contrôlé) ; borne Zod `firstname`/`lastname` 100→50 (aligne le CHECK DB, évite les auth.users orphelins).
+  - [x] L7 : override `esbuild >=0.28.1` (pnpm audit = 0 vulnérabilité).
+  - [ ] Reste : L1 (`sanitizePostgresError` uniforme ~50 sites), L3 (SRI + self-host CDN plotly/Swagger), L5 (nettoyage storage navigateur au logout), L6 (SVG upload sanitize, pagination bornée).
 
 ### Vague 3 — nettoyage (L1-L7)
 

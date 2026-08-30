@@ -6,8 +6,9 @@
 
 		<!-- Performance Optimizations (2025-10-18) -->
 		<!-- Preconnect to Supabase for faster auth/API requests -->
-		<link rel="preconnect" href="https://umamathsprod.supabase.co" crossorigin />
-		<link rel="dns-prefetch" href="https://umamathsprod.supabase.co" />
+		<!-- SECURITY (finding L6): removed a stale preconnect/dns-prefetch to
+		     umamathsprod.supabase.co — a host this project does not control (neither the
+		     current EU project nor the previous one), leaking a DNS/TLS handshake per visit. -->
 
 		<!-- Mathlive fonts - switchable between KaTeX and Shantell -->
 		<link id="mathlive-fonts-css" rel="stylesheet" href="/mathlive-fonts-katex.css" />

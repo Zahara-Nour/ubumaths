@@ -37,6 +37,7 @@ import type { RequestHandler } from './$types';
 import { createLogger } from '$lib/utils/logger';
 import { notifyAdminsOfPendingUser } from '$lib/server/notifications';
 import { validateRedirectUrl } from '$lib/server/validateRedirectUrl';
+import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
 
 const logger = createLogger('auth/callback');
 
@@ -44,6 +45,14 @@ const logger = createLogger('auth/callback');
 const ALLOWED_DOMAIN = '@voltairedoha.com';
 
 export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
+	// SECURITY (finding H5): Google login is disabled. This callback grants a full
+	// session on an existing `approved` profile if the Google provider is still on
+	// in the Supabase dashboard, so hard-fail it server-side (the UI flag is not a
+	// control). Remove/flip GOOGLE_LOGIN_ENABLED to re-enable.
+	if (!GOOGLE_LOGIN_ENABLED) {
+		throw error(403, 'La connexion Google est désactivée.');
+	}
+
 	// Extract OAuth code and next URL from query parameters
 	const code = url.searchParams.get('code');
 	// Validate `next` to prevent open redirect (e.g. ?next=//evil.com).

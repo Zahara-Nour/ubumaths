@@ -90,7 +90,10 @@ export const templateMatchSchema = z.object({
 export const previewTemplateSchema = z.object({
 	data: z
 		.record(
-			z.string(),
+			// SECURITY (finding M11): keys become part of a `new RegExp('\\{\\{'+key+'\\}\\}')`
+			// in templateEngine — constrain them to a safe identifier charset so a key
+			// like `(` can't inject an invalid/backtracking regex (uncaught 500 / CPU DoS).
+			z.string().regex(/^[A-Za-z0-9_]{1,64}$/, 'Clé de variable invalide'),
 			z.union([z.string().max(1000, 'Valeur trop longue (max 1000 caractères)'), z.number()])
 		)
 		.refine((obj) => Object.keys(obj).length <= 50, {

@@ -503,6 +503,14 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 		);
 	}
 
+	// SECURITY (finding H2): the SSR HTML embeds the Supabase session cookies
+	// (access + refresh token) in the SvelteKit data payload. Prevent shared/proxy
+	// caches from storing an authenticated, token-bearing page.
+	const contentType = response.headers.get('content-type') ?? '';
+	if (event.locals.user && contentType.includes('text/html')) {
+		response.headers.set('Cache-Control', 'private, no-store');
+	}
+
 	return response;
 };
 

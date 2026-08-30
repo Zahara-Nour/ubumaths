@@ -10,7 +10,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getExerciseBySlug, getExercise } from '$lib/server/exercises';
-import { getExerciseByShareToken, recordTokenAccess } from '$lib/server/exercise-share-tokens';
+import { getExerciseByShareToken } from '$lib/server/exercise-share-tokens';
 import type { Exercise } from '$lib/exercises/types';
 
 /**
@@ -71,8 +71,7 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 			// (getExerciseByShareToken returns Exercise type directly)
 			dbExercise = tokenResult.data as unknown as typeof dbExercise;
 			accessViaToken = true;
-			// Record access (fire-and-forget)
-			recordTokenAccess(locals.supabase, token);
+			// Access accounting is done inside get_exercise_by_share_token (H8).
 		}
 	}
 

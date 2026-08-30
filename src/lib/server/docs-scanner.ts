@@ -1,5 +1,5 @@
 import { readdir, readFile } from 'fs/promises';
-import { join } from 'path';
+import { join, resolve, sep } from 'path';
 import type { DocumentMetadata } from './markdown-parser';
 
 export interface DocCategory {
@@ -144,7 +144,14 @@ function extractQuickMetadata(content: string, category: string, path: string): 
  * Get full document content
  */
 export async function getDocumentContent(categoryPath: string, docPath: string): Promise<string> {
-	const fullPath = join(DOCS_ROOT, categoryPath, docPath);
+	// SECURITY (finding M7): the [...path] URL param feeds this; `..` segments (or
+	// %2e%2e decoded by SvelteKit) would escape DOCS_ROOT (LFI). Resolve and assert
+	// containment before reading.
+	const root = resolve(DOCS_ROOT);
+	const fullPath = resolve(root, categoryPath, docPath);
+	if (fullPath !== root && !fullPath.startsWith(root + sep)) {
+		throw new Error(`Invalid document path: ${categoryPath}/${docPath}`);
+	}
 
 	try {
 		return await readFile(fullPath, 'utf-8');

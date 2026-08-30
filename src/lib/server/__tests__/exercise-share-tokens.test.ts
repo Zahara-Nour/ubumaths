@@ -64,6 +64,12 @@ function createMockSupabase(overrides: Record<string, unknown> = {}) {
 		error: null
 	});
 
+	// getExerciseByShareToken now resolves via the RPC:
+	// supabase.rpc('get_exercise_by_share_token', { p_token }).maybeSingle()
+	mockRpc.mockReturnValue({
+		maybeSingle: mockMaybeSingle
+	});
+
 	return {
 		from: mockFrom,
 		rpc: mockRpc,
@@ -192,17 +198,15 @@ describe('exercise-share-tokens', () => {
 	});
 
 	describe('getExerciseByShareToken', () => {
-		it('should return exercise for a valid active token', async () => {
+		// H8: getExerciseByShareToken now delegates to the SECURITY DEFINER RPC
+		// get_exercise_by_share_token, which returns the exercise row for a valid token
+		// and NO rows for any invalid case (unknown / expired / revoked) — a single
+		// generic 'Token invalide' is returned so token state is never leaked.
+		it('should return exercise for a valid token (via RPC)', async () => {
 			const { getExerciseByShareToken } = await import('../exercise-share-tokens');
 
 			const supabase = createMockSupabase();
-			// First query: get token
-			supabase._mocks.mockMaybeSingle.mockResolvedValueOnce({
-				data: mockShareToken,
-				error: null
-			});
-			// Second query: get exercise
-			supabase._mocks.mockSingle.mockResolvedValue({
+			supabase._mocks.mockMaybeSingle.mockResolvedValue({
 				data: mockExercise,
 				error: null
 			});
@@ -212,9 +216,12 @@ describe('exercise-share-tokens', () => {
 			expect(result.error).toBeNull();
 			expect(result.data).toBeDefined();
 			expect(result.data?.id).toBe(mockExerciseId);
+			expect(supabase._mocks.mockRpc).toHaveBeenCalledWith('get_exercise_by_share_token', {
+				p_token: mockToken
+			});
 		});
 
-		it('should return error for non-existent token', async () => {
+		it('should return generic error when the RPC yields no row (invalid/expired/revoked)', async () => {
 			const { getExerciseByShareToken } = await import('../exercise-share-tokens');
 
 			const supabase = createMockSupabase();
@@ -229,43 +236,18 @@ describe('exercise-share-tokens', () => {
 			expect(result.data).toBeNull();
 		});
 
-		it('should return error for expired token', async () => {
+		it('should surface an RPC error', async () => {
 			const { getExerciseByShareToken } = await import('../exercise-share-tokens');
-
-			const expiredToken = {
-				...mockShareToken,
-				expires_at: '2023-01-01T00:00:00Z' // Past date
-			};
 
 			const supabase = createMockSupabase();
 			supabase._mocks.mockMaybeSingle.mockResolvedValue({
-				data: expiredToken,
-				error: null
+				data: null,
+				error: { message: 'permission denied' }
 			});
 
 			const result = await getExerciseByShareToken(supabase, mockToken);
 
-			expect(result.error).toBe('Token expiré');
-			expect(result.data).toBeNull();
-		});
-
-		it('should return error for revoked token (is_active=false)', async () => {
-			const { getExerciseByShareToken } = await import('../exercise-share-tokens');
-
-			const revokedToken = {
-				...mockShareToken,
-				is_active: false
-			};
-
-			const supabase = createMockSupabase();
-			supabase._mocks.mockMaybeSingle.mockResolvedValue({
-				data: revokedToken,
-				error: null
-			});
-
-			const result = await getExerciseByShareToken(supabase, mockToken);
-
-			expect(result.error).toBe('Token révoqué');
+			expect(result.error).toBe('permission denied');
 			expect(result.data).toBeNull();
 		});
 	});
