@@ -14,6 +14,7 @@ import {
 	checkNotificationCreateRateLimit,
 	checkNotificationDeleteRateLimit
 } from '$lib/server/rateLimiter';
+import { requireRoles } from '$lib/server/middleware/auth';
 
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
@@ -84,12 +85,9 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 };
 
 export const actions: Actions = {
-	create: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { error: 'Non authentifié' });
-		}
+	create: async ({ request, locals }) => {
+		const { supabase } = locals;
+		const { user } = await requireRoles(locals, ['teacher', 'admin']);
 
 		// ====================================================================
 		// SECURITY: Rate Limiting
@@ -173,12 +171,9 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	delete: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { error: 'Non authentifié' });
-		}
+	delete: async ({ request, locals }) => {
+		const { supabase } = locals;
+		const { user } = await requireRoles(locals, ['teacher', 'admin']);
 
 		// ====================================================================
 		// SECURITY: Rate Limiting

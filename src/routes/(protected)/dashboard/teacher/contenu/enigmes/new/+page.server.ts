@@ -2,6 +2,7 @@ import type { PageServerLoad, Actions } from './$types';
 import type { CreateRiddleData } from '$lib/types/riddle';
 import { redirect, fail } from '@sveltejs/kit';
 import { validateFormData, riddleFormSchema } from '$lib/server/validation';
+import { requireRoles } from '$lib/server/middleware/auth';
 
 /**
  * Load page (no data needed for new riddle)
@@ -19,11 +20,9 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
  * Create riddle action
  */
 export const actions: Actions = {
-	default: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-		if (!user) {
-			return fail(401, { message: 'Non authentifié' });
-		}
+	default: async ({ request, locals }) => {
+		const { supabase } = locals;
+		const { user } = await requireRoles(locals, ['teacher', 'admin']);
 
 		const formData = await request.formData();
 

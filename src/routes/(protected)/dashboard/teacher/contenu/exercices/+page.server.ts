@@ -3,6 +3,7 @@ import type { GradeCode } from '$lib/types/grades';
 import type { ExerciseCategory } from '$lib/exercises/types';
 import { error, redirect, fail } from '@sveltejs/kit';
 import { getTeacherExercises, deleteExercise } from '$lib/server/exercises';
+import { requireRoles } from '$lib/server/middleware/auth';
 
 /**
  * Load teacher's exercises with optional filters
@@ -107,10 +108,7 @@ export const actions: Actions = {
 	 * Delete an exercise
 	 */
 	delete: async ({ request, locals }) => {
-		const { user } = await locals.safeGetSession();
-		if (!user) {
-			return fail(401, { message: 'Non authentifié' });
-		}
+		const { user } = await requireRoles(locals, ['teacher', 'admin']);
 
 		const formData = await request.formData();
 		const exerciseId = formData.get('exercise_id')?.toString();

@@ -2,6 +2,7 @@ import type { PageServerLoad, Actions } from './$types';
 import type { DbRiddle } from '$lib/types/riddle';
 import { error, redirect, fail } from '@sveltejs/kit';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { requireRoles } from '$lib/server/middleware/auth';
 
 /**
  * Load riddle for editing
@@ -36,11 +37,9 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
  * Update riddle action
  */
 export const actions: Actions = {
-	default: async ({ params, request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-		if (!user) {
-			return fail(401, { message: 'Non authentifié' });
-		}
+	default: async ({ params, request, locals }) => {
+		const { supabase } = locals;
+		const { user } = await requireRoles(locals, ['teacher', 'admin']);
 
 		const id = validateUuidParam(params.id);
 		const formData = await request.formData();

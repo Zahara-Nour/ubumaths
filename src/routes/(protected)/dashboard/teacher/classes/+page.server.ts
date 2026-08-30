@@ -42,7 +42,7 @@ import {
 	updateScheduleEntrySchema,
 	deleteScheduleEntrySchema
 } from '$lib/server/validation';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole, requireRoles } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 import { formDataTransforms } from '$lib/server/validation/common';
 
@@ -273,12 +273,9 @@ export const actions: Actions = {
 	 * 3. Verify teacher/admin role (RLS scopes the write)
 	 * 4. Insert new schedule entry into database
 	 */
-	createScheduleEntry: async ({ request, locals: { safeGetSession, supabase } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
+	createScheduleEntry: async ({ request, locals }) => {
+		const { supabase } = locals;
+		await requireRoles(locals, ['teacher', 'admin']);
 
 		const formData = await request.formData();
 
@@ -344,12 +341,9 @@ export const actions: Actions = {
 	 * 3. Verify teacher/admin role (RLS scopes the write)
 	 * 4. Update schedule entry in database
 	 */
-	updateScheduleEntry: async ({ request, locals: { safeGetSession, supabase } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
+	updateScheduleEntry: async ({ request, locals }) => {
+		const { supabase } = locals;
+		await requireRoles(locals, ['teacher', 'admin']);
 
 		const formData = await request.formData();
 
@@ -415,12 +409,9 @@ export const actions: Actions = {
 	 * 2. Verify teacher/admin role (RLS scopes the write)
 	 * 3. Delete entry from database (cascades automatically)
 	 */
-	deleteScheduleEntry: async ({ request, locals: { safeGetSession, supabase } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
+	deleteScheduleEntry: async ({ request, locals }) => {
+		const { supabase } = locals;
+		await requireRoles(locals, ['teacher', 'admin']);
 
 		const formData = await request.formData();
 
