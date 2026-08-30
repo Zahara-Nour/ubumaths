@@ -76,9 +76,12 @@ Suite d'intégration complète : **426 passed / 0 failed / 12 skipped** après l
 - [x] H10 : DROP policy `students_can_join` (aucun flux app ne fait d'INSERT `class_members` authentifié direct ; l'enrôlement passe par le trigger).
 - [x] Tests `security-signup-anchor.test.ts` (2) + `student-self-registration.test.ts` migré `class_id`→`class_code`. Suite complète **439 passed / 0 failed**.
 
-**PR DB (à venir, stacked)** :
+**PR sweep anon (`fix/security-vague1f`, stacked sur vague1e)** — H1 :
 
-- [ ] H1 sweep `REVOKE … FROM anon` + `ALTER DEFAULT PRIVILEGES` + whitelist (⚠️ RISQUÉ, blast radius large)
+- [x] H1 : neutralise `ALTER DEFAULT PRIVILEGES … GRANT … TO anon` (cause racine) + boucle `REVOKE EXECUTE FROM PUBLIC, anon` sur les 295 fonctions SECURITY DEFINER (via `regprocedure`) + re-grant anon de la whitelist (3 RPC : `get_consent_info`, `grant_parental_consent`, `get_exercise_by_share_token` — audit exhaustif Explore). `authenticated`/`service_role` gardent leurs grants explicites (293/295 directs + 1 défaut). Vérifié : **suite complète 441 passed / 0 failed** (aucune régression d'accès authentifié).
+- [x] Test `security-anon-function-sweep.test.ts` (2) : whitelist appelable par anon, non-whitelisté bloqué.
+
+### ✅ Vague 1 TERMINÉE — 15 highs (H1-H15). Reste H2/H3 parties différées (voir vague1d).
 
 > ⚠️ **Flake de test connu** (pré-existant, non lié à la sécu) : `vip-card-enabled-filtering > all cards disabled` échoue par intermittence en suite complète (« Insufficient gidouilles: available 0 » = race de funding dans ProfileBuilder), vert en isolation. À traiter côté test-infra.
 
