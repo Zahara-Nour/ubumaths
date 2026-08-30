@@ -40,8 +40,17 @@ export const handle: Handle = async ({ event, resolve }) => {
 			getAll: () => event.cookies.getAll(),
 			// Write cookies to the response (e.g., after login/logout)
 			setAll: (cookiesToSet) => {
+				// SECURITY (finding H3): @supabase/ssr defaults the auth cookies to a
+				// 400-day maxAge. Cap the session lifetime to 30 days (untouched for
+				// deletions / shorter-lived cookies) so a leaked refresh token has a
+				// bounded window.
+				const MAX_SESSION_AGE = 60 * 60 * 24 * 30; // 30 days
 				cookiesToSet.forEach(({ name, value, options }) => {
-					event.cookies.set(name, value, { ...options, path: '/' });
+					const capped =
+						options?.maxAge != null && options.maxAge > MAX_SESSION_AGE
+							? { ...options, maxAge: MAX_SESSION_AGE }
+							: options;
+					event.cookies.set(name, value, { ...capped, path: '/' });
 				});
 			}
 		}

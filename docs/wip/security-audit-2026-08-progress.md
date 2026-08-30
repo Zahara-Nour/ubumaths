@@ -63,11 +63,17 @@ Suite d'intégration complète : **426 passed / 0 failed / 12 skipped** après l
 - [x] H12 thread : `get_message_thread` filtre la sortie aux messages dont l'appelant est expéditeur OU destinataire (plus de fuite inter-destinataires). Reprend la garde `auth.uid()` de vague0.
 - [x] Tests `security-share-tokens.test.ts` (1) + `security-message-thread.test.ts` (2). Suite complète **437 passed / 0 failed**.
 
+**PR session hardening (`fix/security-vague1d`, stacked sur vague1c)** — H2/H3 (partiel) :
+
+- [x] H2 (partie sûre) : `Cache-Control: private, no-store` sur le HTML authentifié (empêche un cache intermédiaire de stocker la page porteuse du refresh token).
+- [x] H3 (partie sûre) : maxAge des cookies de session cappé à **30 jours** (était 400 j par défaut `@supabase/ssr`).
+- [ ] **DIFFÉRÉ** H2 retrait de `cookies` du `+layout.server.ts` : le client SSR de `+layout.ts` (fichier sensible au bug WebKit TDZ, garde CI sur la taille du chunk) lit `data.cookies` ; le retirer exige de vérifier qu'aucun load universel SSR ne dépend du client authentifié. À faire à part.
+- [ ] **DIFFÉRÉ** H3 CSP : retirer `unsafe-inline`/`unsafe-eval` de `script-src` exige des nonces + scoping `unsafe-eval` aux routes Typst/Pyodide + test de toutes les pages (risque white-screen). À faire à part.
+
 **PR DB (à venir, stacked)** :
 
 - [ ] H9/H10 auto-inscription par code (handle_new_user re-résout le code ; drop `students_can_join`) — ⚠️ touche le trigger de signup (fragile)
 - [ ] H1 sweep `REVOKE … FROM anon` + `ALTER DEFAULT PRIVILEGES` + whitelist (⚠️ RISQUÉ, blast radius large)
-- [ ] H2/H3 cookies HTML (retirer `cookies` du +layout.server.ts), CSP (retirer unsafe-eval/inline), maxAge
 
 > ⚠️ **Flake de test connu** (pré-existant, non lié à la sécu) : `vip-card-enabled-filtering > all cards disabled` échoue par intermittence en suite complète (« Insufficient gidouilles: available 0 » = race de funding dans ProfileBuilder), vert en isolation. À traiter côté test-infra.
 
