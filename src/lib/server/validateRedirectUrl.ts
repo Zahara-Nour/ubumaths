@@ -13,8 +13,10 @@
  * both entry points.
  */
 export function validateRedirectUrl(url: string, origin: string): string {
-	// Allow relative URLs, but reject protocol-relative ones like //evil.com
-	if (url.startsWith('/') && !url.startsWith('//')) {
+	// Allow relative URLs, but reject protocol-relative ones like //evil.com.
+	// SECURITY (finding L4): also reject any `\` — browsers normalize `\`→`/` in
+	// Location, so `/\evil.com` resolves to `//evil.com` (open redirect).
+	if (url.startsWith('/') && !url.startsWith('//') && !url.includes('\\')) {
 		return url;
 	}
 

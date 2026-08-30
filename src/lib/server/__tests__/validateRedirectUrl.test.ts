@@ -29,4 +29,10 @@ describe('validateRedirectUrl', () => {
 		expect(validateRedirectUrl('javascript:alert(1)', ORIGIN)).toBe('/');
 		expect(validateRedirectUrl('not a url', ORIGIN)).toBe('/');
 	});
+
+	it('rejette les backslashes (finding L4 : /\\evil.com -> //evil.com) -> /', () => {
+		expect(validateRedirectUrl('/\\evil.com', ORIGIN)).toBe('/');
+		expect(validateRedirectUrl('/\\/evil.com', ORIGIN)).toBe('/');
+		expect(validateRedirectUrl('/path\\..\\x', ORIGIN)).toBe('/');
+	});
 });

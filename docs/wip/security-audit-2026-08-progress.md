@@ -111,11 +111,24 @@ Suite d'intégration complète : **426 passed / 0 failed / 12 skipped** après l
 - [x] M23 : ajout de `cookie`/`bearer` aux patterns de redaction `error_logs` (`errorMonitoring.sanitizeObject` masquait déjà password/token/auth/etc.)
 - [x] M5 : garde de rôle teacher/admin sur les 8 endpoints teacher (rewards ×3, warnings ×3, periods, classes/[id]/warnings) — défense en profondeur (les RPC gardaient déjà `is_teacher_or_admin`)
 
-**Reste Vague 2** (à faire / ops) :
+**PR 2d (`fix/security-vague2d`)** — L2 + L4 + M13 :
 
-- [ ] M4 form actions (12) `requireRoles` — défense en profondeur (RLS + trigger role protègent déjà le chemin critique)
-- [ ] M8 achievement events — nécessite `reference_id` vers ligne serveur + re-dérivation métriques dans la RPC (chantier)
-- [ ] **Ops/reproductibilité** : M1 (vérifier flags `public` des buckets au dashboard + signed URLs), M3 (gate consentement analytics Vercel), M13 (audit_trigger_func : ne stocker que les clés changées + scrub delete), M17 (assertion CI `pg_trigger` prod), M18 (consent evidence : capturer IP/UA serveur + rate limit), M19 (`cron.schedule` en migration), M20 (matrice de rétention + `run_cleanup_expired_data`)
+- [x] L2 : `/api/openapi.json` gardé `requireAdmin` + `Cache-Control: private, no-store` (était public → reconnaissance de toute la surface API)
+- [x] L4 : `validateRedirectUrl` rejette les `\` (`/\evil.com` → `//evil.com` open redirect). Test unit ajouté.
+- [x] M13 : `audit_trigger_func` ne stocke que les clés changées sur UPDATE + `NULL` sur DELETE (plus de snapshot PII complet). Test `security-audit-minimize.test.ts`. Suite complète **444 passed / 0 failed**.
+
+### Reste — items nécessitant décision produit/ops ou chantier (remédiation documentée)
+
+Non traités en code car ils requièrent une décision humaine (dashboard, base légale, fenêtres de rétention) ou sont des chantiers ; **remédiation précise** ci-dessous :
+
+- **M4** (défense en profondeur, NON exploitable) — 12 form actions teacher gardent `!user` seul ; ajouter `requireRoles(locals, ['teacher','admin'])` (comme M5). La RLS + le trigger `guard_profile_role_change` + les RPC `is_teacher_or_admin` protègent déjà le chemin critique. Mécanique, à appliquer par lot.
+- **M8** (chantier) — scores de jeux / achievement events forgeables : exiger un `reference_id` vers une ligne de jeu **appartenant au serveur** et re-dériver `score/time/perfect` dans la RPC (idem `complete_minesweeper_game`). Concerne aussi `api/games/2048|mathemo/scores`, `tournaments/…/complete`, `vip-cards/exchange` (C8c).
+- **M1** (dashboard + code) — vérifier le flag `public` de chaque bucket au dashboard Supabase ; passer `chat-attachments`/`message-attachments` en privé + `createSignedUrl()` (au lieu de `getPublicUrl` dans `file-upload.ts:75,235`) ; codifier les buckets + policies `storage.objects` en migration.
+- **M3** (produit/légal) — Vercel Analytics + Speed Insights chargés pour les mineurs sans base légale : gate derrière un consentement télémétrie explicite dans `+layout.svelte:27-37`, ou retirer.
+- **M18** (code + coordination app) — `grant_parental_consent(p_token,p_ip,p_user_agent)` : retirer `p_ip`/`p_user_agent` de la signature (preuve forgeable) et les capturer côté serveur ; ajouter un rate limit sur `get_consent_info`. La page `consent/[token]` passe ces params → à changer ensemble.
+- **M17** (ops/CI) — `on_auth_user_created` invisible au dump (déjà perdu une fois) : assertion post-deploy (`SELECT … pg_trigger` sur prod en CI) + job de réconciliation des `auth.users` sans profil.
+- **M19 / M20** (ops + décision rétention) — committer les `cron.schedule(...)` des fonctions de cleanup existantes ; définir la matrice de rétention par table (fenêtres = décision RGPD) et étendre `run_cleanup_expired_data()` ; corriger le COMMENT trompeur.
+- **Vague 3 (lows)** : L1 (`sanitizePostgresError` uniforme ~50 sites), L3 (SRI + self-host CDN plotly/Swagger), L5 (nettoyage storage navigateur au logout + divers client), L6 (SVG upload sanitize, pagination bornée, `preconnect` périmé, borne Zod firstname/lastname 100>50), L7 (bump `esbuild ≥0.28.1` via override — dev/Windows only).
 
 ### Vague 3 — nettoyage (L1-L7)
 
