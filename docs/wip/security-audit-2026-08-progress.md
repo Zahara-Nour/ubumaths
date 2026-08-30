@@ -140,3 +140,21 @@ Non traités en code car ils requièrent une décision humaine (dashboard, base 
 ## Journal
 
 - 2026-08-30 : audit livré, doc committé, démarrage Vague 0.
+- 2026-08-30 (session 2) : Vagues 0→3 remédiées + **déployées en prod** (45/55 findings, 15 migrations EU, PRs #93 + #104). Puis tail traité :
+  - **M1** ✅ merge #105 en prod (bucket `chat-attachments` privé + URL signées ; autres buckets vérifiés OK par David).
+  - **H5** ✅ ops : provider Google désactivé au dashboard Supabase Auth.
+  - **H6** ⚠️ « leaked password protection » = feature Supabase **Pro**, indispo en free tier → accepté (la password policy applicative, elle, est déjà en prod).
+  - **M4** ✅ PR #106 (CI verte) : `requireRoles` sur 17 form actions teacher + 13 tests.
+- **⏸️ ARRÊT 2026-08-30** — reprise plus tard (voir section ci-dessous).
+
+## ⏸️ Reste à faire (reprise plus tard)
+
+Ordre suggéré à la reprise :
+
+1. **M8 / C8c** (chantier) — scores de jeux forgeables : `reference_id` serveur + re-dérivation `score/time/perfect` dans la RPC. Endpoints `api/games/2048|mathemo/scores`, `tournaments/…/complete`, `vip-cards/exchange`.
+2. **Lows** — L1 (`sanitizePostgresError` uniforme ~50 sites), L3 (SRI + self-host CDN), L5 (nettoyage storage navigateur au logout), L6 (SVG upload sanitize, pagination bornée).
+3. **Décisions produit/légal (RGPD, à trancher avec David)** — M3 (télémétrie Vercel mineurs : gate consentement ou retirer), M18 (preuve consentement : capturer IP/UA serveur + rate limit `get_consent_info`), M19/M20 (committer `cron.schedule` + matrice de rétention).
+4. **Ops/CI** — M17 (assertion `pg_trigger` post-deploy + réconciliation `auth.users` sans profil).
+5. **Différés risqués (à isoler)** — H2 (retrait `cookies` du `+layout.server.ts`, ⚠️ WebKit TDZ), H3 (CSP nonces).
+
+Optionnel : H6 en code via HaveIBeenPwned k-anonymity (contourne le free tier).
