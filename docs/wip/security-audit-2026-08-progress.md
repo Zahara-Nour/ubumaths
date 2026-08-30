@@ -128,7 +128,10 @@ Non traités en code car ils requièrent une décision humaine (dashboard, base 
 - **M18** (code + coordination app) — `grant_parental_consent(p_token,p_ip,p_user_agent)` : retirer `p_ip`/`p_user_agent` de la signature (preuve forgeable) et les capturer côté serveur ; ajouter un rate limit sur `get_consent_info`. La page `consent/[token]` passe ces params → à changer ensemble.
 - **M17** (ops/CI) — `on_auth_user_created` invisible au dump (déjà perdu une fois) : assertion post-deploy (`SELECT … pg_trigger` sur prod en CI) + job de réconciliation des `auth.users` sans profil.
 - **M19 / M20** (ops + décision rétention) — committer les `cron.schedule(...)` des fonctions de cleanup existantes ; définir la matrice de rétention par table (fenêtres = décision RGPD) et étendre `run_cleanup_expired_data()` ; corriger le COMMENT trompeur.
-- **Vague 3 (lows)** : L1 (`sanitizePostgresError` uniforme ~50 sites), L3 (SRI + self-host CDN plotly/Swagger), L5 (nettoyage storage navigateur au logout + divers client), L6 (SVG upload sanitize, pagination bornée, `preconnect` périmé, borne Zod firstname/lastname 100>50), L7 (bump `esbuild ≥0.28.1` via override — dev/Windows only).
+- **Vague 3 (lows)** — PR `fix/security-vague3` :
+  - [x] L6 (partiel) : suppression du `preconnect`/`dns-prefetch` périmé vers `umamathsprod.supabase.co` (host non contrôlé) ; borne Zod `firstname`/`lastname` 100→50 (aligne le CHECK DB, évite les auth.users orphelins).
+  - [x] L7 : override `esbuild >=0.28.1` (pnpm audit = 0 vulnérabilité).
+  - [ ] Reste : L1 (`sanitizePostgresError` uniforme ~50 sites), L3 (SRI + self-host CDN plotly/Swagger), L5 (nettoyage storage navigateur au logout), L6 (SVG upload sanitize, pagination bornée).
 
 ### Vague 3 — nettoyage (L1-L7)
 

@@ -56,8 +56,11 @@ export const signupFormSchema = z.object({
  */
 export const registerFormSchema = z
 	.object({
-		firstname: z.string().trim().min(1, 'Prénom requis').max(100),
-		lastname: z.string().trim().min(1, 'Nom requis').max(100),
+		// SECURITY (finding L6/#23): cap at 50 to match the DB CHECK (length <= 50) —
+		// a 51-100 char name passed Zod then failed the handle_new_user INSERT, leaving
+		// an orphaned auth.users row with no profile (email permanently burned).
+		firstname: z.string().trim().min(1, 'Prénom requis').max(50),
+		lastname: z.string().trim().min(1, 'Nom requis').max(50),
 		email: formDataTransforms.email,
 		password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères').max(72),
 		confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise'),
