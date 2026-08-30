@@ -1,6 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import type { DbRiddle } from '$lib/types/riddle';
 import { error, redirect, fail } from '@sveltejs/kit';
+import { requireRoles } from '$lib/server/middleware/auth';
 
 /**
  * Load teacher's riddles
@@ -51,11 +52,9 @@ export const actions: Actions = {
 	/**
 	 * Delete a riddle
 	 */
-	delete: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-		if (!user) {
-			return fail(401, { message: 'Non authentifié' });
-		}
+	delete: async ({ request, locals }) => {
+		const { supabase } = locals;
+		await requireRoles(locals, ['teacher', 'admin']);
 
 		const formData = await request.formData();
 		const riddleId = formData.get('riddle_id')?.toString();
@@ -78,11 +77,9 @@ export const actions: Actions = {
 	/**
 	 * Toggle riddle status (draft <-> published)
 	 */
-	toggleStatus: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-		if (!user) {
-			return fail(401, { message: 'Non authentifié' });
-		}
+	toggleStatus: async ({ request, locals }) => {
+		const { supabase } = locals;
+		await requireRoles(locals, ['teacher', 'admin']);
 
 		const formData = await request.formData();
 		const riddleId = formData.get('riddle_id')?.toString();

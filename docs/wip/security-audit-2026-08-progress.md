@@ -44,8 +44,8 @@ Suite d'intégration complète : **426 passed / 0 failed / 12 skipped** après l
 **PR app-layer (`fix/security-vague1`, stacked sur vague0)** — H4/H5/H6/H7/H11/H13 :
 
 - [x] H4 XSS notebook : `{@html sanitizeHtml(...)}` sur la sortie de cellule (`CellOutputs.svelte`)
-- [x] H5 flag Google login : `$lib/config/google-login.ts` + hard-fail server dans `googleSignIn` action ET `/auth/callback` (le flag UI ne gardait rien). ⚠️ **à faire côté ops** : confirmer le provider Google désactivé dans le dashboard Supabase Auth.
-- [x] H6 password policy : `validatePasswordPolicy` branché via `.superRefine()` dans `registerFormSchema` + `updatePasswordSchema` (était du code mort). ⚠️ activer aussi « leaked password protection » au dashboard.
+- [x] H5 flag Google login : `$lib/config/google-login.ts` + hard-fail server dans `googleSignIn` action ET `/auth/callback` (le flag UI ne gardait rien). ✅ **ops FAIT (2026-08-30, David) : provider Google désactivé dans le dashboard Supabase Auth.**
+- [x] H6 password policy : `validatePasswordPolicy` branché via `.superRefine()` dans `registerFormSchema` + `updatePasswordSchema` (était du code mort). ⚠️ « leaked password protection » (dashboard) = **IMPOSSIBLE en free tier** (feature payante Supabase Pro) → accepté. Mitigation possible en code : check HaveIBeenPwned k-anonymity côté serveur à l'inscription (non fait, optionnel).
 - [x] H7 reset password : Zod (`requestPasswordResetSchema`) + rate limit dédié (email 3/h, IP 20/h) avant l'envoi, réponse générique conservée (anti-énumération)
 - [x] H11 chat : `chatMessageSchema` restreint à `user|assistant` (plus de `system` côté client → anti prompt-injection)
 - [x] H13 latex compile : `requireAuth` (fermait le seul endpoint sans auth = proxy ouvert)
@@ -121,9 +121,9 @@ Suite d'intégration complète : **426 passed / 0 failed / 12 skipped** après l
 
 Non traités en code car ils requièrent une décision humaine (dashboard, base légale, fenêtres de rétention) ou sont des chantiers ; **remédiation précise** ci-dessous :
 
-- **M4** (défense en profondeur, NON exploitable) — 12 form actions teacher gardent `!user` seul ; ajouter `requireRoles(locals, ['teacher','admin'])` (comme M5). La RLS + le trigger `guard_profile_role_change` + les RPC `is_teacher_or_admin` protègent déjà le chemin critique. Mécanique, à appliquer par lot.
+- **M4** — ✅ **FAIT (2026-08-30)** : 17 form actions teacher gardaient `!user` seul → chacune commence désormais par `requireRoles(locals, ['teacher','admin'])`. 10 fichiers : `assessments/[id]/assign` (assign, unassign), `assessments/[id]/edit`, `classes` (create/update/deleteScheduleEntry), `contenu/worksheets` (delete, duplicate), `contenu/exercices` (delete), `notifications` (create, delete), `contenu/enigmes` (delete, toggleStatus), `enigmes/of-the-day` (setRiddle, removeRiddle), `enigmes/new`, `enigmes/[id]/edit`. Test `teacher/__tests__/m4-action-role-guards.test.ts` (13 cas, student→403 / anon→401). **Vérifié + exclus** (déjà gardés ou hors périmètre) : `admin/friendships`/`admin/users` (check rôle inline dans l'action), `admin/notifications` (`requireAdmin`), `enigmes/validations/[id]` (check rôle), navadra/spells+combat (mécaniques élève — garder ouvert), `auth/update-password` (self-service). La RLS + le trigger `guard_profile_role_change` restaient la vraie frontière ; ceci est la défense en profondeur.
 - **M8** (chantier) — scores de jeux / achievement events forgeables : exiger un `reference_id` vers une ligne de jeu **appartenant au serveur** et re-dériver `score/time/perfect` dans la RPC (idem `complete_minesweeper_game`). Concerne aussi `api/games/2048|mathemo/scores`, `tournaments/…/complete`, `vip-cards/exchange` (C8c).
-- **M1** — ✅ **FAIT** : bucket `chat-attachments` basculé en privé au dashboard (David) + code : `chatStore.getAttachmentSignedUrl()` (createSignedUrl) et affichage des pièces jointes chat via URL signée à la demande (`ChatMessageList` — bouton onclick au lieu du `public_url` mort). La policy `storage.objects` « participants peuvent lire » existe déjà en prod → gate participant-only. Test `security-chat-attachment-signing.test.ts`. (`message-attachments` : bucket inexistant en prod → chemin mort, non concerné.) ⚠️ `parody-evaluations` (public) reste à vérifier (contenu = évaluations élèves ?).
+- **M1** — ✅ **FAIT + EN PROD (PR #105, merge `900644e68`)** : bucket `chat-attachments` basculé en privé au dashboard (David) + code : `chatStore.getAttachmentSignedUrl()` (createSignedUrl) et affichage des pièces jointes chat via URL signée à la demande (`ChatMessageList` — bouton onclick au lieu du `public_url` mort). La policy `storage.objects` « participants peuvent lire » existe déjà en prod → gate participant-only. Test `security-chat-attachment-signing.test.ts`. (`message-attachments` : bucket inexistant en prod → chemin mort, non concerné.) ✅ **Flags `public` des autres buckets vérifiés par David (2026-08-30) : OK.**
 - **M3** (produit/légal) — Vercel Analytics + Speed Insights chargés pour les mineurs sans base légale : gate derrière un consentement télémétrie explicite dans `+layout.svelte:27-37`, ou retirer.
 - **M18** (code + coordination app) — `grant_parental_consent(p_token,p_ip,p_user_agent)` : retirer `p_ip`/`p_user_agent` de la signature (preuve forgeable) et les capturer côté serveur ; ajouter un rate limit sur `get_consent_info`. La page `consent/[token]` passe ces params → à changer ensemble.
 - **M17** (ops/CI) — `on_auth_user_created` invisible au dump (déjà perdu une fois) : assertion post-deploy (`SELECT … pg_trigger` sur prod en CI) + job de réconciliation des `auth.users` sans profil.
@@ -140,3 +140,21 @@ Non traités en code car ils requièrent une décision humaine (dashboard, base 
 ## Journal
 
 - 2026-08-30 : audit livré, doc committé, démarrage Vague 0.
+- 2026-08-30 (session 2) : Vagues 0→3 remédiées + **déployées en prod** (45/55 findings, 15 migrations EU, PRs #93 + #104). Puis tail traité :
+  - **M1** ✅ merge #105 en prod (bucket `chat-attachments` privé + URL signées ; autres buckets vérifiés OK par David).
+  - **H5** ✅ ops : provider Google désactivé au dashboard Supabase Auth.
+  - **H6** ⚠️ « leaked password protection » = feature Supabase **Pro**, indispo en free tier → accepté (la password policy applicative, elle, est déjà en prod).
+  - **M4** ✅ PR #106 (CI verte) : `requireRoles` sur 17 form actions teacher + 13 tests.
+- **⏸️ ARRÊT 2026-08-30** — reprise plus tard (voir section ci-dessous).
+
+## ⏸️ Reste à faire (reprise plus tard)
+
+Ordre suggéré à la reprise :
+
+1. **M8 / C8c** (chantier) — scores de jeux forgeables : `reference_id` serveur + re-dérivation `score/time/perfect` dans la RPC. Endpoints `api/games/2048|mathemo/scores`, `tournaments/…/complete`, `vip-cards/exchange`.
+2. **Lows** — L1 (`sanitizePostgresError` uniforme ~50 sites), L3 (SRI + self-host CDN), L5 (nettoyage storage navigateur au logout), L6 (SVG upload sanitize, pagination bornée).
+3. **Décisions produit/légal (RGPD, à trancher avec David)** — M3 (télémétrie Vercel mineurs : gate consentement ou retirer), M18 (preuve consentement : capturer IP/UA serveur + rate limit `get_consent_info`), M19/M20 (committer `cron.schedule` + matrice de rétention).
+4. **Ops/CI** — M17 (assertion `pg_trigger` post-deploy + réconciliation `auth.users` sans profil).
+5. **Différés risqués (à isoler)** — H2 (retrait `cookies` du `+layout.server.ts`, ⚠️ WebKit TDZ), H3 (CSP nonces).
+
+Optionnel : H6 en code via HaveIBeenPwned k-anonymity (contourne le free tier).

@@ -1,6 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { redirect, fail } from '@sveltejs/kit';
 import { z } from 'zod';
+import { requireRoles } from '$lib/server/middleware/auth';
 
 // Validation schema for query parameters
 const querySchema = z.object({
@@ -82,10 +83,7 @@ export const actions: Actions = {
 	 * Delete a worksheet (draft only)
 	 */
 	delete: async ({ request, locals, fetch }) => {
-		const { user } = await locals.safeGetSession();
-		if (!user) {
-			return fail(401, { message: 'Non authentifie' });
-		}
+		await requireRoles(locals, ['teacher', 'admin']);
 
 		const formData = await request.formData();
 		const worksheetId = formData.get('worksheet_id')?.toString();
@@ -114,10 +112,7 @@ export const actions: Actions = {
 	 * Duplicate a worksheet
 	 */
 	duplicate: async ({ request, locals, fetch }) => {
-		const { user } = await locals.safeGetSession();
-		if (!user) {
-			return fail(401, { message: 'Non authentifie' });
-		}
+		await requireRoles(locals, ['teacher', 'admin']);
 
 		const formData = await request.formData();
 		const worksheetId = formData.get('worksheet_id')?.toString();

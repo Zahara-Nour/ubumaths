@@ -1,5 +1,6 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
+import { requireRoles } from '$lib/server/middleware/auth';
 import { getAssessment, getAssessmentAssignments, assignAssessment } from '$lib/server/assessments';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
 import { validateUuidParam } from '$lib/server/validation/params';
@@ -69,10 +70,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 export const actions: Actions = {
 	assign: async ({ request, params, locals }) => {
-		const { user } = await locals.safeGetSession();
-		if (!user) {
-			return { success: false, error: 'Non authentifié' };
-		}
+		const { user } = await requireRoles(locals, ['teacher', 'admin']);
 
 		const id = validateUuidParam(params.id);
 		const formData = await request.formData();
@@ -102,10 +100,7 @@ export const actions: Actions = {
 	},
 
 	unassign: async ({ request, params: _params, locals }) => {
-		const { user } = await locals.safeGetSession();
-		if (!user) {
-			return { success: false, error: 'Non authentifié' };
-		}
+		await requireRoles(locals, ['teacher', 'admin']);
 
 		const formData = await request.formData();
 		const assignmentId = formData.get('assignment_id') as string;

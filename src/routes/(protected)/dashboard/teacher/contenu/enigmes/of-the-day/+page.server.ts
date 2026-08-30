@@ -1,5 +1,6 @@
 import type { PageServerLoad, Actions } from './$types';
 import { redirect, fail } from '@sveltejs/kit';
+import { requireRoles } from '$lib/server/middleware/auth';
 
 /**
  * Load riddle of the day management data
@@ -54,11 +55,9 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
  * Set riddle of the day
  */
 export const actions: Actions = {
-	setRiddle: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-		if (!user) {
-			return fail(401, { message: 'Non authentifié' });
-		}
+	setRiddle: async ({ request, locals }) => {
+		const { supabase } = locals;
+		await requireRoles(locals, ['teacher', 'admin']);
 
 		const formData = await request.formData();
 		const riddleId = formData.get('riddle_id')?.toString();
@@ -94,11 +93,9 @@ export const actions: Actions = {
 		return { success: true, message: 'Énigme du jour définie avec succès' };
 	},
 
-	removeRiddle: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-		if (!user) {
-			return fail(401, { message: 'Non authentifié' });
-		}
+	removeRiddle: async ({ request, locals }) => {
+		const { supabase } = locals;
+		await requireRoles(locals, ['teacher', 'admin']);
 
 		const formData = await request.formData();
 		const assignmentDate = formData.get('assignment_date')?.toString();

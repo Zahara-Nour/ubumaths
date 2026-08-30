@@ -4,6 +4,7 @@ import { getAssessment, updateAssessment } from '$lib/server/assessments';
 import type { UpdateAssessmentData } from '$lib/types/assessment';
 import { assessmentEditFormSchema } from '$lib/server/validation/assessments';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { requireRoles } from '$lib/server/middleware/auth';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
@@ -52,10 +53,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 export const actions: Actions = {
 	default: async ({ request, params, locals }) => {
-		const { user } = await locals.safeGetSession();
-		if (!user) {
-			return fail(401, { success: false, error: 'Non authentifié' });
-		}
+		const { user } = await requireRoles(locals, ['teacher', 'admin']);
 
 		const id = validateUuidParam(params.id);
 		const formData = await request.formData();
