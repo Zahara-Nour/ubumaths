@@ -614,6 +614,50 @@ export async function checkSignupRateLimitByEmail(email: string): Promise<RateLi
 }
 
 /**
+ * Check password-reset rate limit by email (finding H7).
+ *
+ * Prevents email-bombing a specific address and exhausting the Brevo quota
+ * (which would break real signups). 3 requests per hour per email.
+ */
+export async function checkPasswordResetRateLimitByEmail(email: string): Promise<RateLimitResult> {
+	if (!email) {
+		return { allowed: true }; // Fail open
+	}
+	const key = `ratelimit:pwreset:email:${email.toLowerCase().trim()}`;
+	const result = await checkRateLimitWithMessage(
+		key,
+		3,
+		3600,
+		'Trop de demandes de réinitialisation pour cet email. Réessayez dans 1 heure.'
+	);
+	if (!result.allowed) {
+		logger.warn('Password-reset rate limit exceeded by email', { email: maskKey(key) });
+	}
+	return result;
+}
+
+/**
+ * Check password-reset rate limit by IP (finding H7). 20 per hour per IP —
+ * generous for shared school NAT, still blocks bulk mailbombing from one host.
+ */
+export async function checkPasswordResetRateLimitByIP(ip: string): Promise<RateLimitResult> {
+	if (!ip) {
+		return { allowed: true }; // Fail open
+	}
+	const key = `ratelimit:pwreset:ip:${ip}`;
+	const result = await checkRateLimitWithMessage(
+		key,
+		20,
+		3600,
+		'Trop de demandes de réinitialisation. Réessayez plus tard.'
+	);
+	if (!result.allowed) {
+		logger.warn('Password-reset rate limit exceeded by IP', { ip: maskKey(key) });
+	}
+	return result;
+}
+
+/**
  * Check OAuth rate limit by IP address
  *
  * Prevents OAuth flow abuse while allowing legitimate retries for OAuth-specific issues:

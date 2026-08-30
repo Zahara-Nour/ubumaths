@@ -50,7 +50,11 @@ const messageContentSchema = z.union([
  * Individual chat message schema
  */
 const chatMessageSchema = z.object({
-	role: z.enum(['system', 'user', 'assistant'], {
+	// SECURITY (finding H11): the client-supplied history must NOT contain a
+	// `system` turn — a later system message would override the server tutor prompt
+	// (prompt injection, defeating the anti-cheat + age-appropriate constraints).
+	// The system prompt is built server-side only (api/chat/+server.ts).
+	role: z.enum(['user', 'assistant'], {
 		message: 'Rôle de message invalide'
 	}),
 	content: messageContentSchema

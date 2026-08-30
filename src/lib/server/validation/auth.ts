@@ -4,6 +4,22 @@
 
 import { z } from 'zod';
 import { formDataTransforms } from './common';
+import { validatePasswordPolicy } from '$lib/server/passwordPolicy';
+
+/**
+ * SECURITY (finding H6): the server-side password policy was dead code — real
+ * enforcement was only `min(8)`. This superRefine wires it into every schema that
+ * sets a new password (register, update after reset), so complexity + common-
+ * password checks are actually applied server-side.
+ */
+function enforcePasswordPolicy(password: string, ctx: z.RefinementCtx): void {
+	const result = validatePasswordPolicy(password);
+	if (!result.valid) {
+		for (const message of result.errors) {
+			ctx.addIssue({ code: z.ZodIssueCode.custom, message, path: ['password'] });
+		}
+	}
+}
 
 // ============================================================================
 // LOGIN SCHEMAS
@@ -57,7 +73,8 @@ export const registerFormSchema = z
 	.refine((d) => d.password === d.confirmPassword, {
 		message: 'Les mots de passe ne correspondent pas',
 		path: ['confirmPassword']
-	});
+	})
+	.superRefine((d, ctx) => enforcePasswordPolicy(d.password, ctx));
 
 // ============================================================================
 // PASSWORD RESET SCHEMAS
@@ -73,10 +90,12 @@ export const requestPasswordResetSchema = z.object({
 /**
  * Update password schema (after reset link)
  */
-export const updatePasswordSchema = z.object({
-	password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
-	confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise')
-});
+export const updatePasswordSchema = z
+	.object({
+		password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
+		confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise')
+	})
+	.superRefine((d, ctx) => enforcePasswordPolicy(d.password, ctx));
 
 // ============================================================================
 // PROFILE UPDATE SCHEMAS

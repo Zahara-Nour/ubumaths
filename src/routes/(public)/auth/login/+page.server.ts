@@ -46,6 +46,7 @@ import {
 	checkOAuthRateLimitByIP
 } from '$lib/server/rateLimiter';
 import { validateFormData, loginFormSchema } from '$lib/server/validation';
+import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
 
 const logger = createLogger('login/+page.server.ts');
 
@@ -69,6 +70,12 @@ export const actions = {
 	 * SECURITY: Rate limited to prevent OAuth abuse
 	 */
 	googleSignIn: async ({ locals: { supabase }, url, getClientAddress }) => {
+		// SECURITY (finding H5): Google login is disabled. The UI hides the button,
+		// but this action is reachable directly — enforce the flag server-side too.
+		if (!GOOGLE_LOGIN_ENABLED) {
+			return fail(403, { message: 'La connexion Google est désactivée.' });
+		}
+
 		// Check OAuth rate limit (with HMR-safe globalThis singleton)
 		const ip = getClientAddress();
 		const oauthLimit = await checkOAuthRateLimitByIP(ip);

@@ -12,6 +12,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { ChevronDown, ChevronUp } from '@lucide/svelte';
 	import { foldOutput } from '$lib/utils/output-fold';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import 'mathlive';
 
 	// Props
@@ -220,9 +221,11 @@
 						></div>
 					</div>
 				{:else if output.data['text/html']}
-					<!-- HTML output (not commonly used, but supported) -->
+					<!-- HTML output: SECURITY (finding H4) — sanitize before {@html}. A
+					     notebook's outputs are attacker-controllable (PUT /api/python-notebooks/[id])
+					     and readable by the teacher, so this sink must strip scripts/handlers. -->
 					<div class="rounded border border-border bg-muted p-3">
-						{@html output.data['text/html']}
+						{@html sanitizeHtml(output.data['text/html'])}
 					</div>
 				{/if}
 			{/if}

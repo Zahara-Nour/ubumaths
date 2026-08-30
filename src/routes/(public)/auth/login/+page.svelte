@@ -31,12 +31,11 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Alert from '$lib/components/ui/alert';
 	import { Loader2 } from '@lucide/svelte';
+	import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
 
-	// Feature flag: Google OAuth login button.
-	// Disabled after the school change (@voltairedoha.com account gone). The server-side
-	// infrastructure (googleSignIn action + /auth/callback) is intentionally kept so this
-	// can be flipped back to `true` — remember to update the domain label below too.
-	const GOOGLE_LOGIN_ENABLED = false;
+	// Feature flag: Google OAuth login button (single source of truth in
+	// $lib/config/google-login, also enforced server-side in the googleSignIn action
+	// and /auth/callback). Disabled after the school change (@voltairedoha.com gone).
 
 	// Form action result (contains error if login failed)
 	let { form }: { form: ActionData } = $props();

@@ -41,15 +41,23 @@ Suite d'intégration complète : **426 passed / 0 failed / 12 skipped** après l
 
 ### Vague 1 — sweep systémique + haute sévérité (H1-H15)
 
+**PR app-layer (`fix/security-vague1`, stacked sur vague0)** — H4/H5/H6/H7/H11/H13 :
+
+- [x] H4 XSS notebook : `{@html sanitizeHtml(...)}` sur la sortie de cellule (`CellOutputs.svelte`)
+- [x] H5 flag Google login : `$lib/config/google-login.ts` + hard-fail server dans `googleSignIn` action ET `/auth/callback` (le flag UI ne gardait rien). ⚠️ **à faire côté ops** : confirmer le provider Google désactivé dans le dashboard Supabase Auth.
+- [x] H6 password policy : `validatePasswordPolicy` branché via `.superRefine()` dans `registerFormSchema` + `updatePasswordSchema` (était du code mort). ⚠️ activer aussi « leaked password protection » au dashboard.
+- [x] H7 reset password : Zod (`requestPasswordResetSchema`) + rate limit dédié (email 3/h, IP 20/h) avant l'envoi, réponse générique conservée (anti-énumération)
+- [x] H11 chat : `chatMessageSchema` restreint à `user|assistant` (plus de `system` côté client → anti prompt-injection)
+- [x] H13 latex compile : `requireAuth` (fermait le seul endpoint sans auth = proxy ouvert)
+- [x] Tests : `security-hardening.test.ts` (5) + unit rate-limiter/password/login verts
+
+**PR DB (à venir, stacked)** :
+
 - [ ] H1 sweep `REVOKE … FROM anon` + `ALTER DEFAULT PRIVILEGES` + whitelist
 - [ ] H2/H3 cookies HTML, CSP, maxAge
-- [ ] H4/H11 XSS notebook + schéma chat
-- [ ] H5 flag Google login
-- [ ] H6/H7 password policy + reset
 - [ ] H8 share-tokens
 - [ ] H9/H10 auto-inscription par code
 - [ ] H12 thread CTE filtre
-- [ ] H13 latex compile auth
 - [ ] H14/H15 RGPD erasure (pending_students, moderation_logs FK)
 
 ### Vague 2 — durcissement + RGPD (M1-M24)
