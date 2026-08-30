@@ -72,10 +72,17 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
  * Validate riddle attempt
  */
 export const actions: Actions = {
-	validate: async ({ params, request, locals: { supabase, safeGetSession } }) => {
+	validate: async ({ params, request, locals: { supabase, safeGetSession, profile } }) => {
 		const { user } = await safeGetSession();
 		if (!user) {
 			return fail(401, { message: 'Non authentifié' });
+		}
+
+		// SECURITY (finding C8): form actions bypass the layout load. Validating a
+		// riddle attempt credits gidouilles, so it must be teacher/admin only. The
+		// validate_riddle_attempt RPC now enforces this too (defense-in-depth).
+		if (profile?.role !== 'teacher' && profile?.role !== 'admin') {
+			return fail(403, { message: 'Réservé aux enseignants' });
 		}
 
 		const id = validateUuidParam(params.id);

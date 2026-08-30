@@ -80,10 +80,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
 	update_profile: async ({ request, locals }) => {
-		const { user, supabase } = locals;
+		const { user, profile, supabase } = locals;
 
 		if (!user) {
 			return fail(401, { message: 'Unauthorized' });
+		}
+
+		// SECURITY (finding C4): form actions bypass the layout load, so this is the
+		// only app-layer authz on a privileged mutation (role/school/email). Without
+		// it any authenticated student could POST ?/update_profile. The DB (WITH CHECK
+		// + guard_profile_role_change trigger) is the ultimate guard on `role`.
+		if (!profile || (profile.role !== 'admin' && profile.role !== 'teacher')) {
+			return fail(403, { message: 'Accès réservé aux administrateurs et enseignants' });
 		}
 
 		const formData = await request.formData();
