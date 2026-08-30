@@ -162,7 +162,7 @@ describe('Student self-registration by class code - Integration Tests', () => {
 		});
 
 		const { id } = await signUp({
-			class_id: cls.id,
+			class_code: cls.join_code,
 			firstname: 'Alice',
 			lastname: 'Martin',
 			terms_version: TERMS_VERSION
@@ -201,7 +201,7 @@ describe('Student self-registration by class code - Integration Tests', () => {
 		});
 
 		const { id } = await signUp({
-			class_id: cls.id,
+			class_code: cls.join_code,
 			firstname: 'Bob',
 			lastname: 'Durand',
 			terms_version: TERMS_VERSION
@@ -229,7 +229,7 @@ describe('Student self-registration by class code - Integration Tests', () => {
 		});
 
 		const { id } = await signUp({
-			class_id: cls.id,
+			class_code: cls.join_code,
 			firstname: 'Chloe',
 			lastname: 'Petit',
 			terms_version: TERMS_VERSION
@@ -242,11 +242,11 @@ describe('Student self-registration by class code - Integration Tests', () => {
 	});
 
 	// ------------------------------------------------------------------
-	// 4. Non-existent class_id → pending, not enrolled
+	// 4. Non-existent class code → pending, not enrolled
 	// ------------------------------------------------------------------
-	it('non-existent class_id → pending student, not enrolled', async () => {
+	it('non-existent class code → pending student, not enrolled', async () => {
 		const { id } = await signUp({
-			class_id: crypto.randomUUID(),
+			class_code: 'NOSUCHCODE1',
 			firstname: 'David',
 			lastname: 'Roux',
 			terms_version: TERMS_VERSION
@@ -273,7 +273,7 @@ describe('Student self-registration by class code - Integration Tests', () => {
 		});
 
 		const { id } = await signUp({
-			class_id: cls.id,
+			class_code: cls.join_code,
 			firstname: 'Emma',
 			lastname: 'Blanc'
 			// no terms_version
@@ -392,13 +392,13 @@ describe('Student self-registration by class code - Integration Tests', () => {
 
 		// Student A and B both self-register (each gets a terms row).
 		const a = await signUp({
-			class_id: cls.id,
+			class_code: cls.join_code,
 			firstname: 'StudentA',
 			lastname: 'Test',
 			terms_version: TERMS_VERSION
 		});
 		const b = await signUp({
-			class_id: cls.id,
+			class_code: cls.join_code,
 			firstname: 'StudentB',
 			lastname: 'Test',
 			terms_version: TERMS_VERSION

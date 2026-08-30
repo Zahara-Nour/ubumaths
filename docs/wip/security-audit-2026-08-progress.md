@@ -70,9 +70,14 @@ Suite d'intégration complète : **426 passed / 0 failed / 12 skipped** après l
 - [ ] **DIFFÉRÉ** H2 retrait de `cookies` du `+layout.server.ts` : le client SSR de `+layout.ts` (fichier sensible au bug WebKit TDZ, garde CI sur la taille du chunk) lit `data.cookies` ; le retirer exige de vérifier qu'aucun load universel SSR ne dépend du client authentifié. À faire à part.
 - [ ] **DIFFÉRÉ** H3 CSP : retirer `unsafe-inline`/`unsafe-eval` de `script-src` exige des nonces + scoping `unsafe-eval` aux routes Typst/Pyodide + test de toutes les pages (risque white-screen). À faire à part.
 
+**PR signup anchor (`fix/security-vague1e`, stacked sur vague1d)** — H9/H10 :
+
+- [x] H9 : `handle_new_user` re-résout le **code** (`resolve_open_class_by_code`) au lieu de faire confiance à `raw_user_meta_data.class_id` — un signup GoTrue direct avec un simple UUID de classe n'enrôle plus. L'app passe `class_code` (au lieu de `class_id`) dans les metadata. Reproduction fidèle du trigger (agent), seule la branche self-registration change.
+- [x] H10 : DROP policy `students_can_join` (aucun flux app ne fait d'INSERT `class_members` authentifié direct ; l'enrôlement passe par le trigger).
+- [x] Tests `security-signup-anchor.test.ts` (2) + `student-self-registration.test.ts` migré `class_id`→`class_code`. Suite complète **439 passed / 0 failed**.
+
 **PR DB (à venir, stacked)** :
 
-- [ ] H9/H10 auto-inscription par code (handle_new_user re-résout le code ; drop `students_can_join`) — ⚠️ touche le trigger de signup (fragile)
 - [ ] H1 sweep `REVOKE … FROM anon` + `ALTER DEFAULT PRIVILEGES` + whitelist (⚠️ RISQUÉ, blast radius large)
 
 > ⚠️ **Flake de test connu** (pré-existant, non lié à la sécu) : `vip-card-enabled-filtering > all cards disabled` échoue par intermittence en suite complète (« Insufficient gidouilles: available 0 » = race de funding dans ProfileBuilder), vert en isolation. À traiter côté test-infra.
