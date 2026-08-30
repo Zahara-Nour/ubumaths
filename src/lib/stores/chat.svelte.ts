@@ -1646,6 +1646,26 @@ class ChatStore {
 		return this.loadConversationHistory(conversationId, limit);
 	}
 
+	/**
+	 * Generate a short-lived signed URL for a chat attachment (finding M1).
+	 *
+	 * `chat-attachments` is a PRIVATE bucket — files have no public URL. A
+	 * participant reads them through a signed URL; the storage.objects policy
+	 * "Users can view chat attachments in their conversations" authorizes the
+	 * signing (path prefix = conversation_id → participant check).
+	 */
+	async getAttachmentSignedUrl(storagePath: string): Promise<string | null> {
+		if (!browser || !this.supabase || !storagePath) return null;
+		const { data, error } = await this.supabase.storage
+			.from('chat-attachments')
+			.createSignedUrl(storagePath, 3600); // 1h
+		if (error) {
+			logger.error('Failed to sign chat attachment URL:', error);
+			return null;
+		}
+		return data?.signedUrl ?? null;
+	}
+
 	// =========================================================================
 	// RECONNECTION LOGIC (copied from presence.svelte.ts pattern)
 	// =========================================================================
