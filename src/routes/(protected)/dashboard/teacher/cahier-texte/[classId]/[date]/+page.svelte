@@ -144,8 +144,6 @@
 	// --- Activités (5b) -------------------------------------------------------
 	let activities = $state(initialData.activities);
 	let selectedExercise = $state('');
-	let tbLabel = $state('');
-	let courseLabel = $state('');
 
 	function exerciseLabel(id: string | null): string {
 		if (!id) return lore.learning.exercise;
@@ -195,38 +193,6 @@
 			toaster.success(`${lore.learning.exercise} ajoutée`);
 			await refreshActivities();
 			await refreshCoverage();
-		}
-	}
-
-	async function addTextbook() {
-		const entryId = data.entry?.id;
-		const label = tbLabel.trim();
-		if (!entryId || !label) return;
-		const ok = await covApi('/api/teacher/curriculum/activities', 'POST', {
-			entry_id: entryId,
-			kind: 'textbook',
-			textbook_ref: { label }
-		});
-		if (ok) {
-			tbLabel = '';
-			toaster.success('Référence ajoutée');
-			await refreshActivities();
-		}
-	}
-
-	async function addCourse() {
-		const entryId = data.entry?.id;
-		const label = courseLabel.trim();
-		if (!entryId || !label) return;
-		const ok = await covApi('/api/teacher/curriculum/activities', 'POST', {
-			entry_id: entryId,
-			kind: 'course',
-			label
-		});
-		if (ok) {
-			courseLabel = '';
-			toaster.success('Point de cours ajouté');
-			await refreshActivities();
 		}
 	}
 
@@ -576,31 +542,6 @@
 									</Button>
 								</div>
 							{/if}
-							<div class="flex gap-2">
-								<Input
-									bind:value={tbLabel}
-									placeholder="Référence manuel (ex. Sésamath p.42 n°12)"
-								/>
-								<Button
-									variant="outline"
-									size="sm"
-									disabled={!tbLabel.trim()}
-									onclick={addTextbook}
-								>
-									<Plus class="h-4 w-4" />
-								</Button>
-							</div>
-							<div class="flex gap-2">
-								<Input bind:value={courseLabel} placeholder="Point de cours abordé…" />
-								<Button
-									variant="outline"
-									size="sm"
-									disabled={!courseLabel.trim()}
-									onclick={addCourse}
-								>
-									<Plus class="h-4 w-4" />
-								</Button>
-							</div>
 						</div>
 					</div>
 					<Separator class="mb-4" />
