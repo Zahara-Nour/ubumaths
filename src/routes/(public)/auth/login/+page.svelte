@@ -30,7 +30,8 @@
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import * as Alert from '$lib/components/ui/alert';
-	import { Loader2, Eye, EyeOff } from '@lucide/svelte';
+	import { Loader2 } from '@lucide/svelte';
+	import MyPasswordInput from '$lib/components/MyPasswordInput.svelte';
 	import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
 
 	// Feature flag: Google OAuth login button (single source of truth in
@@ -39,9 +40,6 @@
 
 	// Form action result (contains error if login failed)
 	let { form }: { form: ActionData } = $props();
-
-	/** Afficher le mot de passe en clair — utile sur clavier tactile ou mot de passe long. */
-	let showPassword = $state(false);
 
 	// State for showing email form. When Google login is disabled, email/password is the
 	// only method, so show it directly instead of behind the "Email et mot de passe" reveal.
@@ -201,30 +199,12 @@
 									Mot de passe oublié ?
 								</a>
 							</div>
-							<div class="relative">
-								<Input
-									id="password"
-									name="password"
-									type={showPassword ? 'text' : 'password'}
-									autocomplete="current-password"
-									class="pr-10"
-									required
-								/>
-								<button
-									type="button"
-									class="absolute inset-y-0 right-0 flex items-center rounded-md px-3 text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
-									onclick={() => (showPassword = !showPassword)}
-									aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
-									aria-pressed={showPassword}
-									tabindex={-1}
-								>
-									{#if showPassword}
-										<EyeOff class="h-4 w-4" />
-									{:else}
-										<Eye class="h-4 w-4" />
-									{/if}
-								</button>
-							</div>
+							<MyPasswordInput
+								id="password"
+								name="password"
+								autocomplete="current-password"
+								required
+							/>
 						</div>
 
 						<Button

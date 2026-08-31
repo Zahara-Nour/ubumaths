@@ -21,6 +21,7 @@
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
 	import { ShieldCheck } from '@lucide/svelte';
+	import MyPasswordInput from '$lib/components/MyPasswordInput.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -99,9 +100,8 @@
 			<form class="space-y-4" onsubmit={handleSubmit}>
 				<div class="space-y-2">
 					<Label for="admin-password">Mot de passe administrateur</Label>
-					<Input
+					<MyPasswordInput
 						id="admin-password"
-						type="password"
 						autocomplete="current-password"
 						bind:value={password}
 						required
