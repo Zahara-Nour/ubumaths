@@ -97,10 +97,25 @@
 		}
 	}
 
-	/** Optimistically toggle a curriculum point's coverage for this entry. */
+	/**
+	 * Coche ou décoche un point de programme pour cette séance.
+	 *
+	 * Sur une séance NEUVE, il n'y a pas encore d'entrée à référencer : on garde
+	 * la sélection en mémoire et l'action `create` l'écrit après avoir créé
+	 * l'entrée, via le champ caché `coveredPointIds`. Sans ça, il fallait
+	 * enregistrer d'abord puis revenir cocher — une seconde visite que personne
+	 * ne fait, au moment où la séance n'est déjà plus en tête.
+	 */
 	async function togglePoint(point: { id: string }) {
 		const entryId = data.entry?.id;
-		if (!entryId) return;
+
+		if (!entryId) {
+			const next = { ...coveredSource };
+			if (next[point.id] !== undefined) delete next[point.id];
+			else next[point.id] = 'manual';
+			coveredSource = next;
+			return;
+		}
 
 		if (isCovered(point.id)) {
 			const prev = coveredSource[point.id];
@@ -380,6 +395,11 @@
 	>
 		{#if isEditing}
 			<input type="hidden" name="entryId" value={data.entry?.id} />
+		{:else}
+			<!-- Séance neuve : la couverture cochée avant enregistrement voyage
+			     avec la création. La carte « Programme travaillé » vit hors de ce
+			     formulaire, seul ce champ a besoin d'y être. -->
+			<input type="hidden" name="coveredPointIds" value={Object.keys(coveredSource).join(',')} />
 		{/if}
 
 		<div class="space-y-6">
@@ -501,27 +521,26 @@
 	</form>
 
 	<!-- Programme travaillé (coverage) -->
-	{#if isEditing}
-		<div class="mt-6">
-			<Card.Root>
-				<Card.Header>
-					<Card.Title class="flex items-center gap-2">
-						<ListTodo class="h-5 w-5 text-primary" />
-						Programme travaillé
-					</Card.Title>
-					<Card.Description>
-						Cochez les points du programme abordés pendant cette séance.
-						{#if coveredCount > 0}
-							<span class="font-medium text-foreground">
-								{coveredCount} point{coveredCount > 1 ? 's' : ''} coché{coveredCount > 1
-									? 's'
-									: ''}.
-							</span>
-						{/if}
-					</Card.Description>
-				</Card.Header>
-				<Card.Content>
-					<!-- Activités de la séance -->
+	<div class="mt-6">
+		<Card.Root>
+			<Card.Header>
+				<Card.Title class="flex items-center gap-2">
+					<ListTodo class="h-5 w-5 text-primary" />
+					Programme travaillé
+				</Card.Title>
+				<Card.Description>
+					Cochez les points du programme abordés pendant cette séance.
+					{#if coveredCount > 0}
+						<span class="font-medium text-foreground">
+							{coveredCount} point{coveredCount > 1 ? 's' : ''} coché{coveredCount > 1 ? 's' : ''}.
+						</span>
+					{/if}
+				</Card.Description>
+			</Card.Header>
+			<Card.Content>
+				<!-- Activités de la séance — elles pointent vers l'entrée, donc
+					     impossible avant qu'elle existe. Le reste de la carte, si. -->
+				{#if isEditing}
 					<div class="mb-4 space-y-3">
 						<p class="text-sm font-medium">Activités</p>
 						{#if activities.length > 0}
@@ -585,75 +604,75 @@
 						</div>
 					</div>
 					<Separator class="mb-4" />
+				{/if}
 
-					{#if data.curriculumTree.length === 0}
-						<p class="text-sm text-muted-foreground">
-							Aucun programme défini pour le niveau de cette classe.
-							<a class="underline" href={resolve('/dashboard/teacher/programme')}
-								>Le créer dans Programme</a
-							>.
-						</p>
-					{:else}
-						<div class="space-y-1">
-							{#each data.curriculumTree as theme (theme.id)}
-								<div class="rounded-md border">
-									<button
-										class="flex w-full items-center gap-2 p-2 text-left font-medium"
-										onclick={() => (openProgThemes[theme.id] = !openProgThemes[theme.id])}
-									>
-										{#if openProgThemes[theme.id]}
-											<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
-										{:else}
-											<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
-										{/if}
-										<InlineMarkdown content={theme.name} />
-									</button>
+				{#if data.curriculumTree.length === 0}
+					<p class="text-sm text-muted-foreground">
+						Aucun programme défini pour le niveau de cette classe.
+						<a class="underline" href={resolve('/dashboard/teacher/programme')}
+							>Le créer dans Programme</a
+						>.
+					</p>
+				{:else}
+					<div class="space-y-1">
+						{#each data.curriculumTree as theme (theme.id)}
+							<div class="rounded-md border">
+								<button
+									class="flex w-full items-center gap-2 p-2 text-left font-medium"
+									onclick={() => (openProgThemes[theme.id] = !openProgThemes[theme.id])}
+								>
 									{#if openProgThemes[theme.id]}
-										<div class="space-y-1 border-t p-2 pl-4">
-											{#each theme.objectives as item (item.id)}
-												<div>
-													<button
-														class="flex w-full items-center gap-2 py-1 text-left text-sm"
-														onclick={() => (openProgItems[item.id] = !openProgItems[item.id])}
-													>
-														{#if openProgItems[item.id]}
-															<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
-														{:else}
-															<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
-														{/if}
-														<span class="font-medium"><InlineMarkdown content={item.name} /></span>
-														<span class="text-xs text-muted-foreground">
-															({item.points.filter((p) => isCovered(p.id)).length}/{item.points
-																.length})
-														</span>
-													</button>
-													{#if openProgItems[item.id]}
-														<div class="space-y-1 py-1 pl-6">
-															{#each item.points as point (point.id)}
-																<MyCheckbox
-																	checked={isCovered(point.id)}
-																	onchange={() => togglePoint(point)}
-																>
-																	<InlineMarkdown content={point.name} />
-																	{#if coveredSource[point.id] === 'auto'}
-																		<span class="text-muted-foreground">(auto)</span>
-																	{/if}
-																</MyCheckbox>
-															{/each}
-														</div>
-													{/if}
-												</div>
-											{/each}
-										</div>
+										<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
+									{:else}
+										<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 									{/if}
-								</div>
-							{/each}
-						</div>
-					{/if}
-				</Card.Content>
-			</Card.Root>
-		</div>
-	{/if}
+									<InlineMarkdown content={theme.name} />
+								</button>
+								{#if openProgThemes[theme.id]}
+									<div class="space-y-1 border-t p-2 pl-4">
+										{#each theme.objectives as item (item.id)}
+											<div>
+												<button
+													class="flex w-full items-center gap-2 py-1 text-left text-sm"
+													onclick={() => (openProgItems[item.id] = !openProgItems[item.id])}
+												>
+													{#if openProgItems[item.id]}
+														<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
+													{:else}
+														<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
+													{/if}
+													<span class="font-medium"><InlineMarkdown content={item.name} /></span>
+													<span class="text-xs text-muted-foreground">
+														({item.points.filter((p) => isCovered(p.id)).length}/{item.points
+															.length})
+													</span>
+												</button>
+												{#if openProgItems[item.id]}
+													<div class="space-y-1 py-1 pl-6">
+														{#each item.points as point (point.id)}
+															<MyCheckbox
+																checked={isCovered(point.id)}
+																onchange={() => togglePoint(point)}
+															>
+																<InlineMarkdown content={point.name} />
+																{#if coveredSource[point.id] === 'auto'}
+																	<span class="text-muted-foreground">(auto)</span>
+																{/if}
+															</MyCheckbox>
+														{/each}
+													</div>
+												{/if}
+											</div>
+										{/each}
+									</div>
+								{/if}
+							</div>
+						{/each}
+					</div>
+				{/if}
+			</Card.Content>
+		</Card.Root>
+	</div>
 
 	<!-- Hidden delete form -->
 	{#if isEditing}

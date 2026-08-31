@@ -197,6 +197,39 @@ export const actions: Actions = {
 			return fail(500, { error: createError.message, action: 'create' });
 		}
 
+		// Couverture cochée AVANT enregistrement : sur une séance neuve, il n'y
+		// avait pas encore d'entrée à référencer. La page a gardé la sélection et
+		// l'envoie ici, pour l'écrire dans la foulée de la création.
+		const rawPoints = (formData.get('coveredPointIds') as string) || '';
+		const pointIds = [
+			...new Set(
+				rawPoints
+					.split(',')
+					.map((s) => s.trim())
+					.filter(Boolean)
+			)
+		];
+
+		if (entry?.id && pointIds.length > 0) {
+			const valid = pointIds.filter((id) => uuidSchema.safeParse(id).success).slice(0, 500);
+			if (valid.length > 0) {
+				const { error: covError } = await locals.supabase
+					.from('journal_entry_points')
+					.insert(valid.map((point_id) => ({ entry_id: entry.id, point_id, source: 'manual' })));
+				// La séance, elle, est créée : un échec de couverture ne doit pas la
+				// perdre. On le signale sans annuler.
+				if (covError) {
+					console.error('[Create Journal Entry] coverage failed:', covError);
+					return {
+						success: true,
+						action: 'create',
+						entryId: entry.id,
+						warning: 'Séance créée, mais les points du programme n’ont pas pu être enregistrés.'
+					};
+				}
+			}
+		}
+
 		return { success: true, action: 'create', entryId: entry?.id };
 	},
 
