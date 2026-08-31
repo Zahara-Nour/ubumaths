@@ -8,7 +8,9 @@
 -- `enforce_single_teacher` (modèle mono-professeur) n'en tolère qu'un seul et
 -- que chaque test a besoin de créer le sien. Le compte élève, lui, survit.
 --
---   Après une suite d'intégration :  pnpm db:dev-accounts
+--   Après une suite d'intégration : plus rien à faire — le `teardown` du
+--   global-setup rejoue ce fichier en sortie. `pnpm db:dev-accounts` reste le
+--   filet si la suite a été interrompue avant sa fin.
 --
 -- Ce n'est pas un défaut à corriger : c'est l'invariant métier qui rencontre le
 -- design des tests. Seeder un prof permanent et laisser les tests en créer un
