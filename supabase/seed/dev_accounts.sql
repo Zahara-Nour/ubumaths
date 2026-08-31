@@ -88,3 +88,33 @@ BEGIN
         ON CONFLICT (id) DO UPDATE SET role = EXCLUDED.role, full_name = EXCLUDED.full_name;
     END LOOP;
 END $dev_accounts$;
+
+-- ---------------------------------------------------------------------------
+-- Une classe de développement
+-- ---------------------------------------------------------------------------
+-- Sans classe, le cahier de texte, l'avancement et les statistiques n'ont rien
+-- à afficher — et les pages qui en attendent une échouent en 404. Le seed de
+-- référence n'en contient aucune (il ne porte que des tables de contenu).
+--
+-- Niveau seconde : c'est là que le référentiel est le plus fourni (185 points).
+
+insert into public.classes (id, name, grade, join_code, is_active, registration_open)
+values ('44444444-4444-4444-8444-444444444444', 'Seconde Locale', '2', 'DEVLOCAL', true, false)
+on conflict (id) do nothing;
+
+insert into public.class_members (class_id, student_id)
+select '44444444-4444-4444-8444-444444444444', id
+  from public.profiles where email = 'student@local.test'
+on conflict do nothing;
+
+-- ---------------------------------------------------------------------------
+-- Configuration singleton attendue par l'API
+-- ---------------------------------------------------------------------------
+-- `bug_reports_config` est lue avec `.single()` : zéro ligne produit une erreur
+-- PGRST116 « Cannot coerce the result to a single JSON object » à chaque
+-- chargement de page. La prod a sa ligne, le seed de référence ne l'a pas.
+
+insert into public.bug_reports_config
+	(singleton_key, fab_enabled, freeze_detection_enabled, freeze_prompt_enabled, auto_report_enabled)
+values ('global', true, false, false, false)
+on conflict (singleton_key) do nothing;
