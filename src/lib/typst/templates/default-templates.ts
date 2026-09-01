@@ -7,7 +7,9 @@
  * - {{date}} - Current date or assignment date
  * - {{class}} - Class name
  * - {{student_name}} - Student's full name
- * - {{exercises}} - Rendered exercises content
+ * - {{exercises}} - Rendered exercises content ("Exercice N : titre" headers)
+ * - {{exercises_badge}} - Same content, but each exercise number is rendered in
+ *   white on a red square (student-PDF style). Use one or the other, not both.
  * - {{total_points}} - Total points for the worksheet
  * - {{duration}} - Estimated duration in minutes
  * - {{instructions}} - General instructions
@@ -58,7 +60,8 @@ export const DEFAULT_TEMPLATE_IDS = {
 	twoColumns: '00000000-0000-4000-8000-000000000008',
 	landscape: '00000000-0000-4000-8000-000000000009',
 	magazine: '00000000-0000-4000-8000-000000000010',
-	scientific: '00000000-0000-4000-8000-000000000011'
+	scientific: '00000000-0000-4000-8000-000000000011',
+	studentStyle: '00000000-0000-4000-8000-000000000012'
 } as const;
 
 /**
@@ -641,17 +644,6 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
 #set list(spacing: 1.5em)
 #set par(justify: true, leading: 0.8em)
 
-// Fonction pour créer des numéros d'exercices stylisés
-#let exercise-badge(n) = {
-  box(
-    fill: rgb("#dc2626"),
-    inset: (x: 10pt, y: 5pt),
-    radius: 4pt,
-    baseline: 25%,
-    text(fill: white, weight: "bold", size: 11pt, [#n])
-  )
-}
-
 // Header moderne avec dégradé
 #rect(
   width: 100%,
@@ -754,8 +746,8 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
 
 #v(1cm)
 
-// Zone des exercices
-{{exercises}}
+// Zone des exercices (numéros en blanc sur carré rouge)
+{{exercises_badge}}
 
 // Footer moderne
 #v(1fr)
@@ -1520,6 +1512,60 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
 };
 
 /**
+ * Student-view template
+ * Same layout as the PDF the student downloads: two columns, exercise numbers
+ * in white on a red square. Opts into the badge numbering via {{exercises_badge}}.
+ */
+export const STUDENT_STYLE_TEMPLATE: DefaultTemplate = {
+	id: DEFAULT_TEMPLATE_IDS.studentStyle,
+	name: 'Fiche élève',
+	description:
+		"Deux colonnes, numéro d'exercice en blanc sur carré rouge (rendu identique au PDF de l'élève)",
+	type: 'worksheet',
+	is_system: true,
+	placeholders: COMMON_PLACEHOLDERS,
+	template_content: `// Mise en page identique au PDF de l'élève : A4 sur deux colonnes
+#set page(
+  paper: "a4",
+  margin: (x: 1cm, y: 1.5cm),
+  columns: 2,
+  footer: context [
+    #set align(center)
+    #set text(size: 9pt, fill: gray)
+    #counter(page).display("1 / 1", both: true)
+  ]
+)
+
+#set text(font: "New Computer Modern", size: 10pt, lang: "fr")
+#set par(justify: true)
+#set heading(numbering: none)
+
+// Espacement des listes et respiration entre exercices
+#set enum(spacing: 1.5em, tight: false)
+#set list(spacing: 1.5em, tight: false)
+#set block(spacing: 1.8em)
+
+// En-tête
+#align(center)[
+  #text(size: 1.5em, weight: "bold")[{{title}}]
+]
+
+#align(center)[#text(size: 0.9em, fill: gray)[{{date}}]]
+
+#v(0.3em)
+
+{{student_name}} #h(1fr) {{class}}
+
+#line(length: 100%, stroke: 0.5pt + gray)
+
+#v(0.5em)
+
+// Exercices (numéros en blanc sur carré rouge)
+{{exercises_badge}}
+`
+};
+
+/**
  * All default templates
  */
 export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
@@ -1533,7 +1579,8 @@ export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
 	TWO_COLUMNS_TEMPLATE,
 	LANDSCAPE_TEMPLATE,
 	MAGAZINE_TEMPLATE,
-	SCIENTIFIC_TEMPLATE
+	SCIENTIFIC_TEMPLATE,
+	STUDENT_STYLE_TEMPLATE
 ];
 
 /**
@@ -1590,6 +1637,29 @@ Calculer les dimensions de ce rectangle.
 #v(1cm)
 
 *Exercice 3* (10 points)
+
+Dans un cinema, le prix d'une place adulte est 12 euros et le prix d'une place enfant est 8 euros.
+Une famille de 5 personnes paie 48 euros au total.
+Combien y a-t-il d'adultes et d'enfants dans cette famille?`,
+	// Same sample, rendered the way {{exercises_badge}} numbers exercises
+	exercises_badge: `#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]] #h(0.5em) #text(weight: "bold")[Equations]
+
+Resoudre les equations suivantes:
+
+a) 2x + 5 = 11
+
+b) 3x - 7 = 2x + 4
+
+#v(1cm)
+
+#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[2]] #h(0.5em) #text(weight: "bold")[Perimetre]
+
+Un rectangle a un perimetre de 36 cm. Sa longueur est le triple de sa largeur.
+Calculer les dimensions de ce rectangle.
+
+#v(1cm)
+
+#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[3]] #h(0.5em) #text(weight: "bold")[Cinema]
 
 Dans un cinema, le prix d'une place adulte est 12 euros et le prix d'une place enfant est 8 euros.
 Une famille de 5 personnes paie 48 euros au total.
