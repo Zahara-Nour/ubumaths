@@ -23,7 +23,6 @@
 	import { ShieldCheck } from '@lucide/svelte';
 	import MyPasswordInput from '$lib/components/MyPasswordInput.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import { toaster } from '$lib/stores/toaster.svelte';
