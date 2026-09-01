@@ -4790,6 +4790,7 @@ export type Database = {
       }
       journal_entry_activities: {
         Row: {
+          assessment_id: string | null
           chapter_id: string | null
           created_at: string
           display_order: number
@@ -4798,9 +4799,11 @@ export type Database = {
           id: string
           kind: string
           label: string | null
+          question_template_id: string | null
           textbook_ref: Json | null
         }
         Insert: {
+          assessment_id?: string | null
           chapter_id?: string | null
           created_at?: string
           display_order?: number
@@ -4809,9 +4812,11 @@ export type Database = {
           id?: string
           kind: string
           label?: string | null
+          question_template_id?: string | null
           textbook_ref?: Json | null
         }
         Update: {
+          assessment_id?: string | null
           chapter_id?: string | null
           created_at?: string
           display_order?: number
@@ -4820,9 +4825,17 @@ export type Database = {
           id?: string
           kind?: string
           label?: string | null
+          question_template_id?: string | null
           textbook_ref?: Json | null
         }
         Relationships: [
+          {
+            foreignKeyName: "journal_entry_activities_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "journal_entry_activities_chapter_id_fkey"
             columns: ["chapter_id"]
@@ -4842,6 +4855,13 @@ export type Database = {
             columns: ["exercise_id"]
             isOneToOne: false
             referencedRelation: "exercises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_entry_activities_question_template_id_fkey"
+            columns: ["question_template_id"]
+            isOneToOne: false
+            referencedRelation: "question_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -14747,6 +14767,13 @@ export type Database = {
         Returns: Json
       }
       are_classmates: { Args: { p_user_id: string }; Returns: boolean }
+      assessment_curriculum_points: {
+        Args: { p_assessment_ids: string[] }
+        Returns: {
+          assessment_id: string
+          point_id: string
+        }[]
+      }
       auto_activate_scheduled_tournaments: { Args: never; Returns: number }
       auto_complete_ended_tournaments: { Args: never; Returns: number }
       auto_expire_listings: { Args: never; Returns: number }

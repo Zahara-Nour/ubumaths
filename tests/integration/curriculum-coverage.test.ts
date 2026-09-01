@@ -64,6 +64,18 @@ beforeEach(async () => {
 });
 
 async function cleanupCurriculum() {
+	// Ordre imposé par les clés étrangères : `question_template_points.point_id`
+	// est ON DELETE RESTRICT, donc un point encore tagué par une question bloque
+	// la purge du thème qui le porte. Les templates partent d'abord (leurs tags
+	// tombent en cascade), les points ensuite.
+	await service
+		.from('assessments' as never)
+		.delete()
+		.eq('grade', TEST_GRADE);
+	await service
+		.from('question_templates' as never)
+		.delete()
+		.contains('grades', [TEST_GRADE]);
 	await service
 		.from('curriculum_themes' as never)
 		.delete()
@@ -142,6 +154,72 @@ async function makeTaggedExercise(teacherId: string, pointIds: string[]): Promis
 	return exId;
 }
 
+/** Une catégorie de questions — le quadruplet qui identifie un template publié. */
+interface Category {
+	theme: string;
+	domain: string;
+	subdomain: string | null;
+	level: number;
+}
+
+/**
+ * Un template de questions tagué sur les points donnés.
+ *
+ * Publié par défaut : c'est le statut qu'exige la résolution d'une évaluation,
+ * qui ne référence pas ses templates par identifiant mais par catégorie.
+ */
+async function makeTaggedTemplate(
+	pointIds: string[],
+	opts?: { status?: 'draft' | 'published'; category?: Partial<Category> }
+): Promise<{ id: string; category: Category }> {
+	const category: Category = {
+		theme: opts?.category?.theme ?? `Thème ${crypto.randomUUID().slice(0, 8)}`,
+		domain: opts?.category?.domain ?? 'Domaine de test',
+		subdomain: opts?.category?.subdomain ?? null,
+		level: opts?.category?.level ?? 1
+	};
+
+	const { data, error } = await service
+		.from('question_templates' as never)
+		.insert({
+			title: 'Question de test',
+			status: opts?.status ?? 'published',
+			type: 'fill_in_blanks',
+			grades: [TEST_GRADE],
+			...category,
+			variations: [{ blanks: [{ expectedAnswer: '2' }], statement: 'Calculer $1 + 1 = ?$' }]
+		} as never)
+		.select('id')
+		.single();
+	if (error) throw new Error(`template: ${error.message}`);
+
+	const id = (data as { id: string }).id;
+	if (pointIds.length > 0) {
+		const { error: tagErr } = await service
+			.from('question_template_points' as never)
+			.insert(pointIds.map((point_id) => ({ template_id: id, point_id })) as never);
+		if (tagErr) throw new Error(`tag template: ${tagErr.message}`);
+	}
+	return { id, category };
+}
+
+/** Une évaluation portant les catégories données (une par template attendu). */
+async function makeAssessment(teacherId: string, categories: Category[]): Promise<string> {
+	const { data, error } = await service
+		.from('assessments' as never)
+		.insert({
+			title: 'Évaluation de test',
+			grade: TEST_GRADE,
+			created_by: teacherId,
+			status: 'published',
+			categories: categories.map((category) => ({ category, quantity: 1, delay: 20 }))
+		} as never)
+		.select('id')
+		.single();
+	if (error) throw new Error(`assessment: ${error.message}`);
+	return (data as { id: string }).id;
+}
+
 // ---------------------------------------------------------------------------
 // Locals / request helpers
 // ---------------------------------------------------------------------------
@@ -188,6 +266,22 @@ async function addExerciseActivity(ctx: Ctx, exerciseId: string): Promise<string
 		locals: buildLocals(ctx.teacherUser)
 	} as never);
 	const data = await res.json();
+	return data.activity.id as string;
+}
+
+/** Ajoute une activité d'un type quelconque et renvoie la réponse brute. */
+async function addActivity(ctx: Ctx, body: Record<string, unknown>): Promise<Response> {
+	return actPOST({
+		request: req({ entry_id: ctx.entryId, ...body }),
+		locals: buildLocals(ctx.teacherUser)
+	} as never);
+}
+
+/** Idem, mais renvoie directement l'identifiant de l'activité créée. */
+async function addActivityId(ctx: Ctx, body: Record<string, unknown>): Promise<string> {
+	const res = await addActivity(ctx, body);
+	const data = await res.json();
+	if (res.status !== 201) throw new Error(`activité refusée (${res.status}) : ${data.error}`);
 	return data.activity.id as string;
 }
 
@@ -520,5 +614,212 @@ describe('RLS & constraints', () => {
 			.from('journal_entry_points' as never)
 			.insert({ entry_id: ctx.entryId, point_id: point, source: 'bogus' } as never);
 		expect(error?.code).toBe('23514');
+	});
+});
+
+// ============================================================================
+// 6. Questions comme activités
+// ============================================================================
+
+describe('Question activities', () => {
+	it('materializes the question’s points and drops them on removal', async () => {
+		expect.assertions(6);
+		const ctx = await setup();
+		const item = await makeItem();
+		const [p1, p2] = [await svcPoint(item, 'P1'), await svcPoint(item, 'P2')];
+		const { id: template } = await makeTaggedTemplate([p1, p2]);
+
+		const activity = await addActivityId(ctx, {
+			kind: 'question',
+			question_template_id: template
+		});
+		let cov = await coverageMap(ctx);
+		expect(cov.size).toBe(2);
+		expect(cov.get(p1)).toBe('auto');
+		expect(cov.get(p2)).toBe('auto');
+
+		await actDELETE({
+			locals: buildLocals(ctx.teacherUser),
+			params: { activityId: activity }
+		} as never);
+		cov = await coverageMap(ctx);
+		expect(cov.size).toBe(0);
+		expect(cov.has(p1)).toBe(false);
+		expect(cov.has(p2)).toBe(false);
+	});
+
+	it('accepts an untagged question without covering anything', async () => {
+		expect.assertions(2);
+		const ctx = await setup();
+		const { id: template } = await makeTaggedTemplate([]);
+
+		const res = await addActivity(ctx, { kind: 'question', question_template_id: template });
+		expect(res.status).toBe(201);
+		expect((await coverageMap(ctx)).size).toBe(0);
+	});
+
+	it('counts a point once when the same question is added twice', async () => {
+		expect.assertions(2);
+		const ctx = await setup();
+		const point = await svcPoint(await makeItem());
+		const { id: template } = await makeTaggedTemplate([point]);
+
+		await addActivityId(ctx, { kind: 'question', question_template_id: template });
+		await addActivityId(ctx, { kind: 'question', question_template_id: template });
+
+		const cov = await coverageMap(ctx);
+		expect(cov.size).toBe(1);
+		expect(cov.get(point)).toBe('auto');
+	});
+
+	// Décision de spécification : on stocke tous les points tagués, y compris ceux
+	// d'un autre niveau que la classe. L'information est vraie ; c'est l'arbre
+	// affiché qui filtre, pas l'écriture.
+	it('stores points from another referential than the class grade', async () => {
+		expect.assertions(2);
+		const ctx = await setup();
+		const own = await svcPoint(await makeItem(), 'Niveau de la classe');
+		const { data: other, error } = await service
+			.from('curriculum_points' as never)
+			.select('id')
+			.eq('code', '2-096')
+			.single();
+		if (error) throw new Error(`point de seconde absent : ${error.message}`);
+		const foreign = (other as { id: string }).id;
+
+		const { id: template } = await makeTaggedTemplate([own, foreign]);
+		await addActivityId(ctx, { kind: 'question', question_template_id: template });
+
+		const cov = await coverageMap(ctx);
+		expect(cov.size).toBe(2);
+		expect(cov.get(foreign)).toBe('auto');
+	});
+
+	it('rejects an unknown question template (400)', async () => {
+		expect.assertions(2);
+		const ctx = await setup();
+		const res = await addActivity(ctx, {
+			kind: 'question',
+			question_template_id: crypto.randomUUID()
+		});
+		expect(res.status).toBe(400);
+		expect((await coverageMap(ctx)).size).toBe(0);
+	});
+
+	it('rejects kind=question without a template, at the database level (CHECK)', async () => {
+		expect.assertions(1);
+		const ctx = await setup();
+		const { error } = await service
+			.from('journal_entry_activities' as never)
+			.insert({ entry_id: ctx.entryId, kind: 'question', question_template_id: null } as never);
+		expect(error?.code).toBe('23514');
+	});
+});
+
+// ============================================================================
+// 7. Évaluations comme activités
+// ============================================================================
+
+describe('Assessment activities', () => {
+	it('unions the points of every question its categories designate', async () => {
+		expect.assertions(5);
+		const ctx = await setup();
+		const item = await makeItem();
+		const [p1, p2, p3] = [
+			await svcPoint(item, 'P1'),
+			await svcPoint(item, 'P2'),
+			await svcPoint(item, 'P3')
+		];
+		const t1 = await makeTaggedTemplate([p1, p2]);
+		const t2 = await makeTaggedTemplate([p2, p3]);
+		const assessment = await makeAssessment(ctx.teacher.id, [t1.category, t2.category]);
+
+		const activity = await addActivityId(ctx, { kind: 'assessment', assessment_id: assessment });
+		let cov = await coverageMap(ctx);
+		expect(cov.size).toBe(3);
+		expect(cov.get(p1)).toBe('auto');
+		expect(cov.get(p3)).toBe('auto');
+
+		await actDELETE({
+			locals: buildLocals(ctx.teacherUser),
+			params: { activityId: activity }
+		} as never);
+		cov = await coverageMap(ctx);
+		expect(cov.size).toBe(0);
+		expect(cov.has(p2)).toBe(false);
+	});
+
+	// Une catégorie ne désigne un template que par le quadruplet
+	// (thème, domaine, sous-domaine, niveau) et seulement s'il est publié. Une
+	// catégorie devenue muette ne doit pas emporter les autres avec elle.
+	it('ignores a category matching no published template', async () => {
+		expect.assertions(2);
+		const ctx = await setup();
+		const item = await makeItem();
+		const [p1, p2] = [await svcPoint(item, 'P1'), await svcPoint(item, 'P2')];
+		const live = await makeTaggedTemplate([p1]);
+		const draft = await makeTaggedTemplate([p2], { status: 'draft' });
+		const assessment = await makeAssessment(ctx.teacher.id, [live.category, draft.category]);
+
+		await addActivityId(ctx, { kind: 'assessment', assessment_id: assessment });
+		const cov = await coverageMap(ctx);
+		expect(cov.size).toBe(1);
+		expect(cov.get(p1)).toBe('auto');
+	});
+
+	it('rejects an unknown assessment (400)', async () => {
+		expect.assertions(1);
+		const ctx = await setup();
+		const res = await addActivity(ctx, { kind: 'assessment', assessment_id: crypto.randomUUID() });
+		expect(res.status).toBe(400);
+	});
+});
+
+// ============================================================================
+// 8. Les trois sources cohabitent
+// ============================================================================
+
+describe('Mixed sources', () => {
+	it('unions exercise, question and assessment, and keeps the manual layer', async () => {
+		expect.assertions(6);
+		const ctx = await setup();
+		const item = await makeItem();
+		const [pe, pq, pa, pm] = [
+			await svcPoint(item, 'Exercice'),
+			await svcPoint(item, 'Question'),
+			await svcPoint(item, 'Évaluation'),
+			await svcPoint(item, 'Manuel')
+		];
+
+		const exercise = await makeTaggedExercise(ctx.teacher.id, [pe]);
+		const question = await makeTaggedTemplate([pq]);
+		const inAssessment = await makeTaggedTemplate([pa, pq]);
+		const assessment = await makeAssessment(ctx.teacher.id, [inAssessment.category]);
+
+		await addExerciseActivity(ctx, exercise);
+		const qAct = await addActivityId(ctx, {
+			kind: 'question',
+			question_template_id: question.id
+		});
+		await addActivityId(ctx, { kind: 'assessment', assessment_id: assessment });
+		await covPOST({
+			request: req({ entry_id: ctx.entryId, point_id: pm }),
+			locals: buildLocals(ctx.teacherUser)
+		} as never);
+
+		let cov = await coverageMap(ctx);
+		expect(cov.size).toBe(4);
+		expect(cov.get(pm)).toBe('manual');
+
+		// La question part, mais son point reste : l'évaluation le porte aussi.
+		await actDELETE({
+			locals: buildLocals(ctx.teacherUser),
+			params: { activityId: qAct }
+		} as never);
+		cov = await coverageMap(ctx);
+		expect(cov.size).toBe(4);
+		expect(cov.get(pq)).toBe('auto');
+		expect(cov.get(pe)).toBe('auto');
+		expect(cov.get(pm)).toBe('manual');
 	});
 });

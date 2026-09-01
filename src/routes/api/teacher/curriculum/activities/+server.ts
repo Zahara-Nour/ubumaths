@@ -2,10 +2,10 @@
  * API — Journal entry activities (cahier de texte).
  *
  * GET  /api/teacher/curriculum/activities?entry_id=<uuid>   — list activities of an entry
- * POST /api/teacher/curriculum/activities                   — add an activity (3 kinds)
+ * POST /api/teacher/curriculum/activities                   — add an activity (5 kinds)
  *
- * Adding an 'exercise' activity reconciles the entry's AUTO coverage from the
- * exercise's curriculum tags. Teacher/admin only.
+ * Adding an activity that carries curriculum tags — an exercise, a question, or
+ * an assessment — reconciles the entry's AUTO coverage. Teacher/admin only.
  */
 
 import { json } from '@sveltejs/kit';
@@ -18,7 +18,10 @@ import type { JournalEntryActivity } from '$lib/types/database-helpers';
 import type { TablesInsert } from '$lib/types/database';
 
 const ACTIVITY_COLS =
-	'id, entry_id, kind, exercise_id, chapter_id, textbook_ref, label, display_order, created_at';
+	'id, entry_id, kind, exercise_id, question_template_id, assessment_id, chapter_id, textbook_ref, label, display_order, created_at';
+
+/** Kinds whose tags feed the entry's auto coverage. */
+const TAGGED_KINDS = new Set(['exercise', 'question', 'assessment']);
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
@@ -67,6 +70,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	};
 	if (input.kind === 'exercise') {
 		row.exercise_id = input.exercise_id;
+	} else if (input.kind === 'question') {
+		row.question_template_id = input.question_template_id;
+	} else if (input.kind === 'assessment') {
+		row.assessment_id = input.assessment_id;
 	} else if (input.kind === 'course') {
 		row.chapter_id = input.chapter_id ?? null;
 		row.label = input.label ?? null;
@@ -88,8 +95,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ error: dbErr.message }, { status: 500 });
 	}
 
-	// Exercise activity → refresh auto coverage of the entry.
-	if (input.kind === 'exercise') {
+	// Tagged activity → refresh auto coverage of the entry.
+	if (TAGGED_KINDS.has(input.kind)) {
 		try {
 			await reconcileAutoCoverage(locals.supabase, input.entry_id);
 		} catch (e) {

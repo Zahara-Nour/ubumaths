@@ -205,7 +205,7 @@ const textbookRefSchema = z
 	})
 	.strict();
 
-/** Add an activity to a cahier de texte entry (3 kinds). */
+/** Add an activity to a cahier de texte entry (5 kinds). */
 export const createActivitySchema = z
 	.discriminatedUnion('kind', [
 		z.object({
@@ -225,6 +225,18 @@ export const createActivitySchema = z
 			entry_id: uuidSchema,
 			kind: z.literal('textbook'),
 			textbook_ref: textbookRefSchema,
+			display_order: displayOrderSchema.optional()
+		}),
+		z.object({
+			entry_id: uuidSchema,
+			kind: z.literal('question'),
+			question_template_id: uuidSchema,
+			display_order: displayOrderSchema.optional()
+		}),
+		z.object({
+			entry_id: uuidSchema,
+			kind: z.literal('assessment'),
+			assessment_id: uuidSchema,
 			display_order: displayOrderSchema.optional()
 		})
 	])

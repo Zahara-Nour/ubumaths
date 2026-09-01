@@ -78,6 +78,20 @@
 		return coveredSource[pointId] !== undefined;
 	}
 
+	/**
+	 * Nombre de points cochés dans un thème.
+	 *
+	 * L'arbre est replié par défaut : sans ce compte sur l'en-tête, une séance
+	 * dont la couverture est enregistrée paraît vide, et il faut ouvrir les
+	 * thèmes un par un pour retrouver ce qu'on a coché.
+	 */
+	function coveredInTheme(theme: PageData['curriculumTree'][number]): number {
+		return theme.objectives.reduce(
+			(n, item) => n + item.points.filter((p) => isCovered(p.id)).length,
+			0
+		);
+	}
+
 	async function covApi(url: string, method: string, body?: unknown): Promise<boolean> {
 		try {
 			const res = await fetch(url, {
@@ -144,24 +158,59 @@
 	// --- Activités (5b) -------------------------------------------------------
 	let activities = $state(initialData.activities);
 	let selectedExercise = $state('');
+	let selectedQuestion = $state('');
+	let selectedAssessment = $state('');
 
-	function exerciseLabel(id: string | null): string {
-		if (!id) return lore.learning.exercise;
-		return data.exerciseOptions.find((o) => o.value === id)?.label ?? lore.learning.exercise;
+	/**
+	 * Activités choisies sur une séance NEUVE, avant qu'il y ait une entrée à
+	 * référencer. Même traitement que la couverture : la page les garde et
+	 * l'action `create` les écrit après création, via le champ caché
+	 * `pendingActivities`. Sans ça, le bloc « Activités » n'apparaissait qu'une
+	 * fois la séance enregistrée — donc jamais, personne ne revenant sur une
+	 * séance déjà notée.
+	 */
+	type PendingActivity = { kind: 'exercise' | 'question' | 'assessment'; id: string };
+	let pendingActivities = $state<PendingActivity[]>([]);
+
+	/** Retrouve le libellé d'une référence dans la liste qui l'a proposée. */
+	function optionLabel(
+		options: { value: string; label: string }[],
+		id: string | null,
+		fallback: string
+	): string {
+		if (!id) return fallback;
+		return options.find((o) => o.value === id)?.label ?? fallback;
 	}
 
 	function activityLabel(a: PageData['activities'][number]): string {
-		if (a.kind === 'exercise') return exerciseLabel(a.exercise_id);
+		if (a.kind === 'exercise')
+			return optionLabel(data.exerciseOptions, a.exercise_id, lore.learning.exercise);
+		if (a.kind === 'question')
+			return optionLabel(data.questionOptions, a.question_template_id, 'Question');
+		if (a.kind === 'assessment')
+			return optionLabel(data.assessmentOptions, a.assessment_id, lore.learning.exam);
 		if (a.kind === 'textbook')
 			return (a.textbook_ref as { label?: string } | null)?.label ?? 'Référence manuel';
 		return a.label ?? 'Point de cours';
 	}
 
+	function pendingLabel(a: PendingActivity): string {
+		if (a.kind === 'exercise')
+			return optionLabel(data.exerciseOptions, a.id, lore.learning.exercise);
+		if (a.kind === 'question') return optionLabel(data.questionOptions, a.id, 'Question');
+		return optionLabel(data.assessmentOptions, a.id, lore.learning.exam);
+	}
+
 	function kindShort(kind: string): string {
 		if (kind === 'exercise') return 'Exo';
+		if (kind === 'question') return 'Question';
+		if (kind === 'assessment') return lore.learning.exam;
 		if (kind === 'textbook') return 'Manuel';
 		return 'Cours';
 	}
+
+	/** Les types qui portent des tags de programme : eux seuls bougent la couverture. */
+	const TAGGED_KINDS = new Set(['exercise', 'question', 'assessment']);
 
 	async function refreshActivities() {
 		const entryId = data.entry?.id;
@@ -180,19 +229,66 @@
 		coveredSource = next;
 	}
 
-	async function addExercise() {
+	/**
+	 * Ajoute une activité et rafraîchit ce qu'elle a pu changer.
+	 *
+	 * Les trois types portent des tags de programme, donc la couverture est
+	 * relue à chaque fois : les points du contenu référencé viennent s'ajouter
+	 * en `auto`, sans toucher les cases cochées à la main.
+	 */
+	async function addActivity(
+		kind: 'exercise' | 'question' | 'assessment',
+		reference: string,
+		successMessage: string
+	): Promise<boolean> {
+		if (!reference) return false;
+
 		const entryId = data.entry?.id;
-		if (!entryId || !selectedExercise) return;
+		if (!entryId) {
+			// Séance neuve : rien à référencer encore, on garde et on écrira à la
+			// création. Les doublons n'apportent rien, la couverture étant un
+			// ensemble.
+			if (!pendingActivities.some((a) => a.kind === kind && a.id === reference)) {
+				pendingActivities = [...pendingActivities, { kind, id: reference }];
+			}
+			toaster.success(successMessage);
+			return true;
+		}
+
+		const column =
+			kind === 'exercise'
+				? 'exercise_id'
+				: kind === 'question'
+					? 'question_template_id'
+					: 'assessment_id';
 		const ok = await covApi('/api/teacher/curriculum/activities', 'POST', {
 			entry_id: entryId,
-			kind: 'exercise',
-			exercise_id: selectedExercise
+			kind,
+			[column]: reference
 		});
 		if (ok) {
-			selectedExercise = '';
-			toaster.success(`${lore.learning.exercise} ajoutée`);
+			toaster.success(successMessage);
 			await refreshActivities();
 			await refreshCoverage();
+		}
+		return ok;
+	}
+
+	async function addExercise() {
+		if (await addActivity('exercise', selectedExercise, `${lore.learning.exercise} ajoutée`)) {
+			selectedExercise = '';
+		}
+	}
+
+	async function addQuestion() {
+		if (await addActivity('question', selectedQuestion, 'Question ajoutée')) {
+			selectedQuestion = '';
+		}
+	}
+
+	async function addAssessment() {
+		if (await addActivity('assessment', selectedAssessment, `${lore.learning.exam} ajouté`)) {
+			selectedAssessment = '';
 		}
 	}
 
@@ -201,7 +297,7 @@
 		if (ok) {
 			toaster.success('Activité retirée');
 			await refreshActivities();
-			if (a.kind === 'exercise') await refreshCoverage();
+			if (TAGGED_KINDS.has(a.kind)) await refreshCoverage();
 		}
 	}
 
@@ -366,6 +462,7 @@
 			     avec la création. La carte « Programme travaillé » vit hors de ce
 			     formulaire, seul ce champ a besoin d'y être. -->
 			<input type="hidden" name="coveredPointIds" value={Object.keys(coveredSource).join(',')} />
+			<input type="hidden" name="pendingActivities" value={JSON.stringify(pendingActivities)} />
 		{/if}
 
 		<div class="space-y-6">
@@ -504,48 +601,101 @@
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
-				<!-- Activités de la séance — elles pointent vers l'entrée, donc
-					     impossible avant qu'elle existe. Le reste de la carte, si. -->
-				{#if isEditing}
-					<div class="mb-4 space-y-3">
-						<p class="text-sm font-medium">Activités</p>
-						{#if activities.length > 0}
-							<ul class="space-y-1">
-								{#each activities as a (a.id)}
-									<li class="flex items-center gap-2 text-sm">
-										<Badge variant="secondary" class="shrink-0">{kindShort(a.kind)}</Badge>
-										<span class="flex-1 truncate">{activityLabel(a)}</span>
-										<Button variant="ghost" size="sm" onclick={() => deleteActivity(a)}>
-											<Trash2 class="h-4 w-4 text-destructive" />
-										</Button>
-									</li>
-								{/each}
-							</ul>
-						{/if}
-						<div class="space-y-2">
-							{#if data.exerciseOptions.length > 0}
-								<div class="flex gap-2">
-									<MySelect
-										type="single"
-										bind:value={selectedExercise}
-										items={data.exerciseOptions}
-										placeholder="{lore.learning.exercise} du système…"
-										triggerClass="flex-1"
-									/>
-									<Button
-										variant="outline"
-										size="sm"
-										disabled={!selectedExercise}
-										onclick={addExercise}
-									>
-										<Plus class="h-4 w-4" />
+				<!-- Activités de la séance. Sur une séance neuve elles n'ont pas
+					     d'entrée à référencer : elles attendent en mémoire et partent
+					     avec la création. -->
+				<div class="mb-4 space-y-3">
+					<p class="text-sm font-medium">Activités</p>
+					{#if activities.length > 0 || pendingActivities.length > 0}
+						<ul class="space-y-1">
+							{#each activities as a (a.id)}
+								<li class="flex items-center gap-2 text-sm">
+									<Badge variant="secondary" class="shrink-0">{kindShort(a.kind)}</Badge>
+									<span class="flex-1 truncate">{activityLabel(a)}</span>
+									<Button variant="ghost" size="sm" onclick={() => deleteActivity(a)}>
+										<Trash2 class="h-4 w-4 text-destructive" />
 									</Button>
-								</div>
-							{/if}
-						</div>
+								</li>
+							{/each}
+							{#each pendingActivities as a (a.kind + a.id)}
+								<li class="flex items-center gap-2 text-sm">
+									<Badge variant="secondary" class="shrink-0">{kindShort(a.kind)}</Badge>
+									<span class="flex-1 truncate">{pendingLabel(a)}</span>
+									<Button
+										variant="ghost"
+										size="sm"
+										onclick={() =>
+											(pendingActivities = pendingActivities.filter(
+												(p) => !(p.kind === a.kind && p.id === a.id)
+											))}
+									>
+										<Trash2 class="h-4 w-4 text-destructive" />
+									</Button>
+								</li>
+							{/each}
+						</ul>
+					{/if}
+					<div class="space-y-2">
+						{#if data.exerciseOptions.length > 0}
+							<div class="flex gap-2">
+								<MySelect
+									type="single"
+									bind:value={selectedExercise}
+									items={data.exerciseOptions}
+									placeholder="{lore.learning.exercise} du système…"
+									triggerClass="flex-1"
+								/>
+								<Button
+									variant="outline"
+									size="sm"
+									disabled={!selectedExercise}
+									onclick={addExercise}
+								>
+									<Plus class="h-4 w-4" />
+								</Button>
+							</div>
+						{/if}
+						{#if data.questionOptions.length > 0}
+							<div class="flex gap-2">
+								<MySelect
+									type="single"
+									bind:value={selectedQuestion}
+									items={data.questionOptions}
+									placeholder="Question du système…"
+									triggerClass="flex-1"
+								/>
+								<Button
+									variant="outline"
+									size="sm"
+									disabled={!selectedQuestion}
+									onclick={addQuestion}
+								>
+									<Plus class="h-4 w-4" />
+								</Button>
+							</div>
+						{/if}
+						{#if data.assessmentOptions.length > 0}
+							<div class="flex gap-2">
+								<MySelect
+									type="single"
+									bind:value={selectedAssessment}
+									items={data.assessmentOptions}
+									placeholder="{lore.learning.exam}…"
+									triggerClass="flex-1"
+								/>
+								<Button
+									variant="outline"
+									size="sm"
+									disabled={!selectedAssessment}
+									onclick={addAssessment}
+								>
+									<Plus class="h-4 w-4" />
+								</Button>
+							</div>
+						{/if}
 					</div>
-					<Separator class="mb-4" />
-				{/if}
+				</div>
+				<Separator class="mb-4" />
 
 				{#if data.curriculumTree.length === 0}
 					<p class="text-sm text-muted-foreground">
@@ -568,10 +718,14 @@
 										<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 									{/if}
 									<InlineMarkdown content={theme.name} />
+									{#if coveredInTheme(theme) > 0}
+										<Badge class="ml-auto shrink-0">{coveredInTheme(theme)}</Badge>
+									{/if}
 								</button>
 								{#if openProgThemes[theme.id]}
 									<div class="space-y-1 border-t p-2 pl-4">
 										{#each theme.objectives as item (item.id)}
+											{@const couverts = item.points.filter((p) => isCovered(p.id)).length}
 											<div>
 												<button
 													class="flex w-full items-center gap-2 py-1 text-left text-sm"
@@ -583,9 +737,12 @@
 														<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 													{/if}
 													<span class="font-medium"><InlineMarkdown content={item.name} /></span>
-													<span class="text-xs text-muted-foreground">
-														({item.points.filter((p) => isCovered(p.id)).length}/{item.points
-															.length})
+													<span
+														class="text-xs {couverts > 0
+															? 'font-medium text-primary'
+															: 'text-muted-foreground'}"
+													>
+														({couverts}/{item.points.length})
 													</span>
 												</button>
 												{#if openProgItems[item.id]}

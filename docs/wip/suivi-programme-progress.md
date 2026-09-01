@@ -245,3 +245,163 @@ journal_entry_points              -- signal de couverture (manuel + auto matéri
 ```
 
 ```
+
+---
+
+## 12. Phase 4b — Questions et évaluations dans le cahier de texte (2026-08-31)
+
+**Demande** : « il faudrait aussi pouvoir ajouter des questions ou une évaluation
+de questions, les questions pouvant être liées aux points de plusieurs
+référentiels ».
+
+### Constat de départ
+
+Le cahier de texte ne référençait que des **exercices** (`exercises` →
+`exercise_curriculum_points`). Les **questions** (`question_templates` →
+`question_template_points`) vivaient dans un circuit parallèle qui n'alimentait
+que l'acquisition élève. Aucune table ne les reliait, donc une séance faite au
+système de questions n'apparaissait nulle part dans le suivi du programme.
+
+Le multi-référentiel, lui, **existait déjà** en base : `question_template_points`
+n'impose aucun niveau. Mais l'écran de tagging n'affichait qu'un arbre par
+niveau listé dans `template.grades`, c'est-à-dire les seuls niveaux de création.
+
+J'ai d'abord conclu qu'il manquait une UI pour modifier `grades`. **C'était
+faux** — David a rappelé la règle : une question est taguable sur tout niveau
+d'année scolaire **supérieure ou égale** à la sienne. La hiérarchie existe déjà
+(`GradeInfo.schoolYear`, 1 à 12) ; il manquait seulement de s'en servir. Corrigé
+plus bas.
+
+### Décisions (David, 2026-08-31)
+
+| Question                              | Décision                   |
+| ------------------------------------- | -------------------------- |
+| Que rattacher à une séance ?          | **Question ET évaluation** |
+| Couverture après un retag ultérieur ? | **Recalculée**, pas figée  |
+
+Le second point mérite sa justification : le tagging se fait après coup, donc
+figer garantirait une heatmap vide toute la première année. Et la fidélité
+archivistique existe déjà — c'est la couche `manual`, que la réconciliation ne
+touche jamais. Si un jour il faut geler une séance, le geste sera de
+**promouvoir ses lignes `auto` en `manual`**, pas de figer la dérivation.
+
+### Livré
+
+- **Migration `20260904093000`** : `question_template_id` et `assessment_id` sur
+  `journal_entry_activities`, les deux CHECK étendus, deux index partiels, et la
+  fonction `assessment_curriculum_points(uuid[])`.
+- **`reconcileAutoCoverage`** unionne désormais trois sources au lieu d'une.
+- **API activités** (POST + DELETE) : deux nouveaux `kind`, réconciliation
+  déclenchée pour les trois types tagués.
+- **UI cahier de texte** : deux sélecteurs de plus sous « Activités ».
+- **`getGradesAtOrAbove()`** dans `types/grades.ts` + câblage de la page de
+  tagging : les référentiels proposés se déduisent de la hiérarchie au lieu
+  d'être les seuls niveaux de création. La question de démo (créée en seconde)
+  propose désormais seconde **et** 1ʳᵉ spé.
+- **10 tests d'intégration** + **8 tests unitaires** sur le helper.
+- **Activités choisies avant enregistrement** : sur une séance neuve, le bloc
+  n'apparaissait qu'une fois l'entrée créée — donc jamais. Même traitement que la
+  couverture : la page garde la sélection, l'action `create` l'écrit puis
+  réconcilie. Parseur isolé dans `server/journal-activities.ts` (6 tests), et
+  3 tests d'intégration sur l'action elle-même.
+- **Repérage dans l'arbre replié** : compteur sur l'en-tête de thème, ratio
+  accentué sur l'item. Sans ça une couverture enregistrée paraît absente.
+
+### `grades` désigne des voies, pas une plage d'années
+
+Précision de David : le tableau `grades` sert à couvrir des **filières
+parallèles** — une question valable en 1ʳᵉ spé _et_ en 1ʳᵉ STMG — et non un
+intervalle de niveaux. Ces codes partagent alors la même année scolaire (11 pour
+les trois premières, qui ne diffèrent que par `track`).
+
+Deux conséquences :
+
+1. La comparaison portant sur l'année et non sur la voie, **les filières
+   parallèles sont incluses d'office** : une question déclarée `{1_SPE}` seule
+   ouvre déjà les programmes de 1ʳᵉ générale et de 1ʳᵉ STMG. Le multi-niveau
+   n'est pas nécessaire pour taguer, il l'est pour **diffuser** — c'est `grades`
+   qui filtre les classes qui voient la question
+   (`.contains('grades', [niveau de la classe])`).
+2. Min et max coïncidant en pratique, le choix de l'année la plus basse dans le
+   helper ne se manifeste jamais. Il reste comme repli défini.
+
+⚠️ **Ne pas verrouiller `grades` à un seul niveau** — je l'avais proposé en
+croyant le multi-niveau inutilisé (0 question multi-niveau en prod). Ce serait
+casser le cas d'usage prévu.
+
+### Comment une évaluation nomme ses questions
+
+Une évaluation est une liste de questions, chacune avec sa quantité et son
+délai. Ce qui la désigne n'est pas son UUID mais sa **catégorie** :
+`assessments.categories` est un tableau jsonb de
+`{ category: {thème, domaine, sous-domaine, niveau}, quantity, delay }`.
+
+Une catégorie ne vaut qu'une seule question **publiée** — l'index unique
+`idx_question_templates_unique_category` l'impose, et `checkCategoryUniqueness()`
+le vérifie à l'enregistrement. Le lien est donc exact, mais indirect : pas de
+clé étrangère. C'est l'index
+unique `idx_question_templates_unique_category` qui garantit qu'un quadruplet ne
+désigne qu'un seul template **publié**. D'où :
+
+- la résolution est une jointure sur quatre colonnes, faite en base
+  (`assessment_curriculum_points`, `security invoker`) ;
+- une catégorie qui ne correspond plus à un template publié est **ignorée en
+  silence**, sans emporter les autres ;
+- le niveau est comparé en texte et non casté : `categories` n'est contraint par
+  rien, et un `level` non numérique ferait échouer toute la réconciliation.
+
+### Bug de production trouvé au passage
+
+`auto_assign_assessment_to_period` lisait `NEW.class_id`, colonne qui n'existe
+pas sur `assessments`. PL/pgSQL ne résolvant les champs de NEW qu'à l'exécution,
+l'erreur ne se voyait qu'à l'INSERT : **aucune évaluation n'a jamais pu être
+créée**, et la prod en compte zéro. Trouvé en écrivant les fixtures de test.
+
+Migration `20260904090000` supprime le trigger plutôt que de le réparer : le
+rattachement passait par l'école de la classe, chemin inexistant, et le déduire
+de l'année scolaire active serait ambigu (deux écoles, deux années actives en
+base). **Appliquée en local uniquement — décision produit en attente.**
+
+### Dettes assumées, non traitées
+
+- `exercise_id` est en `ON DELETE SET NULL`, ce qu'un CHECK de forme réévalue à
+  l'UPDATE : supprimer un exercice référencé par une séance échoue aujourd'hui.
+  Les deux nouvelles colonnes sont en `CASCADE`, seule action cohérente.
+- Rien ne re-réconcilie la couverture `auto` après une suppression en cascade —
+  pour les exercices non plus.
+- `GradeInfo.prerequisites` existe mais n'est lu nulle part : c'est `schoolYear`
+  qui porte la hiérarchie exploitable.
+
+### Ce que la mise au point sur la vraie page a révélé (2026-09-01)
+
+Trois allers-retours ont été perdus à diagnostiquer par lecture de code. Piloter
+la page avec Playwright contre le serveur de dev a tranché en une passe. À faire
+plus tôt la prochaine fois.
+
+Ce que ça a mis au jour :
+
+- **La création d'évaluation était cassée depuis toujours** (trigger `class_id`,
+  cf. plus haut) — donc zéro série en base, donc le troisième sélecteur invisible.
+- **`assessments` n'a pas suivi le refactor mono-professeur** : ses politiques
+  RLS sont restées à `created_by = auth.uid()`. Une série créée par le compte
+  admin n'existe pas pour le compte prof. C'est une incohérence dormante tant
+  qu'un seul compte crée les séries.
+- Le seed de dev contient désormais une **série de démonstration** contenant la
+  question de démo, ce qui exerce `assessment_curriculum_points()` de bout en
+  bout et rend le sélecteur visible en local.
+
+### Terminologie — question ouverte
+
+`assessments` fusionne deux couches : le **contenu** (liste de questions, avec
+quantité et `delay` — ce délai sert justement à projeter en classe) et l'**usage
+évaluatif** (`max_attempts`, `deadline`, assignations, résultats).
+
+Projeter une série d'automatismes en classe n'emploie que la première. D'où le
+contresens du sélecteur, qui affiche « Décervelage… » (`lore.learning.exam`)
+pour choisir ce qu'on va travailler sans noter.
+
+Piste proposée, **non tranchée** : « série » pour le contenu, « évaluation » pour
+l'usage noté, « séance d'automatismes » pour l'usage projeté — ce dernier terme
+existant déjà dans le modèle (`curriculum_point_automatismes`,
+`regime_acquisition = 'fluence'`). Le moment serait peu coûteux : zéro
+évaluation en production.

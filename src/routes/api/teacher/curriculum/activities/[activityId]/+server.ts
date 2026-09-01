@@ -3,9 +3,9 @@
  *
  * DELETE /api/teacher/curriculum/activities/[activityId]
  *
- * Removing an 'exercise' activity reconciles the entry's AUTO coverage
- * (auto points no longer backed by any exercise are dropped; manual rows kept).
- * Teacher/admin only.
+ * Removing an activity that carried curriculum tags reconciles the entry's AUTO
+ * coverage (auto points no longer backed by any activity are dropped; manual
+ * rows kept). Teacher/admin only.
  */
 
 import { json } from '@sveltejs/kit';
@@ -13,6 +13,9 @@ import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { curriculumDbError } from '$lib/server/curriculum';
 import { reconcileAutoCoverage } from '$lib/server/curriculum-coverage';
+
+/** Kinds whose tags feed the entry's auto coverage. */
+const TAGGED_KINDS = new Set(['exercise', 'question', 'assessment']);
 
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
@@ -46,7 +49,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		return json({ error: dbErr.message }, { status: 500 });
 	}
 
-	if (kind === 'exercise') {
+	if (TAGGED_KINDS.has(kind)) {
 		try {
 			await reconcileAutoCoverage(locals.supabase, entry_id);
 		} catch (e) {
