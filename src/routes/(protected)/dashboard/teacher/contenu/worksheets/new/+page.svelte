@@ -96,11 +96,12 @@
 		submitting = true;
 
 		try {
-			// Parse template ID (handle default: prefix)
-			let templateId: string | null = null;
-			if (selectedTemplateId && !selectedTemplateId.startsWith('default:')) {
-				templateId = selectedTemplateId;
-			}
+			// Parse template ID: the selector prefixes built-in templates with `default:`,
+			// but they are real rows in worksheet_templates sharing the same UUID, so the
+			// prefix is presentational only and must be stripped before saving.
+			const templateId = selectedTemplateId
+				? selectedTemplateId.replace(/^default:/, '') || null
+				: null;
 
 			const worksheetData = {
 				title: title.trim(),

@@ -79,10 +79,16 @@
 	let selectedAssignment = $state<AssignmentWithExtras | null>(null);
 	let classes = $state<{ id: string; name: string }[]>([]);
 
+	// Built-in templates, always offered alongside the teacher's own ones
+	const defaultTemplateOptions = DEFAULT_TEMPLATES.map((t) => ({
+		id: t.id,
+		name: t.name,
+		description: t.description
+	}));
+
 	// Templates state - initialize with default templates
-	let templates = $state<{ id: string; name: string; description: string | null }[]>(
-		DEFAULT_TEMPLATES.map((t) => ({ id: t.id, name: t.name, description: t.description }))
-	);
+	let templates =
+		$state<{ id: string; name: string; description: string | null }[]>(defaultTemplateOptions);
 
 	// Type-safe worksheet access with local state for updates.
 	// Snapshot intentional: $effect below resets it on data changes.
@@ -317,20 +323,27 @@
 	}
 
 	/**
-	 * Load available templates from database (includes seeded default templates)
+	 * Load the teacher's own templates and append them to the built-in ones.
+	 * The API only returns templates the user created (system templates are
+	 * hidden by RLS), so the built-ins must stay in the list.
 	 */
 	async function loadTemplates() {
 		try {
 			const response = await fetch('/api/worksheets/templates');
 			const data = await response.json();
 			if (response.ok && data.templates?.length > 0) {
-				// Use templates from database (includes seeded default templates)
-				templates = data.templates;
+				const ownTemplates = data.templates as {
+					id: string;
+					name: string;
+					description: string | null;
+				}[];
+				const ownIds = new Set(ownTemplates.map((t) => t.id));
+				templates = [...defaultTemplateOptions.filter((t) => !ownIds.has(t.id)), ...ownTemplates];
 			}
-			// If API returns empty, keep the initial default templates from state
+			// If API returns empty, keep the built-in templates from state
 		} catch (err) {
 			console.error('Error loading templates:', err);
-			// On error, keep the initial default templates from state
+			// On error, keep the built-in templates from state
 		}
 	}
 
