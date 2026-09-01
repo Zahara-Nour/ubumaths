@@ -60,10 +60,17 @@ schema_paths = []
 enabled = true
 # Specifies an ordered list of seed files to load during db reset.
 # Supports glob patterns relative to supabase directory: "./seeds/*.sql"
+# `seed/worksheet_system_templates.sql` : les 11 templates Typst intégrés, tels
+#   qu'ils existent en prod (UUID déterministes, created_by = NULL).
 # `seed/dev_accounts.sql`      : comptes de dev LOCAUX (cf. son en-tête).
 # `seed/dev_question_demo.sql` : une question taguée au programme, LOCAL aussi.
 #   Elle vient après les comptes : son auteur est le compte admin de dev.
-sql_paths = ["./seed.sql", "./seed/dev_accounts.sql", "./seed/dev_question_demo.sql"]
+sql_paths = [
+  "./seed.sql",
+  "./seed/worksheet_system_templates.sql",
+  "./seed/dev_accounts.sql",
+  "./seed/dev_question_demo.sql"
+]
 
 [db.network_restrictions]
 # Enable management of network restrictions.
