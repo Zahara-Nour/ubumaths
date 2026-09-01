@@ -31,6 +31,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Alert from '$lib/components/ui/alert';
 	import { Loader2 } from '@lucide/svelte';
+	import MyPasswordInput from '$lib/components/MyPasswordInput.svelte';
 	import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
 
 	// Feature flag: Google OAuth login button (single source of truth in
@@ -198,10 +199,9 @@
 									Mot de passe oublié ?
 								</a>
 							</div>
-							<Input
+							<MyPasswordInput
 								id="password"
 								name="password"
-								type="password"
 								autocomplete="current-password"
 								required
 							/>

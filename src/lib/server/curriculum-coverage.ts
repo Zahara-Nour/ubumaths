@@ -1,44 +1,91 @@
 /**
  * Coverage reconciliation — materializes the AUTO curriculum coverage of a
- * cahier de texte entry from its tagged exercise activities.
+ * cahier de texte entry from its tagged activities.
  *
  * Idempotent set-reconcile: the desired auto set = union of the curriculum
- * points tagged on the exercises referenced by the entry's 'exercise'
- * activities. We delete stale `source='auto'` rows and insert missing ones,
- * never touching `source='manual'` rows (the teacher's explicit choices).
+ * points tagged on everything the entry references — exercises, questions, and
+ * the questions an assessment designates. We delete stale `source='auto'` rows
+ * and insert missing ones, never touching `source='manual'` rows (the teacher's
+ * explicit choices).
  *
- * Called after any exercise activity is added to / removed from an entry.
+ * Deliberately recomputed rather than frozen: tagging happens after the fact,
+ * so a session recorded in September must light up when its content is tagged
+ * in June. Fidelity to what was actually done is the manual layer's job, and
+ * the manual layer is never overwritten here.
+ *
+ * Called after any such activity is added to / removed from an entry.
  */
 
 type Sb = App.Locals['supabase'];
 
-export async function reconcileAutoCoverage(supabase: Sb, entryId: string): Promise<void> {
-	// 1. exercises referenced by this entry's 'exercise' activities
-	const { data: acts, error: actErr } = await supabase
-		.from('journal_entry_activities')
-		.select('exercise_id')
-		.eq('entry_id', entryId)
-		.eq('kind', 'exercise');
-	if (actErr) throw new Error(`reconcileAutoCoverage activities: ${actErr.message}`);
+/** The activity kinds that carry curriculum tags. */
+const TAGGED_KINDS = ['exercise', 'question', 'assessment'];
 
-	const exerciseIds = [
+interface ActivityRef {
+	kind: string;
+	exercise_id: string | null;
+	question_template_id: string | null;
+	assessment_id: string | null;
+}
+
+/** Distinct non-null references of one kind. */
+function refsOf(rows: ActivityRef[], kind: string, column: keyof ActivityRef): string[] {
+	return [
 		...new Set(
-			((acts ?? []) as { exercise_id: string | null }[])
-				.map((a) => a.exercise_id)
+			rows
+				.filter((r) => r.kind === kind)
+				.map((r) => r[column])
 				.filter((id): id is string => id !== null)
 		)
 	];
+}
 
-	// 2. desired auto points = union of those exercises' curriculum tags
-	let desired: string[] = [];
+export async function reconcileAutoCoverage(supabase: Sb, entryId: string): Promise<void> {
+	// 1. what this entry's tagged activities point at
+	const { data: acts, error: actErr } = await supabase
+		.from('journal_entry_activities')
+		.select('kind, exercise_id, question_template_id, assessment_id')
+		.eq('entry_id', entryId)
+		.in('kind', TAGGED_KINDS);
+	if (actErr) throw new Error(`reconcileAutoCoverage activities: ${actErr.message}`);
+
+	const activities = (acts ?? []) as ActivityRef[];
+	const exerciseIds = refsOf(activities, 'exercise', 'exercise_id');
+	const templateIds = refsOf(activities, 'question', 'question_template_id');
+	const assessmentIds = refsOf(activities, 'assessment', 'assessment_id');
+
+	// 2. desired auto points = union of the three sources' curriculum tags
+	const desiredSet = new Set<string>();
+
 	if (exerciseIds.length > 0) {
-		const { data: tags, error: tagErr } = await supabase
+		const { data, error } = await supabase
 			.from('exercise_curriculum_points')
 			.select('point_id')
 			.in('exercise_id', exerciseIds);
-		if (tagErr) throw new Error(`reconcileAutoCoverage tags: ${tagErr.message}`);
-		desired = [...new Set(((tags ?? []) as { point_id: string }[]).map((t) => t.point_id))];
+		if (error) throw new Error(`reconcileAutoCoverage exercise tags: ${error.message}`);
+		for (const t of (data ?? []) as { point_id: string }[]) desiredSet.add(t.point_id);
 	}
+
+	if (templateIds.length > 0) {
+		const { data, error } = await supabase
+			.from('question_template_points')
+			.select('point_id')
+			.in('template_id', templateIds);
+		if (error) throw new Error(`reconcileAutoCoverage question tags: ${error.message}`);
+		for (const t of (data ?? []) as { point_id: string }[]) desiredSet.add(t.point_id);
+	}
+
+	if (assessmentIds.length > 0) {
+		// An assessment names question *categories*, not templates, so the
+		// resolution is a four-column join better left to the database.
+		const { data, error } = await supabase.rpc('assessment_curriculum_points', {
+			p_assessment_ids: assessmentIds
+		});
+		if (error) throw new Error(`reconcileAutoCoverage assessment tags: ${error.message}`);
+		for (const t of (data ?? []) as { point_id: string }[]) desiredSet.add(t.point_id);
+	}
+
+	const desired = [...desiredSet];
 
 	// 3. existing coverage rows for the entry
 	const { data: existing, error: exErr } = await supabase

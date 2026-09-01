@@ -4790,6 +4790,7 @@ export type Database = {
       }
       journal_entry_activities: {
         Row: {
+          assessment_id: string | null
           chapter_id: string | null
           created_at: string
           display_order: number
@@ -4798,9 +4799,11 @@ export type Database = {
           id: string
           kind: string
           label: string | null
+          question_template_id: string | null
           textbook_ref: Json | null
         }
         Insert: {
+          assessment_id?: string | null
           chapter_id?: string | null
           created_at?: string
           display_order?: number
@@ -4809,9 +4812,11 @@ export type Database = {
           id?: string
           kind: string
           label?: string | null
+          question_template_id?: string | null
           textbook_ref?: Json | null
         }
         Update: {
+          assessment_id?: string | null
           chapter_id?: string | null
           created_at?: string
           display_order?: number
@@ -4820,9 +4825,17 @@ export type Database = {
           id?: string
           kind?: string
           label?: string | null
+          question_template_id?: string | null
           textbook_ref?: Json | null
         }
         Relationships: [
+          {
+            foreignKeyName: "journal_entry_activities_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "journal_entry_activities_chapter_id_fkey"
             columns: ["chapter_id"]
@@ -4842,6 +4855,13 @@ export type Database = {
             columns: ["exercise_id"]
             isOneToOne: false
             referencedRelation: "exercises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_entry_activities_question_template_id_fkey"
+            columns: ["question_template_id"]
+            isOneToOne: false
+            referencedRelation: "question_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -7772,7 +7792,7 @@ export type Database = {
           created_at: string
           id: string
           metadata: Json | null
-          moderator_id: string
+          moderator_id: string | null
           reason: string | null
           target_id: string
           target_type: string
@@ -7782,7 +7802,7 @@ export type Database = {
           created_at?: string
           id?: string
           metadata?: Json | null
-          moderator_id: string
+          moderator_id?: string | null
           reason?: string | null
           target_id: string
           target_type: string
@@ -7792,7 +7812,7 @@ export type Database = {
           created_at?: string
           id?: string
           metadata?: Json | null
-          moderator_id?: string
+          moderator_id?: string | null
           reason?: string | null
           target_id?: string
           target_type?: string
@@ -9221,6 +9241,41 @@ export type Database = {
           },
         ]
       }
+      python_submission_server_verdicts: {
+        Row: {
+          created_at: string
+          server_is_correct: boolean | null
+          server_validation_result: Json | null
+          submission_id: string
+          verification_status: string
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          server_is_correct?: boolean | null
+          server_validation_result?: Json | null
+          submission_id: string
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          server_is_correct?: boolean | null
+          server_validation_result?: Json | null
+          submission_id?: string
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "python_submission_server_verdicts_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: true
+            referencedRelation: "python_exercise_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       python_tags: {
         Row: {
           created_at: string
@@ -9244,14 +9299,17 @@ export type Database = {
       }
       question_template_points: {
         Row: {
+          created_at: string
           point_id: string
           template_id: string
         }
         Insert: {
+          created_at?: string
           point_id: string
           template_id: string
         }
         Update: {
+          created_at?: string
           point_id?: string
           template_id?: string
         }
@@ -14709,6 +14767,13 @@ export type Database = {
         Returns: Json
       }
       are_classmates: { Args: { p_user_id: string }; Returns: boolean }
+      assessment_curriculum_points: {
+        Args: { p_assessment_ids: string[] }
+        Returns: {
+          assessment_id: string
+          point_id: string
+        }[]
+      }
       auto_activate_scheduled_tournaments: { Args: never; Returns: number }
       auto_complete_ended_tournaments: { Args: never; Returns: number }
       auto_expire_listings: { Args: never; Returns: number }
@@ -15353,6 +15418,34 @@ export type Database = {
           unique_errors: number
           unresolved_errors: number
         }[]
+      }
+      get_exercise_by_share_token: {
+        Args: { p_token: string }
+        Returns: {
+          category: string
+          created_at: string
+          created_by: string
+          distribution_mode: string
+          generic_functions: string[] | null
+          grades: string[] | null
+          id: string
+          is_public: boolean
+          resources: Json | null
+          shared: Json | null
+          slug: string | null
+          source: string | null
+          title: string | null
+          topic: string | null
+          updated_at: string
+          variables: Json
+          variations: Json | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "exercises"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       get_exercise_completion_stats: {
         Args: { p_exercise_id: string }
@@ -16231,6 +16324,7 @@ export type Database = {
       run_cleanup_all: { Args: never; Returns: undefined }
       run_cleanup_expired_data: { Args: never; Returns: undefined }
       run_daily_summaries: { Args: never; Returns: undefined }
+      run_flag_stale_python_rechecks: { Args: never; Returns: undefined }
       run_recalculate_minesweeper_ref_times: { Args: never; Returns: undefined }
       run_weekly_best_bonuses: { Args: never; Returns: undefined }
       run_weekly_rewards: { Args: never; Returns: undefined }

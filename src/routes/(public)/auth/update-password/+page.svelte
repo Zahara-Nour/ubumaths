@@ -14,10 +14,10 @@
 		getStrengthBarColor
 	} from '$lib/utils/passwordStrength';
 	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import * as Alert from '$lib/components/ui/alert';
+	import MyPasswordInput from '$lib/components/MyPasswordInput.svelte';
 
 	// Form action result
 	let { form }: { form: ActionData } = $props();
@@ -41,10 +41,9 @@
 			<form method="POST" action="?/updatePassword" use:enhance class="space-y-4">
 				<div class="space-y-2">
 					<Label for="password">New Password</Label>
-					<Input
+					<MyPasswordInput
 						id="password"
 						name="password"
-						type="password"
 						autocomplete="new-password"
 						required
 						bind:value={password}
@@ -107,10 +106,9 @@
 
 				<div class="space-y-2">
 					<Label for="confirmPassword">Confirm New Password</Label>
-					<Input
+					<MyPasswordInput
 						id="confirmPassword"
 						name="confirmPassword"
-						type="password"
 						autocomplete="new-password"
 						required
 					/>

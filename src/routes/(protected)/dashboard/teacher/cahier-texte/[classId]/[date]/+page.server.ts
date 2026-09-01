@@ -15,6 +15,8 @@ import {
 	validateUpdateJournalEntry
 } from '$lib/server/validation/journal';
 import { getCurriculumTree } from '$lib/server/curriculum';
+import { reconcileAutoCoverage } from '$lib/server/curriculum-coverage';
+import { parsePendingActivities } from '$lib/server/journal-activities';
 import { z } from 'zod';
 
 // UUID validation schema
@@ -98,6 +100,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		id: string;
 		kind: string;
 		exercise_id: string | null;
+		question_template_id: string | null;
+		assessment_id: string | null;
 		chapter_id: string | null;
 		textbook_ref: unknown;
 		label: string | null;
@@ -112,7 +116,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 		const { data: acts } = await locals.supabase
 			.from('journal_entry_activities')
-			.select('id, kind, exercise_id, chapter_id, textbook_ref, label, display_order')
+			.select(
+				'id, kind, exercise_id, question_template_id, assessment_id, chapter_id, textbook_ref, label, display_order'
+			)
 			.eq('entry_id', entry.id)
 			.order('display_order', { ascending: true })
 			.order('created_at', { ascending: true });
@@ -134,6 +140,36 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		}));
 	}
 
+	// Questions and assessments selectable for this class's grade. Drafts are
+	// listed too: a session records what was worked on, and a question can be
+	// worked on before it is published.
+	let questionOptions: { value: string; label: string }[] = [];
+	let assessmentOptions: { value: string; label: string }[] = [];
+	if (classData.grade) {
+		const [{ data: qs }, { data: assess }] = await Promise.all([
+			locals.supabase
+				.from('question_templates')
+				.select('id, title, theme, domain, level')
+				.contains('grades', [classData.grade])
+				.order('title', { ascending: true })
+				.limit(500),
+			locals.supabase
+				.from('assessments')
+				.select('id, title')
+				.eq('grade', classData.grade)
+				.neq('status', 'archived')
+				.order('title', { ascending: true })
+				.limit(200)
+		]);
+		questionOptions = (qs ?? []).map((q) => ({
+			value: q.id,
+			// Le titre seul se répète beaucoup d'une question à l'autre ; la
+			// catégorie est ce qui les distingue dans la liste.
+			label: `${q.title} — ${q.theme} / ${q.domain} (niv. ${q.level})`
+		}));
+		assessmentOptions = (assess ?? []).map((a) => ({ value: a.id, label: a.title }));
+	}
+
 	return {
 		classData,
 		entry,
@@ -141,7 +177,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		curriculumTree,
 		coveredPoints,
 		activities,
-		exerciseOptions
+		exerciseOptions,
+		questionOptions,
+		assessmentOptions
 	};
 };
 
@@ -195,6 +233,66 @@ export const actions: Actions = {
 		if (createError) {
 			console.error('[Create Journal Entry] Error:', createError);
 			return fail(500, { error: createError.message, action: 'create' });
+		}
+
+		// Couverture cochée AVANT enregistrement : sur une séance neuve, il n'y
+		// avait pas encore d'entrée à référencer. La page a gardé la sélection et
+		// l'envoie ici, pour l'écrire dans la foulée de la création.
+		const rawPoints = (formData.get('coveredPointIds') as string) || '';
+		const pointIds = [
+			...new Set(
+				rawPoints
+					.split(',')
+					.map((s) => s.trim())
+					.filter(Boolean)
+			)
+		];
+
+		if (entry?.id && pointIds.length > 0) {
+			const valid = pointIds.filter((id) => uuidSchema.safeParse(id).success).slice(0, 500);
+			if (valid.length > 0) {
+				const { error: covError } = await locals.supabase
+					.from('journal_entry_points')
+					.insert(valid.map((point_id) => ({ entry_id: entry.id, point_id, source: 'manual' })));
+				// La séance, elle, est créée : un échec de couverture ne doit pas la
+				// perdre. On le signale sans annuler.
+				if (covError) {
+					console.error('[Create Journal Entry] coverage failed:', covError);
+					return {
+						success: true,
+						action: 'create',
+						entryId: entry.id,
+						warning: 'Séance créée, mais les points du programme n’ont pas pu être enregistrés.'
+					};
+				}
+			}
+		}
+
+		// Activités choisies avant enregistrement, même raison que la couverture.
+		// Elles arrivent en JSON parce qu'un type accompagne chaque référence.
+		if (entry?.id) {
+			const rows = parsePendingActivities(formData.get('pendingActivities'));
+			if (rows.length > 0) {
+				const { error: actError } = await locals.supabase
+					.from('journal_entry_activities')
+					.insert(rows.map((r) => ({ ...r, entry_id: entry.id })));
+				if (actError) {
+					console.error('[Create Journal Entry] activities failed:', actError);
+					return {
+						success: true,
+						action: 'create',
+						entryId: entry.id,
+						warning: 'Séance créée, mais les activités n’ont pas pu être enregistrées.'
+					};
+				}
+				// Les activités taguées apportent leur couverture `auto`, qui vient
+				// s'ajouter aux points cochés à la main juste au-dessus.
+				try {
+					await reconcileAutoCoverage(locals.supabase, entry.id);
+				} catch (e) {
+					console.error('[Create Journal Entry] reconcile failed:', e);
+				}
+			}
 		}
 
 		return { success: true, action: 'create', entryId: entry?.id };

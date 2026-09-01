@@ -8,7 +8,9 @@
 -- `enforce_single_teacher` (modèle mono-professeur) n'en tolère qu'un seul et
 -- que chaque test a besoin de créer le sien. Le compte élève, lui, survit.
 --
---   Après une suite d'intégration :  pnpm db:dev-accounts
+--   Après une suite d'intégration : plus rien à faire — le `teardown` du
+--   global-setup rejoue ce fichier en sortie. `pnpm db:dev-accounts` reste le
+--   filet si la suite a été interrompue avant sa fin.
 --
 -- Ce n'est pas un défaut à corriger : c'est l'invariant métier qui rencontre le
 -- design des tests. Seeder un prof permanent et laisser les tests en créer un
@@ -26,6 +28,12 @@
 --
 --   teacher@local.test / local-teacher   → rôle teacher
 --   student@local.test / local-student   → rôle student
+--   admin@local.test   / local-admin     → rôle admin
+--
+-- L'admin est indispensable : l'édition des questions
+-- (`/dashboard/admin/questions/[id]/edit`), donc le tagging au programme, exige
+-- `requireAdmin`. Il survit à `pnpm test:integration`, dont le global-setup ne
+-- supprime que les comptes `teacher`.
 -- ==============================================================================
 
 -- Les triggers sont neutralisés par seed.sql (session_replication_role) ; on
@@ -41,7 +49,9 @@ BEGIN
             ('11111111-1111-4111-8111-111111111111'::uuid,
              'teacher@local.test', 'local-teacher', 'teacher', 'Prof Local'),
             ('22222222-2222-4222-8222-222222222222'::uuid,
-             'student@local.test', 'local-student', 'student', 'Élève Local')
+             'student@local.test', 'local-student', 'student', 'Élève Local'),
+            ('33333333-3333-4333-8333-333333333333'::uuid,
+             'admin@local.test', 'local-admin', 'admin', 'Admin Local')
         ) AS t(id, email, password, role, full_name)
     LOOP
         -- Les colonnes de jetons doivent valoir '' et non NULL : GoTrue les lit
@@ -80,3 +90,33 @@ BEGIN
         ON CONFLICT (id) DO UPDATE SET role = EXCLUDED.role, full_name = EXCLUDED.full_name;
     END LOOP;
 END $dev_accounts$;
+
+-- ---------------------------------------------------------------------------
+-- Une classe de développement
+-- ---------------------------------------------------------------------------
+-- Sans classe, le cahier de texte, l'avancement et les statistiques n'ont rien
+-- à afficher — et les pages qui en attendent une échouent en 404. Le seed de
+-- référence n'en contient aucune (il ne porte que des tables de contenu).
+--
+-- Niveau seconde : c'est là que le référentiel est le plus fourni (185 points).
+
+insert into public.classes (id, name, grade, join_code, is_active, registration_open)
+values ('44444444-4444-4444-8444-444444444444', 'Seconde Locale', '2', 'DEVLOCAL', true, false)
+on conflict (id) do nothing;
+
+insert into public.class_members (class_id, student_id)
+select '44444444-4444-4444-8444-444444444444', id
+  from public.profiles where email = 'student@local.test'
+on conflict do nothing;
+
+-- ---------------------------------------------------------------------------
+-- Configuration singleton attendue par l'API
+-- ---------------------------------------------------------------------------
+-- `bug_reports_config` est lue avec `.single()` : zéro ligne produit une erreur
+-- PGRST116 « Cannot coerce the result to a single JSON object » à chaque
+-- chargement de page. La prod a sa ligne, le seed de référence ne l'a pas.
+
+insert into public.bug_reports_config
+	(singleton_key, fab_enabled, freeze_detection_enabled, freeze_prompt_enabled, auto_report_enabled)
+values ('global', true, false, false, false)
+on conflict (singleton_key) do nothing;

@@ -283,12 +283,56 @@ Toutes en PK composite.
 | ------------------------------- | -------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------- |
 | `question_template_points`      | `(template_id, point_id)`  | **RESTRICT** sur le point | Tagging au niveau template (décision 59) ; toutes les instances héritent. Pivot de l'acquisition. |
 | `exercise_curriculum_points`    | `(exercise_id, point_id)`  | CASCADE                   | Exercices système tagués ; alimente la couverture automatique.                                    |
-| `journal_entry_points`          | `(entry_id, point_id)`     | CASCADE                   | Couverture du cahier de texte (manuelle ou réconciliée depuis les exercices).                     |
+| `journal_entry_points`          | `(entry_id, point_id)`     | CASCADE                   | Couverture du cahier de texte (manuelle, ou réconciliée depuis les activités de la séance).       |
 | `curriculum_point_automatismes` | `(point_id, grade)`        | CASCADE                   | Cf. ci-dessus.                                                                                    |
 | `evaluation_task_perimeter`     | `(task_id, observable_id)` | CASCADE / RESTRICT        | Périmètre d'une tâche d'évaluation famille B.                                                     |
 
 Fiche, chapitre et évaluation ne sont **pas** tagués : leur couverture est
-l'union **calculée** de celle de leurs exercices (décision 4).
+l'union **calculée** de celle de leur contenu (décision 4) — les exercices pour
+une fiche, les questions pour une évaluation.
+
+### Activités d'une séance — `journal_entry_activities` (2026-09-01)
+
+Une séance du cahier de texte référence ce sur quoi elle a porté. Cinq types,
+départagés par le CHECK `journal_entry_activities_kind_shape` qui impose à
+chacun sa colonne :
+
+| `kind`       | Colonne                | Tagué au programme                              |
+| ------------ | ---------------------- | ----------------------------------------------- |
+| `exercise`   | `exercise_id`          | via `exercise_curriculum_points`                |
+| `question`   | `question_template_id` | via `question_template_points`                  |
+| `assessment` | `assessment_id`        | via `assessment_curriculum_points()`, cf. infra |
+| `course`     | `chapter_id` / `label` | non                                             |
+| `textbook`   | `textbook_ref`         | non                                             |
+
+`reconcileAutoCoverage()` matérialise l'union des points portés par les trois
+premiers en lignes `source='auto'`, sans jamais toucher aux lignes `manual`.
+Elle est **recalculée**, jamais figée : le tagging se fait après coup, donc une
+séance de septembre doit s'allumer quand son contenu est tagué en juin. La
+fidélité à ce qui a été fait est le rôle de la couche manuelle.
+
+⚠️ `question_template_id` et `assessment_id` sont en **CASCADE**, là où
+`exercise_id` est en `SET NULL`. Ce dernier est une dette : `SET NULL` est un
+UPDATE, que le CHECK de forme réévalue — supprimer un exercice référencé par une
+séance échoue donc aujourd'hui sur une violation de contrainte.
+
+#### Résolution évaluation → points
+
+Une évaluation ne référence pas ses questions par identifiant : `categories` est
+un tableau jsonb de `{ category: {thème, domaine, sous-domaine, niveau},
+quantity, delay }`. C'est l'index unique `idx_question_templates_unique_category`
+qui garantit qu'un quadruplet ne désigne qu'un seul template **publié**.
+
+`assessment_curriculum_points(uuid[])` fait cette jointure sur quatre colonnes,
+en `security invoker`. Le niveau y est comparé **en texte** plutôt que casté :
+`categories` n'est contraint par rien, et un `level` non numérique ferait échouer
+la réconciliation entière au lieu d'ignorer la seule catégorie fautive. Une
+catégorie sans template publié est ignorée en silence.
+
+⚠️ Les politiques RLS d'`assessments` sont restées à `created_by = auth.uid()`,
+sans suivre le refactor mono-professeur qui a fait passer les autres tables à
+`is_teacher_or_admin()`. Une évaluation créée par le compte admin est donc
+invisible depuis le compte prof.
 
 ### Tâches d'évaluation (famille compétence)
 

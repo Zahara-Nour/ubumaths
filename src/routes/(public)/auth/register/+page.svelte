@@ -17,6 +17,7 @@
 	import * as Alert from '$lib/components/ui/alert';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Loader2, MailCheck } from '@lucide/svelte';
+	import MyPasswordInput from '$lib/components/MyPasswordInput.svelte';
 
 	let { form }: { form: ActionData } = $props();
 
@@ -128,13 +129,7 @@
 
 					<div class="space-y-2">
 						<Label for="password">Mot de passe</Label>
-						<Input
-							id="password"
-							name="password"
-							type="password"
-							autocomplete="new-password"
-							required
-						/>
+						<MyPasswordInput id="password" name="password" autocomplete="new-password" required />
 						{#if fieldError('password')}
 							<p class="text-sm text-destructive">{fieldError('password')}</p>
 						{/if}
@@ -142,10 +137,9 @@
 
 					<div class="space-y-2">
 						<Label for="confirmPassword">Confirmer le mot de passe</Label>
-						<Input
+						<MyPasswordInput
 							id="confirmPassword"
 							name="confirmPassword"
-							type="password"
 							autocomplete="new-password"
 							required
 						/>

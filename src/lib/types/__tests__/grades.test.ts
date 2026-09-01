@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { getCycleForGrade, CYCLES, CYCLE_CODES, type GradeCode, GRADE_CODES } from '../grades';
+import {
+	getCycleForGrade,
+	getGradesAtOrAbove,
+	CYCLES,
+	CYCLE_CODES,
+	type GradeCode,
+	GRADE_CODES
+} from '../grades';
 
 describe('Cycles pédagogiques', () => {
 	describe('CYCLES constant', () => {
@@ -139,5 +146,62 @@ describe('Cycles pédagogiques', () => {
 				expect(result).toBe('cycle_3');
 			});
 		});
+	});
+});
+
+describe('getGradesAtOrAbove', () => {
+	it('rend le niveau lui-même et tous ceux d’après', () => {
+		const eligibles = getGradesAtOrAbove(['2']);
+		expect(eligibles).toContain('2');
+		expect(eligibles).toContain('1_SPE');
+		expect(eligibles).toContain('T_STMG');
+	});
+
+	// C’est tout l’objet du garde : une capacité de seconde peut être remobilisée
+	// en première, jamais rétrogradée au collège.
+	it('exclut les niveaux antérieurs', () => {
+		const eligibles = getGradesAtOrAbove(['2']);
+		expect(eligibles).not.toContain('6');
+		expect(eligibles).not.toContain('3');
+		expect(eligibles).not.toContain('CM2');
+	});
+
+	// L'usage réel de `grades` : des voies parallèles, pas une plage d'années.
+	// Elles partagent la même année scolaire, donc un seul code suffit déjà à
+	// ouvrir les programmes des autres filières du même niveau.
+	it('inclut les filières parallèles de la même année', () => {
+		const depuisLaSpe = getGradesAtOrAbove(['1_SPE']);
+		expect(depuisLaSpe).toContain('1_STMG');
+		expect(depuisLaSpe).toContain('1_GEN');
+		expect(getGradesAtOrAbove(['1_SPE', '1_STMG'])).toEqual(depuisLaSpe);
+	});
+
+	// Cas non prévu par l'usage, mais la fonction doit rester définie : on part
+	// du premier niveau où la question a été déclarée pertinente.
+	it('part de l’année la plus basse si des années différentes cohabitent', () => {
+		expect(getGradesAtOrAbove(['1_SPE', '6'])).toContain('5');
+		expect(getGradesAtOrAbove(['1_SPE'])).not.toContain('5');
+	});
+
+	it('classe les niveaux par année scolaire croissante', () => {
+		const eligibles = getGradesAtOrAbove(['3']);
+		expect(eligibles[0]).toBe('3');
+		expect(eligibles.indexOf('2')).toBeLessThan(eligibles.indexOf('1_SPE'));
+		expect(eligibles.indexOf('1_SPE')).toBeLessThan(eligibles.indexOf('T_SPE'));
+	});
+
+	it('ignore les codes inconnus', () => {
+		expect(getGradesAtOrAbove(['bogus', '2'])).toEqual(getGradesAtOrAbove(['2']));
+	});
+
+	// Ne rien rendre plutôt que tout : sans niveau de départ valide, offrir la
+	// totalité des programmes ferait passer une erreur de données pour un choix.
+	it('ne rend rien quand aucun code n’est valide', () => {
+		expect(getGradesAtOrAbove([])).toEqual([]);
+		expect(getGradesAtOrAbove(['bogus'])).toEqual([]);
+	});
+
+	it('rend la totalité des niveaux depuis le CP', () => {
+		expect(getGradesAtOrAbove(['CP'])).toHaveLength(GRADE_CODES.length);
 	});
 });

@@ -180,6 +180,38 @@ describe('Seed du programme — amorçage et non synchronisation', () => {
 	});
 });
 
+describe('Seed du programme — seconde', () => {
+	it('pose 6 thèmes, 14 objectifs et 185 points', async () => {
+		const { themes, objectives, points } = await pointsOfGrade('2');
+		expect(themes).toHaveLength(6);
+		expect(objectives).toHaveLength(14);
+		expect(points).toHaveLength(185);
+	});
+
+	it('reproduit la typologie du BO', async () => {
+		const { points } = await pointsOfGrade('2');
+		const by = (k: string) => points.filter((p) => p.kind === k).length;
+		expect(by('connaissance')).toBe(68); // Contenus
+		expect(by('savoir_faire')).toBe(105); // Capacités attendues + approfondissements
+		expect(by('demonstration')).toBe(12); // Démonstrations
+	});
+
+	// Même exclusion qu'en 1ʳᵉ (décision 12) : les automatismes du BO sont des
+	// acquis du collège, ils vivront dans l'arbre du niveau qui les introduit.
+	it('ne crée pas de thème « Automatismes »', async () => {
+		const { themes } = await pointsOfGrade('2');
+		expect(themes.map((t) => t.name)).not.toContain('Automatismes');
+	});
+
+	it('donne un code unique à chacun des 185 points', async () => {
+		const { points } = await pointsOfGrade('2');
+		const codes = points.map((p) => p.code);
+		expect(codes).toHaveLength(185);
+		expect(new Set(codes).size).toBe(185);
+		expect(codes.every((c) => /^2-\d{3}$/.test(c!))).toBe(true);
+	});
+});
+
 describe('Seed du programme — 6ᵉ (non-régression)', () => {
 	it('reste à 6 thèmes, 20 objectifs et 95 points', async () => {
 		const { themes, objectives, points } = await pointsOfGrade('6');

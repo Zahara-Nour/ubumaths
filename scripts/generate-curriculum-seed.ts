@@ -1,23 +1,49 @@
 #!/usr/bin/env tsx
 /**
- * Génère `supabase/migrations/<ts>_seed_curriculum_1re_spe.sql` depuis
- * `docs/wip/referentiel/1re-spe-programme.md`.
+ * Génère le SQL d'amorçage d'un niveau depuis son markdown de référentiel.
  *
- * Le markdown est la SOURCE DE VÉRITÉ : on ne retranscrit pas 170 points à la
- * main. Rejouer le script après une correction du markdown régénère le seed à
- * l'identique (même convention que `generate-competence-seeds.ts` pour la 6ᵉ).
+ * Le markdown est la SOURCE DE VÉRITÉ le temps de l'amorçage : on ne retranscrit
+ * pas 200 points à la main. Passé l'amorçage, c'est la page Programme qui fait
+ * foi — le seed généré est gardé et ne rejoue rien sur un niveau déjà rempli.
  *
- * Usage : pnpm tsx scripts/generate-curriculum-1re-spe-seed.ts
+ * Un seul script pour tous les niveaux : dupliquer, c'est laisser les copies
+ * diverger. La table `NIVEAUX` ci-dessous est le seul endroit à étendre.
+ *
+ * Usage :
+ *   pnpm tsx scripts/generate-curriculum-seed.ts 1_SPE
+ *   pnpm tsx scripts/generate-curriculum-seed.ts 2
  */
 
-import { readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const SRC = join(ROOT, 'docs/wip/referentiel/1re-spe-programme.md');
-const OUT = join(ROOT, 'supabase/migrations/20260830090000_seed_curriculum_1re_spe.sql');
-const GRADE = '1_SPE';
+
+/** Un niveau = son markdown, son fichier de seed, et le préfixe de ses codes. */
+const NIVEAUX: Record<string, { md: string; out: string; prefixe: string }> = {
+	'1_SPE': {
+		md: 'docs/wip/referentiel/1re-spe-programme.md',
+		out: 'supabase/migrations/20260830090000_seed_curriculum_1re_spe.sql',
+		prefixe: '1SPE'
+	},
+	'2': {
+		md: 'docs/wip/referentiel/2de-programme.md',
+		out: 'supabase/migrations/20260903090000_seed_curriculum_2de.sql',
+		prefixe: '2'
+	}
+};
+
+const GRADE = process.argv[2];
+if (!GRADE || !NIVEAUX[GRADE]) {
+	console.error(
+		`Usage : pnpm tsx scripts/generate-curriculum-seed.ts <${Object.keys(NIVEAUX).join('|')}>`
+	);
+	process.exit(1);
+}
+const NIVEAU = NIVEAUX[GRADE];
+const SRC = join(ROOT, NIVEAU.md);
+const OUT = join(ROOT, NIVEAU.out);
 
 type Kind = 'connaissance' | 'savoir_faire' | 'demonstration';
 type Point = {
@@ -80,7 +106,7 @@ function parse(md: string) {
 			continue;
 		}
 
-		// `- [SF] \`1SPE-047\` libellé…` — le code, s'il est déjà là, fait foi.
+		// `- [SF] \`<CODE>\` libellé…` — le code, s'il est déjà là, fait foi.
 		const mPoint = /^- \[(C|SF\+|SF|D)\]\s+(?:`([A-Z0-9_]+-\d+)`\s+)?(.+)$/.exec(line);
 		if (mPoint) {
 			if (!theme || !objective) throw new Error(`point hors objectif : ${line}`);
@@ -149,7 +175,7 @@ function assignMissingCodes(markdown: string): string {
 		}
 		if (cursor >= lines.length) throw new Error(`ligne introuvable pour : ${pt.name}`);
 		if (!pt.code) {
-			pt.code = `${GRADE.replace('_', '')}-${String(next++).padStart(3, '0')}`;
+			pt.code = `${NIVEAU.prefixe}-${String(next++).padStart(3, '0')}`;
 			const m = /^(- \[(?:C|SF\+|SF|D)\]\s+)(.+)$/.exec(lines[cursor])!;
 			lines[cursor] = `${m[1]}\`${pt.code}\` ${m[2]}`;
 		}
@@ -161,6 +187,48 @@ function assignMissingCodes(markdown: string): string {
 
 const updatedMd = assignMissingCodes(md);
 if (updatedMd !== md) writeFileSync(SRC, updatedMd);
+
+/**
+ * Garde-fou : toute commande LaTeX doit être connue de MathLive.
+ *
+ * Les libellés sont rendus par MathLive (`math-span`), qui ne couvre pas tout
+ * LaTeX. Une commande inconnue s'affiche en clair au milieu de la phrase — c'est
+ * ce qui est arrivé le 2026-08-30 avec `\dots` et `\overrightarrow`, écrites à la
+ * main et découvertes par David à l'écran, pas par un test.
+ *
+ * On lit la table de MathLive plutôt que d'en figer une copie : elle suit alors
+ * les montées de version du paquet.
+ */
+function assertMathLiveKnowsEveryCommand(points: { code: string; name: string }[]) {
+	const bundle = join(ROOT, 'node_modules/mathlive/mathlive.mjs');
+	if (!existsSync(bundle)) {
+		console.warn('  ⚠ mathlive introuvable — vérification des commandes LaTeX sautée');
+		return;
+	}
+	const src = readFileSync(bundle, 'utf8');
+	const unknown = new Map<string, string[]>();
+
+	for (const pt of points) {
+		for (const formula of pt.name.match(/\$[^$]+\$/g) ?? []) {
+			for (const [, cmd] of formula.matchAll(/\\([a-zA-Z]+)/g)) {
+				// Dans le bundle, les commandes sont écrites avec un antislash échappé.
+				if (src.includes(`\\\\${cmd}"`) || src.includes(`\\\\${cmd}'`)) continue;
+				const codes = unknown.get(cmd) ?? [];
+				if (!codes.includes(pt.code)) codes.push(pt.code);
+				unknown.set(cmd, codes);
+			}
+		}
+	}
+
+	if (unknown.size > 0) {
+		const detail = [...unknown]
+			.map(([cmd, codes]) => `  \\${cmd} — ${codes.slice(0, 4).join(', ')}`)
+			.join('\n');
+		throw new Error(
+			`Commandes LaTeX inconnues de MathLive (elles s'afficheraient en clair) :\n${detail}`
+		);
+	}
+}
 
 // Garde-fous : les contraintes UNIQUE de la base doivent tenir.
 for (const [label, seen] of [
@@ -180,11 +248,13 @@ for (const [label, seen] of [
 	}
 }
 
+assertMathLiveKnowsEveryCommand(points);
+
 const sql = `-- ============================================================================
--- Amorçage — Programme de suivi 1ʳᵉ spécialité mathématiques (grade '${GRADE}')
+-- Amorçage — Référentiel de programme, niveau '${GRADE}'
 -- ============================================================================
--- GÉNÉRÉ par scripts/generate-curriculum-1re-spe-seed.ts depuis
--- docs/wip/referentiel/1re-spe-programme.md — ne pas éditer à la main.
+-- GÉNÉRÉ par scripts/generate-curriculum-seed.ts depuis
+-- ${NIVEAU.md} — ne pas éditer à la main.
 --
 -- Source : « Programme de spécialité de mathématiques de la classe de première
 -- de la voie générale » (programme en vigueur, avec la partie transversale

@@ -17,6 +17,8 @@ import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { mapDbTemplateToForm } from '$lib/questions/types';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { getCurriculumTree, type CurriculumTreeTheme } from '$lib/server/curriculum';
+import { getGradesAtOrAbove } from '$lib/types/grades';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	// Check admin (real admin login OR step-up elevation)
@@ -35,7 +37,37 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		throw error(404, 'Question non trouvée');
 	}
 
+	// Arbres du référentiel taguables, et tags actuels.
+	// `question_template_points` est le pivot de l'acquisition : une tentative n'a
+	// pas de clé étrangère vers un point, elle s'y relie par le template tagué.
+	// Sans un tag ici, aucun point ne se validera jamais.
+	//
+	// Les niveaux proposés ne sont pas ceux de création mais tous ceux d'année
+	// scolaire supérieure ou égale : un programme plus tardif remobilise
+	// couramment une notion vue plus tôt — la distance entre deux points est une
+	// capacité de seconde que la 1ʳᵉ spé réutilise. Les niveaux sans programme
+	// amorcé tombent d'eux-mêmes, leur arbre étant vide.
+	const grades = ((template as { grades?: string[] }).grades ?? []) as string[];
+	const curriculumByGrade: { grade: string; tree: CurriculumTreeTheme[] }[] = [];
+	const trees = await Promise.all(
+		getGradesAtOrAbove(grades).map(async (g) => ({
+			grade: g,
+			tree: await getCurriculumTree(supabase, g)
+		}))
+	);
+	for (const t of trees) {
+		if (t.tree.length > 0) curriculumByGrade.push(t);
+	}
+
+	const { data: tagRows } = await supabase
+		.from('question_template_points')
+		.select('point_id')
+		.eq('template_id', id);
+
 	return {
-		template: mapDbTemplateToForm(template as unknown as Record<string, unknown>)
+		template: mapDbTemplateToForm(template as unknown as Record<string, unknown>),
+		templateId: id,
+		curriculumByGrade,
+		taggedPointIds: (tagRows ?? []).map((r) => r.point_id)
 	};
 };

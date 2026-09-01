@@ -251,6 +251,37 @@ export function hasHighSchoolTrack(
 	return grade.track !== undefined;
 }
 
+/**
+ * Les niveaux sur lesquels un contenu créé pour `grades` peut être rattaché à
+ * un programme, du plus tôt au plus tard.
+ *
+ * La relation n'est pas symétrique : un programme d'année supérieure remobilise
+ * couramment une notion vue plus tôt — la distance entre deux points est une
+ * capacité de seconde que la 1ʳᵉ spé réutilise — alors qu'une question de 1ʳᵉ
+ * n'a rien à faire dans le programme de 6ᵉ.
+ *
+ * La comparaison porte sur l'année et non sur la voie, ce qui inclut d'office
+ * les filières parallèles : un contenu de 1ʳᵉ spé donne accès aux programmes de
+ * 1ʳᵉ générale et de 1ʳᵉ STMG, toutes en année 11.
+ *
+ * `grades` liste justement des voies parallèles — une question valable en 1ʳᵉ
+ * spé et en 1ʳᵉ STMG — donc ses codes partagent en pratique la même année et le
+ * choix ci-dessous ne se voit pas. On retient malgré tout la plus basse : si un
+ * jour des années différentes y cohabitent, c'est le premier moment de la
+ * scolarité où l'auteur a déclaré la question pertinente.
+ *
+ * Les codes inconnus sont ignorés, et une liste qui n'en contient aucun de
+ * valide ne donne rien — pas la totalité des niveaux.
+ */
+export function getGradesAtOrAbove(grades: readonly string[]): GradeCode[] {
+	const years = grades.filter(isGradeCode).map((g) => GRADES[g].schoolYear);
+	if (years.length === 0) return [];
+	const from = Math.min(...years);
+	return GRADE_CODES.filter((code) => GRADES[code].schoolYear >= from).sort(
+		(a, b) => GRADES[a].schoolYear - GRADES[b].schoolYear
+	);
+}
+
 // Export for convenience
 export const PRIMARY_GRADES: GradeCode[] = ['CP', 'CE1', 'CE2', 'CM1', 'CM2'];
 export const MIDDLE_GRADES: GradeCode[] = ['6', '5', '4', '3'];
