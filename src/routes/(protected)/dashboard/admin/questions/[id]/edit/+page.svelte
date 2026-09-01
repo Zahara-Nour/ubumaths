@@ -34,6 +34,7 @@
 	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import { onMount } from 'svelte';
+	import { GRADES, isGradeCode } from '$lib/types/grades';
 
 	let { data }: { data: PageData } = $props();
 
@@ -151,6 +152,11 @@
 			}
 		}
 	}
+
+	/** « 1ère spécialité maths » plutôt que « 1_SPE » : le code est interne. */
+	function gradeLabel(grade: string): string {
+		return isGradeCode(grade) ? GRADES[grade].displayName : grade;
+	}
 </script>
 
 <svelte:head>
@@ -214,7 +220,7 @@
 			<Card.Content class="space-y-4">
 				{#each data.curriculumByGrade as { grade, tree } (grade)}
 					{#if data.curriculumByGrade.length > 1}
-						<p class="text-sm font-semibold text-muted-foreground">Niveau {grade}</p>
+						<p class="text-sm font-semibold text-muted-foreground">{gradeLabel(grade)}</p>
 					{/if}
 					<div class="space-y-1">
 						{#each tree as theme (theme.id)}
