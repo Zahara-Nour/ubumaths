@@ -168,18 +168,23 @@ export function generateStudentWorksheetTypst(
 		// Star prefix for essential exercises
 		const essentialPrefix = exercise.is_essential ? `#text(fill: rgb("#f59e0b"))[★] ` : '';
 
-		// Build exercise content
-		let exerciseContent = `${essentialPrefix}#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[${exerciseNumber}]]${titlePart}\n\n`;
+		// Header, points and instructions go in a single `sticky` block: a column
+		// or page break can then never leave the number alone at the bottom,
+		// separated from the statement it introduces.
+		let header = `${essentialPrefix}#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[${exerciseNumber}]]${titlePart}`;
 
 		// Points if available
 		if (exercise.points) {
-			exerciseContent += `#text(size: 0.9em, fill: gray)[${exercise.points} point${exercise.points > 1 ? 's' : ''}]\n\n`;
+			header += `\n\n#text(size: 0.9em, fill: gray)[${exercise.points} point${exercise.points > 1 ? 's' : ''}]`;
 		}
 
 		// Custom instructions if present
 		if (exercise.custom_instructions) {
-			exerciseContent += `#text(style: "italic", fill: gray)[${escapeTypst(exercise.custom_instructions)}]\n\n`;
+			header += `\n\n#text(style: "italic", fill: gray)[${escapeTypst(exercise.custom_instructions)}]`;
 		}
+
+		// Build exercise content
+		let exerciseContent = `#block(sticky: true, below: 0.6em)[\n${header}\n]\n\n`;
 
 		// Statement (already resolved markdown)
 		const statementAst = parseMarkdown(exercise.statement);
@@ -215,9 +220,9 @@ ${exerciseContent}]\n`;
 				? ` #h(0.5em) #text(weight: "bold")[${processTableCellContent(title)}]`
 				: '';
 
+			// Sticky header inside the panel: same reason as the exercises above
 			typst += `#block(fill: rgb("#f0fdf4"), radius: 4pt, inset: 12pt, width: 100%)[
-  #box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[${number}]]${titlePart}
-  #v(0.5em)
+  #block(sticky: true, below: 0.6em)[#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[${number}]]${titlePart}]
 `;
 			const correctionAst = parseMarkdown(correction);
 			typst += generateTypst(correctionAst, { includeSetup: false });

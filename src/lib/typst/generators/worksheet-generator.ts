@@ -286,6 +286,17 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
   )
 }
 
+// Sticky: a column or page break can never leave the header alone at the bottom
+#let exercise-header(content) = {
+  block(
+    width: 100%,
+    inset: 0pt,
+    sticky: true,
+    below: 0.3em,
+    content
+  )
+}
+
 #let solution-box(content) = {
   block(
     width: 100%,
@@ -535,7 +546,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 
 		// Exercise header with number, title, and optional points
 		const titleSuffix = exercise.title ? ` : ${escapeTypst(exercise.title)}` : '';
-		content += '#exercise-box[\n';
+		content += '#exercise-header[\n';
 		content += '  #grid(\n';
 		content += '    columns: (auto, 1fr, auto),\n';
 		content += `    [#text(size: 1.1em, weight: "bold")[Exercice ${number}${titleSuffix}]],\n`;
@@ -549,8 +560,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		}
 
 		content += '  )\n';
-		content += '  #v(0.3em)\n';
-		content += '  \n';
+		content += ']\n';
+		content += '#exercise-box[\n';
 
 		// Exercise statement
 		const statementAst = parseMarkdown(exercise.statement);
@@ -719,17 +730,18 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const config = this.worksheetConfig;
 		let content = '';
 
-		// Exercise header with title
+		// Exercise header, in its own `sticky` block so a column or page break can
+		// never leave the number alone at the bottom, away from its statement.
 		if (headerStyle === 'badge') {
 			// Number in white on a red rounded square, like the student PDF
 			const titlePart = exercise.title
 				? ` #h(0.5em) #text(weight: "bold")[${escapeTypst(exercise.title)}]`
 				: '';
-			content += `#block(width: 100%, inset: 0pt)[
+			content += `#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[
   #box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[${number}]]${titlePart}`;
 		} else {
 			const titleSuffix = exercise.title ? ` : ${escapeTypst(exercise.title)}` : '';
-			content += `#block(width: 100%, inset: 0pt)[
+			content += `#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[
   #text(size: 1.1em, weight: "bold")[Exercice ${number}${titleSuffix}]`;
 		}
 
@@ -737,7 +749,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			content += ` #h(1fr) #box(fill: rgb("#dcdcdc"), inset: (x: 6pt, y: 3pt), radius: 3pt)[${exercise.position} pts]`;
 		}
 
-		content += '\n  #v(0.3em)\n  \n';
+		// Close the header block and open the statement one (breakable: a long
+		// statement still splits across columns, just never right after the number)
+		content += '\n]\n#block(width: 100%, inset: 0pt)[\n';
 
 		// Exercise statement
 		const statementAst = parseMarkdown(exercise.statement);
@@ -903,7 +917,12 @@ function removeSetupSection(typst: string): string {
 	}
 
 	// Find where actual content starts (after all the #set and #let declarations)
-	const contentMarkers = ['#block(width: 100%)', '#align(center)', '#exercise-box'];
+	const contentMarkers = [
+		'#block(width: 100%)',
+		'#align(center)',
+		'#exercise-header',
+		'#exercise-box'
+	];
 	let contentStart = typst.length;
 
 	for (const marker of contentMarkers) {
