@@ -314,6 +314,46 @@ describe('WorksheetGenerator', () => {
 		});
 	});
 
+	describe('exercise header is never orphaned', () => {
+		const mockTemplate: WorksheetTemplateRow = {
+			id: 'template-1',
+			name: 'Test Template',
+			description: null,
+			template_content: '#set page(paper: "a4", columns: 2)\n{{exercises}}',
+			placeholders: [],
+			created_by: 'teacher-id',
+			created_at: '2024-01-01',
+			updated_at: '2024-01-01'
+		};
+
+		it('puts the header of a templated exercise in its own sticky block', () => {
+			const generator = new WorksheetGenerator(createMockConfig());
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance: createMockInstance(),
+				template: mockTemplate
+			});
+
+			// Header block is sticky, statement follows in a separate (breakable) block
+			expect(result.typstContent).toContain(
+				'#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[\n  #text(size: 1.1em, weight: "bold")[Exercice 1'
+			);
+			expect(result.typstContent).toContain(']\n#block(width: 100%, inset: 0pt)[\n  Solve for x');
+		});
+
+		it('renders the header through the sticky exercise-header helper without a template', () => {
+			const generator = new WorksheetGenerator(createMockConfig());
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance: createMockInstance()
+			});
+
+			expect(result.typstContent).toContain('#let exercise-header(content)');
+			expect(result.typstContent).toContain('sticky: true,');
+			expect(result.typstContent).toContain('#exercise-header[');
+		});
+	});
+
 	describe('worksheet types', () => {
 		it('generates exam with answer spaces', () => {
 			const generator = new WorksheetGenerator(createMockConfig());
