@@ -63,6 +63,16 @@ export interface WorksheetGeneratorInput {
 }
 
 /**
+ * How the exercise header is rendered inside `{{exercises}}`
+ *
+ * - `heading`: bold "Exercice N : title" line (default, used by every template
+ *   written against the `{{exercises}}` placeholder)
+ * - `badge`: the number in white on a red rounded square, like the student PDF
+ *   (opted into by a template using the `{{exercises_badge}}` placeholder)
+ */
+type ExerciseHeaderStyle = 'heading' | 'badge';
+
+/**
  * Parameters for the legacy generateWorksheetTypst function
  */
 export interface GenerateTypstParams {
@@ -163,8 +173,18 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const { worksheet, instance } = input;
 		const mode = this.context.mode as 'worksheet' | 'correction';
 
-		// Generate exercises content for the template
-		const exercisesTypst = this.generateExercisesOnly(instance, mode, worksheet.type);
+		// Generate exercises content for the template. A template opts into the
+		// red-badge numbering by using {{exercises_badge}} instead of {{exercises}};
+		// both keys receive the same content so only the placeholder used matters.
+		const exerciseStyle: ExerciseHeaderStyle = templateContent.includes('{{exercises_badge}}')
+			? 'badge'
+			: 'heading';
+		const exercisesTypst = this.generateExercisesOnly(
+			instance,
+			mode,
+			worksheet.type,
+			exerciseStyle
+		);
 
 		// Prepare template data
 		const templateData: Record<string, string> = {
@@ -182,6 +202,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			school_name: '', // Could be added to config later
 			teacher_name: '', // Could be added to config later
 			exercises: exercisesTypst,
+			exercises_badge: exercisesTypst,
 			// Additional placeholders for specific templates
 			due_date: '',
 			exam_session: '',
@@ -586,7 +607,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	private generateExercisesOnly(
 		instance: InstanceData,
 		mode: 'worksheet' | 'correction',
-		worksheetType: WorksheetType
+		worksheetType: WorksheetType,
+		headerStyle: ExerciseHeaderStyle = 'heading'
 	): string {
 		const exercises = instance.exercises;
 		const sections = instance.sections ?? [];
@@ -602,7 +624,13 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			let content = '';
 			orderedExercises.forEach((exercise, index) => {
 				const number = formatNumber(index + 1, numberingStyle);
-				content += this.generateSingleExerciseSimple(exercise, number, mode, worksheetType);
+				content += this.generateSingleExerciseSimple(
+					exercise,
+					number,
+					mode,
+					worksheetType,
+					headerStyle
+				);
 				content += '\n\n';
 			});
 			return content;
@@ -635,7 +663,13 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			// Section exercises
 			for (const exercise of sectionExercises) {
 				const number = formatNumber(++globalIndex, numberingStyle);
-				content += this.generateSingleExerciseSimple(exercise, number, mode, worksheetType);
+				content += this.generateSingleExerciseSimple(
+					exercise,
+					number,
+					mode,
+					worksheetType,
+					headerStyle
+				);
 				content += '\n\n';
 			}
 		}
@@ -644,7 +678,13 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const unsectioned = grouped.get(null) ?? [];
 		for (const exercise of unsectioned) {
 			const number = formatNumber(++globalIndex, numberingStyle);
-			content += this.generateSingleExerciseSimple(exercise, number, mode, worksheetType);
+			content += this.generateSingleExerciseSimple(
+				exercise,
+				number,
+				mode,
+				worksheetType,
+				headerStyle
+			);
 			content += '\n\n';
 		}
 
@@ -673,15 +713,25 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		exercise: ResolvedExercise,
 		number: string,
 		mode: 'worksheet' | 'correction',
-		worksheetType: WorksheetType
+		worksheetType: WorksheetType,
+		headerStyle: ExerciseHeaderStyle = 'heading'
 	): string {
 		const config = this.worksheetConfig;
 		let content = '';
 
 		// Exercise header with title
-		const titleSuffix = exercise.title ? ` : ${escapeTypst(exercise.title)}` : '';
-		content += `#block(width: 100%, inset: 0pt)[
+		if (headerStyle === 'badge') {
+			// Number in white on a red rounded square, like the student PDF
+			const titlePart = exercise.title
+				? ` #h(0.5em) #text(weight: "bold")[${escapeTypst(exercise.title)}]`
+				: '';
+			content += `#block(width: 100%, inset: 0pt)[
+  #box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[${number}]]${titlePart}`;
+		} else {
+			const titleSuffix = exercise.title ? ` : ${escapeTypst(exercise.title)}` : '';
+			content += `#block(width: 100%, inset: 0pt)[
   #text(size: 1.1em, weight: "bold")[Exercice ${number}${titleSuffix}]`;
+		}
 
 		if (config.show_points && exercise.position) {
 			content += ` #h(1fr) #box(fill: rgb("#dcdcdc"), inset: (x: 6pt, y: 3pt), radius: 3pt)[${exercise.position} pts]`;

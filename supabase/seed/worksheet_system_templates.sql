@@ -1,7 +1,7 @@
 -- ==============================================================================
 -- SEED — templates Typst système des feuilles d'exercices (worksheet_templates)
 -- ==============================================================================
--- Les 11 templates intégrés (Standard, Deux colonnes, Paysage, …) existent en
+-- Les templates intégrés (Standard, Deux colonnes, Fiche élève, …) existent en
 -- production avec ces UUID déterministes et `created_by = NULL`. Le baseline de
 -- migrations étant schéma-seul, ils manquaient en local : toute feuille créée
 -- avec un template intégré violait alors la FK worksheets.template_id.
@@ -562,17 +562,6 @@ VALUES (
 #set list(spacing: 1.5em)
 #set par(justify: true, leading: 0.8em)
 
-// Fonction pour créer des numéros d'exercices stylisés
-#let exercise-badge(n) = {
-  box(
-    fill: rgb("#dc2626"),
-    inset: (x: 10pt, y: 5pt),
-    radius: 4pt,
-    baseline: 25%,
-    text(fill: white, weight: "bold", size: 11pt, [#n])
-  )
-}
-
 // Header moderne avec dégradé
 #rect(
   width: 100%,
@@ -675,8 +664,8 @@ VALUES (
 
 #v(1cm)
 
-// Zone des exercices
-{{exercises}}
+// Zone des exercices (numéros en blanc sur carré rouge)
+{{exercises_badge}}
 
 // Footer moderne
 #v(1fr)
@@ -1424,6 +1413,56 @@ VALUES (
   ]
 )$tpl$,
   $tpl$[{"key":"title","type":"text","label":"Titre","default_value":"Feuille d'exercices"},{"key":"date","type":"date","label":"Date","default_value":""},{"key":"class","type":"text","label":"Classe","default_value":""},{"key":"student_name","type":"text","label":"Nom de l'eleve","default_value":""},{"key":"exercises","type":"dynamic","label":"Exercices","default_value":""},{"key":"total_points","type":"text","label":"Total des points","default_value":""},{"key":"duration","type":"text","label":"Duree estimee","default_value":""},{"key":"instructions","type":"text","label":"Consignes","default_value":""},{"key":"school_name","type":"text","label":"Nom de l'ecole","default_value":""},{"key":"teacher_name","type":"text","label":"Nom du professeur","default_value":""},{"key":"academic_year","type":"text","label":"Année académique","default_value":"2024-2025"},{"key":"semester","type":"text","label":"Semestre","default_value":"1"}]$tpl$::jsonb,
+  NULL
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- Fiche élève — Deux colonnes, numéro d'exercice en blanc sur carré rouge (rendu identique au PDF de l'élève)
+INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
+VALUES (
+  '00000000-0000-4000-8000-000000000012',
+  $tpl$Fiche élève$tpl$,
+  $tpl$Deux colonnes, numéro d'exercice en blanc sur carré rouge (rendu identique au PDF de l'élève)$tpl$,
+  $tpl$// Mise en page identique au PDF de l'élève : A4 sur deux colonnes
+#set page(
+  paper: "a4",
+  margin: (x: 1cm, y: 1.5cm),
+  columns: 2,
+  footer: context [
+    #set align(center)
+    #set text(size: 9pt, fill: gray)
+    #counter(page).display("1 / 1", both: true)
+  ]
+)
+
+#set text(font: "New Computer Modern", size: 10pt, lang: "fr")
+#set par(justify: true)
+#set heading(numbering: none)
+
+// Espacement des listes et respiration entre exercices
+#set enum(spacing: 1.5em, tight: false)
+#set list(spacing: 1.5em, tight: false)
+#set block(spacing: 1.8em)
+
+// En-tête
+#align(center)[
+  #text(size: 1.5em, weight: "bold")[{{title}}]
+]
+
+#align(center)[#text(size: 0.9em, fill: gray)[{{date}}]]
+
+#v(0.3em)
+
+{{student_name}} #h(1fr) {{class}}
+
+#line(length: 100%, stroke: 0.5pt + gray)
+
+#v(0.5em)
+
+// Exercices (numéros en blanc sur carré rouge)
+{{exercises_badge}}
+$tpl$,
+  $tpl$[{"key":"title","type":"text","label":"Titre","default_value":"Feuille d'exercices"},{"key":"date","type":"date","label":"Date","default_value":""},{"key":"class","type":"text","label":"Classe","default_value":""},{"key":"student_name","type":"text","label":"Nom de l'eleve","default_value":""},{"key":"exercises","type":"dynamic","label":"Exercices","default_value":""},{"key":"total_points","type":"text","label":"Total des points","default_value":""},{"key":"duration","type":"text","label":"Duree estimee","default_value":""},{"key":"instructions","type":"text","label":"Consignes","default_value":""},{"key":"school_name","type":"text","label":"Nom de l'ecole","default_value":""},{"key":"teacher_name","type":"text","label":"Nom du professeur","default_value":""}]$tpl$::jsonb,
   NULL
 )
 ON CONFLICT (id) DO NOTHING;

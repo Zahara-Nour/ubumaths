@@ -242,6 +242,41 @@ describe('WorksheetGenerator', () => {
 			expect(result.typstContent).toContain('Jean Dupont');
 			expect(result.typstContent).toContain('Classe 3B');
 		});
+
+		it('numbers exercises with a heading by default', () => {
+			const generator = new WorksheetGenerator(createMockConfig());
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance: createMockInstance(),
+				template: mockTemplate
+			});
+
+			expect(result.typstContent).toContain('Exercice 1');
+			expect(result.typstContent).not.toContain('rgb("#dc2626")');
+		});
+
+		it('numbers exercises with a red badge when the template uses {{exercises_badge}}', () => {
+			const badgeTemplate: WorksheetTemplateRow = {
+				...mockTemplate,
+				template_content: `#set page(paper: "a4", columns: 2)
+{{title}}
+{{exercises_badge}}`
+			};
+			const generator = new WorksheetGenerator(createMockConfig());
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance: createMockInstance(),
+				template: badgeTemplate
+			});
+
+			// Number in white on a red rounded square, no "Exercice N" heading
+			expect(result.typstContent).toContain(
+				'#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]]'
+			);
+			expect(result.typstContent).toContain('Equation lineaire');
+			expect(result.typstContent).not.toContain('Exercice 1');
+			expect(result.typstContent).not.toContain('{{exercises_badge}}');
+		});
 	});
 
 	describe('numbering styles', () => {
