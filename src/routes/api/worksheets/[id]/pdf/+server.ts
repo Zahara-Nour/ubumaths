@@ -245,7 +245,9 @@ function generateSimpleInstance(
 			exercise_id: we.exercise_id,
 			title: we.exercise?.title ?? null,
 			position: we.position,
+			points: we.points,
 			section_id: we.section_id ?? null,
+			custom_instructions: we.custom_instructions ?? null,
 			parameters: {},
 			statement: content.statement_md,
 			solution: content.solution_md

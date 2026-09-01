@@ -35,6 +35,7 @@
 	import type {
 		WorksheetWithRelations,
 		InstanceData,
+		InstanceSection,
 		WorksheetExerciseWithExercise
 	} from '$lib/types/worksheets';
 	import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
@@ -152,25 +153,44 @@
 		// Sort exercises by position
 		const sortedExercises = [...exercises].sort((a, b) => a.position - b.position);
 
-		// Map to resolved exercises (using variations as source of truth)
+		// Map to resolved exercises (using variations as source of truth).
+		// Title, points, section and custom instructions must be carried over:
+		// without them the PDF shows no title, no section, and the exercise
+		// position instead of its points.
 		const resolvedExercises = sortedExercises.map((we: WorksheetExerciseWithExercise) => {
 			const content = we.exercise
 				? getExerciseContentSafe(we.exercise as Exercise)
 				: { statement_md: '', solution_md: '' };
 			return {
 				exercise_id: we.exercise_id,
+				title: we.exercise?.title ?? null,
 				position: we.position,
+				points: we.points,
+				section_id: we.section_id ?? null,
+				custom_instructions: we.custom_instructions ?? null,
 				parameters: {},
 				statement: content.statement_md,
 				solution: content.solution_md
 			};
 		});
 
+		// Sections, so the PDF groups exercises the way the worksheet does
+		const sections: InstanceSection[] = (ws.sections ?? [])
+			.slice()
+			.sort((a, b) => a.position - b.position)
+			.map((s) => ({
+				id: s.id,
+				title: s.title,
+				instructions: s.instructions,
+				position: s.position
+			}));
+
 		// Generate a deterministic seed based on student ID if provided
 		const seed = studentId ? hashString(ws.id + studentId) : Math.floor(Math.random() * 1000000);
 
 		return {
 			exercises: resolvedExercises,
+			sections: sections.length > 0 ? sections : undefined,
 			variant_info: {
 				seed,
 				version: studentId ? 'student' : 'preview'

@@ -187,6 +187,10 @@ export interface ResolvedExercise {
 	solution: string;
 	/** Optional title for the exercise */
 	title?: string | null;
+	/** Points awarded for this exercise, as set on the worksheet */
+	points?: number | null;
+	/** Teacher instructions specific to this exercise */
+	custom_instructions?: string | null;
 	/** Parsed AST for the statement (for rich rendering) */
 	statement_ast?: DocumentNode;
 	/** Parsed AST for the solution (for rich rendering) */

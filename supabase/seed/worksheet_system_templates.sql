@@ -1417,17 +1417,23 @@ VALUES (
 )
 ON CONFLICT (id) DO NOTHING;
 
--- Fiche élève — Deux colonnes, numéro d'exercice en blanc sur carré rouge (rendu identique au PDF de l'élève)
+-- Fiche élève — Deux colonnes avec filet, en-tête pleine largeur, numéro d'exercice en blanc sur carré rouge
 INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
 VALUES (
   '00000000-0000-4000-8000-000000000012',
   $tpl$Fiche élève$tpl$,
-  $tpl$Deux colonnes, numéro d'exercice en blanc sur carré rouge (rendu identique au PDF de l'élève)$tpl$,
-  $tpl$// Mise en page identique au PDF de l'élève : A4 sur deux colonnes
+  $tpl$Deux colonnes avec filet, en-tête pleine largeur, numéro d'exercice en blanc sur carré rouge$tpl$,
+  $tpl$// Mise en page proche du PDF de l'élève : A4 sur deux colonnes
 #set page(
   paper: "a4",
   margin: (x: 1cm, y: 1.5cm),
   columns: 2,
+  // Filet vertical entre les deux colonnes (hauteur = zone de texte)
+  background: place(center + horizon, line(
+    angle: 90deg,
+    length: 100% - 3cm,
+    stroke: 0.3pt + luma(75%)
+  )),
   footer: context [
     #set align(center)
     #set text(size: 9pt, fill: gray)
@@ -1444,20 +1450,23 @@ VALUES (
 #set list(spacing: 1.5em, tight: false)
 #set block(spacing: 1.8em)
 
-// En-tête
-#align(center)[
-  #text(size: 1.5em, weight: "bold")[{{title}}]
+// En-tête sur toute la largeur, au-dessus des deux colonnes.
+// Le fond blanc masque le filet vertical derrière le bandeau.
+#place(top + center, scope: "parent", float: true)[
+  #block(width: 100%, fill: white, inset: (bottom: 6pt), below: 1.2em)[
+    #align(center)[#text(size: 1.5em, weight: "bold")[{{title}}]]
+    #v(0.4em)
+    #grid(
+      columns: (1fr, auto, 1fr),
+      align: (left, center, right),
+      [{{student_name}}],
+      [#text(size: 0.9em, fill: gray)[{{date}}]],
+      [{{class}}]
+    )
+    #v(0.3em)
+    #line(length: 100%, stroke: 0.5pt + gray)
+  ]
 ]
-
-#align(center)[#text(size: 0.9em, fill: gray)[{{date}}]]
-
-#v(0.3em)
-
-{{student_name}} #h(1fr) {{class}}
-
-#line(length: 100%, stroke: 0.5pt + gray)
-
-#v(0.5em)
 
 // Exercices (numéros en blanc sur carré rouge)
 {{exercises_badge}}
