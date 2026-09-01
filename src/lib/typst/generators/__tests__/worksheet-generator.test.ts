@@ -314,6 +314,71 @@ describe('WorksheetGenerator', () => {
 		});
 	});
 
+	describe('exercise metadata', () => {
+		it('shows the points set on the exercise, not its position', () => {
+			const generator = new WorksheetGenerator(createMockConfig());
+			const instance = createMockInstance();
+			// 1st exercise (position 1) worth 5 points, 2nd (position 2) worth 1
+			instance.exercises[0].points = 5;
+			instance.exercises[1].points = 1;
+
+			const result = generator.generate({ worksheet: createMockWorksheet(), instance });
+
+			expect(result.typstContent).toContain('points-badge(5)');
+			expect(result.typstContent).toContain('points-badge(1)');
+			expect(result.typstContent).not.toContain('points-badge(2)');
+		});
+
+		it('omits the points badge when the exercise has none', () => {
+			const generator = new WorksheetGenerator(createMockConfig());
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance: createMockInstance()
+			});
+
+			// (the `#let points-badge(pts)` definition always sits in the setup)
+			expect(result.typstContent).not.toMatch(/^\s+points-badge\(/m);
+		});
+
+		it('renders the custom instructions of an exercise', () => {
+			const generator = new WorksheetGenerator(createMockConfig());
+			const instance = createMockInstance();
+			instance.exercises[0].custom_instructions = 'Detailler les etapes.';
+
+			const result = generator.generate({ worksheet: createMockWorksheet(), instance });
+
+			expect(result.typstContent).toContain('Detailler les etapes.');
+		});
+
+		it('groups exercises under their section titles', () => {
+			const generator = new WorksheetGenerator(createMockConfig());
+			const instance = createMockInstance();
+			instance.sections = [
+				{ id: 's1', title: 'Calculs', instructions: 'Sans calculatrice.', position: 1 }
+			];
+			instance.exercises[0].section_id = 's1';
+			instance.exercises[1].section_id = 's1';
+
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance,
+				template: {
+					id: 't',
+					name: 'T',
+					description: null,
+					template_content: '{{exercises}}',
+					placeholders: [],
+					created_by: 'teacher-id',
+					created_at: '2024-01-01',
+					updated_at: '2024-01-01'
+				}
+			});
+
+			expect(result.typstContent).toContain('Calculs');
+			expect(result.typstContent).toContain('Sans calculatrice.');
+		});
+	});
+
 	describe('exercise header is never orphaned', () => {
 		const mockTemplate: WorksheetTemplateRow = {
 			id: 'template-1',

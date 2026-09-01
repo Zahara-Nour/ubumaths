@@ -552,14 +552,19 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		content += `    [#text(size: 1.1em, weight: "bold")[Exercice ${number}${titleSuffix}]],\n`;
 		content += '    [],\n';
 
-		if (config.show_points && exercise.position) {
-			// Using position as points for now (should be exercise.points when available)
-			content += `    points-badge(${exercise.position})\n`;
+		if (config.show_points && exercise.points) {
+			content += `    points-badge(${exercise.points})\n`;
 		} else {
 			content += '    []\n';
 		}
 
 		content += '  )\n';
+
+		if (exercise.custom_instructions) {
+			content += '  #v(0.2em)\n';
+			content += `  #text(style: "italic", fill: rgb(90, 90, 90))[${escapeTypst(exercise.custom_instructions)}]\n`;
+		}
+
 		content += ']\n';
 		content += '#exercise-box[\n';
 
@@ -745,8 +750,12 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
   #text(size: 1.1em, weight: "bold")[Exercice ${number}${titleSuffix}]`;
 		}
 
-		if (config.show_points && exercise.position) {
-			content += ` #h(1fr) #box(fill: rgb("#dcdcdc"), inset: (x: 6pt, y: 3pt), radius: 3pt)[${exercise.position} pts]`;
+		if (config.show_points && exercise.points) {
+			content += ` #h(1fr) #box(fill: rgb("#dcdcdc"), inset: (x: 6pt, y: 3pt), radius: 3pt)[${exercise.points} ${exercise.points > 1 ? 'pts' : 'pt'}]`;
+		}
+
+		if (exercise.custom_instructions) {
+			content += `\n\n  #text(style: "italic", fill: gray)[${escapeTypst(exercise.custom_instructions)}]`;
 		}
 
 		// Close the header block and open the statement one (breakable: a long
