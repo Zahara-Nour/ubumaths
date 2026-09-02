@@ -42,8 +42,8 @@
 		western: {
 			label: 'Occidental (Lun-Ven)',
 			config: {
-				first_day: 0,
-				last_day: 6,
+				first_day: 1, // Monday
+				last_day: 0, // Sunday (wraps around)
 				school_days: [1, 2, 3, 4, 5],
 				weekend_days: [0, 6]
 			} satisfies WeekConfig
@@ -51,8 +51,8 @@
 		israeli: {
 			label: 'Israélien (Dim-Jeu)',
 			config: {
-				first_day: 0,
-				last_day: 6,
+				first_day: 0, // Sunday
+				last_day: 6, // Saturday
 				school_days: [0, 1, 2, 3, 4],
 				weekend_days: [5, 6]
 			} satisfies WeekConfig
@@ -60,8 +60,8 @@
 		middle_east: {
 			label: 'Moyen-Orient (Sam-Mer)',
 			config: {
-				first_day: 0,
-				last_day: 6,
+				first_day: 6, // Saturday
+				last_day: 5, // Friday (wraps around)
 				school_days: [6, 0, 1, 2, 3],
 				weekend_days: [4, 5]
 			} satisfies WeekConfig
