@@ -243,6 +243,65 @@ describe('WorksheetGenerator', () => {
 			expect(result.typstContent).toContain('Classe 3B');
 		});
 
+		it('honours display options in template mode', () => {
+			const conditionalTemplate: WorksheetTemplateRow = {
+				...mockTemplate,
+				template_content: `#set page(paper: "a4")
+[{{#if show_title}}*Titre :* {{title}}{{/if}}]
+[{{#if show_date}}*Date :* {{date}}{{/if}}]
+[{{#if show_class}}*Classe :* {{class}}{{/if}}]
+[{{#if show_student_name}}*Nom :* {{student_name}}{{/if}}]
+[{{#if show_points}}*Bareme :* {{total_points}}{{/if}}]
+{{exercises}}`
+			};
+			const generator = new WorksheetGenerator(
+				createMockConfig({
+					show_date: false,
+					show_class: false,
+					show_student_name: false,
+					show_points: false
+				}),
+				undefined,
+				{ studentName: 'Jean Dupont', className: 'Classe 3B' }
+			);
+
+			const result = generator.generate({
+				worksheet: createMockWorksheet({ title: 'My Title' }),
+				instance: createMockInstance(),
+				template: conditionalTemplate
+			});
+
+			// The labels have to go with the values, not just the values.
+			expect(result.typstContent).not.toContain('Date :');
+			expect(result.typstContent).not.toContain('Classe :');
+			expect(result.typstContent).not.toContain('Classe 3B');
+			expect(result.typstContent).not.toContain('Nom :');
+			expect(result.typstContent).not.toContain('Jean Dupont');
+			expect(result.typstContent).not.toContain('Bareme :');
+			// The option left on still renders.
+			expect(result.typstContent).toContain('*Titre :* My Title');
+		});
+
+		it('shows every field in template mode when no display option is set', () => {
+			const conditionalTemplate: WorksheetTemplateRow = {
+				...mockTemplate,
+				template_content: `[{{#if show_date}}*Date :* {{date}}{{/if}}]
+[{{#if show_class}}*Classe :* {{class}}{{/if}}]
+{{exercises}}`
+			};
+			// An empty config: flags are opt-out, an absent one means "show".
+			const generator = new WorksheetGenerator({}, undefined, { className: 'Classe 3B' });
+
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance: createMockInstance(),
+				template: conditionalTemplate
+			});
+
+			expect(result.typstContent).toContain('Date :');
+			expect(result.typstContent).toContain('*Classe :* Classe 3B');
+		});
+
 		it('numbers exercises with a heading by default', () => {
 			const generator = new WorksheetGenerator(createMockConfig());
 			const result = generator.generate({
