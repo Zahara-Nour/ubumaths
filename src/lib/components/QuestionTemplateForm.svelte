@@ -29,6 +29,7 @@
 		QuestionCorrection,
 		QuestionType,
 		QuestionVariable,
+		TemplateBlank,
 		GradeLevel,
 		RequiredForm,
 		BlankDefaults,
@@ -542,20 +543,26 @@
 		if (duplicateSourceIndex < 0 || duplicateSourceIndex >= variations.length) return;
 		if (currentVariationIndex < 0 || currentVariationIndex >= variations.length) return;
 
-		// Deep copy the source variation
+		// Deep copy the source variation. `variations` is $state, so its entries are
+		// state proxies: structuredClone throws DataCloneError on those, while
+		// $state.snapshot deep-copies proxies and plain values alike.
 		const sourceVariation = variations[duplicateSourceIndex];
 		const duplicatedVariation: QuestionVariation = {
 			// statement is now a branded string (TemplateMarkdown), so no deep copy needed
 			statement: templateMarkdown(sourceVariation.statement ?? ''),
-			variables: structuredClone(sourceVariation.variables || []),
+			variables: $state.snapshot(sourceVariation.variables ?? []) as QuestionVariable[],
 			correctChoiceIndex: sourceVariation.correctChoiceIndex,
 			// correction is set from variationExtras when building template
 			correction: undefined,
-			blanks: sourceVariation.blanks ? structuredClone(sourceVariation.blanks) : [],
-			choices: sourceVariation.choices ? structuredClone(sourceVariation.choices) : [],
+			blanks: sourceVariation.blanks
+				? ($state.snapshot(sourceVariation.blanks) as TemplateBlank[])
+				: [],
+			choices: sourceVariation.choices ? $state.snapshot(sourceVariation.choices) : [],
 			blankDefaults: {
 				precision: { type: 'none' as const },
-				...(sourceVariation.blankDefaults ? structuredClone(sourceVariation.blankDefaults) : {})
+				...(sourceVariation.blankDefaults
+					? ($state.snapshot(sourceVariation.blankDefaults) as BlankDefaults)
+					: {})
 			}
 		};
 

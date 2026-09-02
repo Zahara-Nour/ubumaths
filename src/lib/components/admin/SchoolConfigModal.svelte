@@ -45,11 +45,23 @@
 	let weekConfig = $state<WeekConfig>(structuredClone(DEFAULT_WEEK_CONFIG));
 	let isSaving = $state(false);
 
+	/**
+	 * Deep copy of the school's week config, falling back to the defaults.
+	 *
+	 * `school` comes from a `$state` variable on the schools page, so its nested
+	 * objects are state proxies and `structuredClone` throws a DataCloneError on
+	 * them. `$state.snapshot` deep-clones proxies and plain objects alike, so the
+	 * form never aliases either the school object or DEFAULT_WEEK_CONFIG.
+	 */
+	function cloneSchoolWeekConfig(): WeekConfig {
+		return $state.snapshot(school.timetable?.week_config ?? DEFAULT_WEEK_CONFIG) as WeekConfig;
+	}
+
 	// Initialize form when school changes or modal opens
 	$effect(() => {
 		if (open && school) {
 			timezone = school.timezone || DEFAULT_TIMEZONE;
-			weekConfig = structuredClone(school.timetable?.week_config || DEFAULT_WEEK_CONFIG);
+			weekConfig = cloneSchoolWeekConfig();
 		}
 	});
 
@@ -100,7 +112,7 @@
 		// Reset form to original values
 		if (school) {
 			timezone = school.timezone || DEFAULT_TIMEZONE;
-			weekConfig = structuredClone(school.timetable?.week_config || DEFAULT_WEEK_CONFIG);
+			weekConfig = cloneSchoolWeekConfig();
 		}
 		open = false;
 	}
