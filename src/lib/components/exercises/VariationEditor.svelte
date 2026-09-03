@@ -8,6 +8,7 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import ExerciseRichTextEditor from './ExerciseRichTextEditor.svelte';
 	import HintEditor from './HintEditor.svelte';
+	import HintTranslationEditor from './HintTranslationEditor.svelte';
 	import type { ExerciseVariation, GuidanceLabel, ExerciseHint } from '$lib/exercises/types';
 	import type { ContentLocale } from '$lib/types/locale';
 	import {
@@ -422,12 +423,21 @@
 			</Collapsible.Trigger>
 			<Collapsible.Content>
 				<Card.Content>
-					<HintEditor
-						bind:hints={variation.hints as ExerciseHint[]}
-						statementMd={variation.statement_md}
-						solutionMd={variation.solution_md}
-						onchange={handleHintsChange}
-					/>
+					{@render localeTabs()}
+					{#if isTranslating}
+						<HintTranslationEditor
+							hints={variation.hints ?? []}
+							bind:translations={variation.translations}
+							onchange={handleHintsChange}
+						/>
+					{:else}
+						<HintEditor
+							bind:hints={variation.hints as ExerciseHint[]}
+							statementMd={variation.statement_md}
+							solutionMd={variation.solution_md}
+							onchange={handleHintsChange}
+						/>
+					{/if}
 				</Card.Content>
 			</Collapsible.Content>
 		</Card.Root>

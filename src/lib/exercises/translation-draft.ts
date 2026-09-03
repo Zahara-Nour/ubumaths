@@ -11,7 +11,7 @@
  * Kept out of the Svelte component so the rule can be tested without a browser.
  */
 
-import type { ExerciseTranslations, TranslatedExerciseContent } from './types';
+import type { ExerciseTranslations, TranslatedExerciseContent, TranslatedHint } from './types';
 
 /** Fields the variation editor can translate today. */
 export type TranslatableField = Extract<
@@ -64,4 +64,62 @@ export function translatedField(
  */
 export function hasEnglishStatement(translations: ExerciseTranslations | undefined): boolean {
 	return Boolean(translations?.en?.statement_md?.trim());
+}
+
+/** Fields of a hint that carry text, and can therefore be translated. */
+export type TranslatableHintField = keyof TranslatedHint;
+
+/**
+ * Translations with one field of one hint set, or removed when blank.
+ *
+ * Hints are keyed by id rather than mirrored as a list precisely so that a
+ * translation can never touch `id`, `type` or `url` — the three fields the
+ * `{{hint:id}}` references in the statement depend on. Pruning cascades from
+ * the field up to the whole map, so a hint typed then cleared leaves nothing
+ * behind, exactly like a cleared statement.
+ */
+export function withTranslatedHint(
+	translations: ExerciseTranslations | undefined,
+	hintId: string,
+	field: TranslatableHintField,
+	value: string
+): ExerciseTranslations | undefined {
+	const hints = { ...translations?.en?.hints };
+	const hint: TranslatedHint = { ...hints[hintId] };
+
+	if (value.trim()) {
+		hint[field] = value;
+	} else {
+		delete hint[field];
+	}
+
+	if (Object.keys(hint).length > 0) {
+		hints[hintId] = hint;
+	} else {
+		delete hints[hintId];
+	}
+
+	const en: TranslatedExerciseContent = { ...translations?.en };
+	if (Object.keys(hints).length > 0) {
+		en.hints = hints;
+	} else {
+		delete en.hints;
+	}
+
+	if (Object.keys(en).length === 0) {
+		const rest = { ...translations };
+		delete rest.en;
+		return Object.keys(rest).length === 0 ? undefined : rest;
+	}
+
+	return { ...translations, en };
+}
+
+/** Translated text of one hint field, or an empty string when it has none. */
+export function translatedHintField(
+	translations: ExerciseTranslations | undefined,
+	hintId: string,
+	field: TranslatableHintField
+): string {
+	return translations?.en?.hints?.[hintId]?.[field] ?? '';
 }
