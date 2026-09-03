@@ -70,6 +70,7 @@
 	let editingDescription = $state(false);
 	let editingType = $state(false);
 	let editingTemplate = $state(false);
+	let editingLanguage = $state(false);
 	let editingDuration = $state(false);
 	let editingGrades = $state(false);
 	let editingTags = $state(false);
@@ -141,6 +142,9 @@
 			case 'template':
 				if (templates.length > 0) editingTemplate = true;
 				break;
+			case 'language':
+				editingLanguage = true;
+				break;
 			case 'duration':
 				editingDuration = true;
 				break;
@@ -168,6 +172,9 @@
 					break;
 				case 'duration':
 					editingDuration = false;
+					break;
+				case 'language':
+					editingLanguage = false;
 					break;
 			}
 		}
@@ -326,8 +333,8 @@
 
 			<Separator />
 
-			<!-- Type, Template, Duration - compact row -->
-			<div class="grid grid-cols-3 gap-4">
+			<!-- Type, Template, Langue, Duration - compact row -->
+			<div class="grid grid-cols-4 gap-4">
 				<!-- Type -->
 				<div>
 					<p class="text-xs text-muted-foreground">Type</p>
@@ -374,6 +381,35 @@
 							onchange={(v) => onFieldChange?.('template_id', v || null)}
 							items={templateOptions}
 							placeholder="Template"
+						/>
+					{/if}
+				</div>
+
+				<!--
+					Langue : volontairement ici, à côté du type et du template, et non
+					dans « Options d'affichage ». Ce n'est pas un réglage d'affichage :
+					elle change le contenu même de la fiche. Visible sans clic.
+				-->
+				<div>
+					<p class="text-xs text-muted-foreground">Langue</p>
+					{#if !editingLanguage}
+						<button
+							type="button"
+							class="text-left text-sm font-medium {isEditable
+								? 'cursor-pointer hover:text-primary'
+								: 'cursor-default'}"
+							onclick={() => startEdit('language')}
+							disabled={!isEditable}
+						>
+							{worksheetLocale(worksheet.config) === 'en' ? 'English' : 'Français'}
+						</button>
+					{:else}
+						<MySelect
+							type="single"
+							value={worksheetLocale(worksheet.config)}
+							onchange={(v) => handleConfigChange('language', v)}
+							items={languageOptions}
+							placeholder="Langue"
 						/>
 					{/if}
 				</div>
@@ -527,12 +563,6 @@
 
 						<!-- Mise en page - inline compact -->
 						<div class="flex flex-wrap gap-x-4 gap-y-1 text-xs">
-							{#if worksheet.config?.language === 'en'}
-								<span>
-									<span class="text-muted-foreground">Langue:</span>
-									<span class="font-medium">English</span>
-								</span>
-							{/if}
 							<span>
 								<span class="text-muted-foreground">Num:</span>
 								<span class="font-medium">{worksheet.config?.numbering_style ?? '1,2,3'}</span>
@@ -617,15 +647,6 @@
 								onchange={(v: string) => handleConfigChange('page_layout', v)}
 								items={layoutOptions}
 								placeholder="Format"
-							/>
-						</div>
-						<div>
-							<p class="mb-1 text-xs text-muted-foreground">Langue</p>
-							<MySelect
-								value={worksheet.config?.language ?? 'fr'}
-								onchange={(v: string) => handleConfigChange('language', v)}
-								items={languageOptions}
-								placeholder="Langue"
 							/>
 						</div>
 						<MyCheckbox
