@@ -18,6 +18,8 @@ import type {
 } from '$lib/types/worksheets';
 import type { Exercise } from '$lib/exercises/types';
 import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
+import { worksheetLocale } from '$lib/types/worksheets';
+import type { ContentLocale } from '$lib/types/locale';
 
 /**
  * Parameters for generating a worksheet instance
@@ -191,6 +193,7 @@ function resolveExercise(
 	exercise: WorksheetExerciseWithExercise,
 	position: number,
 	seed: number,
+	locale: ContentLocale,
 	variantConfig?: VariantConfig
 ): ResolvedExercise {
 	if (!exercise.exercise) {
@@ -215,7 +218,8 @@ function resolveExercise(
 	const result = generateExerciseInstance(template, {
 		seed: seed + position,
 		parseAST: true,
-		variationIndex: exercise.variation_index ?? undefined
+		variationIndex: exercise.variation_index ?? undefined,
+		locale
 	});
 
 	if (!result.success) {
@@ -257,6 +261,10 @@ function resolveExercise(
 export function generateWorksheetInstance(params: GenerateInstanceParams): InstanceData {
 	const { worksheetId, studentId, exercises, config } = params;
 
+	// Language of the sheet: the exercise content must follow it, otherwise the
+	// chrome comes out in English over French statements.
+	const locale = worksheetLocale(config);
+
 	// Group exercises by section (null section = no section)
 	const exercisesBySection = new Map<string | null, WorksheetExerciseWithExercise[]>();
 	for (const exercise of exercises) {
@@ -297,7 +305,13 @@ export function generateWorksheetInstance(params: GenerateInstanceParams): Insta
 				exercise.variant_config
 			);
 
-			const resolved = resolveExercise(exercise, globalPosition, seed, exercise.variant_config);
+			const resolved = resolveExercise(
+				exercise,
+				globalPosition,
+				seed,
+				locale,
+				exercise.variant_config
+			);
 
 			resolvedExercises.push(resolved);
 			globalPosition++;
@@ -363,13 +377,16 @@ export function generatePreviewInstance(
 	// Use provided student ID or generate a preview ID
 	const studentId = params.studentId || `preview-${Date.now()}`;
 
+	// Same rule as the full generator: the preview follows the sheet's language.
+	const locale = worksheetLocale(config);
+
 	// If a specific seed is provided, override the generation
 	if (variantSeed !== undefined) {
 		const resolvedExercises: ResolvedExercise[] = [];
 
 		for (let i = 0; i < exercises.length; i++) {
 			const exercise = exercises[i];
-			const resolved = resolveExercise(exercise, i, variantSeed, exercise.variant_config);
+			const resolved = resolveExercise(exercise, i, variantSeed, locale, exercise.variant_config);
 			resolvedExercises.push(resolved);
 		}
 

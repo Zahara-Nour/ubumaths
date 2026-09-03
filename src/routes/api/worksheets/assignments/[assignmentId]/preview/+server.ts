@@ -43,6 +43,13 @@ import { getCorrectionVisibilityMap } from '$lib/server/worksheets/correction-vi
 import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
 import type { Exercise, ExerciseResource, ExerciseHint } from '$lib/exercises/types';
 import { getExerciseContentSafe } from '$lib/exercises/types';
+import {
+	localizedText,
+	worksheetLocale,
+	type RowTranslations,
+	type WorksheetConfig
+} from '$lib/types/worksheets';
+import type { ContentLocale } from '$lib/types/locale';
 import type { Variable } from '$lib/ubumark';
 import type { ExerciseVariation, SharedExerciseDefaults } from '$lib/exercises/types';
 import type {
@@ -122,7 +129,8 @@ interface ResolvedExerciseResult {
 
 function resolveExercise(
 	worksheetExercise: WorksheetExerciseData,
-	seed: number
+	seed: number,
+	locale: ContentLocale
 ): ResolvedExerciseResult {
 	const exercise = worksheetExercise.exercise;
 
@@ -142,14 +150,15 @@ function resolveExercise(
 	const result = generateExerciseInstance(template, {
 		seed: seed + worksheetExercise.position,
 		parseAST: false,
-		variationIndex: worksheetExercise.variation_index ?? undefined
+		variationIndex: worksheetExercise.variation_index ?? undefined,
+		locale
 	});
 
 	if (!result.success) {
 		const errorMessage = result.errors?.join(', ') ?? 'Unknown error';
 		console.error(`[Preview API] Failed to resolve exercise ${exercise.id}: ${errorMessage}`);
 		// Fallback: use content from variations (single source of truth)
-		const content = getExerciseContentSafe(template);
+		const content = getExerciseContentSafe(template, 0, locale);
 		return {
 			statement: content.statement_md,
 			correction: content.solution_md
@@ -159,7 +168,7 @@ function resolveExercise(
 	const instance = result.instance;
 	if (!instance) {
 		// Fallback: use content from variations (single source of truth)
-		const content = getExerciseContentSafe(template);
+		const content = getExerciseContentSafe(template, 0, locale);
 		return {
 			statement: content.statement_md,
 			correction: content.solution_md
@@ -324,7 +333,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 					title,
 					description,
 					type,
-					config
+					config,
+					translations
 				),
 				classes (
 					name
@@ -348,6 +358,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				description: string | null;
 				type: string;
 				config: Record<string, unknown>;
+				translations: RowTranslations | null;
 			}
 		);
 		const classData = getFirstOrSelf(fullAssignment.classes as unknown as { name: string } | null);
@@ -361,6 +372,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				position,
 				points,
 				custom_instructions,
+				translations,
 				correction_visible,
 				variation_index,
 				section_id,
@@ -388,7 +400,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// Fetch worksheet sections
 		const { data: sections, error: sectionsError } = await locals.supabase
 			.from('worksheet_sections')
-			.select('id, title, instructions, position')
+			.select('id, title, instructions, translations, position')
 			.eq('worksheet_id', worksheet.id)
 			.order('position', { ascending: true });
 
@@ -401,6 +413,9 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		const isTeacherMode = !studentId;
 		const seedId = studentId || 'teacher-preview';
 		const seed = generateSeed(worksheet.id, seedId);
+
+		// Language of the whole sheet: exercise content and PDF chrome alike.
+		const locale = worksheetLocale(worksheet.config as WorksheetConfig);
 
 		// Get correction visibility map (for student mode)
 		const exerciseIds = (worksheetExercises ?? []).map((we) => we.id);
@@ -423,7 +438,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 					...we,
 					exercise: exerciseData
 				},
-				seed
+				seed,
+				locale
 			);
 
 			// In teacher mode, always show corrections
@@ -436,7 +452,12 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				title: exerciseData.title,
 				position: we.position,
 				points: we.points,
-				custom_instructions: we.custom_instructions,
+				custom_instructions: localizedText(
+					we.custom_instructions,
+					we.translations,
+					'custom_instructions',
+					locale
+				),
 				statement: resolved.statement,
 				correction: correctionVisible ? resolved.correction : null,
 				correction_visible: correctionVisible,
@@ -462,8 +483,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// Build sections array for response
 		const sectionViews: StudentSectionView[] = (sections ?? []).map((s) => ({
 			id: s.id,
-			title: s.title,
-			instructions: s.instructions,
+			title: localizedText(s.title, s.translations, 'title', locale) ?? s.title,
+			instructions: localizedText(s.instructions, s.translations, 'instructions', locale),
 			position: s.position
 		}));
 
@@ -475,7 +496,10 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		} = {
 			assignment_id: fullAssignment.id,
 			worksheet_id: worksheet.id,
-			title: worksheet.title,
+			title:
+				localizedText(worksheet.title, worksheet.translations, 'title', locale) ?? worksheet.title,
+			// Drives both the exercise content and the chrome of the student PDF.
+			language: locale,
 			description: worksheet.description,
 			type: worksheet.type as WorksheetType,
 			instructions: fullAssignment.instructions,

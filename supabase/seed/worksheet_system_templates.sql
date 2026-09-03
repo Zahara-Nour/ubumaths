@@ -6,9 +6,10 @@
 -- migrations étant schéma-seul, ils manquaient en local : toute feuille créée
 -- avec un template intégré violait alors la FK worksheets.template_id.
 --
--- Les libellés gardés par les options d'affichage (date, classe, nom, titre,
--- barème) sont encadrés par des conditionnels {{#if show_x}}...{{/if}} que
--- renderTemplate() résout à la génération.
+-- Les libellés gardés par les options d'affichage sont encadrés par des
+-- conditionnels {{#if show_x}}...{{/if}}, et le vocabulaire de l'habillage passe
+-- par des placeholders {{label_*}} suivant la langue de la fiche — le tout
+-- résolu par renderTemplate() à la génération.
 --
 -- Source de vérité : src/lib/typst/templates/default-templates.ts
 -- (regénérer ce fichier si la liste change). AUCUNE donnée personnelle.
@@ -26,7 +27,7 @@ VALUES (
   margin: (top: 2cm, bottom: 2cm, left: 1.5cm, right: 1.5cm)
 )
 
-#set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set text(font: "New Computer Modern", size: 11pt, lang: "{{lang}}")
 #set enum(spacing: 1.5em)
 #set list(spacing: 1.5em)
 
@@ -42,10 +43,10 @@ VALUES (
   columns: (1fr, 1fr),
   gutter: 1cm,
   [
-    {{#if show_student_name}}*Nom :* #underline[#h(3cm) {{student_name}} #h(3cm)]{{/if}}
+    {{#if show_student_name}}*{{label_name}} :* #underline[#h(3cm) {{student_name}} #h(3cm)]{{/if}}
   ],
   [
-    {{#if show_class}}*Classe :* {{class}}{{/if}}
+    {{#if show_class}}*{{label_class}} :* {{class}}{{/if}}
   ]
 )
 
@@ -53,9 +54,9 @@ VALUES (
   columns: (1fr, 1fr),
   gutter: 1cm,
   [
-    {{#if show_date}}*Date :* {{date}}{{/if}}
+    {{#if show_date}}*{{label_date}} :* {{date}}{{/if}}
   ],
-  [{{#if show_points}}*Total :* {{total_points}} points{{/if}}]
+  [{{#if show_points}}*{{label_total}} :* {{total_points}} {{label_points}}{{/if}}]
 )
 
 #v(0.5cm)
@@ -69,7 +70,7 @@ VALUES (
   radius: 4pt,
   width: 100%
 )[
-  *Consignes :* {{instructions}}
+  *{{label_guidelines}} :* {{instructions}}
 ]
 #v(0.5cm)
 
@@ -97,7 +98,7 @@ VALUES (
   margin: (top: 2cm, bottom: 2cm, left: 1.5cm, right: 1.5cm)
 )
 
-#set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set text(font: "New Computer Modern", size: 11pt, lang: "{{lang}}")
 #set enum(spacing: 1.5em)
 #set list(spacing: 1.5em)
 
@@ -113,7 +114,7 @@ VALUES (
     [
       #text(size: 10pt)[{{school_name}}]
       #v(0.3cm)
-      #text(size: 16pt, weight: "bold")[EVALUATION]
+      #text(size: 16pt, weight: "bold")[{{label_assessment}}]
       #v(0.2cm)
       {{#if show_title}}#text(size: 14pt)[{{title}}]{{/if}}
     ],
@@ -126,7 +127,7 @@ VALUES (
           stroke: 1pt
         )[
           #align(center)[
-            *Note*
+            *{{label_grade}}*
             #v(0.5cm)
             {{#if show_points}}#text(size: 14pt)[\/ {{total_points}}]{{/if}}
           ]
@@ -142,16 +143,16 @@ VALUES (
 #grid(
   columns: (1fr, 1fr, 1fr),
   gutter: 0.5cm,
-  [{{#if show_student_name}}*Nom :* #underline[#h(2cm) {{student_name}} #h(2cm)]{{/if}}],
-  [{{#if show_class}}*Classe :* {{class}}{{/if}}],
-  [{{#if show_date}}*Date :* {{date}}{{/if}}]
+  [{{#if show_student_name}}*{{label_name}} :* #underline[#h(2cm) {{student_name}} #h(2cm)]{{/if}}],
+  [{{#if show_class}}*{{label_class}} :* {{class}}{{/if}}],
+  [{{#if show_date}}*{{label_date}} :* {{date}}{{/if}}]
 )
 
 #v(0.3cm)
 
 // Duree
 #align(right)[
-  #text(style: "italic")[Duree : {{duration}} minutes]
+  #text(style: "italic")[{{label_duration}} : {{duration}} {{label_minutes}}]
 ]
 
 #v(0.5cm)
@@ -165,10 +166,10 @@ VALUES (
   radius: 4pt,
   width: 100%
 )[
-  *Consignes :*
-  - Lisez attentivement chaque exercice avant de repondre.
-  - Justifiez vos reponses sauf indication contraire.
-  - La presentation et la redaction sont prises en compte.
+  *{{label_guidelines}} :*
+  - {{label_read_each_exercise}}
+  - {{label_justify_answers}}
+  - {{label_presentation_counts}}
   #v(0.2cm)
   {{instructions}}
 ]
@@ -183,7 +184,7 @@ VALUES (
 #line(length: 100%, stroke: 0.5pt)
 #align(center)[
   #text(size: 9pt, style: "italic")[
-    Bareme indicatif - La note finale peut tenir compte de la qualite de la redaction
+    {{label_indicative_marks}}
   ]
 ]
 ',
@@ -210,7 +211,7 @@ VALUES (
     #grid(
       columns: (1fr, auto, 1fr),
       [{{school_name}}],
-      [#text(weight: "bold")[EXAMEN]],
+      [#text(weight: "bold")[{{label_exam}}]],
       [{{#if show_date}}#align(right)[{{date}}]{{/if}}]
     )
     #line(length: 100%, stroke: 0.5pt)
@@ -221,7 +222,7 @@ VALUES (
   ]
 )
 
-#set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set text(font: "New Computer Modern", size: 11pt, lang: "{{lang}}")
 #set enum(spacing: 1.5em)
 #set list(spacing: 1.5em)
 
@@ -241,8 +242,8 @@ VALUES (
       #v(0.3cm)
       #grid(
         columns: (1fr, 1fr),
-        [*Duree :* {{duration}} min],
-        [*Coefficient :* {{coefficient}}]
+        [*{{label_duration}} :* {{duration}} min],
+        [*{{label_coefficient}} :* {{coefficient}}]
       )
     ]
   ]
@@ -260,14 +261,14 @@ VALUES (
     columns: (1fr, 1fr),
     gutter: 1cm,
     [
-      *Nom :* #underline[#h(4cm)]
+      *{{label_name}} :* #underline[#h(4cm)]
       #v(0.3cm)
-      *Prenom :* #underline[#h(4cm)]
+      *{{label_first_name}} :* #underline[#h(4cm)]
     ],
     [
-      {{#if show_class}}*Classe :* {{class}}
+      {{#if show_class}}*{{label_class}} :* {{class}}
       #v(0.3cm){{/if}}
-      *N° candidat :* #underline[#h(3cm)]
+      *{{label_candidate_number}} :* #underline[#h(3cm)]
     ]
   )
 ]
@@ -281,16 +282,16 @@ VALUES (
   fill: rgb("#f8f9fa"),
   stroke: 1pt
 )[
-  #text(weight: "bold", size: 12pt)[INSTRUCTIONS]
+  #text(weight: "bold", size: 12pt)[{{label_instructions}}]
   #v(0.3cm)
-  - L''usage de la calculatrice est autorise sauf mention contraire.
-  - Aucun document n''est autorise.
-  - Les reponses doivent etre redigees sur la copie d''examen.
-  - Les exercices peuvent etre traites dans n''importe quel ordre.
+  - {{label_calculator_unless_stated}}
+  - {{label_no_documents}}
+  - {{label_answers_on_paper}}
+  - {{label_any_order}}
   #v(0.2cm)
   {{instructions}}
   #v(0.3cm)
-  {{#if show_points}}*Total des points :* {{total_points}}{{/if}}
+  {{#if show_points}}*{{label_total_points}} :* {{total_points}}{{/if}}
 ]
 
 #v(0.5cm)
@@ -301,14 +302,13 @@ VALUES (
   stroke: (left: 3pt + rgb("#6c757d"))
 )[
   #text(size: 10pt, style: "italic")[
-    Je soussigne(e) atteste sur l''honneur avoir pris connaissance du reglement
-    de l''examen et m''engage a le respecter.
+    {{label_honour_statement}}
   ]
   #v(0.3cm)
   #grid(
     columns: (1fr, 1fr),
-    [Date : #underline[#h(3cm)]],
-    [Signature : #underline[#h(4cm)]]
+    [{{label_date}} : #underline[#h(3cm)]],
+    [{{label_signature}} : #underline[#h(4cm)]]
   )
 ]
 
@@ -340,7 +340,7 @@ VALUES (
   margin: (top: 2cm, bottom: 2cm, left: 1.5cm, right: 1.5cm)
 )
 
-#set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set text(font: "New Computer Modern", size: 11pt, lang: "{{lang}}")
 #set enum(spacing: 1.5em)
 #set list(spacing: 1.5em)
 
@@ -350,7 +350,7 @@ VALUES (
   [
     #text(size: 10pt)[{{school_name}}]
     #v(0.2cm)
-    #text(size: 16pt, weight: "bold")[DEVOIRS]
+    #text(size: 16pt, weight: "bold")[{{label_homework}}]
   ],
   [
     #align(right)[
@@ -373,7 +373,7 @@ VALUES (
   columns: (1fr, 1fr),
   gutter: 1cm,
   [
-    {{#if show_date}}#text(weight: "bold")[Date de distribution :] {{date}}{{/if}}
+    {{#if show_date}}#text(weight: "bold")[{{label_handed_out}} :] {{date}}{{/if}}
   ],
   [
     #rect(
@@ -381,7 +381,7 @@ VALUES (
       inset: 5pt,
       radius: 3pt
     )[
-      #text(weight: "bold")[A rendre pour le :] {{due_date}}
+      #text(weight: "bold")[{{label_due_date}} :] {{due_date}}
     ]
   ]
 )
@@ -389,7 +389,7 @@ VALUES (
 #v(0.3cm)
 
 // Nom de l''eleve
-{{#if show_student_name}}*Nom :* #underline[#h(4cm) {{student_name}} #h(4cm)]{{/if}}
+{{#if show_student_name}}*{{label_name}} :* #underline[#h(4cm) {{student_name}} #h(4cm)]{{/if}}
 
 #v(0.5cm)
 #line(length: 100%, stroke: 0.5pt)
@@ -402,7 +402,7 @@ VALUES (
   radius: 4pt,
   width: 100%
 )[
-  *Consignes :* {{instructions}}
+  *{{label_guidelines}} :* {{instructions}}
 ]
 #v(0.5cm)
 
@@ -412,8 +412,8 @@ VALUES (
   stroke: (left: 3pt + rgb("#17a2b8"))
 )[
   #text(size: 10pt, style: "italic")[
-    Rappel : Le travail doit etre soigne et les reponses justifiees.
-    N''hesitez pas a poser des questions en classe si necessaire.
+    {{label_neat_work_reminder}}
+    {{label_ask_questions}}
   ]
 ]
 
@@ -451,7 +451,7 @@ VALUES (
   margin: (top: 1.5cm, bottom: 1.5cm, left: 1.5cm, right: 1.5cm)
 )
 
-#set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set text(font: "New Computer Modern", size: 11pt, lang: "{{lang}}")
 #set enum(spacing: 1.5em)
 #set list(spacing: 1.5em)
 
@@ -466,20 +466,20 @@ VALUES (
     columns: (auto, 1fr, auto),
     gutter: 1cm,
     [
-      #text(size: 14pt, weight: "bold")[QUIZ]
+      #text(size: 14pt, weight: "bold")[{{label_quiz}}]
       #v(0.1cm)
       {{#if show_title}}#text(size: 12pt)[{{title}}]{{/if}}
     ],
     [
       #align(center)[
-        {{#if show_student_name}}*Nom :* #underline[#h(3cm) {{student_name}} #h(3cm)]{{/if}}
+        {{#if show_student_name}}*{{label_name}} :* #underline[#h(3cm) {{student_name}} #h(3cm)]{{/if}}
       ]
     ],
     [
       #align(right)[
-        {{#if show_class}}*Classe :* {{class}}
+        {{#if show_class}}*{{label_class}} :* {{class}}
         #v(0.1cm){{/if}}
-        {{#if show_date}}*Date :* {{date}}{{/if}}
+        {{#if show_date}}*{{label_date}} :* {{date}}{{/if}}
       ]
     ]
   )
@@ -490,8 +490,8 @@ VALUES (
 // Informations rapides
 #grid(
   columns: (1fr, 1fr),
-  [#text(style: "italic")[Duree : {{duration}} min]],
-  [{{#if show_points}}#align(right)[*Total : {{total_points}} points*]{{/if}}]
+  [#text(style: "italic")[{{label_duration}} : {{duration}} min]],
+  [{{#if show_points}}#align(right)[*{{label_total}} : {{total_points}} {{label_points}}*]{{/if}}]
 )
 
 #v(0.3cm)
@@ -513,7 +513,7 @@ VALUES (
     inset: 8pt,
     stroke: 1pt
   )[
-    *Note :* #h(2cm) {{#if show_points}}/ {{total_points}}{{/if}}
+    *{{label_grade}} :* #h(2cm) {{#if show_points}}/ {{total_points}}{{/if}}
   ]
 ]
 ',
@@ -538,7 +538,7 @@ VALUES (
   margin: (top: 2cm, bottom: 2cm, left: 2cm, right: 2cm)
 )
 
-#set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set text(font: "New Computer Modern", size: 11pt, lang: "{{lang}}")
 #set enum(spacing: 1.5em)
 #set list(spacing: 1.5em)
 
@@ -585,7 +585,7 @@ VALUES (
   )
 )
 
-#set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set text(font: "New Computer Modern", size: 11pt, lang: "{{lang}}")
 #set enum(spacing: 1.5em)
 #set list(spacing: 1.5em)
 #set par(justify: true, leading: 0.8em)
@@ -610,15 +610,15 @@ VALUES (
       columns: (1fr, 1fr, 1fr),
       column-gutter: 1cm,
       text(fill: white)[
-        {{#if show_student_name}}#text(weight: "bold", size: 9pt)[ÉLÈVE]\
+        {{#if show_student_name}}#text(weight: "bold", size: 9pt)[#upper[{{label_student}}]]\
         #text(size: 11pt)[{{student_name}}]{{/if}}
       ],
       text(fill: white)[
-        {{#if show_class}}#text(weight: "bold", size: 9pt)[CLASSE]\
+        {{#if show_class}}#text(weight: "bold", size: 9pt)[#upper[{{label_class}}]]\
         #text(size: 11pt)[{{class}}]{{/if}}
       ],
       text(fill: white)[
-        {{#if show_date}}#text(weight: "bold", size: 9pt)[DATE]\
+        {{#if show_date}}#text(weight: "bold", size: 9pt)[#upper[{{label_date}}]]\
         #text(size: 11pt)[{{date}}]{{/if}}
       ]
     )
@@ -640,7 +640,7 @@ VALUES (
     column-gutter: 12pt,
     text(size: 18pt)[⚡],
     [
-      #text(weight: "bold", size: 11pt, fill: rgb("#92400e"))[Consignes]
+      #text(weight: "bold", size: 11pt, fill: rgb("#92400e"))[{{label_guidelines}}]
       #v(0.2cm)
       #text(size: 10pt)[{{instructions}}]
     ]
@@ -725,7 +725,7 @@ VALUES (
   margin: (top: 2cm, bottom: 2cm, left: 1.5cm, right: 1.5cm)
 )
 
-#set text(font: "New Computer Modern", size: 10pt, lang: "fr")
+#set text(font: "New Computer Modern", size: 10pt, lang: "{{lang}}")
 #set enum(spacing: 1.5em)
 #set list(spacing: 1.5em)
 
@@ -769,11 +769,11 @@ VALUES (
   column-gutter: 15pt,
   align: (right, center, left),
   [
-    #text(size: 9pt)[Durée : #text(weight: "bold")[{{duration}} minutes]]
+    #text(size: 9pt)[{{label_duration}} : #text(weight: "bold")[{{duration}} {{label_minutes}}]]
   ],
   circle(radius: 3pt, fill: rgb("#9ca3af")),
   [
-    {{#if show_points}}#text(size: 9pt)[Total : #text(weight: "bold")[{{total_points}} points]]{{/if}}
+    {{#if show_points}}#text(size: 9pt)[{{label_total}} : #text(weight: "bold")[{{total_points}} {{label_points}}]]{{/if}}
   ]
 )
 
@@ -802,7 +802,7 @@ VALUES (
   #grid(
     columns: (auto, 1fr),
     column-gutter: 15pt,
-    text(size: 10pt, weight: "bold", fill: rgb("#1d4ed8"))[📋 Consignes :],
+    text(size: 10pt, weight: "bold", fill: rgb("#1d4ed8"))[📋 {{label_guidelines}} :],
     text(size: 9pt)[{{instructions}}]
   )
 ]
@@ -812,7 +812,7 @@ VALUES (
 // Titre de section
 #align(center)[
   #text(size: 11pt, weight: "bold", fill: rgb("#1f2937"))[
-    — Exercices —
+    — {{label_exercises}} —
   ]
 ]
 
@@ -882,7 +882,7 @@ VALUES (
   ]
 )
 
-#set text(font: "New Computer Modern", size: 10pt, lang: "fr")
+#set text(font: "New Computer Modern", size: 10pt, lang: "{{lang}}")
 #set enum(spacing: 1.5em)
 #set list(spacing: 1.5em)
 
@@ -904,7 +904,7 @@ VALUES (
         {{#if show_title}}#text(size: 22pt, fill: white, weight: "bold")[{{title}}]{{/if}}
         #v(0.2cm)
         #text(size: 10pt, fill: white.transparentize(20%))[
-          Feuille d''exercices{{#if show_class}} • {{class}}{{/if}}
+          {{label_worksheet}}{{#if show_class}} • {{class}}{{/if}}
         ]
       ]
     ],
@@ -917,10 +917,10 @@ VALUES (
             inset: 12pt
           )[
             #text(fill: rgb("#7c2d12"), size: 10pt)[
-              {{#if show_student_name}}#text(weight: "bold")[Nom :]\
+              {{#if show_student_name}}#text(weight: "bold")[{{label_name}} :]\
               {{student_name}}
               #v(0.3cm){{/if}}
-              {{#if show_points}}#text(weight: "bold")[Points :] {{total_points}}{{/if}}
+              {{#if show_points}}#text(weight: "bold")[{{label_points}} :] {{total_points}}{{/if}}
             ]
           ]
         ]
@@ -998,7 +998,7 @@ VALUES (
     columns: (auto, 1fr),
     column-gutter: 12pt,
     text(size: 16pt)[ℹ️],
-    text(size: 9pt)[#text(weight: "bold")[Consignes :] {{instructions}}]
+    text(size: 9pt)[#text(weight: "bold")[{{label_guidelines}} :] {{instructions}}]
   )
 ]
 
@@ -1011,7 +1011,7 @@ VALUES (
     radius: 20pt,
     inset: (x: 20pt, y: 8pt)
   )[
-    #text(size: 11pt, weight: "bold", fill: rgb("#374151"))[📝 Exercices]
+    #text(size: 11pt, weight: "bold", fill: rgb("#374151"))[📝 {{label_exercises}}]
   ]
 ]
 
@@ -1059,7 +1059,7 @@ VALUES (
   ]
 )
 
-#set text(font: "New Computer Modern", size: 10pt, lang: "fr")
+#set text(font: "New Computer Modern", size: 10pt, lang: "{{lang}}")
 #set enum(spacing: 1.5em)
 #set list(spacing: 1.5em)
 #set par(justify: true)
@@ -1074,7 +1074,7 @@ VALUES (
     #text(size: 28pt, weight: "light")[MAGAZINE]
     #v(0.1cm)
     #text(size: 9pt, style: "italic", fill: rgb("#6b7280"))[
-      L''excellence mathématique à votre portée
+      {{label_tagline}}
     ]
   ],
   [
@@ -1086,7 +1086,7 @@ VALUES (
         width: 5.5cm
       )[
         #text(fill: white)[
-          #text(size: 8pt)[ÉDITION]
+          #text(size: 8pt)[#upper[{{label_edition}}]]
           #v(0.1cm)
           {{#if show_class}}#text(size: 16pt, weight: "bold")[{{class}}]
           #v(0.2cm){{/if}}
@@ -1122,7 +1122,7 @@ VALUES (
       {{#if show_title}}#text(size: 22pt, weight: "bold")[{{title}}]{{/if}}
       #v(0.2cm)
       #text(size: 10pt, style: "italic", fill: rgb("#64748b"))[
-        Par {{teacher_name}} • {{duration}} minutes{{#if show_points}} • {{total_points}} points{{/if}}
+        {{label_by}} {{teacher_name}} • {{duration}} {{label_minutes}}{{#if show_points}} • {{total_points}} {{label_points}}{{/if}}
       ]
     ]
   )
@@ -1136,7 +1136,7 @@ VALUES (
   column-gutter: 18pt,
   [
     // Colonne principale - Introduction
-    #text(size: 11pt, weight: "bold", fill: accent)[En bref]
+    #text(size: 11pt, weight: "bold", fill: accent)[{{label_in_brief}}]
     #v(0.2cm)
 
     #rect(
@@ -1148,8 +1148,7 @@ VALUES (
       #text(size: 32pt, fill: accent, weight: "bold")[L]
       #h(-3pt)
       #text(size: 10pt)[
-        es exercices d''aujourd''hui vous permettront d''explorer
-        de nouveaux concepts mathématiques passionnants.
+        {{label_intro}}
         {{instructions}}
       ]
     ]
@@ -1163,18 +1162,18 @@ VALUES (
       stroke: (left: 3pt + accent)
     )[
       #text(size: 10pt, style: "italic", fill: rgb("#374151"))[
-        "Les mathématiques sont la poésie des sciences"
+        "{{label_quote}}"
       ]
       #v(0.1cm)
       #align(right)[
-        #text(size: 8pt, fill: rgb("#6b7280"))[— Léopold Sédar Senghor]
+        #text(size: 8pt, fill: rgb("#6b7280"))[— {{label_quote_author}}]
       ]
     ]
 
     #v(0.8cm)
 
     // Zone d''exercices principale
-    #text(size: 13pt, weight: "bold")[Exercices du jour]
+    #text(size: 13pt, weight: "bold")[{{label_daily_exercises}}]
     #line(length: 100%, stroke: 0.5pt + rgb("#e5e7eb"))
     #v(0.4cm)
 
@@ -1192,19 +1191,19 @@ VALUES (
       radius: 10pt,
       inset: 12pt
     )[
-      #text(size: 10pt, weight: "bold", fill: accent)[📌 Info Élève]
+      #text(size: 10pt, weight: "bold", fill: accent)[📌 {{label_student_info}}]
       #v(0.4cm)
 
       #text(size: 9pt)[
-        {{#if show_student_name}}#text(weight: "bold")[Nom :]
+        {{#if show_student_name}}#text(weight: "bold")[{{label_name}} :]
         #v(0.1cm)
         {{student_name}}
         #v(0.3cm){{/if}}
-        {{#if show_class}}#text(weight: "bold")[Classe :]
+        {{#if show_class}}#text(weight: "bold")[{{label_class}} :]
         #v(0.1cm)
         {{class}}
         #v(0.3cm){{/if}}
-        {{#if show_date}}#text(weight: "bold")[Date :]
+        {{#if show_date}}#text(weight: "bold")[{{label_date}} :]
         #v(0.1cm)
         {{date}}{{/if}}
       ]
@@ -1220,13 +1219,10 @@ VALUES (
       radius: 10pt,
       inset: 12pt
     )[
-      #text(size: 9pt, weight: "bold")[💡 Le saviez-vous ?]
+      #text(size: 9pt, weight: "bold")[💡 {{label_did_you_know}}]
       #v(0.2cm)
       #text(size: 8pt)[
-        Les mathématiques sont utilisées
-        dans tous les domaines : musique,
-        architecture, médecine, et même
-        dans les jeux vidéo !
+        {{label_did_you_know_body}}
       ]
     ]
 
@@ -1241,7 +1237,7 @@ VALUES (
       inset: 12pt
     )[
       #align(center)[
-        #text(size: 9pt, fill: accent)[SCORE]
+        #text(size: 9pt, fill: accent)[{{label_score}}]
         #v(0.4cm)
         #text(size: 20pt, weight: "bold")[
           \_\_\_{{#if show_points}} / {{total_points}}{{/if}}
@@ -1293,14 +1289,14 @@ VALUES (
     #line(length: 100%, stroke: 0.3pt)
     #v(0.2cm)
     #text(size: 8pt, fill: rgb("#6b7280"))[
-      Document généré par Chiphre
+      {{label_generated_by}}
       #h(1fr)
       Page #context(counter(page).display()) sur #context(counter(page).final().first())
     ]
   ]
 )
 
-#set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set text(font: "New Computer Modern", size: 11pt, lang: "{{lang}}")
 #set enum(spacing: 1.5em)
 #set list(spacing: 1.5em)
 #set par(justify: true)
@@ -1309,9 +1305,9 @@ VALUES (
 #align(center)[
   #text(size: 14pt, weight: "bold")[{{school_name}}]
   #v(0.2cm)
-  #text(size: 10pt)[Département de Mathématiques]
+  #text(size: 10pt)[{{label_maths_department}}]
   #v(0.1cm)
-  #text(size: 9pt, style: "italic")[Année académique {{academic_year}} — Semestre {{semester}}]
+  #text(size: 9pt, style: "italic")[{{label_academic_year}} {{academic_year}} — {{label_semester}} {{semester}}]
 ]
 
 #v(0.4cm)
@@ -1332,7 +1328,7 @@ VALUES (
   )[
     {{#if show_title}}#text(size: 15pt, weight: "bold")[{{title}}]{{/if}}
     #v(0.2cm)
-    #text(size: 11pt)[Évaluation de compétences mathématiques]
+    #text(size: 11pt)[{{label_skills_assessment}}]
   ]
 ]
 
@@ -1346,16 +1342,16 @@ VALUES (
   align: (left, left, left, left),
   fill: (col, row) => if row == 0 { rgb("#f3f4f6") },
 
-  [*Champ*], [*Valeur*], [*Champ*], [*Valeur*],
-  [Nom], [{{#if show_student_name}}{{student_name}}{{/if}}], [Classe], [{{#if show_class}}{{class}}{{/if}}],
-  [Date], [{{#if show_date}}{{date}}{{/if}}], [Durée], [{{duration}} minutes],
-  [Professeur], [{{teacher_name}}], [Points], [{{#if show_points}}{{total_points}}{{/if}}]
+  [*{{label_field}}*], [*{{label_value}}*], [*{{label_field}}*], [*{{label_value}}*],
+  [{{label_name}}], [{{#if show_student_name}}{{student_name}}{{/if}}], [{{label_class}}], [{{#if show_class}}{{class}}{{/if}}],
+  [{{label_date}}], [{{#if show_date}}{{date}}{{/if}}], [{{label_duration}}], [{{duration}} {{label_minutes}}],
+  [{{label_teacher}}], [{{teacher_name}}], [{{label_points}}], [{{#if show_points}}{{total_points}}{{/if}}]
 )
 
 #v(0.8cm)
 
 // Section des objectifs pédagogiques
-#text(size: 12pt, weight: "bold")[1. Objectifs pédagogiques]
+#text(size: 12pt, weight: "bold")[1. {{label_learning_objectives}}]
 #v(0.3cm)
 
 #block(
@@ -1364,15 +1360,15 @@ VALUES (
   stroke: (left: 3pt + rgb("#6366f1")),
   inset: 12pt
 )[
-  Cette évaluation vise à mesurer les compétences suivantes :
+  {{label_objectives_intro}}
   #v(0.2cm)
   #list(
     indent: 15pt,
     marker: text(fill: rgb("#6366f1"))[▸],
-    [Résolution d''équations algébriques],
-    [Application des théorèmes fondamentaux],
-    [Raisonnement logique et démonstration],
-    [Interprétation graphique]
+    [{{label_objective_equations}}],
+    [{{label_objective_theorems}}],
+    [{{label_objective_reasoning}}],
+    [{{label_objective_graphs}}]
   )
 ]
 
@@ -1393,15 +1389,15 @@ VALUES (
 
     #v(0.4cm)
 
-    *Barème de notation :*
+    *{{label_marking_scale}} :*
     #table(
       columns: (2fr, 1fr),
       inset: 6pt,
       stroke: none,
-      [• Exactitude de la réponse], [40%],
-      [• Clarté de la démarche], [30%],
-      [• Rigueur mathématique], [20%],
-      [• Présentation], [10%]
+      [• {{label_criterion_accuracy}}], [40%],
+      [• {{label_criterion_clarity}}], [30%],
+      [• {{label_criterion_rigour}}], [20%],
+      [• {{label_criterion_presentation}}], [10%]
     )
   ]
 ]
@@ -1411,7 +1407,7 @@ VALUES (
 // Titre de section pour les exercices
 #line(length: 100%, stroke: 0.5pt)
 #v(0.2cm)
-#text(size: 12pt, weight: "bold")[3. Exercices]
+#text(size: 12pt, weight: "bold")[3. {{label_exercises}}]
 #v(0.4cm)
 
 // Zone des exercices
@@ -1420,8 +1416,8 @@ VALUES (
 #v(1.5cm)
 
 // Grille d''évaluation (pour l''examinateur)
-#text(size: 12pt, weight: "bold")[4. Grille d''évaluation]
-#text(size: 9pt, style: "italic", fill: rgb("#6b7280"))[ (réservé à l''examinateur)]
+#text(size: 12pt, weight: "bold")[4. {{label_marking_grid}}]
+#text(size: 9pt, style: "italic", fill: rgb("#6b7280"))[ ({{label_examiner_only}})]
 #v(0.3cm)
 
 #table(
@@ -1431,12 +1427,12 @@ VALUES (
   align: (center, left, center, center, left),
   fill: (col, row) => if row == 0 { rgb("#e5e7eb") },
 
-  [*Ex.*], [*Compétence évaluée*], [*Barème*], [*Note*], [*Observations*],
-  [1], [Calcul algébrique], [/5], [], [],
-  [2], [Résolution d''équations], [/5], [], [],
-  [3], [Raisonnement], [/5], [], [],
-  [4], [Application], [/5], [], [],
-  table.cell(colspan: 2)[*Total*], [{{#if show_points}}/{{total_points}}{{/if}}], [], []
+  [*{{label_exercise}}*], [*{{label_skill}}*], [*{{label_marks}}*], [*{{label_grade}}*], [*{{label_observations}}*],
+  [1], [{{label_skill_algebra}}], [/5], [], [],
+  [2], [{{label_skill_equations}}], [/5], [], [],
+  [3], [{{label_skill_reasoning}}], [/5], [], [],
+  [4], [{{label_skill_application}}], [/5], [], [],
+  table.cell(colspan: 2)[*{{label_total}}*], [{{#if show_points}}/{{total_points}}{{/if}}], [], []
 )
 
 #v(0.8cm)
@@ -1448,7 +1444,7 @@ VALUES (
   [
     #line(length: 100%, stroke: 0.5pt)
     #v(0.1cm)
-    #text(size: 9pt)[Signature de l''élève]
+    #text(size: 9pt)[{{label_student_signature}}]
   ],
   [
     #line(length: 100%, stroke: 0.5pt)
@@ -1489,7 +1485,7 @@ VALUES (
   ]
 )
 
-#set text(font: "New Computer Modern", size: 10pt, lang: "fr")
+#set text(font: "New Computer Modern", size: 10pt, lang: "{{lang}}")
 #set par(justify: true)
 #set heading(numbering: none)
 

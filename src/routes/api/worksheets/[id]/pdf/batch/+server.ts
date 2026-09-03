@@ -11,6 +11,7 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
+import { worksheetLocale } from '$lib/types/worksheets';
 import type { WorksheetWithRelations, InstanceData } from '$lib/types/worksheets';
 import JSZip from 'jszip';
 
@@ -300,9 +301,11 @@ function generateSimpleInstance(
 	const sortedExercises = [...exercises].sort((a, b) => a.position - b.position);
 
 	// Map to resolved exercises using variations (single source of truth)
+	const locale = worksheetLocale(worksheet.config);
+
 	const resolvedExercises = sortedExercises.map((we) => {
 		const content = we.exercise
-			? getExerciseContentSafe(we.exercise as unknown as Exercise)
+			? getExerciseContentSafe(we.exercise as unknown as Exercise, 0, locale)
 			: { statement_md: '', solution_md: '' };
 		return {
 			exercise_id: we.exercise_id,

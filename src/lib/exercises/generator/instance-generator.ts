@@ -269,7 +269,11 @@ function generateVariationsInstance(
 	const selectedVariation = exercise.variations![variationIndex];
 
 	// 2. Merge shared defaults with variation
-	const resolvedVariation = resolveExerciseVariationWithShared(exercise.shared, selectedVariation);
+	const resolvedVariation = resolveExerciseVariationWithShared(
+		exercise.shared,
+		selectedVariation,
+		options.locale
+	);
 
 	// 3. Check for circular dependencies in merged variables
 	if (resolvedVariation.variables?.length) {

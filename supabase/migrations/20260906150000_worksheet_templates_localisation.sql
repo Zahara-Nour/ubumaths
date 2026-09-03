@@ -1,83 +1,27 @@
-/**
- * Default Typst templates for worksheet PDF generation
- *
- * These templates use Typst markup with placeholders in {{placeholder}} format.
- * Available placeholders:
- * - {{title}} - Worksheet title
- * - {{date}} - Current date or assignment date
- * - {{class}} - Class name
- * - {{student_name}} - Student's full name
- * - {{exercises}} - Rendered exercises content ("Exercice N : titre" headers)
- * - {{exercises_badge}} - Same content, but each exercise number is rendered in
- *   white on a red square (student-PDF style). Use one or the other, not both.
- * - {{total_points}} - Total points for the worksheet
- * - {{duration}} - Estimated duration in minutes
- * - {{instructions}} - General instructions
- * - {{school_name}} - School name
- * - {{teacher_name}} - Teacher's name
- */
+-- Templates système : le vocabulaire suit la langue de la fiche
+-- ===========================================================================
+--
+-- Une fiche en anglais sortait avec un habillage français : « Nom : »,
+-- « Classe : », « Consignes », « Exercices du jour »… étaient écrits en dur
+-- dans les 12 templates, et `lang: "fr"` y fixait la césure et les guillemets
+-- typographiques quel que soit le contenu.
+--
+-- Chaque libellé passe par un placeholder {{label_*}} alimenté par
+-- src/lib/typst/labels.ts, et `lang` par {{lang}} : un seul corps de template
+-- sert les deux langues, donc aucun risque de dérive entre elles.
+--
+-- Les lignes DB sont rafraîchies parce que le générateur préfère le contenu
+-- stocké à celui du code (cf. 20260906090000).
+--
+-- Source de vérité : src/lib/typst/templates/default-templates.ts
 
-import type { TemplatePlaceholder } from '$lib/types/worksheets';
-import { TYPST_LANGS } from '$lib/types/locale';
-import { labelPlaceholders } from '../labels';
-
-export interface DefaultTemplate {
-	id: string;
-	name: string;
-	description: string;
-	type: 'worksheet' | 'assessment' | 'exam' | 'quiz' | 'homework';
-	template_content: string;
-	placeholders: TemplatePlaceholder[];
-	is_system: boolean; // System templates cannot be deleted
-}
-
-/**
- * Common placeholders used across templates
- */
-export const COMMON_PLACEHOLDERS: TemplatePlaceholder[] = [
-	{ key: 'title', type: 'text', label: 'Titre', default_value: "Feuille d'exercices" },
-	{ key: 'date', type: 'date', label: 'Date', default_value: '' },
-	{ key: 'class', type: 'text', label: 'Classe', default_value: '' },
-	{ key: 'student_name', type: 'text', label: "Nom de l'eleve", default_value: '' },
-	{ key: 'exercises', type: 'dynamic', label: 'Exercices', default_value: '' },
-	{ key: 'total_points', type: 'text', label: 'Total des points', default_value: '' },
-	{ key: 'duration', type: 'text', label: 'Duree estimee', default_value: '' },
-	{ key: 'instructions', type: 'text', label: 'Consignes', default_value: '' },
-	{ key: 'school_name', type: 'text', label: "Nom de l'ecole", default_value: '' },
-	{ key: 'teacher_name', type: 'text', label: 'Nom du professeur', default_value: '' }
-];
-
-/**
- * Well-known UUIDs for default templates (deterministic, same across all environments)
- * These templates are seeded into the database via migration
- */
-export const DEFAULT_TEMPLATE_IDS = {
-	standard: '00000000-0000-4000-8000-000000000001',
-	assessment: '00000000-0000-4000-8000-000000000002',
-	exam: '00000000-0000-4000-8000-000000000003',
-	homework: '00000000-0000-4000-8000-000000000004',
-	quiz: '00000000-0000-4000-8000-000000000005',
-	minimal: '00000000-0000-4000-8000-000000000006',
-	modern: '00000000-0000-4000-8000-000000000007',
-	twoColumns: '00000000-0000-4000-8000-000000000008',
-	landscape: '00000000-0000-4000-8000-000000000009',
-	magazine: '00000000-0000-4000-8000-000000000010',
-	scientific: '00000000-0000-4000-8000-000000000011',
-	studentStyle: '00000000-0000-4000-8000-000000000012'
-} as const;
-
-/**
- * Standard worksheet template
- * Basic layout with title, student info, and exercises
- */
-export const STANDARD_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.standard,
-	name: 'Standard',
-	description: 'Mise en page basique avec titre, informations eleve et exercices',
-	type: 'worksheet',
-	is_system: true,
-	placeholders: COMMON_PLACEHOLDERS,
-	template_content: `// Configuration de la page
+-- Standard — Mise en page basique avec titre, informations eleve et exercices
+INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
+VALUES (
+  '00000000-0000-4000-8000-000000000001',
+  'Standard',
+  'Mise en page basique avec titre, informations eleve et exercices',
+  '// Configuration de la page
 #set page(
   paper: "a4",
   margin: (top: 2cm, bottom: 2cm, left: 1.5cm, right: 1.5cm)
@@ -132,24 +76,24 @@ export const STANDARD_TEMPLATE: DefaultTemplate = {
 
 // Exercices
 {{exercises}}
-`
-};
+',
+  '[{"key":"title","type":"text","label":"Titre","default_value":"Feuille d''exercices"},{"key":"date","type":"date","label":"Date","default_value":""},{"key":"class","type":"text","label":"Classe","default_value":""},{"key":"student_name","type":"text","label":"Nom de l''eleve","default_value":""},{"key":"exercises","type":"dynamic","label":"Exercices","default_value":""},{"key":"total_points","type":"text","label":"Total des points","default_value":""},{"key":"duration","type":"text","label":"Duree estimee","default_value":""},{"key":"instructions","type":"text","label":"Consignes","default_value":""},{"key":"school_name","type":"text","label":"Nom de l''ecole","default_value":""},{"key":"teacher_name","type":"text","label":"Nom du professeur","default_value":""}]'::jsonb,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  template_content = EXCLUDED.template_content,
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
-/**
- * Assessment template
- * Formal evaluation layout with grading section
- */
-export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.assessment,
-	name: 'Evaluation',
-	description: 'Mise en page formelle pour evaluation avec section notation',
-	type: 'assessment',
-	is_system: true,
-	placeholders: [
-		...COMMON_PLACEHOLDERS,
-		{ key: 'competences', type: 'text', label: 'Competences evaluees', default_value: '' }
-	],
-	template_content: `// Configuration de la page
+-- Evaluation — Mise en page formelle pour evaluation avec section notation
+INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
+VALUES (
+  '00000000-0000-4000-8000-000000000002',
+  'Evaluation',
+  'Mise en page formelle pour evaluation avec section notation',
+  '// Configuration de la page
 #set page(
   paper: "a4",
   margin: (top: 2cm, bottom: 2cm, left: 1.5cm, right: 1.5cm)
@@ -186,7 +130,7 @@ export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
           #align(center)[
             *{{label_grade}}*
             #v(0.5cm)
-            {{#if show_points}}#text(size: 14pt)[\\/ {{total_points}}]{{/if}}
+            {{#if show_points}}#text(size: 14pt)[\/ {{total_points}}]{{/if}}
           ]
         ]
       ]
@@ -244,26 +188,24 @@ export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
     {{label_indicative_marks}}
   ]
 ]
-`
-};
+',
+  '[{"key":"title","type":"text","label":"Titre","default_value":"Feuille d''exercices"},{"key":"date","type":"date","label":"Date","default_value":""},{"key":"class","type":"text","label":"Classe","default_value":""},{"key":"student_name","type":"text","label":"Nom de l''eleve","default_value":""},{"key":"exercises","type":"dynamic","label":"Exercices","default_value":""},{"key":"total_points","type":"text","label":"Total des points","default_value":""},{"key":"duration","type":"text","label":"Duree estimee","default_value":""},{"key":"instructions","type":"text","label":"Consignes","default_value":""},{"key":"school_name","type":"text","label":"Nom de l''ecole","default_value":""},{"key":"teacher_name","type":"text","label":"Nom du professeur","default_value":""},{"key":"competences","type":"text","label":"Competences evaluees","default_value":""}]'::jsonb,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  template_content = EXCLUDED.template_content,
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
-/**
- * Exam template
- * Official exam layout with header, instructions, and signature line
- */
-export const EXAM_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.exam,
-	name: 'Examen',
-	description: "Mise en page officielle d'examen avec en-tete, consignes et ligne de signature",
-	type: 'exam',
-	is_system: true,
-	placeholders: [
-		...COMMON_PLACEHOLDERS,
-		{ key: 'exam_session', type: 'text', label: "Session d'examen", default_value: '' },
-		{ key: 'subject', type: 'text', label: 'Matiere', default_value: 'Mathematiques' },
-		{ key: 'coefficient', type: 'text', label: 'Coefficient', default_value: '' }
-	],
-	template_content: `// Configuration de la page
+-- Examen — Mise en page officielle d'examen avec en-tete, consignes et ligne de signature
+INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
+VALUES (
+  '00000000-0000-4000-8000-000000000003',
+  'Examen',
+  'Mise en page officielle d''examen avec en-tete, consignes et ligne de signature',
+  '// Configuration de la page
 #set page(
   paper: "a4",
   margin: (top: 2.5cm, bottom: 2cm, left: 2cm, right: 2cm),
@@ -356,7 +298,7 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
 
 #v(0.5cm)
 
-// Attestation sur l'honneur
+// Attestation sur l''honneur
 #block(
   inset: 8pt,
   stroke: (left: 3pt + rgb("#6c757d"))
@@ -378,24 +320,24 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
 
 // Exercices
 {{exercises}}
-`
-};
+',
+  '[{"key":"title","type":"text","label":"Titre","default_value":"Feuille d''exercices"},{"key":"date","type":"date","label":"Date","default_value":""},{"key":"class","type":"text","label":"Classe","default_value":""},{"key":"student_name","type":"text","label":"Nom de l''eleve","default_value":""},{"key":"exercises","type":"dynamic","label":"Exercices","default_value":""},{"key":"total_points","type":"text","label":"Total des points","default_value":""},{"key":"duration","type":"text","label":"Duree estimee","default_value":""},{"key":"instructions","type":"text","label":"Consignes","default_value":""},{"key":"school_name","type":"text","label":"Nom de l''ecole","default_value":""},{"key":"teacher_name","type":"text","label":"Nom du professeur","default_value":""},{"key":"exam_session","type":"text","label":"Session d''examen","default_value":""},{"key":"subject","type":"text","label":"Matiere","default_value":"Mathematiques"},{"key":"coefficient","type":"text","label":"Coefficient","default_value":""}]'::jsonb,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  template_content = EXCLUDED.template_content,
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
-/**
- * Homework template
- * Simple homework assignment layout
- */
-export const HOMEWORK_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.homework,
-	name: 'Devoirs',
-	description: 'Mise en page simple pour devoirs a la maison',
-	type: 'homework',
-	is_system: true,
-	placeholders: [
-		...COMMON_PLACEHOLDERS,
-		{ key: 'due_date', type: 'date', label: 'Date de rendu', default_value: '' }
-	],
-	template_content: `// Configuration de la page
+-- Devoirs — Mise en page simple pour devoirs a la maison
+INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
+VALUES (
+  '00000000-0000-4000-8000-000000000004',
+  'Devoirs',
+  'Mise en page simple pour devoirs a la maison',
+  '// Configuration de la page
 #set page(
   paper: "a4",
   margin: (top: 2cm, bottom: 2cm, left: 1.5cm, right: 1.5cm)
@@ -449,7 +391,7 @@ export const HOMEWORK_TEMPLATE: DefaultTemplate = {
 
 #v(0.3cm)
 
-// Nom de l'eleve
+// Nom de l''eleve
 {{#if show_student_name}}*{{label_name}} :* #underline[#h(4cm) {{student_name}} #h(4cm)]{{/if}}
 
 #v(0.5cm)
@@ -490,21 +432,24 @@ export const HOMEWORK_TEMPLATE: DefaultTemplate = {
     Bon travail !
   ]
 ]
-`
-};
+',
+  '[{"key":"title","type":"text","label":"Titre","default_value":"Feuille d''exercices"},{"key":"date","type":"date","label":"Date","default_value":""},{"key":"class","type":"text","label":"Classe","default_value":""},{"key":"student_name","type":"text","label":"Nom de l''eleve","default_value":""},{"key":"exercises","type":"dynamic","label":"Exercices","default_value":""},{"key":"total_points","type":"text","label":"Total des points","default_value":""},{"key":"duration","type":"text","label":"Duree estimee","default_value":""},{"key":"instructions","type":"text","label":"Consignes","default_value":""},{"key":"school_name","type":"text","label":"Nom de l''ecole","default_value":""},{"key":"teacher_name","type":"text","label":"Nom du professeur","default_value":""},{"key":"due_date","type":"date","label":"Date de rendu","default_value":""}]'::jsonb,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  template_content = EXCLUDED.template_content,
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
-/**
- * Quiz template
- * Quick quiz format with numbered questions
- */
-export const QUIZ_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.quiz,
-	name: 'Quiz',
-	description: 'Format quiz rapide avec questions numerotees',
-	type: 'quiz',
-	is_system: true,
-	placeholders: COMMON_PLACEHOLDERS,
-	template_content: `// Configuration de la page
+-- Quiz — Format quiz rapide avec questions numerotees
+INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
+VALUES (
+  '00000000-0000-4000-8000-000000000005',
+  'Quiz',
+  'Format quiz rapide avec questions numerotees',
+  '// Configuration de la page
 #set page(
   paper: "a4",
   margin: (top: 1.5cm, bottom: 1.5cm, left: 1.5cm, right: 1.5cm)
@@ -575,21 +520,24 @@ export const QUIZ_TEMPLATE: DefaultTemplate = {
     *{{label_grade}} :* #h(2cm) {{#if show_points}}/ {{total_points}}{{/if}}
   ]
 ]
-`
-};
+',
+  '[{"key":"title","type":"text","label":"Titre","default_value":"Feuille d''exercices"},{"key":"date","type":"date","label":"Date","default_value":""},{"key":"class","type":"text","label":"Classe","default_value":""},{"key":"student_name","type":"text","label":"Nom de l''eleve","default_value":""},{"key":"exercises","type":"dynamic","label":"Exercices","default_value":""},{"key":"total_points","type":"text","label":"Total des points","default_value":""},{"key":"duration","type":"text","label":"Duree estimee","default_value":""},{"key":"instructions","type":"text","label":"Consignes","default_value":""},{"key":"school_name","type":"text","label":"Nom de l''ecole","default_value":""},{"key":"teacher_name","type":"text","label":"Nom du professeur","default_value":""}]'::jsonb,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  template_content = EXCLUDED.template_content,
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
-/**
- * Minimal template
- * Clean, minimalist layout
- */
-export const MINIMAL_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.minimal,
-	name: 'Minimaliste',
-	description: 'Mise en page epuree et minimaliste',
-	type: 'worksheet',
-	is_system: true,
-	placeholders: COMMON_PLACEHOLDERS,
-	template_content: `// Configuration de la page
+-- Minimaliste — Mise en page epuree et minimaliste
+INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
+VALUES (
+  '00000000-0000-4000-8000-000000000006',
+  'Minimaliste',
+  'Mise en page epuree et minimaliste',
+  '// Configuration de la page
 #set page(
   paper: "a4",
   margin: (top: 2cm, bottom: 2cm, left: 2cm, right: 2cm)
@@ -614,21 +562,24 @@ export const MINIMAL_TEMPLATE: DefaultTemplate = {
 
 // Exercices
 {{exercises}}
-`
-};
+',
+  '[{"key":"title","type":"text","label":"Titre","default_value":"Feuille d''exercices"},{"key":"date","type":"date","label":"Date","default_value":""},{"key":"class","type":"text","label":"Classe","default_value":""},{"key":"student_name","type":"text","label":"Nom de l''eleve","default_value":""},{"key":"exercises","type":"dynamic","label":"Exercices","default_value":""},{"key":"total_points","type":"text","label":"Total des points","default_value":""},{"key":"duration","type":"text","label":"Duree estimee","default_value":""},{"key":"instructions","type":"text","label":"Consignes","default_value":""},{"key":"school_name","type":"text","label":"Nom de l''ecole","default_value":""},{"key":"teacher_name","type":"text","label":"Nom du professeur","default_value":""}]'::jsonb,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  template_content = EXCLUDED.template_content,
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
-/**
- * Modern template
- * Contemporary design with stylized exercise numbers (red background, white text)
- */
-export const MODERN_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.modern,
-	name: 'Moderne',
-	description: "Design moderne avec numéros d'exercices stylisés et mise en page épurée",
-	type: 'worksheet',
-	is_system: true,
-	placeholders: COMMON_PLACEHOLDERS,
-	template_content: `// Configuration de la page avec design moderne
+-- Moderne — Design moderne avec numéros d'exercices stylisés et mise en page épurée
+INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
+VALUES (
+  '00000000-0000-4000-8000-000000000007',
+  'Moderne',
+  'Design moderne avec numéros d''exercices stylisés et mise en page épurée',
+  '// Configuration de la page avec design moderne
 #set page(
   paper: "a4",
   margin: (top: 2.5cm, bottom: 2cm, left: 2cm, right: 2cm),
@@ -665,15 +616,15 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
       columns: (1fr, 1fr, 1fr),
       column-gutter: 1cm,
       text(fill: white)[
-        {{#if show_student_name}}#text(weight: "bold", size: 9pt)[#upper[{{label_student}}]]\\
+        {{#if show_student_name}}#text(weight: "bold", size: 9pt)[#upper[{{label_student}}]]\
         #text(size: 11pt)[{{student_name}}]{{/if}}
       ],
       text(fill: white)[
-        {{#if show_class}}#text(weight: "bold", size: 9pt)[#upper[{{label_class}}]]\\
+        {{#if show_class}}#text(weight: "bold", size: 9pt)[#upper[{{label_class}}]]\
         #text(size: 11pt)[{{class}}]{{/if}}
       ],
       text(fill: white)[
-        {{#if show_date}}#text(weight: "bold", size: 9pt)[#upper[{{label_date}}]]\\
+        {{#if show_date}}#text(weight: "bold", size: 9pt)[#upper[{{label_date}}]]\
         #text(size: 11pt)[{{date}}]{{/if}}
       ]
     )
@@ -704,7 +655,7 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
 
 #v(0.8cm)
 
-// Badges d'information
+// Badges d''information
 #grid(
   columns: (auto, auto, 1fr, auto),
   column-gutter: 12pt,
@@ -729,7 +680,7 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
   )[
     #text(size: 9pt, fill: rgb("#64748b"))[Score]
     #h(10pt)
-    #text(size: 14pt, weight: "bold")[\\_\\_\\_\\_\\_{{#if show_points}} / {{total_points}}{{/if}}]
+    #text(size: 14pt, weight: "bold")[\_\_\_\_\_{{#if show_points}} / {{total_points}}{{/if}}]
   ]
 )
 
@@ -758,21 +709,24 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
   #text(size: 8pt, fill: rgb("#9ca3af"))[
     Page #context(counter(page).display()) sur #context(counter(page).final().first())
   ]
-]`
-};
+]',
+  '[{"key":"title","type":"text","label":"Titre","default_value":"Feuille d''exercices"},{"key":"date","type":"date","label":"Date","default_value":""},{"key":"class","type":"text","label":"Classe","default_value":""},{"key":"student_name","type":"text","label":"Nom de l''eleve","default_value":""},{"key":"exercises","type":"dynamic","label":"Exercices","default_value":""},{"key":"total_points","type":"text","label":"Total des points","default_value":""},{"key":"duration","type":"text","label":"Duree estimee","default_value":""},{"key":"instructions","type":"text","label":"Consignes","default_value":""},{"key":"school_name","type":"text","label":"Nom de l''ecole","default_value":""},{"key":"teacher_name","type":"text","label":"Nom du professeur","default_value":""}]'::jsonb,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  template_content = EXCLUDED.template_content,
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
-/**
- * Two columns template
- * Optimized layout with two columns for better space usage
- */
-export const TWO_COLUMNS_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.twoColumns,
-	name: 'Deux colonnes',
-	description: "Mise en page sur deux colonnes pour optimiser l'espace",
-	type: 'worksheet',
-	is_system: true,
-	placeholders: COMMON_PLACEHOLDERS,
-	template_content: `// Configuration page avec marges adaptées pour colonnes
+-- Deux colonnes — Mise en page sur deux colonnes pour optimiser l'espace
+INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
+VALUES (
+  '00000000-0000-4000-8000-000000000008',
+  'Deux colonnes',
+  'Mise en page sur deux colonnes pour optimiser l''espace',
+  '// Configuration page avec marges adaptées pour colonnes
 #set page(
   paper: "a4",
   margin: (top: 2cm, bottom: 2cm, left: 1.5cm, right: 1.5cm)
@@ -816,7 +770,7 @@ export const TWO_COLUMNS_TEMPLATE: DefaultTemplate = {
 
 #v(0.6cm)
 
-// Barre d'information avec séparateur central
+// Barre d''information avec séparateur central
 #grid(
   columns: (1fr, auto, 1fr),
   column-gutter: 15pt,
@@ -888,21 +842,24 @@ export const TWO_COLUMNS_TEMPLATE: DefaultTemplate = {
     Page #context(counter(page).display())
   ],
   text(size: 8pt, fill: rgb("#9ca3af"))[{{school_name}}]
-)`
-};
+)',
+  '[{"key":"title","type":"text","label":"Titre","default_value":"Feuille d''exercices"},{"key":"date","type":"date","label":"Date","default_value":""},{"key":"class","type":"text","label":"Classe","default_value":""},{"key":"student_name","type":"text","label":"Nom de l''eleve","default_value":""},{"key":"exercises","type":"dynamic","label":"Exercices","default_value":""},{"key":"total_points","type":"text","label":"Total des points","default_value":""},{"key":"duration","type":"text","label":"Duree estimee","default_value":""},{"key":"instructions","type":"text","label":"Consignes","default_value":""},{"key":"school_name","type":"text","label":"Nom de l''ecole","default_value":""},{"key":"teacher_name","type":"text","label":"Nom du professeur","default_value":""}]'::jsonb,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  template_content = EXCLUDED.template_content,
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
-/**
- * Landscape template
- * A4 landscape format with grid layout for exercises
- */
-export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.landscape,
-	name: 'Paysage',
-	description: 'Format A4 paysage avec grille optimisée pour les exercices',
-	type: 'worksheet',
-	is_system: true,
-	placeholders: COMMON_PLACEHOLDERS,
-	template_content: `// Configuration en mode paysage
+-- Paysage — Format A4 paysage avec grille optimisée pour les exercices
+INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
+VALUES (
+  '00000000-0000-4000-8000-000000000009',
+  'Paysage',
+  'Format A4 paysage avec grille optimisée pour les exercices',
+  '// Configuration en mode paysage
 #set page(
   paper: "a4",
   flipped: true,
@@ -968,7 +925,7 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
             inset: 12pt
           )[
             #text(fill: rgb("#7c2d12"), size: 10pt)[
-              {{#if show_student_name}}#text(weight: "bold")[{{label_name}} :]\\
+              {{#if show_student_name}}#text(weight: "bold")[{{label_name}} :]\
               {{student_name}}
               #v(0.3cm){{/if}}
               {{#if show_points}}#text(weight: "bold")[{{label_points}} :] {{total_points}}{{/if}}
@@ -982,7 +939,7 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
 
 #v(0.6cm)
 
-// Bande d'information horizontale avec 4 cartes
+// Bande d''information horizontale avec 4 cartes
 #grid(
   columns: (1fr, 1fr, 1fr, 1fr),
   column-gutter: 12pt,
@@ -1071,24 +1028,24 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
 // Contenu des exercices en 3 colonnes pour le format paysage
 #columns(3, gutter: 20pt)[
   {{exercises}}
-]`
-};
+]',
+  '[{"key":"title","type":"text","label":"Titre","default_value":"Feuille d''exercices"},{"key":"date","type":"date","label":"Date","default_value":""},{"key":"class","type":"text","label":"Classe","default_value":""},{"key":"student_name","type":"text","label":"Nom de l''eleve","default_value":""},{"key":"exercises","type":"dynamic","label":"Exercices","default_value":""},{"key":"total_points","type":"text","label":"Total des points","default_value":""},{"key":"duration","type":"text","label":"Duree estimee","default_value":""},{"key":"instructions","type":"text","label":"Consignes","default_value":""},{"key":"school_name","type":"text","label":"Nom de l''ecole","default_value":""},{"key":"teacher_name","type":"text","label":"Nom du professeur","default_value":""}]'::jsonb,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  template_content = EXCLUDED.template_content,
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
-/**
- * Magazine template
- * Editorial style with colorful boxes and varied typography
- */
-export const MAGAZINE_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.magazine,
-	name: 'Magazine',
-	description: 'Style magazine avec design éditorial, encadrés colorés et typographie variée',
-	type: 'worksheet',
-	is_system: true,
-	placeholders: [
-		...COMMON_PLACEHOLDERS,
-		{ key: 'theme_color', type: 'text', label: 'Couleur thème', default_value: '#e11d48' }
-	],
-	template_content: `// Variables de couleur (définies avant #set page pour être accessibles dans footer)
+-- Magazine — Style magazine avec design éditorial, encadrés colorés et typographie variée
+INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
+VALUES (
+  '00000000-0000-4000-8000-000000000010',
+  'Magazine',
+  'Style magazine avec design éditorial, encadrés colorés et typographie variée',
+  '// Variables de couleur (définies avant #set page pour être accessibles dans footer)
 #let accent = rgb("#e11d48")
 #let accent-light = accent.lighten(85%)
 
@@ -1116,7 +1073,7 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
 #set list(spacing: 1.5em)
 #set par(justify: true)
 
-// Header magazine avec numéro d'édition
+// Header magazine avec numéro d''édition
 #grid(
   columns: (1fr, auto),
   [
@@ -1224,7 +1181,7 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
 
     #v(0.8cm)
 
-    // Zone d'exercices principale
+    // Zone d''exercices principale
     #text(size: 13pt, weight: "bold")[{{label_daily_exercises}}]
     #line(length: 100%, stroke: 0.5pt + rgb("#e5e7eb"))
     #v(0.4cm)
@@ -1292,7 +1249,7 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
         #text(size: 9pt, fill: accent)[{{label_score}}]
         #v(0.4cm)
         #text(size: 20pt, weight: "bold")[
-          \\_\\_\\_{{#if show_points}} / {{total_points}}{{/if}}
+          \_\_\_{{#if show_points}} / {{total_points}}{{/if}}
         ]
       ]
     ]
@@ -1312,30 +1269,29 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
         #text(size: 8pt, weight: "bold")[
           Prochain cours
           #v(0.1cm)
-          \\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_
+          \_\_\_\_\_\_\_\_\_\_\_
         ]
       ]
     ]
   ]
-)`
-};
+)',
+  '[{"key":"title","type":"text","label":"Titre","default_value":"Feuille d''exercices"},{"key":"date","type":"date","label":"Date","default_value":""},{"key":"class","type":"text","label":"Classe","default_value":""},{"key":"student_name","type":"text","label":"Nom de l''eleve","default_value":""},{"key":"exercises","type":"dynamic","label":"Exercices","default_value":""},{"key":"total_points","type":"text","label":"Total des points","default_value":""},{"key":"duration","type":"text","label":"Duree estimee","default_value":""},{"key":"instructions","type":"text","label":"Consignes","default_value":""},{"key":"school_name","type":"text","label":"Nom de l''ecole","default_value":""},{"key":"teacher_name","type":"text","label":"Nom du professeur","default_value":""},{"key":"theme_color","type":"text","label":"Couleur thème","default_value":"#e11d48"}]'::jsonb,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  template_content = EXCLUDED.template_content,
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
-/**
- * Scientific template
- * Academic bulletin style with formal tables and grading grid
- */
-export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.scientific,
-	name: 'Scientifique',
-	description: 'Style académique avec tableaux de données et grille de notation formelle',
-	type: 'assessment',
-	is_system: true,
-	placeholders: [
-		...COMMON_PLACEHOLDERS,
-		{ key: 'academic_year', type: 'text', label: 'Année académique', default_value: '2024-2025' },
-		{ key: 'semester', type: 'text', label: 'Semestre', default_value: '1' }
-	],
-	template_content: `// Configuration académique formelle
+-- Scientifique — Style académique avec tableaux de données et grille de notation formelle
+INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
+VALUES (
+  '00000000-0000-4000-8000-000000000011',
+  'Scientifique',
+  'Style académique avec tableaux de données et grille de notation formelle',
+  '// Configuration académique formelle
 #set page(
   paper: "a4",
   margin: (top: 2.5cm, bottom: 2.5cm, left: 2.5cm, right: 2cm),
@@ -1388,7 +1344,7 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
 
 #v(0.8cm)
 
-// Tableau d'identification formel
+// Tableau d''identification formel
 #table(
   columns: (1fr, 2fr, 1fr, 2fr),
   inset: 10pt,
@@ -1469,7 +1425,7 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
 
 #v(1.5cm)
 
-// Grille d'évaluation (pour l'examinateur)
+// Grille d''évaluation (pour l''examinateur)
 #text(size: 12pt, weight: "bold")[4. {{label_marking_grid}}]
 #text(size: 9pt, style: "italic", fill: rgb("#6b7280"))[ ({{label_examiner_only}})]
 #v(0.3cm)
@@ -1505,23 +1461,24 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
     #v(0.1cm)
     #text(size: 9pt)[Visa du professeur]
   ]
-)`
-};
+)',
+  '[{"key":"title","type":"text","label":"Titre","default_value":"Feuille d''exercices"},{"key":"date","type":"date","label":"Date","default_value":""},{"key":"class","type":"text","label":"Classe","default_value":""},{"key":"student_name","type":"text","label":"Nom de l''eleve","default_value":""},{"key":"exercises","type":"dynamic","label":"Exercices","default_value":""},{"key":"total_points","type":"text","label":"Total des points","default_value":""},{"key":"duration","type":"text","label":"Duree estimee","default_value":""},{"key":"instructions","type":"text","label":"Consignes","default_value":""},{"key":"school_name","type":"text","label":"Nom de l''ecole","default_value":""},{"key":"teacher_name","type":"text","label":"Nom du professeur","default_value":""},{"key":"academic_year","type":"text","label":"Année académique","default_value":"2024-2025"},{"key":"semester","type":"text","label":"Semestre","default_value":"1"}]'::jsonb,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  template_content = EXCLUDED.template_content,
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
-/**
- * Student-view template
- * Two columns separated by a rule, header spanning both, exercise numbers in
- * white on a red square. Opts into the badge numbering via {{exercises_badge}}.
- */
-export const STUDENT_STYLE_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.studentStyle,
-	name: 'Fiche élève',
-	description:
-		"Deux colonnes avec filet, en-tête pleine largeur, numéro d'exercice en blanc sur carré rouge",
-	type: 'worksheet',
-	is_system: true,
-	placeholders: COMMON_PLACEHOLDERS,
-	template_content: `// Mise en page proche du PDF de l'élève : A4 sur deux colonnes
+-- Fiche élève — Deux colonnes avec filet, en-tête pleine largeur, numéro d'exercice en blanc sur carré rouge
+INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
+VALUES (
+  '00000000-0000-4000-8000-000000000012',
+  'Fiche élève',
+  'Deux colonnes avec filet, en-tête pleine largeur, numéro d''exercice en blanc sur carré rouge',
+  '// Mise en page proche du PDF de l''élève : A4 sur deux colonnes
 #set page(
   paper: "a4",
   margin: (x: 1cm, y: 1.5cm),
@@ -1568,170 +1525,13 @@ export const STUDENT_STYLE_TEMPLATE: DefaultTemplate = {
 
 // Exercices (numéros en blanc sur carré rouge)
 {{exercises_badge}}
-`
-};
-
-/**
- * All default templates
- */
-export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
-	STANDARD_TEMPLATE,
-	ASSESSMENT_TEMPLATE,
-	EXAM_TEMPLATE,
-	HOMEWORK_TEMPLATE,
-	QUIZ_TEMPLATE,
-	MINIMAL_TEMPLATE,
-	MODERN_TEMPLATE,
-	TWO_COLUMNS_TEMPLATE,
-	LANDSCAPE_TEMPLATE,
-	MAGAZINE_TEMPLATE,
-	SCIENTIFIC_TEMPLATE,
-	STUDENT_STYLE_TEMPLATE
-];
-
-/**
- * Get template by ID
- */
-export function getDefaultTemplate(id: string): DefaultTemplate | undefined {
-	return DEFAULT_TEMPLATES.find((t) => t.id === id);
-}
-
-/**
- * Get templates by type
- */
-export function getDefaultTemplatesByType(type: string): DefaultTemplate[] {
-	return DEFAULT_TEMPLATES.filter((t) => t.type === type);
-}
-
-/**
- * Sample data for template preview
- */
-export const SAMPLE_PREVIEW_DATA = {
-	title: 'Equations du premier degre',
-	date: new Date().toLocaleDateString('fr-FR'),
-	class: '3eme B',
-	student_name: 'Jean DUPONT',
-	total_points: '20',
-	duration: '45',
-	instructions: 'Repondez a toutes les questions. La calculatrice est autorisee.',
-	school_name: 'College Victor Hugo',
-	teacher_name: 'Mme Martin',
-	due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR'),
-	exam_session: 'Session 2025',
-	subject: 'Mathematiques',
-	coefficient: '4',
-	competences: 'Resoudre une equation, Modeliser un probleme',
-	// Chrome vocabulary and typst lang. The template editor and the gallery render
-	// through this data, so without them a preview would show raw {{label_*}}.
-	// French: the application UI is French, whatever a worksheet's own language.
-	...labelPlaceholders('fr'),
-	lang: TYPST_LANGS.fr,
-	// Display-option flags: previews always show every field, whatever a given
-	// worksheet's config says. Kept last so the editor's placeholder panel, which
-	// lists the first entries, keeps showing content fields.
-	show_title: 'true',
-	show_date: 'true',
-	show_class: 'true',
-	show_student_name: 'true',
-	show_points: 'true',
-	// New placeholders for advanced templates
-	theme_color: '#e11d48',
-	academic_year: '2024-2025',
-	semester: '1',
-	exercises: `*Exercice 1* (5 points)
-
-Resoudre les equations suivantes:
-
-a) 2x + 5 = 11
-
-b) 3x - 7 = 2x + 4
-
-#v(1cm)
-
-*Exercice 2* (5 points)
-
-Un rectangle a un perimetre de 36 cm. Sa longueur est le triple de sa largeur.
-Calculer les dimensions de ce rectangle.
-
-#v(1cm)
-
-*Exercice 3* (10 points)
-
-Dans un cinema, le prix d'une place adulte est 12 euros et le prix d'une place enfant est 8 euros.
-Une famille de 5 personnes paie 48 euros au total.
-Combien y a-t-il d'adultes et d'enfants dans cette famille?`,
-	// Same sample, rendered the way {{exercises_badge}} numbers exercises
-	exercises_badge: `#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]] #h(0.5em) #text(weight: "bold")[Equations]
-
-Resoudre les equations suivantes:
-
-a) 2x + 5 = 11
-
-b) 3x - 7 = 2x + 4
-
-#v(1cm)
-
-#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[2]] #h(0.5em) #text(weight: "bold")[Perimetre]
-
-Un rectangle a un perimetre de 36 cm. Sa longueur est le triple de sa largeur.
-Calculer les dimensions de ce rectangle.
-
-#v(1cm)
-
-#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[3]] #h(0.5em) #text(weight: "bold")[Cinema]
-
-Dans un cinema, le prix d'une place adulte est 12 euros et le prix d'une place enfant est 8 euros.
-Une famille de 5 personnes paie 48 euros au total.
-Combien y a-t-il d'adultes et d'enfants dans cette famille?`
-};
-
-/**
- * A `{{#if key}}...{{/if}}` block, innermost first so nested blocks resolve
- * from the inside out. The body may not contain another opening tag.
- */
-const CONDITIONAL_BLOCK = /\{\{#if\s+([\w.]+)\s*\}\}((?:(?!\{\{#if\s)[\s\S])*?)\{\{\/if\}\}/;
-
-/**
- * A conditional is truthy unless its value is missing, empty or an explicit
- * `false`. Template data is stringly typed, hence the string comparison.
- */
-function isTruthy(value: string | undefined): boolean {
-	return value !== undefined && value !== '' && value !== 'false';
-}
-
-/**
- * Resolve `{{#if key}}...{{/if}}` blocks, dropping the body of falsy ones.
- *
- * Display options (`show_date`, `show_class`, ...) have to remove the label
- * along with the value - `*{{label_date}} :* {{date}}` would otherwise leave a dangling
- * "Date :" behind - so templates wrap the whole fragment in a conditional.
- * Unbalanced tags are left untouched rather than swallowing the rest of the
- * document.
- */
-function renderConditionals(templateContent: string, data: Record<string, string>): string {
-	let result = templateContent;
-	let match = CONDITIONAL_BLOCK.exec(result);
-
-	while (match) {
-		const [block, key, body] = match;
-		// Splice by index rather than String.replace: Typst content is full of `$`
-		// (math mode) and replacement strings would reinterpret `$&`, `$'`, ...
-		const replacement = isTruthy(data[key]) ? body : '';
-		result = result.slice(0, match.index) + replacement + result.slice(match.index + block.length);
-		match = CONDITIONAL_BLOCK.exec(result);
-	}
-
-	return result;
-}
-
-/**
- * Replace placeholders in template content with actual values
- */
-export function renderTemplate(templateContent: string, data: Record<string, string>): string {
-	let result = renderConditionals(templateContent, data);
-	for (const [key, value] of Object.entries(data)) {
-		const placeholder = `{{${key}}}`;
-		result = result.split(placeholder).join(value);
-	}
-	return result;
-}
+',
+  '[{"key":"title","type":"text","label":"Titre","default_value":"Feuille d''exercices"},{"key":"date","type":"date","label":"Date","default_value":""},{"key":"class","type":"text","label":"Classe","default_value":""},{"key":"student_name","type":"text","label":"Nom de l''eleve","default_value":""},{"key":"exercises","type":"dynamic","label":"Exercices","default_value":""},{"key":"total_points","type":"text","label":"Total des points","default_value":""},{"key":"duration","type":"text","label":"Duree estimee","default_value":""},{"key":"instructions","type":"text","label":"Consignes","default_value":""},{"key":"school_name","type":"text","label":"Nom de l''ecole","default_value":""},{"key":"teacher_name","type":"text","label":"Nom du professeur","default_value":""}]'::jsonb,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  template_content = EXCLUDED.template_content,
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();

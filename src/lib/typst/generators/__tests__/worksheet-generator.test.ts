@@ -302,6 +302,112 @@ describe('WorksheetGenerator', () => {
 			expect(result.typstContent).toContain('*Classe :* Classe 3B');
 		});
 
+		it('writes the chrome in English when the worksheet is', () => {
+			const generator = new WorksheetGenerator(createMockConfig({ language: 'en' }), undefined, {
+				studentName: 'John Smith',
+				className: 'Year 10'
+			});
+
+			const result = generator.generate({
+				worksheet: createMockWorksheet({ type: 'assessment' }),
+				instance: createMockInstance()
+			});
+
+			expect(result.typstContent).toContain('*Surname :*');
+			expect(result.typstContent).toContain('*Class :*');
+			expect(result.typstContent).toContain('*Date :*');
+			expect(result.typstContent).toContain('*Duration :*');
+			expect(result.typstContent).toContain('*Marks :*');
+			expect(result.typstContent).toContain('Exercise 1');
+			expect(result.typstContent).toContain('Read each question carefully');
+			// No French label left behind.
+			expect(result.typstContent).not.toContain('Nom :');
+			expect(result.typstContent).not.toContain('Classe :');
+			expect(result.typstContent).not.toContain('Exercice ');
+			expect(result.typstContent).not.toContain('Duree');
+			expect(result.typstContent).not.toContain('Bareme');
+		});
+
+		it('keeps the French chrome when no language is set', () => {
+			const generator = new WorksheetGenerator(createMockConfig(), undefined, {
+				studentName: 'Jean Dupont',
+				className: '3B'
+			});
+
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance: createMockInstance()
+			});
+
+			expect(result.typstContent).toContain('*Nom :*');
+			expect(result.typstContent).toContain('Exercice 1');
+		});
+
+		it('names the correction in the document language', () => {
+			const generator = new WorksheetGenerator(createMockConfig({ language: 'en' }), undefined, {
+				mode: 'correction'
+			});
+
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance: createMockInstance()
+			});
+
+			expect(result.typstContent).toContain('ANSWERS');
+			expect(result.typstContent).not.toContain('CORRECTION');
+		});
+
+		it('feeds templates the labels and the typst lang', () => {
+			const labelTemplate: WorksheetTemplateRow = {
+				...mockTemplate,
+				template_content: `#set text(lang: "{{lang}}")
+*{{label_name}} :* {{student_name}}
+*{{label_date}} :* {{date}}
+{{label_daily_exercises}}
+{{exercises}}`
+			};
+			const generator = new WorksheetGenerator(createMockConfig({ language: 'en' }), undefined, {
+				studentName: 'John Smith'
+			});
+
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance: createMockInstance(),
+				template: labelTemplate
+			});
+
+			expect(result.typstContent).toContain('#set text(lang: "en")');
+			expect(result.typstContent).toContain('*Surname :* John Smith');
+			expect(result.typstContent).toContain("Today's exercises");
+		});
+
+		it('uses the translated worksheet title on an English sheet', () => {
+			const generator = new WorksheetGenerator(createMockConfig({ language: 'en' }));
+
+			const result = generator.generate({
+				worksheet: createMockWorksheet({
+					title: 'Fonctions du second degré',
+					translations: { en: { title: 'Quadratic functions' } }
+				}),
+				instance: createMockInstance()
+			});
+
+			expect(result.typstContent).toContain('Quadratic functions');
+			expect(result.typstContent).not.toContain('Fonctions du second degré');
+		});
+
+		it('falls back to the French title when it is not translated', () => {
+			const generator = new WorksheetGenerator(createMockConfig({ language: 'en' }));
+
+			const result = generator.generate({
+				worksheet: createMockWorksheet({ title: 'Fonctions du second degré' }),
+				instance: createMockInstance()
+			});
+
+			// A missing translation must not leave a hole in the document.
+			expect(result.typstContent).toContain('Fonctions du second degré');
+		});
+
 		it('numbers exercises with a heading by default', () => {
 			const generator = new WorksheetGenerator(createMockConfig());
 			const result = generator.generate({

@@ -9,6 +9,7 @@ import { z } from 'zod';
 import { uuidSchema } from './common';
 import { exerciseHintSchema } from './exercises';
 import { gradeCodeSchema } from './grades';
+import { CONTENT_LOCALES } from '$lib/types/locale';
 
 // ============================================================================
 // ENUM SCHEMAS
@@ -43,6 +44,37 @@ export const numberingStyleSchema = z.enum(['numeric', 'alphabetic', 'roman'], {
 });
 
 // ============================================================================
+// LOCALE & TRANSLATION SCHEMAS
+// ============================================================================
+
+/**
+ * Content locale of a worksheet: French (the source of truth) or English.
+ * An unknown locale is rejected rather than stored and ignored later.
+ */
+const contentLocaleSchema = z.enum(CONTENT_LOCALES);
+
+/**
+ * Translations of a row's texts, keyed by locale.
+ *
+ * `strict()` on both levels: an unknown locale key or an unknown field is a
+ * bug in the caller, not something to store silently. Lengths mirror the
+ * French columns so a translation cannot smuggle in a bigger payload.
+ */
+const rowTranslationsSchema = z
+	.object({
+		en: z
+			.object({
+				title: z.string().trim().max(200, 'Title too long').optional(),
+				description: z.string().trim().max(5000, 'Description too long').optional(),
+				instructions: z.string().trim().max(5000, 'Instructions too long').optional(),
+				custom_instructions: z.string().trim().max(5000, 'Instructions too long').optional()
+			})
+			.strict()
+			.optional()
+	})
+	.strict();
+
+// ============================================================================
 // CONFIG SCHEMAS
 // ============================================================================
 
@@ -50,6 +82,7 @@ export const numberingStyleSchema = z.enum(['numeric', 'alphabetic', 'roman'], {
  * Base worksheet config object schema (without optional/default wrappers)
  */
 const worksheetConfigObjectSchema = z.object({
+	language: contentLocaleSchema.optional(),
 	show_title: z.boolean().optional(),
 	show_date: z.boolean().optional(),
 	show_student_name: z.boolean().optional(),
@@ -119,6 +152,7 @@ export const variantConfigSchema = z
 export const createWorksheetSchema = z.object({
 	title: z.string().trim().min(1, 'Title is required').max(200, 'Title too long'),
 	description: z.string().trim().max(5000, 'Description too long').optional().nullable(),
+	translations: rowTranslationsSchema.optional().nullable(),
 	type: worksheetTypeSchema.default('worksheet'),
 	config: worksheetConfigSchema,
 	template_id: uuidSchema.optional().nullable(),
@@ -172,7 +206,8 @@ export const updateWorksheetSchema = z.object({
 		.nullable(),
 	grades: z.array(gradeCodeSchema).max(20, 'Maximum 20 grade levels').optional(), // No default - won't be set if not in request
 	tags: z.array(z.string().trim().min(1).max(50)).max(30, 'Maximum 30 tags').optional(), // No default - won't be set if not in request
-	status: worksheetStatusSchema.optional()
+	status: worksheetStatusSchema.optional(),
+	translations: rowTranslationsSchema.optional().nullable()
 });
 
 /**
@@ -206,6 +241,7 @@ export const listWorksheetsQuerySchema = z.object({
 export const createWorksheetSectionSchema = z.object({
 	title: z.string().trim().min(1, 'Title is required').max(200, 'Title too long'),
 	instructions: z.string().trim().max(5000, 'Instructions too long').optional().nullable(),
+	translations: rowTranslationsSchema.optional().nullable(),
 	position: z
 		.number()
 		.int('Position must be an integer')
@@ -250,6 +286,7 @@ export const createWorksheetExerciseSchema = z.object({
 	variant_mode: variantModeSchema.default('none'),
 	variant_config: variantConfigSchema,
 	custom_instructions: z.string().trim().max(5000, 'Instructions too long').optional().nullable(),
+	translations: rowTranslationsSchema.optional().nullable(),
 	is_essential: z.boolean().optional().default(false)
 });
 

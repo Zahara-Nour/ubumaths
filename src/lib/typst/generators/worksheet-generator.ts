@@ -44,7 +44,10 @@ import type { GeneratorConfig, GeneratorContext, GenerateResult } from '../types
 import { BaseTypstGenerator } from './base-generator';
 import { generateTypst, escapeTypst, parseMarkdown } from '$lib/ubumark';
 import { getDefaultTemplate, renderTemplate } from '../templates';
-import { getTypeLabel, formatNumber } from '../utils';
+import { documentLabels, labelPlaceholders, type DocumentLabels } from '../labels';
+import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '$lib/types/locale';
+import { localizedText, worksheetLocale } from '$lib/types/worksheets';
+import { formatNumber } from '../utils';
 
 // ============================================================================
 // TYPES
@@ -98,6 +101,55 @@ export interface GenerateTypstParams {
 export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInput> {
 	/** Worksheet-specific configuration */
 	private worksheetConfig: WorksheetConfig;
+
+	/**
+	 * Language of the whole document: exercise content and chrome alike.
+	 *
+	 * Read from the worksheet config, so a worksheet cannot end up with English
+	 * exercises under French labels. An unknown value falls back to French: a
+	 * corrupted config must still generate.
+	 */
+	private get locale(): ContentLocale {
+		return worksheetLocale(this.worksheetConfig);
+	}
+
+	/** Words written around the teacher's content, in the document language. */
+	private get labels(): DocumentLabels {
+		return documentLabels(this.locale);
+	}
+
+	/**
+	 * Worksheet title in the document language.
+	 *
+	 * The title lives in a column rather than in the variations JSONB, so its
+	 * translation travels in `worksheet.translations` — same contract: French in
+	 * the column, translation optional, fallback to French.
+	 */
+	private title(worksheet: WorksheetRow): string {
+		return localizedText(worksheet.title, worksheet.translations, 'title', this.locale) ?? '';
+	}
+
+	/** Document type name ("Feuille d'exercices", "Worksheet", ...). */
+	private typeLabel(type: string): string {
+		const labels = this.labels;
+		const byType: Record<string, string> = {
+			worksheet: labels.typeWorksheet,
+			assessment: labels.typeAssessment,
+			exam: labels.typeExam,
+			quiz: labels.typeQuiz,
+			homework: labels.typeHomework
+		};
+		return byType[type] ?? labels.typeWorksheet;
+	}
+
+	/** Date as printed on the document, in the document language. */
+	private formattedDate(): string {
+		return new Date().toLocaleDateString(DATE_LOCALES[this.locale], {
+			day: 'numeric',
+			month: 'long',
+			year: 'numeric'
+		});
+	}
 
 	/**
 	 * Create a new worksheet generator
@@ -194,17 +246,18 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 
 		// Prepare template data
 		const templateData: Record<string, string> = {
+			// Chrome vocabulary: one template body serves both languages, so a label
+			// cannot drift between them.
+			...labelPlaceholders(this.locale),
+			// Drives hyphenation and smart quotes, not just wording.
+			lang: TYPST_LANGS[this.locale],
 			show_title: flag(config.show_title),
 			show_date: flag(config.show_date),
 			show_class: flag(config.show_class),
 			show_student_name: flag(config.show_student_name),
 			show_points: flag(config.show_points),
-			title: escapeTypst(worksheet.title),
-			date: new Date().toLocaleDateString('fr-FR', {
-				day: 'numeric',
-				month: 'long',
-				year: 'numeric'
-			}),
+			title: escapeTypst(this.title(worksheet)),
+			date: this.formattedDate(),
 			class: this.context.className ? escapeTypst(this.context.className) : '',
 			student_name: this.context.studentName ? escapeTypst(this.context.studentName) : '',
 			total_points: worksheet.total_points?.toString() || '',
@@ -217,7 +270,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			// Additional placeholders for specific templates
 			due_date: '',
 			exam_session: '',
-			subject: 'Mathematiques',
+			subject: this.labels.subject,
 			coefficient: '',
 			competences: ''
 		};
@@ -227,7 +280,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		if (mode === 'correction') {
 			result += `#block(width: 100%, fill: rgb("#228b22"), inset: 10pt)[
   #align(center)[
-    #text(size: 1.4em, weight: "bold", fill: white)[CORRECTION]
+    #text(size: 1.4em, weight: "bold", fill: white)[${this.labels.correction.toUpperCase()}]
   ]
 ]
 
@@ -351,13 +404,14 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	 */
 	private generateHeader(worksheet: WorksheetRow, mode: 'worksheet' | 'correction'): string {
 		const config = this.worksheetConfig;
+		const labels = this.labels;
 		let header = '';
 
 		// Correction banner (only in correction mode)
 		if (mode === 'correction') {
 			header += '#block(width: 100%, fill: rgb(34, 139, 34), inset: 10pt)[\n';
 			header += '  #align(center)[\n';
-			header += '    #text(size: 1.4em, weight: "bold", fill: white)[CORRECTION]\n';
+			header += `    #text(size: 1.4em, weight: "bold", fill: white)[${labels.correction.toUpperCase()}]\n`;
 			header += '  ]\n';
 			header += ']\n\n';
 			header += '#v(0.5em)\n\n';
@@ -373,7 +427,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			// Left side: Name
 			if (config.show_student_name) {
 				const name = this.context.studentName || '.'.repeat(40);
-				header += `    align(left)[*Nom :* ${escapeTypst(name)}],\n`;
+				header += `    align(left)[*${labels.name} :* ${escapeTypst(name)}],\n`;
 			} else {
 				header += '    [],\n';
 			}
@@ -382,15 +436,10 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			const rightItems: string[] = [];
 			if (config.show_class) {
 				const cls = this.context.className || '.'.repeat(20);
-				rightItems.push(`*Classe :* ${escapeTypst(cls)}`);
+				rightItems.push(`*${labels.class} :* ${escapeTypst(cls)}`);
 			}
 			if (config.show_date) {
-				const date = new Date().toLocaleDateString('fr-FR', {
-					day: 'numeric',
-					month: 'long',
-					year: 'numeric'
-				});
-				rightItems.push(`*Date :* ${date}`);
+				rightItems.push(`*${labels.date} :* ${this.formattedDate()}`);
 			}
 
 			if (rightItems.length > 0) {
@@ -406,12 +455,12 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 
 		// Title
 		if (config.show_title) {
-			const typeLabel = getTypeLabel(worksheet.type);
-			const titleSuffix = mode === 'correction' ? ' - Correction' : '';
+			const typeLabel = this.typeLabel(worksheet.type);
+			const titleSuffix = mode === 'correction' ? ` - ${labels.correction}` : '';
 			header += `#align(center)[\n`;
 			header += `  #text(size: 1.5em, weight: "bold")[${escapeTypst(typeLabel)}${titleSuffix}]\n`;
 			header += `  #linebreak()\n`;
-			header += `  #text(size: 1.3em)[${escapeTypst(worksheet.title)}]\n`;
+			header += `  #text(size: 1.3em)[${escapeTypst(this.title(worksheet))}]\n`;
 			header += `]\n\n`;
 			header += '#v(0.5em)\n\n';
 		}
@@ -419,10 +468,12 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		// Duration and points
 		const metadata: string[] = [];
 		if (worksheet.estimated_duration_minutes) {
-			metadata.push(`*Duree :* ${worksheet.estimated_duration_minutes} minutes`);
+			metadata.push(
+				`*${labels.duration} :* ${worksheet.estimated_duration_minutes} ${labels.minutes}`
+			);
 		}
 		if (config.show_points && worksheet.total_points) {
-			metadata.push(`*Bareme :* ${worksheet.total_points} points`);
+			metadata.push(`*${labels.marks} :* ${worksheet.total_points} ${labels.points.toLowerCase()}`);
 		}
 
 		if (metadata.length > 0) {
@@ -434,15 +485,14 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		if (worksheet.type === 'exam' || worksheet.type === 'assessment') {
 			header += '#block(width: 100%, fill: rgb(250, 250, 250), inset: 10pt, radius: 4pt)[\n';
 			header += '  #text(size: 0.9em, style: "italic")[\n';
-			header += '    *Instructions :*\n';
+			header += `    *${labels.instructions} :*\n`;
 			header += '    #list(\n';
-			header += '      [Lisez attentivement chaque enonce avant de repondre.],\n';
-			header += '      [Ecrivez lisiblement et justifiez vos reponses.],\n';
-			header +=
-				'      [La calculatrice est ' +
-				(worksheet.type === 'exam' ? 'interdite' : 'autorisee') +
-				'.],\n';
-			header += '      [Gerez bien votre temps.]\n';
+			header += `      [${labels.readCarefully}],\n`;
+			header += `      [${labels.writeLegibly}],\n`;
+			header += `      [${
+				worksheet.type === 'exam' ? labels.calculatorForbidden : labels.calculatorAllowed
+			}],\n`;
+			header += `      [${labels.manageTime}]\n`;
 			header += '    )\n';
 			header += '  ]\n';
 			header += ']\n\n';
@@ -560,7 +610,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		content += '#exercise-header[\n';
 		content += '  #grid(\n';
 		content += '    columns: (auto, 1fr, auto),\n';
-		content += `    [#text(size: 1.1em, weight: "bold")[Exercice ${number}${titleSuffix}]],\n`;
+		content += `    [#text(size: 1.1em, weight: "bold")[${this.labels.exercise} ${number}${titleSuffix}]],\n`;
 		content += '    [],\n';
 
 		if (config.show_points && exercise.points) {
@@ -758,11 +808,13 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		} else {
 			const titleSuffix = exercise.title ? ` : ${escapeTypst(exercise.title)}` : '';
 			content += `#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[
-  #text(size: 1.1em, weight: "bold")[Exercice ${number}${titleSuffix}]`;
+  #text(size: 1.1em, weight: "bold")[${this.labels.exercise} ${number}${titleSuffix}]`;
 		}
 
 		if (config.show_points && exercise.points) {
-			content += ` #h(1fr) #box(fill: rgb("#dcdcdc"), inset: (x: 6pt, y: 3pt), radius: 3pt)[${exercise.points} ${exercise.points > 1 ? 'pts' : 'pt'}]`;
+			content += ` #h(1fr) #box(fill: rgb("#dcdcdc"), inset: (x: 6pt, y: 3pt), radius: 3pt)[${exercise.points} ${
+				exercise.points > 1 ? this.labels.pointAbbrevPlural : this.labels.pointAbbrev
+			}]`;
 		}
 
 		if (exercise.custom_instructions) {
@@ -833,10 +885,10 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		footer += '  #set text(size: 0.9em, fill: rgb(100, 100, 100))\n';
 
 		if (mode === 'correction') {
-			footer += '  Correction - ';
+			footer += `  ${this.labels.correction} - `;
 		}
 
-		footer += `  ${escapeTypst(worksheet.title)} - Page #context counter(page).display()\n`;
+		footer += `  ${escapeTypst(this.title(worksheet))} - Page #context counter(page).display()\n`;
 		footer += '])\n';
 
 		// Add generation info for corrections
@@ -846,7 +898,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			footer += '#v(0.5em)\n';
 			footer += '#align(center)[\n';
 			footer += '  #text(size: 0.8em, style: "italic", fill: rgb(100, 100, 100))[\n';
-			footer += `    Document genere le ${new Date().toLocaleDateString('fr-FR')} a ${new Date().toLocaleTimeString('fr-FR')}\n`;
+			const dateLocale = DATE_LOCALES[this.locale];
+			const generatedOn = `${new Date().toLocaleDateString(dateLocale)} ${this.labels.at} ${new Date().toLocaleTimeString(dateLocale)}`;
+			footer += `    ${this.labels.generatedOn} ${generatedOn}\n`;
 			footer += '  ]\n';
 			footer += ']\n';
 		}

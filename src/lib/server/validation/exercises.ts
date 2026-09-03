@@ -101,6 +101,44 @@ export const exerciseHintSchema = z
 	);
 
 /**
+ * Schema for a translated variation or shared defaults.
+ *
+ * Every field is optional: a translation carries only what it overrides, and
+ * what it leaves out falls back to French at resolution time. `strict()`
+ * rejects an unknown locale key rather than storing a language nothing will
+ * ever read.
+ */
+export const exerciseTranslationsSchema = z
+	.object({
+		en: z
+			.object({
+				statement_md: z.string().trim().max(50000, 'Statement too long').optional(),
+				solution_md: z.string().trim().max(50000, 'Solution too long').optional(),
+				// Keyed by hint id, and carrying text only: id/type/url stay in the
+				// French hint so a translation can never break a {{hint:id}} reference.
+				hints: z
+					.record(
+						z
+							.string()
+							.regex(/^[a-zA-Z][a-zA-Z0-9_-]*$/, 'Invalid hint id')
+							.max(50, 'Hint id too long'),
+						z
+							.object({
+								title: z.string().trim().max(200, 'Hint title too long').optional(),
+								description: z.string().trim().max(1000, 'Hint description too long').optional(),
+								content: z.string().trim().max(5000, 'Hint content too long').optional()
+							})
+							.strict()
+					)
+					.refine((hints) => Object.keys(hints).length <= 20, 'Maximum 20 hints per variation')
+					.optional()
+			})
+			.strict()
+			.optional()
+	})
+	.strict();
+
+/**
  * Schema for exercise variations (alternative versions of an exercise)
  */
 export const exerciseVariationSchema = z
@@ -113,7 +151,8 @@ export const exerciseVariationSchema = z
 			.max(50000, 'Statement too long'),
 		solution_md: z.string().trim().min(1, 'Solution is required').max(50000, 'Solution too long'),
 		variables: z.array(variableSchema).max(100, 'Maximum 100 variables per variation').optional(),
-		hints: z.array(exerciseHintSchema).max(20, 'Maximum 20 hints per variation').optional()
+		hints: z.array(exerciseHintSchema).max(20, 'Maximum 20 hints per variation').optional(),
+		translations: exerciseTranslationsSchema.optional()
 	})
 	.refine(
 		(data) => {
@@ -145,7 +184,8 @@ export const sharedExerciseDefaultsSchema = z
 	.object({
 		variables: z.array(variableSchema).max(100, 'Maximum 100 shared variables').optional(),
 		statement_md: z.string().trim().max(50000, 'Statement too long').optional(),
-		solution_md: z.string().trim().max(50000, 'Solution too long').optional()
+		solution_md: z.string().trim().max(50000, 'Solution too long').optional(),
+		translations: exerciseTranslationsSchema.optional()
 	})
 	.optional();
 

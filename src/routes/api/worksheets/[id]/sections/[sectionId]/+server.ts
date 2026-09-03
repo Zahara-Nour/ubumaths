@@ -145,6 +145,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const updateData: Record<string, unknown> = {};
 	if (data.title !== undefined) updateData.title = data.title;
 	if (data.instructions !== undefined) updateData.instructions = data.instructions;
+	if (data.translations !== undefined) updateData.translations = data.translations;
 	if (data.position !== undefined) updateData.position = data.position;
 	if (data.points_total !== undefined) updateData.points_total = data.points_total;
 

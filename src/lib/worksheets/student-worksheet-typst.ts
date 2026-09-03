@@ -18,6 +18,8 @@
  * ```
  */
 
+import { documentLabels, STUDENT_TYPE_LABELS } from '$lib/typst/labels';
+import { isContentLocale, TYPST_LANGS, type ContentLocale } from '$lib/types/locale';
 import type { StudentWorksheetView, StudentExerciseView } from '$lib/types/worksheets';
 import {
 	generateTypst,
@@ -85,7 +87,15 @@ export function generateStudentWorksheetTypst(
 	worksheet: StudentWorksheetView,
 	includeSolution: boolean
 ): string {
-	let typst = generateSetup();
+	// The sheet the student prints is a document: its chrome follows the
+	// worksheet language, like the teacher's PDF does.
+	//
+	// Validated rather than asserted: this value crosses an API response, and a
+	// declared type guarantees nothing at runtime. An unexpected locale would
+	// otherwise crash on STUDENT_TYPE_LABELS[locale] instead of degrading.
+	const locale: ContentLocale = isContentLocale(worksheet.language) ? worksheet.language : 'fr';
+	const labels = documentLabels(locale);
+	let typst = generateSetup(locale);
 
 	// Header with title
 	typst += `#align(center)[
@@ -93,14 +103,7 @@ export function generateStudentWorksheetTypst(
 ]\n\n`;
 
 	// Type badge
-	const typeLabels: Record<string, string> = {
-		worksheet: 'Fiche de travail',
-		assessment: 'Evaluation',
-		exam: 'Examen',
-		quiz: 'Quiz',
-		homework: 'Devoir'
-	};
-	const typeLabel = typeLabels[worksheet.type] || worksheet.type;
+	const typeLabel = STUDENT_TYPE_LABELS[locale][worksheet.type] || escapeTypst(worksheet.type);
 	typst += `#align(center)[#text(size: 0.9em, fill: gray)[${typeLabel}]]\n\n`;
 
 	// Description if present
@@ -111,7 +114,7 @@ export function generateStudentWorksheetTypst(
 	// Instructions if present
 	if (worksheet.instructions) {
 		typst += `#block(fill: rgb("#eff6ff"), radius: 4pt, inset: 12pt, width: 100%)[
-  #text(weight: "bold", fill: rgb("#1d4ed8"))[Instructions]
+  #text(weight: "bold", fill: rgb("#1d4ed8"))[${labels.instructions}]
   #v(0.5em)
   ${escapeTypst(worksheet.instructions)}
 ]\n\n`;
@@ -120,7 +123,7 @@ export function generateStudentWorksheetTypst(
 	// Check if there are essential exercises for legend
 	const hasEssentialExercises = (worksheet.exercises ?? []).some((e) => e.is_essential);
 	if (hasEssentialExercises) {
-		typst += `#text(size: 0.9em, fill: gray)[#text(fill: rgb("#f59e0b"))[★] = Exercices indispensables]\n\n`;
+		typst += `#text(size: 0.9em, fill: gray)[#text(fill: rgb("#f59e0b"))[★] = ${labels.essentialExercises}]\n\n`;
 	}
 
 	typst += `#line(length: 100%, stroke: 0.5pt + gray)\n\n`;
@@ -154,7 +157,7 @@ export function generateStudentWorksheetTypst(
 				}
 			} else if (sections.length > 0) {
 				// Unsectioned exercises after sectioned ones
-				typst += `= Autres exercices\n\n`;
+				typst += `= ${labels.otherExercises}\n\n`;
 			}
 		}
 
@@ -213,7 +216,7 @@ ${exerciseContent}]\n`;
 	// Add corrections section at the end
 	if (corrections.length > 0) {
 		typst += `#pagebreak()\n\n`;
-		typst += `= Corrections\n\n`;
+		typst += `= ${labels.corrections}\n\n`;
 
 		for (const { number, title, correction } of corrections) {
 			const titlePart = title
@@ -246,7 +249,7 @@ ${exerciseContent}]\n`;
  * - Math operator setup (limits for sum, prod, lim, etc.)
  * - Paragraph justification
  */
-function generateSetup(): string {
+function generateSetup(locale: ContentLocale): string {
 	return `#set page(
   paper: "a4",
   margin: (x: 1cm, y: 1.5cm),
@@ -257,7 +260,7 @@ function generateSetup(): string {
     #counter(page).display("1 / 1", both: true)
   ]
 )
-#set text(font: "New Computer Modern", size: 10pt, lang: "fr")
+#set text(font: "New Computer Modern", size: 10pt, lang: "${TYPST_LANGS[locale]}")
 #set par(justify: true)
 #set heading(numbering: none)
 
