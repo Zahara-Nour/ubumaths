@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.13.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.12.0...v0.13.0) (2026-09-03)
+
+### 🐛 Bug Fixes
+
+- **admin:** la config d'école ne plante plus sur structuredClone d'un proxy $state ([b2f23b1](https://github.com/Zahara-Nour/ubumaths/commit/b2f23b18ee9f433cb796a91b9e19d3f707e95476))
+- **worksheets:** les options d'affichage s'appliquent enfin aux templates ([5d34c0a](https://github.com/Zahara-Nour/ubumaths/commit/5d34c0a8282344b4bf4549c293cb9a37b58ec50d))
+- **worksheets:** rend la langue de la fiche visible et l'avertissement utile ([3be9467](https://github.com/Zahara-Nour/ubumaths/commit/3be946740e6ec41728e3eea97f1f49ae84265889))
+
+### ✨ Features
+
+- **exercices:** traduction anglaise des indices dans l'éditeur ([7d7b727](https://github.com/Zahara-Nour/ubumaths/commit/7d7b727dff8b145acf709ac0bb21668dc91e246e))
+- **exercices:** traductions anglaises des 30 exercices de seconde ([aaa922e](https://github.com/Zahara-Nour/ubumaths/commit/aaa922efabc2dd9d6b1c563a0ecb184ef423f3e2))
+- **exercices:** traductions anglaises des 68 exercices de 1ʳᵉ spécialité ([3048d9c](https://github.com/Zahara-Nour/ubumaths/commit/3048d9c436f05a18784d2f6b727ec0df553bf32e))
+- **worksheets:** fiches d'exercices en anglais pour une classe anglophone ([a0f9f03](https://github.com/Zahara-Nour/ubumaths/commit/a0f9f03755a35ae40ef364a64ba0fa1b5d7d3dc1))
+
 ## [0.12.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.11.0...v0.12.0) (2026-09-02)
 
 ### 📚 Documentation
