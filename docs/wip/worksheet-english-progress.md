@@ -72,7 +72,7 @@ Fait le 2026-09-03.
 Tests : 8 (pruning) + 8 (statut) écrits avant l'implémentation. `svelte-autofixer` passé sur les
 4 `.svelte` modifiés, 0 issue. `check:incremental` 0 erreur ; 1886 tests verts.
 
-### Indices : forme corrigée, UI différée (décision PO du 2026-09-03)
+### Indices : forme corrigée, puis UI livrée (2026-09-03)
 
 La spec disait « l'onglet anglais édite énoncé, solution **et indices** ». Deux constats :
 
@@ -86,8 +86,14 @@ Décision : **changer la forme tout de suite** (gratuit tant qu'aucune ligne ne 
 de données plus tard), **différer l'UI**. `translations.en.hints` est désormais une table indexée par
 `id` ne portant que le texte (`title`, `description`, `content`) — `id`/`type`/`url` restent
 structurels. Un indice ajouté en français apparaît non traduit au lieu de disparaître, un indice
-supprimé ne peut pas ressusciter par sa traduction, et le repli est champ par champ. L'UI sera
-purement additive : même éditeur, mêmes `id`, champs texte basculés.
+supprimé ne peut pas ressusciter par sa traduction, et le repli est champ par champ. L'UI a suivi le
+même jour, purement additive comme prévu : `HintTranslationEditor.svelte`, affiché dans l'onglet
+English de la carte « Aides ». Les indices français y sont le **cadre fixe** — mêmes `id`, mêmes
+types, mêmes URL — et seuls leurs textes sont saisissables. Un test vérifie qu'aucun champ n'est
+jamais offert pour `id`, `type` ou `url` : c'est l'invariant qui protège les `{{hint:id}}`.
+`content` n'apparaît que pour les indices `ubumark` (les autres portent une URL), et `description`
+que si le français en a une. Comme partout, un champ vidé retire sa traduction et ne laisse aucun
+conteneur derrière lui.
 
 ## Phase 3 — habillage Typst ✅
 
