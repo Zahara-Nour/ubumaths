@@ -1,18 +1,22 @@
--- ==============================================================================
--- SEED — templates Typst système des feuilles d'exercices (worksheet_templates)
--- ==============================================================================
--- Les templates intégrés (Standard, Deux colonnes, Fiche élève, …) existent en
--- production avec ces UUID déterministes et `created_by = NULL`. Le baseline de
--- migrations étant schéma-seul, ils manquaient en local : toute feuille créée
--- avec un template intégré violait alors la FK worksheets.template_id.
+-- Templates système : options d'affichage effectives via {{#if ...}}
+-- ===========================================================================
 --
--- Les libellés gardés par les options d'affichage (date, classe, nom, titre,
--- barème) sont encadrés par des conditionnels {{#if show_x}}...{{/if}} que
--- renderTemplate() résout à la génération.
+-- Les 12 templates intégrés remplissaient {{date}}, {{class}}, {{student_name}},
+-- {{title}} et {{total_points}} sans jamais lire la config de la fiche : une
+-- feuille avec « Afficher la date » décochée sortait quand même avec la date.
+-- Les libellés étant écrits en dur dans le Typst, il ne suffisait pas d'injecter
+-- une valeur vide ; chaque fragment (libellé + valeur) est désormais encadré par
+-- un conditionnel {{#if show_x}}...{{/if}} résolu par renderTemplate().
+--
+-- Au passage : « Evaluation » ne compilait pas du tout ([/ 20] est lu par Typst
+-- comme une liste de termes, d'où « expected colon ») — le / est échappé.
+--
+-- Les lignes DB sont rafraîchies parce que GET /api/worksheets/[id] renvoie le
+-- template stocké et que le générateur préfère ce contenu à celui du code.
+-- Elles avaient dérivé : la copie en base datait d'une version antérieure du
+-- fichier TS (ex. « Minimaliste » sans les #set enum/list).
 --
 -- Source de vérité : src/lib/typst/templates/default-templates.ts
--- (regénérer ce fichier si la liste change). AUCUNE donnée personnelle.
--- ==============================================================================
 
 -- Standard — Mise en page basique avec titre, informations eleve et exercices
 INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
@@ -83,7 +87,8 @@ ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
   template_content = EXCLUDED.template_content,
-  placeholders = EXCLUDED.placeholders;
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
 -- Evaluation — Mise en page formelle pour evaluation avec section notation
 INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
@@ -194,7 +199,8 @@ ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
   template_content = EXCLUDED.template_content,
-  placeholders = EXCLUDED.placeholders;
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
 -- Examen — Mise en page officielle d'examen avec en-tete, consignes et ligne de signature
 INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
@@ -326,7 +332,8 @@ ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
   template_content = EXCLUDED.template_content,
-  placeholders = EXCLUDED.placeholders;
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
 -- Devoirs — Mise en page simple pour devoirs a la maison
 INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
@@ -437,7 +444,8 @@ ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
   template_content = EXCLUDED.template_content,
-  placeholders = EXCLUDED.placeholders;
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
 -- Quiz — Format quiz rapide avec questions numerotees
 INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
@@ -524,7 +532,8 @@ ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
   template_content = EXCLUDED.template_content,
-  placeholders = EXCLUDED.placeholders;
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
 -- Minimaliste — Mise en page epuree et minimaliste
 INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
@@ -565,7 +574,8 @@ ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
   template_content = EXCLUDED.template_content,
-  placeholders = EXCLUDED.placeholders;
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
 -- Moderne — Design moderne avec numéros d'exercices stylisés et mise en page épurée
 INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
@@ -711,7 +721,8 @@ ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
   template_content = EXCLUDED.template_content,
-  placeholders = EXCLUDED.placeholders;
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
 -- Deux colonnes — Mise en page sur deux colonnes pour optimiser l'espace
 INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
@@ -843,7 +854,8 @@ ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
   template_content = EXCLUDED.template_content,
-  placeholders = EXCLUDED.placeholders;
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
 -- Paysage — Format A4 paysage avec grille optimisée pour les exercices
 INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
@@ -1028,7 +1040,8 @@ ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
   template_content = EXCLUDED.template_content,
-  placeholders = EXCLUDED.placeholders;
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
 -- Magazine — Style magazine avec design éditorial, encadrés colorés et typographie variée
 INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
@@ -1277,7 +1290,8 @@ ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
   template_content = EXCLUDED.template_content,
-  placeholders = EXCLUDED.placeholders;
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
 -- Scientifique — Style académique avec tableaux de données et grille de notation formelle
 INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
@@ -1463,7 +1477,8 @@ ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
   template_content = EXCLUDED.template_content,
-  placeholders = EXCLUDED.placeholders;
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();
 
 -- Fiche élève — Deux colonnes avec filet, en-tête pleine largeur, numéro d'exercice en blanc sur carré rouge
 INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
@@ -1526,4 +1541,5 @@ ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
   template_content = EXCLUDED.template_content,
-  placeholders = EXCLUDED.placeholders;
+  placeholders = EXCLUDED.placeholders,
+  updated_at = now();

@@ -186,8 +186,19 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			exerciseStyle
 		);
 
+		// Display options are opt-out: an absent flag means "show". They are
+		// exposed as {{#if show_x}} conditionals so templates can drop the label
+		// along with the value.
+		const config = this.worksheetConfig;
+		const flag = (value: boolean | undefined) => (value === false ? '' : 'true');
+
 		// Prepare template data
 		const templateData: Record<string, string> = {
+			show_title: flag(config.show_title),
+			show_date: flag(config.show_date),
+			show_class: flag(config.show_class),
+			show_student_name: flag(config.show_student_name),
+			show_points: flag(config.show_points),
 			title: escapeTypst(worksheet.title),
 			date: new Date().toLocaleDateString('fr-FR', {
 				day: 'numeric',

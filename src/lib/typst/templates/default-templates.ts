@@ -87,7 +87,7 @@ export const STANDARD_TEMPLATE: DefaultTemplate = {
 
 // En-tete
 #align(center)[
-  #text(size: 18pt, weight: "bold")[{{title}}]
+  {{#if show_title}}#text(size: 18pt, weight: "bold")[{{title}}]{{/if}}
 ]
 
 #v(0.5cm)
@@ -97,10 +97,10 @@ export const STANDARD_TEMPLATE: DefaultTemplate = {
   columns: (1fr, 1fr),
   gutter: 1cm,
   [
-    *Nom :* #underline[#h(3cm) {{student_name}} #h(3cm)]
+    {{#if show_student_name}}*Nom :* #underline[#h(3cm) {{student_name}} #h(3cm)]{{/if}}
   ],
   [
-    *Classe :* {{class}}
+    {{#if show_class}}*Classe :* {{class}}{{/if}}
   ]
 )
 
@@ -108,9 +108,9 @@ export const STANDARD_TEMPLATE: DefaultTemplate = {
   columns: (1fr, 1fr),
   gutter: 1cm,
   [
-    *Date :* {{date}}
+    {{#if show_date}}*Date :* {{date}}{{/if}}
   ],
-  [*Total :* {{total_points}} points]
+  [{{#if show_points}}*Total :* {{total_points}} points{{/if}}]
 )
 
 #v(0.5cm)
@@ -171,7 +171,7 @@ export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
       #v(0.3cm)
       #text(size: 16pt, weight: "bold")[EVALUATION]
       #v(0.2cm)
-      #text(size: 14pt)[{{title}}]
+      {{#if show_title}}#text(size: 14pt)[{{title}}]{{/if}}
     ],
     [
       #align(right)[
@@ -184,7 +184,7 @@ export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
           #align(center)[
             *Note*
             #v(0.5cm)
-            #text(size: 14pt)[/ {{total_points}}]
+            {{#if show_points}}#text(size: 14pt)[\\/ {{total_points}}]{{/if}}
           ]
         ]
       ]
@@ -198,9 +198,9 @@ export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
 #grid(
   columns: (1fr, 1fr, 1fr),
   gutter: 0.5cm,
-  [*Nom :* #underline[#h(2cm) {{student_name}} #h(2cm)]],
-  [*Classe :* {{class}}],
-  [*Date :* {{date}}]
+  [{{#if show_student_name}}*Nom :* #underline[#h(2cm) {{student_name}} #h(2cm)]{{/if}}],
+  [{{#if show_class}}*Classe :* {{class}}{{/if}}],
+  [{{#if show_date}}*Date :* {{date}}{{/if}}]
 )
 
 #v(0.3cm)
@@ -270,7 +270,7 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
       columns: (1fr, auto, 1fr),
       [{{school_name}}],
       [#text(weight: "bold")[EXAMEN]],
-      [#align(right)[{{date}}]]
+      [{{#if show_date}}#align(right)[{{date}}]{{/if}}]
     )
     #line(length: 100%, stroke: 0.5pt)
   ],
@@ -296,7 +296,7 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
       #v(0.3cm)
       #text(size: 18pt, weight: "bold")[{{subject}}]
       #v(0.3cm)
-      #text(size: 14pt)[{{title}}]
+      {{#if show_title}}#text(size: 14pt)[{{title}}]{{/if}}
       #v(0.3cm)
       #grid(
         columns: (1fr, 1fr),
@@ -324,8 +324,8 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
       *Prenom :* #underline[#h(4cm)]
     ],
     [
-      *Classe :* {{class}}
-      #v(0.3cm)
+      {{#if show_class}}*Classe :* {{class}}
+      #v(0.3cm){{/if}}
       *N° candidat :* #underline[#h(3cm)]
     ]
   )
@@ -349,7 +349,7 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
   #v(0.2cm)
   {{instructions}}
   #v(0.3cm)
-  *Total des points :* {{total_points}}
+  {{#if show_points}}*Total des points :* {{total_points}}{{/if}}
 ]
 
 #v(0.5cm)
@@ -414,8 +414,8 @@ export const HOMEWORK_TEMPLATE: DefaultTemplate = {
   ],
   [
     #align(right)[
-      #text(size: 10pt)[{{class}}]
-      #v(0.2cm)
+      {{#if show_class}}#text(size: 10pt)[{{class}}]
+      #v(0.2cm){{/if}}
       #text(size: 10pt)[{{teacher_name}}]
     ]
   ]
@@ -423,7 +423,7 @@ export const HOMEWORK_TEMPLATE: DefaultTemplate = {
 
 #v(0.3cm)
 #align(center)[
-  #text(size: 14pt, weight: "bold")[{{title}}]
+  {{#if show_title}}#text(size: 14pt, weight: "bold")[{{title}}]{{/if}}
 ]
 
 #v(0.3cm)
@@ -433,7 +433,7 @@ export const HOMEWORK_TEMPLATE: DefaultTemplate = {
   columns: (1fr, 1fr),
   gutter: 1cm,
   [
-    #text(weight: "bold")[Date de distribution :] {{date}}
+    {{#if show_date}}#text(weight: "bold")[Date de distribution :] {{date}}{{/if}}
   ],
   [
     #rect(
@@ -449,7 +449,7 @@ export const HOMEWORK_TEMPLATE: DefaultTemplate = {
 #v(0.3cm)
 
 // Nom de l'eleve
-*Nom :* #underline[#h(4cm) {{student_name}} #h(4cm)]
+{{#if show_student_name}}*Nom :* #underline[#h(4cm) {{student_name}} #h(4cm)]{{/if}}
 
 #v(0.5cm)
 #line(length: 100%, stroke: 0.5pt)
@@ -526,18 +526,18 @@ export const QUIZ_TEMPLATE: DefaultTemplate = {
     [
       #text(size: 14pt, weight: "bold")[QUIZ]
       #v(0.1cm)
-      #text(size: 12pt)[{{title}}]
+      {{#if show_title}}#text(size: 12pt)[{{title}}]{{/if}}
     ],
     [
       #align(center)[
-        *Nom :* #underline[#h(3cm) {{student_name}} #h(3cm)]
+        {{#if show_student_name}}*Nom :* #underline[#h(3cm) {{student_name}} #h(3cm)]{{/if}}
       ]
     ],
     [
       #align(right)[
-        *Classe :* {{class}}
-        #v(0.1cm)
-        *Date :* {{date}}
+        {{#if show_class}}*Classe :* {{class}}
+        #v(0.1cm){{/if}}
+        {{#if show_date}}*Date :* {{date}}{{/if}}
       ]
     ]
   )
@@ -549,7 +549,7 @@ export const QUIZ_TEMPLATE: DefaultTemplate = {
 #grid(
   columns: (1fr, 1fr),
   [#text(style: "italic")[Duree : {{duration}} min]],
-  [#align(right)[*Total : {{total_points}} points*]]
+  [{{#if show_points}}#align(right)[*Total : {{total_points}} points*]{{/if}}]
 )
 
 #v(0.3cm)
@@ -571,7 +571,7 @@ export const QUIZ_TEMPLATE: DefaultTemplate = {
     inset: 8pt,
     stroke: 1pt
   )[
-    *Note :* #h(2cm) / {{total_points}}
+    *Note :* #h(2cm) {{#if show_points}}/ {{total_points}}{{/if}}
   ]
 ]
 `
@@ -599,13 +599,13 @@ export const MINIMAL_TEMPLATE: DefaultTemplate = {
 #set list(spacing: 1.5em)
 
 // En-tete minimaliste
-#text(size: 16pt, weight: "bold")[{{title}}]
+{{#if show_title}}#text(size: 16pt, weight: "bold")[{{title}}]{{/if}}
 #h(1fr)
-#text(size: 10pt)[{{date}}]
+{{#if show_date}}#text(size: 10pt)[{{date}}]{{/if}}
 
 #v(0.3cm)
 
-{{student_name}} #h(1fr) {{class}}
+{{#if show_student_name}}{{student_name}}{{/if}} #h(1fr) {{#if show_class}}{{class}}{{/if}}
 
 #v(0.5cm)
 #line(length: 100%, stroke: 0.3pt)
@@ -652,7 +652,7 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
   inset: 0pt
 )[
   #block(inset: (x: 25pt, y: 20pt))[
-    #text(size: 28pt, fill: white, weight: "bold")[{{title}}]
+    {{#if show_title}}#text(size: 28pt, fill: white, weight: "bold")[{{title}}]{{/if}}
     #v(0.2cm)
     #text(size: 12pt, fill: white.transparentize(30%))[{{school_name}}]
   ]
@@ -664,16 +664,16 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
       columns: (1fr, 1fr, 1fr),
       column-gutter: 1cm,
       text(fill: white)[
-        #text(weight: "bold", size: 9pt)[ÉLÈVE]\\
-        #text(size: 11pt)[{{student_name}}]
+        {{#if show_student_name}}#text(weight: "bold", size: 9pt)[ÉLÈVE]\\
+        #text(size: 11pt)[{{student_name}}]{{/if}}
       ],
       text(fill: white)[
-        #text(weight: "bold", size: 9pt)[CLASSE]\\
-        #text(size: 11pt)[{{class}}]
+        {{#if show_class}}#text(weight: "bold", size: 9pt)[CLASSE]\\
+        #text(size: 11pt)[{{class}}]{{/if}}
       ],
       text(fill: white)[
-        #text(weight: "bold", size: 9pt)[DATE]\\
-        #text(size: 11pt)[{{date}}]
+        {{#if show_date}}#text(weight: "bold", size: 9pt)[DATE]\\
+        #text(size: 11pt)[{{date}}]{{/if}}
       ]
     )
   ]
@@ -728,7 +728,7 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
   )[
     #text(size: 9pt, fill: rgb("#64748b"))[Score]
     #h(10pt)
-    #text(size: 14pt, weight: "bold")[\\_\\_\\_\\_\\_ / {{total_points}}]
+    #text(size: 14pt, weight: "bold")[\\_\\_\\_\\_\\_{{#if show_points}} / {{total_points}}{{/if}}]
   ]
 )
 
@@ -795,19 +795,19 @@ export const TWO_COLUMNS_TEMPLATE: DefaultTemplate = {
       [
         #text(size: 9pt, fill: rgb("#6b7280"))[{{school_name}}]
         #v(0.1cm)
-        #text(weight: "bold", size: 11pt)[{{student_name}}]
+        {{#if show_student_name}}#text(weight: "bold", size: 11pt)[{{student_name}}]{{/if}}
       ],
       rect(
         fill: rgb("#4f46e5"),
         radius: 6pt,
         inset: (x: 18pt, y: 10pt)
       )[
-        #text(fill: white, size: 13pt, weight: "bold")[{{title}}]
+        {{#if show_title}}#text(fill: white, size: 13pt, weight: "bold")[{{title}}]{{/if}}
       ],
       [
-        #text(size: 9pt, fill: rgb("#6b7280"))[{{class}}]
-        #v(0.1cm)
-        #text(weight: "bold", size: 11pt)[{{date}}]
+        {{#if show_class}}#text(size: 9pt, fill: rgb("#6b7280"))[{{class}}]
+        #v(0.1cm){{/if}}
+        {{#if show_date}}#text(weight: "bold", size: 11pt)[{{date}}]{{/if}}
       ]
     )
   ]
@@ -825,7 +825,7 @@ export const TWO_COLUMNS_TEMPLATE: DefaultTemplate = {
   ],
   circle(radius: 3pt, fill: rgb("#9ca3af")),
   [
-    #text(size: 9pt)[Total : #text(weight: "bold")[{{total_points}} points]]
+    {{#if show_points}}#text(size: 9pt)[Total : #text(weight: "bold")[{{total_points}} points]]{{/if}}
   ]
 )
 
@@ -912,8 +912,8 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
       columns: (1fr, auto, 1fr),
       align: (left, center, right),
       [{{school_name}}],
-      [#text(weight: "bold")[{{title}}]],
-      [{{class}} • {{date}}]
+      [{{#if show_title}}#text(weight: "bold")[{{title}}]{{/if}}],
+      [{{#if show_class}}{{class}}{{/if}}{{#if show_date}}{{#if show_class}} • {{/if}}{{date}}{{/if}}]
     )
     #line(length: 100%, stroke: 0.3pt + rgb("#d1d5db"))
   ],
@@ -951,10 +951,10 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
     columns: (2fr, 1fr),
     [
       #block(inset: (x: 25pt, y: 15pt))[
-        #text(size: 22pt, fill: white, weight: "bold")[{{title}}]
+        {{#if show_title}}#text(size: 22pt, fill: white, weight: "bold")[{{title}}]{{/if}}
         #v(0.2cm)
         #text(size: 10pt, fill: white.transparentize(20%))[
-          Feuille d'exercices • {{class}}
+          Feuille d'exercices{{#if show_class}} • {{class}}{{/if}}
         ]
       ]
     ],
@@ -967,10 +967,10 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
             inset: 12pt
           )[
             #text(fill: rgb("#7c2d12"), size: 10pt)[
-              #text(weight: "bold")[Nom :]\\
+              {{#if show_student_name}}#text(weight: "bold")[Nom :]\\
               {{student_name}}
-              #v(0.3cm)
-              #text(weight: "bold")[Points :] {{total_points}}
+              #v(0.3cm){{/if}}
+              {{#if show_points}}#text(weight: "bold")[Points :] {{total_points}}{{/if}}
             ]
           ]
         ]
@@ -1018,7 +1018,7 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
     #align(center)[
       #text(size: 16pt)[📚]
       #v(0.1cm)
-      #text(size: 9pt, weight: "bold")[{{class}}]
+      {{#if show_class}}#text(size: 9pt, weight: "bold")[{{class}}]{{/if}}
     ]
   ],
   rect(
@@ -1030,7 +1030,7 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
     #align(center)[
       #text(size: 16pt)[📅]
       #v(0.1cm)
-      #text(size: 9pt, weight: "bold")[{{date}}]
+      {{#if show_date}}#text(size: 9pt, weight: "bold")[{{date}}]{{/if}}
     ]
   ]
 )
@@ -1139,9 +1139,9 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
         #text(fill: white)[
           #text(size: 8pt)[ÉDITION]
           #v(0.1cm)
-          #text(size: 16pt, weight: "bold")[{{class}}]
-          #v(0.2cm)
-          #text(size: 9pt)[{{date}}]
+          {{#if show_class}}#text(size: 16pt, weight: "bold")[{{class}}]
+          #v(0.2cm){{/if}}
+          {{#if show_date}}#text(size: 9pt)[{{date}}]{{/if}}
         ]
       ]
     ]
@@ -1170,10 +1170,10 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
     columns: (5pt, 1fr),
     rect(fill: accent, width: 5pt, height: 100%),
     block(inset: 18pt)[
-      #text(size: 22pt, weight: "bold")[{{title}}]
+      {{#if show_title}}#text(size: 22pt, weight: "bold")[{{title}}]{{/if}}
       #v(0.2cm)
       #text(size: 10pt, style: "italic", fill: rgb("#64748b"))[
-        Par {{teacher_name}} • {{duration}} minutes • {{total_points}} points
+        Par {{teacher_name}} • {{duration}} minutes{{#if show_points}} • {{total_points}} points{{/if}}
       ]
     ]
   )
@@ -1247,17 +1247,17 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
       #v(0.4cm)
 
       #text(size: 9pt)[
-        #text(weight: "bold")[Nom :]
+        {{#if show_student_name}}#text(weight: "bold")[Nom :]
         #v(0.1cm)
         {{student_name}}
-        #v(0.3cm)
-        #text(weight: "bold")[Classe :]
+        #v(0.3cm){{/if}}
+        {{#if show_class}}#text(weight: "bold")[Classe :]
         #v(0.1cm)
         {{class}}
-        #v(0.3cm)
-        #text(weight: "bold")[Date :]
+        #v(0.3cm){{/if}}
+        {{#if show_date}}#text(weight: "bold")[Date :]
         #v(0.1cm)
-        {{date}}
+        {{date}}{{/if}}
       ]
     ]
 
@@ -1295,7 +1295,7 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
         #text(size: 9pt, fill: accent)[SCORE]
         #v(0.4cm)
         #text(size: 20pt, weight: "bold")[
-          \\_\\_\\_ / {{total_points}}
+          \\_\\_\\_{{#if show_points}} / {{total_points}}{{/if}}
         ]
       ]
     ]
@@ -1383,7 +1383,7 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
     stroke: 1pt,
     inset: 15pt
   )[
-    #text(size: 15pt, weight: "bold")[{{title}}]
+    {{#if show_title}}#text(size: 15pt, weight: "bold")[{{title}}]{{/if}}
     #v(0.2cm)
     #text(size: 11pt)[Évaluation de compétences mathématiques]
   ]
@@ -1400,9 +1400,9 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
   fill: (col, row) => if row == 0 { rgb("#f3f4f6") },
 
   [*Champ*], [*Valeur*], [*Champ*], [*Valeur*],
-  [Nom], [{{student_name}}], [Classe], [{{class}}],
-  [Date], [{{date}}], [Durée], [{{duration}} minutes],
-  [Professeur], [{{teacher_name}}], [Points], [{{total_points}}]
+  [Nom], [{{#if show_student_name}}{{student_name}}{{/if}}], [Classe], [{{#if show_class}}{{class}}{{/if}}],
+  [Date], [{{#if show_date}}{{date}}{{/if}}], [Durée], [{{duration}} minutes],
+  [Professeur], [{{teacher_name}}], [Points], [{{#if show_points}}{{total_points}}{{/if}}]
 )
 
 #v(0.8cm)
@@ -1489,7 +1489,7 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
   [2], [Résolution d'équations], [/5], [], [],
   [3], [Raisonnement], [/5], [], [],
   [4], [Application], [/5], [], [],
-  table.cell(colspan: 2)[*Total*], [/{{total_points}}], [], []
+  table.cell(colspan: 2)[*Total*], [{{#if show_points}}/{{total_points}}{{/if}}], [], []
 )
 
 #v(0.8cm)
@@ -1555,14 +1555,14 @@ export const STUDENT_STYLE_TEMPLATE: DefaultTemplate = {
 // Le fond blanc masque le filet vertical derrière le bandeau.
 #place(top + center, scope: "parent", float: true)[
   #block(width: 100%, fill: white, inset: (bottom: 6pt), below: 1.2em)[
-    #align(center)[#text(size: 1.5em, weight: "bold")[{{title}}]]
-    #v(0.4em)
+    {{#if show_title}}#align(center)[#text(size: 1.5em, weight: "bold")[{{title}}]]
+    #v(0.4em){{/if}}
     #grid(
       columns: (1fr, auto, 1fr),
       align: (left, center, right),
-      [{{student_name}}],
-      [#text(size: 0.9em, fill: gray)[{{date}}]],
-      [{{class}}]
+      [{{#if show_student_name}}{{student_name}}{{/if}}],
+      [{{#if show_date}}#text(size: 0.9em, fill: gray)[{{date}}]{{/if}}],
+      [{{#if show_class}}{{class}}{{/if}}]
     )
     #v(0.3em)
     #line(length: 100%, stroke: 0.5pt + gray)
@@ -1624,6 +1624,14 @@ export const SAMPLE_PREVIEW_DATA = {
 	subject: 'Mathematiques',
 	coefficient: '4',
 	competences: 'Resoudre une equation, Modeliser un probleme',
+	// Display-option flags: previews always show every field, whatever a given
+	// worksheet's config says. Kept last so the editor's placeholder panel, which
+	// lists the first entries, keeps showing content fields.
+	show_title: 'true',
+	show_date: 'true',
+	show_class: 'true',
+	show_student_name: 'true',
+	show_points: 'true',
 	// New placeholders for advanced templates
 	theme_color: '#e11d48',
 	academic_year: '2024-2025',
@@ -1676,10 +1684,49 @@ Combien y a-t-il d'adultes et d'enfants dans cette famille?`
 };
 
 /**
+ * A `{{#if key}}...{{/if}}` block, innermost first so nested blocks resolve
+ * from the inside out. The body may not contain another opening tag.
+ */
+const CONDITIONAL_BLOCK = /\{\{#if\s+([\w.]+)\s*\}\}((?:(?!\{\{#if\s)[\s\S])*?)\{\{\/if\}\}/;
+
+/**
+ * A conditional is truthy unless its value is missing, empty or an explicit
+ * `false`. Template data is stringly typed, hence the string comparison.
+ */
+function isTruthy(value: string | undefined): boolean {
+	return value !== undefined && value !== '' && value !== 'false';
+}
+
+/**
+ * Resolve `{{#if key}}...{{/if}}` blocks, dropping the body of falsy ones.
+ *
+ * Display options (`show_date`, `show_class`, ...) have to remove the label
+ * along with the value - `*Date :* {{date}}` would otherwise leave a dangling
+ * "Date :" behind - so templates wrap the whole fragment in a conditional.
+ * Unbalanced tags are left untouched rather than swallowing the rest of the
+ * document.
+ */
+function renderConditionals(templateContent: string, data: Record<string, string>): string {
+	let result = templateContent;
+	let match = CONDITIONAL_BLOCK.exec(result);
+
+	while (match) {
+		const [block, key, body] = match;
+		// Splice by index rather than String.replace: Typst content is full of `$`
+		// (math mode) and replacement strings would reinterpret `$&`, `$'`, ...
+		const replacement = isTruthy(data[key]) ? body : '';
+		result = result.slice(0, match.index) + replacement + result.slice(match.index + block.length);
+		match = CONDITIONAL_BLOCK.exec(result);
+	}
+
+	return result;
+}
+
+/**
  * Replace placeholders in template content with actual values
  */
 export function renderTemplate(templateContent: string, data: Record<string, string>): string {
-	let result = templateContent;
+	let result = renderConditionals(templateContent, data);
 	for (const [key, value] of Object.entries(data)) {
 		const placeholder = `{{${key}}}`;
 		result = result.split(placeholder).join(value);
