@@ -65,3 +65,50 @@ describe('generateStudentWorksheetTypst', () => {
 		expect(typst).toMatch(/#block\(fill: rgb\("#f0fdf4"\)[^\n]*\[\n {2}#block\(sticky: true/);
 	});
 });
+
+describe('student worksheet language', () => {
+	it('keeps the French chrome by default', () => {
+		const typst = generateStudentWorksheetTypst(
+			createWorksheet({
+				instructions: 'Faites tout',
+				exercises: [
+					{
+						...createWorksheet().exercises[0],
+						is_essential: true
+					}
+				]
+			}),
+			true
+		);
+
+		expect(typst).toContain('lang: "fr"');
+		expect(typst).toContain('Fiche de travail');
+		expect(typst).toContain('Exercices indispensables');
+		expect(typst).toContain('= Corrections');
+	});
+
+	it('writes the chrome in English when the worksheet is', () => {
+		const typst = generateStudentWorksheetTypst(
+			createWorksheet({
+				language: 'en',
+				instructions: 'Do everything',
+				exercises: [
+					{
+						...createWorksheet().exercises[0],
+						is_essential: true
+					}
+				]
+			}),
+			true
+		);
+
+		expect(typst).toContain('lang: "en"');
+		expect(typst).toContain('Worksheet');
+		expect(typst).toContain('Essential exercises');
+		expect(typst).toContain('= Answers');
+		// No French chrome left on an English sheet.
+		expect(typst).not.toContain('Fiche de travail');
+		expect(typst).not.toContain('Exercices indispensables');
+		expect(typst).not.toContain('= Corrections');
+	});
+});

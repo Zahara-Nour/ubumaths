@@ -141,6 +141,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			worksheet_id: params.id,
 			title: data.title,
 			instructions: data.instructions ?? null,
+			translations: data.translations ?? null,
 			position: data.position,
 			points_total: data.points_total ?? null
 		})

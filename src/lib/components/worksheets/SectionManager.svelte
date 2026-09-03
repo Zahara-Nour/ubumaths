@@ -31,18 +31,29 @@
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Plus, Pencil, Trash2, GripVertical, Loader2, Save, X } from '@lucide/svelte';
-	import type { WorksheetSectionRow } from '$lib/types/worksheets';
+	import type { RowTranslations, WorksheetSectionRow } from '$lib/types/worksheets';
+	import type { ContentLocale } from '$lib/types/locale';
 
 	// Types
 	interface Props {
 		worksheetId: string;
 		sections: WorksheetSectionRow[];
 		readonly?: boolean;
+		/** Language of the worksheet: English ones get a translation field. */
+		language?: ContentLocale;
 		onSectionsChange?: (sections: WorksheetSectionRow[]) => void;
 	}
 
 	// Props
-	let { worksheetId, sections = [], readonly = false, onSectionsChange }: Props = $props();
+	let {
+		worksheetId,
+		sections = [],
+		readonly = false,
+		language = 'fr',
+		onSectionsChange
+	}: Props = $props();
+
+	const isEnglishWorksheet = $derived(language === 'en');
 
 	// State
 	let isAdding = $state(false);
@@ -54,6 +65,8 @@
 	let editingSectionId = $state<string | null>(null);
 	let editTitle = $state('');
 	let editInstructions = $state('');
+	let editTitleEn = $state('');
+	let editInstructionsEn = $state('');
 	let isSavingEdit = $state(false);
 
 	// Delete state
@@ -138,6 +151,8 @@
 		editingSectionId = section.id;
 		editTitle = section.title;
 		editInstructions = section.instructions || '';
+		editTitleEn = section.translations?.en?.title ?? '';
+		editInstructionsEn = section.translations?.en?.instructions ?? '';
 	}
 
 	/**
@@ -147,11 +162,26 @@
 		editingSectionId = null;
 		editTitle = '';
 		editInstructions = '';
+		editTitleEn = '';
+		editInstructionsEn = '';
 	}
 
 	/**
 	 * Save section edits
 	 */
+	/**
+	 * Translation payload for the section, or null when nothing is translated.
+	 *
+	 * Never sends an empty container: a section whose English fields were typed
+	 * then cleared must be indistinguishable from one never translated.
+	 */
+	function sectionTranslations(): RowTranslations | null {
+		const en: RowTranslations['en'] = {};
+		if (editTitleEn.trim()) en.title = editTitleEn.trim();
+		if (editInstructionsEn.trim()) en.instructions = editInstructionsEn.trim();
+		return Object.keys(en).length > 0 ? { en } : null;
+	}
+
 	async function saveEdit() {
 		if (!editingSectionId || !editTitle.trim()) {
 			toaster.error('Le titre est requis');
@@ -166,7 +196,8 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					title: editTitle.trim(),
-					instructions: editInstructions.trim() || null
+					instructions: editInstructions.trim() || null,
+					translations: sectionTranslations()
 				})
 			});
 
@@ -500,6 +531,25 @@
 											rows={2}
 										/>
 									</div>
+									{#if isEnglishWorksheet}
+										<div class="space-y-2">
+											<Label for="edit-title-en-{section.id}">Titre anglais</Label>
+											<Input
+												id="edit-title-en-{section.id}"
+												bind:value={editTitleEn}
+												placeholder="Vide : le titre français est utilisé"
+											/>
+										</div>
+										<div class="space-y-2">
+											<Label for="edit-instructions-en-{section.id}">Instructions anglaises</Label>
+											<Textarea
+												id="edit-instructions-en-{section.id}"
+												bind:value={editInstructionsEn}
+												rows={2}
+												placeholder="Vide : les instructions françaises sont utilisées"
+											/>
+										</div>
+									{/if}
 									<div class="flex justify-end gap-2">
 										<Button
 											variant="outline"

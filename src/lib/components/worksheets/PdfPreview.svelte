@@ -38,6 +38,7 @@
 		InstanceSection,
 		WorksheetExerciseWithExercise
 	} from '$lib/types/worksheets';
+	import { localizedText, worksheetLocale } from '$lib/types/worksheets';
 	import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
 	import JSZip from 'jszip';
 	import {
@@ -157,9 +158,11 @@
 		// Title, points, section and custom instructions must be carried over:
 		// without them the PDF shows no title, no section, and the exercise
 		// position instead of its points.
+		// The worksheet language drives the exercise content too, not just the chrome.
+		const locale = worksheetLocale(worksheet.config);
 		const resolvedExercises = sortedExercises.map((we: WorksheetExerciseWithExercise) => {
 			const content = we.exercise
-				? getExerciseContentSafe(we.exercise as Exercise)
+				? getExerciseContentSafe(we.exercise as Exercise, 0, locale)
 				: { statement_md: '', solution_md: '' };
 			return {
 				exercise_id: we.exercise_id,
@@ -167,7 +170,12 @@
 				position: we.position,
 				points: we.points,
 				section_id: we.section_id ?? null,
-				custom_instructions: we.custom_instructions ?? null,
+				custom_instructions: localizedText(
+					we.custom_instructions,
+					we.translations,
+					'custom_instructions',
+					locale
+				),
 				parameters: {},
 				statement: content.statement_md,
 				solution: content.solution_md
@@ -180,8 +188,8 @@
 			.sort((a, b) => a.position - b.position)
 			.map((s) => ({
 				id: s.id,
-				title: s.title,
-				instructions: s.instructions,
+				title: localizedText(s.title, s.translations, 'title', locale) ?? s.title,
+				instructions: localizedText(s.instructions, s.translations, 'instructions', locale),
 				position: s.position
 			}));
 

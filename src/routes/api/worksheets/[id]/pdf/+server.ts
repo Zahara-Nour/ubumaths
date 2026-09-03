@@ -16,6 +16,7 @@ import { z } from 'zod';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
+import { localizedText, worksheetLocale, type WorksheetConfig } from '$lib/types/worksheets';
 import type {
 	InstanceData,
 	InstanceSection,
@@ -101,6 +102,9 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		// Extract sections from worksheet data
 		const worksheetSections = (worksheet.worksheet_sections ?? []) as WorksheetSectionRow[];
 
+		// Language of the sheet: section titles and instructions follow it too.
+		const locale = worksheetLocale(worksheet.config as WorksheetConfig);
+
 		if (studentId) {
 			// Try to fetch existing instance for this student
 			const { data: instance } = await locals.supabase
@@ -116,8 +120,8 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				if (!instanceData.sections && worksheetSections.length > 0) {
 					instanceData.sections = worksheetSections.map((s) => ({
 						id: s.id,
-						title: s.title,
-						instructions: s.instructions,
+						title: localizedText(s.title, s.translations, 'title', locale) ?? s.title,
+						instructions: localizedText(s.instructions, s.translations, 'instructions', locale),
 						position: s.position
 					}));
 				}
@@ -237,9 +241,13 @@ function generateSimpleInstance(
 	const sortedExercises = [...exercises].sort((a, b) => a.position - b.position);
 
 	// Map to resolved exercises using variations (single source of truth)
+	// The worksheet language drives the exercise content too, not just the
+	// chrome: an English worksheet must not print French statements.
+	const locale = worksheetLocale(worksheet.config);
+
 	const resolvedExercises = sortedExercises.map((we) => {
 		const content = we.exercise
-			? getExerciseContentSafe(we.exercise as unknown as Exercise)
+			? getExerciseContentSafe(we.exercise as unknown as Exercise, 0, locale)
 			: { statement_md: '', solution_md: '' };
 		return {
 			exercise_id: we.exercise_id,
@@ -247,7 +255,12 @@ function generateSimpleInstance(
 			position: we.position,
 			points: we.points,
 			section_id: we.section_id ?? null,
-			custom_instructions: we.custom_instructions ?? null,
+			custom_instructions: localizedText(
+				we.custom_instructions,
+				we.translations,
+				'custom_instructions',
+				locale
+			),
 			parameters: {},
 			statement: content.statement_md,
 			solution: content.solution_md
@@ -259,8 +272,8 @@ function generateSimpleInstance(
 		.sort((a, b) => a.position - b.position)
 		.map((s) => ({
 			id: s.id,
-			title: s.title,
-			instructions: s.instructions,
+			title: localizedText(s.title, s.translations, 'title', locale) ?? s.title,
+			instructions: localizedText(s.instructions, s.translations, 'instructions', locale),
 			position: s.position
 		}));
 

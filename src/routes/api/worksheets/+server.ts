@@ -143,6 +143,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			description: data.description ?? null,
 			type: data.type,
 			config: data.config ?? {},
+			translations: data.translations ?? null,
 			status: 'draft',
 			version: 1,
 			template_id: data.template_id ?? null,

@@ -31,6 +31,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import type { ContentLocale } from '$lib/types/locale';
 	import { Loader2, Save, Star } from '@lucide/svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import type {
@@ -46,11 +47,22 @@
 		exercise: WorksheetExerciseWithExercise | null;
 		worksheetId: string;
 		sections: WorksheetSectionRow[];
+		/** Language of the worksheet: English ones get a translation field. */
+		language?: ContentLocale;
 		onSave?: (exercise: WorksheetExerciseWithExercise) => void;
 	}
 
 	// Props
-	let { open = $bindable(false), exercise, worksheetId, sections = [], onSave }: Props = $props();
+	let {
+		open = $bindable(false),
+		exercise,
+		worksheetId,
+		sections = [],
+		language = 'fr',
+		onSave
+	}: Props = $props();
+
+	const isEnglishWorksheet = $derived(language === 'en');
 
 	// Track which exercise we've initialized for
 	let initializedExerciseId = $state<string | null>(null);
@@ -62,6 +74,7 @@
 	let nVersions = $state<number>(2);
 	let groupSize = $state<number>(2);
 	let customInstructions = $state('');
+	let customInstructionsEn = $state('');
 	let isEssential = $state(false);
 
 	// Saving state
@@ -105,6 +118,7 @@
 		nVersions = ex.variant_config?.n_versions ?? 2;
 		groupSize = ex.variant_config?.group_size ?? 2;
 		customInstructions = ex.custom_instructions || '';
+		customInstructionsEn = ex.translations?.en?.custom_instructions ?? '';
 		isEssential = ex.is_essential ?? false;
 	}
 
@@ -143,6 +157,10 @@
 					variant_mode: variantMode,
 					variant_config: buildVariantConfig(),
 					custom_instructions: customInstructions.trim() || null,
+					// Never an empty container: typed then cleared must look untranslated.
+					translations: customInstructionsEn.trim()
+						? { en: { custom_instructions: customInstructionsEn.trim() } }
+						: null,
 					is_essential: isEssential
 				})
 			});
@@ -297,6 +315,15 @@
 				<p class="text-xs text-muted-foreground">
 					Ces instructions s'afficheront avant l'enonce de la {lore.learning.exercise}
 				</p>
+				{#if isEnglishWorksheet}
+					<Label for="custom-instructions-en">Instructions anglaises</Label>
+					<Textarea
+						id="custom-instructions-en"
+						bind:value={customInstructionsEn}
+						placeholder="Vide : les instructions françaises sont utilisées"
+						rows={3}
+					/>
+				{/if}
 			</div>
 		</div>
 

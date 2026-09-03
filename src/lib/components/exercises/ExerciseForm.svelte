@@ -8,6 +8,7 @@
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import ExerciseResourceEditor from './ExerciseResourceEditor.svelte';
 	import VariationEditor from './VariationEditor.svelte';
+	import { hasEnglishStatement } from '$lib/exercises/translation-draft';
 	import LaTeXImportDialog from './LaTeXImportDialog.svelte';
 	import GenericFunctionInput from './GenericFunctionInput.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
@@ -296,7 +297,10 @@
 			statement_md: source.statement_md,
 			solution_md: source.solution_md,
 			variables: source.variables ? [...source.variables.map((v) => ({ ...v }))] : undefined,
-			hints: source.hints ? [...source.hints.map((h) => ({ ...h }))] : undefined
+			hints: source.hints ? [...source.hints.map((h) => ({ ...h }))] : undefined,
+			// The translation follows its statement: duplicating a translated
+			// variation must not silently produce a French-only one.
+			translations: source.translations ? $state.snapshot(source.translations) : undefined
 		};
 
 		// Insert the duplicate after the source
@@ -649,6 +653,12 @@
 						{#each variations as variation, index (index)}
 							<Tabs.Trigger value={String(index)} class="relative pr-8">
 								{getVariationDisplayLabel(variation)}
+								{#if hasEnglishStatement(variation.translations)}
+									<span
+										class="ml-1.5 rounded border border-border px-1 text-[10px] leading-tight text-muted-foreground"
+										title="Version anglaise disponible">EN</span
+									>
+								{/if}
 								{#if variations.length > 1}
 									<span
 										role="button"

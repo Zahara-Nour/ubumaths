@@ -48,6 +48,8 @@
 		ASSIGNMENT_STATUS_LABELS
 	} from '$lib/utils/worksheet-constants';
 	import type { Exercise } from '$lib/exercises/types';
+	import { untranslatedExercises } from '$lib/exercises/translation-status';
+	import { worksheetLocale } from '$lib/types/worksheets';
 	import { DEFAULT_TEMPLATES } from '$lib/worksheets/default-templates';
 
 	let { data }: { data: PageData } = $props();
@@ -128,6 +130,15 @@
 
 	// Get IDs of already added exercises
 	let existingExerciseIds = $derived(worksheet.exercises?.map((e) => e.exercise_id) ?? []);
+
+	// Exercises that would come out in French in an English worksheet. Resolution
+	// falls back to French rather than leaving a hole, so without this listing the
+	// mix would only be discovered on the printed sheet.
+	let missingTranslations = $derived(
+		worksheetLocale(worksheet.config) === 'en'
+			? untranslatedExercises(worksheet.exercises ?? [])
+			: []
+	);
 
 	/**
 	 * Handle status change (publish/unpublish/archive/unarchive)
@@ -559,6 +570,7 @@
 						worksheetId={worksheet.id}
 						sections={worksheet.sections ?? []}
 						readonly={!isDraft}
+						language={worksheetLocale(worksheet.config)}
 						onSectionsChange={handleSectionsChange}
 					/>
 				{/if}
@@ -579,6 +591,21 @@
 									selectedIds={existingExerciseIds}
 								/>
 							{/if}
+						</div>
+					{/if}
+
+					{#if missingTranslations.length > 0}
+						<div
+							class="mb-4 rounded-md border border-amber-500/50 bg-amber-500/10 px-4 py-3 text-sm"
+						>
+							<p class="font-medium text-foreground">
+								{missingTranslations.length}
+								{missingTranslations.length > 1 ? 'exercices sortiront' : 'exercice sortira'} en français
+							</p>
+							<p class="mt-1 text-muted-foreground">
+								Cette fiche est en anglais. Sans version anglaise, l'énoncé français est utilisé :
+								{missingTranslations.map((e) => e.title).join(', ')}
+							</p>
 						</div>
 					{/if}
 
@@ -870,5 +897,6 @@
 	exercise={selectedExercise}
 	worksheetId={worksheet.id}
 	sections={worksheet.sections ?? []}
+	language={worksheetLocale(worksheet.config)}
 	onSave={handleExerciseSave}
 />

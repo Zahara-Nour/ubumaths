@@ -180,6 +180,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	if (data.title !== undefined) updateData.title = data.title;
 	if (data.description !== undefined) updateData.description = data.description;
+	if (data.translations !== undefined) updateData.translations = data.translations;
 	if (data.type !== undefined) updateData.type = data.type;
 	if (data.config !== undefined) updateData.config = data.config;
 	if (data.template_id !== undefined) updateData.template_id = data.template_id;

@@ -189,7 +189,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			points: data.points ?? null,
 			variant_mode: data.variant_mode ?? 'none',
 			variant_config: data.variant_config ?? {},
-			custom_instructions: data.custom_instructions ?? null
+			custom_instructions: data.custom_instructions ?? null,
+			translations: data.translations ?? null
 		})
 		.select()
 		.single();

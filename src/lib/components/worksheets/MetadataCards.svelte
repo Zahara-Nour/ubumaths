@@ -24,6 +24,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import { worksheetLocale } from '$lib/types/worksheets';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
@@ -172,6 +173,31 @@
 		}
 	}
 
+	/**
+	 * English worksheets carry an English title alongside the French one.
+	 *
+	 * Same contract as the exercise content: French stays the source of truth in
+	 * the column, the translation only overrides, and an emptied field removes
+	 * itself rather than leaving an empty `translations` behind.
+	 */
+	const isEnglishWorksheet = $derived(worksheetLocale(worksheet.config) === 'en');
+
+	function handleTitleTranslation(value: string) {
+		const trimmed = value.trim();
+		const en = { ...worksheet.translations?.en };
+		if (trimmed) en.title = value;
+		else delete en.title;
+
+		const translations = Object.keys(en).length > 0 ? { en } : null;
+		onFieldChange?.('translations', translations);
+	}
+
+	// Language the worksheet is rendered in: exercise content and PDF chrome alike
+	const languageOptions = [
+		{ value: 'fr', label: 'Français' },
+		{ value: 'en', label: 'English' }
+	];
+
 	// Type options for MySelect
 	const typeOptions = [...WORKSHEET_TYPE_OPTIONS] as { value: string; label: string }[];
 
@@ -256,6 +282,17 @@
 						class="w-full"
 						placeholder="Titre de la feuille"
 						onkeydown={(e) => handleKeydown(e, 'title')}
+					/>
+				{/if}
+
+				{#if isEnglishWorksheet}
+					<p class="mt-2 text-xs text-muted-foreground">Titre anglais</p>
+					<Input
+						value={worksheet.translations?.en?.title ?? ''}
+						oninput={(e) => handleTitleTranslation(e.currentTarget.value)}
+						class="w-full"
+						placeholder="Laisser vide pour garder le titre français"
+						disabled={!isEditable}
 					/>
 				{/if}
 			</div>
@@ -490,6 +527,12 @@
 
 						<!-- Mise en page - inline compact -->
 						<div class="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+							{#if worksheet.config?.language === 'en'}
+								<span>
+									<span class="text-muted-foreground">Langue:</span>
+									<span class="font-medium">English</span>
+								</span>
+							{/if}
 							<span>
 								<span class="text-muted-foreground">Num:</span>
 								<span class="font-medium">{worksheet.config?.numbering_style ?? '1,2,3'}</span>
@@ -574,6 +617,15 @@
 								onchange={(v: string) => handleConfigChange('page_layout', v)}
 								items={layoutOptions}
 								placeholder="Format"
+							/>
+						</div>
+						<div>
+							<p class="mb-1 text-xs text-muted-foreground">Langue</p>
+							<MySelect
+								value={worksheet.config?.language ?? 'fr'}
+								onchange={(v: string) => handleConfigChange('language', v)}
+								items={languageOptions}
+								placeholder="Langue"
 							/>
 						</div>
 						<MyCheckbox

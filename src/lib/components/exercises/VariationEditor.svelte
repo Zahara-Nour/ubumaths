@@ -5,9 +5,17 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import * as Tabs from '$lib/components/ui/tabs';
 	import ExerciseRichTextEditor from './ExerciseRichTextEditor.svelte';
 	import HintEditor from './HintEditor.svelte';
 	import type { ExerciseVariation, GuidanceLabel, ExerciseHint } from '$lib/exercises/types';
+	import type { ContentLocale } from '$lib/types/locale';
+	import {
+		hasEnglishStatement,
+		translatedField,
+		withTranslatedField,
+		type TranslatableField
+	} from '$lib/exercises/translation-draft';
 	import type { Variable } from '$lib/ubumark';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -40,6 +48,32 @@
 	if (variation.hints === undefined) {
 		variation.hints = [];
 	}
+
+	// ---------------------------------------------------------------------------
+	// Language of the content being edited
+	//
+	// French is the source of truth and lives in the base fields; English is a
+	// translation carrying only what it overrides. Nothing is written until the
+	// teacher actually types, and emptying a field removes it again — an exercise
+	// must never carry an empty `translations` that makes it look translated.
+	// ---------------------------------------------------------------------------
+	let locale = $state<ContentLocale>('fr');
+
+	const localeItems = [
+		{ value: 'fr', label: 'Français' },
+		{ value: 'en', label: 'English' }
+	];
+
+	function translated(field: TranslatableField): string {
+		return translatedField(variation.translations, field);
+	}
+
+	function setTranslated(field: TranslatableField, value: string) {
+		variation.translations = withTranslatedField(variation.translations, field, value);
+	}
+
+	const isTranslating = $derived(locale === 'en');
+	const hasTranslation = $derived(hasEnglishStatement(variation.translations));
 
 	// Label options
 	const guidanceLabelItems: { value: GuidanceLabel | 'custom'; label: string }[] = [
@@ -129,6 +163,25 @@
 	}
 </script>
 
+{#snippet localeTabs()}
+	<!--
+		Language switch shared by the statement and the solution: the teacher is
+		writing either the French source or its English translation, not both at once.
+	-->
+	<Tabs.Root value={locale} onValueChange={(v) => (locale = v as ContentLocale)} class="mb-3">
+		<Tabs.List>
+			{#each localeItems as item (item.value)}
+				<Tabs.Trigger value={item.value}>{item.label}</Tabs.Trigger>
+			{/each}
+		</Tabs.List>
+	</Tabs.Root>
+	{#if isTranslating}
+		<p class="mb-2 text-xs text-muted-foreground">
+			Facultatif. Ce qui reste vide sort en français dans la fiche.
+		</p>
+	{/if}
+{/snippet}
+
 <div class="space-y-6">
 	<!-- Guidance Label -->
 	<div class="space-y-3">
@@ -164,6 +217,12 @@
 						<div class="flex items-center justify-between">
 							<Card.Title class="text-base">
 								Enonce <span class="text-destructive">*</span>
+								{#if hasTranslation}
+									<span
+										class="ml-2 rounded border border-border px-1.5 py-0.5 align-middle text-xs font-normal text-muted-foreground"
+										title="Une version anglaise existe">EN</span
+									>
+								{/if}
 							</Card.Title>
 							<span
 								class="text-muted-foreground transition-transform"
@@ -177,8 +236,13 @@
 			</Collapsible.Trigger>
 			<Collapsible.Content>
 				<Card.Content class="pt-0">
+					{@render localeTabs()}
 					<ExerciseRichTextEditor
-						bind:value={variation.statement_md}
+						bind:value={
+							() => (isTranslating ? translated('statement_md') : variation.statement_md),
+							(v) =>
+								isTranslating ? setTranslated('statement_md', v) : (variation.statement_md = v)
+						}
 						{supabase}
 						{userId}
 						{genericFunctions}
@@ -214,8 +278,12 @@
 			</Collapsible.Trigger>
 			<Collapsible.Content>
 				<Card.Content class="pt-0">
+					{@render localeTabs()}
 					<ExerciseRichTextEditor
-						bind:value={variation.solution_md}
+						bind:value={
+							() => (isTranslating ? translated('solution_md') : variation.solution_md),
+							(v) => (isTranslating ? setTranslated('solution_md', v) : (variation.solution_md = v))
+						}
 						{supabase}
 						{userId}
 						{genericFunctions}

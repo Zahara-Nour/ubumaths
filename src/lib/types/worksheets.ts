@@ -11,6 +11,12 @@ import type {
 	ExerciseResource
 } from '$lib/exercises/types';
 import type { GradeCode } from '$lib/types/grades';
+import {
+	DEFAULT_CONTENT_LOCALE,
+	isContentLocale,
+	type ContentLocale,
+	type TranslatedLocale
+} from '$lib/types/locale';
 
 // =============================================================================
 // ENUMS AND CONSTANTS
@@ -144,6 +150,11 @@ export type NumberingStyle = (typeof NUMBERING_STYLES)[number];
 // =============================================================================
 
 export interface WorksheetConfig {
+	/**
+	 * Language the whole worksheet is rendered in: exercise content and PDF
+	 * chrome alike. Absent means French.
+	 */
+	language?: ContentLocale;
 	show_title?: boolean;
 	show_date?: boolean;
 	show_student_name?: boolean;
@@ -242,6 +253,8 @@ export interface WorksheetRow {
 	id: string;
 	title: string;
 	description: string | null;
+	/** Translations of title/description. NULL when the worksheet is French only. */
+	translations?: RowTranslations | null;
 	type: WorksheetType;
 	config: WorksheetConfig;
 	status: WorksheetStatus;
@@ -264,6 +277,8 @@ export interface WorksheetSectionRow {
 	worksheet_id: string;
 	title: string;
 	instructions: string | null;
+	/** Translations of title/instructions. NULL when the section is French only. */
+	translations?: RowTranslations | null;
 	position: number;
 	points_total: number | null;
 	created_at: string;
@@ -280,6 +295,8 @@ export interface WorksheetExerciseRow {
 	variant_mode: VariantMode;
 	variant_config: VariantConfig;
 	custom_instructions: string | null;
+	/** Translations of custom_instructions. NULL when French only. */
+	translations?: RowTranslations | null;
 	correction_visible: boolean;
 	/**
 	 * Optional: Force a specific variation index (0-based).
@@ -642,6 +659,8 @@ export interface StudentWorksheetView {
 	assignment_id: string;
 	worksheet_id: string;
 	title: string;
+	/** Language of the worksheet, driving both content and PDF chrome. */
+	language?: ContentLocale;
 	description: string | null;
 	type: WorksheetType;
 	instructions: string | null;
@@ -755,3 +774,56 @@ export const DEFAULT_WORKSHEET_CONFIG: WorksheetConfig = {
 export const DEFAULT_VARIANT_CONFIG: VariantConfig = {
 	mode: 'none'
 };
+
+// =============================================================================
+// TRANSLATIONS (worksheet title, sections, per-exercise instructions)
+// =============================================================================
+
+/**
+ * Translatable texts of a worksheet row.
+ *
+ * One shape covers the three tables that carry translatable columns —
+ * `worksheets` (title, description), `worksheet_sections` (title,
+ * instructions) and `worksheet_exercises` (custom_instructions) — so a single
+ * helper serves them all.
+ */
+export interface WorksheetTextTranslation {
+	title?: string;
+	description?: string;
+	instructions?: string;
+	custom_instructions?: string;
+}
+
+/** Translations of a row, keyed by locale. French is never a key. */
+export type RowTranslations = Partial<Record<TranslatedLocale, WorksheetTextTranslation>>;
+
+/**
+ * Language a worksheet renders in, defaulting to French.
+ *
+ * An unknown value falls back to French rather than throwing: a worksheet with
+ * a corrupted config must still generate.
+ */
+export function worksheetLocale(config: WorksheetConfig | null | undefined): ContentLocale {
+	const language = config?.language;
+	return isContentLocale(language) ? language : DEFAULT_CONTENT_LOCALE;
+}
+
+/**
+ * Text of a row in the requested locale, falling back to the French column.
+ *
+ * An empty translation counts as absent, mirroring the exercise content rules.
+ * A null base stays null so callers can still tell "no instructions" from "an
+ * empty string".
+ */
+export function localizedText(
+	base: string | null | undefined,
+	translations: RowTranslations | null | undefined,
+	field: keyof WorksheetTextTranslation,
+	locale: ContentLocale
+): string | null {
+	if (locale !== 'fr') {
+		const translated = translations?.[locale]?.[field];
+		if (translated) return translated;
+	}
+	return base ?? null;
+}

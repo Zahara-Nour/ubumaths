@@ -19,6 +19,7 @@
 
 import type { Variable, ResolvedVariable, DocumentNode } from '$lib/ubumark';
 import type { GradeCode } from '$lib/types/grades';
+import type { ContentLocale, TranslatedLocale } from '$lib/types/locale';
 
 // ============================================================================
 // EXERCISE CATEGORY
@@ -234,6 +235,12 @@ export interface GenerateInstanceOptions {
 	 * If not provided, variation is selected deterministically based on seed.
 	 */
 	variationIndex?: number;
+
+	/**
+	 * Language the content is resolved in. French by default; anything a
+	 * translation leaves out falls back to French field by field.
+	 */
+	locale?: ContentLocale;
 }
 
 /**
@@ -550,6 +557,38 @@ export interface ExerciseHint {
  * };
  * ```
  */
+/**
+ * Translatable text of a hint.
+ *
+ * Only text: `id`, `type` and `url` are structural and never duplicated. That
+ * is the whole point of keying translations by id rather than mirroring the
+ * hints array — a parallel array would have to re-create the ids, and a drift
+ * there breaks the `{{hint:id}}` references inside the statement.
+ */
+export interface TranslatedHint {
+	title?: string;
+	description?: string;
+	content?: string;
+}
+
+/**
+ * Translated content of a variation or of the shared defaults.
+ *
+ * Every field is optional: what is missing falls back to French, so a partial
+ * translation never leaves a hole in a generated worksheet. Hints are keyed by
+ * hint id, so a hint added in French shows up untranslated rather than
+ * disappearing, and one deleted in French cannot come back through its
+ * translation.
+ */
+export interface TranslatedExerciseContent {
+	statement_md?: string;
+	solution_md?: string;
+	hints?: Record<string, TranslatedHint>;
+}
+
+/** Translations by locale. French is never a key: it is the base content. */
+export type ExerciseTranslations = Partial<Record<TranslatedLocale, TranslatedExerciseContent>>;
+
 export interface ExerciseVariation {
 	/**
 	 * Guidance level label
@@ -591,6 +630,14 @@ export interface ExerciseVariation {
 	 * via {{hint:id}} syntax.
 	 */
 	hints?: ExerciseHint[];
+
+	/**
+	 * Translations of this variation, keyed by locale (French excluded).
+	 *
+	 * Only what is actually translated is stored; the rest falls back to the
+	 * French fields above.
+	 */
+	translations?: ExerciseTranslations;
 }
 
 /**
@@ -649,6 +696,14 @@ export interface SharedExerciseDefaults {
 	 * but provide different levels of detail.
 	 */
 	solution_md?: string;
+
+	/**
+	 * Translations of the shared defaults, keyed by locale (French excluded).
+	 *
+	 * Only consulted for the fields a variation leaves empty, exactly like the
+	 * French shared fields above.
+	 */
+	translations?: ExerciseTranslations;
 }
 
 /**
@@ -2366,17 +2421,62 @@ export function mergeExerciseVariables(
  */
 export function resolveExerciseVariationWithShared(
 	shared: SharedExerciseDefaults | undefined,
-	variation: ExerciseVariation
+	variation: ExerciseVariation,
+	locale: ContentLocale = 'fr'
 ): ExerciseVariation {
-	if (!shared) return variation;
+	const translated = locale === 'fr' ? undefined : locale;
+
+	if (!shared && !translated) return variation;
+
+	// Most specific value first, and at equal specificity the requested locale
+	// wins over French. A variation that defines its own French statement must
+	// therefore beat the shared translation, which translates another statement.
+	const variationTr = translated ? variation.translations?.[translated] : undefined;
+	const sharedTr = translated ? shared?.translations?.[translated] : undefined;
 
 	return {
 		label: variation.label,
-		statement_md: variation.statement_md || shared.statement_md || '',
-		solution_md: variation.solution_md || shared.solution_md || '',
-		variables: mergeExerciseVariables(shared.variables, variation.variables),
-		hints: variation.hints
+		statement_md:
+			variationTr?.statement_md ||
+			variation.statement_md ||
+			sharedTr?.statement_md ||
+			shared?.statement_md ||
+			'',
+		solution_md:
+			variationTr?.solution_md ||
+			variation.solution_md ||
+			sharedTr?.solution_md ||
+			shared?.solution_md ||
+			'',
+		variables: mergeExerciseVariables(shared?.variables, variation.variables),
+		hints: localizeHints(variation.hints, variationTr?.hints)
 	};
+}
+
+/**
+ * Hints with their text replaced by the translation of the same id.
+ *
+ * Field by field, like every other translated content: an untranslated hint,
+ * or an untranslated field within a hint, keeps its French text rather than
+ * emptying out.
+ */
+function localizeHints(
+	hints: ExerciseHint[] | undefined,
+	translated: Record<string, TranslatedHint> | undefined
+): ExerciseHint[] | undefined {
+	if (!hints?.length || !translated) return hints;
+
+	return hints.map((hint) => {
+		const translation = translated[hint.id];
+		if (!translation) return hint;
+
+		return {
+			...hint,
+			title: translation.title || hint.title,
+			description: translation.description || hint.description,
+			content: translation.content || hint.content
+		};
+	});
 }
 
 /**
@@ -2403,7 +2503,8 @@ export function resolveExerciseVariationWithShared(
  */
 export function getExerciseContent(
 	exercise: Exercise,
-	variationIndex = 0
+	variationIndex = 0,
+	locale: ContentLocale = 'fr'
 ): { statement_md: string; solution_md: string; hints?: ExerciseHint[] } {
 	if (!exercise.variations || exercise.variations.length === 0) {
 		throw new Error(`Exercise ${exercise.id} has no variations`);
@@ -2413,8 +2514,8 @@ export function getExerciseContent(
 	const index = Math.max(0, Math.min(variationIndex, exercise.variations.length - 1));
 	const variation = exercise.variations[index];
 
-	// Apply shared defaults
-	const resolved = resolveExerciseVariationWithShared(exercise.shared, variation);
+	// Apply shared defaults, in the requested language
+	const resolved = resolveExerciseVariationWithShared(exercise.shared, variation, locale);
 
 	return {
 		statement_md: resolved.statement_md,
@@ -2435,7 +2536,8 @@ export function getExerciseContent(
  */
 export function getExerciseContentSafe(
 	exercise: Exercise,
-	variationIndex = 0
+	variationIndex = 0,
+	locale: ContentLocale = 'fr'
 ): { statement_md: string; solution_md: string; hints?: ExerciseHint[] } {
 	if (!exercise.variations || exercise.variations.length === 0) {
 		return {
@@ -2445,5 +2547,5 @@ export function getExerciseContentSafe(
 		};
 	}
 
-	return getExerciseContent(exercise, variationIndex);
+	return getExerciseContent(exercise, variationIndex, locale);
 }
