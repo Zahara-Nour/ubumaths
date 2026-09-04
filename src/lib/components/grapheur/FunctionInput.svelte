@@ -163,15 +163,15 @@ Features:
 	:global(.function-input math-field) {
 		width: 100%;
 		min-height: 40px;
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-border);
 		border-radius: 0.375rem;
 		padding: 0.5rem;
-		background: hsl(var(--background));
+		background: var(--color-background);
 		font-size: 1rem;
 	}
 
 	:global(.function-input math-field:focus-within) {
-		outline: 2px solid hsl(var(--ring));
+		outline: 2px solid var(--color-ring);
 		outline-offset: 2px;
 	}
 </style>

@@ -71,7 +71,7 @@ Features:
 		width: 28px;
 		height: 28px;
 		border-radius: 6px;
-		border: 2px solid hsl(var(--border));
+		border: 2px solid var(--color-border);
 		cursor: pointer;
 		transition:
 			transform 0.1s,
@@ -80,11 +80,11 @@ Features:
 
 	.color-trigger:hover {
 		transform: scale(1.05);
-		border-color: hsl(var(--foreground));
+		border-color: var(--color-foreground);
 	}
 
 	.color-trigger:focus-visible {
-		outline: 2px solid hsl(var(--ring));
+		outline: 2px solid var(--color-ring);
 		outline-offset: 2px;
 	}
 
@@ -110,12 +110,12 @@ Features:
 	}
 
 	.color-swatch.selected {
-		border-color: hsl(var(--foreground));
-		box-shadow: 0 0 0 2px hsl(var(--background));
+		border-color: var(--color-foreground);
+		box-shadow: 0 0 0 2px var(--color-background);
 	}
 
 	.color-swatch:focus-visible {
-		outline: 2px solid hsl(var(--ring));
+		outline: 2px solid var(--color-ring);
 		outline-offset: 2px;
 	}
 

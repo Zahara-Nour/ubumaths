@@ -92,7 +92,7 @@ Features:
 	.function-list {
 		/* Allow scrolling when there are many functions */
 		scrollbar-width: thin;
-		scrollbar-color: hsl(var(--muted-foreground)) transparent;
+		scrollbar-color: var(--color-muted-foreground) transparent;
 	}
 
 	.function-list::-webkit-scrollbar {
@@ -104,11 +104,11 @@ Features:
 	}
 
 	.function-list::-webkit-scrollbar-thumb {
-		background: hsl(var(--muted-foreground));
+		background: var(--color-muted-foreground);
 		border-radius: 3px;
 	}
 
 	.function-list::-webkit-scrollbar-thumb:hover {
-		background: hsl(var(--foreground));
+		background: var(--color-foreground);
 	}
 </style>

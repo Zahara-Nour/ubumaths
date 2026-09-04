@@ -102,8 +102,8 @@ for function curves. Displays a visual preview of each style option.
 		width: 28px;
 		height: 28px;
 		border-radius: 6px;
-		border: 2px solid hsl(var(--border));
-		background: hsl(var(--background));
+		border: 2px solid var(--color-border);
+		background: var(--color-background);
 		cursor: pointer;
 		transition:
 			transform 0.1s,
@@ -112,16 +112,16 @@ for function curves. Displays a visual preview of each style option.
 
 	.style-trigger:hover {
 		transform: scale(1.05);
-		border-color: hsl(var(--foreground));
+		border-color: var(--color-foreground);
 	}
 
 	.style-trigger:focus-visible {
-		outline: 2px solid hsl(var(--ring));
+		outline: 2px solid var(--color-ring);
 		outline-offset: 2px;
 	}
 
 	.style-icon {
-		color: hsl(var(--foreground));
+		color: var(--color-foreground);
 	}
 
 	.style-picker {
@@ -137,7 +137,7 @@ for function curves. Displays a visual preview of each style option.
 		padding: 6px 10px;
 		border-radius: 4px;
 		border: 2px solid transparent;
-		background: hsl(var(--background));
+		background: var(--color-background);
 		cursor: pointer;
 		transition:
 			background-color 0.1s,
@@ -145,27 +145,27 @@ for function curves. Displays a visual preview of each style option.
 	}
 
 	.style-option:hover {
-		background: hsl(var(--muted));
+		background: var(--color-muted);
 	}
 
 	.style-option.selected {
-		border-color: hsl(var(--foreground));
-		background: hsl(var(--muted));
+		border-color: var(--color-foreground);
+		background: var(--color-muted);
 	}
 
 	.style-option:focus-visible {
-		outline: 2px solid hsl(var(--ring));
+		outline: 2px solid var(--color-ring);
 		outline-offset: 2px;
 	}
 
 	.style-preview {
-		color: hsl(var(--foreground));
+		color: var(--color-foreground);
 		flex-shrink: 0;
 	}
 
 	.style-label {
 		font-size: 0.75rem;
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 		white-space: nowrap;
 	}
 </style>
