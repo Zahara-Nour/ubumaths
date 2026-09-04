@@ -98,7 +98,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # 15 min like the rest of this workflow. The build takes 2-4 min normally;
+    # 10 left no room for a slow runner and cancelled the job mid-build.
+    timeout-minutes: 15
     needs: [lint, typecheck]
 
     steps:
@@ -220,7 +222,10 @@ jobs:
   audit:
     name: Security Audit
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # 15 min like the rest of this workflow. The audit itself runs in under a
+    # minute, but it waits on the npm advisory endpoint, which can hang: a
+    # cancelled job here blocks the merge on infrastructure, not on a finding.
+    timeout-minutes: 15
 
     steps:
       - name: Checkout code
