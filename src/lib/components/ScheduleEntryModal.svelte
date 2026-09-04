@@ -56,6 +56,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { getDayName } from '$lib/utils/schedule';
+	import { getOrderedSchoolDays, type WeekConfig } from '$lib/utils/week-config';
 	import { formatPeriodDisplay, type SchoolPeriod } from '$lib/utils/timetable';
 
 	type ClassSchedule = Tables<'class_schedules'>;
@@ -78,6 +79,8 @@
 		entry?: ClassSchedule;
 		defaultDay?: number;
 		periods: SchoolPeriod[];
+		/** Week configuration of the school: the day picker offers its school days. */
+		weekConfig?: WeekConfig | null;
 		onClose: () => void;
 		onSave: (data: ScheduleFormData) => void;
 		onDelete?: () => void;
@@ -89,6 +92,7 @@
 		entry,
 		defaultDay = 0,
 		periods,
+		weekConfig,
 		onClose,
 		onSave,
 		onDelete
@@ -170,11 +174,15 @@
 		onClose();
 	}
 
-	// Day options for select (convert number to string for MySelect)
-	const dayOptions = [0, 1, 2, 3, 4].map((day) => ({
-		value: String(day),
-		label: getDayName(day)
-	}));
+	// Day options for select: the school's own school days, in week order.
+	// Hard-coding Sunday-to-Thursday offered days the school does not teach on,
+	// and hid the ones it does.
+	const dayOptions = $derived(
+		getOrderedSchoolDays(weekConfig).map((day) => ({
+			value: String(day),
+			label: getDayName(day)
+		}))
+	);
 
 	// Period options for select (convert number to string for MySelect)
 	const periodOptions = $derived(
@@ -186,7 +194,16 @@
 
 	// Selected values as strings for MySelect binding
 	// Initialize with derived values to avoid capturing stale initial state
-	let selectedDay = $state(String(initialEntry?.day_of_week ?? initialDefaultDay));
+	// Un jour hors semaine scolaire (ancienne saisie, ou config changée depuis)
+	// n'existe pas dans les options : on retombe sur le premier jour de classe
+	// plutôt que d'afficher un sélecteur vide. Comme les autres valeurs
+	// d'ouverture ci-dessus, la semaine est figée à l'ouverture du modal.
+	// svelte-ignore state_referenced_locally
+	const initialSchoolDays = getOrderedSchoolDays(weekConfig);
+	const initialDay = initialEntry?.day_of_week ?? initialDefaultDay;
+	let selectedDay = $state(
+		String(initialSchoolDays.includes(initialDay) ? initialDay : initialSchoolDays[0])
+	);
 	let selectedPeriod = $state(
 		String(initialEntry?.period_number ?? (initialPeriods[0]?.number || 1))
 	);

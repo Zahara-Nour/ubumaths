@@ -4,6 +4,7 @@ import {
 	getLastDayOfWeek,
 	isSchoolDay,
 	getSchoolDays,
+	getOrderedSchoolDays,
 	getWeekendDays,
 	isValidWeekConfig,
 	type WeekConfig
@@ -297,5 +298,55 @@ describe('isValidWeekConfig', () => {
 			weekend_days: [5, 6] // 5 appears twice
 		};
 		expect(isValidWeekConfig(config)).toBe(false);
+	});
+});
+
+describe('getOrderedSchoolDays()', () => {
+	test('orders the school days from the first day of the week', () => {
+		// Occidental : la semaine commence lundi, les colonnes vont donc de lundi à vendredi.
+		expect(
+			getOrderedSchoolDays({
+				first_day: 1,
+				last_day: 0,
+				school_days: [1, 2, 3, 4, 5],
+				weekend_days: [0, 6]
+			})
+		).toEqual([1, 2, 3, 4, 5]);
+	});
+
+	test('wraps around when the week starts late in the numbering', () => {
+		// Moyen-Orient : samedi ouvre la semaine, donc Sam, Dim, Lun, Mar, Mer.
+		expect(
+			getOrderedSchoolDays({
+				first_day: 6,
+				last_day: 5,
+				school_days: [6, 0, 1, 2, 3],
+				weekend_days: [4, 5]
+			})
+		).toEqual([6, 0, 1, 2, 3]);
+	});
+
+	test('reorders a school_days array given out of order', () => {
+		// La saisie par cases à cocher trie par numéro de jour, pas par ordre de semaine.
+		expect(
+			getOrderedSchoolDays({
+				first_day: 6,
+				last_day: 5,
+				school_days: [0, 1, 2, 3, 6],
+				weekend_days: [4, 5]
+			})
+		).toEqual([6, 0, 1, 2, 3]);
+	});
+
+	test('falls back to the default configuration when there is none', () => {
+		expect(getOrderedSchoolDays(undefined)).toEqual([0, 1, 2, 3, 4]);
+		expect(getOrderedSchoolDays(null)).toEqual([0, 1, 2, 3, 4]);
+	});
+
+	test('falls back to the default when the configuration lists no school day', () => {
+		// Une config vide ne doit pas produire une grille sans colonne.
+		expect(
+			getOrderedSchoolDays({ first_day: 1, last_day: 0, school_days: [], weekend_days: [] })
+		).toEqual([0, 1, 2, 3, 4]);
 	});
 });

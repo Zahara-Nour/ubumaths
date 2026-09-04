@@ -2,7 +2,7 @@
 	ClassScheduleGrid Component
 	===========================
 
-	Custom weekly schedule grid displaying class schedules from Sunday to Thursday.
+	Custom weekly schedule grid displaying class schedules over the school's own week.
 	Grid rows are dynamically generated from the school's timetable periods.
 	Entries can span multiple periods for multi-period sessions.
 
@@ -17,7 +17,7 @@
 	- Empty state when no schedules or timetable exists
 
 	GRID STRUCTURE:
-	- 5 columns: Sunday (0) through Thursday (4)
+	- One column per school day, ordered from the school's first day of week
 	- Dynamic rows: Based on school's timetable periods
 	- Each period shows: Period name + time range
 	- Entries use rowspan for sessions longer than 1 period
@@ -26,7 +26,7 @@
 	- schedules: ClassSchedule[] - Array of schedule entries to display
 	- periods: SchoolPeriod[] - School timetable periods (defines grid rows)
 	- onCellClick?: (day: number, time: string, entry?: ClassSchedule) => void - Callback when cell is clicked
-	  * day: 0-4 (Sunday-Thursday)
+	  * day: 0-6 (0 = Sunday), among the school's school days
 	  * time: HH:MM:SS format (e.g., "08:00:00")
 	  * entry: undefined for empty cells, ClassSchedule object for existing entries
 	- readonly?: boolean - If true, disable clicking and hover effects (default: false)
@@ -51,17 +51,24 @@
 	import type { Tables } from '$lib/types/database';
 	import { getDayName, formatScheduleDisplay, formatTimeDisplay } from '$lib/utils/schedule';
 	import { formatPeriodName, formatPeriodTimes, type SchoolPeriod } from '$lib/utils/timetable';
+	import { getOrderedSchoolDays, type WeekConfig } from '$lib/utils/week-config';
 
 	type ClassSchedule = Tables<'class_schedules'>;
 
 	interface Props {
 		schedules: ClassSchedule[];
 		periods: SchoolPeriod[];
+		/**
+		 * Week configuration of the school. The columns are its school days, in
+		 * week order — hard-coding them showed a Sunday-to-Thursday week to a
+		 * school running Monday to Friday.
+		 */
+		weekConfig?: WeekConfig | null;
 		onCellClick?: (day: number, time: string, entry?: ClassSchedule) => void;
 		readonly?: boolean;
 	}
 
-	let { schedules, periods, onCellClick, readonly = false }: Props = $props();
+	let { schedules, periods, weekConfig, onCellClick, readonly = false }: Props = $props();
 
 	// Generate time slots from school timetable periods
 	// Each period becomes a row in the grid
@@ -73,8 +80,8 @@
 		}))
 	);
 
-	// Days array: Sunday (0) through Thursday (4)
-	const days = [0, 1, 2, 3, 4];
+	// Columns: the school's own school days, in the order its week runs
+	const days = $derived(getOrderedSchoolDays(weekConfig));
 
 	/**
 	 * Check if there's a break/gap between current period and previous period
