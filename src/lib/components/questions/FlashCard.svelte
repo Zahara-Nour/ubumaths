@@ -443,6 +443,18 @@
 											{/if}
 										{/each}
 									</ul>
+								{:else}
+									<!--
+										getQuestionType() ne connaît que deux types : sans `choices`, une
+										question est classée `fill_in_blanks`. Si elle n'a pas non plus de
+										`blanks`, il n'y a aucune réponse structurée à afficher — sans ce
+										repli, l'encadré vert se rendait vide et muet.
+									-->
+									<p class="text-sm text-muted-foreground">
+										{correctionMarkdown
+											? "Cette question n'a pas de réponse structurée : voir l'explication ci-dessous."
+											: 'Aucune réponse enregistrée pour cette question.'}
+									</p>
 								{/if}
 							</div>
 						</div>
