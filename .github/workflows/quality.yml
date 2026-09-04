@@ -45,6 +45,14 @@ jobs:
       - name: Run Prettier check
         run: pnpm prettier --check .
 
+      # Tailwind 4 exposes complete colours as --color-* ; the bare --border,
+      # --foreground, … tokens that `hsl(var(--x))` expects do not exist, so
+      # those declarations are invalid and silently dropped. It once left an
+      # SVG stroke fully invisible. A baseline carries the pre-existing debt,
+      # so this only blocks NEW occurrences. See docs/ref/css-color-tokens.md.
+      - name: Guard CSS colour tokens (no hsl(var(--…)))
+        run: bash scripts/check-css-tokens.sh
+
       # Persist eslint's per-file cache across runs so a PR only re-lints CHANGED
       # files instead of the whole tree (the type-aware lint is the slow part).
       # The key is unique per commit (always saves a fresh cache); restore-keys
