@@ -96,20 +96,33 @@ puisse atterrir sans passer la CI au rouge. Elle échoue si :
 - un fichier **descend** sous sa référence — c'est un progrès, mais la baseline
   doit être resserrée et committée, sinon la dette pourrait remonter en douce.
 
-## Dette résiduelle (2026-09-04)
+## Dette résiduelle (2026-09-04, après la passe « fonds »)
 
-**235 occurrences dans 40 fichiers**, hors module grapheur déjà assaini.
+**147 occurrences dans 38 fichiers.** Les 88 déclarations `background` /
+`box-shadow` — les seules réellement visibles — ont été converties ; il ne reste
+que la dérive cosmétique.
 
-| Catégorie                                | Nombre | Gravité                          |
-| ---------------------------------------- | ------ | -------------------------------- |
-| `background`, `box-shadow`               | 88     | Fond potentiellement transparent |
-| `color`, `border*`, `outline*`           | 138    | Dérive cosmétique                |
-| dont syntaxe `/ alpha` (→ `color-mix()`) | 40     | Conversion au cas par cas        |
+| Catégorie                                | Nombre | Gravité                   |
+| ---------------------------------------- | ------ | ------------------------- |
+| `background`, `box-shadow`               | 0      | ✅ traité                 |
+| `color`, `border*`, `outline*`           | 126    | Dérive cosmétique         |
+| dont syntaxe `/ alpha` (→ `color-mix()`) | 4      | Conversion au cas par cas |
 
-Les plus chargés : `whiteboard/AnnotationToolbar` (27),
-`extensions/VariationTableNodeView` (26), `extensions/NumberLineNodeView` (26),
-`extensions/ImageNodeView` (17), les pages admin `docs` (16 chacune).
+Le reliquat (21 occurrences) vit dans des propriétés diverses (`fill` de
+`::-webkit-scrollbar`, variables intermédiaires, etc.).
 
-⚠️ Les 88 sont un **majorant** : si une classe Tailwind `bg-*` accompagne la
-règle, elle prend le relais et rien ne se voit. Il faut ouvrir les fichiers,
-pas présumer — d'où un tri à la main plutôt qu'un remplacement en masse.
+Les plus chargés, tous à 14 : les deux pages admin `docs`,
+`whiteboard/AnnotationToolbar`, `extensions/VariationTableNodeView`,
+`extensions/NumberLineNodeView`.
+
+### Ce que la passe « fonds » a réparé
+
+Contrairement à ce qu'on pouvait espérer, **87 des 88 n'avaient aucun filet** :
+une seule était rattrapée par une classe Tailwind `bg-*`. C'étaient donc de
+vrais fonds absents, par exemple :
+
+- `.flip-button` (`FlashCard`, `CorrectionCard`, `CustomFlashCard`) : le bouton
+  circulaire « retourner » était transparent, seule son ombre le dessinait ;
+- `.splitter` (`PythonSplitter`) : poignée de redimensionnement invisible ;
+- `.choice-button`, `.ordering-item` : fonds des réponses d'exercice absents ;
+- les pouces d'ascenseur `::-webkit-scrollbar-thumb`, invisibles.

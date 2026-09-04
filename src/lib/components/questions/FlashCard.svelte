@@ -487,7 +487,7 @@
 		width: calc(3rem * var(--font-scale, 1));
 		height: calc(3rem * var(--font-scale, 1));
 		border-radius: 50%;
-		background: hsl(var(--primary));
+		background: var(--color-primary);
 		color: hsl(var(--primary-foreground));
 		border: none;
 		cursor: pointer;
@@ -511,7 +511,7 @@
 	.flip-button:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
-		background: hsl(var(--muted));
+		background: var(--color-muted);
 		color: hsl(var(--muted-foreground));
 	}
 

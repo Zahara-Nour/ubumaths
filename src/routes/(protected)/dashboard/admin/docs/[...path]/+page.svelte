@@ -198,7 +198,7 @@
 	}
 
 	:global(.prose code) {
-		background-color: hsl(var(--muted));
+		background-color: var(--color-muted);
 		padding: 0.2rem 0.4rem;
 		border-radius: 0.25rem;
 		font-size: 0.875em;
@@ -237,7 +237,7 @@
 	}
 
 	:global(.prose th) {
-		background-color: hsl(var(--muted));
+		background-color: var(--color-muted);
 		font-weight: 600;
 	}
 

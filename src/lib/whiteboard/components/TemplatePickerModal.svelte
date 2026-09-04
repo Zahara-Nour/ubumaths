@@ -724,7 +724,7 @@
 		overflow: hidden;
 		border-radius: 0.5rem;
 		border: 1px solid hsl(var(--border));
-		background-color: hsl(var(--card));
+		background-color: var(--color-card);
 		color: hsl(var(--card-foreground));
 		box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 		transition: all 0.15s;
@@ -753,7 +753,7 @@
 		display: inline-block;
 		margin-top: 0.5rem;
 		border-radius: 9999px;
-		background-color: hsl(var(--muted));
+		background-color: var(--color-muted);
 		padding: 0.125rem 0.5rem;
 		font-size: 0.75rem;
 		color: hsl(var(--muted-foreground));
@@ -764,7 +764,7 @@
 		margin-left: 0.25rem;
 		margin-top: 0.5rem;
 		border-radius: 9999px;
-		background-color: hsl(var(--primary) / 0.1);
+		background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
 		padding: 0.125rem 0.5rem;
 		font-size: 0.75rem;
 		color: hsl(var(--primary));
@@ -798,6 +798,6 @@
 
 	.color-swatch.selected {
 		border-color: hsl(var(--primary));
-		box-shadow: 0 0 0 2px hsl(var(--background));
+		box-shadow: 0 0 0 2px var(--color-background);
 	}
 </style>

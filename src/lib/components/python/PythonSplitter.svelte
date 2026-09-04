@@ -54,7 +54,7 @@
 	.splitter {
 		width: 6px;
 		cursor: ew-resize;
-		background: hsl(var(--border));
+		background: var(--color-border);
 		transition: background 0.15s;
 		touch-action: none;
 		flex-shrink: 0;
@@ -62,7 +62,7 @@
 
 	.splitter:hover,
 	.splitter.dragging {
-		background: hsl(var(--primary) / 0.5);
+		background: color-mix(in srgb, var(--color-primary) 50%, transparent);
 	}
 
 	.splitter:focus-visible {

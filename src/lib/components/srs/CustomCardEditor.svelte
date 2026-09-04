@@ -198,6 +198,6 @@
 		min-height: 100px;
 		padding: 1rem;
 		border-radius: 0.5rem;
-		background: hsl(var(--muted) / 0.3);
+		background: color-mix(in srgb, var(--color-muted) 30%, transparent);
 	}
 </style>

@@ -582,7 +582,7 @@
 		align-items: center;
 		gap: 4px;
 		padding: 6px 8px;
-		background: hsl(var(--background) / 0.95);
+		background: color-mix(in srgb, var(--color-background) 95%, transparent);
 		backdrop-filter: blur(8px);
 		border: 1px solid hsl(var(--border));
 		border-radius: 12px;
@@ -603,7 +603,7 @@
 	}
 
 	.drag-handle:hover {
-		background: hsl(var(--accent));
+		background: var(--color-accent);
 	}
 
 	.drag-handle:active {
@@ -619,7 +619,7 @@
 	.separator {
 		width: 1px;
 		height: 24px;
-		background: hsl(var(--border));
+		background: var(--color-border);
 		margin: 0 4px;
 	}
 
@@ -652,7 +652,7 @@
 		grid-template-columns: repeat(5, 1fr);
 		gap: 4px;
 		padding: 8px;
-		background: hsl(var(--background));
+		background: var(--color-background);
 		border: 1px solid hsl(var(--border));
 		border-radius: 8px;
 		box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
@@ -694,11 +694,11 @@
 	}
 
 	.stroke-width-btn:hover {
-		background: hsl(var(--accent));
+		background: var(--color-accent);
 	}
 
 	.stroke-width-btn.selected {
-		background: hsl(var(--accent));
+		background: var(--color-accent);
 		border-color: hsl(var(--primary));
 	}
 
@@ -727,11 +727,11 @@
 	}
 
 	.stroke-style-btn:hover {
-		background: hsl(var(--accent));
+		background: var(--color-accent);
 	}
 
 	.stroke-style-btn.selected {
-		background: hsl(var(--accent));
+		background: var(--color-accent);
 		border-color: hsl(var(--primary));
 	}
 
@@ -793,7 +793,7 @@
 	}
 
 	.color-swatch.no-fill {
-		background: hsl(var(--muted));
+		background: var(--color-muted);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -811,7 +811,7 @@
 		transform: translateX(-50%);
 		margin-bottom: 8px;
 		padding: 12px;
-		background: hsl(var(--background));
+		background: var(--color-background);
 		border: 1px solid hsl(var(--border));
 		border-radius: 8px;
 		box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
@@ -850,18 +850,18 @@
 		font-size: 16px;
 		border-radius: 4px;
 		border: 1px solid transparent;
-		background: hsl(var(--accent) / 0.5);
+		background: color-mix(in srgb, var(--color-accent) 50%, transparent);
 		cursor: pointer;
 		transition: all 0.1s;
 	}
 
 	.stamp-btn:hover {
-		background: hsl(var(--accent));
+		background: var(--color-accent);
 		transform: scale(1.1);
 	}
 
 	.stamp-btn.selected {
-		background: hsl(var(--primary) / 0.2);
+		background: color-mix(in srgb, var(--color-primary) 20%, transparent);
 		border-color: hsl(var(--primary));
 	}
 

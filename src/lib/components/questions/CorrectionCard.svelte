@@ -423,12 +423,12 @@
 	}
 
 	.flip-face.scrollable::-webkit-scrollbar-thumb {
-		background: hsl(var(--muted));
+		background: var(--color-muted);
 		border-radius: 4px;
 	}
 
 	.flip-face.scrollable::-webkit-scrollbar-thumb:hover {
-		background: hsl(var(--muted-foreground) / 0.5);
+		background: color-mix(in srgb, var(--color-muted-foreground) 50%, transparent);
 	}
 
 	/* ============================================================================
@@ -446,7 +446,7 @@
 		width: calc(3rem * var(--font-scale, 1));
 		height: calc(3rem * var(--font-scale, 1));
 		border-radius: 50%;
-		background: hsl(var(--primary));
+		background: var(--color-primary);
 		color: hsl(var(--primary-foreground));
 		border: none;
 		cursor: pointer;
@@ -470,7 +470,7 @@
 	.flip-button:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
-		background: hsl(var(--muted));
+		background: var(--color-muted);
 		color: hsl(var(--muted-foreground));
 	}
 

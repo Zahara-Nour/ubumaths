@@ -155,14 +155,14 @@
 		text-align: left;
 		border: 2px solid hsl(var(--border));
 		border-radius: calc(0.5rem * var(--font-scale, 1));
-		background: hsl(var(--background));
+		background: var(--color-background);
 		cursor: pointer;
 		transition: all 0.2s ease;
 	}
 
 	.choice-button:hover:not(.disabled) {
 		border-color: hsl(var(--primary));
-		background: hsl(var(--muted) / 0.5);
+		background: color-mix(in srgb, var(--color-muted) 50%, transparent);
 		transform: translateY(-2px);
 		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 	}
@@ -173,7 +173,7 @@
 
 	.choice-button.selected {
 		border-color: hsl(var(--primary));
-		background: hsl(var(--primary) / 0.1);
+		background: color-mix(in srgb, var(--color-primary) 10%, transparent);
 	}
 
 	.choice-button.correct {
@@ -215,12 +215,12 @@
 		font-weight: 700;
 		font-size: calc(0.875rem * var(--font-scale, 1));
 		border-radius: calc(0.375rem * var(--font-scale, 1));
-		background: hsl(var(--muted));
+		background: var(--color-muted);
 		color: hsl(var(--foreground));
 	}
 
 	.choice-button.selected .choice-letter {
-		background: hsl(var(--primary));
+		background: var(--color-primary);
 		color: hsl(var(--primary-foreground));
 	}
 
