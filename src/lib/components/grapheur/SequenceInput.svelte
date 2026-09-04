@@ -18,6 +18,7 @@
 	import { MAX_SEQUENCE_TERMS, sequenceValidationError } from '$lib/grapheur/sequence';
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import MathField from '$lib/components/MathField.svelte';
+	import type { MathfieldElement } from 'mathlive';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import ColorPicker from './ColorPicker.svelte';
 	import LineWidthPicker from './LineWidthPicker.svelte';
@@ -63,6 +64,9 @@
 	let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	let showTable = $state(false);
+
+	/** The MathLive element, needed to insert u_n at the caret. */
+	let field = $state<MathfieldElement | undefined>();
 
 	// ==========================================================================
 	// Derived State
@@ -128,6 +132,24 @@
 			// The staircase only means something for a recurrence.
 			representation: mode === 'recurrence' ? sequence.representation : 'ranks'
 		});
+	}
+
+	/**
+	 * Insert the previous term at the caret.
+	 *
+	 * Typing it by hand means `u`, `_`, `n`, then the right arrow to escape the
+	 * subscript — a step students forget, which silently produces `u_{n+3}`.
+	 * `selectionMode: 'after'` leaves the caret past the subscript instead.
+	 */
+	function insertPreviousTerm() {
+		if (!field) return;
+
+		field.insert(`${sequence.name}_n`, { selectionMode: 'after', format: 'latex' });
+
+		// insert() does not necessarily emit an input event: push the value
+		// ourselves so the debounced sync to the store still fires.
+		latex = field.value;
+		field.focus();
 	}
 
 	function handleFirstIndexInput(event: Event & { currentTarget: HTMLInputElement }) {
@@ -248,7 +270,26 @@
 		<span class="shrink-0 font-serif text-sm text-foreground">
 			{sequence.name}<sub>{definitionIndex}</sub> =
 		</span>
-		<MathField bind:value={latex} placeholder="…" virtual-keyboard-mode="manual" class="w-full" />
+		<MathField
+			bind:value={latex}
+			bind:element={field}
+			placeholder="…"
+			virtual-keyboard-mode="manual"
+			class="w-full"
+		/>
+
+		{#if sequence.mode === 'recurrence'}
+			<Button
+				variant="outline"
+				size="sm"
+				onclick={insertPreviousTerm}
+				title="Insérer le terme précédent"
+				aria-label="Insérer le terme précédent"
+				class="h-8 shrink-0 font-serif"
+			>
+				{sequence.name}<sub>n</sub>
+			</Button>
+		{/if}
 	</div>
 
 	<!-- First index and, for a recurrence, first term -->

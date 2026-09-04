@@ -3,11 +3,17 @@
 	import type { MathfieldElement, MathfieldElementAttributes } from 'mathlive';
 	import { on } from 'svelte/events';
 
-	type Props = { value?: string } & Partial<MathfieldElementAttributes>;
+	type Props = {
+		value?: string;
+		/** The underlying element, for callers needing its imperative API (insert, focus…). */
+		element?: MathfieldElement;
+	} & Partial<MathfieldElementAttributes>;
 
-	let { value = $bindable(), ...rest }: Props = $props();
+	let { value = $bindable(), element = $bindable(), ...rest }: Props = $props();
 
 	const init = (node: MathfieldElement) => {
+		element = node;
+
 		//reacts
 		$effect(() => {
 			if (value) node.value = value;
