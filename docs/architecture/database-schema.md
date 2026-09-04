@@ -41,6 +41,25 @@ Two consequences worth knowing (security-audit notes):
   only widens the sole teacher's reach (any enrolled student, regardless of
   membership status).
 
+### Anonymous read surface
+
+One table is readable **without an account**: `question_templates`, restricted
+to `status = 'published'` (`20260908090000_*`). `/automaths` is a public route,
+so a visitor with no session must be able to browse published questions.
+
+Two things to keep in mind if you touch this table's policies:
+
+- **The three authenticated policies are scoped `TO authenticated` on purpose.**
+  They each run `EXISTS (SELECT 1 FROM profiles …)`, and `anon` has no SELECT on
+  `profiles` (incident C2, security audit 2026-08). Permissive policies are
+  OR-combined, so leaving them on `PUBLIC` makes _every_ anonymous query on the
+  table fail with `permission denied for table profiles` — which is exactly how
+  `/automaths` returned 500 in production for months.
+- **The anon policy must never read `profiles`**, directly or through a helper.
+
+Guarded by `tests/integration/automaths-anon-templates-rls.test.ts`, which also
+re-asserts that anon still cannot read `profiles`.
+
 ---
 
 ## Kanban
