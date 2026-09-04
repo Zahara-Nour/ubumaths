@@ -140,7 +140,7 @@
 
 <style>
 	.markdown-raw {
-		background: hsl(var(--muted));
+		background: var(--color-muted);
 		border: 1px solid hsl(var(--border));
 		border-radius: 0.5rem;
 		padding: 1rem;
@@ -161,7 +161,7 @@
 		font-weight: 600;
 		border-radius: 0.25rem;
 		padding: 0 0.25rem;
-		background: hsl(var(--muted) / 0.5);
+		background: color-mix(in srgb, var(--color-muted) 50%, transparent);
 		cursor: pointer;
 		transition:
 			background-color 0.15s ease,
@@ -169,7 +169,7 @@
 	}
 
 	:global(.variable-highlight:hover) {
-		background: hsl(var(--accent));
+		background: var(--color-accent);
 		transform: scale(1.02);
 	}
 

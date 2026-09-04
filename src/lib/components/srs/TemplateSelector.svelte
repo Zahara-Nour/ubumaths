@@ -286,7 +286,7 @@
 	}
 
 	.templates-list::-webkit-scrollbar-thumb {
-		background: hsl(var(--muted));
+		background: var(--color-muted);
 		border-radius: 4px;
 	}
 </style>

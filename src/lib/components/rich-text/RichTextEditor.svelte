@@ -2038,7 +2038,7 @@
 		font-size: 0.625rem;
 		font-weight: 500;
 		color: hsl(var(--primary-foreground));
-		background: hsl(var(--primary));
+		background: var(--color-primary);
 		border-radius: 0.25rem;
 		white-space: nowrap;
 	}

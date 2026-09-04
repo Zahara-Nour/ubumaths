@@ -86,7 +86,7 @@
 		gap: 0.5rem;
 		padding: 0.75rem 1rem;
 		border-left: 3px solid hsl(var(--primary) / 0.5);
-		background: hsl(var(--muted) / 0.3);
+		background: color-mix(in srgb, var(--color-muted) 30%, transparent);
 		border-radius: 0 0.375rem 0.375rem 0;
 	}
 

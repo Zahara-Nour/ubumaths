@@ -208,7 +208,7 @@
 		font-size: calc(1rem * var(--font-scale, 1));
 		border: 2px solid hsl(var(--border));
 		border-radius: calc(0.5rem * var(--font-scale, 1));
-		background: hsl(var(--background));
+		background: var(--color-background);
 		cursor: move;
 		transition: all 0.2s ease;
 		user-select: none;
@@ -216,7 +216,7 @@
 
 	.ordering-item:hover:not(.disabled) {
 		border-color: hsl(var(--primary));
-		background: hsl(var(--muted) / 0.5);
+		background: color-mix(in srgb, var(--color-muted) 50%, transparent);
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}
 
@@ -227,7 +227,7 @@
 
 	.ordering-item.drop-target {
 		border-color: hsl(var(--primary));
-		background: hsl(var(--primary) / 0.1);
+		background: color-mix(in srgb, var(--color-primary) 10%, transparent);
 		border-style: dashed;
 	}
 
@@ -277,7 +277,7 @@
 		font-weight: 700;
 		font-size: calc(0.875rem * var(--font-scale, 1));
 		border-radius: calc(0.375rem * var(--font-scale, 1));
-		background: hsl(var(--muted));
+		background: var(--color-muted);
 		color: hsl(var(--foreground));
 	}
 

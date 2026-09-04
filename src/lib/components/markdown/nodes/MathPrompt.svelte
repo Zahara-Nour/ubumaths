@@ -207,14 +207,14 @@
 
 	/* Style the prompts (editable areas) */
 	:global(math-field[readonly] .ML__prompt) {
-		background-color: hsl(var(--muted) / 0.3);
+		background-color: color-mix(in srgb, var(--color-muted) 30%, transparent);
 		border-radius: 0.25rem;
 		padding: 0 0.25em;
 		min-width: 2em;
 	}
 
 	:global(math-field[readonly] .ML__prompt:focus-within) {
-		background-color: hsl(var(--accent) / 0.3);
+		background-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
 		outline: 2px solid hsl(var(--ring));
 		outline-offset: 1px;
 	}
@@ -227,7 +227,7 @@
 
 	/* Incorrect state */
 	:global(math-field[readonly] .ML__prompt.ML__incorrect) {
-		background-color: hsl(var(--destructive) / 0.2);
+		background-color: color-mix(in srgb, var(--color-destructive) 20%, transparent);
 		border: 1px solid hsl(var(--destructive) / 0.5);
 	}
 </style>

@@ -217,14 +217,14 @@
 		padding: 1.5rem;
 		width: 100%;
 		text-align: left;
-		background: hsl(var(--card));
+		background: var(--color-card);
 		cursor: pointer;
 		border: none;
 		transition: background 0.2s;
 	}
 
 	.card-content:hover {
-		background: hsl(var(--accent));
+		background: var(--color-accent);
 	}
 
 	.card-header {

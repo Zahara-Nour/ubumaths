@@ -86,20 +86,20 @@
 		font-size: calc(1.125rem * var(--font-scale, 1));
 		border: 2px solid hsl(var(--border));
 		border-radius: calc(0.5rem * var(--font-scale, 1));
-		background: hsl(var(--background));
+		background: var(--color-background);
 		transition: all 0.2s ease;
 	}
 
 	:global(.math-input-field:focus) {
 		outline: none;
 		border-color: hsl(var(--primary));
-		box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 10%, transparent);
 	}
 
 	:global(.math-input-field[readonly]) {
 		opacity: 0.5;
 		cursor: not-allowed;
-		background: hsl(var(--muted));
+		background: var(--color-muted);
 	}
 
 	.helper-text {
@@ -111,6 +111,6 @@
 	/* Dark mode adjustments */
 	:global(.dark .math-input-field) {
 		border-color: hsl(var(--border));
-		background: hsl(var(--background));
+		background: var(--color-background);
 	}
 </style>

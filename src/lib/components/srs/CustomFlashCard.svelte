@@ -225,7 +225,7 @@
 	}
 
 	.flip-face.scrollable::-webkit-scrollbar-thumb {
-		background: hsl(var(--muted));
+		background: var(--color-muted);
 		border-radius: 4px;
 	}
 
@@ -241,7 +241,7 @@
 		width: calc(3rem * var(--font-scale, 1));
 		height: calc(3rem * var(--font-scale, 1));
 		border-radius: 50%;
-		background: hsl(var(--primary));
+		background: var(--color-primary);
 		color: hsl(var(--primary-foreground));
 		border: none;
 		cursor: pointer;

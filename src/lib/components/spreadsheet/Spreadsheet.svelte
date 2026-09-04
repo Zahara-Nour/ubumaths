@@ -304,6 +304,6 @@
 
 	/* When container is focused, show a subtle indicator */
 	.spreadsheet-container:focus-within {
-		box-shadow: 0 0 0 2px hsl(var(--ring) / 0.3);
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-ring) 30%, transparent);
 	}
 </style>

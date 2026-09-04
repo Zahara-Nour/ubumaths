@@ -535,11 +535,11 @@
 		display: flex;
 		gap: 0.25rem;
 		z-index: 10;
-		background: hsl(var(--background) / 0.95);
+		background: color-mix(in srgb, var(--color-background) 95%, transparent);
 		backdrop-filter: blur(4px);
 		padding: 0.25rem;
 		border-radius: 0.375rem;
-		box-shadow: 0 2px 8px hsl(var(--foreground) / 0.1);
+		box-shadow: 0 2px 8px color-mix(in srgb, var(--color-foreground) 10%, transparent);
 		border: 1px solid hsl(var(--border));
 	}
 
@@ -567,7 +567,7 @@
 		flex-direction: column;
 		gap: 0.25rem;
 		padding: 0.5rem;
-		background: hsl(var(--muted) / 0.5);
+		background: color-mix(in srgb, var(--color-muted) 50%, transparent);
 		border: 2px solid hsl(var(--ring));
 		border-radius: 0.375rem;
 	}
@@ -578,7 +578,7 @@
 		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 		font-size: 0.875rem;
 		line-height: 1.5;
-		background: hsl(var(--background));
+		background: var(--color-background);
 		border: 1px solid hsl(var(--border));
 		border-radius: 0.25rem;
 		color: hsl(var(--foreground));
@@ -589,7 +589,7 @@
 	.markdown-input:focus {
 		outline: none;
 		border-color: hsl(var(--ring));
-		box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-ring) 20%, transparent);
 	}
 
 	.markdown-input.is-valid,
@@ -648,10 +648,10 @@
 		padding: 0.125rem 0.375rem;
 		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 		font-size: 0.6875rem;
-		background: hsl(var(--muted));
+		background: var(--color-muted);
 		border: 1px solid hsl(var(--border));
 		border-radius: 0.25rem;
-		box-shadow: 0 1px 0 hsl(var(--border));
+		box-shadow: 0 1px 0 var(--color-border);
 	}
 
 	/* Editing state - expand to full width */
