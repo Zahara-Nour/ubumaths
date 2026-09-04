@@ -85,8 +85,8 @@ Displays a visual preview of each width option.
 		width: 28px;
 		height: 28px;
 		border-radius: 6px;
-		border: 2px solid hsl(var(--border));
-		background: hsl(var(--background));
+		border: 2px solid var(--color-border);
+		background: var(--color-background);
 		cursor: pointer;
 		transition:
 			transform 0.1s,
@@ -95,16 +95,16 @@ Displays a visual preview of each width option.
 
 	.width-trigger:hover {
 		transform: scale(1.05);
-		border-color: hsl(var(--foreground));
+		border-color: var(--color-foreground);
 	}
 
 	.width-trigger:focus-visible {
-		outline: 2px solid hsl(var(--ring));
+		outline: 2px solid var(--color-ring);
 		outline-offset: 2px;
 	}
 
 	.width-icon {
-		color: hsl(var(--foreground));
+		color: var(--color-foreground);
 	}
 
 	.width-picker {
@@ -120,7 +120,7 @@ Displays a visual preview of each width option.
 		padding: 4px 8px;
 		border-radius: 4px;
 		border: 2px solid transparent;
-		background: hsl(var(--background));
+		background: var(--color-background);
 		cursor: pointer;
 		transition:
 			background-color 0.1s,
@@ -128,20 +128,20 @@ Displays a visual preview of each width option.
 	}
 
 	.width-option:hover {
-		background: hsl(var(--muted));
+		background: var(--color-muted);
 	}
 
 	.width-option.selected {
-		border-color: hsl(var(--foreground));
-		background: hsl(var(--muted));
+		border-color: var(--color-foreground);
+		background: var(--color-muted);
 	}
 
 	.width-option:focus-visible {
-		outline: 2px solid hsl(var(--ring));
+		outline: 2px solid var(--color-ring);
 		outline-offset: 2px;
 	}
 
 	.width-preview {
-		color: hsl(var(--foreground));
+		color: var(--color-foreground);
 	}
 </style>
