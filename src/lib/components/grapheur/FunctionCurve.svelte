@@ -9,7 +9,7 @@
 	 * @component
 	 */
 
-	import type { Plottable, Viewport, Point } from '$lib/grapheur/types';
+	import type { ExplicitFunction, Viewport, Point } from '$lib/grapheur/types';
 	import { LINE_STYLE_DASHARRAY } from '$lib/grapheur/types';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
 	import { createEvaluator } from '$lib/grapheur/evaluator';
@@ -23,7 +23,7 @@
 		transformer,
 		isInteracting = false
 	}: {
-		func: Plottable;
+		func: ExplicitFunction;
 		viewport: Viewport;
 		transformer: CoordinateTransformer;
 		isInteracting?: boolean;

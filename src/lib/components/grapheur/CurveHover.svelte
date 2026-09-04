@@ -18,7 +18,8 @@
 
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
-	import type { Plottable, SnappedPointType, SnappedPoint } from '$lib/grapheur/types';
+	import type { ExplicitFunction, SnappedPointType, SnappedPoint } from '$lib/grapheur/types';
+	import { isExplicitFunction } from '$lib/grapheur/types';
 	import { createEvaluator } from '$lib/grapheur/evaluator';
 	import { analyzeAllFunctions } from '$lib/grapheur/analysis';
 	import {
@@ -63,6 +64,7 @@
 		if (grapheurStore.isInteracting) return [];
 
 		const functions = grapheurStore.functions
+			.filter(isExplicitFunction)
 			.filter((f) => f.visible && f.ast)
 			.map((f) => ({
 				id: f.id,
@@ -80,6 +82,7 @@
 		if (grapheurStore.isInteracting) return [];
 
 		const validFuncs = grapheurStore.functions
+			.filter(isExplicitFunction)
 			.filter((f) => f.visible && f.ast !== undefined)
 			.map((f) => ({
 				id: f.id,
@@ -108,7 +111,7 @@
 		svgY: number;
 		distance: number;
 		type: 'curve' | SnappedPointType;
-		func: Plottable | null;
+		func: ExplicitFunction | null;
 		functionIds: string[];
 		color: string;
 	}
@@ -130,7 +133,11 @@
 		// 1. Check special points first (roots, extrema from analysis)
 		// =======================================================================
 		for (const analysis of analysisResults) {
-			const func = grapheurStore.functions.find((f) => f.id === analysis.functionId);
+			// Analyses only ever cover explicit functions, but the store holds
+			// sequences too — narrow while searching.
+			const func = grapheurStore.functions.find(
+				(f): f is ExplicitFunction => isExplicitFunction(f) && f.id === analysis.functionId
+			);
 			const color = func?.color ?? '#888';
 
 			// Roots
@@ -206,7 +213,7 @@
 		// 3. Check curve points (regular hover on curve)
 		// =======================================================================
 		for (const func of grapheurStore.functions) {
-			if (!func.visible || !func.ast) continue;
+			if (!isExplicitFunction(func) || !func.visible || !func.ast) continue;
 
 			const evaluator = createEvaluator(func.ast);
 			const y = evaluator(cursor.x);
