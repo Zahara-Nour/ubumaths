@@ -41,6 +41,7 @@
 	import type { PageData } from './$types';
 	import type { Tables } from '$lib/types/database';
 	import type { SchoolPeriod } from '$lib/utils/timetable';
+	import { getOrderedSchoolDays, type WeekConfig } from '$lib/utils/week-config';
 	import type { ScheduleFormData } from '$lib/components/ScheduleEntryModal.svelte';
 
 	type ClassSchedule = Tables<'class_schedules'>;
@@ -82,6 +83,12 @@
 	}
 
 	let { data }: { data: PageData } = $props();
+
+	// Semaine de l'école : la grille d'emploi du temps et le sélecteur de jour
+	// suivent ses jours de classe, au lieu d'un dimanche-jeudi écrit en dur.
+	const weekConfig = $derived(
+		(data.school?.timetable as unknown as { week_config?: WeekConfig } | null)?.week_config ?? null
+	);
 
 	// ============================================================================
 	// Cache Hydration
@@ -203,7 +210,7 @@
 	let currentClassId = $state<string>('');
 
 	// Default values for new entries (set when user clicks a grid cell)
-	let defaultDay = $state<number>(0); // 0-4 (Sunday-Thursday)
+	let defaultDay = $state<number>(0); // jour de la semaine (0 = dimanche)
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let defaultTime = $state<string | undefined>(undefined); // HH:MM:SS format - kept for future modal pre-fill
 
@@ -249,7 +256,9 @@
 		currentClassId = classId;
 		modalMode = 'create';
 		selectedEntry = undefined;
-		defaultDay = 0;
+		// Premier jour de classe de l'école, pas dimanche : présélectionner un jour
+		// hors semaine scolaire laisserait le sélecteur vide.
+		defaultDay = getOrderedSchoolDays(weekConfig)[0];
 		defaultTime = undefined;
 		modalOpen = true;
 	}
@@ -707,6 +716,7 @@
 							schedules={getMergedSchedules(classItem.id, classItem.schedules)}
 							periods={(data.school?.timetable as unknown as { periods?: SchoolPeriod[] })
 								?.periods || []}
+							{weekConfig}
 							onCellClick={(day, time, entry) => handleCellClick(classItem.id, day, time, entry)}
 						/>
 					</div>
@@ -856,6 +866,7 @@
 		entry={selectedEntry}
 		{defaultDay}
 		periods={(data.school.timetable as unknown as { periods: SchoolPeriod[] }).periods}
+		{weekConfig}
 		onClose={handleModalClose}
 		onSave={handleSave}
 		onDelete={modalMode === 'edit' ? handleDelete : undefined}
@@ -868,6 +879,7 @@
 		entry={selectedEntry}
 		{defaultDay}
 		periods={[]}
+		{weekConfig}
 		onClose={handleModalClose}
 		onSave={handleSave}
 		onDelete={modalMode === 'edit' ? handleDelete : undefined}

@@ -7,13 +7,16 @@ type ClassSchedule = Database['public']['Tables']['class_schedules']['Row'];
  * Helper functions for working with class schedules
  */
 
-// Day names in French (Sunday-Thursday)
+// Day names in French. The whole week: which days a school actually teaches
+// on is a per-school setting (week_config), not something this table decides.
 export const DAY_NAMES: Record<number, string> = {
 	0: 'Dimanche',
 	1: 'Lundi',
 	2: 'Mardi',
 	3: 'Mercredi',
-	4: 'Jeudi'
+	4: 'Jeudi',
+	5: 'Vendredi',
+	6: 'Samedi'
 };
 
 // Short day names in French
@@ -22,7 +25,9 @@ export const DAY_NAMES_SHORT: Record<number, string> = {
 	1: 'Lun',
 	2: 'Mar',
 	3: 'Mer',
-	4: 'Jeu'
+	4: 'Jeu',
+	5: 'Ven',
+	6: 'Sam'
 };
 
 /**

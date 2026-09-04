@@ -83,6 +83,38 @@ export function getSchoolDays(config: WeekConfig): number[] {
 }
 
 /**
+ * School days ordered as the week actually runs, starting at `first_day`.
+ *
+ * `school_days` is stored sorted by day number because that is how the
+ * checkbox editor writes it, which is not the order a timetable is read in: a
+ * week starting on Saturday runs 6, 0, 1, 2, 3. Any grid or day picker must use
+ * this rather than the raw array — or than a hard-coded list.
+ *
+ * Falls back to the default configuration when there is none, or when it lists
+ * no school day at all: a timetable with zero columns would be worse than a
+ * wrong one.
+ *
+ * @param config - Week configuration, possibly absent
+ * @returns School day numbers (0-6) in week order
+ *
+ * @example
+ * ```typescript
+ * getOrderedSchoolDays({ first_day: 6, school_days: [0, 1, 2, 3, 6], ... });
+ * // Returns [6, 0, 1, 2, 3] — Saturday to Wednesday
+ * ```
+ */
+export function getOrderedSchoolDays(config: WeekConfig | null | undefined): number[] {
+	const effective =
+		config && config.school_days && config.school_days.length > 0 ? config : DEFAULT_WEEK_CONFIG;
+
+	const firstDay = effective.first_day ?? 0;
+
+	return [...effective.school_days].sort(
+		(a, b) => ((a - firstDay + 7) % 7) - ((b - firstDay + 7) % 7)
+	);
+}
+
+/**
  * Gets the array of weekend days from the week configuration
  *
  * Day numbering follows JavaScript Date.getDay():
