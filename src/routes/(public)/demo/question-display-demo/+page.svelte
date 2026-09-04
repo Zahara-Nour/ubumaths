@@ -20,7 +20,11 @@
 	// Sample question instances
 	const numericalQuestion: QuestionInstance = {
 		templateId: 'demo-numerical',
-		statement: resolvedMarkdown('Calculate $$\\frac{3}{4} + \\frac{1}{2}$$'),
+		statement: resolvedMarkdown('Calculate $$\\frac{3}{4} + \\frac{1}{2} = $$ ____'),
+		// Sans `blanks`, getQuestionType() classe quand même la question en
+		// `fill_in_blanks` (il n'existe pas de type « numérique ») et la face
+		// réponse n'a alors rien à afficher.
+		blanks: [{ expectedAnswer: '5/4', expectedAnswerLatex: '\\frac{5}{4}', type: 'math' }],
 		grades: ['6', '5'],
 		theme: 'Algèbre',
 		domain: 'Fractions',

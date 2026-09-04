@@ -1213,8 +1213,8 @@
 						size="icon"
 						onclick={togglePreview}
 						{disabled}
-						title={isPreviewMode ? 'Masquer apercu' : 'Afficher apercu'}
-						aria-label={isPreviewMode ? 'Masquer apercu' : 'Afficher apercu'}
+						title={isPreviewMode ? "Masquer l'aperçu" : "Afficher l'aperçu"}
+						aria-label={isPreviewMode ? "Masquer l'aperçu" : "Afficher l'aperçu"}
 					>
 						{#if isPreviewMode}
 							<EyeOff class="h-4 w-4" aria-hidden="true" />
@@ -1452,7 +1452,7 @@
 						size="sm"
 						onclick={() => editor?.chain().focus().toggleOrderedList().run()}
 						{disabled}
-						title="Liste numerotee"
+						title="Liste numérotée"
 					>
 						<ListOrdered class="h-4 w-4" />
 					</Button>
@@ -1609,7 +1609,7 @@
 							size="sm"
 							onclick={handleImageUpload}
 							disabled={disabled || isUploadingImage}
-							title="Inserer une image"
+							title="Insérer une image"
 						>
 							{#if isUploadingImage}
 								<span class="h-4 w-4 animate-spin">⏳</span>
@@ -1628,7 +1628,7 @@
 						size="sm"
 						onclick={insertVariationTable}
 						{disabled}
-						title="Inserer un tableau de variation"
+						title="Insérer un tableau de variation"
 					>
 						<TrendingUp class="h-4 w-4" />
 					</Button>
@@ -1909,7 +1909,7 @@
 			<Dialog.Header>
 				<Dialog.Title>Configurer l'image</Dialog.Title>
 				<Dialog.Description>
-					Ajustez les parametres d'affichage de votre image avant de l'inserer.
+					Ajustez les paramètres d'affichage de votre image avant de l'insérer.
 				</Dialog.Description>
 			</Dialog.Header>
 

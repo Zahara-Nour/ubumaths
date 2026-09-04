@@ -32,7 +32,7 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 	const { data: allTemplates, error: templatesError } = await supabase
 		.from('question_templates')
 		.select('*')
-		.eq('is_published', true);
+		.eq('status', 'published');
 
 	// Sort by theme, domain, subdomain, level
 	const templates =

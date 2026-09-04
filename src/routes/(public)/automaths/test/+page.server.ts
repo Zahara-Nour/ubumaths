@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { data: allTemplates, error: templatesError } = await supabase
 		.from('question_templates')
 		.select('*')
-		.eq('is_published', true);
+		.eq('status', 'published');
 
 	if (templatesError) {
 		console.error('Failed to load question templates:', templatesError);

@@ -4,7 +4,7 @@
 	 * TemplatePickerModal - Dialog for selecting and creating whiteboard templates
 	 *
 	 * Features:
-	 * - Tabs: "Parcourir" (browse) and "Creer" (create)
+	 * - Tabs: "Parcourir" (browse) and "Créer" (create)
 	 * - Favorites section with star toggle
 	 * - Category filtering
 	 * - Template creation form with format, background, font options
@@ -151,7 +151,7 @@
 	);
 
 	const categoryItems = $derived([
-		{ value: 'all', label: 'Toutes les categories' },
+		{ value: 'all', label: 'Toutes les catégories' },
 		...TEMPLATE_CATEGORIES.map((cat) => ({
 			value: cat,
 			label: TEMPLATE_CATEGORY_LABELS[cat]
@@ -184,7 +184,7 @@
 		if (result.success && result.templates) {
 			templates = result.templates;
 		} else {
-			error = result.error ?? 'Erreur lors du chargement des modeles';
+			error = result.error ?? 'Erreur lors du chargement des modèles';
 		}
 
 		loading = false;
@@ -206,7 +206,7 @@
 				t.id === template.id ? { ...t, isFavorite: newIsFavorite } : t
 			);
 		} else {
-			toaster.error(result.error ?? 'Erreur lors de la mise a jour des favoris');
+			toaster.error(result.error ?? 'Erreur lors de la mise à jour des favoris');
 		}
 	}
 
@@ -254,7 +254,7 @@
 
 	async function handleCreateTemplate() {
 		if (!createName.trim()) {
-			toaster.error('Veuillez entrer un nom pour le modele');
+			toaster.error('Veuillez entrer un nom pour le modèle');
 			return;
 		}
 
@@ -276,14 +276,14 @@
 		isCreating = false;
 
 		if (result.success && result.template) {
-			toaster.success('Modele cree avec succes');
+			toaster.success('Modèle créé avec succès');
 			// Reset form
 			resetCreateForm();
 			// Switch to browse tab and reload
 			activeTab = 'browse';
 			await loadTemplates();
 		} else {
-			toaster.error(result.error ?? 'Erreur lors de la creation du modele');
+			toaster.error(result.error ?? 'Erreur lors de la création du modèle');
 		}
 	}
 
@@ -351,9 +351,9 @@
 <Dialog.Root bind:open onOpenChange={(o) => !o && handleClose()}>
 	<Dialog.Content class="flex max-h-[85vh] max-w-3xl flex-col">
 		<Dialog.Header>
-			<Dialog.Title>Choisir un modele</Dialog.Title>
+			<Dialog.Title>Choisir un modèle</Dialog.Title>
 			<Dialog.Description>
-				Parcourez les modeles existants ou creez-en un nouveau
+				Parcourez les modèles existants ou créez-en un nouveau
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -362,7 +362,7 @@
 				<Tabs.Trigger value="browse">Parcourir</Tabs.Trigger>
 				<Tabs.Trigger value="create">
 					<Plus class="mr-1 h-4 w-4" />
-					Creer
+					Créer
 				</Tabs.Trigger>
 			</Tabs.List>
 
@@ -374,7 +374,7 @@
 						type="single"
 						bind:value={selectedCategory}
 						items={categoryItems}
-						placeholder="Filtrer par categorie"
+						placeholder="Filtrer par catégorie"
 					/>
 				</div>
 
@@ -457,7 +457,7 @@
 						<!-- All Templates -->
 						{#if filteredTemplates.length === 0}
 							<div class="flex h-full items-center justify-center text-muted-foreground">
-								<p class="text-sm">Aucun modele disponible</p>
+								<p class="text-sm">Aucun modèle disponible</p>
 							</div>
 						{:else}
 							<div class="grid grid-cols-2 gap-3 md:grid-cols-3">
@@ -524,7 +524,7 @@
 				<div class="grid gap-4">
 					<!-- Name -->
 					<div class="grid gap-2">
-						<Label for="template-name">Nom du modele *</Label>
+						<Label for="template-name">Nom du modèle *</Label>
 						<Input
 							id="template-name"
 							bind:value={createName}
@@ -539,7 +539,7 @@
 						<Textarea
 							id="template-description"
 							bind:value={createDescription}
-							placeholder="Description du modele..."
+							placeholder="Description du modèle..."
 							rows={2}
 							maxlength={500}
 						/>
@@ -548,7 +548,7 @@
 					<!-- Category & Format -->
 					<div class="grid grid-cols-2 gap-4">
 						<div class="grid gap-2">
-							<Label>Categorie</Label>
+							<Label>Catégorie</Label>
 							<MySelect
 								type="single"
 								bind:value={createCategory}
@@ -612,7 +612,7 @@
 
 					<!-- Preview -->
 					<div class="grid gap-2">
-						<Label>Apercu</Label>
+						<Label>Aperçu</Label>
 						<div
 							class="h-24 rounded-lg border"
 							style={getBackgroundPreviewStyle(createBackgroundColor, createBackgroundStyle)}
@@ -629,7 +629,7 @@
 							<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 							Creation...
 						{:else}
-							Creer le modele
+							Créer le modèle
 						{/if}
 					</Button>
 				</div>
@@ -647,7 +647,7 @@
 	<Dialog.Content class="max-w-md">
 		<Dialog.Header>
 			<Dialog.Title>Personnaliser "{selectedTemplate?.name}"</Dialog.Title>
-			<Dialog.Description>Modifiez les options avant de creer la page</Dialog.Description>
+			<Dialog.Description>Modifiez les options avant de créer la page</Dialog.Description>
 		</Dialog.Header>
 
 		<div class="grid gap-4 py-4">
@@ -699,7 +699,7 @@
 
 			<!-- Preview -->
 			<div class="grid gap-2">
-				<Label>Apercu</Label>
+				<Label>Aperçu</Label>
 				<div
 					class="h-20 rounded-lg border"
 					style={getBackgroundPreviewStyle(customBackgroundColor, customBackgroundStyle)}
@@ -711,7 +711,7 @@
 			<Button variant="outline" onclick={() => (showCustomizeDialog = false)}
 				>{lore.actions.cancel}</Button
 			>
-			<Button onclick={applyCustomizedTemplate}>Creer la page</Button>
+			<Button onclick={applyCustomizedTemplate}>Créer la page</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
