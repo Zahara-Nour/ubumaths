@@ -19,6 +19,7 @@
 	import GridLines from './GridLines.svelte';
 	import AxisLines from './AxisLines.svelte';
 	import FunctionCurve from './FunctionCurve.svelte';
+	import SequencePlot from './SequencePlot.svelte';
 	import CurveHover from './CurveHover.svelte';
 	import IntersectionPoints from './IntersectionPoints.svelte';
 	import AsymptoteLines from './AsymptoteLines.svelte';
@@ -342,9 +343,15 @@
 			return `Graphique mathematique vide. Fenetre de x=${xMin} a ${xMax}, y=${yMin} a ${yMax}.`;
 		}
 
-		const funcDescriptions = funcs.map((f) => f.latex || 'fonction inconnue').join(', ');
+		const descriptions = funcs
+			.map((p) =>
+				p.type === 'sequence'
+					? `suite ${p.name}${p.latex ? ` : ${p.latex}` : ''}`
+					: p.latex || 'fonction inconnue'
+			)
+			.join(', ');
 
-		return `Graphique mathematique avec ${funcs.length} fonction(s): ${funcDescriptions}. Fenetre de x=${xMin} a ${xMax}, y=${yMin} a ${yMax}.`;
+		return `Graphique mathematique avec ${funcs.length} trace(s): ${descriptions}. Fenetre de x=${xMin} a ${xMax}, y=${yMin} a ${yMax}.`;
 	});
 </script>
 
@@ -378,15 +385,24 @@
 		<!-- Coordinate axes -->
 		<AxisLines viewport={grapheurStore.viewport} {transformer} {width} {height} />
 
-		<!-- Function curves -->
+		<!-- Function curves and sequence plots -->
 		<g class="function-curves">
-			{#each grapheurStore.visibleFunctions as func (func.id)}
-				<FunctionCurve
-					{func}
-					viewport={grapheurStore.viewport}
-					{transformer}
-					isInteracting={grapheurStore.isInteracting}
-				/>
+			{#each grapheurStore.visibleFunctions as plottable (plottable.id)}
+				{#if plottable.type === 'explicit'}
+					<FunctionCurve
+						func={plottable}
+						viewport={grapheurStore.viewport}
+						{transformer}
+						isInteracting={grapheurStore.isInteracting}
+					/>
+				{:else}
+					<SequencePlot
+						sequence={plottable}
+						viewport={grapheurStore.viewport}
+						{transformer}
+						isInteracting={grapheurStore.isInteracting}
+					/>
+				{/if}
 			{/each}
 		</g>
 

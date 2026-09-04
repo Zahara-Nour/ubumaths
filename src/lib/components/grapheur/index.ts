@@ -20,10 +20,13 @@ export { default as GraphSVG } from './GraphSVG.svelte';
 export { default as AxisLines } from './AxisLines.svelte';
 export { default as GridLines } from './GridLines.svelte';
 export { default as FunctionCurve } from './FunctionCurve.svelte';
+export { default as SequencePlot } from './SequencePlot.svelte';
 
 // UI components
 export { default as FunctionPanel } from './FunctionPanel.svelte';
 export { default as FunctionInput } from './FunctionInput.svelte';
+export { default as SequenceInput } from './SequenceInput.svelte';
+export { default as SequenceTable } from './SequenceTable.svelte';
 export { default as ColorPicker } from './ColorPicker.svelte';
 export { default as LineWidthPicker } from './LineWidthPicker.svelte';
 export { default as LineStylePicker } from './LineStylePicker.svelte';

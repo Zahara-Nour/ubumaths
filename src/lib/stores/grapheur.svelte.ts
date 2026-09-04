@@ -14,14 +14,19 @@ import { getNextColor } from '$lib/grapheur/colors';
 import type {
 	Plottable,
 	ExplicitFunction,
+	SequencePlottable,
+	SequenceMode,
 	Viewport,
 	GraphState,
 	Point,
 	ViewportMetrics,
 	ExplicitFunctionState,
+	PlottableState,
+	SequenceState,
 	SnappedPoint
 } from '$lib/grapheur/types';
-import { graphStateSchema, GRAPH_STATE_VERSION } from '$lib/grapheur/types';
+import { graphStateSchema, GRAPH_STATE_VERSION, isSequence } from '$lib/grapheur/types';
+import { DEFAULT_COBWEB_STEPS, nextSequenceName, parseSequence } from '$lib/grapheur/sequence';
 
 // =============================================================================
 // Constants
@@ -111,6 +116,12 @@ class GrapheurStore {
 	/** Colors currently in use */
 	usedColors = $derived(this.functions.map((f) => f.color));
 
+	/** Only the sequences */
+	sequences = $derived(this.functions.filter(isSequence));
+
+	/** Names already taken by the sequences on the graph */
+	sequenceNames = $derived(this.sequences.map((s) => s.name));
+
 	/** Number of functions */
 	functionCount = $derived(this.functions.length);
 
@@ -195,7 +206,8 @@ class GrapheurStore {
 		>
 	): void {
 		this.functions = this.functions.map((f) => {
-			if (f.id !== id) return f;
+			// Sequences have their own updater — see updateSequence.
+			if (f.id !== id || f.type !== 'explicit') return f;
 
 			// If latex changed, re-parse
 			if (updates.latex !== undefined && updates.latex !== f.latex) {
@@ -209,6 +221,106 @@ class GrapheurStore {
 			}
 
 			return { ...f, ...updates };
+		});
+		this.scheduleSave();
+	}
+
+	// ===========================================================================
+	// Sequence Management
+	// ===========================================================================
+
+	/**
+	 * Add a numeric sequence to the graph
+	 *
+	 * @param mode - Explicit `u_n = f(n)` or recurrence `u_{n+1} = f(u_n)`
+	 * @param latex - Right-hand side of the definition (default: empty)
+	 * @returns The created sequence's ID
+	 *
+	 * @example
+	 * ```typescript
+	 * grapheurStore.addSequence('recurrence', '0.5u_n+3');
+	 * ```
+	 */
+	addSequence(mode: SequenceMode = 'explicit', latex: string = ''): string {
+		const id = crypto.randomUUID();
+		const color = getNextColor(this.usedColors);
+		const name = nextSequenceName(this.sequenceNames);
+		const parseResult = parseSequence(latex, mode, name);
+
+		const sequence: SequencePlottable = {
+			id,
+			type: 'sequence',
+			name,
+			mode,
+			latex,
+			ast: parseResult.ast ?? undefined,
+			parseError: parseResult.error ?? undefined,
+			usesIndex: parseResult.usesIndex,
+			firstIndex: 0,
+			firstTerm: mode === 'recurrence' ? 0 : null,
+			// The cloud of ranks is the standard representation; the staircase is
+			// picked explicitly, since it replaces the points rather than adding to
+			// them.
+			representation: 'ranks',
+			cobwebSteps: DEFAULT_COBWEB_STEPS,
+			color,
+			visible: true,
+			lineWidth: 2,
+			lineStyle: 'solid'
+		};
+
+		this.functions = [...this.functions, sequence];
+		this.scheduleSave();
+		return id;
+	}
+
+	/**
+	 * Update a sequence's properties
+	 *
+	 * Re-parses the expression whenever the expression, the mode or the name
+	 * changes, since all three take part in resolving `u_n`.
+	 *
+	 * @param id - The sequence's ID
+	 * @param updates - Properties to update
+	 */
+	updateSequence(
+		id: string,
+		updates: Partial<
+			Pick<
+				SequencePlottable,
+				| 'latex'
+				| 'mode'
+				| 'name'
+				| 'firstIndex'
+				| 'firstTerm'
+				| 'representation'
+				| 'cobwebSteps'
+				| 'color'
+				| 'visible'
+				| 'lineWidth'
+				| 'lineStyle'
+			>
+		>
+	): void {
+		this.functions = this.functions.map((p) => {
+			if (p.id !== id || p.type !== 'sequence') return p;
+
+			const merged = { ...p, ...updates };
+
+			const needsReparse =
+				(updates.latex !== undefined && updates.latex !== p.latex) ||
+				(updates.mode !== undefined && updates.mode !== p.mode) ||
+				(updates.name !== undefined && updates.name !== p.name);
+
+			if (!needsReparse) return merged;
+
+			const parseResult = parseSequence(merged.latex, merged.mode, merged.name);
+			return {
+				...merged,
+				ast: parseResult.ast ?? undefined,
+				parseError: parseResult.error ?? undefined,
+				usesIndex: parseResult.usesIndex
+			};
 		});
 		this.scheduleSave();
 	}
@@ -371,18 +483,38 @@ class GrapheurStore {
 			version: GRAPH_STATE_VERSION,
 			viewport: this.viewport,
 			showGrid: this.showGrid,
-			functions: this.functions.map(
-				(f): ExplicitFunctionState => ({
-					id: f.id,
-					type: f.type,
-					latex: f.latex,
-					color: f.color,
-					visible: f.visible,
-					lineWidth: f.lineWidth,
-					lineStyle: f.lineStyle,
-					variable: f.variable
-				})
-			)
+			functions: this.functions.map((p): PlottableState => {
+				if (isSequence(p)) {
+					const sequenceState: SequenceState = {
+						id: p.id,
+						type: p.type,
+						name: p.name,
+						mode: p.mode,
+						latex: p.latex,
+						firstIndex: p.firstIndex,
+						firstTerm: p.firstTerm,
+						representation: p.representation,
+						cobwebSteps: p.cobwebSteps,
+						color: p.color,
+						visible: p.visible,
+						lineWidth: p.lineWidth,
+						lineStyle: p.lineStyle
+					};
+					return sequenceState;
+				}
+
+				const functionState: ExplicitFunctionState = {
+					id: p.id,
+					type: p.type,
+					latex: p.latex,
+					color: p.color,
+					visible: p.visible,
+					lineWidth: p.lineWidth,
+					lineStyle: p.lineStyle,
+					variable: p.variable
+				};
+				return functionState;
+			})
 		};
 	}
 
@@ -415,21 +547,45 @@ class GrapheurStore {
 			this.viewport = state.viewport;
 			this.showGrid = state.showGrid;
 
-			// Re-parse all functions (AST is not stored)
-			this.functions = state.functions.map((f): ExplicitFunction => {
-				const parseResult = parseFunction(f.latex);
-				return {
-					id: f.id,
-					type: f.type,
-					latex: f.latex,
+			// Re-parse everything (AST is not stored)
+			this.functions = state.functions.map((p): Plottable => {
+				if (p.type === 'sequence') {
+					const parseResult = parseSequence(p.latex, p.mode, p.name);
+					const sequence: SequencePlottable = {
+						id: p.id,
+						type: p.type,
+						name: p.name,
+						mode: p.mode,
+						latex: p.latex,
+						ast: parseResult.ast ?? undefined,
+						parseError: parseResult.error ?? undefined,
+						usesIndex: parseResult.usesIndex,
+						firstIndex: p.firstIndex,
+						firstTerm: p.firstTerm,
+						representation: p.representation,
+						cobwebSteps: p.cobwebSteps,
+						color: p.color,
+						visible: p.visible,
+						lineWidth: p.lineWidth,
+						lineStyle: p.lineStyle ?? 'solid'
+					};
+					return sequence;
+				}
+
+				const parseResult = parseFunction(p.latex);
+				const func: ExplicitFunction = {
+					id: p.id,
+					type: p.type,
+					latex: p.latex,
 					ast: parseResult.ast ?? undefined,
 					parseError: parseResult.error ?? undefined,
-					variable: f.variable,
-					color: f.color,
-					visible: f.visible,
-					lineWidth: f.lineWidth,
-					lineStyle: f.lineStyle ?? 'solid' // Default for backward compatibility
+					variable: p.variable,
+					color: p.color,
+					visible: p.visible,
+					lineWidth: p.lineWidth,
+					lineStyle: p.lineStyle ?? 'solid' // Default for backward compatibility
 				};
+				return func;
 			});
 		} catch (error) {
 			console.warn('Failed to load grapheur state from localStorage:', error);

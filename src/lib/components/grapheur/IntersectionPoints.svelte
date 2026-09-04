@@ -16,6 +16,7 @@
 
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
+	import { isExplicitFunction } from '$lib/grapheur/types';
 	import { createEvaluator } from '$lib/grapheur/evaluator';
 	import {
 		findAllIntersections,
@@ -60,6 +61,7 @@
 
 		// Access functions directly and filter here for proper reactivity
 		const validFuncs = grapheurStore.functions
+			.filter(isExplicitFunction)
 			.filter((f) => f.visible && f.ast !== undefined)
 			.map((f) => ({
 				id: f.id,

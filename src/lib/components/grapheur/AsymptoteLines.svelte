@@ -20,6 +20,7 @@
 		ObliqueAsymptote,
 		FunctionAnalysis
 	} from '$lib/grapheur/types';
+	import { isExplicitFunction } from '$lib/grapheur/types';
 	import { analyzeAllFunctions } from '$lib/grapheur/analysis';
 	import { createEvaluator } from '$lib/grapheur/evaluator';
 
@@ -51,6 +52,7 @@
 
 		// Access functions directly and filter here for proper reactivity
 		const functions = grapheurStore.functions
+			.filter(isExplicitFunction)
 			.filter((f) => f.visible && f.ast)
 			.map((f) => ({
 				id: f.id,
