@@ -176,17 +176,18 @@ Optimistic UI · Debouncing · Realtime → [architecture.md](docs/claude/archit
 
 ## Documentation
 
-| Doc                                                      | Contenu                                |
-| -------------------------------------------------------- | -------------------------------------- |
-| [git-workflow.md](docs/claude/git-workflow.md)           | **Workflow git OBLIGATOIRE**           |
-| [architecture.md](docs/claude/architecture.md)           | Structure, routing, perf               |
-| [best-practices.md](docs/claude/best-practices.md)       | Svelte 5, TypeScript                   |
-| [ui-components.md](docs/claude/ui-components.md)         | Shadcn, MySelect, Tailwind             |
-| [database.md](docs/claude/database.md)                   | Supabase, migrations                   |
-| [quality-standards.md](docs/claude/quality-standards.md) | Tests, linting, Zod                    |
-| [warning-svelte.md](docs/ref/warning-svelte.md)          | `svelte-ignore` légitime vs dette a11y |
-| [realtime.md](docs/claude/realtime.md)                   | Realtime, chat, présence               |
-| [docs/ref/tests/](docs/ref/tests/)                       | Architecture des tests + TDD           |
+| Doc                                                      | Contenu                                  |
+| -------------------------------------------------------- | ---------------------------------------- |
+| [git-workflow.md](docs/claude/git-workflow.md)           | **Workflow git OBLIGATOIRE**             |
+| [architecture.md](docs/claude/architecture.md)           | Structure, routing, perf                 |
+| [best-practices.md](docs/claude/best-practices.md)       | Svelte 5, TypeScript                     |
+| [ui-components.md](docs/claude/ui-components.md)         | Shadcn, MySelect, Tailwind               |
+| [database.md](docs/claude/database.md)                   | Supabase, migrations                     |
+| [quality-standards.md](docs/claude/quality-standards.md) | Tests, linting, Zod                      |
+| [warning-svelte.md](docs/ref/warning-svelte.md)          | `svelte-ignore` légitime vs dette a11y   |
+| [css-color-tokens.md](docs/ref/css-color-tokens.md)      | `var(--color-*)`, jamais `hsl(var(--x))` |
+| [realtime.md](docs/claude/realtime.md)                   | Realtime, chat, présence                 |
+| [docs/ref/tests/](docs/ref/tests/)                       | Architecture des tests + TDD             |
 
 Index utilisateurs : [docs/README.md](docs/README.md).
 
