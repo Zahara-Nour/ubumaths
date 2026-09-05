@@ -15,8 +15,11 @@
  *
  * @note Database Schema Required
  * This module requires the following database tables/views/functions to be created:
- * - Tables: exercise_assignments, exercise_completions
- * - Views: assigned_exercises_with_details
+ * - Tables: exercise_assignments, exercise_completions (créées, cf. prod)
+ * - ~~Views: assigned_exercises_with_details~~ — jamais créée. La « Phase 4 »
+ *   annoncée ci-dessous n'a pas eu lieu : aucune migration ne définit cette vue,
+ *   baseline comprise. `getAssignmentsForExercise` fait désormais la jointure
+ *   directement, il n'y a plus rien à créer.
  * - Functions: get_student_exercises, student_has_exercise_access,
  *              get_teacher_assignment_stats, get_assignment_completion_stats,
  *              get_exercise_completion_stats
@@ -42,8 +45,11 @@ import type {
 	AssignmentStats,
 	ExerciseCompletionStats,
 	PaginationParams,
-	PaginatedResponse
+	PaginatedResponse,
+	DistributionMode,
+	ExerciseCategory
 } from '$lib/exercises/types';
+import type { GradeCode } from '$lib/types/grades';
 import { validateAssignmentData } from '$lib/exercises/types';
 import { validateSearchQuery } from '$lib/utils/search';
 
@@ -331,9 +337,30 @@ export async function getAssignmentsForExercise(
 	const limit = pagination?.limit || 50;
 	const offset = pagination?.offset || 0;
 
-	// Build base query
-	let query = fromUnknownTable(supabase, 'assigned_exercises_with_details')
-		.select('*', { count: 'exact' })
+	// Jointure directe plutôt que la vue `assigned_exercises_with_details`, qui
+	// n'a jamais été créée : aucune migration ne la définit, baseline comprise.
+	// Cette fonction échouait donc depuis toujours — le compteur d'assignations
+	// affichait 0 et la liste restait vide, sans erreur visible côté prof
+	// (l'échec se lisait uniquement dans les logs serveur). Le contournement
+	// `fromUnknownTable` masquait le problème au typage.
+	//
+	// Les deux clés étrangères vers `profiles` (assigned_by, student_id) sont
+	// désambiguïsées par leur nom de contrainte, comme PostgREST l'exige.
+	let query = supabase
+		.from('exercise_assignments')
+		.select(
+			`
+			id, exercise_id, assigned_by, assigned_to_type, student_id, class_id,
+			assigned_at, optional_deadline, notes, is_active,
+			exercise:exercises!exercise_assignments_exercise_id_fkey (
+				title, distribution_mode, is_public, category, grades
+			),
+			assigner:profiles!exercise_assignments_assigned_by_fkey ( full_name ),
+			student:profiles!exercise_assignments_student_id_fkey ( full_name ),
+			class:classes!exercise_assignments_class_id_fkey ( name )
+			`,
+			{ count: 'exact' }
+		)
 		.eq('exercise_id', exerciseId)
 		.order('assigned_at', { ascending: false });
 
@@ -368,8 +395,58 @@ export async function getAssignmentsForExercise(
 
 	const total = count || 0;
 
+	/** Une ligne telle que la jointure ci-dessus la renvoie. */
+	type JoinedRow = Omit<
+		AssignedExerciseWithDetails,
+		| 'exercise_title'
+		| 'distribution_mode'
+		| 'exercise_is_public'
+		| 'category'
+		| 'grades'
+		| 'assigned_by_name'
+		| 'assigned_to_name'
+	> & {
+		exercise: {
+			title: string;
+			distribution_mode: DistributionMode;
+			is_public: boolean;
+			category: ExerciseCategory;
+			grades: GradeCode[] | null;
+		} | null;
+		assigner: { full_name: string | null } | null;
+		student: { full_name: string | null } | null;
+		class: { name: string | null } | null;
+	};
+
+	// Aplatissement : la vue faisait ce travail en SQL, on le fait ici.
+	const rows: AssignedExerciseWithDetails[] = ((data ?? []) as unknown as JoinedRow[]).map(
+		(row) => {
+			const { exercise, assigner, student, class: klass, ...assignment } = row;
+
+			// `assigned_to_name` est le seul champ vraiment affiché par la page :
+			// nom de l'élève, nom de la classe, ou « Public » selon la cible.
+			const assignedToName =
+				row.assigned_to_type === 'student'
+					? (student?.full_name ?? 'Élève inconnu')
+					: row.assigned_to_type === 'class'
+						? (klass?.name ?? 'Classe inconnue')
+						: 'Public';
+
+			return {
+				...assignment,
+				exercise_title: exercise?.title ?? '',
+				distribution_mode: exercise?.distribution_mode as DistributionMode,
+				exercise_is_public: exercise?.is_public ?? false,
+				category: exercise?.category as ExerciseCategory,
+				grades: exercise?.grades ?? null,
+				assigned_by_name: assigner?.full_name ?? '',
+				assigned_to_name: assignedToName
+			} as AssignedExerciseWithDetails;
+		}
+	);
+
 	return {
-		data: (data as unknown as AssignedExerciseWithDetails[]) || [],
+		data: rows,
 		total,
 		limit,
 		offset,

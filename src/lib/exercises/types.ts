@@ -1720,9 +1720,6 @@ export interface AssignedExerciseWithDetails extends ExerciseAssignment {
 	/** Exercise title */
 	exercise_title: string;
 
-	/** Exercise statement content */
-	statement_md: string;
-
 	/** How instances are distributed */
 	distribution_mode: DistributionMode;
 
@@ -1731,9 +1728,6 @@ export interface AssignedExerciseWithDetails extends ExerciseAssignment {
 
 	/** Exercise category */
 	category: ExerciseCategory;
-
-	/** Exercise tags */
-	tags: string[];
 
 	/** Applicable grade levels */
 	grades: GradeCode[] | null;
