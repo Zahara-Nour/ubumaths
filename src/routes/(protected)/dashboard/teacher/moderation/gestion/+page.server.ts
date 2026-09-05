@@ -59,7 +59,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 			// Message reports via RPC
 			supabase.rpc('get_reports_for_moderation', {
-				p_status: null, // All reports
+				// Paramètre `DEFAULT NULL` : l'omettre demande bien tous les signalements.
+				p_status: undefined,
 				p_limit: 100,
 				p_offset: 0
 			}),
@@ -114,10 +115,30 @@ export const load: PageServerLoad = async ({ locals }) => {
 		return nameA.localeCompare(nameB, 'fr');
 	});
 
+	// Trois colonnes texte face à des unions fermées, et un jsonb face à un
+	// enregistrement : rétrécies ici plutôt que dans chaque tableau d'affichage.
+	// Un motif ou un type inconnu retombe sur la valeur la moins engageante —
+	// « other » et « mute » — afin qu'une ligne écrite par une révision
+	// antérieure reste lisible sans suggérer une sanction plus lourde.
 	return {
-		restrictions: restrictionsResult.data || [],
-		logs: logsResult.data || [],
-		reports: reportsResult.data || [],
+		restrictions: (restrictionsResult.data ?? []).map((r) => ({
+			...r,
+			restriction_type:
+				(['timeout', 'mute', 'ban'] as const).find((t) => t === r.restriction_type) ?? 'mute'
+		})),
+		logs: (logsResult.data ?? []).map((l) => ({
+			...l,
+			metadata:
+				typeof l.metadata === 'object' && l.metadata !== null && !Array.isArray(l.metadata)
+					? (l.metadata as Record<string, unknown>)
+					: {}
+		})),
+		reports: (reportsResult.data ?? []).map((r) => ({
+			...r,
+			reason:
+				(['spam', 'harassment', 'inappropriate', 'other'] as const).find((m) => m === r.reason) ??
+				'other'
+		})),
 		pendingReportsCount: pendingCountResult.data ?? 0,
 		students
 	};
