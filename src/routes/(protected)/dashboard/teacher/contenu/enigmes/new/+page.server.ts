@@ -1,8 +1,9 @@
 import type { PageServerLoad, Actions } from './$types';
-import type { CreateRiddleData } from '$lib/types/riddle';
 import { redirect, fail } from '@sveltejs/kit';
 import { validateFormData, riddleFormSchema } from '$lib/server/validation';
 import { requireRoles } from '$lib/server/middleware/auth';
+import type { TablesInsert } from '$lib/types/database';
+import { toJson } from '$lib/types/database-helpers';
 
 /**
  * Load page (no data needed for new riddle)
@@ -45,15 +46,17 @@ export const actions: Actions = {
 			}
 		}
 
-		// Build riddle data
-		const riddleData: CreateRiddleData & { created_by: string } = {
+		// Le type d'insertion généré exprime l'absence par `null` (Postgres), là où
+		// `CreateRiddleData` l'exprime par `undefined` (TypeScript). `answer` part
+		// dans une colonne jsonb, d'où la conversion explicite.
+		const riddleData: TablesInsert<'riddles'> = {
 			title: validation.data.title,
-			genre: validation.data.genre || undefined,
+			genre: validation.data.genre || null,
 			difficulty: validation.data.difficulty,
 			statement: validation.data.statement,
 			correction: validation.data.correction,
-			image_url: validation.data.image_url || undefined,
-			answer,
+			image_url: validation.data.image_url || null,
+			answer: toJson(answer),
 			status: validation.data.status,
 			created_by: user.id
 		};

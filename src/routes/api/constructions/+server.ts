@@ -9,6 +9,8 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { constructionScriptSchema } from '$lib/constructions';
+import type { TablesInsert } from '$lib/types/database';
+import { toJson } from '$lib/types/database-helpers';
 
 // =============================================================================
 // VALIDATION SCHEMAS
@@ -162,14 +164,16 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.from('constructions')
 		.insert({
 			title,
-			description,
+			// Postgres exprime l'absence par `null`, Zod par `undefined`.
+			description: description ?? null,
 			format,
-			script: format === 'json' ? script : {},
-			dsl_script: format === 'dsl' ? dsl_script : null,
+			// `script` est une colonne jsonb : conversion explicite plutôt que cast.
+			script: toJson(format === 'json' ? script : {}),
+			dsl_script: format === 'dsl' ? (dsl_script ?? null) : null,
 			is_public,
 			tags: tags ?? null,
 			author_id: user.id
-		})
+		} satisfies TablesInsert<'constructions'>)
 		.select()
 		.single();
 
