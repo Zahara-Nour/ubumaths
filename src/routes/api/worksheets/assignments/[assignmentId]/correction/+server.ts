@@ -152,8 +152,11 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		if (instance) {
 			// Structure vérifiée plutôt qu'affirmée : une correction bâtie sur une
 			// instance illisible afficherait des exercices absents.
-			const stockee = asInstanceData(instance.instance_data);
-			if (stockee) instanceData = stockee;
+			// Une instance illisible retombe sur une génération à la volée plutôt que
+			// d'afficher une correction aux exercices absents.
+			instanceData =
+				asInstanceData(instance.instance_data) ??
+				generateSimpleInstance(assignment.worksheet as WorksheetWithRelations);
 
 			// Get student name
 			const { data: studentProfile } = await locals.supabase

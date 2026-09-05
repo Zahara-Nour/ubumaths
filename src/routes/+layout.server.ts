@@ -21,6 +21,7 @@
  */
 
 import type { LayoutServerLoad } from './$types';
+import { toVipCardTemplate } from '$lib/types/vip-card-admin';
 import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
 
 export const load: LayoutServerLoad = async ({ locals, cookies }) => {
