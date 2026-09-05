@@ -62,13 +62,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.select(
 			`
       *,
-      initiator:initiator_id(
+      initiator:profiles!marketplace_trades_initiator_id_fkey(
         id,
         firstname,
         lastname,
         avatar_url
       ),
-      partner:partner_id(
+      partner:profiles!marketplace_trades_partner_id_fkey(
         id,
         firstname,
         lastname,
@@ -278,13 +278,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.select(
 			`
       *,
-      initiator:initiator_id(
+      initiator:profiles!marketplace_trades_initiator_id_fkey(
         id,
         firstname,
         lastname,
         avatar_url
       ),
-      partner:partner_id(
+      partner:profiles!marketplace_trades_partner_id_fkey(
         id,
         firstname,
         lastname,

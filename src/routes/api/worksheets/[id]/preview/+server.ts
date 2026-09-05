@@ -123,14 +123,14 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		if (studentId) {
 			const { data: student } = await supabase
 				.from('profiles')
-				.select('id, first_name, last_name')
+				.select('id, firstname, lastname')
 				.eq('id', studentId)
 				.single();
 
 			if (student) {
 				studentInfo = {
 					id: student.id,
-					name: `${student.first_name || ''} ${student.last_name || ''}`.trim() || 'Unknown Student'
+					name: `${student.firstname || ''} ${student.lastname || ''}`.trim() || 'Unknown Student'
 				};
 			}
 		}
