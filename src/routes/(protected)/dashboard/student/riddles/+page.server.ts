@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types';
 import type { DbRiddle, DbRiddleAttempt } from '$lib/types/riddle';
+import { toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
 import { redirect } from '@sveltejs/kit';
 
 /**
@@ -42,7 +43,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.maybeSingle();
 
 		if (riddle) {
-			riddleOfTheDay = riddle;
+			riddleOfTheDay = toDbRiddle(riddle);
 			riddleOfTheDayDate = new Date().toISOString().slice(0, 10);
 
 			// Fetch student's latest attempt for this riddle
@@ -55,7 +56,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				.limit(1);
 
 			if (attempts && attempts.length > 0) {
-				studentAttempt = attempts[0];
+				studentAttempt = toDbRiddleAttempt(attempts[0]);
 			}
 		}
 	}

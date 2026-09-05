@@ -63,7 +63,7 @@
  * - The type would otherwise be lost on `pnpm db:types` regeneration
  */
 
-import type { Database, Tables } from './database';
+import type { Database, Json, Tables } from './database';
 import type { QuestionTemplate } from '$lib/questions/types';
 import type { GradeCode } from '$lib/types/grades';
 
@@ -613,3 +613,23 @@ export type JournalEntryActivity = Omit<
 export type JournalEntryPoint = Omit<Tables<'journal_entry_points'>, 'source'> & {
 	source: CoverageSource;
 };
+
+// =============================================================================
+// JSONB WRITES
+// =============================================================================
+
+/**
+ * Converts a domain object into the `Json` type expected by a jsonb column.
+ *
+ * TypeScript refuses to assign an `interface` to `Json`: the union is built on
+ * an index signature, which interfaces do not have. The values themselves are
+ * perfectly valid JSON — only the type system stands in the way.
+ *
+ * A cast would have papered over that, and also over values that are genuinely
+ * not serializable. This round-trip performs the conversion the HTTP layer
+ * would perform anyway: `undefined` fields disappear, `Date` becomes a string,
+ * and a cyclic structure throws here rather than at the network boundary.
+ */
+export function toJson<T>(value: T): Json {
+	return JSON.parse(JSON.stringify(value ?? null)) as Json;
+}

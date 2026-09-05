@@ -16,6 +16,7 @@ import { checkCategoryUniqueness } from '$lib/questions/category-validation';
 import { updateQuestionTemplateSchema, validateRequest } from '$lib/server/validation';
 import { requireRoles, requireRole } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { toJson } from '$lib/types/database-helpers';
 
 /**
  * GET /api/questions/templates/[id]
@@ -152,11 +153,11 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 				}),
 				title: templateData.title,
 				description: templateData.description || null,
-				shared: templateData.shared || null,
-				default_display_options: templateData.defaultDisplayOptions || null,
-				variations: templateData.variations,
+				shared: toJson(templateData.shared ?? null),
+				default_display_options: toJson(templateData.defaultDisplayOptions ?? null),
+				variations: toJson(templateData.variations),
 				exercise_instruction: templateData.exerciseInstruction || null,
-				options: templateData.options || null,
+				options: toJson(templateData.options ?? null),
 				grades: templateData.grades,
 				// Categorization fields (independent from grades)
 				// - theme: Broad subject area (e.g., "Algèbre", "Géométrie") [required]
@@ -170,7 +171,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 				status: templateData.status || 'published',
 				delay: templateData.delay || null,
 				multiple_answers: templateData.multipleAnswers ?? null,
-				test_specs: templateData.testSpecs || null
+				test_specs: toJson(templateData.testSpecs ?? null)
 			})
 			.eq('id', id)
 			.select()

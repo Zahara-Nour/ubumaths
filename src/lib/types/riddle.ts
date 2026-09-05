@@ -360,6 +360,71 @@ export function asRiddleDifficulty(value: number | null | undefined): RiddleDiff
 }
 
 /**
+ * Narrows a `riddles` row to {@link DbRiddle}.
+ *
+ * Postgres is looser than the domain type: `difficulty` is a plain integer,
+ * `status` a plain text and `answer` a jsonb. A cast would have asserted the
+ * three at once without checking any of them.
+ *
+ * `answer` stays `null` when it is not a usable object, which is exactly what
+ * the domain means by it: manual validation required.
+ */
+export function toDbRiddle(row: {
+	id: string;
+	riddle_number: number;
+	title: string;
+	genre: string | null;
+	difficulty: number | null;
+	statement: string;
+	correction: string;
+	image_url: string | null;
+	answer: unknown;
+	created_by: string;
+	status: string;
+	created_at: string;
+	updated_at: string;
+}): DbRiddle {
+	return {
+		...row,
+		difficulty: asRiddleDifficulty(row.difficulty),
+		status: row.status === 'published' ? 'published' : 'draft',
+		answer:
+			typeof row.answer === 'object' && row.answer !== null && !Array.isArray(row.answer)
+				? (row.answer as AnswerConfig)
+				: null
+	};
+}
+
+/**
+ * Narrows a `riddle_attempts` row to {@link DbRiddleAttempt}.
+ *
+ * `submitted_answer` is jsonb: anything that is not an object becomes an empty
+ * record rather than propagating a bare string or number into code that
+ * expects a shape.
+ */
+export function toDbRiddleAttempt(row: {
+	id: string;
+	riddle_id: string;
+	student_id: string;
+	attempt_number: number;
+	submitted_answer: unknown;
+	is_correct: boolean | null;
+	validated_by: string | null;
+	validated_at: string | null;
+	gidouilles_awarded: number;
+	created_at: string;
+}): DbRiddleAttempt {
+	const answer = row.submitted_answer;
+	return {
+		...row,
+		submitted_answer:
+			typeof answer === 'object' && answer !== null && !Array.isArray(answer)
+				? (answer as Record<string, unknown>)
+				: {}
+	};
+}
+
+/**
  * Get difficulty label in French
  */
 export function getDifficultyLabel(difficulty: RiddleDifficulty): string {
