@@ -90,3 +90,41 @@ describe('messages.content est du jsonb', () => {
 		expect(error).toBeNull();
 	});
 });
+
+/**
+ * `class_students` n'existe pas : l'appartenance à une classe est portée par
+ * `class_members`, dont la colonne d'état s'appelle `status`. La génération PDF
+ * par lot visait la table fantôme et n'a donc jamais produit de document.
+ */
+describe('class_students — la table n’existe pas', () => {
+	it('la requête de génération par lot est bien refusée', async () => {
+		const { error } = await db
+			// @ts-expect-error - table volontairement inexistante
+			.from('class_students')
+			.select('student_id')
+			.limit(1);
+
+		expect(error).not.toBeNull();
+	});
+
+	it('class_members avec son embed et son statut résout', async () => {
+		const { error } = await db
+			.from('class_members')
+			.select('student:profiles!class_members_student_id_fkey(id, firstname, lastname, email)')
+			.eq('status', 'active')
+			.limit(1);
+
+		expect(error).toBeNull();
+	});
+
+	it('`is_active` n’existe pas sur class_members', async () => {
+		const { error } = await db
+			.from('class_members')
+			.select('id')
+			// @ts-expect-error - colonne volontairement inexistante
+			.eq('is_active', true)
+			.limit(1);
+
+		expect(error).not.toBeNull();
+	});
+});

@@ -14,6 +14,7 @@ import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
 import { worksheetLocale } from '$lib/types/worksheets';
 import type { WorksheetWithRelations, InstanceData } from '$lib/types/worksheets';
 import JSZip from 'jszip';
+import { asWorksheetConfig } from '$lib/types/worksheets';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -104,7 +105,16 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		}
 
 		// Check permissions
-		if (worksheet.created_by !== user.id && user.role !== 'admin') {
+		//
+		// ⚠️ Écart avec la route sœur `pdf/+server.ts`, qui autorise
+		// `requireRoles(['teacher', 'admin'])`. Ici le garde en tête de fonction
+		// refuse déjà tout rôle autre que `teacher` (401), donc un administrateur
+		// ne peut pas atteindre cette route — et le test `role !== 'admin'` qui se
+		// trouvait ici était mort, il ne pouvait jamais être faux.
+		//
+		// Le comportement est conservé tel quel : élargir l'accès des admins est
+		// une décision produit, pas une correction de typage.
+		if (worksheet.created_by !== user.id) {
 			throw error(403, 'Non autorisé');
 		}
 
@@ -119,12 +129,15 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			throw error(404, 'Classe introuvable');
 		}
 
-		// Fetch students in the class
+		// La table `class_students` n'existe pas — l'appartenance à une classe est
+		// portée par `class_members`, dont la colonne d'état s'appelle `status` et
+		// non `is_active`. La requête était donc rejetée en bloc par PostgREST, et
+		// la génération PDF par lot n'a jamais produit le moindre document.
 		const { data: students, error: studentsError } = await locals.supabase
-			.from('class_students')
+			.from('class_members')
 			.select(
 				`
-				student:profiles!class_students_student_id_fkey(
+				student:profiles!class_members_student_id_fkey(
 					id,
 					firstname,
 					lastname,
@@ -133,7 +146,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			`
 			)
 			.eq('class_id', classId)
-			.eq('is_active', true);
+			.eq('status', 'active');
 
 		if (studentsError || !students) {
 			throw error(500, 'Erreur lors de la récupération des élèves');
@@ -195,7 +208,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				const typstContent = generateWorksheetTypst({
 					worksheet: worksheet,
 					instance: instanceData,
-					config: worksheet.config || {},
+					config: asWorksheetConfig(worksheet.config),
 					mode,
 					studentName,
 					className: classData.name
@@ -224,7 +237,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			const masterTypst = generateWorksheetTypst({
 				worksheet: worksheet,
 				instance: generateSimpleInstance(worksheet as WorksheetWithRelations),
-				config: worksheet.config || {},
+				config: asWorksheetConfig(worksheet.config),
 				mode: 'correction',
 				studentName: 'CORRECTION GÉNÉRALE',
 				className: classData.name
