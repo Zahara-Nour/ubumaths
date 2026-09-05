@@ -128,3 +128,20 @@ describe('class_students — la table n’existe pas', () => {
 		expect(error).not.toBeNull();
 	});
 });
+
+/**
+ * Deux tables citées par le code n'ont jamais été créées. Dans les deux cas
+ * l'échec était muet : `ai_chat_usage` était écrite en « fire-and-forget »
+ * dans un `try/catch`, et `class_students` renvoyait un 500 générique.
+ */
+describe('tables jamais créées', () => {
+	it('ai_chat_usage n’existe pas — la journalisation IA n’a rien écrit', async () => {
+		const { error } = await db
+			// @ts-expect-error - table volontairement inexistante
+			.from('ai_chat_usage')
+			.select('user_id')
+			.limit(1);
+
+		expect(error).not.toBeNull();
+	});
+});

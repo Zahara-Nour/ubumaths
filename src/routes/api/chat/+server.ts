@@ -224,22 +224,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 						day: 99
 					};
 
-			// 10. Log to ai_chat_usage table (async, non-blocking)
-			// Intentionally fire-and-forget: logging should not block response
-			void (async () => {
-				try {
-					await locals.supabase.from('ai_chat_usage').insert({
-						user_id: user.id,
-						model: model,
-						message_count: messages.length,
-						tokens_used: data.usage?.total_tokens || 0,
-						client_ip: null,
-						response_length: responseMessage?.length || 0
-					});
-				} catch (logError) {
-					console.error('Failed to log AI chat usage:', logError);
-				}
-			})();
+			// 10. Journalisation de l'usage IA : RETIRÉE, la table n'existe pas.
+			//
+			// `ai_chat_usage` n'a jamais été créée. L'insertion était en
+			// « fire-and-forget » dans un `try/catch` : elle échouait donc à chaque
+			// appel, sans que rien ne remonte. Aucune ligne n'a jamais été écrite,
+			// et le décompte de jetons consommés n'existe pas.
+			//
+			// Rétablir ce suivi demande une migration (choix produit : quelles
+			// données conserver, combien de temps, pour quel usage — il s'agit de
+			// mineurs). On retire le code mort plutôt que de laisser croire à une
+			// journalisation active.
 
 			// 11. Persist messages to tutor_messages if conversationId is provided
 			// Uses locals.supabase which respects RLS (user must own the conversation)
@@ -378,23 +373,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// ====================================================================
 		const responseMessage = data.choices[0].message.content;
 
-		// Log usage to database (async, non-blocking)
-		// Intentionally fire-and-forget: logging should not block response
-		void (async () => {
-			try {
-				await locals.supabase.from('ai_chat_usage').insert({
-					user_id: user.id,
-					model: model,
-					message_count: messages.length,
-					tokens_used: data.usage?.total_tokens || 0,
-					client_ip: null, // No longer tracking IP for chatbot (rate limit by user ID)
-					response_length: responseMessage?.length || 0
-				});
-			} catch (logError) {
-				// Non-blocking error - don't fail the request
-				console.error('Failed to log AI chat usage:', logError);
-			}
-		})();
+		// Journalisation de l'usage IA : RETIRÉE, `ai_chat_usage` n'existe pas.
+		// Voir le commentaire du premier site plus haut dans ce fichier.
 
 		return json({
 			message: responseMessage
