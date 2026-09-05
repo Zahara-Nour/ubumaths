@@ -3,17 +3,7 @@ import { error, json } from '@sveltejs/kit';
 import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
 import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
-
-interface UseDetectorResult {
-	success: boolean;
-	hints_used: number;
-	hints_remaining: number;
-	source: 'vip_card' | 'gidouilles';
-	vip_card_consumed: boolean;
-	gidouilles_spent: number;
-	remaining_gidouilles?: number;
-	penalty_notice: string;
-}
+import { useDetectorResultSchema } from '$lib/server/validation/minesweeper-rpc';
 
 /**
  * Use Detector in Minesweeper Game
@@ -49,7 +39,10 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 			throw error(500, 'Aucune donnée retournée par la fonction de détection');
 		}
 
-		const result = data as UseDetectorResult;
+		// `RETURNS jsonb` : forme validée. Comme l'indice, cette fonction consomme
+		// une carte VIP ou des gidouilles — un résultat mal formé lu comme un
+		// succès débiterait l'élève à tort.
+		const result = useDetectorResultSchema.parse(data);
 
 		return json({
 			success: result.success,

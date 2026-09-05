@@ -36,3 +36,41 @@ export const useUndoResultSchema = z.object({
 });
 
 export type UseUndoResult = z.infer<typeof useUndoResultSchema>;
+
+/**
+ * `use_detector(p_game_id uuid)` — même contrat que l'indice : la fonction
+ * consomme aussi une carte VIP ou des gidouilles.
+ */
+export const useDetectorResultSchema = useHintResultSchema;
+
+export type UseDetectorResult = z.infer<typeof useDetectorResultSchema>;
+
+/**
+ * `complete_minesweeper_game(p_game_id uuid, p_grid_state jsonb)`.
+ *
+ * Renvoie `TABLE(gidouilles_earned numeric, achievements jsonb,
+ * points_earned integer, breakdown jsonb)` : les deux colonnes jsonb ne
+ * portent aucune forme, et la route les affirmait par un cast.
+ *
+ * Le détail du calcul (`breakdown`) n'est qu'affiché ; on le laisse donc
+ * permissif plutôt que de dupliquer ici les quinze facteurs de récompense, qui
+ * évoluent avec la formule. Ce qui est vérifié, c'est ce dont dépend le crédit
+ * de l'élève : les gidouilles et les points.
+ */
+export const completeGameResultSchema = z.object({
+	gidouilles_earned: z.number(),
+	points_earned: z.number().int(),
+	achievements: z
+		.array(
+			z.object({
+				achievement_id: z.string(),
+				name: z.string(),
+				icon: z.string(),
+				difficulty: z.string().nullable()
+			})
+		)
+		.catch([]),
+	breakdown: z.record(z.string(), z.unknown()).catch({})
+});
+
+export type CompleteGameResult = z.infer<typeof completeGameResultSchema>;
