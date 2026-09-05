@@ -67,6 +67,7 @@
 		ImageIcon,
 		FileCode,
 		TrendingUp,
+		Ruler,
 		Table2,
 		Grid3x3
 	} from '@lucide/svelte';
@@ -911,6 +912,18 @@
 	/**
 	 * Insert a variation table at the current position
 	 */
+	/**
+	 * Insère une droite graduée.
+	 *
+	 * L'extension était enregistrée dans editor-config.ts (v29) et le NodeView
+	 * complet, mais aucun bouton n'appelait `insertNumberLine` : la
+	 * fonctionnalité était inatteignable depuis l'éditeur.
+	 */
+	function insertNumberLine() {
+		if (disabled) return;
+		(editor?.commands as unknown as Record<string, () => boolean>).insertNumberLine?.();
+	}
+
 	function insertVariationTable() {
 		// Custom TipTap command from variation-table-extension
 		(editor?.commands as unknown as Record<string, () => boolean>).insertVariationTable?.();
@@ -1621,6 +1634,19 @@
 
 					<div class="mx-1 h-6 w-px bg-border"></div>
 
+					<!-- Number Line Button -->
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={insertNumberLine}
+						{disabled}
+						title="Insérer une droite graduée"
+						aria-label="Insérer une droite graduée"
+					>
+						<Ruler class="h-4 w-4" />
+					</Button>
+
 					<!-- Variation Table Button -->
 					<Button
 						type="button"
@@ -1629,6 +1655,7 @@
 						onclick={insertVariationTable}
 						{disabled}
 						title="Insérer un tableau de variation"
+						aria-label="Insérer un tableau de variation"
 					>
 						<TrendingUp class="h-4 w-4" />
 					</Button>
