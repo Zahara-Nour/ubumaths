@@ -12,7 +12,8 @@
 
 import type { PageServerLoad } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
-import type { VipCardInstance, StudentVipCards } from '$lib/types/vip-card';
+import type { VipCardInstance } from '$lib/types/vip-card';
+import { asStudentVipCards } from '$lib/types/vip-card';
 import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
 
 /**
@@ -83,7 +84,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Parse vip_cards JSONB field
-	const vipCards = (profile.vip_cards || {}) as unknown as StudentVipCards;
+	const vipCards = asStudentVipCards(profile.vip_cards);
 
 	// Build collection data for each template
 	const collectionData: Record<string, CardCollectionStatus> = {};

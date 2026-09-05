@@ -33,7 +33,7 @@
 
 import type { LayoutServerLoad } from './$types';
 import type { StudentProfile, ClassMembership, StudentRewards } from '$lib/types/student-cache';
-import type { StudentVipCards } from '$lib/types/vip-card';
+import { asStudentVipCards } from '$lib/types/vip-card';
 import { error } from '@sveltejs/kit';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
@@ -109,14 +109,9 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		}
 
 		// Parse VIP cards
-		let vipCards: StudentVipCards = {};
-		if (rewardsData?.vip_cards) {
-			try {
-				vipCards = rewardsData.vip_cards as StudentVipCards;
-			} catch {
-				vipCards = {};
-			}
-		}
+		// Le `try/catch` d'origine ne pouvait jamais se déclencher : un cast ne
+		// lève rien. La forme est désormais réellement vérifiée.
+		const vipCards = asStudentVipCards(rewardsData?.vip_cards);
 
 		const rewards: StudentRewards = {
 			gidouilles: rewardsData?.gidouilles || 0,

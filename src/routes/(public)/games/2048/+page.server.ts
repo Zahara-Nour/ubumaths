@@ -6,7 +6,7 @@
  */
 
 import type { PageServerLoad } from './$types';
-import type { StudentVipCards } from '$lib/types/vip-card';
+import { asStudentVipCards } from '$lib/types/vip-card';
 import { countAvailableConsumableUses } from '$lib/utils/vip-cards';
 
 // VIP card IDs for 2048 powers
@@ -70,7 +70,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		supabase.from('profiles').select('vip_cards, gidouilles').eq('id', user.id).single()
 	]);
 
-	const vipCards = (profileResult.data?.vip_cards as StudentVipCards | null) ?? {};
+	const vipCards = asStudentVipCards(profileResult.data?.vip_cards);
 	const gidouilles = (profileResult.data?.gidouilles as number) ?? 0;
 
 	return {

@@ -434,6 +434,30 @@ export function getRarityPoints(rarity: VipCardRarity): number {
 export type StudentVipCards = Record<string, VipCardInstance>;
 
 /**
+ * Narrows the `profiles.vip_cards` jsonb column to {@link StudentVipCards}.
+ *
+ * The column holds a map of instance id to card instance. Its generated type
+ * is `Json`, so the value was cast — inside a `try/catch` that could never
+ * fire, since a cast throws nothing. The safety was imaginary.
+ *
+ * Entries missing the two fields every consumer reads (`cardId`, `earnedAt`)
+ * are dropped: a malformed instance would otherwise surface in the inventory
+ * as a card with no identity.
+ */
+export function asStudentVipCards(value: unknown): StudentVipCards {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) return {};
+
+	const cartes: StudentVipCards = {};
+	for (const [instanceId, instance] of Object.entries(value)) {
+		if (typeof instance !== 'object' || instance === null || Array.isArray(instance)) continue;
+		const brut = instance as Record<string, unknown>;
+		if (typeof brut.cardId !== 'string' || typeof brut.earnedAt !== 'string') continue;
+		cartes[instanceId] = brut as unknown as VipCardInstance;
+	}
+	return cartes;
+}
+
+/**
  * REMOVED (2025-11-08):
  * - VIP_CARDS array (~280 lines) - Now in `vip_card_templates` database table
  * - getVipCardById(), getVipCardsByCategory(), getVipCardsByRarity(), getVipCardsWithActions(), getTotalVipCards()
