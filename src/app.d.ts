@@ -3,12 +3,13 @@
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import { type MathfieldElementAttributes } from 'mathlive';
 import type { Profile } from '$lib/types/database-helpers';
+import type { Database } from '$lib/types/database';
 
 declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-			supabase: SupabaseClient;
+			supabase: SupabaseClient<Database>;
 			safeGetSession: () => Promise<{ user: User | null }>;
 			user: User | null;
 			profile: Profile | null;
@@ -18,7 +19,7 @@ declare global {
 			 * valid admin elevation (Pattern 2). Queries through this client run with
 			 * RLS evaluated as `auth.uid() = <admin>`. Set by adminElevationHandle.
 			 */
-			adminSupabase?: SupabaseClient;
+			adminSupabase?: SupabaseClient<Database>;
 			/**
 			 * Admin elevation state for this request. `null`/absent → not elevated.
 			 * `expiresAt` is a Unix epoch in milliseconds. Set by adminElevationHandle.
