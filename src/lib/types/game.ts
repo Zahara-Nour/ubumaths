@@ -151,6 +151,40 @@ export interface GameMonster {
 
 export type MonsterCategory = 'common' | 'elite' | 'legendary';
 
+/** Narrows the `category` text column to {@link MonsterCategory}. */
+export function asMonsterCategory(value: string | null | undefined): MonsterCategory {
+	return value === 'elite' || value === 'legendary' ? value : 'common';
+}
+
+/**
+ * Narrows a `game_monsters` row to {@link GameMonster}.
+ *
+ * `element` and `category` are plain text columns; the domain describes them
+ * as closed unions. A monster written by an older revision keeps a fightable
+ * element and the common category rather than breaking the combat screen.
+ */
+export function toGameMonster(row: {
+	id: string;
+	name: string;
+	element: string;
+	level: number;
+	category: string;
+	max_endurance: number;
+	attack_coefficient: number;
+	img_url: string;
+	img_head_url: string;
+	position: string | null;
+	spawned_by: string | null;
+	spawned_at: string;
+	is_dead: boolean;
+	defeated_by: string | null;
+	defeated_at: string | null;
+	created_at: string;
+	updated_at: string;
+}): GameMonster {
+	return { ...row, element: asGameElement(row.element), category: asMonsterCategory(row.category) };
+}
+
 // ============================================================================
 // Game Combats
 // ============================================================================

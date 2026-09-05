@@ -13,6 +13,7 @@ import {
 } from '$lib/utils/game/combat';
 import { selectSpellSchema, submitAnswerSchema } from '$lib/server/validation/navadra';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { toGameMonster } from '$lib/types/game';
 
 /**
  * Tolérance de comparaison d'un défi, lue dans la colonne jsonb `answer`.
@@ -91,7 +92,7 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 
 	return {
 		combat,
-		monster: combat.monster,
+		monster: toGameMonster(combat.monster),
 		gamePlayer,
 		playerSpells
 	};
@@ -207,6 +208,10 @@ export const actions: Actions = {
 			return fail(400, { error: "Le combat n'est pas actif" });
 		}
 
+		// `element` et `category` sont des colonnes texte : rétrécies une fois ici
+		// plutôt qu'à chaque calcul de récompense.
+		const monstre = toGameMonster(combat.monster);
+
 		// Fetch challenge
 		const { data: challenge } = await supabase
 			.from('game_challenges')
@@ -266,7 +271,7 @@ export const actions: Actions = {
 			? calculateDamage(
 					spell,
 					gamePlayer.level,
-					combat.monster.element,
+					monstre.element,
 					1.0, // Full effectiveness on correct answer
 					0 // No combo meter for now
 				)
@@ -275,7 +280,7 @@ export const actions: Actions = {
 		// Update monster HP
 		const newMonsterHP = Math.max(
 			0,
-			(combat.monster_endurance_remaining || combat.monster.max_endurance) - damage
+			(combat.monster_endurance_remaining || monstre.max_endurance) - damage
 		);
 
 		// Create combat turn
@@ -301,9 +306,9 @@ export const actions: Actions = {
 
 		if (isVictory) {
 			// Calculate rewards
-			const xpGained = calculateXPReward(combat.monster, gamePlayer.level, 0);
-			const prestigeGained = calculatePrestigeReward(combat.monster, time_taken / 1000, 0);
-			const pyrsGained = calculatePyrsReward(combat.monster);
+			const xpGained = calculateXPReward(monstre, gamePlayer.level, 0);
+			const prestigeGained = calculatePrestigeReward(monstre, time_taken / 1000, 0);
+			const pyrsGained = calculatePyrsReward(monstre);
 
 			// Update combat
 			await supabase
@@ -316,7 +321,7 @@ export const actions: Actions = {
 					completed_at: new Date().toISOString(),
 					xp_gained: xpGained,
 					prestige_gained: prestigeGained,
-					pyrs_gained: { [combat.monster.element]: pyrsGained }
+					pyrs_gained: { [monstre.element]: pyrsGained }
 				})
 				.eq('id', combatId);
 
@@ -329,7 +334,7 @@ export const actions: Actions = {
 					xp: xpGained,
 					prestige: prestigeGained,
 					pyrs: pyrsGained,
-					element: combat.monster.element
+					element: monstre.element
 				}
 			};
 		} else {
