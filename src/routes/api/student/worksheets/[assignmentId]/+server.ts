@@ -51,8 +51,8 @@ import {
 	localizedText,
 	asRowTranslations,
 	worksheetLocale,
-	type RowTranslations,
-	type WorksheetConfig
+	asWorksheetConfig,
+	type RowTranslations
 } from '$lib/types/worksheets';
 import type { ContentLocale } from '$lib/types/locale';
 import type { Variable } from '$lib/ubumark';
@@ -345,7 +345,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		const seed = generateSeed(worksheet.id, user.id);
 
 		// Language of the whole sheet: exercise content and PDF chrome alike.
-		const locale = worksheetLocale(worksheet.config as WorksheetConfig);
+		const locale = worksheetLocale(asWorksheetConfig(worksheet.config));
 
 		// Build exercises array
 		const exercises: StudentExerciseView[] = [];

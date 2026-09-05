@@ -16,7 +16,7 @@ import { z } from 'zod';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
-import { localizedText, worksheetLocale, type WorksheetConfig } from '$lib/types/worksheets';
+import { localizedText, worksheetLocale, asWorksheetConfig } from '$lib/types/worksheets';
 import type {
 	InstanceData,
 	InstanceSection,
@@ -103,7 +103,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		const worksheetSections = (worksheet.worksheet_sections ?? []) as WorksheetSectionRow[];
 
 		// Language of the sheet: section titles and instructions follow it too.
-		const locale = worksheetLocale(worksheet.config as WorksheetConfig);
+		const locale = worksheetLocale(asWorksheetConfig(worksheet.config));
 
 		if (studentId) {
 			// Try to fetch existing instance for this student

@@ -798,6 +798,61 @@ export interface WorksheetTextTranslation {
 export type RowTranslations = Partial<Record<TranslatedLocale, WorksheetTextTranslation>>;
 
 /**
+ * Narrows the `config` jsonb column to {@link WorksheetConfig}.
+ *
+ * Every field is optional and every consumer already has a default, so an
+ * unreadable value degrades to an empty config rather than throwing: a
+ * worksheet with a corrupted config must still generate.
+ *
+ * Only the fields actually used for rendering are carried over; anything of
+ * the wrong runtime type is dropped, which is what the old `as` cast silently
+ * let through.
+ */
+export function asWorksheetConfig(value: unknown): WorksheetConfig {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) return {};
+	const raw = value as Record<string, unknown>;
+	const config: WorksheetConfig = {};
+
+	if (isContentLocale(raw.language)) config.language = raw.language;
+
+	for (const flag of [
+		'show_title',
+		'show_date',
+		'show_student_name',
+		'show_class',
+		'show_points',
+		'shuffle_exercises',
+		'shuffle_within_sections'
+	] as const) {
+		if (typeof raw[flag] === 'boolean') config[flag] = raw[flag];
+	}
+
+	if (typeof raw.font_size === 'number') config.font_size = raw.font_size;
+	if (raw.page_layout === 'A4' || raw.page_layout === 'Letter')
+		config.page_layout = raw.page_layout;
+
+	const m = raw.margins;
+	if (typeof m === 'object' && m !== null && !Array.isArray(m)) {
+		const side = m as Record<string, unknown>;
+		if (
+			typeof side.top === 'number' &&
+			typeof side.bottom === 'number' &&
+			typeof side.left === 'number' &&
+			typeof side.right === 'number'
+		) {
+			config.margins = {
+				top: side.top,
+				bottom: side.bottom,
+				left: side.left,
+				right: side.right
+			};
+		}
+	}
+
+	return config;
+}
+
+/**
  * Narrows the `translations` jsonb column to {@link RowTranslations}.
  *
  * The generated type of a jsonb column is `Json`, a union that carries no
