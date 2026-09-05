@@ -28,22 +28,11 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { purchaseVipCardBodySchema } from '$lib/server/validation/vip-cards';
+import { purchaseResultSchema } from '$lib/server/validation/vip-card-rpc';
 
 // ============================================================================
 // TYPE DEFINITIONS
 // ============================================================================
-
-interface PurchaseResult {
-	success: boolean;
-	instance?: {
-		instanceId: string;
-		cardId: string;
-		purchasedAt: string;
-		acquiredFrom: 'purchase';
-	};
-	newBalance?: number;
-	error?: string;
-}
 
 // ============================================================================
 // POST HANDLER
@@ -88,7 +77,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// The RPC returns a JSON object with the result
-	const result = data as PurchaseResult;
+	// `RETURNS jsonb` : forme validée, pas affirmée. Cette fonction débite le
+	// solde de gidouilles de l'élève.
+	const result = purchaseResultSchema.parse(data);
 
 	if (!result.success) {
 		// Return appropriate status based on error type

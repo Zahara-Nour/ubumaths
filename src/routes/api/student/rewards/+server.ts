@@ -42,7 +42,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { StudentRewards } from '$lib/types/student-cache';
-import type { StudentVipCards } from '$lib/types/vip-card';
+import { asStudentVipCards } from '$lib/types/vip-card';
 
 export const GET: RequestHandler = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
@@ -75,16 +75,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}
 
 		// Parse VIP cards (JSONB field)
-		let vipCards: StudentVipCards = {};
-		if (studentData.vip_cards) {
-			try {
-				// vip_cards is already parsed as object by Supabase
-				vipCards = studentData.vip_cards as StudentVipCards;
-			} catch (parseError) {
-				console.error('[API] Error parsing VIP cards:', parseError);
-				vipCards = {};
-			}
-		}
+		// Le `try/catch` d'origine ne pouvait jamais se déclencher : un cast ne lève
+		// rien. La forme est désormais réellement vérifiée.
+		const vipCards = asStudentVipCards(studentData.vip_cards);
 
 		const rewards: StudentRewards = {
 			gidouilles: studentData.gidouilles || 0,

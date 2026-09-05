@@ -24,7 +24,7 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { useCardSchema } from '$lib/server/validation/vip-cards';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-import type { UseCardResult } from '$lib/types/vip-card';
+import { useCardResultSchema } from '$lib/server/validation/vip-card-rpc';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { user, profile } = await requireAuth(locals);
@@ -78,7 +78,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Failed to use card');
 	}
 
-	const rpcResult = result as UseCardResult;
+	// `RETURNS jsonb` : forme validée, pas affirmée. Une carte consommable perd
+	// un usage à chaque appel.
+	const rpcResult = useCardResultSchema.parse(result);
 
 	if (!rpcResult.success) {
 		const errorMessage = rpcResult.error || 'Failed to use card';

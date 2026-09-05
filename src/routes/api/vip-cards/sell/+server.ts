@@ -27,20 +27,11 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { sellVipCardBodySchema } from '$lib/server/validation/vip-cards';
+import { sellResultSchema } from '$lib/server/validation/vip-card-rpc';
 
 // ============================================================================
 // TYPE DEFINITIONS
 // ============================================================================
-
-interface SellResult {
-	success: boolean;
-	sellPrice?: number;
-	cardId?: string;
-	cardName?: string;
-	newBalance?: number;
-	error?: string;
-	secondsRemaining?: number;
-}
 
 // ============================================================================
 // POST HANDLER
@@ -78,7 +69,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, `Failed to sell card: ${rpcError.message}`);
 	}
 
-	const result = data as SellResult;
+	// `RETURNS jsonb` : forme validée, pas affirmée. Cette fonction crédite le
+	// solde de gidouilles de l'élève.
+	const result = sellResultSchema.parse(data);
 
 	if (!result.success) {
 		const errorMessage = result.error || 'Sale failed';
