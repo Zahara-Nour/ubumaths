@@ -1,0 +1,88 @@
+name: Production Health
+
+# `/automaths` a renvoyé 500 pendant dix mois sans que personne le voie. Vercel
+# loguait le message exact, mais il fallait être déconnecté pour rencontrer la
+# panne, et deux occurrences par semaine se noyaient parmi quarante groupes de
+# 404 de scanners.
+#
+# Lire mieux les logs n'aurait rien changé : personne ne les ouvrait. Ce job
+# vérifie donc ACTIVEMENT, chaque matin, que les pages publiques répondent —
+# exactement ce que ferait un visiteur sans compte — et ouvre une issue sinon.
+#
+# La liste surveillée est celle qui alimente `sitemap.xml` : ajouter une page au
+# plan, c'est la mettre sous surveillance.
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # 06:00 UTC, avant la journée de classe
+  workflow_dispatch: # déclenchement manuel
+
+permissions:
+  contents: read
+  issues: write # pour signaler une panne
+
+jobs:
+  health:
+    name: Pages publiques
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Contrôle des pages publiques
+        id: check
+        run: |
+          set +e
+          npx tsx scripts/check-production-health.ts > health.log 2>&1
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+          cat health.log
+
+      # Une seule issue ouverte à la fois : on met à jour l'existante plutôt que
+      # d'en créer une par jour, sans quoi l'alerte deviendrait le nouveau bruit.
+      - name: Signaler la panne
+        if: steps.check.outputs.exit_code != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITRE="Pages publiques en échec"
+          CORPS=$(printf 'Le contrôle quotidien a trouvé des pages publiques qui ne répondent pas.\n\n```\n%s\n```\n\nExécution : %s/%s/actions/runs/%s\n' \
+            "$(cat health.log)" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID")
+
+          EXISTANTE=$(gh issue list --state open --search "$TITRE in:title" --json number --jq '.[0].number')
+
+          if [ -n "$EXISTANTE" ]; then
+            gh issue comment "$EXISTANTE" --body "$CORPS"
+            echo "::warning::Panne toujours présente — commentée sur l'issue #$EXISTANTE"
+          else
+            gh issue create --title "$TITRE" --body "$CORPS" --label bug
+            echo "::warning::Panne détectée — issue ouverte"
+          fi
+
+          exit 1
+
+      # Referme l'issue dès que tout est revenu à la normale : une alerte qui
+      # reste ouverte après réparation finit par être ignorée.
+      - name: Refermer l'alerte si tout va bien
+        if: steps.check.outputs.exit_code == '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EXISTANTE=$(gh issue list --state open --search "Pages publiques en échec in:title" --json number --jq '.[0].number')
+          if [ -n "$EXISTANTE" ]; then
+            gh issue comment "$EXISTANTE" --body "Toutes les pages publiques répondent à nouveau. Refermé automatiquement."
+            gh issue close "$EXISTANTE"
+          fi
