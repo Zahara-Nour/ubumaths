@@ -664,7 +664,11 @@ export interface StudentWorksheetView {
 	description: string | null;
 	type: WorksheetType;
 	instructions: string | null;
-	available_from: string;
+	/**
+	 * `NULL` means available immediately: the column is nullable in Postgres,
+	 * and the assignment form only sends a date when the teacher sets one.
+	 */
+	available_from: string | null;
 	closes_at: string | null;
 	show_corrections: boolean;
 	class_name: string | null;
@@ -816,7 +820,7 @@ export function toWorksheetRow<T extends Record<string, unknown>>(
 		grades: string[] | null;
 		tags: string[] | null;
 	}
-): T & WorksheetRow {
+): Omit<T, keyof WorksheetRow> & WorksheetRow {
 	return {
 		...row,
 		type: (WORKSHEET_TYPES.find((t) => t === row.type) ?? 'worksheet') as WorksheetType,
@@ -825,7 +829,7 @@ export function toWorksheetRow<T extends Record<string, unknown>>(
 		translations: asRowTranslations(row.translations),
 		grades: row.grades ?? [],
 		tags: row.tags ?? []
-	} as T & WorksheetRow;
+	} as Omit<T, keyof WorksheetRow> & WorksheetRow;
 }
 
 /**
@@ -846,7 +850,7 @@ export function toWorksheetExerciseRow<T extends Record<string, unknown>>(
 		translations?: unknown;
 		correction_visible: boolean | null;
 	}
-): T & WorksheetExerciseRow {
+): Omit<T, keyof WorksheetExerciseRow> & WorksheetExerciseRow {
 	const mode = VARIANT_MODES.find((m) => m === row.variant_mode) ?? 'none';
 	const config =
 		typeof row.variant_config === 'object' &&
@@ -861,7 +865,7 @@ export function toWorksheetExerciseRow<T extends Record<string, unknown>>(
 		variant_config: config,
 		translations: asRowTranslations(row.translations),
 		correction_visible: row.correction_visible ?? false
-	} as T & WorksheetExerciseRow;
+	} as Omit<T, keyof WorksheetExerciseRow> & WorksheetExerciseRow;
 }
 
 /**
