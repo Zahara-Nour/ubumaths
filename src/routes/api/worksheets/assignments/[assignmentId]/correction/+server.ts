@@ -17,6 +17,7 @@ import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 import { canAccessCorrections } from '$lib/server/worksheets/correction-release';
 import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
 import { worksheetLocale } from '$lib/types/worksheets';
+import { asInstanceData } from '$lib/types/worksheets';
 import type {
 	WorksheetWithRelations,
 	InstanceData,
@@ -149,7 +150,10 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		let studentName: string | undefined;
 
 		if (instance) {
-			instanceData = instance.instance_data as InstanceData;
+			// Structure vérifiée plutôt qu'affirmée : une correction bâtie sur une
+			// instance illisible afficherait des exercices absents.
+			const stockee = asInstanceData(instance.instance_data);
+			if (stockee) instanceData = stockee;
 
 			// Get student name
 			const { data: studentProfile } = await locals.supabase

@@ -798,6 +798,24 @@ export interface WorksheetTextTranslation {
 export type RowTranslations = Partial<Record<TranslatedLocale, WorksheetTextTranslation>>;
 
 /**
+ * Narrows the `instance_data` jsonb column to {@link InstanceData}.
+ *
+ * A worksheet instance holds the exercises actually drawn for one student. Its
+ * generated type is `Json`, so the three PDF routes cast it — an assertion on
+ * the entire content of a graded document, never checked.
+ *
+ * Returns `null` when the exercise list is missing, so the caller can fall
+ * back to regenerating an instance rather than emitting a blank worksheet
+ * under a student's name.
+ */
+export function asInstanceData(value: unknown): InstanceData | null {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
+	const data = value as Record<string, unknown>;
+	if (!Array.isArray(data.exercises)) return null;
+	return data as unknown as InstanceData;
+}
+
+/**
  * Narrows the `config` jsonb column to {@link WorksheetConfig}.
  *
  * Every field is optional and every consumer already has a default, so an

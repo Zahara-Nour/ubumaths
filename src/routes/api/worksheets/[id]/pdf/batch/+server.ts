@@ -14,7 +14,7 @@ import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
 import { worksheetLocale } from '$lib/types/worksheets';
 import type { WorksheetWithRelations, InstanceData } from '$lib/types/worksheets';
 import JSZip from 'jszip';
-import { asWorksheetConfig } from '$lib/types/worksheets';
+import { asWorksheetConfig, asInstanceData } from '$lib/types/worksheets';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -167,7 +167,10 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		const instanceMap = new Map<string, InstanceData>();
 		if (existingInstances) {
 			existingInstances.forEach((inst) => {
-				instanceMap.set(inst.student_id, inst.instance_data as InstanceData);
+				// Structure vérifiée : une instance illisible est ignorée, et l'élève
+				// reçoit une fiche régénérée plutôt qu'un document vide.
+				const stockee = asInstanceData(inst.instance_data);
+				if (stockee) instanceMap.set(inst.student_id, stockee);
 			});
 		}
 
