@@ -124,7 +124,7 @@ export const actions: Actions = {
 			// L'IP peut manquer derrière certains proxys : le paramètre est
 			// `DEFAULT NULL` côté SQL, donc optionnel dans les types générés.
 			p_ip: clientIp ?? undefined,
-			p_user_agent: userAgent
+			p_user_agent: userAgent ?? undefined
 		});
 
 		if (dbError) {

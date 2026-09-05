@@ -64,6 +64,13 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 		.eq('user_id', user.id)
 		.single();
 
+	// L'écran de combat lit le niveau du joueur dès son initialisation : sans
+	// fiche de jeu, il n'y a rien à afficher. On refuse ici plutôt que de rendre
+	// toute la page défensive.
+	if (!gamePlayer) {
+		throw error(404, 'Aucune fiche de joueur : lance une partie depuis Navadra.');
+	}
+
 	// Fetch player's spells (from active deck)
 	const { data: activeDeck } = await supabase
 		.from('game_spell_decks')

@@ -246,6 +246,25 @@ export interface CombatTurn {
 	timestamp: string;
 }
 
+/**
+ * Narrows the `combat_flow` jsonb column to {@link CombatTurn}[].
+ *
+ * The column records the turn-by-turn history of a fight. Its generated type is
+ * `Json`, which carries none of the fields the combat log renders.
+ *
+ * Entries missing the two fields the log always reads — `action` and
+ * `timestamp` — are dropped rather than rendered as blank rows.
+ */
+export function asCombatFlow(value: unknown): CombatTurn[] {
+	if (!Array.isArray(value)) return [];
+
+	return value.filter((turn): turn is CombatTurn => {
+		if (typeof turn !== 'object' || turn === null || Array.isArray(turn)) return false;
+		const t = turn as Record<string, unknown>;
+		return typeof t.action === 'string' && typeof t.timestamp === 'string';
+	});
+}
+
 export interface ChallengeResult {
 	challenge_id: string;
 	success: boolean;

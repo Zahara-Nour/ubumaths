@@ -83,7 +83,10 @@
 	/**
 	 * Format date for display
 	 */
-	function formatDate(dateStr: string): string {
+	// `created_at` est nullable en base : une construction sans horodatage
+	// s'affiche avec un tiret plutôt qu'une « Invalid Date ».
+	function formatDate(dateStr: string | null): string {
+		if (!dateStr) return '—';
 		return new Date(dateStr).toLocaleDateString('fr-FR', {
 			day: 'numeric',
 			month: 'long',
