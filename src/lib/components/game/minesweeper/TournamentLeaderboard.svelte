@@ -170,11 +170,11 @@
 						</td>
 						<td class={cn('px-4 py-3 text-center', compact && 'px-2 py-2')}>
 							<span class={cn('font-mono font-semibold text-foreground', compact && 'text-sm')}>
-								{formatScore(entry.average_score)}
+								{formatScore(entry.average_score ?? 0)}
 							</span>
 						</td>
 						{#if isCompleted}
-							{@const reward = getReward(entry.position)}
+							{@const reward = getReward(entry.position ?? 0)}
 							<td class={cn('px-4 py-3 text-center', compact && 'px-2 py-2')}>
 								{#if reward}
 									<span class={cn('font-bold text-amber-500', compact && 'text-sm')}>

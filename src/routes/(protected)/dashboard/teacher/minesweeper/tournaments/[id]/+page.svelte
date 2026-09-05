@@ -27,7 +27,8 @@
 	$effect(() => {
 		if (data.justFinalized) {
 			const podiumCount = data.standings.filter(
-				(s) => s.position <= data.tournament.podium_places
+				// Une position absente n'est pas un podium : `?? 0` l'y aurait fait entrer.
+				(s) => s.position !== null && s.position <= data.tournament.podium_places
 			).length;
 			toaster.success(
 				`Tournoi finalise ! ${podiumCount} recompense${podiumCount > 1 ? 's' : ''} distribuee${podiumCount > 1 ? 's' : ''}`
@@ -308,15 +309,18 @@
 						<Table.Body>
 							{#each data.standings as standing (standing.student_id)}
 								<Table.Row
-									class={standing.position <= data.tournament.podium_places ? 'bg-muted/50' : ''}
+									class={standing.position !== null &&
+									standing.position <= data.tournament.podium_places
+										? 'bg-muted/50'
+										: ''}
 								>
 									<Table.Cell>
 										<span
 											class="inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold {getMedalClass(
-												standing.position
+												standing.position ?? 0
 											)}"
 										>
-											{getMedalEmoji(standing.position)}
+											{getMedalEmoji(standing.position ?? 0)}
 										</span>
 									</Table.Cell>
 									<Table.Cell class="font-medium">
@@ -324,11 +328,11 @@
 										{standing.lastname}
 									</Table.Cell>
 									<Table.Cell class="text-right font-mono">
-										{Math.round(standing.average_score)} pts
+										{Math.round(standing.average_score ?? 0)} pts
 									</Table.Cell>
 									{#if isEnded}
 										<Table.Cell class="text-right">
-											{#if standing.position <= data.tournament.podium_places}
+											{#if standing.position !== null && standing.position <= data.tournament.podium_places}
 												<Badge variant="outline" class="bg-yellow-50 dark:bg-yellow-950">
 													{data.tournament.podium_rewards?.[String(standing.position)] || 0} gidouilles
 												</Badge>
