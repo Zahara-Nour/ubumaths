@@ -26,8 +26,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { data: templates, error: templatesError } = await locals.supabase
 		.from('question_templates')
 		.select('*')
-		.eq('is_published', true)
-		.order('category', { ascending: true })
+		// Deux colonnes inexistantes rendaient cette requête invalide, donc la page
+		// de création d'évaluation n'affichait AUCUNE question : la publication se
+		// lit sur `status`, et il n'y a pas de `category` — la classification passe
+		// par `theme` puis `domain`.
+		.eq('status', 'published')
+		.order('theme', { ascending: true })
 		.order('level', { ascending: true });
 
 	if (templatesError) {

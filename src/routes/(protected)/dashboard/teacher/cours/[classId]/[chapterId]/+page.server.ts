@@ -154,6 +154,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const questionTemplates: Record<string, { id: string; question: string; answer: unknown }> = {};
 
 	// Get exercise details
+	// `exercises.title` est nullable en base : un exercice sans titre reste
+	// listable, il s'affiche sous un libellé de repli.
 	const exerciseDetails: Record<string, { id: string; title: string }> = {};
 	if (exercises.length > 0) {
 		const exerciseIds = exercises.map((e) => e.exerciseId);
@@ -165,7 +167,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		for (const e of exerciseData || []) {
 			exerciseDetails[e.id] = {
 				id: e.id,
-				title: e.title
+				title: e.title ?? 'Exercice sans titre'
 			};
 		}
 	}

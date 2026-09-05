@@ -69,6 +69,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	> = {};
 
 	// Get exercise details for linked exercises
+	// `exercises.title` est nullable en base : un exercice sans titre reste
+	// listable, il s'affiche sous un libellé de repli.
 	const exerciseDetails: Record<string, { id: string; title: string }> = {};
 
 	if (chapter.exercises.length > 0) {
@@ -84,7 +86,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			for (const e of exercises) {
 				exerciseDetails[e.id] = {
 					id: e.id,
-					title: e.title
+					title: e.title ?? 'Exercice sans titre'
 				};
 			}
 		}
