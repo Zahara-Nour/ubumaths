@@ -38,12 +38,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			'send_private_message',
 			{
 				p_sender_id: user.id,
-				p_recipient_ids: isGroupMessage ? null : recipientIds,
+				// `p_recipient_ids` est obligatoire (aucun DEFAULT côté SQL). Pour un
+				// message de groupe la fonction l'ÉCRASE avec les élèves de la classe
+				// (`SELECT array_agg(student_id) INTO p_recipient_ids`) : un tableau
+				// vide y est donc strictement équivalent au NULL passé auparavant.
+				p_recipient_ids: isGroupMessage ? [] : recipientIds,
+				// Les suivants sont `DEFAULT NULL` côté SQL, donc optionnels dans les
+				// types générés : les omettre applique le même défaut que NULL.
 				p_subject: subject.trim(),
 				p_content: content,
 				p_is_group_message: isGroupMessage || false,
-				p_class_id: classId || null,
-				p_parent_message_id: parentMessageId || null
+				p_class_id: classId || undefined,
+				p_parent_message_id: parentMessageId || undefined
 			}
 		);
 

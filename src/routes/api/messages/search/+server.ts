@@ -36,10 +36,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			p_user_id: user.id,
 			p_query: q,
 			p_search_in: searchIn,
-			p_has_attachments: hasAttachments ?? null,
-			p_sender_name: senderName || null,
-			p_date_from: dateFrom || null,
-			p_date_to: dateTo || null,
+			// Ces paramètres sont déclarés `DEFAULT NULL` côté SQL et optionnels dans
+			// les types générés : les omettre applique donc le même défaut que
+			// passer NULL, sans forcer un type `null` que la signature refuse.
+			p_has_attachments: hasAttachments ?? undefined,
+			p_sender_name: senderName || undefined,
+			p_date_from: dateFrom || undefined,
+			p_date_to: dateTo || undefined,
 			p_limit: limit,
 			p_offset: offset
 		});
