@@ -26,6 +26,7 @@ import { uuidSchema } from '$lib/server/validation/common';
 import { cloneTemplateSchema } from '$lib/server/validation/notebook-templates';
 import type { NotebookContent, NotebookCell } from '$lib/types/notebook';
 import { asNotebookContent } from '$lib/types/notebook';
+import { toJson } from '$lib/types/database-helpers';
 
 const MAX_NOTEBOOKS_PER_USER = 50;
 
@@ -141,7 +142,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const insertPayload = {
 		title: bodyValidation.data.title ?? template.title,
 		description: bodyValidation.data.description ?? template.description ?? null,
-		content: clonedContent,
+		// Colonne jsonb : conversion réelle plutôt que cast.
+		content: toJson(clonedContent),
 		author_id: user.id,
 		is_public: false,
 		is_template: false,

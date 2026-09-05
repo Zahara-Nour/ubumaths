@@ -11,6 +11,7 @@ import { createNotebookSchema } from '$lib/server/validation/notebooks';
 import { uuidSchema } from '$lib/server/validation/common';
 import type { NotebookContent } from '$lib/types/notebook';
 import { z } from 'zod';
+import { toJson } from '$lib/types/database-helpers';
 
 // =============================================================================
 // CONSTANTS
@@ -300,7 +301,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.insert({
 			title,
 			description: description ?? null,
-			content: initialContent,
+			// Colonne jsonb : conversion réelle plutôt que cast.
+			content: toJson(initialContent),
 			author_id: user.id,
 			is_public: is_public ?? false
 		})
