@@ -277,6 +277,9 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 		// Build query
 		let query = supabase
 			.from('worksheet_instances')
+			// `accessed_at`, `submitted_at` et `time_spent_seconds` n'existent pas sur
+			// `worksheet_instances` : le suivi de consultation n'a jamais été implémenté
+			// (cf. docs/wip/refonte-referentiel-progress.md). L'avancement se lit sur `status`.
 			.select(
 				`
 				id,
@@ -285,9 +288,6 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 				variant_version,
 				status,
 				generated_at,
-				accessed_at,
-				submitted_at,
-				time_spent_seconds,
 				student:profiles!worksheet_instances_student_id_fkey (
 					id,
 					firstname,

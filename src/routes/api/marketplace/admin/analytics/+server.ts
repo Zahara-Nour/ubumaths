@@ -293,7 +293,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	const { data: acceptedProposals } = await supabase
 		.from('marketplace_proposals')
-		.select('listing_id, created_at, updated_at')
+		.select('listing_id, created_at, responded_at')
 		.eq('status', 'accepted')
 		.in('listing_id', listings?.map((l) => l.id) || []);
 
@@ -301,7 +301,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const listing = listings?.find((l) => l.id === proposal.listing_id);
 		if (listing) {
 			const timeToAcceptance =
-				new Date(proposal.updated_at).getTime() - new Date(listing.created_at).getTime();
+				// `marketplace_proposals` n'a pas d'`updated_at` : la date d'acceptation
+				// est `responded_at`.
+				new Date(proposal.responded_at ?? proposal.created_at).getTime() -
+				new Date(listing.created_at).getTime();
 			totalTimeToAcceptance += timeToAcceptance;
 			acceptedListingsCount++;
 		}

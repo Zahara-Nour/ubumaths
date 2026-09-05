@@ -157,8 +157,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 						`
 				id,
 				title,
-				tags,
-				difficulty,
 				distribution_mode,
 				exercise_assignments!inner(
 					id,

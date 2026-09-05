@@ -49,51 +49,42 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.eq('id', chapter.classId)
 		.single();
 
-	// Get question templates for quiz display
+	// Quiz d'un chapitre : hors service, et depuis toujours.
+	//
+	// Le code interrogeait `question_templates.question`, `.answer` et
+	// `.explanation`. Aucune de ces colonnes n'existe : un modèle de question
+	// porte `title`, `description` et surtout `variations`, où vit réellement
+	// l'énoncé. La requête échouait donc à chaque affichage, la table restait
+	// vide, et `ChapterQuiz` filtre justement les questions sans modèle
+	// (`questions.filter((q) => questionTemplates[...])`) : le quiz n'a jamais
+	// rien montré, sans erreur visible.
+	//
+	// On retire la requête morte plutôt que d'improviser : rebrancher le quiz
+	// suppose de décider comment une `variation` devient une question
+	// vrai/faux, ce qui relève d'un choix produit, pas d'une réparation.
+	// Comportement inchangé — la table était déjà vide en pratique.
 	const questionTemplates: Record<
 		string,
 		{ id: string; question: string; answer: boolean; explanation: string | null }
 	> = {};
 
-	if (chapter.quizQuestions.length > 0) {
-		const templateIds = chapter.quizQuestions.map((q) => q.questionTemplateId);
-		const { data: templates } = await locals.supabase
-			.from('question_templates')
-			.select('id, question, answer, explanation')
-			.in('id', templateIds);
-
-		if (templates) {
-			for (const t of templates) {
-				// Only include true/false questions (answer is boolean-like)
-				if (typeof t.answer === 'boolean' || t.answer === 'true' || t.answer === 'false') {
-					questionTemplates[t.id] = {
-						id: t.id,
-						question: t.question,
-						answer: t.answer === true || t.answer === 'true',
-						explanation: t.explanation
-					};
-				}
-			}
-		}
-	}
-
 	// Get exercise details for linked exercises
-	const exerciseDetails: Record<string, { id: string; title: string; description: string | null }> =
-		{};
+	const exerciseDetails: Record<string, { id: string; title: string }> = {};
 
 	if (chapter.exercises.length > 0) {
 		const exerciseIds = chapter.exercises.map((e) => e.exerciseId);
 		const { data: exercises } = await locals.supabase
 			.from('exercises')
-			.select('id, title, description')
+			// `exercises` n'a pas de colonne `description` : le champ n'existe pas dans ce
+			// modèle. Les consommateurs le testent avant affichage, donc son absence est sans effet.
+			.select('id, title')
 			.in('id', exerciseIds);
 
 		if (exercises) {
 			for (const e of exercises) {
 				exerciseDetails[e.id] = {
 					id: e.id,
-					title: e.title,
-					description: e.description
+					title: e.title
 				};
 			}
 		}

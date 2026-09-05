@@ -159,20 +159,18 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	}
 
 	// Get exercise details
-	const exerciseDetails: Record<string, { id: string; title: string; description: string | null }> =
-		{};
+	const exerciseDetails: Record<string, { id: string; title: string }> = {};
 	if (exercises.length > 0) {
 		const exerciseIds = exercises.map((e) => e.exerciseId);
 		const { data: exerciseData } = await locals.supabase
 			.from('exercises')
-			.select('id, title, description')
+			.select('id, title')
 			.in('id', exerciseIds);
 
 		for (const e of exerciseData || []) {
 			exerciseDetails[e.id] = {
 				id: e.id,
-				title: e.title,
-				description: e.description
+				title: e.title
 			};
 		}
 	}
@@ -188,7 +186,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// Get available exercises for linking
 	const { data: availableExercises } = await locals.supabase
 		.from('exercises')
-		.select('id, title, description')
+		.select('id, title')
 		.eq('created_by', user.id)
 		.order('created_at', { ascending: false })
 		.limit(100);

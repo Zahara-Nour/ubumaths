@@ -61,11 +61,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			homework_due_date,
 			is_published,
 			class_id,
-			teacher_id,
 			created_at,
 			updated_at,
-			classes!inner(name, grade),
-			profiles!inner(display_name)
+			classes!inner(name, grade)
 		`
 		)
 		.eq('id', entryId)
@@ -85,7 +83,17 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	// Transform to application format
 	const classData = entry.classes as unknown as { name: string; grade: string | null };
-	const teacherData = entry.profiles as unknown as { display_name: string | null };
+
+	// `class_journal_entries` n'a plus de `teacher_id` : il a été retiré par le
+	// refactor mono-professeur, et `profiles` n'a pas de `display_name`. L'embed
+	// était donc doublement impossible. Le professeur étant unique, on lit
+	// simplement son nom.
+	const { data: teacher } = await locals.supabase
+		.from('profiles')
+		.select('full_name')
+		.eq('role', 'teacher')
+		.limit(1)
+		.maybeSingle();
 
 	return {
 		entry: {
@@ -103,6 +111,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			name: classData.name,
 			grade: classData.grade
 		},
-		teacherName: teacherData.display_name || 'Professeur'
+		teacherName: teacher?.full_name || 'Professeur'
 	};
 };

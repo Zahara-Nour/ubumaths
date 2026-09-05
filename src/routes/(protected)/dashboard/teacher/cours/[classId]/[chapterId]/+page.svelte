@@ -348,11 +348,6 @@
 										<p class="font-medium">
 											{details?.title || `${lore.learning.exercise} non trouvée`}
 										</p>
-										{#if details?.description}
-											<p class="truncate text-sm text-muted-foreground">
-												{details.description}
-											</p>
-										{/if}
 									</div>
 									<form method="POST" action="?/unlinkExercise" use:enhance>
 										<input type="hidden" name="chapterExerciseId" value={exercise.id} />
