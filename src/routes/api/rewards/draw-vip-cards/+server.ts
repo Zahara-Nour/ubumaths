@@ -113,12 +113,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			p_student_id: data.studentId,
 			p_count: data.count,
 			p_payment_method: data.paymentMethod,
-			p_gidouilles_cost: gidouillesCost,
-			p_vip_card_instance_id: data.paymentMethod === 'vip_card' ? data.vipCardInstanceId : null,
+			p_gidouilles_cost: gidouillesCost ?? undefined,
+			// Ces paramètres sont `DEFAULT NULL` côté SQL et donc optionnels dans les
+			// types générés : les omettre applique le même défaut que passer NULL.
+			p_vip_card_instance_id:
+				data.paymentMethod === 'vip_card' ? data.vipCardInstanceId : undefined,
 			// Filter parameters (all optional)
-			p_force_rarity: forceRarity,
-			p_min_rarity: minRarity,
-			p_exclude_card_ids: data.filters?.excludeCardIds ?? null,
+			p_force_rarity: forceRarity ?? undefined,
+			p_min_rarity: minRarity ?? undefined,
+			p_exclude_card_ids: data.filters?.excludeCardIds ?? undefined,
 			p_only_cards_with_actions: data.filters?.onlyCardsWithActions ?? false
 		});
 

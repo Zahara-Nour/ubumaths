@@ -16,6 +16,8 @@ import type { TemplateMarkdown } from '$lib/ubumark';
 import { generateSRSInstance } from '$lib/srs/generator';
 import { dueCardsQuerySchema } from '$lib/server/validation/srs';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { asCardState } from '$lib/srs/types';
+import { templateMarkdown } from '$lib/ubumark/types/template';
 
 /**
  * Lightweight stats for API response (subset of CardStats)
@@ -181,7 +183,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 						templateId: dueCard.template_id,
 						instance: result.instance,
 						stats: {
-							state: dueCard.state,
+							state: asCardState(dueCard.state),
 							difficulty: dueCard.difficulty,
 							stability: dueCard.stability,
 							totalReviews: statsParCarte.get(dueCard.card_id)?.totalReviews ?? 0,
@@ -207,10 +209,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					reviewCards.push({
 						cardId: dueCard.card_id,
 						cardType: 'custom',
-						frontContent: customCard.front_content,
-						backContent: customCard.back_content,
+						// `front_content` / `back_content` sont nullables en base ; le type
+						// métier est une chaîne marquée. Une carte sans contenu devient vide.
+						frontContent: templateMarkdown(customCard.front_content ?? ''),
+						backContent: templateMarkdown(customCard.back_content ?? ''),
 						stats: {
-							state: dueCard.state,
+							state: asCardState(dueCard.state),
 							difficulty: dueCard.difficulty,
 							stability: dueCard.stability,
 							totalReviews: statsParCarte.get(dueCard.card_id)?.totalReviews ?? 0,
