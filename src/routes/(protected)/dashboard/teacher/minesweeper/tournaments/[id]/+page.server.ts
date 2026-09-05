@@ -106,7 +106,9 @@ export const load: PageServerLoad = async ({ params, locals, fetch, url }) => {
 			{ p_tournament_id: tournamentId }
 		);
 
-		if (redistributeResult?.[0]?.rewards_distributed > 0) {
+		// `rewards_distributed` peut manquer : la fonction rend une table, et une
+		// exécution sans redistribution ne renvoie aucune ligne.
+		if ((redistributeResult?.[0]?.rewards_distributed ?? 0) > 0) {
 			justFinalized = true;
 		}
 	}

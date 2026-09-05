@@ -61,7 +61,8 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
 	const totalGidouilles =
 		history?.reduce((sum: number, h) => sum + (h.total_gidouilles_earned || 0), 0) || 0;
 	const firstAttemptCount = history?.filter((h) => h.total_attempts === 1).length || 0;
-	const multipleAttemptCount = history?.filter((h) => h.total_attempts > 1).length || 0;
+	// `total_attempts` est nullable : la vue agrège, et agréger zéro ligne donne NULL.
+	const multipleAttemptCount = history?.filter((h) => (h.total_attempts ?? 0) > 1).length || 0;
 
 	// Calculate genre counts
 	const genreCounts: Record<string, number> = {};

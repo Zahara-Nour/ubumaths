@@ -43,15 +43,20 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// qui ne porte aucune clé. La page lisait `settings.max_attempts` dessus.
 	// On restitue la forme déclarée (`assessmentSettingsSchema`), avec repli sur
 	// les valeurs par défaut si le contenu stocké ne la respecte pas.
-	const reglages = assessmentSettingsSchema.safeParse(assignment.assessment?.settings);
+	// Une assignation sans son évaluation est une donnée corrompue : la page n'a
+	// alors ni titre ni réglages à afficher. On refuse ici plutôt que de rendre
+	// la page défensive de bout en bout.
+	if (!assignment.assessment) {
+		throw error(404, 'Évaluation introuvable pour cette assignation');
+	}
+
+	const reglages = assessmentSettingsSchema.safeParse(assignment.assessment.settings);
 	const assignationTypee = {
 		...assignment,
-		assessment: assignment.assessment
-			? {
-					...assignment.assessment,
-					settings: reglages.success ? reglages.data : DEFAULT_ASSESSMENT_SETTINGS
-				}
-			: null
+		assessment: {
+			...assignment.assessment,
+			settings: reglages.success ? reglages.data : DEFAULT_ASSESSMENT_SETTINGS
+		}
 	};
 
 	// Verify student has access to this assignment

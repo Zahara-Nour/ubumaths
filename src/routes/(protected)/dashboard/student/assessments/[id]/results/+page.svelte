@@ -156,11 +156,12 @@
 								</Table.Cell>
 								<Table.Cell class="text-center">
 									<span
-										class="text-lg font-semibold {attempt.score >= 5
+										class="text-lg font-semibold {(attempt.score ?? 0) >= 5
 											? 'text-green-600 dark:text-green-400'
 											: 'text-red-600 dark:text-red-400'}"
 									>
-										{attempt.score}/10
+										<!-- `score` est nullable : une session interrompue n'en a pas. -->
+										{attempt.score ?? '—'}/10
 									</span>
 								</Table.Cell>
 								<Table.Cell class="text-center">

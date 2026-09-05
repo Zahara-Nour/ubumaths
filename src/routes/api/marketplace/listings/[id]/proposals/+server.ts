@@ -347,6 +347,13 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		throw error(500, 'Erreur lors de la création de la proposition');
 	}
 
+	// `proposal` est alimentée par deux branches et reste donc `T | null` pour le
+	// compilateur, même une fois l'erreur écartée. La garde évite que la suite —
+	// verrouillage de cartes, notifications, réponse — ne travaille sur `null`.
+	if (!proposal) {
+		throw error(500, 'Proposition créée sans contenu exploitable');
+	}
+
 	// Lock cards if offering any
 	if (data.offered_card_ids.length > 0) {
 		const lockResult = await lockCardsForEntity(
@@ -369,7 +376,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	await supabase
 		.from('marketplace_listings')
 		.update({
-			proposal_count: listing.proposal_count + 1
+			// `proposal_count` est nullable : une annonce jamais proposée vaut NULL.
+			proposal_count: (listing.proposal_count ?? 0) + 1
 		})
 		.eq('id', listingId);
 

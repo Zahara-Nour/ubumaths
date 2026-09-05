@@ -22,7 +22,11 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	}
 
 	// Enrich with profile data
-	const studentIds = (leaderboard || []).map((entry) => entry.student_id);
+	// `riddle_progress` est une vue : `student_id` y est nullable. Sans garde de
+	// type, la liste reste `(string | null)[]` et ne peut pas alimenter `.in()`.
+	const studentIds = (leaderboard || [])
+		.map((entry) => entry.student_id)
+		.filter((id): id is string => id !== null);
 
 	const { data: profiles } = await supabase
 		.from('profiles')

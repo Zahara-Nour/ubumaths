@@ -29,7 +29,8 @@
 		return 'text-muted-foreground';
 	}
 
-	function isCurrentUser(studentId: string) {
+	// `riddle_progress` est une vue d'agrégats : `student_id` y est nullable.
+	function isCurrentUser(studentId: string | null) {
 		return studentId === data.currentUserId;
 	}
 </script>
@@ -181,10 +182,9 @@
 										{/if}
 									</p>
 									<p class="text-sm text-muted-foreground">
-										{entry.riddles_completed} énigme{entry.riddles_completed > 1 ? 's' : ''} réussie{entry.riddles_completed >
-										1
+										{entry.riddles_completed ?? 0} énigme{(entry.riddles_completed ?? 0) > 1
 											? 's'
-											: ''}
+											: ''} réussie{(entry.riddles_completed ?? 0) > 1 ? 's' : ''}
 									</p>
 								</div>
 							</div>
