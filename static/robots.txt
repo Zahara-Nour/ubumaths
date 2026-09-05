@@ -1,3 +1,10 @@
-# allow crawling everything by default
+# Le site est public : tout est indexable par défaut.
 User-agent: *
-Disallow:
+
+# Sauf les espaces authentifiés — un robot n'y accède pas, et les lui proposer
+# ne produit que des redirections vers la page de connexion.
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /api/
+
+Sitemap: https://www.chiph.re/sitemap.xml
