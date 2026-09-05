@@ -46,6 +46,7 @@ import { getExerciseContentSafe } from '$lib/exercises/types';
 import {
 	localizedText,
 	asRowTranslations,
+	toWorksheetExerciseRow,
 	worksheetLocale,
 	asWorksheetConfig,
 	type RowTranslations
@@ -436,7 +437,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 			const resolved = resolveExercise(
 				{
-					...we,
+					// Colonnes plus permissives en base qu'en type métier.
+					...toWorksheetExerciseRow(we),
 					exercise: exerciseData
 				},
 				seed,

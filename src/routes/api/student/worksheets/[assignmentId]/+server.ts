@@ -50,6 +50,7 @@ import { getExerciseContentSafe } from '$lib/exercises/types';
 import {
 	localizedText,
 	asRowTranslations,
+	toWorksheetExerciseRow,
 	worksheetLocale,
 	asWorksheetConfig,
 	type RowTranslations
@@ -385,7 +386,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					// Fallback to dynamic resolution
 					const resolved = resolveExercise(
 						{
-							...we,
+							// Colonnes plus permissives en base qu'en type métier :
+							// `variant_mode` est du texte, `variant_config` et
+							// `translations` du jsonb, `correction_visible` est nullable.
+							...toWorksheetExerciseRow(we),
 							exercise: exerciseData
 						},
 						seed,
@@ -399,7 +403,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				// No instance exists - resolve dynamically
 				const resolved = resolveExercise(
 					{
-						...we,
+						...toWorksheetExerciseRow(we),
 						exercise: exerciseData
 					},
 					seed,

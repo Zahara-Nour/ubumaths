@@ -798,6 +798,73 @@ export interface WorksheetTextTranslation {
 export type RowTranslations = Partial<Record<TranslatedLocale, WorksheetTextTranslation>>;
 
 /**
+ * Narrows a `worksheets` row to {@link WorksheetRow}.
+ *
+ * `type`, `status`, `config` and `translations` are all looser in Postgres —
+ * plain text or jsonb — and `grades` / `tags` are nullable arrays.
+ *
+ * The fallbacks are the feature's own defaults: a worksheet of unknown type
+ * renders as a plain worksheet, and an unknown status is treated as a draft —
+ * the direction that never publishes something by accident.
+ */
+export function toWorksheetRow<T extends Record<string, unknown>>(
+	row: T & {
+		type: string;
+		status: string;
+		config: unknown;
+		translations?: unknown;
+		grades: string[] | null;
+		tags: string[] | null;
+	}
+): T & WorksheetRow {
+	return {
+		...row,
+		type: (WORKSHEET_TYPES.find((t) => t === row.type) ?? 'worksheet') as WorksheetType,
+		status: (WORKSHEET_STATUSES.find((s) => s === row.status) ?? 'draft') as WorksheetStatus,
+		config: asWorksheetConfig(row.config),
+		translations: asRowTranslations(row.translations),
+		grades: row.grades ?? [],
+		tags: row.tags ?? []
+	} as T & WorksheetRow;
+}
+
+/**
+ * Narrows a `worksheet_exercises` row to {@link WorksheetExerciseRow}.
+ *
+ * Three columns are looser in Postgres than in the domain: `variant_mode` is
+ * plain text, `variant_config` and `translations` are jsonb, and
+ * `correction_visible` is nullable.
+ *
+ * The fallbacks are the documented defaults of the feature: no variant, an
+ * empty config, and a correction hidden until the teacher releases it — the
+ * safe direction for a graded document.
+ */
+export function toWorksheetExerciseRow<T extends Record<string, unknown>>(
+	row: T & {
+		variant_mode: string;
+		variant_config: unknown;
+		translations?: unknown;
+		correction_visible: boolean | null;
+	}
+): T & WorksheetExerciseRow {
+	const mode = VARIANT_MODES.find((m) => m === row.variant_mode) ?? 'none';
+	const config =
+		typeof row.variant_config === 'object' &&
+		row.variant_config !== null &&
+		!Array.isArray(row.variant_config)
+			? (row.variant_config as VariantConfig)
+			: {};
+
+	return {
+		...row,
+		variant_mode: mode,
+		variant_config: config,
+		translations: asRowTranslations(row.translations),
+		correction_visible: row.correction_visible ?? false
+	} as T & WorksheetExerciseRow;
+}
+
+/**
  * Narrows the `instance_data` jsonb column to {@link InstanceData}.
  *
  * A worksheet instance holds the exercises actually drawn for one student. Its

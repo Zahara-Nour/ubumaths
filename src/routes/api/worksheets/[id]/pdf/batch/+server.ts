@@ -14,7 +14,7 @@ import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
 import { worksheetLocale } from '$lib/types/worksheets';
 import type { WorksheetWithRelations, InstanceData } from '$lib/types/worksheets';
 import JSZip from 'jszip';
-import { asWorksheetConfig, asInstanceData } from '$lib/types/worksheets';
+import { asWorksheetConfig, asInstanceData, toWorksheetRow } from '$lib/types/worksheets';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -209,7 +209,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 
 				// Generate Typst document
 				const typstContent = generateWorksheetTypst({
-					worksheet: worksheet,
+					worksheet: toWorksheetRow(worksheet),
 					instance: instanceData,
 					config: asWorksheetConfig(worksheet.config),
 					mode,
@@ -238,7 +238,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		// If correction mode, also add a master correction document
 		if (mode === 'correction') {
 			const masterTypst = generateWorksheetTypst({
-				worksheet: worksheet,
+				worksheet: toWorksheetRow(worksheet),
 				instance: generateSimpleInstance(worksheet as WorksheetWithRelations),
 				config: asWorksheetConfig(worksheet.config),
 				mode: 'correction',
