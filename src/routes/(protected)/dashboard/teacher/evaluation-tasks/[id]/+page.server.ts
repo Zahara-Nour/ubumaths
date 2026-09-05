@@ -82,7 +82,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEdit
 					letter,
 					name,
 					display_order,
-					skills (
+					observables (
 						id,
 						name,
 						teacher_grid_text,
@@ -99,10 +99,10 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEdit
 	// 4. Périmètre actuel de la tâche
 	const { data: perimeter } = await locals.supabase
 		.from('evaluation_task_perimeter')
-		.select('skill_id')
+		.select('observable_id')
 		.eq('task_id', params.id);
 
-	const perimeterSet = new Set((perimeter ?? []).map((p) => p.skill_id));
+	const perimeterSet = new Set((perimeter ?? []).map((p) => p.observable_id));
 
 	// 5. Construire la structure groupée
 	const competencesGroups: MathCompetenceGroup[] = (competences ?? []).map((c) => {
@@ -110,7 +110,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEdit
 			.slice()
 			.sort((a, b) => a.display_order - b.display_order)
 			.map((sd) => {
-				const observables: ObservableForPerimeter[] = (sd.skills ?? [])
+				const observables: ObservableForPerimeter[] = (sd.observables ?? [])
 					.slice()
 					.sort((a, b) => a.display_order - b.display_order)
 					.map((sk) => ({
@@ -207,7 +207,7 @@ export const actions: Actions = {
 		if (skillIds.length > 0) {
 			const { error: insErr } = await locals.supabase
 				.from('evaluation_task_perimeter')
-				.insert(skillIds.map((sid) => ({ task_id: params.id, skill_id: sid })));
+				.insert(skillIds.map((sid) => ({ task_id: params.id, observable_id: sid })));
 			if (insErr) return fail(500, { message: `INSERT failed: ${insErr.message}` });
 		}
 

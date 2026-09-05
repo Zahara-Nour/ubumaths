@@ -82,7 +82,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			supabase
 				.from('skill_attempts')
 				.select(
-					'skill_id, success, with_help, phase_blocage, grade, template_id, task_id, source, created_at'
+					'observable_id, success, with_help, phase_blocage, grade, template_id, task_id, source, created_at'
 				)
 				.eq('student_id', userId)
 				.order('created_at', { ascending: false })
@@ -91,7 +91,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			// Évaluation — indicateurs observables par capacité
 			supabase
 				.from('student_observable_state')
-				.select('skill_id, count_plus, count_minus, is_acquis, last_attempt_at')
+				.select('observable_id, count_plus, count_minus, is_acquis, last_attempt_at')
 				.eq('student_id', userId),
 
 			// Activité — exercices complétés (≠ évaluation référentielle)
