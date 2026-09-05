@@ -63,7 +63,11 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 		)
 		.eq('student_id', user.id)
 		.eq('status', 'active')
-		.eq('is_test', false)
+		// `is_test` n'existe pas sur `class_members` (c'est une colonne de
+		// `profiles`) : le filtre rendait la requête ENTIÈRE invalide et l'élève
+		// ne voyait donc aucune ressource. Il était de toute façon sans objet —
+		// la requête est déjà restreinte à `student_id = user.id`, et demander
+		// « suis-je un compte de test ? » sur ses propres classes n'a pas de sens.
 		.order('classes(name)');
 
 	if (classesError) {
