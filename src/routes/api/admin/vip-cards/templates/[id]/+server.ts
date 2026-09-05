@@ -18,6 +18,7 @@ import { updateTemplateSchema } from '$lib/server/validation/vip-card-admin';
 import type { VipCardTemplate } from '$lib/types/vip-card-admin';
 import { templateToResponse } from '$lib/types/vip-card-admin';
 import { validateSlugParam } from '$lib/server/validation/params';
+import type { TablesUpdate } from '$lib/types/database';
 
 /**
  * Body for the typed-confirmation DELETE: the admin must echo the template name.
@@ -74,7 +75,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// 5. Build update object (convert camelCase to snake_case)
-		const updateData: Record<string, unknown> = {};
+		const updateData: TablesUpdate<'vip_card_templates'> = {};
 
 		if (data.name !== undefined) updateData.name = data.name;
 		if (data.description !== undefined) updateData.description = data.description;
