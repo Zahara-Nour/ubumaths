@@ -13,6 +13,7 @@ import {
 } from '$lib/server/validation/python-exercises';
 import type { PythonExercise, PythonExerciseStudentView } from '$lib/types/python-exercises';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { toJson } from '$lib/types/database-helpers';
 import {
 	fetchTagNamesForExercise,
 	resolveTagsToIds,
@@ -142,9 +143,16 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	};
 
 	// Update exercise (tags are handled separately via the junction)
+	// `validation_config` part dans une colonne jsonb : conversion explicite,
+	// et le type d'écriture généré contrôle les autres champs.
 	const { data: updatedExercise, error: updateError } = await supabase
 		.from('python_exercises')
-		.update(updateData)
+		.update({
+			...updateData,
+			...(updateData.validation_config !== undefined
+				? { validation_config: toJson(updateData.validation_config) }
+				: {})
+		})
 		.eq('id', exerciseId)
 		.select()
 		.single();

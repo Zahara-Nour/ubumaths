@@ -49,17 +49,19 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	}
 
 	// Determine which validation field to toggle
-	const validationField = isInitiator ? 'validated_by_initiator' : 'validated_by_partner';
 	const currentValidation = isInitiator ? trade.validated_by_initiator : trade.validated_by_partner;
 	const newValidation = !currentValidation;
 
-	// Update validation status
+	// Update validation status.
+	// Clés littérales : une clé calculée élargit l'objet en signature d'index et
+	// désactive la vérification des colonnes par le type d'écriture généré.
 	const { data: updatedTrade, error: updateError } = await supabase
 		.from('marketplace_trades')
-		.update({
-			[validationField]: newValidation,
-			updated_at: new Date().toISOString()
-		})
+		.update(
+			isInitiator
+				? { validated_by_initiator: newValidation, updated_at: new Date().toISOString() }
+				: { validated_by_partner: newValidation, updated_at: new Date().toISOString() }
+		)
 		.eq('id', tradeId)
 		.select()
 		.single();
