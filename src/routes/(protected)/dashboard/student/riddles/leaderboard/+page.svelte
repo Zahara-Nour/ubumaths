@@ -89,7 +89,7 @@
 					{data.leaderboard[1].profile.firstname || ''}
 				</p>
 				<p class="text-base font-bold text-yellow-600 sm:text-lg dark:text-yellow-400">
-					{data.leaderboard[1].total_gidouilles_from_riddles}
+					{data.leaderboard[1].riddles_gidouilles}
 				</p>
 				<p class="hidden text-xs text-muted-foreground sm:block">
 					{data.leaderboard[1].riddles_completed} énigmes
@@ -109,7 +109,7 @@
 					{data.leaderboard[0].profile.firstname || ''}
 				</p>
 				<p class="text-xl font-bold text-yellow-600 sm:text-2xl dark:text-yellow-400">
-					{data.leaderboard[0].total_gidouilles_from_riddles}
+					{data.leaderboard[0].riddles_gidouilles}
 				</p>
 				<p class="hidden text-xs text-muted-foreground sm:block">
 					{data.leaderboard[0].riddles_completed} énigmes
@@ -129,7 +129,7 @@
 					{data.leaderboard[2].profile.firstname || ''}
 				</p>
 				<p class="text-base font-bold text-yellow-600 sm:text-lg dark:text-yellow-400">
-					{data.leaderboard[2].total_gidouilles_from_riddles}
+					{data.leaderboard[2].riddles_gidouilles}
 				</p>
 				<p class="hidden text-xs text-muted-foreground sm:block">
 					{data.leaderboard[2].riddles_completed} énigmes
@@ -192,7 +192,7 @@
 							<!-- Score -->
 							<div class="text-right">
 								<p class="text-xl font-bold text-yellow-600 dark:text-yellow-400">
-									{entry.total_gidouilles_from_riddles}
+									{entry.riddles_gidouilles}
 								</p>
 								<p class="text-xs text-muted-foreground">gidouilles</p>
 							</div>

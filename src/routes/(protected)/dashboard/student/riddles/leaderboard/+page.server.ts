@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	const { data: leaderboard, error: leaderboardError } = await supabase
 		.from('riddle_progress')
 		.select('*')
-		.order('total_gidouilles_from_riddles', { ascending: false })
+		.order('riddles_gidouilles', { ascending: false })
 		.limit(50);
 
 	if (leaderboardError) {

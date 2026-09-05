@@ -89,7 +89,7 @@
 								</div>
 								<Card.Title class="text-xl">{entry.riddle.title}</Card.Title>
 								<Card.Description class="capitalize">
-									{formatDate(entry.assignment_date)}
+									{formatDate(entry.date)}
 								</Card.Description>
 							</div>
 

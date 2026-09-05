@@ -11,8 +11,15 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		throw redirect(303, '/auth/login');
 	}
 
-	// Get current riddle of the day
-	const { data: currentRiddle } = await supabase.rpc('get_riddle_of_the_day');
+	// `get_riddle_of_the_day` renvoie un UUID scalaire, pas une ligne. Le code le
+	// traitait comme un tableau (`.length`, `[0]`), d'où une carte qui ne pouvait
+	// afficher ni numéro, ni titre, ni date.
+	const { data: currentRiddleId } = await supabase.rpc('get_riddle_of_the_day');
+
+	const currentRiddle = currentRiddleId
+		? ((await supabase.from('riddles').select('*').eq('id', currentRiddleId).maybeSingle()).data ??
+			null)
+		: null;
 
 	// Get history of past riddles of the day
 	const { data: history, error: historyError } = await supabase
@@ -23,7 +30,8 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 			riddle:riddles(*)
 		`
 		)
-		.order('assignment_date', { ascending: false })
+		// La table porte `date`, pas `assignment_date`.
+		.order('date', { ascending: false })
 		.limit(30);
 
 	if (historyError) {
@@ -42,7 +50,9 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	}
 
 	return {
-		currentRiddle: currentRiddle && currentRiddle.length > 0 ? currentRiddle[0] : null,
+		currentRiddle,
+		// Le RPC interroge CURRENT_DATE : c'est la date du jour qui s'affiche.
+		currentRiddleDate: currentRiddle ? new Date().toISOString().slice(0, 10) : null,
 		history: (history || []).map((h) => ({
 			...h,
 			riddle: h.riddle
@@ -57,7 +67,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 export const actions: Actions = {
 	setRiddle: async ({ request, locals }) => {
 		const { supabase } = locals;
-		await requireRoles(locals, ['teacher', 'admin']);
+		const { user } = await requireRoles(locals, ['teacher', 'admin']);
 
 		const formData = await request.formData();
 		const riddleId = formData.get('riddle_id')?.toString();
@@ -80,9 +90,13 @@ export const actions: Actions = {
 		}
 
 		// Set riddle of the day using RPC
+		// Signature réelle : (p_riddle_id uuid, p_date date, p_selected_by uuid).
+		// Le code passait `p_assignment_date` et omettait `p_selected_by` : l'appel
+		// échouait, et aucune énigme du jour n'a donc jamais pu être programmée.
 		const { error: setError } = await supabase.rpc('set_riddle_of_the_day', {
 			p_riddle_id: riddleId,
-			p_assignment_date: assignmentDate
+			p_date: assignmentDate,
+			p_selected_by: user.id
 		});
 
 		if (setError) {
@@ -108,7 +122,8 @@ export const actions: Actions = {
 		const { error: deleteError } = await supabase
 			.from('riddle_of_the_day')
 			.delete()
-			.eq('assignment_date', assignmentDate);
+			// La colonne est `date`.
+			.eq('date', assignmentDate);
 
 		if (deleteError) {
 			console.error('Error removing riddle of the day:', deleteError);

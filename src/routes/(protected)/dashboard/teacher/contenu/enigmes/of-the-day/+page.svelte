@@ -82,14 +82,10 @@
 					</div>
 					<h3 class="text-xl font-semibold">{data.currentRiddle.title}</h3>
 					<p class="text-sm text-muted-foreground capitalize">
-						{formatDate(data.currentRiddle.assignment_date)}
+						{formatDate(data.currentRiddleDate)}
 					</p>
 					<form method="POST" action="?/removeRiddle">
-						<input
-							type="hidden"
-							name="assignment_date"
-							value={data.currentRiddle.assignment_date}
-						/>
+						<input type="hidden" name="assignment_date" value={data.currentRiddleDate} />
 						<Button type="submit" variant="destructive" size="sm">
 							<Trash2 class="mr-2 h-4 w-4" />
 							Retirer
@@ -218,7 +214,7 @@
 								</div>
 								<p class="mt-1 font-medium">{entry.riddle.title}</p>
 								<p class="text-xs text-muted-foreground capitalize">
-									{formatDate(entry.assignment_date)}
+									{formatDate(entry.date)}
 								</p>
 							</div>
 						</div>

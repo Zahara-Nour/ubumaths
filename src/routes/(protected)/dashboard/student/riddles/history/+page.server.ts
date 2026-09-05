@@ -20,7 +20,9 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
 		.from('riddle_student_history')
 		.select('*')
 		.eq('student_id', user.id)
-		.eq('is_correct', true) // Only successful attempts
+		// La vue agrège les tentatives : le succès s'y lit sur `ever_succeeded`
+		// (`bool_or(is_correct)`), il n'y a pas de colonne `is_correct`.
+		.eq('ever_succeeded', true)
 		.order('first_success_at', { ascending: false });
 
 	// Apply filters
@@ -49,9 +51,9 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
 	// Calculate summary stats
 	const totalSuccess = history?.length || 0;
 	const totalGidouilles =
-		history?.reduce((sum: number, h) => sum + (h.gidouilles_awarded || 0), 0) || 0;
-	const firstAttemptCount = history?.filter((h) => h.total_attempts_for_success === 1).length || 0;
-	const multipleAttemptCount = history?.filter((h) => h.total_attempts_for_success > 1).length || 0;
+		history?.reduce((sum: number, h) => sum + (h.total_gidouilles_earned || 0), 0) || 0;
+	const firstAttemptCount = history?.filter((h) => h.total_attempts === 1).length || 0;
+	const multipleAttemptCount = history?.filter((h) => h.total_attempts > 1).length || 0;
 
 	// Calculate genre counts
 	const genreCounts: Record<string, number> = {};
@@ -80,7 +82,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
 				await supabase
 					.from('riddle_of_the_day')
 					.select('riddle_id')
-					.order('assignment_date', { ascending: false })
+					.order('date', { ascending: false })
 					.limit(30)
 			).data?.map((r) => r.riddle_id) || []
 		)
