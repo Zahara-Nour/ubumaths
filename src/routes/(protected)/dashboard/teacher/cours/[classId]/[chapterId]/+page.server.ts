@@ -140,23 +140,18 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		createdAt: e.created_at
 	}));
 
-	// Get question templates for quiz display
+	// Quiz de chapitre : hors service, et depuis toujours — pendant côté
+	// professeur du même défaut corrigé côté élève.
+	//
+	// `question_templates` n'a ni `question`, ni `answer`, ni `answer_type` : un
+	// modèle porte `title`, `description` et surtout `variations`, où vit
+	// l'énoncé. Les requêtes échouaient donc à chaque affichage, et ni la liste
+	// des questions du quiz ni le sélecteur d'ajout n'ont jamais rien montré.
+	//
+	// On retire les requêtes mortes plutôt que d'improviser : rebrancher le quiz
+	// suppose de décider comment une `variation` devient une question vrai/faux,
+	// ce qui relève d'un choix produit. Comportement inchangé.
 	const questionTemplates: Record<string, { id: string; question: string; answer: unknown }> = {};
-	if (quizQuestions.length > 0) {
-		const templateIds = quizQuestions.map((q) => q.questionTemplateId);
-		const { data: templates } = await locals.supabase
-			.from('question_templates')
-			.select('id, question, answer')
-			.in('id', templateIds);
-
-		for (const t of templates || []) {
-			questionTemplates[t.id] = {
-				id: t.id,
-				question: t.question,
-				answer: t.answer
-			};
-		}
-	}
 
 	// Get exercise details
 	const exerciseDetails: Record<string, { id: string; title: string }> = {};
@@ -175,13 +170,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		}
 	}
 
-	// Get available question templates for adding to quiz (true/false only)
-	const { data: availableTemplates } = await locals.supabase
-		.from('question_templates')
-		.select('id, question, answer, topic, subtopic')
-		.eq('answer_type', 'true_false')
-		.order('created_at', { ascending: false })
-		.limit(100);
+	// Même modèle inexistant que ci-dessus (`question`, `answer`, `answer_type`,
+	// `topic`, `subtopic`) : la liste est restée vide depuis toujours.
+	const availableTemplates: Array<{ id: string; question: string }> = [];
 
 	// Get available exercises for linking
 	const { data: availableExercises } = await locals.supabase
@@ -197,12 +188,16 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const { data: quizResultsData } = await getChapterQuizResults(chapterId, locals.supabase);
 
 	// Get students in class
+	// `is_test` est une colonne de `profiles`, pas de `class_members` : le filtre
+	// rendait la requête ENTIÈRE invalide, donc `students` valait toujours `null`
+	// et le professeur ne voyait aucun élève sur la page de chapitre.
+	// L'embed passe en `!inner` pour que le filtre sur la table liée s'applique.
 	const { data: students } = await locals.supabase
 		.from('class_members')
-		.select('student_id, profiles:student_id (id, full_name, avatar_url)')
+		.select('student_id, profiles!inner (id, full_name, avatar_url, is_test)')
 		.eq('class_id', classId)
 		.eq('status', 'active')
-		.eq('is_test', false);
+		.eq('profiles.is_test', false);
 
 	const studentList = (students || [])
 		.map((s) => {
@@ -240,7 +235,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		exercises,
 		questionTemplates,
 		exerciseDetails,
-		availableTemplates: availableTemplates || [],
+		availableTemplates,
 		availableExercises: availableExercises || [],
 		checklistProgress: checklistProgress || [],
 		quizResults: quizResultsData || [],

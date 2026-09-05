@@ -92,15 +92,23 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		}
 
 		// Check if user is a student with access to this assignment
+		// `profiles` porte `class_ids`, un TABLEAU (un élève peut appartenir à
+		// plusieurs classes) — il n'existe pas de `class_id`. La colonne inexistante
+		// faisait rejeter la requête ENTIÈRE par PostgREST : `profile` valait donc
+		// toujours `null`, `isTeacher` toujours `false`, et seul le créateur du
+		// devoir pouvait ouvrir la correction. Échec en mode fermé, mais un
+		// professeur non créateur et les élèves concernés étaient écartés à tort.
 		const { data: profile } = await locals.supabase
 			.from('profiles')
-			.select('role, class_id')
+			.select('role, class_ids')
 			.eq('id', user.id)
 			.single();
 
 		const isTeacher = profile?.role === 'teacher' || profile?.role === 'admin';
 		const isAssignmentCreator = assignment.created_by === user.id;
-		const isStudentInClass = assignment.class_id && profile?.class_id === assignment.class_id;
+		const isStudentInClass = Boolean(
+			assignment.class_id && profile?.class_ids?.includes(assignment.class_id)
+		);
 
 		console.log('[Correction API] Access check:', {
 			userId: user.id,

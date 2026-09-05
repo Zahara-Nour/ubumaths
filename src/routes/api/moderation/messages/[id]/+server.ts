@@ -160,7 +160,11 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		p_metadata: {
 			conversation_id: message.conversation_id,
 			sender_id: message.sender_id,
-			message_length: message.content.length, // Privacy: store length, not content
+			// `messages.content` est du jsonb, pas du texte : `.length` valait
+			// `undefined` et la trace d'audit ne consignait donc aucune taille.
+			// On mesure la forme sérialisée, ce qui préserve l'intention (garder une
+			// taille, jamais le contenu).
+			message_length: JSON.stringify(message.content).length,
 			message_created_at: message.created_at
 		}
 	});

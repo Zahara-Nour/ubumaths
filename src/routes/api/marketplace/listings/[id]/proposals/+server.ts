@@ -16,6 +16,7 @@ import {
 	notifyProposalRejected
 } from '$lib/server/marketplace/notifications';
 import { z } from 'zod';
+import { acceptProposalSchema } from '$lib/server/validation/marketplace-rpc';
 
 // ID validation schema
 const idSchema = z.string().uuid("ID d'annonce invalide");
@@ -421,7 +422,11 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			p_user_id: listing.creator_id
 		});
 
-		if (!rpcError && result?.success) {
+		// `RETURNS json` : on valide la forme réelle plutôt que de lire `.success`
+		// sur le type `Json`, qui ne porte aucune de ces clés.
+		const acceptation = rpcError ? null : acceptProposalSchema.safeParse(result);
+
+		if (acceptation?.success && acceptation.data.success) {
 			// Notify accepted proposer
 			await notifyProposalAccepted(supabase, userId, 'Annonce', proposal.id);
 
@@ -449,13 +454,17 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 					...enrichWithUsernames(proposal),
 					status: 'accepted',
 					auto_accepted: true,
-					trade_id: result.trade_id
+					trade_id: acceptation.data.trade_id
 				},
 				{ status: 201 }
 			);
 		}
 		// If auto-accept fails, fall through to normal proposal flow
-		console.error('Auto-accept failed:', rpcError || result?.error);
+		console.error(
+			'Auto-accept failed:',
+			rpcError ??
+				(acceptation?.success && !acceptation.data.success ? acceptation.data.error : result)
+		);
 	}
 
 	// Normal flow: notify listing creator about new proposal

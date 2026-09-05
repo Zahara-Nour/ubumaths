@@ -14,8 +14,8 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
-import { getChapterWithContent, toggleChecklistItem, submitQuizAnswer } from '$lib/server/chapters';
-import { toggleChecklistSchema, submitQuizAnswerSchema } from '$lib/server/validation/chapters';
+import { getChapterWithContent, toggleChecklistItem } from '$lib/server/chapters';
+import { toggleChecklistSchema } from '$lib/server/validation/chapters';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	// Only students can view this page
@@ -152,14 +152,12 @@ export const actions: Actions = {
 	 * Submit quiz answer
 	 */
 	submitQuiz: async ({ request, locals }) => {
-		const { user } = await requireRole(locals, 'student');
+		// L'authentification reste exigée : l'action est publique dans le contrat
+		// du formulaire, et un refus doit être réservé aux élèves connectés.
+		await requireRole(locals, 'student');
 
 		const formData = await request.formData();
 		const chapterQuizQuestionId = formData.get('quizQuestionId') as string;
-		const answer = formData.get('answer');
-		const timeSpentSecondsRaw = formData.get('timeSpentSeconds');
-		const submittedAnswer = answer === 'true' ? 'true' : 'false';
-		const timeSpentSeconds = timeSpentSecondsRaw ? parseInt(timeSpentSecondsRaw as string, 10) : 0;
 
 		// Get the correct answer to check
 		const { data: quizQuestion } = await locals.supabase
@@ -175,62 +173,19 @@ export const actions: Actions = {
 			});
 		}
 
-		// Get the template to check the answer
-		const { data: template } = await locals.supabase
-			.from('question_templates')
-			.select('answer')
-			.eq('id', quizQuestion.question_template_id)
-			.single();
-
-		if (!template) {
-			return fail(404, {
-				error: 'Template de question non trouvé',
-				action: 'submitQuiz'
-			});
-		}
-
-		// Determine if answer is correct
-		const correctAnswer = template.answer === true || template.answer === 'true';
-		const isCorrect = (submittedAnswer === 'true') === correctAnswer;
-
-		// Validate input (after computing isCorrect)
-		const validation = submitQuizAnswerSchema.safeParse({
-			chapterQuizQuestionId,
-			submittedAnswer,
-			isCorrect,
-			timeSpentSeconds
+		// `question_templates.answer` n'existe pas : la réponse attendue vit dans
+		// `variations`. La requête échouait donc, `template` valait `null`, et
+		// l'action renvoyait déjà ce 404. Elle est de toute façon inatteignable —
+		// le quiz n'a jamais pu afficher la moindre question.
+		//
+		// Tout ce qui suivait (validation Zod, `submitQuizAnswer`, intégration SRS)
+		// dépendait d'un `isCorrect` calculé sur une colonne fantôme : on ne peut
+		// pas corriger une réponse tant que le contrat « une variation → une
+		// question vrai/faux » n'est pas tranché. C'est un choix produit, pas une
+		// réparation. Le refus explicite remplace un calcul faux.
+		return fail(404, {
+			error: 'Quiz de chapitre indisponible',
+			action: 'submitQuiz'
 		});
-
-		if (!validation.success) {
-			return fail(400, {
-				error: validation.error.issues[0].message,
-				action: 'submitQuiz'
-			});
-		}
-
-		// Submit the answer (this also handles SRS integration)
-		const { data: result, error: submitError } = await submitQuizAnswer(
-			user.id,
-			validation.data.chapterQuizQuestionId,
-			validation.data.isCorrect,
-			validation.data.timeSpentSeconds ?? 0,
-			locals.supabase,
-			validation.data.submittedAnswer
-		);
-
-		if (submitError) {
-			console.error('[Submit Quiz] Error:', submitError);
-			return fail(500, {
-				error: 'Erreur lors de la soumission de la réponse',
-				action: 'submitQuiz'
-			});
-		}
-
-		return {
-			success: true,
-			action: 'submitQuiz',
-			isCorrect,
-			resultId: result?.id
-		};
 	}
 };

@@ -226,32 +226,38 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	let mostTradedCards: Array<{ template_id: string; name: string; count: number }> = [];
 	if (mostTradedCardIds.length > 0) {
-		const { data: cards } = await supabase
-			.from('vip_cards')
-			.select('id, template_id, template:vip_card_templates!vip_cards_template_id_fkey(name)')
-			.in('id', mostTradedCardIds);
+		// Il n'existe pas de table `vip_cards` : une carte est une entrée du jsonb
+		// `profiles.vip_cards`, et son identifiant d'instance n'est donc pas
+		// interrogeable par `.in()`. La requête d'origine visait cette table
+		// fantôme et échouait à chaque appel — la section « cartes les plus
+		// échangées » restait vide en silence.
+		//
+		// `vip_cards_activity` journalise chaque mouvement avec les deux
+		// identifiants : c'est elle qui relie l'instance à son modèle.
+		const { data: activites } = await supabase
+			.from('vip_cards_activity')
+			.select('card_instance_id, card_template_id')
+			.in('card_instance_id', mostTradedCardIds);
 
-		// Use Map for O(1) lookups instead of O(n) find operations
-		// Note: Supabase returns joined relations as arrays, so we extract the first element
-		const cardMap = new Map(
-			cards?.map((c) => {
-				const template = Array.isArray(c.template) ? c.template[0] : c.template;
-				return [
-					c.id,
-					{
-						id: c.id as string,
-						template_id: c.template_id as string,
-						template: template as { name: string }
-					}
-				];
-			}) || []
-		);
+		const modeleParInstance = new Map<string, string>();
+		for (const a of activites ?? []) {
+			if (a.card_template_id && !modeleParInstance.has(a.card_instance_id)) {
+				modeleParInstance.set(a.card_instance_id, a.card_template_id);
+			}
+		}
+
+		const { data: modeles } = await supabase
+			.from('vip_card_templates')
+			.select('id, name')
+			.in('id', [...new Set(modeleParInstance.values())]);
+
+		const nomParModele = new Map((modeles ?? []).map((m) => [m.id, m.name]));
 
 		mostTradedCards = mostTradedCardIds.map((cardId) => {
-			const card = cardMap.get(cardId);
+			const templateId = modeleParInstance.get(cardId) ?? '';
 			return {
-				template_id: card?.template_id || '',
-				name: card?.template?.name || 'Carte inconnue',
+				template_id: templateId,
+				name: nomParModele.get(templateId) ?? 'Carte inconnue',
 				count: cardTradeFrequency[cardId]
 			};
 		});

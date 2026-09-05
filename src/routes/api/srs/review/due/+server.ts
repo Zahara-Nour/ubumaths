@@ -112,6 +112,29 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			return json({ cards: [] });
 		}
 
+		// `get_due_cards_for_deck` ne renvoie que
+		// (card_id, template_id, card_type, difficulty, stability, state, next_review) :
+		// ni `total_reviews`, ni `last_review`. Le code les lisait tout de même sur
+		// la ligne du RPC, et l'élève voyait donc des statistiques `undefined`.
+		//
+		// Ces deux champs vivent dans `srs_card_stats`, indexée par utilisateur et
+		// par carte. Une seule requête groupée suffit.
+		const { data: statsCartes } = await supabase
+			.from('srs_card_stats')
+			.select('card_reference_id, total_reviews, last_review')
+			.eq('user_id', user.id)
+			.in(
+				'card_reference_id',
+				dueCards.map((c) => c.card_id)
+			);
+
+		const statsParCarte = new Map(
+			(statsCartes ?? []).map((s) => [
+				s.card_reference_id,
+				{ totalReviews: s.total_reviews, lastReview: s.last_review }
+			])
+		);
+
 		// Process each card to prepare ReviewCard objects
 		const reviewCards: ReviewCard[] = [];
 
@@ -161,8 +184,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 							state: dueCard.state,
 							difficulty: dueCard.difficulty,
 							stability: dueCard.stability,
-							totalReviews: dueCard.total_reviews,
-							lastReview: dueCard.last_review,
+							totalReviews: statsParCarte.get(dueCard.card_id)?.totalReviews ?? 0,
+							lastReview: statsParCarte.get(dueCard.card_id)?.lastReview ?? null,
 							nextReview: dueCard.next_review
 						}
 					});
@@ -190,8 +213,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 							state: dueCard.state,
 							difficulty: dueCard.difficulty,
 							stability: dueCard.stability,
-							totalReviews: dueCard.total_reviews,
-							lastReview: dueCard.last_review,
+							totalReviews: statsParCarte.get(dueCard.card_id)?.totalReviews ?? 0,
+							lastReview: statsParCarte.get(dueCard.card_id)?.lastReview ?? null,
 							nextReview: dueCard.next_review
 						}
 					});

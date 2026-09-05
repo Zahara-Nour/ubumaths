@@ -2,6 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 // Supabase client is now accessed via locals.supabase
 import { createListingSchema, listingsQuerySchema } from '$lib/server/marketplace/validation';
+import { recordListingViewsSchema } from '$lib/server/validation/marketplace-rpc';
 import {
 	validateCardOwnership,
 	lockCardsForEntity,
@@ -146,8 +147,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 					if (viewError) {
 						console.error('Error recording batch views:', viewError);
-					} else if (viewResult?.new_views > 0) {
-						console.log(`Recorded ${viewResult.new_views} new unique views`);
+					} else {
+						// `RETURNS json` : on valide la forme au lieu de lire une clé sur `Json`.
+						const vues = recordListingViewsSchema.safeParse(viewResult);
+						if (vues.success && vues.data.new_views > 0) {
+							console.log(`Recorded ${vues.data.new_views} new unique views`);
+						}
 					}
 				} catch (err) {
 					console.error('Error recording batch views:', err);

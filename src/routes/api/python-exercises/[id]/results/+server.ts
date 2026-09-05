@@ -99,8 +99,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			*,
 			student:profiles!python_exercise_submissions_student_id_fkey(
 				id,
-				first_name,
-				last_name,
+				firstname,
+				lastname,
 				email
 			),
 			assignment:python_exercise_assignments(
@@ -228,7 +228,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		{} as Record<
 			string,
 			{
-				student: { id: string; first_name: string; last_name: string; email: string };
+				student: { id: string; firstname: string | null; lastname: string | null; email: string };
 				total_attempts: number;
 				successful_attempts: number;
 				best_attempt: (typeof results)[0] | null;

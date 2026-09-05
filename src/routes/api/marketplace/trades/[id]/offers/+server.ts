@@ -9,6 +9,7 @@ import {
 } from '$lib/server/marketplace/helpers';
 import { notifyNewTradeOffer } from '$lib/server/marketplace/notifications';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { unlockSpecificCardsSchema } from '$lib/server/validation/marketplace-rpc';
 
 /**
  * POST /api/marketplace/trades/[id]/offers
@@ -186,7 +187,13 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			throw error(500, 'Erreur lors du déverrouillage des cartes retirées');
 		}
 
-		console.log(`Unlocked ${unlockResult.unlocked_count} cards that were removed from the offer`);
+		// `RETURNS json` : forme validée plutôt que clé lue à l'aveugle.
+		const deverrouillage = unlockSpecificCardsSchema.safeParse(unlockResult);
+		if (deverrouillage.success) {
+			console.log(
+				`Unlocked ${deverrouillage.data.unlocked_count} cards that were removed from the offer`
+			);
+		}
 	}
 
 	// Create notification for the other participant
