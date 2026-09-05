@@ -10,9 +10,10 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { generateWorksheetInstance } from '$lib/server/worksheets/instance-generator';
-import type { WorksheetExerciseWithExercise, WorksheetInstanceInsert } from '$lib/types/worksheets';
+import type { WorksheetExerciseWithExercise } from '$lib/types/worksheets';
 import { toJson } from '$lib/types/database-helpers';
 import { asWorksheetConfig, toWorksheetExerciseRow } from '$lib/types/worksheets';
+import type { TablesInsert } from '$lib/types/database';
 
 // Input validation schema for POST
 const createInstancesSchema = z.object({
@@ -158,7 +159,10 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		}
 
 		// Generate instances for each new student
-		const instances: WorksheetInstanceInsert[] = [];
+		// Le type d'insertion généré décrit ce que la table accepte réellement :
+		// `instance_data` y est du jsonb, alors que `WorksheetInstanceInsert`
+		// décrit la forme métier avant sérialisation.
+		const instances: TablesInsert<'worksheet_instances'>[] = [];
 		const errors: Array<{ studentId: string; error: string }> = [];
 
 		for (const student of newStudents) {

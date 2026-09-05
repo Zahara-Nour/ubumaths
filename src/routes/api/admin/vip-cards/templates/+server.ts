@@ -13,8 +13,8 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { createTemplateSchema } from '$lib/server/validation/vip-card-admin';
-import type { VipCardTemplate } from '$lib/types/vip-card-admin';
 import { templateToResponse } from '$lib/types/vip-card-admin';
+import { toVipCardTemplate } from '$lib/types/vip-card-admin';
 
 /**
  * POST /api/admin/vip-cards/templates
@@ -99,7 +99,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// 6. Return created template (convert snake_case to camelCase)
-		return json(templateToResponse(created as VipCardTemplate), { status: 201 });
+		return json(templateToResponse(toVipCardTemplate(created)), { status: 201 });
 	} catch (err) {
 		console.error('Error in POST /api/admin/vip-cards/templates:', err);
 
@@ -143,7 +143,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}
 
 		// 4. Convert to camelCase and return
-		const response = (templates as VipCardTemplate[]).map(templateToResponse);
+		const response = (templates ?? []).map(toVipCardTemplate).map(templateToResponse);
 
 		return json(response);
 	} catch (err) {

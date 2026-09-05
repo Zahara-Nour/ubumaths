@@ -42,7 +42,9 @@ export const load: LayoutServerLoad = async ({ locals, cookies }) => {
 		if (error) {
 			console.error('❌ [ROOT LAYOUT SERVER] Error loading VIP card templates:', error);
 		} else {
-			vipCardTemplates = (data as VipCardTemplate[]) || [];
+			// `rarity` et `category` sont du texte, `action` du jsonb : convertis
+			// plutôt qu'affirmés — la rareté détermine le prix et les probabilités.
+			vipCardTemplates = (data ?? []).map(toVipCardTemplate);
 			console.log(`✅ [ROOT LAYOUT SERVER] Loaded ${vipCardTemplates.length} VIP card templates`);
 		}
 	} catch (err) {

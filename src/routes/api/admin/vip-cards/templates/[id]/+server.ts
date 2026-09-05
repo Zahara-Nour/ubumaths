@@ -15,10 +15,10 @@ import type { RequestHandler } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { assertTypedConfirmation } from '$lib/server/confirmAction';
 import { updateTemplateSchema } from '$lib/server/validation/vip-card-admin';
-import type { VipCardTemplate } from '$lib/types/vip-card-admin';
 import { templateToResponse } from '$lib/types/vip-card-admin';
 import { validateSlugParam } from '$lib/server/validation/params';
 import type { TablesUpdate } from '$lib/types/database';
+import { toVipCardTemplate } from '$lib/types/vip-card-admin';
 
 /**
  * Body for the typed-confirmation DELETE: the admin must echo the template name.
@@ -105,7 +105,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// 7. Return updated template (convert snake_case to camelCase)
-		return json(templateToResponse(updated as VipCardTemplate));
+		return json(templateToResponse(toVipCardTemplate(updated)));
 	} catch (err) {
 		console.error('Error in PATCH /api/admin/vip-cards/templates/[id]:', err);
 
