@@ -88,6 +88,10 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
 			);
 		}
 
+		// Capturé ici : le rétrécissement obtenu par la garde ne survit pas aux
+		// appels asynchrones qui suivent, et le jeton est requis à l'insertion.
+		const refreshToken = tokens.refresh_token;
+
 		// 6. Get user's Google email from token info
 		const tokenInfo = await validateToken(tokens.access_token);
 		const googleEmail = tokenInfo.email || null;
@@ -103,7 +107,7 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
 			{
 				teacher_id: user.id,
 				access_token: encryptToken(tokens.access_token),
-				refresh_token: encryptToken(tokens.refresh_token),
+				refresh_token: encryptToken(refreshToken),
 				token_expiry: tokenExpiry.toISOString(),
 				scopes: tokens.scope.split(' '),
 				google_email: googleEmail,

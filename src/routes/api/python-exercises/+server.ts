@@ -14,6 +14,7 @@ import {
 } from '$lib/server/validation/python-exercises';
 import type { PythonExercise, PythonExerciseStudentView } from '$lib/types/python-exercises';
 import type { Database } from '$lib/types/database';
+import { toJson } from '$lib/types/database-helpers';
 import {
 	fetchExerciseIdsByAnyTag,
 	resolveTagsToIds,
@@ -266,7 +267,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			instructions: data.instructions || null,
 			starter_code: data.starter_code || null,
 			solution_code: data.solution_code,
-			validation_config: data.validation_config,
+			// Colonne jsonb : conversion réelle plutôt que cast.
+			validation_config: toJson(data.validation_config),
 			level: data.level,
 			source: data.source || null,
 			author_id: user.id,
