@@ -20,6 +20,7 @@ import { updateUserStatusSchema } from '$lib/server/validation/admin';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { createSystemNotification } from '$lib/server/notifications';
 import type { Database } from '$lib/types/database';
+import type { TablesUpdate } from '$lib/types/database';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type ExtendedProfile = Profile & {
@@ -100,7 +101,10 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// Build update object with status fields
-		const updateData: Record<string, unknown> = {
+		// Le type généré décrit exactement les colonnes acceptées ; un
+		// `Record<string, unknown>` laissait passer n'importe quel nom de champ
+		// jusqu'à PostgREST, qui rejetait alors la requête entière.
+		const updateData: TablesUpdate<'profiles'> = {
 			status,
 			rejection_reason: status === 'rejected' ? (rejection_reason ?? null) : null,
 			status_changed_at: new Date().toISOString(),

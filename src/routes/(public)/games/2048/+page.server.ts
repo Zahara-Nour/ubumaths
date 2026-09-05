@@ -65,7 +65,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.from('game_2048_scores')
 			.select('best_score, games_played')
 			.eq('user_id', user.id)
-			.eq('mode', 'classic')
+			// `game_2048_scores` n'a pas de colonne `mode` : il n'existe qu'une ligne
+			// par joueur. Le filtre rendait la requête invalide, donc le meilleur
+			// score et le nombre de parties n'étaient jamais chargés.
 			.maybeSingle(),
 		supabase.from('profiles').select('vip_cards, gidouilles').eq('id', user.id).single()
 	]);
