@@ -25,6 +25,7 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { uuidSchema } from '$lib/server/validation/common';
 import { cloneTemplateSchema } from '$lib/server/validation/notebook-templates';
 import type { NotebookContent, NotebookCell } from '$lib/types/notebook';
+import { asNotebookContent } from '$lib/types/notebook';
 
 const MAX_NOTEBOOKS_PER_USER = 50;
 
@@ -102,7 +103,12 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// Clone the content with fresh cell IDs. We treat `template.content` as
 	// an opaque JSON blob — its shape was validated when the template was
 	// originally written via the editor's PUT endpoint.
-	const sourceContent = template.content as NotebookContent;
+	// `content` est une colonne jsonb : la structure est vérifiée, pas affirmée.
+	// Un notebook sans cellules serait autrement recopié en coquille vide.
+	const sourceContent = asNotebookContent(template.content);
+	if (!sourceContent) {
+		throw error(422, 'Contenu de notebook illisible');
+	}
 	const now = new Date().toISOString();
 	const clonedContent: NotebookContent = {
 		version: '1.0',
