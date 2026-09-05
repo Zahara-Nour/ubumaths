@@ -14,6 +14,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { updateDeckSchema, uuidParamSchema } from '$lib/server/validation/srs';
 import { requireAuth } from '$lib/server/middleware/auth';
+import type { TablesUpdate } from '$lib/types/database';
 
 /**
  * GET /api/srs/decks/[id]
@@ -135,7 +136,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		const body = validation.data;
 
 		// Build update object
-		const updates: Record<string, unknown> = {};
+		const updates: TablesUpdate<'srs_decks'> = {};
 
 		if (body.name !== undefined) {
 			updates.name = body.name.trim();

@@ -16,6 +16,7 @@ import type { RequestHandler } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { updateUserFieldsSchema } from '$lib/server/validation/admin';
 import type { Database } from '$lib/types/database';
+import type { TablesUpdate } from '$lib/types/database';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type ExtendedProfile = Profile & {
@@ -106,7 +107,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// 2. Build update object (only include provided fields)
-		const updateData: Record<string, unknown> = {};
+		const updateData: TablesUpdate<'profiles'> = {};
 
 		if (data.firstname !== undefined) updateData.firstname = data.firstname;
 		if (data.lastname !== undefined) updateData.lastname = data.lastname;

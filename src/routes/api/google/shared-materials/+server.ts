@@ -53,6 +53,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
+import type { TablesUpdate } from '$lib/types/database';
 import {
 	listSharedMaterialsSchema,
 	updateSharedMaterialSchema,
@@ -568,7 +569,7 @@ export const PATCH: RequestHandler = async ({ locals, request }) => {
 
 		// Build update object (only include provided fields)
 		// Note: Schema uses 'description_override' not 'custom_description'
-		const updateObject: Record<string, unknown> = {
+		const updateObject: TablesUpdate<'shared_materials'> = {
 			updated_at: new Date().toISOString()
 		};
 

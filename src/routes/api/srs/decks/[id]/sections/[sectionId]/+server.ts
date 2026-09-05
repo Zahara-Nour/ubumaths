@@ -12,6 +12,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { updateSectionSchema } from '$lib/server/validation/srs';
+import type { TablesUpdate } from '$lib/types/database';
 
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	const { user } = await requireAuth(locals);
@@ -39,7 +40,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		return json({ error: validation.error.issues[0].message }, { status: 400 });
 	}
 
-	const updates: Record<string, unknown> = {};
+	const updates: TablesUpdate<'srs_deck_sections'> = {};
 	if (validation.data.name !== undefined) updates.name = validation.data.name;
 	if (validation.data.description !== undefined) updates.description = validation.data.description;
 	if (validation.data.display_order !== undefined)

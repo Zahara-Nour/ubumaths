@@ -14,6 +14,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { updateCardSchema, uuidParamSchema } from '$lib/server/validation/srs';
 import { requireAuth } from '$lib/server/middleware/auth';
+import type { TablesUpdate } from '$lib/types/database';
 
 /**
  * GET /api/srs/cards/[id]
@@ -142,7 +143,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		}
 
 		const body = validation.data;
-		const updates: Record<string, unknown> = {};
+		const updates: TablesUpdate<'srs_cards'> = {};
 
 		// Front/back content : carte custom uniquement
 		if (body.frontContent !== undefined || body.backContent !== undefined) {

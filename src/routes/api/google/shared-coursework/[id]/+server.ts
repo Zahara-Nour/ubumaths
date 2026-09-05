@@ -32,6 +32,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
+import type { TablesUpdate } from '$lib/types/database';
 import {
 	sharedCourseworkIdParamSchema,
 	updateSharedCourseworkByIdSchema
@@ -145,7 +146,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 
 		// Build update object (only include provided fields)
 		// Note: Database uses 'description_override' but API uses 'descriptionOverride'
-		const updateObject: Record<string, unknown> = {
+		const updateObject: TablesUpdate<'shared_coursework'> = {
 			updated_at: new Date().toISOString()
 		};
 

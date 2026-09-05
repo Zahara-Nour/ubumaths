@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const input = parsed.data;
 
 	// Build the insert row per kind (columns not relevant to the kind stay null).
-	const row: Record<string, unknown> = {
+	const row: TablesInsert<'journal_entry_activities'> = {
 		entry_id: input.entry_id,
 		kind: input.kind,
 		display_order: input.display_order ?? 0
