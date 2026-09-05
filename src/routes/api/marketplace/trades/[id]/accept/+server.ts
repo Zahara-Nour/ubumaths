@@ -68,7 +68,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	// Get the last offer to verify it wasn't made by the accepting user
 	const { data: lastOffer, error: offerError } = await supabase
 		.from('marketplace_trade_offers')
-		.select('offer_by')
+		.select('offered_by')
 		.eq('trade_id', trade_id)
 		.order('created_at', { ascending: false })
 		.limit(1)
@@ -79,7 +79,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	// User cannot accept their own offer
-	if (lastOffer.offer_by === userId) {
+	if (lastOffer.offered_by === userId) {
 		throw error(403, 'Vous ne pouvez pas accepter votre propre offre');
 	}
 
