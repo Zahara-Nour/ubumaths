@@ -32,7 +32,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
       classes:class_id (
         name
       ),
-      creator:created_by (
+      creator:profiles!message_templates_created_by_fkey (
         full_name
       )
     `

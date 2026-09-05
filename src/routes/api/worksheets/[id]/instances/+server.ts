@@ -123,8 +123,10 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		// Fetch students in the class
 		const { data: students, error: studentsError } = await supabase
 			.from('profiles')
-			.select('id, first_name, last_name')
-			.eq('class_id', classId)
+			.select('id, firstname, lastname')
+			// `profiles` porte `class_ids` (tableau), pas `class_id` : l'appartenance
+			// se teste par `contains`, comme dans dashboard/admin/classes.
+			.contains('class_ids', [classId])
 			.eq('role', 'student');
 
 		if (studentsError || !students || students.length === 0) {
@@ -288,9 +290,9 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 				time_spent_seconds,
 				student:profiles!worksheet_instances_student_id_fkey (
 					id,
-					first_name,
-					last_name,
-					class_id
+					firstname,
+					lastname,
+					class_ids
 				)
 			`
 			)
@@ -309,7 +311,8 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 			const { data: classStudents } = await supabase
 				.from('profiles')
 				.select('id')
-				.eq('class_id', classId)
+				// `profiles` porte `class_ids` (tableau), pas `class_id`.
+				.contains('class_ids', [classId])
 				.eq('role', 'student');
 
 			if (classStudents && classStudents.length > 0) {

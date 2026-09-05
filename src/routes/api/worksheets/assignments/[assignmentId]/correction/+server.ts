@@ -146,7 +146,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			// Get student name
 			const { data: studentProfile } = await locals.supabase
 				.from('profiles')
-				.select('first_name, last_name')
+				.select('firstname, lastname')
 				.eq('id', user.id)
 				.single();
 
@@ -269,11 +269,8 @@ function generateSimpleInstance(
 /**
  * Format student name
  */
-function formatStudentName(student: {
-	first_name: string | null;
-	last_name: string | null;
-}): string {
-	const firstName = student.first_name || '';
-	const lastName = student.last_name || '';
+function formatStudentName(student: { firstname: string | null; lastname: string | null }): string {
+	const firstName = student.firstname || '';
+	const lastName = student.lastname || '';
 	return `${lastName} ${firstName}`.trim() || 'Eleve';
 }
