@@ -259,15 +259,23 @@ export interface TournamentGame {
  * Tournament leaderboard entry (from minesweeper_tournament_standings view)
  * Ranked by average_score (3BV-based efficiency)
  */
+/**
+ * Une ligne du classement d'un tournoi.
+ *
+ * La fonction SQL rend une table d'agrégats : chaque colonne y est nullable,
+ * car agréger zéro partie donne NULL et non 0, et le prénom vient d'un profil
+ * dont les champs sont facultatifs. Le type le reflète plutôt que de le
+ * masquer — l'affichage retombe déjà sur des valeurs de repli.
+ */
 export interface TournamentStanding {
-	tournament_id: string;
-	student_id: string;
-	firstname: string;
-	lastname: string;
-	games_won: number;
-	average_score: number; // Average score from top X games
-	average_3bvs?: number; // Average 3BV/s efficiency
-	position: number;
+	tournament_id: string | null;
+	student_id: string | null;
+	firstname: string | null;
+	lastname: string | null;
+	games_won: number | null;
+	average_score: number | null; // Average score from top X games
+	average_3bvs?: number | null; // Average 3BV/s efficiency
+	position: number | null;
 }
 
 /**

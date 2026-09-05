@@ -57,7 +57,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { data: reportId, error: reportError } = await locals.supabase.rpc('report_message', {
 		p_message_id: messageId,
 		p_reason: reason,
-		p_details: details ?? null
+		// Paramètre `DEFAULT NULL` côté SQL : l'omettre applique le même défaut.
+		p_details: details ?? undefined
 	});
 
 	if (reportError) {

@@ -137,15 +137,15 @@
 			<tbody class="divide-y divide-border">
 				{#each displayedStandings as entry (entry.student_id)}
 					{@const isCurrentUser = entry.student_id === currentUserId}
-					<tr class={getRankClass(entry.position, isCurrentUser)}>
+					<tr class={getRankClass(entry.position ?? 0, isCurrentUser)}>
 						<td class={cn('px-4 py-3 text-center', compact && 'px-2 py-2')}>
 							<div class="flex items-center justify-center gap-1">
-								{#if entry.position <= 3}
+								{#if (entry.position ?? 0) <= 3}
 									<span class={cn('text-xl', compact && 'text-lg')}
-										>{getMedalEmoji(entry.position)}</span
+										>{getMedalEmoji(entry.position ?? 0)}</span
 									>
 								{/if}
-								<span class={cn('font-bold', compact && 'text-sm')}>#{entry.position}</span>
+								<span class={cn('font-bold', compact && 'text-sm')}>#{entry.position ?? '—'}</span>
 							</div>
 						</td>
 						<td class={cn('px-4 py-3', compact && 'px-2 py-2')}>
@@ -153,7 +153,7 @@
 								<div class="min-w-0">
 									<p class={cn('truncate font-semibold text-foreground', compact && 'text-sm')}>
 										{entry.firstname}
-										{entry.lastname.charAt(0)}.
+										{(entry.lastname ?? '').charAt(0)}.
 									</p>
 									{#if isCurrentUser}
 										<Badge class="mt-1" variant="default">C'est vous !</Badge>
