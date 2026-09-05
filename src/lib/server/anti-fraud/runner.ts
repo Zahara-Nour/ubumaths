@@ -12,6 +12,34 @@
  *      - Applique 5 détecteurs + composite.
  *      - Skip si flag identique non-résolu < 7j (dédoublonnage).
  *      - INSERT flag(s).
+ *
+ * ⚠️ EN ATTENTE — NE PAS RALLUMER SANS CORRIGER (état au 2026-09-05)
+ * ------------------------------------------------------------------
+ * `app_config.anti_fraud_enabled` vaut `false` en production, et ce module ne
+ * fonctionnerait PAS s'il était réactivé tel quel : `loadPairs()` interroge
+ * `question_template_points.skill_id` et un embed `skills(family)`, or la
+ * colonne a été renommée `point_id` et la table `skills` supprimée par la
+ * migration `20260829100000_refonte_referentiel_fusion.sql`.
+ *
+ * Ce que la correction demande, le jour où on le rallume :
+ *
+ *   1. `select('template_id, point_id')` — sans embed.
+ *   2. SUPPRIMER le filtre `family === 'knowledge'`. Il servait à choisir entre
+ *      les DEUX arbres d'alors (famille A « savoirs » via
+ *      `question_template_skills`, famille B « observables »). La fusion a
+ *      supprimé cette dualité : `question_template_skills` n'existe plus, il ne
+ *      reste qu'une seule table de tagging. Le filtre est donc sans objet, et
+ *      le retirer est la traduction fidèle de la fusion — pas une perte de
+ *      précision. Ne PAS le remplacer par `regime_acquisition` : ce champ
+ *      répond à « comment on mesure la maîtrise », pas à « de quel arbre vient
+ *      ce point » (cf. docs/wip/refonte-referentiel-progress.md §5a).
+ *   3. Le regroupement devient (élève × point de programme).
+ *
+ * Pourquoi ce n'est pas fait tout de suite : `detectSrsVsQuizGap` exige ≥ 10
+ * tentatives SRS ET ≥ 10 tentatives quiz par paire sur 7 jours. La banque de
+ * questions compte 2 templates, tous deux en brouillon — la condition ne peut
+ * pas être remplie. Réparer maintenant produirait du code juste qui ne
+ * détecterait jamais rien. À reprendre quand l'usage réel existe.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -81,6 +109,10 @@ async function listScanPairs(
 	];
 	if (templateIds.length === 0) return new Map();
 
+	// ⚠️ Requête périmée — cf. l'avertissement en tête de module. `skill_id` est
+	// devenu `point_id` et la table `skills` n'existe plus depuis la migration
+	// 20260829100000. Laissée en l'état parce que le module est éteint et que le
+	// réparer n'aurait aucun effet tant que la banque de questions est vide.
 	const { data: tagRows, error: tagErr } = await supabase
 		.from('question_template_points')
 		.select('template_id, skill_id, skills!inner(family)')
