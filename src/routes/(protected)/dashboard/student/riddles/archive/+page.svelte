@@ -6,7 +6,7 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { getDifficultyLabel, getDifficultyColor } from '$lib/types/riddle';
+	import { asRiddleDifficulty, getDifficultyLabel, getDifficultyColor } from '$lib/types/riddle';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
@@ -80,8 +80,8 @@
 							<div class="flex-1">
 								<div class="mb-2 flex items-center gap-2">
 									<Badge variant="outline">Énigme #{entry.riddle.riddle_number}</Badge>
-									<Badge class={getDifficultyColor(entry.riddle.difficulty)}>
-										{getDifficultyLabel(entry.riddle.difficulty)}
+									<Badge class={getDifficultyColor(asRiddleDifficulty(entry.riddle.difficulty))}>
+										{getDifficultyLabel(asRiddleDifficulty(entry.riddle.difficulty))}
 									</Badge>
 									{#if entry.riddle.genre}
 										<Badge variant="outline">{entry.riddle.genre}</Badge>

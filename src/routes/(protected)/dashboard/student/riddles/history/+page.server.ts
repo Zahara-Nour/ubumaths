@@ -46,7 +46,15 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
 		.not('genre', 'is', null)
 		.eq('status', 'published');
 
-	const uniqueGenres = [...new Set((allGenres || []).map((r) => r.genre).filter((g: string) => g))];
+	// `riddles.genre` est nullable : sans garde de type, la liste reste
+	// `(string | null)[]` et ne peut pas alimenter un MySelect.
+	const uniqueGenres = [
+		...new Set(
+			(allGenres || [])
+				.map((r) => r.genre)
+				.filter((g): g is string => typeof g === 'string' && g !== '')
+		)
+	];
 
 	// Calculate summary stats
 	const totalSuccess = history?.length || 0;

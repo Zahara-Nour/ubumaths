@@ -6,7 +6,7 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { getDifficultyLabel, getDifficultyColor } from '$lib/types/riddle';
+	import { asRiddleDifficulty, getDifficultyLabel, getDifficultyColor } from '$lib/types/riddle';
 	import { calculateBadges, getTierColorClass } from '$lib/utils/riddle-badges';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -51,7 +51,10 @@
 		goto(`/dashboard/student/riddles/history?${params.toString()}`);
 	}
 
-	function formatDate(dateString: string) {
+	// `first_success_at` est nullable dans la vue : une énigme tentée sans succès
+	// n'a pas de date. On affiche un tiret plutôt qu'une « Invalid Date ».
+	function formatDate(dateString: string | null) {
+		if (!dateString) return '—';
 		return format(new Date(dateString), 'd MMMM yyyy', { locale: fr });
 	}
 
@@ -243,8 +246,8 @@
 								<div class="flex-1">
 									<div class="mb-2 flex flex-wrap items-center gap-2">
 										<Badge variant="outline">Énigme #{entry.riddle_number}</Badge>
-										<Badge class={getDifficultyColor(entry.difficulty)}>
-											{getDifficultyLabel(entry.difficulty)}
+										<Badge class={getDifficultyColor(asRiddleDifficulty(entry.difficulty))}>
+											{getDifficultyLabel(asRiddleDifficulty(entry.difficulty))}
 										</Badge>
 										{#if entry.genre}
 											<Badge variant="outline">{entry.genre}</Badge>

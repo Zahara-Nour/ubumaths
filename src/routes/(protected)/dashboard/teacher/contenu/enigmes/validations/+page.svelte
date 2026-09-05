@@ -8,6 +8,7 @@
 	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import {
+		asRiddleDifficulty,
 		getDifficultyLabel,
 		getDifficultyColor,
 		formatAttemptNumber,
@@ -97,8 +98,8 @@
 
 							<!-- Riddle Badges -->
 							<div class="flex flex-wrap gap-2">
-								<Badge class={getDifficultyColor(attempt.riddle.difficulty)}>
-									{getDifficultyLabel(attempt.riddle.difficulty)}
+								<Badge class={getDifficultyColor(asRiddleDifficulty(attempt.riddle.difficulty))}>
+									{getDifficultyLabel(asRiddleDifficulty(attempt.riddle.difficulty))}
 								</Badge>
 								{#if attempt.riddle.genre}
 									<Badge variant="outline">{attempt.riddle.genre}</Badge>
@@ -120,8 +121,9 @@
 							</div>
 							<span>•</span>
 							<div>
-								{calculateGidouilles(attempt.riddle.difficulty, attempt.attempt_number)} gidouilles si
-								validé
+								{calculateGidouilles(
+									asRiddleDifficulty(attempt.riddle.difficulty, attempt.attempt_number)
+								)} gidouilles si validé
 							</div>
 						</div>
 

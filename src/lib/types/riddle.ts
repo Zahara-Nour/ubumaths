@@ -346,6 +346,20 @@ export function calculateGidouilles(difficulty: RiddleDifficulty, attemptNumber:
 }
 
 /**
+ * Narrows the `difficulty` integer column to {@link RiddleDifficulty}.
+ *
+ * The column is a plain `integer` in Postgres, so every read arrives as
+ * `number | null` and cannot be handed to the label / colour / reward helpers,
+ * whose `switch` is exhaustive over 1-3.
+ *
+ * Anything outside that range — including `null` — falls back to 1 rather than
+ * throwing: an énigme whose difficulty was never set must still display.
+ */
+export function asRiddleDifficulty(value: number | null | undefined): RiddleDifficulty {
+	return value === 2 || value === 3 ? value : 1;
+}
+
+/**
  * Get difficulty label in French
  */
 export function getDifficultyLabel(difficulty: RiddleDifficulty): string {
