@@ -64,6 +64,19 @@ export type VipCardCategory =
 	| 'power'; // Special abilities and game-changers
 
 /**
+ * Narrows the `category` text column to {@link VipCardCategory}.
+ *
+ * Postgres stores it as plain text and allows NULL, so every read arrives as
+ * `string | null`. An unrecognised value becomes `null`, which the UI already
+ * handles as "uncategorised".
+ */
+export function asVipCardCategory(value: string | null | undefined): VipCardCategory | null {
+	return value === 'bonus' || value === 'privilege' || value === 'social' || value === 'power'
+		? value
+		: null;
+}
+
+/**
  * Rarity level of VIP card (required for all cards)
  */
 export type VipCardRarity = 'common' | 'rare' | 'epic' | 'legendary';
@@ -309,6 +322,24 @@ export type VipCardAction =
 	| VisionAction
 	| MultiplierAction
 	| RevealVowelsAction;
+
+/**
+ * Narrows the `action` jsonb column to {@link VipCardAction}.
+ *
+ * The union is large and discriminated by `type`; validating each member here
+ * would duplicate the whole catalogue and drift from it. The guard therefore
+ * checks the shape that every member shares — an object carrying a string
+ * `type` — and leaves the exhaustive dispatch to the consumer, which already
+ * switches on that discriminant.
+ *
+ * Anything else becomes `null`: a card whose action was written by an older
+ * revision must stay displayable, simply without an action.
+ */
+export function asVipCardAction(value: unknown): VipCardAction | null {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
+	const type = (value as Record<string, unknown>).type;
+	return typeof type === 'string' ? (value as VipCardAction) : null;
+}
 
 /**
  * Definition of a VIP card type (template)

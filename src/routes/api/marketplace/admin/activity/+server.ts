@@ -89,8 +89,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				.in('class_id', classIds);
 			studentIds = classMembers?.map((m: { student_id: string }) => m.student_id) || [];
 		}
-	} else if (profile.role === 'admin') {
-		// Admin can see all school students
+	} else if (profile.role === 'admin' && profile.school_id) {
+		// Admin can see all school students.
+		// `school_id` est nullable : un administrateur sans école rattachée n'a
+		// aucun élève à lister, et la garde évite une comparaison à NULL qui
+		// n'aurait de toute façon rien remonté.
 		const { data: schoolStudents } = await supabase
 			.from('profiles')
 			.select('id')
@@ -105,14 +108,17 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	// Fetch recent activities from different tables
+	// Les colonnes de gidouilles sont nullables en base : on le reflète plutôt
+	// que de convertir `null` en `undefined`, ce qui effacerait la distinction
+	// entre « aucune gidouille demandée » et « champ non renseigné ».
 	interface ActivityDetails {
 		listing_type?: string;
-		offered_gidouilles?: number;
-		wanted_gidouilles?: number;
-		offered_cards?: string[];
-		wanted_cards?: string[];
+		offered_gidouilles?: number | null;
+		wanted_gidouilles?: number | null;
+		offered_cards?: string[] | null;
+		wanted_cards?: string[] | null;
 		proposal_count?: number;
-		total_gidouilles?: number;
+		total_gidouilles?: number | null;
 		total_cards?: number;
 		partner_name?: string;
 		[key: string]: unknown;
