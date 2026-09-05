@@ -69,15 +69,17 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			throw error(400, validation.error.issues[0].message);
 		}
 
-		const { action, status, folderId } = validation.data;
+		// Union discriminée : `validation.data` porte `status` ou `folderId` selon
+		// l'action, et chaque branche du switch les voit réellement.
+		const donnees = validation.data;
 
-		switch (action) {
+		switch (donnees.action) {
 			case 'updateStatus': {
 				// Zod schema already validated status exists and is valid
 				const { error: statusError } = await supabase.rpc('update_message_status', {
 					p_message_id: messageId,
 					p_user_id: user.id,
-					p_status: status
+					p_status: donnees.status
 				});
 
 				if (statusError) {
@@ -131,7 +133,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				const { error: folderError } = await supabase.rpc('move_message_to_folder', {
 					p_message_id: messageId,
 					p_user_id: user.id,
-					p_folder_id: folderId
+					p_folder_id: donnees.folderId
 				});
 
 				if (folderError) {
