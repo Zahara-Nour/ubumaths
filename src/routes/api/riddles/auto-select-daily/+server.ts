@@ -122,7 +122,10 @@ export const GET: RequestHandler = async ({ locals: { supabase } }) => {
 			riddle:riddles(riddle_number, title, difficulty)
 		`
 		)
-		.eq('assignment_date', today)
+		// La colonne s'appelle `date` : `assignment_date` n'existe pas, et la
+		// requête était donc rejetée en bloc — la vérification « une énigme
+		// est-elle déjà programmée aujourd'hui ? » ne répondait jamais.
+		.eq('date', today)
 		.single();
 
 	return json({
