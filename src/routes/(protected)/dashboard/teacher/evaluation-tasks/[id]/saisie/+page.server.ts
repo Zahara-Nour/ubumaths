@@ -94,7 +94,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 		.from('evaluation_task_perimeter')
 		.select(
 			`
-				skill:skills (
+				skill:observables (
 					id,
 					name,
 					observable_code,
@@ -145,15 +145,15 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 	// 4. Attempts existants pour cette tâche (idempotence)
 	const { data: existingAttempts } = await locals.supabase
 		.from('skill_attempts')
-		.select('student_id, skill_id, code, created_at')
+		.select('student_id, observable_id, code, created_at')
 		.eq('task_id', params.id)
 		.order('created_at', { ascending: true });
 
 	// Garder le dernier code par (student × skill)
 	const existing: Record<string, 'plus' | 'minus'> = {};
 	for (const a of existingAttempts ?? []) {
-		if (a.student_id && a.skill_id && (a.code === 'plus' || a.code === 'minus')) {
-			existing[`${a.student_id}:${a.skill_id}`] = a.code;
+		if (a.student_id && a.observable_id && (a.code === 'plus' || a.code === 'minus')) {
+			existing[`${a.student_id}:${a.observable_id}`] = a.code;
 		}
 	}
 
@@ -186,9 +186,9 @@ export const actions: Actions = {
 		// Récupérer le périmètre (skill_ids autorisés)
 		const { data: perimeter } = await locals.supabase
 			.from('evaluation_task_perimeter')
-			.select('skill_id')
+			.select('observable_id')
 			.eq('task_id', params.id);
-		const allowedSkillIds = new Set((perimeter ?? []).map((p) => p.skill_id));
+		const allowedSkillIds = new Set((perimeter ?? []).map((p) => p.observable_id));
 		if (allowedSkillIds.size === 0) {
 			return fail(400, { message: 'Aucun observable dans le périmètre.' });
 		}
@@ -218,7 +218,7 @@ export const actions: Actions = {
 		// → 'plus' si coché, 'minus' sinon
 		const rowsToInsert: Array<{
 			student_id: string;
-			skill_id: string;
+			observable_id: string;
 			code: 'plus' | 'minus';
 			task_id: string;
 			source: 'teacher';
@@ -228,7 +228,7 @@ export const actions: Actions = {
 			for (const skid of allowedSkillIds) {
 				rowsToInsert.push({
 					student_id: sid,
-					skill_id: skid,
+					observable_id: skid,
 					code: checked.has(`${sid}:${skid}`) ? 'plus' : 'minus',
 					task_id: params.id,
 					source: 'teacher'

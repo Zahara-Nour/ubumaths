@@ -43,7 +43,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 					id,
 					name
 				),
-				perimeter:evaluation_task_perimeter (skill_id)
+				perimeter:evaluation_task_perimeter (observable_id)
 			`
 		)
 		.order('task_date', { ascending: false, nullsFirst: false })

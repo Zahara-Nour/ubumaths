@@ -70,7 +70,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Competen
 				id, code, name, gloss_for_student,
 				subdimensions:math_competence_subdimensions (
 					letter, name, display_order,
-					skills (id, observable_code, name, display_order)
+					observables (id, observable_code, name, display_order)
 				)
 			`
 		)
@@ -83,24 +83,24 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Competen
 	// 2. État observables (consolidé) de l'élève
 	const allSkillIds: string[] = [];
 	for (const sd of comp.subdimensions ?? []) {
-		for (const sk of sd.skills ?? []) {
+		for (const sk of sd.observables ?? []) {
 			allSkillIds.push(sk.id);
 		}
 	}
 
 	const { data: obsState } = await locals.supabase
 		.from('student_observable_state')
-		.select('skill_id, is_acquis, count_plus, count_minus')
+		.select('observable_id, is_acquis, count_plus, count_minus')
 		.eq('student_id', user.id)
-		.in('skill_id', allSkillIds);
+		.in('observable_id', allSkillIds);
 
 	const stateBySkill = new Map<
 		string,
 		{ is_acquis: boolean; count_plus: number; count_minus: number }
 	>();
 	for (const s of obsState ?? []) {
-		if (s.skill_id) {
-			stateBySkill.set(s.skill_id, {
+		if (s.observable_id) {
+			stateBySkill.set(s.observable_id, {
 				is_acquis: s.is_acquis ?? false,
 				count_plus: s.count_plus ?? 0,
 				count_minus: s.count_minus ?? 0
@@ -122,7 +122,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Competen
 		.map((sd) => ({
 			letter: sd.letter as SubdimensionLetter,
 			name: sd.name,
-			observables: (sd.skills ?? [])
+			observables: (sd.observables ?? [])
 				.slice()
 				.sort((a, b) => a.display_order - b.display_order)
 				.map((sk) => {
