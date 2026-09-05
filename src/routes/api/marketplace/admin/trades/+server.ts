@@ -152,8 +152,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				`initiator_id.in.(${classStudentIds.join(',')}),partner_id.in.(${classStudentIds.join(',')})`
 			);
 		}
-	} else if (profile.role === 'admin') {
-		// Admin sees all trades in their school
+	} else if (profile.role === 'admin' && profile.school_id) {
+		// Admin sees all trades in their school.
+		// `school_id` est nullable : un administrateur sans école rattachée n'a
+		// aucun élève à lister, et comparer à NULL n'aurait rien remonté.
 		const { data: schoolStudents, error: studentsError } = await supabase
 			.from('profiles')
 			.select('id')

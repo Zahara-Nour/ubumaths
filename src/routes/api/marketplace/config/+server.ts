@@ -80,8 +80,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 
 			return json({ config });
-		} else {
-			// Get all configs for the school
+		} else if (profile.school_id) {
+			// Get all configs for the school.
+			// `school_id` est nullable : sans école rattachée il n'y a aucune
+			// configuration à lister, et comparer à NULL n'aurait rien remonté.
 			const { data: configs, error: configsError } = await supabase
 				.from('marketplace_config')
 				.select(
@@ -102,6 +104,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 
 			return json({ configs: configs || [] });
+		} else {
+			// Administrateur sans école rattachée : aucune configuration à lister.
+			return json({ configs: [] });
 		}
 	} else if (profile.role === 'student') {
 		// Student can only see their class's config
