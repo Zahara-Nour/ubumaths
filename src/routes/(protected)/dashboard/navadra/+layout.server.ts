@@ -4,6 +4,7 @@
 
 import type { LayoutServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
+import { toGameSpell } from '$lib/types/game';
 
 export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
@@ -67,7 +68,9 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
 
 	return {
 		gamePlayer,
-		spells: spells || [],
+		// `element` et `type` sont des colonnes texte : rétrécies ici plutôt que
+		// dans chaque écran de combat.
+		spells: (spells ?? []).map(toGameSpell),
 		activeDeck: activeDeck || null,
 		allDecks: allDecks || []
 	};

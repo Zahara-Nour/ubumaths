@@ -87,6 +87,44 @@ export interface GameSpell {
 export type GameElement = 'fire' | 'water' | 'earth' | 'wind';
 export type SpellType = 'attack' | 'heal' | 'buff' | 'debuff';
 
+/**
+ * Narrows the `element` text column to {@link GameElement}.
+ *
+ * Postgres stores it as plain text. An unknown element falls back to `fire`
+ * rather than throwing: a spell written by an older revision must stay
+ * castable rather than break the combat screen.
+ */
+export function asGameElement(value: string | null | undefined): GameElement {
+	return value === 'water' || value === 'earth' || value === 'wind' ? value : 'fire';
+}
+
+/** Narrows the `type` text column to {@link SpellType}. */
+export function asSpellType(value: string | null | undefined): SpellType {
+	return value === 'heal' || value === 'buff' || value === 'debuff' ? value : 'attack';
+}
+
+/**
+ * Narrows a `game_spells` row to {@link GameSpell}.
+ *
+ * Only `element` and `type` differ from the stored row: both are narrow unions
+ * in the domain and plain text in Postgres.
+ */
+export function toGameSpell(row: {
+	id: string;
+	user_id: string;
+	spell_num: number;
+	level: number;
+	element: string;
+	power: number;
+	type: string;
+	unlocked_at: string;
+	last_upgraded_at: string | null;
+	created_at: string;
+	updated_at: string;
+}): GameSpell {
+	return { ...row, element: asGameElement(row.element), type: asSpellType(row.type) };
+}
+
 // ============================================================================
 // Game Monsters
 // ============================================================================

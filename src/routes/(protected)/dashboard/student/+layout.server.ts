@@ -35,6 +35,7 @@ import type { LayoutServerLoad } from './$types';
 import type { StudentProfile, ClassMembership, StudentRewards } from '$lib/types/student-cache';
 import { asStudentVipCards } from '$lib/types/vip-card';
 import { error } from '@sveltejs/kit';
+import { toBuddyState } from '$lib/types/buddy';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
@@ -151,7 +152,9 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		return {
 			studentProfile,
 			rewards,
-			buddy: buddyData,
+			// `palotin_type` est du texte simple en base : le rétrécir ici évite que
+			// chaque consommateur ait à le faire, et garantit un compagnon parlant.
+			buddy: buddyData ? toBuddyState(buddyData) : null,
 			streakLost
 		};
 	} catch (err) {
