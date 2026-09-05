@@ -45,6 +45,7 @@ import type { Exercise, ExerciseResource, ExerciseHint } from '$lib/exercises/ty
 import { getExerciseContentSafe } from '$lib/exercises/types';
 import {
 	localizedText,
+	asRowTranslations,
 	worksheetLocale,
 	type RowTranslations,
 	type WorksheetConfig
@@ -454,7 +455,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				points: we.points,
 				custom_instructions: localizedText(
 					we.custom_instructions,
-					we.translations,
+					asRowTranslations(we.translations),
 					'custom_instructions',
 					locale
 				),
@@ -483,8 +484,13 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// Build sections array for response
 		const sectionViews: StudentSectionView[] = (sections ?? []).map((s) => ({
 			id: s.id,
-			title: localizedText(s.title, s.translations, 'title', locale) ?? s.title,
-			instructions: localizedText(s.instructions, s.translations, 'instructions', locale),
+			title: localizedText(s.title, asRowTranslations(s.translations), 'title', locale) ?? s.title,
+			instructions: localizedText(
+				s.instructions,
+				asRowTranslations(s.translations),
+				'instructions',
+				locale
+			),
 			position: s.position
 		}));
 
@@ -497,7 +503,12 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			assignment_id: fullAssignment.id,
 			worksheet_id: worksheet.id,
 			title:
-				localizedText(worksheet.title, worksheet.translations, 'title', locale) ?? worksheet.title,
+				localizedText(
+					worksheet.title,
+					asRowTranslations(worksheet.translations),
+					'title',
+					locale
+				) ?? worksheet.title,
 			// Drives both the exercise content and the chrome of the student PDF.
 			language: locale,
 			description: worksheet.description,

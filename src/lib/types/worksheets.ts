@@ -798,6 +798,34 @@ export interface WorksheetTextTranslation {
 export type RowTranslations = Partial<Record<TranslatedLocale, WorksheetTextTranslation>>;
 
 /**
+ * Narrows the `translations` jsonb column to {@link RowTranslations}.
+ *
+ * The generated type of a jsonb column is `Json`, a union that carries no
+ * keys, so callers could not read `translations.en.title` without a cast. A
+ * cast would also have hidden genuinely malformed rows.
+ *
+ * Anything that is not an object of objects is treated as absent: a corrupted
+ * row must degrade to the French column rather than break the render.
+ */
+export function asRowTranslations(value: unknown): RowTranslations | null {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
+
+	const result: RowTranslations = {};
+	for (const [locale, texts] of Object.entries(value)) {
+		if (!isContentLocale(locale) || locale === 'fr') continue;
+		if (typeof texts !== 'object' || texts === null || Array.isArray(texts)) continue;
+
+		const entry: WorksheetTextTranslation = {};
+		for (const field of ['title', 'description', 'instructions', 'custom_instructions'] as const) {
+			const text = (texts as Record<string, unknown>)[field];
+			if (typeof text === 'string') entry[field] = text;
+		}
+		result[locale] = entry;
+	}
+	return result;
+}
+
+/**
  * Language a worksheet renders in, defaulting to French.
  *
  * An unknown value falls back to French rather than throwing: a worksheet with
