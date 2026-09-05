@@ -17,6 +17,7 @@ import {
 } from '$lib/server/marketplace/notifications';
 import { z } from 'zod';
 import { acceptProposalSchema } from '$lib/server/validation/marketplace-rpc';
+import { asStudentVipCards } from '$lib/types/vip-card';
 
 // ID validation schema
 const idSchema = z.string().uuid("ID d'annonce invalide");
@@ -98,12 +99,12 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	const instanceToTemplate = new Map<string, string>();
 	if (proposals) {
 		for (const p of proposals) {
-			const proposer = p.proposer as { vip_cards?: VipCardsJson } | null;
-			if (proposer?.vip_cards) {
-				for (const [instId, card] of Object.entries(proposer.vip_cards)) {
-					instanceToTemplate.set(instId, card.cardId);
-					allTemplateIds.add(card.cardId);
-				}
+			// `vip_cards` est du jsonb : la forme est vérifiée plutôt qu'affirmée.
+			// Une instance sans `cardId` ne peut pas être reliée à son modèle, et
+			// `asStudentVipCards` l'écarte plutôt que d'enregistrer un lien vide.
+			for (const [instId, card] of Object.entries(asStudentVipCards(p.proposer?.vip_cards))) {
+				instanceToTemplate.set(instId, card.cardId);
+				allTemplateIds.add(card.cardId);
 			}
 		}
 	}
