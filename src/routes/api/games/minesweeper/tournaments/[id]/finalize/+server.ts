@@ -3,7 +3,6 @@ import { error, json } from '@sveltejs/kit';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
-import type { TournamentFinalizationResult } from '$lib/types/minesweeper';
 
 /**
  * UUID schema for path parameters
@@ -91,28 +90,18 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 			sanitizeRPCError(rpcError, 'finalize_tournament');
 		}
 
-		// Type the response - it's an array of podium winners
-		const podium: TournamentFinalizationResult[] = (data || []).map(
-			(winner: {
-				place: number;
-				student_id: string;
-				firstname: string;
-				lastname: string;
-				average_time: number;
-				gidouilles_awarded: number;
-			}) => ({
-				place: winner.place,
-				student_id: winner.student_id,
-				firstname: winner.firstname,
-				lastname: winner.lastname,
-				average_time: winner.average_time,
-				gidouilles_awarded: winner.gidouilles_awarded
-			})
-		);
+		// `finalize_tournament` renvoie `TABLE(success, rewards_distributed,
+		// reference_updates)` — surtout pas un podium. Le code construisait
+		// pourtant une liste de gagnants à partir de `place`, `student_id`,
+		// `firstname`… qui n'existent nulle part dans ce retour : chaque entrée
+		// valait `undefined`. Aucun appelant ne lisait ce podium, ce qui explique
+		// que personne ne l'ait vu.
+		const resultat = data?.[0];
 
 		return json({
-			success: true,
-			podium
+			success: resultat?.success ?? false,
+			rewards_distributed: resultat?.rewards_distributed ?? 0,
+			reference_updates: resultat?.reference_updates ?? 0
 		});
 	} catch (err) {
 		sanitizePostgresError(err, 'MINESWEEPER_TOURNAMENT_FINALIZE');

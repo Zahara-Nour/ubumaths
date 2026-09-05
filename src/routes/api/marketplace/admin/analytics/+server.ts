@@ -87,11 +87,15 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 	} else if (profile.role === 'admin') {
 		// Admin can see all school students
-		const { data: schoolStudents } = await supabase
-			.from('profiles')
-			.select('id')
-			.eq('school_id', profile.school_id)
-			.eq('role', 'student');
+		// `school_id` est nullable : sans école rattachée il n'y a aucun élève à
+		// lister, et comparer à NULL n'aurait rien remonté de toute façon.
+		const { data: schoolStudents } = profile.school_id
+			? await supabase
+					.from('profiles')
+					.select('id')
+					.eq('school_id', profile.school_id)
+					.eq('role', 'student')
+			: { data: [] };
 		studentIds = schoolStudents?.map((s: { id: string }) => s.id) || [];
 	}
 
@@ -200,11 +204,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		listingCreatorIds.add(listing.creator_id);
 
 		// Track most expensive listings
-		if (listing.wanted_gidouilles > 0) {
+		// `wanted_gidouilles` est nullable : une annonce sans contrepartie en
+		// gidouilles vaut NULL, pas 0.
+		const demande = listing.wanted_gidouilles ?? 0;
+		if (demande > 0) {
 			mostExpensiveListings.push({
 				id: listing.id,
 				listing_type: listing.listing_type,
-				gidouilles: listing.wanted_gidouilles
+				gidouilles: demande
 			});
 		}
 

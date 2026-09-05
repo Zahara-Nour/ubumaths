@@ -187,8 +187,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				p_difficulty: difficulty,
 				p_start_date: start_date,
 				p_end_date: end_date,
-				p_class_ids: class_ids || null,
-				p_description: description || null,
+				// Paramètres `DEFAULT NULL` côté SQL, donc optionnels dans les types
+				// générés : les omettre applique le même défaut que passer NULL.
+				p_class_ids: class_ids || undefined,
+				p_description: description || undefined,
 				p_top_x_games: top_x_games,
 				p_podium_rewards: podium_rewards,
 				p_podium_places: podium_places

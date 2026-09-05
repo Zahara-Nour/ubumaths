@@ -69,3 +69,27 @@ describe('les schémas rejettent une forme incorrecte', () => {
 		).not.toThrow();
 	});
 });
+
+/**
+ * `finalize_tournament` renvoie `TABLE(success, rewards_distributed,
+ * reference_updates)`. La route en tirait pourtant un podium — `place`,
+ * `student_id`, `firstname`… — c'est-à-dire des champs absents de ce retour :
+ * chaque entrée valait `undefined`. Aucun appelant ne lisait ce podium, ce qui
+ * explique que le défaut soit passé inaperçu.
+ */
+describe('finalize_tournament — forme du retour', () => {
+	it('renvoie un compte rendu, pas un podium', async () => {
+		const { data, error } = await db.rpc('finalize_tournament', {
+			p_tournament_id: PARTIE_INEXISTANTE
+		});
+
+		expect(error?.code).not.toBe('PGRST202');
+
+		// Si des lignes reviennent, elles portent le compte rendu — jamais un
+		// classement nominatif.
+		for (const ligne of data ?? []) {
+			expect(ligne).toHaveProperty('success');
+			expect(ligne).not.toHaveProperty('student_id');
+		}
+	});
+});
