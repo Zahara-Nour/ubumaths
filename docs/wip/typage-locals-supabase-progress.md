@@ -103,6 +103,49 @@ de typage : le code lit une propriété que la requête n'a jamais pu retourner.
 - 5 — `src/routes/api/worksheets/assignments/[assignmentId]/preview/+server.ts`
 - 5 — `src/routes/(protected)/dashboard/teacher/contenu/enigmes/stats/+page.svelte`
 
+## Progression mesurée (CI, job `Type Check`)
+
+| Étape                   | Erreurs     | Fichiers | Propriétés fantômes |
+| ----------------------- | ----------- | -------- | ------------------- |
+| Départ — typage branché | 323         | 138      | 75                  |
+| Après lot « énigmes »   | 301         | 137      | —                   |
+| Après lots 2 à 7        | **235**     | 131      | **2**               |
+| Après lot navadra       | _à mesurer_ |          | **0**               |
+
+⚠️ Ne pas pousser pendant qu'une mesure tourne : le workflow `Code Quality` est
+annulé par le push suivant, et la mesure est perdue (arrivé deux fois).
+
+### Ce que la catégorie « propriété inexistante » a révélé
+
+Ce sont les seuls **vrais bugs** du lot — le reste est de la friction de
+typage. Une colonne inexistante fait rejeter la requête **entière** par
+PostgREST : `data` vaut `null`, le code ignore `error`, l'écran se vide sans
+trace.
+
+- **Le professeur ne voyait aucun élève** sur une page de chapitre
+  (`class_members.is_test` — la colonne est sur `profiles`).
+- **La correction d'une fiche était refusée aux professeurs non créateurs**
+  (`profiles.class_id`, alors que c'est `class_ids`, un tableau).
+- **L'énigme du jour ne pouvait pas être programmée** : `set_riddle_of_the_day`
+  appelée avec `p_assignment_date` au lieu de `p_date`, et sans
+  `p_selected_by`. La table est vide en production depuis toujours.
+- **Un faux « quota quotidien atteint »** s'affichait à l'élève dès qu'une
+  panne SQL survenait (`check_daily_trade_limit` a un chemin d'exception de
+  forme différente, et `!undefined` valait `true`).
+- Étiquettes d'exercice invisibles (elles vivent dans la jonction
+  `exercise_tags`), statistiques SRS `undefined`, audit de modération sans
+  taille de message, table `vip_cards` inexistante.
+
+### Fonctionnalités jamais livrées, découvertes au passage
+
+- **Quiz de chapitre** (élève ET professeur) : lit `question` / `answer` /
+  `answer_type` sur `question_templates`, colonnes qui n'ont jamais existé — le
+  contenu vit dans `variations`. Requêtes mortes retirées, comportement
+  inchangé. **Décision produit en attente** : comment une `variation` devient
+  une question vrai/faux.
+- **Compte de bonnes réponses** des évaluations : absent de `test_sessions`.
+  Affichage cassé retiré ; l'ajouter demanderait une migration.
+
 ## Méthode
 
 1. Un lot = un thème cohérent, une PR, des tests d'intégration qui vérifient **les deux
