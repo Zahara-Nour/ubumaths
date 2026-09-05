@@ -70,6 +70,10 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 		);
 	}
 
+	// Capturé ici : le rétrécissement obtenu par la garde ne survit pas aux appels
+	// asynchrones qui suivent, et la classe est requise pour lister les élèves.
+	const classId = task.class_id;
+
 	// 2. Élèves actifs de la classe
 	const { data: members } = await locals.supabase
 		.from('class_members')
@@ -79,7 +83,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 				profiles:student_id (id, full_name, avatar_url)
 			`
 		)
-		.eq('class_id', task.class_id);
+		.eq('class_id', classId);
 
 	const students: StudentRow[] = (members ?? [])
 		.map((m) => {
@@ -183,6 +187,12 @@ export const actions: Actions = {
 			return fail(404, { message: 'Tâche introuvable' });
 		}
 
+		// `class_id` est nullable : une tâche sans classe n'a aucun élève à noter.
+		if (!task.class_id) {
+			return fail(400, { message: "Cette tâche n'est rattachée à aucune classe." });
+		}
+		const classId = task.class_id;
+
 		// Récupérer le périmètre (skill_ids autorisés)
 		const { data: perimeter } = await locals.supabase
 			.from('evaluation_task_perimeter')
@@ -197,7 +207,7 @@ export const actions: Actions = {
 		const { data: members } = await locals.supabase
 			.from('class_members')
 			.select('student_id')
-			.eq('class_id', task.class_id);
+			.eq('class_id', classId);
 		const allowedStudentIds = new Set((members ?? []).map((m) => m.student_id).filter(Boolean));
 		if (allowedStudentIds.size === 0) {
 			return fail(400, { message: 'Aucun élève dans la classe.' });

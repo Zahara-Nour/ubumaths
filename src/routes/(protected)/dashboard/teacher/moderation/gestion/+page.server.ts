@@ -124,10 +124,22 @@ export const load: PageServerLoad = async ({ locals }) => {
 		restrictions: (restrictionsResult.data ?? []).map((r) => ({
 			...r,
 			restriction_type:
-				(['timeout', 'mute', 'ban'] as const).find((t) => t === r.restriction_type) ?? 'mute'
+				(['timeout', 'mute', 'ban'] as const).find((t) => t === r.restriction_type) ?? 'mute',
+			// Une portée inconnue devient `conversation`, la plus restreinte : jamais
+			// `global`, qui étendrait la sanction à toute la plateforme.
+			scope_type:
+				(['global', 'conversation'] as const).find((t) => t === r.scope_type) ?? 'conversation'
 		})),
 		logs: (logsResult.data ?? []).map((l) => ({
 			...l,
+			// L'embed du modérateur peut être absent (compte supprimé) et ses noms
+			// sont nullables : le tableau attend `undefined` plutôt que `null`.
+			moderator: l.moderator
+				? {
+						firstname: l.moderator.firstname ?? '',
+						lastname: l.moderator.lastname ?? ''
+					}
+				: undefined,
 			metadata:
 				typeof l.metadata === 'object' && l.metadata !== null && !Array.isArray(l.metadata)
 					? (l.metadata as Record<string, unknown>)
