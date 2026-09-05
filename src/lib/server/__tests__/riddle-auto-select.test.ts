@@ -78,6 +78,10 @@ describe('autoSelectRiddleOfTheDay', () => {
 								})
 							})
 						};
+					} else if (riddleOfDayQueryCount >= 4) {
+						// Quatrième visite : l'écriture, qui passe désormais par `upsert`
+						// et non plus par un RPC.
+						return { upsert: vi.fn().mockResolvedValue({ error: null }) };
 					} else {
 						// Third query: Get last riddle for difficulty rotation
 						return {
@@ -129,7 +133,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 						})
 					};
 				}
-				return { select: vi.fn() };
+				return { select: vi.fn(), upsert: vi.fn().mockResolvedValue({ error: null }) };
 			});
 
 			(mockSupabase.rpc as Mock).mockResolvedValue({
@@ -174,6 +178,10 @@ describe('autoSelectRiddleOfTheDay', () => {
 								})
 							})
 						};
+					} else if (riddleOfDayQueryCount >= 4) {
+						// Quatrième visite : l'écriture, qui passe désormais par `upsert`
+						// et non plus par un RPC.
+						return { upsert: vi.fn().mockResolvedValue({ error: null }) };
 					} else {
 						// Third query: Get last riddle for difficulty rotation
 						return {
@@ -222,7 +230,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 						})
 					};
 				}
-				return { select: vi.fn() };
+				return { select: vi.fn(), upsert: vi.fn().mockResolvedValue({ error: null }) };
 			});
 
 			(mockSupabase.rpc as Mock).mockResolvedValue({ data: null, error: null });
@@ -264,6 +272,10 @@ describe('autoSelectRiddleOfTheDay', () => {
 								})
 							})
 						};
+					} else if (riddleOfDayQueryCount >= 4) {
+						// Quatrième visite : l'écriture, qui passe désormais par `upsert`
+						// et non plus par un RPC.
+						return { upsert: vi.fn().mockResolvedValue({ error: null }) };
 					} else {
 						// Third query: Get last riddle for difficulty rotation
 						return {
@@ -311,7 +323,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 						})
 					};
 				}
-				return { select: vi.fn() };
+				return { select: vi.fn(), upsert: vi.fn().mockResolvedValue({ error: null }) };
 			});
 
 			(mockSupabase.rpc as Mock).mockResolvedValue({ data: null, error: null });
@@ -332,6 +344,8 @@ describe('autoSelectRiddleOfTheDay', () => {
 			(mockSupabase.from as Mock).mockImplementation((table: string) => {
 				if (table === 'riddle_of_the_day') {
 					return {
+						// L'écriture passe par `upsert`, plus par un RPC.
+						upsert: vi.fn().mockResolvedValue({ error: null }),
 						select: vi.fn().mockReturnValue({
 							eq: vi.fn().mockReturnValue({
 								single: vi.fn().mockResolvedValueOnce({ data: null, error: null })
@@ -367,7 +381,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 						})
 					};
 				}
-				return { select: vi.fn() };
+				return { select: vi.fn(), upsert: vi.fn().mockResolvedValue({ error: null }) };
 			});
 
 			(mockSupabase.rpc as Mock).mockResolvedValue({ data: null, error: null });
@@ -384,6 +398,8 @@ describe('autoSelectRiddleOfTheDay', () => {
 			(mockSupabase.from as Mock).mockImplementation((table: string) => {
 				if (table === 'riddle_of_the_day') {
 					return {
+						// L'écriture passe par `upsert`, plus par un RPC.
+						upsert: vi.fn().mockResolvedValue({ error: null }),
 						select: vi.fn().mockReturnValue({
 							eq: vi.fn().mockReturnValue({
 								single: vi.fn().mockResolvedValueOnce({ data: null, error: null })
@@ -417,7 +433,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 						})
 					};
 				}
-				return { select: vi.fn() };
+				return { select: vi.fn(), upsert: vi.fn().mockResolvedValue({ error: null }) };
 			});
 
 			(mockSupabase.rpc as Mock).mockResolvedValue({ data: null, error: null });
@@ -436,6 +452,8 @@ describe('autoSelectRiddleOfTheDay', () => {
 			(mockSupabase.from as Mock).mockImplementation((table: string) => {
 				if (table === 'riddle_of_the_day') {
 					return {
+						// L'écriture passe par `upsert`, plus par un RPC.
+						upsert: vi.fn().mockResolvedValue({ error: null }),
 						select: vi.fn().mockReturnValue({
 							eq: vi.fn().mockReturnValue({
 								single: vi.fn().mockResolvedValueOnce({ data: null, error: null })
@@ -471,7 +489,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 						})
 					};
 				}
-				return { select: vi.fn() };
+				return { select: vi.fn(), upsert: vi.fn().mockResolvedValue({ error: null }) };
 			});
 
 			(mockSupabase.rpc as Mock).mockResolvedValue({ data: null, error: null });
@@ -523,6 +541,10 @@ describe('autoSelectRiddleOfTheDay', () => {
 								})
 							})
 						};
+					} else if (riddleOfDayQueryCount >= 4) {
+						// Quatrième visite : l'écriture, qui passe désormais par `upsert`
+						// et non plus par un RPC.
+						return { upsert: vi.fn().mockResolvedValue({ error: null }) };
 					} else {
 						// Third query: Get last riddle for difficulty rotation
 						return {
@@ -571,7 +593,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 						})
 					};
 				}
-				return { select: vi.fn() };
+				return { select: vi.fn(), upsert: vi.fn().mockResolvedValue({ error: null }) };
 			});
 
 			(mockSupabase.rpc as Mock).mockResolvedValue({ data: null, error: null });
@@ -588,6 +610,8 @@ describe('autoSelectRiddleOfTheDay', () => {
 			(mockSupabase.from as Mock).mockImplementation((table: string) => {
 				if (table === 'riddle_of_the_day') {
 					return {
+						// L'écriture passe par `upsert`, plus par un RPC.
+						upsert: vi.fn().mockResolvedValue({ error: null }),
 						select: vi.fn().mockReturnValue({
 							eq: vi.fn().mockReturnValue({
 								single: vi.fn().mockResolvedValueOnce({ data: null, error: null })
@@ -619,7 +643,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 						})
 					};
 				}
-				return { select: vi.fn() };
+				return { select: vi.fn(), upsert: vi.fn().mockResolvedValue({ error: null }) };
 			});
 
 			const result = await autoSelectRiddleOfTheDay(mockSupabase, targetDate);
@@ -638,6 +662,8 @@ describe('autoSelectRiddleOfTheDay', () => {
 			(mockSupabase.from as Mock).mockImplementation((table: string) => {
 				if (table === 'riddle_of_the_day') {
 					return {
+						// L'écriture passe par `upsert`, plus par un RPC.
+						upsert: vi.fn().mockResolvedValue({ error: null }),
 						select: vi.fn().mockReturnValue({
 							eq: vi.fn().mockReturnValue({
 								single: vi.fn().mockResolvedValueOnce({ data: null, error: null })
@@ -672,7 +698,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 						})
 					};
 				}
-				return { select: vi.fn() };
+				return { select: vi.fn(), upsert: vi.fn().mockResolvedValue({ error: null }) };
 			});
 
 			(mockSupabase.rpc as Mock).mockResolvedValue({ data: null, error: null });
@@ -683,14 +709,17 @@ describe('autoSelectRiddleOfTheDay', () => {
 		});
 	});
 
-	describe('RPC Function Call', () => {
-		it('should call set_riddle_of_the_day RPC with correct parameters', async () => {
+	describe("Écriture de l'énigme du jour", () => {
+		it('écrit directement, en marquant la sélection comme automatique', async () => {
 			const targetDate = '2025-01-15';
 			const selectedId = 'selected-riddle-123';
+			const upsertSpy = vi.fn().mockResolvedValue({ error: null });
 
 			(mockSupabase.from as Mock).mockImplementation((table: string) => {
 				if (table === 'riddle_of_the_day') {
 					return {
+						// L'écriture passe par `upsert`, plus par un RPC.
+						upsert: upsertSpy,
 						select: vi.fn().mockReturnValue({
 							eq: vi.fn().mockReturnValue({
 								single: vi.fn().mockResolvedValueOnce({ data: null, error: null })
@@ -720,25 +749,36 @@ describe('autoSelectRiddleOfTheDay', () => {
 						})
 					};
 				}
-				return { select: vi.fn() };
+				return { select: vi.fn(), upsert: vi.fn().mockResolvedValue({ error: null }) };
 			});
 
 			(mockSupabase.rpc as Mock).mockResolvedValue({ data: null, error: null });
 
 			await autoSelectRiddleOfTheDay(mockSupabase, targetDate);
 
-			expect(mockSupabase.rpc).toHaveBeenCalledWith('set_riddle_of_the_day', {
-				p_riddle_id: selectedId,
-				p_assignment_date: targetDate
-			});
+			// `set_riddle_of_the_day` force `auto_selected = false` et exige un
+			// sélecteur humain : c'est le poseur MANUEL. Un automate écrit lui-même.
+			expect(mockSupabase.rpc).not.toHaveBeenCalledWith('set_riddle_of_the_day', expect.anything());
+			expect(upsertSpy).toHaveBeenCalledWith(
+				{
+					riddle_id: selectedId,
+					date: targetDate,
+					auto_selected: true,
+					selected_by: null
+				},
+				{ onConflict: 'date' }
+			);
 		});
 
-		it('should handle RPC errors', async () => {
+		it("remonte une erreur d'écriture", async () => {
 			const targetDate = '2025-01-15';
 
 			(mockSupabase.from as Mock).mockImplementation((table: string) => {
 				if (table === 'riddle_of_the_day') {
 					return {
+						// L'écriture passe par `upsert`, plus par un RPC.
+						// L'échec simulé porte désormais sur l'écriture, plus sur un RPC.
+						upsert: vi.fn().mockResolvedValue({ error: { message: 'écriture refusée' } }),
 						select: vi.fn().mockReturnValue({
 							eq: vi.fn().mockReturnValue({
 								single: vi.fn().mockResolvedValueOnce({ data: null, error: null })
@@ -768,7 +808,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 						})
 					};
 				}
-				return { select: vi.fn() };
+				return { select: vi.fn(), upsert: vi.fn().mockResolvedValue({ error: null }) };
 			});
 
 			(mockSupabase.rpc as Mock).mockResolvedValue({
@@ -790,6 +830,8 @@ describe('autoSelectRiddleOfTheDay', () => {
 			(mockSupabase.from as Mock).mockImplementation((table: string) => {
 				if (table === 'riddle_of_the_day') {
 					return {
+						// L'écriture passe par `upsert`, plus par un RPC.
+						upsert: vi.fn().mockResolvedValue({ error: null }),
 						select: vi.fn().mockReturnValue({
 							eq: vi.fn().mockImplementation((field: string, value: string) => {
 								expect(value).toBe(today);
@@ -822,7 +864,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 						})
 					};
 				}
-				return { select: vi.fn() };
+				return { select: vi.fn(), upsert: vi.fn().mockResolvedValue({ error: null }) };
 			});
 
 			(mockSupabase.rpc as Mock).mockResolvedValue({ data: null, error: null });
@@ -898,6 +940,8 @@ describe('checkAndAutoSelectToday', () => {
 				} else {
 					// Subsequent calls in autoSelectRiddleOfTheDay
 					return {
+						// L'écriture finale passe par `upsert`.
+						upsert: vi.fn().mockResolvedValue({ error: null }),
 						select: vi.fn().mockReturnValue({
 							eq: vi.fn().mockReturnValue({
 								single: vi.fn().mockResolvedValue({ data: null, error: null })
@@ -928,7 +972,8 @@ describe('checkAndAutoSelectToday', () => {
 					})
 				};
 			}
-			return { select: vi.fn() };
+			// L'écriture de l'énigme du jour passe par `upsert`.
+			return { select: vi.fn(), upsert: vi.fn().mockResolvedValue({ error: null }) };
 		});
 
 		(mockSupabase.rpc as Mock).mockResolvedValue({ data: null, error: null });
