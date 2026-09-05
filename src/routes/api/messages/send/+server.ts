@@ -42,7 +42,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				// message de groupe la fonction l'ÉCRASE avec les élèves de la classe
 				// (`SELECT array_agg(student_id) INTO p_recipient_ids`) : un tableau
 				// vide y est donc strictement équivalent au NULL passé auparavant.
-				p_recipient_ids: isGroupMessage ? [] : recipientIds,
+				// Le garde plus haut rejette déjà un envoi individuel sans destinataire :
+				// `?? []` ne peut donc s'appliquer qu'au cas groupe, où la fonction
+				// écrase de toute façon le paramètre.
+				p_recipient_ids: isGroupMessage ? [] : (recipientIds ?? []),
 				// Les suivants sont `DEFAULT NULL` côté SQL, donc optionnels dans les
 				// types générés : les omettre applique le même défaut que NULL.
 				p_subject: subject.trim(),

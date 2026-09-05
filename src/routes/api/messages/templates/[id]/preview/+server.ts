@@ -13,6 +13,7 @@ import type { RequestHandler } from './$types';
 import { previewTemplate } from '$lib/templates/templateEngine';
 import { previewTemplateSchema } from '$lib/server/validation/message-templates';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { toMessageTemplate } from '$lib/types/messageTemplates';
 
 // =====================================================
 // POST - Generate preview
@@ -55,7 +56,9 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { data: customData = {} } = validation.data;
 
 	// Generate preview
-	const preview = previewTemplate(template, customData);
+	// `trigger_type` et `scope` sont du texte, `trigger_config` et `variables` du
+	// jsonb : la ligne est convertie plutôt qu'affirmée.
+	const preview = previewTemplate(toMessageTemplate(template), customData);
 
 	return json({
 		preview,

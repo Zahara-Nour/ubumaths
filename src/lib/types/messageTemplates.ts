@@ -68,6 +68,62 @@ export interface MessageTemplate {
 }
 
 /**
+ * Narrows a `message_templates` row to {@link MessageTemplate}.
+ *
+ * `trigger_type` et `scope` sont des colonnes texte, `trigger_config` et
+ * `variables` du jsonb, et les horodatages sont nullables. Le type métier, lui,
+ * décrit des unions fermées.
+ *
+ * Un déclencheur inconnu retombe sur `general` et une portée inconnue sur
+ * `class` — la plus restreinte, qui n'expose pas un modèle à toute la
+ * plateforme.
+ */
+export function toMessageTemplate(row: {
+	id: string;
+	title: string;
+	description: string | null;
+	subject_template: string;
+	body_template: string;
+	trigger_type: string;
+	trigger_config: unknown;
+	scope: string;
+	created_by: string;
+	class_id: string | null;
+	variables: unknown;
+	tags: string[] | null;
+	is_active: boolean;
+	approval_status: string | null;
+	reviewed_by: string | null;
+	reviewed_at: string | null;
+	review_notes: string | null;
+	created_at: string | null;
+	updated_at: string | null;
+}): MessageTemplate {
+	const declencheurs: TriggerType[] = [
+		'assessment_question',
+		'srs_help',
+		'system_notification',
+		'enigma_answer',
+		'general'
+	];
+
+	const objet = (v: unknown) =>
+		typeof v === 'object' && v !== null && !Array.isArray(v)
+			? (v as Record<string, unknown>)
+			: null;
+
+	return {
+		...row,
+		trigger_type: declencheurs.find((t) => t === row.trigger_type) ?? 'general',
+		scope: row.scope === 'system' ? 'system' : 'class',
+		trigger_config: objet(row.trigger_config),
+		variables: Array.isArray(row.variables) ? (row.variables as TemplateVariable[]) : null,
+		created_at: row.created_at ?? '',
+		updated_at: row.updated_at ?? ''
+	};
+}
+
+/**
  * Template creation/update payload
  */
 export interface MessageTemplateInput {
