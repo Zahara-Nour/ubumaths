@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types';
-import type { DbRiddle, DbRiddleAttempt } from '$lib/types/riddle';
+import type { DbRiddleAttempt } from '$lib/types/riddle';
+import { toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
 import { error, redirect } from '@sveltejs/kit';
 import { validateUuidParam } from '$lib/server/validation/params';
 
@@ -36,11 +37,13 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		.order('attempt_number', { ascending: false })
 		.limit(1);
 
+	// `submitted_answer` est du jsonb et `difficulty`/`status` des colonnes
+	// permissives : convertis plutôt qu'affirmés par un cast.
 	const studentAttempt: DbRiddleAttempt | null =
-		attempts && attempts.length > 0 ? attempts[0] : null;
+		attempts && attempts.length > 0 ? toDbRiddleAttempt(attempts[0]) : null;
 
 	return {
-		riddle: riddle as DbRiddle,
+		riddle: toDbRiddle(riddle),
 		studentAttempt
 	};
 };
