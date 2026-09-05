@@ -3,16 +3,12 @@ import { error, json } from '@sveltejs/kit';
 import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
 import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
+import { useUndoResultSchema } from '$lib/server/validation/minesweeper-rpc';
+import { toJson } from '$lib/types/database-helpers';
 
 /**
  * Type definition for use_minesweeper_undo RPC function return value
  */
-interface UseUndoResult {
-	success: boolean;
-	error?: string;
-	message?: string;
-}
-
 /**
  * Request body schema for undo endpoint
  */
@@ -112,7 +108,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		const { data, error: rpcError } = await locals.supabase
 			.rpc('use_minesweeper_undo', {
 				p_game_id: gameId,
-				p_grid_state: grid_state as unknown as Record<string, unknown>
+				// La colonne cible est du jsonb : conversion réelle, pas double cast.
+				p_grid_state: toJson(grid_state)
 			})
 			.single();
 
@@ -124,8 +121,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			throw error(500, 'Aucune donnée retournée par la fonction');
 		}
 
-		// Type assertion for RPC return value
-		const result = data as UseUndoResult;
+		// `RETURNS json` : forme validée plutôt qu'affirmée par un cast.
+		const result = useUndoResultSchema.parse(data);
 
 		if (!result.success) {
 			// RPC returned an error in its response
