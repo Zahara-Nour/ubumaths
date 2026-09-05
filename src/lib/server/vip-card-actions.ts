@@ -51,16 +51,12 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import type {
-	VipCardAction,
-	ExchangeCardAction,
-	StudentVipCards,
-	VipCardRarity
-} from '$lib/types/vip-card';
+import type { VipCardAction, ExchangeCardAction, VipCardRarity } from '$lib/types/vip-card';
 import { getRarityPoints } from '$lib/types/vip-card';
 import { getTemplateById, getTemplatesByRarity } from '$lib/server/vip-card-queries';
 import { removeWarningsBulk } from '$lib/server/warnings';
 import { error } from '@sveltejs/kit';
+import { asStudentVipCards } from '$lib/types/vip-card';
 
 // ============================================================================
 // TYPES
@@ -430,7 +426,7 @@ async function executeExchangeReplaceRandom(options: {
 		throw error(500, `Failed to fetch student cards: ${fetchError.message}`);
 	}
 
-	const vipCards = (profile.vip_cards || {}) as unknown as StudentVipCards;
+	const vipCards = asStudentVipCards(profile.vip_cards);
 
 	// Get unused cards
 	const unusedCards = Object.entries(vipCards).filter(([, instance]) => instance.usedAt === null);
@@ -533,7 +529,7 @@ async function executeExchangeRarityPoints(options: {
 		throw error(500, `Failed to fetch student cards: ${fetchError.message}`);
 	}
 
-	const vipCards = (profile.vip_cards || {}) as unknown as StudentVipCards;
+	const vipCards = asStudentVipCards(profile.vip_cards);
 
 	// Get unused cards
 	const unusedCards = Object.entries(vipCards).filter(([, instance]) => instance.usedAt === null);
@@ -664,7 +660,7 @@ async function executeExchangeDiscardForSpecific(options: {
 		throw error(500, `Failed to fetch student cards: ${fetchError.message}`);
 	}
 
-	const vipCards = (profile.vip_cards || {}) as unknown as StudentVipCards;
+	const vipCards = asStudentVipCards(profile.vip_cards);
 
 	// Get unused cards
 	const unusedCards = Object.entries(vipCards).filter(([, instance]) => instance.usedAt === null);

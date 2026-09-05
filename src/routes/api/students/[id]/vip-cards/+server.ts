@@ -18,9 +18,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
-import type { StudentVipCards } from '$lib/types/vip-card';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { asStudentVipCards } from '$lib/types/vip-card';
 
 // ============================================================================
 // GET HANDLER
@@ -59,7 +59,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		throw error(500, `Failed to fetch student profile: ${fetchError.message}`);
 	}
 
-	const vipCards = (studentProfile?.vip_cards || {}) as unknown as StudentVipCards;
+	const vipCards = asStudentVipCards(studentProfile?.vip_cards);
 
 	return json({
 		vipCards

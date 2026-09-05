@@ -37,6 +37,7 @@ import { getTemplateById, getTemplatesByIds } from '$lib/server/vip-card-queries
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 import { validateActivationContext } from '$lib/server/vip-card-context';
+import { asStudentVipCards } from '$lib/types/vip-card';
 
 // ============================================================================
 // POST HANDLER
@@ -93,7 +94,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, `Failed to fetch student profile: ${fetchError.message}`);
 	}
 
-	const vipCards = (studentProfile.vip_cards || {}) as unknown as StudentVipCards;
+	const vipCards = asStudentVipCards(studentProfile.vip_cards);
 
 	// Validate that action card exists and is not used
 	const actionCardInstance = vipCards[data.actionCardInstanceId];
@@ -300,7 +301,7 @@ async function awardChosenCards(
 			.eq('id', studentId)
 			.single();
 
-		const latestVipCards = (updatedProfile?.vip_cards || {}) as unknown as StudentVipCards;
+		const latestVipCards = asStudentVipCards(updatedProfile?.vip_cards);
 		updatedVipCards = latestVipCards;
 
 		// Find the most recent card instance with this cardId
