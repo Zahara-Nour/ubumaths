@@ -108,12 +108,43 @@ de typage : le code lit une propriété que la requête n'a jamais pu retourner.
 
 ## Progression mesurée (CI, job `Type Check`)
 
-| Étape                   | Erreurs     | Fichiers | Propriétés fantômes |
-| ----------------------- | ----------- | -------- | ------------------- |
-| Départ — typage branché | 323         | 138      | 75                  |
-| Après lot « énigmes »   | 301         | 137      | —                   |
-| Après lots 2 à 7        | **235**     | 131      | **2**               |
-| Après lot navadra       | _à mesurer_ |          | **0**               |
+| Étape                   | Erreurs | Fichiers | Propriétés fantômes |
+| ----------------------- | ------- | -------- | ------------------- |
+| Départ — typage branché | 323     | 138      | 75                  |
+| Après lot « énigmes »   | 301     | 137      | —                   |
+| Après lots 2 à 7        | **235** | 131      | **2**               |
+| Après lot navadra       | 233     | 131      | **0** ✅            |
+| Lots typage (10 cycles) | **132** | 101      | 0                   |
+
+### Convertisseurs partagés créés
+
+Ils couvrent la quasi-totalité des colonnes `jsonb` du projet. Le principe est
+constant : **vérifier plutôt qu'affirmer**, et définir un repli explicite.
+
+| Fonction                                | Colonne                                 | Repli                           |
+| --------------------------------------- | --------------------------------------- | ------------------------------- |
+| `asWorksheetConfig`                     | `worksheets.config`                     | configuration vide              |
+| `asRowTranslations`                     | `*.translations`                        | `null` → colonne française      |
+| `asInstanceData`                        | `worksheet_instances.instance_data`     | `null` → régénère l'instance    |
+| `asNotebookContent`                     | `python_notebooks.content`              | `null` → refus explicite        |
+| `asStudentVipCards`                     | `profiles.vip_cards`                    | écarte les cartes sans identité |
+| `asRiddleDifficulty`                    | `riddles.difficulty`                    | 1                               |
+| `asCardState`                           | `srs_card_stats.state`                  | `'new'`                         |
+| `asVipCardCategory` / `asVipCardAction` | `vip_card_templates.*`                  | `null`                          |
+| `toWhiteboardTemplateRow`               | `whiteboard_templates.page_data`        | `null` → modèle écarté          |
+| `toJson`                                | **sens inverse** : objet métier → jsonb | lève sur structure cyclique     |
+
+Schémas Zod pour les résultats de RPC : `marketplace-rpc.ts`,
+`minesweeper-rpc.ts`.
+
+### Fonctionnalités mortes découvertes après le lot « colonnes fantômes »
+
+- **Génération PDF par lot** : la table `class_students` n'existe pas (c'est
+  `class_members`, avec `status` et non `is_active`). Aucun document n'a jamais
+  été produit.
+- **Décompte des jetons IA** : la table `ai_chat_usage` n'a jamais été créée, et
+  l'insertion était en « fire-and-forget » dans un `try/catch`. Aucune ligne
+  n'a jamais été écrite.
 
 ⚠️ Ne pas pousser pendant qu'une mesure tourne : le workflow `Code Quality` est
 annulé par le push suivant, et la mesure est perdue (arrivé deux fois).
