@@ -97,12 +97,23 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	const newCards = userCards.filter((cardId: string) => !oldUserCards.includes(cardId));
 	const removedCards = oldUserCards.filter((cardId: string) => !userCards.includes(cardId));
 
-	// Create the offer record
+	// `offer_number` est NOT NULL sans valeur par défaut : il doit être fourni.
+	// On numérote à la suite des offres déjà faites sur cet échange.
+	const { count: offresExistantes } = await supabase
+		.from('marketplace_trade_offers')
+		.select('id', { count: 'exact', head: true })
+		.eq('trade_id', data.trade_id);
+
+	// Create the offer record.
+	// ⚠️ La colonne s'appelle `offered_by`, pas `offer_by` : avec ce nom et sans
+	// `offer_number`, l'insertion était rejetée en bloc par PostgREST — aucune
+	// contre-offre n'a jamais pu être enregistrée.
 	const { data: offer, error: offerError } = await supabase
 		.from('marketplace_trade_offers')
 		.insert({
 			trade_id: data.trade_id,
-			offer_by: userId,
+			offered_by: userId,
+			offer_number: (offresExistantes ?? 0) + 1,
 			initiator_cards: data.initiator_cards,
 			initiator_gidouilles: data.initiator_gidouilles,
 			partner_cards: data.partner_cards,

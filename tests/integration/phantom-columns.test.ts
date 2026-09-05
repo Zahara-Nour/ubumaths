@@ -121,3 +121,31 @@ describe('tables absentes du schéma', () => {
 		expect(error).not.toBeNull();
 	});
 });
+
+/**
+ * `marketplace_trade_offers` demandait deux choses impossibles à la fois : une
+ * colonne `offer_by` qui n'existe pas (c'est `offered_by`), et l'omission
+ * d'`offer_number`, qui est NOT NULL sans valeur par défaut. L'insertion était
+ * donc rejetée en bloc : aucune contre-offre n'a jamais pu être enregistrée.
+ */
+describe('marketplace_trade_offers — contrat d’insertion', () => {
+	it('`offer_number` est obligatoire', async () => {
+		const { error } = await db.from('marketplace_trade_offers').insert({
+			trade_id: '00000000-0000-4000-8000-000000000000',
+			offered_by: '00000000-0000-4000-8000-000000000000'
+			// offer_number volontairement omis
+		} as never);
+
+		expect(error).not.toBeNull();
+	});
+
+	it('`offer_by` n’existe pas', async () => {
+		const { error } = await db
+			.from('marketplace_trade_offers')
+			// @ts-expect-error - colonne volontairement inexistante
+			.select('id, offer_by')
+			.limit(1);
+
+		expect(error).not.toBeNull();
+	});
+});

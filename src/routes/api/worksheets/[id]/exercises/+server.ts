@@ -17,6 +17,7 @@ import {
 } from '$lib/server/validation/worksheets';
 import { uuidSchema } from '$lib/server/validation/common';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { toJson } from '$lib/types/database-helpers';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -188,9 +189,11 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			position: data.position,
 			points: data.points ?? null,
 			variant_mode: data.variant_mode ?? 'none',
-			variant_config: data.variant_config ?? {},
+			// Deux colonnes jsonb : conversion réelle plutôt que passage direct d'un
+			// objet métier, que le type d'écriture refuse.
+			variant_config: toJson(data.variant_config ?? {}),
 			custom_instructions: data.custom_instructions ?? null,
-			translations: data.translations ?? null
+			translations: toJson(data.translations ?? null)
 		})
 		.select()
 		.single();
