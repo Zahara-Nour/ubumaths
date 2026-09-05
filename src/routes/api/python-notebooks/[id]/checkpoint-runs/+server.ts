@@ -73,7 +73,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			p_notebook_id: notebookId,
 			p_cell_id: cell_id,
 			p_status: status,
-			p_error_message: error_message ?? null
+			// Paramètre `DEFAULT NULL` : l'omettre applique le même défaut.
+			p_error_message: error_message ?? undefined
 		})
 		.single();
 

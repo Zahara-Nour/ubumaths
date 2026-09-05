@@ -59,7 +59,9 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			p_riddle_id: riddleId,
 			p_student_id: user.id,
 			p_submitted_answer: { value: answer }, // Store as JSONB
-			p_is_correct: isCorrect
+			// Paramètre `DEFAULT NULL` : `null` signifie « en attente de validation
+			// manuelle », et l'omettre applique exactement ce défaut.
+			p_is_correct: isCorrect ?? undefined
 		}
 	);
 

@@ -46,8 +46,9 @@ export interface Warning {
 	academic_period_id: string;
 	warning_type: WarningType;
 	created_by: string;
-	created_at: string;
-	updated_at: string;
+	/** Horodatages nullables en base : la colonne a un défaut, pas de contrainte. */
+	created_at: string | null;
+	updated_at: string | null;
 }
 
 /**

@@ -687,7 +687,8 @@ export interface StudentWorksheetListItem {
 	type: WorksheetType;
 	class_id: string | null;
 	class_name: string | null;
-	available_from: string;
+	/** `NULL` = disponible immédiatement, comme pour {@link StudentWorksheetView}. */
+	available_from: string | null;
 	closes_at: string | null;
 	show_corrections: boolean;
 	exercise_count: number;
