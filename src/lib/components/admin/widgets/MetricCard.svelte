@@ -32,7 +32,7 @@
 			case 'critical':
 				return 'bg-gradient-to-br from-red-50 to-red-100/50 border-red-200';
 			default:
-				return 'bg-white border-gray-200';
+				return 'bg-white border-border';
 		}
 	});
 
@@ -59,8 +59,8 @@
 	<Card.Content class="p-6">
 		<div class="flex items-start justify-between">
 			<div class="flex-1">
-				<p class="text-sm font-medium text-gray-600">{label}</p>
-				<p class="mt-2 text-3xl font-bold text-gray-900">{formattedValue}</p>
+				<p class="text-sm font-medium text-muted-foreground">{label}</p>
+				<p class="mt-2 text-3xl font-bold text-foreground">{formattedValue}</p>
 
 				{#if trend !== undefined}
 					<div class="mt-2 flex items-center gap-1 {trendColor}">
@@ -81,7 +81,7 @@
 						status === 'ok' && 'bg-green-100 text-green-600',
 						status === 'warning' && 'bg-orange-100 text-orange-600',
 						status === 'critical' && 'bg-red-100 text-red-600',
-						!status && 'bg-gray-100 text-gray-600'
+						!status && 'bg-muted text-muted-foreground'
 					)}
 				>
 					<IconComponent class="h-6 w-6" />

@@ -911,13 +911,13 @@
 <div
 	bind:this={containerEl}
 	class={isFullscreen
-		? 'fixed inset-0 z-50 grid grid-rows-[auto_1fr] bg-gray-200'
-		: `whiteboard-container grid grid-rows-[auto_1fr] bg-gray-200 ${className}`}
+		? 'fixed inset-0 z-50 grid grid-rows-[auto_1fr] bg-muted'
+		: `whiteboard-container grid grid-rows-[auto_1fr] bg-muted ${className}`}
 	onwheel={handleWheel}
 >
 	<!-- Top bar -->
 	<div
-		class="whiteboard-topbar flex items-center justify-between gap-2 border-b border-border bg-muted/50 px-3 py-1.5 text-xs text-gray-600"
+		class="whiteboard-topbar flex items-center justify-between gap-2 border-b border-border bg-muted/50 px-3 py-1.5 text-xs text-muted-foreground"
 	>
 		<!-- Left: FileDrawer toggle + Document info -->
 		<div class="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">

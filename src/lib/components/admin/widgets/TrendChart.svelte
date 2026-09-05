@@ -87,8 +87,8 @@
 
 <div class={cn('rounded-lg p-3', colorClasses.bg)}>
 	<div class="mb-2 flex items-center justify-between">
-		<span class="text-xs font-medium text-gray-600">{label}</span>
-		<div class="flex items-center gap-2 text-xs text-gray-500">
+		<span class="text-xs font-medium text-muted-foreground">{label}</span>
+		<div class="flex items-center gap-2 text-xs text-muted-foreground">
 			<span>Min: {minValue}</span>
 			<span>Max: {maxValue}</span>
 		</div>
@@ -134,7 +134,7 @@
 		{#if hoveredIndex !== undefined}
 			{@const point = svgPath.points[hoveredIndex]}
 			<div
-				class="pointer-events-none absolute z-10 rounded bg-gray-900 px-2 py-1 text-xs text-white"
+				class="pointer-events-none absolute z-10 rounded bg-foreground px-2 py-1 text-xs text-background"
 				style="left: {point.x}%; top: -25px; transform: translateX(-50%);"
 			>
 				{data[hoveredIndex]}

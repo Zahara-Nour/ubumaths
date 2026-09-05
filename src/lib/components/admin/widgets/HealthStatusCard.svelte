@@ -86,13 +86,13 @@
 
 				<div class="min-w-0 flex-1">
 					<div class="flex flex-wrap items-center gap-2">
-						<h3 class="text-sm font-semibold text-gray-900">{service}</h3>
+						<h3 class="text-sm font-semibold text-foreground">{service}</h3>
 						<span class={cn('text-xs font-medium', statusConfig.textColor)}>
 							{statusConfig.label}
 						</span>
 					</div>
 
-					<div class="mt-1 flex items-center gap-3 text-xs text-gray-500">
+					<div class="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
 						{#if latency !== undefined}
 							<span>{latency}ms</span>
 						{/if}
@@ -105,13 +105,13 @@
 			{#if message}
 				<button
 					onclick={toggleExpanded}
-					class="rounded p-1 transition-colors hover:bg-gray-100"
+					class="rounded p-1 transition-colors hover:bg-muted"
 					aria-label={expanded ? 'Masquer les détails' : 'Afficher les détails'}
 				>
 					{#if expanded}
-						<ChevronUp class="h-4 w-4 text-gray-600" />
+						<ChevronUp class="h-4 w-4 text-muted-foreground" />
 					{:else}
-						<ChevronDown class="h-4 w-4 text-gray-600" />
+						<ChevronDown class="h-4 w-4 text-muted-foreground" />
 					{/if}
 				</button>
 			{/if}
@@ -119,8 +119,8 @@
 
 		<!-- Expandable message section -->
 		{#if message && expanded}
-			<div class="mt-3 border-t border-gray-200 pt-3">
-				<p class="text-xs text-gray-600">{message}</p>
+			<div class="mt-3 border-t border-border pt-3">
+				<p class="text-xs text-muted-foreground">{message}</p>
 			</div>
 		{/if}
 	</Card.Content>

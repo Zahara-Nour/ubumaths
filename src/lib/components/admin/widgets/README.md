@@ -280,8 +280,14 @@ Loading skeleton placeholder for widgets.
 ### Typography
 
 - Large values: `text-3xl font-bold`
-- Labels: `text-sm font-medium text-gray-600`
-- Small text: `text-xs text-gray-500`
+- Labels: `text-sm font-medium text-muted-foreground`
+- Small text: `text-xs text-muted-foreground`
+
+> Les neutres passent par les **tokens du thème** (`text-foreground`,
+> `text-muted-foreground`, `bg-muted`, `border-border`), jamais par
+> `text-gray-*` / `bg-gray-*` : ces derniers sont figés et deviennent
+> illisibles en thème sombre. Les couleurs de **statut** ci-dessus restent
+> explicites, c'est leur rôle.
 
 ### Spacing
 
