@@ -22,7 +22,11 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	// Fetch exercise
 	const { data: exercise, error: exerciseError } = await locals.supabase
 		.from('exercises')
-		.select('*')
+		// Les étiquettes ne sont pas une colonne d'`exercises` : elles vivent dans
+		// la table de jonction `exercise_tags`. La page les affichait via
+		// `exercise.tags`, qui valait donc toujours `undefined`. Même forme que
+		// `$lib/server/exercises.ts`, pour éviter une seconde requête.
+		.select('*, exercise_tags(tags(name))')
 		.eq('id', exerciseId)
 		.single();
 
@@ -56,7 +60,10 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const classIds = classMemberships?.map((cm) => cm.class_id) || [];
 
 	return {
-		exercise,
+		exercise: {
+			...exercise,
+			tags: (exercise.exercise_tags ?? []).map((et) => et.tags?.name).filter((n) => n !== undefined)
+		},
 		assignment,
 		completion,
 		classIds,

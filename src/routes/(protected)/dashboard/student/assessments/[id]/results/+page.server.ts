@@ -1,6 +1,8 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { assessmentSettingsSchema } from '$lib/server/validation/assessments';
+import { DEFAULT_ASSESSMENT_SETTINGS } from '$lib/types/assessment';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
@@ -37,6 +39,21 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		throw error(404, 'Assignation introuvable');
 	}
 
+	// `assessments.settings` est une colonne jsonb : son type généré est `Json`,
+	// qui ne porte aucune clé. La page lisait `settings.max_attempts` dessus.
+	// On restitue la forme déclarée (`assessmentSettingsSchema`), avec repli sur
+	// les valeurs par défaut si le contenu stocké ne la respecte pas.
+	const reglages = assessmentSettingsSchema.safeParse(assignment.assessment?.settings);
+	const assignationTypee = {
+		...assignment,
+		assessment: assignment.assessment
+			? {
+					...assignment.assessment,
+					settings: reglages.success ? reglages.data : DEFAULT_ASSESSMENT_SETTINGS
+				}
+			: null
+	};
+
 	// Verify student has access to this assignment
 	// Check if directly assigned or assigned via class
 	const isDirectlyAssigned = assignment.student_id === user.id;
@@ -69,13 +86,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	if (attemptsError) {
 		console.error('Failed to fetch attempts:', attemptsError);
 		return {
-			assignment,
+			assignment: assignationTypee,
 			attempts: []
 		};
 	}
 
 	return {
-		assignment,
+		assignment: assignationTypee,
 		attempts: attempts || []
 	};
 };

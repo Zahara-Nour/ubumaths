@@ -164,10 +164,14 @@
 									</span>
 								</Table.Cell>
 								<Table.Cell class="text-center">
-									{attempt.correct_answers}/{attempt.total_questions}
+									<!-- `test_sessions` ne compte pas les bonnes réponses : seule la note
+									     (`score`, sur 10) et le nombre de questions sont enregistrés. La
+									     cellule affichait donc « undefined/N ». -->
+									{attempt.total_questions}
 								</Table.Cell>
 								<Table.Cell class="text-center">
-									{formatDuration(attempt.duration)}
+									<!-- La colonne s'appelle `time_spent`. -->
+									{formatDuration(attempt.time_spent)}
 								</Table.Cell>
 								<Table.Cell class="text-center">
 									{#if attempt.completed_at}
