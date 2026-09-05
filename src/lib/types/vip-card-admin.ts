@@ -58,7 +58,7 @@ export function toVipCardTemplate(row: {
 	image_path: string;
 	is_enabled: boolean;
 	action: unknown;
-	sort_order: number;
+	sort_order: number | null;
 	uses_total: number | null;
 	base_price: number;
 	sell_price: number | null;
@@ -71,6 +71,9 @@ export function toVipCardTemplate(row: {
 	return {
 		...row,
 		rarity: rarity ?? 'common',
+		// `sort_order` est nullable : une carte sans rang explicite passe en fin de
+		// liste plutôt qu'en tête.
+		sort_order: row.sort_order ?? Number.MAX_SAFE_INTEGER,
 		category: asVipCardCategory(row.category) ?? 'bonus',
 		action: asVipCardAction(row.action)
 	};

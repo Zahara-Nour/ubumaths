@@ -13,7 +13,8 @@ import {
 } from '$lib/utils/game/combat';
 import { selectSpellSchema, submitAnswerSchema } from '$lib/server/validation/navadra';
 import { validateUuidParam } from '$lib/server/validation/params';
-import { toGameMonster } from '$lib/types/game';
+import { toGameMonster, toGameSpell, asCombatFlow } from '$lib/types/game';
+import type { GameSpell } from '$lib/types/game';
 
 /**
  * Tolérance de comparaison d'un défi, lue dans la colonne jsonb `answer`.
@@ -84,17 +85,18 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 		.eq('is_active', true)
 		.single();
 
-	// If no active deck, get first 10 spells
-	let playerSpells = [];
-	if (activeDeck && activeDeck.spells) {
-		playerSpells = activeDeck.spells;
+	// If no active deck, get first 10 spells.
+	// `element` et `type` sont des colonnes texte : converties une fois ici.
+	let playerSpells: GameSpell[] = [];
+	if (activeDeck && Array.isArray(activeDeck.spells)) {
+		playerSpells = activeDeck.spells.map(toGameSpell);
 	} else {
 		const { data: spells } = await supabase
 			.from('game_spells')
 			.select('*')
 			.eq('user_id', user.id)
 			.limit(10);
-		playerSpells = spells || [];
+		playerSpells = (spells ?? []).map(toGameSpell);
 	}
 
 	return {
@@ -276,7 +278,7 @@ export const actions: Actions = {
 		// Calculate damage (only if answer is correct)
 		const damage = success
 			? calculateDamage(
-					spell,
+					toGameSpell(spell),
 					gamePlayer.level,
 					monstre.element,
 					1.0, // Full effectiveness on correct answer
@@ -306,7 +308,9 @@ export const actions: Actions = {
 			timestamp: new Date().toISOString()
 		};
 
-		const updatedFlow = [...(combat.combat_flow || []), newTurn];
+		// `combat_flow` est du jsonb : les tours existants sont vérifiés avant
+		// d'y ajouter le nouveau.
+		const updatedFlow = [...asCombatFlow(combat.combat_flow), newTurn];
 
 		// Check if combat is over
 		const isVictory = newMonsterHP <= 0;
