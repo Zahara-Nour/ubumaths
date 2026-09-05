@@ -14,6 +14,19 @@ import {
 import { selectSpellSchema, submitAnswerSchema } from '$lib/server/validation/navadra';
 import { validateUuidParam } from '$lib/server/validation/params';
 
+/**
+ * Tolérance de comparaison d'un défi, lue dans la colonne jsonb `answer`.
+ *
+ * Rend `undefined` si le champ est absent ou n'est pas un nombre, pour laisser
+ * `validateAnswer` appliquer sa valeur par défaut plutôt qu'une tolérance
+ * `NaN` — qui ferait échouer toute comparaison numérique.
+ */
+function toleranceDuDefi(answer: unknown): number | undefined {
+	if (typeof answer !== 'object' || answer === null || Array.isArray(answer)) return undefined;
+	const tolerance = (answer as Record<string, unknown>).tolerance;
+	return typeof tolerance === 'number' ? tolerance : undefined;
+}
+
 export const load: PageServerLoad = async ({ params, locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
 	if (!user) throw error(401, 'Unauthorized');
@@ -210,8 +223,12 @@ export const actions: Actions = {
 		console.log('[submitAnswer] Validating answer:');
 		console.log('  - Student answer:', JSON.stringify(answer));
 		console.log('  - Correct answer:', JSON.stringify(correct_answer));
-		console.log('  - Tolerance:', challenge.answer?.tolerance);
-		const success = validateAnswer(answer, correct_answer, challenge.answer?.tolerance);
+		// `game_challenges.answer` est du jsonb, donc typé `Json` : il ne porte
+		// aucune clé. On extrait la tolérance avec un garde, et `validateAnswer`
+		// applique sa valeur par défaut (0.01) quand elle est absente.
+		const tolerance = toleranceDuDefi(challenge.answer);
+		console.log('  - Tolerance:', tolerance);
+		const success = validateAnswer(answer, correct_answer, tolerance);
 		console.log('[submitAnswer] Validation result:', success);
 
 		// Record challenge attempt
