@@ -29,6 +29,8 @@ export interface VipCardTemplate {
 	sort_order: number;
 	uses_total: number | null;
 	base_price: number;
+	/** Prix de revente. `NULL` quand la carte n'est pas revendable. */
+	sell_price: number | null;
 	is_purchasable: boolean;
 	max_owned_per_student: number;
 	created_at: string;
@@ -59,6 +61,7 @@ export function toVipCardTemplate(row: {
 	sort_order: number;
 	uses_total: number | null;
 	base_price: number;
+	sell_price: number | null;
 	is_purchasable: boolean;
 	max_owned_per_student: number;
 	created_at: string;
@@ -254,6 +257,10 @@ export function responseToTemplate(response: TemplateResponse): VipCardTemplate 
 		sort_order: response.sortOrder,
 		uses_total: response.usesTotal,
 		base_price: response.basePrice,
+		// `TemplateResponse` n'expose pas le prix de revente : la reconstruction
+		// ne peut donc pas le restituer. `null` signifie « non revendable », ce
+		// qui est le sens sûr — l'inverse offrirait une revente non voulue.
+		sell_price: null,
 		is_purchasable: response.isPurchasable,
 		max_owned_per_student: response.maxOwnedPerStudent,
 		created_at: response.createdAt,
