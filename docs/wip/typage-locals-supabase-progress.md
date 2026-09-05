@@ -14,7 +14,10 @@ colonnes absentes du schéma pendant des mois — PostgREST refusait, le code ig
 
 ## État de la mesure
 
-**323 erreurs dans 138 fichiers.**
+**Départ : 323 erreurs dans 138 fichiers. État actuel : 233 dans 131.**
+
+La catégorie « propriété inexistante » — la seule qui révélait de vrais bugs —
+est **soldée** : 75 → 0.
 
 | Catégorie               | Nombre | Nature                                                                   |
 | ----------------------- | ------ | ------------------------------------------------------------------------ |
