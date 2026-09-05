@@ -22,9 +22,9 @@ import {
 	createWhiteboardTemplateSchema
 } from '$lib/server/validation/whiteboard-templates';
 import {
+	toWhiteboardTemplateRow,
 	rowToTemplate,
 	rowToTemplateWithFavorite,
-	type WhiteboardTemplateRow,
 	type WhiteboardTemplateWithFavorite
 } from '$lib/whiteboard/types/templates';
 
@@ -83,9 +83,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const favoriteIds = new Set((favoritesResult.data ?? []).map((f) => f.template_id as string));
 
 		// Transform database rows to API response with favorite status
-		const templates: WhiteboardTemplateWithFavorite[] = (
-			(templatesResult.data as WhiteboardTemplateRow[]) || []
-		).map((row) => rowToTemplateWithFavorite(row, favoriteIds.has(row.id)));
+		// `page_data` est une colonne jsonb : sa forme est vérifiée plutôt
+		// qu'affirmée. Un modèle dont la géométrie de page est incomplète ne peut
+		// pas être rendu — il est écarté, et la galerie en affiche simplement un
+		// de moins.
+		const templates: WhiteboardTemplateWithFavorite[] = (templatesResult.data ?? [])
+			.map(toWhiteboardTemplateRow)
+			.filter((row) => row !== null)
+			.map((row) => rowToTemplateWithFavorite(row, favoriteIds.has(row.id)));
 
 		return json({ templates });
 	} catch (err) {
@@ -146,7 +151,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(500, 'Erreur lors de la creation du template');
 		}
 
-		const template = rowToTemplate(row as WhiteboardTemplateRow);
+		const ligne = toWhiteboardTemplateRow(row);
+		if (!ligne) {
+			throw error(500, 'Template créé avec une géométrie de page invalide');
+		}
+		const template = rowToTemplate(ligne);
 
 		return json({ template }, { status: 201 });
 	} catch (err) {

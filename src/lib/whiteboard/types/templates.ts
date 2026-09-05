@@ -171,6 +171,47 @@ export interface WhiteboardTemplateRow {
 /**
  * Convert a database row to a WhiteboardTemplate.
  */
+/**
+ * Narrows a `whiteboard_templates` row to {@link WhiteboardTemplateRow}.
+ *
+ * `page_data` is a jsonb column, so its generated type is `Json` — a union
+ * that carries none of the fields the renderer reads. The routes cast the
+ * whole row instead, which asserted the page geometry without checking it.
+ *
+ * A page missing its dimensions or its element list cannot be rendered, so
+ * this returns `null` rather than a half-formed template: the caller filters
+ * it out and the gallery simply shows one template less.
+ */
+export function toWhiteboardTemplateRow(row: {
+	id: string;
+	name: string;
+	description: string | null;
+	category: WhiteboardTemplateCategory;
+	page_data: unknown;
+	thumbnail: string | null;
+	created_by: string | null;
+	is_system: boolean;
+	is_public: boolean;
+	created_at: string;
+	updated_at: string;
+}): WhiteboardTemplateRow | null {
+	const data = row.page_data;
+	if (typeof data !== 'object' || data === null || Array.isArray(data)) return null;
+
+	const page = data as Record<string, unknown>;
+	if (
+		!Array.isArray(page.elements) ||
+		typeof page.width !== 'number' ||
+		typeof page.height !== 'number' ||
+		typeof page.background !== 'object' ||
+		page.background === null
+	) {
+		return null;
+	}
+
+	return { ...row, page_data: page as unknown as TemplatePageData };
+}
+
 export function rowToTemplate(row: WhiteboardTemplateRow): WhiteboardTemplate {
 	return {
 		id: row.id,
