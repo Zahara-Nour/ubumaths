@@ -20,17 +20,24 @@ const statsQuerySchema = z.object({
 // TYPES
 // ============================================================================
 
+/**
+ * Une conversation de tutorat, telle que la base la renvoie.
+ *
+ * Les compteurs ont une valeur par défaut mais restent nullables, et le nom
+ * d'un profil peut être absent : le type le reflète plutôt que de le masquer.
+ * Les agrégats calculés plus bas retombent déjà sur zéro.
+ */
 interface ConversationRow {
 	id: string;
 	student_id: string;
-	message_count: number;
-	max_help_level_reached: number;
+	message_count: number | null;
+	max_help_level_reached: number | null;
 	effort_score: number | null;
 	topics_covered: string[] | null;
 	started_at: string;
 	profiles: {
 		id: string;
-		full_name: string;
+		full_name: string | null;
 		avatar_url: string | null;
 	} | null;
 }
@@ -180,7 +187,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const stats: StatsResponse = {
 		overview: {
 			totalConversations: conversations.length,
-			totalMessages: conversations.reduce((sum, c) => sum + c.message_count, 0),
+			totalMessages: conversations.reduce((sum, c) => sum + (c.message_count ?? 0), 0),
 			activeStudents: new Set(conversations.map((c) => c.student_id)).size,
 			avgEffortScore: conversations.length
 				? Math.round(
@@ -189,7 +196,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				: 0,
 			avgHelpLevel: conversations.length
 				? (
-						conversations.reduce((sum, c) => sum + c.max_help_level_reached, 0) /
+						conversations.reduce((sum, c) => sum + (c.max_help_level_reached ?? 0), 0) /
 						conversations.length
 					).toFixed(1)
 				: '0.0'
@@ -225,8 +232,8 @@ function calculateStudentStats(conversations: ConversationRow[]): StudentStats[]
 		};
 
 		existing.conversationCount++;
-		existing.totalMessages += conv.message_count;
-		existing.maxHelpLevel = Math.max(existing.maxHelpLevel, conv.max_help_level_reached);
+		existing.totalMessages += conv.message_count ?? 0;
+		existing.maxHelpLevel = Math.max(existing.maxHelpLevel, conv.max_help_level_reached ?? 0);
 		if (conv.effort_score !== null) {
 			(existing as unknown as { effortScores: number[] }).effortScores.push(conv.effort_score);
 		}
@@ -281,8 +288,11 @@ function calculateHelpLevelDistribution(conversations: ConversationRow[]): HelpL
 	const levels = Array.from({ length: 8 }, () => 0); // 0-7
 
 	for (const conv of conversations || []) {
-		if (conv.max_help_level_reached >= 0 && conv.max_help_level_reached <= 7) {
-			levels[conv.max_help_level_reached]++;
+		// Un niveau absent n'est pas un niveau 0 : la conversation est simplement
+		// écartée de la répartition, plutôt que de gonfler la première tranche.
+		const niveau = conv.max_help_level_reached;
+		if (niveau !== null && niveau >= 0 && niveau <= 7) {
+			levels[niveau]++;
 		}
 	}
 

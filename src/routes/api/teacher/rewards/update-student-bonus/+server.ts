@@ -35,7 +35,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		p_student_id: studentId,
 		p_class_id: classId,
 		p_delta: delta,
-		p_reason: reason ?? null
+		// Paramètre `DEFAULT NULL` : l'omettre applique le même défaut.
+		p_reason: reason ?? undefined
 	});
 
 	if (rpcError) {

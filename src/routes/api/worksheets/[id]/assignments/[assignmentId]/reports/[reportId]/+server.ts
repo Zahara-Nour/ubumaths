@@ -22,6 +22,7 @@ import {
 	notifyErrorReportRejected
 } from '$lib/server/auto-notifications';
 import type { TeacherErrorReportView, ErrorReportStatus } from '$lib/types/worksheets';
+import { toJson } from '$lib/types/database-helpers';
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -409,7 +410,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 			const { error: exerciseUpdateError } = await locals.supabase
 				.from('exercises')
-				.update({ variations: updatedVariations })
+				// Colonne jsonb : conversion réelle plutôt que passage direct.
+				.update({ variations: toJson(updatedVariations) })
 				.eq('id', exerciseId);
 
 			if (exerciseUpdateError) {

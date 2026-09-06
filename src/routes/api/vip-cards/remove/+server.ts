@@ -48,7 +48,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { data: result, error: rpcError } = await supabase.rpc('remove_vip_card', {
 		p_student_id: studentId,
 		p_card_id: cardId,
-		p_reason: reason ?? null
+		// Paramètre `DEFAULT NULL` : l'omettre applique le même défaut.
+		p_reason: reason ?? undefined
 	});
 
 	if (rpcError) {
