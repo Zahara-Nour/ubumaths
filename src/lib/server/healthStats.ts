@@ -244,11 +244,18 @@ async function fetchUserStats(supabase: SupabaseClient<Database>) {
  */
 async function fetchPerformanceStats(supabase: SupabaseClient<Database>) {
 	// Query error_logs for performance metrics (last 24h)
-	const { data: errors } = await supabase
+	const { data: errors, error: errorsError } = await supabase
 		.from('error_logs')
 		.select('response_time, status_code')
 		.gt('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
 		.limit(1000);
+
+	// Un tableau de bord de santé qui n'a rien pu lire affiche « tout va bien ».
+	// C'est le pire moment pour se taire.
+	if (errorsError) {
+		console.error('[healthStats] Journal d’erreurs illisible :', errorsError);
+		throw new Error(errorsError.message);
+	}
 
 	// Extract response times and calculate metrics
 	const responseTimes: number[] = [];

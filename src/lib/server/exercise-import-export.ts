@@ -188,11 +188,18 @@ async function findDuplicateExercise(
 
 	// Query exercises by user with matching title or content hash
 	// Include variations and shared for content extraction
-	const { data } = await supabase
+	const { data, error } = await supabase
 		.from('exercises')
 		.select('id, title, shared, variations')
 		.eq('created_by', userId)
 		.limit(100);
+
+	// Cette lecture sert à détecter un doublon. Une panne rendait « aucun
+	// doublon trouvé », et l'import créait une seconde copie de l'exercice.
+	if (error) {
+		console.error('[import] Exercices existants illisibles :', error);
+		throw new Error(error.message);
+	}
 
 	if (!data) return null;
 
@@ -231,10 +238,16 @@ async function generateUniqueCopyTitle(
 	let candidateTitle = baseTitle + suffix;
 
 	// Query user's existing exercise titles
-	const { data: exercises } = await supabase
+	const { data: exercises, error: exercisesError } = await supabase
 		.from('exercises')
 		.select('title')
 		.eq('created_by', userId);
+
+	// Même piège : la liste des titres existants sert à éviter une collision.
+	if (exercisesError) {
+		console.error('[import] Titres existants illisibles :', exercisesError);
+		throw new Error(exercisesError.message);
+	}
 
 	const existingTitles = new Set(
 		(exercises || []).map((ex) => ex.title).filter((title): title is string => title !== null)

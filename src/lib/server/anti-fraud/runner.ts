@@ -174,20 +174,33 @@ async function loadAttempts(
 	windowStart: Date
 ): Promise<{ srs: AttemptEntry[]; quiz: AttemptEntry[] }> {
 	// Templates tagués avec cette capacité.
-	const { data: tagRows } = await supabase
+	const { data: tagRows, error: tagRowsError } = await supabase
 		.from('question_template_points')
 		.select('template_id')
 		.eq('point_id', capacityPointId);
 
+	// Un détecteur qui ne voit rien conclut « rien à signaler ». Une panne de
+	// lecture produisait exactement ce verdict, sans jamais le distinguer d'une
+	// absence réelle de tentative suspecte.
+	if (tagRowsError) {
+		console.error('[anti-fraude] Étiquetage illisible :', tagRowsError);
+		throw new Error(tagRowsError.message);
+	}
+
 	const templateIds = [...new Set((tagRows ?? []).map((t) => t.template_id))];
 	if (templateIds.length === 0) return { srs: [], quiz: [] };
 
-	const { data: attempts } = await supabase
+	const { data: attempts, error: attemptsError } = await supabase
 		.from('skill_attempts')
 		.select('created_at, success, grade, source')
 		.eq('student_id', studentId)
 		.in('template_id', templateIds)
 		.gte('created_at', windowStart.toISOString());
+
+	if (attemptsError) {
+		console.error('[anti-fraude] Tentatives illisibles :', attemptsError);
+		throw new Error(attemptsError.message);
+	}
 
 	const all = (attempts ?? []) as unknown as AttemptEntry[];
 	return {

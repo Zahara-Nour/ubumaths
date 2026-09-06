@@ -25,11 +25,17 @@ export async function notifyNewProposal(
 	proposalId: string
 ): Promise<void> {
 	try {
-		const { data: proposerProfile } = await supabase
+		const { data: proposerProfile, error: proposerError } = await supabase
 			.from('profiles')
 			.select('firstname, lastname')
 			.eq('id', proposerId)
 			.single();
+
+		// Le repli « Un élève » existe déjà et convient : la notification part,
+		// simplement sans le prénom. On laisse néanmoins la trace.
+		if (proposerError) {
+			console.error('[marketplace] Nom du proposant illisible :', proposerError);
+		}
 
 		const proposerName = proposerProfile
 			? `${proposerProfile.firstname || ''} ${proposerProfile.lastname || ''}`.trim() || 'Un élève'
@@ -147,11 +153,15 @@ export async function notifyNewTradeOffer(
 	tradeId: string
 ): Promise<void> {
 	try {
-		const { data: offererProfile } = await supabase
+		const { data: offererProfile, error: offererError } = await supabase
 			.from('profiles')
 			.select('firstname, lastname')
 			.eq('id', offererId)
 			.single();
+
+		if (offererError) {
+			console.error('[marketplace] Nom de l’offrant illisible :', offererError);
+		}
 
 		const offererName = offererProfile
 			? `${offererProfile.firstname || ''} ${offererProfile.lastname || ''}`.trim() || 'Un élève'

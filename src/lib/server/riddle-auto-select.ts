@@ -16,11 +16,20 @@ export async function autoSelectRiddleOfTheDay(
 ): Promise<{ success: boolean; riddleId?: string; error?: string }> {
 	try {
 		// Check if riddle already exists for this date
-		const { data: existing } = await supabase
+		const { data: existing, error: existingError } = await supabase
 			.from('riddle_of_the_day')
 			.select('riddle_id')
 			.eq('date', targetDate)
 			.single();
+
+		// ⚠️ PGRST116 = aucune énigme programmée, cas normal qu'on vient traiter.
+		// Toute AUTRE panne prenait le même visage : l'automate poursuivait et son
+		// upsert (`onConflict: 'date'`) écrasait l'énigme que le professeur avait
+		// choisie à la main.
+		if (existingError && existingError.code !== 'PGRST116') {
+			console.error('[auto-select] Énigme du jour illisible :', existingError);
+			return { success: false, error: 'Impossible de vérifier l’énigme du jour' };
+		}
 
 		if (existing) {
 			return {
@@ -34,15 +43,22 @@ export async function autoSelectRiddleOfTheDay(
 		thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 		const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
 
-		const { data: recentRiddles } = await supabase
+		const { data: recentRiddles, error: recentRiddlesError } = await supabase
 			.from('riddle_of_the_day')
 			.select('riddle_id')
 			.gte('date', thirtyDaysAgoStr);
 
+		// Cette liste EXCLUT les énigmes déjà posées. Vide par accident, elle
+		// autorisait à reproposer aux élèves une énigme vue la semaine passée.
+		if (recentRiddlesError) {
+			console.error('[auto-select] Énigmes récentes illisibles :', recentRiddlesError);
+			return { success: false, error: 'Impossible de lire les énigmes récentes' };
+		}
+
 		const recentRiddleIds = (recentRiddles || []).map((r) => r.riddle_id);
 
 		// Get last used difficulty to determine next difficulty
-		const { data: lastRiddle } = await supabase
+		const { data: lastRiddle, error: lastRiddleError } = await supabase
 			.from('riddle_of_the_day')
 			.select(
 				`
@@ -52,7 +68,15 @@ export async function autoSelectRiddleOfTheDay(
 			.lt('date', targetDate)
 			.order('date', { ascending: false })
 			.limit(1)
-			.single();
+			.maybeSingle();
+
+		// La difficulté tourne 1 → 2 → 3 → 1 à partir de la précédente. Sans elle,
+		// on repart systématiquement à 1 : la rotation se bloque sur le niveau le
+		// plus facile. Aucune ligne (première énigme) est en revanche légitime.
+		if (lastRiddleError) {
+			console.error('[auto-select] Dernière énigme illisible :', lastRiddleError);
+			return { success: false, error: 'Impossible de lire la dernière énigme posée' };
+		}
 
 		// Determine next difficulty (rotate 1 -> 2 -> 3 -> 1)
 		let targetDifficulty: RiddleDifficulty = 1;
@@ -163,11 +187,18 @@ export async function checkAndAutoSelectToday(
 	const today = new Date().toISOString().split('T')[0];
 
 	// Check if riddle already exists
-	const { data: existing } = await supabase
+	const { data: existing, error: existingError } = await supabase
 		.from('riddle_of_the_day')
 		.select('riddle_id')
 		.eq('date', today)
 		.single();
+
+	// Même garde que ci-dessus : une panne ne doit pas lancer une sélection
+	// automatique par-dessus une énigme déjà programmée.
+	if (existingError && existingError.code !== 'PGRST116') {
+		console.error('[auto-select] Énigme du jour illisible :', existingError);
+		return { success: false, message: 'Impossible de vérifier l’énigme du jour' };
+	}
 
 	if (existing) {
 		return { success: true, message: 'Énigme du jour déjà définie' };

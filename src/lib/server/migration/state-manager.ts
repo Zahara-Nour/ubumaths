@@ -329,18 +329,6 @@ export class MigrationStateManager {
 			// Get state from file
 			const fileState = await this.getMigrationState();
 
-			// Get counts from database (for future use)
-			const { data: _statusCounts } = await this.supabase
-				.from('migration_tracking')
-				.select('migration_status')
-				.then((result) => {
-					const counts: Record<string, number> = {};
-					result.data?.forEach((row) => {
-						counts[row.migration_status] = (counts[row.migration_status] || 0) + 1;
-					});
-					return { data: counts };
-				});
-
 			// Validate phase consistency
 			for (let phase = 1; phase <= 4; phase++) {
 				const phaseKey = phase.toString() as keyof typeof fileState.phases;

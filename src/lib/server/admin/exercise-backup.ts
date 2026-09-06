@@ -28,6 +28,16 @@ import {
 } from '$lib/server/validation/backup';
 import { resolveTagsToIds, syncExerciseTagJunction } from '$lib/server/tags-resolution';
 
+/**
+ * `.single()` traite « zéro ligne » comme une erreur (`PGRST116`). Pendant une
+ * restauration, « la ligne n'existe pas encore » est le cas NORMAL : c'est
+ * précisément ce qu'on cherche à savoir. Toute autre erreur est une panne, et
+ * la faire passer pour une absence conduit à réinsérer par-dessus.
+ */
+function estPanne(error: { code?: string } | null): boolean {
+	return error !== null && error.code !== 'PGRST116';
+}
+
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -593,15 +603,30 @@ export async function restoreFromBackup(
 		errors: []
 	};
 
-	// Get existing user IDs for FK validation
-	const { data: existingUsers } = await supabase.from('profiles').select('id');
+	// ⚠️ Ces ensembles servent à valider les clés étrangères de chaque
+	// enregistrement restauré. Une panne les vidait : TOUS les enregistrements
+	// étaient alors jugés invalides, et la restauration s'annonçait réussie avec
+	// zéro ligne écrite.
+	const { data: existingUsers, error: existingUsersError } = await supabase
+		.from('profiles')
+		.select('id');
+	if (existingUsersError) {
+		console.error('[restore] Comptes illisibles :', existingUsersError);
+		throw new Error(existingUsersError.message);
+	}
 	const validUserIds = new Set((existingUsers ?? []).map((u) => u.id));
 
 	// 1. Restore exercises (no FK dependencies in backup scope)
 	await restoreExercises(supabase, backup.data.exercises, opts, validUserIds, result);
 
 	// Get existing exercise IDs after restore
-	const { data: existingExercises } = await supabase.from('exercises').select('id');
+	const { data: existingExercises, error: existingExercisesError } = await supabase
+		.from('exercises')
+		.select('id');
+	if (existingExercisesError) {
+		console.error('[restore] Exercices illisibles :', existingExercisesError);
+		throw new Error(existingExercisesError.message);
+	}
 	const validExerciseIds = new Set((existingExercises ?? []).map((e) => e.id));
 
 	// 2. Restore templates
@@ -662,11 +687,19 @@ async function restoreExercises(
 			}
 
 			// Check if exercise exists
-			const { data: existing } = await supabase
+			const { data: existing, error: existingError } = await supabase
 				.from('exercises')
 				.select('id')
 				.eq('id', record.id)
 				.single();
+
+			// « La ligne n’existe pas encore » est le cas normal ici. Une PANNE
+			// prenait le même visage, et l’enregistrement partait en insertion
+			// par-dessus une ligne qu’on n’avait simplement pas su lire.
+			if (estPanne(existingError)) {
+				console.error('[restore] Lecture impossible (exercises) :', existingError);
+				throw new Error(existingError!.message);
+			}
 
 			// Tags live in the exercise_tags junction, never on the row. Read them
 			// from the backup record (tolerating legacy backups that carried them
@@ -777,11 +810,19 @@ async function restoreTemplates(
 			}
 
 			// Check if template exists
-			const { data: existing } = await supabase
+			const { data: existing, error: existingError } = await supabase
 				.from('exercise_templates')
 				.select('id')
 				.eq('id', record.id)
 				.single();
+
+			// « La ligne n’existe pas encore » est le cas normal ici. Une PANNE
+			// prenait le même visage, et l’enregistrement partait en insertion
+			// par-dessus une ligne qu’on n’avait simplement pas su lire.
+			if (estPanne(existingError)) {
+				console.error('[restore] Lecture impossible (exercise_templates) :', existingError);
+				throw new Error(existingError!.message);
+			}
 
 			if (existing) {
 				if (options.conflict_strategy === 'skip') {
@@ -880,12 +921,20 @@ async function restoreFavorites(
 			}
 
 			// Check if favorite exists
-			const { data: existing } = await supabase
+			const { data: existing, error: existingError } = await supabase
 				.from('exercise_favorites')
 				.select('user_id')
 				.eq('user_id', record.user_id)
 				.eq('exercise_id', record.exercise_id)
 				.single();
+
+			// « La ligne n’existe pas encore » est le cas normal ici. Une PANNE
+			// prenait le même visage, et l’enregistrement partait en insertion
+			// par-dessus une ligne qu’on n’avait simplement pas su lire.
+			if (estPanne(existingError)) {
+				console.error('[restore] Lecture impossible (exercise_favorites) :', existingError);
+				throw new Error(existingError!.message);
+			}
 
 			if (existing) {
 				// Favorites can't be replaced - just skip
@@ -957,11 +1006,19 @@ async function restoreTokens(
 			}
 
 			// Check if token exists
-			const { data: existing } = await supabase
+			const { data: existing, error: existingError } = await supabase
 				.from('exercise_share_tokens')
 				.select('id')
 				.eq('id', record.id)
 				.single();
+
+			// « La ligne n’existe pas encore » est le cas normal ici. Une PANNE
+			// prenait le même visage, et l’enregistrement partait en insertion
+			// par-dessus une ligne qu’on n’avait simplement pas su lire.
+			if (estPanne(existingError)) {
+				console.error('[restore] Lecture impossible (exercise_share_tokens) :', existingError);
+				throw new Error(existingError!.message);
+			}
 
 			if (existing) {
 				if (options.conflict_strategy === 'skip') {

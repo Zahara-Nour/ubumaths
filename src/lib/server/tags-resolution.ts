@@ -57,10 +57,18 @@ export async function resolveTagsToIds(
 		if (insertErr) {
 			// Race condition possible: a concurrent insert may have created the row
 			// between our SELECT and INSERT. Retry the lookup once.
-			const { data: refreshed } = await supabase
+			const { data: refreshed, error: refreshedError } = await supabase
 				.from(tagsTable)
 				.select('id, name')
 				.in('name', missing);
+
+			// Cette relecture rattrape une insertion concurrente. Si elle échoue,
+			// les étiquettes restent sans identifiant et disparaissent en silence
+			// de l'exercice qu'on est en train d'enregistrer.
+			if (refreshedError) {
+				console.error('[tags] Relecture des étiquettes impossible :', refreshedError);
+				throw new Error(refreshedError.message);
+			}
 			for (const row of refreshed ?? []) {
 				idByName.set(row.name as string, row.id as string);
 			}

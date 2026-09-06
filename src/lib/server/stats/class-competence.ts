@@ -91,10 +91,15 @@ export async function getClassCompetenceGrid(
 		}))
 		.sort((a, b) => a.display_name.localeCompare(b.display_name, 'fr'));
 
-	const { data: compRows } = await supabase
+	const { data: compRows, error: compRowsError } = await supabase
 		.from('math_competences')
 		.select('id, code, name, display_order')
 		.order('display_order', { ascending: true });
+
+	if (compRowsError) {
+		console.error('[class-competence] Compétences illisibles :', compRowsError);
+		throw new Error(compRowsError.message);
+	}
 
 	const competences: MathCompetence[] = (compRows ?? []).map((c) => ({
 		id: c.id,
@@ -174,11 +179,18 @@ export async function getClassTopObservablesToConsolidate(
 	classId: string,
 	topN = 10
 ): Promise<TopObservableToConsolidate[]> {
-	const { data: members } = await supabase
+	const { data: members, error: membersError } = await supabase
 		.from('class_members')
 		.select('student_id, profiles!class_members_student_id_fkey(id, firstname, lastname)')
 		.eq('class_id', classId)
 		.eq('status', 'active');
+
+	// Une classe sans élève se lit « rien à consolider » : un satisfecit, pas
+	// une absence de donnée.
+	if (membersError) {
+		console.error('[class-competence] Élèves illisibles :', membersError);
+		throw new Error(membersError.message);
+	}
 
 	type MemberRow = {
 		student_id: string;
@@ -242,12 +254,17 @@ export async function getClassTopObservablesToConsolidate(
 	const observedObservableIds = [...observableStats.keys()];
 	if (observedObservableIds.length === 0) return [];
 
-	const { data: observableRows } = await supabase
+	const { data: observableRows, error: observableRowsError } = await supabase
 		.from('observables')
 		.select(
 			'id, name, observable_code, subdimension_id, math_competence_subdimensions(letter, name, math_competence_id, math_competences(code))'
 		)
 		.in('id', observedObservableIds);
+
+	if (observableRowsError) {
+		console.error('[class-competence] Indicateurs illisibles :', observableRowsError);
+		throw new Error(observableRowsError.message);
+	}
 
 	type ObservableRow = {
 		id: string;
