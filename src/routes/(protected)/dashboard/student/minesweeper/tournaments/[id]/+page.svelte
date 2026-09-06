@@ -11,7 +11,7 @@
 	import TournamentLeaderboard from '$lib/components/game/minesweeper/TournamentLeaderboard.svelte';
 	import { minesweeperStore } from '$lib/stores/minesweeper.svelte';
 	import { cn } from '$lib/utils';
-	import { DIFFICULTY_LABELS } from '$lib/types/minesweeper';
+	import { DIFFICULTY_LABELS, asGridState } from '$lib/types/minesweeper';
 	import type { Difficulty } from '$lib/types/minesweeper';
 	import type { PageData } from './$types';
 
@@ -80,14 +80,20 @@
 
 	// Resume an in-progress game
 	function resumeGame() {
-		if (!inProgressGame || !inProgressGame.grid_state || isTournamentEnded) return;
+		if (!inProgressGame || isTournamentEnded) return;
+
+		// Colonne jsonb : une grille illisible n'est pas une grille vide. Reprendre
+		// sans elle rejouerait la partie depuis zéro tout en consommant la place
+		// déjà occupée dans le tournoi, donc on ne reprend pas du tout.
+		const gridState = asGridState(inProgressGame.grid_state);
+		if (!gridState) return;
 
 		minesweeperStore.resumeTournamentGame(tournament.id, tournament.difficulty, {
 			id: inProgressGame.id,
 			seed: inProgressGame.seed,
 			game_number: inProgressGame.game_number,
 			started_at: inProgressGame.started_at,
-			grid_state: inProgressGame.grid_state,
+			grid_state: gridState,
 			time_seconds: inProgressGame.time_seconds
 		});
 

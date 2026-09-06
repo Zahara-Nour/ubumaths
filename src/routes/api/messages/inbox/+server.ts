@@ -33,7 +33,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const { data: messages, error: fetchError } = await locals.supabase.rpc('get_user_inbox', {
 			p_user_id: user.id,
 			p_status: status,
-			p_folder_id: folderId || null,
+			// Paramètre `DEFAULT NULL` côté SQL : l'omettre applique le même défaut,
+			// c'est-à-dire tous les dossiers.
+			p_folder_id: folderId || undefined,
 			p_limit: limit,
 			p_offset: offset
 		});

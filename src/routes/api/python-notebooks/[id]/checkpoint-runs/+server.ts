@@ -19,6 +19,7 @@ import type { RequestHandler } from './$types';
 import { upsertCheckpointRunSchema } from '$lib/server/validation/notebook-checkpoints';
 import { validateUuidParam } from '$lib/server/validation/params';
 import type { CheckpointRun, CheckpointRunStatus } from '$lib/types/database-helpers';
+import { rpcNullable } from '$lib/types/database-helpers';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -73,7 +74,11 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			p_notebook_id: notebookId,
 			p_cell_id: cell_id,
 			p_status: status,
-			p_error_message: error_message ?? null
+			// Une exécution réussie n'a pas de message d'erreur, et la colonne est
+			// nullable. Le paramètre SQL n'a pas de `DEFAULT`, donc il doit être
+			// transmis : `rpcNullable` documente le `NULL` que les types générés
+			// ne savent pas décrire.
+			p_error_message: rpcNullable(error_message)
 		})
 		.single();
 

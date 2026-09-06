@@ -12,8 +12,10 @@
 
 import type { PageServerLoad } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
-import type { VipCardInstance, StudentVipCards } from '$lib/types/vip-card';
+import type { VipCardInstance } from '$lib/types/vip-card';
+import { asStudentVipCards } from '$lib/types/vip-card';
 import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
+import { toVipCardTemplate } from '$lib/types/vip-card-admin';
 
 /**
  * Represents the complete collection status for a single card template
@@ -83,14 +85,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Parse vip_cards JSONB field
-	const vipCards = (profile.vip_cards || {}) as unknown as StudentVipCards;
+	const vipCards = asStudentVipCards(profile.vip_cards);
 
 	// Build collection data for each template
 	const collectionData: Record<string, CardCollectionStatus> = {};
 	let ownedCount = 0;
 	let historyOnlyCount = 0;
 
-	templates?.forEach((template) => {
+	// `rarity` et `category` sont du texte, `action` du jsonb : convertis une fois
+	// ici plutôt qu'affirmés à chaque usage.
+	templates?.map(toVipCardTemplate).forEach((template) => {
 		const cardInstances = Object.entries(vipCards).filter(
 			([_, instance]) => instance.cardId === template.id
 		);

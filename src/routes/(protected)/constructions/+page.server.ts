@@ -6,19 +6,27 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
+/**
+ * Une ligne de la liste des constructions.
+ *
+ * Les nullabilités reflètent le schéma : `is_public` et les horodatages ont
+ * une valeur par défaut en base mais restent nullables, et un embed PostgREST
+ * sur une clé étrangère unique renvoie un objet — ou `null` si l'auteur a été
+ * supprimé — jamais un tableau. La page gère déjà les deux formes.
+ */
 export interface ConstructionListItem {
 	id: string;
 	title: string;
 	description: string | null;
 	format: string;
-	is_public: boolean;
-	created_at: string;
-	updated_at: string;
+	is_public: boolean | null;
+	created_at: string | null;
+	updated_at: string | null;
 	author_id: string | null;
 	profiles: {
 		firstname: string | null;
 		lastname: string | null;
-	}[];
+	} | null;
 }
 
 export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => {
@@ -52,7 +60,7 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 	}
 
 	return {
-		constructions: (constructions ?? []) as ConstructionListItem[],
+		constructions: constructions ?? [],
 		userId: user.id
 	};
 };

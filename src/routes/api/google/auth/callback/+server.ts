@@ -88,12 +88,24 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
 			);
 		}
 
+		// Capturé ici : le rétrécissement obtenu par la garde ne survit pas aux
+		// appels asynchrones qui suivent, et le jeton est requis à l'insertion.
+		const refreshToken = tokens.refresh_token;
+
 		// 6. Get user's Google email from token info
 		const tokenInfo = await validateToken(tokens.access_token);
-		const googleEmail = tokenInfo.email || null;
+		const googleEmail = tokenInfo.email;
 
+		// `google_integrations.google_email` est NOT NULL : sans adresse, l'insertion
+		// était refusée par Postgres et l'enseignant voyait une erreur 500 opaque.
+		// L'adresse identifie le compte relié dans la page de réglages, donc on
+		// s'arrête ici avec un message qui dit quoi faire.
 		if (!googleEmail) {
 			console.warn('[Google OAuth] No email in token info');
+			throw error(
+				400,
+				"Google n'a pas transmis l'adresse du compte. Vérifiez que l'autorisation inclut votre adresse e-mail, puis réessayez."
+			);
 		}
 
 		// 7. Store encrypted tokens in database
@@ -103,7 +115,7 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
 			{
 				teacher_id: user.id,
 				access_token: encryptToken(tokens.access_token),
-				refresh_token: encryptToken(tokens.refresh_token),
+				refresh_token: encryptToken(refreshToken),
 				token_expiry: tokenExpiry.toISOString(),
 				scopes: tokens.scope.split(' '),
 				google_email: googleEmail,

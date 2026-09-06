@@ -121,8 +121,10 @@ export const actions: Actions = {
 		// Grant consent via database function
 		const { data, error: dbError } = await locals.supabase.rpc('grant_parental_consent', {
 			p_token: token,
-			p_ip: clientIp,
-			p_user_agent: userAgent
+			// L'IP peut manquer derrière certains proxys : le paramètre est
+			// `DEFAULT NULL` côté SQL, donc optionnel dans les types générés.
+			p_ip: clientIp ?? undefined,
+			p_user_agent: userAgent ?? undefined
 		});
 
 		if (dbError) {

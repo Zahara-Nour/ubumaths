@@ -48,7 +48,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { data: newTemplateId, error: dupError } = await supabase.rpc('duplicate_template', {
 		p_template_id: id,
 		p_user_id: user.id,
-		p_new_title: new_title || null
+		// Paramètre `DEFAULT NULL` : sans titre fourni, la fonction en dérive un.
+		p_new_title: new_title || undefined
 	});
 
 	if (dupError) {

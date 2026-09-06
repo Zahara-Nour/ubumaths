@@ -753,7 +753,10 @@ class SpreadsheetStore {
 	 * @param data - The spreadsheet data to import
 	 * @throws Error if the data is invalid
 	 */
-	importData(data: SpreadsheetData): void {
+	importData(data: unknown): void {
+		// La donnée entrante vient d'une colonne jsonb ou d'un fichier importé :
+		// c'est le schéma qui décide de sa forme, pas l'annotation. La déclarer
+		// déjà valide obligeait chaque appelant à mentir sur son type.
 		const validated = spreadsheetDataSchema.safeParse(data);
 		if (!validated.success) {
 			throw new Error(`Invalid spreadsheet data: ${validated.error.issues[0].message}`);

@@ -164,7 +164,13 @@
 	{:else}
 		<div class="space-y-2">
 			{#each filteredFriendships() as friendship (friendship.id)}
-				{@const badge = getStatusBadge(friendship.status)}
+				<!-- `status` est du texte en base : un statut inconnu s'affiche comme
+				     « en attente », l'état le moins engageant. -->
+				{@const badge = getStatusBadge(
+					friendship.status === 'accepted' || friendship.status === 'rejected'
+						? friendship.status
+						: 'pending'
+				)}
 				<div class="flex items-center justify-between rounded-lg border border-border bg-card p-4">
 					<div class="flex flex-1 items-center gap-6">
 						<!-- Requester -->

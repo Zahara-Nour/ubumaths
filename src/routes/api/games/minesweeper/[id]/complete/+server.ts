@@ -5,7 +5,7 @@ import { completeGameSchema, validateGridState } from '$lib/server/validation/mi
 import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
 import { validateUuidParam } from '$lib/server/validation/params';
 
-import type { RewardBreakdown } from '$lib/types/minesweeper';
+import { completeGameResultSchema } from '$lib/server/validation/minesweeper-rpc';
 
 /**
  * Type for the complete_minesweeper_game RPC response
@@ -14,18 +14,6 @@ import type { RewardBreakdown } from '$lib/types/minesweeper';
  * - gidouilles_awarded is now decimal (0.3-8.0 range)
  * - Formula: base × time_mult × (1 - hint_penalty) × daily_mult
  */
-interface CompleteMinesweeperGameResponse {
-	gidouilles_earned: number; // Decimal: 0.3-8.0 per game
-	points_earned: number; // Integer points for leaderboard
-	achievements: Array<{
-		achievement_id: string;
-		name: string;
-		icon: string;
-		difficulty: string | null;
-	}>;
-	breakdown: RewardBreakdown; // Detailed calculation factors
-}
-
 /**
  * Complete Minesweeper game (WIN)
  * POST /api/games/minesweeper/[id]/complete
@@ -139,9 +127,10 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			throw error(500, 'Aucune donnée retournée par la fonction de complétion');
 		}
 
-		// Type assertion for RPC response
-		// Strategy D: gidouilles_earned is now decimal (0.3-8.0 range)
-		const response = data as CompleteMinesweeperGameResponse;
+		// `achievements` et `breakdown` sont du jsonb : la forme est validée plutôt
+		// qu'affirmée. Ce qui compte ici, ce sont les gidouilles et les points —
+		// c'est ce qui est crédité à l'élève.
+		const response = completeGameResultSchema.parse(data);
 
 		// ✅ Return success with gidouilles (decimal), points, achievements, and breakdown
 		return json({

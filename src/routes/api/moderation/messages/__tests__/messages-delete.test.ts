@@ -40,7 +40,7 @@ const mockMessages = {
 		id: TEST_IDS.message,
 		conversation_id: TEST_IDS.conversation,
 		sender_id: TEST_IDS.student,
-		content: 'This is an inappropriate message',
+		plain_text: 'This is an inappropriate message',
 		created_at: '2024-01-01T00:00:00Z',
 		deleted_at: null
 	},
@@ -48,7 +48,7 @@ const mockMessages = {
 		id: TEST_IDS.message,
 		conversation_id: TEST_IDS.conversation,
 		sender_id: TEST_IDS.student,
-		content: 'Deleted message',
+		plain_text: 'Deleted message',
 		created_at: '2024-01-01T00:00:00Z',
 		deleted_at: '2024-01-02T00:00:00Z'
 	}
@@ -836,9 +836,11 @@ describe('DELETE /api/moderation/messages/[id] - Privacy & Logging', () => {
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
 
 		const messageContent = 'This is a sensitive message that should not be logged';
+		// La route lit `plain_text` : `content` est du jsonb (texte enrichi), dont
+		// la longueur ne dit rien au modérateur.
 		const message = {
 			...mockMessages.classChannelMessage,
-			content: messageContent
+			plain_text: messageContent
 		};
 
 		// Mock message fetch

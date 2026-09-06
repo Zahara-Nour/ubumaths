@@ -7,6 +7,7 @@ import { error, redirect, fail } from '@sveltejs/kit';
 import { generateRandomMonster } from '$lib/utils/game/combat';
 import { getRandomMonsterTemplate, getMonsterImagePaths } from '$lib/data/game/monsters';
 import { startCombatSchema } from '$lib/server/validation/navadra';
+import { toGameMonster, toGamePlayer } from '$lib/types/game';
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
@@ -36,8 +37,11 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 		.limit(20);
 
 	return {
-		gamePlayer,
-		availableMonsters: availableMonsters || []
+		// `tutorial_stage` est du texte et `music_settings` du jsonb.
+		gamePlayer: toGamePlayer(gamePlayer),
+		// `element` et `category` sont des colonnes texte : converties ici plutôt
+		// qu'affirmées dans la carte de monstre.
+		availableMonsters: (availableMonsters ?? []).map(toGameMonster)
 	};
 };
 

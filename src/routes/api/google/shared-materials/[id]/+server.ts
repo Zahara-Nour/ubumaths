@@ -33,6 +33,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { updateSharedMaterialByIdSchema, uuidSchema } from '$lib/server/validation';
+import type { TablesUpdate } from '$lib/types/database';
 
 /**
  * Delete shared material record by ID
@@ -189,7 +190,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	// Build update object (only include provided fields)
-	const updateObject: Record<string, unknown> = {
+	const updateObject: TablesUpdate<'shared_materials'> = {
 		updated_at: new Date().toISOString()
 	};
 

@@ -11,6 +11,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
+import type { TablesUpdate } from '$lib/types/database';
 import {
 	batchUpdateBugReportsSchema,
 	batchDeleteBugReportsSchema
@@ -49,7 +50,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 
 	for (const reportId of reportIds) {
 		try {
-			const updateData: Record<string, unknown> = { status };
+			const updateData: TablesUpdate<'bug_reports'> = { status };
 
 			if (needsResolvedBy) {
 				updateData.resolved_by = user.id;

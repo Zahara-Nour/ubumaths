@@ -3,6 +3,7 @@ import { error, json } from '@sveltejs/kit';
 import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
 import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
+import { useHintResultSchema } from '$lib/server/validation/minesweeper-rpc';
 
 /**
  * Type definition for use_hint RPC function return value
@@ -11,17 +12,6 @@ import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error
  * - Hint cost: 1.0 gidouille (was 10)
  * - Progressive penalties: 10/22/35% (gidouilles) vs 5/11/17% (VIP cards)
  */
-interface UseHintResult {
-	success: boolean;
-	hints_used: number;
-	hints_remaining: number;
-	source: 'vip_card' | 'gidouilles';
-	vip_card_consumed: boolean;
-	gidouilles_spent: number;
-	remaining_gidouilles?: number;
-	penalty_notice: string;
-}
-
 /**
  * Use Hint in Minesweeper Game
  * POST /api/games/minesweeper/[id]/hint
@@ -117,8 +107,10 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 			throw error(500, "Aucune donnée retournée par la fonction d'indice");
 		}
 
-		// Type assertion for RPC return value
-		const result = data as UseHintResult;
+		// `RETURNS json` : la forme est validée, pas affirmée. Cette fonction
+		// consomme une carte VIP ou des gidouilles — un résultat mal formé lu
+		// comme un succès débiterait l'élève à tort.
+		const result = useHintResultSchema.parse(data);
 
 		// Return success response with hint usage details
 		return json({

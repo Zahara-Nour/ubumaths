@@ -2,6 +2,7 @@ import type { PageServerLoad } from './$types';
 import type { AttemptWithDetails } from '$lib/types/riddle';
 import { error, redirect } from '@sveltejs/kit';
 import { getTeacherTestMode } from '$lib/server/test-mode';
+import { toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
 
 /**
  * Load pending manual validations for teacher
@@ -18,19 +19,12 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	// Fetch pending validations for teacher's riddles, filtered by test mode
 	const { data: attempts, error: attemptsError } = await supabase
 		.from('riddle_attempts')
+		// Sélection complète de l'énigme : le type métier `DbRiddle` décrit la ligne
+		// entière, et l'écran de validation affiche l'énoncé comme la correction.
 		.select(
 			`
 			*,
-			riddle:riddles!inner(
-				id,
-				riddle_number,
-				title,
-				genre,
-				difficulty,
-				statement,
-				correction,
-				created_by
-			),
+			riddle:riddles!inner(*),
 			student:profiles!riddle_attempts_student_id_fkey(
 				id,
 				firstname,
@@ -52,8 +46,10 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 
 	// Transform to AttemptWithDetails
 	const pendingValidations: AttemptWithDetails[] = (attempts || []).map((attempt) => ({
-		...attempt,
-		riddle: attempt.riddle,
+		// `difficulty`, `status` et `answer` sont plus permissifs en base qu'en
+		// type métier : convertis plutôt qu'affirmés.
+		...toDbRiddleAttempt(attempt),
+		riddle: toDbRiddle(attempt.riddle),
 		student: {
 			id: attempt.student.id,
 			firstname: attempt.student.firstname,

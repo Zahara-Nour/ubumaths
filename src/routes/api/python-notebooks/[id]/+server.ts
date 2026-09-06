@@ -10,6 +10,7 @@ import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { updateNotebookSchema } from '$lib/server/validation/notebooks';
 import { uuidSchema } from '$lib/server/validation/common';
+import { toJson } from '$lib/types/database-helpers';
 
 // =============================================================================
 // HANDLERS
@@ -145,9 +146,18 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	// Update notebook
+	const { content, ...reste } = updateData;
+
 	const { data, error: updateError } = await locals.supabase
 		.from('python_notebooks')
-		.update(updateData)
+		// `content` part dans une colonne jsonb : conversion explicite, sans
+		// toucher aux champs absents d'une mise à jour partielle.
+		.update({
+			// Le champ jsonb est retiré du spread puis réinjecté converti : le
+			// laisser passer garderait son type métier dans l'union.
+			...reste,
+			...(content !== undefined ? { content: toJson(content) } : {})
+		})
 		.eq('id', notebookId)
 		.select()
 		.single();

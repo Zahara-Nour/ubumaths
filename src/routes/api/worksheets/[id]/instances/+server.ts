@@ -10,7 +10,10 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { generateWorksheetInstance } from '$lib/server/worksheets/instance-generator';
-import type { WorksheetExerciseWithExercise, WorksheetInstanceInsert } from '$lib/types/worksheets';
+import type { WorksheetExerciseWithExercise } from '$lib/types/worksheets';
+import { toJson } from '$lib/types/database-helpers';
+import { asWorksheetConfig, toWorksheetExerciseRow } from '$lib/types/worksheets';
+import type { TablesInsert } from '$lib/types/database';
 
 // Input validation schema for POST
 const createInstancesSchema = z.object({
@@ -156,7 +159,10 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		}
 
 		// Generate instances for each new student
-		const instances: WorksheetInstanceInsert[] = [];
+		// Le type d'insertion généré décrit ce que la table accepte réellement :
+		// `instance_data` y est du jsonb, alors que `WorksheetInstanceInsert`
+		// décrit la forme métier avant sérialisation.
+		const instances: TablesInsert<'worksheet_instances'>[] = [];
 		const errors: Array<{ studentId: string; error: string }> = [];
 
 		for (const student of newStudents) {
@@ -165,8 +171,11 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 				const instanceData = generateWorksheetInstance({
 					worksheetId,
 					studentId: student.id,
-					exercises: worksheetExercises as WorksheetExerciseWithExercise[],
-					config: worksheet.config || {}
+					exercises: (worksheetExercises ?? []).map((we) => ({
+						...toWorksheetExerciseRow(we),
+						exercise: we.exercise
+					})) as WorksheetExerciseWithExercise[],
+					config: asWorksheetConfig(worksheet.config)
 				});
 
 				// Get the variant seed from the instance data
@@ -176,7 +185,8 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 				instances.push({
 					worksheet_id: worksheetId,
 					student_id: student.id,
-					instance_data: instanceData,
+					// Colonne jsonb : conversion réelle plutôt que cast implicite.
+					instance_data: toJson(instanceData),
 					variant_seed: variantSeed,
 					variant_version: instanceData.variant_info?.version || null,
 					status: 'generated'

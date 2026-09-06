@@ -58,19 +58,24 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// Get active students in this class for progress view
 	const { data: students } = await locals.supabase
 		.from('class_members')
+		// `is_test` est une colonne de `profiles`, pas de `class_members` : le
+		// filtre rendait la requête ENTIÈRE invalide, donc la liste des élèves de
+		// la classe était toujours vide. L'embed passe en `!inner` pour que le
+		// filtre sur la table liée s'applique.
 		.select(
 			`
 			student_id,
-			profiles:student_id (
+			profiles!inner (
 				id,
 				full_name,
-				avatar_url
+				avatar_url,
+				is_test
 			)
 		`
 		)
 		.eq('class_id', classId)
 		.eq('status', 'active')
-		.eq('is_test', false);
+		.eq('profiles.is_test', false);
 
 	const studentList = (students || [])
 		.map((s) => {

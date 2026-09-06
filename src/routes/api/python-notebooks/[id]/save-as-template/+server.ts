@@ -25,6 +25,8 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { uuidSchema } from '$lib/server/validation/common';
 import { saveAsTemplateSchema } from '$lib/server/validation/notebook-templates';
 import type { NotebookContent, NotebookCell } from '$lib/types/notebook';
+import { asNotebookContent } from '$lib/types/notebook';
+import { toJson } from '$lib/types/database-helpers';
 
 const MAX_NOTEBOOKS_PER_USER = 50;
 
@@ -94,7 +96,12 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		);
 	}
 
-	const sourceContent = source.content as NotebookContent;
+	// `content` est une colonne jsonb : la structure est vérifiée, pas affirmée.
+	// Un notebook sans cellules serait autrement recopié en coquille vide.
+	const sourceContent = asNotebookContent(source.content);
+	if (!sourceContent) {
+		throw error(422, 'Contenu de notebook illisible');
+	}
 	const now = new Date().toISOString();
 	const templateContent: NotebookContent = {
 		version: '1.0',
@@ -126,7 +133,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const insertPayload = {
 		title: bodyValidation.data.title,
 		description: bodyValidation.data.description ?? source.description ?? null,
-		content: templateContent,
+		// Colonne jsonb : conversion réelle plutôt que cast.
+		content: toJson(templateContent),
 		author_id: user.id,
 		is_public: bodyValidation.data.is_public ?? false,
 		is_template: true,

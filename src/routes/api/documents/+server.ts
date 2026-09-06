@@ -15,6 +15,7 @@ import {
 	documentDeleteSchema
 } from '$lib/server/validation/documents';
 import { deleteDocument, disableDocument, enableDocument } from '$lib/server/rag';
+import type { TablesUpdate } from '$lib/types/database';
 
 /**
  * GET /api/documents - List documents for the current teacher
@@ -229,7 +230,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Update other fields
-		const updateFields: Record<string, unknown> = {};
+		const updateFields: TablesUpdate<'rag_documents'> = {};
 		if (validation.data.title) updateFields.title = validation.data.title;
 		if (validation.data.grades) updateFields.grades = validation.data.grades;
 		if (validation.data.topics) updateFields.topics = validation.data.topics;

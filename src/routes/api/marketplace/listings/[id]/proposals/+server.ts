@@ -16,6 +16,8 @@ import {
 	notifyProposalRejected
 } from '$lib/server/marketplace/notifications';
 import { z } from 'zod';
+import { acceptProposalSchema } from '$lib/server/validation/marketplace-rpc';
+import { asStudentVipCards } from '$lib/types/vip-card';
 
 // ID validation schema
 const idSchema = z.string().uuid("ID d'annonce invalide");
@@ -97,12 +99,12 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	const instanceToTemplate = new Map<string, string>();
 	if (proposals) {
 		for (const p of proposals) {
-			const proposer = p.proposer as { vip_cards?: VipCardsJson } | null;
-			if (proposer?.vip_cards) {
-				for (const [instId, card] of Object.entries(proposer.vip_cards)) {
-					instanceToTemplate.set(instId, card.cardId);
-					allTemplateIds.add(card.cardId);
-				}
+			// `vip_cards` est du jsonb : la forme est vérifiée plutôt qu'affirmée.
+			// Une instance sans `cardId` ne peut pas être reliée à son modèle, et
+			// `asStudentVipCards` l'écarte plutôt que d'enregistrer un lien vide.
+			for (const [instId, card] of Object.entries(asStudentVipCards(p.proposer?.vip_cards))) {
+				instanceToTemplate.set(instId, card.cardId);
+				allTemplateIds.add(card.cardId);
 			}
 		}
 	}
@@ -346,6 +348,13 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		throw error(500, 'Erreur lors de la création de la proposition');
 	}
 
+	// `proposal` est alimentée par deux branches et reste donc `T | null` pour le
+	// compilateur, même une fois l'erreur écartée. La garde évite que la suite —
+	// verrouillage de cartes, notifications, réponse — ne travaille sur `null`.
+	if (!proposal) {
+		throw error(500, 'Proposition créée sans contenu exploitable');
+	}
+
 	// Lock cards if offering any
 	if (data.offered_card_ids.length > 0) {
 		const lockResult = await lockCardsForEntity(
@@ -368,7 +377,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	await supabase
 		.from('marketplace_listings')
 		.update({
-			proposal_count: listing.proposal_count + 1
+			// `proposal_count` est nullable : une annonce jamais proposée vaut NULL.
+			proposal_count: (listing.proposal_count ?? 0) + 1
 		})
 		.eq('id', listingId);
 
@@ -421,7 +431,11 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			p_user_id: listing.creator_id
 		});
 
-		if (!rpcError && result?.success) {
+		// `RETURNS json` : on valide la forme réelle plutôt que de lire `.success`
+		// sur le type `Json`, qui ne porte aucune de ces clés.
+		const acceptation = rpcError ? null : acceptProposalSchema.safeParse(result);
+
+		if (acceptation?.success && acceptation.data.success) {
 			// Notify accepted proposer
 			await notifyProposalAccepted(supabase, userId, 'Annonce', proposal.id);
 
@@ -449,13 +463,17 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 					...enrichWithUsernames(proposal),
 					status: 'accepted',
 					auto_accepted: true,
-					trade_id: result.trade_id
+					trade_id: acceptation.data.trade_id
 				},
 				{ status: 201 }
 			);
 		}
 		// If auto-accept fails, fall through to normal proposal flow
-		console.error('Auto-accept failed:', rpcError || result?.error);
+		console.error(
+			'Auto-accept failed:',
+			rpcError ??
+				(acceptation?.success && !acceptation.data.success ? acceptation.data.error : result)
+		);
 	}
 
 	// Normal flow: notify listing creator about new proposal

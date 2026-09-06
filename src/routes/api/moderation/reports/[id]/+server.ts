@@ -73,7 +73,8 @@ export const PUT: RequestHandler = async ({ request, params, locals }) => {
 	const { error: reviewError } = await locals.supabase.rpc('review_report', {
 		p_report_id: reportId,
 		p_new_status: status,
-		p_review_notes: reviewNotes ?? null,
+		// Paramètre `DEFAULT NULL` : l'omettre applique le même défaut.
+		p_review_notes: reviewNotes ?? undefined,
 		p_delete_message: deleteMessage
 	});
 

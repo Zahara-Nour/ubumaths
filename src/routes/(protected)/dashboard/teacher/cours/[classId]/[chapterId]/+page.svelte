@@ -94,7 +94,9 @@
 			.filter((e) => !data.exercises.some((ex) => ex.exerciseId === e.id))
 			.map((e) => ({
 				value: e.id,
-				label: e.title
+				// `exercises.title` est nullable : un libellé de repli vaut mieux
+				// qu'une entrée vide dans la liste déroulante.
+				label: e.title ?? 'Exercice sans titre'
 			}))
 	]);
 

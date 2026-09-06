@@ -15,15 +15,17 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Settings, ShoppingBag, AlertCircle, Info, Check, X } from '@lucide/svelte';
 	import { z } from 'zod';
+	// La configuration est celle de la table `marketplace_config`. Le composant en
+	// redéclarait une version locale avec un champ `is_enabled` qui n'existe nulle
+	// part : à l'ouverture, l'interrupteur repartait donc toujours de « désactivé »
+	// même sur un marché ouvert, et « Réinitialiser » l'y renvoyait. L'activation
+	// côté classe se lit sur `enabled_for_class`, la colonne que l'enregistrement
+	// écrit déjà.
+	import type { MarketplaceConfig } from '$lib/types/marketplace';
 
-	interface MarketplaceConfig {
-		is_enabled: boolean;
-		max_listings_per_student: number;
-		max_trades_per_day: number;
-		created_by?: string;
-		created_at?: string;
-		updated_at?: string;
-	}
+	/** Valeurs par défaut, alignées sur les bornes du schéma de validation. */
+	const DEFAULT_MAX_LISTINGS = 5;
+	const DEFAULT_MAX_TRADES = 10;
 
 	let {
 		config,
@@ -44,14 +46,16 @@
 	const initialConfig = config;
 
 	// Form state
-	let isEnabled = $state(initialConfig?.is_enabled || false);
-	let maxListingsPerStudent = $state(initialConfig?.max_listings_per_student || 5);
-	let maxTradesPerDay = $state(initialConfig?.max_trades_per_day || 10);
+	let isEnabled = $state(initialConfig?.enabled_for_class ?? false);
+	let maxListingsPerStudent = $state(
+		initialConfig?.max_listings_per_student ?? DEFAULT_MAX_LISTINGS
+	);
+	let maxTradesPerDay = $state(initialConfig?.max_trades_per_day ?? DEFAULT_MAX_TRADES);
 	let isLoading = $state(false);
 
 	// Validation schema (must match backend validation in src/lib/server/marketplace/validation.ts)
 	const configSchema = z.object({
-		is_enabled: z.boolean(),
+		enabled_for_class: z.boolean(),
 		max_listings_per_student: z
 			.number()
 			.int('Doit être un nombre entier')
@@ -69,9 +73,9 @@
 	// Track changes - use $derived instead of $effect to avoid updating state from effect
 	let hasChanges = $derived(
 		config
-			? isEnabled !== config.is_enabled ||
-					maxListingsPerStudent !== config.max_listings_per_student ||
-					maxTradesPerDay !== config.max_trades_per_day
+			? isEnabled !== (config.enabled_for_class ?? false) ||
+					maxListingsPerStudent !== (config.max_listings_per_student ?? DEFAULT_MAX_LISTINGS) ||
+					maxTradesPerDay !== (config.max_trades_per_day ?? DEFAULT_MAX_TRADES)
 			: true // New config, any values are changes
 	);
 
@@ -79,7 +83,7 @@
 	async function saveSettings() {
 		// Validate input
 		const validation = configSchema.safeParse({
-			is_enabled: isEnabled,
+			enabled_for_class: isEnabled,
 			max_listings_per_student: maxListingsPerStudent,
 			max_trades_per_day: maxTradesPerDay
 		});
@@ -126,13 +130,13 @@
 	// Reset to defaults
 	function resetToDefaults() {
 		if (config) {
-			isEnabled = config.is_enabled;
-			maxListingsPerStudent = config.max_listings_per_student;
-			maxTradesPerDay = config.max_trades_per_day;
+			isEnabled = config.enabled_for_class ?? false;
+			maxListingsPerStudent = config.max_listings_per_student ?? DEFAULT_MAX_LISTINGS;
+			maxTradesPerDay = config.max_trades_per_day ?? DEFAULT_MAX_TRADES;
 		} else {
 			isEnabled = false;
-			maxListingsPerStudent = 5;
-			maxTradesPerDay = 10;
+			maxListingsPerStudent = DEFAULT_MAX_LISTINGS;
+			maxTradesPerDay = DEFAULT_MAX_TRADES;
 		}
 		// hasChanges is $derived, it will automatically be false after resetting to config values
 		toaster.info('Paramètres réinitialisés');

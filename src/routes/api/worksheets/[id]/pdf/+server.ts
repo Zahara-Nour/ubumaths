@@ -16,7 +16,13 @@ import { z } from 'zod';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
-import { localizedText, worksheetLocale, type WorksheetConfig } from '$lib/types/worksheets';
+import {
+	localizedText,
+	worksheetLocale,
+	asWorksheetConfig,
+	asInstanceData,
+	toWorksheetRow
+} from '$lib/types/worksheets';
 import type {
 	InstanceData,
 	InstanceSection,
@@ -103,7 +109,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		const worksheetSections = (worksheet.worksheet_sections ?? []) as WorksheetSectionRow[];
 
 		// Language of the sheet: section titles and instructions follow it too.
-		const locale = worksheetLocale(worksheet.config as WorksheetConfig);
+		const locale = worksheetLocale(asWorksheetConfig(worksheet.config));
 
 		if (studentId) {
 			// Try to fetch existing instance for this student
@@ -114,8 +120,12 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				.eq('student_id', studentId)
 				.single();
 
-			if (instance) {
-				instanceData = instance.instance_data as InstanceData;
+			// `instance_data` est du jsonb : la structure est vérifiée. Une instance
+			// sans liste d'exercices ferait sortir une fiche vide au nom de l'élève ;
+			// on retombe alors sur la génération d'une nouvelle instance.
+			const stockee = instance ? asInstanceData(instance.instance_data) : null;
+			if (stockee) {
+				instanceData = stockee;
 				// Add sections if not present in stored instance
 				if (!instanceData.sections && worksheetSections.length > 0) {
 					instanceData.sections = worksheetSections.map((s) => ({
@@ -149,9 +159,9 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 
 		// Generate Typst document
 		const typstContent = generateWorksheetTypst({
-			worksheet: worksheet,
+			worksheet: toWorksheetRow(worksheet),
 			instance: instanceData,
-			config: worksheet.config || {},
+			config: asWorksheetConfig(worksheet.config),
 			mode,
 			studentName,
 			className

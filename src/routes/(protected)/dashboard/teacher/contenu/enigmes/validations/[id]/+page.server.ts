@@ -3,6 +3,7 @@ import type { AttemptWithDetails } from '$lib/types/riddle';
 import { error, redirect, fail } from '@sveltejs/kit';
 import { sendValidationResultMessage } from '$lib/server/riddle-messages';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
 
 /**
  * Load validation details
@@ -19,17 +20,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		.select(
 			`
 			*,
-			riddle:riddles!inner(
-				id,
-				riddle_number,
-				title,
-				genre,
-				difficulty,
-				statement,
-				correction,
-				image_url,
-				created_by
-			),
+			riddle:riddles!inner(*),
 			student:profiles!riddle_attempts_student_id_fkey(
 				id,
 				firstname,
@@ -52,9 +43,12 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		throw error(403, 'Vous ne pouvez valider que vos propres énigmes');
 	}
 
+	// Sélection complète de l'énigme, et conversion plutôt que cast : `difficulty`
+	// et `status` sont des colonnes permissives, `answer` et `submitted_answer`
+	// du jsonb.
 	const attemptWithDetails: AttemptWithDetails = {
-		...attempt,
-		riddle: attempt.riddle,
+		...toDbRiddleAttempt(attempt),
+		riddle: toDbRiddle(attempt.riddle),
 		student: {
 			id: attempt.student.id,
 			firstname: attempt.student.firstname,

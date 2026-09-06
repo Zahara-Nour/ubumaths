@@ -92,7 +92,9 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			try {
 				await supabase
 					.from('marketplace_listings')
-					.update({ view_count: listing.view_count + 1 })
+					// `view_count` est nullable : une annonce jamais consultée vaut NULL,
+					// et `null + 1` aurait écrit `null`.
+					.update({ view_count: (listing.view_count ?? 0) + 1 })
 					.eq('id', listingId);
 			} catch (err) {
 				console.error('Error incrementing view count:', err);

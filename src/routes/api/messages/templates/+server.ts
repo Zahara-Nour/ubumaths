@@ -12,6 +12,7 @@ import type { RequestHandler } from './$types';
 import { validateTemplate } from '$lib/templates/templateEngine';
 import type { MessageTemplateInput } from '$lib/types/messageTemplates';
 import { createMessageTemplateSchema, validateRequest } from '$lib/server/validation';
+import { toJson } from '$lib/types/database-helpers';
 
 // =====================================================
 // GET - List templates
@@ -231,11 +232,12 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			subject_template: templateInput.subject_template,
 			body_template: templateInput.body_template,
 			trigger_type: templateInput.trigger_type,
-			trigger_config: templateInput.trigger_config || {},
+			// Deux colonnes jsonb : conversion réelle plutôt que passage direct.
+			trigger_config: toJson(templateInput.trigger_config || {}),
 			scope: templateInput.scope,
 			created_by: user.id,
 			class_id: templateInput.class_id || null,
-			variables: templateInput.variables || [],
+			variables: toJson(templateInput.variables || []),
 			is_active: templateInput.is_active !== undefined ? templateInput.is_active : true
 		})
 		.select()

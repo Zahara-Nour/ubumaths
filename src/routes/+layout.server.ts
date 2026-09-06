@@ -21,6 +21,7 @@
  */
 
 import type { LayoutServerLoad } from './$types';
+import { asVipCardAction } from '$lib/types/vip-card';
 import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
 
 export const load: LayoutServerLoad = async ({ locals, cookies }) => {
@@ -42,7 +43,12 @@ export const load: LayoutServerLoad = async ({ locals, cookies }) => {
 		if (error) {
 			console.error('❌ [ROOT LAYOUT SERVER] Error loading VIP card templates:', error);
 		} else {
-			vipCardTemplates = (data as VipCardTemplate[]) || [];
+			// Le store conserve la ligne telle quelle et ne rétrécit que `action`,
+			// colonne jsonb : c'est son contrat, distinct du type d'administration.
+			vipCardTemplates = (data ?? []).map((row) => ({
+				...row,
+				action: asVipCardAction(row.action)
+			}));
 			console.log(`✅ [ROOT LAYOUT SERVER] Loaded ${vipCardTemplates.length} VIP card templates`);
 		}
 	} catch (err) {

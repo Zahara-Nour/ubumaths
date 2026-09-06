@@ -29,10 +29,11 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { z } from 'zod';
-import type { StudentVipCards, VipCardAction } from '$lib/types/vip-card';
+import type { VipCardAction } from '$lib/types/vip-card';
 import { getTemplateById } from '$lib/server/vip-card-queries';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 import { validateActivationContext } from '$lib/server/vip-card-context';
+import { asStudentVipCards } from '$lib/types/vip-card';
 
 const activateGidouillesSchema = z.object({
 	instanceId: z.string().uuid(),
@@ -78,7 +79,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, `Failed to fetch student profile: ${fetchError.message}`);
 	}
 
-	const vipCards = (studentProfile.vip_cards || {}) as unknown as StudentVipCards;
+	const vipCards = asStudentVipCards(studentProfile.vip_cards);
 	const instance = vipCards[instanceId];
 
 	if (!instance) {

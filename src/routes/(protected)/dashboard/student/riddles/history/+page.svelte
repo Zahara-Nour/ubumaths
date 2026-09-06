@@ -6,7 +6,7 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { getDifficultyLabel, getDifficultyColor } from '$lib/types/riddle';
+	import { asRiddleDifficulty, getDifficultyLabel, getDifficultyColor } from '$lib/types/riddle';
 	import { calculateBadges, getTierColorClass } from '$lib/utils/riddle-badges';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -51,7 +51,10 @@
 		goto(`/dashboard/student/riddles/history?${params.toString()}`);
 	}
 
-	function formatDate(dateString: string) {
+	// `first_success_at` est nullable dans la vue : une énigme tentée sans succès
+	// n'a pas de date. On affiche un tiret plutôt qu'une « Invalid Date ».
+	function formatDate(dateString: string | null) {
+		if (!dateString) return '—';
 		return format(new Date(dateString), 'd MMMM yyyy', { locale: fr });
 	}
 
@@ -243,20 +246,20 @@
 								<div class="flex-1">
 									<div class="mb-2 flex flex-wrap items-center gap-2">
 										<Badge variant="outline">Énigme #{entry.riddle_number}</Badge>
-										<Badge class={getDifficultyColor(entry.difficulty)}>
-											{getDifficultyLabel(entry.difficulty)}
+										<Badge class={getDifficultyColor(asRiddleDifficulty(entry.difficulty))}>
+											{getDifficultyLabel(asRiddleDifficulty(entry.difficulty))}
 										</Badge>
 										{#if entry.genre}
 											<Badge variant="outline">{entry.genre}</Badge>
 										{/if}
-										{#if entry.total_attempts_for_success === 1}
+										{#if entry.total_attempts === 1}
 											<Badge variant="default" class="bg-green-500">
 												<Award class="mr-1 h-3 w-3" />
 												1er coup
 											</Badge>
 										{/if}
 									</div>
-									<h3 class="mb-1 font-semibold">{entry.title}</h3>
+									<h3 class="mb-1 font-semibold">{entry.riddle_title}</h3>
 									<p class="text-sm text-muted-foreground">
 										Résolu le {formatDate(entry.first_success_at)}
 									</p>
@@ -266,12 +269,12 @@
 								<div class="flex gap-6 sm:flex-col sm:gap-2 sm:text-right">
 									<div>
 										<p class="text-xs text-muted-foreground">Tentatives</p>
-										<p class="font-medium">{entry.total_attempts_for_success}</p>
+										<p class="font-medium">{entry.total_attempts}</p>
 									</div>
 									<div>
 										<p class="text-xs text-muted-foreground">Gidouilles</p>
 										<p class="font-bold text-yellow-600 dark:text-yellow-400">
-											{entry.gidouilles_awarded}
+											{entry.total_gidouilles_earned}
 										</p>
 									</div>
 								</div>

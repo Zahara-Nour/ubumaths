@@ -3,6 +3,9 @@ import type { DbRiddle } from '$lib/types/riddle';
 import { error, redirect, fail } from '@sveltejs/kit';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { requireRoles } from '$lib/server/middleware/auth';
+import type { TablesUpdate } from '$lib/types/database';
+import { toJson } from '$lib/types/database-helpers';
+import { asRiddleDifficulty } from '$lib/types/riddle';
 
 /**
  * Load riddle for editing
@@ -56,15 +59,18 @@ export const actions: Actions = {
 		}
 
 		// Parse form data
-		const updateData: Partial<DbRiddle> = {
+		// Le type d'écriture généré décrit exactement ce que la table accepte :
+		// `answer` y est du jsonb, et les deux `as` d'origine affirmaient une
+		// valeur venant d'un formulaire, donc d'une source non fiable.
+		const updateData: TablesUpdate<'riddles'> = {
 			title: formData.get('title')?.toString() || '',
 			genre: formData.get('genre')?.toString() || null,
-			difficulty: parseInt(formData.get('difficulty')?.toString() || '1') as 1 | 2 | 3,
+			difficulty: asRiddleDifficulty(parseInt(formData.get('difficulty')?.toString() || '1')),
 			statement: formData.get('statement')?.toString() || '',
 			correction: formData.get('correction')?.toString() || '',
 			image_url: formData.get('image_url')?.toString() || null,
-			answer,
-			status: (formData.get('status')?.toString() || 'draft') as 'draft' | 'published'
+			answer: toJson(answer),
+			status: formData.get('status')?.toString() === 'published' ? 'published' : 'draft'
 		};
 
 		// Validate required fields

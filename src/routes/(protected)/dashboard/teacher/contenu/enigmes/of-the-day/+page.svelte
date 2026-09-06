@@ -7,7 +7,12 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
-	import { getDifficultyLabel, getDifficultyColor, type DbRiddle } from '$lib/types/riddle';
+	import {
+		asRiddleDifficulty,
+		getDifficultyLabel,
+		getDifficultyColor,
+		type DbRiddle
+	} from '$lib/types/riddle';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/input';
@@ -35,7 +40,11 @@
 		}))
 	);
 
-	function formatDate(dateString: string) {
+	// `currentRiddleDate` vaut `null` quand aucune énigme n'est programmée, et la
+	// date d'une entrée d'historique peut manquer : on affiche un tiret plutôt
+	// qu'une « Invalid Date ».
+	function formatDate(dateString: string | null) {
+		if (!dateString) return '—';
 		return format(new Date(dateString), 'EEEE d MMMM yyyy', { locale: fr });
 	}
 
@@ -73,8 +82,8 @@
 				<div class="space-y-3">
 					<div class="flex items-center gap-2">
 						<Badge variant="outline">Énigme #{data.currentRiddle.riddle_number}</Badge>
-						<Badge class={getDifficultyColor(data.currentRiddle.difficulty)}>
-							{getDifficultyLabel(data.currentRiddle.difficulty)}
+						<Badge class={getDifficultyColor(asRiddleDifficulty(data.currentRiddle.difficulty))}>
+							{getDifficultyLabel(asRiddleDifficulty(data.currentRiddle.difficulty))}
 						</Badge>
 						{#if data.currentRiddle.genre}
 							<Badge variant="outline">{data.currentRiddle.genre}</Badge>
@@ -82,14 +91,10 @@
 					</div>
 					<h3 class="text-xl font-semibold">{data.currentRiddle.title}</h3>
 					<p class="text-sm text-muted-foreground capitalize">
-						{formatDate(data.currentRiddle.assignment_date)}
+						{formatDate(data.currentRiddleDate)}
 					</p>
 					<form method="POST" action="?/removeRiddle">
-						<input
-							type="hidden"
-							name="assignment_date"
-							value={data.currentRiddle.assignment_date}
-						/>
+						<input type="hidden" name="assignment_date" value={data.currentRiddleDate} />
 						<Button type="submit" variant="destructive" size="sm">
 							<Trash2 class="mr-2 h-4 w-4" />
 							Retirer
@@ -173,8 +178,8 @@
 								</p>
 								<div class="flex items-center gap-2">
 									<Badge variant="outline">#{riddle.riddle_number}</Badge>
-									<Badge class={getDifficultyColor(riddle.difficulty)}>
-										{getDifficultyLabel(riddle.difficulty)}
+									<Badge class={getDifficultyColor(asRiddleDifficulty(riddle.difficulty))}>
+										{getDifficultyLabel(asRiddleDifficulty(riddle.difficulty))}
 									</Badge>
 									{#if riddle.genre}
 										<Badge variant="outline">{riddle.genre}</Badge>
@@ -209,8 +214,8 @@
 							<div class="flex-1">
 								<div class="flex items-center gap-2">
 									<Badge variant="outline">#{entry.riddle.riddle_number}</Badge>
-									<Badge class={getDifficultyColor(entry.riddle.difficulty)}>
-										{getDifficultyLabel(entry.riddle.difficulty)}
+									<Badge class={getDifficultyColor(asRiddleDifficulty(entry.riddle.difficulty))}>
+										{getDifficultyLabel(asRiddleDifficulty(entry.riddle.difficulty))}
 									</Badge>
 									{#if entry.riddle.genre}
 										<Badge variant="outline">{entry.riddle.genre}</Badge>
@@ -218,7 +223,7 @@
 								</div>
 								<p class="mt-1 font-medium">{entry.riddle.title}</p>
 								<p class="text-xs text-muted-foreground capitalize">
-									{formatDate(entry.assignment_date)}
+									{formatDate(entry.date)}
 								</p>
 							</div>
 						</div>

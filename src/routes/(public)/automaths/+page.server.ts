@@ -42,7 +42,8 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 			if ((a.subdomain || '') !== (b.subdomain || '')) {
 				return (a.subdomain || '').localeCompare(b.subdomain || '');
 			}
-			return (a.level || '').localeCompare(b.level || '');
+			// `level` est numérique : un tri lexicographique classerait 10 avant 2.
+			return (a.level ?? 0) - (b.level ?? 0);
 		}) || [];
 
 	if (templatesError) {

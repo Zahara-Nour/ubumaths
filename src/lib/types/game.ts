@@ -61,6 +61,56 @@ export type TutorialStage =
 	| 'index_12'
 	| 'fini';
 
+/** Étapes du tutoriel, dans l'ordre. */
+const ETAPES_TUTORIEL = [
+	'cinematic_0',
+	'index_1',
+	'combattre_2',
+	'index_3',
+	'accueil_defi_4',
+	'fin_defi_5',
+	'grimoire_6',
+	'grimoire_7',
+	'index_8',
+	'prepa_combats_9',
+	'combats_decks_10',
+	'combattre_11',
+	'index_12',
+	'fini'
+] as const;
+
+/**
+ * Narrows a `game_players` row to {@link GamePlayer}.
+ *
+ * `tutorial_stage` is plain text and `music_settings` is jsonb. An unknown
+ * stage falls back to the first one: replaying an introduction is harmless,
+ * whereas skipping to a later step would leave the student without the
+ * explanations that step assumes.
+ */
+export function toGamePlayer<T extends Record<string, unknown>>(
+	row: T & { tutorial_stage: string; music_settings: unknown }
+): Omit<T, 'tutorial_stage' | 'music_settings'> & {
+	tutorial_stage: TutorialStage;
+	music_settings: MusicSettings;
+} {
+	const reglages = row.music_settings;
+	const valide =
+		typeof reglages === 'object' &&
+		reglages !== null &&
+		!Array.isArray(reglages) &&
+		typeof (reglages as Record<string, unknown>).enabled === 'boolean' &&
+		typeof (reglages as Record<string, unknown>).volume === 'number';
+
+	return {
+		...row,
+		tutorial_stage: ETAPES_TUTORIEL.find((e) => e === row.tutorial_stage) ?? ETAPES_TUTORIEL[0],
+		music_settings: valide ? (reglages as unknown as MusicSettings) : { enabled: true, volume: 0.5 }
+	} as Omit<T, 'tutorial_stage' | 'music_settings'> & {
+		tutorial_stage: TutorialStage;
+		music_settings: MusicSettings;
+	};
+}
+
 export interface MusicSettings {
 	enabled: boolean;
 	volume: number; // 0-1
@@ -87,6 +137,44 @@ export interface GameSpell {
 export type GameElement = 'fire' | 'water' | 'earth' | 'wind';
 export type SpellType = 'attack' | 'heal' | 'buff' | 'debuff';
 
+/**
+ * Narrows the `element` text column to {@link GameElement}.
+ *
+ * Postgres stores it as plain text. An unknown element falls back to `fire`
+ * rather than throwing: a spell written by an older revision must stay
+ * castable rather than break the combat screen.
+ */
+export function asGameElement(value: string | null | undefined): GameElement {
+	return value === 'water' || value === 'earth' || value === 'wind' ? value : 'fire';
+}
+
+/** Narrows the `type` text column to {@link SpellType}. */
+export function asSpellType(value: string | null | undefined): SpellType {
+	return value === 'heal' || value === 'buff' || value === 'debuff' ? value : 'attack';
+}
+
+/**
+ * Narrows a `game_spells` row to {@link GameSpell}.
+ *
+ * Only `element` and `type` differ from the stored row: both are narrow unions
+ * in the domain and plain text in Postgres.
+ */
+export function toGameSpell(row: {
+	id: string;
+	user_id: string;
+	spell_num: number;
+	level: number;
+	element: string;
+	power: number;
+	type: string;
+	unlocked_at: string;
+	last_upgraded_at: string | null;
+	created_at: string;
+	updated_at: string;
+}): GameSpell {
+	return { ...row, element: asGameElement(row.element), type: asSpellType(row.type) };
+}
+
 // ============================================================================
 // Game Monsters
 // ============================================================================
@@ -112,6 +200,40 @@ export interface GameMonster {
 }
 
 export type MonsterCategory = 'common' | 'elite' | 'legendary';
+
+/** Narrows the `category` text column to {@link MonsterCategory}. */
+export function asMonsterCategory(value: string | null | undefined): MonsterCategory {
+	return value === 'elite' || value === 'legendary' ? value : 'common';
+}
+
+/**
+ * Narrows a `game_monsters` row to {@link GameMonster}.
+ *
+ * `element` and `category` are plain text columns; the domain describes them
+ * as closed unions. A monster written by an older revision keeps a fightable
+ * element and the common category rather than breaking the combat screen.
+ */
+export function toGameMonster(row: {
+	id: string;
+	name: string;
+	element: string;
+	level: number;
+	category: string;
+	max_endurance: number;
+	attack_coefficient: number;
+	img_url: string;
+	img_head_url: string;
+	position: string | null;
+	spawned_by: string | null;
+	spawned_at: string;
+	is_dead: boolean;
+	defeated_by: string | null;
+	defeated_at: string | null;
+	created_at: string;
+	updated_at: string;
+}): GameMonster {
+	return { ...row, element: asGameElement(row.element), category: asMonsterCategory(row.category) };
+}
 
 // ============================================================================
 // Game Combats
@@ -174,6 +296,25 @@ export interface CombatTurn {
 	timestamp: string;
 }
 
+/**
+ * Narrows the `combat_flow` jsonb column to {@link CombatTurn}[].
+ *
+ * The column records the turn-by-turn history of a fight. Its generated type is
+ * `Json`, which carries none of the fields the combat log renders.
+ *
+ * Entries missing the two fields the log always reads — `action` and
+ * `timestamp` — are dropped rather than rendered as blank rows.
+ */
+export function asCombatFlow(value: unknown): CombatTurn[] {
+	if (!Array.isArray(value)) return [];
+
+	return value.filter((turn): turn is CombatTurn => {
+		if (typeof turn !== 'object' || turn === null || Array.isArray(turn)) return false;
+		const t = turn as Record<string, unknown>;
+		return typeof t.action === 'string' && typeof t.timestamp === 'string';
+	});
+}
+
 export interface ChallengeResult {
 	challenge_id: string;
 	success: boolean;
@@ -190,6 +331,48 @@ export interface PyrsGained {
 // ============================================================================
 // Game Challenges
 // ============================================================================
+
+/**
+ * Narrows a `game_challenges` row to {@link GameChallenge}.
+ *
+ * `element` is plain text and `view_config`, `variables` and `answer` are jsonb
+ * columns. An unknown element falls back to `base`, the neutral one : a défi
+ * doit rester jouable même si son élément a été écrit par une révision
+ * antérieure.
+ */
+export function toGameChallenge(row: {
+	id: string;
+	slug: string;
+	element: string;
+	category: string;
+	difficulty: number;
+	timer: number;
+	challenge_type: number;
+	question: string;
+	view_config: unknown;
+	variables: unknown;
+	answer: unknown;
+	hint: string | null;
+	show_answer: unknown;
+	times_attempted: number;
+	times_succeeded: number;
+	avg_time_taken: number | null;
+	is_active: boolean;
+	created_by: string | null;
+	created_at: string;
+	updated_at: string;
+}): GameChallenge {
+	const objet = (v: unknown) =>
+		typeof v === 'object' && v !== null && !Array.isArray(v) ? (v as Record<string, unknown>) : {};
+
+	return {
+		...row,
+		element: row.element === 'base' ? 'base' : asGameElement(row.element),
+		view_config: objet(row.view_config),
+		variables: row.variables as ChallengeVariables,
+		answer: row.answer as ChallengeAnswer
+	};
+}
 
 export interface GameChallenge {
 	id: string;

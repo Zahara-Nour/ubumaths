@@ -16,6 +16,9 @@ import type { TemplateMarkdown } from '$lib/ubumark';
 import { generateSRSInstance } from '$lib/srs/generator';
 import { dueCardsQuerySchema } from '$lib/server/validation/srs';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { asCardState } from '$lib/srs/types';
+import { templateMarkdown } from '$lib/ubumark/types/template';
+import { toQuestionTemplate } from '$lib/types/question-template';
 
 /**
  * Lightweight stats for API response (subset of CardStats)
@@ -112,6 +115,29 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			return json({ cards: [] });
 		}
 
+		// `get_due_cards_for_deck` ne renvoie que
+		// (card_id, template_id, card_type, difficulty, stability, state, next_review) :
+		// ni `total_reviews`, ni `last_review`. Le code les lisait tout de même sur
+		// la ligne du RPC, et l'élève voyait donc des statistiques `undefined`.
+		//
+		// Ces deux champs vivent dans `srs_card_stats`, indexée par utilisateur et
+		// par carte. Une seule requête groupée suffit.
+		const { data: statsCartes } = await supabase
+			.from('srs_card_stats')
+			.select('card_reference_id, total_reviews, last_review')
+			.eq('user_id', user.id)
+			.in(
+				'card_reference_id',
+				dueCards.map((c) => c.card_id)
+			);
+
+		const statsParCarte = new Map(
+			(statsCartes ?? []).map((s) => [
+				s.card_reference_id,
+				{ totalReviews: s.total_reviews, lastReview: s.last_review }
+			])
+		);
+
 		// Process each card to prepare ReviewCard objects
 		const reviewCards: ReviewCard[] = [];
 
@@ -142,7 +168,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 					console.log(`[SRS] Generating instance for template ${dueCard.template_id}`);
 					// Generate new instance with random seed
-					const result = generateSRSInstance(template);
+					const result = generateSRSInstance(toQuestionTemplate(template));
 
 					if (!result.success) {
 						console.error(
@@ -158,11 +184,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 						templateId: dueCard.template_id,
 						instance: result.instance,
 						stats: {
-							state: dueCard.state,
+							state: asCardState(dueCard.state),
 							difficulty: dueCard.difficulty,
 							stability: dueCard.stability,
-							totalReviews: dueCard.total_reviews,
-							lastReview: dueCard.last_review,
+							totalReviews: statsParCarte.get(dueCard.card_id)?.totalReviews ?? 0,
+							lastReview: statsParCarte.get(dueCard.card_id)?.lastReview ?? null,
 							nextReview: dueCard.next_review
 						}
 					});
@@ -184,14 +210,16 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					reviewCards.push({
 						cardId: dueCard.card_id,
 						cardType: 'custom',
-						frontContent: customCard.front_content,
-						backContent: customCard.back_content,
+						// `front_content` / `back_content` sont nullables en base ; le type
+						// métier est une chaîne marquée. Une carte sans contenu devient vide.
+						frontContent: templateMarkdown(customCard.front_content ?? ''),
+						backContent: templateMarkdown(customCard.back_content ?? ''),
 						stats: {
-							state: dueCard.state,
+							state: asCardState(dueCard.state),
 							difficulty: dueCard.difficulty,
 							stability: dueCard.stability,
-							totalReviews: dueCard.total_reviews,
-							lastReview: dueCard.last_review,
+							totalReviews: statsParCarte.get(dueCard.card_id)?.totalReviews ?? 0,
+							lastReview: statsParCarte.get(dueCard.card_id)?.lastReview ?? null,
 							nextReview: dueCard.next_review
 						}
 					});

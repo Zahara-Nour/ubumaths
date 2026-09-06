@@ -23,12 +23,6 @@ const pendingActivitySchema = z.discriminatedUnion('kind', [
 	z.object({ kind: z.literal('assessment'), id: uuidSchema })
 ]);
 
-const COLUMN_FOR_KIND = {
-	exercise: 'exercise_id',
-	question: 'question_template_id',
-	assessment: 'assessment_id'
-} as const;
-
 /** Nombre d'activités retenues au maximum pour une même séance. */
 const MAX_ACTIVITIES = 100;
 
@@ -44,7 +38,20 @@ const MAX_ACTIVITIES = 100;
  * Les doublons sont écartés : la couverture est un ensemble, référencer deux
  * fois la même question n'apporte rien.
  */
-export function parsePendingActivities(raw: unknown): Record<string, string>[] {
+/**
+ * Une activité prête à être insérée dans `journal_entry_activities`.
+ *
+ * Chaque nature d'activité renseigne SA colonne de référence et laisse les
+ * autres vides. Le type l'exprime en union plutôt qu'en `Record<string,
+ * string>` : ce dernier est une signature d'index, et il désactivait la
+ * vérification des colonnes à l'insertion.
+ */
+export type PendingActivityRow =
+	| { kind: 'exercise'; exercise_id: string }
+	| { kind: 'question'; question_template_id: string }
+	| { kind: 'assessment'; assessment_id: string };
+
+export function parsePendingActivities(raw: unknown): PendingActivityRow[] {
 	if (typeof raw !== 'string' || raw.trim() === '') return [];
 
 	let parsed: unknown;
@@ -56,14 +63,19 @@ export function parsePendingActivities(raw: unknown): Record<string, string>[] {
 	if (!Array.isArray(parsed)) return [];
 
 	const seen = new Set<string>();
-	const rows: Record<string, string>[] = [];
+	const rows: PendingActivityRow[] = [];
 	for (const item of parsed.slice(0, MAX_ACTIVITIES)) {
 		const v = pendingActivitySchema.safeParse(item);
 		if (!v.success) continue;
 		const key = `${v.data.kind}:${v.data.id}`;
 		if (seen.has(key)) continue;
 		seen.add(key);
-		rows.push({ kind: v.data.kind, [COLUMN_FOR_KIND[v.data.kind]]: v.data.id });
+		// Clés littérales : une clé calculée produirait une signature d'index, que
+		// le type d'écriture de la table refuse.
+		if (v.data.kind === 'exercise') rows.push({ kind: 'exercise', exercise_id: v.data.id });
+		else if (v.data.kind === 'question')
+			rows.push({ kind: 'question', question_template_id: v.data.id });
+		else rows.push({ kind: 'assessment', assessment_id: v.data.id });
 	}
 	return rows;
 }
