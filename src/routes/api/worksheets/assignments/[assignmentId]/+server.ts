@@ -105,11 +105,20 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		}
 
 		// Check permissions
-		const { data: profile } = await locals.supabase
+		const { data: profile, error: profileError } = await locals.supabase
 			.from('profiles')
 			.select('role')
 			.eq('id', user.id)
 			.single();
+
+		// `.single()` sur zéro ligne rend PGRST116 : le profil n'existe pas, et le
+		// refus qui suit est légitime. Toute AUTRE panne produisait le même refus,
+		// indiscernable d'un refus mérité — un administrateur pouvait ainsi se voir
+		// fermer la porte sans que rien ne le signale.
+		if (profileError && profileError.code !== 'PGRST116') {
+			console.error('Rôle illisible :', profileError);
+			throw error(500, 'Impossible de vérifier vos droits');
+		}
 
 		const isCreator = assignment.created_by === user.id;
 		const isAdmin = profile?.role === 'admin';
@@ -223,11 +232,20 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			throw error(404, 'Assignation non trouvee');
 		}
 
-		const { data: profile } = await locals.supabase
+		const { data: profile, error: profileError } = await locals.supabase
 			.from('profiles')
 			.select('role')
 			.eq('id', user.id)
 			.single();
+
+		// `.single()` sur zéro ligne rend PGRST116 : le profil n'existe pas, et le
+		// refus qui suit est légitime. Toute AUTRE panne produisait le même refus,
+		// indiscernable d'un refus mérité — un administrateur pouvait ainsi se voir
+		// fermer la porte sans que rien ne le signale.
+		if (profileError && profileError.code !== 'PGRST116') {
+			console.error('Rôle illisible :', profileError);
+			throw error(500, 'Impossible de vérifier vos droits');
+		}
 
 		if (assignment.created_by !== user.id && profile?.role !== 'admin') {
 			throw error(403, 'Non autorise a modifier cette assignation');
@@ -256,10 +274,18 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			}
 
 			// Get current class assignments
-			const { data: currentClasses } = await locals.supabase
+			const { data: currentClasses, error: currentClassesError } = await locals.supabase
 				.from('worksheet_assignment_classes')
 				.select('class_id')
 				.eq('assignment_id', assignmentId);
+
+			// Cet ensemble sert à CALCULER un écart (ce qu'il faut ajouter, ce qu'il faut
+			// retirer). Vide par accident, l'écart conclut « rien n'existe encore » et
+			// réaffecte tout ce qui l'était déjà.
+			if (currentClassesError) {
+				console.error('Affectations courantes illisibles :', currentClassesError);
+				throw error(500, 'Impossible de lire les affectations existantes');
+			}
 
 			const currentClassIds = new Set(currentClasses?.map((c) => c.class_id) || []);
 			const newClassIds = new Set(class_ids);
@@ -329,10 +355,18 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			}
 
 			// Get current student assignments
-			const { data: currentStudents } = await locals.supabase
+			const { data: currentStudents, error: currentStudentsError } = await locals.supabase
 				.from('worksheet_assignment_students')
 				.select('student_id')
 				.eq('assignment_id', assignmentId);
+
+			// Cet ensemble sert à CALCULER un écart (ce qu'il faut ajouter, ce qu'il faut
+			// retirer). Vide par accident, l'écart conclut « rien n'existe encore » et
+			// réaffecte tout ce qui l'était déjà.
+			if (currentStudentsError) {
+				console.error('Affectations courantes illisibles :', currentStudentsError);
+				throw error(500, 'Impossible de lire les affectations existantes');
+			}
 
 			const currentStudentIds = new Set(currentStudents?.map((s) => s.student_id) || []);
 			const newStudentIds = new Set(student_ids);
@@ -409,7 +443,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 		}
 
 		// Fetch complete assignment with relations for response
-		const { data: fullAssignment } = await locals.supabase
+		const { data: fullAssignment, error: fullAssignmentError } = await locals.supabase
 			.from('worksheet_assignments')
 			.select(
 				`
@@ -429,6 +463,11 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			)
 			.eq('id', assignmentId)
 			.single();
+
+		if (fullAssignmentError) {
+			console.error('Lecture impossible :', fullAssignmentError);
+			throw error(500, 'Impossible de charger les données');
+		}
 
 		if (fullAssignment) {
 			// Transform response
@@ -538,11 +577,20 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		}
 
 		if (assignment.created_by !== user.id) {
-			const { data: profile } = await locals.supabase
+			const { data: profile, error: profileError } = await locals.supabase
 				.from('profiles')
 				.select('role')
 				.eq('id', user.id)
 				.single();
+
+			// `.single()` sur zéro ligne rend PGRST116 : le profil n'existe pas, et le
+			// refus qui suit est légitime. Toute AUTRE panne produisait le même refus,
+			// indiscernable d'un refus mérité — un administrateur pouvait ainsi se voir
+			// fermer la porte sans que rien ne le signale.
+			if (profileError && profileError.code !== 'PGRST116') {
+				console.error('Rôle illisible :', profileError);
+				throw error(500, 'Impossible de vérifier vos droits');
+			}
 
 			if (profile?.role !== 'admin') {
 				throw error(403, 'Non autorise a supprimer cette assignation');

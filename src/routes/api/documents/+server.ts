@@ -83,10 +83,16 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		let chunkCounts: Record<string, number> = {};
 
 		if (documentIds.length > 0) {
-			const { data: chunks } = await locals.supabase
+			const { data: chunks, error: chunksError } = await locals.supabase
 				.from('rag_chunks')
 				.select('document_id')
 				.in('document_id', documentIds);
+
+			// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+			// laisse une trace.
+			if (chunksError) {
+				console.error('Enrichissement illisible :', chunksError);
+			}
 
 			if (chunks) {
 				chunkCounts = chunks.reduce(
@@ -153,11 +159,18 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 
 		// Verify ownership (unless admin)
 		if (profile.role !== 'admin') {
-			const { data: doc } = await locals.supabase
+			const { data: doc, error: docError } = await locals.supabase
 				.from('rag_documents')
 				.select('teacher_id')
 				.eq('id', documentId)
 				.single();
+
+			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+			// panne doit se distinguer d'un refus mérité.
+			if (docError && docError.code !== 'PGRST116') {
+				console.error('Contrôle d’accès impossible :', docError);
+				throw error(500, 'Impossible de vérifier votre accès');
+			}
 
 			if (!doc || doc.teacher_id !== user.id) {
 				throw error(403, { message: 'Vous ne pouvez supprimer que vos propres documents' });
@@ -207,11 +220,18 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 
 		// Verify ownership (unless admin)
 		if (profile.role !== 'admin') {
-			const { data: doc } = await locals.supabase
+			const { data: doc, error: docError } = await locals.supabase
 				.from('rag_documents')
 				.select('teacher_id')
 				.eq('id', documentId)
 				.single();
+
+			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+			// panne doit se distinguer d'un refus mérité.
+			if (docError && docError.code !== 'PGRST116') {
+				console.error('Contrôle d’accès impossible :', docError);
+				throw error(500, 'Impossible de vérifier votre accès');
+			}
 
 			if (!doc || doc.teacher_id !== user.id) {
 				throw error(403, { message: 'Vous ne pouvez modifier que vos propres documents' });

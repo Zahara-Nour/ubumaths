@@ -130,21 +130,36 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// If specific class_id is provided, further filter
 		if (class_id) {
 			// Verify class exists
-			const { data: classData } = await supabase
+			const { data: classData, error: classDataError } = await supabase
 				.from('classes')
 				.select('id')
 				.eq('id', class_id)
 				.single();
+
+			// PGRST116 = la classe n'existe pas, et le 403 qui suit est légitime. Toute
+			// AUTRE panne produisait le même 403 : le professeur s'entendait dire qu'il
+			// n'a pas accès à sa propre classe.
+			if (classDataError && classDataError.code !== 'PGRST116') {
+				console.error('Classe illisible :', classDataError);
+				throw error(500, 'Impossible de vérifier la classe');
+			}
 
 			if (!classData) {
 				throw error(403, 'Accès non autorisé à cette classe');
 			}
 
 			// Get students in this specific class
-			const { data: classStudents } = await supabase
+			const { data: classStudents, error: classStudentsError } = await supabase
 				.from('class_members')
 				.select('student_id')
 				.eq('class_id', class_id);
+
+			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
+			// affiche « aucune activité » : un constat, pas une absence de donnée.
+			if (classStudentsError) {
+				console.error('Périmètre d’élèves illisible :', classStudentsError);
+				throw error(500, 'Impossible de déterminer le périmètre');
+			}
 
 			const classStudentIds = classStudents?.map((m: { student_id: string }) => m.student_id) || [];
 

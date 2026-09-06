@@ -247,11 +247,19 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 			}
 
 			// Check if config exists
-			const { data: existingConfig } = await supabase
+			const { data: existingConfig, error: existingConfigError } = await supabase
 				.from('marketplace_config')
 				.select('id')
 				.eq('class_id', classId)
 				.single();
+
+			// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+			// panne prenait le même visage et faisait conclure « rien ici », donc créer
+			// par-dessus ce qu'on n'avait simplement pas su lire.
+			if (existingConfigError && existingConfigError.code !== 'PGRST116') {
+				console.error('Lecture impossible :', existingConfigError);
+				throw error(500, 'Impossible de vérifier l’état actuel');
+			}
 
 			if (existingConfig) {
 				// Update existing config
@@ -302,11 +310,19 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 			}
 
 			// Similar update/create logic as above
-			const { data: existingConfig } = await supabase
+			const { data: existingConfig, error: existingConfigError } = await supabase
 				.from('marketplace_config')
 				.select('id')
 				.eq('class_id', classId)
 				.single();
+
+			// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+			// panne prenait le même visage et faisait conclure « rien ici », donc créer
+			// par-dessus ce qu'on n'avait simplement pas su lire.
+			if (existingConfigError && existingConfigError.code !== 'PGRST116') {
+				console.error('Lecture impossible :', existingConfigError);
+				throw error(500, 'Impossible de vérifier l’état actuel');
+			}
 
 			if (existingConfig) {
 				const { data: updatedConfig, error: updateError } = await supabase
@@ -358,12 +374,20 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 		}
 
 		// Check if school config exists
-		const { data: existingConfig } = await supabase
+		const { data: existingConfig, error: existingConfigError } = await supabase
 			.from('marketplace_config')
 			.select('id')
 			.eq('school_id', schoolId)
 			.is('class_id', null)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+		// panne prenait le même visage et faisait conclure « rien ici », donc créer
+		// par-dessus ce qu'on n'avait simplement pas su lire.
+		if (existingConfigError && existingConfigError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', existingConfigError);
+			throw error(500, 'Impossible de vérifier l’état actuel');
+		}
 
 		if (existingConfig) {
 			// Update existing config

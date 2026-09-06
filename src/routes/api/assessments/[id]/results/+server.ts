@@ -30,11 +30,19 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const assessmentId = idValidation.data;
 
 	// Verify teacher owns the assessment
-	const { data: assessment } = await locals.supabase
+	const { data: assessment, error: assessmentError } = await locals.supabase
 		.from('assessments')
 		.select('created_by')
 		.eq('id', assessmentId)
 		.single();
+
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (assessmentError && assessmentError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', assessmentError);
+		throw error(500, 'Impossible de vérifier l’état actuel');
+	}
 
 	if (!assessment || assessment.created_by !== user.id) {
 		throw error(403, 'Forbidden - Not your assessment');

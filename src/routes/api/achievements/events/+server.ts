@@ -65,11 +65,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (user.id !== studentId) {
 			// Students can only submit events for themselves
 			// Teachers/admins must have access to the student
-			const { data: profile } = await supabase
+			const { data: profile, error: profileError } = await supabase
 				.from('profiles')
 				.select('role')
 				.eq('id', user.id)
 				.single();
+
+			// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+			// panne produisait le même refus, indiscernable d'un refus mérité.
+			if (profileError && profileError.code !== 'PGRST116') {
+				console.error('Rôle illisible :', profileError);
+				throw error(500, 'Impossible de vérifier vos droits');
+			}
 
 			if (!profile || profile.role === 'student') {
 				throw error(403, 'Students can only submit events for themselves');

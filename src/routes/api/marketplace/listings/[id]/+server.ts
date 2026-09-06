@@ -64,7 +64,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// If user is the owner, include proposals
 	let proposals = null;
 	if (listing.creator_id === userId) {
-		const { data: proposalData } = await supabase
+		const { data: proposalData, error: proposalDataError } = await supabase
 			.from('marketplace_proposals')
 			.select(
 				`
@@ -80,6 +80,11 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.eq('listing_id', listingId)
 			.eq('status', 'pending')
 			.order('created_at', { ascending: false });
+
+		if (proposalDataError) {
+			console.error('Lecture impossible :', proposalDataError);
+			throw error(500, 'Impossible de charger les données');
+		}
 
 		proposals = proposalData || [];
 	}
@@ -245,11 +250,16 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	await unlockCardsForEntity(supabase, listingId);
 
 	// Also unlock cards from any pending proposals
-	const { data: proposals } = await supabase
+	const { data: proposals, error: proposalsError } = await supabase
 		.from('marketplace_proposals')
 		.select('id')
 		.eq('listing_id', listingId)
 		.eq('status', 'pending');
+
+	if (proposalsError) {
+		console.error('Lecture impossible :', proposalsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	if (proposals && proposals.length > 0) {
 		for (const proposal of proposals) {

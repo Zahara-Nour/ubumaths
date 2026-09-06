@@ -72,17 +72,31 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				throw error(403, 'Accès non autorisé à cette classe');
 			}
 			// Get students in specific class
-			const { data: classStudents } = await supabase
+			const { data: classStudents, error: classStudentsError } = await supabase
 				.from('class_members')
 				.select('student_id')
 				.eq('class_id', class_id);
+
+			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
+			// affiche « aucune activité » : un constat, pas une absence de donnée.
+			if (classStudentsError) {
+				console.error('Périmètre d’élèves illisible :', classStudentsError);
+				throw error(500, 'Impossible de déterminer le périmètre');
+			}
 			studentIds = classStudents?.map((m: { student_id: string }) => m.student_id) || [];
 		} else {
 			// Get all students in teacher's classes
-			const { data: classMembers } = await supabase
+			const { data: classMembers, error: classMembersError } = await supabase
 				.from('class_members')
 				.select('student_id')
 				.in('class_id', classIds);
+
+			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
+			// affiche « aucune activité » : un constat, pas une absence de donnée.
+			if (classMembersError) {
+				console.error('Périmètre d’élèves illisible :', classMembersError);
+				throw error(500, 'Impossible de déterminer le périmètre');
+			}
 			studentIds = classMembers?.map((m: { student_id: string }) => m.student_id) || [];
 		}
 	} else if (profile.role === 'admin') {
@@ -241,10 +255,16 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		//
 		// `vip_cards_activity` journalise chaque mouvement avec les deux
 		// identifiants : c'est elle qui relie l'instance à son modèle.
-		const { data: activites } = await supabase
+		const { data: activites, error: activitesError } = await supabase
 			.from('vip_cards_activity')
 			.select('card_instance_id, card_template_id')
 			.in('card_instance_id', mostTradedCardIds);
+
+		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+		// laisse une trace.
+		if (activitesError) {
+			console.error('Enrichissement illisible :', activitesError);
+		}
 
 		const modeleParInstance = new Map<string, string>();
 		for (const a of activites ?? []) {
@@ -253,10 +273,16 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 		}
 
-		const { data: modeles } = await supabase
+		const { data: modeles, error: modelesError } = await supabase
 			.from('vip_card_templates')
 			.select('id, name')
 			.in('id', [...new Set(modeleParInstance.values())]);
+
+		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+		// laisse une trace.
+		if (modelesError) {
+			console.error('Enrichissement illisible :', modelesError);
+		}
 
 		const nomParModele = new Map((modeles ?? []).map((m) => [m.id, m.name]));
 
@@ -304,11 +330,16 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	let totalTimeToAcceptance = 0;
 	let acceptedListingsCount = 0;
 
-	const { data: acceptedProposals } = await supabase
+	const { data: acceptedProposals, error: acceptedProposalsError } = await supabase
 		.from('marketplace_proposals')
 		.select('listing_id, created_at, responded_at')
 		.eq('status', 'accepted')
 		.in('listing_id', listings?.map((l) => l.id) || []);
+
+	if (acceptedProposalsError) {
+		console.error('Lecture impossible :', acceptedProposalsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	for (const proposal of acceptedProposals || []) {
 		const listing = listings?.find((l) => l.id === proposal.listing_id);

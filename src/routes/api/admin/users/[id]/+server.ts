@@ -96,11 +96,19 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		// Single-teacher invariant: never promote another account to teacher.
 		// (Belt-and-suspenders with the DB trigger trg_enforce_single_teacher.)
 		if (data.role === 'teacher') {
-			const { data: currentTeacher } = await supabase
+			const { data: currentTeacher, error: currentTeacherError } = await supabase
 				.from('profiles')
 				.select('id')
 				.eq('role', 'teacher')
 				.maybeSingle();
+
+			// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+			// panne prenait le même visage et faisait conclure « rien ici », donc créer
+			// par-dessus ce qu'on n'avait simplement pas su lire.
+			if (currentTeacherError && currentTeacherError.code !== 'PGRST116') {
+				console.error('Lecture impossible :', currentTeacherError);
+				throw error(500, 'Impossible de vérifier l’état actuel');
+			}
 			if (currentTeacher && currentTeacher.id !== userId) {
 				throw error(400, 'Un seul professeur est autorisé : impossible de promouvoir ce compte.');
 			}

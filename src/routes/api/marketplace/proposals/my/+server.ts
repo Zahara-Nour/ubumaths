@@ -116,10 +116,17 @@ export const GET: RequestHandler = async ({ locals }) => {
 	const instanceToTemplate = new Map<string, string>();
 
 	if (needInstanceResolution && userIdsForProfiles.size > 0) {
-		const { data: profiles } = await supabase
+		const { data: profiles, error: profilesError } = await supabase
 			.from('profiles')
 			.select('id, vip_cards')
 			.in('id', Array.from(userIdsForProfiles));
+
+		// Ces cartes composent l'offre affichée à l'élève. Une carte non résolue
+		// disparaît de l'offre : mieux vaut une erreur qu'un troc falsifié.
+		if (profilesError) {
+			console.error('Cartes illisibles :', profilesError);
+			throw error(500, 'Impossible de lire les cartes');
+		}
 
 		if (profiles) {
 			for (const profile of profiles) {
@@ -137,10 +144,16 @@ export const GET: RequestHandler = async ({ locals }) => {
 	// --- Step 3: Fetch all template names in ONE query ---
 	const templateNameMap = new Map<string, string>();
 	if (allTemplateIds.size > 0) {
-		const { data: templates } = await supabase
+		const { data: templates, error: templatesError } = await supabase
 			.from('vip_card_templates')
 			.select('id, name')
 			.in('id', Array.from(allTemplateIds));
+
+		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+		// laisse une trace.
+		if (templatesError) {
+			console.error('Enrichissement illisible :', templatesError);
+		}
 
 		if (templates) {
 			for (const t of templates) templateNameMap.set(t.id, t.name);
