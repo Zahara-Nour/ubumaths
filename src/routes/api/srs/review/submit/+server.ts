@@ -136,7 +136,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		today.setHours(0, 0, 0, 0);
 		const todayStr = today.toISOString();
 
-		const { data: existingSession } = await supabase
+		const { data: existingSession, error: existingSessionError } = await supabase
 			.from('srs_review_sessions')
 			.select('*')
 			.eq('user_id', user.id)
@@ -145,6 +145,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.order('created_at', { ascending: false })
 			.limit(1)
 			.maybeSingle();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+		// panne prenait le même visage et faisait conclure « rien ici », donc créer
+		// par-dessus ce qu'on n'avait simplement pas su lire.
+		if (existingSessionError && existingSessionError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', existingSessionError);
+			throw error(500, 'Impossible de vérifier l’état actuel');
+		}
 
 		const isCorrect = body.grade >= 3;
 		const timeSpent = body.timeSpent || 0;

@@ -55,13 +55,23 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	if (!isOwner && !isPublic) {
 		// Check if teacher of the file owner
 		if (profile.role === 'teacher') {
-			const { data: isTeacher } = await locals.supabase.rpc('is_teacher_of_student', {
-				p_student_id: data.owner_id
-			});
+			const { data: isTeacher, error: isTeacherError } = await locals.supabase.rpc(
+				'is_teacher_of_student',
+				{
+					p_student_id: data.owner_id
+				}
+			);
+
+			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+			// panne doit se distinguer d'un refus mérité.
+			if (isTeacherError && isTeacherError.code !== 'PGRST116') {
+				console.error('Contrôle d’accès impossible :', isTeacherError);
+				throw error(500, 'Impossible de vérifier votre accès');
+			}
 
 			if (!isTeacher) {
 				// Check if assigned to one of teacher's classes
-				const { data: assignment } = await locals.supabase
+				const { data: assignment, error: assignmentError } = await locals.supabase
 					.from('python_file_assignments')
 					.select('id')
 					.eq('file_id', id)
@@ -69,15 +79,32 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					.limit(1)
 					.maybeSingle();
 
+				// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+				// panne doit se distinguer d'un refus mérité.
+				if (assignmentError && assignmentError.code !== 'PGRST116') {
+					console.error('Contrôle d’accès impossible :', assignmentError);
+					throw error(500, 'Impossible de vérifier votre accès');
+				}
+
 				if (!assignment) {
 					throw error(403, 'Acces refuse a ce fichier Python');
 				}
 			}
 		} else if (profile.role === 'student') {
 			// Check if file is assigned to student's class
-			const { data: isAssigned } = await locals.supabase.rpc('is_file_assigned_to_student', {
-				p_file_id: id
-			});
+			const { data: isAssigned, error: isAssignedError } = await locals.supabase.rpc(
+				'is_file_assigned_to_student',
+				{
+					p_file_id: id
+				}
+			);
+
+			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+			// panne doit se distinguer d'un refus mérité.
+			if (isAssignedError && isAssignedError.code !== 'PGRST116') {
+				console.error('Contrôle d’accès impossible :', isAssignedError);
+				throw error(500, 'Impossible de vérifier votre accès');
+			}
 
 			if (!isAssigned) {
 				throw error(403, 'Acces refuse a ce fichier Python');
@@ -90,7 +117,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Fetch assignment info if student
 	let assignment = null;
 	if (profile.role === 'student') {
-		const { data: assignmentData } = await locals.supabase
+		const { data: assignmentData, error: assignmentDataError } = await locals.supabase
 			.from('python_file_assignments')
 			.select(
 				`
@@ -107,6 +134,12 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.eq('file_id', id)
 			.limit(1)
 			.maybeSingle();
+
+		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+		// laisse une trace.
+		if (assignmentDataError) {
+			console.error('Enrichissement illisible :', assignmentDataError);
+		}
 
 		if (assignmentData) {
 			const classData = assignmentData.classes as unknown as { name: string } | null;

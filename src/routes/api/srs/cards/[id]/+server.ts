@@ -48,12 +48,19 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		}
 
 		// Verify user owns the deck this card belongs to
-		const { data: deck } = await supabase
+		const { data: deck, error: deckError } = await supabase
 			.from('srs_decks')
 			.select('id')
 			.eq('id', card.deck_id)
 			.eq('owner_id', user.id)
 			.single();
+
+		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+		// panne doit se distinguer d'un refus mérité.
+		if (deckError && deckError.code !== 'PGRST116') {
+			console.error('Contrôle d’accès impossible :', deckError);
+			return error(500, 'Impossible de vérifier votre accès');
+		}
 
 		if (!deck) {
 			return json({ error: 'Access denied' }, { status: 403 });
@@ -161,12 +168,19 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		if (body.section_id !== undefined) {
 			// Si section_id non-null, vérifier qu'elle appartient bien à ce deck
 			if (body.section_id !== null) {
-				const { data: section } = await supabase
+				const { data: section, error: sectionError } = await supabase
 					.from('srs_deck_sections')
 					.select('id')
 					.eq('id', body.section_id)
 					.eq('deck_id', card.deck_id)
 					.maybeSingle();
+
+				// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+				// panne doit se distinguer d'un refus mérité.
+				if (sectionError && sectionError.code !== 'PGRST116') {
+					console.error('Contrôle d’accès impossible :', sectionError);
+					return error(500, 'Impossible de vérifier votre accès');
+				}
 				if (!section) {
 					return json({ error: 'Section does not belong to this deck.' }, { status: 400 });
 				}

@@ -306,11 +306,17 @@ async function getStudentClassIds(
 	supabase: SupabaseClient<Database>,
 	studentId: string
 ): Promise<string> {
-	const { data: classes } = await supabase
+	const { data: classes, error: classesError } = await supabase
 		.from('class_members')
 		.select('class_id')
 		.eq('student_id', studentId)
 		.eq('status', 'active');
+
+	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+	// laisse une trace.
+	if (classesError) {
+		console.error('Enrichissement illisible :', classesError);
+	}
 
 	if (!classes || classes.length === 0) {
 		return '';

@@ -91,12 +91,20 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 
 			case 'toggleRead': {
 				// Toggle read/unread status
-				const { data: inboxEntry } = await supabase
+				const { data: inboxEntry, error: inboxEntryError } = await supabase
 					.from('message_inbox')
 					.select('read_at')
 					.eq('message_id', messageId)
 					.eq('recipient_id', user.id)
 					.single();
+
+				// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+				// panne prenait le même visage et faisait conclure « rien ici », donc créer
+				// par-dessus ce qu'on n'avait simplement pas su lire.
+				if (inboxEntryError && inboxEntryError.code !== 'PGRST116') {
+					console.error('Lecture impossible :', inboxEntryError);
+					throw error(500, 'Impossible de vérifier l’état actuel');
+				}
 
 				const newReadValue = inboxEntry?.read_at ? null : new Date().toISOString();
 

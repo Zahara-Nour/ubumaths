@@ -116,7 +116,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const amount = template.action.amount;
 
 	// Get student's active class for the gidouilles RPC
-	const { data: membership } = await supabase
+	const { data: membership, error: membershipError } = await supabase
 		.from('class_members')
 		.select('class_id')
 		.eq('student_id', studentId)
@@ -124,6 +124,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.order('joined_at', { ascending: false })
 		.limit(1)
 		.single();
+
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (membershipError && membershipError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', membershipError);
+		throw error(500, 'Impossible de vérifier l’état actuel');
+	}
 
 	if (!membership) {
 		throw error(400, 'Student is not in any active class');

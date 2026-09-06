@@ -53,11 +53,18 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 	}
 
 	// Check role from profile
-	const { data: userProfile } = await locals.supabase
+	const { data: userProfile, error: userProfileError } = await locals.supabase
 		.from('profiles')
 		.select('role')
 		.eq('id', locals.user.id)
 		.single();
+
+	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+	// panne produisait le même refus, indiscernable d'un refus mérité.
+	if (userProfileError && userProfileError.code !== 'PGRST116') {
+		console.error('Rôle illisible :', userProfileError);
+		throw error(500, 'Impossible de vérifier vos droits');
+	}
 
 	if (!userProfile || userProfile.role !== 'teacher') {
 		throw error(401, 'Non autorisé - enseignant requis');
@@ -157,11 +164,18 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 
 		// Check for existing worksheet instances
 		const studentIds = typedStudents.map((s) => s.student.id);
-		const { data: existingInstances } = await locals.supabase
+		const { data: existingInstances, error: existingInstancesError } = await locals.supabase
 			.from('worksheet_instances')
 			.select('student_id, instance_data, variant_seed')
 			.eq('worksheet_id', params.id)
 			.in('student_id', studentIds);
+
+		// Cet ensemble sert à CALCULER un écart. Vide par accident, l'écart conclut
+		// « rien n'existe encore » et recrée ce qui existait déjà.
+		if (existingInstancesError) {
+			console.error('État courant illisible :', existingInstancesError);
+			throw error(500, 'Impossible de lire l’état actuel');
+		}
 
 		// Create a map of existing instances
 		const instanceMap = new Map<string, InstanceData>();

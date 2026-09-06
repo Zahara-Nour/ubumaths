@@ -114,10 +114,15 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		}
 
 		// Get all cards from source deck
-		const { data: sourceCards } = await supabase
+		const { data: sourceCards, error: sourceCardsError } = await supabase
 			.from('srs_cards')
 			.select('*')
 			.eq('deck_id', deckId);
+
+		if (sourceCardsError) {
+			console.error('Lecture impossible :', sourceCardsError);
+			throw error(500, 'Impossible de charger les données');
+		}
 
 		console.log('Source deck has', sourceCards?.length || 0, 'cards');
 

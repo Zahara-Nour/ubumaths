@@ -87,11 +87,18 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	//   (b) freely on a public exercise (assignment_id stays null).
 	// Case (b) requires the exercise to be public — verified just below if no
 	// assignment is found.
-	const { data: assignments } = await supabase
+	const { data: assignments, error: assignmentsError } = await supabase
 		.from('python_exercise_assignments')
 		.select('id, class_id, student_id, max_attempts, due_date')
 		.eq('exercise_id', exerciseId)
 		.or(`student_id.eq.${user.id},class_id.in.(${await getStudentClassIds(supabase, user.id)})`);
+
+	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+	// panne doit se distinguer d'un refus mérité.
+	if (assignmentsError && assignmentsError.code !== 'PGRST116') {
+		console.error('Contrôle d’accès impossible :', assignmentsError);
+		throw error(500, 'Impossible de vérifier votre accès');
+	}
 
 	const assignment =
 		assignments && assignments.length > 0
@@ -202,11 +209,17 @@ async function getStudentClassIds(
 	supabase: SupabaseClient<Database>,
 	studentId: string
 ): Promise<string> {
-	const { data: classes } = await supabase
+	const { data: classes, error: classesError } = await supabase
 		.from('class_members')
 		.select('class_id')
 		.eq('student_id', studentId)
 		.eq('status', 'active');
+
+	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+	// laisse une trace.
+	if (classesError) {
+		console.error('Enrichissement illisible :', classesError);
+	}
 
 	if (!classes || classes.length === 0) {
 		return '';

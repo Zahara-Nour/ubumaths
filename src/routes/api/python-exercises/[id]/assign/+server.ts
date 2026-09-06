@@ -93,11 +93,18 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	// If assigning to student, verify student is enrolled in at least one class
 	if (data.student_id) {
-		const { data: studentClasses } = await supabase
+		const { data: studentClasses, error: studentClassesError } = await supabase
 			.from('class_members')
 			.select('class_id')
 			.eq('student_id', data.student_id)
 			.eq('status', 'active');
+
+		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+		// panne doit se distinguer d'un refus mérité.
+		if (studentClassesError && studentClassesError.code !== 'PGRST116') {
+			console.error('Contrôle d’accès impossible :', studentClassesError);
+			throw error(500, 'Impossible de vérifier votre accès');
+		}
 
 		if (!studentClasses || studentClasses.length === 0) {
 			throw error(404, 'Étudiant introuvable dans une classe');

@@ -114,7 +114,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase } }) =>
 export const GET: RequestHandler = async ({ locals: { supabase } }) => {
 	const today = new Date().toISOString().split('T')[0];
 
-	const { data: existing } = await supabase
+	const { data: existing, error: existingError } = await supabase
 		.from('riddle_of_the_day')
 		.select(
 			`
@@ -127,6 +127,11 @@ export const GET: RequestHandler = async ({ locals: { supabase } }) => {
 		// est-elle déjà programmée aujourd'hui ? » ne répondait jamais.
 		.eq('date', today)
 		.single();
+
+	if (existingError) {
+		console.error('Lecture impossible :', existingError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	return json({
 		date: today,

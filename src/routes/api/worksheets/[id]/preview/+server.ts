@@ -40,11 +40,18 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		const { studentId, variantSeed } = validation.data;
 
 		// Check if user is a teacher (has permission to preview)
-		const { data: profile } = await supabase
+		const { data: profile, error: profileError } = await supabase
 			.from('profiles')
 			.select('role, school_id')
 			.eq('id', user.id)
 			.single();
+
+		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+		// panne produisait le même refus, indiscernable d'un refus mérité.
+		if (profileError && profileError.code !== 'PGRST116') {
+			console.error('Rôle illisible :', profileError);
+			return error(500, 'Impossible de vérifier vos droits');
+		}
 
 		if (!profile || profile.role !== 'teacher') {
 			return error(403, 'Only teachers can preview worksheet variants');
@@ -122,11 +129,17 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		// If a specific student is provided, fetch their details
 		let studentInfo = null;
 		if (studentId) {
-			const { data: student } = await supabase
+			const { data: student, error: studentError } = await supabase
 				.from('profiles')
 				.select('id, firstname, lastname')
 				.eq('id', studentId)
 				.single();
+
+			// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+			// laisse une trace.
+			if (studentError) {
+				console.error('Enrichissement illisible :', studentError);
+			}
 
 			if (student) {
 				studentInfo = {

@@ -37,11 +37,18 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	await requireTeacherOfClass(locals, classId);
 
 	// 1. Liste des élèves actifs de la classe.
-	const { data: memberRows } = await locals.supabase
+	const { data: memberRows, error: memberRowsError } = await locals.supabase
 		.from('class_members')
 		.select('student_id')
 		.eq('class_id', classId)
 		.eq('status', 'active');
+
+	// Cette liste borne la portée du classement. Vidée par une panne, elle
+	// affiche un classement amputé sans le dire.
+	if (memberRowsError) {
+		console.error('Périmètre illisible :', memberRowsError);
+		throw error(500, 'Impossible de déterminer le périmètre');
+	}
 
 	const studentIds = (memberRows ?? []).map((m) => m.student_id);
 	if (studentIds.length === 0) {

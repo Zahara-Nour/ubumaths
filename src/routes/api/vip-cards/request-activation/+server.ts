@@ -100,11 +100,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		: 'Action speciale';
 
 	// Fetch updated instance for response
-	const { data: updatedProfile } = await supabase
+	const { data: updatedProfile, error: updatedProfileError } = await supabase
 		.from('profiles')
 		.select('vip_cards')
 		.eq('id', studentId)
 		.single();
+
+	// L'échange a déjà eu lieu en base : lever ici ferait croire à un échec et
+	// pousserait l'élève à recommencer. On garde donc le repli — mais sans cette
+	// relecture, l'identifiant d'instance renvoyé est un UUID inventé, qui ne
+	// désignera aucune carte réelle lors de la prochaine action.
+	if (updatedProfileError) {
+		console.error(
+			'Inventaire relu en échec, identifiant d’instance approximatif :',
+			updatedProfileError
+		);
+	}
 
 	const updatedInstance = updatedProfile?.vip_cards
 		? (updatedProfile.vip_cards as Record<string, unknown>)[instanceId]

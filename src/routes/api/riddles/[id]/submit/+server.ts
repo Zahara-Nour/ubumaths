@@ -92,11 +92,19 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	// If manual validation, create a message to teacher
 	if (isCorrect === null) {
 		// Get student profile for name
-		const { data: student } = await locals.supabase
+		const { data: student, error: studentError } = await locals.supabase
 			.from('profiles')
 			.select('firstname, lastname')
 			.eq('id', user.id)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+		// panne prenait le même visage et faisait conclure « rien ici », donc créer
+		// par-dessus ce qu'on n'avait simplement pas su lire.
+		if (studentError && studentError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', studentError);
+			throw error(500, 'Impossible de vérifier l’état actuel');
+		}
 
 		// Get teacher ID
 		const teacherId = await getRiddleTeacherId(locals.supabase, riddleId);

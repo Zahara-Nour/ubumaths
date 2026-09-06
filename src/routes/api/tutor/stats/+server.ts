@@ -149,7 +149,16 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	// For teachers (non-admins), only show conversations from their classes
 	if (profile.role === 'teacher') {
 		// Get teacher's class IDs first
-		const { data: teacherClasses } = await locals.supabase.from('classes').select('id');
+		const { data: teacherClasses, error: teacherClassesError } = await locals.supabase
+			.from('classes')
+			.select('id');
+
+		// Cette liste borne la portée du classement. Vidée par une panne, elle
+		// affiche un classement amputé sans le dire.
+		if (teacherClassesError) {
+			console.error('Périmètre illisible :', teacherClassesError);
+			throw error(500, 'Impossible de déterminer le périmètre');
+		}
 
 		if (teacherClasses && teacherClasses.length > 0) {
 			const classIds = teacherClasses.map((c) => c.id);

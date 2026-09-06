@@ -20,11 +20,18 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		return error(401, 'Non authentifié');
 	}
 
-	const { data: profile } = await supabase
+	const { data: profile, error: profileError } = await supabase
 		.from('profiles')
 		.select('role')
 		.eq('id', user.id)
 		.single();
+
+	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+	// panne produisait le même refus, indiscernable d'un refus mérité.
+	if (profileError && profileError.code !== 'PGRST116') {
+		console.error('Rôle illisible :', profileError);
+		return error(500, 'Impossible de vérifier vos droits');
+	}
 
 	if (!profile || (profile.role !== 'admin' && profile.role !== 'teacher')) {
 		return error(403, 'Permissions insuffisantes');

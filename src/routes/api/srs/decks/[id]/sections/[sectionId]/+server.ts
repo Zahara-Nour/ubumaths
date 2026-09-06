@@ -18,12 +18,19 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	const { user } = await requireAuth(locals);
 
 	// P2 defense in depth : vérif ownership explicite avant tout traitement
-	const { data: deck } = await locals.supabase
+	const { data: deck, error: deckError } = await locals.supabase
 		.from('srs_decks')
 		.select('id')
 		.eq('id', params.id)
 		.eq('owner_id', user.id)
 		.maybeSingle();
+
+	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+	// panne doit se distinguer d'un refus mérité.
+	if (deckError) {
+		console.error('Contrôle d’accès impossible :', deckError);
+		return json({ error: 'Impossible de vérifier votre accès' }, { status: 500 });
+	}
 	if (!deck) {
 		return json({ error: 'Deck not found or access denied' }, { status: 404 });
 	}
@@ -80,12 +87,19 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const { user } = await requireAuth(locals);
 
 	// P2 defense in depth : vérif ownership explicite
-	const { data: deck } = await locals.supabase
+	const { data: deck, error: deckError } = await locals.supabase
 		.from('srs_decks')
 		.select('id')
 		.eq('id', params.id)
 		.eq('owner_id', user.id)
 		.maybeSingle();
+
+	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+	// panne doit se distinguer d'un refus mérité.
+	if (deckError) {
+		console.error('Contrôle d’accès impossible :', deckError);
+		return json({ error: 'Impossible de vérifier votre accès' }, { status: 500 });
+	}
 	if (!deck) {
 		return json({ error: 'Deck not found or access denied' }, { status: 404 });
 	}

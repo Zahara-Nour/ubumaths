@@ -101,11 +101,18 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			throw error(404, 'Feuille non trouvee');
 		}
 
-		const { data: profile } = await locals.supabase
+		const { data: profile, error: profileError } = await locals.supabase
 			.from('profiles')
 			.select('role')
 			.eq('id', user.id)
 			.single();
+
+		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+		// panne produisait le même refus, indiscernable d'un refus mérité.
+		if (profileError && profileError.code !== 'PGRST116') {
+			console.error('Rôle illisible :', profileError);
+			throw error(500, 'Impossible de vérifier vos droits');
+		}
 
 		if (worksheet.created_by !== user.id && profile?.role !== 'admin') {
 			throw error(403, 'Acces non autorise');
@@ -141,10 +148,17 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		// Filter by class_id in junction table if provided
 		if (classId) {
 			// Need to filter assignments that have this class in the junction table
-			const { data: assignmentIds } = await locals.supabase
+			const { data: assignmentIds, error: assignmentIdsError } = await locals.supabase
 				.from('worksheet_assignment_classes')
 				.select('assignment_id')
 				.eq('class_id', classId);
+
+			// Cette liste borne la portée du classement. Vidée par une panne, elle
+			// affiche un classement amputé sans le dire.
+			if (assignmentIdsError) {
+				console.error('Périmètre illisible :', assignmentIdsError);
+				throw error(500, 'Impossible de déterminer le périmètre');
+			}
 
 			if (assignmentIds && assignmentIds.length > 0) {
 				query = query.in(
@@ -281,11 +295,18 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			throw error(404, 'Feuille non trouvee');
 		}
 
-		const { data: profile } = await locals.supabase
+		const { data: profile, error: profileError } = await locals.supabase
 			.from('profiles')
 			.select('role')
 			.eq('id', user.id)
 			.single();
+
+		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+		// panne produisait le même refus, indiscernable d'un refus mérité.
+		if (profileError && profileError.code !== 'PGRST116') {
+			console.error('Rôle illisible :', profileError);
+			throw error(500, 'Impossible de vérifier vos droits');
+		}
 
 		if (worksheet.created_by !== user.id && profile?.role !== 'admin') {
 			throw error(403, 'Acces non autorise');

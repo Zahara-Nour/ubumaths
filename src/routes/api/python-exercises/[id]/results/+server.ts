@@ -66,11 +66,18 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	}
 
 	// Teacher must be the author or have assigned this exercise
-	const { data: assignments } = await supabase
+	const { data: assignments, error: assignmentsError } = await supabase
 		.from('python_exercise_assignments')
 		.select('id')
 		.eq('exercise_id', exerciseId)
 		.eq('assigned_by', user.id);
+
+	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+	// panne doit se distinguer d'un refus mérité.
+	if (assignmentsError && assignmentsError.code !== 'PGRST116') {
+		console.error('Contrôle d’accès impossible :', assignmentsError);
+		throw error(500, 'Impossible de vérifier votre accès');
+	}
 
 	if (exercise.author_id !== user.id && (!assignments || assignments.length === 0)) {
 		throw error(403, "Vous n'avez pas accès aux résultats de cet exercice");
@@ -126,11 +133,18 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 	if (class_id) {
 		// Get students from the specified class
-		const { data: classMembers } = await supabase
+		const { data: classMembers, error: classMembersError } = await supabase
 			.from('class_members')
 			.select('student_id')
 			.eq('class_id', class_id)
 			.eq('status', 'active');
+
+		// Cette liste borne la portée du classement. Vidée par une panne, elle
+		// affiche un classement amputé sans le dire.
+		if (classMembersError) {
+			console.error('Périmètre illisible :', classMembersError);
+			throw error(500, 'Impossible de déterminer le périmètre');
+		}
 
 		if (!classMembers || classMembers.length === 0) {
 			return json({ results: [] });
@@ -141,16 +155,32 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	} else {
 		// If no class filter, show submissions from all students in any class.
 		// Mono-teacher: RLS ensures only the teacher's own data is visible.
-		const { data: allClasses } = await supabase.from('classes').select('id');
+		const { data: allClasses, error: allClassesError } = await supabase
+			.from('classes')
+			.select('id');
+
+		// Cette liste borne la portée du classement. Vidée par une panne, elle
+		// affiche un classement amputé sans le dire.
+		if (allClassesError) {
+			console.error('Périmètre illisible :', allClassesError);
+			throw error(500, 'Impossible de déterminer le périmètre');
+		}
 
 		if (allClasses && allClasses.length > 0) {
 			const classIds = allClasses.map((c) => c.id);
 
-			const { data: classMembers } = await supabase
+			const { data: classMembers, error: classMembersError } = await supabase
 				.from('class_members')
 				.select('student_id')
 				.in('class_id', classIds)
 				.eq('status', 'active');
+
+			// Cette liste borne la portée du classement. Vidée par une panne, elle
+			// affiche un classement amputé sans le dire.
+			if (classMembersError) {
+				console.error('Périmètre illisible :', classMembersError);
+				throw error(500, 'Impossible de déterminer le périmètre');
+			}
 
 			if (classMembers && classMembers.length > 0) {
 				const studentIds = classMembers.map((cm) => cm.student_id);

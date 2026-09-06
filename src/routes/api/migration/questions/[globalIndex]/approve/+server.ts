@@ -131,11 +131,19 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 
 		// Check if there's an edited version of this question
 		let editedJson: unknown = null;
-		const { data: editData } = await locals.supabase
+		const { data: editData, error: editDataError } = await locals.supabase
 			.from('migration_edits')
 			.select('edited_json')
 			.eq('old_question_hash', questionHash)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+		// panne prenait le même visage et faisait conclure « rien ici », donc créer
+		// par-dessus ce qu'on n'avait simplement pas su lire.
+		if (editDataError && editDataError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', editDataError);
+			throw error(500, 'Impossible de vérifier l’état actuel');
+		}
 
 		if (editData?.edited_json) {
 			editedJson = editData.edited_json;
