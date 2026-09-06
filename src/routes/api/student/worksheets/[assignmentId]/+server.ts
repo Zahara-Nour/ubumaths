@@ -50,7 +50,6 @@ import { getExerciseContentSafe } from '$lib/exercises/types';
 import {
 	localizedText,
 	asRowTranslations,
-	toWorksheetExerciseRow,
 	worksheetLocale,
 	asWorksheetConfig,
 	type RowTranslations
@@ -386,10 +385,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					// Fallback to dynamic resolution
 					const resolved = resolveExercise(
 						{
-							// Colonnes plus permissives en base qu'en type métier :
-							// `variant_mode` est du texte, `variant_config` et
-							// `translations` du jsonb, `correction_visible` est nullable.
-							...toWorksheetExerciseRow(we),
+							...we,
+							// `correction_visible` est nullable en base : masquée par défaut,
+							// ce qui est le sens sûr sur un document noté.
+							correction_visible: we.correction_visible ?? false,
 							exercise: exerciseData
 						},
 						seed,
@@ -403,7 +402,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				// No instance exists - resolve dynamically
 				const resolved = resolveExercise(
 					{
-						...toWorksheetExerciseRow(we),
+						...we,
+						correction_visible: we.correction_visible ?? false,
 						exercise: exerciseData
 					},
 					seed,
