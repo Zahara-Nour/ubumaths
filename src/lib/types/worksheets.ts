@@ -832,16 +832,15 @@ export function asTemplatePlaceholders(value: unknown): TemplatePlaceholder[] {
  * renders as a plain worksheet, and an unknown status is treated as a draft —
  * the direction that never publishes something by accident.
  */
-export function toWorksheetRow<T extends Record<string, unknown>>(
-	row: T & {
-		type: string;
-		status: string;
-		config: unknown;
-		translations?: unknown;
-		grades: string[] | null;
-		tags: string[] | null;
-	}
-): Omit<T, keyof WorksheetRow> & WorksheetRow {
+export function toWorksheetRow(row: {
+	type: string;
+	status: string;
+	config: unknown;
+	translations?: unknown;
+	grades: string[] | null;
+	tags: string[] | null;
+	[k: string]: unknown;
+}): WorksheetRow {
 	return {
 		...row,
 		type: (WORKSHEET_TYPES.find((t) => t === row.type) ?? 'worksheet') as WorksheetType,
@@ -850,7 +849,7 @@ export function toWorksheetRow<T extends Record<string, unknown>>(
 		translations: asRowTranslations(row.translations),
 		grades: row.grades ?? [],
 		tags: row.tags ?? []
-	} as Omit<T, keyof WorksheetRow> & WorksheetRow;
+	} as unknown as WorksheetRow;
 }
 
 /**
@@ -864,14 +863,13 @@ export function toWorksheetRow<T extends Record<string, unknown>>(
  * empty config, and a correction hidden until the teacher releases it — the
  * safe direction for a graded document.
  */
-export function toWorksheetExerciseRow<T extends Record<string, unknown>>(
-	row: T & {
-		variant_mode: string | null;
-		variant_config: unknown;
-		translations?: unknown;
-		correction_visible: boolean | null;
-	}
-): Omit<T, keyof WorksheetExerciseRow> & WorksheetExerciseRow {
+export function toWorksheetExerciseRow(row: {
+	variant_mode: string | null;
+	variant_config: unknown;
+	translations?: unknown;
+	correction_visible: boolean | null;
+	[k: string]: unknown;
+}): WorksheetExerciseRow {
 	const mode = VARIANT_MODES.find((m) => m === row.variant_mode) ?? 'none';
 	const config =
 		typeof row.variant_config === 'object' &&
@@ -886,7 +884,7 @@ export function toWorksheetExerciseRow<T extends Record<string, unknown>>(
 		variant_config: config,
 		translations: asRowTranslations(row.translations),
 		correction_visible: row.correction_visible ?? false
-	} as Omit<T, keyof WorksheetExerciseRow> & WorksheetExerciseRow;
+	} as unknown as WorksheetExerciseRow;
 }
 
 /**

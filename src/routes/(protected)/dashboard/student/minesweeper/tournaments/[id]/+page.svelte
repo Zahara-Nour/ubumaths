@@ -80,16 +80,20 @@
 
 	// Resume an in-progress game
 	function resumeGame() {
-		if (!inProgressGame || !inProgressGame.grid_state || isTournamentEnded) return;
+		if (!inProgressGame || isTournamentEnded) return;
+
+		// Colonne jsonb : une grille illisible n'est pas une grille vide. Reprendre
+		// sans elle rejouerait la partie depuis zéro tout en consommant la place
+		// déjà occupée dans le tournoi, donc on ne reprend pas du tout.
+		const gridState = asGridState(inProgressGame.grid_state);
+		if (!gridState) return;
 
 		minesweeperStore.resumeTournamentGame(tournament.id, tournament.difficulty, {
 			id: inProgressGame.id,
 			seed: inProgressGame.seed,
 			game_number: inProgressGame.game_number,
 			started_at: inProgressGame.started_at,
-			// Colonne jsonb : une grille illisible empêche la reprise, et le store
-			// démarre alors une nouvelle partie.
-			grid_state: asGridState(inProgressGame.grid_state),
+			grid_state: gridState,
 			time_seconds: inProgressGame.time_seconds
 		});
 

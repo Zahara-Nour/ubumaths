@@ -21,6 +21,7 @@ import {
 	toGameChallenge
 } from '$lib/types/game';
 import type { GameSpell } from '$lib/types/game';
+import { toJson } from '$lib/types/database-helpers';
 
 /**
  * Tolérance de comparaison d'un défi, lue dans la colonne jsonb `answer`.
@@ -333,7 +334,7 @@ export const actions: Actions = {
 			await supabase
 				.from('game_combats')
 				.update({
-					combat_flow: updatedFlow,
+					combat_flow: toJson(updatedFlow),
 					monster_endurance_remaining: newMonsterHP,
 					status: 'completed',
 					outcome: 'victory',
@@ -361,7 +362,7 @@ export const actions: Actions = {
 			await supabase
 				.from('game_combats')
 				.update({
-					combat_flow: updatedFlow,
+					combat_flow: toJson(updatedFlow),
 					monster_endurance_remaining: newMonsterHP,
 					current_turn: combat.current_turn + 1
 				})

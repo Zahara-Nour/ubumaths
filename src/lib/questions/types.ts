@@ -80,12 +80,16 @@ export type QuestionType = 'fill_in_blanks' | 'multiple_choice';
  */
 export function getQuestionType(q: {
 	choices?: unknown[] | undefined;
-	shared?: { choices?: unknown[] | undefined };
+	// `shared` vient d'une colonne jsonb, donc de forme libre : la fonction la
+	// sonde elle-même plutôt que d'obliger l'appelant à l'affirmer.
+	shared?: unknown;
 }): QuestionType {
-	const choices = q.choices ?? q.shared?.choices;
-	return choices !== undefined && choices !== null && choices.length > 0
-		? 'multiple_choice'
-		: 'fill_in_blanks';
+	const sharedChoices =
+		typeof q.shared === 'object' && q.shared !== null && 'choices' in q.shared
+			? (q.shared as { choices?: unknown }).choices
+			: undefined;
+	const choices = q.choices ?? sharedChoices;
+	return Array.isArray(choices) && choices.length > 0 ? 'multiple_choice' : 'fill_in_blanks';
 }
 
 // ============================================================================

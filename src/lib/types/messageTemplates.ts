@@ -91,7 +91,7 @@ export function toMessageTemplate(row: {
 	class_id: string | null;
 	variables: unknown;
 	tags: string[] | null;
-	is_active: boolean;
+	is_active: boolean | null;
 	approval_status: string | null;
 	reviewed_by: string | null;
 	reviewed_at: string | null;
@@ -118,6 +118,11 @@ export function toMessageTemplate(row: {
 		scope: row.scope === 'system' ? 'system' : 'class',
 		trigger_config: objet(row.trigger_config),
 		variables: Array.isArray(row.variables) ? (row.variables as TemplateVariable[]) : null,
+		// La colonne est nullable alors que son défaut vaut `true` : un `NULL` est
+		// donc une écriture explicite, jamais une ligne ordinaire. On la lit comme
+		// « pas active » plutôt que d'ouvrir l'envoi d'un modèle dont l'activation
+		// n'a jamais été décidée.
+		is_active: row.is_active ?? false,
 		created_at: row.created_at ?? '',
 		updated_at: row.updated_at ?? ''
 	};

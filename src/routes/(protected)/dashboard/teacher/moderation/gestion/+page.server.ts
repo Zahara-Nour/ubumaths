@@ -128,7 +128,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 			// Une portée inconnue devient `conversation`, la plus restreinte : jamais
 			// `global`, qui étendrait la sanction à toute la plateforme.
 			scope_type:
-				(['global', 'conversation'] as const).find((t) => t === r.scope_type) ?? 'conversation'
+				(['global', 'conversation'] as const).find((t) => t === r.scope_type) ?? 'conversation',
+			// Les jointures facultatives valent `null` côté PostgREST et `undefined`
+			// côté composant : un compte supprimé ou une conversation effacée doit
+			// rester une ligne lisible, pas une ligne manquante.
+			user: r.user ?? undefined,
+			conversation: r.conversation ?? undefined
 		})),
 		logs: (logsResult.data ?? []).map((l) => ({
 			...l,

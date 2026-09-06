@@ -122,7 +122,8 @@
 							<span>•</span>
 							<div>
 								{calculateGidouilles(
-									asRiddleDifficulty(attempt.riddle.difficulty, attempt.attempt_number)
+									asRiddleDifficulty(attempt.riddle.difficulty),
+									attempt.attempt_number
 								)} gidouilles si validé
 							</div>
 						</div>

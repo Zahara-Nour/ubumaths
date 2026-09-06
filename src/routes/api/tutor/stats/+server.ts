@@ -34,7 +34,9 @@ interface ConversationRow {
 	max_help_level_reached: number | null;
 	effort_score: number | null;
 	topics_covered: string[] | null;
-	started_at: string;
+	// Nullable en base ; la colonne sert au filtre de période côté SQL, jamais au
+	// calcul ci-dessous.
+	started_at: string | null;
 	profiles: {
 		id: string;
 		full_name: string | null;

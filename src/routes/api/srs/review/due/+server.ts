@@ -18,6 +18,7 @@ import { dueCardsQuerySchema } from '$lib/server/validation/srs';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { asCardState } from '$lib/srs/types';
 import { templateMarkdown } from '$lib/ubumark/types/template';
+import { toQuestionTemplate } from '$lib/types/question-template';
 
 /**
  * Lightweight stats for API response (subset of CardStats)
@@ -167,7 +168,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 					console.log(`[SRS] Generating instance for template ${dueCard.template_id}`);
 					// Generate new instance with random seed
-					const result = generateSRSInstance(template);
+					const result = generateSRSInstance(toQuestionTemplate(template));
 
 					if (!result.success) {
 						console.error(

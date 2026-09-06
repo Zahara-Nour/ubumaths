@@ -633,3 +633,24 @@ export type JournalEntryPoint = Omit<Tables<'journal_entry_points'>, 'source'> &
 export function toJson<T>(value: T): Json {
 	return JSON.parse(JSON.stringify(value ?? null)) as Json;
 }
+
+// =============================================================================
+// RPC PARAMETERS
+// =============================================================================
+
+/**
+ * Passes `NULL` to a Postgres function parameter that the generated types
+ * declare non-nullable.
+ *
+ * A function parameter accepts `NULL` unless the function is `STRICT`, but the
+ * type generator has no way to express the nullability of a parameter: it
+ * always emits the plain SQL type. Where the argument is genuinely optional and
+ * the underlying column is nullable, this is the honest way to say so — once,
+ * with a name — instead of scattering assertions across call sites.
+ *
+ * Prefer omitting the argument when the SQL signature declares `DEFAULT NULL`:
+ * the generated type is optional then, and no helper is needed.
+ */
+export function rpcNullable<T>(value: T | null | undefined): T {
+	return (value ?? null) as T;
+}

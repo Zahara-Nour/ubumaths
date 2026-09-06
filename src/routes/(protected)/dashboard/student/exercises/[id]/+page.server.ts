@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { toExercise } from '$lib/types/exercise-row';
 
 export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const { user } = await locals.safeGetSession();
@@ -60,13 +61,10 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const classIds = classMemberships?.map((cm) => cm.class_id) || [];
 
 	return {
-		exercise: {
-			...exercise,
-			// `slug` est nullable en base, optionnel dans le type métier : Postgres
-			// dit « absent » avec `null`, TypeScript avec `undefined`.
-			slug: exercise.slug ?? undefined,
-			tags: (exercise.exercise_tags ?? []).map((et) => et.tags?.name).filter((n) => n !== undefined)
-		},
+		exercise: toExercise(
+			exercise,
+			(exercise.exercise_tags ?? []).map((et) => et.tags?.name).filter((n) => n !== undefined)
+		),
 		assignment,
 		completion,
 		classIds,

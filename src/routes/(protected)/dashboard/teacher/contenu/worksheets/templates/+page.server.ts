@@ -86,8 +86,9 @@ export const actions: Actions = {
 			.insert({
 				name: `${defaultTemplate.name} (copie)`,
 				description: defaultTemplate.description,
-				// Deux colonnes jsonb : conversion réelle lors de la copie.
-				template_content: toJson(defaultTemplate.template_content),
+				// `template_content` est du Typst stocké en `text` ; seule
+				// `placeholders` est une colonne jsonb.
+				template_content: defaultTemplate.template_content,
 				placeholders: toJson(defaultTemplate.placeholders),
 				created_by: user.id
 			})
