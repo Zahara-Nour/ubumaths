@@ -846,7 +846,7 @@ export function toWorksheetRow<T extends Record<string, unknown>>(
  */
 export function toWorksheetExerciseRow<T extends Record<string, unknown>>(
 	row: T & {
-		variant_mode: string;
+		variant_mode: string | null;
 		variant_config: unknown;
 		translations?: unknown;
 		correction_visible: boolean | null;

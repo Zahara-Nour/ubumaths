@@ -20,7 +20,8 @@ import {
 	localizedText,
 	worksheetLocale,
 	asWorksheetConfig,
-	asInstanceData
+	asInstanceData,
+	toWorksheetRow
 } from '$lib/types/worksheets';
 import type {
 	InstanceData,
@@ -158,7 +159,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 
 		// Generate Typst document
 		const typstContent = generateWorksheetTypst({
-			worksheet: worksheet,
+			worksheet: toWorksheetRow(worksheet),
 			instance: instanceData,
 			config: asWorksheetConfig(worksheet.config),
 			mode,

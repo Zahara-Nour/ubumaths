@@ -15,6 +15,7 @@ import {
 import { uuidSchema } from '$lib/server/validation/common';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { TablesUpdate } from '$lib/types/database';
+import { toJson } from '$lib/types/database-helpers';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -162,10 +163,11 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	if (data.position !== undefined) updateData.position = data.position;
 	if (data.points !== undefined) updateData.points = data.points;
 	if (data.variant_mode !== undefined) updateData.variant_mode = data.variant_mode;
-	if (data.variant_config !== undefined) updateData.variant_config = data.variant_config;
+	// Deux colonnes jsonb : converties, pas passées telles quelles.
+	if (data.variant_config !== undefined) updateData.variant_config = toJson(data.variant_config);
 	if (data.custom_instructions !== undefined)
 		updateData.custom_instructions = data.custom_instructions;
-	if (data.translations !== undefined) updateData.translations = data.translations;
+	if (data.translations !== undefined) updateData.translations = toJson(data.translations);
 	if (data.is_essential !== undefined) updateData.is_essential = data.is_essential;
 
 	// Update exercise
