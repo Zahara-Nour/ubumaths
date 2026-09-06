@@ -1,5 +1,7 @@
 # Typage `locals.supabase` — progression
 
+> ✅ **TERMINÉ le 2026-09-06** — job `Type Check` : **0 erreur**. PR #140.
+>
 > Mesure de référence : **PR #140**, job `Type Check` du 2026-09-05.
 > Commande : brancher `SupabaseClient<Database>` sur `locals.supabase` dans `src/app.d.ts`,
 > pousser, et lire le job CI (la mesure locale sature la machine 8 Go).
@@ -14,20 +16,28 @@ colonnes absentes du schéma pendant des mois — PostgREST refusait, le code ig
 
 ## État de la mesure
 
-**Départ : 323 erreurs dans 138 fichiers. État actuel : 233 dans 131.**
+**Départ : 323 erreurs dans 138 fichiers. Arrivée : 0.**
 
 La catégorie « propriété inexistante » — la seule qui révélait de vrais bugs —
-est **soldée** : 75 → 0.
+a été soldée en premier : 75 → 0.
 
-| Catégorie               | Nombre | Nature                                                                   |
-| ----------------------- | ------ | ------------------------------------------------------------------------ |
-| `type-incompatible`     | 164    | type incompatible — surtout du `Json` Supabase vs types métier           |
-| `propriete-inexistante` | 75     | **propriété inexistante — même classe de bug que les colonnes fantômes** |
-| `null-non-gere`         | 30     | null/undefined non géré (nullabilité réelle du schéma)                   |
-| `surcharge`             | 27     | surcharge non trouvée (souvent un `.insert()` mal formé)                 |
-| `cast`                  | 20     | cast `as` impossible (le type réel ne correspond pas)                    |
-| `propriete-manquante`   | 4      | propriétés manquantes dans un objet construit                            |
-| `autre`                 | 3      | divers                                                                   |
+| Catégorie               | Départ | Arrivée | Nature                                                                   |
+| ----------------------- | ------ | ------- | ------------------------------------------------------------------------ |
+| `type-incompatible`     | 164    | 0       | type incompatible — surtout du `Json` Supabase vs types métier           |
+| `propriete-inexistante` | 75     | 0       | **propriété inexistante — même classe de bug que les colonnes fantômes** |
+| `null-non-gere`         | 30     | 0       | null/undefined non géré (nullabilité réelle du schéma)                   |
+| `surcharge`             | 27     | 0       | surcharge non trouvée (souvent un `.insert()` mal formé)                 |
+| `cast`                  | 20     | 0       | cast `as` impossible (le type réel ne correspond pas)                    |
+| `propriete-manquante`   | 4      | 0       | propriétés manquantes dans un objet construit                            |
+| `autre`                 | 3      | 0       | divers                                                                   |
+
+### Vérification sur la base de production (MCP lecture seule, 2026-09-06)
+
+Aucune ligne existante ne tombe sur un repli : 0 statut de modèle inconnu,
+0 mode de distribution inconnu, 0 catégorie d'exercice inconnue, 0 niveau hors
+`GRADE_CODES`, 0 `is_active` ou `enabled_for_class` à `NULL`. Les conversions ne
+changent donc rien aux données en place — elles empêchent une valeur inconnue
+**future** d'être promue en douce.
 
 ## Lot prioritaire — les 75 propriétés inexistantes
 
