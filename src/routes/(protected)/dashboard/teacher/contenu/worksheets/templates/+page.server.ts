@@ -8,6 +8,7 @@ import type { PageServerLoad, Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { DEFAULT_TEMPLATES } from '$lib/worksheets/default-templates';
+import { toJson } from '$lib/types/database-helpers';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const { user } = await requireRoles(locals, ['teacher', 'admin']);
@@ -85,8 +86,9 @@ export const actions: Actions = {
 			.insert({
 				name: `${defaultTemplate.name} (copie)`,
 				description: defaultTemplate.description,
-				template_content: defaultTemplate.template_content,
-				placeholders: defaultTemplate.placeholders,
+				// Deux colonnes jsonb : conversion réelle lors de la copie.
+				template_content: toJson(defaultTemplate.template_content),
+				placeholders: toJson(defaultTemplate.placeholders),
 				created_by: user.id
 			})
 			.select()

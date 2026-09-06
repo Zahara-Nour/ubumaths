@@ -19,6 +19,7 @@ import type { RequestHandler } from './$types';
 import { globalIndexSchema, saveEditSchema } from '$lib/server/validation/migration-review';
 import { isValidGlobalIndex, loadQuestionByIndex } from '$lib/migration/question-data-loader';
 import { generateStableQuestionHash } from '$lib/server/migration/hash-utils';
+import { toJson } from '$lib/types/database-helpers';
 
 /**
  * POST /api/migration/questions/[globalIndex]/edit
@@ -157,7 +158,8 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 				{
 					migration_tracking_id: trackingId,
 					old_question_hash: questionHash,
-					edited_json: editedTransformed,
+					// Colonne jsonb : conversion réelle plutôt que passage direct.
+					edited_json: toJson(editedTransformed),
 					editor_id: locals.profile.id,
 					edit_notes: notes || null
 				},

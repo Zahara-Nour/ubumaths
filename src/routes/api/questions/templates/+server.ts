@@ -144,9 +144,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			);
 		}
 
-		// Safe: createQuestionTemplateSchema validates structure, cast to Partial<QuestionTemplate>
-		// Zod schema enforces the shape of QuestionTemplate fields
-		const templateData = validation.data as unknown as Partial<QuestionTemplate>;
+		// Le schéma Zod garantit déjà `title`, `grades`, `theme`, `domain`, `level`
+		// et `status`. Le double cast vers `Partial<QuestionTemplate>` effaçait
+		// précisément ces garanties, et l'insertion ne pouvait donc plus prouver
+		// qu'elle fournissait les colonnes obligatoires.
+		const templateData = validation.data;
 
 		// Only validate if status is 'published'
 		if (templateData.status === 'published') {
@@ -223,7 +225,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				description: templateData.description || null,
 				shared: toJson(templateData.shared ?? null),
 				default_display_options: toJson(templateData.defaultDisplayOptions ?? null),
-				variations: toJson(templateData.variations),
+				// Facultatif côté requête, obligatoire en base : un modèle sans
+				// variation est créé vide, l'auteur les ajoute ensuite.
+				variations: toJson(templateData.variations ?? []),
 				exercise_instruction: templateData.exerciseInstruction || null,
 				options: toJson(templateData.options ?? null),
 				grades: templateData.grades,
