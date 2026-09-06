@@ -19,6 +19,16 @@ import type {
 import { getAttemptsRemaining, getStudentStatus } from '$lib/types/assessment';
 import { isDeadlinePassed } from '$lib/utils/dates';
 
+/**
+ * `.single()` traite « zéro ligne » comme une erreur (`PGRST116`). C'est une
+ * absence, pas une panne : la ligne n'existe pas, et l'appelant sait déjà quoi
+ * en faire. Tout AUTRE code — RLS, réseau, contrainte — est une panne, qu'on ne
+ * doit pas laisser passer pour une absence.
+ */
+function estPanne(error: { code?: string } | null): boolean {
+	return error !== null && error.code !== 'PGRST116';
+}
+
 type TypedSupabaseClient = SupabaseClient<Database>;
 
 // ===========================================================================
@@ -127,11 +137,19 @@ export async function updateAssessment(
 	userId: string
 ) {
 	// First verify ownership
-	const { data: existing } = await supabase
+	const { data: existing, error: existingError } = await supabase
 		.from('assessments')
 		.select('created_by')
 		.eq('id', assessmentId)
 		.single();
+
+	// Une panne de lecture rendait `existing === null`, donc « non autorisé » :
+	// le professeur s'entendait refuser SA propre évaluation, sans trace. On
+	// reste fermé par défaut, mais on le dit autrement et on le journalise.
+	if (estPanne(existingError)) {
+		console.error('[updateAssessment] Propriété invérifiable :', existingError);
+		return { data: null, error: new Error("Impossible de vérifier l'évaluation") };
+	}
 
 	if (!existing || existing.created_by !== userId) {
 		return { data: null, error: new Error('Unauthorized') };
@@ -214,11 +232,16 @@ export async function assignAssessment(
 	teacherId: string
 ) {
 	// Verify teacher owns the assessment
-	const { data: assessment } = await supabase
+	const { data: assessment, error: assessmentError } = await supabase
 		.from('assessments')
 		.select('created_by, status')
 		.eq('id', data.assessment_id)
 		.single();
+
+	if (estPanne(assessmentError)) {
+		console.error('[assignAssessment] Propriété invérifiable :', assessmentError);
+		return { data: null, error: new Error("Impossible de vérifier l'évaluation") };
+	}
 
 	if (!assessment || assessment.created_by !== teacherId) {
 		return { data: null, error: new Error('Unauthorized') };
@@ -311,21 +334,31 @@ export async function removeAssignment(
 	teacherId: string
 ) {
 	// Verify teacher owns the assessment
-	const { data: assignment } = await supabase
+	const { data: assignment, error: assignmentError } = await supabase
 		.from('assessment_assignments')
 		.select('assessment_id')
 		.eq('id', assignmentId)
 		.single();
 
+	if (estPanne(assignmentError)) {
+		console.error('[removeAssignment] Affectation illisible :', assignmentError);
+		return { error: new Error("Impossible de vérifier l'affectation") };
+	}
+
 	if (!assignment) {
 		return { error: new Error('Assignment not found') };
 	}
 
-	const { data: assessment } = await supabase
+	const { data: assessment, error: assessmentError } = await supabase
 		.from('assessments')
 		.select('created_by')
 		.eq('id', assignment.assessment_id)
 		.single();
+
+	if (estPanne(assessmentError)) {
+		console.error('[removeAssignment] Propriété invérifiable :', assessmentError);
+		return { error: new Error("Impossible de vérifier l'évaluation") };
+	}
 
 	if (!assessment || assessment.created_by !== teacherId) {
 		return { error: new Error('Unauthorized') };
@@ -351,11 +384,20 @@ export async function removeAssignment(
  */
 export async function getStudentAssignments(supabase: TypedSupabaseClient, studentId: string) {
 	// Get student's active classes
-	const { data: classMemberships } = await supabase
+	const { data: classMemberships, error: membershipsError } = await supabase
 		.from('class_members')
 		.select('class_id')
 		.eq('student_id', studentId)
 		.eq('status', 'active');
+
+	// Sans cette garde, une panne réduisait la liste des classes à zéro : les
+	// évaluations affectées À LA CLASSE disparaissaient de l'écran de l'élève,
+	// qui n'y voyait que ses affectations individuelles — donc, le plus souvent,
+	// une page vide.
+	if (membershipsError) {
+		console.error('[getStudentAssignments] Classes illisibles :', membershipsError);
+		return { data: null, error: new Error(membershipsError.message) };
+	}
 
 	const classIds = classMemberships?.map((cm) => cm.class_id) || [];
 
@@ -389,12 +431,19 @@ export async function getStudentAssignments(supabase: TypedSupabaseClient, stude
 	const assignmentIds = (assignments || []).map((a) => a.id);
 
 	// Batch fetch all test attempts for all assignments (1 query instead of N)
-	const { data: allAttempts } = await supabase
+	const { data: allAttempts, error: allAttemptsError } = await supabase
 		.from('test_sessions')
 		.select('assignment_id, score, completed_at')
 		.in('assignment_id', assignmentIds)
 		.eq('user_id', studentId)
 		.order('completed_at', { ascending: true });
+
+	// Le nombre de tentatives déjà passées décide de ce que l'élève peut encore
+	// faire. Une panne le ramenait à zéro, donc à « tout est encore possible ».
+	if (allAttemptsError) {
+		console.error('[getStudentAssignments] Tentatives illisibles :', allAttemptsError);
+		return { data: null, error: new Error(allAttemptsError.message) };
+	}
 
 	// Build map for O(1) lookup: assignment_id -> attempts[]
 	const attemptsMap = new Map<
@@ -459,11 +508,25 @@ export async function validateAttempt(
 	studentId: string
 ): Promise<AttemptValidation> {
 	// Get assignment and assessment
-	const { data: assignment } = await supabase
+	const { data: assignment, error: assignmentError } = await supabase
 		.from('assessment_assignments')
 		.select('*, assessment:assessments(*)')
 		.eq('id', assignmentId)
 		.single();
+
+	// Une panne ici est indiscernable d'une affectation absente. On refuse
+	// l'accès dans les deux cas — mais on nomme la panne au lieu de la faire
+	// passer pour une affectation qui n'existerait pas.
+	if (estPanne(assignmentError)) {
+		console.error('[canAttemptAssessment] Affectation illisible :', assignmentError);
+		return {
+			can_attempt: false,
+			reason: "Impossible de vérifier l'affectation",
+			attempts_remaining: 0,
+			deadline_passed: false,
+			current_attempts: 0
+		};
+	}
 
 	if (!assignment) {
 		return {
@@ -501,11 +564,27 @@ export async function validateAttempt(
 	}
 
 	// Count existing attempts
-	const { data: existingAttempts } = await supabase
+	const { data: existingAttempts, error: existingAttemptsError } = await supabase
 		.from('test_sessions')
 		.select('id')
 		.eq('assignment_id', assignmentId)
 		.eq('user_id', studentId);
+
+	// ⚠️ Ce comptage borne le nombre de passages autorisés sur une évaluation
+	// NOTÉE. Une panne le ramenait à 0, donc à « aucune tentative utilisée » :
+	// l'élève repartait avec son quota entier, autant de fois que la requête
+	// échouait. On refuse plutôt que d'accorder une tentative qu'on ne sait pas
+	// justifier.
+	if (existingAttemptsError) {
+		console.error('[canAttemptAssessment] Tentatives illisibles :', existingAttemptsError);
+		return {
+			can_attempt: false,
+			reason: 'Impossible de vérifier vos tentatives précédentes',
+			attempts_remaining: 0,
+			deadline_passed: false,
+			current_attempts: 0
+		};
+	}
 
 	const currentAttempts = existingAttempts?.length || 0;
 	const attemptsRemaining = getAttemptsRemaining(currentAttempts, maxAttempts);
@@ -561,11 +640,16 @@ export async function getAssessmentResults(
 	}
 
 	// Step 2: Get assessment info once (1 query)
-	const { data: assessment } = await supabase
+	const { data: assessment, error: assessmentError } = await supabase
 		.from('assessments')
 		.select('title, grade')
 		.eq('id', assessmentId)
 		.single();
+
+	if (estPanne(assessmentError)) {
+		console.error('[getAssessmentResults] Évaluation illisible :', assessmentError);
+		return { data: null, error: new Error(assessmentError.message) };
+	}
 
 	if (!assessment) {
 		return { data: null, error: new Error('Assessment not found') };
@@ -578,11 +662,19 @@ export async function getAssessmentResults(
 	// Step 4: Batch fetch all active class members (1 query)
 	const classMembersMap = new Map<string, Array<{ student_id: string; class_id: string }>>();
 	if (classIds.length > 0) {
-		const { data: classMembers } = await supabase
+		const { data: classMembers, error: classMembersError } = await supabase
 			.from('class_members')
 			.select('student_id, class_id')
 			.in('class_id', classIds)
 			.eq('status', 'active');
+
+		// Ces membres décident QUELS élèves figurent au tableau de résultats. Une
+		// panne les faisait tous disparaître : le professeur lisait « personne n'a
+		// composé » là où toute une classe avait composé.
+		if (classMembersError) {
+			console.error('[getAssessmentResults] Membres de classe illisibles :', classMembersError);
+			return { data: null, error: new Error(classMembersError.message) };
+		}
 
 		for (const member of classMembers || []) {
 			if (!classMembersMap.has(member.class_id)) {
@@ -605,18 +697,32 @@ export async function getAssessmentResults(
 	}
 
 	// Step 6: Batch fetch all student profiles (1 query)
-	const { data: students } = await supabase
+	const { data: students, error: studentsError } = await supabase
 		.from('profiles')
 		.select('id, firstname, lastname, is_test')
 		.in('id', Array.from(allStudentIds))
 		.eq('is_test', isTestMode);
+
+	if (studentsError) {
+		console.error('[getAssessmentResults] Profils illisibles :', studentsError);
+		return { data: null, error: new Error(studentsError.message) };
+	}
 
 	const studentsMap = new Map((students || []).map((s) => [s.id, s]));
 
 	// Step 7: Batch fetch all class names (1 query)
 	const classNamesMap = new Map<string, string>();
 	if (classIds.length > 0) {
-		const { data: classes } = await supabase.from('classes').select('id, name').in('id', classIds);
+		const { data: classes, error: classesError } = await supabase
+			.from('classes')
+			.select('id, name')
+			.in('id', classIds);
+
+		// Le nom de classe n'est qu'une étiquette d'affichage : son absence ne
+		// justifie pas de refuser tout le tableau. Elle laisse néanmoins une trace.
+		if (classesError) {
+			console.error('[getAssessmentResults] Noms de classes illisibles :', classesError);
+		}
 
 		for (const cls of classes || []) {
 			classNamesMap.set(cls.id, cls.name);
@@ -625,11 +731,18 @@ export async function getAssessmentResults(
 
 	// Step 8: Batch fetch all test attempts for all assignments (1 query)
 	const assignmentIds = assignments.map((a) => a.id);
-	const { data: allAttempts } = await supabase
+	const { data: allAttempts, error: allAttemptsError } = await supabase
 		.from('test_sessions')
 		.select('assignment_id, user_id, score, completed_at, total_questions')
 		.in('assignment_id', assignmentIds)
 		.order('completed_at', { ascending: false });
+
+	// Ce sont les copies. Sans elles, le tableau affiche « non composé » pour
+	// tout le monde — un verdict, pas une absence de donnée.
+	if (allAttemptsError) {
+		console.error('[getAssessmentResults] Copies illisibles :', allAttemptsError);
+		return { data: null, error: new Error(allAttemptsError.message) };
+	}
 
 	// Group attempts by assignment_id + user_id
 	const attemptsMap = new Map<

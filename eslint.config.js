@@ -8,6 +8,7 @@ import globals from 'globals';
 import ts from 'typescript-eslint';
 import svelteConfig from './svelte.config.js';
 import requireZodValidation from './eslint-rules/require-zod-validation.js';
+import requireSupabaseErrorCheck from './eslint-rules/require-supabase-error-check.js';
 
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
@@ -70,6 +71,23 @@ export default defineConfig(
 		},
 		rules: {
 			'custom/require-zod-validation': 'error'
+		}
+	},
+	// Une requête PostgREST qui échoue rend `data === null` sans lever : ignorer
+	// `error`, c'est afficher un écran vide sans trace. La règle exige seulement
+	// que l'erreur soit nommée ; ce qu'on en fait reste une décision de contexte.
+	{
+		files: ['src/**/*.ts', 'src/**/*.svelte'],
+		ignores: ['src/**/__tests__/**', 'src/**/*.test.ts', 'src/**/*.spec.ts'],
+		plugins: {
+			supabase: {
+				rules: {
+					'require-error-check': requireSupabaseErrorCheck
+				}
+			}
+		},
+		rules: {
+			'supabase/require-error-check': 'error'
 		}
 	}
 );

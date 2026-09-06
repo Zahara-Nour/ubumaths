@@ -251,13 +251,21 @@ export async function createChapter(
 	// Get max display order for the class if not provided
 	let displayOrder = data.displayOrder;
 	if (displayOrder === undefined) {
-		const { data: maxOrder } = await supabase
+		const { data: maxOrder, error: maxOrderError } = await supabase
 			.from('class_chapters')
 			.select('display_order')
 			.eq('class_id', data.classId)
 			.order('display_order', { ascending: false })
 			.limit(1)
-			.single();
+			.maybeSingle();
+
+		// Aucune ligne = premier élément, cas légitime. Toute autre panne laissait
+		// le rang à 0, ce qui insérait l'élément EN TÊTE et réordonnait la liste
+		// du professeur sans rien dire.
+		if (maxOrderError) {
+			console.error('[chapters] Rang suivant illisible (class_chapters) :', maxOrderError);
+			return { data: null, error: new Error(maxOrderError.message) };
+		}
 
 		displayOrder = (maxOrder?.display_order ?? -1) + 1;
 	}
@@ -393,13 +401,21 @@ export async function addChapterDocument(
 	// Get max display order if not provided
 	let displayOrder = data.displayOrder;
 	if (displayOrder === undefined) {
-		const { data: maxOrder } = await supabase
+		const { data: maxOrder, error: maxOrderError } = await supabase
 			.from('chapter_documents')
 			.select('display_order')
 			.eq('chapter_id', chapterId)
 			.order('display_order', { ascending: false })
 			.limit(1)
-			.single();
+			.maybeSingle();
+
+		// Aucune ligne = premier élément, cas légitime. Toute autre panne laissait
+		// le rang à 0, ce qui insérait l'élément EN TÊTE et réordonnait la liste
+		// du professeur sans rien dire.
+		if (maxOrderError) {
+			console.error('[chapters] Rang suivant illisible (chapter_documents) :', maxOrderError);
+			return { data: null, error: new Error(maxOrderError.message) };
+		}
 
 		displayOrder = (maxOrder?.display_order ?? -1) + 1;
 	}
@@ -557,13 +573,21 @@ export async function addQuizQuestion(
 	// Get max display order if not provided
 	let order = displayOrder;
 	if (order === undefined) {
-		const { data: maxOrder } = await supabase
+		const { data: maxOrder, error: maxOrderError } = await supabase
 			.from('chapter_quiz_questions')
 			.select('display_order')
 			.eq('chapter_id', chapterId)
 			.order('display_order', { ascending: false })
 			.limit(1)
-			.single();
+			.maybeSingle();
+
+		// Aucune ligne = premier élément, cas légitime. Toute autre panne laissait
+		// le rang à 0, ce qui insérait l'élément EN TÊTE et réordonnait la liste
+		// du professeur sans rien dire.
+		if (maxOrderError) {
+			console.error('[chapters] Rang suivant illisible (chapter_quiz_questions) :', maxOrderError);
+			return { data: null, error: new Error(maxOrderError.message) };
+		}
 
 		order = (maxOrder?.display_order ?? -1) + 1;
 	}
@@ -656,13 +680,21 @@ export async function addChecklistItem(
 	// Get max display order if not provided
 	let displayOrder = data.displayOrder;
 	if (displayOrder === undefined) {
-		const { data: maxOrder } = await supabase
+		const { data: maxOrder, error: maxOrderError } = await supabase
 			.from('chapter_checklist_items')
 			.select('display_order')
 			.eq('chapter_id', chapterId)
 			.order('display_order', { ascending: false })
 			.limit(1)
-			.single();
+			.maybeSingle();
+
+		// Aucune ligne = premier élément, cas légitime. Toute autre panne laissait
+		// le rang à 0, ce qui insérait l'élément EN TÊTE et réordonnait la liste
+		// du professeur sans rien dire.
+		if (maxOrderError) {
+			console.error('[chapters] Rang suivant illisible (chapter_checklist_items) :', maxOrderError);
+			return { data: null, error: new Error(maxOrderError.message) };
+		}
 
 		displayOrder = (maxOrder?.display_order ?? -1) + 1;
 	}
@@ -792,13 +824,21 @@ export async function linkExercise(
 	// Get max display order if not provided
 	let order = displayOrder;
 	if (order === undefined) {
-		const { data: maxOrder } = await supabase
+		const { data: maxOrder, error: maxOrderError } = await supabase
 			.from('chapter_exercises')
 			.select('display_order')
 			.eq('chapter_id', chapterId)
 			.order('display_order', { ascending: false })
 			.limit(1)
-			.single();
+			.maybeSingle();
+
+		// Aucune ligne = premier élément, cas légitime. Toute autre panne laissait
+		// le rang à 0, ce qui insérait l'élément EN TÊTE et réordonnait la liste
+		// du professeur sans rien dire.
+		if (maxOrderError) {
+			console.error('[chapters] Rang suivant illisible (chapter_exercises) :', maxOrderError);
+			return { data: null, error: new Error(maxOrderError.message) };
+		}
 
 		order = (maxOrder?.display_order ?? -1) + 1;
 	}
@@ -1124,36 +1164,47 @@ export async function getChapterWithContent(
 		return { data: null, error: new Error(chapterError.message) };
 	}
 
-	// Get documents
-	const { data: documents } = await supabase
-		.from('chapter_documents')
-		.select('*')
-		.eq('chapter_id', chapterId)
-		.order('display_order', { ascending: true });
+	// Les quatre sections du chapitre. Une panne sur l'une d'elles rendait la
+	// section vide à l'élève, sans distinction avec « le professeur n'a rien
+	// déposé » : un cours amputé passait donc pour un cours terminé.
+	const [documentsRes, quizQuestionsRes, checklistItemsRes, exercisesRes] = await Promise.all([
+		supabase
+			.from('chapter_documents')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.order('display_order', { ascending: true }),
+		supabase
+			.from('chapter_quiz_questions')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.order('display_order', { ascending: true }),
+		supabase
+			.from('chapter_checklist_items')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.order('display_order', { ascending: true }),
+		supabase
+			.from('chapter_exercises')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.order('display_order', { ascending: true })
+	]);
 
-	// Get quiz questions
-	const { data: quizQuestions } = await supabase
-		.from('chapter_quiz_questions')
-		.select('*')
-		.eq('chapter_id', chapterId)
-		.order('display_order', { ascending: true });
+	const sectionEnEchec = [documentsRes, quizQuestionsRes, checklistItemsRes, exercisesRes].find(
+		(r) => r.error
+	);
+	if (sectionEnEchec?.error) {
+		console.error('[getChapterWithContent] Section illisible :', sectionEnEchec.error);
+		return { data: null, error: new Error(sectionEnEchec.error.message) };
+	}
 
-	// Get checklist items
-	const { data: checklistItems } = await supabase
-		.from('chapter_checklist_items')
-		.select('*')
-		.eq('chapter_id', chapterId)
-		.order('display_order', { ascending: true });
-
-	// Get exercises
-	const { data: exercises } = await supabase
-		.from('chapter_exercises')
-		.select('*')
-		.eq('chapter_id', chapterId)
-		.order('display_order', { ascending: true });
+	const documents = documentsRes.data;
+	const quizQuestions = quizQuestionsRes.data;
+	const checklistItems = checklistItemsRes.data;
+	const exercises = exercisesRes.data;
 
 	// Get student's checklist progress
-	const { data: checklistProgress } = await supabase
+	const { data: checklistProgress, error: checklistProgressError } = await supabase
 		.from('student_checklist_progress')
 		.select('*')
 		.eq('student_id', studentId)
@@ -1163,7 +1214,7 @@ export async function getChapterWithContent(
 		);
 
 	// Get student's quiz results
-	const { data: quizResults } = await supabase
+	const { data: quizResults, error: quizResultsError } = await supabase
 		.from('chapter_quiz_results')
 		.select('*')
 		.eq('student_id', studentId)
@@ -1172,6 +1223,16 @@ export async function getChapterWithContent(
 			(quizQuestions || []).map((q) => q.id)
 		)
 		.order('submitted_at', { ascending: false });
+
+	// L'avancement de l'élève, lui, n'empêche pas d'afficher le cours : une
+	// panne ici le montre « non commencé » plutôt que de fermer la page. Mais
+	// elle laisse une trace, au lieu de se confondre avec un vrai zéro.
+	if (checklistProgressError) {
+		console.error('[getChapterWithContent] Avancement illisible :', checklistProgressError);
+	}
+	if (quizResultsError) {
+		console.error('[getChapterWithContent] Résultats de quiz illisibles :', quizResultsError);
+	}
 
 	// Build progress map for checklist
 	const progressMap = new Map<string, DbStudentChecklistProgress>();
@@ -1443,12 +1504,20 @@ export async function toggleChecklistItem(
 	supabase: SupabaseClient<Database>
 ): Promise<OperationResult<StudentChecklistProgress>> {
 	// Check if progress record exists
-	const { data: existing } = await supabase
+	const { data: existing, error: existingError } = await supabase
 		.from('student_checklist_progress')
 		.select('*')
 		.eq('student_id', studentId)
 		.eq('checklist_item_id', checklistItemId)
 		.maybeSingle();
+
+	// `maybeSingle` rend `null` quand la ligne n'existe pas — cas normal, on la
+	// crée. Mais une PANNE rendait aussi `null` : on partait alors créer une
+	// seconde ligne d'avancement pour le même élève et le même item.
+	if (existingError) {
+		console.error('[toggleChecklistItem] Avancement existant illisible :', existingError);
+		return { data: null, error: new Error(existingError.message) };
+	}
 
 	if (existing) {
 		// Update existing
@@ -1514,7 +1583,7 @@ export async function getMyChecklistProgress(
 	}
 
 	// Get progress
-	const { data: progress } = await supabase
+	const { data: progress, error: progressError } = await supabase
 		.from('student_checklist_progress')
 		.select('*')
 		.eq('student_id', studentId)
@@ -1522,6 +1591,13 @@ export async function getMyChecklistProgress(
 			'checklist_item_id',
 			(items || []).map((i) => i.id)
 		);
+
+	// Sans cette garde, une panne affichait toute la liste décochée : l'élève
+	// voyait son travail effacé et pouvait le refaire par-dessus.
+	if (progressError) {
+		console.error('[getMyChecklistProgress] Avancement illisible :', progressError);
+		return { data: [], error: new Error(progressError.message), count: 0 };
+	}
 
 	// Build progress map
 	const progressMap = new Map<string, DbStudentChecklistProgress>();
