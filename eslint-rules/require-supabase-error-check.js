@@ -44,8 +44,22 @@ const TERMINALES = new Set([
 	'createSignedUrl'
 ]);
 
-/** Racines qui identifient un client Supabase. */
-const RACINES = /supabase|serviceClient|adminClient|db$/i;
+/**
+ * Racines qui identifient un client Supabase.
+ *
+ * Deux intentions distinctes, qu'une seule expression mélangeait : le `$` de
+ * `db$` n'ancrait que cette alternative, pas les autres. Les trois premiers
+ * noms se cherchent n'importe où dans l'identifiant (`mockSupabase`,
+ * `event.locals.supabase`) ; `db` ne vaut qu'en fin de nom, pour ne pas
+ * attraper un `dbg` ou un `dbUrl`.
+ */
+const RACINES_CONTENUES = /supabase|serviceClient|adminClient/i;
+const RACINE_DB = /(^|[a-zA-Z])[Dd]b$/;
+
+/** L'identifiant désigne-t-il un client Supabase ? */
+function estRacineClient(nom) {
+	return RACINES_CONTENUES.test(nom) || RACINE_DB.test(nom);
+}
 
 /** L'expression `await …` porte-t-elle sur une chaîne de requête Supabase ? */
 function estRequeteSupabase(node) {
@@ -66,14 +80,14 @@ function estRequeteSupabase(node) {
 		if (courant.type === 'MemberExpression') {
 			// `locals.supabase`, `event.locals.supabase` : la racine porte le nom
 			// sur la propriété, pas sur l'objet.
-			if (courant.property.type === 'Identifier' && RACINES.test(courant.property.name)) {
+			if (courant.property.type === 'Identifier' && estRacineClient(courant.property.name)) {
 				return vuTerminale;
 			}
 			courant = courant.object;
 			continue;
 		}
 		if (courant.type === 'Identifier') {
-			return vuTerminale && RACINES.test(courant.name);
+			return vuTerminale && estRacineClient(courant.name);
 		}
 		if (courant.type === 'ThisExpression') return false;
 		return false;
