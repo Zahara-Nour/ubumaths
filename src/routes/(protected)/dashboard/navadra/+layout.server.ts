@@ -51,26 +51,42 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
 	}
 
 	// Fetch player's spells
-	const { data: spells } = await supabase
+	const { data: spells, error: spellsError } = await supabase
 		.from('game_spells')
 		.select('*')
 		.eq('user_id', user.id)
 		.order('spell_num', { ascending: true });
 
+	if (spellsError) {
+		console.error('Lecture impossible :', spellsError);
+		throw error(500, 'Impossible de charger les données');
+	}
+
 	// Fetch player's active spell deck
-	const { data: activeDeck } = await supabase
+	const { data: activeDeck, error: activeDeckError } = await supabase
 		.from('game_spell_decks')
 		.select('*')
 		.eq('user_id', user.id)
 		.eq('is_active', true)
 		.single();
 
+	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+	// ne doit pas se confondre avec une donnée réellement vide.
+	if (activeDeckError && activeDeckError.code !== 'PGRST116') {
+		console.error('Contexte illisible :', activeDeckError);
+	}
+
 	// Fetch all player's spell decks
-	const { data: allDecks } = await supabase
+	const { data: allDecks, error: allDecksError } = await supabase
 		.from('game_spell_decks')
 		.select('*')
 		.eq('user_id', user.id)
 		.order('created_at', { ascending: true });
+
+	if (allDecksError) {
+		console.error('Lecture impossible :', allDecksError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	return {
 		// `tutorial_stage` est du texte et `music_settings` du jsonb.

@@ -54,11 +54,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// Only count Phase 4 (manual validation via UI) — not Phase 1 (auto-import)
 		const statusMap = new Map<number, 'validated' | 'failed'>();
 		if (supabase) {
-			const { data: trackingData } = await supabase
+			const { data: trackingData, error: trackingDataError } = await supabase
 				.from('migration_tracking')
 				.select('old_question_index, migration_status')
 				.eq('phase', 4)
 				.in('migration_status', ['validated', 'failed']);
+
+			if (trackingDataError) {
+				console.error('Lecture impossible :', trackingDataError);
+				throw error(500, 'Impossible de charger les données');
+			}
 
 			if (trackingData) {
 				for (const row of trackingData) {

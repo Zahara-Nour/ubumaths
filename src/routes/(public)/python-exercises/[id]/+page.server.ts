@@ -75,12 +75,19 @@ export const load: PageServerLoad = async ({ params, fetch, locals }) => {
 		if (isAuthor) {
 			canViewResults = true;
 		} else {
-			const { data: ownAssignments } = await locals.supabase
+			const { data: ownAssignments, error: ownAssignmentsError } = await locals.supabase
 				.from('python_exercise_assignments')
 				.select('id')
 				.eq('exercise_id', params.id)
 				.eq('assigned_by', locals.user.id)
 				.limit(1);
+
+			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+			// panne doit se distinguer d'un refus mérité.
+			if (ownAssignmentsError && ownAssignmentsError.code !== 'PGRST116') {
+				console.error('Contrôle d’accès impossible :', ownAssignmentsError);
+				throw error(500, 'Impossible de vérifier votre accès');
+			}
 			canViewResults = Boolean(ownAssignments && ownAssignments.length > 0);
 		}
 	}

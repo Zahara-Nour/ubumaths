@@ -69,13 +69,19 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	// Check if welcome email was already sent
 	let previousEmail: { sent_at: string } | null = null;
 
-	const { data: emailRecord } = await supabase
+	const { data: emailRecord, error: emailRecordError } = await supabase
 		.from('welcome_emails_sent')
 		.select('sent_at')
 		.eq('student_id', student_id)
 		.order('sent_at', { ascending: false })
 		.limit(1)
 		.maybeSingle();
+
+	// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
+	// doit pas se confondre avec une donnée réellement vide.
+	if (emailRecordError && emailRecordError.code !== 'PGRST116') {
+		console.error('Contexte illisible :', emailRecordError);
+	}
 
 	if (emailRecord) {
 		previousEmail = emailRecord;

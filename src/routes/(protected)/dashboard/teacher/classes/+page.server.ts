@@ -141,10 +141,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// Batch fetch ALL welcome emails in one query
 		const welcomeEmailMap = new Map<string, string>();
 		if (allStudentIds.length > 0) {
-			const { data: allWelcomeEmails } = await supabase
+			const { data: allWelcomeEmails, error: allWelcomeEmailsError } = await supabase
 				.from('welcome_emails_sent')
 				.select('student_id, sent_at')
 				.in('student_id', allStudentIds);
+
+			// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+			// laisse une trace.
+			if (allWelcomeEmailsError) {
+				console.error('Enrichissement illisible :', allWelcomeEmailsError);
+			}
 
 			for (const email of allWelcomeEmails || []) {
 				welcomeEmailMap.set(email.student_id, email.sent_at);
@@ -201,25 +207,44 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Fetch teacher's Google Classroom courses
-	const { data: googleCourses } = await supabase
+	const { data: googleCourses, error: googleCoursesError } = await supabase
 		.from('google_classroom_courses')
 		.select('id, name, section, course_state')
 		.eq('teacher_id', user.id)
 		.eq('course_state', 'ACTIVE')
 		.order('name');
 
+	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+	// laisse une trace.
+	if (googleCoursesError) {
+		console.error('Enrichissement illisible :', googleCoursesError);
+	}
+
 	// Fetch which courses are already associated with classes (for filtering).
 	// Mono-teacher: the sole teacher owns every class; RLS scopes the read.
-	const { data: associatedCourseIds } = await supabase
+	const { data: associatedCourseIds, error: associatedCourseIdsError } = await supabase
 		.from('classes')
 		.select('google_classroom_course_id')
 		.not('google_classroom_course_id', 'is', null);
+
+	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+	// laisse une trace.
+	if (associatedCourseIdsError) {
+		console.error('Enrichissement illisible :', associatedCourseIdsError);
+	}
 
 	// Single-teacher (Option B): students not enrolled in any active class.
 	const unassignedStudents = await getUnassignedStudents(user.id, supabase);
 
 	// registration_open flag per class (not returned by the classes RPC).
-	const { data: regRows } = await supabase.from('classes').select('id, registration_open');
+	const { data: regRows, error: regRowsError } = await supabase
+		.from('classes')
+		.select('id, registration_open');
+
+	if (regRowsError) {
+		console.error('Lecture impossible :', regRowsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 	const registrationOpenById = new Map((regRows ?? []).map((r) => [r.id, r.registration_open]));
 
 	return {

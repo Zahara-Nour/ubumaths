@@ -118,11 +118,18 @@ export const actions: Actions = {
 		const supabase = locals.supabase;
 
 		// Check if user is teacher or admin
-		const { data: profile } = await supabase
+		const { data: profile, error: profileError } = await supabase
 			.from('profiles')
 			.select('role')
 			.eq('id', user.id)
 			.single();
+
+		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+		// panne produisait le même refus, indiscernable d'un refus mérité.
+		if (profileError && profileError.code !== 'PGRST116') {
+			console.error('Rôle illisible :', profileError);
+			throw error(500, 'Impossible de vérifier vos droits');
+		}
 
 		if (!profile || (profile.role !== 'teacher' && profile.role !== 'admin')) {
 			return fail(403, { error: 'Forbidden' });

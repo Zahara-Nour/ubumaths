@@ -83,11 +83,18 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// rows for any class they own (incl. assignments created by colleagues), so
 	// without this filter a teacher could pass authz on exercises they did not
 	// assign themselves. Do not remove.
-	const { data: ownAssignments } = await supabase
+	const { data: ownAssignments, error: ownAssignmentsError } = await supabase
 		.from('python_exercise_assignments')
 		.select('id, class_id, student_id, due_date')
 		.eq('exercise_id', exerciseId)
 		.eq('assigned_by', user.id);
+
+	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+	// panne doit se distinguer d'un refus mérité.
+	if (ownAssignmentsError && ownAssignmentsError.code !== 'PGRST116') {
+		console.error('Contrôle d’accès impossible :', ownAssignmentsError);
+		throw error(500, 'Impossible de vérifier votre accès');
+	}
 
 	const isAuthor = exercise.author_id === user.id;
 	const hasAssignedIt = (ownAssignments ?? []).length > 0;
@@ -96,7 +103,16 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// 4. Teacher's classes (for the class-filter dropdown + scoping students)
-	const { data: teacherClassesRaw } = await supabase.from('classes').select('id, name');
+	const { data: teacherClassesRaw, error: teacherClassesRawError } = await supabase
+		.from('classes')
+		.select('id, name');
+
+	// Cette liste borne la portée du classement. Vidée par une panne, elle
+	// affiche un classement amputé sans le dire.
+	if (teacherClassesRawError) {
+		console.error('Périmètre illisible :', teacherClassesRawError);
+		throw error(500, 'Impossible de déterminer le périmètre');
+	}
 	const teacherClasses: TeacherClass[] = teacherClassesRaw ?? [];
 	const teacherClassIds = teacherClasses.map((c) => c.id);
 
@@ -142,19 +158,29 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// 7. Profiles for those students
-	const { data: profilesRaw } = await supabase
+	const { data: profilesRaw, error: profilesRawError } = await supabase
 		.from('profiles')
 		.select('id, firstname, lastname, email')
 		.in('id', studentIdsArr);
+
+	if (profilesRawError) {
+		console.error('Lecture impossible :', profilesRawError);
+		throw error(500, 'Impossible de charger les données');
+	}
 	const profilesById = new Map((profilesRaw ?? []).map((p) => [p.id, p as StudentRow['student']]));
 
 	// 8. Submissions for those students on this exercise (desc by created_at, so [0] is latest)
-	const { data: submissionsRaw } = await supabase
+	const { data: submissionsRaw, error: submissionsRawError } = await supabase
 		.from('python_exercise_submissions')
 		.select('student_id, is_correct, attempt_number, created_at')
 		.eq('exercise_id', exerciseId)
 		.in('student_id', studentIdsArr)
 		.order('created_at', { ascending: false });
+
+	if (submissionsRawError) {
+		console.error('Lecture impossible :', submissionsRawError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	const submissionsByStudent = new Map<
 		string,
@@ -173,11 +199,17 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// 9. Mastery rows (sticky 'mastered' or 'needs_review')
-	const { data: masteryRaw } = await supabase
+	const { data: masteryRaw, error: masteryRawError } = await supabase
 		.from('python_exercise_mastery')
 		.select('student_id, status')
 		.eq('exercise_id', exerciseId)
 		.in('student_id', studentIdsArr);
+
+	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+	// laisse une trace.
+	if (masteryRawError) {
+		console.error('Enrichissement illisible :', masteryRawError);
+	}
 	type DbMasteryStatus = 'mastered' | 'needs_review';
 	const masteryByStudent = new Map<string, DbMasteryStatus>(
 		(masteryRaw ?? []).map((m) => [m.student_id, m.status as DbMasteryStatus])

@@ -200,9 +200,14 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		 * This is used to populate the filter dropdowns dynamically.
 		 * We fetch all templates (no filters except count) to get all possible categories.
 		 */
-		const { data: allTemplates } = await supabase
+		const { data: allTemplates, error: allTemplatesError } = await supabase
 			.from('question_templates')
 			.select('theme, domain, subdomain');
+
+		if (allTemplatesError) {
+			console.error('Lecture impossible :', allTemplatesError);
+			throw error(500, 'Impossible de charger les données');
+		}
 
 		const themes = new Set<string>();
 		const domains = new Set<string>();

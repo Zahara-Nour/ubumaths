@@ -36,24 +36,35 @@ export const load: PageServerLoad = async ({ locals }) => {
 	let riddleOfTheDayDate: string | null = null;
 
 	if (riddleOfTheDayId) {
-		const { data: riddle } = await supabase
+		const { data: riddle, error: riddleError } = await supabase
 			.from('riddles')
 			.select('*')
 			.eq('id', riddleOfTheDayId)
 			.maybeSingle();
+
+		// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
+		// doit pas se confondre avec une donnée réellement vide.
+		if (riddleError && riddleError.code !== 'PGRST116') {
+			console.error('Contexte illisible :', riddleError);
+		}
 
 		if (riddle) {
 			riddleOfTheDay = toDbRiddle(riddle);
 			riddleOfTheDayDate = new Date().toISOString().slice(0, 10);
 
 			// Fetch student's latest attempt for this riddle
-			const { data: attempts } = await supabase
+			const { data: attempts, error: attemptsError } = await supabase
 				.from('riddle_attempts')
 				.select('*')
 				.eq('riddle_id', riddleOfTheDayId)
 				.eq('student_id', user.id)
 				.order('attempt_number', { ascending: false })
 				.limit(1);
+
+			if (attemptsError) {
+				console.error('Lecture impossible :', attemptsError);
+				throw error(500, 'Impossible de charger les données');
+			}
 
 			if (attempts && attempts.length > 0) {
 				studentAttempt = toDbRiddleAttempt(attempts[0]);
@@ -63,7 +74,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	// Get assigned riddles for this student (optional for now)
 	const classIds = profile?.class_ids || [];
-	const { data: assignments } = await supabase
+	const { data: assignments, error: assignmentsError } = await supabase
 		.from('riddle_assignments')
 		.select(
 			`
@@ -74,6 +85,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.or(`student_id.eq.${user.id},class_id.in.(${classIds.join(',')})`)
 		.eq('riddles.status', 'published')
 		.order('assigned_at', { ascending: false });
+
+	if (assignmentsError) {
+		console.error('Lecture impossible :', assignmentsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	return {
 		riddleOfTheDay,

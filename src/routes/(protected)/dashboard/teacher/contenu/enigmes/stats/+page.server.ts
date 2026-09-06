@@ -15,16 +15,21 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	const isTestMode = await getTeacherTestMode(user.id, supabase);
 
 	// Overview stats
-	const { data: riddles } = await supabase
+	const { data: riddles, error: riddlesError } = await supabase
 		.from('riddles')
 		.select('id, status')
 		.eq('created_by', user.id);
+
+	if (riddlesError) {
+		console.error('Lecture impossible :', riddlesError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	const totalRiddles = riddles?.length || 0;
 	const publishedRiddles = riddles?.filter((r) => r.status === 'published').length || 0;
 
 	// Pending validations count - filtered by test mode
-	const { data: pendingValidations } = await supabase
+	const { data: pendingValidations, error: pendingValidationsError } = await supabase
 		.from('riddle_attempts')
 		.select(
 			`
@@ -37,17 +42,27 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.eq('riddles.created_by', user.id)
 		.eq('profiles.is_test', isTestMode);
 
+	if (pendingValidationsError) {
+		console.error('Lecture impossible :', pendingValidationsError);
+		throw error(500, 'Impossible de charger les données');
+	}
+
 	const pendingCount = pendingValidations?.length || 0;
 
 	// Stats per riddle
-	const { data: riddleStats } = await supabase
+	const { data: riddleStats, error: riddleStatsError } = await supabase
 		.from('riddle_stats')
 		.select('*')
 		.eq('created_by', user.id)
 		.order('total_attempts', { ascending: false });
 
+	if (riddleStatsError) {
+		console.error('Lecture impossible :', riddleStatsError);
+		throw error(500, 'Impossible de charger les données');
+	}
+
 	// Top students for this teacher's riddles - filtered by test mode
-	const { data: studentStats } = await supabase
+	const { data: studentStats, error: studentStatsError } = await supabase
 		.from('riddle_attempts')
 		.select(
 			`
@@ -62,6 +77,11 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.eq('riddles.created_by', user.id)
 		.eq('is_correct', true)
 		.eq('profiles.is_test', isTestMode);
+
+	if (studentStatsError) {
+		console.error('Lecture impossible :', studentStatsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	// Aggregate by student
 	const studentMap = new Map();

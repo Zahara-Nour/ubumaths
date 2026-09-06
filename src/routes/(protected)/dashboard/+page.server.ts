@@ -91,18 +91,24 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Resolve school_id: use profile.school_id, or for students fallback to their class's school
 	let schoolId = profile.school_id;
 	if (!schoolId && profile.role === 'student') {
-		const { data: membership } = await supabase
+		const { data: membership, error: membershipError } = await supabase
 			.from('class_members')
 			.select('classes(school_id)')
 			.eq('student_id', profile.id)
 			.limit(1)
 			.maybeSingle();
+
+		// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+		// ne doit pas se confondre avec une donnée réellement vide.
+		if (membershipError && membershipError.code !== 'PGRST116') {
+			console.error('Contexte illisible :', membershipError);
+		}
 		schoolId = (membership?.classes as unknown as { school_id: string | null })?.school_id ?? null;
 	}
 
 	if ((profile.role === 'teacher' || profile.role === 'student') && schoolId) {
 		// Fetch current school year for academic periods
-		const { data: schoolYearData } = await supabase
+		const { data: schoolYearData, error: schoolYearDataError } = await supabase
 			.from('school_years')
 			.select('id')
 			.eq('school_id', schoolId)
@@ -110,12 +116,24 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.limit(1)
 			.maybeSingle();
 
+		// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+		// ne doit pas se confondre avec une donnée réellement vide.
+		if (schoolYearDataError && schoolYearDataError.code !== 'PGRST116') {
+			console.error('Contexte illisible :', schoolYearDataError);
+		}
+
 		if (schoolYearData) {
-			const { data: periods } = await supabase
+			const { data: periods, error: periodsError } = await supabase
 				.from('academic_periods')
 				.select('id, name, start_date, end_date, school_year_id, period_order, type, color')
 				.eq('school_year_id', schoolYearData.id)
 				.order('start_date', { ascending: false });
+
+			// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+			// laisse une trace.
+			if (periodsError) {
+				console.error('Enrichissement illisible :', periodsError);
+			}
 
 			academicPeriods = (periods || []) as typeof academicPeriods;
 		}

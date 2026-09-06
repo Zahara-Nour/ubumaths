@@ -71,11 +71,18 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// 3. Authz: author OR has assigned this exercise himself.
 	// Same comment applies as in /results: the .eq('assigned_by', user.id)
 	// is the sole authz gate for non-authors.
-	const { data: ownAssignments } = await supabase
+	const { data: ownAssignments, error: ownAssignmentsError } = await supabase
 		.from('python_exercise_assignments')
 		.select('id, class_id, student_id')
 		.eq('exercise_id', exerciseId)
 		.eq('assigned_by', user.id);
+
+	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+	// panne doit se distinguer d'un refus mérité.
+	if (ownAssignmentsError && ownAssignmentsError.code !== 'PGRST116') {
+		console.error('Contrôle d’accès impossible :', ownAssignmentsError);
+		throw error(500, 'Impossible de vérifier votre accès');
+	}
 
 	const isAuthor = exercise.author_id === user.id;
 	const hasAssignedIt = (ownAssignments ?? []).length > 0;
@@ -84,16 +91,32 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// 4. Build the teacher's student scope.
-	const { data: teacherClassesRaw } = await supabase.from('classes').select('id, name');
+	const { data: teacherClassesRaw, error: teacherClassesRawError } = await supabase
+		.from('classes')
+		.select('id, name');
+
+	// Cette liste borne la portée du classement. Vidée par une panne, elle
+	// affiche un classement amputé sans le dire.
+	if (teacherClassesRawError) {
+		console.error('Périmètre illisible :', teacherClassesRawError);
+		throw error(500, 'Impossible de déterminer le périmètre');
+	}
 	const teacherClassIds = (teacherClassesRaw ?? []).map((c) => c.id);
 
 	const scope = new Set<string>();
 	if (teacherClassIds.length > 0) {
-		const { data: classMembersRaw } = await supabase
+		const { data: classMembersRaw, error: classMembersRawError } = await supabase
 			.from('class_members')
 			.select('student_id')
 			.in('class_id', teacherClassIds)
 			.eq('status', 'active');
+
+		// Cette liste borne la portée du classement. Vidée par une panne, elle
+		// affiche un classement amputé sans le dire.
+		if (classMembersRawError) {
+			console.error('Périmètre illisible :', classMembersRawError);
+			throw error(500, 'Impossible de déterminer le périmètre');
+		}
 		for (const m of classMembersRaw ?? []) {
 			if (m.student_id) scope.add(m.student_id);
 		}

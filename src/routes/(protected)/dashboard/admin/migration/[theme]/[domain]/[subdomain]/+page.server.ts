@@ -199,10 +199,15 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 		if (supabase && globalIndices.length > 0) {
 			// Load tracking data for review status
-			const { data: trackingData } = await supabase
+			const { data: trackingData, error: trackingDataError } = await supabase
 				.from('migration_tracking')
 				.select('old_question_index, migration_status, conversion_errors, conversion_notes')
 				.in('old_question_index', globalIndices);
+
+			if (trackingDataError) {
+				console.error('Lecture impossible :', trackingDataError);
+				throw error(500, 'Impossible de charger les données');
+			}
 
 			if (trackingData) {
 				for (const row of trackingData) {
@@ -220,7 +225,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 			// Load edits from migration_edits table
 			// We need to join with migration_tracking to get the old_question_index
-			const { data: editsData } = await supabase
+			const { data: editsData, error: editsDataError } = await supabase
 				.from('migration_edits')
 				.select(
 					`
@@ -231,6 +236,11 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 				`
 				)
 				.in('migration_tracking.old_question_index', globalIndices);
+
+			if (editsDataError) {
+				console.error('Lecture impossible :', editsDataError);
+				throw error(500, 'Impossible de charger les données');
+			}
 
 			if (editsData) {
 				for (const edit of editsData) {

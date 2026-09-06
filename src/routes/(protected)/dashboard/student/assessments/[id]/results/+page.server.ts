@@ -13,11 +13,18 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const id = validateUuidParam(params.id);
 
 	// Verify user is a student
-	const { data: profile } = await locals.supabase
+	const { data: profile, error: profileError } = await locals.supabase
 		.from('profiles')
 		.select('role')
 		.eq('id', user.id)
 		.single();
+
+	// PGRST116 = pas de profil, et la redirection qui suit est légitime. Une
+	// AUTRE panne renvoyait l'élève au tableau de bord sans rien expliquer.
+	if (profileError && profileError.code !== 'PGRST116') {
+		console.error('Profil illisible :', profileError);
+		throw error(500, 'Impossible de vérifier votre profil');
+	}
 
 	if (!profile || profile.role !== 'student') {
 		throw redirect(303, '/dashboard');
@@ -65,13 +72,20 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	let isAssignedViaClass = false;
 	if (assignment.class_id) {
-		const { data: membership } = await locals.supabase
+		const { data: membership, error: membershipError } = await locals.supabase
 			.from('class_members')
 			.select('id')
 			.eq('class_id', assignment.class_id)
 			.eq('student_id', user.id)
 			.eq('status', 'active')
 			.single();
+
+		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+		// panne doit se distinguer d'un refus mérité.
+		if (membershipError && membershipError.code !== 'PGRST116') {
+			console.error('Contrôle d’accès impossible :', membershipError);
+			throw error(500, 'Impossible de vérifier votre accès');
+		}
 
 		isAssignedViaClass = !!membership;
 	}

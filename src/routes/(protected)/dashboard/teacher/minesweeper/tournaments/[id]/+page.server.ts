@@ -85,12 +85,17 @@ export const load: PageServerLoad = async ({ params, locals, fetch, url }) => {
 	}
 
 	// Check for games with NULL scores (pre-3BV migration) and backfill them
-	const { data: gamesWithNullScore } = await locals.supabase
+	const { data: gamesWithNullScore, error: gamesWithNullScoreError } = await locals.supabase
 		.from('minesweeper_tournament_games')
 		.select('id')
 		.eq('tournament_id', tournamentId)
 		.eq('status', 'won')
 		.is('score', null);
+
+	if (gamesWithNullScoreError) {
+		console.error('Lecture impossible :', gamesWithNullScoreError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	if (gamesWithNullScore && gamesWithNullScore.length > 0) {
 		await locals.supabase.rpc('backfill_tournament_scores', {
@@ -101,10 +106,16 @@ export const load: PageServerLoad = async ({ params, locals, fetch, url }) => {
 	// If tournament is already completed, check if rewards need to be redistributed
 	// (handles the case where finalization ran with empty standings due to NULL scores)
 	if (tournament.status === 'completed' && !justFinalized) {
-		const { data: redistributeResult } = await locals.supabase.rpc(
+		const { data: redistributeResult, error: redistributeResultError } = await locals.supabase.rpc(
 			'redistribute_tournament_rewards',
 			{ p_tournament_id: tournamentId }
 		);
+
+		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+		// laisse une trace.
+		if (redistributeResultError) {
+			console.error('Enrichissement illisible :', redistributeResultError);
+		}
 
 		// `rewards_distributed` peut manquer : la fonction rend une table, et une
 		// exécution sans redistribution ne renvoie aucune ligne.

@@ -62,11 +62,17 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEdit
 	if (!task) throw error(404, 'Tâche introuvable');
 
 	// 2. Classes du prof pour le selecteur
-	const { data: classes } = await locals.supabase
+	const { data: classes, error: classesError } = await locals.supabase
 		.from('classes')
 		.select('id, name')
 		.eq('is_active', true)
 		.order('name');
+
+	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+	// laisse une trace.
+	if (classesError) {
+		console.error('Enrichissement illisible :', classesError);
+	}
 
 	// 3. Toutes les compétences math + sous-dimensions + observables (lecture publique)
 	const { data: competences, error: compErr } = await locals.supabase
@@ -97,10 +103,15 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEdit
 	if (compErr) throw error(500, `Erreur compétences : ${compErr.message}`);
 
 	// 4. Périmètre actuel de la tâche
-	const { data: perimeter } = await locals.supabase
+	const { data: perimeter, error: perimeterError } = await locals.supabase
 		.from('evaluation_task_perimeter')
 		.select('observable_id')
 		.eq('task_id', params.id);
+
+	if (perimeterError) {
+		console.error('Lecture impossible :', perimeterError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	const perimeterSet = new Set((perimeter ?? []).map((p) => p.observable_id));
 
@@ -185,11 +196,17 @@ export const actions: Actions = {
 	save_perimeter: async ({ locals, request, params }) => {
 		await requireRole(locals, 'teacher');
 		// Vérifier l'existence de la tâche
-		const { data: task } = await locals.supabase
+		const { data: task, error: taskError } = await locals.supabase
 			.from('evaluation_tasks')
 			.select('id')
 			.eq('id', params.id)
 			.maybeSingle();
+
+		// PGRST116 = la tâche n'existe pas, et le 404 qui suit est légitime.
+		if (taskError && taskError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', taskError);
+			return fail(500, { message: 'Lecture impossible' });
+		}
 		if (!task) {
 			return fail(404, { message: 'Tâche introuvable' });
 		}

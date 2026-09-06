@@ -48,10 +48,15 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	await signBugReportScreenshots(locals.supabase, (reports ?? []) as BugReportWithAuthor[]);
 
 	// Get stats
-	const { data: stats } = await locals.supabase
+	const { data: stats, error: statsError } = await locals.supabase
 		.from('bug_reports')
 		.select('status')
 		.eq('user_id', user.id);
+
+	if (statsError) {
+		console.error('Lecture impossible :', statsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	const statusCounts = {
 		total: stats?.length ?? 0,

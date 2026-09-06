@@ -41,7 +41,17 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const templateId = idValidation.data;
 
 	// Verify template access
-	const { data: template } = await getChapterTemplate(templateId, locals.supabase);
+	const { data: template, error: templateError } = await getChapterTemplate(
+		templateId,
+		locals.supabase
+	);
+
+	// Le helper rend `{ data, error }` : sans cette garde, une panne de lecture
+	// se présentait comme un modèle inexistant (404).
+	if (templateError) {
+		console.error('Modèle illisible :', templateError);
+		throw error(500, 'Impossible de vérifier le modèle');
+	}
 	if (!template) {
 		throw error(404, 'Template not found');
 	}

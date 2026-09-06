@@ -12,33 +12,55 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 	if (!user) throw error(401, 'Unauthorized');
 
 	// Fetch player's spells
-	const { data: spells } = await supabase
+	const { data: spells, error: spellsError } = await supabase
 		.from('game_spells')
 		.select('*')
 		.eq('user_id', user.id)
 		.order('spell_num', { ascending: true });
 
+	if (spellsError) {
+		console.error('Lecture impossible :', spellsError);
+		throw error(500, 'Impossible de charger les données');
+	}
+
 	// Fetch spell decks
-	const { data: decks } = await supabase
+	const { data: decks, error: decksError } = await supabase
 		.from('game_spell_decks')
 		.select('*')
 		.eq('user_id', user.id)
 		.order('created_at', { ascending: true });
 
+	if (decksError) {
+		console.error('Lecture impossible :', decksError);
+		throw error(500, 'Impossible de charger les données');
+	}
+
 	// Fetch active deck
-	const { data: activeDeck } = await supabase
+	const { data: activeDeck, error: activeDeckError } = await supabase
 		.from('game_spell_decks')
 		.select('*')
 		.eq('user_id', user.id)
 		.eq('is_active', true)
 		.single();
 
+	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+	// ne doit pas se confondre avec une donnée réellement vide.
+	if (activeDeckError && activeDeckError.code !== 'PGRST116') {
+		console.error('Contexte illisible :', activeDeckError);
+	}
+
 	// Fetch game player for pyrs
-	const { data: gamePlayer } = await supabase
+	const { data: gamePlayer, error: gamePlayerError } = await supabase
 		.from('game_players')
 		.select('*')
 		.eq('user_id', user.id)
 		.single();
+
+	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+	// ne doit pas se confondre avec une donnée réellement vide.
+	if (gamePlayerError && gamePlayerError.code !== 'PGRST116') {
+		console.error('Contexte illisible :', gamePlayerError);
+	}
 
 	// L'écran du grimoire lit les pyrs du joueur dès son en-tête : sans fiche de
 	// jeu, il n'y a rien à afficher.
@@ -80,12 +102,18 @@ export const actions: Actions = {
 		const { spell_num, element, type, power } = validation.data;
 
 		// Check if spell already unlocked
-		const { data: existingSpell } = await supabase
+		const { data: existingSpell, error: existingSpellError } = await supabase
 			.from('game_spells')
 			.select('id')
 			.eq('user_id', user.id)
 			.eq('spell_num', spell_num)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
+		if (existingSpellError && existingSpellError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', existingSpellError);
+			return fail(500, { error: 'Lecture impossible' });
+		}
 
 		if (existingSpell) {
 			return fail(400, { error: 'Sort déjà débloqué' });

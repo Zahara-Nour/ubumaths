@@ -40,11 +40,16 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
 	}
 
 	// Get unique genres for filter
-	const { data: allGenres } = await supabase
+	const { data: allGenres, error: allGenresError } = await supabase
 		.from('riddles')
 		.select('genre')
 		.not('genre', 'is', null)
 		.eq('status', 'published');
+
+	if (allGenresError) {
+		console.error('Lecture impossible :', allGenresError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	// `riddles.genre` est nullable : sans garde de type, la liste reste
 	// `(string | null)[]` et ne peut pas alimenter un MySelect.
@@ -74,7 +79,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
 
 	// Calculate consecutive days streak (simplified - just count unique dates)
 	// For a real streak, would need to check if dates are consecutive
-	const { data: riddleOfTheDayAttempts } = await supabase
+	const { data: riddleOfTheDayAttempts, error: riddleOfTheDayAttemptsError } = await supabase
 		.from('riddle_attempts')
 		.select(
 			`
@@ -96,6 +101,11 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
 			).data?.map((r) => r.riddle_id) || []
 		)
 		.order('created_at', { ascending: false });
+
+	if (riddleOfTheDayAttemptsError) {
+		console.error('Lecture impossible :', riddleOfTheDayAttemptsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	const consecutiveDaysStreak = new Set(
 		(riddleOfTheDayAttempts || []).map((a) => a.created_at.split('T')[0])

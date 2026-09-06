@@ -31,11 +31,16 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	// Get student's attempts for these riddles
 	const riddleIds = (history || []).map((h) => h.riddle_id);
 
-	const { data: attempts } = await supabase
+	const { data: attempts, error: attemptsError } = await supabase
 		.from('riddle_attempts')
 		.select('riddle_id, is_correct, attempt_number, gidouilles_awarded')
 		.eq('student_id', user.id)
 		.in('riddle_id', riddleIds);
+
+	if (attemptsError) {
+		console.error('Lecture impossible :', attemptsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	// Create map of riddle_id to attempt
 	const attemptsMap = new Map();

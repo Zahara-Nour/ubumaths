@@ -35,10 +35,15 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (cErr) throw error(500, `Erreur compétences : ${cErr.message}`);
 
 	// 2. Niveaux calculés pour cet élève
-	const { data: levels } = await locals.supabase
+	const { data: levels, error: levelsError } = await locals.supabase
 		.from('student_competence_level')
 		.select('math_competence_id, niveau, task_count')
 		.eq('student_id', user.id);
+
+	if (levelsError) {
+		console.error('Lecture impossible :', levelsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	const levelByCompId = new Map<string, { niveau: MathCompetenceLevel; task_count: number }>();
 	for (const l of levels ?? []) {

@@ -9,11 +9,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Verify user is a student
-	const { data: profile } = await locals.supabase
+	const { data: profile, error: profileError } = await locals.supabase
 		.from('profiles')
 		.select('role')
 		.eq('id', user.id)
 		.single();
+
+	// PGRST116 = pas de profil, et la redirection qui suit est légitime. Une
+	// AUTRE panne renvoyait l'élève au tableau de bord sans rien expliquer.
+	if (profileError && profileError.code !== 'PGRST116') {
+		console.error('Profil illisible :', profileError);
+		throw error(500, 'Impossible de vérifier votre profil');
+	}
 
 	if (!profile || profile.role !== 'student') {
 		throw redirect(303, '/dashboard');

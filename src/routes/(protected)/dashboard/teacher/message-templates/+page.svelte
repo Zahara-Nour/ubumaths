@@ -227,10 +227,16 @@
 	}
 
 	async function loadClasses() {
-		const { data: classesData } = await data.supabase
+		const { data: classesData, error: classesDataError } = await data.supabase
 			.from('classes')
 			.select('id, name')
 			.order('name');
+
+		// Côté client : le repli d'affichage existe, mais une panne silencieuse
+		// ressemble à une liste réellement vide.
+		if (classesDataError) {
+			console.error('Lecture impossible :', classesDataError);
+		}
 
 		if (classesData) {
 			classes = classesData;

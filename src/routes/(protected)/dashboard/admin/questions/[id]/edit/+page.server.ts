@@ -59,10 +59,16 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		if (t.tree.length > 0) curriculumByGrade.push(t);
 	}
 
-	const { data: tagRows } = await supabase
+	const { data: tagRows, error: tagRowsError } = await supabase
 		.from('question_template_points')
 		.select('point_id')
 		.eq('template_id', id);
+
+	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+	// laisse une trace.
+	if (tagRowsError) {
+		console.error('Enrichissement illisible :', tagRowsError);
+	}
 
 	return {
 		template: mapDbTemplateToForm(template as unknown as Record<string, unknown>),

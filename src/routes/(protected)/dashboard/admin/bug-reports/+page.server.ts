@@ -53,9 +53,14 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	}
 
 	// Get stats
-	const { data: allReports } = await supabase
+	const { data: allReports, error: allReportsError } = await supabase
 		.from('bug_reports')
 		.select('status, severity, created_at');
+
+	if (allReportsError) {
+		console.error('Lecture impossible :', allReportsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	// Replace stored screenshot_url with fresh signed URLs (private bucket)
 	await signBugReportScreenshots(supabase, (reports ?? []) as BugReportWithAuthor[]);

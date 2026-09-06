@@ -92,7 +92,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		let sourceData = targetQuestion.transformed;
 
 		if (supabase) {
-			const { data: editsData } = await supabase
+			const { data: editsData, error: editsDataError } = await supabase
 				.from('migration_edits')
 				.select(
 					`
@@ -102,6 +102,11 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 				)
 				.eq('migration_tracking.old_question_index', globalIndex)
 				.limit(1);
+
+			if (editsDataError) {
+				console.error('Lecture impossible :', editsDataError);
+				throw error(500, 'Impossible de charger les données');
+			}
 
 			if (editsData && editsData.length > 0) {
 				sourceData = editsData[0].edited_json as typeof sourceData;

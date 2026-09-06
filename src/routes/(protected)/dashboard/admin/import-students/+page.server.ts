@@ -145,11 +145,19 @@ export const actions: Actions = {
 					// Process each student individually to handle already-logged-in students
 					for (const student of pendingStudents) {
 						// Check if student already has an active profile (logged in before import)
-						const { data: existingProfile } = await supabase
+						const { data: existingProfile, error: existingProfileError } = await supabase
 							.from('profiles')
 							.select('id, class_ids')
 							.eq('email', student.email)
 							.single();
+
+						// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+						// panne prenait le même visage et faisait conclure « rien ici », donc créer
+						// par-dessus ce qu'on n'avait simplement pas su lire.
+						if (existingProfileError && existingProfileError.code !== 'PGRST116') {
+							console.error('Lecture impossible :', existingProfileError);
+							throw error(500, 'Impossible de vérifier l’état actuel');
+						}
 
 						if (existingProfile) {
 							console.log(

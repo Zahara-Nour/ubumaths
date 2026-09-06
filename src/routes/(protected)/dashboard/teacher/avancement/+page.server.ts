@@ -13,10 +13,15 @@ import { getCurriculumTree, type CurriculumTreeTheme } from '$lib/server/curricu
 export const load: PageServerLoad = async ({ locals, url }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
 
-	const { data: classesRaw } = await locals.supabase
+	const { data: classesRaw, error: classesRawError } = await locals.supabase
 		.from('classes')
 		.select('id, name, grade')
 		.order('name', { ascending: true });
+
+	if (classesRawError) {
+		console.error('Lecture impossible :', classesRawError);
+		throw error(500, 'Impossible de charger les données');
+	}
 	const classes = (classesRaw ?? []) as { id: string; name: string; grade: string | null }[];
 
 	const requested = url.searchParams.get('class');
@@ -34,19 +39,29 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	if (selected?.grade) {
 		tree = await getCurriculumTree(locals.supabase, selected.grade);
 
-		const { data: entries } = await locals.supabase
+		const { data: entries, error: entriesError } = await locals.supabase
 			.from('class_journal_entries')
 			.select('id')
 			.eq('class_id', selected.id)
 			.gte('entry_date', yearStart)
 			.lt('entry_date', yearEnd);
+
+		if (entriesError) {
+			console.error('Lecture impossible :', entriesError);
+			throw error(500, 'Impossible de charger les données');
+		}
 		const entryIds = (entries ?? []).map((e) => e.id);
 
 		if (entryIds.length > 0) {
-			const { data: cov } = await locals.supabase
+			const { data: cov, error: covError } = await locals.supabase
 				.from('journal_entry_points')
 				.select('point_id')
 				.in('entry_id', entryIds);
+
+			if (covError) {
+				console.error('Lecture impossible :', covError);
+				throw error(500, 'Impossible de charger les données');
+			}
 			for (const row of cov ?? []) {
 				counts[row.point_id] = (counts[row.point_id] ?? 0) + 1;
 			}

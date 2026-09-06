@@ -50,7 +50,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const classesWithData = await getTeacherClassesWithCounts(user.id, locals.supabase);
 
 	// Get existing assignments
-	const { data: existingAssignments } = await getAssessmentAssignments(locals.supabase, id);
+	const { data: existingAssignments, error: existingAssignmentsError } =
+		await getAssessmentAssignments(locals.supabase, id);
+
+	if (existingAssignmentsError) {
+		console.error('Lecture impossible :', existingAssignmentsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	// Add is_assigned field to classes
 	const formattedClasses = classesWithData.map((c) => ({

@@ -121,11 +121,17 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		};
 
 		// Fetch buddy data (may not exist yet if quiz not completed)
-		const { data: buddyData } = await supabase
+		const { data: buddyData, error: buddyDataError } = await supabase
 			.from('student_buddies')
 			.select('*')
 			.eq('student_id', user.id)
 			.maybeSingle();
+
+		// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+		// ne doit pas se confondre avec une donnée réellement vide.
+		if (buddyDataError && buddyDataError.code !== 'PGRST116') {
+			console.error('Contexte illisible :', buddyDataError);
+		}
 
 		// Check for streak loss (last activity > 1 day ago with active streak)
 		let streakLost = false;
