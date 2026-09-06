@@ -513,10 +513,20 @@ export async function enrichListingsWithCardData<
 	}
 
 	// Fetch creators' vip_cards to map instance IDs to template IDs
-	const { data: creators } = await supabase
+	const { data: creators, error: creatorsError } = await supabase
 		.from('profiles')
 		.select('id, vip_cards')
 		.in('id', Array.from(creatorIds));
+
+	// ⚠️ Une carte que l'on n'arrive pas à résoudre est RETIRÉE de l'offre
+	// (cf. la construction de `offered_cards` plus bas). Une panne de lecture
+	// ferait donc apparaître une proposition d'échange avec moins de cartes
+	// qu'elle n'en contient — l'élève accepterait un troc falsifié. On préfère
+	// une erreur visible à une offre amputée.
+	if (creatorsError) {
+		console.error('[marketplace] Cartes des vendeurs illisibles :', creatorsError);
+		throw new Error(creatorsError.message);
+	}
 
 	// Build a map of creator -> card instance -> template_id
 	const creatorCardsMap = new Map<string, Map<string, string>>();
@@ -541,10 +551,15 @@ export async function enrichListingsWithCardData<
 	const templateMap = new Map<string, CardTemplateInfo>();
 
 	if (allTemplateIds.length > 0) {
-		const { data: templates } = await supabase
+		const { data: templates, error: templatesError } = await supabase
 			.from('vip_card_templates')
 			.select('id, name, description, image_path, rarity, category')
 			.in('id', allTemplateIds);
+
+		if (templatesError) {
+			console.error('[marketplace] Modèles de cartes illisibles :', templatesError);
+			throw new Error(templatesError.message);
+		}
 
 		if (templates) {
 			for (const template of templates) {
@@ -585,18 +600,28 @@ export async function enrichListingsWithCardData<
 		// Get school_id from first listing's creator
 		const firstCreatorId = listings[0]?.creator_id;
 		if (firstCreatorId) {
-			const { data: schoolData } = await supabase
+			const { data: schoolData, error: schoolError } = await supabase
 				.from('profiles')
 				.select('school_id')
 				.eq('id', firstCreatorId)
 				.single();
 
+			if (schoolError) {
+				console.error('[marketplace] École du vendeur illisible :', schoolError);
+				throw new Error(schoolError.message);
+			}
+
 			if (schoolData?.school_id) {
-				const { data: allProfiles } = await supabase
+				const { data: allProfiles, error: allProfilesError } = await supabase
 					.from('profiles')
 					.select('vip_cards')
 					.eq('school_id', schoolData.school_id)
 					.not('vip_cards', 'is', null);
+
+				if (allProfilesError) {
+					console.error('[marketplace] Inventaires de l’école illisibles :', allProfilesError);
+					throw new Error(allProfilesError.message);
+				}
 
 				if (allProfiles) {
 					for (const profile of allProfiles) {
@@ -616,10 +641,18 @@ export async function enrichListingsWithCardData<
 					// Fetch any new template IDs found
 					const newTemplateIds = [...offeredTemplateIds].filter((id) => !templateMap.has(id));
 					if (newTemplateIds.length > 0) {
-						const { data: newTemplates } = await supabase
+						const { data: newTemplates, error: newTemplatesError } = await supabase
 							.from('vip_card_templates')
 							.select('id, name, description, image_path, rarity, category')
 							.in('id', newTemplateIds);
+
+						if (newTemplatesError) {
+							console.error(
+								'[marketplace] Modèles complémentaires illisibles :',
+								newTemplatesError
+							);
+							throw new Error(newTemplatesError.message);
+						}
 
 						if (newTemplates) {
 							for (const template of newTemplates) {
@@ -697,10 +730,17 @@ export async function enrichProposalsWithCardData<
 	const proposerIds = [...new Set(proposals.map((p) => p.proposer_id))];
 
 	// Fetch proposers' vip_cards to map instance IDs to template IDs
-	const { data: proposers } = await supabase
+	const { data: proposers, error: proposersError } = await supabase
 		.from('profiles')
 		.select('id, vip_cards')
 		.in('id', proposerIds);
+
+	// Même risque côté propositions reçues : une carte non résolue disparaît de
+	// l'offre affichée à l'élève.
+	if (proposersError) {
+		console.error('[marketplace] Cartes des proposants illisibles :', proposersError);
+		throw new Error(proposersError.message);
+	}
 
 	const proposerCardsMap = new Map<string, Map<string, string>>();
 	const templateIds = new Set<string>();
@@ -722,10 +762,15 @@ export async function enrichProposalsWithCardData<
 	// Fetch all needed templates
 	const templateMap = new Map<string, CardTemplateInfo>();
 	if (templateIds.size > 0) {
-		const { data: templates } = await supabase
+		const { data: templates, error: templatesError } = await supabase
 			.from('vip_card_templates')
 			.select('id, name, description, image_path, rarity, category')
 			.in('id', Array.from(templateIds));
+
+		if (templatesError) {
+			console.error('[marketplace] Modèles de cartes illisibles :', templatesError);
+			throw new Error(templatesError.message);
+		}
 
 		if (templates) {
 			for (const t of templates) {

@@ -60,7 +60,17 @@ export async function createNotification(
 			if (data.target_type === 'class' && data.target_class_ids) {
 				// Mono-teacher: the sole teacher owns every class. Targets just have to
 				// reference existing classes.
-				const { data: teacherClasses } = await supabase.from('classes').select('id');
+				const { data: teacherClasses, error: teacherClassesError } = await supabase
+					.from('classes')
+					.select('id');
+
+				// Cette liste sert de contrôle : une panne la vidait, toutes les
+				// classes visées devenaient « invalides », et le professeur se voyait
+				// reprocher de cibler des classes qui ne sont pas les siennes.
+				if (teacherClassesError) {
+					console.error('[createNotification] Classes illisibles :', teacherClassesError);
+					return { success: false, error: 'Impossible de vérifier les classes ciblées' };
+				}
 
 				const teacherClassIds = teacherClasses?.map((c) => c.id) || [];
 				const invalidClasses = data.target_class_ids.filter((id) => !teacherClassIds.includes(id));
@@ -76,7 +86,16 @@ export async function createNotification(
 			if (data.target_type === 'users' && data.target_user_ids) {
 				// Mono-teacher: every enrolled student is "ours". Targets just have to be
 				// students enrolled in some class.
-				const { data: teacherStudents } = await supabase.from('class_members').select('student_id');
+				const { data: teacherStudents, error: teacherStudentsError } = await supabase
+					.from('class_members')
+					.select('student_id');
+
+				// Même contrôle, même piège : la liste vide accusait le professeur de
+				// cibler des élèves qui ne sont pas les siens.
+				if (teacherStudentsError) {
+					console.error('[createNotification] Élèves illisibles :', teacherStudentsError);
+					return { success: false, error: 'Impossible de vérifier les élèves ciblés' };
+				}
 
 				const teacherStudentIds = teacherStudents?.map((cm) => cm.student_id) || [];
 				const invalidStudents = data.target_user_ids.filter(
@@ -219,11 +238,18 @@ export async function getUnreadNotifications(
 		const offset = (page - 1) * limit;
 
 		// Get user's role and classes
-		const { data: profile } = await supabase
+		const { data: profile, error: profileError } = await supabase
 			.from('profiles')
 			.select('role, class_ids')
 			.eq('id', userId)
 			.single();
+
+		// Le profil décide QUELLES notifications sont visibles. Une panne les
+		// faisait toutes disparaître, sans distinction avec « rien de nouveau ».
+		if (profileError) {
+			console.error('[getNotifications] Profil illisible :', profileError);
+			throw new Error(profileError.message);
+		}
 
 		if (!profile) {
 			return {
@@ -283,11 +309,18 @@ export async function getUnreadNotifications(
 
 		// Step 2: Get read status for all notifications (batch query)
 		const notificationIds = allNotifications.map((n) => n.id);
-		const { data: reads } = await supabase
+		const { data: reads, error: readsError } = await supabase
 			.from('notification_reads')
 			.select('notification_id')
 			.eq('user_id', userId)
 			.in('notification_id', notificationIds);
+
+		// Sans les accusés de lecture, TOUT réapparaît comme non lu : l'élève
+		// croit avoir perdu son historique.
+		if (readsError) {
+			console.error('[getNotifications] Accusés de lecture illisibles :', readsError);
+			throw new Error(readsError.message);
+		}
 
 		const readSet = new Set(reads?.map((r) => r.notification_id) || []);
 
@@ -428,17 +461,26 @@ export async function deleteNotification(
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		// Check if user is creator or admin
-		const { data: notification } = await supabase
+		const { data: notification, error: notificationError } = await supabase
 			.from('notifications')
 			.select('created_by')
 			.eq('id', notificationId)
 			.single();
 
-		const { data: profile } = await supabase
+		const { data: profile, error: profileError } = await supabase
 			.from('profiles')
 			.select('role')
 			.eq('id', userId)
 			.single();
+
+		// `.single()` sur zéro ligne rend PGRST116 : c'est l'absence, déjà traitée
+		// juste après. Tout autre code est une panne, qu'on ne doit pas faire
+		// passer pour « la notification n'existe pas ».
+		const panne = [notificationError, profileError].find((e) => e && e.code !== 'PGRST116');
+		if (panne) {
+			console.error('[deleteNotification] Vérification impossible :', panne);
+			return { success: false, error: 'Impossible de vérifier vos droits sur cette notification' };
+		}
 
 		if (!notification || !profile) {
 			return { success: false, error: 'Notification ou utilisateur non trouvé' };
@@ -494,10 +536,16 @@ export async function getCreatedNotifications(
 		const notificationIds = notifications.map((n) => n.id);
 
 		// Batch fetch all read counts for all notifications (1 query instead of N)
-		const { data: allReads } = await supabase
+		const { data: allReads, error: allReadsError } = await supabase
 			.from('notification_reads')
 			.select('notification_id')
 			.in('notification_id', notificationIds);
+
+		// Ce décompte est une statistique de lecture affichée au professeur : une
+		// panne le montrerait à zéro. On garde l'écran, on laisse la trace.
+		if (allReadsError) {
+			console.error('[getNotificationsWithStats] Décompte de lectures illisible :', allReadsError);
+		}
 
 		// Build count map for O(1) lookup: notification_id -> count
 		const readCountsMap = (allReads || []).reduce(
@@ -521,10 +569,15 @@ export async function getCreatedNotifications(
 		// Fetch all class names in one query (if needed)
 		const classNamesMap = new Map<string, string>();
 		if (uniqueClassIds.size > 0) {
-			const { data: classes } = await supabase
+			const { data: classes, error: classesError } = await supabase
 				.from('classes')
 				.select('id, name')
 				.in('id', Array.from(uniqueClassIds));
+
+			// Étiquette d'affichage : son absence ne justifie pas de fermer l'écran.
+			if (classesError) {
+				console.error('[getNotificationsWithStats] Noms de classes illisibles :', classesError);
+			}
 
 			for (const cls of classes || []) {
 				classNamesMap.set(cls.id, cls.name);
@@ -534,11 +587,17 @@ export async function getCreatedNotifications(
 		// Fetch class member counts in one query (if needed)
 		const classMemberCountsMap = new Map<string, number>();
 		if (uniqueClassIds.size > 0) {
-			const { data: classMembers } = await supabase
+			const { data: classMembers, error: classMembersError } = await supabase
 				.from('class_members')
 				.select('class_id')
 				.in('class_id', Array.from(uniqueClassIds))
 				.eq('status', 'active');
+
+			// Effectif affiché à côté de chaque envoi : une panne le montrerait à 0,
+			// laissant croire à une classe vide.
+			if (classMembersError) {
+				console.error('[getNotificationsWithStats] Effectifs illisibles :', classMembersError);
+			}
 
 			for (const member of classMembers || []) {
 				classMemberCountsMap.set(
