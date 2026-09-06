@@ -12,7 +12,7 @@
  * Spec : docs/wip/srs-fsrs-spec-tdd.md §2
  */
 
-import { json } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { CardStats } from '$lib/srs/types';
 import { FSRS } from '$lib/srs/fsrs';

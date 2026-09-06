@@ -4,7 +4,7 @@
  * GET - Get completion statistics for a specific exercise (teacher only)
  */
 
-import { json } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getExerciseCompletionStats } from '$lib/server/exercise-assignments';
 import { requireRole } from '$lib/server/middleware/auth';

@@ -7,7 +7,7 @@
  * Cf. spec TDD : docs/wip/srs-anti-fraud-spec-tdd.md §B9
  */
 
-import { json } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
 import { classIdParamSchema } from '$lib/server/validation/teacher-analytics';

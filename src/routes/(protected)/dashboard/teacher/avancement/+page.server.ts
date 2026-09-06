@@ -9,6 +9,7 @@
 import type { PageServerLoad } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { getCurriculumTree, type CurriculumTreeTheme } from '$lib/server/curriculum';
+import { error } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	await requireRoles(locals, ['teacher', 'admin']);

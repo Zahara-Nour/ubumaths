@@ -34,7 +34,7 @@ import { resolveTagsToIds, syncExerciseTagJunction } from '$lib/server/tags-reso
  * précisément ce qu'on cherche à savoir. Toute autre erreur est une panne, et
  * la faire passer pour une absence conduit à réinsérer par-dessus.
  */
-function estPanne(error: { code?: string } | null): boolean {
+function estPanne<T extends { code?: string }>(error: T | null): error is T {
 	return error !== null && error.code !== 'PGRST116';
 }
 
@@ -698,7 +698,7 @@ async function restoreExercises(
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
 			if (estPanne(existingError)) {
 				console.error('[restore] Lecture impossible (exercises) :', existingError);
-				throw new Error(existingError!.message);
+				throw new Error(existingError.message);
 			}
 
 			// Tags live in the exercise_tags junction, never on the row. Read them
@@ -821,7 +821,7 @@ async function restoreTemplates(
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
 			if (estPanne(existingError)) {
 				console.error('[restore] Lecture impossible (exercise_templates) :', existingError);
-				throw new Error(existingError!.message);
+				throw new Error(existingError.message);
 			}
 
 			if (existing) {
@@ -933,7 +933,7 @@ async function restoreFavorites(
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
 			if (estPanne(existingError)) {
 				console.error('[restore] Lecture impossible (exercise_favorites) :', existingError);
-				throw new Error(existingError!.message);
+				throw new Error(existingError.message);
 			}
 
 			if (existing) {
@@ -1017,7 +1017,7 @@ async function restoreTokens(
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
 			if (estPanne(existingError)) {
 				console.error('[restore] Lecture impossible (exercise_share_tokens) :', existingError);
-				throw new Error(existingError!.message);
+				throw new Error(existingError.message);
 			}
 
 			if (existing) {

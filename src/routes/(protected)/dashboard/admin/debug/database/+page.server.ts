@@ -22,6 +22,7 @@
  */
 import type { PageServerLoad } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { error } from '@sveltejs/kit';
 
 /**
  * Redact email address for privacy

@@ -1,4 +1,4 @@
-import { fail } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { requireRole } from '$lib/server/auth';
 
@@ -143,10 +143,13 @@ export const actions: Actions = {
 		}
 
 		// Delete the friendship
-		const { error } = await supabase.from('friendships').delete().eq('id', friendshipId);
+		const { error: deleteError } = await supabase
+			.from('friendships')
+			.delete()
+			.eq('id', friendshipId);
 
-		if (error) {
-			console.error('Error deleting friendship:', error);
+		if (deleteError) {
+			console.error('Error deleting friendship:', deleteError);
 			return fail(500, { error: 'Failed to delete friendship' });
 		}
 

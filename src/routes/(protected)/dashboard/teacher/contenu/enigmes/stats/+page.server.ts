@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { getTeacherTestMode } from '$lib/server/test-mode';
 
 /**

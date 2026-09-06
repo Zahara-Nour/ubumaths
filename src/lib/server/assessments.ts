@@ -25,7 +25,7 @@ import { isDeadlinePassed } from '$lib/utils/dates';
  * en faire. Tout AUTRE code — RLS, réseau, contrainte — est une panne, qu'on ne
  * doit pas laisser passer pour une absence.
  */
-function estPanne(error: { code?: string } | null): boolean {
+function estPanne<T extends { code?: string }>(error: T | null): error is T {
 	return error !== null && error.code !== 'PGRST116';
 }
 

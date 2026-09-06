@@ -30,7 +30,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// affiche un classement amputé sans le dire.
 	if (memberRowsError) {
 		console.error('Périmètre illisible :', memberRowsError);
-		throw error(500, 'Impossible de déterminer le périmètre');
+		return json({ error: 'Impossible de déterminer le périmètre' }, { status: 500 });
 	}
 
 	const studentIds = (memberRows ?? []).map((m) => m.student_id);

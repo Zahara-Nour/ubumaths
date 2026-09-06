@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import type { DbRiddle, DbRiddleAttempt } from '$lib/types/riddle';
 import { toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 /**
  * Load riddle of the day for student

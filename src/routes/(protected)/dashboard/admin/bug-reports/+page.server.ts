@@ -9,6 +9,7 @@ import type { PageServerLoad } from './$types';
 import type { BugReportWithAuthor } from '$lib/types/bug-reports';
 import { signBugReportScreenshots } from '$lib/server/bug-report-screenshots';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { error } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// Admin gate (admin login OR step-up elevation)

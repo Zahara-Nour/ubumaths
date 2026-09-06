@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getStudentAssignments } from '$lib/server/assessments';
 
@@ -27,10 +27,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Fetch assigned assessments
-	const { data: assignments, error } = await getStudentAssignments(locals.supabase, user.id);
+	const { data: assignments, error: assignmentsError } = await getStudentAssignments(
+		locals.supabase,
+		user.id
+	);
 
-	if (error) {
-		console.error('Failed to fetch assignments:', error);
+	if (assignmentsError) {
+		console.error('Failed to fetch assignments:', assignmentsError);
 		return { assignments: [] };
 	}
 

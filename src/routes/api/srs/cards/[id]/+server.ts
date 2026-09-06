@@ -10,7 +10,7 @@
  * - DELETE /api/srs/cards/[id] - Delete card (non-assigned deck only)
  */
 
-import { json } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { updateCardSchema, uuidParamSchema } from '$lib/server/validation/srs';
 import { requireAuth } from '$lib/server/middleware/auth';
