@@ -115,27 +115,31 @@ de typage : le code lit une propriété que la requête n'a jamais pu retourner.
 | Après lots 2 à 7        | **235** | 131      | **2**               |
 | Après lot navadra       | 233     | 131      | **0** ✅            |
 | Lots typage (10 cycles) | **132** | 101      | 0                   |
+| Lots typage (suite)     | **23**  | 18       | 0                   |
 
 ### Convertisseurs partagés créés
 
 Ils couvrent la quasi-totalité des colonnes `jsonb` du projet. Le principe est
 constant : **vérifier plutôt qu'affirmer**, et définir un repli explicite.
 
-| Fonction                                | Colonne                                 | Repli                           |
-| --------------------------------------- | --------------------------------------- | ------------------------------- |
-| `asWorksheetConfig`                     | `worksheets.config`                     | configuration vide              |
-| `asRowTranslations`                     | `*.translations`                        | `null` → colonne française      |
-| `asInstanceData`                        | `worksheet_instances.instance_data`     | `null` → régénère l'instance    |
-| `asNotebookContent`                     | `python_notebooks.content`              | `null` → refus explicite        |
-| `asStudentVipCards`                     | `profiles.vip_cards`                    | écarte les cartes sans identité |
-| `asRiddleDifficulty`                    | `riddles.difficulty`                    | 1                               |
-| `asCardState`                           | `srs_card_stats.state`                  | `'new'`                         |
-| `asVipCardCategory` / `asVipCardAction` | `vip_card_templates.*`                  | `null`                          |
-| `toWhiteboardTemplateRow`               | `whiteboard_templates.page_data`        | `null` → modèle écarté          |
-| `toJson`                                | **sens inverse** : objet métier → jsonb | lève sur structure cyclique     |
+| Fonction                                | Colonne                                 | Repli                               |
+| --------------------------------------- | --------------------------------------- | ----------------------------------- |
+| `asWorksheetConfig`                     | `worksheets.config`                     | configuration vide                  |
+| `asRowTranslations`                     | `*.translations`                        | `null` → colonne française          |
+| `asInstanceData`                        | `worksheet_instances.instance_data`     | `null` → régénère l'instance        |
+| `asNotebookContent`                     | `python_notebooks.content`              | `null` → refus explicite            |
+| `asStudentVipCards`                     | `profiles.vip_cards`                    | écarte les cartes sans identité     |
+| `asRiddleDifficulty`                    | `riddles.difficulty`                    | 1                                   |
+| `asCardState`                           | `srs_card_stats.state`                  | `'new'`                             |
+| `asVipCardCategory` / `asVipCardAction` | `vip_card_templates.*`                  | `null`                              |
+| `toWhiteboardTemplateRow`               | `whiteboard_templates.page_data`        | `null` → modèle écarté              |
+| `toQuestionTemplate`                    | `question_templates.*` (5 colonnes)     | statut inconnu → `draft`            |
+| `toExercise`                            | `exercises.*` (4 colonnes)              | distribution inconnue → `on_demand` |
+| `toJson`                                | **sens inverse** : objet métier → jsonb | lève sur structure cyclique         |
+| `rpcNullable`                           | paramètre SQL nullable non exprimé      | `NULL` documenté, pas affirmé       |
 
 Schémas Zod pour les résultats de RPC : `marketplace-rpc.ts`,
-`minesweeper-rpc.ts`.
+`minesweeper-rpc.ts`, `vip-card-rpc.ts`.
 
 ### Fonctionnalités mortes découvertes après le lot « colonnes fantômes »
 
@@ -169,6 +173,30 @@ trace.
 - Étiquettes d'exercice invisibles (elles vivent dans la jonction
   `exercise_tags`), statistiques SRS `undefined`, audit de modération sans
   taille de message, table `vip_cards` inexistante.
+
+### Écarts trouvés dans le dernier lot
+
+- **Le panneau de réglages du marché repartait toujours de « désactivé »** :
+  le composant déclarait sa propre forme de configuration avec un champ
+  `is_enabled` qui n'existe pas dans `marketplace_config`. Il _écrivait_
+  pourtant `enabled_for_class` — lecture et écriture ne parlaient donc pas de
+  la même colonne, et « Réinitialiser » renvoyait le marché à l'arrêt.
+- **La connexion Google échouait en 500 opaque** quand Google ne transmettait
+  pas l'adresse du compte : `google_integrations.google_email` est NOT NULL, et
+  l'insertion partait quand même avec `null`. Désormais un 400 qui dit quoi
+  faire.
+- **La copie d'un modèle de fiche par défaut** convertissait `template_content`
+  en JSON alors que la colonne est du `text` : le Typst aurait été enregistré
+  entre guillemets, illisible par le moteur de rendu.
+
+### Suite laissée en attente
+
+- `upsert_checkpoint_run(p_error_message text)` n'a pas de `DEFAULT NULL` : le
+  paramètre doit donc être transmis, et les types générés ne savent pas dire
+  qu'un paramètre accepte `NULL`. `rpcNullable` documente le passage. Une
+  migration ajoutant `DEFAULT NULL` rendrait le paramètre facultatif et
+  supprimerait l'helper à cet endroit — additive, mais hors périmètre d'un
+  chantier de typage.
 
 ### Fonctionnalités jamais livrées, découvertes au passage
 

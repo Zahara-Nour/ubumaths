@@ -64,7 +64,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 	// 5. Fetch message with conversation_id and content (for logging)
 	const { data: message, error: fetchError } = await locals.supabase
 		.from('messages')
-		.select('id, conversation_id, sender_id, content, created_at, deleted_at')
+		.select('id, conversation_id, sender_id, plain_text, created_at, deleted_at')
 		.eq('id', messageId)
 		.maybeSingle();
 
@@ -160,11 +160,13 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		p_metadata: {
 			conversation_id: message.conversation_id,
 			sender_id: message.sender_id,
-			// `messages.content` est du jsonb, pas du texte : `.length` valait
-			// `undefined` et la trace d'audit ne consignait donc aucune taille.
-			// On mesure la forme sérialisée, ce qui préserve l'intention (garder une
-			// taille, jamais le contenu).
-			message_length: JSON.stringify(message.content).length,
+			// `messages.content` est du jsonb (texte enrichi) : `.length` y valait
+			// `undefined`, et la trace d'audit ne consignait donc aucune taille.
+			// `plain_text` est le message tel que l'élève l'a écrit — c'est cette
+			// longueur-là qui a un sens pour un modérateur, pas celle de la
+			// sérialisation du document. L'intention est conservée : on garde une
+			// taille, jamais le contenu.
+			message_length: message.plain_text?.length ?? 0,
 			message_created_at: message.created_at
 		}
 	});
