@@ -15,6 +15,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData, ActionData } from './$types';
 	import type { ChallengeInstance } from '$lib/types/game';
+	import { asCombatFlow } from '$lib/types/game';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -375,7 +376,8 @@
 						maxHP={playerMaxHP}
 					/>
 
-					<CombatLog turns={data.combat.combat_flow || []} />
+					<!-- `combat_flow` est du jsonb : les tours sont vérifiés, pas affirmés. -->
+					<CombatLog turns={asCombatFlow(data.combat.combat_flow)} />
 				</div>
 
 				<!-- Center: Monster Panel -->

@@ -10,6 +10,7 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { updateSpreadsheetSchema } from '$lib/server/validation/spreadsheet';
 import { validateUuidParam } from '$lib/server/validation/params';
+import type { TablesUpdate } from '$lib/types/database';
 
 /**
  * GET /api/spreadsheets/:id
@@ -53,7 +54,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	// Build update object with only provided fields
-	const updates: Record<string, unknown> = {};
+	const updates: TablesUpdate<'spreadsheets'> = {};
 	if (validation.data.name !== undefined) updates.name = validation.data.name;
 	if (validation.data.description !== undefined) updates.description = validation.data.description;
 	if (validation.data.data !== undefined) updates.data = validation.data.data;

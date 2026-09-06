@@ -213,30 +213,30 @@ export const threadMessagesQuerySchema = z.object({
 
 /**
  * Schema for updating message (PATCH /api/messages/[id])
- * Supports multiple actions: updateStatus, toggleRead, toggleStar, moveToFolder
+ *
+ * Union discriminée sur `action` plutôt qu'un objet plat contrôlé par
+ * `.refine()`. Le `refine` validait bien à l'exécution, mais laissait `status`
+ * et `folderId` en `string | undefined` pour le compilateur : les routes
+ * devaient donc les passer tels quels à des RPC qui exigent une chaîne, et le
+ * commentaire « Zod a déjà validé » remplaçait une garantie de type.
+ *
+ * La discrimination donne les deux à la fois : même contrat d'exécution, et un
+ * `switch (action)` qui rétrécit réellement les champs associés.
  */
-export const updateMessageSchema = z
-	.object({
-		action: z.enum(['updateStatus', 'toggleRead', 'toggleStar', 'moveToFolder'], {
-			message: 'Action invalide'
-		}),
-		status: z.enum(['inbox', 'archived', 'trash']).optional(),
-		folderId: z.string().uuid('ID de dossier invalide').optional()
-	})
-	.refine(
-		(data) => {
-			// If action is updateStatus, status must be provided
-			if (data.action === 'updateStatus') {
-				return !!data.status;
-			}
-			// If action is moveToFolder, folderId must be provided
-			if (data.action === 'moveToFolder') {
-				return !!data.folderId;
-			}
-			// Other actions don't require additional fields
-			return true;
-		},
-		{
-			message: 'Champs requis manquants pour cette action'
-		}
-	);
+export const updateMessageSchema = z.discriminatedUnion('action', [
+	z.object({
+		action: z.literal('updateStatus'),
+		// Message en français : il remonte tel quel au client (UI francophone).
+		status: z.enum(['inbox', 'archived', 'trash'], {
+			message: 'Champs requis manquants pour cette action : statut'
+		})
+	}),
+	z.object({
+		action: z.literal('moveToFolder'),
+		folderId: z
+			.string({ message: 'Champs requis manquants pour cette action : dossier' })
+			.uuid('ID de dossier invalide')
+	}),
+	z.object({ action: z.literal('toggleRead') }),
+	z.object({ action: z.literal('toggleStar') })
+]);

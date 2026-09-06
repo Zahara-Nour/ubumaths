@@ -13,6 +13,7 @@ import type { RequestHandler } from './$types';
 import { requireAuth, requireRole } from '$lib/server/middleware/auth';
 import { updateBugReportsConfigSchema } from '$lib/server/validation/bug-reports';
 import type { BugReportsConfig } from '$lib/types/bug-reports';
+import type { TablesUpdate } from '$lib/types/database';
 
 // =============================================================================
 // GET /api/bug-reports/config - Get current configuration
@@ -82,7 +83,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 
 	try {
 		// Build update object with snake_case column names
-		const updateData: Record<string, unknown> = {
+		const updateData: TablesUpdate<'bug_reports_config'> = {
 			updated_by: user.id
 		};
 

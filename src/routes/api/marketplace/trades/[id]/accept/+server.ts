@@ -4,6 +4,7 @@ import type { RequestHandler } from './$types';
 import { acceptTradeSchema } from '$lib/server/marketplace/validation';
 import { notifyTradeCompleted } from '$lib/server/marketplace/notifications';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { executeTradeSchema } from '$lib/server/validation/marketplace-rpc';
 // TODO: Implement cache invalidation
 // import {
 //   invalidateMarketplaceCaches,
@@ -68,7 +69,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	// Get the last offer to verify it wasn't made by the accepting user
 	const { data: lastOffer, error: offerError } = await supabase
 		.from('marketplace_trade_offers')
-		.select('offer_by')
+		.select('offered_by')
 		.eq('trade_id', trade_id)
 		.order('created_at', { ascending: false })
 		.limit(1)
@@ -79,7 +80,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	// User cannot accept their own offer
-	if (lastOffer.offer_by === userId) {
+	if (lastOffer.offered_by === userId) {
 		throw error(403, 'Vous ne pouvez pas accepter votre propre offre');
 	}
 
@@ -97,11 +98,14 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		throw error(500, "Erreur lors de l'exécution de l'échange");
 	}
 
-	// Check for business logic error (RPC returned {success: false, error: '...'})
-	if (!rpcResult?.success) {
-		const errorMsg = rpcResult?.error || 'Unknown error';
-		console.error('Trade execution failed:', errorMsg);
-		throw error(500, `Erreur: ${errorMsg}`);
+	// `execute_trade` est déclarée `RETURNS jsonb` : le type généré est `Json`,
+	// qui ne porte aucune de ces clés. On valide la forme réelle plutôt que de
+	// caster — un refus métier y arrive avec `success: false`, pas en erreur.
+	const result = executeTradeSchema.parse(rpcResult);
+
+	if (!result.success) {
+		console.error('Trade execution failed:', result.error);
+		throw error(500, `Erreur: ${result.error}`);
 	}
 
 	// Notify both participants of completion
@@ -148,7 +152,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			...trade,
 			status: 'completed',
 			final_trade: trade.current_offer,
-			completed_at: rpcResult.completed_at
+			completed_at: result.completed_at
 		}
 	});
 };

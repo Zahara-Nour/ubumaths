@@ -18,7 +18,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
 import { templateIdParamSchema } from '$lib/server/validation/whiteboard-templates';
-import { rowToTemplate, type WhiteboardTemplateRow } from '$lib/whiteboard/types/templates';
+import { toWhiteboardTemplateRow, rowToTemplate } from '$lib/whiteboard/types/templates';
 
 /**
  * Get a single whiteboard template by ID
@@ -53,7 +53,11 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw error(500, 'Erreur lors de la recuperation du template');
 		}
 
-		const template = rowToTemplate(row as WhiteboardTemplateRow);
+		const ligne = toWhiteboardTemplateRow(row);
+		if (!ligne) {
+			throw error(500, 'Géométrie de page invalide pour ce template');
+		}
+		const template = rowToTemplate(ligne);
 
 		return json({ template });
 	} catch (err) {

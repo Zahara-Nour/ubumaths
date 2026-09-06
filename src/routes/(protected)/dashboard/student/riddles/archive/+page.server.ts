@@ -19,8 +19,9 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 			riddle:riddles(*)
 		`
 		)
-		.lt('assignment_date', new Date().toISOString().split('T')[0]) // Only past riddles
-		.order('assignment_date', { ascending: false })
+		// La table porte `date`, pas `assignment_date`.
+		.lt('date', new Date().toISOString().split('T')[0]) // Only past riddles
+		.order('date', { ascending: false })
 		.limit(100);
 
 	if (historyError) {

@@ -14,6 +14,7 @@ import {
 } from '$lib/server/validation/worksheets';
 import { uuidSchema } from '$lib/server/validation/common';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import type { TablesUpdate } from '$lib/types/database';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -142,7 +143,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const data = validation.data;
 
 	// Build update object
-	const updateData: Record<string, unknown> = {};
+	const updateData: TablesUpdate<'worksheet_sections'> = {};
 	if (data.title !== undefined) updateData.title = data.title;
 	if (data.instructions !== undefined) updateData.instructions = data.instructions;
 	if (data.translations !== undefined) updateData.translations = data.translations;

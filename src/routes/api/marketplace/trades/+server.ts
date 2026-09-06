@@ -2,6 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 // Supabase client is now accessed via locals.supabase
 import { createTradeSchema } from '$lib/server/marketplace/validation';
+import { dailyTradeLimitSchema } from '$lib/server/validation/marketplace-rpc';
 import {
 	validateCardOwnership,
 	isMarketplaceEnabled,
@@ -62,13 +63,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.select(
 			`
       *,
-      initiator:initiator_id(
+      initiator:profiles!marketplace_trades_initiator_id_fkey(
         id,
         firstname,
         lastname,
         avatar_url
       ),
-      partner:partner_id(
+      partner:profiles!marketplace_trades_partner_id_fkey(
         id,
         firstname,
         lastname,
@@ -201,10 +202,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Erreur lors de la vérification de la limite quotidienne');
 	}
 
-	if (!limitCheck.can_create_trade) {
+	// La fonction renvoie `json` : on valide la forme au lieu de lire des clés à
+	// l'aveugle. Son chemin d'exception ne porte pas `can_create_trade`, et
+	// `!undefined` faisait passer une panne SQL pour un quota atteint.
+	const limit = dailyTradeLimitSchema.parse(limitCheck);
+
+	if (!limit.success) {
+		console.error('check_daily_trade_limit a échoué:', limit.error);
+		throw error(500, 'Erreur lors de la vérification de la limite quotidienne');
+	}
+
+	if (!limit.can_create_trade) {
 		throw error(
 			429, // 429 Too Many Requests
-			`Vous avez atteint la limite quotidienne de ${limitCheck.max_trades} échanges. Revenez demain pour créer de nouveaux échanges.`
+			`Vous avez atteint la limite quotidienne de ${limit.max_trades} échanges. Revenez demain pour créer de nouveaux échanges.`
 		);
 	}
 
@@ -221,10 +232,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Erreur lors de la vérification de la limite quotidienne du partenaire');
 	}
 
-	if (!partnerLimitCheck.can_create_trade) {
+	const partnerLimit = dailyTradeLimitSchema.parse(partnerLimitCheck);
+
+	if (!partnerLimit.success) {
+		console.error('check_daily_trade_limit (partenaire) a échoué:', partnerLimit.error);
+		throw error(500, 'Erreur lors de la vérification de la limite quotidienne du partenaire');
+	}
+
+	if (!partnerLimit.can_create_trade) {
 		throw error(
 			429,
-			`Votre ami a atteint sa limite quotidienne de ${partnerLimitCheck.max_trades} échanges. Réessayez demain.`
+			`Votre ami a atteint sa limite quotidienne de ${partnerLimit.max_trades} échanges. Réessayez demain.`
 		);
 	}
 
@@ -278,13 +296,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.select(
 			`
       *,
-      initiator:initiator_id(
+      initiator:profiles!marketplace_trades_initiator_id_fkey(
         id,
         firstname,
         lastname,
         avatar_url
       ),
-      partner:partner_id(
+      partner:profiles!marketplace_trades_partner_id_fkey(
         id,
         firstname,
         lastname,

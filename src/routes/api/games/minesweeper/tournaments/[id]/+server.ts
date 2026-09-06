@@ -3,7 +3,6 @@ import { error, json } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { getTournamentSchema } from '$lib/server/validation/minesweeper-tournament';
 import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
-import type { TournamentWithDetails } from '$lib/types/minesweeper';
 
 /**
  * Get tournament details
@@ -91,11 +90,15 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw error(404, 'Tournoi introuvable');
 		}
 
-		// Type the response
-		const tournament = data as TournamentWithDetails;
-
+		// `get_tournament_details` renvoie une table qui ne porte ni `scope`, ni
+		// `creator_role`, ni les horodatages — trois champs que `Tournament`
+		// exige. Le cast les affirmait donc à vide.
+		//
+		// On renvoie ce que la fonction produit réellement. Aucun appelant de
+		// cette route ne lit les champs manquants ; ceux qui ont besoin de `scope`
+		// passent par `/tournaments/active`, dont la requête les fournit.
 		return json({
-			tournament
+			tournament: data
 		});
 	} catch (err) {
 		sanitizePostgresError(err, 'MINESWEEPER_TOURNAMENT_DETAILS');

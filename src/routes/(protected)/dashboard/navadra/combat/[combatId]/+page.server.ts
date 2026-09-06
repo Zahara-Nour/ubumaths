@@ -13,6 +13,28 @@ import {
 } from '$lib/utils/game/combat';
 import { selectSpellSchema, submitAnswerSchema } from '$lib/server/validation/navadra';
 import { validateUuidParam } from '$lib/server/validation/params';
+import {
+	toGameMonster,
+	toGameSpell,
+	asCombatFlow,
+	toGamePlayer,
+	toGameChallenge
+} from '$lib/types/game';
+import type { GameSpell } from '$lib/types/game';
+import { toJson } from '$lib/types/database-helpers';
+
+/**
+ * Tolérance de comparaison d'un défi, lue dans la colonne jsonb `answer`.
+ *
+ * Rend `undefined` si le champ est absent ou n'est pas un nombre, pour laisser
+ * `validateAnswer` appliquer sa valeur par défaut plutôt qu'une tolérance
+ * `NaN` — qui ferait échouer toute comparaison numérique.
+ */
+function toleranceDuDefi(answer: unknown): number | undefined {
+	if (typeof answer !== 'object' || answer === null || Array.isArray(answer)) return undefined;
+	const tolerance = (answer as Record<string, unknown>).tolerance;
+	return typeof tolerance === 'number' ? tolerance : undefined;
+}
 
 export const load: PageServerLoad = async ({ params, locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
@@ -50,6 +72,13 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 		.eq('user_id', user.id)
 		.single();
 
+	// L'écran de combat lit le niveau du joueur dès son initialisation : sans
+	// fiche de jeu, il n'y a rien à afficher. On refuse ici plutôt que de rendre
+	// toute la page défensive.
+	if (!gamePlayer) {
+		throw error(404, 'Aucune fiche de joueur : lance une partie depuis Navadra.');
+	}
+
 	// Fetch player's spells (from active deck)
 	const { data: activeDeck } = await supabase
 		.from('game_spell_decks')
@@ -63,23 +92,25 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 		.eq('is_active', true)
 		.single();
 
-	// If no active deck, get first 10 spells
-	let playerSpells = [];
-	if (activeDeck && activeDeck.spells) {
-		playerSpells = activeDeck.spells;
+	// If no active deck, get first 10 spells.
+	// `element` et `type` sont des colonnes texte : converties une fois ici.
+	let playerSpells: GameSpell[] = [];
+	if (activeDeck && Array.isArray(activeDeck.spells)) {
+		playerSpells = activeDeck.spells.map(toGameSpell);
 	} else {
 		const { data: spells } = await supabase
 			.from('game_spells')
 			.select('*')
 			.eq('user_id', user.id)
 			.limit(10);
-		playerSpells = spells || [];
+		playerSpells = (spells ?? []).map(toGameSpell);
 	}
 
 	return {
 		combat,
-		monster: combat.monster,
-		gamePlayer,
+		monster: toGameMonster(combat.monster),
+		// `tutorial_stage` est du texte et `music_settings` du jsonb.
+		gamePlayer: toGamePlayer(gamePlayer),
 		playerSpells
 	};
 };
@@ -146,7 +177,8 @@ export const actions: Actions = {
 		return {
 			success: true,
 			spell,
-			challenge: randomChallenge
+			// `element` est du texte et trois colonnes sont du jsonb.
+			challenge: toGameChallenge(randomChallenge)
 		};
 	},
 
@@ -194,6 +226,10 @@ export const actions: Actions = {
 			return fail(400, { error: "Le combat n'est pas actif" });
 		}
 
+		// `element` et `category` sont des colonnes texte : rétrécies une fois ici
+		// plutôt qu'à chaque calcul de récompense.
+		const monstre = toGameMonster(combat.monster);
+
 		// Fetch challenge
 		const { data: challenge } = await supabase
 			.from('game_challenges')
@@ -210,8 +246,12 @@ export const actions: Actions = {
 		console.log('[submitAnswer] Validating answer:');
 		console.log('  - Student answer:', JSON.stringify(answer));
 		console.log('  - Correct answer:', JSON.stringify(correct_answer));
-		console.log('  - Tolerance:', challenge.answer?.tolerance);
-		const success = validateAnswer(answer, correct_answer, challenge.answer?.tolerance);
+		// `game_challenges.answer` est du jsonb, donc typé `Json` : il ne porte
+		// aucune clé. On extrait la tolérance avec un garde, et `validateAnswer`
+		// applique sa valeur par défaut (0.01) quand elle est absente.
+		const tolerance = toleranceDuDefi(challenge.answer);
+		console.log('  - Tolerance:', tolerance);
+		const success = validateAnswer(answer, correct_answer, tolerance);
 		console.log('[submitAnswer] Validation result:', success);
 
 		// Record challenge attempt
@@ -247,9 +287,9 @@ export const actions: Actions = {
 		// Calculate damage (only if answer is correct)
 		const damage = success
 			? calculateDamage(
-					spell,
+					toGameSpell(spell),
 					gamePlayer.level,
-					combat.monster.element,
+					monstre.element,
 					1.0, // Full effectiveness on correct answer
 					0 // No combo meter for now
 				)
@@ -258,7 +298,7 @@ export const actions: Actions = {
 		// Update monster HP
 		const newMonsterHP = Math.max(
 			0,
-			(combat.monster_endurance_remaining || combat.monster.max_endurance) - damage
+			(combat.monster_endurance_remaining || monstre.max_endurance) - damage
 		);
 
 		// Create combat turn
@@ -277,29 +317,31 @@ export const actions: Actions = {
 			timestamp: new Date().toISOString()
 		};
 
-		const updatedFlow = [...(combat.combat_flow || []), newTurn];
+		// `combat_flow` est du jsonb : les tours existants sont vérifiés avant
+		// d'y ajouter le nouveau.
+		const updatedFlow = [...asCombatFlow(combat.combat_flow), newTurn];
 
 		// Check if combat is over
 		const isVictory = newMonsterHP <= 0;
 
 		if (isVictory) {
 			// Calculate rewards
-			const xpGained = calculateXPReward(combat.monster, gamePlayer.level, 0);
-			const prestigeGained = calculatePrestigeReward(combat.monster, time_taken / 1000, 0);
-			const pyrsGained = calculatePyrsReward(combat.monster);
+			const xpGained = calculateXPReward(monstre, gamePlayer.level, 0);
+			const prestigeGained = calculatePrestigeReward(monstre, time_taken / 1000, 0);
+			const pyrsGained = calculatePyrsReward(monstre);
 
 			// Update combat
 			await supabase
 				.from('game_combats')
 				.update({
-					combat_flow: updatedFlow,
+					combat_flow: toJson(updatedFlow),
 					monster_endurance_remaining: newMonsterHP,
 					status: 'completed',
 					outcome: 'victory',
 					completed_at: new Date().toISOString(),
 					xp_gained: xpGained,
 					prestige_gained: prestigeGained,
-					pyrs_gained: { [combat.monster.element]: pyrsGained }
+					pyrs_gained: { [monstre.element]: pyrsGained }
 				})
 				.eq('id', combatId);
 
@@ -312,7 +354,7 @@ export const actions: Actions = {
 					xp: xpGained,
 					prestige: prestigeGained,
 					pyrs: pyrsGained,
-					element: combat.monster.element
+					element: monstre.element
 				}
 			};
 		} else {
@@ -320,7 +362,7 @@ export const actions: Actions = {
 			await supabase
 				.from('game_combats')
 				.update({
-					combat_flow: updatedFlow,
+					combat_flow: toJson(updatedFlow),
 					monster_endurance_remaining: newMonsterHP,
 					current_turn: combat.current_turn + 1
 				})

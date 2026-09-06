@@ -87,11 +87,15 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 	} else if (profile.role === 'admin') {
 		// Admin can see all school students
-		const { data: schoolStudents } = await supabase
-			.from('profiles')
-			.select('id')
-			.eq('school_id', profile.school_id)
-			.eq('role', 'student');
+		// `school_id` est nullable : sans école rattachée il n'y a aucun élève à
+		// lister, et comparer à NULL n'aurait rien remonté de toute façon.
+		const { data: schoolStudents } = profile.school_id
+			? await supabase
+					.from('profiles')
+					.select('id')
+					.eq('school_id', profile.school_id)
+					.eq('role', 'student')
+			: { data: [] };
 		studentIds = schoolStudents?.map((s: { id: string }) => s.id) || [];
 	}
 
@@ -200,11 +204,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		listingCreatorIds.add(listing.creator_id);
 
 		// Track most expensive listings
-		if (listing.wanted_gidouilles > 0) {
+		// `wanted_gidouilles` est nullable : une annonce sans contrepartie en
+		// gidouilles vaut NULL, pas 0.
+		const demande = listing.wanted_gidouilles ?? 0;
+		if (demande > 0) {
 			mostExpensiveListings.push({
 				id: listing.id,
 				listing_type: listing.listing_type,
-				gidouilles: listing.wanted_gidouilles
+				gidouilles: demande
 			});
 		}
 
@@ -226,32 +233,38 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	let mostTradedCards: Array<{ template_id: string; name: string; count: number }> = [];
 	if (mostTradedCardIds.length > 0) {
-		const { data: cards } = await supabase
-			.from('vip_cards')
-			.select('id, template_id, template:vip_card_templates!vip_cards_template_id_fkey(name)')
-			.in('id', mostTradedCardIds);
+		// Il n'existe pas de table `vip_cards` : une carte est une entrée du jsonb
+		// `profiles.vip_cards`, et son identifiant d'instance n'est donc pas
+		// interrogeable par `.in()`. La requête d'origine visait cette table
+		// fantôme et échouait à chaque appel — la section « cartes les plus
+		// échangées » restait vide en silence.
+		//
+		// `vip_cards_activity` journalise chaque mouvement avec les deux
+		// identifiants : c'est elle qui relie l'instance à son modèle.
+		const { data: activites } = await supabase
+			.from('vip_cards_activity')
+			.select('card_instance_id, card_template_id')
+			.in('card_instance_id', mostTradedCardIds);
 
-		// Use Map for O(1) lookups instead of O(n) find operations
-		// Note: Supabase returns joined relations as arrays, so we extract the first element
-		const cardMap = new Map(
-			cards?.map((c) => {
-				const template = Array.isArray(c.template) ? c.template[0] : c.template;
-				return [
-					c.id,
-					{
-						id: c.id as string,
-						template_id: c.template_id as string,
-						template: template as { name: string }
-					}
-				];
-			}) || []
-		);
+		const modeleParInstance = new Map<string, string>();
+		for (const a of activites ?? []) {
+			if (a.card_template_id && !modeleParInstance.has(a.card_instance_id)) {
+				modeleParInstance.set(a.card_instance_id, a.card_template_id);
+			}
+		}
+
+		const { data: modeles } = await supabase
+			.from('vip_card_templates')
+			.select('id, name')
+			.in('id', [...new Set(modeleParInstance.values())]);
+
+		const nomParModele = new Map((modeles ?? []).map((m) => [m.id, m.name]));
 
 		mostTradedCards = mostTradedCardIds.map((cardId) => {
-			const card = cardMap.get(cardId);
+			const templateId = modeleParInstance.get(cardId) ?? '';
 			return {
-				template_id: card?.template_id || '',
-				name: card?.template?.name || 'Carte inconnue',
+				template_id: templateId,
+				name: nomParModele.get(templateId) ?? 'Carte inconnue',
 				count: cardTradeFrequency[cardId]
 			};
 		});
@@ -293,7 +306,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	const { data: acceptedProposals } = await supabase
 		.from('marketplace_proposals')
-		.select('listing_id, created_at, updated_at')
+		.select('listing_id, created_at, responded_at')
 		.eq('status', 'accepted')
 		.in('listing_id', listings?.map((l) => l.id) || []);
 
@@ -301,7 +314,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const listing = listings?.find((l) => l.id === proposal.listing_id);
 		if (listing) {
 			const timeToAcceptance =
-				new Date(proposal.updated_at).getTime() - new Date(listing.created_at).getTime();
+				// `marketplace_proposals` n'a pas d'`updated_at` : la date d'acceptation
+				// est `responded_at`.
+				new Date(proposal.responded_at ?? proposal.created_at).getTime() -
+				new Date(listing.created_at).getTime();
 			totalTimeToAcceptance += timeToAcceptance;
 			acceptedListingsCount++;
 		}

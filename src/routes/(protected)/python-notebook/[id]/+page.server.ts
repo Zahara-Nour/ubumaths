@@ -73,7 +73,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 		if (assignment) {
 			isAssigned = true;
-			isReadonly = assignment.readonly;
+			// `readonly` est nullable : une assignation sans consigne explicite est
+			// modifiable, ce qui est le défaut de la fonctionnalité.
+			isReadonly = assignment.readonly ?? false;
 		}
 	}
 

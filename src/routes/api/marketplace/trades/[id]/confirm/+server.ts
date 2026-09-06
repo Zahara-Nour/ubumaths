@@ -2,6 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { notifyTradeCompleted } from '$lib/server/marketplace/notifications';
+import { executeTradeSchema } from '$lib/server/validation/marketplace-rpc';
 
 /**
  * Confirmation timeout in milliseconds (5 minutes)
@@ -87,15 +88,18 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 		throw error(410, 'La confirmation a expire. Veuillez revalider.');
 	}
 
-	// Record this user's confirmation
-	const confirmField = isInitiator ? 'confirmed_by_initiator' : 'confirmed_by_partner';
-
+	// Record this user's confirmation.
+	//
+	// Clés littérales plutôt qu'une clé calculée : `{ [champ]: true }` élargit
+	// l'objet en signature d'index, que le type d'écriture généré refuse — et
+	// avec lui toute vérification des colonnes visées.
 	const { error: confirmError } = await supabase
 		.from('marketplace_trades')
-		.update({
-			[confirmField]: true,
-			updated_at: new Date().toISOString()
-		})
+		.update(
+			isInitiator
+				? { confirmed_by_initiator: true, updated_at: new Date().toISOString() }
+				: { confirmed_by_partner: true, updated_at: new Date().toISOString() }
+		)
 		.eq('id', tradeId)
 		.eq('status', 'negotiating');
 
@@ -149,9 +153,12 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 		throw error(500, "Erreur lors de l'execution de l'echange");
 	}
 
-	// Check for business logic error (RPC returned {success: false, error: '...'})
-	if (!rpcResult?.success) {
-		const errorMsg = rpcResult?.error || 'Unknown error';
+	// `execute_trade` renvoie du `jsonb` : on valide sa forme réelle plutôt que
+	// de lire des clés sur le type `Json`.
+	const result = executeTradeSchema.parse(rpcResult);
+
+	if (!result.success) {
+		const errorMsg = result.error;
 		console.error('Trade execution failed:', errorMsg);
 
 		// If trade was already completed by another request, that's OK

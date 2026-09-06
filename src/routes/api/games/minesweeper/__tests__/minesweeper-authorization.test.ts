@@ -533,10 +533,14 @@ describe('POST /api/games/minesweeper/[id]/hint', () => {
 		// Mock RPC call with .single() support
 		(mockSupabase.rpc as ReturnType<typeof vi.fn>).mockReturnValue({
 			single: vi.fn().mockResolvedValue({
+				// Forme réelle de `use_hint` : la fonction dit toujours d'où vient
+				// l'indice (`source`) et si une carte VIP a été consommée.
 				data: {
 					success: true,
 					hints_used: 1,
 					hints_remaining: 2,
+					source: 'gidouilles',
+					vip_card_consumed: false,
 					gidouilles_spent: 10,
 					remaining_gidouilles: 90,
 					penalty_notice: 'Using hints applies 30% penalty to final reward'

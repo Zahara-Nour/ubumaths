@@ -19,7 +19,7 @@ export async function autoSelectRiddleOfTheDay(
 		const { data: existing } = await supabase
 			.from('riddle_of_the_day')
 			.select('riddle_id')
-			.eq('assignment_date', targetDate)
+			.eq('date', targetDate)
 			.single();
 
 		if (existing) {
@@ -37,7 +37,7 @@ export async function autoSelectRiddleOfTheDay(
 		const { data: recentRiddles } = await supabase
 			.from('riddle_of_the_day')
 			.select('riddle_id')
-			.gte('assignment_date', thirtyDaysAgoStr);
+			.gte('date', thirtyDaysAgoStr);
 
 		const recentRiddleIds = (recentRiddles || []).map((r) => r.riddle_id);
 
@@ -49,8 +49,8 @@ export async function autoSelectRiddleOfTheDay(
 				riddle:riddles!inner(difficulty)
 			`
 			)
-			.lt('assignment_date', targetDate)
-			.order('assignment_date', { ascending: false })
+			.lt('date', targetDate)
+			.order('date', { ascending: false })
 			.limit(1)
 			.single();
 
@@ -101,10 +101,19 @@ export async function autoSelectRiddleOfTheDay(
 			const selectedRiddle = fallbackRiddles[randomIndex];
 
 			// Set riddle of the day
-			const { error: setError } = await supabase.rpc('set_riddle_of_the_day', {
-				p_riddle_id: selectedRiddle.id,
-				p_assignment_date: targetDate
-			});
+			// `set_riddle_of_the_day` force `auto_selected = false` et exige un
+			// `p_selected_by` : c'est le poseur MANUEL, inutilisable par un automate.
+			// Une sélection automatique s'écrit donc directement, en marquant
+			// `auto_selected` — ce que la colonne prévoit précisément.
+			const { error: setError } = await supabase.from('riddle_of_the_day').upsert(
+				{
+					riddle_id: selectedRiddle.id,
+					date: targetDate,
+					auto_selected: true,
+					selected_by: null
+				},
+				{ onConflict: 'date' }
+			);
 
 			if (setError) {
 				console.error('Error setting riddle of the day:', setError);
@@ -119,10 +128,19 @@ export async function autoSelectRiddleOfTheDay(
 		const selectedRiddle = eligibleRiddles[randomIndex];
 
 		// Set riddle of the day using RPC
-		const { error: setError } = await supabase.rpc('set_riddle_of_the_day', {
-			p_riddle_id: selectedRiddle.id,
-			p_assignment_date: targetDate
-		});
+		// `set_riddle_of_the_day` force `auto_selected = false` et exige un
+		// `p_selected_by` : c'est le poseur MANUEL, inutilisable par un automate.
+		// Une sélection automatique s'écrit donc directement, en marquant
+		// `auto_selected` — ce que la colonne prévoit précisément.
+		const { error: setError } = await supabase.from('riddle_of_the_day').upsert(
+			{
+				riddle_id: selectedRiddle.id,
+				date: targetDate,
+				auto_selected: true,
+				selected_by: null
+			},
+			{ onConflict: 'date' }
+		);
 
 		if (setError) {
 			console.error('Error setting riddle of the day:', setError);
@@ -148,7 +166,7 @@ export async function checkAndAutoSelectToday(
 	const { data: existing } = await supabase
 		.from('riddle_of_the_day')
 		.select('riddle_id')
-		.eq('assignment_date', today)
+		.eq('date', today)
 		.single();
 
 	if (existing) {

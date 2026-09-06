@@ -33,8 +33,9 @@
 
 import type { LayoutServerLoad } from './$types';
 import type { StudentProfile, ClassMembership, StudentRewards } from '$lib/types/student-cache';
-import type { StudentVipCards } from '$lib/types/vip-card';
+import { asStudentVipCards } from '$lib/types/vip-card';
 import { error } from '@sveltejs/kit';
+import { toBuddyState } from '$lib/types/buddy';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
@@ -109,14 +110,9 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		}
 
 		// Parse VIP cards
-		let vipCards: StudentVipCards = {};
-		if (rewardsData?.vip_cards) {
-			try {
-				vipCards = rewardsData.vip_cards as StudentVipCards;
-			} catch {
-				vipCards = {};
-			}
-		}
+		// Le `try/catch` d'origine ne pouvait jamais se déclencher : un cast ne
+		// lève rien. La forme est désormais réellement vérifiée.
+		const vipCards = asStudentVipCards(rewardsData?.vip_cards);
 
 		const rewards: StudentRewards = {
 			gidouilles: rewardsData?.gidouilles || 0,
@@ -156,7 +152,9 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		return {
 			studentProfile,
 			rewards,
-			buddy: buddyData,
+			// `palotin_type` est du texte simple en base : le rétrécir ici évite que
+			// chaque consommateur ait à le faire, et garantit un compagnon parlant.
+			buddy: buddyData ? toBuddyState(buddyData) : null,
 			streakLost
 		};
 	} catch (err) {

@@ -24,6 +24,38 @@ export interface BuddyState {
 	equipped_skin_id: string | null;
 }
 
+/**
+ * Narrows a `student_buddies` row to {@link BuddyState}.
+ *
+ * `palotin_type` is a plain text column in Postgres, so every read arrives as
+ * `string` and cannot feed the message tables, which are keyed by the three
+ * known palotins.
+ *
+ * An unrecognised value falls back to `giron`: a buddy whose type was written
+ * by an older revision must keep talking to the student rather than break the
+ * dashboard.
+ */
+export function toBuddyState(row: {
+	student_id: string;
+	palotin_type: string;
+	xp: number;
+	level: number;
+	current_streak: number;
+	longest_streak: number;
+	last_activity_date: string | null;
+	xp_earned_today: number;
+	last_xp_date: string | null;
+	themes_explored: string[];
+	change_count: number;
+	equipped_skin_id: string | null;
+}): BuddyState {
+	return {
+		...row,
+		palotin_type:
+			row.palotin_type === 'pile' || row.palotin_type === 'cotice' ? row.palotin_type : 'giron'
+	};
+}
+
 /** Buddy expression states for avatar display */
 export type BuddyExpression = 'neutral' | 'happy' | 'sad' | 'thinking' | 'excited' | 'encouraging';
 

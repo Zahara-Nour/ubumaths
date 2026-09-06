@@ -59,7 +59,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 			// Message reports via RPC
 			supabase.rpc('get_reports_for_moderation', {
-				p_status: null, // All reports
+				// Paramètre `DEFAULT NULL` : l'omettre demande bien tous les signalements.
+				p_status: undefined,
 				p_limit: 100,
 				p_offset: 0
 			}),
@@ -114,10 +115,47 @@ export const load: PageServerLoad = async ({ locals }) => {
 		return nameA.localeCompare(nameB, 'fr');
 	});
 
+	// Trois colonnes texte face à des unions fermées, et un jsonb face à un
+	// enregistrement : rétrécies ici plutôt que dans chaque tableau d'affichage.
+	// Un motif ou un type inconnu retombe sur la valeur la moins engageante —
+	// « other » et « mute » — afin qu'une ligne écrite par une révision
+	// antérieure reste lisible sans suggérer une sanction plus lourde.
 	return {
-		restrictions: restrictionsResult.data || [],
-		logs: logsResult.data || [],
-		reports: reportsResult.data || [],
+		restrictions: (restrictionsResult.data ?? []).map((r) => ({
+			...r,
+			restriction_type:
+				(['timeout', 'mute', 'ban'] as const).find((t) => t === r.restriction_type) ?? 'mute',
+			// Une portée inconnue devient `conversation`, la plus restreinte : jamais
+			// `global`, qui étendrait la sanction à toute la plateforme.
+			scope_type:
+				(['global', 'conversation'] as const).find((t) => t === r.scope_type) ?? 'conversation',
+			// Les jointures facultatives valent `null` côté PostgREST et `undefined`
+			// côté composant : un compte supprimé ou une conversation effacée doit
+			// rester une ligne lisible, pas une ligne manquante.
+			user: r.user ?? undefined,
+			conversation: r.conversation ?? undefined
+		})),
+		logs: (logsResult.data ?? []).map((l) => ({
+			...l,
+			// L'embed du modérateur peut être absent (compte supprimé) et ses noms
+			// sont nullables : le tableau attend `undefined` plutôt que `null`.
+			moderator: l.moderator
+				? {
+						firstname: l.moderator.firstname ?? '',
+						lastname: l.moderator.lastname ?? ''
+					}
+				: undefined,
+			metadata:
+				typeof l.metadata === 'object' && l.metadata !== null && !Array.isArray(l.metadata)
+					? (l.metadata as Record<string, unknown>)
+					: {}
+		})),
+		reports: (reportsResult.data ?? []).map((r) => ({
+			...r,
+			reason:
+				(['spam', 'harassment', 'inappropriate', 'other'] as const).find((m) => m === r.reason) ??
+				'other'
+		})),
 		pendingReportsCount: pendingCountResult.data ?? 0,
 		students
 	};

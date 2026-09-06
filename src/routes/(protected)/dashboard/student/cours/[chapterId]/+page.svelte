@@ -201,11 +201,6 @@
 								<Card.Content class="flex items-center justify-between p-4">
 									<div class="flex-1">
 										<h3 class="font-medium">{details.title}</h3>
-										{#if details.description}
-											<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
-												{details.description}
-											</p>
-										{/if}
 									</div>
 									<Button
 										href="/dashboard/student/exercises/{exercise.exerciseId}"

@@ -7,7 +7,7 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
-	import { getDifficultyLabel, getDifficultyColor } from '$lib/types/riddle';
+	import { asRiddleDifficulty, getDifficultyLabel, getDifficultyColor } from '$lib/types/riddle';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
@@ -15,17 +15,25 @@
 
 	let { data }: { data: PageData } = $props();
 
-	function getSuccessRate(stats: { total_attempts: number; successful_attempts: number }): number {
-		if (stats.total_attempts === 0) return 0;
-		return Math.round((stats.successful_attempts / stats.total_attempts) * 100);
+	// `riddle_stats` est une vue d'agrégats : tous ses compteurs sont nullables
+	// (aucune ligne à agréger donne NULL, pas 0). Les signatures exigeaient des
+	// `number` stricts, ce qui empêchait de leur passer les lignes de la vue.
+	function getSuccessRate(stats: {
+		total_attempts: number | null;
+		successful_attempts: number | null;
+	}): number {
+		const total = stats.total_attempts ?? 0;
+		if (total === 0) return 0;
+		return Math.round(((stats.successful_attempts ?? 0) / total) * 100);
 	}
 
 	function getAverageAttempts(stats: {
-		total_attempts: number;
-		successful_attempts: number;
+		total_attempts: number | null;
+		successful_attempts: number | null;
 	}): string {
-		if (stats.successful_attempts === 0) return 'N/A';
-		return (stats.total_attempts / stats.successful_attempts).toFixed(1);
+		const reussies = stats.successful_attempts ?? 0;
+		if (reussies === 0) return 'N/A';
+		return ((stats.total_attempts ?? 0) / reussies).toFixed(1);
 	}
 </script>
 
@@ -150,8 +158,8 @@
 										</div>
 									</td>
 									<td class="py-3">
-										<Badge class={getDifficultyColor(stats.difficulty)}>
-											{getDifficultyLabel(stats.difficulty)}
+										<Badge class={getDifficultyColor(asRiddleDifficulty(stats.difficulty))}>
+											{getDifficultyLabel(asRiddleDifficulty(stats.difficulty))}
 										</Badge>
 									</td>
 									<td class="py-3 text-center">

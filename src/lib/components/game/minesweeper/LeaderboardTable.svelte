@@ -2,7 +2,8 @@
 	import { Badge } from '$lib/components/ui/badge';
 
 	type LeaderboardEntry = {
-		student_id: string;
+		// La fonction de classement rend une table : `student_id` y est nullable.
+		student_id: string | null;
 		firstname: string | null;
 		lastname: string | null;
 		role: string | null;
@@ -25,9 +26,11 @@
 		const map = new Map<string, number>();
 		let studentPos = 0;
 		for (const entry of rankedPlayers) {
+			// Une ligne sans identifiant ne peut pas être rattachée à un élève : elle
+			// compte dans le classement mais n'entre pas dans la table de position.
 			if (entry.role === 'student') {
 				studentPos++;
-				map.set(entry.student_id, studentPos);
+				if (entry.student_id) map.set(entry.student_id, studentPos);
 			}
 		}
 		return map;
@@ -60,7 +63,8 @@
 			</thead>
 			<tbody class="divide-y divide-border">
 				{#each rankedPlayers as entry (entry.student_id)}
-					{@const studentRank = studentRankMap.get(entry.student_id)}
+					<!-- `student_id` est nullable : une ligne sans identifiant n'a pas de rang. -->
+					{@const studentRank = entry.student_id ? studentRankMap.get(entry.student_id) : undefined}
 					<tr
 						class="transition-colors hover:bg-muted/50 {entry.student_id === currentUserId
 							? 'bg-primary/10'

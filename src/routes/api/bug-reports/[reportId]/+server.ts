@@ -17,6 +17,7 @@ import {
 	updateBugReportAdminSchema
 } from '$lib/server/validation/bug-reports';
 import { z } from 'zod';
+import type { TablesUpdate } from '$lib/types/database';
 
 const reportIdSchema = z.string().uuid('ID de rapport invalide');
 
@@ -117,7 +118,9 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				throw error(400, validation.error.issues[0].message);
 			}
 
-			const updateData: Record<string, unknown> = {};
+			// Le type généré décrit exactement les colonnes acceptées ; un
+			// `Record<string, unknown>` laissait passer n'importe quel nom de champ.
+			const updateData: TablesUpdate<'bug_reports'> = {};
 
 			if (validation.data.status !== undefined) {
 				updateData.status = validation.data.status;
@@ -161,7 +164,9 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				throw error(400, validation.error.issues[0].message);
 			}
 
-			const updateData: Record<string, unknown> = {};
+			// Le type généré décrit exactement les colonnes acceptées ; un
+			// `Record<string, unknown>` laissait passer n'importe quel nom de champ.
+			const updateData: TablesUpdate<'bug_reports'> = {};
 
 			if (validation.data.title !== undefined) {
 				updateData.title = validation.data.title;

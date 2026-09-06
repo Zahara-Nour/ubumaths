@@ -116,6 +116,17 @@ export type CardType = 'template' | 'custom';
 export type CardState = 'new' | 'learning' | 'review' | 'relearning';
 
 /**
+ * Narrows the `state` text column to {@link CardState}.
+ *
+ * Postgres stores the state as plain text, so every read arrives as `string`.
+ * An unrecognised value falls back to `'new'`: a card whose state was written
+ * by an older revision must re-enter the cycle rather than break the session.
+ */
+export function asCardState(value: string | null | undefined): CardState {
+	return value === 'learning' || value === 'review' || value === 'relearning' ? value : 'new';
+}
+
+/**
  * Grade given by user after reviewing
  */
 export enum Grade {

@@ -115,8 +115,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				.eq('class_id', class_id);
 
 			studentIds = classStudents?.map((m: { student_id: string }) => m.student_id) || [];
-		} else {
-			// Get all students in the school
+		} else if (profile.school_id) {
+			// Get all students in the school.
+			// `school_id` est nullable : sans école rattachée, la liste reste vide.
 			const { data: schoolStudents } = await supabase
 				.from('profiles')
 				.select('id')

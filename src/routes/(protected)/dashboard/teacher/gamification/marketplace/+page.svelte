@@ -160,14 +160,11 @@
 
 	<!-- Settings Panel (collapsible) -->
 	{#if showSettings && selectedClass}
+		<!-- Le composant attend la configuration entière : la reconstruire
+		     partiellement lui retirait `id`, `school_id` et les autres réglages,
+		     dont il a besoin pour enregistrer une modification. -->
 		<MarketplaceSettings
-			config={currentConfig
-				? {
-						is_enabled: currentConfig.enabled_for_class,
-						max_listings_per_student: currentConfig.max_listings_per_student,
-						max_trades_per_day: currentConfig.max_trades_per_day
-					}
-				: null}
+			config={currentConfig}
 			isTeacher={true}
 			classId={selectedClass.id}
 			className={selectedClass.name}

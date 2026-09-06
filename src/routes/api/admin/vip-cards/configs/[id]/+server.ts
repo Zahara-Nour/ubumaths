@@ -17,6 +17,7 @@ import { assertTypedConfirmation } from '$lib/server/confirmAction';
 import { updateConfigSchema } from '$lib/server/validation/vip-card-admin';
 import type { VipCardConfig } from '$lib/types/vip-card-admin';
 import { configToResponse } from '$lib/types/vip-card-admin';
+import type { TablesUpdate } from '$lib/types/database';
 
 /**
  * Body for the typed-confirmation DELETE: the admin must echo the config name.
@@ -79,7 +80,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// 5. Build update object (convert camelCase to snake_case)
-		const updateData: Record<string, unknown> = {};
+		const updateData: TablesUpdate<'vip_card_config'> = {};
 
 		if (data.configName !== undefined) updateData.config_name = data.configName;
 		if (data.commonProbability !== undefined)

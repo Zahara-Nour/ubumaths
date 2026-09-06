@@ -49,9 +49,10 @@ import type { Exercise, ExerciseResource, ExerciseHint } from '$lib/exercises/ty
 import { getExerciseContentSafe } from '$lib/exercises/types';
 import {
 	localizedText,
+	asRowTranslations,
 	worksheetLocale,
-	type RowTranslations,
-	type WorksheetConfig
+	asWorksheetConfig,
+	type RowTranslations
 } from '$lib/types/worksheets';
 import type { ContentLocale } from '$lib/types/locale';
 import type { Variable } from '$lib/ubumark';
@@ -344,7 +345,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		const seed = generateSeed(worksheet.id, user.id);
 
 		// Language of the whole sheet: exercise content and PDF chrome alike.
-		const locale = worksheetLocale(worksheet.config as WorksheetConfig);
+		const locale = worksheetLocale(asWorksheetConfig(worksheet.config));
 
 		// Build exercises array
 		const exercises: StudentExerciseView[] = [];
@@ -385,6 +386,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					const resolved = resolveExercise(
 						{
 							...we,
+							// `correction_visible` est nullable en base : masquée par défaut,
+							// ce qui est le sens sûr sur un document noté.
+							correction_visible: we.correction_visible ?? false,
 							exercise: exerciseData
 						},
 						seed,
@@ -399,6 +403,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				const resolved = resolveExercise(
 					{
 						...we,
+						correction_visible: we.correction_visible ?? false,
 						exercise: exerciseData
 					},
 					seed,
@@ -421,7 +426,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				points: we.points,
 				custom_instructions: localizedText(
 					we.custom_instructions,
-					we.translations,
+					asRowTranslations(we.translations),
 					'custom_instructions',
 					locale
 				),
@@ -453,8 +458,13 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		// Build sections array for response
 		const sectionViews: StudentSectionView[] = (sections ?? []).map((s) => ({
 			id: s.id,
-			title: localizedText(s.title, s.translations, 'title', locale) ?? s.title,
-			instructions: localizedText(s.instructions, s.translations, 'instructions', locale),
+			title: localizedText(s.title, asRowTranslations(s.translations), 'title', locale) ?? s.title,
+			instructions: localizedText(
+				s.instructions,
+				asRowTranslations(s.translations),
+				'instructions',
+				locale
+			),
 			position: s.position
 		}));
 
@@ -463,7 +473,12 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			assignment_id: assignment.id,
 			worksheet_id: worksheet.id,
 			title:
-				localizedText(worksheet.title, worksheet.translations, 'title', locale) ?? worksheet.title,
+				localizedText(
+					worksheet.title,
+					asRowTranslations(worksheet.translations),
+					'title',
+					locale
+				) ?? worksheet.title,
 			// Drives both the exercise content and the chrome of the student PDF.
 			language: locale,
 			description: worksheet.description,

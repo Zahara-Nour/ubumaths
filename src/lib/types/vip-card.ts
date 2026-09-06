@@ -64,6 +64,19 @@ export type VipCardCategory =
 	| 'power'; // Special abilities and game-changers
 
 /**
+ * Narrows the `category` text column to {@link VipCardCategory}.
+ *
+ * Postgres stores it as plain text and allows NULL, so every read arrives as
+ * `string | null`. An unrecognised value becomes `null`, which the UI already
+ * handles as "uncategorised".
+ */
+export function asVipCardCategory(value: string | null | undefined): VipCardCategory | null {
+	return value === 'bonus' || value === 'privilege' || value === 'social' || value === 'power'
+		? value
+		: null;
+}
+
+/**
  * Rarity level of VIP card (required for all cards)
  */
 export type VipCardRarity = 'common' | 'rare' | 'epic' | 'legendary';
@@ -311,6 +324,24 @@ export type VipCardAction =
 	| RevealVowelsAction;
 
 /**
+ * Narrows the `action` jsonb column to {@link VipCardAction}.
+ *
+ * The union is large and discriminated by `type`; validating each member here
+ * would duplicate the whole catalogue and drift from it. The guard therefore
+ * checks the shape that every member shares — an object carrying a string
+ * `type` — and leaves the exhaustive dispatch to the consumer, which already
+ * switches on that discriminant.
+ *
+ * Anything else becomes `null`: a card whose action was written by an older
+ * revision must stay displayable, simply without an action.
+ */
+export function asVipCardAction(value: unknown): VipCardAction | null {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
+	const type = (value as Record<string, unknown>).type;
+	return typeof type === 'string' ? (value as VipCardAction) : null;
+}
+
+/**
  * Definition of a VIP card type (template)
  */
 export interface VipCard {
@@ -401,6 +432,30 @@ export function getRarityPoints(rarity: VipCardRarity): number {
 }
 
 export type StudentVipCards = Record<string, VipCardInstance>;
+
+/**
+ * Narrows the `profiles.vip_cards` jsonb column to {@link StudentVipCards}.
+ *
+ * The column holds a map of instance id to card instance. Its generated type
+ * is `Json`, so the value was cast — inside a `try/catch` that could never
+ * fire, since a cast throws nothing. The safety was imaginary.
+ *
+ * Entries missing the two fields every consumer reads (`cardId`, `earnedAt`)
+ * are dropped: a malformed instance would otherwise surface in the inventory
+ * as a card with no identity.
+ */
+export function asStudentVipCards(value: unknown): StudentVipCards {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) return {};
+
+	const cartes: StudentVipCards = {};
+	for (const [instanceId, instance] of Object.entries(value)) {
+		if (typeof instance !== 'object' || instance === null || Array.isArray(instance)) continue;
+		const brut = instance as Record<string, unknown>;
+		if (typeof brut.cardId !== 'string' || typeof brut.earnedAt !== 'string') continue;
+		cartes[instanceId] = brut as unknown as VipCardInstance;
+	}
+	return cartes;
+}
 
 /**
  * REMOVED (2025-11-08):

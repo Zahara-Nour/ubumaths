@@ -123,6 +123,28 @@ export interface NotebookContent {
 	cells: NotebookCell[];
 }
 
+/**
+ * Narrows the `content` jsonb column to {@link NotebookContent}.
+ *
+ * The generated type is `Json`, which carries neither `cells` nor `metadata`.
+ * The routes cast it — an assertion on the whole notebook structure, never
+ * checked. A notebook whose cells are missing would then be duplicated or
+ * turned into a template as an empty husk.
+ *
+ * Returns `null` when the structure is unusable, so the caller can refuse
+ * explicitly rather than persist a broken copy.
+ */
+export function asNotebookContent(value: unknown): NotebookContent | null {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
+
+	const contenu = value as Record<string, unknown>;
+	if (contenu.version !== '1.0') return null;
+	if (!Array.isArray(contenu.cells)) return null;
+	if (typeof contenu.metadata !== 'object' || contenu.metadata === null) return null;
+
+	return contenu as unknown as NotebookContent;
+}
+
 export interface PythonNotebook {
 	id: string;
 	title: string;

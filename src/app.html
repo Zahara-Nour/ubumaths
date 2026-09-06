@@ -4,6 +4,13 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
+		<!-- Icônes. Sans ces déclarations, les navigateurs demandent /favicon.ico et
+		     /apple-touch-icon.png par convention, et récoltaient un 404 à chaque
+		     visite — c'était l'essentiel du bruit du monitoring de production. -->
+		<link rel="icon" href="/favicon.ico" sizes="any" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
 		<!-- Performance Optimizations (2025-10-18) -->
 		<!-- Preconnect to Supabase for faster auth/API requests -->
 		<!-- SECURITY (finding L6): removed a stale preconnect/dns-prefetch to

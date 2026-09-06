@@ -6,7 +6,7 @@
  */
 
 import type { PageServerLoad } from './$types';
-import type { StudentVipCards } from '$lib/types/vip-card';
+import { asStudentVipCards } from '$lib/types/vip-card';
 import { countAvailableConsumableUses } from '$lib/utils/vip-cards';
 
 // VIP card IDs for 2048 powers
@@ -65,12 +65,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.from('game_2048_scores')
 			.select('best_score, games_played')
 			.eq('user_id', user.id)
-			.eq('mode', 'classic')
+			// `game_2048_scores` n'a pas de colonne `mode` : il n'existe qu'une ligne
+			// par joueur. Le filtre rendait la requête invalide, donc le meilleur
+			// score et le nombre de parties n'étaient jamais chargés.
 			.maybeSingle(),
 		supabase.from('profiles').select('vip_cards, gidouilles').eq('id', user.id).single()
 	]);
 
-	const vipCards = (profileResult.data?.vip_cards as StudentVipCards | null) ?? {};
+	const vipCards = asStudentVipCards(profileResult.data?.vip_cards);
 	const gidouilles = (profileResult.data?.gidouilles as number) ?? 0;
 
 	return {

@@ -10,6 +10,7 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { generatePreviewInstance } from '$lib/server/worksheets/instance-generator';
 import type { WorksheetExerciseWithExercise } from '$lib/types/worksheets';
+import { asWorksheetConfig, toWorksheetExerciseRow } from '$lib/types/worksheets';
 
 // Input validation schema
 const previewRequestSchema = z.object({
@@ -123,14 +124,14 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		if (studentId) {
 			const { data: student } = await supabase
 				.from('profiles')
-				.select('id, first_name, last_name')
+				.select('id, firstname, lastname')
 				.eq('id', studentId)
 				.single();
 
 			if (student) {
 				studentInfo = {
 					id: student.id,
-					name: `${student.first_name || ''} ${student.last_name || ''}`.trim() || 'Unknown Student'
+					name: `${student.firstname || ''} ${student.lastname || ''}`.trim() || 'Unknown Student'
 				};
 			}
 		}
@@ -140,8 +141,12 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			worksheetId,
 			studentId,
 			variantSeed,
-			exercises: worksheetExercises as WorksheetExerciseWithExercise[],
-			config: worksheet.config || {}
+			// Colonnes plus permissives en base qu'en type métier.
+			exercises: (worksheetExercises ?? []).map((we) => ({
+				...toWorksheetExerciseRow(we),
+				exercise: we.exercise
+			})) as WorksheetExerciseWithExercise[],
+			config: asWorksheetConfig(worksheet.config)
 		});
 
 		// Return the preview data

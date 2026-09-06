@@ -5,6 +5,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
 import { unlockSpellSchema } from '$lib/server/validation/navadra';
+import { toGameSpell, toGamePlayer } from '$lib/types/game';
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
@@ -39,11 +40,18 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 		.eq('user_id', user.id)
 		.single();
 
+	// L'écran du grimoire lit les pyrs du joueur dès son en-tête : sans fiche de
+	// jeu, il n'y a rien à afficher.
+	if (!gamePlayer) {
+		throw error(404, 'Aucune fiche de joueur : lance une partie depuis Navadra.');
+	}
+
 	return {
-		spells: spells || [],
+		// `element` et `type` sont des colonnes texte, `tutorial_stage` aussi.
+		spells: (spells ?? []).map(toGameSpell),
 		decks: decks || [],
 		activeDeck: activeDeck || null,
-		gamePlayer
+		gamePlayer: toGamePlayer(gamePlayer)
 	};
 };
 

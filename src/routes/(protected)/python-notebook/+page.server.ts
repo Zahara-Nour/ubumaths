@@ -94,7 +94,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 						...notebook,
 						assignment: {
 							id: a.id,
-							readonly: a.readonly,
+							// `readonly` est nullable : une assignation sans consigne explicite
+							// est modifiable, ce qui est le défaut de la fonctionnalité.
+							readonly: a.readonly ?? false,
 							created_at: a.created_at,
 							class_name: classData?.name ?? null
 						}

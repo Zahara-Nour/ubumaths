@@ -11,6 +11,7 @@ import { createNotebookSchema } from '$lib/server/validation/notebooks';
 import { uuidSchema } from '$lib/server/validation/common';
 import type { NotebookContent } from '$lib/types/notebook';
 import { z } from 'zod';
+import { toJson } from '$lib/types/database-helpers';
 
 // =============================================================================
 // CONSTANTS
@@ -200,7 +201,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 						...notebook,
 						assignment: {
 							id: a.id,
-							readonly: a.readonly,
+							// `readonly` est nullable : une assignation sans consigne explicite
+							// est modifiable, ce qui est le défaut de la fonctionnalité.
+							readonly: a.readonly ?? false,
 							created_at: a.created_at,
 							class_name: classData?.name ?? null
 						}
@@ -300,7 +303,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.insert({
 			title,
 			description: description ?? null,
-			content: initialContent,
+			// Colonne jsonb : conversion réelle plutôt que cast.
+			content: toJson(initialContent),
 			author_id: user.id,
 			is_public: is_public ?? false
 		})

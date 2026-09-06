@@ -51,6 +51,24 @@ export interface GridStateDTO {
 	adjacentCounts: Record<string, number>;
 }
 
+/**
+ * Narrows the `grid_state` jsonb column to {@link GridStateDTO}.
+ *
+ * A saved game whose grid is unreadable cannot be resumed : the caller starts a
+ * fresh one rather than restoring a board with no mines, which would look like
+ * an already-won game.
+ */
+export function asGridState(value: unknown): GridStateDTO | null {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
+	const grille = value as Record<string, unknown>;
+
+	if (typeof grille.rows !== 'number' || typeof grille.cols !== 'number') return null;
+	if (!Array.isArray(grille.mines) || !Array.isArray(grille.revealed)) return null;
+	if (!Array.isArray(grille.flagged)) return null;
+
+	return grille as unknown as GridStateDTO;
+}
+
 export interface GameState {
 	id?: string; // UUID if saved to database
 	difficulty: Difficulty;
@@ -259,15 +277,23 @@ export interface TournamentGame {
  * Tournament leaderboard entry (from minesweeper_tournament_standings view)
  * Ranked by average_score (3BV-based efficiency)
  */
+/**
+ * Une ligne du classement d'un tournoi.
+ *
+ * La fonction SQL rend une table d'agrégats : chaque colonne y est nullable,
+ * car agréger zéro partie donne NULL et non 0, et le prénom vient d'un profil
+ * dont les champs sont facultatifs. Le type le reflète plutôt que de le
+ * masquer — l'affichage retombe déjà sur des valeurs de repli.
+ */
 export interface TournamentStanding {
-	tournament_id: string;
-	student_id: string;
-	firstname: string;
-	lastname: string;
-	games_won: number;
-	average_score: number; // Average score from top X games
-	average_3bvs?: number; // Average 3BV/s efficiency
-	position: number;
+	tournament_id: string | null;
+	student_id: string | null;
+	firstname: string | null;
+	lastname: string | null;
+	games_won: number | null;
+	average_score: number | null; // Average score from top X games
+	average_3bvs?: number | null; // Average 3BV/s efficiency
+	position: number | null;
 }
 
 /**

@@ -37,7 +37,7 @@ pnpm test:client <path>             # tests client (*.svelte.test.ts)
 pnpm test:integration               # intégration + DB (Supabase local)
 
 pnpm db:start / db:reset            # Supabase local (reset = recrée depuis le baseline)
-pnpm db:migrate / db:types          # push migrations → EU / régénère database.ts (avec accord explicite)
+pnpm db:migrate / db:types          # push migrations → EU / régénère database.ts (cf. §Migrations)
 pnpm maintenance:on / :off          # mode maintenance prod (releases à risque)
 pnpm release                        # tag de version + CHANGELOG (standard-version, sur main)
 ```
@@ -53,7 +53,37 @@ pnpm release                        # tag de version + CHANGELOG (standard-versi
 - **CI verte avant merge** (`gh pr checks <n> --watch`). Jamais merger en rouge.
 - **Conventional commits**, **header ≤ 100 caractères** (commitlint), **aucune mention Claude/Anthropic** (David = seul auteur).
 - **Migrations** : additive → `db:migrate` avant/avec le deploy ; destructive → après. Uniquement depuis la branche mergée.
-- **Merge / déploiement prod et `db:migrate` : seulement avec mon accord explicite.**
+- **Push, PR et merge : autonomes** dès que la CI est verte. Pas besoin de me demander.
+
+### Migrations : preuves, pas approbation
+
+Je ne sais **pas lire une migration RLS**. Me demander « approuves-tu ? » me
+transfère une responsabilité que je ne peux pas assumer : ce n'est pas un
+contrôle, c'est une formalité. Ne me la demande donc plus.
+
+**Pose-moi la question d'accès, en français, AVANT d'écrire du SQL** : « qui
+pourra lire quoi, qu'il ne pouvait pas lire avant ? ». Ça, je sais y répondre —
+c'est une question de produit.
+
+Ensuite, `db:migrate` est **autonome** si les quatre conditions sont réunies :
+
+1. la question d'accès a été posée et tranchée par moi ;
+2. des tests d'intégration existent, et **tu as vérifié qu'ils échouent sans la
+   migration** (un test qui passe sans prouver ce qu'il prétend est pire que
+   pas de test) ;
+3. `security-auditor` est passé, sans finding bloquant ;
+4. la migration est **additive** et son rollback est écrit en commentaire.
+
+Une seule condition manquante → tu t'arrêtes et tu me le dis.
+
+**Exception absolue : les migrations destructives** (`DROP`, `DELETE`, toute
+altération qui perd de la donnée). Là, aucun test ne rattrape l'erreur, et la
+base contient des données d'élèves mineurs. Tu t'arrêtes toujours, et tu
+m'expliques **en français ce qui va être perdu**.
+
+Je peux te demander « explique-moi cette migration » à tout moment : tu me dis
+qui gagne quel accès et ce qui casserait si elle était fausse — pas le SQL, ses
+conséquences.
 
 ---
 

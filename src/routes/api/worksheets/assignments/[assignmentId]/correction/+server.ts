@@ -17,6 +17,7 @@ import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 import { canAccessCorrections } from '$lib/server/worksheets/correction-release';
 import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
 import { worksheetLocale } from '$lib/types/worksheets';
+import { asInstanceData } from '$lib/types/worksheets';
 import type {
 	WorksheetWithRelations,
 	InstanceData,
@@ -92,15 +93,23 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		}
 
 		// Check if user is a student with access to this assignment
+		// `profiles` porte `class_ids`, un TABLEAU (un élève peut appartenir à
+		// plusieurs classes) — il n'existe pas de `class_id`. La colonne inexistante
+		// faisait rejeter la requête ENTIÈRE par PostgREST : `profile` valait donc
+		// toujours `null`, `isTeacher` toujours `false`, et seul le créateur du
+		// devoir pouvait ouvrir la correction. Échec en mode fermé, mais un
+		// professeur non créateur et les élèves concernés étaient écartés à tort.
 		const { data: profile } = await locals.supabase
 			.from('profiles')
-			.select('role, class_id')
+			.select('role, class_ids')
 			.eq('id', user.id)
 			.single();
 
 		const isTeacher = profile?.role === 'teacher' || profile?.role === 'admin';
 		const isAssignmentCreator = assignment.created_by === user.id;
-		const isStudentInClass = assignment.class_id && profile?.class_id === assignment.class_id;
+		const isStudentInClass = Boolean(
+			assignment.class_id && profile?.class_ids?.includes(assignment.class_id)
+		);
 
 		console.log('[Correction API] Access check:', {
 			userId: user.id,
@@ -141,12 +150,18 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		let studentName: string | undefined;
 
 		if (instance) {
-			instanceData = instance.instance_data as InstanceData;
+			// Structure vérifiée plutôt qu'affirmée : une correction bâtie sur une
+			// instance illisible afficherait des exercices absents.
+			// Une instance illisible retombe sur une génération à la volée plutôt que
+			// d'afficher une correction aux exercices absents.
+			instanceData =
+				asInstanceData(instance.instance_data) ??
+				generateSimpleInstance(assignment.worksheet as WorksheetWithRelations);
 
 			// Get student name
 			const { data: studentProfile } = await locals.supabase
 				.from('profiles')
-				.select('first_name, last_name')
+				.select('firstname, lastname')
 				.eq('id', user.id)
 				.single();
 
@@ -269,11 +284,8 @@ function generateSimpleInstance(
 /**
  * Format student name
  */
-function formatStudentName(student: {
-	first_name: string | null;
-	last_name: string | null;
-}): string {
-	const firstName = student.first_name || '';
-	const lastName = student.last_name || '';
+function formatStudentName(student: { firstname: string | null; lastname: string | null }): string {
+	const firstName = student.firstname || '';
+	const lastName = student.lastname || '';
 	return `${lastName} ${firstName}`.trim() || 'Eleve';
 }

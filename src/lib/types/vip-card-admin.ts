@@ -6,6 +6,7 @@
  */
 
 import type { VipCardAction } from '$lib/types/vip-card';
+import { asVipCardCategory, asVipCardAction } from '$lib/types/vip-card';
 
 /**
  * Database table types
@@ -28,10 +29,54 @@ export interface VipCardTemplate {
 	sort_order: number;
 	uses_total: number | null;
 	base_price: number;
+	/** Prix de revente. `NULL` quand la carte n'est pas revendable. */
+	sell_price: number | null;
 	is_purchasable: boolean;
 	max_owned_per_student: number;
 	created_at: string;
 	updated_at: string;
+}
+
+/**
+ * Narrows a `vip_card_templates` row to {@link VipCardTemplate}.
+ *
+ * `rarity` and `category` are plain text columns, `action` is jsonb, and
+ * `category` is nullable. The routes cast the whole row instead, asserting a
+ * card's rarity — which drives its price and its draw odds — without ever
+ * checking it.
+ *
+ * An unknown rarity falls back to `common` and an unknown category to `bonus`:
+ * a card written by an older revision stays displayable, and never becomes
+ * accidentally rarer than it is.
+ */
+export function toVipCardTemplate(row: {
+	id: string;
+	name: string;
+	description: string;
+	rarity: string;
+	category: string | null;
+	image_path: string;
+	is_enabled: boolean;
+	action: unknown;
+	sort_order: number | null;
+	uses_total: number | null;
+	base_price: number;
+	sell_price: number | null;
+	is_purchasable: boolean;
+	max_owned_per_student: number;
+	created_at: string;
+	updated_at: string;
+}): VipCardTemplate {
+	const rarity = (['common', 'rare', 'epic', 'legendary'] as const).find((r) => r === row.rarity);
+	return {
+		...row,
+		rarity: rarity ?? 'common',
+		// `sort_order` est nullable : une carte sans rang explicite passe en fin de
+		// liste plutôt qu'en tête.
+		sort_order: row.sort_order ?? Number.MAX_SAFE_INTEGER,
+		category: asVipCardCategory(row.category) ?? 'bonus',
+		action: asVipCardAction(row.action)
+	};
 }
 
 /**
@@ -215,6 +260,10 @@ export function responseToTemplate(response: TemplateResponse): VipCardTemplate 
 		sort_order: response.sortOrder,
 		uses_total: response.usesTotal,
 		base_price: response.basePrice,
+		// `TemplateResponse` n'expose pas le prix de revente : la reconstruction
+		// ne peut donc pas le restituer. `null` signifie « non revendable », ce
+		// qui est le sens sûr — l'inverse offrirait une revente non voulue.
+		sell_price: null,
 		is_purchasable: response.isPurchasable,
 		max_owned_per_student: response.maxOwnedPerStudent,
 		created_at: response.createdAt,

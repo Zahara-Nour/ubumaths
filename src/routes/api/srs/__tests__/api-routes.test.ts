@@ -1076,6 +1076,27 @@ describe('GET /api/srs/review/due - Get Due Cards', () => {
 					})
 				};
 			}
+			// `get_due_cards_for_deck` ne renvoie ni `total_reviews` ni
+			// `last_review` : ces deux statistiques vivent dans `srs_card_stats`,
+			// que la route interroge en une seule fois.
+			if (table === 'srs_card_stats') {
+				return {
+					select: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							in: vi.fn().mockResolvedValue({
+								data: [
+									{
+										card_reference_id: TEST_IDS.card1,
+										total_reviews: 4,
+										last_review: '2026-01-01T00:00:00Z'
+									}
+								],
+								error: null
+							})
+						})
+					})
+				};
+			}
 			return {};
 		});
 
@@ -1109,6 +1130,10 @@ describe('GET /api/srs/review/due - Get Due Cards', () => {
 
 		expect(response.status).toBe(200);
 		expect(data.cards).toBeDefined();
+		// Les statistiques viennent de `srs_card_stats`, pas de la ligne du RPC :
+		// l'élève voyait `undefined` avant la correction.
+		expect(data.cards[0].stats.totalReviews).toBe(4);
+		expect(data.cards[0].stats.lastReview).toBe('2026-01-01T00:00:00Z');
 		// Generous timeout: this test runs the real `generateSRSInstance` (CPU-heavy,
 		// ~3s) which can exceed the 5s default under full-zone load.
 	}, 20000);

@@ -23,6 +23,7 @@
 	import type { CardCollectionStatus } from './+page.server';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { syncVipCards, syncGidouilles } from '$lib/utils/cache-sync';
+	import { asVipCardCategory, asVipCardAction } from '$lib/types/vip-card';
 
 	let { data }: { data: PageData } = $props();
 
@@ -217,9 +218,9 @@
 			name: template.name,
 			description: template.description,
 			imagePath: template.image_path,
-			category: template.category,
+			category: asVipCardCategory(template.category),
 			rarity: template.rarity as VipCardRarity,
-			action: template.action ?? undefined
+			action: asVipCardAction(template.action)
 		};
 		sellInstanceId = instanceId;
 		sellPrice = price;
@@ -320,9 +321,9 @@
 											name: template.name,
 											description: template.description,
 											imagePath: template.image_path,
-											category: template.category,
+											category: asVipCardCategory(template.category),
 											rarity: template.rarity as VipCardRarity,
-											action: template.action ?? undefined
+											action: asVipCardAction(template.action)
 										}}
 										clickable={false}
 										{count}

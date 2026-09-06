@@ -156,18 +156,23 @@
 								</Table.Cell>
 								<Table.Cell class="text-center">
 									<span
-										class="text-lg font-semibold {attempt.score >= 5
+										class="text-lg font-semibold {(attempt.score ?? 0) >= 5
 											? 'text-green-600 dark:text-green-400'
 											: 'text-red-600 dark:text-red-400'}"
 									>
-										{attempt.score}/10
+										<!-- `score` est nullable : une session interrompue n'en a pas. -->
+										{attempt.score ?? '—'}/10
 									</span>
 								</Table.Cell>
 								<Table.Cell class="text-center">
-									{attempt.correct_answers}/{attempt.total_questions}
+									<!-- `test_sessions` ne compte pas les bonnes réponses : seule la note
+									     (`score`, sur 10) et le nombre de questions sont enregistrés. La
+									     cellule affichait donc « undefined/N ». -->
+									{attempt.total_questions}
 								</Table.Cell>
 								<Table.Cell class="text-center">
-									{formatDuration(attempt.duration)}
+									<!-- La colonne s'appelle `time_spent`. -->
+									{formatDuration(attempt.time_spent)}
 								</Table.Cell>
 								<Table.Cell class="text-center">
 									{#if attempt.completed_at}

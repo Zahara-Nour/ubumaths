@@ -34,6 +34,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { getTemplateById, getTemplatesByRarity } from '$lib/server/vip-card-queries';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 import { validateActivationContext } from '$lib/server/vip-card-context';
+import { asStudentVipCards } from '$lib/types/vip-card';
 
 // ============================================================================
 // POST HANDLER
@@ -87,7 +88,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, `Failed to fetch student profile: ${fetchError.message}`);
 	}
 
-	const vipCards = (studentProfile.vip_cards || {}) as unknown as StudentVipCards;
+	const vipCards = asStudentVipCards(studentProfile.vip_cards);
 
 	// Validate that action card exists and is not used
 	const actionCard = vipCards[data.actionCardInstanceId];
@@ -359,7 +360,7 @@ async function handleReplaceRandom(
 			.eq('id', studentId)
 			.single();
 
-		const latestVipCards = (updatedProfile?.vip_cards || {}) as unknown as StudentVipCards;
+		const latestVipCards = asStudentVipCards(updatedProfile?.vip_cards);
 
 		// Find the most recent card instance with this cardId (not in original set)
 		const latestInstanceId = Object.keys(latestVipCards).find((id) => {
@@ -460,7 +461,7 @@ async function handleRarityPoints(
 		.eq('id', studentId)
 		.single();
 
-	const latestVipCards = (updatedProfile?.vip_cards || {}) as unknown as StudentVipCards;
+	const latestVipCards = asStudentVipCards(updatedProfile?.vip_cards);
 
 	const latestInstanceId = Object.keys(latestVipCards).find((id) => {
 		const inst = latestVipCards[id];
@@ -538,7 +539,7 @@ async function handleDiscardForSpecific(
 		.eq('id', studentId)
 		.single();
 
-	const latestVipCards = (updatedProfile?.vip_cards || {}) as unknown as StudentVipCards;
+	const latestVipCards = asStudentVipCards(updatedProfile?.vip_cards);
 
 	const latestInstanceId = Object.keys(latestVipCards).find((id) => {
 		const inst = latestVipCards[id];

@@ -7,7 +7,7 @@
 
 import type { PageServerLoad } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
-import type { StudentVipCards } from '$lib/types/vip-card';
+import { asStudentVipCards } from '$lib/types/vip-card';
 import { getTemplateById, getAllTemplates } from '$lib/server/vip-card-queries';
 import { getActionDescription } from '$lib/utils/vip-cards';
 
@@ -71,7 +71,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const pendingRequests: PendingRequest[] = [];
 
 	profiles?.forEach((profile) => {
-		const vipCards = (profile.vip_cards || {}) as unknown as StudentVipCards;
+		const vipCards = asStudentVipCards(profile.vip_cards);
 		const studentName = `${profile.firstname || ''} ${profile.lastname || ''}`.trim();
 
 		Object.entries(vipCards).forEach(([instanceId, instance]) => {

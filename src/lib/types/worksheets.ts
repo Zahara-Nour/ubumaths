@@ -664,7 +664,11 @@ export interface StudentWorksheetView {
 	description: string | null;
 	type: WorksheetType;
 	instructions: string | null;
-	available_from: string;
+	/**
+	 * `NULL` means available immediately: the column is nullable in Postgres,
+	 * and the assignment form only sends a date when the teacher sets one.
+	 */
+	available_from: string | null;
 	closes_at: string | null;
 	show_corrections: boolean;
 	class_name: string | null;
@@ -683,7 +687,8 @@ export interface StudentWorksheetListItem {
 	type: WorksheetType;
 	class_id: string | null;
 	class_name: string | null;
-	available_from: string;
+	/** `NULL` = disponible immédiatement, comme pour {@link StudentWorksheetView}. */
+	available_from: string | null;
 	closes_at: string | null;
 	show_corrections: boolean;
 	exercise_count: number;
@@ -796,6 +801,192 @@ export interface WorksheetTextTranslation {
 
 /** Translations of a row, keyed by locale. French is never a key. */
 export type RowTranslations = Partial<Record<TranslatedLocale, WorksheetTextTranslation>>;
+
+/**
+ * Narrows the `placeholders` jsonb column to {@link TemplatePlaceholder}[].
+ *
+ * Entries missing the two fields the editor always reads — `key` and `type` —
+ * are dropped: an unnamed placeholder cannot be substituted, and would appear
+ * in the palette as a blank chip.
+ */
+export function asTemplatePlaceholders(value: unknown): TemplatePlaceholder[] {
+	if (!Array.isArray(value)) return [];
+
+	return value.filter((p): p is TemplatePlaceholder => {
+		if (typeof p !== 'object' || p === null || Array.isArray(p)) return false;
+		const item = p as Record<string, unknown>;
+		return (
+			typeof item.key === 'string' &&
+			(item.type === 'text' || item.type === 'date' || item.type === 'dynamic')
+		);
+	});
+}
+
+/**
+ * Narrows a `worksheets` row to {@link WorksheetRow}.
+ *
+ * `type`, `status`, `config` and `translations` are all looser in Postgres —
+ * plain text or jsonb — and `grades` / `tags` are nullable arrays.
+ *
+ * The fallbacks are the feature's own defaults: a worksheet of unknown type
+ * renders as a plain worksheet, and an unknown status is treated as a draft —
+ * the direction that never publishes something by accident.
+ */
+export function toWorksheetRow(row: {
+	type: string;
+	status: string;
+	config: unknown;
+	translations?: unknown;
+	grades: string[] | null;
+	tags: string[] | null;
+	[k: string]: unknown;
+}): WorksheetRow {
+	return {
+		...row,
+		type: (WORKSHEET_TYPES.find((t) => t === row.type) ?? 'worksheet') as WorksheetType,
+		status: (WORKSHEET_STATUSES.find((s) => s === row.status) ?? 'draft') as WorksheetStatus,
+		config: asWorksheetConfig(row.config),
+		translations: asRowTranslations(row.translations),
+		grades: row.grades ?? [],
+		tags: row.tags ?? []
+	} as unknown as WorksheetRow;
+}
+
+/**
+ * Narrows a `worksheet_exercises` row to {@link WorksheetExerciseRow}.
+ *
+ * Three columns are looser in Postgres than in the domain: `variant_mode` is
+ * plain text, `variant_config` and `translations` are jsonb, and
+ * `correction_visible` is nullable.
+ *
+ * The fallbacks are the documented defaults of the feature: no variant, an
+ * empty config, and a correction hidden until the teacher releases it — the
+ * safe direction for a graded document.
+ */
+export function toWorksheetExerciseRow(row: {
+	variant_mode: string | null;
+	variant_config: unknown;
+	translations?: unknown;
+	correction_visible: boolean | null;
+	[k: string]: unknown;
+}): WorksheetExerciseRow {
+	const mode = VARIANT_MODES.find((m) => m === row.variant_mode) ?? 'none';
+	const config =
+		typeof row.variant_config === 'object' &&
+		row.variant_config !== null &&
+		!Array.isArray(row.variant_config)
+			? (row.variant_config as VariantConfig)
+			: {};
+
+	return {
+		...row,
+		variant_mode: mode,
+		variant_config: config,
+		translations: asRowTranslations(row.translations),
+		correction_visible: row.correction_visible ?? false
+	} as unknown as WorksheetExerciseRow;
+}
+
+/**
+ * Narrows the `instance_data` jsonb column to {@link InstanceData}.
+ *
+ * A worksheet instance holds the exercises actually drawn for one student. Its
+ * generated type is `Json`, so the three PDF routes cast it — an assertion on
+ * the entire content of a graded document, never checked.
+ *
+ * Returns `null` when the exercise list is missing, so the caller can fall
+ * back to regenerating an instance rather than emitting a blank worksheet
+ * under a student's name.
+ */
+export function asInstanceData(value: unknown): InstanceData | null {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
+	const data = value as Record<string, unknown>;
+	if (!Array.isArray(data.exercises)) return null;
+	return data as unknown as InstanceData;
+}
+
+/**
+ * Narrows the `config` jsonb column to {@link WorksheetConfig}.
+ *
+ * Every field is optional and every consumer already has a default, so an
+ * unreadable value degrades to an empty config rather than throwing: a
+ * worksheet with a corrupted config must still generate.
+ *
+ * Only the fields actually used for rendering are carried over; anything of
+ * the wrong runtime type is dropped, which is what the old `as` cast silently
+ * let through.
+ */
+export function asWorksheetConfig(value: unknown): WorksheetConfig {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) return {};
+	const raw = value as Record<string, unknown>;
+	const config: WorksheetConfig = {};
+
+	if (isContentLocale(raw.language)) config.language = raw.language;
+
+	for (const flag of [
+		'show_title',
+		'show_date',
+		'show_student_name',
+		'show_class',
+		'show_points',
+		'shuffle_exercises',
+		'shuffle_within_sections'
+	] as const) {
+		if (typeof raw[flag] === 'boolean') config[flag] = raw[flag];
+	}
+
+	if (typeof raw.font_size === 'number') config.font_size = raw.font_size;
+	if (raw.page_layout === 'A4' || raw.page_layout === 'Letter')
+		config.page_layout = raw.page_layout;
+
+	const m = raw.margins;
+	if (typeof m === 'object' && m !== null && !Array.isArray(m)) {
+		const side = m as Record<string, unknown>;
+		if (
+			typeof side.top === 'number' &&
+			typeof side.bottom === 'number' &&
+			typeof side.left === 'number' &&
+			typeof side.right === 'number'
+		) {
+			config.margins = {
+				top: side.top,
+				bottom: side.bottom,
+				left: side.left,
+				right: side.right
+			};
+		}
+	}
+
+	return config;
+}
+
+/**
+ * Narrows the `translations` jsonb column to {@link RowTranslations}.
+ *
+ * The generated type of a jsonb column is `Json`, a union that carries no
+ * keys, so callers could not read `translations.en.title` without a cast. A
+ * cast would also have hidden genuinely malformed rows.
+ *
+ * Anything that is not an object of objects is treated as absent: a corrupted
+ * row must degrade to the French column rather than break the render.
+ */
+export function asRowTranslations(value: unknown): RowTranslations | null {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
+
+	const result: RowTranslations = {};
+	for (const [locale, texts] of Object.entries(value)) {
+		if (!isContentLocale(locale) || locale === 'fr') continue;
+		if (typeof texts !== 'object' || texts === null || Array.isArray(texts)) continue;
+
+		const entry: WorksheetTextTranslation = {};
+		for (const field of ['title', 'description', 'instructions', 'custom_instructions'] as const) {
+			const text = (texts as Record<string, unknown>)[field];
+			if (typeof text === 'string') entry[field] = text;
+		}
+		result[locale] = entry;
+	}
+	return result;
+}
 
 /**
  * Language a worksheet renders in, defaulting to French.

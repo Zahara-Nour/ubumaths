@@ -94,7 +94,8 @@
 					Classement général : <span class="text-2xl font-bold text-foreground"
 						>#{data.leaderboardRank}</span
 					>
-					<span class="ml-2">({Math.round(data.leaderboardScore)} pts)</span>
+					<!-- `leaderboardScore` est nullable : aucun score tant qu'aucune partie classée. -->
+					<span class="ml-2">({Math.round(data.leaderboardScore ?? 0)} pts)</span>
 				</p>
 				<Button variant="outline" size="sm" onclick={() => (showLeaderboard = true)}
 					>Voir le classement</Button
