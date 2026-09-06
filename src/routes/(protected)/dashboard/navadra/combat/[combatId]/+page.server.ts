@@ -13,7 +13,7 @@ import {
 } from '$lib/utils/game/combat';
 import { selectSpellSchema, submitAnswerSchema } from '$lib/server/validation/navadra';
 import { validateUuidParam } from '$lib/server/validation/params';
-import { toGameMonster, toGameSpell, asCombatFlow } from '$lib/types/game';
+import { toGameMonster, toGameSpell, asCombatFlow, toGamePlayer } from '$lib/types/game';
 import type { GameSpell } from '$lib/types/game';
 
 /**
@@ -102,7 +102,8 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 	return {
 		combat,
 		monster: toGameMonster(combat.monster),
-		gamePlayer,
+		// `tutorial_stage` est du texte et `music_settings` du jsonb.
+		gamePlayer: toGamePlayer(gamePlayer),
 		playerSpells
 	};
 };

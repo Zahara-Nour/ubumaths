@@ -4,7 +4,7 @@
 
 import type { LayoutServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { toGameSpell } from '$lib/types/game';
+import { toGameSpell, toGamePlayer } from '$lib/types/game';
 
 export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
@@ -44,6 +44,12 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
 		throw error(500, 'Failed to load game profile');
 	}
 
+	// Les deux branches ci-dessus garantissent une fiche, mais le compilateur ne
+	// le déduit pas d'un `let` réaffecté : la garde le lui dit.
+	if (!gamePlayer) {
+		throw error(500, 'Failed to load game profile');
+	}
+
 	// Fetch player's spells
 	const { data: spells } = await supabase
 		.from('game_spells')
@@ -67,7 +73,8 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
 		.order('created_at', { ascending: true });
 
 	return {
-		gamePlayer,
+		// `tutorial_stage` est du texte et `music_settings` du jsonb.
+		gamePlayer: toGamePlayer(gamePlayer),
 		// `element` et `type` sont des colonnes texte : rétrécies ici plutôt que
 		// dans chaque écran de combat.
 		spells: (spells ?? []).map(toGameSpell),

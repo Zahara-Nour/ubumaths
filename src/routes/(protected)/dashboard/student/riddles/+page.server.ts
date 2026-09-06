@@ -79,9 +79,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 		riddleOfTheDay,
 		riddleOfTheDayDate,
 		studentAttempt,
+		// `difficulty` et `status` sont des colonnes permissives, `answer` du jsonb :
+		// converties ici plutôt qu'affirmées dans la carte d'affichage.
 		assignments: (assignments || []).map((a) => ({
 			...a,
-			riddle: a.riddle
+			riddle: a.riddle ? toDbRiddle(a.riddle) : null
 		}))
 	};
 };

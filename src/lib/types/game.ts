@@ -61,6 +61,56 @@ export type TutorialStage =
 	| 'index_12'
 	| 'fini';
 
+/** Étapes du tutoriel, dans l'ordre. */
+const ETAPES_TUTORIEL = [
+	'cinematic_0',
+	'index_1',
+	'combattre_2',
+	'index_3',
+	'accueil_defi_4',
+	'fin_defi_5',
+	'grimoire_6',
+	'grimoire_7',
+	'index_8',
+	'prepa_combats_9',
+	'combats_decks_10',
+	'combattre_11',
+	'index_12',
+	'fini'
+] as const;
+
+/**
+ * Narrows a `game_players` row to {@link GamePlayer}.
+ *
+ * `tutorial_stage` is plain text and `music_settings` is jsonb. An unknown
+ * stage falls back to the first one: replaying an introduction is harmless,
+ * whereas skipping to a later step would leave the student without the
+ * explanations that step assumes.
+ */
+export function toGamePlayer<T extends Record<string, unknown>>(
+	row: T & { tutorial_stage: string; music_settings: unknown }
+): Omit<T, 'tutorial_stage' | 'music_settings'> & {
+	tutorial_stage: TutorialStage;
+	music_settings: MusicSettings;
+} {
+	const reglages = row.music_settings;
+	const valide =
+		typeof reglages === 'object' &&
+		reglages !== null &&
+		!Array.isArray(reglages) &&
+		typeof (reglages as Record<string, unknown>).enabled === 'boolean' &&
+		typeof (reglages as Record<string, unknown>).volume === 'number';
+
+	return {
+		...row,
+		tutorial_stage: ETAPES_TUTORIEL.find((e) => e === row.tutorial_stage) ?? ETAPES_TUTORIEL[0],
+		music_settings: valide ? (reglages as unknown as MusicSettings) : { enabled: true, volume: 0.5 }
+	} as Omit<T, 'tutorial_stage' | 'music_settings'> & {
+		tutorial_stage: TutorialStage;
+		music_settings: MusicSettings;
+	};
+}
+
 export interface MusicSettings {
 	enabled: boolean;
 	volume: number; // 0-1
