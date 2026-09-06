@@ -90,12 +90,19 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		}
 		// Student has access to visible chapters in their enrolled classes
 		else if (profile.role === 'student' && chapter.is_visible) {
-			const { data: enrollment } = await supabase
+			const { data: enrollment, error: enrollmentError } = await supabase
 				.from('class_members')
 				.select('id')
 				.eq('class_id', chapter.class_id)
 				.eq('student_id', profile.id)
 				.single();
+
+			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+			// panne doit se distinguer d'un refus mérité.
+			if (enrollmentError && enrollmentError.code !== 'PGRST116') {
+				console.error('Contrôle d’accès impossible :', enrollmentError);
+				throw error(500, 'Impossible de vérifier votre accès');
+			}
 
 			if (enrollment) {
 				hasAccess = true;

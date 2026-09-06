@@ -75,7 +75,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 	const classId = task.class_id;
 
 	// 2. Élèves actifs de la classe
-	const { data: members } = await locals.supabase
+	const { data: members, error: membersError } = await locals.supabase
 		.from('class_members')
 		.select(
 			`
@@ -84,6 +84,13 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 			`
 		)
 		.eq('class_id', classId);
+
+	// Cette liste borne la portée du classement. Vidée par une panne, elle
+	// affiche un classement amputé sans le dire.
+	if (membersError) {
+		console.error('Périmètre illisible :', membersError);
+		throw error(500, 'Impossible de déterminer le périmètre');
+	}
 
 	const students: StudentRow[] = (members ?? [])
 		.map((m) => {
@@ -147,11 +154,16 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 		.map(({ _compOrder, _sdOrder, _obsOrder, ...rest }) => rest);
 
 	// 4. Attempts existants pour cette tâche (idempotence)
-	const { data: existingAttempts } = await locals.supabase
+	const { data: existingAttempts, error: existingAttemptsError } = await locals.supabase
 		.from('skill_attempts')
 		.select('student_id, observable_id, code, created_at')
 		.eq('task_id', params.id)
 		.order('created_at', { ascending: true });
+
+	if (existingAttemptsError) {
+		console.error('Lecture impossible :', existingAttemptsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	// Garder le dernier code par (student × skill)
 	const existing: Record<string, 'plus' | 'minus'> = {};
@@ -178,11 +190,17 @@ export const actions: Actions = {
 		await requireRole(locals, 'teacher');
 
 		// Re-vérifier l'existence
-		const { data: task } = await locals.supabase
+		const { data: task, error: taskError } = await locals.supabase
 			.from('evaluation_tasks')
 			.select('id, class_id')
 			.eq('id', params.id)
 			.maybeSingle();
+
+		// PGRST116 = la tâche n'existe pas, et le 404 qui suit est légitime.
+		if (taskError && taskError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', taskError);
+			return fail(500, { message: 'Lecture impossible' });
+		}
 		if (!task) {
 			return fail(404, { message: 'Tâche introuvable' });
 		}
@@ -194,20 +212,32 @@ export const actions: Actions = {
 		const classId = task.class_id;
 
 		// Récupérer le périmètre (skill_ids autorisés)
-		const { data: perimeter } = await locals.supabase
+		const { data: perimeter, error: perimeterError } = await locals.supabase
 			.from('evaluation_task_perimeter')
 			.select('observable_id')
 			.eq('task_id', params.id);
+
+		// PGRST116 = la tâche n'existe pas, et le 404 qui suit est légitime.
+		if (perimeterError && perimeterError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', perimeterError);
+			return fail(500, { message: 'Lecture impossible' });
+		}
 		const allowedSkillIds = new Set((perimeter ?? []).map((p) => p.observable_id));
 		if (allowedSkillIds.size === 0) {
 			return fail(400, { message: 'Aucun observable dans le périmètre.' });
 		}
 
 		// Récupérer les élèves de la classe
-		const { data: members } = await locals.supabase
+		const { data: members, error: membersError } = await locals.supabase
 			.from('class_members')
 			.select('student_id')
 			.eq('class_id', classId);
+
+		// PGRST116 = la tâche n'existe pas, et le 404 qui suit est légitime.
+		if (membersError && membersError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', membersError);
+			return fail(500, { message: 'Lecture impossible' });
+		}
 		const allowedStudentIds = new Set((members ?? []).map((m) => m.student_id).filter(Boolean));
 		if (allowedStudentIds.size === 0) {
 			return fail(400, { message: 'Aucun élève dans la classe.' });

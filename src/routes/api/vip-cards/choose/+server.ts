@@ -295,11 +295,22 @@ async function awardChosenCards(
 		const template = await getTemplateById(supabase, awardedCardId);
 
 		// Fetch updated VIP cards to get instance ID
-		const { data: updatedProfile } = await supabase
+		const { data: updatedProfile, error: updatedProfileError } = await supabase
 			.from('profiles')
 			.select('vip_cards')
 			.eq('id', studentId)
 			.single();
+
+		// L'échange a déjà eu lieu en base : lever ici ferait croire à un échec et
+		// pousserait l'élève à recommencer. On garde donc le repli — mais sans cette
+		// relecture, l'identifiant d'instance renvoyé est un UUID inventé, qui ne
+		// désignera aucune carte réelle lors de la prochaine action.
+		if (updatedProfileError) {
+			console.error(
+				'Inventaire relu en échec, identifiant d’instance approximatif :',
+				updatedProfileError
+			);
+		}
 
 		const latestVipCards = asStudentVipCards(updatedProfile?.vip_cards);
 		updatedVipCards = latestVipCards;

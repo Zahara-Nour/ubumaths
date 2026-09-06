@@ -879,10 +879,12 @@ describe('removeAssignment', () => {
 	});
 
 	it('should reject removal when assignment not found', async () => {
-		// Mock assignment not found
+		// PostgREST signale « zéro ligne » sur un `.single()` par le code
+		// PGRST116. Sans ce code, la simulation décrivait une panne, pas une
+		// absence — et les deux n'appellent pas la même réponse.
 		supabase._mockChain.single.mockResolvedValueOnce({
 			data: null,
-			error: { message: 'Not found' }
+			error: { code: 'PGRST116', message: 'JSON object requested, multiple (or no) rows returned' }
 		});
 
 		const result = await assessments.removeAssignment(supabase, 'non-existent', mockTeacherId);
@@ -1176,11 +1178,39 @@ describe('validateAttempt', () => {
 		expect(result.current_attempts).toBe(5);
 	});
 
+	it('refuse la tentative quand le comptage des passages échoue', async () => {
+		// ⚠️ Le comptage borne le nombre de passages sur une évaluation NOTÉE.
+		// Avant la garde, une panne le ramenait à 0 : l'élève repartait avec son
+		// quota entier, autant de fois que la requête échouait.
+		supabase._mockChain.single.mockResolvedValueOnce({
+			data: {
+				id: mockAssignmentId,
+				assessment_id: mockAssessmentId,
+				max_attempts: 1,
+				deadline: null,
+				assessment: { id: mockAssessmentId, status: 'published' }
+			},
+			error: null
+		});
+		supabase._mockChain.then.mockImplementationOnce((onFulfilled: (v: unknown) => unknown) =>
+			Promise.resolve(
+				onFulfilled({ data: null, error: { code: '42501', message: 'permission denied' } })
+			)
+		);
+
+		const result = await assessments.validateAttempt(supabase, mockAssignmentId, mockStudentId);
+
+		expect(result.can_attempt).toBe(false);
+		expect(result.reason).toBe('Impossible de vérifier vos tentatives précédentes');
+	});
+
 	it('should handle assignment not found', async () => {
-		// Mock assignment not found
+		// PostgREST signale « zéro ligne » sur un `.single()` par le code
+		// PGRST116. Sans ce code, la simulation décrivait une panne, pas une
+		// absence — et les deux n'appellent pas la même réponse.
 		supabase._mockChain.single.mockResolvedValueOnce({
 			data: null,
-			error: { message: 'Not found' }
+			error: { code: 'PGRST116', message: 'JSON object requested, multiple (or no) rows returned' }
 		});
 
 		const result = await assessments.validateAttempt(supabase, 'non-existent', mockStudentId);

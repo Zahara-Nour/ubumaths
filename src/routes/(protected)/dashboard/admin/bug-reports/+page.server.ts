@@ -9,6 +9,7 @@ import type { PageServerLoad } from './$types';
 import type { BugReportWithAuthor } from '$lib/types/bug-reports';
 import { signBugReportScreenshots } from '$lib/server/bug-report-screenshots';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { error } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// Admin gate (admin login OR step-up elevation)
@@ -53,9 +54,14 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	}
 
 	// Get stats
-	const { data: allReports } = await supabase
+	const { data: allReports, error: allReportsError } = await supabase
 		.from('bug_reports')
 		.select('status, severity, created_at');
+
+	if (allReportsError) {
+		console.error('Lecture impossible :', allReportsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	// Replace stored screenshot_url with fresh signed URLs (private bucket)
 	await signBugReportScreenshots(supabase, (reports ?? []) as BugReportWithAuthor[]);

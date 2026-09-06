@@ -20,11 +20,18 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	// Only admins can approve/reject
-	const { data: profile } = await supabase
+	const { data: profile, error: profileError } = await supabase
 		.from('profiles')
 		.select('role')
 		.eq('id', user.id)
 		.single();
+
+	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+	// panne produisait le même refus, indiscernable d'un refus mérité.
+	if (profileError && profileError.code !== 'PGRST116') {
+		console.error('Rôle illisible :', profileError);
+		return error(500, 'Impossible de vérifier vos droits');
+	}
 
 	if (!profile || profile.role !== 'admin') {
 		return error(403, 'Seuls les admins peuvent approuver/rejeter des templates');

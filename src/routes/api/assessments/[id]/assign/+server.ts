@@ -57,7 +57,16 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	// Get assessment title for notification
-	const { data: assessment } = await getAssessment(locals.supabase, assessmentId);
+	const { data: assessment, error: assessmentError } = await getAssessment(
+		locals.supabase,
+		assessmentId
+	);
+
+	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+	// laisse une trace.
+	if (assessmentError) {
+		console.error('Enrichissement illisible :', assessmentError);
+	}
 
 	// Send notification to assigned students
 	if (assessment) {

@@ -20,7 +20,7 @@
  * - 90%+ reduction in database queries
  */
 
-import { json } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
@@ -114,10 +114,15 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		}
 
 		// Get all cards from source deck
-		const { data: sourceCards } = await supabase
+		const { data: sourceCards, error: sourceCardsError } = await supabase
 			.from('srs_cards')
 			.select('*')
 			.eq('deck_id', deckId);
+
+		if (sourceCardsError) {
+			console.error('Lecture impossible :', sourceCardsError);
+			throw error(500, 'Impossible de charger les données');
+		}
 
 		console.log('Source deck has', sourceCards?.length || 0, 'cards');
 

@@ -66,11 +66,19 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 	}
 
 	// Fetch game player
-	const { data: gamePlayer } = await supabase
+	const { data: gamePlayer, error: gamePlayerError } = await supabase
 		.from('game_players')
 		.select('*')
 		.eq('user_id', user.id)
 		.single();
+
+	// La fiche de joueur porte le niveau, les pyrs et l'avancement du tutoriel.
+	// Une panne la rendait absente, et l'écran repartait comme pour un joueur
+	// neuf — niveau 1, tutoriel au début.
+	if (gamePlayerError && gamePlayerError.code !== 'PGRST116') {
+		console.error('Fiche de joueur illisible :', gamePlayerError);
+		throw error(500, 'Impossible de charger votre profil de jeu');
+	}
 
 	// L'écran de combat lit le niveau du joueur dès son initialisation : sans
 	// fiche de jeu, il n'y a rien à afficher. On refuse ici plutôt que de rendre
@@ -80,7 +88,7 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 	}
 
 	// Fetch player's spells (from active deck)
-	const { data: activeDeck } = await supabase
+	const { data: activeDeck, error: activeDeckError } = await supabase
 		.from('game_spell_decks')
 		.select(
 			`
@@ -92,17 +100,27 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 		.eq('is_active', true)
 		.single();
 
+	if (activeDeckError) {
+		console.error('Lecture impossible :', activeDeckError);
+		throw error(500, 'Impossible de charger les données');
+	}
+
 	// If no active deck, get first 10 spells.
 	// `element` et `type` sont des colonnes texte : converties une fois ici.
 	let playerSpells: GameSpell[] = [];
 	if (activeDeck && Array.isArray(activeDeck.spells)) {
 		playerSpells = activeDeck.spells.map(toGameSpell);
 	} else {
-		const { data: spells } = await supabase
+		const { data: spells, error: spellsError } = await supabase
 			.from('game_spells')
 			.select('*')
 			.eq('user_id', user.id)
 			.limit(10);
+
+		if (spellsError) {
+			console.error('Lecture impossible :', spellsError);
+			throw error(500, 'Impossible de charger les données');
+		}
 		playerSpells = (spells ?? []).map(toGameSpell);
 	}
 
@@ -138,35 +156,53 @@ export const actions: Actions = {
 		const { spell_num } = validation.data;
 
 		// Fetch combat
-		const { data: combat } = await supabase
+		const { data: combat, error: combatError } = await supabase
 			.from('game_combats')
 			.select('*')
 			.eq('id', combatId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
+		if (combatError && combatError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', combatError);
+			return fail(500, { error: 'Lecture impossible' });
+		}
 
 		if (!combat || combat.status !== 'active') {
 			return fail(400, { error: "Le combat n'est pas actif" });
 		}
 
 		// Fetch spell
-		const { data: spell } = await supabase
+		const { data: spell, error: spellError } = await supabase
 			.from('game_spells')
 			.select('*')
 			.eq('user_id', user.id)
 			.eq('spell_num', spell_num)
 			.single();
 
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
+		if (spellError && spellError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', spellError);
+			return fail(500, { error: 'Lecture impossible' });
+		}
+
 		if (!spell) {
 			return fail(400, { error: 'Sort introuvable' });
 		}
 
 		// Select random challenge based on spell element
-		const { data: challenges } = await supabase
+		const { data: challenges, error: challengesError } = await supabase
 			.from('game_challenges')
 			.select('*')
 			.eq('element', spell.element)
 			.eq('is_active', true)
 			.limit(10);
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
+		if (challengesError && challengesError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', challengesError);
+			return fail(500, { error: 'Lecture impossible' });
+		}
 
 		if (!challenges || challenges.length === 0) {
 			return fail(500, { error: 'Aucun défi disponible pour cet élément' });
@@ -216,11 +252,17 @@ export const actions: Actions = {
 		});
 
 		// Fetch combat
-		const { data: combat } = await supabase
+		const { data: combat, error: combatError } = await supabase
 			.from('game_combats')
 			.select('*, monster:game_monsters(*)')
 			.eq('id', combatId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
+		if (combatError && combatError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', combatError);
+			return fail(500, { error: 'Lecture impossible' });
+		}
 
 		if (!combat || combat.status !== 'active') {
 			return fail(400, { error: "Le combat n'est pas actif" });
@@ -231,11 +273,17 @@ export const actions: Actions = {
 		const monstre = toGameMonster(combat.monster);
 
 		// Fetch challenge
-		const { data: challenge } = await supabase
+		const { data: challenge, error: challengeError } = await supabase
 			.from('game_challenges')
 			.select('*')
 			.eq('id', challenge_id)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
+		if (challengeError && challengeError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', challengeError);
+			return fail(500, { error: 'Lecture impossible' });
+		}
 
 		if (!challenge) {
 			return fail(400, { error: 'Défi introuvable' });
@@ -267,18 +315,30 @@ export const actions: Actions = {
 		});
 
 		// Fetch spell and player level
-		const { data: spell } = await supabase
+		const { data: spell, error: spellError } = await supabase
 			.from('game_spells')
 			.select('*')
 			.eq('user_id', user.id)
 			.eq('spell_num', spell_num)
 			.single();
 
-		const { data: gamePlayer } = await supabase
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
+		if (spellError && spellError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', spellError);
+			return fail(500, { error: 'Lecture impossible' });
+		}
+
+		const { data: gamePlayer, error: gamePlayerError } = await supabase
 			.from('game_players')
 			.select('level')
 			.eq('user_id', user.id)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
+		if (gamePlayerError && gamePlayerError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', gamePlayerError);
+			return fail(500, { error: 'Lecture impossible' });
+		}
 
 		if (!spell || !gamePlayer) {
 			return fail(500, { error: 'Échec de récupération des données du sort ou du joueur' });

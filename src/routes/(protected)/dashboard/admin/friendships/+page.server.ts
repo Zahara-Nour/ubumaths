@@ -1,4 +1,4 @@
-import { fail } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { requireRole } from '$lib/server/auth';
 
@@ -118,11 +118,18 @@ export const actions: Actions = {
 		const supabase = locals.supabase;
 
 		// Check if user is teacher or admin
-		const { data: profile } = await supabase
+		const { data: profile, error: profileError } = await supabase
 			.from('profiles')
 			.select('role')
 			.eq('id', user.id)
 			.single();
+
+		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+		// panne produisait le même refus, indiscernable d'un refus mérité.
+		if (profileError && profileError.code !== 'PGRST116') {
+			console.error('Rôle illisible :', profileError);
+			throw error(500, 'Impossible de vérifier vos droits');
+		}
 
 		if (!profile || (profile.role !== 'teacher' && profile.role !== 'admin')) {
 			return fail(403, { error: 'Forbidden' });
@@ -136,10 +143,13 @@ export const actions: Actions = {
 		}
 
 		// Delete the friendship
-		const { error } = await supabase.from('friendships').delete().eq('id', friendshipId);
+		const { error: deleteError } = await supabase
+			.from('friendships')
+			.delete()
+			.eq('id', friendshipId);
 
-		if (error) {
-			console.error('Error deleting friendship:', error);
+		if (deleteError) {
+			console.error('Error deleting friendship:', deleteError);
 			return fail(500, { error: 'Failed to delete friendship' });
 		}
 

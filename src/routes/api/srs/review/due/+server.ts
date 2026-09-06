@@ -122,7 +122,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		//
 		// Ces deux champs vivent dans `srs_card_stats`, indexée par utilisateur et
 		// par carte. Une seule requête groupée suffit.
-		const { data: statsCartes } = await supabase
+		const { data: statsCartes, error: statsCartesError } = await supabase
 			.from('srs_card_stats')
 			.select('card_reference_id, total_reviews, last_review')
 			.eq('user_id', user.id)
@@ -130,6 +130,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				'card_reference_id',
 				dueCards.map((c) => c.card_id)
 			);
+
+		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+		// laisse une trace.
+		if (statsCartesError) {
+			console.error('Enrichissement illisible :', statsCartesError);
+		}
 
 		const statsParCarte = new Map(
 			(statsCartes ?? []).map((s) => [

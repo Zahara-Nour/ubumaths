@@ -89,7 +89,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 								lt: vi.fn().mockReturnValue({
 									order: vi.fn().mockReturnValue({
 										limit: vi.fn().mockReturnValue({
-											single: vi.fn().mockResolvedValue({
+											maybeSingle: vi.fn().mockResolvedValue({
 												data: {
 													riddle: { difficulty: 2 }
 												},
@@ -189,7 +189,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 								lt: vi.fn().mockReturnValue({
 									order: vi.fn().mockReturnValue({
 										limit: vi.fn().mockReturnValue({
-											single: vi.fn().mockResolvedValue({
+											maybeSingle: vi.fn().mockResolvedValue({
 												data: { riddle: { difficulty: 3 } },
 												error: null
 											})
@@ -283,7 +283,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 								lt: vi.fn().mockReturnValue({
 									order: vi.fn().mockReturnValue({
 										limit: vi.fn().mockReturnValue({
-											single: vi.fn().mockResolvedValue({
+											maybeSingle: vi.fn().mockResolvedValue({
 												data: null, // No previous riddle
 												error: null
 											})
@@ -357,7 +357,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 							lt: vi.fn().mockReturnValue({
 								order: vi.fn().mockReturnValue({
 									limit: vi.fn().mockReturnValue({
-										single: vi.fn().mockResolvedValue({
+										maybeSingle: vi.fn().mockResolvedValue({
 											data: { riddle: { difficulty: 1 } },
 											error: null
 										})
@@ -411,7 +411,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 							lt: vi.fn().mockReturnValue({
 								order: vi.fn().mockReturnValue({
 									limit: vi.fn().mockReturnValue({
-										single: vi.fn().mockResolvedValue({
+										maybeSingle: vi.fn().mockResolvedValue({
 											data: { riddle: { difficulty: 1 } },
 											error: null
 										})
@@ -462,7 +462,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 							lt: vi.fn().mockReturnValue({
 								order: vi.fn().mockReturnValue({
 									limit: vi.fn().mockReturnValue({
-										single: vi.fn().mockResolvedValue({
+										maybeSingle: vi.fn().mockResolvedValue({
 											data: { riddle: { difficulty: 1 } },
 											error: null
 										})
@@ -552,7 +552,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 								lt: vi.fn().mockReturnValue({
 									order: vi.fn().mockReturnValue({
 										limit: vi.fn().mockReturnValue({
-											single: vi.fn().mockResolvedValue({
+											maybeSingle: vi.fn().mockResolvedValue({
 												data: { riddle: { difficulty: 2 } },
 												error: null
 											})
@@ -620,7 +620,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 							lt: vi.fn().mockReturnValue({
 								order: vi.fn().mockReturnValue({
 									limit: vi.fn().mockReturnValue({
-										single: vi.fn().mockResolvedValue({
+										maybeSingle: vi.fn().mockResolvedValue({
 											data: { riddle: { difficulty: 1 } },
 											error: null
 										})
@@ -672,7 +672,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 							lt: vi.fn().mockReturnValue({
 								order: vi.fn().mockReturnValue({
 									limit: vi.fn().mockReturnValue({
-										single: vi.fn().mockResolvedValue({
+										maybeSingle: vi.fn().mockResolvedValue({
 											data: { riddle: { difficulty: 1 } },
 											error: null
 										})
@@ -728,7 +728,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 							lt: vi.fn().mockReturnValue({
 								order: vi.fn().mockReturnValue({
 									limit: vi.fn().mockReturnValue({
-										single: vi.fn().mockResolvedValue({
+										maybeSingle: vi.fn().mockResolvedValue({
 											data: { riddle: { difficulty: 1 } },
 											error: null
 										})
@@ -787,7 +787,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 							lt: vi.fn().mockReturnValue({
 								order: vi.fn().mockReturnValue({
 									limit: vi.fn().mockReturnValue({
-										single: vi.fn().mockResolvedValue({
+										maybeSingle: vi.fn().mockResolvedValue({
 											data: { riddle: { difficulty: 1 } },
 											error: null
 										})
@@ -843,7 +843,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 							lt: vi.fn().mockReturnValue({
 								order: vi.fn().mockReturnValue({
 									limit: vi.fn().mockReturnValue({
-										single: vi.fn().mockResolvedValue({
+										maybeSingle: vi.fn().mockResolvedValue({
 											data: { riddle: { difficulty: 1 } },
 											error: null
 										})
@@ -950,7 +950,7 @@ describe('checkAndAutoSelectToday', () => {
 							lt: vi.fn().mockReturnValue({
 								order: vi.fn().mockReturnValue({
 									limit: vi.fn().mockReturnValue({
-										single: vi.fn().mockResolvedValue({
+										maybeSingle: vi.fn().mockResolvedValue({
 											data: { riddle: { difficulty: 1 } },
 											error: null
 										})
@@ -997,7 +997,7 @@ describe('checkAndAutoSelectToday', () => {
 						lt: vi.fn().mockReturnValue({
 							order: vi.fn().mockReturnValue({
 								limit: vi.fn().mockReturnValue({
-									single: vi.fn().mockResolvedValue({
+									maybeSingle: vi.fn().mockResolvedValue({
 										data: { riddle: { difficulty: 1 } },
 										error: null
 									})

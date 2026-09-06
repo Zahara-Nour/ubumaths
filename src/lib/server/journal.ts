@@ -257,10 +257,17 @@ export async function getJournalEntriesForWeek(
 	}
 
 	// Get class schedule for this class (to know which days have classes)
-	const { data: schedules } = await supabase
+	const { data: schedules, error: schedulesError } = await supabase
 		.from('class_schedules')
 		.select('day_of_week')
 		.eq('class_id', classId);
+
+	// Sans l'emploi du temps, aucun jour n'est « jour de cours » : le cahier de
+	// texte se présente vide, comme si la classe n'avait jamais eu lieu.
+	if (schedulesError) {
+		console.error('[journal] Emploi du temps illisible :', schedulesError);
+		throw new Error(schedulesError.message);
+	}
 
 	const scheduledDays = new Set((schedules || []).map((s) => s.day_of_week));
 

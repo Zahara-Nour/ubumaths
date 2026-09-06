@@ -63,12 +63,18 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		const assignmentsWithDetails = await Promise.all(
 			(assignments || []).map(async (assignment) => {
 				// Get student profile - filter by test mode
-				const { data: student } = await supabase
+				const { data: student, error: studentError } = await supabase
 					.from('profiles')
 					.select('id, firstname, lastname, email, avatar_url, is_test')
 					.eq('id', assignment.assigned_to)
 					.eq('is_test', isTestMode)
 					.single();
+
+				// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
+				// doit pas se confondre avec une donnée réellement vide.
+				if (studentError && studentError.code !== 'PGRST116') {
+					console.error('Contexte illisible :', studentError);
+				}
 
 				// Check if student has the deck copy
 				// Look for any assigned deck with the same name for this student
@@ -94,10 +100,16 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 				// Get stats for student's deck if it exists
 				let deckStats = null;
 				if (studentDeck) {
-					const { data: stats } = await supabase.rpc('get_deck_stats', {
+					const { data: stats, error: statsError } = await supabase.rpc('get_deck_stats', {
 						p_user_id: assignment.assigned_to,
 						p_deck_id: studentDeck.id
 					});
+
+					// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+					// laisse une trace.
+					if (statsError) {
+						console.error('Enrichissement illisible :', statsError);
+					}
 
 					deckStats = stats?.[0] || null;
 				}

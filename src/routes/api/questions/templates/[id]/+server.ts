@@ -217,11 +217,19 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 	try {
 		// Check if template exists first
-		const { data: existing } = await locals.supabase
+		const { data: existing, error: existingError } = await locals.supabase
 			.from('question_templates')
 			.select('id')
 			.eq('id', id)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+		// panne prenait le même visage et faisait conclure « rien ici », donc créer
+		// par-dessus ce qu'on n'avait simplement pas su lire.
+		if (existingError && existingError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', existingError);
+			throw error(500, 'Impossible de vérifier l’état actuel');
+		}
 
 		if (!existing) {
 			throw error(404, 'Template not found');

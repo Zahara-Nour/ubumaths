@@ -38,17 +38,24 @@ export async function loadClassCompetenceExport(
 	className: string
 ): Promise<ClassCompetenceExportData> {
 	// 1. Active students of the class with their names.
-	const { data: members } = await supabase
+	// Un export tronqué a l'apparence d'un export complet : le professeur
+	// transmet un bilan où des élèves ou des compétences manquent, sans le
+	// savoir. On échoue plutôt que de produire un document faux.
+	const { data: members, error: membersError } = await supabase
 		.from('class_members')
 		.select('student_id, profiles:student_id (id, firstname, lastname)')
 		.eq('class_id', classId)
 		.eq('status', 'active');
 
+	if (membersError) throw new Error(`Élèves illisibles : ${membersError.message}`);
+
 	// 2. The six math competences, in display order.
-	const { data: compRows } = await supabase
+	const { data: compRows, error: compRowsError } = await supabase
 		.from('math_competences')
 		.select('id, code, name, display_order')
 		.order('display_order', { ascending: true });
+
+	if (compRowsError) throw new Error(`Compétences illisibles : ${compRowsError.message}`);
 
 	const competenceIdToCode = new Map<string, string>();
 	const competences: ExportCompetence[] = (compRows ?? []).map((c) => {
@@ -69,10 +76,14 @@ export async function loadClassCompetenceExport(
 
 	// 3. Current levels for those students.
 	const studentIds = students.map((s) => s.id);
-	const { data: levelRows } = await supabase
+	const { data: levelRows, error: levelRowsError } = await supabase
 		.from('student_competence_level')
 		.select('student_id, math_competence_id, niveau, task_count, last_recalc_at')
 		.in('student_id', studentIds);
+
+	// Sans les niveaux, l'export sort avec des cases vides — indiscernables d'un
+	// élève réellement non évalué.
+	if (levelRowsError) throw new Error(`Niveaux illisibles : ${levelRowsError.message}`);
 
 	const rowByStudent = new Map<string, ExportStudentRow>();
 	for (const s of students) {

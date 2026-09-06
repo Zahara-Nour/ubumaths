@@ -114,7 +114,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase } }) =>
 export const GET: RequestHandler = async ({ locals: { supabase } }) => {
 	const today = new Date().toISOString().split('T')[0];
 
-	const { data: existing } = await supabase
+	const { data: existing, error: existingError } = await supabase
 		.from('riddle_of_the_day')
 		.select(
 			`
@@ -127,6 +127,13 @@ export const GET: RequestHandler = async ({ locals: { supabase } }) => {
 		// est-elle déjà programmée aujourd'hui ? » ne répondait jamais.
 		.eq('date', today)
 		.single();
+
+	// PGRST116 = aucune énigme programmée aujourd'hui : c'est précisément la
+	// réponse que cette route est censée donner, pas une panne.
+	if (existingError && existingError.code !== 'PGRST116') {
+		console.error('Énigme du jour illisible :', existingError);
+		throw error(500, 'Impossible de vérifier l’énigme du jour');
+	}
 
 	return json({
 		date: today,

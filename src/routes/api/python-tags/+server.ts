@@ -59,18 +59,32 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const { name } = validation.data;
 
 	// Check if tag already exists (case-insensitive)
-	const { data: existing } = await locals.supabase
+	const { data: existing, error: existingError } = await locals.supabase
 		.from('python_tags')
 		.select('id, name')
 		.ilike('name', name)
 		.single();
 
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (existingError && existingError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', existingError);
+		throw error(500, 'Impossible de vérifier l’état actuel');
+	}
+
 	if (existing) {
-		const { data: fullTag } = await locals.supabase
+		const { data: fullTag, error: fullTagError } = await locals.supabase
 			.from('python_tags')
 			.select('id, name, created_by, created_at')
 			.eq('id', existing.id)
 			.single();
+
+		// Relecture de la ligne qu'on vient d'écrire : son échec ne remet pas
+		// l'opération en cause, mais la réponse renvoyée serait incomplète.
+		if (fullTagError && fullTagError.code !== 'PGRST116') {
+			console.error('Relecture impossible :', fullTagError);
+		}
 
 		if (fullTag) {
 			const validated = validateJsonResponse(

@@ -67,19 +67,33 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const { name } = validation.data;
 
 	// Check if tag already exists (case-insensitive)
-	const { data: existing } = await locals.supabase
+	const { data: existing, error: existingError } = await locals.supabase
 		.from('tags')
 		.select('id, name')
 		.ilike('name', name)
 		.single();
 
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (existingError && existingError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', existingError);
+		throw error(500, 'Impossible de vérifier l’état actuel');
+	}
+
 	if (existing) {
 		// Return existing tag instead of creating duplicate
-		const { data: fullTag } = await locals.supabase
+		const { data: fullTag, error: fullTagError } = await locals.supabase
 			.from('tags')
 			.select('id, name, created_by, created_at')
 			.eq('id', existing.id)
 			.single();
+
+		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+		// laisse une trace.
+		if (fullTagError) {
+			console.error('Enrichissement illisible :', fullTagError);
+		}
 
 		if (fullTag) {
 			const validated = validateJsonResponse(

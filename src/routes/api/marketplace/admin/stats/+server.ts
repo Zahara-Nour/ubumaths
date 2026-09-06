@@ -73,56 +73,104 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	if (profile.role === 'teacher') {
 		if (class_id) {
 			// Verify class exists
-			const { data: classData } = await supabase
+			const { data: classData, error: classDataError } = await supabase
 				.from('classes')
 				.select('id')
 				.eq('id', class_id)
 				.single();
+
+			// `.single()` sur zéro ligne rend PGRST116 : la classe n'existe pas, et le
+			// 403 qui suit est légitime. Toute AUTRE panne produisait le même 403,
+			// indiscernable d'un refus mérité — le professeur s'entendait dire qu'il
+			// n'a pas accès à sa propre classe.
+			if (classDataError && classDataError.code !== 'PGRST116') {
+				console.error('Classe illisible :', classDataError);
+				throw error(500, 'Impossible de vérifier la classe');
+			}
 
 			if (!classData) {
 				throw error(403, 'Accès non autorisé à cette classe');
 			}
 
 			// Get students in this specific class
-			const { data: classStudents } = await supabase
+			const { data: classStudents, error: classStudentsError } = await supabase
 				.from('class_members')
 				.select('student_id')
 				.eq('class_id', class_id);
 
+			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
+			// affiche « aucune activité » : un constat, pas une absence de donnée.
+			if (classStudentsError) {
+				console.error('Périmètre d’élèves illisible :', classStudentsError);
+				throw error(500, 'Impossible de déterminer le périmètre');
+			}
+
 			studentIds = classStudents?.map((m: { student_id: string }) => m.student_id) || [];
 		} else {
 			// Get all students in teacher's classes
-			const { data: classMembers } = await supabase.from('class_members').select('student_id');
+			const { data: classMembers, error: classMembersError } = await supabase
+				.from('class_members')
+				.select('student_id');
+
+			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
+			// affiche « aucune activité » : un constat, pas une absence de donnée.
+			if (classMembersError) {
+				console.error('Périmètre d’élèves illisible :', classMembersError);
+				throw error(500, 'Impossible de déterminer le périmètre');
+			}
 
 			studentIds = classMembers?.map((m: { student_id: string }) => m.student_id) || [];
 		}
 	} else if (profile.role === 'admin') {
 		if (class_id) {
 			// Get students in specific class
-			const { data: classData } = await supabase
+			const { data: classData, error: classDataError } = await supabase
 				.from('classes')
 				.select('school_id')
 				.eq('id', class_id)
 				.single();
 
+			// `.single()` sur zéro ligne rend PGRST116 : la classe n'existe pas, et le
+			// 403 qui suit est légitime. Toute AUTRE panne produisait le même 403,
+			// indiscernable d'un refus mérité — le professeur s'entendait dire qu'il
+			// n'a pas accès à sa propre classe.
+			if (classDataError && classDataError.code !== 'PGRST116') {
+				console.error('Classe illisible :', classDataError);
+				throw error(500, 'Impossible de vérifier la classe');
+			}
+
 			if (!classData || classData.school_id !== profile.school_id) {
 				throw error(403, "Cette classe n'appartient pas à votre école");
 			}
 
-			const { data: classStudents } = await supabase
+			const { data: classStudents, error: classStudentsError } = await supabase
 				.from('class_members')
 				.select('student_id')
 				.eq('class_id', class_id);
+
+			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
+			// affiche « aucune activité » : un constat, pas une absence de donnée.
+			if (classStudentsError) {
+				console.error('Périmètre d’élèves illisible :', classStudentsError);
+				throw error(500, 'Impossible de déterminer le périmètre');
+			}
 
 			studentIds = classStudents?.map((m: { student_id: string }) => m.student_id) || [];
 		} else if (profile.school_id) {
 			// Get all students in the school.
 			// `school_id` est nullable : sans école rattachée, la liste reste vide.
-			const { data: schoolStudents } = await supabase
+			const { data: schoolStudents, error: schoolStudentsError } = await supabase
 				.from('profiles')
 				.select('id')
 				.eq('school_id', profile.school_id)
 				.eq('role', 'student');
+
+			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
+			// affiche « aucune activité » : un constat, pas une absence de donnée.
+			if (schoolStudentsError) {
+				console.error('Périmètre d’élèves illisible :', schoolStudentsError);
+				throw error(500, 'Impossible de déterminer le périmètre');
+			}
 
 			studentIds = schoolStudents?.map((s: { id: string }) => s.id) || [];
 		}
@@ -210,10 +258,16 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	// Fetch names for top traders
 	const topTraderIds = topTradersData.map(([id]) => id);
-	const { data: traderProfiles } = await supabase
+	const { data: traderProfiles, error: traderProfilesError } = await supabase
 		.from('profiles')
 		.select('id, firstname, lastname')
 		.in('id', topTraderIds);
+
+	// Enrichissement d'affichage : son absence ne justifie pas de fermer l'écran,
+	// mais elle laisse une trace.
+	if (traderProfilesError) {
+		console.error('Enrichissement illisible :', traderProfilesError);
+	}
 
 	const topTraders = topTradersData.map(([id, count]) => {
 		const profile = traderProfiles?.find(

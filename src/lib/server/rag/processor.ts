@@ -51,12 +51,20 @@ export async function indexDocument(
 		const contentHash = createHash('sha256').update(input.content).digest('hex');
 
 		// Check if document already exists
-		const { data: existingDoc } = await supabase
+		const { data: existingDoc, error: existingDocError } = await supabase
 			.from('rag_documents')
 			.select('id, content_hash')
 			.eq('source_type', input.sourceType)
 			.eq('source_id', input.sourceId || '')
 			.single();
+
+		// PGRST116 = document jamais indexé, cas normal. Une autre panne prenait
+		// le même visage et relançait une indexation complète par-dessus
+		// l'existante, en dupliquant les fragments.
+		if (existingDocError && existingDocError.code !== 'PGRST116') {
+			console.error('[rag] Document existant illisible :', existingDocError);
+			throw new Error(existingDocError.message);
+		}
 
 		if (existingDoc) {
 			// If content hasn't changed, skip re-indexing

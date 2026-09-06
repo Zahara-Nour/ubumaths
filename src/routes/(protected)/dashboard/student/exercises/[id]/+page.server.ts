@@ -36,27 +36,46 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	}
 
 	// Fetch assignment (if any)
-	const { data: assignment } = await locals.supabase
+	const { data: assignment, error: assignmentError } = await locals.supabase
 		.from('exercise_assignments')
 		.select('*')
 		.eq('exercise_id', exerciseId)
 		.or(`student_id.eq.${user.id},assigned_to_type.eq.public`)
 		.maybeSingle();
 
+	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+	// ne doit pas se confondre avec une donnée réellement vide.
+	if (assignmentError && assignmentError.code !== 'PGRST116') {
+		console.error('Contexte illisible :', assignmentError);
+	}
+
 	// Fetch completion
-	const { data: completion } = await locals.supabase
+	const { data: completion, error: completionError } = await locals.supabase
 		.from('exercise_completions')
 		.select('*')
 		.eq('exercise_id', exerciseId)
 		.eq('student_id', user.id)
 		.maybeSingle();
 
+	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+	// ne doit pas se confondre avec une donnée réellement vide.
+	if (completionError && completionError.code !== 'PGRST116') {
+		console.error('Contexte illisible :', completionError);
+	}
+
 	// Get student's active classes (for per_group mode)
-	const { data: classMemberships } = await locals.supabase
+	const { data: classMemberships, error: classMembershipsError } = await locals.supabase
 		.from('class_members')
 		.select('class_id')
 		.eq('student_id', user.id)
 		.eq('status', 'active');
+
+	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+	// panne doit se distinguer d'un refus mérité.
+	if (classMembershipsError && classMembershipsError.code !== 'PGRST116') {
+		console.error('Contrôle d’accès impossible :', classMembershipsError);
+		throw error(500, 'Impossible de vérifier votre accès');
+	}
 
 	const classIds = classMemberships?.map((cm) => cm.class_id) || [];
 

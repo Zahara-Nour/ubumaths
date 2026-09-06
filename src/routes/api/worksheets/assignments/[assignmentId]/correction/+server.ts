@@ -99,11 +99,18 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		// toujours `null`, `isTeacher` toujours `false`, et seul le créateur du
 		// devoir pouvait ouvrir la correction. Échec en mode fermé, mais un
 		// professeur non créateur et les élèves concernés étaient écartés à tort.
-		const { data: profile } = await locals.supabase
+		const { data: profile, error: profileError } = await locals.supabase
 			.from('profiles')
 			.select('role, class_ids')
 			.eq('id', user.id)
 			.single();
+
+		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+		// panne produisait le même refus, indiscernable d'un refus mérité.
+		if (profileError && profileError.code !== 'PGRST116') {
+			console.error('Rôle illisible :', profileError);
+			throw error(500, 'Impossible de vérifier vos droits');
+		}
 
 		const isTeacher = profile?.role === 'teacher' || profile?.role === 'admin';
 		const isAssignmentCreator = assignment.created_by === user.id;
@@ -138,12 +145,20 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		}
 
 		// Get student's worksheet instance
-		const { data: instance } = await locals.supabase
+		const { data: instance, error: instanceError } = await locals.supabase
 			.from('worksheet_instances')
 			.select('*')
 			.eq('worksheet_id', assignment.worksheet_id)
 			.eq('student_id', user.id)
 			.single();
+
+		// PGRST116 = l'élève n'a pas encore d'instance, cas normal traité juste après.
+		// Une autre panne prenait le même visage et masquait la correction d'un devoir
+		// pourtant composé.
+		if (instanceError && instanceError.code !== 'PGRST116') {
+			console.error('Instance illisible :', instanceError);
+			throw error(500, 'Impossible de charger votre copie');
+		}
 
 		// For teachers previewing, we might not have an instance
 		let instanceData: InstanceData;
@@ -159,11 +174,16 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 				generateSimpleInstance(assignment.worksheet as WorksheetWithRelations);
 
 			// Get student name
-			const { data: studentProfile } = await locals.supabase
+			const { data: studentProfile, error: studentProfileError } = await locals.supabase
 				.from('profiles')
 				.select('firstname, lastname')
 				.eq('id', user.id)
 				.single();
+
+			// Le nom n'est qu'un ornement d'affichage : le repli existe déjà.
+			if (studentProfileError && studentProfileError.code !== 'PGRST116') {
+				console.error('Nom illisible :', studentProfileError);
+			}
 
 			if (studentProfile) {
 				studentName = formatStudentName(studentProfile);

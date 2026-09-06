@@ -4,7 +4,7 @@
  * GET - Get completion statistics for a specific exercise (teacher only)
  */
 
-import { json } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getExerciseCompletionStats } from '$lib/server/exercise-assignments';
 import { requireRole } from '$lib/server/middleware/auth';
@@ -24,11 +24,18 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	const { user } = await requireRole(locals, 'teacher');
 
 	// Verify teacher owns the exercise
-	const { data: exercise } = await locals.supabase
+	const { data: exercise, error: exerciseError } = await locals.supabase
 		.from('exercises')
 		.select('created_by')
 		.eq('id', exerciseId)
 		.single();
+
+	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+	// panne doit se distinguer d'un refus mérité.
+	if (exerciseError && exerciseError.code !== 'PGRST116') {
+		console.error('Contrôle d’accès impossible :', exerciseError);
+		throw error(500, 'Impossible de vérifier votre accès');
+	}
 
 	if (!exercise) {
 		return json({ error: 'Exercise not found' }, { status: 404 });

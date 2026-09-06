@@ -69,11 +69,18 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	// Get user profile
-	const { data: profile } = await supabase
+	const { data: profile, error: profileError } = await supabase
 		.from('profiles')
 		.select('role')
 		.eq('id', user.id)
 		.single();
+
+	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+	// panne produisait le même refus, indiscernable d'un refus mérité.
+	if (profileError && profileError.code !== 'PGRST116') {
+		console.error('Rôle illisible :', profileError);
+		return error(500, 'Impossible de vérifier vos droits');
+	}
 
 	if (!profile) {
 		return error(404, 'Profil non trouvé');
@@ -164,11 +171,18 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 
 		// Verify the class exists if changing class_id
 		if (profile.role === 'teacher' && newScope === 'class') {
-			const { data: classData } = await supabase
+			const { data: classData, error: classDataError } = await supabase
 				.from('classes')
 				.select('id')
 				.eq('id', newClassId!)
 				.single();
+
+			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+			// panne doit se distinguer d'un refus mérité.
+			if (classDataError && classDataError.code !== 'PGRST116') {
+				console.error('Contrôle d’accès impossible :', classDataError);
+				return error(500, 'Impossible de vérifier votre accès');
+			}
 
 			if (!classData) {
 				return error(403, 'Vous ne pouvez utiliser que vos propres classes');
@@ -212,11 +226,18 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	}
 
 	// Get user profile
-	const { data: profile } = await supabase
+	const { data: profile, error: profileError } = await supabase
 		.from('profiles')
 		.select('role')
 		.eq('id', user.id)
 		.single();
+
+	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+	// panne produisait le même refus, indiscernable d'un refus mérité.
+	if (profileError && profileError.code !== 'PGRST116') {
+		console.error('Rôle illisible :', profileError);
+		return error(500, 'Impossible de vérifier vos droits');
+	}
 
 	if (!profile) {
 		return error(404, 'Profil non trouvé');

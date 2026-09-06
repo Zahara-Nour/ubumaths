@@ -930,12 +930,20 @@ export async function syncSingleCourse(
 			result.synced = 1;
 
 			// Get course ID from database and sync topics, coursework, and materials
-			const { data: dbCourse } = await supabase
+			const { data: dbCourse, error: dbCourseError } = await supabase
 				.from('google_classroom_courses')
 				.select('id')
 				.eq('teacher_id', teacherId)
 				.eq('google_course_id', googleCourseId)
 				.single();
+
+			// `.single()` sur zéro ligne rend PGRST116 : le cours n'est pas encore
+			// enregistré, cas normal. Toute autre panne faisait sauter en silence la
+			// synchronisation des thèmes, travaux et supports de ce cours.
+			if (dbCourseError && dbCourseError.code !== 'PGRST116') {
+				console.error('[google/sync] Cours illisible :', dbCourseError);
+				throw new Error(dbCourseError.message);
+			}
 
 			if (dbCourse) {
 				// Sync topics first

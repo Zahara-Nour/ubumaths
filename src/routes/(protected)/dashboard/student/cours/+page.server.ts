@@ -63,11 +63,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Resolve the sole teacher once for display attribution.
-	const { data: soleTeacher } = await locals.supabase
+	const { data: soleTeacher, error: soleTeacherError } = await locals.supabase
 		.from('profiles')
 		.select('id, full_name')
 		.eq('role', 'teacher')
 		.maybeSingle();
+
+	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+	// ne doit pas se confondre avec une donnée réellement vide.
+	if (soleTeacherError && soleTeacherError.code !== 'PGRST116') {
+		console.error('Contexte illisible :', soleTeacherError);
+	}
 
 	// Build class info map and set of enrolled class IDs
 	const classMap = new Map<string, { className: string; teacherName: string }>();

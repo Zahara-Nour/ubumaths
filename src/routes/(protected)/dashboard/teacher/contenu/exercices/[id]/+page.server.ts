@@ -43,10 +43,15 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		if (tree.length > 0) curriculumByGrade.push({ grade: g, tree });
 	}
 
-	const { data: tagRows } = await locals.supabase
+	const { data: tagRows, error: tagRowsError } = await locals.supabase
 		.from('exercise_curriculum_points')
 		.select('point_id')
 		.eq('exercise_id', id);
+
+	if (tagRowsError) {
+		console.error('Lecture impossible :', tagRowsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 	const taggedPointIds = (tagRows ?? []).map((r) => r.point_id);
 
 	return {

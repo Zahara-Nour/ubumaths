@@ -21,22 +21,37 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	}
 
 	// Check access to template
-	const { data: template } = await supabase
+	const { data: template, error: templateError } = await supabase
 		.from('message_templates')
 		.select('created_by, scope')
 		.eq('id', id)
 		.single();
+
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (templateError && templateError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', templateError);
+		return error(500, 'Impossible de vérifier l’état actuel');
+	}
 
 	if (!template) {
 		return error(404, 'Template non trouvé');
 	}
 
 	// Get user profile
-	const { data: profile } = await supabase
+	const { data: profile, error: profileError } = await supabase
 		.from('profiles')
 		.select('role')
 		.eq('id', user.id)
 		.single();
+
+	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+	// panne produisait le même refus, indiscernable d'un refus mérité.
+	if (profileError && profileError.code !== 'PGRST116') {
+		console.error('Rôle illisible :', profileError);
+		return error(500, 'Impossible de vérifier vos droits');
+	}
 
 	// Check permissions
 	const isAdmin = profile?.role === 'admin';
@@ -95,22 +110,37 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const body = validation.data;
 
 	// Check template ownership
-	const { data: template } = await supabase
+	const { data: template, error: templateError } = await supabase
 		.from('message_templates')
 		.select('created_by')
 		.eq('id', id)
 		.single();
+
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (templateError && templateError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', templateError);
+		return error(500, 'Impossible de vérifier l’état actuel');
+	}
 
 	if (!template) {
 		return error(404, 'Template non trouvé');
 	}
 
 	// Get user profile
-	const { data: profile } = await supabase
+	const { data: profile, error: profileError } = await supabase
 		.from('profiles')
 		.select('role')
 		.eq('id', user.id)
 		.single();
+
+	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+	// panne produisait le même refus, indiscernable d'un refus mérité.
+	if (profileError && profileError.code !== 'PGRST116') {
+		console.error('Rôle illisible :', profileError);
+		return error(500, 'Impossible de vérifier vos droits');
+	}
 
 	const isAdmin = profile?.role === 'admin';
 	const isOwner = template.created_by === user.id;

@@ -39,13 +39,21 @@ export async function loadOrInitCardStats(
 	cardReferenceType: 'template' | 'custom',
 	cardReferenceId: string
 ): Promise<CardStats> {
-	const { data: existing } = await supabase
+	const { data: existing, error: existingError } = await supabase
 		.from('srs_card_stats')
 		.select('*')
 		.eq('user_id', userId)
 		.eq('card_reference_type', cardReferenceType)
 		.eq('card_reference_id', cardReferenceId)
 		.maybeSingle();
+
+	// Ces statistiques portent tout l'historique de révision de la carte. Une
+	// panne les rendait `null`, donc « carte jamais vue » : l'algorithme
+	// repartait de zéro et l'élève perdait sa progression sur cette carte.
+	if (existingError) {
+		console.error('[srs] Statistiques de carte illisibles :', existingError);
+		throw new Error(existingError.message);
+	}
 
 	if (existing) {
 		return {

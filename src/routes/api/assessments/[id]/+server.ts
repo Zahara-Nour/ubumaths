@@ -44,7 +44,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Students can only view published assessments assigned to them
 	if (profile?.role === 'student') {
 		// Check if assessment is assigned
-		const { data: assignment } = await locals.supabase
+		const { data: assignment, error: assignmentError } = await locals.supabase
 			.from('assessment_assignments')
 			.select('id')
 			.eq('assessment_id', id)
@@ -52,6 +52,13 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				`student_id.eq.${user.id},class_id.in.(${await getStudentClassIds(locals.supabase, user.id)})`
 			)
 			.single();
+
+		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+		// panne doit se distinguer d'un refus mérité.
+		if (assignmentError && assignmentError.code !== 'PGRST116') {
+			console.error('Contrôle d’accès impossible :', assignmentError);
+			throw error(500, 'Impossible de vérifier votre accès');
+		}
 
 		if (!assignment || result.data.status !== 'published') {
 			throw error(403, 'Forbidden');
@@ -131,10 +138,15 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
  * Helper: Get student's class IDs
  */
 async function getStudentClassIds(supabase: SupabaseClient, studentId: string): Promise<string> {
-	const { data } = await supabase
+	const { data, error: dataError } = await supabase
 		.from('class_members')
 		.select('class_id')
 		.eq('student_id', studentId);
+
+	if (dataError) {
+		console.error('Lecture impossible :', dataError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	return data?.map((cm: { class_id: string }) => cm.class_id).join(',') || '';
 }

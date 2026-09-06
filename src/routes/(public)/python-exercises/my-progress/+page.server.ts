@@ -52,11 +52,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// 2. My classes (active membership) — for the assignment scope below
-	const { data: myClassesRaw } = await supabase
+	const { data: myClassesRaw, error: myClassesRawError } = await supabase
 		.from('class_members')
 		.select('class_id')
 		.eq('student_id', user.id)
 		.eq('status', 'active');
+
+	// Cette liste borne la portée du classement. Vidée par une panne, elle
+	// affiche un classement amputé sans le dire.
+	if (myClassesRawError) {
+		console.error('Périmètre illisible :', myClassesRawError);
+		throw error(500, 'Impossible de déterminer le périmètre');
+	}
 	const myClassIds = (myClassesRaw ?? []).map((m) => m.class_id as string);
 
 	// 3. Assignments touching me: directly OR via one of my classes.
@@ -64,20 +71,30 @@ export const load: PageServerLoad = async ({ locals }) => {
 		myClassIds.length > 0
 			? `student_id.eq.${user.id},class_id.in.(${myClassIds.join(',')})`
 			: `student_id.eq.${user.id}`;
-	const { data: assignmentsRaw } = await supabase
+	const { data: assignmentsRaw, error: assignmentsRawError } = await supabase
 		.from('python_exercise_assignments')
 		.select('id, exercise_id, class_id, student_id')
 		.or(orFilter);
+
+	if (assignmentsRawError) {
+		console.error('Lecture impossible :', assignmentsRawError);
+		throw error(500, 'Impossible de charger les données');
+	}
 	const assignedExoIds = new Set(
 		(assignmentsRaw ?? []).map((a) => a.exercise_id as string).filter(Boolean)
 	);
 
 	// 4. My submissions across all exos (group + count + last in JS).
-	const { data: submissionsRaw } = await supabase
+	const { data: submissionsRaw, error: submissionsRawError } = await supabase
 		.from('python_exercise_submissions')
 		.select('exercise_id, is_correct, attempt_number, created_at')
 		.eq('student_id', user.id)
 		.order('created_at', { ascending: false });
+
+	if (submissionsRawError) {
+		console.error('Lecture impossible :', submissionsRawError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	const submissionsByExo = new Map<
 		string,
@@ -97,10 +114,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const submittedExoIds = new Set(submissionsByExo.keys());
 
 	// 5. My mastery rows
-	const { data: masteryRaw } = await supabase
+	const { data: masteryRaw, error: masteryRawError } = await supabase
 		.from('python_exercise_mastery')
 		.select('exercise_id, status')
 		.eq('student_id', user.id);
+
+	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+	// laisse une trace.
+	if (masteryRawError) {
+		console.error('Enrichissement illisible :', masteryRawError);
+	}
 
 	type DbMasteryStatus = 'mastered' | 'needs_review';
 	const masteryByExo = new Map<string, DbMasteryStatus>(
@@ -116,10 +139,15 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// 7. Fetch exo details in one round-trip.
-	const { data: exosRaw } = await supabase
+	const { data: exosRaw, error: exosRawError } = await supabase
 		.from('python_exercises')
 		.select('id, title, level')
 		.in('id', Array.from(unionExoIds));
+
+	if (exosRawError) {
+		console.error('Lecture impossible :', exosRawError);
+		throw error(500, 'Impossible de charger les données');
+	}
 	const exoById = new Map<string, ExerciseSummary>(
 		(exosRaw ?? []).map((e) => [e.id as string, e as ExerciseSummary])
 	);

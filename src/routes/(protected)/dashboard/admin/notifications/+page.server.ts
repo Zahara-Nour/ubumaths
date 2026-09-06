@@ -1,4 +1,4 @@
-import { fail } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import {
 	getCreatedNotifications,
@@ -21,18 +21,28 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { supabase, adminUserId } = await requireAdmin(locals);
 
 	// Get all classes
-	const { data: classes } = await supabase
+	const { data: classes, error: classesError } = await supabase
 		.from('classes')
 		.select('id, name')
 		.eq('is_active', true)
 		.order('name');
 
+	if (classesError) {
+		console.error('Lecture impossible :', classesError);
+		throw error(500, 'Impossible de charger les données');
+	}
+
 	// Get all users (for specific user targeting)
-	const { data: users } = await supabase
+	const { data: users, error: usersError } = await supabase
 		.from('profiles')
 		.select('id, firstname, lastname, role, email')
 		.order('role', { ascending: false })
 		.order('lastname');
+
+	if (usersError) {
+		console.error('Lecture impossible :', usersError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	// Get admin's created notifications with stats
 	const notificationStats = await getCreatedNotifications(supabase, adminUserId);

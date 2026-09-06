@@ -655,11 +655,18 @@ export async function getUserContext(
 	if (!userId) return {};
 
 	try {
-		const { data: profile } = await supabase
+		const { data: profile, error } = await supabase
 			.from('profiles')
 			.select('role')
 			.eq('id', userId)
 			.single();
+
+		// Le rôle n'enrichit qu'un rapport d'erreur : son absence ne doit pas
+		// empêcher de le remonter. Elle se signale sans bloquer.
+		if (error) {
+			console.error('[errorMonitoring] Rôle illisible :', error);
+			return { user_id: userId };
+		}
 
 		if (!profile) return { user_id: userId };
 

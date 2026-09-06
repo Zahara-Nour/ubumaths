@@ -88,11 +88,16 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Competen
 		}
 	}
 
-	const { data: obsState } = await locals.supabase
+	const { data: obsState, error: obsStateError } = await locals.supabase
 		.from('student_observable_state')
 		.select('observable_id, is_acquis, count_plus, count_minus')
 		.eq('student_id', user.id)
 		.in('observable_id', allSkillIds);
+
+	if (obsStateError) {
+		console.error('Lecture impossible :', obsStateError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	const stateBySkill = new Map<
 		string,
@@ -109,12 +114,18 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Competen
 	}
 
 	// 3. Verdict
-	const { data: level } = await locals.supabase
+	const { data: level, error: levelError } = await locals.supabase
 		.from('student_competence_level')
 		.select('niveau, validated_observables, missing_for_next, task_count')
 		.eq('student_id', user.id)
 		.eq('math_competence_id', comp.id)
 		.maybeSingle();
+
+	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+	// ne doit pas se confondre avec une donnée réellement vide.
+	if (levelError && levelError.code !== 'PGRST116') {
+		console.error('Contexte illisible :', levelError);
+	}
 
 	const subdimensions: SubdimensionWithObservables[] = (comp.subdimensions ?? [])
 		.slice()

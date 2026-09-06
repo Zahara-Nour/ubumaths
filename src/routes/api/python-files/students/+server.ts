@@ -123,7 +123,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const filesWithClasses = await Promise.all(
 		(files ?? []).map(async (file) => {
 			// Get classes where this student is enrolled
-			const { data: studentClasses } = await locals.supabase
+			const { data: studentClasses, error: studentClassesError } = await locals.supabase
 				.from('class_members')
 				.select(
 					`
@@ -136,6 +136,12 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				)
 				.eq('student_id', file.owner_id)
 				.eq('status', 'active');
+
+			// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+			// laisse une trace.
+			if (studentClassesError) {
+				console.error('Enrichissement illisible :', studentClassesError);
+			}
 
 			return {
 				...file,

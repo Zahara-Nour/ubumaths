@@ -113,10 +113,16 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const exerciseCountMap = new Map<string, number>();
 
 		if (worksheetIds.length > 0) {
-			const { data: exerciseCounts } = await locals.supabase
+			const { data: exerciseCounts, error: exerciseCountsError } = await locals.supabase
 				.from('worksheet_exercises')
 				.select('worksheet_id')
 				.in('worksheet_id', worksheetIds);
+
+			// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+			// laisse une trace.
+			if (exerciseCountsError) {
+				console.error('Enrichissement illisible :', exerciseCountsError);
+			}
 
 			if (exerciseCounts) {
 				// Count exercises per worksheet

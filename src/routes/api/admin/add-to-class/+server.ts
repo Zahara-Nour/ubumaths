@@ -19,12 +19,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { userId, classId } = validation.data;
 
 	// Check if already in class
-	const { data: existing } = await supabase
+	const { data: existing, error: existingError } = await supabase
 		.from('class_members')
 		.select('id')
 		.eq('student_id', userId)
 		.eq('class_id', classId)
 		.single();
+
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (existingError && existingError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', existingError);
+		throw error(500, 'Impossible de vérifier l’état actuel');
+	}
 
 	if (existing) {
 		return json({ error: 'User is already in this class' }, { status: 400 });

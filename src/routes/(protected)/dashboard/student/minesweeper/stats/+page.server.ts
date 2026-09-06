@@ -149,12 +149,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	try {
 		// Fetch school timezone and week config
-		const { data: schoolData } = await supabase
+		const { data: schoolData, error: schoolDataError } = await supabase
 			.from('class_members')
 			.select('classes(schools(timezone, timetable))')
 			.eq('student_id', user.id)
 			.limit(1)
 			.single();
+
+		// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+		// ne doit pas se confondre avec une donnée réellement vide.
+		if (schoolDataError && schoolDataError.code !== 'PGRST116') {
+			console.error('Contexte illisible :', schoolDataError);
+		}
 
 		const school = (
 			schoolData?.classes as unknown as {
@@ -170,11 +176,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 		const triggerHour = getCronTriggerLocalHour(schoolTimezone);
 
 		// Fetch leaderboard data for this student
-		const { data: rankData } = await supabase
+		const { data: rankData, error: rankDataError } = await supabase
 			.from('minesweeper_leaderboard')
 			.select('avg_top_10, top_games_count')
 			.eq('student_id', user.id)
 			.single();
+
+		// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+		// ne doit pas se confondre avec une donnée réellement vide.
+		if (rankDataError && rankDataError.code !== 'PGRST116') {
+			console.error('Contexte illisible :', rankDataError);
+		}
 
 		// Compute rank among classified students (>= 10 games, excluding teachers)
 		let classifiedRank: number | null = null;

@@ -60,7 +60,16 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// Fetch assessment statistics (direct DB query, no cache)
-	const { data: statistics } = await getAssessmentStatistics(locals.supabase, id, isTestMode);
+	const { data: statistics, error: statisticsError } = await getAssessmentStatistics(
+		locals.supabase,
+		id,
+		isTestMode
+	);
+
+	if (statisticsError) {
+		console.error('Lecture impossible :', statisticsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	return {
 		assessment,

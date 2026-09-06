@@ -108,13 +108,18 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		display_order: number;
 	}[] = [];
 	if (entry) {
-		const { data: cov } = await locals.supabase
+		const { data: cov, error: covError } = await locals.supabase
 			.from('journal_entry_points')
 			.select('point_id, source')
 			.eq('entry_id', entry.id);
+
+		if (covError) {
+			console.error('Lecture impossible :', covError);
+			throw error(500, 'Impossible de charger les données');
+		}
 		coveredPoints = (cov ?? []) as { point_id: string; source: string }[];
 
-		const { data: acts } = await locals.supabase
+		const { data: acts, error: actsError } = await locals.supabase
 			.from('journal_entry_activities')
 			.select(
 				'id, kind, exercise_id, question_template_id, assessment_id, chapter_id, textbook_ref, label, display_order'
@@ -122,18 +127,29 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			.eq('entry_id', entry.id)
 			.order('display_order', { ascending: true })
 			.order('created_at', { ascending: true });
+
+		if (actsError) {
+			console.error('Lecture impossible :', actsError);
+			throw error(500, 'Impossible de charger les données');
+		}
 		activities = (acts ?? []) as typeof activities;
 	}
 
 	// Exercises selectable for this class's grade (for the activity picker).
 	let exerciseOptions: { value: string; label: string }[] = [];
 	if (classData.grade) {
-		const { data: exs } = await locals.supabase
+		const { data: exs, error: exsError } = await locals.supabase
 			.from('exercises')
 			.select('id, title, slug, topic')
 			.contains('grades', [classData.grade])
 			.order('title', { ascending: true })
 			.limit(500);
+
+		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+		// laisse une trace.
+		if (exsError) {
+			console.error('Enrichissement illisible :', exsError);
+		}
 		exerciseOptions = (exs ?? []).map((e) => ({
 			value: e.id,
 			label: e.title || e.topic || e.slug || 'Exercice sans titre'

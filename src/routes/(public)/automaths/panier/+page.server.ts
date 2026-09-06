@@ -26,11 +26,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 	let userRole: string | null = null;
 
 	if (user) {
-		const { data: profile } = await supabase
+		const { data: profile, error: profileError } = await supabase
 			.from('profiles')
 			.select('role')
 			.eq('id', user.id)
 			.single();
+
+		// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
+		// doit pas se confondre avec une donnée réellement vide.
+		if (profileError && profileError.code !== 'PGRST116') {
+			console.error('Contexte illisible :', profileError);
+		}
 
 		userRole = profile?.role || null;
 	}

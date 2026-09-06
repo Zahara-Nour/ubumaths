@@ -36,7 +36,17 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const templateId = idValidation.data;
 
 	// Verify access
-	const { data: template } = await getChapterTemplate(templateId, locals.supabase);
+	const { data: template, error: templateError } = await getChapterTemplate(
+		templateId,
+		locals.supabase
+	);
+
+	// Le helper rend `{ data, error }` : sans cette garde, une panne de lecture
+	// se présentait comme un modèle inexistant (404).
+	if (templateError) {
+		console.error('Modèle illisible :', templateError);
+		throw error(500, 'Impossible de vérifier le modèle');
+	}
 	if (!template) {
 		throw error(404, 'Template not found');
 	}
@@ -84,7 +94,17 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const templateId = idValidation.data;
 
 	// Verify ownership
-	const { data: existing } = await getChapterTemplate(templateId, locals.supabase);
+	const { data: existing, error: existingError } = await getChapterTemplate(
+		templateId,
+		locals.supabase
+	);
+
+	// Le helper rend `{ data, error }` : sans cette garde, une panne de lecture
+	// se présentait comme un modèle inexistant (404).
+	if (existingError) {
+		console.error('Modèle illisible :', existingError);
+		throw error(500, 'Impossible de vérifier le modèle');
+	}
 	if (!existing) {
 		throw error(404, 'Template not found');
 	}

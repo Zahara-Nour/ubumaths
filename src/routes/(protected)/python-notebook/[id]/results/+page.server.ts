@@ -82,11 +82,18 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	// 3. Authz: author OR has assigned this notebook.
 	// .eq('shared_by', user.id) is the SOLE authz gate for non-authors.
-	const { data: ownAssignments } = await supabase
+	const { data: ownAssignments, error: ownAssignmentsError } = await supabase
 		.from('python_notebook_assignments')
 		.select('id, class_id')
 		.eq('notebook_id', notebookId)
 		.eq('shared_by', user.id);
+
+	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+	// panne doit se distinguer d'un refus mérité.
+	if (ownAssignmentsError && ownAssignmentsError.code !== 'PGRST116') {
+		console.error('Contrôle d’accès impossible :', ownAssignmentsError);
+		throw error(500, 'Impossible de vérifier votre accès');
+	}
 
 	const isAuthor = notebook.author_id === user.id;
 	const hasAssignedIt = (ownAssignments ?? []).length > 0;
@@ -108,7 +115,16 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		}));
 
 	// 5. Teacher's classes (for the class-filter dropdown + scoping students)
-	const { data: teacherClassesRaw } = await supabase.from('classes').select('id, name');
+	const { data: teacherClassesRaw, error: teacherClassesRawError } = await supabase
+		.from('classes')
+		.select('id, name');
+
+	// Cette liste borne la portée du classement. Vidée par une panne, elle
+	// affiche un classement amputé sans le dire.
+	if (teacherClassesRawError) {
+		console.error('Périmètre illisible :', teacherClassesRawError);
+		throw error(500, 'Impossible de déterminer le périmètre');
+	}
 	const teacherClasses: TeacherClass[] = teacherClassesRaw ?? [];
 	const teacherClassIds = teacherClasses.map((c) => c.id);
 
@@ -147,20 +163,30 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// 7. Profiles for those students
-	const { data: profilesRaw } = await supabase
+	const { data: profilesRaw, error: profilesRawError } = await supabase
 		.from('profiles')
 		.select('id, firstname, lastname, email')
 		.in('id', studentIdsArr);
+
+	if (profilesRawError) {
+		console.error('Lecture impossible :', profilesRawError);
+		throw error(500, 'Impossible de charger les données');
+	}
 	const profilesById = new Map((profilesRaw ?? []).map((p) => [p.id, p as StudentRow['student']]));
 
 	// 8. Checkpoint runs for those students on this notebook.
-	const { data: runsRaw } = await supabase
+	const { data: runsRaw, error: runsRawError } = await supabase
 		.from('python_notebook_checkpoint_runs')
 		.select(
 			'user_id, cell_id, status, attempt_count, first_attempted_at, succeeded_at, hint_revealed'
 		)
 		.eq('notebook_id', notebookId)
 		.in('user_id', studentIdsArr);
+
+	if (runsRawError) {
+		console.error('Lecture impossible :', runsRawError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	type Run = {
 		user_id: string;

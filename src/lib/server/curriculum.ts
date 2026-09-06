@@ -87,22 +87,29 @@ export async function getCurriculumTree(
 	grade: string,
 	{ includeArchived = false }: { includeArchived?: boolean } = {}
 ): Promise<CurriculumTreeTheme[]> {
-	const { data: themes } = await supabase
+	// L'arbre du programme se lit en trois requêtes. Une branche illisible
+	// disparaissait de l'affichage : le professeur voyait un programme amputé
+	// sans distinction avec un programme non encore saisi.
+	const { data: themes, error: themesError } = await supabase
 		.from('curriculum_themes')
 		.select(THEME_COLS)
 		.eq('grade', grade)
 		.order('display_order', { ascending: true })
 		.order('name', { ascending: true });
+
+	if (themesError) throw new Error(`Thèmes illisibles : ${themesError.message}`);
 	const themeList = (themes ?? []) as CurriculumTheme[];
 	const themeIds = themeList.map((t) => t.id);
 	if (themeIds.length === 0) return [];
 
-	const { data: objectives } = await supabase
+	const { data: objectives, error: objectivesError } = await supabase
 		.from('curriculum_objectives')
 		.select(OBJECTIVE_COLS)
 		.in('theme_id', themeIds)
 		.order('display_order', { ascending: true })
 		.order('name', { ascending: true });
+
+	if (objectivesError) throw new Error(`Objectifs illisibles : ${objectivesError.message}`);
 	const objectiveList = (objectives ?? []) as CurriculumObjective[];
 	const objectiveIds = objectiveList.map((i) => i.id);
 

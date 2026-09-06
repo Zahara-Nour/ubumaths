@@ -909,8 +909,9 @@ describe('Chapter CRUD Functions', () => {
 				error: null
 			});
 
-			// Mock display order lookup (no existing chapters)
-			supabase._mockChain.single.mockResolvedValueOnce({
+			// Le rang suivant se lit avec `maybeSingle` : sur une classe sans
+			// chapitre, l'absence de ligne est normale et non une erreur.
+			supabase._mockChain.maybeSingle.mockResolvedValueOnce({
 				data: null,
 				error: null
 			});
@@ -941,8 +942,9 @@ describe('Chapter CRUD Functions', () => {
 				error: null
 			});
 
-			// Mock existing max display order
-			supabase._mockChain.single.mockResolvedValueOnce({
+			// Le rang suivant se lit avec `maybeSingle` : sur un chapitre encore
+			// vide, l'absence de ligne est normale et non une erreur.
+			supabase._mockChain.maybeSingle.mockResolvedValueOnce({
 				data: { display_order: 5 },
 				error: null
 			});
@@ -1103,8 +1105,7 @@ describe('Document CRUD Functions', () => {
 				fileSize: 1024000
 			};
 
-			// Mock max display order
-			supabase._mockChain.single.mockResolvedValueOnce({
+			supabase._mockChain.maybeSingle.mockResolvedValueOnce({
 				data: null,
 				error: null
 			});
@@ -1131,8 +1132,7 @@ describe('Document CRUD Functions', () => {
 				googleDriveUrl: 'https://drive.google.com/file/d/abc123/view'
 			};
 
-			// Mock max display order
-			supabase._mockChain.single.mockResolvedValueOnce({
+			supabase._mockChain.maybeSingle.mockResolvedValueOnce({
 				data: null,
 				error: null
 			});
@@ -1202,8 +1202,7 @@ describe('Quiz Question Functions', () => {
 
 	describe('addQuizQuestion', () => {
 		it('should add quiz question to chapter', async () => {
-			// Mock max display order
-			supabase._mockChain.single.mockResolvedValueOnce({
+			supabase._mockChain.maybeSingle.mockResolvedValueOnce({
 				data: null,
 				error: null
 			});
@@ -1286,8 +1285,7 @@ describe('Checklist Functions', () => {
 				description: 'Pages 1-10'
 			};
 
-			// Mock max display order
-			supabase._mockChain.single.mockResolvedValueOnce({
+			supabase._mockChain.maybeSingle.mockResolvedValueOnce({
 				data: null,
 				error: null
 			});
@@ -1423,8 +1421,7 @@ describe('Exercise Link Functions', () => {
 
 	describe('linkExercise', () => {
 		it('should link exercise to chapter', async () => {
-			// Mock max display order
-			supabase._mockChain.single.mockResolvedValueOnce({
+			supabase._mockChain.maybeSingle.mockResolvedValueOnce({
 				data: null,
 				error: null
 			});

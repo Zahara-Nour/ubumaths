@@ -81,11 +81,18 @@ async function verifyAssignmentAccess(
 	}
 
 	// Check permissions
-	const { data: profile } = await supabase
+	const { data: profile, error: profileError } = await supabase
 		.from('profiles')
 		.select('role')
 		.eq('id', userId)
 		.single();
+
+	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+	// panne produisait le même refus, indiscernable d'un refus mérité.
+	if (profileError && profileError.code !== 'PGRST116') {
+		console.error('Rôle illisible :', profileError);
+		throw error(500, 'Impossible de vérifier vos droits');
+	}
 
 	const isCreator = assignment.created_by === userId;
 	const isAdmin = profile?.role === 'admin';

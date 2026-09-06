@@ -229,7 +229,21 @@ async function cleanupUserStorage(
 	for (const bucket of buckets) {
 		try {
 			// List files in user's folder (if path-based organization)
-			const { data: files } = await serviceClient.storage.from(bucket).list(userId);
+			const { data: files, error: filesError } = await serviceClient.storage
+				.from(bucket)
+				.list(userId);
+
+			// ⚠️ Sans la liste, aucun fichier n'est supprimé — et le compte l'est. Les
+			// pièces jointes d'un élève mineur survivraient à la suppression de son
+			// compte. On ne peut pas interrompre la suppression ici, mais ce silence-là
+			// doit être visible.
+			if (filesError) {
+				logger.error('Fichiers du compte illisibles, suppression incomplète', {
+					bucket,
+					userId,
+					error: filesError
+				});
+			}
 
 			if (files && files.length > 0) {
 				const filePaths = files.map((f) => `${userId}/${f.name}`);

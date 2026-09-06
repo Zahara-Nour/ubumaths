@@ -43,11 +43,17 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	}
 
 	// Get class info for breadcrumb
-	const { data: classInfo } = await locals.supabase
+	const { data: classInfo, error: classInfoError } = await locals.supabase
 		.from('classes')
 		.select('id, name')
 		.eq('id', chapter.classId)
 		.single();
+
+	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+	// ne doit pas se confondre avec une donnée réellement vide.
+	if (classInfoError && classInfoError.code !== 'PGRST116') {
+		console.error('Contexte illisible :', classInfoError);
+	}
 
 	// Quiz d'un chapitre : hors service, et depuis toujours.
 	//
@@ -75,12 +81,17 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	if (chapter.exercises.length > 0) {
 		const exerciseIds = chapter.exercises.map((e) => e.exerciseId);
-		const { data: exercises } = await locals.supabase
+		const { data: exercises, error: exercisesError } = await locals.supabase
 			.from('exercises')
 			// `exercises` n'a pas de colonne `description` : le champ n'existe pas dans ce
 			// modèle. Les consommateurs le testent avant affichage, donc son absence est sans effet.
 			.select('id, title')
 			.in('id', exerciseIds);
+
+		if (exercisesError) {
+			console.error('Lecture impossible :', exercisesError);
+			throw error(500, 'Impossible de charger les données');
+		}
 
 		if (exercises) {
 			for (const e of exercises) {
@@ -162,11 +173,17 @@ export const actions: Actions = {
 		const chapterQuizQuestionId = formData.get('quizQuestionId') as string;
 
 		// Get the correct answer to check
-		const { data: quizQuestion } = await locals.supabase
+		const { data: quizQuestion, error: quizQuestionError } = await locals.supabase
 			.from('chapter_quiz_questions')
 			.select('question_template_id')
 			.eq('id', chapterQuizQuestionId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
+		if (quizQuestionError && quizQuestionError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', quizQuestionError);
+			return fail(500, { error: 'Lecture impossible' });
+		}
 
 		if (!quizQuestion) {
 			return fail(404, {

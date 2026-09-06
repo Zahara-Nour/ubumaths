@@ -73,17 +73,25 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 	}
 
 	// Duplicate sections
-	const { data: sections } = await locals.supabase
+	const { data: sections, error: sectionsError } = await locals.supabase
 		.from('worksheet_sections')
 		.select('*')
 		.eq('worksheet_id', worksheetId)
 		.order('position');
 
+	// Duplication : une section ou un exercice illisible sort de la copie sans le
+	// dire. La fiche dupliquée serait amputée, et l'écart ne se verrait qu'à
+	// l'usage.
+	if (sectionsError) {
+		console.error('Contenu à dupliquer illisible :', sectionsError);
+		throw error(500, 'Impossible de dupliquer la fiche');
+	}
+
 	if (sections && sections.length > 0) {
 		const sectionMapping: Record<string, string> = {};
 
 		for (const section of sections) {
-			const { data: newSection } = await locals.supabase
+			const { data: newSection, error: newSectionError } = await locals.supabase
 				.from('worksheet_sections')
 				.insert({
 					worksheet_id: duplicate.id,
@@ -95,17 +103,33 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 				.select()
 				.single();
 
+			// Duplication : une section ou un exercice illisible sort de la copie sans le
+			// dire. La fiche dupliquée serait amputée, et l'écart ne se verrait qu'à
+			// l'usage.
+			if (newSectionError) {
+				console.error('Contenu à dupliquer illisible :', newSectionError);
+				throw error(500, 'Impossible de dupliquer la fiche');
+			}
+
 			if (newSection) {
 				sectionMapping[section.id] = newSection.id;
 			}
 		}
 
 		// Duplicate exercises with section mapping
-		const { data: exercises } = await locals.supabase
+		const { data: exercises, error: exercisesError } = await locals.supabase
 			.from('worksheet_exercises')
 			.select('*')
 			.eq('worksheet_id', worksheetId)
 			.order('position');
+
+		// Duplication : une section ou un exercice illisible sort de la copie sans le
+		// dire. La fiche dupliquée serait amputée, et l'écart ne se verrait qu'à
+		// l'usage.
+		if (exercisesError) {
+			console.error('Contenu à dupliquer illisible :', exercisesError);
+			throw error(500, 'Impossible de dupliquer la fiche');
+		}
 
 		if (exercises && exercises.length > 0) {
 			const exerciseInserts = exercises.map((ex) => ({
@@ -123,11 +147,19 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 		}
 	} else {
 		// No sections, duplicate exercises directly
-		const { data: exercises } = await locals.supabase
+		const { data: exercises, error: exercisesError } = await locals.supabase
 			.from('worksheet_exercises')
 			.select('*')
 			.eq('worksheet_id', worksheetId)
 			.order('position');
+
+		// Duplication : une section ou un exercice illisible sort de la copie sans le
+		// dire. La fiche dupliquée serait amputée, et l'écart ne se verrait qu'à
+		// l'usage.
+		if (exercisesError) {
+			console.error('Contenu à dupliquer illisible :', exercisesError);
+			throw error(500, 'Impossible de dupliquer la fiche');
+		}
 
 		if (exercises && exercises.length > 0) {
 			const exerciseInserts = exercises.map((ex) => ({

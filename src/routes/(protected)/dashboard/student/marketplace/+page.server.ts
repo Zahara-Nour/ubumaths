@@ -17,7 +17,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Fetch marketplace configuration
-	const { data: config } = await supabase.from('marketplace_config').select('*').single();
+	const { data: config, error: configError } = await supabase
+		.from('marketplace_config')
+		.select('*')
+		.single();
+
+	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+	// ne doit pas se confondre avec une donnée réellement vide.
+	if (configError && configError.code !== 'PGRST116') {
+		console.error('Contexte illisible :', configError);
+	}
 
 	// Fetch user's active listings count for initial display
 	const { count: myActiveListings } = await supabase

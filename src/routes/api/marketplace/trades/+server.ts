@@ -253,7 +253,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// Check for existing active trade between these users
-	const { data: existingTrade } = await supabase
+	const { data: existingTrade, error: existingTradeError } = await supabase
 		.from('marketplace_trades')
 		.select('id')
 		.or(
@@ -262,6 +262,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.eq('status', 'negotiating')
 		.limit(1)
 		.single();
+
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (existingTradeError && existingTradeError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', existingTradeError);
+		throw error(500, 'Impossible de vérifier l’état actuel');
+	}
 
 	if (existingTrade) {
 		throw error(403, 'Vous avez déjà un échange en cours avec cet ami');

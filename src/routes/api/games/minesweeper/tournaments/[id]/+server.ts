@@ -56,11 +56,19 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 		// Check if this specific tournament needs auto-finalization
 		// (end date passed but still active)
-		const { data: tournamentCheck } = await locals.supabase
+		const { data: tournamentCheck, error: tournamentCheckError } = await locals.supabase
 			.from('minesweeper_tournaments')
 			.select('status, end_date')
 			.eq('id', tournamentId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+		// panne prenait le même visage et faisait conclure « rien ici », donc créer
+		// par-dessus ce qu'on n'avait simplement pas su lire.
+		if (tournamentCheckError && tournamentCheckError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', tournamentCheckError);
+			throw error(500, 'Impossible de vérifier l’état actuel');
+		}
 
 		if (
 			tournamentCheck &&

@@ -175,17 +175,27 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	}
 
 	// Notify both participants of completion
-	const { data: initiatorProfile } = await supabase
+	const { data: initiatorProfile, error: initiatorProfileError } = await supabase
 		.from('profiles')
 		.select('firstname, lastname')
 		.eq('id', trade.initiator_id)
 		.single();
 
-	const { data: partnerProfile } = await supabase
+	// Le nom n'orne que la notification ; le repli « Un élève » existe déjà.
+	if (initiatorProfileError && initiatorProfileError.code !== 'PGRST116') {
+		console.error('Nom illisible :', initiatorProfileError);
+	}
+
+	const { data: partnerProfile, error: partnerProfileError } = await supabase
 		.from('profiles')
 		.select('firstname, lastname')
 		.eq('id', trade.partner_id)
 		.single();
+
+	// Le nom n'orne que la notification ; le repli « Un élève » existe déjà.
+	if (partnerProfileError && partnerProfileError.code !== 'PGRST116') {
+		console.error('Nom illisible :', partnerProfileError);
+	}
 
 	const initiatorName = initiatorProfile
 		? `${initiatorProfile.firstname || ''} ${initiatorProfile.lastname || ''}`.trim() || 'Un eleve'
@@ -200,11 +210,17 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	await notifyTradeCompleted(supabase, trade.partner_id, initiatorName, tradeId);
 
 	// Get the updated trade to return
-	const { data: completedTrade } = await supabase
+	const { data: completedTrade, error: completedTradeError } = await supabase
 		.from('marketplace_trades')
 		.select('*')
 		.eq('id', tradeId)
 		.single();
+
+	// Relecture de la ligne qu'on vient d'écrire : son échec ne remet pas
+	// l'opération en cause, mais la réponse renvoyée serait incomplète.
+	if (completedTradeError && completedTradeError.code !== 'PGRST116') {
+		console.error('Relecture impossible :', completedTradeError);
+	}
 
 	return json({
 		success: true,

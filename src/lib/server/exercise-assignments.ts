@@ -591,11 +591,19 @@ export async function getAssignmentsForStudent(
 	// - Supabase's .or() method still uses parameterized queries internally
 	// - The string is only used to construct the filter logic, not as raw SQL
 	// - This is a documented pattern in Supabase docs for OR conditions
-	const { data: directAssignments } = await fromUnknownTable(supabase, 'exercise_assignments')
+	const { data: directAssignments, error: directAssignmentsError } = await fromUnknownTable(
+		supabase,
+		'exercise_assignments'
+	)
 		.select('*')
 		.in('exercise_id', exerciseIdsForBatch)
 		.eq('is_active', true)
 		.or(`student_id.eq.${studentId},assigned_to_type.eq.public`);
+
+	if (directAssignmentsError) {
+		console.error('Lecture impossible :', directAssignmentsError);
+		throw new Error(directAssignmentsError.message);
+	}
 
 	// Fetch class assignments (requires join with class_members)
 	// SECURITY NOTE: studentId comes from authenticated session (event.locals.user.id)
@@ -607,7 +615,10 @@ export async function getAssignmentsForStudent(
 	// 1. class_members table has index on student_id
 	// 2. Result is a small array of class IDs (typically 1-3 classes per student)
 	// 3. The .in() filter is optimized by Postgres using the class_id index
-	const { data: classAssignments } = await fromUnknownTable(supabase, 'exercise_assignments')
+	const { data: classAssignments, error: classAssignmentsError } = await fromUnknownTable(
+		supabase,
+		'exercise_assignments'
+	)
 		.select('*')
 		.in('exercise_id', exerciseIdsForBatch)
 		.eq('assigned_to_type', 'class')
@@ -621,6 +632,11 @@ export async function getAssignmentsForStudent(
 				.then((res) => res.data?.map((cm) => cm.class_id) || []))
 		]);
 
+	if (classAssignmentsError) {
+		console.error('Lecture impossible :', classAssignmentsError);
+		throw new Error(classAssignmentsError.message);
+	}
+
 	// Combine all assignments
 	const allAssignments = [
 		...(directAssignments || []),
@@ -628,10 +644,18 @@ export async function getAssignmentsForStudent(
 	] as unknown as ExerciseAssignment[];
 
 	// Step 4: Batch-fetch all completions for these exercises
-	const { data: allCompletions } = await fromUnknownTable(supabase, 'exercise_completions')
+	const { data: allCompletions, error: allCompletionsError } = await fromUnknownTable(
+		supabase,
+		'exercise_completions'
+	)
 		.select('*')
 		.in('exercise_id', exerciseIdsForBatch)
 		.eq('student_id', studentId);
+
+	if (allCompletionsError) {
+		console.error('Lecture impossible :', allCompletionsError);
+		throw new Error(allCompletionsError.message);
+	}
 
 	// Step 5: Create lookup maps for O(1) access
 	const assignmentMap = new Map<string, ExerciseAssignment>();
@@ -875,11 +899,21 @@ export async function markExerciseAsViewed(
 	assignmentId?: string
 ): Promise<{ data: ExerciseCompletion | null; error: string | null }> {
 	// Check if completion record exists
-	const { data: existing } = await fromUnknownTable(supabase, 'exercise_completions')
+	const { data: existing, error: existingError } = await fromUnknownTable(
+		supabase,
+		'exercise_completions'
+	)
 		.select('*')
 		.eq('exercise_id', exerciseId)
 		.eq('student_id', studentId)
 		.maybeSingle();
+
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait créer par-dessus.
+	if (existingError && existingError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', existingError);
+		throw new Error(existingError.message);
+	}
 
 	if (existing) {
 		// Update existing record
@@ -950,11 +984,21 @@ export async function markExerciseAsComplete(
 	const now = new Date().toISOString();
 
 	// Check if completion record exists
-	const { data: existing } = await fromUnknownTable(supabase, 'exercise_completions')
+	const { data: existing, error: existingError } = await fromUnknownTable(
+		supabase,
+		'exercise_completions'
+	)
 		.select('*')
 		.eq('exercise_id', exerciseId)
 		.eq('student_id', studentId)
 		.maybeSingle();
+
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait créer par-dessus.
+	if (existingError && existingError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', existingError);
+		throw new Error(existingError.message);
+	}
 
 	if (existing) {
 		// Update existing record

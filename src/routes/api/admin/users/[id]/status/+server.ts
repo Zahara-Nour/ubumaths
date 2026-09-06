@@ -150,10 +150,15 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			});
 
 			// Notify teachers of the student's classes
-			const { data: studentClasses } = await supabase
+			const { data: studentClasses, error: studentClassesError } = await supabase
 				.from('class_members')
 				.select('class_id, classes!inner(id, name, teacher_id)')
 				.eq('student_id', userId);
+
+			if (studentClassesError) {
+				console.error('Lecture impossible :', studentClassesError);
+				throw error(500, 'Impossible de charger les données');
+			}
 
 			if (studentClasses && studentClasses.length > 0) {
 				// Get unique teacher IDs with their class info

@@ -17,11 +17,18 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	const { classRow } = await requireTeacherOfClass(locals, classId);
 
-	const { data: memberRows } = await locals.supabase
+	const { data: memberRows, error: memberRowsError } = await locals.supabase
 		.from('class_members')
 		.select('student_id, profiles!class_members_student_id_fkey(id, firstname, lastname)')
 		.eq('class_id', classId)
 		.eq('status', 'active');
+
+	// Cette liste borne la portée du classement. Vidée par une panne, elle
+	// affiche un classement amputé sans le dire.
+	if (memberRowsError) {
+		console.error('Périmètre illisible :', memberRowsError);
+		throw error(500, 'Impossible de déterminer le périmètre');
+	}
 
 	type MemberRow = {
 		student_id: string;
@@ -38,10 +45,15 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		}))
 		.sort((a, b) => a.display_name.localeCompare(b.display_name, 'fr'));
 
-	const { data: themeRows } = await locals.supabase
+	const { data: themeRows, error: themeRowsError } = await locals.supabase
 		.from('curriculum_themes')
 		.select('id, name, code')
 		.order('display_order', { ascending: true });
+
+	if (themeRowsError) {
+		console.error('Lecture impossible :', themeRowsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	const themes = (themeRows ?? [])
 		.filter((t) => t.code)

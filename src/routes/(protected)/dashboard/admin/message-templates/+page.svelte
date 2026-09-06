@@ -172,9 +172,15 @@
 	}
 
 	async function loadFavorites() {
-		const { data: favoritesData } = await data.supabase
+		const { data: favoritesData, error: favoritesDataError } = await data.supabase
 			.from('user_favorite_templates')
 			.select('template_id');
+
+		// Côté client : le repli d'affichage existe, mais une panne silencieuse
+		// ressemble à une liste réellement vide.
+		if (favoritesDataError) {
+			console.error('Lecture impossible :', favoritesDataError);
+		}
 
 		if (favoritesData) {
 			favoriteTemplateIds = new Set(favoritesData.map((f) => f.template_id));

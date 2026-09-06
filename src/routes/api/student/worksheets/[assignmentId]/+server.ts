@@ -220,9 +220,19 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	try {
 		// Verify access using the helper function (checks RLS + timing)
-		const { data: canAccess } = await locals.supabase.rpc('can_access_assignment', {
-			p_assignment_id: assignmentId
-		});
+		const { data: canAccess, error: canAccessError } = await locals.supabase.rpc(
+			'can_access_assignment',
+			{
+				p_assignment_id: assignmentId
+			}
+		);
+
+		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+		// panne doit se distinguer d'un refus mérité.
+		if (canAccessError && canAccessError.code !== 'PGRST116') {
+			console.error('Contrôle d’accès impossible :', canAccessError);
+			throw error(500, 'Impossible de vérifier votre accès');
+		}
 
 		if (!canAccess) {
 			// Generic error to avoid information disclosure (don't reveal if assignment exists)
@@ -324,12 +334,20 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		}
 
 		// Check if a pre-resolved instance exists
-		const { data: existingInstance } = await locals.supabase
+		const { data: existingInstance, error: existingInstanceError } = await locals.supabase
 			.from('worksheet_instances')
 			.select('instance_data')
 			.eq('worksheet_id', worksheet.id)
 			.eq('student_id', user.id)
 			.maybeSingle();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+		// panne prenait le même visage et faisait conclure « rien ici », donc créer
+		// par-dessus ce qu'on n'avait simplement pas su lire.
+		if (existingInstanceError && existingInstanceError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', existingInstanceError);
+			throw error(500, 'Impossible de vérifier l’état actuel');
+		}
 
 		// Get exercise IDs for correction visibility check
 		const exerciseIds = (worksheetExercises ?? []).map((we) => we.id);

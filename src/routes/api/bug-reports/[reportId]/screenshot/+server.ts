@@ -129,9 +129,14 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		}
 
 		// Return a short-lived signed URL so the client can preview immediately.
-		const { data: signed } = await locals.supabase.storage
+		const { data: signed, error: signedError } = await locals.supabase.storage
 			.from(BUCKET_NAME)
 			.createSignedUrl(storagePath, DISPLAY_SIGNED_URL_TTL);
+
+		if (signedError) {
+			console.error('Lecture impossible :', signedError);
+			throw error(500, 'Impossible de charger les données');
+		}
 
 		return json({
 			success: true,

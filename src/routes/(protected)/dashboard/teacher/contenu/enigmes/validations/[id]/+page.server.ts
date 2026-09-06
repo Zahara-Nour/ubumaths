@@ -96,7 +96,7 @@ export const actions: Actions = {
 		}
 
 		// Fetch updated attempt for notification
-		const { data: attempt } = await supabase
+		const { data: attempt, error: attemptError } = await supabase
 			.from('riddle_attempts')
 			.select(
 				`
@@ -106,6 +106,12 @@ export const actions: Actions = {
 			)
 			.eq('id', params.id)
 			.single();
+
+		// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
+		// doit pas se confondre avec une donnée réellement vide.
+		if (attemptError && attemptError.code !== 'PGRST116') {
+			console.error('Contexte illisible :', attemptError);
+		}
 
 		// Send notification to student
 		if (attempt) {

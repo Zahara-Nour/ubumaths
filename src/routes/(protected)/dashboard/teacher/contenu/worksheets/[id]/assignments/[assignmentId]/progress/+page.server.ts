@@ -66,19 +66,31 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Workshee
 		throw error(400, "ID d'assignation invalide");
 	}
 
-	const { data: worksheet } = await locals.supabase
+	const { data: worksheet, error: worksheetError } = await locals.supabase
 		.from('worksheets')
 		.select('id, title')
 		.eq('id', params.id)
 		.maybeSingle();
+
+	// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
+	// doit pas se confondre avec une donnée réellement vide.
+	if (worksheetError && worksheetError.code !== 'PGRST116') {
+		console.error('Contexte illisible :', worksheetError);
+	}
 	if (!worksheet) throw error(404, 'Fiche non trouvée');
 
-	const { data: assignment } = await locals.supabase
+	const { data: assignment, error: assignmentError } = await locals.supabase
 		.from('worksheet_assignments')
 		.select('id, title, class_id, worksheet_id')
 		.eq('id', params.assignmentId)
 		.eq('worksheet_id', params.id)
 		.maybeSingle();
+
+	// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
+	// doit pas se confondre avec une donnée réellement vide.
+	if (assignmentError && assignmentError.code !== 'PGRST116') {
+		console.error('Contexte illisible :', assignmentError);
+	}
 	if (!assignment) throw error(404, 'Assignation non trouvée');
 
 	// --- Périmètre élèves : classe ciblée ∪ assignés individuellement ---------
@@ -98,17 +110,29 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Workshee
 		for (const m of members ?? []) studentIds.add(m.student_id);
 	}
 
-	const { data: individual } = await locals.supabase
+	const { data: individual, error: individualError } = await locals.supabase
 		.from('worksheet_assignment_students')
 		.select('student_id')
 		.eq('assignment_id', params.assignmentId);
+
+	// Cette liste borne la portée du classement. Vidée par une panne, elle
+	// affiche un classement amputé sans le dire.
+	if (individualError) {
+		console.error('Périmètre illisible :', individualError);
+		throw error(500, 'Impossible de déterminer le périmètre');
+	}
 	for (const row of individual ?? []) studentIds.add(row.student_id);
 
 	// --- Exercices de la fiche ------------------------------------------------
-	const { data: exercises } = await locals.supabase
+	const { data: exercises, error: exercisesError } = await locals.supabase
 		.from('worksheet_exercises')
 		.select('exercise_id')
 		.eq('worksheet_id', params.id);
+
+	if (exercisesError) {
+		console.error('Lecture impossible :', exercisesError);
+		throw error(500, 'Impossible de charger les données');
+	}
 	const exerciseIds = [...new Set((exercises ?? []).map((e) => e.exercise_id))];
 
 	const ids = [...studentIds];

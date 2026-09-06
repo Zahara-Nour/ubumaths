@@ -50,11 +50,19 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	}
 
 	// Check if chapter is linked to a template
-	const { data: instantiation } = await locals.supabase
+	const { data: instantiation, error: instantiationError } = await locals.supabase
 		.from('chapter_template_instantiations')
 		.select('id')
 		.eq('chapter_id', chapterId)
 		.maybeSingle();
+
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (instantiationError && instantiationError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', instantiationError);
+		throw error(500, 'Impossible de vérifier l’état actuel');
+	}
 
 	if (!instantiation) {
 		throw error(400, 'Chapter is not linked to a template');
@@ -71,11 +79,19 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const { hasUpdate, latestVersion } = result.data!;
 
 	// Get current version from instantiation
-	const { data: instData } = await locals.supabase
+	const { data: instData, error: instDataError } = await locals.supabase
 		.from('chapter_template_instantiations')
 		.select('template_version, current_template_version')
 		.eq('chapter_id', chapterId)
 		.single();
+
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (instDataError && instDataError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', instDataError);
+		throw error(500, 'Impossible de vérifier l’état actuel');
+	}
 
 	const currentVersion = instData?.current_template_version ?? instData?.template_version ?? null;
 

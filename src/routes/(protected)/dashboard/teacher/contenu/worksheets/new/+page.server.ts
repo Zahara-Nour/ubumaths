@@ -11,11 +11,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Fetch available templates (user's own only)
-	const { data: templates } = await locals.supabase
+	const { data: templates, error: templatesError } = await locals.supabase
 		.from('worksheet_templates')
 		.select('id, name, description, created_by')
 		.eq('created_by', user.id)
 		.order('name');
+
+	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+	// laisse une trace.
+	if (templatesError) {
+		console.error('Enrichissement illisible :', templatesError);
+	}
 
 	return {
 		user,

@@ -74,12 +74,19 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Check if student has it assigned
 	let isAssigned = false;
 	if (profile.role === 'student') {
-		const { data: assignment } = await locals.supabase
+		const { data: assignment, error: assignmentError } = await locals.supabase
 			.from('python_notebook_assignments')
 			.select('id, readonly')
 			.eq('notebook_id', notebookId)
 			.limit(1)
 			.maybeSingle();
+
+		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+		// panne doit se distinguer d'un refus mérité.
+		if (assignmentError && assignmentError.code !== 'PGRST116') {
+			console.error('Contrôle d’accès impossible :', assignmentError);
+			throw error(500, 'Impossible de vérifier votre accès');
+		}
 
 		isAssigned = !!assignment;
 	}

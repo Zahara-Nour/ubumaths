@@ -113,11 +113,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 			})
 			.filter((id): id is string => !!id) || [];
 
-	const { data: consents } = await supabase
+	const { data: consents, error: consentsError } = await supabase
 		.from('parental_consents')
 		.select('student_id, parent_email, status, email_count, last_email_sent_at')
 		.in('student_id', studentIds)
 		.order('created_at', { ascending: false });
+
+	if (consentsError) {
+		console.error('Lecture impossible :', consentsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	// Create a map of student_id to latest consent
 	const consentMap = new Map<
@@ -277,13 +282,21 @@ export const actions: Actions = {
 		}
 
 		// Check if consent record exists, create or update
-		const { data: existing } = await supabase
+		const { data: existing, error: existingError } = await supabase
 			.from('parental_consents')
 			.select('id')
 			.eq('student_id', studentId)
 			.order('created_at', { ascending: false })
 			.limit(1)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+		// panne prenait le même visage et faisait conclure « rien ici », donc créer
+		// par-dessus ce qu'on n'avait simplement pas su lire.
+		if (existingError && existingError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', existingError);
+			throw error(500, 'Impossible de vérifier l’état actuel');
+		}
 
 		if (existing) {
 			const { error: updateError } = await supabase

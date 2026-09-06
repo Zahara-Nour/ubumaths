@@ -113,12 +113,20 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 
 		if (studentId) {
 			// Try to fetch existing instance for this student
-			const { data: instance } = await locals.supabase
+			const { data: instance, error: instanceError } = await locals.supabase
 				.from('worksheet_instances')
 				.select('instance_data')
 				.eq('worksheet_id', params.id)
 				.eq('student_id', studentId)
 				.single();
+
+			// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+			// panne prenait le même visage et faisait conclure « rien ici », donc créer
+			// par-dessus ce qu'on n'avait simplement pas su lire.
+			if (instanceError && instanceError.code !== 'PGRST116') {
+				console.error('Lecture impossible :', instanceError);
+				throw error(500, 'Impossible de vérifier l’état actuel');
+			}
 
 			// `instance_data` est du jsonb : la structure est vérifiée. Une instance
 			// sans liste d'exercices ferait sortir une fiche vide au nom de l'élève ;

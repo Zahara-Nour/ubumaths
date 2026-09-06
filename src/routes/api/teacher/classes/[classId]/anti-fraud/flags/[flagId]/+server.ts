@@ -52,13 +52,20 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		return json({ error: 'Flag not found' }, { status: 404 });
 	}
 
-	const { data: membership } = await locals.supabase
+	const { data: membership, error: membershipError } = await locals.supabase
 		.from('class_members')
 		.select('id')
 		.eq('class_id', classId)
 		.eq('student_id', flagRow.student_id)
 		.eq('status', 'active')
 		.maybeSingle();
+
+	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+	// panne doit se distinguer d'un refus mérité.
+	if (membershipError) {
+		console.error('Contrôle d’accès impossible :', membershipError);
+		return json({ error: 'Impossible de vérifier votre accès' }, { status: 500 });
+	}
 
 	if (!membership) {
 		return json({ error: 'Flag not found' }, { status: 404 });

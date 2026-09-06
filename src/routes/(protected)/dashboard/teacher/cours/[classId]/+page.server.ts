@@ -56,7 +56,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	}
 
 	// Get active students in this class for progress view
-	const { data: students } = await locals.supabase
+	const { data: students, error: studentsError } = await locals.supabase
 		.from('class_members')
 		// `is_test` est une colonne de `profiles`, pas de `class_members` : le
 		// filtre rendait la requête ENTIÈRE invalide, donc la liste des élèves de
@@ -77,6 +77,11 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.eq('status', 'active')
 		.eq('profiles.is_test', false);
 
+	if (studentsError) {
+		console.error('Lecture impossible :', studentsError);
+		throw error(500, 'Impossible de charger les données');
+	}
+
 	const studentList = (students || [])
 		.map((s) => {
 			const profile = Array.isArray(s.profiles) ? s.profiles[0] : s.profiles;
@@ -91,11 +96,17 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.filter(Boolean);
 
 	// Get available templates (own only)
-	const { data: templates } = await listChapterTemplates(
+	const { data: templates, error: templatesError } = await listChapterTemplates(
 		{ page: 1, limit: 100, grades: undefined },
 		user.id,
 		locals.supabase
 	);
+
+	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+	// laisse une trace.
+	if (templatesError) {
+		console.error('Enrichissement illisible :', templatesError);
+	}
 
 	return {
 		classData,
@@ -114,11 +125,18 @@ export const actions: Actions = {
 		const { classId } = params;
 
 		// Verify class exists
-		const { data: classData } = await locals.supabase
+		const { data: classData, error: classDataError } = await locals.supabase
 			.from('classes')
 			.select('id')
 			.eq('id', classId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
+		// AUTRE panne produisait le même « accès refusé ».
+		if (classDataError && classDataError.code !== 'PGRST116') {
+			console.error('Vérification impossible :', classDataError);
+			return fail(500, { error: 'Verification impossible' });
+		}
 
 		if (!classData) {
 			return fail(403, { error: 'Acces refuse', action: 'create' });
@@ -168,11 +186,18 @@ export const actions: Actions = {
 		const chapterId = formData.get('chapterId') as string;
 
 		// Verify chapter exists and belongs to this class
-		const { data: chapterData } = await locals.supabase
+		const { data: chapterData, error: chapterDataError } = await locals.supabase
 			.from('class_chapters')
 			.select('id, class_id')
 			.eq('id', chapterId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
+		// AUTRE panne produisait le même « accès refusé ».
+		if (chapterDataError && chapterDataError.code !== 'PGRST116') {
+			console.error('Vérification impossible :', chapterDataError);
+			return fail(500, { error: 'Verification impossible' });
+		}
 
 		if (!chapterData || chapterData.class_id !== classId) {
 			return fail(403, { error: 'Acces refuse', action: 'update' });
@@ -220,11 +245,18 @@ export const actions: Actions = {
 		const chapterId = formData.get('chapterId') as string;
 
 		// Verify chapter exists and belongs to this class
-		const { data: chapterData } = await locals.supabase
+		const { data: chapterData, error: chapterDataError } = await locals.supabase
 			.from('class_chapters')
 			.select('id, class_id')
 			.eq('id', chapterId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
+		// AUTRE panne produisait le même « accès refusé ».
+		if (chapterDataError && chapterDataError.code !== 'PGRST116') {
+			console.error('Vérification impossible :', chapterDataError);
+			return fail(500, { error: 'Verification impossible' });
+		}
 
 		if (!chapterData || chapterData.class_id !== classId) {
 			return fail(403, { error: 'Acces refuse', action: 'delete' });
@@ -249,11 +281,18 @@ export const actions: Actions = {
 		const { classId } = params;
 
 		// Verify class exists
-		const { data: classData } = await locals.supabase
+		const { data: classData, error: classDataError } = await locals.supabase
 			.from('classes')
 			.select('id')
 			.eq('id', classId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
+		// AUTRE panne produisait le même « accès refusé ».
+		if (classDataError && classDataError.code !== 'PGRST116') {
+			console.error('Vérification impossible :', classDataError);
+			return fail(500, { error: 'Verification impossible' });
+		}
 
 		if (!classData) {
 			return fail(403, { error: 'Acces refuse', action: 'reorder' });
@@ -308,11 +347,18 @@ export const actions: Actions = {
 		const isVisible = formData.get('isVisible') === 'true';
 
 		// Verify chapter exists and belongs to this class
-		const { data: chapterData } = await locals.supabase
+		const { data: chapterData, error: chapterDataError } = await locals.supabase
 			.from('class_chapters')
 			.select('id, class_id')
 			.eq('id', chapterId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
+		// AUTRE panne produisait le même « accès refusé ».
+		if (chapterDataError && chapterDataError.code !== 'PGRST116') {
+			console.error('Vérification impossible :', chapterDataError);
+			return fail(500, { error: 'Verification impossible' });
+		}
 
 		if (!chapterData || chapterData.class_id !== classId) {
 			return fail(403, { error: 'Acces refuse', action: 'toggleVisibility' });
@@ -337,11 +383,18 @@ export const actions: Actions = {
 		const { classId } = params;
 
 		// Verify class exists
-		const { data: classData } = await locals.supabase
+		const { data: classData, error: classDataError } = await locals.supabase
 			.from('classes')
 			.select('id')
 			.eq('id', classId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
+		// AUTRE panne produisait le même « accès refusé ».
+		if (classDataError && classDataError.code !== 'PGRST116') {
+			console.error('Vérification impossible :', classDataError);
+			return fail(500, { error: 'Verification impossible' });
+		}
 
 		if (!classData) {
 			return fail(403, { error: 'Acces refuse', action: 'instantiateFromTemplate' });

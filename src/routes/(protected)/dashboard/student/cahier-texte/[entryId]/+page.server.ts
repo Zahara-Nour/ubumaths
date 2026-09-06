@@ -88,12 +88,18 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// refactor mono-professeur, et `profiles` n'a pas de `display_name`. L'embed
 	// était donc doublement impossible. Le professeur étant unique, on lit
 	// simplement son nom.
-	const { data: teacher } = await locals.supabase
+	const { data: teacher, error: teacherError } = await locals.supabase
 		.from('profiles')
 		.select('full_name')
 		.eq('role', 'teacher')
 		.limit(1)
 		.maybeSingle();
+
+	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+	// ne doit pas se confondre avec une donnée réellement vide.
+	if (teacherError && teacherError.code !== 'PGRST116') {
+		console.error('Contexte illisible :', teacherError);
+	}
 
 	return {
 		entry: {

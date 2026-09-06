@@ -22,6 +22,7 @@
  */
 import type { PageServerLoad } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { error } from '@sveltejs/kit';
 
 /**
  * Redact email address for privacy
@@ -39,7 +40,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { supabase } = await requireAdmin(locals);
 
 	// Fetch all counts in a single query using database function
-	const { data: stats } = await supabase.rpc('get_database_stats');
+	const { data: stats, error: statsError } = await supabase.rpc('get_database_stats');
+
+	// Contrôle d'intégrité : une liste vide se lit « aucune anomalie ». C'est le
+	// verdict inverse de « je n'ai rien pu vérifier ».
+	if (statsError) {
+		console.error('Contrôle d’intégrité impossible :', statsError);
+		throw error(500, 'Impossible de vérifier l’intégrité');
+	}
 
 	// Parse the stats object
 	const counts = stats || {
@@ -56,39 +64,75 @@ export const load: PageServerLoad = async ({ locals }) => {
 	};
 
 	// Data integrity checks
-	const { data: missingNames } = await supabase
+	const { data: missingNames, error: missingNamesError } = await supabase
 		.from('profiles')
 		.select('id, email, firstname, lastname, role')
 		.or('firstname.is.null,lastname.is.null')
 		.limit(10);
 
-	const { data: missingSchool } = await supabase
+	// Contrôle d'intégrité : une liste vide se lit « aucune anomalie ». C'est le
+	// verdict inverse de « je n'ai rien pu vérifier ».
+	if (missingNamesError) {
+		console.error('Contrôle d’intégrité impossible :', missingNamesError);
+		throw error(500, 'Impossible de vérifier l’intégrité');
+	}
+
+	const { data: missingSchool, error: missingSchoolError } = await supabase
 		.from('profiles')
 		.select('id, email, role, school_id')
 		.is('school_id', null)
 		.limit(10);
 
-	const { data: noClasses } = await supabase
+	// Contrôle d'intégrité : une liste vide se lit « aucune anomalie ». C'est le
+	// verdict inverse de « je n'ai rien pu vérifier ».
+	if (missingSchoolError) {
+		console.error('Contrôle d’intégrité impossible :', missingSchoolError);
+		throw error(500, 'Impossible de vérifier l’intégrité');
+	}
+
+	const { data: noClasses, error: noClassesError } = await supabase
 		.from('profiles')
 		.select('id, email, role, class_ids')
 		.eq('role', 'student')
 		.or('class_ids.is.null,class_ids.eq.{}')
 		.limit(10);
 
+	// Contrôle d'intégrité : une liste vide se lit « aucune anomalie ». C'est le
+	// verdict inverse de « je n'ai rien pu vérifier ».
+	if (noClassesError) {
+		console.error('Contrôle d’intégrité impossible :', noClassesError);
+		throw error(500, 'Impossible de vérifier l’intégrité');
+	}
+
 	// Pending students not activated (already have counts from stats)
-	const { data: pendingStudentsNotActivated } = await supabase
-		.from('pending_students')
-		.select('id, email, firstname, lastname, created_at')
-		.eq('is_activated', false)
-		.order('created_at', { ascending: false })
-		.limit(10);
+	const { data: pendingStudentsNotActivated, error: pendingStudentsNotActivatedError } =
+		await supabase
+			.from('pending_students')
+			.select('id, email, firstname, lastname, created_at')
+			.eq('is_activated', false)
+			.order('created_at', { ascending: false })
+			.limit(10);
+
+	// Contrôle d'intégrité : une liste vide se lit « aucune anomalie ». C'est le
+	// verdict inverse de « je n'ai rien pu vérifier ».
+	if (pendingStudentsNotActivatedError) {
+		console.error('Contrôle d’intégrité impossible :', pendingStudentsNotActivatedError);
+		throw error(500, 'Impossible de vérifier l’intégrité');
+	}
 
 	// Recent signups (last 10)
-	const { data: recentSignups } = await supabase
+	const { data: recentSignups, error: recentSignupsError } = await supabase
 		.from('profiles')
 		.select('id, email, firstname, lastname, role, created_at')
 		.order('created_at', { ascending: false })
 		.limit(10);
+
+	// Contrôle d'intégrité : une liste vide se lit « aucune anomalie ». C'est le
+	// verdict inverse de « je n'ai rien pu vérifier ».
+	if (recentSignupsError) {
+		console.error('Contrôle d’intégrité impossible :', recentSignupsError);
+		throw error(500, 'Impossible de vérifier l’intégrité');
+	}
 
 	// Redact emails in results
 	const redactedMissingNames = missingNames?.map((p) => ({

@@ -25,12 +25,19 @@ import { createSectionSchema } from '$lib/server/validation/srs';
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const { user } = await requireAuth(locals);
 
-	const { data: deck } = await locals.supabase
+	const { data: deck, error: deckError } = await locals.supabase
 		.from('srs_decks')
 		.select('id')
 		.eq('id', params.id)
 		.eq('owner_id', user.id)
 		.maybeSingle();
+
+	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+	// panne doit se distinguer d'un refus mérité.
+	if (deckError) {
+		console.error('Contrôle d’accès impossible :', deckError);
+		return json({ error: 'Impossible de vérifier votre accès' }, { status: 500 });
+	}
 
 	if (!deck) {
 		return json({ error: 'Deck not found or access denied' }, { status: 404 });

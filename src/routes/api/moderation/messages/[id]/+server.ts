@@ -91,20 +91,34 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		// Admins can delete any message - skip authorization checks
 	} else {
 		// Check if teacher is a participant in the conversation
-		const { data: membership } = await locals.supabase
+		const { data: membership, error: membershipError } = await locals.supabase
 			.from('conversation_participants')
 			.select('user_id')
 			.eq('conversation_id', message.conversation_id)
 			.eq('user_id', locals.user.id)
 			.maybeSingle();
 
+		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+		// panne doit se distinguer d'un refus mérité.
+		if (membershipError && membershipError.code !== 'PGRST116') {
+			console.error('Contrôle d’accès impossible :', membershipError);
+			throw error(500, 'Impossible de vérifier votre accès');
+		}
+
 		if (!membership) {
 			// Teacher is NOT a participant - check if it's a student 1-on-1 chat
-			const { data: conversation } = await locals.supabase
+			const { data: conversation, error: conversationError } = await locals.supabase
 				.from('conversations')
 				.select('is_group')
 				.eq('id', message.conversation_id)
 				.maybeSingle();
+
+			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+			// panne doit se distinguer d'un refus mérité.
+			if (conversationError && conversationError.code !== 'PGRST116') {
+				console.error('Contrôle d’accès impossible :', conversationError);
+				throw error(500, 'Impossible de vérifier votre accès');
+			}
 
 			if (!conversation) {
 				throw error(404, 'Conversation not found');
@@ -117,10 +131,17 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 
 			// It's a 1-on-1 chat - verify both participants are students (Option B:
 			// the sole teacher oversees every student, in-class or not).
-			const { data: participants } = await locals.supabase
+			const { data: participants, error: participantsError } = await locals.supabase
 				.from('conversation_participants')
 				.select('user_id')
 				.eq('conversation_id', message.conversation_id);
+
+			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+			// panne doit se distinguer d'un refus mérité.
+			if (participantsError && participantsError.code !== 'PGRST116') {
+				console.error('Contrôle d’accès impossible :', participantsError);
+				throw error(500, 'Impossible de vérifier votre accès');
+			}
 
 			if (!participants || participants.length !== 2) {
 				throw error(403, 'You do not have access to this conversation');

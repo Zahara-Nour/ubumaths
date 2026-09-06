@@ -186,10 +186,15 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		// remove another user's assignment), the DB will still hold that row.
 		// Detecting it now lets us surface a clean 403 instead of an opaque
 		// success-but-not-really.
-		const { data: afterRows } = await locals.supabase
+		const { data: afterRows, error: afterRowsError } = await locals.supabase
 			.from('kanban_card_assignees')
 			.select('user_id')
 			.eq('card_id', cardId);
+
+		if (afterRowsError) {
+			console.error('Lecture impossible :', afterRowsError);
+			throw error(500, 'Impossible de charger les données');
+		}
 		const afterSet = new Set((afterRows ?? []).map((r) => r.user_id));
 		const stillExtra = [...afterSet].filter((id) => !requested.has(id));
 		if (stillExtra.length > 0) {

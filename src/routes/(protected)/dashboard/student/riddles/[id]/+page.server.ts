@@ -29,13 +29,18 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 	}
 
 	// Fetch student's latest attempt
-	const { data: attempts } = await supabase
+	const { data: attempts, error: attemptsError } = await supabase
 		.from('riddle_attempts')
 		.select('*')
 		.eq('riddle_id', id)
 		.eq('student_id', user.id)
 		.order('attempt_number', { ascending: false })
 		.limit(1);
+
+	if (attemptsError) {
+		console.error('Lecture impossible :', attemptsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	// `submitted_answer` est du jsonb et `difficulty`/`status` des colonnes
 	// permissives : convertis plutôt qu'affirmés par un cast.

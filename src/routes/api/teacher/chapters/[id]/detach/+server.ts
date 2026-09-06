@@ -45,11 +45,19 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 	}
 
 	// Check if chapter is linked to a template
-	const { data: instantiation } = await locals.supabase
+	const { data: instantiation, error: instantiationError } = await locals.supabase
 		.from('chapter_template_instantiations')
 		.select('id, is_detached')
 		.eq('chapter_id', chapterId)
 		.maybeSingle();
+
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (instantiationError && instantiationError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', instantiationError);
+		throw error(500, 'Impossible de vérifier l’état actuel');
+	}
 
 	if (!instantiation) {
 		throw error(400, 'Chapter is not linked to a template');

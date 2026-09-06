@@ -44,14 +44,28 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	}
 
 	// Fetch versions
-	const { data: versions } = await getTemplateVersions(templateId, locals.supabase);
+	const { data: versions, error: versionsError } = await getTemplateVersions(
+		templateId,
+		locals.supabase
+	);
+
+	if (versionsError) {
+		console.error('Lecture impossible :', versionsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	// Fetch teacher's classes for instantiation
-	const { data: classes } = await locals.supabase
+	const { data: classes, error: classesError } = await locals.supabase
 		.from('classes')
 		.select('id, name, grade, is_active')
 		.eq('is_active', true)
 		.order('name');
+
+	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+	// laisse une trace.
+	if (classesError) {
+		console.error('Enrichissement illisible :', classesError);
+	}
 
 	return {
 		template,
@@ -70,11 +84,17 @@ export const actions: Actions = {
 		const { templateId } = params;
 
 		// Check ownership
-		const { data: templateCheck } = await locals.supabase
+		const { data: templateCheck, error: templateCheckError } = await locals.supabase
 			.from('chapter_templates')
 			.select('created_by, status')
 			.eq('id', templateId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
+		if (templateCheckError && templateCheckError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', templateCheckError);
+			return fail(500, { error: 'Lecture impossible' });
+		}
 
 		if (!templateCheck || templateCheck.created_by !== user.id) {
 			return fail(403, { error: 'Accès refusé', action: 'update' });
@@ -130,11 +150,17 @@ export const actions: Actions = {
 		const { templateId } = params;
 
 		// Check ownership
-		const { data: templateCheck } = await locals.supabase
+		const { data: templateCheck, error: templateCheckError } = await locals.supabase
 			.from('chapter_templates')
 			.select('created_by, status, content_snapshot')
 			.eq('id', templateId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
+		if (templateCheckError && templateCheckError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', templateCheckError);
+			return fail(500, { error: 'Lecture impossible' });
+		}
 
 		if (!templateCheck || templateCheck.created_by !== user.id) {
 			return fail(403, { error: 'Accès refusé', action: 'publish' });
@@ -175,11 +201,17 @@ export const actions: Actions = {
 		const { templateId } = params;
 
 		// Check ownership
-		const { data: templateCheck } = await locals.supabase
+		const { data: templateCheck, error: templateCheckError } = await locals.supabase
 			.from('chapter_templates')
 			.select('created_by')
 			.eq('id', templateId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
+		if (templateCheckError && templateCheckError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', templateCheckError);
+			return fail(500, { error: 'Lecture impossible' });
+		}
 
 		if (!templateCheck || templateCheck.created_by !== user.id) {
 			return fail(403, { error: 'Accès refusé', action: 'archive' });
@@ -224,11 +256,17 @@ export const actions: Actions = {
 		}
 
 		// Verify class exists
-		const { data: classCheck } = await locals.supabase
+		const { data: classCheck, error: classCheckError } = await locals.supabase
 			.from('classes')
 			.select('id')
 			.eq('id', validation.data.classId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
+		if (classCheckError && classCheckError.code !== 'PGRST116') {
+			console.error('Lecture impossible :', classCheckError);
+			return fail(500, { error: 'Lecture impossible' });
+		}
 
 		if (!classCheck) {
 			return fail(403, { error: 'Accès refusé', action: 'instantiate' });

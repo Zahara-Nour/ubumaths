@@ -121,12 +121,20 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	// Check if already linked
-	const { data: existingLink } = await locals.supabase
+	const { data: existingLink, error: existingLinkError } = await locals.supabase
 		.from('chapter_exercises')
 		.select('id')
 		.eq('chapter_id', chapterId)
 		.eq('exercise_id', validation.data.exerciseId)
 		.maybeSingle();
+
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (existingLinkError && existingLinkError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', existingLinkError);
+		throw error(500, 'Impossible de vérifier l’état actuel');
+	}
 
 	if (existingLink) {
 		throw error(400, 'Exercise already linked to this chapter');

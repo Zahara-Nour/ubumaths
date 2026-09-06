@@ -76,17 +76,31 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				throw error(403, 'Accès non autorisé à cette classe');
 			}
 			// Get students in specific class
-			const { data: classStudents } = await supabase
+			const { data: classStudents, error: classStudentsError } = await supabase
 				.from('class_members')
 				.select('student_id')
 				.eq('class_id', class_id);
+
+			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
+			// affiche « aucune activité » : un constat, pas une absence de donnée.
+			if (classStudentsError) {
+				console.error('Périmètre d’élèves illisible :', classStudentsError);
+				throw error(500, 'Impossible de déterminer le périmètre');
+			}
 			studentIds = classStudents?.map((m: { student_id: string }) => m.student_id) || [];
 		} else {
 			// Get all students in teacher's classes
-			const { data: classMembers } = await supabase
+			const { data: classMembers, error: classMembersError } = await supabase
 				.from('class_members')
 				.select('student_id')
 				.in('class_id', classIds);
+
+			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
+			// affiche « aucune activité » : un constat, pas une absence de donnée.
+			if (classMembersError) {
+				console.error('Périmètre d’élèves illisible :', classMembersError);
+				throw error(500, 'Impossible de déterminer le périmètre');
+			}
 			studentIds = classMembers?.map((m: { student_id: string }) => m.student_id) || [];
 		}
 	} else if (profile.role === 'admin' && profile.school_id) {
@@ -94,11 +108,18 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// `school_id` est nullable : un administrateur sans école rattachée n'a
 		// aucun élève à lister, et la garde évite une comparaison à NULL qui
 		// n'aurait de toute façon rien remonté.
-		const { data: schoolStudents } = await supabase
+		const { data: schoolStudents, error: schoolStudentsError } = await supabase
 			.from('profiles')
 			.select('id')
 			.eq('school_id', profile.school_id)
 			.eq('role', 'student');
+
+		// Cette liste borne la portée des statistiques. Vidée par une panne, elle
+		// affiche « aucune activité » : un constat, pas une absence de donnée.
+		if (schoolStudentsError) {
+			console.error('Périmètre d’élèves illisible :', schoolStudentsError);
+			throw error(500, 'Impossible de déterminer le périmètre');
+		}
 		studentIds = schoolStudents?.map((s: { id: string }) => s.id) || [];
 	}
 
@@ -134,7 +155,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}> = [];
 
 	// Get recent listings
-	const { data: recentListings } = await supabase
+	const { data: recentListings, error: recentListingsError } = await supabase
 		.from('marketplace_listings')
 		.select(
 			`
@@ -151,6 +172,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.in('creator_id', studentIds)
 		.order('created_at', { ascending: false })
 		.limit(limit);
+
+	if (recentListingsError) {
+		console.error('Lecture impossible :', recentListingsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	for (const listing of recentListings || []) {
 		const creator = (listing as { creator?: { firstname?: string; lastname?: string } | null })
@@ -173,7 +199,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	// Get recent proposals
-	const { data: recentProposals } = await supabase
+	const { data: recentProposals, error: recentProposalsError } = await supabase
 		.from('marketplace_proposals')
 		.select(
 			`
@@ -189,6 +215,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.in('proposer_id', studentIds)
 		.order('created_at', { ascending: false })
 		.limit(limit);
+
+	if (recentProposalsError) {
+		console.error('Lecture impossible :', recentProposalsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	for (const proposal of recentProposals || []) {
 		const proposer = (proposal as { proposer?: { firstname?: string; lastname?: string } | null })
@@ -215,7 +246,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	// Get recent trades
-	const { data: recentTrades } = await supabase
+	const { data: recentTrades, error: recentTradesError } = await supabase
 		.from('marketplace_trades')
 		.select(
 			`
@@ -233,6 +264,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.or(`initiator_id.in.(${studentIds.join(',')}),partner_id.in.(${studentIds.join(',')})`)
 		.order('updated_at', { ascending: false })
 		.limit(limit);
+
+	if (recentTradesError) {
+		console.error('Lecture impossible :', recentTradesError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	type ProfileName = { firstname?: string; lastname?: string } | null | undefined;
 	const formatName = (p: ProfileName) =>

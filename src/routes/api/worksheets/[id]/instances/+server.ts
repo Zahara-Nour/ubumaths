@@ -45,11 +45,18 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		const { classId } = validation.data;
 
 		// Check if user is a teacher
-		const { data: profile } = await supabase
+		const { data: profile, error: profileError } = await supabase
 			.from('profiles')
 			.select('role, school_id')
 			.eq('id', user.id)
 			.single();
+
+		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+		// panne produisait le même refus, indiscernable d'un refus mérité.
+		if (profileError && profileError.code !== 'PGRST116') {
+			console.error('Rôle illisible :', profileError);
+			return error(500, 'Impossible de vérifier vos droits');
+		}
 
 		if (!profile || profile.role !== 'teacher') {
 			return error(403, 'Only teachers can generate worksheet instances');
@@ -137,7 +144,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		}
 
 		// Check for existing instances to avoid duplicates
-		const { data: existingInstances } = await supabase
+		const { data: existingInstances, error: existingInstancesError } = await supabase
 			.from('worksheet_instances')
 			.select('student_id')
 			.eq('worksheet_id', worksheetId)
@@ -145,6 +152,13 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 				'student_id',
 				students.map((s) => s.id)
 			);
+
+		// Cet ensemble sert à CALCULER un écart. Vide par accident, l'écart conclut
+		// « rien n'existe encore » et recrée ce qui existait déjà.
+		if (existingInstancesError) {
+			console.error('État courant illisible :', existingInstancesError);
+			throw error(500, 'Impossible de lire l’état actuel');
+		}
 
 		const existingStudentIds = new Set(existingInstances?.map((i) => i.student_id) || []);
 		const newStudents = students.filter((s) => !existingStudentIds.has(s.id));
@@ -248,11 +262,18 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 		}
 
 		// Check if user is a teacher
-		const { data: profile } = await supabase
+		const { data: profile, error: profileError } = await supabase
 			.from('profiles')
 			.select('role, school_id')
 			.eq('id', user.id)
 			.single();
+
+		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+		// panne produisait le même refus, indiscernable d'un refus mérité.
+		if (profileError && profileError.code !== 'PGRST116') {
+			console.error('Rôle illisible :', profileError);
+			return error(500, 'Impossible de vérifier vos droits');
+		}
 
 		if (!profile || profile.role !== 'teacher') {
 			return error(403, 'Only teachers can view worksheet instances');
@@ -318,12 +339,19 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 		// Filter by class if specified
 		if (classId) {
 			// First get student IDs in the class
-			const { data: classStudents } = await supabase
+			const { data: classStudents, error: classStudentsError } = await supabase
 				.from('profiles')
 				.select('id')
 				// `profiles` porte `class_ids` (tableau), pas `class_id`.
 				.contains('class_ids', [classId])
 				.eq('role', 'student');
+
+			// Cette liste borne la portée du classement. Vidée par une panne, elle
+			// affiche un classement amputé sans le dire.
+			if (classStudentsError) {
+				console.error('Périmètre illisible :', classStudentsError);
+				throw error(500, 'Impossible de déterminer le périmètre');
+			}
 
 			if (classStudents && classStudents.length > 0) {
 				query = query.in(

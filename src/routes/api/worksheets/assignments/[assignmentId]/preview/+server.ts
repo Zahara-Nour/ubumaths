@@ -204,11 +204,18 @@ async function verifyTeacherAccess(
 	}
 
 	// Check permissions
-	const { data: profile } = await supabase
+	const { data: profile, error: profileError } = await supabase
 		.from('profiles')
 		.select('role')
 		.eq('id', userId)
 		.single();
+
+	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
+	// panne produisait le même refus, indiscernable d'un refus mérité.
+	if (profileError && profileError.code !== 'PGRST116') {
+		console.error('Rôle illisible :', profileError);
+		throw error(500, 'Impossible de vérifier vos droits');
+	}
 
 	const isCreator = assignment.created_by === userId;
 	const isAdmin = profile?.role === 'admin';
@@ -266,27 +273,41 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		let previewStudentName: string | null = null;
 		if (studentId) {
 			// Check individual assignment first (simple query)
-			const { data: individualAccess } = await locals.supabase
+			const { data: individualAccess, error: individualAccessError } = await locals.supabase
 				.from('worksheet_assignment_students')
 				.select('id')
 				.eq('assignment_id', assignmentId)
 				.eq('student_id', studentId)
 				.maybeSingle();
 
+			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+			// panne doit se distinguer d'un refus mérité.
+			if (individualAccessError) {
+				console.error('Contrôle d’accès impossible :', individualAccessError);
+				throw error(500, 'Impossible de vérifier votre accès');
+			}
+
 			// If not individually assigned, check class membership
 			let hasClassAccess = false;
 			if (!individualAccess) {
 				// Get assigned class IDs
-				const { data: assignedClasses } = await locals.supabase
+				const { data: assignedClasses, error: assignedClassesError } = await locals.supabase
 					.from('worksheet_assignment_classes')
 					.select('class_id')
 					.eq('assignment_id', assignmentId);
+
+				// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+				// panne doit se distinguer d'un refus mérité.
+				if (assignedClassesError) {
+					console.error('Contrôle d’accès impossible :', assignedClassesError);
+					throw error(500, 'Impossible de vérifier votre accès');
+				}
 
 				if (assignedClasses && assignedClasses.length > 0) {
 					const classIds = assignedClasses.map((ac) => ac.class_id);
 
 					// Check if student is member of any assigned class
-					const { data: membership } = await locals.supabase
+					const { data: membership, error: membershipError } = await locals.supabase
 						.from('class_members')
 						.select('id')
 						.eq('student_id', studentId)
@@ -294,6 +315,13 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 						.in('class_id', classIds)
 						.limit(1)
 						.maybeSingle();
+
+					// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+					// panne doit se distinguer d'un refus mérité.
+					if (membershipError) {
+						console.error('Contrôle d’accès impossible :', membershipError);
+						throw error(500, 'Impossible de vérifier votre accès');
+					}
 
 					hasClassAccess = !!membership;
 				}
@@ -304,11 +332,16 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			}
 
 			// Get student name for display
-			const { data: studentProfile } = await locals.supabase
+			const { data: studentProfile, error: studentProfileError } = await locals.supabase
 				.from('profiles')
 				.select('firstname, lastname')
 				.eq('id', studentId)
 				.single();
+
+			// Le nom n'est qu'un ornement d'affichage : le repli existe déjà.
+			if (studentProfileError && studentProfileError.code !== 'PGRST116') {
+				console.error('Nom illisible :', studentProfileError);
+			}
 
 			if (studentProfile) {
 				previewStudentName = [studentProfile.firstname, studentProfile.lastname]

@@ -110,11 +110,18 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	}
 
 	// Also check MY profile (owner) for cards not yet traded
-	const { data: myProfile } = await supabase
+	const { data: myProfile, error: myProfileError } = await supabase
 		.from('profiles')
 		.select('vip_cards')
 		.eq('id', userId)
 		.single();
+
+	// Ces cartes composent l'offre affichée à l'élève. Une carte non résolue
+	// disparaît de l'offre : mieux vaut une erreur qu'un troc falsifié.
+	if (myProfileError) {
+		console.error('Cartes illisibles :', myProfileError);
+		throw error(500, 'Impossible de lire les cartes');
+	}
 	if (myProfile?.vip_cards) {
 		const myCards = myProfile.vip_cards as VipCardsJson;
 		for (const [instId, card] of Object.entries(myCards)) {
@@ -126,10 +133,16 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// Fetch all template names
 	const templateNameMap = new Map<string, string>();
 	if (allTemplateIds.size > 0) {
-		const { data: templates } = await supabase
+		const { data: templates, error: templatesError } = await supabase
 			.from('vip_card_templates')
 			.select('id, name')
 			.in('id', Array.from(allTemplateIds));
+
+		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+		// laisse une trace.
+		if (templatesError) {
+			console.error('Enrichissement illisible :', templatesError);
+		}
 		if (templates) {
 			for (const t of templates) templateNameMap.set(t.id, t.name);
 		}
@@ -254,12 +267,20 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	// Check if user already has a pending proposal for this listing
-	const { data: existingProposal } = await supabase
+	const { data: existingProposal, error: existingProposalError } = await supabase
 		.from('marketplace_proposals')
 		.select('id, status')
 		.eq('listing_id', listingId)
 		.eq('proposer_id', userId)
 		.single();
+
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (existingProposalError && existingProposalError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', existingProposalError);
+		throw error(500, 'Impossible de vérifier l’état actuel');
+	}
 
 	if (existingProposal) {
 		if (existingProposal.status === 'pending') {
@@ -397,11 +418,18 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		// Case 2: Buy listing — wants specific card templates
 		if (wantedTemplateIds.length > 0 && offeredCardIds.length > 0) {
 			// Resolve offered card instance IDs to their template IDs
-			const { data: proposerProfile } = await supabase
+			const { data: proposerProfile, error: proposerProfileError } = await supabase
 				.from('profiles')
 				.select('vip_cards')
 				.eq('id', userId)
 				.single();
+
+			// Ces cartes composent l'offre affichée à l'élève. Une carte non résolue
+			// disparaît de l'offre : mieux vaut une erreur qu'un troc falsifié.
+			if (proposerProfileError) {
+				console.error('Cartes illisibles :', proposerProfileError);
+				throw error(500, 'Impossible de lire les cartes');
+			}
 
 			if (!proposerProfile?.vip_cards) return false;
 
@@ -440,12 +468,17 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			await notifyProposalAccepted(supabase, userId, 'Annonce', proposal.id);
 
 			// Notify rejected proposers
-			const { data: rejectedProposals } = await supabase
+			const { data: rejectedProposals, error: rejectedProposalsError } = await supabase
 				.from('marketplace_proposals')
 				.select('proposer_id')
 				.eq('listing_id', listingId)
 				.eq('status', 'rejected')
 				.neq('id', proposal.id);
+
+			if (rejectedProposalsError) {
+				console.error('Lecture impossible :', rejectedProposalsError);
+				throw error(500, 'Impossible de charger les données');
+			}
 
 			if (rejectedProposals) {
 				for (const p of rejectedProposals) {

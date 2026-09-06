@@ -111,10 +111,15 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Objectiv
 	// 3. Calcul des badges FSRS agrégés
 	// Listes d'automatismes : de quel programme chacun de ces points est un
 	// attendu d'examen. Un point peut figurer dans plusieurs listes.
-	const { data: automatismeRows } = await locals.supabase
+	const { data: automatismeRows, error: automatismeRowsError } = await locals.supabase
 		.from('curriculum_point_automatismes')
 		.select('point_id, grade')
 		.in('point_id', pointIds);
+
+	if (automatismeRowsError) {
+		console.error('Lecture impossible :', automatismeRowsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	const automatismeGradesByPoint = new Map<string, string[]>();
 	for (const row of automatismeRows ?? []) {

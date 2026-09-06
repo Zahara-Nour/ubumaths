@@ -161,12 +161,17 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		await notifyProposalAccepted(supabase, proposal.proposer_id, 'Annonce', proposalId);
 
 		// Notify rejected proposers (already handled by the RPC function but we still send notifications)
-		const { data: rejectedProposals } = await supabase
+		const { data: rejectedProposals, error: rejectedProposalsError } = await supabase
 			.from('marketplace_proposals')
 			.select('id, proposer_id')
 			.eq('listing_id', listing.id)
 			.eq('status', 'rejected')
 			.neq('id', proposalId);
+
+		if (rejectedProposalsError) {
+			console.error('Lecture impossible :', rejectedProposalsError);
+			throw error(500, 'Impossible de charger les données');
+		}
 
 		if (rejectedProposals && rejectedProposals.length > 0) {
 			for (const rejectedProposal of rejectedProposals) {

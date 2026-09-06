@@ -49,11 +49,18 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	// Get user's class IDs if not provided
 	let userClassIds: string[] = [];
 	if (!classId) {
-		const { data: classMembers } = await supabase
+		const { data: classMembers, error: classMembersError } = await supabase
 			.from('class_members')
 			.select('class_id')
 			.eq('student_id', user.id)
 			.eq('status', 'active');
+
+		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+		// panne doit se distinguer d'un refus mérité.
+		if (classMembersError && classMembersError.code !== 'PGRST116') {
+			console.error('Contrôle d’accès impossible :', classMembersError);
+			return error(500, 'Impossible de vérifier votre accès');
+		}
 
 		userClassIds = classMembers?.map((cm) => (cm as { class_id: string }).class_id) || [];
 	} else {

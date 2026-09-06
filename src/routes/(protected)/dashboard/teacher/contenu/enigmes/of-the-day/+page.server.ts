@@ -14,7 +14,14 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	// `get_riddle_of_the_day` renvoie un UUID scalaire, pas une ligne. Le code le
 	// traitait comme un tableau (`.length`, `[0]`), d'où une carte qui ne pouvait
 	// afficher ni numéro, ni titre, ni date.
-	const { data: currentRiddleId } = await supabase.rpc('get_riddle_of_the_day');
+	const { data: currentRiddleId, error: currentRiddleIdError } =
+		await supabase.rpc('get_riddle_of_the_day');
+
+	// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
+	// doit pas se confondre avec une donnée réellement vide.
+	if (currentRiddleIdError && currentRiddleIdError.code !== 'PGRST116') {
+		console.error('Contexte illisible :', currentRiddleIdError);
+	}
 
 	const currentRiddle = currentRiddleId
 		? ((await supabase.from('riddles').select('*').eq('id', currentRiddleId).maybeSingle()).data ??

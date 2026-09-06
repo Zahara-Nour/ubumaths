@@ -50,7 +50,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	let students: Array<{ id: string; firstname: string; lastname: string; class_id: string }> = [];
 
 	if (classIds.length > 0) {
-		const { data: studentsData } = await supabase
+		const { data: studentsData, error: studentsDataError } = await supabase
 			.from('class_members')
 			.select(
 				`
@@ -61,6 +61,11 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 			)
 			.in('class_id', classIds)
 			.eq('status', 'active');
+
+		if (studentsDataError) {
+			console.error('Lecture impossible :', studentsDataError);
+			throw error(500, 'Impossible de charger les données');
+		}
 
 		students =
 			studentsData?.map((cm) => {

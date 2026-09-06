@@ -956,11 +956,19 @@ export async function getMigrationPreview(
 		// Determine target version
 		let finalTargetVersion = targetVersion;
 		if (!finalTargetVersion) {
-			const { data: template } = await supabase
+			const { data: template, error: templateError } = await supabase
 				.from('chapter_templates')
 				.select('current_version')
 				.eq('id', instantiation.template_id)
 				.single();
+
+			// Sans la version courante, l'aperçu compare contre la version déjà
+			// instanciée : il annonce « aucun changement » quelle que soit la mise
+			// à jour réellement disponible.
+			if (templateError) {
+				console.error('[getMigrationPreview] Version courante illisible :', templateError);
+				return { data: null, error: new Error(templateError.message) };
+			}
 
 			finalTargetVersion = template?.current_version ?? instantiation.template_version;
 		}
@@ -1132,33 +1140,44 @@ export async function extractContentSnapshotFromChapter(
 	supabase: SupabaseClient<Database>
 ): Promise<OperationResult<TemplateContentSnapshot>> {
 	try {
-		// Get documents
-		const { data: documents } = await supabase
-			.from('chapter_documents')
-			.select('*')
-			.eq('chapter_id', chapterId)
-			.order('display_order', { ascending: true });
+		// ⚠️ Ce snapshot est ÉCRIT en base comme version du modèle. Une section
+		// illisible produisait un modèle amputé — silencieusement, et hérité par
+		// toutes les instanciations futures.
+		const [documentsRes, quizQuestionsRes, checklistItemsRes, exercisesRes] = await Promise.all([
+			supabase
+				.from('chapter_documents')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order', { ascending: true }),
+			supabase
+				.from('chapter_quiz_questions')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order', { ascending: true }),
+			supabase
+				.from('chapter_checklist_items')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order', { ascending: true }),
+			supabase
+				.from('chapter_exercises')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order', { ascending: true })
+		]);
 
-		// Get quiz questions
-		const { data: quizQuestions } = await supabase
-			.from('chapter_quiz_questions')
-			.select('*')
-			.eq('chapter_id', chapterId)
-			.order('display_order', { ascending: true });
+		const sectionEnEchec = [documentsRes, quizQuestionsRes, checklistItemsRes, exercisesRes].find(
+			(r) => r.error
+		);
+		if (sectionEnEchec?.error) {
+			console.error('[extractContentSnapshot] Section illisible :', sectionEnEchec.error);
+			return { data: null, error: new Error(sectionEnEchec.error.message) };
+		}
 
-		// Get checklist items
-		const { data: checklistItems } = await supabase
-			.from('chapter_checklist_items')
-			.select('*')
-			.eq('chapter_id', chapterId)
-			.order('display_order', { ascending: true });
-
-		// Get exercises
-		const { data: exercises } = await supabase
-			.from('chapter_exercises')
-			.select('*')
-			.eq('chapter_id', chapterId)
-			.order('display_order', { ascending: true });
+		const documents = documentsRes.data;
+		const quizQuestions = quizQuestionsRes.data;
+		const checklistItems = checklistItemsRes.data;
+		const exercises = exercisesRes.data;
 
 		// Build snapshot
 		const snapshot: TemplateContentSnapshot = {

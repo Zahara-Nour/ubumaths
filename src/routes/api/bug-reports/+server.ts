@@ -122,7 +122,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
 
 		// Fetch recent errors for this user
-		const { data: recentErrors } = await locals.supabase
+		const { data: recentErrors, error: recentErrorsError } = await locals.supabase
 			.from('error_logs')
 			.select(
 				'id, error_type, message, severity, created_at, url, file_path, line_number, stack_trace'
@@ -132,8 +132,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.order('created_at', { ascending: false })
 			.limit(10);
 
+		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+		// laisse une trace.
+		if (recentErrorsError) {
+			console.error('Enrichissement illisible :', recentErrorsError);
+		}
+
 		// Fetch recent slow requests
-		const { data: slowRequests } = await locals.supabase
+		const { data: slowRequests, error: slowRequestsError } = await locals.supabase
 			.from('error_logs')
 			.select('url, response_time, status_code, created_at')
 			.eq('user_id', user.id)
@@ -141,6 +147,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.gte('created_at', fiveMinutesAgo)
 			.order('created_at', { ascending: false })
 			.limit(5);
+
+		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+		// laisse une trace.
+		if (slowRequestsError) {
+			console.error('Enrichissement illisible :', slowRequestsError);
+		}
 
 		// Build enriched context
 		const enrichedContext = {

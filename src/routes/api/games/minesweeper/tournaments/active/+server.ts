@@ -128,10 +128,17 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					canParticipate = true;
 				} else {
 					// Check if any of student's classes are in this tournament
-					const { data: tournamentClasses } = await locals.supabase
+					const { data: tournamentClasses, error: tournamentClassesError } = await locals.supabase
 						.from('minesweeper_tournament_classes')
 						.select('class_id')
 						.eq('tournament_id', tournament.id);
+
+					// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+					// panne doit se distinguer d'un refus mérité.
+					if (tournamentClassesError && tournamentClassesError.code !== 'PGRST116') {
+						console.error('Contrôle d’accès impossible :', tournamentClassesError);
+						throw error(500, 'Impossible de vérifier votre accès');
+					}
 
 					const tournamentClassIds = (tournamentClasses || []).map((tc) => tc.class_id);
 					canParticipate = studentClassIds.some((cid) => tournamentClassIds.includes(cid));
@@ -156,12 +163,18 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				const wonGames = myGames.filter((g) => g.status === 'won' && g.time_seconds);
 
 				// Get average score from standings view (already calculated)
-				const { data: standing } = await locals.supabase
+				const { data: standing, error: standingError } = await locals.supabase
 					.from('minesweeper_tournament_standings')
 					.select('average_score')
 					.eq('tournament_id', tournament.id)
 					.eq('student_id', user.id)
 					.single();
+
+				// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+				// laisse une trace.
+				if (standingError) {
+					console.error('Enrichissement illisible :', standingError);
+				}
 
 				const myAverageScore = standing?.average_score ? Math.round(standing.average_score) : null;
 

@@ -94,20 +94,33 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// 5. Get school name from class membership
-	const { data: classInfo } = await supabase
+	const { data: classInfo, error: classInfoError } = await supabase
 		.from('class_members')
 		.select('classes(schools(name))')
 		.eq('student_id', student_id)
 		.limit(1)
 		.single();
 
+	// Le nom de l'école n'est qu'un ornement du courriel ; PGRST116 signifie
+	// « élève hors classe », cas normal.
+	if (classInfoError && classInfoError.code !== 'PGRST116') {
+		console.error('[Send Consent Email] École illisible :', classInfoError);
+	}
+
 	const schoolName = (classInfo?.classes as { schools?: { name?: string } })?.schools?.name ?? null;
 
 	// 6. Check total emails sent for this student (across ALL consent records)
-	const { data: allConsents } = await supabase
+	const { data: allConsents, error: allConsentsError } = await supabase
 		.from('parental_consents')
 		.select('email_count')
 		.eq('student_id', student_id);
+
+	// ⚠️ Ce décompte borne un quota. Une panne le ramenait à zéro, donc à
+	// « quota intact » : la limite sautait aussi souvent que la requête échouait.
+	if (allConsentsError) {
+		console.error('Quota illisible :', allConsentsError);
+		throw error(500, 'Impossible de vérifier le quota');
+	}
 
 	const totalEmailsSent = (allConsents || []).reduce((sum, c) => sum + (c.email_count || 0), 0);
 
@@ -119,13 +132,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// 7. Check existing consent record or create new one
-	const { data: existingConsent } = await supabase
+	const { data: existingConsent, error: existingConsentError } = await supabase
 		.from('parental_consents')
 		.select('id, email_count, status, consent_token, expires_at')
 		.eq('student_id', student_id)
 		.order('created_at', { ascending: false })
 		.limit(1)
 		.single();
+
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (existingConsentError && existingConsentError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', existingConsentError);
+		throw error(500, 'Impossible de vérifier l’état actuel');
+	}
 
 	let consentToken: string;
 	let expiresAt: Date;

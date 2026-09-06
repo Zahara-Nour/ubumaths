@@ -856,10 +856,16 @@ describe('Template Actions', () => {
 					data: { role: 'teacher' },
 					error: null
 				})
-				// Mock class ownership check - different teacher
+				// Mock class ownership check - different teacher.
+				// PostgREST signale « zéro ligne » sur un `.single()` par le code
+				// PGRST116. Sans ce code, la simulation décrivait une PANNE, pas une
+				// absence — et les deux n'appellent pas la même réponse.
 				.mockResolvedValueOnce({
 					data: null,
-					error: { message: 'Not found' }
+					error: {
+						code: 'PGRST116',
+						message: 'JSON object requested, multiple (or no) rows returned'
+					}
 				});
 
 			const formData = new FormData();
@@ -884,6 +890,35 @@ describe('Template Actions', () => {
 			expect(result).toHaveProperty('status', 403);
 			expect(result).toHaveProperty('data.error');
 			expect((result as { data: { error: string } }).data.error).toContain('refus');
+		});
+
+		it('ne déguise pas une panne de lecture en accès refusé', async () => {
+			// Une erreur autre que PGRST116 n'est pas « la classe n'est pas à vous » :
+			// c'est « je n'ai pas pu le vérifier ». Confondre les deux rendait un
+			// refus indiscernable d'un refus mérité.
+			const { actions } = await import('../[templateId]/+page.server');
+
+			const mockSupabase = createMockSupabase();
+			const locals = createMockLocals(mockTeacher.id, mockSupabase);
+
+			mockSupabase._mockChain.single
+				.mockResolvedValueOnce({ data: { role: 'teacher' }, error: null })
+				.mockResolvedValueOnce({
+					data: null,
+					error: { code: '42501', message: 'permission denied' }
+				});
+
+			const formData = new FormData();
+			formData.append('classId', TEST_IDS.class);
+			formData.append('title', 'Chapter from template');
+
+			const result = await actions.instantiate({
+				request: new Request('http://localhost', { method: 'POST', body: formData }),
+				locals,
+				params: { templateId: TEST_IDS.template }
+			} as never);
+
+			expect(result).toHaveProperty('status', 500);
 		});
 	});
 });

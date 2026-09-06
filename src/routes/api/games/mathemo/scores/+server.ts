@@ -160,13 +160,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 			if (theoreticalReward > 0) {
 				// Get school_id
-				const { data: membership } = await supabase
+				const { data: membership, error: membershipError } = await supabase
 					.from('class_members')
 					.select('classes!inner(school_id)')
 					.eq('student_id', user.id)
 					.eq('status', 'active')
 					.limit(1)
 					.maybeSingle();
+
+				// Cette liste borne la portée du classement. Vidée par une panne, elle
+				// affiche un classement amputé sans le dire.
+				if (membershipError) {
+					console.error('Périmètre illisible :', membershipError);
+					throw error(500, 'Impossible de déterminer le périmètre');
+				}
 
 				type MembershipWithClass = { classes: { school_id: string } };
 				const schoolId = (membership as MembershipWithClass | null)?.classes?.school_id;
@@ -263,19 +270,32 @@ async function checkAndAwardMathemoMilestones(
 	// SELECTs below use the caller's authenticated client (RLS-checked).
 	// Writes (INSERT + RPC) switch to the service-role client further down —
 	// see the `createServiceRoleClient()` call after the `existingIds` set.
-	const { data: achievements } = await supabase
+	const { data: achievements, error: achievementsError } = await supabase
 		.from('achievements')
 		.select('id, name, metadata')
 		.in('id', eligibleSlugs);
 
+	if (achievementsError) {
+		console.error('Lecture impossible :', achievementsError);
+		throw error(500, 'Impossible de charger les données');
+	}
+
 	if (!achievements || achievements.length === 0) return;
 
 	const achievementIds = achievements.map((a) => a.id);
-	const { data: existing } = await supabase
+	const { data: existing, error: existingError } = await supabase
 		.from('student_achievements')
 		.select('achievement_id')
 		.eq('student_id', userId)
 		.in('achievement_id', achievementIds);
+
+	// ⚠️ Cette lecture dit si la récompense a DÉJÀ été accordée. Une panne la
+	// rendait absente, et le succès repartait pour un tour — gidouilles créditées
+	// une seconde fois.
+	if (existingError) {
+		console.error('Succès déjà obtenus illisibles :', existingError);
+		throw error(500, 'Impossible de vérifier vos succès');
+	}
 
 	const existingIds = new Set((existing || []).map((e) => e.achievement_id));
 

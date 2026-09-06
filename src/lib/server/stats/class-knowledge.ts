@@ -188,23 +188,36 @@ export async function getClassCapacityGrid(
 	if (opts.includeAllCycle) {
 		// Toggle "Tout le cycle" : on étend aux capacités du même niveau scolaire
 		// que la classe, même non touchées. Cf. plan §Phase 0 #2.
-		const { data: classRow } = await supabase
+		const { data: classRow, error: classRowError } = await supabase
 			.from('classes')
 			.select('grade')
 			.eq('id', classId)
 			.maybeSingle();
 
+		// Sans le niveau de la classe, le bouton « Tout le cycle » n'étend rien :
+		// le professeur croit avoir tout affiché alors qu'il ne voit que les
+		// capacités déjà travaillées.
+		if (classRowError) {
+			console.error('[getClassCapacityGrid] Niveau de classe illisible :', classRowError);
+			throw new Error(classRowError.message);
+		}
+
 		if (classRow?.grade) {
 			// Le grade vit désormais sur le thème, en code canonique — le même que
 			// `classes.grade`. (Avant la refonte, `skills.niveau_scolaire` valait
 			// '6e' alors que `classes.grade` vaut '6' : le filtre ne matchait jamais.)
-			const { data: cyclePoints } = await supabase
+			const { data: cyclePoints, error: cyclePointsError } = await supabase
 				.from('curriculum_points')
 				.select(
 					'id, name, curriculum_objectives!inner(theme_id, curriculum_themes!inner(name, code, grade))'
 				)
 				.eq('curriculum_objectives.curriculum_themes.grade', classRow.grade)
 				.is('archived_at', null);
+
+			if (cyclePointsError) {
+				console.error('[getClassCapacityGrid] Points du cycle illisibles :', cyclePointsError);
+				throw new Error(cyclePointsError.message);
+			}
 
 			type CycleRow = {
 				id: string;
@@ -349,32 +362,49 @@ export async function getStudentRetentionCurve(
 	themeCode: string,
 	weeks = 8
 ): Promise<RetentionPoint[]> {
-	const { data: pointRows } = await supabase
+	const { data: pointRows, error: pointRowsError } = await supabase
 		.from('curriculum_points')
 		.select('id, curriculum_objectives!inner(curriculum_themes!inner(code))')
 		.eq('curriculum_objectives.curriculum_themes.code', themeCode)
 		.is('archived_at', null);
 
+	// Une courbe de rétention vide se lit « cet élève ne révise pas ». Mieux vaut
+	// que le widget dise qu'il n'a pas pu lire.
+	if (pointRowsError) {
+		console.error('[getStudentRetentionCurve] Points illisibles :', pointRowsError);
+		throw new Error(pointRowsError.message);
+	}
+
 	type PointRow = { id: string };
 	const pointIds = ((pointRows ?? []) as unknown as PointRow[]).map((p) => p.id);
 	if (pointIds.length === 0) return [];
 
-	const { data: tagRows } = await supabase
+	const { data: tagRows, error: tagRowsError } = await supabase
 		.from('question_template_points')
 		.select('template_id')
 		.in('point_id', pointIds);
+
+	if (tagRowsError) {
+		console.error('[getStudentRetentionCurve] Étiquetage illisible :', tagRowsError);
+		throw new Error(tagRowsError.message);
+	}
 
 	const templateIds = [...new Set((tagRows ?? []).map((r) => r.template_id))];
 	if (templateIds.length === 0) return [];
 
 	const cutoffMs = Date.now() - weeks * 7 * 24 * 3600 * 1000;
 
-	const { data: stats } = await supabase
+	const { data: stats, error: statsError } = await supabase
 		.from('srs_card_stats')
 		.select('review_history')
 		.eq('user_id', studentId)
 		.eq('card_reference_type', 'template')
 		.in('card_reference_id', templateIds);
+
+	if (statsError) {
+		console.error('[getStudentRetentionCurve] Historique de révision illisible :', statsError);
+		throw new Error(statsError.message);
+	}
 
 	type ReviewEntry = {
 		date: string;
@@ -456,11 +486,18 @@ export async function getClassActivityHeatmap(
 
 	const cutoff = new Date(Date.now() - days * 24 * 3600 * 1000).toISOString();
 
-	const { data: attempts } = await supabase
+	const { data: attempts, error: attemptsError } = await supabase
 		.from('skill_attempts')
 		.select('student_id, created_at, success, source')
 		.in('student_id', studentIds)
 		.gte('created_at', cutoff);
+
+	// Une carte de chaleur vide dit « personne n'a rien fait cette semaine ».
+	// C'est un jugement, pas une absence de donnée.
+	if (attemptsError) {
+		console.error('[getClassActivityHeatmap] Tentatives illisibles :', attemptsError);
+		throw new Error(attemptsError.message);
+	}
 
 	type AttRow = {
 		student_id: string;
@@ -533,12 +570,17 @@ export async function getStudentGradeHistogram(
 ): Promise<GradeHistogramBucket[]> {
 	const cutoff = new Date(Date.now() - days * 24 * 3600 * 1000).toISOString();
 
-	const { data: rows } = await supabase
+	const { data: rows, error: rowsError } = await supabase
 		.from('skill_attempts')
 		.select('grade, created_at, template_id')
 		.eq('student_id', studentId)
 		.gte('created_at', cutoff)
 		.not('grade', 'is', null);
+
+	if (rowsError) {
+		console.error('[getStudentGradeHistogram] Tentatives illisibles :', rowsError);
+		throw new Error(rowsError.message);
+	}
 
 	type AttRow = { grade: number | null; created_at: string; template_id: string | null };
 	const attempts = (rows ?? []) as AttRow[];
@@ -557,12 +599,17 @@ export async function getStudentGradeHistogram(
 
 	const templateIds = [...new Set(attempts.map((a) => a.template_id).filter(Boolean))] as string[];
 	if (templateIds.length > 0) {
-		const { data: stats } = await supabase
+		const { data: stats, error: statsError } = await supabase
 			.from('srs_card_stats')
 			.select('card_reference_id, stability')
 			.eq('user_id', studentId)
 			.eq('card_reference_type', 'template')
 			.in('card_reference_id', templateIds);
+
+		if (statsError) {
+			console.error('[getStudentGradeHistogram] Stabilité illisible :', statsError);
+			throw new Error(statsError.message);
+		}
 
 		type StatRow = { card_reference_id: string; stability: number | null };
 		const stabByTpl = new Map<string, number>();

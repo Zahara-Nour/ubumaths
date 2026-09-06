@@ -84,7 +84,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { exerciseId, assignmentId, statement, topic, classId } = validation.data;
 
 	// Check if conversation already exists
-	const { data: existing } = await locals.supabase
+	const { data: existing, error: existingError } = await locals.supabase
 		.from('tutor_conversations')
 		.select('id')
 		.eq('student_id', user.id)
@@ -92,16 +92,32 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.eq('assignment_id', assignmentId)
 		.maybeSingle();
 
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (existingError && existingError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', existingError);
+		throw error(500, 'Impossible de vérifier l’état actuel');
+	}
+
 	if (existing) {
 		throw error(409, 'Une conversation existe déjà pour cet exercice');
 	}
 
 	// Fetch the exercise correction server-side (from variations)
-	const { data: exercise } = await locals.supabase
+	const { data: exercise, error: exerciseError } = await locals.supabase
 		.from('exercises')
 		.select('id, shared, variations')
 		.eq('id', exerciseId)
 		.single();
+
+	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// panne prenait le même visage et faisait conclure « rien ici », donc créer
+	// par-dessus ce qu'on n'avait simplement pas su lire.
+	if (exerciseError && exerciseError.code !== 'PGRST116') {
+		console.error('Lecture impossible :', exerciseError);
+		throw error(500, 'Impossible de vérifier l’état actuel');
+	}
 
 	// Use variations as single source of truth
 	const content = exercise

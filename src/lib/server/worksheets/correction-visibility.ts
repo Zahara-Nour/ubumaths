@@ -84,12 +84,21 @@ export async function isCorrectionVisible(
 	}
 
 	// Step 3: Check exercise-level override
-	const { data: exerciseSetting } = await supabase
+	const { data: exerciseSetting, error: exerciseSettingError } = await supabase
 		.from('worksheet_assignment_exercise_settings')
 		.select('show_correction')
 		.eq('assignment_id', assignmentId)
 		.eq('worksheet_exercise_id', worksheetExerciseId)
 		.maybeSingle();
+
+	// ⚠️ Cette exception est ce qui MASQUE une correction. Une panne la rendait
+	// `null`, on retombait sur le défaut `?? true`, et la correction s'affichait
+	// alors que le professeur l'avait explicitement masquée. Sur un document
+	// noté, le repli sûr est de ne pas montrer.
+	if (exerciseSettingError) {
+		console.error('[correction-visibility] Exception illisible :', exerciseSettingError);
+		return false;
+	}
 
 	if (exerciseSetting !== null) {
 		// Override exists - use it
@@ -97,11 +106,18 @@ export async function isCorrectionVisible(
 	}
 
 	// Step 4: Use worksheet exercise default
-	const { data: worksheetExercise } = await supabase
+	const { data: worksheetExercise, error: worksheetExerciseError } = await supabase
 		.from('worksheet_exercises')
 		.select('correction_visible')
 		.eq('id', worksheetExerciseId)
 		.single();
+
+	// Même raison : le défaut est « visible », donc une panne ouvrait la
+	// correction au lieu de la retenir.
+	if (worksheetExerciseError) {
+		console.error('[correction-visibility] Réglage par défaut illisible :', worksheetExerciseError);
+		return false;
+	}
 
 	// Default to true if no setting found (original behavior)
 	return worksheetExercise?.correction_visible ?? true;
@@ -165,11 +181,20 @@ export async function getCorrectionVisibilityMap(
 	}
 
 	// Step 3: Fetch all exercise-level overrides for this assignment
-	const { data: exerciseSettings } = await supabase
+	const { data: exerciseSettings, error: exerciseSettingsError } = await supabase
 		.from('worksheet_assignment_exercise_settings')
 		.select('worksheet_exercise_id, show_correction')
 		.eq('assignment_id', assignmentId)
 		.in('worksheet_exercise_id', worksheetExerciseIds);
+
+	// Sans les exceptions, chaque exercice retombe sur son défaut — souvent
+	// « visible ». Une panne dévoilerait donc les corrections masquées : on
+	// renvoie une carte entièrement fermée.
+	if (exerciseSettingsError) {
+		console.error('[correction-visibility] Exceptions illisibles :', exerciseSettingsError);
+		for (const id of worksheetExerciseIds) visibilityMap.set(id, false);
+		return visibilityMap;
+	}
 
 	// Create a map of overrides
 	const overrideMap = new Map<string, boolean>();
@@ -180,10 +205,19 @@ export async function getCorrectionVisibilityMap(
 	}
 
 	// Step 4: Fetch default visibility for all exercises
-	const { data: worksheetExercises } = await supabase
+	const { data: worksheetExercises, error: worksheetExercisesError } = await supabase
 		.from('worksheet_exercises')
 		.select('id, correction_visible')
 		.in('id', worksheetExerciseIds);
+
+	if (worksheetExercisesError) {
+		console.error(
+			'[correction-visibility] Réglages par défaut illisibles :',
+			worksheetExercisesError
+		);
+		for (const id of worksheetExerciseIds) visibilityMap.set(id, false);
+		return visibilityMap;
+	}
 
 	// Create a map of defaults
 	const defaultMap = new Map<string, boolean>();

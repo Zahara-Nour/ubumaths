@@ -64,11 +64,17 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	}
 
 	// Get class info
-	const { data: classData } = await locals.supabase
+	const { data: classData, error: classDataError } = await locals.supabase
 		.from('classes')
 		.select('id, name')
 		.eq('id', classId)
 		.single();
+
+	// PGRST116 = la classe n'existe pas ; le repli d'affichage existe déjà.
+	if (classDataError && classDataError.code !== 'PGRST116') {
+		console.error('Classe illisible :', classDataError);
+		throw error(500, 'Impossible de charger la classe');
+	}
 
 	// Get chapter content in parallel
 	const [documentsResult, quizResult, checklistResult, exercisesResult] = await Promise.all([
@@ -159,10 +165,16 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const exerciseDetails: Record<string, { id: string; title: string }> = {};
 	if (exercises.length > 0) {
 		const exerciseIds = exercises.map((e) => e.exerciseId);
-		const { data: exerciseData } = await locals.supabase
+		const { data: exerciseData, error: exerciseDataError } = await locals.supabase
 			.from('exercises')
 			.select('id, title')
 			.in('id', exerciseIds);
+
+		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+		// laisse une trace.
+		if (exerciseDataError) {
+			console.error('Enrichissement illisible :', exerciseDataError);
+		}
 
 		for (const e of exerciseData || []) {
 			exerciseDetails[e.id] = {
@@ -177,29 +189,60 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const availableTemplates: Array<{ id: string; question: string }> = [];
 
 	// Get available exercises for linking
-	const { data: availableExercises } = await locals.supabase
+	const { data: availableExercises, error: availableExercisesError } = await locals.supabase
 		.from('exercises')
 		.select('id, title')
 		.eq('created_by', user.id)
 		.order('created_at', { ascending: false })
 		.limit(100);
 
-	// Get student progress
-	const { data: checklistProgress } = await getStudentChecklistProgress(chapterId, locals.supabase);
+	if (availableExercisesError) {
+		console.error('Lecture impossible :', availableExercisesError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
-	const { data: quizResultsData } = await getChapterQuizResults(chapterId, locals.supabase);
+	// Get student progress
+	const { data: checklistProgress, error: checklistProgressError } =
+		await getStudentChecklistProgress(chapterId, locals.supabase);
+
+	// L'avancement des élèves : une panne le montrerait entièrement à zéro, ce
+	// que le professeur lirait comme « personne n'a rien fait ».
+	if (checklistProgressError) {
+		console.error('Avancement illisible :', checklistProgressError);
+		throw error(500, 'Impossible de charger l’avancement');
+	}
+
+	const { data: quizResultsData, error: quizResultsDataError } = await getChapterQuizResults(
+		chapterId,
+		locals.supabase
+	);
+
+	// L'avancement des élèves : une panne le montrerait entièrement à zéro, ce
+	// que le professeur lirait comme « personne n'a rien fait ».
+	if (quizResultsDataError) {
+		console.error('Avancement illisible :', quizResultsDataError);
+		throw error(500, 'Impossible de charger l’avancement');
+	}
 
 	// Get students in class
 	// `is_test` est une colonne de `profiles`, pas de `class_members` : le filtre
 	// rendait la requête ENTIÈRE invalide, donc `students` valait toujours `null`
 	// et le professeur ne voyait aucun élève sur la page de chapitre.
 	// L'embed passe en `!inner` pour que le filtre sur la table liée s'applique.
-	const { data: students } = await locals.supabase
+	const { data: students, error: studentsError } = await locals.supabase
 		.from('class_members')
 		.select('student_id, profiles!inner (id, full_name, avatar_url, is_test)')
 		.eq('class_id', classId)
 		.eq('status', 'active')
 		.eq('profiles.is_test', false);
+
+	// ⚠️ C'est la liste des élèves du chapitre. Vide par accident, elle dit au
+	// professeur que personne n'est inscrit — le même symptôme que le filtre
+	// `is_test` mal placé corrigé plus haut.
+	if (studentsError) {
+		console.error('Élèves illisibles :', studentsError);
+		throw error(500, 'Impossible de charger les élèves');
+	}
 
 	const studentList = (students || [])
 		.map((s) => {
@@ -215,7 +258,14 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.filter((s): s is { id: string; name: string; avatar: string | null } => s !== null);
 
 	// Check if chapter has template instantiation
-	const { data: templateInstantiation } = await checkForTemplateUpdates(chapterId, locals.supabase);
+	const { data: templateInstantiation, error: templateInstantiationError } =
+		await checkForTemplateUpdates(chapterId, locals.supabase);
+
+	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+	// laisse une trace.
+	if (templateInstantiationError) {
+		console.error('Enrichissement illisible :', templateInstantiationError);
+	}
 
 	return {
 		chapter: {
@@ -254,11 +304,19 @@ export const actions: Actions = {
 		const { chapterId } = params;
 
 		// Verify chapter exists (RLS enforces ownership)
-		const { data: chapter } = await locals.supabase
+		const { data: chapter, error: chapterError } = await locals.supabase
 			.from('class_chapters')
 			.select('id')
 			.eq('id', chapterId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
+		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
+		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
+		if (chapterError && chapterError.code !== 'PGRST116') {
+			console.error('[addChecklistItem] Lecture impossible :', chapterError);
+			return fail(500, { error: 'Verification impossible', action: 'addChecklistItem' });
+		}
 
 		if (!chapter) {
 			return fail(403, { error: 'Acces refuse', action: 'addChecklistItem' });
@@ -291,11 +349,19 @@ export const actions: Actions = {
 		const itemId = formData.get('itemId') as string;
 
 		// Verify item exists (RLS enforces ownership)
-		const { data: item } = await locals.supabase
+		const { data: item, error: itemError } = await locals.supabase
 			.from('chapter_checklist_items')
 			.select('id')
 			.eq('id', itemId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
+		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
+		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
+		if (itemError && itemError.code !== 'PGRST116') {
+			console.error('[updateChecklistItem] Lecture impossible :', itemError);
+			return fail(500, { error: 'Verification impossible', action: 'updateChecklistItem' });
+		}
 
 		if (!item) {
 			return fail(403, { error: 'Acces refuse', action: 'updateChecklistItem' });
@@ -336,11 +402,19 @@ export const actions: Actions = {
 		const itemId = formData.get('itemId') as string;
 
 		// Verify item exists (RLS enforces ownership)
-		const { data: item } = await locals.supabase
+		const { data: item, error: itemError } = await locals.supabase
 			.from('chapter_checklist_items')
 			.select('id')
 			.eq('id', itemId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
+		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
+		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
+		if (itemError && itemError.code !== 'PGRST116') {
+			console.error('[deleteChecklistItem] Lecture impossible :', itemError);
+			return fail(500, { error: 'Verification impossible', action: 'deleteChecklistItem' });
+		}
 
 		if (!item) {
 			return fail(403, { error: 'Acces refuse', action: 'deleteChecklistItem' });
@@ -362,11 +436,19 @@ export const actions: Actions = {
 		const { chapterId } = params;
 
 		// Verify chapter exists (RLS enforces ownership)
-		const { data: chapter } = await locals.supabase
+		const { data: chapter, error: chapterError } = await locals.supabase
 			.from('class_chapters')
 			.select('id')
 			.eq('id', chapterId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
+		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
+		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
+		if (chapterError && chapterError.code !== 'PGRST116') {
+			console.error('[addQuizQuestion] Lecture impossible :', chapterError);
+			return fail(500, { error: 'Verification impossible', action: 'addQuizQuestion' });
+		}
 
 		if (!chapter) {
 			return fail(403, { error: 'Acces refuse', action: 'addQuizQuestion' });
@@ -399,11 +481,19 @@ export const actions: Actions = {
 		const quizQuestionId = formData.get('quizQuestionId') as string;
 
 		// Verify question exists (RLS enforces ownership)
-		const { data: question } = await locals.supabase
+		const { data: question, error: questionError } = await locals.supabase
 			.from('chapter_quiz_questions')
 			.select('id')
 			.eq('id', quizQuestionId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
+		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
+		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
+		if (questionError && questionError.code !== 'PGRST116') {
+			console.error('[removeQuizQuestion] Lecture impossible :', questionError);
+			return fail(500, { error: 'Verification impossible', action: 'removeQuizQuestion' });
+		}
 
 		if (!question) {
 			return fail(403, { error: 'Acces refuse', action: 'removeQuizQuestion' });
@@ -425,11 +515,19 @@ export const actions: Actions = {
 		const { chapterId } = params;
 
 		// Verify chapter exists (RLS enforces ownership)
-		const { data: chapter } = await locals.supabase
+		const { data: chapter, error: chapterError } = await locals.supabase
 			.from('class_chapters')
 			.select('id')
 			.eq('id', chapterId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
+		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
+		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
+		if (chapterError && chapterError.code !== 'PGRST116') {
+			console.error('[linkExercise] Lecture impossible :', chapterError);
+			return fail(500, { error: 'Verification impossible', action: 'linkExercise' });
+		}
 
 		if (!chapter) {
 			return fail(403, { error: 'Acces refuse', action: 'linkExercise' });
@@ -458,11 +556,19 @@ export const actions: Actions = {
 		const chapterExerciseId = formData.get('chapterExerciseId') as string;
 
 		// Verify link exists (RLS enforces ownership)
-		const { data: link } = await locals.supabase
+		const { data: link, error: linkError } = await locals.supabase
 			.from('chapter_exercises')
 			.select('id')
 			.eq('id', chapterExerciseId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
+		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
+		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
+		if (linkError && linkError.code !== 'PGRST116') {
+			console.error('[unlinkExercise] Lecture impossible :', linkError);
+			return fail(500, { error: 'Verification impossible', action: 'unlinkExercise' });
+		}
 
 		if (!link) {
 			return fail(403, { error: 'Acces refuse', action: 'unlinkExercise' });
@@ -484,11 +590,19 @@ export const actions: Actions = {
 		const { chapterId } = params;
 
 		// Verify chapter exists (RLS enforces ownership)
-		const { data: chapter } = await locals.supabase
+		const { data: chapter, error: chapterError } = await locals.supabase
 			.from('class_chapters')
 			.select('id')
 			.eq('id', chapterId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
+		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
+		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
+		if (chapterError && chapterError.code !== 'PGRST116') {
+			console.error('[uploadDocument] Lecture impossible :', chapterError);
+			return fail(500, { error: 'Verification impossible', action: 'uploadDocument' });
+		}
 
 		if (!chapter) {
 			return fail(403, { error: 'Acces refuse', action: 'uploadDocument' });
@@ -577,11 +691,19 @@ export const actions: Actions = {
 		const { chapterId } = params;
 
 		// Verify chapter exists (RLS enforces ownership)
-		const { data: chapter } = await locals.supabase
+		const { data: chapter, error: chapterError } = await locals.supabase
 			.from('class_chapters')
 			.select('id')
 			.eq('id', chapterId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
+		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
+		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
+		if (chapterError && chapterError.code !== 'PGRST116') {
+			console.error('[addGoogleDriveDocument] Lecture impossible :', chapterError);
+			return fail(500, { error: 'Verification impossible', action: 'addGoogleDriveDocument' });
+		}
 
 		if (!chapter) {
 			return fail(403, { error: 'Acces refuse', action: 'addGoogleDriveDocument' });
@@ -647,11 +769,19 @@ export const actions: Actions = {
 		}
 
 		// Get document info and verify it exists (RLS enforces ownership)
-		const { data: document } = await locals.supabase
+		const { data: document, error: documentError } = await locals.supabase
 			.from('chapter_documents')
 			.select('id, storage_path, source_type')
 			.eq('id', documentId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
+		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
+		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
+		if (documentError && documentError.code !== 'PGRST116') {
+			console.error('[deleteDocument] Lecture impossible :', documentError);
+			return fail(500, { error: 'Verification impossible', action: 'deleteDocument' });
+		}
 
 		if (!document) {
 			return fail(403, { error: 'Acces refuse', action: 'deleteDocument' });
@@ -687,11 +817,19 @@ export const actions: Actions = {
 		const { chapterId } = params;
 
 		// Verify chapter exists (RLS enforces ownership)
-		const { data: chapter } = await locals.supabase
+		const { data: chapter, error: chapterError } = await locals.supabase
 			.from('class_chapters')
 			.select('id')
 			.eq('id', chapterId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
+		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
+		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
+		if (chapterError && chapterError.code !== 'PGRST116') {
+			console.error('[migrateToVersion] Lecture impossible :', chapterError);
+			return fail(500, { error: 'Verification impossible', action: 'migrateToVersion' });
+		}
 
 		if (!chapter) {
 			return fail(403, { error: 'Acces refuse', action: 'migrateToVersion' });
@@ -724,11 +862,19 @@ export const actions: Actions = {
 		const { chapterId } = params;
 
 		// Verify chapter exists (RLS enforces ownership)
-		const { data: chapter } = await locals.supabase
+		const { data: chapter, error: chapterError } = await locals.supabase
 			.from('class_chapters')
 			.select('id')
 			.eq('id', chapterId)
 			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
+		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
+		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
+		if (chapterError && chapterError.code !== 'PGRST116') {
+			console.error('[detachFromTemplate] Lecture impossible :', chapterError);
+			return fail(500, { error: 'Verification impossible', action: 'detachFromTemplate' });
+		}
 
 		if (!chapter) {
 			return fail(403, { error: 'Acces refuse', action: 'detachFromTemplate' });

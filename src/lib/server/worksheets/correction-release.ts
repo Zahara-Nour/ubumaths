@@ -59,37 +59,68 @@ async function getAllAssignmentStudentIds(
 ): Promise<Set<string>> {
 	const studentIds = new Set<string>();
 
+	// ⚠️ Cet ensemble décide QUI reçoit la correction. Une lecture en panne le
+	// réduit sans le dire : le professeur croit avoir libéré la correction pour
+	// toute la classe alors qu'une partie des élèves ne la verra jamais. On
+	// échoue donc plutôt que de libérer à un sous-ensemble silencieux.
+
 	// 1. Get students from multi-class junction table (new)
-	const { data: classAssignments } = await supabase
+	const { data: classAssignments, error: classAssignmentsError } = await supabase
 		.from('worksheet_assignment_classes')
 		.select('class_id')
 		.eq('assignment_id', assignmentId);
 
+	if (classAssignmentsError) {
+		console.error(
+			'[correction-release] Classes de l’affectation illisibles :',
+			classAssignmentsError
+		);
+		throw new Error(classAssignmentsError.message);
+	}
+
 	if (classAssignments && classAssignments.length > 0) {
 		const classIds = classAssignments.map((ca) => ca.class_id);
-		const { data: classMembers } = await supabase
+		const { data: classMembers, error: classMembersError } = await supabase
 			.from('class_members')
 			.select('student_id')
 			.in('class_id', classIds);
+
+		if (classMembersError) {
+			console.error('[correction-release] Membres de classe illisibles :', classMembersError);
+			throw new Error(classMembersError.message);
+		}
 
 		classMembers?.forEach((m) => studentIds.add(m.student_id));
 	}
 
 	// 2. Legacy: Also check class_id field for backward compat
 	if (legacyClassId && !classAssignments?.some((ca) => ca.class_id === legacyClassId)) {
-		const { data: legacyMembers } = await supabase
+		const { data: legacyMembers, error: legacyMembersError } = await supabase
 			.from('class_members')
 			.select('student_id')
 			.eq('class_id', legacyClassId);
+
+		if (legacyMembersError) {
+			console.error('[correction-release] Membres (héritage) illisibles :', legacyMembersError);
+			throw new Error(legacyMembersError.message);
+		}
 
 		legacyMembers?.forEach((m) => studentIds.add(m.student_id));
 	}
 
 	// 3. Get individual student assignments
-	const { data: individualStudents } = await supabase
+	const { data: individualStudents, error: individualStudentsError } = await supabase
 		.from('worksheet_assignment_students')
 		.select('student_id')
 		.eq('assignment_id', assignmentId);
+
+	if (individualStudentsError) {
+		console.error(
+			'[correction-release] Affectations individuelles illisibles :',
+			individualStudentsError
+		);
+		throw new Error(individualStudentsError.message);
+	}
 
 	individualStudents?.forEach((is) => studentIds.add(is.student_id));
 
@@ -100,11 +131,19 @@ async function getAllAssignmentStudentIds(
  * Check if user is admin
  */
 async function isUserAdmin(supabase: SupabaseClient, userId: string): Promise<boolean> {
-	const { data: profile } = await supabase
+	const { data: profile, error } = await supabase
 		.from('profiles')
 		.select('role')
 		.eq('id', userId)
 		.single();
+
+	// Rester fermé par défaut est le bon repli, mais un administrateur écarté par
+	// une panne de lecture doit laisser une trace : sans elle, le refus est
+	// indiscernable d'un refus légitime.
+	if (error) {
+		console.error('[correction-release] Rôle illisible :', error);
+		return false;
+	}
 
 	return profile?.role === 'admin';
 }

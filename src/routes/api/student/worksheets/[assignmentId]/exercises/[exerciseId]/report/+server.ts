@@ -79,9 +79,19 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	try {
 		// Step 1: Verify student has access to this assignment
-		const { data: canAccess } = await locals.supabase.rpc('can_access_assignment', {
-			p_assignment_id: assignmentId
-		});
+		const { data: canAccess, error: canAccessError } = await locals.supabase.rpc(
+			'can_access_assignment',
+			{
+				p_assignment_id: assignmentId
+			}
+		);
+
+		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+		// panne doit se distinguer d'un refus mérité.
+		if (canAccessError && canAccessError.code !== 'PGRST116') {
+			console.error('Contrôle d’accès impossible :', canAccessError);
+			throw error(500, 'Impossible de vérifier votre accès');
+		}
 
 		if (!canAccess) {
 			throw error(404, 'Devoir non trouve');

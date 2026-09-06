@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 /**
  * Load global riddle leaderboard
@@ -28,10 +28,15 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.map((entry) => entry.student_id)
 		.filter((id): id is string => id !== null);
 
-	const { data: profiles } = await supabase
+	const { data: profiles, error: profilesError } = await supabase
 		.from('profiles')
 		.select('id, firstname, lastname, avatar_url')
 		.in('id', studentIds);
+
+	if (profilesError) {
+		console.error('Lecture impossible :', profilesError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	// Create profile map
 	const profileMap = new Map();
