@@ -145,13 +145,15 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	// Update exercise (tags are handled separately via the junction)
 	// `validation_config` part dans une colonne jsonb : conversion explicite,
 	// et le type d'écriture généré contrôle les autres champs.
+	const { validation_config, ...reste } = updateData;
+
 	const { data: updatedExercise, error: updateError } = await supabase
 		.from('python_exercises')
 		.update({
-			...updateData,
-			...(updateData.validation_config !== undefined
-				? { validation_config: toJson(updateData.validation_config) }
-				: {})
+			// Le champ jsonb est retiré du spread puis réinjecté converti : le
+			// laisser passer garderait son type métier dans l'union.
+			...reste,
+			...(validation_config !== undefined ? { validation_config: toJson(validation_config) } : {})
 		})
 		.eq('id', exerciseId)
 		.select()
