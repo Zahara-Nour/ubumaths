@@ -39,7 +39,8 @@
 			reason: string;
 			expires_at: string | null;
 			created_at: string;
-			user?: { firstname: string; lastname: string };
+			// Prénom et nom sont facultatifs sur un profil : le repli existe déjà.
+			user?: { firstname: string | null; lastname: string | null };
 			conversation?: { name: string | null };
 		}>;
 		onUnrestrict?: (restrictionId: string) => void;
@@ -158,11 +159,11 @@
 	/**
 	 * Get user name
 	 */
-	function getUserName(user?: { firstname: string; lastname: string }): string {
+	function getUserName(user?: { firstname: string | null; lastname: string | null }): string {
 		if (!user) {
 			return 'Utilisateur inconnu';
 		}
-		return `${user.firstname} ${user.lastname}`.trim() || 'Utilisateur inconnu';
+		return `${user.firstname ?? ''} ${user.lastname ?? ''}`.trim() || 'Utilisateur inconnu';
 	}
 </script>
 

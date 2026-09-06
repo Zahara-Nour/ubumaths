@@ -13,7 +13,13 @@ import {
 } from '$lib/utils/game/combat';
 import { selectSpellSchema, submitAnswerSchema } from '$lib/server/validation/navadra';
 import { validateUuidParam } from '$lib/server/validation/params';
-import { toGameMonster, toGameSpell, asCombatFlow, toGamePlayer } from '$lib/types/game';
+import {
+	toGameMonster,
+	toGameSpell,
+	asCombatFlow,
+	toGamePlayer,
+	toGameChallenge
+} from '$lib/types/game';
 import type { GameSpell } from '$lib/types/game';
 
 /**
@@ -170,7 +176,8 @@ export const actions: Actions = {
 		return {
 			success: true,
 			spell,
-			challenge: randomChallenge
+			// `element` est du texte et trois colonnes sont du jsonb.
+			challenge: toGameChallenge(randomChallenge)
 		};
 	},
 

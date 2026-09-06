@@ -332,6 +332,48 @@ export interface PyrsGained {
 // Game Challenges
 // ============================================================================
 
+/**
+ * Narrows a `game_challenges` row to {@link GameChallenge}.
+ *
+ * `element` is plain text and `view_config`, `variables` and `answer` are jsonb
+ * columns. An unknown element falls back to `base`, the neutral one : a défi
+ * doit rester jouable même si son élément a été écrit par une révision
+ * antérieure.
+ */
+export function toGameChallenge(row: {
+	id: string;
+	slug: string;
+	element: string;
+	category: string;
+	difficulty: number;
+	timer: number;
+	challenge_type: number;
+	question: string;
+	view_config: unknown;
+	variables: unknown;
+	answer: unknown;
+	hint: string | null;
+	show_answer: unknown;
+	times_attempted: number;
+	times_succeeded: number;
+	avg_time_taken: number | null;
+	is_active: boolean;
+	created_by: string | null;
+	created_at: string;
+	updated_at: string;
+}): GameChallenge {
+	const objet = (v: unknown) =>
+		typeof v === 'object' && v !== null && !Array.isArray(v) ? (v as Record<string, unknown>) : {};
+
+	return {
+		...row,
+		element: row.element === 'base' ? 'base' : asGameElement(row.element),
+		view_config: objet(row.view_config),
+		variables: row.variables as ChallengeVariables,
+		answer: row.answer as ChallengeAnswer
+	};
+}
+
 export interface GameChallenge {
 	id: string;
 	slug: string;

@@ -63,7 +63,8 @@
 			</thead>
 			<tbody class="divide-y divide-border">
 				{#each rankedPlayers as entry (entry.student_id)}
-					{@const studentRank = studentRankMap.get(entry.student_id)}
+					<!-- `student_id` est nullable : une ligne sans identifiant n'a pas de rang. -->
+					{@const studentRank = entry.student_id ? studentRankMap.get(entry.student_id) : undefined}
 					<tr
 						class="transition-colors hover:bg-muted/50 {entry.student_id === currentUserId
 							? 'bg-primary/10'
