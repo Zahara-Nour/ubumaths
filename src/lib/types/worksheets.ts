@@ -803,6 +803,26 @@ export interface WorksheetTextTranslation {
 export type RowTranslations = Partial<Record<TranslatedLocale, WorksheetTextTranslation>>;
 
 /**
+ * Narrows the `placeholders` jsonb column to {@link TemplatePlaceholder}[].
+ *
+ * Entries missing the two fields the editor always reads — `key` and `type` —
+ * are dropped: an unnamed placeholder cannot be substituted, and would appear
+ * in the palette as a blank chip.
+ */
+export function asTemplatePlaceholders(value: unknown): TemplatePlaceholder[] {
+	if (!Array.isArray(value)) return [];
+
+	return value.filter((p): p is TemplatePlaceholder => {
+		if (typeof p !== 'object' || p === null || Array.isArray(p)) return false;
+		const item = p as Record<string, unknown>;
+		return (
+			typeof item.key === 'string' &&
+			(item.type === 'text' || item.type === 'date' || item.type === 'dynamic')
+		);
+	});
+}
+
+/**
  * Narrows a `worksheets` row to {@link WorksheetRow}.
  *
  * `type`, `status`, `config` and `translations` are all looser in Postgres —

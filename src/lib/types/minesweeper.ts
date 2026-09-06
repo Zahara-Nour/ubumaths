@@ -51,6 +51,24 @@ export interface GridStateDTO {
 	adjacentCounts: Record<string, number>;
 }
 
+/**
+ * Narrows the `grid_state` jsonb column to {@link GridStateDTO}.
+ *
+ * A saved game whose grid is unreadable cannot be resumed : the caller starts a
+ * fresh one rather than restoring a board with no mines, which would look like
+ * an already-won game.
+ */
+export function asGridState(value: unknown): GridStateDTO | null {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
+	const grille = value as Record<string, unknown>;
+
+	if (typeof grille.rows !== 'number' || typeof grille.cols !== 'number') return null;
+	if (!Array.isArray(grille.mines) || !Array.isArray(grille.revealed)) return null;
+	if (!Array.isArray(grille.flagged)) return null;
+
+	return grille as unknown as GridStateDTO;
+}
+
 export interface GameState {
 	id?: string; // UUID if saved to database
 	difficulty: Difficulty;

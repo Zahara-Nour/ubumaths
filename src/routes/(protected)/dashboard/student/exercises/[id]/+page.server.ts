@@ -62,6 +62,9 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	return {
 		exercise: {
 			...exercise,
+			// `slug` est nullable en base, optionnel dans le type métier : Postgres
+			// dit « absent » avec `null`, TypeScript avec `undefined`.
+			slug: exercise.slug ?? undefined,
 			tags: (exercise.exercise_tags ?? []).map((et) => et.tags?.name).filter((n) => n !== undefined)
 		},
 		assignment,

@@ -10,6 +10,7 @@
 	import type { PageData, ActionData } from './$types';
 	import TypstEditor from '$lib/components/worksheets/TypstEditor.svelte';
 	import { COMMON_PLACEHOLDERS, STANDARD_TEMPLATE } from '$lib/worksheets/default-templates';
+	import { asTemplatePlaceholders } from '$lib/types/worksheets';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -33,7 +34,13 @@
 	let isValid = $derived(name.trim().length > 0 && templateContent.trim().length > 0);
 
 	// Available placeholders
-	let placeholders = $derived(data.template?.placeholders || COMMON_PLACEHOLDERS);
+	// `placeholders` est une colonne jsonb : les entrées sans clé ni type sont
+	// écartées plutôt qu'affichées en pastilles vides dans la palette.
+	let placeholders = $derived(
+		data.template?.placeholders
+			? asTemplatePlaceholders(data.template.placeholders)
+			: COMMON_PLACEHOLDERS
+	);
 
 	/**
 	 * Handle content change from editor

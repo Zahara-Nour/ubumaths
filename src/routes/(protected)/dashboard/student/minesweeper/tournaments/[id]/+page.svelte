@@ -11,7 +11,7 @@
 	import TournamentLeaderboard from '$lib/components/game/minesweeper/TournamentLeaderboard.svelte';
 	import { minesweeperStore } from '$lib/stores/minesweeper.svelte';
 	import { cn } from '$lib/utils';
-	import { DIFFICULTY_LABELS } from '$lib/types/minesweeper';
+	import { DIFFICULTY_LABELS, asGridState } from '$lib/types/minesweeper';
 	import type { Difficulty } from '$lib/types/minesweeper';
 	import type { PageData } from './$types';
 
@@ -87,7 +87,9 @@
 			seed: inProgressGame.seed,
 			game_number: inProgressGame.game_number,
 			started_at: inProgressGame.started_at,
-			grid_state: inProgressGame.grid_state,
+			// Colonne jsonb : une grille illisible empêche la reprise, et le store
+			// démarre alors une nouvelle partie.
+			grid_state: asGridState(inProgressGame.grid_state),
 			time_seconds: inProgressGame.time_seconds
 		});
 

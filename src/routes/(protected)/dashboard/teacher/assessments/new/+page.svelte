@@ -27,11 +27,14 @@
 	let cartItemsWithInstances = $derived(
 		cartItems.map((item) => {
 			const matchingTemplates = data.templates.filter(
-				(t: { theme: string; domain: string; subdomain: string | null; level: string }) =>
+				// `level` est un entier en base, pas une chaîne : l'annotation d'origine
+				// forçait une comparaison de types incompatibles, qui ne pouvait donc
+				// jamais être vraie — aucun modèle n'était retenu pour l'aperçu.
+				(t: { theme: string; domain: string; subdomain: string | null; level: number }) =>
 					t.theme === item.category.theme &&
 					t.domain === item.category.domain &&
 					(t.subdomain || null) === String(item.category.subdomain || null) &&
-					t.level === String(item.category.level)
+					t.level === Number(item.category.level)
 			);
 
 			let template = undefined;
