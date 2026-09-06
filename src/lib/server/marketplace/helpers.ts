@@ -114,7 +114,12 @@ export async function validateCardOwnership(
 		query = query.neq('locked_entity_id', excludeEntityId);
 	}
 
-	const { data: locks } = await query;
+	const { data: locks, error: locksError } = await query;
+
+	if (locksError) {
+		console.error('Lecture impossible :', locksError);
+		throw new Error(locksError.message);
+	}
 
 	return !locks || locks.length === 0;
 }

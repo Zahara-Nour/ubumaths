@@ -65,27 +65,50 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// 2. Student profile (also acts as the existence check)
-	const { data: studentRaw } = await supabase
+	const { data: studentRaw, error: studentRawError } = await supabase
 		.from('profiles')
 		.select('id, firstname, lastname, email')
 		.eq('id', studentId)
 		.single();
 
+	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
+	// panne doit se distinguer d'un refus mérité.
+	if (studentRawError && studentRawError.code !== 'PGRST116') {
+		console.error('Contrôle d’accès impossible :', studentRawError);
+		throw error(500, 'Impossible de vérifier votre accès');
+	}
+
 	if (!studentRaw) throw error(404, 'Élève introuvable');
 	const student: StudentSummary = studentRaw;
 
 	// 3. My classes
-	const { data: myClassesRaw } = await supabase.from('classes').select('id, name');
+	const { data: myClassesRaw, error: myClassesRawError } = await supabase
+		.from('classes')
+		.select('id, name');
+
+	// Cette liste borne la portée du classement. Vidée par une panne, elle
+	// affiche un classement amputé sans le dire.
+	if (myClassesRawError) {
+		console.error('Périmètre illisible :', myClassesRawError);
+		throw error(500, 'Impossible de déterminer le périmètre');
+	}
 	const myClassIds = (myClassesRaw ?? []).map((c) => c.id);
 
 	// 4. Class members of my classes (for the scope check)
 	let classesContainingStudent: string[] = [];
 	if (myClassIds.length > 0) {
-		const { data: classMembersRaw } = await supabase
+		const { data: classMembersRaw, error: classMembersRawError } = await supabase
 			.from('class_members')
 			.select('student_id, class_id')
 			.in('class_id', myClassIds)
 			.eq('status', 'active');
+
+		// Cette liste borne la portée du classement. Vidée par une panne, elle
+		// affiche un classement amputé sans le dire.
+		if (classMembersRawError) {
+			console.error('Périmètre illisible :', classMembersRawError);
+			throw error(500, 'Impossible de déterminer le périmètre');
+		}
 		classesContainingStudent = (classMembersRaw ?? [])
 			.filter((m) => m.student_id === studentId)
 			.map((m) => m.class_id as string);
@@ -93,11 +116,16 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const isInMyClasses = classesContainingStudent.length > 0;
 
 	// 5. My direct assignments to this student (any exo)
-	const { data: directAssignmentsRaw } = await supabase
+	const { data: directAssignmentsRaw, error: directAssignmentsRawError } = await supabase
 		.from('python_exercise_assignments')
 		.select('id, exercise_id')
 		.eq('assigned_by', user.id)
 		.eq('student_id', studentId);
+
+	if (directAssignmentsRawError) {
+		console.error('Lecture impossible :', directAssignmentsRawError);
+		throw error(500, 'Impossible de charger les données');
+	}
 	const directAssignedExoIds = new Set(
 		(directAssignmentsRaw ?? []).map((a) => a.exercise_id as string)
 	);
@@ -110,11 +138,16 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// 6. My class-level assignments touching this student (only on classes they belong to)
 	const classAssignedExoIds = new Set<string>();
 	if (classesContainingStudent.length > 0) {
-		const { data: classAssignmentsRaw } = await supabase
+		const { data: classAssignmentsRaw, error: classAssignmentsRawError } = await supabase
 			.from('python_exercise_assignments')
 			.select('id, exercise_id, class_id')
 			.eq('assigned_by', user.id)
 			.in('class_id', classesContainingStudent);
+
+		if (classAssignmentsRawError) {
+			console.error('Lecture impossible :', classAssignmentsRawError);
+			throw error(500, 'Impossible de charger les données');
+		}
 		for (const a of classAssignmentsRaw ?? []) {
 			if (a.exercise_id) classAssignedExoIds.add(a.exercise_id as string);
 		}
@@ -123,11 +156,16 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const assignedExoIds = new Set<string>([...directAssignedExoIds, ...classAssignedExoIds]);
 
 	// 7. The student's submissions across all exos (we filter by author_id below).
-	const { data: submissionsRaw } = await supabase
+	const { data: submissionsRaw, error: submissionsRawError } = await supabase
 		.from('python_exercise_submissions')
 		.select('exercise_id, is_correct, attempt_number, created_at')
 		.eq('student_id', studentId)
 		.order('created_at', { ascending: false });
+
+	if (submissionsRawError) {
+		console.error('Lecture impossible :', submissionsRawError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	const submissionsByExo = new Map<
 		string,
@@ -149,21 +187,31 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// 8. Among the submitted exos, the ones I authored (with details).
 	let authoredSubmittedRows: ExerciseSummary[] = [];
 	if (submittedExoIds.length > 0) {
-		const { data } = await supabase
+		const { data, error: dataError } = await supabase
 			.from('python_exercises')
 			.select('id, title, level, author_id')
 			.in('id', submittedExoIds)
 			.eq('author_id', user.id);
+
+		if (dataError) {
+			console.error('Lecture impossible :', dataError);
+			throw error(500, 'Impossible de charger les données');
+		}
 		authoredSubmittedRows = (data ?? []) as ExerciseSummary[];
 	}
 
 	// 9. Full rows for the assigned union (regardless of authorship).
 	let assignedRows: ExerciseSummary[] = [];
 	if (assignedExoIds.size > 0) {
-		const { data } = await supabase
+		const { data, error: dataError } = await supabase
 			.from('python_exercises')
 			.select('id, title, level, author_id')
 			.in('id', Array.from(assignedExoIds));
+
+		if (dataError) {
+			console.error('Lecture impossible :', dataError);
+			throw error(500, 'Impossible de charger les données');
+		}
 		assignedRows = (data ?? []) as ExerciseSummary[];
 	}
 
@@ -178,11 +226,17 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// 10. Mastery for the union × this student.
-	const { data: masteryRaw } = await supabase
+	const { data: masteryRaw, error: masteryRawError } = await supabase
 		.from('python_exercise_mastery')
 		.select('exercise_id, status')
 		.eq('student_id', studentId)
 		.in('exercise_id', unionExoIds);
+
+	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+	// laisse une trace.
+	if (masteryRawError) {
+		console.error('Enrichissement illisible :', masteryRawError);
+	}
 
 	type DbMasteryStatus = 'mastered' | 'needs_review';
 	const masteryByExo = new Map<string, DbMasteryStatus>(

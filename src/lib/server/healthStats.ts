@@ -152,7 +152,16 @@ async function fetch7DayErrorTrend(supabase: SupabaseClient<Database>): Promise<
  */
 async function fetchErrorStats(supabase: SupabaseClient<Database>) {
 	const client = supabase as UntypedSupabaseClient;
-	const { data: errorStats } = await client.from('admin_error_stats_24h').select('*').single();
+	const { data: errorStats, error: errorStatsError } = await client
+		.from('admin_error_stats_24h')
+		.select('*')
+		.single();
+
+	// Statistique d'administration : son absence ne ferme pas le tableau de bord,
+	// mais un « tout va bien » qu'on n'a pas pu lire doit se voir.
+	if (errorStatsError) {
+		console.error('Statistique illisible :', errorStatsError);
+	}
 
 	const trend7d = await fetch7DayErrorTrend(supabase);
 
@@ -308,7 +317,16 @@ async function fetchPerformanceStats(supabase: SupabaseClient<Database>) {
  */
 async function fetchContentStats(supabase: SupabaseClient<Database>) {
 	const client = supabase as UntypedSupabaseClient;
-	const { data: contentStats } = await client.from('admin_content_stats').select('*').single();
+	const { data: contentStats, error: contentStatsError } = await client
+		.from('admin_content_stats')
+		.select('*')
+		.single();
+
+	// Statistique d'administration : son absence ne ferme pas le tableau de bord,
+	// mais un « tout va bien » qu'on n'a pas pu lire doit se voir.
+	if (contentStatsError) {
+		console.error('Statistique illisible :', contentStatsError);
+	}
 
 	const stats = contentStats as AdminContentStats | null;
 
@@ -333,14 +351,28 @@ async function fetchJobStats(supabase: SupabaseClient<Database>) {
 	const client = supabase as UntypedSupabaseClient;
 
 	// Get recent job runs (last 20)
-	const { data: recentJobs } = await client
+	const { data: recentJobs, error: recentJobsError } = await client
 		.from('background_job_runs')
 		.select('job_name, status, started_at, completed_at, error_message, execution_time_ms')
 		.order('started_at', { ascending: false })
 		.limit(20);
 
+	// Statistique d'administration : son absence ne ferme pas le tableau de bord,
+	// mais un « tout va bien » qu'on n'a pas pu lire doit se voir.
+	if (recentJobsError) {
+		console.error('Statistique illisible :', recentJobsError);
+	}
+
 	// Get job status summary
-	const { data: jobSummary } = await client.from('admin_job_status').select('*');
+	const { data: jobSummary, error: jobSummaryError } = await client
+		.from('admin_job_status')
+		.select('*');
+
+	// Statistique d'administration : son absence ne ferme pas le tableau de bord,
+	// mais un « tout va bien » qu'on n'a pas pu lire doit se voir.
+	if (jobSummaryError) {
+		console.error('Statistique illisible :', jobSummaryError);
+	}
 
 	const jobs = (jobSummary ?? []) as AdminJobStatus[];
 

@@ -17,24 +17,37 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 	}
 
 	// Fetch game player
-	const { data: gamePlayer } = await supabase
+	const { data: gamePlayer, error: gamePlayerError } = await supabase
 		.from('game_players')
 		.select('*')
 		.eq('user_id', user.id)
 		.single();
+
+	// La fiche de joueur porte le niveau, les pyrs et l'avancement du tutoriel.
+	// Une panne la rendait absente, et l'écran repartait comme pour un joueur
+	// neuf — niveau 1, tutoriel au début.
+	if (gamePlayerError && gamePlayerError.code !== 'PGRST116') {
+		console.error('Fiche de joueur illisible :', gamePlayerError);
+		throw error(500, 'Impossible de charger votre profil de jeu');
+	}
 
 	if (!gamePlayer) {
 		throw error(404, 'Game profile not found');
 	}
 
 	// Fetch available monsters (not dead, spawned in last 24h)
-	const { data: availableMonsters } = await supabase
+	const { data: availableMonsters, error: availableMonstersError } = await supabase
 		.from('game_monsters')
 		.select('*')
 		.eq('is_dead', false)
 		.gte('spawned_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
 		.order('level', { ascending: true })
 		.limit(20);
+
+	if (availableMonstersError) {
+		console.error('Lecture impossible :', availableMonstersError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	return {
 		// `tutorial_stage` est du texte et `music_settings` du jsonb.
@@ -141,11 +154,19 @@ export const actions: Actions = {
 			monster = existingMonster;
 		} else {
 			// Generate random monster
-			const { data: gamePlayer } = await supabase
+			const { data: gamePlayer, error: gamePlayerError } = await supabase
 				.from('game_players')
 				.select('level')
 				.eq('user_id', user.id)
 				.single();
+
+			// La fiche de joueur porte le niveau, les pyrs et l'avancement du tutoriel.
+			// Une panne la rendait absente, et l'écran repartait comme pour un joueur
+			// neuf — niveau 1, tutoriel au début.
+			if (gamePlayerError && gamePlayerError.code !== 'PGRST116') {
+				console.error('Fiche de joueur illisible :', gamePlayerError);
+				throw error(500, 'Impossible de charger votre profil de jeu');
+			}
 
 			const monsterConfig = generateRandomMonster(gamePlayer?.level || 1);
 

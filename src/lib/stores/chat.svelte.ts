@@ -757,11 +757,17 @@ class ChatStore {
 		// If currentUser is missing, try to fetch it
 		if (!this.currentUser) {
 			logger.info('Fetching user profile for message send...');
-			const { data: profile } = await this.supabase
+			const { data: profile, error: profileError } = await this.supabase
 				.from('profiles')
 				.select('firstname, lastname, avatar_url')
 				.eq('id', this.userId)
 				.single();
+
+			// Statistique d'administration : son absence ne ferme pas le tableau de bord,
+			// mais un « tout va bien » qu'on n'a pas pu lire doit se voir.
+			if (profileError) {
+				console.error('Statistique illisible :', profileError);
+			}
 			this.currentUser = profile
 				? {
 						firstname: profile.firstname,

@@ -128,9 +128,11 @@ export const GET: RequestHandler = async ({ locals: { supabase } }) => {
 		.eq('date', today)
 		.single();
 
-	if (existingError) {
-		console.error('Lecture impossible :', existingError);
-		throw error(500, 'Impossible de charger les données');
+	// PGRST116 = aucune énigme programmée aujourd'hui : c'est précisément la
+	// réponse que cette route est censée donner, pas une panne.
+	if (existingError && existingError.code !== 'PGRST116') {
+		console.error('Énigme du jour illisible :', existingError);
+		throw error(500, 'Impossible de vérifier l’énigme du jour');
 	}
 
 	return json({

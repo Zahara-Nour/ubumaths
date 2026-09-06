@@ -161,7 +161,12 @@ export async function updateAssessment(
 	if (data.description !== undefined) updateData.description = data.description;
 	if (data.settings !== undefined) {
 		// Merge with existing settings
-		const { data: current } = await getAssessment(supabase, assessmentId);
+		const { data: current, error: currentError } = await getAssessment(supabase, assessmentId);
+
+		if (currentError) {
+			console.error('Lecture impossible :', currentError);
+			throw new Error(currentError.message);
+		}
 		if (current) {
 			const currentSettings =
 				current.settings && typeof current.settings === 'object' ? current.settings : {};
