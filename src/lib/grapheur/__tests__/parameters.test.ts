@@ -17,6 +17,7 @@ import {
 	derivativeCurve,
 	integralUnder,
 	osculatingCircleAt,
+	sampleCached,
 	tangentAt,
 	toAnalysisInputs
 } from '../analysis';
@@ -474,5 +475,51 @@ describe('analyse mémoïsée', () => {
 		const f = curve('x^2-2');
 
 		expect(toAnalysisInputs([f])[0].evaluator).toBe(toAnalysisInputs([f])[0].evaluator);
+	});
+});
+
+/**
+ * Déplacer l'abscisse de la tangente ne change ni l'aire, ni la courbe de `f`,
+ * ni celle de `f'`. Mais chaque rendu remet un objet fonction neuf, et sans
+ * mémoïsation tout était recalculé : intégration symbolique comprise, deux fois
+ * par image. Les curseurs saccadaient.
+ */
+describe('mémoïsation du tracé', () => {
+	it('rend la même aire pour la même expression et les mêmes bornes', () => {
+		const f = curve('x^3-3*x');
+
+		expect(integralUnder(f, -5, 5)).toBe(integralUnder(f, -5, 5));
+	});
+
+	it('recalcule l’aire quand une borne change', () => {
+		const f = curve('x^3-3*x');
+
+		expect(integralUnder(f, -5, 5)).not.toBe(integralUnder(f, -5, 4));
+	});
+
+	it('rend le même échantillonnage pour la même fenêtre', () => {
+		const ast = bindParameters(curve('x^3-3*x').ast!, {})!;
+
+		expect(sampleCached(ast, viewport, 300)).toBe(sampleCached(ast, viewport, 300));
+	});
+
+	it('ré-échantillonne quand la fenêtre ou la finesse change', () => {
+		const ast = bindParameters(curve('x^3-3*x').ast!, {})!;
+		const base = sampleCached(ast, viewport, 300);
+
+		expect(sampleCached(ast, { ...viewport, xMax: 20 }, 300)).not.toBe(base);
+		expect(sampleCached(ast, viewport, 100)).not.toBe(base);
+	});
+
+	it('rend la même courbe dérivée quand seule la tangente a bougé', () => {
+		const f = curve('x^3-3*x');
+
+		expect(derivativeCurve({ ...f, tangentAt: 1 })).toBe(derivativeCurve({ ...f, tangentAt: 9 }));
+	});
+
+	it('rend une courbe dérivée neuve quand le style change', () => {
+		const f = curve('x^3-3*x');
+
+		expect(derivativeCurve(f)).not.toBe(derivativeCurve({ ...f, color: '#ff0000' }));
 	});
 });
