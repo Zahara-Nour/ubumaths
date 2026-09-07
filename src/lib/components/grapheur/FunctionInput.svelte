@@ -301,7 +301,12 @@ Features:
 					step={1}
 					aria-label="Abscisse du point de tangence"
 				/>
-				<span class="shrink-0 font-serif tabular-nums">
+				<!--
+					Largeur fixe, sans quoi ce nombre change la largeur du curseur à
+					chaque cran : bits-ui relit `getBoundingClientRect()` à chaque
+					`pointermove`, et un bord qui bouge fait reculer la valeur.
+				-->
+				<span class="w-16 shrink-0 text-right font-serif tabular-nums">
 					{formatSlope(func.tangentAt)}
 				</span>
 			</div>

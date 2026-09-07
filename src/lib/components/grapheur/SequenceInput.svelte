@@ -430,7 +430,8 @@
 
 			{#if showsCobweb}
 				<div class="flex items-center gap-2 text-xs text-muted-foreground">
-					<span class="shrink-0">Termes : {sequence.cobwebSteps}</span>
+					<!-- Largeur fixe : voir la note du curseur de tangente. -->
+					<span class="w-24 shrink-0">Termes : {sequence.cobwebSteps}</span>
 					<Slider
 						type="single"
 						bind:value={() => sequence.cobwebSteps, handleCobwebStepsChange}
