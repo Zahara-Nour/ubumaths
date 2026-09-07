@@ -205,31 +205,6 @@ Features:
 			<LineStylePicker value={func.lineStyle} onchange={handleStyleChange} />
 		</div>
 
-		<!--
-			La dérivée se lit à côté de la fonction : le signe de f' et les
-			variations de f se comprennent ensemble, pas l'un après l'autre.
-		-->
-		<div class="flex items-center gap-2">
-			<MyCheckbox
-				checked={func.showDerivative}
-				onCheckedChange={handleDerivativeChange}
-				label="f ′"
-				aria-label="Afficher la courbe dérivée"
-			/>
-			<MyCheckbox
-				checked={func.tangentAt !== null}
-				onCheckedChange={handleTangentChange}
-				label="tangente"
-				aria-label="Afficher la tangente"
-			/>
-			<MyCheckbox
-				checked={func.integral !== null}
-				onCheckedChange={handleIntegralChange}
-				label="aire"
-				aria-label="Afficher l'aire sous la courbe"
-			/>
-		</div>
-
 		<div class="flex gap-1">
 			<Button
 				variant="ghost"
@@ -273,89 +248,114 @@ Features:
 	</div>
 
 	<!--
-		Le curseur balaie la fenêtre visible : on fait glisser le point de contact
-		le long de la courbe et on lit la pente changer avec lui.
+		Chaque option porte ses propres réglages : « cercle » relève de la
+		tangente, « longueur » de l'intervalle. Les laisser au bout d'une ligne
+		voisine les rendait orphelins.
 	-->
+	<div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+		<MyCheckbox
+			checked={func.showDerivative}
+			onCheckedChange={handleDerivativeChange}
+			label="f′"
+			aria-label="Afficher la courbe dérivée"
+		/>
+		<MyCheckbox
+			checked={func.tangentAt !== null}
+			onCheckedChange={handleTangentChange}
+			label="tangente"
+			aria-label="Afficher la tangente"
+		/>
+		<MyCheckbox
+			checked={func.integral !== null}
+			onCheckedChange={handleIntegralChange}
+			label="aire"
+			aria-label="Afficher l'aire sous la courbe"
+		/>
+	</div>
+
+	{#if func.tangentAt !== null}
+		<div class="flex flex-col gap-2 rounded border border-border/60 bg-muted/30 p-2">
+			<div class="flex items-center gap-2 text-xs text-muted-foreground">
+				<span class="shrink-0 font-serif">x₀</span>
+				<Slider
+					type="single"
+					bind:value={() => func.tangentAt ?? 0, handleTangentSlide}
+					min={grapheurStore.viewport.xMin}
+					max={grapheurStore.viewport.xMax}
+					step={(grapheurStore.viewport.xMax - grapheurStore.viewport.xMin) / 400}
+					aria-label="Abscisse du point de tangence"
+				/>
+				<span class="shrink-0 font-serif tabular-nums">
+					{formatSlope(func.tangentAt)}
+				</span>
+			</div>
+
+			<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+				<span class="font-serif tabular-nums">
+					{#if tangent}
+						f′(x₀) = {formatSlope(tangent.slope)}
+					{:else}
+						pente non définie
+					{/if}
+				</span>
+				<MyCheckbox
+					checked={func.showOsculating}
+					onCheckedChange={handleOsculatingChange}
+					label="cercle osculateur"
+					aria-label="Afficher le cercle osculateur"
+				/>
+				{#if func.showOsculating}
+					<span class="font-serif tabular-nums">
+						κ = {curvature === undefined ? '—' : formatSlope(curvature)}
+					</span>
+				{/if}
+			</div>
+		</div>
+	{/if}
+
 	<!--
 		L'aire est signée : sous l'axe elle compte négativement, ce qu'un
 		remplissage seul ne dirait pas.
 	-->
 	{#if func.integral}
-		<div class="flex items-center gap-2 text-xs text-muted-foreground">
-			<span class="shrink-0 font-serif">∫ de</span>
-			<Input
-				type="number"
-				step="any"
-				value={func.integral.from}
-				oninput={handleBoundInput('from')}
-				class="h-7 w-16 text-xs"
-				aria-label="Borne inférieure de l'aire"
-			/>
-			<span class="shrink-0 font-serif">à</span>
-			<Input
-				type="number"
-				step="any"
-				value={func.integral.to}
-				oninput={handleBoundInput('to')}
-				class="h-7 w-16 text-xs"
-				aria-label="Borne supérieure de l'aire"
-			/>
-			<span class="shrink-0 font-serif tabular-nums">
-				{#if area}
-					= {formatSlope(area.value)}
-				{:else}
-					non calculable
-				{/if}
-			</span>
-			<MyCheckbox
-				checked={func.showArcLength}
-				onCheckedChange={handleArcLengthChange}
-				label="longueur"
-				aria-label="Afficher la longueur de la courbe"
-			/>
-			{#if func.showArcLength}
-				<span class="shrink-0 font-serif tabular-nums">
-					{length === undefined ? '—' : formatSlope(length)}
-				</span>
-			{/if}
-		</div>
-	{/if}
+		<div class="flex flex-col gap-2 rounded border border-border/60 bg-muted/30 p-2">
+			<div class="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+				<span class="shrink-0 font-serif">de</span>
+				<Input
+					type="number"
+					step="any"
+					value={func.integral.from}
+					oninput={handleBoundInput('from')}
+					class="h-7 w-20 text-xs"
+					aria-label="Borne inférieure de l'aire"
+				/>
+				<span class="shrink-0 font-serif">à</span>
+				<Input
+					type="number"
+					step="any"
+					value={func.integral.to}
+					oninput={handleBoundInput('to')}
+					class="h-7 w-20 text-xs"
+					aria-label="Borne supérieure de l'aire"
+				/>
+			</div>
 
-	{#if func.tangentAt !== null}
-		<div class="flex items-center gap-2 text-xs text-muted-foreground">
-			<span class="shrink-0 font-serif">x₀</span>
-			<!--
-				Liaison par fonctions plutôt que `value` + `onValueChange` : le
-				composant écrit dans `value`, qu'il déclare `$bindable`. Une valeur
-				simple lui laisse une copie locale que le rendu du parent réécrase,
-				et le curseur repart en arrière sous la souris.
-			-->
-			<Slider
-				type="single"
-				bind:value={() => func.tangentAt ?? 0, handleTangentSlide}
-				min={grapheurStore.viewport.xMin}
-				max={grapheurStore.viewport.xMax}
-				step={(grapheurStore.viewport.xMax - grapheurStore.viewport.xMin) / 400}
-				aria-label="Abscisse du point de tangence"
-			/>
-			<span class="shrink-0 font-serif tabular-nums">
-				{#if tangent}
-					f ′({formatSlope(func.tangentAt)}) = {formatSlope(tangent.slope)}
-				{:else}
-					non définie
-				{/if}
-			</span>
-			<MyCheckbox
-				checked={func.showOsculating}
-				onCheckedChange={handleOsculatingChange}
-				label="cercle"
-				aria-label="Afficher le cercle osculateur"
-			/>
-			{#if func.showOsculating}
-				<span class="shrink-0 font-serif tabular-nums">
-					κ = {curvature === undefined ? '—' : formatSlope(curvature)}
+			<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+				<span class="font-serif tabular-nums">
+					aire = {area ? formatSlope(area.value) : '—'}
 				</span>
-			{/if}
+				<MyCheckbox
+					checked={func.showArcLength}
+					onCheckedChange={handleArcLengthChange}
+					label="longueur"
+					aria-label="Afficher la longueur de la courbe"
+				/>
+				{#if func.showArcLength}
+					<span class="font-serif tabular-nums">
+						{length === undefined ? '—' : formatSlope(length)}
+					</span>
+				{/if}
+			</div>
 		</div>
 	{/if}
 </div>

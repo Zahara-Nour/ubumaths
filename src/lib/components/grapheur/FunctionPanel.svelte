@@ -49,9 +49,11 @@ Features:
 
 <div class="function-panel flex h-full flex-col gap-4 rounded-lg border border-border bg-card p-4">
 	<!-- Panel Header -->
-	<div class="panel-header flex items-center justify-between border-b border-border pb-3">
+	<div
+		class="panel-header flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3"
+	>
 		<h3 class="text-lg font-semibold text-foreground">Tracés</h3>
-		<div class="flex gap-1">
+		<div class="flex flex-wrap justify-end gap-1">
 			<Button variant="outline" size="sm" onclick={addFunction} aria-label="Ajouter une fonction">
 				<Plus class="h-4 w-4" />
 				<span class="ml-1">Fonction</span>
