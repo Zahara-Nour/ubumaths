@@ -59,6 +59,10 @@ echo "$FILES" | xargs npx oxlint || EXIT=$?
 # eslint réduit aux deux règles maison.
 echo "$FILES" | xargs npx eslint --config eslint.fast.config.js || EXIT=$?
 
+# Parité des variables d'environnement : une clé importée de `$env/static` mais
+# absente de `.github/ci.env` rend le typecheck vert en local et rouge en CI.
+node scripts/check-env-parity.mjs || EXIT=$?
+
 if [ $EXIT -eq 0 ]; then
 	echo "✅ Lint rapide : rien à signaler"
 else
