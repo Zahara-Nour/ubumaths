@@ -25,6 +25,7 @@
 		"format:all": "prettier --write .",
 		"format:check": "prettier --check --cache .",
 		"lint": "eslint",
+		"lint:fast": "bash scripts/lint-fast.sh",
 		"lint:all": "eslint . --cache",
 		"test:server": "vitest run --project=server",
 		"test:client": "vitest run --project=client",
