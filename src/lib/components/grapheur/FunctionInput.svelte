@@ -27,6 +27,7 @@ Features:
 	import ColorPicker from './ColorPicker.svelte';
 	import LineWidthPicker from './LineWidthPicker.svelte';
 	import LineStylePicker from './LineStylePicker.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Eye, EyeOff, Trash2 } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 
@@ -94,6 +95,10 @@ Features:
 	/**
 	 * Toggle visibility
 	 */
+	function handleDerivativeChange(checked: boolean | 'indeterminate') {
+		grapheurStore.updateFunction(func.id, { showDerivative: checked === true });
+	}
+
 	function toggleVisibility() {
 		grapheurStore.updateFunction(func.id, { visible: !func.visible });
 	}
@@ -114,6 +119,17 @@ Features:
 			<LineWidthPicker value={func.lineWidth} onchange={handleWidthChange} />
 			<LineStylePicker value={func.lineStyle} onchange={handleStyleChange} />
 		</div>
+
+		<!--
+			La dérivée se lit à côté de la fonction : le signe de f' et les
+			variations de f se comprennent ensemble, pas l'un après l'autre.
+		-->
+		<MyCheckbox
+			checked={func.showDerivative}
+			onCheckedChange={handleDerivativeChange}
+			label="f ′"
+			aria-label="Afficher la courbe dérivée"
+		/>
 
 		<div class="flex gap-1">
 			<Button

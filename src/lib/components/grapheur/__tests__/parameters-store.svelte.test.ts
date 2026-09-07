@@ -124,3 +124,32 @@ describe('paramètres — premier terme piloté', () => {
 		expect(computeSequenceTerms(spec!, 3)).toEqual([]);
 	});
 });
+
+describe('courbe dérivée — persistance et bascule', () => {
+	beforeEach(() => grapheurStore.fullReset());
+
+	it('naît masquée', () => {
+		const id = grapheurStore.addFunction('x^2');
+		const func = grapheurStore.functions.find((f) => f.id === id);
+
+		expect(func?.type === 'explicit' && func.showDerivative).toBe(false);
+	});
+
+	it('se laisse activer', () => {
+		const id = grapheurStore.addFunction('x^2');
+		grapheurStore.updateFunction(id, { showDerivative: true });
+
+		const func = grapheurStore.functions.find((f) => f.id === id);
+		expect(func?.type === 'explicit' && func.showDerivative).toBe(true);
+	});
+
+	it('survit à la sérialisation', () => {
+		const id = grapheurStore.addFunction('x^2');
+		grapheurStore.updateFunction(id, { showDerivative: true });
+
+		const state = grapheurStore.serialize();
+		const saved = state.functions.find((f) => f.id === id);
+
+		expect(saved?.type === 'explicit' && saved.showDerivative).toBe(true);
+	});
+});

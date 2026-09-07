@@ -61,6 +61,14 @@ export interface ExplicitFunction extends PlottableBase {
 	readonly ast: MathNode | undefined;
 	readonly parseError: string | undefined;
 	readonly variable: string;
+	/**
+	 * Whether the derivative curve is drawn alongside.
+	 *
+	 * It follows the function rather than standing on its own: editing `f`
+	 * redraws `f'`, which is the point — le signe de `f'` et les variations de
+	 * `f` se lisent ensemble.
+	 */
+	readonly showDerivative: boolean;
 }
 
 /**
@@ -148,6 +156,7 @@ export interface ExplicitFunctionState {
 	readonly id: string;
 	readonly type: 'explicit';
 	readonly latex: string;
+	readonly showDerivative: boolean;
 	readonly color: string;
 	readonly visible: boolean;
 	readonly lineWidth: number;
@@ -304,6 +313,8 @@ const explicitFunctionStateSchema = z.object({
 		.min(1, 'Line width minimum is 1')
 		.max(5, 'Line width maximum is 5'),
 	lineStyle: lineStyleSchema.default('solid'),
+	// Absent des états écrits avant la courbe dérivée.
+	showDerivative: z.boolean().default(false),
 	variable: z
 		.string()
 		.min(1, 'Variable name is required')

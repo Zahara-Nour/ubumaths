@@ -293,6 +293,7 @@ class GrapheurStore {
 			ast: parseResult.ast ?? undefined,
 			parseError: parseResult.error ?? undefined,
 			variable: 'x',
+			showDerivative: false,
 			color,
 			visible: true,
 			lineWidth: 2,
@@ -325,7 +326,10 @@ class GrapheurStore {
 	updateFunction(
 		id: string,
 		updates: Partial<
-			Pick<ExplicitFunction, 'latex' | 'color' | 'visible' | 'lineWidth' | 'lineStyle'>
+			Pick<
+				ExplicitFunction,
+				'latex' | 'color' | 'visible' | 'lineWidth' | 'lineStyle' | 'showDerivative'
+			>
 		>
 	): void {
 		this.functions = this.functions.map((f) => {
@@ -645,6 +649,7 @@ class GrapheurStore {
 					id: p.id,
 					type: p.type,
 					latex: p.latex,
+					showDerivative: p.showDerivative,
 					color: p.color,
 					visible: p.visible,
 					lineWidth: p.lineWidth,
@@ -725,6 +730,7 @@ class GrapheurStore {
 					id: p.id,
 					type: p.type,
 					latex: p.latex,
+					showDerivative: p.showDerivative,
 					ast: parseResult.ast ?? undefined,
 					parseError: parseResult.error ?? undefined,
 					variable: p.variable,
