@@ -76,6 +76,13 @@ export interface ExplicitFunction extends PlottableBase {
 	 * slope one can see.
 	 */
 	readonly tangentAt: number | null;
+	/**
+	 * Bounds of the shaded area under the curve, or null when none is shown.
+	 *
+	 * The area is signed: below the axis it counts negative, which is what the
+	 * integral means and what a filled region alone would hide.
+	 */
+	readonly integral: { readonly from: number; readonly to: number } | null;
 }
 
 /**
@@ -165,6 +172,7 @@ export interface ExplicitFunctionState {
 	readonly latex: string;
 	readonly showDerivative: boolean;
 	readonly tangentAt: number | null;
+	readonly integral: { readonly from: number; readonly to: number } | null;
 	readonly color: string;
 	readonly visible: boolean;
 	readonly lineWidth: number;
@@ -324,6 +332,13 @@ const explicitFunctionStateSchema = z.object({
 	// Absents des états écrits avant la courbe dérivée et la tangente.
 	showDerivative: z.boolean().default(false),
 	tangentAt: z.number().finite().min(-1e9).max(1e9).nullable().default(null),
+	integral: z
+		.object({
+			from: z.number().finite().min(-1e9).max(1e9),
+			to: z.number().finite().min(-1e9).max(1e9)
+		})
+		.nullable()
+		.default(null),
 	variable: z
 		.string()
 		.min(1, 'Variable name is required')

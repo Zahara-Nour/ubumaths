@@ -19,7 +19,8 @@
 	import GridLines from './GridLines.svelte';
 	import AxisLines from './AxisLines.svelte';
 	import FunctionCurve from './FunctionCurve.svelte';
-	import { derivativeCurve, tangentAt } from '$lib/grapheur/analysis';
+	import { derivativeCurve, integralUnder, tangentAt } from '$lib/grapheur/analysis';
+	import IntegralArea from './IntegralArea.svelte';
 	import SequencePlot from './SequencePlot.svelte';
 	import CurveHover from './CurveHover.svelte';
 	import IntersectionPoints from './IntersectionPoints.svelte';
@@ -397,6 +398,21 @@
 						isInteracting={grapheurStore.isInteracting}
 						bindings={grapheurStore.parameterBindings}
 					/>
+					<!--
+						L'aire sous la courbe, tracée avant elle pour rester derrière.
+					-->
+					{#if plottable.integral}
+						{@const area = integralUnder(
+							plottable,
+							plottable.integral.from,
+							plottable.integral.to,
+							grapheurStore.parameterBindings
+						)}
+						{#if area}
+							<IntegralArea integral={area} {transformer} color={plottable.color} />
+						{/if}
+					{/if}
+
 					<!--
 						La tangente et son point de contact : le nombre dérivé se lit
 						alors comme une pente, pas comme une valeur dans un tableau.
