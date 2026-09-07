@@ -16,8 +16,7 @@
 
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
-	import { isExplicitFunction } from '$lib/grapheur/types';
-	import { createEvaluator } from '$lib/grapheur/evaluator';
+	import { toAnalysisInputs } from '$lib/grapheur/analysis';
 	import {
 		findAllIntersections,
 		deduplicateIntersections,
@@ -59,14 +58,7 @@
 			return [];
 		}
 
-		// Access functions directly and filter here for proper reactivity
-		const validFuncs = grapheurStore.functions
-			.filter(isExplicitFunction)
-			.filter((f) => f.visible && f.ast !== undefined)
-			.map((f) => ({
-				id: f.id,
-				evaluator: createEvaluator(f.ast!)
-			}));
+		const validFuncs = toAnalysisInputs(grapheurStore.functions);
 
 		// Need at least 2 functions, but limit to avoid performance issues
 		if (validFuncs.length < 2 || validFuncs.length > MAX_FUNCTIONS_FOR_INTERSECTIONS) {

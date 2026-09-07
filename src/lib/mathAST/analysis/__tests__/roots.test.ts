@@ -130,3 +130,45 @@ describe('findRoots', () => {
 		expect(r.some((root) => Math.abs(root.x - Math.PI / 2) < 0.01)).toBe(true);
 	});
 });
+
+/**
+ * `solveExactRoots()` reprend les réponses de `solve()` sans les vérifier —
+ * même confiance aveugle que `critical-points.ts` avant la PR #145, où
+ * `solve((x-1)^2 = 0)` répondait `x = 0`. La cause racine est réparée dans les
+ * lecteurs de coefficients ; cet invariant le verrouille : quelle que soit la
+ * forme de l'expression, un zéro renvoyé annule la fonction.
+ */
+describe('findRoots — invariant : un zéro annule la fonction', () => {
+	const battery = [
+		'(x-1)^2',
+		'(x-1)^4',
+		'(x^2-2)^2',
+		'(2x-1)^3',
+		'x^2*(x-1)',
+		'x^3-x',
+		'(x-1)*(x-2)*(x-3)',
+		'x^4-5*x^2+4',
+		'sqrt(x)-2',
+		'1/(x-1)',
+		'(x^2-1)/(x-1)',
+		'exp(x)-1',
+		'ln(x)-1',
+		'x*exp(x)',
+		'sin(x)*cos(x)'
+	];
+
+	for (const expr of battery) {
+		it(`aucun faux zéro pour ${expr}`, () => {
+			const ast = parseCustom(expr);
+			const fn = compile(ast);
+
+			// Assertion sur la collection : certaines expressions n'ont aucun zéro,
+			// et une boucle vide n'assurerait alors rien du tout.
+			const faux = findRoots(ast, fn, 'x', -10, 10)
+				.map((root) => ({ x: root.x, y: fn({ x: root.x }) }))
+				.filter(({ y }) => !Number.isFinite(y) || Math.abs(y) > 1e-6);
+
+			expect(faux).toEqual([]);
+		});
+	}
+});
