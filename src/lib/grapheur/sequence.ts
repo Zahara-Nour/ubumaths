@@ -75,6 +75,20 @@ export const MAX_SEQUENCE_TERMS = 1000;
 /** Number of staircase steps drawn when a cobweb is first switched on. */
 export const DEFAULT_COBWEB_STEPS = 10;
 
+/** Default lower bound of the slider driving a recurrence's first term. */
+export const DEFAULT_FIRST_TERM_MIN = -10;
+
+/** Default upper bound of the same slider. */
+export const DEFAULT_FIRST_TERM_MAX = 10;
+
+/**
+ * Number of steps the first-term slider offers between its bounds.
+ *
+ * Fine enough to sweep a point fixe smoothly, coarse enough that the value
+ * stays readable while dragging.
+ */
+export const FIRST_TERM_SLIDER_STEPS = 200;
+
 /** Names offered to new sequences, in order. */
 export const SEQUENCE_NAMES = ['u', 'v', 'w', 't', 'a', 'b', 'c'] as const;
 

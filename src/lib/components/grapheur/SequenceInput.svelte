@@ -15,7 +15,11 @@
 		SequenceRepresentation
 	} from '$lib/grapheur/types';
 	import { supportsCobweb } from '$lib/grapheur/types';
-	import { MAX_SEQUENCE_TERMS, sequenceValidationError } from '$lib/grapheur/sequence';
+	import {
+		MAX_SEQUENCE_TERMS,
+		sequenceValidationError,
+		FIRST_TERM_SLIDER_STEPS
+	} from '$lib/grapheur/sequence';
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import MathField from '$lib/components/MathField.svelte';
 	import type { MathfieldElement } from 'mathlive';
@@ -173,6 +177,27 @@
 		});
 	}
 
+	/**
+	 * Slider step: fine enough to sweep a point fixe smoothly, coarse enough that
+	 * the displayed value stays readable while dragging.
+	 */
+	const firstTermStep = $derived(
+		Math.max((sequence.firstTermMax - sequence.firstTermMin) / FIRST_TERM_SLIDER_STEPS, 1e-6)
+	);
+
+	function handleFirstTermSlide(value: number) {
+		grapheurStore.updateSequence(sequence.id, { firstTerm: value });
+	}
+
+	function handleBoundInput(bound: 'firstTermMin' | 'firstTermMax') {
+		return (event: Event & { currentTarget: HTMLInputElement }) => {
+			const parsed = Number.parseFloat(event.currentTarget.value);
+			if (!Number.isFinite(parsed)) return;
+
+			grapheurStore.updateSequence(sequence.id, { [bound]: parsed });
+		};
+	}
+
 	function handleRepresentationChange(value: string) {
 		const item = REPRESENTATION_ITEMS.find((candidate) => candidate.value === value);
 		if (!item) return;
@@ -324,6 +349,42 @@
 			</label>
 		{/if}
 	</div>
+
+	<!--
+		Balayer le premier terme en continu : c'est ce qui fait voir qu'un point
+		fixe attire ou repousse, sans avoir à l'écrire.
+	-->
+	{#if sequence.mode === 'recurrence'}
+		<div class="flex flex-col gap-1">
+			<div class="flex items-center gap-2 text-xs text-muted-foreground">
+				<Input
+					type="number"
+					step="any"
+					value={sequence.firstTermMin}
+					oninput={handleBoundInput('firstTermMin')}
+					class="h-7 w-16 text-xs"
+					aria-label="Borne inférieure du curseur"
+				/>
+				<Slider
+					type="single"
+					value={sequence.firstTerm ?? 0}
+					min={sequence.firstTermMin}
+					max={sequence.firstTermMax}
+					step={firstTermStep}
+					onValueChange={handleFirstTermSlide}
+					aria-label="Premier terme (curseur)"
+				/>
+				<Input
+					type="number"
+					step="any"
+					value={sequence.firstTermMax}
+					oninput={handleBoundInput('firstTermMax')}
+					class="h-7 w-16 text-xs"
+					aria-label="Borne supérieure du curseur"
+				/>
+			</div>
+		</div>
+	{/if}
 
 	<!-- Representation: the staircase replaces the cloud of ranks -->
 	{#if canShowCobweb}
