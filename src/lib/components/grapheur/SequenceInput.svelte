@@ -15,11 +15,7 @@
 		SequenceRepresentation
 	} from '$lib/grapheur/types';
 	import { supportsCobweb } from '$lib/grapheur/types';
-	import {
-		MAX_SEQUENCE_TERMS,
-		sequenceValidationError,
-		FIRST_TERM_SLIDER_STEPS
-	} from '$lib/grapheur/sequence';
+	import { MAX_SEQUENCE_TERMS, sequenceValidationError } from '$lib/grapheur/sequence';
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import MathField from '$lib/components/MathField.svelte';
 	import type { MathfieldElement } from 'mathlive';
@@ -31,6 +27,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Slider } from '$lib/components/ui/slider';
+	import { fromSliderIndex, SLIDER_STEPS, toSliderIndex } from '$lib/grapheur/slider';
 	import { Eye, EyeOff, Table2, Trash2 } from '@lucide/svelte';
 
 	let { sequence }: { sequence: SequencePlottable } = $props();
@@ -177,16 +174,10 @@
 		});
 	}
 
-	/**
-	 * Slider step: fine enough to sweep a point fixe smoothly, coarse enough that
-	 * the displayed value stays readable while dragging.
-	 */
-	const firstTermStep = $derived(
-		Math.max((sequence.firstTermMax - sequence.firstTermMin) / FIRST_TERM_SLIDER_STEPS, 1e-6)
-	);
-
-	function handleFirstTermSlide(value: number) {
-		grapheurStore.updateSequence(sequence.id, { firstTerm: value });
+	function handleFirstTermSlide(index: number) {
+		grapheurStore.updateSequence(sequence.id, {
+			firstTerm: fromSliderIndex(index, sequence.firstTermMin, sequence.firstTermMax)
+		});
 	}
 
 	function handleBoundInput(bound: 'firstTermMin' | 'firstTermMax') {
@@ -396,12 +387,21 @@
 					class="h-7 w-16 text-xs"
 					aria-label="Borne inférieure du curseur"
 				/>
+				<!-- Piloté en entiers : voir `grapheur/slider.ts`. -->
 				<Slider
 					type="single"
-					bind:value={() => sequence.firstTerm ?? 0, handleFirstTermSlide}
-					min={sequence.firstTermMin}
-					max={sequence.firstTermMax}
-					step={firstTermStep}
+					bind:value={
+						() =>
+							toSliderIndex(
+								sequence.firstTerm ?? sequence.firstTermMin,
+								sequence.firstTermMin,
+								sequence.firstTermMax
+							),
+						handleFirstTermSlide
+					}
+					min={0}
+					max={SLIDER_STEPS}
+					step={1}
 					aria-label="Premier terme (curseur)"
 				/>
 				<Input

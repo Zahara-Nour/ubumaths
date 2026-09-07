@@ -15,8 +15,8 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import { Slider } from '$lib/components/ui/slider';
+	import { fromSliderIndex, SLIDER_STEPS, toSliderIndex } from '$lib/grapheur/slider';
 	import { Trash2 } from '@lucide/svelte';
-	import { PARAMETER_SLIDER_STEPS } from '$lib/grapheur/types';
 	import type { Parameter } from '$lib/grapheur/types';
 
 	// Props
@@ -33,15 +33,14 @@
 	// Derived
 	// ==========================================================================
 
-	/** Fine enough to sweep smoothly, coarse enough to keep the value readable. */
-	const step = $derived(Math.max((parameter.max - parameter.min) / PARAMETER_SLIDER_STEPS, 1e-6));
-
 	// ==========================================================================
 	// Handlers
 	// ==========================================================================
 
-	function handleSlide(value: number) {
-		grapheurStore.updateParameter(parameter.id, { value });
+	function handleSlide(index: number) {
+		grapheurStore.updateParameter(parameter.id, {
+			value: fromSliderIndex(index, parameter.min, parameter.max)
+		});
 	}
 
 	function handleNumberInput(field: 'value' | 'min' | 'max') {
@@ -117,12 +116,13 @@
 			class="h-7 w-16 text-xs"
 			aria-label="Borne inférieure de {parameter.name}"
 		/>
+		<!-- Piloté en entiers : voir `grapheur/slider.ts`. -->
 		<Slider
 			type="single"
-			bind:value={() => parameter.value, handleSlide}
-			min={parameter.min}
-			max={parameter.max}
-			{step}
+			bind:value={() => toSliderIndex(parameter.value, parameter.min, parameter.max), handleSlide}
+			min={0}
+			max={SLIDER_STEPS}
+			step={1}
 			aria-label="Curseur du paramètre {parameter.name}"
 		/>
 		<Input
