@@ -23,6 +23,33 @@ describe('Sidebar (Outils libres)', () => {
 		});
 	});
 
+	describe('outils ouverts sans connexion', () => {
+		it('affiche Grapheur et Géométrie pour un visiteur', async () => {
+			render(Sidebar, { profile: null });
+
+			await expect.element(page.getByText('Grapheur', { exact: true })).toBeInTheDocument();
+			await expect.element(page.getByText('Géométrie', { exact: true })).toBeInTheDocument();
+		});
+
+		it('pointe vers les bonnes routes', async () => {
+			const { container } = render(Sidebar, { profile: null });
+
+			expect(container.querySelector('a[href="/grapheur"]')).not.toBeNull();
+			expect(container.querySelector('a[href="/geometry-demo"]')).not.toBeNull();
+		});
+
+		it('rend bien une icône pour chacun', async () => {
+			const { container } = render(Sidebar, { profile: null });
+
+			// Une icône Lucide manquante ne casse pas le rendu : le lien s'afficherait
+			// sans son SVG. On vérifie donc explicitement sa présence.
+			for (const href of ['/grapheur', '/geometry-demo']) {
+				const link = container.querySelector(`a[href="${href}"]`);
+				expect(link?.querySelector('svg')).not.toBeNull();
+			}
+		});
+	});
+
 	describe('items role-restricted', () => {
 		it('affiche Python pour un élève (role student+teacher)', async () => {
 			render(Sidebar, { profile: profile('student') });
