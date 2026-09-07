@@ -21,6 +21,8 @@ import type {
 	FunctionAnalysis
 } from './types';
 import type { Plottable } from './types';
+import type { SampledCurve } from '$lib/geometry-core/viewport';
+import { sampleFunction } from '$lib/geometry-core/viewport';
 import { isExplicitFunction } from './types';
 import type { ExplicitFunction } from './types';
 import { createEvaluator } from './evaluator';
@@ -1025,7 +1027,13 @@ export function derivativeCurve(
 	const derivative = buildAnalysisAST(bound)?.derivative;
 	if (!derivative) return undefined;
 
-	return {
+	// Rendre le même objet pour les mêmes entrées : le composant de tracé
+	// n'échantillonne à nouveau que si sa prop a réellement changé.
+	const key = `${func.id}|${func.color}|${func.lineWidth}|${func.visible}`;
+	const cached = derivativeCache.get(derivative);
+	if (cached?.key === key) return cached.curve;
+
+	const curve: ExplicitFunction = {
 		...func,
 		id: `${func.id}:derivative`,
 		ast: derivative,
@@ -1035,7 +1043,13 @@ export function derivativeCurve(
 		lineWidth: Math.max(func.lineWidth - 1, 1),
 		showDerivative: false
 	};
+
+	derivativeCache.set(derivative, { key, curve });
+	return curve;
 }
+
+/** Derivative curves, keyed by the derivative expression. */
+const derivativeCache = new WeakMap<MathNode, { key: string; curve: ExplicitFunction }>();
 
 /** A tangent: where it touches, how steep it is, and the line itself. */
 export interface TangentResult {
@@ -1134,6 +1148,14 @@ export function integralUnder(
 	const bound = bindParameters(func.ast, bindings);
 	if (!bound) return undefined;
 
+	// L'aire ne dépend que de l'expression et des bornes. Elle est demandée deux
+	// fois par rendu — le remplissage et la valeur affichée — et son intégration
+	// symbolique coûte le plus cher de tout ce que le panneau recalcule.
+	const cacheKey = `${lower},${upper}`;
+	const perExpression = integralCache.get(bound) ?? new Map<string, IntegralResult>();
+	const cachedIntegral = perExpression.get(cacheKey);
+	if (cachedIntegral) return cachedIntegral;
+
 	const info = buildAnalysisAST(bound);
 	if (!info) return undefined;
 
@@ -1160,14 +1182,22 @@ export function integralUnder(
 
 	if (points.length < 2) return undefined;
 
-	return {
+	const integral: IntegralResult = {
 		from: lower,
 		to: upper,
 		value,
 		exact: result.status === 'exact' ? (result.value ?? undefined) : undefined,
 		points
 	};
+
+	if (perExpression.size >= MAX_SAMPLES_PER_EXPRESSION) perExpression.clear();
+	perExpression.set(cacheKey, integral);
+	integralCache.set(bound, perExpression);
+	return integral;
 }
+
+/** Areas, keyed by expression then by bounds. */
+const integralCache = new WeakMap<MathNode, Map<string, IntegralResult>>();
 
 /** Read a numeric value off an exact node, when it has one. */
 function evaluateToNumber(node: MathNode | null): number | undefined {
@@ -1292,6 +1322,42 @@ function cachedEvaluator(ast: MathNode): (x: number) => number | null {
 	const evaluator = createEvaluator(ast);
 	evaluatorCache.set(ast, evaluator);
 	return evaluator;
+}
+
+/**
+ * Sampled curves, keyed by expression then by viewport and point count.
+ *
+ * Moving the tangent's abscissa changes neither the curve of `f`, nor that of
+ * `f'`, nor the shaded area — yet each of them was re-sampled, because every
+ * render hands the components a fresh object. Returning the same result for
+ * the same inputs lets that work be skipped.
+ */
+const sampledCurveCache = new WeakMap<MathNode, Map<string, SampledCurve>>();
+
+/** Viewports kept per expression before the cache is emptied. */
+const MAX_SAMPLES_PER_EXPRESSION = 200;
+
+/**
+ * Sample a curve over a viewport, reusing the previous result when nothing
+ * that matters has changed.
+ *
+ * @param ast - Expression, already bound to its parameter values
+ * @param viewport - Current bounds
+ * @param numPoints - Sample count, which the interaction state may lower
+ */
+export function sampleCached(ast: MathNode, viewport: Viewport, numPoints: number): SampledCurve {
+	const key = `${viewport.xMin},${viewport.xMax},${viewport.yMin},${viewport.yMax}|${numPoints}`;
+	const perExpression = sampledCurveCache.get(ast) ?? new Map<string, SampledCurve>();
+
+	const cached = perExpression.get(key);
+	if (cached) return cached;
+
+	if (perExpression.size >= MAX_SAMPLES_PER_EXPRESSION) perExpression.clear();
+
+	const sampled = sampleFunction(cachedEvaluator(ast), viewport, numPoints);
+	perExpression.set(key, sampled);
+	sampledCurveCache.set(ast, perExpression);
+	return sampled;
 }
 
 /** Substituted expressions, keyed by source AST then by binding values. */
