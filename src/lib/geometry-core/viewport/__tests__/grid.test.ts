@@ -12,11 +12,21 @@ describe('computeGridStep', () => {
 		}
 	});
 
-	it('minor is always major / 5', () => {
+	// Le pas mineur doit rester lisible : `major / 5` donne 0,4 sous un pas
+	// majeur de 2, sur lequel personne ne compte de carreaux. La subdivision
+	// s'ajuste pour que le mineur appartienne, lui aussi, à la suite 1-2-5.
+	it('minor also belongs to the 1-2-5 sequence', () => {
+		const validSteps = [0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50];
 		for (const ppu of [5, 10, 20, 40, 80, 120, 200]) {
-			const { major, minor } = computeGridStep(ppu);
-			expect(minor).toBeCloseTo(major / 5, 10);
+			const { minor } = computeGridStep(ppu);
+			expect(validSteps.some((s) => Math.abs(s - minor) < 1e-12)).toBe(true);
 		}
+	});
+
+	it('subdivides a major step of 2 into 4, not 5', () => {
+		const { major, minor } = computeGridStep(40);
+		expect(major).toBe(2);
+		expect(minor).toBeCloseTo(0.5, 12);
 	});
 
 	// ─── Visual spacing constraint ────────────────────────────────
@@ -96,5 +106,35 @@ describe('computeGridStep', () => {
 		const spacingPx = major * 500;
 		expect(spacingPx).toBeGreaterThanOrEqual(40);
 		expect(spacingPx).toBeLessThanOrEqual(200);
+	});
+
+	// ─── Cible et minimum paramétrables ───────────────────────────
+
+	it('accepte une cible différente de 80 px', () => {
+		const { major } = computeGridStep(40, { targetPx: 160 });
+		expect(major * 40).toBeGreaterThan(80);
+	});
+
+	it('garantit un espacement minimum quand on le demande', () => {
+		for (const ppu of [5, 12, 20, 33, 40, 77, 100, 200]) {
+			const { major } = computeGridStep(ppu, { minPx: 50 });
+			expect(major * ppu).toBeGreaterThanOrEqual(50);
+		}
+	});
+
+	it('reste dans la suite 1-2-5 avec un minimum imposé', () => {
+		const validSteps = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100];
+		for (const ppu of [5, 20, 40, 100, 200]) {
+			const { major } = computeGridStep(ppu, { minPx: 50 });
+			expect(validSteps).toContain(major);
+		}
+	});
+
+	// ─── Entrées invalides ────────────────────────────────────────
+
+	it('renvoie un pas nul pour une échelle non finie ou négative', () => {
+		for (const ppu of [0, -10, NaN, Infinity]) {
+			expect(computeGridStep(ppu)).toEqual({ major: 0, minor: 0 });
+		}
 	});
 });
