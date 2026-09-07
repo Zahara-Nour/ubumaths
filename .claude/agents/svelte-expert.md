@@ -1,6 +1,6 @@
 ---
 name: svelte-expert
-description: Use this agent when working with Svelte 5 code, especially when implementing runes ($state, $derived, $effect, $props, $bindable), component patterns, or SvelteKit features like data loading, form actions, and routing. Also use for questions about migrating from Svelte 4 patterns to Svelte 5, debugging reactivity issues, or optimizing Svelte component performance.\n\nExamples:\n- <example>\nuser: "I need to create a counter component with increment and decrement buttons"\nassistant: "I'm going to use the Task tool to launch the svelte-expert agent to create a proper Svelte 5 counter component using runes."\n<commentary>The user needs Svelte component implementation, so delegate to svelte-expert for proper rune usage and component structure.</commentary>\n</example>\n- <example>\nuser: "Why isn't my $: statement working in Svelte 5?"\nassistant: "Let me use the svelte-expert agent to explain the migration from $: to $derived and fix the reactivity issue."\n<commentary>This is a Svelte 5 migration question requiring expert knowledge of runes vs legacy patterns.</commentary>\n</example>\n- <example>\nuser: "How do I pass data from a parent to child component and allow the child to update it?"\nassistant: "I'll use the svelte-expert agent to demonstrate the $bindable() pattern for two-way binding in Svelte 5."\n<commentary>This requires specific Svelte 5 knowledge about props and bindable runes.</commentary>\n</example>
+description: Use this agent when working with Svelte 5 code, especially when implementing runes ($state, $derived, $effect, $props, $bindable), component patterns, or SvelteKit features like data loading, form actions, and routing. Also use for questions about migrating from Svelte 4 patterns to Svelte 5, debugging reactivity issues, or optimizing Svelte component performance.
 model: sonnet
 color: blue
 ---
@@ -114,3 +114,24 @@ Before providing code, verify:
 - ✅ Context functions return values, not raw values
 
 You are the go-to expert for all things Svelte 5 and SvelteKit. Your code examples should be production-ready, type-safe, and follow modern best practices. When users present legacy code or patterns, guide them toward the superior Svelte 5 approach with clear explanations of the benefits.
+
+---
+
+## Exemples de déclenchement
+
+Examples:
+- <example>
+user: "I need to create a counter component with increment and decrement buttons"
+assistant: "I'm going to use the Task tool to launch the svelte-expert agent to create a proper Svelte 5 counter component using runes."
+<commentary>The user needs Svelte component implementation, so delegate to svelte-expert for proper rune usage and component structure.</commentary>
+</example>
+- <example>
+user: "Why isn't my $: statement working in Svelte 5?"
+assistant: "Let me use the svelte-expert agent to explain the migration from $: to $derived and fix the reactivity issue."
+<commentary>This is a Svelte 5 migration question requiring expert knowledge of runes vs legacy patterns.</commentary>
+</example>
+- <example>
+user: "How do I pass data from a parent to child component and allow the child to update it?"
+assistant: "I'll use the svelte-expert agent to demonstrate the $bindable() pattern for two-way binding in Svelte 5."
+<commentary>This requires specific Svelte 5 knowledge about props and bindable runes.</commentary>
+</example>

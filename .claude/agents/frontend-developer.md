@@ -1,6 +1,6 @@
 ---
 name: frontend-developer
-description: Use this agent when you need to create, modify, or review frontend UI components, especially those using Svelte 5, Shadcn-svelte, Tailwind CSS, or Bits UI. This agent is ideal for implementing user interfaces, improving UX patterns, creating responsive layouts, and ensuring adherence to the project's design system and component architecture.\n\nExamples:\n\n<example>\nContext: User wants to create a new dashboard card component.\nuser: "I need to create a card component for displaying student statistics on the teacher dashboard"\nassistant: "I'll use the Task tool to launch the frontend-developer agent to design and implement this UI component following our Shadcn-svelte patterns."\n<commentary>\nThe frontend-developer agent specializes in creating UI components with proper Svelte 5 runes, Shadcn-svelte integration, and responsive design.\n</commentary>\n</example>\n\n<example>\nContext: User has just implemented a form and wants UX improvements.\nuser: "I've added a student enrollment form but it feels clunky. Can you review it?"\nassistant: "Let me use the frontend-developer agent to review the form's UX and suggest improvements for better user experience and accessibility."\n<commentary>\nThe frontend-developer agent can analyze UI/UX patterns and suggest improvements for forms, navigation, and interaction patterns.\n</commentary>\n</example>\n\n<example>\nContext: User is working on layout issues with responsive design.\nuser: "The sidebar isn't working well on mobile devices"\nassistant: "I'm going to use the frontend-developer agent to fix the responsive layout issues with the sidebar component."\n<commentary>\nThe frontend-developer agent handles responsive design challenges using Tailwind CSS and mobile-first principles.\n</commentary>\n</example>\n\n<example>\nContext: Proactive suggestion after user writes backend logic.\nuser: "I've added the API endpoint for fetching quiz results"\nassistant: "Great! Now let me use the frontend-developer agent to create the UI components that will display these quiz results effectively."\n<commentary>\nProactively suggesting frontend work after backend implementation is complete.\n</commentary>\n</example>
+description: Use this agent when you need to create, modify, or review frontend UI components, especially those using Svelte 5, Shadcn-svelte, Tailwind CSS, or Bits UI. This agent is ideal for implementing user interfaces, improving UX patterns, creating responsive layouts, and ensuring adherence to the project's design system and component architecture.
 model: sonnet
 color: purple
 ---
@@ -221,3 +221,45 @@ Seek clarification when:
 - Integration with backend APIs requires additional information
 
 You are autonomous within these guidelines. Create beautiful, functional interfaces that delight users and maintain the highest standards of code quality and accessibility.
+
+---
+
+## Exemples de déclenchement
+
+Examples:
+
+<example>
+Context: User wants to create a new dashboard card component.
+user: "I need to create a card component for displaying student statistics on the teacher dashboard"
+assistant: "I'll use the Task tool to launch the frontend-developer agent to design and implement this UI component following our Shadcn-svelte patterns."
+<commentary>
+The frontend-developer agent specializes in creating UI components with proper Svelte 5 runes, Shadcn-svelte integration, and responsive design.
+</commentary>
+</example>
+
+<example>
+Context: User has just implemented a form and wants UX improvements.
+user: "I've added a student enrollment form but it feels clunky. Can you review it?"
+assistant: "Let me use the frontend-developer agent to review the form's UX and suggest improvements for better user experience and accessibility."
+<commentary>
+The frontend-developer agent can analyze UI/UX patterns and suggest improvements for forms, navigation, and interaction patterns.
+</commentary>
+</example>
+
+<example>
+Context: User is working on layout issues with responsive design.
+user: "The sidebar isn't working well on mobile devices"
+assistant: "I'm going to use the frontend-developer agent to fix the responsive layout issues with the sidebar component."
+<commentary>
+The frontend-developer agent handles responsive design challenges using Tailwind CSS and mobile-first principles.
+</commentary>
+</example>
+
+<example>
+Context: Proactive suggestion after user writes backend logic.
+user: "I've added the API endpoint for fetching quiz results"
+assistant: "Great! Now let me use the frontend-developer agent to create the UI components that will display these quiz results effectively."
+<commentary>
+Proactively suggesting frontend work after backend implementation is complete.
+</commentary>
+</example>
