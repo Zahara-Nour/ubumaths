@@ -5,14 +5,6 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FunctionPanel from '../FunctionPanel.svelte';
 import { grapheurStore } from '$lib/stores/grapheur.svelte';
-import { isExplicitFunction } from '$lib/grapheur/types';
-import type { ExplicitFunction } from '$lib/grapheur/types';
-
-function functionById(id: string): ExplicitFunction {
-	const found = grapheurStore.functions.find((p) => p.id === id);
-	if (!found || !isExplicitFunction(found)) throw new Error('fonction introuvable');
-	return found;
-}
 
 /**
  * bits-ui relit `getBoundingClientRect()` du curseur à **chaque**
