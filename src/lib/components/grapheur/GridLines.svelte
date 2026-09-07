@@ -69,19 +69,21 @@
 	// Derived Grid Data
 	// ==========================================================================
 
-	/** Grid spacing based on current viewport */
-	const gridSpacing = $derived.by(() => {
-		const xRange = viewport.xMax - viewport.xMin;
-		const yRange = viewport.yMax - viewport.yMin;
-		// Use the larger range to determine spacing (maintains square grid)
-		const range = Math.max(xRange, yRange);
-		return calculateGridSpacing(range);
-	});
+	/**
+	 * Grid spacing, computed for each axis on its own.
+	 *
+	 * The two axes can carry different scales — dragging along an axis resizes
+	 * it alone — so a single spacing taken from the wider range would empty the
+	 * grid of its lines along the other one, while the graduations of
+	 * `AxisLines` stayed right. Cells are square only when both ranges match.
+	 */
+	const xSpacing = $derived(calculateGridSpacing(viewport.xMax - viewport.xMin));
+	const ySpacing = $derived(calculateGridSpacing(viewport.yMax - viewport.yMin));
 
 	/** Generate vertical grid lines (x = constant) */
 	const verticalLines = $derived.by(() => {
 		const lines: { x: number; isMajor: boolean }[] = [];
-		const { major, minor } = gridSpacing;
+		const { major, minor } = xSpacing;
 
 		// Start from a round number before xMin
 		const startX = Math.floor(viewport.xMin / minor) * minor;
@@ -99,7 +101,7 @@
 	/** Generate horizontal grid lines (y = constant) */
 	const horizontalLines = $derived.by(() => {
 		const lines: { y: number; isMajor: boolean }[] = [];
-		const { major, minor } = gridSpacing;
+		const { major, minor } = ySpacing;
 
 		// Start from a round number before yMin
 		const startY = Math.floor(viewport.yMin / minor) * minor;
