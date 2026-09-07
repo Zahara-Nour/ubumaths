@@ -119,11 +119,10 @@
 		/>
 		<Slider
 			type="single"
-			value={parameter.value}
+			bind:value={() => parameter.value, handleSlide}
 			min={parameter.min}
 			max={parameter.max}
 			{step}
-			onValueChange={handleSlide}
 			aria-label="Curseur du paramètre {parameter.name}"
 		/>
 		<Input

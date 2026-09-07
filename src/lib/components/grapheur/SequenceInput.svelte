@@ -398,11 +398,10 @@
 				/>
 				<Slider
 					type="single"
-					value={sequence.firstTerm ?? 0}
+					bind:value={() => sequence.firstTerm ?? 0, handleFirstTermSlide}
 					min={sequence.firstTermMin}
 					max={sequence.firstTermMax}
 					step={firstTermStep}
-					onValueChange={handleFirstTermSlide}
 					aria-label="Premier terme (curseur)"
 				/>
 				<Input
@@ -434,11 +433,10 @@
 					<span class="shrink-0">Termes : {sequence.cobwebSteps}</span>
 					<Slider
 						type="single"
-						value={sequence.cobwebSteps}
+						bind:value={() => sequence.cobwebSteps, handleCobwebStepsChange}
 						min={0}
 						max={maxCobwebSteps}
 						step={1}
-						onValueChange={handleCobwebStepsChange}
 						aria-label="Nombre de termes de l'escalier"
 					/>
 				</div>

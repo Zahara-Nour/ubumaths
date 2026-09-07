@@ -324,13 +324,18 @@ Features:
 	{#if func.tangentAt !== null}
 		<div class="flex items-center gap-2 text-xs text-muted-foreground">
 			<span class="shrink-0 font-serif">x₀</span>
+			<!--
+				Liaison par fonctions plutôt que `value` + `onValueChange` : le
+				composant écrit dans `value`, qu'il déclare `$bindable`. Une valeur
+				simple lui laisse une copie locale que le rendu du parent réécrase,
+				et le curseur repart en arrière sous la souris.
+			-->
 			<Slider
 				type="single"
-				value={func.tangentAt}
+				bind:value={() => func.tangentAt ?? 0, handleTangentSlide}
 				min={grapheurStore.viewport.xMin}
 				max={grapheurStore.viewport.xMax}
 				step={(grapheurStore.viewport.xMax - grapheurStore.viewport.xMin) / 400}
-				onValueChange={handleTangentSlide}
 				aria-label="Abscisse du point de tangence"
 			/>
 			<span class="shrink-0 font-serif tabular-nums">
