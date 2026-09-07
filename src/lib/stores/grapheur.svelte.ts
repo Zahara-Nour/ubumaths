@@ -32,7 +32,8 @@ import {
 	GRAPH_STATE_VERSION,
 	graphStateSchema,
 	isSequence,
-	nextParameterName
+	nextParameterName,
+	RESERVED_PARAMETER_NAMES
 } from '$lib/grapheur/types';
 import {
 	DEFAULT_COBWEB_STEPS,
@@ -209,6 +210,7 @@ class GrapheurStore {
 				max: DEFAULT_PARAMETER_MAX
 			}
 		];
+		this.reparseSequences();
 		this.scheduleSave();
 		return id;
 	}
@@ -219,10 +221,64 @@ class GrapheurStore {
 		this.scheduleSave();
 	}
 
+	/**
+	 * Rename a parameter.
+	 *
+	 * Expressions refer to a parameter by its name, so a rename silently breaks
+	 * the ones that used the old one — they will show their own error. What is
+	 * refused here is a name that could never work.
+	 *
+	 * @returns An error message in French, or null when the rename went through
+	 */
+	renameParameter(id: string, name: string): string | null {
+		const trimmed = name.trim();
+
+		if (!/^[a-z]$/.test(trimmed)) return 'Un paramètre se nomme par une seule lettre minuscule.';
+		if (RESERVED_PARAMETER_NAMES.has(trimmed))
+			return `« ${trimmed} » est déjà pris par le grapheur.`;
+		if (this.parameters.some((p) => p.id !== id && p.name === trimmed)) {
+			return `Un paramètre « ${trimmed} » existe déjà.`;
+		}
+		if (this.sequenceNames.includes(trimmed)) {
+			return `« ${trimmed} » est le nom d'une suite.`;
+		}
+
+		this.parameters = this.parameters.map((p) => (p.id === id ? { ...p, name: trimmed } : p));
+		this.reparseSequences();
+		this.scheduleSave();
+		return null;
+	}
+
 	/** Remove a parameter. Expressions using it stop evaluating until it returns. */
 	removeParameter(id: string): void {
 		this.parameters = this.parameters.filter((p) => p.id !== id);
+		this.reparseSequences();
 		this.scheduleSave();
+	}
+
+	/**
+	 * Re-read every sequence against the current parameter names.
+	 *
+	 * A sequence validates its free variables when it is parsed. Writing
+	 * `a·u_n` before declaring `a` therefore leaves it in error, and nothing
+	 * would lift that error later — the expression has not changed, only what
+	 * counts as a known name has. Explicit functions do not need this: they
+	 * accept any free variable and simply evaluate to nothing until it is bound.
+	 */
+	private reparseSequences(): void {
+		const names = this.parameterNames;
+
+		this.functions = this.functions.map((p) => {
+			if (!isSequence(p)) return p;
+
+			const parsed = parseSequence(p.latex, p.mode, p.name, names);
+			return {
+				...p,
+				ast: parsed.ast ?? undefined,
+				parseError: parsed.error ?? undefined,
+				usesIndex: parsed.usesIndex
+			};
+		});
 	}
 
 	addFunction(latex: string = ''): string {
@@ -325,6 +381,7 @@ class GrapheurStore {
 			usesIndex: parseResult.usesIndex,
 			firstIndex: 0,
 			firstTerm: mode === 'recurrence' ? 0 : null,
+			firstTermParameter: null,
 			firstTermMin: DEFAULT_FIRST_TERM_MIN,
 			firstTermMax: DEFAULT_FIRST_TERM_MAX,
 			// The cloud of ranks is the standard representation; the staircase is
@@ -362,6 +419,7 @@ class GrapheurStore {
 				| 'name'
 				| 'firstIndex'
 				| 'firstTerm'
+				| 'firstTermParameter'
 				| 'firstTermMin'
 				| 'firstTermMax'
 				| 'representation'
@@ -570,6 +628,7 @@ class GrapheurStore {
 						latex: p.latex,
 						firstIndex: p.firstIndex,
 						firstTerm: p.firstTerm,
+						firstTermParameter: p.firstTermParameter,
 						firstTermMin: p.firstTermMin,
 						firstTermMax: p.firstTermMax,
 						representation: p.representation,
@@ -648,6 +707,7 @@ class GrapheurStore {
 						usesIndex: parseResult.usesIndex,
 						firstIndex: p.firstIndex,
 						firstTerm: p.firstTerm,
+						firstTermParameter: p.firstTermParameter,
 						firstTermMin: p.firstTermMin,
 						firstTermMax: p.firstTermMax,
 						representation: p.representation,

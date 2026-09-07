@@ -23,6 +23,13 @@
 	let { parameter }: { parameter: Parameter } = $props();
 
 	// ==========================================================================
+	// State
+	// ==========================================================================
+
+	/** Why the last rename was refused, shown under the field. */
+	let renameError = $state<string | null>(null);
+
+	// ==========================================================================
 	// Derived
 	// ==========================================================================
 
@@ -46,6 +53,22 @@
 		};
 	}
 
+	/**
+	 * Renaming is committed on blur rather than on each keystroke: passing
+	 * through an already-taken letter while typing would reject a name the user
+	 * has not finished writing.
+	 */
+	function handleRename(event: Event & { currentTarget: HTMLInputElement }) {
+		const wanted = event.currentTarget.value;
+		if (wanted === parameter.name) {
+			renameError = null;
+			return;
+		}
+
+		renameError = grapheurStore.renameParameter(parameter.id, wanted);
+		if (renameError) event.currentTarget.value = parameter.name;
+	}
+
 	function handleRemove() {
 		grapheurStore.removeParameter(parameter.id);
 	}
@@ -53,7 +76,14 @@
 
 <div class="flex flex-col gap-1 rounded border border-border/60 bg-muted/30 p-2">
 	<div class="flex items-center gap-2">
-		<span class="font-serif text-sm">{parameter.name} =</span>
+		<Input
+			value={parameter.name}
+			onblur={handleRename}
+			class="h-7 w-10 text-center font-serif text-sm"
+			maxlength={1}
+			aria-label="Nom du paramètre {parameter.name}"
+		/>
+		<span class="font-serif text-sm">=</span>
 		<Input
 			type="number"
 			step="any"
@@ -73,6 +103,10 @@
 			<Trash2 class="h-4 w-4" />
 		</Button>
 	</div>
+
+	{#if renameError}
+		<p class="text-xs text-destructive" role="alert">{renameError}</p>
+	{/if}
 
 	<div class="flex items-center gap-2">
 		<Input

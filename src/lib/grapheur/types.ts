@@ -93,6 +93,13 @@ export interface SequencePlottable extends PlottableBase {
 	readonly firstIndex: number;
 	/** Value of the first term; required for a recurrence, unused otherwise. */
 	readonly firstTerm: number | null;
+	/**
+	 * Name of the parameter driving the first term, when one does.
+	 *
+	 * Set, it takes over `firstTerm`: the parameter's own slider becomes the one
+	 * that sweeps `u₀`, and the same value can drive several sequences at once.
+	 */
+	readonly firstTermParameter: string | null;
 	/** Lower bound of the slider that drives the first term. */
 	readonly firstTermMin: number;
 	/** Upper bound of the slider that drives the first term. */
@@ -156,6 +163,7 @@ export interface SequenceState {
 	readonly latex: string;
 	readonly firstIndex: number;
 	readonly firstTerm: number | null;
+	readonly firstTermParameter: string | null;
 	readonly firstTermMin: number;
 	readonly firstTermMax: number;
 	readonly representation: SequenceRepresentation;
@@ -323,6 +331,12 @@ const sequenceStateSchema = z.object({
 		.min(-1e9, 'First term out of range')
 		.max(1e9, 'First term out of range')
 		.nullable(),
+	// Absent des états écrits avant l'arrivée des paramètres.
+	firstTermParameter: z
+		.string()
+		.regex(/^[a-z]$/, 'Parameter name must be a single lowercase letter')
+		.nullable()
+		.default(null),
 	// Bornes du curseur du premier terme. Absentes des états écrits avant leur
 	// introduction : la valeur par défaut les rétablit sans casse.
 	firstTermMin: z
