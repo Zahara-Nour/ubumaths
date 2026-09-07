@@ -1,11 +1,11 @@
 /**
- * Grapheur Sampler - Generate sample points for curve rendering
+ * Curve sampler — generate sample points for curve rendering
  *
  * This module handles the sampling of mathematical functions over a viewport
  * to produce point arrays suitable for SVG path rendering. It includes
  * discontinuity detection for handling asymptotes and domain errors.
  *
- * @module grapheur/sampler
+ * @module geometry-core/viewport/sampler
  */
 
 import type { Point, SampledCurve, Viewport } from './types';

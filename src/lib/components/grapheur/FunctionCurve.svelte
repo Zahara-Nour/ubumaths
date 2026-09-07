@@ -13,7 +13,7 @@
 	import { LINE_STYLE_DASHARRAY } from '$lib/grapheur/types';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
 	import { createEvaluator } from '$lib/grapheur/evaluator';
-	import { sampleFunction } from '$lib/grapheur/sampler';
+	import { sampleFunction } from '$lib/geometry-core/viewport';
 	import { curveToSVGPath, curveToPolylinePath } from '$lib/grapheur/bezier';
 
 	// Props
