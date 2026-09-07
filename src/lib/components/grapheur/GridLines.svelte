@@ -10,6 +10,7 @@
 
 	import type { Viewport } from '$lib/grapheur/types';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
+	import { computeGridStep } from '$lib/geometry-core/viewport';
 
 	// Props
 	let {
@@ -37,60 +38,19 @@
 	const MAX_LINES_PER_AXIS = 400;
 
 	// ==========================================================================
-	// Grid Spacing Calculation
-	// ==========================================================================
-
-	/**
-	 * Calculate "nice" grid spacing based on viewport size.
-	 * Uses powers of 10 multiplied by 1, 2, or 5 (human-friendly numbers).
-	 *
-	 * The goal is to have roughly 5-15 major grid lines visible.
-	 */
-	function calculateGridSpacing(range: number): { major: number; minor: number } {
-		// Target: ~5-15 major grid lines
-		const targetLines = 8;
-		const rawSpacing = range / targetLines;
-
-		// Find the order of magnitude
-		const magnitude = Math.pow(10, Math.floor(Math.log10(rawSpacing)));
-
-		// Normalize to 1-10 range
-		const normalized = rawSpacing / magnitude;
-
-		// Choose "nice" number: 1, 2, 5, or 10
-		let niceNumber: number;
-		if (normalized <= 1.5) {
-			niceNumber = 1;
-		} else if (normalized <= 3) {
-			niceNumber = 2;
-		} else if (normalized <= 7) {
-			niceNumber = 5;
-		} else {
-			niceNumber = 10;
-		}
-
-		const major = niceNumber * magnitude;
-		// Minor grid: 5 subdivisions for nice numbers 1 and 5, 4 for 2 and 10
-		const minorDivisions = niceNumber === 2 || niceNumber === 10 ? 4 : 5;
-		const minor = major / minorDivisions;
-
-		return { major, minor };
-	}
-
-	// ==========================================================================
 	// Derived Grid Data
 	// ==========================================================================
 
 	/**
-	 * Grid spacing, computed for each axis on its own.
+	 * Grid spacing, computed for each axis on its own, from its own scale.
 	 *
-	 * The two axes can carry different scales — dragging along an axis resizes
-	 * it alone — so a single spacing taken from the wider range would empty the
-	 * grid of its lines along the other one, while the graduations of
-	 * `AxisLines` stayed right. Cells are square only when both ranges match.
+	 * The criterion is a distance in pixels, not a number of lines: the two axes
+	 * can carry different scales — dragging along an axis resizes it alone — and
+	 * only a pixel distance still means something then. Cells are square when,
+	 * and only when, both scales match.
 	 */
-	const xSpacing = $derived(calculateGridSpacing(viewport.xMax - viewport.xMin));
-	const ySpacing = $derived(calculateGridSpacing(viewport.yMax - viewport.yMin));
+	const xSpacing = $derived(computeGridStep(transformer.scaleX));
+	const ySpacing = $derived(computeGridStep(transformer.scaleY));
 
 	/**
 	 * Generate vertical grid lines (x = constant).
@@ -106,12 +66,20 @@
 
 		// Start from a round number before xMin
 		const startX = Math.floor(viewport.xMin / minor) * minor;
-		if (!Number.isFinite(startX) || startX + minor === startX) return lines;
+		// Below one ulp at that magnitude, the axis cannot carry a step at all:
+		// the requested spacing would be rounded away.
+		if (!Number.isFinite(startX) || minor <= Math.abs(startX) * Number.EPSILON) return lines;
 
 		const count = Math.min(Math.floor((viewport.xMax - startX) / minor), MAX_LINES_PER_AXIS);
 
+		let previous = -Infinity;
 		for (let i = 0; i <= count; i++) {
 			const x = startX + i * minor;
+			// Float resolution exhausted: the step no longer moves the value, and
+			// the keyed `{#each}` below would see the same key twice.
+			if (x <= previous) break;
+			previous = x;
+
 			// Check if this is a major line (within floating point tolerance)
 			const isMajor = Math.abs(x / major - Math.round(x / major)) < 0.001;
 			lines.push({ x, isMajor });
@@ -128,12 +96,16 @@
 
 		// Start from a round number before yMin
 		const startY = Math.floor(viewport.yMin / minor) * minor;
-		if (!Number.isFinite(startY) || startY + minor === startY) return lines;
+		if (!Number.isFinite(startY) || minor <= Math.abs(startY) * Number.EPSILON) return lines;
 
 		const count = Math.min(Math.floor((viewport.yMax - startY) / minor), MAX_LINES_PER_AXIS);
 
+		let previous = -Infinity;
 		for (let i = 0; i <= count; i++) {
 			const y = startY + i * minor;
+			if (y <= previous) break;
+			previous = y;
+
 			// Check if this is a major line
 			const isMajor = Math.abs(y / major - Math.round(y / major)) < 0.001;
 			lines.push({ y, isMajor });

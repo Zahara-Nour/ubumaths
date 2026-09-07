@@ -85,7 +85,13 @@ describe('GridLines', () => {
 		expect(horizontalMajor.length).toBeLessThanOrEqual(400);
 	});
 
-	it('ne change rien quand les deux amplitudes sont égales', () => {
+	/**
+	 * Le critère est l'espacement en **pixels**, pas un nombre de lignes : c'est
+	 * le seul qui garde un sens quand les deux axes portent des échelles
+	 * différentes. Deux amplitudes égales sur un canevas non carré donnent donc
+	 * deux pas différents — et c'est voulu.
+	 */
+	it('gradue selon les pixels, pas selon l’amplitude', () => {
 		const { verticalMajor, horizontalMajor } = renderGrid({
 			xMin: -10,
 			xMax: 10,
@@ -93,8 +99,25 @@ describe('GridLines', () => {
 			yMax: 10
 		});
 
-		// Pas majeur de 2 sur [-10 ; 10] : -10, -8, …, 10.
+		// 800 px pour 20 unités → 40 px/unité → pas de 2 : -10, -8, …, 10.
 		expect(verticalMajor).toHaveLength(11);
-		expect(horizontalMajor).toHaveLength(11);
+		// 400 px pour 20 unités → 20 px/unité → pas de 5 : -10, -5, 0, 5, 10.
+		expect(horizontalMajor).toHaveLength(5);
+	});
+
+	it('donne le même pas aux deux axes sur un canevas carré', () => {
+		const viewport: Viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 };
+		const { container } = render(GridLines, {
+			viewport,
+			transformer: createTransformer(viewport, 800, 800),
+			width: 800,
+			height: 800
+		});
+
+		const lines = [...container.querySelectorAll<SVGLineElement>('.grid-major line')];
+		const vertical = lines.filter((l) => l.getAttribute('x1') === l.getAttribute('x2'));
+
+		expect(vertical).toHaveLength(11);
+		expect(lines).toHaveLength(22);
 	});
 });
