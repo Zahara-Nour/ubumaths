@@ -328,7 +328,40 @@ export function extractCubicCoefficients(
 	// Verify a ≠ 0
 	if (isZeroNode(a)) return null;
 
+	// A coefficient of ax³ + bx² + cx + d must be constant in the variable. A
+	// factored cube passes the degree test — `getTermDegree` reads `(x-1)^3` as a
+	// degree-3 term — and the division by x³ then yields `(x-1)^3 / x^3`, which
+	// still depends on x. Cardano applied to such a "coefficient" answered x = 0.
+	// Coefficients holding *other* symbols (parametric equations) stay valid.
+	if (
+		dependsOnVariable(a, variable) ||
+		dependsOnVariable(b, variable) ||
+		dependsOnVariable(c, variable) ||
+		dependsOnVariable(d, variable)
+	) {
+		return null;
+	}
+
 	return { a, b, c, d };
+}
+
+/** Whether a coefficient still involves the variable being solved for. */
+function dependsOnVariable(coefficient: MathNode, variable: string): boolean {
+	return getVariables(coefficient).has(variable);
+}
+
+/**
+ * Read cubic coefficients, expanding once if the expression is not in standard
+ * form. `(x-1)^3` is degree 3 yet holds no constant coefficients until expanded.
+ */
+function cubicCoefficients(
+	expr: MathNode,
+	variable: string
+): { a: MathNode; b: MathNode; c: MathNode; d: MathNode } | null {
+	return (
+		extractCubicCoefficients(expr, variable) ??
+		extractCubicCoefficients(denormalize(normalize(expr)), variable)
+	);
 }
 
 // =============================================================================
@@ -349,7 +382,7 @@ export const polynomialSolver: EquationSolver = {
 
 		// Handle degree 3 (cubics) or pure power equations
 		if (degree === 3) {
-			return extractCubicCoefficients(expr, variable) !== null;
+			return cubicCoefficients(expr, variable) !== null;
 		}
 
 		// For degree > 3, only handle pure power equations x^n = k
@@ -375,7 +408,7 @@ export const polynomialSolver: EquationSolver = {
 			}
 
 			// Otherwise use Cardano for general cubic
-			const cubicCoeffs = extractCubicCoefficients(expr, variable);
+			const cubicCoeffs = cubicCoefficients(expr, variable);
 			if (cubicCoeffs) {
 				return solveCubicCardano(variable, cubicCoeffs, options, recorder);
 			}

@@ -180,3 +180,61 @@ describe('findCriticalInflections', () => {
 		expect(pts.length).toBeGreaterThanOrEqual(1);
 	});
 });
+
+/**
+ * Un candidat renvoyé par `solve()` doit être vérifié avant d'être présenté
+ * comme un zéro : `solve((x-1)^2 = 0)` renvoie aujourd'hui `x = 0`
+ * (`extractQuadraticCoefficients` prend `(x-1)^2` pour un terme en `a·x²` et
+ * en tire un « coefficient » `(x-1)²/x²` qui dépend encore de `x`). Sans
+ * garde-fou, ce faux zéro remonte jusqu'à `zeros()` et jusqu'au grapheur.
+ */
+describe('critical zeros — vérification des candidats exacts', () => {
+	it('ne renvoie pas de faux zéro pour (x-1)^2', () => {
+		const pts = zeros('(x-1)^2');
+
+		expect(pts.map((p) => p.xNumeric)).not.toContain(0);
+		expect(pts).toHaveLength(1);
+		expect(pts[0].xNumeric).toBeCloseTo(1);
+	});
+
+	it('ne renvoie pas de faux zéro pour (x-3)^2', () => {
+		const pts = zeros('(x-3)^2');
+
+		expect(pts).toHaveLength(1);
+		expect(pts[0].xNumeric).toBeCloseTo(3);
+	});
+
+	it('ne renvoie pas de faux zéro pour (x-1)^3', () => {
+		const pts = zeros('(x-1)^3');
+
+		expect(pts.map((p) => p.xNumeric)).not.toContain(0);
+		expect(pts.every((p) => Math.abs(p.yNumeric) < 1e-6)).toBe(true);
+	});
+
+	it('tout zéro renvoyé annule bien la fonction', () => {
+		for (const expr of ['(x-1)^2', '(x+2)^2', '(2x-4)^2', 'x^2-2', 'x^3-3*x']) {
+			const ast = parseCustom(expr);
+			const fn = compile(ast);
+
+			for (const pt of findCriticalZeros(ast, fn, 'x', -10, 10)) {
+				expect(Math.abs(fn({ x: pt.xNumeric }))).toBeLessThan(1e-6);
+			}
+		}
+	});
+
+	it('conserve les zéros exacts légitimes', () => {
+		const pts = zeros('x^2-2');
+
+		expect(pts).toHaveLength(2);
+		expect(pts.some((p) => p.exact)).toBe(true);
+		expect(pts.map((p) => p.xNumeric).sort((a, b) => a - b)[1]).toBeCloseTo(Math.SQRT2);
+	});
+
+	it('conserve les extrema exacts', () => {
+		const pts = extrema('x^2-2');
+
+		expect(pts).toHaveLength(1);
+		expect(pts[0].type).toBe('min');
+		expect(pts[0].xNumeric).toBeCloseTo(0);
+	});
+});

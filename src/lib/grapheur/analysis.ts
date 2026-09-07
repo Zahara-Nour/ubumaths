@@ -20,8 +20,13 @@ import type {
 	ObliqueAsymptote,
 	FunctionAnalysis
 } from './types';
+import type { Plottable } from './types';
+import { isExplicitFunction } from './types';
+import { createEvaluator } from './evaluator';
 import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
+import { compile } from '$lib/mathAST/eval/compile';
+import { differentiate } from '$lib/mathAST/differentiation';
 import { findCriticalZeros, findCriticalExtrema } from '$lib/mathAST/analysis';
 
 // =============================================================================
@@ -801,12 +806,84 @@ export function analyzeFunction(
  * @returns Array of analysis results for each function
  */
 export function analyzeAllFunctions(
-	functions: readonly {
-		id: string;
-		evaluator: (x: number) => number | null;
-		ast?: AnalysisASTInfo;
-	}[],
+	functions: readonly AnalysisInput[],
 	viewport: Viewport
 ): FunctionAnalysis[] {
 	return functions.map((f) => analyzeFunction(f.evaluator, viewport, f.id, f.ast));
+}
+
+// =============================================================================
+// Analysis Inputs
+// =============================================================================
+
+/** One curve to analyse: its evaluator, plus the AST that unlocks exact results. */
+export interface AnalysisInput {
+	readonly id: string;
+	readonly evaluator: (x: number) => number | null;
+	readonly ast?: AnalysisASTInfo;
+}
+
+/**
+ * Derivative and compiled closures are cached per AST node. A pan or a zoom
+ * re-runs the analysis with the very same AST object, which is only replaced
+ * when the user edits the expression.
+ */
+const analysisASTCache = new WeakMap<MathNode, AnalysisASTInfo>();
+
+/**
+ * Build the AST information `analyzeFunction()` needs to take its exact path.
+ *
+ * Returns `undefined` when the expression cannot be compiled at all; a missing
+ * derivative alone is not fatal, extrema simply fall back to the numeric sweep.
+ */
+export function buildAnalysisAST(ast: MathNode): AnalysisASTInfo | undefined {
+	const cached = analysisASTCache.get(ast);
+	if (cached) return cached;
+
+	let compiledFn: CompiledFn;
+	try {
+		compiledFn = compile(ast);
+	} catch {
+		return undefined;
+	}
+
+	let info: AnalysisASTInfo = { expression: ast, compiledFn };
+	try {
+		const derivative = differentiate(ast, { variable: 'x', simplify: true });
+		info = { ...info, derivative, compiledDerivative: compile(derivative) };
+	} catch {
+		// Keep the zeros exact even when the derivative is out of reach.
+	}
+
+	analysisASTCache.set(ast, info);
+	return info;
+}
+
+/**
+ * Turn the graph's plottables into analysis inputs.
+ *
+ * Single entry point for the components that display roots, extrema and
+ * asymptotes: they used to assemble `{ id, evaluator }` by hand and all three
+ * forgot the AST, which silently disabled the exact analysis.
+ *
+ * @param plottables - Everything the graph holds, sequences included
+ * @returns One input per visible explicit function with a parsable expression
+ */
+export function toAnalysisInputs(plottables: readonly Plottable[]): AnalysisInput[] {
+	const inputs: AnalysisInput[] = [];
+
+	for (const plottable of plottables) {
+		if (!isExplicitFunction(plottable) || !plottable.visible) continue;
+
+		const ast = plottable.ast;
+		if (!ast) continue;
+
+		inputs.push({
+			id: plottable.id,
+			evaluator: createEvaluator(ast),
+			ast: buildAnalysisAST(ast)
+		});
+	}
+
+	return inputs;
 }

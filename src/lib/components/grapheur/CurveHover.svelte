@@ -21,7 +21,7 @@
 	import type { ExplicitFunction, SnappedPointType, SnappedPoint } from '$lib/grapheur/types';
 	import { isExplicitFunction } from '$lib/grapheur/types';
 	import { createEvaluator } from '$lib/grapheur/evaluator';
-	import { analyzeAllFunctions } from '$lib/grapheur/analysis';
+	import { analyzeAllFunctions, toAnalysisInputs } from '$lib/grapheur/analysis';
 	import {
 		findAllIntersections,
 		deduplicateIntersections,
@@ -63,15 +63,7 @@
 	const analysisResults = $derived.by(() => {
 		if (grapheurStore.isInteracting) return [];
 
-		const functions = grapheurStore.functions
-			.filter(isExplicitFunction)
-			.filter((f) => f.visible && f.ast)
-			.map((f) => ({
-				id: f.id,
-				evaluator: createEvaluator(f.ast!)
-			}));
-
-		return analyzeAllFunctions(functions, grapheurStore.viewport);
+		return analyzeAllFunctions(toAnalysisInputs(grapheurStore.functions), grapheurStore.viewport);
 	});
 
 	/**

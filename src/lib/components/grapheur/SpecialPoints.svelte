@@ -16,9 +16,7 @@
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
 	import type { Root, Extremum, FunctionAnalysis, SnappedPointType } from '$lib/grapheur/types';
-	import { isExplicitFunction } from '$lib/grapheur/types';
-	import { analyzeAllFunctions } from '$lib/grapheur/analysis';
-	import { createEvaluator } from '$lib/grapheur/evaluator';
+	import { analyzeAllFunctions, toAnalysisInputs } from '$lib/grapheur/analysis';
 
 	// Props
 	let {
@@ -49,16 +47,7 @@
 		// Skip during interaction for performance
 		if (grapheurStore.isInteracting) return [];
 
-		// Access functions directly and filter here for proper reactivity
-		const functions = grapheurStore.functions
-			.filter(isExplicitFunction)
-			.filter((f) => f.visible && f.ast)
-			.map((f) => ({
-				id: f.id,
-				evaluator: createEvaluator(f.ast!)
-			}));
-
-		return analyzeAllFunctions(functions, grapheurStore.viewport);
+		return analyzeAllFunctions(toAnalysisInputs(grapheurStore.functions), grapheurStore.viewport);
 	});
 
 	/**

@@ -49,6 +49,11 @@ const BISECTION_TOLERANCE = 1e-12;
 const DEDUP_TOLERANCE = 1e-8;
 const SIGN_CHECK_EPSILON = 1e-6;
 
+/** Relative tolerance used to verify that a candidate really annuls the function. */
+const ROOT_VERIFY_TOLERANCE = 1e-6;
+/** Offset used to estimate the local magnitude of the function around a candidate. */
+const ROOT_VERIFY_OFFSET = 1e-3;
+
 // =============================================================================
 // Main exports
 // =============================================================================
@@ -148,6 +153,34 @@ export function findCriticalInflections(
 // Phase 1: Exact solving
 // =============================================================================
 
+/**
+ * Verify that a candidate returned by `solve()` really annuls the function.
+ *
+ * `solve()` can return a solution of a *different* equation than the one asked:
+ * `solve((x-1)^2 = 0)` answers `x = 0`, because the quadratic extractor reads
+ * `(x-1)^2` as an `a·x²` term and builds a "coefficient" `(x-1)²/x²` that still
+ * depends on `x`. Presenting such a candidate would draw a zero where the curve
+ * is at height 1 — worse than showing nothing.
+ *
+ * The candidate is compared to the magnitude the function reaches just beside
+ * it, so a steep function keeps a proportionally looser tolerance and a genuine
+ * root lost to cancellation is not rejected.
+ */
+function annulsFunction(compiledFn: CompiledFn, variable: string, x: number): boolean {
+	const y = compiledFn({ [variable]: x });
+	if (!Number.isFinite(y)) return false;
+
+	const left = compiledFn({ [variable]: x - ROOT_VERIFY_OFFSET });
+	const right = compiledFn({ [variable]: x + ROOT_VERIFY_OFFSET });
+	const scale = Math.max(
+		1,
+		Number.isFinite(left) ? Math.abs(left) : 0,
+		Number.isFinite(right) ? Math.abs(right) : 0
+	);
+
+	return Math.abs(y) <= ROOT_VERIFY_TOLERANCE * scale;
+}
+
 function solveExact(
 	equation: RelationNode,
 	_expression: MathNode,
@@ -175,6 +208,7 @@ function solveExact(
 			const xNum = sol.approximate ?? evaluateToNumber(sol.value);
 			if (xNum === null || !Number.isFinite(xNum)) continue;
 			if (xNum < xMin - DEDUP_TOLERANCE || xNum > xMax + DEDUP_TOLERANCE) continue;
+			if (!annulsFunction(compiledFn, variable, xNum)) continue;
 
 			const yNum = compiledFn({ [variable]: xNum });
 			points.push({
@@ -200,6 +234,7 @@ function solveExact(
 				for (let k = kMin; k <= kMax; k++) {
 					const xNum = baseNum + k * periodNumeric;
 					if (xNum < xMin - DEDUP_TOLERANCE || xNum > xMax + DEDUP_TOLERANCE) continue;
+					if (!annulsFunction(compiledFn, variable, xNum)) continue;
 
 					// Check not already present
 					if (points.some((p) => Math.abs(p.xNumeric - xNum) < DEDUP_TOLERANCE)) continue;
