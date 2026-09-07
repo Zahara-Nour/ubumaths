@@ -19,6 +19,7 @@
 	import GridLines from './GridLines.svelte';
 	import AxisLines from './AxisLines.svelte';
 	import FunctionCurve from './FunctionCurve.svelte';
+	import { derivativeCurve } from '$lib/grapheur/analysis';
 	import SequencePlot from './SequencePlot.svelte';
 	import CurveHover from './CurveHover.svelte';
 	import IntersectionPoints from './IntersectionPoints.svelte';
@@ -396,6 +397,18 @@
 						isInteracting={grapheurStore.isInteracting}
 						bindings={grapheurStore.parameterBindings}
 					/>
+					<!-- La dérivée suit la fonction : elle se recalcule à chaque édition. -->
+					{#if plottable.showDerivative}
+						{@const derivative = derivativeCurve(plottable, grapheurStore.parameterBindings)}
+						{#if derivative}
+							<FunctionCurve
+								func={derivative}
+								viewport={grapheurStore.viewport}
+								{transformer}
+								isInteracting={grapheurStore.isInteracting}
+							/>
+						{/if}
+					{/if}
 				{:else}
 					<SequencePlot
 						sequence={plottable}

@@ -22,6 +22,7 @@ import type {
 } from './types';
 import type { Plottable } from './types';
 import { isExplicitFunction } from './types';
+import type { ExplicitFunction } from './types';
 import { createEvaluator } from './evaluator';
 import type { VariableBindings } from './evaluator';
 import type { MathNode } from '$lib/mathAST/types';
@@ -948,6 +949,42 @@ export function bindParameters(ast: MathNode, bindings: VariableBindings): MathN
 	perAst.set(key, bound);
 	boundASTCache.set(ast, perAst);
 	return bound;
+}
+
+/**
+ * Build the curve of `f'`, drawn alongside `f`.
+ *
+ * Returned as a plottable of its own so the renderer needs no special case,
+ * but derived from the function each frame rather than stored: editing `f`
+ * redraws `f'`, which is the whole point of showing them together.
+ *
+ * Parameters are bound before differentiating, so `a·x²` with `a = 3` gives
+ * `6x` and not an expression still carrying `a`.
+ *
+ * @returns The derivative curve, or undefined when it cannot be built
+ */
+export function derivativeCurve(
+	func: ExplicitFunction,
+	bindings: VariableBindings = {}
+): ExplicitFunction | undefined {
+	if (!func.ast) return undefined;
+
+	const bound = bindParameters(func.ast, bindings);
+	if (!bound) return undefined;
+
+	const derivative = buildAnalysisAST(bound)?.derivative;
+	if (!derivative) return undefined;
+
+	return {
+		...func,
+		id: `${func.id}:derivative`,
+		ast: derivative,
+		parseError: undefined,
+		// Dashed, so the two curves stay tellable apart at a glance.
+		lineStyle: 'dashed',
+		lineWidth: Math.max(func.lineWidth - 1, 1),
+		showDerivative: false
+	};
 }
 
 /** Substituted expressions, keyed by source AST then by binding values. */

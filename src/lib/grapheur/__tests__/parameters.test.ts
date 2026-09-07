@@ -8,7 +8,12 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { analyzeAllFunctions, bindParameters, toAnalysisInputs } from '../analysis';
+import {
+	analyzeAllFunctions,
+	bindParameters,
+	derivativeCurve,
+	toAnalysisInputs
+} from '../analysis';
 import { createEvaluator, parseFunction } from '../evaluator';
 import { computeSequenceTerms, parseSequence, toComputeSpec } from '../sequence';
 import { graphStateSchema, nextParameterName, RESERVED_PARAMETER_NAMES } from '../types';
@@ -29,7 +34,8 @@ function curve(latex: string): ExplicitFunction {
 		color: '#0000ff',
 		visible: true,
 		lineWidth: 2,
-		lineStyle: 'solid'
+		lineStyle: 'solid',
+		showDerivative: false
 	};
 }
 
@@ -182,5 +188,57 @@ describe('persistance', () => {
 		});
 
 		expect(result.success).toBe(false);
+	});
+});
+
+/**
+ * La dérivée est construite à partir de la fonction à chaque image, jamais
+ * stockée : éditer `f` redessine `f'`, ce qui est tout l'intérêt de les voir
+ * ensemble.
+ */
+describe('courbe dérivée', () => {
+	it('dérive une fonction simple', () => {
+		const d = derivativeCurve(curve('x^2'));
+
+		expect(d).toBeDefined();
+		expect(createEvaluator(d!.ast!)(3)).toBeCloseTo(6);
+		expect(createEvaluator(d!.ast!)(-2)).toBeCloseTo(-4);
+	});
+
+	it('se distingue de la fonction : pointillés, trait plus fin, id dérivé', () => {
+		const d = derivativeCurve(curve('x^2'));
+
+		expect(d?.lineStyle).toBe('dashed');
+		expect(d?.lineWidth).toBeLessThan(curve('x^2').lineWidth);
+		expect(d?.id).toBe('x^2:derivative');
+	});
+
+	it('ne se dérive pas elle-même', () => {
+		expect(derivativeCurve(curve('x^2'))?.showDerivative).toBe(false);
+	});
+
+	it('substitue les paramètres avant de dériver', () => {
+		// a·x² avec a = 3 donne 6x, et non une expression portant encore « a ».
+		const d = derivativeCurve(curve('a*x^2'), { a: 3 });
+
+		expect(createEvaluator(d!.ast!)(2)).toBeCloseTo(12);
+	});
+
+	it('suit le curseur du paramètre', () => {
+		const slopeAt2 = (a: number) =>
+			createEvaluator(derivativeCurve(curve('a*x^2'), { a })!.ast!)(2);
+
+		expect(slopeAt2(1)).toBeCloseTo(4);
+		expect(slopeAt2(5)).toBeCloseTo(20);
+	});
+
+	it('ne rend rien pour une expression invalide', () => {
+		expect(derivativeCurve(curve(')('))).toBeUndefined();
+	});
+
+	it('rend une dérivée nulle pour une constante', () => {
+		const d = derivativeCurve(curve('4'));
+
+		expect(createEvaluator(d!.ast!)(7)).toBeCloseTo(0);
 	});
 });
