@@ -29,6 +29,7 @@ Features:
 	import LineStylePicker from './LineStylePicker.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Slider } from '$lib/components/ui/slider';
+	import { fromSliderIndex, SLIDER_STEPS, toSliderIndex } from '$lib/grapheur/slider';
 	import { Input } from '$lib/components/ui/input';
 	import { arcLengthBetween, curvatureAt, integralUnder, tangentAt } from '$lib/grapheur/analysis';
 	import { Eye, EyeOff, Trash2 } from '@lucide/svelte';
@@ -163,8 +164,9 @@ Features:
 			: undefined
 	);
 
-	function handleTangentSlide(value: number) {
-		grapheurStore.updateFunction(func.id, { tangentAt: value });
+	function handleTangentSlide(index: number) {
+		const { xMin, xMax } = grapheurStore.viewport;
+		grapheurStore.updateFunction(func.id, { tangentAt: fromSliderIndex(index, xMin, xMax) });
 	}
 
 	/** Slope shown next to the slider — the point of the whole thing. */
@@ -277,12 +279,26 @@ Features:
 		<div class="flex flex-col gap-2 rounded border border-border/60 bg-muted/30 p-2">
 			<div class="flex items-center gap-2 text-xs text-muted-foreground">
 				<span class="shrink-0 font-serif">x₀</span>
+				<!--
+					Curseur piloté en entiers : bits-ui compare la valeur à une liste
+					de valeurs permises avec `===`, et un pas flottant tiré de la
+					fenêtre n'en produit aucune qui corresponde — il réécrit alors la
+					valeur, et le pouce repart en arrière.
+				-->
 				<Slider
 					type="single"
-					bind:value={() => func.tangentAt ?? 0, handleTangentSlide}
-					min={grapheurStore.viewport.xMin}
-					max={grapheurStore.viewport.xMax}
-					step={(grapheurStore.viewport.xMax - grapheurStore.viewport.xMin) / 400}
+					bind:value={
+						() =>
+							toSliderIndex(
+								func.tangentAt ?? grapheurStore.viewport.xMin,
+								grapheurStore.viewport.xMin,
+								grapheurStore.viewport.xMax
+							),
+						handleTangentSlide
+					}
+					min={0}
+					max={SLIDER_STEPS}
+					step={1}
 					aria-label="Abscisse du point de tangence"
 				/>
 				<span class="shrink-0 font-serif tabular-nums">

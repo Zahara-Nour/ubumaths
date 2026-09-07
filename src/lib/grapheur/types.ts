@@ -241,9 +241,6 @@ export const PARAMETER_NAMES = ['a', 'b', 'c', 'k', 'm', 'p', 'q', 'r'] as const
 export const DEFAULT_PARAMETER_MIN = -10;
 export const DEFAULT_PARAMETER_MAX = 10;
 
-/** Steps the parameter slider offers between its bounds. */
-export const PARAMETER_SLIDER_STEPS = 200;
-
 /**
  * Pick the first unused letter for a new parameter.
  *
