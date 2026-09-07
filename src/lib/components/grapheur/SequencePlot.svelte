@@ -18,7 +18,7 @@
 		createRecurrenceFunctionEvaluator,
 		toComputeSpec
 	} from '$lib/grapheur/sequence';
-	import { sampleFunction } from '$lib/grapheur/sampler';
+	import { sampleFunction } from '$lib/geometry-core/viewport';
 	import { curveToPolylinePath, curveToSVGPath } from '$lib/grapheur/bezier';
 
 	// Props
