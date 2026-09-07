@@ -69,6 +69,13 @@ export interface ExplicitFunction extends PlottableBase {
 	 * `f` se lisent ensemble.
 	 */
 	readonly showDerivative: boolean;
+	/**
+	 * Abscissa where the tangent is drawn, or null when none is.
+	 *
+	 * Sliding it along the curve is what turns `f'(x₀)` from a number into a
+	 * slope one can see.
+	 */
+	readonly tangentAt: number | null;
 }
 
 /**
@@ -157,6 +164,7 @@ export interface ExplicitFunctionState {
 	readonly type: 'explicit';
 	readonly latex: string;
 	readonly showDerivative: boolean;
+	readonly tangentAt: number | null;
 	readonly color: string;
 	readonly visible: boolean;
 	readonly lineWidth: number;
@@ -313,8 +321,9 @@ const explicitFunctionStateSchema = z.object({
 		.min(1, 'Line width minimum is 1')
 		.max(5, 'Line width maximum is 5'),
 	lineStyle: lineStyleSchema.default('solid'),
-	// Absent des états écrits avant la courbe dérivée.
+	// Absents des états écrits avant la courbe dérivée et la tangente.
 	showDerivative: z.boolean().default(false),
+	tangentAt: z.number().finite().min(-1e9).max(1e9).nullable().default(null),
 	variable: z
 		.string()
 		.min(1, 'Variable name is required')

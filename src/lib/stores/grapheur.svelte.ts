@@ -294,6 +294,7 @@ class GrapheurStore {
 			parseError: parseResult.error ?? undefined,
 			variable: 'x',
 			showDerivative: false,
+			tangentAt: null,
 			color,
 			visible: true,
 			lineWidth: 2,
@@ -328,7 +329,7 @@ class GrapheurStore {
 		updates: Partial<
 			Pick<
 				ExplicitFunction,
-				'latex' | 'color' | 'visible' | 'lineWidth' | 'lineStyle' | 'showDerivative'
+				'latex' | 'color' | 'visible' | 'lineWidth' | 'lineStyle' | 'showDerivative' | 'tangentAt'
 			>
 		>
 	): void {
@@ -650,6 +651,7 @@ class GrapheurStore {
 					type: p.type,
 					latex: p.latex,
 					showDerivative: p.showDerivative,
+					tangentAt: p.tangentAt,
 					color: p.color,
 					visible: p.visible,
 					lineWidth: p.lineWidth,
@@ -731,6 +733,7 @@ class GrapheurStore {
 					type: p.type,
 					latex: p.latex,
 					showDerivative: p.showDerivative,
+					tangentAt: p.tangentAt,
 					ast: parseResult.ast ?? undefined,
 					parseError: parseResult.error ?? undefined,
 					variable: p.variable,

@@ -32,6 +32,9 @@ import { differentiate } from '$lib/mathAST/differentiation';
 import { findCriticalZeros, findCriticalExtrema } from '$lib/mathAST/analysis';
 import { simplify } from '$lib/mathAST/simplify';
 import { substitute } from '$lib/mathAST/eval/substitute';
+import { add, multiply, variable } from '$lib/mathAST/factory';
+// `number()` refuse un littéral signé ; `numericNode()` gère le signe lui-même.
+import { numericNode } from '$lib/mathAST/common/numeric';
 
 // =============================================================================
 // Constants
@@ -984,6 +987,66 @@ export function derivativeCurve(
 		lineStyle: 'dashed',
 		lineWidth: Math.max(func.lineWidth - 1, 1),
 		showDerivative: false
+	};
+}
+
+/** A tangent: where it touches, how steep it is, and the line itself. */
+export interface TangentResult {
+	/** Abscissa of the point of tangency. */
+	readonly x: number;
+	/** Ordinate of the point of tangency. */
+	readonly y: number;
+	/** `f'(x₀)` — the slope, which is the number the tangent makes visible. */
+	readonly slope: number;
+	/** The tangent as a plottable line, ready for the same renderer as a curve. */
+	readonly line: ExplicitFunction;
+}
+
+/**
+ * Build the tangent to `f` at `x₀`.
+ *
+ * The line is handed back as a plottable of its own so the renderer needs no
+ * special case — a tangent is a curve like another, it just happens to be
+ * straight. Its equation is built from the two numbers `f(x₀)` and `f'(x₀)`,
+ * both read from the derivative `buildAnalysisAST` already memoises.
+ *
+ * @returns The tangent, or undefined where `f` or `f'` is not defined
+ */
+export function tangentAt(
+	func: ExplicitFunction,
+	x0: number,
+	bindings: VariableBindings = {}
+): TangentResult | undefined {
+	if (!func.ast || !Number.isFinite(x0)) return undefined;
+
+	const bound = bindParameters(func.ast, bindings);
+	if (!bound) return undefined;
+
+	const info = buildAnalysisAST(bound);
+	if (!info?.compiledDerivative) return undefined;
+
+	const y = info.compiledFn({ x: x0 });
+	const slope = info.compiledDerivative({ x: x0 });
+	if (!Number.isFinite(y) || !Number.isFinite(slope)) return undefined;
+
+	// y = f(x₀) + f'(x₀)·(x − x₀), écrite sous forme réduite.
+	const intercept = y - slope * x0;
+	const line = add(multiply(numericNode(slope), variable('x'), 'implicit'), numericNode(intercept));
+
+	return {
+		x: x0,
+		y,
+		slope,
+		line: {
+			...func,
+			id: `${func.id}:tangent`,
+			ast: line,
+			parseError: undefined,
+			lineWidth: 1,
+			lineStyle: 'solid',
+			showDerivative: false,
+			tangentAt: null
+		}
 	};
 }
 
