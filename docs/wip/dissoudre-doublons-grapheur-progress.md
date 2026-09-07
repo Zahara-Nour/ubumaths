@@ -74,9 +74,13 @@ particularité du grapheur. Mais c'est un choix d'affichage, donc il est à toi.
 | L3  | Zoom extrême (1e-300, 1e300)                | Nombre de lignes plafonné par axe                           |
 | E1  | `pixelsPerUnit` non fini ou nul             | Renvoie un pas nul, l'appelant n'affiche rien               |
 
-⚠️ `computeGridStep` a un défaut à corriger au passage : si aucun candidat 1-2-5
-ne tombe dans [40 ; 200] px, elle renvoie `pow10` sans vérifier — donc un pas hors
-de sa propre plage. Trois tests suffisent à le cerner.
+**Correction (2026-09-07)** : j'avais annoncé un défaut dans `computeGridStep` —
+elle renvoie `pow10` sans vérifier si aucun candidat ne tombe dans [40 ; 200] px.
+Vérifié : le repli est **inatteignable**. `floor(log10)` garantit
+`pow10 · ppu ∈ (8 ; 80]`, donc `2·pow10 · ppu ∈ (16 ; 160]` et
+`5·pow10 · ppu ∈ (40 ; 400]` : l'un des deux au moins tombe toujours dans la
+plage. Un garde défensif et son test restent utiles, mais ce n'est pas un
+défaut vivant.
 
 ---
 
@@ -102,11 +106,23 @@ Consommateurs : `IntersectionPoints.svelte` et `CurveHover.svelte`, tous deux vi
 et le grapheur n'a aucune raison de dépendre de la géométrie pour intersecter deux
 courbes. Le couplage reste `grapheur → mathAST`, qui existe déjà.
 
-### Ce que ça apporte, au-delà de la suppression
+### Ce que ça apporte, au-delà de la suppression — mesuré
 
-`findRoots` est exact d'abord, numérique ensuite. Les intersections deviennent
-exactes là où elles peuvent l'être — aujourd'hui elles sont toujours approchées.
-Exemple : `x²` et `x` se croisent en 0 et 1 exactement.
+**Correction (2026-09-07)** : j'avais annoncé que le cas tangent `x²` / `2x−1`
+passait de manqué à trouvé. Faux — le numérique le trouve, par chance : la
+tangence tombe sur un point d'échantillonnage et `|d(x)| < 1e-10` y déclenche le
+test de quasi-nullité. Le gain réel est ailleurs.
+
+| Couple                                                                         | Numérique actuel         | `findRoots`                                  |
+| ------------------------------------------------------------------------------ | ------------------------ | -------------------------------------------- |
+| `x²` et `0,1x − 0,0025` (tangentes en 0,05, **hors grille d'échantillonnage**) | **rien**                 | `0,05` exact                                 |
+| `x²` et `0,3x − 0,0225` (tangentes en 0,15)                                    | **rien**                 | `0,15` exact                                 |
+| `x² − 2` et `0`                                                                | `±1,414214` (bissection) | `±1,414213562` exact                         |
+| `sin(x)` et `0,5`                                                              | 7 points approchés       | π/6 et 5π/6 **exacts**, les autres approchés |
+
+Autrement dit : une tangence dont l'abscisse ne tombe pas sur un point
+d'échantillonnage est **totalement invisible aujourd'hui**. C'est le gain, avec
+la précision.
 
 ### Comportements attendus
 
@@ -153,10 +169,13 @@ Le test `grapheur/__tests__/sampler-parametric.test.ts` (289 l.) suit.
 | N3  | Courbes paramétriques de geometry-core | Rendu identique                                      |
 | L1  | Sens des dépendances                   | Plus aucun `geometry-core → grapheur`                |
 
-**Question ouverte** : garde-t-on `grapheur/sampler.ts` en ré-export, comme
-`bezier.ts` et `viewport.ts` (14 et 21 l.), ou met-on à jour les 4 importateurs ?
-Le ré-export est moins bruyant ; mettre à jour est plus honnête. Le projet a déjà
-choisi le ré-export deux fois.
+**Recommandation : mettre à jour les 4 importateurs, sans ré-export.** Un ré-export
+laisserait la ligne `from '$lib/grapheur/sampler'` écrite **à l'intérieur de
+`geometry-core/graph/figure.ts`** — c'est-à-dire exactement la dépendance croisée
+que ce lot existe pour supprimer. Le précédent de `bezier.ts` et `viewport.ts` ne
+s'applique pas : ces deux-là vont dans le bon sens (grapheur → geometry-core) et
+servent la rétrocompatibilité du code du grapheur. Ici le sens est inversé. Et il
+n'y a que 4 importateurs.
 
 ---
 
