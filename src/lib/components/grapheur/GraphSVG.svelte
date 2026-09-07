@@ -19,7 +19,12 @@
 	import GridLines from './GridLines.svelte';
 	import AxisLines from './AxisLines.svelte';
 	import FunctionCurve from './FunctionCurve.svelte';
-	import { derivativeCurve, integralUnder, tangentAt } from '$lib/grapheur/analysis';
+	import {
+		derivativeCurve,
+		integralUnder,
+		osculatingCircleAt,
+		tangentAt
+	} from '$lib/grapheur/analysis';
 	import IntegralArea from './IntegralArea.svelte';
 	import SequencePlot from './SequencePlot.svelte';
 	import CurveHover from './CurveHover.svelte';
@@ -430,6 +435,28 @@
 								{transformer}
 								isInteracting={grapheurStore.isInteracting}
 							/>
+							{#if plottable.showOsculating}
+								{@const circle = osculatingCircleAt(
+									plottable,
+									plottable.tangentAt,
+									grapheurStore.parameterBindings
+								)}
+								{#if circle}
+									{@const centre = transformer.mathToSvg(circle.centerX, circle.centerY)}
+									<ellipse
+										cx={centre.x}
+										cy={centre.y}
+										rx={circle.radius * transformer.scaleX}
+										ry={circle.radius * transformer.scaleY}
+										fill="none"
+										stroke={plottable.color}
+										stroke-width={1}
+										stroke-dasharray="2 3"
+										class="osculating-circle"
+										aria-hidden="true"
+									/>
+								{/if}
+							{/if}
 							{@const contact = transformer.mathToSvg(tangent.x, tangent.y)}
 							<circle
 								cx={contact.x}
