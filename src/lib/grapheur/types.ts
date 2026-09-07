@@ -164,6 +164,11 @@ export interface Root {
 	readonly x: number;
 	readonly functionId: string;
 	readonly confidence: number;
+	/**
+	 * Symbolic abscissa, when the root came from exact solving — `\sqrt{2}`
+	 * rather than `1,414`. Absent when only the numeric sweep found the point.
+	 */
+	readonly exactX?: MathNode;
 }
 
 export interface Extremum {
@@ -172,6 +177,10 @@ export interface Extremum {
 	readonly type: 'min' | 'max';
 	readonly functionId: string;
 	readonly confidence: number;
+	/** Symbolic abscissa, when the extremum came from exact solving. */
+	readonly exactX?: MathNode;
+	/** Symbolic ordinate, simplified, when it is known exactly. */
+	readonly exactY?: MathNode;
 }
 
 export interface VerticalAsymptote {

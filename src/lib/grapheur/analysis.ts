@@ -28,6 +28,7 @@ import type { CompiledFn } from '$lib/mathAST/eval/compile';
 import { compile } from '$lib/mathAST/eval/compile';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { findCriticalZeros, findCriticalExtrema } from '$lib/mathAST/analysis';
+import { simplify } from '$lib/mathAST/simplify';
 
 // =============================================================================
 // Constants
@@ -758,7 +759,8 @@ export function analyzeFunction(
 		roots = criticalZeros.map((cp) => ({
 			x: cp.xNumeric,
 			functionId,
-			confidence: cp.exact ? 1.0 : 0.9
+			confidence: cp.exact ? 1.0 : 0.9,
+			...(cp.exact ? { exactX: cp.x } : {})
 		}));
 
 		if (ast.derivative && ast.compiledDerivative) {
@@ -778,7 +780,8 @@ export function analyzeFunction(
 					y: cp.yNumeric,
 					type: cp.type as 'min' | 'max',
 					functionId,
-					confidence: cp.exact ? 1.0 : 0.9
+					confidence: cp.exact ? 1.0 : 0.9,
+					...(cp.exact ? { exactX: cp.x, exactY: simplifyExact(cp.y) } : {})
 				}));
 		} else {
 			extrema = findExtrema(evaluator, viewport, functionId);
@@ -810,6 +813,21 @@ export function analyzeAllFunctions(
 	viewport: Viewport
 ): FunctionAnalysis[] {
 	return functions.map((f) => analyzeFunction(f.evaluator, viewport, f.id, f.ast));
+}
+
+/**
+ * Simplify an ordinate before it is shown.
+ *
+ * `findCriticalExtrema` returns `y` as the expression evaluated at the critical
+ * point, unreduced: the vertex of `x² − 2` comes back as `0^2 - 2`, and a
+ * trigonometric one as `sin(-π/2) - 0.5`. Nobody wants to read that.
+ */
+function simplifyExact(node: MathNode): MathNode {
+	try {
+		return simplify(node).result;
+	} catch {
+		return node;
+	}
 }
 
 // =============================================================================

@@ -391,6 +391,102 @@ function tryProductDecomposition(
 }
 
 // =============================================================================
+// Power Decomposition
+// =============================================================================
+
+/** Recursion guard for nested powers such as `((x-1)^2)^3`. */
+let powerDecompositionDepth = 0;
+const MAX_POWER_DECOMPOSITION_DEPTH = 5;
+
+/**
+ * Read `u^n` when `n` is an integer ≥ 2 and `u` involves the variable.
+ *
+ * A bare variable base is left alone: `x^n = k` has its own solver, which knows
+ * how to answer for a non-zero `k`.
+ */
+function extractZeroPowerBase(expr: MathNode, variable: string): MathNode | null {
+	const node = unwrapDelimiter(expr);
+	if (node.type !== 'superscript') return null;
+
+	const exponent = node.superscript;
+	if (exponent.type !== 'number') return null;
+
+	const n = Number(exponent.value);
+	if (!Number.isInteger(n) || n < 2) return null;
+
+	const base = unwrapDelimiter(node.base);
+	if (base.type === 'variable') return null;
+	if (!getVariables(base).has(variable)) return null;
+
+	return base;
+}
+
+/**
+ * Try to solve `u^n = 0` as `u = 0`.
+ *
+ * A power vanishes exactly where its base does — the multiplicity changes the
+ * shape of the curve, not the set of solutions. Without this, `(x²-2)² = 0`
+ * reached the quartic solver, which refuses coefficients that still hold `x`,
+ * and the equation came back as having no solution at all. `(x²-2)³ = 0` was
+ * degree 6, which no solver covers.
+ *
+ * @returns SolveResult if the expression is such a power, null otherwise
+ */
+function tryPowerDecomposition(
+	expr: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
+		initialGuesses?: readonly number[];
+		domain?: Domain;
+	}
+): SolveResult | null {
+	if (powerDecompositionDepth >= MAX_POWER_DECOMPOSITION_DEPTH) return null;
+
+	const base = extractZeroPowerBase(expr, variable);
+	if (!base) return null;
+
+	const recorder = createStepRecorder();
+	recorder.recordStep(
+		'zero-product-property',
+		getRuleDescription('zero-product-property'),
+		expr,
+		equals(base, number('0')),
+		'summarized'
+	);
+
+	let baseResult: SolveResult;
+	powerDecompositionDepth++;
+	try {
+		baseResult = solve(equals(base, number('0')), { variable, verbosity: opts.verbosity });
+	} finally {
+		powerDecompositionDepth--;
+	}
+
+	if (baseResult.solutions.length === 0) {
+		return {
+			variable,
+			status: baseResult.status,
+			solutions: [],
+			equationType: 'mixed',
+			strategy: 'algebraic',
+			steps: recorder.getStepsFiltered(opts.verbosity)
+		};
+	}
+
+	const solutions = baseResult.solutions.map(ensureApproximate);
+
+	return {
+		variable,
+		status: solutions.length === 1 ? 'unique' : 'multiple',
+		solutions,
+		equationType: 'mixed',
+		strategy: 'algebraic',
+		steps: recorder.getStepsFiltered(opts.verbosity),
+		...(baseResult.periodicSolutions ? { periodicSolutions: baseResult.periodicSolutions } : {})
+	};
+}
+
+// =============================================================================
 // Trig Recursive Decomposition
 // =============================================================================
 
@@ -1186,6 +1282,11 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 
 	// Try product decomposition (zero-product property) before classification
 	result = tryProductDecomposition(expr, variable, opts);
+
+	// A power vanishes where its base does: (x²-2)² = 0 reduces to x²-2 = 0
+	if (!result) {
+		result = tryPowerDecomposition(expr, variable, opts);
+	}
 
 	// Try trig recursive decomposition for non-linear trig arguments
 	if (!result) {
