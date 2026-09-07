@@ -17,8 +17,10 @@
  * Usage:
  *   pnpm tsx scripts/migrate-questions-phase1.ts [options]
  *
+ * Par défaut le script SIMULE : il ne touche pas à la base.
+ *
  * Options:
- *   --dry-run    Test without database inserts
+ *   --publier    ⚠️  Écrit réellement en base (sinon simulation)
  *   --resume     Continue from last checkpoint
  *   --from N     Start from question index N
  *   --to N       End at question index N
@@ -70,7 +72,10 @@ const CONFIG = {
 			? '../.claude/migration-phase1-test-report.md'
 			: '../.claude/migration-phase1-report.md'
 	),
-	DRY_RUN: process.argv.includes('--dry-run'),
+	// ⚠️ Écrire en base est le mode EXCEPTIONNEL, pas le défaut. Auparavant
+	// c'est `--dry-run` qu'il fallait demander : lancer le script sans option
+	// publiait donc immédiatement, sans confirmation ni retour en arrière.
+	DRY_RUN: !process.argv.includes('--publier'),
 	RESUME: process.argv.includes('--resume'),
 	ROLLBACK: process.argv.includes('--rollback'),
 	FROM_INDEX: parseInt(process.argv.find((_, i) => process.argv[i - 1] === '--from') || '0'),
@@ -141,7 +146,11 @@ async function main() {
 	console.log('🚀 Starting Phase 1 Migration...\n');
 	console.log('Configuration:');
 	console.log(`  - Test mode: ${IS_TEST_MODE ? 'YES' : 'NO'}`);
-	console.log(`  - Dry run: ${CONFIG.DRY_RUN ? 'YES' : 'NO'}`);
+	console.log(
+		CONFIG.DRY_RUN
+			? '  - Mode : SIMULATION (rien ne sera écrit — ajouter --publier pour publier)'
+			: '  - Mode : ⚠️  PUBLICATION RÉELLE en base'
+	);
 	console.log(`  - Resume: ${CONFIG.RESUME ? 'YES' : 'NO'}`);
 	console.log(`  - Batch size: ${CONFIG.BATCH_SIZE}`);
 	console.log(`  - From index: ${CONFIG.FROM_INDEX}`);

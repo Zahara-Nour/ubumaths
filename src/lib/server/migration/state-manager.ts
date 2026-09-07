@@ -37,10 +37,17 @@ export class MigrationStateManager {
 	private readonly progressFilePath: string;
 	private supabase: SupabaseClient<Database> | null = null;
 
-	constructor() {
+	/**
+	 * @param options chemins des fichiers d'état. Par défaut ceux du projet ; un
+	 * test doit en passer d'autres, sinon il réécrit le véritable journal de
+	 * migration sur le disque — ce qui est arrivé.
+	 */
+	constructor(options?: { stateFilePath?: string; progressFilePath?: string }) {
 		// Paths relative to project root
-		this.stateFilePath = resolve(process.cwd(), '.claude/migration-state.json');
-		this.progressFilePath = resolve(process.cwd(), '.claude/migration-progress.md');
+		this.stateFilePath =
+			options?.stateFilePath ?? resolve(process.cwd(), '.claude/migration-state.json');
+		this.progressFilePath =
+			options?.progressFilePath ?? resolve(process.cwd(), '.claude/migration-progress.md');
 	}
 
 	/**

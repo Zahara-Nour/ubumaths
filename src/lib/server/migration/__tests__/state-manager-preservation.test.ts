@@ -1,5 +1,20 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { MigrationStateManager } from '../state-manager';
+
+// Le gestionnaire écrit un journal d'état sur le disque. Sans redirection, les
+// tests réécrivaient le VRAI `.claude/migration-state.json` du projet.
+const dossierTemporaire = mkdtempSync(join(tmpdir(), 'migration-state-'));
+afterAll(() => rmSync(dossierTemporaire, { recursive: true, force: true }));
+
+function gestionnaireIsole() {
+	return new MigrationStateManager({
+		stateFilePath: join(dossierTemporaire, 'state.json'),
+		progressFilePath: join(dossierTemporaire, 'progress.md')
+	});
+}
 
 /**
  * `recordQuestionProcessed` fait un UPSERT : il réécrit la ligne entière.
@@ -43,7 +58,7 @@ describe('recordQuestionProcessed — préservation des champs', () => {
 			reviewed_by: '11111111-1111-4111-8111-111111111111'
 		});
 
-		const gestionnaire = new MigrationStateManager();
+		const gestionnaire = gestionnaireIsole();
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		await gestionnaire.init(client as any);
 		await gestionnaire.recordQuestionProcessed(7, 'imported', 1, QUESTION, {
@@ -73,7 +88,7 @@ describe('recordQuestionProcessed — préservation des champs', () => {
 			reviewed_by: null
 		});
 
-		const gestionnaire = new MigrationStateManager();
+		const gestionnaire = gestionnaireIsole();
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		await gestionnaire.init(client as any);
 		await gestionnaire.recordQuestionProcessed(7, 'validated', 1, QUESTION);
@@ -90,7 +105,7 @@ describe('recordQuestionProcessed — préservation des champs', () => {
 	it('écrit le verdict et son auteur quand la relecture le fournit', async () => {
 		const { client, upserts } = clientSimule(null);
 
-		const gestionnaire = new MigrationStateManager();
+		const gestionnaire = gestionnaireIsole();
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		await gestionnaire.init(client as any);
 		await gestionnaire.recordQuestionProcessed(7, 'pending', 4, QUESTION, {
