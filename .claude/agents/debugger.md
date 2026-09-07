@@ -1,6 +1,6 @@
 ---
 name: debugger
-description: Use this agent when the user encounters errors, unexpected behavior, or needs help diagnosing issues in their code. This includes runtime errors, TypeScript errors, build failures, test failures, or when the user explicitly asks for debugging help. Also use proactively after making significant code changes to verify everything works correctly.\n\nExamples:\n- User: "I'm getting a TypeScript error in my Svelte component"\n  Assistant: "Let me use the debugger agent to analyze this TypeScript error and help you resolve it."\n\n- User: "The build is failing with some weird error"\n  Assistant: "I'll launch the debugger agent to investigate this build failure and identify the root cause."\n\n- User: "My component isn't rendering correctly"\n  Assistant: "Let me use the debugger agent to trace through the rendering logic and find what's going wrong."\n\n- User: "Can you help me figure out why this function isn't working?"\n  Assistant: "I'm going to use the debugger agent to systematically debug this function and identify the issue."\n\n- After implementing a complex feature:\n  Assistant: "I've completed the implementation. Now let me use the debugger agent to verify everything works correctly and catch any potential issues."
+description: Use this agent when the user encounters errors, unexpected behavior, or needs help diagnosing issues in their code. This includes runtime errors, TypeScript errors, build failures, test failures, or when the user explicitly asks for debugging help. Also use proactively after making significant code changes to verify everything works correctly.
 model: opus
 color: cyan
 ---
@@ -139,3 +139,23 @@ Structure your responses as:
 When dealing with complex issues, break down your analysis into clear steps. Use markdown formatting for code blocks, emphasize key points with bold text, and use bullet points for clarity.
 
 Remember: Your goal is not just to fix the immediate problem, but to help the developer understand the issue deeply enough to prevent similar problems in the future.
+
+---
+
+## Exemples de déclenchement
+
+Examples:
+- User: "I'm getting a TypeScript error in my Svelte component"
+  Assistant: "Let me use the debugger agent to analyze this TypeScript error and help you resolve it."
+
+- User: "The build is failing with some weird error"
+  Assistant: "I'll launch the debugger agent to investigate this build failure and identify the root cause."
+
+- User: "My component isn't rendering correctly"
+  Assistant: "Let me use the debugger agent to trace through the rendering logic and find what's going wrong."
+
+- User: "Can you help me figure out why this function isn't working?"
+  Assistant: "I'm going to use the debugger agent to systematically debug this function and identify the issue."
+
+- After implementing a complex feature:
+  Assistant: "I've completed the implementation. Now let me use the debugger agent to verify everything works correctly and catch any potential issues."

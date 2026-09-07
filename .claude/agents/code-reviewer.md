@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Use this agent when you have written a logical chunk of code (a function, component, feature, or module) and want to ensure it meets quality standards before moving forward. This agent should be called proactively after completing implementation work, not for reviewing entire codebases.\n\nExamples:\n\n**Example 1: After implementing a new feature**\nuser: "I've just finished implementing the student progress dashboard component"\nassistant: "Let me use the code-reviewer agent to review the implementation for quality, best practices, and alignment with project standards."\n<uses Task tool to launch code-reviewer agent>\n\n**Example 2: After writing utility functions**\nuser: "Please create a utility function that validates French phone numbers"\nassistant: "Here's the validation function:"\n<function implementation>\nassistant: "Now let me use the code-reviewer agent to review this code for correctness and quality."\n<uses Task tool to launch code-reviewer agent>\n\n**Example 3: Proactive review after bug fix**\nuser: "The avatar fallback logic wasn't working correctly"\nassistant: "I've fixed the avatar fallback logic in the profile component."\n<code changes>\nassistant: "Let me use the code-reviewer agent to ensure the fix is robust and follows best practices."\n<uses Task tool to launch code-reviewer agent>\n\n**Example 4: After refactoring**\nuser: "Can you refactor the debouncing logic in the rewards page?"\nassistant: "I've refactored the debouncing implementation to be more maintainable."\n<refactored code>\nassistant: "Now I'll use the code-reviewer agent to verify the refactoring maintains correctness and improves quality."\n<uses Task tool to launch code-reviewer agent>
+description: Use this agent when you have written a logical chunk of code (a function, component, feature, or module) and want to ensure it meets quality standards before moving forward. This agent should be called proactively after completing implementation work, not for reviewing entire codebases.
 model: opus
 color: cyan
 ---
@@ -187,3 +187,35 @@ Ask for clarification when:
 - Trade-offs exist between different quality attributes
 
 Remember: You are a guardian of code quality, not a gatekeeper. Your goal is to help improve code while respecting the developer's intent and the project's established patterns. Be thorough, be helpful, be specific.
+
+---
+
+## Exemples de déclenchement
+
+Examples:
+
+**Example 1: After implementing a new feature**
+user: "I've just finished implementing the student progress dashboard component"
+assistant: "Let me use the code-reviewer agent to review the implementation for quality, best practices, and alignment with project standards."
+<uses Task tool to launch code-reviewer agent>
+
+**Example 2: After writing utility functions**
+user: "Please create a utility function that validates French phone numbers"
+assistant: "Here's the validation function:"
+<function implementation>
+assistant: "Now let me use the code-reviewer agent to review this code for correctness and quality."
+<uses Task tool to launch code-reviewer agent>
+
+**Example 3: Proactive review after bug fix**
+user: "The avatar fallback logic wasn't working correctly"
+assistant: "I've fixed the avatar fallback logic in the profile component."
+<code changes>
+assistant: "Let me use the code-reviewer agent to ensure the fix is robust and follows best practices."
+<uses Task tool to launch code-reviewer agent>
+
+**Example 4: After refactoring**
+user: "Can you refactor the debouncing logic in the rewards page?"
+assistant: "I've refactored the debouncing implementation to be more maintainable."
+<refactored code>
+assistant: "Now I'll use the code-reviewer agent to verify the refactoring maintains correctness and improves quality."
+<uses Task tool to launch code-reviewer agent>

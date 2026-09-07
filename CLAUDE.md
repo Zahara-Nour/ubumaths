@@ -152,16 +152,6 @@ Réactivité : **event → handler → maj du state → maj du DOM**. `$effect` 
 - **Agent** si : > 3 étapes ET code important ET plusieurs fichiers ET expertise spécialisée. Ne pas hésiter à utiliser **Opus**. Plafonner les briefs (max N lignes / M fichiers).
 - **Interdit aux agents** : lancer build/lint/check/format (cf. OOM) ; tourner > 5 min sans résultat concret.
 
-| Agent                                                                               | Cas d'usage                                                 |
-| ----------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `Explore`                                                                           | Architecture, recherche code, patterns                      |
-| `frontend-developer` / `backend-developer`                                          | UI Svelte / `+server.ts`, `+page.server.ts`, auth           |
-| `supabase-expert`                                                                   | Migrations, RLS, schéma                                     |
-| `security-auditor`                                                                  | **Obligatoire** après auth / RLS / API sensible / migration |
-| `code-reviewer` · `test-automator`                                                  | Revue qualité (proactif) · tests, couverture                |
-| `mathast-expert` · `geometry-expert` · `pedagogy-expert`                            | Modules métier (`mathAST` / `geometry-core` / `questions`)  |
-| `debugger` · `typescript-expert` · `performance-optimizer` · `documentation-writer` | Selon besoin                                                |
-
 (Liste complète : `.claude/agents/README.md`.)
 
 ---

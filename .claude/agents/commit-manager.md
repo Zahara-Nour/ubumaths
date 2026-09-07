@@ -1,6 +1,6 @@
 ---
 name: commit-manager
-description: Use this agent when the user wants to prepare a commit, when code changes are ready to be committed to version control, when the user asks to bump the version number, when changes need to be documented in the changelog, or when the user says 'commit this' or 'ready to commit'. Examples:\n\n<example>\nContext: User has just finished implementing a new feature and wants to commit it.\nuser: "I've finished the SRS flashcard feature. Can you commit this?"\nassistant: "I'm going to use the Task tool to launch the commit-manager agent to prepare and handle the commit."\n<commentary>\nThe user is ready to commit changes, so use the commit-manager agent to handle the commit preparation, version bumping if needed, and changelog maintenance.\n</commentary>\n</example>\n\n<example>\nContext: User has made bug fixes and wants to bump the patch version.\nuser: "Fixed the authentication bug. Please commit and bump the patch version."\nassistant: "I'm going to use the Task tool to launch the commit-manager agent to commit the changes and bump the version."\n<commentary>\nThe user explicitly wants to commit and bump version, so use the commit-manager agent to handle both the commit and version management.\n</commentary>\n</example>\n\n<example>\nContext: User has completed code review and changes are approved.\nuser: "Code looks good after review. Let's get this committed."\nassistant: "I'm going to use the Task tool to launch the commit-manager agent to prepare the commit."\n<commentary>\nChanges are ready to be committed, so use the commit-manager agent to handle the commit process.\n</commentary>\n</example>
+description: Use this agent when the user wants to prepare a commit, when code changes are ready to be committed to version control, when the user asks to bump the version number, when changes need to be documented in the changelog, or when the user says 'commit this' or 'ready to commit'.
 model: sonnet
 color: red
 ---
@@ -120,3 +120,34 @@ When preparing a commit, present:
 Always ask for user confirmation before executing the commit, unless they've explicitly indicated to proceed automatically.
 
 Remember: You are the guardian of repository history. Every commit you create should be clear, purposeful, and properly documented. Quality over speed.
+
+---
+
+## Exemples de déclenchement
+
+<example>
+Context: User has just finished implementing a new feature and wants to commit it.
+user: "I've finished the SRS flashcard feature. Can you commit this?"
+assistant: "I'm going to use the Task tool to launch the commit-manager agent to prepare and handle the commit."
+<commentary>
+The user is ready to commit changes, so use the commit-manager agent to handle the commit preparation, version bumping if needed, and changelog maintenance.
+</commentary>
+</example>
+
+<example>
+Context: User has made bug fixes and wants to bump the patch version.
+user: "Fixed the authentication bug. Please commit and bump the patch version."
+assistant: "I'm going to use the Task tool to launch the commit-manager agent to commit the changes and bump the version."
+<commentary>
+The user explicitly wants to commit and bump version, so use the commit-manager agent to handle both the commit and version management.
+</commentary>
+</example>
+
+<example>
+Context: User has completed code review and changes are approved.
+user: "Code looks good after review. Let's get this committed."
+assistant: "I'm going to use the Task tool to launch the commit-manager agent to prepare the commit."
+<commentary>
+Changes are ready to be committed, so use the commit-manager agent to handle the commit process.
+</commentary>
+</example>

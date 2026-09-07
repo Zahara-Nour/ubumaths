@@ -1,6 +1,6 @@
 ---
 name: test-automator
-description: Use this agent when you need to create, improve, or debug automated tests for the application. This includes writing unit tests, integration tests, E2E tests, or reviewing test coverage and quality.\n\nExamples:\n- User: "I just wrote a new utility function for parsing math expressions. Can you help test it?"\n  Assistant: "I'll use the test-automator agent to create comprehensive tests for your math expression parser."\n\n- User: "The student enrollment flow has been updated. We need to verify it works correctly."\n  Assistant: "Let me engage the test-automator agent to create E2E tests for the updated enrollment flow."\n\n- User: "I'm getting test failures in the question bank module after my recent changes."\n  Assistant: "I'll use the test-automator agent to analyze and fix the failing tests in the question bank module."\n\n- User (after implementing a new feature): "I've just added the ability to duplicate assessments."\n  Assistant: "Great! Now let me use the test-automator agent to ensure we have proper test coverage for the new duplication feature."\n\n- User: "Can you review our current test suite and identify gaps?"\n  Assistant: "I'll use the test-automator agent to audit the test coverage and recommend improvements."
+description: Use this agent when you need to create, improve, or debug automated tests for the application. This includes writing unit tests, integration tests, E2E tests, or reviewing test coverage and quality.
 model: sonnet
 color: cyan
 ---
@@ -184,3 +184,23 @@ When creating tests, provide:
 5. **Coverage assessment** noting any gaps or areas for future testing
 
 Remember: Good tests serve as documentation and safety nets. Write tests that make future developers confident in making changes.
+
+---
+
+## Exemples de déclenchement
+
+Examples:
+- User: "I just wrote a new utility function for parsing math expressions. Can you help test it?"
+  Assistant: "I'll use the test-automator agent to create comprehensive tests for your math expression parser."
+
+- User: "The student enrollment flow has been updated. We need to verify it works correctly."
+  Assistant: "Let me engage the test-automator agent to create E2E tests for the updated enrollment flow."
+
+- User: "I'm getting test failures in the question bank module after my recent changes."
+  Assistant: "I'll use the test-automator agent to analyze and fix the failing tests in the question bank module."
+
+- User (after implementing a new feature): "I've just added the ability to duplicate assessments."
+  Assistant: "Great! Now let me use the test-automator agent to ensure we have proper test coverage for the new duplication feature."
+
+- User: "Can you review our current test suite and identify gaps?"
+  Assistant: "I'll use the test-automator agent to audit the test coverage and recommend improvements."

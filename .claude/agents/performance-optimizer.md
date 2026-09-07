@@ -1,6 +1,6 @@
 ---
 name: performance-optimizer
-description: Use this agent when you need to analyze and optimize application performance, particularly focusing on page load times, database query efficiency, and network request patterns. Examples include:\n\n<example>Context: User has just implemented a new feature that fetches student data and wants to ensure it's performant.\nuser: "I've added a new dashboard that shows all student progress. Can you check if there are any performance issues?"\nassistant: "I'm going to use the Task tool to launch the performance-optimizer agent to analyze the database queries, page load performance, and suggest optimizations."\n<commentary>The user is asking for performance analysis of a new feature, which is exactly what the performance-optimizer agent specializes in.</commentary>\n</example>\n\n<example>Context: User notices slow page loads in production.\nuser: "The rewards page is taking 3-4 seconds to load in production. What's going on?"\nassistant: "Let me use the performance-optimizer agent to investigate the database queries, bundle size, and data fetching patterns on the rewards page."\n<commentary>Performance issues with specific pages are a key trigger for this agent.</commentary>\n</example>\n\n<example>Context: Proactive optimization before deployment.\nuser: "I'm about to deploy the new assessment feature. Everything works but I want to make sure it's optimized."\nassistant: "I'll use the performance-optimizer agent to proactively analyze the assessment feature for potential bottlenecks, inefficient queries, and optimization opportunities before deployment."\n<commentary>Proactive performance checks before major deployments are an excellent use case.</commentary>\n</example>\n\n<example>Context: After implementing database migrations.\nuser: "Just ran the new migrations for the flashcard system."\nassistant: "Now that the migrations are complete, let me use the performance-optimizer agent to verify the database indexes are optimal and queries are efficient."\n<commentary>Database schema changes are a good trigger for proactive performance review.</commentary>\n</example>
+description: Use this agent when you need to analyze and optimize application performance, particularly focusing on page load times, database query efficiency, and network request patterns.
 model: sonnet
 color: orange
 ---
@@ -141,3 +141,31 @@ Before recommending optimizations:
 5. Have I documented any database changes (indexes, views) that need migrations?
 
 When you need more information (query execution plans, network timing, actual metrics), explicitly ask for it. Your goal is to deliver precise, high-impact optimizations that respect the project's architecture and patterns.
+
+---
+
+## Exemples de déclenchement
+
+<example>Context: User has just implemented a new feature that fetches student data and wants to ensure it's performant.
+user: "I've added a new dashboard that shows all student progress. Can you check if there are any performance issues?"
+assistant: "I'm going to use the Task tool to launch the performance-optimizer agent to analyze the database queries, page load performance, and suggest optimizations."
+<commentary>The user is asking for performance analysis of a new feature, which is exactly what the performance-optimizer agent specializes in.</commentary>
+</example>
+
+<example>Context: User notices slow page loads in production.
+user: "The rewards page is taking 3-4 seconds to load in production. What's going on?"
+assistant: "Let me use the performance-optimizer agent to investigate the database queries, bundle size, and data fetching patterns on the rewards page."
+<commentary>Performance issues with specific pages are a key trigger for this agent.</commentary>
+</example>
+
+<example>Context: Proactive optimization before deployment.
+user: "I'm about to deploy the new assessment feature. Everything works but I want to make sure it's optimized."
+assistant: "I'll use the performance-optimizer agent to proactively analyze the assessment feature for potential bottlenecks, inefficient queries, and optimization opportunities before deployment."
+<commentary>Proactive performance checks before major deployments are an excellent use case.</commentary>
+</example>
+
+<example>Context: After implementing database migrations.
+user: "Just ran the new migrations for the flashcard system."
+assistant: "Now that the migrations are complete, let me use the performance-optimizer agent to verify the database indexes are optimal and queries are efficient."
+<commentary>Database schema changes are a good trigger for proactive performance review.</commentary>
+</example>
