@@ -58,7 +58,7 @@
 			return [];
 		}
 
-		const validFuncs = toAnalysisInputs(grapheurStore.functions);
+		const validFuncs = toAnalysisInputs(grapheurStore.functions, grapheurStore.parameterBindings);
 
 		// Need at least 2 functions, but limit to avoid performance issues
 		if (validFuncs.length < 2 || validFuncs.length > MAX_FUNCTIONS_FOR_INTERSECTIONS) {

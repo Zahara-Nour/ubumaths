@@ -11,7 +11,14 @@
 	import type { SequencePlottable } from '$lib/grapheur/types';
 	import { computeSequenceTerms, toComputeSpec } from '$lib/grapheur/sequence';
 
-	let { sequence }: { sequence: SequencePlottable } = $props();
+	let {
+		sequence,
+		bindings = {}
+	}: {
+		sequence: SequencePlottable;
+		/** Parameter values to bind while iterating — `a`, `b`, … */
+		bindings?: Readonly<Record<string, number>>;
+	} = $props();
 
 	// ==========================================================================
 	// Constants
@@ -40,7 +47,7 @@
 	// ==========================================================================
 
 	const terms = $derived.by(() => {
-		const spec = toComputeSpec(sequence);
+		const spec = toComputeSpec(sequence, bindings);
 		if (!spec) return [];
 
 		return computeSequenceTerms(spec, sequence.firstIndex + MAX_ROWS - 1);

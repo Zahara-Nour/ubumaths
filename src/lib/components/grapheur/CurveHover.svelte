@@ -66,7 +66,10 @@
 	const analysisResults = $derived.by(() => {
 		if (grapheurStore.isInteracting) return [];
 
-		return analyzeAllFunctions(toAnalysisInputs(grapheurStore.functions), grapheurStore.viewport);
+		return analyzeAllFunctions(
+			toAnalysisInputs(grapheurStore.functions, grapheurStore.parameterBindings),
+			grapheurStore.viewport
+		);
 	});
 
 	/**
@@ -76,7 +79,7 @@
 	const intersections = $derived.by((): IntersectionResult[] => {
 		if (grapheurStore.isInteracting) return [];
 
-		const validFuncs = toAnalysisInputs(grapheurStore.functions);
+		const validFuncs = toAnalysisInputs(grapheurStore.functions, grapheurStore.parameterBindings);
 
 		if (validFuncs.length < 2 || validFuncs.length > MAX_FUNCTIONS_FOR_INTERSECTIONS) {
 			return [];
@@ -211,7 +214,7 @@
 		for (const func of grapheurStore.functions) {
 			if (!isExplicitFunction(func) || !func.visible || !func.ast) continue;
 
-			const evaluator = createEvaluator(func.ast);
+			const evaluator = createEvaluator(func.ast, grapheurStore.parameterBindings);
 			const y = evaluator(cursor.x);
 
 			if (y === null) continue;

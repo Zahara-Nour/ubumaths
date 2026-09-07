@@ -21,6 +21,7 @@ Features:
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import FunctionInput from './FunctionInput.svelte';
 	import SequenceInput from './SequenceInput.svelte';
+	import ParameterInput from './ParameterInput.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Plus } from '@lucide/svelte';
 
@@ -37,6 +38,13 @@ Features:
 	function addSequence() {
 		grapheurStore.addSequence();
 	}
+
+	/**
+	 * Add a new parameter, named with the first free letter.
+	 */
+	function addParameter() {
+		grapheurStore.addParameter();
+	}
 </script>
 
 <div class="function-panel flex h-full flex-col gap-4 rounded-lg border border-border bg-card p-4">
@@ -52,8 +60,24 @@ Features:
 				<Plus class="h-4 w-4" />
 				<span class="ml-1">Suite</span>
 			</Button>
+			<Button variant="outline" size="sm" onclick={addParameter} aria-label="Ajouter un paramètre">
+				<Plus class="h-4 w-4" />
+				<span class="ml-1">Paramètre</span>
+			</Button>
 		</div>
 	</div>
+
+	<!--
+		Paramètres, au-dessus des tracés : une expression les référence par leur
+		nom, ils se lisent donc avant elle.
+	-->
+	{#if grapheurStore.parameters.length > 0}
+		<div class="parameter-list space-y-2" aria-label="Paramètres">
+			{#each grapheurStore.parameters as parameter (parameter.id)}
+				<ParameterInput {parameter} />
+			{/each}
+		</div>
+	{/if}
 
 	<!-- Function List -->
 	<div class="function-list flex-grow space-y-3 overflow-y-auto">

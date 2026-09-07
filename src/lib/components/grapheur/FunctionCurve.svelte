@@ -13,6 +13,7 @@
 	import { LINE_STYLE_DASHARRAY } from '$lib/grapheur/types';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
 	import { createEvaluator } from '$lib/grapheur/evaluator';
+	import type { VariableBindings } from '$lib/grapheur/evaluator';
 	import { sampleFunction } from '$lib/geometry-core/viewport';
 	import { curveToSVGPath, curveToPolylinePath } from '$lib/grapheur/bezier';
 
@@ -21,12 +22,15 @@
 		func,
 		viewport,
 		transformer,
-		isInteracting = false
+		isInteracting = false,
+		bindings = {}
 	}: {
 		func: ExplicitFunction;
 		viewport: Viewport;
 		transformer: CoordinateTransformer;
 		isInteracting?: boolean;
+		/** Parameter values to bind before evaluating — `a`, `b`, … */
+		bindings?: VariableBindings;
 	} = $props();
 
 	// ==========================================================================
@@ -65,7 +69,7 @@
 		}
 
 		// Create evaluator from the function's AST
-		const evaluator = createEvaluator(func.ast);
+		const evaluator = createEvaluator(func.ast, bindings);
 
 		// Adjust quality based on interaction state
 		const numPoints = isInteracting ? LOW_QUALITY_POINTS : HIGH_QUALITY_POINTS;

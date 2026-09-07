@@ -23,9 +23,17 @@ import type {
 	ExplicitFunctionState,
 	PlottableState,
 	SequenceState,
-	SnappedPoint
+	SnappedPoint,
+	Parameter
 } from '$lib/grapheur/types';
-import { graphStateSchema, GRAPH_STATE_VERSION, isSequence } from '$lib/grapheur/types';
+import {
+	DEFAULT_PARAMETER_MAX,
+	DEFAULT_PARAMETER_MIN,
+	GRAPH_STATE_VERSION,
+	graphStateSchema,
+	isSequence,
+	nextParameterName
+} from '$lib/grapheur/types';
 import {
 	DEFAULT_COBWEB_STEPS,
 	nextSequenceName,
@@ -79,6 +87,9 @@ class GrapheurStore {
 	/** List of functions to plot */
 	functions = $state<Plottable[]>([]);
 
+	/** Named constants usable in any expression, each driven by a slider. */
+	parameters = $state<Parameter[]>([]);
+
 	/** Current viewport bounds */
 	viewport = $state<Viewport>(DEFAULT_VIEWPORT);
 
@@ -104,6 +115,18 @@ class GrapheurStore {
 	// ===========================================================================
 	// Derived State
 	// ===========================================================================
+
+	/**
+	 * Parameter values, keyed by name, ready to bind into an expression.
+	 *
+	 * Rebuilt whenever a slider moves — that is what redraws the curves.
+	 */
+	parameterBindings = $derived(
+		Object.fromEntries(this.parameters.map((p) => [p.name, p.value])) as Record<string, number>
+	);
+
+	/** Names declared as parameters, accepted as free variables in expressions. */
+	parameterNames = $derived(this.parameters.map((p) => p.name));
 
 	/** Only visible functions */
 	visibleFunctions = $derived(this.functions.filter((f) => f.visible));
@@ -164,6 +187,44 @@ class GrapheurStore {
 	 * grapheurStore.addFunction('\\sin(x)');
 	 * ```
 	 */
+	// ===========================================================================
+	// Parameters
+	// ===========================================================================
+
+	/**
+	 * Add a parameter, named with the first free letter.
+	 *
+	 * @returns The created parameter's ID
+	 */
+	addParameter(): string {
+		const id = crypto.randomUUID();
+
+		this.parameters = [
+			...this.parameters,
+			{
+				id,
+				name: nextParameterName(this.parameters.map((p) => p.name)),
+				value: 1,
+				min: DEFAULT_PARAMETER_MIN,
+				max: DEFAULT_PARAMETER_MAX
+			}
+		];
+		this.scheduleSave();
+		return id;
+	}
+
+	/** Update a parameter's value or slider bounds. */
+	updateParameter(id: string, updates: Partial<Pick<Parameter, 'value' | 'min' | 'max'>>): void {
+		this.parameters = this.parameters.map((p) => (p.id === id ? { ...p, ...updates } : p));
+		this.scheduleSave();
+	}
+
+	/** Remove a parameter. Expressions using it stop evaluating until it returns. */
+	removeParameter(id: string): void {
+		this.parameters = this.parameters.filter((p) => p.id !== id);
+		this.scheduleSave();
+	}
+
 	addFunction(latex: string = ''): string {
 		const id = crypto.randomUUID();
 		const color = getNextColor(this.usedColors);
@@ -251,7 +312,7 @@ class GrapheurStore {
 		const id = crypto.randomUUID();
 		const color = getNextColor(this.usedColors);
 		const name = nextSequenceName(this.sequenceNames);
-		const parseResult = parseSequence(latex, mode, name);
+		const parseResult = parseSequence(latex, mode, name, this.parameterNames);
 
 		const sequence: SequencePlottable = {
 			id,
@@ -324,7 +385,12 @@ class GrapheurStore {
 
 			if (!needsReparse) return merged;
 
-			const parseResult = parseSequence(merged.latex, merged.mode, merged.name);
+			const parseResult = parseSequence(
+				merged.latex,
+				merged.mode,
+				merged.name,
+				this.parameterNames
+			);
 			return {
 				...merged,
 				ast: parseResult.ast ?? undefined,
@@ -493,6 +559,7 @@ class GrapheurStore {
 			version: GRAPH_STATE_VERSION,
 			viewport: this.viewport,
 			showGrid: this.showGrid,
+			parameters: this.parameters,
 			functions: this.functions.map((p): PlottableState => {
 				if (isSequence(p)) {
 					const sequenceState: SequenceState = {
@@ -558,11 +625,18 @@ class GrapheurStore {
 			// Restore viewport and grid visibility (schema ensures showGrid exists)
 			this.viewport = state.viewport;
 			this.showGrid = state.showGrid;
+			// Parameters first: the expressions below are parsed against their names.
+			this.parameters = state.parameters;
 
 			// Re-parse everything (AST is not stored)
 			this.functions = state.functions.map((p): Plottable => {
 				if (p.type === 'sequence') {
-					const parseResult = parseSequence(p.latex, p.mode, p.name);
+					const parseResult = parseSequence(
+						p.latex,
+						p.mode,
+						p.name,
+						state.parameters.map((q) => q.name)
+					);
 					const sequence: SequencePlottable = {
 						id: p.id,
 						type: p.type,
@@ -672,6 +746,7 @@ class GrapheurStore {
 	 */
 	reset(): void {
 		this.functions = [];
+		this.parameters = [];
 		this.viewport = { ...DEFAULT_VIEWPORT };
 		this.showGrid = true;
 		this.cursor = null;

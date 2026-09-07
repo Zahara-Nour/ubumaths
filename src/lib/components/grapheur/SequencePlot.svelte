@@ -26,12 +26,15 @@
 		sequence,
 		viewport,
 		transformer,
-		isInteracting = false
+		isInteracting = false,
+		bindings = {}
 	}: {
 		sequence: SequencePlottable;
 		viewport: Viewport;
 		transformer: CoordinateTransformer;
 		isInteracting?: boolean;
+		/** Parameter values to bind while iterating — `a`, `b`, … */
+		bindings?: Readonly<Record<string, number>>;
 	} = $props();
 
 	// ==========================================================================
@@ -84,7 +87,7 @@
 
 	/** Terms of the sequence. */
 	const terms = $derived.by(() => {
-		const spec = toComputeSpec(sequence);
+		const spec = toComputeSpec(sequence, bindings);
 		if (!spec) return [];
 
 		return computeSequenceTerms(spec, lastIndex);
