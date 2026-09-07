@@ -29,7 +29,8 @@ Features:
 	import LineStylePicker from './LineStylePicker.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Slider } from '$lib/components/ui/slider';
-	import { tangentAt } from '$lib/grapheur/analysis';
+	import { Input } from '$lib/components/ui/input';
+	import { integralUnder, tangentAt } from '$lib/grapheur/analysis';
 	import { Eye, EyeOff, Trash2 } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 
@@ -108,6 +109,33 @@ Features:
 		});
 	}
 
+	/** Bornes par défaut : la moitié centrale de la fenêtre visible. */
+	function handleIntegralChange(checked: boolean | 'indeterminate') {
+		const { xMin, xMax } = grapheurStore.viewport;
+		const quarter = (xMax - xMin) / 4;
+		const round = (n: number) => Math.round(n * 100) / 100;
+
+		grapheurStore.updateFunction(func.id, {
+			integral: checked === true ? { from: round(xMin + quarter), to: round(xMax - quarter) } : null
+		});
+	}
+
+	function handleBoundInput(edge: 'from' | 'to') {
+		return (event: Event & { currentTarget: HTMLInputElement }) => {
+			const parsed = Number.parseFloat(event.currentTarget.value);
+			if (!Number.isFinite(parsed) || !func.integral) return;
+
+			grapheurStore.updateFunction(func.id, { integral: { ...func.integral, [edge]: parsed } });
+		};
+	}
+
+	/** Valeur de l'intégrale, recalculée quand une borne ou un paramètre bouge. */
+	const area = $derived(
+		func.integral
+			? integralUnder(func, func.integral.from, func.integral.to, grapheurStore.parameterBindings)
+			: undefined
+	);
+
 	function handleTangentSlide(value: number) {
 		grapheurStore.updateFunction(func.id, { tangentAt: value });
 	}
@@ -167,6 +195,12 @@ Features:
 				label="tangente"
 				aria-label="Afficher la tangente"
 			/>
+			<MyCheckbox
+				checked={func.integral !== null}
+				onCheckedChange={handleIntegralChange}
+				label="aire"
+				aria-label="Afficher l'aire sous la courbe"
+			/>
 		</div>
 
 		<div class="flex gap-1">
@@ -215,6 +249,40 @@ Features:
 		Le curseur balaie la fenêtre visible : on fait glisser le point de contact
 		le long de la courbe et on lit la pente changer avec lui.
 	-->
+	<!--
+		L'aire est signée : sous l'axe elle compte négativement, ce qu'un
+		remplissage seul ne dirait pas.
+	-->
+	{#if func.integral}
+		<div class="flex items-center gap-2 text-xs text-muted-foreground">
+			<span class="shrink-0 font-serif">∫ de</span>
+			<Input
+				type="number"
+				step="any"
+				value={func.integral.from}
+				oninput={handleBoundInput('from')}
+				class="h-7 w-16 text-xs"
+				aria-label="Borne inférieure de l'aire"
+			/>
+			<span class="shrink-0 font-serif">à</span>
+			<Input
+				type="number"
+				step="any"
+				value={func.integral.to}
+				oninput={handleBoundInput('to')}
+				class="h-7 w-16 text-xs"
+				aria-label="Borne supérieure de l'aire"
+			/>
+			<span class="shrink-0 font-serif tabular-nums">
+				{#if area}
+					= {formatSlope(area.value)}
+				{:else}
+					non calculable
+				{/if}
+			</span>
+		</div>
+	{/if}
+
 	{#if func.tangentAt !== null}
 		<div class="flex items-center gap-2 text-xs text-muted-foreground">
 			<span class="shrink-0 font-serif">x₀</span>

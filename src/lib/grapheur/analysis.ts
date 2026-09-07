@@ -35,6 +35,7 @@ import { substitute } from '$lib/mathAST/eval/substitute';
 import { add, multiply, variable } from '$lib/mathAST/factory';
 // `number()` refuse un littéral signé ; `numericNode()` gère le signe lui-même.
 import { numericNode } from '$lib/mathAST/common/numeric';
+import { integrateDefinite } from '$lib/mathAST/integration';
 
 // =============================================================================
 // Constants
@@ -1048,6 +1049,91 @@ export function tangentAt(
 			tangentAt: null
 		}
 	};
+}
+
+/** The area between a curve and the axis, ready to shade and to read. */
+export interface IntegralResult {
+	readonly from: number;
+	readonly to: number;
+	/** Signed value: a region below the axis counts negative. */
+	readonly value: number;
+	/** Exact value, when mathAST found an antiderivative. */
+	readonly exact: MathNode | undefined;
+	/** Boundary of the region, in math coordinates, from `from` to `to`. */
+	readonly points: readonly { readonly x: number; readonly y: number }[];
+}
+
+/** Samples used to draw the shaded boundary. */
+const INTEGRAL_SAMPLES = 200;
+
+/**
+ * Compute the signed area between `f` and the axis, over `[from ; to]`.
+ *
+ * The value comes from `integrateDefinite` of mathAST — exact when an
+ * antiderivative exists, numeric otherwise — so nothing is recomputed here.
+ * What this adds is the outline to shade, which the integral itself has no
+ * reason to know about.
+ *
+ * @returns The area and its outline, or undefined when it cannot be computed
+ */
+export function integralUnder(
+	func: ExplicitFunction,
+	from: number,
+	to: number,
+	bindings: VariableBindings = {}
+): IntegralResult | undefined {
+	if (!func.ast || !Number.isFinite(from) || !Number.isFinite(to) || from === to) return undefined;
+
+	const [lower, upper] = from < to ? [from, to] : [to, from];
+	const bound = bindParameters(func.ast, bindings);
+	if (!bound) return undefined;
+
+	const info = buildAnalysisAST(bound);
+	if (!info) return undefined;
+
+	let result;
+	try {
+		result = integrateDefinite(bound, numericNode(lower), numericNode(upper));
+	} catch {
+		return undefined;
+	}
+
+	const value = result.approximate ?? evaluateToNumber(result.value);
+	if (value === undefined) return undefined;
+
+	// Outline of the region, sampled left to right. A rank where `f` is not
+	// defined breaks the region rather than joining across the gap.
+	const points: { x: number; y: number }[] = [];
+	const step = (upper - lower) / INTEGRAL_SAMPLES;
+
+	for (let i = 0; i <= INTEGRAL_SAMPLES; i++) {
+		const x = lower + i * step;
+		const y = info.compiledFn({ x });
+		if (Number.isFinite(y)) points.push({ x, y });
+	}
+
+	if (points.length < 2) return undefined;
+
+	return {
+		from: lower,
+		to: upper,
+		value,
+		exact: result.status === 'exact' ? (result.value ?? undefined) : undefined,
+		points
+	};
+}
+
+/** Read a numeric value off an exact node, when it has one. */
+function evaluateToNumber(node: MathNode | null): number | undefined {
+	if (!node) return undefined;
+
+	try {
+		const compiled = compile(node);
+		const value = compiled({});
+		return Number.isFinite(value) ? value : undefined;
+	} catch {
+		return undefined;
+	}
 }
 
 /** Substituted expressions, keyed by source AST then by binding values. */

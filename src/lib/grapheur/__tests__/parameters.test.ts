@@ -12,6 +12,7 @@ import {
 	analyzeAllFunctions,
 	bindParameters,
 	derivativeCurve,
+	integralUnder,
 	tangentAt,
 	toAnalysisInputs
 } from '../analysis';
@@ -37,7 +38,8 @@ function curve(latex: string): ExplicitFunction {
 		lineWidth: 2,
 		lineStyle: 'solid',
 		showDerivative: false,
-		tangentAt: null
+		tangentAt: null,
+		integral: null
 	};
 }
 
@@ -294,5 +296,62 @@ describe('tangente', () => {
 
 	it('ne rend rien pour une abscisse non finie', () => {
 		expect(tangentAt(curve('x^2'), Number.NaN)).toBeUndefined();
+	});
+});
+
+/**
+ * L'aire signée entre la courbe et l'axe. La valeur vient de mathAST — exacte
+ * quand une primitive existe, approchée sinon — et rien n'est recalculé ici :
+ * ce que ce module ajoute, c'est le contour à colorier.
+ */
+describe('aire sous la courbe', () => {
+	it('calcule l’aire d’un rectangle', () => {
+		// ∫₀² 3 dx = 6
+		expect(integralUnder(curve('3'), 0, 2)?.value).toBeCloseTo(6);
+	});
+
+	it('calcule une aire classique', () => {
+		// ∫₀¹ x² dx = 1/3
+		expect(integralUnder(curve('x^2'), 0, 1)?.value).toBeCloseTo(1 / 3);
+	});
+
+	it('compte négativement sous l’axe', () => {
+		// ∫₀¹ −x dx = −1/2 : le remplissage seul ne dirait pas le signe.
+		expect(integralUnder(curve('-x'), 0, 1)?.value).toBeCloseTo(-0.5);
+	});
+
+	it('s’annule sur un intervalle symétrique d’une fonction impaire', () => {
+		expect(integralUnder(curve('x^3'), -2, 2)?.value).toBeCloseTo(0);
+	});
+
+	it('accepte des bornes données à l’envers', () => {
+		const direct = integralUnder(curve('x^2'), 0, 1);
+		const inverse = integralUnder(curve('x^2'), 1, 0);
+
+		expect(inverse?.from).toBe(0);
+		expect(inverse?.to).toBe(1);
+		expect(inverse?.value).toBeCloseTo(direct!.value);
+	});
+
+	it('rend le contour à colorier, du début à la fin', () => {
+		const area = integralUnder(curve('x^2'), 0, 2)!;
+
+		expect(area.points.length).toBeGreaterThan(50);
+		expect(area.points[0].x).toBeCloseTo(0);
+		expect(area.points.at(-1)!.x).toBeCloseTo(2);
+		expect(area.points.at(-1)!.y).toBeCloseTo(4);
+	});
+
+	it('tient compte des paramètres', () => {
+		// ∫₀¹ a·x dx = a/2
+		expect(integralUnder(curve('a*x'), 0, 1, { a: 6 })?.value).toBeCloseTo(3);
+	});
+
+	it('ne rend rien pour un intervalle vide', () => {
+		expect(integralUnder(curve('x^2'), 2, 2)).toBeUndefined();
+	});
+
+	it('ne rend rien pour une expression invalide', () => {
+		expect(integralUnder(curve(')('), 0, 1)).toBeUndefined();
 	});
 });
