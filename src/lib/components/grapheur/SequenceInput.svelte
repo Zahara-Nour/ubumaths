@@ -427,7 +427,7 @@
 
 	<!-- Table of values -->
 	{#if showTable}
-		<SequenceTable {sequence} />
+		<SequenceTable {sequence} bindings={grapheurStore.parameterBindings} />
 	{/if}
 </div>
 

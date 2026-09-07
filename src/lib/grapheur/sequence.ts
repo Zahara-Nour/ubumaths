@@ -58,6 +58,8 @@ export interface SequenceComputeSpec {
 	readonly firstIndex: number;
 	/** Value of the first term — required for a recurrence, ignored otherwise. */
 	readonly firstTerm: number | null;
+	/** Parameter values to bind while iterating — `a`, `b`, … */
+	readonly bindings?: Readonly<Record<string, number>>;
 }
 
 // =============================================================================
@@ -172,7 +174,8 @@ function rewritePreviousTerm(ast: MathNode, mode: SequenceMode, name: string): M
 export function parseSequence(
 	latex: string,
 	mode: SequenceMode,
-	name: string
+	name: string,
+	parameterNames: readonly string[] = []
 ): SequenceParseResult {
 	const failure = (error: string): SequenceParseResult => ({
 		success: false,
@@ -201,7 +204,9 @@ export function parseSequence(
 
 	const variables = getVariables(rewritten);
 	const allowed = mode === 'recurrence' ? ALLOWED_RECURRENCE_VARIABLES : ALLOWED_VARIABLES;
-	const unknown = [...variables].filter((v) => !allowed.has(v));
+	// A declared parameter is a legitimate free variable: it gets a value at
+	// evaluation time, from its slider.
+	const unknown = [...variables].filter((v) => !allowed.has(v) && !parameterNames.includes(v));
 	if (unknown.length > 0) {
 		const quoted = unknown.map((v) => `« ${v} »`).join(', ');
 		return failure(`Variable inconnue : ${quoted}.`);
@@ -234,7 +239,7 @@ export function parseSequence(
  * @param lastIndex - Highest rank of interest (usually the viewport's right edge)
  */
 export function computeSequenceTerms(spec: SequenceComputeSpec, lastIndex: number): SequenceTerm[] {
-	const { mode, ast, firstIndex, firstTerm } = spec;
+	const { mode, ast, firstIndex, firstTerm, bindings } = spec;
 
 	if (!Number.isFinite(lastIndex) || lastIndex < firstIndex) return [];
 
@@ -247,6 +252,7 @@ export function computeSequenceTerms(spec: SequenceComputeSpec, lastIndex: numbe
 
 	// Single mutable env reused across the loop — never rebuild it per iteration.
 	const env: Record<string, number> = {
+		...bindings,
 		[INDEX_VARIABLE]: firstIndex,
 		[PREV_TERM_VARIABLE]: 0
 	};
@@ -341,19 +347,23 @@ export function computeCobwebPath(terms: readonly SequenceTerm[], maxSteps?: num
  * @param sequence - Any object carrying the definition of a sequence
  * @returns null when the expression did not parse, so there is nothing to compute
  */
-export function toComputeSpec(sequence: {
-	mode: SequenceMode;
-	ast: MathNode | undefined;
-	firstIndex: number;
-	firstTerm: number | null;
-}): SequenceComputeSpec | null {
+export function toComputeSpec(
+	sequence: {
+		mode: SequenceMode;
+		ast: MathNode | undefined;
+		firstIndex: number;
+		firstTerm: number | null;
+	},
+	bindings: Readonly<Record<string, number>> = {}
+): SequenceComputeSpec | null {
 	if (!sequence.ast) return null;
 
 	return {
 		mode: sequence.mode,
 		ast: sequence.ast,
 		firstIndex: sequence.firstIndex,
-		firstTerm: sequence.firstTerm
+		firstTerm: sequence.firstTerm,
+		bindings
 	};
 }
 

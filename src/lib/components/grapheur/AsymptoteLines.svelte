@@ -48,7 +48,10 @@
 		// Skip during interaction for performance
 		if (grapheurStore.isInteracting) return [];
 
-		return analyzeAllFunctions(toAnalysisInputs(grapheurStore.functions), grapheurStore.viewport);
+		return analyzeAllFunctions(
+			toAnalysisInputs(grapheurStore.functions, grapheurStore.parameterBindings),
+			grapheurStore.viewport
+		);
 	});
 
 	/**

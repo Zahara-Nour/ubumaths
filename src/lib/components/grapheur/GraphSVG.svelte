@@ -394,12 +394,14 @@
 						viewport={grapheurStore.viewport}
 						{transformer}
 						isInteracting={grapheurStore.isInteracting}
+						bindings={grapheurStore.parameterBindings}
 					/>
 				{:else}
 					<SequencePlot
 						sequence={plottable}
 						viewport={grapheurStore.viewport}
 						{transformer}
+						bindings={grapheurStore.parameterBindings}
 						isInteracting={grapheurStore.isInteracting}
 					/>
 				{/if}

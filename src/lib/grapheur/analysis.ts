@@ -23,12 +23,14 @@ import type {
 import type { Plottable } from './types';
 import { isExplicitFunction } from './types';
 import { createEvaluator } from './evaluator';
+import type { VariableBindings } from './evaluator';
 import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
 import { compile } from '$lib/mathAST/eval/compile';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { findCriticalZeros, findCriticalExtrema } from '$lib/mathAST/analysis';
 import { simplify } from '$lib/mathAST/simplify';
+import { substitute } from '$lib/mathAST/eval/substitute';
 
 // =============================================================================
 // Constants
@@ -887,7 +889,10 @@ export function buildAnalysisAST(ast: MathNode): AnalysisASTInfo | undefined {
  * @param plottables - Everything the graph holds, sequences included
  * @returns One input per visible explicit function with a parsable expression
  */
-export function toAnalysisInputs(plottables: readonly Plottable[]): AnalysisInput[] {
+export function toAnalysisInputs(
+	plottables: readonly Plottable[],
+	bindings: VariableBindings = {}
+): AnalysisInput[] {
 	const inputs: AnalysisInput[] = [];
 
 	for (const plottable of plottables) {
@@ -896,12 +901,54 @@ export function toAnalysisInputs(plottables: readonly Plottable[]): AnalysisInpu
 		const ast = plottable.ast;
 		if (!ast) continue;
 
+		// Parameters are substituted before anything symbolic runs: `solve` would
+		// treat a free `a` as a second unknown, and the derivative would carry it.
+		const bound = bindParameters(ast, bindings);
+		if (!bound) continue;
+
 		inputs.push({
 			id: plottable.id,
-			evaluator: createEvaluator(ast),
-			ast: buildAnalysisAST(ast)
+			evaluator: createEvaluator(bound),
+			ast: buildAnalysisAST(bound)
 		});
 	}
 
 	return inputs;
 }
+
+/**
+ * Replace the parameters an expression uses by their current values.
+ *
+ * The substituted AST is cached per (expression, bindings) so a slider drag
+ * does not rebuild it — and so `buildAnalysisAST`, keyed on the node identity,
+ * keeps hitting its own cache between frames at a constant slider value.
+ *
+ * @returns The bound expression, or undefined when substitution fails
+ */
+export function bindParameters(ast: MathNode, bindings: VariableBindings): MathNode | undefined {
+	const names = Object.keys(bindings);
+	if (names.length === 0) return ast;
+
+	const perAst = boundASTCache.get(ast) ?? new Map<string, MathNode>();
+	const key = names
+		.sort()
+		.map((n) => `${n}=${bindings[n]}`)
+		.join(',');
+
+	const cached = perAst.get(key);
+	if (cached) return cached;
+
+	let bound: MathNode;
+	try {
+		bound = substitute(ast, bindings);
+	} catch {
+		return undefined;
+	}
+
+	perAst.set(key, bound);
+	boundASTCache.set(ast, perAst);
+	return bound;
+}
+
+/** Substituted expressions, keyed by source AST then by binding values. */
+const boundASTCache = new WeakMap<MathNode, Map<string, MathNode>>();

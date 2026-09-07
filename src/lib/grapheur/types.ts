@@ -133,6 +133,7 @@ export interface GraphState {
 	readonly version: number;
 	readonly viewport: Viewport;
 	readonly showGrid: boolean;
+	readonly parameters: readonly Parameter[];
 	readonly functions: readonly PlottableState[];
 }
 
@@ -166,6 +167,48 @@ export interface SequenceState {
 }
 
 export type PlottableState = ExplicitFunctionState | SequenceState;
+
+// =============================================================================
+// Parameters
+// =============================================================================
+
+/**
+ * A named constant the user can sweep with a slider.
+ *
+ * Referenced by its name inside any expression — `ax + b`, `u_n + a` — and
+ * substituted before evaluation, so the curve redraws as the slider moves.
+ */
+export interface Parameter {
+	readonly id: string;
+	/** Single lowercase letter, never a reserved one. */
+	readonly name: string;
+	readonly value: number;
+	readonly min: number;
+	readonly max: number;
+}
+
+/** Names an expression already gives a meaning to, so unusable as parameters. */
+export const RESERVED_PARAMETER_NAMES: ReadonlySet<string> = new Set(['x', 'n', 'e', 'pi', 'i']);
+
+/** Letters offered to new parameters, in order. */
+export const PARAMETER_NAMES = ['a', 'b', 'c', 'k', 'm', 'p', 'q', 'r'] as const;
+
+/** Default bounds of a new parameter's slider. */
+export const DEFAULT_PARAMETER_MIN = -10;
+export const DEFAULT_PARAMETER_MAX = 10;
+
+/** Steps the parameter slider offers between its bounds. */
+export const PARAMETER_SLIDER_STEPS = 200;
+
+/**
+ * Pick the first unused letter for a new parameter.
+ *
+ * Falls back to the first letter when all are taken — a graph with eight
+ * parameters is already past what the panel can show usefully.
+ */
+export function nextParameterName(used: readonly string[]): string {
+	return PARAMETER_NAMES.find((name) => !used.includes(name)) ?? PARAMETER_NAMES[0];
+}
 
 // =============================================================================
 // Analysis Types (grapheur-specific)
@@ -317,6 +360,17 @@ const plottableStateSchema = z.discriminatedUnion('type', [
 	sequenceStateSchema
 ]);
 
+const parameterSchema = z.object({
+	id: z.string().uuid('Parameter ID must be a valid UUID'),
+	name: z
+		.string()
+		.regex(/^[a-z]$/, 'Parameter name must be a single lowercase letter')
+		.refine((n) => !RESERVED_PARAMETER_NAMES.has(n), 'This name is reserved'),
+	value: z.number().finite().min(-1e9).max(1e9),
+	min: z.number().finite().min(-1e9).max(1e9),
+	max: z.number().finite().min(-1e9).max(1e9)
+});
+
 export const graphStateSchema = z.object({
 	version: z
 		.number()
@@ -325,6 +379,9 @@ export const graphStateSchema = z.object({
 		.max(GRAPH_STATE_VERSION, `Unsupported version (max ${GRAPH_STATE_VERSION})`),
 	viewport: sharedViewportSchema,
 	showGrid: z.boolean().default(true),
+	// Absents des états écrits avant l'arrivée des paramètres : le défaut les
+	// rétablit sans casse.
+	parameters: z.array(parameterSchema).max(20, 'Too many parameters').default([]),
 	functions: z.array(plottableStateSchema).max(20, 'Too many plots (max 20)').default([])
 });
 
