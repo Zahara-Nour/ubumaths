@@ -153,12 +153,20 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		const stateManager = new MigrationStateManager();
 		await stateManager.init(locals.supabase);
 
+		// Le verdict de relecture va dans `review_status`, pas dans
+		// `migration_status`. Ce dernier décrit ce que la machine a fait de la
+		// question ; y écrire `validated` faisait porter au même mot deux sens
+		// incompatibles — « l'enseignant approuve » ici, « les tests de génération
+		// du template importé passent » dans `validate-phase1-questions.ts`.
+		// L'avancement technique reste `pending` : rien n'a encore été importé.
 		await stateManager.recordQuestionProcessed(
 			globalIndex,
-			'validated', // status
-			4, // phase 4 = validation
+			'pending', // avancement technique inchangé
+			4, // phase 4 = relecture
 			originalQuestion,
 			{
+				reviewStatus: 'approved',
+				reviewedBy: locals.profile.id,
 				notes: notes || undefined,
 				// Store whether we used an edited version (editedJson is unknown from DB JSONB)
 				...(editedJson ? { editedJson } : {})

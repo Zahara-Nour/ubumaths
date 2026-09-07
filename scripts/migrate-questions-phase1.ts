@@ -41,6 +41,10 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import {
+	motifDeNonPublication,
+	type MotifExclusion
+} from '../src/lib/server/migration/publication';
 
 // Get current directory (ESM compatibility)
 const __filename = fileURLToPath(import.meta.url);
@@ -187,16 +191,41 @@ async function main() {
 
 		// 4. Filter Phase 1 compatible questions
 		const phase1Questions = filterPhase1Questions(oldQuestions, startIndex, CONFIG.TO_INDEX);
-		results.total = phase1Questions.length;
-		console.log(`✅ ${phase1Questions.length} questions eligible for Phase 1\n`);
 
-		if (phase1Questions.length === 0) {
-			console.log('ℹ️  No questions to process. Exiting.\n');
+		// 4b. Ne publier que ce que l'enseignant a relu et retenu, et seulement une
+		//     fois. Sans ces deux filtres, le script publiait par PLAGE D'INDEX :
+		//     les questions écartées en relecture partaient en base comme les
+		//     autres, celles jamais relues aussi, et relancer le script après une
+		//     interruption créait un second template pour chaque question déjà
+		//     publiée.
+		const decisions = await chargerDecisionsDeRelecture(supabase);
+		const motifs = new Map<MotifExclusion, number>();
+		const aPublier = phase1Questions.filter(({ index }) => {
+			const motif = motifDeNonPublication(decisions.get(index));
+			if (motif) {
+				motifs.set(motif, (motifs.get(motif) ?? 0) + 1);
+				return false;
+			}
+			return true;
+		});
+
+		const ecartees = phase1Questions.length - aPublier.length;
+		results.skipped += ecartees;
+		results.total = aPublier.length;
+		console.log(`✅ ${aPublier.length} questions approuvées et non encore publiées`);
+		if (ecartees > 0) {
+			const detail = [...motifs.entries()].map(([m, n]) => `${n} ${m}`).join(', ');
+			console.log(`   ${ecartees} écartées : ${detail}`);
+		}
+		console.log('');
+
+		if (aPublier.length === 0) {
+			console.log('ℹ️  Aucune question approuvée en attente de publication. Fin.\n');
 			return;
 		}
 
 		// 5. Process in batches
-		await processBatches(phase1Questions, results, supabase, stateManager);
+		await processBatches(aPublier, results, supabase, stateManager);
 
 		// 6. Mark phase as complete if all questions processed
 		if (!CONFIG.DRY_RUN && results.successful === results.total) {
@@ -327,6 +356,47 @@ async function loadOldQuestions(): Promise<QuestionBase[]> {
 		console.error('❌ Failed to load old questions:', error);
 		throw error;
 	}
+}
+
+// ============================================================================
+// DÉCISIONS DE RELECTURE
+// ============================================================================
+
+/**
+ * Lit, pour chaque question, le verdict de relecture et le template déjà créé.
+ *
+ * La publication ne doit pas se contenter d'une plage d'index : elle doit
+ * respecter ce que l'enseignant a décidé, et ne rien publier deux fois.
+ */
+async function chargerDecisionsDeRelecture(
+	supabase: ReturnType<typeof createSupabaseClient>
+): Promise<Map<number, { reviewStatus: string; newTemplateId: string | null }>> {
+	const decisions = new Map<number, { reviewStatus: string; newTemplateId: string | null }>();
+	const taillePage = 1000;
+
+	for (let debut = 0; ; debut += taillePage) {
+		const { data, error } = await supabase
+			.from('migration_tracking')
+			.select('old_question_index, review_status, new_template_id')
+			.range(debut, debut + taillePage - 1);
+
+		// Une lecture en panne rendrait `decisions` vide, donc « rien n'est
+		// approuvé » : le script ne publierait rien en annonçant que tout va bien.
+		if (error) {
+			throw new Error(`Décisions de relecture illisibles : ${error.message}`);
+		}
+		if (!data || data.length === 0) break;
+
+		for (const ligne of data) {
+			decisions.set(ligne.old_question_index, {
+				reviewStatus: ligne.review_status ?? 'pending',
+				newTemplateId: ligne.new_template_id
+			});
+		}
+		if (data.length < taillePage) break;
+	}
+
+	return decisions;
 }
 
 // ============================================================================

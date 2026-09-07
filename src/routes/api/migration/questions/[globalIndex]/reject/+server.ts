@@ -108,12 +108,17 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		const stateManager = new MigrationStateManager();
 		await stateManager.init(locals.supabase);
 
+		// Un rejet de relecture n'est pas un échec technique : `failed` désigne une
+		// conversion qui a planté et qu'on peut retenter. Écarter une question est
+		// une décision, et elle se lit dans `review_status`.
 		await stateManager.recordQuestionProcessed(
 			globalIndex,
-			'failed', // status
-			4, // phase 4 = validation
+			'pending', // avancement technique inchangé
+			4, // phase 4 = relecture
 			originalQuestion,
 			{
+				reviewStatus: 'rejected',
+				reviewedBy: locals.profile.id,
 				errors: [
 					{
 						code: 'MANUAL_REJECTION',

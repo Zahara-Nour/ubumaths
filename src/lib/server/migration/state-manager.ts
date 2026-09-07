@@ -8,14 +8,15 @@ import { promises as fs } from 'fs';
 import { resolve } from 'path';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
-	MigrationPhase,
-	MigrationTracking,
-	FailedQuestion,
-	ValidationResult,
-	ResumePoint,
-	PhaseCompletionStats,
 	ConversionError,
-	MigrationStatus
+	FailedQuestion,
+	MigrationPhase,
+	MigrationStatus,
+	MigrationTracking,
+	PhaseCompletionStats,
+	ResumePoint,
+	ReviewStatus,
+	ValidationResult
 } from '$lib/types/migration';
 import type { Database } from '$lib/types/database';
 import { lock } from 'proper-lockfile';
@@ -135,6 +136,10 @@ export class MigrationStateManager {
 			newTemplateId?: string;
 			errors?: ConversionError[];
 			notes?: string;
+			/** Verdict de relecture humaine — distinct de l'avancement technique. */
+			reviewStatus?: ReviewStatus;
+			/** Identifiant du relecteur, requis avec `reviewStatus`. */
+			reviewedBy?: string;
 		}
 	): Promise<void> {
 		if (!this.supabase) {
@@ -153,7 +158,11 @@ export class MigrationStateManager {
 		// Check if an entry with this hash already exists (to detect potential conflicts)
 		const { data: existing, error: checkError } = await this.supabase
 			.from('migration_tracking')
-			.select('old_question_index, migration_status, phase')
+			// On relit TOUT ce que l'upsert va réécrire : sans ces colonnes, chaque
+			// transition d'état effaçait les précédentes (cf. plus bas).
+			.select(
+				'old_question_index, migration_status, phase, new_template_id, converted_at, imported_at, validated_at, review_status, reviewed_at, reviewed_by'
+			)
 			.eq('old_question_hash', hash)
 			.maybeSingle();
 
@@ -192,12 +201,30 @@ export class MigrationStateManager {
 			old_description: sanitizeString(description, 500),
 			migration_status: status,
 			phase,
-			new_template_id: options?.newTemplateId || null,
+			// ⚠️ C'est un UPSERT : il réécrit la ligne entière. Écrire `null` dans les
+			// champs qui n'appartiennent pas au nouvel état effaçait donc l'histoire
+			// de la question à chaque transition — importer une question validée
+			// remettait `validated_at` à `null` et perdait le lien vers son template.
+			// Chaque champ est désormais soit renseigné par CETTE transition, soit
+			// repris de la ligne existante.
+			new_template_id: options?.newTemplateId ?? existing?.new_template_id ?? null,
 			conversion_errors: sanitizeConversionErrors(options?.errors || []),
 			conversion_notes: options?.notes ? sanitizeString(options.notes, 2000) : null,
-			converted_at: status === 'converted' ? new Date().toISOString() : null,
-			imported_at: status === 'imported' ? new Date().toISOString() : null,
-			validated_at: status === 'validated' ? new Date().toISOString() : null,
+			converted_at:
+				status === 'converted' ? new Date().toISOString() : (existing?.converted_at ?? null),
+			imported_at:
+				status === 'imported' ? new Date().toISOString() : (existing?.imported_at ?? null),
+			validated_at:
+				status === 'validated' ? new Date().toISOString() : (existing?.validated_at ?? null),
+			// Le verdict humain vit dans ses propres colonnes et ne dépend pas de
+			// l'avancement technique : on le reconduit tel quel.
+			review_status: options?.reviewStatus ?? existing?.review_status ?? 'pending',
+			reviewed_at: options?.reviewStatus
+				? new Date().toISOString()
+				: (existing?.reviewed_at ?? null),
+			reviewed_by: options?.reviewStatus
+				? (options.reviewedBy ?? null)
+				: (existing?.reviewed_by ?? null),
 			updated_at: new Date().toISOString()
 		};
 
