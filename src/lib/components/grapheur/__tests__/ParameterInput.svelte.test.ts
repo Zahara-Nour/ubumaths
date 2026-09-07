@@ -26,7 +26,10 @@ describe('ParameterInput', () => {
 	it('affiche le nom, la valeur et le curseur', () => {
 		const { container } = render(ParameterInput, { parameter });
 
-		expect(container.textContent).toContain('a =');
+		// Le nom vit dans un champ depuis qu'il est modifiable, plus dans le texte.
+		expect(
+			container.querySelector<HTMLInputElement>('[aria-label="Nom du paramètre a"]')?.value
+		).toBe('a');
 		expect(container.querySelector('[aria-label="Curseur du paramètre a"]')).not.toBeNull();
 		expect(
 			container.querySelector<HTMLInputElement>('[aria-label="Valeur du paramètre a"]')?.value
@@ -42,6 +45,14 @@ describe('ParameterInput', () => {
 		expect(
 			container.querySelector<HTMLInputElement>('[aria-label="Borne supérieure de a"]')?.value
 		).toBe('5');
+	});
+
+	it('permet de renommer le paramètre', () => {
+		const { container } = render(ParameterInput, { parameter });
+
+		expect(
+			container.querySelector<HTMLInputElement>('[aria-label="Nom du paramètre a"]')?.value
+		).toBe('a');
 	});
 
 	it('propose de supprimer le paramètre', () => {

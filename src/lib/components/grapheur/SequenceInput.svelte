@@ -198,6 +198,18 @@
 		};
 	}
 
+	/** « Valeur » plus une entrée par paramètre déclaré. */
+	const firstTermItems = $derived([
+		{ value: '', label: 'Valeur' },
+		...grapheurStore.parameters.map((p) => ({ value: p.name, label: p.name }))
+	]);
+
+	const firstTermSource = $derived(sequence.firstTermParameter ?? '');
+
+	function handleFirstTermSourceChange(value: string) {
+		grapheurStore.updateSequence(sequence.id, { firstTermParameter: value === '' ? null : value });
+	}
+
 	function handleRepresentationChange(value: string) {
 		const item = REPRESENTATION_ITEMS.find((candidate) => candidate.value === value);
 		if (!item) return;
@@ -338,15 +350,34 @@
 				<span class="font-serif">
 					{sequence.name}<sub>{sequence.firstIndex}</sub> =
 				</span>
-				<Input
-					type="number"
-					step="any"
-					value={sequence.firstTerm ?? ''}
-					oninput={handleFirstTermInput}
-					class="h-8 w-24"
-					aria-label="Premier terme"
-				/>
+				{#if sequence.firstTermParameter}
+					<span class="font-serif text-sm">{sequence.firstTermParameter}</span>
+				{:else}
+					<Input
+						type="number"
+						step="any"
+						value={sequence.firstTerm ?? ''}
+						oninput={handleFirstTermInput}
+						class="h-8 w-24"
+						aria-label="Premier terme"
+					/>
+				{/if}
 			</label>
+
+			<!--
+				Rattacher u₀ à un paramètre : son curseur pilote alors la suite, et la
+				même valeur peut en piloter plusieurs à la fois.
+			-->
+			{#if grapheurStore.parameters.length > 0}
+				<span class="sr-only" id="source-{sequence.id}">Source du premier terme</span>
+				<MySelect
+					type="single"
+					value={firstTermSource}
+					items={firstTermItems}
+					onValueChange={handleFirstTermSourceChange}
+					triggerClass="h-8 w-24 text-xs"
+				/>
+			{/if}
 		{/if}
 	</div>
 
@@ -354,7 +385,7 @@
 		Balayer le premier terme en continu : c'est ce qui fait voir qu'un point
 		fixe attire ou repousse, sans avoir à l'écrire.
 	-->
-	{#if sequence.mode === 'recurrence'}
+	{#if sequence.mode === 'recurrence' && !sequence.firstTermParameter}
 		<div class="flex flex-col gap-1">
 			<div class="flex items-center gap-2 text-xs text-muted-foreground">
 				<Input

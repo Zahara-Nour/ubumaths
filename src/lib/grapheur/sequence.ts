@@ -353,6 +353,7 @@ export function toComputeSpec(
 		ast: MathNode | undefined;
 		firstIndex: number;
 		firstTerm: number | null;
+		firstTermParameter?: string | null;
 	},
 	bindings: Readonly<Record<string, number>> = {}
 ): SequenceComputeSpec | null {
@@ -362,9 +363,27 @@ export function toComputeSpec(
 		mode: sequence.mode,
 		ast: sequence.ast,
 		firstIndex: sequence.firstIndex,
-		firstTerm: sequence.firstTerm,
+		firstTerm: resolveFirstTerm(sequence.firstTerm, sequence.firstTermParameter, bindings),
 		bindings
 	};
+}
+
+/**
+ * Resolve the first term, which a parameter may drive instead of a fixed value.
+ *
+ * A parameter that no longer exists yields no first term rather than a stale
+ * one: the sequence stops until the parameter is back, which is visible, where
+ * a silent fallback would not be.
+ */
+function resolveFirstTerm(
+	firstTerm: number | null,
+	parameterName: string | null | undefined,
+	bindings: Readonly<Record<string, number>>
+): number | null {
+	if (!parameterName) return firstTerm;
+
+	const bound = bindings[parameterName];
+	return Number.isFinite(bound) ? bound : null;
 }
 
 /**
