@@ -17,6 +17,8 @@
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
 	import type { Root, Extremum, FunctionAnalysis, SnappedPointType } from '$lib/grapheur/types';
 	import { analyzeAllFunctions, toAnalysisInputs } from '$lib/grapheur/analysis';
+	import { toCustom } from '$lib/mathAST/custom-generator';
+	import type { MathNode } from '$lib/mathAST/types';
 
 	// Props
 	let {
@@ -120,13 +122,33 @@
 		return n.toPrecision(4);
 	}
 
+	/**
+	 * Prefer the symbolic value when the solver found one.
+	 *
+	 * These labels feed `<title>`, which carries plain text only — no LaTeX — so
+	 * the exact value is written in the custom syntax: `sqrt(2)`, not `1,414`.
+	 * They are what a screen reader announces for the marker.
+	 */
+	function formatExact(exact: MathNode | undefined, approximate: number): string {
+		if (!exact) return formatNumber(approximate);
+
+		try {
+			return toCustom(exact);
+		} catch {
+			return formatNumber(approximate);
+		}
+	}
+
 	function getRootLabel(root: Root): string {
-		return `Zero: x = ${formatNumber(root.x)}`;
+		return `Zéro : x = ${formatExact(root.exactX, root.x)}`;
 	}
 
 	function getExtremumLabel(extremum: Extremum): string {
 		const typeLabel = extremum.type === 'max' ? 'Max' : 'Min';
-		return `${typeLabel}: (${formatNumber(extremum.x)}, ${formatNumber(extremum.y)})`;
+		const x = formatExact(extremum.exactX, extremum.x);
+		const y = formatExact(extremum.exactY, extremum.y);
+
+		return `${typeLabel} : (${x} ; ${y})`;
 	}
 
 	// ==========================================================================
