@@ -828,7 +828,44 @@ export function analyzeAllFunctions(
 	functions: readonly AnalysisInput[],
 	viewport: Viewport
 ): FunctionAnalysis[] {
-	return functions.map((f) => analyzeFunction(f.evaluator, viewport, f.id, f.ast));
+	return functions.map((f) => analyzeCached(f, viewport));
+}
+
+/**
+ * Analysis results, keyed by expression then by function and viewport.
+ *
+ * Zeros, extrema and asymptotes depend on the expression and on the window —
+ * on nothing else. Yet the four components that display them re-read the whole
+ * function list, which changes at every move of the tangent slider: without
+ * this cache, dragging it re-ran symbolic solving and two numeric sweeps per
+ * function, four times per frame.
+ *
+ * Parameter values need no key of their own: `bindParameters` already returns
+ * a distinct node per set of values, so the expression identity carries them.
+ */
+const analysisCache = new WeakMap<MathNode, Map<string, FunctionAnalysis>>();
+
+/** Viewports kept per expression before the cache is emptied. */
+const MAX_ANALYSES_PER_EXPRESSION = 200;
+
+function analyzeCached(input: AnalysisInput, viewport: Viewport): FunctionAnalysis {
+	const expression = input.ast?.expression;
+	if (!expression) return analyzeFunction(input.evaluator, viewport, input.id, input.ast);
+
+	const key = `${input.id}|${viewport.xMin},${viewport.xMax},${viewport.yMin},${viewport.yMax}`;
+	const perExpression = analysisCache.get(expression) ?? new Map<string, FunctionAnalysis>();
+
+	const cached = perExpression.get(key);
+	if (cached) return cached;
+
+	// Un panoramique crée une clé par fenêtre traversée : on repart à zéro
+	// plutôt que de laisser la carte enfler sans fin.
+	if (perExpression.size >= MAX_ANALYSES_PER_EXPRESSION) perExpression.clear();
+
+	const analysis = analyzeFunction(input.evaluator, viewport, input.id, input.ast);
+	perExpression.set(key, analysis);
+	analysisCache.set(expression, perExpression);
+	return analysis;
 }
 
 /**
@@ -922,7 +959,7 @@ export function toAnalysisInputs(
 
 		inputs.push({
 			id: plottable.id,
-			evaluator: createEvaluator(bound),
+			evaluator: cachedEvaluator(bound),
 			ast: buildAnalysisAST(bound)
 		});
 	}
@@ -1237,6 +1274,24 @@ export function osculatingCircleAt(
 	if (!curve) return undefined;
 
 	return computeOsculatingCircle(curve, {}, x0) ?? undefined;
+}
+
+/**
+ * Evaluators, keyed by expression.
+ *
+ * `createEvaluator` compiles the AST each time it is called, and the four
+ * display components call it on every render. The expression rarely changes;
+ * the compilation should not be redone because a slider moved.
+ */
+const evaluatorCache = new WeakMap<MathNode, (x: number) => number | null>();
+
+function cachedEvaluator(ast: MathNode): (x: number) => number | null {
+	const cached = evaluatorCache.get(ast);
+	if (cached) return cached;
+
+	const evaluator = createEvaluator(ast);
+	evaluatorCache.set(ast, evaluator);
+	return evaluator;
 }
 
 /** Substituted expressions, keyed by source AST then by binding values. */

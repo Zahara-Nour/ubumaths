@@ -425,3 +425,54 @@ describe('longueur, courbure, cercle osculateur', () => {
 		expect(parametric.compiledYSecond!({ x: 4 })).toBeCloseTo(2);
 	});
 });
+
+/**
+ * Déplacer le curseur de la tangente remplace l'objet fonction, ce qui invalide
+ * la liste que lisent les quatre composants d'affichage. Sans mémoïsation, la
+ * résolution symbolique et deux balayages numériques se rejouaient à chaque
+ * cran, quatre fois par image — le curseur saccadait.
+ */
+describe('analyse mémoïsée', () => {
+	it('rend le même objet pour une expression et une fenêtre inchangées', () => {
+		const f = curve('x^2-2');
+		const first = analyzeAllFunctions(toAnalysisInputs([f]), viewport)[0];
+		const second = analyzeAllFunctions(toAnalysisInputs([f]), viewport)[0];
+
+		expect(second).toBe(first);
+	});
+
+	it('n’est pas invalidée par un champ sans effet sur l’analyse', () => {
+		const f = curve('x^3-3*x');
+		const first = analyzeAllFunctions(toAnalysisInputs([f]), viewport)[0];
+		// Déplacer la tangente ne change ni zéros, ni extrema, ni asymptotes.
+		const moved = analyzeAllFunctions(toAnalysisInputs([{ ...f, tangentAt: 4 }]), viewport)[0];
+
+		expect(moved).toBe(first);
+	});
+
+	it('recalcule quand la fenêtre change', () => {
+		const f = curve('x^2-2');
+		const first = analyzeAllFunctions(toAnalysisInputs([f]), viewport)[0];
+		const wider = analyzeAllFunctions(toAnalysisInputs([f]), {
+			...viewport,
+			xMax: 20
+		})[0];
+
+		expect(wider).not.toBe(first);
+	});
+
+	it('recalcule quand un paramètre change, car les zéros bougent', () => {
+		const f = curve('a*x+b');
+		const first = analyzeAllFunctions(toAnalysisInputs([f], { a: 2, b: -4 }), viewport)[0];
+		const other = analyzeAllFunctions(toAnalysisInputs([f], { a: 4, b: -4 }), viewport)[0];
+
+		expect(other).not.toBe(first);
+		expect(other.roots[0].x).not.toBeCloseTo(first.roots[0].x);
+	});
+
+	it('réutilise l’évaluateur compilé d’une expression inchangée', () => {
+		const f = curve('x^2-2');
+
+		expect(toAnalysisInputs([f])[0].evaluator).toBe(toAnalysisInputs([f])[0].evaluator);
+	});
+});
