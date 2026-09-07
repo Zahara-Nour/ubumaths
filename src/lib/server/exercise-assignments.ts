@@ -13,22 +13,22 @@
  *
  * @module server/exercise-assignments
  *
- * @note Database Schema Required
- * This module requires the following database tables/views/functions to be created:
- * - Tables: exercise_assignments, exercise_completions (créées, cf. prod)
- * - ~~Views: assigned_exercises_with_details~~ — jamais créée. La « Phase 4 »
- *   annoncée ci-dessous n'a pas eu lieu : aucune migration ne définit cette vue,
- *   baseline comprise. `getAssignmentsForExercise` fait désormais la jointure
- *   directement, il n'y a plus rien à créer.
- * - Functions: get_student_exercises, student_has_exercise_access,
- *              get_teacher_assignment_stats, get_assignment_completion_stats,
- *              get_exercise_completion_stats
+ * @note État du schéma — la « Phase 4 » annoncée ici pendant des mois est close.
  *
- * These will be created in Phase 4 of the exercise assignment system implementation.
+ * - Tables `exercise_assignments` et `exercise_completions` : créées, et
+ *   présentes dans les types générés.
+ * - Vue `assigned_exercises_with_details` : **jamais créée**, aucune migration
+ *   ne la définit. `getAssignmentsForExercise` fait la jointure directement.
+ * - Fonctions `get_student_exercises`, `get_teacher_assignment_stats`,
+ *   `get_exercise_completion_stats` : présentes dans les types générés.
+ * - `student_has_exercise_access` : existe en base mais **absente des types**,
+ *   parce qu'elle y est surchargée (cf. `appelerAccesExercice` plus bas).
  *
- * @status READY - All backend issues fixed (N+1 queries, SQL injection, pagination, etc.)
- * @note Type assertions used for Phase 4 tables (exercise_assignments, exercise_completions)
- *       until database schema is migrated. RPC functions added to database.ts proactively.
+ * Ce module contournait le typage par deux helpers rendant `any`, écrits quand
+ * ces objets n'existaient pas encore. Ils masquaient donc les erreurs bien
+ * après que la raison de leur existence eut disparu — dont une vue fantôme et
+ * quatre statistiques qui valaient toujours 0. Ils sont retirés : seul l'appel
+ * à la fonction surchargée garde un contournement, nommé et documenté.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -55,27 +55,31 @@ import { validateSearchQuery } from '$lib/utils/search';
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
-// Type helpers for Phase 4 tables (not yet in database schema)
-type UnknownTable = string;
-
-// Helper to bypass type checking for tables not yet in schema
-// Returns a query builder with all methods typed as 'any' to prevent cascading type errors
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function fromUnknownTable(supabase: TypedSupabaseClient, table: UnknownTable): any {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return (supabase as any).from(table);
-}
-
-// Helper to bypass type checking for RPC functions not yet in schema
-
-function callUnknownRpc(
+/**
+ * Appelle `student_has_exercise_access`, absente des types générés.
+ *
+ * ⚠️ Contournement réservé à CETTE fonction, et pour une raison précise : elle
+ * existe en production en **deux surcharges** — `(p_exercise_id)` et
+ * `(p_exercise_id, p_student_id)` — et le générateur de types Supabase ne sait
+ * pas représenter une fonction surchargée : il la saute silencieusement.
+ *
+ * Ce n'est donc pas « une fonction pas encore créée » : c'est une fonction que
+ * le typage ne peut pas voir. Conséquence à garder en tête : un changement de
+ * sa signature, ou sa disparition, ne serait signalé par rien.
+ *
+ * Lever la surcharge côté SQL rendrait ce contournement inutile — c'est une
+ * décision de schéma, pas de typage.
+ *
+ * N'y ajoutez pas d'autres appels : les tables et fonctions qui existent dans
+ * `database.ts` doivent passer par le client typé.
+ */
+function appelerAccesExercice(
 	supabase: TypedSupabaseClient,
-	fn: string,
-	params?: Record<string, unknown>
+	params: { p_exercise_id: string; p_student_id?: string }
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<{ data: any; error: any }> {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return (supabase as any).rpc(fn, params);
+	return (supabase as any).rpc('student_has_exercise_access', params);
 }
 
 // ============================================================================
@@ -152,7 +156,8 @@ export async function createExerciseAssignment(
 		is_active: true
 	};
 
-	const { data: assignment, error } = await fromUnknownTable(supabase, 'exercise_assignments')
+	const { data: assignment, error } = await supabase
+		.from('exercise_assignments')
 		.insert(insertData)
 		.select()
 		.single();
@@ -289,7 +294,8 @@ export async function createBulkAssignments(
 	}
 
 	// Insert all assignments (atomic transaction)
-	const { data: created, error } = await fromUnknownTable(supabase, 'exercise_assignments')
+	const { data: created, error } = await supabase
+		.from('exercise_assignments')
 		.insert(assignments)
 		.select();
 
@@ -501,13 +507,9 @@ export async function getAssignmentsForStudent(
 	const offset = pagination?.offset || 0;
 
 	// Step 1: Get all accessible exercise IDs via RPC function
-	const { data: exerciseIds, error: functionError } = await callUnknownRpc(
-		supabase,
-		'get_student_exercises',
-		{
-			p_student_id: studentId
-		}
-	);
+	const { data: exerciseIds, error: functionError } = await supabase.rpc('get_student_exercises', {
+		p_student_id: studentId
+	});
 
 	if (functionError) {
 		console.error('Error fetching student exercises:', functionError);
@@ -591,10 +593,8 @@ export async function getAssignmentsForStudent(
 	// - Supabase's .or() method still uses parameterized queries internally
 	// - The string is only used to construct the filter logic, not as raw SQL
 	// - This is a documented pattern in Supabase docs for OR conditions
-	const { data: directAssignments, error: directAssignmentsError } = await fromUnknownTable(
-		supabase,
-		'exercise_assignments'
-	)
+	const { data: directAssignments, error: directAssignmentsError } = await supabase
+		.from('exercise_assignments')
 		.select('*')
 		.in('exercise_id', exerciseIdsForBatch)
 		.eq('is_active', true)
@@ -615,10 +615,8 @@ export async function getAssignmentsForStudent(
 	// 1. class_members table has index on student_id
 	// 2. Result is a small array of class IDs (typically 1-3 classes per student)
 	// 3. The .in() filter is optimized by Postgres using the class_id index
-	const { data: classAssignments, error: classAssignmentsError } = await fromUnknownTable(
-		supabase,
-		'exercise_assignments'
-	)
+	const { data: classAssignments, error: classAssignmentsError } = await supabase
+		.from('exercise_assignments')
 		.select('*')
 		.in('exercise_id', exerciseIdsForBatch)
 		.eq('assigned_to_type', 'class')
@@ -644,10 +642,8 @@ export async function getAssignmentsForStudent(
 	] as unknown as ExerciseAssignment[];
 
 	// Step 4: Batch-fetch all completions for these exercises
-	const { data: allCompletions, error: allCompletionsError } = await fromUnknownTable(
-		supabase,
-		'exercise_completions'
-	)
+	const { data: allCompletions, error: allCompletionsError } = await supabase
+		.from('exercise_completions')
 		.select('*')
 		.in('exercise_id', exerciseIdsForBatch)
 		.eq('student_id', studentId);
@@ -789,7 +785,8 @@ export async function updateAssignment(
 	}
 
 	// Update assignment
-	const { data: updated, error } = await fromUnknownTable(supabase, 'exercise_assignments')
+	const { data: updated, error } = await supabase
+		.from('exercise_assignments')
 		.update(updates)
 		.eq('id', assignmentId)
 		.select()
@@ -841,9 +838,7 @@ export async function deleteAssignment(
 
 	if (hardDelete) {
 		// Hard delete: remove from database
-		const { error } = await fromUnknownTable(supabase, 'exercise_assignments')
-			.delete()
-			.eq('id', assignmentId);
+		const { error } = await supabase.from('exercise_assignments').delete().eq('id', assignmentId);
 
 		if (error) {
 			console.error('Error deleting assignment:', error);
@@ -851,7 +846,8 @@ export async function deleteAssignment(
 		}
 	} else {
 		// Soft delete: mark inactive
-		const { error } = await fromUnknownTable(supabase, 'exercise_assignments')
+		const { error } = await supabase
+			.from('exercise_assignments')
 			.update({ is_active: false })
 			.eq('id', assignmentId);
 
@@ -899,10 +895,8 @@ export async function markExerciseAsViewed(
 	assignmentId?: string
 ): Promise<{ data: ExerciseCompletion | null; error: string | null }> {
 	// Check if completion record exists
-	const { data: existing, error: existingError } = await fromUnknownTable(
-		supabase,
-		'exercise_completions'
-	)
+	const { data: existing, error: existingError } = await supabase
+		.from('exercise_completions')
 		.select('*')
 		.eq('exercise_id', exerciseId)
 		.eq('student_id', studentId)
@@ -917,7 +911,8 @@ export async function markExerciseAsViewed(
 
 	if (existing) {
 		// Update existing record
-		const { data: updated, error } = await fromUnknownTable(supabase, 'exercise_completions')
+		const { data: updated, error } = await supabase
+			.from('exercise_completions')
 			.update({
 				view_count: (existing as unknown as ExerciseCompletion).view_count + 1,
 				last_viewed_at: new Date().toISOString()
@@ -934,7 +929,8 @@ export async function markExerciseAsViewed(
 		return { data: updated as unknown as ExerciseCompletion, error: null };
 	} else {
 		// Create new record
-		const { data: created, error } = await fromUnknownTable(supabase, 'exercise_completions')
+		const { data: created, error } = await supabase
+			.from('exercise_completions')
 			.insert({
 				exercise_id: exerciseId,
 				student_id: studentId,
@@ -984,10 +980,8 @@ export async function markExerciseAsComplete(
 	const now = new Date().toISOString();
 
 	// Check if completion record exists
-	const { data: existing, error: existingError } = await fromUnknownTable(
-		supabase,
-		'exercise_completions'
-	)
+	const { data: existing, error: existingError } = await supabase
+		.from('exercise_completions')
 		.select('*')
 		.eq('exercise_id', exerciseId)
 		.eq('student_id', studentId)
@@ -1002,7 +996,8 @@ export async function markExerciseAsComplete(
 
 	if (existing) {
 		// Update existing record
-		const { data: updated, error } = await fromUnknownTable(supabase, 'exercise_completions')
+		const { data: updated, error } = await supabase
+			.from('exercise_completions')
 			.update({
 				completed_at: now,
 				last_viewed_at: now,
@@ -1020,7 +1015,8 @@ export async function markExerciseAsComplete(
 		return { data: updated as unknown as ExerciseCompletion, error: null };
 	} else {
 		// Create new record
-		const { data: created, error } = await fromUnknownTable(supabase, 'exercise_completions')
+		const { data: created, error } = await supabase
+			.from('exercise_completions')
 			.insert({
 				exercise_id: exerciseId,
 				student_id: studentId,
@@ -1068,7 +1064,8 @@ export async function markExerciseAsIncomplete(
 	studentId: string
 ): Promise<{ data: ExerciseCompletion | null; error: string | null }> {
 	// Update existing record
-	const { data: updated, error } = await fromUnknownTable(supabase, 'exercise_completions')
+	const { data: updated, error } = await supabase
+		.from('exercise_completions')
 		.update({
 			completed_at: null,
 			last_viewed_at: new Date().toISOString()
@@ -1111,7 +1108,8 @@ export async function getStudentCompletion(
 	exerciseId: string,
 	studentId: string
 ): Promise<{ data: ExerciseCompletion | null; error: string | null }> {
-	const { data, error } = await fromUnknownTable(supabase, 'exercise_completions')
+	const { data, error } = await supabase
+		.from('exercise_completions')
 		.select('*')
 		.eq('exercise_id', exerciseId)
 		.eq('student_id', studentId)
@@ -1154,29 +1152,26 @@ export async function getAssignmentStats(
 ): Promise<{ data: AssignmentStats | null; error: string | null }> {
 	// Mono-teacher: the RPC scopes to the sole teacher via auth.uid().
 	void teacherId;
-	const { data, error } = await callUnknownRpc(supabase, 'get_teacher_assignment_stats', {});
+	const { data, error } = await supabase.rpc('get_teacher_assignment_stats');
 
 	if (error) {
 		console.error('Error fetching assignment stats:', error);
 		return { data: null, error: error.message };
 	}
 
-	// Transform database result to AssignmentStats type
-	const dataArray = data as Array<{
-		total_assignments: number;
-		active_assignments: number;
-		student_assignments: number;
-		class_assignments: number;
-		public_assignments: number;
-		with_deadline: number;
-	}>;
+	// ⚠️ `with_deadline` ne figure pas dans le retour de la fonction : ce compteur
+	// valait toujours 0. La fonction expose en revanche deux mesures que le code
+	// jetait — le nombre de rendus et le nombre d'élèves ayant travaillé — qui
+	// disent bien davantage sur l'usage réel des affectations.
+	const ligne = data?.[0];
 	const stats: AssignmentStats = {
-		total_assignments: dataArray?.[0]?.total_assignments || 0,
-		active_assignments: dataArray?.[0]?.active_assignments || 0,
-		student_assignments: dataArray?.[0]?.student_assignments || 0,
-		class_assignments: dataArray?.[0]?.class_assignments || 0,
-		public_assignments: dataArray?.[0]?.public_assignments || 0,
-		with_deadline: dataArray?.[0]?.with_deadline || 0
+		total_assignments: ligne?.total_assignments ?? 0,
+		active_assignments: ligne?.active_assignments ?? 0,
+		student_assignments: ligne?.student_assignments ?? 0,
+		class_assignments: ligne?.class_assignments ?? 0,
+		public_assignments: ligne?.public_assignments ?? 0,
+		total_completions: ligne?.total_completions ?? 0,
+		unique_students_engaged: ligne?.unique_students_engaged ?? 0
 	};
 
 	return { data: stats, error: null };
@@ -1226,7 +1221,7 @@ export async function getAssignmentCompletionStats(
 	supabase: TypedSupabaseClient,
 	assignmentId: string
 ): Promise<AssignmentCompletionStats | null> {
-	const { data, error } = await callUnknownRpc(supabase, 'get_assignment_completion_stats', {
+	const { data, error } = await supabase.rpc('get_assignment_completion_stats', {
 		p_assignment_id: assignmentId
 	});
 
@@ -1244,7 +1239,7 @@ export async function getExerciseCompletionStats(
 	exerciseId: string
 ): Promise<{ data: ExerciseCompletionStats | null; error: string | null }> {
 	// Call the correct RPC function with exercise_id parameter
-	const { data, error } = await callUnknownRpc(supabase, 'get_exercise_completion_stats', {
+	const { data, error } = await supabase.rpc('get_exercise_completion_stats', {
 		p_exercise_id: exerciseId
 	});
 
@@ -1253,21 +1248,20 @@ export async function getExerciseCompletionStats(
 		return { data: null, error: error.message };
 	}
 
-	// Transform database result to ExerciseCompletionStats type
-	const dataArray = data as Array<{
-		total_assigned: number;
-		total_viewed: number;
-		total_completed: number;
-		completion_rate: number;
-		average_view_count: number;
-	}>;
+	// ⚠️ Trois des cinq statistiques lisaient un nom que la fonction ne renvoie
+	// pas — `total_assigned`, `total_completed`, `completion_rate` — et valaient
+	// donc TOUJOURS 0 : le professeur voyait « personne n'a rendu » sur tous les
+	// exercices. L'enveloppe `any` empêchait le typage de le dire.
+	//
+	// Noms réels : `total_students`, `completed_count`, `completion_percentage`.
+	const ligne = data?.[0];
 	const stats: ExerciseCompletionStats = {
 		exercise_id: exerciseId,
-		total_assigned: dataArray?.[0]?.total_assigned || 0,
-		total_viewed: dataArray?.[0]?.total_viewed || 0,
-		total_completed: dataArray?.[0]?.total_completed || 0,
-		completion_rate: dataArray?.[0]?.completion_rate || 0,
-		average_view_count: dataArray?.[0]?.average_view_count || 0
+		total_assigned: ligne?.total_students ?? 0,
+		total_viewed: ligne?.total_viewed ?? 0,
+		total_completed: ligne?.completed_count ?? 0,
+		completion_rate: ligne?.completion_percentage ?? 0,
+		average_view_count: ligne?.average_view_count ?? 0
 	};
 
 	return { data: stats, error: null };
@@ -1302,13 +1296,9 @@ export async function getStudentProgress(
 	error: string | null;
 }> {
 	// Get all exercises accessible to student
-	const { data: exerciseIds, error: functionError } = await callUnknownRpc(
-		supabase,
-		'get_student_exercises',
-		{
-			p_student_id: studentId
-		}
-	);
+	const { data: exerciseIds, error: functionError } = await supabase.rpc('get_student_exercises', {
+		p_student_id: studentId
+	});
 
 	if (functionError) {
 		console.error('Error fetching student exercises:', functionError);
@@ -1333,10 +1323,8 @@ export async function getStudentProgress(
 	}
 
 	// Get completed exercises
-	const { data: completions, error: completionsError } = await fromUnknownTable(
-		supabase,
-		'exercise_completions'
-	)
+	const { data: completions, error: completionsError } = await supabase
+		.from('exercise_completions')
 		.select('id')
 		.eq('student_id', studentId)
 		.not('completed_at', 'is', null)
@@ -1399,7 +1387,7 @@ export async function studentHasAccess(
 	exerciseId: string,
 	studentId: string
 ): Promise<boolean> {
-	const { data, error } = await callUnknownRpc(supabase, 'student_has_exercise_access', {
+	const { data, error } = await appelerAccesExercice(supabase, {
 		p_exercise_id: exerciseId,
 		p_student_id: studentId
 	});
@@ -1438,13 +1426,9 @@ export async function getAccessibleExercises(
 	studentId: string
 ): Promise<{ data: Array<Record<string, unknown>>; error: string | null }> {
 	// Get exercise IDs accessible to student
-	const { data: exerciseIds, error: functionError } = await callUnknownRpc(
-		supabase,
-		'get_student_exercises',
-		{
-			p_student_id: studentId
-		}
-	);
+	const { data: exerciseIds, error: functionError } = await supabase.rpc('get_student_exercises', {
+		p_student_id: studentId
+	});
 
 	if (functionError) {
 		console.error('Error fetching student exercises:', functionError);
@@ -1503,10 +1487,8 @@ async function validateAssignmentOwnership(
 	assignmentId: string,
 	userId: string
 ): Promise<{ valid: boolean; assignment?: ExerciseAssignment; error?: string }> {
-	const { data: assignment, error: fetchError } = await fromUnknownTable(
-		supabase,
-		'exercise_assignments'
-	)
+	const { data: assignment, error: fetchError } = await supabase
+		.from('exercise_assignments')
 		.select('*')
 		.eq('id', assignmentId)
 		.single();
