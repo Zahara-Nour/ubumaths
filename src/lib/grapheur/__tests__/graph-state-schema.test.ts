@@ -128,6 +128,47 @@ describe('graphStateSchema — sequences (N9)', () => {
 		}
 	});
 
+	/**
+	 * Les bornes du curseur du premier terme sont arrivées après coup : un état
+	 * enregistré avant leur introduction ne les porte pas, et doit se recharger
+	 * sans casse, curseur compris.
+	 */
+	it('rétablit les bornes du curseur quand elles manquent', () => {
+		const withoutBounds = { ...SEQUENCE_ENTRY };
+		delete (withoutBounds as Record<string, unknown>).firstTermMin;
+		delete (withoutBounds as Record<string, unknown>).firstTermMax;
+
+		const result = graphStateSchema.safeParse({
+			version: GRAPH_STATE_VERSION,
+			viewport: VIEWPORT,
+			showGrid: true,
+			functions: [withoutBounds]
+		});
+
+		expect(result.success).toBe(true);
+		const sequence = result.data?.functions[0];
+		if (sequence?.type === 'sequence') {
+			expect(sequence.firstTermMin).toBe(-10);
+			expect(sequence.firstTermMax).toBe(10);
+			expect(sequence.firstTermMin).toBeLessThan(sequence.firstTermMax);
+		}
+	});
+
+	it('conserve des bornes explicites', () => {
+		const result = graphStateSchema.safeParse({
+			version: GRAPH_STATE_VERSION,
+			viewport: VIEWPORT,
+			showGrid: true,
+			functions: [{ ...SEQUENCE_ENTRY, firstTermMin: -2, firstTermMax: 5 }]
+		});
+
+		const sequence = result.data?.functions[0];
+		if (sequence?.type === 'sequence') {
+			expect(sequence.firstTermMin).toBe(-2);
+			expect(sequence.firstTermMax).toBe(5);
+		}
+	});
+
 	it('rejects a multi-letter sequence name', () => {
 		const result = graphStateSchema.safeParse({
 			version: GRAPH_STATE_VERSION,

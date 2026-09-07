@@ -26,7 +26,13 @@ import type {
 	SnappedPoint
 } from '$lib/grapheur/types';
 import { graphStateSchema, GRAPH_STATE_VERSION, isSequence } from '$lib/grapheur/types';
-import { DEFAULT_COBWEB_STEPS, nextSequenceName, parseSequence } from '$lib/grapheur/sequence';
+import {
+	DEFAULT_COBWEB_STEPS,
+	nextSequenceName,
+	parseSequence,
+	DEFAULT_FIRST_TERM_MIN,
+	DEFAULT_FIRST_TERM_MAX
+} from '$lib/grapheur/sequence';
 
 // =============================================================================
 // Constants
@@ -258,6 +264,8 @@ class GrapheurStore {
 			usesIndex: parseResult.usesIndex,
 			firstIndex: 0,
 			firstTerm: mode === 'recurrence' ? 0 : null,
+			firstTermMin: DEFAULT_FIRST_TERM_MIN,
+			firstTermMax: DEFAULT_FIRST_TERM_MAX,
 			// The cloud of ranks is the standard representation; the staircase is
 			// picked explicitly, since it replaces the points rather than adding to
 			// them.
@@ -293,6 +301,8 @@ class GrapheurStore {
 				| 'name'
 				| 'firstIndex'
 				| 'firstTerm'
+				| 'firstTermMin'
+				| 'firstTermMax'
 				| 'representation'
 				| 'cobwebSteps'
 				| 'color'
@@ -493,6 +503,8 @@ class GrapheurStore {
 						latex: p.latex,
 						firstIndex: p.firstIndex,
 						firstTerm: p.firstTerm,
+						firstTermMin: p.firstTermMin,
+						firstTermMax: p.firstTermMax,
 						representation: p.representation,
 						cobwebSteps: p.cobwebSteps,
 						color: p.color,
@@ -562,6 +574,8 @@ class GrapheurStore {
 						usesIndex: parseResult.usesIndex,
 						firstIndex: p.firstIndex,
 						firstTerm: p.firstTerm,
+						firstTermMin: p.firstTermMin,
+						firstTermMax: p.firstTermMax,
 						representation: p.representation,
 						cobwebSteps: p.cobwebSteps,
 						color: p.color,

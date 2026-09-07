@@ -12,7 +12,12 @@ import {
 	viewportSchema as sharedViewportSchema
 } from '$lib/geometry-core/viewport';
 import type { LineStyle, Viewport } from '$lib/geometry-core/viewport';
-import { DEFAULT_COBWEB_STEPS, MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
+import {
+	DEFAULT_COBWEB_STEPS,
+	DEFAULT_FIRST_TERM_MAX,
+	DEFAULT_FIRST_TERM_MIN,
+	MAX_SEQUENCE_TERMS
+} from '$lib/grapheur/sequence';
 import type { SequenceMode } from '$lib/grapheur/sequence';
 
 export type { SequenceMode, SequenceTerm } from '$lib/grapheur/sequence';
@@ -88,6 +93,10 @@ export interface SequencePlottable extends PlottableBase {
 	readonly firstIndex: number;
 	/** Value of the first term; required for a recurrence, unused otherwise. */
 	readonly firstTerm: number | null;
+	/** Lower bound of the slider that drives the first term. */
+	readonly firstTermMin: number;
+	/** Upper bound of the slider that drives the first term. */
+	readonly firstTermMax: number;
 	/** Which of the two representations is drawn. */
 	readonly representation: SequenceRepresentation;
 	/** Number of staircase steps drawn, in cobweb representation. */
@@ -146,6 +155,8 @@ export interface SequenceState {
 	readonly latex: string;
 	readonly firstIndex: number;
 	readonly firstTerm: number | null;
+	readonly firstTermMin: number;
+	readonly firstTermMax: number;
 	readonly representation: SequenceRepresentation;
 	readonly cobwebSteps: number;
 	readonly color: string;
@@ -269,6 +280,20 @@ const sequenceStateSchema = z.object({
 		.min(-1e9, 'First term out of range')
 		.max(1e9, 'First term out of range')
 		.nullable(),
+	// Bornes du curseur du premier terme. Absentes des états écrits avant leur
+	// introduction : la valeur par défaut les rétablit sans casse.
+	firstTermMin: z
+		.number()
+		.finite('Slider bound must be finite')
+		.min(-1e9, 'Slider bound out of range')
+		.max(1e9, 'Slider bound out of range')
+		.default(DEFAULT_FIRST_TERM_MIN),
+	firstTermMax: z
+		.number()
+		.finite('Slider bound must be finite')
+		.min(-1e9, 'Slider bound out of range')
+		.max(1e9, 'Slider bound out of range')
+		.default(DEFAULT_FIRST_TERM_MAX),
 	representation: z.enum(['ranks', 'cobweb']).default('ranks'),
 	cobwebSteps: z
 		.number()
