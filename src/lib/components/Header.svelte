@@ -46,6 +46,8 @@
 	import type { LucideIcon } from '@lucide/svelte';
 	import {
 		Menu,
+		ChartSpline,
+		Shapes,
 		LogIn,
 		LogOut,
 		LayoutDashboard,
@@ -114,6 +116,10 @@
 				roles: ['student', 'teacher']
 			},
 			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
+			// Sans `roles` : ni le grapheur ni les démos de géométrie ne lisent de
+			// donnée serveur, ils sont donc ouverts, y compris hors connexion.
+			{ label: 'Grapheur', href: '/grapheur', icon: ChartSpline },
+			{ label: 'Géométrie', href: '/geometry-demo', icon: Shapes },
 			{
 				label: 'Whiteboard',
 				href: '/whiteboard',

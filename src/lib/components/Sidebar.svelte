@@ -1,7 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import { Home, Gamepad2, PenTool, Terminal, Calculator, Laugh } from '@lucide/svelte';
+	import {
+		Home,
+		Gamepad2,
+		PenTool,
+		Terminal,
+		Calculator,
+		Laugh,
+		ChartSpline,
+		Shapes
+	} from '@lucide/svelte';
 	import type { LucideIcon } from '@lucide/svelte';
 	import type { Tables } from '$lib/types/database';
 
@@ -27,6 +36,10 @@
 				roles: ['student', 'teacher']
 			},
 			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
+			// Sans `roles` : le grapheur et les démos de géométrie ne lisent aucune
+			// donnée serveur, ils sont donc ouverts, y compris hors connexion.
+			{ label: 'Grapheur', href: '/grapheur', icon: ChartSpline },
+			{ label: 'Géométrie', href: '/geometry-demo', icon: Shapes },
 			{
 				label: 'Whiteboard',
 				href: '/whiteboard',
