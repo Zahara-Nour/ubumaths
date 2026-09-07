@@ -19,7 +19,7 @@
 	import GridLines from './GridLines.svelte';
 	import AxisLines from './AxisLines.svelte';
 	import FunctionCurve from './FunctionCurve.svelte';
-	import { derivativeCurve } from '$lib/grapheur/analysis';
+	import { derivativeCurve, tangentAt } from '$lib/grapheur/analysis';
 	import SequencePlot from './SequencePlot.svelte';
 	import CurveHover from './CurveHover.svelte';
 	import IntersectionPoints from './IntersectionPoints.svelte';
@@ -397,6 +397,37 @@
 						isInteracting={grapheurStore.isInteracting}
 						bindings={grapheurStore.parameterBindings}
 					/>
+					<!--
+						La tangente et son point de contact : le nombre dérivé se lit
+						alors comme une pente, pas comme une valeur dans un tableau.
+					-->
+					{#if plottable.tangentAt !== null}
+						{@const tangent = tangentAt(
+							plottable,
+							plottable.tangentAt,
+							grapheurStore.parameterBindings
+						)}
+						{#if tangent}
+							<FunctionCurve
+								func={tangent.line}
+								viewport={grapheurStore.viewport}
+								{transformer}
+								isInteracting={grapheurStore.isInteracting}
+							/>
+							{@const contact = transformer.mathToSvg(tangent.x, tangent.y)}
+							<circle
+								cx={contact.x}
+								cy={contact.y}
+								r={5}
+								fill={plottable.color}
+								stroke="white"
+								stroke-width={2}
+								class="tangent-point"
+								aria-hidden="true"
+							/>
+						{/if}
+					{/if}
+
 					<!-- La dérivée suit la fonction : elle se recalcule à chaque édition. -->
 					{#if plottable.showDerivative}
 						{@const derivative = derivativeCurve(plottable, grapheurStore.parameterBindings)}

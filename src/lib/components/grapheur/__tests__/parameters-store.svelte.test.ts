@@ -153,3 +153,34 @@ describe('courbe dérivée — persistance et bascule', () => {
 		expect(saved?.type === 'explicit' && saved.showDerivative).toBe(true);
 	});
 });
+
+describe('tangente — bascule et persistance', () => {
+	beforeEach(() => grapheurStore.fullReset());
+
+	it('naît absente', () => {
+		const id = grapheurStore.addFunction('x^2');
+		const func = grapheurStore.functions.find((f) => f.id === id);
+
+		expect(func?.type === 'explicit' && func.tangentAt).toBeNull();
+	});
+
+	it('se pose à une abscisse et s’y déplace', () => {
+		const id = grapheurStore.addFunction('x^2');
+
+		grapheurStore.updateFunction(id, { tangentAt: 2 });
+		expect(grapheurStore.functions.find((f) => f.id === id)?.type === 'explicit').toBe(true);
+
+		grapheurStore.updateFunction(id, { tangentAt: -3 });
+		const func = grapheurStore.functions.find((f) => f.id === id);
+		expect(func?.type === 'explicit' && func.tangentAt).toBe(-3);
+	});
+
+	it('survit à la sérialisation', () => {
+		const id = grapheurStore.addFunction('x^2');
+		grapheurStore.updateFunction(id, { tangentAt: 1.5 });
+
+		const saved = grapheurStore.serialize().functions.find((f) => f.id === id);
+
+		expect(saved?.type === 'explicit' && saved.tangentAt).toBe(1.5);
+	});
+});

@@ -28,6 +28,8 @@ Features:
 	import LineWidthPicker from './LineWidthPicker.svelte';
 	import LineStylePicker from './LineStylePicker.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import { Slider } from '$lib/components/ui/slider';
+	import { tangentAt } from '$lib/grapheur/analysis';
 	import { Eye, EyeOff, Trash2 } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 
@@ -95,6 +97,34 @@ Features:
 	/**
 	 * Toggle visibility
 	 */
+	/**
+	 * The tangent starts at the middle of the visible window rather than at 0,
+	 * which may well be off screen.
+	 */
+	function handleTangentChange(checked: boolean | 'indeterminate') {
+		const { xMin, xMax } = grapheurStore.viewport;
+		grapheurStore.updateFunction(func.id, {
+			tangentAt: checked === true ? Math.round(((xMin + xMax) / 2) * 100) / 100 : null
+		});
+	}
+
+	function handleTangentSlide(value: number) {
+		grapheurStore.updateFunction(func.id, { tangentAt: value });
+	}
+
+	/** Slope shown next to the slider — the point of the whole thing. */
+	const tangent = $derived(
+		func.tangentAt === null
+			? undefined
+			: tangentAt(func, func.tangentAt, grapheurStore.parameterBindings)
+	);
+
+	/** Four significant digits: enough to read a slope, short enough to fit. */
+	function formatSlope(n: number): string {
+		if (!Number.isFinite(n)) return '—';
+		return Number.parseFloat(n.toPrecision(4)).toString();
+	}
+
 	function handleDerivativeChange(checked: boolean | 'indeterminate') {
 		grapheurStore.updateFunction(func.id, { showDerivative: checked === true });
 	}
@@ -124,12 +154,20 @@ Features:
 			La dérivée se lit à côté de la fonction : le signe de f' et les
 			variations de f se comprennent ensemble, pas l'un après l'autre.
 		-->
-		<MyCheckbox
-			checked={func.showDerivative}
-			onCheckedChange={handleDerivativeChange}
-			label="f ′"
-			aria-label="Afficher la courbe dérivée"
-		/>
+		<div class="flex items-center gap-2">
+			<MyCheckbox
+				checked={func.showDerivative}
+				onCheckedChange={handleDerivativeChange}
+				label="f ′"
+				aria-label="Afficher la courbe dérivée"
+			/>
+			<MyCheckbox
+				checked={func.tangentAt !== null}
+				onCheckedChange={handleTangentChange}
+				label="tangente"
+				aria-label="Afficher la tangente"
+			/>
+		</div>
 
 		<div class="flex gap-1">
 			<Button
@@ -172,6 +210,32 @@ Features:
 			</p>
 		{/if}
 	</div>
+
+	<!--
+		Le curseur balaie la fenêtre visible : on fait glisser le point de contact
+		le long de la courbe et on lit la pente changer avec lui.
+	-->
+	{#if func.tangentAt !== null}
+		<div class="flex items-center gap-2 text-xs text-muted-foreground">
+			<span class="shrink-0 font-serif">x₀</span>
+			<Slider
+				type="single"
+				value={func.tangentAt}
+				min={grapheurStore.viewport.xMin}
+				max={grapheurStore.viewport.xMax}
+				step={(grapheurStore.viewport.xMax - grapheurStore.viewport.xMin) / 400}
+				onValueChange={handleTangentSlide}
+				aria-label="Abscisse du point de tangence"
+			/>
+			<span class="shrink-0 font-serif tabular-nums">
+				{#if tangent}
+					f ′({formatSlope(func.tangentAt)}) = {formatSlope(tangent.slope)}
+				{:else}
+					non définie
+				{/if}
+			</span>
+		</div>
+	{/if}
 </div>
 
 <style>

@@ -12,6 +12,7 @@ import {
 	analyzeAllFunctions,
 	bindParameters,
 	derivativeCurve,
+	tangentAt,
 	toAnalysisInputs
 } from '../analysis';
 import { createEvaluator, parseFunction } from '../evaluator';
@@ -35,7 +36,8 @@ function curve(latex: string): ExplicitFunction {
 		visible: true,
 		lineWidth: 2,
 		lineStyle: 'solid',
-		showDerivative: false
+		showDerivative: false,
+		tangentAt: null
 	};
 }
 
@@ -240,5 +242,57 @@ describe('courbe dérivée', () => {
 		const d = derivativeCurve(curve('4'));
 
 		expect(createEvaluator(d!.ast!)(7)).toBeCloseTo(0);
+	});
+});
+
+/**
+ * La tangente rend visible ce qu'est un nombre dérivé : une pente. La droite
+ * est rendue comme un tracé ordinaire — elle est simplement droite — pour que
+ * le rendu n'ait aucun cas particulier à connaître.
+ */
+describe('tangente', () => {
+	it('touche la courbe au point demandé', () => {
+		const t = tangentAt(curve('x^2'), 3);
+
+		expect(t?.x).toBe(3);
+		expect(t?.y).toBeCloseTo(9);
+	});
+
+	it('a pour pente le nombre dérivé', () => {
+		expect(tangentAt(curve('x^2'), 3)?.slope).toBeCloseTo(6);
+		expect(tangentAt(curve('x^3'), 2)?.slope).toBeCloseTo(12);
+	});
+
+	it('est bien la tangente : elle passe par le point et suit la pente', () => {
+		const t = tangentAt(curve('x^2'), 3)!;
+		const line = createEvaluator(t.line.ast!);
+
+		// y = 6x − 9 : elle vaut 9 en 3, et monte de 6 par unité.
+		expect(line(3)).toBeCloseTo(9);
+		expect(line(4)! - line(3)!).toBeCloseTo(6);
+	});
+
+	it('est horizontale à un extremum', () => {
+		expect(tangentAt(curve('x^2'), 0)?.slope).toBeCloseTo(0);
+	});
+
+	it('tient compte des paramètres', () => {
+		expect(tangentAt(curve('a*x^2'), 1, { a: 5 })?.slope).toBeCloseTo(10);
+	});
+
+	it('ne se dérive ni ne se tangente elle-même', () => {
+		const t = tangentAt(curve('x^2'), 1)!;
+
+		expect(t.line.showDerivative).toBe(false);
+		expect(t.line.tangentAt).toBeNull();
+	});
+
+	it('ne rend rien là où la fonction n’est pas définie', () => {
+		expect(tangentAt(curve('1/x'), 0)).toBeUndefined();
+		expect(tangentAt(curve('\\sqrt{x}'), -4)).toBeUndefined();
+	});
+
+	it('ne rend rien pour une abscisse non finie', () => {
+		expect(tangentAt(curve('x^2'), Number.NaN)).toBeUndefined();
 	});
 });
