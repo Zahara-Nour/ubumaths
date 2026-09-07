@@ -73,13 +73,7 @@
 	const intersections = $derived.by((): IntersectionResult[] => {
 		if (grapheurStore.isInteracting) return [];
 
-		const validFuncs = grapheurStore.functions
-			.filter(isExplicitFunction)
-			.filter((f) => f.visible && f.ast !== undefined)
-			.map((f) => ({
-				id: f.id,
-				evaluator: createEvaluator(f.ast!)
-			}));
+		const validFuncs = toAnalysisInputs(grapheurStore.functions);
 
 		if (validFuncs.length < 2 || validFuncs.length > MAX_FUNCTIONS_FOR_INTERSECTIONS) {
 			return [];
