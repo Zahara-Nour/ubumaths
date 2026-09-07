@@ -36,6 +36,15 @@ import { add, multiply, variable } from '$lib/mathAST/factory';
 // `number()` refuse un littéral signé ; `numericNode()` gère le signe lui-même.
 import { numericNode } from '$lib/mathAST/common/numeric';
 import { integrateDefinite } from '$lib/mathAST/integration';
+import type {
+	DifferentiableCurve,
+	OsculatingCircleData
+} from '$lib/geometry-core/graph/parametric-calculus';
+import {
+	computeArcLength,
+	computeCurvature,
+	computeOsculatingCircle
+} from '$lib/geometry-core/graph/parametric-calculus';
 
 // =============================================================================
 // Constants
@@ -1134,6 +1143,100 @@ function evaluateToNumber(node: MathNode | null): number | undefined {
 	} catch {
 		return undefined;
 	}
+}
+
+/**
+ * See `y = f(x)` as the parametrised curve `t ↦ (t, f(t))`.
+ *
+ * That is all it takes to reuse the arc length, curvature and osculating
+ * circle of `geometry-core`, which are stated for a parametrised curve and do
+ * not care where its closures come from. Nothing of those formulas is rewritten
+ * here.
+ *
+ * @returns The curve seen parametrically, or undefined without a second derivative
+ */
+export function asParametricCurve(
+	func: ExplicitFunction,
+	bindings: VariableBindings = {}
+): DifferentiableCurve | undefined {
+	if (!func.ast) return undefined;
+
+	const bound = bindParameters(func.ast, bindings);
+	if (!bound) return undefined;
+
+	const info = buildAnalysisAST(bound);
+	if (!info?.derivative || !info.compiledDerivative) return undefined;
+
+	let compiledSecond: CompiledFn;
+	try {
+		compiledSecond = compile(differentiate(info.derivative, { variable: 'x', simplify: true }));
+	} catch {
+		return undefined;
+	}
+
+	return {
+		parameter: 'x',
+		compiledX: (vars) => vars.x,
+		compiledY: info.compiledFn,
+		// x = t, donc x' = 1 et x'' = 0.
+		compiledXPrime: () => 1,
+		compiledYPrime: info.compiledDerivative,
+		compiledXSecond: () => 0,
+		compiledYSecond: compiledSecond
+	};
+}
+
+/**
+ * Length of the curve between two abscissas.
+ *
+ * `computeArcLength` of geometry-core does the integrating; all this adds is
+ * seeing `f` as a parametrised curve.
+ *
+ * @returns The length, or undefined when it cannot be computed
+ */
+export function arcLengthBetween(
+	func: ExplicitFunction,
+	from: number,
+	to: number,
+	bindings: VariableBindings = {}
+): number | undefined {
+	if (from === to) return undefined;
+
+	const curve = asParametricCurve(func, bindings);
+	if (!curve) return undefined;
+
+	const [lower, upper] = from < to ? [from, to] : [to, from];
+	const length = computeArcLength(curve, {}, lower, upper);
+	return Number.isFinite(length) ? length : undefined;
+}
+
+/** Signed curvature of the curve at an abscissa. */
+export function curvatureAt(
+	func: ExplicitFunction,
+	x0: number,
+	bindings: VariableBindings = {}
+): number | undefined {
+	const curve = asParametricCurve(func, bindings);
+	if (!curve) return undefined;
+
+	return computeCurvature(curve, {}, x0) ?? undefined;
+}
+
+/**
+ * Osculating circle at an abscissa — the circle that best hugs the curve there.
+ *
+ * Undefined where the curve is straight: a zero curvature has no finite circle,
+ * only the tangent.
+ */
+export function osculatingCircleAt(
+	func: ExplicitFunction,
+	x0: number,
+	bindings: VariableBindings = {}
+): OsculatingCircleData | undefined {
+	const curve = asParametricCurve(func, bindings);
+	if (!curve) return undefined;
+
+	return computeOsculatingCircle(curve, {}, x0) ?? undefined;
 }
 
 /** Substituted expressions, keyed by source AST then by binding values. */

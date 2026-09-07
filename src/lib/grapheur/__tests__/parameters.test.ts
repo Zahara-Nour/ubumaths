@@ -11,8 +11,12 @@ import { describe, expect, it } from 'vitest';
 import {
 	analyzeAllFunctions,
 	bindParameters,
+	arcLengthBetween,
+	asParametricCurve,
+	curvatureAt,
 	derivativeCurve,
 	integralUnder,
+	osculatingCircleAt,
 	tangentAt,
 	toAnalysisInputs
 } from '../analysis';
@@ -39,7 +43,9 @@ function curve(latex: string): ExplicitFunction {
 		lineStyle: 'solid',
 		showDerivative: false,
 		tangentAt: null,
-		integral: null
+		integral: null,
+		showOsculating: false,
+		showArcLength: false
 	};
 }
 
@@ -353,5 +359,69 @@ describe('aire sous la courbe', () => {
 
 	it('ne rend rien pour une expression invalide', () => {
 		expect(integralUnder(curve(')('), 0, 1)).toBeUndefined();
+	});
+});
+
+/**
+ * Les trois dernières capacités de l'option C. Leur calcul vit dans
+ * `geometry-core`, énoncé pour une courbe paramétrée ; il suffit de voir
+ * `y = f(x)` comme `t ↦ (t, f(t))` pour le réutiliser tel quel. Aucune formule
+ * n'est réécrite ici.
+ */
+describe('longueur, courbure, cercle osculateur', () => {
+	it('donne la longueur d’un segment de droite', () => {
+		// y = x sur [0 ; 1] : longueur = √2.
+		expect(arcLengthBetween(curve('x'), 0, 1)).toBeCloseTo(Math.SQRT2, 4);
+	});
+
+	it('donne une longueur supérieure à l’écart des bornes', () => {
+		// Une courbe est toujours plus longue que sa projection.
+		expect(arcLengthBetween(curve('x^2'), 0, 2)!).toBeGreaterThan(2);
+	});
+
+	it('accepte des bornes à l’envers', () => {
+		expect(arcLengthBetween(curve('x'), 1, 0)).toBeCloseTo(Math.SQRT2, 4);
+	});
+
+	it('ne rend rien pour un intervalle vide', () => {
+		expect(arcLengthBetween(curve('x'), 1, 1)).toBeUndefined();
+	});
+
+	it('donne une courbure nulle sur une droite', () => {
+		expect(curvatureAt(curve('2*x+1'), 3)).toBeCloseTo(0);
+	});
+
+	it('donne la courbure du sommet d’une parabole', () => {
+		// y = x² en 0 : κ = 2, et le cercle osculateur a pour rayon 1/2.
+		expect(curvatureAt(curve('x^2'), 0)).toBeCloseTo(2);
+	});
+
+	it('donne le cercle osculateur au sommet, centré sur l’axe', () => {
+		const circle = osculatingCircleAt(curve('x^2'), 0)!;
+
+		expect(circle.radius).toBeCloseTo(0.5);
+		expect(circle.centerX).toBeCloseTo(0);
+		expect(circle.centerY).toBeCloseTo(0.5);
+	});
+
+	it('n’a pas de cercle osculateur là où la courbe est droite', () => {
+		expect(osculatingCircleAt(curve('2*x+1'), 3)).toBeUndefined();
+	});
+
+	it('tient compte des paramètres', () => {
+		// y = a·x² en 0 : κ = 2a.
+		expect(curvatureAt(curve('a*x^2'), 0, { a: 3 })).toBeCloseTo(6);
+	});
+
+	it('voit bien f comme la paramétrisation t ↦ (t, f(t))', () => {
+		const parametric = asParametricCurve(curve('x^2'))!;
+
+		expect(parametric.parameter).toBe('x');
+		expect(parametric.compiledX({ x: 4 })).toBe(4);
+		expect(parametric.compiledY({ x: 4 })).toBeCloseTo(16);
+		expect(parametric.compiledXPrime!({ x: 4 })).toBe(1);
+		expect(parametric.compiledYPrime!({ x: 4 })).toBeCloseTo(8);
+		expect(parametric.compiledXSecond!({ x: 4 })).toBe(0);
+		expect(parametric.compiledYSecond!({ x: 4 })).toBeCloseTo(2);
 	});
 });

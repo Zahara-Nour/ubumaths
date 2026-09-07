@@ -83,6 +83,15 @@ export interface ExplicitFunction extends PlottableBase {
 	 * integral means and what a filled region alone would hide.
 	 */
 	readonly integral: { readonly from: number; readonly to: number } | null;
+	/**
+	 * Whether the osculating circle is drawn at the tangency point.
+	 *
+	 * It shares the tangent's abscissa rather than carrying its own: the circle
+	 * touches the curve exactly where the tangent does.
+	 */
+	readonly showOsculating: boolean;
+	/** Whether the arc length is shown, over the same bounds as the area. */
+	readonly showArcLength: boolean;
 }
 
 /**
@@ -173,6 +182,8 @@ export interface ExplicitFunctionState {
 	readonly showDerivative: boolean;
 	readonly tangentAt: number | null;
 	readonly integral: { readonly from: number; readonly to: number } | null;
+	readonly showOsculating: boolean;
+	readonly showArcLength: boolean;
 	readonly color: string;
 	readonly visible: boolean;
 	readonly lineWidth: number;
@@ -339,6 +350,8 @@ const explicitFunctionStateSchema = z.object({
 		})
 		.nullable()
 		.default(null),
+	showOsculating: z.boolean().default(false),
+	showArcLength: z.boolean().default(false),
 	variable: z
 		.string()
 		.min(1, 'Variable name is required')

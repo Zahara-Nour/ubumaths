@@ -296,6 +296,8 @@ class GrapheurStore {
 			showDerivative: false,
 			tangentAt: null,
 			integral: null,
+			showOsculating: false,
+			showArcLength: false,
 			color,
 			visible: true,
 			lineWidth: 2,
@@ -338,6 +340,8 @@ class GrapheurStore {
 				| 'showDerivative'
 				| 'tangentAt'
 				| 'integral'
+				| 'showOsculating'
+				| 'showArcLength'
 			>
 		>
 	): void {
@@ -661,6 +665,8 @@ class GrapheurStore {
 					showDerivative: p.showDerivative,
 					tangentAt: p.tangentAt,
 					integral: p.integral,
+					showOsculating: p.showOsculating,
+					showArcLength: p.showArcLength,
 					color: p.color,
 					visible: p.visible,
 					lineWidth: p.lineWidth,
@@ -744,6 +750,8 @@ class GrapheurStore {
 					showDerivative: p.showDerivative,
 					tangentAt: p.tangentAt,
 					integral: p.integral,
+					showOsculating: p.showOsculating,
+					showArcLength: p.showArcLength,
 					ast: parseResult.ast ?? undefined,
 					parseError: parseResult.error ?? undefined,
 					variable: p.variable,

@@ -30,7 +30,7 @@ Features:
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Slider } from '$lib/components/ui/slider';
 	import { Input } from '$lib/components/ui/input';
-	import { integralUnder, tangentAt } from '$lib/grapheur/analysis';
+	import { arcLengthBetween, curvatureAt, integralUnder, tangentAt } from '$lib/grapheur/analysis';
 	import { Eye, EyeOff, Trash2 } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 
@@ -133,6 +133,33 @@ Features:
 	const area = $derived(
 		func.integral
 			? integralUnder(func, func.integral.from, func.integral.to, grapheurStore.parameterBindings)
+			: undefined
+	);
+
+	function handleOsculatingChange(checked: boolean | 'indeterminate') {
+		grapheurStore.updateFunction(func.id, { showOsculating: checked === true });
+	}
+
+	function handleArcLengthChange(checked: boolean | 'indeterminate') {
+		grapheurStore.updateFunction(func.id, { showArcLength: checked === true });
+	}
+
+	/** Courbure au point de tangence, affichée à côté de la pente. */
+	const curvature = $derived(
+		func.tangentAt === null || !func.showOsculating
+			? undefined
+			: curvatureAt(func, func.tangentAt, grapheurStore.parameterBindings)
+	);
+
+	/** Longueur de la courbe sur les bornes de l'aire. */
+	const length = $derived(
+		func.integral && func.showArcLength
+			? arcLengthBetween(
+					func,
+					func.integral.from,
+					func.integral.to,
+					grapheurStore.parameterBindings
+				)
 			: undefined
 	);
 
@@ -280,6 +307,17 @@ Features:
 					non calculable
 				{/if}
 			</span>
+			<MyCheckbox
+				checked={func.showArcLength}
+				onCheckedChange={handleArcLengthChange}
+				label="longueur"
+				aria-label="Afficher la longueur de la courbe"
+			/>
+			{#if func.showArcLength}
+				<span class="shrink-0 font-serif tabular-nums">
+					{length === undefined ? '—' : formatSlope(length)}
+				</span>
+			{/if}
 		</div>
 	{/if}
 
@@ -302,6 +340,17 @@ Features:
 					non définie
 				{/if}
 			</span>
+			<MyCheckbox
+				checked={func.showOsculating}
+				onCheckedChange={handleOsculatingChange}
+				label="cercle"
+				aria-label="Afficher le cercle osculateur"
+			/>
+			{#if func.showOsculating}
+				<span class="shrink-0 font-serif tabular-nums">
+					κ = {curvature === undefined ? '—' : formatSlope(curvature)}
+				</span>
+			{/if}
 		</div>
 	{/if}
 </div>
