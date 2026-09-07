@@ -6,6 +6,19 @@
 /**
  * Migration status for individual questions
  */
+/**
+ * Verdict de relecture humaine, distinct de l'avancement technique.
+ *
+ * `migration_status` décrit ce que la MACHINE a fait de la question (convertie,
+ * importée, ses tests de génération passent). `review_status` décrit ce que
+ * l'ENSEIGNANT en a dit. Les deux étaient auparavant écrits dans la même
+ * colonne, où le mot `validated` portait donc deux sens incompatibles.
+ */
+export type ReviewStatus =
+	| 'pending' // Pas encore relue
+	| 'approved' // Relue et retenue pour la publication
+	| 'rejected'; // Relue et écartée
+
 export type MigrationStatus =
 	| 'pending' // Not yet processed
 	| 'converted' // Syntax converted successfully
