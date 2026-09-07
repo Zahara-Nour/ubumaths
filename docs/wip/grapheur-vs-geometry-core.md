@@ -175,6 +175,14 @@ restent justes.
 `ySpacing` séparément. Test de non-régression :
 `GridLines.svelte.test.ts` (deux fenêtres anisotropes + une isotrope).
 
+Corrigé dans la foulée (relevé par la revue de code, défaut **pré-existant**) :
+les quatre boucles qui engendrent lignes de grille et graduations accumulaient
+`x += pas`. Sur une fenêtre très zoomée loin de l'origine, `x + pas === x` en
+flottant et la boucle ne finissait jamais — atteignable par glissement d'axe,
+`setViewport` ne bornant pas l'amplitude (`clampViewport` existe mais n'est pas
+appelé). Elles indexent désormais depuis un rang, avec sortie si le pas n'avance
+plus et plafond par axe, dans `GridLines` **et** `AxisLines`.
+
 ### 5.2 L'analyse « exacte » du grapheur est du code mort
 
 `analyzeFunction()` (`analysis.ts:735-793`) accepte un paramètre optionnel `ast`
@@ -222,13 +230,29 @@ fonction raide garde une tolérance proportionnellement plus large). Le zéro
 correct est alors retrouvé par la phase numérique. Bénéficie aussi à
 `zeros()` / `extrema()` de `geometry-core`, qui produisaient le même faux point.
 
-**NON corrigé — à trancher** : la cause racine dans
-`extractQuadraticCoefficients`. Le correctif évident (refuser des coefficients
-qui contiennent encore la variable) est juste, mais cette fonction est partagée
-avec le _stepper quadratique pédagogique_ (`pedagogical-solve/quadratic.ts`) :
-`solve((x-1)^2 = 0)` passerait de « unique, x = 0 » à un échec, ce qui peut
-changer le comportement de questions en production. Décision produit, pas
-technique.
+**Cause racine corrigée le 2026-09-07** (décision de David). La vérification
+« un coefficient ne doit pas contenir la variable résolue » passe **à l'intérieur**
+des lecteurs de coefficients, au degré 2 (`solve/solvers/quadratic.ts`) et au
+degré 3 (`solve/solvers/polynomial.ts`), là où elle a sa place. Trois des quatre
+appelants la faisaient déjà chacun de leur côté (`pedagogical-solve/quadratic.ts`,
+`rational-inequality.ts`, `pedagogical-integration/_helpers.ts`) ; le quatrième —
+le solveur général — ne la faisait pas, et c'était lui qui se trompait. Un
+coefficient portant un _autre_ symbole (équation paramétrique) reste valide.
+
+Renoncer ne suffisait pas : le solveur répondait alors « pas de solution », un
+mensonge du même ordre. Les deux solveurs **développent donc une fois** avant
+d'abandonner, comme le stepper pédagogique le fait déjà via `canon()`.
+
+| Équation      | Avant                            | Après             |
+| ------------- | -------------------------------- | ----------------- |
+| `(x-1)² = 0`  | `x = 0`                          | `x = 1`           |
+| `(2x-4)² = 0` | `x = 0`                          | `x = 2`           |
+| `(x-1)² = 4`  | deux « solutions » contenant `x` | `x = 3`, `x = -1` |
+| `(x-1)³ = 0`  | `x = 0`                          | `x = 1`           |
+
+Le garde-fou en aval (`annulsFunction`) est conservé : il protège de la même
+famille d'erreur venue d'un autre solveur. 15 420 tests verts sur mathAST et le
+DSL géométrie.
 
 ### 5.3 Les exporteurs de `geometry-core` sont partiels et sans appelant
 
