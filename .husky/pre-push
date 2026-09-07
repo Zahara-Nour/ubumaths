@@ -6,6 +6,11 @@ if ! pnpm format:check; then
 	exit 1
 fi
 
-# Note : le full ESLint reste volontairement CI-only — il est type-aware, donc
-# lent (~25 s même sur 1 fichier) et gourmand en RAM (OOM sur machine 8 Go).
-# Le job "Lint" en CI le couvre.
+# Le full ESLint reste CI-only : type-aware, ~35 s et 1,15 Go pour douze fichiers.
+# Mais les trois règles qui l'ont fait rougir sur les 100 derniers runs sont des
+# règles AST pures — `scripts/lint-fast.sh` les rejoue en ~2 s et 279 Mo, ce qui
+# évite un aller-retour CI de six minutes pour une variable inutilisée.
+echo "pre-push : lint rapide…"
+if ! pnpm lint:fast; then
+	exit 1
+fi

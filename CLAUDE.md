@@ -19,7 +19,7 @@ Machine à faible RAM. **NE JAMAIS lancer sur tout le projet** (ça crashe) :
 `pnpm check` · `pnpm check:fast` · `svelte-check` (sans `--incremental`) · `pnpm build` · `pnpm lint` · `npx tsc --noEmit` (en plus, faux positifs `$lib`).
 
 - À la place : **`pnpm check:incremental`** (TS + Svelte, ~30 s, memory-safe, **0 erreur exigée**).
-- **eslint OOM en local → CI-only.** Ne pas le lancer en local (on accepte le round-trip CI).
+- **eslint complet OOM en local → CI-only.** Mais **`pnpm lint:fast`** (~2,5 s, 272 Mo) rejoue les 3 règles qui font rougir le job Lint — `no-unused-vars` via oxlint, plus `supabase/require-error-check` et `custom/require-zod-validation` via `eslint.fast.config.js`, une config sans `projectService` — sur les fichiers modifiés. Lancé automatiquement au `pre-push`. Ne pas lancer `pnpm lint` / `lint:all` en local.
 - Le **hook pre-commit est léger** : `.lintstagedrc.js` lance `oxlint` (Rust, ~0 RAM) + `prettier` sur les fichiers staged (~2 s, **pas d'OOM**) → **`--no-verify` n'est plus nécessaire**. oxlint bloque sur _erreurs_ seulement (warnings non bloquants). eslint complet (`.svelte` + règle Zod) et les tests restent **en CI** ; le typecheck reste hors hook → `pnpm check:incremental` avant de pousser.
 - ⚠️ Si un hook crashe, il peut **stasher** le travail non commité (→ perdu) : commit tôt, et après un crash vérifie `git stash list`. (L'ancien hook OOMait via `eslint --fix` type-aware + `vitest related`, d'où le `--no-verify` historique.)
 
@@ -30,6 +30,7 @@ Machine à faible RAM. **NE JAMAIS lancer sur tout le projet** (ça crashe) :
 ```bash
 pnpm dev -- --port 5175             # dev (TOUJOURS port 5175 ; 5173 = user, NE PAS utiliser)
 pnpm check:incremental              # TS + Svelte (memory-safe, 0 erreur exigée)
+pnpm lint:fast                      # lint des fichiers modifiés (~2,5 s ; évite l'aller-retour CI)
 pnpm format "src/**/*.{ts,svelte}"  # prettier --write
 
 pnpm test:server <path>             # tests serveur (fichier ciblé)
