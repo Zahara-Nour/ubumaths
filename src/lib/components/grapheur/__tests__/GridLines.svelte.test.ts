@@ -56,6 +56,35 @@ describe('GridLines', () => {
 		expect(horizontalMajor.length).toBeGreaterThanOrEqual(5);
 	});
 
+	/**
+	 * Loin de l'origine et très zoomée, la fenêtre atteint un pas si petit que
+	 * `x + pas === x` en flottant : une boucle qui accumule n'avance plus jamais.
+	 * Le glissement d'axe y mène, `setViewport` ne bornant pas l'amplitude.
+	 */
+	it('ne boucle pas sur une fenêtre dégénérée', () => {
+		const { verticalMajor, horizontalMajor } = renderGrid({
+			xMin: 1e6 - 5e-10,
+			xMax: 1e6 + 5e-10,
+			yMin: -10,
+			yMax: 10
+		});
+
+		expect(verticalMajor).toHaveLength(0);
+		expect(horizontalMajor.length).toBeGreaterThan(0);
+	});
+
+	it('plafonne le nombre de lignes par axe', () => {
+		const { verticalMajor, horizontalMajor } = renderGrid({
+			xMin: -1e-300,
+			xMax: 1e-300,
+			yMin: -10,
+			yMax: 10
+		});
+
+		expect(verticalMajor.length).toBeLessThanOrEqual(400);
+		expect(horizontalMajor.length).toBeLessThanOrEqual(400);
+	});
+
 	it('ne change rien quand les deux amplitudes sont égales', () => {
 		const { verticalMajor, horizontalMajor } = renderGrid({
 			xMin: -10,

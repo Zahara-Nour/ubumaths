@@ -321,3 +321,45 @@ describe('Quadratic Solver', () => {
 		});
 	});
 });
+
+/**
+ * Un coefficient de `ax² + bx + c` doit être constant en la variable.
+ * `getTermDegree` voit `(x-1)²` comme un terme de degré 2, d'où un
+ * « coefficient » `a = (x-1)²/x²` qui dépend encore de `x` ; la formule
+ * quadratique appliquée dessus répondait `x = 0` — avec aplomb, et faux.
+ * Le lecteur refuse désormais ces coefficients, et le solveur développe une
+ * fois avant de renoncer.
+ */
+describe('Quadratic Solver — formes factorisées', () => {
+	function solutionsOf(latex: string): string[] {
+		const result = solve(parseEquation(latex));
+		if (result.status !== 'unique' && result.status !== 'multiple') return [];
+		return result.solutions.map((s) => toLatex(s.value));
+	}
+
+	it('résout (x-1)^2 = 0 en x = 1', () => {
+		expect(solutionsOf('(x-1)^2 = 0')).toEqual(['1']);
+	});
+
+	it('résout (x-3)^2 = 0 en x = 3', () => {
+		expect(solutionsOf('(x-3)^2 = 0')).toEqual(['3']);
+	});
+
+	it('résout (2x-4)^2 = 0 en x = 2', () => {
+		expect(solutionsOf('(2x-4)^2 = 0')).toEqual(['2']);
+	});
+
+	it('résout (x-1)^2 = 4 en x = 3 et x = -1', () => {
+		expect(solutionsOf('(x-1)^2 = 4').sort()).toEqual(['-1', '3']);
+	});
+
+	it('résout toujours la forme développée', () => {
+		expect(solutionsOf('x^2 - 2x + 1 = 0')).toEqual(['1']);
+	});
+
+	it('laisse passer un coefficient paramétrique (constant en x)', () => {
+		// `m` n'est pas la variable résolue : ce n'est pas le cas visé.
+		const result = solve(parseEquation('mx^2 - 1 = 0'), { variable: 'x' });
+		expect(result.status).not.toBe('error');
+	});
+});

@@ -34,6 +34,9 @@
 	/** Label offset from axis in pixels */
 	const LABEL_OFFSET = 16;
 
+	/** Hard ceiling on the ticks drawn along one axis (degenerate viewports). */
+	const MAX_TICKS_PER_AXIS = 400;
+
 	/** Minimum pixels between tick labels */
 	const MIN_LABEL_SPACING = 50;
 
@@ -112,12 +115,24 @@
 	/** Tick spacing for Y axis */
 	const yTickSpacing = $derived(calculateTickSpacing(viewport.yMax - viewport.yMin, height));
 
-	/** X axis tick marks and labels */
+	/**
+	 * X axis tick marks and labels.
+	 *
+	 * Stepping by index rather than accumulating keeps the loop finite whatever
+	 * the viewport: on a window zoomed far from the origin, `x + spacing` can be
+	 * absorbed back to `x` and an accumulating loop never advances.
+	 */
 	const xTicks = $derived.by(() => {
 		const ticks: { value: number; svgX: number }[] = [];
-		const startX = Math.ceil(viewport.xMin / xTickSpacing) * xTickSpacing;
+		if (!Number.isFinite(xTickSpacing) || xTickSpacing <= 0) return ticks;
 
-		for (let x = startX; x <= viewport.xMax; x += xTickSpacing) {
+		const startX = Math.ceil(viewport.xMin / xTickSpacing) * xTickSpacing;
+		if (!Number.isFinite(startX) || startX + xTickSpacing === startX) return ticks;
+
+		const count = Math.min(Math.floor((viewport.xMax - startX) / xTickSpacing), MAX_TICKS_PER_AXIS);
+
+		for (let i = 0; i <= count; i++) {
+			const x = startX + i * xTickSpacing;
 			// Skip tick at origin (or very close to it)
 			if (Math.abs(x) < xTickSpacing * 0.001) continue;
 
@@ -128,12 +143,18 @@
 		return ticks;
 	});
 
-	/** Y axis tick marks and labels */
+	/** Y axis tick marks and labels. See {@link xTicks}. */
 	const yTicks = $derived.by(() => {
 		const ticks: { value: number; svgY: number }[] = [];
-		const startY = Math.ceil(viewport.yMin / yTickSpacing) * yTickSpacing;
+		if (!Number.isFinite(yTickSpacing) || yTickSpacing <= 0) return ticks;
 
-		for (let y = startY; y <= viewport.yMax; y += yTickSpacing) {
+		const startY = Math.ceil(viewport.yMin / yTickSpacing) * yTickSpacing;
+		if (!Number.isFinite(startY) || startY + yTickSpacing === startY) return ticks;
+
+		const count = Math.min(Math.floor((viewport.yMax - startY) / yTickSpacing), MAX_TICKS_PER_AXIS);
+
+		for (let i = 0; i <= count; i++) {
+			const y = startY + i * yTickSpacing;
 			// Skip tick at origin
 			if (Math.abs(y) < yTickSpacing * 0.001) continue;
 

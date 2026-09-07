@@ -84,7 +84,27 @@ export function extractQuadraticCoefficients(
 				? cTerms[0]
 				: unflattenSum(cTerms.map((t) => ({ sign: '+' as const, term: t })))!;
 
+	// A coefficient of ax^2 + bx + c must be constant in the variable. A factored
+	// square slips through the degree test — `getPolynomialDegree` reads `(x-1)^2`
+	// as a degree-2 term — and the division by x^2 then yields `(x-1)^2 / x^2`,
+	// which still depends on x. Answering with such a "coefficient" made
+	// `solve((x-1)^2 = 0)` reply x = 0. Callers must be told the expression is not
+	// in standard form so they can expand it, or fall back to another strategy.
+	// Coefficients holding *other* symbols (parametric equations) stay valid.
+	if (
+		dependsOnVariable(a, variable) ||
+		dependsOnVariable(b, variable) ||
+		dependsOnVariable(c, variable)
+	) {
+		return null;
+	}
+
 	return { a, b, c };
+}
+
+/** Whether a coefficient still involves the variable being solved for. */
+function dependsOnVariable(coefficient: MathNode, variable: string): boolean {
+	return getVariables(coefficient).has(variable);
 }
 
 /**
@@ -213,8 +233,13 @@ export const quadraticSolver: EquationSolver = {
 		},
 		recorder: SolveStepRecorder
 	): SolveResult {
-		// Extract coefficients
-		const coeffs = extractQuadraticCoefficients(expr, variable);
+		// A degree-2 expression is not necessarily in standard form: `(x-1)^2` is
+		// degree 2, yet reading `a`, `b`, `c` off it directly gives coefficients
+		// that still depend on x, which the extractor now refuses. Expand once and
+		// read again, the way the pedagogical stepper already does.
+		const coeffs =
+			extractQuadraticCoefficients(expr, variable) ??
+			extractQuadraticCoefficients(denormalize(normalize(expr)), variable);
 
 		if (!coeffs) {
 			return {

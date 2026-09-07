@@ -25,6 +25,18 @@
 	} = $props();
 
 	// ==========================================================================
+	// Constants
+	// ==========================================================================
+
+	/**
+	 * Hard ceiling on the lines drawn along one axis.
+	 *
+	 * The spacing heuristic targets a few dozen, so this only ever triggers on a
+	 * degenerate viewport.
+	 */
+	const MAX_LINES_PER_AXIS = 400;
+
+	// ==========================================================================
 	// Grid Spacing Calculation
 	// ==========================================================================
 
@@ -80,16 +92,26 @@
 	const xSpacing = $derived(calculateGridSpacing(viewport.xMax - viewport.xMin));
 	const ySpacing = $derived(calculateGridSpacing(viewport.yMax - viewport.yMin));
 
-	/** Generate vertical grid lines (x = constant) */
+	/**
+	 * Generate vertical grid lines (x = constant).
+	 *
+	 * Stepping by index rather than accumulating keeps the loop finite whatever
+	 * the viewport: on a window zoomed far from the origin, `x + minor` can be
+	 * absorbed back to `x` and an accumulating loop never advances.
+	 */
 	const verticalLines = $derived.by(() => {
 		const lines: { x: number; isMajor: boolean }[] = [];
 		const { major, minor } = xSpacing;
+		if (!Number.isFinite(minor) || minor <= 0) return lines;
 
 		// Start from a round number before xMin
 		const startX = Math.floor(viewport.xMin / minor) * minor;
-		const endX = viewport.xMax;
+		if (!Number.isFinite(startX) || startX + minor === startX) return lines;
 
-		for (let x = startX; x <= endX; x += minor) {
+		const count = Math.min(Math.floor((viewport.xMax - startX) / minor), MAX_LINES_PER_AXIS);
+
+		for (let i = 0; i <= count; i++) {
+			const x = startX + i * minor;
 			// Check if this is a major line (within floating point tolerance)
 			const isMajor = Math.abs(x / major - Math.round(x / major)) < 0.001;
 			lines.push({ x, isMajor });
@@ -98,16 +120,20 @@
 		return lines;
 	});
 
-	/** Generate horizontal grid lines (y = constant) */
+	/** Generate horizontal grid lines (y = constant). See {@link verticalLines}. */
 	const horizontalLines = $derived.by(() => {
 		const lines: { y: number; isMajor: boolean }[] = [];
 		const { major, minor } = ySpacing;
+		if (!Number.isFinite(minor) || minor <= 0) return lines;
 
 		// Start from a round number before yMin
 		const startY = Math.floor(viewport.yMin / minor) * minor;
-		const endY = viewport.yMax;
+		if (!Number.isFinite(startY) || startY + minor === startY) return lines;
 
-		for (let y = startY; y <= endY; y += minor) {
+		const count = Math.min(Math.floor((viewport.yMax - startY) / minor), MAX_LINES_PER_AXIS);
+
+		for (let i = 0; i <= count; i++) {
+			const y = startY + i * minor;
 			// Check if this is a major line
 			const isMajor = Math.abs(y / major - Math.round(y / major)) < 0.001;
 			lines.push({ y, isMajor });
