@@ -138,6 +138,36 @@ describe('findRoots', () => {
  * lecteurs de coefficients ; cet invariant le verrouille : quelle que soit la
  * forme de l'expression, un zéro renvoyé annule la fonction.
  */
+/**
+ * Une racine multiple ne produit aucun changement de signe : le balayage
+ * numérique ne peut pas la voir. Seule la voie symbolique la trouve, et il
+ * fallait pour cela que `solve` sache réduire `u^n = 0` à `u = 0`.
+ */
+describe('findRoots — racines multiples', () => {
+	it('trouve les deux racines doubles de (x²−2)²', () => {
+		const r = roots('(x^2-2)^2');
+
+		expect(r).toHaveLength(2);
+		expect(r[0].x).toBeCloseTo(-Math.SQRT2, 12);
+		expect(r[1].x).toBeCloseTo(Math.SQRT2, 12);
+		expect(r.every((root) => root.exact)).toBe(true);
+	});
+
+	it('trouve la racine triple de (x−1)³', () => {
+		const r = roots('(x-1)^3');
+
+		expect(r).toHaveLength(1);
+		expect(r[0].x).toBeCloseTo(1, 12);
+	});
+
+	it('trouve la racine quadruple de (2x−4)⁴', () => {
+		const r = roots('(2*x-4)^4');
+
+		expect(r).toHaveLength(1);
+		expect(r[0].x).toBeCloseTo(2, 12);
+	});
+});
+
 describe('findRoots — invariant : un zéro annule la fonction', () => {
 	const battery = [
 		'(x-1)^2',

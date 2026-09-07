@@ -3,6 +3,7 @@ import { analyzeAllFunctions, toAnalysisInputs } from '../analysis';
 import { createEvaluator, parseFunction } from '../evaluator';
 import type { ExplicitFunction, Plottable, SequencePlottable, Viewport } from '../types';
 import { parseSequence } from '../sequence';
+import { toLatex } from '$lib/mathAST/latex-generator';
 
 const viewport: Viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 };
 
@@ -105,5 +106,52 @@ describe('toAnalysisInputs', () => {
 
 		expect(analyses[0].roots).toHaveLength(1);
 		expect(analyses[0].roots[0].x).toBeCloseTo(1);
+	});
+});
+
+/**
+ * Les zéros et les extrema trouvés symboliquement portent leur valeur exacte
+ * jusqu'à l'affichage : `√2` plutôt que `1,414`. `findCriticalZeros` la connaît
+ * déjà, le grapheur la jetait à la conversion.
+ */
+describe('valeurs exactes', () => {
+	function analyse(latex: string) {
+		return analyzeAllFunctions(toAnalysisInputs([explicit(latex)]), viewport)[0];
+	}
+
+	it('donne l’abscisse symbolique des zéros de x²−2', () => {
+		const roots = analyse('x^2-2').roots;
+
+		expect(roots).toHaveLength(2);
+		expect(roots.map((r) => toLatex(r.exactX!)).sort()).toEqual(['-\\sqrt{2}', '\\sqrt{2}']);
+	});
+
+	it('donne la racine cubique exacte de x³−2', () => {
+		const [root] = analyse('x^3-2').roots;
+
+		expect(toLatex(root.exactX!)).toBe('\\sqrt[3]{2}');
+	});
+
+	it('donne les deux racines doubles de (x²−2)²', () => {
+		const roots = analyse('(x^2-2)^2').roots;
+
+		expect(roots).toHaveLength(2);
+		expect(roots.map((r) => toLatex(r.exactX!)).sort()).toEqual(['-\\sqrt{2}', '\\sqrt{2}']);
+	});
+
+	it('simplifie l’ordonnée d’un extremum', () => {
+		const [extremum] = analyse('x^2-2').extrema;
+
+		// Sans simplification, findCriticalExtrema rend « 0^2 - 2 ».
+		expect(toLatex(extremum.exactY!)).toBe('-2');
+		expect(toLatex(extremum.exactX!)).toBe('0');
+	});
+
+	it('n’invente pas de valeur exacte quand seul le numérique a trouvé', () => {
+		// exp(x) - x - 2 : zéros non résolubles algébriquement.
+		const roots = analyse('e^x-x-2').roots;
+
+		expect(roots.length).toBeGreaterThan(0);
+		expect(roots.every((r) => r.exactX === undefined)).toBe(true);
 	});
 });
