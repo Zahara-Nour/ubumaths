@@ -265,7 +265,13 @@ export interface WorksheetRow {
 	estimated_duration_minutes: number | null;
 	total_points: number | null;
 	grades: string[];
-	tags: string[];
+	/**
+	 * ⚠️ Optionnel, et ça n'est pas un oubli : `tags` n'est plus une colonne de
+	 * `worksheets` depuis 20260908180000. Les étiquettes vivent dans
+	 * `resource_tags` et sont chargées séparément — les chemins qui n'en ont pas
+	 * besoin (génération PDF, correction) ne les lisent pas du tout.
+	 */
+	tags?: string[];
 	created_by: string;
 	school_id: string | null;
 	created_at: string;
@@ -826,21 +832,27 @@ export function asTemplatePlaceholders(value: unknown): TemplatePlaceholder[] {
  * Narrows a `worksheets` row to {@link WorksheetRow}.
  *
  * `type`, `status`, `config` and `translations` are all looser in Postgres —
- * plain text or jsonb — and `grades` / `tags` are nullable arrays.
+ * plain text or jsonb — and `grades` is a nullable array. `tags` is passed
+ * separately: it is no longer a column.
  *
  * The fallbacks are the feature's own defaults: a worksheet of unknown type
  * renders as a plain worksheet, and an unknown status is treated as a draft —
  * the direction that never publishes something by accident.
  */
-export function toWorksheetRow(row: {
-	type: string;
-	status: string;
-	config: unknown;
-	translations?: unknown;
-	grades: string[] | null;
-	tags: string[] | null;
-	[k: string]: unknown;
-}): WorksheetRow {
+export function toWorksheetRow(
+	row: {
+		type: string;
+		status: string;
+		config: unknown;
+		translations?: unknown;
+		grades: string[] | null;
+		[k: string]: unknown;
+	},
+	// `tags` n'est plus une colonne de `worksheets` : les étiquettes vivent dans
+	// `resource_tags` depuis 20260908180000. Le domaine les garde sur la fiche,
+	// mais l'appelant doit les fournir — il les a lues séparément.
+	tags: string[] = []
+): WorksheetRow {
 	return {
 		...row,
 		type: (WORKSHEET_TYPES.find((t) => t === row.type) ?? 'worksheet') as WorksheetType,
@@ -848,7 +860,7 @@ export function toWorksheetRow(row: {
 		config: asWorksheetConfig(row.config),
 		translations: asRowTranslations(row.translations),
 		grades: row.grades ?? [],
-		tags: row.tags ?? []
+		tags
 	} as unknown as WorksheetRow;
 }
 

@@ -61,7 +61,7 @@ function asArray<T>(value: Json | null): T[] | undefined {
 }
 
 /**
- * @param tags read from the `exercise_tags` join table — tags are not a column
+ * @param tags read from `resource_tags` — tags are not a column
  * of `exercises`.
  */
 export function toExercise(row: ExerciseRow, tags: string[] = []): Exercise {

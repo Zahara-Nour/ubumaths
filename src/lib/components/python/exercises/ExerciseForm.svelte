@@ -249,11 +249,7 @@
 
 		<div>
 			<label for="ex-tags" class="mb-1 block text-sm font-medium">Tags</label>
-			<TagBadgeSelector
-				bind:value={form.tags}
-				placeholder="Ajouter des tags"
-				apiPath="/api/python-tags"
-			/>
+			<TagBadgeSelector bind:value={form.tags} placeholder="Ajouter des tags" apiPath="/api/tags" />
 		</div>
 
 		<MyCheckbox

@@ -26,7 +26,7 @@ import {
 	validateBackup,
 	validateRestoreOptions
 } from '$lib/server/validation/backup';
-import { syncResourceTags } from '$lib/server/resource-tags';
+import { fetchTagNamesForResources, syncResourceTags } from '$lib/server/resource-tags';
 
 /**
  * `.single()` traite « zéro ligne » comme une erreur (`PGRST116`). Pendant une
@@ -47,28 +47,6 @@ type SupabaseClientType = SupabaseClient<Database>;
 // ============================================================================
 // TAG HELPERS (junction <-> portable string[])
 // ============================================================================
-
-/**
- * Flatten the embedded `exercise_tags(tags(name))` relation returned by Supabase
- * into a sorted, deduplicated, never-null `string[]`.
- *
- * Supabase returns the embed as an array of `{ tags: { name } | null }` rows.
- * We stay defensive about the exact shape since the generated types describe the
- * relation loosely.
- */
-function flattenEmbeddedTagNames(embedded: unknown): string[] {
-	if (!Array.isArray(embedded)) return [];
-	const names = new Set<string>();
-	for (const row of embedded) {
-		if (!row || typeof row !== 'object') continue;
-		const tag = (row as Record<string, unknown>).tags;
-		if (tag && typeof tag === 'object' && 'name' in tag) {
-			const name = (tag as { name: unknown }).name;
-			if (typeof name === 'string' && name.length > 0) names.add(name);
-		}
-	}
-	return [...names].sort();
-}
 
 /**
  * Read the tag names of a backup record, tolerating legacy backups that may have
@@ -101,7 +79,7 @@ async function attachBackupTags(
 		await syncResourceTags(supabase, 'exercise', exerciseId, tagNames);
 	} catch (err) {
 		result.errors.push({
-			table: 'exercise_tags',
+			table: 'resource_tags',
 			record_id: recordId,
 			error: `Failed to attach tags: ${err instanceof Error ? err.message : String(err)}`
 		});
@@ -180,17 +158,15 @@ export async function exportBackupJSON(
 	supabase: SupabaseClientType,
 	adminEmail: string
 ): Promise<ExerciseBackup> {
-	// Fetch all exercises with creator emails and their tags from the junction.
-	// Tags live in exercise_tags(tags) since the tag-normalization migration; the
-	// backup format still emits `tags: string[]` for portability, so we embed the
-	// junction and flatten the nested name rows below.
+	// Les tags viennent de `resource_tags`, lue en une requête groupée après
+	// celle-ci. Le format de sauvegarde continue d'émettre `tags: string[]` pour
+	// rester portable ; seule la source a changé.
 	const { data: exercises, error: exercisesError } = await supabase
 		.from('exercises')
 		.select(
 			`
 			*,
-			profiles:created_by (email),
-			exercise_tags (tags (name))
+			profiles:created_by (email)
 		`
 		)
 		.order('created_at', { ascending: true });
@@ -198,6 +174,13 @@ export async function exportBackupJSON(
 	if (exercisesError) {
 		throw new Error(`Failed to fetch exercises: ${exercisesError.message}`);
 	}
+
+	// Tags depuis `resource_tags`, en une requête groupée pour tout l'export.
+	const tagsByExercise = await fetchTagNamesForResources(
+		supabase,
+		'exercise',
+		(exercises ?? []).map((ex) => (ex as { id: string }).id)
+	);
 
 	// Fetch all templates with creator emails
 	const { data: templates, error: templatesError } = await supabase
@@ -260,10 +243,7 @@ export async function exportBackupJSON(
 			title: ex.title,
 			source: ex.source,
 			category: ex.category,
-			// Flatten exercise_tags(tags(name)) into a portable string[] (never null).
-			// Access via Record cast to stay robust to Supabase's embed typing (the
-			// helper validates the shape defensively).
-			tags: flattenEmbeddedTagNames((ex as Record<string, unknown>).exercise_tags),
+			tags: tagsByExercise.get(ex.id) ?? [],
 			statement_md: firstVariation?.statement_md || '',
 			solution_md: firstVariation?.solution_md || '',
 			grades: ex.grades,
@@ -445,13 +425,20 @@ export async function exportBackupSQL(
 			const exerciseTags = readBackupRecordTags(ex);
 			if (exerciseTags.length > 0) {
 				for (const tagName of exerciseTags) {
+					// `ON CONFLICT (slug)` et non `(name)` : l'unicité du catalogue porte
+					// sur la forme canonique. L'ancienne écriture visait une contrainte
+					// qui n'a jamais existé et aurait échoué en 42P10.
 					lines.push(
-						`INSERT INTO tags (name) VALUES (${escapeSQL(tagName)}) ON CONFLICT (name) DO NOTHING;`
+						`INSERT INTO tags (name) VALUES (${escapeSQL(tagName)}) ON CONFLICT (slug) DO NOTHING;`
 					);
+					// La jonction est `resource_tags` depuis 20260908180000, et la
+					// correspondance se fait par slug pour retrouver la ligne même si
+					// une autre orthographe l'avait déjà créée.
 					lines.push(
-						`INSERT INTO exercise_tags (exercise_id, tag_id)\n` +
-							`SELECT ${escapeSQL(ex.id)}, id FROM tags WHERE name = ${escapeSQL(tagName)}\n` +
-							`ON CONFLICT (exercise_id, tag_id) DO NOTHING;`
+						`INSERT INTO resource_tags (resource_kind, resource_id, tag_id)\n` +
+							`SELECT 'exercise', ${escapeSQL(ex.id)}, id FROM tags\n` +
+							`WHERE slug = public.tag_slug(${escapeSQL(tagName)})\n` +
+							`ON CONFLICT DO NOTHING;`
 					);
 				}
 				lines.push('');

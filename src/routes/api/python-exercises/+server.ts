@@ -15,7 +15,11 @@ import {
 import type { PythonExercise, PythonExerciseStudentView } from '$lib/types/python-exercises';
 import type { Database } from '$lib/types/database';
 import { toJson } from '$lib/types/database-helpers';
-import { fetchResourceIdsByAnyTag, syncResourceTags } from '$lib/server/resource-tags';
+import {
+	fetchResourceIdsByAnyTag,
+	fetchTagNamesForResources,
+	syncResourceTags
+} from '$lib/server/resource-tags';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -87,9 +91,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	// Build query based on role.
 	// We pull tag names via the junction in the same SELECT for the response shape.
-	let query = supabase
-		.from('python_exercises')
-		.select('*, python_exercise_tags(python_tags(name))', { count: 'exact' });
+	let query = supabase.from('python_exercises').select('*', { count: 'exact' });
 
 	if (profile.role === 'teacher') {
 		// Teachers see their exercises + public exercises
@@ -170,25 +172,18 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(500, 'Erreur lors de la récupération des exercices');
 	}
 
-	// Reshape: flatten the nested junction (python_exercise_tags > python_tags)
-	// back to a plain `tags: string[]` so the API contract is unchanged.
-	const flattened = (exercises ?? []).map((row) => {
-		const nested = (row as Record<string, unknown>).python_exercise_tags;
-		const tagNames: string[] = Array.isArray(nested)
-			? nested
-					.map((j) => {
-						const tag = (j as Record<string, unknown>).python_tags;
-						return tag && typeof tag === 'object' && 'name' in tag
-							? (tag as { name: string }).name
-							: null;
-					})
-					.filter((n): n is string => Boolean(n))
-					.sort()
-			: [];
-		// Strip the nested key, replace with flat array
-		const { python_exercise_tags: _stripped, ...rest } = row as Record<string, unknown>;
-		return { ...(rest as Record<string, unknown>), tags: tagNames };
-	});
+	// Les tags viennent de `resource_tags`, en une requête groupée : le contrat de
+	// l'API est inchangé (`tags: string[]`), seule la source a changé.
+	const tagsByExercise = await fetchTagNamesForResources(
+		supabase,
+		'python_exercise',
+		(exercises ?? []).map((row) => (row as { id: string }).id)
+	);
+
+	const flattened = (exercises ?? []).map((row) => ({
+		...(row as Record<string, unknown>),
+		tags: tagsByExercise.get((row as { id: string }).id) ?? []
+	}));
 
 	// For students, exclude solution_code
 	let responseData: (PythonExercise | PythonExerciseStudentView)[] =
