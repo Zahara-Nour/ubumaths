@@ -58,6 +58,31 @@ fi
 echo $$ >"$lock"
 trap 'rm -f "$lock"' EXIT INT TERM
 
+# --- Guard 2: don't run while the local Supabase stack is up -----------------
+# Le 2026-09-09, un check a été tué après 15 minutes. Aucun fantôme : la pile
+# Supabase locale (12 conteneurs, ~1,9 Go mesurés) était restée allumée depuis
+# des tests d'intégration, et le check venait d'être poussé sur son chemin LENT
+# (une édition sous src/routes force `svelte-kit sync`, qui invalide le cache :
+# ~1,6 Go et 2x plus long, cf. plus bas). Sur 8 Go, la machine ne calculait
+# plus, elle swappait.
+#
+# Refuser franchement vaut mieux que ramer : un check étranglé ne donne aucun
+# verdict, coûte un quart d'heure, et se fait tuer — ce qui laisse en plus un
+# cache à moitié écrit, donc le run suivant repart à froid.
+if command -v docker >/dev/null 2>&1; then
+	supa_containers=$(docker ps --quiet --filter label=com.supabase.cli.project=ubumaths 2>/dev/null | wc -l | tr -d ' ')
+	if [ "${supa_containers:-0}" -gt 0 ] && [ "${ALLOW_DB:-0}" != "1" ]; then
+		echo "⛔ La pile Supabase locale tourne ($supa_containers conteneurs, ~1,9 Go)."
+		echo "   Sur cette machine (8 Go), elle étrangle le typecheck : mesuré 15 min"
+		echo "   au lieu de ~40 s, puis tué sans verdict."
+		echo
+		echo "   → pnpm db:stop      puis relance le check"
+		echo "   → ALLOW_DB=1 pnpm check:incremental   pour passer outre en connaissance de cause"
+		rm -f "$lock"
+		exit 2
+	fi
+fi
+
 # --- Guard 2: refuse a run that cannot say anything new ----------------------
 # Anything that can change the verdict: sources, the tsconfig this script uses,
 # the svelte/vite config, and the dependency set.
@@ -96,6 +121,10 @@ watch=(src/routes svelte.config.* .env .env.*)
 shopt -u nullglob
 if [ "${need_sync:-0}" = "1" ] || [ ! -f "$sentinel" ] || \
 	[ -n "$(find "${watch[@]}" -type f -newer "$sentinel" 2>/dev/null | head -1)" ]; then
+	# Prévenir : ce sync invalide le cache, donc ce run sera ~2x plus long et ~2x
+	# plus gourmand. Le dire évite de croire à un blocage.
+	echo "ℹ️  Routes ou config modifiées → svelte-kit sync : cache invalidé,"
+	echo "   ce passage sera plus lent (~2x) et plus gourmand (~1,6 Go)."
 	npx svelte-kit sync >/dev/null 2>&1
 fi
 
