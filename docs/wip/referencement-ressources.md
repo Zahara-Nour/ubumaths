@@ -246,6 +246,20 @@ create policy "Teachers and admins create tags" on public.tags
   for insert to authenticated with check (public.is_teacher_or_admin());
 ```
 
+### Résidu à glisser dans la prochaine migration
+
+`20260908160000` a fermé la **création** de tags sur `tags` et `python_tags`, mais la **suppression** sur `tags` seulement. `python_tags_delete_own` (`created_by = auth.uid()`) survit.
+
+Effet réel aujourd'hui : **nul**, et vérifié en prod — les 57 `python_tags` ont tous `created_by NULL`, donc personne ne satisfait la clause, et la FK `python_exercise_tags → python_tags` est en **RESTRICT** (pas en CASCADE, contrairement à `resource_tags`), donc même une suppression possible ne détruirait aucune association.
+
+Incohérence à corriger quand une migration passera par là :
+
+```sql
+drop policy "python_tags_delete_own" on public.python_tags;
+create policy "Teachers and admins delete python tags" on public.python_tags
+  for delete to authenticated using (public.is_teacher_or_admin());
+```
+
 ### Dette connue, à honorer au moment du nettoyage destructif
 
 Le miroir de `tags-resolution.ts` ne couvre que 2 des 5 types repris (`exercise`, `python_exercise`). Les colonnes `text[]` de `constructions`, `worksheets` et `parody_evaluations` continuent d'être écrites **sans miroir** : `resource_tags` diverge dès la première de ces ressources créée après le déploiement.
