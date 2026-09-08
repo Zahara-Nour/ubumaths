@@ -1,12 +1,23 @@
 name: CodeQL
 
 # Static security analysis (free for public repos). Scans JS/TS for vulnerabilities
-# on push to main, on PRs, and weekly to catch newly-published CodeQL queries.
+# on push to main and weekly, to catch newly-published CodeQL queries.
+#
+# PAS sur `pull_request`, délibérément. Ce job dure ~6 min 25 et n'a jamais été
+# un check REQUIS (cf. la protection de branche) — mais tant qu'il tourne, l'état
+# de la PR reste `UNSTABLE` et **l'auto-merge de GitHub ne déclenche pas**. Il
+# ajoutait donc son temps complet à chaque PR sans jamais rien bloquer.
+#
+# Ce qu'on garde : `push: main` analyse CHAQUE merge, donc rien n'atteint la
+# production sans être passé par CodeQL. Le cron du lundi rattrape les requêtes
+# nouvellement publiées sur du code déjà mergé.
+#
+# Ce qu'on perd : une alerte arrive après le merge et non avant. Sur un dépôt à
+# un seul développeur, où le job n'était de toute façon pas bloquant, c'est
+# quelques minutes de décalage — pas une régression de couverture.
 
 on:
   push:
-    branches: [main]
-  pull_request:
     branches: [main]
   schedule:
     - cron: '0 4 * * 1' # Mondays 04:00 UTC
