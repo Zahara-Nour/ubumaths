@@ -16384,6 +16384,7 @@ export type Database = {
       }
       search_resources: {
         Args: {
+          p_grades?: string[]
           p_kinds?: string[]
           p_limit?: number
           p_query: string
