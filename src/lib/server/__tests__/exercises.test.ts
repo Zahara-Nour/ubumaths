@@ -23,6 +23,7 @@ import type { Database } from '$lib/types/database';
 vi.mock('$lib/server/resource-tags', () => ({
 	syncResourceTags: vi.fn().mockResolvedValue(undefined),
 	fetchResourceTagNames: vi.fn().mockResolvedValue([]),
+	fetchTagNamesForResources: vi.fn().mockResolvedValue(new Map()),
 	fetchResourceIdsByAnyTag: vi.fn().mockResolvedValue([])
 }));
 

@@ -47,10 +47,10 @@
 		maxSelections?: number;
 		onchange?: (value: string[]) => void;
 		/**
-		 * API path to fetch / create tags from. Defaults to the generic
-		 * math-exercise tag endpoint. Pass '/api/python-tags' to target the
-		 * python-specific table instead. The endpoint must accept the same
-		 * payloads as the default one.
+		 * API path to fetch / create tags from. Defaults to `/api/tags`, which is
+		 * now the ONLY catalogue: `python_tags` was merged into `tags` and its
+		 * endpoint removed (20260908180000). Kept as a prop for future catalogues,
+		 * not because a second one exists today.
 		 */
 		apiPath?: string;
 		/**

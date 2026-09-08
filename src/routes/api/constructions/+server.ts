@@ -11,6 +11,7 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { constructionScriptSchema } from '$lib/constructions';
 import type { TablesInsert } from '$lib/types/database';
 import { toJson } from '$lib/types/database-helpers';
+import { syncResourceTags } from '$lib/server/resource-tags';
 
 // =============================================================================
 // VALIDATION SCHEMAS
@@ -171,11 +172,15 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			script: toJson(format === 'json' ? script : {}),
 			dsl_script: format === 'dsl' ? (dsl_script ?? null) : null,
 			is_public,
-			tags: tags ?? null,
 			author_id: user.id
 		} satisfies TablesInsert<'constructions'>)
 		.select()
 		.single();
+
+	// Les étiquettes ne sont plus une colonne : elles vont dans `resource_tags`.
+	if (!insertError && data && tags && tags.length > 0) {
+		await syncResourceTags(locals.supabase, 'construction', data.id, tags);
+	}
 
 	if (insertError) {
 		console.error('Error creating construction:', insertError);

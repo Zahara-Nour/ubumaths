@@ -1830,7 +1830,6 @@ export type Database = {
           id: string
           is_public: boolean | null
           script: Json
-          tags: string[] | null
           title: string
           updated_at: string | null
         }
@@ -1843,7 +1842,6 @@ export type Database = {
           id?: string
           is_public?: boolean | null
           script: Json
-          tags?: string[] | null
           title: string
           updated_at?: string | null
         }
@@ -1856,7 +1854,6 @@ export type Database = {
           id?: string
           is_public?: boolean | null
           script?: Json
-          tags?: string[] | null
           title?: string
           updated_at?: string | null
         }
@@ -3149,36 +3146,6 @@ export type Database = {
             columns: ["exercise_id"]
             isOneToOne: false
             referencedRelation: "exercises"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      exercise_tags: {
-        Row: {
-          exercise_id: string
-          tag_id: string
-        }
-        Insert: {
-          exercise_id: string
-          tag_id: string
-        }
-        Update: {
-          exercise_id?: string
-          tag_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "exercise_tags_exercise_id_fkey"
-            columns: ["exercise_id"]
-            isOneToOne: false
-            referencedRelation: "exercises"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "exercise_tags_tag_id_fkey"
-            columns: ["tag_id"]
-            isOneToOne: false
-            referencedRelation: "tags"
             referencedColumns: ["id"]
           },
         ]
@@ -8258,7 +8225,6 @@ export type Database = {
           id: string
           mime_type: string
           storage_path: string
-          tags: string[]
           title: string
           updated_at: string
         }
@@ -8272,7 +8238,6 @@ export type Database = {
           id?: string
           mime_type: string
           storage_path: string
-          tags?: string[]
           title: string
           updated_at?: string
         }
@@ -8286,7 +8251,6 @@ export type Database = {
           id?: string
           mime_type?: string
           storage_path?: string
-          tags?: string[]
           title?: string
           updated_at?: string
         }
@@ -8838,36 +8802,6 @@ export type Database = {
           },
         ]
       }
-      python_exercise_tags: {
-        Row: {
-          exercise_id: string
-          tag_id: string
-        }
-        Insert: {
-          exercise_id: string
-          tag_id: string
-        }
-        Update: {
-          exercise_id?: string
-          tag_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "python_exercise_tags_exercise_id_fkey"
-            columns: ["exercise_id"]
-            isOneToOne: false
-            referencedRelation: "python_exercises"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "python_exercise_tags_tag_id_fkey"
-            columns: ["tag_id"]
-            isOneToOne: false
-            referencedRelation: "python_tags"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       python_exercises: {
         Row: {
           author_id: string
@@ -9327,27 +9261,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      python_tags: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          id: string
-          name: string
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          name: string
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          name?: string
-        }
-        Relationships: []
       }
       question_template_points: {
         Row: {
@@ -13792,7 +13705,6 @@ export type Database = {
           published_at: string | null
           school_id: string | null
           status: string
-          tags: string[] | null
           template_id: string | null
           title: string
           total_points: number | null
@@ -13813,7 +13725,6 @@ export type Database = {
           published_at?: string | null
           school_id?: string | null
           status?: string
-          tags?: string[] | null
           template_id?: string | null
           title: string
           total_points?: number | null
@@ -13834,7 +13745,6 @@ export type Database = {
           published_at?: string | null
           school_id?: string | null
           status?: string
-          tags?: string[] | null
           template_id?: string | null
           title?: string
           total_points?: number | null
