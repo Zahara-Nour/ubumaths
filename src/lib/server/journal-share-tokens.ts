@@ -46,48 +46,6 @@ export interface JournalShareToken {
 }
 
 /**
- * La table et la RPC ne sont pas encore dans les types générés (`pnpm db:types`
- * s'exécute contre la prod, où la migration n'est pas encore appliquée).
- * Adaptateur étroit plutôt que `any`.
- */
-type TokenQuery = {
-	eq: (c: string, v: string | boolean) => TokenQuery;
-	or: (filter: string) => TokenQuery;
-	maybeSingle: () => PromiseLike<{
-		data: JournalShareToken | null;
-		error: { message: string } | null;
-	}>;
-};
-
-type Loose = {
-	from: (table: string) => {
-		select: (columns: string) => TokenQuery;
-		insert: (row: Record<string, unknown>) => {
-			select: (columns: string) => {
-				single: () => PromiseLike<{
-					data: JournalShareToken | null;
-					error: { message: string } | null;
-				}>;
-			};
-		};
-		update: (row: Record<string, unknown>) => {
-			eq: (
-				c: string,
-				v: string
-			) => {
-				eq: (c: string, v: boolean) => PromiseLike<{ error: { message: string } | null }>;
-			};
-		};
-	};
-	rpc: (
-		fn: string,
-		args: Record<string, unknown>
-	) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
-};
-
-const loose = (supabase: SB) => supabase as unknown as Loose;
-
-/**
  * Fin de l'année scolaire suivante : le 31 août à venir.
  *
  * Un lien d'année scolaire doit mourir de lui-même à la rentrée plutôt que de
@@ -113,7 +71,7 @@ export async function getActiveShareToken(
 	supabase: SB,
 	classId: string
 ): Promise<{ token: JournalShareToken | null; error: string | null }> {
-	const { data, error } = await loose(supabase)
+	const { data, error } = await supabase
 		.from('class_journal_share_tokens')
 		.select(
 			'id, class_id, token, is_active, expires_at, access_count, last_accessed_at, created_at'
@@ -146,7 +104,7 @@ export async function rotateShareToken(
 	const { error: revokeError } = await revokeShareToken(supabase, classId);
 	if (revokeError) return { token: null, error: revokeError };
 
-	const { data, error } = await loose(supabase)
+	const { data, error } = await supabase
 		.from('class_journal_share_tokens')
 		.insert({
 			class_id: classId,
@@ -182,7 +140,7 @@ export async function revokeShareToken(
 	// filtre l'expiration ; s'appuyer sur elle laisserait un jeton expiré mais
 	// toujours `is_active`, que l'index unique partiel opposerait ensuite à toute
 	// création de nouveau lien.
-	const { error } = await loose(supabase)
+	const { error } = await supabase
 		.from('class_journal_share_tokens')
 		.update({ is_active: false })
 		.eq('class_id', classId)
@@ -206,7 +164,7 @@ export async function resolveShareToken(
 	supabase: SB,
 	token: string
 ): Promise<PublicJournal | null> {
-	const { data, error } = await loose(supabase).rpc('get_class_journal_by_share_token', {
+	const { data, error } = await supabase.rpc('get_class_journal_by_share_token', {
 		p_token: token
 	});
 
