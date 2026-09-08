@@ -140,11 +140,13 @@ On garde l'auto-création. On ajoute une normalisation à l'écriture et une pag
 
 **Implémentation prévue** : colonne `slug` normalisée (sans accents, minuscules, kebab) + index UNIQUE ; autocomplétion depuis la base ; page de fusion / renommage / suppression.
 
-### 5.3 Périmètre : 5 types
+### 5.3 Périmètre : 5 types (6 depuis la phase 6)
 
-`exercise` · `question` · `assessment` · `chapter` · `document`.
+`exercise` · `question` · `assessment` · `chapter` · `document`, puis `worksheet_exercise` (phase 6).
 
-**Pourquoi** : ce sont exactement les types que le cahier de texte référence déjà — l'usage a répondu à la question. Le registre est une table de constantes : ajouter un type coûtera cinq lignes. Candidats à la vague suivante : `worksheets`, `python_exercises`, `riddles`.
+**Pourquoi** : ce sont exactement les types que le cahier de texte référence déjà — l'usage a répondu à la question. Le registre est une table de constantes : ajouter un type coûtera cinq lignes. Candidats à la vague suivante : `python_exercises`, `riddles`.
+
+**Ce que l'ajout du 6ᵉ a coûté en vrai** : les cinq lignes annoncées, plus une régression qu'aucun typage ne pouvait attraper — `search_resources` plafonnait `p_kinds` à 5, soit la taille exacte du vocabulaire d'alors, et un 6ᵉ type rendait donc toute recherche vide sans la moindre erreur. Un garde-fou dimensionné sur le vocabulaire courant est une bombe à retardement ; il doit borner un coût, avec de la marge.
 
 ---
 
@@ -182,34 +184,62 @@ Migration `20260908130000`, **additive**. `tags.slug` généré + index unique (
 
 Vérifié sur la prod avant application (l'index unique échouerait sur un doublon) : 86 tags sans collision, 57 `python_tags` tous distincts, aucun slug vide.
 
-## 6bis. Phase 5 — sélecteur d'insertion `[[…]]` : spécifiée, PAS implémentée
+## 6bis. Phase 5 — sélecteur d'insertion `[[…]]` : LIVRÉE
 
-**Je me suis arrêté volontairement.** Sans base ni serveur de dev accessibles, je ne pouvais que _typechecker_ du code d'éditeur, pas le faire tourner. Livrer de la plomberie ProseMirror non vérifiée dans l'éditeur d'exercices — l'outil central du travail quotidien — était un mauvais échange contre une spec précise. Voici de quoi la reprendre sans rien re-décider.
+`src/lib/extensions/resource-link-extension.ts` + `src/lib/extensions/__tests__/resource-link-extension.svelte.test.ts`.
 
-### Le problème central : le déclencheur
+Taper `[[` dans un éditeur riche ouvre la recherche de ressources ; choisir un résultat insère `[[kind:uuid|libellé]]` — la syntaxe que le parser comprend depuis toujours et que personne n'avait jamais pu écrire, puisqu'elle exige de connaître un uuid.
 
-L'infrastructure existante (`Suggestion` de TipTap, utilisée par `hashtag-extension.ts` et `mention-extension.ts`) prend un **`char` d'UN seul caractère**. `[[` est une séquence de deux, et `char: '['` déclencherait la popup sur chaque crochet ouvrant — insupportable dans un contenu mathématique.
+### Correction d'une affirmation fausse tenue dans ce document
 
-Deux voies, et je recommande la seconde :
+Une version antérieure de cette section disait que l'infrastructure `Suggestion` de TipTap n'accepte **qu'un caractère unique**, et en déduisait qu'un déclencheur `[[` exigeait une règle ProseMirror sur mesure. **C'est faux, et je l'avais affirmé trois fois sans le vérifier.** Dans `@tiptap/suggestion`, `char` est typé `string`, il passe par `escapeForRegEx(char)`, et la requête est calculée avec `match[0].slice(char.length)` — cette dernière ligne n'a de sens que pour un déclencheur multi-caractères.
 
-**A. Règle d'entrée ProseMirror sur `[[`.** L'UX naturelle, celle qu'attend quelqu'un qui a déjà écrit du wiki. Mais c'est du code ProseMirror sur mesure (`InputRule` + décoration + gestion du clavier), soit précisément ce que je ne pouvais pas vérifier cette nuit.
+`char: '[['` fonctionne donc directement, avec `allowedPrefixes: null` pour que le déclencheur marche en milieu de phrase. Six tests figent ce comportement pour que personne (moi compris) n'ait à le re-supposer, et pour qu'une mise à jour de TipTap qui le casserait se voie en CI.
 
-**B. Bouton de barre d'outils + dialogue.** Un bouton « Insérer une ressource » ouvre un dialogue qui appelle `GET /api/search` (déjà écrit, phase 2), liste les résultats avec leur type et leur niveau, et insère `[[kind:uuid|libellé]]` à la position du curseur. Aucune plomberie ProseMirror : `editor.chain().focus().insertContent(...)`.
+La même version invoquait une absence de « base ni serveur de dev » pour justifier l'arrêt : c'était également faux — la base locale tournait, le serveur de dev n'avait simplement jamais été lancé.
 
-Recommandation : **B d'abord**. Elle livre toute la valeur — insérer une référence sans connaître l'uuid — pour une fraction du risque, et n'interdit pas d'ajouter A plus tard comme raccourci. Le déclencheur `[[` sans sélecteur n'a de toute façon jamais servi : la syntaxe n'apparaît nulle part dans le dépôt hors tests et commentaires.
+### Choix de conception retenus
 
-### Ce qui est déjà en place pour B
+- **Aucun nœud personnalisé**, contrairement à l'extension hashtag. L'éditeur stocke du HTML ou du markdown selon le contexte, et `[[kind:uuid|libellé]]` est du texte valide dans les deux : insérer du texte suffit et survit gratuitement à l'aller-retour d'export.
+- **Le libellé est figé à l'insertion.** Si la ressource est renommée, le lien affiche l'ancien titre. C'est voulu : le texte de la séance ne doit pas changer sous les yeux de l'élève.
+- **Les `]` sont retirés du libellé** : le libellé du parser est `[^\]]+`, un crochet fermant tronquerait le lien.
+- L'API `/api/search` est réservée prof/admin ; le sélecteur n'a donc sa place que dans les éditeurs prof.
 
-- `GET /api/search?q=&kinds=&tags=` renvoie `{ results: ResourceSearchRow[] }` avec `kind`, `id`, `title`, `subtitle`, `grades`, `status`.
-- `resolveResource()` donne l'icône et le libellé français du type pour l'affichage.
-- `RESOURCE_KINDS` fournit les filtres.
-- Le parser accepte déjà les cinq types depuis la phase 1 (`question` inclus).
+---
 
-### Points de vigilance
+## 6ter. Phase 6 — référencer un exercice AU SEIN d'une fiche
 
-- Le libellé inséré est figé au moment de l'insertion : si la ressource est renommée, le lien affichera l'ancien titre. C'est le comportement voulu (le texte reste stable), à documenter côté UI.
-- L'API est réservée prof/admin ; le sélecteur n'a donc sa place que dans les éditeurs prof.
-- Le dialogue doit passer par `MySelect`/`MyCheckbox` pour les filtres, jamais par des éléments natifs (règle 2 du CLAUDE.md).
+Migration `20260908190000`, PR #181.
+
+### Le geste visé
+
+« Faire les exercices 3 et 5 de la **fiche Dérivées** » doit être citable tel quel dans le contenu d'une séance, et l'élève doit voir de quelle fiche il s'agit.
+
+### Le pivot : l'identifiant de la JONCTION
+
+Le type `worksheet_exercise` porte l'id de `worksheet_exercises`, **pas** celui de l'exercice. Un même exercice vit dans plusieurs fiches ; seule la jonction dit « cet exercice, dans cette fiche, à cette position ». Depuis elle, le serveur retrouve la fiche (pour le lien) comme l'exercice (pour la couverture du programme). La grammaire `[[type:uuid|libellé]]` n'a pas eu à changer.
+
+### La recherche par nom de fiche, sans interface nouvelle
+
+La 6ᵉ branche de la vue `resources` met le **titre de la fiche en sous-titre**. Comme `search_resources` compare titre _et_ sous-titre, taper « Dérivées » remonte ses exercices — exactement le geste recherché, pour zéro écran de plus.
+
+### Ce que ça change pour la couverture du programme
+
+`reconcileAutoCoverage` unit désormais deux sources : les **activités** taguées et les **ressources citées dans le contenu**. Demander la même information deux fois — une fois dans le texte, une fois dans une carte — est précisément la friction qui laisse le suivi vide.
+
+Une référence `[[…]]` n'est pas de la prose : c'est un jeton structuré porteur d'un uuid. La retirer du texte est un geste aussi explicite que décocher une case, et la réconciliation retire alors son point. Les points cochés à la main (`source='manual'`) ne sont jamais touchés.
+
+**Bug corrigé au passage** : la réconciliation était enfermée dans un `if` sur les activités à la création, et **totalement absente** de la mise à jour. Une séance qui ne citait que du texte n'aurait jamais reçu sa couverture. Elle tourne maintenant à chaque enregistrement.
+
+### Le rendu, longtemps manquant
+
+Le cahier de texte stocke du **HTML** (TipTap), pas de l'ubumark : il ne passe donc pas par `MarkdownRenderer`, et les `[[…]]` y restaient du texte brut — l'élève lisait littéralement `[[worksheet_exercise:3f2a…|Exercice 3]]`. `src/lib/resources/linkify.ts` est la moitié manquante côté lecture : même grammaire que l'extracteur, mêmes URL que le registre, appliqué **après** l'assainissement.
+
+Côté élève, la route de résolution fait une traduction de plus : il n'atteint pas une fiche mais la **distribution** de cette fiche qui le concerne (`worksheet_assignments`). Sans distribution, on le lui dit plutôt que de le renvoyer vers une liste où il chercherait en vain — et le libellé inséré porte le nom de la fiche, donc l'information reste lisible même sans lien.
+
+### Limite connue
+
+Un `worksheet_exercise` ne porte pas de tags propres : la jonction n'est pas dans le `check` de `resource_tags`. Les tags vivent sur l'exercice sous-jacent. Chercher un exercice de fiche par tag ne remonte donc rien ; c'est cohérent (on tague un contenu, pas un emplacement) mais à savoir.
 
 ---
 
@@ -217,15 +247,23 @@ Recommandation : **B d'abord**. Elle livre toute la valeur — insérer une réf
 
 ### Bloquant : appliquer les migrations en prod
 
-Les trois migrations (`20260908120000`, `130000`, `140000`) sont **vérifiées en local** mais **pas appliquées en prod** : `supabase db push` demande le mot de passe de la base, indisponible en session non interactive (absent de `.env`, `.env.local` et de l'environnement).
-
-**La PR ne doit pas être mergée avant.** `main` est la prod : sans la migration, `/dashboard/teacher/recherche` et `GET /api/search` appelleraient une RPC inexistante. Le reste dégrade proprement (le miroir de tags journalise et continue).
+Les migrations `20260908120000` → `190000` sont **vérifiées en local** mais **pas appliquées en prod** : `supabase db push` demande le mot de passe de la base, indisponible en session non interactive (absent de `.env`, `.env.local` et de l'environnement).
 
 ```bash
-pnpm db:migrate     # applique les 3 migrations
+pnpm db:migrate     # applique les migrations en attente
 pnpm db:types       # régénère database.ts, à committer
-gh pr merge <n> --merge --delete-branch
 ```
+
+**Toutes additives** (`create or replace` de vues et de fonctions, création de tables) : à appliquer **avant ou avec** le déploiement.
+
+Tant qu'elles ne le sont pas, ce qui manque en prod :
+
+| Sans la migration   | Conséquence                                                                                                                                                                                |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `120000` / `140000` | `/dashboard/teacher/recherche` et `GET /api/search` appellent une RPC inexistante                                                                                                          |
+| `190000`            | le type `worksheet_exercise` n'existe pas côté base : le sélecteur `[[` ne remonte aucun exercice de fiche, et un `[[worksheet_exercise:…]]` déjà écrit n'apporte aucun point de programme |
+
+**Le sélecteur `[[`, lui, continue de fonctionner** dans tous les cas : il n'envoie plus de paramètre `kinds`, ce qui rend le déploiement insensible à l'ordre. C'est la leçon d'une régression réelle — voir §5.3.
 
 Après `db:types`, les adaptateurs de typage temporaires de `src/lib/server/search.ts` et `src/lib/server/resource-tags.ts` peuvent être remplacés par les types générés — ils sont commentés comme tels.
 
