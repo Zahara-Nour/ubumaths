@@ -49,7 +49,9 @@ pnpm release                        # tag de version + CHANGELOG (standard-versi
 
 > **Process complet** : [docs/claude/git-workflow.md](docs/claude/git-workflow.md)
 
-`main` = **production**. Tout changement de **code** : **branche → PR → CI 100 % verte → `gh pr merge --merge` → suppression de branche**. **Jamais de code direct sur `main`** (seule exception : pure doc/typo ≤ 2 fichiers `.md`).
+`main` = **production**. Tout changement de **code** : **branche → PR → CI 100 % verte → `gh pr merge --merge` → suppression de branche**. **Jamais de code direct sur `main`**.
+
+**Pure doc/typo ≤ 2 fichiers `.md` : commit DIRECT sur `main`, sans branche ni PR.** Ce n'est pas une permission, c'est une obligation — une PR pour un `.md` relance toute la CI pour rien.
 
 - **CI verte avant merge** (`gh pr checks <n> --watch`). Jamais merger en rouge.
 - **Conventional commits**, **header ≤ 100 caractères** (commitlint), **aucune mention Claude/Anthropic** (David = seul auteur).
