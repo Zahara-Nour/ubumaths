@@ -41,6 +41,7 @@ import type {
 	WorksheetTemplateRow
 } from '$lib/types/worksheets';
 import type { GeneratorConfig, GeneratorContext, GenerateResult } from '../types';
+import { groupExercisesForDisplay } from '$lib/worksheets/exercise-numbering';
 import { BaseTypstGenerator } from './base-generator';
 import { generateTypst, escapeTypst, parseMarkdown } from '$lib/ubumark';
 import { getDefaultTemplate, renderTemplate } from '../templates';
@@ -524,55 +525,27 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			? instance.exercise_order.map((idx) => exercises[idx])
 			: exercises;
 
-		// If no sections, render exercises directly
-		if (sections.length === 0) {
-			let content = '';
-			orderedExercises.forEach((exercise, index) => {
-				const number = formatNumber(index + 1, numberingStyle);
-				content += this.generateSingleExercise(exercise, number, mode, worksheetType);
-				content += '\n\n';
-			});
-			return content;
-		}
-
-		// Group exercises by section
-		const grouped = new Map<string | null, ResolvedExercise[]>();
-		for (const section of sections) {
-			grouped.set(section.id, []);
-		}
-		grouped.set(null, []); // For unsectioned exercises
-
-		for (const exercise of orderedExercises) {
-			const sectionId = exercise.section_id ?? null;
-			const group = grouped.get(sectionId) ?? grouped.get(null)!;
-			group.push(exercise);
-		}
-
+		// La numérotation est celle de `$lib/worksheets/exercise-numbering` — la
+		// même règle que la page élève et que le résolveur de `[[exos:fiche#3]]`.
+		// Elle était écrite ici en propre, et une troisième copie avait déjà
+		// divergé (notifications de signalement).
+		//
+		// `preserveExerciseOrder` : l'ordre du tirage au sort prime sur `position`.
 		let content = '';
-		let globalIndex = 0;
+		for (const group of groupExercisesForDisplay(orderedExercises, sections, {
+			preserveExerciseOrder: true
+		})) {
+			if (group.section) content += this.generateSectionHeader(group.section);
 
-		// Render sections with their exercises
-		for (const section of sections) {
-			const sectionExercises = grouped.get(section.id) ?? [];
-			if (sectionExercises.length === 0) continue;
-
-			// Section header
-			content += this.generateSectionHeader(section);
-
-			// Section exercises
-			for (const exercise of sectionExercises) {
-				const number = formatNumber(++globalIndex, numberingStyle);
-				content += this.generateSingleExercise(exercise, number, mode, worksheetType);
+			for (const { exercise, number } of group.exercises) {
+				content += this.generateSingleExercise(
+					exercise,
+					formatNumber(number, numberingStyle),
+					mode,
+					worksheetType
+				);
 				content += '\n\n';
 			}
-		}
-
-		// Render unsectioned exercises
-		const unsectioned = grouped.get(null) ?? [];
-		for (const exercise of unsectioned) {
-			const number = formatNumber(++globalIndex, numberingStyle);
-			content += this.generateSingleExercise(exercise, number, mode, worksheetType);
-			content += '\n\n';
 		}
 
 		return content;
@@ -696,73 +669,23 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			? instance.exercise_order.map((idx) => exercises[idx])
 			: exercises;
 
-		// If no sections, render exercises directly
-		if (sections.length === 0) {
-			let content = '';
-			orderedExercises.forEach((exercise, index) => {
-				const number = formatNumber(index + 1, numberingStyle);
-				content += this.generateSingleExerciseSimple(
-					exercise,
-					number,
-					mode,
-					worksheetType,
-					headerStyle
-				);
-				content += '\n\n';
-			});
-			return content;
-		}
-
-		// Group exercises by section
-		const grouped = new Map<string | null, ResolvedExercise[]>();
-		for (const section of sections) {
-			grouped.set(section.id, []);
-		}
-		grouped.set(null, []); // For unsectioned exercises
-
-		for (const exercise of orderedExercises) {
-			const sectionId = exercise.section_id ?? null;
-			const group = grouped.get(sectionId) ?? grouped.get(null)!;
-			group.push(exercise);
-		}
-
+		// Même règle de numérotation que partout ailleurs (cf. generateExercises).
 		let content = '';
-		let globalIndex = 0;
+		for (const group of groupExercisesForDisplay(orderedExercises, sections, {
+			preserveExerciseOrder: true
+		})) {
+			if (group.section) content += this.generateSectionHeaderSimple(group.section);
 
-		// Render sections with their exercises
-		for (const section of sections) {
-			const sectionExercises = grouped.get(section.id) ?? [];
-			if (sectionExercises.length === 0) continue;
-
-			// Section header (simplified for templates)
-			content += this.generateSectionHeaderSimple(section);
-
-			// Section exercises
-			for (const exercise of sectionExercises) {
-				const number = formatNumber(++globalIndex, numberingStyle);
+			for (const { exercise, number } of group.exercises) {
 				content += this.generateSingleExerciseSimple(
 					exercise,
-					number,
+					formatNumber(number, numberingStyle),
 					mode,
 					worksheetType,
 					headerStyle
 				);
 				content += '\n\n';
 			}
-		}
-
-		// Render unsectioned exercises
-		const unsectioned = grouped.get(null) ?? [];
-		for (const exercise of unsectioned) {
-			const number = formatNumber(++globalIndex, numberingStyle);
-			content += this.generateSingleExerciseSimple(
-				exercise,
-				number,
-				mode,
-				worksheetType,
-				headerStyle
-			);
-			content += '\n\n';
 		}
 
 		return content;
