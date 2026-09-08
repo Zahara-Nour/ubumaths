@@ -270,7 +270,8 @@ const VALID_INTERNAL_LINK_TYPES: InternalLinkReferenceType[] = [
 	'document',
 	'exercise',
 	'assessment',
-	'question'
+	'question',
+	'worksheet_exercise'
 ];
 
 /**

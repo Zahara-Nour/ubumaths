@@ -133,6 +133,25 @@ describe('construction du lien', () => {
 	it('ne produit jamais un libellé vide', () => {
 		expect(toSuggestionItem({ ...row, title: '   ' }).label).toBe('Sans titre');
 	});
+
+	it('un exercice de fiche emporte le NOM DE LA FICHE dans le texte inséré', () => {
+		// L'élève doit voir le lien avec la fiche. Le libellé est la seule chose
+		// qui lui reste quand le lien ne mène nulle part (fiche non distribuée),
+		// donc « Exercice 3 » tout seul ne lui apprendrait rien.
+		const item = toSuggestionItem({
+			kind: 'worksheet_exercise',
+			id: '550e8400-e29b-41d4-a716-446655440000',
+			title: 'Exercice 3',
+			subtitle: 'Fiche : Dérivées'
+		});
+
+		expect(item.id).toBe(
+			'[[worksheet_exercise:550e8400-e29b-41d4-a716-446655440000|Exercice 3 — Fiche : Dérivées]]'
+		);
+		// Dans la liste en revanche, la fiche est déjà sur la deuxième ligne.
+		expect(item.label).toBe('Exercice 3');
+		expect(item.description).toBe('Exercice de fiche · Fiche : Dérivées');
+	});
 });
 
 // ============================================================================

@@ -26,7 +26,7 @@ import { Extension } from '@tiptap/core';
 import Suggestion from '@tiptap/suggestion';
 import { PluginKey } from '@tiptap/pm/state';
 import { createSuggestionRenderer, type SuggestionItem } from '$lib/extensions/suggestion-renderer';
-import { RESOURCE_KINDS, isResourceKind, type ResourceKind } from '$lib/resources/kinds';
+import { isResourceKind, type ResourceKind } from '$lib/resources/kinds';
 
 // ============================================================================
 // TYPES
@@ -53,6 +53,7 @@ const KIND_LABELS: Record<ResourceKind, string> = {
 	question: 'Question',
 	assessment: 'Évaluation',
 	chapter: 'Chapitre',
+	worksheet_exercise: 'Exercice de fiche',
 	document: 'Document'
 };
 
@@ -68,9 +69,15 @@ const KIND_LABELS: Record<ResourceKind, string> = {
  */
 async function searchResources(query: string, limit: number): Promise<SuggestionItem[]> {
 	try {
+		// PAS de `kinds` : demander TOUS les types revient à n'en filtrer aucun, et
+		// l'omettre supprime un couplage qui a déjà mordu. La fonction SQL borne la
+		// taille du tableau `p_kinds` ; ce plafond a valu un temps exactement la
+		// taille du vocabulaire, si bien qu'ajouter un type rendait la recherche
+		// vide — sans erreur, sans trace. Ne rien envoyer rend aussi le déploiement
+		// insensible à l'ordre : le sélecteur continue de marcher tant que la
+		// migration qui ajoute un type n'est pas encore appliquée.
 		const params = new URLSearchParams({
 			q: query,
-			kinds: RESOURCE_KINDS.join(','),
 			limit: String(limit)
 		});
 		const response = await fetch(`/api/search?${params.toString()}`);
@@ -94,13 +101,33 @@ export function toSuggestionItem(row: SearchResult): SuggestionItem {
 	// Les `]` casseraient la syntaxe : le libellé du parser est `[^\]]+`, donc un
 	// crochet fermant tronquerait le lien. Les retirer laisse des espaces doubles,
 	// qu'on ré-écrase — sinon le libellé affiché porte la trace de la réparation.
-	const label = row.title.replaceAll(']', '').replace(/\s+/g, ' ').trim() || 'Sans titre';
+	const label = sanitiseLabel(insertedLabel(row, kind));
 
 	return {
 		id: `[[${kind}:${row.id}|${label}]]`,
-		label,
+		// Dans la liste, le titre seul suffit : la fiche est déjà sur la 2ᵉ ligne.
+		label: sanitiseLabel(row.title),
 		description: row.subtitle ? `${KIND_LABELS[kind]} · ${row.subtitle}` : KIND_LABELS[kind]
 	};
+}
+
+function sanitiseLabel(raw: string): string {
+	return raw.replaceAll(']', '').replace(/\s+/g, ' ').trim() || 'Sans titre';
+}
+
+/**
+ * Libellé écrit DANS le texte.
+ *
+ * Un exercice de fiche emporte le nom de sa fiche : c'est la seule information
+ * dont l'élève a besoin pour savoir quoi ouvrir, et elle doit rester lisible même
+ * quand le lien ne mène nulle part (l'élève n'atteint une fiche que si elle lui a
+ * été distribuée). Le sous-titre de la vue est déjà « Fiche : … ».
+ */
+function insertedLabel(row: SearchResult, kind: ResourceKind): string {
+	if (kind === 'worksheet_exercise' && row.subtitle) {
+		return `${row.title} — ${row.subtitle}`;
+	}
+	return row.title;
 }
 
 // ============================================================================

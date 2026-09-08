@@ -28,7 +28,14 @@
  */
 
 import { resolve } from '$app/paths';
-import { BookOpen, ClipboardCheck, FileText, HelpCircle, PencilRuler } from '@lucide/svelte';
+import {
+	BookOpen,
+	ClipboardCheck,
+	ClipboardList,
+	FileText,
+	HelpCircle,
+	PencilRuler
+} from '@lucide/svelte';
 import type { LucideIcon } from '@lucide/svelte';
 import { lore } from '$lib/config/lore';
 import { RESOURCE_KINDS, isResourceKind, type ResourceKind } from './kinds';
@@ -180,6 +187,22 @@ export const RESOURCE_REGISTRY: Record<ResourceKind, ResourceKindDefinition> = {
 			teacher: (id, { classId }) => (classId ? teacherChapterPath(classId, id) : null),
 			student: (id) =>
 				resolve('/(protected)/dashboard/student/cours/[chapterId]', { chapterId: id }),
+			admin: null,
+			public: null
+		}
+	},
+	worksheet_exercise: {
+		label: 'Exercice de fiche',
+		icon: ClipboardList,
+		routes: {
+			// Route de résolution : elle traduit l'identifiant de jonction en fiche
+			// et redirige. Le registre est synchrone et ne peut pas interroger la
+			// base ; c'est donc la route qui fait la traduction.
+			teacher: (id) =>
+				resolve('/(protected)/dashboard/teacher/contenu/worksheets/exercice/[id]', { id }),
+			// Même mécanique côté élève, avec une traduction de plus : il n'atteint
+			// pas une fiche mais la DISTRIBUTION de cette fiche qui le concerne.
+			student: (id) => resolve('/(protected)/dashboard/student/worksheets/exercice/[id]', { id }),
 			admin: null,
 			public: null
 		}

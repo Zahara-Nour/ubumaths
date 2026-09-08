@@ -452,6 +452,11 @@
 			return async ({ update: formUpdate }) => {
 				isSaving = false;
 				await formUpdate();
+				// Les ressources citées dans le texte alimentent la couverture, que le
+				// serveur recalcule à chaque enregistrement. `coveredSource` est un
+				// `$state` figé à l'initialisation : sans cette relance, la carte
+				// « Programme travaillé » afficherait l'état d'avant la sauvegarde.
+				await refreshCoverage();
 			};
 		}}
 	>
