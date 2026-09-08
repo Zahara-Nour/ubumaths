@@ -1522,6 +1522,78 @@ export type Database = {
           },
         ]
       }
+      class_journal_share_tokens: {
+        Row: {
+          access_count: number
+          class_id: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          last_accessed_at: string | null
+          token: string
+        }
+        Insert: {
+          access_count?: number
+          class_id: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          last_accessed_at?: string | null
+          token: string
+        }
+        Update: {
+          access_count?: number
+          class_id?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          last_accessed_at?: string | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_journal_share_tokens_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_journal_share_tokens_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "class_journal_share_tokens_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "class_journal_share_tokens_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_journal_share_tokens_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       class_members: {
         Row: {
           class_id: string
@@ -15400,6 +15472,10 @@ export type Database = {
           total_target_students: number
           total_views: number
         }[]
+      }
+      get_class_journal_by_share_token: {
+        Args: { p_token: string }
+        Returns: Json
       }
       get_classes_by_user_grade: {
         Args: never
