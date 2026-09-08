@@ -28,7 +28,7 @@ export interface SuggestionItem {
  */
 export interface SuggestionRendererConfig {
 	/** Type of suggestion (affects styling) */
-	type: 'hashtag' | 'mention';
+	type: 'hashtag' | 'mention' | 'resource';
 	/** Prefix character shown before each item */
 	prefix: string;
 	/** CSS class for the popup container */
@@ -94,7 +94,11 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 		el.setAttribute('role', 'listbox');
 		el.setAttribute(
 			'aria-label',
-			type === 'hashtag' ? 'Suggestions de hashtags' : 'Suggestions de mentions'
+			type === 'hashtag'
+				? 'Suggestions de hashtags'
+				: type === 'mention'
+					? 'Suggestions de mentions'
+					: 'Suggestions de ressources'
 		);
 		return el;
 	}

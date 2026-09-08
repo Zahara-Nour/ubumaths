@@ -33,6 +33,7 @@ import {
 } from '$lib/extensions/template-extensions';
 import { BlankField } from '$lib/extensions/blank-extension';
 import { Hashtag } from '$lib/extensions/hashtag-extension';
+import { ResourceLink } from '$lib/extensions/resource-link-extension';
 import { Mention } from '$lib/extensions/mention-extension';
 import { MarkdownPaste } from './markdown-paste-extension';
 import { CustomCode, CustomCodeBlock } from '$lib/extensions/code-extension';
@@ -159,6 +160,8 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 
 		// Social features
 		Hashtag.configure({}),
+		// `[[` ouvre la recherche de ressources et insère la syntaxe ubumark.
+		ResourceLink.configure({}),
 		Mention.configure({}),
 
 		// Markdown paste support - converts pasted Markdown to rich text
