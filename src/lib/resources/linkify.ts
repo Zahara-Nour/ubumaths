@@ -42,8 +42,17 @@ export interface LinkifyOptions {
  * Sans ce découpage, une référence écrite dans un attribut (un `title`, un
  * `href`) serait remplacée par un `<a>` au milieu d'une balise ouvrante, ce qui
  * casse le document. On ne transforme donc que ce qui est hors balise.
+ *
+ * ⚠️ La reconnaissance doit tenir compte des GUILLEMETS. La sérialisation HTML
+ * n'échappe, dans une valeur d'attribut, que `&` et `"` : un `>` y survit
+ * littéralement. Un `/(<[^>]*>)/` naïf coupe donc la balise au premier `>` de
+ * `title="a > b"` et prend la fin de l'attribut pour du texte — de quoi injecter
+ * un `<a>` À L'INTÉRIEUR d'une valeur d'attribut et disloquer le paragraphe.
  */
-const TAG_SEGMENT = /(<[^>]*>)/;
+const TAG_SEGMENT = /(<\/?[a-zA-Z!][^>"']*(?:(?:"[^"]*"|'[^']*')[^>"']*)*>)/;
+
+/** Forme canonique attendue d'un `classId` avant de le laisser entrer dans une URL. */
+const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 
 /**
  * Remplace les références par des liens (ou du texte inerte).
@@ -54,9 +63,17 @@ const TAG_SEGMENT = /(<[^>]*>)/;
 export function linkifyResourceReferences(html: string, { role, classId }: LinkifyOptions): string {
 	if (!html || !html.includes('[[')) return html;
 
+	// `resolve()` de SvelteKit substitue les paramètres VERBATIM, sans encodage :
+	// un `classId` mal formé se retrouverait tel quel dans un `href`. Aucun
+	// appelant actuel n'en passe, et c'est précisément le moment de fermer la
+	// porte — pas le jour où une page prof en passera un venu de la base.
+	const safeClassId = classId && UUID.test(classId) ? classId : undefined;
+
 	return html
 		.split(TAG_SEGMENT)
-		.map((segment) => (segment.startsWith('<') ? segment : linkifySegment(segment, role, classId)))
+		.map((segment) =>
+			segment.startsWith('<') ? segment : linkifySegment(segment, role, safeClassId)
+		)
 		.join('');
 }
 
@@ -71,19 +88,24 @@ function linkifySegment(text: string, role: ViewerRole, classId: string | undefi
 			context: { classId }
 		});
 
-		// Le libellé vient d'un HTML déjà assaini : le ré-échapper produirait des
-		// `&amp;lt;` à la lecture. L'attribut `title` ne reçoit qu'une constante du
-		// registre, mais on l'échappe quand même — une constante se change, et le
-		// jour où elle contiendra un guillemet, il ne faut pas que ce soit une
-		// faille plutôt qu'un mot mal affiché.
+		// Le libellé vient d'un HTML déjà assaini : `<`, `>` et `"` y sont donc
+		// déjà des entités, et les échapper est un no-op. On le fait quand même,
+		// parce que ce n'est vrai que du FLUX DE TEXTE : dans une valeur
+		// d'attribut, ces caractères survivent littéralement. Volontairement pas
+		// `&`, qui produirait le `&amp;lt;` que ce double échappement redoute.
 		const title = escapeAttribute(resolved.kindLabel);
 
 		return resolved.url
-			? `<a href="${resolved.url}" class="${LINK_CLASS}" title="${title}">${resolved.label}</a>`
-			: `<span class="${INERT_CLASS}" title="${title} non consultable ici">${resolved.label}</span>`;
+			? `<a href="${escapeAttribute(resolved.url)}" class="${LINK_CLASS}" title="${title}">${escapeText(resolved.label)}</a>`
+			: `<span class="${INERT_CLASS}" title="${title} non consultable ici">${escapeText(resolved.label)}</span>`;
 	});
 }
 
 function escapeAttribute(value: string): string {
 	return value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;');
+}
+
+/** Cf. le commentaire ci-dessus : sans `&`, pour ne jamais doubler l'échappement. */
+function escapeText(value: string): string {
+	return value.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 }

@@ -81,6 +81,57 @@ describe('linkifyResourceReferences', () => {
 		expect(out).not.toContain('&amp;amp;');
 	});
 
+	it("ne s'échappe pas d'une valeur d'attribut contenant un « > »", () => {
+		// La sérialisation HTML n'échappe QUE `&` et `"` dans un attribut : le `>`
+		// y survit littéralement. Un découpage `/(<[^>]*>)/` naïf coupait donc la
+		// balise en plein `title`, et injectait le `<a>` À L'INTÉRIEUR de la valeur
+		// — attribut refermé trop tôt, classe du `<p>` écrasée, texte qui fuit.
+		const html = `<p title="a>[[exercise:${UUID}|X]]">bonjour</p>`;
+
+		expect(linkifyResourceReferences(html, { role: 'student' })).toBe(html);
+	});
+
+	it("n'injecte rien quand un libellé contient une balise littérale", () => {
+		// Deux défenses qui se croisent : le découpage voit `<img src=x>` comme une
+		// balise, donc la référence est coupée en deux et n'est PAS reconnue. Elle
+		// reste du texte tel quel — c'est laid, mais rien n'est injecté.
+		const html = `<p>[[exercise:${UUID}|<img src=x>]]</p>`;
+
+		expect(linkifyResourceReferences(html, { role: 'student' })).toBe(html);
+	});
+
+	it('échappe les guillemets et chevrons du libellé', () => {
+		// Un `"` ne coupe pas le découpage : il atteint donc bien le libellé, et
+		// c'est l'échappement qui l'empêche de sortir d'un attribut le jour où le
+		// libellé en garnirait un.
+		const html = `<p>[[exercise:${UUID}|Dire " et > ]]</p>`;
+		const out = linkifyResourceReferences(html, { role: 'student' });
+
+		expect(out).toContain('Dire &quot; et &gt;');
+	});
+
+	it('refuse un classId qui n’est pas un uuid plutôt que de le mettre dans une URL', () => {
+		// `resolve()` substitue les paramètres VERBATIM, sans encodage.
+		const html = `<p>[[chapter:${UUID}|Le chapitre]]</p>`;
+		const out = linkifyResourceReferences(html, {
+			role: 'teacher',
+			classId: '" onload="alert(1)'
+		});
+
+		expect(out).not.toContain('onload');
+		// Sans classe utilisable, la route prof n'existe pas : texte inerte.
+		expect(out).not.toContain('<a ');
+		expect(out).toContain('Le chapitre');
+	});
+
+	it('accepte un classId bien formé', () => {
+		const classId = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee';
+		const html = `<p>[[chapter:${UUID}|Le chapitre]]</p>`;
+		const out = linkifyResourceReferences(html, { role: 'teacher', classId });
+
+		expect(out).toContain(`href="/dashboard/teacher/cours/${classId}/${UUID}"`);
+	});
+
 	it('accepte un uuid en majuscules', () => {
 		const html = `<p>[[EXERCISE:${UUID.toUpperCase()}|Titre]]</p>`;
 		const out = linkifyResourceReferences(html, { role: 'student' });

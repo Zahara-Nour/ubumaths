@@ -26,7 +26,7 @@ import { Extension } from '@tiptap/core';
 import Suggestion from '@tiptap/suggestion';
 import { PluginKey } from '@tiptap/pm/state';
 import { createSuggestionRenderer, type SuggestionItem } from '$lib/extensions/suggestion-renderer';
-import { RESOURCE_KINDS, isResourceKind, type ResourceKind } from '$lib/resources/kinds';
+import { isResourceKind, type ResourceKind } from '$lib/resources/kinds';
 
 // ============================================================================
 // TYPES
@@ -69,9 +69,15 @@ const KIND_LABELS: Record<ResourceKind, string> = {
  */
 async function searchResources(query: string, limit: number): Promise<SuggestionItem[]> {
 	try {
+		// PAS de `kinds` : demander TOUS les types revient à n'en filtrer aucun, et
+		// l'omettre supprime un couplage qui a déjà mordu. La fonction SQL borne la
+		// taille du tableau `p_kinds` ; ce plafond a valu un temps exactement la
+		// taille du vocabulaire, si bien qu'ajouter un type rendait la recherche
+		// vide — sans erreur, sans trace. Ne rien envoyer rend aussi le déploiement
+		// insensible à l'ordre : le sélecteur continue de marcher tant que la
+		// migration qui ajoute un type n'est pas encore appliquée.
 		const params = new URLSearchParams({
 			q: query,
-			kinds: RESOURCE_KINDS.join(','),
 			limit: String(limit)
 		});
 		const response = await fetch(`/api/search?${params.toString()}`);
