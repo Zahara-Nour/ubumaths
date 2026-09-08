@@ -17,7 +17,7 @@ import {
 	createTagResponseSchema
 } from '$lib/server/validation';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
 
 export const GET: RequestHandler = async ({ locals }) => {
 	await requireAuth(locals);
@@ -42,7 +42,11 @@ export const GET: RequestHandler = async ({ locals }) => {
 };
 
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const { user } = await requireAuth(locals);
+	// Prof/admin seulement depuis 20260908160000 : la RLS refuse déjà l'écriture
+	// à un élève, mais elle le fait par un 42501 que cette route traduirait en
+	// 500 — un refus d'autorisation déguisé en panne. La garde applicative rend
+	// le refus franc (403) et garde la RLS comme ceinture.
+	const { user } = await requireRoles(locals, ['teacher', 'admin']);
 
 	let body: unknown;
 	try {

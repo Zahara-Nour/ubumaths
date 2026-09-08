@@ -12,13 +12,15 @@ import {
 	createTagResponseSchema
 } from '$lib/server/validation';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireRoles } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/tags
  * Get all tags sorted alphabetically.
  * Read-only access is open to anonymous visitors so public pages (e.g.
  * /presques-evaluations) can offer tag-based filtering without auth.
+ * Creation, however, is teacher/admin only: a tag is free text that anyone can
+ * then read without an account.
  * Tag names are generic math themes (algèbre, géométrie, etc.) and carry
  * no PII, so exposing them publicly is safe.
  */
@@ -46,10 +48,14 @@ export const GET: RequestHandler = async ({ locals }) => {
 /**
  * POST /api/tags
  * Create a new tag
- * Any authenticated user can create tags
+ * Teachers and admins only can create tags
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const { user } = await requireAuth(locals);
+	// Prof/admin seulement depuis 20260908160000 : la RLS refuse déjà l'écriture
+	// à un élève, mais elle le fait par un 42501 que cette route traduirait en
+	// 500 — un refus d'autorisation déguisé en panne. La garde applicative rend
+	// le refus franc (403) et garde la RLS comme ceinture.
+	const { user } = await requireRoles(locals, ['teacher', 'admin']);
 
 	// Parse and validate request body
 	let body: unknown;
