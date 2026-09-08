@@ -605,6 +605,7 @@
 						<div class="space-y-2">
 							<Label>Tags</Label>
 							<TagBadgeSelector
+								kind="exercise"
 								bind:value={tags}
 								placeholder="Ajouter des tags"
 								maxSelections={20}

@@ -46,7 +46,17 @@ export const tagSchema = z.object({
 	id: z.string().uuid(),
 	name: z.string(),
 	created_by: z.string().uuid().nullable(),
-	created_at: z.string()
+	created_at: z.string(),
+	/**
+	 * Renseigné seulement quand `GET /api/tags?kind=…` précise un type : indique
+	 * que ce tag est DÉJÀ employé sur ce type de ressource.
+	 *
+	 * Sert à ordonner les suggestions, jamais à restreindre : un tag « maths »
+	 * reste posable sur un exercice Python, il est simplement plus bas dans la
+	 * liste. Le catalogue, lui, demeure unique — c'est ce qui permet à une
+	 * recherche par `dérivée` de traverser exercices et fiches.
+	 */
+	used_on_kind: z.boolean().optional()
 });
 
 export type Tag = z.infer<typeof tagSchema>;
