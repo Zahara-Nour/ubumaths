@@ -56,6 +56,11 @@
 	const initialData = data;
 
 	// Form state
+	// Niveau de la classe dont on écrit la séance : le sélecteur `[[` s'y restreint.
+	// `$derived` et non figé à l'initialisation — on navigue d'une classe à l'autre
+	// sans remonter le composant, et un niveau périmé filtrerait sur la mauvaise classe.
+	let classGrades = $derived(data.classData.grade ? [data.classData.grade] : null);
+
 	let lessonContent = $state(initialData.entry?.lessonContent || '');
 	let homeworkContent = $state(initialData.entry?.homeworkContent || '');
 	let homeworkDueDate = $state(initialData.entry?.homeworkDueDate || '');
@@ -485,6 +490,7 @@
 				<Card.Content>
 					<input type="hidden" name="lessonContent" value={lessonContent} />
 					<RichTextEditor
+						resourceGrades={classGrades}
 						bind:htmlValue={lessonContent}
 						preset="standard"
 						minHeight="200px"
@@ -508,6 +514,7 @@
 				<Card.Content class="space-y-4">
 					<input type="hidden" name="homeworkContent" value={homeworkContent} />
 					<RichTextEditor
+						resourceGrades={classGrades}
 						bind:htmlValue={homeworkContent}
 						preset="standard"
 						minHeight="150px"
