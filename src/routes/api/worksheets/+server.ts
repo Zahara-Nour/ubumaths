@@ -7,6 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { syncResourceTags } from '$lib/server/resource-tags';
 import {
 	validateListWorksheetsQuery,
 	validateCreateWorksheet,
@@ -150,7 +151,6 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			estimated_duration_minutes: data.estimated_duration_minutes ?? null,
 			total_points: data.total_points ?? null,
 			grades: data.grades ?? [],
-			tags: data.tags ?? [],
 			created_by: user.id,
 			school_id: profile.school_id ?? null
 		})
@@ -162,10 +162,13 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(500, 'Failed to create worksheet');
 	}
 
+	// Les tags vivent dans `resource_tags`, plus dans une colonne de la fiche.
+	await syncResourceTags(locals.supabase, 'worksheet', worksheet.id, data.tags ?? []);
+
 	// Validate response
 	const validated = validateJsonResponse(
 		createWorksheetResponseSchema,
-		{ worksheet },
+		{ worksheet: { ...worksheet, tags: data.tags ?? [] } },
 		'POST /api/worksheets'
 	);
 
