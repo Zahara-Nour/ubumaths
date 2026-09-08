@@ -188,10 +188,21 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 		}
 	}
 
+	// Les étiquettes de la fiche d'origine suivent la copie. Elles ne sont plus
+	// une colonne (migration 20260908180000), donc le `insert` qui duplique la
+	// ligne ne les emporte plus : sans cette recopie explicite, dupliquer une
+	// fiche perdrait silencieusement ses étiquettes.
+	const tags = await fetchResourceTagNames(locals.supabase, 'worksheet', worksheetId).catch(
+		() => []
+	);
+	if (tags.length > 0) {
+		await syncResourceTags(locals.supabase, 'worksheet', duplicate.id, tags);
+	}
+
 	// Validate response
 	const validated = validateJsonResponse(
 		createWorksheetResponseSchema,
-		{ worksheet: duplicate },
+		{ worksheet: { ...duplicate, tags } },
 		'POST /api/worksheets/[id]/duplicate'
 	);
 

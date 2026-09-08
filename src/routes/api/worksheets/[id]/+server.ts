@@ -125,12 +125,20 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		}
 	}
 
+	// Les étiquettes ne sont plus une colonne de `worksheets` (migration
+	// 20260908180000). Sans cette lecture, `tags` vaut `undefined` et le schéma
+	// rejette toute la réponse — la fiche devient illisible.
+	const tags = await fetchResourceTagNames(locals.supabase, 'worksheet', worksheet.id).catch(
+		() => []
+	);
+
 	// Validate response
 	const validated = validateJsonResponse(
 		worksheetDetailResponseSchema,
 		{
 			worksheet: {
 				...worksheet,
+				tags,
 				sections: sections ?? [],
 				exercises: exercises ?? [],
 				template
