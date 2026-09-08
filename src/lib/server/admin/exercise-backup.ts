@@ -26,7 +26,7 @@ import {
 	validateBackup,
 	validateRestoreOptions
 } from '$lib/server/validation/backup';
-import { resolveTagsToIds, syncExerciseTagJunction } from '$lib/server/tags-resolution';
+import { syncResourceTags } from '$lib/server/resource-tags';
 
 /**
  * `.single()` traite « zéro ligne » comme une erreur (`PGRST116`). Pendant une
@@ -98,8 +98,7 @@ async function attachBackupTags(
 	recordId: string
 ): Promise<void> {
 	try {
-		const tagIds = await resolveTagsToIds(supabase, tagNames, 'tags');
-		await syncExerciseTagJunction(supabase, exerciseId, tagIds, 'exercise_tags');
+		await syncResourceTags(supabase, 'exercise', exerciseId, tagNames);
 	} catch (err) {
 		result.errors.push({
 			table: 'exercise_tags',
@@ -442,7 +441,7 @@ export async function exportBackupSQL(
 			// tag-normalization migration). For each tag name we: (1) ensure the
 			// catalog row exists, (2) link it to the exercise via a name sub-select.
 			// The catalog `tags` table auto-creates missing names, mirroring the
-			// resolveTagsToIds() behaviour used on the create path.
+			// syncResourceTags() behaviour used on the create path.
 			const exerciseTags = readBackupRecordTags(ex);
 			if (exerciseTags.length > 0) {
 				for (const tagName of exerciseTags) {

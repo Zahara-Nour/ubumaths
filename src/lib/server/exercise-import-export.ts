@@ -28,7 +28,7 @@ import {
 	parseMarkdownWithFrontmatter
 } from '$lib/exercises/markdown-frontmatter';
 import { createExercise } from './exercises';
-import { resolveTagsToIds, syncExerciseTagJunction } from './tags-resolution';
+import { syncResourceTags } from './resource-tags';
 import { createHash } from 'crypto';
 
 // ============================================================================
@@ -355,8 +355,7 @@ export async function importExerciseFromJSON(
 			// Re-sync tags through the junction. On failure, surface the error so the
 			// caller knows the tags weren't applied (the row update itself succeeded).
 			try {
-				const tagIds = await resolveTagsToIds(supabase, replaceTags ?? [], 'tags');
-				await syncExerciseTagJunction(supabase, data!.id, tagIds, 'exercise_tags');
+				await syncResourceTags(supabase, 'exercise', data!.id, replaceTags ?? []);
 			} catch (e) {
 				console.error('Failed to sync tags while replacing imported exercise:', e);
 				return {

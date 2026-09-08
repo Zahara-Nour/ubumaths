@@ -17,11 +17,10 @@ import {
 } from '$lib/exercises/generator/instance-generator';
 import { generateExerciseSlug } from '$lib/exercises/slug-generator';
 import {
-	fetchExerciseIdsByAnyTag,
-	fetchTagNamesForExercise,
-	resolveTagsToIds,
-	syncExerciseTagJunction
-} from '$lib/server/tags-resolution';
+	fetchResourceIdsByAnyTag,
+	fetchResourceTagNames,
+	syncResourceTags
+} from '$lib/server/resource-tags';
 
 type _Exercise = Database['public']['Tables']['exercises']['Row'];
 type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
@@ -143,7 +142,7 @@ export async function getExercises(
 
 	if (filters.tags && filters.tags.length > 0) {
 		// Use the exercise_tags junction (replaces .contains on the legacy column).
-		const ids = await fetchExerciseIdsByAnyTag(supabase, filters.tags, 'exercise_tags', 'tags');
+		const ids = await fetchResourceIdsByAnyTag(supabase, 'exercise', filters.tags);
 		if (ids.length === 0) {
 			return { data: [], error: null, count: 0, page, limit, totalPages: 0 };
 		}
@@ -232,9 +231,7 @@ export async function getExercise(supabase: SupabaseClient<Database>, id: string
 		return { data: null, error };
 	}
 
-	const tags = await fetchTagNamesForExercise(supabase, id, 'exercise_tags', 'tags').catch(
-		() => []
-	);
+	const tags = await fetchResourceTagNames(supabase, 'exercise', id).catch(() => []);
 	return { data: { ...data, tags }, error: null };
 }
 
@@ -252,9 +249,7 @@ export async function getExerciseBySlug(supabase: SupabaseClient<Database>, slug
 		return { data: null, error };
 	}
 
-	const tags = await fetchTagNamesForExercise(supabase, data.id, 'exercise_tags', 'tags').catch(
-		() => []
-	);
+	const tags = await fetchResourceTagNames(supabase, 'exercise', data.id).catch(() => []);
 	return { data: { ...data, tags }, error: null };
 }
 
@@ -335,8 +330,7 @@ export async function createExercise(
 	// stays in the DB without its declared tags, which is silently inconsistent.
 	if (tagNames.length > 0 && data) {
 		try {
-			const tagIds = await resolveTagsToIds(supabase, tagNames, 'tags');
-			await syncExerciseTagJunction(supabase, data.id, tagIds, 'exercise_tags');
+			await syncResourceTags(supabase, 'exercise', data.id, tagNames);
 		} catch (e) {
 			console.error('Failed to attach tags to new exercise — rolling back:', e);
 			await supabase.from('exercises').delete().eq('id', data.id);
@@ -443,8 +437,7 @@ export async function updateExercise(
 	// row with stale junction state.
 	if (tagsUpdate !== undefined && data) {
 		try {
-			const tagIds = await resolveTagsToIds(supabase, tagsUpdate, 'tags');
-			await syncExerciseTagJunction(supabase, data.id, tagIds, 'exercise_tags');
+			await syncResourceTags(supabase, 'exercise', data.id, tagsUpdate);
 		} catch (e) {
 			console.error('Failed to sync tags on update:', e);
 			return {
@@ -517,7 +510,7 @@ export async function getTeacherExercises(
 
 	if (filters.tags && filters.tags.length > 0) {
 		// Use the exercise_tags junction (replaces .contains on the legacy column).
-		const ids = await fetchExerciseIdsByAnyTag(supabase, filters.tags, 'exercise_tags', 'tags');
+		const ids = await fetchResourceIdsByAnyTag(supabase, 'exercise', filters.tags);
 		if (ids.length === 0) {
 			return { data: [], error: null, count: 0, page, limit, totalPages: 0 };
 		}
