@@ -9,6 +9,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { fetchDisplayNumbers } from '$lib/server/worksheets/display-number';
 import {
 	validateAssignmentParams,
 	validateErrorReportsQuery,
@@ -177,23 +178,17 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			throw error(500, 'Erreur lors de la recuperation des signalements');
 		}
 
-		// Step 3: Get exercise positions from worksheet_exercises
+		// Step 3: le NUMÉRO AFFICHÉ de chaque exercice signalé.
+		//
+		// Pas `position` : elle redémarre à 1 dans chaque section, si bien que le
+		// professeur lisait un numéro différent de celui que l'élève lui citait
+		// dans son signalement. Même règle que la fiche et que le PDF.
 		const worksheetExerciseIds = [...new Set((reports ?? []).map((r) => r.worksheet_exercise_id))];
 
 		let exercisePositions: Map<string, number> = new Map();
 
 		if (worksheetExerciseIds.length > 0) {
-			const { data: exercises, error: exercisesError } = await locals.supabase
-				.from('worksheet_exercises')
-				.select('id, position')
-				.in('id', worksheetExerciseIds);
-
-			if (exercisesError) {
-				console.error('[API] Error fetching exercise positions:', exercisesError);
-				// Continue without positions (will default to 0)
-			} else {
-				exercisePositions = new Map((exercises ?? []).map((e) => [e.id, e.position]));
-			}
+			exercisePositions = await fetchDisplayNumbers(locals.supabase, params.id);
 		}
 
 		// Step 4: Transform to TeacherErrorReportView

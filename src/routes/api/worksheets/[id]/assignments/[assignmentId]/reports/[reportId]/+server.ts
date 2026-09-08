@@ -10,6 +10,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { fetchDisplayNumber } from '$lib/server/worksheets/display-number';
 import {
 	validateErrorReportParams,
 	validateReviewErrorReport,
@@ -342,7 +343,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		// Step 2: Get exercise data (position and exercise_id)
 		const { data: worksheetExerciseData, error: worksheetExerciseError } = await locals.supabase
 			.from('worksheet_exercises')
-			.select('id, position, exercise_id')
+			.select('id, position, exercise_id, worksheet_id')
 			.eq('id', existingReport.worksheet_exercise_id)
 			.single();
 
@@ -351,8 +352,25 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			throw error(500, 'Exercice du signalement non trouve');
 		}
 
-		const exercisePosition = worksheetExerciseData.position ?? 0;
 		const exerciseId = worksheetExerciseData.exercise_id;
+
+		// Le numéro ANNONCÉ À L'ÉLÈVE doit être celui qu'il lit sur sa fiche.
+		//
+		// Ce code utilisait `position + 1`, faux deux fois : `position` est déjà
+		// 1-based (ExerciseList.svelte l'écrit `idx + 1`), donc le message
+		// décalait d'un rang ; et `position` redémarre à 1 dans chaque section,
+		// donc elle ne désigne de toute façon pas l'ordinal affiché. Sur une fiche
+		// à sections, l'élève lisait un numéro sans rapport avec le sien.
+		// Repli sur `position` si la fiche est illisible : ce n'est atteignable
+		// qu'en cas d'erreur base, où la requête est de toute façon en difficulté,
+		// et un numéro approché vaut mieux qu'un plantage — mais SANS le `+ 1`
+		// qui faisait le décalage.
+		const displayNumber =
+			(await fetchDisplayNumber(
+				locals.supabase,
+				worksheetExerciseData.worksheet_id,
+				worksheetExerciseData.id
+			)) ?? worksheetExerciseData.position;
 
 		// Step 3: Get assignment data for class_id (needed for bonus)
 		const { data: assignmentData, error: assignmentError } = await locals.supabase
@@ -481,13 +499,13 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			await notifyErrorReportValidated(locals.supabase, {
 				studentId: existingReport.student_id,
 				worksheetTitle: worksheet.title,
-				exercisePosition: exercisePosition + 1 // 1-indexed for display
+				exercisePosition: displayNumber
 			});
 		} else {
 			await notifyErrorReportRejected(locals.supabase, {
 				studentId: existingReport.student_id,
 				worksheetTitle: worksheet.title,
-				exercisePosition: exercisePosition + 1, // 1-indexed for display
+				exercisePosition: displayNumber,
 				response: teacherResponse ?? undefined
 			});
 		}
@@ -500,7 +518,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			id: updatedReport.id,
 			assignment_id: updatedReport.assignment_id,
 			worksheet_exercise_id: updatedReport.worksheet_exercise_id,
-			exercise_position: exercisePosition,
+			exercise_position: displayNumber,
 			student_id: updatedReport.student_id,
 			student_first_name: student?.firstname ?? null,
 			student_last_name: student?.lastname ?? null,
