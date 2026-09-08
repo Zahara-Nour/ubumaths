@@ -90,6 +90,21 @@ altération qui perd de la donnée). Là, aucun test ne rattrape l'erreur, et la
 base contient des données d'élèves mineurs. Tu t'arrêtes toujours, et tu
 m'expliques **en français ce qui va être perdu**.
 
+⚠️ **Avant tout `DROP` : inventaire des USAGES, pas seulement des données.** Deux
+vérifications distinctes, dans cet ordre :
+
+1. **Usages** — `grep -rn "<objet supprimé>" src` pour chaque table et colonne
+   visée. **Y compris dans les chaînes de caractères** : les jointures PostgREST
+   (`.select('*, ma_table(...)')`) sont du texte, donc invisibles au typecheck,
+   au lint ET aux tests unitaires, dont les mocks ne touchent jamais la base.
+   **Zéro référence, ou on ne supprime pas.**
+2. **Données** — requête de réconciliation prouvant que tout ce que porte
+   l'ancienne forme existe dans la nouvelle.
+
+Le grep se colle dans le message : soit la preuve y est, soit elle n'a pas été
+faite. Le 2026-09-08 j'ai fait la 2 sans la 1 — six requêtes cassées en
+production, sur les listes d'exercices, les pages Python et l'export admin.
+
 Je peux te demander « explique-moi cette migration » à tout moment : tu me dis
 qui gagne quel accès et ce qui casserait si elle était fausse — pas le SQL, ses
 conséquences.
