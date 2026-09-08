@@ -46,36 +46,6 @@ export type TaggableKind =
 	| 'parody_evaluation';
 
 /**
- * `resource_tags` is not in the generated types until `pnpm db:types` runs
- * against a database carrying the migration. Narrow adapter rather than `any`.
- */
-type ResourceTagRow = { resource_kind: string; resource_id: string; tag_id: string };
-type ResolveTagsRpc = (
-	fn: 'resolve_tag_ids',
-	args: { p_names: string[] }
-) => PromiseLike<{
-	data: { id: string; name: string }[] | null;
-	error: { message: string } | null;
-}>;
-type LooseTable = {
-	delete: () => {
-		eq: (
-			c: string,
-			v: string
-		) => {
-			eq: (c: string, v: string) => PromiseLike<{ error: { message: string } | null }>;
-		};
-	};
-	upsert: (
-		rows: ResourceTagRow[],
-		options: { onConflict: string; ignoreDuplicates: boolean }
-	) => PromiseLike<{ error: { message: string } | null }>;
-};
-
-const loose = (supabase: SB, table: string) =>
-	(supabase as unknown as { from: (t: string) => LooseTable }).from(table);
-
-/**
  * Resolve tag names against the unified `tags` catalogue, creating what is
  * missing.
  *
@@ -89,8 +59,7 @@ async function resolveUnifiedTagIds(supabase: SB, names: string[]): Promise<stri
 	const wanted = [...new Set(names.map((n) => n.trim()).filter(Boolean))];
 	if (wanted.length === 0) return [];
 
-	const rpc = supabase.rpc as unknown as ResolveTagsRpc;
-	const { data, error } = await rpc('resolve_tag_ids', { p_names: wanted });
+	const { data, error } = await supabase.rpc('resolve_tag_ids', { p_names: wanted });
 
 	if (error) {
 		console.error('[resource-tags] resolve_tag_ids failed', { message: error.message });
@@ -115,7 +84,8 @@ export async function mirrorResourceTags(
 	try {
 		const tagIds = await resolveUnifiedTagIds(supabase, tagNames);
 
-		const { error: delErr } = await loose(supabase, 'resource_tags')
+		const { error: delErr } = await supabase
+			.from('resource_tags')
 			.delete()
 			.eq('resource_kind', kind)
 			.eq('resource_id', resourceId);
@@ -131,7 +101,7 @@ export async function mirrorResourceTags(
 
 		if (tagIds.length === 0) return;
 
-		const { error: upsertErr } = await loose(supabase, 'resource_tags').upsert(
+		const { error: upsertErr } = await supabase.from('resource_tags').upsert(
 			tagIds.map((tag_id) => ({ resource_kind: kind, resource_id: resourceId, tag_id })),
 			{ onConflict: 'resource_kind,resource_id,tag_id', ignoreDuplicates: true }
 		);
