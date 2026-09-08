@@ -1,7 +1,11 @@
-echo "pre-push : prettier --check…"
+# Fichiers SUIVIS uniquement (cf. scripts/format-check-tracked.sh) : la CI voit un
+# clone frais, donc un fichier non commité ne peut pas la faire rougir. Vérifier
+# tout l'arbre bloquait des push pour le brouillon non suivi d'une autre session,
+# et poussait au `--no-verify` — qui saute aussi le lint ci-dessous.
+echo "pre-push : prettier --check (fichiers suivis)…"
 if ! pnpm format:check; then
 	echo ""
-	echo "❌ Formatage : des fichiers ne sont pas formatés → la CI échouerait (job Lint)."
+	echo "❌ Formatage : des fichiers suivis ne sont pas formatés → la CI échouerait (job Lint)."
 	echo "   Corrige puis re-push :  pnpm format:all"
 	exit 1
 fi
