@@ -14,11 +14,7 @@ import {
 import type { PythonExercise, PythonExerciseStudentView } from '$lib/types/python-exercises';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { toJson } from '$lib/types/database-helpers';
-import {
-	fetchTagNamesForExercise,
-	resolveTagsToIds,
-	syncExerciseTagJunction
-} from '$lib/server/tags-resolution';
+import { fetchResourceTagNames, syncResourceTags } from '$lib/server/resource-tags';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -62,12 +58,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	// Fetch tags from the junction. RLS on the junction allows SELECT for everyone,
 	// so this works for anon, students, and the author alike.
-	const tags = await fetchTagNamesForExercise(
-		supabase,
-		exerciseId,
-		'python_exercise_tags',
-		'python_tags'
-	).catch(() => []);
+	const tags = await fetchResourceTagNames(supabase, 'python_exercise', exerciseId).catch(() => []);
 
 	const exerciseWithTags = { ...exercise, tags };
 
@@ -169,8 +160,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	// but reporting success while the junction is stale would lie to the caller.
 	if (tagsUpdate !== undefined) {
 		try {
-			const tagIds = await resolveTagsToIds(supabase, tagsUpdate, 'python_tags');
-			await syncExerciseTagJunction(supabase, exerciseId, tagIds, 'python_exercise_tags');
+			await syncResourceTags(supabase, 'python_exercise', exerciseId, tagsUpdate);
 		} catch (e) {
 			console.error('Failed to sync tags on update:', e);
 			throw error(500, 'Erreur lors de la synchronisation des tags');
@@ -178,12 +168,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	// Return exercise with current tag set
-	const tags = await fetchTagNamesForExercise(
-		supabase,
-		exerciseId,
-		'python_exercise_tags',
-		'python_tags'
-	).catch(() => []);
+	const tags = await fetchResourceTagNames(supabase, 'python_exercise', exerciseId).catch(() => []);
 
 	return json({ exercise: { ...updatedExercise, tags } });
 };

@@ -15,11 +15,7 @@ import {
 import type { PythonExercise, PythonExerciseStudentView } from '$lib/types/python-exercises';
 import type { Database } from '$lib/types/database';
 import { toJson } from '$lib/types/database-helpers';
-import {
-	fetchExerciseIdsByAnyTag,
-	resolveTagsToIds,
-	syncExerciseTagJunction
-} from '$lib/server/tags-resolution';
+import { fetchResourceIdsByAnyTag, syncResourceTags } from '$lib/server/resource-tags';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -80,12 +76,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	// (Replaces the previous .overlaps('tags', tags) on the array column.)
 	let tagFilteredIds: string[] | null = null;
 	if (tags && tags.length > 0) {
-		tagFilteredIds = await fetchExerciseIdsByAnyTag(
-			supabase,
-			tags,
-			'python_exercise_tags',
-			'python_tags'
-		);
+		tagFilteredIds = await fetchResourceIdsByAnyTag(supabase, 'python_exercise', tags);
 		if (tagFilteredIds.length === 0) {
 			return json({
 				exercises: [],
@@ -287,8 +278,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	// reflects the real DB state (otherwise we'd return tags that aren't attached).
 	if (data.tags && data.tags.length > 0) {
 		try {
-			const tagIds = await resolveTagsToIds(supabase, data.tags, 'python_tags');
-			await syncExerciseTagJunction(supabase, exercise.id, tagIds, 'python_exercise_tags');
+			await syncResourceTags(supabase, 'python_exercise', exercise.id, data.tags);
 		} catch (e) {
 			console.error('Failed to attach tags to new exercise — rolling back:', e);
 			await supabase.from('python_exercises').delete().eq('id', exercise.id);
