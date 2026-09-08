@@ -34,6 +34,7 @@ import {
 	FileCheck,
 	Brain,
 	ShieldCheck,
+	Search,
 	User as UserIcon,
 	LogOut
 } from '@lucide/svelte';
@@ -123,6 +124,7 @@ export function getNavLinks(
 			{ href: '/dashboard/teacher/programme', label: 'Programme', icon: ListTodo },
 			{ href: '/dashboard/teacher/avancement', label: 'Avancement', icon: Gauge },
 			{ href: '/dashboard/teacher/contenu', label: 'Mes contenus', icon: Layers },
+			{ href: '/dashboard/teacher/recherche', label: 'Recherche', icon: Search },
 			{
 				href: '/dashboard/teacher/evaluation-tasks',
 				label: "Tâches d'évaluation",

@@ -31,28 +31,14 @@ import { resolve } from '$app/paths';
 import { BookOpen, ClipboardCheck, FileText, HelpCircle, PencilRuler } from '@lucide/svelte';
 import type { LucideIcon } from '@lucide/svelte';
 import { lore } from '$lib/config/lore';
+import { RESOURCE_KINDS, isResourceKind, type ResourceKind } from './kinds';
+
+export { RESOURCE_KINDS, isResourceKind };
+export type { ResourceKind };
 
 // ============================================================================
 // TYPES
 // ============================================================================
-
-/**
- * Resource kinds that can be referenced from anywhere in the app.
- *
- * Deliberately limited to the five kinds actually referenced today (they are
- * exactly the ones the cahier de texte already links to). Adding a kind is five
- * lines here plus its routes; the cost lives in what gets wired behind it
- * (picker, search, tags), not in the registry.
- */
-export const RESOURCE_KINDS = [
-	'exercise',
-	'question',
-	'assessment',
-	'chapter',
-	'document'
-] as const;
-
-export type ResourceKind = (typeof RESOURCE_KINDS)[number];
 
 /**
  * Who is looking. Roles are strictly separated in this app: the
@@ -216,13 +202,6 @@ export const RESOURCE_REGISTRY: Record<ResourceKind, ResourceKindDefinition> = {
 // ============================================================================
 // FUNCTIONS
 // ============================================================================
-
-/**
- * Type guard for untrusted input (parsed markdown, query params, DB rows).
- */
-export function isResourceKind(value: unknown): value is ResourceKind {
-	return typeof value === 'string' && (RESOURCE_KINDS as readonly string[]).includes(value);
-}
 
 /**
  * Resolve a resource reference into a label, an icon and a URL.

@@ -9,6 +9,66 @@
  */
 
 /**
+ * Names pulled from the `tags` catalogue, merged into the suggestion list.
+ *
+ * Phase 4 of the referencing work: until now the editor suggested from a
+ * hardcoded list that had no relation whatsoever to the `tags` table, so a
+ * hashtag typed in a statement could never match a tag used to file an
+ * exercise. Two vocabularies, no bridge.
+ *
+ * The predefined list below stays as a seed: it is what the editor offers
+ * before the catalogue has loaded, and on a page that never loads it. The
+ * catalogue is authoritative but not required.
+ */
+let catalogHashtags: string[] = [];
+
+/** Guards against re-fetching on every editor mount. */
+let catalogLoad: Promise<void> | null = null;
+
+/**
+ * Hydrate the suggestion list from `/api/tags`, once per page load.
+ *
+ * Deliberately fire-and-forget and failure-tolerant: a suggestion list is a
+ * convenience, and an editor that refuses to open because a tag fetch failed
+ * would be a poor trade.
+ */
+export function loadHashtagCatalog(fetcher: typeof fetch = fetch): Promise<void> {
+	catalogLoad ??= (async () => {
+		try {
+			const response = await fetcher('/api/tags');
+			if (!response.ok) return;
+
+			const payload: unknown = await response.json();
+			const tags = (payload as { tags?: { name?: unknown }[] }).tags ?? [];
+
+			catalogHashtags = tags
+				.map((tag) => (typeof tag.name === 'string' ? tag.name : ''))
+				.filter(Boolean);
+		} catch {
+			// Silence volontaire : on garde la liste de secours.
+		}
+	})();
+
+	return catalogLoad;
+}
+
+/**
+ * Suggestion list actually offered: the catalogue plus the seed, deduplicated
+ * on the normalised form so « Algèbre » and « algebre » are not both proposed.
+ */
+function suggestionPool(): string[] {
+	const seen = new Map<string, string>();
+	for (const name of [...catalogHashtags, ...predefinedHashtags]) {
+		const key = name
+			.normalize('NFD')
+			.replace(/[\u0300-\u036f]/g, '')
+			.toLowerCase();
+		if (!seen.has(key)) seen.set(key, name);
+	}
+	return [...seen.values()];
+}
+
+/**
  * Predefined list of valid hashtags for the educational platform.
  *
  * Categories:
@@ -76,7 +136,8 @@ const predefinedHashtags: string[] = [
  * isValidHashtag('unknown'); // false
  */
 export function isValidHashtag(tag: string): boolean {
-	return predefinedHashtags.includes(tag.toLowerCase());
+	const needle = tag.toLowerCase();
+	return suggestionPool().some((name) => name.toLowerCase() === needle);
 }
 
 /**
@@ -90,11 +151,23 @@ export function isValidHashtag(tag: string): boolean {
  * filterHashtags(''); // returns all hashtags
  */
 export function filterHashtags(query: string): string[] {
-	const q = query.toLowerCase();
-	if (!q) {
-		return [...predefinedHashtags];
-	}
-	return predefinedHashtags.filter((tag) => tag.includes(q));
+	const pool = suggestionPool();
+	const q = query
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.toLowerCase();
+
+	if (!q) return pool;
+
+	// Comparaison sans accent des deux côtés : taper « algebre » doit proposer
+	// « Algèbre », sinon le prof crée un doublon que l'index unique refusera.
+	return pool.filter((tag) =>
+		tag
+			.normalize('NFD')
+			.replace(/[\u0300-\u036f]/g, '')
+			.toLowerCase()
+			.includes(q)
+	);
 }
 
 /**
@@ -103,5 +176,5 @@ export function filterHashtags(query: string): string[] {
  * @returns Copy of the predefined hashtags array
  */
 export function getAllHashtags(): string[] {
-	return [...predefinedHashtags];
+	return suggestionPool();
 }

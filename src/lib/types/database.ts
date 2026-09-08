@@ -9553,6 +9553,35 @@ export type Database = {
         }
         Relationships: []
       }
+      resource_tags: {
+        Row: {
+          created_at: string
+          resource_id: string
+          resource_kind: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string
+          resource_id: string
+          resource_kind: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string
+          resource_id?: string
+          resource_kind?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reward_events: {
         Row: {
           amount: number | null
@@ -11793,18 +11822,21 @@ export type Database = {
           created_by: string | null
           id: string
           name: string
+          slug: string | null
         }
         Insert: {
           created_at?: string
           created_by?: string | null
           id?: string
           name: string
+          slug?: string | null
         }
         Update: {
           created_at?: string
           created_by?: string | null
           id?: string
           name?: string
+          slug?: string | null
         }
         Relationships: []
       }
@@ -14346,6 +14378,21 @@ export type Database = {
           },
         ]
       }
+      resources: {
+        Row: {
+          grades: string[] | null
+          id: string | null
+          is_public: boolean | null
+          kind: string | null
+          owner_id: string | null
+          slug: string | null
+          status: string | null
+          subtitle: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
       riddle_progress: {
         Row: {
           avatar_url: string | null
@@ -16301,6 +16348,13 @@ export type Database = {
         Returns: number
       }
       resolve_open_class_by_code: { Args: { p_code: string }; Returns: string }
+      resolve_tag_ids: {
+        Args: { p_names: string[] }
+        Returns: {
+          id: string
+          name: string
+        }[]
+      }
       review_report: {
         Args: {
           p_delete_message?: boolean
@@ -16341,6 +16395,32 @@ export type Database = {
           sent_at: string
           subject: string
         }[]
+      }
+      search_resources: {
+        Args: {
+          p_kinds?: string[]
+          p_limit?: number
+          p_query: string
+          p_tags?: string[]
+        }
+        Returns: {
+          grades: string[] | null
+          id: string | null
+          is_public: boolean | null
+          kind: string | null
+          owner_id: string | null
+          slug: string | null
+          status: string | null
+          subtitle: string | null
+          title: string | null
+          updated_at: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "resources"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       search_users_unaccent: {
         Args: { result_limit?: number; search_term: string }
@@ -16427,6 +16507,7 @@ export type Database = {
           week_best_reward: number
         }[]
       }
+      tag_slug: { Args: { p_name: string }; Returns: string }
       teacher_owns_riddle: { Args: { p_riddle_id: string }; Returns: boolean }
       toggle_message_star: {
         Args: { p_message_id: string; p_user_id: string }
