@@ -34,6 +34,24 @@ export type TaggableKind =
 	| 'worksheet'
 	| 'parody_evaluation';
 
+/** Les types que `resource_tags` accepte, pour valider une entrée non fiable. */
+export const TAGGABLE_KINDS = [
+	'exercise',
+	'question',
+	'assessment',
+	'chapter',
+	'document',
+	'python_exercise',
+	'construction',
+	'worksheet',
+	'parody_evaluation'
+] as const;
+
+/** Garde de type pour un `kind` venant d'un paramètre d'URL. */
+export function isTaggableKind(value: unknown): value is TaggableKind {
+	return typeof value === 'string' && (TAGGABLE_KINDS as readonly string[]).includes(value);
+}
+
 /**
  * Resolve tag names against the unified `tags` catalogue, creating what is
  * missing.

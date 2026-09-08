@@ -13,6 +13,7 @@ import {
 } from '$lib/server/validation';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { isTaggableKind } from '$lib/server/resource-tags';
 
 /**
  * GET /api/tags
@@ -24,7 +25,7 @@ import { requireRoles } from '$lib/server/middleware/auth';
  * Tag names are generic math themes (algèbre, géométrie, etc.) and carry
  * no PII, so exposing them publicly is safe.
  */
-export const GET: RequestHandler = async ({ locals }) => {
+export const GET: RequestHandler = async ({ locals, url }) => {
 	const { data, error: fetchError } = await locals.supabase
 		.from('tags')
 		.select('id, name, created_by, created_at')
@@ -35,12 +36,40 @@ export const GET: RequestHandler = async ({ locals }) => {
 		throw error(500, 'Failed to fetch tags');
 	}
 
+	// `?kind=` ordonne les suggestions sans jamais restreindre le catalogue.
+	// Le catalogue est commun à tous les types — c'est ce qui permet à `dérivée`
+	// de désigner la même chose sur un exercice et sur une fiche — mais proposer
+	// 140 tags dont 122 hors sujet quand on étiquette un exercice Python est du
+	// bruit. On remonte donc d'abord ceux déjà employés sur ce type.
+	const rawKind = url.searchParams.get('kind');
+	const kind = rawKind && isTaggableKind(rawKind) ? rawKind : null;
+
+	let tags = data ?? [];
+	if (kind) {
+		const { data: used, error: usedError } = await locals.supabase
+			.from('resource_tags')
+			.select('tag_id')
+			.eq('resource_kind', kind);
+
+		// Le classement est un confort, pas une fonctionnalité : si la lecture
+		// échoue on rend la liste alphabétique plutôt que de refuser la requête.
+		// Mais on laisse une trace — un tri qui disparaît sans bruit ressemble à
+		// un choix de conception, pas à une panne.
+		if (usedError) {
+			console.error('[tags] classement par type impossible:', usedError);
+		} else {
+			const usedIds = new Set((used ?? []).map((row) => row.tag_id));
+			tags = tags
+				.map((tag) => ({ ...tag, used_on_kind: usedIds.has(tag.id) }))
+				.sort((a, b) => {
+					if (a.used_on_kind !== b.used_on_kind) return a.used_on_kind ? -1 : 1;
+					return a.name.localeCompare(b.name, 'fr');
+				});
+		}
+	}
+
 	// Validate response
-	const validated = validateJsonResponse(
-		tagListResponseSchema,
-		{ tags: data ?? [] },
-		'GET /api/tags'
-	);
+	const validated = validateJsonResponse(tagListResponseSchema, { tags }, 'GET /api/tags');
 
 	return json(validated);
 };
