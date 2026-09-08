@@ -177,6 +177,36 @@ describe('catalogue de tags unifié', () => {
 		expect(error).not.toBeNull();
 	});
 
+	it('anon lit les tags des presques-évaluations, et EUX SEULS', async () => {
+		// Policy ajoutée par 20260908170000, restreinte à `parody_evaluation` :
+		// ces documents sont déjà entièrement publics (page et bucket), donc leurs
+		// étiquettes n'apprennent rien de neuf. Ouvrir `resource_tags` en général
+		// révélerait en revanche les associations de types que l'anonyme ne peut
+		// pas voir — exercices privés, chapitres, et un jour les évaluations, dont
+		// les tags trahiraient le thème d'un contrôle à venir.
+		const anon = createClient<Database>(SUPABASE_URL, ANON_KEY, {
+			auth: { persistSession: false, autoRefreshToken: false }
+		});
+
+		await loose(service).from('resource_tags').insert({
+			resource_kind: 'parody_evaluation',
+			resource_id: RESOURCE_ID,
+			tag_id: tagId
+		});
+
+		const visible = await loose(anon)
+			.from('resource_tags')
+			.select('resource_kind')
+			.eq('resource_id', RESOURCE_ID);
+
+		const kinds = ((visible.data ?? []) as { resource_kind: string }[]).map(
+			(row) => row.resource_kind
+		);
+		expect(kinds).toContain('parody_evaluation');
+		// L'association 'exercise' posée plus haut par le prof ne doit PAS sortir.
+		expect(kinds).not.toContain('exercise');
+	});
+
 	it('refuse un type de ressource inconnu', async () => {
 		const { error } = await loose(teacher).from('resource_tags').insert({
 			resource_kind: 'licorne',

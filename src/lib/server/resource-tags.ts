@@ -139,6 +139,46 @@ export async function fetchResourceTagNames(
 }
 
 /**
+ * Tag names for MANY resources at once, keyed by resource id.
+ *
+ * The per-resource `fetchResourceTagNames` would issue one query per row on a
+ * listing page — the classic N+1. Lists must use this instead.
+ *
+ * Resources without tags are simply absent from the map; callers should default
+ * to an empty array rather than expecting a key.
+ */
+export async function fetchTagNamesForResources(
+	supabase: SB,
+	kind: TaggableKind,
+	resourceIds: string[]
+): Promise<Map<string, string[]>> {
+	const byResource = new Map<string, string[]>();
+	if (resourceIds.length === 0) return byResource;
+
+	const { data, error } = await supabase
+		.from('resource_tags')
+		.select('resource_id, tags(name)')
+		.eq('resource_kind', kind)
+		.in('resource_id', resourceIds);
+
+	if (error) {
+		console.error('[resource-tags] lecture groupée impossible', { kind, message: error.message });
+		throw error;
+	}
+
+	for (const row of data ?? []) {
+		const typed = row as { resource_id: string; tags: { name: string } | null };
+		if (!typed.tags?.name) continue;
+		const names = byResource.get(typed.resource_id) ?? [];
+		names.push(typed.tags.name);
+		byResource.set(typed.resource_id, names);
+	}
+
+	for (const names of byResource.values()) names.sort();
+	return byResource;
+}
+
+/**
  * Ids of the resources of a kind carrying AT LEAST ONE of the given tags.
  *
  * Deliberately does NOT create missing tags: a list filter must not silently

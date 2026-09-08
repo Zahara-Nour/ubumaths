@@ -9,6 +9,7 @@
  */
 
 import type { PageServerLoad } from './$types';
+import { fetchTagNamesForResources } from '$lib/server/resource-tags';
 
 const STORAGE_BUCKET = 'parody-evaluations';
 
@@ -24,7 +25,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 			file_name,
 			file_size,
 			grade_levels,
-			tags,
 			created_at,
 			creator:created_by(firstname, lastname)
 		`
@@ -42,6 +42,15 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// adds Supabase's `?download=<filename>` query param so the browser receives
 	// Content-Disposition: attachment and triggers a real download (the HTML
 	// `download` attribute alone is ignored cross-origin).
+	// Tags depuis `resource_tags` (policy anon restreinte au type
+	// `parody_evaluation` — ces documents sont déjà entièrement publics).
+	// Lecture groupée : un appel par ligne serait un N+1.
+	const tagsByEvaluation = await fetchTagNamesForResources(
+		locals.supabase,
+		'parody_evaluation',
+		(evaluations ?? []).map((evaluation: RawEvaluation) => evaluation.id)
+	);
+
 	const withUrls = (evaluations ?? []).map((evaluation: RawEvaluation) => {
 		const { data: urlData } = locals.supabase.storage
 			.from(STORAGE_BUCKET)
@@ -53,6 +62,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			});
 		return {
 			...evaluation,
+			tags: tagsByEvaluation.get(evaluation.id) ?? [],
 			publicUrl: urlData?.publicUrl ?? null,
 			downloadUrl: downloadData?.publicUrl ?? null
 		};
