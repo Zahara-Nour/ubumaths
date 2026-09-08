@@ -2,29 +2,25 @@
 	InternalLink Component
 	======================
 
-	Renders internal links ([[type:uuid|label]]) as clickable navigation links.
+	Renders internal links ([[type:uuid|label]]) as navigation links.
 
-	Features:
-	- Type-specific icons for visual distinction
-	- Dynamic route generation based on reference type
-	- Support for student and teacher contexts
-	- Callback support for click handling (e.g., for SPAs)
+	Addressing is delegated to `$lib/resources` — this component holds no route
+	knowledge of its own. It used to build URLs with its own `switch`, which is
+	how it ended up pointing at four routes that did not exist: nothing tied its
+	copy of the paths to the real ones.
 
-	Route mapping:
-	- chapter: /dashboard/{role}/cours/{uuid}
-	- document: /dashboard/{role}/documents/{uuid}
-	- exercise: /dashboard/{role}/exercices/{uuid}
-	- assessment: /dashboard/{role}/evaluations/{uuid}
+	A reference the current viewer has nowhere to go to (a document, which has no
+	detail page; a chapter referenced outside its class) renders as inert text
+	rather than a link to a 404.
 
+	@see $lib/resources/registry for the route table
 	@see InternalLinkNode in ast.ts for node structure
-	@see ParagraphNode.svelte for rendering context
 	@module components/markdown/nodes/InternalLink
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { resolveResource, type ResourceKind, type ViewerRole } from '$lib/resources';
 	import type { InternalLinkReferenceType } from '$lib/ubumark';
 	import { cn } from '$lib/utils';
-	import { BookOpen, FileText, PencilRuler, ClipboardCheck } from '@lucide/svelte';
 
 	interface Props {
 		/** Type of the internal resource */
@@ -33,9 +29,11 @@
 		uuid: string;
 		/** Display label for the link */
 		label: string;
-		/** User role for route generation (default: student) */
-		role?: 'student' | 'teacher';
-		/** Callback when link is clicked (for SPA navigation) */
+		/** Viewer role, used to pick the right route (default: student) */
+		role?: ViewerRole;
+		/** Class the reference is read from — required to link a chapter as a teacher */
+		classId?: string;
+		/** Callback when the link is clicked (for SPA navigation) */
 		onClick?: (referenceType: InternalLinkReferenceType, uuid: string) => void;
 		/** Additional CSS classes */
 		class?: string;
@@ -46,81 +44,60 @@
 		uuid,
 		label,
 		role = 'student',
+		classId,
 		onClick,
 		class: className = ''
 	}: Props = $props();
 
-	/**
-	 * Get the route path for the given reference type and UUID
-	 */
-	function getRoute(): string {
-		const basePath = `/dashboard/${role}`;
-		switch (referenceType) {
-			case 'chapter':
-				return `${basePath}/cours/${uuid}`;
-			case 'document':
-				return `${basePath}/documents/${uuid}`;
-			case 'exercise':
-				return `${basePath}/exercices/${uuid}`;
-			case 'assessment':
-				return `${basePath}/evaluations/${uuid}`;
-			default:
-				return '#';
-		}
-	}
+	const resolved = $derived(
+		resolveResource(referenceType as ResourceKind, uuid, {
+			role,
+			label,
+			context: { classId }
+		})
+	);
+	const Icon = $derived(resolved.icon);
 
 	/**
-	 * Handle click - either use callback or navigate via href
+	 * Handle click - either use callback or let the anchor navigate
 	 */
 	function handleClick(event: MouseEvent) {
 		if (onClick) {
 			event.preventDefault();
 			onClick(referenceType, uuid);
 		}
-		// If no onClick, let the default <a> behavior handle navigation
-	}
-
-	/**
-	 * Get French label for reference type (for accessibility)
-	 */
-	function getTypeLabel(): string {
-		switch (referenceType) {
-			case 'chapter':
-				return 'Chapitre';
-			case 'document':
-				return 'Document';
-			case 'exercise':
-				return lore.learning.exercise;
-			case 'assessment':
-				return 'Evaluation';
-			default:
-				return 'Ressource';
-		}
 	}
 </script>
 
-<a
-	href={getRoute()}
-	onclick={handleClick}
-	class={cn(
-		'internal-link inline-flex items-center gap-1 rounded-sm px-1 py-0.5',
-		'text-primary underline decoration-primary/30 underline-offset-2',
-		'hover:bg-primary/10 hover:decoration-primary/50',
-		'transition-colors',
-		className
-	)}
-	aria-label="{getTypeLabel()}: {label}"
->
-	{#if referenceType === 'chapter'}
-		<BookOpen class="h-3.5 w-3.5 flex-shrink-0" />
-	{:else if referenceType === 'document'}
-		<FileText class="h-3.5 w-3.5 flex-shrink-0" />
-	{:else if referenceType === 'exercise'}
-		<PencilRuler class="h-3.5 w-3.5 flex-shrink-0" />
-	{:else if referenceType === 'assessment'}
-		<ClipboardCheck class="h-3.5 w-3.5 flex-shrink-0" />
-	{:else}
-		<FileText class="h-3.5 w-3.5 flex-shrink-0" />
-	{/if}
-	<span>{label}</span>
-</a>
+<!-- `resolved.url` already comes out of SvelteKit's `resolve()` (see the registry);
+     wrapping it again would prefix `base` twice. -->
+{#if resolved.url}
+	<a
+		href={resolved.url}
+		onclick={handleClick}
+		class={cn(
+			'internal-link inline-flex items-center gap-1 rounded-sm px-1 py-0.5',
+			'text-primary underline decoration-primary/30 underline-offset-2',
+			'hover:bg-primary/10 hover:decoration-primary/50',
+			'transition-colors',
+			className
+		)}
+		aria-label="{resolved.kindLabel}: {resolved.label}"
+	>
+		<Icon class="h-3.5 w-3.5 flex-shrink-0" />
+		<span>{resolved.label}</span>
+	</a>
+{:else}
+	<span
+		class={cn(
+			'internal-link inline-flex items-center gap-1 rounded-sm px-1 py-0.5',
+			'text-muted-foreground',
+			className
+		)}
+		aria-label="{resolved.kindLabel}: {resolved.label}"
+		title="{resolved.kindLabel} non consultable ici"
+	>
+		<Icon class="h-3.5 w-3.5 flex-shrink-0" />
+		<span>{resolved.label}</span>
+	</span>
+{/if}

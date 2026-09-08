@@ -30,6 +30,7 @@
 	import BlankInput from './BlankInput.svelte';
 	import HintReference from './HintReference.svelte';
 	import InternalLink from './InternalLink.svelte';
+	import type { ViewerRole } from '$lib/resources';
 	import {
 		hasPrompts,
 		expressionToFlashLatex,
@@ -71,8 +72,8 @@
 		hints?: ExerciseHint[];
 		/** Callback when a hint is opened */
 		onHintOpen?: (hintId: string) => void;
-		/** User role for internal links (student or teacher) */
-		internalLinkRole?: 'student' | 'teacher';
+		/** Viewer role for internal links, used to pick the right route */
+		internalLinkRole?: ViewerRole;
 		/** Callback when an internal link is clicked */
 		onInternalLinkClick?: (referenceType: InternalLinkReferenceType, uuid: string) => void;
 	}

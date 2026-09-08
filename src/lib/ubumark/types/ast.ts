@@ -158,7 +158,12 @@ export interface HintReferenceNode extends BaseNode {
 /**
  * Valid reference types for internal links
  */
-export type InternalLinkReferenceType = 'chapter' | 'document' | 'exercise' | 'assessment';
+export type InternalLinkReferenceType =
+	| 'chapter'
+	| 'document'
+	| 'exercise'
+	| 'assessment'
+	| 'question';
 
 /**
  * Internal link node - references internal resources
@@ -170,6 +175,7 @@ export type InternalLinkReferenceType = 'chapter' | 'document' | 'exercise' | 'a
  * - document: Link to a document
  * - exercise: Link to an exercise
  * - assessment: Link to an assessment
+ * - question: Link to a question template
  *
  * @example
  * ```markdown

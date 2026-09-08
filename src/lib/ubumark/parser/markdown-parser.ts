@@ -269,7 +269,8 @@ const VALID_INTERNAL_LINK_TYPES: InternalLinkReferenceType[] = [
 	'chapter',
 	'document',
 	'exercise',
-	'assessment'
+	'assessment',
+	'question'
 ];
 
 /**
@@ -280,7 +281,7 @@ const VALID_INTERNAL_LINK_TYPES: InternalLinkReferenceType[] = [
  * Label can contain any character except ].
  *
  * Captures:
- * - Group 1: reference type (chapter, document, exercise, assessment)
+ * - Group 1: reference type (chapter, document, exercise, assessment, question)
  * - Group 2: UUID (36 chars, lowercase hex with dashes)
  * - Group 3: label (display text)
  *
@@ -1854,7 +1855,7 @@ function parseContentWithImages(
 		}
 
 		// Check for linked image: [![alt](src)](href)
-		if (/^\[!\[/.test(trimmedLine)) {
+		if (trimmedLine.startsWith('[![')) {
 			flushParagraph();
 			const image = parseImageLine(trimmedLine);
 			if (image) {
@@ -1864,7 +1865,7 @@ function parseContentWithImages(
 		}
 
 		// Check for standard image: ![alt](src)
-		if (/^!\[/.test(trimmedLine)) {
+		if (trimmedLine.startsWith('![')) {
 			flushParagraph();
 			const image = parseImageLine(trimmedLine);
 			if (image) {
