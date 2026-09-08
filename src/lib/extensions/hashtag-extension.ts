@@ -19,7 +19,7 @@ import { Node, mergeAttributes } from '@tiptap/core';
 import Suggestion from '@tiptap/suggestion';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { NodeSelection } from '@tiptap/pm/state';
-import { filterHashtags } from '$lib/stores/hashtags.svelte';
+import { filterHashtags, loadHashtagCatalog } from '$lib/stores/hashtags.svelte';
 import { createSuggestionRenderer, type SuggestionItem } from '$lib/extensions/suggestion-renderer';
 
 // ============================================================================
@@ -213,6 +213,13 @@ export const Hashtag = Node.create<HashtagOptions>({
 
 				// Filter items based on query
 				items: ({ query }) => {
+					// Hydrate depuis le catalogue `tags` au premier appel. Volontairement
+					// non attendu : la liste de secours répond tout de suite, et la frappe
+					// suivante bénéficiera du catalogue. Faire patienter l'autocomplétion
+					// sur un aller-retour réseau serait pire que des suggestions
+					// incomplètes pendant 200 ms.
+					void loadHashtagCatalog();
+
 					const filtered = filterHashtags(query);
 					return hashtagsToItems(filtered.slice(0, this.options.maxSuggestions));
 				},

@@ -39,6 +39,8 @@
 	import { fetchExternalImages, urlToVirtualPath } from '$lib/typst/image-loader';
 	import CodeViewer from '$lib/components/CodeViewer.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import type { Database } from '$lib/types/database';
 	import type { PageData } from './$types';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
@@ -470,6 +472,16 @@
 			isPdfLoading = false;
 		}
 	}
+
+	/**
+	 * Un `#hashtag` dans un énoncé désigne la même étiquette que les tags de
+	 * l'exercice : depuis la phase 3 il n'existe plus qu'un catalogue. Le clic
+	 * ouvre donc la recherche filtrée sur ce tag, au lieu de ne rien faire comme
+	 * c'était le cas depuis l'origine.
+	 */
+	function searchByHashtag(tag: string) {
+		goto(`${resolve('/(protected)/dashboard/teacher/recherche')}?tags=${encodeURIComponent(tag)}`);
+	}
 </script>
 
 <svelte:head>
@@ -728,6 +740,7 @@
 								<MarkdownRenderer
 									content={exerciseContent.statement_md}
 									genericFunctions={genericFunctionsConfig}
+									onHashtagClick={searchByHashtag}
 								/>
 							{:else}
 								<p class="text-muted-foreground">(Aucun énoncé)</p>
@@ -759,6 +772,7 @@
 								<MarkdownRenderer
 									content={exerciseContent.solution_md}
 									genericFunctions={genericFunctionsConfig}
+									onHashtagClick={searchByHashtag}
 								/>
 							{:else}
 								<p class="text-muted-foreground">(Aucune solution)</p>

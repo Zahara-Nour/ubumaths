@@ -1,6 +1,6 @@
 # Référencement des ressources — état des lieux et proposition d'unification
 
-> Statut : **décisions prises le 2026-09-08. Phase 1 implémentée** (branche `feat/resource-registry`).
+> Statut : **phase 1 en prod. Phases 2-4 prêtes, EN ATTENTE DE LA MIGRATION PROD** (2026-09-08).
 > Date : 2026-09-04 (analyse), 2026-09-08 (décisions + phase 1). Origine : question posée en marge du chantier « cahier de texte partageable ».
 > Tous les constats ci-dessous ont été **vérifiés dans le code** le 2026-09-04 (branche `fix/emploi-du-temps-semaine-ecole`). Les références `fichier:ligne` sont à revérifier si le code a bougé depuis.
 
@@ -148,17 +148,82 @@ On garde l'auto-création. On ajoute une normalisation à l'écriture et une pag
 
 ---
 
-## 6. Phase 1 — livrée
+## 6. Phases livrées
 
-`src/lib/resources/registry.ts` + `__tests__/registry.test.ts`, consommé par `InternalLink.svelte`.
+### Phase 1 — registre d'adressage (PR #169, mergée)
 
-Ce qui a changé par rapport au plan : les routes sont construites avec le **`resolve()` typé de SvelteKit** (`$app/paths`), pas par concaténation. Un identifiant de route qui n'existe plus devient une **erreur de compilation** — vérifié en cassant volontairement une route (`svelte-check` la rejette). Le test de correspondance avec les routes sur disque est conservé : il rattrape le retour à la concaténation, et il a été vérifié falsifiable (il échoue sur la route morte historique `/dashboard/teacher/exercices/[id]`).
+`src/lib/resources/` (`registry.ts`, `kinds.ts`, `index.ts`) + `__tests__/registry.test.ts`, consommé par `InternalLink.svelte`.
 
-Autres points :
+Écart assumé par rapport au plan : les routes sont construites avec le **`resolve()` typé de SvelteKit** (`$app/paths`), pas par concaténation. Un identifiant de route qui n'existe plus devient une **erreur de compilation** — vérifié en cassant volontairement une route. Le test de correspondance avec les routes sur disque est conservé : il rattrape le retour à la concaténation, et il a été vérifié falsifiable.
 
-- `question` a été ajouté au vocabulaire inline de l'ubumark (`InternalLinkReferenceType` + whitelist du parser). Un test vérifie que les deux listes ne divergent plus.
-- Une référence sans destination pour le lecteur courant (un `document`, qui n'a pas de page ; un `chapter` lu hors de sa classe) s'affiche en texte inerte grisé au lieu de mener à un 404.
-- La table des routes est **honnête sur les rôles** : le layout `/dashboard/teacher` refuse les admins (`+layout.server.ts:51`), donc un admin n'hérite d'aucune route prof. Le registre déclare `null` plutôt qu'une destination interdite.
+- `question` a été ajouté au vocabulaire inline de l'ubumark, avec un test de synchronisation entre les deux listes.
+- Une référence sans destination (un `document`, qui n'a pas de page ; un `chapter` lu hors de sa classe) s'affiche en texte inerte au lieu de mener à un 404.
+- Table des routes **honnête sur les rôles** : le layout `/dashboard/teacher` refuse les admins (`+layout.server.ts:51`), donc aucun rôle n'hérite des routes d'un autre.
+- `kinds.ts` a été extrait ensuite : le registre importe Lucide et `$app/paths`, qui n'ont rien à faire dans un schéma Zod serveur.
+
+### Phase 2 — vue `resources` + recherche globale
+
+Migration `20260908120000`. Vue `security_invoker = true` sur les 5 types, fonction `search_resources` (`SECURITY INVOKER`), API `GET /api/search` (Zod + `requireRoles` + rate limit), page `/dashboard/teacher/recherche`.
+
+**Décisions produit** (David) : recherche **prof et admin uniquement**, sur **titres et métadonnées** — ni énoncés ni corrigés, pour que l'ouverture éventuelle aux élèves ne révèle jamais les solutions.
+
+**16 tests d'intégration**, échec prouvé sans la migration (`PGRST205` / `PGRST202`).
+
+Deux findings MEDIUM de `security-auditor`, corrigés et couverts par des tests :
+
+- **F1** — `revoke ... from public` ne retire PAS l'entrée ACL de `anon`. Le baseline pose `ALTER DEFAULT PRIVILEGES ... GRANT ALL ON TABLES TO anon` (`20260616220000:46144`), jamais neutralisé : le sweep de l'audit d'août ne couvrait que `ON FUNCTIONS`. C'est la **symétrie exacte** de la leçon d'août, retournée. → `revoke all on public.resources from anon;`
+- **F2** — la RPC est appelable directement en `POST /rest/v1/rpc/...`, donc le `.max(100)` de Zod ne protégeait que la route. → bornes dans le corps SQL (longueur, cardinalité des types) + `rateLimit` sur l'API.
+
+### Phase 3 — catalogue de tags unifié
+
+Migration `20260908130000`, **additive**. `tags.slug` généré + index unique (normalisation sans accent / minuscules / kebab), jonction polymorphe `resource_tags`, reprise des données existantes, RLS. Double écriture branchée dans `tags-resolution.ts`.
+
+⚠️ **Le nettoyage destructif n'est PAS fait** — supprimer `exercise_tags`, `python_tags` et les colonnes `tags text[]` fera l'objet d'une migration séparée, sur accord explicite. Les deux représentations coexistent, l'ancienne reste la source d'écriture.
+
+Vérifié sur la prod avant application (l'index unique échouerait sur un doublon) : 86 tags sans collision, 57 `python_tags` tous distincts, aucun slug vide.
+
+## 7. ⚠️ Ce qui reste à faire, et par qui
+
+### Bloquant : appliquer les migrations en prod
+
+Les trois migrations (`20260908120000`, `130000`, `140000`) sont **vérifiées en local** mais **pas appliquées en prod** : `supabase db push` demande le mot de passe de la base, indisponible en session non interactive (absent de `.env`, `.env.local` et de l'environnement).
+
+**La PR ne doit pas être mergée avant.** `main` est la prod : sans la migration, `/dashboard/teacher/recherche` et `GET /api/search` appelleraient une RPC inexistante. Le reste dégrade proprement (le miroir de tags journalise et continue).
+
+```bash
+pnpm db:migrate     # applique les 3 migrations
+pnpm db:types       # régénère database.ts, à committer
+gh pr merge <n> --merge --delete-branch
+```
+
+Après `db:types`, les adaptateurs de typage temporaires de `src/lib/server/search.ts` et `src/lib/server/resource-tags.ts` peuvent être remplacés par les types générés — ils sont commentés comme tels.
+
+### Décision produit en attente : qui peut créer un tag ?
+
+Trouvé par `security-auditor` (MOYENNE-2), **préexistant**, non modifié par moi car il touche une policy hors périmètre :
+
+- `tags_insert_authenticated ... WITH CHECK (true)` (baseline:42151) et `POST /api/tags` (`requireAuth` seul) laissent **tout compte connecté, élève inclus**, créer un tag ;
+- `tags_select_public ... USING (true)` sans clause `TO` + `GRANT ALL ON TABLE tags TO anon` rendent le catalogue lisible **par les visiteurs anonymes**.
+
+Autrement dit : un élève mineur peut publier du texte libre non modéré, immédiatement lisible sans authentification. La phase 3 n'aggrave pas la faille mais **en change la portée**, puisque `tags` devient le vocabulaire unique de toutes les ressources et l'entrée de la recherche.
+
+Correctif d'une ligne, à valider :
+
+```sql
+drop policy "tags_insert_authenticated" on public.tags;
+create policy "Teachers and admins create tags" on public.tags
+  for insert to authenticated with check (public.is_teacher_or_admin());
+```
+
+### Dette connue, à honorer au moment du nettoyage destructif
+
+Le miroir de `tags-resolution.ts` ne couvre que 2 des 5 types repris (`exercise`, `python_exercise`). Les colonnes `text[]` de `constructions`, `worksheets` et `parody_evaluations` continuent d'être écrites **sans miroir** : `resource_tags` diverge dès la première de ces ressources créée après le déploiement.
+
+→ **La migration destructive devra rejouer un backfill complet et réconcilier**, jamais se fier à l'état du miroir.
+
+Autre point relevé au passage, hors périmètre : les `upsert` de `presques-evaluations` utilisent `onConflict: 'name'` alors qu'**aucune contrainte unique n'existe sur `tags.name`** (le commentaire de colonne du baseline qui l'affirme est faux). Ces upserts échouent déjà en 42P10, avec un simple `console.warn`.
+
+---
 
 ## Annexe A — Types de ressources (tables de contenu)
 
@@ -188,7 +253,9 @@ Autres points :
 
 ## Annexe D — Hors périmètre, découvert au passage
 
-**`/automaths` renvoie 500 en production, pour tous les rôles, depuis le 2025-10-30.** Le commit `90e58e967` (« remove Redis completely ») a remplacé `.eq('status', 'published')` par `.eq('is_published', true)` — colonne inexistante sur `question_templates`. Même bug dans les trois loaders : `automaths/+page.server.ts:35`, `automaths/panier/+page.server.ts:12`, `automaths/test/+page.server.ts:15`.
+> ✅ **RÉGLÉ le 2026-09-08 par une autre session** : les trois loaders utilisent désormais `.eq('status', 'published')` et la migration `20260908090000_automaths_anon_read_published_templates.sql` ouvre les templates publiés aux anonymes, avec son test d'intégration. Ce qui suit est conservé pour la trace du diagnostic.
+
+**`/automaths` renvoyait 500 en production, pour tous les rôles, depuis le 2025-10-30.** Le commit `90e58e967` (« remove Redis completely ») a remplacé `.eq('status', 'published')` par `.eq('is_published', true)` — colonne inexistante sur `question_templates`. Même bug dans les trois loaders : `automaths/+page.server.ts:35`, `automaths/panier/+page.server.ts:12`, `automaths/test/+page.server.ts:15`.
 
 Deux points liés :
 

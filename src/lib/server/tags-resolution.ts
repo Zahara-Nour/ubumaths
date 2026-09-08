@@ -10,6 +10,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { mirrorResourceTags } from './resource-tags';
 
 type SB = SupabaseClient<Database>;
 
@@ -104,6 +105,7 @@ export async function syncExerciseTagJunction(
 			console.error(`tags-resolution: failed to clear ${junctionTable}:`, delErr);
 			throw delErr;
 		}
+		await mirrorToUnifiedJunction(supabase, exerciseId, [], junctionTable);
 		return;
 	}
 
@@ -131,6 +133,44 @@ export async function syncExerciseTagJunction(
 		console.error(`tags-resolution: failed to insert ${junctionTable}:`, insertErr);
 		throw insertErr;
 	}
+
+	await mirrorToUnifiedJunction(supabase, exerciseId, tagIds, junctionTable);
+}
+
+/**
+ * Keep `resource_tags` (migration 20260908130000) in step with the legacy
+ * junction, which remains the source of truth until the destructive cleanup.
+ *
+ * The names are re-read rather than passed in: the two catalogues are distinct
+ * (`tags` vs `python_tags`) and only the NAME is common to both, so a Python tag
+ * id means nothing to the unified catalogue.
+ */
+async function mirrorToUnifiedJunction(
+	supabase: SB,
+	exerciseId: string,
+	tagIds: string[],
+	junctionTable: JunctionTable
+): Promise<void> {
+	const kind = junctionTable === 'exercise_tags' ? 'exercise' : 'python_exercise';
+	const catalog: CatalogTable = junctionTable === 'exercise_tags' ? 'tags' : 'python_tags';
+
+	if (tagIds.length === 0) {
+		await mirrorResourceTags(supabase, kind, exerciseId, []);
+		return;
+	}
+
+	const { data, error } = await supabase.from(catalog).select('name').in('id', tagIds);
+	if (error) {
+		console.error(`tags-resolution: mirror name lookup failed for ${catalog}:`, error);
+		return;
+	}
+
+	await mirrorResourceTags(
+		supabase,
+		kind,
+		exerciseId,
+		(data ?? []).map((row) => row.name as string)
+	);
 }
 
 /**
