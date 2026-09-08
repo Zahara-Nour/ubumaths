@@ -55,6 +55,12 @@ pnpm release                        # tag de version + CHANGELOG (standard-versi
 - **Conventional commits**, **header ≤ 100 caractères** (commitlint), **aucune mention Claude/Anthropic** (David = seul auteur).
 - **Migrations** : additive → `db:migrate` avant/avec le deploy ; destructive → après. Uniquement depuis la branche mergée.
 - **Push, PR et merge : autonomes** dès que la CI est verte. Pas besoin de me demander.
+  - ⚠️ **La CI passe au vert → tu merges, immédiatement.** C'est un automatisme, pas une
+    décision à réévaluer. Ne t'invente aucune exception : ni « je préfère te laisser
+    trancher », ni « je viens d'annoncer que je ne le ferais pas », ni « la PR est
+    grosse ». Surveille la CI **dès l'ouverture de la PR** (tâche de fond), pas quand
+    on te le rappelle. Annoncer la commande de merge à ma place au lieu de l'exécuter,
+    c'est ne pas respecter la consigne.
 
 ### Migrations : preuves, pas approbation
 
