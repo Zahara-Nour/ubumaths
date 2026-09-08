@@ -37,6 +37,8 @@ export interface ResourceLinkOptions {
 	maxSuggestions: number;
 	/** Minimum query length before hitting the network */
 	minQueryLength: number;
+	/** Pause de frappe avant d'interroger l'API, en millisecondes */
+	debounceMs: number;
 }
 
 /** One row of `GET /api/search`, narrowed to what the popup needs. */
@@ -67,7 +69,19 @@ const KIND_LABELS: Record<ResourceKind, string> = {
  * Failure-tolerant: a suggestion popup that throws would break typing. An empty
  * list simply shows "no result", which is also what an offline editor sees.
  */
-async function searchResources(query: string, limit: number): Promise<SuggestionItem[]> {
+/**
+ * Résultat d'une recherche, échec compris.
+ *
+ * Renvoyer un tableau vide dans les deux cas revenait à afficher « aucune
+ * ressource trouvée » alors que la requête n'avait jamais abouti — un message
+ * faux, et impossible à diagnostiquer depuis l'éditeur.
+ */
+interface SearchOutcome {
+	items: SuggestionItem[];
+	failed: boolean;
+}
+
+async function searchResources(query: string, limit: number): Promise<SearchOutcome> {
 	try {
 		// PAS de `kinds` : demander TOUS les types revient à n'en filtrer aucun, et
 		// l'omettre supprime un couplage qui a déjà mordu. La fonction SQL borne la
@@ -81,15 +95,44 @@ async function searchResources(query: string, limit: number): Promise<Suggestion
 			limit: String(limit)
 		});
 		const response = await fetch(`/api/search?${params.toString()}`);
-		if (!response.ok) return [];
+		if (!response.ok) return { items: [], failed: true };
 
 		const payload: unknown = await response.json();
 		const results = (payload as { results?: SearchResult[] }).results ?? [];
 
-		return results.filter((row) => isResourceKind(row.kind)).map(toSuggestionItem);
+		return {
+			items: results.filter((row) => isResourceKind(row.kind)).map(toSuggestionItem),
+			failed: false
+		};
 	} catch {
-		return [];
+		return { items: [], failed: true };
 	}
+}
+
+/**
+ * Anti-rebond : UNE requête par pause de frappe, pas une par touche.
+ *
+ * `/api/search` est limité à 30 appels par minute et par compte — une garde
+ * légitime, la requête étant structurellement chère (UNION ALL sur six branches,
+ * `unaccent` par ligne). Sans rebond, taper « integral » en consommait sept :
+ * quelques recherches suffisaient à déclencher un 429, rendu en « aucune
+ * ressource trouvée ». La popup mentait, et le prof n'avait aucun moyen de le
+ * savoir.
+ *
+ * La dernière frappe gagne : une recherche supplantée voit son minuteur annulé
+ * et ne se résout jamais, donc TipTap ne met pas à jour la popup avec un
+ * résultat périmé.
+ */
+export function createDebouncedSearch(delayMs: number) {
+	let timer: ReturnType<typeof setTimeout> | undefined;
+
+	return (query: string, limit: number): Promise<SearchOutcome> =>
+		new Promise<SearchOutcome>((resolve) => {
+			if (timer) clearTimeout(timer);
+			timer = setTimeout(() => {
+				searchResources(query, limit).then(resolve);
+			}, delayMs);
+		});
 }
 
 /**
@@ -142,12 +185,20 @@ export const ResourceLink = Extension.create<ResourceLinkOptions>({
 			maxSuggestions: 8,
 			// Below two characters the API answers 400 anyway; not calling it at
 			// all spares a round-trip on every opening bracket pair.
-			minQueryLength: 2
+			minQueryLength: 2,
+			// Assez court pour rester vif à la frappe, assez long pour qu'un mot
+			// entier ne coûte qu'une seule requête.
+			debounceMs: 250
 		};
 	},
 
 	addProseMirrorPlugins() {
-		const { maxSuggestions, minQueryLength } = this.options;
+		const { maxSuggestions, minQueryLength, debounceMs } = this.options;
+		const search = createDebouncedSearch(debounceMs);
+
+		// Mémorise POURQUOI la dernière liste était vide, pour que la popup le dise.
+		// Une seule popup à la fois, donc une seule variable suffit.
+		let lastSearchFailed = false;
 
 		return [
 			Suggestion<SuggestionItem>({
@@ -165,8 +216,13 @@ export const ResourceLink = Extension.create<ResourceLinkOptions>({
 				startOfLine: false,
 
 				items: async ({ query }) => {
-					if (query.length < minQueryLength) return [];
-					return searchResources(query, maxSuggestions);
+					if (query.length < minQueryLength) {
+						lastSearchFailed = false;
+						return [];
+					}
+					const outcome = await search(query, maxSuggestions);
+					lastSearchFailed = outcome.failed;
+					return outcome.items;
 				},
 
 				command: ({ editor, range, props }) => {
@@ -178,7 +234,15 @@ export const ResourceLink = Extension.create<ResourceLinkOptions>({
 					createSuggestionRenderer({
 						type: 'resource',
 						prefix: '',
-						noResultsText: 'Aucune ressource trouvée'
+						noResultsText: 'Aucune ressource trouvée',
+						// Trois raisons distinctes d'être vide, trois messages.
+						emptyText: (query) => {
+							if (lastSearchFailed) return 'Recherche indisponible — réessaie dans un instant';
+							if (query.length < minQueryLength) {
+								return `Tape au moins ${minQueryLength} lettres du titre ou de la fiche`;
+							}
+							return 'Aucune ressource trouvée';
+						}
 					})
 			})
 		];

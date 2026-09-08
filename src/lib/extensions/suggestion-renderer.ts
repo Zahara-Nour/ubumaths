@@ -37,6 +37,15 @@ export interface SuggestionRendererConfig {
 	itemClass?: string;
 	/** Text shown when no results match */
 	noResultsText?: string;
+	/**
+	 * Texte de l'état vide, calculé depuis la requête en cours.
+	 *
+	 * « Aucun résultat » est un MENSONGE quand rien n'a été cherché : une requête
+	 * trop courte, ou une recherche en échec, produisent la même liste vide qu'une
+	 * recherche aboutie sans correspondance. Ce rappel permet de les distinguer.
+	 * À défaut, `noResultsText` s'applique comme avant.
+	 */
+	emptyText?: (query: string) => string;
 }
 
 /**
@@ -46,6 +55,8 @@ interface SuggestionState {
 	items: SuggestionItem[];
 	selectedIndex: number;
 	command: (item: SuggestionItem) => void;
+	/** Requête en cours, pour que l'état vide puisse dire POURQUOI il est vide. */
+	query: string;
 }
 
 /**
@@ -74,7 +85,8 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 		prefix,
 		popupClass = 'suggestion-popup',
 		itemClass = 'suggestion-item',
-		noResultsText = 'Aucun résultat'
+		noResultsText = 'Aucun résultat',
+		emptyText = () => noResultsText
 	} = config;
 
 	let popup: HTMLDivElement | null = null;
@@ -82,7 +94,8 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 	let state: SuggestionState = {
 		items: [],
 		selectedIndex: 0,
-		command: () => {}
+		command: () => {},
+		query: ''
 	};
 
 	/**
@@ -117,7 +130,7 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 			// Show no results message
 			const noResults = document.createElement('div');
 			noResults.classList.add('suggestion-no-results');
-			noResults.textContent = noResultsText;
+			noResults.textContent = emptyText(state.query);
 			currentPopup.appendChild(noResults);
 			return;
 		}
@@ -209,7 +222,8 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 			state = {
 				items: props.items,
 				selectedIndex: 0,
-				command: props.command
+				command: props.command,
+				query: props.query
 			};
 
 			renderItems();
@@ -250,6 +264,7 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 		 */
 		onUpdate: (props: SuggestionProps<SuggestionItem>) => {
 			state.items = props.items;
+			state.query = props.query;
 			state.selectedIndex = 0;
 			state.command = props.command;
 

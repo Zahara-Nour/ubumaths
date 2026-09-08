@@ -15,11 +15,12 @@
  * le casserait se voie en CI.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import { findSuggestionMatch } from '@tiptap/suggestion';
-import { ResourceLink, toSuggestionItem } from '../resource-link-extension';
+import { ResourceLink, toSuggestionItem, createDebouncedSearch } from '../resource-link-extension';
+import { createSuggestionRenderer } from '../suggestion-renderer';
 
 // ============================================================================
 // TEST UTILITIES
@@ -187,4 +188,164 @@ describe('intégration éditeur', () => {
 			subtitle: null
 		};
 	}
+});
+
+// ============================================================================
+// L'ÉTAT VIDE : POURQUOI, PAS SEULEMENT « RIEN »
+// ============================================================================
+
+/**
+ * Le 2026-09-08, David tape `[[` et lit « Aucune ressource trouvée » alors que
+ * 127 exercices de fiche venaient d'être mis en ligne. Trois causes possibles
+ * produisaient le même message : requête trop courte, recherche en échec, et
+ * vraie absence de résultat. Ces tests fixent la distinction.
+ */
+describe('état vide de la popup', () => {
+	/** Rend la popup et renvoie le texte affiché quand la liste est vide. */
+	function emptyMessageFor(query: string, emptyText: (q: string) => string): string {
+		const renderer = createSuggestionRenderer({
+			type: 'resource',
+			prefix: '',
+			noResultsText: 'Aucune ressource trouvée',
+			emptyText
+		});
+
+		renderer.onStart({
+			items: [],
+			query,
+			command: () => {},
+			clientRect: () => new DOMRect(0, 0, 0, 0)
+		} as never);
+
+		const popup = document.querySelector('.suggestion-no-results');
+		const text = popup?.textContent ?? '';
+		renderer.onExit();
+		return text;
+	}
+
+	it('invite à taper plutôt que d’annoncer une absence, sous le seuil', () => {
+		const message = emptyMessageFor('', (q) =>
+			q.length < 2 ? 'Tape au moins 2 lettres du titre ou de la fiche' : 'Aucune ressource trouvée'
+		);
+
+		expect(message).toBe('Tape au moins 2 lettres du titre ou de la fiche');
+	});
+
+	it('dit « aucune ressource » seulement quand une vraie recherche a eu lieu', () => {
+		const message = emptyMessageFor('integrale', (q) =>
+			q.length < 2 ? 'Tape au moins 2 lettres du titre ou de la fiche' : 'Aucune ressource trouvée'
+		);
+
+		expect(message).toBe('Aucune ressource trouvée');
+	});
+
+	it('retombe sur `noResultsText` quand aucun `emptyText` n’est fourni', () => {
+		// Les extensions hashtag et mention n'en passent pas : leur comportement
+		// ne doit pas changer.
+		const renderer = createSuggestionRenderer({
+			type: 'hashtag',
+			prefix: '#',
+			noResultsText: 'Aucun hashtag trouvé'
+		});
+		renderer.onStart({
+			items: [],
+			query: 'x',
+			command: () => {},
+			clientRect: () => new DOMRect(0, 0, 0, 0)
+		} as never);
+
+		expect(document.querySelector('.suggestion-no-results')?.textContent).toBe(
+			'Aucun hashtag trouvé'
+		);
+		renderer.onExit();
+	});
+});
+
+// ============================================================================
+// ANTI-REBOND : UNE REQUÊTE PAR PAUSE, PAS UNE PAR TOUCHE
+// ============================================================================
+
+describe('anti-rebond de la recherche', () => {
+	let fetchMock: ReturnType<typeof vi.fn>;
+
+	function urlsAppelees(): string[] {
+		return fetchMock.mock.calls.map((call) => String(call[0]));
+	}
+
+	beforeEach(() => {
+		vi.useFakeTimers();
+		fetchMock = vi.fn().mockResolvedValue({
+			ok: true,
+			json: async () => ({ results: [] })
+		});
+		vi.stubGlobal('fetch', fetchMock);
+	});
+
+	afterEach(() => {
+		vi.useRealTimers();
+		vi.unstubAllGlobals();
+	});
+
+	it('taper un mot entier ne coûte qu’UNE requête, celle du mot complet', async () => {
+		// Le cœur du sujet : `/api/search` est limité à 30 appels par minute et par
+		// compte. Sans rebond, « integral » en consommait sept, et quelques
+		// recherches suffisaient à déclencher un 429 rendu en « aucune ressource
+		// trouvée ».
+		const search = createDebouncedSearch(250);
+
+		const frappes = ['in', 'int', 'inte', 'integ', 'integr', 'integra', 'integral'];
+		const promesses = frappes.map((q) => search(q, 8));
+		await vi.advanceTimersByTimeAsync(300);
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(urlsAppelees()[0]).toContain('q=integral');
+
+		// Et c'est bien la dernière frappe qui reçoit le résultat.
+		await expect(promesses[promesses.length - 1]).resolves.toEqual({ items: [], failed: false });
+	});
+
+	it('deux recherches séparées par une pause coûtent deux requêtes', async () => {
+		const search = createDebouncedSearch(250);
+
+		void search('derivation', 8);
+		await vi.advanceTimersByTimeAsync(300);
+		void search('scalaire', 8);
+		await vi.advanceTimersByTimeAsync(300);
+
+		expect(fetchMock).toHaveBeenCalledTimes(2);
+		expect(urlsAppelees()[1]).toContain('q=scalaire');
+	});
+
+	it('n’envoie plus le paramètre `kinds`, pour rester insensible aux migrations', async () => {
+		// Demander TOUS les types revient à n'en filtrer aucun ; l'omettre évite
+		// le plafond `p_kinds` de la fonction SQL.
+		const search = createDebouncedSearch(0);
+		void search('integral', 8);
+		await vi.advanceTimersByTimeAsync(10);
+
+		expect(urlsAppelees()[0]).not.toContain('kinds=');
+		expect(urlsAppelees()[0]).toContain('limit=8');
+	});
+
+	it('signale un échec au lieu de le faire passer pour une absence de résultat', async () => {
+		fetchMock.mockResolvedValue({ ok: false, status: 429, json: async () => ({}) });
+		const search = createDebouncedSearch(0);
+
+		const promesse = search('integral', 8);
+		await vi.advanceTimersByTimeAsync(10);
+
+		// `failed: true` est ce qui permet à la popup d'écrire « Recherche
+		// indisponible » plutôt que de mentir.
+		await expect(promesse).resolves.toEqual({ items: [], failed: true });
+	});
+
+	it('traite une panne réseau comme un échec, pas comme un vide', async () => {
+		fetchMock.mockRejectedValue(new Error('offline'));
+		const search = createDebouncedSearch(0);
+
+		const promesse = search('integral', 8);
+		await vi.advanceTimersByTimeAsync(10);
+
+		await expect(promesse).resolves.toEqual({ items: [], failed: true });
+	});
 });
