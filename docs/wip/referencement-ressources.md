@@ -182,6 +182,37 @@ Migration `20260908130000`, **additive**. `tags.slug` généré + index unique (
 
 Vérifié sur la prod avant application (l'index unique échouerait sur un doublon) : 86 tags sans collision, 57 `python_tags` tous distincts, aucun slug vide.
 
+## 6bis. Phase 5 — sélecteur d'insertion `[[…]]` : spécifiée, PAS implémentée
+
+**Je me suis arrêté volontairement.** Sans base ni serveur de dev accessibles, je ne pouvais que _typechecker_ du code d'éditeur, pas le faire tourner. Livrer de la plomberie ProseMirror non vérifiée dans l'éditeur d'exercices — l'outil central du travail quotidien — était un mauvais échange contre une spec précise. Voici de quoi la reprendre sans rien re-décider.
+
+### Le problème central : le déclencheur
+
+L'infrastructure existante (`Suggestion` de TipTap, utilisée par `hashtag-extension.ts` et `mention-extension.ts`) prend un **`char` d'UN seul caractère**. `[[` est une séquence de deux, et `char: '['` déclencherait la popup sur chaque crochet ouvrant — insupportable dans un contenu mathématique.
+
+Deux voies, et je recommande la seconde :
+
+**A. Règle d'entrée ProseMirror sur `[[`.** L'UX naturelle, celle qu'attend quelqu'un qui a déjà écrit du wiki. Mais c'est du code ProseMirror sur mesure (`InputRule` + décoration + gestion du clavier), soit précisément ce que je ne pouvais pas vérifier cette nuit.
+
+**B. Bouton de barre d'outils + dialogue.** Un bouton « Insérer une ressource » ouvre un dialogue qui appelle `GET /api/search` (déjà écrit, phase 2), liste les résultats avec leur type et leur niveau, et insère `[[kind:uuid|libellé]]` à la position du curseur. Aucune plomberie ProseMirror : `editor.chain().focus().insertContent(...)`.
+
+Recommandation : **B d'abord**. Elle livre toute la valeur — insérer une référence sans connaître l'uuid — pour une fraction du risque, et n'interdit pas d'ajouter A plus tard comme raccourci. Le déclencheur `[[` sans sélecteur n'a de toute façon jamais servi : la syntaxe n'apparaît nulle part dans le dépôt hors tests et commentaires.
+
+### Ce qui est déjà en place pour B
+
+- `GET /api/search?q=&kinds=&tags=` renvoie `{ results: ResourceSearchRow[] }` avec `kind`, `id`, `title`, `subtitle`, `grades`, `status`.
+- `resolveResource()` donne l'icône et le libellé français du type pour l'affichage.
+- `RESOURCE_KINDS` fournit les filtres.
+- Le parser accepte déjà les cinq types depuis la phase 1 (`question` inclus).
+
+### Points de vigilance
+
+- Le libellé inséré est figé au moment de l'insertion : si la ressource est renommée, le lien affichera l'ancien titre. C'est le comportement voulu (le texte reste stable), à documenter côté UI.
+- L'API est réservée prof/admin ; le sélecteur n'a donc sa place que dans les éditeurs prof.
+- Le dialogue doit passer par `MySelect`/`MyCheckbox` pour les filtres, jamais par des éléments natifs (règle 2 du CLAUDE.md).
+
+---
+
 ## 7. ⚠️ Ce qui reste à faire, et par qui
 
 ### Bloquant : appliquer les migrations en prod
