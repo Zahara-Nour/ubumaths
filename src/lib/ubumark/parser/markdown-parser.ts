@@ -271,7 +271,11 @@ const VALID_INTERNAL_LINK_TYPES: InternalLinkReferenceType[] = [
 	'exercise',
 	'assessment',
 	'question',
-	'worksheet_exercise'
+	'worksheet',
+	'worksheet_exercise',
+	'python_exercise',
+	'python_notebook',
+	'construction'
 ];
 
 /**

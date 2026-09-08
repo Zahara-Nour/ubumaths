@@ -20,15 +20,26 @@
  */
 export const RESOURCE_KINDS = [
 	'exercise',
-	'question',
-	'assessment',
-	'chapter',
-	'document',
+	// La FICHE d'exercices elle-même. Citée seule, c'est un lien vers la fiche
+	// (pour la télécharger, par exemple) et elle n'apporte AUCUN point de
+	// programme : rien ne dit lesquels de ses exercices ont été faits.
+	'worksheet',
 	// Un exercice DANS une fiche. Son identifiant est celui de la jonction
 	// `worksheet_exercises`, pas celui de l'exercice : c'est ce qui permet de
 	// citer « exercice 3 de la fiche Dérivées » et de retrouver ensuite la fiche
 	// (pour le lien) comme l'exercice (pour la couverture du programme).
-	'worksheet_exercise'
+	//
+	// ⚠️ Absent du CATALOGUE de recherche (migration 20260909020000) : on cherche
+	// la fiche, puis on désigne l'exercice par son numéro. Il reste un type de
+	// référence de plein droit — les liens déjà écrits fonctionnent.
+	'worksheet_exercise',
+	'question',
+	'assessment',
+	'chapter',
+	'python_exercise',
+	'python_notebook',
+	'construction',
+	'document'
 ] as const;
 
 export type ResourceKind = (typeof RESOURCE_KINDS)[number];
