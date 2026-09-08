@@ -81,7 +81,11 @@ interface SearchOutcome {
 	failed: boolean;
 }
 
-async function searchResources(query: string, limit: number): Promise<SearchOutcome> {
+async function searchResources(
+	query: string,
+	limit: number,
+	grades: string[] | null
+): Promise<SearchOutcome> {
 	try {
 		// PAS de `kinds` : demander TOUS les types revient à n'en filtrer aucun, et
 		// l'omettre supprime un couplage qui a déjà mordu. La fonction SQL borne la
@@ -94,6 +98,9 @@ async function searchResources(query: string, limit: number): Promise<SearchOutc
 			q: query,
 			limit: String(limit)
 		});
+		// Le niveau de la classe dont on écrit la séance. Absent partout ailleurs
+		// (éditeur d'exercices, chat…), où aucun contexte ne le justifierait.
+		if (grades && grades.length > 0) params.set('grades', grades.join(','));
 		const response = await fetch(`/api/search?${params.toString()}`);
 		if (!response.ok) return { items: [], failed: true };
 
@@ -126,11 +133,11 @@ async function searchResources(query: string, limit: number): Promise<SearchOutc
 export function createDebouncedSearch(delayMs: number) {
 	let timer: ReturnType<typeof setTimeout> | undefined;
 
-	return (query: string, limit: number): Promise<SearchOutcome> =>
+	return (query: string, limit: number, grades: string[] | null): Promise<SearchOutcome> =>
 		new Promise<SearchOutcome>((resolve) => {
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(() => {
-				searchResources(query, limit).then(resolve);
+				searchResources(query, limit, grades).then(resolve);
 			}, delayMs);
 		});
 }
@@ -177,8 +184,38 @@ function insertedLabel(row: SearchResult, kind: ResourceKind): string {
 // EXTENSION
 // ============================================================================
 
-export const ResourceLink = Extension.create<ResourceLinkOptions>({
+export interface ResourceLinkStorage {
+	/**
+	 * Niveaux auxquels restreindre la recherche, ou `null` pour ne pas filtrer.
+	 *
+	 * DANS LE STOCKAGE, PAS DANS LES OPTIONS. `createEditorExtensions()` met en
+	 * cache un unique jeu d'extensions partagé par tous les éditeurs de la page —
+	 * c'est délibéré, sans quoi ProseMirror refuse deux plugins de même clé. Une
+	 * option figée à la configuration serait donc commune à tous les éditeurs, et
+	 * survivrait à une navigation d'une classe vers une autre. Le stockage, lui,
+	 * est propre à chaque instance d'éditeur.
+	 */
+	grades: string[] | null;
+}
+
+/**
+ * `editor.storage` est une interface vide dans `@tiptap/core`, prévue pour être
+ * augmentée : sans cette déclaration, `editor.storage.resourceLink` ne compile
+ * pas. Même mécanisme que l'augmentation de `Commands` dans les extensions
+ * voisines (math, blank, number-line).
+ */
+declare module '@tiptap/core' {
+	interface Storage {
+		resourceLink: ResourceLinkStorage;
+	}
+}
+
+export const ResourceLink = Extension.create<ResourceLinkOptions, ResourceLinkStorage>({
 	name: 'resourceLink',
+
+	addStorage() {
+		return { grades: null };
+	},
 
 	addOptions() {
 		return {
@@ -195,6 +232,9 @@ export const ResourceLink = Extension.create<ResourceLinkOptions>({
 	addProseMirrorPlugins() {
 		const { maxSuggestions, minQueryLength, debounceMs } = this.options;
 		const search = createDebouncedSearch(debounceMs);
+		// Capturé ici, LU au moment de la requête : le niveau peut changer après la
+		// création de l'éditeur (chargement de la classe, navigation).
+		const editor = this.editor;
 
 		// Mémorise POURQUOI la dernière liste était vide, pour que la popup le dise.
 		// Une seule popup à la fois, donc une seule variable suffit.
@@ -220,7 +260,7 @@ export const ResourceLink = Extension.create<ResourceLinkOptions>({
 						lastSearchFailed = false;
 						return [];
 					}
-					const outcome = await search(query, maxSuggestions);
+					const outcome = await search(query, maxSuggestions, editor.storage.resourceLink.grades);
 					lastSearchFailed = outcome.failed;
 					return outcome.items;
 				},

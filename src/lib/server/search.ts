@@ -71,6 +71,11 @@ export interface SearchResourcesParams {
 	kinds?: ResourceKind[];
 	/** Noms de tags ; la comparaison se fait sur leur forme canonique. */
 	tags?: string[];
+	/**
+	 * Niveaux à conserver. Une ressource SANS niveau passe toujours le filtre :
+	 * la masquer la rendrait introuvable sans raison compréhensible.
+	 */
+	grades?: string[];
 	limit?: number;
 }
 
@@ -82,7 +87,7 @@ export interface SearchResourcesParams {
  */
 export async function searchResources(
 	supabase: SupabaseClient<Database>,
-	{ query, kinds, tags, limit = 20 }: SearchResourcesParams
+	{ query, kinds, tags, grades, limit = 20 }: SearchResourcesParams
 ): Promise<{ rows: ResourceSearchRow[]; error: string | null }> {
 	const { data, error } = await supabase.rpc('search_resources', {
 		p_query: query,
@@ -91,6 +96,7 @@ export async function searchResources(
 		// laisse Postgres appliquer son `default null` — même résultat, typage juste.
 		p_kinds: kinds && kinds.length > 0 ? kinds : undefined,
 		p_tags: tags && tags.length > 0 ? tags : undefined,
+		p_grades: grades && grades.length > 0 ? grades : undefined,
 		p_limit: limit
 	});
 

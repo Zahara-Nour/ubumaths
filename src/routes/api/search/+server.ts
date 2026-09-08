@@ -29,6 +29,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		q: url.searchParams.get('q') ?? '',
 		kinds: url.searchParams.get('kinds') ?? undefined,
 		tags: url.searchParams.get('tags') ?? undefined,
+		grades: url.searchParams.get('grades') ?? undefined,
 		limit: url.searchParams.get('limit') ?? undefined
 	});
 
@@ -40,6 +41,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		query: parsed.data.q,
 		kinds: parsed.data.kinds,
 		tags: parsed.data.tags,
+		grades: parsed.data.grades,
 		limit: parsed.data.limit
 	});
 

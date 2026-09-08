@@ -422,6 +422,76 @@ describe('vue resources + recherche globale', () => {
 		expect((data ?? []).map((r: { id: string }) => r.id)).toContain(WS_EXERCISE);
 	});
 
+	it('porte le niveau de LA FICHE, pas celui de l’exercice', async () => {
+		// Décision produit : c'est la fiche qu'on distribue à une classe, donc
+		// c'est son niveau qui situe ses exercices. L'exercice sous-jacent
+		// EX_PUBLIC est en 6ᵉ ; la fiche, elle, est en 1ʳᵉ spé.
+		const { error: gradeError } = await service
+			.from('worksheets')
+			.update({ grades: ['1_SPE'] })
+			.eq('id', WORKSHEET);
+		expect(gradeError).toBeNull();
+
+		const { data, error } = await teacher
+			.from('resources')
+			.select('grades')
+			.eq('id', WS_EXERCISE)
+			.maybeSingle();
+
+		expect(error).toBeNull();
+		expect(data?.grades).toEqual(['1_SPE']);
+
+		// L'exercice autonome, lui, garde son propre niveau.
+		const { data: exo } = await teacher
+			.from('resources')
+			.select('grades')
+			.eq('id', EX_PUBLIC)
+			.maybeSingle();
+		expect(exo?.grades).toEqual(['6']);
+	});
+
+	it('filtre par niveau : la 6ᵉ ne remonte pas dans une recherche de 1ʳᵉ spé', async () => {
+		const { data, error } = await teacher.rpc('search_resources', {
+			p_query: 'algebre',
+			p_grades: ['1_SPE']
+		});
+
+		expect(error).toBeNull();
+		// EX_PUBLIC est en 6ᵉ : il sort. Sans le filtre, il remonterait (test
+		// « est insensible aux accents et à la casse » ci-dessus).
+		expect((data ?? []).map((r: { id: string }) => r.id)).not.toContain(EX_PUBLIC);
+	});
+
+	it('une ressource SANS niveau reste toujours visible', async () => {
+		// La masquer la rendrait introuvable sans raison compréhensible. Un
+		// chapitre n'a jamais de niveau ; certains exercices non plus.
+		const { error: clearError } = await service
+			.from('exercises')
+			.update({ grades: null })
+			.eq('id', EX_PERCENT);
+		expect(clearError).toBeNull();
+
+		const { data, error } = await teacher.rpc('search_resources', {
+			p_query: 'pourcentages',
+			p_grades: ['1_SPE']
+		});
+
+		expect(error).toBeNull();
+		expect((data ?? []).map((r: { id: string }) => r.id)).toContain(EX_PERCENT);
+
+		await service
+			.from('exercises')
+			.update({ grades: ['6'] })
+			.eq('id', EX_PERCENT);
+	});
+
+	it('sans p_grades, rien n’est filtré', async () => {
+		const { data, error } = await teacher.rpc('search_resources', { p_query: 'algebre' });
+
+		expect(error).toBeNull();
+		expect((data ?? []).map((r: { id: string }) => r.id)).toContain(EX_PUBLIC);
+	});
+
 	it("n'expose PAS l'exercice de fiche à un élève à qui la fiche n'a pas été distribuée", async () => {
 		// Même démonstration que pour la vue entière : la branche lit
 		// `worksheets` sous l'identité de l'appelant, dont la RLS exige un
