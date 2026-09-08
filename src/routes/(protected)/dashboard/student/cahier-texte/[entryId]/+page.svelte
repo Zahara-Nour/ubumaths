@@ -15,6 +15,7 @@
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
 	import { Badge } from '$lib/components/ui/badge';
 	import { transformMathHtml } from '$lib/utils/sanitize';
+	import { linkifyResourceReferences } from '$lib/resources/linkify';
 	import { GRADES, type GradeCode } from '$lib/types/grades';
 	import {
 		BookOpen,
@@ -92,9 +93,17 @@
 		goto('/dashboard/student/cahier-texte');
 	}
 
-	// Transformed content for safe rendering
-	let lessonHtml = $derived(transformMathHtml(data.entry.lessonContent || ''));
-	let homeworkHtml = $derived(transformMathHtml(data.entry.homeworkContent || ''));
+	// Transformed content for safe rendering.
+	//
+	// La transformation des références vient APRÈS l'assainissement : elle
+	// réinjecte le libellé tel quel dans le document, donc il doit déjà être du
+	// texte échappé. Sans elle, l'élève lit littéralement `[[exercise:3f2a…|…]]`.
+	function renderContent(raw: string | null | undefined): string {
+		return linkifyResourceReferences(transformMathHtml(raw || ''), { role: 'student' });
+	}
+
+	let lessonHtml = $derived(renderContent(data.entry.lessonContent));
+	let homeworkHtml = $derived(renderContent(data.entry.homeworkContent));
 
 	// Due date info
 	let dueDateInfo = $derived(

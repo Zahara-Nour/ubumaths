@@ -163,7 +163,8 @@ export type InternalLinkReferenceType =
 	| 'document'
 	| 'exercise'
 	| 'assessment'
-	| 'question';
+	| 'question'
+	| 'worksheet_exercise';
 
 /**
  * Internal link node - references internal resources

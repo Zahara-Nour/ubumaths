@@ -301,13 +301,17 @@ export const actions: Actions = {
 						warning: 'Séance créée, mais les activités n’ont pas pu être enregistrées.'
 					};
 				}
-				// Les activités taguées apportent leur couverture `auto`, qui vient
-				// s'ajouter aux points cochés à la main juste au-dessus.
-				try {
-					await reconcileAutoCoverage(locals.supabase, entry.id);
-				} catch (e) {
-					console.error('[Create Journal Entry] reconcile failed:', e);
-				}
+			}
+		}
+
+		// La couverture `auto` vient des activités taguées ET des ressources citées
+		// dans le contenu : on réconcilie donc même sans activité, puisqu'une séance
+		// peut n'être qu'un texte contenant des [[exercice:…]].
+		if (entry?.id) {
+			try {
+				await reconcileAutoCoverage(locals.supabase, entry.id);
+			} catch (e) {
+				console.error('[Create Journal Entry] reconcile failed:', e);
 			}
 		}
 
@@ -372,6 +376,16 @@ export const actions: Actions = {
 		if (updateError) {
 			console.error('[Update Journal Entry] Error:', updateError);
 			return fail(500, { error: updateError.message, action: 'update' });
+		}
+
+		// La couverture suit désormais AUSSI les références citées dans le contenu :
+		// elle doit donc être recalculée à chaque enregistrement, et non plus
+		// seulement quand des activités changent. Retirer un `[[exercice]]` du texte
+		// retire son point, ce que seule une réconciliation complète peut faire.
+		try {
+			await reconcileAutoCoverage(locals.supabase, entryId);
+		} catch (e) {
+			console.error('[Update Journal Entry] reconcile failed:', e);
 		}
 
 		return { success: true, action: 'update' };

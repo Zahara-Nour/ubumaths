@@ -36,6 +36,7 @@ import {
 	DELETE as covDELETE
 } from '../../src/routes/api/teacher/curriculum/coverage/+server';
 
+import { reconcileAutoCoverage } from '$lib/server/curriculum-coverage';
 import {
 	createServiceRoleClient,
 	createAuthenticatedClient,
@@ -498,6 +499,140 @@ describe('Auto coverage reconciliation', () => {
 		} as never);
 		cov = await coverageMap(ctx);
 		expect([...cov.entries()]).toEqual([[p4, 'manual']]);
+	});
+});
+
+// ============================================================================
+// 3bis. Références citées DANS LE CONTENU de la séance
+// ============================================================================
+
+/**
+ * Ce que le prof écrit vaut désignation.
+ *
+ * Le sujet de ces tests : demander la même information deux fois — une fois dans
+ * le texte, une fois dans une carte « activités » — est la friction qui fait que
+ * le suivi n'est pas rempli. Citer `[[exercice]]` dans la séance doit donc suffire
+ * à faire remonter les points travaillés.
+ */
+describe('Références dans le contenu de la séance', () => {
+	/** Écrit le contenu de la séance, puis réconcilie comme le fait l'action de sauvegarde. */
+	async function writeLesson(ctx: Ctx, html: string): Promise<void> {
+		const { error } = await service
+			.from('class_journal_entries' as never)
+			.update({ lesson_content: html } as never)
+			.eq('id', ctx.entryId);
+		if (error) throw new Error(`écriture du contenu : ${error.message}`);
+		await reconcileAutoCoverage(service, ctx.entryId);
+	}
+
+	/** Place un exercice dans une fiche et renvoie l'identifiant de la JONCTION. */
+	async function putInWorksheet(teacherId: string, exerciseId: string): Promise<string> {
+		const { data: ws, error: wsError } = await service
+			.from('worksheets' as never)
+			.insert({
+				title: `Fiche ${crypto.randomUUID().slice(0, 8)}`,
+				type: 'worksheet',
+				status: 'published',
+				created_by: teacherId
+			} as never)
+			.select('id')
+			.single();
+		if (wsError) throw new Error(`fiche : ${wsError.message}`);
+
+		const { data: link, error: linkError } = await service
+			.from('worksheet_exercises' as never)
+			.insert({
+				worksheet_id: (ws as { id: string }).id,
+				exercise_id: exerciseId,
+				position: 3
+			} as never)
+			.select('id')
+			.single();
+		if (linkError) throw new Error(`jonction : ${linkError.message}`);
+		return (link as { id: string }).id;
+	}
+
+	it('un exercice cité dans le contenu apporte ses points, sans aucune activité', async () => {
+		expect.assertions(3);
+		const ctx = await setup();
+		const item = await makeItem();
+		const point = await svcPoint(item, 'P-contenu');
+		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
+
+		await writeLesson(ctx, `<p>Faire [[exercise:${exercise}|Fractions]] en classe.</p>`);
+
+		const cov = await coverageMap(ctx);
+		expect(cov.size).toBe(1);
+		expect(cov.has(point)).toBe(true);
+		expect(cov.get(point)).toBe('auto');
+	});
+
+	it('un EXERCICE DE FICHE cité apporte les points de l’exercice sous-jacent', async () => {
+		expect.assertions(2);
+		const ctx = await setup();
+		const item = await makeItem();
+		const point = await svcPoint(item, 'P-fiche');
+		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
+		// La citation porte l'identifiant de la JONCTION, pas celui de l'exercice :
+		// c'est ce qui permet à l'élève de savoir quelle fiche ouvrir.
+		const junction = await putInWorksheet(ctx.teacher.id, exercise);
+		expect(junction).not.toBe(exercise);
+
+		await writeLesson(ctx, `<p>Exercice 3 : [[worksheet_exercise:${junction}|Exercice 3]]</p>`);
+
+		expect((await coverageMap(ctx)).get(point)).toBe('auto');
+	});
+
+	it('retirer la citation du texte retire le point', async () => {
+		expect.assertions(2);
+		const ctx = await setup();
+		const item = await makeItem();
+		const point = await svcPoint(item, 'P-retire');
+		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
+
+		await writeLesson(ctx, `<p>[[exercise:${exercise}|Fractions]]</p>`);
+		expect((await coverageMap(ctx)).has(point)).toBe(true);
+
+		// Une référence `[[…]]` n'est pas de la prose : la retirer est un geste
+		// aussi explicite que décocher une case.
+		await writeLesson(ctx, '<p>Finalement, cours magistral.</p>');
+		expect((await coverageMap(ctx)).has(point)).toBe(false);
+	});
+
+	it('ne touche jamais un point coché à la main', async () => {
+		expect.assertions(2);
+		const ctx = await setup();
+		const item = await makeItem();
+		const manual = await svcPoint(item, 'P-manuel');
+
+		await covPOST({
+			request: req({ entry_id: ctx.entryId, point_id: manual }),
+			locals: buildLocals(ctx.teacherUser)
+		} as never);
+
+		await writeLesson(ctx, '<p>Aucune citation ici.</p>');
+
+		const cov = await coverageMap(ctx);
+		expect(cov.get(manual)).toBe('manual');
+		expect(cov.size).toBe(1);
+	});
+
+	it('dédoublonne un exercice cité deux fois, et cité en plus comme activité', async () => {
+		expect.assertions(1);
+		const ctx = await setup();
+		const item = await makeItem();
+		const point = await svcPoint(item, 'P-doublon');
+		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
+
+		await addExerciseActivity(ctx, exercise);
+		await writeLesson(
+			ctx,
+			`<p>[[exercise:${exercise}|Une fois]] puis [[exercise:${exercise}|deux fois]]</p>`
+		);
+
+		// La couverture dit qu'un point a été travaillé, pas combien de fois il a
+		// été mentionné.
+		expect([...(await coverageMap(ctx)).keys()]).toEqual([point]);
 	});
 });
 

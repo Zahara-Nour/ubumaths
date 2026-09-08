@@ -14,7 +14,8 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import { transformMathHtml } from '$lib/utils/sanitize';
+	import { linkifyResourceReferences } from '$lib/resources/linkify';
 	import { BookOpen, ClipboardList, CalendarDays } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
@@ -25,6 +26,17 @@
 			? `${data.journal.class_name} · ${data.journal.class_grade}`
 			: data.journal.class_name
 	);
+
+	/**
+	 * Le cahier de texte est saisi dans TipTap et stocké en **HTML**, pas en
+	 * ubumark : le rendre avec le moteur markdown affichait les balises au lieu du
+	 * texte. On assainit puis on transforme les références `[[…]]` en liens —
+	 * inertes ici, puisqu'un lecteur sans compte n'a de page pour aucune d'elles :
+	 * il lit « Exercice 3 — Fiche : Dérivées », ce qui est l'information utile.
+	 */
+	function renderContent(raw: string | null): string {
+		return linkifyResourceReferences(transformMathHtml(raw || ''), { role: 'public' });
+	}
 
 	/** « lundi 8 septembre » — le format long aide à se repérer sans calendrier. */
 	function formatDate(iso: string): string {
@@ -76,7 +88,7 @@
 									En classe
 								</div>
 								<div class="prose prose-sm max-w-none dark:prose-invert">
-									<MarkdownRenderer content={entry.lesson_content} />
+									{@html renderContent(entry.lesson_content)}
 								</div>
 							</div>
 						{/if}
@@ -91,7 +103,7 @@
 									{/if}
 								</div>
 								<div class="prose prose-sm max-w-none dark:prose-invert">
-									<MarkdownRenderer content={entry.homework_content} />
+									{@html renderContent(entry.homework_content)}
 								</div>
 							</div>
 						{/if}

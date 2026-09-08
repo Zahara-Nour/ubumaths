@@ -19,6 +19,7 @@
 -->
 
 <script lang="ts">
+	import { referencesToLabels } from '$lib/resources/references';
 	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -70,7 +71,9 @@
 	 */
 	function truncateContent(html: string | null, maxLength: number): string {
 		if (!html) return '';
-		const text = html.replace(/<[^>]*>/g, '');
+		// Les références citées sont réduites à leur libellé : un uuid mangerait
+		// l'aperçu sans rien apprendre au lecteur.
+		const text = referencesToLabels(html).replace(/<[^>]*>/g, '');
 		return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
 	}
 

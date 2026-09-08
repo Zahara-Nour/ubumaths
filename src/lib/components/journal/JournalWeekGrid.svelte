@@ -20,6 +20,7 @@
 -->
 
 <script lang="ts">
+	import { referencesToLabels } from '$lib/resources/references';
 	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -75,7 +76,9 @@
 	 * Strip HTML tags from content
 	 */
 	function stripHtml(html: string): string {
-		return html.replace(/<[^>]*>/g, '');
+		// Une référence citée dans la séance est réduite à son libellé : dans un
+		// aperçu de cinquante caractères, un uuid ne dirait rien à personne.
+		return referencesToLabels(html).replace(/<[^>]*>/g, '');
 	}
 </script>
 

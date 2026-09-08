@@ -61,6 +61,10 @@ const EX_NO_TITLE = 'c0ffee00-0000-4000-8000-00000000e003';
 const EX_PERCENT = 'c0ffee00-0000-4000-8000-00000000e004';
 const Q_PUBLISHED = 'c0ffee00-0000-4000-8000-0000000000a1';
 const Q_DRAFT = 'c0ffee00-0000-4000-8000-0000000000a2';
+/** Fiche d'exercices + la jonction qui y place EX_PUBLIC (migration 20260908190000). */
+const WORKSHEET = 'c0ffee00-0000-4000-8000-0000000000f1';
+const WS_EXERCISE = 'c0ffee00-0000-4000-8000-0000000000f2';
+const WORKSHEET_TITLE = 'Dérivées ZZ';
 
 const EXERCISE_IDS = [EX_PUBLIC, EX_PRIVATE, EX_NO_TITLE, EX_PERCENT];
 /** Tag posé sur EX_PUBLIC pour éprouver la recherche par étiquette (phase 4). */
@@ -131,6 +135,27 @@ describe('vue resources + recherche globale', () => {
 		]);
 		expect(qError).toBeNull();
 
+		// Une fiche contenant l'exercice public : c'est l'objet du type
+		// `worksheet_exercise`, dont l'identifiant est celui de la JONCTION.
+		await service.from('worksheet_exercises').delete().eq('id', WS_EXERCISE);
+		await service.from('worksheets').delete().eq('id', WORKSHEET);
+		const { error: wsError } = await service.from('worksheets').insert({
+			id: WORKSHEET,
+			title: WORKSHEET_TITLE,
+			type: 'worksheet',
+			status: 'published',
+			created_by: teacherId
+		});
+		expect(wsError).toBeNull();
+
+		const { error: wsExError } = await service.from('worksheet_exercises').insert({
+			id: WS_EXERCISE,
+			worksheet_id: WORKSHEET,
+			exercise_id: EX_PUBLIC,
+			position: 3
+		});
+		expect(wsExError).toBeNull();
+
 		// Étiquette posée sur l'exercice public, pour la recherche par tag.
 		const looseService = service as unknown as {
 			from: (t: string) => {
@@ -165,6 +190,8 @@ describe('vue resources + recherche globale', () => {
 			.from('tags')
 			.delete()
 			.eq('name', TAG_NAME);
+		await service.from('worksheet_exercises').delete().eq('id', WS_EXERCISE);
+		await service.from('worksheets').delete().eq('id', WORKSHEET);
 		await service.from('exercises').delete().in('id', EXERCISE_IDS);
 		await service.from('question_templates').delete().in('id', QUESTION_IDS);
 		await cleanupAllTestData();
@@ -329,10 +356,24 @@ describe('vue resources + recherche globale', () => {
 		expect(data).toEqual([]);
 	});
 
-	it('borne le nombre de types demandés', async () => {
+	it('accepte TOUT le vocabulaire réel — le plafond ne doit pas le toucher', async () => {
+		// Régression : le plafond valait 5, soit exactement la taille du vocabulaire
+		// d'alors. L'éditeur envoie tous les types ; en ajouter un sixième rendait
+		// donc la recherche vide, sans erreur ni trace. Le plafond borne un coût,
+		// il ne valide pas un vocabulaire.
 		const { data, error } = await teacher.rpc('search_resources', {
 			p_query: 'algebre',
-			p_kinds: ['exercise', 'question', 'assessment', 'chapter', 'document', 'exercise']
+			p_kinds: ['exercise', 'question', 'assessment', 'chapter', 'document', 'worksheet_exercise']
+		});
+
+		expect(error).toBeNull();
+		expect((data ?? []).map((r: { id: string }) => r.id)).toContain(EX_PUBLIC);
+	});
+
+	it('borne tout de même un tableau de types déraisonnable', async () => {
+		const { data, error } = await teacher.rpc('search_resources', {
+			p_query: 'algebre',
+			p_kinds: Array.from({ length: 13 }, () => 'exercise')
 		});
 
 		expect(error).toBeNull();
@@ -345,6 +386,50 @@ describe('vue resources + recherche globale', () => {
 		expect(error).toBeNull();
 		const ids = (data ?? []).map((r: { id: string }) => r.id);
 		expect(ids).not.toContain(EX_PRIVATE);
+	});
+
+	// ========================================================================
+	// Exercice de fiche (migration 20260908190000)
+	// ========================================================================
+
+	it("expose l'exercice DANS une fiche, avec la fiche en sous-titre", async () => {
+		const { data, error } = await teacher
+			.from('resources')
+			.select('kind, id, title, subtitle')
+			.eq('id', WS_EXERCISE)
+			.maybeSingle();
+
+		expect(error).toBeNull();
+		expect(data?.kind).toBe('worksheet_exercise');
+		// L'identifiant est celui de la JONCTION, pas celui de l'exercice : c'est ce
+		// qui permet de retrouver ensuite la fiche à ouvrir.
+		expect(data?.id).toBe(WS_EXERCISE);
+		expect(data?.id).not.toBe(EX_PUBLIC);
+		expect(data?.title).toBe('Algèbre — révisions publiques');
+		expect(data?.subtitle).toBe(`Fiche : ${WORKSHEET_TITLE}`);
+	});
+
+	it('se retrouve en cherchant le NOM DE LA FICHE', async () => {
+		// C'est le geste visé : « les exercices de la fiche Dérivées ». Il ne
+		// fonctionne que parce que le titre de la fiche est le sous-titre de la
+		// ligne, et que la recherche compare titre ET sous-titre.
+		const { data, error } = await teacher.rpc('search_resources', {
+			p_query: 'derivees',
+			p_kinds: ['worksheet_exercise']
+		});
+
+		expect(error).toBeNull();
+		expect((data ?? []).map((r: { id: string }) => r.id)).toContain(WS_EXERCISE);
+	});
+
+	it("n'expose PAS l'exercice de fiche à un élève à qui la fiche n'a pas été distribuée", async () => {
+		// Même démonstration que pour la vue entière : la branche lit
+		// `worksheets` sous l'identité de l'appelant, dont la RLS exige un
+		// `student_has_worksheet_access`. Sans `security_invoker`, ce test tombe.
+		const { data, error } = await student.from('resources').select('id').eq('id', WS_EXERCISE);
+
+		expect(error).toBeNull();
+		expect(data).toEqual([]);
 	});
 
 	// ========================================================================

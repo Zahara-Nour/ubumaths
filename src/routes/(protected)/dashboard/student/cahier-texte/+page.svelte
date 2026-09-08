@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { referencesToLabels } from '$lib/resources/references';
 	import { lore } from '$lib/config/lore';
 	/**
 	 * Student Class Journal (Cahier de Texte) Page
@@ -145,8 +146,9 @@
 	 */
 	function truncateContent(html: string | null, maxLength: number = 150): string {
 		if (!html) return '';
-		// Strip HTML tags for preview
-		const text = html.replace(/<[^>]*>/g, '');
+		// Strip HTML tags for preview. Les références citées sont réduites à leur
+		// libellé : un uuid mangerait l'aperçu sans rien apprendre au lecteur.
+		const text = referencesToLabels(html).replace(/<[^>]*>/g, '');
 		if (text.length <= maxLength) return text;
 		return text.slice(0, maxLength).trim() + '...';
 	}
