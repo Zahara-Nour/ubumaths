@@ -256,6 +256,27 @@ Autre point relevé au passage, hors périmètre : les `upsert` de `presques-eva
 
 ---
 
+## 8. Cahier de texte partageable — le sujet d'origine
+
+Migration `20260908150000`. Une table `class_journal_share_tokens` (un lien actif par classe, expiration au 31 août) et une RPC `get_class_journal_by_share_token` en `SECURITY DEFINER`, exécutable par `anon`. Page publique `(public)/cahier/[token]`, en `noindex`, autonome.
+
+**Question d'accès** : toute personne détenant le lien lit les entrées **publiées et non futures** d'une classe, sans compte. Ni brouillons, ni séances à venir, ni élèves, ni le `join_code`.
+
+⚠️ **Séparation stricte d'avec `classes.join_code`.** Les deux sont des secrets qui circulent, mais le code d'inscription **inscrit** alors que ce jeton ne fait que **lire**. Les confondre transformerait un lien envoyé aux familles en porte d'entrée dans la classe. Un test assertionne les clés exactes du payload pour que ça reste vrai.
+
+**11 tests d'intégration**, prouvés faux sans la migration. Ils portent surtout sur ce que le lien **n'ouvre pas** — révoqué, expiré et inexistant renvoient la même réponse, et `anon` ne peut pas lister les jetons vivants (l'erreur exacte du finding H8 sur les exercices).
+
+### Le risque résiduel est éditorial, pas technique
+
+Relevé par `security-auditor` et c'est le point à retenir : le **schéma** de `class_journal_entries` ne contient aucune donnée d'élève, mais son **contenu** est du markdown libre où un prof peut écrire « rattrapage pour Léa ». C'est le seul endroit du dispositif où une donnée personnelle peut sortir, et ça ne se corrige pas en SQL — d'où l'avertissement à côté du bouton de partage.
+
+### Connu, non traité
+
+- **Écriture déclenchable par un anonyme** : chaque résolution incrémente un compteur, donc une lecture publique génère une écriture. DoS irréaliste (verrou en dernier, updates HOT), mais si on veut fermer : n'incrémenter que si `last_accessed_at < now() - interval '5 minutes'`.
+- **Le jeton atterrit dans des journaux** : `errorMonitoringHandle` enregistre le `pathname` pour toute requête de plus de 3 s. Impact faible, la fuite par `Referer` étant déjà neutralisée par `Referrer-Policy: strict-origin-when-cross-origin`.
+
+---
+
 ## Annexe A — Types de ressources (tables de contenu)
 
 `exercises` · `question_templates` · `assessments` · `class_chapters` (+ `chapter_templates`) · `worksheets` (+ `worksheet_templates`) · `python_exercises` · `python_notebooks` · `riddles` · `constructions` · `rag_documents` (+ `chapter_documents`) · `parody_evaluations` · `srs_decks`
