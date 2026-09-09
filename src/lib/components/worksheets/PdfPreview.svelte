@@ -60,9 +60,18 @@
 			first_name: string | null;
 			last_name: string | null;
 		}>;
+		/**
+		 * Autoriser la bascule vers le mode « correction ».
+		 *
+		 * `false` sur le lien de consultation du cahier de texte : un lecteur sans
+		 * compte ne doit jamais atteindre les solutions. La prop existe pour que
+		 * cette contrainte soit EXPLICITE et testable, plutôt que dépendre du fait
+		 * que la page n'affiche pas le sélecteur.
+		 */
+		allowCorrection?: boolean;
 	}
 
-	let { worksheet, classId, students = [] }: Props = $props();
+	let { worksheet, classId, students = [], allowCorrection = true }: Props = $props();
 
 	// Typst library state
 	let typst = $state<TypstCompiler | null>(null);
@@ -70,7 +79,11 @@
 	let typstError = $state<string | null>(null);
 
 	// Preview state
-	let mode = $state<'worksheet' | 'correction'>('worksheet');
+	let modeChoisi = $state<'worksheet' | 'correction'>('worksheet');
+
+	// Verrou, pas simple masquage : même si un sélecteur subsistait quelque part,
+	// le mode retomberait sur « fiche ».
+	const mode = $derived(allowCorrection ? modeChoisi : ('worksheet' as const));
 	let selectedStudentId = $state<string | undefined>(undefined);
 	let isGenerating = $state(false);
 	let pdfUrl = $state<string | null>(null);
@@ -644,17 +657,19 @@ INFORMATIONS
 				<Tabs.Content value="preview" class="space-y-4">
 					<!-- Controls -->
 					<div class="grid gap-4 sm:grid-cols-2">
-						<div class="space-y-2">
-							<Label>Mode</Label>
-							<MySelect
-								type="single"
-								bind:value={mode}
-								items={[
-									{ value: 'worksheet', label: 'Feuille de travail' },
-									{ value: 'correction', label: 'Correction' }
-								]}
-							/>
-						</div>
+						{#if allowCorrection}
+							<div class="space-y-2">
+								<Label>Mode</Label>
+								<MySelect
+									type="single"
+									bind:value={modeChoisi}
+									items={[
+										{ value: 'worksheet', label: 'Feuille de travail' },
+										{ value: 'correction', label: 'Correction' }
+									]}
+								/>
+							</div>
+						{/if}
 
 						{#if students.length > 0}
 							<div class="space-y-2">
@@ -815,7 +830,7 @@ INFORMATIONS
 							<Label>Mode de generation</Label>
 							<MySelect
 								type="single"
-								bind:value={mode}
+								bind:value={modeChoisi}
 								items={[
 									{ value: 'worksheet', label: 'Feuilles de travail' },
 									{ value: 'correction', label: 'Corrections' }

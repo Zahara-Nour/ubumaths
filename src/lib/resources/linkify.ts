@@ -34,6 +34,8 @@ export interface LinkifyOptions {
 	role: ViewerRole;
 	/** Classe de lecture, indispensable pour situer un chapitre côté professeur. */
 	classId?: string;
+	/** Jeton du cahier partagé, quand la lecture se fait par ce lien. */
+	shareToken?: string;
 }
 
 /**
@@ -60,7 +62,10 @@ const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
  * Un type inconnu, ou un type sans page pour ce lecteur, reste lisible : le
  * libellé s'affiche en gris plutôt que de mener à une 404.
  */
-export function linkifyResourceReferences(html: string, { role, classId }: LinkifyOptions): string {
+export function linkifyResourceReferences(
+	html: string,
+	{ role, classId, shareToken }: LinkifyOptions
+): string {
 	if (!html || !html.includes('[[')) return html;
 
 	// `resolve()` de SvelteKit substitue les paramètres VERBATIM, sans encodage :
@@ -72,12 +77,17 @@ export function linkifyResourceReferences(html: string, { role, classId }: Linki
 	return html
 		.split(TAG_SEGMENT)
 		.map((segment) =>
-			segment.startsWith('<') ? segment : linkifySegment(segment, role, safeClassId)
+			segment.startsWith('<') ? segment : linkifySegment(segment, role, safeClassId, shareToken)
 		)
 		.join('');
 }
 
-function linkifySegment(text: string, role: ViewerRole, classId: string | undefined): string {
+function linkifySegment(
+	text: string,
+	role: ViewerRole,
+	classId: string | undefined,
+	shareToken: string | undefined
+): string {
 	return text.replace(REFERENCE_REGEX, (whole, rawKind: string, id: string, label: string) => {
 		const kind = rawKind.toLowerCase();
 		if (!isResourceKind(kind)) return whole;
@@ -85,7 +95,7 @@ function linkifySegment(text: string, role: ViewerRole, classId: string | undefi
 		const resolved = resolveResource(kind, id.toLowerCase(), {
 			role,
 			label: label.trim(),
-			context: { classId }
+			context: { classId, shareToken }
 		});
 
 		// Le libellé vient d'un HTML déjà assaini : `<`, `>` et `"` y sont donc
@@ -95,9 +105,12 @@ function linkifySegment(text: string, role: ViewerRole, classId: string | undefi
 		// `&`, qui produirait le `&amp;lt;` que ce double échappement redoute.
 		const title = escapeAttribute(resolved.kindLabel);
 
+		// Une puce devant le libellé : sans elle, une référence sans destination est
+		// indiscernable de la prose — c'est ce qui a fait croire que le lien ne
+		// marchait pas. Le rendu markdown, lui, affiche depuis toujours une icône.
 		return resolved.url
 			? `<a href="${escapeAttribute(resolved.url)}" class="${LINK_CLASS}" title="${title}">${escapeText(resolved.label)}</a>`
-			: `<span class="${INERT_CLASS}" title="${title} non consultable ici">${escapeText(resolved.label)}</span>`;
+			: `<span class="${INERT_CLASS}" title="${title} non consultable ici">◆&nbsp;${escapeText(resolved.label)}</span>`;
 	});
 }
 
