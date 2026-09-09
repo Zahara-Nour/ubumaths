@@ -344,6 +344,31 @@ describe('anti-rebond de la recherche', () => {
 		expect(urlsAppelees()[0]).not.toContain('grades=');
 	});
 
+	it('regroupe les résultats par type, dans l’ordre du vocabulaire', async () => {
+		// Sans regroupement, 128 exercices noient les 12 fiches. C'est ce qui rend
+		// le préfixe facultatif.
+		fetchMock.mockResolvedValue({
+			ok: true,
+			json: async () => ({
+				results: [
+					{ kind: 'exercise', id: 'a', title: 'Un exercice', subtitle: null },
+					{ kind: 'worksheet', id: 'b', title: 'Une fiche', subtitle: null },
+					{ kind: 'exercise', id: 'c', title: 'Un autre exercice', subtitle: null }
+				]
+			})
+		});
+
+		const search = createDebouncedSearch(0);
+		const promesse = search('quelque', 8, null, null);
+		await vi.advanceTimersByTimeAsync(10);
+		const { items } = await promesse;
+
+		// `exercise` précède `worksheet` dans RESOURCE_KINDS.
+		expect(items.map((i) => i.group)).toEqual(['Exercice', 'Exercice', 'Fiche d’exercices']);
+		// L'ordre de la recherche est conservé À L'INTÉRIEUR d'un type.
+		expect(items.map((i) => i.label)).toEqual(['Un exercice', 'Un autre exercice', 'Une fiche']);
+	});
+
 	it('transmet le type quand un préfixe le précise', async () => {
 		const search = createDebouncedSearch(0);
 		void search('derivees', 8, null, 'worksheet');

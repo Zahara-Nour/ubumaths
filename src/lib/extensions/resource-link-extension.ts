@@ -26,7 +26,7 @@ import { Extension } from '@tiptap/core';
 import Suggestion from '@tiptap/suggestion';
 import { PluginKey } from '@tiptap/pm/state';
 import { createSuggestionRenderer, type SuggestionItem } from '$lib/extensions/suggestion-renderer';
-import { isResourceKind, type ResourceKind } from '$lib/resources/kinds';
+import { RESOURCE_KINDS, isResourceKind, type ResourceKind } from '$lib/resources/kinds';
 import { parseResourceQuery, prefixHint } from '$lib/resources/prefixes';
 
 // ============================================================================
@@ -117,10 +117,7 @@ async function searchResources(
 		const payload: unknown = await response.json();
 		const results = (payload as { results?: SearchResult[] }).results ?? [];
 
-		return {
-			items: results.filter((row) => isResourceKind(row.kind)).map(toSuggestionItem),
-			failed: false
-		};
+		return { items: groupByKind(results.filter((row) => isResourceKind(row.kind))), failed: false };
 	} catch {
 		return { items: [], failed: true };
 	}
@@ -174,6 +171,34 @@ export function toSuggestionItem(row: SearchResult): SuggestionItem {
 		label: sanitiseLabel(row.title),
 		description: row.subtitle ? `${KIND_LABELS[kind]} · ${row.subtitle}` : KIND_LABELS[kind]
 	};
+}
+
+/**
+ * Regroupe les résultats par type, dans l'ordre du vocabulaire.
+ *
+ * C'est ce qui rend le préfixe FACULTATIF plutôt qu'obligatoire : la popup
+ * répond déjà à « lequel de ces résultats est une fiche ? » sans rien exiger de
+ * celui qui tape. Sans regroupement, 128 exercices noient les 12 fiches.
+ *
+ * L'ordre à l'intérieur d'un type est celui de la recherche — pertinence, puis
+ * date de modification — qu'on ne réordonne pas.
+ */
+function groupByKind(rows: SearchResult[]): SuggestionItem[] {
+	const byKind = new Map<ResourceKind, SearchResult[]>();
+	for (const row of rows) {
+		const kind = row.kind as ResourceKind;
+		const bucket = byKind.get(kind);
+		if (bucket) bucket.push(row);
+		else byKind.set(kind, [row]);
+	}
+
+	const items: SuggestionItem[] = [];
+	for (const kind of RESOURCE_KINDS) {
+		for (const row of byKind.get(kind) ?? []) {
+			items.push({ ...toSuggestionItem(row), group: KIND_LABELS[kind] });
+		}
+	}
+	return items;
 }
 
 function sanitiseLabel(raw: string): string {
