@@ -15,7 +15,7 @@ describe('parseResourceQuery', () => {
 		expect(parseResourceQuery('derivees')).toEqual({
 			kind: null,
 			text: 'derivees',
-			exerciseNumber: null
+			selection: null
 		});
 	});
 
@@ -23,7 +23,7 @@ describe('parseResourceQuery', () => {
 		expect(parseResourceQuery('exos:derivees')).toEqual({
 			kind: 'worksheet',
 			text: 'derivees',
-			exerciseNumber: null
+			selection: null
 		});
 	});
 
@@ -33,27 +33,32 @@ describe('parseResourceQuery', () => {
 		expect(parseResourceQuery('exos:fractions').kind).toBe('worksheet');
 	});
 
-	it('extrait le numéro d’exercice', () => {
+	it('extrait la sélection d’exercices', () => {
 		expect(parseResourceQuery('exos:derivees#3')).toEqual({
 			kind: 'worksheet',
 			text: 'derivees',
-			exerciseNumber: 3
+			selection: '3'
 		});
 	});
 
-	it('accepte un numéro sans préfixe', () => {
-		expect(parseResourceQuery('derivees#12').exerciseNumber).toBe(12);
+	it('accepte une liste et des plages', () => {
+		expect(parseResourceQuery('exos:derivees#3,5-7').selection).toBe('3,5-7');
+		expect(parseResourceQuery('exos:derivees#3,4,5').selection).toBe('3-5');
+	});
+
+	it('accepte une sélection sans préfixe', () => {
+		expect(parseResourceQuery('derivees#12').selection).toBe('12');
 	});
 
 	it('ignore `#0` — les exercices sont numérotés à partir de 1', () => {
 		const parsed = parseResourceQuery('derivees#0');
-		expect(parsed.exerciseNumber).toBeNull();
+		expect(parsed.selection).toBeNull();
 		expect(parsed.text).toBe('derivees#0');
 	});
 
 	it('ne prend un numéro qu’en FIN de requête', () => {
 		// « #3 » au milieu fait partie du titre cherché.
-		expect(parseResourceQuery('exos:fiche#3 bis').exerciseNumber).toBeNull();
+		expect(parseResourceQuery('exos:fiche#3 bis').selection).toBeNull();
 	});
 
 	it('laisse un préfixe inconnu au texte plutôt que de refuser', () => {
@@ -61,7 +66,7 @@ describe('parseResourceQuery', () => {
 		expect(parseResourceQuery('note:quelque chose')).toEqual({
 			kind: null,
 			text: 'note:quelque chose',
-			exerciseNumber: null
+			selection: null
 		});
 	});
 
@@ -78,12 +83,12 @@ describe('parseResourceQuery', () => {
 		expect(parseResourceQuery('exos:')).toEqual({
 			kind: 'worksheet',
 			text: '',
-			exerciseNumber: null
+			selection: null
 		});
 	});
 
 	it('accepte une requête vide', () => {
-		expect(parseResourceQuery('')).toEqual({ kind: null, text: '', exerciseNumber: null });
+		expect(parseResourceQuery('')).toEqual({ kind: null, text: '', selection: null });
 	});
 
 	it('l’aide reste courte et ne cite que des préfixes valides', () => {

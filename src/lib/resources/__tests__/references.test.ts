@@ -25,7 +25,7 @@ describe('extractResourceReferences', () => {
 		const refs = extractResourceReferences(`Voir [[exercise:${EX}|Fractions n°12]]`);
 
 		expect(refs).toHaveLength(1);
-		expect(refs[0]).toEqual({ kind: 'exercise', id: EX, label: 'Fractions n°12' });
+		expect(refs[0]).toEqual({ kind: 'exercise', id: EX, label: 'Fractions n°12', selection: null });
 	});
 
 	it('extrait depuis PLUSIEURS contenus — énoncé et devoirs', () => {
@@ -80,5 +80,60 @@ describe("l'extracteur et le parser acceptent les mêmes types", () => {
 		expect(block.children[0].type).toBe('internal-link');
 
 		expect(extractResourceReferences(markdown)).toHaveLength(1);
+	});
+});
+
+// ============================================================================
+// SÉLECTION D'EXERCICES DANS UNE RÉFÉRENCE DE FICHE
+// ============================================================================
+
+describe('sélection `#3,5-7`', () => {
+	const FICHE = '8443f4b7-1d0b-4035-9852-6ac06b63e89f';
+
+	it('extrait la sélection, sans son `#`', () => {
+		const [reference] = extractResourceReferences(
+			`<p>[[worksheet:${FICHE}#3,5-7|Produit scalaire]]</p>`
+		);
+
+		expect(reference.kind).toBe('worksheet');
+		expect(reference.id).toBe(FICHE);
+		expect(reference.selection).toBe('3,5-7');
+	});
+
+	it('une fiche citée entière n’a AUCUNE sélection', () => {
+		// Distinction porteuse de sens : sans sélection, aucun point de programme.
+		const [reference] = extractResourceReferences(`<p>[[worksheet:${FICHE}|Produit scalaire]]</p>`);
+
+		expect(reference.selection).toBeNull();
+	});
+
+	it('deux sélections différentes de la MÊME fiche comptent pour deux', () => {
+		// Le dédoublonnage porte sur la clé complète : citer les exercices 3 puis 7
+		// désigne bien deux choses, et les deux doivent nourrir la couverture.
+		const references = extractResourceReferences(
+			`<p>[[worksheet:${FICHE}#3|A]] et [[worksheet:${FICHE}#7|B]]</p>`
+		);
+
+		expect(references).toHaveLength(2);
+		expect(references.map((r) => r.selection)).toEqual(['3', '7']);
+	});
+
+	it('la même sélection citée deux fois ne compte qu’une', () => {
+		const references = extractResourceReferences(
+			`<p>[[worksheet:${FICHE}#3|A]] puis [[worksheet:${FICHE}#3|encore]]</p>`
+		);
+
+		expect(references).toHaveLength(1);
+	});
+
+	it('une sélection ne casse pas la reconnaissance de la référence', () => {
+		// Avant cette grammaire, un `#` après l'uuid rompait le motif : la
+		// référence n'était plus reconnue DU TOUT, ni pour l'affichage ni pour la
+		// couverture, et s'affichait en texte brut.
+		const references = extractResourceReferences(
+			`<p>[[worksheet:${FICHE}#3,5-7|Produit scalaire]]</p>`
+		);
+
+		expect(references).toHaveLength(1);
 	});
 });

@@ -15,7 +15,7 @@ import {
 	validateUpdateJournalEntry
 } from '$lib/server/validation/journal';
 import { getCurriculumTree } from '$lib/server/curriculum';
-import { reconcileAutoCoverage } from '$lib/server/curriculum-coverage';
+import { reconcileAutoCoverage, type ReconcileReport } from '$lib/server/curriculum-coverage';
 import { parsePendingActivities } from '$lib/server/journal-activities';
 import { z } from 'zod';
 
@@ -199,6 +199,24 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	};
 };
 
+/**
+ * Message d'alerte quand une référence cite un exercice qui n'existe pas.
+ *
+ * `#7` sur une fiche de six exercices ne casse rien — les autres numéros sont
+ * pris en compte — mais c'est une faute de frappe, et le professeur doit
+ * l'apprendre en enregistrant plutôt qu'en constatant plus tard qu'un point
+ * manque à sa couverture.
+ */
+function decrireNumerosIntrouvables(rapport: ReconcileReport): string | undefined {
+	const numeros = rapport.numerosIntrouvables.flatMap((entree) => entree.numeros);
+	if (numeros.length === 0) return undefined;
+
+	const liste = numeros.join(', ');
+	return numeros.length === 1
+		? `L'exercice n° ${liste} n'existe pas dans la fiche citée : il a été ignoré.`
+		: `Les exercices n° ${liste} n'existent pas dans les fiches citées : ils ont été ignorés.`;
+}
+
 export const actions: Actions = {
 	/**
 	 * Create a new journal entry
@@ -307,15 +325,17 @@ export const actions: Actions = {
 		// La couverture `auto` vient des activités taguées ET des ressources citées
 		// dans le contenu : on réconcilie donc même sans activité, puisqu'une séance
 		// peut n'être qu'un texte contenant des [[exercice:…]].
+		let avertissement: string | undefined;
 		if (entry?.id) {
 			try {
-				await reconcileAutoCoverage(locals.supabase, entry.id);
+				const rapport = await reconcileAutoCoverage(locals.supabase, entry.id);
+				avertissement = decrireNumerosIntrouvables(rapport);
 			} catch (e) {
 				console.error('[Create Journal Entry] reconcile failed:', e);
 			}
 		}
 
-		return { success: true, action: 'create', entryId: entry?.id };
+		return { success: true, action: 'create', entryId: entry?.id, warning: avertissement };
 	},
 
 	/**
@@ -382,13 +402,15 @@ export const actions: Actions = {
 		// elle doit donc être recalculée à chaque enregistrement, et non plus
 		// seulement quand des activités changent. Retirer un `[[exercice]]` du texte
 		// retire son point, ce que seule une réconciliation complète peut faire.
+		let avertissement: string | undefined;
 		try {
-			await reconcileAutoCoverage(locals.supabase, entryId);
+			const rapport = await reconcileAutoCoverage(locals.supabase, entryId);
+			avertissement = decrireNumerosIntrouvables(rapport);
 		} catch (e) {
 			console.error('[Update Journal Entry] reconcile failed:', e);
 		}
 
-		return { success: true, action: 'update' };
+		return { success: true, action: 'update', warning: avertissement };
 	},
 
 	/**

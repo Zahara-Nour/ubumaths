@@ -88,30 +88,33 @@ function linkifySegment(
 	classId: string | undefined,
 	shareToken: string | undefined
 ): string {
-	return text.replace(REFERENCE_REGEX, (whole, rawKind: string, id: string, label: string) => {
-		const kind = rawKind.toLowerCase();
-		if (!isResourceKind(kind)) return whole;
+	return text.replace(
+		REFERENCE_REGEX,
+		(whole, rawKind: string, id: string, _selection: string | undefined, label: string) => {
+			const kind = rawKind.toLowerCase();
+			if (!isResourceKind(kind)) return whole;
 
-		const resolved = resolveResource(kind, id.toLowerCase(), {
-			role,
-			label: label.trim(),
-			context: { classId, shareToken }
-		});
+			const resolved = resolveResource(kind, id.toLowerCase(), {
+				role,
+				label: label.trim(),
+				context: { classId, shareToken }
+			});
 
-		// Le libellé vient d'un HTML déjà assaini : `<`, `>` et `"` y sont donc
-		// déjà des entités, et les échapper est un no-op. On le fait quand même,
-		// parce que ce n'est vrai que du FLUX DE TEXTE : dans une valeur
-		// d'attribut, ces caractères survivent littéralement. Volontairement pas
-		// `&`, qui produirait le `&amp;lt;` que ce double échappement redoute.
-		const title = escapeAttribute(resolved.kindLabel);
+			// Le libellé vient d'un HTML déjà assaini : `<`, `>` et `"` y sont donc
+			// déjà des entités, et les échapper est un no-op. On le fait quand même,
+			// parce que ce n'est vrai que du FLUX DE TEXTE : dans une valeur
+			// d'attribut, ces caractères survivent littéralement. Volontairement pas
+			// `&`, qui produirait le `&amp;lt;` que ce double échappement redoute.
+			const title = escapeAttribute(resolved.kindLabel);
 
-		// Une puce devant le libellé : sans elle, une référence sans destination est
-		// indiscernable de la prose — c'est ce qui a fait croire que le lien ne
-		// marchait pas. Le rendu markdown, lui, affiche depuis toujours une icône.
-		return resolved.url
-			? `<a href="${escapeAttribute(resolved.url)}" class="${LINK_CLASS}" title="${title}">${escapeText(resolved.label)}</a>`
-			: `<span class="${INERT_CLASS}" title="${title} non consultable ici">◆&nbsp;${escapeText(resolved.label)}</span>`;
-	});
+			// Une puce devant le libellé : sans elle, une référence sans destination est
+			// indiscernable de la prose — c'est ce qui a fait croire que le lien ne
+			// marchait pas. Le rendu markdown, lui, affiche depuis toujours une icône.
+			return resolved.url
+				? `<a href="${escapeAttribute(resolved.url)}" class="${LINK_CLASS}" title="${title}">${escapeText(resolved.label)}</a>`
+				: `<span class="${INERT_CLASS}" title="${title} non consultable ici">◆&nbsp;${escapeText(resolved.label)}</span>`;
+		}
+	);
 }
 
 function escapeAttribute(value: string): string {

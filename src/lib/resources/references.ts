@@ -24,12 +24,19 @@ import { isResourceKind, type ResourceKind } from './kinds';
  * point compté sans lien visible — serait indétectable à la lecture.
  */
 export const REFERENCE_REGEX =
-	/\[\[(\w+):([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\|([^\]]+)\]\]/gi;
+	/\[\[(\w+):([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})(#[\d,-]{1,60})?\|([^\]]+)\]\]/gi;
 
 export interface ResourceReference {
 	kind: ResourceKind;
 	id: string;
 	label: string;
+	/**
+	 * Sélection d'exercices d'une fiche, sans le `#` : `"3,5-7"`, ou `null`.
+	 *
+	 * Une fiche citée SANS sélection ne désigne aucun exercice, donc n'apporte
+	 * aucun point de programme — rien ne dit lesquels ont été faits.
+	 */
+	selection: string | null;
 }
 
 /**
@@ -51,14 +58,19 @@ export function extractResourceReferences(
 		if (!content) continue;
 
 		for (const match of content.matchAll(REFERENCE_REGEX)) {
-			const [, rawKind, id, label] = match;
+			const [, rawKind, id, selection, label] = match;
 			const kind = rawKind.toLowerCase();
 			if (!isResourceKind(kind)) continue;
 
-			seen.set(`${kind}:${id.toLowerCase()}`, {
+			// La CLÉ inclut la sélection : citer deux fois la même fiche avec des
+			// exercices différents désigne bien deux choses différentes, et les deux
+			// doivent compter dans la couverture.
+			seen.set(`${kind}:${id.toLowerCase()}${selection ?? ''}`, {
 				kind,
 				id: id.toLowerCase(),
-				label: label.trim()
+				label: label.trim(),
+				// `#` retiré : on garde la sélection, pas son marqueur.
+				selection: selection ? selection.slice(1) : null
 			});
 		}
 	}

@@ -194,6 +194,12 @@ export interface InternalLinkNode extends BaseNode {
 	referenceType: InternalLinkReferenceType;
 	/** UUID of the referenced resource */
 	uuid: string;
+	/**
+	 * Sélection d'exercices d'une fiche, sans le `#` : `"3,5-7"`.
+	 *
+	 * Absente pour tous les autres types, et pour une fiche citée entière.
+	 */
+	selection?: string;
 	/** Display label for the link */
 	label: string;
 }

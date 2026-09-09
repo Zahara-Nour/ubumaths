@@ -24,6 +24,8 @@
  */
 
 import { extractResourceReferences, referenceIdsOfKind } from '$lib/resources/references';
+import { parseExerciseSelection } from '$lib/resources/exercise-selection';
+import { resolveExercisesAtDisplayNumbers } from '$lib/server/worksheets/display-number';
 
 type Sb = App.Locals['supabase'];
 
@@ -49,7 +51,21 @@ function refsOf(rows: ActivityRef[], kind: string, column: keyof ActivityRef): s
 	];
 }
 
-export async function reconcileAutoCoverage(supabase: Sb, entryId: string): Promise<void> {
+export interface ReconcileReport {
+	/**
+	 * Numéros d'exercices cités mais absents de leur fiche.
+	 *
+	 * Remontés plutôt qu'ignorés : `#7` sur une fiche de six exercices est une
+	 * faute de frappe, et le professeur doit l'apprendre en enregistrant, pas en
+	 * constatant plus tard qu'un point manque.
+	 */
+	numerosIntrouvables: { worksheetId: string; numeros: number[] }[];
+}
+
+export async function reconcileAutoCoverage(
+	supabase: Sb,
+	entryId: string
+): Promise<ReconcileReport> {
 	// 1. what this entry's tagged activities point at
 	const { data: acts, error: actErr } = await supabase
 		.from('journal_entry_activities')
@@ -87,6 +103,29 @@ export async function reconcileAutoCoverage(supabase: Sb, entryId: string): Prom
 	// Un exercice DE FICHE est cité par l'identifiant de la jonction : c'est ce
 	// qui permet à l'élève de savoir quelle fiche ouvrir. Pour la couverture,
 	// seul compte l'exercice qu'il désigne.
+	// Une FICHE citée avec une sélection : `[[worksheet:<uuid>#3,5-7]]`.
+	//
+	// Sans sélection, elle n'apporte RIEN — et c'est voulu : rien ne dit lesquels
+	// de ses exercices ont été faits. Avec une sélection, on résout les numéros
+	// AFFICHÉS vers les exercices, puis leurs points.
+	//
+	// Les numéros introuvables sont remontés à l'appelant, qui les signale au
+	// professeur : citer un exercice qui n'existe pas est une faute de frappe,
+	// pas une intention.
+	const numerosIntrouvables: { worksheetId: string; numeros: number[] }[] = [];
+	for (const reference of references) {
+		if (reference.kind !== 'worksheet') continue;
+
+		const numeros = parseExerciseSelection(reference.selection);
+		if (numeros.length === 0) continue;
+
+		const resolue = await resolveExercisesAtDisplayNumbers(supabase, reference.id, numeros);
+		for (const id of resolue.exerciseIds) exerciseIds.add(id);
+		if (resolue.introuvables.length > 0) {
+			numerosIntrouvables.push({ worksheetId: reference.id, numeros: resolue.introuvables });
+		}
+	}
+
 	const worksheetExerciseIds = referenceIdsOfKind(references, 'worksheet_exercise');
 	if (worksheetExerciseIds.length > 0) {
 		const { data: linked, error: linkErr } = await supabase
@@ -164,4 +203,6 @@ export async function reconcileAutoCoverage(supabase: Sb, entryId: string): Prom
 			.upsert(toInsert, { onConflict: 'entry_id,point_id', ignoreDuplicates: true });
 		if (error) throw new Error(`reconcileAutoCoverage insert: ${error.message}`);
 	}
+
+	return { numerosIntrouvables };
 }
