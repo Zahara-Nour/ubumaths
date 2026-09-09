@@ -14,7 +14,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
-import { extractResourceReferences, referenceIdsOfKind } from '../references';
+import { extractResourceReferences, referenceIdsOfKind, referencesToLabels } from '../references';
 import { RESOURCE_KINDS } from '../kinds';
 
 const EX = '11111111-1111-4111-8111-111111111111';
@@ -135,5 +135,39 @@ describe('sélection `#3,5-7`', () => {
 		);
 
 		expect(references).toHaveLength(1);
+	});
+});
+
+describe('referencesToLabels', () => {
+	const FICHE = '8443f4b7-1d0b-4035-9852-6ac06b63e89f';
+
+	// Cette fonction alimente TROIS aperçus tronqués — la grille de la semaine,
+	// les cartes de séance, et le cahier de texte de l'élève. Elle lit les groupes
+	// de `REFERENCE_REGEX` par position : ajouter un groupe à la grammaire sans
+	// décaler ici faisait recevoir `undefined` au libellé, donc lever, donc rendre
+	// la page blanche. Ces tests existent pour que ça ne repasse plus.
+
+	it('remplace une référence SANS sélection par son libellé', () => {
+		expect(referencesToLabels(`Faire [[exercise:${EX}|Fractions n°12]] pour jeudi`)).toBe(
+			'Faire Fractions n°12 pour jeudi'
+		);
+	});
+
+	it('remplace une référence AVEC sélection par son libellé', () => {
+		// Le libellé écrit par le sélecteur nomme déjà les exercices
+		// (« Produit scalaire — ex. 3 et 5 à 7 ») : rien à rajouter ici.
+		expect(
+			referencesToLabels(`Faire [[worksheet:${FICHE}#3,5-7|Produit scalaire — ex. 3 et 5 à 7]]`)
+		).toBe('Faire Produit scalaire — ex. 3 et 5 à 7');
+	});
+
+	it('laisse intact ce qui ressemble à une référence sans en être une', () => {
+		const texte = `Voir [[inconnu:${EX}|Quelque chose]]`;
+		expect(referencesToLabels(texte)).toBe(texte);
+	});
+
+	it('rend une chaîne vide pour un contenu absent', () => {
+		expect(referencesToLabels(null)).toBe('');
+		expect(referencesToLabels(undefined)).toBe('');
 	});
 });

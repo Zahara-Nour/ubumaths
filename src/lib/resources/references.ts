@@ -98,7 +98,14 @@ export function referenceIdsOfKind(references: ResourceReference[], kind: Resour
 export function referencesToLabels(content: string | null | undefined): string {
 	if (!content) return '';
 
-	return content.replace(REFERENCE_REGEX, (whole, rawKind: string, _id: string, label: string) =>
-		isResourceKind(rawKind.toLowerCase()) ? label.trim() : whole
+	// ⚠️ Les paramètres suivent les GROUPES de `REFERENCE_REGEX`, sélection
+	// comprise. L'oublier ne produit pas un mauvais libellé : `label` reçoit alors
+	// `undefined` sur toute référence sans sélection — c'est-à-dire toutes celles
+	// écrites jusqu'ici — et `.trim()` lève. Trois aperçus en dépendent, dont le
+	// cahier de texte de l'élève.
+	return content.replace(
+		REFERENCE_REGEX,
+		(whole, rawKind: string, _id: string, _selection: string | undefined, label: string) =>
+			isResourceKind(rawKind.toLowerCase()) ? label.trim() : whole
 	);
 }
