@@ -21,6 +21,7 @@ import StarterKit from '@tiptap/starter-kit';
 import { findSuggestionMatch } from '@tiptap/suggestion';
 import { ResourceLink, toSuggestionItem, createDebouncedSearch } from '../resource-link-extension';
 import { createSuggestionRenderer } from '../suggestion-renderer';
+import { parseResourceQuery } from '$lib/resources/prefixes';
 
 // ============================================================================
 // TEST UTILITIES
@@ -301,7 +302,7 @@ describe('anti-rebond de la recherche', () => {
 		expect(urlsAppelees()[0]).toContain('q=integral');
 
 		// Et c'est bien la dernière frappe qui reçoit le résultat.
-		await expect(promesses[promesses.length - 1]).resolves.toEqual({ items: [], failed: false });
+		await expect(promesses[promesses.length - 1]).resolves.toEqual({ entries: [], failed: false });
 	});
 
 	it('deux recherches séparées par une pause coûtent deux requêtes', async () => {
@@ -361,7 +362,8 @@ describe('anti-rebond de la recherche', () => {
 		const search = createDebouncedSearch(0);
 		const promesse = search('quelque', 8, null, null);
 		await vi.advanceTimersByTimeAsync(10);
-		const { items } = await promesse;
+		const { entries } = await promesse;
+		const items = entries.map((e) => e.item);
 
 		// `exercise` précède `worksheet` dans RESOURCE_KINDS.
 		expect(items.map((i) => i.group)).toEqual(['Exercice', 'Exercice', 'Fiche d’exercices']);
@@ -395,7 +397,7 @@ describe('anti-rebond de la recherche', () => {
 
 		// `failed: true` est ce qui permet à la popup d'écrire « Recherche
 		// indisponible » plutôt que de mentir.
-		await expect(promesse).resolves.toEqual({ items: [], failed: true });
+		await expect(promesse).resolves.toEqual({ entries: [], failed: true });
 	});
 
 	it('traite une panne réseau comme un échec, pas comme un vide', async () => {
@@ -405,6 +407,38 @@ describe('anti-rebond de la recherche', () => {
 		const promesse = search('integral', 8, null, null);
 		await vi.advanceTimersByTimeAsync(10);
 
-		await expect(promesse).resolves.toEqual({ items: [], failed: true });
+		await expect(promesse).resolves.toEqual({ entries: [], failed: true });
+	});
+});
+
+// ============================================================================
+// `#3` : DE LA FICHE À L'EXERCICE
+// ============================================================================
+
+/**
+ * La distinction demandée : `[[exos:derivees]]` pointe la FICHE et n'apporte
+ * aucun point de programme ; `[[exos:derivees#3]]` désigne l'EXERCICE et lui
+ * apporte les siens.
+ */
+describe('résolution du numéro d’exercice', () => {
+	const FICHE = '550e8400-e29b-41d4-a716-446655440000';
+
+	it('découpe `exos:derivees#3` en type, texte et numéro', () => {
+		expect(parseResourceQuery('exos:derivees#3')).toEqual({
+			kind: 'worksheet',
+			text: 'derivees',
+			exerciseNumber: 3
+		});
+	});
+
+	it('sans numéro, la référence reste celle de la fiche', () => {
+		const item = toSuggestionItem({
+			kind: 'worksheet',
+			id: FICHE,
+			title: 'Dérivées',
+			subtitle: null
+		});
+
+		expect(item.id).toBe(`[[worksheet:${FICHE}|Dérivées]]`);
 	});
 });
