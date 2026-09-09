@@ -842,6 +842,17 @@ function convertInlineNode(node: InlineNode): JSONContent[] {
 		case 'mention':
 			return [convertMentionNode(node)];
 
+		// Ces deux-là n'ont PAS de nœud TipTap : ce sont du texte, et c'est un
+		// choix — la syntaxe survit ainsi à l'aller-retour markdown sans qu'on ait
+		// à écrire de nœud personnalisé. Encore faut-il la réécrire ici : elles
+		// tombaient dans le `default` ci-dessous, donc DISPARAISSAIENT dès qu'on
+		// basculait en vue markdown et qu'on revenait.
+		case 'internal-link':
+			return [{ type: 'text', text: `[[${node.referenceType}:${node.uuid}|${node.label}]]` }];
+
+		case 'hint-reference':
+			return [{ type: 'text', text: `{{hint:${node.hintId}}}` }];
+
 		default:
 			return [];
 	}
