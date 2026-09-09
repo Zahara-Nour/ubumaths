@@ -94,10 +94,20 @@ m'expliques **en français ce qui va être perdu**.
 vérifications distinctes, dans cet ordre :
 
 1. **Usages** — `grep -rn "<objet supprimé>" src` pour chaque table et colonne
-   visée. **Y compris dans les chaînes de caractères** : les jointures PostgREST
-   (`.select('*, ma_table(...)')`) sont du texte, donc invisibles au typecheck,
-   au lint ET aux tests unitaires, dont les mocks ne touchent jamais la base.
-   **Zéro référence, ou on ne supprime pas.**
+   visée. **Y compris dans les chaînes de caractères ET dans les schémas Zod** —
+   deux angles morts, les deux déjà payés en prod :
+
+   - les jointures PostgREST (`.select('*, ma_table(...)')`) sont du texte ;
+   - un **schéma de réponse** (`z.object({ tags: z.array(...) })`) nomme la
+     colonne comme une clé d'objet ordinaire. Le 2026-09-09, `worksheets.tags`
+     supprimée mais toujours exigée par `worksheetResponseSchema` a fait
+     répondre 500 à trois routes, et la page annonçait « Aucune feuille trouvée »
+     — un message qui accuse la base d'être vide.
+
+   Les deux sont invisibles au typecheck, au lint ET aux tests unitaires, dont
+   les mocks ne touchent jamais la base. **Zéro référence, ou on ne supprime
+   pas.**
+
 2. **Données** — requête de réconciliation prouvant que tout ce que porte
    l'ancienne forme existe dans la nouvelle.
 
