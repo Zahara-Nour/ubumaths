@@ -28,6 +28,11 @@ import { PluginKey } from '@tiptap/pm/state';
 import { createSuggestionRenderer, type SuggestionItem } from '$lib/extensions/suggestion-renderer';
 import { RESOURCE_KINDS, isResourceKind, type ResourceKind } from '$lib/resources/kinds';
 import { parseResourceQuery, prefixHint } from '$lib/resources/prefixes';
+import {
+	parseExerciseSelection,
+	formatExerciseSelection,
+	describeExerciseSelection
+} from '$lib/resources/exercise-selection';
 
 // ============================================================================
 // TYPES
@@ -233,32 +238,35 @@ function groupByKind(rows: SearchResult[]): SearchEntry[] {
  * référence à la fiche. Un lien juste mais moins précis vaut mieux qu'un lien
  * inventé vers un exercice qui n'existe pas.
  */
-async function withExerciseNumber(
-	entry: SearchEntry,
-	exerciseNumber: number
-): Promise<SuggestionItem> {
-	try {
-		const response = await fetch(
-			`/api/worksheets/${entry.row.id}/exercise-number/${exerciseNumber}`
-		);
-		if (!response.ok) return entry.item;
+/**
+ * Convertit « la fiche X » + une sélection en référence portant les NUMÉROS.
+ *
+ * C'est là que se joue la distinction : `[[worksheet:W]]` pointe la fiche — un
+ * lien pour l'ouvrir, et AUCUN point de programme, puisque rien ne dit lesquels
+ * de ses exercices ont été faits. Suivi d'une sélection, `[[worksheet:W#3,5-7]]`
+ * désigne ces exercices, et apporte leurs points.
+ *
+ * La référence porte des numéros, pas des identifiants d'exercices : elle reste
+ * courte, lisible dans la vue markdown, et MODIFIABLE À LA MAIN. Contrepartie
+ * assumée : réordonner la fiche change ce qu'elle désigne — « les exercices 3
+ * et 4 de la fiche » parle du document que l'élève a sous les yeux.
+ *
+ * Aucun appel réseau : la résolution vers les points de programme a lieu à
+ * l'enregistrement de la séance, pas à l'insertion.
+ */
+function withSelection(entry: SearchEntry, selection: string): SuggestionItem {
+	const numeros = parseExerciseSelection(selection);
+	if (numeros.length === 0) return entry.item;
 
-		const payload: unknown = await response.json();
-		const junctionId = (payload as { worksheet_exercise_id?: string }).worksheet_exercise_id;
-		if (!junctionId) return entry.item;
-
-		// Le libellé nomme l'exercice ET la fiche : c'est ce que l'élève doit lire
-		// pour savoir quoi ouvrir, y compris quand le lien ne mène nulle part.
-		const label = sanitiseLabel(`Exercice ${exerciseNumber} — ${entry.row.title}`);
-		return {
-			...entry.item,
-			id: `[[worksheet_exercise:${junctionId}|${label}]]`,
-			label,
-			description: `${KIND_LABELS.worksheet_exercise} · ${entry.row.title}`
-		};
-	} catch {
-		return entry.item;
-	}
+	// Le libellé nomme les exercices ET la fiche : c'est ce que l'élève doit lire
+	// pour savoir quoi faire, y compris quand le lien ne mène nulle part.
+	const label = sanitiseLabel(`${entry.row.title} — ${describeExerciseSelection(numeros)}`);
+	return {
+		...entry.item,
+		id: `[[worksheet:${entry.row.id}#${formatExerciseSelection(numeros)}|${label}]]`,
+		label,
+		description: `${KIND_LABELS.worksheet} · ${describeExerciseSelection(numeros)}`
+	};
 }
 
 function sanitiseLabel(raw: string): string {
@@ -371,17 +379,13 @@ export const ResourceLink = Extension.create<ResourceLinkOptions, ResourceLinkSt
 					);
 					lastSearchFailed = outcome.failed;
 
-					// Un numéro ne veut rien dire pour autre chose qu'une FICHE : les
+					// Une sélection ne veut rien dire pour autre chose qu'une FICHE : les
 					// autres résultats restent tels quels.
-					const wanted = parsed.exerciseNumber;
-					if (wanted === null) return outcome.entries.map((entry) => entry.item);
+					const selection = parsed.selection;
+					if (selection === null) return outcome.entries.map((entry) => entry.item);
 
-					return Promise.all(
-						outcome.entries.map((entry) =>
-							entry.row.kind === 'worksheet'
-								? withExerciseNumber(entry, wanted)
-								: Promise.resolve(entry.item)
-						)
+					return outcome.entries.map((entry) =>
+						entry.row.kind === 'worksheet' ? withSelection(entry, selection) : entry.item
 					);
 				},
 

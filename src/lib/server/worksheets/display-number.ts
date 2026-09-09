@@ -66,3 +66,60 @@ export async function fetchDisplayNumber(
 	const numbers = await fetchDisplayNumbers(supabase, worksheetId);
 	return numbers.get(worksheetExerciseId) ?? null;
 }
+
+/** Ce qu'une sélection a permis de désigner, et ce qu'elle a raté. */
+export interface ResolvedSelection {
+	/** Identifiants d'exercices (`exercises.id`) désignés par les numéros. */
+	exerciseIds: string[];
+	/** Numéros demandés qui n'existent pas dans la fiche. */
+	introuvables: number[];
+}
+
+/**
+ * Les exercices désignés par des NUMÉROS AFFICHÉS dans une fiche.
+ *
+ * C'est la résolution dont dépend `[[worksheet:<uuid>#3,5-7]]` : la référence
+ * porte des numéros, la couverture du programme a besoin d'exercices.
+ *
+ * Les numéros absents sont RENDUS plutôt qu'ignorés en silence : citer un
+ * exercice qui n'existe pas est une faute de frappe qu'il vaut mieux signaler
+ * au professeur au moment où il enregistre.
+ */
+export async function resolveExercisesAtDisplayNumbers(
+	supabase: Sb,
+	worksheetId: string,
+	numeros: readonly number[]
+): Promise<ResolvedSelection> {
+	if (numeros.length === 0) return { exerciseIds: [], introuvables: [] };
+
+	const [{ data: exercises, error: exercisesError }, { data: sections, error: sectionsError }] =
+		await Promise.all([
+			supabase
+				.from('worksheet_exercises')
+				.select('id, section_id, position, exercise_id')
+				.eq('worksheet_id', worksheetId),
+			supabase.from('worksheet_sections').select('id, position').eq('worksheet_id', worksheetId)
+		]);
+
+	if (exercisesError || sectionsError) {
+		console.error('[display-number] fiche illisible:', exercisesError ?? sectionsError);
+		return { exerciseIds: [], introuvables: [...numeros] };
+	}
+
+	const parNumero = new Map(
+		orderExercisesForDisplay(exercises ?? [], sections ?? []).map(({ exercise, number }) => [
+			number,
+			exercise.exercise_id
+		])
+	);
+
+	const exerciseIds: string[] = [];
+	const introuvables: number[] = [];
+	for (const numero of numeros) {
+		const trouve = parNumero.get(numero);
+		if (trouve) exerciseIds.push(trouve);
+		else introuvables.push(numero);
+	}
+
+	return { exerciseIds, introuvables };
+}

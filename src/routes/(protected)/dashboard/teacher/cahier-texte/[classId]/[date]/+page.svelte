@@ -336,6 +336,13 @@
 			} else if (result.action === 'publish') {
 				toaster.success(result.isPublished ? 'Entree publiee' : 'Publication retiree');
 			}
+
+			// Un numéro d'exercice cité mais inexistant ne casse rien — les autres
+			// sont pris en compte — mais il faut le dire, sinon un point manquerait
+			// à la couverture sans qu'on comprenne pourquoi.
+			if (result.warning) {
+				toaster.warning(result.warning);
+			}
 		} else if (result?.error) {
 			toaster.error(result.error);
 		}

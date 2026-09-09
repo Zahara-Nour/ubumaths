@@ -423,11 +423,11 @@ describe('anti-rebond de la recherche', () => {
 describe('résolution du numéro d’exercice', () => {
 	const FICHE = '550e8400-e29b-41d4-a716-446655440000';
 
-	it('découpe `exos:derivees#3` en type, texte et numéro', () => {
-		expect(parseResourceQuery('exos:derivees#3')).toEqual({
+	it('découpe `exos:derivees#3,5-7` en type, texte et sélection', () => {
+		expect(parseResourceQuery('exos:derivees#3,5-7')).toEqual({
 			kind: 'worksheet',
 			text: 'derivees',
-			exerciseNumber: 3
+			selection: '3,5-7'
 		});
 	});
 

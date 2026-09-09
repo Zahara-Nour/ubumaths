@@ -19,6 +19,7 @@
  */
 
 import type { ResourceKind } from './kinds';
+import { parseExerciseSelection, formatExerciseSelection } from './exercise-selection';
 
 /**
  * Préfixe → type. Les mots sont ceux du professeur, pas ceux de la base :
@@ -44,21 +45,21 @@ export interface ParsedQuery {
 	/** Le texte à chercher, préfixe retiré. */
 	text: string;
 	/**
-	 * Numéro d'exercice demandé après un `#`, ou `null`.
+	 * Sélection d'exercices demandée après un `#`, telle que tapée, ou `null`.
 	 *
-	 * `[[exos:derivees#3` désigne l'exercice 3 de la fiche « Dérivées ». Sans
-	 * numéro, la référence pointe la fiche entière — et n'apporte alors aucun
-	 * point de programme, puisque rien ne dit lesquels de ses exercices ont été
-	 * faits.
+	 * `[[exos:derivees#3` désigne l'exercice 3 ; `#3,5-7` les exercices 3, 5, 6
+	 * et 7. Sans sélection, la référence pointe la fiche entière — et n'apporte
+	 * alors aucun point de programme, puisque rien ne dit lesquels de ses
+	 * exercices ont été faits.
 	 */
-	exerciseNumber: number | null;
+	selection: string | null;
 }
 
-/** `#` suivi de chiffres, en fin de requête. */
-const TRAILING_NUMBER = /#(\d{1,3})$/;
+/** `#` suivi d'une liste de numéros ou de plages, en fin de requête. */
+const TRAILING_SELECTION = /#([\d,-]{1,60})$/;
 
 /**
- * Découpe `exos:derivees#3` en type, texte et numéro.
+ * Découpe `exos:derivees#3,5-7` en type, texte et sélection.
  *
  * Tolérant par construction : un préfixe inconnu n'est pas une erreur, c'est du
  * texte. `[[note:` cherche « note: » plutôt que de ne rien renvoyer — refuser
@@ -78,18 +79,20 @@ export function parseResourceQuery(raw: string): ParsedQuery {
 		}
 	}
 
-	let exerciseNumber: number | null = null;
-	const numbered = text.match(TRAILING_NUMBER);
-	if (numbered) {
-		const parsed = Number(numbered[1]);
-		// `#0` n'existe pas : les exercices sont numérotés à partir de 1.
-		if (parsed >= 1) {
-			exerciseNumber = parsed;
-			text = text.slice(0, numbered.index);
+	let selection: string | null = null;
+	const marquee = text.match(TRAILING_SELECTION);
+	if (marquee) {
+		// La validité de la sélection est jugée par `parseExerciseSelection` : ici
+		// on se contente de la détacher du texte cherché. Une sélection
+		// incompréhensible vaudra « fiche entière », pas « rien trouvé ».
+		const numeros = parseExerciseSelection(marquee[1]);
+		if (numeros.length > 0) {
+			selection = formatExerciseSelection(numeros);
+			text = text.slice(0, marquee.index);
 		}
 	}
 
-	return { kind, text, exerciseNumber };
+	return { kind, text, selection };
 }
 
 /**

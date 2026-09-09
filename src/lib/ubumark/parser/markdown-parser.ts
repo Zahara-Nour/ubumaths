@@ -297,7 +297,7 @@ const VALID_INTERNAL_LINK_TYPES: InternalLinkReferenceType[] = [
  * ```
  */
 const INTERNAL_LINK_REGEX =
-	/\[\[(\w+):([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\|([^\]]+)\]\]/gi;
+	/\[\[(\w+):([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})(#[\d,-]{1,60})?\|([^\]]+)\]\]/gi;
 
 // ============================================================================
 // EXPRESSION MARKER DETECTION
@@ -1090,7 +1090,9 @@ function parseTextForInternalLinks(text: string): (string | InternalLinkNode)[] 
 	while ((match = internalLinkRegex.exec(text)) !== null) {
 		const referenceType = match[1].toLowerCase();
 		const uuid = match[2].toLowerCase();
-		const label = match[3];
+		// Sélection d'exercices d'une fiche (`#3,5-7`), sans son `#`.
+		const selection = match[3] ? match[3].slice(1) : undefined;
+		const label = match[4];
 
 		// Only parse if type is valid and label is not empty
 		if (
@@ -1107,6 +1109,7 @@ function parseTextForInternalLinks(text: string): (string | InternalLinkNode)[] 
 				type: 'internal-link',
 				referenceType: referenceType as InternalLinkReferenceType,
 				uuid,
+				...(selection ? { selection } : {}),
 				label
 			};
 

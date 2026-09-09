@@ -525,6 +525,36 @@ describe('Références dans le contenu de la séance', () => {
 		await reconcileAutoCoverage(service, ctx.entryId);
 	}
 
+	/** Une fiche vide, prête à recevoir des exercices. */
+	async function makeWorksheet(teacherId: string): Promise<string> {
+		const { data, error } = await service
+			.from('worksheets' as never)
+			.insert({
+				title: `Fiche ${crypto.randomUUID().slice(0, 8)}`,
+				type: 'worksheet',
+				status: 'published',
+				created_by: teacherId
+			} as never)
+			.select('id')
+			.single();
+		if (error) throw new Error(`fiche : ${error.message}`);
+		return (data as { id: string }).id;
+	}
+
+	/** Ajoute un exercice à la fin d'une fiche. */
+	async function addToWorksheet(worksheetId: string, exerciseId: string): Promise<void> {
+		const { count } = await service
+			.from('worksheet_exercises' as never)
+			.select('id', { count: 'exact', head: true })
+			.eq('worksheet_id', worksheetId);
+		const { error } = await service.from('worksheet_exercises' as never).insert({
+			worksheet_id: worksheetId,
+			exercise_id: exerciseId,
+			position: (count ?? 0) + 1
+		} as never);
+		if (error) throw new Error(`jonction : ${error.message}`);
+	}
+
 	/** Place un exercice dans une fiche et renvoie l'identifiant de la JONCTION. */
 	async function putInWorksheet(teacherId: string, exerciseId: string): Promise<string> {
 		const { data: ws, error: wsError } = await service
@@ -581,6 +611,83 @@ describe('Références dans le contenu de la séance', () => {
 		await writeLesson(ctx, `<p>Exercice 3 : [[worksheet_exercise:${junction}|Exercice 3]]</p>`);
 
 		expect((await coverageMap(ctx)).get(point)).toBe('auto');
+	});
+
+	it('une FICHE citée avec `#3,4` apporte les points de ces exercices', async () => {
+		expect.assertions(3);
+		const ctx = await setup();
+		const item = await makeItem();
+		const [p3, p4, p5] = [
+			await svcPoint(item, 'P3'),
+			await svcPoint(item, 'P4'),
+			await svcPoint(item, 'P5')
+		];
+
+		// Trois exercices dans une fiche, un point chacun.
+		const fiche = await makeWorksheet(ctx.teacher.id);
+		for (const point of [p3, p4, p5]) {
+			await addToWorksheet(fiche, await makeTaggedExercise(ctx.teacher.id, [point]));
+		}
+
+		await writeLesson(ctx, `<p>[[worksheet:${fiche}#1,2|Fiche — ex. 1 et 2]]</p>`);
+
+		const cov = await coverageMap(ctx);
+		expect(cov.has(p3)).toBe(true);
+		expect(cov.has(p4)).toBe(true);
+		// Le troisième n'est PAS cité : il ne doit rien apporter.
+		expect(cov.has(p5)).toBe(false);
+	});
+
+	it('une fiche citée SANS sélection n’apporte aucun point', async () => {
+		expect.assertions(1);
+		const ctx = await setup();
+		const point = await svcPoint(await makeItem(), 'P-fiche-entiere');
+		const fiche = await makeWorksheet(ctx.teacher.id);
+		await addToWorksheet(fiche, await makeTaggedExercise(ctx.teacher.id, [point]));
+
+		await writeLesson(ctx, `<p>[[worksheet:${fiche}|La fiche entière]]</p>`);
+
+		// Rien ne dit lesquels de ses exercices ont été faits.
+		expect((await coverageMap(ctx)).size).toBe(0);
+	});
+
+	it('une plage `#1-3` prend les bornes incluses', async () => {
+		expect.assertions(1);
+		const ctx = await setup();
+		const item = await makeItem();
+		const points = [
+			await svcPoint(item, 'A'),
+			await svcPoint(item, 'B'),
+			await svcPoint(item, 'C')
+		];
+		const fiche = await makeWorksheet(ctx.teacher.id);
+		for (const point of points) {
+			await addToWorksheet(fiche, await makeTaggedExercise(ctx.teacher.id, [point]));
+		}
+
+		await writeLesson(ctx, `<p>[[worksheet:${fiche}#1-3|Fiche — ex. 1 à 3]]</p>`);
+
+		expect([...(await coverageMap(ctx)).keys()].sort()).toEqual([...points].sort());
+	});
+
+	it('signale un numéro qui n’existe pas, sans perdre les autres', async () => {
+		expect.assertions(3);
+		const ctx = await setup();
+		const point = await svcPoint(await makeItem(), 'P-unique');
+		const fiche = await makeWorksheet(ctx.teacher.id);
+		await addToWorksheet(fiche, await makeTaggedExercise(ctx.teacher.id, [point]));
+
+		// La fiche n'a qu'un exercice : `#1,7` cite un numéro inexistant.
+		await service
+			.from('class_journal_entries' as never)
+			.update({ lesson_content: `<p>[[worksheet:${fiche}#1,7|Fiche]]</p>` } as never)
+			.eq('id', ctx.entryId);
+		const rapport = await reconcileAutoCoverage(service, ctx.entryId);
+
+		// Le numéro valide compte quand même : une coquille ne doit pas tout perdre.
+		expect((await coverageMap(ctx)).has(point)).toBe(true);
+		expect(rapport.numerosIntrouvables).toHaveLength(1);
+		expect(rapport.numerosIntrouvables[0].numeros).toEqual([7]);
 	});
 
 	it('retirer la citation du texte retire le point', async () => {
