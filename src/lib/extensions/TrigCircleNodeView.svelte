@@ -6,23 +6,25 @@
 	`FencedDslNodeView`, partagée avec l'autre bloc DSL.
 -->
 <script lang="ts">
-	import type { Editor } from '@tiptap/core';
 	import FencedDslNodeView from './FencedDslNodeView.svelte';
 	import TrigCircleRender from '$lib/components/markdown/nodes/TrigCircle.svelte';
 	import { parseTrigCircleContent } from '$lib/ubumark/parser/trig-circle-parser';
 
-	// Forme imposée par `SvelteNodeViewRenderer` : les six props sont fournies par
-	// TipTap, même si cette vue n'en utilise que quatre.
-	interface NodeViewProps {
-		editor: Editor;
-		node: { attrs: Record<string, unknown>; nodeSize: number };
+	// TipTap fournit six props ; on ne déclare QUE celles utilisées — `editor`,
+	// `getPos` et `nodeSize` sont inutiles ici, et les déclarer sans s'en servir
+	// est une erreur `svelte/no-unused-props`.
+	//
+	// `attrs` reste un `Record<string, unknown>` : le restreindre à `{ content:
+	// string }` casserait l'affectation à `Component<NodeViewProps>`, les props
+	// étant en position contravariante.
+	interface Props {
+		node: { attrs: Record<string, unknown> };
 		updateAttributes: (attrs: Record<string, unknown>) => void;
 		deleteNode: () => void;
-		getPos: () => number | undefined;
 		selected: boolean;
 	}
 
-	let { node, updateAttributes, deleteNode, selected }: NodeViewProps = $props();
+	let { node, updateAttributes, deleteNode, selected }: Props = $props();
 </script>
 
 <FencedDslNodeView
