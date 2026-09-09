@@ -1032,6 +1032,18 @@ export function localizedText(
 }
 
 /**
+ * Ce que la garde a pu établir sur une fiche.
+ *
+ * `verifie: false` n'est PAS « aucune séance » : le cahier n'a pas pu être lu.
+ * Les deux états rendaient le même écran vide — donc, pour une garde, le même
+ * silence rassurant au moment précis où le professeur s'apprête à réordonner.
+ */
+export interface WorksheetCitationsReport {
+	citations: WorksheetCitation[];
+	verifie: boolean;
+}
+
+/**
  * Une séance du cahier de texte qui cite une fiche PAR NUMÉRO d'exercice.
  *
  * Vit ici, et non dans `$lib/server/worksheets/citations`, parce que le panneau

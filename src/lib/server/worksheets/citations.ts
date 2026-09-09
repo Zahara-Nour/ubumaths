@@ -19,7 +19,7 @@
  */
 
 import { extractResourceReferences } from '$lib/resources/references';
-import type { WorksheetCitation } from '$lib/types/worksheets';
+import type { WorksheetCitation, WorksheetCitationsReport } from '$lib/types/worksheets';
 import {
 	describeExerciseSelection,
 	parseExerciseSelection
@@ -42,27 +42,39 @@ const MAX_CITATIONS = 50;
 /**
  * Les séances citant cette fiche par numéro, de la plus récente à la plus ancienne.
  *
- * @returns une liste vide si le cahier est illisible — la page reste utilisable,
- *          elle avertit seulement moins. Ne jamais faire échouer l'édition d'une
- *          fiche pour un avertissement.
+ * Ne lève jamais : on ne fait pas échouer l'édition d'une fiche pour un
+ * avertissement. Une lecture impossible rend `verifie: false`, que l'appelant
+ * doit distinguer d'une absence de citation — sans quoi la garde se tait quand
+ * elle devrait dire qu'elle ne sait pas.
  */
 export async function fetchWorksheetCitations(
 	supabase: Sb,
 	worksheetId: string
-): Promise<WorksheetCitation[]> {
-	if (!UUID.test(worksheetId)) return [];
+): Promise<WorksheetCitationsReport> {
+	// Un identifiant hors forme ne désigne aucune fiche : il n'y a rien à
+	// vérifier, et c'est un état connu — pas une panne.
+	if (!UUID.test(worksheetId)) return { citations: [], verifie: true };
 
 	// L'extracteur rend les identifiants EN MINUSCULES, et un uuid s'écrit dans
 	// les deux casses : comparer la forme reçue telle quelle ferait une liste
 	// vide, donc un avertissement muet, sur une simple différence d'écriture.
 	const cible = worksheetId.toLowerCase();
 
-	// On présélectionne en SQL sur l'uuid seul, sans le `#` : le tri entre « citée
-	// avec sélection » et « citée tout court » est fait plus bas par
-	// `extractResourceReferences`, c'est-à-dire par LA grammaire, celle qui sert
-	// déjà à la couverture du programme. Deux reconnaissances concurrentes de la
-	// même syntaxe finiraient par diverger.
-	const motif = `%worksheet:${cible}%`;
+	// Le `#` FAIT PARTIE du motif SQL, et c'est un point de correction, pas une
+	// optimisation. Sans lui, la présélection retenait aussi les citations de la
+	// fiche entière — de loin les plus nombreuses — et la troncature à
+	// `MAX_CITATIONS` s'appliquait AVANT le tri : une fiche liée chaque semaine
+	// dans le cahier remplissait la fenêtre de bruit récent, et la seule séance
+	// qui la citait par numéro tombait dehors. Le panneau se taisait précisément
+	// dans le cas pour lequel il existe.
+	//
+	// La grammaire colle le `#` à l'uuid (`REFERENCE_REGEX`), donc le motif ne
+	// peut pas rater une sélection. Il peut en revanche retenir un faux positif —
+	// un `#` écrit à la main derrière un identifiant —, et c'est voulu : le tri
+	// fin reste à `extractResourceReferences`, LA grammaire, celle qui sert déjà
+	// à la couverture du programme. Deux reconnaissances concurrentes de la même
+	// syntaxe finiraient par diverger.
+	const motif = `%worksheet:${cible}#%`;
 
 	const { data, error } = await supabase
 		.from('class_journal_entries')
@@ -73,17 +85,23 @@ export async function fetchWorksheetCitations(
 
 	if (error) {
 		console.error('[worksheet-citations] cahier illisible:', error);
-		return [];
+		return { citations: [], verifie: false };
 	}
 
 	const citations: WorksheetCitation[] = [];
 
 	for (const entry of data ?? []) {
-		const selections = extractResourceReferences(entry.lesson_content, entry.homework_content)
+		const decrites = extractResourceReferences(entry.lesson_content, entry.homework_content)
 			.filter((reference) => reference.kind === 'worksheet' && reference.id === cible)
 			.map((reference) => parseExerciseSelection(reference.selection))
 			.filter((numeros) => numeros.length > 0)
 			.map(describeExerciseSelection);
+
+		// Dédoublonné APRÈS mise en forme : le dédoublonnage de l'extracteur porte
+		// sur la sélection telle qu'écrite, et `#3-5` puis `#3,4,5` sont deux
+		// écritures distinctes du même ensemble. Sans ceci, la ligne afficherait
+		// « ex. 3 à 5 · ex. 3 à 5 ».
+		const selections = [...new Set(decrites)];
 
 		if (selections.length === 0) continue;
 
@@ -96,5 +114,5 @@ export async function fetchWorksheetCitations(
 		});
 	}
 
-	return citations;
+	return { citations, verifie: true };
 }

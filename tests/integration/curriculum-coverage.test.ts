@@ -1125,7 +1125,7 @@ describe('fetchWorksheetCitations', () => {
 			lesson: `<p>[[worksheet:${fiche}#3,5-7|Produit scalaire — ex. 3 et 5 à 7]]</p>`
 		});
 
-		const citations = await fetchWorksheetCitations(service, fiche);
+		const { citations } = await fetchWorksheetCitations(service, fiche);
 
 		expect(citations).toHaveLength(1);
 		expect(citations[0].classId).toBe(classId);
@@ -1143,7 +1143,7 @@ describe('fetchWorksheetCitations', () => {
 			lesson: `<p>[[worksheet:${fiche}|La fiche entière]]</p>`
 		});
 
-		expect(await fetchWorksheetCitations(service, fiche)).toEqual([]);
+		expect((await fetchWorksheetCitations(service, fiche)).citations).toEqual([]);
 	});
 
 	it('n’attribue pas à cette fiche les numéros d’une AUTRE citée dans la même séance', async () => {
@@ -1158,7 +1158,7 @@ describe('fetchWorksheetCitations', () => {
 			lesson: `<p>[[worksheet:${fiche}#2|Celle-ci]] et [[worksheet:${autre}#9|L'autre]]</p>`
 		});
 
-		const citations = await fetchWorksheetCitations(service, fiche);
+		const { citations } = await fetchWorksheetCitations(service, fiche);
 
 		expect(citations).toHaveLength(1);
 		expect(citations[0].selections).toEqual(['ex. 2']);
@@ -1176,7 +1176,7 @@ describe('fetchWorksheetCitations', () => {
 			homework: `<p>Pour jeudi : [[worksheet:${fiche}#4-6|Fiche — ex. 4 à 6]]</p>`
 		});
 
-		const citations = await fetchWorksheetCitations(service, fiche);
+		const { citations } = await fetchWorksheetCitations(service, fiche);
 
 		expect(citations).toHaveLength(1);
 		expect(citations[0].selections).toEqual(['ex. 4 à 6']);
@@ -1191,7 +1191,7 @@ describe('fetchWorksheetCitations', () => {
 			homework: `<p>[[worksheet:${fiche}#4-6|Fiche — ex. 4 à 6]]</p>`
 		});
 
-		const citations = await fetchWorksheetCitations(service, fiche);
+		const { citations } = await fetchWorksheetCitations(service, fiche);
 
 		// Une séance, une ligne : le professeur veut savoir QUELLES séances rompre,
 		// pas combien de fois chacune cite la fiche.
@@ -1211,7 +1211,91 @@ describe('fetchWorksheetCitations', () => {
 			lesson: `<p>[[worksheet:${fiche}#2|Fiche — ex. 2]]</p>`
 		});
 
-		expect(await fetchWorksheetCitations(service, fiche.toUpperCase())).toHaveLength(1);
+		expect((await fetchWorksheetCitations(service, fiche.toUpperCase())).citations).toHaveLength(1);
+	});
+
+	it('n’est pas noyée par les citations de la fiche ENTIÈRE, même bien plus récentes', async () => {
+		expect.assertions(2);
+		// LE cas que la garde existe pour couvrir. Une fiche liée en entier chaque
+		// semaine — un cahier d'exercices de trimestre — produit des dizaines de
+		// citations sans sélection. Si la fenêtre SQL les retient, la troncature
+		// s'applique avant le tri : les récentes remplissent la fenêtre et la seule
+		// séance citant par numéro tombe dehors. Le panneau se tairait.
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const fiche = await makeWorksheet(teacher.id);
+
+		const { classId } = await makeEntry('5ᵉ B', '2026-01-05', {
+			lesson: `<p>[[worksheet:${fiche}#3|Fiche — ex. 3]]</p>`
+		});
+
+		// 60 séances POSTÉRIEURES citant la fiche entière : plus que `MAX_CITATIONS`.
+		const bruit = Array.from({ length: 60 }, (_, i) => {
+			// Deux mois de 30 jours : le cahier a une contrainte d'unicité par
+			// (classe, date), et `2026-03-32` n'est pas une date.
+			const jour = new Date(2026, 2, 1 + i);
+			return {
+				class_id: classId,
+				entry_date: `${jour.getFullYear()}-${String(jour.getMonth() + 1).padStart(2, '0')}-${String(jour.getDate()).padStart(2, '0')}`,
+				lesson_content: `<p>[[worksheet:${fiche}|La fiche entière]]</p>`
+			};
+		});
+		const { error: bruitError } = await service
+			.from('class_journal_entries' as never)
+			.insert(bruit as never);
+		if (bruitError) throw new Error(`bruit : ${bruitError.message}`);
+
+		const { citations } = await fetchWorksheetCitations(service, fiche);
+
+		expect(citations).toHaveLength(1);
+		expect(citations[0].entryDate).toBe('2026-01-05');
+	});
+
+	it('n’affiche pas deux fois la même sélection écrite de deux façons', async () => {
+		expect.assertions(1);
+		// `#3-5` et `#3,4,5` sont deux écritures du même ensemble : l'extracteur en
+		// garde deux (son dédoublonnage porte sur la forme brute), mais la ligne ne
+		// doit pas afficher « ex. 3 à 5 · ex. 3 à 5 ».
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const fiche = await makeWorksheet(teacher.id);
+		await makeEntry('5ᵉ B', '2026-03-12', {
+			lesson: `<p>[[worksheet:${fiche}#3-5|En classe]]</p>`,
+			homework: `<p>[[worksheet:${fiche}#3,4,5|À refaire]]</p>`
+		});
+
+		const { citations } = await fetchWorksheetCitations(service, fiche);
+
+		expect(citations[0].selections).toEqual(['ex. 3 à 5']);
+	});
+
+	it('distingue « rien à signaler » de « je n’ai pas pu lire le cahier »', async () => {
+		expect.assertions(3);
+		// Les deux états rendaient la même liste vide, donc le même écran muet — au
+		// moment précis où le professeur s'apprête à réordonner. Une garde qui ne
+		// sait pas doit le dire.
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const fiche = await makeWorksheet(teacher.id);
+
+		const saine = await fetchWorksheetCitations(service, fiche);
+		expect(saine.citations).toEqual([]);
+		expect(saine.verifie).toBe(true);
+
+		// Un client dont la lecture échoue : la panne doit ressortir comme telle.
+		const silencieux = vi.spyOn(console, 'error').mockImplementation(() => {});
+		const cassé = {
+			from: () => ({
+				select: () => ({
+					or: () => ({
+						order: () => ({
+							limit: () =>
+								Promise.resolve({ data: null, error: { message: 'cahier indisponible' } })
+						})
+					})
+				})
+			})
+		} as unknown as typeof service;
+
+		expect((await fetchWorksheetCitations(cassé, fiche)).verifie).toBe(false);
+		silencieux.mockRestore();
 	});
 
 	it('un identifiant mal formé ne descend JAMAIS jusqu’à la base', async () => {
@@ -1225,7 +1309,7 @@ describe('fetchWorksheetCitations', () => {
 		// de retour, et le test passerait sur du code cassé.
 		const spy = vi.spyOn(service, 'from');
 
-		const citations = await fetchWorksheetCitations(service, '%,id.not.is.null');
+		const { citations } = await fetchWorksheetCitations(service, '%,id.not.is.null');
 
 		expect(spy).not.toHaveBeenCalled();
 		expect(citations).toEqual([]);

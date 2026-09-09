@@ -592,7 +592,7 @@
 						class="mb-4"
 					/>
 
-					<WorksheetCitationsNotice citations={data.citations} class="mb-4" />
+					<WorksheetCitationsNotice report={data.citations} class="mb-4" />
 
 					<ExerciseList
 						worksheetId={worksheet.id}
