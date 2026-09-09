@@ -85,6 +85,12 @@ function convertBlockToMarkdown(block: JSONContent, indentLevel = 0): string | n
 		case 'numberLine':
 			return convertNumberLine(block);
 
+		case 'probabilityTree':
+			return convertFencedDsl(block, 'probtree');
+
+		case 'trigCircle':
+			return convertFencedDsl(block, 'trig');
+
 		case 'taskList':
 			return convertTaskList(block);
 
@@ -816,4 +822,12 @@ function convertTaskList(node: JSONContent): string {
 		return `- [${coche}] ${texte}`;
 	});
 	return items.join('\n');
+}
+
+/**
+ * Bloc DSL générique → clôture ```<mot-clé>, la syntaxe du parser ubumark.
+ */
+function convertFencedDsl(node: JSONContent, keyword: string): string {
+	const content = (node.attrs?.content as string | undefined) ?? '';
+	return `\`\`\`${keyword}\n${content}\n\`\`\``;
 }

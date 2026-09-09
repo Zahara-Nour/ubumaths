@@ -223,6 +223,12 @@ function convertBlock(block: BlockNode): JSONContent | null {
 				attrs: { content: (block as { source?: string }).source ?? '' }
 			};
 
+		case 'trig-circle':
+			return {
+				type: 'trigCircle',
+				attrs: { content: (block as { source?: string }).source ?? '' }
+			};
+
 		case 'probability-tree':
 			return convertProbabilityTree(block as ProbabilityTreeNode);
 
@@ -646,10 +652,12 @@ function convertProbabilityTree(node: ProbabilityTreeNode): JSONContent {
 		serializeBranches(node.root.branches, 0);
 	}
 
+	// Le TEXTE SOURCE prime sur cette re-sérialisation : elle reconstruit le bloc
+	// depuis la structure, donc perd tout ce que le parser n'a pas retenu. Elle
+	// reste le repli pour un nœud produit avant que la source soit conservée.
 	return {
-		type: 'codeBlock',
-		attrs: { language: 'probtree' },
-		content: [{ type: 'text', text: lines.join('\n') }]
+		type: 'probabilityTree',
+		attrs: { content: node.source ?? lines.join('\n') }
 	};
 }
 

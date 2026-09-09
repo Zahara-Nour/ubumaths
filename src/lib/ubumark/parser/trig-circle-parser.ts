@@ -788,8 +788,10 @@ export function parseTrigCircle(
 	startIndex: number,
 	endIndex: number
 ): TrigCircleParseResult {
-	// Extract content lines (skip ``` markers)
 	const contentLines = lines.slice(startIndex + 1, endIndex);
-
-	return parseTrigCircleContent(contentLines);
+	const result = parseTrigCircleContent(contentLines);
+	// Conserver le texte d'origine : c'est lui, et non la structure, que
+	// l'éditeur riche sait réafficher (cf. number-line-parser).
+	if (result.node) result.node.source = contentLines.join('\n');
+	return result;
 }

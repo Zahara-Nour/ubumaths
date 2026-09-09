@@ -536,10 +536,12 @@ export function parseProbabilityTree(
 	startIndex: number,
 	endIndex: number
 ): ProbTreeParseResult {
-	// Extract content lines (skip ``` markers)
 	const contentLines = lines.slice(startIndex + 1, endIndex);
-
-	return parseProbTreeContent(contentLines);
+	const result = parseProbTreeContent(contentLines);
+	// Conserver le texte d'origine : c'est lui, et non la structure, que
+	// l'éditeur riche sait réafficher (cf. number-line-parser).
+	if (result.node) result.node.source = contentLines.join('\n');
+	return result;
 }
 
 // ============================================================================
