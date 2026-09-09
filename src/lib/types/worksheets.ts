@@ -1030,3 +1030,25 @@ export function localizedText(
 	}
 	return base ?? null;
 }
+
+/**
+ * Une séance du cahier de texte qui cite une fiche PAR NUMÉRO d'exercice.
+ *
+ * Vit ici, et non dans `$lib/server/worksheets/citations`, parce que le panneau
+ * d'avertissement qui l'affiche est un composant : rien de ce qu'importe le
+ * client ne doit venir de `$lib/server`.
+ */
+export interface WorksheetCitation {
+	entryId: string;
+	classId: string;
+	className: string;
+	/** Date de la séance, `YYYY-MM-DD` — telle que la route du cahier l'attend. */
+	entryDate: string;
+	/**
+	 * Les sélections citées, déjà lisibles : `['ex. 3 et 5 à 7']`.
+	 *
+	 * Plusieurs quand la séance cite la fiche deux fois — en classe et en devoirs,
+	 * typiquement, avec des exercices différents.
+	 */
+	selections: string[];
+}

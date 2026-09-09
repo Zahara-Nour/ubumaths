@@ -51,6 +51,7 @@
 	import { worksheetLocale } from '$lib/types/worksheets';
 	import { DEFAULT_TEMPLATES } from '$lib/worksheets/default-templates';
 	import UntranslatedExercisesNotice from '$lib/components/worksheets/UntranslatedExercisesNotice.svelte';
+	import WorksheetCitationsNotice from '$lib/components/worksheets/WorksheetCitationsNotice.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -590,6 +591,8 @@
 						config={worksheet.config}
 						class="mb-4"
 					/>
+
+					<WorksheetCitationsNotice citations={data.citations} class="mb-4" />
 
 					<ExerciseList
 						worksheetId={worksheet.id}
