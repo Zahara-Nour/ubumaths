@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { redirect, error } from '@sveltejs/kit';
 import { z } from 'zod';
+import { fetchWorksheetCitations } from '$lib/server/worksheets/citations';
 
 // UUID validation schema
 const uuidSchema = z.string().uuid();
@@ -35,8 +36,17 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
 	const data = await response.json();
 
+	// Les séances qui citent cette fiche PAR NUMÉRO d'exercice.
+	//
+	// Chargé ici plutôt qu'ajouté à `/api/worksheets/[id]` : cet avertissement ne
+	// concerne que la page d'édition, et la réponse de l'API est partagée avec
+	// d'autres consommateurs — dont un schéma Zod qui laisserait tomber le champ
+	// en silence.
+	const citations = await fetchWorksheetCitations(locals.supabase, idValidation.data);
+
 	return {
 		worksheet: data.worksheet,
+		citations,
 		user
 	};
 };

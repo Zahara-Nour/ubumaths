@@ -37,6 +37,7 @@ import {
 } from '../../src/routes/api/teacher/curriculum/coverage/+server';
 
 import { reconcileAutoCoverage } from '$lib/server/curriculum-coverage';
+import { fetchWorksheetCitations } from '$lib/server/worksheets/citations';
 import {
 	createServiceRoleClient,
 	createAuthenticatedClient,
@@ -1063,5 +1064,171 @@ describe('Mixed sources', () => {
 		expect(cov.get(pq)).toBe('auto');
 		expect(cov.get(pe)).toBe('auto');
 		expect(cov.get(pm)).toBe('manual');
+	});
+});
+
+// ============================================================================
+// 3ter. Quelles séances citent une fiche PAR NUMÉRO
+// ============================================================================
+
+/**
+ * La contrepartie visible du choix « la référence porte des numéros ».
+ *
+ * Réordonner une fiche change ce que les séances qui la citent désignent. Le
+ * professeur ne peut l'accepter que s'il le voit AU MOMENT où il réorganise :
+ * ces tests vérifient que la liste affichée sur la page de la fiche est exacte,
+ * et surtout qu'elle ne signale QUE ce qui peut casser.
+ */
+describe('fetchWorksheetCitations', () => {
+	/** Une fiche vide. */
+	async function makeWorksheet(teacherId: string): Promise<string> {
+		const { data, error } = await service
+			.from('worksheets' as never)
+			.insert({
+				title: `Fiche ${crypto.randomUUID().slice(0, 8)}`,
+				type: 'worksheet',
+				status: 'published',
+				created_by: teacherId
+			} as never)
+			.select('id')
+			.single();
+		if (error) throw new Error(`fiche : ${error.message}`);
+		return (data as { id: string }).id;
+	}
+
+	/** Une séance dans une classe nommée, à une date donnée. */
+	async function makeEntry(
+		className: string,
+		entryDate: string,
+		contents: { lesson?: string; homework?: string }
+	): Promise<{ classId: string; entryId: string }> {
+		const klass = await TestData.class().withName(className).create();
+		const { data, error } = await service
+			.from('class_journal_entries' as never)
+			.insert({
+				class_id: klass.id,
+				entry_date: entryDate,
+				lesson_content: contents.lesson ?? null,
+				homework_content: contents.homework ?? null
+			} as never)
+			.select('id')
+			.single();
+		if (error) throw new Error(`séance : ${error.message}`);
+		return { classId: klass.id, entryId: (data as { id: string }).id };
+	}
+
+	it('liste la séance qui cite la fiche par numéro, avec sa classe et sa date', async () => {
+		expect.assertions(4);
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const fiche = await makeWorksheet(teacher.id);
+		const { classId } = await makeEntry('5ᵉ B', '2026-03-12', {
+			lesson: `<p>[[worksheet:${fiche}#3,5-7|Produit scalaire — ex. 3 et 5 à 7]]</p>`
+		});
+
+		const citations = await fetchWorksheetCitations(service, fiche);
+
+		expect(citations).toHaveLength(1);
+		expect(citations[0].classId).toBe(classId);
+		expect(citations[0].entryDate).toBe('2026-03-12');
+		// Le libellé est reconstruit depuis les NUMÉROS, pas recopié du texte :
+		// c'est ce qui rend la liste juste même si le libellé écrit était faux.
+		expect(citations[0].selections).toEqual(['ex. 3 et 5 à 7']);
+	});
+
+	it('ignore une fiche citée SANS sélection — rien ne peut y casser', async () => {
+		expect.assertions(1);
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const fiche = await makeWorksheet(teacher.id);
+		await makeEntry('5ᵉ B', '2026-03-12', {
+			lesson: `<p>[[worksheet:${fiche}|La fiche entière]]</p>`
+		});
+
+		expect(await fetchWorksheetCitations(service, fiche)).toEqual([]);
+	});
+
+	it('n’attribue pas à cette fiche les numéros d’une AUTRE citée dans la même séance', async () => {
+		expect.assertions(2);
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const [fiche, autre] = [await makeWorksheet(teacher.id), await makeWorksheet(teacher.id)];
+
+		// La séance cite les deux fiches : la présélection SQL la retient donc, et
+		// c'est le tri par identifiant qui doit faire le partage. Une séance ne
+		// citant QUE l'autre fiche ne prouverait rien — le SQL l'écarterait déjà.
+		await makeEntry('5ᵉ B', '2026-03-12', {
+			lesson: `<p>[[worksheet:${fiche}#2|Celle-ci]] et [[worksheet:${autre}#9|L'autre]]</p>`
+		});
+
+		const citations = await fetchWorksheetCitations(service, fiche);
+
+		expect(citations).toHaveLength(1);
+		expect(citations[0].selections).toEqual(['ex. 2']);
+	});
+
+	it('trouve une fiche citée UNIQUEMENT dans les devoirs', async () => {
+		expect.assertions(2);
+		// C'est le cas le plus fréquent — « pour jeudi, les exercices 4 à 6 » — et
+		// il dépend d'une présélection SQL qui interroge les DEUX colonnes. Une
+		// séance citant la fiche dans le cours ne le prouverait pas.
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const fiche = await makeWorksheet(teacher.id);
+		await makeEntry('5ᵉ B', '2026-03-12', {
+			lesson: '<p>Correction du contrôle.</p>',
+			homework: `<p>Pour jeudi : [[worksheet:${fiche}#4-6|Fiche — ex. 4 à 6]]</p>`
+		});
+
+		const citations = await fetchWorksheetCitations(service, fiche);
+
+		expect(citations).toHaveLength(1);
+		expect(citations[0].selections).toEqual(['ex. 4 à 6']);
+	});
+
+	it('réunit les deux citations d’une même séance — en classe ET en devoirs', async () => {
+		expect.assertions(2);
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const fiche = await makeWorksheet(teacher.id);
+		await makeEntry('5ᵉ B', '2026-03-12', {
+			lesson: `<p>[[worksheet:${fiche}#1|Fiche — ex. 1]]</p>`,
+			homework: `<p>[[worksheet:${fiche}#4-6|Fiche — ex. 4 à 6]]</p>`
+		});
+
+		const citations = await fetchWorksheetCitations(service, fiche);
+
+		// Une séance, une ligne : le professeur veut savoir QUELLES séances rompre,
+		// pas combien de fois chacune cite la fiche.
+		expect(citations).toHaveLength(1);
+		expect(citations[0].selections.sort()).toEqual(['ex. 1', 'ex. 4 à 6']);
+	});
+
+	it('trouve la fiche même si l’identifiant est écrit en MAJUSCULES', async () => {
+		expect.assertions(1);
+		// L'identifiant vient de l'URL, où un uuid peut s'écrire dans les deux
+		// casses, tandis que l'extracteur rend toujours des minuscules. Comparer
+		// sans normaliser rendrait une liste vide — un avertissement muet, la pire
+		// des pannes pour une garde.
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const fiche = await makeWorksheet(teacher.id);
+		await makeEntry('5ᵉ B', '2026-03-12', {
+			lesson: `<p>[[worksheet:${fiche}#2|Fiche — ex. 2]]</p>`
+		});
+
+		expect(await fetchWorksheetCitations(service, fiche.toUpperCase())).toHaveLength(1);
+	});
+
+	it('un identifiant mal formé ne descend JAMAIS jusqu’à la base', async () => {
+		expect.assertions(2);
+		// Le filtre PostgREST est construit par concaténation : une valeur portant
+		// une virgule en sortirait et ajouterait ses propres conditions — ici
+		// `id.not.is.null`, qui ferait remonter TOUTES les séances du cahier.
+		//
+		// L'assertion porte sur l'absence de requête, pas sur le résultat : le
+		// filtrage par identifiant qui suit masquerait l'injection dans la valeur
+		// de retour, et le test passerait sur du code cassé.
+		const spy = vi.spyOn(service, 'from');
+
+		const citations = await fetchWorksheetCitations(service, '%,id.not.is.null');
+
+		expect(spy).not.toHaveBeenCalled();
+		expect(citations).toEqual([]);
+		spy.mockRestore();
 	});
 });
