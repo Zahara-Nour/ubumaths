@@ -223,7 +223,19 @@ jobs:
         run: cp .github/ci.env .env
 
       - name: Install Playwright browsers
-        run: npx playwright install chromium --with-deps
+        run: |
+          # Le dépôt apt de Google Chrome est préinstallé sur les runners et ne
+          # nous sert à RIEN : Playwright télécharge Chromium lui-même, et ses
+          # dépendances système viennent des dépôts Ubuntu. Mais `--with-deps`
+          # déclenche un `apt-get update` qui le lit — et le 2026-09-09 son index
+          # était incohérent côté CDN Google (« Hash Sum mismatch »), ce qui a
+          # fait échouer tout le job, deux fois.
+          #
+          # On retire une source inutile plutôt que de dépendre de la santé d'un
+          # dépôt tiers à chaque exécution.
+          sudo rm -f /etc/apt/sources.list.d/google-chrome.list \
+            /etc/apt/sources.list.d/google-chrome.sources
+          npx playwright install chromium --with-deps
 
       # The real-Pyodide integration tests are excluded via vite.config.ts
       # (gated on CI=true), since the CLI --exclude flag does not propagate to
