@@ -294,7 +294,7 @@ describe('anti-rebond de la recherche', () => {
 		const search = createDebouncedSearch(250);
 
 		const frappes = ['in', 'int', 'inte', 'integ', 'integr', 'integra', 'integral'];
-		const promesses = frappes.map((q) => search(q, 8, null));
+		const promesses = frappes.map((q) => search(q, 8, null, null));
 		await vi.advanceTimersByTimeAsync(300);
 
 		expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -307,9 +307,9 @@ describe('anti-rebond de la recherche', () => {
 	it('deux recherches séparées par une pause coûtent deux requêtes', async () => {
 		const search = createDebouncedSearch(250);
 
-		void search('derivation', 8, null);
+		void search('derivation', 8, null, null);
 		await vi.advanceTimersByTimeAsync(300);
-		void search('scalaire', 8, null);
+		void search('scalaire', 8, null, null);
 		await vi.advanceTimersByTimeAsync(300);
 
 		expect(fetchMock).toHaveBeenCalledTimes(2);
@@ -320,7 +320,7 @@ describe('anti-rebond de la recherche', () => {
 		// Demander TOUS les types revient à n'en filtrer aucun ; l'omettre évite
 		// le plafond `p_kinds` de la fonction SQL.
 		const search = createDebouncedSearch(0);
-		void search('integral', 8, null);
+		void search('integral', 8, null, null);
 		await vi.advanceTimersByTimeAsync(10);
 
 		expect(urlsAppelees()[0]).not.toContain('kinds=');
@@ -329,7 +329,7 @@ describe('anti-rebond de la recherche', () => {
 
 	it('transmet le niveau de la classe quand il est connu', async () => {
 		const search = createDebouncedSearch(0);
-		void search('scalaire', 8, ['1_SPE']);
+		void search('scalaire', 8, ['1_SPE'], null);
 		await vi.advanceTimersByTimeAsync(10);
 
 		expect(urlsAppelees()[0]).toContain('grades=1_SPE');
@@ -338,17 +338,34 @@ describe('anti-rebond de la recherche', () => {
 	it('n’envoie aucun niveau quand le contexte ne le donne pas', async () => {
 		// Éditeur d'exercices, chat… : rien ne justifierait de filtrer là-bas.
 		const search = createDebouncedSearch(0);
-		void search('scalaire', 8, null);
+		void search('scalaire', 8, null, null);
 		await vi.advanceTimersByTimeAsync(10);
 
 		expect(urlsAppelees()[0]).not.toContain('grades=');
+	});
+
+	it('transmet le type quand un préfixe le précise', async () => {
+		const search = createDebouncedSearch(0);
+		void search('derivees', 8, null, 'worksheet');
+		await vi.advanceTimersByTimeAsync(10);
+
+		expect(urlsAppelees()[0]).toContain('kinds=worksheet');
+	});
+
+	it('n’envoie aucun type sans préfixe', async () => {
+		// Demander TOUS les types revient à n'en filtrer aucun.
+		const search = createDebouncedSearch(0);
+		void search('derivees', 8, null, null);
+		await vi.advanceTimersByTimeAsync(10);
+
+		expect(urlsAppelees()[0]).not.toContain('kinds=');
 	});
 
 	it('signale un échec au lieu de le faire passer pour une absence de résultat', async () => {
 		fetchMock.mockResolvedValue({ ok: false, status: 429, json: async () => ({}) });
 		const search = createDebouncedSearch(0);
 
-		const promesse = search('integral', 8, null);
+		const promesse = search('integral', 8, null, null);
 		await vi.advanceTimersByTimeAsync(10);
 
 		// `failed: true` est ce qui permet à la popup d'écrire « Recherche
@@ -360,7 +377,7 @@ describe('anti-rebond de la recherche', () => {
 		fetchMock.mockRejectedValue(new Error('offline'));
 		const search = createDebouncedSearch(0);
 
-		const promesse = search('integral', 8, null);
+		const promesse = search('integral', 8, null, null);
 		await vi.advanceTimersByTimeAsync(10);
 
 		await expect(promesse).resolves.toEqual({ items: [], failed: true });

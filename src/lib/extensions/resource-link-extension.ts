@@ -27,6 +27,7 @@ import Suggestion from '@tiptap/suggestion';
 import { PluginKey } from '@tiptap/pm/state';
 import { createSuggestionRenderer, type SuggestionItem } from '$lib/extensions/suggestion-renderer';
 import { isResourceKind, type ResourceKind } from '$lib/resources/kinds';
+import { parseResourceQuery, prefixHint } from '$lib/resources/prefixes';
 
 // ============================================================================
 // TYPES
@@ -88,7 +89,8 @@ interface SearchOutcome {
 async function searchResources(
 	query: string,
 	limit: number,
-	grades: string[] | null
+	grades: string[] | null,
+	kind: ResourceKind | null
 ): Promise<SearchOutcome> {
 	try {
 		// PAS de `kinds` : demander TOUS les types revient à n'en filtrer aucun, et
@@ -105,6 +107,10 @@ async function searchResources(
 		// Le niveau de la classe dont on écrit la séance. Absent partout ailleurs
 		// (éditeur d'exercices, chat…), où aucun contexte ne le justifierait.
 		if (grades && grades.length > 0) params.set('grades', grades.join(','));
+		// Un seul type quand le professeur l'a précisé par un préfixe. Sans
+		// préfixe, aucun `kinds` : demander tous les types revient à n'en filtrer
+		// aucun, et l'omettre garde le déploiement insensible à l'ordre.
+		if (kind) params.set('kinds', kind);
 		const response = await fetch(`/api/search?${params.toString()}`);
 		if (!response.ok) return { items: [], failed: true };
 
@@ -137,11 +143,16 @@ async function searchResources(
 export function createDebouncedSearch(delayMs: number) {
 	let timer: ReturnType<typeof setTimeout> | undefined;
 
-	return (query: string, limit: number, grades: string[] | null): Promise<SearchOutcome> =>
+	return (
+		query: string,
+		limit: number,
+		grades: string[] | null,
+		kind: ResourceKind | null
+	): Promise<SearchOutcome> =>
 		new Promise<SearchOutcome>((resolve) => {
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(() => {
-				searchResources(query, limit, grades).then(resolve);
+				searchResources(query, limit, grades, kind).then(resolve);
 			}, delayMs);
 		});
 }
@@ -260,11 +271,19 @@ export const ResourceLink = Extension.create<ResourceLinkOptions, ResourceLinkSt
 				startOfLine: false,
 
 				items: async ({ query }) => {
-					if (query.length < minQueryLength) {
+					// `exos:derivees#3` → type, texte, numéro. Le seuil porte sur le
+					// TEXTE : `exos:` seul ne doit pas déclencher de requête.
+					const parsed = parseResourceQuery(query);
+					if (parsed.text.length < minQueryLength) {
 						lastSearchFailed = false;
 						return [];
 					}
-					const outcome = await search(query, maxSuggestions, editor.storage.resourceLink.grades);
+					const outcome = await search(
+						parsed.text,
+						maxSuggestions,
+						editor.storage.resourceLink.grades,
+						parsed.kind
+					);
 					lastSearchFailed = outcome.failed;
 					return outcome.items;
 				},
@@ -282,8 +301,11 @@ export const ResourceLink = Extension.create<ResourceLinkOptions, ResourceLinkSt
 						// Trois raisons distinctes d'être vide, trois messages.
 						emptyText: (query) => {
 							if (lastSearchFailed) return 'Recherche indisponible — réessaie dans un instant';
-							if (query.length < minQueryLength) {
-								return `Tape au moins ${minQueryLength} lettres du titre ou de la fiche`;
+							const parsed = parseResourceQuery(query);
+							if (parsed.text.length < minQueryLength) {
+								return parsed.kind
+									? `Tape au moins ${minQueryLength} lettres du titre`
+									: `Tape au moins ${minQueryLength} lettres — ou un type : ${prefixHint()}`;
 							}
 							return 'Aucune ressource trouvée';
 						}
