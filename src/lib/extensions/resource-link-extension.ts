@@ -52,10 +52,14 @@ export interface SearchResult {
 /** French kind labels, for the popup's secondary line. */
 const KIND_LABELS: Record<ResourceKind, string> = {
 	exercise: 'Exercice',
-	question: 'Question',
-	assessment: 'Évaluation',
-	chapter: 'Chapitre',
+	worksheet: 'Fiche d’exercices',
 	worksheet_exercise: 'Exercice de fiche',
+	question: 'Question',
+	assessment: 'Série de questions',
+	chapter: 'Chapitre',
+	python_exercise: 'Exercice Python',
+	python_notebook: 'Notebook Python',
+	construction: 'Construction',
 	document: 'Document'
 };
 

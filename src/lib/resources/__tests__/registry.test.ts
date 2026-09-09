@@ -200,7 +200,9 @@ describe('isResourceKind', () => {
 	});
 
 	it('rejects anything else', () => {
-		expect(isResourceKind('worksheet')).toBe(false);
+		// `parody_evaluation` existe comme type TAGUABLE (`resource_tags`) mais
+		// n'est pas référençable : le bon exemple d'un type volontairement absent.
+		expect(isResourceKind('parody_evaluation')).toBe(false);
 		expect(isResourceKind('')).toBe(false);
 		expect(isResourceKind(null)).toBe(false);
 		expect(isResourceKind(42)).toBe(false);
@@ -229,7 +231,7 @@ describe('ubumark vocabulary stays in sync', () => {
 	});
 
 	it('leaves an unregistered kind as plain text', () => {
-		const ast = parseMarkdown(`[[worksheet:${SENTINEL.id}|Une fiche]]`);
+		const ast = parseMarkdown(`[[parody_evaluation:${SENTINEL.id}|Une parodie]]`);
 		const [block] = ast.children;
 
 		expect(block.type).toBe('paragraph');

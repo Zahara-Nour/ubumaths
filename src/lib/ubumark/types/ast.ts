@@ -164,7 +164,11 @@ export type InternalLinkReferenceType =
 	| 'exercise'
 	| 'assessment'
 	| 'question'
-	| 'worksheet_exercise';
+	| 'worksheet'
+	| 'worksheet_exercise'
+	| 'python_exercise'
+	| 'python_notebook'
+	| 'construction';
 
 /**
  * Internal link node - references internal resources

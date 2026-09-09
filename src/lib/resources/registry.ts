@@ -32,9 +32,12 @@ import {
 	BookOpen,
 	ClipboardCheck,
 	ClipboardList,
+	Compass,
 	FileText,
 	HelpCircle,
-	PencilRuler
+	NotebookPen,
+	PencilRuler,
+	Terminal
 } from '@lucide/svelte';
 import type { LucideIcon } from '@lucide/svelte';
 import { lore } from '$lib/config/lore';
@@ -188,6 +191,52 @@ export const RESOURCE_REGISTRY: Record<ResourceKind, ResourceKindDefinition> = {
 			student: (id) =>
 				resolve('/(protected)/dashboard/student/cours/[chapterId]', { chapterId: id }),
 			admin: null,
+			public: null
+		}
+	},
+	worksheet: {
+		label: 'Fiche d’exercices',
+		icon: FileText,
+		routes: {
+			teacher: (id) => resolve('/(protected)/dashboard/teacher/contenu/worksheets/[id]', { id }),
+			// L'élève n'atteint pas une fiche mais la DISTRIBUTION qui le concerne :
+			// cette route fait la traduction et redirige.
+			student: (id) => resolve('/(protected)/dashboard/student/worksheets/fiche/[id]', { id }),
+			admin: null,
+			public: null
+		}
+	},
+	python_exercise: {
+		label: 'Exercice Python',
+		icon: Terminal,
+		routes: {
+			// La page vit dans le groupe (public) : elle est donc atteignable par
+			// tous les rôles, la RLS décidant du contenu.
+			teacher: (id) => resolve('/(public)/python-exercises/[id]', { id }),
+			student: (id) => resolve('/(public)/python-exercises/[id]', { id }),
+			admin: (id) => resolve('/(public)/python-exercises/[id]', { id }),
+			public: (id) => resolve('/(public)/python-exercises/[id]', { id })
+		}
+	},
+	python_notebook: {
+		label: 'Notebook Python',
+		icon: NotebookPen,
+		routes: {
+			// Sous (protected) mais hors /dashboard : accessible aux trois rôles
+			// connectés, jamais à un visiteur.
+			teacher: (id) => resolve('/(protected)/python-notebook/[id]', { id }),
+			student: (id) => resolve('/(protected)/python-notebook/[id]', { id }),
+			admin: (id) => resolve('/(protected)/python-notebook/[id]', { id }),
+			public: null
+		}
+	},
+	construction: {
+		label: 'Construction',
+		icon: Compass,
+		routes: {
+			teacher: (id) => resolve('/(protected)/constructions/[id]', { id }),
+			student: (id) => resolve('/(protected)/constructions/[id]', { id }),
+			admin: (id) => resolve('/(protected)/constructions/[id]', { id }),
 			public: null
 		}
 	},

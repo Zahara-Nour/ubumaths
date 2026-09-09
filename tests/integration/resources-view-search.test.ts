@@ -363,7 +363,17 @@ describe('vue resources + recherche globale', () => {
 		// il ne valide pas un vocabulaire.
 		const { data, error } = await teacher.rpc('search_resources', {
 			p_query: 'algebre',
-			p_kinds: ['exercise', 'question', 'assessment', 'chapter', 'document', 'worksheet_exercise']
+			p_kinds: [
+				'exercise',
+				'worksheet',
+				'question',
+				'assessment',
+				'chapter',
+				'python_exercise',
+				'python_notebook',
+				'construction',
+				'document'
+			]
 		});
 
 		expect(error).toBeNull();
@@ -389,65 +399,69 @@ describe('vue resources + recherche globale', () => {
 	});
 
 	// ========================================================================
-	// Exercice de fiche (migration 20260908190000)
+	// Les types du catalogue (migrations 20260908190000 → 20260909020000)
 	// ========================================================================
 
-	it("expose l'exercice DANS une fiche, avec la fiche en sous-titre", async () => {
+	it('expose LA FICHE elle-même, cherchable par son titre', async () => {
 		const { data, error } = await teacher
 			.from('resources')
-			.select('kind, id, title, subtitle')
-			.eq('id', WS_EXERCISE)
+			.select('kind, id, title')
+			.eq('id', WORKSHEET)
 			.maybeSingle();
 
 		expect(error).toBeNull();
-		expect(data?.kind).toBe('worksheet_exercise');
-		// L'identifiant est celui de la JONCTION, pas celui de l'exercice : c'est ce
-		// qui permet de retrouver ensuite la fiche à ouvrir.
-		expect(data?.id).toBe(WS_EXERCISE);
-		expect(data?.id).not.toBe(EX_PUBLIC);
-		expect(data?.title).toBe('Algèbre — révisions publiques');
-		expect(data?.subtitle).toBe(`Fiche : ${WORKSHEET_TITLE}`);
+		expect(data?.kind).toBe('worksheet');
+		expect(data?.title).toBe(WORKSHEET_TITLE);
 	});
 
-	it('se retrouve en cherchant le NOM DE LA FICHE', async () => {
-		// C'est le geste visé : « les exercices de la fiche Dérivées ». Il ne
-		// fonctionne que parce que le titre de la fiche est le sous-titre de la
-		// ligne, et que la recherche compare titre ET sous-titre.
+	it('n’inonde PLUS le catalogue avec les exercices de fiches', async () => {
+		// 127 exercices de fiches en production contre 12 fiches : les lister
+		// noyait tout le reste. On cherche la fiche, puis on désigne l'exercice
+		// par son numéro. Le type reste valide comme RÉFÉRENCE — il n'est
+		// simplement plus un résultat de recherche.
+		const { data, error } = await teacher
+			.from('resources')
+			.select('id')
+			.eq('kind', 'worksheet_exercise');
+
+		expect(error).toBeNull();
+		expect(data).toEqual([]);
+	});
+
+	it('trouve la fiche en cherchant son titre', async () => {
 		const { data, error } = await teacher.rpc('search_resources', {
 			p_query: 'derivees',
-			p_kinds: ['worksheet_exercise']
+			p_kinds: ['worksheet']
 		});
 
 		expect(error).toBeNull();
-		expect((data ?? []).map((r: { id: string }) => r.id)).toContain(WS_EXERCISE);
+		expect((data ?? []).map((r: { id: string }) => r.id)).toContain(WORKSHEET);
 	});
 
-	it('porte le niveau de LA FICHE, pas celui de l’exercice', async () => {
-		// Décision produit : c'est la fiche qu'on distribue à une classe, donc
-		// c'est son niveau qui situe ses exercices. L'exercice sous-jacent
-		// EX_PUBLIC est en 6ᵉ ; la fiche, elle, est en 1ʳᵉ spé.
+	it("n'expose PAS la fiche à un élève à qui elle n'a pas été distribuée", async () => {
+		// La branche lit `worksheets` sous l'identité de l'appelant, dont la RLS
+		// exige un `student_has_worksheet_access`. Sans `security_invoker`, ce
+		// test tombe.
+		const { data, error } = await student.from('resources').select('id').eq('id', WORKSHEET);
+
+		expect(error).toBeNull();
+		expect(data).toEqual([]);
+	});
+
+	it('filtre la fiche par le niveau de LA FICHE', async () => {
 		const { error: gradeError } = await service
 			.from('worksheets')
 			.update({ grades: ['1_SPE'] })
 			.eq('id', WORKSHEET);
 		expect(gradeError).toBeNull();
 
-		const { data, error } = await teacher
-			.from('resources')
-			.select('grades')
-			.eq('id', WS_EXERCISE)
-			.maybeSingle();
+		const { data, error } = await teacher.rpc('search_resources', {
+			p_query: 'derivees',
+			p_grades: ['6']
+		});
 
 		expect(error).toBeNull();
-		expect(data?.grades).toEqual(['1_SPE']);
-
-		// L'exercice autonome, lui, garde son propre niveau.
-		const { data: exo } = await teacher
-			.from('resources')
-			.select('grades')
-			.eq('id', EX_PUBLIC)
-			.maybeSingle();
-		expect(exo?.grades).toEqual(['6']);
+		expect((data ?? []).map((r: { id: string }) => r.id)).not.toContain(WORKSHEET);
 	});
 
 	it('filtre par niveau : la 6ᵉ ne remonte pas dans une recherche de 1ʳᵉ spé', async () => {
@@ -492,7 +506,7 @@ describe('vue resources + recherche globale', () => {
 		expect((data ?? []).map((r: { id: string }) => r.id)).toContain(EX_PUBLIC);
 	});
 
-	it("n'expose PAS l'exercice de fiche à un élève à qui la fiche n'a pas été distribuée", async () => {
+	it("n'expose pas non plus l'exercice sous-jacent d'une fiche non distribuée", async () => {
 		// Même démonstration que pour la vue entière : la branche lit
 		// `worksheets` sous l'identité de l'appelant, dont la RLS exige un
 		// `student_has_worksheet_access`. Sans `security_invoker`, ce test tombe.
