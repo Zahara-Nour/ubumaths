@@ -19,6 +19,8 @@ import { describe, it, expect } from 'vitest';
 import { tipTapToMarkdown } from '../markdown-export';
 import { markdownToTipTap } from '../markdown-import';
 import { NUMBER_LINE_TEMPLATE } from '$lib/extensions/number-line-extension';
+import { PROBABILITY_TREE_TEMPLATE } from '$lib/extensions/probability-tree-extension';
+import { TRIG_CIRCLE_TEMPLATE } from '$lib/extensions/trig-circle-extension';
 
 const UUID = '3f2a1b4c-5d6e-4f7a-8b9c-0d1e2f3a4b5c';
 
@@ -167,5 +169,77 @@ describe('nœuds sans conversion, trouvés à l’audit de l’export', () => {
 		const retour = markdownToTipTap('- [ ] Une tâche\n- Un point ordinaire');
 
 		expect(retour.content?.[0]?.type).toBe('bulletList');
+	});
+});
+
+// ============================================================================
+// ARBRE DE PROBABILITÉ ET CERCLE TRIGONOMÉTRIQUE
+// ============================================================================
+
+/**
+ * Les deux étaient RENDUS depuis toujours dans l'affichage markdown, mais
+ * aucune extension TipTap ne permettait d'en insérer : il fallait écrire le
+ * bloc à la main dans la vue markdown. Ces tests fixent l'aller-retour des
+ * nouveaux nœuds.
+ */
+describe('nouveaux blocs DSL', () => {
+	const doc = (content: unknown[]) => ({ type: 'doc', content }) as never;
+
+	it('un arbre de probabilité survit à l’aller-retour', () => {
+		const source = doc([
+			{ type: 'probabilityTree', attrs: { content: PROBABILITY_TREE_TEMPLATE } }
+		]);
+
+		const retour = markdownToTipTap(tipTapToMarkdown(source));
+
+		expect(retour.content?.[0]).toEqual({
+			type: 'probabilityTree',
+			attrs: { content: PROBABILITY_TREE_TEMPLATE }
+		});
+	});
+
+	it('un cercle trigonométrique survit à l’aller-retour', () => {
+		const source = doc([{ type: 'trigCircle', attrs: { content: TRIG_CIRCLE_TEMPLATE } }]);
+
+		const retour = markdownToTipTap(tipTapToMarkdown(source));
+
+		expect(retour.content?.[0]).toEqual({
+			type: 'trigCircle',
+			attrs: { content: TRIG_CIRCLE_TEMPLATE }
+		});
+	});
+
+	it('passent par les syntaxes ```probtree et ```trig', () => {
+		expect(
+			tipTapToMarkdown(doc([{ type: 'probabilityTree', attrs: { content: 'root: A' } }]))
+		).toBe('```probtree\nroot: A\n```');
+		expect(
+			tipTapToMarkdown(doc([{ type: 'trigCircle', attrs: { content: 'preset: quarters' } }]))
+		).toBe('```trig\npreset: quarters\n```');
+	});
+
+	it('l’arbre garde son TEXTE source, pas une re-sérialisation', () => {
+		// L'import reconstruisait le bloc depuis la structure analysée, ce qui perd
+		// tout ce que le parser n'a pas retenu. La source est fidèle.
+		const source = 'root: Urne\n\nRouge:1/2\nBleue:1/2';
+
+		const retour = markdownToTipTap(`\`\`\`probtree\n${source}\n\`\`\``);
+
+		expect(retour.content?.[0]?.attrs?.content).toBe(source);
+	});
+
+	it('les gabarits par défaut sont VALIDES', () => {
+		// Un gabarit invalide afficherait une boîte d'erreur dès l'insertion.
+		const arbre = markdownToTipTap(
+			tipTapToMarkdown(
+				doc([{ type: 'probabilityTree', attrs: { content: PROBABILITY_TREE_TEMPLATE } }])
+			)
+		);
+		const cercle = markdownToTipTap(
+			tipTapToMarkdown(doc([{ type: 'trigCircle', attrs: { content: TRIG_CIRCLE_TEMPLATE } }]))
+		);
+
+		expect(arbre.content?.[0]?.type).toBe('probabilityTree');
+		expect(cercle.content?.[0]?.type).toBe('trigCircle');
 	});
 });

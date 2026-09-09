@@ -67,6 +67,8 @@
 		ImageIcon,
 		FileCode,
 		TrendingUp,
+		GitBranch,
+		CircleDot,
 		Ruler,
 		Table2,
 		Grid3x3
@@ -939,6 +941,21 @@
 	 * complet, mais aucun bouton n'appelait `insertNumberLine` : la
 	 * fonctionnalité était inatteignable depuis l'éditeur.
 	 */
+	/**
+	 * Arbre de probabilité et cercle trigonométrique.
+	 *
+	 * Les deux étaient rendus depuis toujours dans l'affichage markdown, mais
+	 * aucune extension TipTap ne permettait d'en insérer : il fallait écrire le
+	 * bloc ```probtree / ```trig à la main dans la vue markdown.
+	 */
+	function insertProbabilityTree() {
+		(editor?.commands as unknown as Record<string, () => boolean>).insertProbabilityTree?.();
+	}
+
+	function insertTrigCircle() {
+		(editor?.commands as unknown as Record<string, () => boolean>).insertTrigCircle?.();
+	}
+
 	function insertNumberLine() {
 		if (disabled) return;
 		(editor?.commands as unknown as Record<string, () => boolean>).insertNumberLine?.();
@@ -1678,6 +1695,32 @@
 						aria-label="Insérer un tableau de variation"
 					>
 						<TrendingUp class="h-4 w-4" />
+					</Button>
+
+					<!-- Probability Tree Button -->
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={insertProbabilityTree}
+						{disabled}
+						title="Insérer un arbre de probabilité"
+						aria-label="Insérer un arbre de probabilité"
+					>
+						<GitBranch class="h-4 w-4" />
+					</Button>
+
+					<!-- Trig Circle Button -->
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={insertTrigCircle}
+						{disabled}
+						title="Insérer un cercle trigonométrique"
+						aria-label="Insérer un cercle trigonométrique"
+					>
+						<CircleDot class="h-4 w-4" />
 					</Button>
 				</div>
 			{/if}

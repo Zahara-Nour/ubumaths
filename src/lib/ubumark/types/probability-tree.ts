@@ -168,6 +168,14 @@ export interface ProbabilityTreeNode extends BaseNode {
 	maxDepth: number;
 	/** Total number of leaf nodes */
 	leafCount: number;
+	/**
+	 * Texte source du bloc, sans les délimiteurs.
+	 *
+	 * Le nœud est STRUCTURÉ, mais l'éditeur riche stocke le bloc sous forme de
+	 * texte : sans cette source, l'aller-retour markdown ne peut pas le
+	 * reconstruire. Même raison que pour la droite graduée.
+	 */
+	source?: string;
 }
 
 // ============================================================================
