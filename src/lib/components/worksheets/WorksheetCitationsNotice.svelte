@@ -10,20 +10,26 @@
 	 * Affiché à côté de la LISTE D'EXERCICES, là où on réordonne : un
 	 * avertissement placé ailleurs ne serait pas lu au moment qui compte.
 	 *
+	 * TROIS états, pas deux. « Aucune séance ne cite cette fiche » et « je n'ai
+	 * pas pu lire le cahier » rendaient le même écran vide, donc le même silence
+	 * rassurant — au moment précis où il ne faut pas rassurer à tort.
+	 *
 	 * @example
-	 * <WorksheetCitationsNotice citations={data.citations} />
+	 * <WorksheetCitationsNotice report={data.citations} />
 	 */
 
 	import { resolve } from '$app/paths';
-	import type { WorksheetCitation } from '$lib/types/worksheets';
+	import type { WorksheetCitationsReport } from '$lib/types/worksheets';
 
 	let {
-		citations = [],
+		report,
 		class: className = ''
 	}: {
-		citations?: WorksheetCitation[];
+		report: WorksheetCitationsReport;
 		class?: string;
 	} = $props();
+
+	const citations = $derived(report.citations);
 
 	/**
 	 * `2026-09-12` → `jeu. 12 sept.`
@@ -44,7 +50,14 @@
 	}
 </script>
 
-{#if citations.length > 0}
+{#if !report.verifie}
+	<div
+		class="rounded-md border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground {className}"
+	>
+		Impossible de vérifier quelles séances citent cette fiche par numéro d'exercice. Réordonner les
+		exercices peut changer ce que le cahier de texte désigne.
+	</div>
+{:else if citations.length > 0}
 	<div class="rounded-md border border-amber-500/50 bg-amber-500/10 px-4 py-3 text-sm {className}">
 		<p class="font-medium text-foreground">
 			{citations.length}

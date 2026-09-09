@@ -21,8 +21,12 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		throw error(400, 'ID de feuille invalide');
 	}
 
-	// Fetch worksheet details from API
-	const response = await fetch(`/api/worksheets/${params.id}`);
+	// Les deux lectures sont indépendantes : les enchaîner faisait payer un
+	// aller-retour de plus à chaque ouverture de fiche.
+	const [response, citations] = await Promise.all([
+		fetch(`/api/worksheets/${params.id}`),
+		fetchWorksheetCitations(locals.supabase, idValidation.data)
+	]);
 
 	if (!response.ok) {
 		if (response.status === 404) {
@@ -36,16 +40,14 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
 	const data = await response.json();
 
-	// Les séances qui citent cette fiche PAR NUMÉRO d'exercice.
-	//
-	// Chargé ici plutôt qu'ajouté à `/api/worksheets/[id]` : cet avertissement ne
-	// concerne que la page d'édition, et la réponse de l'API est partagée avec
-	// d'autres consommateurs — dont un schéma Zod qui laisserait tomber le champ
-	// en silence.
-	const citations = await fetchWorksheetCitations(locals.supabase, idValidation.data);
-
 	return {
 		worksheet: data.worksheet,
+		// Les séances qui citent cette fiche PAR NUMÉRO d'exercice.
+		//
+		// Chargé ici plutôt qu'ajouté à `/api/worksheets/[id]` : cet avertissement
+		// ne concerne que la page d'édition, et la réponse de l'API est partagée
+		// avec d'autres consommateurs — dont un schéma Zod qui laisserait tomber le
+		// champ en silence.
 		citations,
 		user
 	};
