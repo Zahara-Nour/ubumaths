@@ -21,6 +21,13 @@ export interface SuggestionItem {
 	label: string;
 	/** Optional secondary text (e.g., display name for mentions) */
 	description?: string;
+	/**
+	 * En-tête de regroupement, affichée au-dessus du premier élément qui la
+	 * porte. Sert au sélecteur de ressources : sans elle, 128 exercices noient
+	 * les 12 fiches. Les éléments doivent arriver DÉJÀ groupés — la popup ne
+	 * réordonne rien, elle ne fait qu'insérer les titres.
+	 */
+	group?: string;
 }
 
 /**
@@ -135,8 +142,18 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 			return;
 		}
 
-		// Render each item
+		// Render each item, en insérant un titre quand le groupe change.
+		let currentGroup: string | undefined;
 		state.items.forEach((item, index) => {
+			if (item.group && item.group !== currentGroup) {
+				currentGroup = item.group;
+				const heading = document.createElement('div');
+				heading.classList.add('suggestion-group');
+				heading.setAttribute('role', 'presentation');
+				heading.textContent = item.group;
+				currentPopup.appendChild(heading);
+			}
+
 			const itemEl = document.createElement('button');
 			itemEl.classList.add(itemClass);
 			itemEl.setAttribute('role', 'option');

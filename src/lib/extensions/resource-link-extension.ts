@@ -26,7 +26,8 @@ import { Extension } from '@tiptap/core';
 import Suggestion from '@tiptap/suggestion';
 import { PluginKey } from '@tiptap/pm/state';
 import { createSuggestionRenderer, type SuggestionItem } from '$lib/extensions/suggestion-renderer';
-import { isResourceKind, type ResourceKind } from '$lib/resources/kinds';
+import { RESOURCE_KINDS, isResourceKind, type ResourceKind } from '$lib/resources/kinds';
+import { parseResourceQuery, prefixHint } from '$lib/resources/prefixes';
 
 // ============================================================================
 // TYPES
@@ -88,7 +89,8 @@ interface SearchOutcome {
 async function searchResources(
 	query: string,
 	limit: number,
-	grades: string[] | null
+	grades: string[] | null,
+	kind: ResourceKind | null
 ): Promise<SearchOutcome> {
 	try {
 		// PAS de `kinds` : demander TOUS les types revient à n'en filtrer aucun, et
@@ -105,16 +107,17 @@ async function searchResources(
 		// Le niveau de la classe dont on écrit la séance. Absent partout ailleurs
 		// (éditeur d'exercices, chat…), où aucun contexte ne le justifierait.
 		if (grades && grades.length > 0) params.set('grades', grades.join(','));
+		// Un seul type quand le professeur l'a précisé par un préfixe. Sans
+		// préfixe, aucun `kinds` : demander tous les types revient à n'en filtrer
+		// aucun, et l'omettre garde le déploiement insensible à l'ordre.
+		if (kind) params.set('kinds', kind);
 		const response = await fetch(`/api/search?${params.toString()}`);
 		if (!response.ok) return { items: [], failed: true };
 
 		const payload: unknown = await response.json();
 		const results = (payload as { results?: SearchResult[] }).results ?? [];
 
-		return {
-			items: results.filter((row) => isResourceKind(row.kind)).map(toSuggestionItem),
-			failed: false
-		};
+		return { items: groupByKind(results.filter((row) => isResourceKind(row.kind))), failed: false };
 	} catch {
 		return { items: [], failed: true };
 	}
@@ -137,11 +140,16 @@ async function searchResources(
 export function createDebouncedSearch(delayMs: number) {
 	let timer: ReturnType<typeof setTimeout> | undefined;
 
-	return (query: string, limit: number, grades: string[] | null): Promise<SearchOutcome> =>
+	return (
+		query: string,
+		limit: number,
+		grades: string[] | null,
+		kind: ResourceKind | null
+	): Promise<SearchOutcome> =>
 		new Promise<SearchOutcome>((resolve) => {
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(() => {
-				searchResources(query, limit, grades).then(resolve);
+				searchResources(query, limit, grades, kind).then(resolve);
 			}, delayMs);
 		});
 }
@@ -163,6 +171,34 @@ export function toSuggestionItem(row: SearchResult): SuggestionItem {
 		label: sanitiseLabel(row.title),
 		description: row.subtitle ? `${KIND_LABELS[kind]} · ${row.subtitle}` : KIND_LABELS[kind]
 	};
+}
+
+/**
+ * Regroupe les résultats par type, dans l'ordre du vocabulaire.
+ *
+ * C'est ce qui rend le préfixe FACULTATIF plutôt qu'obligatoire : la popup
+ * répond déjà à « lequel de ces résultats est une fiche ? » sans rien exiger de
+ * celui qui tape. Sans regroupement, 128 exercices noient les 12 fiches.
+ *
+ * L'ordre à l'intérieur d'un type est celui de la recherche — pertinence, puis
+ * date de modification — qu'on ne réordonne pas.
+ */
+function groupByKind(rows: SearchResult[]): SuggestionItem[] {
+	const byKind = new Map<ResourceKind, SearchResult[]>();
+	for (const row of rows) {
+		const kind = row.kind as ResourceKind;
+		const bucket = byKind.get(kind);
+		if (bucket) bucket.push(row);
+		else byKind.set(kind, [row]);
+	}
+
+	const items: SuggestionItem[] = [];
+	for (const kind of RESOURCE_KINDS) {
+		for (const row of byKind.get(kind) ?? []) {
+			items.push({ ...toSuggestionItem(row), group: KIND_LABELS[kind] });
+		}
+	}
+	return items;
 }
 
 function sanitiseLabel(raw: string): string {
@@ -260,11 +296,19 @@ export const ResourceLink = Extension.create<ResourceLinkOptions, ResourceLinkSt
 				startOfLine: false,
 
 				items: async ({ query }) => {
-					if (query.length < minQueryLength) {
+					// `exos:derivees#3` → type, texte, numéro. Le seuil porte sur le
+					// TEXTE : `exos:` seul ne doit pas déclencher de requête.
+					const parsed = parseResourceQuery(query);
+					if (parsed.text.length < minQueryLength) {
 						lastSearchFailed = false;
 						return [];
 					}
-					const outcome = await search(query, maxSuggestions, editor.storage.resourceLink.grades);
+					const outcome = await search(
+						parsed.text,
+						maxSuggestions,
+						editor.storage.resourceLink.grades,
+						parsed.kind
+					);
 					lastSearchFailed = outcome.failed;
 					return outcome.items;
 				},
@@ -282,8 +326,11 @@ export const ResourceLink = Extension.create<ResourceLinkOptions, ResourceLinkSt
 						// Trois raisons distinctes d'être vide, trois messages.
 						emptyText: (query) => {
 							if (lastSearchFailed) return 'Recherche indisponible — réessaie dans un instant';
-							if (query.length < minQueryLength) {
-								return `Tape au moins ${minQueryLength} lettres du titre ou de la fiche`;
+							const parsed = parseResourceQuery(query);
+							if (parsed.text.length < minQueryLength) {
+								return parsed.kind
+									? `Tape au moins ${minQueryLength} lettres du titre`
+									: `Tape au moins ${minQueryLength} lettres — ou un type : ${prefixHint()}`;
 							}
 							return 'Aucune ressource trouvée';
 						}
