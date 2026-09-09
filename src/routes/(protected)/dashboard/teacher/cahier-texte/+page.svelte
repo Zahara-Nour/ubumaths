@@ -37,7 +37,7 @@
 	let classItems = $derived(
 		data.classes.map((c) => ({
 			value: c.id,
-			label: `${c.name}${!c.is_active ? ' (inactive)' : ''}`
+			label: c.name
 		}))
 	);
 
