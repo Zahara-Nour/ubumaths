@@ -494,5 +494,9 @@ export function parseNumberLine(
 	endIndex: number
 ): NumberLineParseResult {
 	const contentLines = lines.slice(startIndex + 1, endIndex);
-	return parseNumberLineContent(contentLines);
+	const result = parseNumberLineContent(contentLines);
+	// Conserver le texte d'origine : c'est lui, et non la structure, que
+	// l'éditeur riche sait réafficher.
+	if (result.node) result.node.source = contentLines.join('\n');
+	return result;
 }
