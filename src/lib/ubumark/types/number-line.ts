@@ -165,6 +165,14 @@ export interface NumberLineNode extends BaseNode {
 	points: NumberLinePoint[];
 	/** Segments (intervals) on the line */
 	segments: NumberLineSegment[];
+	/**
+	 * Texte source du bloc ```line, sans les délimiteurs.
+	 *
+	 * Le nœud est STRUCTURÉ, mais l'éditeur riche, lui, stocke la droite sous
+	 * forme de texte. Sans cette source, l'aller-retour markdown ne pouvait pas
+	 * la reconstruire : elle disparaissait purement et simplement.
+	 */
+	source?: string;
 }
 
 // ============================================================================

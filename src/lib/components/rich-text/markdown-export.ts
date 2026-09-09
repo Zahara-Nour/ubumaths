@@ -78,6 +78,16 @@ function convertBlockToMarkdown(block: JSONContent, indentLevel = 0): string | n
 		case 'table':
 			return convertTableToMarkdown(block);
 
+		// Droite graduée et liste de tâches : sans ces deux cas, elles tombaient
+		// dans le `default: return null` et étaient DÉTRUITES par un simple
+		// aller-retour vers la vue markdown. Les deux sont pourtant insérables
+		// depuis la barre d'outils.
+		case 'numberLine':
+			return convertNumberLine(block);
+
+		case 'taskList':
+			return convertTaskList(block);
+
 		case 'variationTable':
 			return convertVariationTableToMarkdown(block);
 
@@ -780,4 +790,30 @@ function convertMathInlineToMarkdown(node: JSONContent): string {
 	} else {
 		return `$${expression}$`;
 	}
+}
+
+/**
+ * Droite graduée → bloc ```line, la syntaxe que le parser ubumark attend.
+ */
+function convertNumberLine(node: JSONContent): string {
+	const content = (node.attrs?.content as string | undefined) ?? '';
+	return `\`\`\`line\n${content}\n\`\`\``;
+}
+
+/**
+ * Liste de tâches → cases à cocher markdown.
+ *
+ * `- [ ]` / `- [x]` est la forme universelle ; l'import la reconnaît et
+ * reconstruit les cases, état compris.
+ */
+function convertTaskList(node: JSONContent): string {
+	const items = (node.content ?? []).map((item) => {
+		const coche = item.attrs?.checked ? 'x' : ' ';
+		const texte = (item.content ?? [])
+			.map((child) => convertBlockToMarkdown(child) ?? '')
+			.join('\n')
+			.trim();
+		return `- [${coche}] ${texte}`;
+	});
+	return items.join('\n');
 }
