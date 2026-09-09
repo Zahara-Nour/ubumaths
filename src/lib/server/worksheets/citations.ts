@@ -15,6 +15,12 @@
  * Une fiche citée SANS sélection est ignorée ici : elle ne désigne aucun
  * exercice en particulier, donc rien ne peut la casser.
  *
+ * PÉRIMÈTRE : l'ÉCOLE DE LA FICHE. Le professeur unique enseigne dans plusieurs
+ * écoles ; une fiche appartient à l'une d'elles, et l'avertissement ne montre
+ * que les séances des classes de cette école-là. L'école est la frontière
+ * sociale de l'application, et un panneau qui nommerait la classe et la date
+ * d'une séance de l'autre école la franchirait — pour un simple avertissement.
+ *
  * @module server/worksheets/citations
  */
 
@@ -76,9 +82,32 @@ export async function fetchWorksheetCitations(
 	// syntaxe finiraient par diverger.
 	const motif = `%worksheet:${cible}#%`;
 
+	// L'école de la fiche fixe le périmètre. Résolue ici plutôt que reçue de
+	// l'appelant : la page charge la fiche par l'API, en parallèle de cet appel,
+	// et attendre sa réponse rendrait les deux lectures séquentielles.
+	const { data: fiche, error: ficheError } = await supabase
+		.from('worksheets')
+		.select('school_id')
+		.eq('id', cible)
+		.maybeSingle();
+
+	if (ficheError) {
+		console.error('[worksheet-citations] fiche illisible:', ficheError);
+		return { citations: [], verifie: false };
+	}
+
+	// Fiche introuvable, ou rattachée à aucune école : le périmètre n'a pas de
+	// sens, et on ne le remplace pas par « toutes les écoles ». Dire qu'on n'a
+	// pas pu vérifier est la seule réponse honnête — se taire laisserait croire
+	// que personne ne cite la fiche.
+	if (!fiche?.school_id) return { citations: [], verifie: false };
+
 	const { data, error } = await supabase
 		.from('class_journal_entries')
-		.select('id, class_id, entry_date, lesson_content, homework_content, classes(name)')
+		.select(
+			'id, class_id, entry_date, lesson_content, homework_content, classes!inner(name, school_id)'
+		)
+		.eq('classes.school_id', fiche.school_id)
 		.or(`lesson_content.ilike.${motif},homework_content.ilike.${motif}`)
 		.order('entry_date', { ascending: false })
 		.limit(MAX_CITATIONS);
@@ -108,7 +137,7 @@ export async function fetchWorksheetCitations(
 		citations.push({
 			entryId: entry.id,
 			classId: entry.class_id,
-			className: entry.classes?.name ?? 'Classe inconnue',
+			className: entry.classes.name,
 			entryDate: entry.entry_date,
 			selections
 		});
