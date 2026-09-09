@@ -81,8 +81,22 @@ const KIND_LABELS: Record<ResourceKind, string> = {
  * ressource trouvée » alors que la requête n'avait jamais abouti — un message
  * faux, et impossible à diagnostiquer depuis l'éditeur.
  */
+/**
+ * Une suggestion et la ligne dont elle vient.
+ *
+ * La ligne est conservée parce que `SuggestionItem` ne porte que du texte
+ * d'affichage : convertir « la fiche X » en « exercice 3 de la fiche X » exige
+ * de retrouver le type et l'identifiant. Attachée à l'élément, et non dans un
+ * tableau parallèle — `groupByKind` réordonne, donc des index alignés seraient
+ * un piège silencieux.
+ */
+interface SearchEntry {
+	item: SuggestionItem;
+	row: SearchResult;
+}
+
 interface SearchOutcome {
-	items: SuggestionItem[];
+	entries: SearchEntry[];
 	failed: boolean;
 }
 
@@ -112,14 +126,17 @@ async function searchResources(
 		// aucun, et l'omettre garde le déploiement insensible à l'ordre.
 		if (kind) params.set('kinds', kind);
 		const response = await fetch(`/api/search?${params.toString()}`);
-		if (!response.ok) return { items: [], failed: true };
+		if (!response.ok) return { entries: [], failed: true };
 
 		const payload: unknown = await response.json();
 		const results = (payload as { results?: SearchResult[] }).results ?? [];
 
-		return { items: groupByKind(results.filter((row) => isResourceKind(row.kind))), failed: false };
+		return {
+			entries: groupByKind(results.filter((row) => isResourceKind(row.kind))),
+			failed: false
+		};
 	} catch {
-		return { items: [], failed: true };
+		return { entries: [], failed: true };
 	}
 }
 
@@ -183,7 +200,7 @@ export function toSuggestionItem(row: SearchResult): SuggestionItem {
  * L'ordre à l'intérieur d'un type est celui de la recherche — pertinence, puis
  * date de modification — qu'on ne réordonne pas.
  */
-function groupByKind(rows: SearchResult[]): SuggestionItem[] {
+function groupByKind(rows: SearchResult[]): SearchEntry[] {
 	const byKind = new Map<ResourceKind, SearchResult[]>();
 	for (const row of rows) {
 		const kind = row.kind as ResourceKind;
@@ -192,13 +209,56 @@ function groupByKind(rows: SearchResult[]): SuggestionItem[] {
 		else byKind.set(kind, [row]);
 	}
 
-	const items: SuggestionItem[] = [];
+	const entries: SearchEntry[] = [];
 	for (const kind of RESOURCE_KINDS) {
 		for (const row of byKind.get(kind) ?? []) {
-			items.push({ ...toSuggestionItem(row), group: KIND_LABELS[kind] });
+			entries.push({ item: { ...toSuggestionItem(row), group: KIND_LABELS[kind] }, row });
 		}
 	}
-	return items;
+	return entries;
+}
+
+/**
+ * Convertit « la fiche X » + un numéro en référence de l'EXERCICE.
+ *
+ * C'est là que se joue la distinction demandée : `[[exos:derivees]]` pointe la
+ * FICHE — un lien pour la télécharger, qui n'apporte AUCUN point de programme,
+ * puisque rien ne dit lesquels de ses exercices ont été faits. Suivi d'un
+ * numéro, `[[exos:derivees#3]]` désigne l'EXERCICE, et lui apporte ses points.
+ *
+ * Le numéro est celui que l'élève lit sur sa fiche : c'est le serveur qui le
+ * traduit, avec la règle partagée de `$lib/worksheets/exercise-numbering`.
+ *
+ * En cas d'échec — numéro hors de la fiche, réseau — on retombe sur la
+ * référence à la fiche. Un lien juste mais moins précis vaut mieux qu'un lien
+ * inventé vers un exercice qui n'existe pas.
+ */
+async function withExerciseNumber(
+	entry: SearchEntry,
+	exerciseNumber: number
+): Promise<SuggestionItem> {
+	try {
+		const response = await fetch(
+			`/api/worksheets/${entry.row.id}/exercise-number/${exerciseNumber}`
+		);
+		if (!response.ok) return entry.item;
+
+		const payload: unknown = await response.json();
+		const junctionId = (payload as { worksheet_exercise_id?: string }).worksheet_exercise_id;
+		if (!junctionId) return entry.item;
+
+		// Le libellé nomme l'exercice ET la fiche : c'est ce que l'élève doit lire
+		// pour savoir quoi ouvrir, y compris quand le lien ne mène nulle part.
+		const label = sanitiseLabel(`Exercice ${exerciseNumber} — ${entry.row.title}`);
+		return {
+			...entry.item,
+			id: `[[worksheet_exercise:${junctionId}|${label}]]`,
+			label,
+			description: `${KIND_LABELS.worksheet_exercise} · ${entry.row.title}`
+		};
+	} catch {
+		return entry.item;
+	}
 }
 
 function sanitiseLabel(raw: string): string {
@@ -310,7 +370,19 @@ export const ResourceLink = Extension.create<ResourceLinkOptions, ResourceLinkSt
 						parsed.kind
 					);
 					lastSearchFailed = outcome.failed;
-					return outcome.items;
+
+					// Un numéro ne veut rien dire pour autre chose qu'une FICHE : les
+					// autres résultats restent tels quels.
+					const wanted = parsed.exerciseNumber;
+					if (wanted === null) return outcome.entries.map((entry) => entry.item);
+
+					return Promise.all(
+						outcome.entries.map((entry) =>
+							entry.row.kind === 'worksheet'
+								? withExerciseNumber(entry, wanted)
+								: Promise.resolve(entry.item)
+						)
+					);
 				},
 
 				command: ({ editor, range, props }) => {
