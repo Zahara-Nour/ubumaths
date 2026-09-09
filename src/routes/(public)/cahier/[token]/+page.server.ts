@@ -35,5 +35,7 @@ export const load: PageServerLoad = async ({ params, locals, setHeaders }) => {
 		throw error(404, 'Ce lien est invalide ou a expiré');
 	}
 
-	return { journal };
+	// Le jeton redescend au rendu : c'est lui qui donne une adresse aux fiches
+	// citées. Il est déjà dans l'URL, le transmettre n'expose rien de plus.
+	return { journal, journal_token: parsed.data };
 };

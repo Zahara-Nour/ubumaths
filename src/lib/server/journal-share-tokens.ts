@@ -34,6 +34,28 @@ export interface PublicJournal {
 	entries: PublicJournalEntry[];
 }
 
+/**
+ * Une fiche d'exercices lisible par un porteur de jeton.
+ *
+ * Forme volontairement proche de `WorksheetWithRelations` : c'est ce que le
+ * composant de composition PDF attend. Les champs absents (créateur, école,
+ * dates) ne servent pas au rendu et n'ont aucune raison d'être exposés.
+ */
+export interface PublicWorksheet {
+	id: string;
+	title: string;
+	description: string | null;
+	type: string;
+	config: unknown;
+	status: string;
+	grades: string[] | null;
+	translations: unknown;
+	total_points: number | null;
+	estimated_duration_minutes: number | null;
+	sections: unknown[];
+	exercises: unknown[];
+}
+
 export interface JournalShareToken {
 	id: string;
 	class_id: string;
@@ -174,4 +196,31 @@ export async function resolveShareToken(
 	}
 
 	return (data as PublicJournal | null) ?? null;
+}
+
+/**
+ * La fiche désignée, SI elle est citée dans une séance visible de ce cahier.
+ *
+ * Toute la décision d'accès est prise en base, par une fonction
+ * `security definer` — le lecteur est `anon` et n'a aucun droit sur
+ * `worksheets`. On ne distingue pas « fiche inexistante » de « fiche non
+ * citée » : les deux renvoient `null`, pour ne rien apprendre à qui essaierait
+ * des identifiants au hasard.
+ */
+export async function resolveWorksheetByShareToken(
+	supabase: SB,
+	token: string,
+	worksheetId: string
+): Promise<PublicWorksheet | null> {
+	const { data, error } = await supabase.rpc('get_worksheet_by_share_token', {
+		p_token: token,
+		p_worksheet_id: worksheetId
+	});
+
+	if (error) {
+		console.error('[journal-share] fiche illisible:', error.message);
+		return null;
+	}
+
+	return (data as PublicWorksheet | null) ?? null;
 }

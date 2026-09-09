@@ -15971,6 +15971,10 @@ export type Database = {
           thumbnail: string
         }[]
       }
+      get_worksheet_by_share_token: {
+        Args: { p_token: string; p_worksheet_id: string }
+        Returns: Json
+      }
       grant_parental_consent: {
         Args: { p_ip?: unknown; p_token: string; p_user_agent?: string }
         Returns: Json

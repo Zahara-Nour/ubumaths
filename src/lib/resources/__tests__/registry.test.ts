@@ -35,7 +35,9 @@ const ROUTES_DIR = join(process.cwd(), 'src', 'routes');
 const SENTINEL = {
 	id: '11111111-1111-4111-8111-111111111111',
 	classId: '22222222-2222-4222-8222-222222222222',
-	slug: 'fractions-abc123'
+	slug: 'fractions-abc123',
+	/** Jeton de partage : une fiche n'a d'adresse publique que par ce lien. */
+	shareToken: 'abcdef0123456789abcdef'
 } as const;
 
 const ROLES: ViewerRole[] = ['teacher', 'student', 'admin', 'public'];
@@ -136,7 +138,11 @@ describe('declared routes exist', () => {
 	it.each(DECLARED_ROUTES)('$kind → $role points at a real route', ({ kind, role }) => {
 		const { url } = resolveResource(kind, SENTINEL.id, {
 			role,
-			context: { classId: SENTINEL.classId, slug: SENTINEL.slug }
+			context: {
+				classId: SENTINEL.classId,
+				slug: SENTINEL.slug,
+				shareToken: SENTINEL.shareToken
+			}
 		});
 
 		expect(url, `${kind}/${role} builds no URL despite declaring a route`).not.toBeNull();
@@ -152,6 +158,18 @@ describe('resolveResource', () => {
 		for (const role of ROLES) {
 			expect(resolveResource('document', SENTINEL.id, { role }).url).toBeNull();
 		}
+	});
+
+	it('une fiche n’a AUCUNE adresse publique sans jeton de partage', () => {
+		// C'est la garde qui fait tenir tout le dispositif : hors du cahier
+		// partagé, une fiche citée reste du texte inerte.
+		expect(resolveResource('worksheet', SENTINEL.id, { role: 'public' }).url).toBeNull();
+
+		const avecJeton = resolveResource('worksheet', SENTINEL.id, {
+			role: 'public',
+			context: { shareToken: SENTINEL.shareToken }
+		});
+		expect(avecJeton.url).toBe(`/cahier/${SENTINEL.shareToken}/fiche/${SENTINEL.id}`);
 	});
 
 	it('returns a null URL when a required context id is missing', () => {

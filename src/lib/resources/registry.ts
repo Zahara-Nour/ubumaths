@@ -70,6 +70,14 @@ export interface ResourceRouteContext {
 	classId?: string;
 	/** URL-friendly identifier, when the resource has one (exercises only). */
 	slug?: string;
+	/**
+	 * Jeton de partage du cahier de texte, quand la lecture se fait par ce lien.
+	 *
+	 * Sans lui, une ressource n'a aucune adresse publique : c'est le jeton qui
+	 * autorise, et la route en a besoin dans son chemin. Absent ailleurs, ce qui
+	 * rend la référence inerte — le bon comportement hors du cahier partagé.
+	 */
+	shareToken?: string;
 }
 
 /**
@@ -129,6 +137,17 @@ function teacherChapterPath(classId: string, chapterId: string): string {
 		classId,
 		chapterId
 	});
+}
+
+/**
+ * Fiche ouverte par le lien de consultation du cahier de texte.
+ *
+ * Extraite pour la même raison que `teacherChapterPath` : `resolve()` renvoie
+ * une union sur toutes les routes de l'application, et la combiner à `null`
+ * en ligne dépasse ce que TypeScript sait représenter.
+ */
+function publicWorksheetPath(token: string, worksheetId: string): string {
+	return resolve('/(public)/cahier/[token]/fiche/[id]', { token, id: worksheetId });
 }
 
 // ============================================================================
@@ -203,7 +222,10 @@ export const RESOURCE_REGISTRY: Record<ResourceKind, ResourceKindDefinition> = {
 			// cette route fait la traduction et redirige.
 			student: (id) => resolve('/(protected)/dashboard/student/worksheets/fiche/[id]', { id }),
 			admin: null,
-			public: null
+			// Lisible SANS COMPTE, mais seulement par le lien de consultation du
+			// cahier — et seulement si la fiche y est CITÉE, ce que la base vérifie.
+			// Sans jeton, pas d'adresse : la référence reste du texte inerte.
+			public: (id, { shareToken }) => (shareToken ? publicWorksheetPath(shareToken, id) : null)
 		}
 	},
 	python_exercise: {

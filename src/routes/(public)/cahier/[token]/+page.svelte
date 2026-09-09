@@ -35,7 +35,13 @@
 	 * il lit « Exercice 3 — Fiche : Dérivées », ce qui est l'information utile.
 	 */
 	function renderContent(raw: string | null): string {
-		return linkifyResourceReferences(transformMathHtml(raw || ''), { role: 'public' });
+		// Le jeton fait toute la différence : sans lui, une fiche citée n'a aucune
+		// adresse publique et reste du texte. Avec lui, elle s'ouvre — à condition
+		// d'être effectivement citée, ce que la base vérifie.
+		return linkifyResourceReferences(transformMathHtml(raw || ''), {
+			role: 'public',
+			shareToken: data.journal_token
+		});
 	}
 
 	/** « lundi 8 septembre » — le format long aide à se repérer sans calendrier. */
