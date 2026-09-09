@@ -10,8 +10,9 @@
 	serveur n'existe pas (`api/worksheets/[id]/pdf` répond 501). Ça tombe bien —
 	le lecteur n'a pas de compte, et rien n'a besoin d'être calculé pour lui.
 
-	`allowCorrection={false}` : un lien de consultation ne montre JAMAIS les
-	corrections. C'est la raison d'être de cette prop.
+	`variant="reader"` : voir et télécharger, rien d'autre. Ce n'est pas qu'une
+	question d'encombrement — le mode « correction » serait une fuite, et les
+	onglets de source n'ont aucun sens pour une famille.
 -->
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
@@ -49,7 +50,7 @@
 
 	<Card.Root>
 		<Card.Content class="p-4">
-			<PdfPreview {worksheet} allowCorrection={false} />
+			<PdfPreview {worksheet} variant="reader" />
 		</Card.Content>
 	</Card.Root>
 

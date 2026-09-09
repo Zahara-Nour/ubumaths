@@ -61,17 +61,20 @@
 			last_name: string | null;
 		}>;
 		/**
-		 * Autoriser la bascule vers le mode « correction ».
+		 * `editor` : tout l'outillage — modes, sources markdown et Typst, lot par
+		 * élève. `reader` : voir et télécharger, rien d'autre.
 		 *
-		 * `false` sur le lien de consultation du cahier de texte : un lecteur sans
-		 * compte ne doit jamais atteindre les solutions. La prop existe pour que
-		 * cette contrainte soit EXPLICITE et testable, plutôt que dépendre du fait
-		 * que la page n'affiche pas le sélecteur.
+		 * `reader` sert au lien de consultation du cahier de texte. Ce n'est pas
+		 * qu'une question d'encombrement : le mode « correction » y serait une
+		 * fuite, et les onglets de source n'ont aucun sens pour une famille.
+		 * Un seul réglage plutôt qu'un drapeau par bouton à masquer.
 		 */
-		allowCorrection?: boolean;
+		variant?: 'editor' | 'reader';
 	}
 
-	let { worksheet, classId, students = [], allowCorrection = true }: Props = $props();
+	let { worksheet, classId, students = [], variant = 'editor' }: Props = $props();
+
+	const estLecteur = $derived(variant === 'reader');
 
 	// Typst library state
 	let typst = $state<TypstCompiler | null>(null);
@@ -83,7 +86,7 @@
 
 	// Verrou, pas simple masquage : même si un sélecteur subsistait quelque part,
 	// le mode retomberait sur « fiche ».
-	const mode = $derived(allowCorrection ? modeChoisi : ('worksheet' as const));
+	const mode = $derived(estLecteur ? ('worksheet' as const) : modeChoisi);
 	let selectedStudentId = $state<string | undefined>(undefined);
 	let isGenerating = $state(false);
 	let pdfUrl = $state<string | null>(null);
@@ -600,13 +603,16 @@ INFORMATIONS
 </script>
 
 <Card.Root>
-	<Card.Header>
-		<Card.Title class="flex items-center gap-2">
-			<FileDown class="h-5 w-5" />
-			Generation PDF
-		</Card.Title>
-		<Card.Description>Generez et previsualisez les PDFs de la feuille de travail</Card.Description>
-	</Card.Header>
+	{#if !estLecteur}
+		<Card.Header>
+			<Card.Title class="flex items-center gap-2">
+				<FileDown class="h-5 w-5" />
+				Generation PDF
+			</Card.Title>
+			<Card.Description>Generez et previsualisez les PDFs de la feuille de travail</Card.Description
+			>
+		</Card.Header>
+	{/if}
 	<Card.Content class="space-y-4">
 		{#if isTypstLoading}
 			<!-- Loading state -->
@@ -634,30 +640,32 @@ INFORMATIONS
 		{:else}
 			<!-- Main content -->
 			<Tabs.Root value="preview">
-				<Tabs.List class="grid w-full grid-cols-4">
-					<Tabs.Trigger value="preview">
-						<Eye class="mr-2 h-4 w-4" />
-						Apercu
-					</Tabs.Trigger>
-					<Tabs.Trigger value="markdown">
-						<FileCode class="mr-2 h-4 w-4" />
-						Markdown
-					</Tabs.Trigger>
-					<Tabs.Trigger value="typst">
-						<Code class="mr-2 h-4 w-4" />
-						Typst
-					</Tabs.Trigger>
-					<Tabs.Trigger value="batch">
-						<Users class="mr-2 h-4 w-4" />
-						Lot
-					</Tabs.Trigger>
-				</Tabs.List>
+				{#if !estLecteur}
+					<Tabs.List class="grid w-full grid-cols-4">
+						<Tabs.Trigger value="preview">
+							<Eye class="mr-2 h-4 w-4" />
+							Apercu
+						</Tabs.Trigger>
+						<Tabs.Trigger value="markdown">
+							<FileCode class="mr-2 h-4 w-4" />
+							Markdown
+						</Tabs.Trigger>
+						<Tabs.Trigger value="typst">
+							<Code class="mr-2 h-4 w-4" />
+							Typst
+						</Tabs.Trigger>
+						<Tabs.Trigger value="batch">
+							<Users class="mr-2 h-4 w-4" />
+							Lot
+						</Tabs.Trigger>
+					</Tabs.List>
+				{/if}
 
 				<!-- Preview Tab -->
 				<Tabs.Content value="preview" class="space-y-4">
 					<!-- Controls -->
 					<div class="grid gap-4 sm:grid-cols-2">
-						{#if allowCorrection}
+						{#if !estLecteur}
 							<div class="space-y-2">
 								<Label>Mode</Label>
 								<MySelect
@@ -681,28 +689,34 @@ INFORMATIONS
 
 					<!-- Preview Actions -->
 					<div class="flex flex-wrap gap-2">
-						<Button onclick={generatePreview} disabled={isGenerating} variant="outline">
-							{#if isGenerating}
-								<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-								Generation...
-							{:else}
-								<RefreshCw class="mr-2 h-4 w-4" />
-								Rafraichir
-							{/if}
-						</Button>
+						{#if !estLecteur}
+							<Button onclick={generatePreview} disabled={isGenerating} variant="outline">
+								{#if isGenerating}
+									<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+									Generation...
+								{:else}
+									<RefreshCw class="mr-2 h-4 w-4" />
+									Rafraichir
+								{/if}
+							</Button>
+						{/if}
 
 						<Button onclick={downloadSinglePdf} disabled={!pdfBlob || isGenerating}>
 							<Download class="mr-2 h-4 w-4" />
 							Telecharger
 						</Button>
 
-						<Button variant="outline" disabled={!pdfUrl} onclick={printPdf}>
-							<Printer class="mr-2 h-4 w-4" />
-							Imprimer
-						</Button>
+						{#if !estLecteur}
+							<Button variant="outline" disabled={!pdfUrl} onclick={printPdf}>
+								<Printer class="mr-2 h-4 w-4" />
+								Imprimer
+							</Button>
+						{/if}
 					</div>
 
-					<Separator />
+					{#if !estLecteur}
+						<Separator />
+					{/if}
 
 					<!-- SVG Preview -->
 					<div class="relative">
