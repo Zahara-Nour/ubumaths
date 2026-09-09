@@ -98,6 +98,14 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 
 	let popup: HTMLDivElement | null = null;
 	let tippyInstance: TippyInstance | null = null;
+	/**
+	 * Les boutons rendus, dans l'ordre de `state.items`.
+	 *
+	 * Gardés pour pouvoir changer la SÉLECTION sans reconstruire le DOM : c'est
+	 * la reconstruction au survol qui rendait le clic impossible (cf.
+	 * `refreshSelection`).
+	 */
+	let itemElements: HTMLButtonElement[] = [];
 	let state: SuggestionState = {
 		items: [],
 		selectedIndex: 0,
@@ -132,6 +140,7 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 
 		// Clear existing content
 		currentPopup.innerHTML = '';
+		itemElements = [];
 
 		if (state.items.length === 0) {
 			// Show no results message
@@ -177,6 +186,12 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 				itemEl.appendChild(descSpan);
 			}
 
+			// Garder le focus dans l'éditeur : un bouton qui le vole ferait perdre la
+			// position d'insertion entre le `mousedown` et le `click`.
+			itemEl.addEventListener('mousedown', (e) => {
+				e.preventDefault();
+			});
+
 			// Click handler
 			itemEl.addEventListener('click', (e) => {
 				e.preventDefault();
@@ -184,13 +199,33 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 				selectItem(index);
 			});
 
-			// Hover handler
+			// Survol : on met à jour la SÉLECTION, jamais le DOM.
 			itemEl.addEventListener('mouseenter', () => {
 				state.selectedIndex = index;
-				renderItems();
+				refreshSelection();
 			});
 
+			itemElements.push(itemEl);
 			currentPopup.appendChild(itemEl);
+		});
+	}
+
+	/**
+	 * Met à jour la surbrillance sans reconstruire la liste.
+	 *
+	 * ⚠️ NE PAS remplacer par `renderItems()`. Le survol appelait cette
+	 * reconstruction, qui vide `innerHTML` : le bouton visé était donc détruit et
+	 * recréé sous le curseur, entre le `mousedown` et le `mouseup`. Or un
+	 * navigateur n'émet un `click` que si les deux tombent sur le MÊME nœud —
+	 * cliquer un résultat ne faisait donc rien du tout, et la popup ne se fermait
+	 * même pas. Le nœud recréé recevait de surcroît un nouveau `mouseenter`,
+	 * relançant la reconstruction en boucle.
+	 */
+	function refreshSelection(): void {
+		itemElements.forEach((element, index) => {
+			const selected = index === state.selectedIndex;
+			element.classList.toggle('selected', selected);
+			element.setAttribute('aria-selected', String(selected));
 		});
 	}
 
@@ -220,13 +255,10 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 		}
 
 		state.selectedIndex = newIndex;
-		renderItems();
+		refreshSelection();
 
 		// Scroll selected item into view
-		if (popup) {
-			const selectedEl = popup.querySelector('.selected');
-			selectedEl?.scrollIntoView({ block: 'nearest' });
-		}
+		itemElements[newIndex]?.scrollIntoView({ block: 'nearest' });
 	}
 
 	return {
