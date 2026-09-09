@@ -139,3 +139,57 @@ describe('Product Decomposition (Zero-Product Property)', () => {
 		});
 	});
 });
+
+/**
+ * `u^n = 0` équivaut à `u = 0` : la multiplicité ne change pas l'ensemble des
+ * solutions. Sans cette règle, `(x²−2)² = 0` tombait sur le solveur de
+ * quartiques, qui refusait des coefficients non numériques, et l'équation
+ * n'avait « pas de solution » — alors qu'elle en a deux.
+ */
+describe('Puissance nulle — u^n = 0 équivaut à u = 0', () => {
+	function solutionsOf(custom: string): { status: string; approx: number[] } {
+		const result = solve(parseEquation(custom));
+		return {
+			status: result.status,
+			approx: result.solutions
+				.map((s) => s.approximate)
+				.filter((v): v is number => v !== undefined)
+				.sort((a, b) => a - b)
+		};
+	}
+
+	it('résout (x^2-2)^2 = 0', () => {
+		const { status, approx } = solutionsOf('(x^2-2)^2 = 0');
+
+		expect(status).toBe('multiple');
+		expect(approx).toHaveLength(2);
+		expect(approx[0]).toBeCloseTo(-Math.SQRT2, 12);
+		expect(approx[1]).toBeCloseTo(Math.SQRT2, 12);
+	});
+
+	it('résout (x^2-2)^3 = 0, où le degré 6 n’est pas géré autrement', () => {
+		const { approx } = solutionsOf('(x^2-2)^3 = 0');
+
+		expect(approx).toHaveLength(2);
+		expect(approx[1]).toBeCloseTo(Math.SQRT2, 12);
+	});
+
+	it('résout une puissance de facteur linéaire', () => {
+		expect(solutionsOf('(x-1)^2 = 0').approx).toEqual([1]);
+		expect(solutionsOf('(2x-4)^4 = 0').approx).toEqual([2]);
+	});
+
+	it('ne trouve aucune solution réelle quand la base n’en a pas', () => {
+		expect(solutionsOf('(x^2+1)^2 = 0').approx).toHaveLength(0);
+	});
+
+	it('laisse x^2 = 0 au chemin habituel', () => {
+		expect(solutionsOf('x^2 = 0').approx).toEqual([0]);
+	});
+
+	it('ne s’applique pas à une puissance qui n’est pas nulle', () => {
+		// (x-1)^2 = 4 n'est pas de la forme u^n = 0 : la forme standard est
+		// (x-1)^2 - 4, une soustraction.
+		expect(solutionsOf('(x-1)^2 = 4').approx).toEqual([-1, 3]);
+	});
+});

@@ -60,9 +60,21 @@
 			first_name: string | null;
 			last_name: string | null;
 		}>;
+		/**
+		 * `editor` : tout l'outillage — modes, sources markdown et Typst, lot par
+		 * élève. `reader` : voir et télécharger, rien d'autre.
+		 *
+		 * `reader` sert au lien de consultation du cahier de texte. Ce n'est pas
+		 * qu'une question d'encombrement : le mode « correction » y serait une
+		 * fuite, et les onglets de source n'ont aucun sens pour une famille.
+		 * Un seul réglage plutôt qu'un drapeau par bouton à masquer.
+		 */
+		variant?: 'editor' | 'reader';
 	}
 
-	let { worksheet, classId, students = [] }: Props = $props();
+	let { worksheet, classId, students = [], variant = 'editor' }: Props = $props();
+
+	const estLecteur = $derived(variant === 'reader');
 
 	// Typst library state
 	let typst = $state<TypstCompiler | null>(null);
@@ -70,7 +82,11 @@
 	let typstError = $state<string | null>(null);
 
 	// Preview state
-	let mode = $state<'worksheet' | 'correction'>('worksheet');
+	let modeChoisi = $state<'worksheet' | 'correction'>('worksheet');
+
+	// Verrou, pas simple masquage : même si un sélecteur subsistait quelque part,
+	// le mode retomberait sur « fiche ».
+	const mode = $derived(estLecteur ? ('worksheet' as const) : modeChoisi);
 	let selectedStudentId = $state<string | undefined>(undefined);
 	let isGenerating = $state(false);
 	let pdfUrl = $state<string | null>(null);
@@ -587,13 +603,16 @@ INFORMATIONS
 </script>
 
 <Card.Root>
-	<Card.Header>
-		<Card.Title class="flex items-center gap-2">
-			<FileDown class="h-5 w-5" />
-			Generation PDF
-		</Card.Title>
-		<Card.Description>Generez et previsualisez les PDFs de la feuille de travail</Card.Description>
-	</Card.Header>
+	{#if !estLecteur}
+		<Card.Header>
+			<Card.Title class="flex items-center gap-2">
+				<FileDown class="h-5 w-5" />
+				Generation PDF
+			</Card.Title>
+			<Card.Description>Generez et previsualisez les PDFs de la feuille de travail</Card.Description
+			>
+		</Card.Header>
+	{/if}
 	<Card.Content class="space-y-4">
 		{#if isTypstLoading}
 			<!-- Loading state -->
@@ -621,40 +640,44 @@ INFORMATIONS
 		{:else}
 			<!-- Main content -->
 			<Tabs.Root value="preview">
-				<Tabs.List class="grid w-full grid-cols-4">
-					<Tabs.Trigger value="preview">
-						<Eye class="mr-2 h-4 w-4" />
-						Apercu
-					</Tabs.Trigger>
-					<Tabs.Trigger value="markdown">
-						<FileCode class="mr-2 h-4 w-4" />
-						Markdown
-					</Tabs.Trigger>
-					<Tabs.Trigger value="typst">
-						<Code class="mr-2 h-4 w-4" />
-						Typst
-					</Tabs.Trigger>
-					<Tabs.Trigger value="batch">
-						<Users class="mr-2 h-4 w-4" />
-						Lot
-					</Tabs.Trigger>
-				</Tabs.List>
+				{#if !estLecteur}
+					<Tabs.List class="grid w-full grid-cols-4">
+						<Tabs.Trigger value="preview">
+							<Eye class="mr-2 h-4 w-4" />
+							Apercu
+						</Tabs.Trigger>
+						<Tabs.Trigger value="markdown">
+							<FileCode class="mr-2 h-4 w-4" />
+							Markdown
+						</Tabs.Trigger>
+						<Tabs.Trigger value="typst">
+							<Code class="mr-2 h-4 w-4" />
+							Typst
+						</Tabs.Trigger>
+						<Tabs.Trigger value="batch">
+							<Users class="mr-2 h-4 w-4" />
+							Lot
+						</Tabs.Trigger>
+					</Tabs.List>
+				{/if}
 
 				<!-- Preview Tab -->
 				<Tabs.Content value="preview" class="space-y-4">
 					<!-- Controls -->
 					<div class="grid gap-4 sm:grid-cols-2">
-						<div class="space-y-2">
-							<Label>Mode</Label>
-							<MySelect
-								type="single"
-								bind:value={mode}
-								items={[
-									{ value: 'worksheet', label: 'Feuille de travail' },
-									{ value: 'correction', label: 'Correction' }
-								]}
-							/>
-						</div>
+						{#if !estLecteur}
+							<div class="space-y-2">
+								<Label>Mode</Label>
+								<MySelect
+									type="single"
+									bind:value={modeChoisi}
+									items={[
+										{ value: 'worksheet', label: 'Feuille de travail' },
+										{ value: 'correction', label: 'Correction' }
+									]}
+								/>
+							</div>
+						{/if}
 
 						{#if students.length > 0}
 							<div class="space-y-2">
@@ -666,28 +689,34 @@ INFORMATIONS
 
 					<!-- Preview Actions -->
 					<div class="flex flex-wrap gap-2">
-						<Button onclick={generatePreview} disabled={isGenerating} variant="outline">
-							{#if isGenerating}
-								<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-								Generation...
-							{:else}
-								<RefreshCw class="mr-2 h-4 w-4" />
-								Rafraichir
-							{/if}
-						</Button>
+						{#if !estLecteur}
+							<Button onclick={generatePreview} disabled={isGenerating} variant="outline">
+								{#if isGenerating}
+									<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+									Generation...
+								{:else}
+									<RefreshCw class="mr-2 h-4 w-4" />
+									Rafraichir
+								{/if}
+							</Button>
+						{/if}
 
 						<Button onclick={downloadSinglePdf} disabled={!pdfBlob || isGenerating}>
 							<Download class="mr-2 h-4 w-4" />
 							Telecharger
 						</Button>
 
-						<Button variant="outline" disabled={!pdfUrl} onclick={printPdf}>
-							<Printer class="mr-2 h-4 w-4" />
-							Imprimer
-						</Button>
+						{#if !estLecteur}
+							<Button variant="outline" disabled={!pdfUrl} onclick={printPdf}>
+								<Printer class="mr-2 h-4 w-4" />
+								Imprimer
+							</Button>
+						{/if}
 					</div>
 
-					<Separator />
+					{#if !estLecteur}
+						<Separator />
+					{/if}
 
 					<!-- SVG Preview -->
 					<div class="relative">
@@ -815,7 +844,7 @@ INFORMATIONS
 							<Label>Mode de generation</Label>
 							<MySelect
 								type="single"
-								bind:value={mode}
+								bind:value={modeChoisi}
 								items={[
 									{ value: 'worksheet', label: 'Feuilles de travail' },
 									{ value: 'correction', label: 'Corrections' }

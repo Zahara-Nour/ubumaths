@@ -20,9 +20,33 @@ import type {
 	ObliqueAsymptote,
 	FunctionAnalysis
 } from './types';
+import type { Plottable } from './types';
+import type { SampledCurve } from '$lib/geometry-core/viewport';
+import { sampleFunction } from '$lib/geometry-core/viewport';
+import { isExplicitFunction } from './types';
+import type { ExplicitFunction } from './types';
+import { createEvaluator } from './evaluator';
+import type { VariableBindings } from './evaluator';
 import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
+import { compile } from '$lib/mathAST/eval/compile';
+import { differentiate } from '$lib/mathAST/differentiation';
 import { findCriticalZeros, findCriticalExtrema } from '$lib/mathAST/analysis';
+import { simplify } from '$lib/mathAST/simplify';
+import { substitute } from '$lib/mathAST/eval/substitute';
+import { add, multiply, variable } from '$lib/mathAST/factory';
+// `number()` refuse un littéral signé ; `numericNode()` gère le signe lui-même.
+import { numericNode } from '$lib/mathAST/common/numeric';
+import { integrateDefinite } from '$lib/mathAST/integration';
+import type {
+	DifferentiableCurve,
+	OsculatingCircleData
+} from '$lib/geometry-core/graph/parametric-calculus';
+import {
+	computeArcLength,
+	computeCurvature,
+	computeOsculatingCircle
+} from '$lib/geometry-core/graph/parametric-calculus';
 
 // =============================================================================
 // Constants
@@ -753,7 +777,8 @@ export function analyzeFunction(
 		roots = criticalZeros.map((cp) => ({
 			x: cp.xNumeric,
 			functionId,
-			confidence: cp.exact ? 1.0 : 0.9
+			confidence: cp.exact ? 1.0 : 0.9,
+			...(cp.exact ? { exactX: cp.x } : {})
 		}));
 
 		if (ast.derivative && ast.compiledDerivative) {
@@ -773,7 +798,8 @@ export function analyzeFunction(
 					y: cp.yNumeric,
 					type: cp.type as 'min' | 'max',
 					functionId,
-					confidence: cp.exact ? 1.0 : 0.9
+					confidence: cp.exact ? 1.0 : 0.9,
+					...(cp.exact ? { exactX: cp.x, exactY: simplifyExact(cp.y) } : {})
 				}));
 		} else {
 			extrema = findExtrema(evaluator, viewport, functionId);
@@ -801,12 +827,538 @@ export function analyzeFunction(
  * @returns Array of analysis results for each function
  */
 export function analyzeAllFunctions(
-	functions: readonly {
-		id: string;
-		evaluator: (x: number) => number | null;
-		ast?: AnalysisASTInfo;
-	}[],
+	functions: readonly AnalysisInput[],
 	viewport: Viewport
 ): FunctionAnalysis[] {
-	return functions.map((f) => analyzeFunction(f.evaluator, viewport, f.id, f.ast));
+	return functions.map((f) => analyzeCached(f, viewport));
 }
+
+/**
+ * Analysis results, keyed by expression then by function and viewport.
+ *
+ * Zeros, extrema and asymptotes depend on the expression and on the window —
+ * on nothing else. Yet the four components that display them re-read the whole
+ * function list, which changes at every move of the tangent slider: without
+ * this cache, dragging it re-ran symbolic solving and two numeric sweeps per
+ * function, four times per frame.
+ *
+ * Parameter values need no key of their own: `bindParameters` already returns
+ * a distinct node per set of values, so the expression identity carries them.
+ */
+const analysisCache = new WeakMap<MathNode, Map<string, FunctionAnalysis>>();
+
+/** Viewports kept per expression before the cache is emptied. */
+const MAX_ANALYSES_PER_EXPRESSION = 200;
+
+function analyzeCached(input: AnalysisInput, viewport: Viewport): FunctionAnalysis {
+	const expression = input.ast?.expression;
+	if (!expression) return analyzeFunction(input.evaluator, viewport, input.id, input.ast);
+
+	const key = `${input.id}|${viewport.xMin},${viewport.xMax},${viewport.yMin},${viewport.yMax}`;
+	const perExpression = analysisCache.get(expression) ?? new Map<string, FunctionAnalysis>();
+
+	const cached = perExpression.get(key);
+	if (cached) return cached;
+
+	// Un panoramique crée une clé par fenêtre traversée : on repart à zéro
+	// plutôt que de laisser la carte enfler sans fin.
+	if (perExpression.size >= MAX_ANALYSES_PER_EXPRESSION) perExpression.clear();
+
+	const analysis = analyzeFunction(input.evaluator, viewport, input.id, input.ast);
+	perExpression.set(key, analysis);
+	analysisCache.set(expression, perExpression);
+	return analysis;
+}
+
+/**
+ * Simplify an ordinate before it is shown.
+ *
+ * `findCriticalExtrema` returns `y` as the expression evaluated at the critical
+ * point, unreduced: the vertex of `x² − 2` comes back as `0^2 - 2`, and a
+ * trigonometric one as `sin(-π/2) - 0.5`. Nobody wants to read that.
+ */
+function simplifyExact(node: MathNode): MathNode {
+	try {
+		return simplify(node).result;
+	} catch {
+		return node;
+	}
+}
+
+// =============================================================================
+// Analysis Inputs
+// =============================================================================
+
+/** One curve to analyse: its evaluator, plus the AST that unlocks exact results. */
+export interface AnalysisInput {
+	readonly id: string;
+	readonly evaluator: (x: number) => number | null;
+	readonly ast?: AnalysisASTInfo;
+}
+
+/**
+ * Derivative and compiled closures are cached per AST node. A pan or a zoom
+ * re-runs the analysis with the very same AST object, which is only replaced
+ * when the user edits the expression.
+ */
+const analysisASTCache = new WeakMap<MathNode, AnalysisASTInfo>();
+
+/**
+ * Build the AST information `analyzeFunction()` needs to take its exact path.
+ *
+ * Returns `undefined` when the expression cannot be compiled at all; a missing
+ * derivative alone is not fatal, extrema simply fall back to the numeric sweep.
+ */
+export function buildAnalysisAST(ast: MathNode): AnalysisASTInfo | undefined {
+	const cached = analysisASTCache.get(ast);
+	if (cached) return cached;
+
+	let compiledFn: CompiledFn;
+	try {
+		compiledFn = compile(ast);
+	} catch {
+		return undefined;
+	}
+
+	let info: AnalysisASTInfo = { expression: ast, compiledFn };
+	try {
+		const derivative = differentiate(ast, { variable: 'x', simplify: true });
+		info = { ...info, derivative, compiledDerivative: compile(derivative) };
+	} catch {
+		// Keep the zeros exact even when the derivative is out of reach.
+	}
+
+	analysisASTCache.set(ast, info);
+	return info;
+}
+
+/**
+ * Turn the graph's plottables into analysis inputs.
+ *
+ * Single entry point for the components that display roots, extrema and
+ * asymptotes: they used to assemble `{ id, evaluator }` by hand and all three
+ * forgot the AST, which silently disabled the exact analysis.
+ *
+ * @param plottables - Everything the graph holds, sequences included
+ * @returns One input per visible explicit function with a parsable expression
+ */
+export function toAnalysisInputs(
+	plottables: readonly Plottable[],
+	bindings: VariableBindings = {}
+): AnalysisInput[] {
+	const inputs: AnalysisInput[] = [];
+
+	for (const plottable of plottables) {
+		if (!isExplicitFunction(plottable) || !plottable.visible) continue;
+
+		const ast = plottable.ast;
+		if (!ast) continue;
+
+		// Parameters are substituted before anything symbolic runs: `solve` would
+		// treat a free `a` as a second unknown, and the derivative would carry it.
+		const bound = bindParameters(ast, bindings);
+		if (!bound) continue;
+
+		inputs.push({
+			id: plottable.id,
+			evaluator: cachedEvaluator(bound),
+			ast: buildAnalysisAST(bound)
+		});
+	}
+
+	return inputs;
+}
+
+/**
+ * Replace the parameters an expression uses by their current values.
+ *
+ * The substituted AST is cached per (expression, bindings) so a slider drag
+ * does not rebuild it — and so `buildAnalysisAST`, keyed on the node identity,
+ * keeps hitting its own cache between frames at a constant slider value.
+ *
+ * @returns The bound expression, or undefined when substitution fails
+ */
+export function bindParameters(ast: MathNode, bindings: VariableBindings): MathNode | undefined {
+	const names = Object.keys(bindings);
+	if (names.length === 0) return ast;
+
+	const perAst = boundASTCache.get(ast) ?? new Map<string, MathNode>();
+	const key = names
+		.sort()
+		.map((n) => `${n}=${bindings[n]}`)
+		.join(',');
+
+	const cached = perAst.get(key);
+	if (cached) return cached;
+
+	let bound: MathNode;
+	try {
+		bound = substitute(ast, bindings);
+	} catch {
+		return undefined;
+	}
+
+	perAst.set(key, bound);
+	boundASTCache.set(ast, perAst);
+	return bound;
+}
+
+/**
+ * Build the curve of `f'`, drawn alongside `f`.
+ *
+ * Returned as a plottable of its own so the renderer needs no special case,
+ * but derived from the function each frame rather than stored: editing `f`
+ * redraws `f'`, which is the whole point of showing them together.
+ *
+ * Parameters are bound before differentiating, so `a·x²` with `a = 3` gives
+ * `6x` and not an expression still carrying `a`.
+ *
+ * @returns The derivative curve, or undefined when it cannot be built
+ */
+export function derivativeCurve(
+	func: ExplicitFunction,
+	bindings: VariableBindings = {}
+): ExplicitFunction | undefined {
+	if (!func.ast) return undefined;
+
+	const bound = bindParameters(func.ast, bindings);
+	if (!bound) return undefined;
+
+	const derivative = buildAnalysisAST(bound)?.derivative;
+	if (!derivative) return undefined;
+
+	// Rendre le même objet pour les mêmes entrées : le composant de tracé
+	// n'échantillonne à nouveau que si sa prop a réellement changé.
+	const key = `${func.id}|${func.color}|${func.lineWidth}|${func.visible}`;
+	const cached = derivativeCache.get(derivative);
+	if (cached?.key === key) return cached.curve;
+
+	const curve: ExplicitFunction = {
+		...func,
+		id: `${func.id}:derivative`,
+		ast: derivative,
+		parseError: undefined,
+		// Dashed, so the two curves stay tellable apart at a glance.
+		lineStyle: 'dashed',
+		lineWidth: Math.max(func.lineWidth - 1, 1),
+		showDerivative: false
+	};
+
+	derivativeCache.set(derivative, { key, curve });
+	return curve;
+}
+
+/** Derivative curves, keyed by the derivative expression. */
+const derivativeCache = new WeakMap<MathNode, { key: string; curve: ExplicitFunction }>();
+
+/** A tangent: where it touches, how steep it is, and the line itself. */
+export interface TangentResult {
+	/** Abscissa of the point of tangency. */
+	readonly x: number;
+	/** Ordinate of the point of tangency. */
+	readonly y: number;
+	/** `f'(x₀)` — the slope, which is the number the tangent makes visible. */
+	readonly slope: number;
+	/** The tangent as a plottable line, ready for the same renderer as a curve. */
+	readonly line: ExplicitFunction;
+}
+
+/**
+ * Build the tangent to `f` at `x₀`.
+ *
+ * The line is handed back as a plottable of its own so the renderer needs no
+ * special case — a tangent is a curve like another, it just happens to be
+ * straight. Its equation is built from the two numbers `f(x₀)` and `f'(x₀)`,
+ * both read from the derivative `buildAnalysisAST` already memoises.
+ *
+ * @returns The tangent, or undefined where `f` or `f'` is not defined
+ */
+export function tangentAt(
+	func: ExplicitFunction,
+	x0: number,
+	bindings: VariableBindings = {}
+): TangentResult | undefined {
+	if (!func.ast || !Number.isFinite(x0)) return undefined;
+
+	const bound = bindParameters(func.ast, bindings);
+	if (!bound) return undefined;
+
+	const info = buildAnalysisAST(bound);
+	if (!info?.compiledDerivative) return undefined;
+
+	const y = info.compiledFn({ x: x0 });
+	const slope = info.compiledDerivative({ x: x0 });
+	if (!Number.isFinite(y) || !Number.isFinite(slope)) return undefined;
+
+	// y = f(x₀) + f'(x₀)·(x − x₀), écrite sous forme réduite.
+	const intercept = y - slope * x0;
+	const line = add(multiply(numericNode(slope), variable('x'), 'implicit'), numericNode(intercept));
+
+	return {
+		x: x0,
+		y,
+		slope,
+		line: {
+			...func,
+			id: `${func.id}:tangent`,
+			ast: line,
+			parseError: undefined,
+			lineWidth: 1,
+			lineStyle: 'solid',
+			showDerivative: false,
+			tangentAt: null
+		}
+	};
+}
+
+/** The area between a curve and the axis, ready to shade and to read. */
+export interface IntegralResult {
+	readonly from: number;
+	readonly to: number;
+	/** Signed value: a region below the axis counts negative. */
+	readonly value: number;
+	/** Exact value, when mathAST found an antiderivative. */
+	readonly exact: MathNode | undefined;
+	/** Boundary of the region, in math coordinates, from `from` to `to`. */
+	readonly points: readonly { readonly x: number; readonly y: number }[];
+}
+
+/** Samples used to draw the shaded boundary. */
+const INTEGRAL_SAMPLES = 200;
+
+/**
+ * Compute the signed area between `f` and the axis, over `[from ; to]`.
+ *
+ * The value comes from `integrateDefinite` of mathAST — exact when an
+ * antiderivative exists, numeric otherwise — so nothing is recomputed here.
+ * What this adds is the outline to shade, which the integral itself has no
+ * reason to know about.
+ *
+ * @returns The area and its outline, or undefined when it cannot be computed
+ */
+export function integralUnder(
+	func: ExplicitFunction,
+	from: number,
+	to: number,
+	bindings: VariableBindings = {}
+): IntegralResult | undefined {
+	if (!func.ast || !Number.isFinite(from) || !Number.isFinite(to) || from === to) return undefined;
+
+	const [lower, upper] = from < to ? [from, to] : [to, from];
+	const bound = bindParameters(func.ast, bindings);
+	if (!bound) return undefined;
+
+	// L'aire ne dépend que de l'expression et des bornes. Elle est demandée deux
+	// fois par rendu — le remplissage et la valeur affichée — et son intégration
+	// symbolique coûte le plus cher de tout ce que le panneau recalcule.
+	const cacheKey = `${lower},${upper}`;
+	const perExpression = integralCache.get(bound) ?? new Map<string, IntegralResult>();
+	const cachedIntegral = perExpression.get(cacheKey);
+	if (cachedIntegral) return cachedIntegral;
+
+	const info = buildAnalysisAST(bound);
+	if (!info) return undefined;
+
+	let result;
+	try {
+		result = integrateDefinite(bound, numericNode(lower), numericNode(upper));
+	} catch {
+		return undefined;
+	}
+
+	const value = result.approximate ?? evaluateToNumber(result.value);
+	if (value === undefined) return undefined;
+
+	// Outline of the region, sampled left to right. A rank where `f` is not
+	// defined breaks the region rather than joining across the gap.
+	const points: { x: number; y: number }[] = [];
+	const step = (upper - lower) / INTEGRAL_SAMPLES;
+
+	for (let i = 0; i <= INTEGRAL_SAMPLES; i++) {
+		const x = lower + i * step;
+		const y = info.compiledFn({ x });
+		if (Number.isFinite(y)) points.push({ x, y });
+	}
+
+	if (points.length < 2) return undefined;
+
+	const integral: IntegralResult = {
+		from: lower,
+		to: upper,
+		value,
+		exact: result.status === 'exact' ? (result.value ?? undefined) : undefined,
+		points
+	};
+
+	if (perExpression.size >= MAX_SAMPLES_PER_EXPRESSION) perExpression.clear();
+	perExpression.set(cacheKey, integral);
+	integralCache.set(bound, perExpression);
+	return integral;
+}
+
+/** Areas, keyed by expression then by bounds. */
+const integralCache = new WeakMap<MathNode, Map<string, IntegralResult>>();
+
+/** Read a numeric value off an exact node, when it has one. */
+function evaluateToNumber(node: MathNode | null): number | undefined {
+	if (!node) return undefined;
+
+	try {
+		const compiled = compile(node);
+		const value = compiled({});
+		return Number.isFinite(value) ? value : undefined;
+	} catch {
+		return undefined;
+	}
+}
+
+/**
+ * See `y = f(x)` as the parametrised curve `t ↦ (t, f(t))`.
+ *
+ * That is all it takes to reuse the arc length, curvature and osculating
+ * circle of `geometry-core`, which are stated for a parametrised curve and do
+ * not care where its closures come from. Nothing of those formulas is rewritten
+ * here.
+ *
+ * @returns The curve seen parametrically, or undefined without a second derivative
+ */
+export function asParametricCurve(
+	func: ExplicitFunction,
+	bindings: VariableBindings = {}
+): DifferentiableCurve | undefined {
+	if (!func.ast) return undefined;
+
+	const bound = bindParameters(func.ast, bindings);
+	if (!bound) return undefined;
+
+	const info = buildAnalysisAST(bound);
+	if (!info?.derivative || !info.compiledDerivative) return undefined;
+
+	let compiledSecond: CompiledFn;
+	try {
+		compiledSecond = compile(differentiate(info.derivative, { variable: 'x', simplify: true }));
+	} catch {
+		return undefined;
+	}
+
+	return {
+		parameter: 'x',
+		compiledX: (vars) => vars.x,
+		compiledY: info.compiledFn,
+		// x = t, donc x' = 1 et x'' = 0.
+		compiledXPrime: () => 1,
+		compiledYPrime: info.compiledDerivative,
+		compiledXSecond: () => 0,
+		compiledYSecond: compiledSecond
+	};
+}
+
+/**
+ * Length of the curve between two abscissas.
+ *
+ * `computeArcLength` of geometry-core does the integrating; all this adds is
+ * seeing `f` as a parametrised curve.
+ *
+ * @returns The length, or undefined when it cannot be computed
+ */
+export function arcLengthBetween(
+	func: ExplicitFunction,
+	from: number,
+	to: number,
+	bindings: VariableBindings = {}
+): number | undefined {
+	if (from === to) return undefined;
+
+	const curve = asParametricCurve(func, bindings);
+	if (!curve) return undefined;
+
+	const [lower, upper] = from < to ? [from, to] : [to, from];
+	const length = computeArcLength(curve, {}, lower, upper);
+	return Number.isFinite(length) ? length : undefined;
+}
+
+/** Signed curvature of the curve at an abscissa. */
+export function curvatureAt(
+	func: ExplicitFunction,
+	x0: number,
+	bindings: VariableBindings = {}
+): number | undefined {
+	const curve = asParametricCurve(func, bindings);
+	if (!curve) return undefined;
+
+	return computeCurvature(curve, {}, x0) ?? undefined;
+}
+
+/**
+ * Osculating circle at an abscissa — the circle that best hugs the curve there.
+ *
+ * Undefined where the curve is straight: a zero curvature has no finite circle,
+ * only the tangent.
+ */
+export function osculatingCircleAt(
+	func: ExplicitFunction,
+	x0: number,
+	bindings: VariableBindings = {}
+): OsculatingCircleData | undefined {
+	const curve = asParametricCurve(func, bindings);
+	if (!curve) return undefined;
+
+	return computeOsculatingCircle(curve, {}, x0) ?? undefined;
+}
+
+/**
+ * Evaluators, keyed by expression.
+ *
+ * `createEvaluator` compiles the AST each time it is called, and the four
+ * display components call it on every render. The expression rarely changes;
+ * the compilation should not be redone because a slider moved.
+ */
+const evaluatorCache = new WeakMap<MathNode, (x: number) => number | null>();
+
+function cachedEvaluator(ast: MathNode): (x: number) => number | null {
+	const cached = evaluatorCache.get(ast);
+	if (cached) return cached;
+
+	const evaluator = createEvaluator(ast);
+	evaluatorCache.set(ast, evaluator);
+	return evaluator;
+}
+
+/**
+ * Sampled curves, keyed by expression then by viewport and point count.
+ *
+ * Moving the tangent's abscissa changes neither the curve of `f`, nor that of
+ * `f'`, nor the shaded area — yet each of them was re-sampled, because every
+ * render hands the components a fresh object. Returning the same result for
+ * the same inputs lets that work be skipped.
+ */
+const sampledCurveCache = new WeakMap<MathNode, Map<string, SampledCurve>>();
+
+/** Viewports kept per expression before the cache is emptied. */
+const MAX_SAMPLES_PER_EXPRESSION = 200;
+
+/**
+ * Sample a curve over a viewport, reusing the previous result when nothing
+ * that matters has changed.
+ *
+ * @param ast - Expression, already bound to its parameter values
+ * @param viewport - Current bounds
+ * @param numPoints - Sample count, which the interaction state may lower
+ */
+export function sampleCached(ast: MathNode, viewport: Viewport, numPoints: number): SampledCurve {
+	const key = `${viewport.xMin},${viewport.xMax},${viewport.yMin},${viewport.yMax}|${numPoints}`;
+	const perExpression = sampledCurveCache.get(ast) ?? new Map<string, SampledCurve>();
+
+	const cached = perExpression.get(key);
+	if (cached) return cached;
+
+	if (perExpression.size >= MAX_SAMPLES_PER_EXPRESSION) perExpression.clear();
+
+	const sampled = sampleFunction(cachedEvaluator(ast), viewport, numPoints);
+	perExpression.set(key, sampled);
+	sampledCurveCache.set(ast, perExpression);
+	return sampled;
+}
+
+/** Substituted expressions, keyed by source AST then by binding values. */
+const boundASTCache = new WeakMap<MathNode, Map<string, MathNode>>();

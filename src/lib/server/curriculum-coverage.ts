@@ -1,6 +1,11 @@
 /**
  * Coverage reconciliation — materializes the AUTO curriculum coverage of a
- * cahier de texte entry from its tagged activities.
+ * cahier de texte entry from everything it designates.
+ *
+ * Two sources, unioned: the entry's tagged **activities**, and the resources
+ * **cited in its content** (`[[exercise:…]]`, `[[worksheet_exercise:…]]`, …).
+ * Asking the teacher for the same information twice — once in the text, once in
+ * a card — is exactly the friction that leaves the tracking empty.
  *
  * Idempotent set-reconcile: the desired auto set = union of the curriculum
  * points tagged on everything the entry references — exercises, questions, and
@@ -13,8 +18,14 @@
  * in June. Fidelity to what was actually done is the manual layer's job, and
  * the manual layer is never overwritten here.
  *
- * Called after any such activity is added to / removed from an entry.
+ * Called on EVERY save of an entry, and whenever an activity is added to /
+ * removed from it. Gating it on activities alone would leave a text-only session
+ * without its coverage, and would never drop a point whose citation was deleted.
  */
+
+import { extractResourceReferences, referenceIdsOfKind } from '$lib/resources/references';
+import { parseExerciseSelection } from '$lib/resources/exercise-selection';
+import { resolveExercisesAtDisplayNumbers } from '$lib/server/worksheets/display-number';
 
 type Sb = App.Locals['supabase'];
 
@@ -40,7 +51,21 @@ function refsOf(rows: ActivityRef[], kind: string, column: keyof ActivityRef): s
 	];
 }
 
-export async function reconcileAutoCoverage(supabase: Sb, entryId: string): Promise<void> {
+export interface ReconcileReport {
+	/**
+	 * Numéros d'exercices cités mais absents de leur fiche.
+	 *
+	 * Remontés plutôt qu'ignorés : `#7` sur une fiche de six exercices est une
+	 * faute de frappe, et le professeur doit l'apprendre en enregistrant, pas en
+	 * constatant plus tard qu'un point manque.
+	 */
+	numerosIntrouvables: { worksheetId: string; numeros: number[] }[];
+}
+
+export async function reconcileAutoCoverage(
+	supabase: Sb,
+	entryId: string
+): Promise<ReconcileReport> {
 	// 1. what this entry's tagged activities point at
 	const { data: acts, error: actErr } = await supabase
 		.from('journal_entry_activities')
@@ -50,36 +75,93 @@ export async function reconcileAutoCoverage(supabase: Sb, entryId: string): Prom
 	if (actErr) throw new Error(`reconcileAutoCoverage activities: ${actErr.message}`);
 
 	const activities = (acts ?? []) as ActivityRef[];
-	const exerciseIds = refsOf(activities, 'exercise', 'exercise_id');
-	const templateIds = refsOf(activities, 'question', 'question_template_id');
-	const assessmentIds = refsOf(activities, 'assessment', 'assessment_id');
+	const exerciseIds = new Set(refsOf(activities, 'exercise', 'exercise_id'));
+	const templateIds = new Set(refsOf(activities, 'question', 'question_template_id'));
+	const assessmentIds = new Set(refsOf(activities, 'assessment', 'assessment_id'));
+
+	// 1bis. ce que le PROF A ÉCRIT dans la séance.
+	//
+	// Citer `[[exercise:…]]` dans le contenu vaut désigner l'activité : demander
+	// la même information deux fois — une fois dans le texte, une fois dans une
+	// carte — est la friction qui fait que le suivi n'est pas rempli.
+	//
+	// Une référence `[[…]]` n'est pas de la prose : c'est un jeton structuré
+	// porteur d'un uuid. La retirer du texte est un geste aussi explicite que
+	// décocher une case, et la réconciliation ci-dessous retire alors son point.
+	const { data: entry, error: entryErr } = await supabase
+		.from('class_journal_entries')
+		.select('lesson_content, homework_content')
+		.eq('id', entryId)
+		.maybeSingle();
+	if (entryErr) throw new Error(`reconcileAutoCoverage entry: ${entryErr.message}`);
+
+	const references = extractResourceReferences(entry?.lesson_content, entry?.homework_content);
+	for (const id of referenceIdsOfKind(references, 'exercise')) exerciseIds.add(id);
+	for (const id of referenceIdsOfKind(references, 'question')) templateIds.add(id);
+	for (const id of referenceIdsOfKind(references, 'assessment')) assessmentIds.add(id);
+
+	// Un exercice DE FICHE est cité par l'identifiant de la jonction : c'est ce
+	// qui permet à l'élève de savoir quelle fiche ouvrir. Pour la couverture,
+	// seul compte l'exercice qu'il désigne.
+	// Une FICHE citée avec une sélection : `[[worksheet:<uuid>#3,5-7]]`.
+	//
+	// Sans sélection, elle n'apporte RIEN — et c'est voulu : rien ne dit lesquels
+	// de ses exercices ont été faits. Avec une sélection, on résout les numéros
+	// AFFICHÉS vers les exercices, puis leurs points.
+	//
+	// Les numéros introuvables sont remontés à l'appelant, qui les signale au
+	// professeur : citer un exercice qui n'existe pas est une faute de frappe,
+	// pas une intention.
+	const numerosIntrouvables: { worksheetId: string; numeros: number[] }[] = [];
+	for (const reference of references) {
+		if (reference.kind !== 'worksheet') continue;
+
+		const numeros = parseExerciseSelection(reference.selection);
+		if (numeros.length === 0) continue;
+
+		const resolue = await resolveExercisesAtDisplayNumbers(supabase, reference.id, numeros);
+		for (const id of resolue.exerciseIds) exerciseIds.add(id);
+		if (resolue.introuvables.length > 0) {
+			numerosIntrouvables.push({ worksheetId: reference.id, numeros: resolue.introuvables });
+		}
+	}
+
+	const worksheetExerciseIds = referenceIdsOfKind(references, 'worksheet_exercise');
+	if (worksheetExerciseIds.length > 0) {
+		const { data: linked, error: linkErr } = await supabase
+			.from('worksheet_exercises')
+			.select('exercise_id')
+			.in('id', worksheetExerciseIds);
+		if (linkErr) throw new Error(`reconcileAutoCoverage worksheet exercises: ${linkErr.message}`);
+		for (const row of linked ?? []) exerciseIds.add(row.exercise_id);
+	}
 
 	// 2. desired auto points = union of the three sources' curriculum tags
 	const desiredSet = new Set<string>();
 
-	if (exerciseIds.length > 0) {
+	if (exerciseIds.size > 0) {
 		const { data, error } = await supabase
 			.from('exercise_curriculum_points')
 			.select('point_id')
-			.in('exercise_id', exerciseIds);
+			.in('exercise_id', [...exerciseIds]);
 		if (error) throw new Error(`reconcileAutoCoverage exercise tags: ${error.message}`);
 		for (const t of (data ?? []) as { point_id: string }[]) desiredSet.add(t.point_id);
 	}
 
-	if (templateIds.length > 0) {
+	if (templateIds.size > 0) {
 		const { data, error } = await supabase
 			.from('question_template_points')
 			.select('point_id')
-			.in('template_id', templateIds);
+			.in('template_id', [...templateIds]);
 		if (error) throw new Error(`reconcileAutoCoverage question tags: ${error.message}`);
 		for (const t of (data ?? []) as { point_id: string }[]) desiredSet.add(t.point_id);
 	}
 
-	if (assessmentIds.length > 0) {
+	if (assessmentIds.size > 0) {
 		// An assessment names question *categories*, not templates, so the
 		// resolution is a four-column join better left to the database.
 		const { data, error } = await supabase.rpc('assessment_curriculum_points', {
-			p_assessment_ids: assessmentIds
+			p_assessment_ids: [...assessmentIds]
 		});
 		if (error) throw new Error(`reconcileAutoCoverage assessment tags: ${error.message}`);
 		for (const t of (data ?? []) as { point_id: string }[]) desiredSet.add(t.point_id);
@@ -121,4 +203,6 @@ export async function reconcileAutoCoverage(supabase: Sb, entryId: string): Prom
 			.upsert(toInsert, { onConflict: 'entry_id,point_id', ignoreDuplicates: true });
 		if (error) throw new Error(`reconcileAutoCoverage insert: ${error.message}`);
 	}
+
+	return { numerosIntrouvables };
 }

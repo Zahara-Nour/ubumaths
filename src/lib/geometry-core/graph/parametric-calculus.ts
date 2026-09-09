@@ -19,7 +19,6 @@
  *   - centre = γ(t0) + n̂ / κ ;  rayon = 1 / |κ|
  */
 
-import type { GeoParametricCurve } from '../types/elements';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
 
 const SPEED_EPS_SQ = 1e-20; // ‖γ'‖² below this → degenerate
@@ -33,8 +32,27 @@ const KAPPA_EPS = 1e-10; // |κ| below this → straight line (no osculating cir
  * Theoretical error is O(1/N^4) for smooth integrands; with N=64 the unit
  * circle integrates to 2π well within 1e-6.
  */
+/**
+ * The shape these computations actually need: a parametrised curve whose
+ * coordinates and derivatives are compiled.
+ *
+ * Stated structurally rather than as `GeoParametricCurve` so that a caller who
+ * has the same closures — the grapheur, whose cartesian `y = f(x)` is the
+ * parametrisation `t ↦ (t, f(t))` — can reuse arc length, curvature and the
+ * osculating circle instead of rewriting their formulas.
+ */
+export interface DifferentiableCurve {
+	readonly parameter: string;
+	readonly compiledX: CompiledFn;
+	readonly compiledY: CompiledFn;
+	readonly compiledXPrime: CompiledFn | null;
+	readonly compiledYPrime: CompiledFn | null;
+	readonly compiledXSecond: CompiledFn | null;
+	readonly compiledYSecond: CompiledFn | null;
+}
+
 export function computeArcLength(
-	curve: GeoParametricCurve,
+	curve: DifferentiableCurve,
 	bindings: Record<string, number>,
 	tMin: number,
 	tMax: number,
@@ -76,7 +94,7 @@ export function computeArcLength(
  * had no first derivatives, or eager compilation failed).
  */
 function getSecondDerivatives(
-	curve: GeoParametricCurve
+	curve: DifferentiableCurve
 ): { compiledXSecond: CompiledFn; compiledYSecond: CompiledFn } | null {
 	if (!curve.compiledXSecond || !curve.compiledYSecond) return null;
 	return {
@@ -91,7 +109,7 @@ function getSecondDerivatives(
  * cannot be obtained.
  */
 export function computeCurvature(
-	curve: GeoParametricCurve,
+	curve: DifferentiableCurve,
 	bindings: Record<string, number>,
 	t0: number
 ): number | null {
@@ -138,7 +156,7 @@ export interface OsculatingCircleData {
  * non-finite. Silent — no logging.
  */
 export function computeOsculatingCircle(
-	curve: GeoParametricCurve,
+	curve: DifferentiableCurve,
 	bindings: Record<string, number>,
 	t0: number
 ): OsculatingCircleData | null {

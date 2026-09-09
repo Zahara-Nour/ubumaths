@@ -21,7 +21,10 @@
 	import type { ExplicitFunction, SnappedPointType, SnappedPoint } from '$lib/grapheur/types';
 	import { isExplicitFunction } from '$lib/grapheur/types';
 	import { createEvaluator } from '$lib/grapheur/evaluator';
-	import { analyzeAllFunctions } from '$lib/grapheur/analysis';
+	import { analyzeAllFunctions, toAnalysisInputs } from '$lib/grapheur/analysis';
+	import { convertLatexToMarkup } from 'mathlive';
+	import { toLatex } from '$lib/mathAST/latex-generator';
+	import type { MathNode } from '$lib/mathAST/types';
 	import {
 		findAllIntersections,
 		deduplicateIntersections,
@@ -63,15 +66,10 @@
 	const analysisResults = $derived.by(() => {
 		if (grapheurStore.isInteracting) return [];
 
-		const functions = grapheurStore.functions
-			.filter(isExplicitFunction)
-			.filter((f) => f.visible && f.ast)
-			.map((f) => ({
-				id: f.id,
-				evaluator: createEvaluator(f.ast!)
-			}));
-
-		return analyzeAllFunctions(functions, grapheurStore.viewport);
+		return analyzeAllFunctions(
+			toAnalysisInputs(grapheurStore.functions, grapheurStore.parameterBindings),
+			grapheurStore.viewport
+		);
 	});
 
 	/**
@@ -81,13 +79,7 @@
 	const intersections = $derived.by((): IntersectionResult[] => {
 		if (grapheurStore.isInteracting) return [];
 
-		const validFuncs = grapheurStore.functions
-			.filter(isExplicitFunction)
-			.filter((f) => f.visible && f.ast !== undefined)
-			.map((f) => ({
-				id: f.id,
-				evaluator: createEvaluator(f.ast!)
-			}));
+		const validFuncs = toAnalysisInputs(grapheurStore.functions, grapheurStore.parameterBindings);
 
 		if (validFuncs.length < 2 || validFuncs.length > MAX_FUNCTIONS_FOR_INTERSECTIONS) {
 			return [];
@@ -114,6 +106,10 @@
 		func: ExplicitFunction | null;
 		functionIds: string[];
 		color: string;
+		/** Symbolic abscissa, when the point was found by exact solving. */
+		exactX?: MathNode;
+		/** Symbolic ordinate, simplified, when known exactly. */
+		exactY?: MathNode;
 	}
 
 	/**
@@ -157,7 +153,8 @@
 						type: 'root',
 						func: func ?? null,
 						functionIds: [analysis.functionId],
-						color
+						color,
+						...(root.exactX ? { exactX: root.exactX } : {})
 					});
 				}
 			}
@@ -179,7 +176,9 @@
 						type: extremum.type,
 						func: func ?? null,
 						functionIds: [analysis.functionId],
-						color
+						color,
+						...(extremum.exactX ? { exactX: extremum.exactX } : {}),
+						...(extremum.exactY ? { exactY: extremum.exactY } : {})
 					});
 				}
 			}
@@ -215,7 +214,7 @@
 		for (const func of grapheurStore.functions) {
 			if (!isExplicitFunction(func) || !func.visible || !func.ast) continue;
 
-			const evaluator = createEvaluator(func.ast);
+			const evaluator = createEvaluator(func.ast, grapheurStore.parameterBindings);
 			const y = evaluator(cursor.x);
 
 			if (y === null) continue;
@@ -318,22 +317,48 @@
 		return parseFloat(formatted).toString();
 	}
 
+	/** A tooltip label: plain text always, plus LaTeX when the values are exact. */
+	interface HoverLabel {
+		/** Text form, used for width estimation and as the fallback rendering. */
+		readonly text: string;
+		/** LaTeX form, present only when the point carries a symbolic value. */
+		readonly latex: string | null;
+	}
+
+	/** French prefix shown before the coordinates, by point type. */
+	const LABEL_PREFIX: Record<string, string> = {
+		root: 'Racine',
+		max: 'Max',
+		min: 'Min',
+		intersection: 'Inter'
+	};
+
 	/**
-	 * Get the label text for a hover point based on its type.
+	 * Build the tooltip label for a hover point.
+	 *
+	 * A root or an extremum found by symbolic solving knows its abscissa
+	 * exactly: showing `1,414` there would throw away what the solver computed.
+	 * The LaTeX form is offered alongside the text one, and the template renders
+	 * it when present.
 	 */
-	function getLabel(point: SnapCandidate): string {
-		switch (point.type) {
-			case 'root':
-				return `Racine : x = ${formatCoord(point.mathX)}`;
-			case 'max':
-				return `Max : (${formatCoord(point.mathX)}, ${formatCoord(point.mathY)})`;
-			case 'min':
-				return `Min : (${formatCoord(point.mathX)}, ${formatCoord(point.mathY)})`;
-			case 'intersection':
-				return `Inter : (${formatCoord(point.mathX)}, ${formatCoord(point.mathY)})`;
-			default:
-				return `(${formatCoord(point.mathX)}, ${formatCoord(point.mathY)})`;
-		}
+	function getLabel(point: SnapCandidate): HoverLabel {
+		const prefix = LABEL_PREFIX[point.type];
+		const isRoot = point.type === 'root';
+
+		const text = isRoot
+			? `Racine : x = ${formatCoord(point.mathX)}`
+			: `${prefix ? `${prefix} : ` : ''}(${formatCoord(point.mathX)}, ${formatCoord(point.mathY)})`;
+
+		if (!point.exactX) return { text, latex: null };
+
+		const x = toLatex(point.exactX);
+		const latex = isRoot
+			? `\\text{Racine : } x = ${x}`
+			: `\\text{${prefix ?? ''} : } \\left( ${x} \\, ; \\, ${
+					point.exactY ? toLatex(point.exactY) : formatCoord(point.mathY)
+				} \\right)`;
+
+		return { text, latex };
 	}
 
 	/**
@@ -398,9 +423,9 @@
 
 {#if hoverPoint}
 	{@const label = getLabel(hoverPoint)}
-	{@const tooltipPos = getTooltipPosition(hoverPoint.svgX, hoverPoint.svgY, label.length)}
+	{@const tooltipPos = getTooltipPosition(hoverPoint.svgX, hoverPoint.svgY, label.text.length)}
 	{@const markerPath = getMarkerPath(hoverPoint.svgX, hoverPoint.svgY, hoverPoint.type)}
-	{@const tooltipWidth = Math.max(105, label.length * 7)}
+	{@const tooltipWidth = Math.max(105, label.text.length * 7)}
 	<g class="curve-hover" pointer-events="none">
 		<!-- Marker: shaped based on point type -->
 		{#if markerPath}
@@ -435,15 +460,29 @@
 			class="tooltip-bg"
 		/>
 
-		<!-- Coordinate label text -->
-		<text
-			x={tooltipPos.anchor === 'start' ? tooltipPos.x + 6 : tooltipPos.x - 6}
-			y={tooltipPos.y + 4}
-			text-anchor={tooltipPos.anchor}
-			class="tooltip-text"
-		>
-			{label}
-		</text>
+		<!-- Coordinate label: rendered maths when the value is exact, text otherwise -->
+		{#if label.latex}
+			<foreignObject
+				x={tooltipPos.anchor === 'start' ? tooltipPos.x : tooltipPos.x - tooltipWidth}
+				y={tooltipPos.y - 10}
+				width={tooltipWidth}
+				height={20}
+			>
+				<div class="tooltip-math" data-anchor={tooltipPos.anchor}>
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+					{@html convertLatexToMarkup(label.latex, { defaultMode: 'inline-math' })}
+				</div>
+			</foreignObject>
+		{:else}
+			<text
+				x={tooltipPos.anchor === 'start' ? tooltipPos.x + 6 : tooltipPos.x - 6}
+				y={tooltipPos.y + 4}
+				text-anchor={tooltipPos.anchor}
+				class="tooltip-text"
+			>
+				{label.text}
+			</text>
+		{/if}
 	</g>
 {/if}
 
@@ -455,6 +494,21 @@
 	.tooltip-bg {
 		fill: var(--graph-tooltip-bg, #1f2937);
 		opacity: 0.95;
+	}
+
+	.tooltip-math {
+		display: flex;
+		align-items: center;
+		height: 20px;
+		padding: 0 6px;
+		font-size: 11px;
+		color: white;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+
+	.tooltip-math[data-anchor='end'] {
+		justify-content: flex-end;
 	}
 
 	.tooltip-text {

@@ -9,6 +9,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { fail } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
+import { fetchTagNamesForResources, syncResourceTags } from '$lib/server/resource-tags';
 import {
 	uploadEvaluationMetadataSchema,
 	updateEvaluationSchema,
@@ -36,7 +37,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 				mime_type,
 				file_size,
 				grade_levels,
-				tags,
 				created_by,
 				created_at,
 				updated_at,
@@ -51,12 +51,21 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	// Resolve the public URL once on the server. Used by the "Aperçu" button
 	// which opens the PDF inline in a new tab.
+	// Les tags viennent de `resource_tags`, plus de la colonne. Lecture GROUPÉE :
+	// une requête par ligne serait un N+1 sur une page qui liste tout.
+	const tagsByEvaluation = await fetchTagNamesForResources(
+		locals.supabase,
+		'parody_evaluation',
+		(evaluations ?? []).map((evaluation: RawEvaluation) => evaluation.id)
+	);
+
 	const withUrls = (evaluations ?? []).map((evaluation: RawEvaluation) => {
 		const { data: urlData } = locals.supabase.storage
 			.from(STORAGE_BUCKET)
 			.getPublicUrl(evaluation.storage_path);
 		return {
 			...evaluation,
+			tags: tagsByEvaluation.get(evaluation.id) ?? [],
 			publicUrl: urlData?.publicUrl ?? null
 		};
 	});
@@ -130,35 +139,34 @@ export const actions: Actions = {
 			return fail(500, { action: 'upload', error: "Erreur lors de l'upload du fichier" });
 		}
 
-		const { error: insertError } = await locals.supabase.from('parody_evaluations').insert({
-			title: metadata.title,
-			description: metadata.description,
-			storage_path: storagePath,
-			file_name: file.name,
-			mime_type: ALLOWED_MIME_TYPE,
-			file_size: file.size,
-			grade_levels: metadata.gradeLevels,
-			tags: metadata.tags,
-			created_by: user.id
-		});
+		const { data: inserted, error: insertError } = await locals.supabase
+			.from('parody_evaluations')
+			.insert({
+				title: metadata.title,
+				description: metadata.description,
+				storage_path: storagePath,
+				file_name: file.name,
+				mime_type: ALLOWED_MIME_TYPE,
+				file_size: file.size,
+				grade_levels: metadata.gradeLevels,
+				created_by: user.id
+			})
+			.select('id')
+			.single();
 
-		if (insertError) {
+		if (insertError || !inserted) {
 			// Rollback: remove the orphan storage object
 			await locals.supabase.storage.from(STORAGE_BUCKET).remove([storagePath]);
 			console.error('[parody-evaluations:upload] DB insert error:', insertError);
 			return fail(500, { action: 'upload', error: "Erreur lors de l'enregistrement" });
 		}
 
-		// Best-effort: register newly-introduced tags in the shared tags table.
-		if (metadata.tags.length > 0) {
-			const { error: tagsError } = await locals.supabase.from('tags').upsert(
-				metadata.tags.map((name) => ({ name, created_by: user.id })),
-				{ onConflict: 'name', ignoreDuplicates: true }
-			);
-			if (tagsError) {
-				console.warn('[parody-evaluations:upload] Tag upsert warning:', tagsError);
-			}
-		}
+		// Les tags vivent désormais dans `resource_tags`, plus dans la colonne.
+		// L'ancien code faisait un `upsert ... onConflict: 'name'` qui échouait en
+		// 42P10 — il n'existe aucune contrainte unique sur `tags.name`, l'unicité
+		// porte sur le slug. L'échec était avalé par un `console.warn` : les tags
+		// n'étaient jamais enregistrés dans le catalogue partagé.
+		await syncResourceTags(locals.supabase, 'parody_evaluation', inserted.id, metadata.tags);
 
 		return { action: 'upload', success: true };
 	},
@@ -213,8 +221,7 @@ export const actions: Actions = {
 			.update({
 				title: input.title,
 				description: input.description,
-				grade_levels: input.gradeLevels,
-				tags: input.tags
+				grade_levels: input.gradeLevels
 			})
 			.eq('id', input.id);
 
@@ -223,15 +230,7 @@ export const actions: Actions = {
 			return fail(500, { action: 'update', error: 'Erreur lors de la modification' });
 		}
 
-		if (input.tags.length > 0) {
-			const { error: tagsError } = await locals.supabase.from('tags').upsert(
-				input.tags.map((name) => ({ name, created_by: user.id })),
-				{ onConflict: 'name', ignoreDuplicates: true }
-			);
-			if (tagsError) {
-				console.warn('[parody-evaluations:update] Tag upsert warning:', tagsError);
-			}
-		}
+		await syncResourceTags(locals.supabase, 'parody_evaluation', input.id, input.tags);
 
 		return { action: 'update', success: true };
 	},

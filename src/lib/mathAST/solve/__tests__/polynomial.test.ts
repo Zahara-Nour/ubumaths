@@ -330,3 +330,28 @@ describe('Polynomial Solver (x^n = k)', () => {
 		});
 	});
 });
+
+/**
+ * Même défaut que pour le degré 2 : `(x-1)^3` passe le test de degré, et la
+ * division par `x³` fabrique un « coefficient » `(x-1)³/x³` qui dépend encore
+ * de `x`. Cardano appliqué dessus répondait `x = 0`.
+ */
+describe('Polynomial Solver — cubes factorisés', () => {
+	function solutionsOf(latex: string): string[] {
+		const result = solve(parseEquation(latex));
+		if (result.status !== 'unique' && result.status !== 'multiple') return [];
+		return result.solutions.map((s) => toLatex(s.value));
+	}
+
+	it('résout (x-1)^3 = 0 en x = 1', () => {
+		expect(solutionsOf('(x-1)^3 = 0')).toEqual(['1']);
+	});
+
+	it('résout (x-2)^3 = 0 en x = 2', () => {
+		expect(solutionsOf('(x-2)^3 = 0')).toEqual(['2']);
+	});
+
+	it('résout toujours x^3 - 8 = 0', () => {
+		expect(solutionsOf('x^3 - 8 = 0')).toEqual(['2']);
+	});
+});

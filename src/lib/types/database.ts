@@ -1522,6 +1522,78 @@ export type Database = {
           },
         ]
       }
+      class_journal_share_tokens: {
+        Row: {
+          access_count: number
+          class_id: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          last_accessed_at: string | null
+          token: string
+        }
+        Insert: {
+          access_count?: number
+          class_id: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          last_accessed_at?: string | null
+          token: string
+        }
+        Update: {
+          access_count?: number
+          class_id?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          last_accessed_at?: string | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_journal_share_tokens_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_journal_share_tokens_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "class_journal_share_tokens_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "class_journal_share_tokens_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_journal_share_tokens_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       class_members: {
         Row: {
           class_id: string
@@ -1758,7 +1830,6 @@ export type Database = {
           id: string
           is_public: boolean | null
           script: Json
-          tags: string[] | null
           title: string
           updated_at: string | null
         }
@@ -1771,7 +1842,6 @@ export type Database = {
           id?: string
           is_public?: boolean | null
           script: Json
-          tags?: string[] | null
           title: string
           updated_at?: string | null
         }
@@ -1784,7 +1854,6 @@ export type Database = {
           id?: string
           is_public?: boolean | null
           script?: Json
-          tags?: string[] | null
           title?: string
           updated_at?: string | null
         }
@@ -3077,36 +3146,6 @@ export type Database = {
             columns: ["exercise_id"]
             isOneToOne: false
             referencedRelation: "exercises"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      exercise_tags: {
-        Row: {
-          exercise_id: string
-          tag_id: string
-        }
-        Insert: {
-          exercise_id: string
-          tag_id: string
-        }
-        Update: {
-          exercise_id?: string
-          tag_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "exercise_tags_exercise_id_fkey"
-            columns: ["exercise_id"]
-            isOneToOne: false
-            referencedRelation: "exercises"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "exercise_tags_tag_id_fkey"
-            columns: ["tag_id"]
-            isOneToOne: false
-            referencedRelation: "tags"
             referencedColumns: ["id"]
           },
         ]
@@ -8186,7 +8225,6 @@ export type Database = {
           id: string
           mime_type: string
           storage_path: string
-          tags: string[]
           title: string
           updated_at: string
         }
@@ -8200,7 +8238,6 @@ export type Database = {
           id?: string
           mime_type: string
           storage_path: string
-          tags?: string[]
           title: string
           updated_at?: string
         }
@@ -8214,7 +8251,6 @@ export type Database = {
           id?: string
           mime_type?: string
           storage_path?: string
-          tags?: string[]
           title?: string
           updated_at?: string
         }
@@ -8766,36 +8802,6 @@ export type Database = {
           },
         ]
       }
-      python_exercise_tags: {
-        Row: {
-          exercise_id: string
-          tag_id: string
-        }
-        Insert: {
-          exercise_id: string
-          tag_id: string
-        }
-        Update: {
-          exercise_id?: string
-          tag_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "python_exercise_tags_exercise_id_fkey"
-            columns: ["exercise_id"]
-            isOneToOne: false
-            referencedRelation: "python_exercises"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "python_exercise_tags_tag_id_fkey"
-            columns: ["tag_id"]
-            isOneToOne: false
-            referencedRelation: "python_tags"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       python_exercises: {
         Row: {
           author_id: string
@@ -9256,27 +9262,6 @@ export type Database = {
           },
         ]
       }
-      python_tags: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          id: string
-          name: string
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          name: string
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          name?: string
-        }
-        Relationships: []
-      }
       question_template_points: {
         Row: {
           created_at: string
@@ -9552,6 +9537,35 @@ export type Database = {
           key?: string
         }
         Relationships: []
+      }
+      resource_tags: {
+        Row: {
+          created_at: string
+          resource_id: string
+          resource_kind: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string
+          resource_id: string
+          resource_kind: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string
+          resource_id?: string
+          resource_kind?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reward_events: {
         Row: {
@@ -11793,18 +11807,21 @@ export type Database = {
           created_by: string | null
           id: string
           name: string
+          slug: string | null
         }
         Insert: {
           created_at?: string
           created_by?: string | null
           id?: string
           name: string
+          slug?: string | null
         }
         Update: {
           created_at?: string
           created_by?: string | null
           id?: string
           name?: string
+          slug?: string | null
         }
         Relationships: []
       }
@@ -13688,7 +13705,6 @@ export type Database = {
           published_at: string | null
           school_id: string | null
           status: string
-          tags: string[] | null
           template_id: string | null
           title: string
           total_points: number | null
@@ -13709,7 +13725,6 @@ export type Database = {
           published_at?: string | null
           school_id?: string | null
           status?: string
-          tags?: string[] | null
           template_id?: string | null
           title: string
           total_points?: number | null
@@ -13730,7 +13745,6 @@ export type Database = {
           published_at?: string | null
           school_id?: string | null
           status?: string
-          tags?: string[] | null
           template_id?: string | null
           title?: string
           total_points?: number | null
@@ -14345,6 +14359,21 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      resources: {
+        Row: {
+          grades: string[] | null
+          id: string | null
+          is_public: boolean | null
+          kind: string | null
+          owner_id: string | null
+          slug: string | null
+          status: string | null
+          subtitle: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: []
       }
       riddle_progress: {
         Row: {
@@ -15354,6 +15383,10 @@ export type Database = {
           total_views: number
         }[]
       }
+      get_class_journal_by_share_token: {
+        Args: { p_token: string }
+        Returns: Json
+      }
       get_classes_by_user_grade: {
         Args: never
         Returns: {
@@ -15938,6 +15971,10 @@ export type Database = {
           thumbnail: string
         }[]
       }
+      get_worksheet_by_share_token: {
+        Args: { p_token: string; p_worksheet_id: string }
+        Returns: Json
+      }
       grant_parental_consent: {
         Args: { p_ip?: unknown; p_token: string; p_user_agent?: string }
         Returns: Json
@@ -16301,6 +16338,13 @@ export type Database = {
         Returns: number
       }
       resolve_open_class_by_code: { Args: { p_code: string }; Returns: string }
+      resolve_tag_ids: {
+        Args: { p_names: string[] }
+        Returns: {
+          id: string
+          name: string
+        }[]
+      }
       review_report: {
         Args: {
           p_delete_message?: boolean
@@ -16341,6 +16385,33 @@ export type Database = {
           sent_at: string
           subject: string
         }[]
+      }
+      search_resources: {
+        Args: {
+          p_grades?: string[]
+          p_kinds?: string[]
+          p_limit?: number
+          p_query: string
+          p_tags?: string[]
+        }
+        Returns: {
+          grades: string[] | null
+          id: string | null
+          is_public: boolean | null
+          kind: string | null
+          owner_id: string | null
+          slug: string | null
+          status: string | null
+          subtitle: string | null
+          title: string | null
+          updated_at: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "resources"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       search_users_unaccent: {
         Args: { result_limit?: number; search_term: string }
@@ -16427,6 +16498,7 @@ export type Database = {
           week_best_reward: number
         }[]
       }
+      tag_slug: { Args: { p_name: string }; Returns: string }
       teacher_owns_riddle: { Args: { p_riddle_id: string }; Returns: boolean }
       toggle_message_star: {
         Args: { p_message_id: string; p_user_id: string }

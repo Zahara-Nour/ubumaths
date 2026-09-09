@@ -265,7 +265,13 @@ export interface WorksheetRow {
 	estimated_duration_minutes: number | null;
 	total_points: number | null;
 	grades: string[];
-	tags: string[];
+	/**
+	 * ⚠️ Optionnel, et ça n'est pas un oubli : `tags` n'est plus une colonne de
+	 * `worksheets` depuis 20260908180000. Les étiquettes vivent dans
+	 * `resource_tags` et sont chargées séparément — les chemins qui n'en ont pas
+	 * besoin (génération PDF, correction) ne les lisent pas du tout.
+	 */
+	tags?: string[];
 	created_by: string;
 	school_id: string | null;
 	created_at: string;
@@ -826,21 +832,27 @@ export function asTemplatePlaceholders(value: unknown): TemplatePlaceholder[] {
  * Narrows a `worksheets` row to {@link WorksheetRow}.
  *
  * `type`, `status`, `config` and `translations` are all looser in Postgres —
- * plain text or jsonb — and `grades` / `tags` are nullable arrays.
+ * plain text or jsonb — and `grades` is a nullable array. `tags` is passed
+ * separately: it is no longer a column.
  *
  * The fallbacks are the feature's own defaults: a worksheet of unknown type
  * renders as a plain worksheet, and an unknown status is treated as a draft —
  * the direction that never publishes something by accident.
  */
-export function toWorksheetRow(row: {
-	type: string;
-	status: string;
-	config: unknown;
-	translations?: unknown;
-	grades: string[] | null;
-	tags: string[] | null;
-	[k: string]: unknown;
-}): WorksheetRow {
+export function toWorksheetRow(
+	row: {
+		type: string;
+		status: string;
+		config: unknown;
+		translations?: unknown;
+		grades: string[] | null;
+		[k: string]: unknown;
+	},
+	// `tags` n'est plus une colonne de `worksheets` : les étiquettes vivent dans
+	// `resource_tags` depuis 20260908180000. Le domaine les garde sur la fiche,
+	// mais l'appelant doit les fournir — il les a lues séparément.
+	tags: string[] = []
+): WorksheetRow {
 	return {
 		...row,
 		type: (WORKSHEET_TYPES.find((t) => t === row.type) ?? 'worksheet') as WorksheetType,
@@ -848,7 +860,7 @@ export function toWorksheetRow(row: {
 		config: asWorksheetConfig(row.config),
 		translations: asRowTranslations(row.translations),
 		grades: row.grades ?? [],
-		tags: row.tags ?? []
+		tags
 	} as unknown as WorksheetRow;
 }
 
@@ -1017,4 +1029,38 @@ export function localizedText(
 		if (translated) return translated;
 	}
 	return base ?? null;
+}
+
+/**
+ * Ce que la garde a pu établir sur une fiche.
+ *
+ * `verifie: false` n'est PAS « aucune séance » : le cahier n'a pas pu être lu.
+ * Les deux états rendaient le même écran vide — donc, pour une garde, le même
+ * silence rassurant au moment précis où le professeur s'apprête à réordonner.
+ */
+export interface WorksheetCitationsReport {
+	citations: WorksheetCitation[];
+	verifie: boolean;
+}
+
+/**
+ * Une séance du cahier de texte qui cite une fiche PAR NUMÉRO d'exercice.
+ *
+ * Vit ici, et non dans `$lib/server/worksheets/citations`, parce que le panneau
+ * d'avertissement qui l'affiche est un composant : rien de ce qu'importe le
+ * client ne doit venir de `$lib/server`.
+ */
+export interface WorksheetCitation {
+	entryId: string;
+	classId: string;
+	className: string;
+	/** Date de la séance, `YYYY-MM-DD` — telle que la route du cahier l'attend. */
+	entryDate: string;
+	/**
+	 * Les sélections citées, déjà lisibles : `['ex. 3 et 5 à 7']`.
+	 *
+	 * Plusieurs quand la séance cite la fiche deux fois — en classe et en devoirs,
+	 * typiquement, avec des exercices différents.
+	 */
+	selections: string[];
 }

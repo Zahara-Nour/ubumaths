@@ -8,6 +8,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { fetchResourceTagNames, syncResourceTags } from '$lib/server/resource-tags';
 import {
 	validateUpdateWorksheet,
 	worksheetDetailResponseSchema,
@@ -124,12 +125,20 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		}
 	}
 
+	// Les étiquettes ne sont plus une colonne de `worksheets` (migration
+	// 20260908180000). Sans cette lecture, `tags` vaut `undefined` et le schéma
+	// rejette toute la réponse — la fiche devient illisible.
+	const tags = await fetchResourceTagNames(locals.supabase, 'worksheet', worksheet.id).catch(
+		() => []
+	);
+
 	// Validate response
 	const validated = validateJsonResponse(
 		worksheetDetailResponseSchema,
 		{
 			worksheet: {
 				...worksheet,
+				tags,
 				sections: sections ?? [],
 				exercises: exercises ?? [],
 				template
@@ -189,7 +198,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		updateData.estimated_duration_minutes = data.estimated_duration_minutes;
 	if (data.total_points !== undefined) updateData.total_points = data.total_points;
 	if (data.grades !== undefined) updateData.grades = data.grades;
-	if (data.tags !== undefined) updateData.tags = data.tags;
+	// `tags` ne va plus dans la colonne : voir la synchronisation plus bas.
 
 	// Handle status changes with timestamps
 	if (data.status !== undefined) {
@@ -222,7 +231,15 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Failed to update worksheet');
 	}
 
-	return json({ worksheet });
+	// `undefined` signifie « champ absent de la requête » : on ne touche alors pas
+	// aux tags, contrairement à un tableau vide qui, lui, les efface.
+	if (data.tags !== undefined) {
+		await syncResourceTags(locals.supabase, 'worksheet', params.id, data.tags);
+	}
+
+	const tags = await fetchResourceTagNames(locals.supabase, 'worksheet', params.id).catch(() => []);
+
+	return json({ worksheet: { ...worksheet, tags } });
 };
 
 /**

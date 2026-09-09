@@ -21,6 +21,13 @@ export interface SuggestionItem {
 	label: string;
 	/** Optional secondary text (e.g., display name for mentions) */
 	description?: string;
+	/**
+	 * En-tête de regroupement, affichée au-dessus du premier élément qui la
+	 * porte. Sert au sélecteur de ressources : sans elle, 128 exercices noient
+	 * les 12 fiches. Les éléments doivent arriver DÉJÀ groupés — la popup ne
+	 * réordonne rien, elle ne fait qu'insérer les titres.
+	 */
+	group?: string;
 }
 
 /**
@@ -28,7 +35,7 @@ export interface SuggestionItem {
  */
 export interface SuggestionRendererConfig {
 	/** Type of suggestion (affects styling) */
-	type: 'hashtag' | 'mention';
+	type: 'hashtag' | 'mention' | 'resource';
 	/** Prefix character shown before each item */
 	prefix: string;
 	/** CSS class for the popup container */
@@ -37,6 +44,15 @@ export interface SuggestionRendererConfig {
 	itemClass?: string;
 	/** Text shown when no results match */
 	noResultsText?: string;
+	/**
+	 * Texte de l'état vide, calculé depuis la requête en cours.
+	 *
+	 * « Aucun résultat » est un MENSONGE quand rien n'a été cherché : une requête
+	 * trop courte, ou une recherche en échec, produisent la même liste vide qu'une
+	 * recherche aboutie sans correspondance. Ce rappel permet de les distinguer.
+	 * À défaut, `noResultsText` s'applique comme avant.
+	 */
+	emptyText?: (query: string) => string;
 }
 
 /**
@@ -46,6 +62,8 @@ interface SuggestionState {
 	items: SuggestionItem[];
 	selectedIndex: number;
 	command: (item: SuggestionItem) => void;
+	/** Requête en cours, pour que l'état vide puisse dire POURQUOI il est vide. */
+	query: string;
 }
 
 /**
@@ -74,15 +92,25 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 		prefix,
 		popupClass = 'suggestion-popup',
 		itemClass = 'suggestion-item',
-		noResultsText = 'Aucun résultat'
+		noResultsText = 'Aucun résultat',
+		emptyText = () => noResultsText
 	} = config;
 
 	let popup: HTMLDivElement | null = null;
 	let tippyInstance: TippyInstance | null = null;
+	/**
+	 * Les boutons rendus, dans l'ordre de `state.items`.
+	 *
+	 * Gardés pour pouvoir changer la SÉLECTION sans reconstruire le DOM : c'est
+	 * la reconstruction au survol qui rendait le clic impossible (cf.
+	 * `refreshSelection`).
+	 */
+	let itemElements: HTMLButtonElement[] = [];
 	let state: SuggestionState = {
 		items: [],
 		selectedIndex: 0,
-		command: () => {}
+		command: () => {},
+		query: ''
 	};
 
 	/**
@@ -94,7 +122,11 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 		el.setAttribute('role', 'listbox');
 		el.setAttribute(
 			'aria-label',
-			type === 'hashtag' ? 'Suggestions de hashtags' : 'Suggestions de mentions'
+			type === 'hashtag'
+				? 'Suggestions de hashtags'
+				: type === 'mention'
+					? 'Suggestions de mentions'
+					: 'Suggestions de ressources'
 		);
 		return el;
 	}
@@ -108,18 +140,29 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 
 		// Clear existing content
 		currentPopup.innerHTML = '';
+		itemElements = [];
 
 		if (state.items.length === 0) {
 			// Show no results message
 			const noResults = document.createElement('div');
 			noResults.classList.add('suggestion-no-results');
-			noResults.textContent = noResultsText;
+			noResults.textContent = emptyText(state.query);
 			currentPopup.appendChild(noResults);
 			return;
 		}
 
-		// Render each item
+		// Render each item, en insérant un titre quand le groupe change.
+		let currentGroup: string | undefined;
 		state.items.forEach((item, index) => {
+			if (item.group && item.group !== currentGroup) {
+				currentGroup = item.group;
+				const heading = document.createElement('div');
+				heading.classList.add('suggestion-group');
+				heading.setAttribute('role', 'presentation');
+				heading.textContent = item.group;
+				currentPopup.appendChild(heading);
+			}
+
 			const itemEl = document.createElement('button');
 			itemEl.classList.add(itemClass);
 			itemEl.setAttribute('role', 'option');
@@ -143,6 +186,12 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 				itemEl.appendChild(descSpan);
 			}
 
+			// Garder le focus dans l'éditeur : un bouton qui le vole ferait perdre la
+			// position d'insertion entre le `mousedown` et le `click`.
+			itemEl.addEventListener('mousedown', (e) => {
+				e.preventDefault();
+			});
+
 			// Click handler
 			itemEl.addEventListener('click', (e) => {
 				e.preventDefault();
@@ -150,13 +199,33 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 				selectItem(index);
 			});
 
-			// Hover handler
+			// Survol : on met à jour la SÉLECTION, jamais le DOM.
 			itemEl.addEventListener('mouseenter', () => {
 				state.selectedIndex = index;
-				renderItems();
+				refreshSelection();
 			});
 
+			itemElements.push(itemEl);
 			currentPopup.appendChild(itemEl);
+		});
+	}
+
+	/**
+	 * Met à jour la surbrillance sans reconstruire la liste.
+	 *
+	 * ⚠️ NE PAS remplacer par `renderItems()`. Le survol appelait cette
+	 * reconstruction, qui vide `innerHTML` : le bouton visé était donc détruit et
+	 * recréé sous le curseur, entre le `mousedown` et le `mouseup`. Or un
+	 * navigateur n'émet un `click` que si les deux tombent sur le MÊME nœud —
+	 * cliquer un résultat ne faisait donc rien du tout, et la popup ne se fermait
+	 * même pas. Le nœud recréé recevait de surcroît un nouveau `mouseenter`,
+	 * relançant la reconstruction en boucle.
+	 */
+	function refreshSelection(): void {
+		itemElements.forEach((element, index) => {
+			const selected = index === state.selectedIndex;
+			element.classList.toggle('selected', selected);
+			element.setAttribute('aria-selected', String(selected));
 		});
 	}
 
@@ -186,13 +255,10 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 		}
 
 		state.selectedIndex = newIndex;
-		renderItems();
+		refreshSelection();
 
 		// Scroll selected item into view
-		if (popup) {
-			const selectedEl = popup.querySelector('.selected');
-			selectedEl?.scrollIntoView({ block: 'nearest' });
-		}
+		itemElements[newIndex]?.scrollIntoView({ block: 'nearest' });
 	}
 
 	return {
@@ -205,7 +271,8 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 			state = {
 				items: props.items,
 				selectedIndex: 0,
-				command: props.command
+				command: props.command,
+				query: props.query
 			};
 
 			renderItems();
@@ -246,6 +313,7 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 		 */
 		onUpdate: (props: SuggestionProps<SuggestionItem>) => {
 			state.items = props.items;
+			state.query = props.query;
 			state.selectedIndex = 0;
 			state.command = props.command;
 

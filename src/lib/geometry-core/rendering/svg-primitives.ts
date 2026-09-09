@@ -1380,7 +1380,7 @@ import type { ConicParams } from '../types/elements';
 import { conicPointFromParam } from '../graph/conic-helpers';
 import { polarLine } from '../geometry/conic-properties';
 import type { Viewport, SampledCurve, Point } from '../viewport/types';
-import { sampleWithDerivative } from '$lib/grapheur/sampler';
+import { sampleWithDerivative } from '../viewport/sampler';
 import { curveToSVGPath } from '../rendering/bezier';
 import { marchingSquares } from './marching-squares';
 import { isPiecewise, extractPiecewiseBoundaries } from '$lib/mathAST';

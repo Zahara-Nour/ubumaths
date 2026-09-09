@@ -67,6 +67,8 @@
 		ImageIcon,
 		FileCode,
 		TrendingUp,
+		GitBranch,
+		CircleDot,
 		Ruler,
 		Table2,
 		Grid3x3
@@ -132,6 +134,14 @@
 		onchange?: () => void;
 		/** Send message on Enter key (Shift+Enter for new line). Only works in chat mode. */
 		enterToSend?: boolean;
+		/**
+		 * Niveaux auxquels restreindre le sélecteur de ressources `[[`.
+		 *
+		 * Renseigné là où le contexte le dit — la séance du cahier de texte connaît
+		 * la classe, donc son niveau. Ailleurs (éditeur d'exercices, chat), laisser
+		 * vide : rien ne justifierait de filtrer.
+		 */
+		resourceGrades?: string[] | null;
 	}
 
 	let {
@@ -151,7 +161,8 @@
 		imageUpload,
 		genericFunctions,
 		onchange,
-		enterToSend = false
+		enterToSend = false,
+		resourceGrades = null
 	}: Props = $props();
 
 	// Resolve configuration: explicit props override preset values
@@ -176,6 +187,17 @@
 	// Editor State
 	let editorElement = $state<HTMLElement | null>(null);
 	let editor = $state<Editor | null>(null);
+
+	// Le sélecteur `[[` lit ce niveau au moment de chaque recherche. On l'écrit
+	// dans le STOCKAGE de l'extension et non dans ses options, parce que
+	// `createEditorExtensions()` partage un jeu d'extensions unique entre tous les
+	// éditeurs de la page : une option serait commune à tous, et survivrait à une
+	// navigation d'une classe vers une autre. Le stockage est par éditeur.
+	$effect(() => {
+		// Un préréglage sans l'extension n'a pas ce stockage : ne pas planter.
+		const storage = editor?.storage.resourceLink;
+		if (storage) storage.grades = resourceGrades;
+	});
 	// Non-reactive flag to prevent update loops (NOT $state - just a guard)
 	let isUpdatingFromProp = false;
 	// Flag to track when editor is ready for user input (prevents onchange during init)
@@ -919,6 +941,21 @@
 	 * complet, mais aucun bouton n'appelait `insertNumberLine` : la
 	 * fonctionnalité était inatteignable depuis l'éditeur.
 	 */
+	/**
+	 * Arbre de probabilité et cercle trigonométrique.
+	 *
+	 * Les deux étaient rendus depuis toujours dans l'affichage markdown, mais
+	 * aucune extension TipTap ne permettait d'en insérer : il fallait écrire le
+	 * bloc ```probtree / ```trig à la main dans la vue markdown.
+	 */
+	function insertProbabilityTree() {
+		(editor?.commands as unknown as Record<string, () => boolean>).insertProbabilityTree?.();
+	}
+
+	function insertTrigCircle() {
+		(editor?.commands as unknown as Record<string, () => boolean>).insertTrigCircle?.();
+	}
+
 	function insertNumberLine() {
 		if (disabled) return;
 		(editor?.commands as unknown as Record<string, () => boolean>).insertNumberLine?.();
@@ -1658,6 +1695,32 @@
 						aria-label="Insérer un tableau de variation"
 					>
 						<TrendingUp class="h-4 w-4" />
+					</Button>
+
+					<!-- Probability Tree Button -->
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={insertProbabilityTree}
+						{disabled}
+						title="Insérer un arbre de probabilité"
+						aria-label="Insérer un arbre de probabilité"
+					>
+						<GitBranch class="h-4 w-4" />
+					</Button>
+
+					<!-- Trig Circle Button -->
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={insertTrigCircle}
+						{disabled}
+						title="Insérer un cercle trigonométrique"
+						aria-label="Insérer un cercle trigonométrique"
+					>
+						<CircleDot class="h-4 w-4" />
 					</Button>
 				</div>
 			{/if}

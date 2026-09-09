@@ -15,6 +15,7 @@
 		StudentExerciseView,
 		StudentSectionView
 	} from '$lib/types/worksheets';
+	import { groupExercisesForDisplay } from '$lib/worksheets/exercise-numbering';
 
 	interface Props {
 		data: PageData;
@@ -29,52 +30,15 @@
 	let exerciseCount = $derived(exercises.length);
 	let assignmentId = $derived(worksheet.assignment_id);
 
-	// Group exercises by section
-	let groupedExercises = $derived.by(() => {
-		const groups = new Map<string | null, StudentExerciseView[]>();
+	// Groupement et numérotation : `$lib/worksheets/exercise-numbering`, la même
+	// règle que le générateur PDF. Elle était réécrite ici, et une troisième
+	// copie avait déjà divergé — d'où le module partagé.
+	let displayGroups = $derived(groupExercisesForDisplay(exercises, sections));
 
-		// Initialize groups for all sections
-		for (const section of sections) {
-			groups.set(section.id, []);
-		}
-		// Group for unsectioned exercises
-		groups.set(null, []);
-
-		// Assign exercises to their sections
-		for (const exercise of exercises) {
-			const sectionId = exercise.section_id;
-			const group = groups.get(sectionId) ?? groups.get(null)!;
-			group.push(exercise);
-		}
-
-		return groups;
-	});
-
-	// Sorted section IDs (sections first, then unsectioned)
-	let sortedSectionIds = $derived.by(() => {
-		const ids: (string | null)[] = sections.map((s: StudentSectionView) => s.id);
-		// Only add null if there are unsectioned exercises
-		const unsectioned = groupedExercises.get(null);
-		if (unsectioned && unsectioned.length > 0) {
-			ids.push(null);
-		}
-		return ids;
-	});
-
-	// Check if we have sections to display
-	let hasSections = $derived(sections.length > 0);
-
-	// Visual order of exercises (respects section grouping)
-	// Used for numbering and modal navigation
-	let visualOrderExercises = $derived.by(() => {
-		if (!hasSections) return exercises;
-		const ordered: StudentExerciseView[] = [];
-		for (const sectionId of sortedSectionIds) {
-			const sectionExercises = groupedExercises.get(sectionId) ?? [];
-			ordered.push(...sectionExercises);
-		}
-		return ordered;
-	});
+	// Ordre visuel, utilisé pour la numérotation et la navigation dans la modale.
+	let visualOrderExercises = $derived(
+		displayGroups.flatMap((g) => g.exercises.map((e) => e.exercise))
+	);
 
 	// Check if there are essential exercises (for legend display)
 	let hasEssentialExercises = $derived(exercises.some((e: StudentExerciseView) => e.is_essential));
@@ -264,13 +228,12 @@
 							</p>
 						</Card.Content>
 					</Card.Root>
-				{:else if hasSections}
+				{:else}
 					<!-- Exercise List grouped by sections -->
-					{#each sortedSectionIds as sectionId (sectionId ?? 'unsectioned')}
-						{@const sectionExercises = groupedExercises.get(sectionId) ?? []}
-						{@const section = sections.find((s) => s.id === sectionId)}
+					{#each displayGroups as group (group.section?.id ?? 'unsectioned')}
+						{@const section = group.section}
 
-						{#if sectionExercises.length > 0}
+						{#if group.exercises.length > 0}
 							<div class="space-y-3">
 								{#if section}
 									<!-- Section Header -->
@@ -289,30 +252,19 @@
 									</div>
 								{/if}
 
-								{#each sectionExercises as exercise (exercise.id)}
-									{@const visualIndex = visualOrderExercises.findIndex((e) => e.id === exercise.id)}
+								<!-- `number` vient du module de numérotation : plus de recherche
+								     d'indice à chaque rendu, et surtout plus de règle recopiée. -->
+								{#each group.exercises as { exercise, number } (exercise.id)}
 									<ExerciseListItem
 										{exercise}
-										index={visualIndex + 1}
+										index={number}
 										masteryStatus={masteryMap.get(exercise.exercise_id) ?? 'not_worked'}
-										onclick={() => openExercise(visualIndex)}
+										onclick={() => openExercise(number - 1)}
 									/>
 								{/each}
 							</div>
 						{/if}
 					{/each}
-				{:else}
-					<!-- Exercise List without sections -->
-					<div class="space-y-3">
-						{#each exercises as exercise, i (exercise.id)}
-							<ExerciseListItem
-								{exercise}
-								index={i + 1}
-								masteryStatus={masteryMap.get(exercise.exercise_id) ?? 'not_worked'}
-								onclick={() => openExercise(i)}
-							/>
-						{/each}
-					</div>
 				{/if}
 			</Tabs.Content>
 

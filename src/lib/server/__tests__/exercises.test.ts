@@ -20,14 +20,14 @@ import type { Database } from '$lib/types/database';
 
 // Stub the tag-resolution helpers so tests don't need to mock junction queries.
 // Individual tests that need specific return values can override via mockResolvedValueOnce.
-vi.mock('$lib/server/tags-resolution', () => ({
-	resolveTagsToIds: vi.fn().mockResolvedValue([]),
-	syncExerciseTagJunction: vi.fn().mockResolvedValue(undefined),
-	fetchTagNamesForExercise: vi.fn().mockResolvedValue([]),
-	fetchExerciseIdsByAnyTag: vi.fn().mockResolvedValue([])
+vi.mock('$lib/server/resource-tags', () => ({
+	syncResourceTags: vi.fn().mockResolvedValue(undefined),
+	fetchResourceTagNames: vi.fn().mockResolvedValue([]),
+	fetchTagNamesForResources: vi.fn().mockResolvedValue(new Map()),
+	fetchResourceIdsByAnyTag: vi.fn().mockResolvedValue([])
 }));
 
-import { fetchExerciseIdsByAnyTag, fetchTagNamesForExercise } from '$lib/server/tags-resolution';
+import { fetchResourceIdsByAnyTag, fetchResourceTagNames } from '$lib/server/resource-tags';
 
 type ExerciseRow = Database['public']['Tables']['exercises']['Row'];
 
@@ -115,20 +115,19 @@ describe('getExercises', () => {
 		expect(mockSupabase.__mockQuery.eq).toHaveBeenCalledWith('category', 'automatisme');
 	});
 
-	it('should apply tags filter via junction (fetchExerciseIdsByAnyTag)', async () => {
+	it('should apply tags filter via junction (fetchResourceIdsByAnyTag)', async () => {
 		const mockSupabase = createMockSupabase() as any;
-		// fetchExerciseIdsByAnyTag returns matching ids; then .in() restricts the query.
-		(fetchExerciseIdsByAnyTag as Mock).mockResolvedValueOnce(['ex-1', 'ex-2']);
+		// fetchResourceIdsByAnyTag returns matching ids; then .in() restricts the query.
+		(fetchResourceIdsByAnyTag as Mock).mockResolvedValueOnce(['ex-1', 'ex-2']);
 		mockSupabase.__mockQuery.range.mockResolvedValue({ data: [], error: null, count: 0 });
 
 		await getExercises(mockSupabase, { tags: ['algèbre', 'équations'] });
 
-		expect(fetchExerciseIdsByAnyTag).toHaveBeenCalledWith(
-			mockSupabase,
-			['algèbre', 'équations'],
-			'exercise_tags',
-			'tags'
-		);
+		// Signature unifiée : le type de ressource remplace les deux noms de tables.
+		expect(fetchResourceIdsByAnyTag).toHaveBeenCalledWith(mockSupabase, 'exercise', [
+			'algèbre',
+			'équations'
+		]);
 		expect(mockSupabase.__mockQuery.in).toHaveBeenCalledWith('id', ['ex-1', 'ex-2']);
 	});
 
@@ -172,7 +171,7 @@ describe('getExercise', () => {
 			title: 'Test Exercise',
 			source: 'Test Book',
 			category: 'automatisme',
-			tags: [], // column is dropped in DB; value from junction via fetchTagNamesForExercise
+			tags: [], // column is dropped in DB; value from junction via fetchResourceTagNames
 			grades: ['3'],
 			topic: 'Algèbre',
 			created_at: '2024-01-01T00:00:00Z',
@@ -196,7 +195,7 @@ describe('getExercise', () => {
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: mockExercise, error: null });
 		// Simulate the junction returning a resolved tag name.
-		(fetchTagNamesForExercise as Mock).mockResolvedValueOnce(['algèbre']);
+		(fetchResourceTagNames as Mock).mockResolvedValueOnce(['algèbre']);
 
 		const result = await getExercise(mockSupabase, 'ex-123');
 
@@ -472,7 +471,7 @@ describe('getTeacherExercises', () => {
 
 	it('should combine teacher filter with other filters, using junction for tags', async () => {
 		const mockSupabase = createMockSupabase() as any;
-		(fetchExerciseIdsByAnyTag as Mock).mockResolvedValueOnce(['ex-1']);
+		(fetchResourceIdsByAnyTag as Mock).mockResolvedValueOnce(['ex-1']);
 		mockSupabase.__mockQuery.range.mockResolvedValue({ data: [], error: null, count: 0 });
 
 		await getTeacherExercises(mockSupabase, 'teacher-123', {
@@ -483,12 +482,7 @@ describe('getTeacherExercises', () => {
 		expect(mockSupabase.__mockQuery.eq).toHaveBeenCalledWith('created_by', 'teacher-123');
 		expect(mockSupabase.__mockQuery.eq).toHaveBeenCalledWith('category', 'automatisme');
 		// Tags are resolved via the junction, not via .contains() on a column.
-		expect(fetchExerciseIdsByAnyTag).toHaveBeenCalledWith(
-			mockSupabase,
-			['algèbre'],
-			'exercise_tags',
-			'tags'
-		);
+		expect(fetchResourceIdsByAnyTag).toHaveBeenCalledWith(mockSupabase, 'exercise', ['algèbre']);
 		expect(mockSupabase.__mockQuery.in).toHaveBeenCalledWith('id', ['ex-1']);
 	});
 });

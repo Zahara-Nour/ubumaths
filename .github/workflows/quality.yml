@@ -109,7 +109,16 @@ jobs:
     # 15 min like the rest of this workflow. The build takes 2-4 min normally;
     # 10 left no room for a slow runner and cancelled the job mid-build.
     timeout-minutes: 15
-    needs: [lint, typecheck]
+    # PAS de `needs:`. Ce job est autonome — checkout, install, build, garde de
+    # chunk — il ne consomme aucun artefact de lint ni de typecheck. L'y enchaîner
+    # n'économisait que des minutes de RUNNER quand lint échoue, au prix de
+    # minutes d'ATTENTE HUMAINE sur chaque PR qui passe, c'est-à-dire presque
+    # toutes. Mesure sur la PR #181 : chemin critique 7 min 21 s, dont 3 min 20 s
+    # de build démarré 2 secondes après la fin du typecheck. En parallèle, le
+    # chemin critique retombe sur le seul typecheck (~3 min 55 s).
+    #
+    # La garde de merge est inchangée : `summary` attend toujours tout le monde,
+    # et c'est lui (avec les autres) qui figure dans la protection de branche.
 
     steps:
       - name: Checkout code
@@ -214,7 +223,19 @@ jobs:
         run: cp .github/ci.env .env
 
       - name: Install Playwright browsers
-        run: npx playwright install chromium --with-deps
+        run: |
+          # Le dépôt apt de Google Chrome est préinstallé sur les runners et ne
+          # nous sert à RIEN : Playwright télécharge Chromium lui-même, et ses
+          # dépendances système viennent des dépôts Ubuntu. Mais `--with-deps`
+          # déclenche un `apt-get update` qui le lit — et le 2026-09-09 son index
+          # était incohérent côté CDN Google (« Hash Sum mismatch »), ce qui a
+          # fait échouer tout le job, deux fois.
+          #
+          # On retire une source inutile plutôt que de dépendre de la santé d'un
+          # dépôt tiers à chaque exécution.
+          sudo rm -f /etc/apt/sources.list.d/google-chrome.list \
+            /etc/apt/sources.list.d/google-chrome.sources
+          npx playwright install chromium --with-deps
 
       # The real-Pyodide integration tests are excluded via vite.config.ts
       # (gated on CI=true), since the CLI --exclude flag does not propagate to

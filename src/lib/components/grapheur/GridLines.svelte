@@ -10,6 +10,7 @@
 
 	import type { Viewport } from '$lib/grapheur/types';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
+	import { computeGridStep } from '$lib/geometry-core/viewport';
 
 	// Props
 	let {
@@ -25,69 +26,60 @@
 	} = $props();
 
 	// ==========================================================================
-	// Grid Spacing Calculation
+	// Constants
 	// ==========================================================================
 
 	/**
-	 * Calculate "nice" grid spacing based on viewport size.
-	 * Uses powers of 10 multiplied by 1, 2, or 5 (human-friendly numbers).
+	 * Hard ceiling on the lines drawn along one axis.
 	 *
-	 * The goal is to have roughly 5-15 major grid lines visible.
+	 * The spacing heuristic targets a few dozen, so this only ever triggers on a
+	 * degenerate viewport.
 	 */
-	function calculateGridSpacing(range: number): { major: number; minor: number } {
-		// Target: ~5-15 major grid lines
-		const targetLines = 8;
-		const rawSpacing = range / targetLines;
-
-		// Find the order of magnitude
-		const magnitude = Math.pow(10, Math.floor(Math.log10(rawSpacing)));
-
-		// Normalize to 1-10 range
-		const normalized = rawSpacing / magnitude;
-
-		// Choose "nice" number: 1, 2, 5, or 10
-		let niceNumber: number;
-		if (normalized <= 1.5) {
-			niceNumber = 1;
-		} else if (normalized <= 3) {
-			niceNumber = 2;
-		} else if (normalized <= 7) {
-			niceNumber = 5;
-		} else {
-			niceNumber = 10;
-		}
-
-		const major = niceNumber * magnitude;
-		// Minor grid: 5 subdivisions for nice numbers 1 and 5, 4 for 2 and 10
-		const minorDivisions = niceNumber === 2 || niceNumber === 10 ? 4 : 5;
-		const minor = major / minorDivisions;
-
-		return { major, minor };
-	}
+	const MAX_LINES_PER_AXIS = 400;
 
 	// ==========================================================================
 	// Derived Grid Data
 	// ==========================================================================
 
-	/** Grid spacing based on current viewport */
-	const gridSpacing = $derived.by(() => {
-		const xRange = viewport.xMax - viewport.xMin;
-		const yRange = viewport.yMax - viewport.yMin;
-		// Use the larger range to determine spacing (maintains square grid)
-		const range = Math.max(xRange, yRange);
-		return calculateGridSpacing(range);
-	});
+	/**
+	 * Grid spacing, computed for each axis on its own, from its own scale.
+	 *
+	 * The criterion is a distance in pixels, not a number of lines: the two axes
+	 * can carry different scales — dragging along an axis resizes it alone — and
+	 * only a pixel distance still means something then. Cells are square when,
+	 * and only when, both scales match.
+	 */
+	const xSpacing = $derived(computeGridStep(transformer.scaleX));
+	const ySpacing = $derived(computeGridStep(transformer.scaleY));
 
-	/** Generate vertical grid lines (x = constant) */
+	/**
+	 * Generate vertical grid lines (x = constant).
+	 *
+	 * Stepping by index rather than accumulating keeps the loop finite whatever
+	 * the viewport: on a window zoomed far from the origin, `x + minor` can be
+	 * absorbed back to `x` and an accumulating loop never advances.
+	 */
 	const verticalLines = $derived.by(() => {
 		const lines: { x: number; isMajor: boolean }[] = [];
-		const { major, minor } = gridSpacing;
+		const { major, minor } = xSpacing;
+		if (!Number.isFinite(minor) || minor <= 0) return lines;
 
 		// Start from a round number before xMin
 		const startX = Math.floor(viewport.xMin / minor) * minor;
-		const endX = viewport.xMax;
+		// Below one ulp at that magnitude, the axis cannot carry a step at all:
+		// the requested spacing would be rounded away.
+		if (!Number.isFinite(startX) || minor <= Math.abs(startX) * Number.EPSILON) return lines;
 
-		for (let x = startX; x <= endX; x += minor) {
+		const count = Math.min(Math.floor((viewport.xMax - startX) / minor), MAX_LINES_PER_AXIS);
+
+		let previous = -Infinity;
+		for (let i = 0; i <= count; i++) {
+			const x = startX + i * minor;
+			// Float resolution exhausted: the step no longer moves the value, and
+			// the keyed `{#each}` below would see the same key twice.
+			if (x <= previous) break;
+			previous = x;
+
 			// Check if this is a major line (within floating point tolerance)
 			const isMajor = Math.abs(x / major - Math.round(x / major)) < 0.001;
 			lines.push({ x, isMajor });
@@ -96,16 +88,24 @@
 		return lines;
 	});
 
-	/** Generate horizontal grid lines (y = constant) */
+	/** Generate horizontal grid lines (y = constant). See {@link verticalLines}. */
 	const horizontalLines = $derived.by(() => {
 		const lines: { y: number; isMajor: boolean }[] = [];
-		const { major, minor } = gridSpacing;
+		const { major, minor } = ySpacing;
+		if (!Number.isFinite(minor) || minor <= 0) return lines;
 
 		// Start from a round number before yMin
 		const startY = Math.floor(viewport.yMin / minor) * minor;
-		const endY = viewport.yMax;
+		if (!Number.isFinite(startY) || minor <= Math.abs(startY) * Number.EPSILON) return lines;
 
-		for (let y = startY; y <= endY; y += minor) {
+		const count = Math.min(Math.floor((viewport.yMax - startY) / minor), MAX_LINES_PER_AXIS);
+
+		let previous = -Infinity;
+		for (let i = 0; i <= count; i++) {
+			const y = startY + i * minor;
+			if (y <= previous) break;
+			previous = y;
+
 			// Check if this is a major line
 			const isMajor = Math.abs(y / major - Math.round(y / major)) < 0.001;
 			lines.push({ y, isMajor });

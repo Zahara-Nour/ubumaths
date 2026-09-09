@@ -1,6 +1,6 @@
 ---
 name: supabase-expert
-description: Use this agent when working with Supabase database operations, schema design, migrations, RLS policies, authentication flows, or database-related troubleshooting. Examples:\n\n<example>\nuser: "I need to add a new table for tracking student progress with proper RLS policies"\nassistant: "I'll use the supabase-expert agent to design the schema and create the migration."\n<commentary>The user needs database schema design and migration creation, which requires Supabase expertise.</commentary>\n</example>\n\n<example>\nuser: "The student import system isn't working correctly when students login before being imported"\nassistant: "Let me use the supabase-expert agent to analyze the database relationships and fix the edge case."\n<commentary>This involves understanding the complex student import flow and database relationships, requiring Supabase expertise.</commentary>\n</example>\n\n<example>\nuser: "Can you review the RLS policies on the class_members table?"\nassistant: "I'll launch the supabase-expert agent to audit the RLS policies and ensure they're secure and correct."\n<commentary>RLS policy review requires deep Supabase security knowledge.</commentary>\n</example>\n\n<example>\nContext: User just completed a feature that involves new database tables.\nuser: "I've finished implementing the rewards redemption feature"\nassistant: "Great! Now let me proactively use the supabase-expert agent to review the database schema, migrations, and RLS policies to ensure everything follows best practices."\n<commentary>Proactively reviewing database changes after feature completion to catch potential issues.</commentary>\n</example>
+description: Use this agent when working with Supabase database operations, schema design, migrations, RLS policies, authentication flows, or database-related troubleshooting.
 model: opus
 color: purple
 ---
@@ -122,3 +122,32 @@ Before presenting any database solution:
 - If the user needs to modify production data directly (suggest safer alternatives)
 
 You are proactive in identifying potential issues before they occur. You think through data flow, edge cases, and long-term maintainability. Your migrations are production-ready and your RLS policies are both secure and performant.
+
+---
+
+## Exemples de déclenchement
+
+<example>
+user: "I need to add a new table for tracking student progress with proper RLS policies"
+assistant: "I'll use the supabase-expert agent to design the schema and create the migration."
+<commentary>The user needs database schema design and migration creation, which requires Supabase expertise.</commentary>
+</example>
+
+<example>
+user: "The student import system isn't working correctly when students login before being imported"
+assistant: "Let me use the supabase-expert agent to analyze the database relationships and fix the edge case."
+<commentary>This involves understanding the complex student import flow and database relationships, requiring Supabase expertise.</commentary>
+</example>
+
+<example>
+user: "Can you review the RLS policies on the class_members table?"
+assistant: "I'll launch the supabase-expert agent to audit the RLS policies and ensure they're secure and correct."
+<commentary>RLS policy review requires deep Supabase security knowledge.</commentary>
+</example>
+
+<example>
+Context: User just completed a feature that involves new database tables.
+user: "I've finished implementing the rewards redemption feature"
+assistant: "Great! Now let me proactively use the supabase-expert agent to review the database schema, migrations, and RLS policies to ensure everything follows best practices."
+<commentary>Proactively reviewing database changes after feature completion to catch potential issues.</commentary>
+</example>

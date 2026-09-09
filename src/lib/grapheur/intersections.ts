@@ -1,225 +1,105 @@
 /**
- * Intersection Detection for Grapheur
+ * Intersections between plotted curves.
  *
- * Finds intersection points between function curves using
- * numerical root-finding. Uses sign-change detection followed
- * by bisection refinement.
+ * The search itself is `findRoots` from mathAST — exact symbolic solving first,
+ * numeric bisection as a fallback. This module only holds the grapheur's glue:
+ * pairing the visible curves, keeping what falls inside the viewport, and
+ * merging points that land on top of each other.
+ *
+ * It used to carry its own sweep-and-bisect implementation. That one could only
+ * see a sign change, so a tangency was found by luck — when its abscissa
+ * happened to fall on one of the 200 sample points — and missed otherwise.
  *
  * @module grapheur/intersections
  */
 
 import type { Point, Viewport } from './types';
+import type { AnalysisInput } from './analysis';
+import { subtract } from '$lib/mathAST/factory';
+import { compile } from '$lib/mathAST/eval/compile';
+import { findRoots } from '$lib/mathAST/analysis/roots';
+
+// =============================================================================
+// Types
+// =============================================================================
+
+/** One intersection point, and the two curves that meet there. */
+export interface IntersectionResult {
+	readonly point: Point;
+	readonly functionIds: readonly [string, string];
+}
 
 // =============================================================================
 // Constants
 // =============================================================================
 
-/** Maximum iterations for bisection refinement */
-const MAX_ITERATIONS = 50;
-
-/** Tolerance for bisection convergence */
-const TOLERANCE = 1e-10;
-
-/** Default number of samples for initial sweep */
-const DEFAULT_SAMPLES = 200;
+/** Default distance below which two intersection points are considered one. */
+const DEFAULT_DEDUP_TOLERANCE = 0.001;
 
 // =============================================================================
-// Core Algorithm
+// Core
 // =============================================================================
 
 /**
- * Find intersection points between two functions.
+ * Find where two curves meet inside the viewport.
  *
- * Algorithm:
- * 1. Sample the difference function d(x) = f1(x) - f2(x)
- * 2. Detect sign changes (potential intersection points)
- * 3. Refine each using bisection method
+ * Solves `f₁(x) − f₂(x) = 0`. A curve whose expression could not be compiled
+ * carries no AST and yields no intersection.
  *
- * @param f1 - First function evaluator
- * @param f2 - Second function evaluator
- * @param viewport - Current viewport bounds
- * @param numSamples - Number of samples for initial sweep
- * @returns Array of intersection points
- *
- * @example
- * ```typescript
- * const f1 = (x) => x * x;  // y = x²
- * const f2 = (x) => x;       // y = x
- * const viewport = { xMin: -2, xMax: 2, yMin: -2, yMax: 2 };
- * const intersections = findIntersections(f1, f2, viewport);
- * // Returns approximately [(0, 0), (1, 1)]
- * ```
+ * @param f1 - First curve
+ * @param f2 - Second curve
+ * @param viewport - Bounds; a point outside them is dropped, in x as in y
+ * @returns The intersection points, ascending in x
  */
 export function findIntersections(
-	f1: (x: number) => number | null,
-	f2: (x: number) => number | null,
-	viewport: Viewport,
-	numSamples: number = DEFAULT_SAMPLES
+	f1: AnalysisInput,
+	f2: AnalysisInput,
+	viewport: Viewport
 ): Point[] {
-	const intersections: Point[] = [];
-	const step = (viewport.xMax - viewport.xMin) / numSamples;
+	if (!f1.ast || !f2.ast) return [];
 
-	let prevX = viewport.xMin;
-	let prevDiff = getDiff(f1, f2, prevX);
+	const difference = subtract(f1.ast.expression, f2.ast.expression);
 
-	for (let i = 1; i <= numSamples; i++) {
-		const x = viewport.xMin + i * step;
-		const diff = getDiff(f1, f2, x);
-
-		// Sign change indicates potential intersection
-		if (prevDiff !== null && diff !== null && prevDiff * diff < 0) {
-			const intersection = bisectIntersection(f1, f2, prevX, x);
-			if (intersection) {
-				// Only include if within viewport
-				if (
-					intersection.y >= viewport.yMin &&
-					intersection.y <= viewport.yMax &&
-					intersection.x >= viewport.xMin &&
-					intersection.x <= viewport.xMax
-				) {
-					intersections.push(intersection);
-				}
-			}
-		}
-
-		// Check for near-zero (exact or very close intersection)
-		if (diff !== null && Math.abs(diff) < TOLERANCE) {
-			const y = f1(x);
-			if (
-				y !== null &&
-				y >= viewport.yMin &&
-				y <= viewport.yMax &&
-				x >= viewport.xMin &&
-				x <= viewport.xMax
-			) {
-				// Avoid duplicates
-				if (!intersections.some((p) => Math.abs(p.x - x) < step && Math.abs(p.y - y) < TOLERANCE)) {
-					intersections.push({ x, y });
-				}
-			}
-		}
-
-		prevX = x;
-		prevDiff = diff;
+	let compiledDifference;
+	try {
+		compiledDifference = compile(difference);
+	} catch {
+		return [];
 	}
 
-	return intersections;
-}
+	const points: Point[] = [];
 
-/**
- * Compute the difference between two functions at x.
- * Returns null if either function is undefined at x.
- */
-function getDiff(
-	f1: (x: number) => number | null,
-	f2: (x: number) => number | null,
-	x: number
-): number | null {
-	const y1 = f1(x);
-	const y2 = f2(x);
-	if (y1 === null || y2 === null) return null;
-	return y1 - y2;
-}
+	for (const root of findRoots(difference, compiledDifference, 'x', viewport.xMin, viewport.xMax)) {
+		const y = f1.ast.compiledFn({ x: root.x });
+		if (!Number.isFinite(y)) continue;
+		if (y < viewport.yMin || y > viewport.yMax) continue;
 
-/**
- * Refine an intersection using bisection method.
- *
- * @param f1 - First function
- * @param f2 - Second function
- * @param xLow - Lower bound (where sign is one way)
- * @param xHigh - Upper bound (where sign is opposite)
- * @returns The intersection point, or null if refinement fails
- */
-function bisectIntersection(
-	f1: (x: number) => number | null,
-	f2: (x: number) => number | null,
-	xLow: number,
-	xHigh: number
-): Point | null {
-	for (let i = 0; i < MAX_ITERATIONS; i++) {
-		const xMid = (xLow + xHigh) / 2;
-
-		// Check convergence
-		if (xHigh - xLow < TOLERANCE) {
-			const y = f1(xMid);
-			return y !== null ? { x: xMid, y } : null;
-		}
-
-		const diffLow = getDiff(f1, f2, xLow);
-		const diffMid = getDiff(f1, f2, xMid);
-
-		// Handle undefined values
-		if (diffLow === null || diffMid === null) {
-			return null;
-		}
-
-		// Standard bisection: narrow to the interval with sign change
-		if (diffLow * diffMid < 0) {
-			xHigh = xMid;
-		} else {
-			xLow = xMid;
-		}
+		points.push({ x: root.x, y });
 	}
 
-	// Return best approximation
-	const xFinal = (xLow + xHigh) / 2;
-	const y = f1(xFinal);
-	return y !== null ? { x: xFinal, y } : null;
-}
-
-// =============================================================================
-// Multi-Function Intersection
-// =============================================================================
-
-/**
- * Result of finding intersection between two functions.
- */
-export interface IntersectionResult {
-	/** The intersection point */
-	readonly point: Point;
-	/** IDs of the two functions that intersect */
-	readonly functionIds: readonly [string, string];
+	return points;
 }
 
 /**
- * Find all pairwise intersections between multiple functions.
+ * Find the intersections of every pair among the given curves.
  *
- * Iterates through all unique pairs and finds intersections.
- *
- * @param functions - Array of functions with their IDs and evaluators
+ * @param functions - The curves to cross, built by `toAnalysisInputs()`
  * @param viewport - Current viewport bounds
- * @returns Array of intersection results
- *
- * @example
- * ```typescript
- * const functions = [
- *   { id: 'a', evaluator: (x) => x * x },
- *   { id: 'b', evaluator: (x) => x },
- *   { id: 'c', evaluator: (x) => 2 - x }
- * ];
- * const intersections = findAllIntersections(functions, viewport);
- * // Returns intersections for pairs (a,b), (a,c), (b,c)
- * ```
+ * @returns One result per intersection found, unordered
  */
 export function findAllIntersections(
-	functions: readonly { id: string; evaluator: (x: number) => number | null }[],
+	functions: readonly AnalysisInput[],
 	viewport: Viewport
 ): IntersectionResult[] {
 	const results: IntersectionResult[] = [];
 
-	// Iterate through all unique pairs
 	for (let i = 0; i < functions.length; i++) {
 		for (let j = i + 1; j < functions.length; j++) {
 			const f1 = functions[i];
 			const f2 = functions[j];
 
-			const intersections = findIntersections(f1.evaluator, f2.evaluator, viewport);
-
-			for (const point of intersections) {
-				results.push({
-					point,
-					functionIds: [f1.id, f2.id] as const
-				});
+			for (const point of findIntersections(f1, f2, viewport)) {
+				results.push({ point, functionIds: [f1.id, f2.id] as const });
 			}
 		}
 	}
@@ -232,15 +112,18 @@ export function findAllIntersections(
 // =============================================================================
 
 /**
- * Remove duplicate intersection points that are too close together.
+ * Drop intersection points that sit within `tolerance` of one already kept.
  *
- * @param intersections - Array of intersection results
- * @param tolerance - Minimum distance between distinct points
- * @returns Deduplicated array
+ * Three curves meeting at one place produce three results for the same visual
+ * point; only the first is kept.
+ *
+ * @param intersections - Results to filter
+ * @param tolerance - Minimum distance between two distinct points
+ * @returns The kept results, in their original order
  */
 export function deduplicateIntersections(
-	intersections: IntersectionResult[],
-	tolerance: number = 0.001
+	intersections: readonly IntersectionResult[],
+	tolerance: number = DEFAULT_DEDUP_TOLERANCE
 ): IntersectionResult[] {
 	const result: IntersectionResult[] = [];
 
@@ -251,9 +134,7 @@ export function deduplicateIntersections(
 				Math.abs(existing.point.y - intersection.point.y) < tolerance
 		);
 
-		if (!isDuplicate) {
-			result.push(intersection);
-		}
+		if (!isDuplicate) result.push(intersection);
 	}
 
 	return result;

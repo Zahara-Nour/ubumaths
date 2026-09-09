@@ -158,7 +158,17 @@ export interface HintReferenceNode extends BaseNode {
 /**
  * Valid reference types for internal links
  */
-export type InternalLinkReferenceType = 'chapter' | 'document' | 'exercise' | 'assessment';
+export type InternalLinkReferenceType =
+	| 'chapter'
+	| 'document'
+	| 'exercise'
+	| 'assessment'
+	| 'question'
+	| 'worksheet'
+	| 'worksheet_exercise'
+	| 'python_exercise'
+	| 'python_notebook'
+	| 'construction';
 
 /**
  * Internal link node - references internal resources
@@ -170,6 +180,7 @@ export type InternalLinkReferenceType = 'chapter' | 'document' | 'exercise' | 'a
  * - document: Link to a document
  * - exercise: Link to an exercise
  * - assessment: Link to an assessment
+ * - question: Link to a question template
  *
  * @example
  * ```markdown
@@ -183,6 +194,12 @@ export interface InternalLinkNode extends BaseNode {
 	referenceType: InternalLinkReferenceType;
 	/** UUID of the referenced resource */
 	uuid: string;
+	/**
+	 * Sélection d'exercices d'une fiche, sans le `#` : `"3,5-7"`.
+	 *
+	 * Absente pour tous les autres types, et pour une fiche citée entière.
+	 */
+	selection?: string;
 	/** Display label for the link */
 	label: string;
 }

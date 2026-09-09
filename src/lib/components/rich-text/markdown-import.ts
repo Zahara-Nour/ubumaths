@@ -214,6 +214,21 @@ function convertBlock(block: BlockNode): JSONContent | null {
 		case 'variation-table':
 			return convertVariationTable(block as VariationTableNode);
 
+		// La droite graduée est reconstruite depuis son TEXTE SOURCE, que le
+		// parser conserve désormais : le nœud ubumark est structuré, alors que
+		// l'éditeur riche stocke la droite sous forme de texte.
+		case 'number-line':
+			return {
+				type: 'numberLine',
+				attrs: { content: (block as { source?: string }).source ?? '' }
+			};
+
+		case 'trig-circle':
+			return {
+				type: 'trigCircle',
+				attrs: { content: (block as { source?: string }).source ?? '' }
+			};
+
 		case 'probability-tree':
 			return convertProbabilityTree(block as ProbabilityTreeNode);
 
@@ -255,7 +270,20 @@ function convertHeading(heading: HeadingNode): JSONContent {
 /**
  * Convert ListNode to TipTap bulletList or orderedList
  */
+/** `[ ] ` ou `[x] ` en tête d'un élément de liste : une case à cocher. */
+const TASK_PREFIX = /^\[([ xX])\]\s+/;
+
 function convertList(list: ListNode): JSONContent {
+	// Une liste dont TOUS les éléments portent une case est une liste de tâches.
+	// Ubumark n'a pas de grammaire pour ça : on la reconnaît ici, à l'import
+	// TipTap, plutôt que de toucher au parser partagé avec les exercices.
+	if (!list.ordered && list.items.length > 0) {
+		const taches = list.items.map((item) => convertTaskItem(item));
+		if (taches.every((tache): tache is JSONContent => tache !== null)) {
+			return { type: 'taskList', content: taches };
+		}
+	}
+
 	const type = list.ordered ? 'orderedList' : 'bulletList';
 
 	const content = list.items.map((item) => convertListItem(item));
@@ -280,6 +308,29 @@ function convertList(list: ListNode): JSONContent {
  * This means a listItem MUST start with a paragraph, followed by zero or more blocks.
  * If the first child is NOT a paragraph, we must insert an empty paragraph first.
  */
+/**
+ * Un élément de liste en case à cocher, ou `null` s'il n'en est pas une.
+ *
+ * Le préfixe est retiré du premier nœud texte : le laisser afficherait
+ * « [x] Fait » à l'intérieur de la case.
+ */
+function convertTaskItem(item: ListItemNode): JSONContent | null {
+	const converti = convertListItem(item);
+	const premier = converti.content?.[0];
+	const texte = premier?.content?.[0];
+	if (typeof texte?.text !== 'string') return null;
+
+	const marque = texte.text.match(TASK_PREFIX);
+	if (!marque) return null;
+
+	texte.text = texte.text.slice(marque[0].length);
+	return {
+		type: 'taskItem',
+		attrs: { checked: marque[1].toLowerCase() === 'x' },
+		content: converti.content
+	};
+}
+
 function convertListItem(item: ListItemNode): JSONContent {
 	const content: JSONContent[] = [];
 
@@ -601,10 +652,12 @@ function convertProbabilityTree(node: ProbabilityTreeNode): JSONContent {
 		serializeBranches(node.root.branches, 0);
 	}
 
+	// Le TEXTE SOURCE prime sur cette re-sérialisation : elle reconstruit le bloc
+	// depuis la structure, donc perd tout ce que le parser n'a pas retenu. Elle
+	// reste le repli pour un nœud produit avant que la source soit conservée.
 	return {
-		type: 'codeBlock',
-		attrs: { language: 'probtree' },
-		content: [{ type: 'text', text: lines.join('\n') }]
+		type: 'probabilityTree',
+		attrs: { content: node.source ?? lines.join('\n') }
 	};
 }
 
@@ -841,6 +894,23 @@ function convertInlineNode(node: InlineNode): JSONContent[] {
 
 		case 'mention':
 			return [convertMentionNode(node)];
+
+		// Ces deux-là n'ont PAS de nœud TipTap : ce sont du texte, et c'est un
+		// choix — la syntaxe survit ainsi à l'aller-retour markdown sans qu'on ait
+		// à écrire de nœud personnalisé. Encore faut-il la réécrire ici : elles
+		// tombaient dans le `default` ci-dessous, donc DISPARAISSAIENT dès qu'on
+		// basculait en vue markdown et qu'on revenait.
+		case 'internal-link': {
+			// La sélection fait partie de la référence : l'oublier ici la ferait
+			// disparaître au premier aller-retour markdown.
+			const selection = node.selection ? `#${node.selection}` : '';
+			return [
+				{ type: 'text', text: `[[${node.referenceType}:${node.uuid}${selection}|${node.label}]]` }
+			];
+		}
+
+		case 'hint-reference':
+			return [{ type: 'text', text: `{{hint:${node.hintId}}}` }];
 
 		default:
 			return [];

@@ -23,10 +23,25 @@ import type {
 	ExplicitFunctionState,
 	PlottableState,
 	SequenceState,
-	SnappedPoint
+	SnappedPoint,
+	Parameter
 } from '$lib/grapheur/types';
-import { graphStateSchema, GRAPH_STATE_VERSION, isSequence } from '$lib/grapheur/types';
-import { DEFAULT_COBWEB_STEPS, nextSequenceName, parseSequence } from '$lib/grapheur/sequence';
+import {
+	DEFAULT_PARAMETER_MAX,
+	DEFAULT_PARAMETER_MIN,
+	GRAPH_STATE_VERSION,
+	graphStateSchema,
+	isSequence,
+	nextParameterName,
+	RESERVED_PARAMETER_NAMES
+} from '$lib/grapheur/types';
+import {
+	DEFAULT_COBWEB_STEPS,
+	nextSequenceName,
+	parseSequence,
+	DEFAULT_FIRST_TERM_MIN,
+	DEFAULT_FIRST_TERM_MAX
+} from '$lib/grapheur/sequence';
 
 // =============================================================================
 // Constants
@@ -73,6 +88,9 @@ class GrapheurStore {
 	/** List of functions to plot */
 	functions = $state<Plottable[]>([]);
 
+	/** Named constants usable in any expression, each driven by a slider. */
+	parameters = $state<Parameter[]>([]);
+
 	/** Current viewport bounds */
 	viewport = $state<Viewport>(DEFAULT_VIEWPORT);
 
@@ -98,6 +116,18 @@ class GrapheurStore {
 	// ===========================================================================
 	// Derived State
 	// ===========================================================================
+
+	/**
+	 * Parameter values, keyed by name, ready to bind into an expression.
+	 *
+	 * Rebuilt whenever a slider moves — that is what redraws the curves.
+	 */
+	parameterBindings = $derived(
+		Object.fromEntries(this.parameters.map((p) => [p.name, p.value])) as Record<string, number>
+	);
+
+	/** Names declared as parameters, accepted as free variables in expressions. */
+	parameterNames = $derived(this.parameters.map((p) => p.name));
 
 	/** Only visible functions */
 	visibleFunctions = $derived(this.functions.filter((f) => f.visible));
@@ -158,6 +188,99 @@ class GrapheurStore {
 	 * grapheurStore.addFunction('\\sin(x)');
 	 * ```
 	 */
+	// ===========================================================================
+	// Parameters
+	// ===========================================================================
+
+	/**
+	 * Add a parameter, named with the first free letter.
+	 *
+	 * @returns The created parameter's ID
+	 */
+	addParameter(): string {
+		const id = crypto.randomUUID();
+
+		this.parameters = [
+			...this.parameters,
+			{
+				id,
+				name: nextParameterName(this.parameters.map((p) => p.name)),
+				value: 1,
+				min: DEFAULT_PARAMETER_MIN,
+				max: DEFAULT_PARAMETER_MAX
+			}
+		];
+		this.reparseSequences();
+		this.scheduleSave();
+		return id;
+	}
+
+	/** Update a parameter's value or slider bounds. */
+	updateParameter(id: string, updates: Partial<Pick<Parameter, 'value' | 'min' | 'max'>>): void {
+		this.parameters = this.parameters.map((p) => (p.id === id ? { ...p, ...updates } : p));
+		this.scheduleSave();
+	}
+
+	/**
+	 * Rename a parameter.
+	 *
+	 * Expressions refer to a parameter by its name, so a rename silently breaks
+	 * the ones that used the old one — they will show their own error. What is
+	 * refused here is a name that could never work.
+	 *
+	 * @returns An error message in French, or null when the rename went through
+	 */
+	renameParameter(id: string, name: string): string | null {
+		const trimmed = name.trim();
+
+		if (!/^[a-z]$/.test(trimmed)) return 'Un paramètre se nomme par une seule lettre minuscule.';
+		if (RESERVED_PARAMETER_NAMES.has(trimmed))
+			return `« ${trimmed} » est déjà pris par le grapheur.`;
+		if (this.parameters.some((p) => p.id !== id && p.name === trimmed)) {
+			return `Un paramètre « ${trimmed} » existe déjà.`;
+		}
+		if (this.sequenceNames.includes(trimmed)) {
+			return `« ${trimmed} » est le nom d'une suite.`;
+		}
+
+		this.parameters = this.parameters.map((p) => (p.id === id ? { ...p, name: trimmed } : p));
+		this.reparseSequences();
+		this.scheduleSave();
+		return null;
+	}
+
+	/** Remove a parameter. Expressions using it stop evaluating until it returns. */
+	removeParameter(id: string): void {
+		this.parameters = this.parameters.filter((p) => p.id !== id);
+		this.reparseSequences();
+		this.scheduleSave();
+	}
+
+	/**
+	 * Re-read every sequence against the current parameter names.
+	 *
+	 * A sequence validates its free variables when it is parsed. Writing
+	 * `a·u_n` before declaring `a` therefore leaves it in error, and nothing
+	 * would lift that error later — the expression has not changed, only what
+	 * counts as a known name has. Explicit functions do not need this: they
+	 * accept any free variable and simply evaluate to nothing until it is bound.
+	 */
+	private reparseSequences(): void {
+		const names = this.parameterNames;
+
+		this.functions = this.functions.map((p) => {
+			if (!isSequence(p)) return p;
+
+			const parsed = parseSequence(p.latex, p.mode, p.name, names);
+			return {
+				...p,
+				ast: parsed.ast ?? undefined,
+				parseError: parsed.error ?? undefined,
+				usesIndex: parsed.usesIndex
+			};
+		});
+	}
+
 	addFunction(latex: string = ''): string {
 		const id = crypto.randomUUID();
 		const color = getNextColor(this.usedColors);
@@ -170,6 +293,11 @@ class GrapheurStore {
 			ast: parseResult.ast ?? undefined,
 			parseError: parseResult.error ?? undefined,
 			variable: 'x',
+			showDerivative: false,
+			tangentAt: null,
+			integral: null,
+			showOsculating: false,
+			showArcLength: false,
 			color,
 			visible: true,
 			lineWidth: 2,
@@ -202,7 +330,19 @@ class GrapheurStore {
 	updateFunction(
 		id: string,
 		updates: Partial<
-			Pick<ExplicitFunction, 'latex' | 'color' | 'visible' | 'lineWidth' | 'lineStyle'>
+			Pick<
+				ExplicitFunction,
+				| 'latex'
+				| 'color'
+				| 'visible'
+				| 'lineWidth'
+				| 'lineStyle'
+				| 'showDerivative'
+				| 'tangentAt'
+				| 'integral'
+				| 'showOsculating'
+				| 'showArcLength'
+			>
 		>
 	): void {
 		this.functions = this.functions.map((f) => {
@@ -245,7 +385,7 @@ class GrapheurStore {
 		const id = crypto.randomUUID();
 		const color = getNextColor(this.usedColors);
 		const name = nextSequenceName(this.sequenceNames);
-		const parseResult = parseSequence(latex, mode, name);
+		const parseResult = parseSequence(latex, mode, name, this.parameterNames);
 
 		const sequence: SequencePlottable = {
 			id,
@@ -258,6 +398,9 @@ class GrapheurStore {
 			usesIndex: parseResult.usesIndex,
 			firstIndex: 0,
 			firstTerm: mode === 'recurrence' ? 0 : null,
+			firstTermParameter: null,
+			firstTermMin: DEFAULT_FIRST_TERM_MIN,
+			firstTermMax: DEFAULT_FIRST_TERM_MAX,
 			// The cloud of ranks is the standard representation; the staircase is
 			// picked explicitly, since it replaces the points rather than adding to
 			// them.
@@ -293,6 +436,9 @@ class GrapheurStore {
 				| 'name'
 				| 'firstIndex'
 				| 'firstTerm'
+				| 'firstTermParameter'
+				| 'firstTermMin'
+				| 'firstTermMax'
 				| 'representation'
 				| 'cobwebSteps'
 				| 'color'
@@ -314,7 +460,12 @@ class GrapheurStore {
 
 			if (!needsReparse) return merged;
 
-			const parseResult = parseSequence(merged.latex, merged.mode, merged.name);
+			const parseResult = parseSequence(
+				merged.latex,
+				merged.mode,
+				merged.name,
+				this.parameterNames
+			);
 			return {
 				...merged,
 				ast: parseResult.ast ?? undefined,
@@ -483,6 +634,7 @@ class GrapheurStore {
 			version: GRAPH_STATE_VERSION,
 			viewport: this.viewport,
 			showGrid: this.showGrid,
+			parameters: this.parameters,
 			functions: this.functions.map((p): PlottableState => {
 				if (isSequence(p)) {
 					const sequenceState: SequenceState = {
@@ -493,6 +645,9 @@ class GrapheurStore {
 						latex: p.latex,
 						firstIndex: p.firstIndex,
 						firstTerm: p.firstTerm,
+						firstTermParameter: p.firstTermParameter,
+						firstTermMin: p.firstTermMin,
+						firstTermMax: p.firstTermMax,
 						representation: p.representation,
 						cobwebSteps: p.cobwebSteps,
 						color: p.color,
@@ -507,6 +662,11 @@ class GrapheurStore {
 					id: p.id,
 					type: p.type,
 					latex: p.latex,
+					showDerivative: p.showDerivative,
+					tangentAt: p.tangentAt,
+					integral: p.integral,
+					showOsculating: p.showOsculating,
+					showArcLength: p.showArcLength,
 					color: p.color,
 					visible: p.visible,
 					lineWidth: p.lineWidth,
@@ -546,11 +706,18 @@ class GrapheurStore {
 			// Restore viewport and grid visibility (schema ensures showGrid exists)
 			this.viewport = state.viewport;
 			this.showGrid = state.showGrid;
+			// Parameters first: the expressions below are parsed against their names.
+			this.parameters = state.parameters;
 
 			// Re-parse everything (AST is not stored)
 			this.functions = state.functions.map((p): Plottable => {
 				if (p.type === 'sequence') {
-					const parseResult = parseSequence(p.latex, p.mode, p.name);
+					const parseResult = parseSequence(
+						p.latex,
+						p.mode,
+						p.name,
+						state.parameters.map((q) => q.name)
+					);
 					const sequence: SequencePlottable = {
 						id: p.id,
 						type: p.type,
@@ -562,6 +729,9 @@ class GrapheurStore {
 						usesIndex: parseResult.usesIndex,
 						firstIndex: p.firstIndex,
 						firstTerm: p.firstTerm,
+						firstTermParameter: p.firstTermParameter,
+						firstTermMin: p.firstTermMin,
+						firstTermMax: p.firstTermMax,
 						representation: p.representation,
 						cobwebSteps: p.cobwebSteps,
 						color: p.color,
@@ -577,6 +747,11 @@ class GrapheurStore {
 					id: p.id,
 					type: p.type,
 					latex: p.latex,
+					showDerivative: p.showDerivative,
+					tangentAt: p.tangentAt,
+					integral: p.integral,
+					showOsculating: p.showOsculating,
+					showArcLength: p.showArcLength,
 					ast: parseResult.ast ?? undefined,
 					parseError: parseResult.error ?? undefined,
 					variable: p.variable,
@@ -658,6 +833,7 @@ class GrapheurStore {
 	 */
 	reset(): void {
 		this.functions = [];
+		this.parameters = [];
 		this.viewport = { ...DEFAULT_VIEWPORT };
 		this.showGrid = true;
 		this.cursor = null;

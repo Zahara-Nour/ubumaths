@@ -1,6 +1,6 @@
 ---
 name: accessibility-tester
-description: Use this agent when you need to audit code, components, or pages for accessibility (a11y) compliance and WCAG standards. Trigger this agent after implementing new UI components, forms, interactive elements, or pages to ensure they meet accessibility requirements. Also use when refactoring existing components to improve accessibility or when preparing for accessibility compliance reviews.\n\nExamples:\n- <example>User: "I just created a new modal component for the rewards system. Can you check if it's accessible?"\nAssistant: "Let me use the accessibility-tester agent to audit your modal component for WCAG compliance and accessibility best practices."</example>\n- <example>User: "I've finished implementing the new student dashboard page with several interactive widgets."\nAssistant: "Great! Now I'll use the accessibility-tester agent to review the dashboard for accessibility issues, keyboard navigation, screen reader support, and WCAG compliance."</example>\n- <example>User: "I added a custom dropdown menu to the assessment creation form."\nAssistant: "I'll launch the accessibility-tester agent to verify that your dropdown meets accessibility standards including keyboard navigation, ARIA attributes, and focus management."</example>
+description: Use this agent when you need to audit code, components, or pages for accessibility (a11y) compliance and WCAG standards. Trigger this agent after implementing new UI components, forms, interactive elements, or pages to ensure they meet accessibility requirements. Also use when refactoring existing components to improve accessibility or when preparing for accessibility compliance reviews.
 model: sonnet
 color: cyan
 ---
@@ -158,3 +158,15 @@ Structure your accessibility audit reports as follows:
 - Questions about legal compliance requirements in specific jurisdictions
 
 Your goal is to make every feature inclusive and usable by the widest possible audience. Accessibility is not optional - it's a fundamental requirement for quality software.
+
+---
+
+## Exemples de déclenchement
+
+Examples:
+- <example>User: "I just created a new modal component for the rewards system. Can you check if it's accessible?"
+Assistant: "Let me use the accessibility-tester agent to audit your modal component for WCAG compliance and accessibility best practices."</example>
+- <example>User: "I've finished implementing the new student dashboard page with several interactive widgets."
+Assistant: "Great! Now I'll use the accessibility-tester agent to review the dashboard for accessibility issues, keyboard navigation, screen reader support, and WCAG compliance."</example>
+- <example>User: "I added a custom dropdown menu to the assessment creation form."
+Assistant: "I'll launch the accessibility-tester agent to verify that your dropdown meets accessibility standards including keyboard navigation, ARIA attributes, and focus management."</example>

@@ -19,12 +19,12 @@ import {
 import type { Exercise } from '$lib/exercises/types';
 
 // Stub tag-resolution helpers: importExerciseFromJSON calls createExercise()
-// which uses resolveTagsToIds + syncExerciseTagJunction after the DB insert.
-vi.mock('$lib/server/tags-resolution', () => ({
-	resolveTagsToIds: vi.fn().mockResolvedValue([]),
-	syncExerciseTagJunction: vi.fn().mockResolvedValue(undefined),
-	fetchTagNamesForExercise: vi.fn().mockResolvedValue([]),
-	fetchExerciseIdsByAnyTag: vi.fn().mockResolvedValue([])
+// which uses syncResourceTags + syncResourceTags after the DB insert.
+vi.mock('$lib/server/resource-tags', () => ({
+	syncResourceTags: vi.fn().mockResolvedValue(undefined),
+	fetchResourceTagNames: vi.fn().mockResolvedValue([]),
+	fetchTagNamesForResources: vi.fn().mockResolvedValue(new Map()),
+	fetchResourceIdsByAnyTag: vi.fn().mockResolvedValue([])
 }));
 
 // Sample exercise for testing (with variations - single source of truth)

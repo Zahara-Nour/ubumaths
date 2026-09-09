@@ -21,13 +21,13 @@ import {
 } from '$tests/helpers';
 
 // Stub tag-resolution helpers so tests don't need to mock junction queries.
-// The GET list handler uses fetchExerciseIdsByAnyTag for tag filtering, and
-// the POST handler uses resolveTagsToIds + syncExerciseTagJunction after insert.
-vi.mock('$lib/server/tags-resolution', () => ({
-	resolveTagsToIds: vi.fn().mockResolvedValue([]),
-	syncExerciseTagJunction: vi.fn().mockResolvedValue(undefined),
-	fetchTagNamesForExercise: vi.fn().mockResolvedValue([]),
-	fetchExerciseIdsByAnyTag: vi.fn().mockResolvedValue([])
+// The GET list handler uses fetchResourceIdsByAnyTag for tag filtering, and
+// the POST handler uses syncResourceTags + syncResourceTags after insert.
+vi.mock('$lib/server/resource-tags', () => ({
+	syncResourceTags: vi.fn().mockResolvedValue(undefined),
+	fetchResourceTagNames: vi.fn().mockResolvedValue([]),
+	fetchTagNamesForResources: vi.fn().mockResolvedValue(new Map()),
+	fetchResourceIdsByAnyTag: vi.fn().mockResolvedValue([])
 }));
 
 const TEACHER_ID = '550e8400-e29b-41d4-a716-446655440011';

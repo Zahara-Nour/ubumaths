@@ -6,7 +6,16 @@
  * Loads the teacher's classes and journal entries for the current week.
  */
 
-import type { PageServerLoad } from './$types';
+import type { Actions, PageServerLoad } from './$types';
+import { fail } from '@sveltejs/kit';
+import { z } from 'zod';
+import {
+	getActiveShareToken,
+	revokeShareToken,
+	rotateShareToken
+} from '$lib/server/journal-share-tokens';
+
+const classIdSchema = z.string().uuid('Identifiant de classe invalide');
 import { error } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { getJournalEntriesForWeek } from '$lib/server/journal';
@@ -29,10 +38,16 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	// Only teachers can view this page
 	await requireRole(locals, 'teacher');
 
-	// Get teacher's classes
+	// Get teacher's classes.
+	//
+	// Les classes ARCHIVÉES sont exclues : elles étaient six pour quatre actives,
+	// et un cahier de texte sert à préparer les cours à venir, pas à relire ceux
+	// des années passées. Le libellé « (inactive) » les signalait sans les rendre
+	// utiles — c'était encombrer la liste pour rien.
 	const { data: classes, error: classesError } = await locals.supabase
 		.from('classes')
-		.select('id, name, grade, is_active')
+		.select('id, name, grade')
+		.eq('is_active', true)
 		.order('name');
 
 	if (classesError) {
@@ -44,8 +59,14 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const weekStartParam = url.searchParams.get('week');
 	const weekStart = weekStartParam || getWeekStart();
 
-	// Get selected class from URL params or default to first class
-	const selectedClassId = url.searchParams.get('class') || classes?.[0]?.id || null;
+	// Get selected class from URL params or default to first class.
+	//
+	// Une classe demandée dans l'URL mais absente de la liste — archivée depuis,
+	// ou d'un autre professeur — retombe sur la première : sans ça, la page
+	// afficherait la semaine d'une classe qu'aucun sélecteur ne montre.
+	const demandee = url.searchParams.get('class');
+	const disponible = (classes ?? []).some((c) => c.id === demandee);
+	const selectedClassId = (disponible ? demandee : null) ?? classes?.[0]?.id ?? null;
 
 	// Load week view for selected class if one exists
 	let weekView: JournalWeekView | null = null;
@@ -64,10 +85,52 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		}
 	}
 
+	// Lien de partage de la classe affichée : tous les élèves n'ont pas de compte,
+	// et sans ce lien ceux-là n'ont aucun moyen de savoir ce qu'il y a à faire.
+	const shareToken = selectedClassId
+		? (await getActiveShareToken(locals.supabase, selectedClassId)).token
+		: null;
+
 	return {
 		classes: classes || [],
 		selectedClassId,
 		weekStart,
-		weekView
+		weekView,
+		shareToken
 	};
+};
+
+/**
+ * Créer / renouveler et révoquer le lien de partage.
+ *
+ * `requireRole` est refait dans chaque action : un `load` qui a autorisé
+ * l'affichage ne protège pas les actions, qui sont des points d'entrée à part
+ * entière.
+ */
+export const actions: Actions = {
+	shareLink: async ({ locals, request }) => {
+		const { user } = await requireRole(locals, 'teacher');
+
+		const form = await request.formData();
+		const parsed = classIdSchema.safeParse(form.get('classId'));
+		if (!parsed.success) return fail(400, { error: 'Classe invalide' });
+
+		const { error: rotateError } = await rotateShareToken(locals.supabase, parsed.data, user.id);
+		if (rotateError) return fail(500, { error: rotateError });
+
+		return { success: true };
+	},
+
+	revokeShareLink: async ({ locals, request }) => {
+		await requireRole(locals, 'teacher');
+
+		const form = await request.formData();
+		const parsed = classIdSchema.safeParse(form.get('classId'));
+		if (!parsed.success) return fail(400, { error: 'Classe invalide' });
+
+		const { error: revokeError } = await revokeShareToken(locals.supabase, parsed.data);
+		if (revokeError) return fail(500, { error: revokeError });
+
+		return { success: true };
+	}
 };

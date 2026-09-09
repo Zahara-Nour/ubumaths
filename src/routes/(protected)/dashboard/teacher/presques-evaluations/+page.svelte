@@ -330,6 +330,7 @@
 			<div class="space-y-2">
 				<Label>Thèmes</Label>
 				<TagBadgeSelector
+					kind="parody_evaluation"
 					bind:value={uploadTags}
 					placeholder="Ajouter des thèmes"
 					maxSelections={20}

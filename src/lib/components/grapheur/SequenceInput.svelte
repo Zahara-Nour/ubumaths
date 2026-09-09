@@ -27,6 +27,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Slider } from '$lib/components/ui/slider';
+	import { fromSliderIndex, SLIDER_STEPS, toSliderIndex } from '$lib/grapheur/slider';
 	import { Eye, EyeOff, Table2, Trash2 } from '@lucide/svelte';
 
 	let { sequence }: { sequence: SequencePlottable } = $props();
@@ -173,6 +174,33 @@
 		});
 	}
 
+	function handleFirstTermSlide(index: number) {
+		grapheurStore.updateSequence(sequence.id, {
+			firstTerm: fromSliderIndex(index, sequence.firstTermMin, sequence.firstTermMax)
+		});
+	}
+
+	function handleBoundInput(bound: 'firstTermMin' | 'firstTermMax') {
+		return (event: Event & { currentTarget: HTMLInputElement }) => {
+			const parsed = Number.parseFloat(event.currentTarget.value);
+			if (!Number.isFinite(parsed)) return;
+
+			grapheurStore.updateSequence(sequence.id, { [bound]: parsed });
+		};
+	}
+
+	/** « Valeur » plus une entrée par paramètre déclaré. */
+	const firstTermItems = $derived([
+		{ value: '', label: 'Valeur' },
+		...grapheurStore.parameters.map((p) => ({ value: p.name, label: p.name }))
+	]);
+
+	const firstTermSource = $derived(sequence.firstTermParameter ?? '');
+
+	function handleFirstTermSourceChange(value: string) {
+		grapheurStore.updateSequence(sequence.id, { firstTermParameter: value === '' ? null : value });
+	}
+
 	function handleRepresentationChange(value: string) {
 		const item = REPRESENTATION_ITEMS.find((candidate) => candidate.value === value);
 		if (!item) return;
@@ -313,17 +341,80 @@
 				<span class="font-serif">
 					{sequence.name}<sub>{sequence.firstIndex}</sub> =
 				</span>
+				{#if sequence.firstTermParameter}
+					<span class="font-serif text-sm">{sequence.firstTermParameter}</span>
+				{:else}
+					<Input
+						type="number"
+						step="any"
+						value={sequence.firstTerm ?? ''}
+						oninput={handleFirstTermInput}
+						class="h-8 w-24"
+						aria-label="Premier terme"
+					/>
+				{/if}
+			</label>
+
+			<!--
+				Rattacher u₀ à un paramètre : son curseur pilote alors la suite, et la
+				même valeur peut en piloter plusieurs à la fois.
+			-->
+			{#if grapheurStore.parameters.length > 0}
+				<span class="sr-only" id="source-{sequence.id}">Source du premier terme</span>
+				<MySelect
+					type="single"
+					value={firstTermSource}
+					items={firstTermItems}
+					onValueChange={handleFirstTermSourceChange}
+					triggerClass="h-8 w-24 text-xs"
+				/>
+			{/if}
+		{/if}
+	</div>
+
+	<!--
+		Balayer le premier terme en continu : c'est ce qui fait voir qu'un point
+		fixe attire ou repousse, sans avoir à l'écrire.
+	-->
+	{#if sequence.mode === 'recurrence' && !sequence.firstTermParameter}
+		<div class="flex flex-col gap-1">
+			<div class="flex items-center gap-2 text-xs text-muted-foreground">
 				<Input
 					type="number"
 					step="any"
-					value={sequence.firstTerm ?? ''}
-					oninput={handleFirstTermInput}
-					class="h-8 w-24"
-					aria-label="Premier terme"
+					value={sequence.firstTermMin}
+					oninput={handleBoundInput('firstTermMin')}
+					class="h-7 w-16 text-xs"
+					aria-label="Borne inférieure du curseur"
 				/>
-			</label>
-		{/if}
-	</div>
+				<!-- Piloté en entiers : voir `grapheur/slider.ts`. -->
+				<Slider
+					type="single"
+					bind:value={
+						() =>
+							toSliderIndex(
+								sequence.firstTerm ?? sequence.firstTermMin,
+								sequence.firstTermMin,
+								sequence.firstTermMax
+							),
+						handleFirstTermSlide
+					}
+					min={0}
+					max={SLIDER_STEPS}
+					step={1}
+					aria-label="Premier terme (curseur)"
+				/>
+				<Input
+					type="number"
+					step="any"
+					value={sequence.firstTermMax}
+					oninput={handleBoundInput('firstTermMax')}
+					class="h-7 w-16 text-xs"
+					aria-label="Borne supérieure du curseur"
+				/>
+			</div>
+		</div>
+	{/if}
 
 	<!-- Representation: the staircase replaces the cloud of ranks -->
 	{#if canShowCobweb}
@@ -339,14 +430,14 @@
 
 			{#if showsCobweb}
 				<div class="flex items-center gap-2 text-xs text-muted-foreground">
-					<span class="shrink-0">Termes : {sequence.cobwebSteps}</span>
+					<!-- Largeur fixe : voir la note du curseur de tangente. -->
+					<span class="w-24 shrink-0">Termes : {sequence.cobwebSteps}</span>
 					<Slider
 						type="single"
-						value={sequence.cobwebSteps}
+						bind:value={() => sequence.cobwebSteps, handleCobwebStepsChange}
 						min={0}
 						max={maxCobwebSteps}
 						step={1}
-						onValueChange={handleCobwebStepsChange}
 						aria-label="Nombre de termes de l'escalier"
 					/>
 				</div>
@@ -366,7 +457,7 @@
 
 	<!-- Table of values -->
 	{#if showTable}
-		<SequenceTable {sequence} />
+		<SequenceTable {sequence} bindings={grapheurStore.parameterBindings} />
 	{/if}
 </div>
 

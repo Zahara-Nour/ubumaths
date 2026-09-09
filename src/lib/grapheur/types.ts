@@ -12,7 +12,12 @@ import {
 	viewportSchema as sharedViewportSchema
 } from '$lib/geometry-core/viewport';
 import type { LineStyle, Viewport } from '$lib/geometry-core/viewport';
-import { DEFAULT_COBWEB_STEPS, MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
+import {
+	DEFAULT_COBWEB_STEPS,
+	DEFAULT_FIRST_TERM_MAX,
+	DEFAULT_FIRST_TERM_MIN,
+	MAX_SEQUENCE_TERMS
+} from '$lib/grapheur/sequence';
 import type { SequenceMode } from '$lib/grapheur/sequence';
 
 export type { SequenceMode, SequenceTerm } from '$lib/grapheur/sequence';
@@ -56,6 +61,37 @@ export interface ExplicitFunction extends PlottableBase {
 	readonly ast: MathNode | undefined;
 	readonly parseError: string | undefined;
 	readonly variable: string;
+	/**
+	 * Whether the derivative curve is drawn alongside.
+	 *
+	 * It follows the function rather than standing on its own: editing `f`
+	 * redraws `f'`, which is the point — le signe de `f'` et les variations de
+	 * `f` se lisent ensemble.
+	 */
+	readonly showDerivative: boolean;
+	/**
+	 * Abscissa where the tangent is drawn, or null when none is.
+	 *
+	 * Sliding it along the curve is what turns `f'(x₀)` from a number into a
+	 * slope one can see.
+	 */
+	readonly tangentAt: number | null;
+	/**
+	 * Bounds of the shaded area under the curve, or null when none is shown.
+	 *
+	 * The area is signed: below the axis it counts negative, which is what the
+	 * integral means and what a filled region alone would hide.
+	 */
+	readonly integral: { readonly from: number; readonly to: number } | null;
+	/**
+	 * Whether the osculating circle is drawn at the tangency point.
+	 *
+	 * It shares the tangent's abscissa rather than carrying its own: the circle
+	 * touches the curve exactly where the tangent does.
+	 */
+	readonly showOsculating: boolean;
+	/** Whether the arc length is shown, over the same bounds as the area. */
+	readonly showArcLength: boolean;
 }
 
 /**
@@ -88,6 +124,17 @@ export interface SequencePlottable extends PlottableBase {
 	readonly firstIndex: number;
 	/** Value of the first term; required for a recurrence, unused otherwise. */
 	readonly firstTerm: number | null;
+	/**
+	 * Name of the parameter driving the first term, when one does.
+	 *
+	 * Set, it takes over `firstTerm`: the parameter's own slider becomes the one
+	 * that sweeps `u₀`, and the same value can drive several sequences at once.
+	 */
+	readonly firstTermParameter: string | null;
+	/** Lower bound of the slider that drives the first term. */
+	readonly firstTermMin: number;
+	/** Upper bound of the slider that drives the first term. */
+	readonly firstTermMax: number;
 	/** Which of the two representations is drawn. */
 	readonly representation: SequenceRepresentation;
 	/** Number of staircase steps drawn, in cobweb representation. */
@@ -124,6 +171,7 @@ export interface GraphState {
 	readonly version: number;
 	readonly viewport: Viewport;
 	readonly showGrid: boolean;
+	readonly parameters: readonly Parameter[];
 	readonly functions: readonly PlottableState[];
 }
 
@@ -131,6 +179,11 @@ export interface ExplicitFunctionState {
 	readonly id: string;
 	readonly type: 'explicit';
 	readonly latex: string;
+	readonly showDerivative: boolean;
+	readonly tangentAt: number | null;
+	readonly integral: { readonly from: number; readonly to: number } | null;
+	readonly showOsculating: boolean;
+	readonly showArcLength: boolean;
 	readonly color: string;
 	readonly visible: boolean;
 	readonly lineWidth: number;
@@ -146,6 +199,9 @@ export interface SequenceState {
 	readonly latex: string;
 	readonly firstIndex: number;
 	readonly firstTerm: number | null;
+	readonly firstTermParameter: string | null;
+	readonly firstTermMin: number;
+	readonly firstTermMax: number;
 	readonly representation: SequenceRepresentation;
 	readonly cobwebSteps: number;
 	readonly color: string;
@@ -157,6 +213,45 @@ export interface SequenceState {
 export type PlottableState = ExplicitFunctionState | SequenceState;
 
 // =============================================================================
+// Parameters
+// =============================================================================
+
+/**
+ * A named constant the user can sweep with a slider.
+ *
+ * Referenced by its name inside any expression — `ax + b`, `u_n + a` — and
+ * substituted before evaluation, so the curve redraws as the slider moves.
+ */
+export interface Parameter {
+	readonly id: string;
+	/** Single lowercase letter, never a reserved one. */
+	readonly name: string;
+	readonly value: number;
+	readonly min: number;
+	readonly max: number;
+}
+
+/** Names an expression already gives a meaning to, so unusable as parameters. */
+export const RESERVED_PARAMETER_NAMES: ReadonlySet<string> = new Set(['x', 'n', 'e', 'pi', 'i']);
+
+/** Letters offered to new parameters, in order. */
+export const PARAMETER_NAMES = ['a', 'b', 'c', 'k', 'm', 'p', 'q', 'r'] as const;
+
+/** Default bounds of a new parameter's slider. */
+export const DEFAULT_PARAMETER_MIN = -10;
+export const DEFAULT_PARAMETER_MAX = 10;
+
+/**
+ * Pick the first unused letter for a new parameter.
+ *
+ * Falls back to the first letter when all are taken — a graph with eight
+ * parameters is already past what the panel can show usefully.
+ */
+export function nextParameterName(used: readonly string[]): string {
+	return PARAMETER_NAMES.find((name) => !used.includes(name)) ?? PARAMETER_NAMES[0];
+}
+
+// =============================================================================
 // Analysis Types (grapheur-specific)
 // =============================================================================
 
@@ -164,6 +259,11 @@ export interface Root {
 	readonly x: number;
 	readonly functionId: string;
 	readonly confidence: number;
+	/**
+	 * Symbolic abscissa, when the root came from exact solving — `\sqrt{2}`
+	 * rather than `1,414`. Absent when only the numeric sweep found the point.
+	 */
+	readonly exactX?: MathNode;
 }
 
 export interface Extremum {
@@ -172,6 +272,10 @@ export interface Extremum {
 	readonly type: 'min' | 'max';
 	readonly functionId: string;
 	readonly confidence: number;
+	/** Symbolic abscissa, when the extremum came from exact solving. */
+	readonly exactX?: MathNode;
+	/** Symbolic ordinate, simplified, when it is known exactly. */
+	readonly exactY?: MathNode;
 }
 
 export interface VerticalAsymptote {
@@ -233,6 +337,18 @@ const explicitFunctionStateSchema = z.object({
 		.min(1, 'Line width minimum is 1')
 		.max(5, 'Line width maximum is 5'),
 	lineStyle: lineStyleSchema.default('solid'),
+	// Absents des états écrits avant la courbe dérivée et la tangente.
+	showDerivative: z.boolean().default(false),
+	tangentAt: z.number().finite().min(-1e9).max(1e9).nullable().default(null),
+	integral: z
+		.object({
+			from: z.number().finite().min(-1e9).max(1e9),
+			to: z.number().finite().min(-1e9).max(1e9)
+		})
+		.nullable()
+		.default(null),
+	showOsculating: z.boolean().default(false),
+	showArcLength: z.boolean().default(false),
 	variable: z
 		.string()
 		.min(1, 'Variable name is required')
@@ -260,6 +376,26 @@ const sequenceStateSchema = z.object({
 		.min(-1e9, 'First term out of range')
 		.max(1e9, 'First term out of range')
 		.nullable(),
+	// Absent des états écrits avant l'arrivée des paramètres.
+	firstTermParameter: z
+		.string()
+		.regex(/^[a-z]$/, 'Parameter name must be a single lowercase letter')
+		.nullable()
+		.default(null),
+	// Bornes du curseur du premier terme. Absentes des états écrits avant leur
+	// introduction : la valeur par défaut les rétablit sans casse.
+	firstTermMin: z
+		.number()
+		.finite('Slider bound must be finite')
+		.min(-1e9, 'Slider bound out of range')
+		.max(1e9, 'Slider bound out of range')
+		.default(DEFAULT_FIRST_TERM_MIN),
+	firstTermMax: z
+		.number()
+		.finite('Slider bound must be finite')
+		.min(-1e9, 'Slider bound out of range')
+		.max(1e9, 'Slider bound out of range')
+		.default(DEFAULT_FIRST_TERM_MAX),
 	representation: z.enum(['ranks', 'cobweb']).default('ranks'),
 	cobwebSteps: z
 		.number()
@@ -283,6 +419,17 @@ const plottableStateSchema = z.discriminatedUnion('type', [
 	sequenceStateSchema
 ]);
 
+const parameterSchema = z.object({
+	id: z.string().uuid('Parameter ID must be a valid UUID'),
+	name: z
+		.string()
+		.regex(/^[a-z]$/, 'Parameter name must be a single lowercase letter')
+		.refine((n) => !RESERVED_PARAMETER_NAMES.has(n), 'This name is reserved'),
+	value: z.number().finite().min(-1e9).max(1e9),
+	min: z.number().finite().min(-1e9).max(1e9),
+	max: z.number().finite().min(-1e9).max(1e9)
+});
+
 export const graphStateSchema = z.object({
 	version: z
 		.number()
@@ -291,6 +438,9 @@ export const graphStateSchema = z.object({
 		.max(GRAPH_STATE_VERSION, `Unsupported version (max ${GRAPH_STATE_VERSION})`),
 	viewport: sharedViewportSchema,
 	showGrid: z.boolean().default(true),
+	// Absents des états écrits avant l'arrivée des paramètres : le défaut les
+	// rétablit sans casse.
+	parameters: z.array(parameterSchema).max(20, 'Too many parameters').default([]),
 	functions: z.array(plottableStateSchema).max(20, 'Too many plots (max 20)').default([])
 });
 

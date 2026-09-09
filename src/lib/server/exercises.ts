@@ -17,11 +17,11 @@ import {
 } from '$lib/exercises/generator/instance-generator';
 import { generateExerciseSlug } from '$lib/exercises/slug-generator';
 import {
-	fetchExerciseIdsByAnyTag,
-	fetchTagNamesForExercise,
-	resolveTagsToIds,
-	syncExerciseTagJunction
-} from '$lib/server/tags-resolution';
+	fetchResourceIdsByAnyTag,
+	fetchResourceTagNames,
+	fetchTagNamesForResources,
+	syncResourceTags
+} from '$lib/server/resource-tags';
 
 type _Exercise = Database['public']['Tables']['exercises']['Row'];
 type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
@@ -129,11 +129,13 @@ export async function getExercises(
 	const limit = Math.min(100, Math.max(1, pagination.limit || 50));
 	const offset = (page - 1) * limit;
 
-	// Include the junction in the SELECT so we can return `tags: string[]`
-	// without a separate N+1 fetch per row.
+	// Les tags sont lus séparément, en une requête groupée (voir plus bas).
+	// `exercise_tags` n'existe plus, et une jointure PostgREST vers une table
+	// supprimée est une CHAÎNE : ni le typecheck ni le compilateur ne peuvent la
+	// valider. C'est ce qui a fait passer ce bug jusqu'en production.
 	let query = supabase
 		.from('exercises')
-		.select('*, exercise_tags(tags(name))', { count: 'exact' })
+		.select('*', { count: 'exact' })
 		.order('created_at', { ascending: false });
 
 	// Apply filters
@@ -142,8 +144,8 @@ export async function getExercises(
 	}
 
 	if (filters.tags && filters.tags.length > 0) {
-		// Use the exercise_tags junction (replaces .contains on the legacy column).
-		const ids = await fetchExerciseIdsByAnyTag(supabase, filters.tags, 'exercise_tags', 'tags');
+		// Filtrage via `resource_tags` (remplace le .contains sur l'ancienne colonne).
+		const ids = await fetchResourceIdsByAnyTag(supabase, 'exercise', filters.tags);
 		if (ids.length === 0) {
 			return { data: [], error: null, count: 0, page, limit, totalPages: 0 };
 		}
@@ -191,22 +193,17 @@ export async function getExercises(
 		return { data: null, error, count: 0 };
 	}
 
-	// Reshape nested junction rows into a plain `tags: string[]`.
-	// Supabase returns exercise_tags as an array of { tags: { name: string } }.
-	const enriched = (data ?? []).map((row) => {
-		const junctionRows = (row as Record<string, unknown>).exercise_tags;
-		const tagNames: string[] = [];
-		if (Array.isArray(junctionRows)) {
-			for (const jr of junctionRows) {
-				const tag = (jr as Record<string, unknown>).tags;
-				if (tag && typeof tag === 'object' && 'name' in tag) {
-					tagNames.push((tag as { name: string }).name);
-				}
-			}
-		}
-		const { exercise_tags: _stripped, ...rest } = row as Record<string, unknown>;
-		return { ...(rest as Record<string, unknown>), tags: tagNames.sort() };
-	});
+	// Lecture groupée : une requête pour toute la page, pas une par ligne.
+	const tagsByExercise = await fetchTagNamesForResources(
+		supabase,
+		'exercise',
+		(data ?? []).map((row) => (row as { id: string }).id)
+	);
+
+	const enriched = (data ?? []).map((row) => ({
+		...(row as Record<string, unknown>),
+		tags: tagsByExercise.get((row as { id: string }).id) ?? []
+	}));
 
 	return {
 		data: enriched,
@@ -221,7 +218,7 @@ export async function getExercises(
 /**
  * Get a single exercise by ID.
  *
- * Tags are fetched from the exercise_tags junction and merged into the returned
+ * Tags are fetched from `resource_tags` and merged into the returned
  * object as `tags: string[]` (API contract preserved).
  */
 export async function getExercise(supabase: SupabaseClient<Database>, id: string) {
@@ -232,16 +229,14 @@ export async function getExercise(supabase: SupabaseClient<Database>, id: string
 		return { data: null, error };
 	}
 
-	const tags = await fetchTagNamesForExercise(supabase, id, 'exercise_tags', 'tags').catch(
-		() => []
-	);
+	const tags = await fetchResourceTagNames(supabase, 'exercise', id).catch(() => []);
 	return { data: { ...data, tags }, error: null };
 }
 
 /**
  * Get a single exercise by slug.
  *
- * Tags are fetched from the exercise_tags junction and merged into the returned
+ * Tags are fetched from `resource_tags` and merged into the returned
  * object as `tags: string[]` (API contract preserved).
  */
 export async function getExerciseBySlug(supabase: SupabaseClient<Database>, slug: string) {
@@ -252,9 +247,7 @@ export async function getExerciseBySlug(supabase: SupabaseClient<Database>, slug
 		return { data: null, error };
 	}
 
-	const tags = await fetchTagNamesForExercise(supabase, data.id, 'exercise_tags', 'tags').catch(
-		() => []
-	);
+	const tags = await fetchResourceTagNames(supabase, 'exercise', data.id).catch(() => []);
 	return { data: { ...data, tags }, error: null };
 }
 
@@ -296,7 +289,7 @@ export async function createExercise(
 		(exercise as { slug?: string }).slug ||
 		generateExerciseSlug((exercise as { topic?: string }).topic);
 
-	// Tags are stored in the junction table (exercise_tags), not on the row.
+	// Tags are stored in `resource_tags`, not on the row.
 	// Strip them from the row insert; we'll attach them via the junction below.
 	const exerciseTags = (exercise as { tags?: unknown }).tags;
 	const tagNames: string[] = Array.isArray(exerciseTags) ? (exerciseTags as string[]) : [];
@@ -335,8 +328,7 @@ export async function createExercise(
 	// stays in the DB without its declared tags, which is silently inconsistent.
 	if (tagNames.length > 0 && data) {
 		try {
-			const tagIds = await resolveTagsToIds(supabase, tagNames, 'tags');
-			await syncExerciseTagJunction(supabase, data.id, tagIds, 'exercise_tags');
+			await syncResourceTags(supabase, 'exercise', data.id, tagNames);
 		} catch (e) {
 			console.error('Failed to attach tags to new exercise — rolling back:', e);
 			await supabase.from('exercises').delete().eq('id', data.id);
@@ -443,8 +435,7 @@ export async function updateExercise(
 	// row with stale junction state.
 	if (tagsUpdate !== undefined && data) {
 		try {
-			const tagIds = await resolveTagsToIds(supabase, tagsUpdate, 'tags');
-			await syncExerciseTagJunction(supabase, data.id, tagIds, 'exercise_tags');
+			await syncResourceTags(supabase, 'exercise', data.id, tagsUpdate);
 		} catch (e) {
 			console.error('Failed to sync tags on update:', e);
 			return {
@@ -503,10 +494,10 @@ export async function getTeacherExercises(
 	const sortBy = pagination.sortBy || 'updated_at';
 	const sortOrder = pagination.sortOrder || 'desc';
 
-	// Include junction in SELECT to return `tags: string[]` without N+1 queries.
+	// Idem : lecture groupée des tags après la requête principale.
 	let query = supabase
 		.from('exercises')
-		.select('*, exercise_tags(tags(name))', { count: 'exact' })
+		.select('*', { count: 'exact' })
 		.eq('created_by', teacherId)
 		.order(sortBy, { ascending: sortOrder === 'asc' });
 
@@ -516,8 +507,8 @@ export async function getTeacherExercises(
 	}
 
 	if (filters.tags && filters.tags.length > 0) {
-		// Use the exercise_tags junction (replaces .contains on the legacy column).
-		const ids = await fetchExerciseIdsByAnyTag(supabase, filters.tags, 'exercise_tags', 'tags');
+		// Filtrage via `resource_tags` (remplace le .contains sur l'ancienne colonne).
+		const ids = await fetchResourceIdsByAnyTag(supabase, 'exercise', filters.tags);
 		if (ids.length === 0) {
 			return { data: [], error: null, count: 0, page, limit, totalPages: 0 };
 		}
@@ -564,21 +555,17 @@ export async function getTeacherExercises(
 		return { data: null, error, count: 0 };
 	}
 
-	// Reshape nested junction rows into a plain `tags: string[]`.
-	const enriched = (data ?? []).map((row) => {
-		const junctionRows = (row as Record<string, unknown>).exercise_tags;
-		const tagNames: string[] = [];
-		if (Array.isArray(junctionRows)) {
-			for (const jr of junctionRows) {
-				const tag = (jr as Record<string, unknown>).tags;
-				if (tag && typeof tag === 'object' && 'name' in tag) {
-					tagNames.push((tag as { name: string }).name);
-				}
-			}
-		}
-		const { exercise_tags: _stripped, ...rest } = row as Record<string, unknown>;
-		return { ...(rest as Record<string, unknown>), tags: tagNames.sort() };
-	});
+	// Lecture groupée : une requête pour toute la page, pas une par ligne.
+	const tagsByExercise = await fetchTagNamesForResources(
+		supabase,
+		'exercise',
+		(data ?? []).map((row) => (row as { id: string }).id)
+	);
+
+	const enriched = (data ?? []).map((row) => ({
+		...(row as Record<string, unknown>),
+		tags: tagsByExercise.get((row as { id: string }).id) ?? []
+	}));
 
 	return {
 		data: enriched,

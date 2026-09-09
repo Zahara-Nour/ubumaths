@@ -19,6 +19,13 @@
 	import GridLines from './GridLines.svelte';
 	import AxisLines from './AxisLines.svelte';
 	import FunctionCurve from './FunctionCurve.svelte';
+	import {
+		derivativeCurve,
+		integralUnder,
+		osculatingCircleAt,
+		tangentAt
+	} from '$lib/grapheur/analysis';
+	import IntegralArea from './IntegralArea.svelte';
 	import SequencePlot from './SequencePlot.svelte';
 	import CurveHover from './CurveHover.svelte';
 	import IntersectionPoints from './IntersectionPoints.svelte';
@@ -394,12 +401,94 @@
 						viewport={grapheurStore.viewport}
 						{transformer}
 						isInteracting={grapheurStore.isInteracting}
+						bindings={grapheurStore.parameterBindings}
 					/>
+					<!--
+						L'aire sous la courbe, tracée avant elle pour rester derrière.
+					-->
+					{#if plottable.integral}
+						{@const area = integralUnder(
+							plottable,
+							plottable.integral.from,
+							plottable.integral.to,
+							grapheurStore.parameterBindings
+						)}
+						{#if area}
+							<IntegralArea integral={area} {transformer} color={plottable.color} />
+						{/if}
+					{/if}
+
+					<!--
+						La tangente et son point de contact : le nombre dérivé se lit
+						alors comme une pente, pas comme une valeur dans un tableau.
+					-->
+					{#if plottable.tangentAt !== null}
+						{@const tangent = tangentAt(
+							plottable,
+							plottable.tangentAt,
+							grapheurStore.parameterBindings
+						)}
+						{#if tangent}
+							<FunctionCurve
+								func={tangent.line}
+								viewport={grapheurStore.viewport}
+								{transformer}
+								isInteracting={grapheurStore.isInteracting}
+							/>
+							{#if plottable.showOsculating}
+								{@const circle = osculatingCircleAt(
+									plottable,
+									plottable.tangentAt,
+									grapheurStore.parameterBindings
+								)}
+								{#if circle}
+									{@const centre = transformer.mathToSvg(circle.centerX, circle.centerY)}
+									<ellipse
+										cx={centre.x}
+										cy={centre.y}
+										rx={circle.radius * transformer.scaleX}
+										ry={circle.radius * transformer.scaleY}
+										fill="none"
+										stroke={plottable.color}
+										stroke-width={1}
+										stroke-dasharray="2 3"
+										class="osculating-circle"
+										aria-hidden="true"
+									/>
+								{/if}
+							{/if}
+							{@const contact = transformer.mathToSvg(tangent.x, tangent.y)}
+							<circle
+								cx={contact.x}
+								cy={contact.y}
+								r={5}
+								fill={plottable.color}
+								stroke="white"
+								stroke-width={2}
+								class="tangent-point"
+								aria-hidden="true"
+							/>
+						{/if}
+					{/if}
+
+					<!-- La dérivée suit la fonction : elle se recalcule à chaque édition. -->
+					{#if plottable.showDerivative}
+						{@const derivative = derivativeCurve(plottable, grapheurStore.parameterBindings)}
+						{#if derivative}
+							<FunctionCurve
+								func={derivative}
+								viewport={grapheurStore.viewport}
+								{transformer}
+								isInteracting={grapheurStore.isInteracting}
+							/>
+						{/if}
+					{/if}
 				{:else}
 					<SequencePlot
 						sequence={plottable}
 						viewport={grapheurStore.viewport}
 						{transformer}
+						bindings={grapheurStore.parameterBindings}
 						isInteracting={grapheurStore.isInteracting}
 					/>
 				{/if}

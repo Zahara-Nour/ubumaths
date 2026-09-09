@@ -509,6 +509,7 @@
 						</button>
 					{:else}
 						<TagBadgeSelector
+							kind="worksheet"
 							value={worksheet.tags || []}
 							onchange={(v) => onFieldChange?.('tags', v)}
 						/>

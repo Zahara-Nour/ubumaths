@@ -6,7 +6,7 @@
  * sur un template tagué famille A.
  *
  * Pattern lookup-then-insert avec gestion de la race condition, inspiré de
- * `tags-resolution.ts` (`resolveTagsToIds`).
+ * `resource-tags.ts` (`syncResourceTags`).
  *
  * Spec : `docs/wip/srs-fsrs-spec-tdd.md` §4.
  * Architecture : `docs/ref/srs/architecture.md` §3.4 + §4.1.

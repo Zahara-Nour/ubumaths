@@ -2,6 +2,7 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { toExercise } from '$lib/types/exercise-row';
+import { fetchResourceTagNames } from '$lib/server/resource-tags';
 
 export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const { user } = await locals.safeGetSession();
@@ -24,16 +25,18 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const { data: exercise, error: exerciseError } = await locals.supabase
 		.from('exercises')
 		// Les étiquettes ne sont pas une colonne d'`exercises` : elles vivent dans
-		// la table de jonction `exercise_tags`. La page les affichait via
-		// `exercise.tags`, qui valait donc toujours `undefined`. Même forme que
-		// `$lib/server/exercises.ts`, pour éviter une seconde requête.
-		.select('*, exercise_tags(tags(name))')
+		// `resource_tags`, lue juste après. La jointure PostgREST précédente visait
+		// `exercise_tags`, supprimée depuis — et une jointure est une CHAÎNE, donc
+		// invisible au typecheck.
+		.select('*')
 		.eq('id', exerciseId)
 		.single();
 
 	if (exerciseError || !exercise) {
 		throw error(404, 'Exercice non trouvé');
 	}
+
+	const tags = await fetchResourceTagNames(locals.supabase, 'exercise', exerciseId).catch(() => []);
 
 	// Fetch assignment (if any)
 	const { data: assignment, error: assignmentError } = await locals.supabase
@@ -80,10 +83,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const classIds = classMemberships?.map((cm) => cm.class_id) || [];
 
 	return {
-		exercise: toExercise(
-			exercise,
-			(exercise.exercise_tags ?? []).map((et) => et.tags?.name).filter((n) => n !== undefined)
-		),
+		exercise: toExercise(exercise, tags),
 		assignment,
 		completion,
 		classIds,

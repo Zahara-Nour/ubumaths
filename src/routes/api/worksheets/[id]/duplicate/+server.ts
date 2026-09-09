@@ -5,6 +5,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { fetchResourceTagNames, syncResourceTags } from '$lib/server/resource-tags';
 import { requireRoles } from '$lib/server/middleware/auth';
 import {
 	validateWorksheetId,
@@ -60,12 +61,22 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 			estimated_duration_minutes: original.estimated_duration_minutes,
 			total_points: original.total_points,
 			grades: original.grades,
-			tags: original.tags,
 			created_by: user.id,
 			school_id: profile.school_id
 		})
 		.select()
 		.single();
+
+	// Les étiquettes sont recopiées via `resource_tags` : dupliquer une fiche doit
+	// dupliquer ses tags, ce que l'ancienne colonne faisait implicitement.
+	if (!createError && duplicate) {
+		const tags = await fetchResourceTagNames(locals.supabase, 'worksheet', params.id).catch(
+			() => []
+		);
+		if (tags.length > 0) {
+			await syncResourceTags(locals.supabase, 'worksheet', duplicate.id, tags);
+		}
+	}
 
 	if (createError) {
 		console.error('Failed to duplicate worksheet:', createError);
@@ -177,10 +188,21 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 		}
 	}
 
+	// Les étiquettes de la fiche d'origine suivent la copie. Elles ne sont plus
+	// une colonne (migration 20260908180000), donc le `insert` qui duplique la
+	// ligne ne les emporte plus : sans cette recopie explicite, dupliquer une
+	// fiche perdrait silencieusement ses étiquettes.
+	const tags = await fetchResourceTagNames(locals.supabase, 'worksheet', worksheetId).catch(
+		() => []
+	);
+	if (tags.length > 0) {
+		await syncResourceTags(locals.supabase, 'worksheet', duplicate.id, tags);
+	}
+
 	// Validate response
 	const validated = validateJsonResponse(
 		createWorksheetResponseSchema,
-		{ worksheet: duplicate },
+		{ worksheet: { ...duplicate, tags } },
 		'POST /api/worksheets/[id]/duplicate'
 	);
 

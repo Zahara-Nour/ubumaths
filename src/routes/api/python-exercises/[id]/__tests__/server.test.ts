@@ -19,13 +19,13 @@ import {
 } from '$tests/helpers';
 
 // Stub tag-resolution helpers so tests don't need to mock junction queries.
-// GET uses fetchTagNamesForExercise, PUT uses resolveTagsToIds + syncExerciseTagJunction
-// + fetchTagNamesForExercise (post-update read-back).
-vi.mock('$lib/server/tags-resolution', () => ({
-	resolveTagsToIds: vi.fn().mockResolvedValue([]),
-	syncExerciseTagJunction: vi.fn().mockResolvedValue(undefined),
-	fetchTagNamesForExercise: vi.fn().mockResolvedValue([]),
-	fetchExerciseIdsByAnyTag: vi.fn().mockResolvedValue([])
+// GET uses fetchResourceTagNames, PUT uses syncResourceTags + syncResourceTags
+// + fetchResourceTagNames (post-update read-back).
+vi.mock('$lib/server/resource-tags', () => ({
+	syncResourceTags: vi.fn().mockResolvedValue(undefined),
+	fetchResourceTagNames: vi.fn().mockResolvedValue([]),
+	fetchTagNamesForResources: vi.fn().mockResolvedValue(new Map()),
+	fetchResourceIdsByAnyTag: vi.fn().mockResolvedValue([])
 }));
 
 const EXERCISE_ID = '550e8400-e29b-41d4-a716-446655440003';

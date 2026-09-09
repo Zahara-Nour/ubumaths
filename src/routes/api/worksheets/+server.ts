@@ -7,6 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { syncResourceTags, fetchTagNamesForResources } from '$lib/server/resource-tags';
 import {
 	validateListWorksheetsQuery,
 	validateCreateWorksheet,
@@ -77,6 +78,21 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(500, 'Failed to fetch worksheets');
 	}
 
+	// Les étiquettes ne sont plus une colonne de `worksheets` (migration
+	// 20260908180000) : elles vivent dans `resource_tags`. Une lecture groupée,
+	// pas une par fiche.
+	//
+	// C'est bien ici qu'il faut les rechercher, et non assouplir le schéma de
+	// réponse : le contrat dit qu'une fiche porte des étiquettes, et c'est
+	// toujours vrai — seul leur rangement a changé. Sans cette lecture, la liste
+	// renvoyait `tags: undefined` et le schéma rejetait les douze fiches, ce qui
+	// s'affichait comme « Aucune feuille trouvée ».
+	const tagsByWorksheet = await fetchTagNamesForResources(
+		locals.supabase,
+		'worksheet',
+		(worksheets ?? []).map((w) => w.id)
+	);
+
 	// Transform worksheets to include exercise_count
 	const worksheetsWithCount = (worksheets ?? []).map((w) => {
 		const { worksheet_exercises, ...rest } = w as typeof w & {
@@ -84,6 +100,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		};
 		return {
 			...rest,
+			tags: tagsByWorksheet.get(w.id) ?? [],
 			exercise_count: worksheet_exercises?.[0]?.count ?? 0
 		};
 	});
@@ -150,7 +167,6 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			estimated_duration_minutes: data.estimated_duration_minutes ?? null,
 			total_points: data.total_points ?? null,
 			grades: data.grades ?? [],
-			tags: data.tags ?? [],
 			created_by: user.id,
 			school_id: profile.school_id ?? null
 		})
@@ -162,10 +178,13 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(500, 'Failed to create worksheet');
 	}
 
+	// Les tags vivent dans `resource_tags`, plus dans une colonne de la fiche.
+	await syncResourceTags(locals.supabase, 'worksheet', worksheet.id, data.tags ?? []);
+
 	// Validate response
 	const validated = validateJsonResponse(
 		createWorksheetResponseSchema,
-		{ worksheet },
+		{ worksheet: { ...worksheet, tags: data.tags ?? [] } },
 		'POST /api/worksheets'
 	);
 

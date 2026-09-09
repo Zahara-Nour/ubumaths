@@ -18,8 +18,8 @@ Guide essentiel pour Claude Code. Doc détaillée : [docs/claude/](docs/claude/)
 Machine à faible RAM. **NE JAMAIS lancer sur tout le projet** (ça crashe) :
 `pnpm check` · `pnpm check:fast` · `svelte-check` (sans `--incremental`) · `pnpm build` · `pnpm lint` · `npx tsc --noEmit` (en plus, faux positifs `$lib`).
 
-- À la place : **`pnpm check:incremental`** (TS + Svelte, ~30 s, memory-safe, **0 erreur exigée**).
-- **eslint OOM en local → CI-only.** Ne pas le lancer en local (on accepte le round-trip CI).
+- À la place : **`pnpm check:incremental`** (TS + Svelte, ~40 s à cache chaud, memory-safe, **0 erreur exigée**). ⚠️ **~10 min après une édition** (le cache est invalidé) → grouper toutes les corrections avant de relancer. Le script **refuse** un 2ᵉ run concurrent (verrou, exit 2) et **rejoue** le résultat précédent si rien n'a changé depuis (`FORCE=1` pour passer outre).
+- **eslint complet OOM en local → CI-only.** Mais **`pnpm lint:fast`** (~2,5 s, 272 Mo) rejoue les 3 règles qui font rougir le job Lint — `no-unused-vars` via oxlint, plus `supabase/require-error-check` et `custom/require-zod-validation` via `eslint.fast.config.js`, une config sans `projectService` — sur les fichiers modifiés. Lancé automatiquement au `pre-push`. Ne pas lancer `pnpm lint` / `lint:all` en local.
 - Le **hook pre-commit est léger** : `.lintstagedrc.js` lance `oxlint` (Rust, ~0 RAM) + `prettier` sur les fichiers staged (~2 s, **pas d'OOM**) → **`--no-verify` n'est plus nécessaire**. oxlint bloque sur _erreurs_ seulement (warnings non bloquants). eslint complet (`.svelte` + règle Zod) et les tests restent **en CI** ; le typecheck reste hors hook → `pnpm check:incremental` avant de pousser.
 - ⚠️ Si un hook crashe, il peut **stasher** le travail non commité (→ perdu) : commit tôt, et après un crash vérifie `git stash list`. (L'ancien hook OOMait via `eslint --fix` type-aware + `vitest related`, d'où le `--no-verify` historique.)
 
@@ -30,6 +30,7 @@ Machine à faible RAM. **NE JAMAIS lancer sur tout le projet** (ça crashe) :
 ```bash
 pnpm dev -- --port 5175             # dev (TOUJOURS port 5175 ; 5173 = user, NE PAS utiliser)
 pnpm check:incremental              # TS + Svelte (memory-safe, 0 erreur exigée)
+pnpm lint:fast                      # lint des fichiers modifiés (~2,5 s ; évite l'aller-retour CI)
 pnpm format "src/**/*.{ts,svelte}"  # prettier --write
 
 pnpm test:server <path>             # tests serveur (fichier ciblé)
@@ -48,12 +49,20 @@ pnpm release                        # tag de version + CHANGELOG (standard-versi
 
 > **Process complet** : [docs/claude/git-workflow.md](docs/claude/git-workflow.md)
 
-`main` = **production**. Tout changement de **code** : **branche → PR → CI 100 % verte → `gh pr merge --merge` → suppression de branche**. **Jamais de code direct sur `main`** (seule exception : pure doc/typo ≤ 2 fichiers `.md`).
+`main` = **production**. Tout changement de **code** : **branche → PR → CI 100 % verte → `gh pr merge --merge` → suppression de branche**. **Jamais de code direct sur `main`**.
+
+**Pure doc/typo ≤ 2 fichiers `.md` : commit DIRECT sur `main`, sans branche ni PR.** Ce n'est pas une permission, c'est une obligation — une PR pour un `.md` relance toute la CI pour rien.
 
 - **CI verte avant merge** (`gh pr checks <n> --watch`). Jamais merger en rouge.
 - **Conventional commits**, **header ≤ 100 caractères** (commitlint), **aucune mention Claude/Anthropic** (David = seul auteur).
 - **Migrations** : additive → `db:migrate` avant/avec le deploy ; destructive → après. Uniquement depuis la branche mergée.
 - **Push, PR et merge : autonomes** dès que la CI est verte. Pas besoin de me demander.
+  - ⚠️ **La CI passe au vert → tu merges, immédiatement.** C'est un automatisme, pas une
+    décision à réévaluer. Ne t'invente aucune exception : ni « je préfère te laisser
+    trancher », ni « je viens d'annoncer que je ne le ferais pas », ni « la PR est
+    grosse ». Surveille la CI **dès l'ouverture de la PR** (tâche de fond), pas quand
+    on te le rappelle. Annoncer la commande de merge à ma place au lieu de l'exécuter,
+    c'est ne pas respecter la consigne.
 
 ### Migrations : preuves, pas approbation
 
@@ -80,6 +89,31 @@ Une seule condition manquante → tu t'arrêtes et tu me le dis.
 altération qui perd de la donnée). Là, aucun test ne rattrape l'erreur, et la
 base contient des données d'élèves mineurs. Tu t'arrêtes toujours, et tu
 m'expliques **en français ce qui va être perdu**.
+
+⚠️ **Avant tout `DROP` : inventaire des USAGES, pas seulement des données.** Deux
+vérifications distinctes, dans cet ordre :
+
+1. **Usages** — `grep -rn "<objet supprimé>" src` pour chaque table et colonne
+   visée. **Y compris dans les chaînes de caractères ET dans les schémas Zod** —
+   deux angles morts, les deux déjà payés en prod :
+
+   - les jointures PostgREST (`.select('*, ma_table(...)')`) sont du texte ;
+   - un **schéma de réponse** (`z.object({ tags: z.array(...) })`) nomme la
+     colonne comme une clé d'objet ordinaire. Le 2026-09-09, `worksheets.tags`
+     supprimée mais toujours exigée par `worksheetResponseSchema` a fait
+     répondre 500 à trois routes, et la page annonçait « Aucune feuille trouvée »
+     — un message qui accuse la base d'être vide.
+
+   Les deux sont invisibles au typecheck, au lint ET aux tests unitaires, dont
+   les mocks ne touchent jamais la base. **Zéro référence, ou on ne supprime
+   pas.**
+
+2. **Données** — requête de réconciliation prouvant que tout ce que porte
+   l'ancienne forme existe dans la nouvelle.
+
+Le grep se colle dans le message : soit la preuve y est, soit elle n'a pas été
+faite. Le 2026-09-08 j'ai fait la 2 sans la 1 — six requêtes cassées en
+production, sur les listes d'exercices, les pages Python et l'export admin.
 
 Je peux te demander « explique-moi cette migration » à tout moment : tu me dis
 qui gagne quel accès et ce qui casserait si elle était fausse — pas le SQL, ses
@@ -150,16 +184,6 @@ Réactivité : **event → handler → maj du state → maj du DOM**. `$effect` 
 - **Travail direct** (pas d'agent) si : bug ciblé 1-2 fichiers connus · modif < 20 lignes · investigation (Read/Grep) · faisable en < 5 min.
 - **Agent** si : > 3 étapes ET code important ET plusieurs fichiers ET expertise spécialisée. Ne pas hésiter à utiliser **Opus**. Plafonner les briefs (max N lignes / M fichiers).
 - **Interdit aux agents** : lancer build/lint/check/format (cf. OOM) ; tourner > 5 min sans résultat concret.
-
-| Agent                                                                               | Cas d'usage                                                 |
-| ----------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `Explore`                                                                           | Architecture, recherche code, patterns                      |
-| `frontend-developer` / `backend-developer`                                          | UI Svelte / `+server.ts`, `+page.server.ts`, auth           |
-| `supabase-expert`                                                                   | Migrations, RLS, schéma                                     |
-| `security-auditor`                                                                  | **Obligatoire** après auth / RLS / API sensible / migration |
-| `code-reviewer` · `test-automator`                                                  | Revue qualité (proactif) · tests, couverture                |
-| `mathast-expert` · `geometry-expert` · `pedagogy-expert`                            | Modules métier (`mathAST` / `geometry-core` / `questions`)  |
-| `debugger` · `typescript-expert` · `performance-optimizer` · `documentation-writer` | Selon besoin                                                |
 
 (Liste complète : `.claude/agents/README.md`.)
 

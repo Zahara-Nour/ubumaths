@@ -12,8 +12,8 @@
 	import type { ExplicitFunction, Viewport, Point } from '$lib/grapheur/types';
 	import { LINE_STYLE_DASHARRAY } from '$lib/grapheur/types';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
-	import { createEvaluator } from '$lib/grapheur/evaluator';
-	import { sampleFunction } from '$lib/grapheur/sampler';
+	import { bindParameters, sampleCached } from '$lib/grapheur/analysis';
+	import type { VariableBindings } from '$lib/grapheur/evaluator';
 	import { curveToSVGPath, curveToPolylinePath } from '$lib/grapheur/bezier';
 
 	// Props
@@ -21,12 +21,15 @@
 		func,
 		viewport,
 		transformer,
-		isInteracting = false
+		isInteracting = false,
+		bindings = {}
 	}: {
 		func: ExplicitFunction;
 		viewport: Viewport;
 		transformer: CoordinateTransformer;
 		isInteracting?: boolean;
+		/** Parameter values to bind before evaluating — `a`, `b`, … */
+		bindings?: VariableBindings;
 	} = $props();
 
 	// ==========================================================================
@@ -64,14 +67,17 @@
 			return '';
 		}
 
-		// Create evaluator from the function's AST
-		const evaluator = createEvaluator(func.ast);
+		// Bind the parameters first: the cache keys on the bound expression.
+		const bound = bindParameters(func.ast, bindings);
+		if (!bound) return '';
 
 		// Adjust quality based on interaction state
 		const numPoints = isInteracting ? LOW_QUALITY_POINTS : HIGH_QUALITY_POINTS;
 
-		// Sample the function across the viewport
-		const sampledCurve = sampleFunction(evaluator, viewport, numPoints);
+		// Sample the function across the viewport. Cached on the expression: the
+		// panel hands over a fresh object at every render — moving a slider that
+		// changes nothing here would otherwise re-sample the whole curve.
+		const sampledCurve = sampleCached(bound, viewport, numPoints);
 
 		// If no points, return empty path
 		if (sampledCurve.points.length === 0) {

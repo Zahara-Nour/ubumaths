@@ -9,6 +9,10 @@ import { z } from 'zod';
 // MIGRATION STATUS ENUM
 // ============================================================================
 
+/** Verdict de relecture humaine — cf. `ReviewStatus`. */
+export const reviewStatusSchema = z.enum(['pending', 'approved', 'rejected']);
+export type ReviewStatus = z.infer<typeof reviewStatusSchema>;
+
 export const migrationStatusSchema = z.enum([
 	'pending',
 	'converted',
@@ -46,6 +50,10 @@ export const migrationTrackingInsertSchema = z.object({
 	converted_at: z.string().datetime().nullable().optional(),
 	imported_at: z.string().datetime().nullable().optional(),
 	validated_at: z.string().datetime().nullable().optional(),
+	// Verdict de relecture — colonnes distinctes de l'avancement technique.
+	review_status: reviewStatusSchema.optional(),
+	reviewed_at: z.string().datetime().nullable().optional(),
+	reviewed_by: z.string().uuid('Invalid UUID format').nullable().optional(),
 	updated_at: z.string().datetime().optional()
 });
 

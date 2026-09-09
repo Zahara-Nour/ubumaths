@@ -56,6 +56,11 @@
 	const initialData = data;
 
 	// Form state
+	// Niveau de la classe dont on écrit la séance : le sélecteur `[[` s'y restreint.
+	// `$derived` et non figé à l'initialisation — on navigue d'une classe à l'autre
+	// sans remonter le composant, et un niveau périmé filtrerait sur la mauvaise classe.
+	let classGrades = $derived(data.classData.grade ? [data.classData.grade] : null);
+
 	let lessonContent = $state(initialData.entry?.lessonContent || '');
 	let homeworkContent = $state(initialData.entry?.homeworkContent || '');
 	let homeworkDueDate = $state(initialData.entry?.homeworkDueDate || '');
@@ -331,6 +336,13 @@
 			} else if (result.action === 'publish') {
 				toaster.success(result.isPublished ? 'Entree publiee' : 'Publication retiree');
 			}
+
+			// Un numéro d'exercice cité mais inexistant ne casse rien — les autres
+			// sont pris en compte — mais il faut le dire, sinon un point manquerait
+			// à la couverture sans qu'on comprenne pourquoi.
+			if (result.warning) {
+				toaster.warning(result.warning);
+			}
 		} else if (result?.error) {
 			toaster.error(result.error);
 		}
@@ -452,6 +464,11 @@
 			return async ({ update: formUpdate }) => {
 				isSaving = false;
 				await formUpdate();
+				// Les ressources citées dans le texte alimentent la couverture, que le
+				// serveur recalcule à chaque enregistrement. `coveredSource` est un
+				// `$state` figé à l'initialisation : sans cette relance, la carte
+				// « Programme travaillé » afficherait l'état d'avant la sauvegarde.
+				await refreshCoverage();
 			};
 		}}
 	>
@@ -480,6 +497,7 @@
 				<Card.Content>
 					<input type="hidden" name="lessonContent" value={lessonContent} />
 					<RichTextEditor
+						resourceGrades={classGrades}
 						bind:htmlValue={lessonContent}
 						preset="standard"
 						minHeight="200px"
@@ -503,6 +521,7 @@
 				<Card.Content class="space-y-4">
 					<input type="hidden" name="homeworkContent" value={homeworkContent} />
 					<RichTextEditor
+						resourceGrades={classGrades}
 						bind:htmlValue={homeworkContent}
 						preset="standard"
 						minHeight="150px"

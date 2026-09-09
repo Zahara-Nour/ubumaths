@@ -1,4 +1,5 @@
 import { error, redirect } from '@sveltejs/kit';
+import { fetchTagNamesForResources } from '$lib/server/resource-tags';
 import type { PageServerLoad } from './$types';
 import type { PythonExercise } from '$lib/types/python-exercises';
 
@@ -30,9 +31,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	const { data: exercises, error: fetchError } = await supabase
 		.from('python_exercises')
-		.select(
-			'id, title, description, level, is_public, created_at, updated_at, python_exercise_tags(python_tags(name))'
-		)
+		.select('id, title, description, level, is_public, created_at, updated_at')
 		.eq('author_id', user.id)
 		.order('created_at', { ascending: false });
 
@@ -41,23 +40,17 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		throw error(500, 'Erreur lors du chargement de tes exercices');
 	}
 
-	// Flatten the junction (python_exercise_tags > python_tags) into a plain `tags: string[]`.
-	const flattened = (exercises ?? []).map((row) => {
-		const nested = (row as Record<string, unknown>).python_exercise_tags;
-		const tagNames: string[] = Array.isArray(nested)
-			? nested
-					.map((j) => {
-						const tag = (j as Record<string, unknown>).python_tags;
-						return tag && typeof tag === 'object' && 'name' in tag
-							? (tag as { name: string }).name
-							: null;
-					})
-					.filter((n): n is string => Boolean(n))
-					.sort()
-			: [];
-		const { python_exercise_tags: _stripped, ...rest } = row as Record<string, unknown>;
-		return { ...(rest as Record<string, unknown>), tags: tagNames };
-	});
+	// Tags depuis `resource_tags`, en une requête groupée.
+	const tagsByExercise = await fetchTagNamesForResources(
+		supabase,
+		'python_exercise',
+		(exercises ?? []).map((row) => (row as { id: string }).id)
+	);
+
+	const flattened = (exercises ?? []).map((row) => ({
+		...(row as Record<string, unknown>),
+		tags: tagsByExercise.get((row as { id: string }).id) ?? []
+	}));
 
 	return {
 		exercises: flattened as unknown as Pick<

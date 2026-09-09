@@ -58,6 +58,8 @@ export interface SequenceComputeSpec {
 	readonly firstIndex: number;
 	/** Value of the first term — required for a recurrence, ignored otherwise. */
 	readonly firstTerm: number | null;
+	/** Parameter values to bind while iterating — `a`, `b`, … */
+	readonly bindings?: Readonly<Record<string, number>>;
 }
 
 // =============================================================================
@@ -74,6 +76,12 @@ export const MAX_SEQUENCE_TERMS = 1000;
 
 /** Number of staircase steps drawn when a cobweb is first switched on. */
 export const DEFAULT_COBWEB_STEPS = 10;
+
+/** Default lower bound of the slider driving a recurrence's first term. */
+export const DEFAULT_FIRST_TERM_MIN = -10;
+
+/** Default upper bound of the same slider. */
+export const DEFAULT_FIRST_TERM_MAX = 10;
 
 /** Names offered to new sequences, in order. */
 export const SEQUENCE_NAMES = ['u', 'v', 'w', 't', 'a', 'b', 'c'] as const;
@@ -158,7 +166,8 @@ function rewritePreviousTerm(ast: MathNode, mode: SequenceMode, name: string): M
 export function parseSequence(
 	latex: string,
 	mode: SequenceMode,
-	name: string
+	name: string,
+	parameterNames: readonly string[] = []
 ): SequenceParseResult {
 	const failure = (error: string): SequenceParseResult => ({
 		success: false,
@@ -187,7 +196,9 @@ export function parseSequence(
 
 	const variables = getVariables(rewritten);
 	const allowed = mode === 'recurrence' ? ALLOWED_RECURRENCE_VARIABLES : ALLOWED_VARIABLES;
-	const unknown = [...variables].filter((v) => !allowed.has(v));
+	// A declared parameter is a legitimate free variable: it gets a value at
+	// evaluation time, from its slider.
+	const unknown = [...variables].filter((v) => !allowed.has(v) && !parameterNames.includes(v));
 	if (unknown.length > 0) {
 		const quoted = unknown.map((v) => `« ${v} »`).join(', ');
 		return failure(`Variable inconnue : ${quoted}.`);
@@ -220,7 +231,7 @@ export function parseSequence(
  * @param lastIndex - Highest rank of interest (usually the viewport's right edge)
  */
 export function computeSequenceTerms(spec: SequenceComputeSpec, lastIndex: number): SequenceTerm[] {
-	const { mode, ast, firstIndex, firstTerm } = spec;
+	const { mode, ast, firstIndex, firstTerm, bindings } = spec;
 
 	if (!Number.isFinite(lastIndex) || lastIndex < firstIndex) return [];
 
@@ -233,6 +244,7 @@ export function computeSequenceTerms(spec: SequenceComputeSpec, lastIndex: numbe
 
 	// Single mutable env reused across the loop — never rebuild it per iteration.
 	const env: Record<string, number> = {
+		...bindings,
 		[INDEX_VARIABLE]: firstIndex,
 		[PREV_TERM_VARIABLE]: 0
 	};
@@ -327,20 +339,43 @@ export function computeCobwebPath(terms: readonly SequenceTerm[], maxSteps?: num
  * @param sequence - Any object carrying the definition of a sequence
  * @returns null when the expression did not parse, so there is nothing to compute
  */
-export function toComputeSpec(sequence: {
-	mode: SequenceMode;
-	ast: MathNode | undefined;
-	firstIndex: number;
-	firstTerm: number | null;
-}): SequenceComputeSpec | null {
+export function toComputeSpec(
+	sequence: {
+		mode: SequenceMode;
+		ast: MathNode | undefined;
+		firstIndex: number;
+		firstTerm: number | null;
+		firstTermParameter?: string | null;
+	},
+	bindings: Readonly<Record<string, number>> = {}
+): SequenceComputeSpec | null {
 	if (!sequence.ast) return null;
 
 	return {
 		mode: sequence.mode,
 		ast: sequence.ast,
 		firstIndex: sequence.firstIndex,
-		firstTerm: sequence.firstTerm
+		firstTerm: resolveFirstTerm(sequence.firstTerm, sequence.firstTermParameter, bindings),
+		bindings
 	};
+}
+
+/**
+ * Resolve the first term, which a parameter may drive instead of a fixed value.
+ *
+ * A parameter that no longer exists yields no first term rather than a stale
+ * one: the sequence stops until the parameter is back, which is visible, where
+ * a silent fallback would not be.
+ */
+function resolveFirstTerm(
+	firstTerm: number | null,
+	parameterName: string | null | undefined,
+	bindings: Readonly<Record<string, number>>
+): number | null {
+	if (!parameterName) return firstTerm;
+
+	const bound = bindings[parameterName];
+	return Number.isFinite(bound) ? bound : null;
 }
 
 /**

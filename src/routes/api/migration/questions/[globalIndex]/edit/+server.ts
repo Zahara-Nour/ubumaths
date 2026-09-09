@@ -137,7 +137,11 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 					old_question_hash: questionHash,
 					old_question_index: globalIndex,
 					old_description: description.slice(0, 500),
-					migration_status: 'converted',
+					// Cette ligne n'est qu'un support pour rattacher l'édition : rien
+					// n'a été converti ni importé, l'avancement technique reste
+					// `pending`. Elle portait `converted`, ce qui laissait croire à une
+					// conversion réussie qui n'avait pas eu lieu.
+					migration_status: 'pending',
 					phase: 4
 				})
 				.select('id')

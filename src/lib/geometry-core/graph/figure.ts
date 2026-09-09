@@ -150,7 +150,7 @@ import type { Delta } from './undo-redo';
 import { computeElementPosition, resolveScalarParam, buildCurveBindings } from './compute-position';
 import { computeLocusCurve } from './compute-locus';
 import type { SampledCurve, Viewport, Point } from '../viewport/types';
-import { sampleParametric2D, type ParametricSampleResult } from '$lib/grapheur/sampler';
+import { sampleParametric2D, type ParametricSampleResult } from '../viewport/sampler';
 import { findClosestParameterOnCurve } from './parametric-newton';
 import { computeOsculatingCircle } from './parametric-calculus';
 

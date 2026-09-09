@@ -27,6 +27,8 @@ describe('SequenceInput', () => {
 			usesIndex: parsed.usesIndex,
 			firstIndex: 0,
 			firstTerm: 8,
+			firstTermMin: -10,
+			firstTermMax: 10,
 			representation: 'ranks',
 			cobwebSteps: 10,
 			color: '#0000ff',
@@ -71,5 +73,46 @@ describe('SequenceInput', () => {
 			sequence: sequence({ mode: 'explicit', latex: '3n+2', firstTerm: null })
 		});
 		expect(explicite.container.textContent?.replace(/\s/g, '')).toContain('un=');
+	});
+
+	/**
+	 * Balayer le premier terme en continu est ce qui fait voir qu'un point fixe
+	 * attire ou repousse : la même récurrence converge ou diverge selon u₀, et
+	 * retaper une valeur ne le montre pas.
+	 */
+	describe('curseur du premier terme', () => {
+		it('affiche le curseur pour une récurrence', () => {
+			const { container } = render(SequenceInput, { sequence: sequence() });
+
+			expect(container.querySelector('[aria-label="Premier terme (curseur)"]')).not.toBeNull();
+		});
+
+		it('n’affiche pas de curseur pour une suite explicite', () => {
+			const { container } = render(SequenceInput, {
+				sequence: sequence({ mode: 'explicit', latex: '3n+2', firstTerm: null })
+			});
+
+			expect(container.querySelector('[aria-label="Premier terme (curseur)"]')).toBeNull();
+		});
+
+		it('expose des bornes réglables', () => {
+			const { container } = render(SequenceInput, { sequence: sequence() });
+
+			const min = container.querySelector<HTMLInputElement>(
+				'[aria-label="Borne inférieure du curseur"]'
+			);
+			const max = container.querySelector<HTMLInputElement>(
+				'[aria-label="Borne supérieure du curseur"]'
+			);
+
+			expect(min?.value).toBe('-10');
+			expect(max?.value).toBe('10');
+		});
+
+		it('garde le champ de saisie exacte à côté du curseur', () => {
+			const { container } = render(SequenceInput, { sequence: sequence() });
+
+			expect(container.querySelector('[aria-label="Premier terme"]')).not.toBeNull();
+		});
 	});
 });

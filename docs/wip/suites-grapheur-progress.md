@@ -63,6 +63,10 @@ simple nuage de points, c'est **l'escalier/toile d'araignée** et **le tableau d
 valeurs**. Les calculatrices les ont nativement, GeoGebra et Desmos les font
 construire. C'est précisément l'argument qui justifie la greffe sur le grapheur.
 
+> **Complété le 2026-09-07** : MathGraph32 manquait à ce panorama alors qu'il
+> est dans le dépôt (`extern/mathgraph-main/`). Voir **§12**, et **§13** pour le
+> chiffrage des suites dans `geometry-core` relevé dans le code.
+
 ---
 
 ## 3. Contraintes techniques découvertes (vérifiées en exécutant le code)
@@ -341,3 +345,287 @@ Effets de bord :
   incohérente (deux axes des abscisses). `showCobweb` remplacé par
   `representation: 'ranks' | 'cobweb'`, exclusives. 294 tests verts
   (282 serveur + 12 client), typecheck à 0 erreur. **Toujours pas commité.**
+- **2026-09-07** — Trou du benchmark comblé : **MathGraph32** lu dans le code
+  (§12). Il unifie géométrie et suites **au niveau du calcul** (`u(n)` = même
+  nœud d'AST que `f(x)`), pas au niveau graphique ; l'escalier y est un objet
+  spécialisé de plus, réservé à l'ordre 1 autonome ; la suite explicite n'est pas
+  un objet mais une figure de départ ; **pas de tableau de valeurs**.
+  Trois prémisses du §1 revérifiées dans notre code, **deux fausses** (§13) :
+  `geometry-core` n'exporte ni `function`, ni `locus`, ni `implicitCurve`, et ses
+  trois exporteurs **n'ont aucun appelant applicatif** ; le chemin réel vers les
+  énoncés et les PDF passe par les **nœuds ubumark** (`number-line`,
+  `variation-table`…), pas par `geometry-core`. Trois branches chiffrées,
+  **question d'usage posée à David, rien tranché**.
+
+---
+
+## 12. Benchmark complémentaire — MathGraph32 (2026-09-07)
+
+Le benchmark du §2 avait un trou : **MathGraph32** (`extern/mathgraph-main/`,
+v7.x, Yves Biton / Sésamath, AGPLv3), seul comparable qui soit à la fois un
+logiciel de géométrie dynamique **et** un outil d'analyse. C'est donc celui qui
+éclaire le mieux la question « géométrie et suites dans le même moteur ? ».
+
+Tout ce qui suit est lu dans le code du dépôt, pas dans la documentation.
+
+### 12.1 Comment MathGraph32 modélise une suite
+
+**Une suite récurrente est un objet de calcul, pas un objet graphique.**
+`CSuiteRec` (`src/objets/CSuiteRec.js`, 167 l.) étend `CCalculAncetre` — la même
+racine qu'une constante ou une fonction. Six classes couvrent le domaine :
+réel × complexe, sur trois formes (`src/textes/textesFrAdd.js:566,908-911`) :
+
+| Forme                         | Classe       | Nature `NatCal`           |
+| ----------------------------- | ------------ | ------------------------- |
+| `u(n+1) = f(u(n))`            | `CSuiteRec`  | `NSuiteRecurrenteReelle`  |
+| `u(n+1) = f(n, u(n))`         | `CSuiteRec2` | `NSuiteRecurrenteReelle2` |
+| `u(n+2) = f(n, u(n+1), u(n))` | `CSuiteRec3` | `NSuiteRecurrenteReelle3` |
+
+Les termes sont **précalculés dans un tableau** au moment du `positionne()`,
+par une boucle `while` avec `try/catch` et test `isFinite` qui s'arrête au
+premier terme non défini (`CSuiteRec.js:100-120`) — exactement notre cas L2
+côté récurrence. Plafond : `NombreMaxiTermesSuiteRec = 100000`
+(`src/kernel/kernel.js:92`), contre 1 000 chez nous.
+
+**Le graphe en escalier est un second objet, graphique celui-là.**
+`CGrapheSuiteRec` (`src/objets/CGrapheSuiteRec.js` 238 l. +
+`src/objetsAdd/CGrapheSuiteRecAdd.js` 179 l.) étend `CElementLigne` et dépend du
+couple (suite, repère). La polyligne est
+`(u₀,u₁) → (u₁,u₁) → (u₁,u₂) → (u₂,u₂) → …` ; une option
+`traitsDeRappelSurAbscisses` ajoute les traits verticaux de chaque `uᵢ` jusqu'à
+l'axe des abscisses. Une seule construction sert à la fois d'escalier et de toile
+d'araignée — la différence est dans `f`, pas dans le code, comme chez nous.
+
+**L'escalier est réservé à l'ordre 1 autonome.**
+`OutilGrapheSuiteRec.activationValide()` exige `NatCal.NSuiteRecurrenteReelle`
+(`src/outils/OutilGrapheSuiteRec.js:41`), bit distinct de celui des formes 2 et 3.
+Une suite `u(n+1) = f(n, u(n))` n'a donc **aucun** graphe en escalier possible.
+C'est notre contrainte L3, atteinte chez eux par le typage de l'objet là où nous
+la portons dynamiquement par le champ `usesIndex` — leur solution est plus
+rigide, la nôtre plus fine (elle rétrograde une suite qui devient dépendante
+de `n` au lieu de l'interdire à la création).
+
+**La suite explicite `uₙ = f(n)` n'existe pas comme objet.**
+Aucune classe, aucun outil. Le nuage de points se fabrique comme une
+_construction_ : fonction + variable bornée + lieu discret + point dans repère.
+MathGraph32 la livre sous forme de **figure de départ** sérialisée en base64
+(`graSuiteunfn`, `src/kernel/figures.js:139`), proposée par le dialogue « nouvelle
+figure » (`src/dialogs/NewFigDlg.js:221`) à côté de deux variantes récurrentes.
+Autrement dit : la représentation la plus courante en classe n'est pas un objet
+du moteur, c'est un modèle de document.
+
+### 12.2 Géométrie et suites : unifiées, mais au niveau du calcul
+
+C'est le point qui répond directement à la question posée.
+
+MathGraph32 **unifie**, mais pas là où on l'attendait : `u(n)` dans une formule
+est le _même nœud d'AST_ qu'un appel de fonction `f(x)` — la classe
+`CAppelFonction`. Seul le rendu LaTeX diffère, `u_{n}` au lieu de `f(n)`
+(`src/objets/CAppelFonctionBase.js:136-140`). Un terme de suite est donc
+utilisable dans n'importe quel calcul de la figure : coordonnée d'un point,
+rayon d'un cercle, condition d'affichage.
+
+L'unification est donc **dans le moteur de calcul**, pas dans la couche
+graphique. Côté graphique, la suite reste un objet spécialisé de plus parmi
+~240, avec sa propre méthode de tracé, son propre hit-testing, son propre
+exporteur. Rien n'est mutualisé avec les autres objets sauf le socle
+(`CElementLigne`, repère, styles).
+
+**Coût observé chez eux** : ~2 060 lignes pour l'ensemble « suites » (6 classes
+de calcul + 2 classes graphiques + leurs `Add` + 8 outils + 2 dialogues), dont
+~420 pour le seul objet graphique escalier.
+
+### 12.3 Ce que ça donne à l'export
+
+`CGrapheSuiteRec.prototype.tikz()` existe
+(`src/objetsAdd/CGrapheSuiteRecAdd.js:116`) : l'escalier **sort bien en TikZ**.
+Le pipeline est per-objet — chaque classe porte sa méthode `tikz()` (38 classes
+sur ~240 en ont une) et le document concatène (`CMathGraphDocAdd.js:74-115`).
+L'export global offre Copy / PNG / JPG / SVG / TikZ / base64 / HTML / URL
+permanente (`MtgAppBase.js:2592`).
+
+MathGraph32 vise donc bien l'usage en énoncé, et son escalier y va.
+**Mais l'objet exporté est l'escalier de récurrence uniquement** : la version
+explicite étant une construction, elle s'exporte en tant que fonction + lieu
+discret, pas en tant que « suite ».
+
+### 12.4 Ce qui manque chez eux
+
+**Pas de tableau de valeurs.** Aucun objet tableur, aucune chaîne d'interface
+`tableau`. Lire les termes suppose de poser à la main des `CValeurAffichee` dans
+la figure. C'est le point où le grapheur de Chiphre est déjà devant : notre
+`SequenceTable.svelte` est synchronisé automatiquement.
+
+### 12.5 Conclusion du complément
+
+Le seul comparable « géométrie + analyse dans un moteur unique » **ne fusionne
+pas** suites et géométrie au niveau graphique. Il fusionne au niveau du calcul,
+et traite la suite comme un objet spécialisé de plus, avec un coût complet
+(tracé + hit-test + export + sérialisation + dialogue) assumé objet par objet.
+
+Cela ne dit pas que `geometry-core` serait le mauvais hôte. Cela dit que
+l'argument « MathGraph32 le fait, donc c'est le bon endroit » n'existe pas :
+MathGraph32 paie exactement le prix que le §1 avait chiffré, et pour la moitié
+seulement du périmètre que le grapheur couvre déjà (ni tableau, ni suite
+explicite comme objet).
+
+---
+
+## 13. Coût réel des branches — relevé dans le code le 2026-09-07
+
+Le §1 datait du 4 septembre et posait le report à `geometry-core` sous
+condition. Avant de trancher, trois prémisses ont été revérifiées. **Deux sont
+fausses.**
+
+### 13.1 `geometry-core` n'exporte pas ce qu'on croyait
+
+Les quatre surfaces existent bien (`geometry-core/CLAUDE.md:109-113`) : canvas
+`GeometryCanvas.svelte`, `export-svg.ts` (468 l.), `export-tikz.ts` (688 l.),
+`export-typst.ts` (685 l.). Mais leur couverture est partielle, et le module le
+documente lui-même : « pas de garde TypeScript ne te le rappellera ».
+
+Types **absents des trois exporteurs** : `function` (la courbe de `f` !),
+`implicitCurve`, `locus`, `trace`, `integralArea`.
+`parametricCurve` et `quadraticCurve` sortent en TikZ/Typst mais pas en SVG.
+`annulus` et les secteurs sortent en SVG mais pas en TikZ/Typst.
+
+Conséquence directe sur la question posée : **un escalier porté dans
+`geometry-core` sortirait en TikZ sans la courbe de `f`**, puisque `function`
+n'est exporté nulle part. Il faudrait d'abord réparer l'export des courbes de
+fonctions — un chantier distinct, qui profiterait à tout le monde mais qui n'est
+pas « porter les suites ».
+
+### 13.2 Les exporteurs n'ont aucun appelant applicatif
+
+`exportToTikZ`, `exportToTypst` et `exportToSVG` ne sont importés que par
+`rendering/index.ts` (barrel) et par leurs propres tests. **Zéro page, zéro
+route, zéro pipeline PDF ne les appelle.** La capacité existe ; elle n'est
+branchée sur rien.
+
+Plus largement, `geometry-core` n'est consommé que par les pages
+`(public)/geometry-demo/*` (démos) et par `(protected)/constructions/*`
+(`constructions-v2`). **Aucun exercice, aucune question, aucune fiche ne l'utilise
+aujourd'hui.** L'argument « geometry-core est l'hôte des figures d'énoncé » décrit
+une intention, pas l'état du code.
+
+### 13.3 Le chemin réel vers les énoncés et les PDF passe ailleurs
+
+Le pipeline PDF (`src/lib/worksheets/typst-{generator,compiler}.ts`,
+`src/routes/api/worksheets/[id]/pdf/`) compile du Typst, et les images y entrent
+en **octets** dans un système de fichiers virtuel (`src/lib/typst/image-loader.ts`).
+
+Les figures « natives » d'un énoncé sont des **nœuds ubumark**, chacun avec son
+générateur Typst dédié : `variation-table`, `probability-tree`, `trig-circle`,
+`number-line` (`src/lib/ubumark/generators/`). **Aucun des quatre ne passe par
+`geometry-core`.** C'est le patron réellement en service pour « une figure dans
+un énoncé ».
+
+Coût mesuré d'un nœud ubumark complet, le plus petit des quatre
+(`number-line`) : **~1 460 lignes sur 5 fichiers** (type, parseur, rendu partagé,
+générateur Typst, composant Svelte) + 4 points de branchement
+(`markdown-parser.ts`, `typst-generator.ts`, `MarkdownRenderer.svelte`,
+`editor-config.ts`).
+
+### 13.4 Ce qu'un `GeoSequence` coûterait vraiment
+
+La prémisse du §1 (« toucher `compute-position.ts` ») est **la troisième à
+corriger** : `computeElementPosition` (`graph/compute-position.ts:145`) ne
+calcule que des positions de **points**, par une chaîne de gardes `isX(el)`. Un
+objet polyligne n'y passe pas. Le précédent exact est `GeoLocus` : module de
+calcul dédié (`graph/compute-locus.ts`, 716 l.), rendu à la volée
+(`svg-primitives.locusToSVG`, l. 2099), **6 fichiers** — et aucun export.
+
+Deux précédents mesurés (fichiers hors tests) :
+
+| Type ajouté       | Fichiers touchés | Export                 |
+| ----------------- | ---------------- | ---------------------- |
+| `locus`           | 6                | aucun                  |
+| `parametricCurve` | 11               | TikZ + Typst (pas SVG) |
+
+Un `GeoSequence` complet se situe donc vers **10-12 fichiers**, plus la surface
+DSL (`dsl/builtins.ts` fait 7 334 lignes, `dsl/serializer.ts` 902), plus les
+1 500 tests existants du module à ne pas casser. Et il n'atteindrait l'objectif
+« suites dans les PDF » qu'après les deux chantiers du §13.1 et §13.2.
+
+### 13.5 Ce que coûte l'autre branche (rester au grapheur)
+
+`src/lib/grapheur/sequence.ts` fait 375 lignes. L'ordre 2 y est une extension
+locale : `rewritePreviousTerm` gère aujourd'hui un seul `__prev`
+(`sequence.ts:118`), `computeSequenceTerms` une seule variable d'état
+(l. 222-265). Il faut un second terme initial, un second symbole `__prev2`, et
+la boucle — le reste (plafond, arrêt sur non-fini, tableau, persistance Zod,
+palette, viewport) est déjà là et déjà testé. L'escalier reste hors sujet pour
+l'ordre 2, comme chez MathGraph32.
+
+Ordre de grandeur : 1 fichier moteur + `types.ts` + `SequenceInput.svelte` +
+store. **Sans commune mesure avec les deux autres branches.**
+
+À noter aussi, contre le §1 : le grapheur **a** un export, SVG et PNG
+(`src/lib/grapheur/export.ts`, 426 l., bouton `ExportButton.svelte`), obtenu en
+sérialisant le SVG vivant — donc les suites y entrent gratuitement (déjà
+constaté en revue, §9). Ce qui manque au grapheur n'est pas « l'export », c'est
+l'export **vectoriel natif dans un document Typst**.
+
+### 13.6 Question ouverte, à trancher par David
+
+La question n'est pas technique : **veut-on des suites dans les énoncés
+d'exercices et les PDF ?** Les trois branches ne servent pas le même besoin.
+
+| Branche                                 | Ce qu'elle donne                                                          | Coût                                                                                                |
+| --------------------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **A. Grapheur : ordre 2 + Σ**           | Un meilleur outil d'exploration en classe. Rien dans les énoncés.         | Faible (1 moteur + 2 UI)                                                                            |
+| **B. Nœud ubumark `suite`**             | Des suites dans les énoncés **et** les PDF, par le chemin déjà en service | ~1 500 l., 5 fichiers + 4 branchements                                                              |
+| **C. `GeoSequence` dans geometry-core** | Une suite comme objet de figure, manipulable au drag, dans le DSL         | 10-12 fichiers **+** réparer l'export de `function` **+** brancher un exporteur sur le pipeline PDF |
+
+### 13.7 Inventaire de l'analyse : `geometry-core` est le module le plus fourni
+
+> Développé depuis dans un document dédié :
+> [`grapheur-vs-geometry-core.md`](grapheur-vs-geometry-core.md) — comparatif
+> complet (repères, systèmes de coordonnées, doublons, dépendance croisée,
+> 3 défauts trouvés).
+
+Relevé le 2026-09-07, après une question de David. Le §13.1-13.6 parlait
+d'export ; il ne disait rien des **capacités d'analyse**, et sur ce terrain
+`geometry-core` est nettement devant le grapheur.
+
+**Primitives d'analyse du DSL `geometry-core`** (`dsl/builtins.ts:6238-6330`) :
+
+| Domaine             | Primitives                                                                       |
+| ------------------- | -------------------------------------------------------------------------------- |
+| Courbes             | `courbe` (cartésienne, paramétrique, polaire, implicite, par morceaux, coniques) |
+| Points sur courbe   | `point_sur` (mobile au drag), `intersection`                                     |
+| Dérivation          | `derivee`, `tangente`, `pente`                                                   |
+| Intégration         | `integrale` (aire signée), `aire`, `aire_entre` → `GeoIntegralArea`              |
+| Points remarquables | `zeros`, `extrema`, `inflections`                                                |
+| Géométrie diff.     | `courbure`, `cercle_osculateur`, `longueur` (abscisse curviligne)                |
+| Coniques            | `asymptotes` (hyperbole), `axes`, `directrice`, `foyers`, `excentricite`         |
+| Paramétrage         | **`slider`** (`min`, `max`, `valeur`, `pas`)                                     |
+| Traces              | `lieu`, `trace`                                                                  |
+
+**Ce que le grapheur a en propre** : les **asymptotes de `y = f(x)`**
+(verticales, horizontales, **obliques** — `grapheur/analysis.ts:352-692`, absentes
+de `geometry-core` qui ne connaît que celles d'une hyperbole), le **survol
+lecteur de valeurs** (`CurveHover`), les **suites** (nuage, escalier, tableau de
+valeurs), et l'**export SVG/PNG du rendu vivant**.
+
+**Ce qui est déjà partagé** — les deux modules ne sont pas étanches :
+
+- `findCriticalZeros` / `findCriticalExtrema` viennent de `$lib/mathAST/analysis`
+  et sont importés **par les deux** (`grapheur/analysis.ts:25` et
+  `geometry-core/dsl/builtins.ts`). Le cœur symbolique est commun.
+- `grapheur/bezier.ts` (14 l.) et `grapheur/viewport.ts` (21 l.) ne sont que des
+  **ré-exports** de `geometry-core/rendering/bezier.ts` et
+  `geometry-core/viewport`. Idem `grapheur/colors.ts`.
+
+Autrement dit **le grapheur est déjà bâti en partie sur `geometry-core`** :
+viewport, splines et palette y vivent déjà.
+
+**Conséquence pour la branche C.** `slider` et `point_sur` existent et sont
+interactifs (`GeometryCanvas.svelte:122-131` + `SliderControl.svelte`,
+démo `/geometry-demo/sliders/limacon`). Un `u₀` réglable au curseur, ou capturable
+au drag comme chez MathGraph32, est donc **déjà disponible côté `geometry-core`
+et absent côté grapheur** (`createEvaluator` y accepte un binding « for sliders »
+mais aucun de ses 7 appelants ne le passe). La branche C est plus forte que ne le
+laissait entendre le §13.6 — **pour l'exploration**. Sa faiblesse reste entière
+côté export : `function` n'est exporté par aucun des trois exporteurs, et aucun
+appelant applicatif ne les invoque.

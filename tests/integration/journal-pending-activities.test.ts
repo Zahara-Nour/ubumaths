@@ -138,6 +138,66 @@ async function createEntry(
 	return result as { entryId?: string; warning?: string };
 }
 
+/** Un exercice tagué sur les points donnés. */
+async function makeTaggedExercise(teacherId: string, pointIds: string[]): Promise<string> {
+	const exercise = (await TestData.exercise(teacherId).create()) as { id: string };
+	if (pointIds.length > 0) {
+		const { error } = await service
+			.from('exercise_curriculum_points' as never)
+			.insert(pointIds.map((point_id) => ({ exercise_id: exercise.id, point_id })) as never);
+		if (error) throw new Error(`tag exercice : ${error.message}`);
+	}
+	return exercise.id;
+}
+
+/** Place un exercice dans une fiche ; renvoie l'identifiant de la JONCTION. */
+async function putInWorksheet(teacherId: string, exerciseId: string): Promise<string> {
+	const { data: ws, error: wsError } = await service
+		.from('worksheets' as never)
+		.insert({
+			title: `Fiche ${crypto.randomUUID().slice(0, 8)}`,
+			type: 'worksheet',
+			status: 'published',
+			created_by: teacherId
+		} as never)
+		.select('id')
+		.single();
+	if (wsError) throw new Error(`fiche : ${wsError.message}`);
+
+	const { data: link, error: linkError } = await service
+		.from('worksheet_exercises' as never)
+		.insert({
+			worksheet_id: (ws as { id: string }).id,
+			exercise_id: exerciseId,
+			position: 3
+		} as never)
+		.select('id')
+		.single();
+	if (linkError) throw new Error(`jonction : ${linkError.message}`);
+	return (link as { id: string }).id;
+}
+
+/** Appelle l'action `update` comme le ferait le formulaire de la page. */
+async function updateEntry(
+	teacherId: string,
+	classId: string,
+	entryId: string,
+	fields: Record<string, string>
+): Promise<void> {
+	const body = new URLSearchParams({ entryId, ...fields });
+	const request = new Request('http://localhost/x', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+		body
+	});
+	const result = (await actions.update({
+		request,
+		locals: buildLocals({ id: teacherId } as User),
+		params: { classId, date: DATE }
+	} as never)) as { success?: boolean; error?: string };
+	if (!result?.success) throw new Error(`update refusé : ${result?.error}`);
+}
+
 async function coverageOf(entryId: string): Promise<Map<string, string>> {
 	const { data } = await service
 		.from('journal_entry_points')
@@ -191,5 +251,74 @@ describe('Séance neuve — activités choisies avant enregistrement', () => {
 		const { entryId } = await createEntry(teacher.id, klass.id, {});
 		expect(entryId).toBeTruthy();
 		expect((await coverageOf(entryId!)).size).toBe(0);
+	});
+});
+
+describe('Séance — ressources citées dans le contenu', () => {
+	it('un exercice cité à la CRÉATION apporte ses points, sans aucune activité', async () => {
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const klass = (await TestData.class().create()) as { id: string };
+		const point = await makePoint();
+		const exercise = await makeTaggedExercise(teacher.id, [point]);
+
+		const { entryId } = await createEntry(teacher.id, klass.id, {
+			lessonContent: `<p>Faire [[exercise:${exercise}|Fractions]] en classe.</p>`
+		});
+
+		// La réconciliation était appelée À L'INTÉRIEUR du bloc « s'il y a des
+		// activités » : une séance qui ne fait que citer des ressources n'aurait
+		// jamais reçu sa couverture.
+		expect((await coverageOf(entryId!)).get(point)).toBe('auto');
+	});
+
+	it('un EXERCICE DE FICHE cité apporte les points de l’exercice sous-jacent', async () => {
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const klass = (await TestData.class().create()) as { id: string };
+		const point = await makePoint();
+		const exercise = await makeTaggedExercise(teacher.id, [point]);
+		const junction = await putInWorksheet(teacher.id, exercise);
+
+		const { entryId } = await createEntry(teacher.id, klass.id, {
+			lessonContent: `<p>[[worksheet_exercise:${junction}|Exercice 3 — Fiche : Dérivées]]</p>`
+		});
+
+		expect((await coverageOf(entryId!)).get(point)).toBe('auto');
+	});
+
+	it('la MISE À JOUR du seul contenu met la couverture à jour', async () => {
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const klass = (await TestData.class().create()) as { id: string };
+		const point = await makePoint();
+		const exercise = await makeTaggedExercise(teacher.id, [point]);
+
+		const { entryId } = await createEntry(teacher.id, klass.id, {});
+		expect((await coverageOf(entryId!)).size).toBe(0);
+
+		// L'action `update` ne réconciliait rien du tout : modifier le texte ne
+		// pouvait donc jamais changer les points travaillés.
+		await updateEntry(teacher.id, klass.id, entryId!, {
+			lessonContent: `<p>[[exercise:${exercise}|Fractions]]</p>`
+		});
+		expect((await coverageOf(entryId!)).get(point)).toBe('auto');
+
+		// Et retirer la citation retire le point.
+		await updateEntry(teacher.id, klass.id, entryId!, {
+			lessonContent: '<p>Finalement, cours magistral.</p>'
+		});
+		expect((await coverageOf(entryId!)).has(point)).toBe(false);
+	});
+
+	it('un devoir cité dans « travail à faire » compte autant que le contenu', async () => {
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const klass = (await TestData.class().create()) as { id: string };
+		const point = await makePoint();
+		const exercise = await makeTaggedExercise(teacher.id, [point]);
+
+		const { entryId } = await createEntry(teacher.id, klass.id, {
+			lessonContent: '<p>Cours.</p>',
+			homeworkContent: `<p>Pour demain : [[exercise:${exercise}|Fractions]]</p>`
+		});
+
+		expect((await coverageOf(entryId!)).get(point)).toBe('auto');
 	});
 });

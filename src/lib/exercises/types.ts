@@ -2056,7 +2056,8 @@ export interface TeacherAssignmentFilters {
  *   student_assignments: 30,
  *   class_assignments: 10,
  *   public_assignments: 5,
- *   with_deadline: 25
+ *   total_completions: 87,
+ *   unique_students_engaged: 24
  * };
  * ```
  */
@@ -2076,8 +2077,17 @@ export interface AssignmentStats {
 	/** Number of public assignments */
 	public_assignments: number;
 
-	/** Number of assignments with deadlines */
-	with_deadline: number;
+	/**
+	 * Nombre de rendus, toutes affectations confondues.
+	 *
+	 * Remplace `with_deadline`, que la fonction SQL `get_teacher_assignment_stats`
+	 * ne renvoie pas : ce compteur affichait donc toujours 0. Ces deux mesures-ci
+	 * sont bien calculées par la fonction, et étaient jusqu'ici jetées.
+	 */
+	total_completions: number;
+
+	/** Nombre d'élèves distincts ayant travaillé au moins une affectation. */
+	unique_students_engaged: number;
 }
 
 /**

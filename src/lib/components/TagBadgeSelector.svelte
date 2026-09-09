@@ -37,6 +37,11 @@
 		name: string;
 		created_by: string | null;
 		created_at: string;
+		/**
+		 * Renseigné seulement quand la requête précise un `kind` : ce tag est déjà
+		 * employé sur ce type de ressource. Sert à ordonner, jamais à restreindre.
+		 */
+		used_on_kind?: boolean;
 	}
 
 	// Props interface
@@ -47,12 +52,19 @@
 		maxSelections?: number;
 		onchange?: (value: string[]) => void;
 		/**
-		 * API path to fetch / create tags from. Defaults to the generic
-		 * math-exercise tag endpoint. Pass '/api/python-tags' to target the
-		 * python-specific table instead. The endpoint must accept the same
-		 * payloads as the default one.
+		 * API path to fetch / create tags from. Defaults to `/api/tags`, which is
+		 * now the ONLY catalogue: `python_tags` was merged into `tags` and its
+		 * endpoint removed (20260908180000). Kept as a prop for future catalogues,
+		 * not because a second one exists today.
 		 */
 		apiPath?: string;
+		/**
+		 * Type de ressource étiquetée. Ne restreint RIEN : il remonte simplement en
+		 * tête les tags déjà employés sur ce type, pour qu'étiqueter un exercice
+		 * Python ne commence pas par proposer « Thalès ». Le catalogue reste
+		 * commun, c'est ce qui permet à un même tag de traverser les types.
+		 */
+		kind?: string;
 		/**
 		 * Optional whitelist of tag names. When provided, the modal only
 		 * exposes tags whose name is in this list — useful when the caller
@@ -70,6 +82,7 @@
 		maxSelections,
 		onchange,
 		apiPath: tagsApiPath = '/api/tags',
+		kind,
 		restrictTo
 	}: Props = $props();
 
@@ -131,7 +144,8 @@
 		loadError = null;
 
 		try {
-			const response = await fetch(tagsApiPath);
+			const url = kind ? `${tagsApiPath}?kind=${encodeURIComponent(kind)}` : tagsApiPath;
+			const response = await fetch(url);
 			if (!response.ok) {
 				throw new Error('Failed to fetch tags');
 			}
@@ -403,7 +417,14 @@
 			{:else}
 				<div class="max-h-64 overflow-y-auto">
 					<div class="flex flex-wrap gap-2">
-						{#each filteredTags as tag (tag.id)}
+						{#each filteredTags as tag, i (tag.id)}
+							<!-- Frontière entre « déjà utilisés sur ce type » et le reste du
+							     catalogue. L'API a trié ; on marque juste la bascule. -->
+							{#if kind && i > 0 && filteredTags[i - 1].used_on_kind && !tag.used_on_kind}
+								<div class="w-full border-t pt-2 text-xs text-muted-foreground">
+									Autres tags du catalogue
+								</div>
+							{/if}
 							{@const selected = isTagSelected(tag.name)}
 							{@const canSelect = selected || canSelectMoreInModal}
 							<button

@@ -18,7 +18,9 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import JournalWeekGrid from '$lib/components/journal/JournalWeekGrid.svelte';
 	import JournalDatePicker from '$lib/components/journal/JournalDatePicker.svelte';
-	import { BookOpen, GraduationCap, Calendar } from '@lucide/svelte';
+	import { BookOpen, GraduationCap, Calendar, Link2, Copy, Check } from '@lucide/svelte';
+	import { enhance } from '$app/forms';
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import { GRADES, type GradeCode } from '$lib/types/grades';
 	import type { PageData } from './$types';
 
@@ -35,7 +37,7 @@
 	let classItems = $derived(
 		data.classes.map((c) => ({
 			value: c.id,
-			label: `${c.name}${!c.is_active ? ' (inactive)' : ''}`
+			label: c.name
 		}))
 	);
 
@@ -120,6 +122,23 @@
 		}
 		return `${start.getDate()} ${startMonth} - ${end.getDate()} ${endMonth} ${start.getFullYear()}`;
 	}
+	let copied = $state(false);
+
+	/** L'URL complète du lien public, celle qu'on colle dans un carnet ou un mail. */
+	const shareUrl = $derived(
+		data.shareToken ? `${$page.url.origin}/cahier/${data.shareToken.token}` : null
+	);
+
+	async function copyShareUrl() {
+		if (!shareUrl) return;
+		try {
+			await navigator.clipboard.writeText(shareUrl);
+			copied = true;
+			setTimeout(() => (copied = false), 2000);
+		} catch {
+			toaster.error('Impossible de copier le lien');
+		}
+	}
 </script>
 
 <svelte:head>
@@ -190,6 +209,69 @@
 				</p>
 			{/if}
 		</div>
+
+		<!-- Lien de partage : les élèves sans compte n'ont pas d'autre accès -->
+		{#if data.selectedClassId}
+			<Card.Root class="mb-6">
+				<Card.Content class="space-y-3 p-4">
+					<div class="flex items-center gap-2 text-sm font-medium">
+						<Link2 class="h-4 w-4" />
+						Lien de consultation
+					</div>
+
+					{#if shareUrl}
+						<p class="text-sm text-muted-foreground">
+							À donner aux élèves sans compte et à leurs familles. Il permet de <strong>lire</strong
+							> les séances publiées, rien d'autre — il n'inscrit personne dans la classe.
+						</p>
+						<!-- Le schéma ne contient aucune donnée d'élève, mais le CONTENU est du
+						     texte libre. C'est le seul endroit du dispositif où une donnée
+						     personnelle peut sortir, et ça ne se corrige pas en SQL. -->
+						<p class="text-sm text-amber-700 dark:text-amber-500">
+							⚠️ Toute personne recevant ce lien lit les séances publiées, sans compte et sans
+							contrôle de qui la transmet. N'y nommez aucun élève.
+						</p>
+						<div class="flex flex-wrap items-center gap-2">
+							<code class="min-w-0 flex-1 truncate rounded bg-muted px-2 py-1 text-xs">
+								{shareUrl}
+							</code>
+							<Button size="sm" variant="outline" onclick={copyShareUrl}>
+								{#if copied}
+									<Check class="mr-2 h-4 w-4" />Copié
+								{:else}
+									<Copy class="mr-2 h-4 w-4" />Copier
+								{/if}
+							</Button>
+						</div>
+						{#if data.shareToken?.expires_at}
+							<p class="text-xs text-muted-foreground">
+								Expire le {new Date(data.shareToken.expires_at).toLocaleDateString('fr-FR')} · consulté
+								{data.shareToken.access_count} fois
+							</p>
+						{/if}
+						<div class="flex flex-wrap gap-2">
+							<form method="POST" action="?/shareLink" use:enhance>
+								<input type="hidden" name="classId" value={data.selectedClassId} />
+								<Button type="submit" size="sm" variant="ghost">Renouveler</Button>
+							</form>
+							<form method="POST" action="?/revokeShareLink" use:enhance>
+								<input type="hidden" name="classId" value={data.selectedClassId} />
+								<Button type="submit" size="sm" variant="ghost">Révoquer</Button>
+							</form>
+						</div>
+					{:else}
+						<p class="text-sm text-muted-foreground">
+							Aucun lien actif. En créer un rendra les séances publiées de cette classe consultables
+							par toute personne ayant le lien, sans compte.
+						</p>
+						<form method="POST" action="?/shareLink" use:enhance>
+							<input type="hidden" name="classId" value={data.selectedClassId} />
+							<Button type="submit" size="sm">Créer le lien</Button>
+						</form>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+		{/if}
 
 		<!-- Week grid -->
 		{#if data.weekView}

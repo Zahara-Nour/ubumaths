@@ -36,6 +36,8 @@ import {
 	DELETE as covDELETE
 } from '../../src/routes/api/teacher/curriculum/coverage/+server';
 
+import { reconcileAutoCoverage } from '$lib/server/curriculum-coverage';
+import { fetchWorksheetCitations } from '$lib/server/worksheets/citations';
 import {
 	createServiceRoleClient,
 	createAuthenticatedClient,
@@ -502,6 +504,247 @@ describe('Auto coverage reconciliation', () => {
 });
 
 // ============================================================================
+// 3bis. Références citées DANS LE CONTENU de la séance
+// ============================================================================
+
+/**
+ * Ce que le prof écrit vaut désignation.
+ *
+ * Le sujet de ces tests : demander la même information deux fois — une fois dans
+ * le texte, une fois dans une carte « activités » — est la friction qui fait que
+ * le suivi n'est pas rempli. Citer `[[exercice]]` dans la séance doit donc suffire
+ * à faire remonter les points travaillés.
+ */
+describe('Références dans le contenu de la séance', () => {
+	/** Écrit le contenu de la séance, puis réconcilie comme le fait l'action de sauvegarde. */
+	async function writeLesson(ctx: Ctx, html: string): Promise<void> {
+		const { error } = await service
+			.from('class_journal_entries' as never)
+			.update({ lesson_content: html } as never)
+			.eq('id', ctx.entryId);
+		if (error) throw new Error(`écriture du contenu : ${error.message}`);
+		await reconcileAutoCoverage(service, ctx.entryId);
+	}
+
+	/** Une fiche vide, prête à recevoir des exercices. */
+	async function makeWorksheet(teacherId: string): Promise<string> {
+		const { data, error } = await service
+			.from('worksheets' as never)
+			.insert({
+				title: `Fiche ${crypto.randomUUID().slice(0, 8)}`,
+				type: 'worksheet',
+				status: 'published',
+				created_by: teacherId
+			} as never)
+			.select('id')
+			.single();
+		if (error) throw new Error(`fiche : ${error.message}`);
+		return (data as { id: string }).id;
+	}
+
+	/** Ajoute un exercice à la fin d'une fiche. */
+	async function addToWorksheet(worksheetId: string, exerciseId: string): Promise<void> {
+		const { count } = await service
+			.from('worksheet_exercises' as never)
+			.select('id', { count: 'exact', head: true })
+			.eq('worksheet_id', worksheetId);
+		const { error } = await service.from('worksheet_exercises' as never).insert({
+			worksheet_id: worksheetId,
+			exercise_id: exerciseId,
+			position: (count ?? 0) + 1
+		} as never);
+		if (error) throw new Error(`jonction : ${error.message}`);
+	}
+
+	/** Place un exercice dans une fiche et renvoie l'identifiant de la JONCTION. */
+	async function putInWorksheet(teacherId: string, exerciseId: string): Promise<string> {
+		const { data: ws, error: wsError } = await service
+			.from('worksheets' as never)
+			.insert({
+				title: `Fiche ${crypto.randomUUID().slice(0, 8)}`,
+				type: 'worksheet',
+				status: 'published',
+				created_by: teacherId
+			} as never)
+			.select('id')
+			.single();
+		if (wsError) throw new Error(`fiche : ${wsError.message}`);
+
+		const { data: link, error: linkError } = await service
+			.from('worksheet_exercises' as never)
+			.insert({
+				worksheet_id: (ws as { id: string }).id,
+				exercise_id: exerciseId,
+				position: 3
+			} as never)
+			.select('id')
+			.single();
+		if (linkError) throw new Error(`jonction : ${linkError.message}`);
+		return (link as { id: string }).id;
+	}
+
+	it('un exercice cité dans le contenu apporte ses points, sans aucune activité', async () => {
+		expect.assertions(3);
+		const ctx = await setup();
+		const item = await makeItem();
+		const point = await svcPoint(item, 'P-contenu');
+		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
+
+		await writeLesson(ctx, `<p>Faire [[exercise:${exercise}|Fractions]] en classe.</p>`);
+
+		const cov = await coverageMap(ctx);
+		expect(cov.size).toBe(1);
+		expect(cov.has(point)).toBe(true);
+		expect(cov.get(point)).toBe('auto');
+	});
+
+	it('un EXERCICE DE FICHE cité apporte les points de l’exercice sous-jacent', async () => {
+		expect.assertions(2);
+		const ctx = await setup();
+		const item = await makeItem();
+		const point = await svcPoint(item, 'P-fiche');
+		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
+		// La citation porte l'identifiant de la JONCTION, pas celui de l'exercice :
+		// c'est ce qui permet à l'élève de savoir quelle fiche ouvrir.
+		const junction = await putInWorksheet(ctx.teacher.id, exercise);
+		expect(junction).not.toBe(exercise);
+
+		await writeLesson(ctx, `<p>Exercice 3 : [[worksheet_exercise:${junction}|Exercice 3]]</p>`);
+
+		expect((await coverageMap(ctx)).get(point)).toBe('auto');
+	});
+
+	it('une FICHE citée avec `#3,4` apporte les points de ces exercices', async () => {
+		expect.assertions(3);
+		const ctx = await setup();
+		const item = await makeItem();
+		const [p3, p4, p5] = [
+			await svcPoint(item, 'P3'),
+			await svcPoint(item, 'P4'),
+			await svcPoint(item, 'P5')
+		];
+
+		// Trois exercices dans une fiche, un point chacun.
+		const fiche = await makeWorksheet(ctx.teacher.id);
+		for (const point of [p3, p4, p5]) {
+			await addToWorksheet(fiche, await makeTaggedExercise(ctx.teacher.id, [point]));
+		}
+
+		await writeLesson(ctx, `<p>[[worksheet:${fiche}#1,2|Fiche — ex. 1 et 2]]</p>`);
+
+		const cov = await coverageMap(ctx);
+		expect(cov.has(p3)).toBe(true);
+		expect(cov.has(p4)).toBe(true);
+		// Le troisième n'est PAS cité : il ne doit rien apporter.
+		expect(cov.has(p5)).toBe(false);
+	});
+
+	it('une fiche citée SANS sélection n’apporte aucun point', async () => {
+		expect.assertions(1);
+		const ctx = await setup();
+		const point = await svcPoint(await makeItem(), 'P-fiche-entiere');
+		const fiche = await makeWorksheet(ctx.teacher.id);
+		await addToWorksheet(fiche, await makeTaggedExercise(ctx.teacher.id, [point]));
+
+		await writeLesson(ctx, `<p>[[worksheet:${fiche}|La fiche entière]]</p>`);
+
+		// Rien ne dit lesquels de ses exercices ont été faits.
+		expect((await coverageMap(ctx)).size).toBe(0);
+	});
+
+	it('une plage `#1-3` prend les bornes incluses', async () => {
+		expect.assertions(1);
+		const ctx = await setup();
+		const item = await makeItem();
+		const points = [
+			await svcPoint(item, 'A'),
+			await svcPoint(item, 'B'),
+			await svcPoint(item, 'C')
+		];
+		const fiche = await makeWorksheet(ctx.teacher.id);
+		for (const point of points) {
+			await addToWorksheet(fiche, await makeTaggedExercise(ctx.teacher.id, [point]));
+		}
+
+		await writeLesson(ctx, `<p>[[worksheet:${fiche}#1-3|Fiche — ex. 1 à 3]]</p>`);
+
+		expect([...(await coverageMap(ctx)).keys()].sort()).toEqual([...points].sort());
+	});
+
+	it('signale un numéro qui n’existe pas, sans perdre les autres', async () => {
+		expect.assertions(3);
+		const ctx = await setup();
+		const point = await svcPoint(await makeItem(), 'P-unique');
+		const fiche = await makeWorksheet(ctx.teacher.id);
+		await addToWorksheet(fiche, await makeTaggedExercise(ctx.teacher.id, [point]));
+
+		// La fiche n'a qu'un exercice : `#1,7` cite un numéro inexistant.
+		await service
+			.from('class_journal_entries' as never)
+			.update({ lesson_content: `<p>[[worksheet:${fiche}#1,7|Fiche]]</p>` } as never)
+			.eq('id', ctx.entryId);
+		const rapport = await reconcileAutoCoverage(service, ctx.entryId);
+
+		// Le numéro valide compte quand même : une coquille ne doit pas tout perdre.
+		expect((await coverageMap(ctx)).has(point)).toBe(true);
+		expect(rapport.numerosIntrouvables).toHaveLength(1);
+		expect(rapport.numerosIntrouvables[0].numeros).toEqual([7]);
+	});
+
+	it('retirer la citation du texte retire le point', async () => {
+		expect.assertions(2);
+		const ctx = await setup();
+		const item = await makeItem();
+		const point = await svcPoint(item, 'P-retire');
+		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
+
+		await writeLesson(ctx, `<p>[[exercise:${exercise}|Fractions]]</p>`);
+		expect((await coverageMap(ctx)).has(point)).toBe(true);
+
+		// Une référence `[[…]]` n'est pas de la prose : la retirer est un geste
+		// aussi explicite que décocher une case.
+		await writeLesson(ctx, '<p>Finalement, cours magistral.</p>');
+		expect((await coverageMap(ctx)).has(point)).toBe(false);
+	});
+
+	it('ne touche jamais un point coché à la main', async () => {
+		expect.assertions(2);
+		const ctx = await setup();
+		const item = await makeItem();
+		const manual = await svcPoint(item, 'P-manuel');
+
+		await covPOST({
+			request: req({ entry_id: ctx.entryId, point_id: manual }),
+			locals: buildLocals(ctx.teacherUser)
+		} as never);
+
+		await writeLesson(ctx, '<p>Aucune citation ici.</p>');
+
+		const cov = await coverageMap(ctx);
+		expect(cov.get(manual)).toBe('manual');
+		expect(cov.size).toBe(1);
+	});
+
+	it('dédoublonne un exercice cité deux fois, et cité en plus comme activité', async () => {
+		expect.assertions(1);
+		const ctx = await setup();
+		const item = await makeItem();
+		const point = await svcPoint(item, 'P-doublon');
+		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
+
+		await addExerciseActivity(ctx, exercise);
+		await writeLesson(
+			ctx,
+			`<p>[[exercise:${exercise}|Une fois]] puis [[exercise:${exercise}|deux fois]]</p>`
+		);
+
+		// La couverture dit qu'un point a été travaillé, pas combien de fois il a
+		// été mentionné.
+		expect([...(await coverageMap(ctx)).keys()]).toEqual([point]);
+	});
+});
+
+// ============================================================================
 // 4. Manual coverage
 // ============================================================================
 
@@ -821,5 +1064,420 @@ describe('Mixed sources', () => {
 		expect(cov.get(pq)).toBe('auto');
 		expect(cov.get(pe)).toBe('auto');
 		expect(cov.get(pm)).toBe('manual');
+	});
+});
+
+// ============================================================================
+// 3ter. Quelles séances citent une fiche PAR NUMÉRO
+// ============================================================================
+
+/**
+ * La contrepartie visible du choix « la référence porte des numéros ».
+ *
+ * Réordonner une fiche change ce que les séances qui la citent désignent. Le
+ * professeur ne peut l'accepter que s'il le voit AU MOMENT où il réorganise :
+ * ces tests vérifient que la liste affichée sur la page de la fiche est exacte,
+ * et surtout qu'elle ne signale QUE ce qui peut casser.
+ */
+describe('fetchWorksheetCitations', () => {
+	/**
+	 * Une école de test.
+	 *
+	 * Nommée `TEST-…` pour être purgeable : la purge générale efface les classes,
+	 * pas les écoles.
+	 */
+	async function makeSchool(): Promise<string> {
+		const { data, error } = await service
+			.from('schools' as never)
+			.insert({
+				name: `TEST-${crypto.randomUUID().slice(0, 8)}`,
+				city: 'Doha',
+				country: 'QA'
+			} as never)
+			.select('id')
+			.single();
+		if (error) throw new Error(`école : ${error.message}`);
+		return (data as { id: string }).id;
+	}
+
+	afterAll(async () => {
+		await service
+			.from('schools' as never)
+			.delete()
+			.like('name', 'TEST-%');
+	});
+
+	/**
+	 * Une fiche vide, rattachée à une école.
+	 *
+	 * L'école n'est pas un détail de fixture : c'est elle qui délimite les séances
+	 * que la garde a le droit de montrer.
+	 */
+	async function makeWorksheet(teacherId: string, schoolId: string): Promise<string> {
+		const { data, error } = await service
+			.from('worksheets' as never)
+			.insert({
+				title: `Fiche ${crypto.randomUUID().slice(0, 8)}`,
+				type: 'worksheet',
+				status: 'published',
+				created_by: teacherId,
+				school_id: schoolId
+			} as never)
+			.select('id')
+			.single();
+		if (error) throw new Error(`fiche : ${error.message}`);
+		return (data as { id: string }).id;
+	}
+
+	/** Une séance dans une classe nommée d'une école donnée, à une date donnée. */
+	async function makeEntry(
+		className: string,
+		entryDate: string,
+		contents: { lesson?: string; homework?: string },
+		schoolId: string
+	): Promise<{ classId: string; entryId: string }> {
+		const klass = await TestData.class().withName(className).create();
+		const { error: rattachement } = await service
+			.from('classes' as never)
+			.update({ school_id: schoolId } as never)
+			.eq('id', klass.id);
+		if (rattachement) throw new Error(`rattachement : ${rattachement.message}`);
+
+		const { data, error } = await service
+			.from('class_journal_entries' as never)
+			.insert({
+				class_id: klass.id,
+				entry_date: entryDate,
+				lesson_content: contents.lesson ?? null,
+				homework_content: contents.homework ?? null
+			} as never)
+			.select('id')
+			.single();
+		if (error) throw new Error(`séance : ${error.message}`);
+		return { classId: klass.id, entryId: (data as { id: string }).id };
+	}
+
+	it('liste la séance qui cite la fiche par numéro, avec sa classe et sa date', async () => {
+		expect.assertions(4);
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const ecole = await makeSchool();
+		const fiche = await makeWorksheet(teacher.id, ecole);
+		const { classId } = await makeEntry(
+			'5ᵉ B',
+			'2026-03-12',
+			{
+				lesson: `<p>[[worksheet:${fiche}#3,5-7|Produit scalaire — ex. 3 et 5 à 7]]</p>`
+			},
+			ecole
+		);
+
+		const { citations } = await fetchWorksheetCitations(service, fiche);
+
+		expect(citations).toHaveLength(1);
+		expect(citations[0].classId).toBe(classId);
+		expect(citations[0].entryDate).toBe('2026-03-12');
+		// Le libellé est reconstruit depuis les NUMÉROS, pas recopié du texte :
+		// c'est ce qui rend la liste juste même si le libellé écrit était faux.
+		expect(citations[0].selections).toEqual(['ex. 3 et 5 à 7']);
+	});
+
+	it('ignore une fiche citée SANS sélection — rien ne peut y casser', async () => {
+		expect.assertions(1);
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const ecole = await makeSchool();
+		const fiche = await makeWorksheet(teacher.id, ecole);
+		await makeEntry(
+			'5ᵉ B',
+			'2026-03-12',
+			{
+				lesson: `<p>[[worksheet:${fiche}|La fiche entière]]</p>`
+			},
+			ecole
+		);
+
+		expect((await fetchWorksheetCitations(service, fiche)).citations).toEqual([]);
+	});
+
+	it('n’attribue pas à cette fiche les numéros d’une AUTRE citée dans la même séance', async () => {
+		expect.assertions(2);
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const ecole = await makeSchool();
+		const [fiche, autre] = [
+			await makeWorksheet(teacher.id, ecole),
+			await makeWorksheet(teacher.id, ecole)
+		];
+
+		// La séance cite les deux fiches : la présélection SQL la retient donc, et
+		// c'est le tri par identifiant qui doit faire le partage. Une séance ne
+		// citant QUE l'autre fiche ne prouverait rien — le SQL l'écarterait déjà.
+		await makeEntry(
+			'5ᵉ B',
+			'2026-03-12',
+			{
+				lesson: `<p>[[worksheet:${fiche}#2|Celle-ci]] et [[worksheet:${autre}#9|L'autre]]</p>`
+			},
+			ecole
+		);
+
+		const { citations } = await fetchWorksheetCitations(service, fiche);
+
+		expect(citations).toHaveLength(1);
+		expect(citations[0].selections).toEqual(['ex. 2']);
+	});
+
+	it('trouve une fiche citée UNIQUEMENT dans les devoirs', async () => {
+		expect.assertions(2);
+		// C'est le cas le plus fréquent — « pour jeudi, les exercices 4 à 6 » — et
+		// il dépend d'une présélection SQL qui interroge les DEUX colonnes. Une
+		// séance citant la fiche dans le cours ne le prouverait pas.
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const ecole = await makeSchool();
+		const fiche = await makeWorksheet(teacher.id, ecole);
+		await makeEntry(
+			'5ᵉ B',
+			'2026-03-12',
+			{
+				lesson: '<p>Correction du contrôle.</p>',
+				homework: `<p>Pour jeudi : [[worksheet:${fiche}#4-6|Fiche — ex. 4 à 6]]</p>`
+			},
+			ecole
+		);
+
+		const { citations } = await fetchWorksheetCitations(service, fiche);
+
+		expect(citations).toHaveLength(1);
+		expect(citations[0].selections).toEqual(['ex. 4 à 6']);
+	});
+
+	it('réunit les deux citations d’une même séance — en classe ET en devoirs', async () => {
+		expect.assertions(2);
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const ecole = await makeSchool();
+		const fiche = await makeWorksheet(teacher.id, ecole);
+		await makeEntry(
+			'5ᵉ B',
+			'2026-03-12',
+			{
+				lesson: `<p>[[worksheet:${fiche}#1|Fiche — ex. 1]]</p>`,
+				homework: `<p>[[worksheet:${fiche}#4-6|Fiche — ex. 4 à 6]]</p>`
+			},
+			ecole
+		);
+
+		const { citations } = await fetchWorksheetCitations(service, fiche);
+
+		// Une séance, une ligne : le professeur veut savoir QUELLES séances rompre,
+		// pas combien de fois chacune cite la fiche.
+		expect(citations).toHaveLength(1);
+		expect(citations[0].selections.sort()).toEqual(['ex. 1', 'ex. 4 à 6']);
+	});
+
+	it('trouve la fiche même si l’identifiant est écrit en MAJUSCULES', async () => {
+		expect.assertions(1);
+		// L'identifiant vient de l'URL, où un uuid peut s'écrire dans les deux
+		// casses, tandis que l'extracteur rend toujours des minuscules. Comparer
+		// sans normaliser rendrait une liste vide — un avertissement muet, la pire
+		// des pannes pour une garde.
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const ecole = await makeSchool();
+		const fiche = await makeWorksheet(teacher.id, ecole);
+		await makeEntry(
+			'5ᵉ B',
+			'2026-03-12',
+			{
+				lesson: `<p>[[worksheet:${fiche}#2|Fiche — ex. 2]]</p>`
+			},
+			ecole
+		);
+
+		expect((await fetchWorksheetCitations(service, fiche.toUpperCase())).citations).toHaveLength(1);
+	});
+
+	it('n’est pas noyée par les citations de la fiche ENTIÈRE, même bien plus récentes', async () => {
+		expect.assertions(2);
+		// LE cas que la garde existe pour couvrir. Une fiche liée en entier chaque
+		// semaine — un cahier d'exercices de trimestre — produit des dizaines de
+		// citations sans sélection. Si la fenêtre SQL les retient, la troncature
+		// s'applique avant le tri : les récentes remplissent la fenêtre et la seule
+		// séance citant par numéro tombe dehors. Le panneau se tairait.
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const ecole = await makeSchool();
+		const fiche = await makeWorksheet(teacher.id, ecole);
+
+		const { classId } = await makeEntry(
+			'5ᵉ B',
+			'2026-01-05',
+			{
+				lesson: `<p>[[worksheet:${fiche}#3|Fiche — ex. 3]]</p>`
+			},
+			ecole
+		);
+
+		// 60 séances POSTÉRIEURES citant la fiche entière : plus que `MAX_CITATIONS`.
+		const bruit = Array.from({ length: 60 }, (_, i) => {
+			// Deux mois de 30 jours : le cahier a une contrainte d'unicité par
+			// (classe, date), et `2026-03-32` n'est pas une date.
+			const jour = new Date(2026, 2, 1 + i);
+			return {
+				class_id: classId,
+				entry_date: `${jour.getFullYear()}-${String(jour.getMonth() + 1).padStart(2, '0')}-${String(jour.getDate()).padStart(2, '0')}`,
+				lesson_content: `<p>[[worksheet:${fiche}|La fiche entière]]</p>`
+			};
+		});
+		const { error: bruitError } = await service
+			.from('class_journal_entries' as never)
+			.insert(bruit as never);
+		if (bruitError) throw new Error(`bruit : ${bruitError.message}`);
+
+		const { citations } = await fetchWorksheetCitations(service, fiche);
+
+		expect(citations).toHaveLength(1);
+		expect(citations[0].entryDate).toBe('2026-01-05');
+	});
+
+	it('n’affiche pas deux fois la même sélection écrite de deux façons', async () => {
+		expect.assertions(1);
+		// `#3-5` et `#3,4,5` sont deux écritures du même ensemble : l'extracteur en
+		// garde deux (son dédoublonnage porte sur la forme brute), mais la ligne ne
+		// doit pas afficher « ex. 3 à 5 · ex. 3 à 5 ».
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const ecole = await makeSchool();
+		const fiche = await makeWorksheet(teacher.id, ecole);
+		await makeEntry(
+			'5ᵉ B',
+			'2026-03-12',
+			{
+				lesson: `<p>[[worksheet:${fiche}#3-5|En classe]]</p>`,
+				homework: `<p>[[worksheet:${fiche}#3,4,5|À refaire]]</p>`
+			},
+			ecole
+		);
+
+		const { citations } = await fetchWorksheetCitations(service, fiche);
+
+		expect(citations[0].selections).toEqual(['ex. 3 à 5']);
+	});
+
+	it('distingue « rien à signaler » de « je n’ai pas pu lire le cahier »', async () => {
+		expect.assertions(3);
+		// Les deux états rendaient la même liste vide, donc le même écran muet — au
+		// moment précis où le professeur s'apprête à réordonner. Une garde qui ne
+		// sait pas doit le dire.
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const ecole = await makeSchool();
+		const fiche = await makeWorksheet(teacher.id, ecole);
+
+		const saine = await fetchWorksheetCitations(service, fiche);
+		expect(saine.citations).toEqual([]);
+		expect(saine.verifie).toBe(true);
+
+		// Un client dont la lecture DU CAHIER échoue — la fiche, elle, se lit :
+		// c'est bien la panne du cahier qu'on veut voir ressortir, pas une fiche
+		// introuvable, qui a déjà son propre chemin.
+		const silencieux = vi.spyOn(console, 'error').mockImplementation(() => {});
+		const cassé = {
+			from: (table: string) =>
+				table === 'worksheets'
+					? {
+							select: () => ({
+								eq: () => ({
+									maybeSingle: () => Promise.resolve({ data: { school_id: ecole }, error: null })
+								})
+							})
+						}
+					: {
+							select: () => ({
+								eq: () => ({
+									or: () => ({
+										order: () => ({
+											limit: () =>
+												Promise.resolve({ data: null, error: { message: 'cahier indisponible' } })
+										})
+									})
+								})
+							})
+						}
+		} as unknown as typeof service;
+
+		expect((await fetchWorksheetCitations(cassé, fiche)).verifie).toBe(false);
+		silencieux.mockRestore();
+	});
+
+	it('ne montre PAS la séance d’une classe d’une autre école', async () => {
+		expect.assertions(2);
+		// L'école est la frontière sociale de l'application. Nommer la classe et la
+		// date d'une séance de l'autre école, fût-ce pour avertir, la franchirait.
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const [ecole, ailleurs] = [await makeSchool(), await makeSchool()];
+		const fiche = await makeWorksheet(teacher.id, ecole);
+
+		await makeEntry(
+			'1SPE 1',
+			'2026-03-12',
+			{ lesson: `<p>[[worksheet:${fiche}#3|Fiche — ex. 3]]</p>` },
+			ecole
+		);
+		await makeEntry(
+			'Terminale ailleurs',
+			'2026-03-13',
+			{ lesson: `<p>[[worksheet:${fiche}#5|Fiche — ex. 5]]</p>` },
+			ailleurs
+		);
+
+		const { citations } = await fetchWorksheetCitations(service, fiche);
+
+		expect(citations).toHaveLength(1);
+		expect(citations[0].className).toBe('1SPE 1');
+	});
+
+	it('dit qu’il n’a pas pu vérifier quand la fiche n’a aucune école', async () => {
+		expect.assertions(2);
+		// Sans école, le périmètre n'a pas de sens — et on ne le remplace surtout
+		// pas par « toutes les écoles ». Se taire laisserait croire que personne ne
+		// cite la fiche.
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const ecole = await makeSchool();
+		const { data, error } = await service
+			.from('worksheets' as never)
+			.insert({
+				title: 'Fiche sans école',
+				type: 'worksheet',
+				status: 'published',
+				created_by: teacher.id
+			} as never)
+			.select('id')
+			.single();
+		if (error) throw new Error(`fiche : ${error.message}`);
+		const fiche = (data as { id: string }).id;
+
+		await makeEntry(
+			'5ᵉ B',
+			'2026-03-12',
+			{ lesson: `<p>[[worksheet:${fiche}#3|Fiche — ex. 3]]</p>` },
+			ecole
+		);
+
+		const rapport = await fetchWorksheetCitations(service, fiche);
+
+		expect(rapport.citations).toEqual([]);
+		expect(rapport.verifie).toBe(false);
+	});
+
+	it('un identifiant mal formé ne descend JAMAIS jusqu’à la base', async () => {
+		expect.assertions(2);
+		// Le filtre PostgREST est construit par concaténation : une valeur portant
+		// une virgule en sortirait et ajouterait ses propres conditions — ici
+		// `id.not.is.null`, qui ferait remonter TOUTES les séances du cahier.
+		//
+		// L'assertion porte sur l'absence de requête, pas sur le résultat : le
+		// filtrage par identifiant qui suit masquerait l'injection dans la valeur
+		// de retour, et le test passerait sur du code cassé.
+		const spy = vi.spyOn(service, 'from');
+
+		const { citations } = await fetchWorksheetCitations(service, '%,id.not.is.null');
+
+		expect(spy).not.toHaveBeenCalled();
+		expect(citations).toEqual([]);
+		spy.mockRestore();
 	});
 });

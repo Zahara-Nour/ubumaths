@@ -130,3 +130,75 @@ describe('findRoots', () => {
 		expect(r.some((root) => Math.abs(root.x - Math.PI / 2) < 0.01)).toBe(true);
 	});
 });
+
+/**
+ * `solveExactRoots()` reprend les réponses de `solve()` sans les vérifier —
+ * même confiance aveugle que `critical-points.ts` avant la PR #145, où
+ * `solve((x-1)^2 = 0)` répondait `x = 0`. La cause racine est réparée dans les
+ * lecteurs de coefficients ; cet invariant le verrouille : quelle que soit la
+ * forme de l'expression, un zéro renvoyé annule la fonction.
+ */
+/**
+ * Une racine multiple ne produit aucun changement de signe : le balayage
+ * numérique ne peut pas la voir. Seule la voie symbolique la trouve, et il
+ * fallait pour cela que `solve` sache réduire `u^n = 0` à `u = 0`.
+ */
+describe('findRoots — racines multiples', () => {
+	it('trouve les deux racines doubles de (x²−2)²', () => {
+		const r = roots('(x^2-2)^2');
+
+		expect(r).toHaveLength(2);
+		expect(r[0].x).toBeCloseTo(-Math.SQRT2, 12);
+		expect(r[1].x).toBeCloseTo(Math.SQRT2, 12);
+		expect(r.every((root) => root.exact)).toBe(true);
+	});
+
+	it('trouve la racine triple de (x−1)³', () => {
+		const r = roots('(x-1)^3');
+
+		expect(r).toHaveLength(1);
+		expect(r[0].x).toBeCloseTo(1, 12);
+	});
+
+	it('trouve la racine quadruple de (2x−4)⁴', () => {
+		const r = roots('(2*x-4)^4');
+
+		expect(r).toHaveLength(1);
+		expect(r[0].x).toBeCloseTo(2, 12);
+	});
+});
+
+describe('findRoots — invariant : un zéro annule la fonction', () => {
+	const battery = [
+		'(x-1)^2',
+		'(x-1)^4',
+		'(x^2-2)^2',
+		'(2x-1)^3',
+		'x^2*(x-1)',
+		'x^3-x',
+		'(x-1)*(x-2)*(x-3)',
+		'x^4-5*x^2+4',
+		'sqrt(x)-2',
+		'1/(x-1)',
+		'(x^2-1)/(x-1)',
+		'exp(x)-1',
+		'ln(x)-1',
+		'x*exp(x)',
+		'sin(x)*cos(x)'
+	];
+
+	for (const expr of battery) {
+		it(`aucun faux zéro pour ${expr}`, () => {
+			const ast = parseCustom(expr);
+			const fn = compile(ast);
+
+			// Assertion sur la collection : certaines expressions n'ont aucun zéro,
+			// et une boucle vide n'assurerait alors rien du tout.
+			const faux = findRoots(ast, fn, 'x', -10, 10)
+				.map((root) => ({ x: root.x, y: fn({ x: root.x }) }))
+				.filter(({ y }) => !Number.isFinite(y) || Math.abs(y) > 1e-6);
+
+			expect(faux).toEqual([]);
+		});
+	}
+});

@@ -223,7 +223,11 @@
 				<!-- Tags -->
 				<div class="space-y-2">
 					<Label>Tags</Label>
-					<TagBadgeSelector bind:value={selectedTags} placeholder="Ajouter des tags" />
+					<TagBadgeSelector
+						kind="worksheet"
+						bind:value={selectedTags}
+						placeholder="Ajouter des tags"
+					/>
 				</div>
 			</Card.Content>
 		</Card.Root>
