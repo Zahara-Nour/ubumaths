@@ -283,7 +283,7 @@ export async function getJournalEntriesForWeek(
 			.in('entry_id', entryIds);
 
 		if (travauxError) {
-			console.error('[journal] Travaux illisibles :', travauxError);
+			console.error('[journal] Travaux illisibles :', travauxError.message);
 			throw new Error(travauxError.message);
 		}
 
@@ -504,11 +504,34 @@ export async function getUpcomingHomework(
 		return { data: [], error: new Error(rowsError.message), count: 0 };
 	}
 
-	const homework: UpcomingHomework[] = (rows ?? []).map((row) => {
-		const dueDate = new Date(row.due_date as string);
-		const daysUntilDue = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+	// Le devoir unique des séances écrites AVANT la bascule. Sa colonne n'est plus
+	// écrite, mais elle est encore lue partout ailleurs (grille prof, page élève,
+	// vue publique) : ne pas la lire ICI ferait disparaître du seul panneau
+	// « à venir » un devoir réel, encore à rendre, que toutes les autres vues
+	// continuent d'afficher.
+	const { data: anciens, error: anciensError } = await supabase
+		.from('class_journal_entries')
+		.select(
+			'id, class_id, entry_date, homework_content, homework_due_date, class:classes!inner(name, grade)'
+		)
+		.in('class_id', classIds)
+		.eq('is_published', true)
+		.lte('entry_date', todayStr)
+		.not('homework_content', 'is', null)
+		.not('homework_due_date', 'is', null)
+		.gte('homework_due_date', todayStr)
+		.lte('homework_due_date', endDate.toISOString().split('T')[0]);
 
-		return {
+	if (anciensError) {
+		console.error('[getUpcomingHomework] Error fetching legacy homework:', anciensError.message);
+		return { data: [], error: new Error(anciensError.message), count: 0 };
+	}
+
+	const joursRestants = (due: string) =>
+		Math.ceil((new Date(due).getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+	const homework: UpcomingHomework[] = [
+		...(rows ?? []).map((row) => ({
 			id: row.id,
 			entryId: row.entry.id,
 			classId: row.entry.class_id,
@@ -517,9 +540,22 @@ export async function getUpcomingHomework(
 			entryDate: row.entry.entry_date,
 			homeworkContent: row.content,
 			homeworkDueDate: row.due_date as string,
-			daysUntilDue
-		};
-	});
+			daysUntilDue: joursRestants(row.due_date as string)
+		})),
+		...(anciens ?? []).map((entry) => ({
+			// L'id de la SÉANCE fait ici office d'id de travail : l'ancien format
+			// n'en portait qu'un, il ne peut donc pas entrer deux fois en collision.
+			id: entry.id,
+			entryId: entry.id,
+			classId: entry.class_id,
+			className: entry.class.name,
+			classGrade: entry.class.grade,
+			entryDate: entry.entry_date,
+			homeworkContent: entry.homework_content as string,
+			homeworkDueDate: entry.homework_due_date as string,
+			daysUntilDue: joursRestants(entry.homework_due_date as string)
+		}))
+	].sort((a, b) => a.homeworkDueDate.localeCompare(b.homeworkDueDate));
 
 	return { data: homework, error: null, count: homework.length };
 }

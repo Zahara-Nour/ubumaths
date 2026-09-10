@@ -1507,7 +1507,9 @@ describe('fetchWorksheetCitations', () => {
 					if (table === 'journal_entry_homework') {
 						return {
 							select: () => ({
-								eq: () => ({ ilike: () => ({ limit: () => Promise.resolve(travaux) }) })
+								eq: () => ({
+									ilike: () => ({ order: () => ({ limit: () => Promise.resolve(travaux) }) })
+								})
 							})
 						};
 					}

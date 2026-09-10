@@ -43,6 +43,8 @@
 	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import { transformMathHtml } from '$lib/utils/sanitize';
+	import { linkifyResourceReferences } from '$lib/resources/linkify';
 
 	interface Props {
 		data: PageData;
@@ -147,18 +149,41 @@
 		// l'affiche donc, signalée — le serveur la refusera en la nommant, et le
 		// professeur saura laquelle corriger.
 		const connues = new Set(options.map((o) => o.value));
+		// Le menu est tronqué à trente dates, la règle ne l'est pas : une échéance
+		// au-delà de la dernière proposée peut être un vrai jour de cours, que le
+		// serveur acceptera. La dire « hors emploi du temps » serait un faux reproche.
+		const dernierePropose = data.sessionDates.at(-1);
 		for (const travail of travaux) {
 			if (travail.dueDate && !connues.has(travail.dueDate)) {
 				connues.add(travail.dueDate);
+				const auDela = dernierePropose !== undefined && travail.dueDate > dernierePropose;
 				options.push({
 					value: travail.dueDate,
-					label: `${libelleDate(travail.dueDate)} (hors emploi du temps)`
+					label: `${libelleDate(travail.dueDate)} ${
+						auDela ? '(au-delà des dates proposées)' : '(hors emploi du temps)'
+					}`
 				});
 			}
 		}
 
 		return options.sort((a, b) => a.value.localeCompare(b.value));
 	});
+
+	/**
+	 * L'ancien devoir unique d'une séance écrite avant la bascule, assaini.
+	 *
+	 * Même pipeline que les vues élève et publique — `transformMathHtml` (qui
+	 * passe par DOMPurify) PUIS la linkification, jamais l'inverse : celle-ci
+	 * réinjecte des libellés dans le document, donc ils doivent déjà être du
+	 * texte échappé.
+	 */
+	let ancienDevoirHtml = $derived(
+		data.entry?.homeworkContent
+			? linkifyResourceReferences(transformMathHtml(data.entry.homeworkContent), {
+					role: 'teacher'
+				})
+			: ''
+	);
 
 	/** L'échéance d'un travail neuf : le prochain cours, ou rien à défaut. */
 	let echeanceParDefaut = $derived(data.sessionDates[0] ?? '');
@@ -589,7 +614,7 @@
 		action={formAction}
 		use:enhance={() => {
 			isSaving = true;
-			return async ({ update: formUpdate }) => {
+			return async ({ result, update: formUpdate }) => {
 				isSaving = false;
 				await formUpdate();
 				// Les ressources citées dans le texte alimentent la couverture, que le
@@ -597,7 +622,12 @@
 				// `$state` figé à l'initialisation : sans cette relance, la carte
 				// « Programme travaillé » afficherait l'état d'avant la sauvegarde.
 				await refreshCoverage();
-				resynchroniserTravaux();
+				// UNIQUEMENT sur un succès. SvelteKit ne relit `data` que dans ce cas ;
+				// resynchroniser après un refus remplacerait la saisie en cours par
+				// l'état d'AVANT la soumission — le professeur perdrait le travail qu'il
+				// vient de taper, et la ligne que le message d'erreur lui demande de
+				// corriger aurait disparu de l'écran.
+				if (result.type === 'success') resynchroniserTravaux();
 			};
 		}}
 	>
@@ -709,8 +739,41 @@
 						</div>
 					{/each}
 
-					{#if travaux.length === 0}
+					{#if travaux.length === 0 && !data.entry?.homeworkContent}
 						<p class="text-sm text-muted-foreground">Aucun travail pour cette séance.</p>
+					{/if}
+
+					{#if data.entry?.homeworkContent}
+						<!-- Séance écrite AVANT la bascule : son devoir vit dans l'ancienne
+						     colonne, que la page n'écrit plus. Le cacher serait pire que
+						     l'afficher : le professeur croirait la séance vide, retaperait
+						     l'énoncé, et l'élève verrait le devoir EN DOUBLE — l'ancien étant
+						     toujours lu par les vues élève et publique. -->
+						<div
+							class="space-y-2 rounded-lg border border-dashed border-muted-foreground/40 bg-muted/30 p-4"
+						>
+							<div class="flex flex-wrap items-center gap-2">
+								<Badge variant="outline">Ancien format</Badge>
+								<span class="text-sm text-muted-foreground">
+									Toujours visible par les élèves, mais non modifiable ici.
+								</span>
+							</div>
+							{#if data.entry.homeworkDueDate}
+								<p class="text-sm text-muted-foreground">
+									À rendre pour le {data.entry.homeworkDueDate}
+								</p>
+							{/if}
+							<div class="prose prose-sm max-w-none dark:prose-invert">
+								<!-- Même pipeline que les vues élève et publique : assainissement
+								     AVANT la linkification, qui réinjecte des libellés. -->
+								<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+								{@html ancienDevoirHtml}
+							</div>
+							<p class="text-xs text-muted-foreground">
+								Pour le reprendre, ajoutez-le comme travail ci-dessous : pensez alors à demander le
+								retrait de l'ancien, sans quoi les deux s'afficheront.
+							</p>
+						</div>
 					{/if}
 
 					<Button type="button" variant="outline" onclick={ajouterTravail}>

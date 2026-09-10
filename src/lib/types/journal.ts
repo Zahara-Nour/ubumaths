@@ -64,9 +64,9 @@ export interface ClassJournalEntry {
  * longer assignment for the week after are two entries, two deadlines — not one
  * block of text under a single date.
  *
- * `dueDate` is null only for a class whose timetable has never been entered:
- * everywhere else the server resolves an absent deadline to the next lesson
- * before writing.
+ * `dueDate` is null when the server had no next lesson to resolve an absent
+ * deadline to: a class whose timetable was never entered — the common case —
+ * or a session written so late in the year that none is left before it ends.
  */
 export interface JournalHomeworkItem {
 	id: string;

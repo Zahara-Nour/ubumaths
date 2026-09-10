@@ -11,13 +11,13 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { createJournalEntry, updateJournalEntry, deleteJournalEntry } from '$lib/server/journal';
 import {
+	parseHomeworkItems,
 	validateCreateJournalEntry,
 	validateUpdateJournalEntry
 } from '$lib/server/validation/journal';
 import { getCurriculumTree } from '$lib/server/curriculum';
 import { reconcileAutoCoverage, type ReconcileReport } from '$lib/server/curriculum-coverage';
 import { parsePendingActivities } from '$lib/server/journal-activities';
-import { parseHomeworkItems } from '$lib/server/validation/journal';
 import {
 	getHomeworkForEntry,
 	prepareHomeworkForEntry,
@@ -477,6 +477,25 @@ export const actions: Actions = {
 				error: validation.error.issues[0].message,
 				action: 'update'
 			});
+		}
+
+		// L'`entryId` vient du FORMULAIRE, la classe et la date de l'URL : rien ne
+		// garantit qu'ils désignent la même séance. Sans ce contrôle, une requête
+		// forgée ferait juger les échéances sur le calendrier d'une classe et les
+		// écrire sur une autre. Le professeur a le droit d'écrire partout — ce
+		// n'est donc pas une frontière franchie, mais une garde qui ne garderait
+		// rien.
+		const { data: seance, error: seanceError } = await locals.supabase
+			.from('class_journal_entries')
+			.select('class_id, entry_date')
+			.eq('id', entryId)
+			.single();
+
+		if (seanceError || !seance) {
+			return fail(404, { error: 'Séance introuvable', action: 'update' });
+		}
+		if (seance.class_id !== classId || seance.entry_date !== date) {
+			return fail(400, { error: 'Séance incohérente avec l’adresse', action: 'update' });
 		}
 
 		// Comme à la création : les échéances sont jugées avant toute écriture.

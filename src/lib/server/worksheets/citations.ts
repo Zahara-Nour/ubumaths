@@ -124,6 +124,11 @@ export async function fetchWorksheetCitations(
 			)
 			.eq('class_journal_entries.classes.school_id', fiche.school_id)
 			.ilike('content', motif)
+			// L'ordre AVANT la troncature, exactement pour la raison décrite plus
+			// haut : sans lui, Postgres rend cinquante lignes arbitraires, et le tri
+			// par date qui suit ne peut plus rattraper ce qui a été jeté. Le panneau
+			// se tairait alors précisément dans le cas pour lequel il existe.
+			.order('class_journal_entries(entry_date)', { ascending: false })
 			.limit(MAX_CITATIONS)
 	]);
 

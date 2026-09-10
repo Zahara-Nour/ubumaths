@@ -314,6 +314,15 @@ export const upcomingHomeworkResponseSchema = z.object({
 export const MAX_HOMEWORK_ITEMS = 50;
 
 /**
+ * Taille maximale du champ sérialisé, en caractères.
+ *
+ * Un peu au-dessus du produit des deux bornes du schéma (50 × 50 000) pour
+ * laisser passer la ponctuation JSON, et bien en dessous de la limite de corps
+ * de la plateforme.
+ */
+const MAX_HOMEWORK_PAYLOAD = 3_000_000;
+
+/**
  * Échéance d'un travail, telle que le formulaire l'envoie.
  *
  * La chaîne vide est acceptée et vaut absence : un `<input type="date">` vidé
@@ -360,6 +369,13 @@ export function parseHomeworkItems(
 ): { success: true; data: HomeworkItemsInput } | { success: false; message: string } {
 	if (raw === null || raw === undefined || raw === '') return { success: true, data: [] };
 	if (typeof raw !== 'string') return { success: false, message: 'Travaux à faire illisibles' };
+
+	// Bornée AVANT le parse : les `.max()` du schéma ne s'appliquent qu'une fois
+	// la chaîne devenue un objet, donc le vrai plafond serait la limite de corps
+	// de la plateforme, pas les 2,5 Mo que le schéma laisse croire.
+	if (raw.length > MAX_HOMEWORK_PAYLOAD) {
+		return { success: false, message: 'Travaux à faire trop volumineux' };
+	}
 
 	let parsed: unknown;
 	try {
