@@ -227,6 +227,38 @@ rien n'est réécrit.
 que `lesson_content` sur les deux pages — c'est le point que l'audit demandait
 de ne pas oublier.
 
+## Vérification en navigateur (2026-09-10)
+
+Parcours complet exercé sur la base locale, compte prof : ajout de deux
+travaux, saisie, échéances distinctes, enregistrement, relecture. Le contenu et
+`display_order` sont bien écrits, et la page les reprend au rechargement.
+
+### ⚠️ Ce que la vérification a révélé : les vacances dépendent d'une policy RLS
+
+Au premier essai, les jeudis 22 et 29 octobre étaient proposés **alors qu'ils
+tombent en vacances de Toussaint**. Le calcul n'était pas en cause (les tests
+unitaires l'attestent) : c'est la policy `Teachers can read school holidays` qui
+exige
+
+```sql
+profiles.school_id = school_years.school_id
+```
+
+Le profil du prof local n'étant rattaché à aucune école, `school_holidays`
+renvoyait **zéro ligne sans erreur** — et le code ne peut pas distinguer
+« aucune vacance saisie » de « la RLS me les cache ». Après rattachement du
+profil, la liste saute correctement du 15 octobre au 5 novembre.
+
+**En production, ça marche** (vérifié) : le profil professeur porte bien
+`school_id` = Blaise Pascal, et les quatre classes actives appartiennent à cette
+école ; le profil admin passe, lui, par sa propre policy.
+
+**Le piège reste posé pour plus tard** : le modèle mono-professeur admet
+plusieurs écoles (il y a une seconde école en base, Voltaire, dont les classes
+sont archivées). Une classe dont l'école **diffère** de celle du profil verrait
+ses vacances silencieusement ignorées, et le cahier proposerait des échéances en
+plein congé. À traiter le jour où une classe d'une autre école redevient active.
+
 ### Reste à savoir
 
 `getJournalStatistics().entriesWithHomework` compte encore l'ancienne colonne,
