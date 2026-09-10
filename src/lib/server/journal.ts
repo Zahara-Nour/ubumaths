@@ -445,11 +445,24 @@ export async function getUpcomingHomework(
 	studentId: string,
 	daysAhead: number = 14
 ): Promise<ListResult<UpcomingHomework>> {
-	const today = new Date();
-	today.setHours(0, 0, 0, 0);
-
-	const endDate = new Date(today);
-	endDate.setDate(endDate.getDate() + daysAhead);
+	// « Aujourd'hui » en UTC, comme la base.
+	//
+	// L'ancien calcul faisait `setHours(0,0,0,0)` — minuit LOCAL — puis
+	// `toISOString()`, qui rend en UTC : à l'est de Greenwich, minuit local est la
+	// VEILLE en UTC, et la date obtenue reculait d'un jour. Une séance écrite le
+	// jour même était alors exclue par le filtre `entry_date <= today`, et son
+	// devoir n'apparaissait pas dans « à venir » avant le lendemain.
+	//
+	// L'UTC n'est pas un choix arbitraire : la RLS de `journal_entry_homework`
+	// compare avec `current_date`, évalué en UTC côté Supabase. Filtrer dans la
+	// même référence évite de réclamer des lignes que la RLS refuse.
+	const maintenant = new Date();
+	const todayUtc = Date.UTC(
+		maintenant.getUTCFullYear(),
+		maintenant.getUTCMonth(),
+		maintenant.getUTCDate()
+	);
+	const endUtc = todayUtc + daysAhead * 86_400_000;
 
 	// Get student's active classes only
 	const { data: memberships, error: membershipError } = await supabase
@@ -469,7 +482,8 @@ export async function getUpcomingHomework(
 		return { data: [], error: null, count: 0 };
 	}
 
-	const todayStr = today.toISOString().split('T')[0];
+	const todayStr = new Date(todayUtc).toISOString().slice(0, 10);
+	const endStr = new Date(endUtc).toISOString().slice(0, 10);
 
 	// Un travail par ligne, et non plus un par séance : c'est toute la raison
 	// d'être de la table fille. Les filtres sur la séance sont posés
@@ -496,7 +510,7 @@ export async function getUpcomingHomework(
 		.lte('entry.entry_date', todayStr)
 		.not('due_date', 'is', null)
 		.gte('due_date', todayStr)
-		.lte('due_date', endDate.toISOString().split('T')[0])
+		.lte('due_date', endStr)
 		.order('due_date', { ascending: true });
 
 	if (rowsError) {
@@ -520,15 +534,18 @@ export async function getUpcomingHomework(
 		.not('homework_content', 'is', null)
 		.not('homework_due_date', 'is', null)
 		.gte('homework_due_date', todayStr)
-		.lte('homework_due_date', endDate.toISOString().split('T')[0]);
+		.lte('homework_due_date', endStr);
 
 	if (anciensError) {
 		console.error('[getUpcomingHomework] Error fetching legacy homework:', anciensError.message);
 		return { data: [], error: new Error(anciensError.message), count: 0 };
 	}
 
+	// Deux minuits UTC exacts : la division tombe juste, `Math.round` absorbe le
+	// flottant sans jamais décaler d'un jour comme le faisait `Math.ceil` sur des
+	// bornes de fuseaux différents.
 	const joursRestants = (due: string) =>
-		Math.ceil((new Date(due).getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+		Math.round((Date.parse(`${due}T00:00:00Z`) - todayUtc) / 86_400_000);
 
 	const homework: UpcomingHomework[] = [
 		...(rows ?? []).map((row) => ({

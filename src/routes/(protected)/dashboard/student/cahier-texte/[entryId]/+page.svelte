@@ -60,13 +60,22 @@
 
 	/**
 	 * Calculate days until due date
+	 *
+	 * ⚠️ Les deux bornes sont prises à minuit UTC. L'ancien calcul comparait
+	 * minuit LOCAL (`setHours(0,0,0,0)`) à `new Date('2026-09-17')`, qui est
+	 * minuit UTC : à Paris, deux heures d'écart que `Math.ceil` arrondissait au
+	 * jour supérieur. La page annonçait « Dans 8 jours » là où le panneau
+	 * « Travail à faire », calculé côté serveur, disait 7 — pour la même date,
+	 * sur le même écran.
 	 */
 	function getDaysUntilDue(dueDateStr: string): { text: string; isUrgent: boolean } {
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
-		const dueDate = new Date(dueDateStr);
-		const diffTime = dueDate.getTime() - today.getTime();
-		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+		const maintenant = new Date();
+		const todayUtc = Date.UTC(
+			maintenant.getUTCFullYear(),
+			maintenant.getUTCMonth(),
+			maintenant.getUTCDate()
+		);
+		const diffDays = Math.round((Date.parse(`${dueDateStr}T00:00:00Z`) - todayUtc) / 86_400_000);
 
 		if (diffDays < 0) {
 			return {
