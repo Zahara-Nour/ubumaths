@@ -43,8 +43,6 @@
 	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { transformMathHtml } from '$lib/utils/sanitize';
-	import { linkifyResourceReferences } from '$lib/resources/linkify';
 
 	interface Props {
 		data: PageData;
