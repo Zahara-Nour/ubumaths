@@ -108,7 +108,7 @@ Le **chunk du root layout doit rester < 100 KB**, sinon iPad/Safari lève `Canno
 **Toujours `--port 5175`** ; `5173` est réservé à l'utilisateur, **ne pas l'utiliser**.
 
 ```bash
-pnpm dev -- --port 5175
+pnpm dev --port 5175 --strictPort
 ```
 
 ---

@@ -9,12 +9,20 @@ Toutes les commandes `pnpm <script>` définies dans `package.json`, par catégor
 
 ## 🚀 Développement
 
-| Commande            | Effet                                         | Notes                                        |
-| ------------------- | --------------------------------------------- | -------------------------------------------- |
-| `pnpm dev`          | Serveur de dev Vite (HMR)                     | `pnpm dev -- --port 5175` pour fixer le port |
-| `pnpm build`        | Build de production (`vite build`, heap 8 Go) | Identique au build Vercel                    |
-| `pnpm preview`      | Sert le build de prod en local                | À lancer après `pnpm build`                  |
-| `pnpm kill:servers` | Tue les serveurs dev restés ouverts           | Pratique si un port est bloqué               |
+| Commande            | Effet                                         | Notes                                          |
+| ------------------- | --------------------------------------------- | ---------------------------------------------- |
+| `pnpm dev`          | Serveur de dev Vite (HMR)                     | `pnpm dev --port 5175 --strictPort` — cf. note |
+| `pnpm build`        | Build de production (`vite build`, heap 8 Go) | Identique au build Vercel                      |
+| `pnpm preview`      | Sert le build de prod en local                | À lancer après `pnpm build`                    |
+| `pnpm kill:servers` | Tue les serveurs dev restés ouverts           | Pratique si un port est bloqué                 |
+
+> ⚠️ **Pas de `--` devant le port.** Le script est `vite dev` : `pnpm dev -- --port 5175`
+> transmet un `--` que vite ignore, port compris, et le serveur démarre sur **5173** —
+> le port de David. Vérifié le 2026-09-10 (`pnpm dev --port 5199` sert bien sur 5199,
+> la forme avec `--` sert sur 5173).
+>
+> `--strictPort` fait échouer bruyamment si 5175 est déjà pris, au lieu de laisser vite
+> dériver sur un autre port en silence — on croit alors tester ce qu'on ne teste pas.
 
 ---
 

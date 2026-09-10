@@ -74,7 +74,7 @@ Développer UbuMaths en respectant les **4 règles critiques** :
 
 ### Commands
 ```bash
-pnpm dev -- --port 5175    # Claude port (ALWAYS use 5175)
+pnpm dev --port 5175 --strictPort    # Claude port (ALWAYS use 5175)
 pnpm check                 # Type checking
 pnpm lint                  # ESLint (cached)
 pnpm test:unit             # Unit tests
