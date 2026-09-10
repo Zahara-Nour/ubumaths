@@ -44,8 +44,8 @@ date passée ; lien de partage via la fonction `SECURITY DEFINER` existante ;
 
 - [x] **Phase 1 — socle** : migration, module de calcul des dates, tests
 - [x] **Phase 2 — serveur** : CRUD, Zod, couverture programme, citations de fiches
-- [ ] **Phase 3 — UI prof** : la liste de travaux dans « Travail à faire »
-- [ ] **Phase 4 — UI élève + vue publique + lien de partage**
+- [x] **Phase 3 — UI prof** : la liste de travaux dans « Travail à faire »
+- [x] **Phase 4 — UI élève + vue publique + lien de partage**
 - [ ] **Phase 5 — revue** : `code-reviewer`, `security-auditor`, `check:incremental`, PR
 
 ## Phase 1 — fait
@@ -189,6 +189,43 @@ travaux, 54 sur la couverture. Les 4 nouveaux tests couverture/citations ont ét
 quatrième passait au premier essai — le cours citait aussi la fiche, donc
 l'ancien code la trouvait quand même ; il exige désormais la sélection venue du
 devoir.
+
+## Phases 3 et 4 — fait
+
+**Éditeur prof** — « Travail à faire » est une liste : un éditeur riche et un
+sélecteur d'échéance par travail, « Ajouter un travail », suppression.
+
+- Le menu affiche « jeudi 17 septembre (prochain cours) », et « (passé) » sur
+  une date antérieure à aujourd'hui — elle apparaît quand on remplit en retard
+  le cahier d'une séance ancienne, et la proposer sans le dire laisserait croire
+  à une erreur.
+- ⚠️ `timeZone: 'UTC'` dans le formatage des libellés. `new Date('2026-09-17')`
+  est interprété à minuit UTC ; un formatage en heure locale afficherait
+  « mercredi 16 » à l'ouest de Greenwich, alors que tout le calcul est en UTC.
+- Une échéance **déjà enregistrée mais devenue invalide** (cours déplacé,
+  vacances ajoutées) reste affichée, marquée « (hors emploi du temps) ». La
+  cacher la ferait retomber sur le placeholder, et l'enregistrement suivant
+  écraserait la date en silence. Le serveur la refuse en la nommant.
+- Une `key` par travail, pas l'index : supprimer une ligne du milieu ferait
+  sinon recycler le mauvais éditeur, et le texte du travail suivant
+  apparaîtrait dans le cadre qu'on vient de vider.
+- `resynchroniserTravaux()` après enregistrement : le serveur ne recopie pas ce
+  qu'on lui envoie (il retire les vides, résout les échéances), donc la page
+  doit reprendre ce que la base connaît — sinon l'enregistrement suivant
+  repartirait d'un état faux.
+
+**Vues élève et publique** — un bloc par travail, avec son échéance et son
+décompte. La pastille de la grille prof compte les travaux (`homeworkCount`,
+requête dédiée : elle se fondait sur `homework_content`, qui n'est plus
+écrite).
+
+**Séances antérieures à la bascule** : l'ancien devoir unique n'est pas migré,
+il est simplement encore **lu** partout où il s'affichait. Rien n'est perdu,
+rien n'est réécrit.
+
+**Assainissement** : `homework[].content` passe par le **même** `renderContent`
+que `lesson_content` sur les deux pages — c'est le point que l'audit demandait
+de ne pas oublier.
 
 ### Reste à savoir
 

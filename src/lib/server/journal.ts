@@ -271,6 +271,27 @@ export async function getJournalEntriesForWeek(
 
 	const scheduledDays = new Set((schedules || []).map((s) => s.day_of_week));
 
+	// Combien de travaux par séance de la semaine. Lu à part : l'indicateur de la
+	// grille se fondait sur `homework_content`, qui n'est plus écrite — sans ce
+	// compte, la mention « devoir » disparaîtrait de tout le calendrier du prof.
+	const entryIds = (entries ?? []).map((e) => e.id);
+	const homeworkCounts = new Map<string, number>();
+	if (entryIds.length > 0) {
+		const { data: travaux, error: travauxError } = await supabase
+			.from('journal_entry_homework')
+			.select('entry_id')
+			.in('entry_id', entryIds);
+
+		if (travauxError) {
+			console.error('[journal] Travaux illisibles :', travauxError);
+			throw new Error(travauxError.message);
+		}
+
+		for (const row of travaux ?? []) {
+			homeworkCounts.set(row.entry_id, (homeworkCounts.get(row.entry_id) ?? 0) + 1);
+		}
+	}
+
 	// Build entries map
 	const entriesMap = new Map<string, DbClassJournalEntry>();
 	for (const entry of entries || []) {
@@ -299,7 +320,8 @@ export async function getJournalEntriesForWeek(
 			isToday,
 			isWeekend,
 			entry: entry ? convertJournalEntry(entry) : undefined,
-			hasScheduledClass: scheduledDays.has(dayOfWeek)
+			hasScheduledClass: scheduledDays.has(dayOfWeek),
+			homeworkCount: entry ? (homeworkCounts.get(entry.id) ?? 0) : 0
 		});
 	}
 

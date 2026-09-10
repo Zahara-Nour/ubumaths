@@ -99,6 +99,26 @@
 							</div>
 						{/if}
 
+						<!-- Un bloc par travail : deux devoirs d'une même séance ont deux
+						     échéances, et les fondre en un seul bloc obligerait à mentir sur
+						     l'une des deux. -->
+						{#each entry.homework as travail (travail.id)}
+							<div class="space-y-1 rounded-md bg-muted/50 p-3">
+								<div class="flex flex-wrap items-center gap-2 text-sm font-medium">
+									<ClipboardList class="h-4 w-4" />
+									À faire
+									{#if formatDueDate(travail.due_date)}
+										<Badge variant="secondary">{formatDueDate(travail.due_date)}</Badge>
+									{/if}
+								</div>
+								<div class="prose prose-sm max-w-none dark:prose-invert">
+									{@html renderContent(travail.content)}
+								</div>
+							</div>
+						{/each}
+
+						<!-- Séances antérieures à la bascule : l'ancien devoir unique n'a pas
+						     été migré, il est simplement encore lu. -->
 						{#if entry.homework_content}
 							<div class="space-y-1 rounded-md bg-muted/50 p-3">
 								<div class="flex flex-wrap items-center gap-2 text-sm font-medium">

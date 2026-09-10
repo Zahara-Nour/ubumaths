@@ -43,6 +43,26 @@ function getWeekEnd(weekStart: string): string {
 	return d.toISOString().split('T')[0];
 }
 
+/**
+ * La prochaine échéance d'une séance, pour la pastille du calendrier.
+ *
+ * Une séance porte plusieurs travaux : la pastille en affiche UNE, et c'est la
+ * plus proche qui informe — celle qui dit à l'élève ce qui l'attend en premier.
+ * Les travaux sans échéance (classe sans emploi du temps) n'en fournissent
+ * aucune.
+ */
+function prochaineEcheance(entry: {
+	homework_due_date: string | null;
+	journal_entry_homework: { due_date: string | null }[];
+}): string | null {
+	const dates = entry.journal_entry_homework
+		.map((h) => h.due_date)
+		.filter((d): d is string => d !== null);
+	if (entry.homework_due_date) dates.push(entry.homework_due_date);
+
+	return dates.length > 0 ? dates.sort()[0] : null;
+}
+
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// Only students can view this page
 	const { user } = await requireRole(locals, 'student');
@@ -109,6 +129,12 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		lesson_content: string | null;
 		homework_content: string | null;
 		homework_due_date: string | null;
+		journal_entry_homework: {
+			id: string;
+			content: string;
+			due_date: string | null;
+			display_order: number;
+		}[];
 		class_id: string;
 		classes: { name: string; grade: string | null };
 	}> = [];
@@ -123,6 +149,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 				lesson_content,
 				homework_content,
 				homework_due_date,
+				journal_entry_homework(id, content, due_date, display_order),
 				class_id,
 				classes!inner(name, grade)
 			`
@@ -160,8 +187,12 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			.map((e) => ({
 				id: e.id,
 				hasLesson: !!e.lesson_content,
-				hasHomework: !!e.homework_content,
-				homeworkDueDate: e.homework_due_date,
+				// Le devoir vit désormais dans la table fille ; l'ancienne colonne
+				// n'est plus écrite mais reste lue pour les séances antérieures à la
+				// bascule. Ne regarder qu'elle ferait disparaître la pastille
+				// « devoir » de toutes les séances récentes.
+				hasHomework: e.journal_entry_homework.length > 0 || !!e.homework_content,
+				homeworkDueDate: prochaineEcheance(e),
 				isPublished: true, // All visible entries are published
 				className: e.classes.name,
 				classId: e.class_id
@@ -202,6 +233,9 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			lessonContent: e.lesson_content,
 			homeworkContent: e.homework_content,
 			homeworkDueDate: e.homework_due_date,
+			homework: [...e.journal_entry_homework]
+				.sort((a, b) => a.display_order - b.display_order)
+				.map((h) => ({ id: h.id, content: h.content, dueDate: h.due_date })),
 			className: e.classes.name,
 			classGrade: e.classes.grade,
 			classId: e.class_id

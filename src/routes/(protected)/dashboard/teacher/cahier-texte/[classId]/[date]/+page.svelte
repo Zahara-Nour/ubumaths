@@ -62,14 +62,142 @@
 	let classGrades = $derived(data.classData.grade ? [data.classData.grade] : null);
 
 	let lessonContent = $state(initialData.entry?.lessonContent || '');
-	let homeworkContent = $state(initialData.entry?.homeworkContent || '');
-	let homeworkDueDate = $state(initialData.entry?.homeworkDueDate || '');
 	let isPublished = $state(initialData.entry?.isPublished || false);
 	let isSaving = $state(false);
 	let isDeleting = $state(false);
 
 	// Delete confirmation dialog
 	let showDeleteDialog = $state(false);
+
+	// --- Travail à faire ------------------------------------------------------
+	/**
+	 * Un travail en cours de saisie.
+	 *
+	 * `key` n'existe que pour le `{#each}` : un travail neuf n'a pas encore
+	 * d'identifiant de base, et indexer la liste ferait recycler le mauvais
+	 * éditeur quand on supprime une ligne du milieu — le texte du travail suivant
+	 * apparaîtrait dans le cadre qu'on vient de vider.
+	 */
+	interface TravailSaisi {
+		key: string;
+		content: string;
+		dueDate: string;
+	}
+
+	let compteurCle = 0;
+	function nouvelleCle(): string {
+		compteurCle += 1;
+		return `t${compteurCle}`;
+	}
+
+	let travaux = $state<TravailSaisi[]>(
+		initialData.homework.map((h) => ({
+			key: nouvelleCle(),
+			content: h.content,
+			dueDate: h.dueDate ?? ''
+		}))
+	);
+
+	/**
+	 * Aujourd'hui, en date ISO, pour distinguer une échéance passée.
+	 *
+	 * Figé au rendu : cette page ne vit pas assez longtemps pour changer de jour,
+	 * et un `$derived` sur `new Date()` ne se recalculerait de toute façon pas.
+	 */
+	const aujourdhui = new Date().toISOString().slice(0, 10);
+
+	/**
+	 * « jeudi 17 septembre » — le libellé d'une date de séance.
+	 *
+	 * ⚠️ `timeZone: 'UTC'` est indispensable : `new Date('2026-09-17')` est
+	 * interprété à minuit UTC, et un formatage en heure locale afficherait
+	 * « mercredi 16 » pour tout fuseau à l'ouest de Greenwich. Tout le calcul des
+	 * dates de séance est en UTC, l'affichage doit suivre.
+	 */
+	function libelleDate(iso: string): string {
+		return new Date(iso).toLocaleDateString('fr-FR', {
+			weekday: 'long',
+			day: 'numeric',
+			month: 'long',
+			timeZone: 'UTC'
+		});
+	}
+
+	/**
+	 * Les échéances proposées, avec ce qui les distingue.
+	 *
+	 * La première est le prochain cours — c'est la valeur par défaut d'un travail
+	 * neuf, conformément à la règle « pas de date = le cours prochain ».
+	 *
+	 * Une date antérieure à aujourd'hui est marquée « (passé) » : elle apparaît
+	 * quand on remplit en retard le cahier d'une séance ancienne, et la proposer
+	 * sans le dire laisserait croire à une erreur.
+	 */
+	let optionsEcheance = $derived.by(() => {
+		const options = data.sessionDates.map((iso, index) => ({
+			value: iso,
+			label:
+				libelleDate(iso) + (index === 0 ? ' (prochain cours)' : iso < aujourdhui ? ' (passé)' : '')
+		}));
+
+		// Une échéance déjà enregistrée peut ne plus être un jour de cours : il
+		// suffit d'avoir déplacé le cours ou ajouté des vacances depuis. La
+		// laisser absente du menu la ferait retomber sur le placeholder, et
+		// l'enregistrement suivant écraserait silencieusement la date. On
+		// l'affiche donc, signalée — le serveur la refusera en la nommant, et le
+		// professeur saura laquelle corriger.
+		const connues = new Set(options.map((o) => o.value));
+		for (const travail of travaux) {
+			if (travail.dueDate && !connues.has(travail.dueDate)) {
+				connues.add(travail.dueDate);
+				options.push({
+					value: travail.dueDate,
+					label: `${libelleDate(travail.dueDate)} (hors emploi du temps)`
+				});
+			}
+		}
+
+		return options.sort((a, b) => a.value.localeCompare(b.value));
+	});
+
+	/** L'échéance d'un travail neuf : le prochain cours, ou rien à défaut. */
+	let echeanceParDefaut = $derived(data.sessionDates[0] ?? '');
+
+	function ajouterTravail() {
+		travaux = [...travaux, { key: nouvelleCle(), content: '', dueDate: echeanceParDefaut }];
+	}
+
+	function retirerTravail(key: string) {
+		travaux = travaux.filter((t) => t.key !== key);
+	}
+
+	/**
+	 * Ce que le formulaire envoie au serveur.
+	 *
+	 * `key` ne part pas : elle n'a de sens que dans cette page. Le serveur retire
+	 * les travaux vides et résout les échéances absentes — on ne filtre donc pas
+	 * ici, pour que les deux ne puissent pas diverger.
+	 */
+	let travauxSerialises = $derived(
+		JSON.stringify(travaux.map((t) => ({ content: t.content, dueDate: t.dueDate })))
+	);
+
+	/**
+	 * Reprend la liste telle que la base la connaît, après enregistrement.
+	 *
+	 * Le serveur ne recopie pas ce qu'on lui envoie : il retire les travaux
+	 * vides et résout les échéances absentes en date de cours. Sans cette
+	 * resynchronisation, la page continuerait d'afficher un cadre vide qui n'a
+	 * pas été enregistré, ou une échéance vide là où une date a été posée — et
+	 * le prochain enregistrement repartirait de cet état faux.
+	 */
+	function resynchroniserTravaux() {
+		travaux = data.homework.map((h) => ({
+			key: nouvelleCle(),
+			content: h.content,
+			dueDate: h.dueDate ?? ''
+		}));
+	}
 
 	// --- Programme travaillé (coverage) --------------------------------------
 	const initialCovered: Record<string, string> = {};
@@ -469,6 +597,7 @@
 				// `$state` figé à l'initialisation : sans cette relance, la carte
 				// « Programme travaillé » afficherait l'état d'avant la sauvegarde.
 				await refreshCoverage();
+				resynchroniserTravaux();
 			};
 		}}
 	>
@@ -514,46 +643,80 @@
 						Travail a faire
 					</Card.Title>
 					<Card.Description>
-						Corvées Domestiques et {lore.learning.exercise}s a faire pour le prochain cours
-						(optionnel)
+						Chaque travail a sa propre échéance. Les dates proposées sont les jours où la classe a
+						cours, vacances exclues.
 					</Card.Description>
 				</Card.Header>
 				<Card.Content class="space-y-4">
-					<input type="hidden" name="homeworkContent" value={homeworkContent} />
-					<RichTextEditor
-						resourceGrades={classGrades}
-						bind:htmlValue={homeworkContent}
-						preset="standard"
-						minHeight="150px"
-						maxHeight="300px"
-					/>
+					<input type="hidden" name="homeworkItems" value={travauxSerialises} />
 
-					<!-- Homework due date -->
-					<div class="flex items-end gap-4">
-						<div class="flex-1 space-y-2">
-							<Label for="homeworkDueDate" class="flex items-center gap-2">
-								<Calendar class="h-4 w-4" />
-								Date limite (optionnel)
-							</Label>
-							<Input
-								type="date"
-								id="homeworkDueDate"
-								name="homeworkDueDate"
-								bind:value={homeworkDueDate}
-								min={data.entryDate}
+					{#if !data.hasSchedule}
+						<!-- Trois des quatre classes actives sont dans ce cas. Un menu vide
+						     bloquerait la saisie : on retombe sur une date libre, en disant
+						     pourquoi et où la corriger. -->
+						<p
+							class="rounded-md border border-orange-200 bg-orange-50 p-3 text-sm text-orange-900 dark:border-orange-900 dark:bg-orange-950 dark:text-orange-200"
+						>
+							L'emploi du temps de cette classe n'est pas renseigné : les échéances sont saisies
+							librement.
+							<a class="font-medium underline" href={resolve('/dashboard/teacher/classes')}>
+								Renseigner l'emploi du temps
+							</a>
+						</p>
+					{/if}
+
+					{#each travaux as travail, index (travail.key)}
+						<div class="space-y-3 rounded-lg border border-border p-4">
+							<div class="flex items-center justify-between">
+								<span class="text-sm font-medium text-muted-foreground">
+									Travail {index + 1}
+								</span>
+								<Button
+									type="button"
+									variant="ghost"
+									size="sm"
+									onclick={() => retirerTravail(travail.key)}
+									aria-label="Retirer ce travail"
+								>
+									<Trash2 class="h-4 w-4" />
+								</Button>
+							</div>
+
+							<RichTextEditor
+								resourceGrades={classGrades}
+								bind:htmlValue={travaux[index].content}
+								preset="standard"
+								minHeight="120px"
+								maxHeight="300px"
 							/>
+
+							<div class="space-y-2">
+								<Label class="flex items-center gap-2">
+									<Calendar class="h-4 w-4" />
+									À rendre pour
+								</Label>
+								{#if data.hasSchedule}
+									<MySelect
+										type="single"
+										bind:value={travaux[index].dueDate}
+										items={optionsEcheance}
+										placeholder="Choisir une date"
+									/>
+								{:else}
+									<Input type="date" bind:value={travaux[index].dueDate} min={data.entryDate} />
+								{/if}
+							</div>
 						</div>
-						{#if homeworkDueDate}
-							<Button
-								type="button"
-								variant="ghost"
-								size="sm"
-								onclick={() => (homeworkDueDate = '')}
-							>
-								Effacer
-							</Button>
-						{/if}
-					</div>
+					{/each}
+
+					{#if travaux.length === 0}
+						<p class="text-sm text-muted-foreground">Aucun travail pour cette séance.</p>
+					{/if}
+
+					<Button type="button" variant="outline" onclick={ajouterTravail}>
+						<Plus class="mr-2 h-4 w-4" />
+						Ajouter un travail
+					</Button>
 				</Card.Content>
 			</Card.Root>
 

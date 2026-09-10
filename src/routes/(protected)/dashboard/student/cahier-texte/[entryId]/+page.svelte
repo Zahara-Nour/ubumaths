@@ -109,6 +109,26 @@
 	let dueDateInfo = $derived(
 		data.entry.homeworkDueDate ? getDaysUntilDue(data.entry.homeworkDueDate) : null
 	);
+
+	/**
+	 * Les travaux de la séance, chacun avec son rendu et son décompte.
+	 *
+	 * Calculé en une fois plutôt qu'appelé depuis le balisage : `getDaysUntilDue`
+	 * lit l'heure courante, et une fonction impure dans un `{#each}` se
+	 * recalculerait à chaque rendu sans que rien n'ait changé.
+	 */
+	let travaux = $derived(
+		data.entry.homework.map((travail) => ({
+			...travail,
+			html: renderContent(travail.content),
+			echeance: travail.dueDate ? getDaysUntilDue(travail.dueDate) : null
+		}))
+	);
+
+	/** Y a-t-il quoi que ce soit à montrer sur cette séance ? */
+	let seanceVide = $derived(
+		!data.entry.lessonContent && !data.entry.homeworkContent && travaux.length === 0
+	);
 </script>
 
 <svelte:head>
@@ -174,7 +194,42 @@
 			</Card.Root>
 		{/if}
 
-		<!-- Homework Content -->
+		<!-- Travail à faire : une carte par échéance. Les fondre en une seule
+		     obligerait à choisir une date pour deux devoirs qui n'en partagent
+		     pas. -->
+		{#each travaux as travail (travail.id)}
+			<Card.Root
+				class={travail.echeance?.isUrgent ? 'border-orange-300 dark:border-orange-700' : ''}
+			>
+				<Card.Header>
+					<div class="flex items-start justify-between gap-4">
+						<Card.Title class="flex items-center gap-2">
+							<ClipboardList class="h-5 w-5 text-orange-500" />
+							Travail a faire
+						</Card.Title>
+						{#if travail.echeance}
+							<Badge variant={travail.echeance.isUrgent ? 'destructive' : 'secondary'}>
+								<Clock class="mr-1 h-3 w-3" />
+								{travail.echeance.text}
+							</Badge>
+						{/if}
+					</div>
+					{#if travail.dueDate}
+						<Card.Description class="mt-2 flex items-center gap-2">
+							<Calendar class="h-4 w-4" />
+							A rendre pour le {formatDateShort(travail.dueDate)}
+						</Card.Description>
+					{/if}
+				</Card.Header>
+				<Card.Content>
+					<div class="prose prose-sm max-w-none dark:prose-invert">
+						{@html travail.html}
+					</div>
+				</Card.Content>
+			</Card.Root>
+		{/each}
+
+		<!-- Séance antérieure à la bascule : l'ancien devoir unique, encore lu. -->
 		{#if data.entry.homeworkContent}
 			<Card.Root class={dueDateInfo?.isUrgent ? 'border-orange-300 dark:border-orange-700' : ''}>
 				<Card.Header>
@@ -206,7 +261,7 @@
 		{/if}
 
 		<!-- Empty state if no content -->
-		{#if !data.entry.lessonContent && !data.entry.homeworkContent}
+		{#if seanceVide}
 			<Card.Root>
 				<Card.Content class="py-12 text-center">
 					<BookOpen class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />

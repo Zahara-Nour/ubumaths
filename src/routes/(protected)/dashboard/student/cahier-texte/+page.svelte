@@ -252,10 +252,13 @@
 													Cours
 												</Badge>
 											{/if}
-											{#if entry.homeworkContent}
+											{#if entry.homework.length > 0 || entry.homeworkContent}
 												<Badge variant="outline" class="text-orange-600">
 													<ClipboardList class="mr-1 h-3 w-3" />
 													Corvées Domestiques
+													{#if entry.homework.length > 1}
+														({entry.homework.length})
+													{/if}
 												</Badge>
 											{/if}
 										</div>

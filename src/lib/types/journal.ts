@@ -124,6 +124,13 @@ export interface JournalWeekDay {
 	entry?: ClassJournalEntry;
 	/** Does this class have a scheduled session on this day? (from class_schedules) */
 	hasScheduledClass?: boolean;
+	/**
+	 * Combien de travaux à faire cette séance porte.
+	 *
+	 * Un compte et non un booléen : la grille dit « 2 devoirs », ce qu'un
+	 * `homeworkContent` non nul ne pouvait pas exprimer.
+	 */
+	homeworkCount?: number;
 }
 
 /**
