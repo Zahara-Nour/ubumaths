@@ -86,6 +86,20 @@ index + trigger `updated_at` + RLS (2 policies, cf. question d'accès) + REVOKE
 (nominal, séance exclue, vacances bornes incluses, doublons d'emploi du temps,
 emploi du temps vide, dates illisibles, plafond, `isSessionDate`).
 
+## Phase 1 — livrée
+
+PR [#205](https://github.com/Zahara-Nour/ubumaths/pull/205) mergée le 2026-09-10,
+CI verte sur les 11 checks. Migration poussée en prod dans la foulée
+(`supabase db push`), vérifiée sur la base EU :
+
+- table créée, 2 policies ;
+- `authenticated=arwd` — les quatre verbes, **sans TRUNCATE** ;
+- **aucune entrée `anon`** dans l'ACL ;
+- anciennes colonnes intactes (et toujours à zéro donnée).
+
+`pnpm db:types` régénéré ensuite : +56 lignes, la table et la fonction, aucune
+dérive ailleurs — la prod et les migrations du dépôt sont donc bien en phase.
+
 ## Ordre imposé par les types
 
 `pnpm db:types` génère `database.ts` **depuis la prod** (`--project-id`). Donc
