@@ -57,8 +57,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			id,
 			entry_date,
 			lesson_content,
-			homework_content,
-			homework_due_date,
 			journal_entry_homework(id, content, due_date, display_order),
 			is_published,
 			class_id,
@@ -107,8 +105,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			id: entry.id,
 			entryDate: entry.entry_date,
 			lessonContent: entry.lesson_content,
-			homeworkContent: entry.homework_content,
-			homeworkDueDate: entry.homework_due_date,
 			// Un travail par échéance, dans l'ordre voulu par le professeur.
 			homework: [...entry.journal_entry_homework]
 				.sort((a, b) => a.display_order - b.display_order)

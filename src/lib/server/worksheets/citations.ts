@@ -107,14 +107,16 @@ export async function fetchWorksheetCitations(
 	// lignes d'une table fille depuis qu'une séance peut en porter plusieurs.
 	// Un seul `ilike` sur `class_journal_entries` raterait le second cas en
 	// silence, et le panneau se tairait sur des séances qui citent bien la fiche.
+	//
+	// Le premier balayage ne regarde plus que `lesson_content` : l'ancienne
+	// colonne de devoir unique a été supprimée, tout le travail à faire étant
+	// passé dans la table fille.
 	const [{ data, error }, { data: travaux, error: travauxError }] = await Promise.all([
 		supabase
 			.from('class_journal_entries')
-			.select(
-				'id, class_id, entry_date, lesson_content, homework_content, classes!inner(name, school_id)'
-			)
+			.select('id, class_id, entry_date, lesson_content, classes!inner(name, school_id)')
 			.eq('classes.school_id', fiche.school_id)
-			.or(`lesson_content.ilike.${motif},homework_content.ilike.${motif}`)
+			.ilike('lesson_content', motif)
 			.order('entry_date', { ascending: false })
 			.limit(MAX_CITATIONS),
 		supabase
@@ -157,7 +159,7 @@ export async function fetchWorksheetCitations(
 			classId: entry.class_id,
 			className: entry.classes.name,
 			entryDate: entry.entry_date,
-			contenus: [entry.lesson_content, entry.homework_content]
+			contenus: [entry.lesson_content]
 		});
 	}
 

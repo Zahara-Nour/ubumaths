@@ -90,7 +90,7 @@ export async function reconcileAutoCoverage(
 	// décocher une case, et la réconciliation ci-dessous retire alors son point.
 	const { data: entry, error: entryErr } = await supabase
 		.from('class_journal_entries')
-		.select('lesson_content, homework_content')
+		.select('lesson_content')
 		.eq('id', entryId)
 		.maybeSingle();
 	if (entryErr) throw new Error(`reconcileAutoCoverage entry: ${entryErr.message}`);
@@ -107,7 +107,6 @@ export async function reconcileAutoCoverage(
 
 	const references = extractResourceReferences(
 		entry?.lesson_content,
-		entry?.homework_content,
 		...(travaux ?? []).map((t) => t.content)
 	);
 	for (const id of referenceIdsOfKind(references, 'exercise')) exerciseIds.add(id);

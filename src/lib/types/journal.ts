@@ -41,17 +41,16 @@ export type DbClassJournalEntryUpdate =
  *
  * A journal entry represents what happened in a class on a specific date:
  * - lesson_content: What was covered during the session (Ubumark format)
- * - homework_content: Homework assignment (Ubumark format)
- * - homework_due_date: Optional deadline for homework
  * - is_published: Whether students can see this entry (they also need entry_date <= today)
+ *
+ * Le travail à faire ne vit PAS ici : une séance en porte plusieurs, chacun avec
+ * son échéance, dans `journal_entry_homework` (voir `JournalHomeworkItem`).
  */
 export interface ClassJournalEntry {
 	id: string;
 	classId: string;
 	entryDate: string; // DATE format YYYY-MM-DD
 	lessonContent: string | null;
-	homeworkContent: string | null;
-	homeworkDueDate: string | null; // DATE format YYYY-MM-DD
 	isPublished: boolean;
 	createdAt: string;
 	updatedAt: string;
@@ -128,7 +127,7 @@ export interface JournalWeekDay {
 	 * Combien de travaux à faire cette séance porte.
 	 *
 	 * Un compte et non un booléen : la grille dit « 2 devoirs », ce qu'un
-	 * `homeworkContent` non nul ne pouvait pas exprimer.
+	 * l'ancienne colonne unique ne pouvait pas exprimer.
 	 */
 	homeworkCount?: number;
 }

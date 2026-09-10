@@ -67,59 +67,20 @@ export const optionalDateSchema = dateSchema.nullable().optional();
 /**
  * Schema for creating a journal entry
  */
-export const createJournalEntrySchema = z
-	.object({
-		classId: uuidSchema.describe('ID de la classe'),
-		entryDate: dateSchema.describe('Date de la seance'),
-		lessonContent: z
-			.string()
-			.trim()
-			.max(
-				MAX_CONTENT_LENGTH,
-				`Le contenu du cours est trop long (max ${MAX_CONTENT_LENGTH} caracteres)`
-			)
-			.optional()
-			.nullable(),
-		homeworkContent: z
-			.string()
-			.trim()
-			.max(
-				MAX_CONTENT_LENGTH,
-				`Le contenu du devoir est trop long (max ${MAX_CONTENT_LENGTH} caracteres)`
-			)
-			.optional()
-			.nullable(),
-		homeworkDueDate: dateSchema.optional().nullable(),
-		isPublished: z.boolean().default(false)
-	})
-	.refine(
-		(data) => {
-			// If homework_due_date is set, homework_content must be provided
-			if (data.homeworkDueDate && !data.homeworkContent) {
-				return false;
-			}
-			return true;
-		},
-		{
-			message: 'Une date limite requiert un contenu de devoir',
-			path: ['homeworkDueDate']
-		}
-	)
-	.refine(
-		(data) => {
-			// homework_due_date must be >= entry_date
-			if (data.homeworkDueDate && data.entryDate) {
-				const entryDate = new Date(data.entryDate);
-				const dueDate = new Date(data.homeworkDueDate);
-				return dueDate >= entryDate;
-			}
-			return true;
-		},
-		{
-			message: "La date limite doit etre posterieure ou egale a la date de l'entree",
-			path: ['homeworkDueDate']
-		}
-	);
+export const createJournalEntrySchema = z.object({
+	classId: uuidSchema.describe('ID de la classe'),
+	entryDate: dateSchema.describe('Date de la seance'),
+	lessonContent: z
+		.string()
+		.trim()
+		.max(
+			MAX_CONTENT_LENGTH,
+			`Le contenu du cours est trop long (max ${MAX_CONTENT_LENGTH} caracteres)`
+		)
+		.optional()
+		.nullable(),
+	isPublished: z.boolean().default(false)
+});
 
 export type CreateJournalEntryInput = z.infer<typeof createJournalEntrySchema>;
 
@@ -142,35 +103,11 @@ export const updateJournalEntrySchema = z
 			)
 			.optional()
 			.nullable(),
-		homeworkContent: z
-			.string()
-			.trim()
-			.max(
-				MAX_CONTENT_LENGTH,
-				`Le contenu du devoir est trop long (max ${MAX_CONTENT_LENGTH} caracteres)`
-			)
-			.optional()
-			.nullable(),
-		homeworkDueDate: dateSchema.optional().nullable(),
 		isPublished: z.boolean().optional()
 	})
 	.refine((data) => Object.keys(data).length > 0, {
 		message: 'Au moins un champ doit etre fourni pour la mise a jour'
-	})
-	.refine(
-		(data) => {
-			// If homeworkDueDate is being cleared (set to null), that's fine
-			// If homeworkDueDate is being set to a value, ensure we're not removing homeworkContent
-			if (data.homeworkDueDate && data.homeworkContent === null) {
-				return false;
-			}
-			return true;
-		},
-		{
-			message: 'Impossible de definir une date limite sans contenu de devoir',
-			path: ['homeworkDueDate']
-		}
-	);
+	});
 
 export type UpdateJournalEntryInput = z.infer<typeof updateJournalEntrySchema>;
 
@@ -272,8 +209,6 @@ export const journalEntryResponseSchema = z.object({
 	teacherId: uuidSchema,
 	entryDate: dateSchema,
 	lessonContent: z.string().nullable(),
-	homeworkContent: z.string().nullable(),
-	homeworkDueDate: dateSchema.nullable(),
 	isPublished: z.boolean(),
 	createdAt: z.string(),
 	updatedAt: z.string()

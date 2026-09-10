@@ -171,13 +171,29 @@ describe('fiche accessible par le lien de consultation', () => {
 	});
 
 	it('une citation dans les DEVOIRS compte aussi', async () => {
-		await service
+		// Le travail à faire vit dans `journal_entry_homework` depuis qu'une séance
+		// peut en porter plusieurs. La fonction doit y chercher la citation :
+		// sinon une fiche donnée à faire à la maison reste INACCESSIBLE depuis le
+		// lien partagé — l'élève clique, et la fonction répond `null` sans rien
+		// expliquer.
+		//
+		// Le contenu de cours est réécrit SANS citation, pour que le devoir soit
+		// la seule source. Sans ça, le test passerait par le contenu de séance et
+		// ne prouverait rien.
+		const { data: seance, error: seanceError } = await service
 			.from('class_journal_entries')
-			.update({
-				lesson_content: '<p>Cours.</p>',
-				homework_content: `<p>Pour demain : [[worksheet:${citee}|Fiche citée]]</p>`
-			})
-			.eq('class_id', classId);
+			.update({ lesson_content: '<p>Cours, sans aucune citation.</p>' })
+			.eq('class_id', classId)
+			.select('id')
+			.single();
+		expect(seanceError).toBeNull();
+
+		const { error: travailError } = await service.from('journal_entry_homework').insert({
+			entry_id: (seance as { id: string }).id,
+			content: `<p>Pour demain : [[worksheet:${citee}|Fiche citée]]</p>`,
+			due_date: null
+		});
+		expect(travailError).toBeNull();
 
 		expect(await ouvrir(TOKEN, citee)).not.toBeNull();
 	});

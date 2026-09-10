@@ -314,9 +314,14 @@ describe('Séance — ressources citées dans le contenu', () => {
 		const point = await makePoint();
 		const exercise = await makeTaggedExercise(teacher.id, [point]);
 
+		// Le travail à faire passe par le champ `homeworkItems` — une liste JSON,
+		// depuis qu'une séance porte plusieurs travaux avec chacun son échéance.
+		// La classe n'ayant pas d'emploi du temps, l'échéance reste vide.
 		const { entryId } = await createEntry(teacher.id, klass.id, {
 			lessonContent: '<p>Cours.</p>',
-			homeworkContent: `<p>Pour demain : [[exercise:${exercise}|Fractions]]</p>`
+			homeworkItems: JSON.stringify([
+				{ content: `<p>Pour demain : [[exercise:${exercise}|Fractions]]</p>`, dueDate: null }
+			])
 		});
 
 		expect((await coverageOf(entryId!)).get(point)).toBe('auto');

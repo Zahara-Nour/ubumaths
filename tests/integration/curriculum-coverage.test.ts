@@ -1186,7 +1186,12 @@ describe('fetchWorksheetCitations', () => {
 		return (data as { id: string }).id;
 	}
 
-	/** Une séance dans une classe nommée d'une école donnée, à une date donnée. */
+	/**
+	 * Une séance dans une classe nommée d'une école donnée, à une date donnée.
+	 *
+	 * `contents.homework` écrit un TRAVAIL À FAIRE dans `journal_entry_homework` :
+	 * l'ancienne colonne unique de `class_journal_entries` a été supprimée.
+	 */
 	async function makeEntry(
 		className: string,
 		entryDate: string,
@@ -1205,13 +1210,23 @@ describe('fetchWorksheetCitations', () => {
 			.insert({
 				class_id: klass.id,
 				entry_date: entryDate,
-				lesson_content: contents.lesson ?? null,
-				homework_content: contents.homework ?? null
+				lesson_content: contents.lesson ?? null
 			} as never)
 			.select('id')
 			.single();
 		if (error) throw new Error(`séance : ${error.message}`);
-		return { classId: klass.id, entryId: (data as { id: string }).id };
+		const entryId = (data as { id: string }).id;
+
+		if (contents.homework) {
+			const { error: travailError } = await service.from('journal_entry_homework' as never).insert({
+				entry_id: entryId,
+				content: contents.homework,
+				due_date: null
+			} as never);
+			if (travailError) throw new Error(`travail : ${travailError.message}`);
+		}
+
+		return { classId: klass.id, entryId };
 	}
 
 	it('liste la séance qui cite la fiche par numéro, avec sa classe et sa date', async () => {
@@ -1513,10 +1528,13 @@ describe('fetchWorksheetCitations', () => {
 							})
 						};
 					}
+					// `ilike` et non plus `or` : le balayage des séances ne porte plus
+					// que sur `lesson_content`, l'ancienne colonne de devoir ayant été
+					// supprimée au profit de `journal_entry_homework`.
 					return {
 						select: () => ({
 							eq: () => ({
-								or: () => ({ order: () => ({ limit: () => Promise.resolve(seances) }) })
+								ilike: () => ({ order: () => ({ limit: () => Promise.resolve(seances) }) })
 							})
 						})
 					};

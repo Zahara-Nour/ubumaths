@@ -38,13 +38,6 @@ export interface PublicJournalEntry {
 	 * séance sans travail, et la page itère dessus sans garde.
 	 */
 	homework: PublicHomeworkItem[];
-	/**
-	 * @deprecated Ancien devoir unique. Colonne conservée mais plus écrite —
-	 * lue ici uniquement pour les séances antérieures à la bascule.
-	 */
-	homework_content: string | null;
-	/** @deprecated Voir `homework_content`. */
-	homework_due_date: string | null;
 }
 
 export interface PublicJournal {

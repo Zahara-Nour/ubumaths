@@ -61,8 +61,6 @@ function convertJournalEntry(db: DbClassJournalEntry): ClassJournalEntry {
 		classId: db.class_id,
 		entryDate: db.entry_date,
 		lessonContent: db.lesson_content,
-		homeworkContent: db.homework_content,
-		homeworkDueDate: db.homework_due_date,
 		isPublished: db.is_published,
 		createdAt: db.created_at,
 		updatedAt: db.updated_at
@@ -109,8 +107,6 @@ export async function createJournalEntry(
 			class_id: input.classId,
 			entry_date: input.entryDate,
 			lesson_content: input.lessonContent ?? null,
-			homework_content: input.homeworkContent ?? null,
-			homework_due_date: input.homeworkDueDate ?? null,
 			is_published: input.isPublished ?? false
 		})
 		.select()
@@ -151,8 +147,6 @@ export async function updateJournalEntry(
 
 	if (input.entryDate !== undefined) updateData.entry_date = input.entryDate;
 	if (input.lessonContent !== undefined) updateData.lesson_content = input.lessonContent;
-	if (input.homeworkContent !== undefined) updateData.homework_content = input.homeworkContent;
-	if (input.homeworkDueDate !== undefined) updateData.homework_due_date = input.homeworkDueDate;
 	if (input.isPublished !== undefined) updateData.is_published = input.isPublished;
 
 	// Update (RLS scopes access to teacher/admin; mono-teacher: entries have no per-teacher owner)
@@ -272,8 +266,8 @@ export async function getJournalEntriesForWeek(
 	const scheduledDays = new Set((schedules || []).map((s) => s.day_of_week));
 
 	// Combien de travaux par séance de la semaine. Lu à part : l'indicateur de la
-	// grille se fondait sur `homework_content`, qui n'est plus écrite — sans ce
-	// compte, la mention « devoir » disparaîtrait de tout le calendrier du prof.
+	// grille se fondait sur l'ancienne colonne unique, aujourd'hui supprimée —
+	// sans ce compte, la mention « devoir » disparaîtrait du calendrier du prof.
 	const entryIds = (entries ?? []).map((e) => e.id);
 	const homeworkCounts = new Map<string, number>();
 	if (entryIds.length > 0) {
@@ -408,6 +402,25 @@ export async function getJournalStatistics(
 		return { data: null, error: new Error(error.message) };
 	}
 
+	// Le travail à faire vit dans sa propre table. Compter l'ancienne colonne
+	// unique aurait rendu 0 pour toujours — pire qu'une statistique absente,
+	// puisque ça laisse croire que le professeur ne donne jamais de devoir.
+	const entryIds = (entries ?? []).map((e) => e.id);
+	let entriesWithHomework = 0;
+	if (entryIds.length > 0) {
+		const { data: travaux, error: travauxError } = await supabase
+			.from('journal_entry_homework')
+			.select('entry_id')
+			.in('entry_id', entryIds);
+
+		if (travauxError) {
+			console.error('[getJournalStatistics] Travaux illisibles :', travauxError.message);
+			return { data: null, error: new Error(travauxError.message) };
+		}
+
+		entriesWithHomework = new Set((travaux ?? []).map((t) => t.entry_id)).size;
+	}
+
 	const now = new Date();
 	const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 	const startOfWeek = new Date(now);
@@ -416,7 +429,7 @@ export async function getJournalStatistics(
 	const stats: JournalStatistics = {
 		totalEntries: entries?.length || 0,
 		publishedEntries: entries?.filter((e) => e.is_published).length || 0,
-		entriesWithHomework: entries?.filter((e) => e.homework_content).length || 0,
+		entriesWithHomework,
 		lastEntryDate:
 			entries && entries.length > 0
 				? entries.sort((a, b) => b.entry_date.localeCompare(a.entry_date))[0].entry_date
@@ -518,61 +531,23 @@ export async function getUpcomingHomework(
 		return { data: [], error: new Error(rowsError.message), count: 0 };
 	}
 
-	// Le devoir unique des séances écrites AVANT la bascule. Sa colonne n'est plus
-	// écrite, mais elle est encore lue partout ailleurs (grille prof, page élève,
-	// vue publique) : ne pas la lire ICI ferait disparaître du seul panneau
-	// « à venir » un devoir réel, encore à rendre, que toutes les autres vues
-	// continuent d'afficher.
-	const { data: anciens, error: anciensError } = await supabase
-		.from('class_journal_entries')
-		.select(
-			'id, class_id, entry_date, homework_content, homework_due_date, class:classes!inner(name, grade)'
-		)
-		.in('class_id', classIds)
-		.eq('is_published', true)
-		.lte('entry_date', todayStr)
-		.not('homework_content', 'is', null)
-		.not('homework_due_date', 'is', null)
-		.gte('homework_due_date', todayStr)
-		.lte('homework_due_date', endStr);
-
-	if (anciensError) {
-		console.error('[getUpcomingHomework] Error fetching legacy homework:', anciensError.message);
-		return { data: [], error: new Error(anciensError.message), count: 0 };
-	}
-
 	// Deux minuits UTC exacts : la division tombe juste, `Math.round` absorbe le
 	// flottant sans jamais décaler d'un jour comme le faisait `Math.ceil` sur des
 	// bornes de fuseaux différents.
 	const joursRestants = (due: string) =>
 		Math.round((Date.parse(`${due}T00:00:00Z`) - todayUtc) / 86_400_000);
 
-	const homework: UpcomingHomework[] = [
-		...(rows ?? []).map((row) => ({
-			id: row.id,
-			entryId: row.entry.id,
-			classId: row.entry.class_id,
-			className: row.entry.class.name,
-			classGrade: row.entry.class.grade,
-			entryDate: row.entry.entry_date,
-			homeworkContent: row.content,
-			homeworkDueDate: row.due_date as string,
-			daysUntilDue: joursRestants(row.due_date as string)
-		})),
-		...(anciens ?? []).map((entry) => ({
-			// L'id de la SÉANCE fait ici office d'id de travail : l'ancien format
-			// n'en portait qu'un, il ne peut donc pas entrer deux fois en collision.
-			id: entry.id,
-			entryId: entry.id,
-			classId: entry.class_id,
-			className: entry.class.name,
-			classGrade: entry.class.grade,
-			entryDate: entry.entry_date,
-			homeworkContent: entry.homework_content as string,
-			homeworkDueDate: entry.homework_due_date as string,
-			daysUntilDue: joursRestants(entry.homework_due_date as string)
-		}))
-	].sort((a, b) => a.homeworkDueDate.localeCompare(b.homeworkDueDate));
+	const homework: UpcomingHomework[] = (rows ?? []).map((row) => ({
+		id: row.id,
+		entryId: row.entry.id,
+		classId: row.entry.class_id,
+		className: row.entry.class.name,
+		classGrade: row.entry.class.grade,
+		entryDate: row.entry.entry_date,
+		homeworkContent: row.content,
+		homeworkDueDate: row.due_date as string,
+		daysUntilDue: joursRestants(row.due_date as string)
+	}));
 
 	return { data: homework, error: null, count: homework.length };
 }

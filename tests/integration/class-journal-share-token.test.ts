@@ -87,7 +87,11 @@ const loose = (client: unknown) => client as unknown as Loose;
 interface JournalPayload {
 	class_name: string;
 	class_grade: string | null;
-	entries: { id: string; entry_date: string; homework_content: string | null }[];
+	entries: {
+		id: string;
+		entry_date: string;
+		homework: { id: string; content: string; due_date: string | null }[];
+	}[];
 }
 
 describe('cahier de texte partageable par lien', () => {
@@ -120,7 +124,6 @@ describe('cahier de texte partageable par lien', () => {
 					class_id: classId,
 					entry_date: yesterday,
 					lesson_content: 'Les fractions équivalentes',
-					homework_content: 'Exercices 12 à 15',
 					is_published: true
 				},
 				{
@@ -181,7 +184,9 @@ describe('cahier de texte partageable par lien', () => {
 		expect(payload.class_name).toBe('6e Partage ZZ');
 		expect(payload.entries).toHaveLength(1);
 		expect(payload.entries[0].id).toBe(PUBLISHED_ID);
-		expect(payload.entries[0].homework_content).toBe('Exercices 12 à 15');
+		// Le travail à faire vient de la table fille : la clé `homework` est
+		// toujours un tableau, vide ici puisque cette séance n'en porte aucun.
+		expect(payload.entries[0].homework).toEqual([]);
 	});
 
 	// ========================================================================

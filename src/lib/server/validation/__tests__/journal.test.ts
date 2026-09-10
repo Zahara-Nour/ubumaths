@@ -88,8 +88,6 @@ describe('createJournalEntrySchema', () => {
 			classId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
 			entryDate: '2024-01-15',
 			lessonContent: 'Nous avons etudie les fractions',
-			homeworkContent: 'Exercices 1-5 page 42',
-			homeworkDueDate: '2024-01-20',
 			isPublished: true
 		});
 		expect(result.success).toBe(true);
@@ -111,41 +109,6 @@ describe('createJournalEntrySchema', () => {
 		expect(result.success).toBe(false);
 	});
 
-	it('should reject homework due date without homework content', () => {
-		const result = createJournalEntrySchema.safeParse({
-			classId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-			entryDate: '2024-01-15',
-			homeworkDueDate: '2024-01-20'
-		});
-		expect(result.success).toBe(false);
-		if (!result.success) {
-			expect(result.error.issues[0].message).toContain('date limite requiert un contenu');
-		}
-	});
-
-	it('should reject homework due date before entry date', () => {
-		const result = createJournalEntrySchema.safeParse({
-			classId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-			entryDate: '2024-01-20',
-			homeworkContent: 'Exercices 1-5',
-			homeworkDueDate: '2024-01-15'
-		});
-		expect(result.success).toBe(false);
-		if (!result.success) {
-			expect(result.error.issues[0].message).toContain('posterieure ou egale');
-		}
-	});
-
-	it('should accept homework due date equal to entry date', () => {
-		const result = createJournalEntrySchema.safeParse({
-			classId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-			entryDate: '2024-01-15',
-			homeworkContent: 'Exercices 1-5',
-			homeworkDueDate: '2024-01-15'
-		});
-		expect(result.success).toBe(true);
-	});
-
 	it('should reject content exceeding max length', () => {
 		const longContent = 'a'.repeat(50001);
 		const result = createJournalEntrySchema.safeParse({
@@ -163,13 +126,11 @@ describe('createJournalEntrySchema', () => {
 		const result = createJournalEntrySchema.safeParse({
 			classId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
 			entryDate: '2024-01-15',
-			lessonContent: '  Test content  ',
-			homeworkContent: '  Homework  '
+			lessonContent: '  Test content  '
 		});
 		expect(result.success).toBe(true);
 		if (result.success) {
 			expect(result.data.lessonContent).toBe('Test content');
-			expect(result.data.homeworkContent).toBe('Homework');
 		}
 	});
 });
@@ -185,7 +146,6 @@ describe('updateJournalEntrySchema', () => {
 	it('should accept multiple fields', () => {
 		const result = updateJournalEntrySchema.safeParse({
 			lessonContent: 'Updated lesson',
-			homeworkContent: 'Updated homework',
 			isPublished: true
 		});
 		expect(result.success).toBe(true);
@@ -197,24 +157,6 @@ describe('updateJournalEntrySchema', () => {
 		if (!result.success) {
 			expect(result.error.issues[0].message).toContain('Au moins un champ');
 		}
-	});
-
-	it('should reject setting homework due date without content', () => {
-		const result = updateJournalEntrySchema.safeParse({
-			homeworkContent: null,
-			homeworkDueDate: '2024-01-20'
-		});
-		expect(result.success).toBe(false);
-		if (!result.success) {
-			expect(result.error.issues[0].message).toContain('sans contenu de devoir');
-		}
-	});
-
-	it('should allow clearing homework due date', () => {
-		const result = updateJournalEntrySchema.safeParse({
-			homeworkDueDate: null
-		});
-		expect(result.success).toBe(true);
 	});
 
 	it('should reject content exceeding max length', () => {

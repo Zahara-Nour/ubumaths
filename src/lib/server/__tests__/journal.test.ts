@@ -74,8 +74,6 @@ const mockDbJournalEntry = {
 	teacher_id: mockTeacherId,
 	entry_date: '2024-01-15',
 	lesson_content: 'Nous avons etudie les fractions',
-	homework_content: 'Exercices 1-5 page 42',
-	homework_due_date: '2024-01-20',
 	is_published: true,
 	created_at: '2024-01-15T10:00:00Z',
 	updated_at: '2024-01-15T10:00:00Z'
@@ -112,8 +110,6 @@ describe('createJournalEntry', () => {
 			classId: mockClassId,
 			entryDate: '2024-01-15',
 			lessonContent: 'Nous avons etudie les fractions',
-			homeworkContent: 'Exercices 1-5 page 42',
-			homeworkDueDate: '2024-01-20',
 			isPublished: true
 		};
 
@@ -124,8 +120,6 @@ describe('createJournalEntry', () => {
 		expect(result.data?.classId).toBe(mockClassId);
 		expect(result.data?.entryDate).toBe('2024-01-15');
 		expect(result.data?.lessonContent).toBe('Nous avons etudie les fractions');
-		expect(result.data?.homeworkContent).toBe('Exercices 1-5 page 42');
-		expect(result.data?.homeworkDueDate).toBe('2024-01-20');
 		expect(result.data?.isPublished).toBe(true);
 	});
 
@@ -185,8 +179,6 @@ describe('createJournalEntry', () => {
 		const minimalEntry = {
 			...mockDbJournalEntry,
 			lesson_content: null,
-			homework_content: null,
-			homework_due_date: null,
 			is_published: false
 		};
 
@@ -211,7 +203,6 @@ describe('createJournalEntry', () => {
 		expect(result.error).toBeNull();
 		expect(result.data).toBeDefined();
 		expect(result.data?.lessonContent).toBeNull();
-		expect(result.data?.homeworkContent).toBeNull();
 		expect(result.data?.isPublished).toBe(false);
 	});
 });
@@ -277,7 +268,6 @@ describe('updateJournalEntry', () => {
 		const updatedEntry = {
 			...mockDbJournalEntry,
 			lesson_content: 'New lesson',
-			homework_content: 'New homework',
 			is_published: false
 		};
 
@@ -288,7 +278,6 @@ describe('updateJournalEntry', () => {
 
 		const input: UpdateJournalEntryInput = {
 			lessonContent: 'New lesson',
-			homeworkContent: 'New homework',
 			isPublished: false
 		};
 
@@ -301,7 +290,6 @@ describe('updateJournalEntry', () => {
 
 		expect(result.error).toBeNull();
 		expect(result.data?.lessonContent).toBe('New lesson');
-		expect(result.data?.homeworkContent).toBe('New homework');
 		expect(result.data?.isPublished).toBe(false);
 	});
 
@@ -389,19 +377,17 @@ describe('getJournalStatistics', () => {
 		const mockSupabase = createMockSupabase();
 
 		const entries = [
-			{ ...mockDbJournalEntry, is_published: true, homework_content: 'HW1' },
+			{ ...mockDbJournalEntry, is_published: true },
 			{
 				...mockDbJournalEntry,
 				id: 'entry2',
 				is_published: false,
-				homework_content: null,
 				entry_date: '2024-01-16'
 			},
 			{
 				...mockDbJournalEntry,
 				id: 'entry3',
 				is_published: true,
-				homework_content: 'HW2',
 				entry_date: '2024-01-17'
 			}
 		];
@@ -409,6 +395,14 @@ describe('getJournalStatistics', () => {
 		// The .eq() call should resolve with the data
 		mockSupabase._mockChain.eq.mockResolvedValueOnce({
 			data: entries,
+			error: null
+		});
+
+		// Le travail à faire vit dans sa propre table : la statistique se compte
+		// désormais sur `journal_entry_homework`, d'où cette seconde lecture. Deux
+		// séances distinctes en portent, la troisième non.
+		mockSupabase._mockChain.in.mockResolvedValueOnce({
+			data: [{ entry_id: mockEntryId }, { entry_id: 'entry3' }, { entry_id: 'entry3' }],
 			error: null
 		});
 

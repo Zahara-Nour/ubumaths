@@ -52,13 +52,11 @@ function getWeekEnd(weekStart: string): string {
  * aucune.
  */
 function prochaineEcheance(entry: {
-	homework_due_date: string | null;
 	journal_entry_homework: { due_date: string | null }[];
 }): string | null {
 	const dates = entry.journal_entry_homework
 		.map((h) => h.due_date)
 		.filter((d): d is string => d !== null);
-	if (entry.homework_due_date) dates.push(entry.homework_due_date);
 
 	return dates.length > 0 ? dates.sort()[0] : null;
 }
@@ -127,8 +125,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		id: string;
 		entry_date: string;
 		lesson_content: string | null;
-		homework_content: string | null;
-		homework_due_date: string | null;
 		journal_entry_homework: {
 			id: string;
 			content: string;
@@ -147,8 +143,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 				id,
 				entry_date,
 				lesson_content,
-				homework_content,
-				homework_due_date,
 				journal_entry_homework(id, content, due_date, display_order),
 				class_id,
 				classes!inner(name, grade)
@@ -187,11 +181,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			.map((e) => ({
 				id: e.id,
 				hasLesson: !!e.lesson_content,
-				// Le devoir vit désormais dans la table fille ; l'ancienne colonne
-				// n'est plus écrite mais reste lue pour les séances antérieures à la
-				// bascule. Ne regarder qu'elle ferait disparaître la pastille
-				// « devoir » de toutes les séances récentes.
-				hasHomework: e.journal_entry_homework.length > 0 || !!e.homework_content,
+				hasHomework: e.journal_entry_homework.length > 0,
 				homeworkDueDate: prochaineEcheance(e),
 				isPublished: true, // All visible entries are published
 				className: e.classes.name,
@@ -231,8 +221,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			id: e.id,
 			entryDate: e.entry_date,
 			lessonContent: e.lesson_content,
-			homeworkContent: e.homework_content,
-			homeworkDueDate: e.homework_due_date,
 			homework: [...e.journal_entry_homework]
 				.sort((a, b) => a.display_order - b.display_order)
 				.map((h) => ({ id: h.id, content: h.content, dueDate: h.due_date })),

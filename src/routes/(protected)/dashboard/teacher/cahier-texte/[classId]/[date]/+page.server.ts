@@ -90,8 +90,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 				classId: existingEntry.class_id,
 				entryDate: existingEntry.entry_date,
 				lessonContent: existingEntry.lesson_content,
-				homeworkContent: existingEntry.homework_content,
-				homeworkDueDate: existingEntry.homework_due_date,
 				isPublished: existingEntry.is_published,
 				createdAt: existingEntry.created_at,
 				updatedAt: existingEntry.updated_at
@@ -312,8 +310,6 @@ export const actions: Actions = {
 			classId,
 			entryDate: date,
 			lessonContent: (formData.get('lessonContent') as string) || null,
-			homeworkContent: (formData.get('homeworkContent') as string) || null,
-			homeworkDueDate: (formData.get('homeworkDueDate') as string) || null,
 			isPublished: formData.get('isPublished') === 'true'
 		};
 
@@ -453,16 +449,6 @@ export const actions: Actions = {
 		const lessonContent = formData.get('lessonContent');
 		if (lessonContent !== null) {
 			updateData.lessonContent = lessonContent || null;
-		}
-
-		const homeworkContent = formData.get('homeworkContent');
-		if (homeworkContent !== null) {
-			updateData.homeworkContent = homeworkContent || null;
-		}
-
-		const homeworkDueDate = formData.get('homeworkDueDate');
-		if (homeworkDueDate !== null) {
-			updateData.homeworkDueDate = homeworkDueDate || null;
 		}
 
 		const isPublished = formData.get('isPublished');

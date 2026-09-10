@@ -651,31 +651,6 @@ describe('travaux à faire d’une séance', () => {
 		expect(data).toEqual([]);
 	});
 
-	it('remonte AUSSI l’ancien devoir unique, trié avec les autres', async () => {
-		// Les séances écrites avant la bascule gardent leur devoir dans
-		// `homework_content`. Toutes les autres vues le lisent encore ; ne pas le
-		// lire ICI le ferait disparaître du seul panneau « à venir », alors qu'il
-		// est bien à rendre.
-		const { error: legacyError } = await service
-			.from('class_journal_entries')
-			.update({ homework_content: 'Ancien devoir', homework_due_date: jour(1) })
-			.eq('id', PUBLIEE_ID);
-		expect(legacyError).toBeNull();
-
-		await poserTravaux(PUBLIEE_ID, [{ content: 'Nouveau devoir', due_date: jour(5) }]);
-
-		const { data } = await getUpcomingHomework(eleve, eleveId);
-
-		// Triés par échéance, toutes provenances confondues.
-		expect(data.map((h) => h.homeworkContent)).toEqual(['Ancien devoir', 'Nouveau devoir']);
-
-		const { error: nettoyage } = await service
-			.from('class_journal_entries')
-			.update({ homework_content: null, homework_due_date: null })
-			.eq('id', PUBLIEE_ID);
-		expect(nettoyage).toBeNull();
-	});
-
 	it('remonte le travail d’une séance écrite LE JOUR MÊME', async () => {
 		// Le cas le plus banal : le professeur note sa séance en sortant de cours.
 		// La borne « séance passée » se comparait à une date calculée depuis minuit
