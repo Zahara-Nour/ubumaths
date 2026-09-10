@@ -271,6 +271,27 @@ export async function getJournalEntriesForWeek(
 
 	const scheduledDays = new Set((schedules || []).map((s) => s.day_of_week));
 
+	// Combien de travaux par séance de la semaine. Lu à part : l'indicateur de la
+	// grille se fondait sur `homework_content`, qui n'est plus écrite — sans ce
+	// compte, la mention « devoir » disparaîtrait de tout le calendrier du prof.
+	const entryIds = (entries ?? []).map((e) => e.id);
+	const homeworkCounts = new Map<string, number>();
+	if (entryIds.length > 0) {
+		const { data: travaux, error: travauxError } = await supabase
+			.from('journal_entry_homework')
+			.select('entry_id')
+			.in('entry_id', entryIds);
+
+		if (travauxError) {
+			console.error('[journal] Travaux illisibles :', travauxError.message);
+			throw new Error(travauxError.message);
+		}
+
+		for (const row of travaux ?? []) {
+			homeworkCounts.set(row.entry_id, (homeworkCounts.get(row.entry_id) ?? 0) + 1);
+		}
+	}
+
 	// Build entries map
 	const entriesMap = new Map<string, DbClassJournalEntry>();
 	for (const entry of entries || []) {
@@ -299,7 +320,8 @@ export async function getJournalEntriesForWeek(
 			isToday,
 			isWeekend,
 			entry: entry ? convertJournalEntry(entry) : undefined,
-			hasScheduledClass: scheduledDays.has(dayOfWeek)
+			hasScheduledClass: scheduledDays.has(dayOfWeek),
+			homeworkCount: entry ? (homeworkCounts.get(entry.id) ?? 0) : 0
 		});
 	}
 
@@ -447,47 +469,93 @@ export async function getUpcomingHomework(
 		return { data: [], error: null, count: 0 };
 	}
 
-	// Get published entries with homework due in the date range
-	const { data: entries, error: entriesError } = await supabase
-		.from('class_journal_entries')
+	const todayStr = today.toISOString().split('T')[0];
+
+	// Un travail par ligne, et non plus un par séance : c'est toute la raison
+	// d'être de la table fille. Les filtres sur la séance sont posés
+	// explicitement bien que la RLS les impose déjà — la même fonction sert au
+	// professeur, dont la RLS, elle, ne filtre rien.
+	const { data: rows, error: rowsError } = await supabase
+		.from('journal_entry_homework')
 		.select(
 			`
-			*,
-			class:classes!inner(name, grade)
+			id,
+			content,
+			due_date,
+			entry:class_journal_entries!inner(
+				id,
+				class_id,
+				entry_date,
+				is_published,
+				class:classes!inner(name, grade)
+			)
 		`
+		)
+		.in('entry.class_id', classIds)
+		.eq('entry.is_published', true)
+		.lte('entry.entry_date', todayStr)
+		.not('due_date', 'is', null)
+		.gte('due_date', todayStr)
+		.lte('due_date', endDate.toISOString().split('T')[0])
+		.order('due_date', { ascending: true });
+
+	if (rowsError) {
+		console.error('[getUpcomingHomework] Error fetching homework:', rowsError);
+		return { data: [], error: new Error(rowsError.message), count: 0 };
+	}
+
+	// Le devoir unique des séances écrites AVANT la bascule. Sa colonne n'est plus
+	// écrite, mais elle est encore lue partout ailleurs (grille prof, page élève,
+	// vue publique) : ne pas la lire ICI ferait disparaître du seul panneau
+	// « à venir » un devoir réel, encore à rendre, que toutes les autres vues
+	// continuent d'afficher.
+	const { data: anciens, error: anciensError } = await supabase
+		.from('class_journal_entries')
+		.select(
+			'id, class_id, entry_date, homework_content, homework_due_date, class:classes!inner(name, grade)'
 		)
 		.in('class_id', classIds)
 		.eq('is_published', true)
-		.lte('entry_date', today.toISOString().split('T')[0]) // Only past/today entries
+		.lte('entry_date', todayStr)
 		.not('homework_content', 'is', null)
 		.not('homework_due_date', 'is', null)
-		.gte('homework_due_date', today.toISOString().split('T')[0])
-		.lte('homework_due_date', endDate.toISOString().split('T')[0])
-		.order('homework_due_date', { ascending: true });
+		.gte('homework_due_date', todayStr)
+		.lte('homework_due_date', endDate.toISOString().split('T')[0]);
 
-	if (entriesError) {
-		console.error('[getUpcomingHomework] Error fetching entries:', entriesError);
-		return { data: [], error: new Error(entriesError.message), count: 0 };
+	if (anciensError) {
+		console.error('[getUpcomingHomework] Error fetching legacy homework:', anciensError.message);
+		return { data: [], error: new Error(anciensError.message), count: 0 };
 	}
 
-	const homework: UpcomingHomework[] = (entries || []).map((row) => {
-		const entry = row as unknown as DbClassJournalEntry & {
-			class: { name: string; grade: string | null };
-		};
-		const dueDate = new Date(entry.homework_due_date!);
-		const daysUntilDue = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+	const joursRestants = (due: string) =>
+		Math.ceil((new Date(due).getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
-		return {
+	const homework: UpcomingHomework[] = [
+		...(rows ?? []).map((row) => ({
+			id: row.id,
+			entryId: row.entry.id,
+			classId: row.entry.class_id,
+			className: row.entry.class.name,
+			classGrade: row.entry.class.grade,
+			entryDate: row.entry.entry_date,
+			homeworkContent: row.content,
+			homeworkDueDate: row.due_date as string,
+			daysUntilDue: joursRestants(row.due_date as string)
+		})),
+		...(anciens ?? []).map((entry) => ({
+			// L'id de la SÉANCE fait ici office d'id de travail : l'ancien format
+			// n'en portait qu'un, il ne peut donc pas entrer deux fois en collision.
 			id: entry.id,
+			entryId: entry.id,
 			classId: entry.class_id,
 			className: entry.class.name,
 			classGrade: entry.class.grade,
 			entryDate: entry.entry_date,
-			homeworkContent: entry.homework_content!,
-			homeworkDueDate: entry.homework_due_date!,
-			daysUntilDue
-		};
-	});
+			homeworkContent: entry.homework_content as string,
+			homeworkDueDate: entry.homework_due_date as string,
+			daysUntilDue: joursRestants(entry.homework_due_date as string)
+		}))
+	].sort((a, b) => a.homeworkDueDate.localeCompare(b.homeworkDueDate));
 
 	return { data: homework, error: null, count: homework.length };
 }

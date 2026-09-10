@@ -4885,6 +4885,44 @@ export type Database = {
           },
         ]
       }
+      journal_entry_homework: {
+        Row: {
+          content: string
+          created_at: string
+          display_order: number
+          due_date: string | null
+          entry_id: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          display_order?: number
+          due_date?: string | null
+          entry_id: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          display_order?: number
+          due_date?: string | null
+          entry_id?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journal_entry_homework_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "class_journal_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       journal_entry_points: {
         Row: {
           created_at: string
@@ -16445,6 +16483,24 @@ export type Database = {
           p_subject: string
         }
         Returns: string
+      }
+      set_journal_entry_homework: {
+        Args: { p_entry_id: string; p_items: Json }
+        Returns: {
+          content: string
+          created_at: string
+          display_order: number
+          due_date: string | null
+          entry_id: string
+          id: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "journal_entry_homework"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       set_riddle_of_the_day: {
         Args: { p_date: string; p_riddle_id: string; p_selected_by: string }

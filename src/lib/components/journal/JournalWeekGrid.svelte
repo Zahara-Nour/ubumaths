@@ -137,11 +137,16 @@
 							</p>
 						{/if}
 
-						<!-- Homework indicator -->
-						{#if day.entry.homeworkContent}
+						<!-- Homework indicator. `homeworkCount` vient de la table fille ;
+						     `homeworkContent` n'est plus écrite mais reste lue pour les
+						     séances antérieures à la bascule. -->
+						{#if (day.homeworkCount ?? 0) > 0 || day.entry.homeworkContent}
 							<div class="flex items-center gap-1 text-xs text-orange-600">
 								<FileText class="h-3 w-3" />
-								<span>{lore.learning.homework}</span>
+								<span>
+									{lore.learning.homework}{#if (day.homeworkCount ?? 0) > 1}
+										&nbsp;({day.homeworkCount}){/if}
+								</span>
 							</div>
 						{/if}
 					</div>

@@ -58,6 +58,23 @@ export interface ClassJournalEntry {
 }
 
 /**
+ * One piece of work to do, attached to a session.
+ *
+ * A session carries a list of these: an exercise for the next lesson and a
+ * longer assignment for the week after are two entries, two deadlines — not one
+ * block of text under a single date.
+ *
+ * `dueDate` is null when the server had no next lesson to resolve an absent
+ * deadline to: a class whose timetable was never entered — the common case —
+ * or a session written so late in the year that none is left before it ends.
+ */
+export interface JournalHomeworkItem {
+	id: string;
+	content: string;
+	dueDate: string | null; // DATE format YYYY-MM-DD
+}
+
+/**
  * Journal entry with additional class information (for teacher views)
  */
 export interface JournalEntryWithClass extends ClassJournalEntry {
@@ -69,7 +86,15 @@ export interface JournalEntryWithClass extends ClassJournalEntry {
  * Upcoming homework item (for student view)
  */
 export interface UpcomingHomework {
+	/**
+	 * Id du TRAVAIL, pas de la séance.
+	 *
+	 * Une séance en porte plusieurs : garder l'id de séance ferait deux clés
+	 * identiques dans une liste `{#each}`, et Svelte ne rendrait qu'une carte.
+	 */
 	id: string;
+	/** Séance qui porte ce travail — c'est vers elle que la carte navigue. */
+	entryId: string;
 	classId: string;
 	className: string;
 	classGrade: string | null;
@@ -99,6 +124,13 @@ export interface JournalWeekDay {
 	entry?: ClassJournalEntry;
 	/** Does this class have a scheduled session on this day? (from class_schedules) */
 	hasScheduledClass?: boolean;
+	/**
+	 * Combien de travaux à faire cette séance porte.
+	 *
+	 * Un compte et non un booléen : la grille dit « 2 devoirs », ce qu'un
+	 * `homeworkContent` non nul ne pouvait pas exprimer.
+	 */
+	homeworkCount?: number;
 }
 
 /**

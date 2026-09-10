@@ -43,9 +43,9 @@ date passée ; lien de partage via la fonction `SECURITY DEFINER` existante ;
 ## Découpage
 
 - [x] **Phase 1 — socle** : migration, module de calcul des dates, tests
-- [ ] **Phase 2 — serveur** : CRUD, Zod, couverture programme, citations de fiches
-- [ ] **Phase 3 — UI prof** : la liste de travaux dans « Travail à faire »
-- [ ] **Phase 4 — UI élève + vue publique + lien de partage**
+- [x] **Phase 2 — serveur** : CRUD, Zod, couverture programme, citations de fiches
+- [x] **Phase 3 — UI prof** : la liste de travaux dans « Travail à faire »
+- [x] **Phase 4 — UI élève + vue publique + lien de partage**
 - [ ] **Phase 5 — revue** : `code-reviewer`, `security-auditor`, `check:incremental`, PR
 
 ## Phase 1 — fait
@@ -85,6 +85,20 @@ index + trigger `updated_at` + RLS (2 policies, cf. question d'accès) + REVOKE
 **Tests** : `src/lib/utils/__tests__/class-sessions.test.ts` — 23 tests verts
 (nominal, séance exclue, vacances bornes incluses, doublons d'emploi du temps,
 emploi du temps vide, dates illisibles, plafond, `isSessionDate`).
+
+## Phase 1 — livrée
+
+PR [#205](https://github.com/Zahara-Nour/ubumaths/pull/205) mergée le 2026-09-10,
+CI verte sur les 11 checks. Migration poussée en prod dans la foulée
+(`supabase db push`), vérifiée sur la base EU :
+
+- table créée, 2 policies ;
+- `authenticated=arwd` — les quatre verbes, **sans TRUNCATE** ;
+- **aucune entrée `anon`** dans l'ACL ;
+- anciennes colonnes intactes (et toujours à zéro donnée).
+
+`pnpm db:types` régénéré ensuite : +56 lignes, la table et la fonction, aucune
+dérive ailleurs — la prod et les migrations du dépôt sont donc bien en phase.
 
 ## Ordre imposé par les types
 
@@ -129,6 +143,128 @@ authenticated` du baseline, jamais révoqué (`ALL` inclut TRUNCATE, qui ignore
 la RLS). Exploitabilité faible — PostgREST n'expose pas TRUNCATE, il faut une
 connexion Postgres directe — mais la nouvelle table est la seule de la famille
 correctement fermée. À traiter dans une migration d'hygiène dédiée, pas ici.
+
+## Phase 2 — fait
+
+**`src/lib/server/journal-homework.ts`** — le cœur.
+
+- `estContenuVide()` : la contrainte SQL `btrim(content) <> ''` ne voit pas un
+  éditeur riche vide (`<p></p>`). Mais un travail peut n'être QU'une formule ou
+  QU'une image : les juger vides effacerait le travail du professeur, donc les
+  éléments porteurs de sens sans texte sont reconnus avant le dépouillement.
+- `resolveHomeworkItems()` : retire les travaux vides, résout une échéance
+  absente au prochain cours, refuse celles qui ne tombent pas un jour de cours.
+  **Rien n'est écrit dès qu'une échéance est refusée** — écrire les bonnes et
+  jeter les autres laisserait une séance à moitié enregistrée, sans le dire.
+  Les refus sont rendus en **liste** : le professeur corrige tout d'un coup.
+- `setHomeworkForEntry()` passe par la fonction SQL atomique.
+
+**Actions du cahier de texte** — `preparerTravaux()` valide **avant** toute
+écriture, à la création comme à la mise à jour : une échéance impossible refuse
+l'enregistrement sans avoir rien touché. Un formulaire qui ne porte PAS le champ
+`homeworkItems` ne déclenche aucune écriture (une liste vide efface tout).
+
+**Zod** — `homeworkItemsSchema` dans `validation/journal.ts`, bornes alignées
+sur le SQL (50 travaux, 50 000 caractères). La chaîne vide est acceptée comme
+échéance absente : un `<input type="date">` vidé renvoie `''`, pas `null`, et la
+refuser ferait échouer l'enregistrement sur le geste le plus naturel qui soit.
+Une saisie malformée n'est **pas** avalée en silence, contrairement aux
+activités en attente : ce champ porte le texte que le professeur vient
+d'écrire.
+
+**`getUpcomingHomework()`** lit désormais la table fille : un travail par carte,
+et non plus un par séance. `UpcomingHomework.id` est l'id du **travail**,
+`entryId` celui de la séance — deux travaux d'une même séance partageant une
+clé `{#each}` n'auraient donné qu'une seule carte, l'autre disparaissant sans
+erreur.
+
+**Couverture programme et citations de fiches** — les deux balaient maintenant
+aussi les travaux. Pour les citations, cela demande **deux requêtes** (la séance
+et ses travaux), regroupées par séance avant extraction pour qu'une fiche citée
+des deux côtés reste une seule ligne.
+
+**Tests** : 20 unitaires (`journal-homework.test.ts`), 27 d'intégration sur les
+travaux, 54 sur la couverture. Les 4 nouveaux tests couverture/citations ont été
+**vérifiés rouges** en neutralisant les correctifs depuis une copie. Le
+quatrième passait au premier essai — le cours citait aussi la fiche, donc
+l'ancien code la trouvait quand même ; il exige désormais la sélection venue du
+devoir.
+
+## Phases 3 et 4 — fait
+
+**Éditeur prof** — « Travail à faire » est une liste : un éditeur riche et un
+sélecteur d'échéance par travail, « Ajouter un travail », suppression.
+
+- Le menu affiche « jeudi 17 septembre (prochain cours) », et « (passé) » sur
+  une date antérieure à aujourd'hui — elle apparaît quand on remplit en retard
+  le cahier d'une séance ancienne, et la proposer sans le dire laisserait croire
+  à une erreur.
+- ⚠️ `timeZone: 'UTC'` dans le formatage des libellés. `new Date('2026-09-17')`
+  est interprété à minuit UTC ; un formatage en heure locale afficherait
+  « mercredi 16 » à l'ouest de Greenwich, alors que tout le calcul est en UTC.
+- Une échéance **déjà enregistrée mais devenue invalide** (cours déplacé,
+  vacances ajoutées) reste affichée, marquée « (hors emploi du temps) ». La
+  cacher la ferait retomber sur le placeholder, et l'enregistrement suivant
+  écraserait la date en silence. Le serveur la refuse en la nommant.
+- Une `key` par travail, pas l'index : supprimer une ligne du milieu ferait
+  sinon recycler le mauvais éditeur, et le texte du travail suivant
+  apparaîtrait dans le cadre qu'on vient de vider.
+- `resynchroniserTravaux()` après enregistrement : le serveur ne recopie pas ce
+  qu'on lui envoie (il retire les vides, résout les échéances), donc la page
+  doit reprendre ce que la base connaît — sinon l'enregistrement suivant
+  repartirait d'un état faux.
+
+**Vues élève et publique** — un bloc par travail, avec son échéance et son
+décompte. La pastille de la grille prof compte les travaux (`homeworkCount`,
+requête dédiée : elle se fondait sur `homework_content`, qui n'est plus
+écrite).
+
+**Séances antérieures à la bascule** : l'ancien devoir unique n'est pas migré,
+il est simplement encore **lu** partout où il s'affichait. Rien n'est perdu,
+rien n'est réécrit.
+
+**Assainissement** : `homework[].content` passe par le **même** `renderContent`
+que `lesson_content` sur les deux pages — c'est le point que l'audit demandait
+de ne pas oublier.
+
+## Vérification en navigateur (2026-09-10)
+
+Parcours complet exercé sur la base locale, compte prof : ajout de deux
+travaux, saisie, échéances distinctes, enregistrement, relecture. Le contenu et
+`display_order` sont bien écrits, et la page les reprend au rechargement.
+
+### ⚠️ Ce que la vérification a révélé : les vacances dépendent d'une policy RLS
+
+Au premier essai, les jeudis 22 et 29 octobre étaient proposés **alors qu'ils
+tombent en vacances de Toussaint**. Le calcul n'était pas en cause (les tests
+unitaires l'attestent) : c'est la policy `Teachers can read school holidays` qui
+exige
+
+```sql
+profiles.school_id = school_years.school_id
+```
+
+Le profil du prof local n'étant rattaché à aucune école, `school_holidays`
+renvoyait **zéro ligne sans erreur** — et le code ne peut pas distinguer
+« aucune vacance saisie » de « la RLS me les cache ». Après rattachement du
+profil, la liste saute correctement du 15 octobre au 5 novembre.
+
+**En production, ça marche** (vérifié) : le profil professeur porte bien
+`school_id` = Blaise Pascal, et les quatre classes actives appartiennent à cette
+école ; le profil admin passe, lui, par sa propre policy.
+
+**Le piège reste posé pour plus tard** : le modèle mono-professeur admet
+plusieurs écoles (il y a une seconde école en base, Voltaire, dont les classes
+sont archivées). Une classe dont l'école **diffère** de celle du profil verrait
+ses vacances silencieusement ignorées, et le cahier proposerait des échéances en
+plein congé. À traiter le jour où une classe d'une autre école redevient active.
+
+### Reste à savoir
+
+`getJournalStatistics().entriesWithHomework` compte encore l'ancienne colonne,
+donc vaudra toujours 0. **La fonction n'est appelée nulle part** en production
+(seulement dans ses propres tests) : laissée telle quelle plutôt que d'élargir
+le périmètre à du code mort. À corriger le jour où elle sert.
 
 ## Pièges connus pour la phase 2
 

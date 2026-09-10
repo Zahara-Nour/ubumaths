@@ -28,6 +28,7 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
+import { getUpcomingHomework } from '$lib/server/journal';
 import type { Database } from '$lib/types/database';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
@@ -131,6 +132,7 @@ describe('travaux à faire d’une séance', () => {
 	let prof: SupabaseClient<Database>;
 	let eleve: SupabaseClient<Database>;
 	let eleveAutreClasse: SupabaseClient<Database>;
+	let eleveId: string;
 
 	beforeAll(async () => {
 		await cleanupAllTestData();
@@ -152,6 +154,7 @@ describe('travaux à faire d’une séance', () => {
 		]);
 		expect(membreError).toBeNull();
 
+		eleveId = profilEleve.id;
 		eleve = await clientFor(profilEleve.email);
 		eleveAutreClasse = await clientFor(profilAutreEleve.email);
 
@@ -575,5 +578,103 @@ describe('travaux à faire d’une séance', () => {
 
 		const seance = (data as CahierPartage).entries.find((e) => e.id === PUBLIEE_ID);
 		expect(seance?.homework).toEqual([]);
+	});
+
+	// ========================================================================
+	// « Travail à venir » de la vue élève
+	// ========================================================================
+
+	it('la vue élève reçoit chaque travail séparément, trié par échéance', async () => {
+		// Le cas qui motive la fonctionnalité, vu du côté de l'élève : deux
+		// travaux d'une MÊME séance, deux échéances, deux cartes.
+		await poserTravaux(PUBLIEE_ID, [
+			{ content: 'DM sur les triangles', due_date: jour(10) },
+			{ content: 'Exercices 12 à 15', due_date: jour(3) }
+		]);
+
+		const { data, error } = await getUpcomingHomework(eleve, eleveId);
+
+		expect(error).toBeNull();
+		expect(data.map((h) => h.homeworkContent)).toEqual([
+			'Exercices 12 à 15',
+			'DM sur les triangles'
+		]);
+	});
+
+	it('l’identifiant est celui du TRAVAIL, la séance est à part', async () => {
+		// Deux travaux d'une même séance avec le même `id` feraient deux clés
+		// identiques dans le `{#each}` de la page : Svelte n'afficherait qu'une
+		// carte, et l'autre devoir disparaîtrait sans erreur.
+		await poserTravaux(PUBLIEE_ID, [
+			{ content: 'Premier', due_date: jour(3) },
+			{ content: 'Second', due_date: jour(4) }
+		]);
+
+		const { data } = await getUpcomingHomework(eleve, eleveId);
+
+		expect(new Set(data.map((h) => h.id)).size).toBe(2);
+		expect(data.every((h) => h.entryId === PUBLIEE_ID)).toBe(true);
+	});
+
+	it('ne remonte pas un travail dont l’échéance est hors fenêtre', async () => {
+		await poserTravaux(PUBLIEE_ID, [
+			{ content: 'Dans la fenêtre', due_date: jour(3) },
+			{ content: 'Bien plus tard', due_date: jour(40) }
+		]);
+
+		const { data } = await getUpcomingHomework(eleve, eleveId, 14);
+
+		expect(data.map((h) => h.homeworkContent)).toEqual(['Dans la fenêtre']);
+	});
+
+	it('ne remonte pas le travail d’un brouillon', async () => {
+		await poserTravaux(BROUILLON_ID, [{ content: 'Travail non publié', due_date: jour(3) }]);
+
+		const { data } = await getUpcomingHomework(eleve, eleveId);
+
+		expect(data).toEqual([]);
+	});
+
+	it('ne remonte pas le travail d’une autre classe', async () => {
+		await poserTravaux(AUTRE_CLASSE_ID, [{ content: 'Réservé à la 4e', due_date: jour(3) }]);
+
+		const { data } = await getUpcomingHomework(eleve, eleveId);
+
+		expect(data).toEqual([]);
+	});
+
+	it('remonte AUSSI l’ancien devoir unique, trié avec les autres', async () => {
+		// Les séances écrites avant la bascule gardent leur devoir dans
+		// `homework_content`. Toutes les autres vues le lisent encore ; ne pas le
+		// lire ICI le ferait disparaître du seul panneau « à venir », alors qu'il
+		// est bien à rendre.
+		const { error: legacyError } = await service
+			.from('class_journal_entries')
+			.update({ homework_content: 'Ancien devoir', homework_due_date: jour(1) })
+			.eq('id', PUBLIEE_ID);
+		expect(legacyError).toBeNull();
+
+		await poserTravaux(PUBLIEE_ID, [{ content: 'Nouveau devoir', due_date: jour(5) }]);
+
+		const { data } = await getUpcomingHomework(eleve, eleveId);
+
+		// Triés par échéance, toutes provenances confondues.
+		expect(data.map((h) => h.homeworkContent)).toEqual(['Ancien devoir', 'Nouveau devoir']);
+
+		const { error: nettoyage } = await service
+			.from('class_journal_entries')
+			.update({ homework_content: null, homework_due_date: null })
+			.eq('id', PUBLIEE_ID);
+		expect(nettoyage).toBeNull();
+	});
+
+	it('ne remonte pas un travail sans échéance', async () => {
+		// Une classe sans emploi du temps : le travail existe, mais il n'a pas de
+		// date, donc il n'a rien à faire dans une liste « à venir ».
+		await poserTravaux(PUBLIEE_ID, [{ content: 'Réviser le cours', due_date: null }]);
+
+		const { data } = await getUpcomingHomework(eleve, eleveId);
+
+		expect(data).toEqual([]);
 	});
 });

@@ -11,12 +11,20 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { createJournalEntry, updateJournalEntry, deleteJournalEntry } from '$lib/server/journal';
 import {
+	parseHomeworkItems,
 	validateCreateJournalEntry,
 	validateUpdateJournalEntry
 } from '$lib/server/validation/journal';
 import { getCurriculumTree } from '$lib/server/curriculum';
 import { reconcileAutoCoverage, type ReconcileReport } from '$lib/server/curriculum-coverage';
 import { parsePendingActivities } from '$lib/server/journal-activities';
+import {
+	getHomeworkForEntry,
+	prepareHomeworkForEntry,
+	setHomeworkForEntry,
+	type HomeworkItemInput
+} from '$lib/server/journal-homework';
+import { getUpcomingSessionDates } from '$lib/server/class-sessions';
 import { z } from 'zod';
 
 // UUID validation schema
@@ -186,10 +194,26 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		assessmentOptions = (assess ?? []).map((a) => ({ value: a.id, label: a.title }));
 	}
 
+	// Travaux à faire de la séance, et les dates qu'on pourra leur donner.
+	//
+	// `hasSchedule` distingue « plus aucune séance cette année » (liste close)
+	// de « emploi du temps jamais renseigné » (rien pour en construire une). Le
+	// second cas concerne trois des quatre classes actives : la page y bascule
+	// sur un champ date libre au lieu d'un menu vide qui bloquerait la saisie.
+	const homework = entry ? await getHomeworkForEntry(locals.supabase, entry.id) : [];
+	const { dates: sessionDates, hasSchedule } = await getUpcomingSessionDates(
+		locals.supabase,
+		classId,
+		date
+	);
+
 	return {
 		classData,
 		entry,
 		entryDate: date,
+		homework,
+		sessionDates,
+		hasSchedule,
 		curriculumTree,
 		coveredPoints,
 		activities,
@@ -198,6 +222,51 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		assessmentOptions
 	};
 };
+
+/**
+ * Relit et valide les travaux à faire AVANT toute écriture.
+ *
+ * Séparé de l'écriture à dessein : une échéance invalide doit faire échouer
+ * l'enregistrement sans que rien n'ait été touché. Valider après avoir créé la
+ * séance laisserait le professeur avec une séance à moitié enregistrée.
+ *
+ * `null` veut dire « le formulaire ne porte pas ce champ » — et alors on n'y
+ * touche pas du tout : `set_journal_entry_homework` remplace la liste entière,
+ * donc l'appeler par précaution effacerait tous les travaux.
+ */
+async function preparerTravaux(
+	locals: App.Locals,
+	formData: FormData,
+	classId: string,
+	entryDate: string
+): Promise<{ items: HomeworkItemInput[] } | { error: string } | null> {
+	const brut = formData.get('homeworkItems');
+	if (brut === null) return null;
+
+	const parsed = parseHomeworkItems(brut);
+	if (!parsed.success) return { error: parsed.message };
+
+	const { items, refusees } = await prepareHomeworkForEntry(
+		locals.supabase,
+		classId,
+		entryDate,
+		parsed.data
+	);
+
+	// Le menu ne propose que des jours de cours, mais une requête forgée porte ce
+	// qu'elle veut : la règle se rejoue ici, côté serveur.
+	if (refusees.length > 0) {
+		const liste = refusees.join(', ');
+		return {
+			error:
+				refusees.length === 1
+					? `L'échéance du ${liste} ne tombe pas un jour où la classe a cours.`
+					: `Ces échéances ne tombent pas un jour où la classe a cours : ${liste}.`
+		};
+	}
+
+	return { items };
+}
 
 /**
  * Message d'alerte quand une référence cite un exercice qui n'existe pas.
@@ -255,6 +324,13 @@ export const actions: Actions = {
 				error: validation.error.issues[0].message,
 				action: 'create'
 			});
+		}
+
+		// Travaux validés AVANT la création : une échéance impossible doit refuser
+		// l'enregistrement sans laisser derrière elle une séance à moitié écrite.
+		const travaux = await preparerTravaux(locals, formData, classId, date);
+		if (travaux && 'error' in travaux) {
+			return fail(400, { error: travaux.error, action: 'create' });
 		}
 
 		// Create the entry
@@ -322,6 +398,23 @@ export const actions: Actions = {
 			}
 		}
 
+		// Travaux à faire, écrits une fois la séance créée — ils la référencent.
+		if (entry?.id && travaux) {
+			const { error: hwError } = await setHomeworkForEntry(
+				locals.supabase,
+				entry.id,
+				travaux.items
+			);
+			if (hwError) {
+				return {
+					success: true,
+					action: 'create',
+					entryId: entry.id,
+					warning: 'Séance créée, mais les travaux à faire n’ont pas pu être enregistrés.'
+				};
+			}
+		}
+
 		// La couverture `auto` vient des activités taguées ET des ressources citées
 		// dans le contenu : on réconcilie donc même sans activité, puisqu'une séance
 		// peut n'être qu'un texte contenant des [[exercice:…]].
@@ -341,8 +434,9 @@ export const actions: Actions = {
 	/**
 	 * Update an existing journal entry
 	 */
-	update: async ({ request, locals }) => {
+	update: async ({ request, locals, params }) => {
 		const { user } = await requireRole(locals, 'teacher');
+		const { classId, date } = params;
 
 		const formData = await request.formData();
 		const entryId = formData.get('entryId') as string;
@@ -385,6 +479,31 @@ export const actions: Actions = {
 			});
 		}
 
+		// L'`entryId` vient du FORMULAIRE, la classe et la date de l'URL : rien ne
+		// garantit qu'ils désignent la même séance. Sans ce contrôle, une requête
+		// forgée ferait juger les échéances sur le calendrier d'une classe et les
+		// écrire sur une autre. Le professeur a le droit d'écrire partout — ce
+		// n'est donc pas une frontière franchie, mais une garde qui ne garderait
+		// rien.
+		const { data: seance, error: seanceError } = await locals.supabase
+			.from('class_journal_entries')
+			.select('class_id, entry_date')
+			.eq('id', entryId)
+			.single();
+
+		if (seanceError || !seance) {
+			return fail(404, { error: 'Séance introuvable', action: 'update' });
+		}
+		if (seance.class_id !== classId || seance.entry_date !== date) {
+			return fail(400, { error: 'Séance incohérente avec l’adresse', action: 'update' });
+		}
+
+		// Comme à la création : les échéances sont jugées avant toute écriture.
+		const travaux = await preparerTravaux(locals, formData, classId, date);
+		if (travaux && 'error' in travaux) {
+			return fail(400, { error: travaux.error, action: 'update' });
+		}
+
 		// Update the entry
 		const { error: updateError } = await updateJournalEntry(
 			locals.supabase,
@@ -396,6 +515,16 @@ export const actions: Actions = {
 		if (updateError) {
 			console.error('[Update Journal Entry] Error:', updateError);
 			return fail(500, { error: updateError.message, action: 'update' });
+		}
+
+		if (travaux) {
+			const { error: hwError } = await setHomeworkForEntry(locals.supabase, entryId, travaux.items);
+			if (hwError) {
+				return fail(500, {
+					error: 'Les travaux à faire n’ont pas pu être enregistrés.',
+					action: 'update'
+				});
+			}
 		}
 
 		// La couverture suit désormais AUSSI les références citées dans le contenu :

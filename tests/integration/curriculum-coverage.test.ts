@@ -598,6 +598,63 @@ describe('Références dans le contenu de la séance', () => {
 		expect(cov.get(point)).toBe('auto');
 	});
 
+	it('un exercice cité dans un TRAVAIL À FAIRE apporte ses points', async () => {
+		expect.assertions(3);
+		// Le devoir compte autant que le cours : un exercice donné à faire à la
+		// maison a bien été travaillé. Les travaux vivant dans leur propre table,
+		// les oublier ici ferait disparaître de la couverture tout exercice cité
+		// UNIQUEMENT dans un devoir — en silence, puisque la réconciliation retire
+		// ce qu'elle ne voit plus.
+		const ctx = await setup();
+		const item = await makeItem();
+		const point = await svcPoint(item, 'P-devoir');
+		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
+
+		const { error } = await service.from('journal_entry_homework' as never).insert({
+			entry_id: ctx.entryId,
+			content: `<p>Pour jeudi : [[exercise:${exercise}|Fractions]]</p>`,
+			due_date: null
+		} as never);
+		expect(error).toBeNull();
+
+		await reconcileAutoCoverage(service, ctx.entryId);
+
+		const cov = await coverageMap(ctx);
+		expect(cov.has(point)).toBe(true);
+		expect(cov.get(point)).toBe('auto');
+	});
+
+	it('retirer la citation d’un travail retire son point', async () => {
+		expect.assertions(2);
+		// La réconciliation est un calcul, pas un cumul : effacer le devoir doit
+		// défaire la couverture qu'il avait apportée, comme pour le contenu de
+		// séance.
+		const ctx = await setup();
+		const item = await makeItem();
+		const point = await svcPoint(item, 'P-devoir-retire');
+		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
+
+		const { data: travail } = await service
+			.from('journal_entry_homework' as never)
+			.insert({
+				entry_id: ctx.entryId,
+				content: `<p>[[exercise:${exercise}|Fractions]]</p>`,
+				due_date: null
+			} as never)
+			.select('id')
+			.single();
+		await reconcileAutoCoverage(service, ctx.entryId);
+		expect((await coverageMap(ctx)).get(point)).toBe('auto');
+
+		await service
+			.from('journal_entry_homework' as never)
+			.delete()
+			.eq('id', (travail as { id: string }).id);
+		await reconcileAutoCoverage(service, ctx.entryId);
+
+		expect((await coverageMap(ctx)).has(point)).toBe(false);
+	});
+
 	it('un EXERCICE DE FICHE cité apporte les points de l’exercice sous-jacent', async () => {
 		expect.assertions(2);
 		const ctx = await setup();
@@ -1181,6 +1238,60 @@ describe('fetchWorksheetCitations', () => {
 		expect(citations[0].selections).toEqual(['ex. 3 et 5 à 7']);
 	});
 
+	it('trouve une fiche citée UNIQUEMENT dans un travail à faire', async () => {
+		expect.assertions(3);
+		// Les travaux vivent dans leur propre table depuis qu'une séance peut en
+		// porter plusieurs. Un seul `ilike` sur `class_journal_entries` les
+		// raterait, et le panneau se tairait sur une séance qui cite bien la fiche
+		// — le professeur réorganiserait sans être averti.
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const ecole = await makeSchool();
+		const fiche = await makeWorksheet(teacher.id, ecole);
+		const { classId, entryId } = await makeEntry('5ᵉ B', '2026-03-12', {}, ecole);
+
+		const { error } = await service.from('journal_entry_homework' as never).insert({
+			entry_id: entryId,
+			content: `<p>Pour jeudi : [[worksheet:${fiche}#2,4|Fiche — ex. 2 et 4]]</p>`,
+			due_date: '2026-03-19'
+		} as never);
+		expect(error).toBeNull();
+
+		const { citations } = await fetchWorksheetCitations(service, fiche);
+
+		expect(citations).toHaveLength(1);
+		expect(citations[0].classId).toBe(classId);
+	});
+
+	it('ne compte qu’une séance quand le cours ET le travail citent la fiche', async () => {
+		expect.assertions(3);
+		// Deux sources, une seule ligne dans le panneau : sinon la même séance
+		// s'afficherait deux fois, et le compte annoncé serait faux. Et cette
+		// ligne doit porter les sélections des DEUX sources — sans quoi le test
+		// passerait aussi avec un code qui ignore les travaux, puisque le cours
+		// seul suffirait à faire apparaître la séance.
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const ecole = await makeSchool();
+		const fiche = await makeWorksheet(teacher.id, ecole);
+		const { entryId } = await makeEntry(
+			'5ᵉ B',
+			'2026-03-12',
+			{ lesson: `<p>[[worksheet:${fiche}#3|Fiche — ex. 3]]</p>` },
+			ecole
+		);
+
+		const { error } = await service.from('journal_entry_homework' as never).insert({
+			entry_id: entryId,
+			content: `<p>[[worksheet:${fiche}#7|Fiche — ex. 7]]</p>`,
+			due_date: '2026-03-19'
+		} as never);
+		expect(error).toBeNull();
+
+		const { citations } = await fetchWorksheetCitations(service, fiche);
+
+		expect(citations).toHaveLength(1);
+		expect(citations[0].selections.sort()).toEqual(['ex. 3', 'ex. 7']);
+	});
+
 	it('ignore une fiche citée SANS sélection — rien ne peut y casser', async () => {
 		expect.assertions(1);
 		const teacher = await TestData.profile().withRole('teacher').create();
@@ -1359,7 +1470,7 @@ describe('fetchWorksheetCitations', () => {
 	});
 
 	it('distingue « rien à signaler » de « je n’ai pas pu lire le cahier »', async () => {
-		expect.assertions(3);
+		expect.assertions(4);
 		// Les deux états rendaient la même liste vide, donc le même écran muet — au
 		// moment précis où le professeur s'apprête à réordonner. Une garde qui ne
 		// sait pas doit le dire.
@@ -1375,31 +1486,51 @@ describe('fetchWorksheetCitations', () => {
 		// c'est bien la panne du cahier qu'on veut voir ressortir, pas une fiche
 		// introuvable, qui a déjà son propre chemin.
 		const silencieux = vi.spyOn(console, 'error').mockImplementation(() => {});
-		const cassé = {
-			from: (table: string) =>
-				table === 'worksheets'
-					? {
+
+		// La citation peut vivre dans la séance OU dans l'un de ses travaux à
+		// faire : la fonction fait donc DEUX lectures. Ce double les distingue,
+		// pour vérifier que chacune, en tombant, suffit à rendre `verifie: false`.
+		const panne = { data: null, error: { message: 'cahier indisponible' } };
+		const vide = { data: [], error: null };
+		const clientAvec = (seances: unknown, travaux: unknown) =>
+			({
+				from: (table: string) => {
+					if (table === 'worksheets') {
+						return {
 							select: () => ({
 								eq: () => ({
 									maybeSingle: () => Promise.resolve({ data: { school_id: ecole }, error: null })
 								})
 							})
-						}
-					: {
+						};
+					}
+					if (table === 'journal_entry_homework') {
+						return {
 							select: () => ({
 								eq: () => ({
-									or: () => ({
-										order: () => ({
-											limit: () =>
-												Promise.resolve({ data: null, error: { message: 'cahier indisponible' } })
-										})
-									})
+									ilike: () => ({ order: () => ({ limit: () => Promise.resolve(travaux) }) })
 								})
 							})
-						}
-		} as unknown as typeof service;
+						};
+					}
+					return {
+						select: () => ({
+							eq: () => ({
+								or: () => ({ order: () => ({ limit: () => Promise.resolve(seances) }) })
+							})
+						})
+					};
+				}
+			}) as unknown as typeof service;
 
-		expect((await fetchWorksheetCitations(cassé, fiche)).verifie).toBe(false);
+		// Le cahier ne se lit pas.
+		expect((await fetchWorksheetCitations(clientAvec(panne, vide), fiche)).verifie).toBe(false);
+
+		// Les TRAVAUX ne se lisent pas. Dire « aucune citation » serait affirmer
+		// plus qu'on ne sait : une fiche citée uniquement dans un devoir se
+		// tairait, et le professeur réorganiserait sa fiche sans être averti.
+		expect((await fetchWorksheetCitations(clientAvec(vide, panne), fiche)).verifie).toBe(false);
+
 		silencieux.mockRestore();
 	});
 

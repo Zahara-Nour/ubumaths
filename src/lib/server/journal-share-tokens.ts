@@ -19,12 +19,31 @@ import { generateShareTokenString } from '$lib/server/exercise-share-tokens';
 
 type SB = SupabaseClient<Database>;
 
+/** Un travail à faire, tel que le voit un visiteur sans compte. */
+export interface PublicHomeworkItem {
+	id: string;
+	content: string;
+	due_date: string | null;
+}
+
 /** Une entrée telle que la voit un visiteur sans compte. */
 export interface PublicJournalEntry {
 	id: string;
 	entry_date: string;
 	lesson_content: string | null;
+	/**
+	 * Les travaux à faire de la séance, un par échéance.
+	 *
+	 * Toujours un tableau, jamais `null` : la fonction SQL rend `[]` pour une
+	 * séance sans travail, et la page itère dessus sans garde.
+	 */
+	homework: PublicHomeworkItem[];
+	/**
+	 * @deprecated Ancien devoir unique. Colonne conservée mais plus écrite —
+	 * lue ici uniquement pour les séances antérieures à la bascule.
+	 */
 	homework_content: string | null;
+	/** @deprecated Voir `homework_content`. */
 	homework_due_date: string | null;
 }
 
