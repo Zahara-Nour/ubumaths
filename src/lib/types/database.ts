@@ -1483,8 +1483,6 @@ export type Database = {
           class_id: string
           created_at: string
           entry_date: string
-          homework_content: string | null
-          homework_due_date: string | null
           id: string
           is_published: boolean
           lesson_content: string | null
@@ -1494,8 +1492,6 @@ export type Database = {
           class_id: string
           created_at?: string
           entry_date: string
-          homework_content?: string | null
-          homework_due_date?: string | null
           id?: string
           is_published?: boolean
           lesson_content?: string | null
@@ -1505,8 +1501,6 @@ export type Database = {
           class_id?: string
           created_at?: string
           entry_date?: string
-          homework_content?: string | null
-          homework_due_date?: string | null
           id?: string
           is_published?: boolean
           lesson_content?: string | null
