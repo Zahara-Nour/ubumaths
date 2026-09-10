@@ -102,25 +102,86 @@ export async function fetchWorksheetCitations(
 	// que personne ne cite la fiche.
 	if (!fiche?.school_id) return { citations: [], verifie: false };
 
-	const { data, error } = await supabase
-		.from('class_journal_entries')
-		.select(
-			'id, class_id, entry_date, lesson_content, homework_content, classes!inner(name, school_id)'
-		)
-		.eq('classes.school_id', fiche.school_id)
-		.or(`lesson_content.ilike.${motif},homework_content.ilike.${motif}`)
-		.order('entry_date', { ascending: false })
-		.limit(MAX_CITATIONS);
+	// DEUX balayages, parce que la citation peut vivre à deux endroits : dans le
+	// contenu de la séance, ou dans l'un de ses travaux à faire — qui sont des
+	// lignes d'une table fille depuis qu'une séance peut en porter plusieurs.
+	// Un seul `ilike` sur `class_journal_entries` raterait le second cas en
+	// silence, et le panneau se tairait sur des séances qui citent bien la fiche.
+	const [{ data, error }, { data: travaux, error: travauxError }] = await Promise.all([
+		supabase
+			.from('class_journal_entries')
+			.select(
+				'id, class_id, entry_date, lesson_content, homework_content, classes!inner(name, school_id)'
+			)
+			.eq('classes.school_id', fiche.school_id)
+			.or(`lesson_content.ilike.${motif},homework_content.ilike.${motif}`)
+			.order('entry_date', { ascending: false })
+			.limit(MAX_CITATIONS),
+		supabase
+			.from('journal_entry_homework')
+			.select(
+				'content, class_journal_entries!inner(id, class_id, entry_date, classes!inner(name, school_id))'
+			)
+			.eq('class_journal_entries.classes.school_id', fiche.school_id)
+			.ilike('content', motif)
+			.limit(MAX_CITATIONS)
+	]);
 
 	if (error) {
 		console.error('[worksheet-citations] cahier illisible:', error);
 		return { citations: [], verifie: false };
 	}
 
-	const citations: WorksheetCitation[] = [];
+	// Le second balayage manque : dire « aucune citation » serait affirmer plus
+	// qu'on ne sait. `verifie: false` est la seule réponse honnête.
+	if (travauxError) {
+		console.error('[worksheet-citations] travaux illisibles:', travauxError);
+		return { citations: [], verifie: false };
+	}
+
+	// Les contenus des deux sources sont regroupés PAR SÉANCE avant extraction :
+	// une fiche citée à la fois dans le cours et dans un devoir est une seule
+	// ligne du panneau, pas deux.
+	const contenusParSeance = new Map<
+		string,
+		{ classId: string; className: string; entryDate: string; contenus: (string | null)[] }
+	>();
 
 	for (const entry of data ?? []) {
-		const decrites = extractResourceReferences(entry.lesson_content, entry.homework_content)
+		contenusParSeance.set(entry.id, {
+			classId: entry.class_id,
+			className: entry.classes.name,
+			entryDate: entry.entry_date,
+			contenus: [entry.lesson_content, entry.homework_content]
+		});
+	}
+
+	for (const travail of travaux ?? []) {
+		const seance = travail.class_journal_entries;
+		const existante = contenusParSeance.get(seance.id);
+		if (existante) {
+			existante.contenus.push(travail.content);
+			continue;
+		}
+		contenusParSeance.set(seance.id, {
+			classId: seance.class_id,
+			className: seance.classes.name,
+			entryDate: seance.entry_date,
+			contenus: [travail.content]
+		});
+	}
+
+	// Le tri se refait ici : deux requêtes bornées séparément ne sortent pas
+	// triées l'une par rapport à l'autre, et le panneau annonce « de la plus
+	// récente à la plus ancienne ».
+	const seances = [...contenusParSeance.entries()]
+		.sort(([, a], [, b]) => b.entryDate.localeCompare(a.entryDate))
+		.slice(0, MAX_CITATIONS);
+
+	const citations: WorksheetCitation[] = [];
+
+	for (const [entryId, entry] of seances) {
+		const decrites = extractResourceReferences(...entry.contenus)
 			.filter((reference) => reference.kind === 'worksheet' && reference.id === cible)
 			.map((reference) => parseExerciseSelection(reference.selection))
 			.filter((numeros) => numeros.length > 0)
@@ -135,10 +196,10 @@ export async function fetchWorksheetCitations(
 		if (selections.length === 0) continue;
 
 		citations.push({
-			entryId: entry.id,
-			classId: entry.class_id,
-			className: entry.classes.name,
-			entryDate: entry.entry_date,
+			entryId,
+			classId: entry.classId,
+			className: entry.className,
+			entryDate: entry.entryDate,
 			selections
 		});
 	}

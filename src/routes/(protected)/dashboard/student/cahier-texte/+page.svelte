@@ -300,7 +300,7 @@
 						{:else}
 							<div class="space-y-3">
 								{#each data.upcomingHomework as homework (homework.id)}
-									<HomeworkCard {homework} onclick={() => goToEntry(homework.id)} />
+									<HomeworkCard {homework} onclick={() => goToEntry(homework.entryId)} />
 								{/each}
 							</div>
 						{/if}

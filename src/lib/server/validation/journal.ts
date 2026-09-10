@@ -300,3 +300,78 @@ export const upcomingHomeworkResponseSchema = z.object({
 	homeworkDueDate: dateSchema,
 	daysUntilDue: z.number().int()
 });
+
+// ============================================================================
+// HOMEWORK ITEMS
+// ============================================================================
+
+/**
+ * Nombre maximum de travaux pour une même séance.
+ *
+ * Même borne que la fonction SQL `set_journal_entry_homework`, qui refuse
+ * au-delà : les deux doivent bouger ensemble.
+ */
+export const MAX_HOMEWORK_ITEMS = 50;
+
+/**
+ * Échéance d'un travail, telle que le formulaire l'envoie.
+ *
+ * La chaîne vide est acceptée et vaut absence : un `<input type="date">` vidé
+ * renvoie `''`, pas `null`. La refuser ferait échouer l'enregistrement sur le
+ * geste le plus naturel de l'interface — effacer une date.
+ */
+const homeworkDueDateSchema = z
+	.union([dateSchema, z.literal('')])
+	.nullable()
+	.optional()
+	.transform((value) => value || null);
+
+/**
+ * Un travail à faire. Le contenu n'est PAS `.trim()`é ni jugé vide ici : c'est
+ * de l'HTML d'éditeur riche, et `<p></p>` n'est pas une chaîne blanche.
+ * `resolveHomeworkItems` s'en charge, avec la connaissance du format.
+ */
+export const homeworkItemSchema = z.object({
+	content: z
+		.string()
+		.max(
+			MAX_CONTENT_LENGTH,
+			`Le contenu d'un travail est trop long (max ${MAX_CONTENT_LENGTH} caracteres)`
+		),
+	dueDate: homeworkDueDateSchema
+});
+
+export const homeworkItemsSchema = z
+	.array(homeworkItemSchema)
+	.max(MAX_HOMEWORK_ITEMS, `Trop de travaux pour une seance (maximum ${MAX_HOMEWORK_ITEMS})`);
+
+export type HomeworkItemsInput = z.infer<typeof homeworkItemsSchema>;
+
+/**
+ * Relit le champ caché `homeworkItems` du formulaire.
+ *
+ * Contrairement aux activités en attente, une saisie malformée n'est PAS
+ * ignorée en silence : ce champ porte le texte que le professeur vient
+ * d'écrire. L'avaler sans rien dire enregistrerait une séance sans son travail,
+ * et il ne l'apprendrait qu'en relisant sa page.
+ */
+export function parseHomeworkItems(
+	raw: unknown
+): { success: true; data: HomeworkItemsInput } | { success: false; message: string } {
+	if (raw === null || raw === undefined || raw === '') return { success: true, data: [] };
+	if (typeof raw !== 'string') return { success: false, message: 'Travaux à faire illisibles' };
+
+	let parsed: unknown;
+	try {
+		parsed = JSON.parse(raw);
+	} catch {
+		return { success: false, message: 'Travaux à faire illisibles' };
+	}
+
+	const validation = homeworkItemsSchema.safeParse(parsed);
+	if (!validation.success) {
+		return { success: false, message: validation.error.issues[0].message };
+	}
+
+	return { success: true, data: validation.data };
+}

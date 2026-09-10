@@ -43,7 +43,7 @@ date passée ; lien de partage via la fonction `SECURITY DEFINER` existante ;
 ## Découpage
 
 - [x] **Phase 1 — socle** : migration, module de calcul des dates, tests
-- [ ] **Phase 2 — serveur** : CRUD, Zod, couverture programme, citations de fiches
+- [x] **Phase 2 — serveur** : CRUD, Zod, couverture programme, citations de fiches
 - [ ] **Phase 3 — UI prof** : la liste de travaux dans « Travail à faire »
 - [ ] **Phase 4 — UI élève + vue publique + lien de partage**
 - [ ] **Phase 5 — revue** : `code-reviewer`, `security-auditor`, `check:incremental`, PR
@@ -143,6 +143,59 @@ authenticated` du baseline, jamais révoqué (`ALL` inclut TRUNCATE, qui ignore
 la RLS). Exploitabilité faible — PostgREST n'expose pas TRUNCATE, il faut une
 connexion Postgres directe — mais la nouvelle table est la seule de la famille
 correctement fermée. À traiter dans une migration d'hygiène dédiée, pas ici.
+
+## Phase 2 — fait
+
+**`src/lib/server/journal-homework.ts`** — le cœur.
+
+- `estContenuVide()` : la contrainte SQL `btrim(content) <> ''` ne voit pas un
+  éditeur riche vide (`<p></p>`). Mais un travail peut n'être QU'une formule ou
+  QU'une image : les juger vides effacerait le travail du professeur, donc les
+  éléments porteurs de sens sans texte sont reconnus avant le dépouillement.
+- `resolveHomeworkItems()` : retire les travaux vides, résout une échéance
+  absente au prochain cours, refuse celles qui ne tombent pas un jour de cours.
+  **Rien n'est écrit dès qu'une échéance est refusée** — écrire les bonnes et
+  jeter les autres laisserait une séance à moitié enregistrée, sans le dire.
+  Les refus sont rendus en **liste** : le professeur corrige tout d'un coup.
+- `setHomeworkForEntry()` passe par la fonction SQL atomique.
+
+**Actions du cahier de texte** — `preparerTravaux()` valide **avant** toute
+écriture, à la création comme à la mise à jour : une échéance impossible refuse
+l'enregistrement sans avoir rien touché. Un formulaire qui ne porte PAS le champ
+`homeworkItems` ne déclenche aucune écriture (une liste vide efface tout).
+
+**Zod** — `homeworkItemsSchema` dans `validation/journal.ts`, bornes alignées
+sur le SQL (50 travaux, 50 000 caractères). La chaîne vide est acceptée comme
+échéance absente : un `<input type="date">` vidé renvoie `''`, pas `null`, et la
+refuser ferait échouer l'enregistrement sur le geste le plus naturel qui soit.
+Une saisie malformée n'est **pas** avalée en silence, contrairement aux
+activités en attente : ce champ porte le texte que le professeur vient
+d'écrire.
+
+**`getUpcomingHomework()`** lit désormais la table fille : un travail par carte,
+et non plus un par séance. `UpcomingHomework.id` est l'id du **travail**,
+`entryId` celui de la séance — deux travaux d'une même séance partageant une
+clé `{#each}` n'auraient donné qu'une seule carte, l'autre disparaissant sans
+erreur.
+
+**Couverture programme et citations de fiches** — les deux balaient maintenant
+aussi les travaux. Pour les citations, cela demande **deux requêtes** (la séance
+et ses travaux), regroupées par séance avant extraction pour qu'une fiche citée
+des deux côtés reste une seule ligne.
+
+**Tests** : 20 unitaires (`journal-homework.test.ts`), 27 d'intégration sur les
+travaux, 54 sur la couverture. Les 4 nouveaux tests couverture/citations ont été
+**vérifiés rouges** en neutralisant les correctifs depuis une copie. Le
+quatrième passait au premier essai — le cours citait aussi la fiche, donc
+l'ancien code la trouvait quand même ; il exige désormais la sélection venue du
+devoir.
+
+### Reste à savoir
+
+`getJournalStatistics().entriesWithHomework` compte encore l'ancienne colonne,
+donc vaudra toujours 0. **La fonction n'est appelée nulle part** en production
+(seulement dans ses propres tests) : laissée telle quelle plutôt que d'élargir
+le périmètre à du code mort. À corriger le jour où elle sert.
 
 ## Pièges connus pour la phase 2
 

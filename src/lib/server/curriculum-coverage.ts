@@ -95,7 +95,21 @@ export async function reconcileAutoCoverage(
 		.maybeSingle();
 	if (entryErr) throw new Error(`reconcileAutoCoverage entry: ${entryErr.message}`);
 
-	const references = extractResourceReferences(entry?.lesson_content, entry?.homework_content);
+	// Les travaux à faire vivent dans leur propre table depuis qu'une séance peut
+	// en porter plusieurs. Les oublier ici ferait disparaître de la couverture
+	// tout exercice cité UNIQUEMENT dans un devoir — sans rien signaler, puisque
+	// la réconciliation retire ce qu'elle ne voit plus.
+	const { data: travaux, error: travauxErr } = await supabase
+		.from('journal_entry_homework')
+		.select('content')
+		.eq('entry_id', entryId);
+	if (travauxErr) throw new Error(`reconcileAutoCoverage homework: ${travauxErr.message}`);
+
+	const references = extractResourceReferences(
+		entry?.lesson_content,
+		entry?.homework_content,
+		...(travaux ?? []).map((t) => t.content)
+	);
 	for (const id of referenceIdsOfKind(references, 'exercise')) exerciseIds.add(id);
 	for (const id of referenceIdsOfKind(references, 'question')) templateIds.add(id);
 	for (const id of referenceIdsOfKind(references, 'assessment')) assessmentIds.add(id);

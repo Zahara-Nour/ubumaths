@@ -58,6 +58,23 @@ export interface ClassJournalEntry {
 }
 
 /**
+ * One piece of work to do, attached to a session.
+ *
+ * A session carries a list of these: an exercise for the next lesson and a
+ * longer assignment for the week after are two entries, two deadlines — not one
+ * block of text under a single date.
+ *
+ * `dueDate` is null only for a class whose timetable has never been entered:
+ * everywhere else the server resolves an absent deadline to the next lesson
+ * before writing.
+ */
+export interface JournalHomeworkItem {
+	id: string;
+	content: string;
+	dueDate: string | null; // DATE format YYYY-MM-DD
+}
+
+/**
  * Journal entry with additional class information (for teacher views)
  */
 export interface JournalEntryWithClass extends ClassJournalEntry {
@@ -69,7 +86,15 @@ export interface JournalEntryWithClass extends ClassJournalEntry {
  * Upcoming homework item (for student view)
  */
 export interface UpcomingHomework {
+	/**
+	 * Id du TRAVAIL, pas de la séance.
+	 *
+	 * Une séance en porte plusieurs : garder l'id de séance ferait deux clés
+	 * identiques dans une liste `{#each}`, et Svelte ne rendrait qu'une carte.
+	 */
 	id: string;
+	/** Séance qui porte ce travail — c'est vers elle que la carte navigue. */
+	entryId: string;
 	classId: string;
 	className: string;
 	classGrade: string | null;

@@ -447,44 +447,54 @@ export async function getUpcomingHomework(
 		return { data: [], error: null, count: 0 };
 	}
 
-	// Get published entries with homework due in the date range
-	const { data: entries, error: entriesError } = await supabase
-		.from('class_journal_entries')
+	const todayStr = today.toISOString().split('T')[0];
+
+	// Un travail par ligne, et non plus un par séance : c'est toute la raison
+	// d'être de la table fille. Les filtres sur la séance sont posés
+	// explicitement bien que la RLS les impose déjà — la même fonction sert au
+	// professeur, dont la RLS, elle, ne filtre rien.
+	const { data: rows, error: rowsError } = await supabase
+		.from('journal_entry_homework')
 		.select(
 			`
-			*,
-			class:classes!inner(name, grade)
+			id,
+			content,
+			due_date,
+			entry:class_journal_entries!inner(
+				id,
+				class_id,
+				entry_date,
+				is_published,
+				class:classes!inner(name, grade)
+			)
 		`
 		)
-		.in('class_id', classIds)
-		.eq('is_published', true)
-		.lte('entry_date', today.toISOString().split('T')[0]) // Only past/today entries
-		.not('homework_content', 'is', null)
-		.not('homework_due_date', 'is', null)
-		.gte('homework_due_date', today.toISOString().split('T')[0])
-		.lte('homework_due_date', endDate.toISOString().split('T')[0])
-		.order('homework_due_date', { ascending: true });
+		.in('entry.class_id', classIds)
+		.eq('entry.is_published', true)
+		.lte('entry.entry_date', todayStr)
+		.not('due_date', 'is', null)
+		.gte('due_date', todayStr)
+		.lte('due_date', endDate.toISOString().split('T')[0])
+		.order('due_date', { ascending: true });
 
-	if (entriesError) {
-		console.error('[getUpcomingHomework] Error fetching entries:', entriesError);
-		return { data: [], error: new Error(entriesError.message), count: 0 };
+	if (rowsError) {
+		console.error('[getUpcomingHomework] Error fetching homework:', rowsError);
+		return { data: [], error: new Error(rowsError.message), count: 0 };
 	}
 
-	const homework: UpcomingHomework[] = (entries || []).map((row) => {
-		const entry = row as unknown as DbClassJournalEntry & {
-			class: { name: string; grade: string | null };
-		};
-		const dueDate = new Date(entry.homework_due_date!);
+	const homework: UpcomingHomework[] = (rows ?? []).map((row) => {
+		const dueDate = new Date(row.due_date as string);
 		const daysUntilDue = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
 		return {
-			id: entry.id,
-			classId: entry.class_id,
-			className: entry.class.name,
-			classGrade: entry.class.grade,
-			entryDate: entry.entry_date,
-			homeworkContent: entry.homework_content!,
-			homeworkDueDate: entry.homework_due_date!,
+			id: row.id,
+			entryId: row.entry.id,
+			classId: row.entry.class_id,
+			className: row.entry.class.name,
+			classGrade: row.entry.class.grade,
+			entryDate: row.entry.entry_date,
+			homeworkContent: row.content,
+			homeworkDueDate: row.due_date as string,
 			daysUntilDue
 		};
 	});
