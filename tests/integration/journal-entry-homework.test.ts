@@ -91,8 +91,9 @@ const PUBLIEE_ID = 'da41e400-0000-4000-8000-00000000d001';
 const BROUILLON_ID = 'da41e400-0000-4000-8000-00000000d002';
 const FUTURE_ID = 'da41e400-0000-4000-8000-00000000d003';
 const AUTRE_CLASSE_ID = 'da41e400-0000-4000-8000-00000000d004';
+const AUJOURDHUI_ID = 'da41e400-0000-4000-8000-00000000d005';
 
-const TOUTES_LES_SEANCES = [PUBLIEE_ID, BROUILLON_ID, FUTURE_ID, AUTRE_CLASSE_ID];
+const TOUTES_LES_SEANCES = [PUBLIEE_ID, BROUILLON_ID, FUTURE_ID, AUTRE_CLASSE_ID, AUJOURDHUI_ID];
 
 interface TravailLu {
 	id: string;
@@ -187,6 +188,13 @@ describe('travaux à faire d’une séance', () => {
 				class_id: autreClasseId,
 				entry_date: jour(-1),
 				lesson_content: 'Une autre classe',
+				is_published: true
+			},
+			{
+				id: AUJOURDHUI_ID,
+				class_id: classeId,
+				entry_date: jour(0),
+				lesson_content: 'Séance du jour',
 				is_published: true
 			}
 		]);
@@ -666,6 +674,19 @@ describe('travaux à faire d’une séance', () => {
 			.update({ homework_content: null, homework_due_date: null })
 			.eq('id', PUBLIEE_ID);
 		expect(nettoyage).toBeNull();
+	});
+
+	it('remonte le travail d’une séance écrite LE JOUR MÊME', async () => {
+		// Le cas le plus banal : le professeur note sa séance en sortant de cours.
+		// La borne « séance passée » se comparait à une date calculée depuis minuit
+		// LOCAL puis rendue en UTC — à l'est de Greenwich elle reculait d'un jour,
+		// et la séance du jour tombait juste en dehors. Le devoir n'apparaissait
+		// chez l'élève que le lendemain.
+		await poserTravaux(AUJOURDHUI_ID, [{ content: 'Pour le prochain cours', due_date: jour(4) }]);
+
+		const { data } = await getUpcomingHomework(eleve, eleveId);
+
+		expect(data.map((h) => h.homeworkContent)).toEqual(['Pour le prochain cours']);
 	});
 
 	it('ne remonte pas un travail sans échéance', async () => {
