@@ -28,7 +28,7 @@ Machine à faible RAM. **NE JAMAIS lancer sur tout le projet** (ça crashe) :
 ## Commandes
 
 ```bash
-pnpm dev -- --port 5175             # dev (TOUJOURS port 5175 ; 5173 = user, NE PAS utiliser)
+pnpm dev --port 5175 --strictPort   # dev (TOUJOURS 5175 ; 5173 = user, NE PAS utiliser)
 pnpm check:incremental              # TS + Svelte (memory-safe, 0 erreur exigée)
 pnpm lint:fast                      # lint des fichiers modifiés (~2,5 s ; évite l'aller-retour CI)
 pnpm format "src/**/*.{ts,svelte}"  # prettier --write
@@ -42,6 +42,12 @@ pnpm db:migrate / db:types          # push migrations → EU / régénère datab
 pnpm maintenance:on / :off          # mode maintenance prod (releases à risque)
 pnpm release                        # tag de version + CHANGELOG (standard-version, sur main)
 ```
+
+⚠️ **`pnpm dev -- --port 5175` ne marche pas** — le script est `vite dev`, donc le
+`--` en trop devient un argument que vite ignore, port compris : le serveur
+démarre sur **5173**, le port de l'utilisateur. Mesuré le 2026-09-10. Sans
+`--strictPort`, un 5175 déjà pris fait dériver vite sur un autre port en
+silence.
 
 ---
 
