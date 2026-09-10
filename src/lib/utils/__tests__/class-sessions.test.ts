@@ -198,4 +198,19 @@ describe('isSessionDate', () => {
 		expect(loin).toBeDefined();
 		expect(isSessionDate(loin, emploiDuTemps)).toBe(true);
 	});
+
+	it('refuse une date au-delà de la fin d’année', () => {
+		expect(isSessionDate('2027-07-22', emploiDuTemps)).toBe(false);
+	});
+
+	it('répond instantanément sur une fin d’année aberrante', () => {
+		// `until` vient de `school_years.end_date`, saisi à la main : une faute de
+		// frappe suffit. Énumérer jour par jour jusqu'en 9999 ferait quelques
+		// millions de tours à CHAQUE échéance enregistrée — la vérification doit
+		// décider, pas parcourir.
+		const debut = performance.now();
+		const verdict = isSessionDate('2026-09-17', { ...emploiDuTemps, until: '9999-06-30' });
+		expect(verdict).toBe(true);
+		expect(performance.now() - debut).toBeLessThan(50);
+	});
 });

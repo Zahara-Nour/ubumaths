@@ -60,7 +60,12 @@ create table if not exists public.journal_entry_homework (
 	updated_at timestamptz not null default now(),
 	-- Un travail sans texte n'est pas un travail : il s'afficherait comme une
 	-- puce vide chez l'élève, avec une échéance et rien à faire.
-	constraint journal_entry_homework_content_not_blank check (btrim(content) <> '')
+	constraint journal_entry_homework_content_not_blank check (btrim(content) <> ''),
+	-- Même borne que `MAX_CONTENT_LENGTH` côté Zod. La liste est plafonnée à 50
+	-- travaux, mais sans borne par travail une séance pèserait autant qu'on veut
+	-- — et c'est le visiteur anonyme du lien de partage qui la retélécharge
+	-- entièrement, sans cache ni pagination.
+	constraint journal_entry_homework_content_length check (char_length(content) <= 50000)
 );
 
 comment on table public.journal_entry_homework is

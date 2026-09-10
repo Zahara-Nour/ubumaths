@@ -370,6 +370,18 @@ describe('travaux à faire d’une séance', () => {
 		expect(error?.code).toBe(CONTRAINTE_VIOLEE);
 	});
 
+	it('refuse un travail démesurément long', async () => {
+		// La liste est bornée à 50 travaux, mais sans borne PAR travail une séance
+		// pèserait autant qu'on veut — et c'est le visiteur du lien de partage qui
+		// la retélécharge entièrement.
+		const { error } = await loose(prof).rpc('set_journal_entry_homework', {
+			p_entry_id: PUBLIEE_ID,
+			p_items: [{ content: 'x'.repeat(50_001), due_date: null }]
+		});
+
+		expect(error?.code).toBe(CONTRAINTE_VIOLEE);
+	});
+
 	it('n’écrit RIEN quand un seul travail de la liste est invalide', async () => {
 		// L'atomicité est la raison d'être de cette fonction : le DELETE ne doit
 		// pas survivre à l'échec de l'INSERT, sinon enregistrer une liste fautive

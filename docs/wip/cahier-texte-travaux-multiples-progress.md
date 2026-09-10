@@ -98,6 +98,48 @@ exclut `tests/**`) et peuvent donc être écrits et exécutés avant.
 migration**) → `security-auditor` → `pnpm db:migrate` → `pnpm db:types` → code
 serveur de la phase 2.
 
+## Audit de sécurité (2026-09-10) — aucun finding bloquant
+
+Vérifié et conforme : pas de fuite brouillon/futur (les trois conditions de la
+policy élève sont le verbatim de celle de `class_journal_entries`), GRANTs
+corrects sur les trois objets (`authenticated` n'a **pas** TRUNCATE, `anon` n'a
+rien), INVOKER/DEFINER justes, aucune garde perdue au `create or replace` de la
+fonction de partage, pas d'injection possible via le JSONB.
+
+**Corrigé** : `isSessionDate()` énumérait jour par jour avec la limite levée.
+`until` venant de `school_years.end_date` — une date saisie à la main — une
+faute de frappe type `9999-06-30` faisait ~2,9 millions de tours à chaque
+échéance enregistrée. La vérification décide maintenant directement, en
+O(vacances). Test de non-régression : `répond instantanément sur une fin
+d'année aberrante`.
+
+**Corrigé** : `content` n'avait aucune borne de taille. Contrainte
+`char_length(content) <= 50000` ajoutée (même borne que `MAX_CONTENT_LENGTH`
+côté Zod) — la liste était plafonnée à 50 travaux, mais pas chaque travail, et
+c'est le visiteur anonyme du lien de partage qui retélécharge le tout.
+
+**À faire en phase 4** : la page publique doit assainir `homework[].content`
+avec le **même filtre que `lesson_content`**. Même classe d'exposition
+qu'aujourd'hui (l'auteur est prof/admin), mais c'est un champ neuf, donc facile
+à oublier.
+
+**Hors périmètre, signalé à David** : `journal_entry_activities`,
+`journal_entry_points` et `class_journal_entries` gardent un `GRANT ALL … TO
+authenticated` du baseline, jamais révoqué (`ALL` inclut TRUNCATE, qui ignore
+la RLS). Exploitabilité faible — PostgREST n'expose pas TRUNCATE, il faut une
+connexion Postgres directe — mais la nouvelle table est la seule de la famille
+correctement fermée. À traiter dans une migration d'hygiène dédiée, pas ici.
+
+## Pièges connus pour la phase 2
+
+- La contrainte SQL `btrim(content) <> ''` ne voit PAS un éditeur riche vide :
+  TipTap rend `<p></p>`, qui n'est pas une chaîne blanche. C'est donc au serveur
+  de retirer les travaux dont le texte, une fois les balises ôtées, ne contient
+  rien — sinon l'élève voit une puce vide avec une échéance et rien à faire.
+- `set_journal_entry_homework` **remplace** la liste entière. Un appel avec un
+  tableau vide efface tous les travaux de la séance : ne l'appeler que lorsque
+  la page a réellement envoyé sa liste, jamais « par précaution ».
+
 ## Ce que la phase 2 ne doit pas oublier
 
 Consommateurs actuels de `homework_content` / `homework_due_date` :

@@ -151,10 +151,22 @@ export function computeSessionDates(options: SessionDatesOptions): string[] {
  */
 export function isSessionDate(date: string, options: SessionDatesOptions): boolean {
 	const target = parseIsoDate(date);
-	if (target === null) return false;
+	const start = parseIsoDate(options.after);
+	const end = parseIsoDate(options.until);
+	if (target === null || start === null || end === null) return false;
 
-	// `limit` would silently make a legitimate far-off date "invalid", which is
-	// the opposite of what a validation check should do: the menu is truncated,
-	// the rule is not.
-	return computeSessionDates({ ...options, limit: Number.MAX_SAFE_INTEGER }).includes(date);
+	// Deliberately NOT `computeSessionDates(...).includes(date)`. Enumerating
+	// would need `limit` lifted — the menu is truncated at 30, the rule is not —
+	// and `until` comes from `school_years.end_date`, a date a human types. One
+	// typo away from `9999-06-30`, the day-by-day loop runs a few million times
+	// per saved deadline. Deciding costs O(holidays) and answers the same
+	// question, with the same bounds: `after` exclusive, `until` inclusive.
+	if (target <= start || target > end) return false;
+
+	const meetingDays = new Set(
+		options.weekdays.filter((day) => Number.isInteger(day) && day >= 0 && day <= 6)
+	);
+	if (!meetingDays.has(new Date(target).getUTCDay())) return false;
+
+	return !isWithinHoliday(target, options.holidays ?? []);
 }
