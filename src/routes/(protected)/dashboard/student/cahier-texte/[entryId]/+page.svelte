@@ -112,12 +112,6 @@
 	}
 
 	let lessonHtml = $derived(renderContent(data.entry.lessonContent));
-	let homeworkHtml = $derived(renderContent(data.entry.homeworkContent));
-
-	// Due date info
-	let dueDateInfo = $derived(
-		data.entry.homeworkDueDate ? getDaysUntilDue(data.entry.homeworkDueDate) : null
-	);
 
 	/**
 	 * Les travaux de la séance, chacun avec son rendu et son décompte.
@@ -135,9 +129,7 @@
 	);
 
 	/** Y a-t-il quoi que ce soit à montrer sur cette séance ? */
-	let seanceVide = $derived(
-		!data.entry.lessonContent && !data.entry.homeworkContent && travaux.length === 0
-	);
+	let seanceVide = $derived(!data.entry.lessonContent && travaux.length === 0);
 </script>
 
 <svelte:head>
@@ -237,37 +229,6 @@
 				</Card.Content>
 			</Card.Root>
 		{/each}
-
-		<!-- Séance antérieure à la bascule : l'ancien devoir unique, encore lu. -->
-		{#if data.entry.homeworkContent}
-			<Card.Root class={dueDateInfo?.isUrgent ? 'border-orange-300 dark:border-orange-700' : ''}>
-				<Card.Header>
-					<div class="flex items-start justify-between gap-4">
-						<Card.Title class="flex items-center gap-2">
-							<ClipboardList class="h-5 w-5 text-orange-500" />
-							Travail a faire
-						</Card.Title>
-						{#if dueDateInfo}
-							<Badge variant={dueDateInfo.isUrgent ? 'destructive' : 'secondary'}>
-								<Clock class="mr-1 h-3 w-3" />
-								{dueDateInfo.text}
-							</Badge>
-						{/if}
-					</div>
-					{#if data.entry.homeworkDueDate}
-						<Card.Description class="mt-2 flex items-center gap-2">
-							<Calendar class="h-4 w-4" />
-							A rendre pour le {formatDateShort(data.entry.homeworkDueDate)}
-						</Card.Description>
-					{/if}
-				</Card.Header>
-				<Card.Content>
-					<div class="prose prose-sm max-w-none dark:prose-invert">
-						{@html homeworkHtml}
-					</div>
-				</Card.Content>
-			</Card.Root>
-		{/if}
 
 		<!-- Empty state if no content -->
 		{#if seanceVide}

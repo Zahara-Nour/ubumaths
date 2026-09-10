@@ -116,23 +116,6 @@
 								</div>
 							</div>
 						{/each}
-
-						<!-- Séances antérieures à la bascule : l'ancien devoir unique n'a pas
-						     été migré, il est simplement encore lu. -->
-						{#if entry.homework_content}
-							<div class="space-y-1 rounded-md bg-muted/50 p-3">
-								<div class="flex flex-wrap items-center gap-2 text-sm font-medium">
-									<ClipboardList class="h-4 w-4" />
-									À faire
-									{#if formatDueDate(entry.homework_due_date)}
-										<Badge variant="secondary">{formatDueDate(entry.homework_due_date)}</Badge>
-									{/if}
-								</div>
-								<div class="prose prose-sm max-w-none dark:prose-invert">
-									{@html renderContent(entry.homework_content)}
-								</div>
-							</div>
-						{/if}
 					</Card.Content>
 				</Card.Root>
 			{/each}

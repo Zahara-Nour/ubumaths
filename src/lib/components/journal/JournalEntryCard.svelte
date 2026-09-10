@@ -20,10 +20,9 @@
 
 <script lang="ts">
 	import { referencesToLabels } from '$lib/resources/references';
-	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { FileText, BookCheck, Globe, Calendar, ClipboardList } from '@lucide/svelte';
+	import { FileText, BookCheck, Globe, Calendar } from '@lucide/svelte';
 	import type { ClassJournalEntry, JournalEntryWithClass } from '$lib/types/journal';
 	import { GRADES, type GradeCode } from '$lib/types/grades';
 	import { cn } from '$lib/utils';
@@ -76,15 +75,6 @@
 		const text = referencesToLabels(html).replace(/<[^>]*>/g, '');
 		return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
 	}
-
-	/**
-	 * Format homework due date (e.g., "À rendre le 20 Jan")
-	 */
-	let homeworkDueDateText = $derived.by(() => {
-		if (!entry.homeworkDueDate) return null;
-		const date = new Date(entry.homeworkDueDate);
-		return `À rendre le ${date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`;
-	});
 
 	/**
 	 * Check if entry has class info
@@ -149,21 +139,6 @@
 			</div>
 		{:else}
 			<p class="text-sm text-muted-foreground/60 italic">Aucun contenu de séance</p>
-		{/if}
-
-		<!-- Homework indicator -->
-		{#if entry.homeworkContent}
-			<div class="flex items-start gap-2 rounded-md bg-orange-50 p-2 dark:bg-orange-950/20">
-				<ClipboardList class="mt-0.5 h-4 w-4 shrink-0 text-orange-600 dark:text-orange-400" />
-				<div class="flex-1 space-y-1">
-					<p class="text-sm font-medium text-orange-900 dark:text-orange-100">
-						{lore.learning.homework} assignée
-					</p>
-					{#if homeworkDueDateText}
-						<p class="text-xs text-orange-700 dark:text-orange-300">{homeworkDueDateText}</p>
-					{/if}
-				</div>
-			</div>
 		{/if}
 	</Card.Content>
 </Card.Root>

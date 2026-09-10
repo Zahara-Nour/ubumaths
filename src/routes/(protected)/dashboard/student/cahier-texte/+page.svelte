@@ -252,7 +252,7 @@
 													Cours
 												</Badge>
 											{/if}
-											{#if entry.homework.length > 0 || entry.homeworkContent}
+											{#if entry.homework.length > 0}
 												<Badge variant="outline" class="text-orange-600">
 													<ClipboardList class="mr-1 h-3 w-3" />
 													Corvées Domestiques
