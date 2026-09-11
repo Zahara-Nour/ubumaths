@@ -223,7 +223,13 @@
 				<Card.Root>
 					<Card.Content class="py-12 text-center">
 						<ClipboardList class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-						<p class="text-muted-foreground">Aucune fiche pour ce {lore.entities.class}</p>
+						{#if data.worksheetsUnavailable}
+							<p class="text-muted-foreground">
+								Les fiches n'ont pas pu être chargées. Réessaie dans un instant.
+							</p>
+						{:else}
+							<p class="text-muted-foreground">Aucune fiche pour ce {lore.entities.class}</p>
+						{/if}
 					</Card.Content>
 				</Card.Root>
 			{:else}

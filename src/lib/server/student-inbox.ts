@@ -104,9 +104,9 @@ function dedupItems(items: WorkItem[]): WorkItem[] {
 			map.set(key, item);
 			continue;
 		}
-		if (existing.classId !== null && item.classId === null) {
+		if (existing.via === 'class' && item.via === 'direct') {
 			map.set(key, item);
-		} else if (existing.classId === item.classId && item.assignedAt > existing.assignedAt) {
+		} else if (existing.via === item.via && item.assignedAt > existing.assignedAt) {
 			map.set(key, item);
 		}
 	}
@@ -256,6 +256,7 @@ async function fetchAssessmentItems(
 			title: assessment.title,
 			classId: assignment.class_id,
 			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
+			via: assignment.class_id ? 'class' : 'direct',
 			dueAt,
 			status: doneAt ? 'done' : 'todo',
 			viewed: false,
@@ -347,6 +348,7 @@ async function fetchExerciseItems(
 			title: exercise?.title ?? '',
 			classId: assignment.class_id,
 			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
+			via: assignment.class_id ? 'class' : 'direct',
 			dueAt: assignment.optional_deadline,
 			status: doneAt ? 'done' : 'todo',
 			viewed: completion?.last_viewed_at != null,
@@ -503,10 +505,13 @@ async function fetchWorksheetItems(
 	function toItem(assignment: WorksheetAssignmentRow, viaClasse: boolean): WorkItem {
 		const worksheet = worksheetById.get(assignment.worksheet_id);
 		const doneAt = worksheetDoneAt(assignment.worksheet_id);
-		// Une affectation atteinte À LA FOIS par la classe et nominalement produit
-		// deux items, que `dedupItems` départage sur `classId === null` au profit
-		// du direct. La classe suit donc la PROVENANCE, pas l'identifiant.
-		const classId = viaClasse ? (classeParAffectation.get(assignment.id) ?? null) : null;
+		// La classe sert à AFFICHER, `via` à départager. Une affectation atteinte à
+		// la fois par la classe et nominalement produit deux items : le direct
+		// gagne, et il garde sa puce de classe, puisque l'affectation vise bien la
+		// classe de l'élève. Confondre les deux — faire porter le départage à
+		// `classId` — effaçait cette puce, et cassait en silence le jour où l'on
+		// voudrait afficher une classe sur un item direct.
+		const classId = classeParAffectation.get(assignment.id) ?? null;
 		return {
 			source: 'worksheet' satisfies WorkSource,
 			itemId: assignment.worksheet_id,
@@ -514,6 +519,7 @@ async function fetchWorksheetItems(
 			title: assignment.title ?? worksheet?.title ?? '',
 			classId,
 			className: classId ? (classNames.get(classId) ?? null) : null,
+			via: viaClasse ? 'class' : 'direct',
 			dueAt: assignment.closes_at,
 			status: doneAt ? 'done' : 'todo',
 			viewed: masteryByExercise.size > 0,
@@ -600,6 +606,7 @@ async function fetchPythonItems(
 			title: exercise?.title ?? '',
 			classId: assignment.class_id,
 			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
+			via: assignment.class_id ? 'class' : 'direct',
 			dueAt: assignment.due_date,
 			status: doneAt ? 'done' : 'todo',
 			viewed: false,
@@ -670,6 +677,7 @@ async function fetchPythonNotebookItems(
 			title: notebook?.title ?? '',
 			classId: assignment.class_id,
 			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
+			via: assignment.class_id ? 'class' : 'direct',
 			dueAt: null,
 			status: 'todo',
 			viewed: false,
@@ -740,6 +748,7 @@ async function fetchPythonFileItems(
 			title: file?.title ?? '',
 			classId: assignment.class_id,
 			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
+			via: assignment.class_id ? 'class' : 'direct',
 			dueAt: assignment.due_date,
 			status: 'todo',
 			viewed: false,

@@ -200,6 +200,15 @@ describe('affectation visant une seconde classe', () => {
 		expect(fiche?.class_name).toBe(NOM_SECONDE);
 	});
 
+	it('filtrée sur une classe qui n’est pas la sienne, la liste est VIDE', async () => {
+		// Le filtre passe par la jonction, lue SOUS LA RLS de l'élève : celle-ci ne
+		// lui montre que les lignes de ses propres classes. Demander la classe
+		// voisine ne rend donc rien — le filtre ne peut que retrancher à une
+		// requête déjà bornée, jamais ouvrir.
+		const fiches = await fichesDe(eleveSecondeId, eleveSecondeClient, classePremiere);
+		expect(fiches).toHaveLength(0);
+	});
+
 	it('l’élève de la première classe n’est pas affecté par la correction', async () => {
 		const fiches = await fichesDe(elevePremiereId, elevePremiereClient, classePremiere);
 		expect(fiches.map((f) => f.assignment_id)).toContain(assignmentId);

@@ -395,9 +395,9 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				translations: RowTranslations | null;
 			}
 		);
-		// Les classes visées, lues dans la jonction. En aperçu professeur elles sont
-		// toutes nommées ; pour un élève la RLS ne laisse voir que la sienne. La
-		// colonne historique ne nommait que la première, quel que soit le lecteur.
+		// Les classes visées, lues dans la jonction. Cet endpoint est réservé au
+		// créateur et aux administrateurs (`verifyTeacherAccess` plus haut), qui les
+		// voient donc toutes ; la colonne historique n'en nommait qu'une.
 		const classesVisees = await fetchAssignmentClasses(locals.supabase, assignmentId);
 
 		// Fetch worksheet exercises

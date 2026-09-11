@@ -594,11 +594,6 @@ export interface WorksheetAssignmentWithRelations extends WorksheetAssignmentRow
 		title: string;
 		type: WorksheetType;
 	};
-	/** @deprecated Use classes instead */
-	class?: {
-		id: string;
-		name: string;
-	};
 	/** All classes assigned to this worksheet (multi-class support) */
 	classes?: Array<{
 		id: string;

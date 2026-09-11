@@ -947,12 +947,14 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 		expect(inbox.thisWeek[0].className).toBe('3eme A');
 	});
 
-	it('la MÊME affectation atteinte par la classe et nommément reste « directe »', async () => {
-		// Une seule ligne d'affectation, touchée par les deux voies. Rattacher la
-		// classe à l'identifiant plutôt qu'à la PROVENANCE donnerait `classId`
-		// non nul aux deux candidats : le départage « le direct gagne » de
-		// `dedupItems` ne s'appliquerait plus, et l'item retenu deviendrait
-		// arbitraire.
+	it('la MÊME affectation atteinte par la classe et nommément reste « directe », puce comprise', async () => {
+		// Une seule ligne d'affectation, touchée par les deux voies. Le départage
+		// porte sur `via`, pas sur `classId` : faire porter le départage à la
+		// classe affichée donnerait `classId` non nul aux deux candidats, aucune
+		// règle ne se déclencherait, et l'item retenu deviendrait arbitraire.
+		//
+		// La puce de classe, elle, est CONSERVÉE : l'affectation vise bien la
+		// classe de l'élève, et le fait qu'il y soit aussi nommé ne l'efface pas.
 		const ligne = {
 			id: 'wa-mixte',
 			worksheet_id: 'w-mixte',
@@ -981,7 +983,9 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
 		expect(inbox.thisWeek).toHaveLength(1);
 		expect(inbox.thisWeek[0].assignmentId).toBe('wa-mixte');
-		expect(inbox.thisWeek[0].classId).toBeNull();
+		expect(inbox.thisWeek[0].via).toBe('direct');
+		expect(inbox.thisWeek[0].classId).toBe(CLASS_A);
+		expect(inbox.thisWeek[0].className).toBe('3eme A');
 	});
 });
 

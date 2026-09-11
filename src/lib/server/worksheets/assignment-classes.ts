@@ -18,6 +18,16 @@
  * Une panne de lecture n'est jamais traitée comme « aucune classe » : selon
  * l'appelant, cela réduirait un périmètre d'élèves ou viderait un écran en
  * accusant la base. Les fonctions lèvent.
+ *
+ * ⚠️ CE MODULE BORNE, IL N'AUTORISE PAS. Deux règles, dans les deux sens :
+ *
+ *   - ne jamais s'en servir comme test d'accès. La policy élève sur la jonction
+ *     ne vérifie ni `status` ni `available_from` : une affectation en brouillon
+ *     ou programmée y est visible alors que son contenu reste fermé. L'accès se
+ *     décide dans `can_access_assignment` / `student_has_worksheet_access` ;
+ *   - ne jamais l'appeler avec un client `service_role`. Tout ce qui précède
+ *     repose sur la RLS du lecteur ; sans elle, ces fonctions rendraient les
+ *     classes de n'importe qui.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -46,8 +56,8 @@ function firstOrSelf<T>(value: T | T[] | null): T | null {
 }
 
 /**
- * Les classes visées par chacune des affectations demandées, dans l'ordre de
- * la jonction. Une affectation sans classe visible (individuelle, ou hors
+ * Les classes visées par chacune des affectations demandées, ordonnées de
+ * façon stable. Une affectation sans classe visible (individuelle, ou hors
  * portée du lecteur) est absente de la Map.
  *
  * @throws si la jonction est illisible — voir l'avertissement du module.
@@ -62,7 +72,11 @@ export async function fetchClassesByAssignment(
 	const { data, error } = await supabase
 		.from('worksheet_assignment_classes')
 		.select('assignment_id, class_id, classes(id, name)')
-		.in('assignment_id', assignmentIds);
+		.in('assignment_id', assignmentIds)
+		// Ordre stable : sans lui, « 1re A, 1re B » devient « 1re B, 1re A » d'un
+		// rechargement à l'autre, et le premier élément retenu pour un élève membre
+		// de deux classes visées désigne une classe au hasard.
+		.order('class_id');
 
 	if (error) {
 		console.error('[assignment-classes] Classes de l’affectation illisibles :', error);

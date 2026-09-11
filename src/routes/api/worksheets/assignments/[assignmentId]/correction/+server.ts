@@ -213,10 +213,12 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		}
 
 		const worksheet = assignment.worksheet as WorksheetWithRelations;
-		// Les classes visées, lues dans la jonction : l'en-tête du PDF de correction
-		// les nomme toutes. `assignment.class` tenait à la colonne historique, qui
-		// n'en portait qu'une — et la clé étrangère qui résolvait cette jointure
-		// disparaît avec elle.
+		// Les classes visées, lues dans la jonction : l'en-tête du PDF nomme celles
+		// que le LECTEUR a le droit de voir — toutes pour le professeur, la sienne
+		// pour l'élève, aucune pour l'élève nommément désigné hors classe.
+		// `assignment.class` tenait à la colonne historique, qui n'en portait
+		// qu'une — et la clé étrangère qui résolvait cette jointure disparaît avec
+		// elle.
 		const className =
 			formatClassNames(await fetchAssignmentClasses(locals.supabase, assignmentId)) ?? undefined;
 

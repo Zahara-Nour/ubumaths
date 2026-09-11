@@ -104,7 +104,17 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	}
 
 	// Fetch worksheets for this class
+	//
+	// Une panne ne doit pas se lire « aucune fiche » : c'est le message qui
+	// accuse la base d'être vide alors que la lecture a échoué. On le distingue
+	// donc explicitement, et on en laisse une trace.
 	const worksheetsResponse = await fetch(`/api/student/worksheets?class_id=${chapter.classId}`);
+	const worksheetsUnavailable = !worksheetsResponse.ok;
+	if (worksheetsUnavailable) {
+		console.error(
+			`Fiches du chapitre illisibles (HTTP ${worksheetsResponse.status}) pour la classe ${chapter.classId}`
+		);
+	}
 	const worksheetsData = worksheetsResponse.ok
 		? await worksheetsResponse.json()
 		: { worksheets: [] };
@@ -114,7 +124,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		className: classInfo?.name || 'Classe',
 		questionTemplates,
 		exerciseDetails,
-		worksheets: worksheetsData.worksheets || []
+		worksheets: worksheetsData.worksheets || [],
+		worksheetsUnavailable
 	};
 };
 

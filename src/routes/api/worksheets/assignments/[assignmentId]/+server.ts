@@ -432,8 +432,13 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 				.select()
 				.single();
 
+			// Cette branche n'était atteignable pour aucune réaffectation de classes
+			// tant que `class_id` garnissait `updateData`. Elle l'est désormais : un
+			// PATCH ne portant que `class_ids` passe ici, et avaler l'erreur ferait
+			// répondre 200 avec `assignment: null` à une réaffectation qui a échoué.
 			if (updateError) {
 				console.error('Error updating assignment timestamp:', updateError);
+				throw error(500, "Erreur lors de la mise a jour de l'assignation");
 			}
 			updated = updatedData;
 		}
