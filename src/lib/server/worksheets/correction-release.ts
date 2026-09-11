@@ -81,7 +81,11 @@ async function getAllAssignmentStudentIds(
 		const { data: classMembers, error: classMembersError } = await supabase
 			.from('class_members')
 			.select('student_id')
-			.in('class_id', classIds);
+			.in('class_id', classIds)
+			// Les membres ARCHIVÉS ont quitté la classe : les compter ici gonflait
+			// le total affiché à l'écran de libération des corrections, et faisait
+			// mentir le commentaire ci-dessus sur ce que cet ensemble désigne.
+			.eq('status', 'active');
 
 		if (classMembersError) {
 			console.error('[correction-release] Membres de classe illisibles :', classMembersError);

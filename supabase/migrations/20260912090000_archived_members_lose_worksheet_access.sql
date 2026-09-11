@@ -143,6 +143,11 @@ drop policy if exists "Students can view their assignment classes"
 create policy "Students can view their assignment classes"
 	on public.worksheet_assignment_classes
 	for select
+	-- `to authenticated`, comme l'originale : sans lui la policy retombe sur
+	-- PUBLIC et se retrouve évaluée pour le rôle `anon`. Aucune ligne n'en
+	-- sortirait (`auth.uid()` vaut NULL), mais on n'expose pas une policy à un
+	-- rôle anonyme sur une base d'élèves mineurs.
+	to authenticated
 	using (
 		exists (
 			select 1
@@ -154,3 +159,10 @@ create policy "Students can view their assignment classes"
 				and c.is_active = true
 		)
 	);
+
+comment on function public.is_in_assigned_class(uuid) is
+	'Le membre doit être ACTIF : `archived` = a quitté la classe, et perd donc l''accès à ce qu''elle distribue.';
+comment on function public.student_has_worksheet_access(uuid) is
+	'Le membre doit être ACTIF. La désignation nominale, elle, ne dépend d''aucune classe.';
+comment on function public.can_access_assignment(uuid) is
+	'Le membre doit être ACTIF. Le créateur garde l''accès en toutes circonstances.';
