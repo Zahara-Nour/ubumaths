@@ -32,6 +32,7 @@ import {
 	studentWorksheetsListResponseSchema
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { fetchClassesByAssignment } from '$lib/server/worksheets/assignment-classes';
 import type { StudentWorksheetListItem } from '$lib/types/worksheets';
 
 export const GET: RequestHandler = async ({ locals, url }) => {
@@ -59,7 +60,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				`
 				id,
 				worksheet_id,
-				class_id,
 				available_from,
 				closes_at,
 				show_corrections,
@@ -67,10 +67,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 					id,
 					title,
 					type
-				),
-				classes (
-					id,
-					name
 				)
 			`,
 				{ count: 'exact' }
@@ -78,9 +74,29 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.eq('status', 'active')
 			.or(`available_from.is.null,available_from.lte.${new Date().toISOString()}`);
 
-		// Filter by class_id if provided
+		// Restriction à une classe : la JONCTION, pas la colonne historique.
+		//
+		// `worksheet_assignments.class_id` ne porte que la PREMIÈRE classe de
+		// l'affectation. Filtrer dessus renvoyait une liste VIDE à l'élève d'une
+		// seconde classe — et la page « Mon cours » d'un chapitre, qui appelle cet
+		// endpoint avec `?class_id=`, lui annonçait qu'aucune fiche n'existait.
 		if (class_id) {
-			query = query.eq('class_id', class_id);
+			const { data: liens, error: liensError } = await locals.supabase
+				.from('worksheet_assignment_classes')
+				.select('assignment_id')
+				.eq('class_id', class_id);
+
+			// Ce filtre borne la liste. Vidé par une panne, il affiche un écran vide
+			// qui accuse la base plutôt que la lecture.
+			if (liensError) {
+				console.error('[API] Classes des affectations illisibles :', liensError);
+				throw error(500, 'Erreur lors de la recuperation des fiches');
+			}
+
+			query = query.in(
+				'id',
+				(liens ?? []).map((l) => l.assignment_id)
+			);
 		}
 
 		// Apply pagination
@@ -97,6 +113,15 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 		// Helper to extract first element from join result (can be array or object)
 		const getFirstOrSelf = <T>(val: T | T[]): T => (Array.isArray(val) ? val[0] : val);
+
+		// La classe rapportée à l'élève est la SIENNE. La RLS ne lui montre de la
+		// jonction que les lignes de ses propres classes : lui afficher le nom
+		// tiré de la colonne historique désignait une classe dont il pouvait
+		// parfaitement ne pas être membre.
+		const classesByAssignment = await fetchClassesByAssignment(
+			locals.supabase,
+			(assignments ?? []).map((a) => a.id)
+		);
 
 		// Get exercise counts for all worksheets in a separate query
 		const worksheetIds = [
@@ -138,17 +163,15 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			const worksheet = getFirstOrSelf(
 				assignment.worksheets as unknown as { id: string; title: string; type: string }
 			);
-			const classData = getFirstOrSelf(
-				assignment.classes as unknown as { id: string; name: string } | null
-			);
+			const classeEleve = classesByAssignment.get(assignment.id)?.[0] ?? null;
 
 			return {
 				assignment_id: assignment.id,
 				worksheet_id: worksheet.id,
 				title: worksheet.title,
 				type: worksheet.type as StudentWorksheetListItem['type'],
-				class_id: assignment.class_id,
-				class_name: classData?.name ?? null,
+				class_id: classeEleve?.id ?? null,
+				class_name: classeEleve?.name || null,
 				available_from: assignment.available_from,
 				closes_at: assignment.closes_at,
 				show_corrections: assignment.show_corrections ?? false,

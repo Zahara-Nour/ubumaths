@@ -180,7 +180,7 @@ describe('getStudentWorkInbox — complétion des fiches (auto-évaluation)', ()
 		mock.enqueue('assessment_assignments', []);
 		mock.enqueue('exercise_assignments', []);
 		// La jonction désigne l'affectation ; la colonne historique ne décide plus.
-		mock.enqueue('worksheet_assignment_classes', [{ assignment_id: 'wa-1' }]);
+		mock.enqueue('worksheet_assignment_classes', [{ assignment_id: 'wa-1', class_id: CLASS_A }]);
 		mock.enqueue('worksheet_assignments', [
 			{
 				id: 'wa-1',
@@ -240,7 +240,7 @@ describe('getStudentWorkInbox — complétion des fiches (auto-évaluation)', ()
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
 		mock.enqueue('assessment_assignments', []);
 		mock.enqueue('exercise_assignments', []);
-		mock.enqueue('worksheet_assignment_classes', [{ assignment_id: 'wa-1' }]);
+		mock.enqueue('worksheet_assignment_classes', [{ assignment_id: 'wa-1', class_id: CLASS_A }]);
 		mock.enqueue('worksheet_assignments', [
 			{
 				id: 'wa-1',
@@ -324,7 +324,9 @@ describe('getStudentWorkInbox — A1 (direct + class fan-out)', () => {
 		mock.enqueue('exercise_completions', []);
 
 		// Worksheet via class + direct (one of each, different ids)
-		mock.enqueue('worksheet_assignment_classes', [{ assignment_id: 'wa-class' }]);
+		mock.enqueue('worksheet_assignment_classes', [
+			{ assignment_id: 'wa-class', class_id: CLASS_A }
+		]);
 		mock.enqueue('worksheet_assignments', [
 			{
 				id: 'wa-class',
@@ -866,7 +868,9 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
 		mock.enqueue('assessment_assignments', []);
 		mock.enqueue('exercise_assignments', []);
-		mock.enqueue('worksheet_assignment_classes', [{ assignment_id: 'wa-class' }]);
+		mock.enqueue('worksheet_assignment_classes', [
+			{ assignment_id: 'wa-class', class_id: CLASS_A }
+		]);
 		mock.enqueue('worksheet_assignments', [
 			{
 				id: 'wa-class',
@@ -906,6 +910,82 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 		expect(inbox.thisWeek[0].itemId).toBe('w-shared');
 		expect(inbox.thisWeek[0].assignmentId).toBe('wa-direct');
 		expect(inbox.thisWeek[0].classId).toBeNull();
+	});
+
+	it('nomme la classe de l’ÉLÈVE sur une fiche distribuée par la classe', async () => {
+		// La classe vient de la jonction, restreinte par la RLS aux classes de
+		// l'élève. La colonne historique `worksheet_assignments.class_id` nommait la
+		// PREMIÈRE classe de l'affectation, dont il pouvait n'être pas membre.
+		const mock = createMockSupabase();
+		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
+		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('exercise_assignments', []);
+		mock.enqueue('worksheet_assignment_classes', [
+			{ assignment_id: 'wa-class', class_id: CLASS_A }
+		]);
+		mock.enqueue('worksheet_assignments', [
+			{
+				id: 'wa-class',
+				worksheet_id: 'w-1',
+				assigned_at: ISO.twoDaysAgo,
+				closes_at: ISO.threeDaysFromNow,
+				available_from: null,
+				status: 'active',
+				title: null,
+				created_by: 'teacher-1',
+				created_at: ISO.twoDaysAgo
+			}
+		]);
+		mock.enqueue('worksheet_assignment_students', []);
+		mock.enqueue('python_exercise_assignments', []);
+		mock.enqueue('worksheets', [{ id: 'w-1', title: 'Fiche classe' }]);
+		mock.enqueue('classes', [{ id: CLASS_A, name: '3eme A' }]);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+		expect(inbox.thisWeek).toHaveLength(1);
+		expect(inbox.thisWeek[0].classId).toBe(CLASS_A);
+		expect(inbox.thisWeek[0].className).toBe('3eme A');
+	});
+
+	it('la MÊME affectation atteinte par la classe et nommément reste « directe », puce comprise', async () => {
+		// Une seule ligne d'affectation, touchée par les deux voies. Le départage
+		// porte sur `via`, pas sur `classId` : faire porter le départage à la
+		// classe affichée donnerait `classId` non nul aux deux candidats, aucune
+		// règle ne se déclencherait, et l'item retenu deviendrait arbitraire.
+		//
+		// La puce de classe, elle, est CONSERVÉE : l'affectation vise bien la
+		// classe de l'élève, et le fait qu'il y soit aussi nommé ne l'efface pas.
+		const ligne = {
+			id: 'wa-mixte',
+			worksheet_id: 'w-mixte',
+			assigned_at: ISO.twoDaysAgo,
+			closes_at: ISO.threeDaysFromNow,
+			available_from: null,
+			status: 'active',
+			title: null,
+			created_by: 'teacher-1',
+			created_at: ISO.twoDaysAgo
+		};
+		const mock = createMockSupabase();
+		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
+		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('exercise_assignments', []);
+		mock.enqueue('worksheet_assignment_classes', [
+			{ assignment_id: 'wa-mixte', class_id: CLASS_A }
+		]);
+		mock.enqueue('worksheet_assignments', [ligne]);
+		mock.enqueue('worksheet_assignment_students', [{ assignment_id: 'wa-mixte' }]);
+		mock.enqueue('worksheet_assignments', [ligne]);
+		mock.enqueue('python_exercise_assignments', []);
+		mock.enqueue('worksheets', [{ id: 'w-mixte', title: 'Fiche mixte' }]);
+		mock.enqueue('classes', [{ id: CLASS_A, name: '3eme A' }]);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+		expect(inbox.thisWeek).toHaveLength(1);
+		expect(inbox.thisWeek[0].assignmentId).toBe('wa-mixte');
+		expect(inbox.thisWeek[0].via).toBe('direct');
+		expect(inbox.thisWeek[0].classId).toBe(CLASS_A);
+		expect(inbox.thisWeek[0].className).toBe('3eme A');
 	});
 });
 

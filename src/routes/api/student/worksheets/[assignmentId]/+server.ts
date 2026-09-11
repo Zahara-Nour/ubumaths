@@ -43,6 +43,7 @@ import {
 	studentWorksheetDetailResponseSchema
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { fetchAssignmentClasses } from '$lib/server/worksheets/assignment-classes';
 import { getCorrectionVisibilityMap } from '$lib/server/worksheets/correction-visibility';
 import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
 import type { Exercise, ExerciseResource, ExerciseHint } from '$lib/exercises/types';
@@ -250,7 +251,6 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				available_from,
 				closes_at,
 				show_corrections,
-				class_id,
 				worksheets!inner (
 					id,
 					title,
@@ -258,9 +258,6 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					type,
 					config,
 					translations
-				),
-				classes (
-					name
 				)
 			`
 			)
@@ -285,7 +282,11 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				translations: RowTranslations | null;
 			}
 		);
-		const classData = getFirstOrSelf(assignment.classes as unknown as { name: string } | null);
+		// La classe rapportée à l'élève est la SIENNE : la RLS ne lui montre de la
+		// jonction que les lignes de ses propres classes. La colonne historique
+		// nommait la première classe de l'affectation, dont il pouvait n'être pas
+		// membre.
+		const classeEleve = (await fetchAssignmentClasses(locals.supabase, assignmentId))[0] ?? null;
 
 		// Fetch worksheet exercises with exercise data (R4: include variations, shared, resources)
 		const { data: worksheetExercises, error: exercisesError } = await locals.supabase
@@ -505,7 +506,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			available_from: assignment.available_from,
 			closes_at: assignment.closes_at,
 			show_corrections: assignment.show_corrections ?? false,
-			class_name: classData?.name ?? null,
+			class_name: classeEleve?.name || null,
 			exercises,
 			sections: sectionViews
 		};

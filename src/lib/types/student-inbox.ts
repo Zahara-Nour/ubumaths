@@ -32,9 +32,21 @@ export interface WorkItem {
 	/** Row id in the corresponding *_assignments table. */
 	assignmentId: string;
 	title: string;
-	/** null when the item is assigned directly to the student or is `public`. */
+	/**
+	 * The class this item reaches the student through, when there is one — used
+	 * for display. `null` for a purely individual assignment.
+	 *
+	 * ⚠️ Do NOT infer the distribution path from this field: an assignment can
+	 * target the student's class AND name them individually, in which case both
+	 * are set. Read {@link WorkItem.via} instead.
+	 */
 	classId: string | null;
 	className: string | null;
+	/**
+	 * How the item reaches the student. Dedup precedence keys on this — never on
+	 * `classId`, which is display-only.
+	 */
+	via: 'class' | 'direct';
 	/** ISO timestamp. null means "no deadline". */
 	dueAt: string | null;
 	status: WorkStatus;

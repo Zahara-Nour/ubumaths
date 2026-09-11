@@ -104,9 +104,9 @@ function dedupItems(items: WorkItem[]): WorkItem[] {
 			map.set(key, item);
 			continue;
 		}
-		if (existing.classId !== null && item.classId === null) {
+		if (existing.via === 'class' && item.via === 'direct') {
 			map.set(key, item);
-		} else if (existing.classId === item.classId && item.assignedAt > existing.assignedAt) {
+		} else if (existing.via === item.via && item.assignedAt > existing.assignedAt) {
 			map.set(key, item);
 		}
 	}
@@ -256,6 +256,7 @@ async function fetchAssessmentItems(
 			title: assessment.title,
 			classId: assignment.class_id,
 			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
+			via: assignment.class_id ? 'class' : 'direct',
 			dueAt,
 			status: doneAt ? 'done' : 'todo',
 			viewed: false,
@@ -347,6 +348,7 @@ async function fetchExerciseItems(
 			title: exercise?.title ?? '',
 			classId: assignment.class_id,
 			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
+			via: assignment.class_id ? 'class' : 'direct',
 			dueAt: assignment.optional_deadline,
 			status: doneAt ? 'done' : 'todo',
 			viewed: completion?.last_viewed_at != null,
@@ -388,12 +390,23 @@ async function fetchWorksheetItems(
 		classIds.length > 0
 			? await supabase
 					.from('worksheet_assignment_classes')
-					.select('assignment_id')
+					.select('assignment_id, class_id')
 					.in('class_id', classIds)
-			: { data: [] as { assignment_id: string }[], error: null };
+			: { data: [] as { assignment_id: string; class_id: string }[], error: null };
 	logError('worksheet.classLinks', classLinkErr);
 
 	const classAssignmentIds = [...new Set((classLinkRaw ?? []).map((row) => row.assignment_id))];
+
+	// La classe affichée vient désormais de la JONCTION, et c'est celle de
+	// l'élève : `classLinkRaw` est déjà restreint à ses propres classes. La
+	// colonne `worksheet_assignments.class_id` nommait la PREMIÈRE classe de
+	// l'affectation, dont il pouvait n'être pas membre.
+	const classeParAffectation = new Map<string, string>();
+	for (const row of classLinkRaw ?? []) {
+		if (!classeParAffectation.has(row.assignment_id)) {
+			classeParAffectation.set(row.assignment_id, row.class_id);
+		}
+	}
 
 	const classAssignmentsRes =
 		classAssignmentIds.length > 0
@@ -433,9 +446,7 @@ async function fetchWorksheetItems(
 	if (assignments.length === 0) return [];
 
 	const worksheetIds = Array.from(new Set(assignments.map((a) => a.worksheet_id)));
-	const referencedClassIds = Array.from(
-		new Set(assignments.map((a) => a.class_id).filter((id): id is string => id !== null))
-	);
+	const referencedClassIds = Array.from(new Set(classeParAffectation.values()));
 
 	const [worksheetsRes, classNames, exercisesRes] = await Promise.all([
 		supabase.from('worksheets').select('id, title').in('id', worksheetIds),
@@ -491,16 +502,24 @@ async function fetchWorksheetItems(
 
 	const worksheetById = new Map((worksheetsRes.data ?? []).map((row) => [row.id, row]));
 
-	return assignments.map<WorkItem>((assignment) => {
+	function toItem(assignment: WorksheetAssignmentRow, viaClasse: boolean): WorkItem {
 		const worksheet = worksheetById.get(assignment.worksheet_id);
 		const doneAt = worksheetDoneAt(assignment.worksheet_id);
+		// La classe sert à AFFICHER, `via` à départager. Une affectation atteinte à
+		// la fois par la classe et nominalement produit deux items : le direct
+		// gagne, et il garde sa puce de classe, puisque l'affectation vise bien la
+		// classe de l'élève. Confondre les deux — faire porter le départage à
+		// `classId` — effaçait cette puce, et cassait en silence le jour où l'on
+		// voudrait afficher une classe sur un item direct.
+		const classId = classeParAffectation.get(assignment.id) ?? null;
 		return {
 			source: 'worksheet' satisfies WorkSource,
 			itemId: assignment.worksheet_id,
 			assignmentId: assignment.id,
 			title: assignment.title ?? worksheet?.title ?? '',
-			classId: assignment.class_id,
-			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
+			classId,
+			className: classId ? (classNames.get(classId) ?? null) : null,
+			via: viaClasse ? 'class' : 'direct',
 			dueAt: assignment.closes_at,
 			status: doneAt ? 'done' : 'todo',
 			viewed: masteryByExercise.size > 0,
@@ -508,7 +527,12 @@ async function fetchWorksheetItems(
 			href: `/dashboard/student/worksheets/${assignment.id}`,
 			assignedAt: assignment.assigned_at
 		};
-	});
+	}
+
+	return [
+		...classAssignments.map((a) => toItem(a, true)),
+		...directAssignments.map((a) => toItem(a, false))
+	];
 }
 
 // ============================================================================
@@ -582,6 +606,7 @@ async function fetchPythonItems(
 			title: exercise?.title ?? '',
 			classId: assignment.class_id,
 			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
+			via: assignment.class_id ? 'class' : 'direct',
 			dueAt: assignment.due_date,
 			status: doneAt ? 'done' : 'todo',
 			viewed: false,
@@ -652,6 +677,7 @@ async function fetchPythonNotebookItems(
 			title: notebook?.title ?? '',
 			classId: assignment.class_id,
 			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
+			via: assignment.class_id ? 'class' : 'direct',
 			dueAt: null,
 			status: 'todo',
 			viewed: false,
@@ -722,6 +748,7 @@ async function fetchPythonFileItems(
 			title: file?.title ?? '',
 			classId: assignment.class_id,
 			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
+			via: assignment.class_id ? 'class' : 'direct',
 			dueAt: assignment.due_date,
 			status: 'todo',
 			viewed: false,

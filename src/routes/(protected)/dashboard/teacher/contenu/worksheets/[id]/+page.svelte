@@ -629,9 +629,7 @@
 					/>
 				{:else if selectedAssignment}
 					<!-- Correction Manager for selected assignment -->
-					{@const selectedClasses =
-						selectedAssignment.classes ||
-						(selectedAssignment.class ? [selectedAssignment.class] : [])}
+					{@const selectedClasses = selectedAssignment.classes || []}
 					{@const selectedStudents = selectedAssignment.assigned_students || []}
 					<div class="space-y-4">
 						<div class="flex items-center justify-between">
@@ -729,8 +727,7 @@
 						{:else}
 							<div class="grid gap-4">
 								{#each assignments as assignment (assignment.id)}
-									{@const assignmentClasses =
-										assignment.classes || (assignment.class ? [assignment.class] : [])}
+									{@const assignmentClasses = assignment.classes || []}
 									{@const assignedStudents = assignment.assigned_students || []}
 									<Card.Root
 										class="cursor-pointer transition-colors hover:bg-muted/50"

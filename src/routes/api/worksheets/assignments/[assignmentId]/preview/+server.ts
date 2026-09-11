@@ -40,6 +40,10 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { getCorrectionVisibilityMap } from '$lib/server/worksheets/correction-visibility';
+import {
+	fetchAssignmentClasses,
+	formatClassNames
+} from '$lib/server/worksheets/assignment-classes';
 import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
 import type { Exercise, ExerciseResource, ExerciseHint } from '$lib/exercises/types';
 import { getExerciseContentSafe } from '$lib/exercises/types';
@@ -361,7 +365,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				available_from,
 				closes_at,
 				show_corrections,
-				class_id,
 				worksheets!inner (
 					id,
 					title,
@@ -369,9 +372,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 					type,
 					config,
 					translations
-				),
-				classes (
-					name
 				)
 			`
 			)
@@ -395,7 +395,10 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				translations: RowTranslations | null;
 			}
 		);
-		const classData = getFirstOrSelf(fullAssignment.classes as unknown as { name: string } | null);
+		// Les classes visées, lues dans la jonction. Cet endpoint est réservé au
+		// créateur et aux administrateurs (`verifyTeacherAccess` plus haut), qui les
+		// voient donc toutes ; la colonne historique n'en nommait qu'une.
+		const classesVisees = await fetchAssignmentClasses(locals.supabase, assignmentId);
 
 		// Fetch worksheet exercises
 		const { data: worksheetExercises, error: exercisesError } = await locals.supabase
@@ -552,7 +555,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			available_from: fullAssignment.available_from,
 			closes_at: fullAssignment.closes_at,
 			show_corrections: isTeacherMode ? true : (fullAssignment.show_corrections ?? false),
-			class_name: classData?.name ?? null,
+			class_name: formatClassNames(classesVisees),
 			exercises,
 			sections: sectionViews,
 			// Preview metadata

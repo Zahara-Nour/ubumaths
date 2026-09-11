@@ -15,6 +15,10 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 import { canAccessCorrections } from '$lib/server/worksheets/correction-release';
+import {
+	fetchAssignmentClasses,
+	formatClassNames
+} from '$lib/server/worksheets/assignment-classes';
 import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
 import { worksheetLocale } from '$lib/types/worksheets';
 import { asInstanceData } from '$lib/types/worksheets';
@@ -78,10 +82,6 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 							variations
 						)
 					)
-				),
-				class:classes(
-					id,
-					name
 				)
 			`
 			)
@@ -213,7 +213,14 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		}
 
 		const worksheet = assignment.worksheet as WorksheetWithRelations;
-		const className = assignment.class?.name;
+		// Les classes visées, lues dans la jonction : l'en-tête du PDF nomme celles
+		// que le LECTEUR a le droit de voir — toutes pour le professeur, la sienne
+		// pour l'élève, aucune pour l'élève nommément désigné hors classe.
+		// `assignment.class` tenait à la colonne historique, qui n'en portait
+		// qu'une — et la clé étrangère qui résolvait cette jointure disparaît avec
+		// elle.
+		const className =
+			formatClassNames(await fetchAssignmentClasses(locals.supabase, assignmentId)) ?? undefined;
 
 		// If JSON format requested, return correction data
 		if (format === 'json') {
