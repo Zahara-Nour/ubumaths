@@ -6,7 +6,13 @@ Guide essentiel pour Claude Code. Doc détaillée : [docs/claude/](docs/claude/)
 
 ## Contexte (toujours en tête)
 
-- Application éducative de mathématiques, élèves francophones. **UI en français, code & commentaires en anglais.**
+- Application éducative de mathématiques, élèves francophones. **UI en français. Identifiants et noms de symboles en anglais ; commentaires en français.**
+  - Tranché par David le 2026-09-12. L'ancienne formulation disait « code &
+    commentaires en anglais », alors que le dépôt compte ~4700 lignes de
+    commentaires français dans 713 fichiers : la règle réelle est celle
+    ci-dessus. Un commentaire explique _pourquoi_, et c'est David qui le relit.
+  - Donc : `const targetClasses`, pas `const classesVisees` — mais le
+    commentaire au-dessus reste en français.
 - ⚠️ **PRODUCTION LIVE** : `main` est déployé en prod (Vercel). Vraies données d'**élèves mineurs** → **RGPD, prudence maximale** sur tout ce qui touche données / auth / social.
 - **Modèle mono-professeur** : un seul prof (+ admin), des élèves dans ses classes ou hors-classe. L'**école = frontière sociale / safeguarding** ; la classe = sous-groupe d'organisation.
 - **Stack** : Svelte 5 (runes) · TypeScript (strict) · Tailwind 4 · Shadcn-svelte · MathLive · Supabase (Postgres + Auth + RLS, **EU / eu-west-3**) · Vercel · pnpm.
