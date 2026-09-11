@@ -1,6 +1,6 @@
 /**
- * Accès élève à une fiche — les TROIS voies de distribution
- * =========================================================
+ * Accès élève à une fiche — les DEUX voies de distribution
+ * ========================================================
  *
  * Migration : 20260908200000_worksheet_access_all_distribution_paths.sql
  *
@@ -11,10 +11,11 @@
  * fiche distribuée à deux classes n'était donc lisible que par la première, et
  * une distribution purement individuelle par personne.
  *
- * Ces tests posent les trois voies côte à côte, et surtout la quatrième
- * situation : celle d'un élève à qui RIEN n'a été distribué, qui ne doit rien
- * voir. Élargir un accès sans vérifier qu'il reste fermé ailleurs ne prouve
- * rien.
+ * La colonne a été supprimée le 2026-09-12 ; restent la jonction et la
+ * désignation nominale. Ces tests les posent côte à côte, et surtout la
+ * troisième situation : celle d'un élève à qui RIEN n'a été distribué, qui ne
+ * doit rien voir. Élargir un accès sans vérifier qu'il reste fermé ailleurs ne
+ * prouve rien.
  *
  * ⚠️ Aucune assertion ne se contente d'un `error === null` : chaque cas compare
  * des identifiants précis.
@@ -107,13 +108,12 @@ describe('accès élève à une fiche selon la voie de distribution', () => {
 			position: 1
 		});
 
-		// Une SEULE affectation, exactement comme l'API en crée : `class_id` porte
-		// la première classe, la jonction porte les deux, plus un élève nommé.
+		// Une SEULE affectation, exactement comme l'API en crée : la jonction porte
+		// les deux classes, plus un élève nommé.
 		const { data: assignment, error: aError } = await service
 			.from('worksheet_assignments')
 			.insert({
 				worksheet_id: worksheetId,
-				class_id: classA.id,
 				status: 'active',
 				created_by: teacher.id
 			})
@@ -159,16 +159,16 @@ describe('accès élève à une fiche selon la voie de distribution', () => {
 		return (sheet.data ?? []).length === 1 && (content.data ?? []).length === 1;
 	}
 
-	it('voie 1 — colonne historique `class_id`', async () => {
+	it('par la classe — la 1re classe visée', async () => {
 		expect(await canRead(viaLegacy)).toBe(true);
 	});
 
-	it('voie 2 — jonction multi-classes (la 2ᵉ classe, absente de `class_id`)', async () => {
+	it('par la classe — la 2ᵉ classe visée, celle que la colonne oubliait', async () => {
 		// C'est le cas qui échouait : `classIds[0]` seul entre dans `class_id`.
 		expect(await canRead(viaJunction)).toBe(true);
 	});
 
-	it('voie 3 — élève nommément désigné, membre d’aucune classe', async () => {
+	it('par le nom — élève désigné, membre d’aucune classe', async () => {
 		expect(await canRead(viaIndividual)).toBe(true);
 	});
 
@@ -177,7 +177,7 @@ describe('accès élève à une fiche selon la voie de distribution', () => {
 		expect(await canRead(outsider)).toBe(false);
 	});
 
-	it('une affectation non active ne donne accès par AUCUNE voie', async () => {
+	it('une affectation non active ne donne accès par AUCUN chemin', async () => {
 		const { error } = await service
 			.from('worksheet_assignments')
 			.update({ status: 'cancelled' })
