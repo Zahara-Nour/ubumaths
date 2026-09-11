@@ -143,7 +143,6 @@ describe('affectation visant une seconde classe', () => {
 		// porte les deux classes.
 		assignmentId = await insert('worksheet_assignments', {
 			worksheet_id: worksheetId,
-			class_id: classePremiere,
 			status: 'active',
 			available_from: new Date(Date.now() - 86_400_000).toISOString(),
 			created_by: profId

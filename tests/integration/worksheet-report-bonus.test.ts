@@ -129,7 +129,6 @@ describe('gidouille du signalement d’erreur', () => {
 		// la première — celle dont l'élève n'est PAS membre.
 		assignmentId = await insert('worksheet_assignments', {
 			worksheet_id: worksheetId,
-			class_id: classePremiere,
 			status: 'active',
 			available_from: new Date(Date.now() - 86_400_000).toISOString(),
 			created_by: profId
