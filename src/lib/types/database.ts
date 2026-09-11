@@ -13252,7 +13252,6 @@ export type Database = {
         Row: {
           assigned_at: string
           available_from: string | null
-          class_id: string | null
           closes_at: string | null
           correction_release_at: string | null
           correction_release_mode: string | null
@@ -13270,7 +13269,6 @@ export type Database = {
         Insert: {
           assigned_at?: string
           available_from?: string | null
-          class_id?: string | null
           closes_at?: string | null
           correction_release_at?: string | null
           correction_release_mode?: string | null
@@ -13288,7 +13286,6 @@ export type Database = {
         Update: {
           assigned_at?: string
           available_from?: string | null
-          class_id?: string | null
           closes_at?: string | null
           correction_release_at?: string | null
           correction_release_mode?: string | null
@@ -13304,13 +13301,6 @@ export type Database = {
           worksheet_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "worksheet_assignments_class_id_fkey"
-            columns: ["class_id"]
-            isOneToOne: false
-            referencedRelation: "classes"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "worksheet_assignments_created_by_fkey"
             columns: ["created_by"]
