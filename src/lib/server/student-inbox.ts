@@ -378,14 +378,31 @@ async function fetchWorksheetItems(
 	const nowIso = new Date().toISOString();
 	const availabilityClause = `available_from.is.null,available_from.lte.${nowIso}`;
 
-	const classAssignmentsRes =
+	// Les affectations visant l'une des classes de l'élève, lues dans la JONCTION.
+	//
+	// `worksheet_assignments.class_id` ne porte que la PREMIÈRE classe : filtrer
+	// dessus faisait disparaître de « Mon travail » toute fiche distribuée à
+	// l'élève par une seconde classe. Il y avait accès, mais elle n'apparaissait
+	// nulle part — donc il ne la faisait pas.
+	const { data: classLinkRaw, error: classLinkErr } =
 		classIds.length > 0
+			? await supabase
+					.from('worksheet_assignment_classes')
+					.select('assignment_id')
+					.in('class_id', classIds)
+			: { data: [] as { assignment_id: string }[], error: null };
+	logError('worksheet.classLinks', classLinkErr);
+
+	const classAssignmentIds = [...new Set((classLinkRaw ?? []).map((row) => row.assignment_id))];
+
+	const classAssignmentsRes =
+		classAssignmentIds.length > 0
 			? await supabase
 					.from('worksheet_assignments')
 					.select('*')
 					.eq('status', 'active')
 					.or(availabilityClause)
-					.in('class_id', classIds)
+					.in('id', classAssignmentIds)
 			: { data: [] as WorksheetAssignmentRow[], error: null };
 
 	const { data: directLinkRaw, error: directLinkErr } = await supabase

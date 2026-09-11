@@ -141,6 +141,7 @@ afterEach(() => {
  *   - exercise_assignments (1x)
  *   - exercises (1x, only when exercise rows exist)
  *   - exercise_completions (1x, only when exercise rows exist)
+ *   - worksheet_assignment_classes (1x, seulement si l'élève a des classes)
  *   - worksheet_assignments (up to 2x: class + direct)
  *   - worksheet_assignment_students (1x)
  *   - worksheets (1x, only when worksheet rows exist)
@@ -158,6 +159,11 @@ function queueEmptyBaseline(mock: MockSupabase, classIds: string[] = []) {
 	);
 	mock.enqueue('assessment_assignments', []);
 	mock.enqueue('exercise_assignments', []);
+	// Les affectations de classe passent par la JONCTION : la colonne historique
+	// `worksheet_assignments.class_id` ne portait que la première classe, et une
+	// fiche distribuée par une seconde classe n'apparaissait pas dans « Mon
+	// travail ».
+	mock.enqueue('worksheet_assignment_classes', []);
 	mock.enqueue('worksheet_assignments', []); // class-scoped
 	mock.enqueue('worksheet_assignment_students', []);
 	mock.enqueue('python_exercise_assignments', []);
@@ -173,6 +179,8 @@ describe('getStudentWorkInbox — complétion des fiches (auto-évaluation)', ()
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
 		mock.enqueue('assessment_assignments', []);
 		mock.enqueue('exercise_assignments', []);
+		// La jonction désigne l'affectation ; la colonne historique ne décide plus.
+		mock.enqueue('worksheet_assignment_classes', [{ assignment_id: 'wa-1' }]);
 		mock.enqueue('worksheet_assignments', [
 			{
 				id: 'wa-1',
@@ -232,6 +240,7 @@ describe('getStudentWorkInbox — complétion des fiches (auto-évaluation)', ()
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
 		mock.enqueue('assessment_assignments', []);
 		mock.enqueue('exercise_assignments', []);
+		mock.enqueue('worksheet_assignment_classes', [{ assignment_id: 'wa-1' }]);
 		mock.enqueue('worksheet_assignments', [
 			{
 				id: 'wa-1',
@@ -315,6 +324,7 @@ describe('getStudentWorkInbox — A1 (direct + class fan-out)', () => {
 		mock.enqueue('exercise_completions', []);
 
 		// Worksheet via class + direct (one of each, different ids)
+		mock.enqueue('worksheet_assignment_classes', [{ assignment_id: 'wa-class' }]);
 		mock.enqueue('worksheet_assignments', [
 			{
 				id: 'wa-class',
@@ -856,6 +866,7 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
 		mock.enqueue('assessment_assignments', []);
 		mock.enqueue('exercise_assignments', []);
+		mock.enqueue('worksheet_assignment_classes', [{ assignment_id: 'wa-class' }]);
 		mock.enqueue('worksheet_assignments', [
 			{
 				id: 'wa-class',

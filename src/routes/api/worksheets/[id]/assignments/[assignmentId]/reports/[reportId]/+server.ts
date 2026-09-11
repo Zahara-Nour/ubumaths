@@ -372,18 +372,50 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 				worksheetExerciseData.id
 			)) ?? worksheetExerciseData.position;
 
-		// Step 3: Get assignment data for class_id (needed for bonus)
-		const { data: assignmentData, error: assignmentError } = await locals.supabase
-			.from('worksheet_assignments')
+		// Step 3 : la classe par laquelle CET élève est concerné par l'affectation.
+		//
+		// `update_student_bonus` exige que l'élève soit membre ACTIF de la classe
+		// passée, sinon elle lève. Ce n'est donc pas « la classe de l'affectation »
+		// qu'il faut, mais l'intersection entre les classes visées et les siennes.
+		//
+		// L'ancienne version lisait `worksheet_assignments.class_id`, la colonne
+		// historique, qui ne porte que la PREMIÈRE classe : un élève de la seconde
+		// faisait lever la fonction, l'erreur était avalée plus bas (« nice-to-have »)
+		// et sa gidouille disparaissait sans trace. Invisible tant qu'on ne
+		// distribue qu'à une classe à la fois.
+		const { data: classesVisees, error: classesError } = await locals.supabase
+			.from('worksheet_assignment_classes')
 			.select('class_id')
-			.eq('id', assignmentId)
-			.single();
+			.eq('assignment_id', assignmentId);
 
-		if (assignmentError) {
-			console.error('[API] Error fetching assignment:', assignmentError);
+		// Une lecture en panne et une absence légitime donnent la même sortie — pas
+		// de gidouille — mais pas le même diagnostic. On retient laquelle c'était,
+		// pour ne pas accuser l'élève d'un refus de lecture.
+		let lectureEnPanne = Boolean(classesError);
+		if (classesError) {
+			console.error('[API] Classes de l’affectation illisibles :', classesError.message);
 		}
 
-		const classId = assignmentData?.class_id;
+		let classId: string | undefined;
+		const idsVises = (classesVisees ?? []).map((c) => c.class_id);
+
+		if (idsVises.length > 0) {
+			const { data: appartenance, error: appartenanceError } = await locals.supabase
+				.from('class_members')
+				.select('class_id')
+				.eq('student_id', existingReport.student_id)
+				.eq('status', 'active')
+				.in('class_id', idsVises)
+				.limit(1)
+				.maybeSingle();
+
+			if (appartenanceError) {
+				lectureEnPanne = true;
+				console.error('[API] Appartenance de classe illisible :', appartenanceError.message);
+			}
+
+			classId = appartenance?.class_id;
+		}
 
 		// Step 4: If status is 'fixed', update the exercise content in variations
 		if (newStatus === 'fixed') {
@@ -437,7 +469,10 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 				throw error(500, "Erreur lors de la mise a jour de l'exercice");
 			}
 
-			// Step 5: Award bonus to student (only if class_id is available)
+			// Step 5 : la gidouille, si l'élève appartient bien à l'une des classes
+			// visées. Un élève NOMMÉMENT désigné et membre d'aucune d'elles n'en
+			// reçoit pas — `update_student_bonus` ne sait pas créditer sans classe.
+			// C'est un défaut connu, laissé en l'état sur décision du PO.
 			if (classId) {
 				const { error: bonusError } = await locals.supabase.rpc('update_student_bonus', {
 					p_student_id: existingReport.student_id,
@@ -452,7 +487,9 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 				}
 			} else {
 				console.warn(
-					'[API] No class_id found for assignment, skipping bonus award for student:',
+					lectureEnPanne
+						? '[API] Classe indéterminable (lecture en panne) : pas de gidouille pour'
+						: '[API] Élève membre d’aucune classe visée par l’affectation : pas de gidouille pour',
 					existingReport.student_id
 				);
 			}
