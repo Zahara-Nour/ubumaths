@@ -359,8 +359,13 @@ describe('VIP Card Draw Filters - RPC Function Tests', () => {
 			expect(data?.cards).toHaveLength(10);
 
 			const counts = countByRarity(data!.cards);
-			// Exactly 1 card should be legendary (first card)
-			expect(counts.legendary).toBe(1);
+			// AU MOINS une légendaire : la RPC ne garantit que la PREMIÈRE carte
+			// (`v_min_rarity IS NOT NULL AND v_loop_counter = 1`), les neuf suivantes
+			// étant tirées normalement — elles peuvent donc être légendaires aussi,
+			// et le test d'à côté s'appelle précisément « draw remaining cards
+			// normally after minRarity guarantee ». Exiger « exactement 1 » faisait
+			// rougir la CI environ une fois sur trois, sur un tirage aléatoire.
+			expect(counts.legendary).toBeGreaterThanOrEqual(1);
 		});
 
 		it('should draw remaining cards normally after minRarity guarantee', async () => {
