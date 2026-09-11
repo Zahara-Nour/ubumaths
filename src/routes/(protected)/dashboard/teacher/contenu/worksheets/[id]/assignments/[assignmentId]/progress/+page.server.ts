@@ -18,6 +18,10 @@ import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { requireRoles } from '$lib/server/middleware/auth';
+import {
+	fetchAssignmentClasses,
+	formatClassNames
+} from '$lib/server/worksheets/assignment-classes';
 import type { MasteryStatus } from '$lib/types/exercise-mastery';
 
 const uuidSchema = z.string().uuid();
@@ -81,7 +85,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Workshee
 
 	const { data: assignment, error: assignmentError } = await locals.supabase
 		.from('worksheet_assignments')
-		.select('id, title, class_id, worksheet_id')
+		.select('id, title, worksheet_id')
 		.eq('id', params.assignmentId)
 		.eq('worksheet_id', params.id)
 		.maybeSingle();
@@ -97,16 +101,29 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Workshee
 	const studentIds = new Set<string>();
 	let className: string | null = null;
 
-	if (assignment.class_id) {
-		const [{ data: klass }, { data: members }] = await Promise.all([
-			locals.supabase.from('classes').select('name').eq('id', assignment.class_id).maybeSingle(),
-			locals.supabase
-				.from('class_members')
-				.select('student_id')
-				.eq('class_id', assignment.class_id)
-				.eq('status', 'active')
-		]);
-		className = klass?.name ?? null;
+	// TOUTES les classes visées, lues dans la jonction. La colonne historique
+	// `worksheet_assignments.class_id` n'en portait que la première : les élèves
+	// des suivantes étaient absents du suivi, et le professeur croyait pourtant
+	// lire l'avancement de tout le monde.
+	const classesVisees = await fetchAssignmentClasses(locals.supabase, params.assignmentId);
+	className = formatClassNames(classesVisees);
+
+	if (classesVisees.length > 0) {
+		const { data: members, error: membersError } = await locals.supabase
+			.from('class_members')
+			.select('student_id')
+			.in(
+				'class_id',
+				classesVisees.map((c) => c.id)
+			)
+			.eq('status', 'active');
+
+		// Cette liste borne le périmètre du suivi. Vidée par une panne, elle
+		// affiche un suivi amputé sans le dire.
+		if (membersError) {
+			console.error('Périmètre illisible :', membersError);
+			throw error(500, 'Impossible de déterminer le périmètre');
+		}
 		for (const m of members ?? []) studentIds.add(m.student_id);
 	}
 

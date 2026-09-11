@@ -335,7 +335,6 @@ export interface WorksheetInstanceRow {
 export interface WorksheetAssignmentRow {
 	id: string;
 	worksheet_id: string;
-	class_id: string | null;
 	title: string | null;
 	instructions: string | null;
 	individualized: boolean;

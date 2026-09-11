@@ -8,7 +8,8 @@
  * Multi-Class Assignment Support (Dec 2024):
  * - Accepts class_ids[] array for assigning to multiple classes
  * - Accepts student_ids[] array for individual student assignments
- * - Backward compatible: still accepts single class_id (deprecated)
+ * - Backward compatible: still accepts a single `class_id` in the BODY (deprecated);
+ *   it is merged into `class_ids` and stored only in the junction table
  * - Uses worksheet_assignment_classes junction table
  */
 
@@ -124,7 +125,6 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			.select(
 				`
 				*,
-				class:classes(id, name),
 				worksheet:worksheets(id, title, type),
 				worksheet_assignment_classes(
 					id,
@@ -160,15 +160,13 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 
-			if (assignmentIds && assignmentIds.length > 0) {
-				query = query.in(
-					'id',
-					assignmentIds.map((a) => a.assignment_id)
-				);
-			} else {
-				// Also check legacy class_id column for backward compat
-				query = query.eq('class_id', classId);
-			}
+			// Aucun repli sur la colonne historique : la jonction est la seule source.
+			// Le repli renvoyait les affectations dont cette classe était la PREMIÈRE
+			// — un sous-ensemble de ce que la jonction dit déjà.
+			query = query.in(
+				'id',
+				(assignmentIds ?? []).map((a) => a.assignment_id)
+			);
 		}
 
 		const { data: assignments, error: fetchError } = await query;
@@ -360,12 +358,10 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			}
 		}
 
-		// Create assignment - store first class_id for backward compat (or null if individual only)
 		const { data: assignment, error: createError } = await locals.supabase
 			.from('worksheet_assignments')
 			.insert({
 				worksheet_id: worksheetId,
-				class_id: classIds[0] || null, // Backward compat: first class or null
 				title: data.title,
 				instructions: data.instructions,
 				individualized: data.individualized,
@@ -429,7 +425,6 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			.select(
 				`
 				*,
-				class:classes(id, name),
 				worksheet_assignment_classes(
 					id,
 					class_id,

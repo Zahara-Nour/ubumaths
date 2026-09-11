@@ -246,7 +246,7 @@ export async function releaseCorrections(
 	// Verify user is the assignment creator OR admin
 	const { data: assignment, error: fetchError } = await supabase
 		.from('worksheet_assignments')
-		.select('id, created_by, worksheet_id, class_id, correction_release_mode')
+		.select('id, created_by, worksheet_id, correction_release_mode')
 		.eq('id', assignmentId)
 		.single();
 
@@ -459,7 +459,6 @@ export async function getCorrectionReleaseStatus(
 				`
 				id,
 				worksheet_id,
-				class_id,
 				correction_release_mode,
 				correction_release_at,
 				status

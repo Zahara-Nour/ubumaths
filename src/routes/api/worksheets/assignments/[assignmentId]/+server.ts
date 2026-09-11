@@ -15,6 +15,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
+import type { TablesUpdate } from '$lib/types/database';
 import {
 	releaseCorrections,
 	revokeCorrections,
@@ -80,10 +81,6 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 					type,
 					config,
 					status
-				),
-				class:classes(
-					id,
-					name
 				),
 				worksheet_assignment_classes(
 					id,
@@ -217,8 +214,10 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 
 	const { class_ids, student_ids, ...assignmentUpdates } = validation.data;
 
-	// Type for updates including optional class_id for backward compat
-	const updateData: Record<string, unknown> = { ...assignmentUpdates };
+	// Typé, pas `Record<string, unknown>` : ce dernier désactive la vérification
+	// des colonnes, et son seul motif — glisser `class_id` hors du schéma validé —
+	// a disparu avec la colonne.
+	const updateData: TablesUpdate<'worksheet_assignments'> = { ...assignmentUpdates };
 
 	try {
 		// Verify user is the creator
@@ -324,9 +323,6 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 					throw error(500, 'Erreur lors de la mise a jour des classes');
 				}
 			}
-
-			// Update legacy class_id for backward compat (first class or null)
-			updateData.class_id = class_ids[0] || null;
 		}
 
 		// Handle student_ids update if provided
@@ -448,7 +444,6 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			.select(
 				`
 				*,
-				class:classes(id, name),
 				worksheet_assignment_classes(
 					id,
 					class_id,

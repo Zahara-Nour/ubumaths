@@ -84,10 +84,10 @@
 	let individualized = $state<boolean>(initialAssignment?.individualized ?? true);
 
 	// Multi-class selection - extract class IDs from assignment
-	let selectedClassIds = $state<string[]>(
-		initialAssignment?.classes?.map((c) => c.id) ||
-			(initialAssignment?.class_id ? [initialAssignment.class_id] : [])
-	);
+	// `classes` vient de la jonction et porte TOUTES les classes visées. Le repli
+	// sur `class_id` n'en rendait qu'une : rouvrir une affectation multi-classes
+	// puis enregistrer aurait effacé les autres.
+	let selectedClassIds = $state<string[]>(initialAssignment?.classes?.map((c) => c.id) ?? []);
 
 	// Individual student selection - extract student IDs from assignment
 	let selectedStudentIds = $state<string[]>(
