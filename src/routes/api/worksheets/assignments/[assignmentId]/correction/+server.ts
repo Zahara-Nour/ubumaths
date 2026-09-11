@@ -114,9 +114,25 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 
 		const isTeacher = profile?.role === 'teacher' || profile?.role === 'admin';
 		const isAssignmentCreator = assignment.created_by === user.id;
-		const isStudentInClass = Boolean(
-			assignment.class_id && profile?.class_ids?.includes(assignment.class_id)
-		);
+
+		// L'accès élève est délégué à `can_access_assignment`, qui connaît les DEUX
+		// voies de distribution — la jonction des classes et la désignation
+		// nominale. Le test précédent ne regardait que `assignment.class_id`, la
+		// colonne historique : un élève d'une seconde classe, ou un élève hors
+		// classe nommément désigné, se voyait refuser la correction d'une fiche à
+		// laquelle il a pourtant accès. Refus en mode fermé, donc sans fuite — mais
+		// un refus injustifié, et le même défaut que celui réparé dans la migration
+		// 20260911100000 un étage plus haut.
+		const { data: aAcces, error: accesError } = await locals.supabase.rpc('can_access_assignment', {
+			p_assignment_id: assignmentId
+		});
+
+		if (accesError) {
+			console.error('Droits sur l’affectation illisibles :', accesError.message);
+			throw error(500, 'Impossible de vérifier vos droits');
+		}
+
+		const isStudentInClass = aAcces === true;
 
 		console.log('[Correction API] Access check:', {
 			userId: user.id,

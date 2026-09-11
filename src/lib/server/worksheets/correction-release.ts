@@ -45,17 +45,15 @@ export interface CorrectionReleaseStatus {
 
 /**
  * Get all student IDs with access to an assignment (multi-class + individual)
- * Supports both legacy class_id and new worksheet_assignment_classes junction table
+ * Les élèves viennent de la jonction des classes et des désignations nominales.
  *
  * @param supabase - Supabase client
  * @param assignmentId - The assignment ID
- * @param legacyClassId - The legacy class_id (for backward compat)
  * @returns Set of unique student IDs
  */
 async function getAllAssignmentStudentIds(
 	supabase: SupabaseClient,
-	assignmentId: string,
-	legacyClassId: string | null
+	assignmentId: string
 ): Promise<Set<string>> {
 	const studentIds = new Set<string>();
 
@@ -93,20 +91,10 @@ async function getAllAssignmentStudentIds(
 		classMembers?.forEach((m) => studentIds.add(m.student_id));
 	}
 
-	// 2. Legacy: Also check class_id field for backward compat
-	if (legacyClassId && !classAssignments?.some((ca) => ca.class_id === legacyClassId)) {
-		const { data: legacyMembers, error: legacyMembersError } = await supabase
-			.from('class_members')
-			.select('student_id')
-			.eq('class_id', legacyClassId);
-
-		if (legacyMembersError) {
-			console.error('[correction-release] Membres (héritage) illisibles :', legacyMembersError);
-			throw new Error(legacyMembersError.message);
-		}
-
-		legacyMembers?.forEach((m) => studentIds.add(m.student_id));
-	}
+	// La colonne historique `worksheet_assignments.class_id` n'est plus consultée :
+	// elle duplique la première classe de la jonction, que le bloc ci-dessus a
+	// déjà lue. La lire en plus ne pouvait qu'ajouter des élèves d'une classe que
+	// l'affectation ne vise plus.
 
 	// 3. Get individual student assignments
 	const { data: individualStudents, error: individualStudentsError } = await supabase
@@ -298,7 +286,7 @@ export async function releaseCorrections(
 	}
 
 	// Count affected students (multi-class + individual)
-	const studentIds = await getAllAssignmentStudentIds(supabase, assignmentId, assignment.class_id);
+	const studentIds = await getAllAssignmentStudentIds(supabase, assignmentId);
 
 	let affectedStudents = 0;
 	if (studentIds.size > 0) {
@@ -504,11 +492,7 @@ export async function getCorrectionReleaseStatus(
 		let studentsWithAccess = 0;
 		let totalStudents = 0;
 
-		const studentIds = await getAllAssignmentStudentIds(
-			supabase,
-			assignmentId,
-			assignment.class_id
-		);
+		const studentIds = await getAllAssignmentStudentIds(supabase, assignmentId);
 
 		// Total students = number of assigned students (not instances)
 		totalStudents = studentIds.size;
