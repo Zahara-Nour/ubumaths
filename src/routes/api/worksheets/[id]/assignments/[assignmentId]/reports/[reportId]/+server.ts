@@ -383,7 +383,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		// faisait lever la fonction, l'erreur était avalée plus bas (« nice-to-have »)
 		// et sa gidouille disparaissait sans trace. Invisible tant qu'on ne
 		// distribue qu'à une classe à la fois.
-		const { data: classesVisees, error: classesError } = await locals.supabase
+		const { data: targetClasses, error: targetClassesError } = await locals.supabase
 			.from('worksheet_assignment_classes')
 			.select('class_id')
 			.eq('assignment_id', assignmentId);
@@ -391,30 +391,30 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		// Une lecture en panne et une absence légitime donnent la même sortie — pas
 		// de gidouille — mais pas le même diagnostic. On retient laquelle c'était,
 		// pour ne pas accuser l'élève d'un refus de lecture.
-		let lectureEnPanne = Boolean(classesError);
-		if (classesError) {
-			console.error('[API] Classes de l’affectation illisibles :', classesError.message);
+		let readFailed = Boolean(targetClassesError);
+		if (targetClassesError) {
+			console.error('[API] Classes de l’affectation illisibles :', targetClassesError.message);
 		}
 
 		let classId: string | undefined;
-		const idsVises = (classesVisees ?? []).map((c) => c.class_id);
+		const targetClassIds = (targetClasses ?? []).map((c) => c.class_id);
 
-		if (idsVises.length > 0) {
-			const { data: appartenance, error: appartenanceError } = await locals.supabase
+		if (targetClassIds.length > 0) {
+			const { data: membership, error: membershipError } = await locals.supabase
 				.from('class_members')
 				.select('class_id')
 				.eq('student_id', existingReport.student_id)
 				.eq('status', 'active')
-				.in('class_id', idsVises)
+				.in('class_id', targetClassIds)
 				.limit(1)
 				.maybeSingle();
 
-			if (appartenanceError) {
-				lectureEnPanne = true;
-				console.error('[API] Appartenance de classe illisible :', appartenanceError.message);
+			if (membershipError) {
+				readFailed = true;
+				console.error('[API] Appartenance de classe illisible :', membershipError.message);
 			}
 
-			classId = appartenance?.class_id;
+			classId = membership?.class_id;
 		}
 
 		// Step 4: If status is 'fixed', update the exercise content in variations
@@ -487,7 +487,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 				}
 			} else {
 				console.warn(
-					lectureEnPanne
+					readFailed
 						? '[API] Classe indéterminable (lecture en panne) : pas de gidouille pour'
 						: '[API] Élève membre d’aucune classe visée par l’affectation : pas de gidouille pour',
 					existingReport.student_id

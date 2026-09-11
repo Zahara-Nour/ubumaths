@@ -31,7 +31,7 @@
 		content: string;
 		/** Nom affiché dans le dialogue et les libellés d'accessibilité. */
 		label: string;
-		/** Analyse le texte : sert à l'aperçu ET à la validation avant d'enregistrer. */
+		/** Analyse le texte : sert à l'aperçu ET à la validation avant d'save. */
 		parse: (content: string) => ParseResult;
 		/** Composant d'aperçu, qui reçoit le nœud analysé. */
 		preview: Component<{ node: never }>;
@@ -54,27 +54,27 @@
 	}: Props = $props();
 
 	let dialogOpen = $state(false);
-	let brouillon = $state('');
+	let draft = $state('');
 	let survol = $state(false);
 
-	// L'aperçu suit le contenu enregistré ; le dialogue a son propre brouillon,
+	// L'aperçu suit le contenu enregistré ; le dialogue a son propre draft,
 	// pour qu'une saisie invalide n'efface pas ce qui est affiché.
 	const analyse = $derived(parse(content));
-	const analyseBrouillon = $derived(dialogOpen ? parse(brouillon) : null);
+	const draftAnalysis = $derived(dialogOpen ? parse(draft) : null);
 
 	const erreurs = $derived(analyse.errors.map((e) => e.message));
-	const erreursBrouillon = $derived(analyseBrouillon?.errors.map((e) => e.message) ?? []);
+	const draftErrors = $derived(draftAnalysis?.errors.map((e) => e.message) ?? []);
 
 	function ouvrir() {
-		brouillon = content;
+		draft = content;
 		dialogOpen = true;
 	}
 
-	function enregistrer() {
-		// Refuser d'enregistrer un bloc invalide : l'aperçu deviendrait une boîte
+	function save() {
+		// Refuser d'save un bloc invalide : l'aperçu deviendrait une boîte
 		// d'erreur, et le markdown exporté serait illisible pour le parser.
-		if (erreursBrouillon.length > 0) return;
-		onSave(brouillon);
+		if (draftErrors.length > 0) return;
+		onSave(draft);
 		dialogOpen = false;
 	}
 </script>
@@ -129,15 +129,15 @@
 		</Dialog.Header>
 
 		<textarea
-			bind:value={brouillon}
+			bind:value={draft}
 			class="h-64 w-full resize-y rounded-md border border-input bg-background p-3 font-mono text-sm"
 			spellcheck="false"
 			aria-label="Contenu de {label}"
 		></textarea>
 
-		{#if erreursBrouillon.length > 0}
+		{#if draftErrors.length > 0}
 			<ul class="list-inside list-disc text-sm text-destructive">
-				{#each erreursBrouillon as erreur (erreur)}
+				{#each draftErrors as erreur (erreur)}
 					<li>{erreur}</li>
 				{/each}
 			</ul>
@@ -145,7 +145,7 @@
 
 		<Dialog.Footer>
 			<Button variant="outline" onclick={() => (dialogOpen = false)}>Annuler</Button>
-			<Button onclick={enregistrer} disabled={erreursBrouillon.length > 0}>Enregistrer</Button>
+			<Button onclick={save} disabled={draftErrors.length > 0}>Enregistrer</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

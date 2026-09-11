@@ -398,7 +398,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// Les classes visées, lues dans la jonction. Cet endpoint est réservé au
 		// créateur et aux administrateurs (`verifyTeacherAccess` plus haut), qui les
 		// voient donc toutes ; la colonne historique n'en nommait qu'une.
-		const classesVisees = await fetchAssignmentClasses(locals.supabase, assignmentId);
+		const targetClasses = await fetchAssignmentClasses(locals.supabase, assignmentId);
 
 		// Fetch worksheet exercises
 		const { data: worksheetExercises, error: exercisesError } = await locals.supabase
@@ -555,7 +555,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			available_from: fullAssignment.available_from,
 			closes_at: fullAssignment.closes_at,
 			show_corrections: isTeacherMode ? true : (fullAssignment.show_corrections ?? false),
-			class_name: formatClassNames(classesVisees),
+			class_name: formatClassNames(targetClasses),
 			exercises,
 			sections: sectionViews,
 			// Preview metadata

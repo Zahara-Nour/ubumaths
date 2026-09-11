@@ -114,13 +114,13 @@
 	let lessonHtml = $derived(renderContent(data.entry.lessonContent));
 
 	/**
-	 * Les travaux de la séance, chacun avec son rendu et son décompte.
+	 * Les homeworkItems de la séance, chacun avec son rendu et son décompte.
 	 *
 	 * Calculé en une fois plutôt qu'appelé depuis le balisage : `getDaysUntilDue`
 	 * lit l'heure courante, et une fonction impure dans un `{#each}` se
 	 * recalculerait à chaque rendu sans que rien n'ait changé.
 	 */
-	let travaux = $derived(
+	let homeworkItems = $derived(
 		data.entry.homework.map((travail) => ({
 			...travail,
 			html: renderContent(travail.content),
@@ -129,7 +129,7 @@
 	);
 
 	/** Y a-t-il quoi que ce soit à montrer sur cette séance ? */
-	let seanceVide = $derived(!data.entry.lessonContent && travaux.length === 0);
+	let sessionIsEmpty = $derived(!data.entry.lessonContent && homeworkItems.length === 0);
 </script>
 
 <svelte:head>
@@ -198,7 +198,7 @@
 		<!-- Travail à faire : une carte par échéance. Les fondre en une seule
 		     obligerait à choisir une date pour deux devoirs qui n'en partagent
 		     pas. -->
-		{#each travaux as travail (travail.id)}
+		{#each homeworkItems as travail (travail.id)}
 			<Card.Root
 				class={travail.echeance?.isUrgent ? 'border-orange-300 dark:border-orange-700' : ''}
 			>
@@ -231,7 +231,7 @@
 		{/each}
 
 		<!-- Empty state if no content -->
-		{#if seanceVide}
+		{#if sessionIsEmpty}
 			<Card.Root>
 				<Card.Content class="py-12 text-center">
 					<BookOpen class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />

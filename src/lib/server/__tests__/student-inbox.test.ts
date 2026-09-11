@@ -948,14 +948,14 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 	});
 
 	it('la MÊME affectation atteinte par la classe et nommément reste « directe », puce comprise', async () => {
-		// Une seule ligne d'affectation, touchée par les deux voies. Le départage
+		// Une seule row d'affectation, touchée par les deux voies. Le départage
 		// porte sur `via`, pas sur `classId` : faire porter le départage à la
 		// classe affichée donnerait `classId` non nul aux deux candidats, aucune
 		// règle ne se déclencherait, et l'item retenu deviendrait arbitraire.
 		//
 		// La puce de classe, elle, est CONSERVÉE : l'affectation vise bien la
 		// classe de l'élève, et le fait qu'il y soit aussi nommé ne l'efface pas.
-		const ligne = {
+		const row = {
 			id: 'wa-mixte',
 			worksheet_id: 'w-mixte',
 			assigned_at: ISO.twoDaysAgo,
@@ -973,9 +973,9 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 		mock.enqueue('worksheet_assignment_classes', [
 			{ assignment_id: 'wa-mixte', class_id: CLASS_A }
 		]);
-		mock.enqueue('worksheet_assignments', [ligne]);
+		mock.enqueue('worksheet_assignments', [row]);
 		mock.enqueue('worksheet_assignment_students', [{ assignment_id: 'wa-mixte' }]);
-		mock.enqueue('worksheet_assignments', [ligne]);
+		mock.enqueue('worksheet_assignments', [row]);
 		mock.enqueue('python_exercise_assignments', []);
 		mock.enqueue('worksheets', [{ id: 'w-mixte', title: 'Fiche mixte' }]);
 		mock.enqueue('classes', [{ id: CLASS_A, name: '3eme A' }]);

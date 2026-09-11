@@ -106,7 +106,7 @@ export async function resolveExercisesAtDisplayNumbers(
 		return { exerciseIds: [], introuvables: [...numeros] };
 	}
 
-	const parNumero = new Map(
+	const byNumber = new Map(
 		orderExercisesForDisplay(exercises ?? [], sections ?? []).map(({ exercise, number }) => [
 			number,
 			exercise.exercise_id
@@ -116,7 +116,7 @@ export async function resolveExercisesAtDisplayNumbers(
 	const exerciseIds: string[] = [];
 	const introuvables: number[] = [];
 	for (const numero of numeros) {
-		const trouve = parNumero.get(numero);
+		const trouve = byNumber.get(numero);
 		if (trouve) exerciseIds.push(trouve);
 		else introuvables.push(numero);
 	}

@@ -109,7 +109,7 @@ export async function fetchWorksheetCitations(
 	// silence, et le panneau se tairait sur des séances qui citent bien la fiche.
 	//
 	// Le premier balayage ne regarde plus que `lesson_content` : l'ancienne
-	// colonne de devoir unique a été supprimée, tout le travail à faire étant
+	// colonne de devoir unique a été supprimée, tout le homework à faire étant
 	// passé dans la table fille.
 	const [{ data, error }, { data: travaux, error: travauxError }] = await Promise.all([
 		supabase
@@ -149,13 +149,13 @@ export async function fetchWorksheetCitations(
 	// Les contenus des deux sources sont regroupés PAR SÉANCE avant extraction :
 	// une fiche citée à la fois dans le cours et dans un devoir est une seule
 	// ligne du panneau, pas deux.
-	const contenusParSeance = new Map<
+	const contentsBySession = new Map<
 		string,
 		{ classId: string; className: string; entryDate: string; contenus: (string | null)[] }
 	>();
 
 	for (const entry of data ?? []) {
-		contenusParSeance.set(entry.id, {
+		contentsBySession.set(entry.id, {
 			classId: entry.class_id,
 			className: entry.classes.name,
 			entryDate: entry.entry_date,
@@ -163,31 +163,31 @@ export async function fetchWorksheetCitations(
 		});
 	}
 
-	for (const travail of travaux ?? []) {
-		const seance = travail.class_journal_entries;
-		const existante = contenusParSeance.get(seance.id);
+	for (const homework of travaux ?? []) {
+		const session = homework.class_journal_entries;
+		const existante = contentsBySession.get(session.id);
 		if (existante) {
-			existante.contenus.push(travail.content);
+			existante.contenus.push(homework.content);
 			continue;
 		}
-		contenusParSeance.set(seance.id, {
-			classId: seance.class_id,
-			className: seance.classes.name,
-			entryDate: seance.entry_date,
-			contenus: [travail.content]
+		contentsBySession.set(session.id, {
+			classId: session.class_id,
+			className: session.classes.name,
+			entryDate: session.entry_date,
+			contenus: [homework.content]
 		});
 	}
 
 	// Le tri se refait ici : deux requêtes bornées séparément ne sortent pas
 	// triées l'une par rapport à l'autre, et le panneau annonce « de la plus
 	// récente à la plus ancienne ».
-	const seances = [...contenusParSeance.entries()]
+	const sessions = [...contentsBySession.entries()]
 		.sort(([, a], [, b]) => b.entryDate.localeCompare(a.entryDate))
 		.slice(0, MAX_CITATIONS);
 
 	const citations: WorksheetCitation[] = [];
 
-	for (const [entryId, entry] of seances) {
+	for (const [entryId, entry] of sessions) {
 		const decrites = extractResourceReferences(...entry.contenus)
 			.filter((reference) => reference.kind === 'worksheet' && reference.id === cible)
 			.map((reference) => parseExerciseSelection(reference.selection))

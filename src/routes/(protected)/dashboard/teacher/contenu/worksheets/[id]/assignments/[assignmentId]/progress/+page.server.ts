@@ -105,16 +105,16 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Workshee
 	// `worksheet_assignments.class_id` n'en portait que la première : les élèves
 	// des suivantes étaient absents du suivi, et le professeur croyait pourtant
 	// lire l'avancement de tout le monde.
-	const classesVisees = await fetchAssignmentClasses(locals.supabase, params.assignmentId);
-	className = formatClassNames(classesVisees);
+	const targetClasses = await fetchAssignmentClasses(locals.supabase, params.assignmentId);
+	className = formatClassNames(targetClasses);
 
-	if (classesVisees.length > 0) {
+	if (targetClasses.length > 0) {
 		const { data: members, error: membersError } = await locals.supabase
 			.from('class_members')
 			.select('student_id')
 			.in(
 				'class_id',
-				classesVisees.map((c) => c.id)
+				targetClasses.map((c) => c.id)
 			)
 			.eq('status', 'active');
 

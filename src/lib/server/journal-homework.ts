@@ -42,7 +42,7 @@ export interface ResolvedHomework {
 	 * A list rather than a first failure: the teacher fixes their whole entry in
 	 * one go instead of discovering the mistakes one save at a time.
 	 */
-	refusees: string[];
+	rejected: string[];
 }
 
 // ============================================================================
@@ -56,7 +56,7 @@ export interface ResolvedHomework {
  * Judging those "blank" by their stripped text would silently drop the
  * teacher's work — the worst possible failure for a save button.
  */
-const CONTENU_SANS_TEXTE = /<(img|iframe|video|audio)\b|data-math-(inline|block)/i;
+const TEXTLESS_CONTENT = /<(img|iframe|video|audio)\b|data-math-(inline|block)/i;
 
 // ============================================================================
 // FUNCTIONS — pure
@@ -69,9 +69,9 @@ const CONTENU_SANS_TEXTE = /<(img|iframe|video|audio)\b|data-math-(inline|block)
  * TipTap editor renders `<p></p>`, which is not a blank string. Without this
  * check the pupil would see a bullet with a deadline and nothing to do.
  */
-export function estContenuVide(html: string | null | undefined): boolean {
+export function isContentEmpty(html: string | null | undefined): boolean {
 	if (!html) return true;
-	if (CONTENU_SANS_TEXTE.test(html)) return false;
+	if (TEXTLESS_CONTENT.test(html)) return false;
 
 	const texte = html
 		.replace(/<[^>]*>/g, '')
@@ -106,13 +106,13 @@ export function resolveHomeworkItems(
 		: null;
 
 	const resolus: HomeworkItemInput[] = [];
-	const refusees: string[] = [];
+	const rejected: string[] = [];
 
 	for (const item of items) {
 		// Dropped BEFORE its deadline is checked: a piece of work we are throwing
 		// away must not fail the save because of a date left in a field nobody
 		// will keep.
-		if (estContenuVide(item.content)) continue;
+		if (isContentEmpty(item.content)) continue;
 
 		const demandee = item.dueDate?.trim() || null;
 
@@ -127,7 +127,7 @@ export function resolveHomeworkItems(
 		}
 
 		if (!isSessionDate(demandee, sessionOptions)) {
-			refusees.push(demandee);
+			rejected.push(demandee);
 			continue;
 		}
 
@@ -137,7 +137,7 @@ export function resolveHomeworkItems(
 	// Nothing is written when a deadline is refused — the caller turns this into
 	// a 400. Writing the acceptable ones and dropping the rest would leave the
 	// teacher with a half-saved session and no way to tell.
-	return { items: refusees.length > 0 ? [] : resolus, refusees };
+	return { items: rejected.length > 0 ? [] : resolus, rejected };
 }
 
 // ============================================================================

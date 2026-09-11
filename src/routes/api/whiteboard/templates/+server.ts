@@ -151,11 +151,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(500, 'Erreur lors de la creation du template');
 		}
 
-		const ligne = toWhiteboardTemplateRow(row);
-		if (!ligne) {
+		const validatedRow = toWhiteboardTemplateRow(row);
+		if (!validatedRow) {
 			throw error(500, 'Template créé avec une géométrie de page invalide');
 		}
-		const template = rowToTemplate(ligne);
+		const template = rowToTemplate(validatedRow);
 
 		return json({ template }, { status: 201 });
 	} catch (err) {

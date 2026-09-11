@@ -51,7 +51,7 @@ function getWeekEnd(weekStart: string): string {
  * Les travaux sans échéance (classe sans emploi du temps) n'en fournissent
  * aucune.
  */
-function prochaineEcheance(entry: {
+function nextDueDate(entry: {
 	journal_entry_homework: { due_date: string | null }[];
 }): string | null {
 	const dates = entry.journal_entry_homework
@@ -182,7 +182,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 				id: e.id,
 				hasLesson: !!e.lesson_content,
 				hasHomework: e.journal_entry_homework.length > 0,
-				homeworkDueDate: prochaineEcheance(e),
+				homeworkDueDate: nextDueDate(e),
 				isPublished: true, // All visible entries are published
 				className: e.classes.name,
 				classId: e.class_id

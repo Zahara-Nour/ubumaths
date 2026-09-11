@@ -25,7 +25,7 @@ import { isDeadlinePassed } from '$lib/utils/dates';
  * en faire. Tout AUTRE code — RLS, réseau, contrainte — est une panne, qu'on ne
  * doit pas laisser passer pour une absence.
  */
-function estPanne<T extends { code?: string }>(error: T | null): error is T {
+function isFailure<T extends { code?: string }>(error: T | null): error is T {
 	return error !== null && error.code !== 'PGRST116';
 }
 
@@ -146,7 +146,7 @@ export async function updateAssessment(
 	// Une panne de lecture rendait `existing === null`, donc « non autorisé » :
 	// le professeur s'entendait refuser SA propre évaluation, sans trace. On
 	// reste fermé par défaut, mais on le dit autrement et on le journalise.
-	if (estPanne(existingError)) {
+	if (isFailure(existingError)) {
 		console.error('[updateAssessment] Propriété invérifiable :', existingError);
 		return { data: null, error: new Error("Impossible de vérifier l'évaluation") };
 	}
@@ -243,7 +243,7 @@ export async function assignAssessment(
 		.eq('id', data.assessment_id)
 		.single();
 
-	if (estPanne(assessmentError)) {
+	if (isFailure(assessmentError)) {
 		console.error('[assignAssessment] Propriété invérifiable :', assessmentError);
 		return { data: null, error: new Error("Impossible de vérifier l'évaluation") };
 	}
@@ -345,7 +345,7 @@ export async function removeAssignment(
 		.eq('id', assignmentId)
 		.single();
 
-	if (estPanne(assignmentError)) {
+	if (isFailure(assignmentError)) {
 		console.error('[removeAssignment] Affectation illisible :', assignmentError);
 		return { error: new Error("Impossible de vérifier l'affectation") };
 	}
@@ -360,7 +360,7 @@ export async function removeAssignment(
 		.eq('id', assignment.assessment_id)
 		.single();
 
-	if (estPanne(assessmentError)) {
+	if (isFailure(assessmentError)) {
 		console.error('[removeAssignment] Propriété invérifiable :', assessmentError);
 		return { error: new Error("Impossible de vérifier l'évaluation") };
 	}
@@ -522,7 +522,7 @@ export async function validateAttempt(
 	// Une panne ici est indiscernable d'une affectation absente. On refuse
 	// l'accès dans les deux cas — mais on nomme la panne au lieu de la faire
 	// passer pour une affectation qui n'existerait pas.
-	if (estPanne(assignmentError)) {
+	if (isFailure(assignmentError)) {
 		console.error('[canAttemptAssessment] Affectation illisible :', assignmentError);
 		return {
 			can_attempt: false,
@@ -651,7 +651,7 @@ export async function getAssessmentResults(
 		.eq('id', assessmentId)
 		.single();
 
-	if (estPanne(assessmentError)) {
+	if (isFailure(assessmentError)) {
 		console.error('[getAssessmentResults] Évaluation illisible :', assessmentError);
 		return { data: null, error: new Error(assessmentError.message) };
 	}

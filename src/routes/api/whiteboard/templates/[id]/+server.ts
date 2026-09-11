@@ -53,11 +53,11 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw error(500, 'Erreur lors de la recuperation du template');
 		}
 
-		const ligne = toWhiteboardTemplateRow(row);
-		if (!ligne) {
+		const validatedRow = toWhiteboardTemplateRow(row);
+		if (!validatedRow) {
 			throw error(500, 'Géométrie de page invalide pour ce template');
 		}
-		const template = rowToTemplate(ligne);
+		const template = rowToTemplate(validatedRow);
 
 		return json({ template });
 	} catch (err) {

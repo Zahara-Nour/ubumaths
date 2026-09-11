@@ -9,13 +9,13 @@ import { asNotebookContent } from '../notebook';
  */
 describe('asNotebookContent', () => {
 	it('accepte un notebook complet', () => {
-		const contenu = asNotebookContent({
+		const content = asNotebookContent({
 			version: '1.0',
 			metadata: { title: 'Suites', created_at: '', updated_at: '' },
 			cells: [{ id: 'c1', type: 'code', source: 'print(1)' }]
 		});
 
-		expect(contenu?.cells).toHaveLength(1);
+		expect(content?.cells).toHaveLength(1);
 	});
 
 	it('refuse une version inconnue', () => {

@@ -137,12 +137,12 @@ export interface NotebookContent {
 export function asNotebookContent(value: unknown): NotebookContent | null {
 	if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
 
-	const contenu = value as Record<string, unknown>;
-	if (contenu.version !== '1.0') return null;
-	if (!Array.isArray(contenu.cells)) return null;
-	if (typeof contenu.metadata !== 'object' || contenu.metadata === null) return null;
+	const content = value as Record<string, unknown>;
+	if (content.version !== '1.0') return null;
+	if (!Array.isArray(content.cells)) return null;
+	if (typeof content.metadata !== 'object' || content.metadata === null) return null;
 
-	return contenu as unknown as NotebookContent;
+	return content as unknown as NotebookContent;
 }
 
 export interface PythonNotebook {

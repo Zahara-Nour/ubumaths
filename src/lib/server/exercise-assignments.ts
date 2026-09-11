@@ -22,7 +22,7 @@
  * - Fonctions `get_student_exercises`, `get_teacher_assignment_stats`,
  *   `get_exercise_completion_stats` : présentes dans les types générés.
  * - `student_has_exercise_access` : existe en base mais **absente des types**,
- *   parce qu'elle y est surchargée (cf. `appelerAccesExercice` plus bas).
+ *   parce qu'elle y est surchargée (cf. `callExerciseAccess` plus bas).
  *
  * Ce module contournait le typage par deux helpers rendant `any`, écrits quand
  * ces objets n'existaient pas encore. Ils masquaient donc les erreurs bien
@@ -73,7 +73,7 @@ type TypedSupabaseClient = SupabaseClient<Database>;
  * N'y ajoutez pas d'autres appels : les tables et fonctions qui existent dans
  * `database.ts` doivent passer par le client typé.
  */
-function appelerAccesExercice(
+function callExerciseAccess(
 	supabase: TypedSupabaseClient,
 	params: { p_exercise_id: string; p_student_id?: string }
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -401,7 +401,7 @@ export async function getAssignmentsForExercise(
 
 	const total = count || 0;
 
-	/** Une ligne telle que la jointure ci-dessus la renvoie. */
+	/** Une row telle que la jointure ci-dessus la renvoie. */
 	type JoinedRow = Omit<
 		AssignedExerciseWithDetails,
 		| 'exercise_title'
@@ -902,7 +902,7 @@ export async function markExerciseAsViewed(
 		.eq('student_id', studentId)
 		.maybeSingle();
 
-	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// PGRST116 = la row n'existe pas, ce que la suite traite déjà. Une AUTRE
 	// panne prenait le même visage et faisait créer par-dessus.
 	if (existingError && existingError.code !== 'PGRST116') {
 		console.error('Lecture impossible :', existingError);
@@ -987,7 +987,7 @@ export async function markExerciseAsComplete(
 		.eq('student_id', studentId)
 		.maybeSingle();
 
-	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
+	// PGRST116 = la row n'existe pas, ce que la suite traite déjà. Une AUTRE
 	// panne prenait le même visage et faisait créer par-dessus.
 	if (existingError && existingError.code !== 'PGRST116') {
 		console.error('Lecture impossible :', existingError);
@@ -1163,15 +1163,15 @@ export async function getAssignmentStats(
 	// valait toujours 0. La fonction expose en revanche deux mesures que le code
 	// jetait — le nombre de rendus et le nombre d'élèves ayant travaillé — qui
 	// disent bien davantage sur l'usage réel des affectations.
-	const ligne = data?.[0];
+	const row = data?.[0];
 	const stats: AssignmentStats = {
-		total_assignments: ligne?.total_assignments ?? 0,
-		active_assignments: ligne?.active_assignments ?? 0,
-		student_assignments: ligne?.student_assignments ?? 0,
-		class_assignments: ligne?.class_assignments ?? 0,
-		public_assignments: ligne?.public_assignments ?? 0,
-		total_completions: ligne?.total_completions ?? 0,
-		unique_students_engaged: ligne?.unique_students_engaged ?? 0
+		total_assignments: row?.total_assignments ?? 0,
+		active_assignments: row?.active_assignments ?? 0,
+		student_assignments: row?.student_assignments ?? 0,
+		class_assignments: row?.class_assignments ?? 0,
+		public_assignments: row?.public_assignments ?? 0,
+		total_completions: row?.total_completions ?? 0,
+		unique_students_engaged: row?.unique_students_engaged ?? 0
 	};
 
 	return { data: stats, error: null };
@@ -1254,14 +1254,14 @@ export async function getExerciseCompletionStats(
 	// exercices. L'enveloppe `any` empêchait le typage de le dire.
 	//
 	// Noms réels : `total_students`, `completed_count`, `completion_percentage`.
-	const ligne = data?.[0];
+	const row = data?.[0];
 	const stats: ExerciseCompletionStats = {
 		exercise_id: exerciseId,
-		total_assigned: ligne?.total_students ?? 0,
-		total_viewed: ligne?.total_viewed ?? 0,
-		total_completed: ligne?.completed_count ?? 0,
-		completion_rate: ligne?.completion_percentage ?? 0,
-		average_view_count: ligne?.average_view_count ?? 0
+		total_assigned: row?.total_students ?? 0,
+		total_viewed: row?.total_viewed ?? 0,
+		total_completed: row?.completed_count ?? 0,
+		completion_rate: row?.completion_percentage ?? 0,
+		average_view_count: row?.average_view_count ?? 0
 	};
 
 	return { data: stats, error: null };
@@ -1387,7 +1387,7 @@ export async function studentHasAccess(
 	exerciseId: string,
 	studentId: string
 ): Promise<boolean> {
-	const { data, error } = await appelerAccesExercice(supabase, {
+	const { data, error } = await callExerciseAccess(supabase, {
 		p_exercise_id: exerciseId,
 		p_student_id: studentId
 	});

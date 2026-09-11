@@ -401,10 +401,10 @@ async function fetchWorksheetItems(
 	// l'élève : `classLinkRaw` est déjà restreint à ses propres classes. La
 	// colonne `worksheet_assignments.class_id` nommait la PREMIÈRE classe de
 	// l'affectation, dont il pouvait n'être pas membre.
-	const classeParAffectation = new Map<string, string>();
+	const classByAssignment = new Map<string, string>();
 	for (const row of classLinkRaw ?? []) {
-		if (!classeParAffectation.has(row.assignment_id)) {
-			classeParAffectation.set(row.assignment_id, row.class_id);
+		if (!classByAssignment.has(row.assignment_id)) {
+			classByAssignment.set(row.assignment_id, row.class_id);
 		}
 	}
 
@@ -446,7 +446,7 @@ async function fetchWorksheetItems(
 	if (assignments.length === 0) return [];
 
 	const worksheetIds = Array.from(new Set(assignments.map((a) => a.worksheet_id)));
-	const referencedClassIds = Array.from(new Set(classeParAffectation.values()));
+	const referencedClassIds = Array.from(new Set(classByAssignment.values()));
 
 	const [worksheetsRes, classNames, exercisesRes] = await Promise.all([
 		supabase.from('worksheets').select('id, title').in('id', worksheetIds),
@@ -502,7 +502,7 @@ async function fetchWorksheetItems(
 
 	const worksheetById = new Map((worksheetsRes.data ?? []).map((row) => [row.id, row]));
 
-	function toItem(assignment: WorksheetAssignmentRow, viaClasse: boolean): WorkItem {
+	function toItem(assignment: WorksheetAssignmentRow, viaClass: boolean): WorkItem {
 		const worksheet = worksheetById.get(assignment.worksheet_id);
 		const doneAt = worksheetDoneAt(assignment.worksheet_id);
 		// La classe sert à AFFICHER, `via` à départager. Une affectation atteinte à
@@ -511,7 +511,7 @@ async function fetchWorksheetItems(
 		// classe de l'élève. Confondre les deux — faire porter le départage à
 		// `classId` — effaçait cette puce, et cassait en silence le jour où l'on
 		// voudrait afficher une classe sur un item direct.
-		const classId = classeParAffectation.get(assignment.id) ?? null;
+		const classId = classByAssignment.get(assignment.id) ?? null;
 		return {
 			source: 'worksheet' satisfies WorkSource,
 			itemId: assignment.worksheet_id,
@@ -519,7 +519,7 @@ async function fetchWorksheetItems(
 			title: assignment.title ?? worksheet?.title ?? '',
 			classId,
 			className: classId ? (classNames.get(classId) ?? null) : null,
-			via: viaClasse ? 'class' : 'direct',
+			via: viaClass ? 'class' : 'direct',
 			dueAt: assignment.closes_at,
 			status: doneAt ? 'done' : 'todo',
 			viewed: masteryByExercise.size > 0,

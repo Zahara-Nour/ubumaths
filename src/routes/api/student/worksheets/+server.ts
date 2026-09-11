@@ -81,21 +81,21 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// seconde classe — et la page « Mon cours » d'un chapitre, qui appelle cet
 		// endpoint avec `?class_id=`, lui annonçait qu'aucune fiche n'existait.
 		if (class_id) {
-			const { data: liens, error: liensError } = await locals.supabase
+			const { data: links, error: linksError } = await locals.supabase
 				.from('worksheet_assignment_classes')
 				.select('assignment_id')
 				.eq('class_id', class_id);
 
 			// Ce filtre borne la liste. Vidé par une panne, il affiche un écran vide
 			// qui accuse la base plutôt que la lecture.
-			if (liensError) {
-				console.error('[API] Classes des affectations illisibles :', liensError);
+			if (linksError) {
+				console.error('[API] Classes des affectations illisibles :', linksError);
 				throw error(500, 'Erreur lors de la recuperation des fiches');
 			}
 
 			query = query.in(
 				'id',
-				(liens ?? []).map((l) => l.assignment_id)
+				(links ?? []).map((l) => l.assignment_id)
 			);
 		}
 
@@ -163,15 +163,15 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			const worksheet = getFirstOrSelf(
 				assignment.worksheets as unknown as { id: string; title: string; type: string }
 			);
-			const classeEleve = classesByAssignment.get(assignment.id)?.[0] ?? null;
+			const studentClass = classesByAssignment.get(assignment.id)?.[0] ?? null;
 
 			return {
 				assignment_id: assignment.id,
 				worksheet_id: worksheet.id,
 				title: worksheet.title,
 				type: worksheet.type as StudentWorksheetListItem['type'],
-				class_id: classeEleve?.id ?? null,
-				class_name: classeEleve?.name || null,
+				class_id: studentClass?.id ?? null,
+				class_name: studentClass?.name || null,
 				available_from: assignment.available_from,
 				closes_at: assignment.closes_at,
 				show_corrections: assignment.show_corrections ?? false,
