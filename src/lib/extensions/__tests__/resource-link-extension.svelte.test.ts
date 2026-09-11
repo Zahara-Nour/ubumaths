@@ -136,7 +136,7 @@ describe('construction du lien', () => {
 		expect(toSuggestionItem({ ...row, title: '   ' }).label).toBe('Sans titre');
 	});
 
-	it('un exercice de fiche emporte le NOM DE LA FICHE dans le texte inséré', () => {
+	it('un exercice de fiche emporte le NOM DE LA WORKSHEET_ID dans le texte inséré', () => {
 		// L'élève doit voir le lien avec la fiche. Le libellé est la seule chose
 		// qui lui reste quand le lien ne mène nulle part (fiche non distribuée),
 		// donc « Exercice 3 » tout seul ne lui apprendrait rien.
@@ -412,16 +412,16 @@ describe('anti-rebond de la recherche', () => {
 });
 
 // ============================================================================
-// `#3` : DE LA FICHE À L'EXERCICE
+// `#3` : DE LA WORKSHEET_ID À L'EXERCICE
 // ============================================================================
 
 /**
- * La distinction demandée : `[[exos:derivees]]` pointe la FICHE et n'apporte
+ * La distinction demandée : `[[exos:derivees]]` pointe la WORKSHEET_ID et n'apporte
  * aucun point de programme ; `[[exos:derivees#3]]` désigne l'EXERCICE et lui
  * apporte les siens.
  */
 describe('résolution du numéro d’exercice', () => {
-	const FICHE = '550e8400-e29b-41d4-a716-446655440000';
+	const WORKSHEET_ID = '550e8400-e29b-41d4-a716-446655440000';
 
 	it('découpe `exos:derivees#3,5-7` en type, texte et sélection', () => {
 		expect(parseResourceQuery('exos:derivees#3,5-7')).toEqual({
@@ -434,11 +434,11 @@ describe('résolution du numéro d’exercice', () => {
 	it('sans numéro, la référence reste celle de la fiche', () => {
 		const item = toSuggestionItem({
 			kind: 'worksheet',
-			id: FICHE,
+			id: WORKSHEET_ID,
 			title: 'Dérivées',
 			subtitle: null
 		});
 
-		expect(item.id).toBe(`[[worksheet:${FICHE}|Dérivées]]`);
+		expect(item.id).toBe(`[[worksheet:${WORKSHEET_ID}|Dérivées]]`);
 	});
 });

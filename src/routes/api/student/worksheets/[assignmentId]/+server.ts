@@ -286,7 +286,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		// jonction que les lignes de ses propres classes. La colonne historique
 		// nommait la première classe de l'affectation, dont il pouvait n'être pas
 		// membre.
-		const classeEleve = (await fetchAssignmentClasses(locals.supabase, assignmentId))[0] ?? null;
+		const studentClass = (await fetchAssignmentClasses(locals.supabase, assignmentId))[0] ?? null;
 
 		// Fetch worksheet exercises with exercise data (R4: include variations, shared, resources)
 		const { data: worksheetExercises, error: exercisesError } = await locals.supabase
@@ -506,7 +506,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			available_from: assignment.available_from,
 			closes_at: assignment.closes_at,
 			show_corrections: assignment.show_corrections ?? false,
-			class_name: classeEleve?.name || null,
+			class_name: studentClass?.name || null,
 			exercises,
 			sections: sectionViews
 		};

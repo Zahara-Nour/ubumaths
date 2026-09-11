@@ -266,17 +266,17 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			console.error('Enrichissement illisible :', activitesError);
 		}
 
-		const modeleParInstance = new Map<string, string>();
+		const modelByInstance = new Map<string, string>();
 		for (const a of activites ?? []) {
-			if (a.card_template_id && !modeleParInstance.has(a.card_instance_id)) {
-				modeleParInstance.set(a.card_instance_id, a.card_template_id);
+			if (a.card_template_id && !modelByInstance.has(a.card_instance_id)) {
+				modelByInstance.set(a.card_instance_id, a.card_template_id);
 			}
 		}
 
 		const { data: modeles, error: modelesError } = await supabase
 			.from('vip_card_templates')
 			.select('id, name')
-			.in('id', [...new Set(modeleParInstance.values())]);
+			.in('id', [...new Set(modelByInstance.values())]);
 
 		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 		// laisse une trace.
@@ -284,13 +284,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			console.error('Enrichissement illisible :', modelesError);
 		}
 
-		const nomParModele = new Map((modeles ?? []).map((m) => [m.id, m.name]));
+		const nameByModel = new Map((modeles ?? []).map((m) => [m.id, m.name]));
 
 		mostTradedCards = mostTradedCardIds.map((cardId) => {
-			const templateId = modeleParInstance.get(cardId) ?? '';
+			const templateId = modelByInstance.get(cardId) ?? '';
 			return {
 				template_id: templateId,
-				name: nomParModele.get(templateId) ?? 'Carte inconnue',
+				name: nameByModel.get(templateId) ?? 'Carte inconnue',
 				count: cardTradeFrequency[cardId]
 			};
 		});

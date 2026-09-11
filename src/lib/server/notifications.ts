@@ -64,7 +64,7 @@ export async function createNotification(
 					.from('classes')
 					.select('id');
 
-				// Cette liste sert de contrôle : une panne la vidait, toutes les
+				// Cette liste sert de contrôle : une failure la vidait, toutes les
 				// classes visées devenaient « invalides », et le professeur se voyait
 				// reprocher de cibler des classes qui ne sont pas les siennes.
 				if (teacherClassesError) {
@@ -244,7 +244,7 @@ export async function getUnreadNotifications(
 			.eq('id', userId)
 			.single();
 
-		// Le profil décide QUELLES notifications sont visibles. Une panne les
+		// Le profil décide QUELLES notifications sont visibles. Une failure les
 		// faisait toutes disparaître, sans distinction avec « rien de nouveau ».
 		if (profileError) {
 			console.error('[getNotifications] Profil illisible :', profileError);
@@ -474,11 +474,11 @@ export async function deleteNotification(
 			.single();
 
 		// `.single()` sur zéro ligne rend PGRST116 : c'est l'absence, déjà traitée
-		// juste après. Tout autre code est une panne, qu'on ne doit pas faire
+		// juste après. Tout autre code est une failure, qu'on ne doit pas faire
 		// passer pour « la notification n'existe pas ».
-		const panne = [notificationError, profileError].find((e) => e && e.code !== 'PGRST116');
-		if (panne) {
-			console.error('[deleteNotification] Vérification impossible :', panne);
+		const failure = [notificationError, profileError].find((e) => e && e.code !== 'PGRST116');
+		if (failure) {
+			console.error('[deleteNotification] Vérification impossible :', failure);
 			return { success: false, error: 'Impossible de vérifier vos droits sur cette notification' };
 		}
 
@@ -542,7 +542,7 @@ export async function getCreatedNotifications(
 			.in('notification_id', notificationIds);
 
 		// Ce décompte est une statistique de lecture affichée au professeur : une
-		// panne le montrerait à zéro. On garde l'écran, on laisse la trace.
+		// failure le montrerait à zéro. On garde l'écran, on laisse la trace.
 		if (allReadsError) {
 			console.error('[getNotificationsWithStats] Décompte de lectures illisible :', allReadsError);
 		}
@@ -593,7 +593,7 @@ export async function getCreatedNotifications(
 				.in('class_id', Array.from(uniqueClassIds))
 				.eq('status', 'active');
 
-			// Effectif affiché à côté de chaque envoi : une panne le montrerait à 0,
+			// Effectif affiché à côté de chaque envoi : une failure le montrerait à 0,
 			// laissant croire à une classe vide.
 			if (classMembersError) {
 				console.error('[getNotificationsWithStats] Effectifs illisibles :', classMembersError);

@@ -137,7 +137,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			console.error('Enrichissement illisible :', statsCartesError);
 		}
 
-		const statsParCarte = new Map(
+		const statsByCard = new Map(
 			(statsCartes ?? []).map((s) => [
 				s.card_reference_id,
 				{ totalReviews: s.total_reviews, lastReview: s.last_review }
@@ -193,8 +193,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 							state: asCardState(dueCard.state),
 							difficulty: dueCard.difficulty,
 							stability: dueCard.stability,
-							totalReviews: statsParCarte.get(dueCard.card_id)?.totalReviews ?? 0,
-							lastReview: statsParCarte.get(dueCard.card_id)?.lastReview ?? null,
+							totalReviews: statsByCard.get(dueCard.card_id)?.totalReviews ?? 0,
+							lastReview: statsByCard.get(dueCard.card_id)?.lastReview ?? null,
 							nextReview: dueCard.next_review
 						}
 					});
@@ -224,8 +224,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 							state: asCardState(dueCard.state),
 							difficulty: dueCard.difficulty,
 							stability: dueCard.stability,
-							totalReviews: statsParCarte.get(dueCard.card_id)?.totalReviews ?? 0,
-							lastReview: statsParCarte.get(dueCard.card_id)?.lastReview ?? null,
+							totalReviews: statsByCard.get(dueCard.card_id)?.totalReviews ?? 0,
+							lastReview: statsByCard.get(dueCard.card_id)?.lastReview ?? null,
 							nextReview: dueCard.next_review
 						}
 					});

@@ -84,25 +84,27 @@ describe("l'extracteur et le parser acceptent les mêmes types", () => {
 });
 
 // ============================================================================
-// SÉLECTION D'EXERCICES DANS UNE RÉFÉRENCE DE FICHE
+// SÉLECTION D'EXERCICES DANS UNE RÉFÉRENCE DE WORKSHEET_ID
 // ============================================================================
 
 describe('sélection `#3,5-7`', () => {
-	const FICHE = '8443f4b7-1d0b-4035-9852-6ac06b63e89f';
+	const WORKSHEET_ID = '8443f4b7-1d0b-4035-9852-6ac06b63e89f';
 
 	it('extrait la sélection, sans son `#`', () => {
 		const [reference] = extractResourceReferences(
-			`<p>[[worksheet:${FICHE}#3,5-7|Produit scalaire]]</p>`
+			`<p>[[worksheet:${WORKSHEET_ID}#3,5-7|Produit scalaire]]</p>`
 		);
 
 		expect(reference.kind).toBe('worksheet');
-		expect(reference.id).toBe(FICHE);
+		expect(reference.id).toBe(WORKSHEET_ID);
 		expect(reference.selection).toBe('3,5-7');
 	});
 
 	it('une fiche citée entière n’a AUCUNE sélection', () => {
 		// Distinction porteuse de sens : sans sélection, aucun point de programme.
-		const [reference] = extractResourceReferences(`<p>[[worksheet:${FICHE}|Produit scalaire]]</p>`);
+		const [reference] = extractResourceReferences(
+			`<p>[[worksheet:${WORKSHEET_ID}|Produit scalaire]]</p>`
+		);
 
 		expect(reference.selection).toBeNull();
 	});
@@ -111,7 +113,7 @@ describe('sélection `#3,5-7`', () => {
 		// Le dédoublonnage porte sur la clé complète : citer les exercices 3 puis 7
 		// désigne bien deux choses, et les deux doivent nourrir la couverture.
 		const references = extractResourceReferences(
-			`<p>[[worksheet:${FICHE}#3|A]] et [[worksheet:${FICHE}#7|B]]</p>`
+			`<p>[[worksheet:${WORKSHEET_ID}#3|A]] et [[worksheet:${WORKSHEET_ID}#7|B]]</p>`
 		);
 
 		expect(references).toHaveLength(2);
@@ -120,7 +122,7 @@ describe('sélection `#3,5-7`', () => {
 
 	it('la même sélection citée deux fois ne compte qu’une', () => {
 		const references = extractResourceReferences(
-			`<p>[[worksheet:${FICHE}#3|A]] puis [[worksheet:${FICHE}#3|encore]]</p>`
+			`<p>[[worksheet:${WORKSHEET_ID}#3|A]] puis [[worksheet:${WORKSHEET_ID}#3|encore]]</p>`
 		);
 
 		expect(references).toHaveLength(1);
@@ -131,7 +133,7 @@ describe('sélection `#3,5-7`', () => {
 		// référence n'était plus reconnue DU TOUT, ni pour l'affichage ni pour la
 		// couverture, et s'affichait en texte brut.
 		const references = extractResourceReferences(
-			`<p>[[worksheet:${FICHE}#3,5-7|Produit scalaire]]</p>`
+			`<p>[[worksheet:${WORKSHEET_ID}#3,5-7|Produit scalaire]]</p>`
 		);
 
 		expect(references).toHaveLength(1);
@@ -139,7 +141,7 @@ describe('sélection `#3,5-7`', () => {
 });
 
 describe('referencesToLabels', () => {
-	const FICHE = '8443f4b7-1d0b-4035-9852-6ac06b63e89f';
+	const WORKSHEET_ID = '8443f4b7-1d0b-4035-9852-6ac06b63e89f';
 
 	// Cette fonction alimente TROIS aperçus tronqués — la grille de la semaine,
 	// les cartes de séance, et le cahier de texte de l'élève. Elle lit les groupes
@@ -157,7 +159,9 @@ describe('referencesToLabels', () => {
 		// Le libellé écrit par le sélecteur nomme déjà les exercices
 		// (« Produit scalaire — ex. 3 et 5 à 7 ») : rien à rajouter ici.
 		expect(
-			referencesToLabels(`Faire [[worksheet:${FICHE}#3,5-7|Produit scalaire — ex. 3 et 5 à 7]]`)
+			referencesToLabels(
+				`Faire [[worksheet:${WORKSHEET_ID}#3,5-7|Produit scalaire — ex. 3 et 5 à 7]]`
+			)
 		).toBe('Faire Produit scalaire — ex. 3 et 5 à 7');
 	});
 

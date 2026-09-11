@@ -41,7 +41,7 @@ function boutons(): HTMLButtonElement[] {
  */
 function survoleCommeUnNavigateur(index: number): HTMLButtonElement {
 	let noeud = boutons()[index];
-	for (let essai = 0; essai < 10; essai++) {
+	for (let attempt = 0; attempt < 10; attempt++) {
 		noeud.dispatchEvent(new MouseEvent('mouseenter'));
 		const apres = boutons()[index];
 		if (apres === noeud) return noeud;

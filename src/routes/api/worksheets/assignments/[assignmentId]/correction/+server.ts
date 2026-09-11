@@ -123,16 +123,19 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		// laquelle il a pourtant accès. Refus en mode fermé, donc sans fuite — mais
 		// un refus injustifié, et le même défaut que celui réparé dans la migration
 		// 20260911100000 un étage plus haut.
-		const { data: aAcces, error: accesError } = await locals.supabase.rpc('can_access_assignment', {
-			p_assignment_id: assignmentId
-		});
+		const { data: hasAccess, error: accessError } = await locals.supabase.rpc(
+			'can_access_assignment',
+			{
+				p_assignment_id: assignmentId
+			}
+		);
 
-		if (accesError) {
-			console.error('Droits sur l’affectation illisibles :', accesError.message);
+		if (accessError) {
+			console.error('Droits sur l’affectation illisibles :', accessError.message);
 			throw error(500, 'Impossible de vérifier vos droits');
 		}
 
-		const isStudentInClass = aAcces === true;
+		const isStudentInClass = hasAccess === true;
 
 		console.log('[Correction API] Access check:', {
 			userId: user.id,

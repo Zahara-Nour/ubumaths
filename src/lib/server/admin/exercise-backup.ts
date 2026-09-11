@@ -34,7 +34,7 @@ import { fetchTagNamesForResources, syncResourceTags } from '$lib/server/resourc
  * précisément ce qu'on cherche à savoir. Toute autre erreur est une panne, et
  * la faire passer pour une absence conduit à réinsérer par-dessus.
  */
-function estPanne<T extends { code?: string }>(error: T | null): error is T {
+function isFailure<T extends { code?: string }>(error: T | null): error is T {
 	return error !== null && error.code !== 'PGRST116';
 }
 
@@ -682,7 +682,7 @@ async function restoreExercises(
 			// « La ligne n’existe pas encore » est le cas normal ici. Une PANNE
 			// prenait le même visage, et l’enregistrement partait en insertion
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
-			if (estPanne(existingError)) {
+			if (isFailure(existingError)) {
 				console.error('[restore] Lecture impossible (exercises) :', existingError);
 				throw new Error(existingError.message);
 			}
@@ -805,7 +805,7 @@ async function restoreTemplates(
 			// « La ligne n’existe pas encore » est le cas normal ici. Une PANNE
 			// prenait le même visage, et l’enregistrement partait en insertion
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
-			if (estPanne(existingError)) {
+			if (isFailure(existingError)) {
 				console.error('[restore] Lecture impossible (exercise_templates) :', existingError);
 				throw new Error(existingError.message);
 			}
@@ -917,7 +917,7 @@ async function restoreFavorites(
 			// « La ligne n’existe pas encore » est le cas normal ici. Une PANNE
 			// prenait le même visage, et l’enregistrement partait en insertion
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
-			if (estPanne(existingError)) {
+			if (isFailure(existingError)) {
 				console.error('[restore] Lecture impossible (exercise_favorites) :', existingError);
 				throw new Error(existingError.message);
 			}
@@ -1001,7 +1001,7 @@ async function restoreTokens(
 			// « La ligne n’existe pas encore » est le cas normal ici. Une PANNE
 			// prenait le même visage, et l’enregistrement partait en insertion
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
-			if (estPanne(existingError)) {
+			if (isFailure(existingError)) {
 				console.error('[restore] Lecture impossible (exercise_share_tokens) :', existingError);
 				throw new Error(existingError.message);
 			}

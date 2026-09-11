@@ -222,7 +222,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 };
 
 /**
- * Relit et valide les travaux à faire AVANT toute écriture.
+ * Relit et valide les homeworkItems à faire AVANT toute écriture.
  *
  * Séparé de l'écriture à dessein : une échéance invalide doit faire échouer
  * l'enregistrement sans que rien n'ait été touché. Valider après avoir créé la
@@ -230,9 +230,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
  *
  * `null` veut dire « le formulaire ne porte pas ce champ » — et alors on n'y
  * touche pas du tout : `set_journal_entry_homework` remplace la liste entière,
- * donc l'appeler par précaution effacerait tous les travaux.
+ * donc l'appeler par précaution effacerait tous les homeworkItems.
  */
-async function preparerTravaux(
+async function prepareHomework(
 	locals: App.Locals,
 	formData: FormData,
 	classId: string,
@@ -244,7 +244,7 @@ async function preparerTravaux(
 	const parsed = parseHomeworkItems(brut);
 	if (!parsed.success) return { error: parsed.message };
 
-	const { items, refusees } = await prepareHomeworkForEntry(
+	const { items, rejected } = await prepareHomeworkForEntry(
 		locals.supabase,
 		classId,
 		entryDate,
@@ -253,11 +253,11 @@ async function preparerTravaux(
 
 	// Le menu ne propose que des jours de cours, mais une requête forgée porte ce
 	// qu'elle veut : la règle se rejoue ici, côté serveur.
-	if (refusees.length > 0) {
-		const liste = refusees.join(', ');
+	if (rejected.length > 0) {
+		const liste = rejected.join(', ');
 		return {
 			error:
-				refusees.length === 1
+				rejected.length === 1
 					? `L'échéance du ${liste} ne tombe pas un jour où la classe a cours.`
 					: `Ces échéances ne tombent pas un jour où la classe a cours : ${liste}.`
 		};
@@ -324,9 +324,9 @@ export const actions: Actions = {
 
 		// Travaux validés AVANT la création : une échéance impossible doit refuser
 		// l'enregistrement sans laisser derrière elle une séance à moitié écrite.
-		const travaux = await preparerTravaux(locals, formData, classId, date);
-		if (travaux && 'error' in travaux) {
-			return fail(400, { error: travaux.error, action: 'create' });
+		const homeworkItems = await prepareHomework(locals, formData, classId, date);
+		if (homeworkItems && 'error' in homeworkItems) {
+			return fail(400, { error: homeworkItems.error, action: 'create' });
 		}
 
 		// Create the entry
@@ -395,18 +395,18 @@ export const actions: Actions = {
 		}
 
 		// Travaux à faire, écrits une fois la séance créée — ils la référencent.
-		if (entry?.id && travaux) {
+		if (entry?.id && homeworkItems) {
 			const { error: hwError } = await setHomeworkForEntry(
 				locals.supabase,
 				entry.id,
-				travaux.items
+				homeworkItems.items
 			);
 			if (hwError) {
 				return {
 					success: true,
 					action: 'create',
 					entryId: entry.id,
-					warning: 'Séance créée, mais les travaux à faire n’ont pas pu être enregistrés.'
+					warning: 'Séance créée, mais les homeworkItems à faire n’ont pas pu être enregistrés.'
 				};
 			}
 		}
@@ -485,9 +485,9 @@ export const actions: Actions = {
 		}
 
 		// Comme à la création : les échéances sont jugées avant toute écriture.
-		const travaux = await preparerTravaux(locals, formData, classId, date);
-		if (travaux && 'error' in travaux) {
-			return fail(400, { error: travaux.error, action: 'update' });
+		const homeworkItems = await prepareHomework(locals, formData, classId, date);
+		if (homeworkItems && 'error' in homeworkItems) {
+			return fail(400, { error: homeworkItems.error, action: 'update' });
 		}
 
 		// Update the entry
@@ -503,11 +503,15 @@ export const actions: Actions = {
 			return fail(500, { error: updateError.message, action: 'update' });
 		}
 
-		if (travaux) {
-			const { error: hwError } = await setHomeworkForEntry(locals.supabase, entryId, travaux.items);
+		if (homeworkItems) {
+			const { error: hwError } = await setHomeworkForEntry(
+				locals.supabase,
+				entryId,
+				homeworkItems.items
+			);
 			if (hwError) {
 				return fail(500, {
-					error: 'Les travaux à faire n’ont pas pu être enregistrés.',
+					error: 'Les homeworkItems à faire n’ont pas pu être enregistrés.',
 					action: 'update'
 				});
 			}
