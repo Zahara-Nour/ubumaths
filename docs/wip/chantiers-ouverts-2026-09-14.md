@@ -159,11 +159,16 @@ personne.
 > (`POST /api/admin/compose-class`, `GET /api/admin/class-composition-source`),
 > 22 tests serveur.
 >
-> **La question inter-écoles est tranchée** (2026-09-14) : déplacer le profil.
-> Trois policies lisent `profiles.school_id` — trimestres, années, marché — et
-> laisser le profil sur l'ancienne école donnerait un élève à moitié cassé. La
-> fonction `admin_compose_class` (PR #241) inscrit et déplace dans **une même
-> transaction**. Reste à écrire : l'API et l'écran, qui attendent `db:types`.
+> **La question inter-écoles est tranchée et livrée** (2026-09-14) : déplacer
+> le profil. Trois policies lisent `profiles.school_id` — trimestres, années,
+> marché — et laisser le profil sur l'ancienne école donnerait un élève à
+> moitié cassé. `admin_compose_class` (PR #241) inscrit et déplace dans **une
+> même transaction** ; l'écran et l'API (PR #242) annoncent le déplacement,
+> exigent une case à cocher, et le serveur refuse en 409 sans le drapeau
+> `confirmSchoolChange` — la garde ne repose pas sur l'interface.
+>
+> **Prêt à l'usage** : créer l'école « Cours particuliers », son année, ses
+> groupes, puis `/dashboard/admin/classes/composer`.
 
 **Ce que c'est.** Un écran qui liste les élèves des classes de l'année
 précédente, groupés par ancienne classe, avec des cases à cocher et une classe
