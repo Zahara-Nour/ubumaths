@@ -19,6 +19,29 @@ export const addToClassSchema = z.object({
 export const removeFromClassSchema = addToClassSchema;
 
 /**
+ * Composition d'une classe depuis l'année précédente.
+ *
+ * Le plafond de 200 n'est pas décoratif : chaque identifiant devient une
+ * adhésion, et le rôle `authenticated` a un `statement_timeout` de 8 s. Une
+ * promotion réaliste tient largement dessous — la plus grosse école du parc
+ * compte 77 élèves.
+ */
+export const composeClassSchema = z.object({
+	targetClassId: z.string().uuid('ID de classe de destination invalide'),
+	studentIds: z
+		.array(z.string().uuid('ID d’élève invalide'))
+		.min(1, 'Aucun élève sélectionné')
+		.max(200, 'Trop d’élèves d’un coup (200 au maximum)')
+});
+
+/**
+ * Liste des élèves composables pour une classe de destination.
+ */
+export const classCompositionSourceSchema = z.object({
+	targetClassId: z.string().uuid('ID de classe de destination invalide')
+});
+
+/**
  * Schema for searching users
  */
 export const searchUsersSchema = z.object({
