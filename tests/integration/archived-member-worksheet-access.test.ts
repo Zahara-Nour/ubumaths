@@ -19,6 +19,17 @@
  * does not depend on any class, and is precisely how an out-of-class student is
  * reached.
  *
+ * MISE À JOUR (Phase 3, lecture seule rétroactive). Le contrat a changé pour la
+ * LECTURE : l'ancien membre relit ce qui lui avait été distribué pendant
+ * l'année de la classe. Ce fichier garde donc ce qui reste FERMÉ — les
+ * écritures, la ligne de jonction, et l'accès d'un élève jamais membre —, et
+ * `archived-member-reads-past-worksheets.test.ts` porte ce qui s'ouvre.
+ *
+ * Les classes d'ici sont rattachées à une année exprès. Sans ce rattachement,
+ * le prédicat rétroactif refuserait faute de fenêtre, et ce fichier resterait
+ * vert sans rien prouver — toutes les classes de la production, elles, ont une
+ * année.
+ *
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
@@ -63,6 +74,7 @@ async function insert(table: string, row: Record<string, unknown>): Promise<stri
 
 describe('archived class members and worksheet access', () => {
 	let teacherId: string;
+	let schoolId: string;
 	let worksheetId: string;
 	let exerciseId: string;
 	let assignmentId: string;
@@ -87,6 +99,26 @@ describe('archived class members and worksheet access', () => {
 
 		const a = await TestData.class().withName('1re A archived ZZ').create();
 		const b = await TestData.class().withName('1re B archived ZZ').create();
+
+		// Une école et une année qui CONTIENT la date de distribution ci-dessous.
+		schoolId = await insert('schools', {
+			name: 'Lycée archived ZZ',
+			city: 'Ville ZZ',
+			country: 'France'
+		});
+		const yearId = await insert('school_years', {
+			school_id: schoolId,
+			name: '2026-2027 archived ZZ',
+			start_date: '2026-08-31',
+			end_date: '2027-07-15',
+			is_active: true
+		});
+		const { error: attachError } = await service
+			.from('classes')
+			.update({ school_id: schoolId, school_year_id: yearId })
+			.in('id', [a.id, b.id]);
+		expect(attachError).toBeNull();
+
 		classA = a.id;
 		classB = b.id;
 
@@ -153,6 +185,7 @@ describe('archived class members and worksheet access', () => {
 	});
 
 	afterAll(async () => {
+		await service.from('schools').delete().eq('id', schoolId);
 		await cleanupAllTestData();
 	});
 
@@ -191,16 +224,21 @@ describe('archived class members and worksheet access', () => {
 	});
 
 	describe('an archived member of the only class reaching them', () => {
-		it('no longer reaches the worksheet', async () => {
-			expect(await hasWorksheetAccess(archivedStudent)).toBe(false);
+		it('relit la fiche : la Phase 3 rouvre la lecture, et elle seule', async () => {
+			// Ce que ce fichier affirmait avant la Phase 3. La lecture est
+			// désormais ouverte ; tout ce qui suit vérifie qu'elle n'a rien
+			// entraîné avec elle.
+			expect(await hasWorksheetAccess(archivedStudent)).toBe(true);
 		});
 
 		it('no longer reaches the assignment, so neither corrections nor previews', async () => {
+			// `can_access_assignment` garde les écritures. Elle reste fermée : c'est
+			// la frontière entre relire et participer.
 			expect(await canAccessAssignment(archivedStudent)).toBe(false);
 		});
 
-		it('no longer sees the assignment row at all', async () => {
-			expect(await visibleAssignments(archivedStudent)).toHaveLength(0);
+		it('retrouve la ligne d’affectation, en lecture', async () => {
+			expect(await visibleAssignments(archivedStudent)).toContain(assignmentId);
 		});
 
 		it('no longer sees the junction row naming that class', async () => {
@@ -214,14 +252,14 @@ describe('archived class members and worksheet access', () => {
 			expect(data ?? []).toHaveLength(0);
 		});
 
-		it('no longer reaches the worksheet exercises', async () => {
-			// `student_has_exercise_access` delegates to the worksheet check, so a
-			// stale grant here would render the worksheet's content anyway.
+		it('atteint les exercices de la fiche, puisqu’il la relit', async () => {
+			// `student_has_exercise_access` délègue à la vérification de fiche :
+			// refuser ici afficherait un énoncé vide.
 			const { data, error } = await archivedStudent.rpc('student_has_exercise_access', {
 				p_exercise_id: exerciseId
 			});
 			expect(error).toBeNull();
-			expect(data).toBe(false);
+			expect(data).toBe(true);
 		});
 	});
 
@@ -240,16 +278,18 @@ describe('archived class members and worksheet access', () => {
 	});
 
 	describe('archiving takes effect without touching the assignment', () => {
-		it('access is lost as soon as the membership is archived', async () => {
-			// Archiving is the teacher's gesture; nothing is expected to be replayed
-			// on the assignment itself for it to take effect.
+		it('le passage actif → archivé bascule l’écriture, sans replay', async () => {
+			// L'archivage est le geste du professeur ; rien n'est censé devoir être
+			// rejoué sur l'affectation pour qu'il prenne effet. Depuis la Phase 3,
+			// c'est l'ÉCRITURE qui bascule — la lecture, elle, survit des deux
+			// côtés, et c'est tout l'objet de la phase.
 			const { error: reactivateError } = await service
 				.from('class_members')
 				.update({ status: 'active' })
 				.eq('student_id', archivedStudentId)
 				.eq('class_id', classA);
 			expect(reactivateError).toBeNull();
-			expect(await hasWorksheetAccess(archivedStudent)).toBe(true);
+			expect(await canAccessAssignment(archivedStudent)).toBe(true);
 
 			const { error: archiveError } = await service
 				.from('class_members')
@@ -257,7 +297,9 @@ describe('archived class members and worksheet access', () => {
 				.eq('student_id', archivedStudentId)
 				.eq('class_id', classA);
 			expect(archiveError).toBeNull();
-			expect(await hasWorksheetAccess(archivedStudent)).toBe(false);
+			expect(await canAccessAssignment(archivedStudent)).toBe(false);
+			// Et la lecture, elle, reste.
+			expect(await hasWorksheetAccess(archivedStudent)).toBe(true);
 		});
 	});
 });
