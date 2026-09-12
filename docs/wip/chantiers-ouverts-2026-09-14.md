@@ -15,22 +15,48 @@ Une troisième école « Cours particuliers » est prévue, pas encore créée.
 
 ## Ce qui est en production
 
-| Chantier                                                                          | État  |
-| --------------------------------------------------------------------------------- | ----- |
-| Série « élève archivé » — fiches, exercices, Python, notifications, chat + kanban | livré |
-| Professeur multi-école (calendrier de toutes ses écoles)                          | livré |
-| Classes rattachées à `school_years` (Phase 1)                                     | livré |
-| `close_school_year` / `reopen_school_year` (Phase 2)                              | livré |
-| Voltaire 2025-2026 clôturée — 77 adhésions archivées                              | fait  |
-| Année courante déduite des dates, plus de `is_active`                             | livré |
+| Chantier                                                                          | État                   |
+| --------------------------------------------------------------------------------- | ---------------------- |
+| Série « élève archivé » — fiches, exercices, Python, notifications, chat + kanban | livré                  |
+| Professeur multi-école (calendrier de toutes ses écoles)                          | livré                  |
+| Classes rattachées à `school_years` (Phase 1)                                     | livré                  |
+| `close_school_year` / `reopen_school_year` (Phase 2)                              | livré                  |
+| Voltaire 2025-2026 clôturée — 77 adhésions archivées                              | fait                   |
+| Année courante déduite des dates, plus de `is_active`                             | livré                  |
+| Realtime : 5 des 6 tables republiées (PR #234)                                    | mergé, **pas en prod** |
+| Phase 3 — lecture seule rétroactive (PR #235 + #237)                              | mergé, **pas en prod** |
+| Phase 4 — composer une classe depuis l'année précédente (PR #236)                 | livré                  |
+
+> ⚠️ **Trois migrations attendent `db:migrate`** : `20260914140000` (realtime),
+> `20260914160000` et `20260914180000` (Phase 3). Le mode auto de Claude Code
+> refuse d'écrire en production ; il faut lancer `pnpm db:migrate` à la main,
+> puis `pnpm db:types` et commiter `database.ts`.
 
 ---
 
-# 1. Realtime — cause établie, correctif non décidé
+# 1. Realtime — corrigé, sauf `user_presence`
 
-**Le fait.** `pg_publication_tables` ne contient **aucune table de `public`** —
+> **État au 2026-09-14** : PR #234 mergée. Cinq tables republiées
+> (`messages`, `notifications`, `student_achievements`,
+> `minesweeper_multiplayer_game_state`, `minesweeper_multiplayer_matches`).
+> **`user_presence` volontairement laissée de côté**, en attente d'arbitrage.
+>
+> **Pourquoi.** La RLS ne s'applique pas aux DELETE, et le `filter`
+> d'abonnement non plus tant que la replica identity vaut `default` : les deux
+> remparts tombent ensemble. Ce qui part est la clé primaire seule — un `id`
+> opaque pour les cinq autres, mais **`user_presence` a `user_id` pour clé
+> primaire**. La publier diffuserait l'UUID d'un compte au moment de sa
+> suppression (CASCADE depuis `profiles`, effacement RGPD compris) à tout
+> abonné.
+>
+> **La question** : accepter cette diffusion, ou repasser la présence en
+> `broadcast` (ce que fait déjà `tradeRealtime`, qui n'a jamais cessé de
+> marcher) ? Réversible en une ligne. Un test refuse la publication tant que
+> rien n'est tranché.
+
+**Le fait.** `pg_publication_tables` ne contenait **aucune table de `public`** —
 seulement les partitions internes de `realtime.messages`, qui servent au
-`broadcast`. Donc **tout `postgres_changes` est inerte** en production.
+`broadcast`. Donc **tout `postgres_changes` était inerte** en production.
 
 **Six stores concernés**, tous utilisant `postgres_changes` :
 `achievementsRealtime`, `multiplayer`, `presence`, `chat`,
@@ -68,6 +94,34 @@ reperdra la même chose en silence.
 
 # 2. Phase 3 — lecture seule rétroactive
 
+> **État au 2026-09-14** : livrée (PR #235), puis corrigée (PR #237) après
+> audit. **Pas encore en production.**
+>
+> Mécanisme : un prédicat `had_class_access_to_assignment(uuid)` — adhésion
+> ARCHIVÉE à une classe destinataire, fiche distribuée dans la fenêtre de
+> l'année de la classe ET après l'arrivée de l'élève (`joined_at`) — OR-é dans
+> `student_has_worksheet_access` et dans la policy de `worksheet_assignments`.
+> `can_access_assignment` n'est pas touchée : elle garde les écritures. Un
+> pendant lecture, `can_read_assignment`, lui est ajouté à côté.
+>
+> **Effet mesuré en prod** : 36 élèves archivés retrouvent 10 fiches, toutes au
+> Lycée Franco-Qatari Voltaire.
+>
+> **Deux questions ouvertes**, posées par l'audit :
+>
+> 1. Un membre resté **actif** dans une classe fermée ne relit pas, alors que
+>    l'archivé de la même classe relit. Le prédicat teste `status = 'archived'`,
+>    une égalité. Rien ne casse aujourd'hui (la clôture archive tout), mais la
+>    règle tient à cette coïncidence. Faut-il l'aligner ?
+> 2. **Aucune borne haute** : l'accès ne s'éteint jamais. Un élève parti en
+>    2026 lira encore ses fiches en 2031, jusqu'à la purge. Combien de temps
+>    doit durer la relecture ?
+>
+> **Reste à faire côté application** : la route `/api/student/worksheets/[id]`
+> garde encore sur `can_access_assignment` et renverrait 404 à l'élève archivé.
+> Le correctif est prêt (patch dans le scratchpad de session) mais attend
+> `db:types`, donc la mise en production des migrations.
+
 **Le besoin.** Un élève dont l'adhésion est archivée perd tout accès aux fiches
 de la classe quittée. Pour réviser en septembre ce qu'il a travaillé en juin,
 il devrait garder la **lecture** de ce qui lui avait été distribué.
@@ -90,6 +144,17 @@ personne.
 
 # 3. Phase 4 — composer une classe depuis l'année précédente
 
+> **État au 2026-09-14** : **livrée** (PR #236), en production au prochain
+> déploiement. Écran `/dashboard/admin/classes/composer`, deux routes
+> (`POST /api/admin/compose-class`, `GET /api/admin/class-composition-source`),
+> 22 tests serveur.
+>
+> **Portée bornée à l'école de la destination.** Reprendre d'anciens élèves de
+> Voltaire dans une école « Cours particuliers » franchirait la frontière
+> école, et demanderait de trancher ce que devient `profiles.school_id`. C'est
+> la question qui reste — et c'est celle dont tu as besoin cette année, pas la
+> bascule d'année à école constante.
+
 **Ce que c'est.** Un écran qui liste les élèves des classes de l'année
 précédente, groupés par ancienne classe, avec des cases à cocher et une classe
 de destination. Les élèves cochés reçoivent une **nouvelle adhésion** dans la
@@ -110,9 +175,11 @@ dupliqué ; un élève sans compte n'apparaît pas (l'import reste la voie des
 nouveaux) ; une classe de destination archivée ou d'une année close est
 refusée.
 
-**Sans objet cette année** : les nouveaux élèves de Blaise Pascal ne viennent
-pas de Voltaire — c'est un changement d'établissement, pas une bascule
-d'année. Utile **l'an prochain**, quand les 2DE 3 deviendront des 1SPE.
+**Sans objet cette année, à école constante** : les nouveaux élèves de Blaise
+Pascal ne viennent pas de Voltaire — c'est un changement d'établissement, pas
+une bascule d'année. L'écran servira **l'an prochain**, quand les 2DE 3
+deviendront des 1SPE… ou **dès maintenant**, si tu tranches la question
+inter-écoles ci-dessus.
 
 ---
 
@@ -204,6 +271,16 @@ que ce contrat n'est pas tranché, on ne peut pas corriger une réponse.
 - **Après beaucoup de `db:reset`, GoTrue casse les sign-in** avec une erreur
   vide. Remède : `db:stop` puis `db:start` — un reset ne suffit pas.
 - Les **tests d'intégration ne tournent pas en CI** : les lancer localement.
+- **Un `db:reset` fait AVANT un rebase ne contient pas les migrations que le
+  rebase apporte.** Symptôme trompeur : une fonction corrigée répond juste,
+  celle qu'elle devait compléter répond faux. Réinitialiser après tout rebase.
+- **`joined_at` vaut `now()` par défaut** : une fixture qui laisse le défaut
+  date l'arrivée d'aujourd'hui, donc APRÈS toute distribution antérieure. Les
+  tests rougissent alors pour une raison sans rapport avec ce qu'ils testent.
+- **`check:incremental` refuse de tourner si Supabase local tourne** (12
+  conteneurs, ~1,9 Go sur une machine de 8 Go) : `db:stop` d'abord.
+- **Le hook pre-commit échoue si prettier a du travail** : formater avant, ou
+  le commit est annulé sans message clair.
 
 # Ce qui rapporterait le plus, maintenant
 
