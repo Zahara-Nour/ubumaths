@@ -1,9 +1,13 @@
 <script lang="ts">
 	/**
-	 * Composer une classe depuis l'année précédente.
+	 * Composer une classe depuis une année précédente, école comprise.
 	 *
 	 * Ce n'est pas une promotion automatique : les groupes ne se reconduisent
 	 * jamais à l'identique. On choisit une destination, on coche, on inscrit.
+	 *
+	 * Un élève venu d'une autre école verra son profil déplacé — donc ses
+	 * trimestres, son calendrier et son marché. L'écran l'annonce et demande un
+	 * consentement explicite AVANT d'agir ; le serveur refuse sans lui.
 	 */
 
 	import type { PageData } from './$types';
@@ -12,7 +16,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { SvelteSet } from 'svelte/reactivity';
-	import { Loader2, Users } from '@lucide/svelte';
+	import { Loader2, Users, ArrowLeftRight, TriangleAlert } from '@lucide/svelte';
 
 	interface CandidateStudent {
 		id: string;
@@ -20,12 +24,16 @@
 		lastname: string | null;
 		email: string | null;
 		already_member: boolean;
+		/** L'inscrire déplacera son profil vers l'école de la destination. */
+		changes_school: boolean;
 	}
 
 	interface SourceClass {
 		class_id: string;
 		class_name: string;
+		school_name: string | null;
 		school_year_name: string;
+		other_school: boolean;
 		students: CandidateStudent[];
 	}
 
@@ -38,6 +46,8 @@
 	let chargement = $state(false);
 	let envoi = $state(false);
 	let charge = $state(false);
+	/** Consentement explicite au déplacement d'école. */
+	let changementEcoleConsenti = $state(false);
 
 	const destinationItems = $derived(
 		data.destinations.map((d) => ({
@@ -51,6 +61,24 @@
 	const composables = $derived(sources.flatMap((c) => c.students.filter((e) => !e.already_member)));
 	const nbSelectionnes = $derived(selection.size);
 
+	/**
+	 * Les élèves cochés qui changeront d'école. Le dire AVANT d'agir : le
+	 * déplacement change leurs trimestres, leur calendrier et leur marché.
+	 */
+	const aDeplacer = $derived(
+		sources.flatMap((c) => c.students.filter((e) => e.changes_school && selection.has(e.id)))
+	);
+	const ecolesQuittees = $derived([
+		...new Set(
+			sources
+				.filter((c) => c.other_school && c.students.some((e) => selection.has(e.id)))
+				.map((c) => c.school_name ?? 'école inconnue')
+		)
+	]);
+	const peutComposer = $derived(
+		nbSelectionnes > 0 && (aDeplacer.length === 0 || changementEcoleConsenti)
+	);
+
 	function nomComplet(e: CandidateStudent): string {
 		const nom = [e.lastname, e.firstname].filter(Boolean).join(' ');
 		return nom || e.email || 'Élève sans nom';
@@ -61,6 +89,7 @@
 		charge = false;
 		sources = [];
 		selection.clear();
+		changementEcoleConsenti = false;
 
 		try {
 			const reponse = await fetch(
@@ -108,7 +137,7 @@
 	}
 
 	async function composer() {
-		if (selection.size === 0) return;
+		if (!peutComposer) return;
 		envoi = true;
 
 		try {
@@ -117,7 +146,8 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					targetClassId: destinationId,
-					studentIds: [...selection]
+					studentIds: [...selection],
+					confirmSchoolChange: changementEcoleConsenti
 				})
 			});
 
@@ -128,9 +158,10 @@
 				return;
 			}
 
-			const { added, ignored, refused } = corps as {
+			const { added, ignored, refused, moved } = corps as {
 				added: number;
 				ignored: number;
+				moved: number;
 				refused: string[];
 			};
 
@@ -142,6 +173,11 @@
 
 			// Les cas partiels méritent leur propre message : les taire ferait
 			// croire à une composition complète.
+			if (moved > 0) {
+				toaster.info(
+					`${moved} élève${moved > 1 ? 's ont' : ' a'} changé d’école pour rejoindre cette classe.`
+				);
+			}
 			if (ignored > 0) {
 				toaster.info(`${ignored} déjà membre${ignored > 1 ? 's' : ''}, non dupliqué.`);
 			}
@@ -167,8 +203,8 @@
 	<header class="mb-6">
 		<h1 class="text-2xl font-bold text-foreground">Composer une classe</h1>
 		<p class="mt-1 text-sm text-muted-foreground">
-			Reprendre des élèves des années précédentes dans une classe de cette année. Leur ancienne
-			adhésion reste archivée.
+			Reprendre des élèves d'années précédentes — d'un autre établissement au besoin — dans une
+			classe de cette année. Leurs anciennes adhésions restent archivées.
 		</p>
 	</header>
 
@@ -199,8 +235,7 @@
 		<div class="rounded-lg border border-border bg-card p-6 text-center">
 			<Users class="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
 			<p class="text-sm text-muted-foreground">
-				Aucun élève à reprendre : cette école n’a pas d’autre année scolaire avec des classes
-				peuplées.
+				Aucun élève à reprendre : aucune autre année scolaire ne compte de classe peuplée.
 			</p>
 		</div>
 	{:else if sources.length > 0}
@@ -209,8 +244,21 @@
 				<section class="rounded-lg border border-border bg-card shadow">
 					<header class="flex items-center justify-between border-b border-border px-4 py-3">
 						<div>
-							<h2 class="font-semibold text-foreground">{classe.class_name}</h2>
-							<p class="text-xs text-muted-foreground">{classe.school_year_name}</p>
+							<h2 class="flex items-center gap-2 font-semibold text-foreground">
+								{classe.class_name}
+								{#if classe.other_school}
+									<span
+										class="inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-xs font-normal text-muted-foreground"
+									>
+										<ArrowLeftRight class="h-3 w-3" />
+										autre école
+									</span>
+								{/if}
+							</h2>
+							<p class="text-xs text-muted-foreground">
+								{classe.school_year_name}{#if classe.school_name}
+									· {classe.school_name}{/if}
+							</p>
 						</div>
 						<MyCheckbox
 							checked={classeEntierementCochee(classe)}
@@ -239,6 +287,39 @@
 			{/each}
 		</div>
 
+		{#if aDeplacer.length > 0}
+			<!-- Le dire AVANT, jamais après : le déplacement change les trimestres,
+			     le calendrier et le marché de l'élève. -->
+			<div
+				class="mt-6 rounded-lg border border-amber-300 bg-amber-50 p-4 dark:border-amber-900 dark:bg-amber-950/40"
+			>
+				<div class="flex items-start gap-3">
+					<TriangleAlert class="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+					<div class="space-y-2 text-sm">
+						<p class="text-amber-900 dark:text-amber-200">
+							<span class="font-medium">
+								{aDeplacer.length} élève{aDeplacer.length > 1 ? 's' : ''} changera{aDeplacer.length >
+								1
+									? 'ont'
+									: ''} d’école.
+							</span>
+							{#if ecolesQuittees.length > 0}
+								Ils quitteront {ecolesQuittees.join(', ')} pour l’école de la classe de destination.
+							{/if}
+						</p>
+						<p class="text-amber-800 dark:text-amber-300">
+							Leur calendrier, leurs trimestres et leur marché suivront la nouvelle école. Leurs
+							anciennes classes restent archivées et leur historique intact.
+						</p>
+						<MyCheckbox
+							bind:checked={changementEcoleConsenti}
+							label="Je comprends, déplacer ces élèves"
+						/>
+					</div>
+				</div>
+			</div>
+		{/if}
+
 		<div
 			class="sticky bottom-4 mt-6 flex items-center justify-between rounded-lg border border-border bg-card p-4 shadow-lg"
 		>
@@ -248,7 +329,7 @@
 					: ''}
 				sur {composables.length} disponible{composables.length > 1 ? 's' : ''}
 			</span>
-			<Button onclick={composer} disabled={nbSelectionnes === 0 || envoi}>
+			<Button onclick={composer} disabled={!peutComposer || envoi}>
 				{#if envoi}
 					<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 				{/if}

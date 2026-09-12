@@ -16,8 +16,15 @@
  *
  * AUTH : admin (connexion admin ou élévation).
  *
- * RÉPONSE : { added, ignored, refused } — `ignored` compte les élèves déjà
- * membres, qui ne sont pas dupliqués.
+ * RÉPONSE : { added, ignored, refused, moved } — `ignored` compte les élèves
+ * déjà membres, qui ne sont pas dupliqués ; `moved` ceux dont le profil a
+ * changé d'école.
+ *
+ * L'écriture passe par `admin_compose_class`, une fonction Postgres :
+ * l'inscription et le déplacement d'école doivent tenir ou échouer ensemble,
+ * sans quoi on fabrique un élève inscrit dans une école et rattaché à une
+ * autre. Les contrôles ci-dessous font double emploi avec ceux de la fonction,
+ * et c'est voulu : la fonction est le garde, la route est le message.
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -33,7 +40,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { targetClassId, studentIds } = validation.data;
+	const { targetClassId, studentIds, confirmSchoolChange } = validation.data;
 
 	// La destination d'abord : composer vers une classe close ou vers une année
 	// terminée fabriquerait des adhésions que plus rien ne gouverne.
@@ -77,7 +84,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// que sa sélection ne s'est pas appliquée entière.
 	const { data: eleves, error: elevesError } = await supabase
 		.from('profiles')
-		.select('id, role')
+		.select('id, role, school_id')
 		.in('id', studentIds);
 
 	if (elevesError) {
@@ -85,44 +92,50 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Impossible de vérifier les élèves sélectionnés');
 	}
 
-	const eleveIds = new Set((eleves ?? []).filter((p) => p.role === 'student').map((p) => p.id));
+	const elevesValides = (eleves ?? []).filter((p) => p.role === 'student');
+	const eleveIds = new Set(elevesValides.map((p) => p.id));
 	const refused = studentIds.filter((id) => !eleveIds.has(id));
 
-	// Les adhésions déjà en place, tous statuts confondus : réinscrire un élève
-	// déjà membre le dupliquerait, et réactiver une adhésion archivée n'est PAS
-	// le geste demandé — c'est une décision du professeur, pas un effet de bord.
-	const { data: dejaMembres, error: dejaError } = await supabase
-		.from('class_members')
-		.select('student_id')
-		.eq('class_id', targetClassId)
-		.in('student_id', [...eleveIds]);
-
-	if (dejaError) {
-		console.error('Lecture des adhésions existantes impossible :', dejaError);
-		throw error(500, 'Impossible de vérifier les adhésions existantes');
-	}
-
-	const dejaIds = new Set((dejaMembres ?? []).map((m) => m.student_id));
-	const aInserer = [...eleveIds].filter((id) => !dejaIds.has(id));
-
-	if (aInserer.length > 0) {
-		const { error: insertError } = await supabase.from('class_members').insert(
-			aInserer.map((student_id) => ({
-				student_id,
-				class_id: targetClassId,
-				status: 'active'
-			}))
+	// Le déplacement d'école ne doit jamais surprendre : il change les
+	// trimestres, le calendrier et le marché de l'élève. On refuse tant qu'il
+	// n'a pas été consenti, en disant combien d'élèves sont concernés.
+	const aDeplacer = elevesValides.filter((p) => p.school_id !== cible.school_id);
+	if (aDeplacer.length > 0 && !confirmSchoolChange) {
+		throw error(
+			409,
+			`${aDeplacer.length} élève${aDeplacer.length > 1 ? 's' : ''} changerai${
+				aDeplacer.length > 1 ? 'ent' : 't'
+			} d’école pour « ${cible.name} ». Confirmez pour continuer.`
 		);
-
-		if (insertError) {
-			console.error('Composition impossible :', insertError);
-			throw error(500, 'Impossible d’inscrire les élèves sélectionnés');
-		}
 	}
+
+	// La déduplication n'est plus faite ici : `admin_compose_class` insère avec
+	// `on conflict do nothing` sur (class_id, student_id). Une adhésion déjà
+	// présente — active ou archivée — n'est donc ni dupliquée ni réactivée, et
+	// c'est la même transaction qui le garantit.
+	if (eleveIds.size === 0) {
+		return json({ added: 0, ignored: 0, moved: 0, refused });
+	}
+
+	// Une seule transaction : inscription et déplacement d'école ensemble.
+	const { data: resultat, error: rpcError } = await supabase.rpc('admin_compose_class', {
+		p_class_id: targetClassId,
+		p_student_ids: [...eleveIds]
+	});
+
+	if (rpcError) {
+		console.error('Composition impossible :', rpcError);
+		throw error(500, 'Impossible d’inscrire les élèves sélectionnés');
+	}
+
+	const compte = resultat?.[0] ?? { enrolled: 0, moved: 0 };
 
 	return json({
-		added: aInserer.length,
-		ignored: dejaIds.size,
+		added: compte.enrolled,
+		// Les élèves éligibles que la fonction n'a pas inscrits : ils étaient
+		// déjà membres, actifs ou archivés.
+		ignored: eleveIds.size - compte.enrolled,
+		moved: compte.moved,
 		refused
 	});
 };

@@ -31,7 +31,14 @@ export const composeClassSchema = z.object({
 	studentIds: z
 		.array(z.string().uuid('ID d’élève invalide'))
 		.min(1, 'Aucun élève sélectionné')
-		.max(200, 'Trop d’élèves d’un coup (200 au maximum)')
+		.max(200, 'Trop d’élèves d’un coup (200 au maximum)'),
+	/**
+	 * Consentement explicite au déplacement d'école. Inscrire un élève dans une
+	 * classe d'une autre école déplace son profil — donc ses trimestres, son
+	 * calendrier et son marché. Ça ne doit jamais arriver par inadvertance :
+	 * sans ce drapeau, l'API refuse et dit combien d'élèves sont concernés.
+	 */
+	confirmSchoolChange: z.boolean().optional().default(false)
 });
 
 /**

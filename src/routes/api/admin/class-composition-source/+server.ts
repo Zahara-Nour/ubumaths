@@ -5,10 +5,12 @@
  * Les candidats à la composition d'une classe : les élèves des classes des
  * AUTRES années scolaires de la même école, groupés par ancienne classe.
  *
- * Portée volontairement bornée à l'école de la classe de destination.
- * L'école est la frontière sociale et de safeguarding du modèle ; composer
- * par-dessus cette frontière demanderait de trancher ce que devient
- * `profiles.school_id`, ce qui n'est pas une question technique.
+ * La portée franchit les écoles, et c'est le cas d'usage principal : reprendre
+ * d'anciens élèves d'un établissement quitté dans une école « Cours
+ * particuliers ». Chaque élève porte donc `changes_school`, parce que
+ * l'inscrire déplacera son profil — trois policies lisent `profiles.school_id`
+ * (trimestres, années, marché), et l'y laisser le laisserait à moitié cassé.
+ * L'écran doit le dire avant d'agir, jamais après.
  *
  * Un élève sans compte n'apparaît pas : l'import reste la voie des nouveaux.
  * Un élève déjà membre de la cible apparaît, marqué — le masquer laisserait
@@ -29,12 +31,17 @@ interface CandidateStudent {
 	email: string | null;
 	/** Déjà membre de la classe de destination : à afficher, pas à proposer. */
 	already_member: boolean;
+	/** L'inscrire déplacera son profil vers l'école de la destination. */
+	changes_school: boolean;
 }
 
 interface SourceClass {
 	class_id: string;
 	class_name: string;
+	school_name: string | null;
 	school_year_name: string;
+	/** L'école de cette classe n'est pas celle de la destination. */
+	other_school: boolean;
 	students: CandidateStudent[];
 }
 
@@ -69,13 +76,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		throw error(409, 'Cette classe n’est rattachée à aucune école.');
 	}
 
-	// Les classes des autres années de la même école. `school_year_id` peut être
-	// nul sur une vieille classe : on l'exclut plutôt que de la ranger sous une
-	// année arbitraire.
+	// Les classes des AUTRES années, toutes écoles confondues. `school_year_id`
+	// peut être nul sur une vieille classe : on l'exclut plutôt que de la ranger
+	// sous une année arbitraire.
 	let sourcesQuery = supabase
 		.from('classes')
-		.select('id, name, school_year:school_years!inner(id, name, start_date)')
-		.eq('school_id', cible.school_id)
+		.select(
+			'id, name, school_id, school:schools(id, name), school_year:school_years!inner(id, name, start_date)'
+		)
 		.not('school_year_id', 'is', null)
 		.neq('id', targetClassId);
 
@@ -101,7 +109,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	// donnerait une liste vide au moment précis où l'écran doit servir.
 	const { data: adhesions, error: adhesionsError } = await supabase
 		.from('class_members')
-		.select('class_id, student_id, profiles!inner(id, firstname, lastname, email, role)')
+		.select('class_id, student_id, profiles!inner(id, firstname, lastname, email, role, school_id)')
 		.in('class_id', sourceIds);
 
 	if (adhesionsError) {
@@ -134,7 +142,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			firstname: profil.firstname,
 			lastname: profil.lastname,
 			email: profil.email,
-			already_member: dejaIds.has(profil.id)
+			already_member: dejaIds.has(profil.id),
+			changes_school: profil.school_id !== cible.school_id
 		});
 		parClasse.set(adhesion.class_id, liste);
 	}
@@ -142,9 +151,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const classes: SourceClass[] = sources
 		.map((c) => {
 			const annee = Array.isArray(c.school_year) ? c.school_year[0] : c.school_year;
+			const ecoleSource = Array.isArray(c.school) ? c.school[0] : c.school;
 			return {
 				class_id: c.id,
 				class_name: c.name,
+				school_name: ecoleSource?.name ?? null,
+				other_school: c.school_id !== cible.school_id,
 				school_year_name: annee?.name ?? '',
 				students: (parClasse.get(c.id) ?? []).sort((a, b) =>
 					`${a.lastname ?? ''} ${a.firstname ?? ''}`.localeCompare(
@@ -157,6 +169,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.filter((c) => c.students.length > 0)
 		.sort(
 			(a, b) =>
+				// L'école de la destination d'abord : c'est le cas ordinaire.
+				Number(a.other_school) - Number(b.other_school) ||
 				b.school_year_name.localeCompare(a.school_year_name) ||
 				a.class_name.localeCompare(b.class_name, 'fr')
 		);
