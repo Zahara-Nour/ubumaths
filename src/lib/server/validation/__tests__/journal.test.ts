@@ -45,10 +45,39 @@ describe('dateSchema', () => {
 });
 
 describe('futureDateSchema', () => {
+	/** La date civile LOCALE — celle qu'un sélecteur de date montre. */
+	const aujourdHuiLocal = () => {
+		const d = new Date();
+		return [
+			d.getFullYear(),
+			String(d.getMonth() + 1).padStart(2, '0'),
+			String(d.getDate()).padStart(2, '0')
+		].join('-');
+	};
+
 	it('should accept today', () => {
-		const today = new Date().toISOString().split('T')[0];
-		const result = futureDateSchema.safeParse(today);
+		// `toISOString()` donnerait la date UTC, qui diffère de la date locale
+		// pendant la fenêtre entre minuit local et minuit UTC. Le test échouait
+		// alors pour une raison de fuseau, pas de logique.
+		const result = futureDateSchema.safeParse(aujourdHuiLocal());
 		expect(result.success).toBe(true);
+	});
+
+	it('accepte aujourd’hui quel que soit le fuseau du serveur', () => {
+		// Le contrôle de non-régression : on éprouve les deux dates civiles
+		// possibles à un instant donné — la locale et celle d'UTC. Aucune des
+		// deux n'est « dans le passé » du point de vue de l'utilisateur, et une
+		// comparaison qui mélange instants et dates civiles en refuse une.
+		const utc = new Date().toISOString().split('T')[0];
+		const local = aujourdHuiLocal();
+		// La date UTC est soit la même, soit la veille de la locale.
+		expect(futureDateSchema.safeParse(local).success).toBe(true);
+		if (utc !== local) {
+			// Le seul cas où elles diffèrent : UTC est en retard, donc « hier »
+			// localement. Le schéma le refuse, et c'est correct — on vérifie que
+			// c'est bien la date LOCALE qui fait référence.
+			expect(futureDateSchema.safeParse(utc).success).toBe(false);
+		}
 	});
 
 	it('should accept future dates', () => {
