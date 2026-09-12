@@ -319,7 +319,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		if (classIds.length > 0) {
 			const { data: classesData, error: classesError } = await locals.supabase
 				.from('classes')
-				.select('id, name')
+				.select('id, name, is_active')
 				.in('id', classIds);
 
 			if (classesError) {
@@ -332,6 +332,21 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			const missingIds = classIds.filter((id) => !foundIds.has(id));
 			if (missingIds.length > 0) {
 				throw error(404, `Classes non trouvees: ${missingIds.length} classe(s) invalide(s)`);
+			}
+
+			// Une classe fermée ne reçoit plus rien. Personne n'y est en cours
+			// d'année, donc la distribution ne servirait aucun élève actif — mais
+			// elle ÉLARGIRAIT la lecture rétroactive de ses anciens membres, qui
+			// se relit sur la fenêtre de l'année et non sur la date de fermeture.
+			// L'interface ne propose que des classes actives
+			// (`get_teacher_classes_with_data` filtre sur `is_active`) : ce garde
+			// ne ferme rien d'atteignable, il empêche la dérive.
+			const fermees = (classesData ?? []).filter((c) => !c.is_active);
+			if (fermees.length > 0) {
+				throw error(
+					400,
+					`Classe fermée : ${fermees.map((c) => c.name).join(', ')} ne peut plus recevoir de fiche`
+				);
 			}
 		}
 
@@ -488,7 +503,9 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 	} catch (err) {
 		console.error('Error creating assignment:', err);
 
-		if (err instanceof Error && 'status' in err) {
+		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
+		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
+		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 
