@@ -26,7 +26,8 @@
  * }
  *
  * SECURITY:
- * - Access verified via can_access_assignment function
+ * - Access verified via resolveAssignmentAccess (can_access_assignment, puis
+ *   can_read_assignment pour la relecture d'un ancien membre)
  * - Only active assignments with available_from <= NOW are accessible
  * - Correction visibility respects assignment and exercise settings
  *
@@ -38,6 +39,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
+import { resolveAssignmentAccess } from '$lib/server/worksheets/assignment-access';
 import {
 	validateStudentWorksheetParam,
 	studentWorksheetDetailResponseSchema
@@ -220,22 +222,12 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const { assignmentId } = paramValidation.data;
 
 	try {
-		// Verify access using the helper function (checks RLS + timing)
-		const { data: canAccess, error: canAccessError } = await locals.supabase.rpc(
-			'can_access_assignment',
-			{
-				p_assignment_id: assignmentId
-			}
-		);
+		// Deux droits distincts : écrire (adhésion active) et relire (ancien
+		// membre revenant sur ce qui lui avait été distribué). Le module dit
+		// lequel s'applique ; une panne y lève un 500, jamais un refus.
+		const { canRead, readOnly } = await resolveAssignmentAccess(locals.supabase, assignmentId);
 
-		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
-		// panne doit se distinguer d'un refus mérité.
-		if (canAccessError && canAccessError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', canAccessError);
-			throw error(500, 'Impossible de vérifier votre accès');
-		}
-
-		if (!canAccess) {
+		if (!canRead) {
 			// Generic error to avoid information disclosure (don't reveal if assignment exists)
 			throw error(404, 'Devoir non trouve');
 		}
@@ -507,6 +499,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			closes_at: assignment.closes_at,
 			show_corrections: assignment.show_corrections ?? false,
 			class_name: studentClass?.name || null,
+			read_only: readOnly,
 			exercises,
 			sections: sectionViews
 		};

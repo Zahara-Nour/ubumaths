@@ -35,6 +35,11 @@
 		reportsMap: Map<string, StudentErrorReportView[]>;
 		onOpenChange: (open: boolean) => void;
 		onNavigate: (index: number) => void;
+		/**
+		 * Consultation seule : l'élève relit une fiche d'une classe qu'il a
+		 * quittée. Le serveur refuse déjà ses écritures ; on ne les propose pas.
+		 */
+		readOnly?: boolean;
 		onMasteryChange: (status: MasteryStatus) => void;
 		onReportCreated: (worksheetExerciseId: string, report: StudentErrorReportView) => void;
 	}
@@ -47,6 +52,7 @@
 		isSavingMastery = false,
 		assignmentId,
 		reportsMap,
+		readOnly = false,
 		onOpenChange,
 		onNavigate,
 		onMasteryChange,
@@ -131,8 +137,8 @@
 	>
 		<!-- DESKTOP LAYOUT: Split 60/40 -->
 		<div class="hidden h-full w-full lg:flex">
-			<!-- Exercise Panel (60%) -->
-			<div class="flex w-[60%] flex-col border-r border-border">
+			<!-- Exercise Panel (60%, ou toute la largeur en consultation seule) -->
+			<div class="flex flex-col {readOnly ? 'w-full' : 'w-[60%] border-r border-border'}">
 				<!-- Header -->
 				<div
 					class="flex items-center justify-between gap-4 border-b border-border bg-card px-6 py-4"
@@ -149,7 +155,7 @@
 						</Dialog.Title>
 					</div>
 					<div class="flex items-center gap-3">
-						{#if exercise}
+						{#if exercise && !readOnly}
 							<ReportErrorButton
 								{assignmentId}
 								exerciseId={exercise.exercise_id}
@@ -226,49 +232,51 @@
 						</Button>
 
 						<!-- Mastery status buttons (requires parental consent) -->
-						<div class="flex items-center gap-1">
-							{#if isSavingMastery}
-								<Loader2 class="mr-1 h-4 w-4 animate-spin text-muted-foreground" />
-							{/if}
-							<ConsentButton
-								variant={masteryStatus === 'not_worked' ? 'default' : 'outline'}
-								size="sm"
-								class="h-8 gap-1 px-2 text-xs"
-								onclick={() => onMasteryChange('not_worked')}
-								disabled={isSavingMastery}
-								title={MASTERY_LABELS.not_worked}
-								aria-pressed={masteryStatus === 'not_worked'}
-							>
-								<Circle class="h-3.5 w-3.5" />
-								<span class="hidden sm:inline">Non fait</span>
-							</ConsentButton>
-							<ConsentButton
-								variant={masteryStatus === 'mastered' ? 'default' : 'outline'}
-								size="sm"
-								class="h-8 gap-1 px-2 text-xs"
-								onclick={() => onMasteryChange('mastered')}
-								disabled={isSavingMastery}
-								title={MASTERY_LABELS.mastered}
-								aria-pressed={masteryStatus === 'mastered'}
-							>
-								<CheckCircle class="h-3.5 w-3.5" />
-								<span class="hidden sm:inline">OK</span>
-							</ConsentButton>
-							<ConsentButton
-								variant={masteryStatus === 'needs_review' ? 'default' : 'outline'}
-								size="sm"
-								class="h-8 gap-1 px-2 text-xs {masteryStatus === 'needs_review'
-									? 'bg-amber-500 hover:bg-amber-600'
-									: ''}"
-								onclick={() => onMasteryChange('needs_review')}
-								disabled={isSavingMastery}
-								title={MASTERY_LABELS.needs_review}
-								aria-pressed={masteryStatus === 'needs_review'}
-							>
-								<AlertCircle class="h-3.5 w-3.5" />
-								<span class="hidden sm:inline">A revoir</span>
-							</ConsentButton>
-						</div>
+						{#if !readOnly}
+							<div class="flex items-center gap-1">
+								{#if isSavingMastery}
+									<Loader2 class="mr-1 h-4 w-4 animate-spin text-muted-foreground" />
+								{/if}
+								<ConsentButton
+									variant={masteryStatus === 'not_worked' ? 'default' : 'outline'}
+									size="sm"
+									class="h-8 gap-1 px-2 text-xs"
+									onclick={() => onMasteryChange('not_worked')}
+									disabled={isSavingMastery}
+									title={MASTERY_LABELS.not_worked}
+									aria-pressed={masteryStatus === 'not_worked'}
+								>
+									<Circle class="h-3.5 w-3.5" />
+									<span class="hidden sm:inline">Non fait</span>
+								</ConsentButton>
+								<ConsentButton
+									variant={masteryStatus === 'mastered' ? 'default' : 'outline'}
+									size="sm"
+									class="h-8 gap-1 px-2 text-xs"
+									onclick={() => onMasteryChange('mastered')}
+									disabled={isSavingMastery}
+									title={MASTERY_LABELS.mastered}
+									aria-pressed={masteryStatus === 'mastered'}
+								>
+									<CheckCircle class="h-3.5 w-3.5" />
+									<span class="hidden sm:inline">OK</span>
+								</ConsentButton>
+								<ConsentButton
+									variant={masteryStatus === 'needs_review' ? 'default' : 'outline'}
+									size="sm"
+									class="h-8 gap-1 px-2 text-xs {masteryStatus === 'needs_review'
+										? 'bg-amber-500 hover:bg-amber-600'
+										: ''}"
+									onclick={() => onMasteryChange('needs_review')}
+									disabled={isSavingMastery}
+									title={MASTERY_LABELS.needs_review}
+									aria-pressed={masteryStatus === 'needs_review'}
+								>
+									<AlertCircle class="h-3.5 w-3.5" />
+									<span class="hidden sm:inline">A revoir</span>
+								</ConsentButton>
+							</div>
+						{/if}
 
 						<!-- Pagination + Navigation next -->
 						<div class="flex items-center gap-2">
@@ -289,19 +297,23 @@
 				</div>
 			</div>
 
-			<!-- Tutor Panel (40%) - Only mount TutorChat on desktop to avoid dual instances -->
-			<div class="flex w-[40%] flex-col overflow-hidden bg-muted/30">
-				{#if isDesktop && tutorContext}
-					<!-- Key forces remount when exercise changes, ensuring fresh state -->
-					{#key tutorContext.exerciseId}
-						<TutorChat exerciseContext={tutorContext} {assignmentId} />
-					{/key}
-				{:else if isDesktop}
-					<div class="flex h-full items-center justify-center text-muted-foreground">
-						<p>Selectionnez une {lore.learning.exercise} pour commencer</p>
-					</div>
-				{/if}
-			</div>
+			<!-- Tutor Panel (40%) - Only mount TutorChat on desktop to avoid dual instances.
+			     Retiré en consultation seule : le tuteur écrit des conversations et
+			     appelle le modèle, ce qu'une fiche relue n'a pas à déclencher. -->
+			{#if !readOnly}
+				<div class="flex w-[40%] flex-col overflow-hidden bg-muted/30">
+					{#if isDesktop && tutorContext}
+						<!-- Key forces remount when exercise changes, ensuring fresh state -->
+						{#key tutorContext.exerciseId}
+							<TutorChat exerciseContext={tutorContext} {assignmentId} />
+						{/key}
+					{:else if isDesktop}
+						<div class="flex h-full items-center justify-center text-muted-foreground">
+							<p>Selectionnez une {lore.learning.exercise} pour commencer</p>
+						</div>
+					{/if}
+				</div>
+			{/if}
 		</div>
 
 		<!-- MOBILE LAYOUT: Full exercise + FAB + Drawer -->
@@ -320,7 +332,7 @@
 					</Dialog.Title>
 				</div>
 				<div class="flex items-center gap-2">
-					{#if exercise}
+					{#if exercise && !readOnly}
 						<ReportErrorButton
 							{assignmentId}
 							exerciseId={exercise.exercise_id}
@@ -397,46 +409,48 @@
 					</Button>
 
 					<!-- Mastery status buttons (requires parental consent) -->
-					<div class="flex items-center gap-1">
-						{#if isSavingMastery}
-							<Loader2 class="h-3 w-3 animate-spin text-muted-foreground" />
-						{/if}
-						<ConsentButton
-							variant={masteryStatus === 'not_worked' ? 'default' : 'outline'}
-							size="sm"
-							class="h-8 px-2"
-							onclick={() => onMasteryChange('not_worked')}
-							disabled={isSavingMastery}
-							title={MASTERY_LABELS.not_worked}
-							aria-pressed={masteryStatus === 'not_worked'}
-						>
-							<Circle class="h-4 w-4" />
-						</ConsentButton>
-						<ConsentButton
-							variant={masteryStatus === 'mastered' ? 'default' : 'outline'}
-							size="sm"
-							class="h-8 px-2"
-							onclick={() => onMasteryChange('mastered')}
-							disabled={isSavingMastery}
-							title={MASTERY_LABELS.mastered}
-							aria-pressed={masteryStatus === 'mastered'}
-						>
-							<CheckCircle class="h-4 w-4" />
-						</ConsentButton>
-						<ConsentButton
-							variant={masteryStatus === 'needs_review' ? 'default' : 'outline'}
-							size="sm"
-							class="h-8 px-2 {masteryStatus === 'needs_review'
-								? 'bg-amber-500 hover:bg-amber-600'
-								: ''}"
-							onclick={() => onMasteryChange('needs_review')}
-							disabled={isSavingMastery}
-							title={MASTERY_LABELS.needs_review}
-							aria-pressed={masteryStatus === 'needs_review'}
-						>
-							<AlertCircle class="h-4 w-4" />
-						</ConsentButton>
-					</div>
+					{#if !readOnly}
+						<div class="flex items-center gap-1">
+							{#if isSavingMastery}
+								<Loader2 class="h-3 w-3 animate-spin text-muted-foreground" />
+							{/if}
+							<ConsentButton
+								variant={masteryStatus === 'not_worked' ? 'default' : 'outline'}
+								size="sm"
+								class="h-8 px-2"
+								onclick={() => onMasteryChange('not_worked')}
+								disabled={isSavingMastery}
+								title={MASTERY_LABELS.not_worked}
+								aria-pressed={masteryStatus === 'not_worked'}
+							>
+								<Circle class="h-4 w-4" />
+							</ConsentButton>
+							<ConsentButton
+								variant={masteryStatus === 'mastered' ? 'default' : 'outline'}
+								size="sm"
+								class="h-8 px-2"
+								onclick={() => onMasteryChange('mastered')}
+								disabled={isSavingMastery}
+								title={MASTERY_LABELS.mastered}
+								aria-pressed={masteryStatus === 'mastered'}
+							>
+								<CheckCircle class="h-4 w-4" />
+							</ConsentButton>
+							<ConsentButton
+								variant={masteryStatus === 'needs_review' ? 'default' : 'outline'}
+								size="sm"
+								class="h-8 px-2 {masteryStatus === 'needs_review'
+									? 'bg-amber-500 hover:bg-amber-600'
+									: ''}"
+								onclick={() => onMasteryChange('needs_review')}
+								disabled={isSavingMastery}
+								title={MASTERY_LABELS.needs_review}
+								aria-pressed={masteryStatus === 'needs_review'}
+							>
+								<AlertCircle class="h-4 w-4" />
+							</ConsentButton>
+						</div>
+					{/if}
 
 					<!-- Pagination + Navigation next -->
 					<div class="flex items-center gap-1">
@@ -456,8 +470,8 @@
 				</div>
 			</div>
 
-			<!-- Tutor FAB - Only show on mobile -->
-			{#if !isDesktop}
+			<!-- Tutor FAB - Only show on mobile, jamais en consultation seule -->
+			{#if !isDesktop && !readOnly}
 				<TutorFAB onclick={() => (tutorDrawerOpen = true)} />
 
 				<!-- Tutor Drawer - Only mount TutorChat on mobile to avoid dual instances -->

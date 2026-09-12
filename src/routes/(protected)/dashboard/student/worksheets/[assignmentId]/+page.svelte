@@ -7,7 +7,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { FileText, AlertTriangle, Star } from '@lucide/svelte';
+	import { FileText, AlertTriangle, Star, Archive } from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import type { MasteryStatus, ExerciseMasteryListResponse } from '$lib/types/exercise-mastery';
 	import type {
@@ -29,6 +29,13 @@
 	let sections = $derived<StudentSectionView[]>(worksheet.sections ?? []);
 	let exerciseCount = $derived(exercises.length);
 	let assignmentId = $derived(worksheet.assignment_id);
+
+	/**
+	 * Consultation seule : la fiche vient d'une classe que l'élève a quittée. Le
+	 * serveur refuse déjà ses écritures — on ne les lui propose pas, plutôt que
+	 * de le laisser buter dessus.
+	 */
+	let readOnly = $derived(worksheet.read_only === true);
 
 	// Groupement et numérotation : `$lib/worksheets/exercise-numbering`, la même
 	// règle que le générateur PDF. Elle était réécrite ici, et une troisième
@@ -195,6 +202,21 @@
 	<!-- Header -->
 	<WorksheetHeader {worksheet} />
 
+	{#if readOnly}
+		<!-- Le dire franchement : sans ce bandeau, l'élève constaterait
+		     l'absence des boutons sans comprendre pourquoi. -->
+		<div
+			class="mt-4 flex items-start gap-3 rounded-lg border border-border bg-muted/50 p-4 text-sm"
+		>
+			<Archive class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+			<p class="text-muted-foreground">
+				<span class="font-medium text-foreground">Consultation seule.</span>
+				Cette fiche vient d'une classe que tu as quittée : tu peux la relire, mais tu ne peux plus y
+				répondre ni signaler une erreur.
+			</p>
+		</div>
+	{/if}
+
 	<!-- Content Tabs -->
 	<section class="mt-8">
 		<Tabs.Root value="exercises" class="space-y-6">
@@ -203,10 +225,12 @@
 					<FileText class="h-4 w-4" />
 					{lore.learning.exercise}s ({exerciseCount})
 				</Tabs.Trigger>
-				<Tabs.Trigger value="reports" class="gap-2">
-					<AlertTriangle class="h-4 w-4" />
-					Signalements
-				</Tabs.Trigger>
+				{#if !readOnly}
+					<Tabs.Trigger value="reports" class="gap-2">
+						<AlertTriangle class="h-4 w-4" />
+						Signalements
+					</Tabs.Trigger>
+				{/if}
 			</Tabs.List>
 
 			<!-- Exercises Tab -->
@@ -269,9 +293,11 @@
 			</Tabs.Content>
 
 			<!-- Reports Tab -->
-			<Tabs.Content value="reports">
-				<StudentReportsPanel {assignmentId} />
-			</Tabs.Content>
+			{#if !readOnly}
+				<Tabs.Content value="reports">
+					<StudentReportsPanel {assignmentId} />
+				</Tabs.Content>
+			{/if}
 		</Tabs.Root>
 	</section>
 </div>
@@ -285,6 +311,7 @@
 	{isSavingMastery}
 	{assignmentId}
 	{reportsMap}
+	{readOnly}
 	onOpenChange={handleOpenChange}
 	onNavigate={handleNavigate}
 	onMasteryChange={handleMasteryChange}
