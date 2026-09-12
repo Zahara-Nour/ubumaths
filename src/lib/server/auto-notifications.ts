@@ -17,6 +17,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { createSystemNotification } from './notifications';
 import { escapeHtml } from '$lib/utils/html-escape';
+import type { NotificationTargetType } from '$lib/types/notification';
 
 type SupabaseClientType = SupabaseClient<Database>;
 
@@ -45,7 +46,7 @@ export async function notifyNewAssignment(
 			type: 'info',
 			priority: 'normal',
 			system_event_type: 'assignment_created',
-			target_type: 'class',
+			target_type: 'classes',
 			target_class_ids: [data.classId],
 			action_label: 'Voir le devoir',
 			action_url: `/dashboard/student/devoirs/${data.assignmentId}`
@@ -81,7 +82,7 @@ export async function notifyNewResource(
 			type: 'info',
 			priority: 'normal',
 			system_event_type: 'resource_added',
-			target_type: 'class',
+			target_type: 'classes',
 			target_class_ids: [data.classId],
 			action_label: 'Voir la ressource',
 			action_url: `/dashboard/student/resources/${data.resourceId}`
@@ -285,7 +286,8 @@ export async function notifyNewAssessment(
 ): Promise<void> {
 	try {
 		// Determine target type based on what was assigned
-		const targetType = data.classIds && data.classIds.length > 0 ? 'class' : 'users';
+		const targetType: NotificationTargetType =
+			data.classIds && data.classIds.length > 0 ? 'classes' : 'users';
 
 		await createSystemNotification(supabase, {
 			title: 'Nouvelle évaluation assignée',

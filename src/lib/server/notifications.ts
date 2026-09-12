@@ -57,7 +57,7 @@ export async function createNotification(
 				};
 			}
 
-			if (data.target_type === 'class' && data.target_class_ids) {
+			if (data.target_type === 'classes' && data.target_class_ids) {
 				// Mono-teacher: the sole teacher owns every class. Targets just have to
 				// reference existing classes.
 				const { data: teacherClasses, error: teacherClassesError } = await supabase
@@ -262,7 +262,12 @@ export async function getUnreadNotifications(
 		const conditions = [`target_type.eq.all`];
 
 		// By role
-		conditions.push(`and(target_type.eq.roles,target_roles.cs.{${profile.role}})`);
+		// `role`, PAS `roles` : c'est la valeur que la contrainte accepte et que
+		// `createSystemNotification` écrit. Au pluriel, cette condition ne
+		// correspondait à rien — les administrateurs ne voyaient donc jamais
+		// « nouvel utilisateur en attente », « nouveau signalement » ni les
+		// alertes d'erreur, qui ciblent tous `target_type: 'role'`.
+		conditions.push(`and(target_type.eq.role,target_roles.cs.{${profile.role}})`);
 
 		// By classes (if user has classes)
 		if (profile.class_ids && profile.class_ids.length > 0) {
@@ -559,7 +564,7 @@ export async function getCreatedNotifications(
 		// Batch fetch all unique class IDs to avoid repeated queries
 		const uniqueClassIds = new Set<string>();
 		for (const n of notifications) {
-			if (n.target_type === 'class' && n.target_class_ids) {
+			if (n.target_type === 'classes' && n.target_class_ids) {
 				for (const classId of n.target_class_ids) {
 					uniqueClassIds.add(classId);
 				}
@@ -627,7 +632,7 @@ export async function getCreatedNotifications(
 				// In production, consider caching role counts separately
 				totalRecipients = totalUsersCount || 0;
 				targetSummary = n.target_roles.join(', ');
-			} else if (n.target_type === 'class' && n.target_class_ids) {
+			} else if (n.target_type === 'classes' && n.target_class_ids) {
 				// Use pre-fetched class names and member counts
 				const classNames = n.target_class_ids
 					.map((id) => classNamesMap.get(id))
