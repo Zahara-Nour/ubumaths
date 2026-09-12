@@ -8,11 +8,16 @@
 -- mois de silence sur le chat, les notifications, la présence, les succès et le
 -- multijoueur.
 --
--- On republie SIX tables, et pas une de plus : celles qui portent un
--- `postgres_changes` dans `src/lib/stores/`. Chaque table publiée coûte du
--- trafic de réplication à chaque client connecté. Le test d'intégration
+-- Six tables portent un `postgres_changes` dans `src/lib/stores/`. On en
+-- republie CINQ. Chaque table publiée coûte du trafic de réplication à chaque
+-- client connecté, et le test d'intégration
 -- `tests/integration/realtime-publication.test.ts` refuse aussi bien une table
 -- manquante qu'une table publiée que personne n'écoute.
+--
+-- `user_presence` est VOLONTAIREMENT laissée de côté, en attente d'un arbitrage
+-- de David (voir la section DELETE ci-dessous). C'est la seule des six dont la
+-- clé primaire soit un identifiant d'utilisateur. La présence reste donc
+-- muette, comme elle l'est depuis le 2026-06-16 ; les cinq autres reviennent.
 --
 -- Accès, INSERT et UPDATE : aucun accès nouveau. Le realtime évalue la RLS par
 -- abonné, active avec des policies SELECT sur les six tables. Le `filter`
@@ -27,10 +32,12 @@
 --   - `messages`, `notifications`, `student_achievements`,
 --     `minesweeper_multiplayer_matches` → un `id` de ligne opaque, inoffensif ;
 --   - `minesweeper_multiplayer_game_state` → `(match_id, player_id)` ;
---   - `user_presence` → la PK EST `user_id`. L'UUID d'un utilisateur dont la
---     présence est purgée (rétention 30 j) ou dont le compte est supprimé
---     (CASCADE depuis `profiles`, effacement RGPD compris) est diffusé aux
---     abonnés. UUID pseudonyme, sans nom ni statut ni horodatage métier.
+--   - `user_presence` → la PK EST `user_id`. Publier cette table diffuserait
+--     l'UUID d'un utilisateur dont la présence est purgée (rétention 30 j) ou
+--     dont le compte est supprimé (CASCADE depuis `profiles`, effacement RGPD
+--     compris) à tout abonné. UUID pseudonyme, sans nom ni statut — mais émis
+--     au moment précis d'un effacement, sur une base d'élèves mineurs. C'est
+--     pour ce seul motif qu'elle n'est PAS publiée ici.
 --
 -- REPLICA IDENTITY reste `default`, et le test d'intégration l'ancre. Passer en
 -- FULL rendrait certes le filtre applicable aux DELETE, mais la RLS resterait
@@ -40,7 +47,7 @@
 -- Rollback :
 --   alter publication supabase_realtime drop table
 --     public.messages, public.notifications, public.student_achievements,
---     public.user_presence, public.minesweeper_multiplayer_game_state,
+--     public.minesweeper_multiplayer_game_state,
 --     public.minesweeper_multiplayer_matches;
 
 -- La publication existe déjà sur les projets Supabase ; on la crée pour les
@@ -66,7 +73,6 @@ begin
     'messages',
     'notifications',
     'student_achievements',
-    'user_presence',
     'minesweeper_multiplayer_game_state',
     'minesweeper_multiplayer_matches'
   ]
