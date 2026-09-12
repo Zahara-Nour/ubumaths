@@ -166,7 +166,9 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	} catch (err) {
 		console.error('Error fetching assignment:', err);
 
-		if (err instanceof Error && 'status' in err) {
+		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
+		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
+		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 
@@ -515,7 +517,9 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 	} catch (err) {
 		console.error('Error updating assignment:', err);
 
-		if (err instanceof Error && 'status' in err) {
+		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
+		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
+		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 
@@ -618,7 +622,9 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	} catch (err) {
 		console.error('Error deleting assignment:', err);
 
-		if (err instanceof Error && 'status' in err) {
+		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
+		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
+		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 

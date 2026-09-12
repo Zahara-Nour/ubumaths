@@ -262,7 +262,9 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	} catch (err) {
 		console.error('Error fetching assignment students:', err);
 
-		if (err instanceof Error && 'status' in err) {
+		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
+		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
+		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 
@@ -367,7 +369,9 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 	} catch (err) {
 		console.error('Error adding students to assignment:', err);
 
-		if (err instanceof Error && 'status' in err) {
+		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
+		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
+		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 
@@ -438,7 +442,9 @@ export const DELETE: RequestHandler = async ({ params, locals, url }) => {
 	} catch (err) {
 		console.error('Error removing student from assignment:', err);
 
-		if (err instanceof Error && 'status' in err) {
+		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
+		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
+		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 

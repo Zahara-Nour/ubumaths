@@ -60,9 +60,22 @@ const ANON_KEY =
 /** Client de service : ensemencement uniquement, jamais une assertion d'accès. */
 const service = createServiceRoleClient();
 
-/** L'année de la classe quittée : close, et bien dans le passé. */
-const ANNEE_DEBUT = '2025-09-01';
-const ANNEE_FIN = '2026-06-30';
+/**
+ * TOUTES les dates sont relatives à aujourd'hui, et c'est délibéré.
+ *
+ * Avec des littérales, cette suite vieillissait mal dans les deux sens : les
+ * tests nominaux seraient devenus rouges le jour où l'année de référence
+ * sortirait de la fenêtre de douze mois, et — bien pire — le test « pas encore
+ * disponible » serait devenu VERT POUR LA MAUVAISE RAISON le jour où
+ * « demain » sortirait de l'année dite en cours, la borne d'année refusant
+ * alors à la place de la borne de disponibilité.
+ */
+const jour = (n: number) => new Date(Date.now() + n * 86_400_000).toISOString().slice(0, 10);
+const instant = (n: number) => new Date(Date.now() + n * 86_400_000).toISOString();
+
+/** L'année de la classe quittée : close il y a 3 mois, donc encore relisible. */
+const ANNEE_DEBUT = jour(-395);
+const ANNEE_FIN = jour(-90);
 
 async function clientFor(email: string): Promise<SupabaseClient<Database>> {
 	const client = createClient<Database>(SUPABASE_URL, ANON_KEY, {
@@ -111,6 +124,12 @@ describe('lecture seule rétroactive des fiches', () => {
 	 * mauvaise raison.
 	 */
 	let classeAnneeEnCours: string;
+	/** Classe désactivée à la main, année encore en cours, adhésion ACTIVE. */
+	let classeFermeeEnPleineAnnee: string;
+	/** Distribuée à cette classe, pendant l'année qui court. */
+	let ficheFermeeEnPleineAnnee: string;
+	/** L'élève resté actif dans cette classe fermée. */
+	let membreActifClasseFermee: SupabaseClient<Database>;
 
 	let ficheId: string;
 	let exerciceId: string;
@@ -134,6 +153,7 @@ describe('lecture seule rétroactive des fiches', () => {
 	let archive: SupabaseClient<Database>;
 	let archiveId: string;
 	let actif: SupabaseClient<Database>;
+	let actifId: string;
 	let etranger: SupabaseClient<Database>;
 
 	beforeAll(async () => {
@@ -149,7 +169,7 @@ describe('lecture seule rétroactive des fiches', () => {
 		});
 		annee = await insert('school_years', {
 			school_id: ecole,
-			name: '2025-2026 rétroactif ZZ',
+			name: 'Année récemment close ZZ',
 			start_date: ANNEE_DEBUT,
 			end_date: ANNEE_FIN,
 			is_active: false
@@ -166,21 +186,22 @@ describe('lecture seule rétroactive des fiches', () => {
 				is_active: false
 			});
 
-		// Une année largement révolue : sa fin est à plus de douze mois.
+		// Une année révolue depuis plus de douze mois : la relecture s'y est éteinte.
 		const anneeEteinte = await insert('school_years', {
 			school_id: ecole,
-			name: '2023-2024 rétroactif ZZ',
-			start_date: '2023-09-01',
-			end_date: '2024-06-30',
+			name: 'Année révolue ZZ',
+			start_date: jour(-760),
+			end_date: jour(-455),
 			is_active: false
 		});
 
-		// Une seconde année, celle-ci en cours, pour éprouver la disponibilité.
+		// Une année EN COURS, pour éprouver la disponibilité sans que la borne
+		// d'année ne refuse à sa place.
 		const anneeEnCours = await insert('school_years', {
 			school_id: ecole,
-			name: '2026-2027 rétroactif ZZ',
-			start_date: '2026-08-31',
-			end_date: '2027-07-15',
+			name: 'Année en cours ZZ',
+			start_date: jour(-30),
+			end_date: jour(300),
 			is_active: true
 		});
 
@@ -201,6 +222,16 @@ describe('lecture seule rétroactive des fiches', () => {
 			join_code: 'ZZR900',
 			is_active: false
 		});
+		// Le scénario réellement observé à Voltaire : la classe a été désactivée
+		// à la main, l'année court encore, et les adhésions n'ont PAS été
+		// archivées — c'est précisément ce que `or not c.is_active` rattrape.
+		classeFermeeEnPleineAnnee = await insert('classes', {
+			name: '2DE fermée en pleine année ZZ',
+			school_id: ecole,
+			school_year_id: anneeEnCours,
+			join_code: 'ZZR902',
+			is_active: false
+		});
 
 		// `joined_at` par défaut vaut `now()`. En laisser le défaut daterait
 		// l'arrivée d'aujourd'hui, donc APRÈS toutes les fiches de l'année
@@ -215,7 +246,7 @@ describe('lecture seule rétroactive des fiches', () => {
 						...a,
 						student_id: profil.id,
 						// Avant toute distribution des fixtures, année révolue comprise.
-						joined_at: '2023-09-01T08:00:00Z'
+						joined_at: instant(-800)
 					}))
 				);
 				expect(error).toBeNull();
@@ -236,19 +267,34 @@ describe('lecture seule rétroactive des fiches', () => {
 		// lui. On le garde actif alors que la classe est close — c'est ce que la
 		// série « élève archivé » avait déjà tranché : `c.is_active` compte.
 		const b = await eleve([{ class_id: classeQuittee, status: 'active' }]);
+		actifId = b.id;
 		actif = b.client;
+
+		// Le scénario Voltaire : adhésion restée ACTIVE dans une classe fermée
+		// dont l'année court encore.
+		const e = await TestData.profile().withRole('student').create();
+		{
+			const { error } = await service.from('class_members').insert({
+				class_id: classeFermeeEnPleineAnnee,
+				student_id: e.id,
+				status: 'active',
+				joined_at: instant(-25)
+			});
+			expect(error).toBeNull();
+		}
+		membreActifClasseFermee = await clientFor(e.email);
 
 		const c = await eleve([]);
 		etranger = c.client;
 
-		// Arrivé le 1er juin, donc après la fiche du 15 mars.
+		// Arrivé APRÈS la fiche nominale : il ne l'a jamais reçue.
 		const d = await TestData.profile().withRole('student').create();
 		{
 			const { error } = await service.from('class_members').insert({
 				class_id: classeQuittee,
 				student_id: d.id,
 				status: 'archived',
-				joined_at: '2026-06-01T08:00:00Z'
+				joined_at: instant(-150)
 			});
 			expect(error).toBeNull();
 		}
@@ -275,6 +321,7 @@ describe('lecture seule rétroactive des fiches', () => {
 		ficheSansAnnee = await fiche('Fiche de la classe sans année ZZ');
 		ficheEtrangere = await fiche('Fiche d’une classe étrangère ZZ');
 		ficheAnneeEteinte = await fiche('Fiche d’une année révolue ZZ');
+		ficheFermeeEnPleineAnnee = await fiche('Fiche d’une classe fermée en pleine année ZZ');
 
 		const affectation = async (worksheet: string, disponible: string, classeCible: string) => {
 			const id = await insert('worksheet_assignments', {
@@ -290,14 +337,16 @@ describe('lecture seule rétroactive des fiches', () => {
 			return id;
 		};
 
-		affectationDansAnnee = await affectation(ficheId, '2026-03-15T08:00:00Z', classeQuittee);
-		// Après le 30 juin : l'élève avait déjà quitté la classe.
-		affectationHorsAnnee = await affectation(ficheHorsAnnee, '2026-07-20T08:00:00Z', classeQuittee);
-		await affectation(ficheSansAnnee, '2026-03-15T08:00:00Z', classeSansAnnee);
-		await affectation(ficheEtrangere, '2026-03-15T08:00:00Z', classeEtrangere);
+		affectationDansAnnee = await affectation(ficheId, instant(-200), classeQuittee);
+		// Après la fin de l'année, mais déjà disponible : seule la borne d'année
+		// peut la refuser.
+		affectationHorsAnnee = await affectation(ficheHorsAnnee, instant(-30), classeQuittee);
+		await affectation(ficheSansAnnee, instant(-200), classeSansAnnee);
+		await affectation(ficheEtrangere, instant(-200), classeEtrangere);
+		await affectation(ficheFermeeEnPleineAnnee, instant(-10), classeFermeeEnPleineAnnee);
 		// Dans la fenêtre de son année, mais cette année s'est terminée il y a
 		// plus de douze mois : seule la borne d'extinction peut la refuser.
-		await affectation(ficheAnneeEteinte, '2024-03-15T08:00:00Z', classeAnneeEteinte);
+		await affectation(ficheAnneeEteinte, instant(-500), classeAnneeEteinte);
 
 		// Un brouillon et une fiche programmée, tous deux dans la fenêtre de
 		// l'année : seul leur statut ou leur mise à disposition les distingue de
@@ -306,7 +355,7 @@ describe('lecture seule rétroactive des fiches', () => {
 		affectationBrouillon = await insert('worksheet_assignments', {
 			worksheet_id: brouillon,
 			status: 'draft',
-			available_from: '2026-03-15T08:00:00Z',
+			available_from: instant(-200),
 			created_by: enseignantId
 		});
 		{
@@ -320,7 +369,7 @@ describe('lecture seule rétroactive des fiches', () => {
 		// peut la refuser. Rattachée à l'année close, elle serait déjà hors
 		// fenêtre, et le test ne prouverait rien.
 		const future = await fiche('Fiche programmée plus tard ZZ');
-		const demain = new Date(Date.now() + 86_400_000).toISOString();
+		const demain = instant(1);
 		affectationFuture = await insert('worksheet_assignments', {
 			worksheet_id: future,
 			status: 'active',
@@ -480,7 +529,39 @@ describe('lecture seule rétroactive des fiches', () => {
 		});
 
 		it('n’y gagne aucune écriture pour autant', async () => {
-			const { data, error } = await actif.rpc('can_access_assignment', {
+			// Une VRAIE tentative d'INSERT, comme pour l'archivé, et non un simple
+			// `can_access_assignment` à false : cette fonction avale ses exceptions
+			// (`when others then return false`), donc un `false` ne distingue pas
+			// le refus de la panne. C'est cette population que la migration fait
+			// entrer ; sa preuve doit être de même qualité.
+			const { data: exercicesFiche } = await service
+				.from('worksheet_exercises')
+				.select('id')
+				.eq('worksheet_id', ficheId)
+				.limit(1);
+			const worksheetExerciseId = (exercicesFiche ?? [])[0]?.id;
+			expect(worksheetExerciseId).toBeTruthy();
+
+			const { error } = await actif.from('worksheet_error_reports').insert({
+				assignment_id: affectationDansAnnee,
+				worksheet_exercise_id: worksheetExerciseId as string,
+				student_id: actifId,
+				description: 'Tentative d’écriture depuis une classe fermée ZZ'
+			});
+			expect(error?.code).toBe('42501');
+		});
+	});
+
+	describe('le scénario observé à Voltaire', () => {
+		it('classe désactivée à la main, année en cours, adhésion restée active : il relit', async () => {
+			// C'est le cas qui a motivé `or not c.is_active`. Avant, cet élève
+			// tombait dans un trou : pas d'accès courant (la classe est fermée),
+			// pas d'accès rétroactif (son adhésion n'est pas archivée).
+			expect(await litLaFiche(membreActifClasseFermee, ficheFermeeEnPleineAnnee)).toBe(true);
+		});
+
+		it('sans y gagner la moindre écriture', async () => {
+			const { data, error } = await membreActifClasseFermee.rpc('can_access_assignment', {
 				p_assignment_id: affectationDansAnnee
 			});
 			expect(error).toBeNull();
