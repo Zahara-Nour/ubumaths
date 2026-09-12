@@ -239,6 +239,20 @@ export interface ChapterExercise {
 }
 
 /**
+ * Fiche rattachée à un chapitre.
+ *
+ * Le rattachement ne distribue pas : une fiche préparée à l'avance reste
+ * invisible à l'élève jusqu'à son affectation. La policy s'en charge.
+ */
+export interface ChapterWorksheet {
+	id: string;
+	chapterId: string;
+	worksheetId: string;
+	displayOrder: number;
+	createdAt: string;
+}
+
+/**
  * Orphaned document - document from a deleted chapter
  */
 export interface OrphanedDocument {

@@ -502,6 +502,17 @@ export const linkExerciseSchema = z.object({
 export type LinkExerciseInput = z.infer<typeof linkExerciseSchema>;
 
 /**
+ * Schema for linking a worksheet to a chapter
+ */
+export const linkWorksheetSchema = z.object({
+	chapterId: uuidSchema.describe('ID du chapitre'),
+	worksheetId: uuidSchema.describe('ID de la fiche'),
+	displayOrder: displayOrderSchema.optional()
+});
+
+export type LinkWorksheetInput = z.infer<typeof linkWorksheetSchema>;
+
+/**
  * Schema for linking multiple exercises
  */
 export const linkBulkExercisesSchema = z.object({
