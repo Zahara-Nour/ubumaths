@@ -109,13 +109,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		//
 		// La fonction est bornée à `student_id = auth.uid()` et ne rend que trois
 		// colonnes de contexte : elle ne rouvre pas la fiche.
-		// `as never` : la fonction est absente de `database.ts`, généré depuis la
-		// production. À RETIRER après le prochain `pnpm db:types` — elle n'est pas
-		// surchargée, elle y apparaîtra, et ce cast masquerait alors toute dérive
-		// de signature.
-		const { data: rawReports, error: queryError } = await locals.supabase.rpc(
-			'get_my_error_reports' as never
-		);
+		const { data: rawReports, error: queryError } =
+			await locals.supabase.rpc('get_my_error_reports');
 
 		if (queryError) {
 			console.error('[API] Error fetching student reports:', queryError);

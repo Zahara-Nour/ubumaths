@@ -15621,6 +15621,23 @@ export type Database = {
         Args: { p_cycle: string; p_difficulty: string }
         Returns: number
       }
+      get_my_error_reports: {
+        Args: never
+        Returns: {
+          assignment_id: string
+          assignment_title: string
+          created_at: string
+          description: string
+          exercise_position: number
+          id: string
+          response: string
+          status: string
+          updated_at: string
+          worksheet_exercise_id: string
+          worksheet_id: string
+          worksheet_title: string
+        }[]
+      }
       get_my_exercise_assignments: {
         Args: never
         Returns: {
