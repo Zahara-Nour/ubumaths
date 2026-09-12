@@ -43,41 +43,51 @@ import {
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { StudentErrorReportWithDisplay } from '$lib/types/worksheets';
 
-// Type guards for Supabase nested joins
-type SupabaseNestedWorksheetExercise = {
-	position: number;
-	worksheet_id: string;
-	worksheets: {
-		id: string;
-		title: string;
-	};
-};
-
-type SupabaseNestedAssignment = {
+/**
+ * Une ligne rendue par `get_my_error_reports()`.
+ *
+ * La fonction est SECURITY DEFINER et absente de `database.ts`, généré depuis
+ * la production : le contrat est donc décrit ici, et vérifié à l'exécution par
+ * {@link isReportRow} — un type seul ne prouve rien de ce que la base renvoie.
+ */
+interface OwnErrorReportRow {
 	id: string;
-	title: string | null;
-};
+	assignment_id: string;
+	worksheet_exercise_id: string;
+	exercise_position: number;
+	worksheet_id: string;
+	worksheet_title: string;
+	assignment_title: string | null;
+	description: string;
+	status: string;
+	response: string | null;
+	created_at: string;
+	updated_at: string;
+}
 
-function isValidWorksheetExercise(obj: unknown): obj is SupabaseNestedWorksheetExercise {
-	if (!obj || typeof obj !== 'object') return false;
-	const ex = obj as Record<string, unknown>;
+function isReportRow(value: unknown): value is OwnErrorReportRow {
+	if (!value || typeof value !== 'object') return false;
+	const row = value as Record<string, unknown>;
 	return (
-		typeof ex.position === 'number' &&
-		typeof ex.worksheet_id === 'string' &&
-		typeof ex.worksheets === 'object' &&
-		ex.worksheets !== null
+		typeof row.id === 'string' &&
+		typeof row.assignment_id === 'string' &&
+		typeof row.worksheet_exercise_id === 'string' &&
+		typeof row.exercise_position === 'number' &&
+		typeof row.worksheet_id === 'string' &&
+		typeof row.worksheet_title === 'string' &&
+		(row.assignment_title === null || typeof row.assignment_title === 'string') &&
+		typeof row.description === 'string' &&
+		typeof row.status === 'string' &&
+		(row.response === null || typeof row.response === 'string') &&
+		typeof row.created_at === 'string' &&
+		typeof row.updated_at === 'string'
 	);
 }
 
-function isValidAssignment(obj: unknown): obj is SupabaseNestedAssignment {
-	if (!obj || typeof obj !== 'object') return false;
-	const a = obj as Record<string, unknown>;
-	return typeof a.id === 'string' && (a.title === null || typeof a.title === 'string');
-}
-
 export const GET: RequestHandler = async ({ locals, url }) => {
-	// Auth check: Must be a student
-	const { user } = await requireRole(locals, 'student');
+	// Auth check: Must be a student. L'identité n'est plus reprise ici : c'est
+	// `get_my_error_reports()` qui borne à `auth.uid()`, côté base.
+	await requireRole(locals, 'student');
 
 	// Validate query parameters
 	const queryValidation = validateStudentReportsQuery(url.searchParams);
@@ -88,95 +98,64 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { status, assignmentId, page, limit } = queryValidation.data;
 
 	try {
-		// Build the base query with joins for display information
-		// Join path: worksheet_error_reports -> worksheet_exercises -> worksheets
-		//            worksheet_error_reports -> worksheet_assignments
-		let query = locals.supabase
-			.from('worksheet_error_reports')
-			.select(
-				`
-				id,
-				assignment_id,
-				worksheet_exercise_id,
-				description,
-				status,
-				response,
-				created_at,
-				updated_at,
-				worksheet_exercises!inner (
-					position,
-					worksheet_id,
-					worksheets!inner (
-						id,
-						title
-					)
-				),
-				worksheet_assignments!inner (
-					id,
-					title
-				)
-			`,
-				{ count: 'exact' }
-			)
-			.eq('student_id', user.id)
-			.order('created_at', { ascending: false });
-
-		// Apply status filter (if not 'all')
-		if (status !== 'all') {
-			query = query.eq('status', status);
-		}
-
-		// Apply assignmentId filter if provided
-		if (assignmentId) {
-			query = query.eq('assignment_id', assignmentId);
-		}
-
-		// Apply pagination
-		const from = (page - 1) * limit;
-		const to = from + limit - 1;
-		query = query.range(from, to);
-
-		const { data: reports, error: queryError, count } = await query;
+		// Les signalements de l'élève, par une fonction dédiée.
+		//
+		// La requête PostgREST joignait `worksheet_exercises!inner`,
+		// `worksheets!inner` et `worksheet_assignments!inner` pour afficher le
+		// contexte. Un `!inner` exige que la ligne jointe soit VISIBLE : depuis que
+		// l'élève archivé perd l'accès aux fiches de la classe quittée, sa liste se
+		// vidait en silence, emportant ses propres signalements et les réponses du
+		// professeur. La fiche appartient à la classe, le signalement à l'élève.
+		//
+		// La fonction est bornée à `student_id = auth.uid()` et ne rend que trois
+		// colonnes de contexte : elle ne rouvre pas la fiche.
+		// `as never` : la fonction est absente de `database.ts`, généré depuis la
+		// production. À RETIRER après le prochain `pnpm db:types` — elle n'est pas
+		// surchargée, elle y apparaîtra, et ce cast masquerait alors toute dérive
+		// de signature.
+		const { data: rawReports, error: queryError } = await locals.supabase.rpc(
+			'get_my_error_reports' as never
+		);
 
 		if (queryError) {
 			console.error('[API] Error fetching student reports:', queryError);
 			throw error(500, 'Erreur lors de la recuperation des signalements');
 		}
 
-		// Transform the nested data into flat response structure
-		const transformedReports: StudentErrorReportWithDisplay[] = (reports || []).map((report) => {
-			// Runtime validation for nested data from Supabase
-			const worksheetExercise = report.worksheet_exercises;
-			const assignment = report.worksheet_assignments;
+		const allReports = (rawReports ?? []) as unknown[];
 
-			if (!isValidWorksheetExercise(worksheetExercise)) {
-				console.error('[API] Invalid worksheet_exercises structure:', worksheetExercise);
+		// Filtres et pagination en mémoire : un élève a quelques dizaines de
+		// signalements au plus, et les reproduire en SQL doublerait la garde
+		// `student_id = auth.uid()` sans rien apporter.
+		const filtered = allReports.filter((row) => {
+			if (!isReportRow(row)) {
+				console.error('[API] Ligne de signalement inattendue :', row);
 				throw error(500, 'Erreur de structure de donnees');
 			}
+			if (status !== 'all' && row.status !== status) return false;
+			if (assignmentId && row.assignment_id !== assignmentId) return false;
+			return true;
+		}) as OwnErrorReportRow[];
 
-			if (!isValidAssignment(assignment)) {
-				console.error('[API] Invalid worksheet_assignments structure:', assignment);
-				throw error(500, 'Erreur de structure de donnees');
-			}
+		const from = (page - 1) * limit;
+		const reports = filtered.slice(from, from + limit);
 
-			return {
-				id: report.id,
-				worksheet_exercise_id: report.worksheet_exercise_id,
-				exercise_position: worksheetExercise.position,
-				description: report.description,
-				status: report.status as StudentErrorReportWithDisplay['status'],
-				response: report.response,
-				created_at: report.created_at,
-				updated_at: report.updated_at,
-				assignment_id: report.assignment_id,
-				worksheet_id: worksheetExercise.worksheets.id,
-				worksheet_title: worksheetExercise.worksheets.title,
-				assignment_title: assignment.title
-			};
-		});
+		const transformedReports: StudentErrorReportWithDisplay[] = reports.map((report) => ({
+			id: report.id,
+			worksheet_exercise_id: report.worksheet_exercise_id,
+			exercise_position: report.exercise_position,
+			description: report.description,
+			status: report.status as StudentErrorReportWithDisplay['status'],
+			response: report.response,
+			created_at: report.created_at,
+			updated_at: report.updated_at,
+			assignment_id: report.assignment_id,
+			worksheet_id: report.worksheet_id,
+			worksheet_title: report.worksheet_title,
+			assignment_title: report.assignment_title
+		}));
 
-		// Defensive handling of count
-		const total = typeof count === 'number' ? count : 0;
+		const total = filtered.length;
 		const totalPages = limit > 0 ? Math.ceil(total / limit) : 0;
 
 		// Validate and return response

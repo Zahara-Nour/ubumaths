@@ -91,7 +91,13 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			const { data: members, error: membersError } = await supabase
 				.from('class_members')
 				.select('student_id')
-				.in('class_id', body.targetIds);
+				.in('class_id', body.targetIds)
+				// Les membres ARCHIVÉS ont quitté la classe : les inscrire à un
+				// paquet qu'on lui attribue aujourd'hui leur rendrait du travail
+				// d'une classe qu'ils ne suivent plus. Contrairement aux fiches et
+				// aux exercices, rien ici n'est relu au moment de l'accès : c'est
+				// cette liste, figée à l'attribution, qui décide.
+				.eq('status', 'active');
 
 			if (membersError) {
 				console.error('Error fetching class members:', membersError);

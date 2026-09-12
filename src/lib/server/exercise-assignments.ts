@@ -56,6 +56,33 @@ import { validateSearchQuery } from '$lib/utils/search';
 type TypedSupabaseClient = SupabaseClient<Database>;
 
 /**
+ * Les identifiants d'exercice rendus par `get_student_exercises`.
+ *
+ * ⚠️ Cette fonction est `returns table(...)` de dix-sept colonnes, PAS un
+ * tableau d'UUID. Les trois appelants la castaient en `string[]` puis
+ * passaient le résultat à un `.in()` : chaque ligne s'y serait sérialisée en
+ * `[object Object]`, et PostgREST aurait rejeté la requête (`22P02`). Le
+ * défaut restait invisible parce que la fonction levait `42P01` en amont —
+ * elle lisait `exercise_tags`, table supprimée en septembre — et que l'erreur
+ * était journalisée puis convertie en liste vide.
+ *
+ * Le `as unknown as string[]` passait le typecheck sans rien garantir : d'où
+ * la vérification à l'exécution ci-dessous.
+ */
+function toExerciseIds(rows: unknown): string[] {
+	if (!Array.isArray(rows)) return [];
+	return rows
+		.map((row) =>
+			row &&
+			typeof row === 'object' &&
+			typeof (row as { exercise_id?: unknown }).exercise_id === 'string'
+				? (row as { exercise_id: string }).exercise_id
+				: null
+		)
+		.filter((id): id is string => id !== null);
+}
+
+/**
  * Appelle `student_has_exercise_access`, absente des types générés.
  *
  * ⚠️ Contournement réservé à CETTE fonction, et pour une raison précise : elle
@@ -522,7 +549,7 @@ export async function getAssignmentsForStudent(
 		};
 	}
 
-	const exerciseIdArray = exerciseIds as unknown as string[];
+	const exerciseIdArray = toExerciseIds(exerciseIds);
 	if (!exerciseIdArray || exerciseIdArray.length === 0) {
 		return {
 			data: [],
@@ -1310,7 +1337,7 @@ export async function getStudentProgress(
 		};
 	}
 
-	const exerciseIdArray = exerciseIds as unknown as string[];
+	const exerciseIdArray = toExerciseIds(exerciseIds);
 	const total_assigned = exerciseIdArray?.length || 0;
 
 	if (total_assigned === 0) {
@@ -1435,7 +1462,7 @@ export async function getAccessibleExercises(
 		return { data: [], error: functionError.message };
 	}
 
-	const exerciseIdArray = exerciseIds as unknown as string[];
+	const exerciseIdArray = toExerciseIds(exerciseIds);
 	if (!exerciseIdArray || exerciseIdArray.length === 0) {
 		return { data: [], error: null };
 	}
