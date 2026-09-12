@@ -14874,6 +14874,13 @@ export type Database = {
         }
         Returns: Json
       }
+      admin_compose_class: {
+        Args: { p_class_id: string; p_student_ids: string[] }
+        Returns: {
+          enrolled: number
+          moved: number
+        }[]
+      }
       app_is_anti_fraud_enabled: { Args: never; Returns: boolean }
       approve_vip_card: {
         Args: { p_instance_id: string; p_student_id: string }
