@@ -9,6 +9,7 @@
 	 * - Quiz questions (true/false)
 	 * - Checklist items
 	 * - Exercises (links)
+	 * - Worksheets (links) — rattacher ne distribue pas
 	 * - Student progress
 	 */
 
@@ -41,6 +42,7 @@
 		BookOpen,
 		Users,
 		BookMarked,
+		ClipboardList,
 		Eye,
 		EyeOff
 	} from '@lucide/svelte';
@@ -59,10 +61,12 @@
 	// Dialog states
 	let showAddQuestionDialog = $state(false);
 	let showLinkExerciseDialog = $state(false);
+	let showLinkWorksheetDialog = $state(false);
 
 	// Form states
 	let selectedQuestionId = $state('');
 	let selectedExerciseId = $state('');
+	let selectedWorksheetId = $state('');
 	let isSubmitting = $state(false);
 
 	// Chapter color
@@ -75,6 +79,7 @@
 	let quizCount = $derived(data.quizQuestions.length);
 	let checklistCount = $derived(data.checklistItems.length);
 	let exerciseCount = $derived(data.exercises.length);
+	let worksheetCount = $derived(data.worksheets.length);
 	let studentCount = $derived(data.students.length);
 
 	// Available items for selects
@@ -100,6 +105,16 @@
 			}))
 	]);
 
+	let worksheetItems = $derived([
+		{ value: '', label: 'Choisir une fiche...' },
+		...data.availableWorksheets
+			.filter((w) => !data.worksheets.some((cw) => cw.worksheetId === w.id))
+			.map((w) => ({
+				value: w.id,
+				label: w.title ?? 'Fiche sans titre'
+			}))
+	]);
+
 	// Handle form results
 	$effect(() => {
 		if (form?.success) {
@@ -111,6 +126,8 @@
 				removeQuizQuestion: 'Question supprimee',
 				linkExercise: `${lore.learning.exercise} liée`,
 				unlinkExercise: `${lore.learning.exercise} retirée`,
+				linkWorksheet: 'Fiche rattachée au chapitre',
+				unlinkWorksheet: 'Fiche retirée du chapitre',
 				uploadDocument: 'Document uploade',
 				addGoogleDriveDocument: 'Document Google Drive ajoute',
 				deleteDocument: 'Document supprime',
@@ -230,6 +247,11 @@
 				<BookOpen class="h-4 w-4" />
 				<span class="hidden sm:inline">{lore.learning.exercise}s</span>
 				<Badge variant="secondary" class="ml-1">{exerciseCount}</Badge>
+			</Tabs.Trigger>
+			<Tabs.Trigger value="worksheets" class="flex items-center gap-2">
+				<ClipboardList class="h-4 w-4" />
+				<span class="hidden sm:inline">Fiches</span>
+				<Badge variant="secondary" class="ml-1">{worksheetCount}</Badge>
 			</Tabs.Trigger>
 			<Tabs.Trigger value="documents" class="flex items-center gap-2">
 				<FileText class="h-4 w-4" />
@@ -365,6 +387,62 @@
 			</div>
 		</Tabs.Content>
 
+		<!-- Worksheets Tab -->
+		<Tabs.Content value="worksheets">
+			<div class="space-y-4">
+				<div class="flex items-start justify-between gap-4">
+					<p class="text-sm text-muted-foreground">
+						Rattacher une fiche la range dans ce chapitre — ça ne la distribue pas. Les élèves ne la
+						verront ici qu'une fois que tu l'auras affectée.
+					</p>
+					<Button onclick={() => (showLinkWorksheetDialog = true)} size="sm" class="shrink-0">
+						<Plus class="mr-2 h-4 w-4" />
+						Rattacher une fiche
+					</Button>
+				</div>
+
+				{#if worksheetCount === 0}
+					<Card.Root class="border-dashed">
+						<Card.Content class="py-12 text-center">
+							<ClipboardList class="mx-auto mb-4 h-12 w-12 text-muted-foreground/40" />
+							<p class="text-muted-foreground">Aucune fiche rattachée à ce chapitre</p>
+							<Button
+								onclick={() => (showLinkWorksheetDialog = true)}
+								variant="ghost"
+								size="sm"
+								class="mt-2"
+							>
+								Rattacher une fiche
+							</Button>
+						</Card.Content>
+					</Card.Root>
+				{:else}
+					<div class="space-y-3">
+						{#each data.worksheets as fiche, index (fiche.id)}
+							<Card.Root>
+								<Card.Content class="flex items-center gap-4 p-4">
+									<div
+										class="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-medium"
+									>
+										{index + 1}
+									</div>
+									<div class="min-w-0 flex-1">
+										<p class="font-medium">{fiche.title ?? 'Fiche non trouvée'}</p>
+									</div>
+									<form method="POST" action="?/unlinkWorksheet" use:enhance>
+										<input type="hidden" name="chapterWorksheetId" value={fiche.id} />
+										<Button type="submit" variant="ghost" size="icon-sm" class="text-destructive">
+											<Trash2 class="h-4 w-4" />
+										</Button>
+									</form>
+								</Card.Content>
+							</Card.Root>
+						{/each}
+					</div>
+				{/if}
+			</div>
+		</Tabs.Content>
+
 		<!-- Documents Tab -->
 		<Tabs.Content value="documents">
 			<div class="space-y-6">
@@ -466,6 +544,46 @@
 				</Button>
 				<Button type="submit" disabled={isSubmitting || !selectedQuestionId}>
 					{isSubmitting ? 'Ajout...' : 'Ajouter'}
+				</Button>
+			</Dialog.Footer>
+		</form>
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- Link Worksheet Dialog -->
+<Dialog.Root bind:open={showLinkWorksheetDialog}>
+	<Dialog.Content class="max-w-lg">
+		<Dialog.Header>
+			<Dialog.Title>Rattacher une fiche</Dialog.Title>
+			<Dialog.Description>
+				La fiche sera rangée dans ce chapitre. Elle n'est pas distribuée pour autant : les élèves ne
+				la verront qu'une fois affectée.
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<form
+			method="POST"
+			action="?/linkWorksheet"
+			use:enhance={() => {
+				isSubmitting = true;
+				return async ({ update }) => {
+					await update();
+				};
+			}}
+			class="space-y-4"
+		>
+			<div class="space-y-2">
+				<Label>Fiche</Label>
+				<MySelect type="single" bind:value={selectedWorksheetId} items={worksheetItems} />
+				<input type="hidden" name="worksheetId" value={selectedWorksheetId} />
+			</div>
+
+			<Dialog.Footer>
+				<Button type="button" variant="outline" onclick={() => (showLinkWorksheetDialog = false)}>
+					Annuler
+				</Button>
+				<Button type="submit" disabled={isSubmitting || !selectedWorksheetId}>
+					{isSubmitting ? 'Rattachement...' : 'Rattacher'}
 				</Button>
 			</Dialog.Footer>
 		</form>

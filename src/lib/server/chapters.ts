@@ -24,6 +24,7 @@ import type {
 	ChapterChecklistItem,
 	StudentChecklistProgress,
 	ChapterExercise,
+	ChapterWorksheet,
 	ChapterProgress,
 	ChapterSummary,
 	StudentChapterView
@@ -50,6 +51,7 @@ type DbChapterQuizResult = Database['public']['Tables']['chapter_quiz_results'][
 type DbChapterChecklistItem = Database['public']['Tables']['chapter_checklist_items']['Row'];
 type DbStudentChecklistProgress = Database['public']['Tables']['student_checklist_progress']['Row'];
 type DbChapterExercise = Database['public']['Tables']['chapter_exercises']['Row'];
+type DbChapterWorksheet = Database['public']['Tables']['chapter_worksheets']['Row'];
 
 /** Order update item for reordering operations */
 interface OrderUpdate {
@@ -164,6 +166,16 @@ function convertExercise(db: DbChapterExercise): ChapterExercise {
 		id: db.id,
 		chapterId: db.chapter_id,
 		exerciseId: db.exercise_id,
+		displayOrder: db.display_order,
+		createdAt: db.created_at
+	};
+}
+
+function convertWorksheet(db: DbChapterWorksheet): ChapterWorksheet {
+	return {
+		id: db.id,
+		chapterId: db.chapter_id,
+		worksheetId: db.worksheet_id,
 		displayOrder: db.display_order,
 		createdAt: db.created_at
 	};
@@ -876,6 +888,87 @@ export async function unlinkExercise(
 
 	if (error) {
 		console.error('[unlinkExercise] Error:', error);
+		return { error: new Error(error.message) };
+	}
+
+	return { error: null };
+}
+
+/**
+ * Rattache une fiche à un chapitre.
+ *
+ * Rattacher ne DISTRIBUE pas : la policy de l'élève sur `chapter_worksheets`
+ * exige `student_has_worksheet_access`, donc une fiche préparée à l'avance
+ * reste invisible jusqu'à son affectation. C'est tout l'intérêt du geste.
+ *
+ * @param chapterId - ID du chapitre
+ * @param worksheetId - ID de la fiche
+ * @param supabase - Client Supabase
+ * @param displayOrder - Rang, sinon à la suite
+ */
+export async function linkWorksheet(
+	chapterId: string,
+	worksheetId: string,
+	supabase: SupabaseClient<Database>,
+	displayOrder?: number
+): Promise<OperationResult<ChapterWorksheet>> {
+	let order = displayOrder;
+	if (order === undefined) {
+		const { data: maxOrder, error: maxOrderError } = await supabase
+			.from('chapter_worksheets')
+			.select('display_order')
+			.eq('chapter_id', chapterId)
+			.order('display_order', { ascending: false })
+			.limit(1)
+			.maybeSingle();
+
+		// Aucune ligne = première fiche, cas légitime. Toute autre panne laissait
+		// le rang à 0, ce qui insérait la fiche EN TÊTE et réordonnait la liste du
+		// professeur sans rien dire.
+		if (maxOrderError) {
+			console.error('[chapters] Rang suivant illisible (chapter_worksheets) :', maxOrderError);
+			return { data: null, error: new Error(maxOrderError.message) };
+		}
+
+		order = (maxOrder?.display_order ?? -1) + 1;
+	}
+
+	const { data: worksheet, error } = await supabase
+		.from('chapter_worksheets')
+		.insert({
+			chapter_id: chapterId,
+			worksheet_id: worksheetId,
+			display_order: order
+		})
+		.select()
+		.single();
+
+	if (error) {
+		console.error('[linkWorksheet] Error:', error);
+		return { data: null, error: new Error(error.message) };
+	}
+
+	return { data: convertWorksheet(worksheet), error: null };
+}
+
+/**
+ * Détache une fiche d'un chapitre.
+ *
+ * La fiche elle-même n'est pas touchée, ni son affectation : l'élève à qui elle
+ * a été distribuée continue de l'avoir dans « Mon travail ». Seul le
+ * rangement dans le chapitre disparaît.
+ *
+ * @param chapterWorksheetId - ID du lien
+ * @param supabase - Client Supabase
+ */
+export async function unlinkWorksheet(
+	chapterWorksheetId: string,
+	supabase: SupabaseClient<Database>
+): Promise<{ error: Error | null }> {
+	const { error } = await supabase.from('chapter_worksheets').delete().eq('id', chapterWorksheetId);
+
+	if (error) {
+		console.error('[unlinkWorksheet] Error:', error);
 		return { error: new Error(error.message) };
 	}
 

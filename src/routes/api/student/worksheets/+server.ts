@@ -48,7 +48,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(400, `Parametres invalides: ${errorMsg}`);
 	}
 
-	const { page, limit, class_id } = queryValidation.data;
+	const { page, limit, class_id, chapter_id } = queryValidation.data;
 
 	try {
 		// Build the base query for assignments accessible to this student
@@ -96,6 +96,32 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			query = query.in(
 				'id',
 				(links ?? []).map((l) => l.assignment_id)
+			);
+		}
+
+		// Restriction à un chapitre de « Mon cours ».
+		//
+		// La jonction est lue avec les droits de l'ÉLÈVE, et sa policy exige
+		// `student_has_worksheet_access` : une fiche que le professeur a rangée
+		// dans le chapitre sans encore la distribuer n'en ressort pas. Le filtre
+		// est donc l'intersection « rangée ici » ∩ « distribuée à moi », sans que
+		// cette route ait à la calculer.
+		if (chapter_id) {
+			const { data: liens, error: liensError } = await locals.supabase
+				.from('chapter_worksheets')
+				.select('worksheet_id')
+				.eq('chapter_id', chapter_id);
+
+			// Ce filtre borne la liste. Vidé par une panne, il afficherait un écran
+			// vide qui accuse le chapitre plutôt que la lecture.
+			if (liensError) {
+				console.error('[API] Fiches du chapitre illisibles :', liensError);
+				throw error(500, 'Erreur lors de la recuperation des fiches');
+			}
+
+			query = query.in(
+				'worksheet_id',
+				(liens ?? []).map((l) => l.worksheet_id)
 			);
 		}
 

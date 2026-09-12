@@ -23,6 +23,8 @@ import {
 	deleteChecklistItem,
 	linkExercise,
 	unlinkExercise,
+	linkWorksheet,
+	unlinkWorksheet,
 	getStudentChecklistProgress,
 	getChapterQuizResults
 } from '$lib/server/chapters';
@@ -41,7 +43,20 @@ import type {
 	ChapterChecklistItem,
 	ChapterExercise
 } from '$lib/types/chapters';
+import type { ChapterWorksheet } from '$lib/types/chapters';
 import type { InstantiationWithStatus } from '$lib/types/chapter-templates';
+
+/**
+ * Une fiche rattachée, avec le peu qu'il faut pour l'afficher.
+ *
+ * Le titre est nullable parce que la jointure peut ne rien rendre — une fiche
+ * supprimée emporte son lien par cascade, mais une panne de lecture, non. Un
+ * titre vide se voit ; une ligne manquante passerait inaperçue.
+ */
+type ChapterWorksheetRow = ChapterWorksheet & {
+	title: string | null;
+	status: string | null;
+};
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const { user } = await requireRole(locals, 'teacher');
@@ -77,28 +92,36 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	}
 
 	// Get chapter content in parallel
-	const [documentsResult, quizResult, checklistResult, exercisesResult] = await Promise.all([
-		locals.supabase
-			.from('chapter_documents')
-			.select('*')
-			.eq('chapter_id', chapterId)
-			.order('display_order'),
-		locals.supabase
-			.from('chapter_quiz_questions')
-			.select('*')
-			.eq('chapter_id', chapterId)
-			.order('display_order'),
-		locals.supabase
-			.from('chapter_checklist_items')
-			.select('*')
-			.eq('chapter_id', chapterId)
-			.order('display_order'),
-		locals.supabase
-			.from('chapter_exercises')
-			.select('*')
-			.eq('chapter_id', chapterId)
-			.order('display_order')
-	]);
+	const [documentsResult, quizResult, checklistResult, exercisesResult, worksheetsResult] =
+		await Promise.all([
+			locals.supabase
+				.from('chapter_documents')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order'),
+			locals.supabase
+				.from('chapter_quiz_questions')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order'),
+			locals.supabase
+				.from('chapter_checklist_items')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order'),
+			locals.supabase
+				.from('chapter_exercises')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order'),
+			// Les fiches rattachées, avec leur titre : le professeur voit tout ce
+			// qu'il a rangé, distribué ou non.
+			locals.supabase
+				.from('chapter_worksheets')
+				.select('*, worksheet:worksheets(id, title, status)')
+				.eq('chapter_id', chapterId)
+				.order('display_order')
+		]);
 
 	// Transform to app types
 	const documents: ChapterDocument[] = (documentsResult.data || []).map((d) => ({
@@ -137,6 +160,21 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		createdAt: c.created_at,
 		updatedAt: c.updated_at
 	}));
+
+	const worksheets: ChapterWorksheetRow[] = (worksheetsResult.data || []).map((w) => {
+		// PostgREST type une jointure « vers un » en tableau quand il ne peut pas
+		// prouver l'unicité ; à l'exécution c'est un objet. L'idiome du dépôt.
+		const fiche = Array.isArray(w.worksheet) ? w.worksheet[0] : w.worksheet;
+		return {
+			id: w.id,
+			chapterId: w.chapter_id,
+			worksheetId: w.worksheet_id,
+			displayOrder: w.display_order,
+			createdAt: w.created_at,
+			title: fiche?.title ?? null,
+			status: fiche?.status ?? null
+		};
+	});
 
 	const exercises: ChapterExercise[] = (exercisesResult.data || []).map((e) => ({
 		id: e.id,
@@ -187,6 +225,22 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// Même modèle inexistant que ci-dessus (`question`, `answer`, `answer_type`,
 	// `topic`, `subtopic`) : la liste est restée vide depuis toujours.
 	const availableTemplates: Array<{ id: string; question: string }> = [];
+
+	// Les fiches publiées du professeur, pour le sélecteur de rattachement.
+	// Une fiche en brouillon n'a rien à faire dans un chapitre : elle n'est pas
+	// distribuable, donc l'élève ne la verrait jamais.
+	const { data: availableWorksheets, error: availableWorksheetsError } = await locals.supabase
+		.from('worksheets')
+		.select('id, title')
+		.eq('created_by', user.id)
+		.eq('status', 'published')
+		.order('created_at', { ascending: false })
+		.limit(100);
+
+	if (availableWorksheetsError) {
+		console.error('Fiches disponibles illisibles :', availableWorksheetsError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	// Get available exercises for linking
 	const { data: availableExercises, error: availableExercisesError } = await locals.supabase
@@ -289,6 +343,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		exerciseDetails,
 		availableTemplates,
 		availableExercises: availableExercises || [],
+		worksheets,
+		availableWorksheets: availableWorksheets || [],
 		checklistProgress: checklistProgress || [],
 		quizResults: quizResultsData || [],
 		students: studentList,
@@ -581,6 +637,81 @@ export const actions: Actions = {
 		}
 
 		return { success: true, action: 'unlinkExercise' };
+	},
+
+	// ============ WORKSHEET ACTIONS ============
+	//
+	// Rattacher ne DISTRIBUE pas : la policy de l'élève sur `chapter_worksheets`
+	// exige `student_has_worksheet_access`. Une fiche rangée ici avant d'être
+	// affectée reste invisible pour lui — c'est ce qui permet de préparer un
+	// chapitre à l'avance.
+
+	linkWorksheet: async ({ request, locals, params }) => {
+		await requireRole(locals, 'teacher');
+		const { chapterId } = params;
+
+		const { data: chapter, error: chapterError } = await locals.supabase
+			.from('class_chapters')
+			.select('id')
+			.eq('id', chapterId)
+			.single();
+
+		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
+		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
+		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
+		if (chapterError && chapterError.code !== 'PGRST116') {
+			console.error('[linkWorksheet] Lecture impossible :', chapterError);
+			return fail(500, { error: 'Verification impossible', action: 'linkWorksheet' });
+		}
+
+		if (!chapter) {
+			return fail(403, { error: 'Acces refuse', action: 'linkWorksheet' });
+		}
+
+		const formData = await request.formData();
+		const worksheetId = formData.get('worksheetId') as string;
+
+		if (!worksheetId) {
+			return fail(400, { error: 'Fiche requise', action: 'linkWorksheet' });
+		}
+
+		const { error: linkError } = await linkWorksheet(chapterId, worksheetId, locals.supabase);
+
+		if (linkError) {
+			return fail(500, { error: 'Erreur lors du lien', action: 'linkWorksheet' });
+		}
+
+		return { success: true, action: 'linkWorksheet' };
+	},
+
+	unlinkWorksheet: async ({ request, locals }) => {
+		await requireRole(locals, 'teacher');
+
+		const formData = await request.formData();
+		const chapterWorksheetId = formData.get('chapterWorksheetId') as string;
+
+		const { data: link, error: linkError } = await locals.supabase
+			.from('chapter_worksheets')
+			.select('id')
+			.eq('id', chapterWorksheetId)
+			.single();
+
+		if (linkError && linkError.code !== 'PGRST116') {
+			console.error('[unlinkWorksheet] Lecture impossible :', linkError);
+			return fail(500, { error: 'Verification impossible', action: 'unlinkWorksheet' });
+		}
+
+		if (!link) {
+			return fail(403, { error: 'Acces refuse', action: 'unlinkWorksheet' });
+		}
+
+		const { error: unlinkError } = await unlinkWorksheet(chapterWorksheetId, locals.supabase);
+
+		if (unlinkError) {
+			return fail(500, { error: 'Erreur lors de la suppression', action: 'unlinkWorksheet' });
+		}
+
+		return { success: true, action: 'unlinkWorksheet' };
 	},
 
 	// ============ DOCUMENT ACTIONS ============
