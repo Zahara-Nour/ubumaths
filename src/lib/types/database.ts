@@ -15032,6 +15032,10 @@ export type Database = {
         Args: { p_student_id: string; p_tournament_id: string }
         Returns: boolean
       }
+      can_read_assignment: {
+        Args: { p_assignment_id: string }
+        Returns: boolean
+      }
       can_view_student_profile: {
         Args: { student_profile_id: string }
         Returns: boolean
@@ -16116,6 +16120,10 @@ export type Database = {
       grant_specific_vip_card: {
         Args: { p_card_id: string; p_count?: number; p_student_id: string }
         Returns: Json
+      }
+      had_class_access_to_assignment: {
+        Args: { p_assignment_id: string }
+        Returns: boolean
       }
       has_individual_assignment: {
         Args: { p_assignment_id: string }

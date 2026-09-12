@@ -984,6 +984,13 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	closes_at: timestampSchema.nullable(),
 	show_corrections: z.boolean(),
 	class_name: z.string().nullable(),
+	/**
+	 * Consultation seule : l'élève relit une fiche d'une classe qu'il a quittée.
+	 * Il n'a alors aucun droit d'écriture — ni réponse, ni signalement d'erreur.
+	 * Le serveur refuse déjà ces écritures ; ce drapeau sert à ne pas les
+	 * proposer.
+	 */
+	read_only: z.boolean(),
 	exercises: z.array(studentExerciseViewSchema),
 	/** Sections for grouping exercises */
 	sections: z.array(studentSectionViewSchema)

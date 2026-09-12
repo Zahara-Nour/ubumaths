@@ -556,6 +556,9 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			closes_at: fullAssignment.closes_at,
 			show_corrections: isTeacherMode ? true : (fullAssignment.show_corrections ?? false),
 			class_name: formatClassNames(targetClasses),
+			// L'aperçu est le geste du professeur : il n'est jamais en
+			// consultation seule, ce mode ne concerne que l'élève archivé.
+			read_only: false,
 			exercises,
 			sections: sectionViews,
 			// Preview metadata

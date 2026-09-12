@@ -672,6 +672,13 @@ export interface StudentWorksheetView {
 	closes_at: string | null;
 	show_corrections: boolean;
 	class_name: string | null;
+	/**
+	 * Consultation seule : l'élève relit une fiche d'une classe qu'il a quittée.
+	 * Il n'a alors aucun droit d'écriture — ni réponse, ni signalement d'erreur.
+	 * Le serveur refuse déjà ces écritures ; ce drapeau sert à ne pas les
+	 * proposer.
+	 */
+	read_only: boolean;
 	exercises: StudentExerciseView[];
 	/** Sections for grouping exercises */
 	sections: StudentSectionView[];
