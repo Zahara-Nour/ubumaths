@@ -93,6 +93,12 @@ describe('fiche accessible par le lien de consultation', () => {
 			lesson_content: `<p>[[worksheet:${citee}|Fiche citée]]</p>`
 		});
 
+		// Le jeton est en dur et `cleanupAllTestData` ne couvre pas cette table :
+		// un run interrompu laissait la ligne, et le run suivant échouait sur
+		// `class_journal_share_tokens_token_key` — tous les tests du fichier
+		// sautés, pour une raison sans rapport avec ce qu'ils vérifient.
+		await service.from('class_journal_share_tokens').delete().eq('token', TOKEN);
+
 		await insert('class_journal_share_tokens', {
 			class_id: classId,
 			token: TOKEN,
@@ -102,6 +108,7 @@ describe('fiche accessible par le lien de consultation', () => {
 	});
 
 	afterAll(async () => {
+		await service.from('class_journal_share_tokens').delete().eq('token', TOKEN);
 		await service.from('worksheets').delete().in('id', [citee, nonCitee]);
 		await cleanupAllTestData();
 	});

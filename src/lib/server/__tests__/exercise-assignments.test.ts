@@ -989,9 +989,12 @@ describe('getStudentProgress', () => {
 	});
 
 	it('should calculate progress correctly', async () => {
-		// Mock get_student_exercises RPC
+		// `get_student_exercises` est `returns table(...)` : elle rend des LIGNES,
+		// pas des identifiants. Le mock rendait un `string[]`, c'est-à-dire le
+		// contrat que le code supposait à tort — il validait donc le bug au lieu
+		// de le révéler.
 		supabase._mockRpc.mockResolvedValueOnce({
-			data: ['ex-1', 'ex-2', 'ex-3', 'ex-4', 'ex-5'], // 5 exercises
+			data: ['ex-1', 'ex-2', 'ex-3', 'ex-4', 'ex-5'].map((id) => ({ exercise_id: id })),
 			error: null
 		});
 
@@ -1031,7 +1034,7 @@ describe('getStudentProgress', () => {
 	it('should handle 100% completion', async () => {
 		// Mock exercises
 		supabase._mockRpc.mockResolvedValueOnce({
-			data: ['ex-1', 'ex-2'],
+			data: ['ex-1', 'ex-2'].map((id) => ({ exercise_id: id })),
 			error: null
 		});
 
