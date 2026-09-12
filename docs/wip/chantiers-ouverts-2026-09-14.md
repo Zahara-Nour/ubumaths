@@ -214,15 +214,20 @@ class_journal_entries .. 2
 Aucun chapitre n'existe. La rubrique est construite mais **jamais utilisée**.
 Toute amélioration technique y serait prématurée tant que David n'y met rien.
 
-## 4b. Les fiches dans « Mon cours »
+## 4b. Les fiches dans « Mon cours » — ✅ LIVRÉ
 
 **Le besoin, formulé par David** : « je mets mes ressources dans Mon cours en
-avance et je distribue au fur et à mesure ». Aujourd'hui la page d'un chapitre
-affiche **toutes** les fiches de la classe, pas les siennes.
+avance et je distribue au fur et à mesure ».
 
-**Ce qui manque** : une table de jonction `chapter_worksheets` (vérifié : elle
-n'existe pas), sur le modèle de `chapter_exercises` et `chapter_documents` qui
-existent déjà. Puis la page de chapitre lit SES fiches.
+`chapter_worksheets` existe (PR #244), et le câblage suit (PR #245) : un onglet
+« Fiches » dans l'éditeur de chapitre côté professeur, et la page de chapitre de
+l'élève qui lit SES fiches via `?chapter_id=`.
+
+**L'invariant à ne pas casser** : rattacher ne distribue PAS. La policy de
+l'élève exige `student_has_worksheet_access` en plus du chapitre visible, donc
+une fiche préparée mais pas encore affectée reste invisible, lien compris. C'est
+dans la policy et non dans l'API, pour que la jonction ne puisse jamais devenir
+un canal de distribution parallèle.
 
 **Point d'attention** : `/dashboard/student/cours/[chapterId]` appelle
 `/api/student/worksheets?class_id=…`. Ce filtre passe par la jonction depuis la
@@ -306,6 +311,27 @@ que ce contrat n'est pas tranché, on ne peut pas corriger une réponse.
 
 # Ce qui rapporterait le plus, maintenant
 
-1. Créer l'école « Cours particuliers », son année, ses vacances, ses groupes.
+1. Créer l'école « Cours particuliers », son année, ses vacances, ses groupes —
+   puis `/dashboard/admin/classes/composer` pour y reprendre d'anciens élèves.
 2. **Inscrire des élèves** à Blaise Pascal : 1 sur 4 classes en a un.
-3. Le reste est de la dette, aucune ne bloque l'usage quotidien.
+3. **Créer des chapitres** dans « Mon cours » : tout y est construit, rien n'y
+   est rangé. Le quiz de chapitre attend d'ailleurs ça pour que la question du
+   contrat `variation` → vrai/faux ait un sens.
+4. Le reste est de la dette, aucune ne bloque l'usage quotidien.
+
+# Corrections que je me suis apportées
+
+Deux fois dans cette série, une recommandation que j'avais donnée s'est révélée
+fausse à la vérification. Les deux valent d'être retenues.
+
+- **`worksheet_instances`** : je conseillais de resserrer la policy UPDATE parce
+  qu'un élève pouvait réécrire `instance_data`, que les routes PDF lisent. Faux —
+  un trigger `prevent_worksheet_instance_tampering` le bloquait déjà. Vérifié en
+  retirant ma migration : l'élève reste bloqué. Ce qui manquait était le TEST du
+  trigger, qui n'existait pas (PR #243).
+- **`futureDateSchema`** : j'ai annoncé qu'un professeur au Qatar serait affecté.
+  Faux — le schéma n'a aucun appelant. Le bug était réel (et permanent à l'ouest
+  de Greenwich), la correction est préventive.
+
+La leçon commune : avant d'annoncer un impact utilisateur, chercher l'appelant et
+chercher le garde qui existe peut-être déjà.
