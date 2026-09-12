@@ -106,7 +106,22 @@ export async function getCurrentAcademicPeriod(options: {
 	// Get today's date in ISO format (YYYY-MM-DD)
 	const today = new Date().toISOString().split('T')[0];
 
-	// Query for current period in active school year
+	// L'année courante d'abord, par la même règle que `getActiveSchoolYear` : le
+	// filtre portait sur `school_years.is_active`, que rien ne tient à jour.
+	// `as never` : la fonction est absente de `database.ts`, généré depuis la
+	// production. À RETIRER après le prochain `pnpm db:types`.
+	const { data: annee, error: anneeError } = await supabase
+		.rpc('current_school_year' as never, { p_school_id: schoolId } as never)
+		.maybeSingle();
+
+	if (anneeError) {
+		console.error('[getCurrentAcademicPeriod] Error fetching school year:', anneeError);
+		throw error(500, `Failed to fetch current academic period: ${anneeError.message}`);
+	}
+
+	if (!annee) return null;
+
+	// Puis la période de CETTE année qui contient aujourd'hui.
 	const { data, error: queryError } = await supabase
 		.from('academic_periods')
 		.select(
@@ -115,8 +130,7 @@ export async function getCurrentAcademicPeriod(options: {
 			school_year:school_years!inner(*)
 		`
 		)
-		.eq('school_years.school_id', schoolId)
-		.eq('school_years.is_active', true)
+		.eq('school_year_id', (annee as { id: string }).id)
 		.lte('start_date', today)
 		.gte('end_date', today)
 		.order('period_order', { ascending: true })
@@ -484,11 +498,14 @@ export async function getActiveSchoolYear(options: {
 }): Promise<SchoolYear | null> {
 	const { schoolId, supabase } = options;
 
+	// `current_school_year` applique la règle : l'année qui contient aujourd'hui,
+	// sinon la plus récente déjà commencée. Le drapeau `is_active` ne décide plus
+	// — rien ne le tenait à jour, et il ne savait pas exprimer le mois de juillet,
+	// où l'année écoulée est finie et la suivante pas commencée.
+	// `as never` : voir la note de `getCurrentAcademicPeriod` — à retirer après
+	// `pnpm db:types`.
 	const { data, error: queryError } = await supabase
-		.from('school_years')
-		.select('*')
-		.eq('school_id', schoolId)
-		.eq('is_active', true)
+		.rpc('current_school_year' as never, { p_school_id: schoolId } as never)
 		.maybeSingle();
 
 	if (queryError) {
@@ -496,5 +513,5 @@ export async function getActiveSchoolYear(options: {
 		throw error(500, `Failed to fetch active school year: ${queryError.message}`);
 	}
 
-	return data;
+	return data as SchoolYear | null;
 }
