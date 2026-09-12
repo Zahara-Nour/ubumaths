@@ -103,16 +103,23 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		}
 	}
 
-	// Fetch worksheets for this class
+	// Les fiches DE CE CHAPITRE, pas toutes celles de la classe.
+	//
+	// Le filtre `chapter_id` passe par `chapter_worksheets`, dont la policy élève
+	// exige `student_has_worksheet_access` : une fiche que le professeur a rangée
+	// ici sans encore la distribuer n'apparaît pas. C'est ce qui lui permet de
+	// préparer un chapitre avant le cours.
 	//
 	// Une panne ne doit pas se lire « aucune fiche » : c'est le message qui
 	// accuse la base d'être vide alors que la lecture a échoué. On le distingue
 	// donc explicitement, et on en laisse une trace.
-	const worksheetsResponse = await fetch(`/api/student/worksheets?class_id=${chapter.classId}`);
+	const worksheetsResponse = await fetch(
+		`/api/student/worksheets?class_id=${chapter.classId}&chapter_id=${chapter.id}`
+	);
 	const worksheetsUnavailable = !worksheetsResponse.ok;
 	if (worksheetsUnavailable) {
 		console.error(
-			`Fiches du chapitre illisibles (HTTP ${worksheetsResponse.status}) pour la classe ${chapter.classId}`
+			`Fiches du chapitre illisibles (HTTP ${worksheetsResponse.status}) pour le chapitre ${chapter.id}`
 		);
 	}
 	const worksheetsData = worksheetsResponse.ok

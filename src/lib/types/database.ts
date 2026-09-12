@@ -1364,6 +1364,45 @@ export type Database = {
           },
         ]
       }
+      chapter_worksheets: {
+        Row: {
+          chapter_id: string
+          created_at: string
+          display_order: number
+          id: string
+          worksheet_id: string
+        }
+        Insert: {
+          chapter_id: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          worksheet_id: string
+        }
+        Update: {
+          chapter_id?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          worksheet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chapter_worksheets_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "class_chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chapter_worksheets_worksheet_id_fkey"
+            columns: ["worksheet_id"]
+            isOneToOne: false
+            referencedRelation: "worksheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       class_chapters: {
         Row: {
           class_id: string

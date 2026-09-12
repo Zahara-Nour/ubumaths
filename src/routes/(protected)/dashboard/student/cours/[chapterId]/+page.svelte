@@ -228,7 +228,10 @@
 								Les fiches n'ont pas pu être chargées. Réessaie dans un instant.
 							</p>
 						{:else}
-							<p class="text-muted-foreground">Aucune fiche pour ce {lore.entities.class}</p>
+							<!-- « pour ce chapitre », pas « pour cette classe » : depuis que la
+							     page filtre sur le chapitre, le message doit dire lequel des deux
+							     est vide, sinon l'élève cherche au mauvais endroit. -->
+							<p class="text-muted-foreground">Aucune fiche dans ce chapitre</p>
 						{/if}
 					</Card.Content>
 				</Card.Root>

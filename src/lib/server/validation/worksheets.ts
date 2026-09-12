@@ -362,6 +362,14 @@ export const worksheetExerciseIdParamSchema = z.object({
  */
 export const studentWorksheetsQuerySchema = z.object({
 	class_id: uuidSchema.optional(),
+	/**
+	 * Restreint aux fiches rattachées à ce chapitre de « Mon cours ».
+	 *
+	 * Le filtre passe par `chapter_worksheets`, dont la policy élève exige déjà
+	 * `student_has_worksheet_access` : une fiche rangée dans le chapitre mais pas
+	 * encore distribuée n'en ressort donc pas.
+	 */
+	chapter_id: uuidSchema.optional(),
 	page: z.coerce
 		.number()
 		.int('Page must be an integer')
