@@ -22,6 +22,16 @@
  * scolaire de la classe. Une classe sans année n'ouvre rien — la jointure
  * échoue, et refuser est le bon repli.
  *
+ * CORRECTIF (20260914180000). L'audit a trouvé deux trous :
+ *
+ *   - `can_read_assignment` ne vérifiait ni le statut de l'affectation ni sa
+ *     disponibilité, alors que les deux autres chemins de lecture le font. Un
+ *     ancien membre pouvait donc relire un BROUILLON ou une fiche programmée
+ *     pour plus tard — que personne n'a jamais reçue ;
+ *   - la borne BASSE manquait. `class_members` ne date pas l'archivage, mais
+ *     porte bien `joined_at` : un élève arrivé en mai relisait ce que la classe
+ *     avait reçu depuis septembre.
+ *
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
@@ -79,6 +89,13 @@ describe('lecture seule rétroactive des fiches', () => {
 	let classeSansAnnee: string;
 	/** Une classe dont l'élève n'a jamais été membre. */
 	let classeEtrangere: string;
+	/**
+	 * Une classe d'une année EN COURS. Elle sert à éprouver la garde de
+	 * disponibilité seule : dans l'année close, une fiche « pas encore
+	 * disponible » sortirait déjà de la fenêtre, et le test passerait pour la
+	 * mauvaise raison.
+	 */
+	let classeAnneeEnCours: string;
 
 	let ficheId: string;
 	let exerciceId: string;
@@ -91,6 +108,13 @@ describe('lecture seule rétroactive des fiches', () => {
 	let ficheSansAnnee: string;
 	/** Distribuée à une classe étrangère à l'élève. */
 	let ficheEtrangere: string;
+	/** En brouillon : personne ne l'a jamais reçue. */
+	let affectationBrouillon: string;
+	/** Programmée pour plus tard : personne ne l'a encore reçue. */
+	let affectationFuture: string;
+
+	/** Archivé, mais arrivé APRÈS la distribution : il ne l'a jamais reçue. */
+	let tardif: SupabaseClient<Database>;
 
 	let archive: SupabaseClient<Database>;
 	let archiveId: string;
@@ -127,16 +151,41 @@ describe('lecture seule rétroactive des fiches', () => {
 				is_active: false
 			});
 
+		// Une seconde année, celle-ci en cours, pour éprouver la disponibilité.
+		const anneeEnCours = await insert('school_years', {
+			school_id: ecole,
+			name: '2026-2027 rétroactif ZZ',
+			start_date: '2026-08-31',
+			end_date: '2027-07-15',
+			is_active: true
+		});
+
 		classeQuittee = await classe('2DE quittée ZZ', true);
 		classeSansAnnee = await classe('2DE sans année ZZ', false);
 		classeEtrangere = await classe('2DE étrangère ZZ', true);
+		classeAnneeEnCours = await insert('classes', {
+			name: '1SPE année en cours ZZ',
+			school_id: ecole,
+			school_year_id: anneeEnCours,
+			join_code: 'ZZR900',
+			is_active: false
+		});
 
+		// `joined_at` par défaut vaut `now()`. En laisser le défaut daterait
+		// l'arrivée d'aujourd'hui, donc APRÈS toutes les fiches de l'année
+		// écoulée — la borne basse refuserait tout, et les tests nominaux
+		// mentiraient. En production ce champ est renseigné : les adhésions de
+		// Voltaire s'échelonnent d'octobre 2025 à février 2026.
 		const eleve = async (adhesions: { class_id: string; status: string }[]) => {
 			const profil = await TestData.profile().withRole('student').create();
 			if (adhesions.length > 0) {
-				const { error } = await service
-					.from('class_members')
-					.insert(adhesions.map((a) => ({ ...a, student_id: profil.id })));
+				const { error } = await service.from('class_members').insert(
+					adhesions.map((a) => ({
+						...a,
+						student_id: profil.id,
+						joined_at: `${ANNEE_DEBUT}T08:00:00Z`
+					}))
+				);
 				expect(error).toBeNull();
 			}
 			return { id: profil.id, client: await clientFor(profil.email) };
@@ -144,7 +193,8 @@ describe('lecture seule rétroactive des fiches', () => {
 
 		const a = await eleve([
 			{ class_id: classeQuittee, status: 'archived' },
-			{ class_id: classeSansAnnee, status: 'archived' }
+			{ class_id: classeSansAnnee, status: 'archived' },
+			{ class_id: classeAnneeEnCours, status: 'archived' }
 		]);
 		archiveId = a.id;
 		archive = a.client;
@@ -157,6 +207,19 @@ describe('lecture seule rétroactive des fiches', () => {
 
 		const c = await eleve([]);
 		etranger = c.client;
+
+		// Arrivé le 1er juin, donc après la fiche du 15 mars.
+		const d = await TestData.profile().withRole('student').create();
+		{
+			const { error } = await service.from('class_members').insert({
+				class_id: classeQuittee,
+				student_id: d.id,
+				status: 'archived',
+				joined_at: '2026-06-01T08:00:00Z'
+			});
+			expect(error).toBeNull();
+		}
+		tardif = await clientFor(d.email);
 
 		const exercice = (await TestData.exercise(enseignantId).create()) as { id: string };
 		exerciceId = exercice.id;
@@ -198,6 +261,41 @@ describe('lecture seule rétroactive des fiches', () => {
 		affectationHorsAnnee = await affectation(ficheHorsAnnee, '2026-07-20T08:00:00Z', classeQuittee);
 		await affectation(ficheSansAnnee, '2026-03-15T08:00:00Z', classeSansAnnee);
 		await affectation(ficheEtrangere, '2026-03-15T08:00:00Z', classeEtrangere);
+
+		// Un brouillon et une fiche programmée, tous deux dans la fenêtre de
+		// l'année : seul leur statut ou leur mise à disposition les distingue de
+		// la fiche nominale.
+		const brouillon = await fiche('Brouillon jamais distribué ZZ');
+		affectationBrouillon = await insert('worksheet_assignments', {
+			worksheet_id: brouillon,
+			status: 'draft',
+			available_from: '2026-03-15T08:00:00Z',
+			created_by: enseignantId
+		});
+		{
+			const { error } = await service
+				.from('worksheet_assignment_classes')
+				.insert({ assignment_id: affectationBrouillon, class_id: classeQuittee });
+			expect(error).toBeNull();
+		}
+
+		// Demain tombe DANS l'année en cours : seule la garde de disponibilité
+		// peut la refuser. Rattachée à l'année close, elle serait déjà hors
+		// fenêtre, et le test ne prouverait rien.
+		const future = await fiche('Fiche programmée plus tard ZZ');
+		const demain = new Date(Date.now() + 86_400_000).toISOString();
+		affectationFuture = await insert('worksheet_assignments', {
+			worksheet_id: future,
+			status: 'active',
+			available_from: demain,
+			created_by: enseignantId
+		});
+		{
+			const { error } = await service
+				.from('worksheet_assignment_classes')
+				.insert({ assignment_id: affectationFuture, class_id: classeAnneeEnCours });
+			expect(error).toBeNull();
+		}
 	});
 
 	afterAll(async () => {
@@ -295,21 +393,56 @@ describe('lecture seule rétroactive des fiches', () => {
 		});
 
 		it('un élève sans aucune adhésion ne lit rien', async () => {
+			// Assertion RELATIVE aux fixtures : `toHaveLength(0)` affirmerait une
+			// absence globale et virerait rouge dès qu'une autre suite laisse une
+			// ligne derrière elle.
 			expect(await litLaFiche(etranger, ficheId)).toBe(false);
-			expect(await affectationsVisibles(etranger)).toHaveLength(0);
+			expect(await affectationsVisibles(etranger)).not.toContain(affectationDansAnnee);
 		});
 	});
 
-	describe('le témoin : le membre actif d’une classe close', () => {
-		it('reste fermé, comme la série « élève archivé » l’a tranché', async () => {
-			// `c.is_active = false` : la classe est close. L'adhésion active ne suffit
-			// pas. Ce test garde l'acquis — la lecture rétroactive ne doit pas
-			// rouvrir ce chemin-là par un effet de bord.
-			const { data, error } = await actif.rpc('can_access_assignment', {
-				p_assignment_id: affectationDansAnnee
+	describe('les gardes de can_read_assignment', () => {
+		async function relit(client: SupabaseClient<Database>, affectation: string) {
+			const { data, error } = await client.rpc('can_read_assignment', {
+				p_assignment_id: affectation
 			});
 			expect(error).toBeNull();
-			expect(data).toBe(false);
+			return data === true;
+		}
+
+		it('relit bien l’affectation qui a été distribuée', async () => {
+			expect(await relit(archive, affectationDansAnnee)).toBe(true);
+		});
+
+		it('ne relit pas une affectation en brouillon', async () => {
+			// Personne ne l'a jamais reçue. `student_has_worksheet_access` le
+			// vérifiait déjà ; `can_read_assignment` l'omettait.
+			expect(await relit(archive, affectationBrouillon)).toBe(false);
+		});
+
+		it('ne relit pas une affectation pas encore disponible', async () => {
+			expect(await relit(archive, affectationFuture)).toBe(false);
+		});
+	});
+
+	describe('la borne basse : le séjour de l’élève dans la classe', () => {
+		it('ne relit pas une fiche distribuée avant son arrivée', async () => {
+			// Arrivé le 1er juin, la fiche date du 15 mars. « Relire ce qui lui
+			// AVAIT ÉTÉ DISTRIBUÉ » ne peut pas vouloir dire « relire ce que la
+			// classe avait reçu avant lui ».
+			expect(await litLaFiche(tardif, ficheId)).toBe(false);
+		});
+	});
+
+	describe('le membre ACTIF d’une classe close', () => {
+		it('ne relit pas, à l’inverse de l’archivé — asymétrie à trancher', async () => {
+			// `had_class_access_to_assignment` teste `cm.status = 'archived'`, une
+			// ÉGALITÉ. Un membre resté actif dans une classe fermée est donc plus
+			// mal loti qu'un membre archivé de la même classe. Rien ne casse
+			// aujourd'hui — la clôture d'année archive toutes les adhésions —, mais
+			// la règle tient à cette coïncidence. Ce test fige le comportement réel
+			// pour que la question reste visible.
+			expect(await litLaFiche(actif, ficheId)).toBe(false);
 		});
 	});
 });

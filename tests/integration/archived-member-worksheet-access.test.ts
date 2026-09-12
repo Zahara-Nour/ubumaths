@@ -122,12 +122,18 @@ describe('archived class members and worksheet access', () => {
 		classA = a.id;
 		classB = b.id;
 
+		// `joined_at` explicite, AVANT la distribution ci-dessous (hier). Le
+		// défaut vaudrait `now()`, donc après — et la borne basse de la lecture
+		// rétroactive refuserait, faisant échouer les tests pour une raison qui
+		// n'a rien à voir avec l'archivage.
+		const joinedAt = new Date(Date.now() - 3 * 86_400_000).toISOString();
+
 		const mkStudent = async (memberships: { class_id: string; status: string }[]) => {
 			const profile = await TestData.profile().withRole('student').create();
 			if (memberships.length > 0) {
 				const { error } = await service
 					.from('class_members')
-					.insert(memberships.map((m) => ({ ...m, student_id: profile.id })));
+					.insert(memberships.map((m) => ({ ...m, student_id: profile.id, joined_at: joinedAt })));
 				expect(error).toBeNull();
 			}
 			return { id: profile.id, client: await clientFor(profile.email) };
