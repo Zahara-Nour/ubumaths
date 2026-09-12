@@ -20,8 +20,8 @@ ont été désactivées.
 
 `is_active` fonctionne exactement comme prévu. C'est l'**absence de bascule
 d'année** qui place 77 élèves sur 78 dans un état où ils n'atteignent presque
-rien. Cela recoupe [l'état des lieux pédagogique](../../README.md) : les chaînes
-classe sont construites mais quasi inutilisées.
+rien. Cela recoupe le constat déjà fait ailleurs : les chaînes classe sont
+construites mais quasi inutilisées.
 
 ## Ce que `is_active` veut dire aujourd'hui
 
@@ -62,6 +62,31 @@ séances de cahier de texte                  0
 **L'impact concret se réduit à 10 fiches inaccessibles.** Tout le reste est vide,
 parce que l'usage l'est aussi.
 
+## Le chaînon manquant : `classes` ignore `school_years`
+
+C'est la découverte qui recadre tout le reste.
+
+**`school_years` existe et sert déjà.** Deux années y sont enregistrées, avec
+leurs trimestres et leurs vacances :
+
+|                               | 2025-2026 | 2026-2027 |
+| ----------------------------- | --------- | --------- |
+| périodes (`academic_periods`) | 3         | 3         |
+| vacances (`school_holidays`)  | 0         | **4**     |
+
+Les vacances 2026-2027 sont celles qu'utilise le calendrier de séances du
+cahier de texte. `academic_periods` porte les 271 observations
+(`student_warnings`) et les évaluations.
+
+**Mais `classes` n'a aucune colonne vers `school_years`.** Le rattachement d'une
+classe à son année n'existe pas : `classes.is_active` en tient lieu, à la main.
+C'est pourquoi le drapeau porte deux sens contradictoires — il remplace un lien
+qui n'a jamais été posé.
+
+**Anomalie liée : les deux années sont `is_active = true` simultanément.** Rien
+ne désigne donc « l'année courante » de façon univoque. `src/lib/server/warnings.ts`
+filtre pourtant sur `school_years.is_active` en supposant l'unicité.
+
 ## Les décisions ouvertes
 
 ### 1. Comment se fait une fin d'année ?
@@ -80,11 +105,23 @@ seule sur du contenu qu'il a déjà travaillé. Mais cela suppose de distinguer
 « classe terminée » de « classe pas encore ouverte », ce que le drapeau actuel
 ne fait pas.
 
-### 3. Faut-il trois états plutôt que deux ?
+### 3. Rattacher `classes` à `school_years`, ou multiplier les états ?
 
-`is_active = false` porte aujourd'hui deux sens opposés : _pas encore commencée_
-et _terminée_. Un état explicite (`brouillon` / `en cours` / `archivée`)
-permettrait des règles différentes — notamment l'accès rétroactif du point 2.
+Deux voies, et elles ne mènent pas au même endroit.
+
+**Rattacher** (`classes.school_year_id`) : « classe de l'année courante » se
+déduit alors, au lieu de se saisir. Le drapeau `is_active` retrouve un sens
+unique — ouverte ou fermée _à l'intérieur_ de son année — et l'accès rétroactif
+du point 2 devient exprimable : _lecture seule sur les classes des années
+précédentes_. Coût : une colonne, un rattrapage sur 10 classes, et la reprise
+des 21 objets qui testent le drapeau.
+
+**Multiplier les états** (`brouillon` / `en cours` / `archivée`) : moins
+invasif, mais l'année reste implicite. Deux classes « 6A » de deux années
+resteraient indiscernables autrement que par leur date de création.
+
+Le fait que `school_years` existe déjà, porte les vacances et les périodes, et
+soit lue par le cahier de texte penche pour la première.
 
 ### 4. Que devient l'adhésion d'un élève à la fin de l'année ?
 
