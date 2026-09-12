@@ -14,15 +14,28 @@
 -- `tests/integration/realtime-publication.test.ts` refuse aussi bien une table
 -- manquante qu'une table publiée que personne n'écoute.
 --
--- Accès : AUCUN accès nouveau. Le realtime applique la RLS, active avec des
--- policies SELECT sur les six tables. Les DELETE échappent à la RLS chez
--- Supabase, mais les six abonnements portent un filtre serveur
--- (`user_id=eq.…`, `conversation_id=eq.…`, `user_id=in.(mes amis)`) : un client
--- ne reçoit que des lignes dont il a lui-même fourni l'identifiant.
+-- Accès, INSERT et UPDATE : aucun accès nouveau. Le realtime évalue la RLS par
+-- abonné, active avec des policies SELECT sur les six tables. Le `filter`
+-- d'abonnement est choisi par le client : c'est une économie de trafic, jamais
+-- un contrôle. Le rempart est la RLS, et elle tient.
 --
--- REPLICA IDENTITY reste `default` (clé primaire seule) : on ne passe pas en
--- FULL, qui diffuserait l'ancienne ligne entière à chaque UPDATE/DELETE. Aucun
--- abonnement n'en a besoin — `presence` lit `old.user_id`, qui est la clé.
+-- Accès, DELETE : la RLS ne s'y applique pas (Postgres ne peut plus vérifier
+-- l'accès à une ligne supprimée), ET le `filter` ne s'y applique pas non plus
+-- tant que la replica identity vaut `default`. Les deux remparts tombent
+-- ensemble. Ce qui part alors à tout abonné est la charge utile `old`, c'est-à-
+-- dire la CLÉ PRIMAIRE seule :
+--   - `messages`, `notifications`, `student_achievements`,
+--     `minesweeper_multiplayer_matches` → un `id` de ligne opaque, inoffensif ;
+--   - `minesweeper_multiplayer_game_state` → `(match_id, player_id)` ;
+--   - `user_presence` → la PK EST `user_id`. L'UUID d'un utilisateur dont la
+--     présence est purgée (rétention 30 j) ou dont le compte est supprimé
+--     (CASCADE depuis `profiles`, effacement RGPD compris) est diffusé aux
+--     abonnés. UUID pseudonyme, sans nom ni statut ni horodatage métier.
+--
+-- REPLICA IDENTITY reste `default`, et le test d'intégration l'ancre. Passer en
+-- FULL rendrait certes le filtre applicable aux DELETE, mais la RLS resterait
+-- inappliquée, le filtre resterait choisi par le client — et on diffuserait en
+-- prime l'ancienne ligne ENTIÈRE à chaque UPDATE. Le remède serait pire.
 --
 -- Rollback :
 --   alter publication supabase_realtime drop table
@@ -35,7 +48,9 @@
 do $$
 begin
   if not exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
-    create publication supabase_realtime;
+    -- Sans clause, Postgres publierait aussi `truncate` ; Supabase ne le fait
+    -- pas. On reste fidèle pour que le local dise la vérité sur la prod.
+    create publication supabase_realtime with (publish = 'insert, update, delete');
   end if;
 end
 $$;

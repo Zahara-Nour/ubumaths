@@ -55,6 +55,23 @@ describe('publication supabase_realtime', () => {
 		expect(publiees).toContain(table);
 	});
 
+	// Toute la sécurité de la republication tient à ce `default`. En `full`, une
+	// table publiée diffuserait l'ANCIENNE LIGNE ENTIÈRE à chaque UPDATE et
+	// DELETE, là où `default` s'en tient à la clé primaire. Un passage en `full`
+	// au Dashboard élargirait donc les charges utiles en silence : rien dans le
+	// code applicatif ne changerait, et aucun autre test ne broncherait.
+	it.each(TABLES_ECOUTEES)('garde %s en replica identity default', async (table) => {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query<{ relreplident: string }>(
+			`select c.relreplident
+			   from pg_class c
+			   join pg_namespace n on n.oid = c.relnamespace
+			  where n.nspname = 'public' and c.relname = $1`,
+			[table]
+		);
+		expect(rows[0]?.relreplident).toBe('d');
+	});
+
 	it('ne publie rien que le code n’écoute — chaque table publiée coûte du trafic', () => {
 		const superflues = publiees.filter((t) => !(TABLES_ECOUTEES as readonly string[]).includes(t));
 		expect(superflues).toEqual([]);
