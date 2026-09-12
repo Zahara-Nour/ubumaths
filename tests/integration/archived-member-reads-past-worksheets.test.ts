@@ -32,6 +32,14 @@
  *     porte bien `joined_at` : un élève arrivé en mai relisait ce que la classe
  *     avait reçu depuis septembre.
  *
+ * SUITE (20260914200000), deux décisions de David :
+ *   - « ancien membre » = adhésion archivée OU classe fermée. L'égalité sur
+ *     `status = 'archived'` rendait le membre resté ACTIF d'une classe fermée
+ *     plus mal loti que l'archivé de la même classe ;
+ *   - la relecture s'éteint douze mois après la fin de l'année. Sans borne
+ *     haute, la conservation jusqu'à la purge (2031) devenait un accès
+ *     permanent.
+ *
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
@@ -89,6 +97,13 @@ describe('lecture seule rétroactive des fiches', () => {
 	let classeSansAnnee: string;
 	/** Une classe dont l'élève n'a jamais été membre. */
 	let classeEtrangere: string;
+	/**
+	 * Une classe d'une année terminée depuis PLUS de douze mois : la relecture
+	 * doit s'y être éteinte.
+	 */
+	let classeAnneeEteinte: string;
+	/** Distribuée dans cette année-là, donc hors de portée aujourd'hui. */
+	let ficheAnneeEteinte: string;
 	/**
 	 * Une classe d'une année EN COURS. Elle sert à éprouver la garde de
 	 * disponibilité seule : dans l'année close, une fiche « pas encore
@@ -151,6 +166,15 @@ describe('lecture seule rétroactive des fiches', () => {
 				is_active: false
 			});
 
+		// Une année largement révolue : sa fin est à plus de douze mois.
+		const anneeEteinte = await insert('school_years', {
+			school_id: ecole,
+			name: '2023-2024 rétroactif ZZ',
+			start_date: '2023-09-01',
+			end_date: '2024-06-30',
+			is_active: false
+		});
+
 		// Une seconde année, celle-ci en cours, pour éprouver la disponibilité.
 		const anneeEnCours = await insert('school_years', {
 			school_id: ecole,
@@ -163,6 +187,13 @@ describe('lecture seule rétroactive des fiches', () => {
 		classeQuittee = await classe('2DE quittée ZZ', true);
 		classeSansAnnee = await classe('2DE sans année ZZ', false);
 		classeEtrangere = await classe('2DE étrangère ZZ', true);
+		classeAnneeEteinte = await insert('classes', {
+			name: '3E année éteinte ZZ',
+			school_id: ecole,
+			school_year_id: anneeEteinte,
+			join_code: 'ZZR901',
+			is_active: false
+		});
 		classeAnneeEnCours = await insert('classes', {
 			name: '1SPE année en cours ZZ',
 			school_id: ecole,
@@ -183,7 +214,8 @@ describe('lecture seule rétroactive des fiches', () => {
 					adhesions.map((a) => ({
 						...a,
 						student_id: profil.id,
-						joined_at: `${ANNEE_DEBUT}T08:00:00Z`
+						// Avant toute distribution des fixtures, année révolue comprise.
+						joined_at: '2023-09-01T08:00:00Z'
 					}))
 				);
 				expect(error).toBeNull();
@@ -194,7 +226,8 @@ describe('lecture seule rétroactive des fiches', () => {
 		const a = await eleve([
 			{ class_id: classeQuittee, status: 'archived' },
 			{ class_id: classeSansAnnee, status: 'archived' },
-			{ class_id: classeAnneeEnCours, status: 'archived' }
+			{ class_id: classeAnneeEnCours, status: 'archived' },
+			{ class_id: classeAnneeEteinte, status: 'archived' }
 		]);
 		archiveId = a.id;
 		archive = a.client;
@@ -241,6 +274,7 @@ describe('lecture seule rétroactive des fiches', () => {
 		ficheHorsAnnee = await fiche('Fiche distribuée après la fin ZZ');
 		ficheSansAnnee = await fiche('Fiche de la classe sans année ZZ');
 		ficheEtrangere = await fiche('Fiche d’une classe étrangère ZZ');
+		ficheAnneeEteinte = await fiche('Fiche d’une année révolue ZZ');
 
 		const affectation = async (worksheet: string, disponible: string, classeCible: string) => {
 			const id = await insert('worksheet_assignments', {
@@ -261,6 +295,9 @@ describe('lecture seule rétroactive des fiches', () => {
 		affectationHorsAnnee = await affectation(ficheHorsAnnee, '2026-07-20T08:00:00Z', classeQuittee);
 		await affectation(ficheSansAnnee, '2026-03-15T08:00:00Z', classeSansAnnee);
 		await affectation(ficheEtrangere, '2026-03-15T08:00:00Z', classeEtrangere);
+		// Dans la fenêtre de son année, mais cette année s'est terminée il y a
+		// plus de douze mois : seule la borne d'extinction peut la refuser.
+		await affectation(ficheAnneeEteinte, '2024-03-15T08:00:00Z', classeAnneeEteinte);
 
 		// Un brouillon et une fiche programmée, tous deux dans la fenêtre de
 		// l'année : seul leur statut ou leur mise à disposition les distingue de
@@ -435,14 +472,33 @@ describe('lecture seule rétroactive des fiches', () => {
 	});
 
 	describe('le membre ACTIF d’une classe close', () => {
-		it('ne relit pas, à l’inverse de l’archivé — asymétrie à trancher', async () => {
-			// `had_class_access_to_assignment` teste `cm.status = 'archived'`, une
-			// ÉGALITÉ. Un membre resté actif dans une classe fermée est donc plus
-			// mal loti qu'un membre archivé de la même classe. Rien ne casse
-			// aujourd'hui — la clôture d'année archive toutes les adhésions —, mais
-			// la règle tient à cette coïncidence. Ce test fige le comportement réel
-			// pour que la question reste visible.
-			expect(await litLaFiche(actif, ficheId)).toBe(false);
+		it('relit comme l’archivé : « ancien membre » couvre les deux', async () => {
+			// L'asymétrie est levée. La clôture d'année archive les adhésions, mais
+			// une classe désactivée à la main n'en archive aucune — et ces élèves
+			// tombaient alors dans un trou : ni accès courant, ni accès rétroactif.
+			expect(await litLaFiche(actif, ficheId)).toBe(true);
+		});
+
+		it('n’y gagne aucune écriture pour autant', async () => {
+			const { data, error } = await actif.rpc('can_access_assignment', {
+				p_assignment_id: affectationDansAnnee
+			});
+			expect(error).toBeNull();
+			expect(data).toBe(false);
+		});
+	});
+
+	describe('l’extinction : douze mois après la fin de l’année', () => {
+		it('ne relit plus une fiche d’une année révolue depuis plus d’un an', async () => {
+			// Conserver et donner accès sont deux décisions distinctes : les
+			// comptes vivent jusqu'en 2031, la relecture non.
+			expect(await litLaFiche(archive, ficheAnneeEteinte)).toBe(false);
+		});
+
+		it('relit encore celle de l’année qui vient de s’achever', async () => {
+			// Le contrôle de la borne : sans lui, le test ci-dessus passerait aussi
+			// avec une extinction beaucoup trop agressive.
+			expect(await litLaFiche(archive, ficheId)).toBe(true);
 		});
 	});
 });
