@@ -108,10 +108,8 @@ export async function getCurrentAcademicPeriod(options: {
 
 	// L'année courante d'abord, par la même règle que `getActiveSchoolYear` : le
 	// filtre portait sur `school_years.is_active`, que rien ne tient à jour.
-	// `as never` : la fonction est absente de `database.ts`, généré depuis la
-	// production. À RETIRER après le prochain `pnpm db:types`.
 	const { data: annee, error: anneeError } = await supabase
-		.rpc('current_school_year' as never, { p_school_id: schoolId } as never)
+		.rpc('current_school_year', { p_school_id: schoolId })
 		.maybeSingle();
 
 	if (anneeError) {
@@ -502,10 +500,8 @@ export async function getActiveSchoolYear(options: {
 	// sinon la plus récente déjà commencée. Le drapeau `is_active` ne décide plus
 	// — rien ne le tenait à jour, et il ne savait pas exprimer le mois de juillet,
 	// où l'année écoulée est finie et la suivante pas commencée.
-	// `as never` : voir la note de `getCurrentAcademicPeriod` — à retirer après
-	// `pnpm db:types`.
 	const { data, error: queryError } = await supabase
-		.rpc('current_school_year' as never, { p_school_id: schoolId } as never)
+		.rpc('current_school_year', { p_school_id: schoolId })
 		.maybeSingle();
 
 	if (queryError) {

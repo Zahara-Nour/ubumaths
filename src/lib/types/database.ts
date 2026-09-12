@@ -1710,6 +1710,7 @@ export type Database = {
           name: string
           registration_open: boolean
           school_id: string | null
+          school_year_id: string | null
           tutor_config: Json | null
           updated_at: string
         }
@@ -1724,6 +1725,7 @@ export type Database = {
           name: string
           registration_open?: boolean
           school_id?: string | null
+          school_year_id?: string | null
           tutor_config?: Json | null
           updated_at?: string
         }
@@ -1738,6 +1740,7 @@ export type Database = {
           name?: string
           registration_open?: boolean
           school_id?: string | null
+          school_year_id?: string | null
           tutor_config?: Json | null
           updated_at?: string
         }
@@ -1754,6 +1757,13 @@ export type Database = {
             columns: ["school_id"]
             isOneToOne: false
             referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_school_year_id_fkey"
+            columns: ["school_year_id"]
+            isOneToOne: false
+            referencedRelation: "school_years"
             referencedColumns: ["id"]
           },
         ]
@@ -10111,6 +10121,66 @@ export type Database = {
           },
         ]
       }
+      school_year_closures: {
+        Row: {
+          class_ids: string[]
+          class_member_ids: string[]
+          closed_at: string
+          closed_by: string | null
+          school_year_id: string
+        }
+        Insert: {
+          class_ids: string[]
+          class_member_ids: string[]
+          closed_at?: string
+          closed_by?: string | null
+          school_year_id: string
+        }
+        Update: {
+          class_ids?: string[]
+          class_member_ids?: string[]
+          closed_at?: string
+          closed_by?: string | null
+          school_year_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "school_year_closures_closed_by_fkey"
+            columns: ["closed_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "school_year_closures_closed_by_fkey"
+            columns: ["closed_by"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "school_year_closures_closed_by_fkey"
+            columns: ["closed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "school_year_closures_closed_by_fkey"
+            columns: ["closed_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "school_year_closures_school_year_id_fkey"
+            columns: ["school_year_id"]
+            isOneToOne: true
+            referencedRelation: "school_years"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       school_years: {
         Row: {
           created_at: string | null
@@ -10119,6 +10189,7 @@ export type Database = {
           is_active: boolean | null
           metadata: Json | null
           name: string
+          purge_after: string | null
           school_id: string
           start_date: string
           updated_at: string | null
@@ -10130,6 +10201,7 @@ export type Database = {
           is_active?: boolean | null
           metadata?: Json | null
           name: string
+          purge_after?: string | null
           school_id: string
           start_date: string
           updated_at?: string | null
@@ -10141,6 +10213,7 @@ export type Database = {
           is_active?: boolean | null
           metadata?: Json | null
           name?: string
+          purge_after?: string | null
           school_id?: string
           start_date?: string
           updated_at?: string | null
@@ -15015,6 +15088,7 @@ export type Database = {
       cleanup_stale_queue_entries: { Args: never; Returns: undefined }
       cleanup_stale_trades: { Args: never; Returns: undefined }
       cleanup_stuck_job_runs: { Args: never; Returns: undefined }
+      close_school_year: { Args: { p_school_year_id: string }; Returns: Json }
       complete_job_run: {
         Args: {
           p_error_message?: string
@@ -15139,6 +15213,27 @@ export type Database = {
           p_top_x_games?: number
         }
         Returns: string
+      }
+      current_school_year: {
+        Args: { p_school_id: string }
+        Returns: {
+          created_at: string | null
+          end_date: string
+          id: string
+          is_active: boolean | null
+          metadata: Json | null
+          name: string
+          purge_after: string | null
+          school_id: string
+          start_date: string
+          updated_at: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "school_years"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       curriculum_point_reference_counts: {
         Args: { p_point_id: string }
@@ -16336,6 +16431,7 @@ export type Database = {
         }
         Returns: Json
       }
+      reopen_school_year: { Args: { p_school_year_id: string }; Returns: Json }
       reorder_curriculum_objectives: {
         Args: { p_objective_ids: string[]; p_theme_id: string }
         Returns: undefined
