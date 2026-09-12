@@ -109,13 +109,16 @@ reperdra la même chose en silence.
 >
 > **Deux questions ouvertes**, posées par l'audit :
 >
-> 1. Un membre resté **actif** dans une classe fermée ne relit pas, alors que
->    l'archivé de la même classe relit. Le prédicat teste `status = 'archived'`,
->    une égalité. Rien ne casse aujourd'hui (la clôture archive tout), mais la
->    règle tient à cette coïncidence. Faut-il l'aligner ?
-> 2. **Aucune borne haute** : l'accès ne s'éteint jamais. Un élève parti en
->    2026 lira encore ses fiches en 2031, jusqu'à la purge. Combien de temps
->    doit durer la relecture ?
+> **Les deux questions sont tranchées** (2026-09-14, PR #239) :
+>
+> 1. « Ancien membre » = adhésion archivée **OU** classe fermée. L'égalité sur
+>    `status = 'archived'` laissait dans un trou l'élève resté actif dans une
+>    classe désactivée à la main — le cas réellement observé à Voltaire.
+> 2. La relecture **s'éteint douze mois après la fin de l'année**. Mesuré :
+>    0 adhésion gagne, 0 adhésion perd aujourd'hui.
+>
+> Attention, la durée réelle va jusqu'à ~22 mois : le compteur part de
+> `sy.end_date`, pas du départ de l'élève.
 >
 > **Côté application (PR #238, en prod)** : la décision d'accès vit dans
 > `src/lib/server/worksheets/assignment-access.ts` — trois issues (écrire,
@@ -156,11 +159,11 @@ personne.
 > (`POST /api/admin/compose-class`, `GET /api/admin/class-composition-source`),
 > 22 tests serveur.
 >
-> **Portée bornée à l'école de la destination.** Reprendre d'anciens élèves de
-> Voltaire dans une école « Cours particuliers » franchirait la frontière
-> école, et demanderait de trancher ce que devient `profiles.school_id`. C'est
-> la question qui reste — et c'est celle dont tu as besoin cette année, pas la
-> bascule d'année à école constante.
+> **La question inter-écoles est tranchée** (2026-09-14) : déplacer le profil.
+> Trois policies lisent `profiles.school_id` — trimestres, années, marché — et
+> laisser le profil sur l'ancienne école donnerait un élève à moitié cassé. La
+> fonction `admin_compose_class` (PR #241) inscrit et déplace dans **une même
+> transaction**. Reste à écrire : l'API et l'écran, qui attendent `db:types`.
 
 **Ce que c'est.** Un écran qui liste les élèves des classes de l'année
 précédente, groupés par ancienne classe, avec des cases à cocher et une classe
@@ -278,6 +281,13 @@ que ce contrat n'est pas tranché, on ne peut pas corriger une réponse.
 - **Après beaucoup de `db:reset`, GoTrue casse les sign-in** avec une erreur
   vide. Remède : `db:stop` puis `db:start` — un reset ne suffit pas.
 - Les **tests d'intégration ne tournent pas en CI** : les lancer localement.
+- **`HttpError` de SvelteKit n'étend pas `Error`** : `err instanceof Error &&
+'status' in err` est toujours faux et convertit tout 4xx délibéré en 500.
+  Neuf handlers de l'API fiches étaient touchés. Idiome correct :
+  `err && typeof err === 'object' && 'status' in err`.
+- **Des dates littérales dans des fixtures vieillissent dans les deux sens** :
+  rouge bruyant d'un côté, vert menteur de l'autre. Les rendre relatives à
+  `Date.now()` dès qu'une borne temporelle est testée.
 - **Un `db:reset` fait AVANT un rebase ne contient pas les migrations que le
   rebase apporte.** Symptôme trompeur : une fonction corrigée répond juste,
   celle qu'elle devait compléter répond faux. Réinitialiser après tout rebase.
