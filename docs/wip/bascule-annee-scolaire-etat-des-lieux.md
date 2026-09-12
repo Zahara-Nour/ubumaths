@@ -162,3 +162,102 @@ les publications. Même motif que la disparition de `on_auth_user_created`.
 
 Les autres tables écoutées n'ont **jamais** été versionnées : activées au
 Dashboard, sans trace de ce qui l'était avant la bascule.
+
+---
+
+# Spécification — validée par David le 2026-09-12
+
+> Statut : **Phase 0 — spec validée sur le principe, en attente du feu vert par phase.**
+
+## Le modèle retenu
+
+> **L'élève est permanent. La classe appartient à une année. L'adhésion est annuelle.**
+
+`profiles` traverse les années avec son historique, ses gidouilles et ses succès.
+`classes` naît dans une année. `class_members` est le lien annuel : une nouvelle
+ligne à chaque rentrée.
+
+**Deux objets, pas un** : « 1ère G Spé Maths » de 2025-2026 et celle de 2026-2027
+sont deux classes distinctes. Aucune promotion automatique — les groupes ne se
+reconduisent jamais à l'identique (une 2nde se répartit entre deux 1SPE, une
+Terminale part au bac). Rien ne se transforme : **on clôt, puis on compose.**
+
+## Phase 1 — Rattacher les classes à leur année
+
+**Nominal.** `classes.school_year_id` référence `school_years`. Toute classe
+créée reçoit l'année en cours.
+
+**Rattrapage.** Neuf classes sur dix se déduisent de leur date de création. La
+dixième, `1SPE-TEST` (créée le 2026-08-25), tombe **entre** la fin de 2025-2026
+(2026-06-30) et le début de 2026-2027 (2026-08-31) : elle est rattachée
+explicitement à 2026-2027, en dur dans la migration, avec la justification.
+Un rattrapage par date seule l'aurait laissée à `NULL` en silence.
+
+**Limite.** Une classe sans année reste possible pendant la transition : la
+colonne est nullable en Phase 1. Elle ne le sera plus après la Phase 2.
+
+**Anomalie à corriger dans la même phase.** Les deux `school_years` sont
+`is_active = true`. Une seule année doit l'être — `src/lib/server/warnings.ts`
+suppose déjà l'unicité. À trancher : 2026-2027 devient la seule active.
+
+## Phase 2 — Clôturer une année
+
+**Nominal.** Un bouton « Clôturer l'année 2025-2026 », avec confirmation nommant
+ce qui va changer. Effet : toutes les classes de l'année passent
+`is_active = false`, et **toutes leurs adhésions passent `status = 'archived'`**.
+
+Ce que l'élève perd immédiatement, par les cinq volets déjà livrés : les
+nouvelles fiches, les exercices, le Python, les notifications de classe, et le
+salon de groupe.
+
+Ce qu'il garde : son compte, ses gidouilles, ses succès, ses signalements
+d'erreur et leurs réponses, et — voir Phase 3 — la lecture des fiches déjà
+distribuées.
+
+**Réversible.** « Rouvrir l'année » remet les adhésions en `active`. Les cinq
+triggers rejouent en sens inverse, y compris le retour dans le salon.
+
+**Limite.** Une année sans classe, une classe sans élève : le geste réussit sans
+rien faire. Clôturer une année déjà close ne change rien.
+
+**Erreur.** Clôturer l'année **courante** doit être refusé — ou demander une
+confirmation renforcée, puisque cela couperait l'accès à tous les élèves en
+cours d'année.
+
+## Phase 3 — Lecture seule rétroactive
+
+**Nominal.** Un élève dont l'adhésion est archivée conserve l'accès **en lecture**
+aux fiches qui lui avaient été distribuées, pour réviser. Exception ciblée dans
+`student_has_worksheet_access`, pas une refonte.
+
+**Ce qui reste fermé** : recevoir une nouvelle distribution, écrire (complétions,
+signalements, soumissions), le salon, les notifications.
+
+**Limite.** Une fiche retirée de la distribution après coup n'est plus lisible :
+la lecture suit la distribution, pas l'historique de consultation.
+
+## Phase 4 — Composer une classe depuis l'année précédente
+
+**Nominal.** Un écran qui liste les élèves des classes de l'année précédente,
+groupés par ancienne classe, avec cases à cocher et une classe de destination.
+Les élèves cochés reçoivent une **nouvelle adhésion** dans la classe cible ;
+leur ancienne reste archivée.
+
+**Limite.** Un élève déjà membre de la classe cible est ignoré, pas dupliqué.
+Un élève sans compte n'apparaît pas — l'import reste la voie des nouveaux.
+
+**Erreur.** Une classe de destination archivée, ou d'une année close, est
+refusée.
+
+**Existe déjà** : l'ajout un par un (`/api/admin/add-to-class`, depuis l'écran
+des utilisateurs) et l'auto-inscription par code de classe. Cette phase ajoute
+le geste de masse, pas le mécanisme.
+
+## Ordre et dépendances
+
+Phase 1 conditionne les autres — sans rattachement, « les classes de l'année »
+ne se calcule pas. Les phases 2, 3 et 4 sont ensuite indépendantes entre elles.
+
+La Phase 2 est **destructive au sens de CLAUDE.md** : elle change l'accès de 77
+élèves d'un coup. Elle exigera son inventaire, ses tests rouges, son audit, et
+un feu vert explicite.
