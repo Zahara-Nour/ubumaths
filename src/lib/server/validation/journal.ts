@@ -47,10 +47,26 @@ export const dateSchema = z
  */
 export const futureDateSchema = dateSchema.refine(
 	(date) => {
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
-		const inputDate = new Date(date);
-		return inputDate >= today;
+		// Comparaison de dates CIVILES, en chaînes, et non de deux instants.
+		//
+		// `new Date('2026-09-13')` est interprété à minuit UTC, alors que
+		// `setHours(0, 0, 0, 0)` donne minuit LOCAL. Mélanger les deux faisait
+		// refuser « aujourd'hui » pendant toute la fenêtre entre minuit local et
+		// minuit UTC — trois heures par jour au Qatar (UTC+3), deux en France
+		// l'été. Le test « should accept today » rougissait dans cette fenêtre et
+		// nulle part ailleurs, la CI tournant en UTC.
+		//
+		// Sur des chaînes `YYYY-MM-DD`, l'ordre lexical est l'ordre
+		// chronologique, et l'ambiguïté de fuseau n'existe plus. La date de
+		// référence est la date civile LOCALE, celle que le sélecteur de date
+		// montre à l'utilisateur.
+		const maintenant = new Date();
+		const aujourdHui = [
+			maintenant.getFullYear(),
+			String(maintenant.getMonth() + 1).padStart(2, '0'),
+			String(maintenant.getDate()).padStart(2, '0')
+		].join('-');
+		return date >= aujourdHui;
 	},
 	{ message: 'La date ne peut pas etre dans le passe' }
 );
