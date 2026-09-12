@@ -210,7 +210,7 @@
 									<span>Par rôle</span>
 								</label>
 								<label class="flex items-center gap-2 rounded border p-2 hover:bg-muted">
-									<input type="radio" bind:group={targetType} value="class" class="h-4 w-4" />
+									<input type="radio" bind:group={targetType} value="classes" class="h-4 w-4" />
 									<span>Par {lore.entities.class}</span>
 								</label>
 								<label class="flex items-center gap-2 rounded border p-2 hover:bg-muted">
@@ -252,7 +252,7 @@
 						{/if}
 
 						<!-- Class selection -->
-						{#if targetType === 'class'}
+						{#if targetType === 'classes'}
 							<div class="space-y-2">
 								<Label>Sélectionner les {lore.entities.class}s</Label>
 								<div class="max-h-48 overflow-y-auto rounded border p-2">

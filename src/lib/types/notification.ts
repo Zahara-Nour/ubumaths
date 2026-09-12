@@ -23,14 +23,16 @@ export type NotificationType =
 
 export type NotificationPriority = 'normal' | 'important' | 'urgent';
 
-export type NotificationTargetType =
-	| 'all'
-	| 'role'
-	| 'roles'
-	| 'class'
-	| 'classes'
-	| 'user'
-	| 'users';
+/**
+ * Les quatre valeurs que la base accepte.
+ *
+ * `notifications_target_type_check` ne connaît que celles-ci — au singulier
+ * pour le rôle, au PLURIEL pour les classes et les utilisateurs. Le type
+ * acceptait auparavant les deux formes de chacune, si bien que le code
+ * écrivait `'class'` (rejeté par la contrainte) et relisait `'roles'` (qui ne
+ * correspond à rien) sans que le compilateur puisse le voir.
+ */
+export type NotificationTargetType = 'all' | 'role' | 'classes' | 'users';
 
 export type SystemEventType =
 	| 'maintenance'
