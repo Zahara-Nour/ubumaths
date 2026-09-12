@@ -117,10 +117,17 @@ reperdra la même chose en silence.
 >    2026 lira encore ses fiches en 2031, jusqu'à la purge. Combien de temps
 >    doit durer la relecture ?
 >
-> **Reste à faire côté application** : la route `/api/student/worksheets/[id]`
-> garde encore sur `can_access_assignment` et renverrait 404 à l'élève archivé.
-> Le correctif est prêt (patch dans le scratchpad de session) mais attend
-> `db:types`, donc la mise en production des migrations.
+> **Côté application (PR #238, en prod)** : la décision d'accès vit dans
+> `src/lib/server/worksheets/assignment-access.ts` — trois issues (écrire,
+> relire, rien) et une quatrième à ne jamais confondre avec « rien » :
+> « je n'ai pas su lire ». La réponse porte un drapeau `read_only`, et l'écran
+> retire alors les boutons de maîtrise, le signalement d'erreur, l'onglet
+> Signalements **et le tuteur** — celui-ci écrit des conversations et appelle
+> le modèle, ce qu'une fiche relue n'a pas à déclencher, et rien ne le gardait
+> côté serveur. Un bandeau dit pourquoi.
+>
+> **Effet mesuré une fois en prod** : 8 fiches relisibles en 1ère G, 1 en
+> Terminale G, 133 paires élève/fiche après la borne du séjour.
 
 **Le besoin.** Un élève dont l'adhésion est archivée perd tout accès aux fiches
 de la classe quittée. Pour réviser en septembre ce qu'il a travaillé en juin,
