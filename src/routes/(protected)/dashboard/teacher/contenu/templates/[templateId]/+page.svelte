@@ -154,11 +154,11 @@
 					{/if}
 
 					<!--
-						Un brouillon n'a jamais servi — il ne peut même plus être
-						instancié — donc il s'efface vraiment. Un modèle publié
-						s'archive, ce qui préserve les chapitres qui en sont issus.
+						Un modèle archivé est une trace de ce qui a servi : on ne le
+						détruit pas. Brouillon et publié se suppriment, la
+						confirmation disant ce que cela emporte.
 					-->
-					{#if data.template.status === 'draft'}
+					{#if data.template.status !== 'archived'}
 						<Button
 							variant="outline"
 							class="text-destructive hover:text-destructive"

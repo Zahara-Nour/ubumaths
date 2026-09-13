@@ -198,11 +198,12 @@ export const actions: Actions = {
 	},
 
 	/**
-	 * Supprimer définitivement un modèle en brouillon.
+	 * Supprimer définitivement un modèle, brouillon ou publié.
 	 *
-	 * Les chapitres qui en seraient issus survivent : leur rattachement passe à
-	 * NULL et leur bandeau affiche « Template supprimé ». Seul l'historique des
-	 * versions part avec le modèle.
+	 * Les chapitres qui en sont issus survivent : leur rattachement passe à NULL
+	 * et leur bandeau affiche « Template supprimé ». Seul l'historique des
+	 * versions part avec le modèle. Un modèle archivé, lui, est une trace et
+	 * n'est pas supprimable.
 	 */
 	delete: async ({ locals, params }) => {
 		const { user } = await requireRole(locals, 'teacher');
@@ -224,9 +225,9 @@ export const actions: Actions = {
 			return fail(403, { error: 'Accès refusé', action: 'delete' });
 		}
 
-		if (templateCheck.status !== 'draft') {
+		if (templateCheck.status === 'archived') {
 			return fail(400, {
-				error: 'Seul un brouillon peut être supprimé : archivez-le pour le retirer de l’usage',
+				error: 'Un modèle archivé ne peut pas être supprimé',
 				action: 'delete'
 			});
 		}

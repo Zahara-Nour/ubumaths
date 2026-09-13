@@ -1894,19 +1894,23 @@ describe('Publishing Operations', () => {
 			expect(result.error).toBeNull();
 		});
 
-		// Un modèle publié a pu servir : l'archivage existe pour le retirer de
-		// l'usage sans rien détruire.
-		it('refuse de supprimer un modèle publié', async () => {
+		// Un modèle publié a pu servir : la suppression reste permise, et ce sont
+		// les chapitres issus qui survivent, détachés.
+		it('supprime un modèle publié', async () => {
 			supabase._mockChain.single.mockResolvedValueOnce({
 				data: { status: 'published' },
 				error: null
 			});
+			supabase._mockChain.eq.mockReturnValueOnce(supabase._mockChain as never);
+			supabase._mockChain.eq.mockReturnValueOnce(Promise.resolve({ error: null }) as never);
 
 			const result = await templates.deleteChapterTemplate(mockTemplateId, supabase);
 
-			expect(result.error?.message).toContain('brouillon');
+			expect(result.error).toBeNull();
 		});
 
+		// Archivé veut dire « retiré de l'usage, mais conservé » : le détruire
+		// effacerait la trace de ce qui a servi.
 		it('refuse de supprimer un modèle archivé', async () => {
 			supabase._mockChain.single.mockResolvedValueOnce({
 				data: { status: 'archived' },
@@ -1915,7 +1919,7 @@ describe('Publishing Operations', () => {
 
 			const result = await templates.deleteChapterTemplate(mockTemplateId, supabase);
 
-			expect(result.error).toBeDefined();
+			expect(result.error?.message).toContain('archivé');
 		});
 	});
 

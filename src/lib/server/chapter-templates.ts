@@ -306,9 +306,9 @@ export async function deleteChapterTemplate(
 	supabase: SupabaseClient<Database>
 ): Promise<{ error: Error | null }> {
 	try {
-		// Un modèle publié a pu servir, et l'archivage existe pour le retirer de
-		// l'usage sans rien détruire. Seul un brouillon — qui ne peut plus être
-		// instancié — s'efface vraiment.
+		// Un modèle archivé a été retiré de l'usage : c'est une trace, et on ne
+		// détruit pas une trace par mégarde. Brouillon et publié, eux, se
+		// suppriment — le second pouvant avoir servi, l'appelant en avertit.
 		const { data: template, error: readError } = await supabase
 			.from('chapter_templates')
 			.select('status')
@@ -320,11 +320,9 @@ export async function deleteChapterTemplate(
 			return { error: new Error(readError.message) };
 		}
 
-		if (template.status !== 'draft') {
+		if (template.status === 'archived') {
 			return {
-				error: new Error(
-					'Seul un modèle en brouillon peut être supprimé : archivez-le pour le retirer de l’usage.'
-				)
+				error: new Error('Un modèle archivé ne peut pas être supprimé.')
 			};
 		}
 
