@@ -1,5 +1,17 @@
 # Cahier de texte — plusieurs travaux à faire par séance
 
+> ✅ **CHANTIER CLOS** (vérifié le 2026-09-13). Les quatre phases sont livrées et
+> en production. Vérification faite, pas déduite :
+>
+> - `class_journal_entries.homework_content` et `homework_due_date` **n'existent
+>   plus** en base (`information_schema.columns` ne les renvoie pas) ;
+> - `grep -rn "homework_content\|homework_due_date" src` → **zéro référence** ;
+> - `journal_entry_homework` porte 2 lignes en production, pour 2 séances.
+>
+> Ce document reste comme trace des décisions et des pièges. Les deux dernières
+> sections, écrites AVANT la phase 2, décrivent un futur devenu passé : elles se
+> lisent maintenant comme la liste de ce qui a été fait.
+>
 > Doc de progression (crash-recovery). Branche : `feat/cahier-texte-travaux-multiples`.
 
 ## Le besoin
@@ -266,7 +278,7 @@ donc vaudra toujours 0. **La fonction n'est appelée nulle part** en production
 (seulement dans ses propres tests) : laissée telle quelle plutôt que d'élargir
 le périmètre à du code mort. À corriger le jour où elle sert.
 
-## Pièges connus pour la phase 2
+## Pièges connus pour la phase 2 — _historique, phase livrée_
 
 - La contrainte SQL `btrim(content) <> ''` ne voit PAS un éditeur riche vide :
   TipTap rend `<p></p>`, qui n'est pas une chaîne blanche. C'est donc au serveur
@@ -276,7 +288,7 @@ le périmètre à du code mort. À corriger le jour où elle sert.
   tableau vide efface tous les travaux de la séance : ne l'appeler que lorsque
   la page a réellement envoyé sa liste, jamais « par précaution ».
 
-## Ce que la phase 2 ne doit pas oublier
+## Ce que la phase 2 ne devait pas oublier — _historique, tout est traité_
 
 Consommateurs actuels de `homework_content` / `homework_due_date` :
 
