@@ -278,6 +278,14 @@
 						</div>
 					{/if}
 				</div>
+			{:else}
+				<!--
+					Une carte sans le moindre compteur se lit « chapitre vide », alors que
+					le cas normal est « le professeur n'a pas encore publié ». Les
+					compteurs passent par la RLS de l'élève : ils ne comptent que le
+					publié, donc ce texte ne révèle rien de ce qui attend en coulisse.
+				-->
+				<p class="text-xs text-muted-foreground italic">Rien n'est encore disponible ici.</p>
 			{/if}
 		</Card.Content>
 

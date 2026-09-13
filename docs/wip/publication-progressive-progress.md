@@ -151,6 +151,36 @@ distribution réelle de la classe pour ne pas l'inventer. Sans ça, il affichera
 serveur : un composant ne peut rien importer de `$lib/server/**`, fût-ce un
 type, et seul `vite build` l'aurait vu — pas le typecheck.
 
+## Phase 3 — ✅ écrite
+
+Rien à filtrer côté code : la RLS le fait déjà. Ce que la phase 3 corrige est
+**ce que l'élève lit** quand elle a filtré.
+
+Depuis la publication au fur et à mesure, **un onglet vide est le cas normal**.
+« Aucun document pour ce chapitre » se lisait comme un défaut — chapitre cassé,
+ou abandonné. `ChapterEmptyState` dit désormais une **attente** (« ton
+professeur n'a pas encore mis… »), pour les six cas (5 onglets + chapitre).
+
+⚠️ **Contrainte de confidentialité, testée :** le message ne révèle jamais
+COMBIEN de contenus attendent en coulisse. La RLS les cache ; un « 12 questions
+à venir » apprendrait à l'élève qu'un contrôle se prépare. Un test interdit tout
+chiffre dans ces messages.
+
+Deux autres corrections :
+
+- **la carte d'un chapitre sans rien de publié** n'est plus muette (elle
+  n'affichait aucun compteur, donc rien du tout) ;
+- **un onglet sans matière est grisé**, pour que l'élève voie d'un coup d'œil où
+  chercher sans ouvrir les cinq.
+
+Les compteurs de la liste passent par la RLS de l'élève (`chapter_documents(count)`
+et consorts) : ils ne comptent **que le publié**, donc aucune fuite par ce
+chemin non plus.
+
+Détail appris : `lore.learning.exercise` vaut **« Corvée »**, pas « exercice ».
+Toute tournure qui accorde en genre sur ce mot casse au premier changement de
+vocabulaire — les messages l'évitent.
+
 ## Reste ouvert
 
 **La dispersion.** David : « j'ai l'impression que c'est dispersé ». Mesuré, il
