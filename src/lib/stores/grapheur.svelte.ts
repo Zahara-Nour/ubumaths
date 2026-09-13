@@ -870,6 +870,7 @@ class GrapheurStore {
 		this.showGrid = true;
 		this.cursor = null;
 		this.isInteracting = false;
+		this.pinnedLabels = [];
 		this.scheduleSave();
 	}
 

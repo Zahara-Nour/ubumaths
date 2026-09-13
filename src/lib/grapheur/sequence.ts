@@ -49,15 +49,6 @@ export interface SequenceTerm {
 	readonly value: number;
 }
 
-/** A term found under the cursor, with what the caller needs to draw it. */
-export interface NearestTerm {
-	readonly term: SequenceTerm;
-	/** Screen position of the term. */
-	readonly svg: Point;
-	/** Distance in pixels between the cursor and the term. */
-	readonly distance: number;
-}
-
 /** Everything needed to compute the terms of a sequence. */
 export interface SequenceComputeSpec {
 	readonly mode: SequenceMode;
@@ -253,48 +244,6 @@ export function filterVisibleTerms(
 			term.value >= viewport.yMin &&
 			term.value <= viewport.yMax
 	);
-}
-
-/**
- * Find the term closest to the cursor, within a pixel threshold.
- *
- * The distance is measured on screen rather than in maths coordinates: a unit
- * of rank and a unit of value have no reason to be the same number of pixels,
- * and it is pixels the student is pointing with.
- *
- * @param terms - Terms to search, usually the visible ones
- * @param cursorSvg - Cursor position, in SVG coordinates
- * @param mathToSvg - Projection from maths coordinates to SVG ones
- * @param threshold - Distance, in pixels, beyond which a term is out of reach
- *   (exclusive, like every other snap threshold of the grapheur)
- *
- * @example
- * ```typescript
- * const found = findNearestTerm(terms, cursorSvg, transformer.mathToSvg, 20);
- * if (found) console.log(`u_${found.term.n} = ${found.term.value}`);
- * ```
- */
-export function findNearestTerm(
-	terms: readonly SequenceTerm[],
-	cursorSvg: Point,
-	mathToSvg: (x: number, y: number) => Point,
-	threshold: number
-): NearestTerm | null {
-	let nearest: NearestTerm | null = null;
-
-	for (const term of terms) {
-		const svg = mathToSvg(term.n, term.value);
-		const dx = cursorSvg.x - svg.x;
-		const dy = cursorSvg.y - svg.y;
-		const distance = Math.sqrt(dx * dx + dy * dy);
-
-		if (distance >= threshold) continue;
-		if (nearest && nearest.distance <= distance) continue;
-
-		nearest = { term, svg, distance };
-	}
-
-	return nearest;
 }
 
 /**

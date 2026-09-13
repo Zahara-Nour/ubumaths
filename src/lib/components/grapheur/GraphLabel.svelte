@@ -6,6 +6,9 @@
 	 * hovered point, the value of a term. Shared by the ephemeral hover label
 	 * and the ones a click leaves behind, so the two cannot drift apart.
 	 *
+	 * Keeps the historical `tooltip-*` class names: they are what the rest of
+	 * the grapheur and its tests look for.
+	 *
 	 * @component
 	 */
 
@@ -95,11 +98,11 @@
 	const boxX = $derived(position.anchor === 'start' ? position.x : position.x - width);
 </script>
 
-<rect x={boxX} y={position.y - height / 2} {width} {height} rx={4} class="label-bg" />
+<rect x={boxX} y={position.y - height / 2} {width} {height} rx={4} class="tooltip-bg" />
 
 {#if content.latex}
 	<foreignObject x={boxX} y={position.y - height / 2} {width} {height}>
-		<div class="label-math" data-anchor={position.anchor} style="height: {height}px">
+		<div class="tooltip-math" data-anchor={position.anchor} style="height: {height}px">
 			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 			{@html convertLatexToMarkup(content.latex, { defaultMode: 'inline-math' })}
 		</div>
@@ -109,19 +112,19 @@
 		x={position.anchor === 'start' ? position.x + 6 : position.x - 6}
 		y={position.y + 4}
 		text-anchor={position.anchor}
-		class="label-text"
+		class="tooltip-text"
 	>
 		{content.text}
 	</text>
 {/if}
 
 <style>
-	.label-bg {
+	.tooltip-bg {
 		fill: var(--graph-tooltip-bg, #1f2937);
 		opacity: 0.95;
 	}
 
-	.label-math {
+	.tooltip-math {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -132,18 +135,18 @@
 		overflow: hidden;
 	}
 
-	.label-math[data-anchor='end'] {
+	.tooltip-math[data-anchor='end'] {
 		justify-content: flex-end;
 	}
 
-	.label-text {
+	.tooltip-text {
 		font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
 		font-size: 11px;
 		fill: white;
 		user-select: none;
 	}
 
-	:global(.dark) .label-bg {
+	:global(.dark) .tooltip-bg {
 		fill: var(--graph-tooltip-bg-dark, #374151);
 	}
 </style>

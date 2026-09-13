@@ -7,9 +7,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseSequence } from '$lib/grapheur/sequence';
+import { computeSequenceTerms, parseSequence } from '$lib/grapheur/sequence';
 import { exactTermValue, exactTermValues } from '$lib/grapheur/exact';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { evaluate } from '$lib/mathAST/eval/evaluate';
 import type { MathNode } from '$lib/mathAST/types';
 
 // =============================================================================
@@ -192,5 +193,38 @@ describe('exactTermValues', () => {
 		const column = exactColumn('2n', 4, { firstIndex: 2 });
 
 		expect([...column.keys()]).toEqual([2, 3, 4]);
+	});
+});
+
+// =============================================================================
+// Cohérence avec la valeur tracée
+// =============================================================================
+
+describe('exactTermValue — accord avec le point tracé', () => {
+	// Une étiquette exacte est posée sur un point placé, lui, par le calcul
+	// numérique : les deux doivent désigner le même nombre, sans quoi le graphe
+	// dirait une chose et l'étiquette une autre.
+	it.each([
+		['3\\cdot\\left(-\\frac12\\right)^n', 'explicit' as const, null],
+		['\\frac{n}{6}', 'explicit' as const, null],
+		['\\frac{u_n}{2}+3', 'recurrence' as const, 8],
+		['u_n^2-1', 'recurrence' as const, 0.5]
+	])('%s', (latex, mode, firstTerm) => {
+		const parsed = parseSequence(latex, mode, 'u');
+		const spec = {
+			mode,
+			ast: parsed.ast!,
+			firstIndex: 0,
+			firstTerm,
+			bindings: {}
+		};
+
+		for (const term of computeSequenceTerms(spec, 6)) {
+			const exact = exactTermValue(spec, term.n);
+			if (!exact) continue;
+
+			const asNumber = Number(evaluate(exact, { mode: 'decimal' }).value);
+			expect(asNumber).toBeCloseTo(term.value, 10);
+		}
 	});
 });

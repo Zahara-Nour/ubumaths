@@ -73,19 +73,26 @@
 	});
 
 	/**
-	 * Exact value of each rank, computed in one pass.
+	 * Rendered exact value of each rank, computed in one pass.
+	 *
+	 * The MathLive markup is built here rather than in the rows: a parameter
+	 * slider changes `bindings` at every step, and rendering fifty formulas per
+	 * step inside the `{#each}` would be felt.
 	 *
 	 * Empty while the column shows decimals: unrolling a recurrence exactly is
 	 * work nobody asked for then.
 	 */
-	const exactValues = $derived.by(() => {
+	const exactMarkup = $derived.by(() => {
 		if (!showsExact) return new Map<number, string>();
 
 		const spec = toComputeSpec(sequence, bindings);
 		if (!spec) return new Map<number, string>();
 
 		return new Map(
-			[...exactTermValues(spec, lastIndex)].map(([rank, node]) => [rank, toLatex(node)])
+			[...exactTermValues(spec, lastIndex)].map(([rank, node]) => [
+				rank,
+				convertLatexToMarkup(toLatex(node), { defaultMode: 'inline-math' })
+			])
 		);
 	});
 </script>
@@ -123,13 +130,13 @@
 				</thead>
 				<tbody>
 					{#each terms as term (term.n)}
-						{@const exact = exactValues.get(term.n)}
+						{@const exact = exactMarkup.get(term.n)}
 						<tr class="border-t border-border/40">
 							<td class="px-2 py-1 text-muted-foreground">{term.n}</td>
 							<td class="px-2 py-1 text-right {exact ? '' : 'font-mono'}">
 								{#if exact}
 									<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-									{@html convertLatexToMarkup(exact, { defaultMode: 'inline-math' })}
+									{@html exact}
 								{:else}
 									{formatValue(term.value)}
 								{/if}

@@ -33,7 +33,14 @@ export type PinnedLabelTarget =
 	| { readonly kind: 'term'; readonly functionId: string; readonly rank: number }
 	| {
 			readonly kind: 'point';
-			readonly functionId: string;
+			/**
+			 * Every curve the point belongs to — one for a root or an extremum,
+			 * two for an intersection.
+			 *
+			 * All of them, because an intersection dies with either curve, and
+			 * because reordering the functions must not rename it.
+			 */
+			readonly functionIds: readonly string[];
 			readonly pointType: SnappedPointType;
 			readonly x: number;
 	  };
@@ -49,25 +56,35 @@ export type PinnedLabel = PinnedLabelTarget & {
 // =============================================================================
 
 /**
- * Largest gap, in maths units, between two abscissas still taken as the same
- * special point.
+ * Relative gap between two abscissas still taken as the same special point.
  *
  * The solvers re-run whenever the viewport moves and land a hair apart; an
- * equality test would drop the label on the first pan.
+ * equality test would drop the label on the first pan. Relative, because an
+ * absolute gap means nothing on a graph zoomed far in or far out.
  */
-const SAME_POINT_TOLERANCE = 1e-6;
+const SAME_POINT_TOLERANCE = 1e-9;
+
+/** Whether two abscissas name the same point, to the solvers' precision. */
+function isSameAbscissa(a: number, b: number): boolean {
+	return Math.abs(a - b) <= SAME_POINT_TOLERANCE * Math.max(1, Math.abs(a), Math.abs(b));
+}
+
+/** Whether two point targets belong to the same curves, order notwithstanding. */
+function hasSameCurves(a: readonly string[], b: readonly string[]): boolean {
+	return a.length === b.length && a.every((id) => b.includes(id));
+}
 
 /** Whether a label points at the same thing as the given target. */
 export function isSameTarget(label: PinnedLabelTarget, target: PinnedLabelTarget): boolean {
-	if (label.kind !== target.kind || label.functionId !== target.functionId) return false;
-
 	if (label.kind === 'term' && target.kind === 'term') {
-		return label.rank === target.rank;
+		return label.functionId === target.functionId && label.rank === target.rank;
 	}
 
 	if (label.kind === 'point' && target.kind === 'point') {
 		return (
-			label.pointType === target.pointType && Math.abs(label.x - target.x) <= SAME_POINT_TOLERANCE
+			label.pointType === target.pointType &&
+			isSameAbscissa(label.x, target.x) &&
+			hasSameCurves(label.functionIds, target.functionIds)
 		);
 	}
 
@@ -128,5 +145,10 @@ export function cyclePinnedLabels(
  * @param functionId - Plottable being removed
  */
 export function clearLabelsOf(labels: readonly PinnedLabel[], functionId: string): PinnedLabel[] {
-	return labels.filter((label) => label.functionId !== functionId);
+	return labels.filter((label) =>
+		label.kind === 'term'
+			? label.functionId !== functionId
+			: // An intersection dies with either of its two curves.
+				!label.functionIds.includes(functionId)
+	);
 }

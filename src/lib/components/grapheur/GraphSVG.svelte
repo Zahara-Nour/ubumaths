@@ -221,12 +221,15 @@
 	let hoveredTarget = $state<PinnedLabelTarget | null>(null);
 
 	/**
-	 * Where the pointer went down, to tell a click from the end of a pan.
+	 * Where the pointer went down, and what was under it.
 	 *
-	 * The graph pans under the same button: without this, releasing after a
-	 * drag would pin a label the user never asked for.
+	 * The graph pans under the same button: without the origin, releasing after
+	 * a drag would pin a label nobody asked for. The target has to be captured
+	 * here too — pressing marks the graph as interacting, which drops the
+	 * analyses, so by the time the pointer is released nothing is under the
+	 * cursor any more.
 	 */
-	let pressOrigin: { x: number; y: number } | null = null;
+	let press: { x: number; y: number; target: PinnedLabelTarget | null } | null = null;
 
 	/** Pixels of travel still counted as a click rather than a drag. */
 	const CLICK_TOLERANCE = 4;
@@ -237,7 +240,7 @@
 	function handlePointerDown(e: PointerEvent): void {
 		if (e.button !== 0) return; // Left click only
 
-		pressOrigin = { x: e.clientX, y: e.clientY };
+		press = { x: e.clientX, y: e.clientY, target: hoveredTarget };
 
 		const rect = (e.currentTarget as Element).getBoundingClientRect();
 		const svgX = e.clientX - rect.left;
@@ -325,15 +328,17 @@
 	 * Handle pointer up - end dragging
 	 */
 	function handlePointerUp(e: PointerEvent): void {
-		// A press that did not travel is a click: pin the term under it, or cycle
-		// the label already there.
-		if (pressOrigin && hoveredTarget) {
-			const travel = Math.hypot(e.clientX - pressOrigin.x, e.clientY - pressOrigin.y);
+		// A press that did not travel is a click: pin what it landed on, or cycle
+		// the label already there. The target comes from the press, not from now:
+		// pressing marks the graph as interacting, which puts the analyses to
+		// sleep and leaves nothing under the cursor.
+		if (press?.target) {
+			const travel = Math.hypot(e.clientX - press.x, e.clientY - press.y);
 			if (travel <= CLICK_TOLERANCE) {
-				grapheurStore.togglePinnedLabel(hoveredTarget);
+				grapheurStore.togglePinnedLabel(press.target);
 			}
 		}
-		pressOrigin = null;
+		press = null;
 
 		isDragging = false;
 		dragStart = null;

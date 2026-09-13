@@ -35,4 +35,11 @@ describe('formatGraphValue', () => {
 	it('garde le signe', () => {
 		expect(formatGraphValue(-0.375)).toBe('-0.375');
 	});
+
+	// Une valeur non finie ne devrait jamais atteindre l'affichage, mais si elle
+	// y arrive, elle doit rester lisible plutôt que de casser le rendu.
+	it('écrit les valeurs non finies telles quelles', () => {
+		expect(formatGraphValue(Number.POSITIVE_INFINITY)).toBe('Infinity');
+		expect(formatGraphValue(Number.NaN)).toBe('NaN');
+	});
 });

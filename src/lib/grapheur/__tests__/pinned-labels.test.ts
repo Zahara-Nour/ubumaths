@@ -12,7 +12,13 @@ import { clearLabelsOf, cyclePinnedLabels, findPinnedLabel } from '$lib/grapheur
 const u3 = { kind: 'term', functionId: 'u', rank: 3 } as const;
 const u5 = { kind: 'term', functionId: 'u', rank: 5 } as const;
 const v3 = { kind: 'term', functionId: 'v', rank: 3 } as const;
-const root = { kind: 'point', functionId: 'f', pointType: 'root', x: 1.4142135 } as const;
+const root = { kind: 'point', functionIds: ['f'], pointType: 'root', x: 1.4142135 } as const;
+const crossing = {
+	kind: 'point',
+	functionIds: ['f', 'g'],
+	pointType: 'intersection',
+	x: 2
+} as const;
 
 describe('cyclePinnedLabels', () => {
 	it('fige la valeur décimale au premier clic', () => {
@@ -62,6 +68,15 @@ describe('findPinnedLabel', () => {
 });
 
 describe('clearLabelsOf', () => {
+	// Une intersection meurt avec l'une OU l'autre de ses courbes ; la garder
+	// laisserait une étiquette invisible et jamais nettoyée.
+	it('retire une intersection quand la seconde courbe disparaît', () => {
+		const labels = cyclePinnedLabels([], crossing);
+
+		expect(clearLabelsOf(labels, 'g')).toEqual([]);
+		expect(clearLabelsOf(labels, 'f')).toEqual([]);
+	});
+
 	it('retire les étiquettes d’une suite supprimée', () => {
 		const labels = cyclePinnedLabels(cyclePinnedLabels([], u3), v3);
 
@@ -115,6 +130,31 @@ describe('cyclePinnedLabels — point spécial', () => {
 	it('ne confond jamais un terme et un point', () => {
 		const term = { kind: 'term', functionId: 'f', rank: 1 } as const;
 		const labels = cyclePinnedLabels(cyclePinnedLabels([], root), term);
+
+		expect(labels).toHaveLength(2);
+	});
+
+	// L'ordre des courbes vient du store et change à la moindre réorganisation :
+	// l'étiquette d'une intersection ne doit pas y être sensible.
+	it('retrouve une intersection quel que soit l’ordre des courbes', () => {
+		const labels = cyclePinnedLabels([], crossing);
+		const reordered = { ...crossing, functionIds: ['g', 'f'] } as const;
+
+		expect(findPinnedLabel(labels, reordered)).toBeDefined();
+	});
+
+	it('distingue une intersection d’une racine de même abscisse', () => {
+		const rootAt2 = { kind: 'point', functionIds: ['f'], pointType: 'root', x: 2 } as const;
+		const labels = cyclePinnedLabels(cyclePinnedLabels([], crossing), rootAt2);
+
+		expect(labels).toHaveLength(2);
+	});
+
+	// Sur un graphe zoomé loin, deux racines peuvent être très proches sans être
+	// la même : la tolérance suit l'échelle des valeurs.
+	it('distingue deux racines voisines mais distinctes', () => {
+		const near = { ...root, x: root.x + 1e-4 } as const;
+		const labels = cyclePinnedLabels(cyclePinnedLabels([], root), near);
 
 		expect(labels).toHaveLength(2);
 	});

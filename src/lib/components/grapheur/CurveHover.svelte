@@ -29,9 +29,8 @@
 	import { isCobwebEnabled, isExplicitFunction, isSequence } from '$lib/grapheur/types';
 	import {
 		computeSequenceTerms,
-		filterVisibleTerms,
-		findNearestTerm,
-		toComputeSpec
+		toComputeSpec,
+		type SequenceComputeSpec
 	} from '$lib/grapheur/sequence';
 	import { exactTermValue } from '$lib/grapheur/exact';
 	import { formatGraphValue } from '$lib/grapheur/format';
@@ -43,7 +42,6 @@
 	import GraphLabel, { type GraphLabelContent } from './GraphLabel.svelte';
 	import { createEvaluator } from '$lib/grapheur/evaluator';
 	import { analyzeAllFunctions, toAnalysisInputs } from '$lib/grapheur/analysis';
-	import { convertLatexToMarkup } from 'mathlive';
 	import { toLatex } from '$lib/mathAST/latex-generator';
 	import type { MathNode } from '$lib/mathAST/types';
 	import {
@@ -138,11 +136,13 @@
 	const sequenceLastIndex = $derived(Math.ceil(grapheurStore.viewport.xMax));
 
 	/**
-	 * Terms of every sequence, computed but not yet clipped to the viewport.
+	 * Terms of every sequence.
 	 *
-	 * Deliberately kept out of `hoverPoint`: recomputing them at each mouse move
-	 * would iterate the recurrences for nothing. They only change when the
-	 * sequences, the parameters or the highest rank do.
+	 * Deliberately kept out of `hoverPoint`, and depending on the highest rank
+	 * rather than on the viewport itself: recomputing them at each mouse move —
+	 * or at each frame of a pan — would iterate the recurrences for nothing.
+	 * Terms off screen cost nothing: the cursor is never near them, and a
+	 * pinned label checks the viewport before drawing.
 	 */
 	const computedSequenceTerms = $derived.by(() =>
 		grapheurStore.functions.filter(isSequence).flatMap((sequence: SequencePlottable) => {
@@ -155,15 +155,6 @@
 
 			return [{ sequence, spec, terms: computeSequenceTerms(spec, sequenceLastIndex) }];
 		})
-	);
-
-	/** The same terms, clipped to what the plot actually draws. */
-	const sequenceTerms = $derived(
-		computedSequenceTerms.map(({ sequence, spec, terms }) => ({
-			sequence,
-			spec,
-			terms: filterVisibleTerms(terms, grapheurStore.viewport)
-		}))
 	);
 
 	// ==========================================================================
@@ -186,6 +177,13 @@
 		exactX?: MathNode;
 		/** Symbolic ordinate, simplified, when known exactly. */
 		exactY?: MathNode;
+		/**
+		 * How to recompute the sequence, for a term.
+		 *
+		 * The exact value is deliberately not computed here: there is one point
+		 * per rank, and only the one being named needs it.
+		 */
+		sequenceSpec?: SequenceComputeSpec;
 	}
 
 	/**
@@ -199,7 +197,14 @@
 		(
 			| { type: 'sequence'; sequenceName: string }
 			| { type: 'curve' | SnappedPointType; sequenceName?: undefined }
-		);
+		) & {
+			/**
+			 * What a click would pin, carried from the candidate.
+			 *
+			 * Absent on a free curve point, which has no identity to keep.
+			 */
+			target?: PinnedLabelTarget;
+		};
 
 	/** A point that a click can pin: special points and terms, never a free curve point. */
 	type PinnableCandidate = Omit<SnapCandidate, 'distance' | 'svgX' | 'svgY'> & {
@@ -234,7 +239,7 @@
 					color,
 					target: {
 						kind: 'point',
-						functionId: analysis.functionId,
+						functionIds: [analysis.functionId],
 						pointType: 'root',
 						x: root.x
 					},
@@ -252,7 +257,7 @@
 					color,
 					target: {
 						kind: 'point',
-						functionId: analysis.functionId,
+						functionIds: [analysis.functionId],
 						pointType: extremum.type,
 						x: extremum.x
 					},
@@ -272,16 +277,16 @@
 				color: '#6b7280', // Gray for intersections
 				target: {
 					kind: 'point',
-					// An intersection belongs to several curves; the first one names
-					// it, and removing that curve takes the label with it.
-					functionId: intersection.functionIds[0],
+					// Both curves name it: it dies with either of them, and
+					// reordering the functions must not rename it.
+					functionIds: [...intersection.functionIds],
 					pointType: 'intersection',
 					x: intersection.point.x
 				}
 			});
 		}
 
-		for (const { sequence, terms } of sequenceTerms) {
+		for (const { sequence, spec, terms } of computedSequenceTerms) {
 			for (const term of terms) {
 				candidates.push({
 					mathX: term.n,
@@ -291,6 +296,7 @@
 					functionIds: [sequence.id],
 					color: sequence.color,
 					sequenceName: sequence.name,
+					sequenceSpec: spec,
 					target: { kind: 'term', functionId: sequence.id, rank: term.n }
 				});
 			}
@@ -299,17 +305,30 @@
 		return candidates;
 	});
 
-	/** Screen position and distance to the cursor, for one candidate. */
-	function toSnapCandidate(candidate: PinnableCandidate, cursorSvg: Point): SnapCandidate {
+	/**
+	 * Screen position and distance to the cursor, for a candidate within reach.
+	 *
+	 * Returns null beyond the threshold, comparing squared distances so the
+	 * candidates the cursor is nowhere near cost no allocation at all — this
+	 * runs over every term of every sequence on each mouse move.
+	 */
+	function toSnapCandidate(
+		candidate: PinnableCandidate,
+		cursorSvg: Point,
+		threshold: number
+	): SnapCandidate | null {
 		const svg = transformer.mathToSvg(candidate.mathX, candidate.mathY);
 		const dx = cursorSvg.x - svg.x;
 		const dy = cursorSvg.y - svg.y;
+		const squared = dx * dx + dy * dy;
+
+		if (squared >= threshold * threshold) return null;
 
 		return {
 			...candidate,
 			svgX: svg.x,
 			svgY: svg.y,
-			distance: Math.sqrt(dx * dx + dy * dy)
+			distance: Math.sqrt(squared)
 		} as SnapCandidate;
 	}
 
@@ -335,8 +354,8 @@
 			const threshold =
 				candidate.type === 'sequence' ? SEQUENCE_TERM_SNAP_THRESHOLD : SPECIAL_POINT_SNAP_THRESHOLD;
 
-			const snapped = toSnapCandidate(candidate, cursorSvg);
-			if (snapped.distance < threshold) candidates.push(snapped);
+			const snapped = toSnapCandidate(candidate, cursorSvg, threshold);
+			if (snapped) candidates.push(snapped);
 		}
 
 		// =======================================================================
@@ -413,7 +432,7 @@
 	function pinnedKey(pinned: PinnedLabel): string {
 		return pinned.kind === 'term'
 			? `term:${pinned.functionId}:${pinned.rank}`
-			: `point:${pinned.functionId}:${pinned.pointType}:${pinned.x}`;
+			: `point:${[...pinned.functionIds].sort().join('+')}:${pinned.pointType}:${pinned.x}`;
 	}
 
 	/**
@@ -427,6 +446,16 @@
 		grapheurStore.pinnedLabels.flatMap((pinned) => {
 			const candidate = pinnableCandidates.find((c) => isSameTarget(c.target, pinned));
 			if (!candidate) return [];
+
+			// Off screen, the label would be dragged back inside the canvas and
+			// name a point nobody can see.
+			const { viewport } = grapheurStore;
+			const inView =
+				candidate.mathX >= viewport.xMin &&
+				candidate.mathX <= viewport.xMax &&
+				candidate.mathY >= viewport.yMin &&
+				candidate.mathY <= viewport.yMax;
+			if (!inView) return [];
 
 			const svg = transformer.mathToSvg(candidate.mathX, candidate.mathY);
 
@@ -448,17 +477,7 @@
 	 * solvers named, and the terms of a sequence.
 	 */
 	$effect(() => {
-		const pinnable =
-			hoverPoint && hoverPoint.type !== 'curve'
-				? pinnableCandidates.find(
-						(candidate) =>
-							candidate.type === hoverPoint.type &&
-							candidate.mathX === hoverPoint.mathX &&
-							candidate.mathY === hoverPoint.mathY
-					)
-				: undefined;
-
-		onhoveredtargetchange?.(pinnable?.target ?? null);
+		onhoveredtargetchange?.(hoverPoint?.target ?? null);
 	});
 
 	/**
@@ -500,7 +519,10 @@
 	 * Shared by the hovered point and the pinned ones, so both are worded the
 	 * same way.
 	 */
-	type LabelSource = Pick<SnapCandidate, 'type' | 'mathX' | 'mathY' | 'exactX' | 'exactY'> & {
+	type LabelSource = Pick<
+		SnapCandidate,
+		'type' | 'mathX' | 'mathY' | 'exactX' | 'exactY' | 'sequenceSpec'
+	> & {
 		sequenceName?: string;
 	};
 
@@ -524,9 +546,11 @@
 		// A term is read as `u_3 = 0.375`: the rank is what names it, and it is
 		// exact — no need to go through the curve formatting.
 		if (point.type === 'sequence') {
-			// The exact value is what the maths say: -3/8, not -0.375. The decimal
-			// stands in when asked for, or when no exact form is readable.
-			const exact = showsExact ? point.exactY : undefined;
+			// The exact value is what the maths say: -3/8, not -0.375. Computed for
+			// the term being named only, and the decimal stands in when asked for
+			// or when no exact form is readable.
+			const exact =
+				showsExact && point.sequenceSpec ? exactTermValue(point.sequenceSpec, point.mathX) : null;
 			const value = exact ? toLatex(exact) : formatGraphValue(point.mathY);
 			return {
 				text: `${point.sequenceName}${point.mathX} = ${formatGraphValue(point.mathY)}`,
