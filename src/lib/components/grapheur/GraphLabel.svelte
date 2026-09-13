@@ -27,7 +27,8 @@
 		y,
 		content,
 		canvasWidth,
-		canvasHeight
+		canvasHeight,
+		pinned = false
 	}: {
 		/** Point being labelled, in SVG coordinates. */
 		x: number;
@@ -36,6 +37,14 @@
 		/** Canvas size, so the box stays inside it. */
 		canvasWidth: number;
 		canvasHeight: number;
+		/**
+		 * Whether a click put this label here.
+		 *
+		 * Gets a thin outline: a pinned exact value would otherwise look exactly
+		 * like the hover that shows the same thing, and the click would seem to
+		 * have done nothing.
+		 */
+		pinned?: boolean;
 	} = $props();
 
 	// ==========================================================================
@@ -98,7 +107,15 @@
 	const boxX = $derived(position.anchor === 'start' ? position.x : position.x - width);
 </script>
 
-<rect x={boxX} y={position.y - height / 2} {width} {height} rx={4} class="tooltip-bg" />
+<rect
+	x={boxX}
+	y={position.y - height / 2}
+	{width}
+	{height}
+	rx={4}
+	class="tooltip-bg"
+	class:pinned
+/>
 
 {#if content.latex}
 	<foreignObject x={boxX} y={position.y - height / 2} {width} {height}>
@@ -122,6 +139,12 @@
 	.tooltip-bg {
 		fill: var(--graph-tooltip-bg, #1f2937);
 		opacity: 0.95;
+	}
+
+	.tooltip-bg.pinned {
+		stroke: white;
+		stroke-width: 1.5;
+		stroke-opacity: 0.7;
 	}
 
 	.tooltip-math {

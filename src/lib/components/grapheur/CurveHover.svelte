@@ -428,6 +428,19 @@
 		return candidates[0];
 	});
 
+	/**
+	 * Whether the hovered point already carries a label from a click.
+	 *
+	 * The two are drawn at the same place: letting the hover keep its own label
+	 * on top would hide the value the click just chose, and make the click look
+	 * like it did nothing.
+	 */
+	const hoverIsPinned = $derived(
+		hoverPoint?.target
+			? grapheurStore.pinnedLabels.some((pinned) => isSameTarget(pinned, hoverPoint.target!))
+			: false
+	);
+
 	/** A key that survives a re-render: what the label names, not where it is. */
 	function pinnedKey(pinned: PinnedLabel): string {
 		return pinned.kind === 'term'
@@ -620,6 +633,7 @@
 			content={pinned.content}
 			canvasWidth={width}
 			canvasHeight={height}
+			pinned
 		/>
 	{/each}
 </g>
@@ -651,14 +665,20 @@
 			/>
 		{/if}
 
-		<!-- Value label, shared with the labels a click leaves behind -->
-		<GraphLabel
-			x={hoverPoint.svgX}
-			y={hoverPoint.svgY}
-			content={label}
-			canvasWidth={width}
-			canvasHeight={height}
-		/>
+		<!--
+			Value label, shared with the labels a click leaves behind. A point
+			already pinned keeps the value its click chose: two boxes at the same
+			place would just hide one another.
+		-->
+		{#if !hoverIsPinned}
+			<GraphLabel
+				x={hoverPoint.svgX}
+				y={hoverPoint.svgY}
+				content={label}
+				canvasWidth={width}
+				canvasHeight={height}
+			/>
+		{/if}
 	</g>
 {/if}
 
