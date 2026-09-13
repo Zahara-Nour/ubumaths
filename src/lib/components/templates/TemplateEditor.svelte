@@ -93,7 +93,8 @@
 			documents: [],
 			quizQuestions: [],
 			checklistItems: [],
-			exercises: []
+			exercises: [],
+			worksheets: []
 		}
 	);
 

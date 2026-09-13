@@ -140,6 +140,15 @@ const mockContentSnapshot: TemplateContentSnapshot = {
 			exerciseId: mockExerciseId,
 			displayOrder: 0
 		}
+	],
+	// Depuis que les modèles emportent les fiches : rattachées, jamais
+	// distribuées — la policy de l'élève exige `student_has_worksheet_access`
+	// en plus du rattachement.
+	worksheets: [
+		{
+			worksheetId: '550e8400-e29b-41d4-a716-446655440099',
+			displayOrder: 0
+		}
 	]
 };
 
@@ -201,7 +210,8 @@ describe('Content Snapshot Validation Schemas', () => {
 				documents: [],
 				quizQuestions: [],
 				checklistItems: [],
-				exercises: []
+				exercises: [],
+				worksheets: []
 			};
 
 			const result = validation.templateContentSnapshotSchema.safeParse(data);
@@ -225,7 +235,8 @@ describe('Content Snapshot Validation Schemas', () => {
 				}),
 				quizQuestions: [],
 				checklistItems: [],
-				exercises: []
+				exercises: [],
+				worksheets: []
 			};
 
 			const result = validation.templateContentSnapshotSchema.safeParse(data);
@@ -247,7 +258,8 @@ describe('Content Snapshot Validation Schemas', () => {
 				}),
 				quizQuestions: [],
 				checklistItems: [],
-				exercises: []
+				exercises: [],
+				worksheets: []
 			};
 
 			const result = validation.templateContentSnapshotSchema.safeParse(data);
@@ -263,7 +275,8 @@ describe('Content Snapshot Validation Schemas', () => {
 					displayOrder: 0
 				}),
 				checklistItems: [],
-				exercises: []
+				exercises: [],
+				worksheets: []
 			};
 
 			const result = validation.templateContentSnapshotSchema.safeParse(data);
@@ -282,7 +295,8 @@ describe('Content Snapshot Validation Schemas', () => {
 					displayOrder: 0
 				}),
 				checklistItems: [],
-				exercises: []
+				exercises: [],
+				worksheets: []
 			};
 
 			const result = validation.templateContentSnapshotSchema.safeParse(data);
@@ -293,6 +307,7 @@ describe('Content Snapshot Validation Schemas', () => {
 			const data = {
 				documents: [],
 				quizQuestions: [],
+				worksheets: [],
 				checklistItems: Array(51).fill({
 					content: 'Item',
 					description: null,
@@ -886,7 +901,8 @@ describe('Type Conversion Functions', () => {
 				documents: [],
 				quizQuestions: [],
 				checklistItems: [],
-				exercises: []
+				exercises: [],
+				worksheets: []
 			} as Record<string, unknown>;
 
 			const snapshot = parseContentSnapshot(json);
@@ -920,6 +936,7 @@ describe('Type Conversion Functions', () => {
 				quizQuestions: [],
 				checklistItems: [],
 				exercises: [],
+				worksheets: [],
 				stats: {
 					documentsAdded: 0,
 					documentsRemoved: 0,
@@ -954,7 +971,8 @@ describe('Helper Functions', () => {
 				documents: [mockContentSnapshot.documents[0]],
 				quizQuestions: [],
 				checklistItems: [],
-				exercises: []
+				exercises: [],
+				worksheets: []
 			};
 
 			expect(hasContent(snapshot)).toBe(true);
@@ -965,7 +983,8 @@ describe('Helper Functions', () => {
 				documents: [],
 				quizQuestions: [mockContentSnapshot.quizQuestions[0]],
 				checklistItems: [],
-				exercises: []
+				exercises: [],
+				worksheets: []
 			};
 
 			expect(hasContent(snapshot)).toBe(true);
@@ -1006,7 +1025,8 @@ describe('Helper Functions', () => {
 			expect(counts.quizQuestionCount).toBe(1);
 			expect(counts.checklistItemCount).toBe(1);
 			expect(counts.exerciseCount).toBe(1);
-			expect(counts.totalCount).toBe(4);
+			expect(counts.worksheetCount).toBe(1);
+			expect(counts.totalCount).toBe(5);
 		});
 
 		it('should return zero counts for empty snapshot', () => {
@@ -1016,6 +1036,7 @@ describe('Helper Functions', () => {
 			expect(counts.quizQuestionCount).toBe(0);
 			expect(counts.checklistItemCount).toBe(0);
 			expect(counts.exerciseCount).toBe(0);
+			expect(counts.worksheetCount).toBe(0);
 			expect(counts.totalCount).toBe(0);
 		});
 
@@ -1024,11 +1045,12 @@ describe('Helper Functions', () => {
 				documents: Array(5).fill(mockContentSnapshot.documents[0]),
 				quizQuestions: Array(10).fill(mockContentSnapshot.quizQuestions[0]),
 				checklistItems: Array(3).fill(mockContentSnapshot.checklistItems[0]),
-				exercises: Array(2).fill(mockContentSnapshot.exercises[0])
+				exercises: Array(2).fill(mockContentSnapshot.exercises[0]),
+				worksheets: Array(4).fill(mockContentSnapshot.worksheets[0])
 			};
 
 			const counts = getContentCounts(snapshot);
-			expect(counts.totalCount).toBe(20);
+			expect(counts.totalCount).toBe(24);
 		});
 	});
 
@@ -1358,7 +1380,16 @@ describe('computeDiff Function', () => {
 			expect(diff.stats.checklistItemsRemoved).toBe(1);
 		});
 
-		it('should detect modified checklist items (content change)', () => {
+		/**
+		 * Réordonner un objectif n'est PAS le supprimer puis le rajouter.
+		 *
+		 * L'ancienne clé incluait le rang : déplacer un objectif produisait un
+		 * « supprimé » + un « ajouté », donc un écran d'alertes rouge pour une
+		 * mise à jour qui ne changera rien. Et la fusion, elle, reconnaît un
+		 * objectif par son TEXTE — le diff doit dire la même chose qu'elle,
+		 * sinon l'aperçu décrit autre chose que ce qui va se passer.
+		 */
+		it('voit un réordonnancement comme une modification, pas un remplacement', () => {
 			const oldSnapshot: TemplateContentSnapshot = {
 				...EMPTY_CONTENT_SNAPSHOT,
 				checklistItems: [mockContentSnapshot.checklistItems[0]]
@@ -1377,10 +1408,10 @@ describe('computeDiff Function', () => {
 
 			const diff = templates.computeDiff(oldSnapshot, newSnapshot);
 
-			// Different displayOrder creates different key, so it's add + remove
-			expect(diff.checklistItems).toHaveLength(2);
-			expect(diff.stats.checklistItemsAdded).toBe(1);
-			expect(diff.stats.checklistItemsRemoved).toBe(1);
+			expect(diff.checklistItems).toHaveLength(1);
+			expect(diff.checklistItems[0].type).toBe('modified');
+			expect(diff.stats.checklistItemsAdded).toBe(0);
+			expect(diff.stats.checklistItemsRemoved).toBe(0);
 		});
 	});
 
@@ -1466,7 +1497,8 @@ describe('computeDiff Function', () => {
 						exerciseId: '99999999-9999-4999-8999-999999999998',
 						displayOrder: 1
 					}
-				]
+				],
+				worksheets: mockContentSnapshot.worksheets
 			};
 
 			const diff = templates.computeDiff(oldSnapshot, newSnapshot);
@@ -1492,7 +1524,8 @@ describe('computeDiff Function', () => {
 					})),
 				quizQuestions: [],
 				checklistItems: [],
-				exercises: []
+				exercises: [],
+				worksheets: []
 			};
 
 			const newSnapshot: TemplateContentSnapshot = {
@@ -1508,7 +1541,8 @@ describe('computeDiff Function', () => {
 					})),
 				quizQuestions: [],
 				checklistItems: [],
-				exercises: []
+				exercises: [],
+				worksheets: []
 			};
 
 			const diff = templates.computeDiff(oldSnapshot, newSnapshot);
@@ -2202,6 +2236,19 @@ describe('Instantiation Operations', () => {
 				error: null
 			});
 
+			// Mock worksheets fetch — cinquième section depuis que les modèles
+			// emportent les fiches. Sans elle, l'attente ne se résout jamais et le
+			// test expire au lieu d'échouer.
+			supabase._mockChain.order.mockResolvedValueOnce({
+				data: [
+					{
+						worksheet_id: '550e8400-e29b-41d4-a716-446655440099',
+						display_order: 0
+					}
+				],
+				error: null
+			});
+
 			const result = await templates.extractContentSnapshotFromChapter(mockChapterId, supabase);
 
 			expect(result.error).toBeNull();
@@ -2209,6 +2256,7 @@ describe('Instantiation Operations', () => {
 			expect(result.data?.quizQuestions).toHaveLength(1);
 			expect(result.data?.checklistItems).toHaveLength(1);
 			expect(result.data?.exercises).toHaveLength(1);
+			expect(result.data?.worksheets).toHaveLength(1);
 		});
 
 		it('should extract empty snapshot from empty chapter', async () => {

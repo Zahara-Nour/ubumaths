@@ -17,7 +17,7 @@
 	import {
 		ArrowUpCircle,
 		X,
-		AlertTriangle,
+		Info,
 		FileText,
 		HelpCircle,
 		ClipboardList,
@@ -58,22 +58,20 @@
 		}
 	}
 
-	// Check if there are removals (data loss warning)
-	const hasRemovals = $derived(
+	// Du contenu a été RETIRÉ DU MODÈLE — ce qui ne le retire plus du chapitre.
+	//
+	// L'écran annonçait « cette mise à jour supprimera du contenu de votre
+	// chapitre, action irréversible », et passait le bouton en rouge « Forcer la
+	// mise à jour ». Depuis que la mise à jour fusionne au lieu d'écraser, c'est
+	// faux : elle ne supprime rien. Un professeur renonçait devant l'opération la
+	// plus anodine du système.
+	const retireDuModele = $derived(
 		preview
 			? preview.diff.stats.documentsRemoved > 0 ||
 					preview.diff.stats.quizQuestionsRemoved > 0 ||
 					preview.diff.stats.checklistItemsRemoved > 0 ||
-					preview.diff.stats.exercisesRemoved > 0
-			: false
-	);
-
-	// Check if there are checklist changes (progress loss warning)
-	const hasChecklistChanges = $derived(
-		preview
-			? preview.diff.stats.checklistItemsAdded > 0 ||
-					preview.diff.stats.checklistItemsRemoved > 0 ||
-					preview.diff.stats.checklistItemsModified > 0
+					preview.diff.stats.exercisesRemoved > 0 ||
+					preview.diff.stats.worksheetsRemoved > 0
 			: false
 	);
 </script>
@@ -279,40 +277,29 @@
 					</Card.Content>
 				</Card.Root>
 
-				<!-- Warnings -->
-				{#if hasRemovals}
-					<div
-						class="flex items-start gap-3 rounded-lg border border-orange-200 bg-orange-50 p-4 dark:border-orange-800 dark:bg-orange-900/30"
-					>
-						<AlertTriangle class="h-5 w-5 shrink-0 text-orange-600" />
-						<div class="text-sm">
-							<p class="font-semibold text-orange-900 dark:text-orange-100">
-								Attention : Suppressions détectées
-							</p>
-							<p class="mt-1 text-orange-700 dark:text-orange-200">
-								Cette mise à jour supprimera du contenu de votre chapitre. Cette action est
-								irréversible.
-							</p>
-						</div>
+				<!--
+					Ni alerte ni bouton rouge : la mise à jour n'efface rien. Elle ajoute
+					ce qui manque et corrige ce qui a changé ; ce que vous aviez ajouté à
+					la main, et ce que vous aviez publié, restent en place.
+				-->
+				<div
+					class="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/30"
+				>
+					<Info class="h-5 w-5 shrink-0 text-blue-600" />
+					<div class="text-sm">
+						<p class="font-semibold text-blue-900 dark:text-blue-100">
+							Rien ne sera supprimé de votre chapitre
+						</p>
+						<p class="mt-1 text-blue-700 dark:text-blue-200">
+							Ce que vous avez ajouté vous-même reste en place, et ce que vous avez publié le reste
+							aussi. La progression des {lore.entities.student}s n'est pas touchée.
+							{#if retireDuModele}
+								Le contenu retiré du modèle reste dans ce chapitre : à vous de l'enlever si vous le
+								souhaitez.
+							{/if}
+						</p>
 					</div>
-				{/if}
-
-				{#if hasChecklistChanges}
-					<div
-						class="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/30"
-					>
-						<AlertTriangle class="h-5 w-5 shrink-0 text-red-600" />
-						<div class="text-sm">
-							<p class="font-semibold text-red-900 dark:text-red-100">
-								Perte de progression des {lore.entities.student}s
-							</p>
-							<p class="mt-1 text-red-700 dark:text-red-200">
-								Les modifications des objectifs entraîneront la perte de la progression des {lore
-									.entities.student}s sur ces objectifs.
-							</p>
-						</div>
-					</div>
-				{/if}
+				</div>
 			</div>
 		{/if}
 
@@ -321,13 +308,9 @@
 				<X class="mr-2 h-4 w-4" />
 				Annuler
 			</Button>
-			<Button
-				onclick={handleMigrate}
-				disabled={!preview || isSubmitting}
-				variant={hasRemovals ? 'destructive' : 'default'}
-			>
+			<Button onclick={handleMigrate} disabled={!preview || isSubmitting}>
 				<ArrowUpCircle class="mr-2 h-4 w-4" />
-				{hasRemovals ? 'Forcer la mise à jour' : 'Mettre à jour'}
+				Mettre à jour
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>

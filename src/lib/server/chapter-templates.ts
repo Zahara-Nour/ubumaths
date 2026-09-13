@@ -725,11 +725,16 @@ export function computeDiff(
 		(a, b) => a.pointsOverride === b.pointsOverride && a.displayOrder === b.displayOrder
 	);
 
-	// Checklist items: keyed by content hash (since they're copied)
+	// Objectifs : reconnus par leur TEXTE seul.
+	//
+	// La clé incluait le rang, si bien qu'un simple réordonnancement produisait
+	// N « supprimés » + N « ajoutés » — un écran d'alertes pour une mise à jour
+	// qui ne changera rien. Et c'est le texte, et lui seul, qui sert de clé à la
+	// fusion : le diff doit dire la même chose qu'elle.
 	const checklistDiffs = diffArray(
 		oldSnapshot.checklistItems,
 		newSnapshot.checklistItems,
-		(item) => `${item.content}-${item.displayOrder}`,
+		(item) => item.content,
 		(a, b) =>
 			a.content === b.content &&
 			a.description === b.description &&
@@ -741,6 +746,15 @@ export function computeDiff(
 		oldSnapshot.exercises,
 		newSnapshot.exercises,
 		(ex) => ex.exerciseId,
+		(a, b) => a.displayOrder === b.displayOrder
+	);
+
+	// Fiches : sans elles, l'aperçu était MUET sur du contenu que la mise à jour
+	// allait pourtant poser dans le chapitre.
+	const worksheetDiffs = diffArray(
+		oldSnapshot.worksheets,
+		newSnapshot.worksheets,
+		(w) => w.worksheetId,
 		(a, b) => a.displayOrder === b.displayOrder
 	);
 
@@ -757,7 +771,10 @@ export function computeDiff(
 		checklistItemsModified: checklistDiffs.filter((d) => d.type === 'modified').length,
 		exercisesAdded: exerciseDiffs.filter((d) => d.type === 'added').length,
 		exercisesRemoved: exerciseDiffs.filter((d) => d.type === 'removed').length,
-		exercisesModified: exerciseDiffs.filter((d) => d.type === 'modified').length
+		exercisesModified: exerciseDiffs.filter((d) => d.type === 'modified').length,
+		worksheetsAdded: worksheetDiffs.filter((d) => d.type === 'added').length,
+		worksheetsRemoved: worksheetDiffs.filter((d) => d.type === 'removed').length,
+		worksheetsModified: worksheetDiffs.filter((d) => d.type === 'modified').length
 	};
 
 	return {
@@ -765,6 +782,7 @@ export function computeDiff(
 		quizQuestions: quizDiffs,
 		checklistItems: checklistDiffs,
 		exercises: exerciseDiffs,
+		worksheets: worksheetDiffs,
 		stats
 	};
 }
@@ -1060,15 +1078,11 @@ export async function migrateChapterToVersion(
 			return { error: new Error(versionError.message) };
 		}
 
-		// Clear existing chapter content (documents, quiz, checklist, exercises)
-		await supabase.from('chapter_documents').delete().eq('chapter_id', chapterId);
-		await supabase.from('chapter_quiz_questions').delete().eq('chapter_id', chapterId);
-		await supabase.from('chapter_checklist_items').delete().eq('chapter_id', chapterId);
-		await supabase.from('chapter_exercises').delete().eq('chapter_id', chapterId);
-
-		// Apply new content
+		// On N'EFFACE PLUS. Voir `mergeContentSnapshotIntoChapter` : supprimer
+		// puis recréer perdait ce que le professeur avait ajouté à la main, et
+		// effaçait `published_at` — les élèves voyaient le chapitre se vider.
 		const snapshot = parseContentSnapshot(versionData.content_snapshot as Record<string, unknown>);
-		const applyResult = await applyContentSnapshotToChapter(chapterId, snapshot, supabase);
+		const applyResult = await mergeContentSnapshotIntoChapter(chapterId, snapshot, supabase);
 
 		if (applyResult.error) {
 			return { error: applyResult.error };
@@ -1143,32 +1157,42 @@ export async function extractContentSnapshotFromChapter(
 		// ⚠️ Ce snapshot est ÉCRIT en base comme version du modèle. Une section
 		// illisible produisait un modèle amputé — silencieusement, et hérité par
 		// toutes les instanciations futures.
-		const [documentsRes, quizQuestionsRes, checklistItemsRes, exercisesRes] = await Promise.all([
-			supabase
-				.from('chapter_documents')
-				.select('*')
-				.eq('chapter_id', chapterId)
-				.order('display_order', { ascending: true }),
-			supabase
-				.from('chapter_quiz_questions')
-				.select('*')
-				.eq('chapter_id', chapterId)
-				.order('display_order', { ascending: true }),
-			supabase
-				.from('chapter_checklist_items')
-				.select('*')
-				.eq('chapter_id', chapterId)
-				.order('display_order', { ascending: true }),
-			supabase
-				.from('chapter_exercises')
-				.select('*')
-				.eq('chapter_id', chapterId)
-				.order('display_order', { ascending: true })
-		]);
+		const [documentsRes, quizQuestionsRes, checklistItemsRes, exercisesRes, worksheetsRes] =
+			await Promise.all([
+				supabase
+					.from('chapter_documents')
+					.select('*')
+					.eq('chapter_id', chapterId)
+					.order('display_order', { ascending: true }),
+				supabase
+					.from('chapter_quiz_questions')
+					.select('*')
+					.eq('chapter_id', chapterId)
+					.order('display_order', { ascending: true }),
+				supabase
+					.from('chapter_checklist_items')
+					.select('*')
+					.eq('chapter_id', chapterId)
+					.order('display_order', { ascending: true }),
+				supabase
+					.from('chapter_exercises')
+					.select('*')
+					.eq('chapter_id', chapterId)
+					.order('display_order', { ascending: true }),
+				supabase
+					.from('chapter_worksheets')
+					.select('*')
+					.eq('chapter_id', chapterId)
+					.order('display_order', { ascending: true })
+			]);
 
-		const sectionEnEchec = [documentsRes, quizQuestionsRes, checklistItemsRes, exercisesRes].find(
-			(r) => r.error
-		);
+		const sectionEnEchec = [
+			documentsRes,
+			quizQuestionsRes,
+			checklistItemsRes,
+			exercisesRes,
+			worksheetsRes
+		].find((r) => r.error);
 		if (sectionEnEchec?.error) {
 			console.error('[extractContentSnapshot] Section illisible :', sectionEnEchec.error);
 			return { data: null, error: new Error(sectionEnEchec.error.message) };
@@ -1178,6 +1202,7 @@ export async function extractContentSnapshotFromChapter(
 		const quizQuestions = quizQuestionsRes.data;
 		const checklistItems = checklistItemsRes.data;
 		const exercises = exercisesRes.data;
+		const worksheets = worksheetsRes.data;
 
 		// Build snapshot
 		const snapshot: TemplateContentSnapshot = {
@@ -1205,6 +1230,13 @@ export async function extractContentSnapshotFromChapter(
 			exercises: (exercises || []).map((ex) => ({
 				exerciseId: ex.exercise_id,
 				displayOrder: ex.display_order
+			})),
+			// `published_at` n'est PAS repris : la publication appartient à la
+			// classe, pas au modèle. Un contenu arrivant par instanciation ou par
+			// mise à jour est donc préparé, jamais donné.
+			worksheets: (worksheets || []).map((w) => ({
+				worksheetId: w.worksheet_id,
+				displayOrder: w.display_order
 			}))
 		};
 
@@ -1213,6 +1245,224 @@ export async function extractContentSnapshotFromChapter(
 		console.error('[extractContentSnapshotFromChapter] Unexpected error:', err);
 		return { data: null, error: err as Error };
 	}
+}
+
+/**
+ * Réconcilie le chapitre avec ce que le modèle apporte : ajoute ce qui manque,
+ * met à jour ce qui a changé, ne supprime JAMAIS rien.
+ *
+ * Remplace l'ancienne mise à jour, qui supprimait les quatre contenus du
+ * chapitre avant de réappliquer le modèle. Trois dégâts, dont le dernier est né
+ * de la publication au fur et à mesure :
+ *
+ * 1. ce que le professeur avait ajouté à la main dans CETTE classe
+ *    disparaissait — le modèle est un point de départ, pas une laisse ;
+ * 2. les quatre suppressions ne lisaient pas leur erreur : l'une pouvait
+ *    échouer sans un mot, et la reconstruction se faisait par-dessus ;
+ * 3. supprimer puis recréer effaçait `published_at` — les élèves voyaient le
+ *    chapitre se vider d'un coup, en plein cours.
+ *
+ * CE QUI SE PROPAGE, ET CE QUI NE SE PROPAGE PAS :
+ *
+ * - le **contenu** d'un élément déjà présent est mis à jour (titre d'un
+ *   document, barème d'une question, description d'un objectif). Sans ça, une
+ *   correction dans le modèle ne redescendrait jamais — et le chapitre serait
+ *   quand même marqué à jour, donc plus aucun bouton pour réessayer ;
+ * - l'**ordre d'affichage** ne se propage pas, et `published_at` non plus. Les
+ *   deux appartiennent à la classe : le professeur y range et y publie à son
+ *   rythme, une mise à jour de modèle n'a pas à défaire ça ;
+ * - un élément **retiré** du modèle reste dans les chapitres déjà créés. C'est
+ *   le revers assumé de « ne plus rien effacer ».
+ *
+ * Chaque type a sa clé de reconnaissance : l'identifiant référencé pour les
+ * exercices, fiches et questions ; le texte pour les objectifs ; l'URL pour les
+ * documents, qui n'ont pas d'identifiant partagé.
+ *
+ * ⚠️ Limite connue : un objectif dont le professeur corrige le TEXTE n'est plus
+ * reconnu, et la mise à jour suivante réinsère la version du modèle — l'élève
+ * voit alors deux objectifs voisins. Rien en base ne l'en empêche
+ * (`chapter_checklist_items` n'a aucune contrainte d'unicité). Fermer ça
+ * suppose de donner une origine traçable aux objectifs issus d'un modèle, donc
+ * une migration : décision en attente.
+ */
+export async function mergeContentSnapshotIntoChapter(
+	chapterId: string,
+	snapshot: TemplateContentSnapshot,
+	supabase: SupabaseClient<Database>
+): Promise<{ error: Error | null }> {
+	// Ce que le chapitre contient DÉJÀ. Une lecture en échec ne doit surtout pas
+	// passer pour « chapitre vide » : la fusion réinsérerait tout, en double.
+	const [documentsRes, quizRes, checklistRes, exercisesRes, worksheetsRes] = await Promise.all([
+		supabase
+			.from('chapter_documents')
+			.select('id, google_drive_url, title, description, mime_type, display_order')
+			.eq('chapter_id', chapterId),
+		supabase
+			.from('chapter_quiz_questions')
+			.select('id, question_template_id, points_override, display_order')
+			.eq('chapter_id', chapterId),
+		supabase
+			.from('chapter_checklist_items')
+			.select('id, content, description, display_order')
+			.eq('chapter_id', chapterId),
+		supabase
+			.from('chapter_exercises')
+			.select('id, exercise_id, display_order')
+			.eq('chapter_id', chapterId),
+		supabase
+			.from('chapter_worksheets')
+			.select('id, worksheet_id, display_order')
+			.eq('chapter_id', chapterId)
+	]);
+
+	const lectureEnEchec = [documentsRes, quizRes, checklistRes, exercisesRes, worksheetsRes].find(
+		(r) => r.error
+	);
+	if (lectureEnEchec?.error) {
+		console.error('[mergeContentSnapshotIntoChapter] Contenu illisible :', lectureEnEchec.error);
+		return { error: new Error(lectureEnEchec.error.message) };
+	}
+
+	/**
+	 * Les nouveautés se rangent APRÈS l'existant.
+	 *
+	 * Réutiliser le rang du modèle produirait des égalités avec les ajouts faits
+	 * à la main (qui prennent `max + 1` dans le chapitre), et les requêtes
+	 * d'affichage trient sur ce seul champ : à égalité, l'ordre devient
+	 * arbitraire et peut changer d'un chargement à l'autre.
+	 */
+	const rangSuivant = (rangs: { display_order: number }[]) =>
+		rangs.reduce((max, r) => Math.max(max, r.display_order), -1) + 1;
+
+	// --- Documents : reconnus par leur URL -----------------------------------
+	const documentsParUrl = new Map((documentsRes.data ?? []).map((d) => [d.google_drive_url, d]));
+	let rang = rangSuivant(documentsRes.data ?? []);
+	for (const doc of snapshot.documents) {
+		const existant = documentsParUrl.get(doc.documentUrl);
+		if (existant) {
+			if (existant.title !== doc.title || existant.description !== doc.description) {
+				const { error } = await supabase
+					.from('chapter_documents')
+					.update({ title: doc.title, description: doc.description, mime_type: doc.mimeType })
+					.eq('id', existant.id);
+				if (error) {
+					console.error('[mergeContentSnapshotIntoChapter] Document non mis à jour :', error);
+					return { error: new Error(error.message) };
+				}
+			}
+			continue;
+		}
+		const { error } = await supabase.from('chapter_documents').insert({
+			chapter_id: chapterId,
+			title: doc.title,
+			description: doc.description,
+			// Les documents d'un modèle sont des références, jamais des fichiers
+			// recopiés — l'idiome retenu à la création des modèles.
+			source_type: 'google_drive',
+			google_drive_url: doc.documentUrl,
+			mime_type: doc.mimeType,
+			display_order: rang++
+		});
+		if (error) {
+			console.error('[mergeContentSnapshotIntoChapter] Document non ajouté :', error);
+			return { error: new Error(error.message) };
+		}
+	}
+
+	// --- Questions de quiz : reconnues par le modèle de question --------------
+	const quizParModele = new Map((quizRes.data ?? []).map((q) => [q.question_template_id, q]));
+	rang = rangSuivant(quizRes.data ?? []);
+	for (const q of snapshot.quizQuestions) {
+		const existant = quizParModele.get(q.questionTemplateId);
+		if (existant) {
+			if (existant.points_override !== q.pointsOverride) {
+				const { error } = await supabase
+					.from('chapter_quiz_questions')
+					.update({ points_override: q.pointsOverride })
+					.eq('id', existant.id);
+				if (error) {
+					console.error('[mergeContentSnapshotIntoChapter] Barème non mis à jour :', error);
+					return { error: new Error(error.message) };
+				}
+			}
+			continue;
+		}
+		const { error } = await supabase.from('chapter_quiz_questions').insert({
+			chapter_id: chapterId,
+			question_template_id: q.questionTemplateId,
+			points_override: q.pointsOverride,
+			display_order: rang++
+		});
+		if (error) {
+			console.error('[mergeContentSnapshotIntoChapter] Question non ajoutée :', error);
+			return { error: new Error(error.message) };
+		}
+	}
+
+	// --- Objectifs : reconnus par leur texte ---------------------------------
+	const objectifsParTexte = new Map((checklistRes.data ?? []).map((c) => [c.content, c]));
+	rang = rangSuivant(checklistRes.data ?? []);
+	for (const item of snapshot.checklistItems) {
+		const existant = objectifsParTexte.get(item.content);
+		if (existant) {
+			if (existant.description !== item.description) {
+				const { error } = await supabase
+					.from('chapter_checklist_items')
+					.update({ description: item.description })
+					.eq('id', existant.id);
+				if (error) {
+					console.error('[mergeContentSnapshotIntoChapter] Objectif non mis à jour :', error);
+					return { error: new Error(error.message) };
+				}
+			}
+			continue;
+		}
+		const { error } = await supabase.from('chapter_checklist_items').insert({
+			chapter_id: chapterId,
+			content: item.content,
+			description: item.description,
+			display_order: rang++
+		});
+		if (error) {
+			console.error('[mergeContentSnapshotIntoChapter] Objectif non ajouté :', error);
+			return { error: new Error(error.message) };
+		}
+	}
+
+	// --- Exercices et fiches : de pures références, rien à mettre à jour ------
+	const exercicesPresents = new Set((exercisesRes.data ?? []).map((e) => e.exercise_id));
+	rang = rangSuivant(exercisesRes.data ?? []);
+	for (const ex of snapshot.exercises) {
+		if (exercicesPresents.has(ex.exerciseId)) continue;
+		const { error } = await supabase.from('chapter_exercises').insert({
+			chapter_id: chapterId,
+			exercise_id: ex.exerciseId,
+			display_order: rang++
+		});
+		if (error) {
+			console.error('[mergeContentSnapshotIntoChapter] Exercice non ajouté :', error);
+			return { error: new Error(error.message) };
+		}
+	}
+
+	const fichesPresentes = new Set((worksheetsRes.data ?? []).map((w) => w.worksheet_id));
+	rang = rangSuivant(worksheetsRes.data ?? []);
+	for (const w of snapshot.worksheets) {
+		if (fichesPresentes.has(w.worksheetId)) continue;
+		// Rattachée, jamais publiée ni distribuée : `published_at` reste NULL et
+		// la policy de l'élève exige en plus `student_has_worksheet_access`.
+		const { error } = await supabase.from('chapter_worksheets').insert({
+			chapter_id: chapterId,
+			worksheet_id: w.worksheetId,
+			display_order: rang++
+		});
+		if (error) {
+			console.error('[mergeContentSnapshotIntoChapter] Fiche non ajoutée :', error);
+			return { error: new Error(error.message) };
+		}
+	}
+
+	return { error: null };
 }
 
 /**
@@ -1328,6 +1578,27 @@ export async function applyContentSnapshotToChapter(
 			if (exerciseError) {
 				console.error('[applyContentSnapshotToChapter] Error inserting exercises:', exerciseError);
 				return { error: new Error(exerciseError.message) };
+			}
+		}
+
+		// Les fiches du modèle : rattachées, JAMAIS distribuées ni publiées. La
+		// policy de l'élève exige `student_has_worksheet_access` en plus du
+		// rattachement, donc instancier un modèle ne donne rien à personne.
+		if (snapshot.worksheets.length > 0) {
+			const { error: worksheetError } = await supabase.from('chapter_worksheets').insert(
+				snapshot.worksheets.map((w) => ({
+					chapter_id: chapterId,
+					worksheet_id: w.worksheetId,
+					display_order: w.displayOrder
+				}))
+			);
+
+			if (worksheetError) {
+				console.error(
+					'[applyContentSnapshotToChapter] Error inserting worksheets:',
+					worksheetError
+				);
+				return { error: new Error(worksheetError.message) };
 			}
 		}
 

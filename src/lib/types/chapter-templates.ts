@@ -68,6 +68,18 @@ export interface TemplateExerciseSnapshot {
 }
 
 /**
+ * Worksheet reference in template snapshot
+ *
+ * Une fiche appartient au professeur et n'est liée à aucune classe : elle se
+ * prête donc à un modèle de niveau. Et la porter ne distribue RIEN — la policy
+ * de l'élève exige `student_has_worksheet_access` en plus du rattachement.
+ */
+export interface TemplateWorksheetSnapshot {
+	worksheetId: string;
+	displayOrder: number;
+}
+
+/**
  * Complete template content snapshot
  */
 export interface TemplateContentSnapshot {
@@ -75,6 +87,7 @@ export interface TemplateContentSnapshot {
 	quizQuestions: TemplateQuizQuestionSnapshot[];
 	checklistItems: TemplateChecklistItemSnapshot[];
 	exercises: TemplateExerciseSnapshot[];
+	worksheets: TemplateWorksheetSnapshot[];
 }
 
 /**
@@ -84,6 +97,7 @@ export const EMPTY_CONTENT_SNAPSHOT: TemplateContentSnapshot = {
 	documents: [],
 	quizQuestions: [],
 	checklistItems: [],
+	worksheets: [],
 	exercises: []
 };
 
@@ -107,6 +121,7 @@ export interface TemplateDiff {
 	documents: DiffEntry<TemplateDocumentSnapshot>[];
 	quizQuestions: DiffEntry<TemplateQuizQuestionSnapshot>[];
 	checklistItems: DiffEntry<TemplateChecklistItemSnapshot>[];
+	worksheets: DiffEntry<TemplateWorksheetSnapshot>[];
 	exercises: DiffEntry<TemplateExerciseSnapshot>[];
 	/** Summary statistics */
 	stats: {
@@ -119,6 +134,9 @@ export interface TemplateDiff {
 		checklistItemsAdded: number;
 		checklistItemsRemoved: number;
 		checklistItemsModified: number;
+		worksheetsAdded: number;
+		worksheetsRemoved: number;
+		worksheetsModified: number;
 		exercisesAdded: number;
 		exercisesRemoved: number;
 		exercisesModified: number;
@@ -306,7 +324,12 @@ export function parseContentSnapshot(json: Record<string, unknown>): TemplateCon
 		checklistItems: Array.isArray(json.checklistItems)
 			? (json.checklistItems as TemplateChecklistItemSnapshot[])
 			: [],
-		exercises: Array.isArray(json.exercises) ? (json.exercises as TemplateExerciseSnapshot[]) : []
+		exercises: Array.isArray(json.exercises) ? (json.exercises as TemplateExerciseSnapshot[]) : [],
+		// Absent des versions écrites avant que les modèles portent les fiches :
+		// un ancien `content_snapshot` reste donc lisible, sans fiche.
+		worksheets: Array.isArray(json.worksheets)
+			? (json.worksheets as TemplateWorksheetSnapshot[])
+			: []
 	};
 }
 
@@ -385,7 +408,8 @@ export function hasContent(snapshot: TemplateContentSnapshot): boolean {
 		snapshot.documents.length > 0 ||
 		snapshot.quizQuestions.length > 0 ||
 		snapshot.checklistItems.length > 0 ||
-		snapshot.exercises.length > 0
+		snapshot.exercises.length > 0 ||
+		snapshot.worksheets.length > 0
 	);
 }
 
@@ -397,6 +421,7 @@ export function getContentCounts(snapshot: TemplateContentSnapshot): {
 	quizQuestionCount: number;
 	checklistItemCount: number;
 	exerciseCount: number;
+	worksheetCount: number;
 	totalCount: number;
 } {
 	return {
@@ -404,11 +429,13 @@ export function getContentCounts(snapshot: TemplateContentSnapshot): {
 		quizQuestionCount: snapshot.quizQuestions.length,
 		checklistItemCount: snapshot.checklistItems.length,
 		exerciseCount: snapshot.exercises.length,
+		worksheetCount: snapshot.worksheets.length,
 		totalCount:
 			snapshot.documents.length +
 			snapshot.quizQuestions.length +
 			snapshot.checklistItems.length +
-			snapshot.exercises.length
+			snapshot.exercises.length +
+			snapshot.worksheets.length
 	};
 }
 
