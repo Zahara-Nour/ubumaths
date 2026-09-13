@@ -503,8 +503,8 @@ class GrapheurStore {
 	}
 
 	/**
-	 * Apply a click on a term: pin its exact value, then its decimal one, then
-	 * remove the label.
+	 * Apply a click on a term: pin its decimal value — the hover already shows
+	 * the exact one — then flip back to exact, then remove the label.
 	 *
 	 * @param target - Sequence and rank that was clicked
 	 */

@@ -1,8 +1,10 @@
 /**
  * Grapheur Pinned Labels — the labels a click leaves on the graph
  *
- * Hovering shows a value and takes it back; clicking keeps it. The gesture is
- * a three-step cycle: exact value, decimal value, gone.
+ * Hovering shows the exact value and takes it back; clicking keeps a label on
+ * the graph. The cycle starts with the decimal value: the exact one is already
+ * under the cursor, so a first click that changed nothing visible would look
+ * like a click that did nothing.
  *
  * A label stores what was clicked, never the value itself: the term is
  * recomputed at render time, so moving a parameter slider updates the label
@@ -26,7 +28,7 @@ export interface PinnedLabelTarget {
 
 /** A label currently kept on the graph. */
 export interface PinnedLabel extends PinnedLabelTarget {
-	/** Exact value first; the next click shows the decimal one. */
+	/** Decimal value first; the next click brings the exact one back. */
 	readonly showsExact: boolean;
 }
 
@@ -53,7 +55,8 @@ export function findPinnedLabel(
 }
 
 /**
- * Apply a click on a term: pin it, flip it to decimal, then remove it.
+ * Apply a click on a term: pin its decimal value, flip back to the exact one,
+ * then remove the label.
  *
  * @param labels - Labels currently on the graph
  * @param target - Sequence and rank that was clicked
@@ -61,8 +64,8 @@ export function findPinnedLabel(
  *
  * @example
  * ```typescript
- * let labels = cyclePinnedLabels([], { functionId: 'u', rank: 3 }); // exact
- * labels = cyclePinnedLabels(labels, { functionId: 'u', rank: 3 }); // decimal
+ * let labels = cyclePinnedLabels([], { functionId: 'u', rank: 3 }); // -0.375
+ * labels = cyclePinnedLabels(labels, { functionId: 'u', rank: 3 }); // -3/8
  * labels = cyclePinnedLabels(labels, { functionId: 'u', rank: 3 }); // gone
  * ```
  */
@@ -73,12 +76,12 @@ export function cyclePinnedLabels(
 	const existing = findPinnedLabel(labels, target);
 
 	if (!existing) {
-		return [...labels, { ...target, showsExact: true }];
+		return [...labels, { ...target, showsExact: false }];
 	}
 
-	if (existing.showsExact) {
+	if (!existing.showsExact) {
 		return labels.map((label) =>
-			isSameTarget(label, target) ? { ...label, showsExact: false } : label
+			isSameTarget(label, target) ? { ...label, showsExact: true } : label
 		);
 	}
 

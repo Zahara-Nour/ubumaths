@@ -8,7 +8,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { parseSequence } from '$lib/grapheur/sequence';
-import { exactTermValue } from '$lib/grapheur/exact';
+import { exactTermValue, exactTermValues } from '$lib/grapheur/exact';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import type { MathNode } from '$lib/mathAST/types';
 
@@ -121,5 +121,76 @@ describe('exactTermValue — récurrence', () => {
 
 	it('renonce au-delà du plafond de rangs', () => {
 		expect(exactOf('u_n+1', 5000, { mode: 'recurrence', firstTerm: 0 })).toBeNull();
+	});
+});
+
+// =============================================================================
+// Colonne entière
+// =============================================================================
+
+describe('exactTermValues', () => {
+	/** Même construction que exactOf, mais pour toute une colonne. */
+	function exactColumn(
+		latex: string,
+		lastIndex: number,
+		options: {
+			mode?: 'explicit' | 'recurrence';
+			firstIndex?: number;
+			firstTerm?: number | null;
+		} = {}
+	): Map<number, string> {
+		const mode = options.mode ?? 'explicit';
+		const parsed = parseSequence(latex, mode, 'u');
+		expect(parsed.error).toBeNull();
+
+		const values = exactTermValues(
+			{
+				mode,
+				ast: parsed.ast!,
+				firstIndex: options.firstIndex ?? 0,
+				firstTerm: options.firstTerm ?? null,
+				bindings: {}
+			},
+			lastIndex
+		);
+
+		return new Map([...values].map(([rank, node]) => [rank, toLatex(node)]));
+	}
+
+	it('rend chaque rang d’une suite explicite', () => {
+		const column = exactColumn('\\frac{n}{6}', 3);
+
+		expect(column.get(0)).toBe('0');
+		expect(column.get(2)).toBe('\\dfrac{1}{3}');
+		expect(column.get(3)).toBe('\\dfrac{1}{2}');
+		expect(column.size).toBe(4);
+	});
+
+	// Une récurrence se déroule une seule fois pour toute la colonne : la
+	// recalculer par ligne coûterait le carré du nombre de lignes.
+	it('déroule la récurrence une seule fois', () => {
+		const column = exactColumn('\\frac{u_n}{2}+3', 3, { mode: 'recurrence', firstTerm: 8 });
+
+		expect([...column.values()]).toEqual(['8', '7', '\\dfrac{13}{2}', '\\dfrac{25}{4}']);
+	});
+
+	it('s’arrête au rang où l’exact devient illisible', () => {
+		const column = exactColumn('u_n^2-1', 40, { mode: 'recurrence', firstTerm: 0.5 });
+
+		// Les premiers rangs tiennent, les suivants non : la colonne s'arrête là
+		// plutôt que de rendre des monstres.
+		expect(column.get(0)).toBe('\\dfrac{1}{2}');
+		expect(column.size).toBeLessThan(20);
+		expect(column.has(40)).toBe(false);
+	});
+
+	it('ne rend rien sans premier terme', () => {
+		expect(exactColumn('u_n+1', 5, { mode: 'recurrence', firstTerm: null }).size).toBe(0);
+	});
+
+	it('commence au premier rang de la suite', () => {
+		const column = exactColumn('2n', 4, { firstIndex: 2 });
+
+		expect([...column.keys()]).toEqual([2, 3, 4]);
 	});
 });

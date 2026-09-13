@@ -10,6 +10,10 @@
 
 	import type { SequencePlottable } from '$lib/grapheur/types';
 	import { computeSequenceTerms, toComputeSpec } from '$lib/grapheur/sequence';
+	import { exactTermValues } from '$lib/grapheur/exact';
+	import { toLatex } from '$lib/mathAST/latex-generator';
+	import { convertLatexToMarkup } from 'mathlive';
+	import { Button } from '$lib/components/ui/button';
 
 	let {
 		sequence,
@@ -26,6 +30,19 @@
 
 	/** Rows listed at once — the panel scrolls rather than growing. */
 	const MAX_ROWS = 50;
+
+	// ==========================================================================
+	// State
+	// ==========================================================================
+
+	/**
+	 * Exact values first, as everywhere else on the graph.
+	 *
+	 * The switch drives the whole column: comparing terms means reading them
+	 * the same way, and flipping them one by one would be a lot of clicks for
+	 * nothing.
+	 */
+	let showsExact = $state(true);
 
 	/** Significant digits used for non-integer terms. */
 	const DISPLAY_PRECISION = 6;
@@ -46,11 +63,30 @@
 	// Derived State
 	// ==========================================================================
 
+	const lastIndex = $derived(sequence.firstIndex + MAX_ROWS - 1);
+
 	const terms = $derived.by(() => {
 		const spec = toComputeSpec(sequence, bindings);
 		if (!spec) return [];
 
-		return computeSequenceTerms(spec, sequence.firstIndex + MAX_ROWS - 1);
+		return computeSequenceTerms(spec, lastIndex);
+	});
+
+	/**
+	 * Exact value of each rank, computed in one pass.
+	 *
+	 * Empty while the column shows decimals: unrolling a recurrence exactly is
+	 * work nobody asked for then.
+	 */
+	const exactValues = $derived.by(() => {
+		if (!showsExact) return new Map<number, string>();
+
+		const spec = toComputeSpec(sequence, bindings);
+		if (!spec) return new Map<number, string>();
+
+		return new Map(
+			[...exactTermValues(spec, lastIndex)].map(([rank, node]) => [rank, toLatex(node)])
+		);
 	});
 </script>
 
@@ -67,15 +103,37 @@
 					<tr>
 						<th scope="col" class="px-2 py-1 text-left font-medium">n</th>
 						<th scope="col" class="px-2 py-1 text-right font-medium">
-							{sequence.name}<sub>n</sub>
+							<span class="flex items-center justify-end gap-1">
+								<span class="font-serif">{sequence.name}<sub>n</sub></span>
+								<Button
+									variant="ghost"
+									size="sm"
+									class="h-6 px-1.5 text-[10px] font-normal"
+									onclick={() => (showsExact = !showsExact)}
+									aria-pressed={showsExact}
+									title={showsExact
+										? 'Afficher les valeurs décimales'
+										: 'Afficher les valeurs exactes'}
+								>
+									{showsExact ? 'exact' : 'décimal'}
+								</Button>
+							</span>
 						</th>
 					</tr>
 				</thead>
 				<tbody>
 					{#each terms as term (term.n)}
+						{@const exact = exactValues.get(term.n)}
 						<tr class="border-t border-border/40">
 							<td class="px-2 py-1 text-muted-foreground">{term.n}</td>
-							<td class="px-2 py-1 text-right font-mono">{formatValue(term.value)}</td>
+							<td class="px-2 py-1 text-right {exact ? '' : 'font-mono'}">
+								{#if exact}
+									<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+									{@html convertLatexToMarkup(exact, { defaultMode: 'inline-math' })}
+								{:else}
+									{formatValue(term.value)}
+								{/if}
+							</td>
 						</tr>
 					{/each}
 				</tbody>
