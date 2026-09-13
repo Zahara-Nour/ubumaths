@@ -19,34 +19,17 @@
 		CardHeader,
 		CardTitle
 	} from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
+	import type { GradeCode } from '$lib/types/grades';
 	import { ArrowLeft } from '@lucide/svelte';
 
 	let { form }: { form: ActionData } = $props();
 
 	let isSubmitting = $state(false);
-	let selectedGrades = $state<string[]>([]);
+	let selectedGrades = $state<GradeCode[]>([]);
 	let title = $state('');
 	let description = $state('');
-
-	const gradeOptions = [
-		{ value: '6', label: '6ème' },
-		{ value: '5', label: '5ème' },
-		{ value: '4', label: '4ème' },
-		{ value: '3', label: '3ème' },
-		{ value: '2', label: '2nde' },
-		{ value: '1', label: '1ère' },
-		{ value: 'T', label: 'Terminale' }
-	];
-
-	function toggleGrade(grade: string) {
-		if (selectedGrades.includes(grade)) {
-			selectedGrades = selectedGrades.filter((g) => g !== grade);
-		} else {
-			selectedGrades = [...selectedGrades, grade];
-		}
-	}
 
 	// Show error toast if form returns error
 	$effect(() => {
@@ -126,17 +109,13 @@
 				<!-- Grades -->
 				<div class="space-y-2">
 					<Label>Niveaux recommandés</Label>
-					<div class="flex flex-wrap gap-2">
-						{#each gradeOptions as grade (grade.value)}
-							<Badge
-								variant={selectedGrades.includes(grade.value) ? 'default' : 'outline'}
-								class="cursor-pointer"
-								onclick={() => toggleGrade(grade.value)}
-							>
-								{grade.label}
-							</Badge>
-						{/each}
-					</div>
+					<!--
+						Les niveaux viennent du référentiel commun, comme partout
+						ailleurs : une liste maison laissait choisir « 1ère » et
+						« Terminale », que le serveur refuse, et cachait le primaire
+						comme les filières (spécialité, STMG, expertes).
+					-->
+					<GradeBadgeSelector bind:value={selectedGrades} />
 					<input type="hidden" name="grades" value={selectedGrades.join(',')} />
 					<p class="text-xs text-muted-foreground">
 						Sélectionnez les niveaux pour lesquels ce template est adapté
