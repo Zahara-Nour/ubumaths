@@ -14,7 +14,9 @@ import {
 	updateChapterTemplate,
 	publishTemplate,
 	archiveTemplate,
+	createTemplateVersion,
 	deleteChapterTemplate,
+	extractContentSnapshotFromChapter,
 	getTemplateVersions,
 	instantiateTemplate
 } from '$lib/server/chapter-templates';
@@ -55,6 +57,19 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		throw error(500, 'Impossible de charger les données');
 	}
 
+	// Chapitres qui suivent ce modèle — le chapitre d'origine en fait partie,
+	// il est rattaché dès la création. Ce sont les seules sources légitimes
+	// d'une mise à jour du modèle.
+	const { data: linkedChapters, error: linkedError } = await locals.supabase
+		.from('chapter_template_instantiations')
+		.select('chapter_id, is_detached, class_chapters(id, title, classes(name))')
+		.eq('template_id', templateId)
+		.eq('is_detached', false);
+
+	if (linkedError) {
+		console.error('Chapitres rattachés illisibles :', linkedError);
+	}
+
 	// Fetch teacher's classes for instantiation
 	const { data: classes, error: classesError } = await locals.supabase
 		.from('classes')
@@ -72,6 +87,18 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		template,
 		versions: versions || [],
 		classes: classes || [],
+		linkedChapters: (linkedChapters ?? []).flatMap((row) => {
+			const chapter = row.class_chapters;
+			if (!chapter) return [];
+
+			return [
+				{
+					id: chapter.id,
+					title: chapter.title,
+					className: chapter.classes?.name ?? null
+				}
+			];
+		}),
 		isOwner
 	};
 };
@@ -195,6 +222,87 @@ export const actions: Actions = {
 		}
 
 		return { success: true, action: 'publish' };
+	},
+
+	/**
+	 * Reprendre le contenu d'un chapitre dans le modèle.
+	 *
+	 * En brouillon, le contenu est remplacé ; sur un modèle publié, il devient
+	 * une nouvelle version, ce qui permet aux chapitres qui en sont issus de se
+	 * mettre à jour à leur tour.
+	 */
+	updateFromChapter: async ({ request, locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+		const { templateId } = params;
+
+		const { data: templateCheck, error: templateCheckError } = await locals.supabase
+			.from('chapter_templates')
+			.select('created_by, status')
+			.eq('id', templateId)
+			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que le refus suivant traite déjà.
+		if (templateCheckError && templateCheckError.code !== 'PGRST116') {
+			console.error('[Update From Chapter] Lecture impossible :', templateCheckError);
+			return fail(500, { error: 'Lecture impossible', action: 'updateFromChapter' });
+		}
+
+		if (!templateCheck || templateCheck.created_by !== user.id) {
+			return fail(403, { error: 'Accès refusé', action: 'updateFromChapter' });
+		}
+
+		if (templateCheck.status === 'archived') {
+			return fail(400, {
+				error: 'Un modèle archivé ne peut plus être modifié',
+				action: 'updateFromChapter'
+			});
+		}
+
+		const formData = await request.formData();
+		const chapterId = formData.get('chapterId') as string | null;
+		const changeSummary = (formData.get('changeSummary') as string | null)?.trim() || null;
+
+		if (!chapterId) {
+			return fail(400, { error: 'Chapitre requis', action: 'updateFromChapter' });
+		}
+
+		const { data: snapshot, error: snapshotError } = await extractContentSnapshotFromChapter(
+			chapterId,
+			locals.supabase
+		);
+
+		if (snapshotError || !snapshot) {
+			console.error('[Update From Chapter] Extraction impossible :', snapshotError);
+			return fail(500, { error: 'Lecture du chapitre impossible', action: 'updateFromChapter' });
+		}
+
+		// Un brouillon se réécrit ; un modèle publié gagne une version, sans quoi
+		// les chapitres qui le suivent ne sauraient pas qu'il a changé.
+		const { error: writeError } =
+			templateCheck.status === 'draft'
+				? await updateChapterTemplate(
+						templateId,
+						{ contentSnapshot: snapshot },
+						user.id,
+						locals.supabase
+					)
+				: await createTemplateVersion(
+						templateId,
+						snapshot,
+						changeSummary,
+						user.id,
+						locals.supabase
+					);
+
+		if (writeError) {
+			console.error('[Update From Chapter] Écriture impossible :', writeError);
+			return fail(500, {
+				error: 'Erreur lors de la mise à jour du modèle',
+				action: 'updateFromChapter'
+			});
+		}
+
+		return { success: true, action: 'updateFromChapter' };
 	},
 
 	/**
