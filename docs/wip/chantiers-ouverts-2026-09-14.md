@@ -200,67 +200,41 @@ inter-écoles ci-dessus.
 
 # 4. Cahier de texte / Mon cours / fiches / quiz
 
-C'est le chantier d'origine de la session, resté en suspens. Deux constats
-mesurés le 2026-09-14 changent sa priorité.
+Ce volet a désormais ses propres documents, tenus à jour et mesurés :
 
-## 4a. « Mon cours » est entièrement vide
+- **[mon-cours-chapitres-progress.md](mon-cours-chapitres-progress.md)** —
+  l'état complet de « Mon cours » : le modèle à deux étages (chapitre par
+  CLASSE, modèle par NIVEAU), les fiches rattachées (livrées), le quiz et son
+  blocage, ce qu'un modèle emporte et ce qu'il n'emporte pas.
+- **[prompts/prompt-mon-cours-quiz.md](prompts/prompt-mon-cours-quiz.md)** — le
+  prompt de reprise pour une nouvelle session.
+- **[cahier-texte-travaux-multiples-progress.md](cahier-texte-travaux-multiples-progress.md)**
+  — ✅ **clos**. Les quatre phases sont livrées, anciennes colonnes supprimées.
 
-```
-class_chapters ......... 0        chapter_exercises ...... 0
-chapter_documents ...... 0        chapter_quiz_questions . 0
-class_journal_entries .. 2
-```
+## Ce qu'il faut retenir ici
 
-Aucun chapitre n'existe. La rubrique est construite mais **jamais utilisée**.
-Toute amélioration technique y serait prématurée tant que David n'y met rien.
+**Tout est construit, rien n'est utilisé** : 0 chapitre, 0 modèle, 0 quiz,
+0 objectif, 0 fiche rattachée. Le cahier de texte, lui, sert (2 séances, 2
+travaux), et le programme est semé (18 thèmes, 453 points) mais sans aucun
+rattachement d'exercice.
 
-## 4b. Les fiches dans « Mon cours » — ✅ LIVRÉ
+**Le quiz est bloqué par un choix produit, pas par un bug.** `ChapterQuiz` est
+câblé en vrai/faux (`answer: boolean`), alors qu'aucun des six types de
+`question_templates` n'est un vrai/faux et qu'une question porte des
+`variations` avec des variables à résoudre par élève. Trois options sont
+décrites dans le document ; **aucune n'est tranchée**.
 
-**Le besoin, formulé par David** : « je mets mes ressources dans Mon cours en
-avance et je distribue au fur et à mesure ».
+**Les fiches rattachées ne suivent pas les modèles de chapitre.** Le
+`content_snapshot` connaît quatre types de contenu, pas `chapter_worksheets`.
+Instancier n'apporte pas les fiches, migrer ne les touche pas. Question ouverte.
 
-`chapter_worksheets` existe (PR #244), et le câblage suit (PR #245) : un onglet
-« Fiches » dans l'éditeur de chapitre côté professeur, et la page de chapitre de
-l'élève qui lit SES fiches via `?chapter_id=`.
-
-**L'invariant à ne pas casser** : rattacher ne distribue PAS. La policy de
-l'élève exige `student_has_worksheet_access` en plus du chapitre visible, donc
-une fiche préparée mais pas encore affectée reste invisible, lien compris. C'est
-dans la policy et non dans l'API, pour que la jonction ne puisse jamais devenir
-un canal de distribution parallèle.
-
-**Point d'attention** : `/dashboard/student/cours/[chapterId]` appelle
-`/api/student/worksheets?class_id=…`. Ce filtre passe par la jonction depuis la
-PR #213 ; la page distingue désormais « aucune fiche » d'une panne de lecture.
-
-## 4c. Le quiz de chapitre n'a jamais rien montré
-
-**Établi en lisant le code** (`src/routes/(protected)/dashboard/student/cours/[chapterId]/+page.server.ts`,
-commentaires aux lignes ~60 et ~205) :
-
-Le code interrogeait `question_templates.question`, `.answer` et
-`.explanation`. **Aucune de ces colonnes n'existe** : un modèle de question
-porte `title`, `description` et surtout `variations`, où vit l'énoncé. La
-requête échouait à chaque affichage, sans erreur visible, et `ChapterQuiz`
-filtre les questions sans modèle — **le quiz n'a donc jamais affiché quoi que
-ce soit**.
-
-La requête morte a été retirée ; l'action de soumission renvoie un 404
-explicite au lieu de calculer un `isCorrect` sur une colonne fantôme.
-
-**Le schéma est déjà prêt** : `chapter_quiz_questions` porte
-`question_template_id`, `display_order` et `points_override`. Le lien vers le
-système de questions **existe**.
-
-**Ce qui bloque est un choix produit, pas une réparation** : comment une
-`variation` d'un modèle de question devient-elle une question vrai/faux ? Tant
-que ce contrat n'est pas tranché, on ne peut pas corriger une réponse.
+**L'invariant à ne jamais casser** : rattacher une fiche ne la distribue pas.
+C'est une condition dans la policy de l'élève, pas dans l'API, et un test la
+garde.
 
 ## 4d. Objectifs
 
 **Explicitement mis de côté par David** (deux fois). Ne pas le relancer.
-
----
 
 # Décisions prises, à ne pas re-litiger
 
