@@ -23,6 +23,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import PublicationToggle from '$lib/components/cours/teacher/PublicationToggle.svelte';
 	import {
 		ChecklistEditor,
 		StudentProgressTable,
@@ -326,6 +327,11 @@
 											{/if}
 										</p>
 									</div>
+									<PublicationToggle
+										contentType="quiz"
+										itemId={question.id}
+										publishedAt={question.publishedAt}
+									/>
 									<form method="POST" action="?/removeQuizQuestion" use:enhance>
 										<input type="hidden" name="quizQuestionId" value={question.id} />
 										<Button type="submit" variant="ghost" size="icon-sm" class="text-destructive">
@@ -382,6 +388,11 @@
 											{details?.title || `${lore.learning.exercise} non trouvée`}
 										</p>
 									</div>
+									<PublicationToggle
+										contentType="exercise"
+										itemId={exercise.id}
+										publishedAt={exercise.publishedAt}
+									/>
 									<form method="POST" action="?/unlinkExercise" use:enhance>
 										<input type="hidden" name="chapterExerciseId" value={exercise.id} />
 										<Button type="submit" variant="ghost" size="icon-sm" class="text-destructive">
@@ -438,6 +449,12 @@
 									<div class="min-w-0 flex-1">
 										<p class="font-medium">{fiche.title ?? 'Fiche non trouvée'}</p>
 									</div>
+									<PublicationToggle
+										contentType="worksheet"
+										itemId={fiche.id}
+										publishedAt={fiche.publishedAt}
+										distributed={data.distributedWorksheetIds.includes(fiche.worksheetId)}
+									/>
 									<form method="POST" action="?/unlinkWorksheet" use:enhance>
 										<input type="hidden" name="chapterWorksheetId" value={fiche.id} />
 										<Button type="submit" variant="ghost" size="icon-sm" class="text-destructive">
@@ -478,6 +495,13 @@
 							{#each data.documents as document (document.id)}
 								<div class="group relative">
 									<DocumentCard {document} />
+									<div class="mt-2">
+										<PublicationToggle
+											contentType="document"
+											itemId={document.id}
+											publishedAt={document.publishedAt}
+										/>
+									</div>
 									<!-- Delete button overlay -->
 									<form
 										method="POST"

@@ -229,7 +229,7 @@ describe('buildQuizInstances — ce qui manque est annoncé', () => {
 	it('remonte une panne de lecture au lieu de rendre un quiz vide', async () => {
 		const { buildQuizInstances } = await import('../chapters-quiz');
 		const supabase = createMockSupabase();
-		mockError(supabase, { message: 'connexion perdue', code: '08006' }, 'then');
+		mockError(supabase, 'connexion perdue', 'then', '08006');
 
 		const { data, error } = await buildQuizInstances(
 			[question(QUIZ_Q1, TEMPLATE_1)],
@@ -321,7 +321,7 @@ describe('submitQuizAnswer — le numéro de tentative', () => {
 			'single'
 		);
 		// 2. comptage des essais : il tombe
-		mockError(supabase, { message: 'connexion perdue', code: '08006' }, 'then');
+		mockError(supabase, 'connexion perdue', 'then', '08006');
 
 		const { data, error } = await submitQuizAnswer(
 			{

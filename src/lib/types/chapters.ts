@@ -171,6 +171,13 @@ export interface ChapterDocument {
 	displayOrder: number;
 	createdAt: string;
 	updatedAt: string;
+	/**
+	 * Mise à disposition des élèves. `null` = préparé, invisible.
+	 *
+	 * Sens DISTINCT de `worksheets.status` (la fiche est terminée) et de
+	 * `chapter_templates.status` (le modèle est diffusable).
+	 */
+	publishedAt: string | null;
 }
 
 /**
@@ -184,7 +191,27 @@ export interface ChapterQuizQuestion {
 	pointsOverride: number | null;
 	displayOrder: number;
 	createdAt: string;
+	/**
+	 * Mise à disposition des élèves. `null` = préparé, invisible.
+	 *
+	 * Sens DISTINCT de `worksheets.status` (la fiche est terminée) et de
+	 * `chapter_templates.status` (le modèle est diffusable).
+	 */
+	publishedAt: string | null;
 }
+
+/**
+ * Les cinq contenus d'un chapitre qui portent une date de mise à disposition.
+ *
+ * Ce type traverse la frontière serveur/client (le composant de publication le
+ * reçoit en prop) : il vit donc ici, d'où un composant peut importer — jamais
+ * dans `$lib/server/**`, que SvelteKit interdit au code client.
+ *
+ * Ce ne sont PAS des noms de tables : la correspondance est tenue côté serveur,
+ * dans une table fermée, pour qu'un formulaire ne puisse jamais désigner la
+ * table à écrire.
+ */
+export type ChapterContentType = 'document' | 'exercise' | 'checklist' | 'quiz' | 'worksheet';
 
 /**
  * Pourquoi une question du quiz n'est pas jouable.
@@ -230,6 +257,13 @@ export interface ChapterChecklistItem {
 	displayOrder: number;
 	createdAt: string;
 	updatedAt: string;
+	/**
+	 * Mise à disposition des élèves. `null` = préparé, invisible.
+	 *
+	 * Sens DISTINCT de `worksheets.status` (la fiche est terminée) et de
+	 * `chapter_templates.status` (le modèle est diffusable).
+	 */
+	publishedAt: string | null;
 }
 
 /**
@@ -254,6 +288,13 @@ export interface ChapterExercise {
 	exerciseId: string;
 	displayOrder: number;
 	createdAt: string;
+	/**
+	 * Mise à disposition des élèves. `null` = préparé, invisible.
+	 *
+	 * Sens DISTINCT de `worksheets.status` (la fiche est terminée) et de
+	 * `chapter_templates.status` (le modèle est diffusable).
+	 */
+	publishedAt: string | null;
 }
 
 /**
@@ -268,6 +309,13 @@ export interface ChapterWorksheet {
 	worksheetId: string;
 	displayOrder: number;
 	createdAt: string;
+	/**
+	 * Mise à disposition des élèves. `null` = préparé, invisible.
+	 *
+	 * Sens DISTINCT de `worksheets.status` (la fiche est terminée) et de
+	 * `chapter_templates.status` (le modèle est diffusable).
+	 */
+	publishedAt: string | null;
 }
 
 /**
@@ -400,7 +448,8 @@ export function dbDocumentToApp(db: DbChapterDocument): ChapterDocument {
 		thumbnailUrl: db.thumbnail_url,
 		displayOrder: db.display_order,
 		createdAt: db.created_at,
-		updatedAt: db.updated_at
+		updatedAt: db.updated_at,
+		publishedAt: db.published_at
 	};
 }
 
@@ -414,7 +463,8 @@ export function dbQuizQuestionToApp(db: DbChapterQuizQuestion): ChapterQuizQuest
 		questionTemplateId: db.question_template_id,
 		pointsOverride: db.points_override,
 		displayOrder: db.display_order,
-		createdAt: db.created_at
+		createdAt: db.created_at,
+		publishedAt: db.published_at
 	};
 }
 
@@ -446,7 +496,8 @@ export function dbChecklistItemToApp(db: DbChapterChecklistItem): ChapterCheckli
 		description: db.description,
 		displayOrder: db.display_order,
 		createdAt: db.created_at,
-		updatedAt: db.updated_at
+		updatedAt: db.updated_at,
+		publishedAt: db.published_at
 	};
 }
 
@@ -474,7 +525,8 @@ export function dbExerciseToApp(db: DbChapterExercise): ChapterExercise {
 		chapterId: db.chapter_id,
 		exerciseId: db.exercise_id,
 		displayOrder: db.display_order,
-		createdAt: db.created_at
+		createdAt: db.created_at,
+		publishedAt: db.published_at
 	};
 }
 

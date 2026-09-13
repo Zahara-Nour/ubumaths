@@ -30,6 +30,8 @@ import {
 	ContentRefusal
 } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { setContentPublication, CHAPTER_CONTENT_TYPES } from '$lib/server/chapters-publication';
+import { z } from 'zod';
 import {
 	checkForTemplateUpdates,
 	migrateChapterToVersion,
@@ -55,6 +57,13 @@ import type { InstantiationWithStatus } from '$lib/types/chapter-templates';
  * supprimée emporte son lien par cascade, mais une panne de lecture, non. Un
  * titre vide se voit ; une ligne manquante passerait inaperçue.
  */
+/** Le type de contenu est borné à la liste fermée du module de publication. */
+const setPublicationSchema = z.object({
+	contentType: z.enum(CHAPTER_CONTENT_TYPES),
+	itemId: uuidSchema,
+	published: z.boolean()
+});
+
 type ChapterWorksheetRow = ChapterWorksheet & {
 	title: string | null;
 	status: string | null;
@@ -141,7 +150,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		thumbnailUrl: d.thumbnail_url,
 		displayOrder: d.display_order,
 		createdAt: d.created_at,
-		updatedAt: d.updated_at
+		updatedAt: d.updated_at,
+		publishedAt: d.published_at
 	}));
 
 	const quizQuestions: ChapterQuizQuestion[] = (quizResult.data || []).map((q) => ({
@@ -150,7 +160,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		questionTemplateId: q.question_template_id,
 		pointsOverride: q.points_override,
 		displayOrder: q.display_order,
-		createdAt: q.created_at
+		createdAt: q.created_at,
+		publishedAt: q.published_at
 	}));
 
 	const checklistItems: ChapterChecklistItem[] = (checklistResult.data || []).map((c) => ({
@@ -160,7 +171,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		description: c.description,
 		displayOrder: c.display_order,
 		createdAt: c.created_at,
-		updatedAt: c.updated_at
+		updatedAt: c.updated_at,
+		publishedAt: c.published_at
 	}));
 
 	const worksheets: ChapterWorksheetRow[] = (worksheetsResult.data || []).map((w) => {
@@ -173,6 +185,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			worksheetId: w.worksheet_id,
 			displayOrder: w.display_order,
 			createdAt: w.created_at,
+			publishedAt: w.published_at,
 			title: fiche?.title ?? null,
 			status: fiche?.status ?? null
 		};
@@ -183,7 +196,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		chapterId: e.chapter_id,
 		exerciseId: e.exercise_id,
 		displayOrder: e.display_order,
-		createdAt: e.created_at
+		createdAt: e.created_at,
+		publishedAt: e.published_at
 	}));
 
 	// Les modèles rattachés au quiz, pour les nommer dans la liste.
@@ -208,6 +222,34 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 		for (const t of templateRows ?? []) {
 			questionTemplates[t.id] = { id: t.id, title: t.title, status: t.status };
+		}
+	}
+
+	// Quelles fiches du chapitre sont RÉELLEMENT distribuées à cette classe ?
+	//
+	// Une fiche cumule deux gardes : publiée dans le chapitre ET distribuée à
+	// l'élève. Sans cette lecture, l'écran afficherait « visible par les élèves »
+	// pour une fiche publiée que personne ne peut ouvrir — le genre d'affirmation
+	// fausse que ce chantier passe son temps à corriger.
+	const distributedWorksheetIds = new Set<string>();
+
+	if (worksheets.length > 0) {
+		const worksheetIds = [...new Set(worksheets.map((w) => w.worksheetId))];
+		const { data: affectations, error: affectationsError } = await locals.supabase
+			.from('worksheet_assignments')
+			.select('worksheet_id, worksheet_assignment_classes!inner(class_id)')
+			.in('worksheet_id', worksheetIds)
+			.eq('status', 'active')
+			.eq('worksheet_assignment_classes.class_id', classId);
+
+		// Enrichissement d'affichage : son absence ne ferme pas l'écran. Mais elle
+		// ne doit pas se lire « non distribuée », donc on en laisse une trace.
+		if (affectationsError) {
+			console.error('Distribution des fiches illisible :', affectationsError);
+		}
+
+		for (const a of affectations ?? []) {
+			distributedWorksheetIds.add(a.worksheet_id);
 		}
 	}
 
@@ -387,6 +429,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		hiddenTemplateCount,
 		availableExercises: availableExercises || [],
 		worksheets,
+		distributedWorksheetIds: [...distributedWorksheetIds],
 		availableWorksheets: availableWorksheets || [],
 		checklistProgress: checklistProgress || [],
 		quizResults: quizResultsData || [],
@@ -529,6 +572,49 @@ export const actions: Actions = {
 	},
 
 	// ============ QUIZ ACTIONS ============
+
+	/**
+	 * Publier ou dépublier un contenu du chapitre.
+	 *
+	 * Une seule action pour les cinq types : le type est validé contre une liste
+	 * fermée, puis traduit en nom de table par `chapters-publication`. Il ne
+	 * traverse jamais la frontière sous forme de nom de table.
+	 */
+	setPublication: async ({ request, locals }) => {
+		await requireRole(locals, 'teacher');
+
+		const formData = await request.formData();
+		const validation = setPublicationSchema.safeParse({
+			contentType: formData.get('contentType'),
+			itemId: formData.get('itemId'),
+			published: formData.get('published') === 'true'
+		});
+
+		if (!validation.success) {
+			return fail(400, {
+				error: validation.error.issues[0].message,
+				action: 'setPublication'
+			});
+		}
+
+		const { error: publicationError } = await setContentPublication(
+			validation.data,
+			locals.supabase
+		);
+
+		if (publicationError) {
+			console.error('[setPublication] Écriture impossible :', publicationError);
+			return fail(500, {
+				error: "Impossible de changer l'état de publication",
+				action: 'setPublication'
+			});
+		}
+
+		return {
+			success: true,
+			action: validation.data.published ? 'publish' : 'unpublish'
+		};
+	},
 
 	addQuizQuestion: async ({ request, locals, params }) => {
 		await requireRole(locals, 'teacher');

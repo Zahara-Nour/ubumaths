@@ -28,6 +28,8 @@
 		Target
 	} from '@lucide/svelte';
 
+	import PublicationToggle from './PublicationToggle.svelte';
+
 	// Props - callbacks are now optional (using form actions instead)
 	interface Props {
 		items: ChapterChecklistItem[];
@@ -176,6 +178,18 @@
 
 						<!-- Actions -->
 						<div class="flex items-center gap-1">
+							{#if editingId !== item.id}
+								<!--
+									L'objectif se publie comme les autres contenus : préparé, il
+									reste invisible à l'élève. Masqué pendant l'édition pour ne pas
+									mêler deux gestes.
+								-->
+								<PublicationToggle
+									contentType="checklist"
+									itemId={item.id}
+									publishedAt={item.publishedAt}
+								/>
+							{/if}
 							{#if editingId === item.id}
 								<!-- Edit actions - form for update -->
 								<form

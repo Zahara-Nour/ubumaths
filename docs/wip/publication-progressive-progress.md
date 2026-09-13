@@ -120,6 +120,37 @@ distribuer, les deux gardes se cumulent.
   NULL et contraint ; `question_templates.type` NOT NULL et `variations` non
   vide.
 
+## Phase 2 — ✅ écrite
+
+`src/lib/server/chapters-publication.ts` — `setContentPublication()`, une seule
+fonction pour les cinq types.
+
+**Le point de sécurité :** le type de contenu vient d'un formulaire. C'est
+exactement la forme qui invite à écrire `supabase.from(type)` — une injection de
+nom de table à un caractère près. La correspondance type → table est donc
+**fermée et côté serveur** ; ce que le client envoie n'est jamais un nom de
+table, seulement une clé qu'on y cherche. Un type inconnu ne produit aucune
+requête (test dédié).
+
+`TABLES` est déclarée `as const satisfies Record<ChapterContentType, string>` :
+le `satisfies` casse le typecheck si un sixième type est ajouté sans sa table,
+le `as const` garde les littéraux dont le client Supabase typé a besoin.
+
+**Publier pose `now()`, jamais une date choisie.** La policy compare
+`published_at <= now()` : une date future ne publierait rien, et le professeur
+croirait avoir publié. Programmer une publication est un autre geste, qui
+n'existe pas encore.
+
+**Côté interface**, un composant unique `PublicationToggle` sur les cinq
+onglets. Pour une fiche, le badge distingue trois états — _préparé_, _publiée
+mais pas encore distribuée_, _visible par les élèves_ — et l'écran charge la
+distribution réelle de la classe pour ne pas l'inventer. Sans ça, il afficherait
+« visible par les élèves » pour une fiche que personne ne peut ouvrir.
+
+⚠️ `ChapterContentType` vit dans `$lib/types/chapters.ts`, **pas** dans le module
+serveur : un composant ne peut rien importer de `$lib/server/**`, fût-ce un
+type, et seul `vite build` l'aurait vu — pas le typecheck.
+
 ## Reste ouvert
 
 **La dispersion.** David : « j'ai l'impression que c'est dispersé ». Mesuré, il
