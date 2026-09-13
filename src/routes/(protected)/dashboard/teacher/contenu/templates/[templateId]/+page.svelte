@@ -31,6 +31,7 @@
 		HelpCircle,
 		CheckSquare,
 		BookOpen,
+		ClipboardList,
 		Upload,
 		Archive,
 		PlayCircle,
@@ -192,7 +193,7 @@
 			{/if}
 
 			<!-- Stats -->
-			<div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+			<div class="grid grid-cols-2 gap-4 md:grid-cols-5">
 				<div class="flex items-center gap-2">
 					<FileText class="h-5 w-5 text-muted-foreground" />
 					<div>
@@ -219,6 +220,17 @@
 					<div>
 						<p class="text-2xl font-bold">{contentCounts.exerciseCount}</p>
 						<p class="text-xs text-muted-foreground">{lore.learning.exercise}s</p>
+					</div>
+				</div>
+				<!--
+					Les fiches font partie du modèle depuis la PR #256 : les compter
+					ici, sans quoi un modèle qui n'emporte qu'elles paraît vide.
+				-->
+				<div class="flex items-center gap-2">
+					<ClipboardList class="h-5 w-5 text-muted-foreground" />
+					<div>
+						<p class="text-2xl font-bold">{contentCounts.worksheetCount}</p>
+						<p class="text-xs text-muted-foreground">Fiches</p>
 					</div>
 				</div>
 			</div>

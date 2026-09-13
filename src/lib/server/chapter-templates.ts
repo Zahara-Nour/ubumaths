@@ -413,7 +413,8 @@ export async function listChapterTemplates(
 				documentCount: counts.documentCount,
 				quizQuestionCount: counts.quizQuestionCount,
 				checklistItemCount: counts.checklistItemCount,
-				exerciseCount: counts.exerciseCount
+				exerciseCount: counts.exerciseCount,
+				worksheetCount: counts.worksheetCount
 			};
 		});
 

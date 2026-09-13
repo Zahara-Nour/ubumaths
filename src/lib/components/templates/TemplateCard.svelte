@@ -41,7 +41,8 @@
 		FileText,
 		ClipboardList,
 		HelpCircle,
-		Dumbbell
+		Dumbbell,
+		FileSpreadsheet
 	} from '@lucide/svelte';
 	import type { ChapterIcon } from '$lib/types/chapters';
 
@@ -167,6 +168,11 @@
 			<div class="flex items-center gap-1.5">
 				<Dumbbell class="h-3.5 w-3.5" />
 				<span>{template.exerciseCount} ex.</span>
+			</div>
+			<!-- Les fiches font partie du modèle : les taire le ferait paraître vide. -->
+			<div class="flex items-center gap-1.5">
+				<FileSpreadsheet class="h-3.5 w-3.5" />
+				<span>{template.worksheetCount} fiche{template.worksheetCount > 1 ? 's' : ''}</span>
 			</div>
 		</div>
 

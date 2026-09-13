@@ -14,7 +14,7 @@
 	 */
 
 	import { enhance } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { navigating } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -22,6 +22,8 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
+	import { Input } from '$lib/components/ui/input';
+	import { Textarea } from '$lib/components/ui/textarea';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import PublicationToggle from '$lib/components/cours/teacher/PublicationToggle.svelte';
 	import {
@@ -44,6 +46,7 @@
 		Users,
 		BookMarked,
 		ClipboardList,
+		Copy,
 		Eye,
 		EyeOff
 	} from '@lucide/svelte';
@@ -63,12 +66,17 @@
 	let showAddQuestionDialog = $state(false);
 	let showLinkExerciseDialog = $state(false);
 	let showLinkWorksheetDialog = $state(false);
+	let showCreateTemplateDialog = $state(false);
 
 	// Form states
 	let selectedQuestionId = $state('');
 	let selectedExerciseId = $state('');
 	let selectedWorksheetId = $state('');
 	let isSubmitting = $state(false);
+
+	/** Titre du futur modèle, pré-rempli avec celui du chapitre. */
+	let templateTitle = $state('');
+	let templateDescription = $state('');
 
 	// Chapter color
 	let colorClasses = $derived(
@@ -82,6 +90,14 @@
 	let exerciseCount = $derived(data.exercises.length);
 	let worksheetCount = $derived(data.worksheets.length);
 	let studentCount = $derived(data.students.length);
+
+	/**
+	 * Un chapitre sans contenu ne fait pas un modèle : le serveur refuse de
+	 * publier un modèle vide, autant ne pas le laisser créer.
+	 */
+	let hasContent = $derived(
+		documentCount + quizCount + checklistCount + exerciseCount + worksheetCount > 0
+	);
 
 	// Available items for selects
 	let questionItems = $derived([
@@ -133,7 +149,8 @@
 				addGoogleDriveDocument: 'Document Google Drive ajoute',
 				deleteDocument: 'Document supprime',
 				migrateToVersion: 'Chapitre mis a jour depuis le template',
-				detachFromTemplate: 'Chapitre detache du template'
+				detachFromTemplate: 'Chapitre detache du template',
+				createTemplate: 'Modèle créé à partir de ce chapitre'
 			};
 			const message = actionMessages[form.action] || 'Operation reussie';
 			toaster.success(message);
@@ -146,6 +163,12 @@
 			if (form.action === 'linkExercise') {
 				showLinkExerciseDialog = false;
 				selectedExerciseId = '';
+			}
+			if (form.action === 'createTemplate' && form.templateId) {
+				showCreateTemplateDialog = false;
+				// Le modèle est né en brouillon : on emmène le professeur dessus,
+				// c'est là qu'il le publie.
+				goto(`/dashboard/teacher/contenu/templates/${form.templateId}`);
 			}
 
 			invalidateAll();
@@ -215,18 +238,41 @@
 						{/if}
 					</div>
 				</div>
-				<Badge
-					variant={data.chapter.isVisible ? 'default' : 'secondary'}
-					class="flex items-center gap-1"
-				>
-					{#if data.chapter.isVisible}
-						<Eye class="h-3 w-3" />
-						Visible
-					{:else}
-						<EyeOff class="h-3 w-3" />
-						Masque
-					{/if}
-				</Badge>
+				<div class="flex shrink-0 items-center gap-2">
+					<!--
+						Faire un modèle de ce chapitre : c'est le seul chemin qui
+						remplit un modèle, le contenu y entre par capture.
+					-->
+					<Button
+						variant="outline"
+						size="sm"
+						disabled={!hasContent}
+						onclick={() => {
+							templateTitle = data.chapter.title;
+							templateDescription = data.chapter.description ?? '';
+							showCreateTemplateDialog = true;
+						}}
+						title={hasContent
+							? 'Créer un modèle réutilisable à partir de ce chapitre'
+							: 'Ajoutez du contenu au chapitre avant d’en faire un modèle'}
+					>
+						<Copy class="mr-2 h-4 w-4" />
+						Faire un modèle
+					</Button>
+
+					<Badge
+						variant={data.chapter.isVisible ? 'default' : 'secondary'}
+						class="flex items-center gap-1"
+					>
+						{#if data.chapter.isVisible}
+							<Eye class="h-3 w-3" />
+							Visible
+						{:else}
+							<EyeOff class="h-3 w-3" />
+							Masque
+						{/if}
+					</Badge>
+				</div>
 			</div>
 		</Card.Header>
 	</Card.Root>
@@ -609,6 +655,61 @@
 </Dialog.Root>
 
 <!-- Link Worksheet Dialog -->
+<Dialog.Root bind:open={showCreateTemplateDialog}>
+	<Dialog.Content class="max-w-lg">
+		<Dialog.Header>
+			<Dialog.Title>Faire un modèle de ce chapitre</Dialog.Title>
+			<Dialog.Description>
+				Le modèle emporte une copie du contenu : objectifs, questions de quiz, exercices, fiches et
+				documents. Il naît en brouillon, et rien n'est distribué aux élèves.
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<form
+			method="POST"
+			action="?/createTemplate"
+			use:enhance={() => {
+				isSubmitting = true;
+				return async ({ update }) => {
+					await update();
+				};
+			}}
+			class="space-y-4"
+		>
+			<div class="space-y-2">
+				<Label for="template-title">Titre du modèle</Label>
+				<Input
+					id="template-title"
+					name="title"
+					bind:value={templateTitle}
+					maxlength={200}
+					required
+				/>
+			</div>
+
+			<div class="space-y-2">
+				<Label for="template-description">Description (facultative)</Label>
+				<Textarea
+					id="template-description"
+					name="description"
+					bind:value={templateDescription}
+					maxlength={2000}
+					rows={3}
+				/>
+			</div>
+
+			<Dialog.Footer>
+				<Button type="button" variant="outline" onclick={() => (showCreateTemplateDialog = false)}>
+					Annuler
+				</Button>
+				<Button type="submit" disabled={isSubmitting || !templateTitle.trim()}>
+					{isSubmitting ? 'Création...' : 'Créer le modèle'}
+				</Button>
+			</Dialog.Footer>
+		</form>
+	</Dialog.Content>
+</Dialog.Root>
+
 <Dialog.Root bind:open={showLinkWorksheetDialog}>
 	<Dialog.Content class="max-w-lg">
 		<Dialog.Header>
