@@ -1249,10 +1249,10 @@ class RDParser {
 	 * (`\frac12`, `\sqrt2`), so this is what the app receives whenever a
 	 * student types a fraction.
 	 *
-	 * @param openMessage - Error reported when nothing can serve as an argument
+	 * @param missingMessage - Error reported when nothing can serve as an argument
 	 * @param closeMessage - Error reported when a braced group is left open
 	 */
-	private parseCommandArgument(openMessage: string, closeMessage: string): MathNode {
+	private parseCommandArgument(missingMessage: string, closeMessage: string): MathNode {
 		if (this.check('LBRACE')) {
 			this.advance();
 			const argument = this.parseExpression();
@@ -1260,28 +1260,36 @@ class RDParser {
 			return argument;
 		}
 
-		// `\frac12` is one half: an unbraced number contributes one digit only,
-		// and the rest of it goes back into the stream.
-		if (this.check('NUMBER') && this.currentToken.value.length > 1) {
-			return this.takeLeadingDigit();
-		}
+		const token = this.currentToken;
 
-		if (this.check('NUMBER') || this.check('LETTER') || this.check('COMMAND')) {
-			return this.parsePrimary();
-		}
+		switch (token.type) {
+			case 'NUMBER':
+				// `\frac12` is one half: an unbraced number gives up its first digit
+				// and the rest goes back into the stream. A number the tokenizer
+				// rewrote (`1{,}5`, `1\,000`) has no character-to-source mapping any
+				// more, so it is taken whole rather than split at a wrong offset.
+				return /^\d\d/.test(token.value) && token.value.length === token.length
+					? this.takeLeadingDigit()
+					: this.parseNumber();
 
-		this.error(
-			openMessage,
-			this.currentToken.position,
-			this.currentToken.length,
-			'UNEXPECTED_TOKEN'
-		);
+			case 'LETTER':
+				// A lone letter is just that letter: `\sqrt f(x)` means
+				// `\sqrt{f}(x)`, so the parentheses stay outside the argument.
+				this.advance();
+				return this.applyColor(MathAST.variable(token.value));
+
+			case 'COMMAND':
+				return this.parseCommand();
+
+			default:
+				this.error(missingMessage, token.position, token.length, 'UNEXPECTED_TOKEN');
+		}
 	}
 
 	/**
-	 * Consume the first character of a multi-character number and push the rest
-	 * back as the current token — TeX reads an unbraced argument one character
-	 * at a time, so `\frac12` is 1/2 and never 12 over something.
+	 * Consume the first digit of a multi-digit number and push the rest back as
+	 * the current token — TeX reads an unbraced argument one character at a
+	 * time, so `\frac12` is 1/2 and never 12 over something.
 	 */
 	private takeLeadingDigit(): MathNode {
 		const token = this.currentToken;
@@ -1300,15 +1308,15 @@ class RDParser {
 	 * Parse \frac{num}{denom}, or its unbraced TeX form \frac12
 	 */
 	private parseFraction(): MathNode {
-		this.advance(); // consume \frac
+		this.advance(); // consume \\frac
 
 		const numerator = this.parseCommandArgument(
-			"Expected '{' for \\frac numerator",
+			'Missing \\frac numerator',
 			"Expected '}' after \\frac numerator"
 		);
 
 		const denominator = this.parseCommandArgument(
-			"Expected '{' for \\frac denominator",
+			'Missing \\frac denominator',
 			"Expected '}' after \\frac denominator"
 		);
 
@@ -1331,7 +1339,7 @@ class RDParser {
 
 		// Parse radicand
 		const radicand = this.parseCommandArgument(
-			"Expected '{' for \\sqrt argument",
+			'Missing \\sqrt argument',
 			"Expected '}' after \\sqrt argument"
 		);
 

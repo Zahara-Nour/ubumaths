@@ -11,9 +11,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parsePratt } from '../parser-pratt';
-import { parseRD } from '../parser-rd';
+import { parsePratt, parsePrattSafe } from '../parser-pratt';
+import { parseRD, parseRDSafe } from '../parser-rd';
 import type { MathNode } from '../../../types';
+import type { ParseResult } from '../../types';
 
 // =============================================================================
 // Helper Functions
@@ -27,16 +28,24 @@ function expectType<T extends MathNode['type']>(
 }
 
 /** The two parsers must agree: every case runs through both. */
-const PARSERS: readonly { name: string; parse: (input: string) => MathNode }[] = [
-	{ name: 'pratt', parse: (input) => parsePratt(input) },
-	{ name: 'rd', parse: (input) => parseRD(input) }
+const PARSERS: readonly {
+	name: string;
+	parse: (input: string) => MathNode;
+	parseSafe: (input: string) => ParseResult;
+}[] = [
+	{
+		name: 'pratt',
+		parse: (input) => parsePratt(input),
+		parseSafe: (input) => parsePrattSafe(input)
+	},
+	{ name: 'rd', parse: (input) => parseRD(input), parseSafe: (input) => parseRDSafe(input) }
 ];
 
 // =============================================================================
 // Tests
 // =============================================================================
 
-describe.each(PARSERS)('$name parser — unbraced arguments', ({ parse }) => {
+describe.each(PARSERS)('$name parser — unbraced arguments', ({ parse, parseSafe }) => {
 	describe('\\frac', () => {
 		it('reads \\frac12 as one half, not twelve over something', () => {
 			const node = parse('\\frac12');
@@ -132,12 +141,78 @@ describe.each(PARSERS)('$name parser — unbraced arguments', ({ parse }) => {
 		});
 	});
 
+	describe('numbers the tokenizer rewrites', () => {
+		// `1{,}5` and `1\,000` reach the parser with a canonicalised value that
+		// is shorter than the source they came from: splitting them would report
+		// errors at offsets pointing into the wrong characters, so they are read
+		// whole instead.
+		it('reads a French decimal comma whole', () => {
+			const node = parse('\\frac1{,}5{2}');
+			expectType(node, 'division');
+			expectType(node.numerator, 'number');
+			expect(node.numerator.value).toBe('1.5');
+		});
+
+		it('reads a decimal point whole', () => {
+			const node = parse('\\frac1.5{2}');
+			expectType(node, 'division');
+			expectType(node.numerator, 'number');
+			expect(node.numerator.value).toBe('1.5');
+		});
+
+		it('never builds a number out of a non-digit', () => {
+			// `.` or `e` as a numerator would be a numeric node holding NaN, which
+			// downstream consumers (checkReducedFractions) turn into a crash.
+			for (const input of ['\\frac1.5{2}', '\\frac1e5{2}']) {
+				const { ast } = parseSafe(input);
+				const numerator = ast && ast.type === 'division' ? ast.numerator : null;
+				if (numerator?.type === 'number') {
+					expect(Number.isNaN(Number(numerator.value))).toBe(false);
+				}
+			}
+		});
+
+		it('points the error at the offending character after a split', () => {
+			// `\frac1+` : the numerator took the 1, so the complaint must land on
+			// the `+` at index 6, not somewhere inside the consumed digits.
+			const { errors } = parseSafe('\\frac1+');
+			expect(errors.length).toBeGreaterThan(0);
+			expect(errors[0].position).toBe(6);
+		});
+	});
+
+	describe('a letter argument stops at the letter', () => {
+		// f, g, h, u… are generic function names by default, and a generic name
+		// swallows the parentheses that follow it. An unbraced argument must not:
+		// `\sqrt f(x)` is `\sqrt{f}(x)`, and both parsers have to agree on it.
+		it('leaves the parentheses outside the argument', () => {
+			const node = parse('\\sqrt f(x)');
+			expectType(node, 'multiplication');
+			expectType(node.left, 'function');
+			expect(node.left.name).toBe('sqrt');
+			expectType(node.left.args[0], 'variable');
+			expect(node.left.args[0].name).toBe('f');
+		});
+
+		it('reads \\frac f2 the same way as \\frac{f}{2}', () => {
+			expect(parse('\\frac f2')).toEqual(parse('\\frac{f}{2}'));
+		});
+	});
+
 	describe('what MathLive actually emits', () => {
 		// The sequence that surfaced the bug in the grapheur: a student typed
 		// 3·(−1/2)^n and MathLive serialised the half as `\frac12`.
 		it('parses 3\\cdot\\left(-\\frac12\\right)^n', () => {
 			const node = parse('3\\cdot\\left(-\\frac12\\right)^n');
 			expectType(node, 'multiplication');
+		});
+
+		// The parser refuses two juxtaposed numbers everywhere (`2 3` and
+		// `\frac{1}{2}2` alike): the unbraced form must inherit that verdict
+		// rather than invent a multiplication of its own.
+		it('treats \\frac122 exactly like \\frac{1}{2}2', () => {
+			expect(() => parse('\\frac122')).toThrow();
+			expect(() => parse('\\frac{1}{2}2')).toThrow();
 		});
 
 		it('parses a fraction nested in a fraction', () => {
