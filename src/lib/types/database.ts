@@ -925,6 +925,7 @@ export type Database = {
           description: string | null
           display_order: number
           id: string
+          published_at: string | null
           updated_at: string
         }
         Insert: {
@@ -934,6 +935,7 @@ export type Database = {
           description?: string | null
           display_order?: number
           id?: string
+          published_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -943,6 +945,7 @@ export type Database = {
           description?: string | null
           display_order?: number
           id?: string
+          published_at?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -967,6 +970,7 @@ export type Database = {
           google_file_id: string | null
           id: string
           mime_type: string | null
+          published_at: string | null
           source_type: string
           storage_path: string | null
           thumbnail_url: string | null
@@ -984,6 +988,7 @@ export type Database = {
           google_file_id?: string | null
           id?: string
           mime_type?: string | null
+          published_at?: string | null
           source_type?: string
           storage_path?: string | null
           thumbnail_url?: string | null
@@ -1001,6 +1006,7 @@ export type Database = {
           google_file_id?: string | null
           id?: string
           mime_type?: string | null
+          published_at?: string | null
           source_type?: string
           storage_path?: string | null
           thumbnail_url?: string | null
@@ -1024,6 +1030,7 @@ export type Database = {
           display_order: number
           exercise_id: string
           id: string
+          published_at: string | null
         }
         Insert: {
           chapter_id: string
@@ -1031,6 +1038,7 @@ export type Database = {
           display_order?: number
           exercise_id: string
           id?: string
+          published_at?: string | null
         }
         Update: {
           chapter_id?: string
@@ -1038,6 +1046,7 @@ export type Database = {
           display_order?: number
           exercise_id?: string
           id?: string
+          published_at?: string | null
         }
         Relationships: [
           {
@@ -1063,6 +1072,7 @@ export type Database = {
           display_order: number
           id: string
           points_override: number | null
+          published_at: string | null
           question_template_id: string
         }
         Insert: {
@@ -1071,6 +1081,7 @@ export type Database = {
           display_order?: number
           id?: string
           points_override?: number | null
+          published_at?: string | null
           question_template_id: string
         }
         Update: {
@@ -1079,6 +1090,7 @@ export type Database = {
           display_order?: number
           id?: string
           points_override?: number | null
+          published_at?: string | null
           question_template_id?: string
         }
         Relationships: [
@@ -1370,6 +1382,7 @@ export type Database = {
           created_at: string
           display_order: number
           id: string
+          published_at: string | null
           worksheet_id: string
         }
         Insert: {
@@ -1377,6 +1390,7 @@ export type Database = {
           created_at?: string
           display_order?: number
           id?: string
+          published_at?: string | null
           worksheet_id: string
         }
         Update: {
@@ -1384,6 +1398,7 @@ export type Database = {
           created_at?: string
           display_order?: number
           id?: string
+          published_at?: string | null
           worksheet_id?: string
         }
         Relationships: [
