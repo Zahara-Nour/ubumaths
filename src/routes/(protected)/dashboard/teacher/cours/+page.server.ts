@@ -34,9 +34,15 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Get teacher's classes
+	//
+	// Les classes désactivées restent en base avec leurs chapitres — elles
+	// reviennent telles quelles si l'admin les réactive — mais elles n'ont rien
+	// à faire dans l'écran où l'on prépare les cours en fours. La fiche d'un
+	// modèle filtre déjà ainsi.
 	const { data: classes, error: classesError } = await locals.supabase
 		.from('classes')
 		.select('id, name, is_active')
+		.eq('is_active', true)
 		.order('name');
 
 	if (classesError) {
@@ -73,7 +79,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	return {
 		classesWithChapters,
-		totalChapters: chapters.length,
+		// Compté sur ce qui est montré : les chapitres des classes désactivées
+		// sont chargés mais jamais listés, et annoncer leur nombre ferait
+		// chercher des chapitres introuvables.
+		totalChapters: classesWithChapters.reduce((total, c) => total + c.chapters.length, 0),
 		classes: classes || []
 	};
 };
