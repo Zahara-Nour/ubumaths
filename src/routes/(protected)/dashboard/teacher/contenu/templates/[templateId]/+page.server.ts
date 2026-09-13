@@ -7,13 +7,14 @@
  */
 
 import type { PageServerLoad, Actions } from './$types';
-import { error, fail } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import {
 	getChapterTemplate,
 	updateChapterTemplate,
 	publishTemplate,
 	archiveTemplate,
+	deleteChapterTemplate,
 	getTemplateVersions,
 	instantiateTemplate
 } from '$lib/server/chapter-templates';
@@ -176,8 +177,11 @@ export const actions: Actions = {
 		);
 		if (!hasContent(snapshot)) {
 			return fail(400, {
+				// Les cinq types que `hasContent` accepte, dans les mots de la
+				// fiche : une fiche seule suffit à publier, et le message le disait
+				// le contraire.
 				error:
-					'Le template doit contenir au moins un élément (document, quiz, checklist ou exercice)',
+					'Un modèle doit contenir au moins un élément : document, question de quiz, tâche, corvée ou fiche',
 				action: 'publish'
 			});
 		}
@@ -191,6 +195,50 @@ export const actions: Actions = {
 		}
 
 		return { success: true, action: 'publish' };
+	},
+
+	/**
+	 * Supprimer définitivement un modèle en brouillon.
+	 *
+	 * Les chapitres qui en seraient issus survivent : leur rattachement passe à
+	 * NULL et leur bandeau affiche « Template supprimé ». Seul l'historique des
+	 * versions part avec le modèle.
+	 */
+	delete: async ({ locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+		const { templateId } = params;
+
+		const { data: templateCheck, error: templateCheckError } = await locals.supabase
+			.from('chapter_templates')
+			.select('created_by, status')
+			.eq('id', templateId)
+			.single();
+
+		// PGRST116 = la ligne n'existe pas, ce que le refus suivant traite déjà.
+		if (templateCheckError && templateCheckError.code !== 'PGRST116') {
+			console.error('[Delete Template] Lecture impossible :', templateCheckError);
+			return fail(500, { error: 'Lecture impossible', action: 'delete' });
+		}
+
+		if (!templateCheck || templateCheck.created_by !== user.id) {
+			return fail(403, { error: 'Accès refusé', action: 'delete' });
+		}
+
+		if (templateCheck.status !== 'draft') {
+			return fail(400, {
+				error: 'Seul un brouillon peut être supprimé : archivez-le pour le retirer de l’usage',
+				action: 'delete'
+			});
+		}
+
+		const { error: deleteError } = await deleteChapterTemplate(templateId, locals.supabase);
+
+		if (deleteError) {
+			console.error('[Delete Template] Suppression impossible :', deleteError);
+			return fail(500, { error: 'Erreur lors de la suppression du modèle', action: 'delete' });
+		}
+
+		throw redirect(303, '/dashboard/teacher/contenu/templates');
 	},
 
 	/**
