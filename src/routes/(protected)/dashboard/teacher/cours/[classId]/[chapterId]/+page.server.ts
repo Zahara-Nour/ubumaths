@@ -38,9 +38,11 @@ import {
 import { z } from 'zod';
 import {
 	checkForTemplateUpdates,
+	createTemplateFromChapter,
 	migrateChapterToVersion,
 	detachChapterFromTemplate
 } from '$lib/server/chapter-templates';
+import { createTemplateFromChapterSchema } from '$lib/server/validation/chapter-templates';
 import {
 	createChecklistItemSchema,
 	updateChecklistItemSchema
@@ -821,6 +823,62 @@ export const actions: Actions = {
 		}
 
 		return { success: true, action: 'linkWorksheet' };
+	},
+
+	/**
+	 * Faire un modèle de ce chapitre.
+	 *
+	 * C'est le seul chemin qui remplit un modèle : le contenu y entre par
+	 * capture d'un chapitre, jamais à la main. Le modèle naît en brouillon,
+	 * avec les cinq types de contenu — fiches comprises.
+	 */
+	createTemplate: async ({ request, locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+		const { chapterId } = params;
+
+		const { data: chapter, error: chapterError } = await locals.supabase
+			.from('class_chapters')
+			.select('id')
+			.eq('id', chapterId)
+			.single();
+
+		// PGRST116 = la ligne n'existe pas ; toute autre panne mérite son propre
+		// message plutôt qu'un « accès refusé » trompeur.
+		if (chapterError && chapterError.code !== 'PGRST116') {
+			console.error('[createTemplate] Lecture impossible :', chapterError);
+			return fail(500, { error: 'Verification impossible', action: 'createTemplate' });
+		}
+
+		if (!chapter) {
+			return fail(403, { error: 'Acces refuse', action: 'createTemplate' });
+		}
+
+		const formData = await request.formData();
+		const validation = createTemplateFromChapterSchema.safeParse({
+			chapterId,
+			title: formData.get('title'),
+			description: (formData.get('description') as string | null) || undefined
+		});
+
+		if (!validation.success) {
+			return fail(400, {
+				error: validation.error.issues[0].message,
+				action: 'createTemplate'
+			});
+		}
+
+		const { data: template, error: createError } = await createTemplateFromChapter(
+			validation.data,
+			user.id,
+			locals.supabase
+		);
+
+		if (createError || !template) {
+			console.error('[createTemplate] Creation impossible :', createError);
+			return fail(500, { error: 'Erreur lors de la creation du modele', action: 'createTemplate' });
+		}
+
+		return { success: true, action: 'createTemplate', templateId: template.id };
 	},
 
 	unlinkWorksheet: async ({ request, locals }) => {

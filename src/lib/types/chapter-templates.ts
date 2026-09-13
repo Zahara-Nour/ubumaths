@@ -231,6 +231,7 @@ export interface TemplateSummary {
 	quizQuestionCount: number;
 	checklistItemCount: number;
 	exerciseCount: number;
+	worksheetCount: number;
 }
 
 /**
