@@ -250,13 +250,61 @@ jour » — au lieu de laisser croire que rien n'est parti.
    la fiche reste publiable (correction ci-dessus) — mais l'élève verrait la même
    fiche deux fois dans « Mon travail ». Fermer ça demande un verrou en base
    (RPC `SECURITY DEFINER`), donc une migration : **à trancher par David**.
-2. **Les élèves archivés reçoivent les distributions ultérieures.**
-   `had_class_access_to_assignment` borne par le bas (`>= joined_at`) mais pas
-   par le haut, faute d'un `left_at` sur `class_members` (77 membres archivés en
-   prod). Préexistant, mais ce chantier transforme la distribution en geste de
-   routine, donc la surface s'élargit. Question d'accès à poser :
-   **« un élève qui a quitté la classe doit-il continuer à voir les fiches
-   distribuées après son départ ? »**
+2. ~~Les élèves archivés reçoivent les distributions ultérieures.~~ **Réglé le
+   2026-09-13** — voir ci-dessous.
+
+## Retirer un élève garde la trace de son passage — ✅ en production
+
+Deux décisions de David, le 2026-09-13, et elles vont dans des sens opposés :
+
+1. « il ne doit plus voir les fiches distribuées après son départ » ;
+2. « je veux garder la trace du passage ».
+
+### Ce qu'on a découvert entre les deux
+
+La première seule était **inerte**. Vérifié : `src/` ne contenait AUCUN
+`.update()` sur `class_members` ni aucune écriture de `status = 'archived'`.
+Retirer un élève faisait un **DELETE** — donc il n'existait aucune « date de
+départ » à comparer.
+
+Pire, ce DELETE défaisait la seconde décision avant même qu'elle soit prise :
+sans ligne d'adhésion, la relecture rétroactive ne rend rien. L'ancien élève
+**gardait ses résultats et perdait les énoncés** — le bulletin sans le classeur.
+
+Constat rassurant au passage : **aucune table ne référence `class_members`**,
+donc retirer un élève n'a jamais supprimé la moindre donnée. C'était une perte
+de visibilité, pas de contenu.
+
+### Ce qui est livré
+
+- `class_members.left_at`, posé par un **trigger** (l'archivage peut venir de
+  n'importe quel chemin — une colonne que chaque appelant doit penser à écrire
+  finit par être fausse) ;
+- la relecture rétroactive bornée : rien après le départ ;
+- `api/admin/remove-from-class` **archive** au lieu de supprimer ;
+- `api/admin/add-to-class` **réactive** un archivé (sinon la contrainte
+  d'unicité `(class_id, student_id)` ferait échouer le ré-ajout, et l'écran
+  dirait « déjà dans cette classe » d'un élève qui n'y est plus) ;
+- une policy UPDATE pour les admins, qui n'avaient qu'INSERT et DELETE.
+
+`left_at is null` = **départ inconnu** → comportement d'avant. C'est la promesse
+qui protège les **77 adhésions archivées** avant la migration ; un test la garde,
+parce qu'un futur `coalesce(left_at, joined_at)` leur retirerait la relecture en
+silence.
+
+### Le garde du trigger
+
+Une date de départ ne se **repousse** pas — sinon un `update ... set left_at =
+'2099-01-01'`, qui ne touche pas `status`, rouvrirait l'accès. D'où le
+déclenchement sur TOUT UPDATE. Avancer la date ou la remettre à NULL reste
+permis : ce sont des corrections légitimes, et elles ne rendent jamais plus que
+le comportement d'avant.
+
+### Non traité, volontairement
+
+Une policy dormante permet à un élève de se retirer lui-même (`students_can_leave`,
+DELETE). **Aucune interface ne l'utilise.** La convertir en UPDATE lui donnerait
+le pouvoir de se **réactiver** seul : décision distincte, à ne pas glisser ici.
 
 ## Reste ouvert
 

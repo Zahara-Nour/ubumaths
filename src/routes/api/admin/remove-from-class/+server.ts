@@ -18,16 +18,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const { userId, classId } = validation.data;
 
-	// Remove from class_members table
-	const { error: deleteError } = await supabase
+	// ARCHIVER, et non supprimer. Décision de David du 2026-09-13 : « je veux
+	// garder la trace du passage ».
+	//
+	// Un DELETE effaçait la ligne, et avec elle la jointure dont dépend la
+	// relecture rétroactive : l'ancien élève perdait les énoncés de TOUT ce
+	// qu'on lui avait donné. Il gardait ses résultats et perdait son classeur.
+	//
+	// Archiver conserve cette lecture pour la période où il était inscrit, et
+	// le trigger `trg_class_members_left_at` horodate son départ — ce qui
+	// l'empêche de recevoir ce qui sera distribué ensuite.
+	const { error: archiveError } = await supabase
 		.from('class_members')
-		.delete()
+		.update({ status: 'archived' })
 		.eq('student_id', userId)
 		.eq('class_id', classId);
 
-	if (deleteError) {
-		console.error('Delete error:', deleteError);
-		return json({ error: deleteError.message }, { status: 400 });
+	if (archiveError) {
+		console.error('Archive error:', archiveError);
+		return json({ error: archiveError.message }, { status: 400 });
 	}
 
 	// Fetch the updated profile with all classes
