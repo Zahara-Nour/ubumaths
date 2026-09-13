@@ -157,20 +157,29 @@ describe('chapter_worksheets — rattacher n’est pas distribuer', () => {
 			expect(error).toBeNull();
 		}
 
+		// `published_at` : depuis la publication au fur et à mesure, être
+		// distribuée ne suffit plus — la fiche doit aussi avoir été mise à
+		// disposition DANS le chapitre. Les deux gardes se cumulent, et c'est ce
+		// que ce test continue de vérifier côté « distribuée ».
 		lienDistribue = await insert('chapter_worksheets', {
 			chapter_id: chapitreVisible,
 			worksheet_id: ficheDistribuee,
-			display_order: 1
+			display_order: 1,
+			published_at: new Date(Date.now() - 3600_000).toISOString()
 		});
+		// Publiée dans le chapitre, mais JAMAIS distribuée : l'invariant historique
+		// de ce fichier. Publier ne remplace pas la distribution.
 		lienPrepare = await insert('chapter_worksheets', {
 			chapter_id: chapitreVisible,
 			worksheet_id: fichePreparee,
-			display_order: 2
+			display_order: 2,
+			published_at: new Date(Date.now() - 3600_000).toISOString()
 		});
 		lienMasque = await insert('chapter_worksheets', {
 			chapter_id: chapitreMasque,
 			worksheet_id: ficheDistribuee,
-			display_order: 1
+			display_order: 1,
+			published_at: new Date(Date.now() - 3600_000).toISOString()
 		});
 	});
 
