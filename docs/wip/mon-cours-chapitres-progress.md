@@ -63,15 +63,15 @@ nouvelle version **efface puis réapplique** `chapter_documents`,
 Ce n'est pas un oubli : la table a été créée après le mécanisme de modèles, et
 la frontière n'a pas été franchie faute d'arbitrage.
 
-**Tranché le 2026-09-13 : on en reparle quand un modèle existera.**
-`chapter_templates` est à 0, la question est théorique tant que David n'a pas
-écrit un modèle et senti ce qui manque. Ne pas relancer d'ici là.
+✅ **FAIT le 2026-09-13** (PR #256). Le `content_snapshot` emporte les fiches,
+et l'instanciation les rattache — **sans rien distribuer** : la policy élève
+exige `student_has_worksheet_access` en plus du chapitre visible.
 
-Pour mémoire, l'étude d'accès : inclure les fiches serait **sûr**, la policy
-élève exige `student_has_worksheet_access` en plus du chapitre visible, donc
-instancier ne distribuerait rien. Le vrai prix est ailleurs : la migration de
-version **efface puis réapplique**, elle effacerait donc les rattachements de
-fiches faits à la main dans la classe.
+Le prix redouté (« la migration efface puis réapplique, donc elle effacerait les
+rattachements faits à la main ») **n'existe plus** : la mise à jour ne supprime
+plus rien. Voir
+[publication-progressive-progress.md](publication-progressive-progress.md),
+phase 5.
 
 ## Les fiches dans un chapitre — ✅ livré
 
@@ -212,6 +212,32 @@ du rôle, la RLS les refuse. Il ne peut donc ni modifier ni effacer un résultat
 seulement en ajouter. L'exposition est identique à celle de
 `worksheet_error_reports`, déjà acceptée, qui n'a elle aussi qu'un plafond
 applicatif.
+
+### Le tirage des versions — tranché le 2026-09-13
+
+Un modèle de question peut porter **plusieurs variations** : deux énoncés
+différents sous le même titre (« un rectangle de 7 sur 4 » / « un jardin de 7 m
+sur 4 m »). Il y a donc DEUX tirages, et je n'avais posé la question que sur le
+premier :
+
+| Tirage               | Décision                          |
+| -------------------- | --------------------------------- |
+| Quelles valeurs ?    | par élève, stable s'il revient    |
+| Quelle **version** ? | **par élève** — David, 2026-09-13 |
+
+Donc deux élèves d'une même classe peuvent recevoir des **énoncés différents**,
+pas seulement des nombres différents. Assumé : ça limite la copie entre voisins.
+
+⚠️ **Corollaire pour l'écriture des questions** : les variations d'un même
+modèle doivent être **équivalentes en difficulté**. Une variation plus dure que
+les autres rend le quiz inégal sans que personne ne le voie.
+
+Sans effet aujourd'hui — mesuré le 2026-09-13 : les 2 modèles en production et
+les 41 questions TinyMath suivies ont **une seule variation** chacun. Le
+comportement ne se manifestera qu'à la première question à plusieurs versions.
+
+À noter : la route d'aperçu accepte un paramètre `variationIndex`, le valide, et
+ne s'en sert pas — il n'existe aujourd'hui aucun moyen d'imposer une variation.
 
 ### Deux choix à connaître
 

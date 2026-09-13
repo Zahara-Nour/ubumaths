@@ -223,15 +223,23 @@ matière tant qu'aucun modèle n'est publié, et les 633 TinyMath sont de niveau
 collège alors que les classes actives sont 1SPE et 2DE. Détail dans le document
 ci-dessus.
 
-**Les fiches rattachées ne suivent pas les modèles de chapitre.** Le
-`content_snapshot` connaît quatre types de contenu, pas `chapter_worksheets`.
-Instancier n'apporte pas les fiches, migrer ne les touche pas. **Tranché le
-2026-09-13 : on en reparle quand un modèle de chapitre existera** (il y en a 0).
-Ne pas relancer d'ici là.
+**Les fiches suivent désormais les modèles de chapitre** (✅ 2026-09-13, PR
+#256). Le `content_snapshot` les emporte, l'instanciation les rattache sans rien
+distribuer, et la mise à jour de version **n'efface plus rien** — donc ce qu'un
+professeur ajoute à la main dans sa classe survit, et ce qu'il a publié reste
+publié.
 
 **L'invariant à ne jamais casser** : rattacher une fiche ne la distribue pas.
 C'est une condition dans la policy de l'élève, pas dans l'API, et un test la
 garde.
+
+⚠️ À ne pas confondre avec la nouveauté du 2026-09-13 : **publier** une fiche
+depuis un chapitre, elle, la distribue (un clic, toute la classe). Rattacher
+reste inerte ; c'est la publication qui donne.
+
+**Publication au fur et à mesure** (✅ 2026-09-13, PR #250 à #256) : chaque
+contenu d'un chapitre porte sa date de mise à disposition. Voir
+[publication-progressive-progress.md](publication-progressive-progress.md).
 
 ## 4d. Objectifs
 

@@ -1,6 +1,7 @@
 # Publication au fur et à mesure des chapitres
 
-> Chantier ouvert le **2026-09-13**. Décisions prises par David ce jour-là, en
+> Chantier **CLOS le 2026-09-13** — les cinq phases sont en production
+> (PR #250, #251, #252, #253, #254, #256, plus #255 pour la sortie de classe). Décisions prises par David ce jour-là, en
 > réponse à une étude : voir la section « Ce qui est tranché ».
 >
 > Contexte amont : [mon-cours-chapitres-progress.md](mon-cours-chapitres-progress.md).
@@ -39,15 +40,15 @@ mesure » suppose de savoir **quand**, et parce que `null` dit sans ambiguïté
 
 ## Les cinq phases
 
-| #   | Contenu                                             | Migration | État              |
-| --- | --------------------------------------------------- | --------- | ----------------- |
-| 1   | `published_at` sur les 5 tables + policies élève    | **oui**   | ✅ écrite, testée |
-| 2   | Côté prof : publier / dépublier chaque élément      | non       | à faire           |
-| 3   | Côté élève : ne voir que le publié, sans écran muet | non       | à faire           |
-| 4   | Publier une fiche = la distribuer                   | non       | à faire           |
-| 5   | Fiches dans le modèle + migration additive          | non       | à faire           |
+| #   | Contenu                                             | Migration | État             |
+| --- | --------------------------------------------------- | --------- | ---------------- |
+| 1   | `published_at` sur les 5 tables + policies élève    | **oui**   | ✅ en production |
+| 2   | Côté prof : publier / dépublier chaque élément      | non       | ✅ en production |
+| 3   | Côté élève : ne voir que le publié, sans écran muet | non       | ✅ en production |
+| 4   | Publier une fiche = la distribuer                   | non       | ✅ en production |
+| 5   | Fiches dans le modèle + mise à jour non destructive | non       | ✅ en production |
 
-## Phase 1 — ✅ écrite
+## Phase 1 — ✅ en production
 
 `supabase/migrations/20260915140000_chapter_content_publication.sql`
 
@@ -120,7 +121,7 @@ distribuer, les deux gardes se cumulent.
   NULL et contraint ; `question_templates.type` NOT NULL et `variations` non
   vide.
 
-## Phase 2 — ✅ écrite
+## Phase 2 — ✅ en production
 
 `src/lib/server/chapters-publication.ts` — `setContentPublication()`, une seule
 fonction pour les cinq types.
@@ -151,7 +152,7 @@ distribution réelle de la classe pour ne pas l'inventer. Sans ça, il affichera
 serveur : un composant ne peut rien importer de `$lib/server/**`, fût-ce un
 type, et seul `vite build` l'aurait vu — pas le typecheck.
 
-## Phase 3 — ✅ écrite
+## Phase 3 — ✅ en production
 
 Rien à filtrer côté code : la RLS le fait déjà. Ce que la phase 3 corrige est
 **ce que l'élève lit** quand elle a filtré.
@@ -181,7 +182,7 @@ Détail appris : `lore.learning.exercise` vaut **« Corvée »**, pas « exercic
 Toute tournure qui accorde en genre sur ce mot casse au premier changement de
 vocabulaire — les messages l'évitent.
 
-## Phase 4 — ✅ écrite
+## Phase 4 — ✅ en production
 
 Publier une fiche depuis un chapitre la **distribue** à la classe de ce
 chapitre : affectation `status = 'active'`, ouverte tout de suite, sans échéance
@@ -306,7 +307,7 @@ Une policy dormante permet à un élève de se retirer lui-même (`students_can_
 DELETE). **Aucune interface ne l'utilise.** La convertir en UPDATE lui donnerait
 le pouvoir de se **réactiver** seul : décision distincte, à ne pas glisser ici.
 
-## Phase 5 — ✅ écrite
+## Phase 5 — ✅ en production
 
 Mettre à jour un chapitre depuis son modèle **n'efface plus rien**, et le modèle
 emporte désormais les **fiches**.

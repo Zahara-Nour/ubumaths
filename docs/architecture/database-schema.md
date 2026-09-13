@@ -802,3 +802,106 @@ SELECT cron.schedule('flag_stale_python_rechecks', '15 * * * *',
   cascade delete ; (d) CHECK enum rejette `skipped` ; (e) le balai logge un run
   avec le bon compte. Contexte utilisateur réel partout (jamais de smoke-test
   `auth.uid()` NULL).
+
+## « Mon cours » — publication au fur et à mesure (2026-09-13)
+
+### Le problème
+
+`class_chapters.is_visible` était le **seul** interrupteur : un chapitre était
+entièrement visible ou entièrement caché. Impossible de le préparer en entier
+puis d'en libérer les parties au rythme du cours.
+
+### `published_at` sur les cinq contenus
+
+Migration `20260915140000_chapter_content_publication.sql`. Colonne
+`published_at timestamptz null` ajoutée à :
+
+`chapter_documents` · `chapter_exercises` · `chapter_checklist_items` ·
+`chapter_quiz_questions` · `chapter_worksheets`
+
+⚠️ **« Publier » a TROIS sens dans ce dépôt**, et les confondre coûte cher :
+
+| Colonne                                  | Sens                                             |
+| ---------------------------------------- | ------------------------------------------------ |
+| `worksheets.status = 'published'`        | la fiche est terminée                            |
+| `chapter_templates.status = 'published'` | le modèle est diffusable                         |
+| `<contenu>.published_at`                 | **mis à disposition des élèves de cette classe** |
+
+D'où un horodatage et non un `status` : « au fur et à mesure » suppose de savoir
+**quand**, et `null` dit sans ambiguïté « préparé, pas encore donné ».
+
+### Les policies élève testent `<= now()`, pas `is not null`
+
+La différence n'est pas théorique. Une colonne nommée « date de mise à
+disposition » appelle un jour un sélecteur de date ; avec `is not null`, un
+professeur programmant « demain 8 h » rendrait le contenu lisible **aussitôt** —
+les questions du contrôle comprises. `published_at <= now()` couvre les deux cas
+(`null <= now()` vaut `null`, donc faux).
+
+### Les fiches cumulent DEUX gardes
+
+`chapter_worksheets` exige `published_at <= now()` **ET**
+`student_has_worksheet_access(worksheet_id)`. Retirer l'un des deux rouvrirait
+le canal de distribution parallèle que cette table a été conçue pour interdire.
+
+Depuis 2026-09-13, **publier une fiche depuis un chapitre la distribue** (crée
+une `worksheet_assignments` active + son lien de classe). Rattacher, lui, ne
+distribue toujours rien.
+
+### Tests
+
+- `tests/integration/chapter-publication-rls.test.ts` — préparé ≠ donné, pour
+  les cinq contenus, plus le cas « date future ne publie rien » ;
+- `tests/integration/chapter-worksheet-publish-distributes.test.ts` — publier
+  distribue vraiment (chemin complet, droits réels), idempotence, et retrait non
+  destructif.
+
+## Sortie d'une classe — `class_members.left_at` (2026-09-13)
+
+Migrations `20260915160000_class_member_left_at.sql` et
+`20260915180000_admins_update_class_members.sql`.
+
+### Le problème
+
+La relecture rétroactive (`had_class_access_to_assignment`) était bornée par le
+bas (`>= joined_at`), par l'année scolaire et par une extinction à douze mois —
+mais **pas par la date de départ**, que rien ne stockait. Un élève archivé en
+décembre continuait de recevoir les fiches distribuées en mars.
+
+### La colonne et son trigger
+
+`class_members.left_at timestamptz null`, posé par
+`trg_class_members_left_at` (BEFORE INSERT OR UPDATE) :
+
+- passage en `archived` → `left_at = now()`, **une seule fois** ;
+- retour en non-archivé → `left_at = null` (sans quoi un élève réintégré
+  resterait borné à son ancien départ) ;
+- une date de départ ne se **repousse** pas — sinon un `update … set left_at =
+'2099-01-01'`, qui ne touche pas `status`, rouvrirait l'accès.
+
+Le trigger, et non l'écriture par les appelants : une colonne que chaque chemin
+doit penser à écrire finit par être fausse là où on l'oublie, et ici « fausse »
+voudrait dire « un ancien élève continue de recevoir ».
+
+⚠️ `left_at is null` = **départ inconnu** → comportement d'avant la migration.
+C'est ce qui protège les 77 adhésions archivées avant 2026-09-13. Un futur
+`coalesce(left_at, joined_at)` leur retirerait la relecture en silence.
+
+### Retirer un élève l'ARCHIVE
+
+`api/admin/remove-from-class` faisait un DELETE. Sans ligne d'adhésion, la
+jointure de la relecture ne rend rien : l'ancien élève perdait les énoncés de
+tout ce qu'on lui avait donné — il gardait ses résultats et perdait son
+classeur. Il archive désormais (d'où la policy UPDATE pour les admins, qui
+n'avaient qu'INSERT et DELETE), et `add-to-class` **réactive** un archivé, sinon
+la contrainte `UNIQUE (class_id, student_id)` ferait échouer le ré-ajout.
+
+Aucune table ne référence `class_members` : retirer un élève n'a jamais supprimé
+de donnée, seulement de la visibilité.
+
+### Test
+
+`tests/integration/archived-member-stops-receiving.test.ts` — le trigger, la
+borne, l'invariant « NULL = comportement d'avant », la non-répétition de la
+date, et le parcours complet retrait → relecture conservée → distributions
+suivantes refusées → réintégration.
