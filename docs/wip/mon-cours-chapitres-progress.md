@@ -4,7 +4,10 @@
 > production** (MCP Supabase read-only, EU), pas déduits du code.
 >
 > Chantier voisin, **clos** : [cahier-texte-travaux-multiples-progress.md](cahier-texte-travaux-multiples-progress.md).
-> Prompt de reprise : [prompts/prompt-mon-cours-quiz.md](prompts/prompt-mon-cours-quiz.md).
+>
+> Le prompt de reprise `prompts/prompt-mon-cours-quiz.md` a été **supprimé** : il
+> demandait de trancher le contrat du quiz, ce qui est fait (option 1, le
+> 2026-09-13). Le laisser aurait fait refaire l'étude.
 
 ## Le fait qui commande tout le reste
 
@@ -58,11 +61,17 @@ nouvelle version **efface puis réapplique** `chapter_documents`,
   — donc aucune perte, mais aucune propagation non plus.
 
 Ce n'est pas un oubli : la table a été créée après le mécanisme de modèles, et
-la frontière n'a pas été franchie faute d'arbitrage. **Question ouverte pour
-David.** Argument pour l'inclure : une fiche appartient au professeur et n'est
-liée à aucune classe (c'est l'affectation qui l'est), elle se prête donc bien à
-un modèle de niveau — contrairement à un document uploadé, que le code copie
-d'ailleurs « as refs, not uploaded files ».
+la frontière n'a pas été franchie faute d'arbitrage.
+
+**Tranché le 2026-09-13 : on en reparle quand un modèle existera.**
+`chapter_templates` est à 0, la question est théorique tant que David n'a pas
+écrit un modèle et senti ce qui manque. Ne pas relancer d'ici là.
+
+Pour mémoire, l'étude d'accès : inclure les fiches serait **sûr**, la policy
+élève exige `student_has_worksheet_access` en plus du chapitre visible, donc
+instancier ne distribuerait rien. Le vrai prix est ailleurs : la migration de
+version **efface puis réapplique**, elle effacerait donc les rattachements de
+fiches faits à la main dans la classe.
 
 ## Les fiches dans un chapitre — ✅ livré
 
@@ -88,82 +97,92 @@ Côté élève, `/dashboard/student/cours/[chapterId]` demande
 de l'élève** : l'intersection « rangée ici » ∩ « distribuée à moi » est donc
 gratuite, la route n'a pas à la calculer.
 
-## Le quiz de chapitre — bloqué, et pas par un bug
+## Le quiz de chapitre — ✅ rebranché (2026-09-13)
 
-### Ce qui a été réparé
+**Tranché par David : option 1** — le quiz réutilise le moteur de questions.
+Les options « rester vrai/faux » et « énoncés propres » sont écartées, ne pas
+les reproposer.
 
-Le code interrogeait `question_templates.question`, `.answer` et `.explanation`.
-**Aucune de ces colonnes n'existe.** La requête échouait à chaque affichage sans
-erreur visible, et `ChapterQuiz` filtre les questions sans modèle : **le quiz
-n'a donc jamais affiché quoi que ce soit**, depuis toujours.
+### Ce qui a été trouvé en plus des colonnes fantômes
 
-La requête morte a été retirée ; l'action `submitQuiz` renvoie un 404 explicite
-au lieu de calculer un `isCorrect` sur une colonne fantôme.
+Trois défauts indépendants coexistaient sur le même chemin, aucun visible au
+typecheck :
 
-### Le vrai blocage : deux modèles qui ne se rencontrent pas
+1. `ChapterQuiz` postait vers `/api/chapters/quiz/submit` — **route
+   inexistante** (il n'y a pas de `src/routes/api/chapters`, ni d'attrape-tout).
+   La vraie est `/api/student/chapters/[id]/quiz/submit`, qui était complète
+   depuis toujours (Zod, SRS, XP).
+2. Le corps envoyé ne correspondait pas : `chapterQuizQuestionId` /
+   `submittedAnswer` contre `quizQuestionId` / `timeSpentSeconds` attendus.
+3. L'action de formulaire `submitQuiz` n'avait **aucun appelant** — aucun
+   formulaire ne postait `?/submitQuiz`. Supprimée.
 
-`ChapterQuiz.svelte` est **câblé en vrai/faux** :
+Et un quatrième, qui aurait rejoué le scénario : `addQuizQuestion` acceptait un
+modèle **en brouillon**, que la RLS rend invisible à l'élève. Un quiz rempli de
+brouillons serait redevenu vide en silence.
 
-```ts
-answer: boolean;
-const userAnswerCorrect = userAnswer === currentTemplate.answer;
-```
+Signe que le composant n'avait jamais tourné : sa branche QCM tenait la bonne
+réponse pour toujours première (`isCorrectChoice = index === 0`).
 
-Or `question_templates.type` est contraint à **six valeurs, dont aucune n'est un
-vrai/faux** :
+### Ce qui a été livré
 
-```
-numerical_exact · numerical_decimal · numerical_rounded
-algebraic_transform · fill_in_blanks · multiple_choice
-```
+- `src/lib/server/chapters-quiz.ts` — `buildQuizInstances()` : charge les
+  modèles **aux droits de l'élève** (la policy fait le filtre « publié »),
+  génère une instance par question, et **retourne ce qu'elle a écarté** avec son
+  motif (`modele_indisponible` / `generation_impossible`). Une panne de lecture
+  rend une erreur, pas un quiz vide.
+- Graine **déterministe sur (question, élève)** via `generateStudentSeed` : deux
+  élèves voient des valeurs différentes, le même élève revoit les siennes. Il ne
+  peut donc pas recharger jusqu'à tomber sur une version plus facile.
+- `ChapterQuiz.svelte` — rendu et correction délégués à `FlashCard interactive`
+  (`maxAttempts=1`, correction au verso si faux) ; les questions écartées sont
+  **annoncées** ; un échec d'enregistrement lève un toast au lieu d'un
+  `// Continue anyway`.
+- `QuizQuestion.svelte` **supprimé** (211 lignes, plus aucun appelant).
+- Côté professeur : le sélecteur ne propose que des modèles **publiés**, la liste
+  distingue publié / brouillon / supprimé, et le refus d'un brouillon remonte son
+  motif (400, plus 500 muet).
 
-Et une question ne porte pas une réponse : elle porte des **`variations`**
-(`jsonb`), chacune avec un `statement`, des `variables` à résoudre par élève, et
-une charge utile propre au type. Exemple réel en base :
+**Aucune migration.** Le schéma suffisait : `chapter_quiz_questions` portait
+déjà le lien, `chapter_quiz_results.submitted_answer` est du texte libre, et la
+policy « Students can view published templates » existait déjà.
 
-```jsonc
-// type = multiple_choice
-{
-	"statement": "Quelle est la parité de ce nombre ?\n$${{expression}}$$",
-	"variables": [
-		{ "name": "k", "expression": "1..9" },
-		{ "name": "expression", "expression": "eval:2k" }
-	],
-	"choices": [
-		{ "content": "pair", "isCorrect": true },
-		{ "content": "impair", "isCorrect": false }
-	],
-	"correctChoiceIndex": "0"
-}
-```
+### Ce qui reste vrai — le carburant
 
-Le schéma de liaison, lui, **est prêt** : `chapter_quiz_questions` porte
-`question_template_id`, `display_order`, `points_override`. Le lien vers le
-système de questions existe. Ce qui manque est le **contrat** entre les deux.
+`question_templates` compte **2 lignes, 0 publiée**. Tout ce qui descend de
+cette table est donc à zéro, quiz compris — mais aussi **/automaths**, qui ne
+lit que `status='published'`, et les évaluations. Ce n'est pas une panne.
 
-### La question à trancher, en français
+⚠️ Et les 633 TinyMath ne changeront pas ça pour les classes actives : leurs
+thèmes sont collège (Entiers 228, Décimaux 83, Fractions 58…) alors que les
+classes actives sont **1SPE ×3 et 2DE ×1**. Pour voir le quiz tourner cette
+année, la matière doit venir de modèles écrits au niveau lycée
+(`/dashboard/admin/questions/create`).
 
-Comment une `variation` devient-elle une question de quiz de chapitre ? Trois
-réponses possibles, non exclusives :
+### Deux bugs trouvés par la revue, et corrigés
 
-1. **Le quiz cesse d'être vrai/faux** et réutilise le moteur de rendu et de
-   validation des questions (celui de `/automaths`, des fiches et des
-   exercices). Le plus juste, le plus cher : il faut résoudre les variables par
-   élève, rendre le type, valider la réponse.
-2. **Le quiz reste vrai/faux** et n'accepte que des `multiple_choice` à deux
-   choix, qu'il projette sur un booléen. Le moins cher, mais il faudra créer des
-   modèles exprès, et « pair / impair » n'est pas « vrai / faux ».
-3. **Le quiz n'utilise plus `question_templates`** et porte ses propres énoncés,
-   comme les objectifs de checklist. On perd la réutilisation et les variations.
+- **Le score se comptait deux fois.** Le `{#key}` qui isole l'état de la carte
+  entre deux questions la remonte aussi au **retour en arrière** : le bouton
+  « Valider » revenait, l'élève revalidait, le score montait encore — et le
+  serveur ré-attribuait de l'XP à chaque passage (XP farmable à l'infini). Un
+  quiz de trois questions pouvait finir à 6/3. Corrigé en dérivant le score de
+  `answers` (source unique) et en coupant `interactive` sur une question déjà
+  traitée. Deux tests le prouvent, aucun test n'utilisait plus d'une question.
+- **Le bandeau accusait toujours le professeur** de ne pas avoir publié, y
+  compris quand le motif réel était `generation_impossible` (modèle publié mais
+  défectueux). Le champ `reason` existait et n'était lu nulle part : le même
+  mensonge sur la cause, déplacé d'un cran. Le message distingue maintenant les
+  deux.
 
-⚠️ **Rien n'est décidé.** Ne pas coder avant que David ait tranché.
+### Deux choix à connaître
 
-### Un préalable indépendant du choix
-
-`question_templates` compte **2 lignes en production, aucune publiée** — deux
-essais (`Essai 2`, `Essai3`). Les 633 questions TinyMath sont en cours de
-relecture (41/633) et **rien n'est publié, c'est voulu**. Quel que soit le
-contrat retenu, le quiz n'aura pas de matière avant.
+- **La correction reste côté client.** `isCorrect` est calculé dans le
+  navigateur et posté tel quel, comme partout ailleurs (automaths, SRS). Admis
+  pour un entraînement ; **à revoir si le quiz doit un jour compter comme une
+  note** — ça suppose une revalidation serveur, qui ne se rajoute pas après coup.
+- **`FlashCard` interactive poste aussi vers `/api/skill-attempts`** (table vide
+  à ce jour). Le quiz alimente donc le suivi par compétence en plus de
+  `chapter_quiz_results`. Effet de bord assumé, validé par David.
 
 ## Le cahier de texte — ✅ clos
 
@@ -183,6 +202,23 @@ Le référentiel est semé, mais **aucun exercice n'est rattaché à un point** 
 **aucune séance ne cite de point**. La couverture par classe et la heatmap
 d'avancement calculent donc sur du vide. Voir
 [suivi-programme-progress.md](suivi-programme-progress.md).
+
+**Ce n'est ni un chantier ni un abandon : c'est de la saisie.** Tranché le
+2026-09-13 — David taguera lui-même, rien à coder.
+
+Les trois faits qui le disent :
+
+- l'interface existe **des deux côtés** : taguer un exercice
+  (`/dashboard/teacher/contenu/exercices/[id]`, onglet points du programme) et
+  cocher les points d'une séance (cahier de texte) ;
+- le référentiel couvre **exactement les niveaux actifs** — 1_SPE 173 points,
+  2de 185, 6ᵉ 95 (aucune classe active) ;
+- le cahier de texte **a deux jours** (première entrée le 2026-09-11) : le zéro
+  mesure la nouveauté de l'usage, pas un défaut.
+
+Et `reconcileAutoCoverage` remplit la couverture toute seule à partir des tags
+d'exercices, de modèles et d'évaluations : taguer les 128 exercices existants
+suffit à faire vivre la heatmap.
 
 ## Ce qui rapporterait le plus, dans l'ordre
 

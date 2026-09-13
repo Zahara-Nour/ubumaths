@@ -187,6 +187,24 @@ export interface ChapterQuizQuestion {
 }
 
 /**
+ * Pourquoi une question du quiz n'est pas jouable.
+ *
+ * - `modele_indisponible` : le modèle est en brouillon (invisible à l'élève
+ *   par la policy « Students can view published templates ») ou supprimé ;
+ * - `generation_impossible` : le modèle existe mais ne produit pas d'instance.
+ *
+ * Ce type vit ici, et non près de `buildQuizInstances`, parce qu'il traverse la
+ * frontière serveur/client : un composant ne peut rien importer de
+ * `$lib/server/**`, fût-ce un type.
+ */
+export type QuizUnavailableReason = 'modele_indisponible' | 'generation_impossible';
+
+export interface QuizUnavailableQuestion {
+	quizQuestionId: string;
+	reason: QuizUnavailableReason;
+}
+
+/**
  * Chapter quiz result - student's answer to a quiz question
  */
 export interface ChapterQuizResult {

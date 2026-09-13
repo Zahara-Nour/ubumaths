@@ -4,7 +4,7 @@
  *
  * Manages chapter content:
  * - Documents (add/remove/reorder)
- * - Quiz questions (add/remove/reorder)
+ * - Quiz questions (modèles publiés : add/remove/reorder)
  * - Checklist items (CRUD/reorder)
  * - Exercises (link/unlink/reorder)
  * - View student progress
@@ -26,8 +26,10 @@ import {
 	linkWorksheet,
 	unlinkWorksheet,
 	getStudentChecklistProgress,
-	getChapterQuizResults
+	getChapterQuizResults,
+	ContentRefusal
 } from '$lib/server/chapters';
+import { uuidSchema } from '$lib/server/validation/common';
 import {
 	checkForTemplateUpdates,
 	migrateChapterToVersion,
@@ -184,18 +186,30 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		createdAt: e.created_at
 	}));
 
-	// Quiz de chapitre : hors service, et depuis toujours — pendant côté
-	// professeur du même défaut corrigé côté élève.
+	// Les modèles rattachés au quiz, pour les nommer dans la liste.
 	//
-	// `question_templates` n'a ni `question`, ni `answer`, ni `answer_type` : un
-	// modèle porte `title`, `description` et surtout `variations`, où vit
-	// l'énoncé. Les requêtes échouaient donc à chaque affichage, et ni la liste
-	// des questions du quiz ni le sélecteur d'ajout n'ont jamais rien montré.
-	//
-	// On retire les requêtes mortes plutôt que d'improviser : rebrancher le quiz
-	// suppose de décider comment une `variation` devient une question vrai/faux,
-	// ce qui relève d'un choix produit. Comportement inchangé.
-	const questionTemplates: Record<string, { id: string; question: string; answer: unknown }> = {};
+	// On lit aussi `status` : un modèle dépublié depuis son rattachement reste
+	// dans le quiz, et l'élève ne le verra plus. Le professeur doit pouvoir
+	// faire la différence entre « modèle supprimé » et « modèle redevenu
+	// brouillon » — les deux produisent la même case vide sinon.
+	const questionTemplates: Record<string, { id: string; title: string; status: string }> = {};
+
+	if (quizQuestions.length > 0) {
+		const templateIds = [...new Set(quizQuestions.map((q) => q.questionTemplateId))];
+		const { data: templateRows, error: templatesError } = await locals.supabase
+			.from('question_templates')
+			.select('id, title, status')
+			.in('id', templateIds);
+
+		if (templatesError) {
+			console.error('Modèles du quiz illisibles :', templatesError);
+			throw error(500, 'Impossible de charger les données');
+		}
+
+		for (const t of templateRows ?? []) {
+			questionTemplates[t.id] = { id: t.id, title: t.title, status: t.status };
+		}
+	}
 
 	// Get exercise details
 	// `exercises.title` est nullable en base : un exercice sans titre reste
@@ -222,9 +236,37 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		}
 	}
 
-	// Même modèle inexistant que ci-dessus (`question`, `answer`, `answer_type`,
-	// `topic`, `subtopic`) : la liste est restée vide depuis toujours.
-	const availableTemplates: Array<{ id: string; question: string }> = [];
+	// Les modèles PUBLIÉS, pour le sélecteur d'ajout.
+	//
+	// Un brouillon n'a rien à faire dans un quiz : la policy « Students can view
+	// published templates » le rend invisible à l'élève, donc la question
+	// disparaîtrait de son écran sans un mot. Même règle que les fiches, pour la
+	// même raison. `addQuizQuestion` refuse d'ailleurs les brouillons — le
+	// sélecteur évite simplement de les proposer.
+	//
+	// La liste est plafonnée, et ce plafond doit se voir : la migration TinyMath
+	// a 633 questions en file. Au 201ᵉ modèle publié, un titre qui trie après le
+	// dernier disparaîtrait sans un mot, et le professeur en conclurait qu'il
+	// n'existe pas. On compte donc le total pour pouvoir le dire.
+	const TEMPLATE_LIMIT = 200;
+	const {
+		data: availableTemplateRows,
+		error: availableTemplatesError,
+		count: publishedCount
+	} = await locals.supabase
+		.from('question_templates')
+		.select('id, title, theme, domain, level', { count: 'exact' })
+		.eq('status', 'published')
+		.order('title', { ascending: true })
+		.limit(TEMPLATE_LIMIT);
+
+	if (availableTemplatesError) {
+		console.error('Modèles publiés illisibles :', availableTemplatesError);
+		throw error(500, 'Impossible de charger les données');
+	}
+
+	const availableTemplates = availableTemplateRows ?? [];
+	const hiddenTemplateCount = Math.max(0, (publishedCount ?? 0) - availableTemplates.length);
 
 	// Les fiches publiées du professeur, pour le sélecteur de rattachement.
 	// Une fiche en brouillon n'a rien à faire dans un chapitre : elle n'est pas
@@ -342,6 +384,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		questionTemplates,
 		exerciseDetails,
 		availableTemplates,
+		hiddenTemplateCount,
 		availableExercises: availableExercises || [],
 		worksheets,
 		availableWorksheets: availableWorksheets || [],
@@ -511,20 +554,29 @@ export const actions: Actions = {
 		}
 
 		const formData = await request.formData();
-		const questionTemplateId = formData.get('questionTemplateId') as string;
 
-		if (!questionTemplateId) {
+		// Valider avant d'atteindre la base : sans ça, une valeur non-UUID part
+		// dans un `.eq()` sur une colonne `uuid` et Postgres répond `22P02`, dont
+		// le message décrit la base et non l'action.
+		const idValidation = uuidSchema.safeParse(formData.get('questionTemplateId'));
+		if (!idValidation.success) {
 			return fail(400, { error: 'Question requise', action: 'addQuizQuestion' });
 		}
 
 		const { error: addError } = await addQuizQuestion(
 			chapterId,
-			questionTemplateId,
+			idValidation.data,
 			locals.supabase
 		);
 
 		if (addError) {
-			return fail(500, { error: "Erreur lors de l'ajout", action: 'addQuizQuestion' });
+			console.error('[addQuizQuestion] Ajout refusé :', addError);
+			// Un refus délibéré est écrit pour le professeur et doit lui parvenir
+			// tel quel — sinon il rejoue l'ajout en boucle sans savoir pourquoi.
+			// Une panne, elle, ne sort pas d'ici : son message vient de Postgres.
+			return addError instanceof ContentRefusal
+				? fail(400, { error: addError.message, action: 'addQuizQuestion' })
+				: fail(500, { error: "Erreur lors de l'ajout", action: 'addQuizQuestion' });
 		}
 
 		return { success: true, action: 'addQuizQuestion' };

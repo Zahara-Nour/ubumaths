@@ -6,7 +6,7 @@
 	 *
 	 * Displays a chapter with tabs for:
 	 * - Documents (PDFs, Google Drive links)
-	 * - Quiz (Vrai/Faux questions with SRS integration)
+	 * - Quiz (moteur de questions, correction immédiate, SRS)
 	 * - Exercices (linked exercises)
 	 * - Checklist (personal progress tracking)
 	 */
@@ -174,11 +174,25 @@
 						<p class="text-muted-foreground">Aucune question pour ce chapitre</p>
 					</Card.Content>
 				</Card.Root>
+			{:else if data.quizUnreadable}
+				<!--
+					Une panne de lecture ne doit pas se lire « aucune question » : ce
+					message accuserait la base d'être vide alors qu'elle n'a pas répondu.
+				-->
+				<Card.Root>
+					<Card.Content class="py-12 text-center">
+						<HelpCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+						<p class="text-muted-foreground">
+							Le quiz n'a pas pu être chargé. Réessaie dans un instant.
+						</p>
+					</Card.Content>
+				</Card.Root>
 			{:else}
 				<ChapterQuiz
+					chapterId={data.chapter.id}
 					questions={data.chapter.quizQuestionsWithResults}
-					questionTemplates={data.questionTemplates}
-					progress={data.chapter.progress}
+					instances={data.quizInstances}
+					unavailable={data.quizUnavailable}
 				/>
 			{/if}
 		</Tabs.Content>
