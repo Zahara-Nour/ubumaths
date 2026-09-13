@@ -20,9 +20,11 @@
 		ChapterProgressIndicator,
 		DocumentCard,
 		ChecklistSection,
-		ChapterQuiz
+		ChapterQuiz,
+		ChapterEmptyState
 	} from '$lib/components/cours';
 	import { getChapterColorClasses } from '$lib/types/chapters';
+	import { cn } from '$lib/utils';
 	import {
 		ArrowLeft,
 		FileText,
@@ -108,35 +110,50 @@
 	<!-- Content Tabs -->
 	<Tabs.Root bind:value={activeTab} class="w-full">
 		<Tabs.List class="mb-6 grid w-full grid-cols-5">
-			<Tabs.Trigger value="documents" class="flex items-center gap-2">
+			<Tabs.Trigger
+				value="documents"
+				class={cn('flex items-center gap-2', documentCount === 0 && 'text-muted-foreground/50')}
+			>
 				<FileText class="h-4 w-4" />
 				<span class="hidden sm:inline">Documents</span>
 				{#if documentCount > 0}
 					<Badge variant="secondary" class="ml-1">{documentCount}</Badge>
 				{/if}
 			</Tabs.Trigger>
-			<Tabs.Trigger value="quiz" class="flex items-center gap-2">
+			<Tabs.Trigger
+				value="quiz"
+				class={cn('flex items-center gap-2', quizCount === 0 && 'text-muted-foreground/50')}
+			>
 				<HelpCircle class="h-4 w-4" />
 				<span class="hidden sm:inline">Quiz</span>
 				{#if quizCount > 0}
 					<Badge variant="secondary" class="ml-1">{quizCount}</Badge>
 				{/if}
 			</Tabs.Trigger>
-			<Tabs.Trigger value="exercices" class="flex items-center gap-2">
+			<Tabs.Trigger
+				value="exercices"
+				class={cn('flex items-center gap-2', exerciseCount === 0 && 'text-muted-foreground/50')}
+			>
 				<BookOpen class="h-4 w-4" />
 				<span class="hidden sm:inline">{lore.learning.exercise}s</span>
 				{#if exerciseCount > 0}
 					<Badge variant="secondary" class="ml-1">{exerciseCount}</Badge>
 				{/if}
 			</Tabs.Trigger>
-			<Tabs.Trigger value="fiches" class="flex items-center gap-2">
+			<Tabs.Trigger
+				value="fiches"
+				class={cn('flex items-center gap-2', worksheetCount === 0 && 'text-muted-foreground/50')}
+			>
 				<ClipboardList class="h-4 w-4" />
 				<span class="hidden sm:inline">Fiches</span>
 				{#if worksheetCount > 0}
 					<Badge variant="secondary" class="ml-1">{worksheetCount}</Badge>
 				{/if}
 			</Tabs.Trigger>
-			<Tabs.Trigger value="checklist" class="flex items-center gap-2">
+			<Tabs.Trigger
+				value="checklist"
+				class={cn('flex items-center gap-2', checklistCount === 0 && 'text-muted-foreground/50')}
+			>
 				<ListChecks class="h-4 w-4" />
 				<span class="hidden sm:inline">Checklist</span>
 				{#if checklistCount > 0}
@@ -150,12 +167,7 @@
 		<!-- Documents Tab -->
 		<Tabs.Content value="documents">
 			{#if documentCount === 0}
-				<Card.Root>
-					<Card.Content class="py-12 text-center">
-						<FileText class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-						<p class="text-muted-foreground">Aucun document pour ce chapitre</p>
-					</Card.Content>
-				</Card.Root>
+				<ChapterEmptyState kind="documents" />
 			{:else}
 				<div class="grid gap-4 sm:grid-cols-2">
 					{#each data.chapter.documents as document (document.id)}
@@ -168,12 +180,7 @@
 		<!-- Quiz Tab -->
 		<Tabs.Content value="quiz">
 			{#if quizCount === 0}
-				<Card.Root>
-					<Card.Content class="py-12 text-center">
-						<HelpCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-						<p class="text-muted-foreground">Aucune question pour ce chapitre</p>
-					</Card.Content>
-				</Card.Root>
+				<ChapterEmptyState kind="quiz" />
 			{:else if data.quizUnreadable}
 				<!--
 					Une panne de lecture ne doit pas se lire « aucune question » : ce
@@ -200,12 +207,7 @@
 		<!-- Exercices Tab -->
 		<Tabs.Content value="exercices">
 			{#if exerciseCount === 0}
-				<Card.Root>
-					<Card.Content class="py-12 text-center">
-						<BookOpen class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-						<p class="text-muted-foreground">Aucune {lore.learning.exercise} pour ce chapitre</p>
-					</Card.Content>
-				</Card.Root>
+				<ChapterEmptyState kind="exercises" />
 			{:else}
 				<div class="space-y-3">
 					{#each data.chapter.exercises as exercise (exercise.id)}
@@ -234,21 +236,23 @@
 		<!-- Fiches Tab -->
 		<Tabs.Content value="fiches">
 			{#if worksheetCount === 0}
-				<Card.Root>
-					<Card.Content class="py-12 text-center">
-						<ClipboardList class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-						{#if data.worksheetsUnavailable}
+				{#if data.worksheetsUnavailable}
+					<!-- Une panne de lecture ne doit pas se lire « aucune fiche » : ce
+					     message accuserait la base d'être vide alors qu'elle n'a pas
+					     répondu. -->
+					<Card.Root>
+						<Card.Content class="py-12 text-center">
+							<ClipboardList class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
 							<p class="text-muted-foreground">
 								Les fiches n'ont pas pu être chargées. Réessaie dans un instant.
 							</p>
-						{:else}
-							<!-- « pour ce chapitre », pas « pour cette classe » : depuis que la
-							     page filtre sur le chapitre, le message doit dire lequel des deux
-							     est vide, sinon l'élève cherche au mauvais endroit. -->
-							<p class="text-muted-foreground">Aucune fiche dans ce chapitre</p>
-						{/if}
-					</Card.Content>
-				</Card.Root>
+						</Card.Content>
+					</Card.Root>
+				{:else}
+					<!-- « pour ce chapitre », pas « pour cette classe » : la page filtre sur
+					     le chapitre, le message doit dire lequel des deux est vide. -->
+					<ChapterEmptyState kind="worksheets" />
+				{/if}
 			{:else}
 				<div class="grid gap-4 sm:grid-cols-2">
 					{#each data.worksheets as worksheet (worksheet.assignment_id)}
@@ -261,12 +265,7 @@
 		<!-- Checklist Tab -->
 		<Tabs.Content value="checklist">
 			{#if checklistCount === 0}
-				<Card.Root>
-					<Card.Content class="py-12 text-center">
-						<ListChecks class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-						<p class="text-muted-foreground">Aucun élément de checklist pour ce chapitre</p>
-					</Card.Content>
-				</Card.Root>
+				<ChapterEmptyState kind="checklist" />
 			{:else}
 				<ChecklistSection
 					items={data.chapter.checklistItemsWithProgress}
