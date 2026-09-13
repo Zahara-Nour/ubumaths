@@ -84,6 +84,28 @@ describe('parseSequence — explicit mode', () => {
 		expect(result.success).toBe(false);
 		expect(result.error).not.toBeNull();
 	});
+
+	// MathLive drops the braces around a one-character argument, so a fraction
+	// typed in the field arrives as `\frac12`, not `\frac{1}{2}`.
+	it('accepts the compact fraction MathLive emits', () => {
+		const result = parseSequence('3\\cdot\\left(-\\frac12\\right)^n', 'explicit', 'u');
+
+		expect(result.success).toBe(true);
+		expect(result.error).toBeNull();
+		expect(result.usesIndex).toBe(true);
+	});
+
+	it('computes the geometric sequence that compact fraction defines', () => {
+		const parsed = parseSequence('3\\cdot\\left(-\\frac12\\right)^n', 'explicit', 'u');
+		expect(parsed.ast).not.toBeNull();
+
+		const terms = computeSequenceTerms(
+			{ mode: 'explicit', ast: parsed.ast!, firstIndex: 0, firstTerm: null },
+			3
+		);
+
+		expect(terms.map((t) => t.value)).toEqual([3, -1.5, 0.75, -0.375]);
+	});
 });
 
 describe('parseSequence — recurrence mode', () => {

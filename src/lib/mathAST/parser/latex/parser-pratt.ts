@@ -1560,7 +1560,7 @@ class PrattParser {
 	}
 
 	/**
-	 * Parse matrix content: rows separated by \\, columns by &
+	 * Parse matrix content: rows separated by \, columns by &
 	 */
 	private parseMatrixContent(): MathNode[][] {
 		const rows: MathNode[][] = [];
@@ -1833,20 +1833,83 @@ class PrattParser {
 	// =========================================================================
 
 	/**
-	 * Parse \frac{num}{denom}
+	 * Parse the argument of a command such as \frac or \sqrt.
+	 *
+	 * TeX accepts two forms: a braced group, or a single character. MathLive
+	 * serialises the second one as soon as an argument fits in one character
+	 * (`\frac12`, `\sqrt2`), so this is what the app receives whenever a
+	 * student types a fraction.
+	 *
+	 * @param missingMessage - Error reported when nothing can serve as an argument
+	 * @param closeMessage - Error reported when a braced group is left open
+	 */
+	private parseCommandArgument(missingMessage: string, closeMessage: string): MathNode {
+		if (this.check('LBRACE')) {
+			this.advance();
+			const argument = this.parseExpression(BP.NONE);
+			this.expect('RBRACE', closeMessage);
+			return argument;
+		}
+
+		const token = this.currentToken;
+
+		switch (token.type) {
+			case 'NUMBER':
+				// `\frac12` is one half: an unbraced number gives up its first digit
+				// and the rest goes back into the stream. A number the tokenizer
+				// rewrote (`1{,}5`, `1\,000`) has no character-to-source mapping any
+				// more, so it is taken whole rather than split at a wrong offset.
+				return /^\d\d/.test(token.value) && token.value.length === token.length
+					? this.takeLeadingDigit()
+					: this.parseNumber();
+
+			case 'LETTER':
+				// A lone letter is just that letter: `\sqrt f(x)` means
+				// `\sqrt{f}(x)`, so the parentheses stay outside the argument.
+				this.advance();
+				return this.applyColor(MathAST.variable(token.value));
+
+			case 'COMMAND':
+				return this.parseCommand();
+
+			default:
+				this.error(missingMessage, token.position, token.length, 'UNEXPECTED_TOKEN');
+		}
+	}
+
+	/**
+	 * Consume the first digit of a multi-digit number and push the rest back as
+	 * the current token — TeX reads an unbraced argument one character at a
+	 * time, so `\frac12` is 1/2 and never 12 over something.
+	 */
+	private takeLeadingDigit(): MathNode {
+		const token = this.currentToken;
+
+		this.currentToken = {
+			type: 'NUMBER',
+			value: token.value.slice(1),
+			position: token.position + 1,
+			length: token.length - 1
+		};
+
+		return this.applyColor(MathAST.number(token.value[0]));
+	}
+
+	/**
+	 * Parse \frac{num}{denom}, or its unbraced TeX form \frac12
 	 */
 	private parseFraction(): MathNode {
-		this.advance(); // consume \frac
+		this.advance(); // consume \\frac
 
-		// Parse numerator
-		this.expect('LBRACE', "Expected '{' for \\frac numerator");
-		const numerator = this.parseExpression(BP.NONE);
-		this.expect('RBRACE', "Expected '}' after \\frac numerator");
+		const numerator = this.parseCommandArgument(
+			'Missing \\frac numerator',
+			"Expected '}' after \\frac numerator"
+		);
 
-		// Parse denominator
-		this.expect('LBRACE', "Expected '{' for \\frac denominator");
-		const denominator = this.parseExpression(BP.NONE);
-		this.expect('RBRACE', "Expected '}' after \\frac denominator");
+		const denominator = this.parseCommandArgument(
+			'Missing \\frac denominator',
+			"Expected '}' after \\frac denominator"
+		);
 
 		return this.applyColor(MathAST.divide(numerator, denominator, 'fraction'));
 	}
@@ -1866,9 +1929,10 @@ class PrattParser {
 		}
 
 		// Parse radicand
-		this.expect('LBRACE', "Expected '{' for \\sqrt argument");
-		const radicand = this.parseExpression(BP.NONE);
-		this.expect('RBRACE', "Expected '}' after \\sqrt argument");
+		const radicand = this.parseCommandArgument(
+			'Missing \\sqrt argument',
+			"Expected '}' after \\sqrt argument"
+		);
 
 		// If nth root specified, use a different representation
 		// For now, we'll just use sqrt function
