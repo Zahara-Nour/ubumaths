@@ -85,6 +85,28 @@ describe('GraphSVG — épingler une étiquette au clic', () => {
 		expect(grapheurStore.pinnedLabels[0]).toMatchObject({ kind: 'point', pointType: 'root' });
 	});
 
+	// Le survol dessine son étiquette au même endroit que celle du clic : si
+	// elle reste au-dessus, cliquer semble ne rien faire, puisque la valeur
+	// exacte du survol masque la décimale que le clic vient de poser.
+	it('montre la décimale du clic, curseur toujours sur le point', async () => {
+		const id = grapheurStore.addSequence('explicit', '3\\cdot\\left(-\\frac12\\right)^n');
+		grapheurStore.updateSequence(id, { firstIndex: 0 });
+		grapheurStore.setViewport({ xMin: -1, xMax: 6, yMin: -4, yMax: 4 });
+
+		const { container } = render(GraphSVG, {});
+		const svg = container.querySelector('svg');
+
+		// Le terme de rang 3 vaut -0.375, soit -3/8.
+		await clickAt(svg!, (WIDTH * (3 - -1)) / 7, (HEIGHT * (4 - -0.375)) / 8);
+
+		expect(grapheurStore.pinnedLabels).toHaveLength(1);
+		expect(container.textContent).toContain('0.375');
+
+		// Une seule boîte sur le point : celle du clic. Deux superposées et
+		// c'est l'exacte du survol qu'on lit, par-dessus la décimale.
+		expect(container.querySelectorAll('.tooltip-bg')).toHaveLength(1);
+	});
+
 	it('ne fige rien quand le geste était un déplacement', async () => {
 		const id = grapheurStore.addSequence('explicit', '2n');
 		grapheurStore.updateSequence(id, { firstIndex: 0 });
