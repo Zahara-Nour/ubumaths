@@ -306,6 +306,56 @@ Une policy dormante permet à un élève de se retirer lui-même (`students_can_
 DELETE). **Aucune interface ne l'utilise.** La convertir en UPDATE lui donnerait
 le pouvoir de se **réactiver** seul : décision distincte, à ne pas glisser ici.
 
+## Phase 5 — ✅ écrite
+
+Mettre à jour un chapitre depuis son modèle **n'efface plus rien**, et le modèle
+emporte désormais les **fiches**.
+
+### Le piège désamorcé
+
+L'ancienne mise à jour supprimait les quatre contenus du chapitre puis
+réappliquait le modèle. Trois dégâts, et le troisième est né de la phase 1 :
+
+1. ce que le professeur avait ajouté à la main dans CETTE classe disparaissait ;
+2. les quatre suppressions **ne lisaient pas leur erreur** ;
+3. supprimer puis recréer effaçait `published_at` : **les élèves auraient vu le
+   chapitre se vider d'un coup, en plein cours.**
+
+### Ce qui se propage, et ce qui ne se propage pas
+
+- le **contenu** d'un élément déjà présent est mis à jour (titre, barème,
+  description). Sans ça — et c'est la revue qui l'a vu — la fusion aurait cessé
+  d'écraser **et** cessé de mettre à jour : une correction du modèle ne serait
+  jamais redescendue, et le chapitre aurait quand même été marqué à jour, donc
+  plus aucun bouton pour réessayer ;
+- l'**ordre d'affichage** et `published_at` ne se propagent pas : ils
+  appartiennent à la classe ;
+- un élément **retiré** du modèle reste dans les chapitres — revers assumé.
+
+Les nouveautés se rangent **après** l'existant (`max + 1`) : réutiliser le rang
+du modèle créait des égalités avec les ajouts manuels, et les écrans trient sur
+ce seul champ — à égalité, l'ordre devient arbitraire.
+
+### L'écran ne ment plus
+
+Le dialogue de migration annonçait « suppressions détectées, action
+irréversible » et « perte de progression des élèves », avec un bouton rouge
+« Forcer la mise à jour ». Plus rien de tout ça n'arrive. Pire : la clé du diff
+des objectifs incluait leur rang, si bien qu'un simple **réordonnancement**
+produisait N supprimés + N ajoutés — un écran d'alertes pour une mise à jour
+sans effet. Clé corrigée (le texte seul, comme la fusion), messages refaits.
+
+Le diff ignorait aussi les **fiches** : l'aperçu était muet sur du contenu que
+la mise à jour allait pourtant poser.
+
+### Limite connue, en attente de décision
+
+Un objectif dont le professeur corrige le **texte** n'est plus reconnu : la mise
+à jour suivante réinsère la version du modèle, et l'élève voit deux objectifs
+voisins avec sa progression scindée. Rien en base ne l'empêche
+(`chapter_checklist_items` n'a aucune contrainte d'unicité). Fermer ça suppose
+une origine traçable pour les objectifs issus d'un modèle, donc une migration.
+
 ## Reste ouvert
 
 **La dispersion.** David : « j'ai l'impression que c'est dispersé ». Mesuré, il

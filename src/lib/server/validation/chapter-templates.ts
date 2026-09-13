@@ -119,6 +119,17 @@ export const templateContentSnapshotSchema = z.object({
 		.array(templateQuizQuestionSnapshotSchema)
 		.max(100, 'Trop de questions (max 100)'),
 	checklistItems: z.array(templateChecklistItemSnapshotSchema).max(50, "Trop d'elements (max 50)"),
+	// Les fiches du modèle. `.default([])` : un `content_snapshot` écrit avant
+	// que les modèles les portent reste valide, et vaut « aucune fiche ».
+	worksheets: z
+		.array(
+			z.object({
+				worksheetId: z.string().uuid(),
+				displayOrder: z.number().int().min(0)
+			})
+		)
+		.max(50, 'Trop de fiches (max 50)')
+		.default([]),
 	exercises: z.array(templateExerciseSnapshotSchema).max(50, "Trop d'exercices (max 50)")
 });
 
