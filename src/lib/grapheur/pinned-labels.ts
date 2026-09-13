@@ -16,29 +16,62 @@
  * @module grapheur/pinned-labels
  */
 
+import type { SnappedPointType } from './types';
+
 // =============================================================================
 // Types
 // =============================================================================
 
-/** What a click identifies: one term of one sequence. */
-export interface PinnedLabelTarget {
-	readonly functionId: string;
-	readonly rank: number;
-}
+/**
+ * What a click identifies.
+ *
+ * A term is named by its rank, which is stable. A special point is named by
+ * the abscissa the solver found, which is recomputed on every viewport change
+ * and can move by a hair: matching it uses a tolerance rather than equality.
+ */
+export type PinnedLabelTarget =
+	| { readonly kind: 'term'; readonly functionId: string; readonly rank: number }
+	| {
+			readonly kind: 'point';
+			readonly functionId: string;
+			readonly pointType: SnappedPointType;
+			readonly x: number;
+	  };
 
 /** A label currently kept on the graph. */
-export interface PinnedLabel extends PinnedLabelTarget {
+export type PinnedLabel = PinnedLabelTarget & {
 	/** Decimal value first; the next click brings the exact one back. */
 	readonly showsExact: boolean;
-}
+};
 
 // =============================================================================
 // Functions
 // =============================================================================
 
-/** Whether a label points at the given term. */
-function isSameTarget(label: PinnedLabelTarget, target: PinnedLabelTarget): boolean {
-	return label.functionId === target.functionId && label.rank === target.rank;
+/**
+ * Largest gap, in maths units, between two abscissas still taken as the same
+ * special point.
+ *
+ * The solvers re-run whenever the viewport moves and land a hair apart; an
+ * equality test would drop the label on the first pan.
+ */
+const SAME_POINT_TOLERANCE = 1e-6;
+
+/** Whether a label points at the same thing as the given target. */
+export function isSameTarget(label: PinnedLabelTarget, target: PinnedLabelTarget): boolean {
+	if (label.kind !== target.kind || label.functionId !== target.functionId) return false;
+
+	if (label.kind === 'term' && target.kind === 'term') {
+		return label.rank === target.rank;
+	}
+
+	if (label.kind === 'point' && target.kind === 'point') {
+		return (
+			label.pointType === target.pointType && Math.abs(label.x - target.x) <= SAME_POINT_TOLERANCE
+		);
+	}
+
+	return false;
 }
 
 /**
@@ -89,10 +122,10 @@ export function cyclePinnedLabels(
 }
 
 /**
- * Drop the labels of a sequence that no longer exists.
+ * Drop the labels of a function or sequence that no longer exists.
  *
  * @param labels - Labels currently on the graph
- * @param functionId - Sequence being removed
+ * @param functionId - Plottable being removed
  */
 export function clearLabelsOf(labels: readonly PinnedLabel[], functionId: string): PinnedLabel[] {
 	return labels.filter((label) => label.functionId !== functionId);

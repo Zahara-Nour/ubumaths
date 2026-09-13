@@ -28,7 +28,6 @@
 	import IntegralArea from './IntegralArea.svelte';
 	import SequencePlot from './SequencePlot.svelte';
 	import CurveHover from './CurveHover.svelte';
-	import PinnedLabels from './PinnedLabels.svelte';
 	import type { PinnedLabelTarget } from '$lib/grapheur/pinned-labels';
 	import IntersectionPoints from './IntersectionPoints.svelte';
 	import AsymptoteLines from './AsymptoteLines.svelte';
@@ -214,11 +213,12 @@
 	// ==========================================================================
 
 	/**
-	 * Term under the cursor, reported by CurveHover.
+	 * Point under the cursor, reported by CurveHover — a term of a sequence, a
+	 * root, an extremum, an intersection.
 	 *
 	 * A click has to know what it lands on, and the detection lives there.
 	 */
-	let hoveredTerm = $state<PinnedLabelTarget | null>(null);
+	let hoveredTarget = $state<PinnedLabelTarget | null>(null);
 
 	/**
 	 * Where the pointer went down, to tell a click from the end of a pan.
@@ -327,10 +327,10 @@
 	function handlePointerUp(e: PointerEvent): void {
 		// A press that did not travel is a click: pin the term under it, or cycle
 		// the label already there.
-		if (pressOrigin && hoveredTerm) {
+		if (pressOrigin && hoveredTarget) {
 			const travel = Math.hypot(e.clientX - pressOrigin.x, e.clientY - pressOrigin.y);
 			if (travel <= CLICK_TOLERANCE) {
-				grapheurStore.togglePinnedLabel(hoveredTerm);
+				grapheurStore.togglePinnedLabel(hoveredTarget);
 			}
 		}
 		pressOrigin = null;
@@ -535,11 +535,8 @@
 			{transformer}
 			{width}
 			{height}
-			onhoveredtermchange={(target) => (hoveredTerm = target)}
+			onhoveredtargetchange={(target) => (hoveredTarget = target)}
 		/>
-
-		<!-- Labels a click left behind -->
-		<PinnedLabels {transformer} {width} {height} />
 
 		<!-- Intersection points -->
 		<IntersectionPoints {transformer} />
