@@ -21,20 +21,23 @@
 	} from '$lib/components/ui/card';
 	import { Plus, Search, FileText, HelpCircle, CheckSquare, BookOpen } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
+	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
+	import type { GradeCode } from '$lib/types/grades';
 
 	let { data }: { data: PageData } = $props();
 
 	let searchQuery = $state('');
-	let selectedGrades = $state<string[]>([]);
+	let selectedGrades = $state<GradeCode[]>([]);
 
-	const gradeOptions = ['6', '5', '4', '3', '2', '1', 'T'];
-
-	function toggleGrade(grade: string) {
-		if (selectedGrades.includes(grade)) {
-			selectedGrades = selectedGrades.filter((g) => g !== grade);
-		} else {
-			selectedGrades = [...selectedGrades, grade];
-		}
+	/**
+	 * Le filtre suit le référentiel commun.
+	 *
+	 * Les sept valeurs maison qu'il portait ne s'accordaient pas avec ce que
+	 * la base contient : filtrer sur « 1 » ou « T » ne pouvait rien trouver, et
+	 * les filières comme le primaire restaient hors de portée.
+	 */
+	function handleGradesChange(grades: GradeCode[]) {
+		selectedGrades = grades;
 		applyFilters();
 	}
 
@@ -113,17 +116,11 @@
 			<!-- Grade filters -->
 			<div>
 				<p class="mb-2 text-sm font-medium">Niveaux :</p>
-				<div class="flex flex-wrap gap-2">
-					{#each gradeOptions as grade (grade)}
-						<Badge
-							variant={selectedGrades.includes(grade) ? 'default' : 'outline'}
-							class="cursor-pointer"
-							onclick={() => toggleGrade(grade)}
-						>
-							{(grade as string) === 'T' ? 'Terminale' : `${grade}ème`}
-						</Badge>
-					{/each}
-				</div>
+				<GradeBadgeSelector
+					value={selectedGrades}
+					onchange={handleGradesChange}
+					placeholder="Filtrer par niveau"
+				/>
 			</div>
 		</CardContent>
 	</Card>

@@ -37,6 +37,7 @@
 		Clock
 	} from '@lucide/svelte';
 	import { getContentCounts } from '$lib/types/chapter-templates';
+	import { formatGradeShort } from '$lib/utils/grades';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -183,9 +184,8 @@
 					<p class="mb-2 text-sm font-medium">Niveaux :</p>
 					<div class="flex flex-wrap gap-2">
 						{#each data.template.grades as grade (grade)}
-							<Badge variant="outline">
-								{(grade as string) === 'T' ? 'Terminale' : `${grade}ème`}
-							</Badge>
+							<!-- Le nom court vient du référentiel : « 2de », « 1re spé »… -->
+							<Badge variant="outline">{formatGradeShort(grade)}</Badge>
 						{/each}
 					</div>
 				</div>
