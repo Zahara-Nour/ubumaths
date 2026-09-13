@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { page } from '@vitest/browser/context';
 import { render } from 'vitest-browser-svelte';
 import SequenceTable from '../SequenceTable.svelte';
 import { parseSequence } from '$lib/grapheur/sequence';
@@ -41,8 +42,19 @@ describe('SequenceTable', () => {
 		);
 	}
 
-	it('liste les termes successifs d’une récurrence', () => {
+	// La colonne affiche les valeurs exactes par défaut : 13/2 plutôt que 6,5.
+	it('rend les termes en maths, pas en texte', () => {
 		const { container } = render(SequenceTable, { sequence: sequence() });
+
+		const third = container.querySelectorAll('tbody tr')[2];
+		expect(third?.querySelector('.ML__latex')).not.toBeNull();
+		expect(third?.textContent).not.toContain('6.5');
+	});
+
+	it('liste les termes successifs d’une récurrence, en décimal', async () => {
+		const { container } = render(SequenceTable, { sequence: sequence() });
+
+		await page.getByRole('button', { name: 'exact' }).click();
 
 		const firstRows = rows(container).slice(0, 4);
 		expect(firstRows).toEqual([
@@ -58,6 +70,7 @@ describe('SequenceTable', () => {
 			sequence: sequence({ mode: 'explicit', latex: '3n+2', firstIndex: 2, firstTerm: null })
 		});
 
+		// Des entiers : exacts et décimaux s'écrivent pareil.
 		expect(rows(container).slice(0, 2)).toEqual([
 			['2', '8'],
 			['3', '11']

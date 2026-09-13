@@ -19,6 +19,7 @@
 
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
+	import type { Point } from '$lib/geometry-core/viewport';
 	import type {
 		ExplicitFunction,
 		SequencePlottable,
@@ -28,13 +29,19 @@
 	import { isCobwebEnabled, isExplicitFunction, isSequence } from '$lib/grapheur/types';
 	import {
 		computeSequenceTerms,
-		filterVisibleTerms,
-		findNearestTerm,
-		toComputeSpec
+		toComputeSpec,
+		type SequenceComputeSpec
 	} from '$lib/grapheur/sequence';
+	import { exactTermValue } from '$lib/grapheur/exact';
+	import { formatGraphValue } from '$lib/grapheur/format';
+	import {
+		isSameTarget,
+		type PinnedLabel,
+		type PinnedLabelTarget
+	} from '$lib/grapheur/pinned-labels';
+	import GraphLabel, { type GraphLabelContent } from './GraphLabel.svelte';
 	import { createEvaluator } from '$lib/grapheur/evaluator';
 	import { analyzeAllFunctions, toAnalysisInputs } from '$lib/grapheur/analysis';
-	import { convertLatexToMarkup } from 'mathlive';
 	import { toLatex } from '$lib/mathAST/latex-generator';
 	import type { MathNode } from '$lib/mathAST/types';
 	import {
@@ -47,11 +54,20 @@
 	let {
 		transformer,
 		width,
-		height
+		height,
+		onhoveredtargetchange
 	}: {
 		transformer: CoordinateTransformer;
 		width: number;
 		height: number;
+		/**
+		 * Term currently under the cursor, or null.
+		 *
+		 * The click lives in GraphSVG, which owns the pointer gestures and can
+		 * tell a click from the end of a pan; it needs to know what is being
+		 * pointed at.
+		 */
+		onhoveredtargetchange?: (target: PinnedLabelTarget | null) => void;
 	} = $props();
 
 	// ==========================================================================
@@ -120,11 +136,13 @@
 	const sequenceLastIndex = $derived(Math.ceil(grapheurStore.viewport.xMax));
 
 	/**
-	 * Terms of every sequence, computed but not yet clipped to the viewport.
+	 * Terms of every sequence.
 	 *
-	 * Deliberately kept out of `hoverPoint`: recomputing them at each mouse move
-	 * would iterate the recurrences for nothing. They only change when the
-	 * sequences, the parameters or the highest rank do.
+	 * Deliberately kept out of `hoverPoint`, and depending on the highest rank
+	 * rather than on the viewport itself: recomputing them at each mouse move —
+	 * or at each frame of a pan — would iterate the recurrences for nothing.
+	 * Terms off screen cost nothing: the cursor is never near them, and a
+	 * pinned label checks the viewport before drawing.
 	 */
 	const computedSequenceTerms = $derived.by(() =>
 		grapheurStore.functions.filter(isSequence).flatMap((sequence: SequencePlottable) => {
@@ -135,16 +153,8 @@
 			const spec = toComputeSpec(sequence, grapheurStore.parameterBindings);
 			if (!spec) return [];
 
-			return [{ sequence, terms: computeSequenceTerms(spec, sequenceLastIndex) }];
+			return [{ sequence, spec, terms: computeSequenceTerms(spec, sequenceLastIndex) }];
 		})
-	);
-
-	/** The same terms, clipped to what the plot actually draws. */
-	const sequenceTerms = $derived(
-		computedSequenceTerms.map(({ sequence, terms }) => ({
-			sequence,
-			terms: filterVisibleTerms(terms, grapheurStore.viewport)
-		}))
 	);
 
 	// ==========================================================================
@@ -167,6 +177,13 @@
 		exactX?: MathNode;
 		/** Symbolic ordinate, simplified, when known exactly. */
 		exactY?: MathNode;
+		/**
+		 * How to recompute the sequence, for a term.
+		 *
+		 * The exact value is deliberately not computed here: there is one point
+		 * per rank, and only the one being named needs it.
+		 */
+		sequenceSpec?: SequenceComputeSpec;
 	}
 
 	/**
@@ -180,13 +197,146 @@
 		(
 			| { type: 'sequence'; sequenceName: string }
 			| { type: 'curve' | SnappedPointType; sequenceName?: undefined }
-		);
+		) & {
+			/**
+			 * What a click would pin, carried from the candidate.
+			 *
+			 * Absent on a free curve point, which has no identity to keep.
+			 */
+			target?: PinnedLabelTarget;
+		};
+
+	/** A point that a click can pin: special points and terms, never a free curve point. */
+	type PinnableCandidate = Omit<SnapCandidate, 'distance' | 'svgX' | 'svgY'> & {
+		/** What identifies it for a pinned label. */
+		target: PinnedLabelTarget;
+	};
+
+	/**
+	 * Every point a click could pin, cursor notwithstanding.
+	 *
+	 * Kept apart from the hover so the labels a click left behind can be drawn
+	 * from the same list, instead of a second copy of the analyses.
+	 */
+	const pinnableCandidates = $derived.by((): PinnableCandidate[] => {
+		const candidates: PinnableCandidate[] = [];
+
+		for (const analysis of analysisResults) {
+			// Analyses only ever cover explicit functions, but the store holds
+			// sequences too — narrow while searching.
+			const func = grapheurStore.functions.find(
+				(f): f is ExplicitFunction => isExplicitFunction(f) && f.id === analysis.functionId
+			);
+			const color = func?.color ?? '#888';
+
+			for (const root of analysis.roots) {
+				candidates.push({
+					mathX: root.x,
+					mathY: 0,
+					type: 'root',
+					func: func ?? null,
+					functionIds: [analysis.functionId],
+					color,
+					target: {
+						kind: 'point',
+						functionIds: [analysis.functionId],
+						pointType: 'root',
+						x: root.x
+					},
+					...(root.exactX ? { exactX: root.exactX } : {})
+				});
+			}
+
+			for (const extremum of analysis.extrema) {
+				candidates.push({
+					mathX: extremum.x,
+					mathY: extremum.y,
+					type: extremum.type,
+					func: func ?? null,
+					functionIds: [analysis.functionId],
+					color,
+					target: {
+						kind: 'point',
+						functionIds: [analysis.functionId],
+						pointType: extremum.type,
+						x: extremum.x
+					},
+					...(extremum.exactX ? { exactX: extremum.exactX } : {}),
+					...(extremum.exactY ? { exactY: extremum.exactY } : {})
+				});
+			}
+		}
+
+		for (const intersection of intersections) {
+			candidates.push({
+				mathX: intersection.point.x,
+				mathY: intersection.point.y,
+				type: 'intersection',
+				func: null,
+				functionIds: [...intersection.functionIds],
+				color: '#6b7280', // Gray for intersections
+				target: {
+					kind: 'point',
+					// Both curves name it: it dies with either of them, and
+					// reordering the functions must not rename it.
+					functionIds: [...intersection.functionIds],
+					pointType: 'intersection',
+					x: intersection.point.x
+				}
+			});
+		}
+
+		for (const { sequence, spec, terms } of computedSequenceTerms) {
+			for (const term of terms) {
+				candidates.push({
+					mathX: term.n,
+					mathY: term.value,
+					type: 'sequence',
+					func: null,
+					functionIds: [sequence.id],
+					color: sequence.color,
+					sequenceName: sequence.name,
+					sequenceSpec: spec,
+					target: { kind: 'term', functionId: sequence.id, rank: term.n }
+				});
+			}
+		}
+
+		return candidates;
+	});
+
+	/**
+	 * Screen position and distance to the cursor, for a candidate within reach.
+	 *
+	 * Returns null beyond the threshold, comparing squared distances so the
+	 * candidates the cursor is nowhere near cost no allocation at all — this
+	 * runs over every term of every sequence on each mouse move.
+	 */
+	function toSnapCandidate(
+		candidate: PinnableCandidate,
+		cursorSvg: Point,
+		threshold: number
+	): SnapCandidate | null {
+		const svg = transformer.mathToSvg(candidate.mathX, candidate.mathY);
+		const dx = cursorSvg.x - svg.x;
+		const dy = cursorSvg.y - svg.y;
+		const squared = dx * dx + dy * dy;
+
+		if (squared >= threshold * threshold) return null;
+
+		return {
+			...candidate,
+			svgX: svg.x,
+			svgY: svg.y,
+			distance: Math.sqrt(squared)
+		} as SnapCandidate;
+	}
 
 	/**
 	 * Find the best point to snap to: prioritizes special points over curve points.
 	 * Returns null if cursor is not hovering or no point is within threshold.
 	 */
-	const hoverPoint = $derived.by(() => {
+	const hoverPoint = $derived.by((): SnapCandidate | null => {
 		const cursor = grapheurStore.cursor;
 		if (!cursor) {
 			return null;
@@ -196,116 +346,20 @@
 		const candidates: SnapCandidate[] = [];
 
 		// =======================================================================
-		// 1. Check special points first (roots, extrema from analysis)
+		// 1. Special points and terms, each with its own reach
 		// =======================================================================
-		for (const analysis of analysisResults) {
-			// Analyses only ever cover explicit functions, but the store holds
-			// sequences too — narrow while searching.
-			const func = grapheurStore.functions.find(
-				(f): f is ExplicitFunction => isExplicitFunction(f) && f.id === analysis.functionId
-			);
-			const color = func?.color ?? '#888';
+		for (const candidate of pinnableCandidates) {
+			// A sequence has one point per rank: a generous radius would blanket
+			// the whole strip and steal every hover from the curves underneath.
+			const threshold =
+				candidate.type === 'sequence' ? SEQUENCE_TERM_SNAP_THRESHOLD : SPECIAL_POINT_SNAP_THRESHOLD;
 
-			// Roots
-			for (const root of analysis.roots) {
-				const svgPoint = transformer.mathToSvg(root.x, 0);
-				const dx = cursorSvg.x - svgPoint.x;
-				const dy = cursorSvg.y - svgPoint.y;
-				const distance = Math.sqrt(dx * dx + dy * dy);
-
-				if (distance < SPECIAL_POINT_SNAP_THRESHOLD) {
-					candidates.push({
-						mathX: root.x,
-						mathY: 0,
-						svgX: svgPoint.x,
-						svgY: svgPoint.y,
-						distance,
-						type: 'root',
-						func: func ?? null,
-						functionIds: [analysis.functionId],
-						color,
-						...(root.exactX ? { exactX: root.exactX } : {})
-					});
-				}
-			}
-
-			// Extrema
-			for (const extremum of analysis.extrema) {
-				const svgPoint = transformer.mathToSvg(extremum.x, extremum.y);
-				const dx = cursorSvg.x - svgPoint.x;
-				const dy = cursorSvg.y - svgPoint.y;
-				const distance = Math.sqrt(dx * dx + dy * dy);
-
-				if (distance < SPECIAL_POINT_SNAP_THRESHOLD) {
-					candidates.push({
-						mathX: extremum.x,
-						mathY: extremum.y,
-						svgX: svgPoint.x,
-						svgY: svgPoint.y,
-						distance,
-						type: extremum.type,
-						func: func ?? null,
-						functionIds: [analysis.functionId],
-						color,
-						...(extremum.exactX ? { exactX: extremum.exactX } : {}),
-						...(extremum.exactY ? { exactY: extremum.exactY } : {})
-					});
-				}
-			}
+			const snapped = toSnapCandidate(candidate, cursorSvg, threshold);
+			if (snapped) candidates.push(snapped);
 		}
 
 		// =======================================================================
-		// 2. Check intersection points
-		// =======================================================================
-		for (const intersection of intersections) {
-			const svgPoint = transformer.mathToSvg(intersection.point.x, intersection.point.y);
-			const dx = cursorSvg.x - svgPoint.x;
-			const dy = cursorSvg.y - svgPoint.y;
-			const distance = Math.sqrt(dx * dx + dy * dy);
-
-			if (distance < SPECIAL_POINT_SNAP_THRESHOLD) {
-				candidates.push({
-					mathX: intersection.point.x,
-					mathY: intersection.point.y,
-					svgX: svgPoint.x,
-					svgY: svgPoint.y,
-					distance,
-					type: 'intersection',
-					func: null,
-					functionIds: [...intersection.functionIds],
-					color: '#6b7280' // Gray for intersections
-				});
-			}
-		}
-
-		// =======================================================================
-		// 3. Check the terms of the sequences
-		// =======================================================================
-		for (const { sequence, terms } of sequenceTerms) {
-			const found = findNearestTerm(
-				terms,
-				cursorSvg,
-				(x, y) => transformer.mathToSvg(x, y),
-				SEQUENCE_TERM_SNAP_THRESHOLD
-			);
-			if (!found) continue;
-
-			candidates.push({
-				mathX: found.term.n,
-				mathY: found.term.value,
-				svgX: found.svg.x,
-				svgY: found.svg.y,
-				distance: found.distance,
-				type: 'sequence',
-				func: null,
-				functionIds: [sequence.id],
-				color: sequence.color,
-				sequenceName: sequence.name
-			});
-		}
-
-		// =======================================================================
-		// 4. Check curve points (regular hover on curve)
+		// 2. Check curve points (regular hover on curve)
 		// =======================================================================
 		for (const func of grapheurStore.functions) {
 			if (!isExplicitFunction(func) || !func.visible || !func.ast) continue;
@@ -334,7 +388,7 @@
 		}
 
 		// =======================================================================
-		// 5. Select best candidate
+		// 3. Select best candidate
 		// =======================================================================
 		if (candidates.length === 0) {
 			return null;
@@ -374,10 +428,63 @@
 		return candidates[0];
 	});
 
+	/** A key that survives a re-render: what the label names, not where it is. */
+	function pinnedKey(pinned: PinnedLabel): string {
+		return pinned.kind === 'term'
+			? `term:${pinned.functionId}:${pinned.rank}`
+			: `point:${[...pinned.functionIds].sort().join('+')}:${pinned.pointType}:${pinned.x}`;
+	}
+
+	/**
+	 * The labels a click left behind, matched to the points they name.
+	 *
+	 * A label whose point is gone — the curve edited, the rank out of range,
+	 * the sequence switched to its staircase — draws nothing rather than a
+	 * value that is no longer true.
+	 */
+	const pinnedDrawables = $derived.by(() =>
+		grapheurStore.pinnedLabels.flatMap((pinned) => {
+			const candidate = pinnableCandidates.find((c) => isSameTarget(c.target, pinned));
+			if (!candidate) return [];
+
+			// Off screen, the label would be dragged back inside the canvas and
+			// name a point nobody can see.
+			const { viewport } = grapheurStore;
+			const inView =
+				candidate.mathX >= viewport.xMin &&
+				candidate.mathX <= viewport.xMax &&
+				candidate.mathY >= viewport.yMin &&
+				candidate.mathY <= viewport.yMax;
+			if (!inView) return [];
+
+			const svg = transformer.mathToSvg(candidate.mathX, candidate.mathY);
+
+			return [
+				{
+					key: pinnedKey(pinned),
+					candidate,
+					svg,
+					content: getLabel(candidate, pinned.showsExact)
+				}
+			];
+		})
+	);
+
+	/**
+	 * Report what the cursor is on, so a click knows what it would pin.
+	 *
+	 * A free point on a curve has no identity to pin: only the points the
+	 * solvers named, and the terms of a sequence.
+	 */
+	$effect(() => {
+		onhoveredtargetchange?.(hoverPoint?.target ?? null);
+	});
+
 	/**
 	 * Update the store's snapped point when hoverPoint changes.
 	 * This is done in an effect because it's a side effect.
 	 */
+
 	$effect(() => {
 		if (!hoverPoint) {
 			grapheurStore.setSnappedPoint(null);
@@ -403,30 +510,21 @@
 	// Formatting
 	// ==========================================================================
 
-	/**
-	 * Format a coordinate value for display.
-	 */
-	function formatCoord(n: number): string {
-		if (Math.abs(n) < 0.0001 && n !== 0) {
-			return n.toExponential(2);
-		}
-		if (Math.abs(n) >= 10000) {
-			return n.toExponential(2);
-		}
-		if (Math.abs(n) < 0.0001) {
-			return '0';
-		}
-		const formatted = n.toPrecision(4);
-		return parseFloat(formatted).toString();
-	}
+	/** A label: text form, plus LaTeX when the value is worth rendering. */
+	type HoverLabel = GraphLabelContent;
 
-	/** A tooltip label: plain text always, plus LaTeX when the values are exact. */
-	interface HoverLabel {
-		/** Text form, used for width estimation and as the fallback rendering. */
-		readonly text: string;
-		/** LaTeX form, present only when the point carries a symbolic value. */
-		readonly latex: string | null;
-	}
+	/**
+	 * What naming a point needs: its values and its kind, never its position.
+	 *
+	 * Shared by the hovered point and the pinned ones, so both are worded the
+	 * same way.
+	 */
+	type LabelSource = Pick<
+		SnapCandidate,
+		'type' | 'mathX' | 'mathY' | 'exactX' | 'exactY' | 'sequenceSpec'
+	> & {
+		sequenceName?: string;
+	};
 
 	/** French prefix shown before the coordinates, by point type. */
 	const LABEL_PREFIX: Record<string, string> = {
@@ -444,13 +542,18 @@
 	 * The LaTeX form is offered alongside the text one, and the template renders
 	 * it when present.
 	 */
-	function getLabel(point: SnapCandidate): HoverLabel {
+	function getLabel(point: LabelSource, showsExact = true): HoverLabel {
 		// A term is read as `u_3 = 0.375`: the rank is what names it, and it is
 		// exact — no need to go through the curve formatting.
 		if (point.type === 'sequence') {
-			const value = formatCoord(point.mathY);
+			// The exact value is what the maths say: -3/8, not -0.375. Computed for
+			// the term being named only, and the decimal stands in when asked for
+			// or when no exact form is readable.
+			const exact =
+				showsExact && point.sequenceSpec ? exactTermValue(point.sequenceSpec, point.mathX) : null;
+			const value = exact ? toLatex(exact) : formatGraphValue(point.mathY);
 			return {
-				text: `${point.sequenceName}${point.mathX} = ${value}`,
+				text: `${point.sequenceName}${point.mathX} = ${formatGraphValue(point.mathY)}`,
 				latex: `${point.sequenceName}_{${point.mathX}} = ${value}`
 			};
 		}
@@ -459,16 +562,16 @@
 		const isRoot = point.type === 'root';
 
 		const text = isRoot
-			? `Racine : x = ${formatCoord(point.mathX)}`
-			: `${prefix ? `${prefix} : ` : ''}(${formatCoord(point.mathX)}, ${formatCoord(point.mathY)})`;
+			? `Racine : x = ${formatGraphValue(point.mathX)}`
+			: `${prefix ? `${prefix} : ` : ''}(${formatGraphValue(point.mathX)}, ${formatGraphValue(point.mathY)})`;
 
-		if (!point.exactX) return { text, latex: null };
+		if (!showsExact || !point.exactX) return { text, latex: null };
 
 		const x = toLatex(point.exactX);
 		const latex = isRoot
 			? `\\text{Racine : } x = ${x}`
 			: `\\text{${prefix ?? ''} : } \\left( ${x} \\, ; \\, ${
-					point.exactY ? toLatex(point.exactY) : formatCoord(point.mathY)
+					point.exactY ? toLatex(point.exactY) : formatGraphValue(point.mathY)
 				} \\right)`;
 
 		return { text, latex };
@@ -497,48 +600,33 @@
 				return '';
 		}
 	}
-
-	/**
-	 * Calculate tooltip position to keep it within bounds.
-	 */
-	function getTooltipPosition(
-		svgX: number,
-		svgY: number,
-		labelLength: number
-	): { x: number; y: number; anchor: 'start' | 'end' } {
-		const tooltipWidth = Math.max(105, labelLength * 7);
-		const tooltipHeight = 20;
-		const margin = 12;
-
-		let tooltipX = svgX + margin;
-		let anchor: 'start' | 'end' = 'start';
-
-		// If too close to right edge, flip to left
-		if (svgX + tooltipWidth + margin > width) {
-			tooltipX = svgX - margin;
-			anchor = 'end';
-		}
-
-		// Position above the point, unless too close to top or bottom
-		let tooltipY = svgY - margin - 8;
-		if (tooltipY < margin + tooltipHeight) {
-			// Try below the point
-			tooltipY = svgY + margin + tooltipHeight;
-			// If still overflows bottom, clamp it
-			if (tooltipY + tooltipHeight > height - margin) {
-				tooltipY = height - tooltipHeight - margin;
-			}
-		}
-
-		return { x: tooltipX, y: tooltipY, anchor };
-	}
 </script>
+
+<g class="pinned-labels" pointer-events="none">
+	{#each pinnedDrawables as pinned (pinned.key)}
+		<circle
+			cx={pinned.svg.x}
+			cy={pinned.svg.y}
+			r={6}
+			fill={pinned.candidate.color}
+			stroke="white"
+			stroke-width={2}
+			class="pinned-marker"
+		/>
+
+		<GraphLabel
+			x={pinned.svg.x}
+			y={pinned.svg.y}
+			content={pinned.content}
+			canvasWidth={width}
+			canvasHeight={height}
+		/>
+	{/each}
+</g>
 
 {#if hoverPoint}
 	{@const label = getLabel(hoverPoint)}
-	{@const tooltipPos = getTooltipPosition(hoverPoint.svgX, hoverPoint.svgY, label.text.length)}
 	{@const markerPath = getMarkerPath(hoverPoint.svgX, hoverPoint.svgY, hoverPoint.type)}
-	{@const tooltipWidth = Math.max(105, label.text.length * 7)}
 	<g class="curve-hover" pointer-events="none">
 		<!-- Marker: shaped based on point type -->
 		{#if markerPath}
@@ -563,75 +651,23 @@
 			/>
 		{/if}
 
-		<!-- Coordinate label background -->
-		<rect
-			x={tooltipPos.anchor === 'start' ? tooltipPos.x : tooltipPos.x - tooltipWidth}
-			y={tooltipPos.y - 10}
-			width={tooltipWidth}
-			height={20}
-			rx={4}
-			class="tooltip-bg"
+		<!-- Value label, shared with the labels a click leaves behind -->
+		<GraphLabel
+			x={hoverPoint.svgX}
+			y={hoverPoint.svgY}
+			content={label}
+			canvasWidth={width}
+			canvasHeight={height}
 		/>
-
-		<!-- Coordinate label: rendered maths when the value is exact, text otherwise -->
-		{#if label.latex}
-			<foreignObject
-				x={tooltipPos.anchor === 'start' ? tooltipPos.x : tooltipPos.x - tooltipWidth}
-				y={tooltipPos.y - 10}
-				width={tooltipWidth}
-				height={20}
-			>
-				<div class="tooltip-math" data-anchor={tooltipPos.anchor}>
-					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-					{@html convertLatexToMarkup(label.latex, { defaultMode: 'inline-math' })}
-				</div>
-			</foreignObject>
-		{:else}
-			<text
-				x={tooltipPos.anchor === 'start' ? tooltipPos.x + 6 : tooltipPos.x - 6}
-				y={tooltipPos.y + 4}
-				text-anchor={tooltipPos.anchor}
-				class="tooltip-text"
-			>
-				{label.text}
-			</text>
-		{/if}
 	</g>
 {/if}
 
 <style>
-	.hover-marker {
+	.pinned-marker {
 		filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
 	}
 
-	.tooltip-bg {
-		fill: var(--graph-tooltip-bg, #1f2937);
-		opacity: 0.95;
-	}
-
-	.tooltip-math {
-		display: flex;
-		align-items: center;
-		height: 20px;
-		padding: 0 6px;
-		font-size: 11px;
-		color: white;
-		white-space: nowrap;
-		overflow: hidden;
-	}
-
-	.tooltip-math[data-anchor='end'] {
-		justify-content: flex-end;
-	}
-
-	.tooltip-text {
-		font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
-		font-size: 11px;
-		fill: white;
-		user-select: none;
-	}
-
-	:global(.dark) .tooltip-bg {
-		fill: var(--graph-tooltip-bg-dark, #374151);
+	.hover-marker {
+		filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
 	}
 </style>
