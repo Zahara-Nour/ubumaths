@@ -25,7 +25,7 @@
 		SnappedPointType,
 		SnappedPoint
 	} from '$lib/grapheur/types';
-	import { isExplicitFunction, isSequence, supportsCobweb } from '$lib/grapheur/types';
+	import { isCobwebEnabled, isExplicitFunction, isSequence } from '$lib/grapheur/types';
 	import {
 		computeSequenceTerms,
 		filterVisibleTerms,
@@ -63,6 +63,16 @@
 
 	/** Snap threshold in pixels for special points (slightly larger for priority) */
 	const SPECIAL_POINT_SNAP_THRESHOLD = 25;
+
+	/**
+	 * Snap threshold in pixels for the term of a sequence.
+	 *
+	 * Deliberately smaller than the one for special points: a sequence has one
+	 * point per rank, so a generous radius would blanket the whole strip and
+	 * steal every hover from the curves underneath. This one stays close to the
+	 * drawn dot.
+	 */
+	const SEQUENCE_TERM_SNAP_THRESHOLD = 12;
 
 	/** Maximum functions for intersection detection */
 	const MAX_FUNCTIONS_FOR_INTERSECTIONS = 10;
@@ -102,25 +112,39 @@
 	});
 
 	/**
-	 * Terms currently drawn, sequence by sequence.
+	 * Highest rank worth computing, as an integer.
 	 *
-	 * Deliberately kept out of `hoverPoint`: recomputing every term at each
-	 * mouse move would iterate the recurrences for nothing. These only change
-	 * when the sequences, the viewport or the parameters do.
+	 * Read on its own so a pan only recomputes the terms when a rank is actually
+	 * crossed, instead of on every frame — the same reasoning as SequencePlot.
 	 */
-	const sequenceTerms = $derived.by(() =>
+	const sequenceLastIndex = $derived(Math.ceil(grapheurStore.viewport.xMax));
+
+	/**
+	 * Terms of every sequence, computed but not yet clipped to the viewport.
+	 *
+	 * Deliberately kept out of `hoverPoint`: recomputing them at each mouse move
+	 * would iterate the recurrences for nothing. They only change when the
+	 * sequences, the parameters or the highest rank do.
+	 */
+	const computedSequenceTerms = $derived.by(() =>
 		grapheurStore.functions.filter(isSequence).flatMap((sequence: SequencePlottable) => {
 			// The staircase puts u_n on the abscissa instead of the rank: there is
 			// no (n, u_n) point to hover over there.
-			const cobweb = sequence.representation === 'cobweb' && supportsCobweb(sequence);
-			if (!sequence.visible || !sequence.ast || cobweb) return [];
+			if (!sequence.visible || !sequence.ast || isCobwebEnabled(sequence)) return [];
 
 			const spec = toComputeSpec(sequence, grapheurStore.parameterBindings);
 			if (!spec) return [];
 
-			const terms = computeSequenceTerms(spec, Math.ceil(grapheurStore.viewport.xMax));
-			return [{ sequence, terms: filterVisibleTerms(terms, grapheurStore.viewport) }];
+			return [{ sequence, terms: computeSequenceTerms(spec, sequenceLastIndex) }];
 		})
+	);
+
+	/** The same terms, clipped to what the plot actually draws. */
+	const sequenceTerms = $derived(
+		computedSequenceTerms.map(({ sequence, terms }) => ({
+			sequence,
+			terms: filterVisibleTerms(terms, grapheurStore.viewport)
+		}))
 	);
 
 	// ==========================================================================
@@ -130,13 +154,12 @@
 	/**
 	 * Represents a candidate point to snap to
 	 */
-	interface SnapCandidate {
+	interface SnapCandidateBase {
 		mathX: number;
 		mathY: number;
 		svgX: number;
 		svgY: number;
 		distance: number;
-		type: 'curve' | 'sequence' | SnappedPointType;
 		func: ExplicitFunction | null;
 		functionIds: string[];
 		color: string;
@@ -144,9 +167,20 @@
 		exactX?: MathNode;
 		/** Symbolic ordinate, simplified, when known exactly. */
 		exactY?: MathNode;
-		/** Name of the sequence the term belongs to, for a `sequence` point. */
-		sequenceName?: string;
 	}
+
+	/**
+	 * A candidate point to snap to.
+	 *
+	 * Discriminated on `type` so a term cannot be pushed without the name that
+	 * labels it — an optional field would let `getLabel` fall back in silence to
+	 * the plain `(3, 0.375)` of a curve point.
+	 */
+	type SnapCandidate = SnapCandidateBase &
+		(
+			| { type: 'sequence'; sequenceName: string }
+			| { type: 'curve' | SnappedPointType; sequenceName?: undefined }
+		);
 
 	/**
 	 * Find the best point to snap to: prioritizes special points over curve points.
@@ -252,7 +286,7 @@
 				terms,
 				cursorSvg,
 				(x, y) => transformer.mathToSvg(x, y),
-				SPECIAL_POINT_SNAP_THRESHOLD
+				SEQUENCE_TERM_SNAP_THRESHOLD
 			);
 			if (!found) continue;
 
@@ -310,7 +344,9 @@
 		// Priority order: sequence term / intersection > root > max/min > curve
 		// A term of a sequence is an exact, isolated point: it wins over a curve,
 		// which the cursor can follow anywhere.
-		const priorityOrder: Record<string, number> = {
+		// Typed on the candidate kinds: a new one cannot be forgotten here, where
+		// a missing key would silently sort as undefined.
+		const priorityOrder: Record<SnapCandidate['type'], number> = {
 			sequence: 0,
 			intersection: 0,
 			root: 1,
@@ -354,7 +390,7 @@
 			const newSnapped: SnappedPoint = {
 				x: hoverPoint.mathX,
 				y: hoverPoint.mathY,
-				type: hoverPoint.type as SnappedPointType,
+				type: hoverPoint.type,
 				functionIds: hoverPoint.functionIds
 			};
 			grapheurStore.setSnappedPoint(newSnapped);
@@ -411,7 +447,7 @@
 	function getLabel(point: SnapCandidate): HoverLabel {
 		// A term is read as `u_3 = 0.375`: the rank is what names it, and it is
 		// exact — no need to go through the curve formatting.
-		if (point.type === 'sequence' && point.sequenceName) {
+		if (point.type === 'sequence') {
 			const value = formatCoord(point.mathY);
 			return {
 				text: `${point.sequenceName}${point.mathX} = ${value}`,

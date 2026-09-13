@@ -10,7 +10,7 @@
 	 */
 
 	import type { Point, SequencePlottable, Viewport } from '$lib/grapheur/types';
-	import { LINE_STYLE_DASHARRAY, supportsCobweb } from '$lib/grapheur/types';
+	import { isCobwebEnabled, LINE_STYLE_DASHARRAY } from '$lib/grapheur/types';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
 	import {
 		computeCobwebPath,
@@ -70,7 +70,7 @@
 	// ==========================================================================
 
 	/** Whether the staircase is the representation in use. */
-	const cobwebEnabled = $derived(sequence.representation === 'cobweb' && supportsCobweb(sequence));
+	const cobwebEnabled = $derived(isCobwebEnabled(sequence));
 
 	/**
 	 * Highest rank worth computing.

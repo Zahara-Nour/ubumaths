@@ -265,7 +265,8 @@ export function filterVisibleTerms(
  * @param terms - Terms to search, usually the visible ones
  * @param cursorSvg - Cursor position, in SVG coordinates
  * @param mathToSvg - Projection from maths coordinates to SVG ones
- * @param threshold - Largest distance, in pixels, that still counts as a hover
+ * @param threshold - Distance, in pixels, beyond which a term is out of reach
+ *   (exclusive, like every other snap threshold of the grapheur)
  *
  * @example
  * ```typescript
@@ -287,7 +288,7 @@ export function findNearestTerm(
 		const dy = cursorSvg.y - svg.y;
 		const distance = Math.sqrt(dx * dx + dy * dy);
 
-		if (distance > threshold) continue;
+		if (distance >= threshold) continue;
 		if (nearest && nearest.distance <= distance) continue;
 
 		nearest = { term, svg, distance };

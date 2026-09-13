@@ -160,6 +160,18 @@ export function supportsCobweb(seq: SequencePlottable): boolean {
 	return seq.mode === 'recurrence' && !seq.usesIndex && seq.ast !== undefined;
 }
 
+/**
+ * Whether the staircase is what is actually drawn.
+ *
+ * A sequence can ask for the staircase and not be able to hold one (an
+ * explicit sequence, or a recurrence in n): it then falls back to the cloud of
+ * ranks. Everything that has to agree with what is on screen — the plot, the
+ * hover — asks this, not the representation alone.
+ */
+export function isCobwebEnabled(seq: SequencePlottable): boolean {
+	return seq.representation === 'cobweb' && supportsCobweb(seq);
+}
+
 // =============================================================================
 // Graph State Types (grapheur-specific)
 // =============================================================================

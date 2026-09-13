@@ -505,6 +505,15 @@ describe('findNearestTerm', () => {
 		expect(found?.svg).toEqual({ x: 10, y: -10 });
 	});
 
+	// The threshold is exclusive, like every other snap threshold of the
+	// grapheur: a term exactly on the boundary would otherwise become a
+	// candidate and then lose the priority sort.
+	it('leaves out a term exactly on the threshold', () => {
+		// The only term sits at (0, 0), so the cursor is 20 pixels away.
+		expect(findNearestTerm([{ n: 0, value: 0 }], { x: 20, y: 0 }, mathToSvg, 20)).toBeNull();
+		expect(findNearestTerm([{ n: 0, value: 0 }], { x: 19, y: 0 }, mathToSvg, 20)).not.toBeNull();
+	});
+
 	it('returns nothing for an empty sequence', () => {
 		expect(findNearestTerm([], { x: 0, y: 0 }, mathToSvg, 20)).toBeNull();
 	});
