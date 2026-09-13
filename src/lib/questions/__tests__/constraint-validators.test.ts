@@ -2752,8 +2752,16 @@ describe('checkReducedFractions', () => {
 			expect(checkReducedFractions(['\\frac{'])).toHaveLength(0);
 		});
 
-		it('should handle \\frac without proper braces', () => {
-			expect(checkReducedFractions(['\\frac 2 4'])).toHaveLength(0);
+		// Unbraced arguments are valid TeX, and MathLive emits them as soon as an
+		// argument fits in one character — so 2/4 typed by a student arrives as
+		// `\frac24` and must be caught like any other unreduced fraction.
+		it('should catch an unreduced fraction written without braces', () => {
+			expect(checkReducedFractions(['\\frac 2 4'])).toEqual([0]);
+			expect(checkReducedFractions(['\\frac24'])).toEqual([0]);
+		});
+
+		it('should accept a reduced fraction written without braces', () => {
+			expect(checkReducedFractions(['\\frac12'])).toHaveLength(0);
 		});
 
 		it('should handle large numbers: 1000/2000', () => {
