@@ -955,10 +955,12 @@ export const actions: Actions = {
 			return fail(400, { error: 'Type de fichier non supporte', action: 'uploadDocument' });
 		}
 
-		// Validate file size (10MB)
-		const MAX_SIZE = 10 * 1024 * 1024;
+		// Le plafond vit aussi sur le bucket `chapter-documents` : les deux
+		// doivent s'accorder, sans quoi le stockage refuse ce que l'application
+		// vient d'accepter.
+		const MAX_SIZE = 25 * 1024 * 1024;
 		if (file.size > MAX_SIZE) {
-			return fail(400, { error: 'Fichier trop volumineux (max 10MB)', action: 'uploadDocument' });
+			return fail(400, { error: 'Fichier trop volumineux (max 25 Mo)', action: 'uploadDocument' });
 		}
 
 		try {

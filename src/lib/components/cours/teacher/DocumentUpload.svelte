@@ -45,7 +45,9 @@
 	let isAddingGoogleDrive = $state(false);
 
 	// Constants
-	const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+	// Doit rester d'accord avec l'action d'envoi et avec le bucket
+	// `chapter-documents` : trois plafonds pour un seul refus possible.
+	const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 Mo
 	const ALLOWED_TYPES = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
 	const ALLOWED_EXTENSIONS = ['pdf', 'png', 'jpg', 'jpeg', 'gif'];
 
@@ -58,7 +60,7 @@
 			}
 		}
 		if (file.size > MAX_FILE_SIZE) {
-			return `Le fichier est trop volumineux (max ${MAX_FILE_SIZE / (1024 * 1024)}MB)`;
+			return `Le fichier est trop volumineux (max ${MAX_FILE_SIZE / (1024 * 1024)} Mo)`;
 		}
 		return null;
 	}
@@ -223,7 +225,7 @@
 									parcourez
 								</button>
 							</p>
-							<p class="mt-2 text-xs text-muted-foreground">PDF, PNG, JPG, GIF (max 10MB)</p>
+							<p class="mt-2 text-xs text-muted-foreground">PDF, PNG, JPG, GIF (max 25 Mo)</p>
 							<input
 								id="file-input"
 								type="file"
