@@ -195,7 +195,11 @@ question et par élève, refusé en 429.
 `INSERT` — une écriture directe via PostgREST ne passe pas par l'API. Fermer ce
 chemin demanderait un garde **en base** (trigger, comme les soumissions Python)
 ou le retrait du droit `INSERT` au profit d'une fonction `SECURITY DEFINER`.
-**Non fait, décision en attente de David.**
+
+⛔ **Tranché par David le 2026-09-13 : on laisse comme ça. Ne plus le
+proposer.** Le dégât plafonne à un élève qui gonfle SES statistiques et pollue
+SON calendrier SRS ; aucune donnée d'un autre élève n'est atteignable, et
+l'exposition est celle, déjà acceptée, de `worksheet_error_reports`.
 
 Ce que le plafond protège réellement : un client qui re-soumet en boucle. Ce
 n'est pas théorique — la première version de `ChapterQuiz` re-postait à chaque
@@ -211,10 +215,20 @@ applicatif.
 
 ### Deux choix à connaître
 
-- **La correction reste côté client.** `isCorrect` est calculé dans le
-  navigateur et posté tel quel, comme partout ailleurs (automaths, SRS). Admis
-  pour un entraînement ; **à revoir si le quiz doit un jour compter comme une
-  note** — ça suppose une revalidation serveur, qui ne se rajoute pas après coup.
+- **La correction reste côté client — ⛔ tranché le 2026-09-13, ne plus le
+  proposer.** `validateAnswer` n'est appelé que depuis `FlashCard`,
+  `QuestionCard` et `QuestionSlide` ; il n'est importé nulle part sous
+  `src/routes/api/` ni `src/lib/server/`. Le serveur reçoit un verdict déjà
+  rendu (`isCorrect: z.boolean()`), et l'instance envoyée au navigateur porte la
+  réponse attendue. Vrai pour **tout** le système de questions : /automaths, le
+  SRS, les tests, le quiz.
+
+  Conséquence à garder en tête : **les statistiques de quiz sont un outil pour
+  l'élève, pas une mesure sur laquelle noter.** Le jour où David voudrait noter,
+  le chantier n'est pas le plafond d'insertions mais la correction serveur — le
+  dépôt sait déjà le faire (combats navadra, exercices Python), ça n'a
+  simplement jamais été appliqué aux `question_templates`.
+
 - **`FlashCard` interactive poste aussi vers `/api/skill-attempts`** (table vide
   à ce jour). Le quiz alimente donc le suivi par compétence en plus de
   `chapter_quiz_results`. Effet de bord assumé, validé par David.
