@@ -8,6 +8,7 @@
 	 * Features:
 	 * - Snap to nearest curve point
 	 * - PRIORITY snap to special points (roots, extrema, intersections)
+	 * - PRIORITY snap to the terms of a sequence, labelled u_n = value
 	 * - Display (x, y) coordinates with point type label
 	 * - Marker in function color (or gray for intersections)
 	 * - Instant snap (no animation)
@@ -18,8 +19,19 @@
 
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
-	import type { ExplicitFunction, SnappedPointType, SnappedPoint } from '$lib/grapheur/types';
-	import { isExplicitFunction } from '$lib/grapheur/types';
+	import type {
+		ExplicitFunction,
+		SequencePlottable,
+		SnappedPointType,
+		SnappedPoint
+	} from '$lib/grapheur/types';
+	import { isExplicitFunction, isSequence, supportsCobweb } from '$lib/grapheur/types';
+	import {
+		computeSequenceTerms,
+		filterVisibleTerms,
+		findNearestTerm,
+		toComputeSpec
+	} from '$lib/grapheur/sequence';
 	import { createEvaluator } from '$lib/grapheur/evaluator';
 	import { analyzeAllFunctions, toAnalysisInputs } from '$lib/grapheur/analysis';
 	import { convertLatexToMarkup } from 'mathlive';
@@ -89,6 +101,28 @@
 		return deduplicateIntersections(rawIntersections, 0.01);
 	});
 
+	/**
+	 * Terms currently drawn, sequence by sequence.
+	 *
+	 * Deliberately kept out of `hoverPoint`: recomputing every term at each
+	 * mouse move would iterate the recurrences for nothing. These only change
+	 * when the sequences, the viewport or the parameters do.
+	 */
+	const sequenceTerms = $derived.by(() =>
+		grapheurStore.functions.filter(isSequence).flatMap((sequence: SequencePlottable) => {
+			// The staircase puts u_n on the abscissa instead of the rank: there is
+			// no (n, u_n) point to hover over there.
+			const cobweb = sequence.representation === 'cobweb' && supportsCobweb(sequence);
+			if (!sequence.visible || !sequence.ast || cobweb) return [];
+
+			const spec = toComputeSpec(sequence, grapheurStore.parameterBindings);
+			if (!spec) return [];
+
+			const terms = computeSequenceTerms(spec, Math.ceil(grapheurStore.viewport.xMax));
+			return [{ sequence, terms: filterVisibleTerms(terms, grapheurStore.viewport) }];
+		})
+	);
+
 	// ==========================================================================
 	// Hover Point Detection
 	// ==========================================================================
@@ -102,7 +136,7 @@
 		svgX: number;
 		svgY: number;
 		distance: number;
-		type: 'curve' | SnappedPointType;
+		type: 'curve' | 'sequence' | SnappedPointType;
 		func: ExplicitFunction | null;
 		functionIds: string[];
 		color: string;
@@ -110,6 +144,8 @@
 		exactX?: MathNode;
 		/** Symbolic ordinate, simplified, when known exactly. */
 		exactY?: MathNode;
+		/** Name of the sequence the term belongs to, for a `sequence` point. */
+		sequenceName?: string;
 	}
 
 	/**
@@ -209,7 +245,33 @@
 		}
 
 		// =======================================================================
-		// 3. Check curve points (regular hover on curve)
+		// 3. Check the terms of the sequences
+		// =======================================================================
+		for (const { sequence, terms } of sequenceTerms) {
+			const found = findNearestTerm(
+				terms,
+				cursorSvg,
+				(x, y) => transformer.mathToSvg(x, y),
+				SPECIAL_POINT_SNAP_THRESHOLD
+			);
+			if (!found) continue;
+
+			candidates.push({
+				mathX: found.term.n,
+				mathY: found.term.value,
+				svgX: found.svg.x,
+				svgY: found.svg.y,
+				distance: found.distance,
+				type: 'sequence',
+				func: null,
+				functionIds: [sequence.id],
+				color: sequence.color,
+				sequenceName: sequence.name
+			});
+		}
+
+		// =======================================================================
+		// 4. Check curve points (regular hover on curve)
 		// =======================================================================
 		for (const func of grapheurStore.functions) {
 			if (!isExplicitFunction(func) || !func.visible || !func.ast) continue;
@@ -238,15 +300,18 @@
 		}
 
 		// =======================================================================
-		// 4. Select best candidate
+		// 5. Select best candidate
 		// =======================================================================
 		if (candidates.length === 0) {
 			return null;
 		}
 
 		// Sort by priority: special points first, then by distance
-		// Priority order: intersection > root > max/min > curve
+		// Priority order: sequence term / intersection > root > max/min > curve
+		// A term of a sequence is an exact, isolated point: it wins over a curve,
+		// which the cursor can follow anywhere.
 		const priorityOrder: Record<string, number> = {
+			sequence: 0,
 			intersection: 0,
 			root: 1,
 			max: 2,
@@ -283,7 +348,9 @@
 			return;
 		}
 
-		if (hoverPoint.type !== 'curve') {
+		// `sequence` and `curve` are not analysis results: the store only carries
+		// the special points other components draw.
+		if (hoverPoint.type !== 'curve' && hoverPoint.type !== 'sequence') {
 			const newSnapped: SnappedPoint = {
 				x: hoverPoint.mathX,
 				y: hoverPoint.mathY,
@@ -342,6 +409,16 @@
 	 * it when present.
 	 */
 	function getLabel(point: SnapCandidate): HoverLabel {
+		// A term is read as `u_3 = 0.375`: the rank is what names it, and it is
+		// exact — no need to go through the curve formatting.
+		if (point.type === 'sequence' && point.sequenceName) {
+			const value = formatCoord(point.mathY);
+			return {
+				text: `${point.sequenceName}${point.mathX} = ${value}`,
+				latex: `${point.sequenceName}_{${point.mathX}} = ${value}`
+			};
+		}
+
 		const prefix = LABEL_PREFIX[point.type];
 		const isRoot = point.type === 'root';
 

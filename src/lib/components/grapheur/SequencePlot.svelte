@@ -16,6 +16,7 @@
 		computeCobwebPath,
 		computeSequenceTerms,
 		createRecurrenceFunctionEvaluator,
+		filterVisibleTerms,
 		toComputeSpec
 	} from '$lib/grapheur/sequence';
 	import { sampleFunction } from '$lib/geometry-core/viewport';
@@ -102,19 +103,11 @@
 	const visiblePoints = $derived.by(() =>
 		cobwebEnabled
 			? []
-			: terms
-					.filter(
-						(term) =>
-							term.n >= viewport.xMin - 1 &&
-							term.n <= viewport.xMax + 1 &&
-							term.value >= viewport.yMin &&
-							term.value <= viewport.yMax
-					)
-					.map((term) => ({
-						n: term.n,
-						value: term.value,
-						svg: transformer.mathToSvg(term.n, term.value)
-					}))
+			: filterVisibleTerms(terms, viewport).map((term) => ({
+					n: term.n,
+					value: term.value,
+					svg: transformer.mathToSvg(term.n, term.value)
+				}))
 	);
 
 	/** Staircase polyline. */

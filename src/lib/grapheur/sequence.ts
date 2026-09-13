@@ -22,7 +22,7 @@ import type { MathNode, SubscriptNode } from '$lib/mathAST/types';
 import { transformAST } from '$lib/mathAST/visitor';
 // Imported from geometry-core rather than from grapheur/types, which depends on
 // this module for MAX_SEQUENCE_TERMS.
-import type { Point } from '$lib/geometry-core/viewport';
+import type { Point, Viewport } from '$lib/geometry-core/viewport';
 
 // =============================================================================
 // Types
@@ -47,6 +47,15 @@ export interface SequenceParseResult {
 export interface SequenceTerm {
 	readonly n: number;
 	readonly value: number;
+}
+
+/** A term found under the cursor, with what the caller needs to draw it. */
+export interface NearestTerm {
+	readonly term: SequenceTerm;
+	/** Screen position of the term. */
+	readonly svg: Point;
+	/** Distance in pixels between the cursor and the term. */
+	readonly distance: number;
 }
 
 /** Everything needed to compute the terms of a sequence. */
@@ -218,6 +227,73 @@ export function parseSequence(
 		error: null,
 		usesIndex: variables.has(INDEX_VARIABLE)
 	};
+}
+
+// =============================================================================
+// Hover
+// =============================================================================
+
+/**
+ * Keep the terms the plot actually draws.
+ *
+ * The one-rank horizontal margin matches what SequencePlot renders: a point
+ * half a rank off screen is still visible, so it must stay hoverable.
+ *
+ * @param terms - Computed terms, in rank order
+ * @param viewport - Current viewport, in maths coordinates
+ */
+export function filterVisibleTerms(
+	terms: readonly SequenceTerm[],
+	viewport: Viewport
+): SequenceTerm[] {
+	return terms.filter(
+		(term) =>
+			term.n >= viewport.xMin - 1 &&
+			term.n <= viewport.xMax + 1 &&
+			term.value >= viewport.yMin &&
+			term.value <= viewport.yMax
+	);
+}
+
+/**
+ * Find the term closest to the cursor, within a pixel threshold.
+ *
+ * The distance is measured on screen rather than in maths coordinates: a unit
+ * of rank and a unit of value have no reason to be the same number of pixels,
+ * and it is pixels the student is pointing with.
+ *
+ * @param terms - Terms to search, usually the visible ones
+ * @param cursorSvg - Cursor position, in SVG coordinates
+ * @param mathToSvg - Projection from maths coordinates to SVG ones
+ * @param threshold - Largest distance, in pixels, that still counts as a hover
+ *
+ * @example
+ * ```typescript
+ * const found = findNearestTerm(terms, cursorSvg, transformer.mathToSvg, 20);
+ * if (found) console.log(`u_${found.term.n} = ${found.term.value}`);
+ * ```
+ */
+export function findNearestTerm(
+	terms: readonly SequenceTerm[],
+	cursorSvg: Point,
+	mathToSvg: (x: number, y: number) => Point,
+	threshold: number
+): NearestTerm | null {
+	let nearest: NearestTerm | null = null;
+
+	for (const term of terms) {
+		const svg = mathToSvg(term.n, term.value);
+		const dx = cursorSvg.x - svg.x;
+		const dy = cursorSvg.y - svg.y;
+		const distance = Math.sqrt(dx * dx + dy * dy);
+
+		if (distance > threshold) continue;
+		if (nearest && nearest.distance <= distance) continue;
+
+		nearest = { term, svg, distance };
+	}
+
+	return nearest;
 }
 
 /**
