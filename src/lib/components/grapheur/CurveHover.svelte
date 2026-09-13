@@ -32,6 +32,10 @@
 		findNearestTerm,
 		toComputeSpec
 	} from '$lib/grapheur/sequence';
+	import { exactTermValue } from '$lib/grapheur/exact';
+	import { formatGraphValue } from '$lib/grapheur/format';
+	import type { PinnedLabelTarget } from '$lib/grapheur/pinned-labels';
+	import GraphLabel, { type GraphLabelContent } from './GraphLabel.svelte';
 	import { createEvaluator } from '$lib/grapheur/evaluator';
 	import { analyzeAllFunctions, toAnalysisInputs } from '$lib/grapheur/analysis';
 	import { convertLatexToMarkup } from 'mathlive';
@@ -47,11 +51,20 @@
 	let {
 		transformer,
 		width,
-		height
+		height,
+		onhoveredtermchange
 	}: {
 		transformer: CoordinateTransformer;
 		width: number;
 		height: number;
+		/**
+		 * Term currently under the cursor, or null.
+		 *
+		 * The click lives in GraphSVG, which owns the pointer gestures and can
+		 * tell a click from the end of a pan; it needs to know what is being
+		 * pointed at.
+		 */
+		onhoveredtermchange?: (target: PinnedLabelTarget | null) => void;
 	} = $props();
 
 	// ==========================================================================
@@ -135,14 +148,15 @@
 			const spec = toComputeSpec(sequence, grapheurStore.parameterBindings);
 			if (!spec) return [];
 
-			return [{ sequence, terms: computeSequenceTerms(spec, sequenceLastIndex) }];
+			return [{ sequence, spec, terms: computeSequenceTerms(spec, sequenceLastIndex) }];
 		})
 	);
 
 	/** The same terms, clipped to what the plot actually draws. */
 	const sequenceTerms = $derived(
-		computedSequenceTerms.map(({ sequence, terms }) => ({
+		computedSequenceTerms.map(({ sequence, spec, terms }) => ({
 			sequence,
+			spec,
 			terms: filterVisibleTerms(terms, grapheurStore.viewport)
 		}))
 	);
@@ -281,7 +295,7 @@
 		// =======================================================================
 		// 3. Check the terms of the sequences
 		// =======================================================================
-		for (const { sequence, terms } of sequenceTerms) {
+		for (const { sequence, spec, terms } of sequenceTerms) {
 			const found = findNearestTerm(
 				terms,
 				cursorSvg,
@@ -300,7 +314,13 @@
 				func: null,
 				functionIds: [sequence.id],
 				color: sequence.color,
-				sequenceName: sequence.name
+				sequenceName: sequence.name,
+				// Computed for the hovered term only: the whole point of an exact
+				// value is that it is asked for, one point at a time.
+				...(() => {
+					const exact = exactTermValue(spec, found.term.n);
+					return exact ? { exactY: exact } : {};
+				})()
 			});
 		}
 
@@ -379,6 +399,14 @@
 	 * This is done in an effect because it's a side effect.
 	 */
 	$effect(() => {
+		onhoveredtermchange?.(
+			hoverPoint?.type === 'sequence'
+				? { functionId: hoverPoint.functionIds[0], rank: hoverPoint.mathX }
+				: null
+		);
+	});
+
+	$effect(() => {
 		if (!hoverPoint) {
 			grapheurStore.setSnappedPoint(null);
 			return;
@@ -403,30 +431,8 @@
 	// Formatting
 	// ==========================================================================
 
-	/**
-	 * Format a coordinate value for display.
-	 */
-	function formatCoord(n: number): string {
-		if (Math.abs(n) < 0.0001 && n !== 0) {
-			return n.toExponential(2);
-		}
-		if (Math.abs(n) >= 10000) {
-			return n.toExponential(2);
-		}
-		if (Math.abs(n) < 0.0001) {
-			return '0';
-		}
-		const formatted = n.toPrecision(4);
-		return parseFloat(formatted).toString();
-	}
-
-	/** A tooltip label: plain text always, plus LaTeX when the values are exact. */
-	interface HoverLabel {
-		/** Text form, used for width estimation and as the fallback rendering. */
-		readonly text: string;
-		/** LaTeX form, present only when the point carries a symbolic value. */
-		readonly latex: string | null;
-	}
+	/** A label: text form, plus LaTeX when the value is worth rendering. */
+	type HoverLabel = GraphLabelContent;
 
 	/** French prefix shown before the coordinates, by point type. */
 	const LABEL_PREFIX: Record<string, string> = {
@@ -448,9 +454,11 @@
 		// A term is read as `u_3 = 0.375`: the rank is what names it, and it is
 		// exact — no need to go through the curve formatting.
 		if (point.type === 'sequence') {
-			const value = formatCoord(point.mathY);
+			// The exact value is what the maths say: -3/8, not -0.375. The decimal
+			// stands in only when no exact form is reachable or readable.
+			const value = point.exactY ? toLatex(point.exactY) : formatGraphValue(point.mathY);
 			return {
-				text: `${point.sequenceName}${point.mathX} = ${value}`,
+				text: `${point.sequenceName}${point.mathX} = ${formatGraphValue(point.mathY)}`,
 				latex: `${point.sequenceName}_{${point.mathX}} = ${value}`
 			};
 		}
@@ -459,8 +467,8 @@
 		const isRoot = point.type === 'root';
 
 		const text = isRoot
-			? `Racine : x = ${formatCoord(point.mathX)}`
-			: `${prefix ? `${prefix} : ` : ''}(${formatCoord(point.mathX)}, ${formatCoord(point.mathY)})`;
+			? `Racine : x = ${formatGraphValue(point.mathX)}`
+			: `${prefix ? `${prefix} : ` : ''}(${formatGraphValue(point.mathX)}, ${formatGraphValue(point.mathY)})`;
 
 		if (!point.exactX) return { text, latex: null };
 
@@ -468,7 +476,7 @@
 		const latex = isRoot
 			? `\\text{Racine : } x = ${x}`
 			: `\\text{${prefix ?? ''} : } \\left( ${x} \\, ; \\, ${
-					point.exactY ? toLatex(point.exactY) : formatCoord(point.mathY)
+					point.exactY ? toLatex(point.exactY) : formatGraphValue(point.mathY)
 				} \\right)`;
 
 		return { text, latex };
@@ -497,48 +505,11 @@
 				return '';
 		}
 	}
-
-	/**
-	 * Calculate tooltip position to keep it within bounds.
-	 */
-	function getTooltipPosition(
-		svgX: number,
-		svgY: number,
-		labelLength: number
-	): { x: number; y: number; anchor: 'start' | 'end' } {
-		const tooltipWidth = Math.max(105, labelLength * 7);
-		const tooltipHeight = 20;
-		const margin = 12;
-
-		let tooltipX = svgX + margin;
-		let anchor: 'start' | 'end' = 'start';
-
-		// If too close to right edge, flip to left
-		if (svgX + tooltipWidth + margin > width) {
-			tooltipX = svgX - margin;
-			anchor = 'end';
-		}
-
-		// Position above the point, unless too close to top or bottom
-		let tooltipY = svgY - margin - 8;
-		if (tooltipY < margin + tooltipHeight) {
-			// Try below the point
-			tooltipY = svgY + margin + tooltipHeight;
-			// If still overflows bottom, clamp it
-			if (tooltipY + tooltipHeight > height - margin) {
-				tooltipY = height - tooltipHeight - margin;
-			}
-		}
-
-		return { x: tooltipX, y: tooltipY, anchor };
-	}
 </script>
 
 {#if hoverPoint}
 	{@const label = getLabel(hoverPoint)}
-	{@const tooltipPos = getTooltipPosition(hoverPoint.svgX, hoverPoint.svgY, label.text.length)}
 	{@const markerPath = getMarkerPath(hoverPoint.svgX, hoverPoint.svgY, hoverPoint.type)}
-	{@const tooltipWidth = Math.max(105, label.text.length * 7)}
 	<g class="curve-hover" pointer-events="none">
 		<!-- Marker: shaped based on point type -->
 		{#if markerPath}
@@ -563,75 +534,19 @@
 			/>
 		{/if}
 
-		<!-- Coordinate label background -->
-		<rect
-			x={tooltipPos.anchor === 'start' ? tooltipPos.x : tooltipPos.x - tooltipWidth}
-			y={tooltipPos.y - 10}
-			width={tooltipWidth}
-			height={20}
-			rx={4}
-			class="tooltip-bg"
+		<!-- Value label, shared with the labels a click leaves behind -->
+		<GraphLabel
+			x={hoverPoint.svgX}
+			y={hoverPoint.svgY}
+			content={label}
+			canvasWidth={width}
+			canvasHeight={height}
 		/>
-
-		<!-- Coordinate label: rendered maths when the value is exact, text otherwise -->
-		{#if label.latex}
-			<foreignObject
-				x={tooltipPos.anchor === 'start' ? tooltipPos.x : tooltipPos.x - tooltipWidth}
-				y={tooltipPos.y - 10}
-				width={tooltipWidth}
-				height={20}
-			>
-				<div class="tooltip-math" data-anchor={tooltipPos.anchor}>
-					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-					{@html convertLatexToMarkup(label.latex, { defaultMode: 'inline-math' })}
-				</div>
-			</foreignObject>
-		{:else}
-			<text
-				x={tooltipPos.anchor === 'start' ? tooltipPos.x + 6 : tooltipPos.x - 6}
-				y={tooltipPos.y + 4}
-				text-anchor={tooltipPos.anchor}
-				class="tooltip-text"
-			>
-				{label.text}
-			</text>
-		{/if}
 	</g>
 {/if}
 
 <style>
 	.hover-marker {
 		filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
-	}
-
-	.tooltip-bg {
-		fill: var(--graph-tooltip-bg, #1f2937);
-		opacity: 0.95;
-	}
-
-	.tooltip-math {
-		display: flex;
-		align-items: center;
-		height: 20px;
-		padding: 0 6px;
-		font-size: 11px;
-		color: white;
-		white-space: nowrap;
-		overflow: hidden;
-	}
-
-	.tooltip-math[data-anchor='end'] {
-		justify-content: flex-end;
-	}
-
-	.tooltip-text {
-		font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
-		font-size: 11px;
-		fill: white;
-		user-select: none;
-	}
-
-	:global(.dark) .tooltip-bg {
-		fill: var(--graph-tooltip-bg-dark, #374151);
 	}
 </style>

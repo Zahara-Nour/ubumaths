@@ -42,6 +42,12 @@ import {
 	DEFAULT_FIRST_TERM_MIN,
 	DEFAULT_FIRST_TERM_MAX
 } from '$lib/grapheur/sequence';
+import {
+	clearLabelsOf,
+	cyclePinnedLabels,
+	type PinnedLabel,
+	type PinnedLabelTarget
+} from '$lib/grapheur/pinned-labels';
 
 // =============================================================================
 // Constants
@@ -96,6 +102,15 @@ class GrapheurStore {
 
 	/** Cursor position in math coordinates (null if not hovering) */
 	cursor = $state<Point | null>(null);
+
+	/**
+	 * Labels a click left on the graph.
+	 *
+	 * Deliberately absent from `serialize()`: they are what you point at during
+	 * a lesson, not what you save. Each holds only what was clicked, so its
+	 * value follows the parameters instead of going stale.
+	 */
+	pinnedLabels = $state<PinnedLabel[]>([]);
 
 	/** Whether user is currently interacting (pan/zoom) - affects rendering quality */
 	isInteracting = $state(false);
@@ -483,7 +498,23 @@ class GrapheurStore {
 	 */
 	removeFunction(id: string): void {
 		this.functions = this.functions.filter((f) => f.id !== id);
+		this.pinnedLabels = clearLabelsOf(this.pinnedLabels, id);
 		this.scheduleSave();
+	}
+
+	/**
+	 * Apply a click on a term: pin its exact value, then its decimal one, then
+	 * remove the label.
+	 *
+	 * @param target - Sequence and rank that was clicked
+	 */
+	togglePinnedLabel(target: PinnedLabelTarget): void {
+		this.pinnedLabels = cyclePinnedLabels(this.pinnedLabels, target);
+	}
+
+	/** Remove every label, for instance when the graph is cleared. */
+	clearPinnedLabels(): void {
+		this.pinnedLabels = [];
 	}
 
 	/**
@@ -491,6 +522,7 @@ class GrapheurStore {
 	 */
 	clearFunctions(): void {
 		this.functions = [];
+		this.pinnedLabels = [];
 		this.scheduleSave();
 	}
 

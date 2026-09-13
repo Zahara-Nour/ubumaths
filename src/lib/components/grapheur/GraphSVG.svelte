@@ -28,6 +28,8 @@
 	import IntegralArea from './IntegralArea.svelte';
 	import SequencePlot from './SequencePlot.svelte';
 	import CurveHover from './CurveHover.svelte';
+	import PinnedLabels from './PinnedLabels.svelte';
+	import type { PinnedLabelTarget } from '$lib/grapheur/pinned-labels';
 	import IntersectionPoints from './IntersectionPoints.svelte';
 	import AsymptoteLines from './AsymptoteLines.svelte';
 	import SpecialPoints from './SpecialPoints.svelte';
@@ -212,10 +214,30 @@
 	// ==========================================================================
 
 	/**
+	 * Term under the cursor, reported by CurveHover.
+	 *
+	 * A click has to know what it lands on, and the detection lives there.
+	 */
+	let hoveredTerm = $state<PinnedLabelTarget | null>(null);
+
+	/**
+	 * Where the pointer went down, to tell a click from the end of a pan.
+	 *
+	 * The graph pans under the same button: without this, releasing after a
+	 * drag would pin a label the user never asked for.
+	 */
+	let pressOrigin: { x: number; y: number } | null = null;
+
+	/** Pixels of travel still counted as a click rather than a drag. */
+	const CLICK_TOLERANCE = 4;
+
+	/**
 	 * Handle pointer down - initiate dragging (pan or axis scale)
 	 */
 	function handlePointerDown(e: PointerEvent): void {
 		if (e.button !== 0) return; // Left click only
+
+		pressOrigin = { x: e.clientX, y: e.clientY };
 
 		const rect = (e.currentTarget as Element).getBoundingClientRect();
 		const svgX = e.clientX - rect.left;
@@ -303,6 +325,16 @@
 	 * Handle pointer up - end dragging
 	 */
 	function handlePointerUp(e: PointerEvent): void {
+		// A press that did not travel is a click: pin the term under it, or cycle
+		// the label already there.
+		if (pressOrigin && hoveredTerm) {
+			const travel = Math.hypot(e.clientX - pressOrigin.x, e.clientY - pressOrigin.y);
+			if (travel <= CLICK_TOLERANCE) {
+				grapheurStore.togglePinnedLabel(hoveredTerm);
+			}
+		}
+		pressOrigin = null;
+
 		isDragging = false;
 		dragStart = null;
 		viewportStart = null;
@@ -499,7 +531,15 @@
 		<SpecialPoints {transformer} />
 
 		<!-- Curve hover point -->
-		<CurveHover {transformer} {width} {height} />
+		<CurveHover
+			{transformer}
+			{width}
+			{height}
+			onhoveredtermchange={(target) => (hoveredTerm = target)}
+		/>
+
+		<!-- Labels a click left behind -->
+		<PinnedLabels {transformer} {width} {height} />
 
 		<!-- Intersection points -->
 		<IntersectionPoints {transformer} />
