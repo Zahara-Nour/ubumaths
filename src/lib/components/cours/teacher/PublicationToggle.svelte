@@ -9,9 +9,12 @@
 	forme de clé, jamais de nom de table — le serveur le traduit contre une liste
 	fermée.
 
-	⚠️ **Une fiche cumule deux gardes.** Publier la range dans le cours ; l'élève
-	ne la verra que si elle lui a AUSSI été distribuée. Le libellé le dit, parce
-	que le professeur croirait sinon avoir donné la fiche.
+	⚠️ **Publier une fiche la DISTRIBUE** à la classe du chapitre, immédiatement
+	et sans confirmation (tranché par David le 2026-09-13). Le bouton le dit :
+	un clic donne la fiche à toute la classe.
+
+	Dépublier, en revanche, ne reprend rien : l'affectation reste, l'élève garde
+	la fiche dans « Mon travail ». On n'interrompt pas un travail en cours.
 
 	@module components/cours/teacher/PublicationToggle
 -->
@@ -40,11 +43,14 @@
 
 	const published = $derived(publishedAt !== null);
 
-	// Une fiche publiée mais non distribuée reste invisible : le dire ici évite
-	// que le professeur attende un effet qui ne viendra pas.
+	// Une fiche publiée AVANT la phase 4 peut être restée non distribuée : le
+	// dire plutôt que d'afficher « visible par les élèves » pour une fiche que
+	// personne ne peut ouvrir.
 	const invisibleMalgrePublication = $derived(
 		published && contentType === 'worksheet' && distributed === false
 	);
+
+	const estFiche = $derived(contentType === 'worksheet');
 </script>
 
 <div class="flex items-center gap-2">
@@ -79,14 +85,20 @@
 			variant="ghost"
 			size="sm"
 			disabled={isSubmitting}
-			title={published ? 'Retirer de la vue des élèves' : 'Mettre à disposition des élèves'}
+			title={published
+				? estFiche
+					? 'Retirer du chapitre — les élèves la gardent dans « Mon travail »'
+					: 'Retirer de la vue des élèves'
+				: estFiche
+					? 'Publier ET distribuer à toute la classe, immédiatement'
+					: 'Mettre à disposition des élèves'}
 		>
 			{#if published}
 				<EyeOff class="mr-1 h-4 w-4" />
 				Retirer
 			{:else}
 				<Eye class="mr-1 h-4 w-4" />
-				Publier
+				{estFiche ? 'Publier et distribuer' : 'Publier'}
 			{/if}
 		</Button>
 	</form>

@@ -54,6 +54,8 @@ export interface SetContentPublicationInput {
 	itemId: string;
 	/** `true` met à disposition, `false` retire. */
 	published: boolean;
+	/** Auteur de l'affectation créée en distribuant une fiche. */
+	teacherId: string;
 }
 
 export interface PublicationResult {
@@ -82,6 +84,23 @@ export async function setContentPublication(
 		return { data: null, error: new Error('Type de contenu inconnu') };
 	}
 
+	// Publier une fiche, c'est la DONNER.
+	//
+	// Tranché par David le 2026-09-13 : un clic, la fiche part à la classe du
+	// chapitre, ouverte tout de suite, sans échéance ni consigne. La
+	// distribution passe AVANT l'écriture de `published_at` — si elle échoue, la
+	// fiche ne doit pas se retrouver marquée « publiée » alors que personne ne
+	// l'a reçue.
+	//
+	// Dépublier, en revanche, ne touche pas à l'affectation : l'élève garde la
+	// fiche dans « Mon travail », on n'interrompt pas un travail en cours.
+	if (input.contentType === 'worksheet' && input.published) {
+		const distribution = await ensureWorksheetDistributed(input.itemId, input.teacherId, supabase);
+		if (distribution.error) {
+			return { data: null, error: distribution.error };
+		}
+	}
+
 	// `now()` et non une date choisie : la policy compare `published_at <= now()`,
 	// donc une date future ne publierait rien — et le professeur croirait avoir
 	// publié. Programmer une publication est un autre geste, qui n'existe pas
@@ -104,6 +123,17 @@ export async function setContentPublication(
 
 	if (error) {
 		console.error('[setContentPublication] Écriture impossible :', error);
+		// Une fiche déjà distribuée dont le chapitre n'a pas pu être mis à jour :
+		// la classe l'a reçue, l'écran dira « Préparé ». Le dire, plutôt que de
+		// laisser le professeur croire que rien n'est parti.
+		if (input.contentType === 'worksheet' && input.published) {
+			return {
+				data: null,
+				error: new Error(
+					"La fiche a été distribuée à la classe, mais le chapitre n'a pas pu être mis à jour."
+				)
+			};
+		}
 		return { data: null, error: new Error(error.message) };
 	}
 
@@ -111,4 +141,158 @@ export async function setContentPublication(
 		data: { itemId: data.id, chapterId: data.chapter_id, publishedAt },
 		error: null
 	};
+}
+
+/**
+ * S'assure que la fiche d'un chapitre est bien distribuée à la classe de ce
+ * chapitre — en créant l'affectation si elle manque.
+ *
+ * Idempotent : une classe qui a déjà une affectation active n'en reçoit pas une
+ * seconde. Sans ce garde, republier une fiche empilerait les affectations, et
+ * l'élève verrait la même fiche plusieurs fois dans « Mon travail ».
+ */
+/**
+ * Parmi ces fiches, lesquelles sont réellement distribuées à cette classe ?
+ *
+ * ⚠️ **Une seule définition de « distribuée », et c'est le point.** Ce critère
+ * doit rester identique à celui de `student_has_worksheet_access` : statut
+ * actif, ouverture déjà échue, et un lien vers la classe. Deux endroits le
+ * consultent — le garde d'idempotence ci-dessous et l'écran du professeur — et
+ * s'ils divergeaient, le badge afficherait « visible par les élèves » pour une
+ * fiche programmée pour lundi prochain.
+ *
+ * `available_from` était justement l'oubli : la colonne a pour défaut `now()`,
+ * mais l'écran de distribution permet de la fixer dans le futur.
+ *
+ * Pas de `maybeSingle()` ici : rien n'interdit deux affectations actives de la
+ * même fiche à la même classe, et `maybeSingle()` lève `PGRST116` dès la
+ * deuxième ligne — ce qui rendait la fiche DÉFINITIVEMENT impubliable.
+ */
+export async function listDistributedWorksheetIds(
+	worksheetIds: string[],
+	classId: string,
+	supabase: SupabaseClient<Database>
+): Promise<{ data: Set<string> | null; error: Error | null }> {
+	if (worksheetIds.length === 0) {
+		return { data: new Set(), error: null };
+	}
+
+	const maintenant = new Date().toISOString();
+	const { data, error } = await supabase
+		.from('worksheet_assignments')
+		.select('worksheet_id, worksheet_assignment_classes!inner(class_id)')
+		.in('worksheet_id', worksheetIds)
+		.eq('status', 'active')
+		.eq('worksheet_assignment_classes.class_id', classId)
+		.or(`available_from.is.null,available_from.lte.${maintenant}`);
+
+	if (error) {
+		console.error('[listDistributedWorksheetIds] Affectations illisibles :', error);
+		return { data: null, error: new Error(error.message) };
+	}
+
+	return { data: new Set((data ?? []).map((a) => a.worksheet_id)), error: null };
+}
+
+async function ensureWorksheetDistributed(
+	chapterWorksheetId: string,
+	teacherId: string,
+	supabase: SupabaseClient<Database>
+): Promise<{ error: Error | null }> {
+	// Quelle fiche, et à quelle classe ? Les deux viennent du rattachement,
+	// jamais du client : c'est ce qui empêche de distribuer à une autre classe.
+	const { data: lien, error: lienError } = await supabase
+		.from('chapter_worksheets')
+		.select('id, worksheet_id, chapter:class_chapters!inner(class_id)')
+		.eq('id', chapterWorksheetId)
+		.single();
+
+	if (lienError || !lien) {
+		console.error('[ensureWorksheetDistributed] Rattachement illisible :', lienError);
+		return { error: new Error('Fiche introuvable dans ce chapitre') };
+	}
+
+	// PostgREST type une jointure « vers un » en tableau quand il ne peut pas
+	// prouver l'unicité ; à l'exécution c'est un objet. L'idiome du dépôt.
+	const chapitre = Array.isArray(lien.chapter) ? lien.chapter[0] : lien.chapter;
+	const classId = chapitre?.class_id;
+
+	if (!classId) {
+		return { error: new Error('Chapitre sans classe') };
+	}
+
+	const { data: dejaDistribuees, error: lectureError } = await listDistributedWorksheetIds(
+		[lien.worksheet_id],
+		classId,
+		supabase
+	);
+
+	if (lectureError) {
+		return { error: lectureError };
+	}
+
+	if (dejaDistribuees!.has(lien.worksheet_id)) {
+		return { error: null };
+	}
+
+	// Créée en BROUILLON d'abord, activée en dernier.
+	//
+	// Ce n'est pas un détail de style : la seule policy DELETE de
+	// `worksheet_assignments` ne laisse supprimer que des brouillons. Une
+	// affectation créée directement en `active` et dont le rattachement à la
+	// classe échouerait serait donc **indélébile par l'API**, et le « ménage »
+	// ci-dessous un no-op silencieux (un DELETE qui ne touche aucune ligne ne
+	// renvoie pas d'erreur). En trois temps, le ménage fonctionne vraiment.
+	//
+	// Et tant qu'elle est en brouillon, elle n'atteint personne :
+	// `student_has_worksheet_access` exige `status = 'active'`.
+	const { data: affectation, error: affectationError } = await supabase
+		.from('worksheet_assignments')
+		.insert({
+			worksheet_id: lien.worksheet_id,
+			status: 'draft',
+			created_by: teacherId
+		})
+		.select('id')
+		.single();
+
+	if (affectationError || !affectation) {
+		console.error('[ensureWorksheetDistributed] Affectation impossible :', affectationError);
+		return { error: new Error('Distribution impossible') };
+	}
+
+	const { error: lienClasseError } = await supabase
+		.from('worksheet_assignment_classes')
+		.insert({ assignment_id: affectation.id, class_id: classId });
+
+	if (lienClasseError) {
+		console.error(
+			'[ensureWorksheetDistributed] Rattachement à la classe impossible :',
+			lienClasseError
+		);
+		// Le brouillon, lui, est supprimable : la policy l'autorise.
+		const { error: menageError } = await supabase
+			.from('worksheet_assignments')
+			.delete()
+			.eq('id', affectation.id);
+		if (menageError) {
+			console.error('[ensureWorksheetDistributed] Ménage impossible :', menageError);
+		}
+		return { error: new Error('Distribution impossible') };
+	}
+
+	// Activation en dernier : à cet instant seulement, et pas avant, la fiche
+	// devient lisible par la classe.
+	const { error: activationError } = await supabase
+		.from('worksheet_assignments')
+		.update({ status: 'active' })
+		.eq('id', affectation.id);
+
+	if (activationError) {
+		console.error('[ensureWorksheetDistributed] Activation impossible :', activationError);
+		// Le brouillon reste, invisible aux élèves, et supprimable.
+		return { error: new Error('Distribution impossible') };
+	}
+
+	return { error: null };
 }

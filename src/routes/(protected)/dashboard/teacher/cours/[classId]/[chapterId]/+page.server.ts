@@ -30,7 +30,11 @@ import {
 	ContentRefusal
 } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
-import { setContentPublication, CHAPTER_CONTENT_TYPES } from '$lib/server/chapters-publication';
+import {
+	setContentPublication,
+	listDistributedWorksheetIds,
+	CHAPTER_CONTENT_TYPES
+} from '$lib/server/chapters-publication';
 import { z } from 'zod';
 import {
 	checkForTemplateUpdates,
@@ -227,30 +231,27 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	// Quelles fiches du chapitre sont RÉELLEMENT distribuées à cette classe ?
 	//
-	// Une fiche cumule deux gardes : publiée dans le chapitre ET distribuée à
-	// l'élève. Sans cette lecture, l'écran afficherait « visible par les élèves »
-	// pour une fiche publiée que personne ne peut ouvrir — le genre d'affirmation
-	// fausse que ce chantier passe son temps à corriger.
-	const distributedWorksheetIds = new Set<string>();
+	// La définition de « distribuée » vit dans `listDistributedWorksheetIds`, et
+	// nulle part ailleurs : elle doit coller à `student_has_worksheet_access`
+	// (statut actif, ouverture échue, lien de classe). La recopier ici l'aurait
+	// fait diverger — et le badge aurait annoncé « visible par les élèves » pour
+	// une fiche programmée pour lundi prochain.
+	let distributedWorksheetIds: string[] = [];
 
 	if (worksheets.length > 0) {
-		const worksheetIds = [...new Set(worksheets.map((w) => w.worksheetId))];
-		const { data: affectations, error: affectationsError } = await locals.supabase
-			.from('worksheet_assignments')
-			.select('worksheet_id, worksheet_assignment_classes!inner(class_id)')
-			.in('worksheet_id', worksheetIds)
-			.eq('status', 'active')
-			.eq('worksheet_assignment_classes.class_id', classId);
+		const { data: distribuees, error: distribueesError } = await listDistributedWorksheetIds(
+			[...new Set(worksheets.map((w) => w.worksheetId))],
+			classId,
+			locals.supabase
+		);
 
 		// Enrichissement d'affichage : son absence ne ferme pas l'écran. Mais elle
 		// ne doit pas se lire « non distribuée », donc on en laisse une trace.
-		if (affectationsError) {
-			console.error('Distribution des fiches illisible :', affectationsError);
+		if (distribueesError) {
+			console.error('Distribution des fiches illisible :', distribueesError);
 		}
 
-		for (const a of affectations ?? []) {
-			distributedWorksheetIds.add(a.worksheet_id);
-		}
+		distributedWorksheetIds = [...(distribuees ?? [])];
 	}
 
 	// Get exercise details
@@ -429,7 +430,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		hiddenTemplateCount,
 		availableExercises: availableExercises || [],
 		worksheets,
-		distributedWorksheetIds: [...distributedWorksheetIds],
+		distributedWorksheetIds,
 		availableWorksheets: availableWorksheets || [],
 		checklistProgress: checklistProgress || [],
 		quizResults: quizResultsData || [],
@@ -581,7 +582,7 @@ export const actions: Actions = {
 	 * traverse jamais la frontière sous forme de nom de table.
 	 */
 	setPublication: async ({ request, locals }) => {
-		await requireRole(locals, 'teacher');
+		const { user } = await requireRole(locals, 'teacher');
 
 		const formData = await request.formData();
 		const validation = setPublicationSchema.safeParse({
@@ -598,7 +599,7 @@ export const actions: Actions = {
 		}
 
 		const { error: publicationError } = await setContentPublication(
-			validation.data,
+			{ ...validation.data, teacherId: user.id },
 			locals.supabase
 		);
 
