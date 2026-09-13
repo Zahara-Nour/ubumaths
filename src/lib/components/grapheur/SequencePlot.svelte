@@ -10,12 +10,13 @@
 	 */
 
 	import type { Point, SequencePlottable, Viewport } from '$lib/grapheur/types';
-	import { LINE_STYLE_DASHARRAY, supportsCobweb } from '$lib/grapheur/types';
+	import { isCobwebEnabled, LINE_STYLE_DASHARRAY } from '$lib/grapheur/types';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
 	import {
 		computeCobwebPath,
 		computeSequenceTerms,
 		createRecurrenceFunctionEvaluator,
+		filterVisibleTerms,
 		toComputeSpec
 	} from '$lib/grapheur/sequence';
 	import { sampleFunction } from '$lib/geometry-core/viewport';
@@ -69,7 +70,7 @@
 	// ==========================================================================
 
 	/** Whether the staircase is the representation in use. */
-	const cobwebEnabled = $derived(sequence.representation === 'cobweb' && supportsCobweb(sequence));
+	const cobwebEnabled = $derived(isCobwebEnabled(sequence));
 
 	/**
 	 * Highest rank worth computing.
@@ -102,19 +103,11 @@
 	const visiblePoints = $derived.by(() =>
 		cobwebEnabled
 			? []
-			: terms
-					.filter(
-						(term) =>
-							term.n >= viewport.xMin - 1 &&
-							term.n <= viewport.xMax + 1 &&
-							term.value >= viewport.yMin &&
-							term.value <= viewport.yMax
-					)
-					.map((term) => ({
-						n: term.n,
-						value: term.value,
-						svg: transformer.mathToSvg(term.n, term.value)
-					}))
+			: filterVisibleTerms(terms, viewport).map((term) => ({
+					n: term.n,
+					value: term.value,
+					svg: transformer.mathToSvg(term.n, term.value)
+				}))
 	);
 
 	/** Staircase polyline. */

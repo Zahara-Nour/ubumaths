@@ -12,6 +12,8 @@ import {
 	SEQUENCE_NAMES,
 	computeCobwebPath,
 	computeSequenceTerms,
+	findNearestTerm,
+	filterVisibleTerms,
 	createRecurrenceFunctionEvaluator,
 	nextSequenceName,
 	parseSequence,
@@ -435,5 +437,84 @@ describe('sequenceValidationError', () => {
 
 	it('returns null when everything is valid', () => {
 		expect(sequenceValidationError('recurrence', null, 8)).toBeNull();
+	});
+});
+
+// =============================================================================
+// Survol des termes
+// =============================================================================
+
+describe('filterVisibleTerms', () => {
+	const viewport = { xMin: 0, xMax: 5, yMin: -2, yMax: 2 };
+
+	it('keeps the terms drawn inside the viewport', () => {
+		const terms = [
+			{ n: 0, value: 1 },
+			{ n: 3, value: -1 },
+			{ n: 9, value: 0 }
+		];
+
+		expect(filterVisibleTerms(terms, viewport).map((t) => t.n)).toEqual([0, 3]);
+	});
+
+	it('drops a term whose value is off screen, rank notwithstanding', () => {
+		const terms = [{ n: 2, value: 50 }];
+
+		expect(filterVisibleTerms(terms, viewport)).toEqual([]);
+	});
+
+	// A point half a rank off screen is still drawn, so it must stay hoverable.
+	it('keeps the one-rank margin the plot draws', () => {
+		const terms = [{ n: -1, value: 0 }];
+
+		expect(filterVisibleTerms(terms, viewport).map((t) => t.n)).toEqual([-1]);
+	});
+});
+
+describe('findNearestTerm', () => {
+	// 10 pixels per unit, y downwards — enough to reason in pixels.
+	const mathToSvg = (x: number, y: number) => ({ x: x * 10, y: -y * 10 });
+
+	const terms = [
+		{ n: 0, value: 0 },
+		{ n: 1, value: 1 },
+		{ n: 2, value: 4 }
+	];
+
+	it('returns the term under the cursor', () => {
+		const found = findNearestTerm(terms, { x: 12, y: -8 }, mathToSvg, 20);
+
+		expect(found?.term).toEqual({ n: 1, value: 1 });
+	});
+
+	it('returns nothing when every term is beyond the threshold', () => {
+		expect(findNearestTerm(terms, { x: 200, y: 200 }, mathToSvg, 20)).toBeNull();
+	});
+
+	it('picks the closest when two terms are both within reach', () => {
+		// Halfway between n=0 (0,0) and n=1 (10,-10), but nearer the second.
+		const found = findNearestTerm(terms, { x: 7, y: -7 }, mathToSvg, 20);
+
+		expect(found?.term.n).toBe(1);
+	});
+
+	it('reports the distance and the screen position of the term', () => {
+		const found = findNearestTerm(terms, { x: 10, y: -10 }, mathToSvg, 20);
+
+		expect(found?.distance).toBe(0);
+		expect(found?.svg).toEqual({ x: 10, y: -10 });
+	});
+
+	// The threshold is exclusive, like every other snap threshold of the
+	// grapheur: a term exactly on the boundary would otherwise become a
+	// candidate and then lose the priority sort.
+	it('leaves out a term exactly on the threshold', () => {
+		// The only term sits at (0, 0), so the cursor is 20 pixels away.
+		expect(findNearestTerm([{ n: 0, value: 0 }], { x: 20, y: 0 }, mathToSvg, 20)).toBeNull();
+		expect(findNearestTerm([{ n: 0, value: 0 }], { x: 19, y: 0 }, mathToSvg, 20)).not.toBeNull();
+	});
+
+	it('returns nothing for an empty sequence', () => {
+		expect(findNearestTerm([], { x: 0, y: 0 }, mathToSvg, 20)).toBeNull();
 	});
 });
