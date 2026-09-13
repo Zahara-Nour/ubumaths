@@ -13,7 +13,7 @@
 	 * - Student progress
 	 */
 
-	import { enhance } from '$app/forms';
+	import { applyAction, enhance } from '$app/forms';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { navigating } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
@@ -149,8 +149,7 @@
 				addGoogleDriveDocument: 'Document Google Drive ajoute',
 				deleteDocument: 'Document supprime',
 				migrateToVersion: 'Chapitre mis a jour depuis le template',
-				detachFromTemplate: 'Chapitre detache du template',
-				createTemplate: 'Modèle créé à partir de ce chapitre'
+				detachFromTemplate: 'Chapitre detache du template'
 			};
 			const message = actionMessages[form.action] || 'Operation reussie';
 			toaster.success(message);
@@ -164,13 +163,6 @@
 				showLinkExerciseDialog = false;
 				selectedExerciseId = '';
 			}
-			if (form.action === 'createTemplate' && form.templateId) {
-				showCreateTemplateDialog = false;
-				// Le modèle est né en brouillon : on emmène le professeur dessus,
-				// c'est là qu'il le publie.
-				goto(`/dashboard/teacher/contenu/templates/${form.templateId}`);
-			}
-
 			invalidateAll();
 		} else if (form?.error) {
 			toaster.error(form.error);
@@ -670,8 +662,21 @@
 			action="?/createTemplate"
 			use:enhance={() => {
 				isSubmitting = true;
-				return async ({ update }) => {
-					await update();
+
+				return async ({ result }) => {
+					isSubmitting = false;
+
+					// Ce formulaire quitte la page : laisser l'effet global le
+					// traiter lancerait un rechargement de la page courante en même
+					// temps que la navigation, et les deux se bloqueraient.
+					if (result.type === 'success' && result.data?.templateId) {
+						showCreateTemplateDialog = false;
+						toaster.success('Modèle créé à partir de ce chapitre');
+						await goto(`/dashboard/teacher/contenu/templates/${result.data.templateId}`);
+						return;
+					}
+
+					await applyAction(result);
 				};
 			}}
 			class="space-y-4"
