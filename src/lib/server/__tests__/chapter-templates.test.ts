@@ -1795,20 +1795,29 @@ describe('Template CRUD Functions', () => {
 	});
 
 	describe('deleteChapterTemplate', () => {
-		it('should archive template (soft delete)', async () => {
-			const updatePromise = Promise.resolve({ error: null });
-			supabase._mockChain.eq.mockReturnValueOnce(updatePromise as never);
+		it('supprime réellement, au lieu d’archiver', async () => {
+			supabase._mockChain.single.mockResolvedValueOnce({
+				data: { status: 'draft' },
+				error: null
+			});
+			supabase._mockChain.eq.mockReturnValueOnce(supabase._mockChain as never);
+			supabase._mockChain.eq.mockReturnValueOnce(Promise.resolve({ error: null }) as never);
 
 			const result = await templates.deleteChapterTemplate(mockTemplateId, supabase);
 
 			expect(result.error).toBeNull();
+			expect(supabase._mockChain.delete).toHaveBeenCalled();
 		});
 
 		it('should handle deletion error', async () => {
-			const updatePromise = Promise.resolve({
-				error: { message: 'Deletion failed' }
+			supabase._mockChain.single.mockResolvedValueOnce({
+				data: { status: 'draft' },
+				error: null
 			});
-			supabase._mockChain.eq.mockReturnValueOnce(updatePromise as never);
+			supabase._mockChain.eq.mockReturnValueOnce(supabase._mockChain as never);
+			supabase._mockChain.eq.mockReturnValueOnce(
+				Promise.resolve({ error: { message: 'Deletion failed' } }) as never
+			);
 
 			const result = await templates.deleteChapterTemplate(mockTemplateId, supabase);
 
@@ -1827,6 +1836,91 @@ describe('Publishing Operations', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		supabase = createMockSupabase();
+	});
+
+	describe('instantiateTemplate', () => {
+		// Publier, c'est justement dire « ce modèle est prêt à servir ». Laisser
+		// instancier un brouillon vidait ce geste de son sens, et répandait dans
+		// des classes un contenu encore en chantier.
+		it('refuse d’instancier un brouillon', async () => {
+			supabase._mockChain.single.mockResolvedValueOnce({
+				data: { ...mockDbTemplate, status: 'draft' },
+				error: null
+			});
+
+			const result = await templates.instantiateTemplate(
+				{ templateId: mockTemplateId, classId: mockClassId, isVisible: false },
+				mockUserId,
+				supabase
+			);
+
+			expect(result.data).toBeNull();
+			expect(result.error?.message).toContain('brouillon');
+		});
+
+		it('refuse d’instancier un modèle archivé', async () => {
+			supabase._mockChain.single.mockResolvedValueOnce({
+				data: { ...mockDbTemplate, status: 'archived' },
+				error: null
+			});
+
+			const result = await templates.instantiateTemplate(
+				{ templateId: mockTemplateId, classId: mockClassId, isVisible: false },
+				mockUserId,
+				supabase
+			);
+
+			expect(result.data).toBeNull();
+			expect(result.error).toBeDefined();
+		});
+	});
+
+	describe('deleteChapterTemplate', () => {
+		// Supprimer efface le modèle et son historique de versions. Les chapitres
+		// qui en sont issus survivent : la clé étrangère est en SET NULL, et leur
+		// bandeau affiche « Template supprimé ».
+		it('supprime un brouillon', async () => {
+			supabase._mockChain.single.mockResolvedValueOnce({
+				data: { status: 'draft' },
+				error: null
+			});
+			// Le premier `eq` appartient à la lecture du statut et reste
+			// chaînable ; seul celui du delete termine la chaîne.
+			supabase._mockChain.eq.mockReturnValueOnce(supabase._mockChain as never);
+			supabase._mockChain.eq.mockReturnValueOnce(Promise.resolve({ error: null }) as never);
+
+			const result = await templates.deleteChapterTemplate(mockTemplateId, supabase);
+
+			expect(result.error).toBeNull();
+		});
+
+		// Un modèle publié a pu servir : la suppression reste permise, et ce sont
+		// les chapitres issus qui survivent, détachés.
+		it('supprime un modèle publié', async () => {
+			supabase._mockChain.single.mockResolvedValueOnce({
+				data: { status: 'published' },
+				error: null
+			});
+			supabase._mockChain.eq.mockReturnValueOnce(supabase._mockChain as never);
+			supabase._mockChain.eq.mockReturnValueOnce(Promise.resolve({ error: null }) as never);
+
+			const result = await templates.deleteChapterTemplate(mockTemplateId, supabase);
+
+			expect(result.error).toBeNull();
+		});
+
+		// Archivé veut dire « retiré de l'usage, mais conservé » : le détruire
+		// effacerait la trace de ce qui a servi.
+		it('refuse de supprimer un modèle archivé', async () => {
+			supabase._mockChain.single.mockResolvedValueOnce({
+				data: { status: 'archived' },
+				error: null
+			});
+
+			const result = await templates.deleteChapterTemplate(mockTemplateId, supabase);
+
+			expect(result.error?.message).toContain('archivé');
+		});
 	});
 
 	describe('publishTemplate', () => {
@@ -2136,14 +2230,15 @@ describe('Instantiation Operations', () => {
 				isVisible: false
 			};
 
-			// Mock template fetch
+			// Mock template fetch — publié, seul statut qui autorise l'usage.
 			supabase._mockChain.single.mockResolvedValueOnce({
 				data: {
 					title: 'Template Title',
 					content_snapshot: EMPTY_CONTENT_SNAPSHOT,
 					current_version: 1,
 					color: 'blue',
-					icon: 'calculator'
+					icon: 'calculator',
+					status: 'published'
 				},
 				error: null
 			});

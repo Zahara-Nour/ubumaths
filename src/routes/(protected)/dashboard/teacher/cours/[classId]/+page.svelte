@@ -25,7 +25,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { CHAPTER_COLORS, CHAPTER_ICONS } from '$lib/types/chapters';
+	import { CHAPTER_ICONS } from '$lib/types/chapters';
 	import {
 		ArrowLeft,
 		Plus,
@@ -62,7 +62,6 @@
 	// Form states
 	let createTitle = $state('');
 	let createDescription = $state('');
-	let createColor = $state('');
 	let createIcon = $state('');
 	let createIsVisible = $state(false);
 
@@ -78,7 +77,6 @@
 
 	let editTitle = $state('');
 	let editDescription = $state('');
-	let editColor = $state('');
 	let editIcon = $state('');
 	let editIsVisible = $state(false);
 
@@ -87,11 +85,6 @@
 	let isNavigating = $derived(!!$navigating);
 
 	// Color options for MySelect
-	let colorItems = $derived([
-		{ value: '', label: 'Aucune couleur' },
-		...CHAPTER_COLORS.map((c) => ({ value: c, label: c.charAt(0).toUpperCase() + c.slice(1) }))
-	]);
-
 	// Icon options for MySelect
 	let iconItems = $derived([
 		{ value: '', label: 'Aucune icone' },
@@ -138,7 +131,6 @@
 	function resetCreateForm() {
 		createTitle = '';
 		createDescription = '';
-		createColor = '';
 		createIcon = '';
 		createIsVisible = false;
 	}
@@ -155,7 +147,6 @@
 		selectedChapter = chapter;
 		editTitle = chapter.title;
 		editDescription = chapter.description || '';
-		editColor = chapter.color || '';
 		editIcon = chapter.icon || '';
 		editIsVisible = chapter.isVisible;
 		showEditDialog = true;
@@ -384,18 +375,10 @@
 				/>
 			</div>
 
-			<div class="grid grid-cols-2 gap-4">
-				<div class="space-y-2">
-					<Label>Couleur</Label>
-					<MySelect type="single" bind:value={createColor} items={colorItems} />
-					<input type="hidden" name="color" value={createColor} />
-				</div>
-
-				<div class="space-y-2">
-					<Label>Icone</Label>
-					<MySelect type="single" bind:value={createIcon} items={iconItems} />
-					<input type="hidden" name="icon" value={createIcon} />
-				</div>
+			<div class="space-y-2">
+				<Label>Icone</Label>
+				<MySelect type="single" bind:value={createIcon} items={iconItems} />
+				<input type="hidden" name="icon" value={createIcon} />
 			</div>
 
 			<div class="flex items-center gap-2">
@@ -451,18 +434,10 @@
 					/>
 				</div>
 
-				<div class="grid grid-cols-2 gap-4">
-					<div class="space-y-2">
-						<Label>Couleur</Label>
-						<MySelect type="single" bind:value={editColor} items={colorItems} />
-						<input type="hidden" name="color" value={editColor} />
-					</div>
-
-					<div class="space-y-2">
-						<Label>Icone</Label>
-						<MySelect type="single" bind:value={editIcon} items={iconItems} />
-						<input type="hidden" name="icon" value={editIcon} />
-					</div>
+				<div class="space-y-2">
+					<Label>Icone</Label>
+					<MySelect type="single" bind:value={editIcon} items={iconItems} />
+					<input type="hidden" name="icon" value={editIcon} />
 				</div>
 
 				<div class="flex items-center gap-2">

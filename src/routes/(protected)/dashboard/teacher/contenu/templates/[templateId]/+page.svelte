@@ -34,6 +34,7 @@
 		ClipboardList,
 		Upload,
 		Archive,
+		Trash2,
 		PlayCircle,
 		Clock
 	} from '@lucide/svelte';
@@ -44,6 +45,8 @@
 
 	let isPublishing = $state(false);
 	let isArchiving = $state(false);
+	let isDeleting = $state(false);
+	let showDeleteDialog = $state(false);
 	let isInstantiating = $state(false);
 	let showInstantiateDialog = $state(false);
 	let selectedClassId = $state<string>('');
@@ -148,6 +151,22 @@
 								{isPublishing ? 'Publication...' : 'Publier'}
 							</Button>
 						</form>
+					{/if}
+
+					<!--
+						Un modèle archivé est une trace de ce qui a servi : on ne le
+						détruit pas. Brouillon et publié se suppriment, la
+						confirmation disant ce que cela emporte.
+					-->
+					{#if data.template.status !== 'archived'}
+						<Button
+							variant="outline"
+							class="text-destructive hover:text-destructive"
+							onclick={() => (showDeleteDialog = true)}
+						>
+							<Trash2 class="mr-2 h-4 w-4" />
+							Supprimer
+						</Button>
 					{/if}
 
 					{#if data.template.status === 'published'}
@@ -298,6 +317,40 @@
 </div>
 
 <!-- Instantiate Dialog -->
+<Dialog.Root bind:open={showDeleteDialog}>
+	<Dialog.Content class="max-w-lg">
+		<Dialog.Header>
+			<Dialog.Title>Supprimer ce modèle ?</Dialog.Title>
+			<Dialog.Description>
+				Le modèle « {data.template.title} » et son historique de versions seront effacés définitivement.
+				Le chapitre dont il a été tiré n'est pas touché, et les chapitres déjà créés à partir de lui
+				sont conservés — ils deviennent simplement indépendants.
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<form
+			method="POST"
+			action="?/delete"
+			use:enhance={() => {
+				isDeleting = true;
+				return async ({ update }) => {
+					isDeleting = false;
+					await update();
+				};
+			}}
+		>
+			<Dialog.Footer>
+				<Button type="button" variant="outline" onclick={() => (showDeleteDialog = false)}>
+					Annuler
+				</Button>
+				<Button type="submit" variant="destructive" disabled={isDeleting}>
+					{isDeleting ? 'Suppression...' : 'Supprimer définitivement'}
+				</Button>
+			</Dialog.Footer>
+		</form>
+	</Dialog.Content>
+</Dialog.Root>
+
 <Dialog.Root bind:open={showInstantiateDialog}>
 	<Dialog.Content>
 		<Dialog.Header>

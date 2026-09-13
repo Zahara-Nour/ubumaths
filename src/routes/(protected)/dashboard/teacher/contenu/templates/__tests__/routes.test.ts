@@ -803,14 +803,15 @@ describe('Template Actions', () => {
 					data: { id: TEST_IDS.class, teacher_id: mockTeacher.id },
 					error: null
 				})
-				// Mock template fetch
+				// Mock template fetch — publié, seul statut instanciable.
 				.mockResolvedValueOnce({
 					data: {
 						title: 'Template',
 						content_snapshot: {},
 						current_version: 1,
 						color: '#3b82f6',
-						icon: 'book'
+						icon: 'book',
+						status: 'published'
 					},
 					error: null
 				})

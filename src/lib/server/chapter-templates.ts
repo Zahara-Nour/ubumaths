@@ -295,7 +295,7 @@ export async function updateChapterTemplate(
 }
 
 /**
- * Delete a chapter template (soft delete by archiving)
+ * Supprimer définitivement un modèle en brouillon
  *
  * @param templateId - Template ID
  * @param supabase - Supabase client
@@ -306,14 +306,33 @@ export async function deleteChapterTemplate(
 	supabase: SupabaseClient<Database>
 ): Promise<{ error: Error | null }> {
 	try {
-		// Archive instead of hard delete to preserve instantiation history
-		const { error } = await supabase
+		// Un modèle archivé a été retiré de l'usage : c'est une trace, et on ne
+		// détruit pas une trace par mégarde. Brouillon et publié, eux, se
+		// suppriment — le second pouvant avoir servi, l'appelant en avertit.
+		const { data: template, error: readError } = await supabase
 			.from('chapter_templates')
-			.update({ status: 'archived' })
-			.eq('id', templateId);
+			.select('status')
+			.eq('id', templateId)
+			.single();
+
+		if (readError) {
+			console.error('[deleteChapterTemplate] Lecture impossible :', readError);
+			return { error: new Error(readError.message) };
+		}
+
+		if (template.status === 'archived') {
+			return {
+				error: new Error('Un modèle archivé ne peut pas être supprimé.')
+			};
+		}
+
+		// Les versions partent avec lui (CASCADE) ; les chapitres qui en sont
+		// issus survivent, leur rattachement passant à NULL (SET NULL), et leur
+		// bandeau affiche alors « Template supprimé ».
+		const { error } = await supabase.from('chapter_templates').delete().eq('id', templateId);
 
 		if (error) {
-			console.error('[deleteChapterTemplate] Error:', error);
+			console.error('[deleteChapterTemplate] Suppression impossible :', error);
 			return { error: new Error(error.message) };
 		}
 
@@ -459,7 +478,7 @@ export async function publishTemplate(
 			return {
 				data: null,
 				error: new Error(
-					'Cannot publish empty template. Add at least one document, quiz question, checklist item, or exercise.'
+					'Cannot publish empty template. Add at least one document, quiz question, checklist item, exercise, or worksheet.'
 				)
 			};
 		}
@@ -809,13 +828,27 @@ export async function instantiateTemplate(
 		// Get template
 		const { data: template, error: templateError } = await supabase
 			.from('chapter_templates')
-			.select('title, content_snapshot, current_version, color, icon')
+			.select('title, content_snapshot, current_version, color, icon, status')
 			.eq('id', input.templateId)
 			.single();
 
 		if (templateError) {
 			console.error('[instantiateTemplate] Error fetching template:', templateError);
 			return { data: null, error: new Error(templateError.message) };
+		}
+
+		// Publier, c'est dire « ce modèle est prêt à servir ». Sans cette garde, un
+		// brouillon se répandait dans les classes, et publier ne voulait plus rien
+		// dire ; un modèle archivé, lui, a été retiré de l'usage.
+		if (template.status !== 'published') {
+			return {
+				data: null,
+				error: new Error(
+					template.status === 'draft'
+						? 'Un modèle en brouillon ne peut pas être utilisé : publiez-le d’abord.'
+						: 'Un modèle archivé ne peut plus être utilisé.'
+				)
+			};
 		}
 
 		const snapshot = parseContentSnapshot(template.content_snapshot as Record<string, unknown>);
