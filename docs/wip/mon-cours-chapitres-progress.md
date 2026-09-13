@@ -43,35 +43,37 @@ vers une version plus récente du modèle ou de le détacher.
 
 Donc pour deux classes de même niveau : **un modèle, deux instanciations**.
 
-### Ce qu'un modèle emporte — et ce qu'il n'emporte pas
+### Ce qu'un modèle emporte
 
-Le `content_snapshot` couvre **quatre** types de contenu, et le refus de
-publication le dit noir sur blanc :
+Le `content_snapshot` couvre **cinq** types de contenu : documents, questions
+de quiz, tâches, corvées (exercices) et **fiches**.
+`extractContentSnapshotFromChapter` les lit toutes les cinq,
+`applyContentSnapshotToChapter` les réapplique, et `computeDiff` les compare
+d'une version à l'autre.
 
-> `Cannot publish empty template. Add at least one document, quiz question, checklist item, or exercise.`
-
-`applyContentSnapshotToChapter` réapplique ces quatre-là ; la migration vers une
-nouvelle version **efface puis réapplique** `chapter_documents`,
-`chapter_quiz_questions`, `chapter_checklist_items`, `chapter_exercises`.
-
-⚠️ **`chapter_worksheets` n'en fait PAS partie.** Conséquences vérifiées :
-
-- instancier un modèle **n'apporte pas** ses fiches ;
-- migrer un chapitre vers une version plus récente **ne touche pas** aux fiches
-  — donc aucune perte, mais aucune propagation non plus.
-
-Ce n'est pas un oubli : la table a été créée après le mécanisme de modèles, et
-la frontière n'a pas été franchie faute d'arbitrage.
-
-✅ **FAIT le 2026-09-13** (PR #256). Le `content_snapshot` emporte les fiches,
-et l'instanciation les rattache — **sans rien distribuer** : la policy élève
+L'instanciation rattache les fiches **sans rien distribuer** : la policy élève
 exige `student_has_worksheet_access` en plus du chapitre visible.
 
-Le prix redouté (« la migration efface puis réapplique, donc elle effacerait les
-rattachements faits à la main ») **n'existe plus** : la mise à jour ne supprime
-plus rien. Voir
+La mise à jour vers une version plus récente **ne supprime plus rien**, si bien
+qu'elle n'efface pas les rattachements faits à la main. Voir
 [publication-progressive-progress.md](publication-progressive-progress.md),
 phase 5.
+
+⚠️ Le message de refus de publication est resté en arrière : il énumère quatre
+types (« document, quiz question, checklist item, or exercise ») alors que
+`hasContent` accepte aussi un modèle qui ne porte que des fiches. Texte
+trompeur, garde correcte.
+
+#### Historique — les fiches en étaient exclues jusqu'au 2026-09-13
+
+Avant la PR #256, `chapter_worksheets` ne faisait pas partie du snapshot :
+instancier un modèle n'apportait pas ses fiches, et migrer un chapitre n'y
+touchait pas. Ce n'était pas un oubli — la table avait été créée après le
+mécanisme de modèles, et la frontière attendait un arbitrage.
+
+**Ne pas se fier à ce paragraphe pour décrire l'état courant** : il est daté, et
+sa version au présent a déjà induit en erreur une fois. Le code fait foi —
+`grep worksheet src/lib/server/chapter-templates.ts`.
 
 ## Les fiches dans un chapitre — ✅ livré
 
