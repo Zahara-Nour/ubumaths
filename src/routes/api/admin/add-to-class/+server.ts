@@ -21,7 +21,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Check if already in class
 	const { data: existing, error: existingError } = await supabase
 		.from('class_members')
-		.select('id')
+		.select('id, status')
 		.eq('student_id', userId)
 		.eq('class_id', classId)
 		.single();
@@ -34,14 +34,31 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
 
-	if (existing) {
+	// Un ancien élève garde sa ligne, archivée : le ré-ajouter le RÉACTIVE.
+	//
+	// Sans ça, la contrainte d'unicité (class_id, student_id) ferait échouer
+	// l'insertion, et le professeur lirait « déjà dans cette classe » à propos
+	// d'un élève qui n'y est plus. Le trigger efface au passage sa date de
+	// départ, sans quoi il resterait borné à son ancien départ et ne recevrait
+	// plus rien.
+	if (existing?.status === 'archived') {
+		const { error: reactivationError } = await supabase
+			.from('class_members')
+			.update({ status: 'active' })
+			.eq('id', existing.id);
+
+		if (reactivationError) {
+			console.error('Réactivation impossible :', reactivationError);
+			return json({ error: reactivationError.message }, { status: 400 });
+		}
+	} else if (existing) {
 		return json({ error: 'User is already in this class' }, { status: 400 });
 	}
 
 	// Add to class_members table
-	const { error: insertError } = await supabase
-		.from('class_members')
-		.insert({ student_id: userId, class_id: classId });
+	const { error: insertError } = existing
+		? { error: null }
+		: await supabase.from('class_members').insert({ student_id: userId, class_id: classId });
 
 	if (insertError) {
 		console.error('Insert error:', insertError);

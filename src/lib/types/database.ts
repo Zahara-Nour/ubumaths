@@ -1647,6 +1647,7 @@ export type Database = {
           class_id: string
           id: string
           joined_at: string
+          left_at: string | null
           status: string
           student_id: string
         }
@@ -1654,6 +1655,7 @@ export type Database = {
           class_id: string
           id?: string
           joined_at?: string
+          left_at?: string | null
           status?: string
           student_id: string
         }
@@ -1661,6 +1663,7 @@ export type Database = {
           class_id?: string
           id?: string
           joined_at?: string
+          left_at?: string | null
           status?: string
           student_id?: string
         }
