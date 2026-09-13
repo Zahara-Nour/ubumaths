@@ -18,7 +18,11 @@ import { getChapterWithContent, toggleChecklistItem } from '$lib/server/chapters
 import { buildQuizInstances } from '$lib/server/chapters-quiz';
 import { toggleChecklistSchema } from '$lib/server/validation/chapters';
 
-export const load: PageServerLoad = async ({ locals, params }) => {
+// `fetch` vient de l'événement, jamais du global : une URL relative ferait
+// lever `Failed to parse URL` au `fetch` de Node — hors `try`, donc 500 sur
+// TOUT le chapitre, documents et quiz compris. Et à supposer qu'elle passe,
+// les cookies ne suivraient pas : l'appel arriverait non authentifié.
+export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	// Only students can view this page
 	const { user } = await requireRole(locals, 'student');
 
