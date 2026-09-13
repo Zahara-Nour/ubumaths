@@ -181,6 +181,83 @@ Détail appris : `lore.learning.exercise` vaut **« Corvée »**, pas « exercic
 Toute tournure qui accorde en genre sur ce mot casse au premier changement de
 vocabulaire — les messages l'évitent.
 
+## Phase 4 — ✅ écrite
+
+Publier une fiche depuis un chapitre la **distribue** à la classe de ce
+chapitre : affectation `status = 'active'`, ouverte tout de suite, sans échéance
+ni consigne. Un clic, sans confirmation — tranché par David.
+
+**L'ordre compte.** La distribution passe AVANT l'écriture de `published_at` :
+si elle échoue, la fiche ne doit pas se retrouver marquée « publiée » alors que
+personne ne l'a reçue. C'est le mensonge que ce chantier corrige partout
+ailleurs.
+
+**Idempotent.** Une classe qui a déjà une affectation active n'en reçoit pas une
+seconde ; sinon republier empilerait les affectations et l'élève verrait la même
+fiche plusieurs fois dans « Mon travail ».
+
+**Dépublier ne reprend rien.** L'affectation reste, l'élève garde la fiche dans
+« Mon travail ». On n'interrompt jamais un travail en cours.
+
+⚠️ `status` a pour défaut `'draft'` : l'omettre ne distribuerait rien.
+`student_has_worksheet_access` exige `status = 'active'`, `available_from <=
+now()`, une adhésion **active** et une classe **active**.
+
+### Pourquoi un test d'intégration ici
+
+Les tests unitaires prouvent qu'on insère `status: 'active'` et un lien de
+classe. Ils ne prouvent **pas** que l'élève voit la fiche : ça dépend de quatre
+conditions dans `student_has_worksheet_access`. Une seule ratée, et le
+professeur croirait avoir distribué.
+
+`tests/integration/chapter-worksheet-publish-distributes.test.ts` fait donc le
+chemin complet avec les droits réels — le professeur publie, l'élève regarde —
+et garde aussi les deux autres décisions (idempotence, retrait non destructif).
+
+### Ce que l'audit de sécurité a rattrapé (phase 4)
+
+Rien de bloquant, mais quatre corrections, dont une sérieuse.
+
+**Une fiche pouvait devenir DÉFINITIVEMENT impubliable.** Le garde
+d'idempotence utilisait `maybeSingle()`, qui lève `PGRST116` dès la **deuxième**
+ligne — et rien en base n'interdit deux affectations actives de la même fiche à
+la même classe. Le jour où un doublon serait apparu, publier aurait échoué pour
+toujours, avec un message générique et aucune issue depuis l'interface.
+
+**Le badge pouvait mentir.** Le critère d'idempotence ignorait `available_from`,
+que `student_has_worksheet_access` exige. Une fiche programmée pour lundi
+prochain était dite « déjà distribuée » : rien ne partait, et l'écran affichait
+« visible par les élèves » pour une fiche que personne ne peut ouvrir. Les deux
+requêtes (module et écran prof) sont désormais **la même fonction**,
+`listDistributedWorksheetIds` — elles ne peuvent plus diverger.
+
+**Le rollback était un no-op garanti.** La seule policy DELETE de
+`worksheet_assignments` ne vise que les **brouillons** ; une affectation créée
+en `active` dont le lien de classe échouerait était donc indélébile par l'API —
+et un DELETE à 0 ligne ne renvoie pas d'erreur, donc le « ménage » se croyait
+réussi. La création passe maintenant en **trois temps** : brouillon → lien de
+classe → activation. Le ménage fonctionne, et tant qu'elle est en brouillon
+l'affectation n'atteint personne.
+
+**Message honnête** si la distribution réussit mais que le chapitre ne se met
+pas à jour : « la fiche a été distribuée, mais le chapitre n'a pas pu être mis à
+jour » — au lieu de laisser croire que rien n'est parti.
+
+### Deux résidus, non traités et assumés
+
+1. **Course entre deux clics simultanés.** Le motif reste un check-then-insert :
+   deux onglets peuvent créer deux affectations. Conséquence désormais bornée —
+   la fiche reste publiable (correction ci-dessus) — mais l'élève verrait la même
+   fiche deux fois dans « Mon travail ». Fermer ça demande un verrou en base
+   (RPC `SECURITY DEFINER`), donc une migration : **à trancher par David**.
+2. **Les élèves archivés reçoivent les distributions ultérieures.**
+   `had_class_access_to_assignment` borne par le bas (`>= joined_at`) mais pas
+   par le haut, faute d'un `left_at` sur `class_members` (77 membres archivés en
+   prod). Préexistant, mais ce chantier transforme la distribution en geste de
+   routine, donc la surface s'élargit. Question d'accès à poser :
+   **« un élève qui a quitté la classe doit-il continuer à voir les fiches
+   distribuées après son départ ? »**
+
 ## Reste ouvert
 
 **La dispersion.** David : « j'ai l'impression que c'est dispersé ». Mesuré, il
