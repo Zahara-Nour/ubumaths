@@ -65,24 +65,43 @@
 		return null;
 	}
 
+	/** L'élément qui porte réellement le fichier soumis. */
+	let fileInput = $state<HTMLInputElement | null>(null);
+
+	/**
+	 * Retenir le fichier, et le poser dans l'input quand il vient d'un
+	 * glisser-déposer : le navigateur n'y met que ce qu'on a choisi par la
+	 * boîte de dialogue, et le formulaire n'envoie que le contenu de l'input.
+	 */
+	function retenirFichier(file: File, viaGlisserDeposer: boolean) {
+		const error = validateFile(file);
+		if (error) {
+			uploadError = error;
+			selectedFile = null;
+			if (fileInput) fileInput.value = '';
+			return;
+		}
+
+		uploadError = '';
+		selectedFile = file;
+
+		if (viaGlisserDeposer && fileInput) {
+			const transfert = new DataTransfer();
+			transfert.items.add(file);
+			fileInput.files = transfert.files;
+		}
+
+		// Auto-fill title from filename if empty
+		if (!uploadTitle) {
+			uploadTitle = file.name.replace(/\.[^/.]+$/, ''); // Remove extension
+		}
+	}
+
 	// Handle file selection
 	function handleFileSelect(event: Event) {
 		const input = event.target as HTMLInputElement;
 		const file = input.files?.[0];
-		if (file) {
-			const error = validateFile(file);
-			if (error) {
-				uploadError = error;
-				selectedFile = null;
-			} else {
-				uploadError = '';
-				selectedFile = file;
-				// Auto-fill title from filename if empty
-				if (!uploadTitle) {
-					uploadTitle = file.name.replace(/\.[^/.]+$/, ''); // Remove extension
-				}
-			}
-		}
+		if (file) retenirFichier(file, false);
 	}
 
 	// Handle drag events
@@ -100,19 +119,7 @@
 		isDragging = false;
 
 		const file = event.dataTransfer?.files?.[0];
-		if (file) {
-			const error = validateFile(file);
-			if (error) {
-				uploadError = error;
-				selectedFile = null;
-			} else {
-				uploadError = '';
-				selectedFile = file;
-				if (!uploadTitle) {
-					uploadTitle = file.name.replace(/\.[^/.]+$/, '');
-				}
-			}
-		}
+		if (file) retenirFichier(file, true);
 	}
 
 	// Clear selected file
@@ -121,6 +128,7 @@
 		uploadTitle = '';
 		uploadDescription = '';
 		uploadError = '';
+		if (fileInput) fileInput.value = '';
 	}
 
 	// Get file icon based on type
@@ -149,6 +157,9 @@
 		uploadDescription = '';
 		uploadError = '';
 		isUploading = false;
+		// L'input garde son fichier après l'envoi : sans ce nettoyage, le
+		// suivant repartirait avec l'ancien.
+		if (fileInput) fileInput.value = '';
 	}
 
 	function resetGoogleDriveForm() {
@@ -202,6 +213,21 @@
 				>
 					<input type="hidden" name="chapterId" value={chapterId} />
 
+					<!--
+						Toujours monté, jamais dans le bloc conditionnel : c'est lui qui
+						porte le fichier jusqu'au serveur, et le retirer du DOM dès la
+						sélection le faisait disparaître de l'envoi.
+					-->
+					<input
+						id="file-input"
+						bind:this={fileInput}
+						type="file"
+						name="file"
+						accept=".pdf,.png,.jpg,.jpeg,.gif,application/pdf,image/png,image/jpeg,image/gif"
+						class="hidden"
+						onchange={handleFileSelect}
+					/>
+
 					<!-- Drop zone -->
 					{#if !selectedFile}
 						<div
@@ -226,14 +252,6 @@
 								</button>
 							</p>
 							<p class="mt-2 text-xs text-muted-foreground">PDF, PNG, JPG, GIF (max 25 Mo)</p>
-							<input
-								id="file-input"
-								type="file"
-								name="file"
-								accept=".pdf,.png,.jpg,.jpeg,.gif,application/pdf,image/png,image/jpeg,image/gif"
-								class="hidden"
-								onchange={handleFileSelect}
-							/>
 						</div>
 					{:else}
 						{@const IconComponent = getFileIcon(selectedFile)}
@@ -252,6 +270,7 @@
 								size="icon-sm"
 								onclick={clearFile}
 								disabled={isUploading}
+								aria-label="Retirer le fichier"
 							>
 								<X class="h-4 w-4" />
 							</Button>
