@@ -59,6 +59,19 @@ interface OrderUpdate {
 	displayOrder: number;
 }
 
+/**
+ * Refus délibéré, par opposition à une panne.
+ *
+ * Le message d'un refus est écrit pour le professeur et doit lui parvenir tel
+ * quel (« ce modèle n'est pas publié »). Celui d'une panne vient de Postgres et
+ * n'a rien à faire dans une réponse HTTP : il décrit la base, pas l'action.
+ * Sans cette distinction, l'appelant doit choisir entre tout montrer et tout
+ * taire — et il taisait le seul message utile.
+ */
+export class ContentRefusal extends Error {
+	readonly name = 'ContentRefusal';
+}
+
 /** Result type for operations */
 interface OperationResult<T> {
 	data: T | null;
@@ -582,6 +595,40 @@ export async function addQuizQuestion(
 	supabase: SupabaseClient<Database>,
 	displayOrder?: number
 ): Promise<OperationResult<ChapterQuizQuestion>> {
+	// Un modèle en brouillon n'est pas lisible par l'élève : la policy
+	// « Students can view published templates » filtre sur `status`. L'attacher
+	// au quiz créerait une question que le professeur voit et que l'élève ne
+	// verra jamais — sans message, la question disparaîtrait simplement de son
+	// écran. C'est exactement le défaut qui a rendu ce quiz invisible pendant
+	// toute sa vie ; on refuse donc à l'entrée plutôt que d'y remédier après.
+	//
+	// Le même garde existe déjà pour les fiches d'un chapitre, pour la même
+	// raison : un brouillon n'est pas distribuable.
+	const { data: template, error: templateError } = await supabase
+		.from('question_templates')
+		.select('id, status')
+		.eq('id', questionTemplateId)
+		.single();
+
+	// PGRST116 = aucune ligne, ce que le refus qui suit traite déjà.
+	if (templateError && templateError.code !== 'PGRST116') {
+		console.error('[addQuizQuestion] Modèle illisible :', templateError);
+		return { data: null, error: new Error(templateError.message) };
+	}
+
+	if (!template) {
+		return { data: null, error: new ContentRefusal('Modèle de question introuvable') };
+	}
+
+	if (template.status !== 'published') {
+		return {
+			data: null,
+			error: new ContentRefusal(
+				"Ce modèle de question n'est pas publié : les élèves ne pourraient pas le voir."
+			)
+		};
+	}
+
 	// Get max display order if not provided
 	let order = displayOrder;
 	if (order === undefined) {
@@ -1469,11 +1516,20 @@ export async function submitQuizAnswer(
 	}
 
 	// 2. Get attempt number (count existing attempts + 1)
-	const { count: existingAttempts } = await supabase
+	//
+	// Une panne de comptage n'est pas « zéro essai » : sans ce garde, elle
+	// laissait `attempt_number` à 1 indéfiniment, et le professeur lisait « 1ʳᵉ
+	// tentative » sur la dixième. On refuse plutôt que d'enregistrer un faux.
+	const { count: existingAttempts, error: countError } = await supabase
 		.from('chapter_quiz_results')
 		.select('*', { count: 'exact', head: true })
 		.eq('chapter_quiz_question_id', quizQuestionId)
 		.eq('student_id', studentId);
+
+	if (countError) {
+		console.error('[submitQuizAnswer] Comptage des essais impossible :', countError);
+		return { data: null, error: new Error(countError.message) };
+	}
 
 	const attemptNumber = (existingAttempts ?? 0) + 1;
 

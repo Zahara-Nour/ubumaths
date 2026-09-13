@@ -204,10 +204,8 @@ Ce volet a désormais ses propres documents, tenus à jour et mesurés :
 
 - **[mon-cours-chapitres-progress.md](mon-cours-chapitres-progress.md)** —
   l'état complet de « Mon cours » : le modèle à deux étages (chapitre par
-  CLASSE, modèle par NIVEAU), les fiches rattachées (livrées), le quiz et son
-  blocage, ce qu'un modèle emporte et ce qu'il n'emporte pas.
-- **[prompts/prompt-mon-cours-quiz.md](prompts/prompt-mon-cours-quiz.md)** — le
-  prompt de reprise pour une nouvelle session.
+  CLASSE, modèle par NIVEAU), les fiches rattachées (livrées), le quiz
+  (rebranché) et ce qu'un modèle emporte ou n'emporte pas.
 - **[cahier-texte-travaux-multiples-progress.md](cahier-texte-travaux-multiples-progress.md)**
   — ✅ **clos**. Les quatre phases sont livrées, anciennes colonnes supprimées.
 
@@ -218,15 +216,18 @@ Ce volet a désormais ses propres documents, tenus à jour et mesurés :
 travaux), et le programme est semé (18 thèmes, 453 points) mais sans aucun
 rattachement d'exercice.
 
-**Le quiz est bloqué par un choix produit, pas par un bug.** `ChapterQuiz` est
-câblé en vrai/faux (`answer: boolean`), alors qu'aucun des six types de
-`question_templates` n'est un vrai/faux et qu'une question porte des
-`variations` avec des variables à résoudre par élève. Trois options sont
-décrites dans le document ; **aucune n'est tranchée**.
+**Le quiz : tranché et livré le 2026-09-13.** David a retenu l'option 1 — le
+quiz réutilise le moteur de questions (`generateInstance` + `FlashCard`), comme
+/automaths et le SRS. Aucune migration : le schéma suffisait. Il reste sans
+matière tant qu'aucun modèle n'est publié, et les 633 TinyMath sont de niveau
+collège alors que les classes actives sont 1SPE et 2DE. Détail dans le document
+ci-dessus.
 
 **Les fiches rattachées ne suivent pas les modèles de chapitre.** Le
 `content_snapshot` connaît quatre types de contenu, pas `chapter_worksheets`.
-Instancier n'apporte pas les fiches, migrer ne les touche pas. Question ouverte.
+Instancier n'apporte pas les fiches, migrer ne les touche pas. **Tranché le
+2026-09-13 : on en reparle quand un modèle de chapitre existera** (il y en a 0).
+Ne pas relancer d'ici là.
 
 **L'invariant à ne jamais casser** : rattacher une fiche ne la distribue pas.
 C'est une condition dans la policy de l'élève, pas dans l'API, et un test la

@@ -15,6 +15,7 @@ import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { getChapterWithContent, toggleChecklistItem } from '$lib/server/chapters';
+import { buildQuizInstances } from '$lib/server/chapters-quiz';
 import { toggleChecklistSchema } from '$lib/server/validation/chapters';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
@@ -55,24 +56,23 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		console.error('Contexte illisible :', classInfoError);
 	}
 
-	// Quiz d'un chapitre : hors service, et depuis toujours.
+	// Le quiz du chapitre, résolu aux valeurs de CET élève.
 	//
-	// Le code interrogeait `question_templates.question`, `.answer` et
-	// `.explanation`. Aucune de ces colonnes n'existe : un modèle de question
-	// porte `title`, `description` et surtout `variations`, où vit réellement
-	// l'énoncé. La requête échouait donc à chaque affichage, la table restait
-	// vide, et `ChapterQuiz` filtre justement les questions sans modèle
-	// (`questions.filter((q) => questionTemplates[...])`) : le quiz n'a jamais
-	// rien montré, sans erreur visible.
-	//
-	// On retire la requête morte plutôt que d'improviser : rebrancher le quiz
-	// suppose de décider comment une `variation` devient une question
-	// vrai/faux, ce qui relève d'un choix produit, pas d'une réparation.
-	// Comportement inchangé — la table était déjà vide en pratique.
-	const questionTemplates: Record<
-		string,
-		{ id: string; question: string; answer: boolean; explanation: string | null }
-	> = {};
+	// La lecture passe par `locals.supabase`, donc aux droits de l'élève : la
+	// policy « Students can view published templates » écarte d'elle-même les
+	// brouillons. On ne recalcule pas ce filtre, on en récolte le résultat — et
+	// `buildQuizInstances` nous dit ce qui manque au lieu de le taire.
+	const { data: quiz, error: quizError } = await buildQuizInstances(
+		chapter.quizQuestionsWithResults,
+		user.id,
+		locals.supabase
+	);
+
+	// Une panne de lecture n'est pas un quiz vide : on le distingue, comme pour
+	// les fiches plus bas.
+	if (quizError) {
+		console.error(`Quiz illisible pour le chapitre ${chapter.id} :`, quizError);
+	}
 
 	// Get exercise details for linked exercises
 	// `exercises.title` est nullable en base : un exercice sans titre reste
@@ -129,7 +129,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	return {
 		chapter,
 		className: classInfo?.name || 'Classe',
-		questionTemplates,
+		quizInstances: quiz?.instances ?? {},
+		quizUnavailable: quiz?.unavailable ?? [],
+		quizUnreadable: Boolean(quizError),
 		exerciseDetails,
 		worksheets: worksheetsData.worksheets || [],
 		worksheetsUnavailable
@@ -177,52 +179,5 @@ export const actions: Actions = {
 		}
 
 		return { success: true, action: 'toggleChecklist' };
-	},
-
-	/**
-	 * Submit quiz answer
-	 */
-	submitQuiz: async ({ request, locals }) => {
-		// L'authentification reste exigée : l'action est publique dans le contrat
-		// du formulaire, et un refus doit être réservé aux élèves connectés.
-		await requireRole(locals, 'student');
-
-		const formData = await request.formData();
-		const chapterQuizQuestionId = formData.get('quizQuestionId') as string;
-
-		// Get the correct answer to check
-		const { data: quizQuestion, error: quizQuestionError } = await locals.supabase
-			.from('chapter_quiz_questions')
-			.select('question_template_id')
-			.eq('id', chapterQuizQuestionId)
-			.single();
-
-		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
-		if (quizQuestionError && quizQuestionError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', quizQuestionError);
-			return fail(500, { error: 'Lecture impossible' });
-		}
-
-		if (!quizQuestion) {
-			return fail(404, {
-				error: 'Question non trouvée',
-				action: 'submitQuiz'
-			});
-		}
-
-		// `question_templates.answer` n'existe pas : la réponse attendue vit dans
-		// `variations`. La requête échouait donc, `template` valait `null`, et
-		// l'action renvoyait déjà ce 404. Elle est de toute façon inatteignable —
-		// le quiz n'a jamais pu afficher la moindre question.
-		//
-		// Tout ce qui suivait (validation Zod, `submitQuizAnswer`, intégration SRS)
-		// dépendait d'un `isCorrect` calculé sur une colonne fantôme : on ne peut
-		// pas corriger une réponse tant que le contrat « une variation → une
-		// question vrai/faux » n'est pas tranché. C'est un choix produit, pas une
-		// réparation. Le refus explicite remplace un calcul faux.
-		return fail(404, {
-			error: 'Quiz de chapitre indisponible',
-			action: 'submitQuiz'
-		});
 	}
 };

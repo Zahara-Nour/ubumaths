@@ -6,7 +6,7 @@
 	 *
 	 * Manage chapter content with tabs:
 	 * - Documents (upload/Google Drive)
-	 * - Quiz questions (true/false)
+	 * - Quiz questions (modèles de questions publiés)
 	 * - Checklist items
 	 * - Exercises (links)
 	 * - Worksheets (links) — rattacher ne distribue pas
@@ -89,7 +89,7 @@
 			.filter((t) => !data.quizQuestions.some((q) => q.questionTemplateId === t.id))
 			.map((t) => ({
 				value: t.id,
-				label: t.question.length > 60 ? t.question.slice(0, 60) + '...' : t.question
+				label: `${t.title} — ${t.domain} (niv. ${t.level})`
 			}))
 	]);
 
@@ -309,12 +309,21 @@
 									</div>
 									<div class="min-w-0 flex-1">
 										<p class="font-medium">
-											{template?.question || 'Question non trouvee'}
+											{template?.title ?? 'Modèle supprimé'}
 										</p>
+										<!--
+											Trois états distincts, que l'ancienne version confondait en une
+											case vide : modèle publié (l'élève le voit), modèle redevenu
+											brouillon (l'élève ne le voit plus), modèle supprimé.
+										-->
 										<p class="text-sm text-muted-foreground">
-											Reponse: {template?.answer === true || template?.answer === 'true'
-												? 'Vrai'
-												: 'Faux'}
+											{#if !template}
+												Ce modèle n'existe plus : la question ne s'affichera pas.
+											{:else if template.status !== 'published'}
+												Brouillon — les élèves ne verront pas cette question.
+											{:else}
+												Publié
+											{/if}
 										</p>
 									</div>
 									<form method="POST" action="?/removeQuizQuestion" use:enhance>
@@ -517,7 +526,8 @@
 		<Dialog.Header>
 			<Dialog.Title>Ajouter une question au quiz</Dialog.Title>
 			<Dialog.Description>
-				Selectionnez une question Vrai/Faux existante pour l'ajouter au quiz.
+				Seuls les modèles <strong>publiés</strong> sont proposés : un brouillon serait invisible aux
+				élèves.
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -534,8 +544,32 @@
 		>
 			<div class="space-y-2">
 				<Label>Question</Label>
-				<MySelect type="single" bind:value={selectedQuestionId} items={questionItems} />
-				<input type="hidden" name="questionTemplateId" value={selectedQuestionId} />
+				{#if data.availableTemplates.length === 0}
+					<!--
+						Une liste vide ne doit pas laisser croire à une panne : ici, elle
+						dit ce qu'il manque et où le faire.
+					-->
+					<p class="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
+						Aucun modèle de question publié pour le moment. Publie un modèle depuis
+						<a href="/dashboard/admin/questions" class="underline">la banque de questions</a>
+						pour pouvoir l'ajouter ici.
+					</p>
+				{:else}
+					<MySelect type="single" bind:value={selectedQuestionId} items={questionItems} />
+					<input type="hidden" name="questionTemplateId" value={selectedQuestionId} />
+					{#if data.hiddenTemplateCount > 0}
+						<!-- Un plafond silencieux ferait conclure que la question n'existe pas. -->
+						<p class="text-xs text-muted-foreground">
+							{data.hiddenTemplateCount} autre{data.hiddenTemplateCount > 1 ? 's' : ''} modèle{data.hiddenTemplateCount >
+							1
+								? 's'
+								: ''} publié{data.hiddenTemplateCount > 1 ? 's' : ''} ne {data.hiddenTemplateCount >
+							1
+								? 'sont'
+								: 'est'} pas listé{data.hiddenTemplateCount > 1 ? 's' : ''} ici (limite d'affichage).
+						</p>
+					{/if}
+				{/if}
 			</div>
 
 			<Dialog.Footer>

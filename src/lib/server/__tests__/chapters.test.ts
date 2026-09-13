@@ -1202,6 +1202,12 @@ describe('Quiz Question Functions', () => {
 
 	describe('addQuizQuestion', () => {
 		it('should add quiz question to chapter', async () => {
+			// Le modèle doit être publié : un brouillon serait invisible à l'élève.
+			supabase._mockChain.single.mockResolvedValueOnce({
+				data: { id: mockQuestionTemplateId, status: 'published' },
+				error: null
+			});
+
 			supabase._mockChain.maybeSingle.mockResolvedValueOnce({
 				data: null,
 				error: null
@@ -1224,6 +1230,11 @@ describe('Quiz Question Functions', () => {
 		});
 
 		it('should add quiz question with custom display order', async () => {
+			supabase._mockChain.single.mockResolvedValueOnce({
+				data: { id: mockQuestionTemplateId, status: 'published' },
+				error: null
+			});
+
 			supabase._mockChain.single.mockResolvedValueOnce({
 				data: { ...mockDbQuizQuestion, display_order: 5 },
 				error: null
