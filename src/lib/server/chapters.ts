@@ -1483,26 +1483,73 @@ export async function getChapterWithContent(
 // ============================================================================
 
 /**
+ * Plafond d'essais par question et par élève.
+ *
+ * Il ne protège pas d'un élève qui scripterait son propre jeton : le rôle
+ * `authenticated` a le droit `INSERT` sur `chapter_quiz_results`, donc une
+ * insertion directe via PostgREST ne passe pas par ici. Fermer ce chemin-là
+ * demande un garde EN BASE.
+ *
+ * Ce qu'il protège vraiment : un client qui re-soumet en boucle. Ce n'est pas
+ * théorique — la première version de `ChapterQuiz` re-postait à chaque retour
+ * en arrière. Le plafond borne le dégât d'un bug d'interface.
+ *
+ * 100 est délibérément large : le quiz est un entraînement rejouable, et la
+ * limite doit rester invisible à un élève assidu.
+ */
+const MAX_QUIZ_ATTEMPTS_PER_QUESTION = 100;
+
+/** Pourquoi une soumission de quiz est refusée. */
+export type QuizRefusalReason = 'chapitre_incoherent' | 'limite_atteinte';
+
+export class QuizSubmissionRefusal extends Error {
+	constructor(
+		readonly reason: QuizRefusalReason,
+		message: string
+	) {
+		super(message);
+		this.name = 'QuizSubmissionRefusal';
+	}
+}
+
+export interface SubmitQuizAnswerInput {
+	studentId: string;
+	/** Question du quiz visée. */
+	quizQuestionId: string;
+	/** Chapitre depuis lequel la réponse est envoyée — il doit porter la question. */
+	chapterId: string;
+	isCorrect: boolean;
+	timeSpentSeconds: number;
+	/** Réponse soumise, pour la trace. */
+	submittedAnswer?: string;
+}
+
+/**
  * Submit a quiz answer
  *
  * CRITICAL: Also updates SRS card stats if the question template is in student's deck
  *
- * @param studentId - Student's user ID
- * @param quizQuestionId - Chapter quiz question ID
- * @param isCorrect - Whether the answer was correct
- * @param timeSpentSeconds - Time spent on the question
+ * Les arguments passent par un objet nommé : la fonction en prenait six en
+ * position, dont deux booléens/nombres voisins, et une inversion y aurait été
+ * silencieuse.
+ *
+ * @param input - Élève, question, chapitre d'origine et réponse
  * @param supabase - Supabase client
- * @param submittedAnswer - The answer submitted (for recording)
  * @returns Created quiz result
  */
 export async function submitQuizAnswer(
-	studentId: string,
-	quizQuestionId: string,
-	isCorrect: boolean,
-	timeSpentSeconds: number,
-	supabase: SupabaseClient<Database>,
-	submittedAnswer: string = ''
+	input: SubmitQuizAnswerInput,
+	supabase: SupabaseClient<Database>
 ): Promise<OperationResult<ChapterQuizResult>> {
+	const {
+		studentId,
+		quizQuestionId,
+		chapterId,
+		isCorrect,
+		timeSpentSeconds,
+		submittedAnswer = ''
+	} = input;
+
 	// 1. Get the quiz question to find the template ID
 	const { data: quizQuestion, error: questionError } = await supabase
 		.from('chapter_quiz_questions')
@@ -1513,6 +1560,26 @@ export async function submitQuizAnswer(
 	if (questionError || !quizQuestion) {
 		console.error('[submitQuizAnswer] Error fetching question:', questionError);
 		return { data: null, error: new Error(questionError?.message || 'Question not found') };
+	}
+
+	// La question doit appartenir au chapitre d'où vient la réponse.
+	//
+	// L'en-tête de la route promettait cette vérification ; elle n'existait pas.
+	// La policy d'insertion rattrape l'essentiel (classe et visibilité), donc
+	// rien n'était exploitable — mais un commentaire qui décrit un garde absent
+	// finit par être cru, et le résultat serait rangé sous un chapitre qui ne
+	// l'a jamais posé.
+	if (quizQuestion.chapter_id !== chapterId) {
+		console.error(
+			`[submitQuizAnswer] Question ${quizQuestionId} soumise depuis le chapitre ${chapterId}, alors qu'elle appartient à ${quizQuestion.chapter_id}`
+		);
+		return {
+			data: null,
+			error: new QuizSubmissionRefusal(
+				'chapitre_incoherent',
+				"Cette question n'appartient pas à ce chapitre"
+			)
+		};
 	}
 
 	// 2. Get attempt number (count existing attempts + 1)
@@ -1529,6 +1596,16 @@ export async function submitQuizAnswer(
 	if (countError) {
 		console.error('[submitQuizAnswer] Comptage des essais impossible :', countError);
 		return { data: null, error: new Error(countError.message) };
+	}
+
+	if ((existingAttempts ?? 0) >= MAX_QUIZ_ATTEMPTS_PER_QUESTION) {
+		return {
+			data: null,
+			error: new QuizSubmissionRefusal(
+				'limite_atteinte',
+				`Limite de ${MAX_QUIZ_ATTEMPTS_PER_QUESTION} tentatives atteinte pour cette question`
+			)
+		};
 	}
 
 	const attemptNumber = (existingAttempts ?? 0) + 1;

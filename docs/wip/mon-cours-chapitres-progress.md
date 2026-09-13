@@ -174,6 +174,41 @@ année, la matière doit venir de modèles écrits au niveau lycée
   mensonge sur la cause, déplacé d'un cran. Le message distingue maintenant les
   deux.
 
+### Les deux faiblesses préexistantes de l'audit — traitées le 2026-09-13
+
+**1. La question soumise doit appartenir au chapitre de l'URL.** L'en-tête de
+`/api/student/chapters/[id]/quiz/submit` promettait une « validation de
+contexte » qui n'existait pas : `params.id` était vérifié comme UUID, puis
+jamais comparé. Rien d'exploitable (la policy d'insertion revérifie classe et
+visibilité), mais un commentaire qui décrit un garde absent finit par être cru.
+`submitQuizAnswer` compare désormais, et refuse en 400.
+
+Au passage, sa signature passe à un **objet nommé** : elle prenait six
+paramètres positionnels dont un booléen et un nombre voisins, et une inversion
+y aurait été silencieuse.
+
+**2. Le plafond de tentatives — et ce qu'il ne fait PAS.** Cap à 100 essais par
+question et par élève, refusé en 429.
+
+⚠️ **Ce plafond ne protège pas d'un élève qui scripterait son jeton.** Mesuré :
+`relacl` de `chapter_quiz_results` donne `authenticated=arwdxtm`, donc le droit
+`INSERT` — une écriture directe via PostgREST ne passe pas par l'API. Fermer ce
+chemin demanderait un garde **en base** (trigger, comme les soumissions Python)
+ou le retrait du droit `INSERT` au profit d'une fonction `SECURITY DEFINER`.
+**Non fait, décision en attente de David.**
+
+Ce que le plafond protège réellement : un client qui re-soumet en boucle. Ce
+n'est pas théorique — la première version de `ChapterQuiz` re-postait à chaque
+retour en arrière.
+
+Bornes du dégât résiduel, vérifiées en prod : l'élève ne peut insérer que
+**ses** lignes, sur un chapitre visible de **sa** classe ; et il n'existe
+**aucune policy `UPDATE` ni `DELETE`** sur la table — malgré les droits `w`/`d`
+du rôle, la RLS les refuse. Il ne peut donc ni modifier ni effacer un résultat,
+seulement en ajouter. L'exposition est identique à celle de
+`worksheet_error_reports`, déjà acceptée, qui n'a elle aussi qu'un plafond
+applicatif.
+
 ### Deux choix à connaître
 
 - **La correction reste côté client.** `isCorrect` est calculé dans le

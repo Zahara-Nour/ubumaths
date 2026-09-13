@@ -11,7 +11,7 @@
  * AUTH: Any authenticated user (RLS handles access control)
  *
  * PARAMS:
- * - id: Chapter UUID (for context validation)
+ * - id: Chapter UUID — la question soumise doit lui appartenir (vérifié)
  *
  * BODY:
  * {
@@ -42,7 +42,7 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
-import { submitQuizAnswer } from '$lib/server/chapters';
+import { submitQuizAnswer, QuizSubmissionRefusal } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
 import { addBuddyXpFromExercise } from '$lib/server/buddy-xp-service';
 
@@ -77,7 +77,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user, profile } = await requireAuth(locals);
 	requireConsent(profile, 'submit_exercise');
 
-	// Validate chapter ID parameter (for context, though main validation is on quizQuestionId)
+	// Le chapitre de l'URL n'est pas décoratif : `submitQuizAnswer` vérifie que
+	// la question lui appartient vraiment.
 	const paramsValidation = paramsSchema.safeParse(params);
 	if (!paramsValidation.success) {
 		throw error(400, paramsValidation.error.issues[0].message);
@@ -101,15 +102,24 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		// Submit the quiz answer (includes SRS integration)
 		const result = await submitQuizAnswer(
-			user.id,
-			quizQuestionId,
-			isCorrect,
-			timeSpentSeconds,
-			locals.supabase,
-			submittedAnswer
+			{
+				studentId: user.id,
+				quizQuestionId,
+				chapterId: paramsValidation.data.id,
+				isCorrect,
+				timeSpentSeconds,
+				submittedAnswer
+			},
+			locals.supabase
 		);
 
 		if (result.error) {
+			// Un refus n'est pas une panne : il a son propre statut, et son message
+			// est écrit pour être lu. Les confondre en 500 ferait réessayer le
+			// client en boucle sur une demande qui ne peut pas aboutir.
+			if (result.error instanceof QuizSubmissionRefusal) {
+				throw error(result.error.reason === 'limite_atteinte' ? 429 : 400, result.error.message);
+			}
 			// Check for common errors
 			if (result.error.message.includes('not found') || result.error.message.includes('PGRST116')) {
 				throw error(404, 'Quiz question not found');
