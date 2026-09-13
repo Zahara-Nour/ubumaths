@@ -1794,6 +1794,69 @@ describe('Template CRUD Functions', () => {
 		});
 	});
 
+	describe('createTemplateFromChapter', () => {
+		/** Enchaîne les réponses : snapshot, métadonnées, insertion du modèle. */
+		function mockCreationChain() {
+			// extractContentSnapshotFromChapter lit cinq sections, chacune close
+			// par un `order`.
+			for (let i = 0; i < 5; i++) {
+				supabase._mockChain.order.mockResolvedValueOnce({ data: [], error: null });
+			}
+			supabase._mockChain.single
+				// métadonnées du chapitre (couleur, icône)
+				.mockResolvedValueOnce({ data: { color: null, icon: null }, error: null })
+				// insertion du modèle
+				.mockResolvedValueOnce({ data: mockDbTemplate, error: null });
+		}
+
+		// Le chapitre qui engendre le modèle le suit désormais comme les autres :
+		// il reçoit les propositions de mise à jour, au lieu de rester à l'écart
+		// des corrections qu'il a lui-même inspirées.
+		it('rattache le chapitre source au modèle créé', async () => {
+			mockCreationChain();
+			// aucun rattachement préexistant
+			supabase._mockChain.maybeSingle.mockResolvedValueOnce({ data: null, error: null });
+			// le premier insert (le modèle) se poursuit en .select().single() ;
+			// le second (le rattachement) termine la chaîne.
+			supabase._mockChain.insert
+				.mockReturnValueOnce(supabase._mockChain as never)
+				.mockReturnValueOnce(Promise.resolve({ error: null }) as never);
+
+			const result = await templates.createTemplateFromChapter(
+				{ chapterId: mockChapterId, title: 'Le second degré' },
+				mockUserId,
+				supabase
+			);
+
+			expect(result.error).toBeNull();
+			expect(supabase._mockChain.insert).toHaveBeenCalledWith(
+				expect.objectContaining({ chapter_id: mockChapterId, template_version: 1 })
+			);
+		});
+
+		// La base n'impose pas l'unicité du rattachement, et le code lit avec
+		// `.single()` : une seconde ligne ferait échouer le bandeau du chapitre et
+		// ses mises à jour.
+		it('laisse intact un chapitre qui suit déjà un modèle', async () => {
+			mockCreationChain();
+			supabase._mockChain.maybeSingle.mockResolvedValueOnce({
+				data: { id: 'existing-instantiation' },
+				error: null
+			});
+
+			const result = await templates.createTemplateFromChapter(
+				{ chapterId: mockChapterId, title: 'Le second degré' },
+				mockUserId,
+				supabase
+			);
+
+			expect(result.error).toBeNull();
+			expect(supabase._mockChain.insert).not.toHaveBeenCalledWith(
+				expect.objectContaining({ chapter_id: mockChapterId })
+			);
+		});
+	});
+
 	describe('deleteChapterTemplate', () => {
 		it('supprime réellement, au lieu d’archiver', async () => {
 			supabase._mockChain.single.mockResolvedValueOnce({

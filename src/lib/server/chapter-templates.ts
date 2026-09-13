@@ -165,6 +165,33 @@ export async function createTemplateFromChapter(
 			return { data: null, error: new Error(error.message) };
 		}
 
+		// Le chapitre qui engendre le modèle le suit désormais comme les autres :
+		// sans ce rattachement, il serait le seul à ne pas recevoir les
+		// corrections qu'il a lui-même inspirées.
+		const { data: existing, error: existingError } = await supabase
+			.from('chapter_template_instantiations')
+			.select('id')
+			.eq('chapter_id', input.chapterId)
+			.maybeSingle();
+
+		if (existingError) {
+			console.error('[createTemplateFromChapter] Rattachement illisible :', existingError);
+		} else if (!existing) {
+			// Un chapitre ne porte qu'un rattachement — le code le lit avec
+			// `.single()` — donc celui qui suit déjà un modèle garde le sien.
+			const { error: linkError } = await supabase.from('chapter_template_instantiations').insert({
+				template_id: template.id,
+				template_version: 1,
+				chapter_id: input.chapterId,
+				current_template_version: 1
+			});
+
+			// Le modèle existe : un rattachement manqué ne doit pas le perdre.
+			if (linkError) {
+				console.error('[createTemplateFromChapter] Rattachement impossible :', linkError);
+			}
+		}
+
 		return { data: dbTemplateToApp(template as DbChapterTemplate), error: null };
 	} catch (err) {
 		console.error('[createTemplateFromChapter] Unexpected error:', err);

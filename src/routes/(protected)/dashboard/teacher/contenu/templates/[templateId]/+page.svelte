@@ -34,6 +34,7 @@
 		ClipboardList,
 		Upload,
 		Archive,
+		RefreshCw,
 		Trash2,
 		PlayCircle,
 		Clock
@@ -47,6 +48,19 @@
 	let isArchiving = $state(false);
 	let isDeleting = $state(false);
 	let showDeleteDialog = $state(false);
+	let isUpdatingFromChapter = $state(false);
+	let showUpdateDialog = $state(false);
+	let selectedChapterId = $state('');
+	let changeSummary = $state('');
+
+	/** Chapitres qui suivent ce modèle, nommés avec leur classe. */
+	const chapterItems = $derived([
+		{ value: '', label: 'Choisir un chapitre...' },
+		...data.linkedChapters.map((chapter) => ({
+			value: chapter.id,
+			label: chapter.className ? `${chapter.title} — ${chapter.className}` : chapter.title
+		}))
+	]);
 	let isInstantiating = $state(false);
 	let showInstantiateDialog = $state(false);
 	let selectedClassId = $state<string>('');
@@ -97,6 +111,15 @@
 				toaster.success('Template archivé');
 			} else if (form.action === 'update') {
 				toaster.success('Template mis à jour');
+			} else if (form.action === 'updateFromChapter') {
+				toaster.success(
+					data.template.status === 'draft'
+						? 'Contenu du modèle repris depuis le chapitre'
+						: 'Nouvelle version créée depuis le chapitre'
+				);
+				showUpdateDialog = false;
+				selectedChapterId = '';
+				changeSummary = '';
 			} else if (form.action === 'instantiate') {
 				toaster.success('Chapitre créé avec succès');
 				showInstantiateDialog = false;
@@ -151,6 +174,18 @@
 								{isPublishing ? 'Publication...' : 'Publier'}
 							</Button>
 						</form>
+					{/if}
+
+					<!--
+						Reprendre le contenu d'un chapitre : c'est le seul moyen de
+						faire évoluer un modèle, son contenu n'étant pas modifiable
+						pièce à pièce.
+					-->
+					{#if data.template.status !== 'archived' && data.linkedChapters.length > 0}
+						<Button variant="outline" onclick={() => (showUpdateDialog = true)}>
+							<RefreshCw class="mr-2 h-4 w-4" />
+							Mettre à jour depuis un chapitre
+						</Button>
 					{/if}
 
 					<!--
@@ -317,6 +352,64 @@
 </div>
 
 <!-- Instantiate Dialog -->
+<Dialog.Root bind:open={showUpdateDialog}>
+	<Dialog.Content class="max-w-lg">
+		<Dialog.Header>
+			<Dialog.Title>Mettre à jour ce modèle</Dialog.Title>
+			<Dialog.Description>
+				Le contenu du chapitre choisi remplacera celui du modèle.
+				{#if data.template.status === 'draft'}
+					Le modèle est en brouillon : son contenu est simplement réécrit.
+				{:else}
+					Le modèle est publié : cela crée une nouvelle version, et les chapitres qui le suivent se
+					verront proposer la mise à jour.
+				{/if}
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<form
+			method="POST"
+			action="?/updateFromChapter"
+			use:enhance={() => {
+				isUpdatingFromChapter = true;
+				return async ({ update }) => {
+					isUpdatingFromChapter = false;
+					await update();
+				};
+			}}
+			class="space-y-4"
+		>
+			<div class="space-y-2">
+				<Label>Chapitre source</Label>
+				<MySelect type="single" bind:value={selectedChapterId} items={chapterItems} />
+				<input type="hidden" name="chapterId" value={selectedChapterId} />
+			</div>
+
+			{#if data.template.status !== 'draft'}
+				<div class="space-y-2">
+					<Label for="change-summary">Ce qui change (facultatif)</Label>
+					<Input
+						id="change-summary"
+						name="changeSummary"
+						bind:value={changeSummary}
+						maxlength={200}
+						placeholder="Ajout de deux exercices sur le discriminant"
+					/>
+				</div>
+			{/if}
+
+			<Dialog.Footer>
+				<Button type="button" variant="outline" onclick={() => (showUpdateDialog = false)}>
+					Annuler
+				</Button>
+				<Button type="submit" disabled={isUpdatingFromChapter || !selectedChapterId}>
+					{isUpdatingFromChapter ? 'Mise à jour...' : 'Mettre à jour'}
+				</Button>
+			</Dialog.Footer>
+		</form>
+	</Dialog.Content>
+</Dialog.Root>
+
 <Dialog.Root bind:open={showDeleteDialog}>
 	<Dialog.Content class="max-w-lg">
 		<Dialog.Header>
