@@ -82,39 +82,33 @@ describe('annuaire du personnel', () => {
 		).toContain(profId);
 	});
 
-	it('elle rend un nom et un avatar', async () => {
+	/**
+	 * ⚠️ LE test qui garde le chantier entier, et c'est une liste BLANCHE.
+	 *
+	 * Une liste noire de colonnes interdites serait plus lisible et plus
+	 * faible : `profiles` en compte 25, et il suffirait d'en oublier une —
+	 * `rejection_reason`, `class_ids`, `vip_cards_history`… — pour qu'un ajout
+	 * passe au vert. Ici, TOUTE colonne ajoutée fait tomber le test, connue ou
+	 * non, présente ou future.
+	 *
+	 * Si quelqu'un ajoute une colonne sensible à la fonction, la restriction
+	 * des profils devient inutile — et rien d'autre ne le dirait : ni le
+	 * typecheck, ni le lint, ni la RLS.
+	 */
+	it('elle rend un nom et un avatar, et RIEN de plus', async () => {
 		const { data } = await eleve.rpc(ANNUAIRE);
 		const prof = ((data ?? []) as LigneAnnuaire[]).find((l) => l.id === profId);
 
 		expect(prof).toBeDefined();
-		expect(Object.keys(prof!).sort()).toEqual(
-			['avatar_url', 'firstname', 'full_name', 'id', 'lastname', 'role'].sort()
-		);
-	});
+		expect(
+			Object.keys(prof!).sort(),
+			'une colonne a été ajoutée à l’annuaire : elle est lisible par TOUT compte connecté'
+		).toEqual(['avatar_url', 'firstname', 'full_name', 'id', 'lastname', 'role'].sort());
 
-	/**
-	 * ⚠️ LE test qui garde le chantier entier. Si quelqu'un ajoute une colonne
-	 * sensible à la fonction, la restriction des profils devient inutile — et
-	 * rien d'autre ne le dirait : ni le typecheck, ni le lint, ni la RLS.
-	 */
-	it('elle n’expose AUCUNE colonne sensible', async () => {
-		const { data } = await eleve.rpc(ANNUAIRE);
-		const prof = ((data ?? []) as LigneAnnuaire[]).find((l) => l.id === profId);
-
-		for (const interdite of [
-			'email',
-			'consent_granted_at',
-			'consent_required',
-			'grade',
-			'school_id',
-			'gidouilles',
-			'status'
-		]) {
-			expect(
-				Object.keys(prof!),
-				`« ${interdite} » ne doit jamais sortir de l’annuaire du personnel`
-			).not.toContain(interdite);
-		}
+		// Le jeu de clés ne dit rien du contenu : sans nom, les six écrans
+		// continueraient d'afficher « Utilisateur inconnu » et la suite
+		// resterait verte — le bug même que cette fonction existe pour corriger.
+		expect(prof!.full_name, 'le nom du professeur n’arrive pas').toBeTruthy();
 	});
 
 	/** Elle ne rend QUE le personnel : un élève n'y figure pas. */
@@ -129,13 +123,26 @@ describe('annuaire du personnel', () => {
 		).toBeGreaterThan(0);
 	});
 
-	/** Sans session, rien : `anon` n'a pas le droit d'exécution. */
+	/**
+	 * Sans session, rien : `anon` n'a pas le droit d'exécution.
+	 *
+	 * ⚠️ Le refus seul ne prouverait rien — il serait tout aussi vert si la
+	 * fonction n'existait pas, si l'URL était fausse, ou si PostgREST était
+	 * tombé. D'où le second appel, authentifié, qui doit RÉUSSIR.
+	 *
+	 * Et pas d'assertion sur le code d'erreur : selon la version, PostgREST
+	 * rend `42501` ou un 404 `PGRST202` (fonction hors du cache de schéma),
+	 * indistinguable de « n'existe pas ».
+	 */
 	it('un visiteur non connecté ne peut pas l’appeler', async () => {
 		const anonyme = createClient<Database>(SUPABASE_URL, ANON_KEY, {
 			auth: { persistSession: false, autoRefreshToken: false }
 		});
-		const { error } = await anonyme.rpc(ANNUAIRE);
 
-		expect(error, 'anon a pu lire l’annuaire du personnel').not.toBeNull();
+		const { error: refus } = await anonyme.rpc(ANNUAIRE);
+		expect(refus, 'anon a pu lire l’annuaire du personnel').not.toBeNull();
+
+		const { error: autorise } = await eleve.rpc(ANNUAIRE);
+		expect(autorise, 'la fonction est absente : le refus d’anon ne prouve rien').toBeNull();
 	});
 });

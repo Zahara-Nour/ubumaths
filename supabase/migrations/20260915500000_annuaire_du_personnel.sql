@@ -13,7 +13,13 @@
 -- notebook Python.
 --
 -- QUESTION D'ACCÈS, posée et tranchée par David le 2026-09-15 : un élève voit
--- le NOM et l'AVATAR de son professeur, rien d'autre.
+-- le NOM et l'AVATAR de son professeur.
+--
+-- La signature rend aussi `role`, et il faut le dire plutôt que de laisser le
+-- commentaire mentir : `fetchBoardMembers` en a besoin pour distinguer le
+-- professeur des élèves dans le sélecteur d'assignés du kanban. Ce n'est pas
+-- une donnée personnelle, mais ça désigne nommément l'unique compte admin de
+-- la plateforme — à savoir, si la question du hameçonnage se pose un jour.
 --
 -- ⚠️ Pourquoi une fonction et pas une policy. Une policy
 -- `using (role in ('teacher','admin'))` aurait suffi en une ligne — mais la
@@ -24,7 +30,22 @@
 --
 -- Le personnel tient en deux ou trois lignes (modèle mono-professeur) : la
 -- fonction rend l'annuaire entier, et chaque écran y retrouve le nom dont il a
--- besoin. Pas de paramètre, donc pas d'oracle d'existence.
+-- besoin. Pas de paramètre, donc pas d'oracle d'existence — et pas de SQL
+-- dynamique, donc aucune surface d'injection.
+--
+-- ⚠️ L'ABSENCE DE FILTRE PAR ÉCOLE EST UN CHOIX, pas un oubli. L'école est la
+-- frontière sociale du projet, et filtrer dessus paraît prudent — ce serait un
+-- bug : le `school_id` du personnel ne décrit pas les classes qu'il enseigne.
+-- Mesuré le 2026-09-15 : l'unique professeur est rattaché au Lycée Blaise
+-- Pascal, où il n'y a qu'un élève, tandis que 77 élèves sur 81 sont au Lycée
+-- Franco-Qatari Voltaire. Un filtre par école viderait donc l'annuaire pour la
+-- quasi-totalité des élèves, et recasserait les six écrans exactement comme le
+-- retrait de la policy.
+--
+-- ⚠️ Ce que cette fonction expose suit `profiles.role` : promouvoir un compte
+-- élève en `teacher`/`admin` le fait entrer dans l'annuaire, nom compris,
+-- lisible par tous les comptes connectés. La protection des noms de mineurs
+-- dépend donc aussi de qui a le droit d'ÉCRIRE `role`.
 --
 -- ROLLBACK :
 --   drop function if exists public.get_staff_directory();
