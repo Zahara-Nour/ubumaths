@@ -368,3 +368,31 @@ est citée. Plus deux pages hors menu (`/dashboard/student/worksheets`,
 Volontairement **non traité** : ce chantier ne ferait que déplacer le problème.
 À reprendre quand un vrai chapitre existera — la bonne réponse sera plus
 évidente avec du contenu sous les yeux.
+
+## Complément 2026-09-14 — l'élève inscrit après la publication
+
+Question de David, ses élèves n'étant pas encore inscrits : quand ils
+s'inscriront, faudra-t-il **redéployer** les fiches déjà publiées ?
+
+**Non.** `student_has_worksheet_access` dérive l'accès de `class_members` à
+chaque lecture ; rien n'est matérialisé par élève. Et la route élève résout les
+exercices à la volée, avec le **même seed déterministe** que la génération par
+lot, quand aucune `worksheet_instances` n'existe : l'élève tardif reçoit donc
+exactement les exercices qu'une pré-génération lui aurait donnés.
+
+Aucun code n'a été écrit pour ça — c'était déjà le comportement. Ce qui a été
+ajouté, c'est **la preuve** :
+`tests/integration/eleve-inscrit-apres-publication.test.ts` (PR #270). La même
+session élève lit le chapitre avant son inscription (rien) puis après (la
+fiche), et le test constate qu'aucune ligne nominative ni instance n'a été créée
+au passage.
+
+⚠️ **Pourquoi ce test existe** : il interdit de remplacer un jour ce modèle par
+une distribution matérialisée. Les élèves arrivés après la publication
+perdraient leurs fiches **en silence** — l'interface du professeur montre ce qui
+a été publié, pas ce que chaque élève reçoit. Vu rouge en neutralisant la
+fonction : 2 des 5 tests tombent.
+
+Le §« Reste ouvert » ci-dessus attendait « qu'un vrai chapitre existe » : c'est
+le cas depuis le 2026-09-14 (un chapitre, un document en production). La
+question de la dispersion peut donc être reprise.

@@ -15,22 +15,27 @@ Une troisième école « Cours particuliers » est prévue, pas encore créée.
 
 ## Ce qui est en production
 
-| Chantier                                                                          | État                   |
-| --------------------------------------------------------------------------------- | ---------------------- |
-| Série « élève archivé » — fiches, exercices, Python, notifications, chat + kanban | livré                  |
-| Professeur multi-école (calendrier de toutes ses écoles)                          | livré                  |
-| Classes rattachées à `school_years` (Phase 1)                                     | livré                  |
-| `close_school_year` / `reopen_school_year` (Phase 2)                              | livré                  |
-| Voltaire 2025-2026 clôturée — 77 adhésions archivées                              | fait                   |
-| Année courante déduite des dates, plus de `is_active`                             | livré                  |
-| Realtime : 5 des 6 tables republiées (PR #234)                                    | mergé, **pas en prod** |
-| Phase 3 — lecture seule rétroactive (PR #235 + #237)                              | mergé, **pas en prod** |
-| Phase 4 — composer une classe depuis l'année précédente (PR #236)                 | livré                  |
+| Chantier                                                                          | État                           |
+| --------------------------------------------------------------------------------- | ------------------------------ |
+| Série « élève archivé » — fiches, exercices, Python, notifications, chat + kanban | livré                          |
+| Professeur multi-école (calendrier de toutes ses écoles)                          | livré                          |
+| Classes rattachées à `school_years` (Phase 1)                                     | livré                          |
+| `close_school_year` / `reopen_school_year` (Phase 2)                              | livré                          |
+| Voltaire 2025-2026 clôturée — 77 adhésions archivées                              | fait                           |
+| Année courante déduite des dates, plus de `is_active`                             | livré                          |
+| Realtime : 5 des 6 tables republiées (PR #234)                                    | **livré** (vérifié 2026-09-14) |
+| Phase 3 — lecture seule rétroactive (PR #235 + #237)                              | **livré** (vérifié 2026-09-14) |
+| Phase 4 — composer une classe depuis l'année précédente (PR #236)                 | livré                          |
 
-> ⚠️ **Trois migrations attendent `db:migrate`** : `20260914140000` (realtime),
-> `20260914160000` et `20260914180000` (Phase 3). Le mode auto de Claude Code
-> refuse d'écrire en production ; il faut lancer `pnpm db:migrate` à la main,
-> puis `pnpm db:types` et commiter `database.ts`.
+> ✅ **Les trois migrations sont appliquées en production** — `20260914140000`
+> (realtime), `20260914160000` et `20260914180000` (Phase 3). Vérifié le
+> 2026-09-14 dans `supabase_migrations.schema_migrations` (MCP read-only, EU),
+> avec cinq migrations plus récentes derrière elles, jusqu'à
+> `20260915200000_chapter_documents_25mb`.
+>
+> ⚠️ Ce bloc disait l'inverse jusqu'au 2026-09-14. Sur un document de reprise
+> après compactage, une affirmation périmée coûte plus cher qu'une absence :
+> **vérifier l'état avant de s'en servir**, la requête tient en une ligne.
 
 ---
 

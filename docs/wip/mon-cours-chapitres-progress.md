@@ -1,6 +1,6 @@
 # « Mon cours » — chapitres, fiches, quiz
 
-> État au **2026-09-13**. Tous les chiffres de ce document sont **mesurés en
+> État au **2026-09-14**. Tous les chiffres de ce document sont **mesurés en
 > production** (MCP Supabase read-only, EU), pas déduits du code.
 >
 > Chantier voisin, **clos** : [cahier-texte-travaux-multiples-progress.md](cahier-texte-travaux-multiples-progress.md).
@@ -9,19 +9,33 @@
 > demandait de trancher le contrat du quiz, ce qui est fait (option 1, le
 > 2026-09-13). Le laisser aurait fait refaire l'étude.
 
-## Le fait qui commande tout le reste
+## Le fait qui commandait tout le reste — levé le 2026-09-14
+
+**Relevé en production le 2026-09-14** (MCP Supabase read-only, EU) :
 
 ```
-class_chapters ............ 0     chapter_quiz_questions .... 0
-chapter_templates ......... 0     chapter_quiz_results ...... 0
-chapter_documents ......... 0     chapter_checklist_items ... 0
-chapter_exercises ......... 0     chapter_worksheets ........ 0
+class_chapters ............ 1     chapter_quiz_questions .... 0
+chapter_templates ......... 1     chapter_checklist_items ... 0
+chapter_documents ......... 1     chapter_worksheets ........ 0
+chapter_exercises ......... 0     instanciations ............ 0
 ```
 
-**La rubrique est entièrement construite et n'a jamais servi.** Pas un chapitre,
-pas un modèle. Toute amélioration technique y est prématurée tant que David n'y
-met rien — et la question produit qui bloque le quiz (voir plus bas) se posera
-beaucoup mieux avec du contenu sous les yeux.
+**La rubrique a commencé à servir.** Un chapitre, un modèle, un document — c'est
+peu, mais ce n'est plus zéro, et le blocage décrit ci-dessous n'en est plus un :
+l'usage réel a produit en une session six correctifs et ajouts (niveaux des
+modèles, bouton « Faire un modèle », suppression, mise à jour depuis un
+chapitre, classes inactives masquées, téléversement de documents). Voir
+[§ Le cycle de vie d'un modèle](#le-cycle-de-vie-dun-modèle--complété-le-2026-09-14).
+
+#### L'état précédent, pour mémoire
+
+Jusqu'au 2026-09-14, **les huit compteurs valaient zéro** : la rubrique était
+entièrement construite et n'avait jamais servi. La conclusion qu'on en tirait —
+« toute amélioration technique y est prématurée » — était juste, et c'est
+justement la première mise en service qui a montré ce qui manquait. Le
+diagnostic « construit mais jamais utilisé » vaut toujours pour d'autres
+chantiers, voir
+[bascule-annee-scolaire-etat-des-lieux.md](bascule-annee-scolaire-etat-des-lieux.md).
 
 Pour comparaison, ce qui EST utilisé : 12 fiches, 2 séances de cahier de texte
 avec leurs 2 travaux, 453 points de programme sur 18 thèmes.
@@ -297,15 +311,72 @@ Et `reconcileAutoCoverage` remplit la couverture toute seule à partir des tags
 d'exercices, de modèles et d'évaluations : taguer les 128 exercices existants
 suffit à faire vivre la heatmap.
 
+## Le cycle de vie d'un modèle — complété le 2026-09-14
+
+Première mise en service réelle. Le modèle de données était complet ; **les
+chemins d'interface ne l'étaient pas**, et chaque manque ne s'est vu qu'à
+l'usage.
+
+| Ce qui manquait                                 | Ajouté                                                                      |
+| ----------------------------------------------- | --------------------------------------------------------------------------- |
+| Les niveaux du formulaire ignoraient Chiphre    | Le sélecteur de `grades` suit le référentiel de l'application               |
+| Aucun moyen de créer un modèle depuis un cours  | Bouton « Faire un modèle » → action `createTemplate` sur le chapitre        |
+| Aucun moyen de supprimer un modèle              | Action `delete` (brouillon **et** publié ; archivé exclu)                   |
+| Un brouillon était instanciable                 | Refusé : un modèle non publié ne se diffuse pas                             |
+| Rien ne reliait le modèle à son chapitre source | Le chapitre d'origine est enregistré comme **instanciation** (option B)     |
+| Le modèle ne pouvait pas être remis à jour      | Action `updateFromChapter` — « mettre à jour le modèle depuis un chapitre » |
+
+Actions de la page modèle, au 2026-09-14 :
+`update` · `publish` · `updateFromChapter` · `delete` · `archive` ·
+`instantiate` (`contenu/templates/[templateId]/+page.server.ts`).
+
+### Pourquoi le chapitre source devient une instanciation
+
+Deux options étaient sur la table : une colonne `source_chapter_id` sur le
+modèle, ou réutiliser `chapter_template_instantiations`. **Option B retenue par
+David.** Le chapitre qui a servi à créer le modèle est un chapitre rattaché à ce
+modèle comme les autres — il se met à jour, se détache, et « mettre à jour le
+modèle depuis un chapitre » n'a pas à traiter le cas d'origine à part.
+
+⚠️ **Pas de `UNIQUE (chapter_id)`** sur `chapter_template_instantiations` :
+rien n'interdit en base qu'un chapitre soit rattaché à deux modèles. Connu, non
+corrigé, pas rencontré.
+
+### Supprimer un modèle ne touche à rien d'autre
+
+La question avait été posée explicitement : faut-il supprimer le chapitre dont
+le modèle est tiré, et les instanciations ? **Non.** Un chapitre est une
+ressource de classe qui vit sa vie ; le modèle n'est qu'un patron. Supprimer le
+modèle retire le patron, les chapitres restent — simplement détachés.
+
+## Autres correctifs de la même mise en service
+
+- **Les classes inactives apparaissaient dans « Mon cours »** — celles des
+  années clôturées comprises. Corrigé (PR #265).
+- **Un chapitre exigeait une couleur** sans que rien ne s'en serve : le champ a
+  été retiré du formulaire, pas seulement rendu facultatif (PR #263).
+- **Documents de chapitre** : plafond à 25 Mo et téléversement direct
+  navigateur → storage (PR #266, #267, #268). Le détail, et le piège des deux
+  gardes de taille, sont dans
+  [database-schema.md](../architecture/database-schema.md).
+
 ## Ce qui rapporterait le plus, dans l'ordre
 
-1. **Créer un chapitre.** Un seul suffit à faire apparaître ce qui manque
-   vraiment, et à donner un support concret à la question du quiz.
-2. **Trancher la question du quiz** (les trois options ci-dessus).
-3. **Trancher les fiches dans les modèles** (les inclure au `content_snapshot`
-   ou pas).
-4. Rattacher des exercices aux points de programme, pour que le suivi cesse de
-   compter zéro.
+> Mis à jour le **2026-09-14**. Les points 1 et 3 de la liste d'origine sont
+> faits ; le 2 l'était déjà (option 1, le 2026-09-13).
+
+1. ✅ ~~**Créer un chapitre**~~ — fait le 2026-09-14, et la prédiction s'est
+   vérifiée : un seul chapitre a fait apparaître six manques d'interface que
+   l'analyse n'avait pas vus.
+2. ✅ ~~**Trancher la question du quiz**~~ — option 1, le 2026-09-13.
+3. ✅ ~~**Trancher les fiches dans les modèles**~~ — incluses au
+   `content_snapshot`, PR #256.
+4. **Rattacher des exercices aux points de programme**, pour que le suivi cesse
+   de compter zéro. ⚠️ De la saisie, pas du code (tranché le 2026-09-13).
+5. **Mettre du contenu dans le chapitre existant** — il n'a pour l'instant
+   qu'un document : ni exercice, ni objectif, ni question de quiz, ni fiche.
+   Les cinq types de contenu et leur publication au fur et à mesure sont
+   livrés, mais aucun n'a encore été exercé sur des élèves réels.
 
 ## Pièges relevés sur ce chantier
 
@@ -320,3 +391,16 @@ suffit à faire vivre la heatmap.
   d'affirmer qu'un symbole est mort.
 - **Le rattachement d'une fiche n'est pas une distribution**, et ça ne tient qu'à
   une condition dans une policy. Ne jamais la retirer « pour simplifier ».
+- **Un `<input type="file">` placé dans un `{#if !selectedFile}` disparaît au
+  moment précis où le formulaire en a besoin** : le fichier était choisi, et le
+  POST partait vide (« Fichier requis »). Une condition d'affichage sur un champ
+  de formulaire est une condition d'**existence**.
+- **Un plafond de taille a deux gardes** — le bucket et la contrainte CHECK. En
+  relever une seule fait monter le fichier puis échouer l'enregistrement, en
+  laissant un orphelin dans le bucket.
+- **Vercel plafonne le corps d'une requête bien en dessous de 25 Mo** : aucune
+  garde applicative ne rattrape un 413. Un gros fichier ne transite pas par le
+  serveur, il va au storage en direct.
+- **L'accès élève aux fiches est hérité de la classe, pas distribué** : un élève
+  inscrit après la publication voit tout, sans redéploiement. Figé par
+  `tests/integration/eleve-inscrit-apres-publication.test.ts`.

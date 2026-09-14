@@ -905,3 +905,75 @@ de donnée, seulement de la visibilité.
 borne, l'invariant « NULL = comportement d'avant », la non-répétition de la
 date, et le parcours complet retrait → relecture conservée → distributions
 suivantes refusées → réintégration.
+
+## Documents de chapitre — 25 Mo et téléversement direct (2026-09-14)
+
+Migration `20260915200000_chapter_documents_25mb.sql`. Le plafond passe de
+10 à **25 Mo**, en **deux endroits qui doivent bouger ensemble** :
+
+| Garde                                       | Valeur     |
+| ------------------------------------------- | ---------- |
+| `storage.buckets.file_size_limit`           | 26 214 400 |
+| `chapter_documents` CHECK `valid_file_size` | 26 214 400 |
+
+⚠️ **Le piège, et il a été payé** : relever le bucket seul laisse le fichier
+monter puis l'enregistrement échouer sur la contrainte (`23514`). L'utilisateur
+voit une erreur après une longue attente, et un fichier orphelin reste dans le
+bucket. Un test qui ne vérifie que le bucket ne prouve donc rien —
+`tests/integration/chapter-documents-size-limit.test.ts` couvre les deux, et
+rejoue la migration depuis 10 Mo pour ne pas dépendre de l'état de la base.
+
+⚠️ **Rollback conditionnel** : redescendre à 10 Mo échoue dès qu'un document de
+plus de 10 Mo existe. Le commentaire d'en-tête de la migration le dit.
+
+### Le fichier ne transite plus par le serveur
+
+Vercel plafonne le corps d'une requête bien en dessous de 25 Mo : poster le
+fichier à une action de formulaire rendait **413** quoi qu'on écrive dans les
+gardes applicatives. Le téléversement se fait donc **navigateur → storage**, en
+trois temps :
+
+1. `POST /api/teacher/chapters/[id]/document-upload-url` — vérifie le
+   professeur et le chapitre, valide `fileName` / `fileType` (Zod), et **choisit
+   lui-même le chemin** `chapters/<chapterId>/<timestamp>.<ext>` ;
+2. le navigateur envoie les octets à Supabase Storage (`uploadToSignedUrl`) ;
+3. `POST /api/teacher/chapters/[id]/documents` — enregistre la **métadonnée
+   seule**, refuse un `storagePath` qui ne commence pas par
+   `chapters/<chapterId>/`, et **supprime le fichier déposé** si l'insertion
+   échoue.
+
+Le serveur ne voit jamais les octets, mais garde les deux décisions qui
+comptent : qui a le droit, et où ça s'écrit. Le client ne propose qu'un nom.
+
+⚠️ **Deux chemins d'upload coexistent** et n'ont pas la même limite :
+`cours/teacher/DocumentUpload.svelte` (documents de chapitre, 25 Mo, direct) et
+`documents/DocumentUploader.svelte` → `POST /api/documents/upload` (documents
+génériques, **10 Mo**, relayé par le serveur). Le second heurterait le même mur
+413 le jour où on relèvera sa limite sans le convertir.
+
+## L'accès aux fiches est hérité, jamais distribué (2026-09-14)
+
+Question posée : faut-il « redéployer » les fiches d'un chapitre quand de
+nouveaux élèves s'inscrivent dans la classe ?
+
+**Non, et c'est structurel.** `student_has_worksheet_access` part de
+`worksheet_assignments`, passe par `worksheet_assignment_classes` et rejoint
+`class_members` — l'accès est **recalculé à chaque lecture** à partir de
+l'appartenance. Rien n'est matérialisé par élève, donc il n'y a rien à
+redistribuer. Même chose côté contenu : la route élève résout les exercices à la
+volée quand aucune `worksheet_instances` n'existe, avec le **même seed
+déterministe** que la génération par lot — l'élève tardif obtient donc ses
+exercices propres, identiques à ceux qu'une pré-génération lui aurait donnés.
+
+`tests/integration/eleve-inscrit-apres-publication.test.ts` fige ce
+comportement. La **même session élève** lit le chapitre avant son inscription
+(rien) puis après (la fiche), et le test constate qu'aucune ligne
+`worksheet_assignment_students` ni `worksheet_instances` n'a été créée au
+passage.
+
+⚠️ **Ce que ce test protège** : le jour où quelqu'un remplacerait ce modèle par
+une distribution matérialisée (une ligne par élève, écrite au moment de la
+publication), les élèves arrivés **après** perdraient leurs fiches en silence —
+personne ne le verrait dans l'interface du professeur, qui affiche ce qui a été
+publié, pas ce que chaque élève reçoit. Vu rouge en neutralisant la fonction :
+2 des 5 tests tombent.
