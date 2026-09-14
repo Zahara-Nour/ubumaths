@@ -142,15 +142,32 @@ export const actions: Actions = {
 			return fail(400, { error: 'Missing friendshipId' });
 		}
 
-		// Delete the friendship
-		const { error: deleteError } = await supabase
+		// ⚠️ `.select()` n'est pas décoratif : une suppression refusée par la RLS
+		// ne lève AUCUNE erreur, elle ne trouve simplement aucune ligne. Sans les
+		// lignes rendues, cet écran annonçait « c'est fait » sur zéro suppression
+		// — un outil de modération qui ment.
+		//
+		// Le cas n'était pas théorique : jusqu'à `20260915560000`, la policy
+		// DELETE testait `role = 'teacher'` en dur et ne couvrait pas l'admin,
+		// alors que cette page le laisse passer. Et depuis `20260915520000`, une
+		// amitié OUVRE le profil de l'autre : croire avoir retiré un signalement
+		// entre deux mineurs alors qu'il tient toujours n'est plus un détail.
+		const { data: supprimees, error: deleteError } = await supabase
 			.from('friendships')
 			.delete()
-			.eq('id', friendshipId);
+			.eq('id', friendshipId)
+			.select('id');
 
 		if (deleteError) {
 			console.error('Error deleting friendship:', deleteError);
 			return fail(500, { error: 'Failed to delete friendship' });
+		}
+
+		if (!supprimees || supprimees.length === 0) {
+			console.error('[admin/friendships] Suppression sans effet :', friendshipId);
+			return fail(403, {
+				error: 'Cette amitié n’a pas pu être supprimée — vos droits ne le permettent pas.'
+			});
 		}
 
 		return { success: true };
