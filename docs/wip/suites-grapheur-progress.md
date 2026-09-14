@@ -1,7 +1,7 @@
 ---
 title: Suites numériques dans le grapheur — spécification & progression
 date: 2026-09-04
-status: Phase 1 — implémentée, en attente de revue et de PR
+status: livré en production (v0.14.1) — lecture des termes complétée le 2026-09-14 (§14)
 scope: src/lib/grapheur/, src/lib/components/grapheur/, src/lib/stores/grapheur.svelte.ts
 niveau visé: 1ère spé & Terminale spé
 ---
@@ -323,7 +323,7 @@ Effets de bord :
 | `svelte-autofixer`       | ✅ passé sur les 3 nouveaux `.svelte`                          |
 | Prettier                 | ✅                                                             |
 | Revue                    | ✅ `code-reviewer`, 10 correctifs appliqués, rien de bloquant  |
-| Reste à faire            | re-essai manuel, commit + PR (accord attendu)                  |
+| Reste à faire            | rien — en production (PR #121/#122, puis #257-#260)            |
 
 ## 11. Journal
 
@@ -629,3 +629,86 @@ mais aucun de ses 7 appelants ne le passe). La branche C est plus forte que ne l
 laissait entendre le §13.6 — **pour l'exploration**. Sa faiblesse reste entière
 côté export : `function` n'est exporté par aucun des trois exporteurs, et aucun
 appelant applicatif ne les invoque.
+
+---
+
+## 14. Lire les termes — survol, valeur exacte, étiquettes figées (2026-09-14)
+
+> Première utilisation réelle de la greffe par David. Trois demandes se sont
+> enchaînées à partir d'une seule suite saisie : `u_n = 3 \times (-1/2)^n`.
+
+### 14.1 Le bug d'entrée : `\frac12` n'était pas lisible
+
+La suite refusait de se tracer — « Expected '{' for \frac numerator ». **La
+saisie était correcte** : MathLive sérialise un argument d'un seul caractère
+**sans accolades** (`\frac12`, `\sqrt2`), ce que TeX autorise depuis toujours et
+que nos deux parseurs LaTeX n'acceptaient pas.
+
+Corrigé dans `parser-pratt.ts` **et** `parser-rd.ts` (même logique, une méthode
+`parseCommandArgument` chacun) : accolade présente → expression complète ;
+sinon un chiffre (`\frac12` → `1` puis `2`, d'où `takeLeadingDigit`), une
+lettre, ou une commande.
+
+⚠️ **La leçon dépasse le grapheur** : tout ce qui vient de MathLive peut
+contenir des arguments non accolés. Un parseur qui exige `{` rejette de la
+saisie utilisateur parfaitement valide, et le message d'erreur accuse
+l'utilisateur.
+
+### 14.2 Survol d'un point de suite
+
+`CurveHover` sait lire les valeurs d'une courbe ; il ignorait les nuages de
+points. Il affiche désormais le terme et sa valeur au survol d'un point
+(`SEQUENCE_TERM_SNAP_THRESHOLD = 12` px, plus serré que le seuil des points
+remarquables : un nuage est dense, accrocher de loin donnerait le mauvais rang).
+
+### 14.3 La valeur exacte par défaut, la décimale sur demande
+
+**Tranché par David** : ce qui s'affiche au survol est la **valeur exacte**
+(`-\frac{3}{16}`), pas l'approximation. L'approché est une dégradation, il ne
+doit pas être le défaut.
+
+`src/lib/grapheur/exact.ts` substitue le rang puis évalue, et n'accepte le
+résultat que si `status === 'value' && exact` — une évaluation approchée est
+rejetée plutôt qu'affichée comme exacte. Deux plafonds gardent le rendu :
+`MAX_EXACT_RANK = 300` (au-delà, le calcul symbolique n'apporte plus rien) et
+`MAX_EXACT_LATEX_LENGTH = 2000` (une expression exacte peut enfler sans fin —
+au-delà, on retombe sur la décimale plutôt que de bloquer la page).
+
+### 14.4 Figer une étiquette — et le cycle qui a dû être corrigé
+
+Un clic **fige** l'étiquette (elle survit au départ du curseur), un liseré blanc
+la distingue d'un simple survol. Portée : le tableau de valeurs **et** les points
+de la courbe.
+
+**Les étiquettes figées ne sont pas persistées** — décision de David : elles
+disparaissent au rechargement. Ce sont des marques de lecture, pas du contenu.
+
+⚠️ **Le cycle a d'abord été faux** : j'avais fait « 1er clic → exact », alors que
+l'exact est **déjà** ce que montre le survol. Le premier clic ne changeait donc
+rien de visible, et le geste semblait mort. Corrigé en
+`décimale → exacte → disparue` (`cyclePinnedLabels`) : le premier clic apporte
+l'autre lecture, qui est la seule chose que l'utilisateur n'a pas encore.
+
+### 14.5 Ce que ça a produit dans le module
+
+| Fichier                                 | Rôle                                                      |
+| --------------------------------------- | --------------------------------------------------------- |
+| `grapheur/exact.ts`                     | valeur exacte d'un terme, avec ses deux plafonds          |
+| `grapheur/pinned-labels.ts`             | cible d'étiquette (union `term` \| `point`), cycle, purge |
+| `grapheur/format.ts`                    | `formatGraphValue`                                        |
+| `components/grapheur/GraphLabel.svelte` | boîte d'étiquette partagée survol/figée                   |
+
+⚠️ `GraphLabel.svelte` **garde les noms de classes `tooltip-*`** hérités : des
+tests s'y accrochent. Les renommer « pour la cohérence » casserait la suite sans
+rien apporter.
+
+`CurveHover` a été séparé en deux : `pinnableCandidates` (indépendant du
+curseur, pour savoir ce qui _peut_ être figé) et `toSnapCandidate(candidate,
+cursorSvg, threshold)` qui rend `null` au-delà du seuil. Mélanger les deux
+faisait dépendre la liste des cibles de la position de la souris.
+
+### 14.6 Journal
+
+- **2026-09-14** — PR #257 (arguments LaTeX sans accolades), #258 (survol des
+  termes), #259 (valeurs exactes + étiquettes figées), #260 (étiquette figée
+  masquée). Livrées en production dans les versions **v0.14.0** et **v0.14.1**.
