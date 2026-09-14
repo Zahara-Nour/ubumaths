@@ -15,8 +15,8 @@
  *   2. Fetch source cards (1 query)
  *   3. Batch-insert decks (1 query)
  *   4. Batch-insert cards (1 query)
- *   5. Batch-insert stats (1 query)
- *   6. Batch-insert assignments (1 query)
+ *   5. Batch-insert assignments (1 query)
+ *   6. Batch-insert stats (1 query) — EN DERNIER, cf. l'étape 5 bis
  * - 90%+ reduction in database queries
  */
 
@@ -247,6 +247,11 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			section_id: string | null;
 		}> = [];
 
+		// Les cartes créées, hors de la portée du `if` : les statistiques FSRS
+		// s'écrivent plus bas, une fois l'assignation acquise.
+		let cartesCreees: { id: string; deck_id: string; card_type: string; template_id: string }[] =
+			[];
+
 		if (sourceCards && sourceCards.length > 0) {
 			for (const deck of createdDecks) {
 				const cardsForDeck = sourceCards.map((card) => ({
@@ -287,42 +292,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			}
 
 			console.log(`✓ Inserted ${insertedCards.length} cards`);
-
-			// Step 3: Batch-insert all card stats (ONE query)
-			const now = new Date().toISOString();
-			const allStatsToCreate = insertedCards.map((card) => {
-				// Find the student who owns this card's deck
-				const deckOwnerId = createdDecks.find((d) => d.id === card.deck_id)?.owner_id;
-
-				return {
-					user_id: deckOwnerId!,
-					card_reference_type: card.card_type,
-					card_reference_id: card.card_type === 'template' ? card.template_id : card.id,
-					difficulty: 5.0, // Default difficulty (FSRS default)
-					stability: 0.1, // Very short initial stability (new card)
-					state: 'new',
-					last_review: null,
-					next_review: now, // Available immediately
-					total_reviews: 0,
-					review_history: []
-				};
-			});
-
-			console.log(`Batch-inserting ${allStatsToCreate.length} card stats...`);
-
-			const { error: statsError } = await adminClient
-				.from('srs_card_stats')
-				.insert(allStatsToCreate);
-
-			if (statsError) {
-				console.error('Failed to batch-insert card stats:', statsError);
-				// Continue anyway - cards exist, just without stats
-				console.warn(
-					'Warning: Cards created without stats. Students may not see cards in reviews.'
-				);
-			} else {
-				console.log(`✓ Inserted ${allStatsToCreate.length} card stats`);
-			}
+			cartesCreees = insertedCards;
 		}
 
 		// Step 4: Batch-insert all assignment records (ONE query)
@@ -359,6 +329,50 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		}
 
 		console.log(`✓ Inserted ${assignmentsToCreate.length} assignment records`);
+
+		// ⚠️ Les statistiques FSRS s'écrivent EN DERNIER, une fois l'assignation
+		// acquise. `srs_card_stats` n'a ni clé étrangère vers le deck ni index
+		// unique : le rollback ci-dessus ne les emporterait pas, et les effacer à
+		// la main détruirait l'avancement que l'élève a peut-être déjà sur le
+		// même template dans un autre deck. Ne pas les écrire du tout est la
+		// seule sortie sûre.
+		if (cartesCreees.length > 0) {
+			// Step 5 : Batch-insert all card stats (ONE query)
+			const now = new Date().toISOString();
+			const allStatsToCreate = cartesCreees.map((card) => {
+				// Find the student who owns this card's deck
+				const deckOwnerId = createdDecks.find((d) => d.id === card.deck_id)?.owner_id;
+
+				return {
+					user_id: deckOwnerId!,
+					card_reference_type: card.card_type,
+					card_reference_id: card.card_type === 'template' ? card.template_id : card.id,
+					difficulty: 5.0, // Default difficulty (FSRS default)
+					stability: 0.1, // Very short initial stability (new card)
+					state: 'new',
+					last_review: null,
+					next_review: now, // Available immediately
+					total_reviews: 0,
+					review_history: []
+				};
+			});
+
+			console.log(`Batch-inserting ${allStatsToCreate.length} card stats...`);
+
+			const { error: statsError } = await adminClient
+				.from('srs_card_stats')
+				.insert(allStatsToCreate);
+
+			if (statsError) {
+				console.error('Failed to batch-insert card stats:', statsError);
+				// Continue anyway - cards exist, just without stats
+				console.warn(
+					'Warning: Cards created without stats. Students may not see cards in reviews.'
+				);
+			} else {
+				console.log(`✓ Inserted ${allStatsToCreate.length} card stats`);
+			}
+		}
 
 		const results = {
 			successCount: createdDecks.length,

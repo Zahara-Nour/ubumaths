@@ -971,6 +971,81 @@ export type Database = {
           },
         ]
       }
+      chapter_decks: {
+        Row: {
+          chapter_id: string
+          created_at: string
+          deck_id: string
+          deck_section_id: string | null
+          display_order: number
+          id: string
+          mode: string
+          published_at: string | null
+          section_id: string | null
+          section_order: number
+        }
+        Insert: {
+          chapter_id: string
+          created_at?: string
+          deck_id: string
+          deck_section_id?: string | null
+          display_order?: number
+          id?: string
+          mode?: string
+          published_at?: string | null
+          section_id?: string | null
+          section_order?: number
+        }
+        Update: {
+          chapter_id?: string
+          created_at?: string
+          deck_id?: string
+          deck_section_id?: string | null
+          display_order?: number
+          id?: string
+          mode?: string
+          published_at?: string | null
+          section_id?: string | null
+          section_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chapter_decks_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "class_chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chapter_decks_deck_id_fkey"
+            columns: ["deck_id"]
+            isOneToOne: false
+            referencedRelation: "deck_stats_view"
+            referencedColumns: ["deck_id"]
+          },
+          {
+            foreignKeyName: "chapter_decks_deck_id_fkey"
+            columns: ["deck_id"]
+            isOneToOne: false
+            referencedRelation: "srs_decks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chapter_decks_deck_section_fkey"
+            columns: ["deck_section_id", "deck_id"]
+            isOneToOne: false
+            referencedRelation: "srs_deck_sections"
+            referencedColumns: ["id", "deck_id"]
+          },
+          {
+            foreignKeyName: "chapter_decks_section_fkey"
+            columns: ["section_id", "chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_sections"
+            referencedColumns: ["id", "chapter_id"]
+          },
+        ]
+      }
       chapter_documents: {
         Row: {
           chapter_id: string
@@ -11139,6 +11214,7 @@ export type Database = {
           is_auto_managed: boolean
           name: string
           owner_id: string
+          source_deck_id: string | null
           updated_at: string
         }
         Insert: {
@@ -11151,6 +11227,7 @@ export type Database = {
           is_auto_managed?: boolean
           name: string
           owner_id: string
+          source_deck_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -11163,6 +11240,7 @@ export type Database = {
           is_auto_managed?: boolean
           name?: string
           owner_id?: string
+          source_deck_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -11193,6 +11271,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "srs_decks_source_deck_id_fkey"
+            columns: ["source_deck_id"]
+            isOneToOne: false
+            referencedRelation: "deck_stats_view"
+            referencedColumns: ["deck_id"]
+          },
+          {
+            foreignKeyName: "srs_decks_source_deck_id_fkey"
+            columns: ["source_deck_id"]
+            isOneToOne: false
+            referencedRelation: "srs_decks"
+            referencedColumns: ["id"]
           },
         ]
       }
