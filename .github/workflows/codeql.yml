@@ -19,6 +19,14 @@ name: CodeQL
 on:
   push:
     branches: [main]
+    # Un commit 100 % documentaire ne change aucun code analysable : l'analyse
+    # porterait sur un arbre JS/TS identique au précédent. Le cron du lundi
+    # rescanne l'intégralité du dépôt de toute façon, donc la couverture est
+    # inchangée. (Ajouté le 2026-09-14 : `quality.yml` ignorait déjà les docs
+    # sur `push`, CodeQL restait le seul à tourner pour rien.)
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
   schedule:
     - cron: '0 4 * * 1' # Mondays 04:00 UTC
 
