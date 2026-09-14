@@ -6,6 +6,7 @@
  * Fetches chapters with content counts for display in cards.
  */
 
+import { fetchStaffDirectory, soleTeacher } from '$lib/server/staff-directory';
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
@@ -61,18 +62,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 		console.error('[Student Cours] Error fetching memberships:', membershipError);
 	}
 
-	// Resolve the sole teacher once for display attribution.
-	const { data: soleTeacher, error: soleTeacherError } = await locals.supabase
-		.from('profiles')
-		.select('id, full_name')
-		.eq('role', 'teacher')
-		.maybeSingle();
-
-	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
-	// ne doit pas se confondre avec une donnée réellement vide.
-	if (soleTeacherError && soleTeacherError.code !== 'PGRST116') {
-		console.error('Contexte illisible :', soleTeacherError);
-	}
+	// Le professeur unique, pour l'attribution à l'affichage.
+	//
+	// ⚠️ Par l'ANNUAIRE, pas par `profiles` : la lecture des profils est bornée
+	// aux camarades, amis et co-participants, et un professeur n'entre dans
+	// aucune de ces cases. Un `.from('profiles')` rendrait `null` en silence.
+	const enseignant = soleTeacher(await fetchStaffDirectory(locals.supabase));
 
 	// Build class info map and set of enrolled class IDs
 	const classMap = new Map<string, { className: string; teacherName: string }>();
@@ -83,7 +78,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		if (classData) {
 			classMap.set(m.class_id, {
 				className: classData.name,
-				teacherName: soleTeacher?.full_name || 'Professeur'
+				teacherName: enseignant?.full_name || 'Professeur'
 			});
 			enrolledClassIds.add(m.class_id);
 		}
@@ -95,7 +90,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.map((row) => ({
 			id: row.id,
 			classId: row.class_id,
-			teacherId: soleTeacher?.id || '',
+			teacherId: enseignant?.id || '',
 			title: row.title,
 			description: row.description,
 			displayOrder: row.display_order,

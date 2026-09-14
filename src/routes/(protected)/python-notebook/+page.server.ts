@@ -4,6 +4,7 @@
  */
 
 import { error } from '@sveltejs/kit';
+import { fetchStaffDirectory, soleTeacher } from '$lib/server/staff-directory';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -76,6 +77,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 			)
 			.order('created_at', { ascending: false });
 
+		// Le professeur, pour combler la jointure que la RLS masque aux élèves.
+		const auteur = soleTeacher(await fetchStaffDirectory(locals.supabase));
+
 		if (!assignedError && assigned) {
 			assignedNotebooks = assigned
 				.filter((a) => a.python_notebooks)
@@ -92,6 +96,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 					const classData = a.classes as unknown as { name: string } | null;
 					return {
 						...notebook,
+						// ⚠️ L'auteur d'un notebook est le professeur, et la jointure
+						// `profiles!python_notebooks_author_id_fkey` rend `null` à un
+						// élève : la lecture des profils est bornée aux camarades, amis
+						// et co-participants. L'écran affichait « Auteur: » suivi de
+						// rien. L'annuaire ne contient que le personnel, donc si le
+						// notebook venait d'un élève, le repli reste `null`.
+						profiles: notebook.profiles ?? auteur,
 						assignment: {
 							id: a.id,
 							// `readonly` est nullable : une assignation sans consigne explicite

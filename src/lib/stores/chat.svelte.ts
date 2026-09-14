@@ -1011,6 +1011,38 @@ class ChatStore {
 	 *
 	 * @param newMessage - The raw message row from postgres_changes
 	 */
+	/**
+	 * Le personnel, par identifiant — pour combler ce que la RLS masque.
+	 *
+	 * Mis en cache : l'annuaire tient en deux lignes et ne change pas pendant
+	 * une session. Le relire à chaque message en temps réel serait un appel
+	 * réseau par message reçu.
+	 */
+	private annuairePersonnel: Map<
+		string,
+		{ id: string; firstname: string | null; lastname: string | null; avatar_url: string | null }
+	> | null = null;
+
+	private async staffMember(id: string | null) {
+		if (!id || !this.supabase) return null;
+
+		if (!this.annuairePersonnel) {
+			const { data, error } = await this.supabase.rpc('get_staff_directory');
+			if (error) {
+				logger.warn('Annuaire du personnel illisible :', error);
+				return null;
+			}
+			this.annuairePersonnel = new Map(
+				(data ?? []).map((m) => [
+					m.id,
+					{ id: m.id, firstname: m.firstname, lastname: m.lastname, avatar_url: m.avatar_url }
+				])
+			);
+		}
+
+		return this.annuairePersonnel.get(id) ?? null;
+	}
+
 	private async handlePostgresMessage(
 		newMessage: Database['public']['Tables']['messages']['Row']
 	): Promise<void> {
@@ -1043,7 +1075,15 @@ class ChatStore {
 
 			// Transform to Message type
 			// Extract sender info (handle both array and object formats from Supabase)
-			const senderData = Array.isArray(data.sender) ? data.sender[0] : data.sender;
+			//
+			// ⚠️ La jointure rend `null` quand l'expéditeur est le PROFESSEUR : la
+			// lecture des profils est bornée aux camarades, amis et
+			// co-participants, et un prof n'entre dans aucune de ces cases. Le
+			// message arrivait alors sans nom ni avatar, puis le nom réapparaissait
+			// au rechargement (le chargement passe, lui, par un RPC qui le rend) —
+			// une incohérence visible à l'écran.
+			const brut = Array.isArray(data.sender) ? data.sender[0] : data.sender;
+			const senderData = brut ?? (await this.staffMember(data.sender_id));
 			const senderFirstname = senderData?.firstname ?? null;
 			const senderLastname = senderData?.lastname ?? null;
 			const senderAvatarUrl = senderData?.avatar_url ?? null;

@@ -15146,6 +15146,10 @@ export type Database = {
         Args: { p_assignee: string; p_card_id: string }
         Returns: boolean
       }
+      can_grant_kanban_card_assignment: {
+        Args: { p_assignee: string; p_card_id: string }
+        Returns: boolean
+      }
       can_manage_kanban_card_tag: {
         Args: { p_card_id: string; p_tag_id: string }
         Returns: boolean
@@ -15963,6 +15967,17 @@ export type Database = {
         Returns: {
           items: Json
           total_count: number
+        }[]
+      }
+      get_staff_directory: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          firstname: string
+          full_name: string
+          id: string
+          lastname: string
+          role: Database["public"]["Enums"]["user_role"]
         }[]
       }
       get_student_exercises: {
