@@ -120,6 +120,8 @@ function convertDocument(db: DbChapterDocument): ChapterDocument {
 		googleDriveUrl: db.google_drive_url,
 		thumbnailUrl: db.thumbnail_url,
 		displayOrder: db.display_order,
+		sectionId: db.section_id,
+		sectionOrder: db.section_order,
 		createdAt: db.created_at,
 		updatedAt: db.updated_at,
 		publishedAt: db.published_at
@@ -133,6 +135,8 @@ function convertQuizQuestion(db: DbChapterQuizQuestion): ChapterQuizQuestion {
 		questionTemplateId: db.question_template_id,
 		pointsOverride: db.points_override,
 		displayOrder: db.display_order,
+		sectionId: db.section_id,
+		sectionOrder: db.section_order,
 		createdAt: db.created_at,
 		publishedAt: db.published_at
 	};
@@ -159,6 +163,8 @@ function convertChecklistItem(db: DbChapterChecklistItem): ChapterChecklistItem 
 		content: db.content,
 		description: db.description,
 		displayOrder: db.display_order,
+		sectionId: db.section_id,
+		sectionOrder: db.section_order,
 		createdAt: db.created_at,
 		updatedAt: db.updated_at,
 		publishedAt: db.published_at
@@ -183,6 +189,8 @@ function convertExercise(db: DbChapterExercise): ChapterExercise {
 		chapterId: db.chapter_id,
 		exerciseId: db.exercise_id,
 		displayOrder: db.display_order,
+		sectionId: db.section_id,
+		sectionOrder: db.section_order,
 		createdAt: db.created_at,
 		publishedAt: db.published_at
 	};
@@ -194,6 +202,8 @@ function convertWorksheet(db: DbChapterWorksheet): ChapterWorksheet {
 		chapterId: db.chapter_id,
 		worksheetId: db.worksheet_id,
 		displayOrder: db.display_order,
+		sectionId: db.section_id,
+		sectionOrder: db.section_order,
 		createdAt: db.created_at,
 		publishedAt: db.published_at
 	};

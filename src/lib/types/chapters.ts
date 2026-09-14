@@ -148,6 +148,21 @@ export interface ClassChapter {
 /**
  * Chapter document - file attached to a chapter
  */
+/**
+ * Section d'un chapitre — « Préparation », « Le cours »…
+ *
+ * Propre à son chapitre : renommable, réordonnable, supprimable sans effet sur
+ * les autres. Semée par trigger à la création du chapitre.
+ */
+export interface ChapterSection {
+	id: string;
+	chapterId: string;
+	title: string;
+	displayOrder: number;
+	createdAt: string;
+	updatedAt: string;
+}
+
 export interface ChapterDocument {
 	id: string;
 	chapterId: string;
@@ -169,6 +184,17 @@ export interface ChapterDocument {
 	/** Thumbnail URL for preview */
 	thumbnailUrl: string | null;
 	displayOrder: number;
+	/**
+	 * Section du chapitre qui range ce contenu. `null` = « Non classé »,
+	 * affiché en fin de chapitre.
+	 */
+	sectionId: string | null;
+	/**
+	 * Ordre À L'INTÉRIEUR de la section — distinct de `displayOrder`, qui reste
+	 * l'ordre par TYPE. Les cinq types vivent dans cinq tables : seul
+	 * `sectionOrder` les range ensemble.
+	 */
+	sectionOrder: number;
 	createdAt: string;
 	updatedAt: string;
 	/**
@@ -190,6 +216,17 @@ export interface ChapterQuizQuestion {
 	/** Optional points override (null = use default) */
 	pointsOverride: number | null;
 	displayOrder: number;
+	/**
+	 * Section du chapitre qui range ce contenu. `null` = « Non classé »,
+	 * affiché en fin de chapitre.
+	 */
+	sectionId: string | null;
+	/**
+	 * Ordre À L'INTÉRIEUR de la section — distinct de `displayOrder`, qui reste
+	 * l'ordre par TYPE. Les cinq types vivent dans cinq tables : seul
+	 * `sectionOrder` les range ensemble.
+	 */
+	sectionOrder: number;
 	createdAt: string;
 	/**
 	 * Mise à disposition des élèves. `null` = préparé, invisible.
@@ -255,6 +292,17 @@ export interface ChapterChecklistItem {
 	content: string;
 	description: string | null;
 	displayOrder: number;
+	/**
+	 * Section du chapitre qui range ce contenu. `null` = « Non classé »,
+	 * affiché en fin de chapitre.
+	 */
+	sectionId: string | null;
+	/**
+	 * Ordre À L'INTÉRIEUR de la section — distinct de `displayOrder`, qui reste
+	 * l'ordre par TYPE. Les cinq types vivent dans cinq tables : seul
+	 * `sectionOrder` les range ensemble.
+	 */
+	sectionOrder: number;
 	createdAt: string;
 	updatedAt: string;
 	/**
@@ -287,6 +335,17 @@ export interface ChapterExercise {
 	chapterId: string;
 	exerciseId: string;
 	displayOrder: number;
+	/**
+	 * Section du chapitre qui range ce contenu. `null` = « Non classé »,
+	 * affiché en fin de chapitre.
+	 */
+	sectionId: string | null;
+	/**
+	 * Ordre À L'INTÉRIEUR de la section — distinct de `displayOrder`, qui reste
+	 * l'ordre par TYPE. Les cinq types vivent dans cinq tables : seul
+	 * `sectionOrder` les range ensemble.
+	 */
+	sectionOrder: number;
 	createdAt: string;
 	/**
 	 * Mise à disposition des élèves. `null` = préparé, invisible.
@@ -308,6 +367,17 @@ export interface ChapterWorksheet {
 	chapterId: string;
 	worksheetId: string;
 	displayOrder: number;
+	/**
+	 * Section du chapitre qui range ce contenu. `null` = « Non classé »,
+	 * affiché en fin de chapitre.
+	 */
+	sectionId: string | null;
+	/**
+	 * Ordre À L'INTÉRIEUR de la section — distinct de `displayOrder`, qui reste
+	 * l'ordre par TYPE. Les cinq types vivent dans cinq tables : seul
+	 * `sectionOrder` les range ensemble.
+	 */
+	sectionOrder: number;
 	createdAt: string;
 	/**
 	 * Mise à disposition des élèves. `null` = préparé, invisible.
@@ -447,6 +517,8 @@ export function dbDocumentToApp(db: DbChapterDocument): ChapterDocument {
 		googleDriveUrl: db.google_drive_url,
 		thumbnailUrl: db.thumbnail_url,
 		displayOrder: db.display_order,
+		sectionId: db.section_id,
+		sectionOrder: db.section_order,
 		createdAt: db.created_at,
 		updatedAt: db.updated_at,
 		publishedAt: db.published_at
@@ -463,6 +535,8 @@ export function dbQuizQuestionToApp(db: DbChapterQuizQuestion): ChapterQuizQuest
 		questionTemplateId: db.question_template_id,
 		pointsOverride: db.points_override,
 		displayOrder: db.display_order,
+		sectionId: db.section_id,
+		sectionOrder: db.section_order,
 		createdAt: db.created_at,
 		publishedAt: db.published_at
 	};
@@ -495,6 +569,8 @@ export function dbChecklistItemToApp(db: DbChapterChecklistItem): ChapterCheckli
 		content: db.content,
 		description: db.description,
 		displayOrder: db.display_order,
+		sectionId: db.section_id,
+		sectionOrder: db.section_order,
 		createdAt: db.created_at,
 		updatedAt: db.updated_at,
 		publishedAt: db.published_at
@@ -525,6 +601,8 @@ export function dbExerciseToApp(db: DbChapterExercise): ChapterExercise {
 		chapterId: db.chapter_id,
 		exerciseId: db.exercise_id,
 		displayOrder: db.display_order,
+		sectionId: db.section_id,
+		sectionOrder: db.section_order,
 		createdAt: db.created_at,
 		publishedAt: db.published_at
 	};
