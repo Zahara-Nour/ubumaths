@@ -63,6 +63,8 @@ describe('une amitié ne se forge pas', () => {
 	let attaquantId: string;
 	let cibleId: string;
 	let complicId: string;
+	/** Quatrième compte : chaque cas a besoin d'une paire libre (`unique_friendship`). */
+	let quatriemeId: string;
 
 	beforeAll(async () => {
 		await cleanupAllTestData();
@@ -94,6 +96,7 @@ describe('une amitié ne se forge pas', () => {
 
 		// Un troisième compte, cible de la forge — on n'a besoin que de son id.
 		complicId = (await eleve()).id;
+		quatriemeId = (await eleve()).id;
 	}, 120_000);
 
 	afterAll(async () => {
@@ -152,6 +155,7 @@ describe('une amitié ne se forge pas', () => {
 			.update({ requester_id: cibleId, status: 'accepted' })
 			.eq('id', lien);
 		expect(error, 'les parties de l’amitié ont pu être réécrites').not.toBeNull();
+		expect(error?.message).toContain('parties d');
 
 		const { data } = await service
 			.from('friendships')
@@ -159,6 +163,45 @@ describe('une amitié ne se forge pas', () => {
 			.eq('id', lien)
 			.single();
 		expect(data?.requester_id, 'le demandeur a été remplacé').toBe(complicId);
+	});
+
+	/**
+	 * L'AUTRE moitié du trigger — et une nuance qui mérite d'être écrite.
+	 *
+	 * Sur `addressee_id`, la RLS protège DÉJÀ : déplacer le destinataire viole
+	 * le `with check` implicite de la policy UPDATE (`auth.uid() = addressee_id`
+	 * réutilisé sur la nouvelle ligne). Le trigger est donc ici une SECONDE
+	 * barrière, pas la seule — contrairement à `requester_id`, que la policy
+	 * laisse passer.
+	 *
+	 * ⚠️ D'où l'assertion sur le MESSAGE : elle dit lequel des deux gardes a
+	 * répondu. Retirer la branche du trigger fait tomber ce cas avec « violates
+	 * row-level security policy » au lieu du message du trigger — la défense en
+	 * profondeur redevient simple, et ce sera un choix vu, pas un accident.
+	 */
+	it('l’addressee ne peut pas se substituer un autre destinataire', async () => {
+		const lien = await insert('friendships', {
+			requester_id: quatriemeId,
+			addressee_id: attaquantId,
+			status: 'pending',
+			friendship_type: 'friend'
+		});
+
+		const { error } = await attaquant
+			.from('friendships')
+			.update({ addressee_id: cibleId })
+			.eq('id', lien);
+		expect(error, 'le destinataire a pu être remplacé').not.toBeNull();
+		// ⚠️ Le code 42501 ne discrimine pas : PostgREST le rend AUSSI pour un
+		// refus de policy. Seul le message dit que c'est bien le trigger.
+		expect(error?.message).toContain('parties d');
+
+		const { data } = await service
+			.from('friendships')
+			.select('addressee_id')
+			.eq('id', lien)
+			.single();
+		expect(data?.addressee_id).toBe(attaquantId);
 	});
 
 	/** Accepter reste possible : c'est tout l'objet de la policy UPDATE. */
