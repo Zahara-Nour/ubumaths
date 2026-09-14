@@ -658,35 +658,6 @@ export async function deleteChecklistItem(
 	return { error: null };
 }
 
-/**
- * Reorder checklist items within a chapter
- *
- * @param chapterId - Chapter ID
- * @param orderUpdates - Array of {id, displayOrder} updates
- * @param supabase - Supabase client
- * @returns Success status
- */
-export async function reorderChecklistItems(
-	chapterId: string,
-	orderUpdates: OrderUpdate[],
-	supabase: SupabaseClient<Database>
-): Promise<{ error: Error | null }> {
-	for (const update of orderUpdates) {
-		const { error } = await supabase
-			.from('chapter_checklist_items')
-			.update({ display_order: update.displayOrder })
-			.eq('id', update.id)
-			.eq('chapter_id', chapterId);
-
-		if (error) {
-			console.error('[reorderChecklistItems] Error:', error);
-			return { error: new Error(error.message) };
-		}
-	}
-
-	return { error: null };
-}
-
 // ============================================================================
 // TEACHER FUNCTIONS - EXERCISES
 // ============================================================================

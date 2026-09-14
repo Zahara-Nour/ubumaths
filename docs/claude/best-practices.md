@@ -366,7 +366,7 @@ const store = getStore();
 
 <form
 	method="POST"
-	action="?/reorderChecklistItem"
+	action="?/updateChecklistItem"
 	use:enhance={() => {
 		// retourner une fonction pour override le comportement par défaut
 		return async ({ update }) => {
