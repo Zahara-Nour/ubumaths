@@ -9,6 +9,7 @@
  * - Entry date <= today
  */
 
+import { fetchStaffDirectory, soleTeacher } from '$lib/server/staff-directory';
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
@@ -87,18 +88,11 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// refactor mono-professeur, et `profiles` n'a pas de `display_name`. L'embed
 	// était donc doublement impossible. Le professeur étant unique, on lit
 	// simplement son nom.
-	const { data: teacher, error: teacherError } = await locals.supabase
-		.from('profiles')
-		.select('full_name')
-		.eq('role', 'teacher')
-		.limit(1)
-		.maybeSingle();
-
-	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
-	// ne doit pas se confondre avec une donnée réellement vide.
-	if (teacherError && teacherError.code !== 'PGRST116') {
-		console.error('Contexte illisible :', teacherError);
-	}
+	//
+	// ⚠️ Par l'ANNUAIRE, pas par `profiles` : la lecture des profils est bornée
+	// aux camarades, amis et co-participants, et un professeur n'entre dans
+	// aucune de ces cases. Un `.from('profiles')` rendrait `null` en silence.
+	const teacher = soleTeacher(await fetchStaffDirectory(locals.supabase));
 
 	return {
 		entry: {

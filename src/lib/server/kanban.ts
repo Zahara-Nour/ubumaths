@@ -16,6 +16,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { fetchStaffDirectory, indexStaffById } from './staff-directory';
 import type { RateLimitResult } from '$lib/server/rateLimiter';
 import type {
 	KanbanBoard,
@@ -332,6 +333,15 @@ async function fetchBoardMembers(
 		.select('id, firstname, lastname, full_name, avatar_url, role')
 		.in('id', idList);
 
+	// ⚠️ Le PROPRIÉTAIRE du tableau de classe est le professeur, et un élève ne
+	// voit pas son profil : la lecture est bornée aux camarades, amis et
+	// co-participants. Sans l'annuaire, il apparaissait sans nom dans le
+	// sélecteur d'assignés — sur SON propre tableau.
+	//
+	// Fusionné et non substitué : l'annuaire ne contient que le personnel, les
+	// camarades continuent de venir de `profiles`.
+	const annuaire = indexStaffById(await fetchStaffDirectory(supabase));
+
 	if (profErr) {
 		console.error('[kanban] fetchBoardMembers / profiles failed:', profErr);
 		return idList.map((id) => ({
@@ -343,6 +353,13 @@ async function fetchBoardMembers(
 			role: null
 		}));
 	}
+
+	// Les lignes que la RLS a masquées, comblées par l'annuaire du personnel.
+	const lues = new Set((profiles ?? []).map((p) => p.id));
+	const complet = [
+		...(profiles ?? []),
+		...idList.filter((id) => !lues.has(id) && annuaire.has(id)).map((id) => annuaire.get(id)!)
+	];
 
 	// Build a display name with graceful fallbacks: prefer the explicit
 	// full_name, otherwise concatenate firstname + lastname (most
@@ -365,8 +382,12 @@ async function fetchBoardMembers(
 	// If RLS hid some profile rows (e.g. a student can't see another
 	// student's profile depending on the school's policy), fill the gap
 	// with id-only entries so the picker doesn't lose the option.
-	const seen = new Set((profiles ?? []).map((p) => p.id));
-	const result: KanbanBoardMember[] = (profiles ?? []).map((p) => ({
+	//
+	// `complet` = ce que la RLS a rendu, PLUS le personnel repêché par
+	// l'annuaire. Le repli sans nom ci-dessous ne concerne donc plus que les
+	// élèves réellement invisibles à l'appelant.
+	const seen = new Set(complet.map((p) => p.id));
+	const result: KanbanBoardMember[] = complet.map((p) => ({
 		id: p.id,
 		full_name: displayName(p),
 		firstname: p.firstname,

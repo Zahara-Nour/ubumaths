@@ -6,6 +6,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { fetchStaffDirectory, indexStaffById } from './staff-directory';
 import type { Database } from '$lib/types/database';
 import type {
 	CreateNotificationData,
@@ -340,6 +341,19 @@ export async function getUnreadNotifications(
 		// Step 5: Apply in-memory pagination
 		const paginatedNotifications = allUnreadNotifications.slice(offset, offset + limit);
 
+		// ⚠️ La jointure `creator:profiles!created_by` rend `null` à un élève :
+		// depuis que la lecture des profils est bornée, il ne voit pas celui de
+		// son professeur — qui n'est ni un camarade, ni un ami, ni un
+		// co-participant. L'écran affichait alors « Utilisateur inconnu » sur une
+		// notification pourtant signée.
+		//
+		// L'annuaire n'est lu que si au moins une notification a un auteur : les
+		// notifications système n'en ont pas, et elles sont la quasi-totalité.
+		const auteursManquants = paginatedNotifications.some((n) => n.created_by && !n.creator);
+		const annuaire = auteursManquants
+			? indexStaffById(await fetchStaffDirectory(supabase))
+			: new Map();
+
 		// Step 6: Enrich with proper types
 		const unreadNotifications: NotificationWithDetails[] = paginatedNotifications.map((n) => ({
 			id: n.id,
@@ -356,7 +370,7 @@ export async function getUnreadNotifications(
 			is_system: n.is_system,
 			system_event_type: n.system_event_type as SystemEventType | null,
 			metadata: (n as { metadata?: Record<string, unknown> | null }).metadata || null,
-			creator: n.creator || undefined,
+			creator: n.creator || (n.created_by ? annuaire.get(n.created_by) : undefined) || undefined,
 			is_read: false
 		}));
 
