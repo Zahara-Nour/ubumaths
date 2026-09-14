@@ -11,8 +11,9 @@
  */
 import { describe, it, expect } from 'vitest';
 import {
-	planSectionCopies,
 	indexCopiedSections,
+	planDeckCopies,
+	planSectionCopies,
 	resolveCardSection,
 	type SourceSection
 } from '../deck-copy';
@@ -102,5 +103,45 @@ describe('resolveCardSection', () => {
 		expect(
 			resolveCardSection({ section_id: 'src-cours' }, [COURS, EXOS], copiees, 'deck-jamais-copie')
 		).toBeNull();
+	});
+});
+
+describe('planDeckCopies — la copie porte sa source', () => {
+	const SOURCE = {
+		name: 'Automatismes 3e',
+		description: 'Calcul mental',
+		deck_type: 'official',
+		config: { daily_limit: 20 }
+	};
+	const DECK = '11111111-1111-4111-8111-111111111111';
+	const ELEVE_A = '22222222-2222-4222-8222-222222222222';
+	const ELEVE_B = '33333333-3333-4333-8333-333333333333';
+
+	/**
+	 * La policy élève de `chapter_decks` exige une copie dont
+	 * `source_deck_id` vaut le deck rattaché. Une copie sans ce lien laisse
+	 * l'élève devant un chapitre où le deck n'apparaît pas — sans message, et
+	 * sans que rien ne signale la cause.
+	 */
+	it('écrit source_deck_id sur CHAQUE copie', () => {
+		const copies = planDeckCopies(SOURCE, DECK, [ELEVE_A, ELEVE_B]);
+
+		expect(copies).toHaveLength(2);
+		expect(copies.every((c) => c.source_deck_id === DECK)).toBe(true);
+		expect(copies.map((c) => c.owner_id)).toEqual([ELEVE_A, ELEVE_B]);
+	});
+
+	it('marque la copie en lecture seule et reprend la config de la source', () => {
+		const [copie] = planDeckCopies(SOURCE, DECK, [ELEVE_A]);
+
+		expect(copie.is_assigned).toBe(true);
+		expect(copie.name).toBe(SOURCE.name);
+		expect(copie.description).toBe(SOURCE.description);
+		expect(copie.deck_type).toBe(SOURCE.deck_type);
+		expect(copie.config).toEqual(SOURCE.config);
+	});
+
+	it('ne crée rien sans élève', () => {
+		expect(planDeckCopies(SOURCE, DECK, [])).toEqual([]);
 	});
 });
