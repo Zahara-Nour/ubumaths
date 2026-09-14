@@ -168,14 +168,29 @@ export async function cleanupAllTestData(): Promise<void> {
 	// so they no longer cascade-delete with the test teacher's profile. Purge them
 	// explicitly (test DB only; seed.sql creates no classes/tasks). Cascades clear
 	// class_members, class_chapters, schedules, timeslots, evaluation_task_perimeter.
-	for (const table of ['classes', 'evaluation_tasks']) {
-		try {
-			await serviceClient
-				.from(table as never)
-				.delete()
-				.not('id', 'is', null);
-		} catch (error) {
-			console.debug(`Cleanup ${table}:`, error);
+	//
+	// ⚠️ `exercise_assignments` D'ABORD, et ce n'est pas cosmétique : sa clé
+	// `class_id` est en NO ACTION, pas en CASCADE. Une seule affectation
+	// suffisait donc à faire échouer le DELETE massif — qui est UNE seule
+	// instruction, donc TOUTES les classes survivaient. Mesuré le 2026-09-15 :
+	// 668 classes accumulées en base de test, et un test qui pose un `join_code`
+	// fixe échouait une fois sur deux sur un doublon.
+	//
+	// ⚠️ Et l'erreur était PERDUE : `.delete()` ne lève pas, il REND `{ error }`,
+	// que le `try/catch` ne pouvait donc pas voir. Le nettoyage était cassé
+	// depuis des mois en annonçant le succès. C'est exactement la règle
+	// `supabase/require-error-check` du dépôt, appliquée ici aux tests.
+	for (const table of ['exercise_assignments', 'classes', 'evaluation_tasks']) {
+		const { error } = await serviceClient
+			.from(table as never)
+			.delete()
+			.not('id', 'is', null);
+
+		if (error) {
+			// Bruyant EXPRÈS : un nettoyage qui échoue en silence laisse la suite
+			// suivante trébucher sur des données qu'elle n'a pas créées, et le
+			// diagnostic coûte alors bien plus cher que ce message.
+			console.error(`[cleanupAllTestData] Purge de "${table}" impossible :`, error.message);
 		}
 	}
 
