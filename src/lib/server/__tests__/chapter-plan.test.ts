@@ -62,29 +62,12 @@ function document(id: string, sectionId: string | null, sectionOrder: number) {
 	};
 }
 
-function question(id: string, sectionId: string | null, sectionOrder: number) {
-	return {
-		id,
-		chapterId: 'chap',
-		questionTemplateId: `modele-${id}`,
-		pointsOverride: null,
-		displayOrder: 0,
-		sectionId,
-		sectionOrder,
-		createdAt: '2026-09-14T00:00:00Z',
-		publishedAt: '2026-09-14T00:00:00Z',
-		bestResult: null,
-		attemptsCount: 0
-	};
-}
-
 function entree(partiel: Partial<BuildPlanInput> = {}): BuildPlanInput {
 	return {
 		sections: [],
 		documents: [],
 		exercises: [],
 		checklistItems: [],
-		quizQuestions: [],
 		worksheets: [],
 		exerciseTitles: {},
 		worksheetPlacements: {},
@@ -170,36 +153,6 @@ describe('buildChapterPlan', () => {
 		expect(plan).toHaveLength(1);
 		expect(plan[0].id).toBe(UNASSIGNED_SECTION_ID);
 		expect(plan[0].title).toBeNull();
-	});
-
-	it('regroupe les questions d’une section en UN seul quiz', () => {
-		const plan = buildChapterPlan(
-			entree({
-				sections: [section('a', 'Bilan', 1)],
-				quizQuestions: [question('q2', 'a', 1), question('q1', 'a', 0), question('q3', 'a', 2)]
-			})
-		);
-
-		const items = plan[0].items;
-		expect(items).toHaveLength(1);
-		expect(items[0].kind).toBe('quiz');
-		expect(items[0].kind === 'quiz' && items[0].questions.map((q) => q.id)).toEqual([
-			'q1',
-			'q2',
-			'q3'
-		]);
-	});
-
-	it('pose le quiz à la position de sa première question', () => {
-		const plan = buildChapterPlan(
-			entree({
-				sections: [section('a', 'Le cours', 1)],
-				documents: [document('d1', 'a', 5)],
-				quizQuestions: [question('q1', 'a', 1), question('q2', 'a', 9)]
-			})
-		);
-
-		expect(plan[0].items.map((i) => i.kind)).toEqual(['quiz', 'document']);
 	});
 
 	it('« Non classé » vient en dernier et n’a pas de titre', () => {

@@ -11,10 +11,9 @@
  *    `published_at`. Laisser ce filtre à l'affichage ferait d'une règle de
  *    confidentialité une question de gabarit — « Contrôle vendredi » comme nom
  *    de section fuiterait au premier composant qui oublie la condition.
- * 2. **Les questions de quiz d'une section forment UN quiz**, et ses objectifs
- *    UNE liste — chacun posé à la position de son premier élément. Sans ça,
- *    cinq questions donneraient cinq blocs, et `ChecklistSection`, qui est
- *    conçu pour une liste avec ses statistiques, serait détourné en ligne.
+ * 2. **Les objectifs d'une section forment UNE liste**, posée à la position du
+ *    premier. `ChecklistSection` est conçu pour une liste avec ses
+ *    statistiques, pas pour une ligne isolée.
  *
  * @module server/chapter-plan
  */
@@ -24,19 +23,12 @@ import type {
 	ChapterSection,
 	ChapterDocument,
 	ChapterExercise,
-	ChapterChecklistItem,
-	ChapterQuizQuestion,
-	ChapterQuizResult
+	ChapterChecklistItem
 } from '$lib/types/chapters';
 
 export type ChecklistItemWithProgress = ChapterChecklistItem & {
 	isCompleted: boolean;
 	completedAt: string | null;
-};
-
-export type QuizQuestionWithResult = ChapterQuizQuestion & {
-	bestResult: ChapterQuizResult | null;
-	attemptsCount: number;
 };
 
 /**
@@ -55,8 +47,7 @@ export type PlanItem =
 	| { kind: 'document'; document: ChapterDocument }
 	| { kind: 'exercise'; exerciseId: string; title: string }
 	| { kind: 'worksheet'; worksheet: StudentWorksheet }
-	| { kind: 'checklist'; items: ChecklistItemWithProgress[] }
-	| { kind: 'quiz'; questions: QuizQuestionWithResult[] };
+	| { kind: 'checklist'; items: ChecklistItemWithProgress[] };
 
 export type PlanSection = {
 	id: string;
@@ -86,7 +77,6 @@ export type BuildPlanInput = {
 	documents: ChapterDocument[];
 	exercises: ChapterExercise[];
 	checklistItems: ChecklistItemWithProgress[];
-	quizQuestions: QuizQuestionWithResult[];
 	worksheets: StudentWorksheet[];
 	/** Titres des exercices, par identifiant d'exercice. */
 	exerciseTitles: Record<string, { title: string }>;
@@ -121,8 +111,8 @@ export function buildChapterPlan(input: BuildPlanInput): PlanSection[] {
 		})
 	];
 
-	// Quiz et objectifs se regroupent par section, chacun posé à la position de
-	// son premier élément.
+	// Les objectifs d'une section se regroupent en une liste, posée à la position
+	// du premier.
 	function grouper<T extends { sectionId: string | null; sectionOrder: number }>(
 		valeurs: T[],
 		fabrique: (membres: T[]) => PlanItem
@@ -148,7 +138,6 @@ export function buildChapterPlan(input: BuildPlanInput): PlanSection[] {
 		}
 	}
 
-	grouper(input.quizQuestions, (questions) => ({ kind: 'quiz', questions }));
 	grouper(input.checklistItems, (items) => ({ kind: 'checklist', items }));
 
 	const parSection = new Map<string | null, Place<PlanItem>[]>();

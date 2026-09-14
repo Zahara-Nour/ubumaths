@@ -15,13 +15,12 @@ import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { getChapterWithContent, toggleChecklistItem } from '$lib/server/chapters';
-import { buildQuizInstances } from '$lib/server/chapters-quiz';
 import { buildChapterPlan, type WorksheetPlacement } from '$lib/server/chapter-plan';
 import { toggleChecklistSchema } from '$lib/server/validation/chapters';
 
 // `fetch` vient de l'événement, jamais du global : une URL relative ferait
 // lever `Failed to parse URL` au `fetch` de Node — hors `try`, donc 500 sur
-// TOUT le chapitre, documents et quiz compris. Et à supposer qu'elle passe,
+// TOUT le chapitre, documents compris. Et à supposer qu'elle passe,
 // les cookies ne suivraient pas : l'appel arriverait non authentifié.
 export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	// Only students can view this page
@@ -59,24 +58,6 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	// ne doit pas se confondre avec une donnée réellement vide.
 	if (classInfoError && classInfoError.code !== 'PGRST116') {
 		console.error('Contexte illisible :', classInfoError);
-	}
-
-	// Le quiz du chapitre, résolu aux valeurs de CET élève.
-	//
-	// La lecture passe par `locals.supabase`, donc aux droits de l'élève : la
-	// policy « Students can view published templates » écarte d'elle-même les
-	// brouillons. On ne recalcule pas ce filtre, on en récolte le résultat — et
-	// `buildQuizInstances` nous dit ce qui manque au lieu de le taire.
-	const { data: quiz, error: quizError } = await buildQuizInstances(
-		chapter.quizQuestionsWithResults,
-		user.id,
-		locals.supabase
-	);
-
-	// Une panne de lecture n'est pas un quiz vide : on le distingue, comme pour
-	// les fiches plus bas.
-	if (quizError) {
-		console.error(`Quiz illisible pour le chapitre ${chapter.id} :`, quizError);
 	}
 
 	// Get exercise details for linked exercises
@@ -176,7 +157,6 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		documents: chapter.documents,
 		exercises: chapter.exercises,
 		checklistItems: chapter.checklistItemsWithProgress,
-		quizQuestions: chapter.quizQuestionsWithResults,
 		worksheets: worksheetsData.worksheets || [],
 		exerciseTitles: exerciseDetails,
 		worksheetPlacements
@@ -186,9 +166,6 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		chapter,
 		plan,
 		className: classInfo?.name || 'Classe',
-		quizInstances: quiz?.instances ?? {},
-		quizUnavailable: quiz?.unavailable ?? [],
-		quizUnreadable: Boolean(quizError),
 		exerciseDetails,
 		worksheets: worksheetsData.worksheets || [],
 		worksheetsUnavailable
