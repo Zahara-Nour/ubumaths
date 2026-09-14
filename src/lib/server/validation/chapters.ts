@@ -351,125 +351,6 @@ export const bulkToggleChecklistSchema = z.object({
 export type BulkToggleChecklistInput = z.infer<typeof bulkToggleChecklistSchema>;
 
 // ============================================================================
-// QUIZ SCHEMAS
-// ============================================================================
-
-/**
- * Schema for adding a question to a chapter quiz
- */
-export const addQuizQuestionSchema = z.object({
-	chapterId: uuidSchema.describe('ID du chapitre'),
-	questionTemplateId: uuidSchema.describe('ID du template de question'),
-	pointsOverride: z
-		.number()
-		.int('Les points doivent etre un entier')
-		.min(0, 'Les points doivent etre positifs')
-		.max(100, 'Les points sont trop eleves (max 100)')
-		.optional()
-		.nullable(),
-	displayOrder: displayOrderSchema.optional()
-});
-
-export type AddQuizQuestionInput = z.infer<typeof addQuizQuestionSchema>;
-
-/**
- * Schema for updating a quiz question link
- */
-export const updateQuizQuestionSchema = z
-	.object({
-		pointsOverride: z
-			.number()
-			.int('Les points doivent etre un entier')
-			.min(0, 'Les points doivent etre positifs')
-			.max(100, 'Les points sont trop eleves (max 100)')
-			.optional()
-			.nullable(),
-		displayOrder: displayOrderSchema.optional()
-	})
-	.refine((data) => Object.keys(data).length > 0, {
-		message: 'Au moins un champ doit etre fourni pour la mise a jour'
-	});
-
-export type UpdateQuizQuestionInput = z.infer<typeof updateQuizQuestionSchema>;
-
-/**
- * Schema for adding multiple questions to a quiz
- */
-export const addBulkQuizQuestionsSchema = z.object({
-	chapterId: uuidSchema.describe('ID du chapitre'),
-	questions: z
-		.array(
-			z.object({
-				questionTemplateId: uuidSchema,
-				pointsOverride: z.number().int().min(0).max(100).optional().nullable(),
-				displayOrder: displayOrderSchema.optional()
-			})
-		)
-		.min(1, 'Au moins une question requise')
-		.max(50, 'Trop de questions (max 50)')
-});
-
-export type AddBulkQuizQuestionsInput = z.infer<typeof addBulkQuizQuestionsSchema>;
-
-/**
- * Schema for reordering quiz questions
- */
-export const reorderQuizQuestionsSchema = z.object({
-	questions: z
-		.array(
-			z.object({
-				id: uuidSchema,
-				displayOrder: displayOrderSchema
-			})
-		)
-		.min(1, 'Au moins une question requise')
-		.max(100, 'Trop de questions (max 100)')
-});
-
-export type ReorderQuizQuestionsInput = z.infer<typeof reorderQuizQuestionsSchema>;
-
-/**
- * Schema for student submitting a quiz answer
- */
-export const submitQuizAnswerSchema = z.object({
-	chapterQuizQuestionId: uuidSchema.describe('ID de la question du quiz'),
-	submittedAnswer: z
-		.string()
-		.trim()
-		.min(1, 'La reponse est requise')
-		.max(5000, 'La reponse est trop longue (max 5000 caracteres)'),
-	isCorrect: z.boolean(),
-	timeSpentSeconds: z
-		.number()
-		.int('Le temps doit etre un entier')
-		.min(0, 'Le temps ne peut pas etre negatif')
-		.max(86400, 'Le temps est trop eleve (max 24h)')
-		.optional()
-		.nullable()
-});
-
-export type SubmitQuizAnswerInput = z.infer<typeof submitQuizAnswerSchema>;
-
-/**
- * Schema for submitting multiple quiz answers (batch)
- */
-export const submitBulkQuizAnswersSchema = z.object({
-	answers: z
-		.array(
-			z.object({
-				chapterQuizQuestionId: uuidSchema,
-				submittedAnswer: z.string().trim().min(1).max(5000),
-				isCorrect: z.boolean(),
-				timeSpentSeconds: z.number().int().min(0).max(86400).optional().nullable()
-			})
-		)
-		.min(1, 'Au moins une reponse requise')
-		.max(50, 'Trop de reponses (max 50)')
-});
-
-export type SubmitBulkQuizAnswersInput = z.infer<typeof submitBulkQuizAnswersSchema>;
-
-// ============================================================================
 // EXERCISE SCHEMAS
 // ============================================================================
 
@@ -557,17 +438,6 @@ export const chapterProgressQuerySchema = z.object({
 
 export type ChapterProgressQuery = z.infer<typeof chapterProgressQuerySchema>;
 
-/**
- * Schema for listing quiz results
- */
-export const listQuizResultsQuerySchema = paginationSchema.extend({
-	chapterId: uuidSchema.optional(),
-	studentId: uuidSchema.optional(),
-	questionId: uuidSchema.optional()
-});
-
-export type ListQuizResultsQuery = z.infer<typeof listQuizResultsQuerySchema>;
-
 // ============================================================================
 // VALIDATION HELPER FUNCTIONS
 // ============================================================================
@@ -605,20 +475,6 @@ export function validateCreateChecklistItem(data: unknown) {
  */
 export function validateToggleChecklist(data: unknown) {
 	return toggleChecklistSchema.safeParse(data);
-}
-
-/**
- * Validate add quiz question request
- */
-export function validateAddQuizQuestion(data: unknown) {
-	return addQuizQuestionSchema.safeParse(data);
-}
-
-/**
- * Validate submit quiz answer request
- */
-export function validateSubmitQuizAnswer(data: unknown) {
-	return submitQuizAnswerSchema.safeParse(data);
 }
 
 /**
@@ -693,9 +549,6 @@ export const chapterProgressResponseSchema = z.object({
 	totalChecklistItems: z.number().int().nonnegative(),
 	completedChecklistItems: z.number().int().nonnegative(),
 	checklistProgress: z.number().min(0).max(100),
-	totalQuizQuestions: z.number().int().nonnegative(),
-	correctQuizQuestions: z.number().int().nonnegative(),
-	quizScore: z.number().min(0).max(100),
 	totalPointsEarned: z.number().int().nonnegative(),
 	maxPossiblePoints: z.number().int().nonnegative(),
 	lastActivityAt: z.string().nullable()
@@ -707,19 +560,4 @@ export const chapterProgressResponseSchema = z.object({
 export const chapterListResponseSchema = z.object({
 	chapters: z.array(chapterResponseSchema),
 	total: z.number().int().nonnegative()
-});
-
-/**
- * Quiz result response schema
- */
-export const quizResultResponseSchema = z.object({
-	id: uuidSchema,
-	studentId: uuidSchema,
-	chapterQuizQuestionId: uuidSchema,
-	attemptNumber: z.number().int().positive(),
-	isCorrect: z.boolean(),
-	submittedAnswer: z.string(),
-	pointsEarned: z.number().int().nonnegative(),
-	submittedAt: z.string(),
-	timeSpentSeconds: z.number().int().nonnegative().nullable()
 });
