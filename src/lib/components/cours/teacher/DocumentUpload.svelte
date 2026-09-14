@@ -77,9 +77,6 @@
 	/** L'élément qui porte le fichier choisi. */
 	let fileInput = $state<HTMLInputElement | null>(null);
 
-	/** Chemin du fichier déposé, transmis à l'enregistrement. */
-	let metaStoragePath = $state('');
-
 	/**
 	 * Retenir le fichier, et le poser dans l'input quand il vient d'un
 	 * glisser-déposer : le navigateur n'y met que ce qu'on a choisi par la boîte
@@ -161,8 +158,6 @@
 			}
 
 			// 3. Les métadonnées, quelques centaines d'octets.
-			metaStoragePath = storagePath;
-
 			const enregistrement = await fetch(`/api/teacher/chapters/${chapterId}/documents`, {
 				method: 'POST',
 				headers: { 'content-type': 'application/json' },
@@ -223,7 +218,6 @@
 		uploadDescription = '';
 		uploadError = '';
 		if (fileInput) fileInput.value = '';
-		metaStoragePath = '';
 	}
 
 	// Get file icon based on type
@@ -255,7 +249,6 @@
 		// L'input garde son fichier après l'envoi : sans ce nettoyage, le
 		// suivant repartirait avec l'ancien.
 		if (fileInput) fileInput.value = '';
-		metaStoragePath = '';
 	}
 
 	function resetGoogleDriveForm() {
