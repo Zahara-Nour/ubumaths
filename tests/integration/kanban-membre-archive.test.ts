@@ -39,6 +39,15 @@ const ANON_KEY =
 
 const service = createServiceRoleClient();
 
+/**
+ * Le titre que seul l'élève ACTIF a le droit de poser.
+ *
+ * Il sert deux fois : le témoin vérifie qu'il s'écrit, et le cas négatif
+ * vérifie qu'il est TOUJOURS là après la tentative de l'archivé. Une sentinelle
+ * partagée vaut mieux que deux constantes qui pourraient diverger.
+ */
+const TITRE_ACTIF = 'Carte modifiée par un actif KK';
+
 async function clientFor(email: string): Promise<SupabaseClient<Database>> {
 	const client = createClient<Database>(SUPABASE_URL, ANON_KEY, {
 		auth: { persistSession: false, autoRefreshToken: false }
@@ -146,12 +155,24 @@ describe('kanban de classe — l’élève archivé', () => {
 		expect(cartes?.map((c) => c.id)).toEqual([carte]);
 	});
 
+	/**
+	 * ⚠️ `.select()` n'est PAS décoratif. Une UPDATE refusée par la RLS ne lève
+	 * aucune erreur : PostgREST ne trouve simplement aucune ligne à modifier, et
+	 * `error` vaut `null` dans les deux cas. Sans les lignes rendues, ce témoin
+	 * resterait vert même si la migration coupait l'écriture aux élèves ACTIFS —
+	 * or c'est la seule chose qui garde cet accès légitime.
+	 */
 	it('l’élève ACTIF peut encore écrire une carte', async () => {
-		const { error } = await actif
+		const { data, error } = await actif
 			.from('kanban_cards')
-			.update({ title: 'Carte modifiée par un actif KK' })
-			.eq('id', carte);
+			.update({ title: TITRE_ACTIF })
+			.eq('id', carte)
+			.select('id');
+
 		expect(error).toBeNull();
+		expect(data, 'aucune ligne modifiée : l’élève actif a perdu l’écriture').toEqual([
+			{ id: carte }
+		]);
 	});
 
 	it('l’élève ARCHIVÉ ne voit plus le tableau', async () => {
@@ -188,13 +209,21 @@ describe('kanban de classe — l’élève archivé', () => {
 	 * trouve simplement aucune ligne à mettre à jour. On vérifie donc l'EFFET
 	 * en base, avec le client de service — sans quoi le test serait vert même
 	 * si la modification passait.
+	 *
+	 * ⚠️ Et on l'affirme POSITIVEMENT. Un `not.toBe(INTRUS)` passerait aussi si
+	 * la carte avait disparu : `.single()` rendrait `null`, donc `undefined`,
+	 * qui n'est pas l'intrus. Le test ne distinguerait plus « la RLS a protégé »
+	 * de « la ligne n'est pas là ». Comparer au titre ATTENDU prouve les deux à
+	 * la fois : la carte existe, et elle est intacte.
 	 */
 	it('l’élève ARCHIVÉ ne peut pas MODIFIER une carte', async () => {
-		const INTRUS = 'Titre imposé par un archivé KK';
-		await archive.from('kanban_cards').update({ title: INTRUS }).eq('id', carte);
+		await archive
+			.from('kanban_cards')
+			.update({ title: 'Titre imposé par un archivé KK' })
+			.eq('id', carte);
 
 		const { data } = await service.from('kanban_cards').select('title').eq('id', carte).single();
-		expect(data?.title).not.toBe(INTRUS);
+		expect(data?.title).toBe(TITRE_ACTIF);
 	});
 
 	it('l’élève ARCHIVÉ ne peut pas SUPPRIMER une carte', async () => {
