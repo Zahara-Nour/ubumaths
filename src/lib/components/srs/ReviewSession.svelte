@@ -33,6 +33,15 @@
 		deckId: string;
 		/** Optional FSRS state filter (e.g. "learning,relearning") used by deck Programme sections. */
 		states?: string;
+		/**
+		 * Révision forcée : toutes les cartes du deck, échéance ignorée.
+		 *
+		 * Le cas d'usage est la veille d'un contrôle — « je vérifie une dernière
+		 * fois que j'ai tout compris ». Le reste de la session ne change pas : même
+		 * carte, mêmes boutons FSRS, même soumission, donc le SRS est alimenté
+		 * comme lors d'une révision normale.
+		 */
+		all?: boolean;
 		onComplete?: (summary: SessionSummary) => void;
 		onBack?: () => void;
 	}
@@ -44,7 +53,7 @@
 		totalTime: number;
 	}
 
-	let { deckId, states, onComplete, onBack }: Props = $props();
+	let { deckId, states, all = false, onComplete, onBack }: Props = $props();
 
 	// State
 	let cards = $state<ReviewCard[]>([]);
@@ -86,6 +95,10 @@
 			const url = new URL('/api/srs/review/due', window.location.origin);
 			url.searchParams.set('deck_id', deckId);
 			if (states) url.searchParams.set('states', states);
+			// Seul `'true'` active la révision forcée côté serveur : ne poser le
+			// paramètre que lorsqu'il vaut quelque chose évite un `?all=false`
+			// qui ne dit rien de plus que son absence.
+			if (all) url.searchParams.set('all', 'true');
 			const response = await fetch(url.toString());
 
 			if (!response.ok) {

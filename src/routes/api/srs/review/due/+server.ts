@@ -1,7 +1,7 @@
 /**
  * SRS Review API - Due Cards
  *
- * GET /api/srs/review/due?deck_id=X[&states=learning,relearning]
+ * GET /api/srs/review/due?deck_id=X[&states=learning,relearning][&all=true]
  *
  * Refonte 2026-06-10 (Phase 3) : ajout du filtre `states` pour permettre
  * aux sections du deck Programme de lancer une session ciblée
@@ -70,7 +70,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	// ✅ SECURITY: Validate query parameters with Zod (states inclus)
 	const queryRaw = {
 		deck_id: url.searchParams.get('deck_id'),
-		states: url.searchParams.get('states') ?? undefined
+		states: url.searchParams.get('states') ?? undefined,
+		all: url.searchParams.get('all') ?? undefined
 	};
 	const validation = dueCardsQuerySchema.safeParse(queryRaw);
 
@@ -78,7 +79,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		return json({ error: validation.error.issues[0].message }, { status: 400 });
 	}
 
-	const { deck_id: deckId, states } = validation.data;
+	const { deck_id: deckId, states, all: revisionForcee } = validation.data;
 
 	// `states` est déjà parsé+validé par Zod (undefined si pas de filtre valide)
 	const allowedStates: Set<CardState> | null = states ? new Set(states as CardState[]) : null;
@@ -98,9 +99,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		// Get due cards using helper function
 		console.log(`[SRS] Fetching due cards for user ${user.id}, deck ${deckId}`);
+		// `p_all` ignore l'échéance : la veille d'un contrôle, l'élève veut tout
+		// repasser, pas seulement ce que l'algorithme juge dû. Le deck lui
+		// appartient — vérifié juste au-dessus — donc ce drapeau n'ouvre l'accès
+		// à rien de nouveau, il élargit seulement la sélection de SES cartes.
 		const { data: dueCards, error: dueCardsError } = await supabase.rpc('get_due_cards_for_deck', {
 			p_user_id: user.id,
-			p_deck_id: deckId
+			p_deck_id: deckId,
+			p_all: revisionForcee
 		});
 
 		if (dueCardsError) {
