@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.14.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.14.0...v0.14.1) (2026-09-14)
+
+### 📚 Documentation
+
+- **cours:** l'état courant d'abord, l'historique ensuite ([ecb167b](https://github.com/Zahara-Nour/ubumaths/commit/ecb167b9cc819e2f72ead3e1b9db76ed474f6d0e)), closes [#256](https://github.com/Zahara-Nour/ubumaths/issues/256)
+
+### ✨ Features
+
+- **cours:** envoyer un document directement du navigateur au stockage ([ed8d302](https://github.com/Zahara-Nour/ubumaths/commit/ed8d30265300ad1908928d4ecfdb1a16527a00e6))
+- **cours:** faire un modèle d'un chapitre, et compter ses fiches ([84a1ff4](https://github.com/Zahara-Nour/ubumaths/commit/84a1ff4e85f8198dbcfa432549de093819596009))
+- **cours:** porter le plafond d'un document de chapitre à 25 Mo ([ff97d4c](https://github.com/Zahara-Nour/ubumaths/commit/ff97d4ce2026a35465703a5bdec3593298d70725))
+- **modeles:** mettre à jour un modèle depuis un chapitre, et garder le lien ([67ce54d](https://github.com/Zahara-Nour/ubumaths/commit/67ce54de71e305e45fd25ff4c7aff832c253e2be))
+- **modeles:** supprimer aussi un modèle publié, en disant ce que ça emporte ([eefaef6](https://github.com/Zahara-Nour/ubumaths/commit/eefaef6982bc3b6d0db7ce1b12dfdd725dbd352b))
+- **modeles:** supprimer un brouillon, et n'instancier que le publié ([bcda775](https://github.com/Zahara-Nour/ubumaths/commit/bcda77597b8424bddde224e4b13351d96d5038b5))
+
+### 🐛 Bug Fixes
+
+- **cours:** deux appels explicites, plutôt qu'un formulaire qui part seul ([5c2d62b](https://github.com/Zahara-Nour/ubumaths/commit/5c2d62b750621a860f0c7b4b1a78d8b77ab8934e))
+- **cours:** la création d'un modèle ne fige plus la page ([b6bf48c](https://github.com/Zahara-Nour/ubumaths/commit/b6bf48cbb281d697e54bf21a7267a0733f89abff))
+- **cours:** le fichier ne quitte plus le formulaire au moment d'être choisi ([735997e](https://github.com/Zahara-Nour/ubumaths/commit/735997e317a84cdcb6c6621613022a2d964a8381))
+- **cours:** ne plus lister les classes désactivées ([27675a8](https://github.com/Zahara-Nour/ubumaths/commit/27675a8a5292ade901265a282ea673c5ac14a046))
+- **cours:** retirer la variable laissée sans emploi ([51e2eb1](https://github.com/Zahara-Nour/ubumaths/commit/51e2eb1f7851a73fc68c1bb36c7c29282ec1912d))
+- **cours:** retirer le choix de couleur d'un chapitre ([e4abbc0](https://github.com/Zahara-Nour/ubumaths/commit/e4abbc026b083c6b913135af0f035f84828d9fbf))
+- **modeles:** aligner les niveaux d'un modèle de chapitre sur le référentiel ([0d81daf](https://github.com/Zahara-Nour/ubumaths/commit/0d81dafa11f4b2256dd3069d21538db16c8da77f))
+
 ## [0.14.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.13.0...v0.14.0) (2026-09-13)
 
 ### ⚠ BREAKING CHANGES
