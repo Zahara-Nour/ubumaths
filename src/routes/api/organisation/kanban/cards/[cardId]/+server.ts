@@ -151,18 +151,20 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		const toAdd = [...requested].filter((id) => !existing.has(id));
 		const toRemove = [...existing].filter((id) => !requested.has(id));
 
-		if (toRemove.length > 0) {
-			const { error: delError } = await locals.supabase
-				.from('kanban_card_assignees')
-				.delete()
-				.eq('card_id', cardId)
-				.in('user_id', toRemove);
-			if (delError) {
-				console.error('[kanban] remove assignees failed:', delError);
-				throw error(500, 'Erreur lors du retrait des personnes assignées');
-			}
-		}
-
+		// ⚠️ L'AJOUT D'ABORD, le retrait ensuite — l'ordre n'est pas indifférent.
+		//
+		// Ces deux appels sont deux transactions distinctes. Si l'ajout est
+		// refusé alors que le retrait est déjà commité, la carte perd une
+		// assignation que personne n'a demandé de retirer, et le client annule
+		// son affichage optimiste : la perte est SILENCIEUSE.
+		//
+		// Le cas est devenu atteignable pour le PROFESSEUR depuis
+		// `20260915420000`, qui refuse d'assigner un élève archivé : un onglet
+		// ouvert avant l'archivage propose encore l'ancien élève. Remplacer
+		// Bob par Alice-archivée effaçait Bob.
+		//
+		// `toAdd` et `toRemove` sont disjoints par construction, donc inverser
+		// ne risque aucun conflit de clé unique.
 		if (toAdd.length > 0) {
 			const rows = toAdd.map((user_id) => ({
 				card_id: cardId,
@@ -178,6 +180,18 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 					throw error(403, "Vous n'êtes pas autorisé·e à modifier les assignations de cette carte");
 				}
 				throw error(500, "Erreur lors de l'ajout des personnes assignées");
+			}
+		}
+
+		if (toRemove.length > 0) {
+			const { error: delError } = await locals.supabase
+				.from('kanban_card_assignees')
+				.delete()
+				.eq('card_id', cardId)
+				.in('user_id', toRemove);
+			if (delError) {
+				console.error('[kanban] remove assignees failed:', delError);
+				throw error(500, 'Erreur lors du retrait des personnes assignées');
 			}
 		}
 
