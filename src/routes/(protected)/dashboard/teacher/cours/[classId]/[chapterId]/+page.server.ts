@@ -25,6 +25,11 @@ import {
 	getStudentChecklistProgress
 } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { placeInSection } from '$lib/server/chapter-sections';
+import {
+	targetSectionFieldSchema,
+	type SectionContentKind
+} from '$lib/server/validation/chapter-sections';
 import {
 	setContentPublication,
 	listDistributedWorksheetIds,
@@ -377,6 +382,39 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	};
 };
 
+/**
+ * Range la ressource qui vient d'être créée dans la section demandée.
+ *
+ * ⚠️ Un échec de rangement ne fait PAS échouer la création : la ressource
+ * existe déjà, et rendre `fail()` ferait croire au professeur qu'elle n'a pas
+ * été créée — il la recréerait, et se retrouverait avec un doublon. Elle
+ * retombe simplement en « Non classé », où elle est visible et déplaçable.
+ * `placed: false` laisse l'écran le dire au lieu de le taire.
+ */
+async function rangerSiDemande(
+	chapterId: string,
+	formData: FormData,
+	kind: SectionContentKind,
+	itemId: string,
+	supabase: App.Locals['supabase'],
+	action: string
+) {
+	const cible = targetSectionFieldSchema.safeParse(formData.get('sectionId'));
+
+	if (!cible.success || !cible.data) {
+		return { success: true, action, placed: true };
+	}
+
+	const { error: placeError } = await placeInSection(chapterId, cible.data, kind, itemId, supabase);
+
+	if (placeError) {
+		console.error(`[${action}] Rangement impossible :`, placeError);
+		return { success: true, action, placed: false };
+	}
+
+	return { success: true, action, placed: true };
+}
+
 export const actions: Actions = {
 	// ============ CHECKLIST ACTIONS ============
 
@@ -414,13 +452,24 @@ export const actions: Actions = {
 			return fail(400, { error: validation.error.issues[0].message, action: 'addChecklistItem' });
 		}
 
-		const { error: addError } = await addChecklistItem(chapterId, validation.data, locals.supabase);
+		const { data: created, error: addError } = await addChecklistItem(
+			chapterId,
+			validation.data,
+			locals.supabase
+		);
 
-		if (addError) {
+		if (addError || !created) {
 			return fail(500, { error: "Erreur lors de l'ajout", action: 'addChecklistItem' });
 		}
 
-		return { success: true, action: 'addChecklistItem' };
+		return rangerSiDemande(
+			chapterId,
+			formData,
+			'checklistItem',
+			created.id,
+			locals.supabase,
+			'addChecklistItem'
+		);
 	},
 
 	updateChecklistItem: async ({ request, locals, params: _params }) => {
@@ -585,13 +634,24 @@ export const actions: Actions = {
 			return fail(400, { error: 'Exercice requis', action: 'linkExercise' });
 		}
 
-		const { error: linkError } = await linkExercise(chapterId, exerciseId, locals.supabase);
+		const { data: created, error: linkError } = await linkExercise(
+			chapterId,
+			exerciseId,
+			locals.supabase
+		);
 
-		if (linkError) {
+		if (linkError || !created) {
 			return fail(500, { error: 'Erreur lors du lien', action: 'linkExercise' });
 		}
 
-		return { success: true, action: 'linkExercise' };
+		return rangerSiDemande(
+			chapterId,
+			formData,
+			'exercise',
+			created.id,
+			locals.supabase,
+			'linkExercise'
+		);
 	},
 
 	unlinkExercise: async ({ request, locals }) => {
@@ -664,13 +724,24 @@ export const actions: Actions = {
 			return fail(400, { error: 'Fiche requise', action: 'linkWorksheet' });
 		}
 
-		const { error: linkError } = await linkWorksheet(chapterId, worksheetId, locals.supabase);
+		const { data: created, error: linkError } = await linkWorksheet(
+			chapterId,
+			worksheetId,
+			locals.supabase
+		);
 
-		if (linkError) {
+		if (linkError || !created) {
 			return fail(500, { error: 'Erreur lors du lien', action: 'linkWorksheet' });
 		}
 
-		return { success: true, action: 'linkWorksheet' };
+		return rangerSiDemande(
+			chapterId,
+			formData,
+			'worksheet',
+			created.id,
+			locals.supabase,
+			'linkWorksheet'
+		);
 	},
 
 	/**
@@ -812,7 +883,7 @@ export const actions: Actions = {
 			googleFileId = fileIdMatch[1];
 		}
 
-		const { error: dbError } = await addChapterDocument(
+		const { data: created, error: dbError } = await addChapterDocument(
 			chapterId,
 			{
 				chapterId,
@@ -825,12 +896,19 @@ export const actions: Actions = {
 			locals.supabase
 		);
 
-		if (dbError) {
+		if (dbError || !created) {
 			console.error('[addGoogleDriveDocument] Error:', dbError);
 			return fail(500, { error: "Erreur lors de l'ajout", action: 'addGoogleDriveDocument' });
 		}
 
-		return { success: true, action: 'addGoogleDriveDocument' };
+		return rangerSiDemande(
+			chapterId,
+			formData,
+			'document',
+			created.id,
+			locals.supabase,
+			'addGoogleDriveDocument'
+		);
 	},
 
 	deleteDocument: async ({ request, locals }) => {

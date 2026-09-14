@@ -31,10 +31,18 @@
 		 * dans le stockage, muni d'une autorisation à usage unique.
 		 */
 		supabase: SupabaseClient<Database>;
+		/**
+		 * Section où ranger le document. `null` le laisse en « Non classé ».
+		 *
+		 * Les deux chemins la portent — l'envoi direct dans son corps JSON, le
+		 * lien Drive dans un champ caché — sinon le document ajouté depuis une
+		 * section atterrirait ailleurs que là où le professeur a cliqué.
+		 */
+		sectionId?: string | null;
 		onSuccess?: () => void;
 	}
 
-	let { chapterId, supabase, onSuccess }: Props = $props();
+	let { chapterId, supabase, sectionId = null, onSuccess }: Props = $props();
 
 	// Tab state
 	let activeTab = $state<'upload' | 'google_drive'>('upload');
@@ -167,7 +175,8 @@
 					storagePath,
 					fileName: file.name,
 					fileType: file.type,
-					fileSize: file.size
+					fileSize: file.size,
+					sectionId
 				})
 			});
 
@@ -414,6 +423,7 @@
 					}}
 					class="space-y-4"
 				>
+					<input type="hidden" name="sectionId" value={sectionId ?? ''} />
 					<input type="hidden" name="chapterId" value={chapterId} />
 
 					<div class="space-y-2">

@@ -17,38 +17,22 @@
 	import { navigating } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import PublicationToggle from '$lib/components/cours/teacher/PublicationToggle.svelte';
 	import {
 		ChapterSectionsEditor,
-		ChecklistEditor,
 		StudentProgressTable,
 		DocumentUpload
 	} from '$lib/components/cours/teacher';
-	import { DocumentCard } from '$lib/components/cours';
 	import { ChapterTemplateIndicator } from '$lib/components/templates';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { getChapterColorClasses } from '$lib/types/chapters';
-	import {
-		ArrowLeft,
-		Plus,
-		Trash2,
-		FileText,
-		ListChecks,
-		BookOpen,
-		Users,
-		BookMarked,
-		ClipboardList,
-		Copy,
-		Eye,
-		EyeOff
-	} from '@lucide/svelte';
+	import { ArrowLeft, BookMarked, Copy, Eye, EyeOff } from '@lucide/svelte';
+	import type { SectionContentKind } from '$lib/server/validation/chapter-sections';
 	import type { PageData, ActionData } from './$types';
 
 	interface Props {
@@ -58,13 +42,27 @@
 
 	let { data, form }: Props = $props();
 
-	// Tab state
-	let activeTab = $state('checklist');
-
 	// Dialog states
 	let showLinkExerciseDialog = $state(false);
 	let showLinkWorksheetDialog = $state(false);
 	let showCreateTemplateDialog = $state(false);
+	let showChecklistDialog = $state(false);
+	let showDocumentDialog = $state(false);
+
+	/**
+	 * La section où ira la prochaine ressource créée.
+	 *
+	 * ⚠️ Posée au moment du clic sur « Ajouter », et relue à l'envoi du
+	 * formulaire : c'est elle qui fait la différence entre « créé là où j'ai
+	 * cliqué » et « créé en Non classé, débrouille-toi ». `null` est une valeur
+	 * légitime — c'est « Non classé ».
+	 */
+	let targetSectionId = $state<string | null>(null);
+
+	/** Objectif en cours d'écriture — vide pour une création, rempli pour une reprise. */
+	let checklistItemId = $state('');
+	let checklistContent = $state('');
+	let checklistDescription = $state('');
 
 	// Form states
 	let selectedExerciseId = $state('');
@@ -74,6 +72,41 @@
 	/** Titre du futur modèle, pré-rempli avec celui du chapitre. */
 	let templateTitle = $state('');
 	let templateDescription = $state('');
+
+	/**
+	 * Le professeur a choisi un type dans le menu « Ajouter » d'une section.
+	 *
+	 * Chaque type a déjà sa boîte de dialogue ; on retient la cible, puis on
+	 * ouvre la bonne. Rien n'est créé ici.
+	 */
+	function ouvrirAjout(kind: SectionContentKind, sectionId: string | null) {
+		targetSectionId = sectionId;
+
+		if (kind === 'checklistItem') {
+			checklistItemId = '';
+			checklistContent = '';
+			checklistDescription = '';
+			showChecklistDialog = true;
+		} else if (kind === 'exercise') {
+			selectedExerciseId = '';
+			showLinkExerciseDialog = true;
+		} else if (kind === 'worksheet') {
+			selectedWorksheetId = '';
+			showLinkWorksheetDialog = true;
+		} else {
+			showDocumentDialog = true;
+		}
+	}
+
+	/** Reprendre le texte d'un objectif déjà posé. */
+	function modifierObjectif(item: { id: string; content: string; description: string | null }) {
+		checklistItemId = item.id;
+		checklistContent = item.content;
+		checklistDescription = item.description ?? '';
+		// La section ne bouge pas : on ne fait que corriger le texte.
+		targetSectionId = null;
+		showChecklistDialog = true;
+	}
 
 	// Chapter color
 	let colorClasses = $derived(
@@ -85,7 +118,6 @@
 	let checklistCount = $derived(data.checklistItems.length);
 	let exerciseCount = $derived(data.exercises.length);
 	let worksheetCount = $derived(data.worksheets.length);
-	let studentCount = $derived(data.students.length);
 
 	/**
 	 * Un chapitre sans contenu ne fait pas un modèle : le serveur refuse de
@@ -270,249 +302,30 @@
 			checklistItems={data.checklistItems}
 			worksheets={data.worksheets}
 			exerciseDetails={data.exerciseDetails}
+			distributedWorksheetIds={data.distributedWorksheetIds}
+			onAdd={ouvrirAjout}
+			onEditChecklistItem={modifierObjectif}
 		/>
 	</section>
 
-	<!-- Content Tabs -->
-	<Tabs.Root bind:value={activeTab} class="w-full">
-		<Tabs.List class="mb-6 grid w-full grid-cols-4">
-			<Tabs.Trigger value="checklist" class="flex items-center gap-2">
-				<ListChecks class="h-4 w-4" />
-				<span class="hidden sm:inline">Objectifs</span>
-				<Badge variant="secondary" class="ml-1">{checklistCount}</Badge>
-			</Tabs.Trigger>
-			<Tabs.Trigger value="exercises" class="flex items-center gap-2">
-				<BookOpen class="h-4 w-4" />
-				<span class="hidden sm:inline">{lore.learning.exercise}s</span>
-				<Badge variant="secondary" class="ml-1">{exerciseCount}</Badge>
-			</Tabs.Trigger>
-			<Tabs.Trigger value="worksheets" class="flex items-center gap-2">
-				<ClipboardList class="h-4 w-4" />
-				<span class="hidden sm:inline">Fiches</span>
-				<Badge variant="secondary" class="ml-1">{worksheetCount}</Badge>
-			</Tabs.Trigger>
-			<Tabs.Trigger value="documents" class="flex items-center gap-2">
-				<FileText class="h-4 w-4" />
-				<span class="hidden sm:inline">Documents</span>
-				<Badge variant="secondary" class="ml-1">{documentCount}</Badge>
-			</Tabs.Trigger>
-			<Tabs.Trigger value="progress" class="flex items-center gap-2">
-				<Users class="h-4 w-4" />
-				<span class="hidden sm:inline">Progression</span>
-				<Badge variant="secondary" class="ml-1">{studentCount}</Badge>
-			</Tabs.Trigger>
-		</Tabs.List>
-
-		<!-- Checklist Tab -->
-		<Tabs.Content value="checklist">
-			<ChecklistEditor items={data.checklistItems} chapterId={data.chapter.id} />
-		</Tabs.Content>
-
-		<!-- Exercises Tab -->
-		<Tabs.Content value="exercises">
-			<div class="space-y-4">
-				<!-- Link exercise button -->
-				<div class="flex justify-end">
-					<Button onclick={() => (showLinkExerciseDialog = true)} size="sm">
-						<Plus class="mr-2 h-4 w-4" />
-						Lier une {lore.learning.exercise}
-					</Button>
-				</div>
-
-				{#if exerciseCount === 0}
-					<Card.Root class="border-dashed">
-						<Card.Content class="py-12 text-center">
-							<BookOpen class="mx-auto mb-4 h-12 w-12 text-muted-foreground/40" />
-							<p class="text-muted-foreground">Aucune {lore.learning.exercise} lie</p>
-							<Button
-								onclick={() => (showLinkExerciseDialog = true)}
-								variant="ghost"
-								size="sm"
-								class="mt-2"
-							>
-								Lier une {lore.learning.exercise}
-							</Button>
-						</Card.Content>
-					</Card.Root>
-				{:else}
-					<div class="space-y-3">
-						{#each data.exercises as exercise, index (exercise.id)}
-							{@const details = data.exerciseDetails[exercise.exerciseId]}
-							<Card.Root>
-								<Card.Content class="flex items-center gap-4 p-4">
-									<div
-										class="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-medium"
-									>
-										{index + 1}
-									</div>
-									<div class="min-w-0 flex-1">
-										<p class="font-medium">
-											{details?.title || `${lore.learning.exercise} non trouvée`}
-										</p>
-									</div>
-									<PublicationToggle
-										contentType="exercise"
-										itemId={exercise.id}
-										publishedAt={exercise.publishedAt}
-									/>
-									<form method="POST" action="?/unlinkExercise" use:enhance>
-										<input type="hidden" name="chapterExerciseId" value={exercise.id} />
-										<Button type="submit" variant="ghost" size="icon-sm" class="text-destructive">
-											<Trash2 class="h-4 w-4" />
-										</Button>
-									</form>
-								</Card.Content>
-							</Card.Root>
-						{/each}
-					</div>
-				{/if}
-			</div>
-		</Tabs.Content>
-
-		<!-- Worksheets Tab -->
-		<Tabs.Content value="worksheets">
-			<div class="space-y-4">
-				<div class="flex items-start justify-between gap-4">
-					<p class="text-sm text-muted-foreground">
-						Rattacher une fiche la range dans ce chapitre — ça ne la distribue pas. Les élèves ne la
-						verront ici qu'une fois que tu l'auras affectée.
-					</p>
-					<Button onclick={() => (showLinkWorksheetDialog = true)} size="sm" class="shrink-0">
-						<Plus class="mr-2 h-4 w-4" />
-						Rattacher une fiche
-					</Button>
-				</div>
-
-				{#if worksheetCount === 0}
-					<Card.Root class="border-dashed">
-						<Card.Content class="py-12 text-center">
-							<ClipboardList class="mx-auto mb-4 h-12 w-12 text-muted-foreground/40" />
-							<p class="text-muted-foreground">Aucune fiche rattachée à ce chapitre</p>
-							<Button
-								onclick={() => (showLinkWorksheetDialog = true)}
-								variant="ghost"
-								size="sm"
-								class="mt-2"
-							>
-								Rattacher une fiche
-							</Button>
-						</Card.Content>
-					</Card.Root>
-				{:else}
-					<div class="space-y-3">
-						{#each data.worksheets as fiche, index (fiche.id)}
-							<Card.Root>
-								<Card.Content class="flex items-center gap-4 p-4">
-									<div
-										class="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-medium"
-									>
-										{index + 1}
-									</div>
-									<div class="min-w-0 flex-1">
-										<p class="font-medium">{fiche.title ?? 'Fiche non trouvée'}</p>
-									</div>
-									<PublicationToggle
-										contentType="worksheet"
-										itemId={fiche.id}
-										publishedAt={fiche.publishedAt}
-										distributed={data.distributedWorksheetIds.includes(fiche.worksheetId)}
-									/>
-									<form method="POST" action="?/unlinkWorksheet" use:enhance>
-										<input type="hidden" name="chapterWorksheetId" value={fiche.id} />
-										<Button type="submit" variant="ghost" size="icon-sm" class="text-destructive">
-											<Trash2 class="h-4 w-4" />
-										</Button>
-									</form>
-								</Card.Content>
-							</Card.Root>
-						{/each}
-					</div>
-				{/if}
-			</div>
-		</Tabs.Content>
-
-		<!-- Documents Tab -->
-		<Tabs.Content value="documents">
-			<div class="space-y-6">
-				<!-- Upload component -->
-				<!--
-					Le client du navigateur pousse le fichier directement dans le
-					stockage : il ne traverse plus la fonction, qui refusait au-delà de
-					quelques mégaoctets.
-				-->
-				<DocumentUpload
-					chapterId={data.chapter.id}
-					supabase={data.supabase}
-					onSuccess={() => invalidateAll()}
-				/>
-
-				<!-- Documents list -->
-				{#if documentCount === 0}
-					<Card.Root class="border-dashed">
-						<Card.Content class="py-8 text-center">
-							<FileText class="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
-							<p class="text-muted-foreground">Aucun document dans ce chapitre</p>
-							<p class="mt-1 text-sm text-muted-foreground">
-								Utilisez le formulaire ci-dessus pour ajouter des documents
-							</p>
-						</Card.Content>
-					</Card.Root>
-				{:else}
-					<div class="space-y-3">
-						<h3 class="text-sm font-medium text-muted-foreground">
-							{documentCount} document{documentCount > 1 ? 's' : ''}
-						</h3>
-						<div class="grid gap-4 sm:grid-cols-2">
-							{#each data.documents as document (document.id)}
-								<div class="group relative">
-									<DocumentCard {document} />
-									<div class="mt-2">
-										<PublicationToggle
-											contentType="document"
-											itemId={document.id}
-											publishedAt={document.publishedAt}
-										/>
-									</div>
-									<!-- Delete button overlay -->
-									<form
-										method="POST"
-										action="?/deleteDocument"
-										use:enhance={() => {
-											isSubmitting = true;
-											return async ({ update }) => {
-												await update();
-											};
-										}}
-										class="absolute top-2 right-2 opacity-0 transition-opacity group-hover:opacity-100"
-									>
-										<input type="hidden" name="documentId" value={document.id} />
-										<Button
-											type="submit"
-											variant="destructive"
-											size="icon-sm"
-											disabled={isSubmitting}
-											title="Supprimer"
-										>
-											<Trash2 class="h-4 w-4" />
-										</Button>
-									</form>
-								</div>
-							{/each}
-						</div>
-					</div>
-				{/if}
-			</div>
-		</Tabs.Content>
-
-		<!-- Progress Tab -->
-		<Tabs.Content value="progress">
-			<StudentProgressTable
-				students={data.students}
-				checklistItems={data.checklistItems}
-				progress={data.checklistProgress}
-			/>
-		</Tabs.Content>
-	</Tabs.Root>
+	<!--
+		La progression n'est pas une ressource du chapitre : elle ne se range dans
+		aucune section, et c'est pourquoi elle vit ici, sous le plan, plutôt que
+		dedans.
+	-->
+	<section class="space-y-3">
+		<div>
+			<h2 class="text-xl font-semibold">Progression des {lore.entities.student}s</h2>
+			<p class="text-sm text-muted-foreground">
+				Où en est chacun sur les objectifs publiés de ce chapitre.
+			</p>
+		</div>
+		<StudentProgressTable
+			students={data.students}
+			checklistItems={data.checklistItems}
+			progress={data.checklistProgress}
+		/>
+	</section>
 </main>
 
 <!-- Link Worksheet Dialog -->
@@ -605,6 +418,7 @@
 			}}
 			class="space-y-4"
 		>
+			<input type="hidden" name="sectionId" value={targetSectionId ?? ''} />
 			<div class="space-y-2">
 				<Label>Fiche</Label>
 				<MySelect type="single" bind:value={selectedWorksheetId} items={worksheetItems} />
@@ -644,6 +458,7 @@
 			}}
 			class="space-y-4"
 		>
+			<input type="hidden" name="sectionId" value={targetSectionId ?? ''} />
 			<div class="space-y-2">
 				<Label>{lore.learning.exercise}</Label>
 				<MySelect type="single" bind:value={selectedExerciseId} items={exerciseItems} />
@@ -659,6 +474,105 @@
 				</Button>
 			</Dialog.Footer>
 		</form>
+	</Dialog.Content>
+</Dialog.Root>
+
+<!--
+	Objectif : la MÊME boîte crée et corrige.
+	=========================================
+
+	`checklistItemId` fait la bascule — vide, on crée dans la section visée ;
+	rempli, on corrige un texte existant sans toucher à son rangement. Deux
+	boîtes auraient divergé, et le professeur aurait fini par ne plus savoir
+	laquelle ouvre quoi.
+-->
+<Dialog.Root bind:open={showChecklistDialog}>
+	<Dialog.Content class="max-w-lg">
+		<Dialog.Header>
+			<Dialog.Title>
+				{checklistItemId ? 'Modifier l’objectif' : 'Ajouter un objectif'}
+			</Dialog.Title>
+			<Dialog.Description>
+				Ce que l’{lore.entities.student} doit savoir faire à la fin du chapitre. Il reste préparé tant
+				que tu ne l’as pas publié.
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<form
+			method="POST"
+			action={checklistItemId ? '?/updateChecklistItem' : '?/addChecklistItem'}
+			use:enhance={() => {
+				isSubmitting = true;
+				return async ({ result, update }) => {
+					isSubmitting = false;
+					if (result.type === 'success') showChecklistDialog = false;
+					await update();
+				};
+			}}
+			class="space-y-4"
+		>
+			<input type="hidden" name="sectionId" value={targetSectionId ?? ''} />
+			{#if checklistItemId}
+				<input type="hidden" name="itemId" value={checklistItemId} />
+			{/if}
+
+			<div class="space-y-2">
+				<Label for="checklist-content">Objectif</Label>
+				<Input
+					id="checklist-content"
+					name="content"
+					bind:value={checklistContent}
+					maxlength={500}
+					required
+				/>
+			</div>
+
+			<div class="space-y-2">
+				<Label for="checklist-description">Précision (facultative)</Label>
+				<Textarea
+					id="checklist-description"
+					name="description"
+					bind:value={checklistDescription}
+					maxlength={1000}
+					rows={2}
+				/>
+			</div>
+
+			<Dialog.Footer>
+				<Button type="button" variant="outline" onclick={() => (showChecklistDialog = false)}>
+					Annuler
+				</Button>
+				<Button type="submit" disabled={isSubmitting || !checklistContent.trim()}>
+					{checklistItemId ? 'Enregistrer' : 'Ajouter'}
+				</Button>
+			</Dialog.Footer>
+		</form>
+	</Dialog.Content>
+</Dialog.Root>
+
+<!--
+	Document : l'envoi direct et le lien Drive, tels quels.
+	Le fichier ne traverse pas la fonction — il part du navigateur vers le
+	stockage, muni d'une autorisation à usage unique.
+-->
+<Dialog.Root bind:open={showDocumentDialog}>
+	<Dialog.Content class="max-w-2xl">
+		<Dialog.Header>
+			<Dialog.Title>Ajouter un document</Dialog.Title>
+			<Dialog.Description>
+				Dépose un fichier, ou colle le lien d’un document Google Drive.
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<DocumentUpload
+			chapterId={data.chapter.id}
+			supabase={data.supabase}
+			sectionId={targetSectionId}
+			onSuccess={() => {
+				showDocumentDialog = false;
+				invalidateAll();
+			}}
+		/>
 	</Dialog.Content>
 </Dialog.Root>
 
