@@ -53,6 +53,15 @@ jobs:
       - name: Guard CSS colour tokens (no hsl(var(--…)))
         run: bash scripts/check-css-tokens.sh
 
+      # Un baril `index.ts` rend ses ré-exports invisibles à oxlint, eslint ET
+      # svelte-check : ils ne voient qu'un export légitime, jamais le fait que
+      # personne ne l'importe. C'est ainsi que ChecklistEditor (321 lignes) et
+      # ChapterEditor (373) ont survécu à la disparition de leur écran, CI au
+      # vert. Baseline comme pour les tokens CSS : seuls les NOUVEAUX orphelins
+      # bloquent, et la dette ne peut que rétrécir.
+      - name: Guard barrel exports (no orphaned component re-exports)
+        run: npx tsx scripts/check-barrel-exports.ts
+
       # Persist eslint's per-file cache across runs so a PR only re-lints CHANGED
       # files instead of the whole tree (the type-aware lint is the slow part).
       # The key is unique per commit (always saves a fresh cache); restore-keys

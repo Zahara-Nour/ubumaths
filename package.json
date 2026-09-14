@@ -56,6 +56,7 @@
 		"maintenance:status": "bash scripts/vercel-maintenance.sh status",
 		"kill:servers": "bash scripts/kill-servers.sh",
 		"db:types": "pnpm supabase gen types typescript --project-id cnevnzsvixxpnurautls > src/lib/types/database.ts",
+		"check:barrels": "tsx scripts/check-barrel-exports.ts",
 		"db:migrate": "supabase db push",
 		"db:start": "supabase start",
 		"db:stop": "supabase stop",
