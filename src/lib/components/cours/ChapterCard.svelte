@@ -3,7 +3,7 @@
 	=====================
 
 	Card displaying chapter summary for list view.
-	Shows title, description, content counts (docs, quiz, exercises, checklist),
+	Shows title, description, content counts (docs, exercises, checklist),
 	and progress bar at the bottom.
 
 	@module components/cours/ChapterCard
@@ -22,7 +22,6 @@
 	import { cn } from '$lib/utils';
 	import {
 		FileText,
-		HelpCircle,
 		BookOpen,
 		CheckSquare,
 		Book,
@@ -201,10 +200,7 @@
 
 	// Content counts
 	const hasContent = $derived(
-		chapter.documentCount > 0 ||
-			chapter.quizQuestionCount > 0 ||
-			chapter.exerciseCount > 0 ||
-			chapter.checklistItemCount > 0
+		chapter.documentCount > 0 || chapter.exerciseCount > 0 || chapter.checklistItemCount > 0
 	);
 </script>
 
@@ -250,12 +246,6 @@
 						<div class="flex items-center gap-1">
 							<FileText class="h-3.5 w-3.5" />
 							<span>{chapter.documentCount} doc{chapter.documentCount > 1 ? 's' : ''}</span>
-						</div>
-					{/if}
-					{#if chapter.quizQuestionCount > 0}
-						<div class="flex items-center gap-1">
-							<HelpCircle class="h-3.5 w-3.5" />
-							<span>{chapter.quizQuestionCount} quiz</span>
 						</div>
 					{/if}
 					{#if chapter.exerciseCount > 0}

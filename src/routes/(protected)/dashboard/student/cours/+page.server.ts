@@ -29,7 +29,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 			`
 			*,
 			documents:chapter_documents(count),
-			quizQuestions:chapter_quiz_questions(count),
 			checklistItems:chapter_checklist_items(count),
 			exercises:chapter_exercises(count)
 		`
@@ -106,7 +105,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 			createdAt: row.created_at,
 			updatedAt: row.updated_at,
 			documentCount: (row.documents as unknown as { count: number }[])?.[0]?.count || 0,
-			quizQuestionCount: (row.quizQuestions as unknown as { count: number }[])?.[0]?.count || 0,
 			checklistItemCount: (row.checklistItems as unknown as { count: number }[])?.[0]?.count || 0,
 			exerciseCount: (row.exercises as unknown as { count: number }[])?.[0]?.count || 0
 		}));

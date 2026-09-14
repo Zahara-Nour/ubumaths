@@ -40,7 +40,6 @@
 		Copy,
 		FileText,
 		ClipboardList,
-		HelpCircle,
 		Dumbbell,
 		FileSpreadsheet
 	} from '@lucide/svelte';
@@ -156,10 +155,6 @@
 			<div class="flex items-center gap-1.5">
 				<FileText class="h-3.5 w-3.5" />
 				<span>{template.documentCount} doc{template.documentCount > 1 ? 's' : ''}</span>
-			</div>
-			<div class="flex items-center gap-1.5">
-				<HelpCircle class="h-3.5 w-3.5" />
-				<span>{template.quizQuestionCount} quiz</span>
 			</div>
 			<div class="flex items-center gap-1.5">
 				<ClipboardList class="h-3.5 w-3.5" />

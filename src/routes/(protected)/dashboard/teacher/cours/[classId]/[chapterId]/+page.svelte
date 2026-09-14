@@ -6,7 +6,6 @@
 	 *
 	 * Manage chapter content with tabs:
 	 * - Documents (upload/Google Drive)
-	 * - Quiz questions (modèles de questions publiés)
 	 * - Checklist items
 	 * - Exercises (links)
 	 * - Worksheets (links) — rattacher ne distribue pas
@@ -41,7 +40,6 @@
 		Plus,
 		Trash2,
 		FileText,
-		HelpCircle,
 		ListChecks,
 		BookOpen,
 		Users,
@@ -64,13 +62,11 @@
 	let activeTab = $state('checklist');
 
 	// Dialog states
-	let showAddQuestionDialog = $state(false);
 	let showLinkExerciseDialog = $state(false);
 	let showLinkWorksheetDialog = $state(false);
 	let showCreateTemplateDialog = $state(false);
 
 	// Form states
-	let selectedQuestionId = $state('');
 	let selectedExerciseId = $state('');
 	let selectedWorksheetId = $state('');
 	let isSubmitting = $state(false);
@@ -86,7 +82,6 @@
 
 	// Content counts
 	let documentCount = $derived(data.documents.length);
-	let quizCount = $derived(data.quizQuestions.length);
 	let checklistCount = $derived(data.checklistItems.length);
 	let exerciseCount = $derived(data.exercises.length);
 	let worksheetCount = $derived(data.worksheets.length);
@@ -96,21 +91,9 @@
 	 * Un chapitre sans contenu ne fait pas un modèle : le serveur refuse de
 	 * publier un modèle vide, autant ne pas le laisser créer.
 	 */
-	let hasContent = $derived(
-		documentCount + quizCount + checklistCount + exerciseCount + worksheetCount > 0
-	);
+	let hasContent = $derived(documentCount + checklistCount + exerciseCount + worksheetCount > 0);
 
 	// Available items for selects
-	let questionItems = $derived([
-		{ value: '', label: 'Choisir une question...' },
-		...data.availableTemplates
-			.filter((t) => !data.quizQuestions.some((q) => q.questionTemplateId === t.id))
-			.map((t) => ({
-				value: t.id,
-				label: `${t.title} — ${t.domain} (niv. ${t.level})`
-			}))
-	]);
-
 	let exerciseItems = $derived([
 		{ value: '', label: `Choisir une ${lore.learning.exercise}...` },
 		...data.availableExercises
@@ -140,8 +123,6 @@
 				addChecklistItem: 'Objectif ajoute',
 				updateChecklistItem: 'Objectif mis a jour',
 				deleteChecklistItem: 'Objectif supprime',
-				addQuizQuestion: 'Question ajoutee',
-				removeQuizQuestion: 'Question supprimee',
 				linkExercise: `${lore.learning.exercise} liée`,
 				unlinkExercise: `${lore.learning.exercise} retirée`,
 				linkWorksheet: 'Fiche rattachée au chapitre',
@@ -155,10 +136,6 @@
 			toaster.success(message);
 
 			// Close dialogs
-			if (form.action === 'addQuizQuestion') {
-				showAddQuestionDialog = false;
-				selectedQuestionId = '';
-			}
 			if (form.action === 'linkExercise') {
 				showLinkExerciseDialog = false;
 				selectedExerciseId = '';
@@ -291,25 +268,18 @@
 			documents={data.documents}
 			exercises={data.exercises}
 			checklistItems={data.checklistItems}
-			quizQuestions={data.quizQuestions}
 			worksheets={data.worksheets}
-			questionTemplates={data.questionTemplates}
 			exerciseDetails={data.exerciseDetails}
 		/>
 	</section>
 
 	<!-- Content Tabs -->
 	<Tabs.Root bind:value={activeTab} class="w-full">
-		<Tabs.List class="mb-6 grid w-full grid-cols-5">
+		<Tabs.List class="mb-6 grid w-full grid-cols-4">
 			<Tabs.Trigger value="checklist" class="flex items-center gap-2">
 				<ListChecks class="h-4 w-4" />
 				<span class="hidden sm:inline">Objectifs</span>
 				<Badge variant="secondary" class="ml-1">{checklistCount}</Badge>
-			</Tabs.Trigger>
-			<Tabs.Trigger value="quiz" class="flex items-center gap-2">
-				<HelpCircle class="h-4 w-4" />
-				<span class="hidden sm:inline">Quiz</span>
-				<Badge variant="secondary" class="ml-1">{quizCount}</Badge>
 			</Tabs.Trigger>
 			<Tabs.Trigger value="exercises" class="flex items-center gap-2">
 				<BookOpen class="h-4 w-4" />
@@ -336,81 +306,6 @@
 		<!-- Checklist Tab -->
 		<Tabs.Content value="checklist">
 			<ChecklistEditor items={data.checklistItems} chapterId={data.chapter.id} />
-		</Tabs.Content>
-
-		<!-- Quiz Tab -->
-		<Tabs.Content value="quiz">
-			<div class="space-y-4">
-				<!-- Add question button -->
-				<div class="flex justify-end">
-					<Button onclick={() => (showAddQuestionDialog = true)} size="sm">
-						<Plus class="mr-2 h-4 w-4" />
-						Ajouter une question
-					</Button>
-				</div>
-
-				{#if quizCount === 0}
-					<Card.Root class="border-dashed">
-						<Card.Content class="py-12 text-center">
-							<HelpCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground/40" />
-							<p class="text-muted-foreground">Aucune question dans ce quiz</p>
-							<Button
-								onclick={() => (showAddQuestionDialog = true)}
-								variant="ghost"
-								size="sm"
-								class="mt-2"
-							>
-								Ajouter la premiere question
-							</Button>
-						</Card.Content>
-					</Card.Root>
-				{:else}
-					<div class="space-y-3">
-						{#each data.quizQuestions as question, index (question.id)}
-							{@const template = data.questionTemplates[question.questionTemplateId]}
-							<Card.Root>
-								<Card.Content class="flex items-center gap-4 p-4">
-									<div
-										class="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-medium"
-									>
-										{index + 1}
-									</div>
-									<div class="min-w-0 flex-1">
-										<p class="font-medium">
-											{template?.title ?? 'Modèle supprimé'}
-										</p>
-										<!--
-											Trois états distincts, que l'ancienne version confondait en une
-											case vide : modèle publié (l'élève le voit), modèle redevenu
-											brouillon (l'élève ne le voit plus), modèle supprimé.
-										-->
-										<p class="text-sm text-muted-foreground">
-											{#if !template}
-												Ce modèle n'existe plus : la question ne s'affichera pas.
-											{:else if template.status !== 'published'}
-												Brouillon — les élèves ne verront pas cette question.
-											{:else}
-												Publié
-											{/if}
-										</p>
-									</div>
-									<PublicationToggle
-										contentType="quiz"
-										itemId={question.id}
-										publishedAt={question.publishedAt}
-									/>
-									<form method="POST" action="?/removeQuizQuestion" use:enhance>
-										<input type="hidden" name="quizQuestionId" value={question.id} />
-										<Button type="submit" variant="ghost" size="icon-sm" class="text-destructive">
-											<Trash2 class="h-4 w-4" />
-										</Button>
-									</form>
-								</Card.Content>
-							</Card.Root>
-						{/each}
-					</div>
-				{/if}
-			</div>
 		</Tabs.Content>
 
 		<!-- Exercises Tab -->
@@ -620,78 +515,14 @@
 	</Tabs.Root>
 </main>
 
-<!-- Add Quiz Question Dialog -->
-<Dialog.Root bind:open={showAddQuestionDialog}>
-	<Dialog.Content class="max-w-lg">
-		<Dialog.Header>
-			<Dialog.Title>Ajouter une question au quiz</Dialog.Title>
-			<Dialog.Description>
-				Seuls les modèles <strong>publiés</strong> sont proposés : un brouillon serait invisible aux
-				élèves.
-			</Dialog.Description>
-		</Dialog.Header>
-
-		<form
-			method="POST"
-			action="?/addQuizQuestion"
-			use:enhance={() => {
-				isSubmitting = true;
-				return async ({ update }) => {
-					await update();
-				};
-			}}
-			class="space-y-4"
-		>
-			<div class="space-y-2">
-				<Label>Question</Label>
-				{#if data.availableTemplates.length === 0}
-					<!--
-						Une liste vide ne doit pas laisser croire à une panne : ici, elle
-						dit ce qu'il manque et où le faire.
-					-->
-					<p class="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
-						Aucun modèle de question publié pour le moment. Publie un modèle depuis
-						<a href="/dashboard/admin/questions" class="underline">la banque de questions</a>
-						pour pouvoir l'ajouter ici.
-					</p>
-				{:else}
-					<MySelect type="single" bind:value={selectedQuestionId} items={questionItems} />
-					<input type="hidden" name="questionTemplateId" value={selectedQuestionId} />
-					{#if data.hiddenTemplateCount > 0}
-						<!-- Un plafond silencieux ferait conclure que la question n'existe pas. -->
-						<p class="text-xs text-muted-foreground">
-							{data.hiddenTemplateCount} autre{data.hiddenTemplateCount > 1 ? 's' : ''} modèle{data.hiddenTemplateCount >
-							1
-								? 's'
-								: ''} publié{data.hiddenTemplateCount > 1 ? 's' : ''} ne {data.hiddenTemplateCount >
-							1
-								? 'sont'
-								: 'est'} pas listé{data.hiddenTemplateCount > 1 ? 's' : ''} ici (limite d'affichage).
-						</p>
-					{/if}
-				{/if}
-			</div>
-
-			<Dialog.Footer>
-				<Button type="button" variant="outline" onclick={() => (showAddQuestionDialog = false)}>
-					Annuler
-				</Button>
-				<Button type="submit" disabled={isSubmitting || !selectedQuestionId}>
-					{isSubmitting ? 'Ajout...' : 'Ajouter'}
-				</Button>
-			</Dialog.Footer>
-		</form>
-	</Dialog.Content>
-</Dialog.Root>
-
 <!-- Link Worksheet Dialog -->
 <Dialog.Root bind:open={showCreateTemplateDialog}>
 	<Dialog.Content class="max-w-lg">
 		<Dialog.Header>
 			<Dialog.Title>Faire un modèle de ce chapitre</Dialog.Title>
 			<Dialog.Description>
-				Le modèle emporte une copie du contenu : objectifs, questions de quiz, exercices, fiches et
-				documents. Il naît en brouillon, et rien n'est distribué aux élèves.
+				Le modèle emporte une copie du contenu : objectifs, exercices, fiches et documents. Il naît
+				en brouillon, et rien n'est distribué aux élèves.
 			</Dialog.Description>
 		</Dialog.Header>
 

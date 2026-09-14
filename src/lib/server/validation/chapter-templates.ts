@@ -64,22 +64,6 @@ export const templateDocumentSnapshotSchema = z.object({
 export type TemplateDocumentSnapshotInput = z.infer<typeof templateDocumentSnapshotSchema>;
 
 /**
- * Quiz question snapshot schema
- */
-export const templateQuizQuestionSnapshotSchema = z.object({
-	questionTemplateId: uuidSchema.describe('ID du template de question'),
-	pointsOverride: z
-		.number()
-		.int('Les points doivent etre un entier')
-		.min(0, 'Les points doivent etre positifs')
-		.max(100, 'Les points sont trop eleves (max 100)')
-		.nullable(),
-	displayOrder: displayOrderSchema
-});
-
-export type TemplateQuizQuestionSnapshotInput = z.infer<typeof templateQuizQuestionSnapshotSchema>;
-
-/**
  * Checklist item snapshot schema
  */
 export const templateChecklistItemSnapshotSchema = z.object({
@@ -115,9 +99,6 @@ export type TemplateExerciseSnapshotInput = z.infer<typeof templateExerciseSnaps
  */
 export const templateContentSnapshotSchema = z.object({
 	documents: z.array(templateDocumentSnapshotSchema).max(50, 'Trop de documents (max 50)'),
-	quizQuestions: z
-		.array(templateQuizQuestionSnapshotSchema)
-		.max(100, 'Trop de questions (max 100)'),
 	checklistItems: z.array(templateChecklistItemSnapshotSchema).max(50, "Trop d'elements (max 50)"),
 	// Les fiches du modèle. `.default([])` : un `content_snapshot` écrit avant
 	// que les modèles les portent reste valide, et vaut « aucune fiche ».

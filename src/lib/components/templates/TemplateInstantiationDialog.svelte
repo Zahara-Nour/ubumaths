@@ -18,15 +18,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import {
-		Copy,
-		X,
-		FileText,
-		HelpCircle,
-		ClipboardList,
-		Dumbbell,
-		AlertCircle
-	} from '@lucide/svelte';
+	import { Copy, X, FileText, ClipboardList, Dumbbell, AlertCircle } from '@lucide/svelte';
 
 	// Props
 	interface ClassOption {
@@ -101,7 +93,6 @@
 	// Total content count
 	const totalContent = $derived(
 		template.contentSnapshot.documents.length +
-			template.contentSnapshot.quizQuestions.length +
 			template.contentSnapshot.checklistItems.length +
 			template.contentSnapshot.exercises.length
 	);
@@ -145,15 +136,6 @@
 									.documents.length > 1
 									? 's'
 									: ''}
-							</span>
-						</div>
-						<div class="flex items-center gap-2">
-							<HelpCircle class="h-4 w-4 text-muted-foreground" />
-							<span>
-								{template.contentSnapshot.quizQuestions.length} question{template.contentSnapshot
-									.quizQuestions.length > 1
-									? 's'
-									: ''} quiz
 							</span>
 						</div>
 						<div class="flex items-center gap-2">
@@ -229,7 +211,7 @@
 					<div>
 						<p class="font-medium text-orange-900 dark:text-orange-100">Template vide</p>
 						<p class="mt-1 text-orange-700 dark:text-orange-200">
-							Ce template ne contient aucun contenu. Vous pourrez ajouter des documents, quiz et
+							Ce template ne contient aucun contenu. Vous pourrez ajouter des documents et
 							{lore.learning.exercise}s après la création.
 						</p>
 					</div>

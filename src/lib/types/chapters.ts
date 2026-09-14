@@ -14,8 +14,6 @@ import type { Database } from './database';
 
 export type DbClassChapter = Database['public']['Tables']['class_chapters']['Row'];
 export type DbChapterDocument = Database['public']['Tables']['chapter_documents']['Row'];
-export type DbChapterQuizQuestion = Database['public']['Tables']['chapter_quiz_questions']['Row'];
-export type DbChapterQuizResult = Database['public']['Tables']['chapter_quiz_results']['Row'];
 export type DbChapterChecklistItem = Database['public']['Tables']['chapter_checklist_items']['Row'];
 export type DbStudentChecklistProgress =
 	Database['public']['Tables']['student_checklist_progress']['Row'];
@@ -207,37 +205,6 @@ export interface ChapterDocument {
 }
 
 /**
- * Chapter quiz question - links a question template to a chapter
- */
-export interface ChapterQuizQuestion {
-	id: string;
-	chapterId: string;
-	questionTemplateId: string;
-	/** Optional points override (null = use default) */
-	pointsOverride: number | null;
-	displayOrder: number;
-	/**
-	 * Section du chapitre qui range ce contenu. `null` = « Non classé »,
-	 * affiché en fin de chapitre.
-	 */
-	sectionId: string | null;
-	/**
-	 * Ordre À L'INTÉRIEUR de la section — distinct de `displayOrder`, qui reste
-	 * l'ordre par TYPE. Les cinq types vivent dans cinq tables : seul
-	 * `sectionOrder` les range ensemble.
-	 */
-	sectionOrder: number;
-	createdAt: string;
-	/**
-	 * Mise à disposition des élèves. `null` = préparé, invisible.
-	 *
-	 * Sens DISTINCT de `worksheets.status` (la fiche est terminée) et de
-	 * `chapter_templates.status` (le modèle est diffusable).
-	 */
-	publishedAt: string | null;
-}
-
-/**
  * Les cinq contenus d'un chapitre qui portent une date de mise à disposition.
  *
  * Ce type traverse la frontière serveur/client (le composant de publication le
@@ -248,40 +215,7 @@ export interface ChapterQuizQuestion {
  * dans une table fermée, pour qu'un formulaire ne puisse jamais désigner la
  * table à écrire.
  */
-export type ChapterContentType = 'document' | 'exercise' | 'checklist' | 'quiz' | 'worksheet';
-
-/**
- * Pourquoi une question du quiz n'est pas jouable.
- *
- * - `modele_indisponible` : le modèle est en brouillon (invisible à l'élève
- *   par la policy « Students can view published templates ») ou supprimé ;
- * - `generation_impossible` : le modèle existe mais ne produit pas d'instance.
- *
- * Ce type vit ici, et non près de `buildQuizInstances`, parce qu'il traverse la
- * frontière serveur/client : un composant ne peut rien importer de
- * `$lib/server/**`, fût-ce un type.
- */
-export type QuizUnavailableReason = 'modele_indisponible' | 'generation_impossible';
-
-export interface QuizUnavailableQuestion {
-	quizQuestionId: string;
-	reason: QuizUnavailableReason;
-}
-
-/**
- * Chapter quiz result - student's answer to a quiz question
- */
-export interface ChapterQuizResult {
-	id: string;
-	studentId: string;
-	chapterQuizQuestionId: string;
-	attemptNumber: number;
-	isCorrect: boolean;
-	submittedAnswer: string;
-	pointsEarned: number;
-	submittedAt: string;
-	timeSpentSeconds: number | null;
-}
+export type ChapterContentType = 'document' | 'exercise' | 'checklist' | 'worksheet';
 
 /**
  * Chapter checklist item - an item students can check off
@@ -415,7 +349,6 @@ export interface OrphanedDocument {
  */
 export interface ChapterWithContent extends ClassChapter {
 	documents: ChapterDocument[];
-	quizQuestions: ChapterQuizQuestion[];
 	checklistItems: ChapterChecklistItem[];
 	exercises: ChapterExercise[];
 }
@@ -432,16 +365,6 @@ export interface ChapterProgress {
 	completedChecklistItems: number;
 	/** Checklist completion percentage (0-100) */
 	checklistProgress: number;
-	/** Total quiz questions in chapter */
-	totalQuizQuestions: number;
-	/** Correctly answered quiz questions (best attempt) */
-	correctQuizQuestions: number;
-	/** Quiz score percentage (0-100) */
-	quizScore: number;
-	/** Total points earned from quiz */
-	totalPointsEarned: number;
-	/** Maximum possible points from quiz */
-	maxPossiblePoints: number;
 	/** Last activity timestamp */
 	lastActivityAt: string | null;
 }
@@ -452,8 +375,6 @@ export interface ChapterProgress {
 export interface ChapterSummary extends ClassChapter {
 	/** Number of documents */
 	documentCount: number;
-	/** Number of quiz questions */
-	quizQuestionCount: number;
 	/** Number of checklist items */
 	checklistItemCount: number;
 	/** Number of exercises */
@@ -469,11 +390,6 @@ export interface StudentChapterView extends ChapterWithContent {
 	checklistItemsWithProgress: (ChapterChecklistItem & {
 		isCompleted: boolean;
 		completedAt: string | null;
-	})[];
-	/** Quiz questions with student's best result */
-	quizQuestionsWithResults: (ChapterQuizQuestion & {
-		bestResult: ChapterQuizResult | null;
-		attemptsCount: number;
 	})[];
 }
 
@@ -522,40 +438,6 @@ export function dbDocumentToApp(db: DbChapterDocument): ChapterDocument {
 		createdAt: db.created_at,
 		updatedAt: db.updated_at,
 		publishedAt: db.published_at
-	};
-}
-
-/**
- * Convert database quiz question to app type
- */
-export function dbQuizQuestionToApp(db: DbChapterQuizQuestion): ChapterQuizQuestion {
-	return {
-		id: db.id,
-		chapterId: db.chapter_id,
-		questionTemplateId: db.question_template_id,
-		pointsOverride: db.points_override,
-		displayOrder: db.display_order,
-		sectionId: db.section_id,
-		sectionOrder: db.section_order,
-		createdAt: db.created_at,
-		publishedAt: db.published_at
-	};
-}
-
-/**
- * Convert database quiz result to app type
- */
-export function dbQuizResultToApp(db: DbChapterQuizResult): ChapterQuizResult {
-	return {
-		id: db.id,
-		studentId: db.student_id,
-		chapterQuizQuestionId: db.chapter_quiz_question_id,
-		attemptNumber: db.attempt_number,
-		isCorrect: db.is_correct,
-		submittedAnswer: db.submitted_answer,
-		pointsEarned: db.points_earned,
-		submittedAt: db.submitted_at,
-		timeSpentSeconds: db.time_spent_seconds
 	};
 }
 

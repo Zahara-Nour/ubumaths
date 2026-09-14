@@ -12,7 +12,7 @@
 	import type { ChapterProgress } from '$lib/types/chapters';
 	import { Progress } from '$lib/components/ui/progress';
 	import { cn } from '$lib/utils';
-	import { CheckCircle2, Circle, Target, HelpCircle } from '@lucide/svelte';
+	import { CheckCircle2, Circle, Target } from '@lucide/svelte';
 
 	// Props
 	interface Props {
@@ -23,27 +23,15 @@
 
 	let { progress, variant = 'circular', showDetails = true }: Props = $props();
 
-	// Calculate overall progress (weighted average of checklist and quiz)
-	const overallProgress = $derived.by(() => {
-		const checklistWeight = 0.6;
-		const quizWeight = 0.4;
-
-		let total = 0;
-		let weights = 0;
-
-		if (progress.totalChecklistItems > 0) {
-			total += progress.checklistProgress * checklistWeight;
-			weights += checklistWeight;
-		}
-
-		if (progress.totalQuizQuestions > 0) {
-			total += progress.quizScore * quizWeight;
-			weights += quizWeight;
-		}
-
-		if (weights === 0) return 0;
-		return Math.round(total / weights);
-	});
+	// L'avancement d'un chapitre est celui de ses objectifs.
+	//
+	// Il était une moyenne pondérée objectifs (0,6) / quiz (0,4). Le quiz de
+	// chapitre ayant été retiré, la pondération n'avait plus de second terme :
+	// elle rendait mécaniquement `checklistProgress`, en passant par un calcul
+	// que plus personne n'aurait su relire.
+	const overallProgress = $derived(
+		progress.totalChecklistItems > 0 ? Math.round(progress.checklistProgress) : 0
+	);
 
 	// Color classes based on progress
 	const colorClasses = $derived.by(() => {
@@ -139,21 +127,6 @@
 						</div>
 					</div>
 				{/if}
-
-				{#if progress.totalQuizQuestions > 0}
-					<div class="flex items-center gap-3">
-						<HelpCircle class="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-						<div class="flex-1">
-							<div class="mb-1 flex justify-between text-xs">
-								<span class="text-muted-foreground">Quiz</span>
-								<span class={cn('font-medium', colorClasses.text)}>
-									{progress.correctQuizQuestions}/{progress.totalQuizQuestions}
-								</span>
-							</div>
-							<Progress value={progress.quizScore} max={100} class="h-1.5" />
-						</div>
-					</div>
-				{/if}
 			</div>
 		{/if}
 	</div>
@@ -183,24 +156,6 @@
 						</div>
 						<div class="text-xs text-muted-foreground">
 							{progress.completedChecklistItems}/{progress.totalChecklistItems} complete{progress.completedChecklistItems >
-							1
-								? 's'
-								: ''}
-						</div>
-					</div>
-				{/if}
-
-				{#if progress.totalQuizQuestions > 0}
-					<div class={cn('rounded-lg p-3', colorClasses.bgLight)}>
-						<div class="mb-2 flex items-center gap-2">
-							<HelpCircle class="h-4 w-4" />
-							<span class="text-xs font-medium">Quiz</span>
-						</div>
-						<div class={cn('text-2xl font-bold', colorClasses.text)}>
-							{progress.quizScore}%
-						</div>
-						<div class="text-xs text-muted-foreground">
-							{progress.correctQuizQuestions}/{progress.totalQuizQuestions} correct{progress.correctQuizQuestions >
 							1
 								? 's'
 								: ''}
@@ -248,12 +203,6 @@
 				<div class="truncate text-xs text-muted-foreground">
 					{#if progress.totalChecklistItems > 0}
 						{progress.completedChecklistItems}/{progress.totalChecklistItems} objectifs
-					{/if}
-					{#if progress.totalChecklistItems > 0 && progress.totalQuizQuestions > 0}
-						,
-					{/if}
-					{#if progress.totalQuizQuestions > 0}
-						{progress.correctQuizQuestions}/{progress.totalQuizQuestions} quiz
 					{/if}
 				</div>
 			{/if}

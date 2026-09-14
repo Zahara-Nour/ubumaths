@@ -37,7 +37,6 @@
 		FolderOpen,
 		Book,
 		FileText,
-		HelpCircle,
 		ClipboardList,
 		Dumbbell,
 		Copy
@@ -260,7 +259,6 @@
 							{/if}
 							<div class="mt-2 flex gap-4 text-xs text-muted-foreground">
 								<span>{chapter.documentCount} doc{chapter.documentCount !== 1 ? 's' : ''}</span>
-								<span>{chapter.quizQuestionCount} quiz</span>
 								<span
 									>{chapter.checklistItemCount} objectif{chapter.checklistItemCount !== 1
 										? 's'
@@ -549,15 +547,6 @@
 									>{selectedTemplate.documentCount} document{selectedTemplate.documentCount > 1
 										? 's'
 										: ''}</span
-								>
-							</div>
-							<div class="flex items-center gap-2">
-								<HelpCircle class="h-4 w-4 text-muted-foreground" />
-								<span
-									>{selectedTemplate.quizQuestionCount} question{selectedTemplate.quizQuestionCount >
-									1
-										? 's'
-										: ''} quiz</span
 								>
 							</div>
 							<div class="flex items-center gap-2">

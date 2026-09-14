@@ -1,12 +1,12 @@
 /**
  * API Route: /api/teacher/chapters/[id]/progress
- * GET - Get student progress for a chapter (checklist + quiz results)
+ * GET - Get student progress for a chapter (checklist)
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
-import { getStudentChecklistProgress, getChapterQuizResults } from '$lib/server/chapters';
+import { getStudentChecklistProgress } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
 import { z } from 'zod';
 
@@ -73,14 +73,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		throw error(500, 'Failed to fetch checklist progress');
 	}
 
-	// Fetch quiz results
-	const quizResult = await getChapterQuizResults(chapterId, locals.supabase, studentId);
-
-	if (quizResult.error) {
-		console.error('[GET /api/teacher/chapters/[id]/progress] Quiz error:', quizResult.error);
-		throw error(500, 'Failed to fetch quiz results');
-	}
-
 	// Get list of students in the class for complete progress view
 	const { data: students, error: studentsError } = await locals.supabase
 		.from('class_members')
@@ -106,12 +98,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			total: number;
 			percentage: number;
 		};
-		quizProgress: {
-			correct: number;
-			attempted: number;
-			total: number;
-			percentage: number;
-		};
 	};
 
 	// Get total counts
@@ -120,16 +106,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		.select('*', { count: 'exact', head: true })
 		.eq('chapter_id', chapterId);
 
-	const { count: totalQuizQuestions } = await locals.supabase
-		.from('chapter_quiz_questions')
-		.select('*', { count: 'exact', head: true })
-		.eq('chapter_id', chapterId);
-
 	// Map checklist progress by student
 	const checklistByStudent = new Map(checklistResult.data.map((p) => [p.studentId, p]));
-
-	// Map quiz results by student
-	const quizByStudent = new Map(quizResult.data.map((r) => [r.studentId, r]));
 
 	// Build progress for each student
 	const progress: StudentProgress[] = (students || []).map((s) => {
@@ -140,11 +118,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			lastname: string | null;
 		} | null;
 		const checklistData = checklistByStudent.get(s.student_id);
-		const quizData = quizByStudent.get(s.student_id);
 
 		const completedChecklist = checklistData?.items.filter((i) => i.isCompleted).length ?? 0;
-		const correctQuiz = quizData?.totalCorrect ?? 0;
-		const attemptedQuiz = quizData?.totalAttempted ?? 0;
 
 		return {
 			studentId: s.student_id,
@@ -158,15 +133,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 					totalChecklistItems && totalChecklistItems > 0
 						? Math.round((completedChecklist / totalChecklistItems) * 100)
 						: 0
-			},
-			quizProgress: {
-				correct: correctQuiz,
-				attempted: attemptedQuiz,
-				total: totalQuizQuestions ?? 0,
-				percentage:
-					totalQuizQuestions && totalQuizQuestions > 0
-						? Math.round((correctQuiz / totalQuizQuestions) * 100)
-						: 0
 			}
 		};
 	});
@@ -177,7 +143,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	return json({
 		chapterId,
 		totalChecklistItems: totalChecklistItems ?? 0,
-		totalQuizQuestions: totalQuizQuestions ?? 0,
 		students: filteredProgress,
 		count: filteredProgress.length
 	});

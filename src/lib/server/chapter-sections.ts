@@ -28,7 +28,6 @@ const CONTENT_TABLES: Record<SectionContentKind, string> = {
 	document: 'chapter_documents',
 	exercise: 'chapter_exercises',
 	checklistItem: 'chapter_checklist_items',
-	quizQuestion: 'chapter_quiz_questions',
 	worksheet: 'chapter_worksheets'
 };
 

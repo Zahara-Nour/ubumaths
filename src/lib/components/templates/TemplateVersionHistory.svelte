@@ -187,37 +187,6 @@
 												</div>
 											{/if}
 
-											{#if stats.quizQuestionsAdded + stats.quizQuestionsRemoved + stats.quizQuestionsModified > 0}
-												<div class="rounded-md bg-muted p-2">
-													<p class="font-medium">Quiz</p>
-													<ul class="mt-1 space-y-0.5 text-muted-foreground">
-														{#if stats.quizQuestionsAdded > 0}
-															<li class="text-green-600 dark:text-green-400">
-																+ {stats.quizQuestionsAdded} ajouté{stats.quizQuestionsAdded > 1
-																	? 's'
-																	: ''}
-															</li>
-														{/if}
-														{#if stats.quizQuestionsRemoved > 0}
-															<li class="text-red-600 dark:text-red-400">
-																- {stats.quizQuestionsRemoved} supprimé{stats.quizQuestionsRemoved >
-																1
-																	? 's'
-																	: ''}
-															</li>
-														{/if}
-														{#if stats.quizQuestionsModified > 0}
-															<li class="text-blue-600 dark:text-blue-400">
-																~ {stats.quizQuestionsModified} modifié{stats.quizQuestionsModified >
-																1
-																	? 's'
-																	: ''}
-															</li>
-														{/if}
-													</ul>
-												</div>
-											{/if}
-
 											{#if stats.checklistItemsAdded + stats.checklistItemsRemoved + stats.checklistItemsModified > 0}
 												<div class="rounded-md bg-muted p-2">
 													<p class="font-medium">Objectifs</p>

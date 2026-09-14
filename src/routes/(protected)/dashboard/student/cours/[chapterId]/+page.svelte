@@ -18,14 +18,9 @@
 	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import {
-		ChapterProgressIndicator,
-		DocumentCard,
-		ChecklistSection,
-		ChapterQuiz
-	} from '$lib/components/cours';
+	import { ChapterProgressIndicator, DocumentCard, ChecklistSection } from '$lib/components/cours';
 	import { getChapterColorClasses } from '$lib/types/chapters';
-	import { ArrowLeft, BookMarked, HelpCircle } from '@lucide/svelte';
+	import { ArrowLeft, BookMarked } from '@lucide/svelte';
 	import WorksheetCard from '$lib/components/student/worksheets/WorksheetCard.svelte';
 	import type { PageData, ActionData } from './$types';
 
@@ -82,7 +77,7 @@
 		</Card.Header>
 	</Card.Root>
 
-	{#if data.quizUnreadable || data.worksheetsUnavailable}
+	{#if data.worksheetsUnavailable}
 		<!--
 			Une panne de lecture ne doit pas se lire « chapitre vide » : ce message
 			accuserait le professeur de n'avoir rien mis alors que la base n'a pas
@@ -134,30 +129,6 @@
 							<WorksheetCard worksheet={item.worksheet} />
 						{:else if item.kind === 'checklist'}
 							<ChecklistSection items={item.items} progress={data.chapter.progress} />
-						{:else if item.kind === 'quiz'}
-							{@const idsDeLaSection = new Set(item.questions.map((q) => q.id))}
-							{#if item.questions.some((q) => data.quizInstances[q.id])}
-								<ChapterQuiz
-									chapterId={data.chapter.id}
-									questions={item.questions}
-									instances={data.quizInstances}
-									unavailable={data.quizUnavailable.filter((u) =>
-										idsDeLaSection.has(u.quizQuestionId)
-									)}
-								/>
-							{:else}
-								<!--
-									Aucune question jouable ici. Le dire plutôt que de laisser un
-									blanc : « rien ne s'affiche » enverrait l'élève et le
-									professeur chercher au mauvais endroit.
-								-->
-								<Card.Root>
-									<Card.Content class="py-8 text-center text-sm text-muted-foreground">
-										<HelpCircle class="mx-auto mb-3 h-8 w-8 text-muted-foreground/50" />
-										Le quiz de cette partie n'est pas disponible pour le moment.
-									</Card.Content>
-								</Card.Root>
-							{/if}
 						{/if}
 					{/each}
 				</section>

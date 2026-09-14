@@ -56,7 +56,6 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			`
 			*,
 			documents:chapter_documents(*),
-			quizQuestions:chapter_quiz_questions(*),
 			checklistItems:chapter_checklist_items(*),
 			exercises:chapter_exercises(*)
 		`

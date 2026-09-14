@@ -457,7 +457,6 @@ export async function listChapterTemplates(
 				creatorName: profile?.full_name ?? null,
 				isOwner: template.createdBy === userId,
 				documentCount: counts.documentCount,
-				quizQuestionCount: counts.quizQuestionCount,
 				checklistItemCount: counts.checklistItemCount,
 				exerciseCount: counts.exerciseCount,
 				worksheetCount: counts.worksheetCount
@@ -505,7 +504,7 @@ export async function publishTemplate(
 			return {
 				data: null,
 				error: new Error(
-					'Cannot publish empty template. Add at least one document, quiz question, checklist item, exercise, or worksheet.'
+					'Modèle vide : ajoutez au moins un document, un objectif, un exercice ou une fiche.'
 				)
 			};
 		}
@@ -764,14 +763,6 @@ export function computeDiff(
 			a.displayOrder === b.displayOrder
 	);
 
-	// Quiz questions: keyed by questionTemplateId
-	const quizDiffs = diffArray(
-		oldSnapshot.quizQuestions,
-		newSnapshot.quizQuestions,
-		(q) => q.questionTemplateId,
-		(a, b) => a.pointsOverride === b.pointsOverride && a.displayOrder === b.displayOrder
-	);
-
 	// Objectifs : reconnus par leur TEXTE seul.
 	//
 	// La clé incluait le rang, si bien qu'un simple réordonnancement produisait
@@ -810,9 +801,6 @@ export function computeDiff(
 		documentsAdded: documentDiffs.filter((d) => d.type === 'added').length,
 		documentsRemoved: documentDiffs.filter((d) => d.type === 'removed').length,
 		documentsModified: documentDiffs.filter((d) => d.type === 'modified').length,
-		quizQuestionsAdded: quizDiffs.filter((d) => d.type === 'added').length,
-		quizQuestionsRemoved: quizDiffs.filter((d) => d.type === 'removed').length,
-		quizQuestionsModified: quizDiffs.filter((d) => d.type === 'modified').length,
 		checklistItemsAdded: checklistDiffs.filter((d) => d.type === 'added').length,
 		checklistItemsRemoved: checklistDiffs.filter((d) => d.type === 'removed').length,
 		checklistItemsModified: checklistDiffs.filter((d) => d.type === 'modified').length,
@@ -826,7 +814,6 @@ export function computeDiff(
 
 	return {
 		documents: documentDiffs,
-		quizQuestions: quizDiffs,
 		checklistItems: checklistDiffs,
 		exercises: exerciseDiffs,
 		worksheets: worksheetDiffs,
@@ -1218,49 +1205,38 @@ export async function extractContentSnapshotFromChapter(
 		// ⚠️ Ce snapshot est ÉCRIT en base comme version du modèle. Une section
 		// illisible produisait un modèle amputé — silencieusement, et hérité par
 		// toutes les instanciations futures.
-		const [documentsRes, quizQuestionsRes, checklistItemsRes, exercisesRes, worksheetsRes] =
-			await Promise.all([
-				supabase
-					.from('chapter_documents')
-					.select('*')
-					.eq('chapter_id', chapterId)
-					.order('display_order', { ascending: true }),
-				supabase
-					.from('chapter_quiz_questions')
-					.select('*')
-					.eq('chapter_id', chapterId)
-					.order('display_order', { ascending: true }),
-				supabase
-					.from('chapter_checklist_items')
-					.select('*')
-					.eq('chapter_id', chapterId)
-					.order('display_order', { ascending: true }),
-				supabase
-					.from('chapter_exercises')
-					.select('*')
-					.eq('chapter_id', chapterId)
-					.order('display_order', { ascending: true }),
-				supabase
-					.from('chapter_worksheets')
-					.select('*')
-					.eq('chapter_id', chapterId)
-					.order('display_order', { ascending: true })
-			]);
+		const [documentsRes, checklistItemsRes, exercisesRes, worksheetsRes] = await Promise.all([
+			supabase
+				.from('chapter_documents')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order', { ascending: true }),
+			supabase
+				.from('chapter_checklist_items')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order', { ascending: true }),
+			supabase
+				.from('chapter_exercises')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order', { ascending: true }),
+			supabase
+				.from('chapter_worksheets')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order', { ascending: true })
+		]);
 
-		const sectionEnEchec = [
-			documentsRes,
-			quizQuestionsRes,
-			checklistItemsRes,
-			exercisesRes,
-			worksheetsRes
-		].find((r) => r.error);
+		const sectionEnEchec = [documentsRes, checklistItemsRes, exercisesRes, worksheetsRes].find(
+			(r) => r.error
+		);
 		if (sectionEnEchec?.error) {
 			console.error('[extractContentSnapshot] Section illisible :', sectionEnEchec.error);
 			return { data: null, error: new Error(sectionEnEchec.error.message) };
 		}
 
 		const documents = documentsRes.data;
-		const quizQuestions = quizQuestionsRes.data;
 		const checklistItems = checklistItemsRes.data;
 		const exercises = exercisesRes.data;
 		const worksheets = worksheetsRes.data;
@@ -1277,11 +1253,6 @@ export async function extractContentSnapshotFromChapter(
 				sourceType: doc.source_type === 'google_drive' ? 'google_drive' : 'external_url',
 				mimeType: doc.mime_type,
 				displayOrder: doc.display_order
-			})),
-			quizQuestions: (quizQuestions || []).map((q) => ({
-				questionTemplateId: q.question_template_id,
-				pointsOverride: q.points_override,
-				displayOrder: q.display_order
 			})),
 			checklistItems: (checklistItems || []).map((item) => ({
 				content: item.content,
@@ -1353,14 +1324,10 @@ export async function mergeContentSnapshotIntoChapter(
 ): Promise<{ error: Error | null }> {
 	// Ce que le chapitre contient DÉJÀ. Une lecture en échec ne doit surtout pas
 	// passer pour « chapitre vide » : la fusion réinsérerait tout, en double.
-	const [documentsRes, quizRes, checklistRes, exercisesRes, worksheetsRes] = await Promise.all([
+	const [documentsRes, checklistRes, exercisesRes, worksheetsRes] = await Promise.all([
 		supabase
 			.from('chapter_documents')
 			.select('id, google_drive_url, title, description, mime_type, display_order')
-			.eq('chapter_id', chapterId),
-		supabase
-			.from('chapter_quiz_questions')
-			.select('id, question_template_id, points_override, display_order')
 			.eq('chapter_id', chapterId),
 		supabase
 			.from('chapter_checklist_items')
@@ -1376,7 +1343,7 @@ export async function mergeContentSnapshotIntoChapter(
 			.eq('chapter_id', chapterId)
 	]);
 
-	const lectureEnEchec = [documentsRes, quizRes, checklistRes, exercisesRes, worksheetsRes].find(
+	const lectureEnEchec = [documentsRes, checklistRes, exercisesRes, worksheetsRes].find(
 		(r) => r.error
 	);
 	if (lectureEnEchec?.error) {
@@ -1426,36 +1393,6 @@ export async function mergeContentSnapshotIntoChapter(
 		});
 		if (error) {
 			console.error('[mergeContentSnapshotIntoChapter] Document non ajouté :', error);
-			return { error: new Error(error.message) };
-		}
-	}
-
-	// --- Questions de quiz : reconnues par le modèle de question --------------
-	const quizParModele = new Map((quizRes.data ?? []).map((q) => [q.question_template_id, q]));
-	rang = rangSuivant(quizRes.data ?? []);
-	for (const q of snapshot.quizQuestions) {
-		const existant = quizParModele.get(q.questionTemplateId);
-		if (existant) {
-			if (existant.points_override !== q.pointsOverride) {
-				const { error } = await supabase
-					.from('chapter_quiz_questions')
-					.update({ points_override: q.pointsOverride })
-					.eq('id', existant.id);
-				if (error) {
-					console.error('[mergeContentSnapshotIntoChapter] Barème non mis à jour :', error);
-					return { error: new Error(error.message) };
-				}
-			}
-			continue;
-		}
-		const { error } = await supabase.from('chapter_quiz_questions').insert({
-			chapter_id: chapterId,
-			question_template_id: q.questionTemplateId,
-			points_override: q.pointsOverride,
-			display_order: rang++
-		});
-		if (error) {
-			console.error('[mergeContentSnapshotIntoChapter] Question non ajoutée :', error);
 			return { error: new Error(error.message) };
 		}
 	}
@@ -1580,25 +1517,6 @@ export async function applyContentSnapshotToChapter(
 			if (docError) {
 				console.error('[applyContentSnapshotToChapter] Error inserting documents:', docError);
 				return { error: new Error(docError.message) };
-			}
-		}
-
-		// Insert quiz questions
-		if (snapshot.quizQuestions.length > 0) {
-			const quizInserts = snapshot.quizQuestions.map((q) => ({
-				chapter_id: chapterId,
-				question_template_id: q.questionTemplateId,
-				points_override: q.pointsOverride,
-				display_order: q.displayOrder
-			}));
-
-			const { error: quizError } = await supabase
-				.from('chapter_quiz_questions')
-				.insert(quizInserts);
-
-			if (quizError) {
-				console.error('[applyContentSnapshotToChapter] Error inserting quiz questions:', quizError);
-				return { error: new Error(quizError.message) };
 			}
 		}
 

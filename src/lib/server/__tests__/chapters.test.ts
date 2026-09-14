@@ -9,9 +9,8 @@
  *
  * Test Categories:
  * 1. Zod validation schemas (valid/invalid inputs, edge cases, boundary values)
- * 2. Server CRUD functions (chapters, documents, quiz, checklist, exercises)
+ * 2. Server CRUD functions (chapters, documents, checklist, exercises)
  * 3. Progress tracking and statistics
- * 4. SRS integration for quiz answers
  * 5. Type transformations (snake_case ↔ camelCase)
  *
  * @module server/chapters.test
@@ -82,9 +81,7 @@ const mockStudentId = '22222222-2222-4222-8222-222222222222';
 const mockClassId = '33333333-3333-4333-8333-333333333333';
 const mockChapterId = '44444444-4444-4444-8444-444444444444';
 const mockDocumentId = '55555555-5555-4555-8555-555555555555';
-const mockQuizQuestionId = '66666666-6666-4666-8666-666666666666';
 const mockChecklistItemId = '77777777-7777-4777-8777-777777777777';
-const mockQuestionTemplateId = '88888888-8888-4888-8888-888888888888';
 const mockExerciseId = '99999999-9999-4999-8999-999999999999';
 
 const mockDbChapter = {
@@ -119,15 +116,6 @@ const mockDbDocument = {
 	updated_at: '2024-01-01T00:00:00Z'
 };
 
-const mockDbQuizQuestion = {
-	id: mockQuizQuestionId,
-	chapter_id: mockChapterId,
-	question_template_id: mockQuestionTemplateId,
-	points_override: 5,
-	display_order: 0,
-	created_at: '2024-01-01T00:00:00Z'
-};
-
 const mockDbChecklistItem = {
 	id: mockChecklistItemId,
 	chapter_id: mockChapterId,
@@ -146,18 +134,6 @@ const mockDbChecklistProgress = {
 	completed_at: '2024-01-15T10:00:00Z',
 	created_at: '2024-01-15T10:00:00Z',
 	updated_at: '2024-01-15T10:00:00Z'
-};
-
-const _mockDbQuizResult = {
-	id: 'result-123',
-	student_id: mockStudentId,
-	chapter_quiz_question_id: mockQuizQuestionId,
-	attempt_number: 1,
-	is_correct: true,
-	submitted_answer: '42',
-	points_earned: 5,
-	submitted_at: '2024-01-15T11:00:00Z',
-	time_spent_seconds: 120
 };
 
 const mockDbClass = {
@@ -752,136 +728,6 @@ describe('Checklist Validation Schemas', () => {
 // VALIDATION SCHEMA TESTS - QUIZ
 // ============================================================================
 
-describe('Quiz Validation Schemas', () => {
-	describe('addQuizQuestionSchema', () => {
-		it('should validate quiz question with minimal data', () => {
-			const data = {
-				chapterId: mockChapterId,
-				questionTemplateId: mockQuestionTemplateId
-			};
-
-			const result = validation.addQuizQuestionSchema.safeParse(data);
-			expect(result.success).toBe(true);
-		});
-
-		it('should validate quiz question with points override', () => {
-			const data = {
-				chapterId: mockChapterId,
-				questionTemplateId: mockQuestionTemplateId,
-				pointsOverride: 10
-			};
-
-			const result = validation.addQuizQuestionSchema.safeParse(data);
-			expect(result.success).toBe(true);
-		});
-
-		it('should reject negative points', () => {
-			const data = {
-				chapterId: mockChapterId,
-				questionTemplateId: mockQuestionTemplateId,
-				pointsOverride: -5
-			};
-
-			const result = validation.addQuizQuestionSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject points above 100', () => {
-			const data = {
-				chapterId: mockChapterId,
-				questionTemplateId: mockQuestionTemplateId,
-				pointsOverride: 101
-			};
-
-			const result = validation.addQuizQuestionSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should accept points at max (100)', () => {
-			const data = {
-				chapterId: mockChapterId,
-				questionTemplateId: mockQuestionTemplateId,
-				pointsOverride: 100
-			};
-
-			const result = validation.addQuizQuestionSchema.safeParse(data);
-			expect(result.success).toBe(true);
-		});
-	});
-
-	describe('submitQuizAnswerSchema', () => {
-		it('should validate quiz answer submission', () => {
-			const data = {
-				chapterQuizQuestionId: mockQuizQuestionId,
-				submittedAnswer: '42',
-				isCorrect: true,
-				timeSpentSeconds: 120
-			};
-
-			const result = validation.submitQuizAnswerSchema.safeParse(data);
-			expect(result.success).toBe(true);
-		});
-
-		it('should reject empty answer', () => {
-			const data = {
-				chapterQuizQuestionId: mockQuizQuestionId,
-				submittedAnswer: '',
-				isCorrect: false
-			};
-
-			const result = validation.submitQuizAnswerSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject answer longer than 5000 characters', () => {
-			const data = {
-				chapterQuizQuestionId: mockQuizQuestionId,
-				submittedAnswer: 'A'.repeat(5001),
-				isCorrect: false
-			};
-
-			const result = validation.submitQuizAnswerSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject negative time spent', () => {
-			const data = {
-				chapterQuizQuestionId: mockQuizQuestionId,
-				submittedAnswer: '42',
-				isCorrect: true,
-				timeSpentSeconds: -10
-			};
-
-			const result = validation.submitQuizAnswerSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject time spent above 24 hours', () => {
-			const data = {
-				chapterQuizQuestionId: mockQuizQuestionId,
-				submittedAnswer: '42',
-				isCorrect: true,
-				timeSpentSeconds: 86401 // 24h + 1s
-			};
-
-			const result = validation.submitQuizAnswerSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should accept time spent at max (24h)', () => {
-			const data = {
-				chapterQuizQuestionId: mockQuizQuestionId,
-				submittedAnswer: '42',
-				isCorrect: true,
-				timeSpentSeconds: 86400 // Exactly 24h
-			};
-
-			const result = validation.submitQuizAnswerSchema.safeParse(data);
-			expect(result.success).toBe(true);
-		});
-	});
-});
-
 // ============================================================================
 // SERVER FUNCTION TESTS - CHAPTER CRUD
 // ============================================================================
@@ -1184,94 +1030,6 @@ describe('Document CRUD Functions', () => {
 			const result = await chapters.deleteChapterDocument(mockDocumentId, supabase);
 
 			expect(result.error).toBeNull();
-		});
-	});
-});
-
-// ============================================================================
-// SERVER FUNCTION TESTS - QUIZ QUESTIONS
-// ============================================================================
-
-describe('Quiz Question Functions', () => {
-	let supabase: MockSupabaseClient;
-
-	beforeEach(() => {
-		vi.clearAllMocks();
-		supabase = createMockSupabase();
-	});
-
-	describe('addQuizQuestion', () => {
-		it('should add quiz question to chapter', async () => {
-			// Le modèle doit être publié : un brouillon serait invisible à l'élève.
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: { id: mockQuestionTemplateId, status: 'published' },
-				error: null
-			});
-
-			supabase._mockChain.maybeSingle.mockResolvedValueOnce({
-				data: null,
-				error: null
-			});
-
-			// Mock question creation
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: mockDbQuizQuestion,
-				error: null
-			});
-
-			const result = await chapters.addQuizQuestion(
-				mockChapterId,
-				mockQuestionTemplateId,
-				supabase
-			);
-
-			expect(result.error).toBeNull();
-			expect(result.data?.questionTemplateId).toBe(mockQuestionTemplateId);
-		});
-
-		it('should add quiz question with custom display order', async () => {
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: { id: mockQuestionTemplateId, status: 'published' },
-				error: null
-			});
-
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: { ...mockDbQuizQuestion, display_order: 5 },
-				error: null
-			});
-
-			const result = await chapters.addQuizQuestion(
-				mockChapterId,
-				mockQuestionTemplateId,
-				supabase,
-				5
-			);
-
-			expect(result.error).toBeNull();
-			expect(result.data?.displayOrder).toBe(5);
-		});
-	});
-
-	describe('removeQuizQuestion', () => {
-		it('should remove quiz question', async () => {
-			const deletePromise = Promise.resolve({ data: {}, error: null });
-			supabase._mockChain.eq.mockReturnValueOnce(deletePromise as never);
-
-			const result = await chapters.removeQuizQuestion(mockQuizQuestionId, supabase);
-
-			expect(result.error).toBeNull();
-		});
-	});
-
-	describe('submitQuizAnswer', () => {
-		// Skip these complex async tests for now - they require very specific mock chain setups
-		// The validation tests are more valuable for ensuring correctness
-		it.skip('should submit correct answer and update SRS', async () => {
-			// Complex test skipped - requires intricate mock chain setup
-		});
-
-		it.skip('should submit incorrect answer', async () => {
-			// Complex test skipped - requires intricate mock chain setup
 		});
 	});
 });
