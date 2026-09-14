@@ -18,7 +18,7 @@ import type { SectionContentKind } from './validation/chapter-sections';
 type ChapterSection = Database['public']['Tables']['chapter_sections']['Row'];
 
 /**
- * Les cinq tables qu'une section peut ranger.
+ * Les quatre tables qu'une section peut ranger.
  *
  * ⚠️ Miroir du tableau de la migration `20260915260000` : ajouter un type de
  * contenu demande de toucher les deux, sinon le nouveau type ne sera jamais
@@ -191,7 +191,7 @@ export async function reorderSections(
  * Range des ressources dans une section (ou les en sort si `sectionId` vaut
  * `null`), et fixe leur ordre à l'intérieur.
  *
- * ⚠️ `section_order` et non `display_order` : les cinq types vivent dans cinq
+ * ⚠️ `section_order` et non `display_order` : les quatre types vivent dans quatre
  * tables, et leur `display_order` est un ordre PAR TYPE. Seul `section_order`
  * traverse les tables.
  *
@@ -221,4 +221,50 @@ export async function assignToSection(
 	}
 
 	return { error: null };
+}
+
+/**
+ * Range UNE ressource qui vient d'être créée, à la fin d'une section.
+ *
+ * ⚠️ Le rang se calcule sur les QUATRE tables, pas seulement sur celle de la
+ * ressource : une section les mélange, et compter sur une seule donnerait le
+ * même `section_order` à deux ressources de types différents. Elles
+ * s'afficheraient alors dans un ordre arbitraire, que le professeur ne
+ * pourrait pas corriger autrement qu'en les déplaçant toutes.
+ */
+export async function placeInSection(
+	chapterId: string,
+	sectionId: string,
+	kind: SectionContentKind,
+	itemId: string,
+	supabase: SupabaseClient<Database>
+): Promise<{ error: Error | null }> {
+	let dernier = -1;
+
+	for (const table of Object.values(CONTENT_TABLES)) {
+		// `maybeSingle` : une section encore vide pour ce type est le cas normal.
+		const { data, error } = await supabase
+			.from(table as never)
+			.select('section_order')
+			.eq('chapter_id', chapterId)
+			.eq('section_id', sectionId)
+			.order('section_order', { ascending: false })
+			.limit(1)
+			.maybeSingle();
+
+		if (error) {
+			console.error(`[placeInSection] Rang suivant illisible (${table}) :`, error);
+			return { error: new Error(error.message) };
+		}
+
+		const rang = (data as { section_order: number | null } | null)?.section_order;
+		if (typeof rang === 'number' && rang > dernier) dernier = rang;
+	}
+
+	return assignToSection(
+		chapterId,
+		sectionId,
+		[{ kind, id: itemId, sectionOrder: dernier + 1 }],
+		supabase
+	);
 }

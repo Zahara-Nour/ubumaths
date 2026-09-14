@@ -3,12 +3,12 @@
 	=====================
 
 	Range les ressources d'un chapitre par MOMENT du cours (« Préparation »,
-	« Le cours »…) plutôt que par type. Une section accueille les cinq types
+	« Le cours »…) plutôt que par type. Une section accueille les quatre types
 	côte à côte, et tout se déplace au glisser-déposer.
 
 	⚠️ L'ordre à l'intérieur d'une section est porté par `sectionOrder`, et NON
-	par `displayOrder` : ce dernier reste l'ordre par type, et les cinq types
-	vivent dans cinq tables. Seul `sectionOrder` les range ensemble.
+	par `displayOrder` : ce dernier reste l'ordre par type, et les quatre types
+	vivent dans quatre tables. Seul `sectionOrder` les range ensemble.
 
 	Modèle d'état, repris du kanban (`organisation/kanban/[boardId]`) :
 	- l'état LOCAL est la source de vérité de l'affichage — le glisser-déposer
@@ -28,7 +28,9 @@
 	@module components/cours/teacher/ChapterSectionsEditor
 -->
 <script lang="ts">
+	import { lore } from '$lib/config/lore';
 	import type {
+		ChapterContentType,
 		ChapterSection,
 		ChapterDocument,
 		ChapterExercise,
@@ -48,8 +50,23 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { GripVertical, Pencil, Trash2, Plus, Check, X } from '@lucide/svelte';
-	import { resolveDrop, type ZonesSnapshot } from './section-dnd';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import PublicationToggle from './PublicationToggle.svelte';
+	import { enhance } from '$app/forms';
+	import {
+		GripVertical,
+		Pencil,
+		Trash2,
+		Plus,
+		Check,
+		X,
+		ExternalLink,
+		FileText,
+		ListChecks,
+		BookOpen,
+		ClipboardList
+	} from '@lucide/svelte';
+	import { empreinteAffichage, resolveDrop, type ZonesSnapshot } from './section-dnd';
 
 	type WorksheetRow = ChapterWorksheet & { title: string | null; status: string | null };
 
@@ -62,6 +79,31 @@
 		worksheets: WorksheetRow[];
 		/** Titres des exercices, par identifiant d'exercice. */
 		exerciseDetails?: Record<string, { title: string | null }>;
+		/**
+		 * Fiches réellement distribuées, par identifiant de FICHE (et non de
+		 * rattachement) : publier une fiche que personne n'a reçue ne la montre à
+		 * personne, et le bouton doit le dire.
+		 */
+		distributedWorksheetIds?: string[];
+		/**
+		 * Le professeur veut ajouter une ressource dans cette section.
+		 *
+		 * La boîte de dialogue vit dans la PAGE, pas ici : c'est elle qui connaît
+		 * les exercices et les fiches disponibles, et qui porte déjà les actions
+		 * de formulaire. Ce composant ne fait que désigner la cible.
+		 */
+		onAdd: (kind: SectionContentKind, sectionId: string | null) => void;
+		/**
+		 * Corriger le texte d'un objectif.
+		 *
+		 * Sans ça, le plan ne saurait que supprimer : une coquille obligerait à
+		 * refaire l'objectif, et sa publication avec.
+		 */
+		onEditChecklistItem: (item: {
+			id: string;
+			content: string;
+			description: string | null;
+		}) => void;
 	}
 
 	let {
@@ -71,14 +113,17 @@
 		exercises,
 		checklistItems,
 		worksheets,
-		exerciseDetails = {}
+		exerciseDetails = {},
+		distributedWorksheetIds = [],
+		onAdd,
+		onEditChecklistItem
 	}: Props = $props();
 
 	/**
 	 * Vue unifiée d'une ressource.
 	 *
 	 * ⚠️ `id` est `kind:contentId` et non l'identifiant de la ligne :
-	 * svelte-dnd-action exige un `id` unique DANS TOUTE la zone, or les cinq
+	 * svelte-dnd-action exige un `id` unique DANS TOUTE la zone, or les quatre
 	 * tables ont chacune leurs propres identifiants. `contentId` garde la vraie
 	 * clé, celle que l'API attend.
 	 */
@@ -89,6 +134,12 @@
 		label: string;
 		typeLabel: string;
 		publishedAt: string | null;
+		/** Document seulement : où l'ouvrir. `null` pour les autres types. */
+		openUrl: string | null;
+		/** Fiche seulement : a-t-elle été distribuée ? */
+		distributed?: boolean;
+		/** Objectif seulement : sa précision, pour la reprise du texte. */
+		description?: string | null;
 	};
 
 	type SectionLocale = {
@@ -98,6 +149,41 @@
 	};
 
 	const FLIP_MS = 200;
+
+	/**
+	 * Où va la suppression, pour chaque type.
+	 *
+	 * ⚠️ Le nom du champ diffère d'une action à l'autre — les quatre tables ont
+	 * chacune la leur. Une table de correspondance fermée évite de le deviner
+	 * dans le balisage, où l'erreur serait muette : le formulaire partirait, le
+	 * serveur ne trouverait pas l'identifiant, et rien ne serait supprimé.
+	 */
+	const SUPPRESSION: Record<SectionContentKind, { action: string; champ: string }> = {
+		checklistItem: { action: '?/deleteChecklistItem', champ: 'itemId' },
+		exercise: { action: '?/unlinkExercise', champ: 'chapterExerciseId' },
+		worksheet: { action: '?/unlinkWorksheet', champ: 'chapterWorksheetId' },
+		document: { action: '?/deleteDocument', champ: 'documentId' }
+	};
+
+	/** Ce que `PublicationToggle` attend : « checklistItem » s'y dit « checklist ». */
+	const TYPE_PUBLICATION: Record<SectionContentKind, ChapterContentType> = {
+		checklistItem: 'checklist',
+		exercise: 'exercise',
+		worksheet: 'worksheet',
+		document: 'document'
+	};
+
+	/** Le menu « Ajouter », dans l'ordre où le professeur les cherche. */
+	const TYPES_AJOUTABLES = [
+		{ kind: 'checklistItem' as const, label: 'Objectif', icon: ListChecks },
+		{ kind: 'exercise' as const, label: capitaliser(lore.learning.exercise), icon: BookOpen },
+		{ kind: 'worksheet' as const, label: 'Fiche', icon: ClipboardList },
+		{ kind: 'document' as const, label: 'Document', icon: FileText }
+	];
+
+	function capitaliser(mot: string): string {
+		return mot.charAt(0).toUpperCase() + mot.slice(1);
+	}
 
 	// `Set` natif et non `SvelteSet` : il est local à cette fonction pure, jamais
 	// lu de façon réactive. Le rendre réactif coûterait sans rien apporter —
@@ -134,7 +220,15 @@
 						contentId: d.id,
 						label: d.title,
 						typeLabel: 'Document',
-						publishedAt: d.publishedAt
+						publishedAt: d.publishedAt,
+						// Le même calcul que `DocumentCard` : un document déposé passe par
+						// la route signée, un Drive garde son URL d'origine.
+						openUrl:
+							d.sourceType === 'google_drive'
+								? (d.googleDriveUrl ?? null)
+								: d.storagePath
+									? `/api/documents/${d.id}`
+									: null
 					}
 				})),
 				...exercises.map((e) => ({
@@ -148,7 +242,8 @@
 						// qu'une ligne vide que le professeur ne saura pas identifier.
 						label: exerciseDetails[e.exerciseId]?.title ?? 'Exercice sans titre',
 						typeLabel: 'Exercice',
-						publishedAt: e.publishedAt
+						publishedAt: e.publishedAt,
+						openUrl: null
 					}
 				})),
 				...checklistItems.map((c) => ({
@@ -160,7 +255,9 @@
 						contentId: c.id,
 						label: c.content,
 						typeLabel: 'Objectif',
-						publishedAt: c.publishedAt
+						publishedAt: c.publishedAt,
+						openUrl: null,
+						description: c.description
 					}
 				})),
 				...worksheets.map((w) => ({
@@ -172,7 +269,9 @@
 						contentId: w.id,
 						label: w.title ?? 'Fiche sans titre',
 						typeLabel: 'Fiche',
-						publishedAt: w.publishedAt
+						publishedAt: w.publishedAt,
+						openUrl: null,
+						distributed: distributedWorksheetIds.includes(w.worksheetId)
 					}
 				}))
 			]
@@ -208,6 +307,53 @@
 	// glisser rendrait le geste saccadé.
 	let sectionsLocales = $state<SectionLocale[]>(instantanerSections());
 	let nonClassees = $state<Ressource[]>(instantanerNonClassees());
+
+	/**
+	 * Empreinte de CE QUI EXISTE ET DE CE QUI S'AFFICHE — jamais du rangement.
+	 *
+	 * ⚠️ Deux exigences contraires se rencontrent ici. L'état local doit rester
+	 * la source de vérité PENDANT un glisser, sinon le geste saccade ; mais tout
+	 * ce que le professeur change depuis le plan revient par les props, après
+	 * `invalidateAll()`.
+	 *
+	 * ⚠️⚠️ Les IDENTIFIANTS ne suffisent pas, et c'est contre-intuitif : publier
+	 * un contenu ou corriger le texte d'un objectif ne change aucun identifiant.
+	 * Une empreinte qui ne retiendrait qu'eux figerait l'affichage sur
+	 * l'instantané d'origine — le badge resterait « Préparé », et comme
+	 * `PublicationToggle` calcule son champ caché depuis `publishedAt`, chaque
+	 * clic renverrait `published=true` : DÉPUBLIER deviendrait impossible sans
+	 * recharger. Sur une fiche, republier redistribue à toute la classe.
+	 *
+	 * Ces champs-là ne bougent jamais pendant un glisser — seuls `section_id` et
+	 * `section_order` bougent, et ils sont volontairement absents. L'invariant
+	 * du geste tient donc toujours.
+	 */
+	let empreinte = $derived(
+		empreinteAffichage({
+			sections,
+			documents,
+			exercises,
+			checklistItems,
+			worksheets,
+			distributedWorksheetIds
+		})
+	);
+
+	// Volontairement hors `$state` : cette valeur ne pilote aucun affichage, elle
+	// ne sert qu'à ne pas rejouer l'effet pour la même empreinte.
+	//
+	// Elle démarre vide plutôt qu'à `empreinte` : lire un `$derived` ici n'en
+	// capturerait que la valeur initiale, ce que Svelte signale à juste titre.
+	// L'effet la remplit à son premier passage, en reconstruisant un instantané
+	// identique à celui d'origine — même props, même résultat.
+	let derniereEmpreinte = '';
+
+	$effect(() => {
+		if (empreinte === derniereEmpreinte) return;
+		derniereEmpreinte = empreinte;
+		sectionsLocales = instantanerSections();
+		nonClassees = instantanerNonClassees();
+	});
 
 	let busy = $state(false);
 	let editingSectionId = $state<string | null>(null);
@@ -469,17 +615,118 @@
 				<GripVertical class="h-4 w-4 shrink-0 cursor-grab text-muted-foreground" />
 				<Badge variant="secondary" class="shrink-0">{ressource.typeLabel}</Badge>
 				<span class="min-w-0 flex-1 truncate text-sm">{ressource.label}</span>
-				{#if !ressource.publishedAt}
-					<Badge variant="outline" class="shrink-0">Préparé</Badge>
+
+				<!--
+					Pendant un glisser, la bibliothèque duplique la ligne : afficher ses
+					boutons sur la copie donnerait deux fois la même suppression, et le
+					second envoi porterait sur une ligne déjà supprimée.
+				-->
+				{#if !isDndShadow(ressource) && ressource.id !== SHADOW_PLACEHOLDER_ITEM_ID}
+					{#if ressource.kind === 'checklistItem'}
+						<Button
+							variant="ghost"
+							size="icon-sm"
+							class="shrink-0"
+							aria-label="Modifier {ressource.label}"
+							onclick={() =>
+								onEditChecklistItem({
+									id: ressource.contentId,
+									content: ressource.label,
+									description: ressource.description ?? null
+								})}
+						>
+							<Pencil class="h-4 w-4" />
+						</Button>
+					{/if}
+
+					{#if ressource.openUrl}
+						<Button
+							variant="ghost"
+							size="icon-sm"
+							href={ressource.openUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="shrink-0"
+							aria-label="Ouvrir {ressource.label}"
+						>
+							<ExternalLink class="h-4 w-4" />
+						</Button>
+					{/if}
+
+					<PublicationToggle
+						contentType={TYPE_PUBLICATION[ressource.kind]}
+						itemId={ressource.contentId}
+						publishedAt={ressource.publishedAt}
+						distributed={ressource.distributed}
+					/>
+
+					<form
+						method="POST"
+						action={SUPPRESSION[ressource.kind].action}
+						use:enhance
+						class="shrink-0"
+					>
+						<input
+							type="hidden"
+							name={SUPPRESSION[ressource.kind].champ}
+							value={ressource.contentId}
+						/>
+						<Button
+							type="submit"
+							variant="ghost"
+							size="icon-sm"
+							disabled={busy}
+							class="text-destructive"
+							aria-label="Retirer {ressource.label} du chapitre"
+						>
+							<Trash2 class="h-4 w-4" />
+						</Button>
+					</form>
 				{/if}
 			</div>
 		{/each}
+	</div>
 
-		{#if liste.length === 0}
-			<p class="py-3 text-center text-sm text-muted-foreground italic">
-				Glissez une ressource ici.
-			</p>
-		{/if}
+	<!--
+		⚠️ HORS de la zone : `svelte-dnd-action` apparie ses enfants DIRECTS avec
+		`items` par index. Dans une section vide — et un chapitre neuf en a six —
+		la zone aurait 0 élément et 1 enfant : ce paragraphe deviendrait
+		traînable, annoncé comme élément de liste aux lecteurs d'écran, et le
+		tirer produirait une ligne fantôme puis un rangement refusé. La hauteur
+		minimale de la zone suffit à garder une cible de dépose.
+	-->
+	{#if liste.length === 0}
+		<p class="px-3 pb-1 text-center text-sm text-muted-foreground italic">
+			Glissez une ressource ici, ou ajoutez-en une.
+		</p>
+	{/if}
+{/snippet}
+
+<!--
+	⚠️ HORS de la zone de dépose : `dndzone` considère chaque enfant direct
+	comme un élément déplaçable. Le bouton y deviendrait traînable, et la
+	bibliothèque compterait un élément de plus que la liste.
+-->
+{#snippet menuAjout(sectionId: string | null)}
+	<div class="px-3 pb-1">
+		<DropdownMenu.Root>
+			<DropdownMenu.Trigger>
+				{#snippet child({ props })}
+					<Button {...props} variant="ghost" size="sm" class="text-muted-foreground">
+						<Plus class="mr-2 h-4 w-4" />
+						Ajouter
+					</Button>
+				{/snippet}
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Content align="start">
+				{#each TYPES_AJOUTABLES as type (type.kind)}
+					<DropdownMenu.Item onclick={() => onAdd(type.kind, sectionId)}>
+						<type.icon class="mr-2 h-4 w-4" />
+						{type.label}
+					</DropdownMenu.Item>
+				{/each}
+			</DropdownMenu.Content>
+		</DropdownMenu.Root>
 	</div>
 {/snippet}
 
@@ -516,7 +763,7 @@
 								variant="ghost"
 								size="icon"
 								disabled={busy}
-								aria-label="Valider le titre"
+								aria-label="Valider le titre de {section.title}"
 								onclick={() => renommerSection(section.id)}
 							>
 								<Check class="h-4 w-4" />
@@ -524,7 +771,7 @@
 							<Button
 								variant="ghost"
 								size="icon"
-								aria-label="Annuler"
+								aria-label="Annuler le renommage de {section.title}"
 								onclick={() => (editingSectionId = null)}
 							>
 								<X class="h-4 w-4" />
@@ -553,6 +800,7 @@
 
 					<Card.Content class="p-0 pb-3">
 						{@render zoneRessources(section.id, section.ressources)}
+						{@render menuAjout(section.id)}
 					</Card.Content>
 				</Card.Root>
 			</div>
@@ -573,6 +821,7 @@
 		</Card.Header>
 		<Card.Content class="p-0 pb-3">
 			{@render zoneRessources(null, nonClassees)}
+			{@render menuAjout(null)}
 		</Card.Content>
 	</Card.Root>
 

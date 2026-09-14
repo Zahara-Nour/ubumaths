@@ -65,7 +65,12 @@ export const reorderSectionsSchema = z.object({
 
 export type ReorderSectionsInput = z.infer<typeof reorderSectionsSchema>;
 
-/** Les cinq types de contenu qu'une section peut ranger. */
+/**
+ * Les QUATRE types de contenu qu'une section peut ranger.
+ *
+ * Ils étaient cinq : le quiz de chapitre a été retiré par la migration
+ * `20260915340000`, le moteur de questions l'ayant remplacé.
+ */
 export const sectionContentKindSchema = z.enum([
 	'document',
 	'exercise',
@@ -97,3 +102,16 @@ export const assignToSectionSchema = z.object({
 });
 
 export type AssignToSectionInput = z.infer<typeof assignToSectionSchema>;
+
+/**
+ * La section visée par une CRÉATION, telle qu'elle arrive d'un formulaire.
+ *
+ * Trois formes valent « aucune section » et rendent `null` : le champ absent,
+ * la chaîne vide (ce qu'un `<input hidden>` envoie quand le professeur ajoute
+ * depuis « Non classé »), et `null`. La ressource retombe alors en fin de
+ * chapitre, exactement comme avant l'existence des sections.
+ */
+export const targetSectionFieldSchema = z
+	.union([uuidSchema, z.literal('')])
+	.nullish()
+	.transform((valeur) => valeur || null);

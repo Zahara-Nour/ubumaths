@@ -14,6 +14,8 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { uuidSchema } from '$lib/server/validation/common';
 import { addChapterDocument } from '$lib/server/chapters';
+import { placeInSection } from '$lib/server/chapter-sections';
+import { targetSectionFieldSchema } from '$lib/server/validation/chapter-sections';
 import { z } from 'zod';
 
 /** Le bucket porte la même liste ; celle-ci refuse tôt, avec un message clair. */
@@ -34,7 +36,9 @@ const bodySchema = z.object({
 	storagePath: z.string().min(1, 'Fichier requis'),
 	fileName: z.string().trim().min(1, 'Fichier requis').max(255),
 	fileType: z.enum(ALLOWED_MIME_TYPES),
-	fileSize: z.number().int().positive().max(MAX_FILE_SIZE, 'Fichier trop volumineux (max 25 Mo)')
+	fileSize: z.number().int().positive().max(MAX_FILE_SIZE, 'Fichier trop volumineux (max 25 Mo)'),
+	/** Section visée. Absente, le document retombe en « Non classé ». */
+	sectionId: targetSectionFieldSchema
 });
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
@@ -83,7 +87,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(400, 'Fichier invalide');
 	}
 
-	const { error: dbError } = await addChapterDocument(
+	const { data: created, error: dbError } = await addChapterDocument(
 		chapterId,
 		{
 			chapterId,
@@ -98,7 +102,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		locals.supabase
 	);
 
-	if (dbError) {
+	if (dbError || !created) {
 		// Le fichier est déjà dans le stockage : le laisser sans sa ligne en
 		// ferait un orphelin invisible.
 		await locals.supabase.storage.from('chapter-documents').remove([data.storagePath]);
@@ -106,5 +110,23 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, "Erreur lors de l'enregistrement");
 	}
 
-	return json({ success: true }, { status: 201 });
+	// ⚠️ Un rangement raté ne défait PAS l'enregistrement : le document existe,
+	// le fichier aussi. Il retombe en « Non classé », d'où le professeur peut
+	// le déplacer — bien préférable à un 500 qui l'inviterait à tout refaire.
+	let placed = true;
+	if (data.sectionId) {
+		const { error: placeError } = await placeInSection(
+			chapterId,
+			data.sectionId,
+			'document',
+			created.id,
+			locals.supabase
+		);
+		if (placeError) {
+			console.error('[documents] Rangement impossible :', placeError);
+			placed = false;
+		}
+	}
+
+	return json({ success: true, placed }, { status: 201 });
 };

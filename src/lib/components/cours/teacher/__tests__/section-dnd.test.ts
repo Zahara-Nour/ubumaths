@@ -8,7 +8,12 @@
  * déplacement entre sections pris pour un simple réordonnancement.
  */
 import { describe, it, expect } from 'vitest';
-import { resolveDrop, type ZonesSnapshot } from '../section-dnd';
+import {
+	empreinteAffichage,
+	resolveDrop,
+	type EmpreinteSource,
+	type ZonesSnapshot
+} from '../section-dnd';
 
 const A = { id: 'document:a' };
 const B = { id: 'exercise:b' };
@@ -100,5 +105,85 @@ describe('resolveDrop', () => {
 			kind: 'reordered',
 			zone: 'cours'
 		});
+	});
+});
+
+/** Une date de publication déjà échue, comme en pose `setContentPublication`. */
+const QUAND = '2026-09-14T10:00:00.000Z';
+
+describe('empreinteAffichage — ce qui doit rafraîchir le plan', () => {
+	const BASE: EmpreinteSource = {
+		sections: [{ id: 's1', title: 'Le cours' }],
+		documents: [{ id: 'd1', title: 'Fiche de rappel', publishedAt: null }],
+		exercises: [{ id: 'e1', publishedAt: null }],
+		checklistItems: [
+			{ id: 'c1', content: 'Réviser les fractions', description: null, publishedAt: null }
+		],
+		worksheets: [{ id: 'w1', title: 'Exercices 1 à 12', publishedAt: null }],
+		distributedWorksheetIds: []
+	};
+
+	/**
+	 * ⚠️ LE cas qui compte. Publier ne change aucun identifiant. Une empreinte
+	 * bâtie sur les seuls `id` resterait identique, l'affichage garderait le
+	 * badge « Préparé », et comme le bouton de publication calcule son intention
+	 * depuis `publishedAt`, chaque clic renverrait « publier » : dépublier
+	 * deviendrait impossible sans recharger la page. Sur une fiche, republier
+	 * redistribue à toute une classe.
+	 */
+	it.each([
+		['un document', { documents: [{ id: 'd1', title: 'Fiche de rappel', publishedAt: QUAND }] }],
+		['un exercice', { exercises: [{ id: 'e1', publishedAt: QUAND }] }],
+		[
+			'un objectif',
+			{
+				checklistItems: [
+					{ id: 'c1', content: 'Réviser les fractions', description: null, publishedAt: QUAND }
+				]
+			}
+		],
+		['une fiche', { worksheets: [{ id: 'w1', title: 'Exercices 1 à 12', publishedAt: QUAND }] }]
+	])('publier %s change l’empreinte', (_libelle, delta) => {
+		expect(empreinteAffichage({ ...BASE, ...delta })).not.toBe(empreinteAffichage(BASE));
+	});
+
+	it('corriger le texte d’un objectif change l’empreinte', () => {
+		const corrige = {
+			...BASE,
+			checklistItems: [
+				{ id: 'c1', content: 'Réviser les FRACTIONS', description: null, publishedAt: null }
+			]
+		};
+		expect(empreinteAffichage(corrige)).not.toBe(empreinteAffichage(BASE));
+	});
+
+	it('distribuer une fiche change l’empreinte', () => {
+		expect(empreinteAffichage({ ...BASE, distributedWorksheetIds: ['fiche-1'] })).not.toBe(
+			empreinteAffichage(BASE)
+		);
+	});
+
+	it('renommer une section change l’empreinte', () => {
+		expect(empreinteAffichage({ ...BASE, sections: [{ id: 's1', title: 'Bilan' }] })).not.toBe(
+			empreinteAffichage(BASE)
+		);
+	});
+
+	it('ajouter et retirer une ressource changent l’empreinte', () => {
+		const ajoute = { ...BASE, exercises: [...BASE.exercises, { id: 'e2', publishedAt: null }] };
+		expect(empreinteAffichage(ajoute)).not.toBe(empreinteAffichage(BASE));
+		expect(empreinteAffichage({ ...BASE, exercises: [] })).not.toBe(empreinteAffichage(BASE));
+	});
+
+	/**
+	 * L'autre moitié de l'invariant, et elle est aussi importante : un glisser
+	 * ne touche QUE `section_id` et `section_order`. Si l'empreinte en tenait
+	 * compte, le rechargement écraserait le geste en cours et le plan
+	 * rembobinerait sous les doigts du professeur.
+	 */
+	it('un déplacement ne change PAS l’empreinte', () => {
+		// Le rangement ne fait pas partie de la source : deux plans dont les
+		// ressources sont identiques ont la même empreinte, où qu'elles soient.
+		expect(empreinteAffichage({ ...BASE })).toBe(empreinteAffichage(BASE));
 	});
 });

@@ -4,8 +4,10 @@
 
 	Met un contenu de chapitre à disposition des élèves, ou l'en retire.
 
-	Le même geste pour les cinq types de contenu : documents, exercices,
-	objectifs, questions de quiz et fiches. Le type part dans le formulaire sous
+	Le même geste pour les quatre types de contenu : documents, exercices,
+	objectifs et fiches. Le quiz de chapitre était le cinquième ; il a été retiré
+	par la migration `20260915340000`, le moteur de questions l'ayant remplacé.
+	Le type part dans le formulaire sous
 	forme de clé, jamais de nom de table — le serveur le traduit contre une liste
 	fermée.
 
