@@ -95,6 +95,11 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 				.select('id')
 				.eq('class_id', chapter.class_id)
 				.eq('student_id', profile.id)
+				// Depuis le 2026-09-13, retirer un élève l'ARCHIVE : l'adhésion
+				// survit au départ, donc son existence ne prouve plus rien. Sans
+				// ce filtre, cette route énoncerait une règle d'accès que
+				// `is_class_student` refuse désormais côté base.
+				.eq('status', 'active')
 				.single();
 
 			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
