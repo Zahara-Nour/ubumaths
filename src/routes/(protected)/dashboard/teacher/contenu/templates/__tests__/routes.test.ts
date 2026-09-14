@@ -45,7 +45,6 @@ const mockTemplate = {
 	created_by: TEST_IDS.teacher,
 	content_snapshot: {
 		documents: [],
-		quizQuestions: [],
 		checklistItems: [],
 		exercises: []
 	},
@@ -339,7 +338,6 @@ describe('POST /dashboard/teacher/contenu/templates/new (Create Template)', () =
 				created_by: TEST_IDS.teacher,
 				content_snapshot: {
 					documents: [],
-					quizQuestions: [],
 					checklistItems: [],
 					exercises: []
 				}
@@ -583,7 +581,7 @@ describe('Template Actions', () => {
 					created_at: '2024-01-01T00:00:00Z',
 					updated_at: '2024-01-01T00:00:00Z',
 					created_by: TEST_IDS.teacher,
-					content_snapshot: { documents: [], quizQuestions: [], checklistItems: [], exercises: [] }
+					content_snapshot: { documents: [], checklistItems: [], exercises: [] }
 				},
 				error: null
 			});
@@ -673,7 +671,6 @@ describe('Template Actions', () => {
 									displayOrder: 0
 								}
 							],
-							quizQuestions: [],
 							checklistItems: [],
 							exercises: []
 						}
@@ -694,7 +691,6 @@ describe('Template Actions', () => {
 									displayOrder: 0
 								}
 							],
-							quizQuestions: [],
 							checklistItems: [],
 							exercises: []
 						}
@@ -731,7 +727,6 @@ describe('Template Actions', () => {
 								displayOrder: 0
 							}
 						],
-						quizQuestions: [],
 						checklistItems: [],
 						exercises: []
 					}
@@ -767,7 +762,6 @@ describe('Template Actions', () => {
 						status: 'draft',
 						content_snapshot: {
 							documents: [],
-							quizQuestions: [],
 							checklistItems: [],
 							exercises: []
 						}

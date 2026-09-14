@@ -94,9 +94,9 @@ describe('resolveDrop', () => {
 	 * enregistré, et ça ne se verrait qu'au rechargement suivant.
 	 */
 	it('persiste plutôt que de deviner quand la source est introuvable', () => {
-		const inconnue = { id: 'quizQuestion:z' };
+		const inconnue = { id: 'document:inconnu' };
 
-		expect(resolveDrop(snapshot, 'cours', [A, B, inconnue], 'quizQuestion:z')).toEqual({
+		expect(resolveDrop(snapshot, 'cours', [A, B, inconnue], 'document:inconnu')).toEqual({
 			kind: 'reordered',
 			zone: 'cours'
 		});

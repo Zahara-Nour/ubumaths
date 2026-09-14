@@ -121,13 +121,6 @@ const mockContentSnapshot: TemplateContentSnapshot = {
 			displayOrder: 0
 		}
 	],
-	quizQuestions: [
-		{
-			questionTemplateId: mockQuestionTemplateId,
-			pointsOverride: 5,
-			displayOrder: 0
-		}
-	],
 	checklistItems: [
 		{
 			content: 'Lire le cours',
@@ -208,7 +201,6 @@ describe('Content Snapshot Validation Schemas', () => {
 		it('should validate empty snapshot', () => {
 			const data = {
 				documents: [],
-				quizQuestions: [],
 				checklistItems: [],
 				exercises: [],
 				worksheets: []
@@ -233,7 +225,6 @@ describe('Content Snapshot Validation Schemas', () => {
 					mimeType: 'application/pdf',
 					displayOrder: 0
 				}),
-				quizQuestions: [],
 				checklistItems: [],
 				exercises: [],
 				worksheets: []
@@ -256,44 +247,6 @@ describe('Content Snapshot Validation Schemas', () => {
 					mimeType: 'application/pdf',
 					displayOrder: 0
 				}),
-				quizQuestions: [],
-				checklistItems: [],
-				exercises: [],
-				worksheets: []
-			};
-
-			const result = validation.templateContentSnapshotSchema.safeParse(data);
-			expect(result.success).toBe(true);
-		});
-
-		it('should reject too many quiz questions (>100)', () => {
-			const data = {
-				documents: [],
-				quizQuestions: Array(101).fill({
-					questionTemplateId: mockQuestionTemplateId,
-					pointsOverride: null,
-					displayOrder: 0
-				}),
-				checklistItems: [],
-				exercises: [],
-				worksheets: []
-			};
-
-			const result = validation.templateContentSnapshotSchema.safeParse(data);
-			expect(result.success).toBe(false);
-			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('100');
-			}
-		});
-
-		it('should accept exactly 100 quiz questions', () => {
-			const data = {
-				documents: [],
-				quizQuestions: Array(100).fill({
-					questionTemplateId: mockQuestionTemplateId,
-					pointsOverride: null,
-					displayOrder: 0
-				}),
 				checklistItems: [],
 				exercises: [],
 				worksheets: []
@@ -306,7 +259,6 @@ describe('Content Snapshot Validation Schemas', () => {
 		it('should reject too many checklist items (>50)', () => {
 			const data = {
 				documents: [],
-				quizQuestions: [],
 				worksheets: [],
 				checklistItems: Array(51).fill({
 					content: 'Item',
@@ -323,7 +275,6 @@ describe('Content Snapshot Validation Schemas', () => {
 		it('should reject too many exercises (>50)', () => {
 			const data = {
 				documents: [],
-				quizQuestions: [],
 				checklistItems: [],
 				exercises: Array(51).fill({
 					exerciseId: mockExerciseId,
@@ -405,74 +356,6 @@ describe('Content Snapshot Validation Schemas', () => {
 
 			const result = validation.templateDocumentSnapshotSchema.safeParse(data);
 			expect(result.success).toBe(true);
-		});
-	});
-
-	describe('templateQuizQuestionSnapshotSchema', () => {
-		it('should validate quiz question with points override', () => {
-			const data = {
-				questionTemplateId: mockQuestionTemplateId,
-				pointsOverride: 10,
-				displayOrder: 0
-			};
-
-			const result = validation.templateQuizQuestionSnapshotSchema.safeParse(data);
-			expect(result.success).toBe(true);
-		});
-
-		it('should validate quiz question without points override', () => {
-			const data = {
-				questionTemplateId: mockQuestionTemplateId,
-				pointsOverride: null,
-				displayOrder: 0
-			};
-
-			const result = validation.templateQuizQuestionSnapshotSchema.safeParse(data);
-			expect(result.success).toBe(true);
-		});
-
-		it('should reject negative points', () => {
-			const data = {
-				questionTemplateId: mockQuestionTemplateId,
-				pointsOverride: -5,
-				displayOrder: 0
-			};
-
-			const result = validation.templateQuizQuestionSnapshotSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject points above 100', () => {
-			const data = {
-				questionTemplateId: mockQuestionTemplateId,
-				pointsOverride: 101,
-				displayOrder: 0
-			};
-
-			const result = validation.templateQuizQuestionSnapshotSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should accept points at max (100)', () => {
-			const data = {
-				questionTemplateId: mockQuestionTemplateId,
-				pointsOverride: 100,
-				displayOrder: 0
-			};
-
-			const result = validation.templateQuizQuestionSnapshotSchema.safeParse(data);
-			expect(result.success).toBe(true);
-		});
-
-		it('should reject invalid UUID', () => {
-			const data = {
-				questionTemplateId: 'not-a-uuid',
-				pointsOverride: null,
-				displayOrder: 0
-			};
-
-			const result = validation.templateQuizQuestionSnapshotSchema.safeParse(data);
-			expect(result.success).toBe(false);
 		});
 	});
 
@@ -852,7 +735,6 @@ describe('Type Conversion Functions', () => {
 			const app = dbTemplateToApp(mockDbTemplate);
 
 			expect(app.contentSnapshot.documents).toHaveLength(1);
-			expect(app.contentSnapshot.quizQuestions).toHaveLength(1);
 			expect(app.contentSnapshot.checklistItems).toHaveLength(1);
 			expect(app.contentSnapshot.exercises).toHaveLength(1);
 		});
@@ -891,7 +773,6 @@ describe('Type Conversion Functions', () => {
 			const snapshot = parseContentSnapshot(json);
 
 			expect(snapshot.documents).toHaveLength(1);
-			expect(snapshot.quizQuestions).toHaveLength(1);
 			expect(snapshot.checklistItems).toHaveLength(1);
 			expect(snapshot.exercises).toHaveLength(1);
 		});
@@ -899,7 +780,6 @@ describe('Type Conversion Functions', () => {
 		it('should handle empty arrays in snapshot', () => {
 			const json = {
 				documents: [],
-				quizQuestions: [],
 				checklistItems: [],
 				exercises: [],
 				worksheets: []
@@ -908,7 +788,6 @@ describe('Type Conversion Functions', () => {
 			const snapshot = parseContentSnapshot(json);
 
 			expect(snapshot.documents).toEqual([]);
-			expect(snapshot.quizQuestions).toEqual([]);
 			expect(snapshot.checklistItems).toEqual([]);
 			expect(snapshot.exercises).toEqual([]);
 		});
@@ -918,7 +797,6 @@ describe('Type Conversion Functions', () => {
 			const snapshot = parseContentSnapshot(json);
 
 			expect(snapshot.documents).toEqual([]);
-			expect(snapshot.quizQuestions).toEqual([]);
 			expect(snapshot.checklistItems).toEqual([]);
 			expect(snapshot.exercises).toEqual([]);
 		});
@@ -933,7 +811,6 @@ describe('Type Conversion Functions', () => {
 		it('should parse valid diff object', () => {
 			const diffJson = {
 				documents: [],
-				quizQuestions: [],
 				checklistItems: [],
 				exercises: [],
 				worksheets: [],
@@ -941,9 +818,6 @@ describe('Type Conversion Functions', () => {
 					documentsAdded: 0,
 					documentsRemoved: 0,
 					documentsModified: 0,
-					quizQuestionsAdded: 0,
-					quizQuestionsRemoved: 0,
-					quizQuestionsModified: 0,
 					checklistItemsAdded: 0,
 					checklistItemsRemoved: 0,
 					checklistItemsModified: 0,
@@ -969,19 +843,6 @@ describe('Helper Functions', () => {
 		it('should return true for snapshot with documents', () => {
 			const snapshot = {
 				documents: [mockContentSnapshot.documents[0]],
-				quizQuestions: [],
-				checklistItems: [],
-				exercises: [],
-				worksheets: []
-			};
-
-			expect(hasContent(snapshot)).toBe(true);
-		});
-
-		it('should return true for snapshot with quiz questions', () => {
-			const snapshot = {
-				documents: [],
-				quizQuestions: [mockContentSnapshot.quizQuestions[0]],
 				checklistItems: [],
 				exercises: [],
 				worksheets: []
@@ -993,7 +854,6 @@ describe('Helper Functions', () => {
 		it('should return true for snapshot with checklist items', () => {
 			const snapshot = {
 				documents: [],
-				quizQuestions: [],
 				checklistItems: [mockContentSnapshot.checklistItems[0]],
 				exercises: []
 			};
@@ -1004,7 +864,6 @@ describe('Helper Functions', () => {
 		it('should return true for snapshot with exercises', () => {
 			const snapshot = {
 				documents: [],
-				quizQuestions: [],
 				checklistItems: [],
 				exercises: [mockContentSnapshot.exercises[0]]
 			};
@@ -1022,18 +881,16 @@ describe('Helper Functions', () => {
 			const counts = getContentCounts(mockContentSnapshot);
 
 			expect(counts.documentCount).toBe(1);
-			expect(counts.quizQuestionCount).toBe(1);
 			expect(counts.checklistItemCount).toBe(1);
 			expect(counts.exerciseCount).toBe(1);
 			expect(counts.worksheetCount).toBe(1);
-			expect(counts.totalCount).toBe(5);
+			expect(counts.totalCount).toBe(4);
 		});
 
 		it('should return zero counts for empty snapshot', () => {
 			const counts = getContentCounts(EMPTY_CONTENT_SNAPSHOT);
 
 			expect(counts.documentCount).toBe(0);
-			expect(counts.quizQuestionCount).toBe(0);
 			expect(counts.checklistItemCount).toBe(0);
 			expect(counts.exerciseCount).toBe(0);
 			expect(counts.worksheetCount).toBe(0);
@@ -1043,14 +900,13 @@ describe('Helper Functions', () => {
 		it('should calculate total count correctly', () => {
 			const snapshot: TemplateContentSnapshot = {
 				documents: Array(5).fill(mockContentSnapshot.documents[0]),
-				quizQuestions: Array(10).fill(mockContentSnapshot.quizQuestions[0]),
 				checklistItems: Array(3).fill(mockContentSnapshot.checklistItems[0]),
 				exercises: Array(2).fill(mockContentSnapshot.exercises[0]),
 				worksheets: Array(4).fill(mockContentSnapshot.worksheets[0])
 			};
 
 			const counts = getContentCounts(snapshot);
-			expect(counts.totalCount).toBe(24);
+			expect(counts.totalCount).toBe(14);
 		});
 	});
 
@@ -1123,7 +979,6 @@ describe('computeDiff Function', () => {
 			const diff = templates.computeDiff(EMPTY_CONTENT_SNAPSHOT, EMPTY_CONTENT_SNAPSHOT);
 
 			expect(diff.documents).toHaveLength(0);
-			expect(diff.quizQuestions).toHaveLength(0);
 			expect(diff.checklistItems).toHaveLength(0);
 			expect(diff.exercises).toHaveLength(0);
 			expect(diff.stats.documentsAdded).toBe(0);
@@ -1135,15 +990,12 @@ describe('computeDiff Function', () => {
 
 			expect(diff.documents).toHaveLength(1);
 			expect(diff.documents[0].type).toBe('added');
-			expect(diff.quizQuestions).toHaveLength(1);
-			expect(diff.quizQuestions[0].type).toBe('added');
 			expect(diff.checklistItems).toHaveLength(1);
 			expect(diff.checklistItems[0].type).toBe('added');
 			expect(diff.exercises).toHaveLength(1);
 			expect(diff.exercises[0].type).toBe('added');
 
 			expect(diff.stats.documentsAdded).toBe(1);
-			expect(diff.stats.quizQuestionsAdded).toBe(1);
 			expect(diff.stats.checklistItemsAdded).toBe(1);
 			expect(diff.stats.exercisesAdded).toBe(1);
 		});
@@ -1153,15 +1005,12 @@ describe('computeDiff Function', () => {
 
 			expect(diff.documents).toHaveLength(1);
 			expect(diff.documents[0].type).toBe('removed');
-			expect(diff.quizQuestions).toHaveLength(1);
-			expect(diff.quizQuestions[0].type).toBe('removed');
 			expect(diff.checklistItems).toHaveLength(1);
 			expect(diff.checklistItems[0].type).toBe('removed');
 			expect(diff.exercises).toHaveLength(1);
 			expect(diff.exercises[0].type).toBe('removed');
 
 			expect(diff.stats.documentsRemoved).toBe(1);
-			expect(diff.stats.quizQuestionsRemoved).toBe(1);
 			expect(diff.stats.checklistItemsRemoved).toBe(1);
 			expect(diff.stats.exercisesRemoved).toBe(1);
 		});
@@ -1272,82 +1121,6 @@ describe('computeDiff Function', () => {
 			expect(diff.stats.documentsAdded).toBe(0);
 			expect(diff.stats.documentsRemoved).toBe(0);
 			expect(diff.stats.documentsModified).toBe(0);
-		});
-	});
-
-	describe('quiz question diffs', () => {
-		it('should detect added quiz questions', () => {
-			const oldSnapshot = { ...EMPTY_CONTENT_SNAPSHOT };
-			const newSnapshot: TemplateContentSnapshot = {
-				...EMPTY_CONTENT_SNAPSHOT,
-				quizQuestions: [mockContentSnapshot.quizQuestions[0]]
-			};
-
-			const diff = templates.computeDiff(oldSnapshot, newSnapshot);
-
-			expect(diff.quizQuestions).toHaveLength(1);
-			expect(diff.quizQuestions[0].type).toBe('added');
-			expect(diff.stats.quizQuestionsAdded).toBe(1);
-		});
-
-		it('should detect removed quiz questions', () => {
-			const oldSnapshot: TemplateContentSnapshot = {
-				...EMPTY_CONTENT_SNAPSHOT,
-				quizQuestions: [mockContentSnapshot.quizQuestions[0]]
-			};
-			const newSnapshot = { ...EMPTY_CONTENT_SNAPSHOT };
-
-			const diff = templates.computeDiff(oldSnapshot, newSnapshot);
-
-			expect(diff.quizQuestions).toHaveLength(1);
-			expect(diff.quizQuestions[0].type).toBe('removed');
-			expect(diff.stats.quizQuestionsRemoved).toBe(1);
-		});
-
-		it('should detect modified quiz questions (points override change)', () => {
-			const oldSnapshot: TemplateContentSnapshot = {
-				...EMPTY_CONTENT_SNAPSHOT,
-				quizQuestions: [mockContentSnapshot.quizQuestions[0]]
-			};
-
-			const newSnapshot: TemplateContentSnapshot = {
-				...EMPTY_CONTENT_SNAPSHOT,
-				quizQuestions: [
-					{
-						...mockContentSnapshot.quizQuestions[0],
-						pointsOverride: 10
-					}
-				]
-			};
-
-			const diff = templates.computeDiff(oldSnapshot, newSnapshot);
-
-			expect(diff.quizQuestions).toHaveLength(1);
-			expect(diff.quizQuestions[0].type).toBe('modified');
-			expect(diff.stats.quizQuestionsModified).toBe(1);
-		});
-
-		it('should detect modified quiz questions (display order change)', () => {
-			const oldSnapshot: TemplateContentSnapshot = {
-				...EMPTY_CONTENT_SNAPSHOT,
-				quizQuestions: [mockContentSnapshot.quizQuestions[0]]
-			};
-
-			const newSnapshot: TemplateContentSnapshot = {
-				...EMPTY_CONTENT_SNAPSHOT,
-				quizQuestions: [
-					{
-						...mockContentSnapshot.quizQuestions[0],
-						displayOrder: 5
-					}
-				]
-			};
-
-			const diff = templates.computeDiff(oldSnapshot, newSnapshot);
-
-			expect(diff.quizQuestions).toHaveLength(1);
-			expect(diff.quizQuestions[0].type).toBe('modified');
-			expect(diff.stats.quizQuestionsModified).toBe(1);
 		});
 	});
 
@@ -1484,7 +1257,6 @@ describe('computeDiff Function', () => {
 						displayOrder: 1
 					}
 				],
-				quizQuestions: [], // All removed
 				checklistItems: [
 					{
 						...mockContentSnapshot.checklistItems[0],
@@ -1505,7 +1277,6 @@ describe('computeDiff Function', () => {
 
 			expect(diff.stats.documentsAdded).toBe(1);
 			expect(diff.stats.documentsRemoved).toBe(0);
-			expect(diff.stats.quizQuestionsRemoved).toBe(1);
 			expect(diff.stats.checklistItemsModified).toBe(1);
 			expect(diff.stats.exercisesAdded).toBe(1);
 		});
@@ -1522,7 +1293,6 @@ describe('computeDiff Function', () => {
 						mimeType: 'application/pdf',
 						displayOrder: i
 					})),
-				quizQuestions: [],
 				checklistItems: [],
 				exercises: [],
 				worksheets: []
@@ -1539,7 +1309,6 @@ describe('computeDiff Function', () => {
 						mimeType: 'application/pdf',
 						displayOrder: i
 					})),
-				quizQuestions: [],
 				checklistItems: [],
 				exercises: [],
 				worksheets: []
@@ -2016,7 +1785,7 @@ describe('Publishing Operations', () => {
 			const result = await templates.publishTemplate(mockTemplateId, supabase);
 
 			expect(result.error).toBeDefined();
-			expect(result.error?.message).toContain('Cannot publish empty template');
+			expect(result.error?.message).toContain('Modèle vide');
 			expect(result.data).toBeNull();
 		});
 
@@ -2411,7 +2180,6 @@ describe('Instantiation Operations', () => {
 
 			expect(result.error).toBeNull();
 			expect(result.data?.documents).toHaveLength(1);
-			expect(result.data?.quizQuestions).toHaveLength(1);
 			expect(result.data?.checklistItems).toHaveLength(1);
 			expect(result.data?.exercises).toHaveLength(1);
 			expect(result.data?.worksheets).toHaveLength(1);
@@ -2428,7 +2196,6 @@ describe('Instantiation Operations', () => {
 
 			expect(result.error).toBeNull();
 			expect(result.data?.documents).toEqual([]);
-			expect(result.data?.quizQuestions).toEqual([]);
 			expect(result.data?.checklistItems).toEqual([]);
 			expect(result.data?.exercises).toEqual([]);
 		});

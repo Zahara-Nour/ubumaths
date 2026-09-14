@@ -26,12 +26,10 @@ const CHAPITRE = '99999999-9999-4999-8999-999999999999';
 const EXERCICE_A = '11111111-1111-4111-8111-111111111111';
 const EXERCICE_B = '22222222-2222-4222-8222-222222222222';
 const FICHE_A = '33333333-3333-4333-8333-333333333333';
-const MODELE_Q = '44444444-4444-4444-8444-444444444444';
 
 function snapshot(partiel: Partial<TemplateContentSnapshot> = {}): TemplateContentSnapshot {
 	return {
 		documents: [],
-		quizQuestions: [],
 		checklistItems: [],
 		exercises: [],
 		worksheets: [],
@@ -44,14 +42,12 @@ function chapitreContient(
 	supabase: ReturnType<typeof createMockSupabase>,
 	contenus: {
 		documents?: unknown[];
-		quiz?: unknown[];
 		checklist?: unknown[];
 		exercises?: unknown[];
 		worksheets?: unknown[];
 	}
 ) {
 	mockSuccess(supabase, contenus.documents ?? [], 'then');
-	mockSuccess(supabase, contenus.quiz ?? [], 'then');
 	mockSuccess(supabase, contenus.checklist ?? [], 'then');
 	mockSuccess(supabase, contenus.exercises ?? [], 'then');
 	mockSuccess(supabase, contenus.worksheets ?? [], 'then');
@@ -116,7 +112,6 @@ describe('mergeContentSnapshotIntoChapter — n’écrase rien', () => {
 		chapitreContient(supabase, {
 			exercises: [{ exercise_id: EXERCICE_A }],
 			worksheets: [{ worksheet_id: FICHE_A }],
-			quiz: [{ question_template_id: MODELE_Q }],
 			checklist: [{ content: 'Savoir dériver' }]
 		});
 
@@ -125,7 +120,6 @@ describe('mergeContentSnapshotIntoChapter — n’écrase rien', () => {
 			snapshot({
 				exercises: [{ exerciseId: EXERCICE_A, displayOrder: 0 }],
 				worksheets: [{ worksheetId: FICHE_A, displayOrder: 0 }],
-				quizQuestions: [{ questionTemplateId: MODELE_Q, pointsOverride: null, displayOrder: 0 }],
 				checklistItems: [{ content: 'Savoir dériver', description: null, displayOrder: 0 }]
 			}),
 			supabase as never
