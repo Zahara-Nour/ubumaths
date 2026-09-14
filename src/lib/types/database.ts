@@ -926,6 +926,8 @@ export type Database = {
           display_order: number
           id: string
           published_at: string | null
+          section_id: string | null
+          section_order: number
           updated_at: string
         }
         Insert: {
@@ -936,6 +938,8 @@ export type Database = {
           display_order?: number
           id?: string
           published_at?: string | null
+          section_id?: string | null
+          section_order?: number
           updated_at?: string
         }
         Update: {
@@ -946,6 +950,8 @@ export type Database = {
           display_order?: number
           id?: string
           published_at?: string | null
+          section_id?: string | null
+          section_order?: number
           updated_at?: string
         }
         Relationships: [
@@ -955,6 +961,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "class_chapters"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chapter_checklist_items_section_fkey"
+            columns: ["section_id", "chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_sections"
+            referencedColumns: ["id", "chapter_id"]
           },
         ]
       }
@@ -971,6 +984,8 @@ export type Database = {
           id: string
           mime_type: string | null
           published_at: string | null
+          section_id: string | null
+          section_order: number
           source_type: string
           storage_path: string | null
           thumbnail_url: string | null
@@ -989,6 +1004,8 @@ export type Database = {
           id?: string
           mime_type?: string | null
           published_at?: string | null
+          section_id?: string | null
+          section_order?: number
           source_type?: string
           storage_path?: string | null
           thumbnail_url?: string | null
@@ -1007,6 +1024,8 @@ export type Database = {
           id?: string
           mime_type?: string | null
           published_at?: string | null
+          section_id?: string | null
+          section_order?: number
           source_type?: string
           storage_path?: string | null
           thumbnail_url?: string | null
@@ -1021,6 +1040,13 @@ export type Database = {
             referencedRelation: "class_chapters"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "chapter_documents_section_fkey"
+            columns: ["section_id", "chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_sections"
+            referencedColumns: ["id", "chapter_id"]
+          },
         ]
       }
       chapter_exercises: {
@@ -1031,6 +1057,8 @@ export type Database = {
           exercise_id: string
           id: string
           published_at: string | null
+          section_id: string | null
+          section_order: number
         }
         Insert: {
           chapter_id: string
@@ -1039,6 +1067,8 @@ export type Database = {
           exercise_id: string
           id?: string
           published_at?: string | null
+          section_id?: string | null
+          section_order?: number
         }
         Update: {
           chapter_id?: string
@@ -1047,6 +1077,8 @@ export type Database = {
           exercise_id?: string
           id?: string
           published_at?: string | null
+          section_id?: string | null
+          section_order?: number
         }
         Relationships: [
           {
@@ -1063,6 +1095,13 @@ export type Database = {
             referencedRelation: "exercises"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "chapter_exercises_section_fkey"
+            columns: ["section_id", "chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_sections"
+            referencedColumns: ["id", "chapter_id"]
+          },
         ]
       }
       chapter_quiz_questions: {
@@ -1074,6 +1113,8 @@ export type Database = {
           points_override: number | null
           published_at: string | null
           question_template_id: string
+          section_id: string | null
+          section_order: number
         }
         Insert: {
           chapter_id: string
@@ -1083,6 +1124,8 @@ export type Database = {
           points_override?: number | null
           published_at?: string | null
           question_template_id: string
+          section_id?: string | null
+          section_order?: number
         }
         Update: {
           chapter_id?: string
@@ -1092,6 +1135,8 @@ export type Database = {
           points_override?: number | null
           published_at?: string | null
           question_template_id?: string
+          section_id?: string | null
+          section_order?: number
         }
         Relationships: [
           {
@@ -1107,6 +1152,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "question_templates"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chapter_quiz_questions_section_fkey"
+            columns: ["section_id", "chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_sections"
+            referencedColumns: ["id", "chapter_id"]
           },
         ]
       }
@@ -1179,6 +1231,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      chapter_sections: {
+        Row: {
+          chapter_id: string
+          created_at: string
+          display_order: number
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          chapter_id: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          chapter_id?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chapter_sections_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "class_chapters"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1383,6 +1470,8 @@ export type Database = {
           display_order: number
           id: string
           published_at: string | null
+          section_id: string | null
+          section_order: number
           worksheet_id: string
         }
         Insert: {
@@ -1391,6 +1480,8 @@ export type Database = {
           display_order?: number
           id?: string
           published_at?: string | null
+          section_id?: string | null
+          section_order?: number
           worksheet_id: string
         }
         Update: {
@@ -1399,6 +1490,8 @@ export type Database = {
           display_order?: number
           id?: string
           published_at?: string | null
+          section_id?: string | null
+          section_order?: number
           worksheet_id?: string
         }
         Relationships: [
@@ -1408,6 +1501,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "class_chapters"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chapter_worksheets_section_fkey"
+            columns: ["section_id", "chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_sections"
+            referencedColumns: ["id", "chapter_id"]
           },
           {
             foreignKeyName: "chapter_worksheets_worksheet_id_fkey"
