@@ -40,7 +40,6 @@
 		Plus,
 		Trash2,
 		FileText,
-		HelpCircle,
 		ListChecks,
 		BookOpen,
 		Users,

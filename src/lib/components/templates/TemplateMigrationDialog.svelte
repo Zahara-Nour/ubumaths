@@ -14,15 +14,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import {
-		ArrowUpCircle,
-		X,
-		Info,
-		FileText,
-		HelpCircle,
-		ClipboardList,
-		Dumbbell
-	} from '@lucide/svelte';
+	import { ArrowUpCircle, X, Info, FileText, ClipboardList, Dumbbell } from '@lucide/svelte';
 
 	// Props
 	interface Props {
