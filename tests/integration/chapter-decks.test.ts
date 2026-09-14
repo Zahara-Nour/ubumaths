@@ -79,6 +79,9 @@ describe('decks rattachés à un chapitre', () => {
 	/** Ancien membre de la classe : il ne reçoit plus rien. */
 	let eleveArchive: SupabaseClient<Database>;
 	let lienProgramme: string;
+	/** Le deck que PERSONNE n'a reçu : la cible de la copie forgée. */
+	let deckJamaisAssigne: string;
+	let sansDeckId: string;
 
 	beforeAll(async () => {
 		await cleanupAllTestData();
@@ -123,7 +126,7 @@ describe('decks rattachés à un chapitre', () => {
 
 		deckSource = await deck('Deck du chapitre QQ');
 		const deckPrepare = await deck('Deck préparé QQ');
-		const deckJamaisAssigne = await deck('Deck jamais assigné QQ');
+		deckJamaisAssigne = await deck('Deck jamais assigné QQ');
 
 		lienPublie = await insert('chapter_decks', {
 			chapter_id: chapitre,
@@ -190,12 +193,17 @@ describe('decks rattachés à un chapitre', () => {
 					assignment_type: 'student'
 				});
 			}
-			return clientFor(profil.email);
+			return { id: profil.id, client: await clientFor(profil.email) };
 		};
 
-		equipe = await eleve([deckSource, deckProgramme]);
+		// `deckPrepare` inclus : sans lui, « rattachement préparé » serait déjà
+		// vert par le garde d'assignation, et `published_at is null` ne serait
+		// jamais éprouvé.
+		equipe = (await eleve([deckSource, deckProgramme, deckPrepare])).client;
 		// Même classe, même chapitre : seule l'assignation les sépare.
-		sansDeck = await eleve([]);
+		const sansRien = await eleve([]);
+		sansDeck = sansRien.client;
+		sansDeckId = sansRien.id;
 
 		// Une SECONDE classe : sans elle, retirer `is_class_student` de la policy
 		// laisserait tous les cas au vert.
@@ -206,8 +214,8 @@ describe('decks rattachés à un chapitre', () => {
 			join_code: 'QQDE02',
 			is_active: true
 		});
-		eleveAilleurs = await eleve([deckSource], { classeId: autreClasse });
-		eleveArchive = await eleve([deckSource], { statut: 'archived' });
+		eleveAilleurs = (await eleve([deckSource], { classeId: autreClasse })).client;
+		eleveArchive = (await eleve([deckSource], { statut: 'archived' })).client;
 	}, 120_000);
 
 	afterAll(async () => {
@@ -233,6 +241,32 @@ describe('decks rattachés à un chapitre', () => {
 	});
 
 	it('un camarade sans copie ne voit rien du tout', async () => {
+		expect(await decksVusPar(sansDeck, chapitre)).toEqual([]);
+	});
+
+	/**
+	 * L'ancre infalsifiable.
+	 *
+	 * ⚠️ La policy exige DEUX preuves d'assignation, et une seule des deux est
+	 * hors de portée de l'élève. `srs_decks` s'insère sous
+	 * `auth.uid() = owner_id`, sans aucune restriction de colonne : un élève
+	 * peut donc déclarer `source_deck_id = <n'importe quel deck>` et fabriquer
+	 * de ses propres mains la première preuve.
+	 *
+	 * Sans ce test, retirer le `exists` sur `srs_deck_assignments` laisse toute
+	 * la suite au vert — et un élève verrait le deck de révision d'un contrôle
+	 * que le professeur n'a encore assigné à personne.
+	 */
+	it('une copie forgée par l’élève ne suffit pas : seule l’assignation fait foi', async () => {
+		// La forge DOIT réussir, sinon le test ne prouve rien du tout.
+		const { error: forge } = await sansDeck.from('srs_decks').insert({
+			owner_id: sansDeckId,
+			name: 'Copie forgée QQ',
+			deck_type: 'official',
+			source_deck_id: deckJamaisAssigne
+		});
+		expect(forge, 'la policy INSERT de srs_decks n’a pas de garde de colonne').toBeNull();
+
 		expect(await decksVusPar(sansDeck, chapitre)).toEqual([]);
 	});
 
