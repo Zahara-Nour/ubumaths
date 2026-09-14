@@ -70,3 +70,47 @@ export function resolveDrop(
 
 	return { kind: 'reordered', zone: targetId };
 }
+
+/**
+ * Ce que l'affichage du plan doit à ses props.
+ *
+ * ⚠️ Cette empreinte arbitre un conflit réel : pendant un glisser, l'état local
+ * doit rester la source de vérité, sinon le geste saccade ; mais tout ce que le
+ * professeur change depuis le plan — publier, corriger un objectif — revient
+ * par les props après `invalidateAll()`, et doit s'afficher.
+ *
+ * D'où la règle : on retient CE QUI EXISTE ET CE QUI S'AFFICHE, jamais le
+ * rangement. `section_id` et `section_order` en sont volontairement absents,
+ * et ce sont les seuls champs qu'un glisser modifie.
+ *
+ * ⚠️ Se limiter aux identifiants serait le piège : publier ne change aucun
+ * identifiant. L'affichage resterait figé sur « Préparé », et comme le bouton
+ * de publication calcule son intention depuis `publishedAt`, dépublier
+ * deviendrait impossible sans recharger la page.
+ */
+export type EmpreinteSource = {
+	sections: { id: string; title: string }[];
+	documents: { id: string; title: string; publishedAt: string | null }[];
+	exercises: { id: string; publishedAt: string | null }[];
+	checklistItems: {
+		id: string;
+		content: string;
+		description: string | null;
+		publishedAt: string | null;
+	}[];
+	worksheets: { id: string; title: string | null; publishedAt: string | null }[];
+	distributedWorksheetIds: string[];
+};
+
+export function empreinteAffichage(source: EmpreinteSource): string {
+	return [
+		source.sections.map((x) => `${x.id}~${x.title}`).join(','),
+		source.documents.map((x) => `${x.id}~${x.publishedAt}~${x.title}`).join(','),
+		source.exercises.map((x) => `${x.id}~${x.publishedAt}`).join(','),
+		source.checklistItems
+			.map((x) => `${x.id}~${x.publishedAt}~${x.content}~${x.description}`)
+			.join(','),
+		source.worksheets.map((x) => `${x.id}~${x.publishedAt}~${x.title}`).join(','),
+		source.distributedWorksheetIds.join(',')
+	].join('|');
+}

@@ -65,7 +65,12 @@ export const reorderSectionsSchema = z.object({
 
 export type ReorderSectionsInput = z.infer<typeof reorderSectionsSchema>;
 
-/** Les cinq types de contenu qu'une section peut ranger. */
+/**
+ * Les QUATRE types de contenu qu'une section peut ranger.
+ *
+ * Ils étaient cinq : le quiz de chapitre a été retiré par la migration
+ * `20260915340000`, le moteur de questions l'ayant remplacé.
+ */
 export const sectionContentKindSchema = z.enum([
 	'document',
 	'exercise',

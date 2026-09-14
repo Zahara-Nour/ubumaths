@@ -1,15 +1,24 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	/**
-	 * Teacher Chapter Content Editor Page
-	 * ====================================
+	 * Le chapitre, vu par le professeur
+	 * ==================================
 	 *
-	 * Manage chapter content with tabs:
-	 * - Documents (upload/Google Drive)
-	 * - Checklist items
-	 * - Exercises (links)
-	 * - Worksheets (links) — rattacher ne distribue pas
-	 * - Student progress
+	 * Le PLAN est le seul écran. L'axe de rangement est le MOMENT du cours
+	 * (« Préparation », « Le cours »…), pas le type de ressource : les onglets
+	 * par type ont disparu, et tout ce qu'ils portaient vit désormais dans le
+	 * plan — ajouter depuis une section, publier, supprimer, ouvrir un document,
+	 * corriger un objectif.
+	 *
+	 * Cette page garde les BOÎTES DE DIALOGUE, parce qu'elle seule connaît les
+	 * exercices et les fiches disponibles et porte les actions de formulaire ;
+	 * l'éditeur de sections ne fait que désigner la cible via `onAdd`.
+	 *
+	 * ⚠️ Rattacher une fiche ne la DISTRIBUE pas — mais la PUBLIER, si. Voir
+	 * `PublicationToggle`.
+	 *
+	 * La progression des élèves n'est pas une ressource : elle ne se range dans
+	 * aucune section, d'où sa place à part sous le plan.
 	 */
 
 	import { applyAction, enhance } from '$app/forms';
@@ -162,15 +171,35 @@
 				addGoogleDriveDocument: 'Document Google Drive ajoute',
 				deleteDocument: 'Document supprime',
 				migrateToVersion: 'Chapitre mis a jour depuis le template',
-				detachFromTemplate: 'Chapitre detache du template'
+				detachFromTemplate: 'Chapitre detache du template',
+				// `setPublication` rend « publish »/« unpublish », pas son propre
+				// nom : sans ces deux lignes, publier disait « Operation reussie ».
+				publish: 'Contenu publié — visible par les élèves',
+				unpublish: 'Contenu retiré — de nouveau préparé'
 			};
 			const message = actionMessages[form.action] || 'Operation reussie';
-			toaster.success(message);
+
+			// ⚠️ Créé, mais PAS rangé. La ressource existe — la création n'a pas
+			// échoué — seulement elle a atterri en « Non classé » au lieu de la
+			// section visée. Le taire laisserait le professeur la chercher là où
+			// il a cliqué.
+			if (form.placed === false) {
+				toaster.warning(`${message}, mais rangé en « Non classé » — glisse-le dans sa section.`);
+			} else {
+				toaster.success(message);
+			}
 
 			// Close dialogs
 			if (form.action === 'linkExercise') {
 				showLinkExerciseDialog = false;
 				selectedExerciseId = '';
+			}
+			if (form.action === 'linkWorksheet') {
+				showLinkWorksheetDialog = false;
+				selectedWorksheetId = '';
+			}
+			if (form.action === 'addGoogleDriveDocument') {
+				showDocumentDialog = false;
 			}
 			invalidateAll();
 		} else if (form?.error) {
@@ -279,18 +308,16 @@
 	</Card.Root>
 
 	<!--
-		Le PLAN du chapitre : l'axe de rangement est le moment du cours, pas le
-		type de ressource. Les onglets par type, plus bas, restent l'endroit où
-		l'on ajoute et modifie une ressource ; celui-ci est l'endroit où on la
-		range.
+		Le PLAN du chapitre : on y ajoute, on y range, on y publie et on y
+		supprime. C'est le seul endroit — il n'y a plus d'onglets par type.
 	-->
 	<section class="mb-8 space-y-3">
 		<div>
 			<h2 class="text-xl font-semibold">Plan du chapitre</h2>
 			<p class="text-sm text-muted-foreground">
-				Rangez chaque ressource dans la section où elle intervient. Les sections se renomment, se
-				réordonnent, s'ajoutent et se suppriment — supprimer une section ne supprime jamais ses
-				ressources.
+				Ajoutez chaque ressource dans la section où elle intervient, et déplacez-la au
+				glisser-déposer. Les sections se renomment, se réordonnent, s'ajoutent et se suppriment —
+				supprimer une section ne supprime jamais ses ressources.
 			</p>
 		</div>
 

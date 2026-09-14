@@ -18,7 +18,7 @@ import type { SectionContentKind } from './validation/chapter-sections';
 type ChapterSection = Database['public']['Tables']['chapter_sections']['Row'];
 
 /**
- * Les cinq tables qu'une section peut ranger.
+ * Les quatre tables qu'une section peut ranger.
  *
  * ⚠️ Miroir du tableau de la migration `20260915260000` : ajouter un type de
  * contenu demande de toucher les deux, sinon le nouveau type ne sera jamais
@@ -191,7 +191,7 @@ export async function reorderSections(
  * Range des ressources dans une section (ou les en sort si `sectionId` vaut
  * `null`), et fixe leur ordre à l'intérieur.
  *
- * ⚠️ `section_order` et non `display_order` : les cinq types vivent dans cinq
+ * ⚠️ `section_order` et non `display_order` : les quatre types vivent dans quatre
  * tables, et leur `display_order` est un ordre PAR TYPE. Seul `section_order`
  * traverse les tables.
  *

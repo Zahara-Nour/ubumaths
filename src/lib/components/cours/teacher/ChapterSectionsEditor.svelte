@@ -3,12 +3,12 @@
 	=====================
 
 	Range les ressources d'un chapitre par MOMENT du cours (« Préparation »,
-	« Le cours »…) plutôt que par type. Une section accueille les cinq types
+	« Le cours »…) plutôt que par type. Une section accueille les quatre types
 	côte à côte, et tout se déplace au glisser-déposer.
 
 	⚠️ L'ordre à l'intérieur d'une section est porté par `sectionOrder`, et NON
-	par `displayOrder` : ce dernier reste l'ordre par type, et les cinq types
-	vivent dans cinq tables. Seul `sectionOrder` les range ensemble.
+	par `displayOrder` : ce dernier reste l'ordre par type, et les quatre types
+	vivent dans quatre tables. Seul `sectionOrder` les range ensemble.
 
 	Modèle d'état, repris du kanban (`organisation/kanban/[boardId]`) :
 	- l'état LOCAL est la source de vérité de l'affichage — le glisser-déposer
@@ -66,7 +66,7 @@
 		BookOpen,
 		ClipboardList
 	} from '@lucide/svelte';
-	import { resolveDrop, type ZonesSnapshot } from './section-dnd';
+	import { empreinteAffichage, resolveDrop, type ZonesSnapshot } from './section-dnd';
 
 	type WorksheetRow = ChapterWorksheet & { title: string | null; status: string | null };
 
@@ -123,7 +123,7 @@
 	 * Vue unifiée d'une ressource.
 	 *
 	 * ⚠️ `id` est `kind:contentId` et non l'identifiant de la ligne :
-	 * svelte-dnd-action exige un `id` unique DANS TOUTE la zone, or les cinq
+	 * svelte-dnd-action exige un `id` unique DANS TOUTE la zone, or les quatre
 	 * tables ont chacune leurs propres identifiants. `contentId` garde la vraie
 	 * clé, celle que l'API attend.
 	 */
@@ -309,26 +309,34 @@
 	let nonClassees = $state<Ressource[]>(instantanerNonClassees());
 
 	/**
-	 * Empreinte de CE QUI EXISTE — jamais de son rangement.
+	 * Empreinte de CE QUI EXISTE ET DE CE QUI S'AFFICHE — jamais du rangement.
 	 *
 	 * ⚠️ Deux exigences contraires se rencontrent ici. L'état local doit rester
-	 * la source de vérité PENDANT un glisser, sinon le geste saccade ; mais une
-	 * ressource qu'on vient d'ajouter doit apparaître, et elle arrive par les
-	 * props après `invalidateAll()`.
+	 * la source de vérité PENDANT un glisser, sinon le geste saccade ; mais tout
+	 * ce que le professeur change depuis le plan revient par les props, après
+	 * `invalidateAll()`.
 	 *
-	 * D'où une empreinte qui ne retient que les IDENTIFIANTS présents. Ajouter
-	 * ou supprimer la change, et on repart du serveur. Un déplacement, lui, ne
-	 * touche ni l'ensemble des ressources ni celui des sections : l'empreinte
-	 * est identique, et le travail local survit.
+	 * ⚠️⚠️ Les IDENTIFIANTS ne suffisent pas, et c'est contre-intuitif : publier
+	 * un contenu ou corriger le texte d'un objectif ne change aucun identifiant.
+	 * Une empreinte qui ne retiendrait qu'eux figerait l'affichage sur
+	 * l'instantané d'origine — le badge resterait « Préparé », et comme
+	 * `PublicationToggle` calcule son champ caché depuis `publishedAt`, chaque
+	 * clic renverrait `published=true` : DÉPUBLIER deviendrait impossible sans
+	 * recharger. Sur une fiche, republier redistribue à toute la classe.
+	 *
+	 * Ces champs-là ne bougent jamais pendant un glisser — seuls `section_id` et
+	 * `section_order` bougent, et ils sont volontairement absents. L'invariant
+	 * du geste tient donc toujours.
 	 */
 	let empreinte = $derived(
-		[
-			sections.map((x) => x.id).join(','),
-			documents.map((x) => x.id).join(','),
-			exercises.map((x) => x.id).join(','),
-			checklistItems.map((x) => x.id).join(','),
-			worksheets.map((x) => x.id).join(',')
-		].join('|')
+		empreinteAffichage({
+			sections,
+			documents,
+			exercises,
+			checklistItems,
+			worksheets,
+			distributedWorksheetIds
+		})
 	);
 
 	// Volontairement hors `$state` : cette valeur ne pilote aucun affichage, elle
@@ -667,6 +675,7 @@
 							type="submit"
 							variant="ghost"
 							size="icon-sm"
+							disabled={busy}
 							class="text-destructive"
 							aria-label="Retirer {ressource.label} du chapitre"
 						>
@@ -676,13 +685,21 @@
 				{/if}
 			</div>
 		{/each}
-
-		{#if liste.length === 0}
-			<p class="py-3 text-center text-sm text-muted-foreground italic">
-				Glissez une ressource ici, ou ajoutez-en une.
-			</p>
-		{/if}
 	</div>
+
+	<!--
+		⚠️ HORS de la zone : `svelte-dnd-action` apparie ses enfants DIRECTS avec
+		`items` par index. Dans une section vide — et un chapitre neuf en a six —
+		la zone aurait 0 élément et 1 enfant : ce paragraphe deviendrait
+		traînable, annoncé comme élément de liste aux lecteurs d'écran, et le
+		tirer produirait une ligne fantôme puis un rangement refusé. La hauteur
+		minimale de la zone suffit à garder une cible de dépose.
+	-->
+	{#if liste.length === 0}
+		<p class="px-3 pb-1 text-center text-sm text-muted-foreground italic">
+			Glissez une ressource ici, ou ajoutez-en une.
+		</p>
+	{/if}
 {/snippet}
 
 <!--
@@ -746,7 +763,7 @@
 								variant="ghost"
 								size="icon"
 								disabled={busy}
-								aria-label="Valider le titre"
+								aria-label="Valider le titre de {section.title}"
 								onclick={() => renommerSection(section.id)}
 							>
 								<Check class="h-4 w-4" />
@@ -754,7 +771,7 @@
 							<Button
 								variant="ghost"
 								size="icon"
-								aria-label="Annuler"
+								aria-label="Annuler le renommage de {section.title}"
 								onclick={() => (editingSectionId = null)}
 							>
 								<X class="h-4 w-4" />

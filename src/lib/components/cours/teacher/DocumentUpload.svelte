@@ -11,6 +11,7 @@
 	 * - Upload progress feedback
 	 */
 
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -183,6 +184,15 @@
 			if (!enregistrement.ok) {
 				uploadError = "Erreur lors de l'enregistrement";
 				return;
+			}
+
+			// ⚠️ Le document est enregistré, mais il a pu ne pas être RANGÉ : la
+			// route ne fait pas échouer l'enregistrement pour autant — le fichier
+			// est déjà dans le stockage. Se taire ferait chercher le document dans
+			// la section où le professeur a cliqué, alors qu'il est tout en bas.
+			const { placed } = (await enregistrement.json()) as { placed?: boolean };
+			if (placed === false) {
+				toaster.warning('Document ajouté, mais rangé en « Non classé ».');
 			}
 
 			resetUploadForm();
