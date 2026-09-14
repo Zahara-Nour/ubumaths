@@ -1,7 +1,7 @@
 ---
 title: Sections d'un chapitre « Mon cours » — spécification (Phase 0)
 date: 2026-09-14
-status: ⏸️ EN ATTENTE DE VALIDATION — aucune ligne de code écrite
+status: validée le 2026-09-14 — livraison 1 (base de données) en cours
 scope: class_chapters + les 5 tables de contenu, éditeur prof, vue élève, modèles
 ---
 
@@ -131,15 +131,51 @@ apprendre les sections. Et `computeDiff` doit savoir reconnaître une section
 **renommée** plutôt que d'annoncer « une supprimée, une ajoutée » — le même
 défaut qui avait été corrigé sur les objectifs.
 
-## Questions ouvertes — à trancher avant de coder
+## Points relevés par l'audit — connus, non traités
 
-1. **Supprimer une section qui contient des ressources** : les renvoyer en « Non
-   classé » (proposé), ou **refuser** la suppression tant qu'elle n'est pas
-   vide ? Le refus est plus sûr mais plus agaçant.
-2. **Une section a-t-elle sa propre date de publication ?** Aujourd'hui chaque
-   contenu porte la sienne. Une section publiable d'un coup serait pratique
-   (« j'ouvre Méthodes »), mais ajouterait un **quatrième sens** au mot
-   « publier », et l'expérience dit que c'est cher.
-3. **Les six titres sont-ils exactement ceux-là ?** « Le cours », « Les
-   exercices », « Méthodes », « Résumé », « Bilan », « Préparation » — l'ordre
-   ci-dessus est celui de ta demande, je le prends tel quel sauf avis contraire.
+1. **Le titre d'une section est visible dès que le chapitre l'est.** Les
+   contenus attendent leur `published_at` ; le **plan** du chapitre, non — c'est
+   la conséquence directe de « pas de date de publication par section ».
+   ⚠️ **Conséquence pratique pour David** : nommer une section « Contrôle
+   vendredi » ou « Remédiation groupe B » la publie aussitôt à toute la classe.
+   À la livraison 2, filtrer **côté serveur** (et pas seulement dans le
+   composant) les sections sans contenu publié.
+2. **Une section VIDE peut être déplacée vers un autre chapitre.** La policy
+   professeur ne vérifie pas que `chapter_id` reste le même. Sans conséquence en
+   mono-professeur — il n'y a pas de frontière à franchir — mais un `update` mal
+   filtré pourrait réattribuer des sections. Fermable par un trigger
+   `before update`, laissé ouvert en connaissance de cause.
+3. **Instancier un modèle ne range rien.** `applyContentSnapshotToChapter` ne
+   renseigne pas `section_id` : un chapitre issu d'un modèle affichera six
+   sections vides et tout son contenu en « Non classé ». C'est cohérent avec le
+   caractère additif de la livraison 1 — et c'est **le cœur de la livraison 2**.
+
+## Questions ouvertes — tranchées le 2026-09-14
+
+1. **Supprimer une section non vide** → les ressources passent en « Non classé »,
+   et **« Non classé » est AFFICHÉ à l'élève**, sans titre, en fin de chapitre.
+   ⚠️ Correction de la première version de cette spec, qui le masquait : ainsi,
+   supprimer une section pour la renommer aurait fait disparaître des ressources
+   de la vue élève sans un mot. Aucune règle bloquante n'est donc nécessaire.
+2. **Pas de date de publication par section.** Le besoin (« j'ouvre Méthodes
+   d'un coup ») est une **action groupée**, pas un état : un bouton « tout
+   publier dans cette section » pose `published_at` sur chaque ressource. Zéro
+   nouveau concept, zéro nouvelle surface RLS, et pas deux dates qui peuvent se
+   contredire.
+3. **Les six titres et leur ordre sont ceux de la demande.** Question peu
+   coûteuse : les sections étant modifiables par chapitre, cette liste n'est
+   qu'un **défaut**, pas un engagement.
+
+## Livraison 1 — ce qui est fait
+
+| Élément                                                                  | État            |
+| ------------------------------------------------------------------------ | --------------- |
+| Table `chapter_sections` + `section_id`/`section_order` sur les 5 tables | ✅              |
+| Clé étrangère **composite**, `on delete set null (section_id)`           | ✅              |
+| Trigger des six sections par défaut                                      | ✅              |
+| RLS (admin / professeur / élève) + `revoke ... from anon`                | ✅              |
+| Trigger `updated_at`                                                     | ✅              |
+| `tests/integration/chapter-sections.test.ts` — 14 cas, **vus rouges**    | ✅              |
+| Schémas Zod (`validation/chapter-sections.ts`)                           | ✅              |
+| Routes API + éditeur professeur                                          | ⏳ livraison 1b |
+| Vue élève + modèles                                                      | ⏳ livraison 2  |
