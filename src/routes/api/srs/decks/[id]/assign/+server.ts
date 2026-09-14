@@ -27,6 +27,11 @@ import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import { assignDeckSchema, uuidParamSchema } from '$lib/server/validation/srs';
 import { requireRole } from '$lib/server/middleware/auth';
+import {
+	planSectionCopies,
+	indexCopiedSections,
+	resolveCardSection
+} from '$lib/server/srs/deck-copy';
 
 /**
  * POST /api/srs/decks/[id]/assign
@@ -132,6 +137,23 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 		console.log('Source deck has', sourceCards?.length || 0, 'cards');
 
+		// Les SECTIONS du deck source (sous-decks).
+		//
+		// ⚠️ Elles n'étaient pas copiées : les élèves recevaient un deck dont
+		// toutes les cartes avaient `section_id = null`. Le rangement du
+		// professeur disparaissait à l'assignation, sans un mot — et rien ne
+		// pouvait le signaler, `srs_deck_sections` n'ayant jamais servi.
+		const { data: sourceSections, error: sourceSectionsError } = await supabase
+			.from('srs_deck_sections')
+			.select('*')
+			.eq('deck_id', deckId)
+			.order('display_order');
+
+		if (sourceSectionsError) {
+			console.error('Sections du deck source illisibles :', sourceSectionsError);
+			throw error(500, 'Impossible de charger les données');
+		}
+
 		// Create admin client to bypass RLS for deck assignment
 		const adminClient = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 			auth: {
@@ -176,6 +198,51 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			studentToDeckMap.set(deck.owner_id, deck.id);
 		}
 
+		// Step 1 bis : copier les sections, AVANT les cartes — la clé étrangère
+		// `srs_cards.section_id` l'exige.
+		//
+		// ⚠️ La correspondance se fait sur `display_order`, RENUMÉROTÉ de 0 à n
+		// par deck : l'ordre de retour d'un `insert().select()` n'est pas
+		// garanti, et deux sections peuvent porter le même nom. Renuméroter nous
+		// donne une clé unique par deck, que nous contrôlons.
+		//
+		// L'enjeu n'est pas cosmétique : `srs_cards.section_id` n'a PAS de clé
+		// étrangère composite, donc la base accepterait sans broncher une carte
+		// de la copie pointant vers une section du deck SOURCE. Elle ne
+		// rattraperait pas une correspondance fausse.
+		const sectionIdParDeckEtRang = new Map<string, string>();
+
+		if (sourceSections && sourceSections.length > 0) {
+			const sectionsACreer = planSectionCopies(
+				sourceSections,
+				createdDecks.map((d) => d.id)
+			);
+
+			const { data: sectionsCreees, error: sectionsError } = await adminClient
+				.from('srs_deck_sections')
+				.insert(sectionsACreer)
+				.select('id, deck_id, display_order');
+
+			if (sectionsError || !sectionsCreees) {
+				console.error('Copie des sections impossible :', sectionsError);
+				// Les sections partent en cascade avec les decks.
+				await adminClient
+					.from('srs_decks')
+					.delete()
+					.in(
+						'id',
+						createdDecks.map((d) => d.id)
+					);
+				return json({ error: 'Failed to copy deck sections' }, { status: 500 });
+			}
+
+			for (const [cle, id] of indexCopiedSections(sectionsCreees)) {
+				sectionIdParDeckEtRang.set(cle, id);
+			}
+
+			console.log(`✓ Copied ${sectionsCreees.length} sections`);
+		}
+
 		// Step 2: Batch-insert all cards for all decks (ONE query)
 		const allCardsToCreate: Array<{
 			deck_id: string;
@@ -183,6 +250,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			template_id: string | null;
 			front_content: unknown;
 			back_content: unknown;
+			section_id: string | null;
 		}> = [];
 
 		if (sourceCards && sourceCards.length > 0) {
@@ -192,7 +260,14 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 					card_type: card.card_type,
 					template_id: card.template_id,
 					front_content: card.front_content,
-					back_content: card.back_content
+					back_content: card.back_content,
+					// La section de la COPIE, jamais celle de la source.
+					section_id: resolveCardSection(
+						card,
+						sourceSections ?? [],
+						sectionIdParDeckEtRang,
+						deck.id
+					)
 				}));
 				allCardsToCreate.push(...cardsForDeck);
 			}
