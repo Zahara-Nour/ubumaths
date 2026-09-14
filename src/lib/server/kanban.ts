@@ -296,7 +296,17 @@ async function fetchBoardMembers(
 		const { data: memberRows, error: memberErr } = await supabase
 			.from('class_members')
 			.select('student_id')
-			.eq('class_id', classId);
+			// ⚠️ L'adhésion SURVIT au départ depuis le 2026-09-13 : retirer un
+			// élève l'archive au lieu de le supprimer. Sans ce filtre, le
+			// sélecteur d'assignés propose les anciens élèves à côté des actuels —
+			// et le professeur peut alors assigner une carte à quelqu'un qui ne
+			// verra jamais le tableau (`is_class_member` ne le laisse plus entrer
+			// depuis `20260915400000`).
+			//
+			// Invisible à un `grep is_class_member` : ce code ne nomme pas la
+			// fonction, il refait la requête à la main.
+			.eq('class_id', classId)
+			.eq('status', 'active');
 		if (memberErr) {
 			console.error('[kanban] fetchBoardMembers / class_members failed:', memberErr);
 			// Don't 500 the whole page: degrade gracefully with the owner only.
