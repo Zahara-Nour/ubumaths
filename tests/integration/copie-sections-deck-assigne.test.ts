@@ -105,7 +105,11 @@ describe('copie des sections à l’assignation d’un deck', () => {
 			owner_id: eleveId,
 			name: 'Deck source RR',
 			deck_type: 'official',
-			is_assigned: true
+			is_assigned: true,
+			// Tel que `planDeckCopies` l'écrit. Sans ce lien, la policy élève de
+			// `chapter_decks` masque le deck : la copie existe, le chapitre la
+			// cache, et le décor de ce test ne ressemblerait plus à la production.
+			source_deck_id: deckSource
 		});
 
 		const sectionsACreer = planSectionCopies(sourceSections ?? [], [deckCopie]);

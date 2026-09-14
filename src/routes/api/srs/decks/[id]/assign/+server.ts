@@ -28,8 +28,9 @@ import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import { assignDeckSchema, uuidParamSchema } from '$lib/server/validation/srs';
 import { requireRole } from '$lib/server/middleware/auth';
 import {
-	planSectionCopies,
 	indexCopiedSections,
+	planDeckCopies,
+	planSectionCopies,
 	resolveCardSection
 } from '$lib/server/srs/deck-copy';
 
@@ -171,14 +172,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		console.log(`Batch-creating ${studentIds.length} deck copies...`);
 
 		// Step 1: Batch-insert all decks for all students (ONE query)
-		const decksToCreate = studentIds.map((studentId) => ({
-			name: sourceDeck.name,
-			description: sourceDeck.description,
-			owner_id: studentId,
-			deck_type: sourceDeck.deck_type,
-			is_assigned: true, // Mark as assigned (read-only)
-			config: sourceDeck.config
-		}));
+		const decksToCreate = planDeckCopies(sourceDeck, deckId, studentIds);
 
 		const { data: createdDecks, error: decksError } = await adminClient
 			.from('srs_decks')
@@ -346,11 +340,25 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			.insert(assignmentsToCreate);
 
 		if (assignmentsError) {
+			// ⚠️ N'EST PLUS FACULTATIF. `srs_deck_assignments` est la SEULE trace
+			// qu'un élève ne peut pas écrire lui-même : c'est elle qui prouve
+			// l'assignation, et la policy de `chapter_decks` s'y ancre. Laisser
+			// passer l'échec produisait une copie sans preuve — donc un élève
+			// légitime privé du rattachement, en silence.
+			//
+			// On annule comme le font déjà les sections et les cartes.
 			console.error('Failed to batch-insert assignments:', assignmentsError);
-			// Continue anyway - decks and cards are created
-		} else {
-			console.log(`✓ Inserted ${assignmentsToCreate.length} assignment records`);
+			await adminClient
+				.from('srs_decks')
+				.delete()
+				.in(
+					'id',
+					createdDecks.map((d) => d.id)
+				);
+			return json({ error: 'Failed to record deck assignments' }, { status: 500 });
 		}
+
+		console.log(`✓ Inserted ${assignmentsToCreate.length} assignment records`);
 
 		const results = {
 			successCount: createdDecks.length,

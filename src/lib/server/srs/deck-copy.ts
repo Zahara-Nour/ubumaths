@@ -69,3 +69,48 @@ export function resolveCardSection(
 
 	return copiedSections.get(`${deckId}|${rang}`) ?? null;
 }
+
+/** Ce qu'il faut du deck source pour en fabriquer une copie. */
+export type SourceDeck = {
+	name: string;
+	description: string | null;
+	deck_type: string;
+	config: unknown;
+};
+
+/**
+ * Une copie du deck par élève.
+ *
+ * ⚠️ `source_deck_id` n'est PAS une commodité d'affichage : la policy élève de
+ * `chapter_decks` s'en sert pour n'afficher un deck de chapitre qu'à ceux qui
+ * en possèdent une copie. Une copie sans source est invisible dans le
+ * chapitre — le deck est bien là, l'élève ne le voit pas, et rien ne le dit.
+ */
+export function planDeckCopies(
+	sourceDeck: SourceDeck,
+	sourceDeckId: string,
+	studentIds: string[]
+): {
+	name: string;
+	description: string | null;
+	owner_id: string;
+	deck_type: string;
+	is_assigned: true;
+	config: unknown;
+	source_deck_id: string;
+}[] {
+	return studentIds.map((studentId) => ({
+		name: sourceDeck.name,
+		description: sourceDeck.description,
+		owner_id: studentId,
+		deck_type: sourceDeck.deck_type,
+		// La copie est en lecture seule : l'élève révise, il ne réécrit pas le
+		// deck du professeur.
+		is_assigned: true as const,
+		config: sourceDeck.config,
+		// D'où vient cette copie. `srs_deck_assignments` ne garde que
+		// (source, élève) : sans ce lien, retrouver LA copie d'un élève
+		// obligeait à apparier sur le nom du deck.
+		source_deck_id: sourceDeckId
+	}));
+}
