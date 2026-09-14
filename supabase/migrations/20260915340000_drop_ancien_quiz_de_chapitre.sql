@@ -1,0 +1,55 @@
+-- ⚠️ MIGRATION DESTRUCTIVE — suppression de l'ancien quiz de chapitre
+-- ====================================================================
+--
+-- CE QUI EST PERDU, EN CLAIR :
+--
+--   · `chapter_quiz_questions` — le rattachement d'un modèle de question à un
+--     chapitre, avec son barème et sa date de publication ;
+--   · `chapter_quiz_results` — les réponses des élèves à ces questions :
+--     justesse, points, temps passé, nombre d'essais.
+--
+-- Une fois supprimées, ces données NE SONT PAS RÉCUPÉRABLES. Le rollback plus
+-- bas recrée les tables vides ; il ne rend rien.
+--
+-- PREUVE DE DONNÉES (production EU, mesurée le 2026-09-14, juste avant
+-- d'écrire ce fichier) :
+--
+--   chapter_quiz_questions ................... 0
+--   chapter_quiz_results ..................... 0
+--   modèles dont le snapshot porte un quiz ... 0
+--   dépendances externes (clés étrangères) ... aucune
+--
+-- Rien n'est donc perdu en pratique : la fonctionnalité n'a jamais servi, faute
+-- de modèles de questions publiés (0 en production).
+--
+-- PREUVE D'USAGES — `grep -rn "chapter_quiz_questions\|chapter_quiz_results"
+-- src/ tests/ e2e/` ne rend plus RIEN, hors `src/lib/types/database.ts` qui est
+-- auto-généré. Les deux angles morts de la règle ont été traités nommément :
+--
+--   · jointures PostgREST (du TEXTE, invisible au typecheck) — deux trouvées et
+--     retirées : `quizQuestions:chapter_quiz_questions(count)` dans la liste des
+--     chapitres de l'élève, et `(*)` dans `api/teacher/chapters/[id]` ;
+--   · schémas Zod — `templateContentSnapshotSchema` exigeait `quizQuestions`,
+--     retiré ; sans quoi tout enregistrement de modèle aurait échoué.
+--
+-- POURQUOI : le quiz de chapitre faisait choisir les questions UNE PAR UNE,
+-- alors que l'unité de travail est la SÉRIE. Décision de David le 2026-09-14 :
+-- « ChapterQuiz n'a donc plus lieu d'être ». Le remplacement — rattacher une
+-- série (`assessments`) ou un deck — fait l'objet de
+-- `docs/wip/series-de-questions-dans-un-chapitre-spec.md`.
+--
+-- ORDRE D'APPLICATION : APRÈS le déploiement du code qui ne les référence plus.
+-- Les appliquer avant ferait répondre 500 aux deux jointures ci-dessus, tant
+-- que l'ancienne version tourne encore.
+--
+-- ROLLBACK — recrée les tables VIDES, avec leurs policies. Il rétablit la
+-- structure, JAMAIS les données :
+--
+--   Rejouer les définitions de `20260616220000_baseline_schema.sql`
+--   (chapter_quiz_questions, chapter_quiz_results et leurs policies), puis
+--   `20260915140000_chapter_content_publication.sql` pour `published_at`, puis
+--   `20260915260000_chapter_sections.sql` pour `section_id`/`section_order`.
+
+-- `chapter_quiz_results` d'abord : elle référence `chapter_quiz_questions`.
+drop table if exists public.chapter_quiz_results;
+drop table if exists public.chapter_quiz_questions;
