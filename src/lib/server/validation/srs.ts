@@ -152,7 +152,17 @@ export const dueCardsQuerySchema = z.object({
 					(CARD_STATES as readonly string[]).includes(s)
 				);
 			return parsed.length > 0 ? parsed : undefined;
-		})
+		}),
+	/**
+	 * Révision forcée : rendre TOUTES les cartes du deck, échéance ignorée.
+	 *
+	 * Une query string ne porte que du texte : seul `'true'` vaut vrai, pour
+	 * qu'un `?all=0` ou un `?all=` ne l'active pas par accident.
+	 */
+	all: z
+		.string()
+		.optional()
+		.transform((val) => val === 'true')
 });
 
 // ============================================================================
