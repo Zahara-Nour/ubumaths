@@ -19,13 +19,22 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Upload, Link, FileText, Image, X, Loader2 } from '@lucide/svelte';
+	import type { SupabaseClient } from '@supabase/supabase-js';
+	import type { Database } from '$lib/types/database';
 
 	interface Props {
 		chapterId: string;
+		/**
+		 * Client Supabase du navigateur (`data.supabase` du layout).
+		 *
+		 * Le fichier ne passe plus par le serveur : c'est ce client qui le pousse
+		 * dans le stockage, muni d'une autorisation à usage unique.
+		 */
+		supabase: SupabaseClient<Database>;
 		onSuccess?: () => void;
 	}
 
-	let { chapterId, onSuccess }: Props = $props();
+	let { chapterId, supabase, onSuccess }: Props = $props();
 
 	// Tab state
 	let activeTab = $state<'upload' | 'google_drive'>('upload');
@@ -65,13 +74,13 @@
 		return null;
 	}
 
-	/** L'élément qui porte réellement le fichier soumis. */
+	/** L'élément qui porte le fichier choisi. */
 	let fileInput = $state<HTMLInputElement | null>(null);
 
 	/**
 	 * Retenir le fichier, et le poser dans l'input quand il vient d'un
-	 * glisser-déposer : le navigateur n'y met que ce qu'on a choisi par la
-	 * boîte de dialogue, et le formulaire n'envoie que le contenu de l'input.
+	 * glisser-déposer : le navigateur n'y met que ce qu'on a choisi par la boîte
+	 * de dialogue, et c'est l'input que le formulaire regarde.
 	 */
 	function retenirFichier(file: File, viaGlisserDeposer: boolean) {
 		const error = validateFile(file);
@@ -94,6 +103,86 @@
 		// Auto-fill title from filename if empty
 		if (!uploadTitle) {
 			uploadTitle = file.name.replace(/\.[^/.]+$/, ''); // Remove extension
+		}
+	}
+
+	/**
+	 * Déposer le fichier avant que le formulaire ne parte.
+	 *
+	 * Le fichier ne traverse plus le serveur : au-delà de quelques mégaoctets,
+	 * la plateforme refusait la requête d'un 413 avant même que le code ne
+	 * s'exécute. Le navigateur demande une autorisation, pousse le fichier
+	 * directement dans le stockage, puis laisse le formulaire poster les seules
+	 * métadonnées — quelques centaines d'octets.
+	 */
+	async function envoyerDocument(event: SubmitEvent) {
+		event.preventDefault();
+
+		const file = selectedFile;
+		if (!file) {
+			uploadError = 'Fichier requis';
+			return;
+		}
+
+		isUploading = true;
+		uploadError = '';
+
+		try {
+			// 1. L'autorisation : le serveur vérifie les droits et choisit le
+			//    chemin, que le navigateur ne décide jamais lui-même.
+			const reponse = await fetch(`/api/teacher/chapters/${chapterId}/document-upload-url`, {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ fileName: file.name, fileType: file.type })
+			});
+
+			if (!reponse.ok) {
+				uploadError = "Erreur lors de la préparation de l'envoi";
+				return;
+			}
+
+			const { storagePath, token } = (await reponse.json()) as {
+				storagePath: string;
+				token: string;
+			};
+
+			// 2. Le fichier, directement du navigateur au stockage.
+			const { error: envoiError } = await supabase.storage
+				.from('chapter-documents')
+				.uploadToSignedUrl(storagePath, token, file, { contentType: file.type });
+
+			if (envoiError) {
+				console.error('[DocumentUpload] Envoi impossible :', envoiError);
+				uploadError = "Erreur lors de l'upload";
+				return;
+			}
+
+			// 3. Les métadonnées, quelques centaines d'octets.
+			const enregistrement = await fetch(`/api/teacher/chapters/${chapterId}/documents`, {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({
+					title: uploadTitle,
+					description: uploadDescription || null,
+					storagePath,
+					fileName: file.name,
+					fileType: file.type,
+					fileSize: file.size
+				})
+			});
+
+			if (!enregistrement.ok) {
+				uploadError = "Erreur lors de l'enregistrement";
+				return;
+			}
+
+			resetUploadForm();
+			onSuccess?.();
+		} catch (err) {
+			console.error('[DocumentUpload] Erreur inattendue :', err);
+			uploadError = 'Erreur inattendue';
+		} finally {
+			isUploading = false;
 		}
 	}
 
@@ -190,43 +279,27 @@
 
 			<!-- Upload Tab -->
 			<Tabs.Content value="upload" class="mt-4">
-				<form
-					method="POST"
-					action="?/uploadDocument"
-					enctype="multipart/form-data"
-					use:enhance={() => {
-						isUploading = true;
-						uploadError = '';
-						return async ({ result, update }) => {
-							isUploading = false;
-							if (result.type === 'success') {
-								resetUploadForm();
-								onSuccess?.();
-							} else if (result.type === 'failure') {
-								uploadError =
-									(result.data as { error?: string })?.error || "Erreur lors de l'upload";
-							}
-							await update();
-						};
-					}}
-					class="space-y-4"
-				>
-					<input type="hidden" name="chapterId" value={chapterId} />
+				<!--
+					Hors du formulaire, et c'est voulu : le fichier part directement au
+					stockage, jamais dans le corps de la requête. L'y laisser le ferait
+					repartir avec les métadonnées — et ramènerait le 413.
+				-->
+				<input
+					id="file-input"
+					bind:this={fileInput}
+					type="file"
+					accept=".pdf,.png,.jpg,.jpeg,.gif,application/pdf,image/png,image/jpeg,image/gif"
+					class="hidden"
+					onchange={handleFileSelect}
+				/>
 
-					<!--
-						Toujours monté, jamais dans le bloc conditionnel : c'est lui qui
-						porte le fichier jusqu'au serveur, et le retirer du DOM dès la
-						sélection le faisait disparaître de l'envoi.
-					-->
-					<input
-						id="file-input"
-						bind:this={fileInput}
-						type="file"
-						name="file"
-						accept=".pdf,.png,.jpg,.jpeg,.gif,application/pdf,image/png,image/jpeg,image/gif"
-						class="hidden"
-						onchange={handleFileSelect}
-					/>
+				<!--
+					Ni `action` ni `use:enhance` : le dépôt et l'enregistrement passent
+					par deux routes d'API. Laisser `enhance` ici le ferait poster le
+					formulaire en parallèle, avant même que le fichier ne soit déposé.
+				-->
+				<form onsubmit={envoyerDocument} class="space-y-4" data-testid="upload-form">
+					<input type="hidden" name="chapterId" value={chapterId} />
 
 					<!-- Drop zone -->
 					{#if !selectedFile}

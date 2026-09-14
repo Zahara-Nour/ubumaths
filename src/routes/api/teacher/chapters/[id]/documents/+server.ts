@@ -1,116 +1,110 @@
 /**
- * API Route: /api/teacher/chapters/[id]/documents
- * GET - List documents for a chapter
- * POST - Add a document to a chapter
+ * Enregistrement d'un document de chapitre
+ * ========================================
+ *
+ * Le fichier est déjà dans le stockage, déposé par le navigateur avec une
+ * autorisation signée. Cette route n'enregistre que ses métadonnées — quelques
+ * centaines d'octets, là où le fichier lui-même faisait répondre 413.
+ *
+ * POST /api/teacher/chapters/[id]/documents
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
-import { addChapterDocument } from '$lib/server/chapters';
-import { createDocumentSchema } from '$lib/server/validation/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { addChapterDocument } from '$lib/server/chapters';
+import { z } from 'zod';
 
-type ZodIssue = { path: (string | number)[]; message: string };
+/** Le bucket porte la même liste ; celle-ci refuse tôt, avec un message clair. */
+const ALLOWED_MIME_TYPES = [
+	'application/pdf',
+	'image/png',
+	'image/jpeg',
+	'image/jpg',
+	'image/gif'
+] as const;
 
-/**
- * Verify the chapter exists
- */
-async function verifyChapterExists(chapterId: string, supabase: App.Locals['supabase']) {
-	const { data: chapter, error: chapterError } = await supabase
+/** Doit rester d'accord avec le bucket et la contrainte `valid_file_size`. */
+const MAX_FILE_SIZE = 25 * 1024 * 1024;
+
+const bodySchema = z.object({
+	title: z.string().trim().min(1, 'Titre requis').max(200),
+	description: z.string().trim().max(1000).optional().nullable(),
+	storagePath: z.string().min(1, 'Fichier requis'),
+	fileName: z.string().trim().min(1, 'Fichier requis').max(255),
+	fileType: z.enum(ALLOWED_MIME_TYPES),
+	fileSize: z.number().int().positive().max(MAX_FILE_SIZE, 'Fichier trop volumineux (max 25 Mo)')
+});
+
+export const POST: RequestHandler = async ({ locals, params, request }) => {
+	await requireRole(locals, 'teacher');
+
+	const idValidation = uuidSchema.safeParse(params.id);
+	if (!idValidation.success) {
+		throw error(400, 'Identifiant de chapitre invalide');
+	}
+
+	const chapterId = idValidation.data;
+
+	const { data: chapter, error: chapterError } = await locals.supabase
 		.from('class_chapters')
 		.select('id')
 		.eq('id', chapterId)
 		.single();
 
-	if (chapterError || !chapter) {
-		throw error(404, 'Chapter not found');
+	// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
+	if (chapterError && chapterError.code !== 'PGRST116') {
+		console.error('[documents] Lecture impossible :', chapterError);
+		throw error(500, 'Vérification impossible');
 	}
 
-	return chapter;
-}
-
-/**
- * GET /api/teacher/chapters/[id]/documents
- * List all documents for a chapter
- */
-export const GET: RequestHandler = async ({ locals, params }) => {
-	await requireRole(locals, 'teacher');
-
-	// Validate chapter ID
-	const idValidation = uuidSchema.safeParse(params.id);
-	if (!idValidation.success) {
-		throw error(400, 'Invalid chapter ID');
+	if (!chapter) {
+		throw error(403, 'Accès refusé');
 	}
 
-	const chapterId = idValidation.data;
-
-	// Verify ownership
-	await verifyChapterExists(chapterId, locals.supabase);
-
-	// Fetch documents
-	const { data: documents, error: docsError } = await locals.supabase
-		.from('chapter_documents')
-		.select('*')
-		.eq('chapter_id', chapterId)
-		.order('display_order', { ascending: true });
-
-	if (docsError) {
-		console.error('[GET /api/teacher/chapters/[id]/documents] Error:', docsError);
-		throw error(500, 'Failed to fetch documents');
-	}
-
-	return json({
-		documents: documents || [],
-		count: documents?.length || 0
-	});
-};
-
-/**
- * POST /api/teacher/chapters/[id]/documents
- * Add a document to a chapter
- */
-export const POST: RequestHandler = async ({ locals, params, request }) => {
-	await requireRole(locals, 'teacher');
-
-	// Validate chapter ID
-	const idValidation = uuidSchema.safeParse(params.id);
-	if (!idValidation.success) {
-		throw error(400, 'Invalid chapter ID');
-	}
-
-	const chapterId = idValidation.data;
-
-	// Verify ownership
-	await verifyChapterExists(chapterId, locals.supabase);
-
-	// Parse and validate request body
 	let body: unknown;
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête invalide');
 	}
 
-	// Add chapterId to body for validation (it comes from URL)
-	const dataWithChapter = { ...(body as object), chapterId };
-
-	const validation = createDocumentSchema.safeParse(dataWithChapter);
-
+	const validation = bodySchema.safeParse(body);
 	if (!validation.success) {
-		const errorMsg = validation.error.issues
-			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
-			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, validation.error.issues[0].message);
 	}
 
-	// Add document
-	const result = await addChapterDocument(chapterId, validation.data, locals.supabase);
+	const data = validation.data;
 
-	if (result.error) {
-		console.error('[POST /api/teacher/chapters/[id]/documents] Error:', result.error);
-		throw error(500, 'Failed to add document');
+	// Un chemin venu du navigateur ne vaut que s'il désigne ce chapitre : sinon
+	// on rattacherait ici le fichier d'un autre.
+	if (!data.storagePath.startsWith(`chapters/${chapterId}/`)) {
+		throw error(400, 'Fichier invalide');
 	}
 
-	return json({ document: result.data }, { status: 201 });
+	const { error: dbError } = await addChapterDocument(
+		chapterId,
+		{
+			chapterId,
+			sourceType: 'upload',
+			title: data.title,
+			description: data.description || null,
+			storagePath: data.storagePath,
+			fileName: data.fileName,
+			mimeType: data.fileType,
+			fileSize: data.fileSize
+		},
+		locals.supabase
+	);
+
+	if (dbError) {
+		// Le fichier est déjà dans le stockage : le laisser sans sa ligne en
+		// ferait un orphelin invisible.
+		await locals.supabase.storage.from('chapter-documents').remove([data.storagePath]);
+		console.error('[documents] Enregistrement impossible :', dbError);
+		throw error(500, "Erreur lors de l'enregistrement");
+	}
+
+	return json({ success: true }, { status: 201 });
 };

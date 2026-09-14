@@ -145,7 +145,6 @@
 				unlinkExercise: `${lore.learning.exercise} retirée`,
 				linkWorksheet: 'Fiche rattachée au chapitre',
 				unlinkWorksheet: 'Fiche retirée du chapitre',
-				uploadDocument: 'Document uploade',
 				addGoogleDriveDocument: 'Document Google Drive ajoute',
 				deleteDocument: 'Document supprime',
 				migrateToVersion: 'Chapitre mis a jour depuis le template',
@@ -511,7 +510,16 @@
 		<Tabs.Content value="documents">
 			<div class="space-y-6">
 				<!-- Upload component -->
-				<DocumentUpload chapterId={data.chapter.id} onSuccess={() => invalidateAll()} />
+				<!--
+					Le client du navigateur pousse le fichier directement dans le
+					stockage : il ne traverse plus la fonction, qui refusait au-delà de
+					quelques mégaoctets.
+				-->
+				<DocumentUpload
+					chapterId={data.chapter.id}
+					supabase={data.supabase}
+					onSuccess={() => invalidateAll()}
+				/>
 
 				<!-- Documents list -->
 				{#if documentCount === 0}
