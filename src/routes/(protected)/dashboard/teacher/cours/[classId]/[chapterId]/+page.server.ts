@@ -48,6 +48,7 @@ import {
 	updateChecklistItemSchema
 } from '$lib/server/validation/chapters';
 import type {
+	ChapterSection,
 	ChapterDocument,
 	ChapterQuizQuestion,
 	ChapterChecklistItem,
@@ -109,36 +110,63 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	}
 
 	// Get chapter content in parallel
-	const [documentsResult, quizResult, checklistResult, exercisesResult, worksheetsResult] =
-		await Promise.all([
-			locals.supabase
-				.from('chapter_documents')
-				.select('*')
-				.eq('chapter_id', chapterId)
-				.order('display_order'),
-			locals.supabase
-				.from('chapter_quiz_questions')
-				.select('*')
-				.eq('chapter_id', chapterId)
-				.order('display_order'),
-			locals.supabase
-				.from('chapter_checklist_items')
-				.select('*')
-				.eq('chapter_id', chapterId)
-				.order('display_order'),
-			locals.supabase
-				.from('chapter_exercises')
-				.select('*')
-				.eq('chapter_id', chapterId)
-				.order('display_order'),
-			// Les fiches rattachées, avec leur titre : le professeur voit tout ce
-			// qu'il a rangé, distribué ou non.
-			locals.supabase
-				.from('chapter_worksheets')
-				.select('*, worksheet:worksheets(id, title, status)')
-				.eq('chapter_id', chapterId)
-				.order('display_order')
-		]);
+	const [
+		documentsResult,
+		quizResult,
+		checklistResult,
+		exercisesResult,
+		worksheetsResult,
+		sectionsResult
+	] = await Promise.all([
+		locals.supabase
+			.from('chapter_documents')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.order('display_order'),
+		locals.supabase
+			.from('chapter_quiz_questions')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.order('display_order'),
+		locals.supabase
+			.from('chapter_checklist_items')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.order('display_order'),
+		locals.supabase
+			.from('chapter_exercises')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.order('display_order'),
+		// Les fiches rattachées, avec leur titre : le professeur voit tout ce
+		// qu'il a rangé, distribué ou non.
+		locals.supabase
+			.from('chapter_worksheets')
+			.select('*, worksheet:worksheets(id, title, status)')
+			.eq('chapter_id', chapterId)
+			.order('display_order'),
+		// Le plan du chapitre. Un chapitre en a toujours au moins zéro : le
+		// professeur peut avoir supprimé les six, et la vue retombe alors sur
+		// « Non classé » seul.
+		locals.supabase
+			.from('chapter_sections')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.order('display_order')
+	]);
+
+	if (sectionsResult.error) {
+		console.error('Sections illisibles :', sectionsResult.error);
+	}
+
+	const sections: ChapterSection[] = (sectionsResult.data || []).map((s) => ({
+		id: s.id,
+		chapterId: s.chapter_id,
+		title: s.title,
+		displayOrder: s.display_order,
+		createdAt: s.created_at,
+		updatedAt: s.updated_at
+	}));
 
 	// Transform to app types
 	const documents: ChapterDocument[] = (documentsResult.data || []).map((d) => ({
@@ -155,6 +183,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		googleDriveUrl: d.google_drive_url,
 		thumbnailUrl: d.thumbnail_url,
 		displayOrder: d.display_order,
+		sectionId: d.section_id,
+		sectionOrder: d.section_order,
 		createdAt: d.created_at,
 		updatedAt: d.updated_at,
 		publishedAt: d.published_at
@@ -166,6 +196,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		questionTemplateId: q.question_template_id,
 		pointsOverride: q.points_override,
 		displayOrder: q.display_order,
+		sectionId: q.section_id,
+		sectionOrder: q.section_order,
 		createdAt: q.created_at,
 		publishedAt: q.published_at
 	}));
@@ -176,6 +208,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		content: c.content,
 		description: c.description,
 		displayOrder: c.display_order,
+		sectionId: c.section_id,
+		sectionOrder: c.section_order,
 		createdAt: c.created_at,
 		updatedAt: c.updated_at,
 		publishedAt: c.published_at
@@ -190,6 +224,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			chapterId: w.chapter_id,
 			worksheetId: w.worksheet_id,
 			displayOrder: w.display_order,
+			sectionId: w.section_id,
+			sectionOrder: w.section_order,
 			createdAt: w.created_at,
 			publishedAt: w.published_at,
 			title: fiche?.title ?? null,
@@ -202,6 +238,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		chapterId: e.chapter_id,
 		exerciseId: e.exercise_id,
 		displayOrder: e.display_order,
+		sectionId: e.section_id,
+		sectionOrder: e.section_order,
 		createdAt: e.created_at,
 		publishedAt: e.published_at
 	}));
@@ -422,6 +460,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			updatedAt: chapter.updated_at
 		},
 		classData,
+		sections,
 		documents,
 		quizQuestions,
 		checklistItems,

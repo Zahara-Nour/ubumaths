@@ -8,6 +8,7 @@
  */
 
 export { default as ChapterEditor } from './ChapterEditor.svelte';
+export { default as ChapterSectionsEditor } from './ChapterSectionsEditor.svelte';
 export { default as ChecklistEditor } from './ChecklistEditor.svelte';
 export { default as StudentProgressTable } from './StudentProgressTable.svelte';
 export { default as DocumentUpload } from './DocumentUpload.svelte';

@@ -27,6 +27,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import PublicationToggle from '$lib/components/cours/teacher/PublicationToggle.svelte';
 	import {
+		ChapterSectionsEditor,
 		ChecklistEditor,
 		StudentProgressTable,
 		DocumentUpload
@@ -267,6 +268,35 @@
 			</div>
 		</Card.Header>
 	</Card.Root>
+
+	<!--
+		Le PLAN du chapitre : l'axe de rangement est le moment du cours, pas le
+		type de ressource. Les onglets par type, plus bas, restent l'endroit où
+		l'on ajoute et modifie une ressource ; celui-ci est l'endroit où on la
+		range.
+	-->
+	<section class="mb-8 space-y-3">
+		<div>
+			<h2 class="text-xl font-semibold">Plan du chapitre</h2>
+			<p class="text-sm text-muted-foreground">
+				Rangez chaque ressource dans la section où elle intervient. Les sections se renomment, se
+				réordonnent, s'ajoutent et se suppriment — supprimer une section ne supprime jamais ses
+				ressources.
+			</p>
+		</div>
+
+		<ChapterSectionsEditor
+			chapterId={data.chapter.id}
+			sections={data.sections}
+			documents={data.documents}
+			exercises={data.exercises}
+			checklistItems={data.checklistItems}
+			quizQuestions={data.quizQuestions}
+			worksheets={data.worksheets}
+			questionTemplates={data.questionTemplates}
+			exerciseDetails={data.exerciseDetails}
+		/>
+	</section>
 
 	<!-- Content Tabs -->
 	<Tabs.Root bind:value={activeTab} class="w-full">
