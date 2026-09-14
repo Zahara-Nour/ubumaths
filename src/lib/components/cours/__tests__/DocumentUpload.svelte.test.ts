@@ -3,14 +3,13 @@ import { render } from 'vitest-browser-svelte';
 import DocumentUpload from '../teacher/DocumentUpload.svelte';
 
 /**
- * Le fichier ne part que s'il est dans le formulaire au moment de l'envoi.
- *
- * L'input qui le porte vivait dans le bloc affiché tant qu'aucun fichier
- * n'était choisi : le sélectionner le faisait disparaître du DOM, et avec lui
- * le fichier. Le serveur répondait « Fichier requis » sur un formulaire où
- * l'on voyait pourtant le document et sa taille.
+ * Le sélecteur de fichier doit rester monté — il vivait dans le bloc affiché
+ * tant qu'aucun fichier n'était choisi, si bien que le sélectionner le faisait
+ * disparaître du DOM — mais il ne doit plus appartenir au formulaire : le
+ * fichier part directement au stockage, et l'y laisser le renverrait dans le
+ * corps de la requête, avec le 413 au bout.
  */
-describe('DocumentUpload — le fichier reste dans le formulaire', () => {
+describe('DocumentUpload — le sélecteur de fichier', () => {
 	const chapterId = '22222222-2222-4222-8222-222222222222';
 
 	afterEach(() => {
@@ -30,42 +29,43 @@ describe('DocumentUpload — le fichier reste dans le formulaire', () => {
 		input.dispatchEvent(new Event('change', { bubbles: true }));
 	}
 
-	it('garde l’input de fichier monté après la sélection', async () => {
-		const { container } = render(DocumentUpload, { chapterId });
+	it('reste monté après la sélection', async () => {
+		const { container } = render(DocumentUpload, { chapterId, supabase: {} as never });
 
-		const input = container.querySelector<HTMLInputElement>('input[name="file"]');
+		const input = container.querySelector<HTMLInputElement>('#file-input');
 		expect(input).not.toBeNull();
 
 		choisir(input!, pdf('cours.pdf'));
-		await new Promise((resolve) => setTimeout(resolve, 0));
+		await new Promise((resolve) => setTimeout(resolve, 20));
 
-		// Le nom du fichier s'affiche — et l'input est toujours là, avec lui.
+		// Le nom du fichier s'affiche — et le sélecteur est toujours là, avec lui.
 		expect(container.textContent).toContain('cours.pdf');
-		const apres = container.querySelector<HTMLInputElement>('input[name="file"]');
+		const apres = container.querySelector<HTMLInputElement>('#file-input');
 		expect(apres).not.toBeNull();
 		expect(apres!.files?.length).toBe(1);
 	});
 
-	it('envoie le fichier avec le formulaire', async () => {
-		const { container } = render(DocumentUpload, { chapterId });
+	// Le formulaire ne porte plus le fichier : il ne poste que des métadonnées.
+	// L'y remettre ramènerait le 413 — et SvelteKit refuserait le formulaire,
+	// faute d'`enctype`.
+	it('ne met pas le fichier dans le formulaire', async () => {
+		const { container } = render(DocumentUpload, { chapterId, supabase: {} as never });
 
-		const input = container.querySelector<HTMLInputElement>('input[name="file"]');
-		choisir(input!, pdf('polycopie.pdf'));
-		await new Promise((resolve) => setTimeout(resolve, 0));
+		choisir(container.querySelector<HTMLInputElement>('#file-input')!, pdf('polycopie.pdf'));
+		await new Promise((resolve) => setTimeout(resolve, 20));
 
-		// Ce que le serveur recevra vraiment.
-		const form = container.querySelector<HTMLFormElement>('form[action="?/uploadDocument"]');
+		const form = container.querySelector<HTMLFormElement>('[data-testid="upload-form"]');
 		expect(form).not.toBeNull();
+		expect(form!.querySelector('input[type="file"]')).toBeNull();
 
 		const envoi = new FormData(form!).get('file');
-		expect(envoi).toBeInstanceOf(File);
-		expect((envoi as File).name).toBe('polycopie.pdf');
+		expect(envoi).toBeNull();
 	});
 
 	it('oublie le fichier quand on le retire', async () => {
-		const { container } = render(DocumentUpload, { chapterId });
+		const { container } = render(DocumentUpload, { chapterId, supabase: {} as never });
 
-		const input = container.querySelector<HTMLInputElement>('input[name="file"]');
+		const input = container.querySelector<HTMLInputElement>('#file-input');
 		choisir(input!, pdf('a-retirer.pdf'));
 		await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -79,7 +79,7 @@ describe('DocumentUpload — le fichier reste dans le formulaire', () => {
 
 		// L'input doit être vidé lui aussi, sinon le fichier repartirait avec
 		// l'envoi suivant.
-		const apres = container.querySelector<HTMLInputElement>('input[name="file"]');
+		const apres = container.querySelector<HTMLInputElement>('#file-input');
 		expect(apres!.files?.length ?? 0).toBe(0);
 	});
 });
@@ -93,7 +93,11 @@ describe('DocumentUpload — le fichier reste dans le formulaire', () => {
 describe('DocumentUpload — envoi direct au stockage', () => {
 	const chapterId = '22222222-2222-4222-8222-222222222222';
 
-	afterEach(() => {
+	afterEach(async () => {
+		// La soumission des métadonnées peut encore être en vol : retirer le
+		// stub maintenant l'enverrait vers un vrai `fetch`, et l'erreur
+		// remonterait hors de tout test.
+		await new Promise((resolve) => setTimeout(resolve, 50));
 		vi.unstubAllGlobals();
 	});
 
@@ -123,10 +127,12 @@ describe('DocumentUpload — envoi direct au stockage', () => {
 			}
 		} as never;
 
+		const corps: string[] = [];
 		vi.stubGlobal(
 			'fetch',
-			vi.fn(async (url: string) => {
+			vi.fn(async (url: string, init?: RequestInit) => {
 				appels.push(String(url));
+				if (init?.body) corps.push(String(init.body));
 				return new Response(
 					JSON.stringify({
 						storagePath: `chapters/${chapterId}/123.pdf`,
@@ -139,14 +145,15 @@ describe('DocumentUpload — envoi direct au stockage', () => {
 
 		const { container } = render(DocumentUpload, { chapterId, supabase });
 
-		choisir(container.querySelector<HTMLInputElement>('input[name="file"]')!, pdf('cours.pdf'));
+		choisir(container.querySelector<HTMLInputElement>('#file-input')!, pdf('cours.pdf'));
 		await new Promise((resolve) => setTimeout(resolve, 20));
 
-		container.querySelector<HTMLFormElement>('form[action="?/uploadDocument"]')!.requestSubmit();
-		await new Promise((resolve) => setTimeout(resolve, 80));
+		container.querySelector<HTMLFormElement>('[data-testid="upload-form"]')!.requestSubmit();
+		await new Promise((resolve) => setTimeout(resolve, 200));
 
-		// L'autorisation est demandée au serveur, qui décide du chemin.
+		// L'autorisation d'abord, l'enregistrement des métadonnées ensuite.
 		expect(appels[0]).toContain('document-upload-url');
+		expect(appels[1]).toContain(`/api/teacher/chapters/${chapterId}/documents`);
 
 		// Puis le fichier part directement au stockage, jamais par la fonction.
 		expect(envois).toHaveLength(1);
@@ -154,12 +161,15 @@ describe('DocumentUpload — envoi direct au stockage', () => {
 		expect(envois[0].token).toBe('jeton-unique');
 		expect(envois[0].file.name).toBe('cours.pdf');
 
-		// Le chemin rejoint le formulaire, qui postera les métadonnées.
-		const chemin = container.querySelector<HTMLInputElement>('input[name="storagePath"]');
-		expect(chemin?.value).toBe(`chapters/${chapterId}/123.pdf`);
+		// L'enregistrement porte le chemin choisi par le serveur, et la taille.
+		const metadonnees = JSON.parse(corps[1]);
+		expect(metadonnees.storagePath).toBe(`chapters/${chapterId}/123.pdf`);
+		expect(metadonnees.fileName).toBe('cours.pdf');
+		expect(metadonnees.fileSize).toBeGreaterThan(0);
 	});
 
-	it('signale l’échec du dépôt, et ne retient aucun chemin', async () => {
+	it('signale l’échec du dépôt, et n’enregistre rien', async () => {
+		const appels: string[] = [];
 		const supabase = {
 			storage: {
 				from: () => ({
@@ -184,17 +194,16 @@ describe('DocumentUpload — envoi direct au stockage', () => {
 
 		const { container } = render(DocumentUpload, { chapterId, supabase });
 
-		choisir(container.querySelector<HTMLInputElement>('input[name="file"]')!, pdf('trop-gros.pdf'));
+		choisir(container.querySelector<HTMLInputElement>('#file-input')!, pdf('trop-gros.pdf'));
 		await new Promise((resolve) => setTimeout(resolve, 20));
 
-		container.querySelector<HTMLFormElement>('form[action="?/uploadDocument"]')!.requestSubmit();
-		await new Promise((resolve) => setTimeout(resolve, 80));
+		container.querySelector<HTMLFormElement>('[data-testid="upload-form"]')!.requestSubmit();
+		await new Promise((resolve) => setTimeout(resolve, 200));
 
 		expect(container.textContent).toContain("Erreur lors de l'upload");
 
-		// Rien à enregistrer : le fichier n'est pas arrivé.
-		const chemin = container.querySelector<HTMLInputElement>('input[name="storagePath"]');
-		expect(chemin?.value).toBe('');
+		// Rien n'est enregistré d'un fichier qui n'est pas arrivé.
+		expect(appels.filter((u) => u.endsWith('/documents'))).toHaveLength(0);
 	});
 
 	it('refuse de partir sans fichier', async () => {
@@ -209,7 +218,7 @@ describe('DocumentUpload — envoi direct au stockage', () => {
 
 		const { container } = render(DocumentUpload, { chapterId, supabase: {} as never });
 
-		container.querySelector<HTMLFormElement>('form[action="?/uploadDocument"]')!.requestSubmit();
+		container.querySelector<HTMLFormElement>('[data-testid="upload-form"]')!.requestSubmit();
 		await new Promise((resolve) => setTimeout(resolve, 40));
 
 		expect(appels).toHaveLength(0);

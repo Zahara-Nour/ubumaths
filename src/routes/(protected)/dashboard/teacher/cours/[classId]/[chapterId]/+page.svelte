@@ -145,7 +145,6 @@
 				unlinkExercise: `${lore.learning.exercise} retirée`,
 				linkWorksheet: 'Fiche rattachée au chapitre',
 				unlinkWorksheet: 'Fiche retirée du chapitre',
-				uploadDocument: 'Document uploade',
 				addGoogleDriveDocument: 'Document Google Drive ajoute',
 				deleteDocument: 'Document supprime',
 				migrateToVersion: 'Chapitre mis a jour depuis le template',

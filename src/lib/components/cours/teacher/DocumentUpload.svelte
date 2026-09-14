@@ -12,7 +12,6 @@
 	 */
 
 	import { enhance } from '$app/forms';
-	import { tick } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -120,10 +119,6 @@
 	 * métadonnées — quelques centaines d'octets.
 	 */
 	async function envoyerDocument(event: SubmitEvent) {
-		// Le fichier est déjà en place : cette soumission-là est celle des
-		// métadonnées, on la laisse partir.
-		if (metaStoragePath) return;
-
 		event.preventDefault();
 
 		const file = selectedFile;
@@ -165,10 +160,29 @@
 				return;
 			}
 
-			// 3. Les métadonnées suivent, par le formulaire lui-même.
+			// 3. Les métadonnées, quelques centaines d'octets.
 			metaStoragePath = storagePath;
-			await tick();
-			(event.target as HTMLFormElement).requestSubmit();
+
+			const enregistrement = await fetch(`/api/teacher/chapters/${chapterId}/documents`, {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({
+					title: uploadTitle,
+					description: uploadDescription || null,
+					storagePath,
+					fileName: file.name,
+					fileType: file.type,
+					fileSize: file.size
+				})
+			});
+
+			if (!enregistrement.ok) {
+				uploadError = "Erreur lors de l'enregistrement";
+				return;
+			}
+
+			resetUploadForm();
+			onSuccess?.();
 		} catch (err) {
 			console.error('[DocumentUpload] Erreur inattendue :', err);
 			uploadError = 'Erreur inattendue';
@@ -272,43 +286,27 @@
 
 			<!-- Upload Tab -->
 			<Tabs.Content value="upload" class="mt-4">
-				<form
-					method="POST"
-					action="?/uploadDocument"
-					onsubmit={envoyerDocument}
-					use:enhance={() => {
-						isUploading = true;
-						return async ({ result, update }) => {
-							isUploading = false;
-							if (result.type === 'success') {
-								resetUploadForm();
-								onSuccess?.();
-							} else if (result.type === 'failure') {
-								uploadError =
-									(result.data as { error?: string })?.error || "Erreur lors de l'upload";
-							}
-							await update({ reset: false });
-						};
-					}}
-					class="space-y-4"
-				>
-					<input type="hidden" name="storagePath" value={metaStoragePath} />
-					<input type="hidden" name="chapterId" value={chapterId} />
+				<!--
+					Hors du formulaire, et c'est voulu : le fichier part directement au
+					stockage, jamais dans le corps de la requête. L'y laisser le ferait
+					repartir avec les métadonnées — et ramènerait le 413.
+				-->
+				<input
+					id="file-input"
+					bind:this={fileInput}
+					type="file"
+					accept=".pdf,.png,.jpg,.jpeg,.gif,application/pdf,image/png,image/jpeg,image/gif"
+					class="hidden"
+					onchange={handleFileSelect}
+				/>
 
-					<!--
-						Toujours monté, jamais dans le bloc conditionnel : c'est lui qui
-						porte le fichier jusqu'au serveur, et le retirer du DOM dès la
-						sélection le faisait disparaître de l'envoi.
-					-->
-					<input
-						id="file-input"
-						bind:this={fileInput}
-						type="file"
-						name="file"
-						accept=".pdf,.png,.jpg,.jpeg,.gif,application/pdf,image/png,image/jpeg,image/gif"
-						class="hidden"
-						onchange={handleFileSelect}
-					/>
+				<!--
+					Ni `action` ni `use:enhance` : le dépôt et l'enregistrement passent
+					par deux routes d'API. Laisser `enhance` ici le ferait poster le
+					formulaire en parallèle, avant même que le fichier ne soit déposé.
+				-->
+				<form onsubmit={envoyerDocument} class="space-y-4" data-testid="upload-form">
+					<input type="hidden" name="chapterId" value={chapterId} />
 
 					<!-- Drop zone -->
 					{#if !selectedFile}
