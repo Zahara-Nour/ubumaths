@@ -16,6 +16,7 @@ import { error, fail } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { getChapterWithContent, toggleChecklistItem } from '$lib/server/chapters';
 import { buildQuizInstances } from '$lib/server/chapters-quiz';
+import { buildChapterPlan, type WorksheetPlacement } from '$lib/server/chapter-plan';
 import { toggleChecklistSchema } from '$lib/server/validation/chapters';
 
 // `fetch` vient de l'événement, jamais du global : une URL relative ferait
@@ -130,8 +131,60 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		? await worksheetsResponse.json()
 		: { worksheets: [] };
 
+	// Le PLAN : les sections du chapitre et, dans chacune, les ressources de
+	// tous types. Les deux lectures passent par `locals.supabase`, donc aux
+	// droits de l'élève — une section d'un chapitre qui n'est pas le sien, ou
+	// une fiche non distribuée, ne remontent pas.
+	const [sectionsResult, placementsResult] = await Promise.all([
+		locals.supabase
+			.from('chapter_sections')
+			.select('*')
+			.eq('chapter_id', chapter.id)
+			.order('display_order'),
+		locals.supabase
+			.from('chapter_worksheets')
+			.select('worksheet_id, section_id, section_order')
+			.eq('chapter_id', chapter.id)
+	]);
+
+	// Une panne de rangement ne doit pas se lire « chapitre vide » : le plan
+	// retombe alors sur « Non classé », qui montre TOUT plutôt que rien.
+	if (sectionsResult.error) {
+		console.error(`Sections illisibles pour le chapitre ${chapter.id} :`, sectionsResult.error);
+	}
+	if (placementsResult.error) {
+		console.error(`Rangement des fiches illisible pour ${chapter.id} :`, placementsResult.error);
+	}
+
+	const worksheetPlacements: Record<string, WorksheetPlacement> = {};
+	for (const lien of placementsResult.data ?? []) {
+		worksheetPlacements[lien.worksheet_id] = {
+			sectionId: lien.section_id,
+			sectionOrder: lien.section_order
+		};
+	}
+
+	const plan = buildChapterPlan({
+		sections: (sectionsResult.data ?? []).map((s) => ({
+			id: s.id,
+			chapterId: s.chapter_id,
+			title: s.title,
+			displayOrder: s.display_order,
+			createdAt: s.created_at,
+			updatedAt: s.updated_at
+		})),
+		documents: chapter.documents,
+		exercises: chapter.exercises,
+		checklistItems: chapter.checklistItemsWithProgress,
+		quizQuestions: chapter.quizQuestionsWithResults,
+		worksheets: worksheetsData.worksheets || [],
+		exerciseTitles: exerciseDetails,
+		worksheetPlacements
+	});
+
 	return {
 		chapter,
+		plan,
 		className: classInfo?.name || 'Classe',
 		quizInstances: quiz?.instances ?? {},
 		quizUnavailable: quiz?.unavailable ?? [],

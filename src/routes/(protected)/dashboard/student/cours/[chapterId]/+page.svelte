@@ -1,39 +1,31 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
 	/**
-	 * Student Chapter Detail Page
+	 * Le chapitre, vu par l'élève
 	 * ============================
 	 *
-	 * Displays a chapter with tabs for:
-	 * - Documents (PDFs, Google Drive links)
-	 * - Quiz (moteur de questions, correction immédiate, SRS)
-	 * - Exercices (linked exercises)
-	 * - Checklist (personal progress tracking)
+	 * Rangé par MOMENT du cours — « Préparation », « Le cours », « Les
+	 * exercices »… — et non plus par type de ressource. Dans chaque section, les
+	 * cinq types se suivent dans l'ordre voulu par le professeur : l'élève
+	 * descend la page au lieu de deviner dans quel onglet chercher.
+	 *
+	 * ⚠️ Le plan arrive DÉJÀ filtré et ordonné par `buildChapterPlan`, côté
+	 * serveur. Les sections sans contenu publié n'y figurent pas : ce n'est pas
+	 * une règle d'affichage mais de confidentialité — le titre d'une section est
+	 * visible dès que le chapitre l'est, alors que son contenu attend sa
+	 * publication. Ne pas la ré-implémenter ici, et surtout ne pas la déplacer.
 	 */
 
 	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Badge } from '$lib/components/ui/badge';
 	import {
 		ChapterProgressIndicator,
 		DocumentCard,
 		ChecklistSection,
-		ChapterQuiz,
-		ChapterEmptyState
+		ChapterQuiz
 	} from '$lib/components/cours';
 	import { getChapterColorClasses } from '$lib/types/chapters';
-	import { cn } from '$lib/utils';
-	import {
-		ArrowLeft,
-		FileText,
-		HelpCircle,
-		ListChecks,
-		BookOpen,
-		BookMarked,
-		ClipboardList
-	} from '@lucide/svelte';
+	import { ArrowLeft, BookMarked, HelpCircle } from '@lucide/svelte';
 	import WorksheetCard from '$lib/components/student/worksheets/WorksheetCard.svelte';
 	import type { PageData, ActionData } from './$types';
 
@@ -44,28 +36,13 @@
 
 	let { data, form }: Props = $props();
 
-	// Tab state
-	let activeTab = $state('documents');
-
-	// Chapter color classes
 	let colorClasses = $derived(getChapterColorClasses(data.chapter.color));
 
-	// Content counts
-	let documentCount = $derived(data.chapter.documents.length);
-	let quizCount = $derived(data.chapter.quizQuestionsWithResults.length);
-	let exerciseCount = $derived(data.chapter.exercises.length);
-	let checklistCount = $derived(data.chapter.checklistItemsWithProgress.length);
-	let worksheetCount = $derived(data.worksheets.length);
+	/** Le plan est vide tant que rien n'est publié — pas quand rien n'existe. */
+	let planVide = $derived(data.plan.length === 0);
 
-	// Quiz state
-	let _quizCompleted = $derived(
-		data.chapter.quizQuestionsWithResults.every((q) => q.bestResult !== null)
-	);
-
-	// Handle form submission result
 	$effect(() => {
 		if (form?.success) {
-			// Refresh data after successful action
 			invalidateAll();
 		}
 	});
@@ -76,7 +53,6 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-4xl px-4 py-6">
-	<!-- Breadcrumb & Back -->
 	<div class="mb-6">
 		<Button variant="ghost" href="/dashboard/student/cours" class="mb-2 -ml-2">
 			<ArrowLeft class="mr-2 h-4 w-4" />
@@ -87,7 +63,6 @@
 		</p>
 	</div>
 
-	<!-- Chapter Header -->
 	<Card.Root class="mb-6 {colorClasses.border} border-2">
 		<Card.Header class={colorClasses.bg}>
 			<div class="flex items-start justify-between gap-4">
@@ -107,119 +82,47 @@
 		</Card.Header>
 	</Card.Root>
 
-	<!-- Content Tabs -->
-	<Tabs.Root bind:value={activeTab} class="w-full">
-		<Tabs.List class="mb-6 grid w-full grid-cols-5">
-			<Tabs.Trigger
-				value="documents"
-				class={cn('flex items-center gap-2', documentCount === 0 && 'text-muted-foreground/50')}
-			>
-				<FileText class="h-4 w-4" />
-				<span class="hidden sm:inline">Documents</span>
-				{#if documentCount > 0}
-					<Badge variant="secondary" class="ml-1">{documentCount}</Badge>
-				{/if}
-			</Tabs.Trigger>
-			<Tabs.Trigger
-				value="quiz"
-				class={cn('flex items-center gap-2', quizCount === 0 && 'text-muted-foreground/50')}
-			>
-				<HelpCircle class="h-4 w-4" />
-				<span class="hidden sm:inline">Quiz</span>
-				{#if quizCount > 0}
-					<Badge variant="secondary" class="ml-1">{quizCount}</Badge>
-				{/if}
-			</Tabs.Trigger>
-			<Tabs.Trigger
-				value="exercices"
-				class={cn('flex items-center gap-2', exerciseCount === 0 && 'text-muted-foreground/50')}
-			>
-				<BookOpen class="h-4 w-4" />
-				<span class="hidden sm:inline">{lore.learning.exercise}s</span>
-				{#if exerciseCount > 0}
-					<Badge variant="secondary" class="ml-1">{exerciseCount}</Badge>
-				{/if}
-			</Tabs.Trigger>
-			<Tabs.Trigger
-				value="fiches"
-				class={cn('flex items-center gap-2', worksheetCount === 0 && 'text-muted-foreground/50')}
-			>
-				<ClipboardList class="h-4 w-4" />
-				<span class="hidden sm:inline">Fiches</span>
-				{#if worksheetCount > 0}
-					<Badge variant="secondary" class="ml-1">{worksheetCount}</Badge>
-				{/if}
-			</Tabs.Trigger>
-			<Tabs.Trigger
-				value="checklist"
-				class={cn('flex items-center gap-2', checklistCount === 0 && 'text-muted-foreground/50')}
-			>
-				<ListChecks class="h-4 w-4" />
-				<span class="hidden sm:inline">Checklist</span>
-				{#if checklistCount > 0}
-					<Badge variant="secondary" class="ml-1">
-						{data.chapter.progress.completedChecklistItems}/{checklistCount}
-					</Badge>
-				{/if}
-			</Tabs.Trigger>
-		</Tabs.List>
+	{#if data.quizUnreadable || data.worksheetsUnavailable}
+		<!--
+			Une panne de lecture ne doit pas se lire « chapitre vide » : ce message
+			accuserait le professeur de n'avoir rien mis alors que la base n'a pas
+			répondu.
+		-->
+		<Card.Root class="mb-6 border-dashed">
+			<Card.Content class="py-4 text-center text-sm text-muted-foreground">
+				Une partie du chapitre n'a pas pu être chargée. Réessaie dans un instant.
+			</Card.Content>
+		</Card.Root>
+	{/if}
 
-		<!-- Documents Tab -->
-		<Tabs.Content value="documents">
-			{#if documentCount === 0}
-				<ChapterEmptyState kind="documents" />
-			{:else}
-				<div class="grid gap-4 sm:grid-cols-2">
-					{#each data.chapter.documents as document (document.id)}
-						<DocumentCard {document} />
-					{/each}
-				</div>
-			{/if}
-		</Tabs.Content>
+	{#if planVide}
+		<Card.Root>
+			<Card.Content class="py-12 text-center">
+				<BookMarked class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+				<p class="text-muted-foreground">Ce chapitre ne contient encore rien pour toi.</p>
+			</Card.Content>
+		</Card.Root>
+	{:else}
+		<div class="space-y-10">
+			{#each data.plan as section (section.id)}
+				<section class="space-y-4">
+					<!--
+						« Non classé » n'a pas de titre : l'élève voit les ressources, pas
+						l'étiquette du rangement en cours du professeur.
+					-->
+					{#if section.title}
+						<h2 class="border-b pb-2 text-xl font-semibold">{section.title}</h2>
+					{/if}
 
-		<!-- Quiz Tab -->
-		<Tabs.Content value="quiz">
-			{#if quizCount === 0}
-				<ChapterEmptyState kind="quiz" />
-			{:else if data.quizUnreadable}
-				<!--
-					Une panne de lecture ne doit pas se lire « aucune question » : ce
-					message accuserait la base d'être vide alors qu'elle n'a pas répondu.
-				-->
-				<Card.Root>
-					<Card.Content class="py-12 text-center">
-						<HelpCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-						<p class="text-muted-foreground">
-							Le quiz n'a pas pu être chargé. Réessaie dans un instant.
-						</p>
-					</Card.Content>
-				</Card.Root>
-			{:else}
-				<ChapterQuiz
-					chapterId={data.chapter.id}
-					questions={data.chapter.quizQuestionsWithResults}
-					instances={data.quizInstances}
-					unavailable={data.quizUnavailable}
-				/>
-			{/if}
-		</Tabs.Content>
-
-		<!-- Exercices Tab -->
-		<Tabs.Content value="exercices">
-			{#if exerciseCount === 0}
-				<ChapterEmptyState kind="exercises" />
-			{:else}
-				<div class="space-y-3">
-					{#each data.chapter.exercises as exercise (exercise.id)}
-						{@const details = data.exerciseDetails[exercise.exerciseId]}
-						{#if details}
+					{#each section.items as item, index (`${section.id}-${index}`)}
+						{#if item.kind === 'document'}
+							<DocumentCard document={item.document} />
+						{:else if item.kind === 'exercise'}
 							<Card.Root class="transition-shadow hover:shadow-md">
 								<Card.Content class="flex items-center justify-between p-4">
-									<div class="flex-1">
-										<h3 class="font-medium">{details.title}</h3>
-									</div>
+									<h3 class="flex-1 font-medium">{item.title}</h3>
 									<Button
-										href="/dashboard/student/exercises/{exercise.exerciseId}"
+										href="/dashboard/student/exercises/{item.exerciseId}"
 										variant="outline"
 										size="sm"
 									>
@@ -227,51 +130,38 @@
 									</Button>
 								</Card.Content>
 							</Card.Root>
+						{:else if item.kind === 'worksheet'}
+							<WorksheetCard worksheet={item.worksheet} />
+						{:else if item.kind === 'checklist'}
+							<ChecklistSection items={item.items} progress={data.chapter.progress} />
+						{:else if item.kind === 'quiz'}
+							{@const idsDeLaSection = new Set(item.questions.map((q) => q.id))}
+							{#if item.questions.some((q) => data.quizInstances[q.id])}
+								<ChapterQuiz
+									chapterId={data.chapter.id}
+									questions={item.questions}
+									instances={data.quizInstances}
+									unavailable={data.quizUnavailable.filter((u) =>
+										idsDeLaSection.has(u.quizQuestionId)
+									)}
+								/>
+							{:else}
+								<!--
+									Aucune question jouable ici. Le dire plutôt que de laisser un
+									blanc : « rien ne s'affiche » enverrait l'élève et le
+									professeur chercher au mauvais endroit.
+								-->
+								<Card.Root>
+									<Card.Content class="py-8 text-center text-sm text-muted-foreground">
+										<HelpCircle class="mx-auto mb-3 h-8 w-8 text-muted-foreground/50" />
+										Le quiz de cette partie n'est pas disponible pour le moment.
+									</Card.Content>
+								</Card.Root>
+							{/if}
 						{/if}
 					{/each}
-				</div>
-			{/if}
-		</Tabs.Content>
-
-		<!-- Fiches Tab -->
-		<Tabs.Content value="fiches">
-			{#if worksheetCount === 0}
-				{#if data.worksheetsUnavailable}
-					<!-- Une panne de lecture ne doit pas se lire « aucune fiche » : ce
-					     message accuserait la base d'être vide alors qu'elle n'a pas
-					     répondu. -->
-					<Card.Root>
-						<Card.Content class="py-12 text-center">
-							<ClipboardList class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-							<p class="text-muted-foreground">
-								Les fiches n'ont pas pu être chargées. Réessaie dans un instant.
-							</p>
-						</Card.Content>
-					</Card.Root>
-				{:else}
-					<!-- « pour ce chapitre », pas « pour cette classe » : la page filtre sur
-					     le chapitre, le message doit dire lequel des deux est vide. -->
-					<ChapterEmptyState kind="worksheets" />
-				{/if}
-			{:else}
-				<div class="grid gap-4 sm:grid-cols-2">
-					{#each data.worksheets as worksheet (worksheet.assignment_id)}
-						<WorksheetCard {worksheet} />
-					{/each}
-				</div>
-			{/if}
-		</Tabs.Content>
-
-		<!-- Checklist Tab -->
-		<Tabs.Content value="checklist">
-			{#if checklistCount === 0}
-				<ChapterEmptyState kind="checklist" />
-			{:else}
-				<ChecklistSection
-					items={data.chapter.checklistItemsWithProgress}
-					progress={data.chapter.progress}
-				/>
-			{/if}
-		</Tabs.Content>
-	</Tabs.Root>
+				</section>
+			{/each}
+		</div>
+	{/if}
 </main>
