@@ -2,13 +2,12 @@
  * Chapter System Server Functions
  * ================================
  *
- * Server-side functions for managing class chapters, documents, quizzes,
- * checklists, and exercises.
+ * Server-side functions for managing class chapters, documents, checklists,
+ * and exercises.
  *
  * Features:
  * - Teacher CRUD operations for chapters and content
  * - Student access to visible chapters with progress tracking
- * - SRS integration for quiz answers
  * - Reordering support for all content types
  *
  * @module server/chapters
@@ -19,8 +18,6 @@ import type { Database, TablesUpdate } from '$lib/types/database';
 import type {
 	ClassChapter,
 	ChapterDocument,
-	ChapterQuizQuestion,
-	ChapterQuizResult,
 	ChapterChecklistItem,
 	StudentChecklistProgress,
 	ChapterExercise,
@@ -37,8 +34,6 @@ import type {
 	CreateChecklistItemInput,
 	UpdateChecklistItemInput
 } from '$lib/server/validation/chapters';
-import { createDefaultFSRS } from '$lib/srs/fsrs';
-import { Grade, type CardStats, type ReviewHistoryEntry } from '$lib/srs/types';
 
 // ============================================================================
 // TYPES
@@ -46,8 +41,6 @@ import { Grade, type CardStats, type ReviewHistoryEntry } from '$lib/srs/types';
 
 type DbClassChapter = Database['public']['Tables']['class_chapters']['Row'];
 type DbChapterDocument = Database['public']['Tables']['chapter_documents']['Row'];
-type DbChapterQuizQuestion = Database['public']['Tables']['chapter_quiz_questions']['Row'];
-type DbChapterQuizResult = Database['public']['Tables']['chapter_quiz_results']['Row'];
 type DbChapterChecklistItem = Database['public']['Tables']['chapter_checklist_items']['Row'];
 type DbStudentChecklistProgress = Database['public']['Tables']['student_checklist_progress']['Row'];
 type DbChapterExercise = Database['public']['Tables']['chapter_exercises']['Row'];
@@ -57,19 +50,6 @@ type DbChapterWorksheet = Database['public']['Tables']['chapter_worksheets']['Ro
 interface OrderUpdate {
 	id: string;
 	displayOrder: number;
-}
-
-/**
- * Refus délibéré, par opposition à une panne.
- *
- * Le message d'un refus est écrit pour le professeur et doit lui parvenir tel
- * quel (« ce modèle n'est pas publié »). Celui d'une panne vient de Postgres et
- * n'a rien à faire dans une réponse HTTP : il décrit la base, pas l'action.
- * Sans cette distinction, l'appelant doit choisir entre tout montrer et tout
- * taire — et il taisait le seul message utile.
- */
-export class ContentRefusal extends Error {
-	readonly name = 'ContentRefusal';
 }
 
 /** Result type for operations */
@@ -125,34 +105,6 @@ function convertDocument(db: DbChapterDocument): ChapterDocument {
 		createdAt: db.created_at,
 		updatedAt: db.updated_at,
 		publishedAt: db.published_at
-	};
-}
-
-function convertQuizQuestion(db: DbChapterQuizQuestion): ChapterQuizQuestion {
-	return {
-		id: db.id,
-		chapterId: db.chapter_id,
-		questionTemplateId: db.question_template_id,
-		pointsOverride: db.points_override,
-		displayOrder: db.display_order,
-		sectionId: db.section_id,
-		sectionOrder: db.section_order,
-		createdAt: db.created_at,
-		publishedAt: db.published_at
-	};
-}
-
-function convertQuizResult(db: DbChapterQuizResult): ChapterQuizResult {
-	return {
-		id: db.id,
-		studentId: db.student_id,
-		chapterQuizQuestionId: db.chapter_quiz_question_id,
-		attemptNumber: db.attempt_number,
-		isCorrect: db.is_correct,
-		submittedAnswer: db.submitted_answer,
-		pointsEarned: db.points_earned,
-		submittedAt: db.submitted_at,
-		timeSpentSeconds: db.time_spent_seconds
 	};
 }
 
@@ -232,7 +184,6 @@ export async function getTeacherChapters(
 			`
 			*,
 			documents:chapter_documents(count),
-			quizQuestions:chapter_quiz_questions(count),
 			checklistItems:chapter_checklist_items(count),
 			exercises:chapter_exercises(count)
 		`
@@ -255,7 +206,6 @@ export async function getTeacherChapters(
 		return {
 			...chapter,
 			documentCount: (row.documents as unknown as { count: number }[])?.[0]?.count || 0,
-			quizQuestionCount: (row.quizQuestions as unknown as { count: number }[])?.[0]?.count || 0,
 			checklistItemCount: (row.checklistItems as unknown as { count: number }[])?.[0]?.count || 0,
 			exerciseCount: (row.exercises as unknown as { count: number }[])?.[0]?.count || 0
 		};
@@ -594,145 +544,6 @@ export async function reorderDocuments(
 // ============================================================================
 // TEACHER FUNCTIONS - QUIZ QUESTIONS
 // ============================================================================
-
-/**
- * Add a quiz question to a chapter
- *
- * @param chapterId - Chapter ID
- * @param questionTemplateId - Question template ID
- * @param supabase - Supabase client
- * @param displayOrder - Optional display order
- * @returns Created quiz question
- */
-export async function addQuizQuestion(
-	chapterId: string,
-	questionTemplateId: string,
-	supabase: SupabaseClient<Database>,
-	displayOrder?: number
-): Promise<OperationResult<ChapterQuizQuestion>> {
-	// Un modèle en brouillon n'est pas lisible par l'élève : la policy
-	// « Students can view published templates » filtre sur `status`. L'attacher
-	// au quiz créerait une question que le professeur voit et que l'élève ne
-	// verra jamais — sans message, la question disparaîtrait simplement de son
-	// écran. C'est exactement le défaut qui a rendu ce quiz invisible pendant
-	// toute sa vie ; on refuse donc à l'entrée plutôt que d'y remédier après.
-	//
-	// Le même garde existe déjà pour les fiches d'un chapitre, pour la même
-	// raison : un brouillon n'est pas distribuable.
-	const { data: template, error: templateError } = await supabase
-		.from('question_templates')
-		.select('id, status')
-		.eq('id', questionTemplateId)
-		.single();
-
-	// PGRST116 = aucune ligne, ce que le refus qui suit traite déjà.
-	if (templateError && templateError.code !== 'PGRST116') {
-		console.error('[addQuizQuestion] Modèle illisible :', templateError);
-		return { data: null, error: new Error(templateError.message) };
-	}
-
-	if (!template) {
-		return { data: null, error: new ContentRefusal('Modèle de question introuvable') };
-	}
-
-	if (template.status !== 'published') {
-		return {
-			data: null,
-			error: new ContentRefusal(
-				"Ce modèle de question n'est pas publié : les élèves ne pourraient pas le voir."
-			)
-		};
-	}
-
-	// Get max display order if not provided
-	let order = displayOrder;
-	if (order === undefined) {
-		const { data: maxOrder, error: maxOrderError } = await supabase
-			.from('chapter_quiz_questions')
-			.select('display_order')
-			.eq('chapter_id', chapterId)
-			.order('display_order', { ascending: false })
-			.limit(1)
-			.maybeSingle();
-
-		// Aucune ligne = premier élément, cas légitime. Toute autre panne laissait
-		// le rang à 0, ce qui insérait l'élément EN TÊTE et réordonnait la liste
-		// du professeur sans rien dire.
-		if (maxOrderError) {
-			console.error('[chapters] Rang suivant illisible (chapter_quiz_questions) :', maxOrderError);
-			return { data: null, error: new Error(maxOrderError.message) };
-		}
-
-		order = (maxOrder?.display_order ?? -1) + 1;
-	}
-
-	const { data: question, error } = await supabase
-		.from('chapter_quiz_questions')
-		.insert({
-			chapter_id: chapterId,
-			question_template_id: questionTemplateId,
-			display_order: order
-		})
-		.select()
-		.single();
-
-	if (error) {
-		console.error('[addQuizQuestion] Error:', error);
-		return { data: null, error: new Error(error.message) };
-	}
-
-	return { data: convertQuizQuestion(question), error: null };
-}
-
-/**
- * Remove a quiz question from a chapter
- *
- * @param quizQuestionId - Quiz question ID
- * @param supabase - Supabase client
- * @returns Success status
- */
-export async function removeQuizQuestion(
-	quizQuestionId: string,
-	supabase: SupabaseClient<Database>
-): Promise<{ error: Error | null }> {
-	const { error } = await supabase.from('chapter_quiz_questions').delete().eq('id', quizQuestionId);
-
-	if (error) {
-		console.error('[removeQuizQuestion] Error:', error);
-		return { error: new Error(error.message) };
-	}
-
-	return { error: null };
-}
-
-/**
- * Reorder quiz questions within a chapter
- *
- * @param chapterId - Chapter ID
- * @param orderUpdates - Array of {id, displayOrder} updates
- * @param supabase - Supabase client
- * @returns Success status
- */
-export async function reorderQuizQuestions(
-	chapterId: string,
-	orderUpdates: OrderUpdate[],
-	supabase: SupabaseClient<Database>
-): Promise<{ error: Error | null }> {
-	for (const update of orderUpdates) {
-		const { error } = await supabase
-			.from('chapter_quiz_questions')
-			.update({ display_order: update.displayOrder })
-			.eq('id', update.id)
-			.eq('chapter_id', chapterId);
-
-		if (error) {
-			console.error('[reorderQuizQuestions] Error:', error);
-			return { error: new Error(error.message) };
-		}
-	}
-
-	return { error: null };
-}
 
 // ============================================================================
 // TEACHER FUNCTIONS - CHECKLIST
@@ -1159,102 +970,6 @@ export async function getStudentChecklistProgress(
 	return { data: result, error: null, count: result.length };
 }
 
-/**
- * Get quiz results for a chapter
- *
- * @param chapterId - Chapter ID
- * @param supabase - Supabase client
- * @param studentId - Optional specific student ID
- * @returns Quiz results grouped by student
- */
-export async function getChapterQuizResults(
-	chapterId: string,
-	supabase: SupabaseClient<Database>,
-	studentId?: string
-): Promise<
-	ListResult<{
-		studentId: string;
-		results: ChapterQuizResult[];
-		totalCorrect: number;
-		totalAttempted: number;
-	}>
-> {
-	// Get quiz questions for the chapter
-	const { data: questions, error: questionsError } = await supabase
-		.from('chapter_quiz_questions')
-		.select('id')
-		.eq('chapter_id', chapterId);
-
-	if (questionsError) {
-		console.error('[getChapterQuizResults] Error fetching questions:', questionsError);
-		return { data: [], error: new Error(questionsError.message), count: 0 };
-	}
-
-	const questionIds = (questions || []).map((q) => q.id);
-
-	if (questionIds.length === 0) {
-		return { data: [], error: null, count: 0 };
-	}
-
-	// Get results
-	let resultsQuery = supabase
-		.from('chapter_quiz_results')
-		.select('*')
-		.in('chapter_quiz_question_id', questionIds)
-		.order('submitted_at', { ascending: false });
-
-	if (studentId) {
-		resultsQuery = resultsQuery.eq('student_id', studentId);
-	}
-
-	const { data: resultsData, error: resultsError } = await resultsQuery;
-
-	if (resultsError) {
-		console.error('[getChapterQuizResults] Error fetching results:', resultsError);
-		return { data: [], error: new Error(resultsError.message), count: 0 };
-	}
-
-	// Group by student
-	const resultsByStudent = new Map<string, DbChapterQuizResult[]>();
-
-	for (const result of resultsData || []) {
-		if (!resultsByStudent.has(result.student_id)) {
-			resultsByStudent.set(result.student_id, []);
-		}
-		resultsByStudent.get(result.student_id)!.push(result);
-	}
-
-	// Build result
-	const result: {
-		studentId: string;
-		results: ChapterQuizResult[];
-		totalCorrect: number;
-		totalAttempted: number;
-	}[] = [];
-
-	for (const [sid, studentResults] of resultsByStudent) {
-		// Get best result per question
-		const bestByQuestion = new Map<string, DbChapterQuizResult>();
-		for (const r of studentResults) {
-			const existing = bestByQuestion.get(r.chapter_quiz_question_id);
-			if (!existing || r.is_correct) {
-				bestByQuestion.set(r.chapter_quiz_question_id, r);
-			}
-		}
-
-		const totalCorrect = Array.from(bestByQuestion.values()).filter((r) => r.is_correct).length;
-
-		result.push({
-			studentId: sid,
-			results: studentResults.map(convertQuizResult),
-			totalCorrect,
-			totalAttempted: bestByQuestion.size
-		});
-	}
-
-	return { data: result, error: null, count: result.length };
-}
-
 // ============================================================================
 // STUDENT FUNCTIONS - VIEW
 // ============================================================================
@@ -1319,17 +1034,12 @@ export async function getChapterWithContent(
 		return { data: null, error: new Error(chapterError.message) };
 	}
 
-	// Les quatre sections du chapitre. Une panne sur l'une d'elles rendait la
+	// Les trois sections du chapitre. Une panne sur l'une d'elles rendait la
 	// section vide à l'élève, sans distinction avec « le professeur n'a rien
 	// déposé » : un cours amputé passait donc pour un cours terminé.
-	const [documentsRes, quizQuestionsRes, checklistItemsRes, exercisesRes] = await Promise.all([
+	const [documentsRes, checklistItemsRes, exercisesRes] = await Promise.all([
 		supabase
 			.from('chapter_documents')
-			.select('*')
-			.eq('chapter_id', chapterId)
-			.order('display_order', { ascending: true }),
-		supabase
-			.from('chapter_quiz_questions')
 			.select('*')
 			.eq('chapter_id', chapterId)
 			.order('display_order', { ascending: true }),
@@ -1345,16 +1055,13 @@ export async function getChapterWithContent(
 			.order('display_order', { ascending: true })
 	]);
 
-	const sectionEnEchec = [documentsRes, quizQuestionsRes, checklistItemsRes, exercisesRes].find(
-		(r) => r.error
-	);
+	const sectionEnEchec = [documentsRes, checklistItemsRes, exercisesRes].find((r) => r.error);
 	if (sectionEnEchec?.error) {
 		console.error('[getChapterWithContent] Section illisible :', sectionEnEchec.error);
 		return { data: null, error: new Error(sectionEnEchec.error.message) };
 	}
 
 	const documents = documentsRes.data;
-	const quizQuestions = quizQuestionsRes.data;
 	const checklistItems = checklistItemsRes.data;
 	const exercises = exercisesRes.data;
 
@@ -1368,45 +1075,17 @@ export async function getChapterWithContent(
 			(checklistItems || []).map((i) => i.id)
 		);
 
-	// Get student's quiz results
-	const { data: quizResults, error: quizResultsError } = await supabase
-		.from('chapter_quiz_results')
-		.select('*')
-		.eq('student_id', studentId)
-		.in(
-			'chapter_quiz_question_id',
-			(quizQuestions || []).map((q) => q.id)
-		)
-		.order('submitted_at', { ascending: false });
-
 	// L'avancement de l'élève, lui, n'empêche pas d'afficher le cours : une
 	// panne ici le montre « non commencé » plutôt que de fermer la page. Mais
 	// elle laisse une trace, au lieu de se confondre avec un vrai zéro.
 	if (checklistProgressError) {
 		console.error('[getChapterWithContent] Avancement illisible :', checklistProgressError);
 	}
-	if (quizResultsError) {
-		console.error('[getChapterWithContent] Résultats de quiz illisibles :', quizResultsError);
-	}
 
 	// Build progress map for checklist
 	const progressMap = new Map<string, DbStudentChecklistProgress>();
 	for (const p of checklistProgress || []) {
 		progressMap.set(p.checklist_item_id, p);
-	}
-
-	// Build results map for quiz (best result per question)
-	const resultsMap = new Map<string, { best: DbChapterQuizResult; count: number }>();
-	for (const r of quizResults || []) {
-		const existing = resultsMap.get(r.chapter_quiz_question_id);
-		if (!existing) {
-			resultsMap.set(r.chapter_quiz_question_id, { best: r, count: 1 });
-		} else {
-			existing.count++;
-			if (r.is_correct && !existing.best.is_correct) {
-				existing.best = r;
-			}
-		}
 	}
 
 	// Build enriched checklist items
@@ -1419,47 +1098,15 @@ export async function getChapterWithContent(
 		};
 	});
 
-	// Build enriched quiz questions
-	const quizQuestionsWithResults = (quizQuestions || []).map((q) => {
-		const resultInfo = resultsMap.get(q.id);
-		return {
-			...convertQuizQuestion(q),
-			bestResult: resultInfo ? convertQuizResult(resultInfo.best) : null,
-			attemptsCount: resultInfo?.count ?? 0
-		};
-	});
-
 	// Calculate progress
 	const completedChecklistItems = checklistItemsWithProgress.filter((i) => i.isCompleted).length;
 	const totalChecklistItems = checklistItemsWithProgress.length;
-	const correctQuizQuestions = Array.from(resultsMap.values()).filter(
-		(r) => r.best.is_correct
-	).length;
-	const totalQuizQuestions = (quizQuestions || []).length;
-
-	// Calculate points
-	const totalPointsEarned = Array.from(resultsMap.values()).reduce(
-		(sum, r) => sum + (r.best.is_correct ? r.best.points_earned : 0),
-		0
-	);
-	const maxPossiblePoints = (quizQuestions || []).reduce(
-		(sum, q) => sum + (q.points_override ?? 1),
-		0
-	);
-
 	// Find last activity
 	const lastChecklistActivity = checklistItemsWithProgress
 		.filter((i) => i.completedAt)
 		.sort((a, b) => (b.completedAt! > a.completedAt! ? 1 : -1))[0]?.completedAt;
 
-	const lastQuizActivity = quizResults?.[0]?.submitted_at;
-
-	const lastActivityAt =
-		lastChecklistActivity && lastQuizActivity
-			? lastChecklistActivity > lastQuizActivity
-				? lastChecklistActivity
-				: lastQuizActivity
-			: lastChecklistActivity || lastQuizActivity || null;
+	const lastActivityAt = lastChecklistActivity ?? null;
 
 	const progress: ChapterProgress = {
 		chapterId,
@@ -1470,259 +1117,19 @@ export async function getChapterWithContent(
 			totalChecklistItems > 0
 				? Math.round((completedChecklistItems / totalChecklistItems) * 100)
 				: 0,
-		totalQuizQuestions,
-		correctQuizQuestions,
-		quizScore:
-			totalQuizQuestions > 0 ? Math.round((correctQuizQuestions / totalQuizQuestions) * 100) : 0,
-		totalPointsEarned,
-		maxPossiblePoints,
 		lastActivityAt
 	};
 
 	const result: StudentChapterView = {
 		...convertChapter(chapter),
 		documents: (documents || []).map(convertDocument),
-		quizQuestions: (quizQuestions || []).map(convertQuizQuestion),
 		checklistItems: (checklistItems || []).map(convertChecklistItem),
 		exercises: (exercises || []).map(convertExercise),
 		progress,
-		checklistItemsWithProgress,
-		quizQuestionsWithResults
+		checklistItemsWithProgress
 	};
 
 	return { data: result, error: null };
-}
-
-// ============================================================================
-// STUDENT FUNCTIONS - QUIZ
-// ============================================================================
-
-/**
- * Plafond d'essais par question et par élève.
- *
- * Il ne protège pas d'un élève qui scripterait son propre jeton : le rôle
- * `authenticated` a le droit `INSERT` sur `chapter_quiz_results`, donc une
- * insertion directe via PostgREST ne passe pas par ici. Fermer ce chemin-là
- * demande un garde EN BASE.
- *
- * Ce qu'il protège vraiment : un client qui re-soumet en boucle. Ce n'est pas
- * théorique — la première version de `ChapterQuiz` re-postait à chaque retour
- * en arrière. Le plafond borne le dégât d'un bug d'interface.
- *
- * 100 est délibérément large : le quiz est un entraînement rejouable, et la
- * limite doit rester invisible à un élève assidu.
- */
-const MAX_QUIZ_ATTEMPTS_PER_QUESTION = 100;
-
-/** Pourquoi une soumission de quiz est refusée. */
-export type QuizRefusalReason = 'chapitre_incoherent' | 'limite_atteinte';
-
-export class QuizSubmissionRefusal extends Error {
-	constructor(
-		readonly reason: QuizRefusalReason,
-		message: string
-	) {
-		super(message);
-		this.name = 'QuizSubmissionRefusal';
-	}
-}
-
-export interface SubmitQuizAnswerInput {
-	studentId: string;
-	/** Question du quiz visée. */
-	quizQuestionId: string;
-	/** Chapitre depuis lequel la réponse est envoyée — il doit porter la question. */
-	chapterId: string;
-	isCorrect: boolean;
-	timeSpentSeconds: number;
-	/** Réponse soumise, pour la trace. */
-	submittedAnswer?: string;
-}
-
-/**
- * Submit a quiz answer
- *
- * CRITICAL: Also updates SRS card stats if the question template is in student's deck
- *
- * Les arguments passent par un objet nommé : la fonction en prenait six en
- * position, dont deux booléens/nombres voisins, et une inversion y aurait été
- * silencieuse.
- *
- * @param input - Élève, question, chapitre d'origine et réponse
- * @param supabase - Supabase client
- * @returns Created quiz result
- */
-export async function submitQuizAnswer(
-	input: SubmitQuizAnswerInput,
-	supabase: SupabaseClient<Database>
-): Promise<OperationResult<ChapterQuizResult>> {
-	const {
-		studentId,
-		quizQuestionId,
-		chapterId,
-		isCorrect,
-		timeSpentSeconds,
-		submittedAnswer = ''
-	} = input;
-
-	// 1. Get the quiz question to find the template ID
-	const { data: quizQuestion, error: questionError } = await supabase
-		.from('chapter_quiz_questions')
-		.select('*, chapter:class_chapters!inner(is_visible, class_id)')
-		.eq('id', quizQuestionId)
-		.single();
-
-	if (questionError || !quizQuestion) {
-		console.error('[submitQuizAnswer] Error fetching question:', questionError);
-		return { data: null, error: new Error(questionError?.message || 'Question not found') };
-	}
-
-	// La question doit appartenir au chapitre d'où vient la réponse.
-	//
-	// L'en-tête de la route promettait cette vérification ; elle n'existait pas.
-	// La policy d'insertion rattrape l'essentiel (classe et visibilité), donc
-	// rien n'était exploitable — mais un commentaire qui décrit un garde absent
-	// finit par être cru, et le résultat serait rangé sous un chapitre qui ne
-	// l'a jamais posé.
-	if (quizQuestion.chapter_id !== chapterId) {
-		console.error(
-			`[submitQuizAnswer] Question ${quizQuestionId} soumise depuis le chapitre ${chapterId}, alors qu'elle appartient à ${quizQuestion.chapter_id}`
-		);
-		return {
-			data: null,
-			error: new QuizSubmissionRefusal(
-				'chapitre_incoherent',
-				"Cette question n'appartient pas à ce chapitre"
-			)
-		};
-	}
-
-	// 2. Get attempt number (count existing attempts + 1)
-	//
-	// Une panne de comptage n'est pas « zéro essai » : sans ce garde, elle
-	// laissait `attempt_number` à 1 indéfiniment, et le professeur lisait « 1ʳᵉ
-	// tentative » sur la dixième. On refuse plutôt que d'enregistrer un faux.
-	const { count: existingAttempts, error: countError } = await supabase
-		.from('chapter_quiz_results')
-		.select('*', { count: 'exact', head: true })
-		.eq('chapter_quiz_question_id', quizQuestionId)
-		.eq('student_id', studentId);
-
-	if (countError) {
-		console.error('[submitQuizAnswer] Comptage des essais impossible :', countError);
-		return { data: null, error: new Error(countError.message) };
-	}
-
-	if ((existingAttempts ?? 0) >= MAX_QUIZ_ATTEMPTS_PER_QUESTION) {
-		return {
-			data: null,
-			error: new QuizSubmissionRefusal(
-				'limite_atteinte',
-				`Limite de ${MAX_QUIZ_ATTEMPTS_PER_QUESTION} tentatives atteinte pour cette question`
-			)
-		};
-	}
-
-	const attemptNumber = (existingAttempts ?? 0) + 1;
-
-	// Calculate points earned (use override or default to 1)
-	const pointsEarned = isCorrect ? (quizQuestion.points_override ?? 1) : 0;
-
-	// 3. Insert the quiz result
-	const { data: result, error: resultError } = await supabase
-		.from('chapter_quiz_results')
-		.insert({
-			chapter_quiz_question_id: quizQuestionId,
-			student_id: studentId,
-			submitted_answer: submittedAnswer,
-			is_correct: isCorrect,
-			points_earned: pointsEarned,
-			time_spent_seconds: timeSpentSeconds,
-			attempt_number: attemptNumber
-		})
-		.select()
-		.single();
-
-	if (resultError) {
-		console.error('[submitQuizAnswer] Error inserting result:', resultError);
-		return { data: null, error: new Error(resultError.message) };
-	}
-
-	// 4. SRS Integration - Check if student has this template in their SRS decks
-	const questionTemplateId = quizQuestion.question_template_id;
-
-	try {
-		// Find if student has card stats for this template
-		const { data: cardStats, error: statsError } = await supabase
-			.from('srs_card_stats')
-			.select('*')
-			.eq('user_id', studentId)
-			.eq('card_reference_type', 'template')
-			.eq('card_reference_id', questionTemplateId)
-			.maybeSingle();
-
-		if (statsError) {
-			console.error('[submitQuizAnswer] Error checking SRS stats:', statsError);
-			// Don't fail the whole operation, just log the error
-		} else if (cardStats) {
-			// 5. Update SRS stats using FSRS algorithm
-			const fsrs = createDefaultFSRS();
-
-			// Convert DB stats to CardStats type
-			const currentStats: CardStats = {
-				id: cardStats.id,
-				userId: cardStats.user_id,
-				cardReferenceType: cardStats.card_reference_type as 'template' | 'custom',
-				cardReferenceId: cardStats.card_reference_id,
-				difficulty: cardStats.difficulty,
-				stability: cardStats.stability,
-				state: cardStats.state as CardStats['state'],
-				lastReview: cardStats.last_review,
-				nextReview: cardStats.next_review,
-				totalReviews: cardStats.total_reviews,
-				reviewHistory: (cardStats.review_history as unknown as ReviewHistoryEntry[]) || [],
-				createdAt: cardStats.created_at,
-				updatedAt: cardStats.updated_at
-			};
-
-			// Determine grade based on correctness
-			// isCorrect = true -> Grade.GOOD (3)
-			// isCorrect = false -> Grade.AGAIN (1)
-			const grade = isCorrect ? Grade.GOOD : Grade.AGAIN;
-
-			// Review the card
-			const updatedStats = fsrs.reviewCard(currentStats, grade, timeSpentSeconds);
-
-			// Update the database
-			const { error: updateError } = await supabase
-				.from('srs_card_stats')
-				.update({
-					difficulty: updatedStats.difficulty,
-					stability: updatedStats.stability,
-					state: updatedStats.state,
-					last_review: updatedStats.lastReview,
-					next_review: updatedStats.nextReview,
-					total_reviews: updatedStats.totalReviews,
-					review_history:
-						updatedStats.reviewHistory as unknown as Database['public']['Tables']['srs_card_stats']['Update']['review_history']
-				})
-				.eq('id', cardStats.id);
-
-			if (updateError) {
-				console.error('[submitQuizAnswer] Error updating SRS stats:', updateError);
-				// Don't fail the whole operation
-			} else {
-				console.log(
-					`[submitQuizAnswer] Updated SRS stats for template ${questionTemplateId}: grade=${grade}, next review in ${fsrs.calculateInterval(updatedStats.stability)} days`
-				);
-			}
-		}
-	} catch (srsError) {
-		console.error('[submitQuizAnswer] SRS integration error:', srsError);
-		// Don't fail the quiz answer submission due to SRS errors
-	}
-
-	return { data: convertQuizResult(result), error: null };
 }
 
 // ============================================================================

@@ -28,7 +28,6 @@
 	import {
 		ArrowLeft,
 		FileText,
-		HelpCircle,
 		CheckSquare,
 		BookOpen,
 		ClipboardList,
@@ -253,13 +252,6 @@
 					<div>
 						<p class="text-2xl font-bold">{contentCounts.documentCount}</p>
 						<p class="text-xs text-muted-foreground">Documents</p>
-					</div>
-				</div>
-				<div class="flex items-center gap-2">
-					<HelpCircle class="h-5 w-5 text-muted-foreground" />
-					<div>
-						<p class="text-2xl font-bold">{contentCounts.quizQuestionCount}</p>
-						<p class="text-xs text-muted-foreground">Questions Quiz</p>
 					</div>
 				</div>
 				<div class="flex items-center gap-2">

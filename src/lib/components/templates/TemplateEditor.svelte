@@ -51,7 +51,6 @@
 		Save,
 		X,
 		FileText,
-		HelpCircle,
 		ClipboardList,
 		Dumbbell,
 		AlertCircle
@@ -91,7 +90,6 @@
 	let contentSnapshot = $state<TemplateContentSnapshot>(
 		initialTemplate?.contentSnapshot ?? {
 			documents: [],
-			quizQuestions: [],
 			checklistItems: [],
 			exercises: [],
 			worksheets: []
@@ -105,7 +103,6 @@
 	const isValid = $derived(title.trim().length > 0);
 	const hasContent = $derived(
 		contentSnapshot.documents.length > 0 ||
-			contentSnapshot.quizQuestions.length > 0 ||
 			contentSnapshot.checklistItems.length > 0 ||
 			contentSnapshot.exercises.length > 0
 	);
@@ -255,20 +252,13 @@
 
 	<Card.Content>
 		<Tabs.Root bind:value={activeTab}>
-			<Tabs.List class="grid w-full grid-cols-5">
+			<Tabs.List class="grid w-full grid-cols-4">
 				<Tabs.Trigger value="metadata">Informations</Tabs.Trigger>
 				<Tabs.Trigger value="documents" class="flex items-center gap-1">
 					<FileText class="h-4 w-4" />
 					<span class="hidden sm:inline">Documents</span>
 					<Badge variant="secondary" class="ml-1 text-xs">
 						{contentSnapshot.documents.length}
-					</Badge>
-				</Tabs.Trigger>
-				<Tabs.Trigger value="quiz" class="flex items-center gap-1">
-					<HelpCircle class="h-4 w-4" />
-					<span class="hidden sm:inline">Quiz</span>
-					<Badge variant="secondary" class="ml-1 text-xs">
-						{contentSnapshot.quizQuestions.length}
 					</Badge>
 				</Tabs.Trigger>
 				<Tabs.Trigger value="checklist" class="flex items-center gap-1">
@@ -449,19 +439,6 @@
 					<h3 class="mb-1 text-lg font-semibold">Gestion des documents</h3>
 					<p class="text-sm text-muted-foreground">
 						L'éditeur de documents sera disponible prochainement.
-					</p>
-				</div>
-			</Tabs.Content>
-
-			<!-- Quiz Tab -->
-			<Tabs.Content value="quiz" class="py-4">
-				<div
-					class="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-12"
-				>
-					<HelpCircle class="mb-3 h-12 w-12 text-muted-foreground/50" />
-					<h3 class="mb-1 text-lg font-semibold">Gestion des questions quiz</h3>
-					<p class="text-sm text-muted-foreground">
-						L'éditeur de quiz sera disponible prochainement.
 					</p>
 				</div>
 			</Tabs.Content>

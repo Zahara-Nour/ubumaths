@@ -70,7 +70,6 @@ export const sectionContentKindSchema = z.enum([
 	'document',
 	'exercise',
 	'checklistItem',
-	'quizQuestion',
 	'worksheet'
 ]);
 

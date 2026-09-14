@@ -4,7 +4,6 @@
  *
  * Manages chapter content:
  * - Documents (add/remove/reorder)
- * - Quiz questions (modèles publiés : add/remove/reorder)
  * - Checklist items (CRUD/reorder)
  * - Exercises (link/unlink/reorder)
  * - View student progress
@@ -16,8 +15,6 @@ import { requireRole } from '$lib/server/middleware/auth';
 import {
 	addChapterDocument,
 	deleteChapterDocument,
-	addQuizQuestion,
-	removeQuizQuestion,
 	addChecklistItem,
 	updateChecklistItem,
 	deleteChecklistItem,
@@ -25,9 +22,7 @@ import {
 	unlinkExercise,
 	linkWorksheet,
 	unlinkWorksheet,
-	getStudentChecklistProgress,
-	getChapterQuizResults,
-	ContentRefusal
+	getStudentChecklistProgress
 } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
 import {
@@ -50,7 +45,6 @@ import {
 import type {
 	ChapterSection,
 	ChapterDocument,
-	ChapterQuizQuestion,
 	ChapterChecklistItem,
 	ChapterExercise
 } from '$lib/types/chapters';
@@ -110,50 +104,39 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	}
 
 	// Get chapter content in parallel
-	const [
-		documentsResult,
-		quizResult,
-		checklistResult,
-		exercisesResult,
-		worksheetsResult,
-		sectionsResult
-	] = await Promise.all([
-		locals.supabase
-			.from('chapter_documents')
-			.select('*')
-			.eq('chapter_id', chapterId)
-			.order('display_order'),
-		locals.supabase
-			.from('chapter_quiz_questions')
-			.select('*')
-			.eq('chapter_id', chapterId)
-			.order('display_order'),
-		locals.supabase
-			.from('chapter_checklist_items')
-			.select('*')
-			.eq('chapter_id', chapterId)
-			.order('display_order'),
-		locals.supabase
-			.from('chapter_exercises')
-			.select('*')
-			.eq('chapter_id', chapterId)
-			.order('display_order'),
-		// Les fiches rattachées, avec leur titre : le professeur voit tout ce
-		// qu'il a rangé, distribué ou non.
-		locals.supabase
-			.from('chapter_worksheets')
-			.select('*, worksheet:worksheets(id, title, status)')
-			.eq('chapter_id', chapterId)
-			.order('display_order'),
-		// Le plan du chapitre. Un chapitre en a toujours au moins zéro : le
-		// professeur peut avoir supprimé les six, et la vue retombe alors sur
-		// « Non classé » seul.
-		locals.supabase
-			.from('chapter_sections')
-			.select('*')
-			.eq('chapter_id', chapterId)
-			.order('display_order')
-	]);
+	const [documentsResult, checklistResult, exercisesResult, worksheetsResult, sectionsResult] =
+		await Promise.all([
+			locals.supabase
+				.from('chapter_documents')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order'),
+			locals.supabase
+				.from('chapter_checklist_items')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order'),
+			locals.supabase
+				.from('chapter_exercises')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order'),
+			// Les fiches rattachées, avec leur titre : le professeur voit tout ce
+			// qu'il a rangé, distribué ou non.
+			locals.supabase
+				.from('chapter_worksheets')
+				.select('*, worksheet:worksheets(id, title, status)')
+				.eq('chapter_id', chapterId)
+				.order('display_order'),
+			// Le plan du chapitre. Un chapitre en a toujours au moins zéro : le
+			// professeur peut avoir supprimé les six, et la vue retombe alors sur
+			// « Non classé » seul.
+			locals.supabase
+				.from('chapter_sections')
+				.select('*')
+				.eq('chapter_id', chapterId)
+				.order('display_order')
+		]);
 
 	if (sectionsResult.error) {
 		console.error('Sections illisibles :', sectionsResult.error);
@@ -188,18 +171,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		createdAt: d.created_at,
 		updatedAt: d.updated_at,
 		publishedAt: d.published_at
-	}));
-
-	const quizQuestions: ChapterQuizQuestion[] = (quizResult.data || []).map((q) => ({
-		id: q.id,
-		chapterId: q.chapter_id,
-		questionTemplateId: q.question_template_id,
-		pointsOverride: q.points_override,
-		displayOrder: q.display_order,
-		sectionId: q.section_id,
-		sectionOrder: q.section_order,
-		createdAt: q.created_at,
-		publishedAt: q.published_at
 	}));
 
 	const checklistItems: ChapterChecklistItem[] = (checklistResult.data || []).map((c) => ({
@@ -244,28 +215,28 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		publishedAt: e.published_at
 	}));
 
-	// Les modèles rattachés au quiz, pour les nommer dans la liste.
-	//
-	// On lit aussi `status` : un modèle dépublié depuis son rattachement reste
-	// dans le quiz, et l'élève ne le verra plus. Le professeur doit pouvoir
-	// faire la différence entre « modèle supprimé » et « modèle redevenu
-	// brouillon » — les deux produisent la même case vide sinon.
-	const questionTemplates: Record<string, { id: string; title: string; status: string }> = {};
+	// Get exercise details
+	// `exercises.title` est nullable en base : un exercice sans titre reste
+	// listable, il s'affiche sous un libellé de repli.
+	const exerciseDetails: Record<string, { id: string; title: string }> = {};
+	if (exercises.length > 0) {
+		const exerciseIds = exercises.map((e) => e.exerciseId);
+		const { data: exerciseData, error: exerciseDataError } = await locals.supabase
+			.from('exercises')
+			.select('id, title')
+			.in('id', exerciseIds);
 
-	if (quizQuestions.length > 0) {
-		const templateIds = [...new Set(quizQuestions.map((q) => q.questionTemplateId))];
-		const { data: templateRows, error: templatesError } = await locals.supabase
-			.from('question_templates')
-			.select('id, title, status')
-			.in('id', templateIds);
-
-		if (templatesError) {
-			console.error('Modèles du quiz illisibles :', templatesError);
-			throw error(500, 'Impossible de charger les données');
+		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
+		// laisse une trace.
+		if (exerciseDataError) {
+			console.error('Enrichissement illisible :', exerciseDataError);
 		}
 
-		for (const t of templateRows ?? []) {
-			questionTemplates[t.id] = { id: t.id, title: t.title, status: t.status };
+		for (const e of exerciseData || []) {
+			exerciseDetails[e.id] = {
+				id: e.id,
+				title: e.title ?? 'Exercice sans titre'
+			};
 		}
 	}
 
@@ -293,63 +264,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 		distributedWorksheetIds = [...(distribuees ?? [])];
 	}
-
-	// Get exercise details
-	// `exercises.title` est nullable en base : un exercice sans titre reste
-	// listable, il s'affiche sous un libellé de repli.
-	const exerciseDetails: Record<string, { id: string; title: string }> = {};
-	if (exercises.length > 0) {
-		const exerciseIds = exercises.map((e) => e.exerciseId);
-		const { data: exerciseData, error: exerciseDataError } = await locals.supabase
-			.from('exercises')
-			.select('id, title')
-			.in('id', exerciseIds);
-
-		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
-		// laisse une trace.
-		if (exerciseDataError) {
-			console.error('Enrichissement illisible :', exerciseDataError);
-		}
-
-		for (const e of exerciseData || []) {
-			exerciseDetails[e.id] = {
-				id: e.id,
-				title: e.title ?? 'Exercice sans titre'
-			};
-		}
-	}
-
-	// Les modèles PUBLIÉS, pour le sélecteur d'ajout.
-	//
-	// Un brouillon n'a rien à faire dans un quiz : la policy « Students can view
-	// published templates » le rend invisible à l'élève, donc la question
-	// disparaîtrait de son écran sans un mot. Même règle que les fiches, pour la
-	// même raison. `addQuizQuestion` refuse d'ailleurs les brouillons — le
-	// sélecteur évite simplement de les proposer.
-	//
-	// La liste est plafonnée, et ce plafond doit se voir : la migration TinyMath
-	// a 633 questions en file. Au 201ᵉ modèle publié, un titre qui trie après le
-	// dernier disparaîtrait sans un mot, et le professeur en conclurait qu'il
-	// n'existe pas. On compte donc le total pour pouvoir le dire.
-	const TEMPLATE_LIMIT = 200;
-	const {
-		data: availableTemplateRows,
-		error: availableTemplatesError,
-		count: publishedCount
-	} = await locals.supabase
-		.from('question_templates')
-		.select('id, title, theme, domain, level', { count: 'exact' })
-		.eq('status', 'published')
-		.order('title', { ascending: true })
-		.limit(TEMPLATE_LIMIT);
-
-	if (availableTemplatesError) {
-		console.error('Modèles publiés illisibles :', availableTemplatesError);
-		throw error(500, 'Impossible de charger les données');
-	}
-
-	const availableTemplates = availableTemplateRows ?? [];
-	const hiddenTemplateCount = Math.max(0, (publishedCount ?? 0) - availableTemplates.length);
 
 	// Les fiches publiées du professeur, pour le sélecteur de rattachement.
 	// Une fiche en brouillon n'a rien à faire dans un chapitre : elle n'est pas
@@ -388,18 +302,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// que le professeur lirait comme « personne n'a rien fait ».
 	if (checklistProgressError) {
 		console.error('Avancement illisible :', checklistProgressError);
-		throw error(500, 'Impossible de charger l’avancement');
-	}
-
-	const { data: quizResultsData, error: quizResultsDataError } = await getChapterQuizResults(
-		chapterId,
-		locals.supabase
-	);
-
-	// L'avancement des élèves : une panne le montrerait entièrement à zéro, ce
-	// que le professeur lirait comme « personne n'a rien fait ».
-	if (quizResultsDataError) {
-		console.error('Avancement illisible :', quizResultsDataError);
 		throw error(500, 'Impossible de charger l’avancement');
 	}
 
@@ -462,19 +364,14 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		classData,
 		sections,
 		documents,
-		quizQuestions,
 		checklistItems,
 		exercises,
-		questionTemplates,
 		exerciseDetails,
-		availableTemplates,
-		hiddenTemplateCount,
 		availableExercises: availableExercises || [],
 		worksheets,
 		distributedWorksheetIds,
 		availableWorksheets: availableWorksheets || [],
 		checklistProgress: checklistProgress || [],
-		quizResults: quizResultsData || [],
 		students: studentList,
 		templateInstantiation: templateInstantiation as InstantiationWithStatus | null
 	};
@@ -657,94 +554,6 @@ export const actions: Actions = {
 			action: validation.data.published ? 'publish' : 'unpublish'
 		};
 	},
-
-	addQuizQuestion: async ({ request, locals, params }) => {
-		await requireRole(locals, 'teacher');
-		const { chapterId } = params;
-
-		// Verify chapter exists (RLS enforces ownership)
-		const { data: chapter, error: chapterError } = await locals.supabase
-			.from('class_chapters')
-			.select('id')
-			.eq('id', chapterId)
-			.single();
-
-		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
-		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
-		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
-		if (chapterError && chapterError.code !== 'PGRST116') {
-			console.error('[addQuizQuestion] Lecture impossible :', chapterError);
-			return fail(500, { error: 'Verification impossible', action: 'addQuizQuestion' });
-		}
-
-		if (!chapter) {
-			return fail(403, { error: 'Acces refuse', action: 'addQuizQuestion' });
-		}
-
-		const formData = await request.formData();
-
-		// Valider avant d'atteindre la base : sans ça, une valeur non-UUID part
-		// dans un `.eq()` sur une colonne `uuid` et Postgres répond `22P02`, dont
-		// le message décrit la base et non l'action.
-		const idValidation = uuidSchema.safeParse(formData.get('questionTemplateId'));
-		if (!idValidation.success) {
-			return fail(400, { error: 'Question requise', action: 'addQuizQuestion' });
-		}
-
-		const { error: addError } = await addQuizQuestion(
-			chapterId,
-			idValidation.data,
-			locals.supabase
-		);
-
-		if (addError) {
-			console.error('[addQuizQuestion] Ajout refusé :', addError);
-			// Un refus délibéré est écrit pour le professeur et doit lui parvenir
-			// tel quel — sinon il rejoue l'ajout en boucle sans savoir pourquoi.
-			// Une panne, elle, ne sort pas d'ici : son message vient de Postgres.
-			return addError instanceof ContentRefusal
-				? fail(400, { error: addError.message, action: 'addQuizQuestion' })
-				: fail(500, { error: "Erreur lors de l'ajout", action: 'addQuizQuestion' });
-		}
-
-		return { success: true, action: 'addQuizQuestion' };
-	},
-
-	removeQuizQuestion: async ({ request, locals }) => {
-		await requireRole(locals, 'teacher');
-
-		const formData = await request.formData();
-		const quizQuestionId = formData.get('quizQuestionId') as string;
-
-		// Verify question exists (RLS enforces ownership)
-		const { data: question, error: questionError } = await locals.supabase
-			.from('chapter_quiz_questions')
-			.select('id')
-			.eq('id', quizQuestionId)
-			.single();
-
-		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
-		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
-		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
-		if (questionError && questionError.code !== 'PGRST116') {
-			console.error('[removeQuizQuestion] Lecture impossible :', questionError);
-			return fail(500, { error: 'Verification impossible', action: 'removeQuizQuestion' });
-		}
-
-		if (!question) {
-			return fail(403, { error: 'Acces refuse', action: 'removeQuizQuestion' });
-		}
-
-		const { error: removeError } = await removeQuizQuestion(quizQuestionId, locals.supabase);
-
-		if (removeError) {
-			return fail(500, { error: 'Erreur lors de la suppression', action: 'removeQuizQuestion' });
-		}
-
-		return { success: true, action: 'removeQuizQuestion' };
-	},
-
-	// ============ EXERCISE ACTIONS ============
 
 	linkExercise: async ({ request, locals, params }) => {
 		await requireRole(locals, 'teacher');

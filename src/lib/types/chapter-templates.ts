@@ -42,15 +42,6 @@ export interface TemplateDocumentSnapshot {
 }
 
 /**
- * Quiz question reference in template snapshot
- */
-export interface TemplateQuizQuestionSnapshot {
-	questionTemplateId: string;
-	pointsOverride: number | null;
-	displayOrder: number;
-}
-
-/**
  * Checklist item in template snapshot (copied content)
  */
 export interface TemplateChecklistItemSnapshot {
@@ -84,7 +75,6 @@ export interface TemplateWorksheetSnapshot {
  */
 export interface TemplateContentSnapshot {
 	documents: TemplateDocumentSnapshot[];
-	quizQuestions: TemplateQuizQuestionSnapshot[];
 	checklistItems: TemplateChecklistItemSnapshot[];
 	exercises: TemplateExerciseSnapshot[];
 	worksheets: TemplateWorksheetSnapshot[];
@@ -95,7 +85,6 @@ export interface TemplateContentSnapshot {
  */
 export const EMPTY_CONTENT_SNAPSHOT: TemplateContentSnapshot = {
 	documents: [],
-	quizQuestions: [],
 	checklistItems: [],
 	worksheets: [],
 	exercises: []
@@ -119,7 +108,6 @@ export interface DiffEntry<T> {
  */
 export interface TemplateDiff {
 	documents: DiffEntry<TemplateDocumentSnapshot>[];
-	quizQuestions: DiffEntry<TemplateQuizQuestionSnapshot>[];
 	checklistItems: DiffEntry<TemplateChecklistItemSnapshot>[];
 	worksheets: DiffEntry<TemplateWorksheetSnapshot>[];
 	exercises: DiffEntry<TemplateExerciseSnapshot>[];
@@ -128,9 +116,6 @@ export interface TemplateDiff {
 		documentsAdded: number;
 		documentsRemoved: number;
 		documentsModified: number;
-		quizQuestionsAdded: number;
-		quizQuestionsRemoved: number;
-		quizQuestionsModified: number;
 		checklistItemsAdded: number;
 		checklistItemsRemoved: number;
 		checklistItemsModified: number;
@@ -228,7 +213,6 @@ export interface TemplateSummary {
 	isOwner: boolean;
 	/** Content counts */
 	documentCount: number;
-	quizQuestionCount: number;
 	checklistItemCount: number;
 	exerciseCount: number;
 	worksheetCount: number;
@@ -319,9 +303,6 @@ export interface DbChapterTemplateInstantiation {
 export function parseContentSnapshot(json: Record<string, unknown>): TemplateContentSnapshot {
 	return {
 		documents: Array.isArray(json.documents) ? (json.documents as TemplateDocumentSnapshot[]) : [],
-		quizQuestions: Array.isArray(json.quizQuestions)
-			? (json.quizQuestions as TemplateQuizQuestionSnapshot[])
-			: [],
 		checklistItems: Array.isArray(json.checklistItems)
 			? (json.checklistItems as TemplateChecklistItemSnapshot[])
 			: [],
@@ -407,7 +388,6 @@ export function dbInstantiationToApp(
 export function hasContent(snapshot: TemplateContentSnapshot): boolean {
 	return (
 		snapshot.documents.length > 0 ||
-		snapshot.quizQuestions.length > 0 ||
 		snapshot.checklistItems.length > 0 ||
 		snapshot.exercises.length > 0 ||
 		snapshot.worksheets.length > 0
@@ -419,7 +399,6 @@ export function hasContent(snapshot: TemplateContentSnapshot): boolean {
  */
 export function getContentCounts(snapshot: TemplateContentSnapshot): {
 	documentCount: number;
-	quizQuestionCount: number;
 	checklistItemCount: number;
 	exerciseCount: number;
 	worksheetCount: number;
@@ -427,13 +406,11 @@ export function getContentCounts(snapshot: TemplateContentSnapshot): {
 } {
 	return {
 		documentCount: snapshot.documents.length,
-		quizQuestionCount: snapshot.quizQuestions.length,
 		checklistItemCount: snapshot.checklistItems.length,
 		exerciseCount: snapshot.exercises.length,
 		worksheetCount: snapshot.worksheets.length,
 		totalCount:
 			snapshot.documents.length +
-			snapshot.quizQuestions.length +
 			snapshot.checklistItems.length +
 			snapshot.exercises.length +
 			snapshot.worksheets.length

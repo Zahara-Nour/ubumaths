@@ -19,7 +19,7 @@
 		CardHeader,
 		CardTitle
 	} from '$lib/components/ui/card';
-	import { Plus, Search, FileText, HelpCircle, CheckSquare, BookOpen } from '@lucide/svelte';
+	import { Plus, Search, FileText, CheckSquare, BookOpen } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import type { GradeCode } from '$lib/types/grades';
@@ -173,10 +173,6 @@
 							<div class="flex items-center gap-1">
 								<FileText class="h-4 w-4" />
 								<span>{template.documentCount} docs</span>
-							</div>
-							<div class="flex items-center gap-1">
-								<HelpCircle class="h-4 w-4" />
-								<span>{template.quizQuestionCount} quiz</span>
 							</div>
 							<div class="flex items-center gap-1">
 								<CheckSquare class="h-4 w-4" />

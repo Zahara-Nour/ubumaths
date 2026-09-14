@@ -40,7 +40,6 @@
 		Copy,
 		FileText,
 		ClipboardList,
-		HelpCircle,
 		Dumbbell,
 		FileSpreadsheet
 	} from '@lucide/svelte';
@@ -129,37 +128,17 @@
 
 		<div class="mt-3">
 			<Card.Title class="line-clamp-1 text-lg">{template.title}</Card.Title>
-			{#if template.description}
-				<Card.Description class="mt-1.5 line-clamp-2 text-sm">
-					{truncate(template.description, 120)}
-				</Card.Description>
-			{/if}
 		</div>
 	</Card.Header>
 
 	<Card.Content class="space-y-3 pb-3">
 		<!-- Grades -->
-		{#if template.grades.length > 0}
-			<div class="flex flex-wrap gap-1">
-				{#each template.grades as grade (grade)}
-					<Badge variant="secondary" class="text-xs">
-						{grade}e
-					</Badge>
-				{/each}
-			</div>
-		{:else}
-			<Badge variant="secondary" class="text-xs">Tous niveaux</Badge>
-		{/if}
 
 		<!-- Content counts -->
 		<div class="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
 			<div class="flex items-center gap-1.5">
 				<FileText class="h-3.5 w-3.5" />
 				<span>{template.documentCount} doc{template.documentCount > 1 ? 's' : ''}</span>
-			</div>
-			<div class="flex items-center gap-1.5">
-				<HelpCircle class="h-3.5 w-3.5" />
-				<span>{template.quizQuestionCount} quiz</span>
 			</div>
 			<div class="flex items-center gap-1.5">
 				<ClipboardList class="h-3.5 w-3.5" />

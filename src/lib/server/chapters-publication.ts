@@ -37,7 +37,6 @@ const TABLES = {
 	document: 'chapter_documents',
 	exercise: 'chapter_exercises',
 	checklist: 'chapter_checklist_items',
-	quiz: 'chapter_quiz_questions',
 	worksheet: 'chapter_worksheets'
 } as const satisfies Record<ChapterContentType, string>;
 

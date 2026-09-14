@@ -50,8 +50,6 @@ const ANON_KEY =
 const service = createServiceRoleClient();
 
 const PUBLIE = new Date(Date.now() - 3600_000).toISOString();
-/** Discriminant d'exécution : `question_templates` survit à un run interrompu. */
-const RUN = `ZZ${Date.now().toString(36)}`;
 
 async function clientFor(email: string): Promise<SupabaseClient<Database>> {
 	const client = createClient<Database>(SUPABASE_URL, ANON_KEY, {
@@ -94,7 +92,6 @@ describe('élève archivé — le chapitre de son ancienne classe', () => {
 	let document: string;
 	let objectif: string;
 	let lienExercice: string;
-	let questionDeQuiz: string;
 	let lienFiche: string;
 	let affectation: string;
 
@@ -159,24 +156,6 @@ describe('élève archivé — le chapitre de son ancienne classe', () => {
 		lienExercice = await insert('chapter_exercises', {
 			chapter_id: chapitre,
 			exercise_id: exercice,
-			display_order: 1,
-			published_at: PUBLIE
-		});
-
-		const modele = await insert('question_templates', {
-			title: 'Question archivé ZZ',
-			type: 'multiple_choice',
-			theme: `Archivé ${RUN}`,
-			domain: 'Archivé',
-			level: 1,
-			grades: ['1_SPE'],
-			status: 'published',
-			variations: [{ statement: 'Question de test ZZ [_]', blanks: [{ expectedAnswer: '1' }] }],
-			created_by: enseignant.id
-		});
-		questionDeQuiz = await insert('chapter_quiz_questions', {
-			chapter_id: chapitre,
-			question_template_id: modele,
 			display_order: 1,
 			published_at: PUBLIE
 		});
@@ -264,7 +243,6 @@ describe('élève archivé — le chapitre de son ancienne classe', () => {
 		expect(await idsVusPar(actif, 'chapter_documents', chapitre)).toContain(document);
 		expect(await idsVusPar(actif, 'chapter_checklist_items', chapitre)).toContain(objectif);
 		expect(await idsVusPar(actif, 'chapter_exercises', chapitre)).toContain(lienExercice);
-		expect(await idsVusPar(actif, 'chapter_quiz_questions', chapitre)).toContain(questionDeQuiz);
 		expect(await idsVusPar(actif, 'chapter_worksheets', chapitre)).toContain(lienFiche);
 	});
 
@@ -280,26 +258,9 @@ describe('élève archivé — le chapitre de son ancienne classe', () => {
 		['chapter_documents', () => document],
 		['chapter_checklist_items', () => objectif],
 		['chapter_exercises', () => lienExercice],
-		['chapter_quiz_questions', () => questionDeQuiz],
 		['chapter_worksheets', () => lienFiche]
 	])('l’élève archivé ne voit plus %s', async (table, id) => {
 		expect(await idsVusPar(archive, table, chapitre)).not.toContain(id());
-	});
-
-	/**
-	 * Le trou le plus discret : deux des neuf policies sont des INSERT. Un
-	 * ancien élève pouvait continuer d'ÉCRIRE dans la classe qu'il a quittée.
-	 */
-	it('l’élève archivé ne peut plus écrire de résultat de quiz', async () => {
-		const { error } = await archive.from('chapter_quiz_results').insert({
-			chapter_quiz_question_id: questionDeQuiz,
-			student_id: archiveId,
-			is_correct: true,
-			submitted_answer: '1'
-		});
-
-		expect(error, 'l’insertion aurait dû être refusée par la RLS').not.toBeNull();
-		expect(error?.code).toBe('42501');
 	});
 
 	it('l’élève archivé ne peut plus cocher un objectif', async () => {

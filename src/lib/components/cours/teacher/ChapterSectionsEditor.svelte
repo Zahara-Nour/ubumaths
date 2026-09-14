@@ -33,7 +33,6 @@
 		ChapterDocument,
 		ChapterExercise,
 		ChapterChecklistItem,
-		ChapterQuizQuestion,
 		ChapterWorksheet
 	} from '$lib/types/chapters';
 	import type { SectionContentKind } from '$lib/server/validation/chapter-sections';
@@ -60,10 +59,7 @@
 		documents: ChapterDocument[];
 		exercises: ChapterExercise[];
 		checklistItems: ChapterChecklistItem[];
-		quizQuestions: ChapterQuizQuestion[];
 		worksheets: WorksheetRow[];
-		/** Titres des modèles de quiz, par identifiant de modèle. */
-		questionTemplates?: Record<string, { title: string }>;
 		/** Titres des exercices, par identifiant d'exercice. */
 		exerciseDetails?: Record<string, { title: string | null }>;
 	}
@@ -74,9 +70,7 @@
 		documents,
 		exercises,
 		checklistItems,
-		quizQuestions,
 		worksheets,
-		questionTemplates = {},
 		exerciseDetails = {}
 	}: Props = $props();
 
@@ -167,18 +161,6 @@
 						label: c.content,
 						typeLabel: 'Objectif',
 						publishedAt: c.publishedAt
-					}
-				})),
-				...quizQuestions.map((q) => ({
-					sectionId: q.sectionId,
-					ordre: q.sectionOrder,
-					ressource: {
-						id: `quizQuestion:${q.id}`,
-						kind: 'quizQuestion' as const,
-						contentId: q.id,
-						label: questionTemplates[q.questionTemplateId]?.title ?? 'Question de quiz',
-						typeLabel: 'Quiz',
-						publishedAt: q.publishedAt
 					}
 				})),
 				...worksheets.map((w) => ({

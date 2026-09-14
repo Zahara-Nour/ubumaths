@@ -68,7 +68,6 @@
 	const retireDuModele = $derived(
 		preview
 			? preview.diff.stats.documentsRemoved > 0 ||
-					preview.diff.stats.quizQuestionsRemoved > 0 ||
 					preview.diff.stats.checklistItemsRemoved > 0 ||
 					preview.diff.stats.exercisesRemoved > 0 ||
 					preview.diff.stats.worksheetsRemoved > 0
@@ -153,46 +152,6 @@
 											class="border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30"
 										>
 											~ {stats.documentsModified} modifié{stats.documentsModified > 1 ? 's' : ''}
-										</Badge>
-									{/if}
-								</div>
-							</div>
-						{/if}
-
-						<!-- Quiz Questions -->
-						{#if stats.quizQuestionsAdded + stats.quizQuestionsRemoved + stats.quizQuestionsModified > 0}
-							<div class="space-y-2">
-								<div class="flex items-center gap-2">
-									<HelpCircle class="h-4 w-4 text-muted-foreground" />
-									<h4 class="text-sm font-medium">Questions Quiz</h4>
-								</div>
-								<div class="flex flex-wrap gap-2 text-xs">
-									{#if stats.quizQuestionsAdded > 0}
-										<Badge
-											variant="outline"
-											class="border-green-500 bg-green-50 text-green-700 dark:bg-green-900/30"
-										>
-											+ {stats.quizQuestionsAdded} ajoutée{stats.quizQuestionsAdded > 1 ? 's' : ''}
-										</Badge>
-									{/if}
-									{#if stats.quizQuestionsRemoved > 0}
-										<Badge
-											variant="outline"
-											class="border-red-500 bg-red-50 text-red-700 dark:bg-red-900/30"
-										>
-											- {stats.quizQuestionsRemoved} supprimée{stats.quizQuestionsRemoved > 1
-												? 's'
-												: ''}
-										</Badge>
-									{/if}
-									{#if stats.quizQuestionsModified > 0}
-										<Badge
-											variant="outline"
-											class="border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30"
-										>
-											~ {stats.quizQuestionsModified} modifiée{stats.quizQuestionsModified > 1
-												? 's'
-												: ''}
 										</Badge>
 									{/if}
 								</div>

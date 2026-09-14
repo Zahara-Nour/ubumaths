@@ -26,12 +26,11 @@ beforeEach(() => {
 	vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
-describe('setContentPublication — les cinq types de contenu', () => {
+describe('setContentPublication — les quatre types de contenu', () => {
 	it.each([
 		['document', 'chapter_documents'],
 		['exercise', 'chapter_exercises'],
-		['checklist', 'chapter_checklist_items'],
-		['quiz', 'chapter_quiz_questions']
+		['checklist', 'chapter_checklist_items']
 	])('%s vise la table %s', async (type, table) => {
 		const { setContentPublication } = await import('../chapters-publication');
 		const supabase = createMockSupabase();
@@ -90,7 +89,7 @@ describe('setContentPublication — ce qui est écrit', () => {
 		mockSuccess(supabase, { id: ELEMENT, chapter_id: CHAPITRE }, 'single');
 
 		await setContentPublication(
-			{ contentType: 'quiz', itemId: ELEMENT, published: false, teacherId: PROF },
+			{ contentType: 'exercise', itemId: ELEMENT, published: false, teacherId: PROF },
 			supabase as never
 		);
 
