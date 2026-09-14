@@ -56,6 +56,8 @@ async function insert(table: string, row: Record<string, unknown>): Promise<stri
 
 describe('assigner une carte de kanban', () => {
 	let carte: string;
+	let cartePersonnelle: string;
+	let profId: string;
 	let prof: SupabaseClient<Database>;
 	let actifId: string;
 	let archiveId: string;
@@ -64,6 +66,7 @@ describe('assigner une carte de kanban', () => {
 		await cleanupAllTestData();
 
 		const enseignant = await TestData.profile().withRole('teacher').create();
+		profId = enseignant.id;
 		prof = await clientFor(enseignant.email);
 
 		const ecole = await insert('schools', {
@@ -99,6 +102,25 @@ describe('assigner une carte de kanban', () => {
 		carte = await insert('kanban_cards', {
 			column_id: colonne,
 			title: 'Carte à assigner JJ',
+			position: 0
+		});
+
+		// Un tableau PERSONNEL (sans classe) : l'autre court-circuit de la
+		// fonction, celui qui dit « il n'y a pas de classe dont on puisse être
+		// archivé ».
+		const tableauPerso = await insert('kanban_boards', {
+			owner_id: enseignant.id,
+			class_id: null,
+			title: 'Tableau perso JJ'
+		});
+		const colonnePerso = await insert('kanban_columns', {
+			board_id: tableauPerso,
+			title: 'Perso JJ',
+			position: 0
+		});
+		cartePersonnelle = await insert('kanban_cards', {
+			column_id: colonnePerso,
+			title: 'Carte perso JJ',
 			position: 0
 		});
 
@@ -138,6 +160,43 @@ describe('assigner une carte de kanban', () => {
 			.eq('card_id', carte)
 			.eq('user_id', actifId);
 		expect(data?.length, 'l’assignation d’un élève actif n’a pas été enregistrée').toBe(1);
+	});
+
+	/**
+	 * ⚠️ Le court-circuit `p_assignee = v_owner`. Sans lui, le professeur ne
+	 * peut plus s'assigner lui-même sur un tableau de CLASSE : il n'a pas de
+	 * ligne dans `class_members`, donc l'exigence d'adhésion active le refuse.
+	 * Geste quotidien, qui cassait sans qu'aucun test ne rougisse.
+	 */
+	it('le professeur peut s’assigner lui-même sur un tableau de classe', async () => {
+		const { error } = await prof
+			.from('kanban_card_assignees')
+			.insert({ card_id: carte, user_id: profId });
+		expect(error).toBeNull();
+
+		const { data } = await service
+			.from('kanban_card_assignees')
+			.select('user_id')
+			.eq('card_id', carte)
+			.eq('user_id', profId);
+		expect(data?.length, 'le professeur ne peut plus s’assigner').toBe(1);
+	});
+
+	/**
+	 * ⚠️ L'autre court-circuit, `v_class is null`. Un tableau personnel n'a pas
+	 * de classe : exiger une adhésion active y interdirait toute assignation.
+	 */
+	it('le propriétaire d’un tableau PERSONNEL peut encore s’assigner', async () => {
+		const { error } = await prof
+			.from('kanban_card_assignees')
+			.insert({ card_id: cartePersonnelle, user_id: profId });
+		expect(error).toBeNull();
+
+		const { data } = await service
+			.from('kanban_card_assignees')
+			.select('user_id')
+			.eq('card_id', cartePersonnelle);
+		expect(data?.length, 'le tableau personnel n’accepte plus d’assignation').toBe(1);
 	});
 
 	it('le professeur ne peut PAS assigner un élève ARCHIVÉ', async () => {
