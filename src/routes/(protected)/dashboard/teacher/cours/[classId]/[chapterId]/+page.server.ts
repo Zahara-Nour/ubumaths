@@ -441,6 +441,23 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	};
 };
 
+/**
+ * Types acceptés pour un document de chapitre.
+ *
+ * Le bucket porte la même liste : celle-ci sert à refuser tôt, avec un message
+ * clair, plutôt qu'à faire barrage — c'est le stockage qui a le dernier mot.
+ */
+const ALLOWED_DOCUMENT_TYPES = [
+	'application/pdf',
+	'image/png',
+	'image/jpeg',
+	'image/jpg',
+	'image/gif'
+];
+
+/** Doit rester d'accord avec le bucket et la contrainte `valid_file_size`. */
+const MAX_DOCUMENT_SIZE = 25 * 1024 * 1024;
+
 export const actions: Actions = {
 	// ============ CHECKLIST ACTIONS ============
 
@@ -913,20 +930,22 @@ export const actions: Actions = {
 
 	// ============ DOCUMENT ACTIONS ============
 
+	/**
+	 * Enregistrer un document dont le fichier est déjà dans le stockage.
+	 *
+	 * Ne reçoit que des métadonnées : quelques centaines d'octets, qui passent
+	 * sans difficulté par l'action.
+	 */
 	uploadDocument: async ({ request, locals, params }) => {
 		await requireRole(locals, 'teacher');
 		const { chapterId } = params;
 
-		// Verify chapter exists (RLS enforces ownership)
 		const { data: chapter, error: chapterError } = await locals.supabase
 			.from('class_chapters')
 			.select('id')
 			.eq('id', chapterId)
 			.single();
 
-		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
-		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
-		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
 		if (chapterError && chapterError.code !== 'PGRST116') {
 			console.error('[uploadDocument] Lecture impossible :', chapterError);
 			return fail(500, { error: 'Verification impossible', action: 'uploadDocument' });
@@ -937,83 +956,59 @@ export const actions: Actions = {
 		}
 
 		const formData = await request.formData();
-		const file = formData.get('file') as File | null;
-		const title = formData.get('title') as string;
-		const description = (formData.get('description') as string) || null;
-
-		if (!file || !(file instanceof File) || file.size === 0) {
-			return fail(400, { error: 'Fichier requis', action: 'uploadDocument' });
-		}
+		const title = formData.get('title') as string | null;
+		const description = formData.get('description') as string | null;
+		const storagePath = formData.get('storagePath') as string | null;
+		const fileName = formData.get('fileName') as string | null;
+		const fileType = (formData.get('fileType') as string | null) ?? '';
+		const fileSize = Number(formData.get('fileSize'));
 
 		if (!title?.trim()) {
 			return fail(400, { error: 'Titre requis', action: 'uploadDocument' });
 		}
 
-		// Validate file type
-		const ALLOWED_TYPES = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
-		if (!ALLOWED_TYPES.includes(file.type)) {
+		if (!storagePath || !fileName) {
+			return fail(400, { error: 'Fichier requis', action: 'uploadDocument' });
+		}
+
+		// Un chemin venu du navigateur ne vaut que s'il désigne ce chapitre :
+		// sinon, on rattacherait ici le fichier d'un autre.
+		if (!storagePath.startsWith(`chapters/${chapterId}/`)) {
+			return fail(400, { error: 'Fichier invalide', action: 'uploadDocument' });
+		}
+
+		if (!ALLOWED_DOCUMENT_TYPES.includes(fileType)) {
 			return fail(400, { error: 'Type de fichier non supporte', action: 'uploadDocument' });
 		}
 
-		// Le plafond vit aussi sur le bucket `chapter-documents` : les deux
-		// doivent s'accorder, sans quoi le stockage refuse ce que l'application
-		// vient d'accepter.
-		const MAX_SIZE = 25 * 1024 * 1024;
-		if (file.size > MAX_SIZE) {
+		if (!Number.isFinite(fileSize) || fileSize <= 0 || fileSize > MAX_DOCUMENT_SIZE) {
 			return fail(400, { error: 'Fichier trop volumineux (max 25 Mo)', action: 'uploadDocument' });
 		}
 
-		try {
-			// Generate unique filename
-			const timestamp = Date.now();
-			const ext = file.name.split('.').pop()?.toLowerCase() || 'bin';
-			const storagePath = `chapters/${chapterId}/${timestamp}.${ext}`;
-
-			// Upload to Supabase Storage
-			const arrayBuffer = await file.arrayBuffer();
-			const buffer = new Uint8Array(arrayBuffer);
-
-			const { error: uploadError } = await locals.supabase.storage
-				.from('chapter-documents')
-				.upload(storagePath, buffer, {
-					contentType: file.type,
-					upsert: false,
-					cacheControl: '3600'
-				});
-
-			if (uploadError) {
-				console.error('[uploadDocument] Storage error:', uploadError);
-				return fail(500, { error: "Erreur lors de l'upload", action: 'uploadDocument' });
-			}
-
-			// Create document record
-			const { error: dbError } = await addChapterDocument(
+		const { error: dbError } = await addChapterDocument(
+			chapterId,
+			{
 				chapterId,
-				{
-					chapterId,
-					sourceType: 'upload',
-					title: title.trim(),
-					description: description?.trim() || null,
-					storagePath,
-					fileName: file.name,
-					mimeType: file.type,
-					fileSize: file.size
-				},
-				locals.supabase
-			);
+				sourceType: 'upload',
+				title: title.trim(),
+				description: description?.trim() || null,
+				storagePath,
+				fileName,
+				mimeType: fileType,
+				fileSize
+			},
+			locals.supabase
+		);
 
-			if (dbError) {
-				// Try to clean up uploaded file
-				await locals.supabase.storage.from('chapter-documents').remove([storagePath]);
-				console.error('[uploadDocument] DB error:', dbError);
-				return fail(500, { error: "Erreur lors de l'enregistrement", action: 'uploadDocument' });
-			}
-
-			return { success: true, action: 'uploadDocument' };
-		} catch (err) {
-			console.error('[uploadDocument] Error:', err);
-			return fail(500, { error: 'Erreur inattendue', action: 'uploadDocument' });
+		if (dbError) {
+			// Le fichier est déjà dans le stockage : le laisser sans sa ligne en
+			// ferait un orphelin invisible.
+			await locals.supabase.storage.from('chapter-documents').remove([storagePath]);
+			console.error('[uploadDocument] DB error:', dbError);
+			return fail(500, { error: "Erreur lors de l'enregistrement", action: 'uploadDocument' });
 		}
+
+		return { success: true, action: 'uploadDocument' };
 	},
 
 	addGoogleDriveDocument: async ({ request, locals, params }) => {

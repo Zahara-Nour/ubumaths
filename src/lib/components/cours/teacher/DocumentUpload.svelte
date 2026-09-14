@@ -12,6 +12,7 @@
 	 */
 
 	import { enhance } from '$app/forms';
+	import { tick } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -19,13 +20,22 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Upload, Link, FileText, Image, X, Loader2 } from '@lucide/svelte';
+	import type { SupabaseClient } from '@supabase/supabase-js';
+	import type { Database } from '$lib/types/database';
 
 	interface Props {
 		chapterId: string;
+		/**
+		 * Client Supabase du navigateur (`data.supabase` du layout).
+		 *
+		 * Le fichier ne passe plus par le serveur : c'est ce client qui le pousse
+		 * dans le stockage, muni d'une autorisation à usage unique.
+		 */
+		supabase: SupabaseClient<Database>;
 		onSuccess?: () => void;
 	}
 
-	let { chapterId, onSuccess }: Props = $props();
+	let { chapterId, supabase, onSuccess }: Props = $props();
 
 	// Tab state
 	let activeTab = $state<'upload' | 'google_drive'>('upload');
@@ -65,13 +75,16 @@
 		return null;
 	}
 
-	/** L'élément qui porte réellement le fichier soumis. */
+	/** L'élément qui porte le fichier choisi. */
 	let fileInput = $state<HTMLInputElement | null>(null);
+
+	/** Chemin du fichier déposé, transmis à l'enregistrement. */
+	let metaStoragePath = $state('');
 
 	/**
 	 * Retenir le fichier, et le poser dans l'input quand il vient d'un
-	 * glisser-déposer : le navigateur n'y met que ce qu'on a choisi par la
-	 * boîte de dialogue, et le formulaire n'envoie que le contenu de l'input.
+	 * glisser-déposer : le navigateur n'y met que ce qu'on a choisi par la boîte
+	 * de dialogue, et c'est l'input que le formulaire regarde.
 	 */
 	function retenirFichier(file: File, viaGlisserDeposer: boolean) {
 		const error = validateFile(file);
@@ -94,6 +107,73 @@
 		// Auto-fill title from filename if empty
 		if (!uploadTitle) {
 			uploadTitle = file.name.replace(/\.[^/.]+$/, ''); // Remove extension
+		}
+	}
+
+	/**
+	 * Déposer le fichier avant que le formulaire ne parte.
+	 *
+	 * Le fichier ne traverse plus le serveur : au-delà de quelques mégaoctets,
+	 * la plateforme refusait la requête d'un 413 avant même que le code ne
+	 * s'exécute. Le navigateur demande une autorisation, pousse le fichier
+	 * directement dans le stockage, puis laisse le formulaire poster les seules
+	 * métadonnées — quelques centaines d'octets.
+	 */
+	async function envoyerDocument(event: SubmitEvent) {
+		// Le fichier est déjà en place : cette soumission-là est celle des
+		// métadonnées, on la laisse partir.
+		if (metaStoragePath) return;
+
+		event.preventDefault();
+
+		const file = selectedFile;
+		if (!file) {
+			uploadError = 'Fichier requis';
+			return;
+		}
+
+		isUploading = true;
+		uploadError = '';
+
+		try {
+			// 1. L'autorisation : le serveur vérifie les droits et choisit le
+			//    chemin, que le navigateur ne décide jamais lui-même.
+			const reponse = await fetch(`/api/teacher/chapters/${chapterId}/document-upload-url`, {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ fileName: file.name, fileType: file.type })
+			});
+
+			if (!reponse.ok) {
+				uploadError = "Erreur lors de la préparation de l'envoi";
+				return;
+			}
+
+			const { storagePath, token } = (await reponse.json()) as {
+				storagePath: string;
+				token: string;
+			};
+
+			// 2. Le fichier, directement du navigateur au stockage.
+			const { error: envoiError } = await supabase.storage
+				.from('chapter-documents')
+				.uploadToSignedUrl(storagePath, token, file, { contentType: file.type });
+
+			if (envoiError) {
+				console.error('[DocumentUpload] Envoi impossible :', envoiError);
+				uploadError = "Erreur lors de l'upload";
+				return;
+			}
+
+			// 3. Les métadonnées suivent, par le formulaire lui-même.
+			metaStoragePath = storagePath;
+			await tick();
+			(event.target as HTMLFormElement).requestSubmit();
+		} catch (err) {
+			console.error('[DocumentUpload] Erreur inattendue :', err);
+			uploadError = 'Erreur inattendue';
+		} finally {
+			isUploading = false;
 		}
 	}
 
@@ -129,6 +209,7 @@
 		uploadDescription = '';
 		uploadError = '';
 		if (fileInput) fileInput.value = '';
+		metaStoragePath = '';
 	}
 
 	// Get file icon based on type
@@ -160,6 +241,7 @@
 		// L'input garde son fichier après l'envoi : sans ce nettoyage, le
 		// suivant repartirait avec l'ancien.
 		if (fileInput) fileInput.value = '';
+		metaStoragePath = '';
 	}
 
 	function resetGoogleDriveForm() {
@@ -193,10 +275,9 @@
 				<form
 					method="POST"
 					action="?/uploadDocument"
-					enctype="multipart/form-data"
+					onsubmit={envoyerDocument}
 					use:enhance={() => {
 						isUploading = true;
-						uploadError = '';
 						return async ({ result, update }) => {
 							isUploading = false;
 							if (result.type === 'success') {
@@ -206,11 +287,12 @@
 								uploadError =
 									(result.data as { error?: string })?.error || "Erreur lors de l'upload";
 							}
-							await update();
+							await update({ reset: false });
 						};
 					}}
 					class="space-y-4"
 				>
+					<input type="hidden" name="storagePath" value={metaStoragePath} />
 					<input type="hidden" name="chapterId" value={chapterId} />
 
 					<!--
