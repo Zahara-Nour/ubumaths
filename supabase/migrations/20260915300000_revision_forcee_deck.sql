@@ -22,10 +22,11 @@
 -- `database.ts` sans cesser d'exister. Piège déjà payé sur ce dépôt.
 -- Les appelants passant deux arguments restent valides : `p_all` a un défaut.
 --
--- USAGES vérifiés avant le DROP (`grep -rn get_due_cards_for_deck src`) :
+-- USAGES vérifiés avant le DROP (`grep -rn get_due_cards_for_deck src tests e2e`) :
 --   src/routes/api/srs/review/due/+server.ts:101  ← le seul appelant
 --   src/routes/api/srs/__tests__/api-routes.test.ts:1079  ← un commentaire
 --   src/lib/types/database.ts:15706  ← type auto-généré
+--   tests/integration/phantom-columns-lot3.test.ts:75  ← un libellé `describe`
 -- Aucune jointure PostgREST, aucun schéma Zod ne nomme cette fonction.
 --
 -- Aucune donnée n'est touchée : c'est une fonction de lecture.
@@ -83,9 +84,23 @@ begin
 		-- reste celui de l'échéance, donc le plus en retard passe en premier même
 		-- en révision forcée.
 		and (p_all or coalesce(s.next_review, now()) <= now())
-	order by coalesce(s.next_review, now()) asc;
+	order by coalesce(s.next_review, now()) asc
+	-- ⚠️ FILET, pas une limite de produit. Le filtre d'échéance bornait
+	-- naturellement le travail de la route appelante, qui fait un SELECT unitaire
+	-- PUIS une génération d'instance PAR CARTE. `p_all` retire cette borne, et
+	-- rien d'autre ne la remplace. L'ordre par échéance garantit qu'on garde les
+	-- plus urgentes. Le vrai correctif est de grouper ce N+1 côté route — le
+	-- deck le plus fourni compte 0 carte en production le 2026-09-14, donc ce
+	-- plafond n'a aucun effet observable aujourd'hui.
+	limit 500;
 end;
 $function$;
+
+-- Le `drop` a emporté le propriétaire d'origine. Sur une fonction `security
+-- definer`, le propriétaire EST l'identité d'exécution : la laisser implicite
+-- marche avec `db push` (qui applique en `postgres`) et dérive le jour où la
+-- migration est rejouée autrement.
+alter function public.get_due_cards_for_deck(uuid, uuid, boolean) owner to postgres;
 
 comment on function public.get_due_cards_for_deck(uuid, uuid, boolean) is
 	'Cartes à réviser dans un deck. `p_all = true` force TOUTES les cartes, échéance ignorée (révision de veille de contrôle) ; `false` garde la sélection par échéance, qui reste le défaut.';

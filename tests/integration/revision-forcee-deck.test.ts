@@ -48,8 +48,16 @@ async function insert(table: string, row: Record<string, unknown>): Promise<stri
 /** Les cartes rendues, dans l'ordre, par leur contenu recto. */
 async function cartesRendues(eleveId: string, deckId: string, toutes: boolean): Promise<string[]> {
 	const pg = await getPostgresClient();
+	// ⚠️ `with ordinality` capture l'ordre D'ÉMISSION de la fonction.
+	// La version précédente finissait par `order by d.next_review` : elle
+	// RE-TRIAIT le résultat avant de vérifier qu'il était trié, si bien que
+	// retirer le `order by` de la fonction laissait le test vert.
 	const { rows } = await pg.query(
-		'select c.front_content from public.get_due_cards_for_deck($1, $2, $3) d join public.srs_cards c on c.id = d.card_id order by d.next_review asc',
+		`select c.front_content
+		 from public.get_due_cards_for_deck($1, $2, $3)
+		      with ordinality as d(card_id, template_id, card_type, difficulty, stability, state, next_review, ord)
+		 join public.srs_cards c on c.id = d.card_id
+		 order by d.ord`,
 		[eleveId, deckId, toutes]
 	);
 	return rows.map((r: { front_content: string }) => r.front_content);
@@ -103,6 +111,12 @@ describe('révision forcée d’un deck', () => {
 		await stats(enRetard, IL_Y_A_UN_MOIS);
 		await stats(echueHier, HIER);
 		await stats(plusTard, DANS_UNE_SEMAINE);
+
+		// Une carte SANS statistiques : le cas le plus fréquent en production, et
+		// la branche où `p_all` rencontre un `where` portant sur une colonne du
+		// côté nullable de la jointure. `coalesce(next_review, now())` la rend due
+		// immédiatement, donc elle doit sortir dans LES DEUX modes.
+		await carte('Jamais révisée TT');
 	}, 120_000);
 
 	afterAll(async () => {
@@ -118,15 +132,20 @@ describe('révision forcée d’un deck', () => {
 	it('sans le drapeau, la carte programmée plus tard est exclue', async () => {
 		const rendues = await cartesRendues(eleveId, deckId, false);
 
-		expect(rendues).toEqual(['En retard TT', 'Échue hier TT']);
+		expect(rendues).toEqual(['En retard TT', 'Échue hier TT', 'Jamais révisée TT']);
 		expect(rendues).not.toContain('Programmée plus tard TT');
 	});
 
 	it('avec le drapeau, toutes les cartes du deck sortent', async () => {
 		const rendues = await cartesRendues(eleveId, deckId, true);
 
-		expect(rendues).toHaveLength(3);
+		expect(rendues).toHaveLength(4);
 		expect(rendues).toContain('Programmée plus tard TT');
+	});
+
+	it('une carte jamais révisée sort dans les deux modes', async () => {
+		expect(await cartesRendues(eleveId, deckId, false)).toContain('Jamais révisée TT');
+		expect(await cartesRendues(eleveId, deckId, true)).toContain('Jamais révisée TT');
 	});
 
 	/**
@@ -138,6 +157,7 @@ describe('révision forcée d’un deck', () => {
 		expect(await cartesRendues(eleveId, deckId, true)).toEqual([
 			'En retard TT',
 			'Échue hier TT',
+			'Jamais révisée TT',
 			'Programmée plus tard TT'
 		]);
 	});
@@ -154,6 +174,6 @@ describe('révision forcée d’un deck', () => {
 			[eleveId, deckId]
 		);
 
-		expect(rows[0].n).toBe(2);
+		expect(rows[0].n).toBe(3);
 	});
 });
