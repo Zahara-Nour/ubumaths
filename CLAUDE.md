@@ -63,7 +63,15 @@ silence.
 
 `main` = **production**. Tout changement de **code** : **branche → PR → CI 100 % verte → `gh pr merge --merge` → suppression de branche**. **Jamais de code direct sur `main`**.
 
-**Pure doc/typo ≤ 2 fichiers `.md` : commit DIRECT sur `main`, sans branche ni PR.** Ce n'est pas une permission, c'est une obligation — une PR pour un `.md` relance toute la CI pour rien.
+**Changement 100 % documentaire : commit DIRECT sur `main`, sans branche ni PR — quel que soit le nombre de fichiers.** Ce n'est pas une permission, c'est une obligation : sur `pull_request` la CI n'a **pas** de `paths-ignore` (les checks requis doivent rapporter), donc une PR pour du markdown relance les 12 jobs pour rien. Sur `push`, `paths-ignore` couvre `**/*.md` et `docs/**` → un commit docs-only ne déclenche **aucune** CI et ne redéploie pas la prod.
+
+⚠️ **Le test est mécanique, pas une impression** — avant de commiter directement :
+
+```bash
+git diff --cached --name-only | grep -v -E '^docs/|\.md$' && echo "⛔ hors docs → branche + PR" || echo "✅ docs pur → commit direct"
+```
+
+Une seule ligne hors `docs/` ou `*.md` (y compris `.github/`, `package.json`, un `.sql`) → **branche + PR**, comme tout changement de code. Plafond de 2 fichiers levé par David le 2026-09-14 : il était arbitraire, le raisonnement est le même à 2 qu'à 20.
 
 - **CI verte avant merge** (`gh pr checks <n> --watch`). Jamais merger en rouge.
 - **Conventional commits**, **header ≤ 100 caractères** (commitlint), **aucune mention Claude/Anthropic** (David = seul auteur).

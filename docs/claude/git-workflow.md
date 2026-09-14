@@ -10,7 +10,14 @@
 
 1. **`main` = prod, toujours vert et déployable.** Jamais de commit de **code** directement sur `main`.
 2. Tout changement de code → **branche → PR → CI 100 % verte → merge commit → suppression de branche**.
-3. **Seule exception au PR** : pure doc/typo (**≤ 2 fichiers `.md`**) → commit direct sur `main` autorisé. (L'`ignoreCommand` Vercel exclut `docs/**` et `**/*.md` → un commit docs-only **ne redéploie pas** la prod.)
+3. **Seule exception au PR** : changement **100 % documentaire** (`docs/**` et `**/*.md`, aucun fichier de code) → commit direct sur `main`, **quel que soit le nombre de fichiers**. Plafond de 2 fichiers levé le 2026-09-14.
+   - Pourquoi c'est une obligation et pas une facilité : `quality.yml` n'a **pas** de `paths-ignore` sur `pull_request` (voir le commentaire du fichier — les checks requis doivent rapporter sur toute PR, sinon une PR doc-only resterait bloquée à jamais). Une PR pour du markdown relance donc **les 12 jobs**, ~4 min, pour zéro vérification utile. Sur `push`, `paths-ignore` couvre les docs → commit direct = **aucune CI**.
+   - L'`ignoreCommand` Vercel exclut aussi `docs/**` et `**/*.md` → un commit docs-only **ne redéploie pas** la prod.
+   - ⚠️ Vérification **mécanique** avant de commiter, jamais à l'œil :
+     ```bash
+     git diff --cached --name-only | grep -v -E '^docs/|\.md$' && echo "⛔ hors docs → branche + PR" || echo "✅ docs pur → commit direct"
+     ```
+     Une seule ligne hors `docs/` ou `*.md` (`.github/`, `package.json`, un `.sql`…) fait basculer sur le circuit normal.
 4. **Conventional commits** (`feat()`, `fix()`, `chore()`, `refactor()`, `perf()`, `docs()`, `test()`). **Aucune mention Claude/Anthropic.**
 
 ## 2. Nommage des branches
