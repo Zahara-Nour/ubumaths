@@ -104,8 +104,6 @@
 	};
 
 	const FLIP_MS = 200;
-	/** Zone des non classées : ce n'est pas une section, donc pas un UUID. */
-	const NON_CLASSE = '__non-classe__';
 
 	// `Set` natif et non `SvelteSet` : il est local à cette fonction pure, jamais
 	// lu de façon réactive. Le rendre réactif coûterait sans rien apporter —
@@ -275,11 +273,6 @@
 	}
 
 	// ===== Glisser-déposer : les ressources =====
-
-	function zoneDe(sectionId: string | null): Ressource[] {
-		if (sectionId === null) return nonClassees;
-		return sectionsLocales.find((s) => s.id === sectionId)?.ressources ?? [];
-	}
 
 	function poserZone(sectionId: string | null, liste: Ressource[]) {
 		if (sectionId === null) {
