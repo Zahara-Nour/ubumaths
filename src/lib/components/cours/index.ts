@@ -9,7 +9,7 @@
  * // Student components
  *
  * // Teacher components
- * import { ChapterEditor, ChecklistEditor } from '$lib/components/cours/teacher';
+ * import { ChapterSectionsEditor } from '$lib/components/cours/teacher';
  */
 
 // Student components

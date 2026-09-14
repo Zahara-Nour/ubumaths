@@ -350,23 +350,6 @@ export const bulkToggleChecklistSchema = z.object({
 
 export type BulkToggleChecklistInput = z.infer<typeof bulkToggleChecklistSchema>;
 
-/**
- * Schema for reordering checklist items
- */
-export const reorderChecklistItemsSchema = z.object({
-	items: z
-		.array(
-			z.object({
-				id: uuidSchema,
-				displayOrder: displayOrderSchema
-			})
-		)
-		.min(1, 'Au moins un element requis')
-		.max(100, "Trop d'elements (max 100)")
-});
-
-export type ReorderChecklistItemsInput = z.infer<typeof reorderChecklistItemsSchema>;
-
 // ============================================================================
 // QUIZ SCHEMAS
 // ============================================================================
