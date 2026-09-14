@@ -1104,136 +1104,6 @@ export type Database = {
           },
         ]
       }
-      chapter_quiz_questions: {
-        Row: {
-          chapter_id: string
-          created_at: string
-          display_order: number
-          id: string
-          points_override: number | null
-          published_at: string | null
-          question_template_id: string
-          section_id: string | null
-          section_order: number
-        }
-        Insert: {
-          chapter_id: string
-          created_at?: string
-          display_order?: number
-          id?: string
-          points_override?: number | null
-          published_at?: string | null
-          question_template_id: string
-          section_id?: string | null
-          section_order?: number
-        }
-        Update: {
-          chapter_id?: string
-          created_at?: string
-          display_order?: number
-          id?: string
-          points_override?: number | null
-          published_at?: string | null
-          question_template_id?: string
-          section_id?: string | null
-          section_order?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chapter_quiz_questions_chapter_id_fkey"
-            columns: ["chapter_id"]
-            isOneToOne: false
-            referencedRelation: "class_chapters"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "chapter_quiz_questions_question_template_id_fkey"
-            columns: ["question_template_id"]
-            isOneToOne: false
-            referencedRelation: "question_templates"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "chapter_quiz_questions_section_fkey"
-            columns: ["section_id", "chapter_id"]
-            isOneToOne: false
-            referencedRelation: "chapter_sections"
-            referencedColumns: ["id", "chapter_id"]
-          },
-        ]
-      }
-      chapter_quiz_results: {
-        Row: {
-          attempt_number: number
-          chapter_quiz_question_id: string
-          id: string
-          is_correct: boolean
-          points_earned: number
-          student_id: string
-          submitted_answer: string
-          submitted_at: string
-          time_spent_seconds: number | null
-        }
-        Insert: {
-          attempt_number?: number
-          chapter_quiz_question_id: string
-          id?: string
-          is_correct: boolean
-          points_earned?: number
-          student_id: string
-          submitted_answer: string
-          submitted_at?: string
-          time_spent_seconds?: number | null
-        }
-        Update: {
-          attempt_number?: number
-          chapter_quiz_question_id?: string
-          id?: string
-          is_correct?: boolean
-          points_earned?: number
-          student_id?: string
-          submitted_answer?: string
-          submitted_at?: string
-          time_spent_seconds?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chapter_quiz_results_chapter_quiz_question_id_fkey"
-            columns: ["chapter_quiz_question_id"]
-            isOneToOne: false
-            referencedRelation: "chapter_quiz_questions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "chapter_quiz_results_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "chapter_quiz_results_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "minesweeper_student_achievement_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "chapter_quiz_results_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "chapter_quiz_results_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "riddle_progress"
-            referencedColumns: ["student_id"]
-          },
-        ]
-      }
       chapter_sections: {
         Row: {
           chapter_id: string
@@ -15704,7 +15574,7 @@ export type Database = {
         }[]
       }
       get_due_cards_for_deck: {
-        Args: { p_deck_id: string; p_user_id: string }
+        Args: { p_all?: boolean; p_deck_id: string; p_user_id: string }
         Returns: {
           card_id: string
           card_type: string
