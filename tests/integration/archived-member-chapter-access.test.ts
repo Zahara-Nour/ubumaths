@@ -314,6 +314,49 @@ describe('élève archivé — le chapitre de son ancienne classe', () => {
 	});
 
 	/**
+	 * Le cas que la seule correction de `is_class_student` ne fermait PAS : les
+	 * policies UPDATE et DELETE ne regardaient que `student_id = auth.uid()`.
+	 * Un élève archivé ne pouvait plus créer de progression, mais pouvait
+	 * indéfiniment cocher et décocher celle qu'il avait déjà.
+	 *
+	 * ⚠️ Un UPDATE refusé par la RLS ne LÈVE PAS : il ne touche aucune ligne.
+	 * C'est `data` vide qu'il faut regarder, pas `error` — attendre un 42501
+	 * ici rendrait le test faussement rouge, puis faussement « corrigé ».
+	 */
+	it('l’élève archivé ne peut plus décocher un objectif déjà coché', async () => {
+		// Semé par le service : l'élève l'avait coché quand il était en classe.
+		const progression = await insert('student_checklist_progress', {
+			checklist_item_id: objectif,
+			student_id: archiveId,
+			is_completed: true
+		});
+
+		const { data: modifiees, error: erreurUpdate } = await archive
+			.from('student_checklist_progress')
+			.update({ is_completed: false })
+			.eq('id', progression)
+			.select('id');
+		expect(erreurUpdate).toBeNull();
+		expect(modifiees, 'aucune ligne ne doit être modifiable').toEqual([]);
+
+		const { data: supprimees, error: erreurDelete } = await archive
+			.from('student_checklist_progress')
+			.delete()
+			.eq('id', progression)
+			.select('id');
+		expect(erreurDelete).toBeNull();
+		expect(supprimees, 'aucune ligne ne doit être supprimable').toEqual([]);
+
+		// Figée, pas cachée : il la VOIT toujours, cochée comme il l'a laissée.
+		const { data: vue, error: erreurSelect } = await archive
+			.from('student_checklist_progress')
+			.select('id, is_completed')
+			.eq('id', progression);
+		expect(erreurSelect).toBeNull();
+		expect(vue).toEqual([{ id: progression, is_completed: true }]);
+	});
+
+	/**
 	 * La contrepartie, et elle est essentielle : l'élève archivé garde son
 	 * classeur. Retirer un élève l'archive PRÉCISÉMENT pour qu'il relise ce
 	 * qu'on lui a donné — si ce cas tombe, la correction est allée trop loin.
