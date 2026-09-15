@@ -100,3 +100,35 @@ Sur un cadrage à très grande abscisse (`xMin = 1e12`, largeur `1e-4`),
 `viewport.xMin + i * step` perd entièrement le pas : **298 abscisses dupliquées
 sur 300**. Défaut préexistant, indépendant de ce chantier ; la garde
 `from.x < to.x` empêche le lissage d'y ajouter quoi que ce soit.
+
+### Limite connue, mesurée : le dernier niveau reste biaisé
+
+Quand le budget s'épuise **au milieu** d'un niveau, les derniers segments en
+abscisse n'obtiennent pas leur point : un biais gauche-droite subsiste, mais sur
+**un seul niveau** au lieu de tous.
+
+Cela ne se produit que si le budget sature dès le niveau 0 — donc sur une
+fonction qu'aucun échantillonnage uniforme ne peut rendre. Mesuré sur
+`sin(200x)` (190 oscillations pour 300 échantillons, tracé crénelé de toute
+façon) : 66 px à gauche contre 220 px à droite. Et sur une zone de pôles placée
+après 90 % d'oscillation : 55 px, contre 118 px avant ce chantier et 1 px si la
+même zone n'a pas d'oscillation devant elle.
+
+Non corrigé, et non corrigeable en triant : le tri par amplitude est justement
+ce que la mesure a montré contre-productif. C'est une limite bornée, pas un
+défaut — notée pour que le prochain à mesurer 55 px sache que c'est attendu.
+
+### Chiffres de la revue
+
+| cas adverse                                  | avant ce chantier | version « par position » | version « par niveaux » |
+| -------------------------------------------- | ----------------- | ------------------------ | ----------------------- |
+| oscillation sur 90 %, pôles à la fin         | 118,0 px          | 118,0 px                 | **54,8 px**             |
+| pôles – oscillation – pôles (zone du milieu) | 85,3 px           | 85,3 px                  | **23,4 px**             |
+| 4 pôles symétriques                          | 26,7 px           | 0,94 px                  | 0,94 px                 |
+| plat à gauche, courbure à droite             | 7,62 px           | 0,89 px                  | 0,89 px                 |
+
+La version « par position » n'améliorait **rien** sur les deux premiers cas : le
+budget partait intégralement dans la première moitié.
+
+Drag de slider mesuré (6 courbes, cadrage mobile) : 0,43 ms par image en qualité
+pleine, contre 0,24 avant — sur les 16 ms d'une image.

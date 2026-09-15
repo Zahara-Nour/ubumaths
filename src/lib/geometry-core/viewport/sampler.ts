@@ -423,6 +423,15 @@ function makeClamp(viewport: Viewport): (y: number) => number {
  * mesurait la distance perpendiculaire rapportée à la diagonale du cadre : au
  * même endroit elle valait 0,4 px, sous tous les seuils raisonnables, et la
  * subdivision ne se déclenchait jamais.
+ *
+ * Limite connue : quand le budget s'épuise AU MILIEU d'un niveau, les derniers
+ * segments en abscisse n'ont pas leur point — un biais gauche-droite subsiste
+ * donc, mais sur un seul niveau au lieu de tous. Cela ne se produit que si le
+ * budget sature dès le niveau 0, c'est-à-dire sur une fonction qu'aucun
+ * échantillonnage uniforme ne peut rendre (sin(200x) : 190 oscillations pour
+ * 300 échantillons, tracé crénelé de toute façon). Mesuré dans ce régime :
+ * 66 px à gauche contre 220 px à droite. Attendu, et non corrigeable en
+ * triant — voir plus haut pourquoi le tri par amplitude est contre-productif.
  */
 function refineByLevels(
 	evaluator: (x: number) => number | null,
@@ -656,6 +665,11 @@ function smoothCurve(
 	const smoothed: Point[] = [];
 	const shifted: number[] = [];
 	for (let i = 0; i < points.length; i++) {
+		// Le décalage est pris AVANT l'insertion, et c'est juste parce que
+		// `inserted` ne peut pas contenir la clé d'une rupture : les segments
+		// ne sont construits que pour `!breaks.has(i)`. Les deux gardes se
+		// répondent — c'est le seul endroit de cette fonction où la justesse
+		// n'est pas locale.
 		if (breaks.has(i)) shifted.push(smoothed.length);
 		const extra = inserted.get(i);
 		if (extra !== undefined) {
