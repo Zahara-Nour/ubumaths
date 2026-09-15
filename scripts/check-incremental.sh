@@ -21,42 +21,46 @@
 # sync. Reach for it after deleting/renaming files, or if an error here disagrees
 # with `pnpm check`.
 #
-# TWO GUARDS, because this script costs ~40s warm but ~10 min after an edit, and
+# THREE GUARDS, because this script costs ~40s warm but ~10 min after an edit, and
 # on this machine a wasted run is wasted wall-clock the user pays for:
 #   1. A lock: a second instance refuses to start while one is running (two
 #      concurrent svelte-check + tsc make an 8 GB machine unusable).
-#   2. A redundancy guard: if nothing that can change the result has changed
+#   3. A redundancy guard: if nothing that can change the result has changed
 #      since the last completed run, the previous result is REPLAYED instead of
 #      recomputed. Re-running to "have another look" answers nothing.
+#   (Guard 2 = refuse to run while the local Supabase stack is up, see below.)
 # Both are bypassed with FORCE=1 (and FRESH=1 implies a real run).
 set -uo pipefail
 
+# --- Guard 1: one run at a time — ACROSS WORKTREES ---------------------------
+# Le verrou vit dans le répertoire git COMMUN, pas ici : deux worktrees, ce sont
+# deux .svelte-kit/, donc deux verrous locaux qui ne se voient pas. La garde
+# « un seul typecheck à la fois » disparaîtrait au moment exact où elle devient
+# la plus nécessaire.
+#
+# On se RÉ-EXÉCUTE sous le verrou (tenu par le noyau, cf. scripts/lib/lock.py).
+# Le descripteur survit à exec, donc le verrou couvre tout le reste du script,
+# et le noyau le relâche à la mort du processus — Ctrl-C et OOM compris, sans
+# aucun trap. Si python3 manquait, l'exec échouerait et RIEN ne tournerait.
+if [ -z "${UBU_VERROU_TYPECHECK:-}" ]; then
+	export UBU_VERROU_TYPECHECK=1
+	exec python3 "$(dirname "${BASH_SOURCE[0]}")/lib/lock.py" \
+		typecheck "Un check:incremental" -- bash "${BASH_SOURCE[0]}" "$@"
+fi
+
 # ---------------------------------------------------------------------------
-# Guard state. Kept out of .svelte-check/ so FRESH=1 (which wipes that cache)
-# does not also destroy the lock we are holding.
+# État de la garde 3 (rejeu du dernier verdict). Il reste LOCAL au worktree, et
+# c'est essentiel : un verdict porte sur CE répertoire de travail. Partagé, un
+# worktree rejouerait le « 0 erreur » calculé sur un AUTRE arbre source sans
+# rien vérifier — un faux vert, pire que pas de garde du tout.
+# Kept out of .svelte-check/ so FRESH=1 (which wipes that cache) does not
+# destroy it.
 # ---------------------------------------------------------------------------
 state_dir=.svelte-kit/.check-incremental
 mkdir -p "$state_dir"
-lock="$state_dir/lock"
 marker="$state_dir/last-run"
 last_output="$state_dir/last-output"
 last_status="$state_dir/last-status"
-
-# --- Guard 1: one run at a time ---------------------------------------------
-if [ -f "$lock" ]; then
-	running_pid=$(cat "$lock" 2>/dev/null)
-	if [ -n "${running_pid:-}" ] && kill -0 "$running_pid" 2>/dev/null; then
-		since=$(ps -o etime= -p "$running_pid" 2>/dev/null | tr -d ' ')
-		echo "⛔ Un check:incremental tourne déjà (PID $running_pid, depuis ${since:-?})."
-		echo "   Deux typechecks en parallèle rendent la machine inutilisable — attends"
-		echo "   sa fin. Pour tuer le précédent : kill $running_pid"
-		exit 2
-	fi
-	# Stale lock: the previous run was killed (OOM, Ctrl-C) without its trap firing.
-	rm -f "$lock"
-fi
-echo $$ >"$lock"
-trap 'rm -f "$lock"' EXIT INT TERM
 
 # --- Guard 2: don't run while the local Supabase stack is up -----------------
 # Le 2026-09-09, un check a été tué après 15 minutes. Aucun fantôme : la pile
@@ -78,12 +82,11 @@ if command -v docker >/dev/null 2>&1; then
 		echo
 		echo "   → pnpm db:stop      puis relance le check"
 		echo "   → ALLOW_DB=1 pnpm check:incremental   pour passer outre en connaissance de cause"
-		rm -f "$lock"
 		exit 2
 	fi
 fi
 
-# --- Guard 2: refuse a run that cannot say anything new ----------------------
+# --- Guard 3: refuse a run that cannot say anything new ----------------------
 # Anything that can change the verdict: sources, the tsconfig this script uses,
 # the svelte/vite config, and the dependency set.
 shopt -s nullglob
@@ -100,7 +103,7 @@ if [ "${FORCE:-0}" != "1" ] && [ "${FRESH:-0}" != "1" ] &&
 fi
 
 # Timestamped BEFORE the run, so a file edited *during* the run still counts as
-# newer than the marker and is not silently swallowed by guard 2.
+# newer than the marker and is not silently swallowed by guard 3.
 touch "$state_dir/run-started"
 
 # FRESH=1 → drop svelte-check's transpile cache (cures ghosts) and force a sync.
@@ -137,9 +140,31 @@ fi
 # (and re-measure — don't cargo-cult the number back up).
 output=$(NODE_OPTIONS='--max-old-space-size=4096' npx svelte-check \
 	--tsconfig ./tsconfig.check.json --threshold error --incremental --output machine 2>&1)
+sc_status=$?
+
+# Un svelte-check tué par un signal (Ctrl-C, OOM) rend 128+n : sa sortie est
+# TRONQUÉE, et « aucune ligne ERROR » n'y veut alors rien dire. Écrire un
+# verdict là-dessus fabriquerait un faux vert, que la garde 3 rejouerait ensuite
+# comme vérité. On sort sans rien écrire — ni verdict, ni marqueur.
+if [ "$sc_status" -ge 128 ]; then
+	echo "⛔ svelte-check interrompu (code $sc_status) : aucun verdict écrit."
+	exit "$sc_status"
+fi
 
 # Filter extern/ (present locally, absent in CI — see header).
 errors=$(echo "$output" | grep " ERROR " | grep -v "extern/")
+
+# Un svelte-check qui échoue SANS produire de rapport n'a rien vérifié : npx
+# introuvable (127), tsconfig illisible (1 sans ligne COMPLETED)… Le laisser
+# tomber dans la branche « aucune erreur » écrivait « ✓ ? FILES 0 ERRORS » avec
+# un code 0 — un faux vert, que la garde 3 rejouait ensuite comme vérité. Les
+# « ? » étaient le seul indice, et personne ne lit un « ? » sur un run vert.
+if [ "$sc_status" -ne 0 ] && [ -z "$errors" ] && ! echo "$output" | grep -q "COMPLETED"; then
+	echo "⛔ svelte-check a échoué (code $sc_status) sans produire de rapport."
+	echo "   Rien n'a été vérifié — aucun verdict écrit."
+	printf '%s\n' "$output" | tail -15
+	exit "$sc_status"
+fi
 
 if [ -n "$errors" ]; then
 	report=$(
