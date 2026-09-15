@@ -356,14 +356,86 @@ begin
 end;
 $function$;
 
--- ── Garde : aucune des 19 ne doit avoir été oubliée ────────────────────────
--- Dix-neuf `alter policy` écrits à la main, c'est dix-neuf occasions de se
--- tromper de nom et de ne rien casser visiblement. Cette vérification échoue la
--- migration plutôt que de la laisser passer à moitié.
+-- ── Garde 1 : la clause annexe de chaque policy a-t-elle survécu ? ─────────
+-- LE vrai risque de dix-neuf réécritures à la main n'est pas de se tromper de
+-- nom (`alter policy` lèverait déjà une erreur) : c'est de PERDRE une condition
+-- en recopiant. Une expression amputée de son `visible = true` ou de son
+-- `is_test = false` élargit l'accès en silence, et rien ne rougit.
+--
+-- On vérifie donc, pour chaque policy qui en portait une, que sa clause annexe
+-- est toujours là.
+
+do $$
+declare
+	v_attendu text[][] := array[
+		['class_journal_entries', 'Students can view published journal entries', 'is_published'],
+		['class_journal_entries', 'Students can view published journal entries', 'entry_date'],
+		['journal_entry_homework', 'Students read homework of visible entries', 'is_published'],
+		['shared_coursework', 'Students can view visible shared coursework for their classes', 'shared_coursework_students'],
+		['coursework_materials', 'Students can view materials for shared coursework', 'visible'],
+		['shared_materials', 'Students can view visible shared materials in their classes', 'is_test'],
+		['google_classroom_materials', 'Students can view materials shared with their classes', 'is_test'],
+		['google_classroom_topics', 'Students can view topics for shared materials', 'visible'],
+		['google_classroom_material_attachments', 'Students can view attachments for shared materials', 'is_test'],
+		['message_templates', 'student_view_templates', 'approval_status = ''approved'''],
+		['message_templates', 'student_view_templates', 'scope'],
+		['game_class_settings', 'Students can view class game settings', 'class_members'],
+		['assessment_assignments', 'Students can view own assignments', 'student_id = auth.uid()'],
+		['riddle_assignments', 'Students can view own assignments', 'student_id = auth.uid()'],
+		['evaluation_tasks', 'evaluation_tasks_select_student', 'class_id IS NOT NULL'],
+		['evaluation_task_perimeter', 'evaluation_task_perimeter_select_student', 'class_id IS NOT NULL']
+	];
+	v_ligne text[];
+	v_qual text;
+begin
+	foreach v_ligne slice 1 in array v_attendu loop
+		select qual into v_qual
+		from pg_policies
+		where schemaname = 'public' and tablename = v_ligne[1] and policyname = v_ligne[2];
+
+		if v_qual is null or position(v_ligne[3] in v_qual) = 0 then
+			raise exception 'Clause perdue en réécrivant % / % : « % » a disparu',
+				v_ligne[1], v_ligne[2], v_ligne[3];
+		end if;
+	end loop;
+end
+$$;
+
+-- ── Garde 2 : les deux fonctions portent bien le filtre ────────────────────
+
+do $$
+begin
+	if not exists (
+		select 1 from pg_proc p
+		join pg_namespace n on n.oid = p.pronamespace
+		where n.nspname = 'public'
+			and p.proname = 'student_has_assignment_for_assessment'
+			and p.prosrc like '%status = ''active''%'
+	) then
+		raise exception 'student_has_assignment_for_assessment() n’a pas reçu son filtre de statut';
+	end if;
+
+	if not exists (
+		select 1 from pg_proc p
+		join pg_namespace n on n.oid = p.pronamespace
+		where n.nspname = 'public'
+			and p.proname = 'is_riddle_assigned_to_student'
+			and p.prosrc like '%status = ''active''%'
+	) then
+		raise exception 'is_riddle_assigned_to_student() n’a pas reçu son filtre de statut';
+	end if;
+end
+$$;
+
+-- ── Garde 3 : aucune des 19 ne doit avoir été oubliée ──────────────────────
+-- ⚠️ Volontairement testée sur `cm.status` / `class_members.status`, et non sur
+-- le seul mot « status » : `approval_status = 'active'` — une faute de frappe
+-- plausible sur `message_templates` — passerait la garde naïve au vert.
 
 do $$
 declare
 	v_manquantes text;
+	v_restantes text;
 begin
 	select string_agg(format('%s / %s', tablename, policyname), ', ')
 	into v_manquantes
@@ -390,10 +462,21 @@ begin
 			('evaluation_task_perimeter', 'evaluation_task_perimeter_select_student'),
 			('riddle_assignments', 'Students can view own assignments')
 		)
-		and coalesce(qual, '') not like '%status = ''active''%';
+		and coalesce(qual, '') !~ '(cm|m|class_members)\.status = ''active''';
 
 	if v_manquantes is not null then
 		raise exception 'Policies sans filtre de statut après migration : %', v_manquantes;
 	end if;
+
+	-- Inventaire, pas garde : ce qui reste volontairement non filtré. Sans ce
+	-- décompte, rien ne dirait qu'on a traité 19 des 38 policies recensées.
+	select count(*) || ' policies citent encore class_members sans son statut'
+	into v_restantes
+	from pg_policies
+	where schemaname = 'public'
+		and coalesce(qual, '') || ' ' || coalesce(with_check, '') like '%class_members%'
+		and coalesce(qual, '') || ' ' || coalesce(with_check, '') !~ '(cm|cm1|m|class_members)\.status';
+
+	raise notice 'Hors périmètre de ce lot : % (13 côté professeur, 6 différées : view_member_classes, rag_*, tournois)', v_restantes;
 end
 $$;

@@ -157,6 +157,28 @@ Les trois réponses possibles, telles qu'elles étaient posées :
 3. **Ne rien couper.** Statu quo. Le trou d'`assessment_assignments` reste
    ouvert côté base.
 
+## Trouvé au passage, et NON traité
+
+`shared_coursework` / « Students can view visible shared coursework for their
+classes » contient :
+
+```sql
+not exists (select 1 from shared_coursework_students
+            where shared_coursework_id = shared_coursework.id)
+or exists (... and scs.student_id = auth.uid())
+```
+
+Le `not exists` est évalué **sous la RLS de `shared_coursework_students`**, dont
+la seule policy élève est `using (student_id = auth.uid())`. Un élève ne voit
+donc jamais les lignes de restriction des autres : pour une fiche restreinte à
+d'autres élèves, le `not exists` vaut **true**, et la fiche lui est lisible.
+
+C'est la forme n° 1 des échecs silencieux — une lecture filtrée rend zéro ligne,
+et ici ce zéro est interprété comme « aucune restriction ». Antérieur à tout ce
+qui précède, et inchangé par le lot 1 ; trouvé par l'audit du 2026-09-15.
+
+---
+
 ⚠️ Quelle que soit la réponse, **chaque ligne retire un accès** : à livrer par
 petits lots, avec un test d'intégration par lot, et jamais `view_member_classes`
 en premier.
