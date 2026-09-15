@@ -24,6 +24,7 @@ import type {
 	TemplateDiff,
 	DiffEntry,
 	MigrationPreview,
+	InstantiationWithStatus,
 	DbChapterTemplate,
 	DbChapterTemplateVersion,
 	DbChapterTemplateInstantiation
@@ -935,6 +936,77 @@ export async function instantiateTemplate(
 // ============================================================================
 // MIGRATION OPERATIONS
 // ============================================================================
+
+/**
+ * L'instanciation d'un chapitre, TELLE QUE L'ÉCRAN doit la voir — ou `null`.
+ *
+ * ⚠️ Distincte de `checkForTemplateUpdates`, qui ne rend que « y a-t-il une
+ * version plus récente ? » et répond `{ hasUpdate: false }` — un objet, donc
+ * VRAI — même quand le chapitre n'a aucun modèle. Le passer tel quel à
+ * l'affichage faisait apparaître l'étiquette « Template supprimé » sur tous les
+ * chapitres créés à la main, et plantait la page sur le premier tooltip.
+ *
+ * Ici, pas de modèle ⇒ `null`. C'est la seule valeur qui dit « rien à
+ * montrer », et l'écran n'a pas à l'interpréter.
+ */
+export async function getInstantiationWithStatus(
+	chapterId: string,
+	supabase: SupabaseClient<Database>
+): Promise<OperationResult<InstantiationWithStatus | null>> {
+	try {
+		// `maybeSingle` : un chapitre créé de zéro n'a aucune instanciation, et
+		// c'est le cas normal — une absence, pas une panne.
+		const { data: row, error } = await supabase
+			.from('chapter_template_instantiations')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.maybeSingle();
+
+		if (error) {
+			console.error('[getInstantiationWithStatus] Erreur :', error);
+			return { data: null, error: new Error(error.message) };
+		}
+
+		if (!row) {
+			return { data: null, error: null };
+		}
+
+		// Le titre et la version courante du modèle. Un modèle supprimé laisse
+		// l'instanciation en place : c'est une absence, que l'écran sait dire.
+		const { data: template, error: templateError } = row.template_id
+			? await supabase
+					.from('chapter_templates')
+					.select('title, current_version')
+					.eq('id', row.template_id)
+					.maybeSingle()
+			: { data: null, error: null };
+
+		if (templateError) {
+			console.error('[getInstantiationWithStatus] Modèle illisible :', templateError);
+			return { data: null, error: new Error(templateError.message) };
+		}
+
+		const hasUpdate =
+			template !== null &&
+			row.current_template_version !== null &&
+			template.current_version > row.current_template_version;
+
+		// Le convertisseur du module fait la correspondance de colonnes : la
+		// refaire à la main ici la laisserait diverger au prochain champ ajouté.
+		return {
+			data: {
+				...dbInstantiationToApp(row),
+				hasUpdate,
+				latestVersion: hasUpdate ? template.current_version : null,
+				templateTitle: template?.title ?? null
+			},
+			error: null
+		};
+	} catch (err) {
+		console.error('[getInstantiationWithStatus] Erreur inattendue :', err);
+		return { data: null, error: err as Error };
+	}
+}
 
 /**
  * Check if a chapter's template has updates available
