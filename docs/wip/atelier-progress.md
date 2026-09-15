@@ -108,10 +108,22 @@ stockage se lisent en **LaTeX** ; URL, collage et mode commande passent par la
    « en attente de b, o, j, u, r, t, l, m, d ». Absurde, mais ni une erreur ni un
    plantage.
 
-**À trancher** : accepter ce comportement, ou poser un critère de refus au
-collage (nombre de variables libres, présence de caractères non mathématiques) ?
-Ce critère n'est pas spécifié, et je ne l'invente pas. Les faits sont figés par
-des tests en attendant.
+**✅ Tranché le 2026-09-16 : pas de critère de refus au collage.** Il raterait le
+cas le plus fréquent — coller « Soit f la fonction définie par f(x)=… » contient
+opérateurs et vraie expression — et l'asymétrie des coûts l'interdit : un faux
+refus bloque un usage valide, un faux passage coûte trois secondes et se voit.
+
+Trois filets à la place, spécifiés au §6 bis : **annulation du collage**
+(`Ctrl+Z`), **message d'attente qui compte au lieu d'énumérer** au-delà de trois
+noms (§2.5 N7), et le fait que l'élève voit ce qui entre dans le champ. Ces deux
+premiers restent à implémenter — ils touchent l'interface, pas le modèle.
+
+⚠️ **Bug ouvert à part : [#329](https://github.com/Zahara-Nour/ubumaths/issues/329)**
+— le nommage automatique fabrique une fausse « définition circulaire ». Créer un
+objet sans nom avec la définition `f(x)+1` donne « définition circulaire », alors
+que le même contenu nommé `g` donne « en attente de f ». C'est le message que
+reçoit un élève qui colle un énoncé : il ment sur la cause. Correction proposée :
+`nextName()` doit éviter les noms cités dans la définition.
 
 ---
 
