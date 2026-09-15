@@ -118,14 +118,24 @@ Toutes les commandes `pnpm <script>` définies dans `package.json`, par catégor
 
 ## 🏷️ Releases
 
-| Commande             | Effet                                             | Notes                  |
-| -------------------- | ------------------------------------------------- | ---------------------- |
-| `pnpm release`       | Version auto selon les commits (standard-version) | Bump + CHANGELOG + tag |
-| `pnpm release:patch` | Force un bump patch                               |                        |
-| `pnpm release:minor` | Force un bump minor                               |                        |
-| `pnpm release:major` | Force un bump major                               |                        |
+| Commande             | Effet                                                 | Notes                  |
+| -------------------- | ----------------------------------------------------- | ---------------------- |
+| `pnpm release`       | Version auto selon les commits (`scripts/release.ts`) | Bump + CHANGELOG + tag |
+| `pnpm release:patch` | Force un bump patch                                   |                        |
+| `pnpm release:minor` | Force un bump minor                                   |                        |
+| `pnpm release:major` | Force un bump major                                   |                        |
 
 > Après : `git push --follow-tags origin main`. Le tag déclenche la Release GitHub auto.
+
+⚠️ **`pnpm release` n'appelle plus `standard-version` directement.** En dessous
+de 1.0.0 celui-ci force `preMajor` et rétrograde chaque niveau d'un cran : un
+`feat:` ne valait qu'un patch, et la v0.14.2 est sortie avec dix fonctionnalités
+dedans sous un numéro de correctif. `scripts/release.ts` décide le niveau —
+`feat` **et** rupture → mineur, le reste → patch — puis passe la main à
+standard-version pour le CHANGELOG, le commit et le tag.
+
+Le **1.0.0 reste une décision**, pas la conséquence d'un `!` dans un message :
+il se pose à la main, `pnpm release:major`.
 
 ---
 

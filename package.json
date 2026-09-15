@@ -36,7 +36,7 @@
 		"test:lint-rules": "node eslint-rules/require-zod-validation.test.js",
 		"test": "npm run test:changed",
 		"test:e2e": "playwright test",
-		"release": "standard-version",
+		"release": "tsx scripts/release.ts",
 		"release:patch": "standard-version --release-as patch",
 		"release:minor": "standard-version --release-as minor",
 		"release:major": "standard-version --release-as major",
