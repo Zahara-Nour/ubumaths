@@ -24,6 +24,10 @@
 	  deux éléments identiques. Et il faut TOUJOURS committer le dédoublonnage
 	  au finalize, même sur une dépose sans effet, sinon l'ombre reste et
 	  l'élément paraît grisé et intraînable.
+	- ⚠️⚠️ D'où vient la ressource ne se lit QU'À LA PRISE (`origine`) : cette
+	  ombre au même identifiant fait que, à la dépose, la zone survolée paraît
+	  la contenir déjà. Le plan concluait « rien n'a bougé » et n'enregistrait
+	  RIEN — le déplacement tenait à l'écran jusqu'au rechargement.
 
 	@module components/cours/teacher/ChapterSectionsEditor
 -->
@@ -38,12 +42,7 @@
 		ChapterWorksheet
 	} from '$lib/types/chapters';
 	import type { SectionContentKind } from '$lib/server/validation/chapter-sections';
-	import {
-		dndzone,
-		SHADOW_PLACEHOLDER_ITEM_ID,
-		SHADOW_ITEM_MARKER_PROPERTY_NAME,
-		type DndEvent
-	} from 'svelte-dnd-action';
+	import { dndzone, SHADOW_PLACEHOLDER_ITEM_ID, TRIGGERS, type DndEvent } from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -66,7 +65,14 @@
 		BookOpen,
 		ClipboardList
 	} from '@lucide/svelte';
-	import { empreinteAffichage, resolveDrop, type ZonesSnapshot } from './section-dnd';
+	import {
+		empreinteAffichage,
+		estOmbre,
+		origineDuGlisser,
+		remettreAuRang,
+		resolveDrop,
+		type DragOrigin
+	} from './section-dnd';
 
 	type WorksheetRow = ChapterWorksheet & { title: string | null; status: string | null };
 
@@ -199,12 +205,8 @@
 		return sortie;
 	}
 
-	function isDndShadow(item: { id: string }): boolean {
-		return Boolean((item as Record<string, unknown>)[SHADOW_ITEM_MARKER_PROPERTY_NAME]);
-	}
-
 	function dndKey(item: { id: string }): string {
-		return isDndShadow(item) ? `${item.id}_dnd-shadow` : item.id;
+		return estOmbre(item) ? `${item.id}_dnd-shadow` : item.id;
 	}
 
 	/** Toutes les ressources du chapitre, avec la section où elles sont rangées. */
@@ -411,7 +413,19 @@
 		if (section) section.ressources = liste;
 	}
 
+	/**
+	 * D'où part la ressource en cours de glisser.
+	 *
+	 * Volontairement hors `$state` : cette valeur ne pilote aucun affichage. Elle
+	 * se pose à la PRISE, et c'est tout l'enjeu — au moment de la dépose, les
+	 * zones ne disent plus d'où vient la ressource (cf. `DragOrigin`).
+	 */
+	let origine: DragOrigin | null = null;
+
 	function ressourcesConsider(sectionId: string | null, event: CustomEvent<DndEvent<Ressource>>) {
+		if (event.detail.info.trigger === TRIGGERS.DRAG_STARTED) {
+			origine = origineDuGlisser(sectionId, event.detail.items, event.detail.info.id);
+		}
 		poserZone(sectionId, dedupeById(event.detail.items));
 	}
 
@@ -419,11 +433,20 @@
 		sectionId: string | null,
 		event: CustomEvent<DndEvent<Ressource>>
 	) {
-		// Instantané de TOUTES les zones avant mutation : un déplacement entre
-		// sections en touche deux.
+		const depart = origine;
+
+		// Instantané de TOUTES les zones avant mutation — un déplacement entre
+		// sections en touche deux. La ressource tirée en est RETIRÉE, ombre ou
+		// non : la restauration la remet elle-même à son rang de départ, et
+		// l'instantané qui la porterait encore en ferait un doublon. Deux lignes
+		// de même clé, et le `{#each}` des sections lève `each_key_duplicate`.
+		const horsTiree = (r: { id: string }) => !estOmbre(r) && r.id !== event.detail.info.id;
 		const instantane = {
-			sections: sectionsLocales.map((s) => ({ id: s.id, ressources: [...s.ressources] })),
-			nonClassees: [...nonClassees]
+			sections: sectionsLocales.map((s) => ({
+				id: s.id,
+				ressources: s.ressources.filter(horsTiree)
+			})),
+			nonClassees: nonClassees.filter(horsTiree)
 		};
 
 		const arrivee = dedupeById(event.detail.items);
@@ -435,11 +458,7 @@
 
 		// La décision vit dans `section-dnd.ts`, où elle est testée sans avoir à
 		// fabriquer d'événement de souris.
-		const zones: ZonesSnapshot = {
-			sections: instantane.sections.map((s) => ({ id: s.id, items: s.ressources })),
-			unassigned: instantane.nonClassees
-		};
-		const issue = resolveDrop(zones, sectionId, arrivee, deplaceId);
+		const issue = resolveDrop(depart, sectionId, arrivee, deplaceId);
 
 		if (issue.kind === 'ignored') return;
 
@@ -454,35 +473,78 @@
 			}
 		}
 
+		// Ce qu'on s'apprête à enregistrer devient le nouveau point de départ :
+		// au clavier, un même glisser enchaîne plusieurs déposes.
+		origine = { zone: sectionId, index: arrivee.findIndex((r) => r.id === deplaceId) };
+
 		busy = true;
 		const ok = await persisterZone(sectionId, arrivee);
 		busy = false;
 
 		if (!ok) {
-			// Restauration : les deux zones concernées reviennent à l'instantané.
+			const tiree = arrivee.find((r) => r.id === deplaceId);
+
+			// Prise manquée : on ne sait pas d'où la ressource venait, donc on ne
+			// touche à rien. La remettre « quelque part » la ferait sauter d'une
+			// section à l'autre ; l'effacer la ferait passer pour supprimée. Le
+			// message d'erreur a déjà dit que le rangement n'a pas pris.
+			if (!tiree || !depart) return;
+
+			// Restauration : toutes les zones reviennent à l'instantané, puis la
+			// ressource retourne d'où elle venait — l'instantané ne la porte plus.
 			sectionsLocales = sectionsLocales.map((s) => {
 				const snap = instantane.sections.find((i) => i.id === s.id);
-				return snap ? { ...s, ressources: snap.ressources } : s;
+				return snap ? { ...s, ressources: [...snap.ressources] } : s;
 			});
-			nonClassees = instantane.nonClassees;
+			nonClassees = [...instantane.nonClassees];
+			origine = depart;
+			reposer(depart, tiree);
 		}
+	}
+
+	/** Remet une ressource là d'où elle venait, quand le rangement est refusé. */
+	function reposer(depart: DragOrigin, ressource: Ressource) {
+		if (depart.zone === null) {
+			nonClassees = remettreAuRang(nonClassees, depart.index, ressource);
+			return;
+		}
+
+		const section = sectionsLocales.find((s) => s.id === depart.zone);
+		if (section) section.ressources = remettreAuRang(section.ressources, depart.index, ressource);
 	}
 
 	// ===== Glisser-déposer : les sections =====
 
+	/**
+	 * D'où part la section en cours de glisser — même règle que les ressources :
+	 * son ombre occupe déjà le rang d'arrivée quand la dépose arrive, et relire
+	 * la liste à ce moment-là ferait conclure « rien n'a bougé ».
+	 *
+	 * Les sections n'ont qu'UNE zone : seul le rang compte, d'où `zone: null`.
+	 */
+	let origineSection: DragOrigin | null = null;
+
 	function sectionsConsider(event: CustomEvent<DndEvent<SectionLocale>>) {
+		if (event.detail.info.trigger === TRIGGERS.DRAG_STARTED) {
+			origineSection = origineDuGlisser(null, event.detail.items, event.detail.info.id);
+		}
 		sectionsLocales = dedupeById(event.detail.items);
 	}
 
 	async function sectionsFinalize(event: CustomEvent<DndEvent<SectionLocale>>) {
-		const instantane = [...sectionsLocales];
+		const depart = origineSection;
+		// La section tirée est retirée de l'instantané, ombre ou non : la
+		// restauration la remet à son rang, et un doublon de clé ferait lever
+		// `each_key_duplicate` au rendu.
+		const instantane = sectionsLocales.filter((s) => !estOmbre(s) && s.id !== event.detail.info.id);
 		const apres = dedupeById(event.detail.items);
 		sectionsLocales = apres;
 
 		const deplaceId = event.detail.info.id;
-		const ancienIndex = instantane.findIndex((s) => s.id === deplaceId);
-		const nouvelIndex = apres.findIndex((s) => s.id === deplaceId);
-		if (nouvelIndex === -1 || ancienIndex === nouvelIndex) return;
+		if (resolveDrop(depart, null, apres, deplaceId).kind === 'ignored') return;
+
+		// Le rang qu'on s'apprête à enregistrer devient le nouveau point de départ.
+		origineSection = { zone: null, index: apres.findIndex((s) => s.id === deplaceId) };
 
 		busy = true;
 		const ok = await appeler(
@@ -497,7 +559,16 @@
 		);
 		busy = false;
 
-		if (!ok) sectionsLocales = instantane;
+		if (!ok) {
+			// La section déplacée ne figure plus dans l'instantané : on la remet à
+			// son rang de départ. Origine inconnue : on ne touche à rien, plutôt
+			// que de la faire sauter ailleurs ou de la faire disparaître.
+			const remise = apres.find((s) => s.id === deplaceId);
+			if (!remise || !depart) return;
+
+			sectionsLocales = remettreAuRang(instantane, depart.index, remise);
+			origineSection = depart;
+		}
 	}
 
 	// ===== Sections : créer, renommer, supprimer =====
@@ -610,7 +681,7 @@
 			<div
 				animate:flip={{ duration: FLIP_MS }}
 				class="flex items-center gap-2 rounded-md border bg-card px-2 py-1.5
-					{ressource.id === SHADOW_PLACEHOLDER_ITEM_ID || isDndShadow(ressource) ? 'opacity-40' : ''}"
+					{ressource.id === SHADOW_PLACEHOLDER_ITEM_ID || estOmbre(ressource) ? 'opacity-40' : ''}"
 			>
 				<GripVertical class="h-4 w-4 shrink-0 cursor-grab text-muted-foreground" />
 				<Badge variant="secondary" class="shrink-0">{ressource.typeLabel}</Badge>
@@ -621,7 +692,7 @@
 					boutons sur la copie donnerait deux fois la même suppression, et le
 					second envoi porterait sur une ligne déjà supprimée.
 				-->
-				{#if !isDndShadow(ressource) && ressource.id !== SHADOW_PLACEHOLDER_ITEM_ID}
+				{#if !estOmbre(ressource) && ressource.id !== SHADOW_PLACEHOLDER_ITEM_ID}
 					{#if ressource.kind === 'checklistItem'}
 						<Button
 							variant="ghost"
@@ -745,7 +816,7 @@
 	>
 		{#each sectionsLocales as section (dndKey(section))}
 			<div animate:flip={{ duration: FLIP_MS }}>
-				<Card.Root class={isDndShadow(section) ? 'opacity-40' : ''}>
+				<Card.Root class={estOmbre(section) ? 'opacity-40' : ''}>
 					<Card.Header class="flex flex-row items-center gap-2 space-y-0">
 						<GripVertical class="h-4 w-4 shrink-0 cursor-grab text-muted-foreground" />
 

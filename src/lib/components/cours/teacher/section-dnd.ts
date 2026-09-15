@@ -1,74 +1,115 @@
 /**
  * Logique de dépose des ressources d'un chapitre — sans le geste
  *
- * Extraite du composant pour être testable : un test de glisser-déposer ne
- * peut que FABRIQUER les événements que la bibliothèque émet, et prouverait
- * alors surtout que la simulation est fidèle. Ce qui mérite un test, c'est ce
- * qui suit la dépose — d'où vient la ressource, la dépose est-elle sans effet,
- * quelles zones renuméroter.
+ * Extraite du composant pour décider en un seul endroit : d'où vient la
+ * ressource, la dépose est-elle sans effet, quelle zone renuméroter.
+ *
+ * ⚠️ Ces fonctions pures ne suffisent PAS à couvrir le glisser-déposer, et
+ * l'avoir cru a coûté un bug en production : leurs cas partaient d'un état
+ * d'AVANT le geste, que le composant n'a jamais entre les mains. C'est
+ * `ChapterSectionsEditor.svelte.test.ts` qui rejoue la vraie séquence de la
+ * bibliothèque — et c'est le seul qui ait vu que rien ne s'enregistrait.
  *
  * @module components/cours/teacher/section-dnd
  */
 
+import { SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
+
 /** Une ressource telle que la zone de dépose la manipule. */
 export type DndItem = { id: string };
 
-/** L'état des zones avant la dépose. `null` = « Non classé ». */
-export type ZonesSnapshot = {
-	sections: { id: string; items: DndItem[] }[];
-	unassigned: DndItem[];
-};
+/**
+ * D'où part la ressource tirée : sa zone (`null` = « Non classé ») et son rang.
+ *
+ * ⚠️ C'est la SEULE mémoire fiable du point de départ, et elle se prend au tout
+ * début du geste. Relire les zones au moment de la dépose ne le donne pas :
+ * `svelte-dnd-action` y a déjà déplacé sa copie « ombre », et lui a rendu
+ * l'identifiant de la ressource tirée (`keepOriginalElementInDom`). La zone
+ * survolée contient donc un élément qui porte cet identifiant — le plan croyait
+ * la ressource DÉJÀ rangée là, au même rang, concluait « rien n'a bougé », et
+ * n'enregistrait rien. Le déplacement tenait à l'écran jusqu'au rechargement.
+ */
+export type DragOrigin = { zone: string | null; index: number };
 
 export type DropOutcome =
 	| { kind: 'ignored'; reason: 'not-landed' | 'unchanged' }
 	| { kind: 'moved'; from: string | null; to: string | null }
 	| { kind: 'reordered'; zone: string | null };
 
+/** La copie « ombre » que la bibliothèque promène pendant le geste. */
+export function estOmbre(item: DndItem): boolean {
+	return Boolean((item as Record<string, unknown>)[SHADOW_ITEM_MARKER_PROPERTY_NAME]);
+}
+
+/**
+ * Le point de départ du geste, lu sur le `consider` de prise (« dragStarted »).
+ *
+ * À la souris, la bibliothèque a remplacé la ressource par son ombre, au même
+ * rang ; au clavier, elle laisse la liste intacte. Chercher l'un OU l'autre
+ * couvre les deux.
+ *
+ * @param zone   la zone où le geste commence (`null` = « Non classé »)
+ * @param items  ses éléments, tels que le `consider` les rend
+ * @param movedId l'identifiant rendu par la bibliothèque
+ */
+export function origineDuGlisser(
+	zone: string | null,
+	items: DndItem[],
+	movedId: string
+): DragOrigin {
+	return { zone, index: items.findIndex((item) => estOmbre(item) || item.id === movedId) };
+}
+
 /**
  * Que faut-il faire d'une dépose ?
  *
- * @param snapshot  l'état des zones AVANT la dépose
+ * @param origin    d'où part la ressource, ou `null` si la prise a été manquée
  * @param targetId  la zone qui reçoit (`null` = « Non classé »)
  * @param arrived   les éléments de la zone d'arrivée, dédoublonnés
  * @param movedId   l'identifiant rendu par la bibliothèque
  */
 export function resolveDrop(
-	snapshot: ZonesSnapshot,
+	origin: DragOrigin | null,
 	targetId: string | null,
 	arrived: DndItem[],
 	movedId: string
 ): DropOutcome {
+	const nouvelIndex = arrived.findIndex((item) => item.id === movedId);
+
 	// Déposée hors de toute zone : la bibliothèque rend quand même un finalize.
-	if (!arrived.some((item) => item.id === movedId)) {
+	if (nouvelIndex === -1) {
 		return { kind: 'ignored', reason: 'not-landed' };
 	}
 
-	const sourceSection = snapshot.sections.find((s) => s.items.some((i) => i.id === movedId));
-	const venaitDesNonClassees = snapshot.unassigned.some((i) => i.id === movedId);
-
-	// Introuvable dans l'instantané : course rare entre `consider` et
-	// `finalize`. On persiste plutôt que de deviner — l'API traitera ça comme
-	// une mise à jour d'ordre.
-	if (!sourceSection && !venaitDesNonClassees) {
+	// Prise manquée : course rare entre la prise et la dépose. On persiste
+	// plutôt que de deviner — l'API traitera ça comme une mise à jour d'ordre.
+	if (!origin) {
 		return { kind: 'reordered', zone: targetId };
 	}
 
-	const sourceId = sourceSection ? sourceSection.id : null;
-
-	if (sourceId !== targetId) {
-		return { kind: 'moved', from: sourceId, to: targetId };
+	if (origin.zone !== targetId) {
+		return { kind: 'moved', from: origin.zone, to: targetId };
 	}
 
-	// Même zone : si l'index n'a pas bougé, il n'y a rien à persister.
-	const avant = sourceSection ? sourceSection.items : snapshot.unassigned;
-	const ancienIndex = avant.findIndex((i) => i.id === movedId);
-	const nouvelIndex = arrived.findIndex((i) => i.id === movedId);
-
-	if (ancienIndex === nouvelIndex) {
+	// Même zone : si le rang n'a pas bougé, il n'y a rien à persister.
+	if (origin.index === nouvelIndex) {
 		return { kind: 'ignored', reason: 'unchanged' };
 	}
 
 	return { kind: 'reordered', zone: targetId };
+}
+
+/**
+ * Remet un élément au rang d'où il est parti, quand le rangement est refusé.
+ *
+ * ⚠️ L'instantané pris à la dépose ne doit PAS le porter — l'appelant l'en
+ * retire, ombre ou non : deux lignes de même clé feraient lever
+ * `each_key_duplicate` au rendu. Et on ne restaure jamais une ombre : elle
+ * resterait en ligne fantôme, grisée, jusqu'au rechargement.
+ */
+export function remettreAuRang<T>(liste: T[], index: number, element: T): T[] {
+	const rang = index >= 0 && index <= liste.length ? index : liste.length;
+	return [...liste.slice(0, rang), element, ...liste.slice(rang)];
 }
 
 /**
