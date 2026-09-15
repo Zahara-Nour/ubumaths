@@ -94,23 +94,45 @@ appellent une RPC ont été vérifiées une par une : toutes gardées.
 ⚠️ Dans les deux cas, **ne pas re-`grant` à `anon`** sans mesurer ce que ça
 rouvre : c'est la cause racine de l'audit d'août.
 
-## La limite, et ce qu'il faut en faire
+## La limite, et pourquoi ça ne s'automatise pas (encore)
 
-**La fenêtre est de 7 jours maximum, et rien n'est archivé.** Une panne
-apparue et corrigée il y a huit jours est invisible, et une panne installée
-depuis trois semaines n'affiche que ses sept derniers jours.
+**La fenêtre est de 7 jours, et rien n'est archivé.** Une panne apparue et
+corrigée il y a huit jours est invisible ; une panne installée depuis trois
+semaines n'affiche que ses sept derniers jours.
 
-Donc : **regarder chaque semaine**, sans quoi ce document ne sert à rien. Le
-dépôt a déjà deux routines claude.ai programmées (CI nocturne, audit des
-dépendances hebdomadaire) qui ouvrent des PR — c'est le même moule. Prompt à
-coller dans une troisième :
+⚠️ **Il n'existe aucun chemin d'automatisation aujourd'hui.** Les deux idées
+évidentes ont été essayées, et échouent toutes les deux :
 
-> Lis les erreurs d'exécution du projet Vercel `prj_7AcalefMmOpS5jANEfVh4LF4t6Hr`
-> (équipe `team_gn9W4dSrGih1EsxVMNUg3fZt`) sur les 7 derniers jours. Ignore les
-> 404 de balayage de robots. Pour chaque autre groupe d'erreurs, dis : la route,
-> le nombre d'utilisateurs touchés, depuis quand, et la cause probable selon
-> `docs/ref/observabilite-erreurs-prod.md`. Si une correction est évidente et
-> sans décision d'accès, ouvre une PR avec un test. Sinon, pose la question.
+1. **Une routine cloud claude.ai** — impossible : les routines cloud **n'ont pas
+   accès aux connecteurs MCP**. Vérifié quatre fois le 2026-06-14 (« No connected
+   MCP connectors found »), et c'est pour cette raison exacte que les routines
+   « advisors Supabase » et « erreurs de prod » avaient déjà été abandonnées à
+   l'époque. Les quatre routines qui tournent (triage CI, audit des dépendances,
+   scan de secrets, hygiène des PR) ne dépendent, elles, que de `git` et `gh`.
+2. **Le CLI Vercel** — `vercel logs --environment production --level error
+--since 7d` fonctionne, mais **ne voit pas les mêmes données** : il rend
+   « No logs found » là où `get_runtime_errors` remonte 14 groupes. Le CLI lit
+   les journaux bruts (rétention courte) ; l'outil MCP lit la table d'erreurs
+   **agrégée** (7 jours). Mesuré le 2026-09-15 sur le message exact
+   « Enrichissement illisible » : trouvé par le MCP, introuvable par le CLI.
+
+   ⚠️ Un script `pnpm errors:prod` bâti sur le CLI annoncerait donc « aucune
+   erreur » alors qu'il y en a. Pire que rien : ça institutionnalise le piège du
+   journal vide. **Ne pas le faire.**
+
+### Donc : un rituel, pas une automatisation
+
+Le seul chemin fiable est l'outil MCP — c'est-à-dire **moi, en session**, ou toi
+dans le tableau de bord Vercel (Observability → Errors).
+
+Pour que ça arrive vraiment, l'accrocher à un geste qui existe déjà :
+
+- **après chaque `pnpm db:migrate`** — c'est là qu'on casse le plus, et c'est
+  déjà le moment retenu en juin pour relancer les advisors Supabase ;
+- **au début d'une session de travail sur la prod**, avant d'ouvrir un chantier.
+
+Ça demande quatre minutes et ça a trouvé trois pannes du premier coup, dont une
+vieille de neuf jours.
 
 Lié : [rls-echecs-silencieux.md](rls-echecs-silencieux.md) — pourquoi tant de
 choses échouent sans rien dire.
