@@ -18,6 +18,7 @@ import type {
 	VerticalAsymptote,
 	HorizontalAsymptote,
 	ObliqueAsymptote,
+	PolynomialAsymptote,
 	FunctionAnalysis
 } from './types';
 import type { Plottable } from './types';
@@ -201,6 +202,49 @@ function isValidRoot(evaluator: (x: number) => number | null, x: number): boolea
 	if (Math.abs(y) > 1) return false;
 
 	return true;
+}
+
+/**
+ * Asymptotes **courbes** : le polynôme de degré ≥ 2 dont la courbe se rapproche.
+ *
+ * `(x³ + 1)/x` suit `y = x²`, `(x³ + 2x² - x + 1)/(x - 1)` suit
+ * `y = x² + 3x + 2`. Les degrés 0 et 1 relèvent des asymptotes horizontales et
+ * obliques, déjà traitées ailleurs ; on ne les rend pas deux fois.
+ *
+ * @param evaluator - Function that takes x and returns y
+ * @param functionId - ID of the function being analyzed
+ * @returns Array of detected polynomial (curved) asymptotes
+ */
+export function findPolynomialAsymptotes(
+	evaluator: (x: number) => number | null,
+	functionId: string
+): PolynomialAsymptote[] {
+	const asymptotes: PolynomialAsymptote[] = [];
+
+	const branch = (sign: 1 | -1): number[] | null => {
+		const coefficients = fitAsymptoteBranch(evaluator, sign);
+		if (coefficients === null || coefficients.length < 3) return null;
+		if (!differsFromPolynomial(evaluator, coefficients, sign)) return null;
+		return coefficients;
+	};
+
+	const right = branch(1);
+	const left = branch(-1);
+
+	const same =
+		right !== null &&
+		left !== null &&
+		right.length === left.length &&
+		right.every((c, k) => Math.abs(c - left[k]) < COEFFICIENT_TOLERANCE * Math.max(Math.abs(c), 1));
+
+	if (same && right !== null) {
+		asymptotes.push({ coefficients: right, functionId, direction: 'both' });
+	} else {
+		if (right !== null) asymptotes.push({ coefficients: right, functionId, direction: 'right' });
+		if (left !== null) asymptotes.push({ coefficients: left, functionId, direction: 'left' });
+	}
+
+	return asymptotes;
 }
 
 // =============================================================================
@@ -597,6 +641,181 @@ function determineBehavior(
 }
 
 // =============================================================================
+// Asymptotes polynomiales (horizontale, oblique, courbe)
+// =============================================================================
+
+/** Degré maximal cherché : au-delà, l'extraction numérique n'est plus fiable. */
+const MAX_ASYMPTOTE_DEGREE = 4;
+
+/** Abscisses de référence, normalisées pour rester bien conditionnées. */
+const ASYMPTOTE_PROBE_SCALE = 1000;
+
+/** Écart relatif toléré entre deux estimations d'un même coefficient. */
+const COEFFICIENT_TOLERANCE = 1e-4;
+
+/** En deçà, la fonction EST son polynôme : il n'y a pas d'asymptote à tracer. */
+const POLYNOMIAL_IDENTITY_TOLERANCE = 1e-12;
+
+/**
+ * Le polynôme asymptote de `f` dans une direction, s'il existe.
+ *
+ * Méthode : interpolation de Lagrange sur `degree + 1` abscisses éloignées,
+ * puis **vérification de stabilité** — on recommence deux fois plus loin, et
+ * les coefficients doivent coïncider. C'est cette seconde passe qui distingue
+ * une vraie asymptote d'un simple ajustement local.
+ *
+ * ⚠️ L'ancienne extraction de l'ordonnée à l'origine (`f(x) − m·x` avec un `m`
+ * estimé) était condamnée : l'erreur sur la pente est multipliée par x, donc
+ * par 100 000. Une erreur de 1e-5 sur `m` suffisait à faire diverger `b`, et
+ * toute oblique dont l'ordonnée à l'origine n'est pas nulle était perdue.
+ * Ici les abscisses sont normalisées (x / 1000) avant l'interpolation, ce qui
+ * garde la matrice utilisable jusqu'au degré 4.
+ *
+ * @returns coefficients du plus petit degré au plus grand, ou `null`
+ */
+function fitPolynomialBranch(
+	evaluator: (x: number) => number | null,
+	degree: number,
+	sign: 1 | -1
+): number[] | null {
+	const sample = (scale: number): number[] | null => {
+		// degree + 1 abscisses régulièrement espacées, en unités de `scale`.
+		const us: number[] = [];
+		const ys: number[] = [];
+		for (let k = 0; k <= degree; k++) {
+			const u = 1 + k * 0.5;
+			const y = evaluator(sign * u * scale);
+			if (y === null || !Number.isFinite(y)) return null;
+			us.push(u);
+			ys.push(y);
+		}
+
+		const inU = solveVandermonde(us, ys);
+		if (inU === null) return null;
+
+		// Repasser en coefficients de x AVANT toute comparaison : deux
+		// ajustements faits à des échelles différentes s'expriment sinon dans
+		// des bases différentes et ne sont pas comparables.
+		const factor = sign * scale;
+		return inU.map((coefficient, k) => coefficient / factor ** k);
+	};
+
+	// Trois échelles, chacune quatre fois plus loin que la précédente.
+	const scales = [
+		sample(ASYMPTOTE_PROBE_SCALE),
+		sample(ASYMPTOTE_PROBE_SCALE * 4),
+		sample(ASYMPTOTE_PROBE_SCALE * 16)
+	];
+	if (scales.some((s) => s === null)) return null;
+	const [near, mid, far] = scales as number[][];
+
+	// Extrapolation de Richardson. L'écart entre la courbe et son asymptote est
+	// en O(1/x) : à x = 1000, l'ordonnée à l'origine de (x²+3x)/(x-2) est
+	// estimée à 5,0167 et à x = 4000 à 5,0042. Exiger que ces deux valeurs
+	// coïncident serait irréaliste ; en revanche (4·loin − près)/3 élimine le
+	// terme en 1/x et rend 4,99999.
+	const richardson = (a: number[], b: number[]): number[] =>
+		b.map((coefficient, k) => (4 * coefficient - a[k]) / 3);
+
+	const first = richardson(near, mid);
+	const second = richardson(mid, far);
+
+	// Stabilité : deux extrapolations successives doivent coïncider.
+	for (let k = 0; k <= degree; k++) {
+		const magnitude = Math.max(Math.abs(first[k]), Math.abs(second[k]), 1);
+		if (Math.abs(first[k] - second[k]) > COEFFICIENT_TOLERANCE * magnitude) return null;
+	}
+
+	return second;
+}
+
+/**
+ * Résoudre le système de Vandermonde par élimination de Gauss.
+ *
+ * @returns coefficients du plus petit degré au plus grand
+ */
+function solveVandermonde(us: readonly number[], ys: readonly number[]): number[] | null {
+	const n = us.length;
+	const matrix: number[][] = us.map((u, row) => {
+		const line: number[] = [];
+		for (let k = 0; k < n; k++) line.push(u ** k);
+		line.push(ys[row]);
+		return line;
+	});
+
+	for (let col = 0; col < n; col++) {
+		let pivot = col;
+		for (let row = col + 1; row < n; row++) {
+			if (Math.abs(matrix[row][col]) > Math.abs(matrix[pivot][col])) pivot = row;
+		}
+		if (Math.abs(matrix[pivot][col]) < 1e-12) return null;
+		[matrix[col], matrix[pivot]] = [matrix[pivot], matrix[col]];
+
+		for (let row = 0; row < n; row++) {
+			if (row === col) continue;
+			const factor = matrix[row][col] / matrix[col][col];
+			for (let k = col; k <= n; k++) matrix[row][k] -= factor * matrix[col][k];
+		}
+	}
+
+	return matrix.map((line, row) => line[n] / line[row]);
+}
+
+/**
+ * Le plus petit degré pour lequel `f` admet un polynôme asymptote, s'il existe.
+ *
+ * On part du degré 0 : une horizontale est une asymptote polynomiale de degré
+ * 0, une oblique de degré 1. Le premier degré qui donne un ajustement stable
+ * gagne, ce qui évite qu'une horizontale soit rendue comme une parabole de
+ * coefficient dominant nul.
+ */
+function fitAsymptoteBranch(
+	evaluator: (x: number) => number | null,
+	sign: 1 | -1
+): number[] | null {
+	for (let degree = 0; degree <= MAX_ASYMPTOTE_DEGREE; degree++) {
+		const coefficients = fitPolynomialBranch(evaluator, degree, sign);
+		if (coefficients === null) continue;
+
+		// Un coefficient dominant nul signifie que le vrai degré est plus bas ;
+		// il a donc déjà été trouvé, ou le sera au tour suivant.
+		if (degree > 0 && Math.abs(coefficients[degree]) < COEFFICIENT_TOLERANCE) continue;
+		return coefficients;
+	}
+	return null;
+}
+
+/**
+ * `f` est-elle DISTINCTE de son polynôme asymptote ?
+ *
+ * Une parabole n'est pas asymptote d'elle-même : l'ajustement y est parfait,
+ * mais il n'y a rien à tracer. On mesure donc l'écart à une échelle modérée,
+ * où il est encore franc.
+ *
+ * ⚠️ Ne pas vérifier ici que l'écart DÉCROÎT : à x = 100 000, c'est l'erreur
+ * résiduelle sur le coefficient dominant (1e-8 × x) qui domine l'écart réel,
+ * lequel remonte alors. Le test se sabotait lui-même et rejetait `x + 1/x`.
+ * La décroissance est déjà garantie par la stabilité de l'extrapolation.
+ */
+function differsFromPolynomial(
+	evaluator: (x: number) => number | null,
+	coefficients: readonly number[],
+	sign: 1 | -1
+): boolean {
+	const valueAt = (x: number): number => coefficients.reduce((sum, c, k) => sum + c * x ** k, 0);
+
+	for (const scale of [100, 300]) {
+		const x = sign * scale;
+		const y = evaluator(x);
+		if (y === null || !Number.isFinite(y)) continue;
+
+		const magnitude = Math.max(Math.abs(y), 1);
+		if (Math.abs(y - valueAt(x)) > POLYNOMIAL_IDENTITY_TOLERANCE * magnitude) return true;
+	}
+	return false;
+}
+
+// =============================================================================
 // Horizontal Asymptote Detection
 // =============================================================================
 
@@ -681,16 +900,17 @@ function estimateLimit(
 		values.push(y);
 	}
 
-	// Check convergence: differences should shrink
-	for (let i = 1; i < values.length; i++) {
+	// Les écarts doivent rétrécir — ou être DÉJÀ nuls.
+	//
+	// ⚠️ `diff >= prevDiff * 0.9` rejetait `0 >= 0`, donc une limite atteinte
+	// exactement au flottant près : exp(-x) vaut 0 dès x = -750, la sigmoïde
+	// vaut 1 dès x = 40. Ces deux fonctions n'avaient aucune asymptote.
+	for (let i = 2; i < values.length; i++) {
 		const diff = Math.abs(values[i] - values[i - 1]);
-		const prevDiff = i > 1 ? Math.abs(values[i - 1] - values[i - 2]) : Infinity;
+		const prevDiff = Math.abs(values[i - 1] - values[i - 2]);
 
-		// If difference is not shrinking, not converging
-		if (i > 1 && diff >= prevDiff * 0.9) {
-			// Allow some tolerance
-			return null;
-		}
+		if (diff === 0) continue;
+		if (diff >= prevDiff * 0.9) return null;
 	}
 
 	// Check that the final values are close enough
@@ -725,13 +945,8 @@ export function findObliqueAsymptotes(
 ): ObliqueAsymptote[] {
 	const asymptotes: ObliqueAsymptote[] = [];
 
-	// Check positive direction
-	const obliqueRight = estimateObliqueAsymptote(evaluator, LARGE_X_VALUES);
-	// Check negative direction
-	const obliqueLeft = estimateObliqueAsymptote(
-		evaluator,
-		LARGE_X_VALUES.map((x) => -x)
-	);
+	const obliqueRight = estimateObliqueAsymptote(evaluator, 1);
+	const obliqueLeft = estimateObliqueAsymptote(evaluator, -1);
 
 	if (obliqueRight !== null && obliqueLeft !== null) {
 		// Check if same asymptote in both directions
@@ -779,66 +994,17 @@ export function findObliqueAsymptotes(
  */
 function estimateObliqueAsymptote(
 	evaluator: (x: number) => number | null,
-	xValues: readonly number[] | number[]
+	sign: 1 | -1
 ): { m: number; b: number } | null {
-	// Step 1: Estimate m = lim f(x)/x
-	const mValues: number[] = [];
+	const coefficients = fitPolynomialBranch(evaluator, 1, sign);
+	if (coefficients === null) return null;
 
-	for (const x of xValues) {
-		// Skip x values too close to zero to avoid division instability
-		if (Math.abs(x) < 1e-6) continue;
-		const y = evaluator(x);
-		if (y === null || !isFinite(y)) return null;
-		mValues.push(y / x);
-	}
-
-	// Check if m converges
-	const m = checkConvergence(mValues);
-	if (m === null) return null;
-
-	// If m is essentially zero, this is a horizontal asymptote, not oblique
+	const [b, m] = coefficients;
+	// Une pente nulle décrit une horizontale : ce n'est pas notre affaire.
 	if (Math.abs(m) < LIMIT_TOLERANCE) return null;
-
-	// Step 2: Estimate b = lim (f(x) - mx)
-	const bValues: number[] = [];
-
-	for (const x of xValues) {
-		const y = evaluator(x);
-		if (y === null || !isFinite(y)) return null;
-		bValues.push(y - m * x);
-	}
-
-	// Check if b converges
-	const b = checkConvergence(bValues);
-	if (b === null) return null;
+	if (!differsFromPolynomial(evaluator, coefficients, sign)) return null;
 
 	return { m, b };
-}
-
-/**
- * Check if a sequence of values converges and return the limit.
- */
-function checkConvergence(values: number[]): number | null {
-	if (values.length < 2) return null;
-
-	// Check that differences are shrinking
-	let lastDiff = Infinity;
-	for (let i = 1; i < values.length; i++) {
-		const diff = Math.abs(values[i] - values[i - 1]);
-		if (diff >= lastDiff * 0.95) {
-			// Not converging fast enough
-			return null;
-		}
-		lastDiff = diff;
-	}
-
-	// Check final convergence
-	const lastTwo = values.slice(-2);
-	if (Math.abs(lastTwo[0] - lastTwo[1]) > LIMIT_TOLERANCE * 10) {
-		return null;
-	}
-
-	return values[values.length - 1];
 }
 
 // =============================================================================
@@ -920,7 +1086,8 @@ export function analyzeFunction(
 		extrema,
 		verticalAsymptotes: findVerticalAsymptotes(evaluator, viewport, functionId),
 		horizontalAsymptotes: findHorizontalAsymptotes(evaluator, functionId),
-		obliqueAsymptotes: findObliqueAsymptotes(evaluator, functionId)
+		obliqueAsymptotes: findObliqueAsymptotes(evaluator, functionId),
+		polynomialAsymptotes: findPolynomialAsymptotes(evaluator, functionId)
 	};
 }
 

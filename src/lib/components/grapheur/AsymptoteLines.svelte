@@ -18,9 +18,16 @@
 		VerticalAsymptote,
 		HorizontalAsymptote,
 		ObliqueAsymptote,
+		PolynomialAsymptote,
 		FunctionAnalysis
 	} from '$lib/grapheur/types';
 	import { analyzeAllFunctions, toAnalysisInputs } from '$lib/grapheur/analysis';
+
+	/** Nombre de segments pour dessiner une asymptote courbe. */
+	const ASYMPTOTE_CURVE_STEPS = 64;
+
+	/** En deçà, un coefficient n'apparaît pas dans le libellé. */
+	const POLYNOMIAL_LABEL_EPSILON = 1e-6;
 
 	// Props
 	let {
@@ -79,23 +86,58 @@
 	 */
 	function getHorizontalPath(asymptote: HorizontalAsymptote): string {
 		const svgY = transformer.mathToSvg(0, asymptote.y).y;
-		return `M 0 ${svgY} L ${width} ${svgY}`;
+		const [from, to] = branchBounds(asymptote.direction);
+		return `M ${from} ${svgY} L ${to} ${svgY}`;
+	}
+
+	/**
+	 * Bornes en abscisse SVG du tracé d'une asymptote, selon sa direction.
+	 *
+	 * Une asymptote qui n'existe que d'un côté ne doit être tracée que de ce
+	 * côté : arctan a `y = π/2` en +∞ et `y = -π/2` en -∞, et les tracer toutes
+	 * deux sur toute la largeur montre à l'élève deux droites dont chacune est
+	 * fausse sur la moitié du repère.
+	 */
+	function branchBounds(direction: 'left' | 'right' | 'both'): [number, number] {
+		if (direction === 'both') return [0, width];
+		const origin = transformer.mathToSvg(0, 0).x;
+		// Si l'origine est hors du cadre, la branche occupe tout le cadre.
+		const cut = Math.min(Math.max(origin, 0), width);
+		return direction === 'right' ? [cut, width] : [0, cut];
 	}
 
 	/**
 	 * Get SVG path for an oblique asymptote line (y = mx + b)
 	 */
 	function getObliquePath(asymptote: ObliqueAsymptote): string {
-		const { xMin, xMax } = grapheurStore.viewport;
+		return polynomialPath([asymptote.b, asymptote.m], asymptote.direction);
+	}
 
-		// Calculate y values at viewport edges
-		const y1 = asymptote.m * xMin + asymptote.b;
-		const y2 = asymptote.m * xMax + asymptote.b;
+	/**
+	 * Tracé d'une asymptote polynomiale, en coefficients croissants.
+	 *
+	 * Un polynôme de degré 1 se résume à deux points ; au-delà, on échantillonne
+	 * — c'est une courbe, pas une droite.
+	 */
+	function polynomialPath(
+		coefficients: readonly number[],
+		direction: 'left' | 'right' | 'both'
+	): string {
+		const [fromSvg, toSvg] = branchBounds(direction);
+		if (toSvg - fromSvg < 1) return '';
 
-		const start = transformer.mathToSvg(xMin, y1);
-		const end = transformer.mathToSvg(xMax, y2);
+		const valueAt = (x: number): number =>
+			coefficients.reduce((sum, coefficient, k) => sum + coefficient * x ** k, 0);
 
-		return `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
+		const steps = coefficients.length <= 2 ? 1 : ASYMPTOTE_CURVE_STEPS;
+		const commands: string[] = [];
+		for (let i = 0; i <= steps; i++) {
+			const svgX = fromSvg + ((toSvg - fromSvg) * i) / steps;
+			const mathX = transformer.svgToMath(svgX, 0).x;
+			const point = transformer.mathToSvg(mathX, valueAt(mathX));
+			commands.push(`${i === 0 ? 'M' : 'L'} ${svgX} ${point.y}`);
+		}
+		return commands.join(' ');
 	}
 
 	/**
@@ -114,6 +156,27 @@
 		const bSign = asymptote.b >= 0 ? '+' : '-';
 		const bStr = Math.abs(asymptote.b).toPrecision(3);
 		return `y = ${mStr}x ${bSign} ${bStr}`;
+	}
+
+	/** Libellé d'une asymptote courbe : `y = x² + 3x + 2`, du plus haut degré au plus bas. */
+	function getPolynomialLabel(asymptote: PolynomialAsymptote): string {
+		const terms: string[] = [];
+
+		for (let degree = asymptote.coefficients.length - 1; degree >= 0; degree--) {
+			const coefficient = asymptote.coefficients[degree];
+			if (Math.abs(coefficient) < POLYNOMIAL_LABEL_EPSILON) continue;
+
+			const magnitude = Math.abs(coefficient).toPrecision(3);
+			const power = degree === 0 ? '' : degree === 1 ? 'x' : `x^${degree}`;
+			const factor =
+				degree > 0 && Math.abs(Math.abs(coefficient) - 1) < POLYNOMIAL_LABEL_EPSILON
+					? ''
+					: magnitude;
+			const sign = coefficient < 0 ? '-' : terms.length === 0 ? '' : '+';
+			terms.push(`${terms.length === 0 ? sign : ` ${sign} `}${factor}${power}`);
+		}
+
+		return `y = ${terms.join('') || '0'}`;
 	}
 </script>
 
@@ -146,6 +209,20 @@
 				opacity="0.5"
 			>
 				<title>{getHorizontalLabel(asymptote)}</title>
+			</path>
+		{/each}
+
+		<!-- Asymptotes courbes (degré ≥ 2) -->
+		{#each analysis.polynomialAsymptotes as asymptote, idx (`p-${analysis.functionId}-${idx}`)}
+			<path
+				d={polynomialPath(asymptote.coefficients, asymptote.direction)}
+				stroke={color}
+				stroke-width="1.5"
+				stroke-dasharray="10,3,2,3"
+				fill="none"
+				opacity="0.5"
+			>
+				<title>{getPolynomialLabel(asymptote)}</title>
 			</path>
 		{/each}
 
