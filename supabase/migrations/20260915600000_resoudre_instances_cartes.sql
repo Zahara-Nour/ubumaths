@@ -45,11 +45,35 @@ security definer
 set search_path to 'public', 'pg_temp'
 as $$
     select k.key, (k.value ->> 'cardId')::uuid
-    from public.profiles p, lateral jsonb_each(p.vip_cards) k
-    where p.vip_cards is not null
-      -- ⚠️ Le filtre EST la garde : sans lui, la fonction déverserait la
-      -- totalité des inventaires de la base.
-      and k.key = any(p_instance_ids)
+    from public.profiles p,
+         -- ⚠️ `jsonb_each` LÈVE sur un jsonb qui n'est pas un objet — un
+         -- tableau, une chaîne, un nombre. Et `vip_cards is not null` ne teste
+         -- que le NULL SQL, pas la forme.
+         --
+         -- Le couplage serait dangereux : cette fonction scanne TOUS les
+         -- profils, donc UNE seule ligne malformée la ferait lever pour tous
+         -- les appelants, et le marché rendrait 500 à toute l'école.
+         --
+         -- Aujourd'hui aucun élève ne peut écrire ça — le trigger
+         -- `update_vip_cards_history_trigger` est BEFORE UPDATE sur toute la
+         -- table et appelle lui-même `jsonb_each`, donc il refuse l'écriture
+         -- avant qu'elle aboutisse (vérifié le 2026-09-15). Mais on ne fait pas
+         -- dépendre la disponibilité du marché d'un trigger voisin : le `case`
+         -- ne dépend de rien.
+         --
+         -- ⚠️ Dans le FROM, pas dans le WHERE : un `jsonb_typeof(...) = 'object'`
+         -- en prédicat ne serait correct que si le planificateur le pousse sous
+         -- la jointure latérale. Il le fait, mais on ne s'appuie pas dessus.
+         lateral jsonb_each(
+             case when jsonb_typeof(p.vip_cards) = 'object'
+                  then p.vip_cards
+                  else '{}'::jsonb end
+         ) k
+    -- ⚠️ Le filtre EST la garde : sans lui, la fonction déverserait la
+    -- totalité des inventaires de la base.
+    where k.key = any(p_instance_ids)
+      -- Échoue FERMÉ : `array_length` rend NULL sur un tableau vide ou NULL,
+      -- donc le prédicat vaut NULL et la fonction ne rend rien.
       and array_length(p_instance_ids, 1) <= 500;
 $$;
 
