@@ -134,23 +134,24 @@ Le défaut que ça répare est mesuré, et il est en production :
 `parseFunction` du grapheur rend `success: true`. Une fonction inconnue est donc
 acceptée en silence aujourd'hui, la courbe ne se trace pas, et rien ne l'explique.
 
-| #      | Cas                                                     | Attendu                                                                                                                        |
-| ------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| **N1** | `f(x) = zzz(x) + 1`, `zzz` inconnu                      | `f` est **en attente de `zzz`**, pas en erreur. Rien n'est tracé, et le panneau dit ce qui manque                              |
-| **N2** | L'élève définit ensuite `zzz`                           | `f` redevient exploitable **sans aucune action de sa part**                                                                    |
-| **N3** | `f(x) = a·x`, `a` inconnu et **lettre seule**           | En attente de `a`, **plus une offre** : « créer le curseur `a` »                                                               |
-| **N4** | L'élève accepte l'offre                                 | Une valeur `a` est créée avec son curseur [−10 ; 10] (décision D3) ; `f` devient exploitable                                   |
-| **N5** | Plusieurs noms manquent                                 | Tous sont nommés, pas seulement le premier                                                                                     |
-| **N6** | Deux lettres seules manquent                            | Une offre de curseur **par lettre** — jamais une offre groupée qui crée plusieurs objets d'un coup                             |
-| **L1** | `sin(x)`, `ln(x)`, `sqrt(x)`…                           | Jamais en attente : les 45 fonctions de `FUNCTION_COMMANDS` sont connues du moteur                                             |
-| **L2** | `x` dans une fonction, `n` dans une suite               | Jamais en attente : c'est la variable de l'objet lui-même                                                                      |
-| **L3** | `e`, `pi`, `i`                                          | Jamais en attente : ce sont des constantes (noms réservés)                                                                     |
-| **L4** | `zzz(x)` — identifiant **suivi d'une parenthèse**       | En attente, **sans** offre de curseur : c'est une fonction qui manque, pas une valeur                                          |
-| **L5** | L'élève ignore l'offre                                  | L'objet reste en attente. **Rien n'est créé d'office** — une offre ignorée ne coûte rien, un curseur parasite, si              |
-| **L6** | `f(x) = xz` (faute de frappe pour `x^2`)                | En attente de `z` + offre. L'élève voit immédiatement le nom parasite : c'est le même message qui sert la faute et l'intention |
-| **E1** | `zzz(x) ^^ 2` — illisible **et** nom inconnu            | **Erreur**, pas attente : on ne promet rien d'une définition qu'on ne sait pas lire (priorité du §1)                           |
-| **E2** | Circularité **et** nom inconnu                          | **Erreur** : même priorité                                                                                                     |
-| **E3** | L'offre est acceptée alors que le nom vient d'être pris | Refus normal du §2.2, avec son message                                                                                         |
+| #      | Cas                                                     | Attendu                                                                                                                                                                     |
+| ------ | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **N1** | `f(x) = zzz(x) + 1`, `zzz` inconnu                      | `f` est **en attente de `zzz`**, pas en erreur. Rien n'est tracé, et le panneau dit ce qui manque                                                                           |
+| **N2** | L'élève définit ensuite `zzz`                           | `f` redevient exploitable **sans aucune action de sa part**                                                                                                                 |
+| **N3** | `f(x) = a·x`, `a` inconnu et **lettre seule**           | En attente de `a`, **plus une offre** : « créer le curseur `a` »                                                                                                            |
+| **N4** | L'élève accepte l'offre                                 | Une valeur `a` est créée avec son curseur [−10 ; 10] (décision D3) ; `f` devient exploitable                                                                                |
+| **N5** | Plusieurs noms manquent                                 | Tous sont nommés, pas seulement le premier                                                                                                                                  |
+| **N6** | Deux lettres seules manquent                            | Une offre de curseur **par lettre** — jamais une offre groupée qui crée plusieurs objets d'un coup                                                                          |
+| **N7** | **Plus de trois noms manquent**                         | Le message compte au lieu d'énumérer : « 9 noms inconnus », le détail au survol. « En attente de b, o, j, u, r, t, l, m, d » est illisible — c'est le cas d'un collage raté |
+| **L1** | `sin(x)`, `ln(x)`, `sqrt(x)`…                           | Jamais en attente : les 45 fonctions de `FUNCTION_COMMANDS` sont connues du moteur                                                                                          |
+| **L2** | `x` dans une fonction, `n` dans une suite               | Jamais en attente : c'est la variable de l'objet lui-même                                                                                                                   |
+| **L3** | `e`, `pi`, `i`                                          | Jamais en attente : ce sont des constantes (noms réservés)                                                                                                                  |
+| **L4** | `zzz(x)` — identifiant **suivi d'une parenthèse**       | En attente, **sans** offre de curseur : c'est une fonction qui manque, pas une valeur                                                                                       |
+| **L5** | L'élève ignore l'offre                                  | L'objet reste en attente. **Rien n'est créé d'office** — une offre ignorée ne coûte rien, un curseur parasite, si                                                           |
+| **L6** | `f(x) = xz` (faute de frappe pour `x^2`)                | En attente de `z` + offre. L'élève voit immédiatement le nom parasite : c'est le même message qui sert la faute et l'intention                                              |
+| **E1** | `zzz(x) ^^ 2` — illisible **et** nom inconnu            | **Erreur**, pas attente : on ne promet rien d'une définition qu'on ne sait pas lire (priorité du §1)                                                                        |
+| **E2** | Circularité **et** nom inconnu                          | **Erreur** : même priorité                                                                                                                                                  |
+| **E3** | L'offre est acceptée alors que le nom vient d'être pris | Refus normal du §2.2, avec son message                                                                                                                                      |
 
 **Ce que l'attente n'est pas.** Un nom inconnu n'est jamais une erreur de
 saisie à corriger tout de suite : pendant qu'il cherche, l'élève écrit
@@ -296,14 +297,35 @@ attend en écrivant `?f=e^x`.
 Ce qui est collé est **relu puis réécrit en LaTeX dans le champ**, pour que
 l'élève voie immédiatement ce que l'atelier a compris.
 
-| #      | Cas                                          | Attendu                                                                             |
-| ------ | -------------------------------------------- | ----------------------------------------------------------------------------------- |
-| **N1** | Coller `sin(x)`                              | Détecté custom → le champ affiche `\sin(x)`, « sin » en romain, pas trois italiques |
-| **N2** | Coller `\frac{1}{2}`                         | Détecté LaTeX → inséré tel quel                                                     |
-| **N3** | Coller dans un champ non vide                | Même règle, inséré à la position du curseur                                         |
-| **L1** | Collage ambigu (confiance 0,5)               | LaTeX, le format du champ — on n'invente pas                                        |
-| **L2** | Coller un texte qui n'est pas une expression | Reçu tel quel ; l'objet passera en erreur à la lecture. Aucun plantage              |
-| **E1** | Collage vide                                 | Rien ne se passe                                                                    |
+| #      | Cas                                          | Attendu                                                                                                                                           |
+| ------ | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **N1** | Coller `sin(x)`                              | Détecté custom → le champ affiche `\sin(x)`, « sin » en romain, pas trois italiques                                                               |
+| **N2** | Coller `\frac{1}{2}`                         | Détecté LaTeX → inséré tel quel                                                                                                                   |
+| **N3** | Coller dans un champ non vide                | Même règle, inséré à la position du curseur                                                                                                       |
+| **L1** | Collage ambigu (confiance 0,5)               | LaTeX, le format du champ — on n'invente pas                                                                                                      |
+| **L2** | Coller un texte qui n'est pas une expression | ⚠️ **Il ne passe PAS en erreur** — voir l'encadré. Il se lit comme un produit de lettres et l'objet part « en attente ». Aucun plantage           |
+| **E1** | Collage vide                                 | Rien ne se passe                                                                                                                                  |
+| **N4** | **Annuler un collage** (`Ctrl+Z`)            | La normalisation est **annulable** : le champ revient à son état d'avant. C'est ce qui rattrape tous les collages ratés, sans jamais rien refuser |
+
+> ⚠️ **Il n'y a pas de critère de refus au collage, et c'est délibéré.**
+>
+> Les deux parseurs tournent en mode **tolérant** : `bonjour tout le monde` se lit
+> comme un produit de 18 lettres, `!!! ??? %%%` devient `\lnot \lnot \lnot
+\placeholder…`. **Un collage ne produit donc presque jamais d'erreur** — toute
+> garde qui compte là-dessus est sans effet.
+>
+> Un garde-fou heuristique a été écarté le 2026-09-16, pour deux raisons mesurées :
+>
+> 1. **Il rate le cas le plus fréquent.** Coller « Soit f la fonction définie par
+>    f(x)=x^2-3x+1 » contient opérateurs, parenthèses et vraie expression : aucun
+>    critère ne l'aurait distingué d'une expression légitime.
+> 2. **L'asymétrie des coûts l'interdit.** Un faux refus bloque un usage valide et
+>    l'élève ne comprend pas ce qu'on lui reproche ; un faux passage lui coûte trois
+>    secondes et se voit à l'écran. Dans un outil dont le principe est de ne pas
+>    transformer une recherche en faute, le premier est disqualifiant.
+>
+> Ce qui tient lieu de filet : l'annulation (N4), le message d'attente lisible
+> (§2.5 N7), et le fait que l'élève **voit** ce qui est entré dans le champ.
 
 ### Entrée par URL
 
