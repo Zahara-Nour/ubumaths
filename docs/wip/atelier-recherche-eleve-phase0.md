@@ -235,6 +235,8 @@ Deux usages qu'il ne faut pas confondre :
 - **(b) ouvrir un contenu sans toucher au sien** — le prof qui projette, l'élève
   qui reçoit un énoncé.
 
+La **lecture** de ce que porte une URL suit la règle de provenance du §6 bis.
+
 | #      | Cas                                                  | Attendu                                                                                                                                                                      |
 | ------ | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **N1** | « Partager »                                         | Choix de **portée** : _cette vue_ ou _tout l'atelier_ (garantie de la décision figée n° 5)                                                                                   |
@@ -252,6 +254,69 @@ Deux usages qu'il ne faut pas confondre :
 > non fiable, et celles-ci circuleront entre élèves. En v1 le contenu est du texte
 > mathématique. Dès que Python entre dans l'atelier, **du code venu d'une URL ne
 > doit jamais s'exécuter sans une action explicite de l'utilisateur.**
+
+---
+
+## 6 bis. La syntaxe d'entrée : le parseur suit la provenance
+
+Décision **D10**, tranchée le 2026-09-15. **Ce n'est pas le contenu qui décide du
+parseur, c'est d'où vient la définition** — parce qu'on connaît toujours la
+provenance, alors que deviner d'après le texte casse sur les mélanges.
+
+### Les faits mesurés qui commandent cette règle
+
+| Mesure                                        | Résultat                                                                        |
+| --------------------------------------------- | ------------------------------------------------------------------------------- |
+| `parseCustomSafe('\frac{1}{2}')`              | **échec** — le parseur custom rejette le LaTeX                                  |
+| `parseLatexSafe('sin(x)')`                    | « réussit » en lisant `s·i·n·(x)` — **faux, et silencieux**                     |
+| `detectInputFormat('sin(x)')`                 | custom 0,9 → lu `\sin(x)` ✅                                                    |
+| `detectInputFormat('sin(x) + \frac{1}{2}')`   | **latex 0,9** → `sin` redevient `s·i·n` ⚠️ le mélange casse la détection        |
+| `MathfieldElement.inlineShortcuts` (Chromium) | `sin → \sin`, `cos → \cos`, `ln → \ln` — la frappe produit donc du LaTeX propre |
+| `setValue('sin(x)', {format:'latex'})`        | rend `sin(x)` **tel quel** — un collage n'est PAS normalisé                     |
+
+### La règle
+
+| Provenance                         | Lecture                           | Pourquoi                                             |
+| ---------------------------------- | --------------------------------- | ---------------------------------------------------- |
+| Frappe dans un champ de maths      | **LaTeX**                         | Les raccourcis garantissent `\sin`, `\frac`, `\sqrt` |
+| Clavier virtuel de l'atelier       | **LaTeX**                         | Il insère via le champ de maths                      |
+| **Collage** dans un champ de maths | Détection, **puis normalisation** | On ne sait rien de ce qui arrive (§6 bis, N1)        |
+| Paramètre d'**URL**                | Détection                         | Un prof écrit ses liens à la main (§7 N2)            |
+| Mode commande (saisie texte)       | Détection                         | L'élève tape au clavier                              |
+| Import de fichier, stockage local  | **LaTeX**                         | C'est l'atelier qui l'a écrit                        |
+
+**Repli sur ambiguïté** (confiance 0,5) : **custom** pour une entrée texte,
+**LaTeX** pour un champ de maths. Deux conséquences à connaître : `a/b` devient
+une fraction plutôt qu'une division en ligne — même valeur, affichage différent,
+et c'est ce qu'un élève veut dire ; `e` reste la constante d'Euler, ce qu'un prof
+attend en écrivant `?f=e^x`.
+
+### Normalisation au collage
+
+Ce qui est collé est **relu puis réécrit en LaTeX dans le champ**, pour que
+l'élève voie immédiatement ce que l'atelier a compris.
+
+| #      | Cas                                          | Attendu                                                                             |
+| ------ | -------------------------------------------- | ----------------------------------------------------------------------------------- |
+| **N1** | Coller `sin(x)`                              | Détecté custom → le champ affiche `\sin(x)`, « sin » en romain, pas trois italiques |
+| **N2** | Coller `\frac{1}{2}`                         | Détecté LaTeX → inséré tel quel                                                     |
+| **N3** | Coller dans un champ non vide                | Même règle, inséré à la position du curseur                                         |
+| **L1** | Collage ambigu (confiance 0,5)               | LaTeX, le format du champ — on n'invente pas                                        |
+| **L2** | Coller un texte qui n'est pas une expression | Reçu tel quel ; l'objet passera en erreur à la lecture. Aucun plantage              |
+| **E1** | Collage vide                                 | Rien ne se passe                                                                    |
+
+### Entrée par URL
+
+| #      | Cas                           | Attendu                                                              |
+| ------ | ----------------------------- | -------------------------------------------------------------------- |
+| **N1** | `?f=x^2-3x+1`                 | Lu et créé                                                           |
+| **N2** | `?f=sin(x)` (écrit à la main) | Détecté custom → `\sin(x)` : le lien du prof marche sans échappement |
+| **N3** | `?f=%5Csin(x)` (LaTeX encodé) | Détecté LaTeX → même résultat                                        |
+| **E1** | Contenu illisible             | L'objet est créé **en erreur**, avec son message ; l'atelier s'ouvre |
+
+⚠️ La détection ne remplace **jamais** la validation du §6 E2 : on valide
+d'abord (liste blanche, bornes, Zod), on détecte ensuite. Une URL reste une
+entrée non fiable.
 
 ---
 
@@ -296,6 +361,18 @@ David a validé les huit recommandations. Elles ne sont plus à re-proposer.
 | **D6** | Annulation globale (undo/redo) dans l'atelier ?                      | **Hors v1.** `geometry-core` en a un, mais il est lié à son graphe d'objets                                                                    |
 | **D7** | `f'` est-il un objet à part entière, ou un affichage attaché à `f` ? | **Les deux gestes**, distincts : « afficher la dérivée » (attaché, comme aujourd'hui) et « garder `f'` » (objet)                               |
 | **D8** | Combien de valeurs au maximum dans une liste ?                       | ⚠️ La méthode est validée, **pas le nombre** — proposition ci-dessous : 200 valeurs par liste, 8 listes par atelier                            |
+
+### D10 — le parseur suit la provenance, pas le contenu
+
+Tranchée le 2026-09-15 (voir §6 bis). Écartées : **tout en custom** — MathLive
+produit du LaTeX, donc une fraction posée dans l'éditeur serait rejetée ; **tout
+en LaTeX** — `sin(x)` tapé au clavier est lu `s·i·n·(x)` sans erreur, le pire
+type de défaut ; **la détection seule** — elle regarde toute la chaîne, donc un
+`sin(` mêlé à un `\frac{}` bascule tout en LaTeX.
+
+⚠️ **Conséquence sur le code déjà écrit** : `src/lib/atelier/parse.ts` appelle
+`parseCustomSafe` en dur. Il devra recevoir la provenance et, pour les entrées
+texte, passer par `detectInputFormat` / `parse()` de `mathAST/cli/core`.
 
 ### D9 — un nom inconnu met l'objet en attente, pas en erreur
 
