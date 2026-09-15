@@ -113,7 +113,7 @@ vol. Avec `flock`, le même banc donne 1 détenteur sur 5 essais sur 5.
 
 Le descripteur survit à `exec()`, donc le verrou couvre toute la vie de la
 commande lancée. `check:incremental` se ré-exécute lui-même sous le verrou
-(`UBU_VERROU_TYPECHECK`), ce qui lui évite tout `trap`.
+(argument `--verrou-tenu`), ce qui lui évite tout `trap`.
 
 ⚠️ **Nuance importante : « à la mort du processus » veut dire du DERNIER
 détenteur du descripteur.** Tout enfant forké par la commande hérite du
@@ -143,10 +143,15 @@ laisse pas passer deux détenteurs.
 **production** et se lancent depuis `main` après merge ; `db:status` (lecture
 seule) ; et les serveurs de dev (règle 5).
 
-⚠️ **Un contournement connu** : `UBU_VERROU_TYPECHECK` déjà positionné dans
-l'environnement fait tourner `check:incremental` sans verrou, en silence. La
-variable est posée par le script lui-même juste avant sa ré-exécution — ne
-jamais la définir à la main.
+**Pourquoi la sentinelle de ré-exécution est un argument, pas une variable
+d'environnement** : une variable se propage à tous les enfants sans que personne
+ne la retape. Déjà posée dans l'environnement, elle aurait fait tourner
+`check:incremental` **sans verrou et en silence** — le dernier chemin de ce
+genre. `--verrou-tenu` doit être écrit sur la ligne de commande : le
+contournement redevient un geste délibéré et visible dans l'historique du shell.
+
+Conséquence assumée : une invocation imbriquée de `check:incremental` se refuse
+elle-même en exit 2 au lieu de tourner sans verrou.
 
 ### Un run interrompu n'écrit aucun verdict
 
