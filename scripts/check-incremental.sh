@@ -42,11 +42,20 @@ set -uo pipefail
 # Le descripteur survit à exec, donc le verrou couvre tout le reste du script,
 # et le noyau le relâche à la mort du processus — Ctrl-C et OOM compris, sans
 # aucun trap. Si python3 manquait, l'exec échouerait et RIEN ne tournerait.
-if [ -z "${UBU_VERROU_TYPECHECK:-}" ]; then
-	export UBU_VERROU_TYPECHECK=1
+#
+# La sentinelle qui évite la ré-exécution infinie est un ARGUMENT, pas une
+# variable d'environnement. Une variable se propage à tous les enfants sans que
+# personne ne la retape : déjà posée dans l'environnement, elle ferait tourner
+# le typecheck SANS verrou et EN SILENCE — c'était le dernier chemin de ce
+# genre. Un argument, lui, doit être écrit sur la ligne de commande : le
+# contournement redevient un geste délibéré et visible.
+# Conséquence assumée : une invocation imbriquée se refuse elle-même en exit 2
+# au lieu de tourner sans verrou. C'est le bon sens du refus.
+if [ "${1:-}" != "--verrou-tenu" ]; then
 	exec python3 "$(dirname "${BASH_SOURCE[0]}")/lib/lock.py" \
-		typecheck "Un check:incremental" -- bash "${BASH_SOURCE[0]}" "$@"
+		typecheck "Un check:incremental" -- bash "${BASH_SOURCE[0]}" --verrou-tenu "$@"
 fi
+shift
 
 # ---------------------------------------------------------------------------
 # État de la garde 3 (rejeu du dernier verdict). Il reste LOCAL au worktree, et
