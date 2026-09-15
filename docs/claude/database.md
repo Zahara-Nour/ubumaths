@@ -82,6 +82,12 @@ import type { Profile, FriendProfile } from '$lib/types/database-helpers';
 | `is_my_student(p_student_id)` | pivot Option B : un élève est-il « à moi » (inclut hors-classe)                |
 | `my_school()`                 | `profiles.school_id` de l'appelant (NULL si non rattaché) — borne safeguarding |
 
+⚠️ **Avant d'écrire ou de retirer une policy** : lire
+[rls-echecs-silencieux.md](../ref/rls-echecs-silencieux.md). Une opération
+refusée par la RLS rend zéro ligne, pas une erreur — `if (error) throw` ne se
+déclenche jamais. Les policies permissives se combinent en **OU**, donc une
+seule `using (true)` annule toutes les autres.
+
 **Bonnes pratiques policies** : RLS activé sur **toute** table ; une policy **par opération** (SELECT/INSERT/UPDATE/DELETE) ; `auth.uid()` pour l'identité ; `SECURITY DEFINER` pour l'autorisation complexe ; commenter l'intention (`COMMENT ON FUNCTION/POLICY`).
 
 ---

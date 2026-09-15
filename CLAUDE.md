@@ -197,6 +197,33 @@ Réactivité : **event → handler → maj du state → maj du DOM**. `$effect` 
 - **Tests d'intégration locaux OBLIGATOIRES** pour toute RLS / fonction `SECURITY DEFINER` / trigger / policy (`db:start` + `test:integration`). **JAMAIS** valider par un smoke-test `auth.uid()` NULL (le garde sort avant la requête → faux positif).
 - Après push : `pnpm db:types` (+ commit). **Interroger la prod** : MCP Supabase **read-only** (EU).
 
+### ⚠️ La RLS échoue en SILENCE — lire [rls-echecs-silencieux.md](docs/ref/rls-echecs-silencieux.md)
+
+**Une opération refusée par la RLS ne rend pas d'erreur : elle rend zéro ligne.**
+Donc `if (error) throw` ne peut PAS se déclencher sur un refus, et une absence
+ressemble à un vide légitime. Quatre conséquences, toutes payées le 2026-09-15 :
+
+1. **Écriture** : `.delete()`/`.update()` refusé affecte 0 ligne sans erreur →
+   toujours `.select()` et vérifier les lignes rendues. Un écran a annoncé avoir
+   supprimé une amitié signalée entre deux mineurs sans rien supprimer.
+2. **Jointure `!inner`** sous RLS : la ligne PARENTE disparaît quand l'enfant est
+   masqué → rangs et totaux faux, sans log. Préférer un `SECURITY DEFINER`.
+3. **Une garde centralisée ne protège que ce qui passe par elle.** Chercher
+   `grep "from('<table>')"` en plus du nom de la fonction : trois endroits
+   refaisaient la requête à la main, invisibles au grep sur `is_class_member`.
+4. **Les policies permissives se combinent en OU.** Une seule `using (true)`
+   rend inutiles toutes les autres, qui restent correctes et sans effet.
+
+⚠️ **Retirer une policy est aussi risqué qu'en ouvrir une.** Poser la question
+d'accès EN MIROIR (« qui ne pourra plus lire ce qu'il lisait ? »), et la MESURER
+sur les données réelles — une policy qui paraît redondante peut être la seule
+qui fonctionne.
+
+⚠️ **`db:types` génère depuis la PRODUCTION** : une RPC pas encore en prod
+n'existe pas dans `database.ts`. Livrer une fonction SQL + le code qui l'appelle
+demande donc **deux PR** — la migration d'abord, `db:migrate`, `db:types`, puis
+le code.
+
 ---
 
 ## Quand utiliser un agent
