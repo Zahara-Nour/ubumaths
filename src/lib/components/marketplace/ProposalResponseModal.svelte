@@ -6,7 +6,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import VipCard from '$lib/components/VipCard.svelte';
 	import gidouilleImage from '$lib/assets/images/gidouille.png';
-	import { ArrowDown } from '@lucide/svelte';
+	import { ArrowDown, TriangleAlert } from '@lucide/svelte';
 
 	// Props
 	let {
@@ -130,6 +130,20 @@
 							/>
 						{/each}
 					{/if}
+					<!--
+						⚠️ Une carte que le serveur n'a pas pu résoudre n'est PAS affichée —
+						et l'élève s'apprête à accepter ou refuser. Le taire ferait trancher
+						sur une offre incomplète sans le savoir.
+					-->
+					{#if proposal.offre_incomplete}
+						<div
+							class="flex items-center gap-1.5 rounded border border-amber-400 bg-amber-50 px-2 py-1 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200"
+						>
+							<TriangleAlert class="h-4 w-4 shrink-0" />
+							<span>Offre incomplète : une carte n’a pas pu être affichée.</span>
+						</div>
+					{/if}
+
 					{#if proposal.offered_gidouilles && proposal.offered_gidouilles > 0}
 						<div
 							class="flex items-center gap-0.5 rounded bg-yellow-50 px-2 py-1 text-sm dark:bg-yellow-950/30"
