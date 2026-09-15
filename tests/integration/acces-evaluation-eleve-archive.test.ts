@@ -147,8 +147,21 @@ describe('un élève archivé et l’évaluation de son ancienne classe', () => 
 		expect(await statusFor(activeStudentId, activeStudent)).toBe(200);
 	});
 
-	/** ⚠️ LE cas. Avant le filtre de statut, il rendait 200. */
+	/**
+	 * ⚠️ LE cas. Avant le filtre de statut, il rendait 200.
+	 *
+	 * Deux refus possibles, et c'est voulu :
+	 * - **403** quand seule la route filtre (état du 2026-09-15, PR #305) ;
+	 * - **404** depuis que la base filtre aussi (`20260915700000`) — l'évaluation
+	 *   elle-même devient invisible, donc `getAssessment` sort avant le contrôle
+	 *   d'autorisation. Ne pas révéler l'existence est ici le meilleur refus.
+	 *
+	 * Ce qui est gardé, c'est qu'il n'obtient PAS 200. Figer l'un des deux codes
+	 * ferait rougir ce test au prochain resserrement, sans qu'aucun accès n'ait
+	 * changé.
+	 */
 	it('l’élève archivé ne l’ouvre plus', async () => {
-		expect(await statusFor(archivedStudentId, archivedStudent)).toBe(403);
+		const status = await statusFor(archivedStudentId, archivedStudent);
+		expect([403, 404], `refus attendu, obtenu ${status}`).toContain(status);
 	});
 });

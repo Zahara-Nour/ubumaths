@@ -130,7 +130,22 @@ donc d'anciennes classes comme actuelles.
 > contenu de ces classes — emploi du temps, cahier de texte, devoirs, documents,
 > énigmes, tournois, évaluations ?**
 
-Trois réponses possibles, et leurs conséquences réelles :
+✅ **Réponse de David, le 2026-09-15 : « couper le support de classe, garder
+leurs traces »** — la deuxième option ci-dessous.
+
+Premier lot livré : migration `20260915700000_support_de_classe_membres_actifs`,
+**19 policies + 2 fonctions**. Test d'intégration
+`tests/integration/support-de-classe-eleve-archive.test.ts`, vu **rouge sans la
+migration** (4 échecs : emploi du temps, cahier de texte, évaluation, énigme
+restaient lisibles) et **vert avec** (9/9, témoin actif compris).
+
+Restent hors lot 1, et pourquoi : `classes / view_member_classes` (fondation,
+~15 écrans la joignent en `!inner`), `rag_documents` / `rag_chunks` (forme
+« membre d'une classe quelconque »), les trois tables de tournoi (un tournoi
+porte aussi les PARTIES de l'élève : support et trace y sont mêlés),
+`check_marketplace_enabled()`, et `is_kanban_board_member()` — jamais.
+
+Les trois réponses possibles, telles qu'elles étaient posées :
 
 1. **Tout couper.** Cohérent avec le kanban (« tout couper », 2026-09-15). Les
    77 ouvrent l'application sur un écran vide. 25 policies + 3 fonctions.
@@ -141,6 +156,28 @@ Trois réponses possibles, et leurs conséquences réelles :
    qui est le support et ce qui est la trace de l'élève.
 3. **Ne rien couper.** Statu quo. Le trou d'`assessment_assignments` reste
    ouvert côté base.
+
+## Trouvé au passage, et NON traité
+
+`shared_coursework` / « Students can view visible shared coursework for their
+classes » contient :
+
+```sql
+not exists (select 1 from shared_coursework_students
+            where shared_coursework_id = shared_coursework.id)
+or exists (... and scs.student_id = auth.uid())
+```
+
+Le `not exists` est évalué **sous la RLS de `shared_coursework_students`**, dont
+la seule policy élève est `using (student_id = auth.uid())`. Un élève ne voit
+donc jamais les lignes de restriction des autres : pour une fiche restreinte à
+d'autres élèves, le `not exists` vaut **true**, et la fiche lui est lisible.
+
+C'est la forme n° 1 des échecs silencieux — une lecture filtrée rend zéro ligne,
+et ici ce zéro est interprété comme « aucune restriction ». Antérieur à tout ce
+qui précède, et inchangé par le lot 1 ; trouvé par l'audit du 2026-09-15.
+
+---
 
 ⚠️ Quelle que soit la réponse, **chaque ligne retire un accès** : à livrer par
 petits lots, avec un test d'intégration par lot, et jamais `view_member_classes`
