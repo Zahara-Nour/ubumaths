@@ -473,141 +473,99 @@ describe('getAchievementLeaderboard', () => {
 		mockSupabase = createMockSupabase();
 	});
 
-	it('should fetch leaderboard with correct aggregation', async () => {
-		const mockData = [
+	/**
+	 * ⚠️ Ces cas éprouvaient une agrégation EN MÉMOIRE qui n'existe plus.
+	 *
+	 * La fonction faisait `profiles!inner (...)` avec le client de l'utilisateur,
+	 * donc sous RLS — et une jointure INTERNE supprime la LIGNE ENTIÈRE quand le
+	 * profil est masqué. Depuis que la lecture des profils est bornée, le
+	 * classement se serait réduit à soi, ses camarades et ses amis, avec des
+	 * rangs et des totaux faux, sans erreur ni log.
+	 *
+	 * Le RPC `get_achievement_leaderboard` est SECURITY DEFINER : il voit tout
+	 * le monde, agrège et trie côté serveur, et ne rend qu'un nom pseudonymisé.
+	 * Il n'y a donc plus rien à agréger ici — seulement à transposer.
+	 */
+	const ligneRpc = (
+		rank: number,
+		student_id: string,
+		student_name: string,
+		total_points: number,
+		achievement_count: number,
+		avatar_url: string | null = null
+	) => ({ rank, student_id, student_name, avatar_url, total_points, achievement_count });
+
+	it('transpose les lignes du RPC', async () => {
+		(mockSupabase.rpc as Mock).mockResolvedValue({
+			data: [ligneRpc(1, 'student2', 'Bob D.', 100, 3, 'avatar.png')],
+			error: null
+		});
+
+		const result = await getAchievementLeaderboard(mockSupabase, 'minesweeper', 10);
+
+		expect(result).toEqual([
 			{
-				student_id: 'student1',
-				points_awarded: 50,
-				profiles: { username: 'Alice', avatar_url: 'avatar1.png' },
-				achievements: { context: 'minesweeper' }
-			},
-			{
-				student_id: 'student1',
-				points_awarded: 30,
-				profiles: { username: 'Alice', avatar_url: 'avatar1.png' },
-				achievements: { context: 'minesweeper' }
-			},
-			{
-				student_id: 'student2',
-				points_awarded: 60,
-				profiles: { username: 'Bob', avatar_url: 'avatar2.png' },
-				achievements: { context: 'minesweeper' }
+				studentId: 'student2',
+				username: 'Bob D.',
+				avatarUrl: 'avatar.png',
+				totalPoints: 100,
+				achievementCount: 3
 			}
-		];
+		]);
+	});
 
-		const mockQuery = {
-			eq: vi.fn().mockReturnThis(),
-			gte: vi.fn().mockResolvedValue({ data: mockData, error: null })
-		};
+	/**
+	 * ⚠️ Le contexte et la limite doivent ARRIVER au RPC : c'est lui qui trie et
+	 * borne désormais. Les passer à côté rendrait un classement global là où on
+	 * en demande un par contexte, sans que rien ne le signale.
+	 */
+	it('transmet le contexte et la limite au RPC', async () => {
+		(mockSupabase.rpc as Mock).mockResolvedValue({ data: [], error: null });
 
-		(mockSupabase.from as Mock).mockReturnValue({ select: vi.fn().mockReturnValue(mockQuery) });
+		await getAchievementLeaderboard(mockSupabase, 'minesweeper', 5);
+
+		expect(mockSupabase.rpc).toHaveBeenCalledWith('get_achievement_leaderboard', {
+			p_context: 'minesweeper',
+			p_limit: 5
+		});
+	});
+
+	/**
+	 * Le RPC rend des `bigint`, que PostgREST sérialise parfois en chaîne. Sans
+	 * la conversion, un tri ou une somme côté client comparerait du texte.
+	 */
+	it('convertit les compteurs en nombres', async () => {
+		(mockSupabase.rpc as Mock).mockResolvedValue({
+			data: [
+				{ ...ligneRpc(1, 's1', 'Alice D.', 0, 0), total_points: '42', achievement_count: '7' }
+			],
+			error: null
+		});
 
 		const result = await getAchievementLeaderboard(mockSupabase, 'minesweeper', 10);
 
-		expect(result).toHaveLength(2);
-		expect(result[0].studentId).toBe('student1');
-		expect(result[0].totalPoints).toBe(80); // 50 + 30
-		expect(result[0].achievementCount).toBe(2);
-		expect(result[1].studentId).toBe('student2');
-		expect(result[1].totalPoints).toBe(60);
-		expect(result[1].achievementCount).toBe(1);
+		expect(result[0].totalPoints).toBe(42);
+		expect(result[0].achievementCount).toBe(7);
 	});
 
-	it('should sort leaderboard by total points descending', async () => {
-		const mockData = [
-			{
-				student_id: 'student1',
-				points_awarded: 30,
-				profiles: { username: 'Alice', avatar_url: null },
-				achievements: { context: 'minesweeper' }
-			},
-			{
-				student_id: 'student2',
-				points_awarded: 100,
-				profiles: { username: 'Bob', avatar_url: null },
-				achievements: { context: 'minesweeper' }
-			}
-		];
+	it('rend un tableau vide quand le RPC ne rend rien', async () => {
+		(mockSupabase.rpc as Mock).mockResolvedValue({ data: [], error: null });
 
-		const mockQuery = {
-			eq: vi.fn().mockReturnThis(),
-			gte: vi.fn().mockResolvedValue({ data: mockData, error: null })
-		};
-
-		(mockSupabase.from as Mock).mockReturnValue({ select: vi.fn().mockReturnValue(mockQuery) });
-
-		const result = await getAchievementLeaderboard(mockSupabase, 'minesweeper', 10);
-
-		expect(result[0].studentId).toBe('student2'); // Higher points first
-		expect(result[0].totalPoints).toBe(100);
-		expect(result[1].studentId).toBe('student1');
-		expect(result[1].totalPoints).toBe(30);
+		expect(await getAchievementLeaderboard(mockSupabase, 'minesweeper', 10)).toEqual([]);
 	});
 
-	it('should respect limit parameter', async () => {
-		const mockData = Array.from({ length: 20 }, (_, i) => ({
-			student_id: `student${i}`,
-			points_awarded: 10,
-			profiles: { username: `User${i}`, avatar_url: null },
-			achievements: { context: 'minesweeper' }
-		}));
+	it('rend un tableau vide quand le RPC rend null', async () => {
+		(mockSupabase.rpc as Mock).mockResolvedValue({ data: null, error: null });
 
-		const mockQuery = {
-			eq: vi.fn().mockReturnThis(),
-			gte: vi.fn().mockResolvedValue({ data: mockData, error: null })
-		};
-
-		(mockSupabase.from as Mock).mockReturnValue({ select: vi.fn().mockReturnValue(mockQuery) });
-
-		const result = await getAchievementLeaderboard(mockSupabase, 'minesweeper', 5);
-
-		expect(result).toHaveLength(5);
+		expect(await getAchievementLeaderboard(mockSupabase, 'minesweeper', 10)).toEqual([]);
 	});
 
-	it('should return empty array when no data found', async () => {
-		const mockQuery = {
-			eq: vi.fn().mockReturnThis(),
-			gte: vi.fn().mockResolvedValue({ data: [], error: null })
-		};
-
-		(mockSupabase.from as Mock).mockReturnValue({ select: vi.fn().mockReturnValue(mockQuery) });
-
-		const result = await getAchievementLeaderboard(mockSupabase, 'minesweeper', 10);
-
-		expect(result).toEqual([]);
-	});
-
-	it('should handle profiles as array response', async () => {
-		const mockData = [
-			{
-				student_id: 'student1',
-				points_awarded: 50,
-				profiles: [{ username: 'Alice', avatar_url: 'avatar.png' }],
-				achievements: { context: 'minesweeper' }
-			}
-		];
-
-		const mockQuery = {
-			eq: vi.fn().mockReturnThis(),
-			gte: vi.fn().mockResolvedValue({ data: mockData, error: null })
-		};
-
-		(mockSupabase.from as Mock).mockReturnValue({ select: vi.fn().mockReturnValue(mockQuery) });
-
-		const result = await getAchievementLeaderboard(mockSupabase, 'minesweeper', 10);
-
-		expect(result[0].username).toBe('Alice');
-		expect(result[0].avatarUrl).toBe('avatar.png');
-	});
-
-	it('should throw AchievementServiceError on database error', async () => {
-		const mockError = { message: 'Database error' };
-		const mockQuery = {
-			eq: vi.fn().mockReturnThis(),
-			gte: vi.fn().mockResolvedValue({ data: null, error: mockError })
-		};
-
-		(mockSupabase.from as Mock).mockReturnValue({ select: vi.fn().mockReturnValue(mockQuery) });
+	/** Une panne ne doit pas se lire « classement vide ». */
+	it('remonte une erreur du RPC', async () => {
+		(mockSupabase.rpc as Mock).mockResolvedValue({
+			data: null,
+			error: { message: 'boom' }
+		});
 
 		await expect(getAchievementLeaderboard(mockSupabase, 'minesweeper', 10)).rejects.toThrow(
 			AchievementServiceError

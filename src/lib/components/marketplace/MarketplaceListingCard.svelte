@@ -4,7 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Clock, ArrowRight } from '@lucide/svelte';
+	import { ArrowRight, Clock, TriangleAlert } from '@lucide/svelte';
 	import gidouilleImage from '$lib/assets/images/gidouille.png';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
@@ -153,6 +153,20 @@
 					<span class="font-medium">{listing.offered_gidouilles.toLocaleString('fr-FR')}</span>
 					<img src={gidouilleImage} alt="Gidouille" class="h-3 w-3" />
 				</div>
+			{/if}
+			<!--
+				⚠️ Une carte que le serveur n'a pas pu résoudre n'apparaît pas. Sans
+				ce signe, l'annonce paraîtrait simplement contenir moins que ce
+				qu'elle contient — et l'élève proposerait un échange là-dessus.
+			-->
+			{#if listing.offre_incomplete}
+				<span
+					class="flex items-center gap-1 rounded border border-amber-400 bg-amber-50 px-1.5 py-0.5 text-xs text-amber-900 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200"
+					title="Une carte de cette offre n’a pas pu être affichée."
+				>
+					<TriangleAlert class="h-3 w-3 shrink-0" />
+					incomplète
+				</span>
 			{/if}
 			{#if !hasOffer}
 				<span class="text-xs text-muted-foreground italic">Rien</span>

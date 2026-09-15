@@ -49,6 +49,7 @@ async function clientFor(email: string): Promise<SupabaseClient<Database>> {
 
 describe('résoudre une instance de carte', () => {
 	let acheteur: SupabaseClient<Database>;
+	let vendeurId: string;
 	let modeleId: string;
 	const INSTANCE_VENDEUR = 'inst-vendeur-MM';
 	const INSTANCE_INCONNUE = 'inst-jamais-vue-MM';
@@ -77,6 +78,7 @@ describe('résoudre une instance de carte', () => {
 		// Le VENDEUR détient l'instance. L'acheteur n'a aucun lien avec lui :
 		// ni classe, ni amitié, ni tournoi.
 		const vendeur = await TestData.profile().withRole('student').create();
+		vendeurId = vendeur.id;
 		const { error: inventaireError } = await service
 			.from('profiles')
 			.update({
@@ -93,6 +95,25 @@ describe('résoudre une instance de carte', () => {
 
 	afterAll(async () => {
 		await cleanupAllTestData();
+	});
+
+	/**
+	 * ⚠️ LE témoin qui donne son sens à tout le fichier, et il manquait.
+	 *
+	 * Sans lui, le test principal prouverait seulement que la fonction rend la
+	 * bonne ligne — pas qu'elle est NÉCESSAIRE. Sur une base où
+	 * `Anyone can view profiles for leaderboard` serait encore active,
+	 * l'acheteur lirait tout aussi bien `profiles.vip_cards` du vendeur en
+	 * direct, et la RPC ne servirait à rien.
+	 *
+	 * Ce cas ÉCHOUE sur une branche qui ne porte pas `20260915580000` — c'est
+	 * précisément ce qui le rend utile.
+	 */
+	it('l’acheteur ne peut PAS lire le profil du vendeur en direct', async () => {
+		const { data, error } = await acheteur.from('profiles').select('vip_cards').eq('id', vendeurId);
+
+		expect(error).toBeNull();
+		expect(data, 'l’acheteur lit encore le profil du vendeur : la RPC ne prouve rien').toEqual([]);
 	});
 
 	/**

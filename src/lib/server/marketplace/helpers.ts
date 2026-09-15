@@ -499,6 +499,8 @@ export async function enrichListingsWithCardData<
 ): Promise<
 	(T & {
 		offered_cards?: OfferedCardInfo[];
+		/** Au moins une carte offerte n'a pas pu être résolue : ne pas laisser croire l'offre complète. */
+		offre_incomplete?: boolean;
 		wanted_templates?: CardTemplateInfo[];
 	})[]
 > {
@@ -517,38 +519,43 @@ export async function enrichListingsWithCardData<
 		}
 	}
 
-	// Fetch creators' vip_cards to map instance IDs to template IDs
-	const { data: creators, error: creatorsError } = await supabase
-		.from('profiles')
-		.select('id, vip_cards')
-		.in('id', Array.from(creatorIds));
+	// Traduire les identifiants d'INSTANCE offerts en identifiants de MODÈLE.
+	//
+	// ⚠️ Par la RPC, PAS par `profiles.vip_cards` du vendeur. Depuis
+	// `20260915580000`, l'acheteur ne lit plus le profil du vendeur — et une
+	// lecture filtrée par la RLS ne rend AUCUNE erreur, elle rend zéro ligne.
+	// La garde ci-dessous ne se serait donc jamais déclenchée : l'offre se
+	// serait affichée VIDE, et l'élève aurait accepté un échange sans voir ce
+	// qu'on lui propose. Mesuré : 5 annonces sur 13, invisibles pour 64 à 75
+	// élèves sur 76.
+	//
+	// `resolve_card_instances` est SECURITY DEFINER et ne rend aucune colonne
+	// de profil : seulement instance → modèle.
+	const instancesOffertes = [
+		...new Set(listings.flatMap((l) => (l.offered_card_ids as string[] | null) ?? []))
+	];
 
-	// ⚠️ Une carte que l'on n'arrive pas à résoudre est RETIRÉE de l'offre
-	// (cf. la construction de `offered_cards` plus bas). Une panne de lecture
-	// ferait donc apparaître une proposition d'échange avec moins de cartes
-	// qu'elle n'en contient — l'élève accepterait un troc falsifié. On préfère
-	// une erreur visible à une offre amputée.
+	const { data: resolues, error: creatorsError } =
+		instancesOffertes.length > 0
+			? await supabase.rpc('resolve_card_instances', { p_instance_ids: instancesOffertes })
+			: { data: [], error: null };
+
+	// Une carte non résolue est SIGNALÉE, jamais retirée en silence (cf. la
+	// construction de `offered_cards` plus bas).
 	if (creatorsError) {
 		console.error('[marketplace] Cartes des vendeurs illisibles :', creatorsError);
 		throw new Error(creatorsError.message);
 	}
 
-	// Build a map of creator -> card instance -> template_id
-	const creatorCardsMap = new Map<string, Map<string, string>>();
+	// La correspondance instance → modèle, tous vendeurs confondus. La RPC ne
+	// dit pas à qui appartient quoi, et l'affichage n'en a pas besoin : une
+	// annonce porte déjà ses propres `offered_card_ids`.
+	const instanceMap = new Map<string, string>();
 	const offeredTemplateIds = new Set<string>();
 
-	if (creators) {
-		for (const creator of creators) {
-			const cardMap = new Map<string, string>();
-			const vipCards = creator.vip_cards as VipCardsJson | null;
-			if (vipCards) {
-				for (const [instanceId, card] of Object.entries(vipCards)) {
-					cardMap.set(instanceId, card.cardId);
-					offeredTemplateIds.add(card.cardId);
-				}
-			}
-			creatorCardsMap.set(creator.id, cardMap);
-		}
+	for (const ligne of resolues ?? []) {
+		instanceMap.set(ligne.instance_id, ligne.card_id);
+		offeredTemplateIds.add(ligne.card_id);
 	}
 
 	// Fetch all needed templates in one query
@@ -580,119 +587,53 @@ export async function enrichListingsWithCardData<
 		}
 	}
 
-	// Build a global instanceId → templateId map from ALL fetched profiles
-	const globalInstanceMap = new Map<string, string>();
-	for (const cardMap of creatorCardsMap.values()) {
-		for (const [instanceId, templateId] of cardMap) {
-			globalInstanceMap.set(instanceId, templateId);
-		}
-	}
+	// ⚠️ Le repli « à l'échelle de l'école » a disparu, et ce n'est pas un
+	// oubli : il relisait `profiles.vip_cards` de toute l'école avec le client
+	// de l'élève, donc sous la même RLS que la lecture qu'il devait rattraper.
+	// Il ne pouvait rien rattraper du tout. `resolve_card_instances` cherche
+	// déjà dans TOUS les profils, côté serveur : ce qu'elle ne trouve pas
+	// n'existe plus nulle part.
+	const globalInstanceMap = instanceMap;
 
-	// Find unresolved offered_card_ids (cards transferred to other users)
-	const unresolvedInstanceIds: string[] = [];
-	for (const listing of listings) {
-		if (listing.offered_card_ids) {
-			for (const cardId of listing.offered_card_ids) {
-				if (!globalInstanceMap.has(cardId)) {
-					unresolvedInstanceIds.push(cardId);
-				}
-			}
-		}
-	}
+	// Une carte que plus personne ne détient — transférée, ou supprimée.
+	const instancesIntrouvables = new Set(
+		listings.flatMap((l) =>
+			((l.offered_card_ids as string[] | null) ?? []).filter((id) => !globalInstanceMap.has(id))
+		)
+	);
 
-	// If there are unresolved cards, search ALL school profiles
-	if (unresolvedInstanceIds.length > 0) {
-		// Get school_id from first listing's creator
-		const firstCreatorId = listings[0]?.creator_id;
-		if (firstCreatorId) {
-			const { data: schoolData, error: schoolError } = await supabase
-				.from('profiles')
-				.select('school_id')
-				.eq('id', firstCreatorId)
-				.single();
-
-			if (schoolError) {
-				console.error('[marketplace] École du vendeur illisible :', schoolError);
-				throw new Error(schoolError.message);
-			}
-
-			if (schoolData?.school_id) {
-				const { data: allProfiles, error: allProfilesError } = await supabase
-					.from('profiles')
-					.select('vip_cards')
-					.eq('school_id', schoolData.school_id)
-					.not('vip_cards', 'is', null);
-
-				if (allProfilesError) {
-					console.error('[marketplace] Inventaires de l’école illisibles :', allProfilesError);
-					throw new Error(allProfilesError.message);
-				}
-
-				if (allProfiles) {
-					for (const profile of allProfiles) {
-						const vipCards = profile.vip_cards as VipCardsJson | null;
-						if (vipCards) {
-							for (const [instanceId, card] of Object.entries(vipCards)) {
-								if (!globalInstanceMap.has(instanceId)) {
-									globalInstanceMap.set(instanceId, card.cardId);
-									if (!templateMap.has(card.cardId)) {
-										offeredTemplateIds.add(card.cardId);
-									}
-								}
-							}
-						}
-					}
-
-					// Fetch any new template IDs found
-					const newTemplateIds = [...offeredTemplateIds].filter((id) => !templateMap.has(id));
-					if (newTemplateIds.length > 0) {
-						const { data: newTemplates, error: newTemplatesError } = await supabase
-							.from('vip_card_templates')
-							.select('id, name, description, image_path, rarity, category')
-							.in('id', newTemplateIds);
-
-						if (newTemplatesError) {
-							console.error(
-								'[marketplace] Modèles complémentaires illisibles :',
-								newTemplatesError
-							);
-							throw new Error(newTemplatesError.message);
-						}
-
-						if (newTemplates) {
-							for (const template of newTemplates) {
-								templateMap.set(template.id, {
-									id: template.id,
-									name: template.name,
-									description: template.description,
-									image_path: template.image_path,
-									rarity: template.rarity as 'common' | 'rare' | 'epic' | 'legendary',
-									category: template.category
-								});
-							}
-						}
-					}
-				}
-			}
-		}
+	if (instancesIntrouvables.size > 0) {
+		// Bruyant exprès : une offre incomplète est un problème de consentement,
+		// pas un détail d'affichage.
+		console.warn(
+			`[marketplace] ${instancesIntrouvables.size} carte(s) offerte(s) introuvable(s) — les annonces concernées seront marquées incomplètes.`
+		);
 	}
 
 	// Enrich each listing
 	return listings.map((listing) => {
 		// Map offered card IDs to templates using global map
+		//
+		// ⚠️ `offreIncomplete` n'est pas cosmétique. Une carte qu'on n'arrive pas
+		// à résoudre était RETIRÉE en silence : l'annonce s'affichait avec moins
+		// de cartes qu'elle n'en contient, et l'élève acceptait un échange sur ce
+		// qu'il voyait. Mieux vaut dire « offre incomplète » que mentir par
+		// omission.
 		const offeredCards: OfferedCardInfo[] = [];
+		let offreIncomplete = false;
 		if (listing.offered_card_ids) {
 			for (const cardId of listing.offered_card_ids) {
 				const templateId = globalInstanceMap.get(cardId);
-				if (templateId) {
-					const template = templateMap.get(templateId);
-					if (template) {
-						offeredCards.push({
-							id: cardId,
-							template_id: templateId,
-							template
-						});
-					}
+				const template = templateId ? templateMap.get(templateId) : undefined;
+
+				if (templateId && template) {
+					offeredCards.push({
+						id: cardId,
+						template_id: templateId,
+						template
+					});
+				} else {
+					offreIncomplete = true;
 				}
 			}
 		}
@@ -711,6 +652,7 @@ export async function enrichListingsWithCardData<
 		return {
 			...listing,
 			offered_cards: offeredCards.length > 0 ? offeredCards : undefined,
+			offre_incomplete: offreIncomplete || undefined,
 			wanted_templates: wantedTemplates.length > 0 ? wantedTemplates : undefined
 		};
 	});
@@ -728,40 +670,41 @@ export async function enrichProposalsWithCardData<
 >(
 	supabase: SupabaseClient<Database>,
 	proposals: T[]
-): Promise<(T & { offered_cards?: OfferedCardInfo[] })[]> {
+): Promise<
+	(T & {
+		offered_cards?: OfferedCardInfo[];
+		/** Au moins une carte proposée n'a pas pu être résolue. */
+		offre_incomplete?: boolean;
+	})[]
+> {
 	if (proposals.length === 0) return proposals;
 
-	// Collect unique proposer IDs
-	const proposerIds = [...new Set(proposals.map((p) => p.proposer_id))];
+	// ⚠️ Le chemin MIROIR de celui des annonces, et le plus exposé des deux :
+	// une annonce se consulte, une proposition s'ACCEPTE ou se REFUSE. Lire
+	// `profiles.vip_cards` du proposant sous RLS rendrait zéro ligne sans
+	// erreur, et l'élève trancherait sur une offre affichée vide.
+	//
+	// `proposerIds` n'est plus utilisé pour indexer : la RPC ne dit pas à qui
+	// appartient quoi, et c'est inutile — une proposition porte déjà ses
+	// propres `offered_card_ids`.
+	const instancesProposees = [...new Set(proposals.flatMap((p) => p.offered_card_ids ?? []))];
 
-	// Fetch proposers' vip_cards to map instance IDs to template IDs
-	const { data: proposers, error: proposersError } = await supabase
-		.from('profiles')
-		.select('id, vip_cards')
-		.in('id', proposerIds);
+	const { data: resolues, error: proposersError } =
+		instancesProposees.length > 0
+			? await supabase.rpc('resolve_card_instances', { p_instance_ids: instancesProposees })
+			: { data: [], error: null };
 
-	// Même risque côté propositions reçues : une carte non résolue disparaît de
-	// l'offre affichée à l'élève.
 	if (proposersError) {
 		console.error('[marketplace] Cartes des proposants illisibles :', proposersError);
 		throw new Error(proposersError.message);
 	}
 
-	const proposerCardsMap = new Map<string, Map<string, string>>();
+	const instanceMap = new Map<string, string>();
 	const templateIds = new Set<string>();
 
-	if (proposers) {
-		for (const proposer of proposers) {
-			const cardMap = new Map<string, string>();
-			const vipCards = proposer.vip_cards as VipCardsJson | null;
-			if (vipCards) {
-				for (const [instanceId, card] of Object.entries(vipCards)) {
-					cardMap.set(instanceId, card.cardId);
-					templateIds.add(card.cardId);
-				}
-			}
-			proposerCardsMap.set(proposer.id, cardMap);
-		}
+	for (const ligne of resolues ?? []) {
+		instanceMap.set(ligne.instance_id, ligne.card_id);
+		templateIds.add(ligne.card_id);
 	}
 
 	// Fetch all needed templates
@@ -792,24 +735,27 @@ export async function enrichProposalsWithCardData<
 	}
 
 	return proposals.map((proposal) => {
-		const proposerCards = proposerCardsMap.get(proposal.proposer_id);
 		const offeredCards: OfferedCardInfo[] = [];
+		let offreIncomplete = false;
 
-		if (proposal.offered_card_ids && proposerCards) {
+		if (proposal.offered_card_ids) {
 			for (const cardId of proposal.offered_card_ids) {
-				const templateId = proposerCards.get(cardId);
-				if (templateId) {
-					const template = templateMap.get(templateId);
-					if (template) {
-						offeredCards.push({ id: cardId, template_id: templateId, template });
-					}
+				const templateId = instanceMap.get(cardId);
+				const template = templateId ? templateMap.get(templateId) : undefined;
+
+				if (templateId && template) {
+					offeredCards.push({ id: cardId, template_id: templateId, template });
+				} else {
+					// Jamais escamotée : l'élève accepte ou refuse sur ce qu'il voit.
+					offreIncomplete = true;
 				}
 			}
 		}
 
 		return {
 			...proposal,
-			offered_cards: offeredCards.length > 0 ? offeredCards : undefined
+			offered_cards: offeredCards.length > 0 ? offeredCards : undefined,
+			offre_incomplete: offreIncomplete || undefined
 		};
 	});
 }

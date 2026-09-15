@@ -1,0 +1,71 @@
+-- Retirer « Anyone can view profiles for leaderboard » (using true)
+-- =================================================================
+--
+-- ⚠️ Cette migration RETIRE un accès. Elle ne perd aucune donnée, mais elle
+-- change ce que les élèves voient — à lire avec le même soin qu'une migration
+-- destructive.
+--
+-- ── Ce que la policy faisait ──────────────────────────────────────────────
+--
+-- `for select to authenticated using (true)` : TOUT compte connecté lisait
+-- LES 83 PROFILS de la base, dont les adresses e-mail de 81 élèves MINEURS,
+-- leurs nom, prénom, niveau scolaire, école et état de consentement.
+--
+-- Pire que l'ouverture elle-même : les policies permissives se combinent en
+-- OU. Ce `true` rendait donc parfaitement inutiles les QUATRE policies écrites
+-- pour borner cet accès — `students_view_classmate_profiles` (are_classmates),
+-- « tournament co-participants » (shares_tournament), « Teachers can view
+-- student profiles » (is_my_student) et « Admins can view all profiles ».
+-- Elles étaient là, correctes, et sans effet.
+--
+-- ── Pourquoi son nom est périmé ───────────────────────────────────────────
+--
+-- Les classements qui la justifiaient passent, pour l'essentiel, par des
+-- fonctions `SECURITY DEFINER` : `game_leaderboard`,
+-- `get_achievement_leaderboard`, `minesweeper_scoped_leaderboard`. Elles
+-- contournent la RLS et ne rendent que les colonnes qu'elles sélectionnent.
+--
+-- ⚠️ MAIS PAS TOUS, et il faut le dire ici plutôt que de laisser croire le
+-- contraire : trois VUES en `security_invoker` joignent `public.profiles` et
+-- restent donc sous la RLS de l'appelant — `minesweeper_leaderboard`,
+-- `minesweeper_tournament_standings`, `riddle_progress`. Une jointure y
+-- supprime la LIGNE ENTIÈRE quand le profil est masqué ; le pire cas est le
+-- rang au démineur, calculé en COMPTANT les joueurs au-dessus de soi, qui
+-- ferait passer presque tout le monde premier.
+--
+-- Mesuré le 2026-09-15 : ces trois écrans sont DORMANTS — 2 parties de
+-- démineur sur 90 jours par un seul joueur, ZÉRO tentative d'énigme depuis la
+-- création de la base, aucun tournoi ouvert. L'impact est donc nul
+-- aujourd'hui. Il cessera de l'être le jour où le démineur repart : c'est à
+-- traiter alors, et cette note est là pour qu'on ne s'appuie pas sur la phrase
+-- d'au-dessus comme sur une preuve.
+--
+-- ── Ce qui reste lisible après ────────────────────────────────────────────
+--
+--   · son propre profil ............... auth.uid() = id
+--   · ses camarades ACTIFS ............ are_classmates
+--   · ses AMIS ........................ is_friend (posée par 20260915440000)
+--   · ses co-participants de tournoi .. shares_tournament
+--   · tout élève, pour le prof ........ is_my_student, qui ignore son
+--     paramètre et rend is_teacher_or_admin() : le professeur ne perd RIEN,
+--     y compris sur les 77 élèves archivés
+--   · tout profil, pour l'admin ....... is_admin
+--
+-- ── Ce qui a été vérifié avant ────────────────────────────────────────────
+--
+-- Policy retirée en base LOCALE, suite d'intégration complète relancée : 990
+-- tests, aucun échec imputable. Les 4 rouges sont les flakes de parallélisme
+-- connus (`Hook timed out`, erreur de protocole pg), identiques avec et sans.
+--
+-- ⚠️ Ce que cette mesure NE prouve PAS : la suite ne couvre pas la lecture
+-- d'un profil par quelqu'un qui n'est ni soi, ni camarade, ni ami, ni
+-- co-participant. C'est écrit ici pour que personne ne le surestime plus tard.
+--
+-- QUESTION D'ACCÈS, posée et tranchée par David le 2026-09-15 : on referme, en
+-- posant d'abord la policy « amis » pour ne pas vider le social.
+--
+-- ROLLBACK (rouvre tous les profils à tous les comptes connectés) :
+--   create policy "Anyone can view profiles for leaderboard"
+--       on public.profiles for select to authenticated using (true);
+
+drop policy if exists "Anyone can view profiles for leaderboard" on public.profiles;

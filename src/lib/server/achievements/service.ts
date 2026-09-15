@@ -464,73 +464,36 @@ export async function getAchievementLeaderboard(
 	limit = 10
 ): Promise<LeaderboardEntry[]> {
 	try {
-		// Query student_achievements joined with achievements and profiles
-		const { data, error } = await supabase
-			.from('student_achievements')
-			.select(
-				`
-				student_id,
-				points_awarded,
-				profiles!inner (
-					username,
-					avatar_url,
-					is_test
-				),
-				achievements!inner (
-					context
-				)
-			`
-			)
-			.eq('achievements.context', context)
-			.eq('profiles.is_test', false)
-			.gte('points_awarded', 1);
+		// ⚠️ Par le RPC, PAS par une jointure. La version précédente faisait
+		// `profiles!inner (...)` avec le client de l'UTILISATEUR, donc sous RLS :
+		// depuis que la lecture des profils est bornée, une jointure INTERNE
+		// supprime la LIGNE ENTIÈRE quand le profil est masqué. Le classement se
+		// réduisait alors à soi, ses camarades et ses amis — avec des rangs et
+		// des totaux faux, sans erreur ni log.
+		//
+		// `get_achievement_leaderboard` est SECURITY DEFINER : elle voit tout le
+		// monde, et ne rend qu'un nom pseudonymisé (« Marie D. ») plus l'avatar.
+		//
+		// ⚠️ Différence assumée : elle ne filtre pas `is_test`. Mesuré en
+		// production le 2026-09-15 — 3 comptes de test, ZÉRO succès : la bascule
+		// est inerte aujourd'hui. Si un compte de test en gagnait un, il
+		// apparaîtrait ; c'est au RPC qu'il faudrait alors ajouter le filtre.
+		const { data, error } = await supabase.rpc('get_achievement_leaderboard', {
+			p_context: context,
+			p_limit: limit
+		});
 
 		if (error) {
 			throw new AchievementServiceError('Failed to fetch leaderboard', 'DATABASE_ERROR', error);
 		}
 
-		if (!data || data.length === 0) {
-			return [];
-		}
-
-		// Aggregate by student (sum points, count achievements)
-		const studentMap = new Map<string, LeaderboardEntry>();
-
-		// Define type for profile data from join
-		type ProfileData = { username: string; avatar_url: string | null };
-
-		for (const row of data) {
-			const studentId = row.student_id;
-			const points = row.points_awarded || 0;
-
-			// Extract profile data (handle both array and object responses)
-			const profile = (Array.isArray(row.profiles) ? row.profiles[0] : row.profiles) as
-				| ProfileData
-				| undefined;
-			const username = profile?.username ?? 'Unknown';
-			const avatarUrl = profile?.avatar_url ?? null;
-
-			if (studentMap.has(studentId)) {
-				const entry = studentMap.get(studentId)!;
-				entry.totalPoints += points;
-				entry.achievementCount += 1;
-			} else {
-				studentMap.set(studentId, {
-					studentId,
-					username,
-					avatarUrl,
-					totalPoints: points,
-					achievementCount: 1
-				});
-			}
-		}
-
-		// Convert to array, sort by points, and limit
-		const leaderboard = Array.from(studentMap.values())
-			.sort((a, b) => b.totalPoints - a.totalPoints)
-			.slice(0, limit);
-
-		return leaderboard;
+		return (data ?? []).map((row) => ({
+			studentId: row.student_id,
+			username: row.student_name,
+			avatarUrl: row.avatar_url,
+			totalPoints: Number(row.total_points),
+			achievementCount: Number(row.achievement_count)
+		}));
 	} catch (err) {
 		if (err instanceof AchievementServiceError) {
 			throw err;
