@@ -441,6 +441,97 @@ describe('sampler', () => {
 			expect(curve.points.length).toBe(300);
 		});
 
+		it('coupe les trois pôles même sur un très grand cadrage', () => {
+			// Cadrage réel signalé le 2026-09-15 : 127 unités de large. Le seuil
+			// de suspicion valant 5 % de la hauteur, il exigeait un saut de 6,35
+			// entre deux échantillons voisins ; autour de x = -1 il vaut 5,3.
+			// Les pôles passaient inaperçus et les branches restaient reliées —
+			// la spline lissait le pont en une bosse, sans rien dépasser.
+			const cubic = (x: number): number | null => {
+				const d = x * (x + 1) * (x - 1);
+				return d === 0 ? null : 1 / d;
+			};
+			const huge: Viewport = {
+				xMin: -14.000654775934105,
+				xMax: 113.07859471742174,
+				yMin: -103.05587983841271,
+				yMax: 24.023369654942957
+			};
+
+			for (const count of [100, 300]) {
+				const curve = sampleFunction(cubic, huge, count);
+				const breaks = new Set(curve.discontinuityIndices);
+
+				for (const pole of [-1, 0, 1]) {
+					const straddles = curve.points.some(
+						(p, i) => i > 0 && !breaks.has(i) && curve.points[i - 1].x < pole && p.x > pole
+					);
+					expect(straddles, `${count} points, pôle ${pole}`).toBe(false);
+				}
+			}
+		});
+
+		it('fait sortir du cadre chaque branche bordant un pôle', () => {
+			// La propriété qui compte vraiment : ne pas relier deux branches ne
+			// suffit pas, encore faut-il les tracer ENTIÈREMENT. Une branche qui
+			// s'arrête en plein cadre ressemble à s'y méprendre à une bosse —
+			// c'est ce qui restait visible après la correction des ponts.
+			const cubic = (x: number): number | null => {
+				const d = x * (x + 1) * (x - 1);
+				return d === 0 ? null : 1 / d;
+			};
+			const huge: Viewport = {
+				xMin: -14.000654775934105,
+				xMax: 113.07859471742174,
+				yMin: -103.05587983841271,
+				yMax: 24.023369654942957
+			};
+
+			// En qualité pleine. À 100 points — la qualité réduite d'un drag — le
+			// pas vaut 1,28 pour une branche large de 1 : la cuvette entre -1 et
+			// 0 ne reçoit aucun échantillon et ne peut donc pas être tracée.
+			// C'est une limite de résolution, pas un défaut de détection ; seule
+			// l'absence de pont est exigée à cette densité (test précédent).
+			const curve = sampleFunction(cubic, huge, 300);
+
+			for (const pole of [-1, 0, 1]) {
+				const before = curve.points.filter((p) => p.x < pole && p.x > pole - 0.5);
+				const after = curve.points.filter((p) => p.x > pole && p.x < pole + 0.5);
+				const escapes = (points: readonly Point[]): boolean =>
+					points.some((p) => p.y > huge.yMax || p.y < huge.yMin);
+
+				expect(escapes(before), `à gauche de ${pole}`).toBe(true);
+				expect(escapes(after), `à droite de ${pole}`).toBe(true);
+			}
+		});
+
+		it("s'arrête au zéro plutôt que de relier, quand zéro et pôle se partagent un pas", () => {
+			// Compromis assumé de la conservation du signe. `1/x + 1` a son zéro
+			// en -1 et son pôle en 0 ; dès que le pas d'échantillonnage dépasse
+			// 1, les deux tombent dans le même intervalle et la marche converge
+			// vers le zéro, pas vers le pôle. La branche est donc TRONQUÉE —
+			// mais elle n'est plus RELIÉE à celle d'en face, ce qui serait pire :
+			// un pont se lit comme une courbe, un moignon se voit.
+			//
+			// Relâcher la garde réadmettrait le point de la branche du milieu
+			// qu'elle existe pour rejeter ; le vrai correctif est de poursuivre
+			// la dichotomie au-delà du changement de signe, ce qui demande de
+			// refondre `marchToward`.
+			const homographic = (x: number): number | null => (x === 0 ? null : 1 / x + 1);
+			const box: Viewport = { xMin: -100, xMax: 100, yMin: -50, yMax: 50 };
+			const curve = sampleFunction(homographic, box, 100);
+
+			const breaks = new Set(curve.discontinuityIndices);
+			const straddles = curve.points.some(
+				(p, i) => i > 0 && !breaks.has(i) && curve.points[i - 1].x < 0 && p.x > 0
+			);
+			expect(straddles).toBe(false);
+
+			// Le témoin du compromis : la branche gauche s'arrête sur son zéro.
+			const left = curve.points.filter((p) => p.x < 0).at(-1);
+			expect(left?.x).toBeCloseTo(-1, 3);
+		});
+
 		it('applique le même traitement à sampleWithDerivative (courbe du DSL)', () => {
 			const derivative = (x: number): number | null => {
 				const d = x * (x + 1);
