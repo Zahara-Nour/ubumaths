@@ -15,9 +15,9 @@
  * @module atelier/atelier
  */
 
-import type { AtelierObject, ObjectKind, ListObject, ValueObject } from './types';
+import type { AtelierObject, MissingReference, ObjectKind, ListObject, ValueObject } from './types';
 import { validateName, nextName, nameRejectionMessage } from './names';
-import { parseDefinition, referencedNames, renameInDefinition } from './parse';
+import { parseDefinition, referencesOf, renameInDefinition } from './parse';
 
 // =============================================================================
 // Types de retour
@@ -69,10 +69,19 @@ const DEFAULT_SLIDER = { min: -10, max: 10, step: 0.1 } as const;
 
 const CIRCULAR = 'Définition circulaire : cet objet finit par se définir lui-même.';
 
-const brokenMessage = (missing: readonly string[]) =>
+/** Valeur d'un curseur neuf — même convention que `addParameter` du grapheur. */
+const OFFER_DEFINITION = '1';
+
+const brokenMessage = (culprits: readonly string[]) =>
+	culprits.length === 1
+		? `Dépend de « ${culprits[0]} », qui est en erreur.`
+		: `Dépend de ${culprits.map((n) => `« ${n} »`).join(', ')}, en erreur.`;
+
+/** « En attente de … » — une aide, jamais un reproche (décision D9). */
+const pendingMessage = (missing: readonly MissingReference[]) =>
 	missing.length === 1
-		? `Dépend de « ${missing[0]} », qui est en erreur ou n'existe plus.`
-		: `Dépend de ${missing.map((n) => `« ${n} »`).join(', ')}, en erreur ou disparus.`;
+		? `En attente de « ${missing[0].name} », qui n'est pas encore défini.`
+		: `En attente de ${missing.map((m) => `« ${m.name} »`).join(', ')}, qui ne sont pas encore définis.`;
 
 // =============================================================================
 // Atelier
@@ -81,17 +90,6 @@ const brokenMessage = (missing: readonly string[]) =>
 export class Atelier {
 	/** Les objets, dans leur ordre de création. */
 	private items = $state<AtelierObject[]>([]);
-
-	/**
-	 * Les noms qui ont existé dans cet atelier, même supprimés depuis.
-	 *
-	 * Sans cette mémoire, une définition qui cite un objet supprimé n'a plus
-	 * aucune dépendance détectable — elle redeviendrait « correcte » alors
-	 * qu'elle ne peut plus rien produire. On ne signale donc que ce qu'on SAIT
-	 * avoir disparu : un nom jamais défini reste ignoré (voir la limite notée
-	 * dans le doc de progression).
-	 */
-	private seen = new Set<string>();
 
 	get objects(): readonly AtelierObject[] {
 		return this.items;
@@ -122,7 +120,6 @@ export class Atelier {
 			name = input.name;
 		}
 
-		this.seen.add(name);
 		this.items.push(this.build(name, input.kind, definition));
 		this.recomputeAll();
 		return { ok: true, object: this.get(name)! };
@@ -140,7 +137,6 @@ export class Atelier {
 		const rejection = validateName(to, others);
 		if (rejection) return { ok: false, message: nameRejectionMessage(rejection, to) };
 
-		this.seen.add(to);
 		this.items[index] = { ...this.items[index], name: to } as AtelierObject;
 
 		// Les définitions qui citaient l'ancien nom suivent : c'est ce qu'attend
@@ -192,8 +188,24 @@ export class Atelier {
 	/** Les objets dont la définition cite `name`, directement. */
 	dependents(name: string): readonly string[] {
 		return this.items
-			.filter((o) => o.name !== name && referencedNames(o.definition, this.names).includes(name))
+			.filter((o) => o.name !== name && referencesOf(o.definition).some((ref) => ref.name === name))
 			.map((o) => o.name);
+	}
+
+	/**
+	 * Accepter l'offre de curseur portée par un objet en attente (§2.5 N4).
+	 *
+	 * Refusée si personne n'attend ce nom comme valeur : une offre ne se
+	 * fabrique pas, elle se saisit.
+	 */
+	createFromOffer(name: string): Created | Refused {
+		const offered = this.items.some((o) =>
+			(o.missing ?? []).some((m) => m.name === name && m.as === 'value')
+		);
+		if (!offered) {
+			return { ok: false, message: `Aucun objet n'attend « ${name} ».` };
+		}
+		return this.create({ kind: 'value', name, definition: OFFER_DEFINITION });
 	}
 
 	// ---------------------------------------------------------------------------
@@ -250,92 +262,130 @@ export class Atelier {
 	}
 
 	/**
-	 * Recalculer les erreurs de tout l'atelier.
+	 * Recalculer l'état de tout l'atelier.
 	 *
-	 * Trois causes, dans cet ordre : la définition elle-même est illisible, elle
-	 * participe d'un cycle, ou elle dépend d'un objet en erreur ou disparu.
+	 * Quatre états, dans leur ordre de priorité (décision D9) :
+	 * `error` > `pending` > `incomplete` > `ok`. Une définition qu'on ne sait
+	 * pas lire ne peut rien promettre, donc l'erreur prime sur l'attente.
 	 */
 	private recomputeAll(): void {
-		const names = this.names;
-		const living = new Set(names);
-		// Les noms ayant existé comptent comme références : un objet supprimé
-		// laisse ses dépendants cassés, il ne les rend pas sains.
-		const referable = [...new Set([...names, ...this.seen])];
+		const living = new Set(this.names);
 
-		// 1. Erreur propre à la définition — on repart de zéro à chaque passe.
-		const own = new Map<string, string | undefined>();
-		for (const o of this.items) {
-			own.set(o.name, parseDefinition(o.kind, o.definition).error);
-		}
+		const ownError = new Map<string, string | undefined>();
+		const deps = new Map<string, string[]>();
+		const missing = new Map<string, MissingReference[]>();
 
-		// 2. Cycles. Une suite qui se cite elle-même est une récurrence, pas un
-		//    cycle : `u_{n+1} = 0,5·u_n + 3` est une définition parfaitement saine.
-		const edges = new Map<string, string[]>();
-		const missing = new Map<string, string[]>();
 		for (const o of this.items) {
-			const refs = referencedNames(o.definition, referable).filter(
-				(r) => !(r === o.name && o.kind === 'sequence')
+			ownError.set(o.name, parseDefinition(o.kind, o.definition).error);
+
+			// Une suite qui se cite elle-même est une récurrence, pas un cycle :
+			// `u(n+1) = 0,5·u(n) + 3` est une définition parfaitement saine.
+			const refs = referencesOf(o.definition).filter(
+				(r) => !(r.name === o.name && o.kind === 'sequence')
 			);
-			edges.set(
+			deps.set(
 				o.name,
-				refs.filter((r) => living.has(r))
+				refs.filter((r) => living.has(r.name)).map((r) => r.name)
 			);
 			missing.set(
 				o.name,
-				refs.filter((r) => !living.has(r))
+				refs.filter((r) => !living.has(r.name))
 			);
 		}
 
-		const state = new Map<string, 'visiting' | 'done'>();
+		// Cycles : un parcours qui marque ce qu'il a vu ne boucle jamais.
+		const visitState = new Map<string, 'visiting' | 'done'>();
 		const inCycle = new Set<string>();
 		const visit = (node: string, path: string[]): void => {
-			if (state.get(node) === 'done') return;
-			if (state.get(node) === 'visiting') {
-				// On retombe sur un nœud du chemin courant : tout ce segment boucle.
+			if (visitState.get(node) === 'done') return;
+			if (visitState.get(node) === 'visiting') {
 				for (const n of path.slice(path.indexOf(node))) inCycle.add(n);
 				return;
 			}
-			state.set(node, 'visiting');
-			for (const next of edges.get(node) ?? []) visit(next, [...path, next]);
-			state.set(node, 'done');
+			visitState.set(node, 'visiting');
+			for (const next of deps.get(node) ?? []) visit(next, [...path, next]);
+			visitState.set(node, 'done');
 		};
-		for (const name of names) visit(name, [name]);
+		for (const name of this.names) visit(name, [name]);
 
-		// 3. Contamination : dépendre d'un objet en erreur est une erreur.
+		// Propagation, par points fixes. L'erreur se propage la première : elle
+		// prime, donc un objet contaminé par une erreur n'est jamais « en attente ».
 		const failing = new Set<string>();
-		for (const [name, error] of own) if (error) failing.add(name);
+		for (const [name, error] of ownError) if (error) failing.add(name);
 		for (const name of inCycle) failing.add(name);
-		for (const [name, gone] of missing) if (gone.length > 0) failing.add(name);
+		this.spread((name) => (deps.get(name) ?? []).some((d) => failing.has(d)), failing);
 
+		const waiting = new Map<string, MissingReference[]>();
+		for (const o of this.items) {
+			if (failing.has(o.name)) continue;
+			const own = missing.get(o.name) ?? [];
+			if (own.length > 0) waiting.set(o.name, [...own]);
+		}
+		// Dépendre d'un objet en attente, c'est attendre la même chose que lui.
 		let changed = true;
 		while (changed) {
 			changed = false;
 			for (const o of this.items) {
 				if (failing.has(o.name)) continue;
-				const refs = edges.get(o.name) ?? [];
-				if (refs.some((r) => failing.has(r))) {
-					failing.add(o.name);
+				const inherited = (deps.get(o.name) ?? []).flatMap((d) => waiting.get(d) ?? []);
+				if (inherited.length === 0) continue;
+				const current = waiting.get(o.name) ?? [];
+				const merged = [...current];
+				for (const ref of inherited) {
+					if (!merged.some((m) => m.name === ref.name)) merged.push(ref);
+				}
+				if (merged.length !== current.length) {
+					waiting.set(o.name, merged);
 					changed = true;
 				}
 			}
 		}
 
-		// Écriture finale, en une passe.
 		this.items = this.items.map((o) => {
-			let error: string | undefined;
-			if (own.get(o.name)) error = own.get(o.name);
-			else if (inCycle.has(o.name)) error = CIRCULAR;
-			else if (failing.has(o.name)) {
-				const gone = missing.get(o.name) ?? [];
-				const culprits =
-					gone.length > 0 ? gone : (edges.get(o.name) ?? []).filter((r) => failing.has(r));
-				error = brokenMessage(culprits);
+			const next = { ...o } as AtelierObject & {
+				status: AtelierObject['status'];
+				message?: string;
+				missing?: readonly MissingReference[];
+			};
+			delete next.message;
+			delete next.missing;
+
+			const own = ownError.get(o.name);
+			if (own) {
+				next.status = 'error';
+				next.message = own;
+			} else if (inCycle.has(o.name)) {
+				next.status = 'error';
+				next.message = CIRCULAR;
+			} else if (failing.has(o.name)) {
+				next.status = 'error';
+				next.message = brokenMessage((deps.get(o.name) ?? []).filter((d) => failing.has(d)));
+			} else if (waiting.has(o.name)) {
+				const refs = waiting.get(o.name)!;
+				next.status = 'pending';
+				next.message = pendingMessage(refs);
+				next.missing = refs;
+			} else if (o.definition.trim() === '') {
+				next.status = 'incomplete';
+			} else {
+				next.status = 'ok';
 			}
-			if (o.error === error) return o;
-			const next = { ...o } as AtelierObject & { error?: string };
-			if (error) next.error = error;
-			else delete next.error;
 			return next;
 		});
+	}
+
+	/** Étendre un ensemble jusqu'au point fixe, selon un critère de contagion. */
+	private spread(caught: (name: string) => boolean, into: Set<string>): void {
+		let changed = true;
+		while (changed) {
+			changed = false;
+			for (const o of this.items) {
+				if (into.has(o.name)) continue;
+				if (caught(o.name)) {
+					into.add(o.name);
+					changed = true;
+				}
+			}
+		}
 	}
 }

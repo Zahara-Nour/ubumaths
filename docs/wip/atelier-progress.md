@@ -1,7 +1,7 @@
 ---
 title: Atelier de recherche — progression du chantier
 date: 2026-09-15
-status: Phase 1 — modèle d'objet implémenté, 38 tests verts
+status: Phase 1 — modèle d'objet à quatre états, 56 tests verts
 branche: feat/atelier
 worktree: ../ubumaths-wt-atelier
 ---
@@ -62,6 +62,34 @@ comparaison). L'argument qui avait d'abord fait pencher vers une classe pure —
 runes : seul `*.svelte.test.ts` part dans le projet `client`, qui lance un vrai
 navigateur.
 
+### Phase 1 (suite) — les quatre états (D9), 56 tests verts
+
+`error > pending > incomplete > ok`. L'attente se répare d'elle-même et se
+propage : un objet qui dépend d'un objet en attente attend la même chose que lui.
+
+**La rustine `seen` a disparu.** Elle existait pour distinguer « nom supprimé »
+de « nom jamais défini » ; avec `pending`, la distinction n'a plus d'objet — un
+nom absent est un nom absent, même message, même réparation.
+
+#### Trois faits du moteur, mesurés avant d'écrire
+
+1. **L'AST, jamais le texte.** `ax + b` donne les variables `a`, `x`, `b` : la
+   lecture par expression régulière lisait `ax` comme un nom. `getVariables`
+   résout la multiplication implicite.
+2. **Un appel de fonction porte son nom dans l'AST** (`{type:'function',
+name:'h'}`), donc le classement valeur/fonction est exact — pas deviné.
+3. **Pas de liste blanche de fonctions à tenir.** Les fonctions génériques du
+   parseur sont `f g h u v w F G H`, soit exactement la forme d'un nom d'objet.
+   Donc la règle est : **seul un identifiant qui pourrait nommer un objet peut
+   manquer**. `sqrt`, `sin`, `abs` font plusieurs lettres — hors jeu par
+   construction. ⚠️ `FUNCTION_COMMANDS` ne contient PAS `sqrt` : s'en servir
+   comme liste blanche aurait mis `sqrt(x)` en attente.
+
+#### Une limite du moteur, figée par un test
+
+En syntaxe custom, **`pi` n'est pas une constante** : il se lit `p·i`. Un test le
+documente plutôt que de le masquer. `e` est bien reconnu.
+
 ---
 
 ## Un défaut de conception trouvé par les tests
@@ -74,17 +102,11 @@ C'est le test §2.4 L1 qui l'a attrapé.
 Corrigé par une mémoire des noms ayant existé (`seen`) : un nom qu'on SAIT avoir
 disparu casse ses dépendants.
 
-### ⚠️ La limite qui reste, et que la spec ne tranche pas
+### ✅ Tranchée le 2026-09-15 — décision D9
 
-Un nom **jamais défini** n'est pas signalé : `g(x) = zzz(x) + 1` passe pour
-correcte tant que `zzz` n'a jamais existé dans l'atelier. Distinguer « objet
-inconnu » de « fonction du CAS » (`sin`, `ln`, `exp`…) demanderait la liste des
-fonctions connues du moteur — faisable, mais ce n'est pas spécifié.
-
-**À trancher** : est-ce une erreur à signaler à l'élève, ou un silence
-acceptable pendant qu'il tape ? Mon avis : silence pendant la saisie, signalement
-au moment de tracer ou de calculer — mais c'est un comportement à écrire dans la
-Phase 0 avant de le coder.
+Un nom inconnu met l'objet **en attente**, pas en erreur, et pour une lettre
+seule l'attente porte une offre de curseur. Comportements écrits au §2.5 de la
+Phase 0, implémentés et testés.
 
 ---
 
@@ -107,7 +129,8 @@ reproduit pas dans l'atelier.
 
 ## Reste à faire
 
-- [x] Implémenter `names.ts`, `parse.ts`, `atelier.svelte.ts` — 38 tests verts
+- [x] Implémenter `names.ts`, `parse.ts`, `atelier.svelte.ts`
+- [x] Les quatre états (D9) et l'offre de curseur — 56 tests verts
 - [ ] Tests et implémentation de la **persistance locale** (§5) et de
       **l'URL / mode éphémère** (§6)
 - [ ] ⚠️ **Le refactor inévitable** : les 13 fichiers qui font

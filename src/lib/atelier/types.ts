@@ -17,6 +17,26 @@
 export type ObjectKind = 'value' | 'function' | 'sequence' | 'list';
 
 /**
+ * L'état d'un objet. Décision D9.
+ *
+ * Priorité : `error` > `pending` > `incomplete` > `ok`. Une définition qu'on ne
+ * sait pas lire ne peut rien promettre, donc l'erreur prime sur l'attente.
+ */
+export type ObjectStatus = 'ok' | 'incomplete' | 'pending' | 'error';
+
+/**
+ * Un nom cité par une définition et que l'atelier ne connaît pas.
+ *
+ * `as` vient de la grammaire, pas d'une devinette : un identifiant suivi d'une
+ * parenthèse est une fonction, une lettre seule est une valeur — et seule la
+ * seconde peut recevoir une offre de curseur (§2.5 N3 et L4).
+ */
+export interface MissingReference {
+	readonly name: string;
+	readonly as: 'value' | 'function';
+}
+
+/**
  * Bornes et pas d'un curseur.
  *
  * Décision D3 : toute valeur numérique libre est pilotable par un curseur,
@@ -39,12 +59,21 @@ interface AtelierObjectBase {
 	 * PAS une erreur (§2.1 L2).
 	 */
 	readonly definition: string;
+	/** Où en est cet objet. Voir `ObjectStatus`. */
+	readonly status: ObjectStatus;
 	/**
-	 * Message en français quand la définition n'est pas exploitable.
+	 * Message en français, présent pour `error` et `pending`.
 	 *
-	 * L'objet existe et porte son erreur : l'atelier reste utilisable (§2.1 E2).
+	 * L'objet existe et porte son état : l'atelier reste utilisable (§2.1 E2).
 	 */
-	readonly error?: string;
+	readonly message?: string;
+	/**
+	 * Ce qui manque, pour `pending` seulement.
+	 *
+	 * Se vide tout seul dès que les objets nommés apparaissent : une attente se
+	 * répare sans que l'élève ait à y revenir (§2.5 N2).
+	 */
+	readonly missing?: readonly MissingReference[];
 }
 
 export interface ValueObject extends AtelierObjectBase {

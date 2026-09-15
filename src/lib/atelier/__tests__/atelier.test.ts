@@ -62,7 +62,7 @@ describe('création', () => {
 		expect(r.ok).toBe(true);
 		if (!r.ok) return;
 		expect(r.object.definition).toBe('');
-		expect(r.object.error).toBeUndefined();
+		expect(r.object.status).toBe('incomplete');
 	});
 
 	// E1
@@ -78,7 +78,8 @@ describe('création', () => {
 		const r = a.create({ kind: 'function', definition: 'x^^2' });
 		expect(r.ok).toBe(true);
 		if (!r.ok) return;
-		expect(r.object.error).toBeTruthy();
+		expect(r.object.status).toBe('error');
+		expect(r.object.message).toBeTruthy();
 		expect(a.names).toEqual(['f']);
 		// et l'atelier accepte encore un autre objet
 		expect(a.create({ kind: 'value', definition: '2' }).ok).toBe(true);
@@ -171,10 +172,11 @@ describe('modification', () => {
 
 		const r = a.update('f', 'x^^2');
 		expect(r.ok).toBe(true);
-		expect(a.get('f')?.error).toBeTruthy();
-		// g existe toujours et signale qu'elle dépend d'un objet en erreur
+		expect(a.get('f')?.status).toBe('error');
+		// g existe toujours et signale qu'elle dépend d'un objet illisible :
+		// c'est une erreur, pas une attente — f est là, mais inexploitable.
 		expect(a.get('g')).toBeDefined();
-		expect(a.get('g')?.error).toBeTruthy();
+		expect(a.get('g')?.status).toBe('error');
 	});
 
 	// L2 — circularité nommée en français, aucune boucle infinie
@@ -184,13 +186,15 @@ describe('modification', () => {
 
 		const r = a.update('f', 'g(x) + 1');
 		expect(r.ok).toBe(true);
-		expect(a.get('f')?.error?.toLowerCase()).toContain('circulaire');
+		expect(a.get('f')?.status).toBe('error');
+		expect(a.get('f')?.message?.toLowerCase()).toContain('circulaire');
 	});
 
 	it('détecte aussi une définition qui se cite elle-même', () => {
 		a.create({ kind: 'function', name: 'f', definition: 'x' });
 		a.update('f', 'f(x) + 1');
-		expect(a.get('f')?.error?.toLowerCase()).toContain('circulaire');
+		expect(a.get('f')?.status).toBe('error');
+		expect(a.get('f')?.message?.toLowerCase()).toContain('circulaire');
 	});
 });
 
@@ -223,7 +227,9 @@ describe('suppression', () => {
 		if (!r.ok) return;
 		expect(r.broken).toEqual(['g']);
 		expect(a.get('g')).toBeDefined();
-		expect(a.get('g')?.error).toBeTruthy();
+		// D9 : f peut revenir, donc c'est une absence, pas une faute
+		expect(a.get('g')?.status).toBe('pending');
+		expect(a.get('g')?.missing?.map((m) => m.name)).toEqual(['f']);
 	});
 
 	// L2 — atelier vide et prêt, SANS x² ajouté d'office
@@ -240,5 +246,169 @@ describe('suppression', () => {
 		expect(r.ok).toBe(true);
 		if (!r.ok) return;
 		expect(r.object.name).toBe('f');
+	});
+});
+
+// =============================================================================
+// §2.5 Les objets en attente (décision D9)
+// =============================================================================
+
+describe('objets en attente', () => {
+	// N1 — un nom inconnu met en attente, pas en erreur
+	it('met en attente quand une fonction citée n’existe pas', () => {
+		const r = a.create({ kind: 'function', name: 'g', definition: 'h(x) + 1' });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.status).toBe('pending');
+		expect(r.object.missing).toEqual([{ name: 'h', as: 'function' }]);
+		expect(r.object.message).toContain('h');
+	});
+
+	// N2 — l'attente se répare toute seule
+	it('redevient exploitable dès que le nom manquant apparaît', () => {
+		a.create({ kind: 'function', name: 'g', definition: 'h(x) + 1' });
+		expect(a.get('g')?.status).toBe('pending');
+
+		a.create({ kind: 'function', name: 'h', definition: 'x^2' });
+		expect(a.get('g')?.status).toBe('ok');
+		expect(a.get('g')?.missing).toBeUndefined();
+	});
+
+	// N3 — une lettre seule est une valeur, donc une offre de curseur
+	it('classe une lettre seule en valeur, pour pouvoir offrir un curseur', () => {
+		const r = a.create({ kind: 'function', name: 'f', definition: 'a*x' });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.status).toBe('pending');
+		expect(r.object.missing).toEqual([{ name: 'a', as: 'value' }]);
+	});
+
+	// L'AST résout la multiplication implicite : `ax` n'est pas un nom
+	it('ne prend pas `ax` pour un nom, mais lit `a` et `x`', () => {
+		const r = a.create({ kind: 'function', name: 'f', definition: 'ax + b' });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.missing?.map((m) => m.name).sort()).toEqual(['a', 'b']);
+	});
+
+	// N4 — accepter l'offre
+	it('crée la valeur avec son curseur et répare l’objet en attente', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'a*x' });
+
+		const r = a.createFromOffer('a');
+		expect(r.ok).toBe(true);
+		if (!r.ok || !isValue(r.object)) return;
+		expect(r.object.slider).toEqual({ min: -10, max: 10, step: expect.any(Number) });
+		expect(a.get('f')?.status).toBe('ok');
+	});
+
+	// N5 — tous les noms manquants sont nommés
+	it('nomme tous les manquants, pas seulement le premier', () => {
+		const r = a.create({ kind: 'function', name: 'f', definition: 'a*x + b' });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.missing?.map((m) => m.name).sort()).toEqual(['a', 'b']);
+		expect(r.object.message).toContain('a');
+		expect(r.object.message).toContain('b');
+	});
+
+	// L1 — les 45 fonctions du moteur ne sont jamais en attente
+	it('ne met jamais en attente une fonction connue du moteur', () => {
+		for (const def of ['sin(x)', 'ln(x) + 1', 'sqrt(x)', 'exp(x)']) {
+			const r = a.create({ kind: 'function', definition: def });
+			expect(r.ok).toBe(true);
+			if (!r.ok) return;
+			expect(r.object.status).toBe('ok');
+		}
+	});
+
+	// L2 — la variable de l'objet lui-même
+	it('ne met jamais en attente la variable de l’objet', () => {
+		const f = a.create({ kind: 'function', name: 'f', definition: 'x^2 - 3x + 1' });
+		expect(f.ok && f.object.status).toBe('ok');
+
+		const u = a.create({ kind: 'sequence', name: 'u', definition: '0,5u_n + 3' });
+		expect(u.ok && u.object.status).toBe('ok');
+	});
+
+	// L3 — les constantes
+	it('ne met jamais en attente une constante', () => {
+		const r = a.create({ kind: 'function', name: 'f', definition: 'e^x' });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.status).toBe('ok');
+	});
+
+	// ⚠️ Limite du moteur, pas de l'atelier : en syntaxe custom `pi` n'est pas
+	// une constante, il se lit `p·i`. On fige le fait pour qu'il se voie.
+	it('documente que `pi` n’est pas reconnu en syntaxe custom', () => {
+		const r = a.create({ kind: 'function', name: 'f', definition: 'pi' });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.missing?.map((m) => m.name)).toEqual(['p']);
+	});
+
+	// Cohérence : l'attente se propage à ce qui dépend d'un objet en attente
+	it('propage l’attente à ce qui dépend d’un objet en attente', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'a*x' });
+		a.create({ kind: 'function', name: 'g', definition: 'f(x) + 1' });
+		expect(a.get('g')?.status).toBe('pending');
+		expect(a.get('g')?.missing?.map((m) => m.name)).toEqual(['a']);
+
+		a.createFromOffer('a');
+		expect(a.get('g')?.status).toBe('ok');
+	});
+
+	// L4 — suivi d'une parenthèse : pas d'offre de curseur
+	it('n’offre pas de curseur pour un nom suivi d’une parenthèse', () => {
+		const r = a.create({ kind: 'function', name: 'g', definition: 'h(x)' });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.missing).toEqual([{ name: 'h', as: 'function' }]);
+	});
+
+	// L5 — ignorer l'offre ne crée rien
+	it('ne crée rien tant que l’offre n’est pas acceptée', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'a*x' });
+		expect(a.names).toEqual(['f']);
+		expect(a.get('f')?.status).toBe('pending');
+	});
+
+	// L6 — la faute de frappe se lit comme un manque
+	it('montre le nom parasite d’une faute de frappe', () => {
+		const r = a.create({ kind: 'function', name: 'f', definition: 'xz' });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.missing).toEqual([{ name: 'z', as: 'value' }]);
+	});
+
+	// E1 — l'erreur prime sur l'attente
+	it('reste en erreur quand la définition est illisible ET cite un inconnu', () => {
+		const r = a.create({ kind: 'function', name: 'f', definition: 'a*x ^^ 2' });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.status).toBe('error');
+	});
+
+	// E2 — la circularité prime aussi
+	it('reste en erreur quand il y a circularité ET un inconnu', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'x' });
+		a.create({ kind: 'function', name: 'g', definition: 'f(x)' });
+		a.update('f', 'g(x) + b');
+		expect(a.get('f')?.status).toBe('error');
+		expect(a.get('f')?.message?.toLowerCase()).toContain('circulaire');
+	});
+
+	// E3 — l'offre sur un nom devenu pris
+	it('refuse l’offre quand le nom vient d’être pris', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'a*x' });
+		a.create({ kind: 'sequence', name: 'a', definition: 'n' });
+		expect(a.createFromOffer('a').ok).toBe(false);
+	});
+
+	// L'offre n'a de sens que pour un nom réellement attendu
+	it('refuse l’offre pour un nom que personne n’attend', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		expect(a.createFromOffer('a').ok).toBe(false);
 	});
 });

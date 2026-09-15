@@ -42,6 +42,17 @@ export type NameRejection = 'reserved' | 'malformed' | 'taken';
 /** Une lettre latine, éventuellement suivie d'un indice numérique. */
 const NAME_SHAPE = /^[A-Za-z](?:_\d+)?$/;
 
+/**
+ * Ce nom pourrait-il désigner un objet de l'atelier ?
+ *
+ * Sert à décider ce qui « manque » : `sqrt`, `sin` ou `abs` font plusieurs
+ * lettres, donc aucun objet ne pourra jamais porter ces noms — ils ne sont
+ * jamais en attente, sans qu'on ait à tenir une liste des fonctions du moteur.
+ */
+export function hasObjectNameShape(name: string): boolean {
+	return NAME_SHAPE.test(name) && !RESERVED_NAMES.has(name);
+}
+
 /** Borne de la recherche d'un nom indicé — garde-fou, jamais atteinte. */
 const MAX_INDEX = 999;
 

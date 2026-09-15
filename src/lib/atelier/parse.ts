@@ -9,7 +9,10 @@
  */
 
 import { parseCustomSafe } from '$lib/mathAST/parser/custom';
-import type { ObjectKind } from './types';
+import { getVariables } from '$lib/mathAST/eval/substitute';
+import type { MathNode } from '$lib/mathAST/types';
+import type { MissingReference, ObjectKind } from './types';
+import { hasObjectNameShape } from './names';
 
 /** Ce qu'une définition apprend sur l'objet qu'elle définit. */
 export interface ParsedDefinition {
@@ -26,7 +29,7 @@ export interface ParsedDefinition {
 /** Une valeur : un nombre, éventuellement suivi d'une unité. */
 const VALUE_SHAPE = /^\s*(-?\d+(?:[.,]\d+)?)\s*([A-Za-zµ°%]+(?:\/[A-Za-zµ°%]+)?)?\s*$/;
 
-/** Les identifiants d'une expression, pour en tirer les dépendances. */
+/** Les identifiants du TEXTE — pour la réécriture au renommage, pas pour lire les dépendances. */
 const IDENTIFIERS = /[A-Za-z]+(?:_\d+)?/g;
 
 /**
@@ -82,19 +85,55 @@ export function parseDefinition(kind: ObjectKind, definition: string): ParsedDef
 }
 
 /**
- * Les identifiants d'une définition qui désignent des objets de l'atelier.
+ * Les noms libres d'une définition, classés par la grammaire.
  *
- * Tout ce qui n'est pas un nom d'objet est ignoré : `sin`, `x`, un nombre. On
- * n'a donc pas besoin de connaître les fonctions du CAS pour éviter de les
- * confondre avec des dépendances.
+ * Tout vient de l'AST, jamais du texte : `ax + b` se lit `a·x + b`, donc `ax`
+ * n'est pas un nom — une lecture par expression régulière s'y trompait. Un
+ * identifiant appelé avec une parenthèse produit un nœud `function` et sort
+ * donc classé `function` ; une lettre seule produit une variable.
+ *
+ * Seuls les identifiants qui POURRAIENT nommer un objet sont retenus (§1 : une
+ * lettre, éventuellement indicée). `sqrt`, `sin` et `abs` font plusieurs
+ * lettres : aucun objet ne portera jamais ces noms, donc ils ne manquent
+ * jamais — et l'atelier n'a aucune liste de fonctions à tenir à jour.
+ *
+ * ⚠️ En syntaxe custom, `pi` n'est PAS une constante : il se lit `p·i`.
  */
-export function referencedNames(definition: string, known: readonly string[]): string[] {
-	const knownSet = new Set(known);
-	const found = new Set<string>();
-	for (const match of definition.matchAll(IDENTIFIERS)) {
-		if (knownSet.has(match[0])) found.add(match[0]);
+export function referencesOf(definition: string): MissingReference[] {
+	const result = parseCustomSafe(definition);
+	if (!result.ast) return [];
+
+	const found = new Map<string, MissingReference>();
+
+	for (const name of getVariables(result.ast)) {
+		if (!hasObjectNameShape(name)) continue;
+		found.set(name, { name, as: 'value' });
 	}
-	return [...found];
+
+	// Un appel de fonction l'emporte sur la lecture « variable » du même nom :
+	// `h(x) + h` désigne une fonction, et on n'offrira pas de curseur pour elle.
+	for (const name of calledFunctions(result.ast)) {
+		if (!hasObjectNameShape(name)) continue;
+		found.set(name, { name, as: 'function' });
+	}
+
+	return [...found.values()];
+}
+
+/** Les noms des fonctions appelées dans un AST, à tout niveau. */
+function calledFunctions(node: MathNode): string[] {
+	const out: string[] = [];
+	const visit = (n: unknown): void => {
+		if (!n || typeof n !== 'object') return;
+		const o = n as Record<string, unknown>;
+		if (o.type === 'function' && typeof o.name === 'string') out.push(o.name);
+		for (const value of Object.values(o)) {
+			if (Array.isArray(value)) value.forEach(visit);
+			else visit(value);
+		}
+	};
+	visit(node);
+	return out;
 }
 
 /**
