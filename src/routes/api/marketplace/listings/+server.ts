@@ -10,7 +10,7 @@ import {
 	isMarketplaceEnabled,
 	getStudentSchoolId,
 	enrichListingsWithCardData,
-	enrichWithUsernames
+	enrichWithParticipants
 } from '$lib/server/marketplace/helpers';
 // TODO: Add cache invalidation when cache-manager is properly implemented
 // import { invalidateListingCaches } from '$lib/server/marketplace/cache-manager';
@@ -162,8 +162,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	// Enrich listings with card template data and usernames
-	const enrichedListings = (await enrichListingsWithCardData(supabase, listings || [])).map(
-		enrichWithUsernames
+	// ⚠️ `enrichWithParticipants` et non `.map(enrichWithUsernames)` : la
+	// jointure `creator:creator_id` rend `null` pour presque tout le monde
+	// depuis que la lecture des profils est bornée, et l'élève verrait
+	// « Anonyme » en face de son échange.
+	const enrichedListings = await enrichWithParticipants(
+		supabase,
+		await enrichListingsWithCardData(supabase, listings || [])
 	);
 
 	return json({
@@ -289,5 +294,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Enrich the newly created listing with card template data and usernames
 	const [enrichedListing] = await enrichListingsWithCardData(supabase, [listing]);
 
-	return json(enrichWithUsernames(enrichedListing), { status: 201 });
+	const [avecParticipant] = await enrichWithParticipants(supabase, [enrichedListing]);
+	return json(avecParticipant, { status: 201 });
 };

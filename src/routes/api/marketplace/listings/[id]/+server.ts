@@ -5,7 +5,7 @@ import { updateListingSchema } from '$lib/server/marketplace/validation';
 import {
 	unlockCardsForEntity,
 	isMarketplaceEnabled,
-	enrichWithUsernames
+	enrichWithParticipants
 } from '$lib/server/marketplace/helpers';
 // TODO: Implement cache invalidation
 // import { invalidateListingCaches } from '$lib/server/marketplace/cache-manager';
@@ -107,12 +107,12 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		})();
 	}
 
-	return json(
-		enrichWithUsernames({
-			...listing,
-			proposals: proposals?.map(enrichWithUsernames) || undefined
-		})
-	);
+	// ⚠️ L'annonce ET ses propositions : sans comblement, l'élève verrait
+	// « Anonyme » à la fois en face de l'offre et sur chaque proposition reçue.
+	const [avecCreateur] = await enrichWithParticipants(supabase, [listing]);
+	const propositions = proposals ? await enrichWithParticipants(supabase, proposals) : undefined;
+
+	return json({ ...avecCreateur, proposals: propositions });
 };
 
 /**
@@ -190,7 +190,8 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	// Invalidate caches
 	// TODO: await invalidateListingCaches(supabase, userId);
 
-	return json(enrichWithUsernames(updatedListing));
+	const [avecParticipant] = await enrichWithParticipants(supabase, [updatedListing]);
+	return json(avecParticipant);
 };
 
 /**

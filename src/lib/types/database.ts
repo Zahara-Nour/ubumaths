@@ -16628,6 +16628,14 @@ export type Database = {
         }
         Returns: number
       }
+      resolve_marketplace_participants: {
+        Args: { p_user_ids: string[] }
+        Returns: {
+          avatar_url: string
+          display_name: string
+          id: string
+        }[]
+      }
       resolve_open_class_by_code: { Args: { p_code: string }; Returns: string }
       resolve_tag_ids: {
         Args: { p_names: string[] }

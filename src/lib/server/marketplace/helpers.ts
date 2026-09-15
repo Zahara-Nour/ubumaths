@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { completerParticipant, fetchParticipants } from './participants';
 
 // ============================================================================
 // PROFILE HELPERS
@@ -40,6 +41,68 @@ export function enrichWithUsernames<T extends Record<string, any>>(record: T): T
 		}
 	}
 	return result;
+}
+
+/**
+ * Les clés de profil et l'identifiant qui les porte.
+ *
+ * ⚠️ Miroir de `profileKeys` ci-dessus : ajouter une relation de profil sans
+ * l'ajouter ici la laisserait sans nom après le retrait de
+ * `Anyone can view profiles for leaderboard`.
+ */
+const CLES_PARTICIPANTS = {
+	creator: 'creator_id',
+	proposer: 'proposer_id',
+	initiator: 'initiator_id',
+	partner: 'partner_id',
+	sender: 'sender_id',
+	offer_by_profile: 'offer_by'
+} as const;
+
+/**
+ * Comme `enrichWithUsernames`, mais comble ce que la RLS a masqué.
+ *
+ * ⚠️ Le marché est à l'échelle de l'ÉCOLE, alors qu'un élève ne lit plus que
+ * lui-même, ses camarades ACTIFS, ses amis et ses co-participants. La jointure
+ * `creator:creator_id(...)` rend donc `null` pour presque tout le monde — sans
+ * erreur, et l'affichage retombe sur « Anonyme ».
+ *
+ * Mesuré avant d'écrire ceci : 949 couples annonce × élève sur 1040, et 10
+ * propositions sur 31.
+ *
+ * La jointure garde la PRIORITÉ : quand elle réussit, elle rend l'état civil
+ * que l'intéressé a déjà le droit de voir. La fonction bornée ne sert qu'aux
+ * trous, et elle rend un nom pseudonymisé.
+ */
+export async function enrichWithParticipants<T extends Record<string, unknown>>(
+	supabase: SupabaseClient<Database>,
+	records: T[]
+): Promise<T[]> {
+	if (records.length === 0) return records;
+
+	const manquants: string[] = [];
+	for (const record of records) {
+		for (const [cle, cleId] of Object.entries(CLES_PARTICIPANTS)) {
+			if (!record[cle] && typeof record[cleId] === 'string') {
+				manquants.push(record[cleId] as string);
+			}
+		}
+	}
+
+	const annuaire = await fetchParticipants(supabase, manquants);
+
+	return records.map((record) => {
+		const sortie = { ...record } as Record<string, unknown>;
+		for (const [cle, cleId] of Object.entries(CLES_PARTICIPANTS)) {
+			const complete = completerParticipant(
+				sortie[cle] as { id: string; username: string } | null,
+				sortie[cleId] as string | null,
+				annuaire
+			);
+			if (complete) sortie[cle] = complete;
+		}
+		return enrichWithUsernames(sortie as T);
+	});
 }
 
 // ============================================================================
