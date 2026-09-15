@@ -156,8 +156,8 @@ Un chantier = un worktree **frère** du dépôt :
   `pwd` au premier message.
 - ⚠️ **Un worktree n'isole ni la RAM, ni Supabase local, ni les ports** — et deux
   sessions ne se voient pas. Deux verrous partagés s'en chargent : `typecheck`
-  (`check:incremental`) et `supabase` (`db:reset`, `db:stop`,
-  `test:integration`). Un refus sort en **exit 2** et nomme le worktree
+  (`check:incremental`) et `supabase` (tous les `db:*`
+  locaux et `test:integration`). Un refus sort en **exit 2** et nomme le worktree
   détenteur : **ça s'attend, ça ne se contourne pas.**
 - ⛔ **`pnpm kill:servers` interdit depuis un worktree** : il tue 5173 (le
   serveur de David) et Supabase. Kill ciblé sur son propre port.

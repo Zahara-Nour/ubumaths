@@ -13,7 +13,19 @@
 # silencieuse en refus explicite, qui nomme le worktree fautif.
 set -uo pipefail
 
-source "$(dirname "${BASH_SOURCE[0]}")/lib/lock.sh"
+# Charger le verrou, et ÉCHOUER si on ne peut pas : un `source` raté laisse
+# `acquire_lock: command not found` puis exécute la commande SANS verrou, en
+# sortant 0. Silence total sur la disparition de la seule protection.
+lock_lib="$(dirname "${BASH_SOURCE[0]}")/lib/lock.sh"
+# shellcheck source=scripts/lib/lock.sh
+source "$lock_lib" || {
+	echo "⛔ $lock_lib introuvable : on n'exécute rien sans verrou." >&2
+	exit 1
+}
+type -t acquire_lock >/dev/null || {
+	echo "⛔ acquire_lock absent de $lock_lib : on n'exécute rien sans verrou." >&2
+	exit 1
+}
 acquire_lock supabase "Une commande sur la base Supabase locale"
 
 "$@"

@@ -78,10 +78,10 @@ pnpm install --prefer-offline
 Implémentation : `scripts/lib/lock.sh`, posés par `scripts/check-incremental.sh`
 et `scripts/with-db-lock.sh`.
 
-| Verrou      | Pris par                                          | Ce qu'il évite                                    |
-| ----------- | ------------------------------------------------- | ------------------------------------------------- |
-| `typecheck` | `pnpm check:incremental`                          | Deux typechecks concurrents sur 8 Go              |
-| `supabase`  | `db:reset`, `db:stop`, `test:integration(:watch)` | Un `db:reset` au milieu d'une suite d'intégration |
+| Verrou      | Pris par                                                                                            | Ce qu'il évite                                    |
+| ----------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `typecheck` | `pnpm check:incremental`                                                                            | Deux typechecks concurrents sur 8 Go              |
+| `supabase`  | `db:start`, `db:stop`, `db:reset`, `db:dev-accounts`, `db:fix-profiles`, `test:integration(:watch)` | Un `db:reset` au milieu d'une suite d'intégration |
 
 **Où ils vivent** : `<répertoire git commun>/.locks/<nom>`, c'est-à-dire
 `.git/.locks/` du dépôt principal — le seul endroit que tous les worktrees
@@ -94,20 +94,34 @@ endroits différents selon l'appelant, paraît fonctionner, et ne protège rien.
 
 **Comportement** :
 
-- Refus en **exit 2**, avec le PID, l'ancienneté et **le worktree détenteur** —
-  la seule information qui rend le refus actionnable, l'autre session étant
-  invisible.
-- Verrou **périmé** (processus tué, OOM, `kill -9`) : repris automatiquement.
-  Une OOM ne bloque donc pas la machine durablement.
-- Relâché à la sortie, Ctrl-C compris.
+- **Acquisition atomique** : la pose se fait sous `noclobber`, donc avec
+  `O_CREAT|O_EXCL` — exactement un processus gagne. ⚠️ Un `[ -f ]` suivi d'une
+  écriture ne verrouille **rien** : mesuré, trois acquisitions simultanées
+  réussissaient toutes les trois, et la première à finir supprimait le fichier
+  pour tout le monde. Vérifié depuis : 5 acquisitions simultanées → 1 gagnant,
+  4 refus.
+- Refus en **exit 2**, avec le PID, l'ancienneté, **le worktree détenteur** et le
+  chemin du fichier de verrou — la seule information qui rend le refus
+  actionnable, l'autre session étant invisible.
+- Verrou **périmé** : repris automatiquement. La péremption se juge sur la **date
+  de démarrage** du processus, pas sur le seul PID. Un processus tué par l'OOM
+  (SIGKILL : aucun trap) laisse son fichier derrière lui ; si le système recycle
+  ce PID, `kill -0` réussit sur un processus innocent et le blocage devient
+  perpétuel — pour **tout le dépôt**, désormais, et non plus pour un worktree.
+- Relâché à la sortie. **Ctrl-C et SIGTERM relâchent puis SORTENT** (130 / 143).
+  Sans ce `exit`, bash reprend l'exécution après le handler et l'appelant irait
+  écrire un verdict calculé sur une commande interrompue — un faux vert, ensuite
+  rejoué comme vérité par la garde 3.
+- **Jamais de verrou silencieusement absent** : helper introuvable, répertoire
+  git commun introuvable, fichier impossible à écrire → **exit 1**, et la
+  commande n'est pas exécutée. Croire être protégé sans l'être est le pire des
+  trois états.
 - **Un refus s'attend, il ne se contourne pas.** Il n'y a pas de `FORCE=1` sur
   ces verrous, et c'est délibéré.
 
-**Ce qu'ils ne couvrent pas** : `db:start` (inoffensif), `db:migrate` et
-`db:types` (qui visent la **production**, et se lancent depuis `main` après
-merge), `db:dev-accounts` (écrit dans la base partagée mais reste non verrouillé
-à cause de sa redirection d'entrée — à lancer quand rien d'autre ne tourne), et
-les serveurs de dev (règle 5).
+**Ce qu'ils ne couvrent pas** : `db:migrate` et `db:types`, qui visent la
+**production** et se lancent depuis `main` après merge ; `db:status` (lecture
+seule) ; et les serveurs de dev (règle 5).
 
 ### Garde déjà existante, à ne pas confondre
 
@@ -144,6 +158,7 @@ ne pas `--force` sans avoir regardé ce qui allait être détruit.
 | --------------------------------------------------------- | --------------------------------------------------------- | ----------------------------------------------------- |
 | `⛔ … tourne déjà` mais rien ne tourne visiblement        | L'autre session est dans un autre worktree — c'est le but | Le message nomme le worktree ; attendre               |
 | Le détenteur est un processus zombie                      | Processus vivant mais bloqué                              | `kill <PID>` indiqué dans le message                  |
+| Verrou fantôme, détenteur introuvable                     | Cas normalement impossible (date de démarrage vérifiée)   | Supprimer le fichier de verrou que le message nomme   |
 | `git worktree list` montre un worktree supprimé à la main | Dossier effacé sans `git worktree remove`                 | `git worktree prune`                                  |
 | Tests d'intégration en échec sans test en échec           | `db:reset` concurrent, **ou** GoTrue dégradé              | Le verrou exclut la 1ʳᵉ cause → `db:stop && db:start` |
 | `?? .claude/worktrees/` dans `git status`                 | Un worktree a été créé **dans** le dépôt                  | Le déplacer en frère (voir ci-dessous)                |

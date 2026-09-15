@@ -37,7 +37,19 @@ set -uo pipefail
 # deux .svelte-kit/, donc deux verrous locaux qui ne se voient pas. La garde
 # « un seul typecheck à la fois » disparaîtrait au moment exact où elle devient
 # la plus nécessaire. Cf. scripts/lib/lock.sh et docs/claude/worktrees.md.
-source "$(dirname "${BASH_SOURCE[0]}")/lib/lock.sh"
+# Charger le verrou, et ÉCHOUER si on ne peut pas : un `source` raté laisse
+# `acquire_lock: command not found` puis exécute la commande SANS verrou, en
+# sortant 0. Silence total sur la disparition de la seule protection.
+lock_lib="$(dirname "${BASH_SOURCE[0]}")/lib/lock.sh"
+# shellcheck source=scripts/lib/lock.sh
+source "$lock_lib" || {
+	echo "⛔ $lock_lib introuvable : on n'exécute rien sans verrou." >&2
+	exit 1
+}
+type -t acquire_lock >/dev/null || {
+	echo "⛔ acquire_lock absent de $lock_lib : on n'exécute rien sans verrou." >&2
+	exit 1
+}
 acquire_lock typecheck "Un check:incremental"
 
 # ---------------------------------------------------------------------------
