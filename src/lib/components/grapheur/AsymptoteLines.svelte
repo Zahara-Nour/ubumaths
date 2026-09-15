@@ -21,6 +21,14 @@
 		FunctionAnalysis
 	} from '$lib/grapheur/types';
 	import { analyzeAllFunctions, toAnalysisInputs } from '$lib/grapheur/analysis';
+	import GraphLabel from './GraphLabel.svelte';
+	import {
+		placeAsymptoteLabels,
+		branchBounds as branchBoundsOf
+	} from '$lib/grapheur/asymptote-labels';
+
+	/** Nombre de segments pour dessiner une asymptote courbe. */
+	const ASYMPTOTE_CURVE_STEPS = 64;
 
 	// Props
 	let {
@@ -79,41 +87,45 @@
 	 */
 	function getHorizontalPath(asymptote: HorizontalAsymptote): string {
 		const svgY = transformer.mathToSvg(0, asymptote.y).y;
-		return `M 0 ${svgY} L ${width} ${svgY}`;
+		const [from, to] = branchBoundsOf(asymptote.direction, transformer, width);
+		// Sans cette garde, une branche entièrement hors cadre laisse un <path>
+		// vide dans le DOM — et son infobulle sur un trait inexistant.
+		if (to - from < 1) return '';
+		return `M ${from} ${svgY} L ${to} ${svgY}`;
 	}
 
 	/**
 	 * Get SVG path for an oblique asymptote line (y = mx + b)
 	 */
 	function getObliquePath(asymptote: ObliqueAsymptote): string {
-		const { xMin, xMax } = grapheurStore.viewport;
-
-		// Calculate y values at viewport edges
-		const y1 = asymptote.m * xMin + asymptote.b;
-		const y2 = asymptote.m * xMax + asymptote.b;
-
-		const start = transformer.mathToSvg(xMin, y1);
-		const end = transformer.mathToSvg(xMax, y2);
-
-		return `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
+		return polynomialPath([asymptote.b, asymptote.m], asymptote.direction);
 	}
 
 	/**
-	 * Generate tooltip text for asymptotes
+	 * Tracé d'une asymptote polynomiale, en coefficients croissants.
+	 *
+	 * Un polynôme de degré 1 se résume à deux points ; au-delà, on échantillonne
+	 * — c'est une courbe, pas une droite.
 	 */
-	function getVerticalLabel(asymptote: VerticalAsymptote): string {
-		return `x = ${asymptote.x.toPrecision(4)}`;
-	}
+	function polynomialPath(
+		coefficients: readonly number[],
+		direction: 'left' | 'right' | 'both'
+	): string {
+		const [fromSvg, toSvg] = branchBoundsOf(direction, transformer, width);
+		if (toSvg - fromSvg < 1) return '';
 
-	function getHorizontalLabel(asymptote: HorizontalAsymptote): string {
-		return `y = ${asymptote.y.toPrecision(4)}`;
-	}
+		const valueAt = (x: number): number =>
+			coefficients.reduce((sum, coefficient, k) => sum + coefficient * x ** k, 0);
 
-	function getObliqueLabel(asymptote: ObliqueAsymptote): string {
-		const mStr = asymptote.m.toPrecision(3);
-		const bSign = asymptote.b >= 0 ? '+' : '-';
-		const bStr = Math.abs(asymptote.b).toPrecision(3);
-		return `y = ${mStr}x ${bSign} ${bStr}`;
+		const steps = coefficients.length <= 2 ? 1 : ASYMPTOTE_CURVE_STEPS;
+		const commands: string[] = [];
+		for (let i = 0; i <= steps; i++) {
+			const svgX = fromSvg + ((toSvg - fromSvg) * i) / steps;
+			const mathX = transformer.svgToMath(svgX, 0).x;
+			const svgY = transformer.mathToSvg(0, valueAt(mathX)).y;
+			commands.push(`${i === 0 ? 'M' : 'L'} ${svgX} ${svgY}`);
+		}
+		return commands.join(' ');
 	}
 </script>
 
@@ -130,9 +142,7 @@
 				stroke-dasharray="5,5"
 				fill="none"
 				opacity="0.5"
-			>
-				<title>{getVerticalLabel(asymptote)}</title>
-			</path>
+			></path>
 		{/each}
 
 		<!-- Horizontal asymptotes -->
@@ -144,9 +154,19 @@
 				stroke-dasharray="8,4"
 				fill="none"
 				opacity="0.5"
-			>
-				<title>{getHorizontalLabel(asymptote)}</title>
-			</path>
+			></path>
+		{/each}
+
+		<!-- Asymptotes courbes (degré ≥ 2) -->
+		{#each analysis.polynomialAsymptotes as asymptote, idx (`p-${analysis.functionId}-${idx}`)}
+			<path
+				d={polynomialPath(asymptote.coefficients, asymptote.direction)}
+				stroke={color}
+				stroke-width="1.5"
+				stroke-dasharray="10,3,2,3"
+				fill="none"
+				opacity="0.5"
+			></path>
 		{/each}
 
 		<!-- Oblique asymptotes -->
@@ -158,9 +178,19 @@
 				stroke-dasharray="10,3,2,3"
 				fill="none"
 				opacity="0.5"
-			>
-				<title>{getObliqueLabel(asymptote)}</title>
-			</path>
+			></path>
 		{/each}
+	{/each}
+	<!-- Étiquettes : le <title> SVG ne pouvait pas s'afficher, la couche étant
+	     en pointer-events="none" comme toutes les décorations du grapheur.
+	     Le placement vit dans $lib/grapheur/asymptote-labels, où il est testé. -->
+	{#each placeAsymptoteLabels(analyses, transformer, { width, height }) as label, idx (`l-${idx}`)}
+		<GraphLabel
+			x={label.x}
+			y={label.y}
+			content={{ text: label.text, latex: label.latex }}
+			canvasWidth={width}
+			canvasHeight={height}
+		/>
 	{/each}
 </g>

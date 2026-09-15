@@ -309,6 +309,19 @@ export interface ObliqueAsymptote {
 	readonly direction: 'left' | 'right' | 'both';
 }
 
+/**
+ * Asymptote **courbe** : le polynôme de degré ≥ 2 dont la courbe se rapproche.
+ *
+ * Les coefficients vont du plus petit degré au plus grand — `[2, 3, 1]` décrit
+ * `y = x² + 3x + 2`. Les degrés 0 et 1 sont couverts par `HorizontalAsymptote`
+ * et `ObliqueAsymptote`.
+ */
+export interface PolynomialAsymptote {
+	readonly coefficients: readonly number[];
+	readonly functionId: string;
+	readonly direction: 'left' | 'right' | 'both';
+}
+
 export interface FunctionAnalysis {
 	readonly functionId: string;
 	readonly roots: readonly Root[];
@@ -316,6 +329,7 @@ export interface FunctionAnalysis {
 	readonly verticalAsymptotes: readonly VerticalAsymptote[];
 	readonly horizontalAsymptotes: readonly HorizontalAsymptote[];
 	readonly obliqueAsymptotes: readonly ObliqueAsymptote[];
+	readonly polynomialAsymptotes: readonly PolynomialAsymptote[];
 }
 
 // =============================================================================
