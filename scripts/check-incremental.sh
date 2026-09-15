@@ -36,21 +36,17 @@ set -uo pipefail
 # Le verrou vit dans le répertoire git COMMUN, pas ici : deux worktrees, ce sont
 # deux .svelte-kit/, donc deux verrous locaux qui ne se voient pas. La garde
 # « un seul typecheck à la fois » disparaîtrait au moment exact où elle devient
-# la plus nécessaire. Cf. scripts/lib/lock.sh et docs/claude/worktrees.md.
-# Charger le verrou, et ÉCHOUER si on ne peut pas : un `source` raté laisse
-# `acquire_lock: command not found` puis exécute la commande SANS verrou, en
-# sortant 0. Silence total sur la disparition de la seule protection.
-lock_lib="$(dirname "${BASH_SOURCE[0]}")/lib/lock.sh"
-# shellcheck source=scripts/lib/lock.sh
-source "$lock_lib" || {
-	echo "⛔ $lock_lib introuvable : on n'exécute rien sans verrou." >&2
-	exit 1
-}
-type -t acquire_lock >/dev/null || {
-	echo "⛔ acquire_lock absent de $lock_lib : on n'exécute rien sans verrou." >&2
-	exit 1
-}
-acquire_lock typecheck "Un check:incremental"
+# la plus nécessaire.
+#
+# On se RÉ-EXÉCUTE sous le verrou (tenu par le noyau, cf. scripts/lib/lock.py).
+# Le descripteur survit à exec, donc le verrou couvre tout le reste du script,
+# et le noyau le relâche à la mort du processus — Ctrl-C et OOM compris, sans
+# aucun trap. Si python3 manquait, l'exec échouerait et RIEN ne tournerait.
+if [ -z "${UBU_VERROU_TYPECHECK:-}" ]; then
+	export UBU_VERROU_TYPECHECK=1
+	exec python3 "$(dirname "${BASH_SOURCE[0]}")/lib/lock.py" \
+		typecheck "Un check:incremental" -- bash "${BASH_SOURCE[0]}" "$@"
+fi
 
 # ---------------------------------------------------------------------------
 # État de la garde 3 (rejeu du dernier verdict). Il reste LOCAL au worktree, et
@@ -144,6 +140,16 @@ fi
 # (and re-measure — don't cargo-cult the number back up).
 output=$(NODE_OPTIONS='--max-old-space-size=4096' npx svelte-check \
 	--tsconfig ./tsconfig.check.json --threshold error --incremental --output machine 2>&1)
+sc_status=$?
+
+# Un svelte-check tué par un signal (Ctrl-C, OOM) rend 128+n : sa sortie est
+# TRONQUÉE, et « aucune ligne ERROR » n'y veut alors rien dire. Écrire un
+# verdict là-dessus fabriquerait un faux vert, que la garde 3 rejouerait ensuite
+# comme vérité. On sort sans rien écrire — ni verdict, ni marqueur.
+if [ "$sc_status" -ge 128 ]; then
+	echo "⛔ svelte-check interrompu (code $sc_status) : aucun verdict écrit."
+	exit "$sc_status"
+fi
 
 # Filter extern/ (present locally, absent in CI — see header).
 errors=$(echo "$output" | grep " ERROR " | grep -v "extern/")

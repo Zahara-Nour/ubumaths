@@ -75,8 +75,8 @@ pnpm install --prefer-offline
 
 ## Les deux verrous
 
-Implémentation : `scripts/lib/lock.sh`, posés par `scripts/check-incremental.sh`
-et `scripts/with-db-lock.sh`.
+Implémentation : `scripts/lib/lock.py`, appelé par `scripts/check-incremental.sh`
+(qui se ré-exécute sous le verrou) et par `scripts/with-db-lock.sh`.
 
 | Verrou      | Pris par                                                                                            | Ce qu'il évite                                    |
 | ----------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
@@ -88,40 +88,59 @@ et `scripts/with-db-lock.sh`.
 partagent. Un verrou posé dans le worktree ne verrouille rien.
 
 ⚠️ `git rev-parse --git-common-dir` rend un chemin **relatif** (`.git`) depuis le
-dépôt principal et **absolu** depuis un worktree. D'où
-`--path-format=absolute` dans `lock.sh` : sans lui, le verrou atterrit à deux
-endroits différents selon l'appelant, paraît fonctionner, et ne protège rien.
+dépôt principal et **absolu** depuis un worktree. D'où `--path-format=absolute` :
+sans lui, le verrou atterrit à deux endroits différents selon l'appelant, paraît
+fonctionner, et ne protège rien.
+
+### Le verrou est tenu par le NOYAU, pas par un fichier
+
+C'est `flock(2)` sur un descripteur ouvert, pas la présence d'un fichier.
+Conséquence directe : **le noyau relâche le verrou à la mort du processus**,
+SIGKILL et OOM compris. Il n'existe donc jamais de verrou « périmé », donc
+jamais de reprise à faire, donc aucune course à protéger.
+
+⚠️ **Un fichier qui traîne dans `.locks/` n'est pas un verrou.** Le fichier n'est
+qu'un support ; son contenu (PID, worktree, heure) n'est qu'un message pour
+l'humain. Le supprimer ne débloque rien et ne casse rien.
+
+Deux implémentations en shell pur ont été écrites puis jetées avant celle-ci,
+parce que sans primitive noyau il faut détecter les verrous périmés et les
+reprendre — et cette reprise est intrinsèquement racée : on supprime par CHEMIN,
+sans pouvoir garantir que le fichier est encore celui qu'on vient de juger
+périmé. **Mesuré, verrou périmé + 6 concurrents : 2 détenteurs simultanés**, y
+compris avec `O_CREAT|O_EXCL`, puis avec publication par lien dur et verrou de
+vol. Avec `flock`, le même banc donne 1 détenteur sur 5 essais sur 5.
+
+Le descripteur survit à `exec()`, donc le verrou couvre toute la vie de la
+commande lancée. `check:incremental` se ré-exécute lui-même sous le verrou
+(`UBU_VERROU_TYPECHECK`), ce qui lui évite tout `trap`.
 
 **Comportement** :
 
-- **Acquisition atomique** : la pose se fait sous `noclobber`, donc avec
-  `O_CREAT|O_EXCL` — exactement un processus gagne. ⚠️ Un `[ -f ]` suivi d'une
-  écriture ne verrouille **rien** : mesuré, trois acquisitions simultanées
-  réussissaient toutes les trois, et la première à finir supprimait le fichier
-  pour tout le monde. Vérifié depuis : 5 acquisitions simultanées → 1 gagnant,
-  4 refus.
-- Refus en **exit 2**, avec le PID, l'ancienneté, **le worktree détenteur** et le
-  chemin du fichier de verrou — la seule information qui rend le refus
-  actionnable, l'autre session étant invisible.
-- Verrou **périmé** : repris automatiquement. La péremption se juge sur la **date
-  de démarrage** du processus, pas sur le seul PID. Un processus tué par l'OOM
-  (SIGKILL : aucun trap) laisse son fichier derrière lui ; si le système recycle
-  ce PID, `kill -0` réussit sur un processus innocent et le blocage devient
-  perpétuel — pour **tout le dépôt**, désormais, et non plus pour un worktree.
-- Relâché à la sortie. **Ctrl-C et SIGTERM relâchent puis SORTENT** (130 / 143).
-  Sans ce `exit`, bash reprend l'exécution après le handler et l'appelant irait
-  écrire un verdict calculé sur une commande interrompue — un faux vert, ensuite
-  rejoué comme vérité par la garde 3.
-- **Jamais de verrou silencieusement absent** : helper introuvable, répertoire
-  git commun introuvable, fichier impossible à écrire → **exit 1**, et la
-  commande n'est pas exécutée. Croire être protégé sans l'être est le pire des
-  trois états.
+- Refus en **exit 2**, avec le PID, l'heure de prise et **le worktree
+  détenteur** — la seule information qui rend le refus actionnable, l'autre
+  session étant invisible. (Dans une fenêtre de quelques microsecondes après la
+  prise, la fiche n'est pas encore écrite et le message reste générique ;
+  l'exclusion, elle, est déjà acquise.)
+- **Jamais de verrou silencieusement absent** : python3 manquant, répertoire git
+  commun introuvable, fichier impossible à ouvrir → la commande **n'est pas
+  exécutée**. Vérifié : sans python3 dans le `PATH`, exit 127 et aucun effet.
+- Le code de sortie de la commande est propagé tel quel (`exec`), stdin compris
+  — `db:dev-accounts` garde sa redirection `< …sql`.
 - **Un refus s'attend, il ne se contourne pas.** Il n'y a pas de `FORCE=1` sur
   ces verrous, et c'est délibéré.
 
 **Ce qu'ils ne couvrent pas** : `db:migrate` et `db:types`, qui visent la
 **production** et se lancent depuis `main` après merge ; `db:status` (lecture
 seule) ; et les serveurs de dev (règle 5).
+
+### Un run interrompu n'écrit aucun verdict
+
+`check:incremental` vérifie le code de sortie de `svelte-check` : au-delà de
+128, le processus a été tué par un signal (130 = Ctrl-C, 137 = OOM), sa sortie
+est tronquée, et « aucune ligne ERROR » n'y veut rien dire. Le script sort sans
+écrire ni verdict ni marqueur — sinon la garde 3 rejouerait ensuite un faux vert
+comme vérité.
 
 ### Garde déjà existante, à ne pas confondre
 
@@ -158,7 +177,6 @@ ne pas `--force` sans avoir regardé ce qui allait être détruit.
 | --------------------------------------------------------- | --------------------------------------------------------- | ----------------------------------------------------- |
 | `⛔ … tourne déjà` mais rien ne tourne visiblement        | L'autre session est dans un autre worktree — c'est le but | Le message nomme le worktree ; attendre               |
 | Le détenteur est un processus zombie                      | Processus vivant mais bloqué                              | `kill <PID>` indiqué dans le message                  |
-| Verrou fantôme, détenteur introuvable                     | Cas normalement impossible (date de démarrage vérifiée)   | Supprimer le fichier de verrou que le message nomme   |
 | `git worktree list` montre un worktree supprimé à la main | Dossier effacé sans `git worktree remove`                 | `git worktree prune`                                  |
 | Tests d'intégration en échec sans test en échec           | `db:reset` concurrent, **ou** GoTrue dégradé              | Le verrou exclut la 1ʳᵉ cause → `db:stop && db:start` |
 | `?? .claude/worktrees/` dans `git status`                 | Un worktree a été créé **dans** le dépôt                  | Le déplacer en frère (voir ci-dessous)                |

@@ -155,7 +155,8 @@ Un chantier = un worktree **frère** du dépôt :
 - **Un worktree = une branche = une session.** Annoncer `git worktree list` +
   `pwd` au premier message.
 - ⚠️ **Un worktree n'isole ni la RAM, ni Supabase local, ni les ports** — et deux
-  sessions ne se voient pas. Deux verrous partagés s'en chargent : `typecheck`
+  sessions ne se voient pas. Deux verrous partagés — tenus par le
+  noyau (`flock`), donc jamais périmés — s'en chargent : `typecheck`
   (`check:incremental`) et `supabase` (tous les `db:*`
   locaux et `test:integration`). Un refus sort en **exit 2** et nomme le worktree
   détenteur : **ça s'attend, ça ne se contourne pas.**

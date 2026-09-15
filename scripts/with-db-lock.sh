@@ -11,22 +11,9 @@
 # test en échec — signature indiscernable d'un GoTrue dégradé. On passe alors
 # l'heure suivante à débugger son propre code. Le verrou change une corruption
 # silencieuse en refus explicite, qui nomme le worktree fautif.
-set -uo pipefail
-
-# Charger le verrou, et ÉCHOUER si on ne peut pas : un `source` raté laisse
-# `acquire_lock: command not found` puis exécute la commande SANS verrou, en
-# sortant 0. Silence total sur la disparition de la seule protection.
-lock_lib="$(dirname "${BASH_SOURCE[0]}")/lib/lock.sh"
-# shellcheck source=scripts/lib/lock.sh
-source "$lock_lib" || {
-	echo "⛔ $lock_lib introuvable : on n'exécute rien sans verrou." >&2
-	exit 1
-}
-type -t acquire_lock >/dev/null || {
-	echo "⛔ acquire_lock absent de $lock_lib : on n'exécute rien sans verrou." >&2
-	exit 1
-}
-acquire_lock supabase "Une commande sur la base Supabase locale"
-
-"$@"
-exit $?
+#
+# `exec` plutôt qu'un simple appel : lock.py remplace ce processus par la
+# commande, en gardant ouvert le descripteur verrouillé. Et si python3 manquait,
+# l'exec échouerait — la commande ne tournerait PAS. Jamais de tour sans verrou.
+exec python3 "$(dirname "${BASH_SOURCE[0]}")/lib/lock.py" \
+	supabase "Une commande sur la base Supabase locale" -- "$@"
