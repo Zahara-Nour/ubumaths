@@ -70,10 +70,11 @@ chose.
 
 ---
 
-## Tas 3 — À DISCUTER (16)
+## Tas 3 — TRANCHÉ le 2026-09-15 (sauf (c) et (d))
 
-Aucun n'est un défaut évident. Chacun pose une **question de produit** à
-laquelle je ne peux pas répondre seul.
+Aucun n'était un défaut évident : chacun posait une **question de produit**.
+David a répondu le 2026-09-15 ; les décisions sont reportées ci-dessous, juste
+après la question qu'elles closent.
 
 ### a) Résoudre l'école ou le fuseau horaire de l'élève (3)
 
@@ -88,6 +89,10 @@ Pour un élève archivé partout, elles rendent son **ancienne** école.
 > fuseau horaire et le nom de son ancienne école, ou retomber sur un défaut ?
 > Conséquence visible : horaires décalés, et un e-mail de consentement au nom
 > de la mauvaise école.
+>
+> ✅ **Décidé : retomber sur le défaut.** Sans classe active, pas d'école. Les
+> trois sites filtrent `status`. Le courriel de consentement part donc sans nom
+> d'école plutôt qu'au nom de la précédente.
 
 ### b) Le tableau de saisie des notes (2)
 
@@ -102,6 +107,14 @@ Pour un élève archivé partout, elles rendent son **ancienne** école.
 > ⚠️ **Piège** : `left_at` est **NULL sur les 77 adhésions archivées** — le
 > chemin d'archivage ne renseigne que `status`. Toute règle fondée sur
 > `left_at` serait donc fail-open aujourd'hui.
+>
+> ✅ **Décidé : le retirer.** Les deux sites filtrent `status`, et c'est
+> volontairement **le même filtre des deux côtés** : `:79` alimente l'affichage,
+> `:232` est la liste blanche de l'action `save`. Les désynchroniser afficherait
+> des élèves dont la saisie serait refusée sans le dire.
+>
+> ⚠️ Conséquence assumée : un élève archivé **après** l'évaluation n'a plus de
+> note saisissable. Les notes déjà enregistrées, elles, restent.
 
 ### c) Le suivi des consentements (1)
 
@@ -110,6 +123,10 @@ Pour un élève archivé partout, elles rendent son **ancienne** école.
 > **Question** : faut-il continuer à réclamer le consentement d'un élève qui a
 > quitté la classe ? C'est peut-être une **obligation légale** de garder la
 > trace — auquel cas ce site passe en « légitime ».
+>
+> ⏸️ **Non tranché — statu quo.** Question juridique, pas technique : je n'ai
+> rien touché. Le suivi continue donc d'afficher les élèves partis, ce qui est
+> le comportement le plus prudent vis-à-vis d'une obligation de conservation.
 
 ### d) Les écrans d'administration du marché (9)
 
@@ -121,12 +138,21 @@ Pour un élève archivé partout, elles rendent son **ancienne** école.
 Tous comptent ou listent les élèves d'une ou plusieurs classes.
 
 > **Question, une seule pour les neuf** : ces statistiques décrivent-elles la
-> classe **d'aujourd'hui** ou **toute son histoire** ? Inclure les archivés
-> gonfle les effectifs ; les exclure fait disparaître l'activité passée des
-> élèves partis.
+> classe **d'aujourd'hui** ou **toute son histoire** ?
 >
-> ℹ️ `stats/+server.ts:112` n'a **aucun** filtre de classe : il lit toutes les
-> adhésions de la base.
+> 🔎 **Vérifié depuis** : dans les neuf cas, la liste ne sert **jamais à
+> compter des élèves**. Elle construit un `studentIds` qui borne ensuite les
+> requêtes d'ACTIVITÉ (`initiator_id.in.(…)`, `creator_id.in.(…)`). Aucun
+> effectif n'est affiché — l'argument « effectifs gonflés » était faux.
+>
+> 💬 **Ma recommandation : ne rien changer.** Filtrer ferait disparaître des
+> totaux les échanges passés des élèves partis : l'historique d'un mois
+> changerait rétroactivement, sans que rien ne le signale. Et ce sont des
+> écrans de statistiques réservés au professeur : aucun accès n'est en jeu.
+>
+> ℹ️ À part : `stats/+server.ts:112` n'a **aucun** filtre de classe — il lit
+> toutes les adhésions de la base. C'est un défaut de portée, indépendant du
+> statut, non traité.
 
 ### e) Le ciblage des notifications (1)
 
@@ -139,6 +165,9 @@ Ce n'est pas une liste d'affichage mais un **contrôle d'autorisation** :
 > **Question** : doit-il pouvoir encore écrire à un ancien élève ? Le risque
 > est faible — il n'y a qu'un professeur — mais c'est bien un élargissement de
 > droit fondé sur une adhésion périmée.
+>
+> ✅ **Décidé : garder.** Rien n'est modifié. Filtrer rendrait injoignable
+> l'élève **hors-classe**, qui existe dans le modèle mono-professeur.
 
 ---
 

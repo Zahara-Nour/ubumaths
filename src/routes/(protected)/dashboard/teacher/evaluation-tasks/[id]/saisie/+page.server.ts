@@ -75,6 +75,11 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 	const classId = task.class_id;
 
 	// 2. Élèves actifs de la classe
+	// Le commentaire disait « actifs » ; la requête ne le vérifiait pas. Depuis
+	// l'archivage (2026-09-13), la grille s'allongeait de tous les élèves partis.
+	// Tranché par David le 2026-09-15 : on ne les affiche plus.
+	// ⚠️ Le filtre de l'action `save` doit rester identique : sinon la grille
+	// montrerait des élèves dont la saisie serait refusée en silence.
 	const { data: members, error: membersError } = await locals.supabase
 		.from('class_members')
 		.select(
@@ -83,7 +88,8 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 				profiles:student_id (id, full_name, avatar_url)
 			`
 		)
-		.eq('class_id', classId);
+		.eq('class_id', classId)
+		.eq('status', 'active');
 
 	// Cette liste borne la portée du classement. Vidée par une panne, elle
 	// affiche un classement amputé sans le dire.
@@ -228,10 +234,14 @@ export const actions: Actions = {
 		}
 
 		// Récupérer les élèves de la classe
+		// ⚠️ Liste BLANCHE de la saisie : ce que cette requête ne rend pas ne peut
+		// pas être enregistré. Même filtre que l'affichage, sciemment — un élève
+		// archivé après l'évaluation n'aura plus de note saisissable.
 		const { data: members, error: membersError } = await locals.supabase
 			.from('class_members')
 			.select('student_id')
-			.eq('class_id', classId);
+			.eq('class_id', classId)
+			.eq('status', 'active');
 
 		// PGRST116 = la tâche n'existe pas, et le 404 qui suit est légitime.
 		if (membersError && membersError.code !== 'PGRST116') {
