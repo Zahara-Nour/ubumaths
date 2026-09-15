@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.14.3](https://github.com/Zahara-Nour/ubumaths/compare/v0.14.2...v0.14.3) (2026-09-15)
+
+### 📚 Documentation
+
+- **rls:** trier les 38 policies qui lisent une adhésion sans son statut ([19f0e1f](https://github.com/Zahara-Nour/ubumaths/commit/19f0e1f77d75b2013bea76b8778e382e2bd4ed68)), closes [#305](https://github.com/Zahara-Nour/ubumaths/issues/305)
+
+### 🐛 Bug Fixes
+
+- **classes:** appliquer les décisions d'archivage sur l'école et la saisie ([56111ab](https://github.com/Zahara-Nour/ubumaths/commit/56111abe8ca6f606f17a0a50c3bc47b4abd900e2))
+- **classes:** ne plus traiter une adhésion archivée comme une inscription ([275d24b](https://github.com/Zahara-Nour/ubumaths/commit/275d24bc4f20817795b0a5de4650c446634e5217))
+- **marche:** réparer la traduction des cartes, cassée par un cast en uuid ([9f77c61](https://github.com/Zahara-Nour/ubumaths/commit/9f77c614688513ba7d4ea034a764953fb4410df2))
+- **release:** rendre son niveau mineur à une fonctionnalité en 0.x ([c79f687](https://github.com/Zahara-Nour/ubumaths/commit/c79f687c5d66567a3d69e01d1c074c4168dd36a3))
+- **rls:** donner des dents à la garde de la migration ([bd8d157](https://github.com/Zahara-Nour/ubumaths/commit/bd8d157dad6e1e60ac49fef354344d4fa86e9684))
+- **rls:** fermer le support de classe aux élèves archivés ([7930102](https://github.com/Zahara-Nour/ubumaths/commit/79301021c87b1e78fa6db9c637c18e3305d12b76))
+
 ### [0.14.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.14.1...v0.14.2) (2026-09-15)
 
 ### 🐛 Bug Fixes
