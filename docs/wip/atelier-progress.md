@@ -132,7 +132,23 @@ inconnus » : le mot **inconnu** désigne en maths ce qu'on cherche dans une
 équation. L'employer pour un nom non défini serait un faux ami, dans un outil qui
 s'adresse à des élèves. Un test interdit désormais ce mot dans le message.
 
-Reste à faire : l'annulation du collage (`Ctrl+Z`), qui touche l'interface.
+✅ **Annulation du collage faite** (`src/lib/atelier/paste.ts`). `insertPasted()`
+réécrit le collage en LaTeX puis l'insère — et le geste s'annule.
+
+⚠️ **Piège mesuré dans Chromium** : `setValue()` **écrase la pile d'annulation**,
+`executeCommand(['insert', …])` la nourrit.
+
+```
+setValue puis undo  →  reste \sin(x)     ← l'annulation ne revient PAS
+insert   puis undo  →  revient à x^2     ✓
+```
+
+Un `Ctrl+Z` inopérant sans rien pour l'expliquer : exactement le genre de défaut
+qu'aucun test unitaire n'attrape. Deux tests le verrouillent — la logique en
+node avec un faux champ, l'annulation réelle dans un navigateur
+(`paste.svelte.test.ts`).
+
+Les trois filets du §6 bis sont donc en place.
 
 ✅ **[#329](https://github.com/Zahara-Nour/ubumaths/issues/329) corrigé** — le
 nommage automatique fabriquait une fausse « définition circulaire » : créer un
@@ -187,7 +203,8 @@ reproduit pas dans l'atelier.
 - [x] Les quatre états (D9) et l'offre de curseur
 - [x] La provenance des définitions (D10) et la normalisation au collage
 - [x] #329 — le nommage automatique évite les noms cités par la définition
-- [x] §2.5 N7 — message d'attente lisible au-delà de trois noms — 84 tests verts
+- [x] §2.5 N7 — message d'attente lisible au-delà de trois noms
+- [x] §6 bis N4 — collage annulable (`insertPasted`) — 89 tests verts
 - [ ] Tests et implémentation de la **persistance locale** (§5) et de
       **l'URL / mode éphémère** (§6)
 - [ ] ⚠️ **Le refactor inévitable** : les 13 fichiers qui font
