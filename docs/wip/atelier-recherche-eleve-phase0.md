@@ -49,6 +49,25 @@ points et les termes d'une suite (cadrage §11, point 5).
 | `EvalState` tient `bindings` et `functions` dans **deux registres séparés** (`cli/core/eval-state.ts:31`)                                  | Rien n'empêche aujourd'hui `f` d'être à la fois valeur et fonction → décision **D1** |
 | Le tableur a déjà un `dependency-graph` et le code d'erreur `#CIRC!`                                                                       | Les dépendances circulaires ont déjà une réponse à réutiliser (§2.3 L2)              |
 
+### Les quatre états d'un objet
+
+Un objet n'est pas « sain ou en erreur » : **quatre états**, et leur ordre de
+priorité compte (décision D9, tranchée le 2026-09-15).
+
+| État             | Sens                                                                    | Réparable par l'élève                |
+| ---------------- | ----------------------------------------------------------------------- | ------------------------------------ |
+| **`error`**      | Définition illisible, ou circulaire, ou qui dépend d'un objet en erreur | En corrigeant                        |
+| **`pending`**    | La définition cite un ou plusieurs noms que l'atelier ne connaît pas    | **Tout seul**, dès que le nom arrive |
+| **`incomplete`** | Définition vide — état normal pendant qu'on cherche                     | En la complétant                     |
+| **`ok`**         | Exploitable                                                             | —                                    |
+
+**Priorité : `error` > `pending` > `incomplete` > `ok`.** Une définition qu'on
+ne sait pas lire ne peut rien promettre : l'erreur prime sur l'attente.
+
+La distinction `error` / `pending` est le cœur du §2.5. Elle existe parce que
+« en attente de `f` » est une **aide**, alors que « erreur » est un reproche —
+et parce que l'attente se répare d'elle-même.
+
 ### Nommage
 
 Un nom est **une lettre latine**, éventuellement suivie d'un indice numérique
@@ -90,20 +109,54 @@ pour les valeurs (`PARAMETER_NAMES` existe), `L, M, N` pour les listes.
 
 ### 2.3 Modification
 
-| #      | Cas                                               | Attendu                                                                                                                        |
-| ------ | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| **N1** | Modifier `f`                                      | Tout ce qui en dépend se recalcule : courbe, tableau, dérivée affichée, objets qui la citent                                   |
-| **N2** | Bouger le curseur `a`                             | Les courbes qui utilisent `a` se redessinent. Le chemin « seul le curseur a bougé » est déjà optimisé côté grapheur            |
-| **L1** | Rendre `f` non analysable alors que `g` en dépend | La courbe de `f` disparaît, `f` porte son erreur, `g` signale qu'elle dépend d'un objet en erreur — **l'atelier ne casse pas** |
-| **L2** | `f(x) = g(x) + 1` et `g(x) = f(x) - 1`            | Circularité détectée et nommée en français ; aucun blocage, aucune boucle infinie                                              |
+| #      | Cas                                               | Attendu                                                                                                                                                                     |
+| ------ | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **N1** | Modifier `f`                                      | Tout ce qui en dépend se recalcule : courbe, tableau, dérivée affichée, objets qui la citent                                                                                |
+| **N2** | Bouger le curseur `a`                             | Les courbes qui utilisent `a` se redessinent. Le chemin « seul le curseur a bougé » est déjà optimisé côté grapheur                                                         |
+| **L1** | Rendre `f` non analysable alors que `g` en dépend | La courbe de `f` disparaît, `f` porte son erreur, `g` passe en **erreur** elle aussi (elle dépend d'un objet illisible, pas d'un objet absent) — **l'atelier ne casse pas** |
+| **L2** | `f(x) = g(x) + 1` et `g(x) = f(x) - 1`            | Circularité détectée et nommée en français ; aucun blocage, aucune boucle infinie                                                                                           |
 
 ### 2.4 Suppression
 
-| #      | Cas                                   | Attendu                                                                                                     |
-| ------ | ------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **N1** | Supprimer `f`                         | Disparaît du panneau ; sa courbe, son tableau et ses affichages disparaissent                               |
-| **L1** | Supprimer `f` alors que `g` en dépend | Prévenir (« `g` utilise `f` »), puis laisser faire : `g` passe en erreur, il ne disparaît pas               |
-| **L2** | Supprimer le dernier objet            | Atelier vide et prêt. ⚠️ **Pas** de `x^2` ajouté d'office — différence assumée avec `/grapheur` aujourd'hui |
+| #      | Cas                                   | Attendu                                                                                                                                                        |
+| ------ | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **N1** | Supprimer `f`                         | Disparaît du panneau ; sa courbe, son tableau et ses affichages disparaissent                                                                                  |
+| **L1** | Supprimer `f` alors que `g` en dépend | Prévenir (« `g` utilise `f` »), puis laisser faire : `g` passe **en attente de `f`**, il ne disparaît pas. `f` peut revenir — c'est une absence, pas une faute |
+| **L2** | Supprimer le dernier objet            | Atelier vide et prêt. ⚠️ **Pas** de `x^2` ajouté d'office — différence assumée avec `/grapheur` aujourd'hui                                                    |
+
+### 2.5 Les objets en attente
+
+Quand une définition cite un nom que l'atelier ne connaît pas, l'objet est
+**en attente**, et l'atelier **nomme ce qui manque**.
+
+Le défaut que ça répare est mesuré, et il est en production :
+`parseCustomSafe('zzz(x) + 1')` rend un AST valide sans erreur, et
+`parseFunction` du grapheur rend `success: true`. Une fonction inconnue est donc
+acceptée en silence aujourd'hui, la courbe ne se trace pas, et rien ne l'explique.
+
+| #      | Cas                                                     | Attendu                                                                                                                        |
+| ------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **N1** | `f(x) = zzz(x) + 1`, `zzz` inconnu                      | `f` est **en attente de `zzz`**, pas en erreur. Rien n'est tracé, et le panneau dit ce qui manque                              |
+| **N2** | L'élève définit ensuite `zzz`                           | `f` redevient exploitable **sans aucune action de sa part**                                                                    |
+| **N3** | `f(x) = a·x`, `a` inconnu et **lettre seule**           | En attente de `a`, **plus une offre** : « créer le curseur `a` »                                                               |
+| **N4** | L'élève accepte l'offre                                 | Une valeur `a` est créée avec son curseur [−10 ; 10] (décision D3) ; `f` devient exploitable                                   |
+| **N5** | Plusieurs noms manquent                                 | Tous sont nommés, pas seulement le premier                                                                                     |
+| **N6** | Deux lettres seules manquent                            | Une offre de curseur **par lettre** — jamais une offre groupée qui crée plusieurs objets d'un coup                             |
+| **L1** | `sin(x)`, `ln(x)`, `sqrt(x)`…                           | Jamais en attente : les 45 fonctions de `FUNCTION_COMMANDS` sont connues du moteur                                             |
+| **L2** | `x` dans une fonction, `n` dans une suite               | Jamais en attente : c'est la variable de l'objet lui-même                                                                      |
+| **L3** | `e`, `pi`, `i`                                          | Jamais en attente : ce sont des constantes (noms réservés)                                                                     |
+| **L4** | `zzz(x)` — identifiant **suivi d'une parenthèse**       | En attente, **sans** offre de curseur : c'est une fonction qui manque, pas une valeur                                          |
+| **L5** | L'élève ignore l'offre                                  | L'objet reste en attente. **Rien n'est créé d'office** — une offre ignorée ne coûte rien, un curseur parasite, si              |
+| **L6** | `f(x) = xz` (faute de frappe pour `x^2`)                | En attente de `z` + offre. L'élève voit immédiatement le nom parasite : c'est le même message qui sert la faute et l'intention |
+| **E1** | `zzz(x) ^^ 2` — illisible **et** nom inconnu            | **Erreur**, pas attente : on ne promet rien d'une définition qu'on ne sait pas lire (priorité du §1)                           |
+| **E2** | Circularité **et** nom inconnu                          | **Erreur** : même priorité                                                                                                     |
+| **E3** | L'offre est acceptée alors que le nom vient d'être pris | Refus normal du §2.2, avec son message                                                                                         |
+
+**Ce que l'attente n'est pas.** Un nom inconnu n'est jamais une erreur de
+saisie à corriger tout de suite : pendant qu'il cherche, l'élève écrit
+légitimement `g(x) = f(x) + 1` avant d'avoir défini `f`. L'attente confirme ce
+qu'il sait déjà dans ce cas-là, et lui montre sa faute dans les deux autres
+(frappe, fonction qui n'existe pas) — **un seul message pour trois situations**.
 
 ---
 
@@ -243,6 +296,22 @@ David a validé les huit recommandations. Elles ne sont plus à re-proposer.
 | **D6** | Annulation globale (undo/redo) dans l'atelier ?                      | **Hors v1.** `geometry-core` en a un, mais il est lié à son graphe d'objets                                                                    |
 | **D7** | `f'` est-il un objet à part entière, ou un affichage attaché à `f` ? | **Les deux gestes**, distincts : « afficher la dérivée » (attaché, comme aujourd'hui) et « garder `f'` » (objet)                               |
 | **D8** | Combien de valeurs au maximum dans une liste ?                       | ⚠️ La méthode est validée, **pas le nombre** — proposition ci-dessous : 200 valeurs par liste, 8 listes par atelier                            |
+
+### D9 — un nom inconnu met l'objet en attente, pas en erreur
+
+Tranchée le 2026-09-15, après mesure du comportement actuel (voir §2.5).
+Quatre états au lieu de deux, et pour une **lettre seule** l'attente porte une
+offre de curseur — sans jamais créer d'office.
+
+Écartées : le silence (c'est le défaut d'aujourd'hui, pas une décision) ;
+l'erreur immédiate (elle punit l'élève qui écrit dans l'ordre qui l'arrange) ;
+et le message reporté au moment de tracer (il arrive loin de l'endroit où la
+faute a été écrite, quand l'élève a déjà changé de vue).
+
+⚠️ **Conséquence sur le code déjà écrit** : la mémoire des noms ayant existé
+(`seen` dans `atelier.svelte.ts`) devient inutile. Un nom absent est un nom
+absent, qu'il ait existé ou non — le message et la réparation sont les mêmes.
+Le test §2.4 L1 attend désormais `pending`, plus `error`.
 
 ### D8 — le plafond, chiffré
 
