@@ -32,6 +32,38 @@ const ASYMPTOTE_FACTOR = 2;
  */
 const MIN_VIEWPORT_DIM = 1e-10;
 
+/**
+ * |Δy| au-delà duquel un intervalle est inspecté, en fraction de la hauteur.
+ * Volontairement bas : la sonde du milieu écarte ensuite, à une évaluation
+ * près, la quasi-totalité des intervalles d'une fonction continue.
+ */
+const SUSPICION_RATIO = 0.05;
+
+/**
+ * Un pôle est déclaré quand |y| dépasse ce facteur × max(|y₁|, |y₂|, hauteur).
+ * Le seuil est RELATIF aux deux extrémités : une exponentielle qui sort du
+ * cadre par le haut ne diverge pas, elle grandit — et ne doit pas être coupée.
+ */
+const DIVERGENCE_FACTOR = 4;
+
+/** Écart résiduel comptant encore comme un saut, en fraction de la hauteur. */
+const JUMP_RATIO = 0.05;
+
+/** Marge de tracé au-delà du cadre, en hauteurs de fenêtre. */
+const CLAMP_MARGIN = 1;
+
+/** Nombre maximal de dichotomies par branche approchant une singularité. */
+const MAX_MARCH_STEPS = 24;
+
+/** Nombre maximal d'intervalles raffinés par courbe (garde-fou de coût). */
+const MAX_REFINED_INTERVALS = 64;
+
+/** Nombre maximal de marches vers un bord de domaine, par courbe. */
+const MAX_DOMAIN_MARCHES = 64;
+
+/** Deux branches sont jointives sous cette fraction de l'intervalle initial. */
+const X_CONVERGENCE_RATIO = 1e-3;
+
 // =============================================================================
 // Asymptote Detection
 // =============================================================================
@@ -93,6 +125,327 @@ export function isAsymptote(y1: number | null, y2: number | null, viewportHeight
 }
 
 // =============================================================================
+// Pôles, bords de domaine et écrêtage
+// =============================================================================
+
+/**
+ * Résultat d'une marche par dichotomie vers une singularité.
+ */
+interface BranchMarch {
+	/** Points retenus, du plus proche de l'origine au plus proche du bord. */
+	readonly points: Point[];
+	/** La branche a-t-elle franchi le seuil de divergence ? */
+	readonly diverged: boolean;
+	/** Dernier point retenu (l'origine si rien n'a été accepté). */
+	readonly end: Point;
+}
+
+/** Seuil de |y| au-delà duquel une branche est considérée divergente. */
+function divergenceLimit(y1: number, y2: number, height: number): number {
+	return DIVERGENCE_FACTOR * Math.max(Math.abs(y1), Math.abs(y2), height);
+}
+
+/**
+ * Prolonger une branche vers une singularité par dichotomie.
+ *
+ * On avance depuis `from` vers `toX` tant que la valeur rencontrée appartient
+ * encore à la branche de départ. C'est ce qui permet à la fois de DÉCIDER
+ * (la branche diverge-t-elle ?) et de CORRIGER (les points ajoutés font
+ * atteindre le bord du cadre au tracé).
+ *
+ * @param opposite - ordonnée de l'autre extrémité, ou `null` s'il n'y a pas de
+ *   branche rivale (bord de domaine) : tout point défini est alors accepté.
+ */
+function marchToward(
+	evaluator: (x: number) => number | null,
+	from: Point,
+	toX: number,
+	opposite: number | null,
+	divergence: number
+): BranchMarch {
+	let near = from;
+	let far = toX;
+	const points: Point[] = [];
+	let diverged = false;
+
+	for (let i = 0; i < MAX_MARCH_STEPS; i++) {
+		const midX = (near.x + far) / 2;
+		// Épuisement de la précision flottante : inutile d'insister.
+		if (midX === near.x || midX === far) break;
+
+		const y = evaluator(midX);
+		if (y === null || !Number.isFinite(y)) {
+			far = midX;
+			continue;
+		}
+
+		// Le candidat appartient à notre branche s'il est DE NOTRE SIGNE et
+		// dépasse les deux extrémités (il est sur le chemin de la divergence —
+		// c'est le cas d'un pôle d'ordre pair, où les deux branches partent du
+		// même côté), ou bien s'il est plus proche de notre branche que de la
+		// branche d'en face. Sans le test de signe, la marche de gauche saute
+		// par-dessus le pôle de 1/(x(x+1)) et relie les deux branches.
+		const belongs =
+			opposite === null ||
+			(y * near.y > 0 && Math.abs(y) > Math.max(Math.abs(near.y), Math.abs(opposite))) ||
+			Math.abs(y - near.y) <= Math.abs(y - opposite);
+
+		if (!belongs) {
+			far = midX;
+			continue;
+		}
+
+		near = { x: midX, y };
+		points.push(near);
+		if (Math.abs(y) > divergence) {
+			diverged = true;
+			break;
+		}
+	}
+
+	return { points, diverged, end: near };
+}
+
+/** Points à insérer entre deux échantillons, et rupture éventuelle. */
+interface GapAnalysis {
+	readonly broken: boolean;
+	readonly left: readonly Point[];
+	readonly right: readonly Point[];
+}
+
+/**
+ * Analyser l'intervalle entre deux échantillons consécutifs définis.
+ *
+ * Renvoie `null` quand il n'y a rien à faire — cas de l'immense majorité des
+ * intervalles. Sinon, prolonge les deux branches vers la singularité et dit
+ * s'il faut rompre le tracé.
+ */
+function analyzeGap(
+	evaluator: (x: number) => number | null,
+	p1: Point,
+	p2: Point,
+	height: number
+): GapAnalysis | null {
+	const deltaY = Math.abs(p2.y - p1.y);
+	if (deltaY <= SUSPICION_RATIO * height) return null;
+
+	// Sonde au milieu : une valeur franchement intercalée signe une fonction
+	// continue (pentue, mais continue) — on s'arrête là, à une évaluation près.
+	const midY = evaluator((p1.x + p2.x) / 2);
+	const low = Math.min(p1.y, p2.y);
+	const high = Math.max(p1.y, p2.y);
+	const margin = 0.05 * deltaY;
+	if (midY !== null && Number.isFinite(midY) && midY > low + margin && midY < high - margin) {
+		return null;
+	}
+
+	const divergence = divergenceLimit(p1.y, p2.y, height);
+	const left = marchToward(evaluator, p1, p2.x, p2.y, divergence);
+	const right = marchToward(evaluator, p2, p1.x, p1.y, divergence);
+
+	// Les deux branches se sont-elles rejointes sur la même abscisse ?
+	const met = Math.abs(right.end.x - left.end.x) <= Math.abs(p2.x - p1.x) * X_CONVERGENCE_RATIO;
+	const residual = Math.abs(right.end.y - left.end.y);
+	const broken = left.diverged || right.diverged || (met && residual > JUMP_RATIO * height);
+
+	// Sans rupture, les points des deux marches ne servent à rien : ils ne
+	// prolongent aucune branche vers le bord du cadre et ne collent à aucun
+	// saut. Une oscillation sous-échantillonnée en semait une quarantaine par
+	// intervalle — dix fois plus de points que demandé, dans le chemin SVG.
+	if (!broken) return null;
+
+	return {
+		broken,
+		left: left.points,
+		// La marche de droite progresse vers la gauche : on rétablit l'ordre,
+		// et on écarte tout point qui chevaucherait la branche de gauche.
+		right: right.points.filter((p) => p.x > left.end.x).reverse()
+	};
+}
+
+/**
+ * Choisir les bords de domaine à prolonger, par longueur de branche.
+ *
+ * Renvoie les indices d'échantillon où une marche vers le bord du domaine est
+ * autorisée. Une transition est d'autant plus méritante que la branche définie
+ * qu'elle borde est longue : une branche de cent points mérite d'atteindre le
+ * bord du cadre, un point isolé au milieu d'une zone hachée non.
+ */
+function selectDomainMarches(ys: readonly (number | null)[]): Set<number> {
+	// Longueur du run défini auquel appartient chaque échantillon.
+	const runLength: number[] = Array.from({ length: ys.length }, () => 0);
+	let runStart = 0;
+	for (let i = 0; i <= ys.length; i++) {
+		if (i === ys.length || ys[i] === null) {
+			for (let k = runStart; k < i; k++) runLength[k] = i - runStart;
+			runStart = i + 1;
+		}
+	}
+
+	const transitions: { index: number; merit: number }[] = [];
+	for (let i = 1; i < ys.length; i++) {
+		const before = ys[i - 1];
+		const after = ys[i];
+		if (before !== null && after === null) transitions.push({ index: i, merit: runLength[i - 1] });
+		else if (before === null && after !== null) transitions.push({ index: i, merit: runLength[i] });
+	}
+
+	transitions.sort((a, b) => b.merit - a.merit);
+	return new Set(transitions.slice(0, MAX_DOMAIN_MARCHES).map((t) => t.index));
+}
+
+/**
+ * Écrêteur d'ordonnées pour un viewport donné.
+ *
+ * Un y de 10⁶ près d'un pôle déforme les tangentes de la spline de tous ses
+ * voisins : on le ramène à une hauteur de fenêtre au-delà du cadre, là où il
+ * reste invisible. Deux garde-fous :
+ *
+ * - les bornes n'enjambent JAMAIS zéro — sur une fenêtre pannée vers le haut
+ *   (y ∈ [30 ; 40]) la borne basse valait +20 et rendait −x² positif, ce que
+ *   `splitOnZeros` lit ensuite pour colorier les aires ;
+ * - une fenêtre sans hauteur (ou inversée) désactive l'écrêtage, au lieu de
+ *   fabriquer un intervalle vide qui écraserait toute la courbe.
+ */
+function makeClamp(viewport: Viewport): (y: number) => number {
+	const height = viewport.yMax - viewport.yMin;
+	if (!(height > MIN_VIEWPORT_DIM)) return (y) => y;
+
+	const high = Math.max(viewport.yMax, 0) + CLAMP_MARGIN * height;
+	const low = Math.min(viewport.yMin, 0) - CLAMP_MARGIN * height;
+	return (y) => Math.min(high, Math.max(low, y));
+}
+
+/**
+ * Construire la courbe à partir d'abscisses déjà choisies.
+ *
+ * Trois passes : évaluation, raffinement des intervalles suspects, assemblage.
+ *
+ * Le raffinement est **trié par suspicion décroissante**, et c'est essentiel :
+ * consommé de gauche à droite, le budget était épuisé par une zone oscillante
+ * en début de fenêtre, et les pôles situés après n'étaient plus ni coupés ni
+ * prolongés — le bug d'origine revenait intact sur la moitié droite du tracé.
+ */
+function buildCurve(
+	evaluator: (x: number) => number | null,
+	xValues: readonly number[],
+	viewport: Viewport
+): SampledCurve {
+	const height = Math.max(viewport.yMax - viewport.yMin, MIN_VIEWPORT_DIM);
+	const clamp = makeClamp(viewport);
+
+	// ─── Passe 1 : une seule évaluation par abscisse ────────────────────
+	const ys: (number | null)[] = xValues.map((x) => {
+		const y = evaluator(x);
+		return y !== null && Number.isFinite(y) ? y : null;
+	});
+
+	// ─── Passe 2 : raffiner les intervalles les plus suspects d'abord ───
+	const candidates: { index: number; suspicion: number }[] = [];
+	for (let i = 1; i < xValues.length; i++) {
+		const before = ys[i - 1];
+		const after = ys[i];
+		if (before === null || after === null) continue; // bord de domaine : passe 3
+
+		const deltaY = Math.abs(after - before);
+		if (deltaY > SUSPICION_RATIO * height) candidates.push({ index: i, suspicion: deltaY });
+	}
+	candidates.sort((a, b) => b.suspicion - a.suspicion);
+
+	const gaps = new Map<number, GapAnalysis>();
+	let attempts = 0;
+	for (const { index } of candidates) {
+		// On plafonne les TENTATIVES, pas les ruptures trouvées : c'est la
+		// tentative qui coûte (deux marches par dichotomie).
+		if (attempts >= MAX_REFINED_INTERVALS) break;
+		attempts++;
+		const gap = analyzeGap(
+			evaluator,
+			{ x: xValues[index - 1], y: ys[index - 1] as number },
+			{ x: xValues[index], y: ys[index] as number },
+			height
+		);
+		if (gap !== null) gaps.set(index, gap);
+	}
+
+	// Les bords de domaine sont choisis de la même façon : par mérite et non
+	// par position. Le mérite d'un bord, c'est la longueur de la branche qu'il
+	// termine — on prolonge en priorité les branches visibles, pas les
+	// échantillons isolés d'une zone hachée. Consommé de gauche à droite, le
+	// budget laissait un décrochage visible sur la moitié droite du tracé.
+	const allowedDomainMarches = selectDomainMarches(ys);
+
+	// ─── Passe 3 : assemblage dans l'ordre des abscisses ────────────────
+	const points: Point[] = [];
+	const discontinuityIndices: number[] = [];
+	let pendingBreak = false;
+
+	const push = (p: Point): void => {
+		if (pendingBreak && points.length > 0) discontinuityIndices.push(points.length);
+		pendingBreak = false;
+		points.push({ x: p.x, y: clamp(p.y) });
+	};
+
+	/** Dernier échantillon défini, ordonnée NON écrêtée. */
+	let previous: Point | null = null;
+	/** Dernière abscisse hors domaine rencontrée. */
+	let lastUndefinedX: number | null = null;
+
+	for (let i = 0; i < xValues.length; i++) {
+		const x = xValues[i];
+		const y = ys[i];
+
+		if (y === null) {
+			// Défini → hors domaine : pousser la branche jusqu'au bord du domaine.
+			if (previous !== null && allowedDomainMarches.has(i)) {
+				const march = marchToward(
+					evaluator,
+					previous,
+					x,
+					null,
+					divergenceLimit(previous.y, previous.y, height)
+				);
+				march.points.forEach(push);
+			}
+			previous = null;
+			lastUndefinedX = x;
+			pendingBreak = true;
+			continue;
+		}
+
+		const current: Point = { x, y };
+
+		if (lastUndefinedX !== null) {
+			// Hors domaine → défini : redescendre vers le bord du domaine, la
+			// nouvelle branche démarre là-bas et non à l'échantillon suivant.
+			if (allowedDomainMarches.has(i)) {
+				const march = marchToward(
+					evaluator,
+					current,
+					lastUndefinedX,
+					null,
+					divergenceLimit(y, y, height)
+				);
+				for (let k = march.points.length - 1; k >= 0; k--) push(march.points[k]);
+			}
+			lastUndefinedX = null;
+		} else {
+			const gap = gaps.get(i);
+			if (gap !== undefined) {
+				gap.left.forEach(push);
+				if (gap.broken) pendingBreak = true;
+				gap.right.forEach(push);
+			}
+		}
+
+		push(current);
+		previous = current;
+	}
+
+	return { points, discontinuityIndices };
+}
+
+// =============================================================================
 // Sampling
 // =============================================================================
 
@@ -135,7 +488,6 @@ export function sampleFunction(
 	// Validate inputs
 	const n = Math.max(2, Math.floor(numPoints));
 	const viewportWidth = viewport.xMax - viewport.xMin;
-	const viewportHeight = viewport.yMax - viewport.yMin;
 
 	// Handle degenerate viewport
 	if (viewportWidth <= MIN_VIEWPORT_DIM) {
@@ -143,29 +495,12 @@ export function sampleFunction(
 	}
 
 	const step = viewportWidth / (n - 1);
-	const points: Point[] = [];
-	const discontinuityIndices: number[] = [];
-
-	let prevY: number | null = null;
-
+	const xValues: number[] = [];
 	for (let i = 0; i < n; i++) {
-		const x = viewport.xMin + i * step;
-		const y = evaluator(x);
-
-		// Check for discontinuity (not for the first point)
-		if (i > 0 && isAsymptote(prevY, y, viewportHeight)) {
-			discontinuityIndices.push(points.length);
-		}
-
-		// Only add point if y is defined
-		if (y !== null) {
-			points.push({ x, y });
-		}
-
-		prevY = y;
+		xValues.push(viewport.xMin + i * step);
 	}
 
-	return { points, discontinuityIndices };
+	return buildCurve(evaluator, xValues, viewport);
 }
 
 /**
@@ -193,67 +528,10 @@ export function sampleFunctionAdaptive(
 	viewport: Viewport,
 	numPoints: number = DEFAULT_NUM_POINTS
 ): SampledCurve {
-	// First pass: regular sampling
-	const initial = sampleFunction(evaluator, viewport, numPoints);
-
-	// If no discontinuities, return as-is
-	if (initial.discontinuityIndices.length === 0) {
-		return initial;
-	}
-
-	// Second pass: refine near discontinuities
-	const viewportWidth = viewport.xMax - viewport.xMin;
-	const viewportHeight = viewport.yMax - viewport.yMin;
-	const step = viewportWidth / (numPoints - 1);
-
-	// Collect all x values with refinement
-	const xValues = new Set<number>();
-
-	// Add original sample points
-	for (let i = 0; i < numPoints; i++) {
-		xValues.add(viewport.xMin + i * step);
-	}
-
-	// Add refinement points near discontinuities
-	const refinementStep = step / 10;
-	for (const discIdx of initial.discontinuityIndices) {
-		// Find the x value at this discontinuity
-		if (discIdx > 0 && discIdx <= initial.points.length) {
-			const point = initial.points[discIdx - 1];
-			if (point) {
-				// Add points around the discontinuity
-				for (let j = -5; j <= 5; j++) {
-					const x = point.x + j * refinementStep;
-					if (x >= viewport.xMin && x <= viewport.xMax) {
-						xValues.add(x);
-					}
-				}
-			}
-		}
-	}
-
-	// Sort x values and sample
-	const sortedX = [...xValues].sort((a, b) => a - b);
-	const points: Point[] = [];
-	const discontinuityIndices: number[] = [];
-
-	let prevY: number | null = null;
-
-	for (const x of sortedX) {
-		const y = evaluator(x);
-
-		if (points.length > 0 && isAsymptote(prevY, y, viewportHeight)) {
-			discontinuityIndices.push(points.length);
-		}
-
-		if (y !== null) {
-			points.push({ x, y });
-		}
-
-		prevY = y;
-	}
-
-	return { points, discontinuityIndices };
+	// Le raffinement autour des singularités est désormais intégré à
+	// `sampleFunction` : il localise le pôle par dichotomie au lieu de semer
+	// dix points autour de l'échantillon voisin. Conservé pour les appelants.
+	return sampleFunction(evaluator, viewport, numPoints);
 }
 
 // =============================================================================
@@ -289,7 +567,6 @@ export function sampleWithDerivative(
 ): SampledCurve {
 	const n = Math.max(2, Math.floor(numPoints));
 	const viewportWidth = viewport.xMax - viewport.xMin;
-	const viewportHeight = viewport.yMax - viewport.yMin;
 
 	if (viewportWidth <= MIN_VIEWPORT_DIM) {
 		return { points: [], discontinuityIndices: [] };
@@ -357,68 +634,8 @@ export function sampleWithDerivative(
 		xValues[xValues.length - 1] = viewport.xMax;
 	}
 
-	// Pass 3: sample at computed x values with discontinuity detection
-	const points: Point[] = [];
-	const discontinuityIndices: number[] = [];
-	let prevY: number | null = null;
-
-	for (const x of xValues) {
-		const y = evaluator(x);
-
-		if (points.length > 0 && isAsymptote(prevY, y, viewportHeight)) {
-			discontinuityIndices.push(points.length);
-		}
-
-		if (y !== null) {
-			points.push({ x, y });
-		}
-
-		prevY = y;
-	}
-
-	// Pass 4: refine near discontinuities (same as sampleFunctionAdaptive)
-	if (discontinuityIndices.length === 0) {
-		return { points, discontinuityIndices };
-	}
-
-	const refinementStep = viewportWidth / n / 10;
-	const allX = new Set(xValues);
-
-	for (const discIdx of discontinuityIndices) {
-		if (discIdx > 0 && discIdx <= points.length) {
-			const point = points[discIdx - 1];
-			if (point) {
-				for (let j = -5; j <= 5; j++) {
-					const rx = point.x + j * refinementStep;
-					if (rx >= viewport.xMin && rx <= viewport.xMax) {
-						allX.add(rx);
-					}
-				}
-			}
-		}
-	}
-
-	// Re-sample with refined points
-	const sortedX = [...allX].sort((a, b) => a - b);
-	const refinedPoints: Point[] = [];
-	const refinedDiscontinuities: number[] = [];
-	prevY = null;
-
-	for (const x of sortedX) {
-		const y = evaluator(x);
-
-		if (refinedPoints.length > 0 && isAsymptote(prevY, y, viewportHeight)) {
-			refinedDiscontinuities.push(refinedPoints.length);
-		}
-
-		if (y !== null) {
-			refinedPoints.push({ x, y });
-		}
-
-		prevY = y;
-	}
-
-	return { points: refinedPoints, discontinuityIndices: refinedDiscontinuities };
+	// Pass 3: évaluation, détection des pôles et écrêtage, en un seul passage.
+	return buildCurve(evaluator, xValues, viewport);
 }
 
 // =============================================================================

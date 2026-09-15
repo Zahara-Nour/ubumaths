@@ -98,15 +98,20 @@ f = courbe("y = x^2 sur [a ; b]")
 
 	it('clamps sampling to the domain interior', () => {
 		// Even though viewport is [-10, 10], sampling should only happen on [-2, 2].
-		const { figure: f1 } = run('f = courbe("y = x^2")');
-		const id1 = f1.getAllElements().find((e) => e.type === 'function')!.id;
-		const svg1 = functionToSVG(id1, f1, transformer, dims);
+		// On mesure l'emprise réelle du tracé, pas la longueur de la chaîne :
+		// depuis l'écrêtage des ordonnées hors cadre, une courbe qui sort du
+		// haut a des coordonnées PLUS courtes, pas plus longues.
+		const { figure } = run('f = courbe("y = x^2 sur [-2 ; 2]")');
+		const id = figure.getAllElements().find((e) => e.type === 'function')!.id;
+		const svg = functionToSVG(id, figure, transformer, dims);
 
-		const { figure: f2 } = run('f = courbe("y = x^2 sur [-2 ; 2]")');
-		const id2 = f2.getAllElements().find((e) => e.type === 'function')!.id;
-		const svg2 = functionToSVG(id2, f2, transformer, dims);
-
-		expect(svg2!.path.length).toBeLessThan(svg1!.path.length);
+		const xs = [...svg!.path.matchAll(/[ML C,]?(-?\d+(?:\.\d+)?),-?\d/g)].map((m) => Number(m[1]));
+		expect(xs.length).toBeGreaterThan(0);
+		const left = transformer.mathToSvg(-2, 0).x;
+		const right = transformer.mathToSvg(2, 0).x;
+		// Une tolérance d'un pixel absorbe les points de contrôle de la spline.
+		expect(Math.min(...xs)).toBeGreaterThanOrEqual(left - 1);
+		expect(Math.max(...xs)).toBeLessThanOrEqual(right + 1);
 	});
 
 	it('marker positions are inside the SVG viewport', () => {
