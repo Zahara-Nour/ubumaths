@@ -12,7 +12,8 @@
 	 * - Toolbar and status bar
 	 */
 
-	import { dndzone, SHADOW_PLACEHOLDER_ITEM_ID, type DndEvent } from 'svelte-dnd-action';
+	import { dndzone, type DndEvent } from 'svelte-dnd-action';
+	import { cellulesApresGeste, estOmbre } from './notebook-dnd';
 	import { flip } from 'svelte/animate';
 	import { NotebookStore } from '$lib/stores/notebookStore.svelte';
 	import type { NotebookCell as NotebookCellType } from '$lib/types/notebook';
@@ -250,17 +251,20 @@
 	// keep the existing notebook.cells API as the read source so the rest
 	// of the component stays uncoupled.
 
-	function applyDndItems(items: NotebookCellType[]): void {
+	// ⚠️ `cellulesApresGeste` rend son identifiant à la cellule tirée : la
+	// bibliothèque la remplace par une ombre qui porte une SENTINELLE, et ce
+	// tableau-ci est celui que l'autosave sérialise. Voir `notebook-dnd.ts`.
+	function applyDndItems(items: NotebookCellType[], tireeId: string): void {
 		if (!notebook.notebook) return;
-		notebook.notebook.content.cells = items;
+		notebook.notebook.content.cells = cellulesApresGeste(items, tireeId);
 	}
 
 	function handleCellsConsider(event: CustomEvent<DndEvent<NotebookCellType>>): void {
-		applyDndItems(event.detail.items);
+		applyDndItems(event.detail.items, event.detail.info.id);
 	}
 
 	function handleCellsFinalize(event: CustomEvent<DndEvent<NotebookCellType>>): void {
-		applyDndItems(event.detail.items);
+		applyDndItems(event.detail.items, event.detail.info.id);
 		// Reorder doesn't change source/id hash for our autosave canary, so
 		// also explicitly schedule a save — the new ordering is content
 		// and the user expects "Enregistré" to follow.
@@ -268,11 +272,11 @@
 		notebook.scheduleAutoSave();
 	}
 
-	// True while a cell is mid-drag. svelte-dnd-action injects a sentinel
-	// item with this id; we use it to fade the placeholder so the user
-	// sees where the drop will land.
-	function isShadow(cellId: string): boolean {
-		return cellId === SHADOW_PLACEHOLDER_ITEM_ID;
+	// La cellule en cours de glisser, grisée pour montrer où la dépose
+	// atterrira. ⚠️ Reconnue à son MARQUEUR et non à son identifiant : celui-ci
+	// est désormais le vrai (cf. `cellulesApresGeste`).
+	function isShadow(cellule: NotebookCellType): boolean {
+		return estOmbre(cellule);
 	}
 
 	// Keyboard shortcuts
@@ -492,7 +496,7 @@
 							<div
 								id="notebook-cell-{cellId}"
 								animate:flip={{ duration: FLIP_MS }}
-								class={isShadow(cellId) ? 'opacity-40' : ''}
+								class={isShadow(notebook.cells[index]) ? 'opacity-40' : ''}
 							>
 								<NotebookCell
 									bind:cell={notebook.cells[index]}
