@@ -84,6 +84,63 @@ using (
 	)
 );
 
+-- ── La restriction doit couvrir le CONTENU, pas seulement la ligne parente ──
+--
+-- ⚠️ Trouvé par l'audit du 2026-09-15, après une première version de cette
+-- migration qui ne fermait que `shared_coursework`.
+--
+-- Masquer la ligne parente ne masque pas ce qu'elle désigne. Les policies élève
+-- de ces deux tables ne consultaient jamais la liste des destinataires : un
+-- élève ACTIF non nommé lisait donc, en interrogeant PostgREST directement, le
+-- titre, la consigne et l'échéance du devoir réservé à ses camarades — et les
+-- `file_url` de ses documents. Sans deviner aucun identifiant : le `select` non
+-- filtré était autorisé.
+--
+-- L'écran, lui, ne montrait rien : il part de `shared_coursework`. La frontière
+-- réelle était donc la RLS seule, et elle était ouverte.
+
+alter policy "Students can view coursework shared with their classes" on public.google_classroom_coursework
+using (
+	exists (
+		select 1
+		from public.shared_coursework sc
+		join public.class_members cm on cm.class_id = sc.class_id
+		where sc.coursework_id = google_classroom_coursework.id
+			and cm.student_id = auth.uid()
+			and cm.status = 'active'
+			and sc.visible = true
+			and (
+				not public.shared_coursework_is_restricted(sc.id)
+				or exists (
+					select 1 from public.shared_coursework_students scs
+					where scs.shared_coursework_id = sc.id
+						and scs.student_id = auth.uid()
+				)
+			)
+	)
+);
+
+alter policy "Students can view materials for shared coursework" on public.coursework_materials
+using (
+	exists (
+		select 1
+		from public.shared_coursework sc
+		join public.class_members cm on cm.class_id = sc.class_id
+		where sc.coursework_id = coursework_materials.coursework_id
+			and cm.student_id = auth.uid()
+			and cm.status = 'active'
+			and sc.visible = true
+			and (
+				not public.shared_coursework_is_restricted(sc.id)
+				or exists (
+					select 1 from public.shared_coursework_students scs
+					where scs.shared_coursework_id = sc.id
+						and scs.student_id = auth.uid()
+				)
+			)
+	)
+);
+
 -- ── Garde : la policy ne doit plus tester l'existence sous la RLS ──────────
 
 do $$
@@ -104,9 +161,34 @@ begin
 		raise exception 'La policy ne passe pas par shared_coursework_is_restricted : la restriction resterait invisible';
 	end if;
 
-	-- Les deux autres conditions doivent avoir survécu à la réécriture.
-	if position('visible' in v_qual) = 0 or position('status = ''active''' in v_qual) = 0 then
+	-- Les autres conditions doivent avoir survécu à la réécriture.
+	if position('visible = true' in v_qual) = 0 or position('status = ''active''' in v_qual) = 0 then
 		raise exception 'Une condition a été perdue en réécrivant la policy des fiches partagées';
 	end if;
+
+	-- Sans cette branche, le destinataire NOMMÉ perdrait sa propre fiche : échec
+	-- fermé, donc pas un trou, mais un service cassé sans rien faire rougir.
+	if position('scs.student_id = auth.uid()' in v_qual) = 0 then
+		raise exception 'La branche « destinataire nommé » a disparu : plus personne ne verrait une fiche restreinte';
+	end if;
+
+	-- Et le contenu doit être fermé comme la ligne parente.
+	for v_qual in
+		select qual from pg_policies
+		where schemaname = 'public'
+			and (tablename, policyname) in (
+				('google_classroom_coursework', 'Students can view coursework shared with their classes'),
+				('coursework_materials', 'Students can view materials for shared coursework')
+			)
+	loop
+		if position('shared_coursework_is_restricted' in v_qual) = 0 then
+			raise exception 'Le contenu d’une fiche restreinte reste lisible : la policy fille ne consulte pas les destinataires';
+		end if;
+	end loop;
 end
 $$;
+
+-- ⚠️ Ces gardes vérifient le VOCABULAIRE, pas la structure : un `not` oublié ou
+-- un parenthésage perdu les passerait au vert. La garde réelle est
+-- `tests/integration/fiche-partagee-restreinte.test.ts`, qui éprouve les trois
+-- cas — destinataire, camarade, et fiche sans destinataire.

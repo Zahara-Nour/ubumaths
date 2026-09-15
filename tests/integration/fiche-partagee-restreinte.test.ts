@@ -53,6 +53,8 @@ async function clientFor(email: string): Promise<SupabaseClient<Database>> {
 describe('une fiche partagée réservée à des élèves nommés', () => {
 	let partageId: string;
 	let partageOuvertId: string;
+	let devoirRestreintId: string;
+	let materielRestreintId: string;
 	let destinataire: SupabaseClient<Database>;
 	let camarade: SupabaseClient<Database>;
 
@@ -118,7 +120,24 @@ describe('une fiche partagée réservée à des élèves nommés', () => {
 		};
 
 		// LA fiche restreinte : réservée au seul destinataire.
-		partageId = await partage(await devoir('zz-restreint'));
+		devoirRestreintId = await devoir('zz-restreint');
+		partageId = await partage(devoirRestreintId);
+
+		// Le devoir porte un document : c'est LUI que l'élève veut ouvrir.
+		const { data: materiel, error: materielError } = await service
+			.from('coursework_materials')
+			.insert({
+				coursework_id: devoirRestreintId,
+				material_type: 'LINK',
+				file_name: 'corrige-zz.pdf',
+				file_url: 'https://example.invalid/corrige-zz.pdf',
+				title: 'Corrigé réservé ZZ'
+			})
+			.select('id')
+			.single();
+		expect(materielError, 'le décor n’a pas pu être posé').toBeNull();
+		materielRestreintId = materiel!.id;
+
 		const { error: restrictionError } = await service
 			.from('shared_coursework_students')
 			.insert({ shared_coursework_id: partageId, student_id: a.id });
@@ -148,6 +167,42 @@ describe('une fiche partagée réservée à des élèves nommés', () => {
 			await voit(camarade, partageId),
 			'la restriction ne restreint personne : elle ne voit que sa propre ligne'
 		).toBe(false);
+	});
+
+	/**
+	 * ⚠️ Fermer la ligne parente ne suffit pas : le CONTENU se lit directement.
+	 * Les policies de ces deux tables ne consultaient pas les destinataires, donc
+	 * un élève non nommé lisait le titre et la consigne du devoir, et l'URL de
+	 * ses documents — sans deviner aucun identifiant.
+	 */
+	it('ni le devoir qu’elle désigne, ni ses documents', async () => {
+		const { data: devoirs, error: devoirsError } = await camarade
+			.from('google_classroom_coursework')
+			.select('id')
+			.eq('id', devoirRestreintId);
+		expect(devoirsError).toBeNull();
+		expect(devoirs, 'le devoir réservé à d’autres reste lisible').toEqual([]);
+
+		const { data: materiels, error: materielsError } = await camarade
+			.from('coursework_materials')
+			.select('id')
+			.eq('id', materielRestreintId);
+		expect(materielsError).toBeNull();
+		expect(materiels, 'le document réservé à d’autres reste lisible').toEqual([]);
+	});
+
+	it('alors que le destinataire, lui, ouvre bien le devoir et son document', async () => {
+		const { data: devoirs } = await destinataire
+			.from('google_classroom_coursework')
+			.select('id')
+			.eq('id', devoirRestreintId);
+		expect(devoirs, 'le destinataire a perdu SA fiche').toHaveLength(1);
+
+		const { data: materiels } = await destinataire
+			.from('coursework_materials')
+			.select('id')
+			.eq('id', materielRestreintId);
+		expect(materiels).toHaveLength(1);
 	});
 
 	/**
