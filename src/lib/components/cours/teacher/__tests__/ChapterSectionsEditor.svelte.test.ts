@@ -215,7 +215,7 @@ function monter(documents: ChapterDocument[], refuse = false) {
 		})
 	);
 
-	const { container } = render(ChapterSectionsEditor, {
+	const { container, rerender } = render(ChapterSectionsEditor, {
 		chapterId: CHAPITRE,
 		sections: [section(COURS, 'Le cours', 1), section(METHODES, 'Méthodes', 2)],
 		documents,
@@ -226,7 +226,7 @@ function monter(documents: ChapterDocument[], refuse = false) {
 		onEditChecklistItem: () => {}
 	});
 
-	return { appels, zones: zonesDeDepose(container as HTMLElement) };
+	return { appels, rerender, zones: zonesDeDepose(container as HTMLElement) };
 }
 
 describe('ChapterSectionsEditor — ranger au glisser-déposer', () => {
@@ -367,5 +367,66 @@ describe('ChapterSectionsEditor — réordonner les sections', () => {
 				{ id: COURS, displayOrder: 1 }
 			]
 		});
+	});
+});
+
+describe('ChapterSectionsEditor — un rafraîchissement pendant le geste', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+	});
+
+	/**
+	 * Le plan se rafraîchit depuis le serveur pendant qu'on tire une ressource :
+	 * publier un contenu appelle `invalidateAll()`, et les props reviennent. Les
+	 * listes sont alors reconstruites — elles portent la ressource RÉELLE, plus
+	 * son ombre. Si le rangement échoue ensuite, la restauration ne doit pas la
+	 * remettre une seconde fois : deux lignes de même clé, et le rendu lève
+	 * `each_key_duplicate`.
+	 */
+	it('ne duplique pas la ressource quand le rangement est refusé', async () => {
+		const { zones, rerender } = monter([document(null)], true);
+
+		const ombre: Element = {
+			...RESSOURCE,
+			[SHADOW_ITEM_MARKER_PROPERTY_NAME]: true,
+			id: SHADOW_PLACEHOLDER_ITEM_ID
+		};
+		poser(zones.nonClassees, 'consider', [ombre], {
+			trigger: TRIGGERS.DRAG_STARTED,
+			id: RESSOURCE.id,
+			source: 'pointer'
+		});
+		await rendu();
+		ombre.id = String(RESSOURCE.id);
+
+		poser(zones.nonClassees, 'consider', [], {
+			trigger: TRIGGERS.DRAGGED_ENTERED_ANOTHER,
+			id: RESSOURCE.id,
+			source: 'pointer'
+		});
+		poser(zones.cours, 'consider', [ombre], {
+			trigger: TRIGGERS.DRAGGED_ENTERED,
+			id: RESSOURCE.id,
+			source: 'pointer'
+		});
+		await rendu();
+
+		// Les props reviennent : le document est publié entre-temps.
+		await rerender({ documents: [{ ...document(null), publishedAt: QUAND }] });
+		await rendu();
+
+		poser(zones.cours, 'finalize', [RESSOURCE], {
+			trigger: TRIGGERS.DROPPED_INTO_ZONE,
+			id: RESSOURCE.id,
+			source: 'pointer'
+		});
+		poser(zones.nonClassees, 'finalize', [], {
+			trigger: TRIGGERS.DROPPED_INTO_ANOTHER,
+			id: RESSOURCE.id,
+			source: 'pointer'
+		});
+		await rendu();
+
+		expect(affiche(zones)).toEqual({ cours: 0, methodes: 0, nonClassees: 1 });
 	});
 });

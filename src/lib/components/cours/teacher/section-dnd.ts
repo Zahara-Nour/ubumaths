@@ -1,11 +1,14 @@
 /**
  * Logique de dépose des ressources d'un chapitre — sans le geste
  *
- * Extraite du composant pour être testable : un test de glisser-déposer ne
- * peut que FABRIQUER les événements que la bibliothèque émet, et prouverait
- * alors surtout que la simulation est fidèle. Ce qui mérite un test, c'est ce
- * qui suit la dépose — d'où vient la ressource, la dépose est-elle sans effet,
- * quelles zones renuméroter.
+ * Extraite du composant pour décider en un seul endroit : d'où vient la
+ * ressource, la dépose est-elle sans effet, quelle zone renuméroter.
+ *
+ * ⚠️ Ces fonctions pures ne suffisent PAS à couvrir le glisser-déposer, et
+ * l'avoir cru a coûté un bug en production : leurs cas partaient d'un état
+ * d'AVANT le geste, que le composant n'a jamais entre les mains. C'est
+ * `ChapterSectionsEditor.svelte.test.ts` qui rejoue la vraie séquence de la
+ * bibliothèque — et c'est le seul qui ait vu que rien ne s'enregistrait.
  *
  * @module components/cours/teacher/section-dnd
  */
@@ -99,9 +102,10 @@ export function resolveDrop(
 /**
  * Remet un élément au rang d'où il est parti, quand le rangement est refusé.
  *
- * ⚠️ L'instantané pris à la dépose ne le porte PLUS : pendant le geste, seule
- * son ombre y figurait, et on ne restaure jamais une ombre — elle resterait en
- * ligne fantôme, grisée, jusqu'au rechargement.
+ * ⚠️ L'instantané pris à la dépose ne doit PAS le porter — l'appelant l'en
+ * retire, ombre ou non : deux lignes de même clé feraient lever
+ * `each_key_duplicate` au rendu. Et on ne restaure jamais une ombre : elle
+ * resterait en ligne fantôme, grisée, jusqu'au rechargement.
  */
 export function remettreAuRang<T>(liste: T[], index: number, element: T): T[] {
 	const rang = index >= 0 && index <= liste.length ? index : liste.length;

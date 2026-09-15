@@ -436,15 +436,17 @@
 		const depart = origine;
 
 		// Instantané de TOUTES les zones avant mutation — un déplacement entre
-		// sections en touche deux — et SANS les ombres : restaurer une ombre
-		// laisserait une ligne fantôme, grisée et intraînable, jusqu'au
-		// rechargement.
+		// sections en touche deux. La ressource tirée en est RETIRÉE, ombre ou
+		// non : la restauration la remet elle-même à son rang de départ, et
+		// l'instantané qui la porterait encore en ferait un doublon. Deux lignes
+		// de même clé, et le `{#each}` des sections lève `each_key_duplicate`.
+		const horsTiree = (r: { id: string }) => !estOmbre(r) && r.id !== event.detail.info.id;
 		const instantane = {
 			sections: sectionsLocales.map((s) => ({
 				id: s.id,
-				ressources: s.ressources.filter((r) => !estOmbre(r))
+				ressources: s.ressources.filter(horsTiree)
 			})),
-			nonClassees: nonClassees.filter((r) => !estOmbre(r))
+			nonClassees: nonClassees.filter(horsTiree)
 		};
 
 		const arrivee = dedupeById(event.detail.items);
@@ -480,18 +482,23 @@
 		busy = false;
 
 		if (!ok) {
-			// Restauration : les deux zones concernées reviennent à l'instantané,
-			// puis la ressource retourne d'où elle venait — l'instantané ne la
-			// porte plus, puisque seule son ombre y figurait.
+			const tiree = arrivee.find((r) => r.id === deplaceId);
+
+			// Prise manquée : on ne sait pas d'où la ressource venait, donc on ne
+			// touche à rien. La remettre « quelque part » la ferait sauter d'une
+			// section à l'autre ; l'effacer la ferait passer pour supprimée. Le
+			// message d'erreur a déjà dit que le rangement n'a pas pris.
+			if (!tiree || !depart) return;
+
+			// Restauration : toutes les zones reviennent à l'instantané, puis la
+			// ressource retourne d'où elle venait — l'instantané ne la porte plus.
 			sectionsLocales = sectionsLocales.map((s) => {
 				const snap = instantane.sections.find((i) => i.id === s.id);
 				return snap ? { ...s, ressources: [...snap.ressources] } : s;
 			});
 			nonClassees = [...instantane.nonClassees];
 			origine = depart;
-
-			const tiree = arrivee.find((r) => r.id === deplaceId);
-			if (tiree && depart) reposer(depart, tiree);
+			reposer(depart, tiree);
 		}
 	}
 
@@ -526,8 +533,10 @@
 
 	async function sectionsFinalize(event: CustomEvent<DndEvent<SectionLocale>>) {
 		const depart = origineSection;
-		// Sans les ombres : on ne restaure jamais une ligne fantôme.
-		const instantane = sectionsLocales.filter((s) => !estOmbre(s));
+		// La section tirée est retirée de l'instantané, ombre ou non : la
+		// restauration la remet à son rang, et un doublon de clé ferait lever
+		// `each_key_duplicate` au rendu.
+		const instantane = sectionsLocales.filter((s) => !estOmbre(s) && s.id !== event.detail.info.id);
 		const apres = dedupeById(event.detail.items);
 		sectionsLocales = apres;
 
@@ -551,11 +560,13 @@
 		busy = false;
 
 		if (!ok) {
-			// La section déplacée ne figure plus dans l'instantané : il ne portait
-			// que son ombre. On la remet à son rang de départ.
+			// La section déplacée ne figure plus dans l'instantané : on la remet à
+			// son rang de départ. Origine inconnue : on ne touche à rien, plutôt
+			// que de la faire sauter ailleurs ou de la faire disparaître.
 			const remise = apres.find((s) => s.id === deplaceId);
-			sectionsLocales =
-				remise && depart ? remettreAuRang(instantane, depart.index, remise) : instantane;
+			if (!remise || !depart) return;
+
+			sectionsLocales = remettreAuRang(instantane, depart.index, remise);
 			origineSection = depart;
 		}
 	}
