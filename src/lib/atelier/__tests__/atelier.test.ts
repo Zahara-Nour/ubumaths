@@ -39,12 +39,33 @@ describe('création', () => {
 	});
 
 	// D4 — une grandeur n'est pas pilotable par un curseur
-	it('ne donne pas de curseur à une valeur portant une unité', () => {
-		const r = a.create({ kind: 'value', definition: '12 km' });
+	it('lit une unité déclarée et ne lui donne pas de curseur', () => {
+		const r = a.create({ kind: 'value', definition: '12[km]' });
 		expect(r.ok).toBe(true);
 		if (!r.ok || !isValue(r.object)) return;
 		expect(r.object.unit).toBe('km');
 		expect(r.object.slider).toBeUndefined();
+		// l'assertion qui manquait : l'unité ne doit pas partir en attente
+		expect(r.object.status).toBe('ok');
+		expect(r.object.missing).toBeUndefined();
+	});
+
+	it('lit une unité composée', () => {
+		const r = a.create({ kind: 'value', definition: '3[m/s]' });
+		expect(r.ok && isValue(r.object) && r.object.unit).toBe('m/s');
+	});
+
+	// ⚠️ L'unité se déclare, elle ne se devine pas : sans crochets, c'est un
+	// produit. Lire n'importe quel suffixe comme une unité faisait de « 2pi »
+	// une valeur « d'unité pi », et de « 3x » une valeur « d'unité x ».
+	it('ne prend pas un suffixe quelconque pour une unité', () => {
+		for (const def of ['12 km', '2pi', '3x']) {
+			const b = new Atelier();
+			const r = b.create({ kind: 'value', name: 'r', definition: def });
+			expect(r.ok).toBe(true);
+			if (!r.ok || !isValue(r.object)) return;
+			expect(r.object.unit).toBeUndefined();
+		}
 	});
 
 	// N3 — création depuis le bouton « + Fonction » de la vue Graphe
@@ -508,5 +529,62 @@ describe('lisibilité du message d’attente (§2.5 N7)', () => {
 		expect(r.ok).toBe(true);
 		if (!r.ok) return;
 		expect(r.object.message?.toLowerCase()).not.toContain('inconnu');
+	});
+});
+
+// =============================================================================
+// Correctifs de revue — PR #330
+// =============================================================================
+
+describe('renommage d’une suite qui se cite elle-même', () => {
+	// La récurrence u_{n+1} = 2·u_n cite `u` : renommer doit réécrire AUSSI sa
+	// propre définition, sinon la suite part en attente de son ancien nom.
+	it('réécrit sa propre définition', () => {
+		a.create({ kind: 'sequence', name: 'u', definition: '2u + 1' });
+		const r = a.rename('u', 'v');
+
+		expect(r.ok).toBe(true);
+		expect(a.get('v')?.definition).toBe('2v + 1');
+		expect(a.get('v')?.status).toBe('ok');
+	});
+
+	it('ne se compte pas parmi les objets mis à jour', () => {
+		a.create({ kind: 'sequence', name: 'u', definition: '2u + 1' });
+		const r = a.rename('u', 'v');
+		expect(r.ok && r.updated).toEqual([]);
+	});
+
+	it('compte les autres, sans s’oublier lui-même', () => {
+		a.create({ kind: 'sequence', name: 'u', definition: '2u + 1' });
+		a.create({ kind: 'function', name: 'f', definition: 'u + 1' });
+		const r = a.rename('u', 'v');
+		expect(r.ok && r.updated).toEqual(['f']);
+		expect(a.get('v')?.definition).toBe('2v + 1');
+		expect(a.get('f')?.definition).toBe('v + 1');
+	});
+});
+
+describe('plafonds du v1 (décision D8)', () => {
+	it('refuse une liste au-delà de 200 valeurs', () => {
+		const long = Array.from({ length: 201 }, (_, i) => i).join(';');
+		const r = a.create({ kind: 'list', definition: long });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.status).toBe('error');
+		expect(r.object.message).toContain('200');
+	});
+
+	it('accepte exactement 200 valeurs', () => {
+		const ok = Array.from({ length: 200 }, (_, i) => i).join(';');
+		const r = a.create({ kind: 'list', definition: ok });
+		expect(r.ok && r.object.status).toBe('ok');
+	});
+
+	it('refuse une neuvième liste', () => {
+		for (let i = 0; i < 8; i++) a.create({ kind: 'list', definition: '1;2' });
+		const ninth = a.create({ kind: 'list', definition: '1;2' });
+		expect(ninth.ok).toBe(false);
+		if (ninth.ok) return;
+		expect(ninth.message).toContain('8');
 	});
 });

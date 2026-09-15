@@ -13,7 +13,9 @@ import { parseLatexSafe } from '$lib/mathAST/parser';
 import { detectInputFormat } from '$lib/mathAST/cli/core/input-detector';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { getVariables } from '$lib/mathAST/eval/substitute';
+import { format as formatUnit } from '$lib/mathAST/units';
 import type { MathNode } from '$lib/mathAST/types';
+import { MAX_LIST_VALUES } from './types';
 import type { MissingReference, ObjectKind } from './types';
 import { hasObjectNameShape } from './names';
 
@@ -85,8 +87,8 @@ export interface ParsedDefinition {
 	readonly skipped?: number;
 }
 
-/** Une valeur : un nombre, éventuellement suivi d'une unité. */
-const VALUE_SHAPE = /^\s*(-?\d+(?:[.,]\d+)?)\s*([A-Za-zµ°%]+(?:\/[A-Za-zµ°%]+)?)?\s*$/;
+/** Une valeur purement numérique, sans unité ni expression. */
+const PLAIN_NUMBER = /^\s*-?\d+(?:[.,]\d+)?\s*$/;
 
 /** Les identifiants du TEXTE — pour la réécriture au renommage, pas pour lire les dépendances. */
 const IDENTIFIERS = /[A-Za-z]+(?:_\d+)?/g;
@@ -127,22 +129,32 @@ export function parseDefinition(
 			if (n === null) skipped++;
 			else values.push(n);
 		}
+		// Plafond D8 : la liste garde ses valeurs et porte son erreur — on ne jette
+		// pas la saisie de l'élève, on lui dit ce qui bloque. Le contrôle vit ici
+		// et non à la construction de l'objet : `recomputeAll` repart toujours de
+		// `parseDefinition`, et écraserait un statut posé ailleurs.
+		if (values.length > MAX_LIST_VALUES) {
+			return {
+				values,
+				skipped,
+				error: `Une liste ne peut pas dépasser ${MAX_LIST_VALUES} valeurs (celle-ci en a ${values.length}).`
+			};
+		}
 		return { values, skipped };
 	}
 
-	if (kind === 'value') {
-		const m = VALUE_SHAPE.exec(definition);
-		if (m) {
-			// Décision D4 : la grandeur est acceptée, mais elle ne prendra pas de
-			// curseur — c'est au modèle d'en décider, pas ici.
-			return m[2] ? { unit: m[2] } : {};
-		}
-		// Une valeur peut aussi être une expression (`2+3`) : on la fait analyser.
-	}
+	if (kind === 'value' && PLAIN_NUMBER.test(definition)) return {};
 
 	const result = parseByProvenance(definition, provenance);
 	if (!result.ast) {
 		return { error: `« ${definition.trim()} » n'est pas une expression valide.` };
+	}
+
+	if (kind === 'value') {
+		// Décision D4 : la grandeur est acceptée, mais elle ne prendra pas de
+		// curseur — c'est au modèle d'en décider, pas ici.
+		const symbol = unitSymbolOf(result.ast);
+		if (symbol) return { unit: symbol };
 	}
 	return {};
 }
@@ -184,6 +196,46 @@ export function referencesOf(
 	}
 
 	return [...found.values()];
+}
+
+/**
+ * Le symbole d'unité porté par une définition, s'il y en a un.
+ *
+ * ⚠️ L'unité se **déclare**, elle ne se devine pas : `12[km]` en syntaxe custom,
+ * `\unit{km}` en LaTeX — ce que produit la palette d'unités du champ de saisie.
+ * Le parseur en fait un nœud `unit` qui, lui, ne libère aucune variable : `12 km`
+ * écrit sans crochets reste donc le produit `12·k·m`, ce qu'il est
+ * mathématiquement.
+ *
+ * Une lecture par expression régulière prenait auparavant n'importe quel suffixe
+ * pour une unité — `2pi` devenait « 2 d'unité pi », `3x` « 3 d'unité x ».
+ */
+function unitSymbolOf(node: MathNode): string | null {
+	const found = findUnitNode(node);
+	if (!found) return null;
+	try {
+		return formatUnit(found, 'original');
+	} catch {
+		return null;
+	}
+}
+
+function findUnitNode(node: unknown): Parameters<typeof formatUnit>[0] | null {
+	if (!node || typeof node !== 'object') return null;
+	const o = node as Record<string, unknown>;
+	if (o.type === 'unit' && o.unit) return o.unit as Parameters<typeof formatUnit>[0];
+	for (const value of Object.values(o)) {
+		if (Array.isArray(value)) {
+			for (const item of value) {
+				const found = findUnitNode(item);
+				if (found) return found;
+			}
+		} else {
+			const found = findUnitNode(value);
+			if (found) return found;
+		}
+	}
+	return null;
 }
 
 /** Les noms des fonctions appelées dans un AST, à tout niveau. */

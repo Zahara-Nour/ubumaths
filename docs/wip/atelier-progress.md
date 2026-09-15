@@ -160,6 +160,63 @@ message dit « en attente de f », le même qu'avec un nom choisi par l'élève.
 Ce qui ne change pas : un élève qui écrit lui-même `f(x) = f(x)+1` lit toujours
 « définition circulaire ». Quatre tests figent les deux comportements.
 
+### Revue de la PR #330 — quatre correctifs
+
+Une revue de code a trouvé **cinq défauts** qu'aucun des 88 tests ne couvrait, et
+que la CI verte ne disait pas. Quatre sont corrigés.
+
+1. **`d = 12 km` partait « en attente de `k`, `m` »**, avec deux offres de
+   curseur pour les lettres du mot « km ». C'était l'exemple de la décision D4.
+   Le test de la valeur à unité vérifiait `unit` et `slider`, **jamais**
+   `status` : l'assertion confirmait l'intention, pas le résultat.
+2. **N'importe quel suffixe était pris pour une unité** — `2pi` devenait
+   « 2 d'unité pi », `3x` « 3 d'unité x ».
+3. **Renommer une suite auto-référente ne réécrivait pas sa propre définition** :
+   `u = 2u + 1` renommée `v` gardait `2u + 1`, partait en attente de `u`, et
+   `updated` était vide — l'élève n'était même pas prévenu.
+4. **Les plafonds D8 n'étaient utilisés nulle part** : une liste de 500 valeurs
+   passait en silence.
+
+#### Les unités : trois briques existaient, je n'en utilisais aucune
+
+Signalé par David. `VALUE_SHAPE`, ma lecture maison, était une **réinvention
+fautive** :
+
+| Brique                                  | Où                       | Ce qu'elle règle                            |
+| --------------------------------------- | ------------------------ | ------------------------------------------- |
+| Syntaxe `12[km]` (custom) / `\unit{km}` | les deux parseurs        | l'unité se **déclare**, ne se devine pas    |
+| `units.parse()` / `format()`            | `src/lib/mathAST/units/` | `km` oui, `pi` et `x` non                   |
+| Macro `\unit` + palette de 18 unités    | page de debug mathfield  | l'élève la saisit sans la taper, et la voit |
+
+Le parseur fait de `12[km]` un nœud `unit` qui **ne libère aucune variable** :
+`12 km` écrit sans crochets reste le produit `12·k·m`, ce qu'il est
+mathématiquement.
+
+#### ⚠️ Le même piège, deux fois
+
+Le plafond des listes, d'abord posé dans `build()`, ne servait à rien :
+`recomputeAll` repart toujours de `parseDefinition` et écrase. Identique au
+`status` du premier lot. **Tout contrôle sur une définition doit vivre dans sa
+lecture**, jamais à la construction de l'objet.
+
+---
+
+## 🔜 À faire au lot des vues : extraire le composant de saisie
+
+La page `/dashboard/admin/debug/mathfield` (carte « Math Input ») contient déjà,
+en bac à sable, ce que la saisie de l'atelier demande :
+
+- la **macro MathLive `\unit`** : `{ args: 1, def: '\\,\\colorbox{#e8f5e9}{...}' }`,
+  qui rend l'unité sur fond vert en sans-sérif droit — donc distincte d'une
+  variable en italique, **avant même le parseur** ;
+- l'insertion par `executeCommand(['insert', '\\unit{km}'])`, la même API qui
+  préserve la pile d'annulation (§6 bis N4) ;
+- une **palette de 18 unités** : `m km cm mm s h min kg g mg L mL m/s km/h m/s^2
+N J W`.
+
+À extraire en composant partagé (atelier **et** `/calc`) quand les vues
+arriveront — pas avant : taillé aujourd'hui, il le serait pour le bac à sable.
+
 ---
 
 ## Un défaut de conception trouvé par les tests
@@ -204,7 +261,9 @@ reproduit pas dans l'atelier.
 - [x] La provenance des définitions (D10) et la normalisation au collage
 - [x] #329 — le nommage automatique évite les noms cités par la définition
 - [x] §2.5 N7 — message d'attente lisible au-delà de trois noms
-- [x] §6 bis N4 — collage annulable (`insertPasted`) — 89 tests verts
+- [x] §6 bis N4 — collage annulable (`insertPasted`)
+- [x] Revue #330 — unités déclarées, renommage auto-référent, plafonds D8 — 96 tests verts
+- [ ] ⏸ Finding 4 : un dépendant d'un objet `incomplete` reste `ok` — **décision produit en attente**
 - [ ] Tests et implémentation de la **persistance locale** (§5) et de
       **l'URL / mode éphémère** (§6)
 - [ ] ⚠️ **Le refactor inévitable** : les 13 fichiers qui font

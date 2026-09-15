@@ -15,6 +15,7 @@
  * @module atelier/atelier
  */
 
+import { MAX_LISTS } from './types';
 import type {
 	AtelierObject,
 	MissingReference,
@@ -139,6 +140,15 @@ export class Atelier {
 	create(input: CreateInput): Created | Refused {
 		const definition = input.definition ?? '';
 
+		// Plafonds du v1 (décision D8) : ils existent pour qu'un atelier tienne
+		// dans une URL, qui est le seul moyen de partager sans compte.
+		if (input.kind === 'list' && this.items.filter((o) => o.kind === 'list').length >= MAX_LISTS) {
+			return {
+				ok: false,
+				message: `Un atelier ne peut pas contenir plus de ${MAX_LISTS} listes.`
+			};
+		}
+
 		let name: string;
 		if (input.name === undefined) {
 			// #329 : ne pas se nommer comme un objet que la définition cite déjà,
@@ -168,10 +178,18 @@ export class Atelier {
 		const rejection = validateName(to, others);
 		if (rejection) return { ok: false, message: nameRejectionMessage(rejection, to) };
 
-		this.items[index] = { ...this.items[index], name: to } as AtelierObject;
+		// L'objet renommé voit sa PROPRE définition réécrite lui aussi : une suite
+		// récurrente se cite elle-même (`u(n+1) = 2·u(n)`), et l'oublier la
+		// laisserait en attente de son ancien nom.
+		this.items[index] = {
+			...this.items[index],
+			name: to,
+			definition: renameInDefinition(this.items[index].definition, from, to)
+		} as AtelierObject;
 
 		// Les définitions qui citaient l'ancien nom suivent : c'est ce qu'attend
-		// un élève, et on le lui dit en rendant la liste.
+		// un élève, et on le lui dit en rendant la liste. L'objet renommé n'y
+		// figure pas — il n'a pas été « mis à jour », il a été renommé.
 		const updated: string[] = [];
 		this.items.forEach((o, i) => {
 			if (o.name === to) return;
