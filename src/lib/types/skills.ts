@@ -215,6 +215,35 @@ const OBJECTIVE_LEVEL_VISUALS: Record<ObjectiveLevel, string> = {
 	4: '✨'
 };
 
+/**
+ * Niveau d'un objectif, quelle que soit sa forme.
+ *
+ * Depuis la fusion des référentiels (2026-08-29), le `rang` d'un point est
+ * FACULTATIF, donc deux formes d'objectif coexistent :
+ *   · avec échelle  (points rangés 1-4) → le niveau EST le rang max acquis ;
+ *   · sans échelle  (points non rangés) → on projette la couverture acquis/total
+ *     sur la même échelle visuelle.
+ *
+ * Pas de niveau 4 sans échelle : « aller au-delà de l'attendu » n'a de sens que
+ * si une échelle le définit.
+ *
+ * ⚠️ Fonction PARTAGÉE serveur (agrégation) / client (rendu). C'est elle qui
+ * garantit que la tuile du dashboard et la page disent le même chiffre : avant
+ * elle, chaque surface avait sa propre version, et celle du dashboard ignorait
+ * la forme sans échelle — donc comptait zéro sur la totalité du référentiel réel.
+ */
+export function objectiveLevel(o: {
+	has_scale: boolean;
+	rang_max_acquired: ObjectiveLevel;
+	acquired_count: number;
+	total_count: number;
+}): ObjectiveLevel {
+	if (o.has_scale) return o.rang_max_acquired;
+	if (o.total_count === 0) return 0;
+	if (o.acquired_count === o.total_count) return 3;
+	return o.acquired_count > 0 ? 1 : 0;
+}
+
 export function formatObjectiveLevel(level: ObjectiveLevel): string {
 	return OBJECTIVE_LEVEL_LABELS[level];
 }

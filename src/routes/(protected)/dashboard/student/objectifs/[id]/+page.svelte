@@ -64,7 +64,7 @@
 <main class="container mx-auto max-w-5xl px-4 py-6">
 	<!-- Breadcrumb / retour -->
 	<div class="mb-4">
-		<Button variant="ghost" size="sm" href="/dashboard/student/objectifs">
+		<Button variant="ghost" size="sm" href="/dashboard/student/progression?onglet=objectifs">
 			<ChevronLeft class="h-4 w-4" />
 			Mes objectifs
 		</Button>
