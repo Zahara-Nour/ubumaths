@@ -136,12 +136,19 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 /**
  * Helper: Get student's class IDs
+ *
+ * ⚠️ Ces identifiants ouvrent l'accès à une évaluation (`class_id.in.(…)`).
+ * Une adhésion ARCHIVÉE y donnerait donc droit aux évaluations de la classe
+ * quittée : le filtre de statut est ici un contrôle d'accès, pas un confort
+ * d'affichage. Les deux copies de ce helper sous `api/python-exercises/` le
+ * posent déjà.
  */
 async function getStudentClassIds(supabase: SupabaseClient, studentId: string): Promise<string> {
 	const { data, error: dataError } = await supabase
 		.from('class_members')
 		.select('class_id')
-		.eq('student_id', studentId);
+		.eq('student_id', studentId)
+		.eq('status', 'active');
 
 	if (dataError) {
 		console.error('Lecture impossible :', dataError);

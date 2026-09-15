@@ -111,10 +111,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	} else if (profile.role === 'student') {
 		// Student can only see their class's config
 		// Get student's class membership
+		// Une adhésion archivée rendrait la configuration du marché de l'ancienne
+		// classe — plafonds d'échange compris.
 		const { data: membership, error: membershipError } = await supabase
 			.from('class_members')
 			.select('class_id')
 			.eq('student_id', userId)
+			.eq('status', 'active')
 			.limit(1)
 			.single();
 

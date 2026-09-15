@@ -74,6 +74,9 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	}
 
 	// Get list of students in the class for complete progress view
+	// La page équivalente (`teacher/cours/[classId]/[chapterId]`) filtre déjà le
+	// statut : sans ça, les deux écrans du MÊME chapitre ne montrent pas les
+	// mêmes élèves, et celui-ci compte les partis dans l'avancement.
 	const { data: students, error: studentsError } = await locals.supabase
 		.from('class_members')
 		.select(
@@ -82,7 +85,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			profile:profiles!class_members_student_id_fkey(id, firstname, lastname)
 		`
 		)
-		.eq('class_id', chapter.class_id);
+		.eq('class_id', chapter.class_id)
+		.eq('status', 'active');
 
 	if (studentsError) {
 		console.error('[GET /api/teacher/chapters/[id]/progress] Students error:', studentsError);
