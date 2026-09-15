@@ -33,6 +33,7 @@
 		dndzone,
 		SHADOW_PLACEHOLDER_ITEM_ID,
 		SHADOW_ITEM_MARKER_PROPERTY_NAME,
+		TRIGGERS,
 		type DndEvent
 	} from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
@@ -495,7 +496,33 @@
 
 	// ===== DnD: cards =====
 
-	function handleCardsConsider(columnId: string, items: CardWithExtras[]) {
+	/**
+	 * D'où part l'élément tiré : sa zone, et son rang dans cette zone.
+	 *
+	 * ⚠️ Ça ne se lit QU'À LA PRISE. `svelte-dnd-action` laisse une copie
+	 * « ombre » dans la zone survolée et lui REND l'identifiant de l'élément tiré
+	 * (`keepOriginalElementInDom`) : à la dépose, la zone d'arrivée paraît donc
+	 * déjà le contenir, au même rang. Relire les colonnes à ce moment-là faisait
+	 * conclure « rien n'a bougé », et RIEN n'était enregistré — l'écran montrait
+	 * le déplacement, le rechargement le perdait.
+	 */
+	let cardOrigin: { columnId: string; index: number } | null = null;
+	let columnOrigin: number | null = null;
+
+	function handleCardsConsider(
+		columnId: string,
+		items: CardWithExtras[],
+		info: DndEvent<CardWithExtras>['info']
+	) {
+		if (info.trigger === TRIGGERS.DRAG_STARTED) {
+			// À la souris l'ombre est à la place de la carte ; au clavier la liste
+			// est intacte. Chercher l'une OU l'autre couvre les deux.
+			cardOrigin = {
+				columnId,
+				index: items.findIndex((c) => isDndShadow(c) || c.id === info.id)
+			};
+		}
+
 		const col = columns.find((c) => c.id === columnId);
 		if (!col) return;
 		col.cards = dedupeById(items);
@@ -506,26 +533,29 @@
 		items: CardWithExtras[],
 		info: DndEvent<CardWithExtras>['info']
 	) {
+		const origin = cardOrigin;
 		const destCol = columns.find((c) => c.id === columnId);
 		if (!destCol) return;
 
 		// Snapshot all columns' cards (for rollback) BEFORE mutating local state.
-		const snapshot = columns.map((c) => ({ colId: c.id, cards: [...c.cards] }));
+		// ⚠️ La carte tirée en est retirée, ombre ou non : la restauration la remet
+		// elle-même à son rang, et l'y laisser en ferait un doublon de clé.
+		const movedId = info.id;
+		const snapshot = columns.map((c) => ({
+			colId: c.id,
+			cards: c.cards.filter((card) => !isDndShadow(card) && card.id !== movedId)
+		}));
 
 		// Apply the dnd library's final items array to the destination column.
 		destCol.cards = dedupeById(items);
 
-		// The dropped item's id is in `info.id`. It might or might not have come
-		// from another column — to know, we look for it in the snapshot.
-		const movedId = info.id;
 		const movedCard = items.find((c) => c.id === movedId);
 		if (!movedCard) return; // dropped outside or never landed
 
-		// If it came from another column, remove it from that column's array.
-		const sourceSnapshot = snapshot.find((s) => s.cards.some((c) => c.id === movedId));
-		const crossColumn = sourceSnapshot && sourceSnapshot.colId !== columnId;
-		if (crossColumn) {
-			const sourceCol = columns.find((c) => c.id === sourceSnapshot!.colId);
+		// D'où elle vient est connu depuis la PRISE, jamais relu ici.
+		const crossColumn = origin ? origin.columnId !== columnId : false;
+		if (crossColumn && origin) {
+			const sourceCol = columns.find((c) => c.id === origin.columnId);
 			if (sourceCol) {
 				sourceCol.cards = sourceCol.cards.filter((c) => c.id !== movedId);
 			}
@@ -540,43 +570,68 @@
 			destIndex < destCol.cards.length - 1 ? destCol.cards[destIndex + 1].position : null;
 
 		// Short-circuit no-op drops: same column AND same index → nothing to persist.
-		// If the snapshot didn't contain the card anywhere (rare race when the
-		// library emits a finalize before the source column's consider has fully
-		// committed), skip the no-op check and just persist the move — the API
-		// will treat it as a position update.
-		if (!crossColumn && sourceSnapshot) {
-			const oldIndex = sourceSnapshot.cards.findIndex((c) => c.id === movedId);
-			if (oldIndex === destIndex) return;
-		}
+		// Prise manquée (`origin` absent, course rare) : on persiste plutôt que de
+		// deviner — l'API traitera ça comme une mise à jour de position.
+		if (origin && !crossColumn && origin.index === destIndex) return;
 
 		const newPosition = getPositionBetween(before, after);
 		movedCard.position = newPosition;
 
-		// Persist. For cross-column moves, the API requires both column_id AND
-		// position; for same-column it accepts position alone (we send both for
-		// uniformity — the schema permits it).
-		const patch: { position: number; column_id?: string } = { position: newPosition };
-		if (crossColumn) patch.column_id = columnId;
+		// La colonne d'arrivée part TOUJOURS : elle est connue à coup sûr, alors
+		// que « la carte a-t-elle changé de colonne ? » dépend d'une origine qui
+		// peut manquer. Envoyer les deux est valide — le schéma exige seulement
+		// qu'un `column_id` soit accompagné d'une position.
+		const patch = { position: newPosition, column_id: columnId };
+
+		// Ce qu'on s'apprête à enregistrer devient le nouveau point de départ :
+		// au clavier, un même glisser enchaîne plusieurs déposes.
+		cardOrigin = { columnId, index: destIndex };
 
 		const updated = await updateCard(movedId, patch);
 		if (!updated) {
-			// Rollback to the snapshot.
+			// Rollback to the snapshot — puis la carte retourne d'où elle venait,
+			// l'instantané ne la portant plus. Origine inconnue : on ne touche à
+			// rien, plutôt que de la faire sauter ailleurs ou disparaître.
+			if (!origin) return;
+
 			columns = columns.map((c) => {
 				const snap = snapshot.find((s) => s.colId === c.id);
-				return snap ? { ...c, cards: snap.cards } : c;
+				return snap ? { ...c, cards: [...snap.cards] } : c;
 			});
+			const sourceCol = columns.find((c) => c.id === origin.columnId);
+			if (sourceCol) {
+				const rang =
+					origin.index >= 0 && origin.index <= sourceCol.cards.length
+						? origin.index
+						: sourceCol.cards.length;
+				sourceCol.cards = [
+					...sourceCol.cards.slice(0, rang),
+					movedCard,
+					...sourceCol.cards.slice(rang)
+				];
+			}
+			cardOrigin = origin;
 		}
 	}
 
 	// ===== DnD: columns =====
 
 	function handleColumnsConsider(event: CustomEvent<DndEvent<ColumnWithCards>>) {
+		if (event.detail.info.trigger === TRIGGERS.DRAG_STARTED) {
+			columnOrigin = event.detail.items.findIndex(
+				(c) => isDndShadow(c) || c.id === event.detail.info.id
+			);
+		}
 		columns = dedupeById(event.detail.items);
 	}
 
 	async function handleColumnsFinalize(event: CustomEvent<DndEvent<ColumnWithCards>>) {
 		const movedId = event.detail.info.id;
-		const snapshot = [...columns];
+		const origin = columnOrigin;
+		// La colonne tirée est retirée de l'instantané, ombre ou non : la
+		// restauration la remet à son rang, et un doublon de clé ferait lever
+		// `each_key_duplicate` au rendu.
+		const snapshot = columns.filter((c) => !isDndShadow(c) && c.id !== movedId);
 		const deduped = dedupeById(event.detail.items);
 
 		// ALWAYS commit the dedup. The finalize event payload is the lib's
@@ -586,12 +641,14 @@
 		// marker in our state, making the column appear faded and undraggable.
 		columns = deduped;
 
-		// Short-circuit no-op drops: same index → nothing to persist.
-		const oldIndex = snapshot.findIndex((c) => c.id === movedId);
+		// Short-circuit no-op drops: same index → nothing to persist. Le rang de
+		// départ vient de la PRISE ; relire l'instantané ici ferait conclure « rien
+		// n'a bougé » à tous les coups (cf. `cardOrigin`).
 		const newIndex = deduped.findIndex((c) => c.id === movedId);
-		if (oldIndex === newIndex) return;
-
 		if (newIndex === -1) return;
+		if (origin !== null && origin === newIndex) return;
+
+		columnOrigin = newIndex;
 
 		const before = newIndex > 0 ? columns[newIndex - 1].position : null;
 		const after = newIndex < columns.length - 1 ? columns[newIndex + 1].position : null;
@@ -600,7 +657,12 @@
 
 		const updated = await updateColumn(movedId, { position: newPosition });
 		if (!updated) {
-			columns = snapshot;
+			const remise = deduped.find((c) => c.id === movedId);
+			if (!remise || origin === null) return;
+
+			const rang = origin >= 0 && origin <= snapshot.length ? origin : snapshot.length;
+			columns = [...snapshot.slice(0, rang), remise, ...snapshot.slice(rang)];
+			columnOrigin = origin;
 		}
 	}
 </script>
@@ -703,46 +765,55 @@
 	{:else}
 		<!-- Columns + add-column zone, horizontally scrollable -->
 		<div class="flex-1 overflow-x-auto pb-4">
-			<div
-				class="flex h-full items-start gap-3"
-				use:dndzone={{
-					items: visibleColumns,
-					type: 'kanban-column',
-					flipDurationMs: FLIP_MS,
-					// Column DnD is disabled when the "Mes cartes" filter is on
-					// because reordering operates on the filtered subset.
-					dragDisabled: !isOwner || myCardsOnly,
-					centreDraggedOnCursor: true,
-					useCursorForDetection: true,
-					dropTargetStyle: { outline: '2px dashed var(--color-ring)' }
-				}}
-				onconsider={handleColumnsConsider}
-				onfinalize={handleColumnsFinalize}
-			>
-				{#each visibleColumns as column (columnDndKey(column))}
-					{@const dndShadow = isDndShadow(column)}
-					{@const isShadow = column.id === SHADOW_PLACEHOLDER_ITEM_ID || dndShadow}
-					<div
-						animate:flip={{ duration: FLIP_MS }}
-						class={isShadow ? 'opacity-40' : ''}
-						data-is-dnd-shadow-item-hint={dndShadow}
-					>
-						<KanbanColumnComp
-							{column}
-							cards={column.cards}
-							{isOwner}
-							{tagsById}
-							{membersById}
-							cardsDragDisabled={myCardsOnly}
-							onCardsConsider={handleCardsConsider}
-							onCardsFinalize={handleCardsFinalize}
-							onEditCard={handleEditCard}
-							onRenameColumn={handleRenameColumn}
-							onDeleteColumn={handleDeleteColumn}
-							onCreateCard={handleCreateCard}
-						/>
-					</div>
-				{/each}
+			<!--
+				⚠️ Le bloc « Créer une colonne » est un FRÈRE de la zone de dépose,
+				jamais son enfant : `dndzone` traite chaque enfant direct comme un
+				élément déplaçable et les apparie avec `items` PAR INDEX. Dedans, il
+				devenait traînable, annoncé comme élément de liste aux lecteurs
+				d'écran, et le tirer désignait un élément qui n'existe pas.
+			-->
+			<div class="flex h-full items-start gap-3">
+				<div
+					class="flex h-full items-start gap-3"
+					use:dndzone={{
+						items: visibleColumns,
+						type: 'kanban-column',
+						flipDurationMs: FLIP_MS,
+						// Column DnD is disabled when the "Mes cartes" filter is on
+						// because reordering operates on the filtered subset.
+						dragDisabled: !isOwner || myCardsOnly,
+						centreDraggedOnCursor: true,
+						useCursorForDetection: true,
+						dropTargetStyle: { outline: '2px dashed var(--color-ring)' }
+					}}
+					onconsider={handleColumnsConsider}
+					onfinalize={handleColumnsFinalize}
+				>
+					{#each visibleColumns as column (columnDndKey(column))}
+						{@const dndShadow = isDndShadow(column)}
+						{@const isShadow = column.id === SHADOW_PLACEHOLDER_ITEM_ID || dndShadow}
+						<div
+							animate:flip={{ duration: FLIP_MS }}
+							class={isShadow ? 'opacity-40' : ''}
+							data-is-dnd-shadow-item-hint={dndShadow}
+						>
+							<KanbanColumnComp
+								{column}
+								cards={column.cards}
+								{isOwner}
+								{tagsById}
+								{membersById}
+								cardsDragDisabled={myCardsOnly}
+								onCardsConsider={handleCardsConsider}
+								onCardsFinalize={handleCardsFinalize}
+								onEditCard={handleEditCard}
+								onRenameColumn={handleRenameColumn}
+								onDeleteColumn={handleDeleteColumn}
+								onCreateCard={handleCreateCard}
+							/>
+						</div>
+					{/each}
+				</div>
 
 				{#if isOwner}
 					<div class="w-72 shrink-0 sm:w-80">

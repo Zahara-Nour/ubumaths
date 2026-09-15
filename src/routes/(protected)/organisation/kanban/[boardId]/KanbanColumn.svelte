@@ -77,8 +77,18 @@
 		 * hidden cards on commit.
 		 */
 		cardsDragDisabled?: boolean;
-		/** Called while a card is being dragged over this column (visual update). */
-		onCardsConsider: (columnId: string, items: CardWithExtras[]) => void;
+		/**
+		 * Called while a card is being dragged over this column (visual update).
+		 *
+		 * ⚠️ `info` est indispensable : c'est lui qui distingue la PRISE
+		 * (`dragStarted`) du survol, et le parent n'a que ce moment-là pour
+		 * savoir d'où part la carte.
+		 */
+		onCardsConsider: (
+			columnId: string,
+			items: CardWithExtras[],
+			info: DndEvent<CardWithExtras>['info']
+		) => void;
 		/** Called when a card drop is finalized in / from this column. */
 		onCardsFinalize: (
 			columnId: string,
@@ -221,7 +231,7 @@
 
 	// DnD handlers (cards inside this column).
 	function handleCardsConsider(event: CustomEvent<DndEvent<KanbanCard>>) {
-		onCardsConsider(column.id, event.detail.items);
+		onCardsConsider(column.id, event.detail.items, event.detail.info);
 	}
 
 	function handleCardsFinalize(event: CustomEvent<DndEvent<KanbanCard>>) {
