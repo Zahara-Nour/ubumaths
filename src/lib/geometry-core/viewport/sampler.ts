@@ -70,6 +70,19 @@ const OPPOSITE_BRANCH_FACTOR = 4;
 /** Un dépassement de sonde sous 1/500 de la hauteur reste invisible à l'écran. */
 const SUSPICION_PIXEL_RATIO = 500;
 
+/**
+ * Écart toléré entre la courbe et la corde qui joint deux échantillons, en
+ * fraction de la hauteur de fenêtre. 1/400 vaut à peu près le pixel sur un
+ * cadre de 400 px de haut.
+ */
+const FIDELITY_RATIO = 400;
+
+/** Profondeur maximale de subdivision d'un segment (2⁶ sous-segments). */
+const MAX_SUBDIVISION_DEPTH = 6;
+
+/** Points de lissage insérés au plus par courbe, en multiple des échantillons. */
+const SMOOTHING_BUDGET_FACTOR = 2;
+
 /** Positions sondées dans chaque intervalle, en fraction de sa largeur. */
 const PROBE_POSITIONS = [0.25, 0.5, 0.75] as const;
 
@@ -385,6 +398,51 @@ function makeClamp(viewport: Viewport): (y: number) => number {
 }
 
 /**
+ * Combler un segment que la courbe ne suit pas.
+ *
+ * L'échantillonnage est uniforme en abscisse : dans une zone de forte courbure
+ * — l'approche d'un pôle, par exemple — la fonction s'écarte franchement de la
+ * corde qui joint deux échantillons voisins. Mesuré sur 1/(x(x+1)(x-1))
+ * dézoomé : **65 px** d'écart sur un cadre de 400 px de haut, loin de toute
+ * rupture. On insère donc des points tant que l'écart dépasse le pixel.
+ *
+ * ⚠️ Le critère porte sur l'écart VERTICAL à la corde. Une première version
+ * mesurait la distance perpendiculaire rapportée à la diagonale du cadre :
+ * au même endroit elle valait 0,4 px, sous tous les seuils raisonnables, et
+ * la subdivision ne se déclenchait jamais.
+ *
+ * Les ordonnées sont écrêtées avant comparaison : hors du cadre tout est
+ * aplati sur la borne, donc on ne dépense rien à raffiner un trait invisible.
+ */
+function subdivideSegment(
+	evaluator: (x: number) => number | null,
+	clamp: (y: number) => number,
+	from: Point,
+	to: Point,
+	depth: number,
+	tolerance: number,
+	out: Point[],
+	budget: { remaining: number }
+): void {
+	if (depth >= MAX_SUBDIVISION_DEPTH || budget.remaining <= 0) return;
+
+	const midX = (from.x + to.x) / 2;
+	if (midX === from.x || midX === to.x) return;
+
+	const raw = evaluator(midX);
+	// Un trou de domaine relève des marches, pas du lissage.
+	if (raw === null || !Number.isFinite(raw)) return;
+
+	const mid: Point = { x: midX, y: clamp(raw) };
+	if (Math.abs(mid.y - (from.y + to.y) / 2) <= tolerance) return;
+
+	subdivideSegment(evaluator, clamp, from, mid, depth + 1, tolerance, out, budget);
+	out.push(mid);
+	budget.remaining--;
+	subdivideSegment(evaluator, clamp, mid, to, depth + 1, tolerance, out, budget);
+}
+
+/**
  * Construire la courbe à partir d'abscisses déjà choisies.
  *
  * Trois passes : évaluation, raffinement des intervalles suspects, assemblage.
@@ -453,10 +511,36 @@ function buildCurve(
 	const discontinuityIndices: number[] = [];
 	let pendingBreak = false;
 
+	const fidelity = height / FIDELITY_RATIO;
+	const smoothingBudget = { remaining: SMOOTHING_BUDGET_FACTOR * xValues.length };
+
 	const push = (p: Point): void => {
+		const clamped = { x: p.x, y: clamp(p.y) };
+		const previousPoint = points[points.length - 1];
+
+		// Densifier entre le point précédent et celui-ci, sauf de part et
+		// d'autre d'une rupture — où il n'y a justement rien à relier.
+		// Le faire ICI et non dans la boucle principale est ce qui couvre aussi
+		// les segments bordant les points de marche d'un pôle : c'est là que
+		// l'écart est le plus grand.
+		if (!pendingBreak && previousPoint !== undefined && previousPoint.x < clamped.x) {
+			const smoothed: Point[] = [];
+			subdivideSegment(
+				evaluator,
+				clamp,
+				previousPoint,
+				clamped,
+				0,
+				fidelity,
+				smoothed,
+				smoothingBudget
+			);
+			points.push(...smoothed);
+		}
+
 		if (pendingBreak && points.length > 0) discontinuityIndices.push(points.length);
 		pendingBreak = false;
-		points.push({ x: p.x, y: clamp(p.y) });
+		points.push(clamped);
 	};
 
 	/** Dernier échantillon défini, ordonnée NON écrêtée. */

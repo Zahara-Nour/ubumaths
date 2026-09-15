@@ -247,6 +247,80 @@ describe('sampler', () => {
 		});
 	});
 	// =========================================================================
+	// Fidélité du tracé — écart entre la courbe rendue et la fonction
+	// =========================================================================
+
+	describe('fidélité', () => {
+		/**
+		 * Plus grand écart, en fraction de la hauteur de fenêtre, entre la
+		 * courbe reconstruite et la fonction — mesuré uniquement là où les deux
+		 * sont VISIBLES. Un écart de 1/400 correspond à peu près au pixel sur un
+		 * cadre de 400 px de haut.
+		 */
+		function maxDeviation(
+			evaluator: (x: number) => number | null,
+			curve: { points: readonly Point[]; discontinuityIndices: readonly number[] },
+			viewport: Viewport
+		): number {
+			const height = viewport.yMax - viewport.yMin;
+			const breaks = new Set(curve.discontinuityIndices);
+			let worst = 0;
+
+			for (let i = 1; i < curve.points.length; i++) {
+				if (breaks.has(i)) continue;
+				const a = curve.points[i - 1];
+				const b = curve.points[i];
+
+				// La corde que le rendu trace entre deux échantillons voisins.
+				for (let k = 1; k < 8; k++) {
+					const t = k / 8;
+					const x = a.x + (b.x - a.x) * t;
+					const chord = a.y + (b.y - a.y) * t;
+					const exact = evaluator(x);
+					if (exact === null) continue;
+					if (exact < viewport.yMin || exact > viewport.yMax) continue;
+					if (chord < viewport.yMin || chord > viewport.yMax) continue;
+					worst = Math.max(worst, Math.abs(chord - exact) / height);
+				}
+			}
+			return worst;
+		}
+
+		it("suit la fonction à moins d'un pixel dans les zones très courbées", () => {
+			// 1/(x(x+1)(x-1)) dézoomé : entre deux échantillons voisins, la courbe
+			// varie trop pour qu'un segment — ou la cubique construite dessus —
+			// la suive. Écart mesuré avant correction : 65 px sur un cadre de
+			// 400 px de haut, bien visible, et loin des ruptures.
+			const cubic = (x: number): number | null => {
+				const d = x * (x + 1) * (x - 1);
+				return d === 0 ? null : 1 / d;
+			};
+			const box: Viewport = { xMin: -16.2, xMax: 5.2, yMin: -7, yMax: 16.5 };
+
+			expect(maxDeviation(cubic, sampleFunction(cubic, box, 300), box)).toBeLessThan(1 / 200);
+		});
+
+		it('reste fidèle sur une sinusoïde très dézoomée', () => {
+			const box: Viewport = { xMin: -60, xMax: 60, yMin: -2, yMax: 2 };
+			const sine = (x: number): number => Math.sin(x);
+
+			expect(maxDeviation(sine, sampleFunction(sine, box, 300), box)).toBeLessThan(1 / 200);
+		});
+
+		it('ne densifie pas une courbe déjà fidèle', () => {
+			const box: Viewport = { xMin: -5, xMax: 5, yMin: -1, yMax: 26 };
+			expect(sampleFunction((x) => x * x, box, 300).points.length).toBeLessThan(330);
+		});
+
+		it('reste borné sur une fonction pathologique', () => {
+			const box: Viewport = { xMin: 0, xMax: 10, yMin: -2, yMax: 2 };
+			expect(sampleFunction((x) => Math.sin(200 * x) * 2, box, 300).points.length).toBeLessThan(
+				1400
+			);
+		});
+	});
+
+	// =========================================================================
 	// Pôles verticaux — bug de tracé du grapheur (branches reliées / tronquées)
 	// =========================================================================
 
@@ -423,10 +497,12 @@ describe('sampler', () => {
 			expect(last!.x).toBeGreaterThan(7.999);
 		});
 
-		it("n'insère aucun point quand le raffinement ne conclut à rien", () => {
+		it('ne garde pas les points des marches qui ne concluent à rien', () => {
 			// Une oscillation sous-échantillonnée déclenche des marches qui ne
 			// trouvent ni pôle ni saut : leurs points sont du remplissage pur,
-			// qui alourdissait le chemin SVG d'un facteur 10.
+			// qui alourdissait le chemin SVG d'un facteur 10. Le lissage, lui,
+			// insère légitimement des points ici — d'où une borne plutôt qu'une
+			// égalité, la borne du budget étant ce qui compte.
 			const curve = sampleFunction(
 				(x) => Math.sin(200 * x) * 2,
 				{
@@ -438,7 +514,8 @@ describe('sampler', () => {
 				300
 			);
 
-			expect(curve.points.length).toBe(300);
+			expect(curve.points.length).toBeLessThan(1000);
+			expect(curve.discontinuityIndices.length).toBe(0);
 		});
 
 		it('coupe les trois pôles même sur un très grand cadrage', () => {
