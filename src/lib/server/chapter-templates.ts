@@ -948,32 +948,43 @@ export async function checkForTemplateUpdates(
 	supabase: SupabaseClient<Database>
 ): Promise<OperationResult<{ hasUpdate: boolean; latestVersion: number | null }>> {
 	try {
+		// ⚠️ `maybeSingle`, pas `single` : un chapitre créé de zéro n'a AUCUNE
+		// instanciation, et c'est le cas normal. `.single()` rendait alors
+		// PGRST116 — « 0 ligne » — traité comme une panne : 14 remontées d'erreur
+		// en production sur la page de chapitre du professeur, entre le 13 et le
+		// 15 septembre 2026, pour un chapitre qui n'a simplement pas de modèle.
 		const { data: instantiation, error } = await supabase
 			.from('chapter_template_instantiations')
 			.select('template_id, template_version, current_template_version, is_detached')
 			.eq('chapter_id', chapterId)
-			.single();
+			.maybeSingle();
 
 		if (error) {
 			console.error('[checkForTemplateUpdates] Error:', error);
 			return { data: null, error: new Error(error.message) };
 		}
 
-		// If detached or template deleted, no updates
-		if (instantiation.is_detached || !instantiation.template_id) {
+		// Pas d'instanciation, détaché, ou modèle supprimé : rien à proposer.
+		if (!instantiation || instantiation.is_detached || !instantiation.template_id) {
 			return { data: { hasUpdate: false, latestVersion: null }, error: null };
 		}
 
 		// Get latest template version
+		// Idem : un `template_id` qui ne pointe plus sur rien — modèle supprimé —
+		// est une absence, pas une panne.
 		const { data: template, error: templateError } = await supabase
 			.from('chapter_templates')
 			.select('current_version')
 			.eq('id', instantiation.template_id)
-			.single();
+			.maybeSingle();
 
 		if (templateError) {
 			console.error('[checkForTemplateUpdates] Error fetching template:', templateError);
 			return { data: null, error: new Error(templateError.message) };
+		}
+
+		if (!template) {
+			return { data: { hasUpdate: false, latestVersion: null }, error: null };
 		}
 
 		const hasUpdate =
