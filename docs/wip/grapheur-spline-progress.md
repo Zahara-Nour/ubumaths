@@ -92,3 +92,85 @@ Un quart de cercle a x monotone et reçoit donc le limiteur : erreur radiale
 7,1e-4 → 1,2e-3, soit 0,18 px sur un rayon de 150 px. Un test verrouille cette
 non-régression, comme le plateau écrêté (l'écrêtage rend des ordonnées
 **égales**, donc une sécante nulle, donc des pentes nulles : vérifié) et n = 3.
+
+## Suite — pôles ratés sur un grand cadrage
+
+Signalé le 2026-09-15 après la livraison de #324 : le crochet persiste. La
+console a tranché : le dépassement du tracé **réellement affiché** valait
+**0**. Donc plus aucun défaut de spline — le correctif de #324 était bien
+actif, et la bosse observée venait d'ailleurs.
+
+Cause, reproduite sur l'état exact de David (`localStorage`, cadrage de 127
+unités) : le seuil de suspicion valait 5 % de la hauteur de fenêtre, soit
+**6,35**, alors que le saut mesuré autour de x = -1 vaut **5,3**. Le pôle
+n'était pas soupçonné, les deux branches restaient reliées, et la spline
+lissait le pont en une bosse — qui, elle, ne dépasse aucune donnée. D'où le 0.
+
+⚠️ J'avais **mesuré** cette anomalie une heure plus tôt (« 0 rupture à 100
+points, 1 seule à 300 ») et je l'avais écartée comme « un autre sujet ». C'était
+le sujet.
+
+Deux corrections :
+
+1. **La sonde ne dépend plus de la hauteur de fenêtre.** Chaque intervalle est
+   sondé à 1/4, 1/2 et 3/4 — trois évaluations, alors que la courbe en coûte
+   déjà des centaines. Une valeur hors de l'intervalle des extrémités, ou
+   absente, désigne une singularité, quel que soit le zoom. Trois sondes et non
+   une : le milieu de l'intervalle contenant le pôle x = 1 tombait **par
+   hasard** entre les deux extrémités.
+2. **La marche conserve le signe.** Un intervalle peut contenir DEUX pôles dès
+   qu'on dézoome : la marche acceptait alors un point de la branche du milieu
+   (y = +2,63 après y = −2,41) parce qu'il était « plus proche de nous que de
+   l'autre extrémité », et enjambait le premier pôle.
+
+Coût mesuré : ~1250 évaluations pour 300 points (×4), 1,2 ms par courbe.
+
+| cadrage                 | avant                            | après                  |
+| ----------------------- | -------------------------------- | ---------------------- |
+| celui de David, 100 pts | 0 rupture, ponts sur les 3 pôles | 2 ruptures, aucun pont |
+| celui de David, 300 pts | 1 rupture, ponts sur −1 et 1     | 3 ruptures, aucun pont |
+| vue par défaut          | 3 ruptures, aucun pont           | inchangé               |
+
+### Faux pas de méthode, à ne pas refaire
+
+Deux captures « avec l'état de David » ne valaient rien : j'avais fabriqué
+l'état avec `id: 'a'`, que la validation Zod rejette — l'application repartait
+alors sur ses valeurs par défaut sans rien dire. Le symptôme était pourtant
+visible (un seul sous-tracé au lieu de quatre). **Vérifier que l'état injecté
+est bien celui relu**, avant d'en tirer la moindre conclusion.
+
+### Revue de la détection — 6 findings
+
+- **Branches tronquées (important).** Ne pas relier deux branches ne suffit
+  pas : encore faut-il les tracer entièrement. La branche gauche du pôle x = 1
+  s'arrêtait à y = −3,88 au milieu d'un cadre allant jusqu'à −103 — **à
+  l'écran, une branche tronquée ressemble exactement à la bosse cherchée
+  depuis le début**. Cause : le critère « plus proche de notre branche que de
+  l'autre ». Entre un échantillon et son pôle, |f| commence souvent par
+  DÉCROÎTRE avant de diverger, et le point se retrouvait numériquement plus
+  près de l'autre extrémité. On ne rejette plus qu'un candidat **nettement**
+  collé à l'autre branche (facteur 4) — la signature d'un saut fini.
+  Le test porte désormais sur la **complétude des branches**, pas seulement sur
+  l'absence de pont : c'est la propriété qui compte pour l'œil.
+- **Compromis figé par un test.** La conservation du signe tronque une branche
+  sur son zéro quand zéro et pôle se partagent un pas d'échantillonnage — cas
+  des homographiques `(ax+b)/(cx+d)` au dézoom. Un moignon plutôt qu'un pont :
+  moins faux, et visible. Le vrai correctif demande de refondre `marchToward`
+  pour poursuivre la dichotomie au-delà du changement de signe. Non fait.
+- **Tri redevenu positionnel (mineur).** `suspicion()` rendait `Infinity`, or
+  `Infinity - Infinity` vaut `NaN` : le comparateur retombait sur l'ordre des
+  indices, soit exactement la consommation gauche-droite du budget que ce tri
+  existe pour empêcher. `Number.MAX_VALUE`.
+- **Gaspillage sur chaque extremum (mineur).** Tout sommet de parabole
+  déclenchait une paire de marches inutiles. Plancher à 1/500 de la hauteur :
+  un dépassement sous le pixel n'est pas une singularité.
+- **Limite de résolution assumée.** À 100 points (qualité d'un drag) sur un
+  cadrage de 127 unités, la branche entre −1 et 0 ne reçoit **aucun**
+  échantillon : le pas vaut 1,28 pour une branche large de 1. Elle ne peut donc
+  pas être tracée. Seule l'absence de pont est exigée à cette densité.
+- **Les sauts finis restent liés au zoom.** Les singularités, elles, ne le sont
+  plus. Un escalier n'a rien à trahir entre ses marches : seul le seuil
+  `SUSPICION_RATIO` le détecte, et il monte avec le dézoom.
+
+Coût final : 1197 évaluations pour 300 points sur une fonction lisse — le
+minimum incompressible des trois sondes. 1342 sur le cadrage de David.
