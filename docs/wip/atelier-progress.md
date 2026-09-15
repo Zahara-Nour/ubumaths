@@ -1,7 +1,7 @@
 ---
 title: Atelier de recherche — progression du chantier
 date: 2026-09-15
-status: Phase 1 — modèle d'objet à quatre états, 56 tests verts
+status: Phase 1 — provenance des définitions (D10), 72 tests verts
 branche: feat/atelier
 worktree: ../ubumaths-wt-atelier
 ---
@@ -90,6 +90,29 @@ name:'h'}`), donc le classement valeur/fonction est exact — pas deviné.
 En syntaxe custom, **`pi` n'est pas une constante** : il se lit `p·i`. Un test le
 documente plutôt que de le masquer. `e` est bien reconnu.
 
+### Phase 1 (suite) — la provenance (D10), 72 tests verts
+
+`parse.ts` reçoit désormais une `Provenance`. Champ de maths, clavier virtuel et
+stockage se lisent en **LaTeX** ; URL, collage et mode commande passent par la
+**détection**, avec repli sur la syntaxe custom quand la confiance est ≤ 0,5.
+`normalizePasted()` réécrit un collage en LaTeX.
+
+#### ⚠️ Deux constats qui contredisent le §6 bis
+
+1. **« L'objet passera en erreur » est illusoire.** Les deux parseurs tournent en
+   mode tolérant : `bonjour tout le monde` se lit comme un produit de 18 lettres,
+   et `!!! ??? %%%` devient `\lnot \lnot \lnot \placeholder…`. **Un collage ne
+   produit donc presque jamais d'erreur.** Toute garde qui compte là-dessus est
+   sans effet.
+2. Conséquence concrète : coller une phrase donnerait un objet
+   « en attente de b, o, j, u, r, t, l, m, d ». Absurde, mais ni une erreur ni un
+   plantage.
+
+**À trancher** : accepter ce comportement, ou poser un critère de refus au
+collage (nombre de variables libres, présence de caractères non mathématiques) ?
+Ce critère n'est pas spécifié, et je ne l'invente pas. Les faits sont figés par
+des tests en attendant.
+
 ---
 
 ## Un défaut de conception trouvé par les tests
@@ -130,7 +153,8 @@ reproduit pas dans l'atelier.
 ## Reste à faire
 
 - [x] Implémenter `names.ts`, `parse.ts`, `atelier.svelte.ts`
-- [x] Les quatre états (D9) et l'offre de curseur — 56 tests verts
+- [x] Les quatre états (D9) et l'offre de curseur
+- [x] La provenance des définitions (D10) et la normalisation au collage — 72 tests verts
 - [ ] Tests et implémentation de la **persistance locale** (§5) et de
       **l'URL / mode éphémère** (§6)
 - [ ] ⚠️ **Le refactor inévitable** : les 13 fichiers qui font

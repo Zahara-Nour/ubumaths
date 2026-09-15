@@ -9,10 +9,69 @@
  */
 
 import { parseCustomSafe } from '$lib/mathAST/parser/custom';
+import { parseLatexSafe } from '$lib/mathAST/parser';
+import { detectInputFormat } from '$lib/mathAST/cli/core/input-detector';
+import { toLatex } from '$lib/mathAST/latex-generator';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import type { MathNode } from '$lib/mathAST/types';
 import type { MissingReference, ObjectKind } from './types';
 import { hasObjectNameShape } from './names';
+
+/**
+ * D'où vient une définition. Décision D10 : c'est la provenance qui décide du
+ * parseur, jamais le contenu — on connaît toujours la première, alors que
+ * deviner d'après le second casse sur les mélanges (`sin(x) + \frac{1}{2}`).
+ */
+export type Provenance = 'mathfield' | 'keyboard' | 'storage' | 'paste' | 'url' | 'command';
+
+/** Comment lire une définition venue de là. */
+export type ReadingMode = 'latex' | 'detect';
+
+/**
+ * Un champ de maths produit du LaTeX — ses raccourcis intégrés convertissent
+ * « sin » en `\sin`, vérifié dans Chromium (`mathlive-shortcuts.svelte.test.ts`).
+ * Tout le reste est du texte dont on ne sait rien.
+ */
+export function readingMode(provenance: Provenance): ReadingMode {
+	return provenance === 'mathfield' || provenance === 'keyboard' || provenance === 'storage'
+		? 'latex'
+		: 'detect';
+}
+
+/**
+ * Analyser une définition selon sa provenance.
+ *
+ * En mode `detect`, le repli d'une détection hésitante (confiance ≤ 0,5) est la
+ * syntaxe **custom** : c'est ce qu'un humain écrit au clavier. Deux effets
+ * voulus — `a/b` devient une fraction, et `e` reste la constante d'Euler.
+ */
+function parseByProvenance(definition: string, provenance: Provenance) {
+	if (readingMode(provenance) === 'latex') return parseLatexSafe(definition);
+
+	const detected = detectInputFormat(definition);
+	if (detected.format === 'latex' && detected.confidence > 0.5) return parseLatexSafe(definition);
+	return parseCustomSafe(definition);
+}
+
+/**
+ * Réécrire un texte collé en LaTeX, pour que le champ montre ce qui a été
+ * compris.
+ *
+ * MathLive ne normalise PAS une valeur injectée (mesuré) : sans ce passage, un
+ * `sin` collé resterait trois lettres italiques, lues `s·i·n`. Un texte qui
+ * n'est pas une expression est rendu tel quel — le champ le recevra, et l'objet
+ * portera son erreur à la lecture (§6 bis L2).
+ */
+export function normalizePasted(text: string): string {
+	if (text.trim() === '') return text;
+	const result = parseByProvenance(text, 'paste');
+	if (!result.ast) return text;
+	try {
+		return toLatex(result.ast);
+	} catch {
+		return text;
+	}
+}
 
 /** Ce qu'une définition apprend sur l'objet qu'elle définit. */
 export interface ParsedDefinition {
@@ -52,7 +111,11 @@ export function readNumber(raw: string): number | null {
  * Une définition vide ne rend jamais d'erreur : l'objet est « incomplet », ce
  * qui est un état normal pendant qu'on cherche.
  */
-export function parseDefinition(kind: ObjectKind, definition: string): ParsedDefinition {
+export function parseDefinition(
+	kind: ObjectKind,
+	definition: string,
+	provenance: Provenance = 'url'
+): ParsedDefinition {
 	if (definition.trim() === '') return {};
 
 	if (kind === 'list') {
@@ -77,7 +140,7 @@ export function parseDefinition(kind: ObjectKind, definition: string): ParsedDef
 		// Une valeur peut aussi être une expression (`2+3`) : on la fait analyser.
 	}
 
-	const result = parseCustomSafe(definition);
+	const result = parseByProvenance(definition, provenance);
 	if (!result.ast) {
 		return { error: `« ${definition.trim()} » n'est pas une expression valide.` };
 	}
@@ -99,8 +162,11 @@ export function parseDefinition(kind: ObjectKind, definition: string): ParsedDef
  *
  * ⚠️ En syntaxe custom, `pi` n'est PAS une constante : il se lit `p·i`.
  */
-export function referencesOf(definition: string): MissingReference[] {
-	const result = parseCustomSafe(definition);
+export function referencesOf(
+	definition: string,
+	provenance: Provenance = 'url'
+): MissingReference[] {
+	const result = parseByProvenance(definition, provenance);
 	if (!result.ast) return [];
 
 	const found = new Map<string, MissingReference>();
