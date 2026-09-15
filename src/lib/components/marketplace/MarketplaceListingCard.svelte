@@ -191,7 +191,18 @@
 					<img src={gidouilleImage} alt="Gidouille" class="h-3 w-3" />
 				</div>
 			{/if}
-			{#if !hasDemand}
+			<!-- ⚠️ Symétrique de l'offre : un modèle demandé non résolu n'apparaît
+			     pas, et l'annonce paraîtrait demander moins qu'elle ne demande. -->
+			{#if listing.demande_incomplete}
+				<span
+					class="flex items-center gap-1 rounded border border-amber-400 bg-amber-50 px-1.5 py-0.5 text-xs text-amber-900 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200"
+					title="Une carte demandée n’a pas pu être affichée."
+				>
+					<TriangleAlert class="h-3 w-3 shrink-0" />
+					incomplète
+				</span>
+			{/if}
+			{#if !hasDemand && !listing.demande_incomplete}
 				<span class="text-xs text-muted-foreground italic">Rien</span>
 			{/if}
 		</div>

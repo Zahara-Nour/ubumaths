@@ -25,6 +25,15 @@ export interface MarketplaceListing extends DbListing {
 	 * septembre 2026.
 	 */
 	offre_incomplete?: boolean;
+	/**
+	 * Au moins un modèle DEMANDÉ n'a pas pu être résolu : la demande affichée est
+	 * plus courte que la vraie.
+	 *
+	 * ⚠️ Symétrique de `offre_incomplete`. Sans lui, un modèle introuvable au
+	 * catalogue disparaissait de l'annonce en silence, et l'élève pouvait
+	 * accepter en croyant devoir moins qu'il ne doit.
+	 */
+	demande_incomplete?: boolean;
 	// Relations
 	creator?: {
 		id: string;

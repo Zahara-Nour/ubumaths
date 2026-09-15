@@ -1,5 +1,16 @@
 # Tri : les lectures de `class_members` sans filtre de statut
 
+> **CLOS le 2026-09-15.** Toutes les décisions ont été prises ; rien n'attend
+> plus. Le détail de chacune est consigné à sa place ci-dessous.
+>
+> - Tas 1 (6 sites) : **corrigé** (PR #305).
+> - Tas 2 (3 sites) : **légitimes**, ne pas toucher.
+> - Tas 3 : école et saisie **corrigées** (PR #306) ; notifications **gardées** ;
+>   consentements **statu quo** (question juridique, tranchée : on garde tout le
+>   monde) ; **9 écrans du marché : ne rien changer** — vérifié depuis, leurs
+>   listes ne comptent jamais d'élèves, elles bornent des requêtes d'activité.
+> - `stats/+server.ts:112`, sans filtre de classe : **corrigé**.
+>
 > **État au 2026-09-15 : le tas 1 est corrigé** (six filtres `status`, plus un
 > test d'intégration sur le cas d'accès). Les tas 2 et 3 sont intacts — le tas 3
 > attend toujours un « oui / non » de David, ligne par ligne.

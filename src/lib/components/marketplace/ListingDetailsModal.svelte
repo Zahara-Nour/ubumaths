@@ -223,6 +223,21 @@
 				<div class="space-y-3 rounded-lg border p-4">
 					<h4 class="text-sm font-semibold">Demande</h4>
 
+					<!--
+						⚠️ SYMÉTRIQUE de l'avertissement sur l'offre, et pour la même
+						raison : c'est l'écran qui porte « Accepter l'échange ». Taire un
+						modèle demandé non résolu ferait accepter l'élève en croyant
+						devoir moins qu'il ne doit.
+					-->
+					{#if listing.demande_incomplete}
+						<div
+							class="flex items-center gap-2 rounded-lg border border-amber-400 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200"
+						>
+							<TriangleAlert class="h-4 w-4 shrink-0" />
+							<span>Demande incomplète : une carte demandée n’a pas pu être affichée.</span>
+						</div>
+					{/if}
+
 					{#if wantedCardsGrouped.length > 0}
 						<div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
 							{#each wantedCardsGrouped as group (group.card.id)}
@@ -238,7 +253,7 @@
 						</div>
 					{/if}
 
-					{#if !wantedCardsGrouped.length && !listing.wanted_gidouilles}
+					{#if !wantedCardsGrouped.length && !listing.wanted_gidouilles && !listing.demande_incomplete}
 						<p class="text-muted-foreground italic">Aucune demande spécifique</p>
 					{/if}
 				</div>
