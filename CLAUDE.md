@@ -238,7 +238,7 @@ le code.
 
 ## Planning (plans multi-phases)
 
-> **TDD collaboratif** : [docs/ref/tests/tdd.md](docs/ref/tests/tdd.md)
+> **Architecture des tests** : [docs/ref/tests/architecture.md](docs/ref/tests/architecture.md) — le workflow TDD collaboratif, lui, est décrit ci-dessous (points 1 à 3).
 
 1. **Phase 0 — Spécification TDD** : proposer les comportements en français (cas nominal / limite / erreur), **attendre validation** avant de coder.
 2. **Agents ET modèles spécifiés** par tâche (Opus sans hésiter).
@@ -291,7 +291,7 @@ Optimistic UI · Debouncing · Realtime → [architecture.md](docs/claude/archit
 | [realtime.md](docs/claude/realtime.md)                                  | Realtime, chat, présence                   |
 | [docs/ref/tests/](docs/ref/tests/)                                      | Architecture des tests + TDD               |
 
-Index utilisateurs : [docs/README.md](docs/README.md).
+Toute la doc : [docs/](docs/).
 
 ---
 
