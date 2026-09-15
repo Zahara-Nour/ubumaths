@@ -38,6 +38,8 @@ export interface AsymptoteLabel {
 	readonly y: number;
 	readonly text: string;
 	readonly latex: string;
+	/** La courbe dont vient l'asymptote, pour lui emprunter sa couleur. */
+	readonly functionId: string;
 }
 
 interface CanvasSize {
@@ -185,7 +187,13 @@ export function placeAsymptoteLabels(
 	 * descendre en escalier les six pôles de tan(x), pourtant répartis sur
 	 * toute la largeur.
 	 */
-	const place = (anchorX: number, anchorY: number, text: string, latex: string): void => {
+	const place = (
+		anchorX: number,
+		anchorY: number,
+		text: string,
+		latex: string,
+		functionId: string
+	): void => {
 		let y = anchorY;
 
 		for (let attempt = 0; attempt < 8; attempt++) {
@@ -199,7 +207,7 @@ export function placeAsymptoteLabels(
 		// Rester dans le cadre : `GraphLabel` replaque sinon la boîte lui-même,
 		// ce qui défait l'empilement calculé ici.
 		const bounded = Math.min(Math.max(y, LABEL_STACK), size.height - LABEL_MARGIN);
-		placed.push({ x: anchorX, y: bounded, text, latex });
+		placed.push({ x: anchorX, y: bounded, text, latex, functionId });
 	};
 
 	for (const analysis of list) {
@@ -211,7 +219,7 @@ export function placeAsymptoteLabels(
 			const span = Math.abs(transformer.svgToMath(size.width, 0).x - transformer.svgToMath(0, 0).x);
 			const rounded = Math.abs(asymptote.x) < LABEL_RELATIVE_EPSILON * span ? 0 : asymptote.x;
 			const label = `x = ${Number(rounded.toPrecision(4))}`;
-			place(svgX + LABEL_MARGIN, LABEL_STACK + LABEL_MARGIN, label, label);
+			place(svgX + LABEL_MARGIN, LABEL_STACK + LABEL_MARGIN, label, label, analysis.functionId);
 		}
 
 		for (const asymptote of analysis.horizontalAsymptotes) {
@@ -224,7 +232,13 @@ export function placeAsymptoteLabels(
 			);
 			const level = Math.abs(asymptote.y) < LABEL_RELATIVE_EPSILON * height ? 0 : asymptote.y;
 			const label = asymptote.exactLatex ?? `y = ${Number(level.toPrecision(4))}`;
-			place(from + LABEL_MARGIN, svgY - LABEL_MARGIN, plainTextOf(label), label);
+			place(
+				from + LABEL_MARGIN,
+				svgY - LABEL_MARGIN,
+				plainTextOf(label),
+				label,
+				analysis.functionId
+			);
 		}
 
 		for (const asymptote of analysis.obliqueAsymptotes) {
@@ -232,14 +246,14 @@ export function placeAsymptoteLabels(
 			const anchor = anchorOnBranch(coefficients, asymptote.direction, transformer, size);
 			if (anchor === null) continue;
 			const latex = asymptote.exactLatex ?? polynomialLatex(coefficients);
-			place(anchor.x, anchor.y, plainTextOf(latex), latex);
+			place(anchor.x, anchor.y, plainTextOf(latex), latex, analysis.functionId);
 		}
 
 		for (const asymptote of analysis.polynomialAsymptotes) {
 			const anchor = anchorOnBranch(asymptote.coefficients, asymptote.direction, transformer, size);
 			if (anchor === null) continue;
 			const latex = asymptote.exactLatex ?? polynomialLatex(asymptote.coefficients);
-			place(anchor.x, anchor.y, plainTextOf(latex), latex);
+			place(anchor.x, anchor.y, plainTextOf(latex), latex, analysis.functionId);
 		}
 	}
 

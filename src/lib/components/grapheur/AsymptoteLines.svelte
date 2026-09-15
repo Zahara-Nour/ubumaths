@@ -189,6 +189,7 @@
 			x={label.x}
 			y={label.y}
 			content={{ text: label.text, latex: label.latex }}
+			accent={getFunctionColor(label.functionId)}
 			canvasWidth={width}
 			canvasHeight={height}
 		/>
