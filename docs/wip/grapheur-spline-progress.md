@@ -138,3 +138,39 @@ l'état avec `id: 'a'`, que la validation Zod rejette — l'application repartai
 alors sur ses valeurs par défaut sans rien dire. Le symptôme était pourtant
 visible (un seul sous-tracé au lieu de quatre). **Vérifier que l'état injecté
 est bien celui relu**, avant d'en tirer la moindre conclusion.
+
+### Revue de la détection — 6 findings
+
+- **Branches tronquées (important).** Ne pas relier deux branches ne suffit
+  pas : encore faut-il les tracer entièrement. La branche gauche du pôle x = 1
+  s'arrêtait à y = −3,88 au milieu d'un cadre allant jusqu'à −103 — **à
+  l'écran, une branche tronquée ressemble exactement à la bosse cherchée
+  depuis le début**. Cause : le critère « plus proche de notre branche que de
+  l'autre ». Entre un échantillon et son pôle, |f| commence souvent par
+  DÉCROÎTRE avant de diverger, et le point se retrouvait numériquement plus
+  près de l'autre extrémité. On ne rejette plus qu'un candidat **nettement**
+  collé à l'autre branche (facteur 4) — la signature d'un saut fini.
+  Le test porte désormais sur la **complétude des branches**, pas seulement sur
+  l'absence de pont : c'est la propriété qui compte pour l'œil.
+- **Compromis figé par un test.** La conservation du signe tronque une branche
+  sur son zéro quand zéro et pôle se partagent un pas d'échantillonnage — cas
+  des homographiques `(ax+b)/(cx+d)` au dézoom. Un moignon plutôt qu'un pont :
+  moins faux, et visible. Le vrai correctif demande de refondre `marchToward`
+  pour poursuivre la dichotomie au-delà du changement de signe. Non fait.
+- **Tri redevenu positionnel (mineur).** `suspicion()` rendait `Infinity`, or
+  `Infinity - Infinity` vaut `NaN` : le comparateur retombait sur l'ordre des
+  indices, soit exactement la consommation gauche-droite du budget que ce tri
+  existe pour empêcher. `Number.MAX_VALUE`.
+- **Gaspillage sur chaque extremum (mineur).** Tout sommet de parabole
+  déclenchait une paire de marches inutiles. Plancher à 1/500 de la hauteur :
+  un dépassement sous le pixel n'est pas une singularité.
+- **Limite de résolution assumée.** À 100 points (qualité d'un drag) sur un
+  cadrage de 127 unités, la branche entre −1 et 0 ne reçoit **aucun**
+  échantillon : le pas vaut 1,28 pour une branche large de 1. Elle ne peut donc
+  pas être tracée. Seule l'absence de pont est exigée à cette densité.
+- **Les sauts finis restent liés au zoom.** Les singularités, elles, ne le sont
+  plus. Un escalier n'a rien à trahir entre ses marches : seul le seuil
+  `SUSPICION_RATIO` le détecte, et il monte avec le dézoom.
+
+Coût final : 1197 évaluations pour 300 points sur une fonction lisse — le
+minimum incompressible des trois sondes. 1342 sur le cadrage de David.

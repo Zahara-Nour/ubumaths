@@ -33,9 +33,9 @@ const ASYMPTOTE_FACTOR = 2;
 const MIN_VIEWPORT_DIM = 1e-10;
 
 /**
- * |Δy| au-delà duquel un intervalle est inspecté, en fraction de la hauteur.
- * Volontairement bas : la sonde du milieu écarte ensuite, à une évaluation
- * près, la quasi-totalité des intervalles d'une fonction continue.
+ * |Δy| au-delà duquel un SAUT FINI est inspecté, en fraction de la hauteur.
+ * Les singularités, elles, sont désormais trouvées par les sondes, sans seuil
+ * lié au zoom — un escalier, lui, n'a rien à trahir entre ses marches.
  */
 const SUSPICION_RATIO = 0.05;
 
@@ -60,6 +60,15 @@ const MAX_REFINED_INTERVALS = 64;
 
 /** Nombre maximal de marches vers un bord de domaine, par courbe. */
 const MAX_DOMAIN_MARCHES = 64;
+
+/**
+ * Un candidat est réputé appartenir à la branche opposée quand il en est ce
+ * facteur de fois plus proche que de la nôtre.
+ */
+const OPPOSITE_BRANCH_FACTOR = 4;
+
+/** Un dépassement de sonde sous 1/500 de la hauteur reste invisible à l'écran. */
+const SUSPICION_PIXEL_RATIO = 500;
 
 /** Positions sondées dans chaque intervalle, en fraction de sa largeur. */
 const PROBE_POSITIONS = [0.25, 0.5, 0.75] as const;
@@ -189,15 +198,20 @@ function marchToward(
 		// point de la branche du milieu et enjamber le premier pôle.
 		const sameSign = y * near.y > 0 || y === 0 || near.y === 0;
 
-		// Ensuite seulement : soit il dépasse les deux extrémités (il est sur
-		// le chemin de la divergence — cas d'un pôle d'ordre pair, où les deux
-		// branches partent du même côté), soit il est plus proche de notre
-		// branche que de la branche d'en face.
-		const belongs =
-			opposite === null ||
-			(sameSign &&
-				(Math.abs(y) > Math.max(Math.abs(near.y), Math.abs(opposite)) ||
-					Math.abs(y - near.y) <= Math.abs(y - opposite)));
+		// Ensuite : on ne rejette un candidat de notre signe que s'il colle
+		// NETTEMENT à l'autre extrémité — la signature d'un saut fini, où la
+		// valeur est déjà sur l'autre marche de l'escalier.
+		//
+		// Exiger simplement « plus proche de nous que de l'autre » amputait les
+		// branches : entre un échantillon et son pôle, |f| commence souvent par
+		// DÉCROÎTRE avant de diverger, et le point se retrouve numériquement
+		// plus près de l'autre extrémité. La branche gauche du pôle x = 1 de
+		// 1/(x(x+1)(x-1)) s'arrêtait ainsi en plein cadre, à y = -3,88 au lieu
+		// de plonger vers -103 : à l'écran, une bosse.
+		const clingsToOpposite =
+			opposite !== null && Math.abs(y - opposite) * OPPOSITE_BRANCH_FACTOR < Math.abs(y - near.y);
+
+		const belongs = opposite === null || (sameSign && !clingsToOpposite);
 
 		if (!belongs) {
 			far = midX;
@@ -218,10 +232,11 @@ function marchToward(
 /**
  * À quel point l'intervalle entre deux échantillons est-il suspect ?
  *
- * On sonde le milieu de CHAQUE intervalle — une évaluation, alors que la
- * courbe en coûte déjà des centaines. Une valeur franchement intercalée signe
- * une fonction continue et rend 0 ; une valeur qui sort de l'intervalle, ou
- * qui n'existe pas, trahit une singularité et rend l'ampleur de l'écart.
+ * On sonde CHAQUE intervalle en trois points — trois évaluations, alors que la
+ * courbe en coûte déjà des centaines. Des valeurs franchement intercalées
+ * signent une fonction continue et rendent 0 ; une valeur qui sort de
+ * l'intervalle, ou qui n'existe pas, trahit une singularité et rend l'ampleur
+ * de l'écart.
  *
  * ⚠️ Le seuil précédent — un saut supérieur à 5 % de la hauteur de fenêtre —
  * était une fausse bonne idée : sur un cadrage de 127 unités il réclamait un
@@ -241,6 +256,10 @@ function suspicion(
 	const deltaY = Math.abs(p2.y - p1.y);
 	const margin = 0.05 * deltaY;
 
+	// Un dépassement de sonde inférieur au pixel est un extremum local, pas une
+	// singularité : sans ce plancher, le sommet de chaque parabole déclenchait
+	// une paire de marches pour rien (sin(x) : 200 → 1085 évaluations).
+	const floor = height / SUSPICION_PIXEL_RATIO;
 	let overshoot = 0;
 	let interpolates = true;
 
@@ -251,9 +270,13 @@ function suspicion(
 	for (const t of PROBE_POSITIONS) {
 		const y = evaluator(p1.x + (p2.x - p1.x) * t);
 		// Hors domaine : bord de domaine ou pôle, toujours à inspecter.
-		if (y === null || !Number.isFinite(y)) return Infinity;
+		// `MAX_VALUE` et non `Infinity` : `Infinity - Infinity` vaut NaN, et le
+		// comparateur du tri retombait alors sur l'ordre des indices — soit la
+		// consommation gauche-droite du budget que ce tri existe pour éviter.
+		if (y === null || !Number.isFinite(y)) return Number.MAX_VALUE;
 
-		overshoot = Math.max(overshoot, low - y, y - high);
+		const excess = Math.max(low - y, y - high);
+		if (excess > floor) overshoot = Math.max(overshoot, excess);
 		if (!(y > low + margin && y < high - margin)) interpolates = false;
 	}
 
@@ -261,7 +284,7 @@ function suspicion(
 	// un escalier a ses sondes sur l'une ou l'autre des marches.
 	const jump = deltaY > SUSPICION_RATIO * height ? deltaY : 0;
 
-	return Math.max(overshoot, interpolates ? 0 : jump, 0);
+	return interpolates ? 0 : Math.max(overshoot, jump);
 }
 
 /** Points à insérer entre deux échantillons, et rupture éventuelle. */
