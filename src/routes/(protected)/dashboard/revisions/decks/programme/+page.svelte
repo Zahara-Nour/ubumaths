@@ -101,7 +101,7 @@
 					Tu n'as pas encore travaillé de capacité tagué dans le référentiel.<br />
 					Va t'entraîner pour faire apparaître tes premières cartes ici.
 				</p>
-				<Button href="/dashboard/student/objectifs">Voir mes objectifs</Button>
+				<Button href="/dashboard/student/progression?onglet=objectifs">Voir ma progression</Button>
 			</Card.Content>
 		</Card.Root>
 	{:else}

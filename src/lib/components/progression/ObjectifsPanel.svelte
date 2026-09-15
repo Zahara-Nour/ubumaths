@@ -1,48 +1,49 @@
 <script lang="ts">
 	/**
-	 * Student Objectifs Page
-	 * ======================
+	 * Onglet « Ce que je sais faire » — contenus du programme de l'élève.
 	 *
-	 * UI élève Phase 3.1 — Liste des objectifs famille knowledge (capacités 6ᵉ).
-	 *
-	 * Spec : docs/wip/skills-referentiel-design.md §8
-	 * Format visuel : ◯ Non commencé / 🟠 En cours / 🟢 Objectif atteint / ✨ Maîtrisé en profondeur
+	 * Format visuel : ◯ non commencé / 🟠 en cours / 🟢 atteint / ✨ maîtrisé.
+	 * Le niveau d'un objectif vient de `objectiveLevel()` — la MÊME fonction que
+	 * l'agrégation serveur, pour que le compteur de l'onglet et celui de la
+	 * tuile du dashboard ne puissent pas diverger.
 	 */
 
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import { Target, Sparkles, CheckCircle2, Circle, LifeBuoy, ChevronRight } from '@lucide/svelte';
+	import {
+		Sparkles,
+		CheckCircle2,
+		Circle,
+		LifeBuoy,
+		ChevronRight,
+		Hourglass
+	} from '@lucide/svelte';
 	import {
 		formatObjectiveLevel,
 		getObjectiveLevelVisual,
+		objectiveLevel,
 		type ObjectiveLevel
 	} from '$lib/types/skills';
 	import CapacityFsrsBadge from '$lib/components/srs/CapacityFsrsBadge.svelte';
-	import type { PageData } from './$types';
-	import type { ObjectiveSummary } from './+page.server';
+	import { formatGradeForDisplay, isValidGradeCode } from '$lib/utils/grades';
+	import type { ObjectivesProgression } from '$lib/server/progression/student-progression';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let {
+		objectives,
+		competencesObserved = false
+	}: { objectives: ObjectivesProgression; competencesObserved?: boolean } = $props();
 
 	let showNonCommence = $state(false);
 
-	// Helpers de présentation
-	//
-	// Deux formes d'objectif depuis la fusion des référentiels :
-	//  · avec échelle → le niveau EST le rang max acquis (0-4) ;
-	//  · sans échelle → on projette la couverture sur la même échelle visuelle.
-	//    Pas de niveau 4 : « aller au-delà de l'attendu » n'a de sens que si une
-	//    échelle le définit.
-	function objectiveLevel(o: ObjectiveSummary): ObjectiveLevel {
-		if (o.has_scale) return o.rang_max_acquired;
-		if (o.total_count === 0) return 0;
-		if (o.acquired_count === o.total_count) return 3;
-		return o.acquired_count > 0 ? 1 : 0;
-	}
+	const stats = $derived(objectives.stats);
+
+	// Le niveau réel de l'élève, jamais une mention codée en dur.
+	const gradeLabel = $derived(
+		objectives.grade && isValidGradeCode(objectives.grade)
+			? formatGradeForDisplay(objectives.grade)
+			: null
+	);
 
 	function visualBgClass(level: ObjectiveLevel): string {
 		if (level === 4) return 'bg-amber-100 dark:bg-amber-900/30';
@@ -59,93 +60,100 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Mes objectifs | Chiphre</title>
-</svelte:head>
-
-<main class="container mx-auto max-w-5xl px-4 py-6">
-	<!-- Header -->
-	<div class="mb-6">
-		<div class="flex items-center gap-3">
-			<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-				<Target class="h-6 w-6 text-primary" />
-			</div>
-			<div>
-				<h1 class="text-3xl font-bold tracking-tight">Mes objectifs</h1>
-				<p class="text-muted-foreground">
-					Programme 6<sup>ème</sup> — {data.stats.total} attendus à maîtriser
-				</p>
-			</div>
-		</div>
-	</div>
-
+{#if !objectives.hasReferentiel}
+	<!--
+		Le référentiel ne couvre pas encore ce niveau (1ʳᵉ générale, terminale, ou
+		élève sans niveau renseigné). On le DIT : une page vide laisse croire à une
+		panne, et un « 0 sur 0 » laisse croire à un échec.
+	-->
+	<Card.Root>
+		<Card.Content class="py-12 text-center">
+			<Hourglass class="mx-auto mb-3 h-10 w-10 text-muted-foreground opacity-40" />
+			<p class="mb-1 font-medium">
+				Le programme {gradeLabel ? `de ${gradeLabel}` : 'de ton niveau'} n'est pas encore disponible
+				ici.
+			</p>
+			<p class="text-sm text-muted-foreground">
+				{#if competencesObserved}
+					<!-- Ne renvoyer vers l'autre onglet que s'il a de la matière : en
+						 production il est vide pour tout le monde, et la promesse
+						 sonnerait faux. -->
+					Il arrivera. En attendant, l'onglet « Ma façon de faire des maths » a de quoi te répondre.
+				{:else}
+					Il arrivera.
+				{/if}
+			</p>
+		</Card.Content>
+	</Card.Root>
+{:else}
 	<!-- Compteurs + barre de progression -->
 	<Card.Root class="mb-6">
 		<Card.Content class="pt-6">
+			<p class="mb-4 text-sm text-muted-foreground">
+				{#if gradeLabel}
+					Programme de {gradeLabel} — {stats.total} objectif{stats.total > 1 ? 's' : ''} à atteindre.
+				{:else}
+					{stats.total} objectif{stats.total > 1 ? 's' : ''} à atteindre.
+				{/if}
+			</p>
 			<div class="mb-4 flex flex-wrap items-center gap-3">
 				<div class="flex items-center gap-1 text-lg">
 					<Sparkles class="h-5 w-5 text-amber-500" />
-					<span class="font-bold">{data.stats.mastery}</span>
+					<span class="font-bold">{stats.mastery}</span>
 				</div>
 				<div class="flex items-center gap-1 text-lg">
 					<CheckCircle2 class="h-5 w-5 text-green-500" />
-					<span class="font-bold">{data.stats.atteint}</span>
+					<span class="font-bold">{stats.atteint}</span>
 				</div>
 				<div class="flex items-center gap-1 text-lg">
 					<Circle class="h-5 w-5 fill-orange-500 text-orange-500" />
-					<span class="font-bold">{data.stats.en_cours}</span>
+					<span class="font-bold">{stats.en_cours}</span>
 				</div>
-				{#if data.stats.non_commence > 0}
+				{#if stats.non_commence > 0}
 					<div class="flex items-center gap-1 text-sm text-muted-foreground">
 						<Circle class="h-4 w-4" />
-						<span
-							>{data.stats.non_commence} non commencé{data.stats.non_commence > 1 ? 's' : ''}</span
-						>
+						<span>{stats.non_commence} non commencé{stats.non_commence > 1 ? 's' : ''}</span>
 					</div>
 				{/if}
-				<div class="ml-auto text-sm text-muted-foreground">
-					{data.stats.mastery + data.stats.atteint}/{data.stats.total} atteints
-				</div>
+				{#if stats.total > 0}
+					<div class="ml-auto text-sm text-muted-foreground">
+						{stats.mastery + stats.atteint}/{stats.total} atteints
+					</div>
+				{/if}
 			</div>
-			<!-- Barre de progression -->
-			<div class="h-3 w-full overflow-hidden rounded-full bg-muted">
-				<div class="flex h-full">
-					{#if data.stats.mastery > 0}
-						<div
-							class="bg-amber-500"
-							style="width: {(data.stats.mastery / data.stats.total) * 100}%"
-						></div>
-					{/if}
-					{#if data.stats.atteint > 0}
-						<div
-							class="bg-green-500"
-							style="width: {(data.stats.atteint / data.stats.total) * 100}%"
-						></div>
-					{/if}
-					{#if data.stats.en_cours > 0}
-						<div
-							class="bg-orange-500"
-							style="width: {(data.stats.en_cours / data.stats.total) * 100}%"
-						></div>
-					{/if}
+			{#if stats.total > 0}
+				<div class="h-3 w-full overflow-hidden rounded-full bg-muted">
+					<div class="flex h-full">
+						{#if stats.mastery > 0}
+							<div class="bg-amber-500" style="width: {(stats.mastery / stats.total) * 100}%"></div>
+						{/if}
+						{#if stats.atteint > 0}
+							<div class="bg-green-500" style="width: {(stats.atteint / stats.total) * 100}%"></div>
+						{/if}
+						{#if stats.en_cours > 0}
+							<div
+								class="bg-orange-500"
+								style="width: {(stats.en_cours / stats.total) * 100}%"
+							></div>
+						{/if}
+					</div>
 				</div>
-			</div>
-			<!-- Badge à remédier -->
-			{#if data.stats.remediation_count > 0}
+			{/if}
+			{#if stats.remediation_count > 0}
 				<div class="mt-4">
 					<Badge variant="destructive" class="gap-1">
 						<LifeBuoy class="h-4 w-4" />
-						{data.stats.remediation_count} objectif{data.stats.remediation_count > 1 ? 's' : ''} à remédier
+						{stats.remediation_count} objectif{stats.remediation_count > 1 ? 's' : ''} à remédier
 					</Badge>
 				</div>
 			{/if}
 		</Card.Content>
 	</Card.Root>
 
-	<!-- Mini-cartes thèmes (résumé par thème) -->
-	{#if data.themes.length > 1}
+	<!-- Mini-cartes par thème -->
+	{#if objectives.themes.length > 1}
 		<div class="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-			{#each data.themes as theme (theme.id)}
+			{#each objectives.themes as theme (theme.id)}
 				{@const themeAtteint = theme.objectives.filter((o) => objectiveLevel(o) >= 3).length}
 				{@const themeTotal = theme.objectives.length}
 				{@const themeRatio = themeTotal > 0 ? themeAtteint / themeTotal : 0}
@@ -171,17 +179,16 @@
 	{/if}
 
 	<!-- Toggle non commencés -->
-	{#if data.stats.non_commence > 0}
+	{#if stats.non_commence > 0}
 		<div class="mb-4">
 			<Button variant="ghost" size="sm" onclick={() => (showNonCommence = !showNonCommence)}>
-				{showNonCommence ? 'Masquer' : 'Afficher'} les objectifs non commencés ({data.stats
-					.non_commence})
+				{showNonCommence ? 'Masquer' : 'Afficher'} les objectifs non commencés ({stats.non_commence})
 			</Button>
 		</div>
 	{/if}
 
 	<!-- Liste par thème -->
-	{#each data.themes as theme (theme.id)}
+	{#each objectives.themes as theme (theme.id)}
 		{@const visibleObjectives = theme.objectives.filter(
 			(o) => objectiveLevel(o) > 0 || showNonCommence
 		)}
@@ -197,7 +204,6 @@
 						>
 							<Card.Root>
 								<Card.Content class="flex items-center gap-3 p-4">
-									<!-- Visuel d'état -->
 									<div
 										class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xl {visualBgClass(
 											level
@@ -228,7 +234,6 @@
 											</span>
 										{/if}
 									</div>
-									<!-- Nom + badges -->
 									<div class="min-w-0 flex-1">
 										<div class="truncate font-medium">{obj.name}</div>
 										<div class="mt-1 flex gap-2">
@@ -251,11 +256,16 @@
 		{/if}
 	{/each}
 
-	{#if data.stats.total === 0}
+	<!--
+		Référentiel présent mais sans aucun objectif : un thème semé à vide suffit.
+		Sans ce message, l'élève lirait « 0 objectif à atteindre » suivi de rien —
+		le « 0 sur 0 » que ce chantier cherche justement à supprimer.
+	-->
+	{#if stats.total === 0}
 		<Card.Root>
 			<Card.Content class="py-12 text-center text-muted-foreground">
 				<p>Aucun objectif disponible pour le moment.</p>
 			</Card.Content>
 		</Card.Root>
 	{/if}
-</main>
+{/if}

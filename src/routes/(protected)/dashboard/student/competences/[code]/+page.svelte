@@ -45,7 +45,7 @@
 
 <main class="container mx-auto max-w-4xl px-4 py-6">
 	<div class="mb-4">
-		<Button variant="ghost" size="sm" href="/dashboard/student/competences">
+		<Button variant="ghost" size="sm" href="/dashboard/student/progression?onglet=competences">
 			<ChevronLeft class="h-4 w-4" />
 			Mes compétences
 		</Button>

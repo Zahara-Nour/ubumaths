@@ -33,15 +33,17 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	// `lore` n'est plus utilisé que dans les blocs commentés plus bas (sections
+	// exercices et SRS). Son dernier usage vivant était le message « famille B »,
+	// retiré avec les deux anciennes tuiles.
+	// import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import RewardsBlock from '$lib/components/RewardsBlock.svelte';
 	import InboxWidget from '$lib/components/student-inbox/InboxWidget.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import {
-		Target,
-		Brain,
+		TrendingUp,
 		Sparkles,
 		CheckCircle2,
 		Circle,
@@ -86,135 +88,111 @@
 		<InboxWidget inbox={data.inbox} maxItems={5} />
 	{/if}
 
-	<!-- COMPÉTENCES PROGRESS WIDGET (Phase 6) -->
-	{#if data.competencesSummary}
-		{@const objs = data.competencesSummary.objectives}
-		{@const comps = data.competencesSummary.competences}
-		<div class="grid gap-3 md:grid-cols-2">
-			<!-- Mes objectifs (famille A — knowledge) -->
-			<a
-				href="/dashboard/student/objectifs"
-				class="block rounded-lg transition-colors hover:bg-accent/50 focus:bg-accent focus:outline-none"
-			>
-				<Card.Root>
-					<Card.Content class="p-4">
-						<div class="mb-2 flex items-center gap-2">
-							<Target class="h-5 w-5 text-primary" />
-							<h3 class="font-semibold">Mes objectifs</h3>
-							<ChevronRight class="ml-auto h-4 w-4 text-muted-foreground" />
-						</div>
-						<div class="mb-2 flex items-center gap-3 text-sm">
-							<span class="flex items-center gap-1">
-								<Sparkles class="h-4 w-4 text-amber-500" />
-								<strong>{objs.mastery}</strong>
-							</span>
-							<span class="flex items-center gap-1">
-								<CheckCircle2 class="h-4 w-4 text-green-500" />
-								<strong>{objs.atteint}</strong>
-							</span>
-							<span class="flex items-center gap-1">
-								<Circle class="h-4 w-4 fill-orange-500 text-orange-500" />
-								<strong>{objs.en_cours}</strong>
-							</span>
-							<span class="ml-auto text-xs text-muted-foreground">
-								{objs.mastery + objs.atteint}/{objs.total} atteints
-							</span>
-						</div>
-						<div class="h-2 w-full overflow-hidden rounded-full bg-muted">
-							<div class="flex h-full">
-								{#if objs.mastery > 0}
-									<div
-										class="bg-amber-500"
-										style="width: {(objs.mastery / objs.total) * 100}%"
-									></div>
-								{/if}
-								{#if objs.atteint > 0}
-									<div
-										class="bg-green-500"
-										style="width: {(objs.atteint / objs.total) * 100}%"
-									></div>
-								{/if}
-								{#if objs.en_cours > 0}
-									<div
-										class="bg-orange-500"
-										style="width: {(objs.en_cours / objs.total) * 100}%"
-									></div>
-								{/if}
-							</div>
-						</div>
-						{#if objs.remediation > 0}
-							<div class="mt-2">
-								<Badge variant="destructive" class="gap-1 text-xs">
-									<LifeBuoy class="h-3 w-3" />
-									{objs.remediation} à remédier
-								</Badge>
-							</div>
-						{/if}
-					</Card.Content>
-				</Card.Root>
-			</a>
+	<!--
+		TUILE « MA PROGRESSION »
+		=======================
+		Une seule tuile pour les deux axes. Avant, deux tuiles côte à côte —
+		mêmes icônes, mêmes couleurs, même barre, aucune glose — que David
+		lui-même n'arrivait pas à distinguer.
 
-			<!-- Mes compétences math (famille B — competence) -->
-			<a
-				href="/dashboard/student/competences"
-				class="block rounded-lg transition-colors hover:bg-accent/50 focus:bg-accent focus:outline-none"
-			>
-				<Card.Root>
-					<Card.Content class="p-4">
-						<div class="mb-2 flex items-center gap-2">
-							<Brain class="h-5 w-5 text-primary" />
-							<h3 class="font-semibold">Mes compétences math</h3>
-							<ChevronRight class="ml-auto h-4 w-4 text-muted-foreground" />
-						</div>
-						{#if comps.with_data === 0}
-							<p class="text-sm text-muted-foreground">
-								Pas encore d'évaluation famille B. Ton {lore.entities.teacher} commencera bientôt.
-							</p>
-						{:else}
-							<div class="mb-2 flex items-center gap-3 text-sm">
+		Elle disparaît quand il n'y a RIEN à résumer : ni référentiel pour le
+		niveau de l'élève, ni compétence observée. L'entrée de menu, elle, reste :
+		la page explique alors franchement pourquoi c'est vide.
+	-->
+	{#if data.progression && (data.progression.objectives.hasReferentiel || data.progression.competences.stats.with_data > 0)}
+		{@const objs = data.progression.objectives.stats}
+		{@const comps = data.progression.competences.stats}
+		<a
+			href="/dashboard/student/progression"
+			class="block rounded-lg transition-colors hover:bg-accent/50 focus:bg-accent focus:outline-none"
+		>
+			<Card.Root>
+				<Card.Content class="p-4">
+					<div class="mb-3 flex items-center gap-2">
+						<TrendingUp class="h-5 w-5 text-primary" />
+						<h3 class="font-semibold">Ma progression</h3>
+						<ChevronRight class="ml-auto h-4 w-4 text-muted-foreground" />
+					</div>
+
+					{#if data.progression.objectives.hasReferentiel}
+						<div class="mb-3">
+							<div class="mb-1 flex items-center gap-3 text-sm">
+								<span class="text-xs font-medium text-muted-foreground">Ce que je sais faire</span>
 								<span class="flex items-center gap-1">
 									<Sparkles class="h-4 w-4 text-amber-500" />
-									<strong>{comps.tres_bonne}</strong>
+									<strong>{objs.mastery}</strong>
 								</span>
 								<span class="flex items-center gap-1">
 									<CheckCircle2 class="h-4 w-4 text-green-500" />
-									<strong>{comps.satisfaisante}</strong>
+									<strong>{objs.atteint}</strong>
 								</span>
 								<span class="flex items-center gap-1">
 									<Circle class="h-4 w-4 fill-orange-500 text-orange-500" />
-									<strong>{comps.fragile}</strong>
+									<strong>{objs.en_cours}</strong>
 								</span>
 								<span class="ml-auto text-xs text-muted-foreground">
-									{comps.tres_bonne + comps.satisfaisante}/{comps.total} à niveau
+									{objs.mastery + objs.atteint}/{objs.total} atteints
 								</span>
 							</div>
 							<div class="h-2 w-full overflow-hidden rounded-full bg-muted">
 								<div class="flex h-full">
-									{#if comps.tres_bonne > 0}
+									{#if objs.mastery > 0}
 										<div
 											class="bg-amber-500"
-											style="width: {(comps.tres_bonne / comps.total) * 100}%"
+											style="width: {(objs.mastery / objs.total) * 100}%"
 										></div>
 									{/if}
-									{#if comps.satisfaisante > 0}
+									{#if objs.atteint > 0}
 										<div
 											class="bg-green-500"
-											style="width: {(comps.satisfaisante / comps.total) * 100}%"
+											style="width: {(objs.atteint / objs.total) * 100}%"
 										></div>
 									{/if}
-									{#if comps.fragile > 0}
+									{#if objs.en_cours > 0}
 										<div
 											class="bg-orange-500"
-											style="width: {(comps.fragile / comps.total) * 100}%"
+											style="width: {(objs.en_cours / objs.total) * 100}%"
 										></div>
 									{/if}
 								</div>
 							</div>
-						{/if}
-					</Card.Content>
-				</Card.Root>
-			</a>
-		</div>
+						</div>
+					{/if}
+
+					{#if comps.with_data > 0}
+						<div class="flex items-center gap-3 text-sm">
+							<span class="text-xs font-medium text-muted-foreground">
+								Ma façon de faire des maths
+							</span>
+							<span class="flex items-center gap-1">
+								<Sparkles class="h-4 w-4 text-amber-500" />
+								<strong>{comps.tres_bonne}</strong>
+							</span>
+							<span class="flex items-center gap-1">
+								<CheckCircle2 class="h-4 w-4 text-green-500" />
+								<strong>{comps.satisfaisante}</strong>
+							</span>
+							<span class="flex items-center gap-1">
+								<Circle class="h-4 w-4 fill-orange-500 text-orange-500" />
+								<strong>{comps.fragile}</strong>
+							</span>
+							<span class="ml-auto text-xs text-muted-foreground">
+								{comps.with_data}/{comps.total} observées
+							</span>
+						</div>
+					{/if}
+
+					{#if objs.remediation_count > 0}
+						<div class="mt-3">
+							<Badge variant="destructive" class="gap-1 text-xs">
+								<LifeBuoy class="h-3 w-3" />
+								{objs.remediation_count} à remédier
+							</Badge>
+						</div>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+		</a>
 	{/if}
 
 	<!-- REWARDS BLOCK -->
