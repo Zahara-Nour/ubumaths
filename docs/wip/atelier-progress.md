@@ -208,6 +208,60 @@ lecture**, jamais à la construction de l'objet.
 
 ---
 
+## 🔜 Dette reconnue — trois points, avec leur condition de déclenchement
+
+Relevés par la revue de la PR #330 et **délibérément non corrigés** : ils ne
+deviennent observables, testables et mesurables qu'avec une interface. Les
+traiter à l'aveugle reviendrait à concevoir sans appelant, tester à moitié, et
+optimiser sans mesure.
+
+Chacun porte sa **condition de déclenchement** — sans elle, un point améliorable
+est un point oublié.
+
+### 1. D10 n'est pas branché depuis l'atelier
+
+`create` et `update` ne portent pas de `Provenance` : tout est lu en `detect`,
+alors que `parse.ts` sait faire du LaTeX pour un champ de maths (§6 bis).
+
+⚠️ **Ce n'est pas un bug aujourd'hui.** La détection lit correctement le LaTeX
+pur comme le custom pur ; un champ de maths produit `\sin(x)`, détecté LaTeX,
+lu juste. Le seul écart est l'ambiguïté : `e^x` saisi dans un champ sera lu comme
+la **constante d'Euler** (repli custom) et non comme une variable `e` — ce qui
+est d'ailleurs ce qu'un élève veut dire. D10 apporte une **garantie**, pas une
+correction.
+
+> **Déclencheur : quand `create`/`update` auront de vrais appelants**, c'est-à-dire
+> au lot des vues. On saura alors quelle provenance porte un `update` déclenché
+> par un curseur, par une URL ou par une restauration — ce qui ne se devine pas.
+
+### 2. `build()` recrée le curseur à chaque `update`
+
+Les bornes d'un curseur réglé par l'élève seraient effacées dès qu'il édite la
+définition. **Silencieux, et frustrant le jour où ça se déclenche.**
+
+Aujourd'hui sans effet : rien ne permet de régler un curseur, donc le seul test
+possible vérifierait que le défaut reste le défaut — ce qui ne prouve rien.
+
+> **Déclencheur : dans le MÊME lot que l'action « régler le curseur »** (§3),
+> jamais avant. Le test de préservation s'écrit avec la capacité qu'il protège.
+
+### 3. `recomputeAll` réassigne tout le tableau
+
+`this.items = this.items.map(...)` remplace chaque objet à chaque mutation, même
+quand aucun statut ne change : tout `{#each}` se re-rend. C'est précisément la
+granularité que le choix du store à runes visait à préserver.
+
+⚠️ **Ce n'est pas un problème de performance** : la revue a mesuré **0,7 ms** par
+mutation sur 20 objets dont 8 listes de 200 valeurs. L'enjeu est le re-rendu, et
+aucune vue ne permet encore de l'observer. Optimiser sans mesure risquerait
+surtout un bug de réactivité — un objet qu'on cesse de remplacer alors qu'il
+aurait dû l'être.
+
+> **Déclencheur : après avoir mesuré sur une vue réelle.** Ne remplacer alors que
+> les objets dont `status`, `message` ou `missing` changent.
+
+---
+
 ## 🔜 À faire au lot des vues : extraire le composant de saisie
 
 La page `/dashboard/admin/debug/mathfield` (carte « Math Input ») contient déjà,
