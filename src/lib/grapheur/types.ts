@@ -300,6 +300,13 @@ export interface HorizontalAsymptote {
 	readonly y: number;
 	readonly functionId: string;
 	readonly direction: 'left' | 'right' | 'both';
+	/**
+	 * Forme exacte du libellé, quand la division euclidienne l'a donnée.
+	 *
+	 * `y = x + 5` plutôt que `y = 1.0000000000000002x + 4.999999999999998` :
+	 * le tracé se contente des coefficients numériques, l'étiquette non.
+	 */
+	readonly exactLatex?: string;
 }
 
 export interface ObliqueAsymptote {
@@ -307,6 +314,13 @@ export interface ObliqueAsymptote {
 	readonly b: number;
 	readonly functionId: string;
 	readonly direction: 'left' | 'right' | 'both';
+	/**
+	 * Forme exacte du libellé, quand la division euclidienne l'a donnée.
+	 *
+	 * `y = x + 5` plutôt que `y = 1.0000000000000002x + 4.999999999999998` :
+	 * le tracé se contente des coefficients numériques, l'étiquette non.
+	 */
+	readonly exactLatex?: string;
 }
 
 /**
@@ -320,6 +334,13 @@ export interface PolynomialAsymptote {
 	readonly coefficients: readonly number[];
 	readonly functionId: string;
 	readonly direction: 'left' | 'right' | 'both';
+	/**
+	 * Forme exacte du libellé, quand la division euclidienne l'a donnée.
+	 *
+	 * `y = x + 5` plutôt que `y = 1.0000000000000002x + 4.999999999999998` :
+	 * le tracé se contente des coefficients numériques, l'étiquette non.
+	 */
+	readonly exactLatex?: string;
 }
 
 export interface FunctionAnalysis {

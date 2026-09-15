@@ -204,7 +204,7 @@ export function placeAsymptoteLabels(
 				transformer.svgToMath(0, 0).y - transformer.svgToMath(0, size.height).y
 			);
 			const level = Math.abs(asymptote.y) < LABEL_RELATIVE_EPSILON * height ? 0 : asymptote.y;
-			const label = `y = ${Number(level.toPrecision(4))}`;
+			const label = asymptote.exactLatex ?? `y = ${Number(level.toPrecision(4))}`;
 			place(from + LABEL_MARGIN, svgY - LABEL_MARGIN, label, label);
 		}
 
@@ -212,13 +212,14 @@ export function placeAsymptoteLabels(
 			const coefficients = [asymptote.b, asymptote.m];
 			const anchor = anchorOnBranch(coefficients, asymptote.direction, transformer, size);
 			if (anchor === null) continue;
-			place(anchor.x, anchor.y, polynomialLatex(coefficients), polynomialLatex(coefficients));
+			const latex = asymptote.exactLatex ?? polynomialLatex(coefficients);
+			place(anchor.x, anchor.y, latex, latex);
 		}
 
 		for (const asymptote of analysis.polynomialAsymptotes) {
 			const anchor = anchorOnBranch(asymptote.coefficients, asymptote.direction, transformer, size);
 			if (anchor === null) continue;
-			const latex = polynomialLatex(asymptote.coefficients);
+			const latex = asymptote.exactLatex ?? polynomialLatex(asymptote.coefficients);
 			place(anchor.x, anchor.y, latex, latex);
 		}
 	}

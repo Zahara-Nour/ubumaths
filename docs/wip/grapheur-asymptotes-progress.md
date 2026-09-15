@@ -217,3 +217,55 @@ c'est ce qui l'attrapera la prochaine fois.
 libellé sont devenus **relatifs** — à la plus grande amplitude pour un
 coefficient, à la taille du cadre pour une abscisse. On lit `x = 0` et `y = x²`.
 Le chantier symbolique donnera ces zéros exactement, plutôt que de les arrondir.
+
+---
+
+## Phase 4 — Symbolique d'abord, numérique en repli
+
+Le sondage fait ce qu'il peut : il évalue la fonction très loin, extrapole, et
+paie chaque chiffre en bruit. Sur une **fraction rationnelle**, rien de tout
+cela n'est nécessaire — la division euclidienne de P par Q donne le quotient D
+avec P/Q = D + R/Q, et R/Q tend vers 0. **D est l'asymptote**, exactement.
+C'est ce qu'un élève fait à la main.
+
+### Ce que ça change, mesuré
+
+|               | Numérique                                                 | Symbolique                                       |
+| ------------- | --------------------------------------------------------- | ------------------------------------------------ |
+| Degré atteint | 2 (plafond figé par un test)                              | sans limite — `(x⁴+1)/(x−1)` donne `x³+x²+x+1`   |
+| Coefficients  | `1.0000000000000002x + 4.999999999999998`                 | `x + 5`                                          |
+| Faux positifs | ~1,5 % sur les oscillations irrationnelles                | aucun : il n'y a rien à deviner                  |
+| Étiquette     | arrondie à 4 chiffres, zéros masqués par un seuil relatif | forme exacte, `\frac{x}{2}+\frac{1}{2}` comprise |
+
+Le plafond de degré 2 n'était pas un choix : à l'échelle de sondage, x³ vaut
+4e12 et l'unité ne s'y lit plus. Aucun réglage ne l'aurait levé.
+
+### Où vit quoi
+
+- `$lib/mathAST/normal/rational-quotient` — `rationalQuotient(expr, 'x')` rend
+  `{ quotient, coefficients }` ou `null`. La forme pour l'étiquette, les
+  nombres pour le tracé, une seule normalisation pour les deux. Rend `null`
+  pour un polynôme (il est sa propre valeur), pour une fraction en `t` quand on
+  analyse `x`, et pour tout ce qui n'est pas rationnel.
+- `$lib/grapheur/asymptotes-exactes` — traduit le degré du quotient en famille :
+  0 → horizontale, 1 → oblique, ≥ 2 → courbe. Toujours `direction: 'both'` : un
+  quotient ne change pas selon qu'on parte vers +∞ ou vers −∞.
+- `analyzeFunction` — `exact?.horizontal ?? findHorizontalAsymptotes(…)`, et de
+  même pour les deux autres. **Le repli est silencieux** : hors des fractions
+  rationnelles, le chemin numérique est rigoureusement celui d'avant.
+
+### Le filet
+
+Les 13 tests numériques de la phase 3 appellent les détecteurs **directement**
+et passent à l'identique — c'est ce qui prouve que le repli n'a pas bougé.
+S'y ajoutent 9 tests de division et 10 tests d'asymptotes exactes, dont trois
+qui traversent `analyzeFunction` : une oblique exacte, une courbe de degré 3
+hors de portée du numérique, et `arctan` qui doit **rester** numérique, à 7e-6
+de ±π/2, sans `exactLatex`.
+
+### Ce qui reste numérique, et pourquoi
+
+Les **asymptotes verticales** : ce sont les pôles, une autre question — trouver
+où Q s'annule demande de résoudre, pas de diviser. Et tout ce qui n'est pas une
+fraction rationnelle : `arctan`, `tanh`, `exp(−x²)`, `√(x²+1)`, `x + ln(x)/x`.
+Le sondage y garde ses limites connues, listées en phase 3.
