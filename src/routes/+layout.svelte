@@ -64,6 +64,20 @@
 	// Check if we're on the whiteboard page (needs full screen, no footer/padding)
 	let isWhiteboardRoute = $derived(page.url.pathname.startsWith('/whiteboard'));
 
+	/**
+	 * Pages dont le contenu occupe tout le cadre : le pied de page y recouvre
+	 * l'outil. Sur le grapheur, il masquait l'affichage des coordonnées, en bas
+	 * du repère — on ne pouvait pas lire la position du curseur.
+	 *
+	 * ⚠️ Les liens Confidentialité / CGU / Mentions légales disparaissent donc
+	 * de ces pages, comme c'était déjà le cas du whiteboard. Ils restent
+	 * accessibles depuis toutes les autres, et par URL directe.
+	 */
+	const FULL_CANVAS_ROUTES = ['/whiteboard', '/grapheur', '/geometry-demo'];
+	let isFullCanvasRoute = $derived(
+		FULL_CANVAS_ROUTES.some((route) => page.url.pathname.startsWith(route))
+	);
+
 	// Determine which skeleton variant to show based on current route
 	let skeletonType = $derived(getSkeletonType(page.url.pathname));
 
@@ -154,8 +168,8 @@
 		</main>
 	</div>
 
-	<!-- Footer - only show on non-dashboard and non-whiteboard routes -->
-	{#if !isDashboardRoute && !isWhiteboardRoute}
+	<!-- Footer : masqué sur le tableau de bord et sur les pages pleine page -->
+	{#if !isDashboardRoute && !isFullCanvasRoute}
 		<footer class="border-t border-border bg-background py-4">
 			<div
 				class="container mx-auto flex flex-col items-center justify-between gap-2 px-4 text-sm text-muted-foreground sm:flex-row"
