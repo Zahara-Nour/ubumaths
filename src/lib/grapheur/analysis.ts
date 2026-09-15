@@ -360,12 +360,107 @@ function classifyExtremum(evaluator: (x: number) => number | null, x: number): '
 // =============================================================================
 
 /**
+ * Écarts relatifs successifs utilisés pour sonder le comportement au pôle.
+ * Relatifs, parce que `x + 1e-15` vaut `x` dès que |x| dépasse quelques unités.
+ */
+const POLE_PROBE_RATIOS = [1e-2, 1e-4, 1e-7, 1e-11, 1e-15] as const;
+
+/** Croissance minimale de |f| entre la première et la dernière sonde. */
+const POLE_GROWTH_FACTOR = 4;
+
+/**
+ * La fonction explose-t-elle au voisinage de `x` ?
+ *
+ * On sonde de plus en plus près, des deux côtés. Une vraie asymptote fait
+ * croître |f| SANS BORNE : il ne suffit pas que |f| soit grande (une
+ * exponentielle l'est aussi) ni qu'elle croisse (√x croît). On exige donc que
+ * |f| grandisse encore quand on se rapproche, et qu'elle finisse par sortir
+ * du cadre.
+ */
+function divergesAt(
+	evaluator: (x: number) => number | null,
+	x: number,
+	viewportHeight: number
+): boolean {
+	const scale = Math.max(Math.abs(x), 1);
+
+	for (const side of [-1, 1]) {
+		let first = 0;
+		let previous = 0;
+		let increasing = true;
+
+		for (const ratio of POLE_PROBE_RATIOS) {
+			const y = evaluator(x + side * ratio * scale);
+			if (y === null || !Number.isFinite(y)) {
+				increasing = false;
+				break;
+			}
+			const magnitude = Math.abs(y);
+			if (magnitude < previous) {
+				increasing = false;
+				break;
+			}
+			if (first === 0) first = magnitude;
+			previous = magnitude;
+		}
+
+		if (increasing && previous > viewportHeight / 2 && previous >= first * POLE_GROWTH_FACTOR) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Se rapprocher du pôle depuis `from`, tant que |f| grandit.
+ *
+ * Une valeur indéfinie compte comme infinie : c'est ainsi qu'on atteint le
+ * bord exact d'un domaine (ln en 0) autant qu'un pôle (1/x en 0).
+ */
+function approachPole(
+	evaluator: (x: number) => number | null,
+	from: number,
+	toward: number
+): number {
+	const magnitudeAt = (x: number): number => {
+		const y = evaluator(x);
+		return y === null || !Number.isFinite(y) ? Infinity : Math.abs(y);
+	};
+
+	let near = from;
+	let far = toward;
+	let best = magnitudeAt(from);
+
+	for (let i = 0; i < MAX_ITERATIONS; i++) {
+		const mid = (near + far) / 2;
+		if (mid === near || mid === far) break;
+
+		const magnitude = magnitudeAt(mid);
+		if (magnitude >= best) {
+			near = mid;
+			best = magnitude;
+		} else {
+			far = mid;
+		}
+	}
+
+	return near;
+}
+
+/**
  * Find vertical asymptotes within the viewport.
  *
  * Algorithm:
- * 1. Detect discontinuities (null values or large jumps)
- * 2. Refine location using binary search
- * 3. Determine behavior (→+∞ or →-∞)
+ * 1. Repérer les intervalles suspects : passage domaine ↔ hors-domaine, ou
+ *    saut supérieur à la hauteur de la fenêtre.
+ * 2. Localiser le pôle en se rapprochant des deux côtés.
+ * 3. Ne retenir que ce qui diverge réellement.
+ *
+ * ⚠️ Une valeur absente n'est PAS une asymptote. Deux échantillons hors
+ * domaine consécutifs ne sont même pas un candidat : sans ce garde, ln(x)
+ * faisait dessiner une asymptote par échantillon sur tout x < 0, et un bord
+ * de domaine à limite finie (√x en 0) en dessinait une aussi.
  *
  * @param evaluator - Function that takes x and returns y
  * @param viewport - The mathematical viewport bounds
@@ -381,7 +476,7 @@ export function findVerticalAsymptotes(
 ): VerticalAsymptote[] {
 	const asymptotes: VerticalAsymptote[] = [];
 	const step = (viewport.xMax - viewport.xMin) / numSamples;
-	const viewportHeight = viewport.yMax - viewport.yMin;
+	const viewportHeight = Math.max(viewport.yMax - viewport.yMin, 1);
 
 	let prevX = viewport.xMin;
 	let prevY = evaluator(prevX);
@@ -390,19 +485,26 @@ export function findVerticalAsymptotes(
 		const x = viewport.xMin + i * step;
 		const y = evaluator(x);
 
-		// Check for discontinuity
-		if (isDiscontinuity(prevY, y, viewportHeight)) {
-			const asymptoteX = refineDiscontinuity(evaluator, prevX, x);
+		const leftDefined = prevY !== null && Number.isFinite(prevY);
+		const rightDefined = y !== null && Number.isFinite(y);
 
-			// Determine behavior
-			const behavior = determineBehavior(evaluator, asymptoteX);
+		// Candidat : une seule des deux extrémités est définie (bord de
+		// domaine), ou le saut dépasse la fenêtre entière.
+		const crossesDomain = leftDefined !== rightDefined;
+		const jumps =
+			leftDefined && rightDefined && Math.abs((prevY as number) - (y as number)) > viewportHeight;
 
-			// Avoid duplicates
-			if (!asymptotes.some((a) => Math.abs(a.x - asymptoteX) < step * 2)) {
+		if (crossesDomain || jumps) {
+			const poleX = (approachPole(evaluator, prevX, x) + approachPole(evaluator, x, prevX)) / 2;
+
+			if (
+				divergesAt(evaluator, poleX, viewportHeight) &&
+				!asymptotes.some((a) => Math.abs(a.x - poleX) < step * 2)
+			) {
 				asymptotes.push({
-					x: asymptoteX,
+					x: poleX,
 					functionId,
-					behavior
+					behavior: determineBehavior(evaluator, poleX)
 				});
 			}
 		}
@@ -412,49 +514,6 @@ export function findVerticalAsymptotes(
 	}
 
 	return asymptotes;
-}
-
-/**
- * Check if there's a discontinuity between two points.
- */
-function isDiscontinuity(y1: number | null, y2: number | null, viewportHeight: number): boolean {
-	// If either value is null, it's a discontinuity
-	if (y1 === null || y2 === null) return true;
-
-	// Large jump indicates asymptote
-	const height = Math.max(viewportHeight, 1);
-	const threshold = height * 5;
-
-	return Math.abs(y1 - y2) > threshold;
-}
-
-/**
- * Refine the location of a discontinuity using binary search.
- */
-function refineDiscontinuity(
-	evaluator: (x: number) => number | null,
-	xLow: number,
-	xHigh: number
-): number {
-	for (let i = 0; i < 20; i++) {
-		const xMid = (xLow + xHigh) / 2;
-
-		if (xHigh - xLow < TOLERANCE) {
-			return xMid;
-		}
-
-		const yLow = evaluator(xLow);
-		const yMid = evaluator(xMid);
-
-		// If discontinuity is between low and mid
-		if (yLow === null || yMid === null || Math.abs((yMid ?? 0) - (yLow ?? 0)) > JUMP_THRESHOLD) {
-			xHigh = xMid;
-		} else {
-			xLow = xMid;
-		}
-	}
-
-	return (xLow + xHigh) / 2;
 }
 
 /**

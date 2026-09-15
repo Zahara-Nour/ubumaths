@@ -103,9 +103,12 @@ describe('sampler', () => {
 			const curve = sampleFunction(f, defaultViewport);
 
 			// Points should only be for x >= 0
-			const positivePoints = curve.points.filter((p) => p.x >= 0);
-			expect(positivePoints.length).toBeGreaterThan(0);
-			expect(curve.discontinuityIndices.length).toBeGreaterThan(0);
+			expect(curve.points.length).toBeGreaterThan(0);
+			expect(curve.points.every((p) => p.x >= 0)).toBe(true);
+			// Le hors-domaine ouvre la courbe : rien ne le précède, donc aucune
+			// rupture à déclarer (l'index 0 était de toute façon ignoré par
+			// `splitAtDiscontinuities`).
+			expect(curve.discontinuityIndices).toEqual([]);
 		});
 
 		it('respects custom number of points', () => {
@@ -241,6 +244,144 @@ describe('sampler', () => {
 
 			// Should detect discontinuity around x=0
 			expect(curve.discontinuityIndices.length).toBeGreaterThan(0);
+		});
+	});
+	// =========================================================================
+	// Pôles verticaux — bug de tracé du grapheur (branches reliées / tronquées)
+	// =========================================================================
+
+	describe('pôles verticaux', () => {
+		/** 1/(x(x+1)) — deux pôles, en x = -1 et x = 0. */
+		const rational = (x: number): number | null => {
+			const d = x * (x + 1);
+			return d === 0 ? null : 1 / d;
+		};
+		/** Fenêtre de la capture d'écran qui a révélé le bug. */
+		const wide: Viewport = { xMin: -10.3, xMax: 8, yMin: -32, yMax: 31 };
+		const height = wide.yMax - wide.yMin;
+
+		/** Découpe les points en branches selon les ruptures déclarées. */
+		function branches(curve: {
+			points: readonly { x: number; y: number }[];
+			discontinuityIndices: readonly number[];
+		}): { x: number; y: number }[][] {
+			const breaks = new Set(curve.discontinuityIndices);
+			const out: { x: number; y: number }[][] = [];
+			let current: { x: number; y: number }[] = [];
+			curve.points.forEach((p, i) => {
+				if (breaks.has(i) && current.length > 0) {
+					out.push(current);
+					current = [];
+				}
+				current.push(p);
+			});
+			if (current.length > 0) out.push(current);
+			return out;
+		}
+
+		it('coupe le tracé à chacun des deux pôles', () => {
+			const curve = sampleFunction(rational, wide, 300);
+			expect(curve.discontinuityIndices.length).toBe(2);
+		});
+
+		it('ne relie jamais deux branches à travers un pôle', () => {
+			const curve = sampleFunction(rational, wide, 300);
+			for (const branch of branches(curve)) {
+				for (const pole of [-1, 0]) {
+					const straddles = branch.some((p, i) => i > 0 && branch[i - 1].x < pole && p.x > pole);
+					expect(straddles).toBe(false);
+				}
+			}
+		});
+
+		it('prolonge chaque branche divergente au-delà du cadre', () => {
+			const curve = sampleFunction(rational, wide, 300);
+
+			// x < -1 : la fonction monte vers +∞
+			const left = curve.points.filter((p) => p.x < -1);
+			expect(Math.max(...left.map((p) => p.y))).toBeGreaterThan(wide.yMax);
+
+			// -1 < x < 0 : la fonction descend vers -∞ des deux côtés
+			const middle = curve.points.filter((p) => p.x > -1 && p.x < 0);
+			expect(Math.min(...middle.filter((p) => p.x < -0.5).map((p) => p.y))).toBeLessThan(wide.yMin);
+			expect(Math.min(...middle.filter((p) => p.x > -0.5).map((p) => p.y))).toBeLessThan(wide.yMin);
+
+			// x > 0 : la fonction monte vers +∞
+			const right = curve.points.filter((p) => p.x > 0);
+			expect(Math.max(...right.map((p) => p.y))).toBeGreaterThan(wide.yMax);
+		});
+
+		it('borne les ordonnées à une hauteur de fenêtre autour du cadre', () => {
+			const curve = sampleFunction(rational, wide, 300);
+			for (const p of curve.points) {
+				expect(p.y).toBeLessThanOrEqual(wide.yMax + height);
+				expect(p.y).toBeGreaterThanOrEqual(wide.yMin - height);
+			}
+		});
+
+		it('ne déclare quune seule rupture quand le pôle tombe sur un échantillon', () => {
+			const inverse = (x: number): number | null => (x === 0 ? null : 1 / x);
+			// 101 points sur [-5, 5] : x = 0 est échantillonné exactement.
+			const curve = sampleFunction(inverse, { xMin: -5, xMax: 5, yMin: -10, yMax: 10 }, 101);
+			expect(curve.discontinuityIndices.length).toBe(1);
+		});
+
+		it('coupe à chaque pôle de tan(x)', () => {
+			// [-5, 5] contient ±π/2 et ±3π/2.
+			const curve = sampleFunction(
+				(x) => Math.tan(x),
+				{ xMin: -5, xMax: 5, yMin: -10, yMax: 10 },
+				300
+			);
+			expect(curve.discontinuityIndices.length).toBe(4);
+		});
+
+		it("n'invente pas de rupture sur une fonction continue très pentue", () => {
+			const steep = sampleFunction(
+				(x) => x ** 5,
+				{ xMin: -10, xMax: 10, yMin: -50, yMax: 50 },
+				200
+			);
+			expect(steep.discontinuityIndices).toEqual([]);
+
+			const exponential = sampleFunction(
+				(x) => Math.exp(x),
+				{ xMin: -2, xMax: 10, yMin: -10, yMax: 50 },
+				200
+			);
+			expect(exponential.discontinuityIndices).toEqual([]);
+		});
+
+		it('prolonge le tracé jusquau bord du domaine', () => {
+			const root = (x: number): number | null => (x < 0 ? null : Math.sqrt(x));
+			const curve = sampleFunction(root, { xMin: -10, xMax: 10, yMin: -10, yMax: 10 }, 200);
+
+			// Sans raffinement, le premier point tombe à ~0.05 : un décrochage visible.
+			expect(curve.points[0].x).toBeGreaterThanOrEqual(0);
+			expect(curve.points[0].x).toBeLessThan(1e-3);
+		});
+
+		it('fait plonger ln(x) sous le cadre au bord de son domaine', () => {
+			const ln = (x: number): number | null => (x <= 0 ? null : Math.log(x));
+			const curve = sampleFunction(ln, { xMin: -5, xMax: 5, yMin: -10, yMax: 10 }, 200);
+			expect(Math.min(...curve.points.map((p) => p.y))).toBeLessThan(-10);
+		});
+
+		it('applique le même traitement à sampleWithDerivative (courbe du DSL)', () => {
+			const derivative = (x: number): number | null => {
+				const d = x * (x + 1);
+				return d === 0 ? null : -(2 * x + 1) / (d * d);
+			};
+			const curve = sampleWithDerivative(rational, derivative, wide, 300);
+
+			expect(curve.discontinuityIndices.length).toBe(2);
+			const left = curve.points.filter((p) => p.x < -1);
+			expect(Math.max(...left.map((p) => p.y))).toBeGreaterThan(wide.yMax);
+			for (const p of curve.points) {
+				expect(Math.abs(p.y)).toBeLessThanOrEqual(
+					Math.max(Math.abs(wide.yMax), Math.abs(wide.yMin)) + height
+				);
+			}
 		});
 	});
 });
