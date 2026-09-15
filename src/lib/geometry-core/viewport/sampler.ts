@@ -70,6 +70,19 @@ const OPPOSITE_BRANCH_FACTOR = 4;
 /** Un dépassement de sonde sous 1/500 de la hauteur reste invisible à l'écran. */
 const SUSPICION_PIXEL_RATIO = 500;
 
+/**
+ * Écart toléré entre la courbe et la corde qui joint deux échantillons, en
+ * fraction de la hauteur de fenêtre. 1/400 vaut à peu près le pixel sur un
+ * cadre de 400 px de haut.
+ */
+const FIDELITY_RATIO = 400;
+
+/** Profondeur maximale de subdivision d'un segment (2⁶ sous-segments). */
+const MAX_SUBDIVISION_DEPTH = 6;
+
+/** Points de lissage insérés au plus par courbe, en multiple des échantillons. */
+const SMOOTHING_BUDGET_FACTOR = 2;
+
 /** Positions sondées dans chaque intervalle, en fraction de sa largeur. */
 const PROBE_POSITIONS = [0.25, 0.5, 0.75] as const;
 
@@ -385,6 +398,89 @@ function makeClamp(viewport: Viewport): (y: number) => number {
 }
 
 /**
+ * Densifier les segments que la courbe ne suit pas.
+ *
+ * L'échantillonnage est uniforme en abscisse : dans une zone de forte courbure
+ * — l'approche d'un pôle, par exemple — la fonction s'écarte franchement de la
+ * corde qui joint deux échantillons voisins. Mesuré sur 1/(x(x+1)(x-1))
+ * dézoomé : **65 px** d'écart sur un cadre de 400 px de haut, loin de toute
+ * rupture.
+ *
+ * ⚠️ Le raffinement se fait **par niveaux** et non segment par segment : on
+ * insère d'abord un point au milieu de chaque segment infidèle, puis on
+ * recommence sur les moitiés encore infidèles. C'est ce qui répartit le budget
+ * sur toute la courbe.
+ *
+ * Deux répartitions ont été essayées et rejetées, mesurées sur une fonction qui
+ * oscille à gauche et a trois pôles à droite :
+ * - dans l'ordre des abscisses, l'oscillation épuisait le budget et les pôles
+ *   n'étaient plus lissés du tout (1 px à gauche, 15 px à droite) ;
+ * - par écart décroissant, même résultat : une oscillation sous-échantillonnée
+ *   a de GROS écarts qui ne diminuent jamais, elle rafle donc tout le budget
+ *   sans que le tracé y gagne quoi que ce soit.
+ *
+ * ⚠️ Le critère porte sur l'écart VERTICAL à la corde. Une première version
+ * mesurait la distance perpendiculaire rapportée à la diagonale du cadre : au
+ * même endroit elle valait 0,4 px, sous tous les seuils raisonnables, et la
+ * subdivision ne se déclenchait jamais.
+ *
+ * Limite connue : quand le budget s'épuise AU MILIEU d'un niveau, les derniers
+ * segments en abscisse n'ont pas leur point — un biais gauche-droite subsiste
+ * donc, mais sur un seul niveau au lieu de tous. Cela ne se produit que si le
+ * budget sature dès le niveau 0, c'est-à-dire sur une fonction qu'aucun
+ * échantillonnage uniforme ne peut rendre (sin(200x) : 190 oscillations pour
+ * 300 échantillons, tracé crénelé de toute façon). Mesuré dans ce régime :
+ * 66 px à gauche contre 220 px à droite. Attendu, et non corrigeable en
+ * triant — voir plus haut pourquoi le tri par amplitude est contre-productif.
+ */
+function refineByLevels(
+	evaluator: (x: number) => number | null,
+	clamp: (y: number) => number,
+	segments: readonly { key: number; from: Point; to: Point }[],
+	tolerance: number,
+	budgetTotal: number
+): Map<number, Point[]> {
+	const inserted = new Map<number, Point[]>();
+	let pending = [...segments];
+	let remaining = budgetTotal;
+
+	for (
+		let depth = 0;
+		depth < MAX_SUBDIVISION_DEPTH && pending.length > 0 && remaining > 0;
+		depth++
+	) {
+		const next: { key: number; from: Point; to: Point }[] = [];
+
+		for (const segment of pending) {
+			if (remaining <= 0) break;
+
+			const midX = (segment.from.x + segment.to.x) / 2;
+			// Épuisement de la précision flottante : inutile d'insister.
+			if (midX === segment.from.x || midX === segment.to.x) continue;
+
+			const raw = evaluator(midX);
+			// Un trou de domaine relève des marches, pas du lissage.
+			if (raw === null || !Number.isFinite(raw)) continue;
+
+			const mid: Point = { x: midX, y: clamp(raw) };
+			if (Math.abs(mid.y - (segment.from.y + segment.to.y) / 2) <= tolerance) continue;
+
+			const bucket = inserted.get(segment.key);
+			if (bucket === undefined) inserted.set(segment.key, [mid]);
+			else bucket.push(mid);
+			remaining--;
+
+			next.push({ key: segment.key, from: segment.from, to: mid });
+			next.push({ key: segment.key, from: mid, to: segment.to });
+		}
+
+		pending = next;
+	}
+
+	return inserted;
+}
+
+/**
  * Construire la courbe à partir d'abscisses déjà choisies.
  *
  * Trois passes : évaluation, raffinement des intervalles suspects, assemblage.
@@ -515,7 +611,75 @@ function buildCurve(
 		previous = current;
 	}
 
-	return { points, discontinuityIndices };
+	// ─── Passe 4 : lisser, du segment le plus infidèle au moins infidèle ──
+	return smoothCurve(evaluator, clamp, points, discontinuityIndices, viewport, xValues.length);
+}
+
+/**
+ * Lisser une courbe déjà assemblée, sans franchir ses ruptures.
+ */
+function smoothCurve(
+	evaluator: (x: number) => number | null,
+	clamp: (y: number) => number,
+	points: readonly Point[],
+	discontinuityIndices: readonly number[],
+	viewport: Viewport,
+	sampleCount: number
+): SampledCurve {
+	const height = viewport.yMax - viewport.yMin;
+	const unchanged = (): SampledCurve => ({
+		points: [...points],
+		discontinuityIndices: [...discontinuityIndices]
+	});
+
+	// Une fenêtre sans hauteur n'a pas d'échelle : rien à lisser, et l'écrêtage
+	// y est de toute façon désactivé.
+	if (!(height > MIN_VIEWPORT_DIM) || points.length < 2) return unchanged();
+
+	const tolerance = height / FIDELITY_RATIO;
+	const breaks = new Set(discontinuityIndices);
+
+	const segments: { key: number; from: Point; to: Point }[] = [];
+	for (let i = 1; i < points.length; i++) {
+		if (breaks.has(i)) continue;
+		const from = points[i - 1];
+		const to = points[i];
+		// Les points de marche peuvent se chevaucher : on ne lisse que ce qui
+		// avance en abscisse.
+		if (from.x < to.x) segments.push({ key: i, from, to });
+	}
+	if (segments.length === 0) return unchanged();
+
+	const inserted = refineByLevels(
+		evaluator,
+		clamp,
+		segments,
+		tolerance,
+		SMOOTHING_BUDGET_FACTOR * sampleCount
+	);
+	if (inserted.size === 0) return unchanged();
+
+	// Réassemblage : les points insérés dans un segment arrivent dans l'ordre
+	// des niveaux, pas des abscisses — d'où le tri. Les ruptures se décalent du
+	// nombre de points ajoutés avant elles.
+	const smoothed: Point[] = [];
+	const shifted: number[] = [];
+	for (let i = 0; i < points.length; i++) {
+		// Le décalage est pris AVANT l'insertion, et c'est juste parce que
+		// `inserted` ne peut pas contenir la clé d'une rupture : les segments
+		// ne sont construits que pour `!breaks.has(i)`. Les deux gardes se
+		// répondent — c'est le seul endroit de cette fonction où la justesse
+		// n'est pas locale.
+		if (breaks.has(i)) shifted.push(smoothed.length);
+		const extra = inserted.get(i);
+		if (extra !== undefined) {
+			extra.sort((a, b) => a.x - b.x);
+			smoothed.push(...extra);
+		}
+		smoothed.push(points[i]);
+	}
+
+	return { points: smoothed, discontinuityIndices: shifted };
 }
 
 // =============================================================================
