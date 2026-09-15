@@ -59,6 +59,35 @@ describe('exactAsymptotes', () => {
 		expect(found?.oblique[0].exactLatex).toContain('frac');
 	});
 
+	it("refuse une fraction dont le numérateur n'est pas polynomial en x", () => {
+		// ⚠️ Le piège : la forme normale tient `e^x`, `ln(x)` et `sin(x)` pour des
+		// « variables », et leur degré EN x vaut zéro. e^x/x passait donc pour la
+		// fraction 0/x et recevait `y = 0` des DEUX côtés — alors que la courbe
+		// part à 2,7e41 en x = 100. Le numérique, lui, disait « à gauche » et
+		// avait raison : c'est à lui de répondre ici.
+		expect(asymptotesOf('\\frac{e^x}{x}')).toBeNull();
+		expect(asymptotesOf('\\frac{e^{-x}}{x}')).toBeNull();
+		expect(asymptotesOf('\\frac{2e^x}{x}')).toBeNull();
+		expect(asymptotesOf('\\frac{2^x}{x}')).toBeNull();
+		expect(asymptotesOf('\\frac{\\ln(x)}{x}')).toBeNull();
+		expect(asymptotesOf('\\frac{\\sin(x)}{x}')).toBeNull();
+		expect(asymptotesOf('\\frac{x}{\\ln(x)}')).toBeNull();
+	});
+
+	it('refuse un dénominateur constant : la fonction est alors un polynôme', () => {
+		expect(asymptotesOf('\\frac{x^2+1}{2}')).toBeNull();
+		expect(asymptotesOf('\\frac{x^2+1}{\\pi}')).toBeNull();
+	});
+
+	it("ne pose pas d'asymptote sur la courbe elle-même", () => {
+		// Le quotient est exact et le reste nul : l'« asymptote » serait la
+		// courbe. La réduction par PGCD de la forme normale ramène ces
+		// fractions à un polynôme, et un polynôme est refusé.
+		expect(asymptotesOf('\\frac{x^2-1}{x-1}')).toBeNull();
+		expect(asymptotesOf('\\frac{x^3+x}{x}')).toBeNull();
+		expect(asymptotesOf('\\frac{x^2}{3x}')).toBeNull();
+	});
+
 	it('laisse la main au numérique hors des fractions rationnelles', () => {
 		expect(asymptotesOf('\\sqrt{x^2+1}')).toBeNull();
 		expect(asymptotesOf('\\arctan(x)')).toBeNull();
@@ -112,6 +141,17 @@ describe('analyzeFunction, chemin symbolique', () => {
 		const levels = analysis.horizontalAsymptotes.map((a) => a.y).sort((a, b) => a - b);
 		expect(levels[0]).toBeCloseTo(-Math.PI / 2, 4);
 		expect(levels[1]).toBeCloseTo(Math.PI / 2, 4);
+	});
+
+	it("laisse le numérique garder son asymptote d'un seul côté", () => {
+		// e^x/x : à gauche la courbe colle à y = 0, à droite elle explose. Le
+		// chemin symbolique doit s'effacer complètement — direction comprise.
+		const analysis = analyze('\\frac{e^x}{x}');
+
+		expect(analysis.horizontalAsymptotes.length).toBe(1);
+		expect(analysis.horizontalAsymptotes[0].y).toBeCloseTo(0, 6);
+		expect(analysis.horizontalAsymptotes[0].direction).toBe('left');
+		expect(analysis.horizontalAsymptotes[0].exactLatex).toBeUndefined();
 	});
 
 	it("n'invente pas d'asymptote pour un polynôme", () => {

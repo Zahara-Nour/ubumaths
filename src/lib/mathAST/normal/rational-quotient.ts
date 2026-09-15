@@ -72,10 +72,19 @@ export function rationalQuotient(expr: MathNode, variable: string): RationalAsym
 	const denominatorCheck = checkUnivariate(normalForm.denominator);
 	if (!numeratorCheck.isUnivariate || !denominatorCheck.isUnivariate) return null;
 
-	// La variable portée par les vues doit être celle qu'on analyse : une
-	// fraction en `t` n'a pas d'asymptote « en x ».
-	const univariate = denominatorCheck.variable ?? numeratorCheck.variable;
-	if (!univariate || !isVariable(univariate) || univariate.name !== variable) return null;
+	// ⚠️ `checkUnivariate` tient pour « variable » n'importe quelle base
+	// symbolique : `e^x`, `ln(x)` et `sin(x)` en sont, et leur degré EN x est
+	// compté zéro. Sans le vérifier des DEUX côtés, e^x/x passait pour la
+	// fraction 0/x et recevait une asymptote y = 0 des deux côtés — alors que
+	// f(100) = 2,7e41. Chaque variable présente doit être celle qu'on analyse.
+	const numeratorVariable = numeratorCheck.variable;
+	const denominatorVariable = denominatorCheck.variable;
+	if (numeratorVariable && !isOurVariable(numeratorVariable, variable)) return null;
+
+	// Le dénominateur, lui, doit porter la variable : constant, il ne fait que
+	// diviser un polynôme, et un polynôme n'a pas d'asymptote.
+	if (!denominatorVariable || !isOurVariable(denominatorVariable, variable)) return null;
+	const univariate = denominatorVariable;
 
 	try {
 		const division = divideUnivariate(
@@ -98,6 +107,11 @@ export function rationalQuotient(expr: MathNode, variable: string): RationalAsym
 	} catch {
 		return null;
 	}
+}
+
+/** La base symbolique est-elle exactement la variable analysée ? */
+function isOurVariable(node: MathNode, variable: string): boolean {
+	return isVariable(node) && node.name === variable;
 }
 
 /**

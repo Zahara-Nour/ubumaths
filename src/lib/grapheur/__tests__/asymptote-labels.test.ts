@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { placeAsymptoteLabels } from '../asymptote-labels';
+import { placeAsymptoteLabels, plainTextOf } from '../asymptote-labels';
 import type { FunctionAnalysis } from '../types';
 import { DEFAULT_VIEWPORT, createTransformer } from '$lib/geometry-core/viewport';
 
@@ -121,5 +121,35 @@ describe('asymptote hors du cadre', () => {
 			SIZE
 		);
 		expect(labels).toEqual([]);
+	});
+});
+
+describe('plainTextOf', () => {
+	it('mesure la boîte sur ce qui est AFFICHÉ, pas sur le LaTeX', () => {
+		// `GraphLabel` déduit la largeur du fond de `text.length * 7` alors qu'il
+		// rend `latex` : 31 caractères de LaTeX donnaient 217 px de rectangle
+		// sombre derrière une formule de 70.
+		expect(plainTextOf('y = \\dfrac{1}{2} x + \\dfrac{1}{2}')).toBe('y = 1/2 x + 1/2');
+		expect(plainTextOf('y = x^{2} + 3x + 2')).toBe('y = x^2 + 3x + 2');
+		expect(plainTextOf('y = 0')).toBe('y = 0');
+	});
+
+	it('donne aux étiquettes exactes un texte plus court que leur LaTeX', () => {
+		const analysis = analysisOf({
+			obliqueAsymptotes: [
+				{
+					m: 0.5,
+					b: 0.5,
+					functionId: 'f',
+					direction: 'both',
+					exactLatex: 'y = \\dfrac{1}{2} x + \\dfrac{1}{2}'
+				}
+			]
+		});
+
+		const [label] = placeAsymptoteLabels(analysis, transformer, SIZE);
+		expect(label.latex).toContain('dfrac');
+		expect(label.text).not.toContain('\\');
+		expect(label.text.length).toBeLessThan(label.latex.length);
 	});
 });

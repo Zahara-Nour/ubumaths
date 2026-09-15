@@ -269,3 +269,30 @@ Les **asymptotes verticales** : ce sont les pôles, une autre question — trouv
 où Q s'annule demande de résoudre, pas de diviser. Et tout ce qui n'est pas une
 fraction rationnelle : `arctan`, `tanh`, `exp(−x²)`, `√(x²+1)`, `x + ln(x)/x`.
 Le sondage y garde ses limites connues, listées en phase 3.
+
+### Deux défauts trouvés à la relecture
+
+**Une asymptote fausse, là où le numérique avait raison.** `e^x/x` recevait
+`y = 0` **des deux côtés**. La forme normale tient `e^x`, `ln(x)` et `sin(x)`
+pour des « variables » à part entière, et leur degré **en x** vaut zéro : la
+fraction passait pour `0/x`, dont le quotient est nul. Je ne vérifiais que la
+variable du dénominateur, jamais celle du numérateur. Le pointillé traversait
+donc tout le cadre, y compris à droite où f(100) = 2,7e41 — et la PR faisait
+_perdre_ au passage l'asymptote gauche correcte que le numérique trouvait.
+
+Chaque variable présente doit maintenant être celle qu'on analyse, des deux
+côtés ; et le dénominateur doit la porter, faute de quoi la fonction est un
+polynôme. Sept expressions de cette famille sont figées dans les tests, plus
+une qui traverse `analyzeFunction` et vérifie que le numérique **garde** son
+`direction: 'left'`.
+
+⚠️ Le trou était **asymétrique** : `x/ln(x)` était déjà sain, parce que la
+variable retenue était alors le nœud transcendant et que `isVariable` échouait.
+Un seul côté testé aurait laissé croire le contraire.
+
+**Une boîte d'étiquette trop large.** `GraphLabel` déduit la largeur du fond de
+`text.length * 7` alors qu'il **affiche** `latex`. En passant le LaTeX exact
+aux deux, `y = \dfrac{1}{2} x + \dfrac{1}{2}` comptait 31 caractères pour une
+formule qui en occupe 15 : un rectangle sombre de 217 px derrière 70 px de
+formule, et la bascule à gauche déclenchée 100 px trop tôt. `plainTextOf()`
+rend au texte sa longueur réelle.
