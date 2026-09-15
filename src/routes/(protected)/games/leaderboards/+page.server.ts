@@ -16,8 +16,21 @@ import { error } from '@sveltejs/kit';
 import { gameLeaderboardQuerySchema } from '$lib/server/validation/games';
 import type { GameLeaderboardRow, MinesweeperLeaderboardRow } from '$lib/types/database-helpers';
 
-export const load: PageServerLoad = async ({ url, locals }) => {
+export const load: PageServerLoad = async ({ url, locals, parent }) => {
 	const { supabase } = locals;
+
+	// ⚠️ `await parent()` n'est pas décoratif : SvelteKit exécute les `load` du
+	// layout et de la page EN PARALLÈLE. Sans cette attente, la page appelait la
+	// RPC avant que le layout n'ait redirigé un visiteur non connecté — donc en
+	// tant qu'`anon`, qui n'a pas le droit de l'exécuter. Résultat : `42501
+	// permission denied`, transformé ligne 38 en **500** au lieu d'une simple
+	// redirection vers /login. Trois utilisateurs concernés depuis le 2026-09-06,
+	// trouvés dans les erreurs d'exécution de la production.
+	//
+	// C'est le motif que documente `(protected)/+layout.server.ts` : un enfant
+	// qui a besoin de la session l'obtient par `parent()`, ce qui le sérialise
+	// APRÈS le garde.
+	await parent();
 
 	// The schema never throws: unknown game/scope fall back, limit is clamped.
 	const { game, scope, limit } = gameLeaderboardQuerySchema.parse({
