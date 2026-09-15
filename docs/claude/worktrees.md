@@ -115,6 +115,15 @@ Le descripteur survit à `exec()`, donc le verrou couvre toute la vie de la
 commande lancée. `check:incremental` se ré-exécute lui-même sous le verrou
 (`UBU_VERROU_TYPECHECK`), ce qui lui évite tout `trap`.
 
+⚠️ **Nuance importante : « à la mort du processus » veut dire du DERNIER
+détenteur du descripteur.** Tout enfant forké par la commande hérite du
+descripteur verrouillé, donc un enfant survivant garde le verrou après la mort
+de son parent. Cas réel : vitest tué par l'OOM killer en laissant un worker.
+Le refus détecte alors que le PID déclaré est mort et renvoie vers
+`lsof <fichier de verrou>` plutôt que vers un `kill` inopérant. C'est la
+sémantique de `flock(1)`, et elle échoue du bon côté : elle refuse, elle ne
+laisse pas passer deux détenteurs.
+
 **Comportement** :
 
 - Refus en **exit 2**, avec le PID, l'heure de prise et **le worktree
@@ -134,13 +143,27 @@ commande lancée. `check:incremental` se ré-exécute lui-même sous le verrou
 **production** et se lancent depuis `main` après merge ; `db:status` (lecture
 seule) ; et les serveurs de dev (règle 5).
 
+⚠️ **Un contournement connu** : `UBU_VERROU_TYPECHECK` déjà positionné dans
+l'environnement fait tourner `check:incremental` sans verrou, en silence. La
+variable est posée par le script lui-même juste avant sa ré-exécution — ne
+jamais la définir à la main.
+
 ### Un run interrompu n'écrit aucun verdict
 
-`check:incremental` vérifie le code de sortie de `svelte-check` : au-delà de
-128, le processus a été tué par un signal (130 = Ctrl-C, 137 = OOM), sa sortie
-est tronquée, et « aucune ligne ERROR » n'y veut rien dire. Le script sort sans
-écrire ni verdict ni marqueur — sinon la garde 3 rejouerait ensuite un faux vert
-comme vérité.
+`check:incremental` vérifie le code de sortie de `svelte-check`, et refuse
+d'écrire un verdict dans deux cas :
+
+- **tué par un signal** (code ≥ 128 : 130 = Ctrl-C, 137 = OOM) — sa sortie est
+  tronquée, et « aucune ligne ERROR » n'y veut rien dire ;
+- **échec sans rapport** (code non nul, aucune ligne `COMPLETED`) : `npx`
+  introuvable, `tsconfig.check.json` illisible, worktree neuf sans
+  `node_modules`… Rien n'a été vérifié.
+
+Sans ces gardes, les deux cas tombaient dans la branche « aucune erreur » et
+affichaient `✓ ? FILES 0 ERRORS` avec un code 0 — un faux vert, que la garde 3
+rejouait ensuite comme vérité. Les `?` étaient le seul indice, et personne ne
+lit un `?` sur un run vert. Vérifié en renommant `tsconfig.check.json` : refus
+explicite, code 1, aucun verdict écrit.
 
 ### Garde déjà existante, à ne pas confondre
 
@@ -177,6 +200,7 @@ ne pas `--force` sans avoir regardé ce qui allait être détruit.
 | --------------------------------------------------------- | --------------------------------------------------------- | ----------------------------------------------------- |
 | `⛔ … tourne déjà` mais rien ne tourne visiblement        | L'autre session est dans un autre worktree — c'est le but | Le message nomme le worktree ; attendre               |
 | Le détenteur est un processus zombie                      | Processus vivant mais bloqué                              | `kill <PID>` indiqué dans le message                  |
+| `kill <PID>` sans effet, le refus persiste                | Un enfant forké survivant tient le descripteur hérité     | `lsof <fichier de verrou>` puis tuer l'enfant         |
 | `git worktree list` montre un worktree supprimé à la main | Dossier effacé sans `git worktree remove`                 | `git worktree prune`                                  |
 | Tests d'intégration en échec sans test en échec           | `db:reset` concurrent, **ou** GoTrue dégradé              | Le verrou exclut la 1ʳᵉ cause → `db:stop && db:start` |
 | `?? .claude/worktrees/` dans `git status`                 | Un worktree a été créé **dans** le dépôt                  | Le déplacer en frère (voir ci-dessous)                |

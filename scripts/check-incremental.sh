@@ -154,6 +154,18 @@ fi
 # Filter extern/ (present locally, absent in CI — see header).
 errors=$(echo "$output" | grep " ERROR " | grep -v "extern/")
 
+# Un svelte-check qui échoue SANS produire de rapport n'a rien vérifié : npx
+# introuvable (127), tsconfig illisible (1 sans ligne COMPLETED)… Le laisser
+# tomber dans la branche « aucune erreur » écrivait « ✓ ? FILES 0 ERRORS » avec
+# un code 0 — un faux vert, que la garde 3 rejouait ensuite comme vérité. Les
+# « ? » étaient le seul indice, et personne ne lit un « ? » sur un run vert.
+if [ "$sc_status" -ne 0 ] && [ -z "$errors" ] && ! echo "$output" | grep -q "COMPLETED"; then
+	echo "⛔ svelte-check a échoué (code $sc_status) sans produire de rapport."
+	echo "   Rien n'a été vérifié — aucun verdict écrit."
+	printf '%s\n' "$output" | tail -15
+	exit "$sc_status"
+fi
+
 if [ -n "$errors" ]; then
 	report=$(
 		echo "TypeScript/Svelte errors found:"

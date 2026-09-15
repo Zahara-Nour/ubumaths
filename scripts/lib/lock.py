@@ -61,6 +61,16 @@ def repertoire_des_verrous():
 	return os.path.join(commun, ".locks")
 
 
+def processus_vivant(pid):
+	try:
+		os.kill(int(pid), 0)
+	except (ValueError, ProcessLookupError):
+		return False
+	except PermissionError:
+		return True
+	return True
+
+
 def decrire_le_detenteur(fd):
 	"""Le détenteur s'est décrit dans le fichier ; absent, on reste vague."""
 	try:
@@ -106,7 +116,15 @@ def main():
 		if worktree:
 			print(f"   Détenu par : {worktree}")
 		print("   Cette ressource est partagée par tous les worktrees — attends la fin.")
-		if pid:
+		if pid and not processus_vivant(pid):
+			# flock est attaché à la DESCRIPTION de fichier ouverte, pas au
+			# processus : tout enfant forké hérite du descripteur, et le noyau
+			# ne relâche qu'à la mort du DERNIER. Conseiller `kill <pid>` ici
+			# serait inopérant — le processus déclaré n'existe plus.
+			print(f"   ⚠️ Le PID déclaré ({pid}) est MORT : le verrou est tenu par un de ses")
+			print("      enfants survivants (vitest, docker, npx…). Pour le trouver :")
+			print(f"        lsof {chemin}")
+		elif pid:
 			print(f"   Pour tuer le détenteur : kill {pid}")
 		sys.exit(2)
 
