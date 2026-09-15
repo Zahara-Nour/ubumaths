@@ -20,10 +20,25 @@
 --
 -- ── Pourquoi son nom est périmé ───────────────────────────────────────────
 --
--- Les classements, qui la justifiaient, passent DÉJÀ par des fonctions
--- `SECURITY DEFINER` : `game_leaderboard`, `get_achievement_leaderboard`,
--- `minesweeper_scoped_leaderboard`. Elles contournent la RLS et ne rendent que
--- les colonnes qu'elles sélectionnent. Aucune n'a besoin de cette policy.
+-- Les classements qui la justifiaient passent, pour l'essentiel, par des
+-- fonctions `SECURITY DEFINER` : `game_leaderboard`,
+-- `get_achievement_leaderboard`, `minesweeper_scoped_leaderboard`. Elles
+-- contournent la RLS et ne rendent que les colonnes qu'elles sélectionnent.
+--
+-- ⚠️ MAIS PAS TOUS, et il faut le dire ici plutôt que de laisser croire le
+-- contraire : trois VUES en `security_invoker` joignent `public.profiles` et
+-- restent donc sous la RLS de l'appelant — `minesweeper_leaderboard`,
+-- `minesweeper_tournament_standings`, `riddle_progress`. Une jointure y
+-- supprime la LIGNE ENTIÈRE quand le profil est masqué ; le pire cas est le
+-- rang au démineur, calculé en COMPTANT les joueurs au-dessus de soi, qui
+-- ferait passer presque tout le monde premier.
+--
+-- Mesuré le 2026-09-15 : ces trois écrans sont DORMANTS — 2 parties de
+-- démineur sur 90 jours par un seul joueur, ZÉRO tentative d'énigme depuis la
+-- création de la base, aucun tournoi ouvert. L'impact est donc nul
+-- aujourd'hui. Il cessera de l'être le jour où le démineur repart : c'est à
+-- traiter alors, et cette note est là pour qu'on ne s'appuie pas sur la phrase
+-- d'au-dessus comme sur une preuve.
 --
 -- ── Ce qui reste lisible après ────────────────────────────────────────────
 --
