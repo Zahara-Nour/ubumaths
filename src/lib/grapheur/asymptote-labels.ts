@@ -108,6 +108,25 @@ function anchorOnBranch(
 	return null;
 }
 
+/**
+ * Version lisible d'un libellé LaTeX, pour la mesure de la boîte.
+ *
+ * ⚠️ `GraphLabel` déduit la largeur du fond de `content.text.length * 7` alors
+ * qu'il AFFICHE `content.latex`. Passer le LaTeX brut aux deux fait compter
+ * `\dfrac{1}{3}` pour 13 caractères au lieu des 3 qu'il occupe : un rectangle
+ * sombre de 217 px derrière une formule de 70, et la bascule à gauche qui se
+ * déclenche 100 px trop tôt.
+ */
+export function plainTextOf(latex: string): string {
+	return latex
+		.replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, '$1/$2')
+		.replace(/\\(left|right|,|;|!)/g, '')
+		.replace(/\\([a-zA-Z]+)/g, '$1')
+		.replace(/[{}]/g, '')
+		.replace(/\s+/g, ' ')
+		.trim();
+}
+
 /** Un coefficient entier s'écrit sans décimale : `3`, pas `3.00`. */
 function formatCoefficient(value: number): string {
 	return Number.isInteger(value) ? String(value) : String(Number(value.toPrecision(3)));
@@ -204,22 +223,23 @@ export function placeAsymptoteLabels(
 				transformer.svgToMath(0, 0).y - transformer.svgToMath(0, size.height).y
 			);
 			const level = Math.abs(asymptote.y) < LABEL_RELATIVE_EPSILON * height ? 0 : asymptote.y;
-			const label = `y = ${Number(level.toPrecision(4))}`;
-			place(from + LABEL_MARGIN, svgY - LABEL_MARGIN, label, label);
+			const label = asymptote.exactLatex ?? `y = ${Number(level.toPrecision(4))}`;
+			place(from + LABEL_MARGIN, svgY - LABEL_MARGIN, plainTextOf(label), label);
 		}
 
 		for (const asymptote of analysis.obliqueAsymptotes) {
 			const coefficients = [asymptote.b, asymptote.m];
 			const anchor = anchorOnBranch(coefficients, asymptote.direction, transformer, size);
 			if (anchor === null) continue;
-			place(anchor.x, anchor.y, polynomialLatex(coefficients), polynomialLatex(coefficients));
+			const latex = asymptote.exactLatex ?? polynomialLatex(coefficients);
+			place(anchor.x, anchor.y, plainTextOf(latex), latex);
 		}
 
 		for (const asymptote of analysis.polynomialAsymptotes) {
 			const anchor = anchorOnBranch(asymptote.coefficients, asymptote.direction, transformer, size);
 			if (anchor === null) continue;
-			const latex = polynomialLatex(asymptote.coefficients);
-			place(anchor.x, anchor.y, latex, latex);
+			const latex = asymptote.exactLatex ?? polynomialLatex(asymptote.coefficients);
+			place(anchor.x, anchor.y, plainTextOf(latex), latex);
 		}
 	}
 

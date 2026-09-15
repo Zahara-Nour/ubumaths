@@ -33,6 +33,7 @@ import type { CompiledFn } from '$lib/mathAST/eval/compile';
 import { compile } from '$lib/mathAST/eval/compile';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { findCriticalZeros, findCriticalExtrema } from '$lib/mathAST/analysis';
+import { exactAsymptotes } from './asymptotes-exactes';
 import { simplify } from '$lib/mathAST/simplify';
 import { substitute } from '$lib/mathAST/eval/substitute';
 import { add, multiply, variable } from '$lib/mathAST/factory';
@@ -1169,14 +1170,19 @@ export function analyzeFunction(
 		extrema = findExtrema(evaluator, viewport, functionId);
 	}
 
+	// Symbolique d'abord : sur une fraction rationnelle, la division euclidienne
+	// donne les trois familles d'un coup, exactement et sans sondage. Partout
+	// ailleurs elle rend `null` et le numérique reprend la main, en silence.
+	const exact = ast ? exactAsymptotes(ast.expression, functionId) : null;
+
 	return {
 		functionId,
 		roots,
 		extrema,
 		verticalAsymptotes: findVerticalAsymptotes(evaluator, viewport, functionId),
-		horizontalAsymptotes: findHorizontalAsymptotes(evaluator, functionId),
-		obliqueAsymptotes: findObliqueAsymptotes(evaluator, functionId),
-		polynomialAsymptotes: findPolynomialAsymptotes(evaluator, functionId)
+		horizontalAsymptotes: exact?.horizontal ?? findHorizontalAsymptotes(evaluator, functionId),
+		obliqueAsymptotes: exact?.oblique ?? findObliqueAsymptotes(evaluator, functionId),
+		polynomialAsymptotes: exact?.polynomial ?? findPolynomialAsymptotes(evaluator, functionId)
 	};
 }
 
