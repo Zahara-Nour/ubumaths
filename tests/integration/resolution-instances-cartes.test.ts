@@ -62,8 +62,15 @@ describe('résoudre une instance de carte', () => {
 		).createServiceRoleClient();
 		await TestData.profile().withRole('teacher').create();
 
-		// `vip_card_templates.id` n'a pas de valeur par défaut : on la fournit.
-		modeleId = crypto.randomUUID();
+		// ⚠️ `vip_card_templates.id` n'a pas de valeur par défaut, et c'est du
+		// TEXTE : les 49 modèles de la production portent des slugs lisibles —
+		// `soldes`, `bougeotte`, `mathemo-letter`. Aucun n'est un uuid.
+		//
+		// Ce décor utilisait `crypto.randomUUID()`. Il ne ressemblait donc pas à
+		// la production, et il a laissé passer un `::uuid` dans la fonction : le
+		// marché rendait 500 sur toute carte réelle. Un décor qui ne ressemble
+		// pas à la base réelle ne prouve rien.
+		modeleId = `carte-marche-mm-${crypto.randomUUID().slice(0, 8)}`;
 		const { error: modeleError } = await service.from('vip_card_templates').insert({
 			id: modeleId,
 			name: 'Carte marché MM',

@@ -17,7 +17,6 @@ import {
 } from '$lib/server/marketplace/notifications';
 import { z } from 'zod';
 import { acceptProposalSchema } from '$lib/server/validation/marketplace-rpc';
-import { asStudentVipCards } from '$lib/types/vip-card';
 
 // ID validation schema
 const idSchema = z.string().uuid("ID d'annonce invalide");
@@ -59,7 +58,10 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		throw error(403, 'Vous ne pouvez pas voir les propositions de cette annonce');
 	}
 
-	// Fetch proposals with proposer info + proposer's vip_cards (for card name resolution)
+	// ⚠️ Plus de `vip_cards` ici. L'inventaire complet de chaque proposant était
+	// chargé pour une seule chose — traduire les instances de cartes en modèles —
+	// puis effacé de la réponse à la main (finding M12). La RPC le fait sans
+	// jamais sortir de colonne de profil : le problème disparaît à la source.
 	const { data: proposals, error: proposalsError } = await supabase
 		.from('marketplace_proposals')
 		.select(
@@ -69,8 +71,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
         id,
         firstname,
         lastname,
-        avatar_url,
-        vip_cards
+        avatar_url
       )
     `
 		)
@@ -82,52 +83,39 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		throw error(500, 'Erreur lors de la récupération des propositions');
 	}
 
-	// Resolve template names for listing's offered_card_ids
-	// After an accepted trade, the cards are in the PROPOSER's profile
-	type VipCardsJson = Record<string, { cardId: string }>;
+	// Les cartes que MON annonce offrait, traduites en modèles pour le résumé.
+	//
+	// ⚠️ Par la RPC, PAS par `profiles.vip_cards`. Une fois l'échange ACCEPTÉ,
+	// ces cartes ont changé de main : elles sont dans l'inventaire du proposant,
+	// que la RLS me ferme depuis `20260915580000`. Et une lecture refusée par la
+	// RLS ne rend aucune erreur — elle rend zéro ligne. La traduction échouait
+	// donc en silence, et mon propre résumé d'échange affichait
+	// « … contre rien », comme si je n'avais rien donné.
+	//
+	// Le repli par le profil du propriétaire ne rattrapait rien : après
+	// l'échange, la carte n'y est justement plus.
+	//
+	// `resolve_card_instances` est SECURITY DEFINER, bornée, et ne rend que
+	// instance → modèle.
+	const instancesOffertes = listing.offered_card_ids ?? [];
 
-	// Collect all template IDs we need
-	const allTemplateIds = new Set<string>();
+	const { data: resolues, error: resolutionError } =
+		instancesOffertes.length > 0
+			? await supabase.rpc('resolve_card_instances', { p_instance_ids: instancesOffertes })
+			: { data: [], error: null };
 
-	// From listing's wanted_card_template_ids (already template IDs)
-	if (listing.wanted_card_template_ids?.length) {
-		for (const id of listing.wanted_card_template_ids) allTemplateIds.add(id);
-	}
-
-	// Build instanceId → templateId map from ALL proposers' profiles
-	// (listing's offered cards may now be in any proposer's profile)
-	const instanceToTemplate = new Map<string, string>();
-	if (proposals) {
-		for (const p of proposals) {
-			// `vip_cards` est du jsonb : la forme est vérifiée plutôt qu'affirmée.
-			// Une instance sans `cardId` ne peut pas être reliée à son modèle, et
-			// `asStudentVipCards` l'écarte plutôt que d'enregistrer un lien vide.
-			for (const [instId, card] of Object.entries(asStudentVipCards(p.proposer?.vip_cards))) {
-				instanceToTemplate.set(instId, card.cardId);
-				allTemplateIds.add(card.cardId);
-			}
-		}
-	}
-
-	// Also check MY profile (owner) for cards not yet traded
-	const { data: myProfile, error: myProfileError } = await supabase
-		.from('profiles')
-		.select('vip_cards')
-		.eq('id', userId)
-		.single();
-
-	// Ces cartes composent l'offre affichée à l'élève. Une carte non résolue
+	// Ces cartes composent la moitié du résumé d'échange. Une carte non résolue
 	// disparaît de l'offre : mieux vaut une erreur qu'un troc falsifié.
-	if (myProfileError) {
-		console.error('Cartes illisibles :', myProfileError);
-		throw error(500, 'Impossible de lire les cartes');
+	if (resolutionError) {
+		console.error('[marketplace] Cartes de l’annonce illisibles :', resolutionError);
+		throw error(500, 'Impossible de lire les cartes de l’annonce');
 	}
-	if (myProfile?.vip_cards) {
-		const myCards = myProfile.vip_cards as VipCardsJson;
-		for (const [instId, card] of Object.entries(myCards)) {
-			instanceToTemplate.set(instId, card.cardId);
-			allTemplateIds.add(card.cardId);
-		}
+
+	const instanceToTemplate = new Map<string, string>();
+	const allTemplateIds = new Set<string>();
+	for (const ligne of resolues ?? []) {
+		instanceToTemplate.set(ligne.instance_id, ligne.card_id);
+		allTemplateIds.add(ligne.card_id);
 	}
 
 	// Fetch all template names
@@ -157,15 +145,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.join(' + ');
 	}
 
-	// SECURITY (finding M12): proposer.vip_cards was fetched only to build the
-	// instanceId→template map above. Strip each bidder's full inventory now so it
-	// never reaches the listing owner in the response.
-	for (const p of proposals ?? []) {
-		const proposer = p.proposer as { vip_cards?: unknown } | null;
-		if (proposer && typeof proposer === 'object') {
-			delete proposer.vip_cards;
-		}
-	}
+	// (Le retrait manuel de `proposer.vip_cards` — finding M12 — n'a plus lieu
+	// d'être : la colonne n'est plus demandée.)
 
 	// Build summary for each proposal (from listing owner's perspective)
 	// Format: "[ce que j'ai reçu] contre [ce que j'ai donné]"
