@@ -2,6 +2,56 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.14.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.14.1...v0.14.2) (2026-09-15)
+
+### 🐛 Bug Fixes
+
+- **cours:** figer la progression d'objectifs d'un élève archivé ([1b23455](https://github.com/Zahara-Nour/ubumaths/commit/1b2345549b3dd51e76041ac2f5464ae466829d09))
+- **cours:** rafraîchir le plan quand un contenu change sans changer d'identifiant ([52fc436](https://github.com/Zahara-Nour/ubumaths/commit/52fc436de997703a5664572cc1213937bea310a0))
+- **cours:** restaurer la description et les niveaux de TemplateCard ([c0efb92](https://github.com/Zahara-Nour/ubumaths/commit/c0efb9260e404791e6f7a38f8cadd81035c83daa))
+- **cours:** retirer le code mort laissé par le passage au glisser-déposer ([efcbf5e](https://github.com/Zahara-Nour/ubumaths/commit/efcbf5e1753162b1be01c6c57db065b15f2c9a2c))
+- **cours:** semer les sections dans les chapitres antérieurs au trigger ([9d63ad5](https://github.com/Zahara-Nour/ubumaths/commit/9d63ad5623e2fd9d47837061fd94b9380f125d10))
+- **cours:** un élève archivé perd le chapitre de son ancienne classe ([e8bdd0c](https://github.com/Zahara-Nour/ubumaths/commit/e8bdd0c46e2d59a238abce31b00840b2436e9dce))
+- **kanban:** ajouter les assignations AVANT de retirer les anciennes ([5f07ac6](https://github.com/Zahara-Nour/ubumaths/commit/5f07ac688e2cb522539b7bcb0a151601e98a0f4d))
+- **marche:** refaire le chemin des propositions, et montrer une offre incomplète ([5d64f7e](https://github.com/Zahara-Nour/ubumaths/commit/5d64f7e1c49d9665a68f2e97680ef9754e258f46))
+- **marche:** résoudre les instances même si un inventaire est malformé ([07c5595](https://github.com/Zahara-Nour/ubumaths/commit/07c559560439fa768adc512e1995941e3ab5e7b3))
+- **rls:** borner la lecture des profils ([a2ec7dd](https://github.com/Zahara-Nour/ubumaths/commit/a2ec7ddb254e9db6a0351518f890b906bdd06f57))
+- **rls:** ne plus assigner une carte de kanban à un élève qui a quitté la classe ([e1fd2ce](https://github.com/Zahara-Nour/ubumaths/commit/e1fd2ceb1f7d16b089630f660d98b5a043f9c879))
+- **rls:** un élève archivé perd l'accès au kanban de son ancienne classe ([bc191e4](https://github.com/Zahara-Nour/ubumaths/commit/bc191e431e5d1ae2bc89a9e5b122049d611951df))
+- **rls:** une amitié ne se déclare pas tout seul ([be1f68f](https://github.com/Zahara-Nour/ubumaths/commit/be1f68f34322b4b0167d303a992038418ba9d5a0))
+- **srs:** assigner un deck copie aussi ses sections ([06b1f48](https://github.com/Zahara-Nour/ubumaths/commit/06b1f4811dc3d512ae8ac9a3d659283f3719cc21))
+- **srs:** corriger la preuve du test d'ordre et borner la révision forcée ([3ca654d](https://github.com/Zahara-Nour/ubumaths/commit/3ca654ddbfbc7755557b8e49b06c7f0195752a0a))
+- **srs:** l'identité ne se passe plus en paramètre à get_due_cards_for_deck ([07e4cf1](https://github.com/Zahara-Nour/ubumaths/commit/07e4cf13e58be32a61e08f66ef011a4658689596))
+- **srs:** n'écrire les statistiques FSRS qu'une fois l'assignation acquise ([38903a2](https://github.com/Zahara-Nour/ubumaths/commit/38903a25a5dca6a70f4105537f457d58b43573ba))
+- **srs:** répondre à une évaluation replanifie enfin la carte FSRS ([0063df7](https://github.com/Zahara-Nour/ubumaths/commit/0063df704e8ba22ec617fdb912985ae190e4cdaf))
+- **tests:** le nettoyage des classes échouait en silence depuis des mois ([4dd3d57](https://github.com/Zahara-Nour/ubumaths/commit/4dd3d57b2b980e6c51afda438b0ed10f409734e9))
+
+### ✨ Features
+
+- **cours:** ajouter une ressource depuis sa section, sans passer par les onglets ([607407d](https://github.com/Zahara-Nour/ubumaths/commit/607407d5b2514f0c45783fed7b8683fcd4416490))
+- **cours:** glisser-déposer pour ranger les ressources d'un chapitre ([a1917aa](https://github.com/Zahara-Nour/ubumaths/commit/a1917aae3cfe7301e4511c168233c5565a6b7f5f))
+- **cours:** la vue élève rangée par moment du cours, comme celle du prof ([265f9d7](https://github.com/Zahara-Nour/ubumaths/commit/265f9d78e5f73f224fc56d5373dbb3a60965ff4a))
+- **cours:** le plan du chapitre, axe de rangement par moment du cours ([cebb2d1](https://github.com/Zahara-Nour/ubumaths/commit/cebb2d1488b6b82c97e1814b9931ca15d73d9642))
+- **cours:** ranger un chapitre par sections plutôt que par type ([ae17fbe](https://github.com/Zahara-Nour/ubumaths/commit/ae17fbe47fb5307ab81883d4fc13c95b05d65082))
+- **cours:** rattacher des decks de révision à un chapitre ([8bf8ed8](https://github.com/Zahara-Nour/ubumaths/commit/8bf8ed84222802cfa4a83bd6840547b0aad0199b))
+- **cours:** routes et opérations serveur des sections de chapitre ([88efa3e](https://github.com/Zahara-Nour/ubumaths/commit/88efa3e19a535d60000852ecb21f27012c84933c))
+- **marche:** combler le nom des participants masqués par la RLS ([e3e4d9c](https://github.com/Zahara-Nour/ubumaths/commit/e3e4d9c8fc23346652335f16e72b6f2d86e5f6cf))
+- **marche:** rendre le nom des participants, borné et pseudonymisé ([bc6d1d6](https://github.com/Zahara-Nour/ubumaths/commit/bc6d1d64f21c6cb777cdc6981a518322289127ff))
+- **marche:** traduire une instance de carte sans lire de profil ([85f662d](https://github.com/Zahara-Nour/ubumaths/commit/85f662dd39cae855ffe9e2ad3a51df885912c10b))
+- **rls:** brancher les six écrans sur l'annuaire du personnel ([becd9c4](https://github.com/Zahara-Nour/ubumaths/commit/becd9c42f68fb7c8395ebea9f7d4c3e6c4362fb9))
+- **rls:** un annuaire du personnel, nom et avatar seulement ([a461e4d](https://github.com/Zahara-Nour/ubumaths/commit/a461e4daf40f48496bce1a4baae46b9956a046f9))
+- **srs:** réviser tout un deck, échéance ignorée ([7c0b0f1](https://github.com/Zahara-Nour/ubumaths/commit/7c0b0f13bd4e3bedfabe5e49aa746b75877b3b7b))
+
+### 📚 Documentation
+
+- consigner la mise en service de « Mon cours » et la lecture des suites ([86ff9e7](https://github.com/Zahara-Nour/ubumaths/commit/86ff9e7f9840c2b6c7d5a00ea067993a16b70738))
+- corriger l'état périmé des trois migrations du doc de reprise ([e3d0c58](https://github.com/Zahara-Nour/ubumaths/commit/e3d0c58cafa7494c5b289d25b3437968ffdb3c45))
+- lever le plafond de 2 fichiers pour les commits documentaires directs ([7797a78](https://github.com/Zahara-Nour/ubumaths/commit/7797a7857cc6ca3f4d434e7b4434c668702ede90))
+- **rls:** documenter les échecs silencieux de la RLS ([ff98fb0](https://github.com/Zahara-Nour/ubumaths/commit/ff98fb08e573d683b8cbd52d36faf65a55f9b4be))
+- spécifier les sections d'un chapitre avant de coder ([0c8209d](https://github.com/Zahara-Nour/ubumaths/commit/0c8209d3b66118ab09550d188ae31f1d358bd955))
+- spécifier les séries de questions comme ressource de chapitre ([0571a13](https://github.com/Zahara-Nour/ubumaths/commit/0571a1317c5b07bbc611be75a289f18fd9504425)), closes [#278](https://github.com/Zahara-Nour/ubumaths/issues/278)
+- **wip:** trier les lectures de class_members sans filtre de statut ([8ba92fd](https://github.com/Zahara-Nour/ubumaths/commit/8ba92fd90c151ad562c0b250b8fa2ab7c3fa8544))
+
 ### [0.14.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.14.0...v0.14.1) (2026-09-14)
 
 ### 📚 Documentation
