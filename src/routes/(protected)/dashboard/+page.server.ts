@@ -95,6 +95,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.from('class_members')
 			.select('classes(school_id)')
 			.eq('student_id', profile.id)
+			// Une adhésion ARCHIVÉE rattacherait l'élève à son ancienne école.
+			// Tranché par David le 2026-09-15 : sans classe active, pas d'école —
+			// on retombe sur le défaut plutôt que de prolonger la précédente.
+			.eq('status', 'active')
 			.limit(1)
 			.maybeSingle();
 

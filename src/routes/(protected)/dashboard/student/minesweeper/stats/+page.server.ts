@@ -153,6 +153,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.from('class_members')
 			.select('classes(schools(timezone, timetable))')
 			.eq('student_id', user.id)
+			// Sans classe active, pas d'école : le fuseau horaire et la semaine
+			// retombent sur le défaut, plutôt que sur ceux de l'école quittée.
+			// Tranché par David le 2026-09-15.
+			.eq('status', 'active')
 			.limit(1)
 			.single();
 

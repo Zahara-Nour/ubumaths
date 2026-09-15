@@ -98,6 +98,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.from('class_members')
 		.select('classes(schools(name))')
 		.eq('student_id', student_id)
+		// ⚠️ Ce nom part dans un courriel aux parents. Une adhésion archivée le
+		// ferait signer par l'ancienne école. Tranché par David le 2026-09-15 :
+		// sans classe active, le courriel part sans nom d'école.
+		.eq('status', 'active')
 		.limit(1)
 		.single();
 
