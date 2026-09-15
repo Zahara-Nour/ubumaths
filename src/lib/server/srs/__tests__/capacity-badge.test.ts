@@ -21,6 +21,7 @@ import {
 	worstBadge,
 	aggregateBadge,
 	computePointBadges,
+	IN_CHUNK_SIZE,
 	BADGE_LABEL,
 	BADGE_VISUAL,
 	BADGE_PRIORITY,
@@ -500,5 +501,120 @@ describe('BADGE_PRIORITY (exporté)', () => {
 			'acquise_en_memoire',
 			'non_commencee'
 		]);
+	});
+});
+
+// ============================================================================
+// computePointBadges — découpage des listes `.in()`
+// ============================================================================
+
+/**
+ * ⚠️ Pourquoi ce découpage existe
+ *
+ * `.in('point_id', pointIds)` envoie TOUTE la liste dans l'URL. Mesuré en
+ * production le 2026-09-15 : la 2ᵈᵉ compte 185 points actifs, soit ≈ 6 845
+ * octets d'URL, contre une limite usuelle de 8 Ko pour une ligne de requête
+ * HTTP. Le référentiel étant en cours d'extension, un niveau un peu plus fourni
+ * ne rendrait pas la page lente : il la casserait en 414 URI Too Long.
+ *
+ * Depuis la fusion « Ma progression », cette fonction tourne sur le tableau de
+ * bord — la première page après connexion, pour les 81 élèves.
+ */
+describe('computePointBadges — listes découpées en lots', () => {
+	/** Mock qui ENREGISTRE la taille de chaque `.in()`, pour pouvoir l'asserter. */
+	function buildRecordingMock(
+		tagMappings: Array<{ point_id: string; template_id: string }>,
+		fsrsRows: Array<{ card_reference_id: string; state: string; next_review: string }>
+	) {
+		const pointBatches: string[][] = [];
+		const templateBatches: string[][] = [];
+
+		const from = vi.fn().mockImplementation((table: string) => {
+			if (table === 'question_template_points') {
+				return {
+					select: vi.fn().mockReturnThis(),
+					in: vi.fn().mockImplementation((_col: string, ids: string[]) => {
+						pointBatches.push(ids);
+						// Ne rendre que les lignes du lot demandé : c'est ce que ferait la
+						// base, et c'est ce qui fait échouer un découpage qui perd des
+						// résultats en route.
+						const subset = tagMappings.filter((m) => ids.includes(m.point_id));
+						return Promise.resolve({ data: subset, error: null });
+					})
+				};
+			}
+			if (table === 'srs_card_stats') {
+				return {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					in: vi.fn().mockImplementation((_col: string, ids: string[]) => {
+						templateBatches.push(ids);
+						const subset = fsrsRows.filter((r) => ids.includes(r.card_reference_id));
+						return Promise.resolve({ data: subset, error: null });
+					})
+				};
+			}
+			throw new Error(`Table inattendue dans le mock : ${table}`);
+		});
+
+		return {
+			supabase: { from } as unknown as Parameters<typeof computePointBadges>[0],
+			pointBatches,
+			templateBatches
+		};
+	}
+
+	it('IN1 — aucun lot ne dépasse IN_CHUNK_SIZE', async () => {
+		const pointIds = Array.from({ length: 250 }, (_, i) => `point-${i}`);
+		const { supabase, pointBatches } = buildRecordingMock([], []);
+
+		await computePointBadges(supabase, 'student-uuid', pointIds);
+
+		expect(pointBatches.length).toBeGreaterThan(1);
+		for (const batch of pointBatches) {
+			expect(batch.length).toBeLessThanOrEqual(IN_CHUNK_SIZE);
+		}
+		// Rien ne doit être perdu ni demandé deux fois.
+		expect(pointBatches.flat().sort()).toEqual([...pointIds].sort());
+	});
+
+	it('IN2 — un point tagué dans le DERNIER lot reçoit quand même son badge', async () => {
+		// Le piège d'un découpage bâclé : seul le premier lot est exploité.
+		const pointIds = Array.from({ length: 250 }, (_, i) => `point-${i}`);
+		const past = new Date(Date.now() - 86_400_000).toISOString();
+		const { supabase } = buildRecordingMock(
+			[{ point_id: 'point-249', template_id: 'tpl-z' }],
+			[{ card_reference_id: 'tpl-z', state: 'relearning', next_review: past }]
+		);
+
+		const result = await computePointBadges(supabase, 'student-uuid', pointIds);
+
+		expect(result.size).toBe(250);
+		expect(result.get('point-249')).toBe('a_remedier');
+		expect(result.get('point-0')).toBe('non_commencee');
+	});
+
+	it('IN3 — la liste des templates est découpée elle aussi', async () => {
+		// Un point peut être tagué sur de nombreux templates : la seconde requête a
+		// exactement le même défaut d'URL que la première.
+		const pointIds = ['point-unique'];
+		const tagMappings = Array.from({ length: 250 }, (_, i) => ({
+			point_id: 'point-unique',
+			template_id: `tpl-${i}`
+		}));
+		const { supabase, templateBatches } = buildRecordingMock(tagMappings, []);
+
+		await computePointBadges(supabase, 'student-uuid', pointIds);
+
+		expect(templateBatches.length).toBeGreaterThan(1);
+		for (const batch of templateBatches) {
+			expect(batch.length).toBeLessThanOrEqual(IN_CHUNK_SIZE);
+		}
+	});
+
+	it('IN4 — une seule requête tant que la liste tient dans un lot', async () => {
+		const { supabase, pointBatches } = buildRecordingMock([], []);
+		await computePointBadges(supabase, 'student-uuid', ['a', 'b', 'c']);
+		expect(pointBatches).toHaveLength(1);
 	});
 });

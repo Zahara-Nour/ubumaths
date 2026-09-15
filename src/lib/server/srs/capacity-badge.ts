@@ -39,10 +39,38 @@ interface FsrsStateRow {
 }
 
 /**
+ * Taille maximale d'une liste envoyée à `.in()`.
+ *
+ * ⚠️ PostgREST met toute la liste dans l'URL. Mesuré en production le
+ * 2026-09-15 : la 2ᵈᵉ compte 185 points actifs, soit ≈ 6 845 octets d'URL
+ * (37 octets par UUID), contre une limite usuelle de 8 Ko pour une ligne de
+ * requête HTTP. Le référentiel est en cours d'extension : sans découpage, un
+ * niveau un peu plus fourni ne rendrait pas la page lente, il la casserait en
+ * **414 URI Too Long**.
+ *
+ * 100 tient largement sous la limite (≈ 3,7 Ko) tout en gardant le nombre
+ * d'allers-retours bas : un aller-retour pour la 6ᵉ, deux pour la 2ᵈᵉ.
+ */
+export const IN_CHUNK_SIZE = 100;
+
+/** Découpe une liste en lots d'au plus `size` éléments. */
+function chunk<T>(items: T[], size: number): T[][] {
+	const batches: T[][] = [];
+	for (let i = 0; i < items.length; i += size) {
+		batches.push(items.slice(i, i + size));
+	}
+	return batches;
+}
+
+/**
  * Récupère et agrège les badges FSRS pour une liste de point_ids et un élève.
  *
  * Retourne une Map point_id → badge. Les capacités sans aucun template tagué
  * (ou sans srs_card_stats sur leurs templates) reçoivent `non_commencee`.
+ *
+ * Les deux listes `.in()` sont découpées en lots (cf. `IN_CHUNK_SIZE`) : cette
+ * fonction tourne sur le tableau de bord depuis la fusion « Ma progression »,
+ * donc sur la première page que voit chaque élève après connexion.
  */
 export async function computePointBadges(
 	supabase: SB,
@@ -52,17 +80,25 @@ export async function computePointBadges(
 	const result = new Map<string, CapacityBadge>();
 	if (pointIds.length === 0) return result;
 
-	// 1. Mapping point → templates (M2M)
-	const { data: tagMappings, error: tagErr } = await supabase
-		.from('question_template_points')
-		.select('point_id, template_id')
-		.in('point_id', pointIds);
+	// 1. Mapping point → templates (M2M), par lots d'URL raisonnables
+	const tagBatches = await Promise.all(
+		chunk(pointIds, IN_CHUNK_SIZE).map((batch) =>
+			supabase
+				.from('question_template_points')
+				.select('point_id, template_id')
+				.in('point_id', batch)
+		)
+	);
 
+	const tagErr = tagBatches.find((b) => b.error)?.error;
 	if (tagErr) {
 		console.error('[capacity-badge] tag lookup failed:', tagErr);
 		for (const id of pointIds) result.set(id, 'non_commencee');
 		return result;
 	}
+
+	// Un lot en échec invaliderait le tout : on ne fusionne qu'après le contrôle.
+	const tagMappings = tagBatches.flatMap((b) => b.data ?? []);
 
 	const tagsByPoint = new Map<string, string[]>();
 	for (const row of tagMappings ?? []) {
@@ -79,18 +115,27 @@ export async function computePointBadges(
 		return result;
 	}
 
-	const { data: fsrsRows, error: fsrsErr } = await supabase
-		.from('srs_card_stats')
-		.select('card_reference_id, state, next_review')
-		.eq('user_id', studentId)
-		.eq('card_reference_type', 'template')
-		.in('card_reference_id', allTemplateIds);
+	// Même découpage ici : un point peut être tagué sur de nombreux templates,
+	// donc cette liste a exactement le même défaut d'URL que la précédente.
+	const fsrsBatches = await Promise.all(
+		chunk(allTemplateIds, IN_CHUNK_SIZE).map((batch) =>
+			supabase
+				.from('srs_card_stats')
+				.select('card_reference_id, state, next_review')
+				.eq('user_id', studentId)
+				.eq('card_reference_type', 'template')
+				.in('card_reference_id', batch)
+		)
+	);
 
+	const fsrsErr = fsrsBatches.find((b) => b.error)?.error;
 	if (fsrsErr) {
 		console.error('[capacity-badge] fsrs lookup failed:', fsrsErr);
 		for (const id of pointIds) result.set(id, 'non_commencee');
 		return result;
 	}
+
+	const fsrsRows = fsrsBatches.flatMap((b) => b.data ?? []);
 
 	const stateByTemplate = new Map<string, FsrsStateRow>();
 	for (const row of (fsrsRows ?? []) as FsrsStateRow[]) {
