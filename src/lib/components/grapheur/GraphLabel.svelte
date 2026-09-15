@@ -28,7 +28,8 @@
 		content,
 		canvasWidth,
 		canvasHeight,
-		pinned = false
+		pinned = false,
+		accent = null
 	}: {
 		/** Point being labelled, in SVG coordinates. */
 		x: number;
@@ -45,6 +46,15 @@
 		 * have done nothing.
 		 */
 		pinned?: boolean;
+		/**
+		 * Couleur de la courbe à laquelle l'étiquette appartient.
+		 *
+		 * Portée en BORDURE, pas en fond : le texte est blanc, et les couleurs
+		 * de la palette ne lui offrent pas toutes un contraste suffisant —
+		 * blanc sur le vert `#16a34a` tombe à 3:1. Le fond sombre reste donc
+		 * le fond, et la couleur dit seulement de qui vient l'étiquette.
+		 */
+		accent?: string | null;
 	} = $props();
 
 	// ==========================================================================
@@ -115,6 +125,8 @@
 	rx={4}
 	class="tooltip-bg"
 	class:pinned
+	class:accented={accent !== null}
+	style={accent === null ? undefined : `stroke: ${accent}`}
 />
 
 {#if content.latex}
@@ -139,6 +151,11 @@
 	.tooltip-bg {
 		fill: var(--graph-tooltip-bg, #1f2937);
 		opacity: 0.95;
+	}
+
+	.tooltip-bg.accented {
+		stroke-width: 2;
+		stroke-opacity: 0.9;
 	}
 
 	.tooltip-bg.pinned {

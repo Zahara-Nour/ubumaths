@@ -153,3 +153,27 @@ describe('plainTextOf', () => {
 		expect(label.text.length).toBeLessThan(label.latex.length);
 	});
 });
+
+describe('couleur des étiquettes', () => {
+	it('rattache chaque étiquette à sa courbe', () => {
+		// Deux fonctions, deux couleurs : sans l'identifiant, le composant ne
+		// peut pas savoir à laquelle emprunter la sienne.
+		const labels = placeAsymptoteLabels(
+			[
+				analysisOf({
+					functionId: 'f',
+					horizontalAsymptotes: [{ y: 2, functionId: 'f', direction: 'both' }]
+				}),
+				analysisOf({
+					functionId: 'g',
+					verticalAsymptotes: [{ x: 3, functionId: 'g', behavior: 'both' }]
+				})
+			],
+			transformer,
+			SIZE
+		);
+
+		expect(labels.length).toBe(2);
+		expect(labels.map((l) => l.functionId).sort()).toEqual(['f', 'g']);
+	});
+});
