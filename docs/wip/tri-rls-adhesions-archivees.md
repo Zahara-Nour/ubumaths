@@ -130,7 +130,22 @@ donc d'anciennes classes comme actuelles.
 > contenu de ces classes — emploi du temps, cahier de texte, devoirs, documents,
 > énigmes, tournois, évaluations ?**
 
-Trois réponses possibles, et leurs conséquences réelles :
+✅ **Réponse de David, le 2026-09-15 : « couper le support de classe, garder
+leurs traces »** — la deuxième option ci-dessous.
+
+Premier lot livré : migration `20260915700000_support_de_classe_membres_actifs`,
+**19 policies + 2 fonctions**. Test d'intégration
+`tests/integration/support-de-classe-eleve-archive.test.ts`, vu **rouge sans la
+migration** (4 échecs : emploi du temps, cahier de texte, évaluation, énigme
+restaient lisibles) et **vert avec** (9/9, témoin actif compris).
+
+Restent hors lot 1, et pourquoi : `classes / view_member_classes` (fondation,
+~15 écrans la joignent en `!inner`), `rag_documents` / `rag_chunks` (forme
+« membre d'une classe quelconque »), les trois tables de tournoi (un tournoi
+porte aussi les PARTIES de l'élève : support et trace y sont mêlés),
+`check_marketplace_enabled()`, et `is_kanban_board_member()` — jamais.
+
+Les trois réponses possibles, telles qu'elles étaient posées :
 
 1. **Tout couper.** Cohérent avec le kanban (« tout couper », 2026-09-15). Les
    77 ouvrent l'application sur un écran vide. 25 policies + 3 fonctions.
