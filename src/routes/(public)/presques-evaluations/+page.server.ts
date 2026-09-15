@@ -6,8 +6,20 @@
  * inline preview + download button.
  *
  * No auth gate; RLS allows SELECT for `to public` on the table.
+ *
+ * ⚠️ NE PAS y remettre `creator:created_by(firstname, lastname)`. Une jointure
+ * porte ses propres droits : `profiles` est fermée aux visiteurs anonymes
+ * depuis le durcissement d'août, et PostgREST refuse alors la requête ENTIÈRE
+ * — `42501 permission denied for table profiles` — au lieu de rendre un auteur
+ * vide. La page affichait donc « Aucune presque évaluation pour le moment. »
+ * à tout visiteur non connecté, du 2026-09-05 au 2026-09-15, alors que le
+ * document existait. Un message qui accuse la base d'être vide.
+ *
+ * Il n'y a qu'un auteur — le professeur — et son nom ne valait pas d'ouvrir
+ * `profiles` aux anonymes (la table des élèves mineurs).
  */
 
+import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { fetchTagNamesForResources } from '$lib/server/resource-tags';
 
@@ -25,14 +37,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 			file_name,
 			file_size,
 			grade_levels,
-			created_at,
-			creator:created_by(firstname, lastname)
+			created_at
 		`
 		)
 		.order('created_at', { ascending: false });
 
+	// ⚠️ On ÉCHOUE plutôt que de rendre une liste vide. C'est ce qui a laissé le
+	// défaut vivre dix jours : l'erreur était journalisée, puis la page affichait
+	// « Aucune presque évaluation pour le moment. » — indiscernable d'une base
+	// réellement vide, donc invisible pour tout le monde.
 	if (loadError) {
 		console.error('[presques-evaluations:public] Load error:', loadError);
+		throw error(500, 'Impossible de charger les presques évaluations');
 	}
 
 	type RawEvaluation = NonNullable<typeof evaluations>[number];
