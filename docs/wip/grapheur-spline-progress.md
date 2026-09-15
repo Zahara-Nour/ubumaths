@@ -92,3 +92,49 @@ Un quart de cercle a x monotone et reçoit donc le limiteur : erreur radiale
 7,1e-4 → 1,2e-3, soit 0,18 px sur un rayon de 150 px. Un test verrouille cette
 non-régression, comme le plateau écrêté (l'écrêtage rend des ordonnées
 **égales**, donc une sécante nulle, donc des pentes nulles : vérifié) et n = 3.
+
+## Suite — pôles ratés sur un grand cadrage
+
+Signalé le 2026-09-15 après la livraison de #324 : le crochet persiste. La
+console a tranché : le dépassement du tracé **réellement affiché** valait
+**0**. Donc plus aucun défaut de spline — le correctif de #324 était bien
+actif, et la bosse observée venait d'ailleurs.
+
+Cause, reproduite sur l'état exact de David (`localStorage`, cadrage de 127
+unités) : le seuil de suspicion valait 5 % de la hauteur de fenêtre, soit
+**6,35**, alors que le saut mesuré autour de x = -1 vaut **5,3**. Le pôle
+n'était pas soupçonné, les deux branches restaient reliées, et la spline
+lissait le pont en une bosse — qui, elle, ne dépasse aucune donnée. D'où le 0.
+
+⚠️ J'avais **mesuré** cette anomalie une heure plus tôt (« 0 rupture à 100
+points, 1 seule à 300 ») et je l'avais écartée comme « un autre sujet ». C'était
+le sujet.
+
+Deux corrections :
+
+1. **La sonde ne dépend plus de la hauteur de fenêtre.** Chaque intervalle est
+   sondé à 1/4, 1/2 et 3/4 — trois évaluations, alors que la courbe en coûte
+   déjà des centaines. Une valeur hors de l'intervalle des extrémités, ou
+   absente, désigne une singularité, quel que soit le zoom. Trois sondes et non
+   une : le milieu de l'intervalle contenant le pôle x = 1 tombait **par
+   hasard** entre les deux extrémités.
+2. **La marche conserve le signe.** Un intervalle peut contenir DEUX pôles dès
+   qu'on dézoome : la marche acceptait alors un point de la branche du milieu
+   (y = +2,63 après y = −2,41) parce qu'il était « plus proche de nous que de
+   l'autre extrémité », et enjambait le premier pôle.
+
+Coût mesuré : ~1250 évaluations pour 300 points (×4), 1,2 ms par courbe.
+
+| cadrage                 | avant                            | après                  |
+| ----------------------- | -------------------------------- | ---------------------- |
+| celui de David, 100 pts | 0 rupture, ponts sur les 3 pôles | 2 ruptures, aucun pont |
+| celui de David, 300 pts | 1 rupture, ponts sur −1 et 1     | 3 ruptures, aucun pont |
+| vue par défaut          | 3 ruptures, aucun pont           | inchangé               |
+
+### Faux pas de méthode, à ne pas refaire
+
+Deux captures « avec l'état de David » ne valaient rien : j'avais fabriqué
+l'état avec `id: 'a'`, que la validation Zod rejette — l'application repartait
+alors sur ses valeurs par défaut sans rien dire. Le symptôme était pourtant
+visible (un seul sous-tracé au lieu de quatre). **Vérifier que l'état injecté
+est bien celui relu**, avant d'en tirer la moindre conclusion.

@@ -61,6 +61,9 @@ const MAX_REFINED_INTERVALS = 64;
 /** Nombre maximal de marches vers un bord de domaine, par courbe. */
 const MAX_DOMAIN_MARCHES = 64;
 
+/** Positions sondées dans chaque intervalle, en fraction de sa largeur. */
+const PROBE_POSITIONS = [0.25, 0.5, 0.75] as const;
+
 /** Deux branches sont jointives sous cette fraction de l'intervalle initial. */
 const X_CONVERGENCE_RATIO = 1e-3;
 
@@ -179,16 +182,22 @@ function marchToward(
 			continue;
 		}
 
-		// Le candidat appartient à notre branche s'il est DE NOTRE SIGNE et
-		// dépasse les deux extrémités (il est sur le chemin de la divergence —
-		// c'est le cas d'un pôle d'ordre pair, où les deux branches partent du
-		// même côté), ou bien s'il est plus proche de notre branche que de la
-		// branche d'en face. Sans le test de signe, la marche de gauche saute
-		// par-dessus le pôle de 1/(x(x+1)) et relie les deux branches.
+		// Le candidat doit d'abord être DU SIGNE de notre branche : entre un
+		// échantillon et le pôle qu'il approche, une fonction ne change pas de
+		// signe. Sans cette exigence, un intervalle contenant DEUX pôles — ce
+		// qui arrive dès qu'on dézoome fort — voyait la marche accepter un
+		// point de la branche du milieu et enjamber le premier pôle.
+		const sameSign = y * near.y > 0 || y === 0 || near.y === 0;
+
+		// Ensuite seulement : soit il dépasse les deux extrémités (il est sur
+		// le chemin de la divergence — cas d'un pôle d'ordre pair, où les deux
+		// branches partent du même côté), soit il est plus proche de notre
+		// branche que de la branche d'en face.
 		const belongs =
 			opposite === null ||
-			(y * near.y > 0 && Math.abs(y) > Math.max(Math.abs(near.y), Math.abs(opposite))) ||
-			Math.abs(y - near.y) <= Math.abs(y - opposite);
+			(sameSign &&
+				(Math.abs(y) > Math.max(Math.abs(near.y), Math.abs(opposite)) ||
+					Math.abs(y - near.y) <= Math.abs(y - opposite)));
 
 		if (!belongs) {
 			far = midX;
@@ -204,6 +213,55 @@ function marchToward(
 	}
 
 	return { points, diverged, end: near };
+}
+
+/**
+ * À quel point l'intervalle entre deux échantillons est-il suspect ?
+ *
+ * On sonde le milieu de CHAQUE intervalle — une évaluation, alors que la
+ * courbe en coûte déjà des centaines. Une valeur franchement intercalée signe
+ * une fonction continue et rend 0 ; une valeur qui sort de l'intervalle, ou
+ * qui n'existe pas, trahit une singularité et rend l'ampleur de l'écart.
+ *
+ * ⚠️ Le seuil précédent — un saut supérieur à 5 % de la hauteur de fenêtre —
+ * était une fausse bonne idée : sur un cadrage de 127 unités il réclamait un
+ * saut de 6,35 là où le pôle de 1/(x(x+1)(x-1)) n'en produit que 5,3 entre
+ * deux échantillons voisins. Le pôle passait inaperçu, les branches restaient
+ * reliées, et la spline lissait le pont en une bosse — sans jamais dépasser
+ * ses données, donc invisible à toute mesure de dépassement.
+ */
+function suspicion(
+	evaluator: (x: number) => number | null,
+	p1: Point,
+	p2: Point,
+	height: number
+): number {
+	const low = Math.min(p1.y, p2.y);
+	const high = Math.max(p1.y, p2.y);
+	const deltaY = Math.abs(p2.y - p1.y);
+	const margin = 0.05 * deltaY;
+
+	let overshoot = 0;
+	let interpolates = true;
+
+	// Trois sondes et non une seule : le milieu d'un intervalle qui contient un
+	// pôle peut tomber PAR HASARD entre les deux extrémités. C'est le cas du
+	// pôle x = 1 de 1/(x(x+1)(x-1)) sur un cadrage de 127 unités — les quarts,
+	// eux, le trahissent.
+	for (const t of PROBE_POSITIONS) {
+		const y = evaluator(p1.x + (p2.x - p1.x) * t);
+		// Hors domaine : bord de domaine ou pôle, toujours à inspecter.
+		if (y === null || !Number.isFinite(y)) return Infinity;
+
+		overshoot = Math.max(overshoot, low - y, y - high);
+		if (!(y > low + margin && y < high - margin)) interpolates = false;
+	}
+
+	// Un saut franc reste suspect même si les sondes tombent entre les deux :
+	// un escalier a ses sondes sur l'une ou l'autre des marches.
+	const jump = deltaY > SUSPICION_RATIO * height ? deltaY : 0;
+
+	return Math.max(overshoot, interpolates ? 0 : jump, 0);
 }
 
 /** Points à insérer entre deux échantillons, et rupture éventuelle. */
@@ -226,19 +284,6 @@ function analyzeGap(
 	p2: Point,
 	height: number
 ): GapAnalysis | null {
-	const deltaY = Math.abs(p2.y - p1.y);
-	if (deltaY <= SUSPICION_RATIO * height) return null;
-
-	// Sonde au milieu : une valeur franchement intercalée signe une fonction
-	// continue (pentue, mais continue) — on s'arrête là, à une évaluation près.
-	const midY = evaluator((p1.x + p2.x) / 2);
-	const low = Math.min(p1.y, p2.y);
-	const high = Math.max(p1.y, p2.y);
-	const margin = 0.05 * deltaY;
-	if (midY !== null && Number.isFinite(midY) && midY > low + margin && midY < high - margin) {
-		return null;
-	}
-
 	const divergence = divergenceLimit(p1.y, p2.y, height);
 	const left = marchToward(evaluator, p1, p2.x, p2.y, divergence);
 	const right = marchToward(evaluator, p2, p1.x, p1.y, divergence);
@@ -347,8 +392,13 @@ function buildCurve(
 		const after = ys[i];
 		if (before === null || after === null) continue; // bord de domaine : passe 3
 
-		const deltaY = Math.abs(after - before);
-		if (deltaY > SUSPICION_RATIO * height) candidates.push({ index: i, suspicion: deltaY });
+		const score = suspicion(
+			evaluator,
+			{ x: xValues[i - 1], y: before },
+			{ x: xValues[i], y: after },
+			height
+		);
+		if (score > 0) candidates.push({ index: i, suspicion: score });
 	}
 	candidates.sort((a, b) => b.suspicion - a.suspicion);
 

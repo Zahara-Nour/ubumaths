@@ -441,6 +441,36 @@ describe('sampler', () => {
 			expect(curve.points.length).toBe(300);
 		});
 
+		it('coupe les trois pôles même sur un très grand cadrage', () => {
+			// Cadrage réel signalé le 2026-09-15 : 127 unités de large. Le seuil
+			// de suspicion valant 5 % de la hauteur, il exigeait un saut de 6,35
+			// entre deux échantillons voisins ; autour de x = -1 il vaut 5,3.
+			// Les pôles passaient inaperçus et les branches restaient reliées —
+			// la spline lissait le pont en une bosse, sans rien dépasser.
+			const cubic = (x: number): number | null => {
+				const d = x * (x + 1) * (x - 1);
+				return d === 0 ? null : 1 / d;
+			};
+			const huge: Viewport = {
+				xMin: -14.000654775934105,
+				xMax: 113.07859471742174,
+				yMin: -103.05587983841271,
+				yMax: 24.023369654942957
+			};
+
+			for (const count of [100, 300]) {
+				const curve = sampleFunction(cubic, huge, count);
+				const breaks = new Set(curve.discontinuityIndices);
+
+				for (const pole of [-1, 0, 1]) {
+					const straddles = curve.points.some(
+						(p, i) => i > 0 && !breaks.has(i) && curve.points[i - 1].x < pole && p.x > pole
+					);
+					expect(straddles, `${count} points, pôle ${pole}`).toBe(false);
+				}
+			}
+		});
+
 		it('applique le même traitement à sampleWithDerivative (courbe du DSL)', () => {
 			const derivative = (x: number): number | null => {
 				const d = x * (x + 1);
