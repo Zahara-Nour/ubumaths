@@ -464,3 +464,49 @@ describe('nommage automatique et collisions (#329)', () => {
 		expect(r.object.message?.toLowerCase()).toContain('circulaire');
 	});
 });
+
+// =============================================================================
+// §2.5 N7 — le message reste lisible quand beaucoup de noms manquent
+// =============================================================================
+
+describe('lisibilité du message d’attente (§2.5 N7)', () => {
+	it('énumère tant qu’il n’y a pas plus de trois noms', () => {
+		const un = a.create({ kind: 'function', name: 'f', definition: 'a*x' });
+		expect(un.ok && un.object.message).toContain('a');
+
+		const b = new Atelier();
+		const trois = b.create({ kind: 'function', name: 'f', definition: 'a*b*c*x' });
+		expect(trois.ok).toBe(true);
+		if (!trois.ok) return;
+		expect(trois.object.missing).toHaveLength(3);
+		expect(trois.object.message).toContain('a');
+		expect(trois.object.message).toContain('b');
+		expect(trois.object.message).toContain('c');
+	});
+
+	it('compte au lieu d’énumérer au-delà de trois noms', () => {
+		const r = a.create({ kind: 'function', name: 'f', definition: 'a*b*c*d*x' });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.missing).toHaveLength(4);
+		expect(r.object.message).toContain('4');
+		// plus d'énumération : le message ne cite aucun nom
+		expect(r.object.message).not.toContain('« a »');
+		expect(r.object.message).not.toContain('« d »');
+	});
+
+	it('garde le détail dans `missing`, quel que soit le message', () => {
+		const r = a.create({ kind: 'function', name: 'f', definition: 'a*b*c*d*x' });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		// l'interface affichera ce détail au survol
+		expect(r.object.missing?.map((m) => m.name).sort()).toEqual(['a', 'b', 'c', 'd']);
+	});
+
+	it('ne dit jamais « inconnu » — le mot désigne autre chose en maths', () => {
+		const r = a.create({ kind: 'function', name: 'f', definition: 'a*b*c*d*x' });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.message?.toLowerCase()).not.toContain('inconnu');
+	});
+});

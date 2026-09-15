@@ -115,8 +115,24 @@ refus bloque un usage valide, un faux passage coûte trois secondes et se voit.
 
 Trois filets à la place, spécifiés au §6 bis : **annulation du collage**
 (`Ctrl+Z`), **message d'attente qui compte au lieu d'énumérer** au-delà de trois
-noms (§2.5 N7), et le fait que l'élève voit ce qui entre dans le champ. Ces deux
-premiers restent à implémenter — ils touchent l'interface, pas le modèle.
+noms (§2.5 N7), et le fait que l'élève voit ce qui entre dans le champ.
+
+✅ **N7 fait.** Au-delà de trois manquants le message compte ; le détail reste
+dans `missing`, que l'interface montrera au survol :
+
+```
+a*x         → En attente de « a », qui n'est pas encore défini.
+a*b*c*x     → En attente de « a », « b », « c », qui ne sont pas encore définis.
+a*b*c*d*x   → En attente de 4 noms qui ne sont pas encore définis.
+énoncé collé → En attente de 10 noms qui ne sont pas encore définis.
+```
+
+⚠️ **Écart volontaire à la lettre du §2.5 N7**, qui proposait « 9 noms
+inconnus » : le mot **inconnu** désigne en maths ce qu'on cherche dans une
+équation. L'employer pour un nom non défini serait un faux ami, dans un outil qui
+s'adresse à des élèves. Un test interdit désormais ce mot dans le message.
+
+Reste à faire : l'annulation du collage (`Ctrl+Z`), qui touche l'interface.
 
 ✅ **[#329](https://github.com/Zahara-Nour/ubumaths/issues/329) corrigé** — le
 nommage automatique fabriquait une fausse « définition circulaire » : créer un
@@ -170,7 +186,8 @@ reproduit pas dans l'atelier.
 - [x] Implémenter `names.ts`, `parse.ts`, `atelier.svelte.ts`
 - [x] Les quatre états (D9) et l'offre de curseur
 - [x] La provenance des définitions (D10) et la normalisation au collage
-- [x] #329 — le nommage automatique évite les noms cités par la définition — 80 tests verts
+- [x] #329 — le nommage automatique évite les noms cités par la définition
+- [x] §2.5 N7 — message d'attente lisible au-delà de trois noms — 84 tests verts
 - [ ] Tests et implémentation de la **persistance locale** (§5) et de
       **l'URL / mode éphémère** (§6)
 - [ ] ⚠️ **Le refactor inévitable** : les 13 fichiers qui font

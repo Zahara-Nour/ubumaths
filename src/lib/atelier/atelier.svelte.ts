@@ -84,11 +84,32 @@ const brokenMessage = (culprits: readonly string[]) =>
 		? `Dépend de « ${culprits[0]} », qui est en erreur.`
 		: `Dépend de ${culprits.map((n) => `« ${n} »`).join(', ')}, en erreur.`;
 
-/** « En attente de … » — une aide, jamais un reproche (décision D9). */
-const pendingMessage = (missing: readonly MissingReference[]) =>
-	missing.length === 1
-		? `En attente de « ${missing[0].name} », qui n'est pas encore défini.`
-		: `En attente de ${missing.map((m) => `« ${m.name} »`).join(', ')}, qui ne sont pas encore définis.`;
+/**
+ * Au-delà de ce nombre de manquants, le message compte au lieu d'énumérer.
+ *
+ * « En attente de b, o, j, u, r, t, l, m, d » est illisible — et c'est ce que
+ * produit un collage raté (§2.5 N7). Le détail reste porté par `missing`, que
+ * l'interface montre au survol.
+ */
+const MAX_LISTED_MISSING = 3;
+
+/**
+ * « En attente de … » — une aide, jamais un reproche (décision D9).
+ *
+ * ⚠️ Le mot « inconnu » est écarté à dessein : en maths, une inconnue est ce
+ * qu'on cherche dans une équation. L'employer ici pour un nom non défini serait
+ * un faux ami, dans un outil qui s'adresse justement à des élèves.
+ */
+const pendingMessage = (missing: readonly MissingReference[]) => {
+	if (missing.length === 1) {
+		return `En attente de « ${missing[0].name} », qui n'est pas encore défini.`;
+	}
+	if (missing.length <= MAX_LISTED_MISSING) {
+		const names = missing.map((m) => `« ${m.name} »`).join(', ');
+		return `En attente de ${names}, qui ne sont pas encore définis.`;
+	}
+	return `En attente de ${missing.length} noms qui ne sont pas encore définis.`;
+};
 
 // =============================================================================
 // Atelier
