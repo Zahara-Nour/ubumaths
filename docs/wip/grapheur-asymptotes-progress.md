@@ -49,8 +49,8 @@ modérée, où l'écart est franc.
 
 ## Périmètre
 
-- Degré borné à **4**. Au-delà, l'extraction numérique des coefficients n'est
-  plus fiable, et c'est hors programme.
+- Degré borné à **2** par voie numérique — voir la revue plus bas : 4 était une
+  promesse non tenue.
 - Les degrés 0 et 1 restent rendus comme horizontale et oblique : pas de doublon.
 - Nouveau type `PolynomialAsymptote` (coefficients croissants), pour ne pas
   toucher à `ObliqueAsymptote`, utilisé ailleurs.
@@ -64,3 +64,72 @@ modérée, où l'écart est franc.
   et les non-régressions (`1/x`, `arctan`, `√(x²+1)`, `x + 1/x`, polynômes).
 - **3806** tests geometry-core + grapheur verts ; `svelte-autofixer` sans
   remarque ; rendu relu dans l'application sur les trois familles.
+
+## Revue — six findings, dont deux critiques
+
+L'auditeur a balayé ~4100 fonctions, puis confirmé chaque finding contre le
+vrai module. Verdict initial : **ne pas merger**. Ce qu'il a trouvé, et ce que
+j'en ai fait.
+
+### Deux régressions introduites par ma propre correction
+
+Corriger le défaut n° 1 (« une convergence exacte était rejetée ») revenait à
+accepter `diff === 0` comme convergence. Deux faux positifs sont nés de là :
+
+- **`cos(πx/50)` déclarée d'asymptote `y = 1`.** Sa période vaut 100 : sondée
+  sur 100, 1000, 10000, elle rend **exactement 1** à chaque fois. Les sondes
+  sont désormais **non commensurables** — 137, 1373, 13729, 137299 — pour ne
+  plus tomber sur une période décimale.
+- **Une fonction constante recevait une asymptote sur elle-même**, le pointillé
+  posé sur la courbe. Les obliques et les courbes refusaient déjà ce cas ;
+  l'horizontale le fait maintenant aussi.
+
+Et le défaut n° 1 lui-même **était redéposé** dans la nouvelle vérification :
+`differsFromPolynomial` ne sondait qu'à x = ±100 et ±300, et confondait « je
+n'ai rien pu mesurer » avec « la fonction EST le polynôme ». `√(x²−250000)`,
+non définie avant 500, et `x + e⁻ˣ`, dont l'écart est sous l'ulp dès x = 100,
+perdaient leur asymptote. Les deux situations sont désormais distinctes.
+
+### L'extrapolation ne suffisait pas
+
+`(x²+3x)/(x−20)` n'était pas détectée : l'écart à l'asymptote vaut
+`A/x + A·a/x² + …`, et le premier niveau de Richardson ne tue que le terme en
+1/x. Seuil mesuré : détecté jusqu'à un pôle en 10, perdu dès 20.
+
+Un **second niveau** `(16·R2 − R1)/15` corrige, sur quatre échelles. Et le
+critère de validation change : on vérifie que la suite **converge** — les écarts
+successifs se resserrent d'un facteur net — au lieu d'exiger que deux
+estimations **coïncident**. `√(x²−250000)` approche lentement (−230, −52, −13,
+−3,3) : la convergence est franche, l'égalité ne viendra jamais.
+
+Résultat : `(x²+3x)/(x−20)` → `y = x + 23`, `(x²+1)/(x−100)` → `y = x + 100`,
+`x³/(x−20)` → `y = x² + 20x + 400`.
+
+### Le périmètre annoncé n'était pas tenu
+
+**Le degré 4 était une promesse en l'air** : au degré 3, le coefficient constant
+se reconstruit par annulation catastrophique — à x = 16 000, x³ vaut 4e12 et
+lire une unité dessus demande 16 chiffres significatifs. `(x⁴+1)/(x−1)` n'était
+pas détectée, et `x³ + a₀ + 1/x` ne l'était que pour |a₀| ≳ 10. Les cinq tests
+d'asymptotes courbes n'exerçaient que le degré 2 : l'écart était invisible.
+
+Le degré est ramené à **2**, avec un test qui fige cette limite. La voie
+symbolique la lèvera — c'est précisément ce qu'une division euclidienne fait
+sans sondage.
+
+### Trois points mineurs
+
+- Le seuil sur le coefficient dominant devient **relatif** : une parabole plate
+  (`x²/50000`) a bien une asymptote courbe, qu'un seuil absolu écartait.
+- `getHorizontalPath` reçoit la garde de dégénérescence qui manquait : une
+  branche entièrement hors cadre laissait un `<path>` vide et son infobulle.
+- Un aller-retour inutile dans le tracé des courbes, et un commentaire faux.
+
+### Deux limites intrinsèques, notées
+
+- **Écart en O(ln x / x)** : `x + ln(x)/x` n'est pas détectée. L'extrapolation
+  suppose une erreur en puissances de 1/x ; un logarithme y laisse un résidu que
+  le test lit comme une instabilité.
+- **Oscillation très lente** : `x² + sin(x/10⁶)` est vue comme `y = x²`. Les
+  sondes plafonnent à 137 299 pour une période de 6,3e6. Inévitable avec des
+  sondes fixes.

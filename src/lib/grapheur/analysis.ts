@@ -69,7 +69,10 @@ const DERIVATIVE_H = 1e-8;
 const JUMP_THRESHOLD = 100;
 
 /** Large x values for limit estimation */
-const LARGE_X_VALUES = [100, 1000, 10000, 100000] as const;
+// Volontairement NON décimales : une grille en puissances de 10 tombe pile sur
+// la période de cos(πx/50), qui y rend exactement 1 — tous les écarts sont nuls
+// et l'oscillation passe pour une asymptote y = 1.
+const LARGE_X_VALUES = [137, 1373, 13729, 137299] as const;
 
 /** Convergence tolerance for limit estimation */
 const LIMIT_TOLERANCE = 0.001;
@@ -644,14 +647,26 @@ function determineBehavior(
 // Asymptotes polynomiales (horizontale, oblique, courbe)
 // =============================================================================
 
-/** Degré maximal cherché : au-delà, l'extraction numérique n'est plus fiable. */
-const MAX_ASYMPTOTE_DEGREE = 4;
+/**
+ * Degré maximal cherché **par voie numérique**.
+ *
+ * ⚠️ 2, et non 4 comme annoncé au départ. Au degré 3, le coefficient constant
+ * se reconstruit par annulation catastrophique : à x = 16 000, x³ vaut 4e12 et
+ * lire une unité dessus demande 16 chiffres significatifs. Mesuré :
+ * `(x⁴+1)/(x−1)` n'est pas détecté, et `x³ + a₀ + 1/x` ne l'est que pour
+ * |a₀| ≳ 10. Plutôt que de promettre un périmètre non tenu, on s'arrête là où
+ * la mesure suit — la voie symbolique (division euclidienne) le lèvera.
+ */
+const MAX_ASYMPTOTE_DEGREE = 2;
 
 /** Abscisses de référence, normalisées pour rester bien conditionnées. */
 const ASYMPTOTE_PROBE_SCALE = 1000;
 
 /** Écart relatif toléré entre deux estimations d'un même coefficient. */
 const COEFFICIENT_TOLERANCE = 1e-4;
+
+/** Facteur minimal de resserrement entre deux écarts successifs. */
+const CONVERGENCE_RATIO = 3;
 
 /** En deçà, la fonction EST son polynôme : il n'y a pas d'asymptote à tracer. */
 const POLYNOMIAL_IDENTITY_TOLERANCE = 1e-12;
@@ -700,33 +715,50 @@ function fitPolynomialBranch(
 		return inU.map((coefficient, k) => coefficient / factor ** k);
 	};
 
-	// Trois échelles, chacune quatre fois plus loin que la précédente.
-	const scales = [
-		sample(ASYMPTOTE_PROBE_SCALE),
-		sample(ASYMPTOTE_PROBE_SCALE * 4),
-		sample(ASYMPTOTE_PROBE_SCALE * 16)
-	];
+	// Quatre échelles, chacune quatre fois plus loin que la précédente.
+	const scales = [1, 4, 16, 64].map((factor) => sample(ASYMPTOTE_PROBE_SCALE * factor));
 	if (scales.some((s) => s === null)) return null;
-	const [near, mid, far] = scales as number[][];
+	const measured = scales as number[][];
 
-	// Extrapolation de Richardson. L'écart entre la courbe et son asymptote est
-	// en O(1/x) : à x = 1000, l'ordonnée à l'origine de (x²+3x)/(x-2) est
-	// estimée à 5,0167 et à x = 4000 à 5,0042. Exiger que ces deux valeurs
-	// coïncident serait irréaliste ; en revanche (4·loin − près)/3 élimine le
-	// terme en 1/x et rend 4,99999.
-	const richardson = (a: number[], b: number[]): number[] =>
-		b.map((coefficient, k) => (4 * coefficient - a[k]) / 3);
+	// Extrapolation de Richardson, à DEUX niveaux.
+	//
+	// L'écart entre la courbe et son asymptote n'est pas seulement en 1/x : pour
+	// (x²+3x)/(x−a) il vaut A/x + A·a/x² + …, et le terme en 1/x² survit au
+	// premier niveau. Mesuré sur (x²+3x)/(x−20) : le premier niveau rend 22,995
+	// puis 22,9997 — l'écart résiduel suffit à faire échouer le test de
+	// stabilité, et l'asymptote y = x + 23 était perdue. Le second niveau,
+	// (16·R2 − R1)/15, rend 23,0000071.
+	const level = (order: number, a: number[], b: number[]): number[] => {
+		const factor = 4 ** order;
+		return b.map((coefficient, k) => (factor * coefficient - a[k]) / (factor - 1));
+	};
 
-	const first = richardson(near, mid);
-	const second = richardson(mid, far);
+	const first = [
+		level(1, measured[0], measured[1]),
+		level(1, measured[1], measured[2]),
+		level(1, measured[2], measured[3])
+	];
+	const second = [level(2, first[0], first[1]), level(2, first[1], first[2])];
 
-	// Stabilité : deux extrapolations successives doivent coïncider.
+	// Critère : la suite CONVERGE, elle n'a pas à avoir convergé.
+	//
+	// Exiger que deux extrapolations coïncident rejetait √(x²−250000), dont
+	// l'approche est lente : les valeurs successives de l'ordonnée à l'origine
+	// valent -230, -52, -13, -3,3 — une convergence franche vers 0, mais deux
+	// estimations voisines restent distantes. On demande donc que les écarts
+	// successifs se resserrent d'un facteur net, signature d'une convergence, et
+	// on retient la valeur la plus extrapolée.
 	for (let k = 0; k <= degree; k++) {
-		const magnitude = Math.max(Math.abs(first[k]), Math.abs(second[k]), 1);
-		if (Math.abs(first[k] - second[k]) > COEFFICIENT_TOLERANCE * magnitude) return null;
+		const wide = Math.abs(first[1][k] - first[0][k]);
+		const narrow = Math.abs(first[2][k] - first[1][k]);
+		const magnitude = Math.max(Math.abs(second[1][k]), 1);
+
+		// Déjà stable au chiffre près : rien à exiger de plus.
+		if (narrow <= COEFFICIENT_TOLERANCE * magnitude) continue;
+		if (narrow > wide / CONVERGENCE_RATIO) return null;
 	}
 
-	return second;
+	return second[1];
 }
 
 /**
@@ -777,9 +809,14 @@ function fitAsymptoteBranch(
 		const coefficients = fitPolynomialBranch(evaluator, degree, sign);
 		if (coefficients === null) continue;
 
-		// Un coefficient dominant nul signifie que le vrai degré est plus bas ;
-		// il a donc déjà été trouvé, ou le sera au tour suivant.
-		if (degree > 0 && Math.abs(coefficients[degree]) < COEFFICIENT_TOLERANCE) continue;
+		// Un coefficient dominant négligeable DEVANT LES AUTRES signifie que le
+		// vrai degré est plus bas ; il a donc déjà été trouvé, ou le sera au tour
+		// suivant. Le seuil est relatif : une parabole plate (x²/50000) a bien
+		// une asymptote courbe, qu'un seuil absolu écartait.
+		if (degree > 0) {
+			const largest = Math.max(...coefficients.map((c) => Math.abs(c)), 1);
+			if (Math.abs(coefficients[degree]) < COEFFICIENT_TOLERANCE * largest) continue;
+		}
 		return coefficients;
 	}
 	return null;
@@ -803,16 +840,25 @@ function differsFromPolynomial(
 	sign: 1 | -1
 ): boolean {
 	const valueAt = (x: number): number => coefficients.reduce((sum, c, k) => sum + c * x ** k, 0);
+	let measured = false;
 
-	for (const scale of [100, 300]) {
+	// Plusieurs échelles, et non deux : une branche d'hyperbole n'est pas
+	// définie près de l'origine, et une approche exponentielle est déjà sous
+	// l'ulp à x = 100. Dans les deux cas les sondes proches ne mesurent RIEN —
+	// ce que l'on ne doit pas confondre avec « la fonction EST le polynôme ».
+	for (const scale of [17, 53, 137, 1373]) {
 		const x = sign * scale;
 		const y = evaluator(x);
 		if (y === null || !Number.isFinite(y)) continue;
 
+		measured = true;
 		const magnitude = Math.max(Math.abs(y), 1);
 		if (Math.abs(y - valueAt(x)) > POLYNOMIAL_IDENTITY_TOLERANCE * magnitude) return true;
 	}
-	return false;
+
+	// Rien de mesurable : on ne peut pas affirmer que la fonction EST le
+	// polynôme, donc on laisse passer l'asymptote trouvée par l'ajustement.
+	return !measured;
 }
 
 // =============================================================================
@@ -844,6 +890,15 @@ export function findHorizontalAsymptotes(
 		evaluator,
 		LARGE_X_VALUES.map((x) => -x)
 	);
+
+	// Une fonction constante n'est pas sa propre asymptote : le pointillé se
+	// poserait exactement sur la courbe. Les obliques et les courbes refusent
+	// déjà ce cas.
+	const constantRight = limitRight !== null && differsFromPolynomial(evaluator, [limitRight], 1);
+	const constantLeft = limitLeft !== null && differsFromPolynomial(evaluator, [limitLeft], -1);
+	if (limitRight !== null && limitLeft !== null && !constantRight && !constantLeft) {
+		return [];
+	}
 
 	if (limitRight !== null && limitLeft !== null) {
 		// Both limits exist

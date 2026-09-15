@@ -87,6 +87,9 @@
 	function getHorizontalPath(asymptote: HorizontalAsymptote): string {
 		const svgY = transformer.mathToSvg(0, asymptote.y).y;
 		const [from, to] = branchBounds(asymptote.direction);
+		// Sans cette garde, une branche entièrement hors cadre laisse un <path>
+		// vide dans le DOM — et son infobulle sur un trait inexistant.
+		if (to - from < 1) return '';
 		return `M ${from} ${svgY} L ${to} ${svgY}`;
 	}
 
@@ -101,7 +104,8 @@
 	function branchBounds(direction: 'left' | 'right' | 'both'): [number, number] {
 		if (direction === 'both') return [0, width];
 		const origin = transformer.mathToSvg(0, 0).x;
-		// Si l'origine est hors du cadre, la branche occupe tout le cadre.
+		// Origine hors cadre : la branche occupe tout le cadre du bon côté, et
+		// rien du mauvais — ce que `to - from < 1` écarte chez l'appelant.
 		const cut = Math.min(Math.max(origin, 0), width);
 		return direction === 'right' ? [cut, width] : [0, cut];
 	}
@@ -134,8 +138,8 @@
 		for (let i = 0; i <= steps; i++) {
 			const svgX = fromSvg + ((toSvg - fromSvg) * i) / steps;
 			const mathX = transformer.svgToMath(svgX, 0).x;
-			const point = transformer.mathToSvg(mathX, valueAt(mathX));
-			commands.push(`${i === 0 ? 'M' : 'L'} ${svgX} ${point.y}`);
+			const svgY = transformer.mathToSvg(0, valueAt(mathX)).y;
+			commands.push(`${i === 0 ? 'M' : 'L'} ${svgX} ${svgY}`);
 		}
 		return commands.join(' ');
 	}
