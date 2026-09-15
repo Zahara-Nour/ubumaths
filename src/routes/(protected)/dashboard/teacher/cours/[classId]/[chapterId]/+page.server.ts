@@ -37,7 +37,7 @@ import {
 } from '$lib/server/chapters-publication';
 import { z } from 'zod';
 import {
-	checkForTemplateUpdates,
+	getInstantiationWithStatus,
 	createTemplateFromChapter,
 	migrateChapterToVersion,
 	detachChapterFromTemplate
@@ -54,7 +54,6 @@ import type {
 	ChapterExercise
 } from '$lib/types/chapters';
 import type { ChapterWorksheet } from '$lib/types/chapters';
-import type { InstantiationWithStatus } from '$lib/types/chapter-templates';
 
 /**
  * Une fiche rattachée, avec le peu qu'il faut pour l'afficher.
@@ -343,9 +342,14 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		})
 		.filter((s): s is { id: string; name: string; avatar: string | null } => s !== null);
 
-	// Check if chapter has template instantiation
+	// Le modèle dont ce chapitre est issu — `null` s'il n'en a aucun.
+	//
+	// ⚠️ PAS `checkForTemplateUpdates` : elle répond « pas de mise à jour »
+	// (un objet, donc VRAI) même sans modèle, et l'écran affichait alors
+	// « Template supprimé » sur tous les chapitres créés à la main — puis
+	// plantait sur le premier tooltip.
 	const { data: templateInstantiation, error: templateInstantiationError } =
-		await checkForTemplateUpdates(chapterId, locals.supabase);
+		await getInstantiationWithStatus(chapterId, locals.supabase);
 
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
@@ -378,7 +382,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		availableWorksheets: availableWorksheets || [],
 		checklistProgress: checklistProgress || [],
 		students: studentList,
-		templateInstantiation: templateInstantiation as InstantiationWithStatus | null
+		templateInstantiation
 	};
 };
 

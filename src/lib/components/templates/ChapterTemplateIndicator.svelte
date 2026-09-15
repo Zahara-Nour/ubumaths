@@ -42,86 +42,110 @@
 	const isDetached = $derived(instantiation?.isDetached ?? false);
 </script>
 
+<!--
+	⚠️ `Tooltip.Provider` est porté ICI, et pas laissé à l'appelant : sans lui,
+	bits-ui jette « Context "Tooltip.Provider" not found » au montage, et c'est
+	toute l'hydratation de la page hôte qui s'arrête. Un composant qui pose des
+	tooltips apporte son contexte, sinon il casse la première page qui l'insère
+	sans le savoir.
+-->
 {#if instantiation}
-	<div class={cn('flex items-center gap-2', className)}>
-		<!-- Template badge -->
-		<Badge
-			variant={isDeleted ? 'outline' : isDetached ? 'secondary' : 'default'}
-			class={cn(
-				'flex items-center gap-1.5 px-2 py-1',
-				isDeleted && 'border-destructive/50 text-destructive'
-			)}
-		>
-			<Package class="h-3 w-3" />
-			<span class="text-xs">
-				{#if isDeleted}
-					Template supprimé
-				{:else if instantiation.templateTitle}
-					{instantiation.templateTitle}
-				{:else}
-					Template
-				{/if}
-				{#if !isDetached && !isDeleted}
-					<span class="ml-1 opacity-60">v{instantiation.templateVersion}</span>
-				{/if}
-			</span>
-			{#if isDetached}
-				<Tooltip.Root>
-					<Tooltip.Trigger>
-						{#snippet child({ props })}
-							<span {...props}>
-								<AlertCircle class="h-3 w-3 text-orange-500" />
-							</span>
-						{/snippet}
-					</Tooltip.Trigger>
-					<Tooltip.Content>
-						<p>Détaché du template</p>
-					</Tooltip.Content>
-				</Tooltip.Root>
-			{/if}
-		</Badge>
-
-		<!-- Update available badge -->
-		{#if hasUpdate && !isDetached && !isDeleted && instantiation.latestVersion}
-			<Badge variant="outline" class="border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30">
-				<ArrowUpCircle class="mr-1 h-3 w-3" />
+	<Tooltip.Provider>
+		<div class={cn('flex items-center gap-2', className)}>
+			<!-- Template badge -->
+			<Badge
+				variant={isDeleted ? 'outline' : isDetached ? 'secondary' : 'default'}
+				class={cn(
+					'flex items-center gap-1.5 px-2 py-1',
+					isDeleted && 'border-destructive/50 text-destructive'
+				)}
+			>
+				<Package class="h-3 w-3" />
 				<span class="text-xs">
-					Mise à jour v{instantiation.latestVersion}
+					{#if isDeleted}
+						Template supprimé
+					{:else if instantiation.templateTitle}
+						{instantiation.templateTitle}
+					{:else}
+						Template
+					{/if}
+					{#if !isDetached && !isDeleted}
+						<span class="ml-1 opacity-60">v{instantiation.templateVersion}</span>
+					{/if}
 				</span>
+				{#if isDetached}
+					<Tooltip.Root>
+						<Tooltip.Trigger>
+							{#snippet child({ props })}
+								<span {...props}>
+									<AlertCircle class="h-3 w-3 text-orange-500" />
+								</span>
+							{/snippet}
+						</Tooltip.Trigger>
+						<Tooltip.Content>
+							<p>Détaché du template</p>
+						</Tooltip.Content>
+					</Tooltip.Root>
+				{/if}
 			</Badge>
-		{/if}
 
-		<!-- Actions -->
-		<div class="flex items-center gap-1">
-			{#if hasUpdate && !isDetached && !isDeleted && onUpdate}
-				<Tooltip.Root>
-					<Tooltip.Trigger>
-						{#snippet child({ props })}
-							<Button {...props} variant="ghost" size="icon-sm" onclick={onUpdate} class="h-7 w-7">
-								<ArrowUpCircle class="h-4 w-4 text-blue-600" />
-							</Button>
-						{/snippet}
-					</Tooltip.Trigger>
-					<Tooltip.Content>
-						<p>Mettre à jour depuis le template</p>
-					</Tooltip.Content>
-				</Tooltip.Root>
+			<!-- Update available badge -->
+			{#if hasUpdate && !isDetached && !isDeleted && instantiation.latestVersion}
+				<Badge
+					variant="outline"
+					class="border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30"
+				>
+					<ArrowUpCircle class="mr-1 h-3 w-3" />
+					<span class="text-xs">
+						Mise à jour v{instantiation.latestVersion}
+					</span>
+				</Badge>
 			{/if}
 
-			{#if !isDetached && onDetach}
-				<Tooltip.Root>
-					<Tooltip.Trigger>
-						{#snippet child({ props })}
-							<Button {...props} variant="ghost" size="icon-sm" onclick={onDetach} class="h-7 w-7">
-								<Unlink class="h-4 w-4 text-muted-foreground hover:text-destructive" />
-							</Button>
-						{/snippet}
-					</Tooltip.Trigger>
-					<Tooltip.Content>
-						<p>Détacher du template</p>
-					</Tooltip.Content>
-				</Tooltip.Root>
-			{/if}
+			<!-- Actions -->
+			<div class="flex items-center gap-1">
+				{#if hasUpdate && !isDetached && !isDeleted && onUpdate}
+					<Tooltip.Root>
+						<Tooltip.Trigger>
+							{#snippet child({ props })}
+								<Button
+									{...props}
+									variant="ghost"
+									size="icon-sm"
+									onclick={onUpdate}
+									class="h-7 w-7"
+								>
+									<ArrowUpCircle class="h-4 w-4 text-blue-600" />
+								</Button>
+							{/snippet}
+						</Tooltip.Trigger>
+						<Tooltip.Content>
+							<p>Mettre à jour depuis le template</p>
+						</Tooltip.Content>
+					</Tooltip.Root>
+				{/if}
+
+				{#if !isDetached && onDetach}
+					<Tooltip.Root>
+						<Tooltip.Trigger>
+							{#snippet child({ props })}
+								<Button
+									{...props}
+									variant="ghost"
+									size="icon-sm"
+									onclick={onDetach}
+									class="h-7 w-7"
+								>
+									<Unlink class="h-4 w-4 text-muted-foreground hover:text-destructive" />
+								</Button>
+							{/snippet}
+						</Tooltip.Trigger>
+						<Tooltip.Content>
+							<p>Détacher du template</p>
+						</Tooltip.Content>
+					</Tooltip.Root>
+				{/if}
+			</div>
 		</div>
-	</div>
+	</Tooltip.Provider>
 {/if}

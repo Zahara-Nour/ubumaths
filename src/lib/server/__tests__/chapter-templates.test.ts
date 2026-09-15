@@ -2243,3 +2243,87 @@ describe('Instantiation Operations', () => {
 		});
 	});
 });
+
+// ============================================================================
+// getInstantiationWithStatus — ce que l'ÉCRAN doit recevoir
+// ============================================================================
+
+describe('getInstantiationWithStatus', () => {
+	let mockSupabase: MockSupabaseClient;
+
+	beforeEach(() => {
+		mockSupabase = createMockSupabase();
+	});
+
+	/**
+	 * ⚠️ LE cas qui a coûté un plantage en production. `checkForTemplateUpdates`
+	 * répond `{ hasUpdate: false }` — un objet, donc VRAI — pour un chapitre sans
+	 * modèle. La page le passait tel quel à l'affichage : étiquette « Template
+	 * supprimé » sur tous les chapitres créés à la main, puis
+	 * « Context "Tooltip.Provider" not found » et l'hydratation arrêtée net.
+	 *
+	 * `null` est la seule valeur qui dise « rien à montrer ».
+	 */
+	it('rend null quand le chapitre n’a aucun modèle', async () => {
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({ data: null, error: null });
+
+		const result = await templates.getInstantiationWithStatus(mockChapterId, mockSupabase);
+
+		expect(result.error).toBeNull();
+		expect(result.data).toBeNull();
+	});
+
+	it('rend l’instanciation complète, avec le titre du modèle', async () => {
+		mockSupabase._mockChain.maybeSingle
+			.mockResolvedValueOnce({ data: mockDbInstantiation, error: null })
+			.mockResolvedValueOnce({
+				data: { title: 'Les fonctions affines', current_version: 1 },
+				error: null
+			});
+
+		const result = await templates.getInstantiationWithStatus(mockChapterId, mockSupabase);
+
+		expect(result.error).toBeNull();
+		expect(result.data).toMatchObject({
+			id: mockInstantiationId,
+			templateId: mockTemplateId,
+			templateVersion: 1,
+			templateTitle: 'Les fonctions affines',
+			isDetached: false,
+			hasUpdate: false,
+			latestVersion: null
+		});
+	});
+
+	it('signale une version plus récente du modèle', async () => {
+		mockSupabase._mockChain.maybeSingle
+			.mockResolvedValueOnce({ data: mockDbInstantiation, error: null })
+			.mockResolvedValueOnce({
+				data: { title: 'Les fonctions affines', current_version: 3 },
+				error: null
+			});
+
+		const result = await templates.getInstantiationWithStatus(mockChapterId, mockSupabase);
+
+		expect(result.data).toMatchObject({ hasUpdate: true, latestVersion: 3 });
+	});
+
+	/**
+	 * Modèle supprimé : l'instanciation reste, et l'écran doit pouvoir le dire.
+	 * C'est une absence de modèle, pas une absence d'instanciation — la
+	 * distinction est justement celle que la page avait perdue.
+	 */
+	it('garde l’instanciation d’un modèle supprimé, sans titre', async () => {
+		mockSupabase._mockChain.maybeSingle
+			.mockResolvedValueOnce({ data: mockDbInstantiation, error: null })
+			.mockResolvedValueOnce({ data: null, error: null });
+
+		const result = await templates.getInstantiationWithStatus(mockChapterId, mockSupabase);
+
+		expect(result.data).toMatchObject({
+			id: mockInstantiationId,
+			templateTitle: null,
+			hasUpdate: false
+		});
+	});
+});
