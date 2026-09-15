@@ -16270,6 +16270,10 @@ export type Database = {
         Args: { p_assignment_id: string }
         Returns: boolean
       }
+      has_pending_request_from: {
+        Args: { p_requester_id: string }
+        Returns: boolean
+      }
       has_proposal_on_listing: {
         Args: { p_listing_id: string; p_user_id: string }
         Returns: boolean
@@ -16311,6 +16315,7 @@ export type Database = {
         Args: { p_file_id: string }
         Returns: boolean
       }
+      is_friend: { Args: { p_user_id: string }; Returns: boolean }
       is_in_assigned_class: {
         Args: { p_assignment_id: string }
         Returns: boolean
