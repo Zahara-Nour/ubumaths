@@ -1,5 +1,16 @@
 # Tri : la RLS et les adhésions archivées
 
+> **CLOS le 2026-09-15.** Le lot 1 (19 policies + 2 fonctions) est en
+> production. Les 6 policies restantes de la pile A sont **abandonnées
+> délibérément** — décision de David, sur mesure : les tournois concernés, c'est
+> 4 tournois et 29 parties jouées par **2 élèves** ; `view_member_classes` est la
+> plus risquée de toutes (une quinzaine d'écrans joignent `classes!inner`).
+> Rendement décroissant. Les 13 policies « professeur » sont gardées, comme
+> décidé.
+>
+> Seul le `not exists` de `shared_coursework`, trouvé par l'audit, a été corrigé
+> à part : `20260915740000`.
+>
 > **Rien n'a été modifié.** C'est l'autre moitié de
 > [tri-adhesions-archivees.md](tri-adhesions-archivees.md), qui ne scannait que
 > `src/`. Ici, c'est la base — la couche qui **accorde réellement** l'accès.

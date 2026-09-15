@@ -108,9 +108,27 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			studentIds = classStudents?.map((m: { student_id: string }) => m.student_id) || [];
 		} else {
 			// Get all students in teacher's classes
+			// ⚠️ Le commentaire disait « des classes du professeur », la requête ne
+			// le vérifiait pas : elle lisait TOUTES les adhésions de la base, sans
+			// filtre de classe ni d'école. Les routes sœurs (`activity`,
+			// `analytics`, `trades`) bornent toutes par `.in('class_id', classIds)`.
+			// Sous la RLS mono-professeur l'effet est aujourd'hui nul — mais c'est la
+			// RLS qui bornait, pas ce code, et rien ne le disait.
+			const { data: teacherClasses, error: classesError } = await supabase
+				.from('classes')
+				.select('id');
+
+			if (classesError) {
+				console.error('Classes illisibles :', classesError);
+				throw error(500, 'Impossible de déterminer le périmètre');
+			}
+
+			const classIds = teacherClasses?.map((c: { id: string }) => c.id) || [];
+
 			const { data: classMembers, error: classMembersError } = await supabase
 				.from('class_members')
-				.select('student_id');
+				.select('student_id')
+				.in('class_id', classIds);
 
 			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
 			// affiche « aucune activité » : un constat, pas une absence de donnée.

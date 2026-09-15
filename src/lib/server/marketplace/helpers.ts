@@ -573,6 +573,8 @@ export async function enrichListingsWithCardData<
 		/** Au moins une carte offerte n'a pas pu être résolue : ne pas laisser croire l'offre complète. */
 		offre_incomplete?: boolean;
 		wanted_templates?: CardTemplateInfo[];
+		/** Au moins un modèle DEMANDÉ n'a pas pu être résolu : la demande affichée est plus courte que la vraie. */
+		demande_incomplete?: boolean;
 	})[]
 > {
 	if (listings.length === 0) return listings;
@@ -710,12 +712,19 @@ export async function enrichListingsWithCardData<
 		}
 
 		// Get wanted templates
+		// ⚠️ SYMÉTRIQUE de `offre_incomplete` ci-dessus, et pour la même raison :
+		// un modèle demandé qui ne se résout pas disparaissait de l'annonce SANS
+		// le dire. L'élève lisait donc une demande plus courte que la vraie, et
+		// pouvait accepter en croyant devoir moins qu'il ne doit.
 		const wantedTemplates: CardTemplateInfo[] = [];
+		let demandeIncomplete = false;
 		if (listing.wanted_card_template_ids) {
 			for (const templateId of listing.wanted_card_template_ids) {
 				const template = templateMap.get(templateId);
 				if (template) {
 					wantedTemplates.push(template);
+				} else {
+					demandeIncomplete = true;
 				}
 			}
 		}
@@ -724,7 +733,8 @@ export async function enrichListingsWithCardData<
 			...listing,
 			offered_cards: offeredCards.length > 0 ? offeredCards : undefined,
 			offre_incomplete: offreIncomplete || undefined,
-			wanted_templates: wantedTemplates.length > 0 ? wantedTemplates : undefined
+			wanted_templates: wantedTemplates.length > 0 ? wantedTemplates : undefined,
+			demande_incomplete: demandeIncomplete || undefined
 		};
 	});
 }
