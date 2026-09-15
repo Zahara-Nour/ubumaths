@@ -76,8 +76,49 @@ Tous reproduits indépendamment avant correction, avec les mêmes chiffres.
 | 4 🟠 | `approachPole` était une montée de colline : une fois le pôle franchi, elle ne le retrouvait plus. L'asymptote de `1/(x − e)` sortait à 2,71875, **affichée « x = 2,719 » à l'élève**.                    | `locatePole` : dichotomie sur l'existence (bord de domaine), sur le signe de 1/f (pôle impair), section ternaire sur \|1/f\| (pôle pair). |
 | 5 🟠 | `divergesAt` exigeait \|f\| > hauteur/2, or la sonde la plus fine ne donne que \|ln\| ≈ 34 → **plus d'asymptote pour ln(x) dès 69 unités de hauteur**.                                                    | Seuil absolu supprimé ; seul le facteur de croissance décide.                                                                             |
 | 6 🟠 | `approachPole` marchait **dans** la zone hors-domaine (`Infinity >= Infinity`) : candidat à 0,25 pour un bord à 0,3.                                                                                      | Couvert par `locatePole`.                                                                                                                 |
-| 7 🟡 | Coût non plafonné. Mesuré après correction : `sin(200x)` 2988 → **300** points, `sqrt(sin(50x))` 7143 → **1836** évaluations.                                                                             | Tri + `MAX_DOMAIN_MARCHES` + `MAX_ASYMPTOTE_CANDIDATES`.                                                                                  |
+| 7 🟡 | Coût non plafonné.                                                                                                                                                                                        | Tri + `MAX_DOMAIN_MARCHES` + `MAX_ASYMPTOTE_CANDIDATES`. Chiffres définitifs en fin de document.                                          |
 | 8 🟡 | Sentinelle `first === 0` ambiguë dans `divergesAt`.                                                                                                                                                       | `first: number \| null`.                                                                                                                  |
 | 9 🟡 | `isAsymptote` supposée morte.                                                                                                                                                                             | **Non suivi** : elle sert toujours à `sampleAtPoints` (`sampler.ts`). Rien supprimé.                                                      |
 
 6 tests de non-régression ajoutés, un par finding reproductible.
+
+## Seconde passe de revue
+
+L'auditeur a revérifié les huit corrections sur le commit suivant : **cinq sur six
+tiennent sur son scénario exact** (F4 tombe à une erreur de 0,00e+0 sur
+`1/(x − e)`, ln(x) retrouve son asymptote à tous les zooms, le signe n'est plus
+inversé). Il confirme aussi que **F9 était un faux positif de sa part** : son
+grep excluait `sampler.ts`, donc l'appelant intra-fichier `sampleAtPoints`.
+
+Trois suites données :
+
+- **Ma mesure de F7 était fausse.** J'annonçais « `sin(200x)` : 300 points au
+  lieu de 2988 » ; ce chiffre valait pour une fenêtre de hauteur 20, pas pour
+  son cas (`sin(200x)·2` dans y ∈ [-2 ; 2]), qui faisait toujours 2988 points.
+  Corrigé pour de bon depuis : `analyzeGap` ne rend plus ses points quand elle
+  ne conclut ni à un pôle ni à un saut — c'était du remplissage pur, une
+  quarantaine de points par intervalle. Le budget compte désormais les
+  **tentatives**, pas les ruptures trouvées, sinon le coût n'était plus borné.
+- **`MAX_DOMAIN_MARCHES` reproduisait le défaut de F1**, consommé de gauche à
+  droite : des trous denses avant x = 5 laissaient revenir le décrochage sur un
+  bord franc en x = 8 (tracé arrêté à 7,993 au lieu de 8,000). Les bords sont
+  maintenant choisis **par longueur de la branche qu'ils terminent** : on
+  prolonge une branche de cent points, pas un échantillon isolé d'une zone
+  hachée.
+- **`MAX_ASYMPTOTE_CANDIDATES` : signalé comme structurellement identique, mais
+  l'auditeur n'a pas réussi à le reproduire, et moi non plus** (le test écrit
+  pour ça passe sans modification du code). Laissé tel quel, avec ce test comme
+  garde-fou.
+
+### Coût, chiffres définitifs (300 points demandés)
+
+| fonction                    | avant                    | après                            |
+| --------------------------- | ------------------------ | -------------------------------- |
+| `sin(200x)·2`, y ∈ [-2 ; 2] | 2988 points              | **300 points**, 2620 évaluations |
+| `sqrt(sin(50x))`            | 3572 points / 7143 évals | **944 points / 1836 évals**      |
+| `1/(x(x+1))`                | —                        | 311 points / 376 évals           |
+
+Note de l'auditeur, conservée telle quelle : sur une fenêtre loin de l'origine
+(y ∈ [1000 ; 1063]), interdire aux bornes d'écrêtage d'enjamber zéro élargit la
+bande à ~17 hauteurs de fenêtre. L'effet anti-crochets y est dilué — c'est le
+compromis accepté : mieux vaut une tangente un peu tirée qu'un signe faux.

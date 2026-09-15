@@ -407,6 +407,40 @@ describe('sampler', () => {
 			expect(Math.max(...inverted.points.map((p) => p.y))).toBeCloseTo(5, 5);
 		});
 
+		it('atteint le bord du domaine même après une zone de trous denses', () => {
+			// Le budget des marches de domaine se consommait lui aussi de gauche
+			// à droite : les trous d'avant x = 5 le mangeaient, et le bord franc
+			// en x = 8 retrouvait son décrochage.
+			const holesThenEdge = (x: number): number | null => {
+				if (x < 5) return Math.sin(1000 * x) < 0 ? null : 1;
+				return x < 8 ? Math.sqrt(8 - x) : null;
+			};
+			const box: Viewport = { xMin: 0, xMax: 10, yMin: -2, yMax: 2 };
+			const curve = sampleFunction(holesThenEdge, box, 300);
+
+			const last = curve.points.filter((p) => p.x < 8).at(-1);
+			expect(last).toBeDefined();
+			expect(last!.x).toBeGreaterThan(7.999);
+		});
+
+		it("n'insère aucun point quand le raffinement ne conclut à rien", () => {
+			// Une oscillation sous-échantillonnée déclenche des marches qui ne
+			// trouvent ni pôle ni saut : leurs points sont du remplissage pur,
+			// qui alourdissait le chemin SVG d'un facteur 10.
+			const curve = sampleFunction(
+				(x) => Math.sin(200 * x) * 2,
+				{
+					xMin: 0,
+					xMax: 10,
+					yMin: -2,
+					yMax: 2
+				},
+				300
+			);
+
+			expect(curve.points.length).toBe(300);
+		});
+
 		it('applique le même traitement à sampleWithDerivative (courbe du DSL)', () => {
 			const derivative = (x: number): number | null => {
 				const d = x * (x + 1);

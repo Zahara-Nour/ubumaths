@@ -87,4 +87,19 @@ describe('findVerticalAsymptotes', () => {
 		expect(found.length).toBe(1);
 		expect(found[0].x).toBeCloseTo(0.3, 6);
 	});
+	it('examine les candidats sur toute la fenêtre, pas seulement à gauche', () => {
+		// Des trous de domaine denses à gauche ne doivent pas épuiser le budget
+		// d'examen et masquer un pôle situé à droite.
+		const noisyThenPole = (x: number): number | null => {
+			if (x < 5) return Math.sin(1000 * x) < 0 ? null : 1;
+			return x === 8 ? null : 1 / (x - 8);
+		};
+		const found = findVerticalAsymptotes(
+			noisyThenPole,
+			{ xMin: 0, xMax: 10, yMin: -10, yMax: 10 },
+			'f'
+		);
+
+		expect(found.some((a) => Math.abs(a.x - 8) < 1e-3)).toBe(true);
+	});
 });

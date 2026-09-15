@@ -248,6 +248,12 @@ function analyzeGap(
 	const residual = Math.abs(right.end.y - left.end.y);
 	const broken = left.diverged || right.diverged || (met && residual > JUMP_RATIO * height);
 
+	// Sans rupture, les points des deux marches ne servent à rien : ils ne
+	// prolongent aucune branche vers le bord du cadre et ne collent à aucun
+	// saut. Une oscillation sous-échantillonnée en semait une quarantaine par
+	// intervalle — dix fois plus de points que demandé, dans le chemin SVG.
+	if (!broken) return null;
+
 	return {
 		broken,
 		left: left.points,
@@ -255,6 +261,37 @@ function analyzeGap(
 		// et on écarte tout point qui chevaucherait la branche de gauche.
 		right: right.points.filter((p) => p.x > left.end.x).reverse()
 	};
+}
+
+/**
+ * Choisir les bords de domaine à prolonger, par longueur de branche.
+ *
+ * Renvoie les indices d'échantillon où une marche vers le bord du domaine est
+ * autorisée. Une transition est d'autant plus méritante que la branche définie
+ * qu'elle borde est longue : une branche de cent points mérite d'atteindre le
+ * bord du cadre, un point isolé au milieu d'une zone hachée non.
+ */
+function selectDomainMarches(ys: readonly (number | null)[]): Set<number> {
+	// Longueur du run défini auquel appartient chaque échantillon.
+	const runLength: number[] = Array.from({ length: ys.length }, () => 0);
+	let runStart = 0;
+	for (let i = 0; i <= ys.length; i++) {
+		if (i === ys.length || ys[i] === null) {
+			for (let k = runStart; k < i; k++) runLength[k] = i - runStart;
+			runStart = i + 1;
+		}
+	}
+
+	const transitions: { index: number; merit: number }[] = [];
+	for (let i = 1; i < ys.length; i++) {
+		const before = ys[i - 1];
+		const after = ys[i];
+		if (before !== null && after === null) transitions.push({ index: i, merit: runLength[i - 1] });
+		else if (before === null && after !== null) transitions.push({ index: i, merit: runLength[i] });
+	}
+
+	transitions.sort((a, b) => b.merit - a.merit);
+	return new Set(transitions.slice(0, MAX_DOMAIN_MARCHES).map((t) => t.index));
 }
 
 /**
@@ -316,8 +353,12 @@ function buildCurve(
 	candidates.sort((a, b) => b.suspicion - a.suspicion);
 
 	const gaps = new Map<number, GapAnalysis>();
+	let attempts = 0;
 	for (const { index } of candidates) {
-		if (gaps.size >= MAX_REFINED_INTERVALS) break;
+		// On plafonne les TENTATIVES, pas les ruptures trouvées : c'est la
+		// tentative qui coûte (deux marches par dichotomie).
+		if (attempts >= MAX_REFINED_INTERVALS) break;
+		attempts++;
 		const gap = analyzeGap(
 			evaluator,
 			{ x: xValues[index - 1], y: ys[index - 1] as number },
@@ -327,11 +368,17 @@ function buildCurve(
 		if (gap !== null) gaps.set(index, gap);
 	}
 
+	// Les bords de domaine sont choisis de la même façon : par mérite et non
+	// par position. Le mérite d'un bord, c'est la longueur de la branche qu'il
+	// termine — on prolonge en priorité les branches visibles, pas les
+	// échantillons isolés d'une zone hachée. Consommé de gauche à droite, le
+	// budget laissait un décrochage visible sur la moitié droite du tracé.
+	const allowedDomainMarches = selectDomainMarches(ys);
+
 	// ─── Passe 3 : assemblage dans l'ordre des abscisses ────────────────
 	const points: Point[] = [];
 	const discontinuityIndices: number[] = [];
 	let pendingBreak = false;
-	let domainMarches = 0;
 
 	const push = (p: Point): void => {
 		if (pendingBreak && points.length > 0) discontinuityIndices.push(points.length);
@@ -350,8 +397,7 @@ function buildCurve(
 
 		if (y === null) {
 			// Défini → hors domaine : pousser la branche jusqu'au bord du domaine.
-			if (previous !== null && domainMarches < MAX_DOMAIN_MARCHES) {
-				domainMarches++;
+			if (previous !== null && allowedDomainMarches.has(i)) {
 				const march = marchToward(
 					evaluator,
 					previous,
@@ -372,8 +418,7 @@ function buildCurve(
 		if (lastUndefinedX !== null) {
 			// Hors domaine → défini : redescendre vers le bord du domaine, la
 			// nouvelle branche démarre là-bas et non à l'échantillon suivant.
-			if (domainMarches < MAX_DOMAIN_MARCHES) {
-				domainMarches++;
+			if (allowedDomainMarches.has(i)) {
 				const march = marchToward(
 					evaluator,
 					current,
