@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { curveToSVGPath } from '../bezier';
+import { curveToSVGPath, isFunctionGraph, monotoneSlopes, pointsToCatmullRom } from '../bezier';
 import type { Point, SampledCurve } from '../../viewport/types';
 
 /** Segments cubiques extraits d'un chemin SVG : [départ, cp1, cp2, arrivée]. */
@@ -102,6 +102,113 @@ describe('spline sur un graphe de fonction', () => {
 			const x = at(start.x, cp1.x, cp2.x, end.x);
 			const y = at(start.y, cp1.y, cp2.y, end.y);
 			expect(Math.hypot(x, y)).toBeCloseTo(1, 2);
+		}
+	});
+});
+
+describe('isFunctionGraph', () => {
+	const at = (xs: number[]): Point[] => xs.map((x, i) => ({ x, y: i }));
+
+	it('accepte une suite strictement monotone, dans les deux sens', () => {
+		expect(isFunctionGraph(at([0, 1, 2, 3]))).toBe(true);
+		expect(isFunctionGraph(at([3, 2, 1, 0]))).toBe(true);
+	});
+
+	it('refuse une abscisse répétée', () => {
+		expect(isFunctionGraph(at([0, 1, 1, 2]))).toBe(false);
+	});
+
+	it('refuse une abscisse non finie, y compris sur une suite décroissante', () => {
+		// `delta > 0 !== increasing` acceptait NaN quand increasing valait false :
+		// les points de contrôle partaient à (0,0), dans le coin du SVG.
+		expect(isFunctionGraph(at([0, 1, NaN, 3]))).toBe(false);
+		expect(isFunctionGraph(at([3, 2, NaN, 0]))).toBe(false);
+	});
+
+	it('refuse un demi-tour', () => {
+		expect(isFunctionGraph(at([0, 2, 1, 3]))).toBe(false);
+	});
+});
+
+describe('tension', () => {
+	const points: Point[] = [
+		{ x: 0, y: 0 },
+		{ x: 1, y: 2 },
+		{ x: 2, y: 0 },
+		{ x: 3, y: 2 }
+	];
+
+	it('rend des segments droits à tension nulle', () => {
+		// Contrat documenté : 0 = pas de courbure.
+		const path = `M${points[0].x},${points[0].y}` + pointsToCatmullRom(points, 0);
+		expect(cubicSegments(path).length).toBe(points.length - 1);
+
+		for (const [start, cp1, cp2, end] of cubicSegments(path)) {
+			expect(cp1.x).toBeCloseTo(start.x, 6);
+			expect(cp1.y).toBeCloseTo(start.y, 6);
+			expect(cp2.x).toBeCloseTo(end.x, 6);
+			expect(cp2.y).toBeCloseTo(end.y, 6);
+		}
+	});
+
+	it('produit trois tracés différents pour trois tensions', () => {
+		const paths = [0, 0.5, 1].map((t) => pointsToCatmullRom(points, t));
+		expect(new Set(paths).size).toBe(3);
+	});
+});
+
+describe('monotoneSlopes', () => {
+	it('annule les pentes sur un plateau', () => {
+		// Un dépassement écrêté produit plusieurs points de MÊME ordonnée.
+		const slopes = monotoneSlopes([
+			{ x: 0, y: 32 },
+			{ x: 1, y: 32 },
+			{ x: 2, y: 32 },
+			{ x: 3, y: 4 }
+		]);
+		expect(slopes[0]).toBe(0);
+		expect(slopes[1]).toBe(0);
+		expect(slopes[2]).toBe(0);
+	});
+
+	it('gère trois points sans déborder du tableau', () => {
+		expect(
+			monotoneSlopes([
+				{ x: 0, y: 0 },
+				{ x: 1, y: 1 },
+				{ x: 2, y: 4 }
+			])
+		).toEqual([1, 2, 3]);
+	});
+
+	it('ignore le limiteur quand la sécante déborde', () => {
+		// Abscisses séparées par un dénormal : la sécante vaut l'infini et
+		// `alpha² + beta²` débordait, ce qui annulait les deux pentes.
+		const slopes = monotoneSlopes([
+			{ x: 0, y: 0 },
+			{ x: 1e-300, y: 1 },
+			{ x: 1, y: 2 }
+		]);
+		expect(slopes.every((s) => Number.isFinite(s))).toBe(true);
+	});
+});
+
+describe('arc paramétrique à abscisse monotone', () => {
+	it('reste rond', () => {
+		// Un quart de cercle a x monotone : il reçoit le limiteur. L'écart doit
+		// rester très en dessous du pixel.
+		const points: Point[] = Array.from({ length: 17 }, (_, i) => {
+			const t = (i / 16) * (Math.PI / 2);
+			return { x: Math.cos(t), y: Math.sin(t) };
+		});
+
+		for (const [start, cp1, cp2, end] of cubicSegments(
+			curveToSVGPath({ points, discontinuityIndices: [] })
+		)) {
+			const at = (a: number, b: number, c: number, d: number): number =>
+				0.125 * a + 0.375 * b + 0.375 * c + 0.125 * d;
+			const radius = Math.hypot(at(start.x, cp1.x, cp2.x, end.x), at(start.y, cp1.y, cp2.y, end.y));
+			expect(Math.abs(radius - 1)).toBeLessThan(0.01);
 		}
 	});
 });

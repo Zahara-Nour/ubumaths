@@ -116,14 +116,16 @@ export function catmullRomToBezier(
  * graphes reçoivent le limiteur de pente : sur un arc, forcer la tangente
  * aplatirait les sommets.
  */
-function isFunctionGraph(points: readonly Point[]): boolean {
+export function isFunctionGraph(points: readonly Point[]): boolean {
 	if (points.length < 3) return false;
 
 	const increasing = points[1].x > points[0].x;
 	for (let i = 1; i < points.length; i++) {
 		const delta = points[i].x - points[i - 1].x;
-		if (delta === 0) return false;
-		if (delta > 0 !== increasing) return false;
+		// Formulation positive : elle rejette aussi le pas nul et le NaN, que
+		// `delta > 0 !== increasing` laissait passer sur une suite décroissante
+		// (false !== false) — les points de contrôle partaient alors à (0,0).
+		if (!(increasing ? delta > 0 : delta < 0)) return false;
 	}
 	return true;
 }
@@ -140,10 +142,11 @@ function isFunctionGraph(points: readonly Point[]): boolean {
  *
  * Correctif classique de Fritsch-Carlson : pente nulle à tout extremum local,
  * et pente bornée à trois fois la plus petite sécante adjacente. Sur des
- * données lisses et régulièrement espacées, la borne ne mord jamais — le rendu
- * est alors identique à Catmull-Rom, au bit près.
+ * données lisses et régulièrement espacées la borne ne mord pas, et le rendu
+ * reste celui de Catmull-Rom — à l'aplatissement près du nœud voisin d'un
+ * extremum, mesuré à 0,2 % de l'amplitude sur une sinusoïde.
  */
-function monotoneSlopes(points: readonly Point[]): number[] {
+export function monotoneSlopes(points: readonly Point[]): number[] {
 	const n = points.length;
 	const secants: number[] = [];
 	for (let i = 0; i < n - 1; i++) {
@@ -165,11 +168,18 @@ function monotoneSlopes(points: readonly Point[]): number[] {
 			slopes[i + 1] = 0;
 			continue;
 		}
+		// Une sécante non finie (deux abscisses séparées par un dénormal) ne
+		// borne rien : on la laisse au Catmull-Rom d'origine plutôt que de
+		// propager des NaN.
+		if (!Number.isFinite(secant)) continue;
+
 		const alpha = slopes[i] / secant;
 		const beta = slopes[i + 1] / secant;
-		const norm = alpha * alpha + beta * beta;
-		if (norm > 9) {
-			const scale = 3 / Math.sqrt(norm);
+		// `hypot` plutôt que α² + β² : au-delà de ~1e154 la somme déborde à
+		// l'infini, et le facteur d'échelle annulait alors les deux pentes.
+		const norm = Math.hypot(alpha, beta);
+		if (norm > 3) {
+			const scale = 3 / norm;
 			slopes[i] = scale * alpha * secant;
 			slopes[i + 1] = scale * beta * secant;
 		}
@@ -181,14 +191,20 @@ function monotoneSlopes(points: readonly Point[]): number[] {
 /**
  * Chemin cubique d'un graphe de fonction, sans dépassement.
  */
-function functionGraphToBezier(points: readonly Point[]): string {
+function functionGraphToBezier(points: readonly Point[], tension: number): string {
 	const slopes = monotoneSlopes(points);
 	const commands: string[] = [];
+
+	// La tension déplace les points de contrôle entre l'extrémité du segment
+	// (0 = segments droits, comme le contrat le documente) et leur position
+	// de pente bornée (0,5 = Catmull-Rom standard). Au-delà de 0,5 la courbe
+	// se tend et peut redépasser — même comportement qu'avant sur ce point.
+	const reach = tension / DEFAULT_TENSION;
 
 	for (let i = 0; i < points.length - 1; i++) {
 		const start = points[i];
 		const end = points[i + 1];
-		const third = (end.x - start.x) / 3;
+		const third = ((end.x - start.x) / 3) * reach;
 
 		const cp1: Point = { x: start.x + third, y: start.y + slopes[i] * third };
 		const cp2: Point = { x: end.x - third, y: end.y - slopes[i + 1] * third };
@@ -241,7 +257,7 @@ export function pointsToCatmullRom(
 
 	// Graphe de fonction : pentes bornées, aucun dépassement des données.
 	if (isFunctionGraph(points)) {
-		return functionGraphToBezier(points);
+		return functionGraphToBezier(points, tension);
 	}
 
 	const commands: string[] = [];
