@@ -141,6 +141,33 @@ conséquences.
 
 ---
 
+## Worktrees
+
+> Règles complètes : [docs/claude/worktrees.md](docs/claude/worktrees.md)
+
+Un chantier = un worktree **frère** du dépôt :
+`git worktree add -b <type>/<sujet> ../ubumaths-wt-<sujet> origin/main`, puis
+`cp ../ubumaths/.env ../ubumaths/.env.local . && pnpm install --prefer-offline`
+(5,2 s ; `.env` et `node_modules` ne suivent pas le worktree).
+
+- **Le dépôt principal reste sur `main`** — commits 100 % doc, `release`,
+  `db:migrate` d'après-merge, lecture. **Jamais de chantier dedans.**
+- **Un worktree = une branche = une session.** Annoncer `git worktree list` +
+  `pwd` au premier message.
+- ⚠️ **Un worktree n'isole ni la RAM, ni Supabase local, ni les ports** — et deux
+  sessions ne se voient pas. Deux verrous partagés s'en chargent : `typecheck`
+  (`check:incremental`) et `supabase` (`db:reset`, `db:stop`,
+  `test:integration`). Un refus sort en **exit 2** et nomme le worktree
+  détenteur : **ça s'attend, ça ne se contourne pas.**
+- ⛔ **`pnpm kill:servers` interdit depuis un worktree** : il tue 5173 (le
+  serveur de David) et Supabase. Kill ciblé sur son propre port.
+- `docs/wip/<sujet>-progress.md` **commité au premier commit** — non suivi, il
+  est invisible des autres sessions et meurt avec le worktree.
+- Fin de vie dès la PR mergée : `git worktree remove` + `git branch -d` +
+  `git worktree list` pour vérifier.
+
+---
+
 ## Règles de code (non négociables)
 
 **0. Ne JAMAIS supprimer un fichier non suivi par git** (`rm`/`mv`) sans demander. `git status` d'abord ; si untracked dans la cible → STOP et demander.
@@ -280,6 +307,7 @@ Optimistic UI · Debouncing · Realtime → [architecture.md](docs/claude/archit
 | Doc                                                                     | Contenu                                    |
 | ----------------------------------------------------------------------- | ------------------------------------------ |
 | [git-workflow.md](docs/claude/git-workflow.md)                          | **Workflow git OBLIGATOIRE**               |
+| [worktrees.md](docs/claude/worktrees.md)                                | **Worktrees** : règles + verrous partagés  |
 | [architecture.md](docs/claude/architecture.md)                          | Structure, routing, perf                   |
 | [best-practices.md](docs/claude/best-practices.md)                      | Svelte 5, TypeScript                       |
 | [ui-components.md](docs/claude/ui-components.md)                        | Shadcn, MySelect, Tailwind                 |
