@@ -63,3 +63,21 @@ avaient le même bug.
   comparait des **longueurs de chaîne** de chemin SVG. Depuis l'écrêtage, une
   courbe qui sort du cadre a des coordonnées plus COURTES : le proxy s'inversait.
   Remplacé par une mesure de l'emprise réelle en x.
+
+## Revue (`code-reviewer`) — 9 findings, 8 traités
+
+Tous reproduits indépendamment avant correction, avec les mêmes chiffres.
+
+| #    | Problème                                                                                                                                                                                                  | Correction                                                                                                                                |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 🔴 | Budget de raffinement consommé **de gauche à droite** : une zone oscillante en amont l'épuisait et les pôles suivants retombaient dans le bug d'origine (`sin(200x)` avant un pôle en x = 8 → 0 rupture). | `buildCurve` en **trois passes** : évaluation, raffinement **trié par suspicion décroissante**, assemblage.                               |
+| 2 🔴 | L'écrêtage pouvait **inverser le signe** de y (fenêtre y ∈ [30 ; 40] → `-x²` rendu positif), et `splitOnZeros` lit ce signe pour colorier `aire()` / `aire_entre()`.                                      | Les bornes d'écrêtage n'enjambent plus zéro (`Math.max(yMax, 0)` / `Math.min(yMin, 0)`).                                                  |
+| 3 🟠 | Fenêtre de hauteur nulle ou inversée → toute la courbe aplatie sur une seule ordonnée.                                                                                                                    | `makeClamp` rend l'identité quand la hauteur est dégénérée.                                                                               |
+| 4 🟠 | `approachPole` était une montée de colline : une fois le pôle franchi, elle ne le retrouvait plus. L'asymptote de `1/(x − e)` sortait à 2,71875, **affichée « x = 2,719 » à l'élève**.                    | `locatePole` : dichotomie sur l'existence (bord de domaine), sur le signe de 1/f (pôle impair), section ternaire sur \|1/f\| (pôle pair). |
+| 5 🟠 | `divergesAt` exigeait \|f\| > hauteur/2, or la sonde la plus fine ne donne que \|ln\| ≈ 34 → **plus d'asymptote pour ln(x) dès 69 unités de hauteur**.                                                    | Seuil absolu supprimé ; seul le facteur de croissance décide.                                                                             |
+| 6 🟠 | `approachPole` marchait **dans** la zone hors-domaine (`Infinity >= Infinity`) : candidat à 0,25 pour un bord à 0,3.                                                                                      | Couvert par `locatePole`.                                                                                                                 |
+| 7 🟡 | Coût non plafonné. Mesuré après correction : `sin(200x)` 2988 → **300** points, `sqrt(sin(50x))` 7143 → **1836** évaluations.                                                                             | Tri + `MAX_DOMAIN_MARCHES` + `MAX_ASYMPTOTE_CANDIDATES`.                                                                                  |
+| 8 🟡 | Sentinelle `first === 0` ambiguë dans `divergesAt`.                                                                                                                                                       | `first: number \| null`.                                                                                                                  |
+| 9 🟡 | `isAsymptote` supposée morte.                                                                                                                                                                             | **Non suivi** : elle sert toujours à `sampleAtPoints` (`sampler.ts`). Rien supprimé.                                                      |
+
+6 tests de non-régression ajoutés, un par finding reproductible.

@@ -367,6 +367,46 @@ describe('sampler', () => {
 			expect(Math.min(...curve.points.map((p) => p.y))).toBeLessThan(-10);
 		});
 
+		it('traite les pôles même après une zone oscillante (budget par priorité)', () => {
+			// Le budget de raffinement est consommé du plus suspect au moins
+			// suspect, sinon une oscillation en début de fenêtre l'épuise et les
+			// pôles suivants retombent dans le bug d'origine.
+			const noisyThenPole = (x: number): number | null =>
+				x < 5 ? Math.sin(200 * x) * 2 : x === 8 ? null : 1 / (x - 8);
+			const box: Viewport = { xMin: 0, xMax: 10, yMin: -2, yMax: 2 };
+			const curve = sampleFunction(noisyThenPole, box, 300);
+
+			// Le pôle en x = 8 doit être coupé, et ses deux branches sortir du
+			// cadre : le bruit d'avant ne doit pas avoir mangé le budget.
+			const breaks = new Set(curve.discontinuityIndices);
+			const straddles = curve.points.some(
+				(p, i) => i > 0 && !breaks.has(i) && curve.points[i - 1].x < 8 && p.x > 8
+			);
+			expect(straddles).toBe(false);
+
+			const before = curve.points.filter((p) => p.x > 7.5 && p.x < 8);
+			const after = curve.points.filter((p) => p.x > 8 && p.x < 8.5);
+			expect(Math.min(...before.map((p) => p.y))).toBeLessThan(box.yMin);
+			expect(Math.max(...after.map((p) => p.y))).toBeGreaterThan(box.yMax);
+		});
+
+		it("n'inverse jamais le signe d'une ordonnée en l'écrêtant", () => {
+			// Fenêtre pannée vers le haut : la borne basse d'écrêtage devenait
+			// positive et rendait -x² positif, ce que `splitOnZeros` lit ensuite
+			// pour colorier les aires.
+			const curve = sampleFunction((x) => -x * x, { xMin: -5, xMax: 5, yMin: 30, yMax: 40 }, 50);
+			expect(curve.points.every((p) => p.y <= 0)).toBe(true);
+		});
+
+		it("n'écrête pas quand la fenêtre n'a pas de hauteur", () => {
+			const flat = sampleFunction((x) => x * x, { xMin: -5, xMax: 5, yMin: 0, yMax: 0 }, 50);
+			expect(Math.max(...flat.points.map((p) => p.y))).toBeCloseTo(25, 5);
+
+			const inverted = sampleFunction((x) => x, { xMin: -5, xMax: 5, yMin: 10, yMax: -10 }, 50);
+			expect(Math.min(...inverted.points.map((p) => p.y))).toBeCloseTo(-5, 5);
+			expect(Math.max(...inverted.points.map((p) => p.y))).toBeCloseTo(5, 5);
+		});
+
 		it('applique le même traitement à sampleWithDerivative (courbe du DSL)', () => {
 			const derivative = (x: number): number | null => {
 				const d = x * (x + 1);

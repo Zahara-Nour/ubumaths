@@ -58,6 +58,9 @@ const MAX_MARCH_STEPS = 24;
 /** Nombre maximal d'intervalles raffinés par courbe (garde-fou de coût). */
 const MAX_REFINED_INTERVALS = 64;
 
+/** Nombre maximal de marches vers un bord de domaine, par courbe. */
+const MAX_DOMAIN_MARCHES = 64;
+
 /** Deux branches sont jointives sous cette fraction de l'intervalle initial. */
 const X_CONVERGENCE_RATIO = 1e-3;
 
@@ -255,14 +258,36 @@ function analyzeGap(
 }
 
 /**
+ * Écrêteur d'ordonnées pour un viewport donné.
+ *
+ * Un y de 10⁶ près d'un pôle déforme les tangentes de la spline de tous ses
+ * voisins : on le ramène à une hauteur de fenêtre au-delà du cadre, là où il
+ * reste invisible. Deux garde-fous :
+ *
+ * - les bornes n'enjambent JAMAIS zéro — sur une fenêtre pannée vers le haut
+ *   (y ∈ [30 ; 40]) la borne basse valait +20 et rendait −x² positif, ce que
+ *   `splitOnZeros` lit ensuite pour colorier les aires ;
+ * - une fenêtre sans hauteur (ou inversée) désactive l'écrêtage, au lieu de
+ *   fabriquer un intervalle vide qui écraserait toute la courbe.
+ */
+function makeClamp(viewport: Viewport): (y: number) => number {
+	const height = viewport.yMax - viewport.yMin;
+	if (!(height > MIN_VIEWPORT_DIM)) return (y) => y;
+
+	const high = Math.max(viewport.yMax, 0) + CLAMP_MARGIN * height;
+	const low = Math.min(viewport.yMin, 0) - CLAMP_MARGIN * height;
+	return (y) => Math.min(high, Math.max(low, y));
+}
+
+/**
  * Construire la courbe à partir d'abscisses déjà choisies.
  *
- * Un seul passage qui, pour chaque intervalle suspect : localise la
- * singularité par dichotomie, prolonge les branches jusqu'à sortir du cadre,
- * rompt le tracé au bon endroit, et écrête les ordonnées.
+ * Trois passes : évaluation, raffinement des intervalles suspects, assemblage.
  *
- * L'écrêtage est indispensable : un y de 10⁶ près d'un pôle déforme les
- * tangentes de la spline de tous ses voisins, d'où les crochets parasites.
+ * Le raffinement est **trié par suspicion décroissante**, et c'est essentiel :
+ * consommé de gauche à droite, le budget était épuisé par une zone oscillante
+ * en début de fenêtre, et les pôles situés après n'étaient plus ni coupés ni
+ * prolongés — le bug d'origine revenait intact sur la moitié droite du tracé.
  */
 function buildCurve(
 	evaluator: (x: number) => number | null,
@@ -270,18 +295,48 @@ function buildCurve(
 	viewport: Viewport
 ): SampledCurve {
 	const height = Math.max(viewport.yMax - viewport.yMin, MIN_VIEWPORT_DIM);
-	const clampLow = viewport.yMin - CLAMP_MARGIN * height;
-	const clampHigh = viewport.yMax + CLAMP_MARGIN * height;
+	const clamp = makeClamp(viewport);
 
+	// ─── Passe 1 : une seule évaluation par abscisse ────────────────────
+	const ys: (number | null)[] = xValues.map((x) => {
+		const y = evaluator(x);
+		return y !== null && Number.isFinite(y) ? y : null;
+	});
+
+	// ─── Passe 2 : raffiner les intervalles les plus suspects d'abord ───
+	const candidates: { index: number; suspicion: number }[] = [];
+	for (let i = 1; i < xValues.length; i++) {
+		const before = ys[i - 1];
+		const after = ys[i];
+		if (before === null || after === null) continue; // bord de domaine : passe 3
+
+		const deltaY = Math.abs(after - before);
+		if (deltaY > SUSPICION_RATIO * height) candidates.push({ index: i, suspicion: deltaY });
+	}
+	candidates.sort((a, b) => b.suspicion - a.suspicion);
+
+	const gaps = new Map<number, GapAnalysis>();
+	for (const { index } of candidates) {
+		if (gaps.size >= MAX_REFINED_INTERVALS) break;
+		const gap = analyzeGap(
+			evaluator,
+			{ x: xValues[index - 1], y: ys[index - 1] as number },
+			{ x: xValues[index], y: ys[index] as number },
+			height
+		);
+		if (gap !== null) gaps.set(index, gap);
+	}
+
+	// ─── Passe 3 : assemblage dans l'ordre des abscisses ────────────────
 	const points: Point[] = [];
 	const discontinuityIndices: number[] = [];
 	let pendingBreak = false;
-	let refinedIntervals = 0;
+	let domainMarches = 0;
 
 	const push = (p: Point): void => {
 		if (pendingBreak && points.length > 0) discontinuityIndices.push(points.length);
 		pendingBreak = false;
-		points.push({ x: p.x, y: Math.min(clampHigh, Math.max(clampLow, p.y)) });
+		points.push({ x: p.x, y: clamp(p.y) });
 	};
 
 	/** Dernier échantillon défini, ordonnée NON écrêtée. */
@@ -289,13 +344,14 @@ function buildCurve(
 	/** Dernière abscisse hors domaine rencontrée. */
 	let lastUndefinedX: number | null = null;
 
-	for (const x of xValues) {
-		const raw = evaluator(x);
-		const y = raw !== null && Number.isFinite(raw) ? raw : null;
+	for (let i = 0; i < xValues.length; i++) {
+		const x = xValues[i];
+		const y = ys[i];
 
 		if (y === null) {
 			// Défini → hors domaine : pousser la branche jusqu'au bord du domaine.
-			if (previous !== null) {
+			if (previous !== null && domainMarches < MAX_DOMAIN_MARCHES) {
+				domainMarches++;
 				const march = marchToward(
 					evaluator,
 					previous,
@@ -304,8 +360,8 @@ function buildCurve(
 					divergenceLimit(previous.y, previous.y, height)
 				);
 				march.points.forEach(push);
-				previous = null;
 			}
+			previous = null;
 			lastUndefinedX = x;
 			pendingBreak = true;
 			continue;
@@ -316,19 +372,21 @@ function buildCurve(
 		if (lastUndefinedX !== null) {
 			// Hors domaine → défini : redescendre vers le bord du domaine, la
 			// nouvelle branche démarre là-bas et non à l'échantillon suivant.
-			const march = marchToward(
-				evaluator,
-				current,
-				lastUndefinedX,
-				null,
-				divergenceLimit(y, y, height)
-			);
-			for (let k = march.points.length - 1; k >= 0; k--) push(march.points[k]);
+			if (domainMarches < MAX_DOMAIN_MARCHES) {
+				domainMarches++;
+				const march = marchToward(
+					evaluator,
+					current,
+					lastUndefinedX,
+					null,
+					divergenceLimit(y, y, height)
+				);
+				for (let k = march.points.length - 1; k >= 0; k--) push(march.points[k]);
+			}
 			lastUndefinedX = null;
-		} else if (previous !== null && refinedIntervals < MAX_REFINED_INTERVALS) {
-			const gap = analyzeGap(evaluator, previous, current, height);
-			if (gap !== null) {
-				refinedIntervals++;
+		} else {
+			const gap = gaps.get(i);
+			if (gap !== undefined) {
 				gap.left.forEach(push);
 				if (gap.broken) pendingBreak = true;
 				gap.right.forEach(push);

@@ -368,24 +368,26 @@ const POLE_PROBE_RATIOS = [1e-2, 1e-4, 1e-7, 1e-11, 1e-15] as const;
 /** Croissance minimale de |f| entre la première et la dernière sonde. */
 const POLE_GROWTH_FACTOR = 4;
 
+/** Nombre maximal d'intervalles candidats examinés par fenêtre. */
+const MAX_ASYMPTOTE_CANDIDATES = 64;
+
 /**
  * La fonction explose-t-elle au voisinage de `x` ?
  *
  * On sonde de plus en plus près, des deux côtés. Une vraie asymptote fait
  * croître |f| SANS BORNE : il ne suffit pas que |f| soit grande (une
  * exponentielle l'est aussi) ni qu'elle croisse (√x croît). On exige donc que
- * |f| grandisse encore quand on se rapproche, et qu'elle finisse par sortir
- * du cadre.
+ * |f| grandisse encore quand on se rapproche, d'un facteur net.
+ *
+ * ⚠️ Pas de seuil « |f| dépasse la fenêtre » : la sonde la plus fine est à
+ * 1e-15 du pôle, donc |ln| n'y vaut que ~34. Un tel seuil faisait disparaître
+ * l'asymptote de ln(x) dès qu'on dézoomait au-delà de 69 unités de hauteur.
  */
-function divergesAt(
-	evaluator: (x: number) => number | null,
-	x: number,
-	viewportHeight: number
-): boolean {
+function divergesAt(evaluator: (x: number) => number | null, x: number): boolean {
 	const scale = Math.max(Math.abs(x), 1);
 
 	for (const side of [-1, 1]) {
-		let first = 0;
+		let first: number | null = null;
 		let previous = 0;
 		let increasing = true;
 
@@ -400,11 +402,11 @@ function divergesAt(
 				increasing = false;
 				break;
 			}
-			if (first === 0) first = magnitude;
+			if (first === null) first = magnitude;
 			previous = magnitude;
 		}
 
-		if (increasing && previous > viewportHeight / 2 && previous >= first * POLE_GROWTH_FACTOR) {
+		if (increasing && first !== null && first > 0 && previous >= first * POLE_GROWTH_FACTOR) {
 			return true;
 		}
 	}
@@ -413,39 +415,81 @@ function divergesAt(
 }
 
 /**
- * Se rapprocher du pôle depuis `from`, tant que |f| grandit.
+ * Localiser précisément la singularité entre deux échantillons voisins.
  *
- * Une valeur indéfinie compte comme infinie : c'est ainsi qu'on atteint le
- * bord exact d'un domaine (ln en 0) autant qu'un pôle (1/x en 0).
+ * Trois régimes, parce qu'aucune méthode unique ne les couvre :
+ * - **bord de domaine** : dichotomie sur « la valeur existe-t-elle ? » ;
+ * - **pôle qui change de signe** : 1/f est continue et s'annule au pôle →
+ *   dichotomie ordinaire sur son signe, précise à l'ulp près ;
+ * - **pôle de signe constant** (1/x²) : 1/f ne change pas de signe, on cherche
+ *   son minimum par section ternaire.
+ *
+ * ⚠️ Une montée de colline ne convient pas : une fois passée de l'autre côté
+ * du pôle, elle ne peut plus le retrouver. Elle plaçait l'asymptote de
+ * 1/(x − e) en 2,71875, et `AsymptoteLines` l'étiquetait « x = 2,719 ».
  */
-function approachPole(
-	evaluator: (x: number) => number | null,
-	from: number,
-	toward: number
-): number {
-	const magnitudeAt = (x: number): number => {
+function locatePole(evaluator: (x: number) => number | null, xLow: number, xHigh: number): number {
+	const valueAt = (x: number): number | null => {
 		const y = evaluator(x);
-		return y === null || !Number.isFinite(y) ? Infinity : Math.abs(y);
+		return y !== null && Number.isFinite(y) ? y : null;
 	};
 
-	let near = from;
-	let far = toward;
-	let best = magnitudeAt(from);
+	const yLow = valueAt(xLow);
+	const yHigh = valueAt(xHigh);
 
-	for (let i = 0; i < MAX_ITERATIONS; i++) {
-		const mid = (near + far) / 2;
-		if (mid === near || mid === far) break;
+	// Bord de domaine : on cherche la frontière de l'existence.
+	if ((yLow === null) !== (yHigh === null)) {
+		let inside = yLow !== null ? xLow : xHigh;
+		let outside = yLow !== null ? xHigh : xLow;
 
-		const magnitude = magnitudeAt(mid);
-		if (magnitude >= best) {
-			near = mid;
-			best = magnitude;
-		} else {
-			far = mid;
+		for (let i = 0; i < MAX_ITERATIONS; i++) {
+			const mid = (inside + outside) / 2;
+			if (mid === inside || mid === outside) break;
+			if (valueAt(mid) !== null) inside = mid;
+			else outside = mid;
 		}
+		return (inside + outside) / 2;
 	}
 
-	return near;
+	if (yLow === null || yHigh === null) return (xLow + xHigh) / 2;
+
+	// Pôle intérieur : zéro de 1/f.
+	const inverseLow = 1 / yLow;
+	if (inverseLow * (1 / yHigh) < 0) {
+		let low = xLow;
+		let high = xHigh;
+		const lowSign = Math.sign(inverseLow);
+
+		for (let i = 0; i < MAX_ITERATIONS; i++) {
+			const mid = (low + high) / 2;
+			if (mid === low || mid === high) break;
+
+			const y = valueAt(mid);
+			if (y === null) return mid;
+			if (Math.sign(1 / y) === lowSign) low = mid;
+			else high = mid;
+		}
+		return (low + high) / 2;
+	}
+
+	// Signe constant : minimum de |1/f|.
+	const inverseMagnitude = (x: number): number => {
+		const y = valueAt(x);
+		return y === null ? 0 : Math.abs(1 / y);
+	};
+
+	let low = xLow;
+	let high = xHigh;
+	for (let i = 0; i < MAX_ITERATIONS; i++) {
+		const third = (high - low) / 3;
+		const left = low + third;
+		const right = high - third;
+		if (left >= right) break;
+
+		if (inverseMagnitude(left) <= inverseMagnitude(right)) high = right;
+		else low = left;
+	}
+	return (low + high) / 2;
 }
 
 /**
@@ -480,6 +524,7 @@ export function findVerticalAsymptotes(
 
 	let prevX = viewport.xMin;
 	let prevY = evaluator(prevX);
+	let examined = 0;
 
 	for (let i = 1; i <= numSamples; i++) {
 		const x = viewport.xMin + i * step;
@@ -494,11 +539,12 @@ export function findVerticalAsymptotes(
 		const jumps =
 			leftDefined && rightDefined && Math.abs((prevY as number) - (y as number)) > viewportHeight;
 
-		if (crossesDomain || jumps) {
-			const poleX = (approachPole(evaluator, prevX, x) + approachPole(evaluator, x, prevX)) / 2;
+		if ((crossesDomain || jumps) && examined < MAX_ASYMPTOTE_CANDIDATES) {
+			examined++;
+			const poleX = locatePole(evaluator, prevX, x);
 
 			if (
-				divergesAt(evaluator, poleX, viewportHeight) &&
+				divergesAt(evaluator, poleX) &&
 				!asymptotes.some((a) => Math.abs(a.x - poleX) < step * 2)
 			) {
 				asymptotes.push({

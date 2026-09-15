@@ -58,4 +58,33 @@ describe('findVerticalAsymptotes', () => {
 	it('ne signale rien pour une fonction continue', () => {
 		expect(findVerticalAsymptotes((x) => x * x, viewport, 'f')).toEqual([]);
 	});
+	it("place l'asymptote à l'abscisse exacte du pôle", () => {
+		// L'étiquette affichée à l'élève est un `toPrecision(4)` : une montée de
+		// colline qui s'arrête du mauvais côté du pôle donne « x = 2,719 ».
+		const pole = 2.718281828;
+		const found = findVerticalAsymptotes(
+			(x) => (x === pole ? null : 1 / (x - pole)),
+			viewport,
+			'f'
+		);
+
+		expect(found.length).toBe(1);
+		expect(found[0].x).toBeCloseTo(pole, 6);
+	});
+
+	it('trouve ln(x) quelle que soit la hauteur de la fenêtre', () => {
+		const ln = (x: number): number | null => (x <= 0 ? null : Math.log(x));
+		for (const half of [10, 40, 100]) {
+			const found = findVerticalAsymptotes(ln, { xMin: -5, xMax: 5, yMin: -half, yMax: half }, 'f');
+			expect(found.length, `hauteur ${2 * half}`).toBe(1);
+		}
+	});
+
+	it('trouve un bord de domaine divergent', () => {
+		const g = (x: number): number | null => (x <= 0.3 ? null : 1 / Math.sqrt(x - 0.3));
+		const found = findVerticalAsymptotes(g, { xMin: -2, xMax: 5, yMin: -10, yMax: 10 }, 'f');
+
+		expect(found.length).toBe(1);
+		expect(found[0].x).toBeCloseTo(0.3, 6);
+	});
 });
