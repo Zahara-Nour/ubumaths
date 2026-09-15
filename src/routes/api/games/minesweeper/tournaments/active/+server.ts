@@ -67,10 +67,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const { include_upcoming, include_completed, limit } = validation.data;
 
 		// Get student's class IDs
+		// Une adhésion archivée ferait concourir un ancien élève dans le tournoi
+		// de la classe qu'il a quittée.
 		const { data: classMemberships, error: membershipError } = await locals.supabase
 			.from('class_members')
 			.select('class_id')
-			.eq('student_id', user.id);
+			.eq('student_id', user.id)
+			.eq('status', 'active');
 
 		if (membershipError) {
 			sanitizePostgresError(membershipError, 'MINESWEEPER_TOURNAMENT_ACTIVE_MEMBERSHIP');

@@ -1,10 +1,15 @@
 # Tri : les lectures de `class_members` sans filtre de statut
 
-> **Rien n'a été modifié.** Ce document est une base de décision, pas un plan
-> d'exécution. Chaque ligne attend un « oui / non » de David.
+> **État au 2026-09-15 : le tas 1 est corrigé** (six filtres `status`, plus un
+> test d'intégration sur le cas d'accès). Les tas 2 et 3 sont intacts — le tas 3
+> attend toujours un « oui / non » de David, ligne par ligne.
 >
 > Établi le 2026-09-15, après les correctifs `20260915400000` (accès au kanban)
 > et `20260915420000` (assignation d'une carte).
+>
+> ⚠️ **Ce tri ne couvre que `src/`.** La base, elle, n'a pas été triée : 37
+> policies RLS et 25 fonctions `SECURITY DEFINER` lisent `class_members` sans
+> regarder `status`. Voir « L'autre moitié » en fin de document.
 
 ## Pourquoi ce tri existe
 
@@ -35,10 +40,16 @@ tiennent compte du contexte lu à la main, pas seulement de l'heuristique.
 
 ---
 
-## Tas 1 — À CORRIGER (6)
+## Tas 1 — CORRIGÉ (6)
 
-Une adhésion archivée y **accorde un accès** ou **rattache à la mauvaise
-classe**. Ce sont des défauts, pas des choix.
+Une adhésion archivée y **accordait un accès** ou **rattachait à la mauvaise
+classe**. C'étaient des défauts, pas des choix — les six portent désormais
+`.eq('status', 'active')`.
+
+Le cas `assessments` est couvert par
+`tests/integration/acces-evaluation-eleve-archive.test.ts`, **vu rouge sans le
+filtre** : l'élève archivé obtenait un `200` sur l'évaluation de la classe
+quittée, pendant que le témoin actif obtenait lui aussi `200`.
 
 | Fichier                                                             | Ce que fait la requête                                  | Ce que l'archivé provoque                                                                                                                                                                   |
 | ------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -156,11 +167,46 @@ lectures.
 
 ---
 
+## L'autre moitié : la base
+
+Le tri ci-dessus a scanné `src/`. Il ne pouvait donc pas voir que **la base
+elle-même** raisonne sur l'existence d'une adhésion.
+
+Mesuré le 2026-09-15 sur la production (`pg_policies`, `pg_proc`) :
+
+- **37 policies RLS** dont l'expression cite `class_members` sans jamais citer
+  `status` ;
+- **25 fonctions `SECURITY DEFINER`** dans le même cas.
+
+C'est la couche qui **accorde réellement** l'accès. Exemple exact, celui que le
+tas 1 vient de fermer côté route :
+
+```sql
+-- policy « Students can view own assignments » sur assessment_assignments
+exists (select 1 from class_members cm
+        where cm.class_id = assessment_assignments.class_id
+          and cm.student_id = auth.uid())   -- pas de statut
+```
+
+Conséquence : la route est fermée, mais un ancien élève qui interroge
+PostgREST **directement depuis son navigateur** lit encore la ligne
+d'affectation — et l'évaluation publiée qu'elle désigne, la policy
+`student_has_assignment_for_assessment()` ayant le même angle mort.
+
+⚠️ Chaque ligne de cette liste **retire** un accès : c'est la question d'accès
+en miroir (« qui ne pourra plus lire ce qu'il lisait ? »), et elle se pose
+avant d'écrire du SQL. Rien n'a été touché.
+
+ℹ️ Mesure indicative : le critère est « l'expression ne contient pas le mot
+`status` ». Il produit des faux positifs (une policy qui parle d'un autre
+statut) et des faux négatifs (un filtre posé dans une fonction appelée).
+
+---
+
 ## Ce que je propose
 
-1. **Le tas 1 en une PR**, six lignes `.eq('status', 'active')` — sauf
-   `assessments`, qui mérite un test d'intégration parce qu'il décide d'un
-   accès.
+1. ~~**Le tas 1 en une PR**~~ — fait, avec le test d'intégration sur
+   `assessments` puisqu'il décide d'un accès.
 2. **Le tas 3 point par point**, quand tu auras tranché. Le groupe (d) se
    règle en une seule réponse pour ses neuf sites.
 3. **Le tas 2, jamais** — et `class-composition-source:121` mérite un

@@ -288,6 +288,10 @@ export async function checkDailyTradeLimit(
 		.from('class_members')
 		.select('class_id')
 		.eq('student_id', studentId)
+		// Depuis le 2026-09-13, retirer un élève d'une classe l'ARCHIVE. Sans ce
+		// filtre, la configuration lue est celle de son ancienne classe — et le
+		// `.single()` levait dès qu'il avait une adhésion active ET une archivée.
+		.eq('status', 'active')
 		.single();
 
 	if (configError || !classConfig) {
@@ -340,6 +344,10 @@ export async function checkActiveListingsLimit(
 		.from('class_members')
 		.select('class_id')
 		.eq('student_id', studentId)
+		// Depuis le 2026-09-13, retirer un élève d'une classe l'ARCHIVE. Sans ce
+		// filtre, la configuration lue est celle de son ancienne classe — et le
+		// `.single()` levait dès qu'il avait une adhésion active ET une archivée.
+		.eq('status', 'active')
 		.single();
 
 	if (configError || !classConfig) {
