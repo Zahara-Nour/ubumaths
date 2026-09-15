@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { TriangleAlert } from '@lucide/svelte';
 	import type { MarketplaceListing } from '$lib/types/marketplace';
 	import type { VipCardRarity } from '$lib/types/vip-card';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -196,7 +197,24 @@
 						</div>
 					{/if}
 
-					{#if !offeredCardsGrouped.length && !listing.offered_gidouilles}
+					<!--
+						⚠️ C'EST L'ÉCRAN DE DÉCISION — celui qui porte « Accepter
+						l'échange ». La carte compacte prévient déjà, mais c'est ICI que
+						l'élève dit oui : taire une carte non résolue lui ferait accepter
+						sur une offre amputée.
+					-->
+					{#if listing.offre_incomplete}
+						<div
+							class="flex items-center gap-2 rounded-lg border border-amber-400 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200"
+						>
+							<TriangleAlert class="h-4 w-4 shrink-0" />
+							<span>Offre incomplète : une carte n’a pas pu être affichée.</span>
+						</div>
+					{/if}
+
+					<!-- ⚠️ « Aucune offre » est une AFFIRMATION. Ne pas la faire quand on
+					     sait seulement qu'on n'a rien pu résoudre. -->
+					{#if !offeredCardsGrouped.length && !listing.offered_gidouilles && !listing.offre_incomplete}
 						<p class="text-muted-foreground italic">Aucune offre</p>
 					{/if}
 				</div>

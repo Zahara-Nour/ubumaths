@@ -15,6 +15,16 @@ type DbTradeOffer = Database['public']['Tables']['marketplace_trade_offers']['Ro
 
 // Listing types
 export interface MarketplaceListing extends DbListing {
+	/**
+	 * Au moins une carte offerte n'a pas pu être résolue en modèle.
+	 *
+	 * ⚠️ Posé par le serveur, lu par les écrans. Son ABSENCE de ce type est ce
+	 * qui a fait rater `ListingDetailsModal` — l'écran de décision — lors de sa
+	 * mise en place : rien ne reliait le producteur aux consommateurs, donc rien
+	 * ne signalait l'oubli. Même mode de panne que `worksheets.tags` en
+	 * septembre 2026.
+	 */
+	offre_incomplete?: boolean;
 	// Relations
 	creator?: {
 		id: string;
@@ -48,6 +58,8 @@ export interface MarketplaceListing extends DbListing {
 
 // Proposal types
 export interface MarketplaceProposal extends DbProposal {
+	/** Au moins une carte proposée n'a pas pu être résolue. Cf. `MarketplaceListing`. */
+	offre_incomplete?: boolean;
 	// Relations
 	proposer?: {
 		id: string;

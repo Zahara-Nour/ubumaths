@@ -7,7 +7,7 @@ import {
 	lockCardsForEntity,
 	isMarketplaceEnabled,
 	getStudentGidouilles,
-	enrichWithUsernames,
+	enrichWithParticipants,
 	enrichProposalsWithCardData
 } from '$lib/server/marketplace/helpers';
 import {
@@ -170,7 +170,10 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// Build summary for each proposal (from listing owner's perspective)
 	// Format: "[ce que j'ai reçu] contre [ce que j'ai donné]"
 	const enrichedProposals = await enrichProposalsWithCardData(supabase, proposals);
-	const result = enrichedProposals.map(enrichWithUsernames).map((p) => {
+	// ⚠️ Comblement AVANT la projection : le propriétaire d'une annonce doit
+	// savoir qui lui propose un échange. Mesuré, 10 propositions sur 31
+	// seraient devenues anonymes.
+	const result = (await enrichWithParticipants(supabase, enrichedProposals)).map((p) => {
 		// Ce que j'ai reçu = what the proposer offered
 		const iGotParts: string[] = [];
 		if (p.offered_cards?.length) {
@@ -493,7 +496,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 			return json(
 				{
-					...enrichWithUsernames(proposal),
+					...(await enrichWithParticipants(supabase, [proposal]))[0],
 					status: 'accepted',
 					auto_accepted: true,
 					trade_id: acceptation.data.trade_id
@@ -512,5 +515,6 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	// Normal flow: notify listing creator about new proposal
 	await notifyNewProposal(supabase, listing.creator_id, userId, 'Annonce', proposal.id);
 
-	return json(enrichWithUsernames(proposal), { status: 201 });
+	const [avecProposant] = await enrichWithParticipants(supabase, [proposal]);
+	return json(avecProposant, { status: 201 });
 };
