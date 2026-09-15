@@ -39,6 +39,12 @@ export const PREFERRED_NAMES: Readonly<Record<ObjectKind, readonly string[]>> = 
 /** Pourquoi un nom est refusé. L'appelant en tire le message français. */
 export type NameRejection = 'reserved' | 'malformed' | 'taken';
 
+/** Une lettre latine, éventuellement suivie d'un indice numérique. */
+const NAME_SHAPE = /^[A-Za-z](?:_\d+)?$/;
+
+/** Borne de la recherche d'un nom indicé — garde-fou, jamais atteinte. */
+const MAX_INDEX = 999;
+
 // =============================================================================
 // Fonctions
 // =============================================================================
@@ -51,9 +57,12 @@ export type NameRejection = 'reserved' | 'malformed' | 'taken';
  * @returns La raison du refus, ou `null` si le nom est acceptable
  */
 export function validateName(name: string, taken: readonly string[]): NameRejection | null {
-	void name;
-	void taken;
-	throw new Error('validateName : non implémenté');
+	// Les réservés d'abord : `pi` est réservé ET mal formé, et c'est « réservé »
+	// qui explique le refus à l'élève.
+	if (RESERVED_NAMES.has(name)) return 'reserved';
+	if (!NAME_SHAPE.test(name)) return 'malformed';
+	if (taken.includes(name)) return 'taken';
+	return null;
 }
 
 /**
@@ -68,9 +77,23 @@ export function validateName(name: string, taken: readonly string[]): NameReject
  * @param taken - Les noms déjà utilisés, tous types confondus
  */
 export function nextName(kind: ObjectKind, taken: readonly string[]): string {
-	void kind;
-	void taken;
-	throw new Error('nextName : non implémenté');
+	const used = new Set(taken);
+	const free = (name: string) => !used.has(name) && !RESERVED_NAMES.has(name);
+
+	const preferred = PREFERRED_NAMES[kind];
+	for (const name of preferred) {
+		if (free(name)) return name;
+	}
+
+	// Lettres épuisées : on indice la première, plutôt que de rendre un nom pris.
+	const base = preferred[0];
+	for (let i = 1; i <= MAX_INDEX; i++) {
+		const name = `${base}_${i}`;
+		if (free(name)) return name;
+	}
+
+	// Inatteignable en pratique : MAX_INDEX dépasse de loin le plafond d'objets.
+	throw new Error(`Aucun nom libre pour un objet de type « ${kind} »`);
 }
 
 /**
@@ -80,7 +103,12 @@ export function nextName(kind: ObjectKind, taken: readonly string[]): string {
  * @param name - Le nom refusé, cité dans le message
  */
 export function nameRejectionMessage(rejection: NameRejection, name: string): string {
-	void rejection;
-	void name;
-	throw new Error('nameRejectionMessage : non implémenté');
+	switch (rejection) {
+		case 'reserved':
+			return `« ${name} » est réservé : c'est le nom d'une variable ou d'une constante. Choisis une autre lettre.`;
+		case 'taken':
+			return `« ${name} » est déjà utilisé par un autre objet de l'atelier.`;
+		case 'malformed':
+			return `« ${name} » n'est pas un nom valide : une lettre, éventuellement suivie d'un indice (a, f, L, u_1).`;
+	}
 }

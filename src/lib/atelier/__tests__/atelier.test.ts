@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Atelier } from '../atelier';
+import { Atelier } from '../atelier.svelte';
 import { isList, isValue } from '../types';
 
 let a: Atelier;
