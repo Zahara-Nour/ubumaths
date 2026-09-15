@@ -46,7 +46,7 @@ pnpm test:integration               # intégration + DB (Supabase local)
 pnpm db:start / db:reset            # Supabase local (reset = recrée depuis le baseline)
 pnpm db:migrate / db:types          # push migrations → EU / régénère database.ts (cf. §Migrations)
 pnpm maintenance:on / :off          # mode maintenance prod (releases à risque)
-pnpm release                        # tag de version + CHANGELOG (standard-version, sur main)
+pnpm release                        # tag de version + CHANGELOG (sur main ; feat → mineur, cf. scripts/release.ts)
 ```
 
 ⚠️ **`pnpm dev -- --port 5175` ne marche pas** — le script est `vite dev`, donc le
