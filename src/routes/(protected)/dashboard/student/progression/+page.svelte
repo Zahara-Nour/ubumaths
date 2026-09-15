@@ -62,7 +62,12 @@
 		</Tabs.List>
 
 		<Tabs.Content value="objectifs" class="mt-6">
-			<ObjectifsPanel objectives={data.objectives} />
+			<!-- `competencesObserved` sert au message de repli : ne renvoyer vers
+				 l'autre onglet que s'il a réellement quelque chose à montrer. -->
+			<ObjectifsPanel
+				objectives={data.objectives}
+				competencesObserved={data.competences.stats.with_data > 0}
+			/>
 		</Tabs.Content>
 
 		<Tabs.Content value="competences" class="mt-6">

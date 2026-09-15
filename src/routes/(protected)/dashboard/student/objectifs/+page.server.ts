@@ -13,6 +13,9 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
-	// 308 : déplacement permanent, méthode préservée — les favoris se mettent à jour.
-	redirect(308, '/dashboard/student/progression?onglet=objectifs');
+	// 307 et non 308 : un 308 est mis en cache DÉFINITIVEMENT par le navigateur.
+	// Si la fusion était un jour défaite, les élèves ne pourraient plus atteindre
+	// cette URL sans vider leurs données de site. Le gain du permanent (référencement,
+	// favoris réécrits) est nul sur une route derrière authentification.
+	redirect(307, '/dashboard/student/progression?onglet=objectifs');
 };

@@ -227,11 +227,27 @@ export const load: PageServerLoad = async ({ locals }) => {
 			// Fetch unified work inbox (aggregates all 4 assignment sources)
 			getStudentWorkInbox(supabase, profile.id),
 			// Tuile « Ma progression » — même source que la page dédiée.
-			getObjectivesProgression(supabase, profile.id, profile.grade),
-			getCompetencesProgression(supabase, profile.id)
+			//
+			// ⚠️ Repli explicite : ces deux fonctions LÈVENT en cas d'erreur, ce qui
+			// est le bon comportement sur la page dédiée (l'élève y vient pour ça).
+			// Ici, non : le tableau de bord porte aussi l'inbox, les exercices et les
+			// récompenses. Une VIEW renommée ou un timeout ne doit pas priver les 81
+			// élèves de leur page d'accueil pour une tuile de résumé.
+			getObjectivesProgression(supabase, profile.id, profile.grade).catch((err) => {
+				console.error('[dashboard] progression objectifs indisponible :', err);
+				return null;
+			}),
+			getCompetencesProgression(supabase, profile.id).catch((err) => {
+				console.error('[dashboard] progression compétences indisponible :', err);
+				return null;
+			})
 		]);
 
-		progression = { objectives: objectivesProgression, competences: competencesProgression };
+		// Sans les DEUX axes, pas de tuile — plutôt qu'une tuile à moitié vraie.
+		progression =
+			objectivesProgression && competencesProgression
+				? { objectives: objectivesProgression, competences: competencesProgression }
+				: null;
 
 		riddlesSolved = riddleCount.count || 0;
 		recentExercises = (exercisesData.data || []) as typeof recentExercises;

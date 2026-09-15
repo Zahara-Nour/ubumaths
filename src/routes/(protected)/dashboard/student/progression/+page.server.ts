@@ -38,13 +38,12 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const requestedTab: ProgressionTab | null =
 		requested === 'objectifs' || requested === 'competences' ? requested : null;
 
-	// Sinon : celui qui a quelque chose à montrer. À défaut, les objectifs —
-	// c'est l'axe que l'élève peut consulter même sans aucune acquisition,
-	// puisqu'il y lit le programme de son année.
-	const hasObjectiveData =
-		objectives.stats.total - objectives.stats.non_commence > 0 || objectives.hasReferentiel;
+	// Sinon : les objectifs par défaut — c'est l'axe que l'élève peut consulter
+	// même sans aucune acquisition, puisqu'il y lit le programme de son année.
+	// On ne bascule sur les compétences que si les objectifs n'ont RIEN à
+	// montrer (niveau sans référentiel) alors que les compétences, si.
 	const defaultTab: ProgressionTab =
-		hasObjectiveData || competences.stats.with_data === 0 ? 'objectifs' : 'competences';
+		!objectives.hasReferentiel && competences.stats.with_data > 0 ? 'competences' : 'objectifs';
 
 	return {
 		objectives,

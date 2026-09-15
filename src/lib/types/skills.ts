@@ -131,6 +131,27 @@ const MATH_COMPETENCE_LEVEL_VISUALS: Record<MathCompetenceLevel, string> = {
 	tres_bonne: '✨'
 };
 
+/**
+ * Une compétence est-elle réellement OBSERVÉE ?
+ *
+ * ⚠️ `niveau` est NOT NULL en base, et `update_student_competence_level` écrit
+ * `'insuffisante'` dès qu'il y a moins de deux tâches (garde §6.4). Donc la
+ * PRÉSENCE d'une ligne dans `student_competence_level` ne prouve rien : une
+ * ligne `{niveau:'insuffisante', task_count:0}` est parfaitement possible.
+ *
+ * Sans ce seuil partagé, la tuile comptait « 1 observée » pendant que le
+ * panneau affichait « Pas encore observée » pour la même compétence — la
+ * divergence tuile/page que ce module entier vise à rendre impossible.
+ *
+ * Le seuil est celui du SQL : deux tâches avant de prononcer un niveau.
+ */
+export function isCompetenceObserved(competence: { task_count: number }): boolean {
+	return competence.task_count >= MIN_TASKS_FOR_COMPETENCE_LEVEL;
+}
+
+/** Garde §6.4 — nombre minimal de tâches d'observation, aligné sur le PL/pgSQL. */
+export const MIN_TASKS_FOR_COMPETENCE_LEVEL = 2;
+
 export function formatMathCompetenceLevel(level: MathCompetenceLevel): string {
 	return MATH_COMPETENCE_LEVEL_LABELS[level];
 }

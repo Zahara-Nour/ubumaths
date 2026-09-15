@@ -29,7 +29,10 @@
 	import { formatGradeForDisplay, isValidGradeCode } from '$lib/utils/grades';
 	import type { ObjectivesProgression } from '$lib/server/progression/student-progression';
 
-	let { objectives }: { objectives: ObjectivesProgression } = $props();
+	let {
+		objectives,
+		competencesObserved = false
+	}: { objectives: ObjectivesProgression; competencesObserved?: boolean } = $props();
 
 	let showNonCommence = $state(false);
 
@@ -71,7 +74,14 @@
 				ici.
 			</p>
 			<p class="text-sm text-muted-foreground">
-				Il arrivera. En attendant, l'onglet « Ma façon de faire des maths » reste à jour.
+				{#if competencesObserved}
+					<!-- Ne renvoyer vers l'autre onglet que s'il a de la matière : en
+						 production il est vide pour tout le monde, et la promesse
+						 sonnerait faux. -->
+					Il arrivera. En attendant, l'onglet « Ma façon de faire des maths » a de quoi te répondre.
+				{:else}
+					Il arrivera.
+				{/if}
 			</p>
 		</Card.Content>
 	</Card.Root>
@@ -245,4 +255,17 @@
 			</section>
 		{/if}
 	{/each}
+
+	<!--
+		Référentiel présent mais sans aucun objectif : un thème semé à vide suffit.
+		Sans ce message, l'élève lirait « 0 objectif à atteindre » suivi de rien —
+		le « 0 sur 0 » que ce chantier cherche justement à supprimer.
+	-->
+	{#if stats.total === 0}
+		<Card.Root>
+			<Card.Content class="py-12 text-center text-muted-foreground">
+				<p>Aucun objectif disponible pour le moment.</p>
+			</Card.Content>
+		</Card.Root>
+	{/if}
 {/if}

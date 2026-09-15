@@ -336,13 +336,18 @@ describe('getCompetencesProgression', () => {
 		expect(progression.items.every((i) => i.task_count === 0)).toBe(true);
 	});
 
-	it('C10 — une compétence sans niveau calculé ne compte pas dans with_data', async () => {
+	// ⚠️ Décor calqué sur la PRODUCTION, pas sur une forme commode :
+	// `student_competence_level.niveau` est NOT NULL, et
+	// `update_student_competence_level` écrit 'insuffisante' dès qu'il y a moins
+	// de deux tâches. Une ligne {niveau:'insuffisante', task_count:0} existe donc
+	// bel et bien — et c'est elle qui faisait diverger la tuile du panneau.
+	it("C10 — une ligne 'insuffisante' sous le seuil de tâches ne compte pas comme observée", async () => {
 		const supabase = buildMock({
 			math_competences: () => ({ data: competences, error: null }),
 			student_competence_level: () => ({
 				data: [
 					{ math_competence_id: 'c1', niveau: 'satisfaisante', task_count: 3 },
-					{ math_competence_id: 'c2', niveau: null, task_count: 0 }
+					{ math_competence_id: 'c2', niveau: 'insuffisante', task_count: 0 }
 				],
 				error: null
 			})
@@ -350,5 +355,23 @@ describe('getCompetencesProgression', () => {
 		const progression = await getCompetencesProgression(supabase, 'student-1');
 		expect(progression.stats.with_data).toBe(1);
 		expect(progression.stats.satisfaisante).toBe(1);
+		// La ligne présente mais non observée ne gonfle aucun compteur de niveau.
+		expect(progression.stats.insuffisante).toBe(0);
+	});
+
+	it('C11 — une seule tâche ne suffit pas : le seuil est celui du SQL (2)', async () => {
+		const supabase = buildMock({
+			math_competences: () => ({ data: competences, error: null }),
+			student_competence_level: () => ({
+				data: [
+					{ math_competence_id: 'c1', niveau: 'fragile', task_count: 1 },
+					{ math_competence_id: 'c2', niveau: 'fragile', task_count: 2 }
+				],
+				error: null
+			})
+		});
+		const progression = await getCompetencesProgression(supabase, 'student-1');
+		expect(progression.stats.with_data).toBe(1);
+		expect(progression.stats.fragile).toBe(1);
 	});
 });

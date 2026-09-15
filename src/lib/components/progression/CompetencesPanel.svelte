@@ -13,6 +13,7 @@
 	import {
 		formatMathCompetenceLevel,
 		getMathCompetenceLevelVisual,
+		isCompetenceObserved,
 		type MathCompetenceLevel
 	} from '$lib/types/skills';
 	import type { CompetencesProgression } from '$lib/server/progression/student-progression';
@@ -46,7 +47,8 @@
 {:else}
 	<div class="space-y-2">
 		{#each competences.items as comp (comp.id)}
-			{@const observee = comp.task_count > 0}
+			<!-- Même définition que `with_data` côté serveur : une seule source. -->
+			{@const observee = isCompetenceObserved(comp)}
 			<a
 				href="/dashboard/student/competences/{comp.code}"
 				class="block rounded-lg transition-colors hover:bg-accent/50 focus:bg-accent focus:outline-none"

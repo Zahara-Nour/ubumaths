@@ -12,5 +12,5 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
-	redirect(308, '/dashboard/student/progression?onglet=competences');
+	redirect(307, '/dashboard/student/progression?onglet=competences');
 };

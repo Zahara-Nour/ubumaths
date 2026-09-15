@@ -26,6 +26,7 @@ import type { Database } from '$lib/types/database';
 import { computePointBadges, worstBadge, type CapacityBadge } from '$lib/server/srs/capacity-badge';
 import {
 	objectiveLevel,
+	isCompetenceObserved,
 	type MathCompetenceCode,
 	type MathCompetenceLevel,
 	type ObjectiveLevel
@@ -98,7 +99,7 @@ export interface CompetencesStats {
 	satisfaisante: number;
 	fragile: number;
 	insuffisante: number;
-	/** Nombre de compétences réellement évaluées (niveau calculé non nul). */
+	/** Nombre de compétences réellement OBSERVÉES (cf. `isCompetenceObserved`). */
 	with_data: number;
 	total: number;
 }
@@ -111,6 +112,16 @@ export interface CompetencesProgression {
 // ============================================================================
 // Constantes
 // ============================================================================
+
+/**
+ * Niveaux pour lesquels `curriculum_themes` est semé (état 2026-09-15).
+ *
+ * Sert uniquement à distinguer deux silences : « ce niveau n'a pas encore de
+ * référentiel » (légitime) et « ce niveau en a un, mais la requête n'a rien
+ * rendu » (suspect — RLS ou code de niveau décalé). N'ouvre aucun droit et ne
+ * filtre rien : une valeur périmée ici ne fait que taire ou ajouter un log.
+ */
+const COVERED_GRADES = new Set(['6', '2', '1_SPE']);
 
 const EMPTY_OBJECTIVE_STATS: ObjectivesStats = {
 	total: 0,
@@ -223,7 +234,17 @@ export async function getObjectivesProgression(
 	const themesData = themesResult.data ?? [];
 
 	// Le référentiel ne couvre pas ce niveau (cas de 1_GEN et T_SPE en prod).
+	//
+	// ⚠️ Zéro ligne, c'est AUSSI ce que rend un refus RLS ou un `grade` décalé
+	// ('6e' au lieu de '6') — la RLS échoue en silence, elle ne lève pas. Sans
+	// cette trace, un durcissement de policy ferait lire « Il arrivera » aux 37
+	// élèves de 6ᵉ, et personne ne le saurait.
 	if (themesData.length === 0) {
+		if (COVERED_GRADES.has(grade)) {
+			console.warn(
+				`[progression] aucun thème pour le niveau "${grade}", pourtant censé être couvert — RLS ou code de niveau décalé ?`
+			);
+		}
 		return { hasReferentiel: false, grade, themes: [], stats: { ...EMPTY_OBJECTIVE_STATS } };
 	}
 
@@ -346,9 +367,7 @@ export async function getCompetencesProgression(
 		{ niveau: MathCompetenceLevel; task_count: number }
 	>();
 	for (const level of levelsResult.data ?? []) {
-		// `niveau` NULL = compétence jamais observée : on ne l'enregistre pas,
-		// pour qu'elle ne soit pas comptée dans `with_data`.
-		if (!level.math_competence_id || !level.niveau) continue;
+		if (!level.math_competence_id) continue;
 		levelByCompetenceId.set(level.math_competence_id, {
 			niveau: level.niveau as MathCompetenceLevel,
 			task_count: level.task_count ?? 0
@@ -377,8 +396,12 @@ export async function getCompetencesProgression(
 		total: items.length
 	};
 
+	// ⚠️ La PRÉSENCE d'une ligne ne suffit pas : `niveau` est NOT NULL et vaut
+	// 'insuffisante' dès la première tâche. Le seuil vit dans
+	// `isCompetenceObserved()`, appelée AUSSI par le panneau — sans quoi la
+	// tuile annoncerait « 1 observée » sous une liste de « Pas encore observée ».
 	for (const item of items) {
-		if (!levelByCompetenceId.has(item.id)) continue;
+		if (!isCompetenceObserved(item)) continue;
 		stats.with_data += 1;
 		stats[item.niveau] += 1;
 	}
