@@ -339,15 +339,24 @@ describe('objets en attente', () => {
 		expect(r.object.status).toBe('ok');
 	});
 
-	// ⚠️ Limite du moteur, pas de l'atelier : en syntaxe custom `pi` n'est pas
-	// une constante, il se lit `p·i`. On fige le fait pour qu'il se voie.
-	it('documente que `pi` n’est pas reconnu en syntaxe custom', () => {
+	// `\pi` est la bonne écriture d'une constante grecque en syntaxe custom —
+	// et c'est ce que MathLive produit.
+	it('reconnaît \\pi comme une constante', () => {
+		const r = a.create({ kind: 'function', name: 'f', definition: '2\\pi*x' });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.status).toBe('ok');
+	});
+
+	// `pi` écrit sans barre oblique est un produit `p·i`, comme `xy` est `x·y`.
+	// Ce n'est pas un défaut : c'est la multiplication implicite, et l'atelier
+	// le dit clairement en nommant `p`.
+	it('lit `pi` sans barre oblique comme le produit p·i', () => {
 		const r = a.create({ kind: 'function', name: 'f', definition: 'pi' });
 		expect(r.ok).toBe(true);
 		if (!r.ok) return;
 		expect(r.object.missing?.map((m) => m.name)).toEqual(['p']);
 	});
-
 	// Cohérence : l'attente se propage à ce qui dépend d'un objet en attente
 	it('propage l’attente à ce qui dépend d’un objet en attente', () => {
 		a.create({ kind: 'function', name: 'f', definition: 'a*x' });

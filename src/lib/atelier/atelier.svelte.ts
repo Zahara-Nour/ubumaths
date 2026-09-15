@@ -15,7 +15,14 @@
  * @module atelier/atelier
  */
 
-import type { AtelierObject, MissingReference, ObjectKind, ListObject, ValueObject } from './types';
+import type {
+	AtelierObject,
+	MissingReference,
+	ObjectKind,
+	ObjectStatus,
+	ListObject,
+	ValueObject
+} from './types';
 import { validateName, nextName, nameRejectionMessage } from './names';
 import { parseDefinition, referencesOf, renameInDefinition } from './parse';
 
@@ -212,10 +219,20 @@ export class Atelier {
 	// Interne
 	// ---------------------------------------------------------------------------
 
-	/** Construire un objet à partir de sa définition, erreur de lecture comprise. */
+	/**
+	 * Construire un objet à partir de sa définition.
+	 *
+	 * Le statut posé ici est provisoire : `recomputeAll`, toujours appelé
+	 * ensuite, tranche entre les quatre états en tenant compte de tout
+	 * l'atelier — erreurs, cycles, attentes propagées.
+	 */
 	private build(name: string, kind: ObjectKind, definition: string): AtelierObject {
 		const parsed = parseDefinition(kind, definition);
-		const base = { name, definition, ...(parsed.error ? { error: parsed.error } : {}) };
+		const base = {
+			name,
+			definition,
+			status: (definition.trim() === '' ? 'incomplete' : 'ok') as ObjectStatus
+		};
 
 		switch (kind) {
 			case 'list':
