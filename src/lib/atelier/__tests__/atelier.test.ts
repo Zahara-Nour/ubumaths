@@ -588,3 +588,45 @@ describe('plafonds du v1 (décision D8)', () => {
 		expect(ninth.message).toContain('8');
 	});
 });
+
+// =============================================================================
+// Dépendre d'un objet encore vide (finding 4 de la revue #330)
+// =============================================================================
+
+describe('dépendre d’un objet incomplet', () => {
+	// Le geste : « + Fonction » crée `f` vide (§2.1 N3), puis l'élève écrit `g`.
+	// Sans cette règle, `g` s'affichait « ok » alors que rien ne se trace.
+	it('met en attente le dépendant d’un objet encore vide', () => {
+		a.create({ kind: 'function', name: 'f' });
+		a.create({ kind: 'function', name: 'g', definition: 'f(x) + 1' });
+
+		expect(a.get('f')?.status).toBe('incomplete');
+		expect(a.get('g')?.status).toBe('pending');
+		expect(a.get('g')?.missing?.map((m) => m.name)).toEqual(['f']);
+	});
+
+	it('libère le dépendant dès que l’objet est rempli', () => {
+		a.create({ kind: 'function', name: 'f' });
+		a.create({ kind: 'function', name: 'g', definition: 'f(x) + 1' });
+
+		a.update('f', 'x^2');
+		expect(a.get('g')?.status).toBe('ok');
+	});
+
+	// L'objet vide lui-même n'est pas « en attente » : il ne manque de rien,
+	// il est juste vide. C'est l'état normal pendant qu'on cherche (§2.1 L2).
+	it('laisse l’objet vide en « incomplete », pas en attente', () => {
+		a.create({ kind: 'function', name: 'f' });
+		expect(a.get('f')?.status).toBe('incomplete');
+		expect(a.get('f')?.missing).toBeUndefined();
+	});
+
+	it('propage le long d’une chaîne', () => {
+		a.create({ kind: 'function', name: 'f' });
+		a.create({ kind: 'function', name: 'g', definition: 'f(x) + 1' });
+		a.create({ kind: 'function', name: 'h', definition: 'g(x) * 2' });
+
+		expect(a.get('h')?.status).toBe('pending');
+		expect(a.get('h')?.missing?.map((m) => m.name)).toEqual(['f']);
+	});
+});

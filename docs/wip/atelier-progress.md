@@ -160,7 +160,7 @@ message dit « en attente de f », le même qu'avec un nom choisi par l'élève.
 Ce qui ne change pas : un élève qui écrit lui-même `f(x) = f(x)+1` lit toujours
 « définition circulaire ». Quatre tests figent les deux comportements.
 
-### Revue de la PR #330 — quatre correctifs
+### Revue de la PR #330 — cinq correctifs
 
 Une revue de code a trouvé **cinq défauts** qu'aucun des 88 tests ne couvrait, et
 que la CI verte ne disait pas. Quatre sont corrigés.
@@ -176,6 +176,13 @@ que la CI verte ne disait pas. Quatre sont corrigés.
    `updated` était vide — l'élève n'était même pas prévenu.
 4. **Les plafonds D8 n'étaient utilisés nulle part** : une liste de 500 valeurs
    passait en silence.
+5. **Un dépendant d'un objet encore vide restait `ok`.** Le bouton
+   « + Fonction » crée `f` vide (§2.1 N3) ; l'élève écrit `g = f(x)+1` ; `g`
+   s'affichait comme bonne pendant que rien ne se traçait et que rien ne
+   l'expliquait — le silence même que D9 supprime. Tranché le 2026-09-16 : un
+   objet vide ne peut rien fournir à ceux qui le citent, **ils l'attendent**,
+   exactement comme un nom absent. L'objet vide, lui, reste `incomplete` : il ne
+   manque de rien, il est juste vide.
 
 #### Les unités : trois briques existaient, je n'en utilisais aucune
 
@@ -263,7 +270,7 @@ reproduit pas dans l'atelier.
 - [x] §2.5 N7 — message d'attente lisible au-delà de trois noms
 - [x] §6 bis N4 — collage annulable (`insertPasted`)
 - [x] Revue #330 — unités déclarées, renommage auto-référent, plafonds D8 — 96 tests verts
-- [ ] ⏸ Finding 4 : un dépendant d'un objet `incomplete` reste `ok` — **décision produit en attente**
+- [x] Finding 4 — un dépendant d'un objet encore vide passe en attente — 100 tests verts
 - [ ] Tests et implémentation de la **persistance locale** (§5) et de
       **l'URL / mode éphémère** (§6)
 - [ ] ⚠️ **Le refactor inévitable** : les 13 fichiers qui font

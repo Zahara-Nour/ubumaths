@@ -329,6 +329,12 @@ export class Atelier {
 	 */
 	private recomputeAll(): void {
 		const living = new Set(this.names);
+		// Un objet encore vide ne peut rien fournir à ceux qui le citent : ils
+		// l'attendent, exactement comme un nom absent. Sans ça, « g = f(x)+1 »
+		// s'affichait « ok » pendant que `f` était vide — rien ne se traçait, et
+		// rien ne l'expliquait : le silence même que D9 supprime.
+		const empty = new Set(this.items.filter((o) => o.definition.trim() === '').map((o) => o.name));
+		const usable = (name: string) => living.has(name) && !empty.has(name);
 
 		const ownError = new Map<string, string | undefined>();
 		const deps = new Map<string, string[]>();
@@ -344,11 +350,11 @@ export class Atelier {
 			);
 			deps.set(
 				o.name,
-				refs.filter((r) => living.has(r.name)).map((r) => r.name)
+				refs.filter((r) => usable(r.name)).map((r) => r.name)
 			);
 			missing.set(
 				o.name,
-				refs.filter((r) => !living.has(r.name))
+				refs.filter((r) => !usable(r.name))
 			);
 		}
 
