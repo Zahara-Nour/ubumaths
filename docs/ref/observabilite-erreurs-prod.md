@@ -62,11 +62,11 @@ servie. Ne pas conclure d'un journal vide que le code est sain.
 
 ## Ce que le premier passage a trouvé (2026-09-15)
 
-| Erreur                                                                | Portée                                         | Suite donnée                            |
-| --------------------------------------------------------------------- | ---------------------------------------------- | --------------------------------------- |
-| `checkForTemplateUpdates` → `PGRST116`                                | 14 occurrences, 2 profs, depuis le 13/09       | **Corrigé** (`.maybeSingle()`) + test   |
-| `game_leaderboard` → `42501 permission denied`                        | 3 occurrences, 3 utilisateurs, depuis le 06/09 | ⏸️ **question d'accès** (voir plus bas) |
-| `presques-evaluations` → `42501 permission denied for table profiles` | 2 utilisateurs, page **publique**              | ⏸️ **question d'accès** (voir plus bas) |
+| Erreur                                                                | Portée                                         | Suite donnée                                                      |
+| --------------------------------------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------- |
+| `checkForTemplateUpdates` → `PGRST116`                                | 14 occurrences, 2 profs, depuis le 13/09       | **Corrigé** (`.maybeSingle()`) + test                             |
+| `game_leaderboard` → `42501 permission denied`                        | 3 occurrences, 3 utilisateurs, depuis le 06/09 | **Corrigé** — ce n'était pas une question d'accès (voir plus bas) |
+| `presques-evaluations` → `42501 permission denied for table profiles` | 2 utilisateurs, page **publique**              | ⏸️ **question d'accès** (voir plus bas)                           |
 
 ### Les deux questions d'accès qui restent
 
@@ -74,13 +74,20 @@ Elles ne se tranchent pas en lisant du code — ce sont des questions de produit
 et la réponse facile (« rendre l'accès à `anon` ») déferait le durcissement
 d'août.
 
-1. **Le classement des jeux doit-il être visible sans être connecté ?** La
-   fonction `game_leaderboard` n'accorde `EXECUTE` qu'à `authenticated`. Or elle
-   est appelée depuis `/(public)/auth/login` — donc en tant qu'`anon`, qui se
-   fait refuser. Soit la page ne doit pas la demander, soit il faut une RPC
-   bornée pour les visiteurs (comme `get_staff_directory` ou
-   `resolve_marketplace_participants`).
-2. **La page publique « presques-évaluations » a besoin de `profiles`.** Depuis
+~~1. Le classement des jeux doit-il être visible sans être connecté ?~~
+**Ce n'en était pas une** — mal qualifié au premier passage. La page est bien
+sous `(protected)`, mais son `load` n'attendait pas `parent()`. Or SvelteKit
+exécute les `load` du layout et de la page **en parallèle** : la RPC partait
+avant que le garde n'ait redirigé, donc en tant qu'`anon`. D'où le `42501`,
+transformé en **500** au lieu d'une redirection vers `/login`. Corrigé par un
+`await parent()`, le motif que documente déjà `(protected)/+layout.server.ts`.
+
+⚠️ **À vérifier sur toute page `(protected)` qui interroge la base** : sans
+`await parent()` — ou sans garde explicite (`requireAdmin`, `locals.user`…) — le
+`load` s'exécute pour un visiteur non connecté. Les 12 autres pages du dépôt qui
+appellent une RPC ont été vérifiées une par une : toutes gardées.
+
+1. **La page publique « presques-évaluations » a besoin de `profiles`.** Depuis
    le durcissement, `anon` ne lit plus cette table. Même alternative : retirer le
    besoin, ou le servir par une fonction qui ne rend que le strict nécessaire.
 
