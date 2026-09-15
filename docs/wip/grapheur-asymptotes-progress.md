@@ -170,3 +170,50 @@ Décision de David : **étiquette permanente**. Elle réutilise `GraphLabel`, la
 boîte déjà employée par le survol et les étiquettes épinglées, et rend le
 **LaTeX** : l'élève lit `y = x² + 3x + 2` et non `y = x^2 + 3.00x + 2.00`. Les
 étiquettes qui partagent une bande horizontale s'empilent.
+
+## Troisième passe — l'étiquette ne s'affichait pas là où elle comptait
+
+Volet numérique validé par l'auditeur : R1, R1 bis, R1 ter et R2 clos sans
+régression, et les faux positifs sur oscillations passent de **10,6 % à 1,5 %**
+— **0 % sur des valeurs rondes** (grille exhaustive de 680 combinaisons
+`x^q + a·trig(ωx)` à coefficients usuels). Le résidu vit aux fréquences
+irrationnelles qu'un élève ne tape pas. L'auditeur a mesuré son propre correctif
+supplémentaire (test de décroissance du résidu) et **l'a retiré** : il casse
+quatre cas légitimes, dont `(x³+1)/x` et `x³/(x−20)`.
+
+### Le défaut bloquant
+
+**Dans le viewport par défaut, aucune des cinq asymptotes que nos tests figent
+n'affichait son libellé.** L'ancrage était pris à une fraction fixe de la
+branche — deux tiers — et `y = x²` sort du cadre dès x = 3,2. La fonctionnalité
+échouait donc précisément sur les cas pour lesquels les deux commits précédents
+avaient été écrits.
+
+⚠️ Je ne l'avais pas vu en vérifiant à l'œil **parce que j'avais choisi mes
+propres cadrages**, ceux où l'ancrage tombe dans le cadre. C'est la deuxième
+fois de la soirée qu'un décor choisi par moi masque un défaut.
+
+Le placement balaie désormais la branche et retient le premier point visible.
+Deux autres défauts du même ordre, corrigés avec :
+
+- **les étiquettes des pôles s'empilaient en escalier** : l'ordonnée d'ancrage
+  était la même constante pour toutes, donc `tan(x)` alignait six boîtes en
+  diagonale dans un coin pendant que ses pôles s'étalaient sur la largeur. La
+  détection de chevauchement tient compte de l'abscisse ;
+- **l'anti-chevauchement était par fonction** : `1/x` et `2/x` posaient leurs
+  deux `y = 0` au même endroit. Il est maintenant partagé, et les positions sont
+  bornées au cadre — sinon `GraphLabel` les replaçait lui-même, défaisant
+  l'empilement calculé en amont.
+
+### Extrait dans un module testable
+
+`placeAsymptoteLabels` vit dans `$lib/grapheur/asymptote-labels`, avec cinq
+tests sur le **viewport par défaut**. C'est ce qui aurait attrapé le défaut, et
+c'est ce qui l'attrapera la prochaine fois.
+
+### Bruit numérique masqué à l'affichage
+
+`x = -4,441e-17` et `y = x² - 0,000014` s'affichaient tels quels. Les seuils du
+libellé sont devenus **relatifs** — à la plus grande amplitude pour un
+coefficient, à la taille du cadre pour une abscisse. On lit `x = 0` et `y = x²`.
+Le chantier symbolique donnera ces zéros exactement, plutôt que de les arrondir.
