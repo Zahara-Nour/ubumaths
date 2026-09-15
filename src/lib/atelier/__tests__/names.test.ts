@@ -91,6 +91,26 @@ describe('nextName', () => {
 		expect(nextName('value', [...all, 'a_1'])).toBe('a_2');
 	});
 
+	// #329 — le nom proposé ne doit pas entrer en collision avec la définition
+	it('évite les noms cités dans la définition', () => {
+		expect(nextName('function', [], ['f'])).toBe('g');
+		expect(nextName('function', [], ['f', 'g'])).toBe('h');
+	});
+
+	it('cumule les noms pris et les noms à éviter', () => {
+		expect(nextName('function', ['f'], ['g'])).toBe('h');
+	});
+
+	it('passe aux indices quand lettres prises et lettres citées se recouvrent', () => {
+		const proposed = nextName('function', ['f'], ['g', 'h']);
+		expect(['f', 'g', 'h']).not.toContain(proposed);
+	});
+
+	it('ne change rien quand il n’y a rien à éviter', () => {
+		expect(nextName('function', [], [])).toBe('f');
+		expect(nextName('function', [])).toBe('f');
+	});
+
 	it('ne propose jamais un nom réservé', () => {
 		for (const kind of ['value', 'function', 'sequence', 'list'] as const) {
 			expect(RESERVED_NAMES.has(nextName(kind, []))).toBe(false);

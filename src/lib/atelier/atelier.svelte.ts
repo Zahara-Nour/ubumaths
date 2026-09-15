@@ -120,7 +120,10 @@ export class Atelier {
 
 		let name: string;
 		if (input.name === undefined) {
-			name = nextName(input.kind, this.names);
+			// #329 : ne pas se nommer comme un objet que la définition cite déjà,
+			// sinon l'atelier fabrique lui-même la circularité qu'il dénonce.
+			const cited = referencesOf(definition).map((r) => r.name);
+			name = nextName(input.kind, this.names, cited);
 		} else {
 			const rejection = validateName(input.name, this.names);
 			if (rejection) return { ok: false, message: nameRejectionMessage(rejection, input.name) };

@@ -84,11 +84,21 @@ export function validateName(name: string, taken: readonly string[]): NameReject
  * aujourd'hui sur la première lettre (`nextParameterName`), ce qui écraserait
  * un objet nommé.
  *
+ * ⚠️ `avoid` évite aussi les noms **cités par la définition** de l'objet qu'on
+ * est en train de créer. Sans ça, créer une fonction définie par `f(x)+1` la
+ * nommerait `f` et l'atelier annoncerait une « définition circulaire » qu'il
+ * aurait lui-même fabriquée — issue #329.
+ *
  * @param kind - Le type de l'objet à créer
  * @param taken - Les noms déjà utilisés, tous types confondus
+ * @param avoid - Noms libres mais à ne pas proposer (ceux que cite la définition)
  */
-export function nextName(kind: ObjectKind, taken: readonly string[]): string {
-	const used = new Set(taken);
+export function nextName(
+	kind: ObjectKind,
+	taken: readonly string[],
+	avoid: readonly string[] = []
+): string {
+	const used = new Set([...taken, ...avoid]);
 	const free = (name: string) => !used.has(name) && !RESERVED_NAMES.has(name);
 
 	const preferred = PREFERRED_NAMES[kind];

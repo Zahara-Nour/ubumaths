@@ -421,3 +421,46 @@ describe('objets en attente', () => {
 		expect(a.createFromOffer('a').ok).toBe(false);
 	});
 });
+
+// =============================================================================
+// #329 — le nommage automatique ne doit pas fabriquer de circularité
+// =============================================================================
+
+describe('nommage automatique et collisions (#329)', () => {
+	it('ne se nomme pas comme un objet cité par sa propre définition', () => {
+		const r = a.create({ kind: 'function', definition: 'f(x)+1' });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.name).toBe('g');
+		// et le message dit la vérité : il manque f, rien n'est circulaire
+		expect(r.object.status).toBe('pending');
+		expect(r.object.missing?.map((m) => m.name)).toEqual(['f']);
+	});
+
+	it('donne le même message qu’avec un nom choisi par l’élève', () => {
+		const auto = a.create({ kind: 'function', definition: 'f(x)+1' });
+		const b = new Atelier();
+		const explicit = b.create({ kind: 'function', name: 'g', definition: 'f(x)+1' });
+		expect(auto.ok && auto.object.status).toBe(explicit.ok && explicit.object.status);
+	});
+
+	// Le geste qui a révélé le défaut : coller un énoncé entier
+	it('ne crie pas à la circularité quand on colle un énoncé', () => {
+		const r = a.create({
+			kind: 'function',
+			definition: 'Soit f la fonction définie par f(x)=x^2-3x+1'
+		});
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.message?.toLowerCase() ?? '').not.toContain('circulaire');
+	});
+
+	// Ce qui ne change PAS : un élève qui se cite délibérément
+	it('garde la circularité quand l’élève nomme lui-même', () => {
+		const r = a.create({ kind: 'function', name: 'f', definition: 'f(x)+1' });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.object.status).toBe('error');
+		expect(r.object.message?.toLowerCase()).toContain('circulaire');
+	});
+});

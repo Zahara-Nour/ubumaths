@@ -118,12 +118,15 @@ Trois filets à la place, spécifiés au §6 bis : **annulation du collage**
 noms (§2.5 N7), et le fait que l'élève voit ce qui entre dans le champ. Ces deux
 premiers restent à implémenter — ils touchent l'interface, pas le modèle.
 
-⚠️ **Bug ouvert à part : [#329](https://github.com/Zahara-Nour/ubumaths/issues/329)**
-— le nommage automatique fabrique une fausse « définition circulaire ». Créer un
-objet sans nom avec la définition `f(x)+1` donne « définition circulaire », alors
-que le même contenu nommé `g` donne « en attente de f ». C'est le message que
-reçoit un élève qui colle un énoncé : il ment sur la cause. Correction proposée :
-`nextName()` doit éviter les noms cités dans la définition.
+✅ **[#329](https://github.com/Zahara-Nour/ubumaths/issues/329) corrigé** — le
+nommage automatique fabriquait une fausse « définition circulaire » : créer un
+objet sans nom avec la définition `f(x)+1` le nommait `f`, donc l'atelier
+dénonçait une circularité qu'il venait de créer. `nextName()` reçoit désormais
+les noms **cités par la définition** et les évite : l'objet s'appelle `g` et le
+message dit « en attente de f », le même qu'avec un nom choisi par l'élève.
+
+Ce qui ne change pas : un élève qui écrit lui-même `f(x) = f(x)+1` lit toujours
+« définition circulaire ». Quatre tests figent les deux comportements.
 
 ---
 
@@ -166,7 +169,8 @@ reproduit pas dans l'atelier.
 
 - [x] Implémenter `names.ts`, `parse.ts`, `atelier.svelte.ts`
 - [x] Les quatre états (D9) et l'offre de curseur
-- [x] La provenance des définitions (D10) et la normalisation au collage — 72 tests verts
+- [x] La provenance des définitions (D10) et la normalisation au collage
+- [x] #329 — le nommage automatique évite les noms cités par la définition — 80 tests verts
 - [ ] Tests et implémentation de la **persistance locale** (§5) et de
       **l'URL / mode éphémère** (§6)
 - [ ] ⚠️ **Le refactor inévitable** : les 13 fichiers qui font
