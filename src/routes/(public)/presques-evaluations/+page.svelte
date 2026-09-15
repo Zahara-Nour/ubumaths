@@ -5,7 +5,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
-	import { FileText, Eye, Download, Calendar, User, X } from '@lucide/svelte';
+	import { FileText, Eye, Download, Calendar, X } from '@lucide/svelte';
 	import { formatGradeShort } from '$lib/utils/grades';
 	import { GRADE_CODES, type GradeCode } from '$lib/types/grades';
 	import type { PageData } from './$types';
@@ -37,13 +37,6 @@
 			month: 'short',
 			year: 'numeric'
 		});
-	}
-
-	function creatorName(evaluation: Evaluation): string {
-		const creator = evaluation.creator as { firstname?: string; lastname?: string } | null;
-		if (!creator) return 'Auteur inconnu';
-		const parts = [creator.firstname, creator.lastname].filter(Boolean);
-		return parts.length ? parts.join(' ') : 'Auteur inconnu';
 	}
 
 	function matchesGradeFilter(evaluation: Evaluation): boolean {
@@ -182,10 +175,6 @@
 							<div class="flex items-center gap-1">
 								<Calendar class="h-3 w-3" />
 								{formatDate(evaluation.created_at)}
-							</div>
-							<div class="flex items-center gap-1">
-								<User class="h-3 w-3" />
-								{creatorName(evaluation)}
 							</div>
 							<div>{formatFileSize(evaluation.file_size)}</div>
 						</div>
