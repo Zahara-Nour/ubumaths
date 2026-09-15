@@ -1,7 +1,7 @@
 ---
 title: Atelier de recherche de l'élève — Phase 0, comportements attendus
 date: 2026-09-15
-status: SPÉCIFICATION — en attente de validation, aucun code écrit
+status: SPÉCIFICATION — D1 à D8 tranchées par David le 2026-09-15, aucun code écrit
 scope: v1 (Calcul · Graphe · Données) + les deux garanties /grapheur
 ---
 
@@ -11,9 +11,10 @@ Cadrage, décisions et périmètre : [`atelier-recherche-eleve.md`](atelier-rech
 Ce document ne décrit que le **v1** (§10 du cadrage) : vues Calcul, Graphe et
 Données. La géométrie (v2) et Python (v3) sont hors sujet ici.
 
-**Rien de ce qui suit n'est acté.** Chaque ligne est une proposition, et chaque
-ligne est destinée à devenir un test. Les décisions de modèle sont rassemblées au
-§9 : ce sont elles qu'il faut trancher en premier, tout le reste en découle.
+Chaque ligne est destinée à devenir un test. **Les huit décisions de modèle du §9
+ont été tranchées par David le 2026-09-15**, toutes dans le sens des
+recommandations ; les comportements décrits ci-dessous s'y conforment. Seul le
+plafond de D8 restait à chiffrer — la valeur proposée y est signalée comme telle.
 
 Convention de lecture : **N** = cas nominal, **L** = cas limite, **E** = cas
 d'erreur.
@@ -228,7 +229,9 @@ mode présentation · l'export PDF · la validation, la correction et l'assignat
 
 ---
 
-## 9. Décisions à trancher avant tout code
+## 9. Décisions de modèle — tranchées le 2026-09-15
+
+David a validé les huit recommandations. Elles ne sont plus à re-proposer.
 
 | #      | Question                                                             | Ma recommandation                                                                                                                              |
 | ------ | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -239,7 +242,26 @@ mode présentation · l'export PDF · la validation, la correction et l'assignat
 | **D5** | Que devient l'historique de Calcul ?                                 | Il reste (comme aujourd'hui), et on peut **promouvoir** un résultat en objet nommé                                                             |
 | **D6** | Annulation globale (undo/redo) dans l'atelier ?                      | **Hors v1.** `geometry-core` en a un, mais il est lié à son graphe d'objets                                                                    |
 | **D7** | `f'` est-il un objet à part entière, ou un affichage attaché à `f` ? | **Les deux gestes**, distincts : « afficher la dérivée » (attaché, comme aujourd'hui) et « garder `f'` » (objet)                               |
-| **D8** | Combien de valeurs au maximum dans une liste ?                       | À fixer avec le poids de l'URL en tête. Le tableur plafonne à 20 × 20                                                                          |
+| **D8** | Combien de valeurs au maximum dans une liste ?                       | ⚠️ La méthode est validée, **pas le nombre** — proposition ci-dessous : 200 valeurs par liste, 8 listes par atelier                            |
+
+### D8 — le plafond, chiffré
+
+La méthode est validée (« avec le poids de l'URL en tête »), le nombre restait à
+poser. **Proposition : 200 valeurs par liste, 8 listes par atelier.**
+
+Le raisonnement, à contester si le chiffre gêne :
+
+- une série statistique de classe dépasse rarement 50 valeurs ; 200 couvre un
+  relevé de capteur ou un sondage sur plusieurs classes, avec de la marge ;
+- une valeur à 2–4 chiffres suivie de son point-virgule pèse ~5 caractères, donc
+  200 valeurs ≈ 1 000 caractères avant compression — du texte numérique
+  répétitif, qui se compresse bien ;
+- un atelier complet (listes, fonctions, curseurs, fenêtre) doit rester sous la
+  barre prudente des **2 000 caractères d'URL**, celle qui passe partout : mail,
+  ENT, messagerie. Les navigateurs acceptent bien plus, mais ce ne sont pas eux
+  qui tronquent ;
+- au-delà du plafond, l'atelier ne refuse pas la donnée : il refuse **le
+  partage par URL** et propose l'export en fichier (§5, §6 L1).
 
 ---
 

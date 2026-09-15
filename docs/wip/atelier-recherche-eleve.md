@@ -346,9 +346,11 @@ complet.
 
 ## 12. Ce qui reste à faire avant tout code
 
-> **Écrite le 2026-09-15** : [`atelier-recherche-eleve-phase0.md`](atelier-recherche-eleve-phase0.md)
-> — comportements attendus du v1 et huit décisions de modèle (D1 à D8) à
-> trancher. En attente de validation.
+> **Écrite et validée le 2026-09-15** :
+> [`atelier-recherche-eleve-phase0.md`](atelier-recherche-eleve-phase0.md) —
+> comportements attendus du v1. Les huit décisions de modèle (D1 à D8) ont été
+> tranchées par David dans le sens des recommandations ; seul le plafond chiffré
+> de D8 reste une proposition. **Les tests peuvent être écrits.**
 
 **Phase 0 — spécification TDD.** Proposer les comportements en français (cas
 nominal, cas limite, cas d'erreur) pour au moins :
