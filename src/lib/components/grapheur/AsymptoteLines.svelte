@@ -18,7 +18,6 @@
 		VerticalAsymptote,
 		HorizontalAsymptote,
 		ObliqueAsymptote,
-		PolynomialAsymptote,
 		FunctionAnalysis
 	} from '$lib/grapheur/types';
 	import { analyzeAllFunctions, toAnalysisInputs } from '$lib/grapheur/analysis';
