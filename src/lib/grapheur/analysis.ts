@@ -715,8 +715,8 @@ function fitPolynomialBranch(
 		return inU.map((coefficient, k) => coefficient / factor ** k);
 	};
 
-	// Quatre échelles, chacune quatre fois plus loin que la précédente.
-	const scales = [1, 4, 16, 64].map((factor) => sample(ASYMPTOTE_PROBE_SCALE * factor));
+	// Cinq échelles, chacune quatre fois plus loin que la précédente.
+	const scales = [1, 4, 16, 64, 256].map((factor) => sample(ASYMPTOTE_PROBE_SCALE * factor));
 	if (scales.some((s) => s === null)) return null;
 	const measured = scales as number[][];
 
@@ -736,9 +736,14 @@ function fitPolynomialBranch(
 	const first = [
 		level(1, measured[0], measured[1]),
 		level(1, measured[1], measured[2]),
-		level(1, measured[2], measured[3])
+		level(1, measured[2], measured[3]),
+		level(1, measured[3], measured[4])
 	];
-	const second = [level(2, first[0], first[1]), level(2, first[1], first[2])];
+	const second = [
+		level(2, first[0], first[1]),
+		level(2, first[1], first[2]),
+		level(2, first[2], first[3])
+	];
 
 	// Critère : la suite CONVERGE, elle n'a pas à avoir convergé.
 	//
@@ -746,19 +751,27 @@ function fitPolynomialBranch(
 	// l'approche est lente : les valeurs successives de l'ordonnée à l'origine
 	// valent -230, -52, -13, -3,3 — une convergence franche vers 0, mais deux
 	// estimations voisines restent distantes. On demande donc que les écarts
-	// successifs se resserrent d'un facteur net, signature d'une convergence, et
-	// on retient la valeur la plus extrapolée.
+	// successifs se resserrent d'un facteur net.
+	//
+	// ⚠️ DEUX resserrements consécutifs, et non un seul : un rapport unique
+	// n'est pas une signature de convergence, une suite quasi aléatoire le
+	// franchit souvent. Mesuré avec un seul rapport : 9 % des fonctions de la
+	// forme `x^q + a·sin(ωx)` recevaient une asymptote, dont `x² + 3cos(x)`,
+	// qui oscille pourtant de ±3 indéfiniment.
+	const gaps = [first.slice(0, 2), first.slice(1, 3), first.slice(2, 4)].map(([a, b]) =>
+		a.map((coefficient, k) => Math.abs(b[k] - coefficient))
+	);
+
 	for (let k = 0; k <= degree; k++) {
-		const wide = Math.abs(first[1][k] - first[0][k]);
-		const narrow = Math.abs(first[2][k] - first[1][k]);
-		const magnitude = Math.max(Math.abs(second[1][k]), 1);
+		const magnitude = Math.max(Math.abs(second[2][k]), 1);
 
 		// Déjà stable au chiffre près : rien à exiger de plus.
-		if (narrow <= COEFFICIENT_TOLERANCE * magnitude) continue;
-		if (narrow > wide / CONVERGENCE_RATIO) return null;
+		if (gaps[2][k] <= COEFFICIENT_TOLERANCE * magnitude) continue;
+		if (gaps[1][k] > gaps[0][k] / CONVERGENCE_RATIO) return null;
+		if (gaps[2][k] > gaps[1][k] / CONVERGENCE_RATIO) return null;
 	}
 
-	return second[1];
+	return second[2];
 }
 
 /**
@@ -814,8 +827,16 @@ function fitAsymptoteBranch(
 		// suivant. Le seuil est relatif : une parabole plate (x²/50000) a bien
 		// une asymptote courbe, qu'un seuil absolu écartait.
 		if (degree > 0) {
-			const largest = Math.max(...coefficients.map((c) => Math.abs(c)), 1);
-			if (Math.abs(coefficients[degree]) < COEFFICIENT_TOLERANCE * largest) continue;
+			// On compare des CONTRIBUTIONS, pas des coefficients : ceux-ci n'ont
+			// pas la même dimension, et 5e-5 devant x² pèse plus que 10 devant x
+			// dès que x dépasse 200 000. Comparer les nombres entre eux perdait
+			// la parabole de `5e-5·x² + 10x + 1/x` ; un plancher à 1 ramenait de
+			// surcroît le seuil relatif à un seuil absolu.
+			const reach = ASYMPTOTE_PROBE_SCALE * 256 * 1.5;
+			const contribution = (k: number): number => Math.abs(coefficients[k]) * reach ** k;
+			const others = Math.max(...coefficients.slice(0, degree).map((_, k) => contribution(k)));
+			if (contribution(degree) < COEFFICIENT_TOLERANCE * Math.max(others, contribution(degree)))
+				continue;
 		}
 		return coefficients;
 	}
@@ -842,11 +863,21 @@ function differsFromPolynomial(
 	const valueAt = (x: number): number => coefficients.reduce((sum, c, k) => sum + c * x ** k, 0);
 	let measured = false;
 
-	// Plusieurs échelles, et non deux : une branche d'hyperbole n'est pas
-	// définie près de l'origine, et une approche exponentielle est déjà sous
-	// l'ulp à x = 100. Dans les deux cas les sondes proches ne mesurent RIEN —
-	// ce que l'on ne doit pas confondre avec « la fonction EST le polynôme ».
-	for (const scale of [17, 53, 137, 1373]) {
+	// Des sondes PROCHES autant que lointaines.
+	//
+	// Proches, parce que « f vaut la limite au loin » ne dit pas « f est
+	// constante » : tanh(17) vaut 1 à 3,4e-15 près, et un garde qui ne
+	// regardait que le lointain supprimait l'asymptote de tanh et de exp(-x²) —
+	// la famille même que ce chantier voulait servir. tanh(1) = 0,76 tranche.
+	//
+	// Lointaines, parce qu'une branche d'hyperbole n'est pas définie près de
+	// l'origine et qu'une approche exponentielle est déjà sous l'ulp à x = 100.
+	// Dans ces cas les sondes proches ne mesurent RIEN — ce qu'il ne faut pas
+	// confondre avec « la fonction EST le polynôme ».
+	//
+	// ⚠️ 1373 doit rester DANS la plage d'ajustement : c'est ce qui garantit
+	// qu'au moins une sonde est mesurable dès que l'ajustement a réussi.
+	for (const scale of [1, 3, 17, 53, 137, 1373]) {
 		const x = sign * scale;
 		const y = evaluator(x);
 		if (y === null || !Number.isFinite(y)) continue;
@@ -894,43 +925,46 @@ export function findHorizontalAsymptotes(
 	// Une fonction constante n'est pas sa propre asymptote : le pointillé se
 	// poserait exactement sur la courbe. Les obliques et les courbes refusent
 	// déjà ce cas.
-	const constantRight = limitRight !== null && differsFromPolynomial(evaluator, [limitRight], 1);
-	const constantLeft = limitLeft !== null && differsFromPolynomial(evaluator, [limitLeft], -1);
-	if (limitRight !== null && limitLeft !== null && !constantRight && !constantLeft) {
-		return [];
-	}
+	//
+	// Chaque direction est jugée séparément : exiger que les DEUX limites
+	// existent laissait passer la demi-constante `x < 0 ? null : 3`.
+	const differsRight = limitRight !== null && differsFromPolynomial(evaluator, [limitRight], 1);
+	const differsLeft = limitLeft !== null && differsFromPolynomial(evaluator, [limitLeft], -1);
+	const usableRight = limitRight !== null && differsRight ? limitRight : null;
+	const usableLeft = limitLeft !== null && differsLeft ? limitLeft : null;
+	if (usableRight === null && usableLeft === null) return [];
 
-	if (limitRight !== null && limitLeft !== null) {
+	if (usableRight !== null && usableLeft !== null) {
 		// Both limits exist
-		if (Math.abs(limitRight - limitLeft) < LIMIT_TOLERANCE) {
+		if (Math.abs(usableRight - usableLeft) < LIMIT_TOLERANCE) {
 			// Same limit in both directions
 			asymptotes.push({
-				y: (limitRight + limitLeft) / 2,
+				y: (usableRight + usableLeft) / 2,
 				functionId,
 				direction: 'both'
 			});
 		} else {
 			// Different limits
 			asymptotes.push({
-				y: limitRight,
+				y: usableRight,
 				functionId,
 				direction: 'right'
 			});
 			asymptotes.push({
-				y: limitLeft,
+				y: usableLeft,
 				functionId,
 				direction: 'left'
 			});
 		}
-	} else if (limitRight !== null) {
+	} else if (usableRight !== null) {
 		asymptotes.push({
-			y: limitRight,
+			y: usableRight,
 			functionId,
 			direction: 'right'
 		});
-	} else if (limitLeft !== null) {
+	} else if (usableLeft !== null) {
 		asymptotes.push({
-			y: limitLeft,
+			y: usableLeft,
 			functionId,
 			direction: 'left'
 		});

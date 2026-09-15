@@ -210,3 +210,45 @@ describe('limites assumées de la voie numérique', () => {
 		);
 	});
 });
+
+describe('pièges introduits par les corrections', () => {
+	it('garde les horizontales des fonctions qui saturent vite', () => {
+		// tanh(17) vaut 1 à 3,4e-15 près : un garde « la fonction est-elle
+		// constante ? » qui ne sonde qu'au loin conclut qu'elle EST la
+		// constante, et supprime l'asymptote — la famille même que la
+		// correction d'origine visait.
+		expect(findHorizontalAsymptotes((x) => Math.tanh(x), 'f').length).toBe(2);
+		expect(findHorizontalAsymptotes((x) => 5 * Math.tanh(x) + 2, 'f').length).toBe(2);
+
+		const gaussienne = findHorizontalAsymptotes((x) => Math.exp(-x * x), 'f');
+		expect(gaussienne.length).toBeGreaterThan(0);
+		expect(gaussienne[0].y).toBeCloseTo(0, 6);
+	});
+
+	it("refuse une constante définie d'un seul côté", () => {
+		// Le garde exigeait les DEUX limites : une demi-constante gardait son
+		// pointillé posé sur elle-même.
+		expect(findHorizontalAsymptotes((x) => (x < 0 ? null : 3), 'f')).toEqual([]);
+	});
+
+	it("ne prend pas une oscillation autour d'un polynôme pour une asymptote", () => {
+		// x² + 3cos(x) oscille de ±3 autour de x², indéfiniment. Un critère de
+		// convergence fondé sur un SEUL rapport d'écarts se laisse convaincre :
+		// une suite quasi aléatoire franchit souvent un rapport unique.
+		expect(findPolynomialAsymptotes((x) => x * x + 3 * Math.cos(x), 'f')).toEqual([]);
+		expect(findObliqueAsymptotes((x) => x + 1.41 * Math.sin(0.9545 * x), 'f')).toEqual([]);
+	});
+
+	it('trouve une parabole asymptote de coefficient minuscule', () => {
+		// Le plancher `Math.max(..., 1)` ramenait le seuil relatif à un seuil
+		// absolu de 1e-4 dès que les coefficients sont petits.
+		const found = findPolynomialAsymptotes(
+			(x) => (x === 0 ? null : 5e-5 * x * x + 10 * x + 1 / x),
+			'f'
+		);
+
+		expect(found.length).toBe(1);
+		expect(found[0].coefficients[2]).toBeCloseTo(5e-5, 8);
+		expect(found[0].coefficients[1]).toBeCloseTo(10, 4);
+	});
+});

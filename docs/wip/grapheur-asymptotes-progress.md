@@ -133,3 +133,40 @@ sans sondage.
 - **Oscillation très lente** : `x² + sin(x/10⁶)` est vue comme `y = x²`. Les
   sondes plafonnent à 137 299 pour une période de 6,3e6. Inévitable avec des
   sondes fixes.
+
+## Seconde passe de revue — quatre régressions, dont deux de mes correctifs
+
+L'auditeur a rejoué ~21 000 fonctions. F1, F3, F5 confirmés clos, F2 assumé.
+Mais deux de mes corrections avaient créé pire que ce qu'elles réparaient.
+
+- **Le garde anti-constante tuait `tanh` et `exp(−x²)`.** `tanh(17)` vaut 1 à
+  3,4e-15 près : un garde qui ne sonde qu'au loin conclut que la fonction EST
+  la constante et supprime l'asymptote — **la famille même que ce chantier
+  voulait servir**. `atan` et la sigmoïde survivaient par hasard, parce
+  qu'elles convergent plus lentement : le garde discriminait sur la vitesse de
+  convergence, pas sur la constance. On sonde désormais aussi **près de
+  l'origine** (`tanh(1) = 0,76` tranche), et chaque direction est jugée
+  séparément — la demi-constante `x < 0 ? null : 3` échappait au garde.
+- **Le critère de convergence ouvrait 9 % de faux positifs sur les
+  oscillations.** Avec trois échelles il ne restait qu'**un seul** rapport
+  d'écarts à vérifier, et une suite quasi aléatoire le franchit souvent.
+  Reproduction ronde : `x² + 3cos(x)` recevait une asymptote `y = x² + 5,656`,
+  alors qu'elle oscille de ±3 indéfiniment. Cinq échelles désormais, et **deux
+  resserrements consécutifs** exigés.
+- **Le seuil du coefficient dominant comparait des grandeurs incomparables.**
+  Des coefficients n'ont pas la même dimension : 5e-5 devant x² pèse plus que
+  10 devant x dès que x dépasse 200 000. On compare maintenant leurs
+  **contributions** à l'abscisse de sonde. Et le plancher `Math.max(…, 1)`
+  ramenait le seuil relatif à un seuil absolu dès que tout est petit.
+
+### Le libellé était inatteignable
+
+Signalé par David en testant : rien ne s'affiche au survol. En effet — le
+libellé vivait dans un `<title>` SVG, et la couche entière est en
+`pointer-events="none"`, comme toutes les décorations du grapheur. L'infobulle
+**ne pouvait jamais se déclencher**, et je l'avais annoncée sans la tester.
+
+Décision de David : **étiquette permanente**. Elle réutilise `GraphLabel`, la
+boîte déjà employée par le survol et les étiquettes épinglées, et rend le
+**LaTeX** : l'élève lit `y = x² + 3x + 2` et non `y = x^2 + 3.00x + 2.00`. Les
+étiquettes qui partagent une bande horizontale s'empilent.
