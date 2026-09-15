@@ -398,48 +398,77 @@ function makeClamp(viewport: Viewport): (y: number) => number {
 }
 
 /**
- * Combler un segment que la courbe ne suit pas.
+ * Densifier les segments que la courbe ne suit pas.
  *
  * L'échantillonnage est uniforme en abscisse : dans une zone de forte courbure
  * — l'approche d'un pôle, par exemple — la fonction s'écarte franchement de la
  * corde qui joint deux échantillons voisins. Mesuré sur 1/(x(x+1)(x-1))
  * dézoomé : **65 px** d'écart sur un cadre de 400 px de haut, loin de toute
- * rupture. On insère donc des points tant que l'écart dépasse le pixel.
+ * rupture.
+ *
+ * ⚠️ Le raffinement se fait **par niveaux** et non segment par segment : on
+ * insère d'abord un point au milieu de chaque segment infidèle, puis on
+ * recommence sur les moitiés encore infidèles. C'est ce qui répartit le budget
+ * sur toute la courbe.
+ *
+ * Deux répartitions ont été essayées et rejetées, mesurées sur une fonction qui
+ * oscille à gauche et a trois pôles à droite :
+ * - dans l'ordre des abscisses, l'oscillation épuisait le budget et les pôles
+ *   n'étaient plus lissés du tout (1 px à gauche, 15 px à droite) ;
+ * - par écart décroissant, même résultat : une oscillation sous-échantillonnée
+ *   a de GROS écarts qui ne diminuent jamais, elle rafle donc tout le budget
+ *   sans que le tracé y gagne quoi que ce soit.
  *
  * ⚠️ Le critère porte sur l'écart VERTICAL à la corde. Une première version
- * mesurait la distance perpendiculaire rapportée à la diagonale du cadre :
- * au même endroit elle valait 0,4 px, sous tous les seuils raisonnables, et
- * la subdivision ne se déclenchait jamais.
- *
- * Les ordonnées sont écrêtées avant comparaison : hors du cadre tout est
- * aplati sur la borne, donc on ne dépense rien à raffiner un trait invisible.
+ * mesurait la distance perpendiculaire rapportée à la diagonale du cadre : au
+ * même endroit elle valait 0,4 px, sous tous les seuils raisonnables, et la
+ * subdivision ne se déclenchait jamais.
  */
-function subdivideSegment(
+function refineByLevels(
 	evaluator: (x: number) => number | null,
 	clamp: (y: number) => number,
-	from: Point,
-	to: Point,
-	depth: number,
+	segments: readonly { key: number; from: Point; to: Point }[],
 	tolerance: number,
-	out: Point[],
-	budget: { remaining: number }
-): void {
-	if (depth >= MAX_SUBDIVISION_DEPTH || budget.remaining <= 0) return;
+	budgetTotal: number
+): Map<number, Point[]> {
+	const inserted = new Map<number, Point[]>();
+	let pending = [...segments];
+	let remaining = budgetTotal;
 
-	const midX = (from.x + to.x) / 2;
-	if (midX === from.x || midX === to.x) return;
+	for (
+		let depth = 0;
+		depth < MAX_SUBDIVISION_DEPTH && pending.length > 0 && remaining > 0;
+		depth++
+	) {
+		const next: { key: number; from: Point; to: Point }[] = [];
 
-	const raw = evaluator(midX);
-	// Un trou de domaine relève des marches, pas du lissage.
-	if (raw === null || !Number.isFinite(raw)) return;
+		for (const segment of pending) {
+			if (remaining <= 0) break;
 
-	const mid: Point = { x: midX, y: clamp(raw) };
-	if (Math.abs(mid.y - (from.y + to.y) / 2) <= tolerance) return;
+			const midX = (segment.from.x + segment.to.x) / 2;
+			// Épuisement de la précision flottante : inutile d'insister.
+			if (midX === segment.from.x || midX === segment.to.x) continue;
 
-	subdivideSegment(evaluator, clamp, from, mid, depth + 1, tolerance, out, budget);
-	out.push(mid);
-	budget.remaining--;
-	subdivideSegment(evaluator, clamp, mid, to, depth + 1, tolerance, out, budget);
+			const raw = evaluator(midX);
+			// Un trou de domaine relève des marches, pas du lissage.
+			if (raw === null || !Number.isFinite(raw)) continue;
+
+			const mid: Point = { x: midX, y: clamp(raw) };
+			if (Math.abs(mid.y - (segment.from.y + segment.to.y) / 2) <= tolerance) continue;
+
+			const bucket = inserted.get(segment.key);
+			if (bucket === undefined) inserted.set(segment.key, [mid]);
+			else bucket.push(mid);
+			remaining--;
+
+			next.push({ key: segment.key, from: segment.from, to: mid });
+			next.push({ key: segment.key, from: mid, to: segment.to });
+		}
+
+		pending = next;
+	}
+
+	return inserted;
 }
 
 /**
@@ -511,36 +540,10 @@ function buildCurve(
 	const discontinuityIndices: number[] = [];
 	let pendingBreak = false;
 
-	const fidelity = height / FIDELITY_RATIO;
-	const smoothingBudget = { remaining: SMOOTHING_BUDGET_FACTOR * xValues.length };
-
 	const push = (p: Point): void => {
-		const clamped = { x: p.x, y: clamp(p.y) };
-		const previousPoint = points[points.length - 1];
-
-		// Densifier entre le point précédent et celui-ci, sauf de part et
-		// d'autre d'une rupture — où il n'y a justement rien à relier.
-		// Le faire ICI et non dans la boucle principale est ce qui couvre aussi
-		// les segments bordant les points de marche d'un pôle : c'est là que
-		// l'écart est le plus grand.
-		if (!pendingBreak && previousPoint !== undefined && previousPoint.x < clamped.x) {
-			const smoothed: Point[] = [];
-			subdivideSegment(
-				evaluator,
-				clamp,
-				previousPoint,
-				clamped,
-				0,
-				fidelity,
-				smoothed,
-				smoothingBudget
-			);
-			points.push(...smoothed);
-		}
-
 		if (pendingBreak && points.length > 0) discontinuityIndices.push(points.length);
 		pendingBreak = false;
-		points.push(clamped);
+		points.push({ x: p.x, y: clamp(p.y) });
 	};
 
 	/** Dernier échantillon défini, ordonnée NON écrêtée. */
@@ -599,7 +602,70 @@ function buildCurve(
 		previous = current;
 	}
 
-	return { points, discontinuityIndices };
+	// ─── Passe 4 : lisser, du segment le plus infidèle au moins infidèle ──
+	return smoothCurve(evaluator, clamp, points, discontinuityIndices, viewport, xValues.length);
+}
+
+/**
+ * Lisser une courbe déjà assemblée, sans franchir ses ruptures.
+ */
+function smoothCurve(
+	evaluator: (x: number) => number | null,
+	clamp: (y: number) => number,
+	points: readonly Point[],
+	discontinuityIndices: readonly number[],
+	viewport: Viewport,
+	sampleCount: number
+): SampledCurve {
+	const height = viewport.yMax - viewport.yMin;
+	const unchanged = (): SampledCurve => ({
+		points: [...points],
+		discontinuityIndices: [...discontinuityIndices]
+	});
+
+	// Une fenêtre sans hauteur n'a pas d'échelle : rien à lisser, et l'écrêtage
+	// y est de toute façon désactivé.
+	if (!(height > MIN_VIEWPORT_DIM) || points.length < 2) return unchanged();
+
+	const tolerance = height / FIDELITY_RATIO;
+	const breaks = new Set(discontinuityIndices);
+
+	const segments: { key: number; from: Point; to: Point }[] = [];
+	for (let i = 1; i < points.length; i++) {
+		if (breaks.has(i)) continue;
+		const from = points[i - 1];
+		const to = points[i];
+		// Les points de marche peuvent se chevaucher : on ne lisse que ce qui
+		// avance en abscisse.
+		if (from.x < to.x) segments.push({ key: i, from, to });
+	}
+	if (segments.length === 0) return unchanged();
+
+	const inserted = refineByLevels(
+		evaluator,
+		clamp,
+		segments,
+		tolerance,
+		SMOOTHING_BUDGET_FACTOR * sampleCount
+	);
+	if (inserted.size === 0) return unchanged();
+
+	// Réassemblage : les points insérés dans un segment arrivent dans l'ordre
+	// des niveaux, pas des abscisses — d'où le tri. Les ruptures se décalent du
+	// nombre de points ajoutés avant elles.
+	const smoothed: Point[] = [];
+	const shifted: number[] = [];
+	for (let i = 0; i < points.length; i++) {
+		if (breaks.has(i)) shifted.push(smoothed.length);
+		const extra = inserted.get(i);
+		if (extra !== undefined) {
+			extra.sort((a, b) => a.x - b.x);
+			smoothed.push(...extra);
+		}
+		smoothed.push(points[i]);
+	}
+
+	return { points: smoothed, discontinuityIndices: shifted };
 }
 
 // =============================================================================

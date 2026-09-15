@@ -307,6 +307,54 @@ describe('sampler', () => {
 			expect(maxDeviation(sine, sampleFunction(sine, box, 300), box)).toBeLessThan(1 / 200);
 		});
 
+		it("lisse aussi bien à droite qu'à gauche", () => {
+			// Le budget de lissage ne doit pas se consommer dans l'ordre des
+			// abscisses : une zone coûteuse en début de fenêtre affamerait tout
+			// ce qui suit. Même famille de pôles, une fois après une zone
+			// oscillante, une fois avant : l'écart doit être comparable.
+			const oscillationPuisPoles = (x: number): number | null => {
+				if (x < 0) return 3 * Math.sin(40 * x);
+				const d = (x - 2) * (x - 4) * (x - 6);
+				return d === 0 ? null : 8 / d;
+			};
+			const miroir = (x: number): number | null => oscillationPuisPoles(-x);
+			const box: Viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 };
+
+			/** Écart max sur une moitié de la fenêtre, en fraction de la hauteur. */
+			function deviationOn(f: (x: number) => number | null, keep: (x: number) => boolean): number {
+				const curve = sampleFunction(f, box, 300);
+				const height = box.yMax - box.yMin;
+				const breaks = new Set(curve.discontinuityIndices);
+				let worst = 0;
+
+				for (let i = 1; i < curve.points.length; i++) {
+					if (breaks.has(i)) continue;
+					const a = curve.points[i - 1];
+					const b = curve.points[i];
+					if (!keep(a.x)) continue;
+
+					for (let k = 1; k < 8; k++) {
+						const t = k / 8;
+						const x = a.x + (b.x - a.x) * t;
+						const chord = a.y + (b.y - a.y) * t;
+						const exact = f(x);
+						if (exact === null) continue;
+						if (exact < box.yMin || exact > box.yMax) continue;
+						if (chord < box.yMin || chord > box.yMax) continue;
+						worst = Math.max(worst, Math.abs(chord - exact) / height);
+					}
+				}
+				return worst;
+			}
+
+			// Les pôles sont à droite dans un cas, à gauche dans l'autre.
+			const polesEnSecond = deviationOn(oscillationPuisPoles, (x) => x > 0);
+			const polesEnPremier = deviationOn(miroir, (x) => x < 0);
+
+			expect(polesEnSecond).toBeLessThan(1 / 200);
+			expect(polesEnSecond).toBeLessThan(polesEnPremier * 4 + 1 / 200);
+		});
+
 		it('ne densifie pas une courbe déjà fidèle', () => {
 			const box: Viewport = { xMin: -5, xMax: 5, yMin: -1, yMax: 26 };
 			expect(sampleFunction((x) => x * x, box, 300).points.length).toBeLessThan(330);

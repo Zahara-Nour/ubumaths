@@ -56,3 +56,47 @@ illisible.
 exactement 300 points sur `sin(200x)`. Le lissage en insère désormais
 légitimement : le test vérifie la **borne** du budget et l'absence de rupture,
 ce qui était son intention — repérer les points de marche inutiles.
+
+## Revue — la répartition du budget, pour la troisième fois
+
+L'auditeur a reproduit, sur une fonction qui oscille à gauche et a trois pôles à
+droite, le défaut que ce fichier a déjà payé deux fois : **le budget se
+consommait dans l'ordre des abscisses**. Le même groupe de pôles valait 1,00 px
+d'écart en début de fenêtre et **14,55 px** après la zone oscillante — rien
+d'autre n'avait changé que l'ordre de parcours.
+
+Deux répartitions essayées, la première rejetée par la mesure :
+
+1. **Par écart décroissant** (le remède des deux fois précédentes) : **sans
+   effet**, 14,55 px inchangés. Une oscillation sous-échantillonnée a de GROS
+   écarts qui ne diminuent jamais en subdivisant : elle rafle tout le budget
+   sans que le tracé y gagne rien. Trier par amplitude, ici, c'est trier par
+   gaspillage.
+2. **Par niveaux** (retenu) : on insère un point au milieu de chaque segment
+   infidèle, puis on recommence sur les moitiés encore infidèles. Chacun reçoit
+   le même niveau de détail avant qu'on aille plus loin.
+
+|                                       | avant    | après       |
+| ------------------------------------- | -------- | ----------- |
+| pôles en second (après l'oscillation) | 14,55 px | **1,63 px** |
+| pôles en premier                      | 1,00 px  | 1,00 px     |
+
+Le raffinement en largeur borne aussi le budget exactement : le compteur est
+décrémenté avant d'empiler les moitiés, il n'y a plus de dépassement.
+
+### Deux points signalés, traités
+
+- **Fenêtre dégénérée ou inversée** : `height` retombait à `1e-10`, la tolérance
+  à `2,5e-13`, et le budget se vidait entièrement sur une fenêtre sans hauteur
+  visible (904 points pour `x²`). Le lissage est désormais désactivé dans ce cas,
+  comme l'écrêtage l'était déjà.
+- **Une évaluation par segment, même sur une courbe déjà fidèle** (`x²` :
+  1197 → 1496 évaluations, +25 %). C'est le prix de savoir s'il faut densifier :
+  la mesure doit précéder la dépense. Sub-milliseconde en absolu.
+
+### Signalé, hors périmètre — à ticketer
+
+Sur un cadrage à très grande abscisse (`xMin = 1e12`, largeur `1e-4`),
+`viewport.xMin + i * step` perd entièrement le pas : **298 abscisses dupliquées
+sur 300**. Défaut préexistant, indépendant de ce chantier ; la garde
+`from.x < to.x` empêche le lissage d'y ajouter quoi que ce soit.
