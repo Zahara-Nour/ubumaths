@@ -236,6 +236,67 @@ Ce que le collège fait remonter dans la liste :
    opposée dans les deux cas. On les rend invocables depuis le même conteneur.
 4. **Pas de sélecteur de niveau.** La progressivité passe par les actions
    attachées aux objets (§6).
+5. **`/grapheur` reste une porte sur l'atelier, sous deux garanties.**
+   (Tranché par David le 2026-09-15, après comparaison détaillée de l'approche
+   « porte d'entrée » et de l'approche « instance autonome ».) La route survit et
+   l'entrée de la Sidebar ne bouge pas ; `/grapheur` ouvre l'atelier sur la vue
+   Graphe. Les deux garanties ci-dessous **font partie de la décision** : sans
+   elles, l'approche retenue dégraderait un usage qui marche aujourd'hui — voir
+   §9 bis.
+
+---
+
+## 9 bis. `/grapheur` : les deux garanties, et pourquoi
+
+### L'usage à ne pas casser
+
+David projette une courbe à ses élèves depuis `/grapheur` : taper une expression,
+montrer la courbe, en quelques secondes, sur grand écran. C'est la seule donnée
+d'usage dont on dispose sur cette page, et elle vient de lui.
+
+### Le défaut est antérieur à l'atelier
+
+`src/lib/stores/grapheur.svelte.ts:180` :
+
+```ts
+constructor() {
+	if (browser) {
+		this.loadFromStorage();
+	}
+}
+```
+
+**Ouvrir `/grapheur` recharge donc l'état de la dernière fois** — courbes,
+curseurs, fenêtre — y compris ce qui a été tracé depuis `/calc`, puisque les deux
+partagent le même singleton. La page n'ajoute `x^2` que si l'état est vide
+(`routes/(public)/grapheur/+page.svelte`, `onMount`). Autrement dit : on ouvre
+déjà son brouillon de la dernière fois, et on fait le ménage devant la classe.
+
+L'atelier n'invente pas ce défaut, il l'aggraverait — l'état engloberait aussi
+les objets venus des autres vues.
+
+### Garantie 1 — ouverture épurée
+
+`/grapheur` ouvre **panneau d'objets replié, vue Graphe seule**, sans onglets de
+vues visibles tant qu'on ne les demande pas. L'écran de projection ne doit pas
+être plus chargé qu'aujourd'hui.
+
+### Garantie 2 — mode éphémère
+
+Une URL qui **porte son contenu** (`/grapheur?f=x^2-3x+1`) ouvre une vue propre
+avec cette seule courbe et **n'écrit pas dans l'atelier persistant** : elle ne
+l'écrase pas et ne le pollue pas.
+
+C'est ce qui rend l'approche retenue _meilleure_ que l'existant pour la
+projection : le prof prépare ses URL à l'avance, une par courbe, dans son cahier
+de textes ; il clique, c'est propre et instantané ; il peut les donner aux
+élèves. Le mécanisme est celui du §7 — il servait à l'élève, il sert aussi au
+prof.
+
+> Ces deux garanties seraient acquises par défaut avec une instance autonome.
+> C'est le prix assumé de l'état unique, et il s'échange contre l'enchaînement :
+> projeter la courbe, puis dériver, puis montrer les variations, sans changer
+> d'outil ni retaper.
 
 ---
 
@@ -294,7 +355,12 @@ nominal, cas limite, cas d'erreur) pour au moins :
   version de format, atelier venu d'une version plus récente) ;
 - l'apparition et la disparition des actions selon le type d'objet (§6) ;
 - la cohabitation avec `/grapheur` et sa persistance existante (décision figée
-  n° 1).
+  n° 1) ;
+- **l'ouverture épurée de `/grapheur`** (garantie 1, §9 bis) : ce qui est visible
+  à l'ouverture, ce qui se déplie à la demande, ce qu'on retrouve en revenant ;
+- **le mode éphémère** (garantie 2, §9 bis) : une URL porteuse de contenu n'écrit
+  pas dans l'atelier ; que se passe-t-il si l'élève modifie ce qu'il a reçu, s'il
+  veut le garder, s'il avait déjà un atelier en cours ?
 
 Aucun code avant validation de cette Phase 0.
 
@@ -307,6 +373,16 @@ Aucun code avant validation de cette Phase 0.
   ses moteurs en import dynamique.
 - Aucune maquette. La forme du §6 est un principe, pas un écran.
 - Aucune décision sur le sort de `/calc`, `/cas`, `/calculatrice` (NumWorks) et
-  `/spreadsheet` une fois l'atelier en place.
+  `/spreadsheet` une fois l'atelier en place. Le sort de `/grapheur`, lui, est
+  tranché (décision figée n° 5).
+
+### Un manque indépendant de ce chantier
+
+**Le grapheur n'a aucun mode plein écran.** Vérifié le 2026-09-15 : rien dans
+`src/lib/components/grapheur/`, alors que `/calculatrice` (NumWorks) en a un
+(`routes/(protected)/calculatrice/+page.svelte`). Pour projeter une courbe en
+classe, c'est probablement le manque le plus concret — et il n'attend ni
+l'atelier, ni la Phase 0, ni aucune décision de ce document.
+
 - Les numéros de ligne cités datent du **2026-09-15** : les revérifier avant de
   s'en servir.
