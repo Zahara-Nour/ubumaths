@@ -14,6 +14,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { fetchInChunks } from '$lib/server/utils/chunked-in';
 import {
 	templateToBadge,
 	BADGE_PRIORITY,
@@ -130,6 +131,8 @@ export async function getClassCapacityGrid(
 	const { data: attemptsRaw, error: attErr } = await supabase
 		.from('skill_attempts')
 		.select('student_id, template_id')
+		// `studentIds` est borné par la taille d'une classe (quelques dizaines) :
+		// pas de découpage nécessaire, contrairement aux listes de templates.
 		.in('student_id', studentIds)
 		.not('template_id', 'is', null);
 
@@ -144,12 +147,15 @@ export async function getClassCapacityGrid(
 	const templateToPointIds = new Map<string, string[]>();
 
 	if (templateIds.length > 0) {
-		const { data: tagRows, error: tagErr } = await supabase
-			.from('question_template_points')
-			.select(
-				'template_id, point_id, curriculum_points!inner(id, name, curriculum_objectives!inner(theme_id, curriculum_themes!inner(name, code)))'
-			)
-			.in('template_id', templateIds);
+		// `templateIds` grossit avec l'usage de la classe, sans borne : découpé.
+		const { data: tagRows, error: tagErr } = await fetchInChunks(templateIds, (batch) =>
+			supabase
+				.from('question_template_points')
+				.select(
+					'template_id, point_id, curriculum_points!inner(id, name, curriculum_objectives!inner(theme_id, curriculum_themes!inner(name, code)))'
+				)
+				.in('template_id', batch)
+		);
 
 		if (tagErr) {
 			console.error('[class-knowledge] question_template_points lookup failed:', tagErr);
@@ -242,15 +248,17 @@ export async function getClassCapacityGrid(
 		}
 	}
 
-	const { data: fsrsRows, error: fsrsErr } =
-		templateIds.length > 0
-			? await supabase
-					.from('srs_card_stats')
-					.select('user_id, card_reference_id, state, next_review')
-					.in('user_id', studentIds)
-					.eq('card_reference_type', 'template')
-					.in('card_reference_id', templateIds)
-			: { data: [], error: null };
+	// Deux `.in()` dans la même requête : seul `templateIds` est découpé.
+	// `studentIds` est borné par la taille d'une classe (quelques dizaines), et
+	// découper les deux ferait un produit cartésien de lots.
+	const { data: fsrsRows, error: fsrsErr } = await fetchInChunks(templateIds, (batch) =>
+		supabase
+			.from('srs_card_stats')
+			.select('user_id, card_reference_id, state, next_review')
+			.in('user_id', studentIds)
+			.eq('card_reference_type', 'template')
+			.in('card_reference_id', batch)
+	);
 
 	if (fsrsErr) {
 		console.error('[class-knowledge] srs_card_stats lookup failed:', fsrsErr);
@@ -379,10 +387,10 @@ export async function getStudentRetentionCurve(
 	const pointIds = ((pointRows ?? []) as unknown as PointRow[]).map((p) => p.id);
 	if (pointIds.length === 0) return [];
 
-	const { data: tagRows, error: tagRowsError } = await supabase
-		.from('question_template_points')
-		.select('template_id')
-		.in('point_id', pointIds);
+	// `pointIds` = tous les points d'un niveau : 185 en 2ᵈᵉ aujourd'hui.
+	const { data: tagRows, error: tagRowsError } = await fetchInChunks(pointIds, (batch) =>
+		supabase.from('question_template_points').select('template_id').in('point_id', batch)
+	);
 
 	if (tagRowsError) {
 		console.error('[getStudentRetentionCurve] Étiquetage illisible :', tagRowsError);
@@ -394,12 +402,14 @@ export async function getStudentRetentionCurve(
 
 	const cutoffMs = Date.now() - weeks * 7 * 24 * 3600 * 1000;
 
-	const { data: stats, error: statsError } = await supabase
-		.from('srs_card_stats')
-		.select('review_history')
-		.eq('user_id', studentId)
-		.eq('card_reference_type', 'template')
-		.in('card_reference_id', templateIds);
+	const { data: stats, error: statsError } = await fetchInChunks(templateIds, (batch) =>
+		supabase
+			.from('srs_card_stats')
+			.select('review_history')
+			.eq('user_id', studentId)
+			.eq('card_reference_type', 'template')
+			.in('card_reference_id', batch)
+	);
 
 	if (statsError) {
 		console.error('[getStudentRetentionCurve] Historique de révision illisible :', statsError);
@@ -599,12 +609,14 @@ export async function getStudentGradeHistogram(
 
 	const templateIds = [...new Set(attempts.map((a) => a.template_id).filter(Boolean))] as string[];
 	if (templateIds.length > 0) {
-		const { data: stats, error: statsError } = await supabase
-			.from('srs_card_stats')
-			.select('card_reference_id, stability')
-			.eq('user_id', studentId)
-			.eq('card_reference_type', 'template')
-			.in('card_reference_id', templateIds);
+		const { data: stats, error: statsError } = await fetchInChunks(templateIds, (batch) =>
+			supabase
+				.from('srs_card_stats')
+				.select('card_reference_id, stability')
+				.eq('user_id', studentId)
+				.eq('card_reference_type', 'template')
+				.in('card_reference_id', batch)
+		);
 
 		if (statsError) {
 			console.error('[getStudentGradeHistogram] Stabilité illisible :', statsError);

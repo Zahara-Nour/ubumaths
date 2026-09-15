@@ -21,12 +21,12 @@ import {
 	worstBadge,
 	aggregateBadge,
 	computePointBadges,
-	IN_CHUNK_SIZE,
 	BADGE_LABEL,
 	BADGE_VISUAL,
 	BADGE_PRIORITY,
 	type CapacityBadge
 } from '../capacity-badge';
+import { IN_CHUNK_SIZE } from '$lib/server/utils/chunked-in';
 
 // ============================================================================
 // templateToBadge — règle de mapping pour 1 template
