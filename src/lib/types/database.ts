@@ -16609,6 +16609,13 @@ export type Database = {
         Args: { p_instance_id: string; p_student_id: string }
         Returns: Json
       }
+      resolve_card_instances: {
+        Args: { p_instance_ids: string[] }
+        Returns: {
+          card_id: string
+          instance_id: string
+        }[]
+      }
       resolve_error: {
         Args: { p_error_log_id: string; p_notes: string; p_resolved_by: string }
         Returns: boolean
