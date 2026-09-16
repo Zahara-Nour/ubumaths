@@ -109,19 +109,17 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map([
 			example: '.équivalent (x+1)^2 x^2+2x+1'
 		}
 	],
-	// ⚠️ Cassée dans l'interface web, mesuré le 2026-09-16 : le dispatch parse
-	// TOUT l'argument comme une expression avant d'appeler la commande, donc
-	// `.taylor sin(x) 5 0` meurt sur « Unexpected token: 5 » sans que la commande
-	// soit jamais appelée. Elle marche dans le CLI (`pnpm repl`), qui lui passe
-	// la chaîne telle quelle. Même cause pour `.integrate x^2 x 0 1` (intégrale
-	// définie) et `.solve … --verbose`. Voir le dispatch des commandes du
-	// registre dans `web-repl-engine.ts` : seul `equiv` y fait exception.
+	// Réparée le 2026-09-16 : le dispatch parsait TOUT l'argument comme une
+	// expression avant d'appeler la commande, donc `.taylor sin(x) 5 0` mourait
+	// sur « Unexpected token: 5 » sans que la commande soit jamais appelée. Le
+	// drapeau `requiresAst` existait déjà mais n'était pas dans le contrat
+	// `Command` : les deux dispatches (web ET CLI) ne pouvaient pas le voir.
 	[
 		'taylor',
 		{
 			french: 'taylor',
 			description: 'Développement limité au voisinage d’un point',
-			unavailable: 'Cette commande ne fonctionne pas encore dans l’atelier.'
+			example: '.taylor sin(x) 5 0'
 		}
 	],
 	[

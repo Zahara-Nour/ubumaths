@@ -236,10 +236,17 @@ function handleReplCommand(input: string, rl: readline.Interface, state: ReplSta
 			ast = parseResult.ast;
 			cmdInput = args;
 		} else if (parseResult.errors.length > 0) {
-			for (const err of parseResult.errors) {
-				console.log(formatError(err));
+			// Même correctif que dans `web/web-repl-engine.ts` : une commande qui
+			// relit `ctx.input` (`requiresAst === false`) sait lire ses arguments
+			// elle-même, et les parser en bloc la tuait sur son premier nombre.
+			if (command.requiresAst !== false) {
+				for (const err of parseResult.errors) {
+					console.log(formatError(err));
+				}
+				return;
 			}
-			return;
+			ast = undefined;
+			cmdInput = args;
 		}
 	}
 

@@ -433,17 +433,31 @@ export class WebReplEngine {
 				ast = parseResult.ast;
 				cmdInput = args;
 			} else if (parseResult.errors.length > 0) {
-				const error = parseResult.errors[0];
-				return {
-					success: false,
-					output: error.message,
-					outputHtml: formatErrorHtml(error),
-					error: {
-						code: error.code,
-						message: error.message,
-						position: error.position
-					}
-				};
+				// ⚠️ Un argument qui ne se lit pas comme une expression n'est une
+				// erreur que pour les commandes qui ont BESOIN de l'arbre.
+				//
+				// Celles qui relisent `ctx.input` (`requiresAst === false`) attendent
+				// souvent autre chose derrière l'expression : `.taylor expr termes
+				// [centre]`, `.integrate expr var [a b]`, `.solve … --verbose`. Les
+				// parser en bloc les tuait sur leur premier nombre, sans qu'elles
+				// soient jamais appelées.
+				if (command.requiresAst !== false) {
+					const error = parseResult.errors[0];
+					return {
+						success: false,
+						output: error.message,
+						outputHtml: formatErrorHtml(error),
+						error: {
+							code: error.code,
+							message: error.message,
+							position: error.position
+						}
+					};
+				}
+				// `ast` reste indéfini : l'élève a fourni des arguments, ce n'est donc
+				// pas le cas « reprends la dernière expression ».
+				ast = undefined;
+				cmdInput = args;
 			}
 		}
 
