@@ -1,154 +1,163 @@
 # Progression — correction des 5 défauts de mathAST
 
-Chantier lancé le 2026-09-16, d'après
+Chantier du 2026-09-16/17, d'après
 [`mathast-5-defauts-prompt.md`](mathast-5-defauts-prompt.md).
-Une branche + une PR par défaut, dans l'ordre. Ce fichier sert de reprise
-après crash : il note ce qui a été **mesuré**, pas ce qui est supposé.
+Une branche + une PR par défaut, dans l'ordre. Ce fichier note ce qui a été
+**mesuré**, pas ce qui est supposé.
 
-## Script de reproduction
+## État
 
-Rejoué le 2026-09-16 avant de commencer : **les cinq défauts se reproduisent
-à l'identique** du doc de départ, ligne pour ligne.
+| #   | Module                   | PR                                                       | État       |
+| --- | ------------------------ | -------------------------------------------------------- | ---------- |
+| 1   | `taylor`                 | [#352](https://github.com/Zahara-Nour/ubumaths/pull/352) | ✅ mergée  |
+| 2   | `pedagogical-arithmetic` | [#354](https://github.com/Zahara-Nour/ubumaths/pull/354) | ✅ mergée  |
+| 3   | `variations`             | [#355](https://github.com/Zahara-Nour/ubumaths/pull/355) | ✅ mergée  |
+| 4   | `units`                  | [#356](https://github.com/Zahara-Nour/ubumaths/pull/356) | PR ouverte |
+| 5   | `numtype`                | —                                                        | commité    |
 
-## Décisions produit (tranchées par David le 2026-09-16)
+Script de reproduction rejoué avant de commencer : les cinq défauts se
+reproduisaient **à l'identique** du doc de départ, ligne pour ligne.
 
-1. **numtype** → **ajouter `decimal`** à l'union `NumericType`
-   (ℕ ⊂ ℤ ⊂ 𝔻 ⊂ ℚ du collège), et non se contenter de `rational`.
-2. **units 4a** → **ne rien changer** à `format` (voir « écarts » ci-dessous).
-3. **units 4c** → `kWh` **corrigé dans la même PR** que 4b.
+## Décisions produit (tranchées par David)
+
+1. **numtype** → **ajouter `decimal`** à l'union (ℕ ⊂ ℤ ⊂ 𝔻 ⊂ ℚ), plutôt que de
+   se contenter de classer 2,5 en `rational`.
+2. **units 4a** → **ne rien changer** à `format` (voir ci-dessous).
+3. **units 4c** → `kWh` corrigé dans la même PR que 4b.
+4. **radicaux** (conséquence du défaut 2) → `√2 × √8 = 4` en **une** étape.
+
+## Le fil rouge : les tests n'ont pas raté ces bugs, ils les ont enregistrés
+
+C'est le constat le plus réutilisable du chantier. Dans les cinq modules, la
+suite était verte **parce que** les tests décrivaient le comportement fautif.
+
+| Défaut                     | Forme prise par l'enregistrement du bug                                                                                                    |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1 `taylor`                 | Un bloc `describe('output format')` n'assertant que `toContain('x')` et `length > 0`.                                                      |
+| 2 `pedagogical-arithmetic` | Un **snapshot** contenant les 50 étapes du cycle, commité comme sortie attendue.                                                           |
+| 3 `variations`             | `if (extrema.length > 0) { assert } else { … }`, titres « _when extrema are found_ », commentaires « _due to sign analysis limitations_ ». |
+| 4 `units`                  | `expect(unitsAreCompatible(L, m3)).toBe(false)` commenté « _known limitation that may be addressed in Phase 2_ ».                          |
+| 5 `numtype`                | `expect(inferType('3.14').base).toBe('real')`.                                                                                             |
+
+Corollaire pour la suite : **une suite verte ne dit rien tant qu'on n'a pas lu
+ce qu'elle assert**. Les quatre premiers défauts ont été confirmés en lisant les
+tests existants avant d'en écrire de nouveaux.
 
 ## Écarts constatés avec le doc de départ
 
-### 4a n'est pas un défaut
+### 4a n'était pas un défaut
 
 `format` (`units/formatter.ts`) prend un paramètre `style`, dont `'original'`
-qui rend l'unité écrite par l'élève. Mesuré :
+qui rend l'unité écrite par l'élève :
 
 ```
 km/h   original="km/h"   dot=m.s^-1   'original'=km/h   fraction=m/s
-mL     original="mL"     dot=L        'original'=mL     fraction=L
 ```
 
-Les **6 appelants** de `format` dans `src/` (hors tests) passent tous
-`'original'` : `latex-generator.ts:736,1280`, `custom-generator.ts:926,1359`,
-`pretty-print.ts:589`, `atelier/parse.ts:326`. Le script de repro appelait
-`format(u)` sans style et mesurait donc le défaut `'dot'`, documenté comme
-normalisation SI. **Aucun chemin de production ne perd l'unité de l'élève.**
+Les **6 appelants** dans `src/` (hors tests) passent tous `'original'` :
+`latex-generator.ts:736,1280`, `custom-generator.ts:926,1359`,
+`pretty-print.ts:589`, `atelier/parse.ts:326`. Le script de reproduction
+appelait `format(u)` sans style et mesurait donc le défaut `'dot'`, documenté
+comme normalisation SI. **Aucun chemin de production ne perdait l'unité.**
 
-### Le défaut 1 en cachait un plus grave
+### Chaque défaut était plus large que décrit
 
-Les trois cas de mesure du doc sont tous centrés en 0. Pour un centre ≠ 0,
-`taylorExpand` affichait `x + -1^2` au lieu de `(x-1)^2` — l'expression
-montrée n'était pas celle qui avait été calculée. Corrigé dans la même PR.
+- **1** ne cachait pas qu'un « + - » : pour un centre ≠ 0, `taylorExpand`
+  affichait `x + -1^2` au lieu de `(x-1)^2` — une **autre expression**. Invisible
+  au doc de départ, dont les trois cas de mesure sont tous centrés en 0.
+- **2** ne touchait pas que les fractions : la même cause dégradait la notation
+  scientifique et les radicaux.
+- **3** privait de tableau de variations **toute fonction dont la dérivée
+  s'annule en 0** — `x²`, `x³`, `x⁴`, les cas les plus courants du programme.
+- **4** a révélé **deux défauts préexistants** dans `questions/units`, sans quoi
+  le litre serait resté cassé de ce côté.
+- **5** : l'angle mort n'était pas là où le doc l'annonçait (voir plus bas).
 
-## État par défaut
+## 1. `taylor`
 
-| #   | Module                   | PR                                                       | État                                                     |
-| --- | ------------------------ | -------------------------------------------------------- | -------------------------------------------------------- |
-| 1   | `taylor`                 | [#352](https://github.com/Zahara-Nour/ubumaths/pull/352) | ✅ **mergée**                                            |
-| 2   | `pedagogical-arithmetic` | [#354](https://github.com/Zahara-Nour/ubumaths/pull/354) | ✅ **mergée**                                            |
-| 3   | `variations`             | —                                                        | commité sur `fix/variations-extrema`, typecheck en cours |
-| 4   | `units` (4b + 4c)        | —                                                        | cause localisée, pas commencé                            |
-| 5   | `numtype`                | —                                                        | relevé d'exhaustivité fait, pas commencé                 |
-
-## 1. `taylor` — fait
-
-Deux défauts, tous deux dans `taylor/expand.ts`, le calcul étant juste :
+Deux défauts dans `taylor/expand.ts`, le calcul étant juste :
 
 1. **branche morte** : les deux côtés du `if (term.type === 'opposite')`
-   faisaient `add`. Le commentaire annonçait « use subtraction ».
+   faisaient `add`, alors que le commentaire annonçait « use subtraction ».
 2. **base non parenthésée** : `power(add(x, opposite(a)), n)` sans nœud
-   `delimiter`. Le rendu n'ajoute **aucune** parenthèse d'après la priorité
-   des opérateurs — mesuré : `toLatex(power(add(x, -1), 2))` = `x + -1^2`.
+   `delimiter`. Le rendu n'ajoute **aucune** parenthèse d'après la priorité des
+   opérateurs — mesuré : `toLatex(power(add(x, -1), 2))` = `x + -1^2`.
 
 Écarté : `removeSignsAST`, proposé par le doc. La cause n'était pas une
 normalisation manquante, et cette fonction balaie aussi les signes dans les
-produits et quotients (trop de rayon d'action, plus une dépendance du module
-de calcul vers la couche cosmétique).
+produits et quotients.
 
-Preuves : 8 tests vus rouges, 53/53 verts après (dont 45 préexistants),
-126 tests connexes verts, `check:incremental` 1615 fichiers 0 erreur.
+## 2. `pedagogical-arithmetic`
 
-## 2. `pedagogical-arithmetic` — cause confirmée par lecture
+Priorités `to-common-denominator` **130**, `add-same-denominator` **110**,
+`reduce-fraction` **30**. Mais `findFirstApplication` parcourt l'arbre avec
+`mapNode`, **bottom-up** (`transforms.ts:277`), et capture la première règle qui
+mord.
 
-Priorités : `to-common-denominator` **130**, `add-same-denominator` **110**,
-`reduce-fraction` **30**. Mais `findFirstApplication`
-(`pedagogical-arithmetic/pipeline.ts:262`) parcourt l'arbre avec `mapNode`,
-qui est **bottom-up** (`transforms.ts:277`, « children first, then parent »),
-et `captured` court-circuite tout le reste dès le premier match.
+> **La priorité n'ordonnait que les règles essayées sur un même nœud ; entre
+> nœuds, c'est la profondeur qui gagnait.**
 
-Sur `8/12 + 9/12`, la division `8/12` déclenche donc `reduce-fraction` (30)
-**avant** que l'addition parente ne soit confrontée à `add-same-denominator`
-(110). D'où le cycle.
+Correctif : une passe préalable détermine la meilleure priorité applicable dans
+tout l'arbre ; seules les règles de cette priorité peuvent ensuite mordre.
+`mapNodeTopDown` écarté (il aurait combattu la règle « parenthèses d'abord »).
 
-> **La priorité n'ordonne que les règles essayées sur un même nœud ; entre
-> nœuds, c'est la profondeur qui gagne.**
+⚠️ Le test de cycle **doit chercher un motif de période 2 à 4** : une détection
+limitée à « A B A B » ne mord pas, le cycle des fractions étant de période 3.
 
-**Correctif retenu** : une passe préalable détermine la meilleure priorité
-applicable dans tout l'arbre, et seules les règles de cette priorité ont
-ensuite le droit de mordre. `mapNodeTopDown` a été écarté (il aurait combattu
-la règle « parenthèses d'abord », voulue).
+## 3. `variations`
 
-⚠️ **La même cause de classe dégradait deux autres familles**, corrigées du
-même coup : la notation scientifique (`10^4` développé en `10·10·10·10` avant
-de multiplier) et les radicaux (`√2 × √8` décomposait `√8`). Décision produit
-de David : chemin en une étape pour les radicaux.
+**A.** `findAdjacentIntervals` retenait l'intervalle **dégénéré**
+`constant [a ; a]`, qui sépare les deux vrais voisins. Corrigé là plutôt qu'en
+cessant d'émettre ces intervalles : `variations/format.ts:90,386` s'en sert pour
+la colonne du point critique (grep fait, comme demandé).
 
-Le snapshot de démonstration **gravait le cycle** comme sortie attendue : il
-perd 3079 lignes pour 471 ajoutées.
-
-⚠️ Piège documenté : `__tests__/fractions.test.ts` teste les règles en
-isolation via `applyRule()` (ne traverse pas le pipeline) et
-`__tests__/pipeline.test.ts` n'assert qu'une borne **inférieure**
-(`toBeGreaterThanOrEqual(1)`). Le test à écrire est une borne **supérieure**.
-
-## 5. `numtype` — relevé d'exhaustivité (à faire AVANT de coder)
-
-Ajouter `decimal` cassera le typecheck sur **six `Record<NumericType, …>`**,
-ce qui est un filet : quatre en production —
-`format-fr.ts:16` (`TYPE_DESCRIPTIONS`), `algebra.ts:35` (`TYPE_LEVEL`),
-`algebra.ts:50` (`DIRECT_PARENTS`), `algebra.ts:64` (`ALL_ANCESTORS`) —
-et deux dans `__tests__/format-fr.test.ts:151,174`.
-
-L'angle mort est ailleurs : ces fichiers nomment les membres **sans**
-`Record`, en chaînes de `if/else` où `decimal` filerait en silence —
-`predicates.ts` (17 mentions), `infer.ts` (9), `rules/power.ts` (56),
-`rules/functions.ts` (22), `rules/literals.ts` (13),
-`rules/arithmetic.ts` (10).
-
-`algebra.ts` encode le treillis : `decimal` aura `rational` pour parent, et
-`integer` prendra `decimal` pour parent.
-
-Deux `switch` sur `NumericType` : `format-fr.ts:121` et `format-fr.ts:205`.
-(Les `switch (type)` de `variations/` et des tokenizers portent sur d'autres
-types — ne pas les confondre.)
-
-## 3. `variations` — deux causes, chacune prouvée séparément
-
-**A. `findAdjacentIntervals` retenait l'intervalle DÉGÉNÉRÉ.** Le zéro de la
-dérivée produit un `constant [3/2 ; 3/2]` qui s'intercale entre le décroissant
-et le croissant ; la boucle écrasant `before`, c'est lui qui restait.
-Corrigé dans `extrema.ts` et **non** en cessant d'émettre ces intervalles :
-`variations/format.ts` s'en sert pour la colonne du point critique dans le
-tableau (grep fait, comme le demandait le doc de départ).
-
-**B. Le solveur linéaire ne posait pas `approximate` sur la solution 0.**
-`normalize(0)` rend un numérateur VIDE, donc la branche rationnelle de
-`solvers/linear.ts` (qui teste `numerator.length === 1`) ne le voyait pas. Or
-`sign/analyze.ts` écarte tout zéro sans `approximate` comme point de découpe →
-un seul intervalle `unknown` → **toute fonction dont la dérivée s'annule en 0**
-perdait son tableau de variations.
+**B.** Le solveur linéaire ne posait pas `approximate` sur la solution **0** —
+`normalize(0)` rend un numérateur vide, que la branche rationnelle
+(`numerator.length === 1`) ne voit pas. Or `sign/analyze.ts:462` écarte tout
+zéro sans `approximate` comme point de découpe.
 
 Un helper `ensureApproximate` compensait déjà ce défaut dans `solve.ts` et
-`rational.ts` (« Handles the case where the linear solver doesn't set
-approximate for zero »), mais le chemin de l'analyse de signe n'y passe pas —
-une garde centralisée ne protège que ce qui passe par elle. Corrigé à la source.
+`rational.ts` — mais le chemin de l'analyse de signe n'y passe pas. **Une garde
+centralisée ne protège que ce qui passe par elle.** Corrigé à la source.
 
-**Part de chaque correctif, mesurée en les neutralisant un à un** : A seul
-répare 4 cas sur 5 ; B n'est nécessaire que pour `x^2`. `x^4` relève de A.
+**Part de chaque correctif, mesurée en les neutralisant un à un** (depuis une
+copie, jamais `git checkout`) : A seul répare 4 cas sur 5 ; B n'est nécessaire
+que pour `x^2`. `x^4` relève de A.
 
-⚠️ **Pourquoi la suite était verte** — pire qu'une borne inférieure : les tests
-de `compute.test.ts` sont écrits `if (result.extrema.length > 0) { ... } else
-{ ... }`, avec des commentaires « Extrema not found due to sign analysis
-limitations » et des titres « when extrema are found ». Le défaut était encodé
-comme résultat acceptable.
+## 4. `units`
+
+`L` était une entrée de `BASE_UNITS` de dimension `'volume'`, de signature
+`{ volume: 1 }`, quand `dm^3` vaut `{ length: 3 }`. Le fichier documentait déjà
+l'incohérence à propos de l'hectare (« This diverges from how 'volume' is
+treated »). Le litre rejoint `DERIVED_UNITS` avec `components: Map([['m', 3]])`.
+
+⚠️ **L'ordre de `DERIVED_UNITS` est significatif** : `recognizeDerivedUnit` rend
+la PREMIÈRE entrée dont les composants correspondent. `Wh` a les mêmes
+composants que `J` ; placé en tête, « 2 N × 3 m » rendait 6 Wh.
+
+Deux défauts **préexistants** trouvés au passage, vérifiés sur arbre propre :
+
+1. `questions/units/parser.ts` construisait l'unité comme `baseSymbol^1` en
+   ignorant `components` : `1 ha + 1 m^2` était déclaré impossible à
+   additionner. Invisible tant que les deux côtés étaient également faux.
+2. `generateUnitWhitelist` ne connaissait que `BASE_UNITS × préfixes` : le
+   tokenizer découpait `mL` en « m × L ».
+
+## 5. `numtype`
+
+`decimal` ajouté à l'union et inséré dans le treillis (`TYPE_LEVEL` renuméroté,
+`DIRECT_PARENTS`, `ALL_ANCESTORS`).
+
+**Le filet a bien joué**, mais pas là où on l'attendait. Les six
+`Record<NumericType, …>` cassent au typecheck et signalent ce qu'il faut
+compléter. L'angle mort réel était ailleurs : **six comparaisons STRICTES
+`base === 'rational'`** dans `rules/power.ts` et `rules/arithmetic.ts`,
+qu'aucun `Record` ne protège et qu'aucun test ne couvrait.
+
+Une seule rendait un résultat **faux** : `inferDivisionType` laissait les
+décimaux tomber dans `join`, qui concluait « décimal » pour `2,5 / 3` = 0,8333…
+Les quatre branches sont regroupées en un `isSubtype(..., 'rational')`.
+
+> Leçon #343 confirmée et précisée : ce n'est pas l'union qui est dangereuse,
+> ce sont les **égalités strictes** sur ses membres. Les `Record` exhaustifs
+> sont un bon filet ; `x === 'membre'` n'en a aucun.
