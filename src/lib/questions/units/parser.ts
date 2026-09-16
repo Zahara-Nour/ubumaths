@@ -257,9 +257,18 @@ function parseTokensToUnit(tokens: Token[]): Unit {
 				throw new Error(`Unknown unit: ${token.value}`);
 			}
 
-			// Create unit directly from resolved definition (avoid redundant resolve call)
+			// Create unit directly from resolved definition (avoid redundant resolve call).
+			//
+			// ⚠️ Les unités dérivées (N, J, W, ha, L, ...) portent un `components`
+			// qui donne leur signature SI complète. L'ignorer et poser
+			// `baseSymbol^1` réduisait l'hectare à `{ m: 1 }` et le newton à
+			// `{ g: 1 }` : `1 ha + 1 m^2` était déclaré impossible à additionner.
+			// Le défaut ne se voyait pas quand les deux côtés étaient également
+			// faux (`N + N`). Même expansion que `mathAST/units/parser.ts:276`.
 			let unit: Unit = {
-				components: new Map([[unitDef.baseSymbol, 1]]),
+				components: unitDef.components
+					? new Map(unitDef.components)
+					: new Map([[unitDef.baseSymbol, 1]]),
 				coefficient: unitDef.coefficient
 			};
 

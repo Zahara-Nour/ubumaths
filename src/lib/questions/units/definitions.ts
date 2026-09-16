@@ -24,6 +24,7 @@ import {
 	SI_PREFIXES as MATHAST_SI_PREFIXES,
 	BASE_UNITS as MATHAST_BASE_UNITS,
 	SPECIAL_UNITS as MATHAST_SPECIAL_UNITS,
+	DERIVED_UNITS as MATHAST_DERIVED_UNITS,
 	UNIT_ALIASES as MATHAST_UNIT_ALIASES,
 	resolveUnit
 } from '$lib/mathAST/units/definitions';
@@ -107,8 +108,12 @@ const SPECIAL_CASE_UNITS = new Set(['ms', 'min', 'cd', 'mol', 'mois']);
  *
  * The whitelist includes:
  * 1. All special units (h, min, €, °, t, q, ms, etc.)
- * 2. All SI prefix + base combinations (km, μg, cL, etc.)
+ * 2. All SI prefix + base combinations (km, μg, etc.)
  * 3. All aliases (euro, litre, mins, etc.)
+ * 4. Les unités SI dérivées et leurs formes préfixées (N, J, W, Hz, L, mL,
+ *    cL, kWh, ...). Sans elles, le tokenizer découpe `mL` en « m × L », soit
+ *    un mètre fois un litre : `500 mL + 1 L` était alors déclaré impossible
+ *    à additionner.
  *
  * @returns Set of all valid unit symbols
  *
@@ -153,6 +158,20 @@ export function generateUnitWhitelist(): Set<string> {
 	// 4. Add base units themselves (no prefix)
 	for (const base of baseUnits) {
 		whitelist.add(base);
+	}
+
+	// 5. Unités SI dérivées (N, J, W, Hz, Pa, L, Wh, ...) et leurs formes
+	// préfixées. `resolveUnit` les accepte déjà (« préfixe × unité dérivée ») ;
+	// le tokenizer doit donc les reconnaître d'un bloc, sinon il les découpe en
+	// produits de symboles.
+	for (const derived of MATHAST_DERIVED_UNITS.keys()) {
+		whitelist.add(derived);
+		for (const prefix of prefixes) {
+			const symbol = prefix + derived;
+			if (!SPECIAL_CASE_UNITS.has(symbol) || symbol === derived) {
+				whitelist.add(symbol);
+			}
+		}
 	}
 
 	return whitelist;

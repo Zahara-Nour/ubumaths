@@ -434,8 +434,12 @@ describe('Unit Formatter', () => {
 		it('should format liter', () => {
 			const result = parse('L');
 			expect(result).not.toBeNull();
+			// `original` rend ce que l'élève a écrit — c'est ce style que tous les
+			// appelants de production utilisent.
 			expect(format(result!, 'original')).toBe('L');
-			expect(format(result!, 'dot')).toBe('L');
+			// `dot` est la normalisation SI : un litre est un volume, il s'y écrit
+			// donc `m^3`, comme l'hectare s'y écrit `m^2`.
+			expect(format(result!, 'dot')).toBe('m^3');
 		});
 	});
 

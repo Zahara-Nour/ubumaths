@@ -57,8 +57,10 @@ describe('Unit Parser', () => {
 		it('should parse liter (L)', () => {
 			const result = parse('L');
 			expect(result).not.toBeNull();
-			expect(result?.components).toEqual(new Map([['L', 1]]));
-			expect(result?.coefficient).toBe(1);
+			// Le litre porte la signature d'un volume (`m^3`), comme l'hectare
+			// porte celle d'une aire.
+			expect(result?.components).toEqual(new Map([['m', 3]]));
+			expect(result?.coefficient).toBe(0.001);
 			expect(result?.original).toBe('L');
 		});
 
@@ -273,11 +275,11 @@ describe('Unit Parser', () => {
 			expect(result).not.toBeNull();
 			expect(result?.components).toEqual(
 				new Map([
-					['L', 1],
+					['m', 3],
 					['s', -1]
 				])
 			);
-			expect(result?.coefficient).toBe(1);
+			expect(result?.coefficient).toBe(0.001);
 			expect(result?.original).toBe('L/s');
 		});
 	});
@@ -666,11 +668,11 @@ describe('Unit Parser', () => {
 			expect(result).not.toBeNull();
 			expect(result?.components).toEqual(
 				new Map([
-					['L', 1],
+					['m', 3],
 					['s', -1]
 				])
 			);
-			expect(result?.coefficient).toBe(1 / 60);
+			expect(result?.coefficient).toBeCloseTo(0.001 / 60, 12);
 		});
 	});
 });

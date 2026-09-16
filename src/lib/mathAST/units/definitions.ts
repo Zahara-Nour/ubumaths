@@ -82,7 +82,6 @@ export const BASE_UNITS: ReadonlyMap<string, { dimension: Dimension; name: strin
 	['K', { dimension: 'temperature', name: 'kelvin' }],
 	['mol', { dimension: 'amount', name: 'mole' }],
 	['cd', { dimension: 'luminous_intensity', name: 'candela' }],
-	['L', { dimension: 'volume', name: 'litre' }],
 	['rad', { dimension: 'angle', name: 'radian' }],
 	['1', { dimension: 'dimensionless', name: 'dimensionless' }]
 ]);
@@ -291,8 +290,9 @@ export const SPECIAL_UNITS: ReadonlyMap<string, BaseUnitDef> = new Map([
 		'gal',
 		{
 			symbol: 'gal',
-			baseSymbol: 'L',
-			coefficient: 3.785411784,
+			baseSymbol: 'm',
+			components: new Map([['m', 3]]),
+			coefficient: 0.003785411784,
 			dimension: 'volume',
 			name: 'gallon (US)'
 		}
@@ -301,8 +301,9 @@ export const SPECIAL_UNITS: ReadonlyMap<string, BaseUnitDef> = new Map([
 		'qt',
 		{
 			symbol: 'qt',
-			baseSymbol: 'L',
-			coefficient: 0.946352946,
+			baseSymbol: 'm',
+			components: new Map([['m', 3]]),
+			coefficient: 0.000946352946,
 			dimension: 'volume',
 			name: 'quart (US)'
 		}
@@ -311,8 +312,9 @@ export const SPECIAL_UNITS: ReadonlyMap<string, BaseUnitDef> = new Map([
 		'pt',
 		{
 			symbol: 'pt',
-			baseSymbol: 'L',
-			coefficient: 0.473176473,
+			baseSymbol: 'm',
+			components: new Map([['m', 3]]),
+			coefficient: 0.000473176473,
 			dimension: 'volume',
 			name: 'pint (US)'
 		}
@@ -321,8 +323,9 @@ export const SPECIAL_UNITS: ReadonlyMap<string, BaseUnitDef> = new Map([
 		'floz',
 		{
 			symbol: 'floz',
-			baseSymbol: 'L',
-			coefficient: 0.0295735295625,
+			baseSymbol: 'm',
+			components: new Map([['m', 3]]),
+			coefficient: 2.95735295625e-5,
 			dimension: 'volume',
 			name: 'fluid ounce (US)'
 		}
@@ -606,6 +609,46 @@ export const DERIVED_UNITS: ReadonlyMap<string, BaseUnitDef> = new Map([
 			coefficient: 0.001,
 			dimension: 'electric_capacitance',
 			name: 'farad'
+		}
+	],
+
+	// ⚠️ ORDRE SIGNIFICATIF — `recognizeDerivedUnit` (units/conversion.ts) rend la
+	// PREMIÈRE entrée dont les composants correspondent. Le wattheure a les mêmes
+	// composants que le joule : placé plus haut, il lui volerait la reconnaissance
+	// et « 2 N × 3 m » rendrait 6 Wh au lieu de 6 J. Les entrées ajoutées après
+	// coup vont donc ici, en fin de liste.
+	// Le litre est un VOLUME, donc un `m^3` déguisé : il doit porter les mêmes
+	// composants qu'un cube de longueur, sans quoi `L` et `dm^3` ont des
+	// signatures dimensionnelles incomparables et toute conversion entre les deux
+	// rend `null`. Même patron que l'are et l'hectare, qui valent `{ m: 2 }`.
+	// Déclaré ici plutôt que dans BASE_UNITS pour garder les préfixes SI
+	// (mL, cL, dL, kL passent par « préfixe × unité dérivée »).
+	[
+		'L',
+		{
+			symbol: 'L',
+			baseSymbol: 'm',
+			components: new Map([['m', 3]]),
+			coefficient: 0.001,
+			dimension: 'volume',
+			name: 'litre'
+		}
+	],
+	// Wattheure : `kWh` ne se lisait pas, la résolution essayant « préfixe +
+	// unité » et `Wh` n'existant pas. 1 Wh = 3600 J, et J vaut 1000 g.m^2.s^-2.
+	[
+		'Wh',
+		{
+			symbol: 'Wh',
+			baseSymbol: 'g',
+			components: new Map([
+				['g', 1],
+				['m', 2],
+				['s', -2]
+			]),
+			coefficient: 3.6e6,
+			dimension: 'energy',
+			name: 'wattheure'
 		}
 	]
 ]);

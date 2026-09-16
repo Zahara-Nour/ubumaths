@@ -7,6 +7,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { unit, unitWithPower, dimensionless, fromComponents } from '../factory';
+import { parseOrThrow } from '../parser';
 import {
 	unitsAreCompatible,
 	getConversionFactor,
@@ -554,5 +555,77 @@ describe('Unit Conversion', () => {
 			// 1000 (from km) * (1/60) (from 1/min) = 1000/60
 			expect(Math.abs(normalized.coefficient - 1000 / 60) < 1e-9).toBe(true);
 		});
+	});
+});
+
+// =============================================================================
+// Litre <-> volume cubique (regression)
+// =============================================================================
+
+describe('litre et volume cubique sont la même dimension', () => {
+	// `L` était une entrée de BASE_UNITS de dimension 'volume', donc de
+	// signature `{ volume: 1 }`, alors qu'un `dm^3` a la signature
+	// `{ length: 3 }`. Les deux étant incomparables, toute conversion entre un
+	// volume écrit en litres et le même volume écrit comme un cube de longueur
+	// rendait `null` — une conversion de 6e.
+	//
+	// Le fichier documentait déjà l'incohérence : l'hectare passe par
+	// `components: Map([['m', 2]])` et vaut `{ length: 2 }`, « This diverges
+	// from how 'volume' is treated ».
+
+	it('1 L = 1 dm^3', () => {
+		expect(getConversionFactor(parseOrThrow('L'), parseOrThrow('dm^3'))).toBeCloseTo(1, 12);
+	});
+
+	it('1 mL = 1 cm^3', () => {
+		expect(getConversionFactor(parseOrThrow('mL'), parseOrThrow('cm^3'))).toBeCloseTo(1, 12);
+	});
+
+	it('1 L = 0,001 m^3', () => {
+		expect(getConversionFactor(parseOrThrow('L'), parseOrThrow('m^3'))).toBeCloseTo(0.001, 12);
+	});
+
+	it('1 kL = 1 m^3', () => {
+		expect(getConversionFactor(parseOrThrow('kL'), parseOrThrow('m^3'))).toBeCloseTo(1, 12);
+	});
+
+	it('les deux écritures sont compatibles', () => {
+		expect(unitsAreCompatible(parseOrThrow('L'), parseOrThrow('dm^3'))).toBe(true);
+		expect(unitsAreCompatible(parseOrThrow('mL'), parseOrThrow('cm^3'))).toBe(true);
+	});
+
+	it('les conversions entre litres restent justes', () => {
+		expect(getConversionFactor(parseOrThrow('L'), parseOrThrow('mL'))).toBeCloseTo(1000, 9);
+		expect(getConversionFactor(parseOrThrow('dL'), parseOrThrow('mL'))).toBeCloseTo(100, 9);
+	});
+
+	it('un volume n est pas compatible avec une longueur ni une aire', () => {
+		expect(unitsAreCompatible(parseOrThrow('L'), parseOrThrow('m'))).toBe(false);
+		expect(unitsAreCompatible(parseOrThrow('L'), parseOrThrow('m^2'))).toBe(false);
+	});
+});
+
+// =============================================================================
+// kWh (regression)
+// =============================================================================
+
+describe('le kilowattheure est reconnu', () => {
+	// `kWh` levait « Invalid unit string: kWh » : la résolution essaie
+	// préfixe + unité, et `Wh` n'existait pas.
+	it('kWh se lit', () => {
+		expect(() => parseOrThrow('kWh')).not.toThrow();
+	});
+
+	it('1 Wh = 3600 J', () => {
+		expect(getConversionFactor(parseOrThrow('Wh'), parseOrThrow('J'))).toBeCloseTo(3600, 6);
+	});
+
+	it('1 kWh = 3,6 MJ', () => {
+		expect(getConversionFactor(parseOrThrow('kWh'), parseOrThrow('J'))).toBeCloseTo(3.6e6, 0);
+	});
+
+	it('un kWh est une énergie, pas une puissance', () => {
+		expect(unitsAreCompatible(parseOrThrow('kWh'), parseOrThrow('J'))).toBe(true);
+		expect(unitsAreCompatible(parseOrThrow('kWh'), parseOrThrow('W'))).toBe(false);
 	});
 });
