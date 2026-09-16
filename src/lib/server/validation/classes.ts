@@ -52,9 +52,15 @@ export const getClassStudentsSchema = z.object({
 // ============================================================================
 
 /**
- * Day of week (0 = Sunday, 4 = Thursday for Israeli school week)
+ * Jour de la semaine, convention JavaScript (0 = dimanche … 6 = samedi).
+ *
+ * Les jours OUVRÉS ne se décident pas ici : ils vivent dans `week_config` de
+ * l'école (`school_days`), et la grille d'emploi du temps n'affiche que
+ * ceux-là. Ce schéma borne la convention, rien de plus — la borner à 4
+ * (ancienne semaine dimanche→jeudi) rendait le vendredi impossible à saisir
+ * dans une école qui travaille du lundi au vendredi.
  */
-const dayOfWeekSchema = z.number().int().min(0).max(4);
+const dayOfWeekSchema = z.number().int().min(0).max(6);
 
 /**
  * Time format HH:MM or HH:MM:SS
