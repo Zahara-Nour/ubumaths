@@ -19,6 +19,7 @@ const run = (input: string) =>
 	renderResult(new WebReplEngine().execute(input), { fromCommand: true });
 
 /** Une sequence ANSI, echappee ou non — les deux ont ete vues a l'ecran. */
+// eslint-disable-next-line no-control-regex -- c'est justement ce caractere qu'on traque
 const ANSI = /\u001b[[]{1}[0-9]+m|[[]{1}[0-9]+m/;
 
 describe('les sequences de terminal ne sortent jamais', () => {
