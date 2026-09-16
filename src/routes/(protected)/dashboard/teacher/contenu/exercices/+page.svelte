@@ -10,6 +10,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { submitAction } from '$lib/utils/form-action';
 	import ExportDialog from '$lib/components/exercises/ExportDialog.svelte';
 	import ImportDialog from '$lib/components/exercises/ImportDialog.svelte';
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
@@ -115,17 +116,14 @@
 		const formData = new FormData();
 		formData.append('exercise_id', exerciseToDelete.id);
 
-		const response = await fetch('?/delete', {
-			method: 'POST',
-			body: formData
-		});
+		const outcome = await submitAction('?/delete', formData);
 
-		if (response.ok) {
+		if (outcome.ok) {
 			toaster.success(`${lore.learning.exercise} supprimée`);
 			// Refresh exercises list via fetch
 			await fetchExercises(pagination.page);
 		} else {
-			toaster.error('Erreur lors de la suppression');
+			toaster.error(outcome.message);
 		}
 
 		deletingId = null;

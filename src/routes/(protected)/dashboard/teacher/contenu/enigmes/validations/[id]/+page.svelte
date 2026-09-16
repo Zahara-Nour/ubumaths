@@ -21,6 +21,8 @@
 	import * as Alert from '$lib/components/ui/alert';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { goto } from '$app/navigation';
+	import { submitAction } from '$lib/utils/form-action';
 	import { CheckCircle2, XCircle, AlertTriangle, ArrowLeft } from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
@@ -51,25 +53,22 @@
 		formData.append('is_correct', String(isCorrect));
 		if (feedback.trim()) formData.append('feedback', feedback.trim());
 
-		try {
-			const response = await fetch('?/validate', {
-				method: 'POST',
-				body: formData
-			});
+		const outcome = await submitAction('?/validate', formData);
 
-			if (response.ok) {
-				toaster.success(isCorrect ? 'Réponse validée avec succès' : 'Réponse refusée');
-				// Redirect will happen server-side
-			} else {
-				toaster.error('Erreur lors de la validation');
-				isSubmitting = false;
-				selectedValidation = null;
-			}
-		} catch (error) {
-			console.error('Validation error:', error);
-			toaster.error('Erreur lors de la validation');
+		if (!outcome.ok) {
+			toaster.error(outcome.message);
 			isSubmitting = false;
 			selectedValidation = null;
+			return;
+		}
+
+		toaster.success(isCorrect ? 'Réponse validée avec succès' : 'Réponse refusée');
+
+		// L'action redirige vers la liste après avoir écrit le verdict. Appelée en
+		// `fetch`, la redirection n'est PAS suivie par le navigateur : c'est à nous
+		// de naviguer, sinon la page reste sur une réponse déjà traitée.
+		if (outcome.redirect) {
+			await goto(outcome.redirect);
 		}
 	}
 
