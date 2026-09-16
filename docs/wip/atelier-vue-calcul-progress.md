@@ -52,9 +52,39 @@ rend bien `{g, function}`, sans offre de curseur, conformément à L4.
 > frappe suivante. **Déclencheur : quand la vue Calcul câblera `.let`** — il
 > devra créer un objet d'atelier, pas une liaison de moteur.
 
+## Étape 2 — les commandes découvrables et françaises (fait)
+
+`src/lib/atelier/commands.ts` : `commandCatalog()`, `resolveCommand()`,
+`suggestFor()`.
+
+### ⚠️ Le chiffre exact : 34 commandes, pas 36 ni 22
+
+Mesuré en comptant : registre 26 + hors registre 10, **mais `latex` et `custom`
+sont dans les deux** → **34 uniques**. `/calc` en propose 8, donc **26
+invisibles**. Le cadrage disait 22 (il ne comptait que 4 des 10 hors registre),
+et ma propre Phase 0 disait 28 (elle ne voyait pas le recouvrement).
+
+Les 34 sont désormais traduites, décrites en français et, pour les plus
+courantes, accompagnées d'un exemple. Un test verrouille l'invariant : **aucune
+commande du registre ne peut rester sans traduction** — sinon une commande
+ajoutée au moteur reviendrait en anglais sans que personne le voie.
+
+### Le conflit d'alias, réparé
+
+`.help` et `.hash` déclarent tous deux `h`. L'ordre de la table tranche : `aide`
+sert à un élève, `empreinte` non. Un alias n'est donné qu'une fois, et un test
+le vérifie sur tout le catalogue.
+
+### Ce que la neutralisation a corrigé
+
+Mon premier test de relégation comparait `variations` et `hash` — deux
+commandes **déjà** dans le bon ordre dans la table : il passait sans rien
+prouver. Le cas qui mord est `convert`, branché en dur donc ajouté **après**
+tout le registre : sans la relégation finale, « convertir », qui sert au
+collège, s'afficherait après « empreinte ».
+
 ## Étapes suivantes
 
-- [ ] Étape 2 — les commandes découvrables et françaises (§5, Q3)
 - [ ] Étape 3 — la saisie : définition / calcul / commande (§2)
 - [ ] Étape 4 — garder un résultat sous un nom (§4, D5)
 - [ ] Étape 5 — les quatre actions du panneau (§6)
