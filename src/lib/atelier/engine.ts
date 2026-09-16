@@ -92,7 +92,15 @@ export function syncEngine(atelier: Atelier, engine: WebReplEngine): void {
 	clearFunctions(state);
 
 	for (const object of objects) {
-		const ast = astOf(object.definition);
+		// ⚠️ Le moteur reçoit l'expression DÉVELOPPÉE, jamais la définition brute.
+		//
+		// Vu à l'écran : après `g = f'`, taper `g(3)` rendait « Evaluation error:
+		// Cannot evaluate derivative function 'f'(x) without a definition » — le
+		// moteur ne sait pas lier `f'`. C'est le §6 bis appliqué à la
+		// synchronisation, au troisième endroit où il manquait après les commandes
+		// et les actions.
+		const substituted = expressionOf(atelier, object.name);
+		const ast = substituted.ok ? astOf(substituted.expression) : astOf(object.definition);
 		if (ast === null) continue;
 		if (object.kind === 'function') {
 			createFunctionBinding(state, object.name, ['x'], ast);
