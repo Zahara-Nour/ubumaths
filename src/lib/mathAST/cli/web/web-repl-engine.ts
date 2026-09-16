@@ -1612,11 +1612,22 @@ export class WebReplEngine {
 		const min = sorted[0];
 		const max = sorted[n - 1];
 
+		// ⚠️ **Population variance: divided by `n`, not `n - 1`** — decided by
+		// David on 2026-09-16.
+		//
+		// This is the descriptive variance of the French curriculum, what a
+		// calculator's σₓ key returns, and what the atelier's panel shows. With
+		// `n - 1` the same series read 9 here and 6 there: two correct numbers
+		// answering different questions, which a student comparing them could not
+		// reconcile.
+		//
+		// The sample estimator belongs to inferential statistics, which this
+		// command does not claim to do.
 		let variance = 0;
 		let stdev = 0;
 		if (n >= 2) {
 			const squaredDiffs = values.map((v) => (v - mean) ** 2);
-			variance = squaredDiffs.reduce((a, b) => a + b, 0) / (n - 1);
+			variance = squaredDiffs.reduce((a, b) => a + b, 0) / n;
 			stdev = Math.sqrt(variance);
 		}
 

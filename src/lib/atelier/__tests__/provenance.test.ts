@@ -1,115 +1,122 @@
 /**
- * La syntaxe d'entrée suit la provenance — décision D10, §6 bis.
+ * D10 soldée : la provenance descend jusqu'à l'objet, et y reste.
  *
- * Chaque `it` porte le numéro du cas de la spécification
- * (`docs/wip/atelier-recherche-eleve-phase0.md`).
+ * ⚠️ **Le piège que ce travail a révélé.** `'keyboard'` ne veut PAS dire « tapé
+ * dans un champ texte » : il désigne la frappe **dans un champ MathLive**, dont
+ * les raccourcis convertissent « sin » en `\sin`. Il est donc lu en LaTeX.
+ *
+ * Faire descendre `'keyboard'` depuis la vue Calcul — qui a un champ texte
+ * ordinaire — aurait donc INTRODUIT le défaut que D10 prétend éviter :
+ * `sin(x)` lu `s·i·n·(x)`. D'où la provenance `'text'`.
  */
 
 import { describe, it, expect } from 'vitest';
-import { readingMode, parseDefinition, referencesOf, normalizePasted } from '../parse';
+import { Atelier } from '../atelier.svelte';
+import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { runInput } from '../calcul';
 
-describe('readingMode', () => {
-	it('lit en LaTeX tout ce qui sort d’un champ de maths', () => {
-		expect(readingMode('mathfield')).toBe('latex');
-		expect(readingMode('keyboard')).toBe('latex');
-		expect(readingMode('storage')).toBe('latex');
+describe('un champ texte lit du texte', () => {
+	it('reconnaît sin(x) écrit à la main', () => {
+		const atelier = new Atelier();
+
+		atelier.create({ kind: 'function', name: 'f', definition: 'sin(x)' }, 'text');
+
+		expect(atelier.get('f')?.status).toBe('ok');
 	});
 
-	it('détecte pour tout ce qui vient d’ailleurs', () => {
-		expect(readingMode('url')).toBe('detect');
-		expect(readingMode('command')).toBe('detect');
-		expect(readingMode('paste')).toBe('detect');
-	});
-});
+	it('reconnaît plusieurs fonctions usuelles', () => {
+		const atelier = new Atelier();
 
-describe('lecture selon la provenance', () => {
-	// N1 — un champ de maths produit du LaTeX, et le LaTeX se lit
-	it('lit une fraction LaTeX venue d’un champ de maths', () => {
-		expect(parseDefinition('function', '\\frac{1}{2}', 'mathfield').error).toBeUndefined();
+		atelier.create({ kind: 'function', name: 'f', definition: 'cos(x) + ln(x)' }, 'text');
+
+		expect(atelier.get('f')?.status).toBe('ok');
 	});
 
-	// N2 — la même chose depuis une URL : la détection reconnaît le LaTeX
-	it('lit une fraction LaTeX venue d’une URL', () => {
-		expect(parseDefinition('function', '\\frac{1}{2}', 'url').error).toBeUndefined();
-	});
+	// ⚠️ LE test qui prouve la distinction
+	it('alors que la même saisie lue en LaTeX y verrait un produit de lettres', () => {
+		const atelier = new Atelier();
 
-	// N3 — le cas du prof qui écrit son lien à la main, sans échappement
-	it('lit `sin(x)` écrit à la main dans une URL', () => {
-		expect(parseDefinition('function', 'sin(x)', 'url').error).toBeUndefined();
-		expect(referencesOf('sin(x)', 'url')).toEqual([]);
-	});
+		atelier.create({ kind: 'function', name: 'f', definition: 'sin(x)' }, 'keyboard');
 
-	// ⚠️ Le revers assumé : dire « mathfield » c'est garantir du LaTeX. Si on
-	// ment sur la provenance, `sin` redevient un produit de trois lettres.
-	it('lit `sin(x)` comme un produit si on annonce un champ de maths', () => {
-		// `i` et `n` sont réservés, donc seul `s` reste candidat.
-		expect(
-			referencesOf('sin(x)', 'mathfield')
-				.map((r) => r.name)
-				.sort()
-		).toEqual(['s']);
-	});
-
-	// Repli sur ambiguïté : custom pour une entrée texte
-	it('lit `a/b` comme une fraction quand il vient d’une URL', () => {
-		expect(
-			referencesOf('a/b', 'url')
-				.map((r) => r.name)
-				.sort()
-		).toEqual(['a', 'b']);
-		expect(parseDefinition('function', 'a/b', 'url').error).toBeUndefined();
-	});
-
-	it('accepte les deux écritures d’une racine selon la provenance', () => {
-		expect(parseDefinition('function', 'sqrt(x)', 'url').error).toBeUndefined();
-		expect(parseDefinition('function', '\\sqrt{x}', 'mathfield').error).toBeUndefined();
-	});
-
-	// Le mélange : la détection bascule en LaTeX, donc `sin` se perd. On fige le
-	// fait plutôt que de le masquer — c'est ce que la normalisation au collage
-	// évite en amont.
-	it('documente que le mélange bascule en LaTeX', () => {
-		const refs = referencesOf('sin(x) + \\frac{1}{2}', 'url').map((r) => r.name);
-		expect(refs).toContain('s');
+		expect(atelier.get('f')?.status).toBe('pending');
 	});
 });
 
-describe('normalisation au collage', () => {
-	// N1 — ce qui est collé est relu puis réécrit en LaTeX
-	it('réécrit `sin(x)` en commande LaTeX', () => {
-		expect(normalizePasted('sin(x)')).toContain('\\sin');
+describe('un champ MathLive lit du LaTeX', () => {
+	it('accepte une fraction', () => {
+		const atelier = new Atelier();
+
+		atelier.create({ kind: 'function', name: 'f', definition: '\\frac{1}{x}' }, 'mathfield');
+
+		expect(atelier.get('f')?.status).toBe('ok');
 	});
 
-	it('réécrit `sqrt(x)` en commande LaTeX', () => {
-		expect(normalizePasted('sqrt(x)')).toContain('\\sqrt');
+	it('accepte une fonction en commande LaTeX', () => {
+		const atelier = new Atelier();
+
+		atelier.create({ kind: 'function', name: 'f', definition: '\\sin(x)' }, 'mathfield');
+
+		expect(atelier.get('f')?.status).toBe('ok');
+	});
+});
+
+describe('la provenance survit au recalcul', () => {
+	// ⚠️ Sans mémoire sur l'objet, `recomputeAll` relirait la définition avec le
+	// défaut — donc une saisie texte redeviendrait du LaTeX dès qu'un AUTRE
+	// objet change.
+	it('reste celle de la saisie quand un autre objet bouge', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'sin(x)' }, 'text');
+
+		atelier.create({ kind: 'value', name: 'a', definition: '3' }, 'text');
+		atelier.update('a', '4', 'text');
+
+		expect(atelier.get('f')?.status).toBe('ok');
 	});
 
-	// N2 — du LaTeX collé reste lisible
-	it('laisse une fraction LaTeX lisible', () => {
-		expect(normalizePasted('\\frac{1}{2}')).toContain('frac');
+	it('suit une modification', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x' }, 'text');
+
+		atelier.update('f', 'cos(x)', 'text');
+
+		expect(atelier.get('f')?.status).toBe('ok');
+	});
+});
+
+describe('la vue Calcul écrit bien du texte', () => {
+	it('accepte sin(x) tapé au clavier', () => {
+		const s = { atelier: new Atelier(), engine: new WebReplEngine() };
+
+		runInput(s, 'f(x) = sin(x)');
+
+		expect(s.atelier.get('f')?.status).toBe('ok');
 	});
 
-	// ⚠️ DIVERGENCE avec le §6 bis L2, qui annonce « l'objet passera en erreur ».
-	// Il n'y passe pas : une phrase est une multiplication implicite de lettres
-	// parfaitement analysable. Coller « bonjour tout le monde » donnerait un
-	// objet « en attente de b, o, j, u, r, t, l, m, d » — absurde, mais pas une
-	// erreur. Le fait est figé ici en attendant l'arbitrage de David.
-	it('lit une phrase comme un produit de lettres, sans erreur', () => {
-		const out = normalizePasted('bonjour tout le monde');
-		expect(out).not.toBe('bonjour tout le monde');
-		expect(out).toContain('o');
+	it('et l’évalue', () => {
+		const s = { atelier: new Atelier(), engine: new WebReplEngine() };
+		runInput(s, 'f(x) = sin(x)');
+
+		const result = runInput(s, 'f(0)');
+
+		expect(result.kind === 'calcul' && result.output).toBe('0');
+	});
+});
+
+describe('ce que la provenance ne change pas', () => {
+	it('un nom réservé reste refusé', () => {
+		const atelier = new Atelier();
+
+		expect(atelier.create({ kind: 'value', name: 'x', definition: '3' }, 'mathfield').ok).toBe(
+			false
+		);
 	});
 
-	// ⚠️ Les deux parseurs tournent en mode tolérant : `!!! ??? %%%` devient
-	// `\lnot \lnot \lnot \placeholder…`. Le repli « rendu tel quel » n'est donc
-	// atteint qu'en cas d'échec franc, ce qui est rare. Toute garde qui compte
-	// sur « le parseur échouera » est illusoire — voir le rapport à David.
-	it('produit quelque chose même pour une suite de symboles', () => {
-		expect(normalizePasted('!!! ??? %%%')).not.toBe('');
-	});
+	it('une définition illisible porte son erreur', () => {
+		const atelier = new Atelier();
 
-	// E1 — collage vide
-	it('rend une chaîne vide inchangée', () => {
-		expect(normalizePasted('')).toBe('');
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^^2' }, 'text');
+
+		expect(atelier.get('f')?.status).toBe('error');
 	});
 });

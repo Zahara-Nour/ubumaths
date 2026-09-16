@@ -98,10 +98,6 @@ function defineObject(
 	body: string,
 	provenance: Provenance
 ): CalcResult {
-	// `provenance` suivra jusqu'à `create`/`update` quand la dette D10 sera
-	// soldée — ils ne la prennent pas encore.
-	void provenance;
-
 	const { atelier } = session;
 	const existing = atelier.get(name);
 
@@ -110,12 +106,15 @@ function defineObject(
 		if (rejection !== null) {
 			return { kind: 'refus', message: nameRejectionMessage(rejection, name) };
 		}
-		const created = atelier.create({ kind: kindOf(parameter), name, definition: body.trim() });
+		const created = atelier.create(
+			{ kind: kindOf(parameter), name, definition: body.trim() },
+			provenance
+		);
 		if (!created.ok) return { kind: 'refus', message: created.message };
 		return { kind: 'definition', name, object: created.object };
 	}
 
-	const updated = atelier.update(name, body.trim());
+	const updated = atelier.update(name, body.trim(), provenance);
 	if (!updated.ok) return { kind: 'refus', message: updated.message };
 	return { kind: 'definition', name, object: updated.object };
 }
@@ -165,7 +164,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 export function runInput(
 	session: CalcSession,
 	text: string,
-	provenance: Provenance = 'keyboard'
+	provenance: Provenance = 'text'
 ): CalcResult {
 	const input = text.trim();
 	if (input === '') return { kind: 'vide' };

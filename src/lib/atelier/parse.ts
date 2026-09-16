@@ -24,7 +24,31 @@ import { hasObjectNameShape } from './names';
  * parseur, jamais le contenu — on connaît toujours la première, alors que
  * deviner d'après le second casse sur les mélanges (`sin(x) + \frac{1}{2}`).
  */
-export type Provenance = 'mathfield' | 'keyboard' | 'storage' | 'paste' | 'url' | 'command';
+export type Provenance =
+	/** Valeur lue dans un champ MathLive : du LaTeX. */
+	| 'mathfield'
+	/**
+	 * Frappe au clavier **dans** un champ MathLive.
+	 *
+	 * ⚠️ Ce n'est PAS « tapé dans un champ texte » — c'est aussi du LaTeX, parce
+	 * que les raccourcis de MathLive convertissent « sin » en `\sin` à la frappe
+	 * (mesuré dans Chromium, `mathlive-shortcuts.svelte.test.ts`), alors qu'ils
+	 * ne touchent pas une valeur injectée. Pour un champ texte ordinaire, c'est
+	 * `'text'`.
+	 */
+	| 'keyboard'
+	/**
+	 * Champ texte ordinaire : ce que l'élève écrit à la main, sans éditeur.
+	 *
+	 * Lu en `detect`, avec repli custom — sans quoi `sin(x)` se lirait
+	 * `s·i·n·(x)`, trois noms inconnus au lieu d'une fonction connue. C'est
+	 * exactement le défaut que D10 nomme « le pire type de défaut ».
+	 */
+	| 'text'
+	| 'storage'
+	| 'paste'
+	| 'url'
+	| 'command';
 
 /** Comment lire une définition venue de là. */
 export type ReadingMode = 'latex' | 'detect';
@@ -33,6 +57,10 @@ export type ReadingMode = 'latex' | 'detect';
  * Un champ de maths produit du LaTeX — ses raccourcis intégrés convertissent
  * « sin » en `\sin`, vérifié dans Chromium (`mathlive-shortcuts.svelte.test.ts`).
  * Tout le reste est du texte dont on ne sait rien.
+ *
+ * ⚠️ `'text'` n'est PAS du LaTeX, malgré son voisinage avec `'keyboard'` : un
+ * champ texte ordinaire ne convertit rien, et y lire du LaTeX ferait de
+ * `sin(x)` un produit de lettres.
  */
 export function readingMode(provenance: Provenance): ReadingMode {
 	return provenance === 'mathfield' || provenance === 'keyboard' || provenance === 'storage'

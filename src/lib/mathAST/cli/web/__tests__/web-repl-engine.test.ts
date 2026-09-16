@@ -554,6 +554,27 @@ describe('WebReplEngine - Statistics (Phase 4)', () => {
 			expect(result.output).toContain('Variance');
 		});
 
+		/**
+		 * ⚠️ **Population variance, divided by `n`** — decided by David on
+		 * 2026-09-16.
+		 *
+		 * This is the descriptive variance of the French curriculum, the one a
+		 * calculator's σₓ key returns. The engine used to divide by `n - 1`, so
+		 * the same series gave 9 here and 6 in the atelier's panel — two correct
+		 * numbers answering different questions, which a student comparing them
+		 * had no way to reconcile.
+		 *
+		 * No existing test pinned the VALUE, only the words: that is why the
+		 * divergence went unnoticed.
+		 */
+		it('divides by n, not n-1 — the descriptive variance', () => {
+			const result = engine.execute('.stats 12, 15, 9');
+
+			// Mean 12; squared deviations 0, 9, 9 → 18/3 = 6
+			expect(result.output).toMatch(/Variance:\s*6\b/);
+			expect(result.output).toMatch(/Ecart-type \(stdev\):\s*2[.,]449/);
+		});
+
 		it('handles single value (no variance/stdev)', () => {
 			const result = engine.execute('.stats 42');
 
