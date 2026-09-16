@@ -247,17 +247,52 @@ function findFirstApplicationInAnyParens(
 }
 
 /**
- * Find the first sub-tree of `node` where ANY of `rules` applies. Iterates
- * **node-first**, then rule-by-rule at each node — this means the
- * left-most applicable sub-tree wins, which mirrors the natural reading
- * order ("on calcule de gauche à droite quand les priorités sont égales").
+ * Plus haute priorité applicable dans tout l'arbre, ou `null` si aucune
+ * règle ne s'applique.
  *
- * For each candidate node, rules are tried in priority order ; the first
- * one that matches AND produces a non-trivial transformation is captured.
+ * `rules` étant trié par priorité décroissante, la première règle qui mord
+ * sur un nœud est la meilleure de ce nœud : on peut s'arrêter là.
+ */
+function highestApplicablePriority(
+	rules: readonly PedagogicalArithmeticRule[],
+	node: MathNode
+): number | null {
+	let best: number | null = null;
+
+	mapNode(node, (n) => {
+		for (const pedaRule of rules) {
+			const r = pedaRule.rule;
+			const m = match(r.pattern, n);
+			if (!m.success) continue;
+			if (r.condition && !r.condition(m.bindings)) continue;
+			const transformed =
+				typeof r.replacement === 'function'
+					? r.replacement(m.bindings)
+					: instantiate(r.replacement, m.bindings);
+			if (nodesEqual(transformed, n)) continue;
+			if (best === null || pedaRule.priority > best) best = pedaRule.priority;
+			break;
+		}
+		return n;
+	});
+
+	return best;
+}
+
+/**
+ * Find the sub-tree of `node` where the HIGHEST-PRIORITY applicable rule
+ * fires. À priorité égale, le sous-arbre le plus à gauche gagne, ce qui
+ * reproduit l'ordre de lecture naturel (« on calcule de gauche à droite
+ * quand les priorités sont égales »).
  *
- * Bottom-up traversal of `mapNode` ensures children are visited before
- * parents — a multiplication `n*m` deep inside a sum is matched before
- * the sum itself is considered.
+ * ⚠️ La priorité doit se comparer sur TOUT l'arbre, pas nœud par nœud.
+ * `mapNode` descend bottom-up : sans cette précaution, une règle de faible
+ * priorité posée sur un nœud profond passe devant une règle prioritaire
+ * posée sur son parent. C'est ce qui faisait cycler toute addition de
+ * fractions — sur `8/12 + 9/12`, `reduce-fraction` (30) mordait sur la
+ * division `8/12` avant que `add-same-denominator` (110) ne soit essayée
+ * sur la somme, ramenant `8/12` à `2/3` et relançant la mise au même
+ * dénominateur, indéfiniment jusqu'au plafond d'itérations.
  */
 function findFirstApplication(
 	rules: readonly PedagogicalArithmeticRule[],
@@ -271,9 +306,16 @@ function findFirstApplication(
 } | null {
 	let captured: CapturedApplication | null = null;
 
+	// Première passe : quelle est la meilleure priorité disponible ?
+	const best = highestApplicablePriority(rules, node);
+	if (best === null) return null;
+
+	// Seconde passe : seules les règles de cette priorité ont le droit de
+	// mordre, donc le parcours ne départage plus que les ex æquo.
 	const replacedTree = mapNode(node, (n) => {
 		if (captured) return n;
 		for (const pedaRule of rules) {
+			if (pedaRule.priority !== best) continue;
 			const r = pedaRule.rule;
 			const m = match(r.pattern, n);
 			if (!m.success) continue;

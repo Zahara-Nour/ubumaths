@@ -14,6 +14,7 @@ import { add, divide, multiply, number, sqrt, subtract } from '../../factory';
 import { toLatex } from '../../latex-generator';
 import { generatePedagogicalArithmeticSteps } from '../pipeline';
 import { PedagogicalArithmeticRenderer } from '../renderer';
+import type { MathNode } from '../../types';
 
 describe('generatePedagogicalArithmeticSteps', () => {
 	describe('basic operations', () => {
@@ -168,5 +169,91 @@ describe('generatePedagogicalArithmeticSteps', () => {
 			const result = generatePedagogicalArithmeticSteps(expr, { schoolLevel: 'college' });
 			expect(toLatex(result.finalNode)).toBe('-3');
 		});
+	});
+});
+
+// =============================================================================
+// Addition de fractions : pas de cycle (regression)
+// =============================================================================
+
+describe('addition de fractions — le pipeline ne doit pas cycler', () => {
+	// `to-common-denominator` (priorité 130) produit 8/12 + 9/12, puis
+	// `reduce-fraction` (priorité 30) ramène 8/12 à 2/3, et on recommence :
+	// le pipeline tapait le plafond de 50 itérations sur TOUTE addition de
+	// fractions. Le résultat final restait juste — c'est le chemin qui était
+	// absurde, et aucun test ne le voyait (bornes inférieures seulement).
+	const cas: [string, () => MathNode, string, number][] = [
+		[
+			'2/3 + 3/4',
+			() => add(divide(number('2'), number('3')), divide(number('3'), number('4'))),
+			'\\dfrac{17}{12}',
+			4
+		],
+		[
+			'1/2 + 1/4',
+			() => add(divide(number('1'), number('2')), divide(number('1'), number('4'))),
+			'\\dfrac{3}{4}',
+			4
+		],
+		[
+			'1/2 + 1/3 + 1/6',
+			() =>
+				add(
+					add(divide(number('1'), number('2')), divide(number('1'), number('3'))),
+					divide(number('1'), number('6'))
+				),
+			'1',
+			7
+		]
+	];
+
+	it.each(cas)(
+		'%s tient en peu d étapes et donne le bon résultat',
+		(_label, build, attendu, max) => {
+			const result = generatePedagogicalArithmeticSteps(build(), { schoolLevel: 'college' });
+
+			// Le résultat doit rester juste : un correctif qui casse le calcul
+			// n'est pas un correctif.
+			expect(toLatex(result.finalNode)).toBe(attendu);
+
+			// Borne SUPÉRIEURE : c'est elle qui manquait. 51 étapes passaient.
+			expect(result.steps.length).toBeLessThanOrEqual(max);
+		}
+	);
+
+	it.each(cas)('%s ne met au même dénominateur qu une fois par addition', (_label, build) => {
+		const result = generatePedagogicalArithmeticSteps(build(), { schoolLevel: 'college' });
+		const miseAuMemeDenominateur = result.steps.filter((s) =>
+			s.rule.startsWith('to-common-denominator')
+		);
+		// Une addition de deux fractions se met au même dénominateur une fois ;
+		// trois fractions, deux fois (deux additions). Jamais plus.
+		expect(miseAuMemeDenominateur.length).toBeLessThanOrEqual(2);
+	});
+
+	// ⚠️ Une détection limitée à « A B A B » NE MORD PAS ici : le cycle de
+	// 2/3+3/4 est de période 3 (to-common-denominator / reduce / reduce).
+	// On cherche donc la répétition d'un motif de période 2 à 4.
+	it.each(cas)('%s ne répète aucun motif de règles', (_label, build) => {
+		const rules = generatePedagogicalArithmeticSteps(build(), { schoolLevel: 'college' }).steps.map(
+			(s) => s.rule
+		);
+		const motifs: string[] = [];
+		for (let periode = 2; periode <= 4; periode++) {
+			for (let i = 0; i + 2 * periode <= rules.length; i++) {
+				const a = rules.slice(i, i + periode).join('|');
+				const b = rules.slice(i + periode, i + 2 * periode).join('|');
+				if (a === b) motifs.push(`période ${periode} en ${i} : ${a}`);
+			}
+		}
+		expect(motifs).toEqual([]);
+	});
+
+	it('ne tape jamais le plafond d itérations', () => {
+		const expr = add(divide(number('2'), number('3')), divide(number('3'), number('4')));
+		const result = generatePedagogicalArithmeticSteps(expr, { schoolLevel: 'college' });
+		// 50 = DEFAULT_MAX_ITERATIONS ; l'atteindre signifie que la boucle ne
+		// s'est pas arrêtée d'elle-même.
+		expect(result.steps.length).toBeLessThan(50);
 	});
 });
