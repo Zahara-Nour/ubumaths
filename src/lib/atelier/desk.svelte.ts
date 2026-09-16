@@ -27,6 +27,7 @@ import { syncPlots } from './plot-sync';
 import { isList, type ListObject } from './types';
 import { nextName } from './names';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
+import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 
 // =============================================================================
 // Types
@@ -43,6 +44,13 @@ export interface Entry {
 	readonly latex?: string;
 	/** La ligne dit-elle un échec ? Elle reste affichée, en rouge. */
 	readonly failed: boolean;
+	/**
+	 * Les étapes de résolution, quand `.résoudre` a su les produire.
+	 *
+	 * Elles se déplient sous la réponse (décision Q1) : l'historique reste
+	 * dense, le raisonnement est là quand l'élève le demande.
+	 */
+	readonly steps?: readonly RenderedStep[];
 	/** Présent seulement pour une saisie : c'est ce que « Garder » consomme. */
 	readonly result?: CalcResult;
 }
@@ -94,6 +102,7 @@ export class CalcDesk {
 			label: text,
 			text: textOf(result),
 			...(result.kind === 'calcul' || result.kind === 'commande' ? { latex: result.latex } : {}),
+			...(result.kind === 'commande' && result.steps !== undefined ? { steps: result.steps } : {}),
 			failed: result.kind === 'refus',
 			result
 		});

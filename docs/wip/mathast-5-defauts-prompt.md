@@ -234,6 +234,40 @@ pas s'arrêter au premier trouvé.
 
 ---
 
+### 6. `cli/commands/solve.command.ts` — deux conventions de terminal qui donnent de fausses réponses
+
+Trouvés le 2026-09-17 en branchant l'atelier sur `pedagogical-solve` ; relevés
+par David. Ce ne sont pas des défauts d'affichage : **le moteur résout une autre
+équation que celle qui est écrite, et répond avec succès.**
+
+```
+.solve 3x+5=14 x   ->  « x = 3 »                  juste : x = 5/11
+.solve 3-v=1       ->  « contradictoire »          juste : v = 2
+```
+
+**6a.** `parseInput` traite un identifiant final comme un argument « variable »
+(`<équation> [variable]`). Or le parseur lit l'espace comme une multiplication
+implicite — mesuré, `3x+5=14 x` donne `3x+5=14x`. Le `x` est donc amputé de
+l'équation, et le moteur résout `3x+5=14`.
+
+**6b.** `parseOptions` retire `--verbose|-v|--quiet|-q` de l'entrée **par
+remplacement de texte**, sans regarder si ce qu'il retire fait partie de
+l'expression. `3-v=1` devient `3=1`, d'où « contradictoire ».
+
+La convention CLI se défend dans un terminal ; devant un élève, elle produit une
+réponse fausse en silence. Deux pistes, à trancher : ne reconnaître l'argument
+`[variable]` que si l'équation ne contient pas déjà cette lettre (6a) et ne
+retirer un drapeau que s'il est isolé — précédé d'un espace et suivi d'un espace
+ou de la fin (6b) ; ou retirer ces conventions du chemin web, qui n'est pas un
+terminal.
+
+⚠️ `src/lib/atelier/solve-steps.ts` contourne déjà les deux en lisant l'argument
+comme des mathématiques. Ses tests (`__tests__/solve-steps.test.ts`, describe
+« lit des MATHÉMATIQUES ») verrouillent la bonne réponse : ils ne doivent pas
+devenir rouges en corrigeant le moteur, au contraire.
+
+---
+
 ## Contraintes de travail (non négociables)
 
 - ⛔ **NE JAMAIS lancer** `pnpm check`, `pnpm check:fast`, `svelte-check` sans
