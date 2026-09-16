@@ -18,6 +18,10 @@
 import type { Atelier } from './atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, runAction, promote, type CalcResult, type CalcSession } from './calcul';
+import { describeList, fitAffine } from './stats';
+import { isList, type ListObject } from './types';
+import { nextName } from './names';
+import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 
 // =============================================================================
 // Types
@@ -40,6 +44,11 @@ export interface Entry {
 
 /** Ce qu'une action venue du panneau a donné. */
 export type PanelOutcome = 'ok' | 'needs-argument' | 'unsupported';
+
+/** Un nombre écrit comme l'élève l'écrit : virgule décimale, trois décimales au plus. */
+function fr(value: number): string {
+	return Number(value.toFixed(3)).toString().replace('.', ',');
+}
 
 /** Les actions que la vue Calcul sait exécuter, et leur libellé dans l'historique. */
 const PANEL_ACTIONS: Readonly<Record<string, string>> = {
@@ -97,6 +106,126 @@ export class CalcDesk {
 		this.notice = kept.ok ? `Gardé sous le nom « ${kept.object.name} ».` : kept.message;
 	}
 
+	/** La liste nommée, si c'en est une et qu'elle est exploitable. */
+	#listNamed(name: string): ListObject | null {
+		const object = this.atelier.get(name);
+		return object !== undefined && isList(object) ? object : null;
+	}
+
+	/**
+	 * La liste à prendre comme ordonnées : **la suivante dans le panneau**.
+	 *
+	 * Un choix explicite serait plus riche, mais demanderait un écran de plus
+	 * pour un geste que l'élève fait sur deux colonnes voisines. L'atelier dit
+	 * toujours laquelle il a prise, donc rien n'est deviné en silence.
+	 */
+	#partnerOf(name: string): ListObject | null {
+		const lists = this.atelier.objects.filter(isList);
+		const index = lists.findIndex((l) => l.name === name);
+		if (index === -1) return null;
+		return lists[index + 1] ?? lists[0 === index ? 1 : 0] ?? null;
+	}
+
+	/** Les statistiques d'une liste, écrites en français. */
+	#describe(name: string): void {
+		const list = this.#listNamed(name);
+		const stats = list === null ? null : describeList(list.values);
+
+		if (stats === null) {
+			this.#push({
+				label: `Statistiques ${name}`,
+				text: `« ${name} » n'a pas encore de valeurs.`,
+				failed: true
+			});
+			return;
+		}
+
+		// ⚠️ Écrites ici, en français et accentuées : `.stats` rend « Moyenne
+		// (mean) » et « Mediane », et l'étendue lui manque.
+		this.#push({
+			label: `Statistiques ${name}`,
+			text: [
+				`Effectif : ${stats.count}`,
+				`Moyenne : ${fr(stats.mean)}`,
+				`Médiane : ${fr(stats.median)}`,
+				`Minimum : ${fr(stats.min)}`,
+				`Maximum : ${fr(stats.max)}`,
+				`Étendue : ${fr(stats.range)}`,
+				`Écart-type : ${fr(stats.deviation)}`,
+				`Variance : ${fr(stats.variance)}`
+			].join('\n'),
+			failed: false
+		});
+	}
+
+	/** Poser le nuage de deux listes dans le grapheur. */
+	#scatter(name: string, graph: GrapheurStore | undefined): void {
+		const xs = this.#listNamed(name);
+		const ys = xs === null ? null : this.#partnerOf(name);
+
+		if (xs === null || ys === null || graph === undefined) {
+			this.#push({
+				label: `Nuage ${name}`,
+				text: 'Il faut deux listes pour tracer un nuage de points.',
+				failed: true
+			});
+			return;
+		}
+
+		const drawn = Math.min(xs.values.length, ys.values.length);
+		const ignored = Math.max(xs.values.length, ys.values.length) - drawn;
+		graph.addScatter(xs.values, ys.values, `${xs.name} / ${ys.name}`);
+
+		// §4 L1 : on dit ce qui n'a pas été tracé, sinon l'élève compte ses points
+		// et ne comprend pas.
+		const note =
+			ignored === 0
+				? ''
+				: ` — ${ignored} valeur${ignored > 1 ? 's' : ''} ignorée${ignored > 1 ? 's' : ''}`;
+		this.#push({
+			label: `Nuage ${name}`,
+			text: `Nuage de ${xs.name} (abscisses) et ${ys.name} (ordonnées)${note}`,
+			failed: false
+		});
+	}
+
+	/** Ajuster une droite sur deux listes, et en faire une fonction. */
+	#fit(name: string): void {
+		const xs = this.#listNamed(name);
+		const ys = xs === null ? null : this.#partnerOf(name);
+
+		if (xs === null || ys === null) {
+			this.#push({
+				label: `Ajustement ${name}`,
+				text: 'Il faut deux listes pour ajuster une droite.',
+				failed: true
+			});
+			return;
+		}
+
+		const fit = fitAffine(xs.values, ys.values);
+		if (!fit.ok) {
+			this.#push({ label: `Ajustement ${name}`, text: fit.message, failed: true });
+			return;
+		}
+
+		// §4 N4 : l'ajustement produit un OBJET, donc quelque chose de traçable —
+		// c'est ce qui permet de voir la droite passer dans le nuage.
+		const created = this.atelier.create({
+			kind: 'function',
+			name: nextName('function', this.atelier.names),
+			definition: `${fr(fit.slope)}*x+${fr(fit.intercept)}`.replace(/\+-/, '-')
+		});
+
+		this.#push({
+			label: `Ajustement ${name}`,
+			text: created.ok
+				? `${created.object.name}(x) = ${fr(fit.slope)}x + ${fr(fit.intercept)} — R² = ${fr(fit.r2)}`
+				: created.message,
+			failed: !created.ok
+		});
+	}
+
 	/**
 	 * Exécuter une action cliquée dans le panneau.
 	 *
@@ -104,10 +233,23 @@ export class CalcDesk {
 	 * dialogue, on **prépare la saisie** (`f(`) et l'élève finit de taper — le
 	 * geste reste dans le même champ que tout le reste.
 	 */
-	runFromPanel(actionId: string, name: string): PanelOutcome {
+	runFromPanel(actionId: string, name: string, graph?: GrapheurStore): PanelOutcome {
 		if (actionId === 'image') {
 			this.draft = `${name}(`;
 			return 'needs-argument';
+		}
+
+		if (actionId === 'stats') {
+			this.#describe(name);
+			return 'ok';
+		}
+		if (actionId === 'scatter') {
+			this.#scatter(name, graph);
+			return 'ok';
+		}
+		if (actionId === 'fit') {
+			this.#fit(name);
+			return 'ok';
 		}
 
 		const label = PANEL_ACTIONS[actionId];

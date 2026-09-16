@@ -95,9 +95,35 @@ tests le vérifient, et ils rougissent quand on retire le filtre.
 La boucle s'arrête à la **plus courte** des deux séries (§4 L1) ; c'est la vue
 Données qui dira combien de valeurs sont écartées, pas le rendu.
 
+## Étape 4 — les trois actions des listes (fait)
+
+`stats`, `scatter` et `fit` sont câblées dans le pupitre et libérées du panneau.
+
+**Les statistiques sont écrites ici, en français et accentuées** : `.stats` rend
+« Moyenne (mean) » et « Mediane », et l'étendue lui manque.
+
+**Le nuage bascule sur la vue Graphe**, pas sur Calcul : c'est là qu'il se voit.
+
+**L'ajustement crée une fonction** — donc quelque chose de traçable, ce qui
+permet de voir la droite passer dans le nuage. Son R² est annoncé : c'est lui
+qui dit si l'ajustement vaut quelque chose.
+
+### La liste partenaire est la suivante du panneau
+
+Nuage et ajustement ont besoin de deux listes. L'atelier prend **la suivante**
+et **le dit toujours** (« Nuage de L (abscisses) et M (ordonnées) »). Un choix
+explicite serait plus riche mais demanderait un écran de plus, pour un geste que
+l'élève fait sur deux colonnes voisines — rien n'est deviné en silence.
+
+### La garde du lot 3 a resservi
+
+Libérer une action dans `actions.ts` sans la brancher donne un bouton **actif et
+muet** — le bloquant de la revue #339. Un test d'écran clique donc « Statistiques »
+sur une vraie carte et vérifie qu'une ligne apparaît.
+
 ## Étapes suivantes
 
-- [ ] Étape 4 — l'ajustement affine crée une fonction traçable (§3)
-- [ ] Étape 5 — la vue Données, ses actions, et le report des nuages
+- [ ] Étape 5 — la vue Données elle-même (saisie des listes)
+- [ ] Étape 6 — le report des nuages quand les listes changent
 - [ ] Étape 4 — l'ajustement affine crée une fonction traçable (§3)
 - [ ] Étape 5 — la vue Données et ses actions

@@ -137,10 +137,15 @@
 			return;
 		}
 
-		// Les actions de calcul répondent dans la vue Calcul : on y bascule, sans
-		// quoi l'élève cliquerait et ne verrait jamais la réponse arriver.
-		const outcome = desk.runFromPanel(action.id, object.name);
-		if (outcome !== 'unsupported') activeView = 'calcul';
+		// Les actions de calcul et de données répondent dans la vue Calcul : on y
+		// bascule, sans quoi l'élève cliquerait et ne verrait jamais la réponse
+		// arriver. `graph` suit, parce que « Nuage de points » écrit dedans.
+		const outcome = desk.runFromPanel(action.id, object.name, graph);
+		if (outcome === 'unsupported') return;
+
+		// Un nuage se voit dans le Graphe, pas dans l'historique : c'est là que
+		// l'élève doit regarder.
+		activeView = action.id === 'scatter' ? 'graphe' : 'calcul';
 	}
 </script>
 
