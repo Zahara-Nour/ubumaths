@@ -68,7 +68,7 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
  * Cette liste se vide au fur et à mesure des lots (§3 E1).
  */
 const NOT_YET: ReadonlySet<string> = new Set([
-	'plot',
+	// 'plot' est câblé depuis le lot « vue Graphe ».
 	'plot-points',
 	'plot-cobweb',
 	'derive',
@@ -108,6 +108,11 @@ export function actionsFor(object: AtelierObject): ObjectAction[] {
 	const blocked = blockedBy(object);
 
 	const specific = BY_KIND[object.kind].map((action) => {
+		// « Tracer » devient « Retirer du graphe » quand la courbe est là : un
+		// même bouton qui bascule, plutôt que deux boutons dont un est inutile.
+		if (action.id === 'plot' && object.plotted) {
+			action = { ...action, label: 'Retirer du graphe' };
+		}
 		// D4 : un curseur sur une grandeur n'a pas de sens — on le dit plutôt que
 		// de faire disparaître l'action, sinon l'élève cherche pourquoi.
 		if (action.id === 'slider' && isValue(object) && object.unit !== undefined) {
@@ -116,7 +121,12 @@ export function actionsFor(object: AtelierObject): ObjectAction[] {
 				disabledReason: `« ${object.name} » est une grandeur en ${object.unit} : un curseur n’aurait pas de sens ici.`
 			};
 		}
-		if (blocked) return { ...action, disabledReason: blocked };
+		// ⚠️ Retirer du graphe reste possible même quand l'objet ne peut plus rien
+		// produire : sinon une fonction qui casse laisse un marqueur « tracé » que
+		// l'élève ne peut plus enlever, alors que sa courbe a déjà disparu.
+		if (blocked && !(action.id === 'plot' && object.plotted)) {
+			return { ...action, disabledReason: blocked };
+		}
 		// L'objet va bien, mais la vue qui rendrait cette action n'existe pas
 		// encore : on le dit, plutôt que de laisser un bouton sans effet.
 		if (NOT_YET.has(action.id)) return { ...action, disabledReason: NOT_YET_REASON };

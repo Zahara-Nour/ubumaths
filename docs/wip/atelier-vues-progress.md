@@ -101,8 +101,87 @@ fermée » et vérifiait la perte. **Deuxième fois dans ce chantier** (le premi
 Et `session.svelte.ts` → `session.ts` : aucune rune dedans, le suffixe n'avait
 pas lieu d'être.
 
+## Lot 2 — la vue Graphe
+
+### La décision : **option B**, tranchée le 2026-09-16
+
+Quand l'élève clique « Tracer » sur `f`, qui détient la courbe ?
+
+|                                                                         |                                                 |
+| ----------------------------------------------------------------------- | ----------------------------------------------- |
+| A — l'atelier pousse une copie                                          | ⛔ deux vérités : modifier `f` ne redessine pas |
+| **B — le grapheur est synchronisé depuis l'atelier, dans un seul sens** | ✅ retenue                                      |
+| C — les fonctions du grapheur SONT les objets de l'atelier              | 🔜 plus tard                                    |
+
+B tient la décision figée n° 1 — l'atelier détient l'état, la courbe le reflète —
+**sans refondre le grapheur**, qui vient de passer en production. Et elle répond
+à une question que A laissait ouverte : que se passe-t-il si on ajoute une
+fonction depuis le panneau du grapheur ? En B la question disparaît, puisque ce
+panneau n'est pas affiché dans l'atelier — c'est « Mes objets » qui tient ce rôle.
+
+> 🔜 **C reste intéressant pour plus tard** (noté avec David le 2026-09-16).
+> **Déclencheur : quand le grapheur n'aura plus d'autre usage que l'atelier.**
+> Tant que `/grapheur` vit seul, son `functions` doit rester à lui.
+
+### Ce que ça donne
+
+`plot-sync.ts` reporte les objets tracés vers le grapheur. **Idempotent** :
+re-synchroniser sans changement ne fait rien, sinon chaque frappe recréerait les
+courbes et le graphe clignoterait. Et il ne touche jamais aux courbes ajoutées à
+la main dans `/grapheur` — il ne connaît que celles qu'il a posées.
+
+Un objet qui ne peut rien produire (`pending`, `error`) **n'est pas tracé** :
+une courbe absente sans explication est pire qu'une action désactivée qui en
+donne une.
+
+### Un bug trouvé par un test
+
+`update()` reconstruit l'objet et **perdait son état tracé** : l'élève modifiait
+sa fonction, sa courbe disparaissait. Même famille que le curseur écrasé signalé
+en revue #334 — tout état d'affichage ajouté devra être reporté au même endroit,
+un commentaire le dit désormais dans le code.
+
+### Le test qui a rougi comme prévu
+
+Celui qui vérifiait que « Tracer » annonce son prochain lot. Il a rougi au moment
+exact où l'action a été câblée, et il continue de surveiller les autres.
+
 ## Ce que ce lot n'est pas
 
 Les trois vues sont des **espaces réservés** : elles affichent leur nom et
 attendent leur lot. Les actions qui dépendent d'une vue (tracer, tabuler) ne sont
 pas encore câblées — seule « Supprimer » l'est, parce qu'elle ne dépend de rien.
+
+## Ce que la revue #337 a corrigé
+
+Six points, dont un bloquant qui cassait le lot entier.
+
+**Le panneau du grapheur écrivait par-dessus l'élève.** J'avais écrit dans un
+commentaire que `GrapheurContainer` était monté « sans son panneau » — c'était
+faux : il rendait `FunctionPanel` sans condition. Dans l'atelier, deux panneaux
+pilotaient donc le même store, et la synchronisation réécrivait ce que l'élève
+tapait dans celui du grapheur. Une prop `panel` (par défaut `true`) le masque
+côté atelier ; `/calc` et `/grapheur` ne changent pas.
+
+> ⚠️ **Un commentaire qui décrit un comportement est une assertion.** Celui-ci
+> décrivait l'intention, pas le code, et il a rendu le bug invisible à ma
+> relecture. Le vérifier coûtait un `grep`.
+
+**Une définition fautive masque la courbe au lieu de la détruire.** En cours de
+frappe, `f(x)=2x+` est momentanément invalide : détruire puis recréer la courbe
+lui donnait une nouvelle couleur à chaque caractère. Elle reste désormais en
+place, `visible: false`.
+
+**« Retirer du graphe » reste actif sur un objet cassé** — c'est justement le
+moment où l'on veut l'enlever.
+
+**Le `WeakMap` est clé sur le couple (atelier, grapheur).** Clé sur le seul
+atelier, deux grapheurs auraient partagé un état de synchronisation qui ne
+décrivait ni l'un ni l'autre.
+
+**`adoptGrapheurState` marque `plotted: true`.** Sans ça, la première
+synchronisation effaçait les courbes qu'elle venait d'adopter.
+
+**Un commentaire dit pourquoi l'effet ne boucle pas** : la synchronisation est
+idempotente, et c'est la seule raison — sans elle,
+`effect_update_depth_exceeded`.

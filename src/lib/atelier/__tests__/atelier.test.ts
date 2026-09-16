@@ -718,3 +718,57 @@ describe('sérialisation', () => {
 		expect(report.skipped).toEqual([]);
 	});
 });
+
+// =============================================================================
+// Tracer — l'état d'affichage d'un objet (lot « vue Graphe »)
+// =============================================================================
+
+describe('objets tracés', () => {
+	it('n’est tracé par défaut', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		expect(a.get('f')?.plotted).toBeFalsy();
+	});
+
+	it('se trace et se retire', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
+
+		a.setPlotted('f', true);
+		expect(a.get('f')?.plotted).toBe(true);
+
+		a.setPlotted('f', false);
+		expect(a.get('f')?.plotted).toBe(false);
+	});
+
+	it('compte comme une modification, donc s’enregistre', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		const before = a.revision;
+
+		a.setPlotted('f', true);
+		expect(a.revision).toBeGreaterThan(before);
+	});
+
+	// L'élève doit retrouver ses courbes au rechargement
+	it('survit à un aller-retour par la sérialisation', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		a.create({ kind: 'function', name: 'g', definition: 'x^3' });
+		a.setPlotted('f', true);
+
+		const restored = new Atelier();
+		restored.restore(a.serialize());
+
+		expect(restored.get('f')?.plotted).toBe(true);
+		expect(restored.get('g')?.plotted).toBeFalsy();
+	});
+
+	it('ignore un objet qui n’existe pas', () => {
+		expect(() => a.setPlotted('inconnu', true)).not.toThrow();
+	});
+
+	// On ne trace que ce qui peut l'être — mais on ne l'empêche pas : c'est la
+	// vue qui décide quoi afficher, le modèle ne juge pas.
+	it('accepte de marquer un objet en attente', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'a*x' });
+		a.setPlotted('f', true);
+		expect(a.get('f')?.plotted).toBe(true);
+	});
+});

@@ -30,9 +30,19 @@ Features:
 	 */
 	let {
 		class: className = '',
-		store
+		store,
+		panel = true
 	}: {
 		class?: string;
+		/**
+		 * Afficher le panneau de fonctions.
+		 *
+		 * `false` quand un autre panneau tient déjà ce rôle — dans l'atelier,
+		 * c'est « Mes objets ». Deux listes de fonctions côte à côte posent la
+		 * question de savoir laquelle fait foi, et l'élève y perd sa saisie : ce
+		 * qu'il tape dans l'une est réécrit par l'autre.
+		 */
+		panel?: boolean;
 		/**
 		 * L'instance de grapheur à piloter.
 		 *
@@ -73,11 +83,13 @@ Features:
 	}
 </script>
 
-<div class="grapheur-container {className}">
+<div class="grapheur-container {className}" class:sans-panneau={!panel}>
 	<!-- Sidebar: Function List -->
-	<aside class="grapheur-sidebar">
-		<FunctionPanel />
-	</aside>
+	{#if panel}
+		<aside class="grapheur-sidebar">
+			<FunctionPanel />
+		</aside>
+	{/if}
 
 	<!-- Main Graph Area -->
 	<main class="grapheur-main">
@@ -105,6 +117,10 @@ Features:
 	/* ==========================================================================
      Layout
      ========================================================================== */
+
+	.grapheur-container.sans-panneau {
+		grid-template-columns: 1fr;
+	}
 
 	.grapheur-container {
 		display: grid;
@@ -157,6 +173,10 @@ Features:
      ========================================================================== */
 
 	@media (max-width: 768px) {
+		.grapheur-container.sans-panneau {
+			grid-template-columns: 1fr;
+		}
+
 		.grapheur-container {
 			grid-template-columns: 1fr;
 			grid-template-rows: 1fr auto;
@@ -193,6 +213,10 @@ Features:
      ========================================================================== */
 
 	@media (min-width: 769px) and (max-width: 1024px) {
+		.grapheur-container.sans-panneau {
+			grid-template-columns: 1fr;
+		}
+
 		.grapheur-container {
 			grid-template-columns: 300px 1fr;
 		}

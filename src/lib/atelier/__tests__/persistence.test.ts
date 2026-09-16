@@ -245,3 +245,20 @@ describe('un autre onglet écrit', () => {
 		expect(out.state.objects).toHaveLength(1);
 	});
 });
+
+describe('reprise du grapheur — les courbes arrivent tracées', () => {
+	it('marque comme tracées les courbes reprises', () => {
+		const s = fakeStorage();
+		s.setItem(
+			'chiphre-grapheur-state',
+			JSON.stringify({ version: 2, functions: [{ latex: 'x^2' }] })
+		);
+
+		const out = adoptGrapheurState(s);
+		expect(out.kind).toBe('adopted');
+		if (out.kind !== 'adopted') return;
+		// Elles étaient visibles dans /grapheur : elles doivent l'être ici aussi,
+		// sinon la vue Graphe s'ouvre vide sans que l'élève comprenne.
+		expect(out.state.objects[0].plotted).toBe(true);
+	});
+});

@@ -13,6 +13,9 @@
 	import type { AtelierObject } from '$lib/atelier/types';
 	import type { ObjectAction } from '$lib/atelier/actions';
 	import ObjectPanel from './ObjectPanel.svelte';
+	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
+	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+	import { syncPlots } from '$lib/atelier/plot-sync';
 
 	interface Props {
 		/** L'atelier à piloter. Sans lui, le conteneur crée le sien. */
@@ -68,6 +71,15 @@
 		};
 	});
 
+	/**
+	 * Le grapheur de CET atelier.
+	 *
+	 * Clé de rangement propre : sans elle, il chargerait les courbes de
+	 * `/grapheur` puis les écraserait (revue #334). L'atelier range ses objets
+	 * lui-même, le grapheur n'a donc rien à conserver — d'où `null`.
+	 */
+	const graph = new GrapheurStore(null);
+
 	let lastSeenRevision = $state(-1);
 
 	// ⚠️ UNE seule source de « ça a changé ». Prévenir la session depuis chaque
@@ -79,6 +91,18 @@
 		if (session === null || current === lastSeenRevision) return;
 		lastSeenRevision = current;
 		session.touch();
+	});
+
+	// Option B : la courbe suit l'objet. Un seul sens — l'atelier détient l'état.
+	//
+	// ⚠️ Cet effet LIT `graph.functions` (via `syncPlots`) et l'ÉCRIT : Svelte le
+	// rejoue donc une fois de plus après chaque synchronisation. Il ne boucle que
+	// parce que `syncPlots` est **idempotent** — la seconde passe ne réécrit
+	// rien. Toute modification qui rendrait `syncPlots` inconditionnel donnerait
+	// un `effect_update_depth_exceeded`.
+	$effect(() => {
+		void atelier.revision;
+		syncPlots(atelier, graph);
 	});
 
 	/** Un navigateur peut refuser `localStorage` — ce n'est pas une erreur (§5 E1). */
@@ -96,6 +120,11 @@
 		if (action.id === 'remove') {
 			atelier.remove(object.name);
 			if (selected === object.name) selected = null;
+			return;
+		}
+		if (action.id === 'plot') {
+			atelier.setPlotted(object.name, !object.plotted);
+			activeView = 'graphe';
 		}
 	}
 </script>
@@ -128,10 +157,20 @@
 			{/each}
 		</ul>
 
-		<section class="vue">
-			<p class="a-venir">
-				La vue « {VIEWS.find((v) => v.id === activeView)?.label} » arrive au prochain lot.
-			</p>
+		<section class="vue" class:pleine={activeView === 'graphe'}>
+			{#if activeView === 'graphe'}
+				<!--
+					`panel={false}` : dans l'atelier, c'est « Mes objets » qui tient ce
+					rôle. Deux listes de fonctions côte à côte ne posent pas seulement la
+					question de savoir laquelle fait foi — l'élève y PERD sa saisie, que
+					la synchronisation réécrit aussitôt avec la définition de l'objet.
+				-->
+				<GrapheurContainer store={graph} panel={false} />
+			{:else}
+				<p class="a-venir">
+					La vue « {VIEWS.find((v) => v.id === activeView)?.label} » arrive au prochain lot.
+				</p>
+			{/if}
 		</section>
 	</main>
 </div>
@@ -201,6 +240,10 @@
 		flex: 1;
 		min-height: 0;
 		padding: 1rem;
+	}
+	.vue.pleine {
+		padding: 0;
+		display: flex;
 	}
 	.a-venir {
 		margin: 0;
