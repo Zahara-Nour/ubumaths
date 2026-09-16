@@ -63,12 +63,15 @@ describe('`.résoudre` se replie sans rien perdre', () => {
 	it('L1 : un degré 3 garde la sortie actuelle du moteur', () => {
 		const result = runInput(session(), '.résoudre x^3-x=0');
 
+		// Le `kind` est asserté AVANT de lire la suite : sans ça, un `refus`
+		// ferait échouer le test sur un `TypeError` qui ne dit pas ce qui s'est
+		// passé.
 		expect(result.kind).toBe('commande');
-		const commande = result as Extract<typeof result, { kind: 'commande' }>;
-		expect(commande.steps).toBeUndefined();
+		if (result.kind !== 'commande') return;
+		expect(result.steps).toBeUndefined();
 		// ⚠️ **La réponse ne disparaît jamais.** C'est la seule façon dont ce lot
 		// pourrait rendre l'atelier pire qu'avant.
-		expect(commande.output.length).toBeGreaterThan(0);
+		expect(result.output.length).toBeGreaterThan(0);
 	});
 
 	it('L3 : une équation à paramètre garde la sortie actuelle', () => {
@@ -77,17 +80,19 @@ describe('`.résoudre` se replie sans rien perdre', () => {
 
 		const result = runInput(s, '.résoudre b*x+5=14');
 
-		const commande = result as Extract<typeof result, { kind: 'commande' }>;
-		expect(commande.steps).toBeUndefined();
-		expect(commande.output.length).toBeGreaterThan(0);
+		expect(result.kind).toBe('commande');
+		if (result.kind !== 'commande') return;
+		expect(result.steps).toBeUndefined();
+		expect(result.output.length).toBeGreaterThan(0);
 	});
 
 	it('les autres commandes ne portent pas d’étapes', () => {
 		const result = runInput(session(), '.dériver x^2');
 
-		const commande = result as Extract<typeof result, { kind: 'commande' }>;
-		expect(commande.steps).toBeUndefined();
-		expect(commande.output.length).toBeGreaterThan(0);
+		expect(result.kind).toBe('commande');
+		if (result.kind !== 'commande') return;
+		expect(result.steps).toBeUndefined();
+		expect(result.output.length).toBeGreaterThan(0);
 	});
 });
 

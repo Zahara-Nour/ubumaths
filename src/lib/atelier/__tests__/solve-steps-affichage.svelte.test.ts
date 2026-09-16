@@ -15,7 +15,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { convertLatexToMarkup } from 'mathlive';
-import { solveSteps } from '../solve-steps';
+import { solveSteps, answerOf } from '../solve-steps';
 
 /** Le marqueur que MathLive pose sur ce qu'il n'a pas su composer. */
 const ERROR_MARKER = 'ML__error';
@@ -72,9 +72,11 @@ describe('chaque étape se compose sans erreur', () => {
 
 	it('la réponse que porte la ligne se compose aussi', () => {
 		for (const equation of ['3x+5=14', 'x^2=4', 'x^2+1=0']) {
-			const steps = solveSteps(equation)!;
-			const answer = steps[steps.length - 1].expressionLatex!;
-			expect(markupOf(answer)).not.toContain(ERROR_MARKER);
+			// ⚠️ On appelle `answerOf`, on ne le réimplémente pas : un test qui
+			// refait le calcul de la fonction qu'il prétend garder reste vert
+			// quand cette fonction change, pendant que la ligne affiche
+			// autre chose.
+			expect(markupOf(answerOf(solveSteps(equation)!))).not.toContain(ERROR_MARKER);
 		}
 	});
 });

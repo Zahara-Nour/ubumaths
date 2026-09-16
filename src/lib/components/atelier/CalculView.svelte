@@ -121,6 +121,7 @@
 							size="sm"
 							class="comment"
 							aria-expanded={unfolded.includes(entry.id)}
+							aria-controls="etapes-{entry.id}"
 							onclick={() => toggleSteps(entry.id)}
 						>
 							{unfolded.includes(entry.id) ? 'Masquer le détail' : 'Comment ?'}
@@ -128,7 +129,7 @@
 					{/if}
 				</div>
 				{#if entry.steps !== undefined && unfolded.includes(entry.id)}
-					<div class="etapes">
+					<div class="etapes" id="etapes-{entry.id}">
 						<GeneratedStepsCorrection steps={entry.steps} />
 					</div>
 				{/if}

@@ -53,6 +53,55 @@ produisent les renderers. Le test assert désormais ça, et vérifie d'abord que
 marqueur apparaît bien sur du LaTeX invalide, faute de quoi les trois autres
 assertions ne garderaient rien.
 
+## La revue de code — un bloquant réel, corrigé
+
+### Le défaut : une réponse FAUSSE, démontrée
+
+`.résoudre 3x+5=14 x` — la variable explicite que la commande accepte.
+
+```
+avant :  ligne « x = 5/11 »  (5 étapes à l'appui)   moteur « x = 3 »
+après :  ligne « x = 3 »     (4 étapes)             moteur « x = 3 »
+```
+
+**Cause** : le moteur découpe `<équation> [variable]` et retire ses options
+(`-v`, `--verbose`, `-q`, `--quiet`) **avant** de parser (`solve.command.ts`,
+`parseInput` et `parseOptions`). Je passais la queue brute de la commande, donc
+`pedagogical-solve` lisait « 3x+5 = 14x ». Le découpage du moteur est désormais
+reproduit à l'identique dans `readArgument` — les étapes doivent décrire ce que
+le moteur a résolu, pas autre chose.
+
+Variante bénigne du même défaut, corrigée aussi : `.résoudre 3x+5=14 -v` se
+lisait « 14 - v », deux variables → repli silencieux. Les étapes ne
+s'affichaient **jamais** dès qu'une option était tapée.
+
+### Les autres corrections
+
+| finding                                                                      | correctif                                          |
+| ---------------------------------------------------------------------------- | -------------------------------------------------- |
+| une inéquation rendait 4 étapes titrées « Solution : x = 3 » pour `x < 3`    | la garde exige `relation === '='`, comme le moteur |
+| le `try` ne couvrait que la génération, pas le rendu (les renderers jettent) | le corps entier est dans le `try`                  |
+| `latex` posé même vide → zone mathématique vide, texte jamais affiché        | repli si la conclusion n'a pas de LaTeX            |
+| un test réimplémentait `answerOf` au lieu de l'appeler                       | il l'appelle                                       |
+| casts `as Extract<…>` masquant le `kind` réel                                | narrowing sur `result.kind`                        |
+| `aria-expanded` sans `aria-controls`                                         | les deux attributs, avec l'`id` du panneau         |
+
+### Le geste, maintenant prouvé vivant
+
+La revue relevait que rien ne traversait le clic : deux moitiés vertes (les
+étapes se calculent, le LaTeX se compose) et zéro preuve que « Comment ? »
+déplie quoi que ce soit — la forme exacte de #339 et #342.
+
+`solve-depliage.svelte.test.ts` monte désormais `CalculView` pour de bon dans
+Chromium (`mount()` de Svelte 5 ; le dépôt n'a pas de testing-library et n'en a
+pas eu besoin) et modélise la séquence complète `pointerdown → mousedown →
+pointerup → mouseup → click`. Prouvé par neutralisation :
+
+| neutralisation                      | tests devenus rouges                               |
+| ----------------------------------- | -------------------------------------------------- |
+| `toggleSteps` ne fait plus rien     | « cliquer fait apparaître », « recliquer replie »  |
+| le bouton s'affiche sur toute ligne | « une commande sans étapes n'offre pas le bouton » |
+
 ## Reste à faire
 
 - **Le bouton « Résoudre » du panneau** passe toujours par l'ancien chemin
@@ -66,3 +115,12 @@ assertions ne garderaient rien.
 - **Le défaut `2 1`** au dénominateur du second degré quand `a = 1` — il est
   dans `pedagogical-solve/quadratic-renderer.ts`, versé au lot de correction de
   mathAST (`mathast-5-defauts-prompt.md`).
+- **`.résoudre 2x+1<7` affiche une ligne VIDE** — défaut préexistant : le moteur
+  n'a rien pour les inéquations. C'est précisément le trou que
+  `generateInequalitySteps` comblerait, et l'argument le plus fort pour le lot
+  suivant.
+- **`GeneratedStepsCorrection.svelte` style en `hsl(var(--primary))`** alors que
+  les tokens du dépôt sont `--color-*` : ces déclarations tombent (pas de filet
+  gauche, couleurs par défaut). Préexistant, gravé dans
+  `scripts/css-tokens-baseline.txt`, donc invisible à la CI — mais ce lot met ce
+  composant devant l'élève pour la première fois dans l'atelier.

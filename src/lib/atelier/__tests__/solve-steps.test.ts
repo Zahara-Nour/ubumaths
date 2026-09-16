@@ -73,7 +73,53 @@ describe('solveSteps — le renderer suit le degré', () => {
 	});
 });
 
+describe('solveSteps lit l’argument comme le moteur', () => {
+	/**
+	 * ⚠️ **Le défaut que ces tests ferment a affiché une réponse FAUSSE avec
+	 * l'autorité d'une démonstration.** `.résoudre 3x+5=14 x` — la variable
+	 * explicite que la commande accepte — était passée telle quelle : mathAST
+	 * lisait « 3x+5 = 14x » et la ligne annonçait `x = 5/11`, cinq étapes à
+	 * l'appui, pendant que le moteur répondait `x = 3`. Une réponse qui
+	 * disparaît est un défaut ; une réponse fausse démontrée en est un pire.
+	 *
+	 * Le moteur découpe `<équation> [variable]` et retire ses options AVANT de
+	 * parser (`solve.command.ts`, `parseInput` et `parseOptions`). On reproduit
+	 * son découpage : les étapes doivent décrire ce que le moteur a résolu, pas
+	 * autre chose.
+	 */
+	it('la variable explicite est honorée, pas collée à l’équation', () => {
+		const steps = solveSteps('3x+5=14 x');
+
+		expect(steps).not.toBeNull();
+		expect(answerOf(steps!)).toBe('x = 3');
+	});
+
+	it('une équation à deux lettres se résout dans la variable demandée', () => {
+		// Sans la variable, « cannot detect a single variable » → repli.
+		expect(solveSteps('a*x=6')).toBeNull();
+		// Avec elle, mathAST sait quoi isoler.
+		expect(solveSteps('a*x=6 x')).not.toBeNull();
+	});
+
+	it('les options du moteur ne se retrouvent pas dans l’équation', () => {
+		// `-v` restait dans l'argument et se lisait « 14 - v » : deux variables,
+		// donc repli silencieux — les étapes ne s'affichaient JAMAIS dès qu'une
+		// option était tapée.
+		expect(answerOf(solveSteps('3x+5=14 -v')!)).toBe('x = 3');
+		expect(answerOf(solveSteps('3x+5=14 --verbose')!)).toBe('x = 3');
+		expect(answerOf(solveSteps('3x+5=14 -q')!)).toBe('x = 3');
+	});
+});
+
 describe('solveSteps — les replis', () => {
+	it('une inéquation se replie : ce n’est pas une équation', () => {
+		// ⚠️ Mesuré : sans cette garde, `2x+1<7` rend quatre étapes dont la
+		// dernière est titrée « Solution : x = 3 » alors que son LaTeX dit
+		// `x < 3`. Le titre ment sur la nature du résultat.
+		expect(solveSteps('2x+1<7')).toBeNull();
+		expect(solveSteps('x^2>=4')).toBeNull();
+	});
+
 	it('L1 : un degré 3 se replie', () => {
 		expect(solveSteps('x^3-x=0')).toBeNull();
 	});
