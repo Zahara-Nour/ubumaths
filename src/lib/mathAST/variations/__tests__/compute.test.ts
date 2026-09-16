@@ -735,3 +735,74 @@ describe('computeVariations - Error Handling', () => {
 		expect(() => computeVariations(expr, { domain: emptyDomain })).toThrow(VariationError);
 	});
 });
+
+// =============================================================================
+// Extrema des cas de manuel (regression)
+// =============================================================================
+
+describe('extrema des paraboles et cubiques du programme', () => {
+	// Ces quatre cas ne rendaient AUCUN extremum. Deux causes distinctes :
+	//
+	//  A. un intervalle dégénéré `constant [a ; a]` s'intercalait entre les
+	//     deux intervalles adjacents au point critique, et `findAdjacentIntervals`
+	//     le retenait comme « intervalle d'avant » — la comparaison
+	//     décroissant → croissant n'avait donc jamais lieu ;
+	//  B. pour x^2, le signe de la dérivée n'était pas analysé du tout : le
+	//     solveur linéaire ne posait pas `approximate` sur la solution 0, et
+	//     un zéro sans `approximate` est écarté comme point de découpe.
+	//
+	// ⚠️ Les assertions sont INCONDITIONNELLES. Les tests préexistants de ce
+	// fichier sont de la forme `if (result.extrema.length > 0) { ... }` : ils
+	// passaient en n'assertant rien.
+	//
+	// Part de chaque correctif, mesurée en les neutralisant un à un :
+	// A seul répare 4 cas sur 5 ; B n'est nécessaire QUE pour x^2, dont la
+	// dérivée 2x passe par le solveur linéaire. x^4 relève de A.
+
+	it('x^2 - 3x + 1 a un minimum en 3/2 (cause A)', () => {
+		const result = computeVariations(parse('x^2 - 3x + 1'));
+		expect(result.extrema.length).toBeGreaterThan(0);
+		expect(
+			hasExtremumAt(result, 1.5, 'local_minimum') || hasExtremumAt(result, 1.5, 'global_minimum')
+		).toBe(true);
+	});
+
+	it('x^2 a un minimum en 0 (causes A ET B)', () => {
+		const result = computeVariations(parse('x^2'));
+		// Le découpage doit avoir lieu : un seul intervalle `unknown` signifie
+		// que l'analyse de signe n'a rien donné.
+		expect(result.monotonicIntervals.map((mi) => mi.monotonicity)).not.toEqual(['unknown']);
+		expect(result.extrema.length).toBeGreaterThan(0);
+		expect(
+			hasExtremumAt(result, 0, 'local_minimum') || hasExtremumAt(result, 0, 'global_minimum')
+		).toBe(true);
+	});
+
+	it('-x^2 + 4x a un maximum en 2 (cause A)', () => {
+		const result = computeVariations(parse('-x^2 + 4x'));
+		expect(result.extrema.length).toBeGreaterThan(0);
+		expect(
+			hasExtremumAt(result, 2, 'local_maximum') || hasExtremumAt(result, 2, 'global_maximum')
+		).toBe(true);
+	});
+
+	it('x^3 - 3x a un maximum en -1 ET un minimum en 1 (cause A, deux fois)', () => {
+		const result = computeVariations(parse('x^3 - 3x'));
+		expect(result.extrema.length).toBeGreaterThanOrEqual(2);
+		expect(
+			hasExtremumAt(result, -1, 'local_maximum') || hasExtremumAt(result, -1, 'global_maximum')
+		).toBe(true);
+		expect(
+			hasExtremumAt(result, 1, 'local_minimum') || hasExtremumAt(result, 1, 'global_minimum')
+		).toBe(true);
+	});
+
+	// x^4 partage la cause B avec x^2 : la dérivée 4x^3 s'annule en 0.
+	it('x^4 a un minimum en 0 (cause A ; sa dérivée ne passe pas par le solveur linéaire)', () => {
+		const result = computeVariations(parse('x^4'));
+		expect(result.extrema.length).toBeGreaterThan(0);
+		expect(
+			hasExtremumAt(result, 0, 'local_minimum') || hasExtremumAt(result, 0, 'global_minimum')
+		).toBe(true);
+	});
+});
