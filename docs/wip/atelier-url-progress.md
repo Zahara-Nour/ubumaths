@@ -44,9 +44,36 @@ test qui validait une perte silencieuse.
   incomplet, donc jamais d'ouverture à moitié ;
 - rien qui n'ait passé Zod n'est rendu.
 
+## Étape 2 — garder ce qu'on a reçu (fait)
+
+`merge.ts` : `mergeInto()`. **Q2 — l'arrivant est renommé**, jamais
+d'écrasement, et le rapport dit ce qui a été fait.
+
+⚠️ Les noms sont réservés **au fur et à mesure** : deux arrivants réclamant le
+même nom ne peuvent pas recevoir le même remplacement, sinon le second
+écraserait le premier — l'écrasement qu'on cherche à éviter.
+
+## Étape 3 — l'écran (fait)
+
+`ShareBar.svelte`, plus la lecture de l'URL par la page.
+
+**Partager** : la taille est annoncée **avant** la copie (§6 L1), avec le nombre
+de caractères et ce qu'il faut retirer. `/calc` refuse aujourd'hui après coup.
+Si le presse-papier refuse, le lien reste **affiché et sélectionnable** — jamais
+un échec muet.
+
+**Recevoir** : une bannière dit que l'atelier personnel n'est pas touché. Sans
+elle, l'élève croit avoir perdu son travail.
+
+⚠️ Un lien abîmé n'ouvre pas une page morte : on le dit, et **son** atelier
+s'ouvre.
+
+### Une leçon de test
+
+Mes deux premiers tests du lien attendaient un nombre de `tick()`. La
+compression est asynchrone : le compte qui suffit sur cette machine ne suffira
+pas ailleurs. Ils attendent désormais la **condition** (`vi.waitFor`).
+
 ## Étapes suivantes
 
-- [ ] Étape 2 — partager : choix de portée, taille annoncée AVANT la copie
-- [ ] Étape 3 — recevoir : mode éphémère et bannière
-- [ ] Étape 4 — « garder dans mon atelier » avec renommage (Q2)
 - [ ] Étape 5 — l'ouverture épurée de `/grapheur` (Q3)
