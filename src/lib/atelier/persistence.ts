@@ -30,6 +30,13 @@ export const ATELIER_STORAGE_KEY = 'chiphre-atelier';
  */
 export const ATELIER_STATE_VERSION = 1;
 
+/**
+ * Au-delà, on refuse d'enregistrer plutôt que d'écrire un état qu'on ne saura
+ * pas relire. Large : un atelier au plafond D8 (8 listes de 200 valeurs) tient
+ * sous 100 ko, et `localStorage` en offre environ 5 Mo.
+ */
+const MAX_SERIALIZED_LENGTH = 500_000;
+
 // =============================================================================
 // Forme rangée
 // =============================================================================
@@ -46,9 +53,13 @@ const storedObjectSchema = z.object({
 	definition: z.string().max(4000)
 });
 
-const atelierStateSchema = z.object({
+/**
+ * L'enveloppe, volontairement permissive : elle ne juge QUE la forme générale.
+ * Le tri des objets se fait un par un, pour n'en perdre qu'un à la fois.
+ */
+const atelierShellSchema = z.object({
 	version: z.number().int().positive(),
-	objects: z.array(storedObjectSchema).max(64)
+	objects: z.array(z.unknown())
 });
 
 export interface StoredObject {
@@ -68,7 +79,12 @@ export interface AtelierState {
 
 export type LoadOutcome =
 	| { readonly kind: 'empty' }
-	| { readonly kind: 'loaded'; readonly state: AtelierState }
+	| {
+			readonly kind: 'loaded';
+			readonly state: AtelierState;
+			/** Objets abîmés qu'on n'a pas su relire — à signaler, jamais à taire. */
+			readonly dropped: number;
+	  }
 	/** §5 L2 — plus récent que nous : on ne relit pas, et on n'écrase pas. */
 	| { readonly kind: 'too-recent'; readonly version: number; readonly raw: string }
 	/** §5 L3 — illisible : atelier vide et message, jamais d'écran blanc. */
@@ -82,6 +98,8 @@ export type SaveOutcome =
 	| { readonly kind: 'quota'; readonly message: string }
 	/** §5 L2 — un état plus récent occupe la place. */
 	| { readonly kind: 'refused-newer'; readonly version: number }
+	/** Trop gros pour être relu ensuite : on refuse AVANT d'écrire. */
+	| { readonly kind: 'too-large'; readonly message: string }
 	| { readonly kind: 'unavailable' };
 
 // =============================================================================
@@ -114,11 +132,35 @@ export function loadAtelier(storage: Storage | null): LoadOutcome {
 		return { kind: 'too-recent', version, raw };
 	}
 
-	const check = atelierStateSchema.safeParse(parsed);
-	if (!check.success) {
+	// ⚠️ On récupère objet par objet, JAMAIS en bloc. Un seul objet abîmé ne doit
+	// pas coûter tout l'atelier à l'élève : c'est sa seule mémoire, il n'a pas de
+	// compte pour le retrouver ailleurs.
+	const shell = atelierShellSchema.safeParse(parsed);
+	if (!shell.success) {
 		return { kind: 'corrupt', message: "L'atelier enregistré n'a pas la forme attendue." };
 	}
-	return { kind: 'loaded', state: check.data };
+
+	const { objects, dropped } = salvageObjects(shell.data.objects);
+	return { kind: 'loaded', state: { version: shell.data.version, objects }, dropped };
+}
+
+/**
+ * Trier les objets un par un, en comptant ceux qu'on n'a pas su relire.
+ *
+ * Jamais de rejet en bloc : un objet abîmé ne doit pas coûter tout l'atelier.
+ */
+function salvageObjects(candidates: readonly unknown[]): {
+	objects: StoredObject[];
+	dropped: number;
+} {
+	const objects: StoredObject[] = [];
+	let dropped = 0;
+	for (const candidate of candidates) {
+		const one = storedObjectSchema.safeParse(candidate);
+		if (one.success) objects.push(one.data);
+		else dropped++;
+	}
+	return { objects, dropped };
 }
 
 // =============================================================================
@@ -135,11 +177,31 @@ export function saveAtelier(storage: Storage | null, state: AtelierState): SaveO
 	}
 	if (existing.kind === 'unavailable') return { kind: 'unavailable' };
 
+	// ⚠️ Ne jamais ranger ce qu'on ne saura pas relire. Sans ce garde, un atelier
+	// trop gros s'enregistrait « avec succès » puis revenait vide au rechargement :
+	// l'élève perdait tout après qu'on lui a dit que c'était sauvegardé.
+	const serialized = JSON.stringify(state);
+	if (serialized.length > MAX_SERIALIZED_LENGTH) {
+		return {
+			kind: 'too-large',
+			message: `L'atelier est trop volumineux pour être enregistré (${Math.round(serialized.length / 1000)} ko). Exporte-le dans un fichier, ou supprime des objets.`
+		};
+	}
+
 	try {
-		storage.setItem(ATELIER_STORAGE_KEY, JSON.stringify(state));
+		storage.setItem(ATELIER_STORAGE_KEY, serialized);
 		return { kind: 'saved' };
 	} catch (error) {
-		if (error instanceof Error && error.name === 'QuotaExceededError') {
+		// Firefox n'emploie pas le même nom ni le même code que les autres —
+		// s'en tenir à « QuotaExceededError » faisait afficher le message
+		// « rien ne sera conservé » à la place de « exporte ou supprime ».
+		const isQuota =
+			error instanceof DOMException &&
+			(error.name === 'QuotaExceededError' ||
+				error.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+				error.code === 22 ||
+				error.code === 1014);
+		if (isQuota) {
 			// ⚠️ On ne réduit PAS l'atelier pour faire tenir : le store de la
 			// calculatrice le fait et vide l'historique sans rien dire. Ici c'est
 			// le travail de l'élève, il doit savoir et choisir.
@@ -163,12 +225,15 @@ const GRAPHEUR_STORAGE_KEY = 'chiphre-grapheur-state';
 /** Lettres proposées aux fonctions du grapheur, qui n'ont pas de nom. */
 const ADOPTED_NAMES = ['f', 'g', 'h', 'p', 'q', 'r'] as const;
 
+/** Une courbe du grapheur, réduite à ce qui nous intéresse. */
+const grapheurCurveSchema = z.object({ latex: z.string() });
+
 /** Ce que le grapheur range, réduit à ce qui nous intéresse. */
 const grapheurStateSchema = z.object({
-	functions: z
-		.array(z.object({ latex: z.string() }).passthrough())
-		.max(ADOPTED_NAMES.length)
-		.optional()
+	// Volontairement permissif : un `.max()` ou une forme stricte ici ferait
+	// échouer TOUTE la validation dès qu'une courbe sort du moule — donc zéro
+	// reprise. Chaque courbe est jugée dans la boucle, une par une.
+	functions: z.array(z.unknown()).optional()
 });
 
 export type AdoptOutcome =
@@ -215,10 +280,12 @@ export function adoptGrapheurState(storage: Storage | null): AdoptOutcome {
 	if (!check.success) return { kind: 'nothing' };
 
 	const objects: StoredObject[] = [];
-	for (const fn of check.data.functions ?? []) {
-		const definition = fn.latex.trim();
-		// Une courbe sans expression n'a rien à reprendre — et elle ne doit pas
-		// coûter les autres.
+	for (const candidate of check.data.functions ?? []) {
+		const curve = grapheurCurveSchema.safeParse(candidate);
+		// Une courbe qu'on ne sait pas lire — ou sans expression — n'a rien à
+		// reprendre, et elle ne doit pas coûter les autres.
+		if (!curve.success) continue;
+		const definition = curve.data.latex.trim();
 		if (definition === '') continue;
 		const name = ADOPTED_NAMES[objects.length];
 		if (name === undefined) break;
@@ -275,17 +342,19 @@ export function readForeignWrite(event: StorageEvent): ForeignWriteOutcome {
 		};
 	}
 
-	const check = atelierStateSchema.safeParse(parsed);
-	if (!check.success) {
+	const shell = atelierShellSchema.safeParse(parsed);
+	if (!shell.success) {
 		return {
 			kind: 'corrupt',
 			message: 'Un autre onglet a enregistré un atelier que celui-ci ne sait pas lire.'
 		};
 	}
 
+	// Même tolérance qu'à la lecture : un objet abîmé ne coûte pas le reste.
+	const { objects } = salvageObjects(shell.data.objects);
 	return {
 		kind: 'changed',
-		state: check.data,
+		state: { version: shell.data.version, objects },
 		message: "L'atelier a été modifié dans un autre onglet."
 	};
 }

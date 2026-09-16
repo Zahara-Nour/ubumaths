@@ -673,9 +673,13 @@ describe('sérialisation', () => {
 		expect(restored.get('f')?.missing?.map((m) => m.name)).toEqual(['a']);
 	});
 
-	it('ignore un objet de forme inattendue sans tout perdre', () => {
+	// ⚠️ Ce test disait « ignore … sans tout perdre » et gravait une perte
+	// silencieuse dans le marbre : deux objets disparaissaient sans un mot. Sans
+	// compte, l'atelier est la seule mémoire de l'élève — ce qu'on ne peut pas
+	// restaurer doit au moins être DIT.
+	it('rend compte de ce qu’il n’a pas pu restaurer', () => {
 		const restored = new Atelier();
-		restored.restore({
+		const report = restored.restore({
 			version: 1,
 			objects: [
 				{ name: 'f', kind: 'function', definition: 'x^2' },
@@ -685,5 +689,32 @@ describe('sérialisation', () => {
 		});
 
 		expect(restored.names).toEqual(['f', 'g']);
+		expect(report.skipped).toHaveLength(1);
+		expect(report.skipped[0].name).toBe('2f');
+		expect(report.skipped[0].reason).toBeTruthy();
+	});
+
+	it('ne perd pas un doublon en silence', () => {
+		const restored = new Atelier();
+		const report = restored.restore({
+			version: 1,
+			objects: [
+				{ name: 'f', kind: 'function', definition: 'x^2' },
+				{ name: 'f', kind: 'function', definition: 'x^3' }
+			]
+		});
+
+		expect(report.skipped.map((s) => s.name)).toEqual(['f']);
+	});
+
+	it('ne signale rien quand tout est restauré', () => {
+		const restored = new Atelier();
+		const report = restored.restore({
+			version: 1,
+			objects: [{ name: 'f', kind: 'function', definition: 'x^2' }]
+		});
+
+		expect(report.restored).toBe(1);
+		expect(report.skipped).toEqual([]);
 	});
 });

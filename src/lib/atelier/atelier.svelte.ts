@@ -62,6 +62,23 @@ export interface Updated {
 	readonly recomputed: readonly string[];
 }
 
+/** Un objet qu'une restauration n'a pas pu recréer, et pourquoi. */
+export interface SkippedObject {
+	readonly name: string;
+	readonly reason: string;
+}
+
+/**
+ * Ce qu'une restauration a pu faire.
+ *
+ * `skipped` non vide se **montre à l'élève** : c'est du travail qui n'a pas été
+ * retrouvé, pas un détail technique.
+ */
+export interface RestoreReport {
+	readonly restored: number;
+	readonly skipped: readonly SkippedObject[];
+}
+
 /** Ce qu'il faut pour créer un objet. Sans `name`, l'atelier en propose un. */
 export interface CreateInput {
 	readonly kind: ObjectKind;
@@ -270,16 +287,28 @@ export class Atelier {
 	/**
 	 * Remplacer le contenu de l'atelier par un état rangé.
 	 *
-	 * Les objets de forme inattendue sont **écartés un par un** : un seul nom
-	 * invalide ne doit pas coûter tout l'atelier à l'élève. Les états sont
-	 * recalculés, jamais relus.
+	 * Les objets refusés sont **écartés un par un** — un seul nom invalide ne
+	 * doit pas coûter tout l'atelier — mais ⚠️ **jamais en silence** : le rapport
+	 * rendu les nomme avec leur raison. Sans compte, cet atelier est la seule
+	 * mémoire de l'élève ; ce qu'on ne sait pas restaurer doit au moins être dit.
+	 *
+	 * Les états sont recalculés, jamais relus.
 	 */
-	restore(state: AtelierState): void {
+	restore(state: AtelierState): RestoreReport {
 		this.items = [];
+		const skipped: SkippedObject[] = [];
+
 		for (const stored of state.objects) {
-			this.create({ kind: stored.kind, name: stored.name, definition: stored.definition });
+			const result = this.create({
+				kind: stored.kind,
+				name: stored.name,
+				definition: stored.definition
+			});
+			if (!result.ok) skipped.push({ name: stored.name, reason: result.message });
 		}
+
 		this.recomputeAll();
+		return { restored: this.items.length, skipped };
 	}
 
 	/** Les objets dont la définition cite `name`, directement. */

@@ -29,9 +29,10 @@ function fakeStorage(limit = Infinity): Storage {
 		clear: () => map.clear(),
 		setItem: (k: string, v: string) => {
 			if (v.length > limit) {
-				const err = new Error('quota');
-				err.name = 'QuotaExceededError';
-				throw err;
+				// Ce que jette un vrai navigateur : une DOMException, pas une Error.
+				// Fabriquer une Error au nom choisi revenait à tester le code
+				// contre lui-même.
+				throw new DOMException('quota', 'QuotaExceededError');
 			}
 			map.set(k, v);
 		}

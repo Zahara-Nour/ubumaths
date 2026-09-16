@@ -114,6 +114,57 @@ retourne. La reprise ne se fait donc qu'une fois, quand l'atelier n'a encore rie
 
 Une courbe sans expression est écartée sans coûter les autres.
 
+## ⚠️ Revue #335 — deux pertes du travail de l'élève, fermées
+
+La revue a trouvé **deux chemins où l'élève perdait son travail**, tous deux
+mesurés avant correction. C'est précisément ce que ce lot existait pour empêcher.
+
+### 1. Un atelier trop gros s'enregistrait « avec succès », puis revenait vide
+
+```
+avant :  70 objets → save=saved → reload=corrupt        ← tout perdu
+après :  70 objets → save=saved → reload=loaded, 70 objets, 0 écarté
+```
+
+Cause : **le schéma de lecture était plus strict que ce que le modèle laisse
+créer**, et `saveAtelier` ne validait rien. L'élève dépassait 64 objets, l'atelier
+disait « enregistré », et au rechargement `safeParse` échouait sur **tout**
+l'état.
+
+Deux corrections, complémentaires :
+
+- la lecture **récupère objet par objet** au lieu de rejeter en bloc, et rend le
+  nombre d'objets écartés (`dropped`) ;
+- l'écriture **refuse avant d'écrire** ce qu'elle ne saura pas relire
+  (`too-large`), plutôt que de mentir puis de perdre.
+
+### 2. `restore()` perdait des objets en silence
+
+```
+avant :  3 objets → 1 restauré, 2 disparus sans un mot
+après :  1 restauré, 2 signalés par leur nom et leur raison
+```
+
+Atteignable sans corruption : deux fois le même nom, ou un nom réservé (`x`,
+`pi`). `restore()` rend désormais un `RestoreReport` — ce qu'on ne sait pas
+restaurer doit au moins être **dit**.
+
+⚠️ **Mon propre test gravait cette perte dans le marbre** : il s'appelait
+« ignore un objet de forme inattendue **sans tout perdre** » et vérifiait
+exactement le comportement fautif. Un test peut consacrer un défaut au lieu de
+l'attraper.
+
+### Trois autres corrections
+
+- **Le quota de Firefox** n'était pas reconnu (`NS_ERROR_DOM_QUOTA_REACHED`,
+  code 1014) : l'élève y lisait « rien ne sera conservé » au lieu de « exporte ou
+  supprime ». Et mon test fabriquait une `Error` portant le nom que le code
+  cherchait — il testait le code contre lui-même. Il jette maintenant une vraie
+  `DOMException`.
+- Le `.max()` de la reprise faisait **échouer toute la validation** dès la 7ᵉ
+  courbe du grapheur, donc zéro reprise. Retiré : la boucle plafonne déjà.
+- `readForeignWrite` applique la même tolérance objet par objet.
+
 ## Reste à faire
 
 Brancher tout ceci sur l'atelier réel — chargement au démarrage, sauvegarde
