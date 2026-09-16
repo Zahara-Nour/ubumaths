@@ -53,11 +53,16 @@ describe('ClassScheduleGrid', () => {
 		expect(jours[2]).toBe('Dimanche');
 	});
 
-	it('retombe sur la configuration par défaut sans semaine fournie', () => {
+	// Le repli décrit la semaine française : sans configuration, la grille
+	// montrait une colonne Dimanche et aucune colonne Vendredi — un emploi du
+	// temps impossible à remplir dans un lycée français.
+	it('retombe sur la semaine française sans semaine fournie', () => {
 		const { container } = render(ClassScheduleGrid, { schedules: [], periods });
 
 		const jours = entetes(container);
-		expect(jours).toContain('Dimanche');
-		expect(jours).toContain('Jeudi');
+		expect(jours).toContain('Lundi');
+		expect(jours).toContain('Vendredi');
+		expect(jours).not.toContain('Dimanche');
+		expect(jours).not.toContain('Samedi');
 	});
 });
