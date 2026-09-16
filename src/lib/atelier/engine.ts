@@ -65,6 +65,17 @@ function usable(atelier: Atelier): AtelierObject[] {
 	return atelier.objects.filter((o) => o.status === 'ok' && o.definition.trim() !== '');
 }
 
+/**
+ * Les objets qu'on peut DÉRIVER, même s'ils ne s'évaluent pas.
+ *
+ * Plus large que `usable` : un objet en attente d'un paramètre garde une
+ * définition lisible, donc dérivable. Seule une définition illisible est
+ * écartée.
+ */
+function derivable(atelier: Atelier): AtelierObject[] {
+	return atelier.objects.filter((o) => o.status !== 'error' && o.definition.trim() !== '');
+}
+
 /** L'empreinte de ce qui est poussé — deux empreintes égales, rien à refaire. */
 function fingerprint(objects: readonly AtelierObject[]): string {
 	return JSON.stringify(objects.map((o) => [o.kind, o.name, o.definition]));
@@ -195,9 +206,13 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 
 	// Premier passage : les arbres bruts, pour que le développement des dérivées
 	// puisse s'appuyer sur eux (`f'` a besoin de connaître `f`).
+	//
+	// ⚠️ Ici on prend AUSSI les objets en attente : `k(x) = bx` ne s'évalue pas,
+	// mais il se dérive — `k'` vaut `b`, sans qu'on sache ce que `b` vaut. Seul
+	// ce qui ne se LIT pas est écarté.
 	const raw: Record<string, FunctionDefinition> = {};
-	for (const object of usable(atelier)) {
-		const ast = astOf(object.definition);
+	for (const object of derivable(atelier)) {
+		const ast = astOf(object.definition, object.provenance, atelier.functionNames);
 		if (ast === null) continue;
 		if (object.kind === 'function') raw[object.name] = { expression: ast, parameters: ['x'] };
 		else if (object.kind === 'sequence') raw[object.name] = { expression: ast, parameters: ['n'] };
@@ -205,7 +220,7 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 
 	for (const object of usable(atelier)) {
 		if (object.name === exclude) continue;
-		const plain = astOf(object.definition);
+		const plain = astOf(object.definition, object.provenance, atelier.functionNames);
 		// ⚠️ Développé ICI aussi : sans quoi une fonction qui cite `g` recevrait
 		// `f'` par substitution, et le développement du niveau supérieur — déjà
 		// passé — ne le verrait jamais.
@@ -217,7 +232,7 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 		else if (object.kind === 'value') variables[object.name] = ast;
 	}
 
-	return { variables, functions };
+	return { variables, functions, derivableFunctions: raw };
 }
 
 /**
@@ -243,20 +258,34 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 export function expandInput(atelier: Atelier, text: string): string {
 	if (!text.includes("'") && !text.includes('’')) return text;
 
-	const ast = astOf(text);
+	const ast = astOf(text, 'url', atelier.functionNames);
 	if (ast === null) return text;
 
-	const { functions } = bindingsOf(atelier, '');
-	const expanded = expandDerivatives(ast, functions);
+	// ⚠️ Les bindings DÉRIVABLES, pas ceux de l'évaluation : `k(x) = bx` ne
+	// s'évalue pas mais se dérive, et `k'` doit valoir `b`.
+	const { derivableFunctions } = bindingsOf(atelier, '');
+	const expanded = expandDerivatives(ast, derivableFunctions);
 	return toCustom(expanded);
 }
 
-export function expressionOf(atelier: Atelier, name: string): Substituted {
+export function expressionOf(
+	atelier: Atelier,
+	name: string,
+	options?: { readonly forDerivation?: boolean }
+): Substituted {
 	const object = atelier.get(name);
 	if (object === undefined) {
 		return { ok: false, message: `« ${name} » n'existe pas dans l'atelier.` };
 	}
-	if (object.status !== 'ok') {
+	// ⚠️ **Évaluer et dériver n'ont pas les mêmes exigences.**
+	//
+	// `k(x) = bx` ne peut pas être ÉVALUÉ — on ne connaît pas `b` — mais il se
+	// DÉRIVE parfaitement : `k'` vaut `b`. Confondre les deux refusait une
+	// dérivée légitime (relevé par David) ; ne plus distinguer du tout laissait
+	// passer des évaluations sur du vide, et trois tests l'ont montré aussitôt.
+	const blocking =
+		options?.forDerivation === true ? ['error', 'incomplete'] : ['error', 'incomplete', 'pending'];
+	if (blocking.includes(object.status)) {
 		// Le message de l'objet dit déjà ce qui manque ou ce qui cloche ; le
 		// reformuler ici le ferait diverger de ce que montre le panneau.
 		return {
@@ -265,15 +294,16 @@ export function expressionOf(atelier: Atelier, name: string): Substituted {
 		};
 	}
 
-	const ast = astOf(object.definition);
+	const ast = astOf(object.definition, object.provenance, atelier.functionNames);
 	if (ast === null) {
 		return { ok: false, message: `« ${object.definition} » ne se lit pas.` };
 	}
 
-	const { variables, functions } = bindingsOf(atelier, name);
+	const { variables, functions, derivableFunctions } = bindingsOf(atelier, name);
 	// Les dérivées AVANT le reste : `f'` doit devenir une expression avant que
-	// `substituteAll` cherche à y remplacer des noms.
-	const expanded = expandDerivatives(ast, functions);
+	// `substituteAll` cherche à y remplacer des noms. Et on les développe avec
+	// les bindings DÉRIVABLES — un objet en attente se dérive.
+	const expanded = expandDerivatives(ast, derivableFunctions);
 	const substituted = substituteAll(expanded, variables, substituteFunction, {
 		functions: functions satisfies FunctionBindings
 	});

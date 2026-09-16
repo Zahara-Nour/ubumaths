@@ -75,12 +75,41 @@ export function readingMode(provenance: Provenance): ReadingMode {
  * syntaxe **custom** : c'est ce qu'un humain écrit au clavier. Deux effets
  * voulus — `a/b` devient une fraction, et `e` reste la constante d'Euler.
  */
-function parseByProvenance(definition: string, provenance: Provenance) {
+/**
+ * Les noms que le parseur doit reconnaître comme des FONCTIONS.
+ *
+ * ⚠️ `mathAST` n'accepte l'apostrophe que sur ses noms par défaut —
+ * `f g h u v w`. Mesuré : `f'` se lit, `k'` **échoue**. Or l'élève nomme ses
+ * fonctions comme il veut, et `k` est même l'un des noms que l'atelier propose…
+ * pour les valeurs.
+ *
+ * Signalé par David le 2026-09-16 (« on ne peut pas avoir k'(x)=b ? ») : la
+ * limite n'était pas dans la dérivation — `mathAST` dérive très bien `b*x` en
+ * `b` — mais dans la LECTURE, un cran avant.
+ *
+ * ⚠️⚠️ On n'ajoute QUE les noms réellement portés par une fonction de
+ * l'atelier. Déclarer tout l'alphabet casse la lecture du reste : `zzz(x)` se
+ * met à désigner des appels de fonction, et trois tests de l'attente l'ont
+ * montré aussitôt.
+ */
+const DEFAULT_FUNCTION_NAMES = ['f', 'g', 'h', 'u', 'v', 'w'] as const;
+
+function genericFunctionsFor(extraNames: readonly string[] | undefined) {
+	const names = new Set<string>(DEFAULT_FUNCTION_NAMES);
+	for (const name of extraNames ?? []) names.add(name);
+	return { names: [...names], allowDerivatives: true, allowInverse: true };
+}
+
+function parseByProvenance(
+	definition: string,
+	provenance: Provenance,
+	functionNames?: readonly string[]
+) {
 	if (readingMode(provenance) === 'latex') return parseLatexSafe(definition);
 
 	const detected = detectInputFormat(definition);
 	if (detected.format === 'latex' && detected.confidence > 0.5) return parseLatexSafe(definition);
-	return parseCustomSafe(definition);
+	return parseCustomSafe(definition, { genericFunctions: genericFunctionsFor(functionNames) });
 }
 
 /**
@@ -91,9 +120,13 @@ function parseByProvenance(definition: string, provenance: Provenance) {
  * garantit que le moteur lit la définition **exactement** comme le panneau —
  * même provenance, donc même syntaxe (décision D10).
  */
-export function astOf(definition: string, provenance: Provenance = 'url'): MathNode | null {
+export function astOf(
+	definition: string,
+	provenance: Provenance = 'url',
+	functionNames?: readonly string[]
+): MathNode | null {
 	if (definition.trim() === '') return null;
-	return parseByProvenance(definition, provenance).ast ?? null;
+	return parseByProvenance(definition, provenance, functionNames).ast ?? null;
 }
 
 /**
@@ -185,7 +218,8 @@ function commaUsedAsSeparator(definition: string): string | null {
 export function parseDefinition(
 	kind: ObjectKind,
 	definition: string,
-	provenance: Provenance = 'url'
+	provenance: Provenance = 'url',
+	functionNames?: readonly string[]
 ): ParsedDefinition {
 	if (definition.trim() === '') return {};
 
@@ -219,7 +253,7 @@ export function parseDefinition(
 
 	if (kind === 'value' && PLAIN_NUMBER.test(definition)) return {};
 
-	const result = parseByProvenance(definition, provenance);
+	const result = parseByProvenance(definition, provenance, functionNames);
 	if (!result.ast) {
 		return { error: `« ${definition.trim()} » n'est pas une expression valide.` };
 	}
@@ -250,9 +284,10 @@ export function parseDefinition(
  */
 export function referencesOf(
 	definition: string,
-	provenance: Provenance = 'url'
+	provenance: Provenance = 'url',
+	functionNames?: readonly string[]
 ): MissingReference[] {
-	const result = parseByProvenance(definition, provenance);
+	const result = parseByProvenance(definition, provenance, functionNames);
 	if (!result.ast) return [];
 
 	const found = new Map<string, MissingReference>();

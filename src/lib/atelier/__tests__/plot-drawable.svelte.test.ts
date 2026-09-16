@@ -106,14 +106,22 @@ describe('ce qui est tracé est dessinable', () => {
 	});
 });
 
-describe('une dérivée d’un objet indisponible le dit en français', () => {
-	// ⚠️ Vu à l'écran : `k'` sur un objet en attente rendait « Unexpected
-	// token: ' » — un message de parseur, en anglais.
-	it('refuse plutôt que de laisser le moteur trébucher', async () => {
+describe('une dérivée illisible le dit en français', () => {
+	/**
+	 * ⛔ **Ces tests disaient l'inverse hier, et ils avaient tort.**
+	 *
+	 * Ils vérifiaient que `k'` est REFUSÉ quand `k(x) = bx` attend `b`. David
+	 * l'a relevé : `k'` vaut `b`, et se calcule sans qu'on sache ce que `b`
+	 * vaut. Mon garde confondait « ne peut pas être évalué » et « ne peut pas
+	 * être dérivé ».
+	 *
+	 * Ce qui reste vrai : une définition **illisible** n'a pas de dérivée.
+	 */
+	it('refuse la dérivée d’un objet en erreur', async () => {
 		const { runInput } = await import('../calcul');
 		const { WebReplEngine } = await import('$lib/mathAST/cli/web/web-repl-engine');
 		const session = { atelier: new Atelier(), engine: new WebReplEngine() };
-		session.atelier.create({ kind: 'function', name: 'k', definition: 'b*x' }, 'text');
+		session.atelier.create({ kind: 'function', name: 'k', definition: 'x^^2' }, 'text');
 
 		const result = runInput(session, "k'");
 
@@ -121,10 +129,7 @@ describe('une dérivée d’un objet indisponible le dit en français', () => {
 		expect(result.kind === 'refus' && result.message).not.toMatch(/Unexpected token/);
 	});
 
-	// ⚠️ Le message est celui de l'OBJET, donc il nomme la cause racine (`b`)
-	// plutôt que l'intermédiaire (`k`) — et c'est mieux : l'élève doit définir
-	// `b`, pas comprendre que `k` est coincé.
-	it('et nomme ce qui manque vraiment', async () => {
+	it('mais calcule celle d’un objet en attente d’un paramètre', async () => {
 		const { runInput } = await import('../calcul');
 		const { WebReplEngine } = await import('$lib/mathAST/cli/web/web-repl-engine');
 		const session = { atelier: new Atelier(), engine: new WebReplEngine() };
@@ -132,7 +137,8 @@ describe('une dérivée d’un objet indisponible le dit en français', () => {
 
 		const result = runInput(session, "k'");
 
-		expect(result.kind === 'refus' && result.message).toMatch(/b/);
+		expect(result.kind).not.toBe('refus');
+		expect(result.kind === 'calcul' && result.output.replace(/\s/g, '')).toBe('b');
 	});
 
 	it('mais laisse passer la dérivée d’un objet sain', async () => {
