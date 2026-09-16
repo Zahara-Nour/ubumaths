@@ -25,17 +25,34 @@ describe('instance fournie par contexte', () => {
 		add?.click();
 		await new Promise((r) => setTimeout(r, 0));
 
-		expect(own.functions.length).toBeGreaterThan(0);
+		expect(own.functions.length).toBe(1);
 		expect(grapheurStore.functions.length).toBe(0);
 	});
 
-	it('deux instances ne se voient pas', () => {
-		const a = new GrapheurStore();
-		const b = new GrapheurStore();
+	// ⚠️ L'isolation en mémoire ne suffit pas : sans clé propre, une seconde
+	// instance chargerait l'état rangé par `/grapheur` puis l'écraserait à sa
+	// première modification. L'élève perdrait ses courbes sans un mot.
+	it('range son état sous SA clé, sans contaminer celle du grapheur', async () => {
+		const own = new GrapheurStore('atelier-test');
+		own.addFunction('x^{42}');
+		await new Promise((r) => setTimeout(r, 700)); // debounce de sauvegarde
 
-		a.addFunction('x^2');
-		expect(a.functions.length).toBe(1);
-		expect(b.functions.length).toBe(0);
-		expect(grapheurStore.functions.length).toBe(0);
+		expect(localStorage.getItem('atelier-test')).toContain('42');
+		expect(localStorage.getItem('chiphre-grapheur-state') ?? '').not.toContain('42');
+
+		localStorage.removeItem('atelier-test');
+	});
+
+	it('ne range rien du tout quand la clé est nulle', async () => {
+		const volatile = new GrapheurStore(null);
+		volatile.addFunction('x^{43}');
+		await new Promise((r) => setTimeout(r, 700));
+
+		expect(volatile.functions.length).toBe(1);
+		// nulle part : ni sous la clé du grapheur, ni ailleurs
+		const everything = Object.keys(localStorage)
+			.map((k) => localStorage.getItem(k) ?? '')
+			.join('');
+		expect(everything).not.toContain('43');
 	});
 });

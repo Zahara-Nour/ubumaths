@@ -11,7 +11,8 @@
  */
 
 import { getContext, hasContext, setContext } from 'svelte';
-import { GrapheurStore, grapheurStore } from './grapheur.svelte';
+import { grapheurStore } from './grapheur.svelte';
+import type { GrapheurStore } from './grapheur.svelte';
 
 const GRAPHEUR_KEY = Symbol('grapheur-store');
 

@@ -62,6 +62,25 @@ piloter une autre instance, il faut remonter le conteneur — `{#key}` suffit.
 Cas documenté comme légitime par [`warning-svelte.md`](../ref/warning-svelte.md)
 §1 (pattern snapshot). Le projet est à 0 warning, et le reste.
 
+## Deux pièges fermés, signalés par la revue
+
+**`CalculatorContainer` était le seul consommateur de production oublié.** Il
+monte `<GrapheurContainer />` mais écrivait en dur `grapheurStore.addFunction()`.
+Identique aujourd'hui — mais le jour où `/calc` reçoit une instance, « Tracer »
+aurait écrit dans le singleton et **la courbe ne serait jamais apparue, sans
+erreur**. Subtilité : ce composant est _au-dessus_ du fournisseur, donc
+`useGrapheurStore()` n'y voit rien — l'instance descend par une prop.
+
+**La clé de stockage était un const de module.** Le plus sérieux :
+`new GrapheurStore()`, le but même du refactor, aurait chargé les courbes de
+l'élève depuis `chiphre-grapheur-state` puis les aurait **écrasées** à la
+première édition. Isolation en mémoire acquise, persistance non. La clé est
+désormais injectable au constructeur, `null` signifiant « ne range rien ».
+
+⚠️ Le garde `if (key === null) return` vit **hors du `try`** : à l'intérieur,
+TypeScript ne le propage pas jusqu'au `catch`, et le chemin « quota dépassé »
+— qu'aucun test ne parcourt — restait non typé.
+
 ## Ce que ça n'est pas
 
 Le singleton **vit toujours** et reste l'instance par défaut. Ce n'est pas un
