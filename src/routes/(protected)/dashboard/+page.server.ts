@@ -44,6 +44,7 @@
 import type { PageServerLoad } from './$types';
 import { getStudentWorkInbox } from '$lib/server/student-inbox';
 import type { StudentWorkInbox } from '$lib/types/student-inbox';
+import type { WeekConfig } from '$lib/utils/week-config';
 import {
 	getObjectivesProgression,
 	getCompetencesProgression,
@@ -72,6 +73,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 		type: string;
 		color: string;
 	}> = [];
+
+	/** Semaine de l'école : jours travaillés et jours chômés. */
+	let weekConfig: WeekConfig | null = null;
 
 	// For students, fetch additional stats for rewards block and recent exercises
 	let riddlesSolved = 0;
@@ -117,6 +121,22 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	if ((profile.role === 'teacher' || profile.role === 'student') && schoolId) {
+		// La semaine de l'école : quels jours sont travaillés. Sans elle, tout ce
+		// qui raisonne sur « aujourd'hui » retombe sur un défaut codé en dur — et
+		// l'ancienne école chômait le vendredi.
+		const { data: school, error: schoolError } = await supabase
+			.from('schools')
+			.select('timetable')
+			.eq('id', schoolId)
+			.maybeSingle();
+
+		if (schoolError) {
+			console.error('Configuration de semaine illisible :', schoolError);
+		}
+
+		weekConfig =
+			((school?.timetable as { week_config?: WeekConfig } | null)?.week_config ?? null) || null;
+
 		// Fetch current school year for academic periods
 		const { data: schoolYearData, error: schoolYearDataError } = await supabase
 			.from('school_years')
@@ -296,6 +316,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			riddlesSolved,
 			recentExercises,
 			academicPeriods,
+			weekConfig,
 			minesweeperAchievements,
 			achievementStats,
 			inbox,
@@ -310,6 +331,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		riddlesSolved,
 		recentExercises,
 		academicPeriods,
+		weekConfig,
 		minesweeperAchievements: null,
 		achievementStats: null,
 		inbox: null as StudentWorkInbox | null,

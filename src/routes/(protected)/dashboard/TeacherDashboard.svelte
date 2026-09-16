@@ -365,14 +365,14 @@
 	 *
 	 * Matches current day/time against all class schedules:
 	 * 1. Validates teacher has classes and schedules configured
-	 * 2. Checks if current day is a school day (Sunday-Thursday)
+	 * 2. Vérifie que le jour est travaillé, d'après `week_config` de l'école
 	 * 3. Finds schedule entry matching current time
 	 * 4. Auto-selects matching class in dropdown
 	 * 5. Shows appropriate toast notification
 	 *
 	 * EDGE CASES HANDLED:
 	 * - Teacher with no classes → Error toast
-	 * - Weekend (Friday/Saturday) → Warning toast
+	 * - Jour chômé selon `week_config` de l'école → Warning toast
 	 * - No schedules configured → Error toast
 	 * - No class at current time → Info toast
 	 * - Class found → Success toast with details + auto-select
@@ -384,9 +384,9 @@
 			return;
 		}
 
-		// Edge case 2: Current day is weekend (Friday or Saturday)
-		if (isWeekend()) {
-			toaster.warning("Pas de cours aujourd'hui (weekend)");
+		// Edge case 2 : jour chômé, selon la semaine de CETTE école
+		if (isWeekend(data.weekConfig)) {
+			toaster.warning("Pas de cours aujourd'hui (week-end)");
 			return;
 		}
 
@@ -416,7 +416,8 @@
 		} else {
 			// NO MATCH: Valid school day/time, but no class scheduled
 			const message = getNoClassMessage(
-				classes as unknown as Array<Class & { schedules?: ClassSchedule[] }>
+				classes as unknown as Array<Class & { schedules?: ClassSchedule[] }>,
+				data.weekConfig
 			);
 			toaster.info(message);
 		}

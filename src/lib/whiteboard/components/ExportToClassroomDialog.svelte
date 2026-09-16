@@ -249,11 +249,6 @@
 		const minutes = now.getMinutes().toString().padStart(2, '0');
 		const currentTime = `${hours}:${minutes}:00`;
 
-		// Only school days (Sunday=0 to Thursday=4)
-		if (day < 0 || day > 4) {
-			return null;
-		}
-
 		for (const cls of classes) {
 			if (!cls.schedules || cls.schedules.length === 0) {
 				continue;
