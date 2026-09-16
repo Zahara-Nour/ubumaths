@@ -26,6 +26,7 @@ import {
 import { substituteAll } from '$lib/mathAST/eval/substitute';
 import { substituteFunction } from '$lib/mathAST/eval/function-bindings';
 import { toCustom } from '$lib/mathAST/custom-generator';
+import { differentiate } from '$lib/mathAST/differentiation';
 import { astOf } from './parse';
 
 // =============================================================================
@@ -108,6 +109,77 @@ export function syncEngine(atelier: Atelier, engine: WebReplEngine): void {
 	pushed.set(atelier, perEngine);
 }
 
+/**
+ * Remplacer `f'` par la dérivée de `f`, partout dans un arbre.
+ *
+ * ⚠️ **`substituteFunction` ne le fait pas** : il laisse `f'(x)` symbolique,
+ * c'est écrit dans sa documentation. Sans ce passage, `g = f'` rendait « f' »
+ * tel quel — un objet que l'atelier croyait sain et qui ne valait rien.
+ *
+ * La dérivée est recalculée **à chaque lecture**, jamais figée : c'est ce qui
+ * fait de `f'` une référence **vivante**. Modifier `f` change `g` sans que
+ * l'élève ait à y revenir.
+ */
+function expandDerivatives(
+	node: MathNode,
+	functions: Record<string, FunctionDefinition>
+): MathNode {
+	if (node === null || typeof node !== 'object') return node;
+
+	const current = node as MathNode & {
+		type?: string;
+		name?: string;
+		args?: MathNode[];
+		derivativeOrder?: number;
+	};
+
+	if (
+		current.type === 'function' &&
+		typeof current.name === 'string' &&
+		(current.derivativeOrder ?? 0) >= 1
+	) {
+		const target = functions[current.name];
+		if (target !== undefined) {
+			// Dériver autant de fois que l'apostrophe le demande : `f''` existe.
+			let derived = target.expression;
+			for (let order = 0; order < (current.derivativeOrder ?? 1); order++) {
+				derived = differentiate(derived);
+			}
+			// `f'` sans argument désigne la fonction ; `f'(2)` demande sa valeur en 2.
+			const args = current.args ?? [];
+			if (args.length === 0) return expandDerivatives(derived, functions);
+			return expandDerivatives(
+				substituteAll(derived, { [target.parameters[0] ?? 'x']: args[0] }, substituteFunction),
+				functions
+			);
+		}
+	}
+
+	// Descente générique : les nœuds portent leurs enfants sous des noms variés
+	// (`left`/`right`, `args`, `operand`, `base`/`exponent`…). Les parcourir tous
+	// évite d'énumérer les 27 formes de `MathNode` — et d'en oublier une à la
+	// prochaine qui s'ajoutera.
+	//
+	// ⚠️ Le double passage par `unknown` est délibéré : `MathNode` est une union
+	// discriminée, et TypeScript refuse à juste titre qu'un objet reconstruit clé
+	// par clé s'y convertisse directement. C'est la seule forme du module qui ne
+	// se vérifie pas statiquement — les tests couvrent les cas, y compris les
+	// dérivées imbriquées et composées.
+	const copy = { ...(node as unknown as Record<string, unknown>) };
+	for (const [key, value] of Object.entries(copy)) {
+		if (Array.isArray(value)) {
+			copy[key] = value.map((item) =>
+				item !== null && typeof item === 'object'
+					? expandDerivatives(item as MathNode, functions)
+					: item
+			);
+		} else if (value !== null && typeof value === 'object') {
+			copy[key] = expandDerivatives(value as MathNode, functions);
+		}
+	}
+	return copy as unknown as MathNode;
+}
+
 /** Les définitions des AUTRES objets, sous la forme qu'attend `substituteAll`. */
 function bindingsOf(atelier: Atelier, exclude: string) {
 	const variables: Record<string, MathNode> = {};
@@ -139,6 +211,24 @@ function bindingsOf(atelier: Atelier, exclude: string) {
  * La substitution est **récursive** (`substituteAll` itère) : sans ça, `f` qui
  * cite `g` reproduirait le défaut un étage plus bas.
  */
+/**
+ * Développer les dérivées d'une saisie libre, avant de la donner au moteur.
+ *
+ * ⚠️ Le moteur ne connaît pas `f'` : `f'` n'est pas un identifiant qu'il puisse
+ * lier. C'est donc à l'atelier de traduire avant d'appeler, comme pour les noms
+ * d'objets.
+ */
+export function expandInput(atelier: Atelier, text: string): string {
+	if (!text.includes("'") && !text.includes('’')) return text;
+
+	const ast = astOf(text);
+	if (ast === null) return text;
+
+	const { functions } = bindingsOf(atelier, '');
+	const expanded = expandDerivatives(ast, functions);
+	return toCustom(expanded);
+}
+
 export function expressionOf(atelier: Atelier, name: string): Substituted {
 	const object = atelier.get(name);
 	if (object === undefined) {
@@ -159,7 +249,10 @@ export function expressionOf(atelier: Atelier, name: string): Substituted {
 	}
 
 	const { variables, functions } = bindingsOf(atelier, name);
-	const substituted = substituteAll(ast, variables, substituteFunction, {
+	// Les dérivées AVANT le reste : `f'` doit devenir une expression avant que
+	// `substituteAll` cherche à y remplacer des noms.
+	const expanded = expandDerivatives(ast, functions);
+	const substituted = substituteAll(expanded, variables, substituteFunction, {
 		functions: functions satisfies FunctionBindings
 	});
 
