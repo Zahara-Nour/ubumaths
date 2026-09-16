@@ -25,7 +25,8 @@ import type {
 	SequenceState,
 	SnappedPoint,
 	Parameter,
-	ScatterPlottable
+	ScatterPlottable,
+	ScatterState
 } from '$lib/grapheur/types';
 import {
 	DEFAULT_PARAMETER_MAX,
@@ -33,6 +34,7 @@ import {
 	GRAPH_STATE_VERSION,
 	graphStateSchema,
 	isSequence,
+	isScatter,
 	nextParameterName,
 	RESERVED_PARAMETER_NAMES
 } from '$lib/grapheur/types';
@@ -766,6 +768,23 @@ class GrapheurStore {
 					return sequenceState;
 				}
 
+				// ⚠️ Le nuage AVANT le repli sur « fonction » : avec trois membres dans
+				// l'union, le `else` implicite ne veut plus dire « explicit ».
+				if (isScatter(p)) {
+					const scatterState: ScatterState = {
+						id: p.id,
+						type: p.type,
+						label: p.label,
+						xs: [...p.xs],
+						ys: [...p.ys],
+						color: p.color,
+						visible: p.visible,
+						lineWidth: p.lineWidth,
+						lineStyle: p.lineStyle
+					};
+					return scatterState;
+				}
+
 				const functionState: ExplicitFunctionState = {
 					id: p.id,
 					type: p.type,
@@ -820,6 +839,21 @@ class GrapheurStore {
 
 			// Re-parse everything (AST is not stored)
 			this.functions = state.functions.map((p): Plottable => {
+				// Un nuage n'a rien à reparser : ses deux séries sont la donnée.
+				if (p.type === 'scatter') {
+					const scatter: ScatterPlottable = {
+						id: p.id,
+						type: p.type,
+						label: p.label,
+						xs: p.xs,
+						ys: p.ys,
+						color: p.color,
+						visible: p.visible,
+						lineWidth: p.lineWidth,
+						lineStyle: p.lineStyle ?? 'solid'
+					};
+					return scatter;
+				}
 				if (p.type === 'sequence') {
 					const parseResult = parseSequence(
 						p.latex,

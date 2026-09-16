@@ -392,11 +392,14 @@
 		}
 
 		const descriptions = funcs
-			.map((p) =>
-				p.type === 'sequence'
-					? `suite ${p.name}${p.latex ? ` : ${p.latex}` : ''}`
-					: p.latex || 'fonction inconnue'
-			)
+			.map((p) => {
+				// ⚠️ Les trois types sont nommés : avec l'union élargie, un `else`
+				// aurait décrit un nuage comme « fonction inconnue » — le texte que
+				// lit un lecteur d'écran.
+				if (p.type === 'sequence') return `suite ${p.name}${p.latex ? ` : ${p.latex}` : ''}`;
+				if (p.type === 'scatter') return `nuage de points ${p.label}`;
+				return p.latex || 'fonction inconnue';
+			})
 			.join(', ');
 
 		return `Graphique mathematique avec ${funcs.length} trace(s): ${descriptions}. Fenetre de x=${xMin} a ${xMax}, y=${yMin} a ${yMax}.`;

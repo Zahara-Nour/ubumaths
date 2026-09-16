@@ -9,7 +9,6 @@
 	import { useAtelier } from '$lib/atelier/context';
 	import { isList } from '$lib/atelier/types';
 	import { describeList } from '$lib/atelier/stats';
-	import { Button } from '$lib/components/ui/button';
 
 	const atelier = useAtelier();
 

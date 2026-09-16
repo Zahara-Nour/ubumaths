@@ -245,7 +245,15 @@ export interface SequenceState {
 	readonly lineStyle: LineStyle;
 }
 
-export type PlottableState = ExplicitFunctionState | SequenceState;
+/**
+ * Ce qu'on range d'un nuage : ses deux séries, rien de plus.
+ *
+ * ⚠️ Un nuage n'a pas d'expression à reparser — c'est ce qui le distingue des
+ * deux autres à la relecture.
+ */
+export type ScatterState = z.infer<typeof scatterStateSchema>;
+
+export type PlottableState = ExplicitFunctionState | SequenceState | ScatterState;
 
 // =============================================================================
 // Parameters

@@ -162,3 +162,27 @@ qu'elle écrit.
       déclencheur)
 - [ ] Étape 4 — l'ajustement affine crée une fonction traçable (§3)
 - [ ] Étape 5 — la vue Données et ses actions
+
+## ⚠️ Élargir une union de types casse tous les `else` implicites
+
+La CI a rougi sur `Type Check` là où mes 900 tests étaient verts : **vitest ne
+vérifie pas les types**.
+
+Ajouter un troisième membre à `Plottable` a cassé tout le code qui supposait
+qu'il n'y en avait que deux. Partout où le code faisait
+`if (isSequence(p)) {…} else { /* forcément explicit */ }`, TypeScript sait
+désormais que le `else` peut être un nuage :
+
+| Fichier                | Ce qui manquait                                                         |
+| ---------------------- | ----------------------------------------------------------------------- |
+| `types.ts`             | `ScatterState` absent de `PlottableState`                               |
+| `grapheur.svelte.ts`   | sérialisation ET relecture ne connaissaient pas le nuage                |
+| `FunctionPanel.svelte` | `{:else}` passait un nuage à `SequenceInput`                            |
+| `GraphSVG.svelte`      | un nuage aurait été décrit « fonction inconnue » **au lecteur d'écran** |
+
+J'avais repéré ce piège dans la boucle de rendu et l'avais corrigé là. Je ne
+l'avais pas cherché **ailleurs** — c'est le même défaut, dans quatre fichiers.
+
+Une erreur de lint au passage : `Button` importé sans être utilisé dans
+`DataView`. C'est l'angle mort connu de `lint:fast`, qui ne descend pas dans le
+`<script>` d'un `.svelte`.
