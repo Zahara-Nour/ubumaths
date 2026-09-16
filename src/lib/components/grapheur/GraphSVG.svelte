@@ -423,11 +423,14 @@
 			<GridLines viewport={grapheurStore.viewport} {transformer} {width} {height} />
 		{/if}
 
-		<!-- Asymptote lines (behind curves) -->
-		<AsymptoteLines {transformer} {width} {height} />
-
 		<!-- Coordinate axes -->
 		<AxisLines viewport={grapheurStore.viewport} {transformer} {width} {height} />
+
+		<!-- Asymptotes : AU-DESSUS des axes, en dessous des courbes.
+		     Dessinées sous les axes, celles de 1/x étaient invisibles : x = 0 et
+		     y = 0 SONT les axes, et un pointillé à 50 % d'opacité disparaît sous
+		     un trait plein. C'est pourtant l'exemple d'asymptotes par excellence. -->
+		<AsymptoteLines {transformer} {width} {height} />
 
 		<!-- Function curves and sequence plots -->
 		<g class="function-curves">
