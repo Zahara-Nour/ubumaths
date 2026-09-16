@@ -11,10 +11,12 @@
 	import { provideAtelier } from '$lib/atelier/context';
 	import { openSession, type Session, type SessionNotice } from '$lib/atelier/session';
 	import type { AtelierObject } from '$lib/atelier/types';
+	import type { AtelierState } from '$lib/atelier/persistence';
 	import type { ObjectAction } from '$lib/atelier/actions';
 	import ObjectPanel from './ObjectPanel.svelte';
 	import CalculView from './CalculView.svelte';
 	import DataView from './DataView.svelte';
+	import ShareBar from './ShareBar.svelte';
 	import { CalcDesk } from '$lib/atelier/desk.svelte';
 	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
 	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
@@ -27,6 +29,10 @@
 		view?: ViewId;
 		/** Ne rien charger ni ranger — mode éphémère (§6, §7 N2). */
 		ephemeral?: boolean;
+		/** L'atelier reçu par l'URL. Sa présence fait le mode éphémère. */
+		received?: AtelierState | null;
+		/** Ce que la relecture de l'URL a eu à dire. */
+		notice?: string | null;
 	}
 
 	type ViewId = 'calcul' | 'graphe' | 'donnees';
@@ -37,7 +43,13 @@
 		{ id: 'donnees', label: 'Données' }
 	];
 
-	let { atelier = new Atelier(), view = 'calcul', ephemeral = false }: Props = $props();
+	let {
+		atelier = new Atelier(),
+		view = 'calcul',
+		ephemeral = false,
+		received = null,
+		notice = null
+	}: Props = $props();
 
 	// svelte-ignore state_referenced_locally
 	provideAtelier(atelier);
@@ -157,6 +169,7 @@
 	<ObjectPanel bind:selected onAction={handleAction} />
 
 	<main class="zone">
+		<ShareBar {received} {notice} />
 		<nav class="onglets" aria-label="Vues de l'atelier">
 			{#each VIEWS as item (item.id)}
 				<button

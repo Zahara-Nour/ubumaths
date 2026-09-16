@@ -59,7 +59,7 @@ const storedObjectSchema = z.object({
  * L'enveloppe, volontairement permissive : elle ne juge QUE la forme générale.
  * Le tri des objets se fait un par un, pour n'en perdre qu'un à la fois.
  */
-const atelierShellSchema = z.object({
+export const atelierShellSchema = z.object({
 	version: z.number().int().positive(),
 	objects: z.array(z.unknown())
 });
@@ -152,7 +152,7 @@ export function loadAtelier(storage: Storage | null): LoadOutcome {
  *
  * Jamais de rejet en bloc : un objet abîmé ne doit pas coûter tout l'atelier.
  */
-function salvageObjects(candidates: readonly unknown[]): {
+export function salvageObjects(candidates: readonly unknown[]): {
 	objects: StoredObject[];
 	dropped: number;
 } {
