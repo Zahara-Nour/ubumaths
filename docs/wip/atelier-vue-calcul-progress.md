@@ -83,10 +83,43 @@ prouver. Le cas qui mord est `convert`, branché en dur donc ajouté **après**
 tout le registre : sans la relégation finale, « convertir », qui sert au
 collège, s'afficherait après « empreinte ».
 
+## Étape 3 — la saisie, et garder un résultat (fait)
+
+`src/lib/atelier/calcul.ts` : `runInput()` et `promote()`.
+
+Un seul champ. Ce que l'élève tape est une **définition** (elle crée ou met à
+jour un objet), un **calcul** (il produit une ligne d'historique), ou une
+**commande** (elle commence par un point). Le moteur est remis en accord avec
+l'atelier **avant** toute évaluation : c'est ce qui fait que `f(2)` répond sans
+que l'élève redéclare `f`.
+
+### `x = 3` n'est pas un test d'égalité
+
+Mon premier jet écartait `x` de la détection de définition, via
+`hasObjectNameShape` — qui exclut les noms réservés. Conséquence : `x = 3`
+tombait en **calcul** et le moteur répondait sans broncher, alors que le §2 L2
+demande un refus qui explique. La forme du membre gauche est déjà garantie par
+l'expression régulière (`3 = 3` n'y entre pas) ; c'est `validateName` qui doit
+trancher sur le nom.
+
+### Garder un résultat : le type suit le contenu
+
+`promote()` sans nom en propose un. Un résultat qui contient `x` devient une
+**fonction**, donc traçable — c'est ce qui permet d'enchaîner « je dérive »
+puis « je trace la dérivée » (§4 N2, D7).
+
+Les commandes répondant en plusieurs lignes (`d/dx(x^2) = 2x`, puis
+`LaTeX: 2 x`), c'est ce qui suit le dernier `=` de la première ligne qui est
+gardé.
+
+### Une commande inconnue est vérifiée AVANT d'être exécutée
+
+Laissée au moteur, elle produit « Unknown command » en anglais, sans rien
+proposer. L'atelier nomme les deux plus proches : `.dériiver` → « Peut-être :
+« .dériver » ? ».
+
 ## Étapes suivantes
 
-- [ ] Étape 3 — la saisie : définition / calcul / commande (§2)
-- [ ] Étape 4 — garder un résultat sous un nom (§4, D5)
 - [ ] Étape 5 — les quatre actions du panneau (§6)
 - [ ] Étape 6 — le rendu mathématique (§3, §6 ter)
 - [ ] Étape 7 — `/atelier` en navigation (Q2)
