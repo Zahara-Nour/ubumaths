@@ -1,6 +1,6 @@
 ---
 titre: Atelier — URL, mode éphémère et garanties /grapheur (lot 5)
-statut: Phase 0, en attente de validation
+statut: Phase 0, validée le 2026-09-16 — les tests peuvent être écrits
 date: 2026-09-16
 scope: partage par URL, mode éphémère, ouverture épurée de /grapheur
 ---
@@ -77,9 +77,9 @@ voir **Q1**.
 
 ---
 
-## 4. Les trois questions
+## 4. Les trois questions — tranchées le 2026-09-16
 
-### Q1 — Compresser, et que faire sans `CompressionStream` ?
+### Q1 — Compresser ? → **oui, avec repli base64 brut et préfixe**
 
 | Approche                                                   | Avantages                                                                                                       | Inconvénients                                                                |
 | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -87,11 +87,11 @@ voir **Q1**.
 | **B — compresser seulement**                               | Un seul format                                                                                                  | Sur Safari < 16.4, **aucun partage** — un élève ne comprendrait pas pourquoi |
 | **C — base64 brut seulement**                              | Simple                                                                                                          | Plafonds à diviser par huit, ou promesse de D8 abandonnée                    |
 
-**Ma recommandation : A.** Le lien porte un préfixe d'un caractère (`1` =
+**Tranché : A.** Le lien porte un préfixe d'un caractère (`1` =
 compressé, `0` = brut), donc la relecture ne devine rien. Et la limite annoncée
 à l'élève s'adapte à ce que son navigateur sait faire.
 
-### Q2 — Que fait « garder dans mon atelier » sur une collision ?
+### Q2 — Collision à la fusion ? → **l'arrivant est renommé, avec compte rendu**
 
 L'élève reçoit un atelier contenant `f`, et il a déjà un `f`.
 
@@ -101,17 +101,17 @@ L'élève reçoit un atelier contenant `f`, et il a déjà un `f`.
 | **B — demander pour chaque collision**                   | Contrôle total                                                | Un écran par nom ; insupportable au-delà de deux         |
 | **C — refuser la fusion**                                | Sans surprise                                                 | L'élève ne peut rien garder de ce qu'il a reçu           |
 
-**Ma recommandation : A**, avec un compte rendu (« 3 objets ajoutés, `f` renommé
+**Tranché : A**, avec un compte rendu (« 3 objets ajoutés, `f` renommé
 en `f_1` »). C'est la règle qui vaut déjà partout ailleurs dans l'atelier :
 **jamais d'écrasement silencieux**.
 
-### Q3 — L'ouverture épurée de `/grapheur` : maintenant, ou plus tard ?
+### Q3 — L'ouverture épurée de `/grapheur` ? → **maintenant, et réversible**
 
 Le §7 demande que `/grapheur` s'ouvre sur la vue Graphe seule, panneau replié,
 sans onglets. C'est un **changement d'écran sur une page en production**, que
 tu utilises pour projeter en classe.
 
-**Ma recommandation : la faire, mais la garder réversible** — l'état replié ou
+**Tranché : la faire, en la gardant réversible** — l'état replié ou
 déplié est retenu (§7 N3), donc un dépliage te ramène à l'écran actuel. Le
 risque est borné, et sans ça la garantie de la décision figée n° 5 n'est pas
 tenue.
