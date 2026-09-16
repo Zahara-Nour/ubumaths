@@ -10,7 +10,9 @@ import {
 	ATELIER_STORAGE_KEY,
 	ATELIER_STATE_VERSION,
 	loadAtelier,
-	saveAtelier
+	saveAtelier,
+	adoptGrapheurState,
+	readForeignWrite
 } from '../persistence';
 import type { AtelierState } from '../persistence';
 
@@ -129,5 +131,116 @@ describe('cas limites', () => {
 
 		expect(loadAtelier(hostile).kind).toBe('unavailable');
 		expect(saveAtelier(hostile, state).kind).toBe('unavailable');
+	});
+});
+
+// =============================================================================
+// §5 L5 — reprendre un atelier venu du grapheur
+// =============================================================================
+
+describe('reprise de l’ancien état du grapheur', () => {
+	const GRAPHEUR_KEY = 'chiphre-grapheur-state';
+
+	function grapheurState(functions: { latex: string }[]) {
+		return JSON.stringify({ version: 2, functions, viewport: { xMin: -10, xMax: 10 } });
+	}
+
+	it('nomme les fonctions anonymes du grapheur', () => {
+		const s = fakeStorage();
+		s.setItem(GRAPHEUR_KEY, grapheurState([{ latex: 'x^2' }, { latex: '2x+1' }]));
+
+		const out = adoptGrapheurState(s);
+		expect(out.kind).toBe('adopted');
+		if (out.kind !== 'adopted') return;
+		expect(out.state.objects.map((o) => o.name)).toEqual(['f', 'g']);
+		expect(out.state.objects.map((o) => o.definition)).toEqual(['x^2', '2x+1']);
+	});
+
+	// L'ancienne clé est CONSERVÉE : /grapheur continue de vivre sa vie.
+	it('ne touche pas à l’état du grapheur', () => {
+		const s = fakeStorage();
+		const original = grapheurState([{ latex: 'x^2' }]);
+		s.setItem(GRAPHEUR_KEY, original);
+
+		adoptGrapheurState(s);
+		expect(s.getItem(GRAPHEUR_KEY)).toBe(original);
+	});
+
+	it('ne reprend rien quand l’atelier a déjà son état', () => {
+		const s = fakeStorage();
+		s.setItem(GRAPHEUR_KEY, grapheurState([{ latex: 'x^2' }]));
+		saveAtelier(s, state);
+
+		expect(adoptGrapheurState(s).kind).toBe('skipped');
+	});
+
+	it('ne reprend rien quand le grapheur est vide', () => {
+		expect(adoptGrapheurState(fakeStorage()).kind).toBe('nothing');
+	});
+
+	it('écarte une fonction sans expression sans tout perdre', () => {
+		const s = fakeStorage();
+		s.setItem(GRAPHEUR_KEY, grapheurState([{ latex: '' }, { latex: 'x^3' }]));
+
+		const out = adoptGrapheurState(s);
+		expect(out.kind).toBe('adopted');
+		if (out.kind !== 'adopted') return;
+		expect(out.state.objects.map((o) => o.definition)).toEqual(['x^3']);
+	});
+
+	it('survit à un état de grapheur illisible', () => {
+		const s = fakeStorage();
+		s.setItem(GRAPHEUR_KEY, 'pas du json');
+		expect(adoptGrapheurState(s).kind).toBe('nothing');
+	});
+});
+
+// =============================================================================
+// §5 L4 — un autre onglet a écrit
+// =============================================================================
+
+describe('un autre onglet écrit', () => {
+	/** Fabrique l'événement que le navigateur émet quand une AUTRE page écrit. */
+	function storageEvent(key: string, newValue: string | null): StorageEvent {
+		return { key, newValue } as StorageEvent;
+	}
+
+	it('reconnaît une écriture de l’atelier venue d’ailleurs', () => {
+		const next = JSON.stringify({ version: ATELIER_STATE_VERSION, objects: [] });
+		const out = readForeignWrite(storageEvent(ATELIER_STORAGE_KEY, next));
+
+		expect(out.kind).toBe('changed');
+		if (out.kind !== 'changed') return;
+		expect(out.message.toLowerCase()).toContain('onglet');
+	});
+
+	it('ignore les écritures qui ne nous concernent pas', () => {
+		expect(readForeignWrite(storageEvent('chiphre-calc-history', '[]')).kind).toBe('ignored');
+		expect(readForeignWrite(storageEvent('chiphre-grapheur-state', '{}')).kind).toBe('ignored');
+	});
+
+	// Un autre onglet a vidé l'atelier : c'est une écriture comme une autre, et
+	// elle mérite le même avertissement.
+	it('reconnaît un effacement', () => {
+		expect(readForeignWrite(storageEvent(ATELIER_STORAGE_KEY, null)).kind).toBe('cleared');
+	});
+
+	it('signale un contenu illisible sans jeter', () => {
+		expect(readForeignWrite(storageEvent(ATELIER_STORAGE_KEY, '{ cassé')).kind).toBe('corrupt');
+	});
+
+	// ⚠️ Le dernier qui écrit gagne — on ne fusionne PAS. Mais on prévient, ce
+	// que le grapheur ne fait pas aujourd'hui : deux onglets s'y écrasent en
+	// silence.
+	it('rend l’état reçu, pour que l’appelant puisse proposer de le reprendre', () => {
+		const next = JSON.stringify({
+			version: ATELIER_STATE_VERSION,
+			objects: [{ name: 'f', kind: 'function', definition: 'x^2' }]
+		});
+		const out = readForeignWrite(storageEvent(ATELIER_STORAGE_KEY, next));
+
+		expect(out.kind).toBe('changed');
+		if (out.kind !== 'changed') return;
+		expect(out.state.objects).toHaveLength(1);
 	});
 });

@@ -1,7 +1,7 @@
 ---
 title: Atelier — persistance locale (§5)
 date: 2026-09-16
-status: lot 1 fait (ranger, relire, cas limites) ; L4 et L5 à venir
+status: §5 complet — ranger, relire, cas limites, deux onglets, reprise du grapheur
 branche: feat/atelier-persistance
 ---
 
@@ -87,9 +87,35 @@ vaut rien.
 
 ---
 
-## Reste à faire du §5
+## L4 — un autre onglet a écrit
 
-- **L4 — deux onglets** : le dernier qui écrit gagne, mais on prévient. Demande
-  d'écouter l'événement `storage`.
-- **L5 — reprendre un ancien `chiphre-grapheur-state`** : les fonctions anonymes
-  reçoivent un nom, l'ancienne clé est conservée le temps d'une version.
+`readForeignWrite(event)` lit ce qu'une autre page vient de ranger. Le navigateur
+n'émet `storage` que dans les **autres** pages de la même origine : recevoir cet
+événement signifie donc littéralement « quelqu'un d'autre a touché à l'atelier ».
+
+⚠️ **Le dernier qui écrit gagne, et on ne fusionne pas** — mais on prévient.
+C'est la différence avec le grapheur, où deux onglets s'écrasent aujourd'hui en
+silence. L'état reçu est rendu à l'appelant, qui peut proposer de le reprendre
+plutôt que d'imposer un choix.
+
+Quatre issues : `changed`, `cleared` (un onglet a vidé l'atelier), `corrupt`,
+`ignored` (une écriture qui ne nous concerne pas).
+
+## L5 — reprendre ce qui a été tracé dans le grapheur
+
+`adoptGrapheurState(storage)` propose à l'atelier les courbes de `/grapheur`.
+Elles n'ont **pas de nom** — le grapheur ne nomme pas ses fonctions — donc elles
+reçoivent `f`, `g`, `h`… puisqu'un objet d'atelier se désigne par son nom (§1).
+
+⚠️ **L'état du grapheur est laissé intact** : c'est une copie, pas un
+déménagement. `/grapheur` continue de vivre sa vie et l'élève ne perd rien s'il y
+retourne. La reprise ne se fait donc qu'une fois, quand l'atelier n'a encore rien
+à lui (`skipped` sinon).
+
+Une courbe sans expression est écartée sans coûter les autres.
+
+## Reste à faire
+
+Brancher tout ceci sur l'atelier réel — chargement au démarrage, sauvegarde
+différée, écoute de l'événement `storage`. Ce sont des gestes de composant : ils
+appartiennent au **lot des vues**.
