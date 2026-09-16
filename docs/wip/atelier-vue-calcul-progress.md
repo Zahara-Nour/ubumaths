@@ -162,7 +162,35 @@ a attrapé **quatre que j'avais inventés** :
 Et une cinquième fois, c'était **mon décor** qui était faux : il exécutait
 `.poser` sans le résoudre, donc l'exemple de `.oublier` était accusé à tort.
 
+## Étape 5 — le rendu mathématique (fait)
+
+`src/lib/atelier/render.ts` : `renderResult()`.
+
+Le champ `latex` de `ReplExecutionResult` n'étant **jamais rempli**, le LaTeX est
+produit ici. Trois sources, dans cet ordre :
+
+1. **le texte, s'il contient déjà du LaTeX** — c'est le cas des grandeurs :
+   le moteur rend « \dfrac{123}{10} km », et c'est le **seul** endroit où
+   l'unité survit, l'arbre l'ayant perdue ;
+2. **`result.ast`** pour une expression : il porte le RÉSULTAT (`1/3 + 1/6`
+   donne l'arbre de `1/2`, mesuré) ;
+3. **rien** — et le texte s'affiche tel quel (§3 L1 : mieux vaut du texte propre
+   qu'un rendu mathématique faux).
+
+### Deux pièges, tous deux mesurés
+
+**Ne jamais reparser la sortie texte.** `(x^2-1)/(x+1)` rend
+« (x^2-1):/(x+1) (variables: x) » ; reparser cette chaîne donne
+« v a r \imaginaryI a b l \exponentialE s » — le mot « variables » lu comme un
+produit de lettres.
+
+**Pour une commande, `result.ast` porte l'ENTRÉE, pas le résultat.** Le rendre
+afficherait « x² » là où `.dériver x^2` répond « 2x » : un résultat faux,
+joliment composé — le pire des deux mondes. D'où l'option `fromCommand`.
+
+Au passage, deux annotations de terminal disparaissent de ce que lit l'élève :
+la ligne « LaTeX: 2 x » et le suffixe « (variables: x) ».
+
 ## Étapes suivantes
 
-- [ ] Étape 6 — le rendu mathématique (§3, §6 ter)
 - [ ] Étape 7 — `/atelier` en navigation (Q2)

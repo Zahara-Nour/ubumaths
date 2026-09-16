@@ -75,6 +75,15 @@ describe('ce que la saisie produit', () => {
 		expect(s.atelier.get('f')?.definition).toContain('x^3');
 	});
 
+	// §3 N1 : une fraction doit se voir comme une fraction, pas en font-mono
+	it('rend le résultat d’un calcul en mathématiques', () => {
+		const s = session();
+
+		const result = runInput(s, '1/3 + 1/6');
+
+		expect(result.kind === 'calcul' && result.latex).toBe('\\dfrac{1}{2}');
+	});
+
 	it('exécute une commande française', () => {
 		const s = session();
 

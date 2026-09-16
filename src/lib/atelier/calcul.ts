@@ -19,6 +19,7 @@ import { validateName, nameRejectionMessage, nextName } from './names';
 import { astOf, readNumber } from './parse';
 import { syncEngine, expressionOf } from './engine';
 import { resolveCommand, suggestFor, commandCatalog } from './commands';
+import { renderResult } from './render';
 
 // =============================================================================
 // Types
@@ -34,13 +35,23 @@ export interface CalcSession {
 export type CalcResult =
 	| { readonly kind: 'vide' }
 	| { readonly kind: 'definition'; readonly name: string; readonly object: AtelierObject }
-	| { readonly kind: 'calcul'; readonly input: string; readonly output: string }
-	| { readonly kind: 'commande'; readonly input: string; readonly output: string }
+	| {
+			readonly kind: 'calcul';
+			readonly input: string;
+			readonly output: string;
+			readonly latex?: string;
+	  }
+	| {
+			readonly kind: 'commande';
+			readonly input: string;
+			readonly output: string;
+			readonly latex?: string;
+	  }
 	| { readonly kind: 'refus'; readonly message: string };
 
 /** Ce qu'une action attachée à un objet a produit. */
 export type ActionOutcome =
-	| { readonly ok: true; readonly output: string }
+	| { readonly ok: true; readonly output: string; readonly latex?: string }
 	| { readonly ok: false; readonly message: string };
 
 // =============================================================================
@@ -63,22 +74,6 @@ const DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*(?:\(\s*([A-Za-z])\s*\))?\s*=\s*(.
 function kindOf(parameter: string | undefined): ObjectKind {
 	if (parameter === 'n') return 'sequence';
 	return parameter === undefined ? 'value' : 'function';
-}
-
-/**
- * Ce que le moteur a renvoyé, débarrassé de ce qui ne regarde pas l'élève.
- *
- * ⚠️ Les commandes ajoutent une ligne « LaTeX: 2 x » après leur résultat — une
- * sortie de terminal (§6 ter). Elle ne dit rien à un élève, et elle SERA
- * remplacée par le vrai rendu mathématique ; en attendant, mieux vaut ne pas
- * l'afficher que l'afficher telle quelle.
- */
-function readOutput(result: { output: string; outputHtml?: string }): string {
-	return result.output
-		.split('\n')
-		.filter((line) => !/^\s*LaTeX\s*:/.test(line))
-		.join('\n')
-		.trim();
 }
 
 /**
@@ -140,7 +135,15 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	}
 
 	const result = engine.execute(resolved);
-	return { kind: 'commande', input, output: readOutput(result) };
+	// `fromCommand` : pour une commande, `result.ast` porte l'ENTRÉE. Le rendre
+	// afficherait « x^2 » là où `.dériver x^2` répond « 2x » (voir `render.ts`).
+	const rendered = renderResult(result, { fromCommand: true });
+	return {
+		kind: 'commande',
+		input,
+		output: rendered.text,
+		...(rendered.latex && { latex: rendered.latex })
+	};
 }
 
 /**
@@ -175,7 +178,13 @@ export function runInput(
 	}
 
 	const result = session.engine.execute(input);
-	return { kind: 'calcul', input, output: readOutput(result) };
+	const rendered = renderResult(result);
+	return {
+		kind: 'calcul',
+		input,
+		output: rendered.text,
+		...(rendered.latex && { latex: rendered.latex })
+	};
 }
 
 /** L'expression qu'une ligne d'historique permet de garder, s'il y en a une. */
@@ -286,7 +295,8 @@ export function runAction(
 		if (!result.success) {
 			return { ok: false, message: `Impossible de calculer ${name}(${argument}).` };
 		}
-		return { ok: true, output: readOutput(result) };
+		const rendered = renderResult(result);
+		return { ok: true, output: rendered.text, ...(rendered.latex && { latex: rendered.latex }) };
 	}
 
 	const build = ACTION_COMMANDS[actionId];
@@ -295,8 +305,9 @@ export function runAction(
 	}
 
 	const result = engine.execute(build(substituted.expression));
+	const rendered = renderResult(result, { fromCommand: true });
 	if (!result.success) {
-		return { ok: false, message: readOutput(result) || 'Le calcul n’a pas abouti.' };
+		return { ok: false, message: rendered.text || 'Le calcul n’a pas abouti.' };
 	}
-	return { ok: true, output: readOutput(result) };
+	return { ok: true, output: rendered.text };
 }

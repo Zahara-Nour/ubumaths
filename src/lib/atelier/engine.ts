@@ -15,7 +15,7 @@
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
 import type { MathNode } from '$lib/mathAST/types';
-import type { FunctionBindings, FunctionDefinition } from '$lib/mathAST/eval/types';
+import type { FunctionBindings, FunctionDefinition } from '$lib/mathAST/eval/function-bindings';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import {
 	setBinding,
@@ -160,7 +160,7 @@ export function expressionOf(atelier: Atelier, name: string): Substituted {
 
 	const { variables, functions } = bindingsOf(atelier, name);
 	const substituted = substituteAll(ast, variables, substituteFunction, {
-		functions: functions as FunctionBindings
+		functions: functions satisfies FunctionBindings
 	});
 
 	return { ok: true, expression: toCustom(substituted) };
