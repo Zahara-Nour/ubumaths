@@ -193,9 +193,23 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 	const variables: Record<string, MathNode> = {};
 	const functions: Record<string, FunctionDefinition> = {};
 
+	// Premier passage : les arbres bruts, pour que le développement des dérivées
+	// puisse s'appuyer sur eux (`f'` a besoin de connaître `f`).
+	const raw: Record<string, FunctionDefinition> = {};
+	for (const object of usable(atelier)) {
+		const ast = astOf(object.definition);
+		if (ast === null) continue;
+		if (object.kind === 'function') raw[object.name] = { expression: ast, parameters: ['x'] };
+		else if (object.kind === 'sequence') raw[object.name] = { expression: ast, parameters: ['n'] };
+	}
+
 	for (const object of usable(atelier)) {
 		if (object.name === exclude) continue;
-		const ast = astOf(object.definition);
+		const plain = astOf(object.definition);
+		// ⚠️ Développé ICI aussi : sans quoi une fonction qui cite `g` recevrait
+		// `f'` par substitution, et le développement du niveau supérieur — déjà
+		// passé — ne le verrait jamais.
+		const ast = plain === null ? null : expandDerivatives(plain, raw);
 		if (ast === null) continue;
 		if (object.kind === 'function') functions[object.name] = { expression: ast, parameters: ['x'] };
 		else if (object.kind === 'sequence')
