@@ -16,7 +16,10 @@
 	} from '$lib/grapheur/types';
 	import { supportsCobweb } from '$lib/grapheur/types';
 	import { MAX_SEQUENCE_TERMS, sequenceValidationError } from '$lib/grapheur/sequence';
-	import { grapheurStore } from '$lib/stores/grapheur.svelte';
+	import { useGrapheurStore } from '$lib/stores/grapheur-context';
+
+	// L'instance de l'atelier qui nous contient, ou celle par défaut.
+	const grapheurStore = useGrapheurStore();
 	import MathField from '$lib/components/MathField.svelte';
 	import type { MathfieldElement } from 'mathlive';
 	import MySelect from '$lib/components/MySelect.svelte';

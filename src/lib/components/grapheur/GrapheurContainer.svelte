@@ -22,15 +22,35 @@ Features:
 	import ViewportControls from './ViewportControls.svelte';
 	import CoordinatesDisplay from './CoordinatesDisplay.svelte';
 	import KeyboardHandler from './KeyboardHandler.svelte';
+	import { provideGrapheurStore } from '$lib/stores/grapheur-context';
+	import { grapheurStore, type GrapheurStore } from '$lib/stores/grapheur.svelte';
 
 	/**
 	 * Optional CSS class for container customization
 	 */
 	let {
-		class: className = ''
+		class: className = '',
+		store
 	}: {
 		class?: string;
+		/**
+		 * L'instance de grapheur à piloter.
+		 *
+		 * Sans elle, c'est le singleton — donc `/grapheur` et `/calc` gardent
+		 * l'état partagé qu'ils ont toujours eu. Un atelier qui veut le sien
+		 * passe la sienne.
+		 */
+		store?: GrapheurStore;
 	} = $props();
+
+	// Donné aux composants descendants, qui le lisent par `useGrapheurStore()`.
+	//
+	// Capture volontaire de la valeur initiale : `setContext` ne peut être appelé
+	// qu'à l'initialisation d'un composant, donc changer `store` après le montage
+	// n'aurait de toute façon aucun effet. Pour piloter une autre instance, il
+	// faut remonter le conteneur — `{#key}` fait très bien l'affaire.
+	// svelte-ignore state_referenced_locally
+	provideGrapheurStore(store ?? grapheurStore);
 
 	// ==========================================================================
 	// Export Support
