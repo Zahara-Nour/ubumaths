@@ -16,8 +16,8 @@ import type { Provenance } from './parse';
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName } from './names';
-import { astOf } from './parse';
-import { syncEngine } from './engine';
+import { astOf, readNumber } from './parse';
+import { syncEngine, expressionOf } from './engine';
 import { resolveCommand, suggestFor, commandCatalog } from './commands';
 
 // =============================================================================
@@ -37,6 +37,11 @@ export type CalcResult =
 	| { readonly kind: 'calcul'; readonly input: string; readonly output: string }
 	| { readonly kind: 'commande'; readonly input: string; readonly output: string }
 	| { readonly kind: 'refus'; readonly message: string };
+
+/** Ce qu'une action attachée à un objet a produit. */
+export type ActionOutcome =
+	| { readonly ok: true; readonly output: string }
+	| { readonly ok: false; readonly message: string };
 
 // =============================================================================
 // Constantes
@@ -60,9 +65,20 @@ function kindOf(parameter: string | undefined): ObjectKind {
 	return parameter === undefined ? 'value' : 'function';
 }
 
-/** Ce que le moteur a renvoyé, débarrassé de ce qui ne regarde pas l'élève. */
+/**
+ * Ce que le moteur a renvoyé, débarrassé de ce qui ne regarde pas l'élève.
+ *
+ * ⚠️ Les commandes ajoutent une ligne « LaTeX: 2 x » après leur résultat — une
+ * sortie de terminal (§6 ter). Elle ne dit rien à un élève, et elle SERA
+ * remplacée par le vrai rendu mathématique ; en attendant, mieux vaut ne pas
+ * l'afficher que l'afficher telle quelle.
+ */
 function readOutput(result: { output: string; outputHtml?: string }): string {
-	return result.output;
+	return result.output
+		.split('\n')
+		.filter((line) => !/^\s*LaTeX\s*:/.test(line))
+		.join('\n')
+		.trim();
 }
 
 /**
@@ -221,4 +237,66 @@ export function promote(
 	const created = atelier.create({ kind, name: chosen, definition: expression });
 	if (created.ok) syncEngine(atelier, session.engine);
 	return created;
+}
+
+// =============================================================================
+// Les actions attachées aux objets (§6)
+// =============================================================================
+
+/** Ce que chaque action demande au moteur, à partir de l'expression substituée. */
+const ACTION_COMMANDS: Readonly<Record<string, (expression: string) => string>> = {
+	derive: (e) => `.diff ${e}`,
+	solve: (e) => `.solve ${e}=0`,
+	variations: (e) => `.variations ${e}`
+};
+
+/**
+ * Lancer une action du panneau sur un objet.
+ *
+ * ⚠️ **L'expression est substituée avant l'appel** (§6 bis) : passer `f(x)` au
+ * moteur rend un résultat faux SANS erreur — `.variations f(x)` annonce
+ * « Points critiques : aucun » pour une parabole qui en a un.
+ *
+ * @param actionId - L'identifiant de `actionsFor`, pas un libellé
+ * @param name - L'objet sur lequel l'élève a cliqué
+ * @param argument - Le nombre demandé, pour « image d'un nombre »
+ */
+export function runAction(
+	session: CalcSession,
+	actionId: string,
+	name: string,
+	argument?: string
+): ActionOutcome {
+	const { atelier, engine } = session;
+	syncEngine(atelier, engine);
+
+	const substituted = expressionOf(atelier, name);
+	// Le message vient de l'objet : le panneau et l'action disent la même chose.
+	if (!substituted.ok) return { ok: false, message: substituted.message };
+
+	if (actionId === 'image') {
+		const value = argument === undefined ? null : readNumber(argument);
+		if (value === null) {
+			return { ok: false, message: `« ${argument ?? ''} » n'est pas un nombre.` };
+		}
+		// Ici, citer le nom est SÛR et mesuré : `f(2)` rend `-1`. C'est le chemin
+		// d'évaluation, pas une commande symbolique — la substitution du §6 bis ne
+		// concerne que les secondes.
+		const result = engine.execute(`${name}(${value})`);
+		if (!result.success) {
+			return { ok: false, message: `Impossible de calculer ${name}(${argument}).` };
+		}
+		return { ok: true, output: readOutput(result) };
+	}
+
+	const build = ACTION_COMMANDS[actionId];
+	if (build === undefined) {
+		return { ok: false, message: `L'action « ${actionId} » n'est pas encore disponible.` };
+	}
+
+	const result = engine.execute(build(substituted.expression));
+	if (!result.success) {
+		return { ok: false, message: readOutput(result) || 'Le calcul n’a pas abouti.' };
+	}
+	return { ok: true, output: readOutput(result) };
 }

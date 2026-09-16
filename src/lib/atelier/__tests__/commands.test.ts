@@ -88,6 +88,45 @@ describe('le catalogue des commandes', () => {
 		expect(oubliees.map((c) => c.name)).toEqual([]);
 	});
 
+	/**
+	 * ⚠️ Un exemple qui ne marche pas est pire que pas d'exemple : l'élève
+	 * conclut que c'est lui qui se trompe.
+	 *
+	 * Mesuré le 2026-09-16 : mon premier exemple pour `.évaluer` était
+	 * `.évaluer x^2 x=3`, que le moteur accepte en rendant « Result: false ».
+	 * Un succès apparent, un résultat absurde — invisible sans ce test.
+	 */
+	it('ne propose que des exemples qui s’exécutent vraiment', () => {
+		for (const command of commandCatalog(new WebReplEngine())) {
+			if (command.example === undefined || command.unavailable !== undefined) continue;
+			// Un moteur neuf par exemple : aucun ne doit dépendre d'un autre.
+			// Le décor passe par `resolveCommand` comme le ferait la vue — sans
+			// quoi c'est le DÉCOR qui échoue, et l'exemple est accusé à tort.
+			const engine = new WebReplEngine();
+			engine.execute(resolveCommand('.poser a = 3'));
+			engine.execute(resolveCommand('.définir f(x) = x^2'));
+			// `.convertir` agit sur le DERNIER résultat : sans grandeur calculée
+			// avant, elle n'a rien à convertir. Le décor ressemble donc à un
+			// atelier où l'élève a déjà travaillé, pas à un moteur vierge.
+			engine.execute('1200[m]');
+			const result = engine.execute(resolveCommand(command.example));
+			expect(
+				{ commande: command.french, sortie: result.output.slice(0, 80), ok: result.success },
+				`l'exemple de « .${command.french} » n'aboutit pas`
+			).toMatchObject({ ok: true });
+		}
+	});
+
+	// Une commande indisponible doit dire pourquoi, et ne pas porter d'exemple
+	// qui laisserait croire qu'elle marche.
+	it('donne une raison à toute commande indisponible', () => {
+		for (const command of commandCatalog(new WebReplEngine())) {
+			if (command.unavailable === undefined) continue;
+			expect(command.unavailable.trim()).not.toBe('');
+			expect(command.example).toBeUndefined();
+		}
+	});
+
 	it('est stable d’un appel à l’autre', () => {
 		const engine = new WebReplEngine();
 

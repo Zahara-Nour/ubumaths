@@ -33,6 +33,14 @@ export interface AtelierCommand {
 	readonly example?: string;
 	/** Reléguée : tapable, mais pas proposée en premier (§5 L2). */
 	readonly advanced?: boolean;
+	/**
+	 * Pourquoi cette commande ne peut rien produire ici, si elle ne le peut pas.
+	 *
+	 * Même principe qu'au §3 pour les actions : **visible et désactivée avec sa
+	 * raison**, jamais cachée. Un élève qui ne la voit plus conclut que l'outil
+	 * ne sait pas faire ; un élève qui lit la raison sait à quoi s'en tenir.
+	 */
+	readonly unavailable?: string;
 }
 
 // =============================================================================
@@ -45,6 +53,7 @@ interface Translation {
 	readonly description: string;
 	readonly example?: string;
 	readonly advanced?: boolean;
+	readonly unavailable?: string;
 }
 
 /**
@@ -100,12 +109,19 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map([
 			example: '.équivalent (x+1)^2 x^2+2x+1'
 		}
 	],
+	// ⚠️ Cassée dans l'interface web, mesuré le 2026-09-16 : le dispatch parse
+	// TOUT l'argument comme une expression avant d'appeler la commande, donc
+	// `.taylor sin(x) 5 0` meurt sur « Unexpected token: 5 » sans que la commande
+	// soit jamais appelée. Elle marche dans le CLI (`pnpm repl`), qui lui passe
+	// la chaîne telle quelle. Même cause pour `.integrate x^2 x 0 1` (intégrale
+	// définie) et `.solve … --verbose`. Voir le dispatch des commandes du
+	// registre dans `web-repl-engine.ts` : seul `equiv` y fait exception.
 	[
 		'taylor',
 		{
 			french: 'taylor',
 			description: 'Développement limité au voisinage d’un point',
-			example: '.taylor sin(x) 3'
+			unavailable: 'Cette commande ne fonctionne pas encore dans l’atelier.'
 		}
 	],
 	['let', { french: 'poser', description: 'Poser une valeur', example: '.poser a = 3' }],
@@ -195,7 +211,7 @@ const OFF_REGISTRY: ReadonlyMap<string, Translation> = new Map([
 		{
 			french: 'ajustement',
 			description: 'Ajustement affine de deux séries',
-			example: '.ajustement 1 2 3 | 2 4 6'
+			example: '.ajustement 1,2,3 : 2,4,6'
 		}
 	],
 	['exact', { french: 'exact', description: 'Passer aux valeurs exactes' }],
@@ -252,7 +268,8 @@ export function commandCatalog(engine: WebReplEngine): AtelierCommand[] {
 			aliases,
 			description: t.description,
 			...(t.example && { example: t.example }),
-			...(t.advanced && { advanced: true })
+			...(t.advanced && { advanced: true }),
+			...(t.unavailable && { unavailable: t.unavailable })
 		});
 	};
 

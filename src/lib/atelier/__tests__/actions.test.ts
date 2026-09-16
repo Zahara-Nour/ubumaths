@@ -136,13 +136,23 @@ describe('objets qui ne peuvent rien produire (§3 L2)', () => {
 
 	// ⚠️ Une action dont la vue n'existe pas encore est VISIBLE et désactivée
 	// avec sa raison — jamais un bouton qui ne répond pas. Cette liste se vide au
-	// fil des lots : ce test a déjà rougi une fois, quand « Tracer » a été câblé.
+	// fil des lots : ce test a rougi quand « Tracer » a été câblé, puis quand la
+	// vue Calcul a câblé « Dériver ». C'est le signal attendu, pas une régression.
 	it('dit qu’une action attend son lot, au lieu de ne rien faire', () => {
 		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
 
-		const deriver = action('f', 'derive');
-		expect(deriver).toBeDefined();
-		expect(deriver?.disabledReason).toContain('prochain lot');
+		const tabuler = action('f', 'table');
+		expect(tabuler).toBeDefined();
+		expect(tabuler?.disabledReason).toContain('prochain lot');
+	});
+
+	// Les quatre que la vue Calcul a câblées ne l'annoncent plus.
+	it('ne fait plus attendre les actions de la vue Calcul', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
+
+		for (const id of ['derive', 'solve', 'variations', 'image']) {
+			expect(action('f', id)?.disabledReason, id).toBeUndefined();
+		}
 	});
 
 	// « Tracer », lui, répond depuis le lot « vue Graphe ».

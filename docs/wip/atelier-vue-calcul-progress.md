@@ -118,8 +118,51 @@ Laissée au moteur, elle produit « Unknown command » en anglais, sans rien
 proposer. L'atelier nomme les deux plus proches : `.dériiver` → « Peut-être :
 « .dériver » ? ».
 
+## Étape 4 — les quatre actions du panneau (fait)
+
+`runAction()` dans `calcul.ts` câble **dériver**, **résoudre `f(x) = 0`**,
+**variations** et **image d'un nombre**. Elles ne disent plus « prochain lot ».
+
+Toutes passent par `expressionOf` : c'est la règle du §6 bis. Seule « image »
+cite le nom — et c'est sûr, parce que c'est le chemin d'évaluation (`f(2)` rend
+`-1`, mesuré), pas une commande symbolique.
+
+### ⚠️ Un bug du moteur, trouvé en vérifiant les exemples
+
+**Le dispatch web parse TOUT l'argument comme une expression avant d'appeler la
+commande.** Conséquence : toute commande prenant un argument numérique ou en
+tiret après l'expression meurt sans être appelée.
+
+| Appel                      | Web                                   | CLI |
+| -------------------------- | ------------------------------------- | --- |
+| `.taylor sin(x) 5 0`       | « Unexpected token: 5 »               | ✅  |
+| `.integrate x^2 x 0 1`     | « Unexpected token in expression: 0 » | ✅  |
+| `.solve x^2-1=0 --verbose` | « Consecutive signs not allowed: -- » | ✅  |
+
+Seul `equiv` bénéficie d'une exception dans ce dispatch. `.taylor` est donc
+**entièrement inutilisable** dans l'atelier — même `.taylor sin(x)` seul échoue.
+
+Je ne le corrige pas ici : c'est du code partagé avec `/cas` et `/calc`, et ça
+mérite sa PR et ses tests. `.taylor` est marquée `unavailable` avec sa raison en
+français — **visible et désactivée**, comme les actions du §3, jamais cachée.
+
+### Le test qui a attrapé quatre exemples faux
+
+Un exemple qui ne marche pas est pire que pas d'exemple : l'élève conclut que
+c'est lui qui se trompe. Un test exécute donc chaque exemple du catalogue. Il en
+a attrapé **quatre que j'avais inventés** :
+
+| Exemple                      | Ce qui n'allait pas                                  |
+| ---------------------------- | ---------------------------------------------------- |
+| `.évaluer x^2 x=3`           | Rend « Result: false » — un succès apparent, absurde |
+| `.taylor sin(x) 3`           | Commande cassée en web (ci-dessus)                   |
+| `.convertir km`              | Agit sur le dernier résultat : il en faut un         |
+| `.ajustement 1 2 3 \| 2 4 6` | Le séparateur est `:`, pas `\|`                      |
+
+Et une cinquième fois, c'était **mon décor** qui était faux : il exécutait
+`.poser` sans le résoudre, donc l'exemple de `.oublier` était accusé à tort.
+
 ## Étapes suivantes
 
-- [ ] Étape 5 — les quatre actions du panneau (§6)
 - [ ] Étape 6 — le rendu mathématique (§3, §6 ter)
 - [ ] Étape 7 — `/atelier` en navigation (Q2)
