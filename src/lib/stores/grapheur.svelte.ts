@@ -24,7 +24,8 @@ import type {
 	PlottableState,
 	SequenceState,
 	SnappedPoint,
-	Parameter
+	Parameter,
+	ScatterPlottable
 } from '$lib/grapheur/types';
 import {
 	DEFAULT_PARAMETER_MAX,
@@ -448,6 +449,63 @@ class GrapheurStore {
 		this.functions = [...this.functions, sequence];
 		this.scheduleSave();
 		return id;
+	}
+
+	/**
+	 * Pose un nuage de points à partir de deux séries.
+	 *
+	 * ⚠️ Les séries arrivent **déjà lues** : c'est l'atelier qui détient les
+	 * listes et qui a écarté ce qui n'était pas un nombre. Le grapheur ne fait
+	 * que les dessiner — un seul sens, comme pour les courbes (option B).
+	 *
+	 * @param xs - Abscisses
+	 * @param ys - Ordonnées ; les paires incomplètes ne seront pas dessinées
+	 * @param label - Ce que le panneau affiche, par exemple « L / M »
+	 * @returns L'identifiant du nuage posé
+	 */
+	addScatter(xs: readonly number[], ys: readonly number[], label = ''): string {
+		const id = crypto.randomUUID();
+		const scatter: ScatterPlottable = {
+			id,
+			type: 'scatter',
+			label,
+			xs: [...xs],
+			ys: [...ys],
+			color: getNextColor(this.usedColors),
+			visible: true,
+			lineWidth: 2,
+			lineStyle: 'solid'
+		};
+
+		this.functions = [...this.functions, scatter];
+		this.scheduleSave();
+		return id;
+	}
+
+	/**
+	 * Met un nuage à jour.
+	 *
+	 * ⚠️ Un identifiant inconnu ne casse pas : la synchronisation depuis
+	 * l'atelier peut arriver après un retrait, et faire tomber l'écran pour ça
+	 * serait disproportionné.
+	 */
+	updateScatter(
+		id: string,
+		updates: Partial<Pick<ScatterPlottable, 'xs' | 'ys' | 'label' | 'color' | 'visible'>>
+	): void {
+		const index = this.functions.findIndex((f) => f.id === id && f.type === 'scatter');
+		if (index === -1) return;
+
+		const current = this.functions[index] as ScatterPlottable;
+		const next: ScatterPlottable = {
+			...current,
+			...updates,
+			...(updates.xs && { xs: [...updates.xs] }),
+			...(updates.ys && { ys: [...updates.ys] })
+		};
+
+		this.functions = [...this.functions.slice(0, index), next, ...this.functions.slice(index + 1)];
+		this.scheduleSave();
 	}
 
 	/**

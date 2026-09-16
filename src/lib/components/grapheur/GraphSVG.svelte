@@ -30,6 +30,7 @@
 	} from '$lib/grapheur/analysis';
 	import IntegralArea from './IntegralArea.svelte';
 	import SequencePlot from './SequencePlot.svelte';
+	import ScatterPlot from './ScatterPlot.svelte';
 	import CurveHover from './CurveHover.svelte';
 	import type { PinnedLabelTarget } from '$lib/grapheur/pinned-labels';
 	import IntersectionPoints from './IntersectionPoints.svelte';
@@ -526,7 +527,13 @@
 							/>
 						{/if}
 					{/if}
-				{:else}
+				{:else if plottable.type === 'sequence'}
+					<!--
+						⚠️ Le type est testé EXPLICITEMENT, et non laissé à un `{:else}` :
+						un nuage de points tomberait sinon dans cette branche et serait
+						dessiné comme une suite, dont il n'a ni le `mode`, ni l'`ast`, ni
+						le `firstIndex`.
+					-->
 					<SequencePlot
 						sequence={plottable}
 						viewport={grapheurStore.viewport}
@@ -534,6 +541,8 @@
 						bindings={grapheurStore.parameterBindings}
 						isInteracting={grapheurStore.isInteracting}
 					/>
+				{:else}
+					<ScatterPlot scatter={plottable} {transformer} />
 				{/if}
 			{/each}
 		</g>

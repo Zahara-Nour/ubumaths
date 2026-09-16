@@ -74,8 +74,30 @@ Le plafond des séries est celui de D8 (200), le même que `MAX_LIST_VALUES` :
 deux plafonds différents laisseraient passer un état qu'on ne saurait pas
 relire.
 
+## Étape 3b — le rendu du nuage (fait)
+
+`ScatterPlot.svelte`, `addScatter()` / `updateScatter()` sur le store, et le
+branchement dans `GraphSVG`.
+
+### Le `{:else}` a bien été fermé
+
+`GraphSVG` teste désormais `{:else if plottable.type === 'sequence'}` avant le
+`{:else}` du nuage. Sans ça, un nuage serait passé à `SequencePlot`, dont il n'a
+ni le `mode`, ni l'`ast`, ni le `firstIndex`.
+
+### ⚠️ Une valeur non finie disparaît en silence
+
+`NaN` projeté donne un attribut SVG invalide, que le navigateur **abandonne sans
+rien dire** — le point ne s'affiche pas, et rien ne l'explique. Les valeurs non
+finies sont donc filtrées explicitement, les autres restant dessinées. Deux
+tests le vérifient, et ils rougissent quand on retire le filtre.
+
+La boucle s'arrête à la **plus courte** des deux séries (§4 L1) ; c'est la vue
+Données qui dira combien de valeurs sont écartées, pas le rendu.
+
 ## Étapes suivantes
 
-- [ ] Étape 3b — le rendu du nuage et son ajout au store
+- [ ] Étape 4 — l'ajustement affine crée une fonction traçable (§3)
+- [ ] Étape 5 — la vue Données, ses actions, et le report des nuages
 - [ ] Étape 4 — l'ajustement affine crée une fonction traçable (§3)
 - [ ] Étape 5 — la vue Données et ses actions
