@@ -26,6 +26,7 @@ import type {
 } from './types';
 import { validateName, nextName, nameRejectionMessage } from './names';
 import { parseDefinition, referencesOf, renameInDefinition } from './parse';
+import { ATELIER_STATE_VERSION, type AtelierState, type StoredObject } from './persistence';
 
 // =============================================================================
 // Types de retour
@@ -59,6 +60,23 @@ export interface Updated {
 	readonly object: AtelierObject;
 	/** Les objets recalculés en cascade (§2.3 N1). */
 	readonly recomputed: readonly string[];
+}
+
+/** Un objet qu'une restauration n'a pas pu recréer, et pourquoi. */
+export interface SkippedObject {
+	readonly name: string;
+	readonly reason: string;
+}
+
+/**
+ * Ce qu'une restauration a pu faire.
+ *
+ * `skipped` non vide se **montre à l'élève** : c'est du travail qui n'a pas été
+ * retrouvé, pas un détail technique.
+ */
+export interface RestoreReport {
+	readonly restored: number;
+	readonly skipped: readonly SkippedObject[];
 }
 
 /** Ce qu'il faut pour créer un objet. Sans `name`, l'atelier en propose un. */
@@ -232,6 +250,65 @@ export class Atelier {
 		this.recomputeAll();
 
 		return { ok: true, broken };
+	}
+
+	// ---------------------------------------------------------------------------
+	// Ranger et relire (§5)
+	// ---------------------------------------------------------------------------
+
+	/**
+	 * Ce qu'il faut ranger pour reconstruire cet atelier.
+	 *
+	 * ⚠️ **Ne jamais rendre `this.items` directement.** `structuredClone` — et
+	 * tout ce qui sérialise en profondeur — jette `DataCloneError` sur un proxy
+	 * `$state` ; le projet l'a déjà payé en production (configuration d'école,
+	 * 2026-09-02). Ici chaque champ est recopié, donc ce qui sort est fait de
+	 * chaînes ordinaires, clonables.
+	 *
+	 * `$state.snapshot()` serait redondant tant que seules des primitives sont
+	 * recopiées — mesuré : le test reste vert sans lui. Il deviendrait nécessaire
+	 * le jour où un champ non primitif entrerait ici (un curseur, un tableau de
+	 * valeurs). Vérifié par `serialize.svelte.test.ts`, **dans un navigateur** :
+	 * en node les proxies ne sont pas les mêmes objets et rien ne jette.
+	 *
+	 * Statut, message et manquants ne sont PAS rangés : ils se recalculent à la
+	 * relecture. Les ranger reviendrait à relire un verdict devenu faux — par
+	 * exemple « en attente de `a` » alors que `a` a été défini entre-temps.
+	 */
+	serialize(): AtelierState {
+		const objects: StoredObject[] = this.items.map((o) => ({
+			name: o.name,
+			kind: o.kind,
+			definition: o.definition
+		}));
+		return { version: ATELIER_STATE_VERSION, objects };
+	}
+
+	/**
+	 * Remplacer le contenu de l'atelier par un état rangé.
+	 *
+	 * Les objets refusés sont **écartés un par un** — un seul nom invalide ne
+	 * doit pas coûter tout l'atelier — mais ⚠️ **jamais en silence** : le rapport
+	 * rendu les nomme avec leur raison. Sans compte, cet atelier est la seule
+	 * mémoire de l'élève ; ce qu'on ne sait pas restaurer doit au moins être dit.
+	 *
+	 * Les états sont recalculés, jamais relus.
+	 */
+	restore(state: AtelierState): RestoreReport {
+		this.items = [];
+		const skipped: SkippedObject[] = [];
+
+		for (const stored of state.objects) {
+			const result = this.create({
+				kind: stored.kind,
+				name: stored.name,
+				definition: stored.definition
+			});
+			if (!result.ok) skipped.push({ name: stored.name, reason: result.message });
+		}
+
+		this.recomputeAll();
+		return { restored: this.items.length, skipped };
 	}
 
 	/** Les objets dont la définition cite `name`, directement. */

@@ -630,3 +630,91 @@ describe('dépendre d’un objet incomplet', () => {
 		expect(a.get('h')?.missing?.map((m) => m.name)).toEqual(['f']);
 	});
 });
+
+// =============================================================================
+// Sérialisation de l'atelier (§5)
+// =============================================================================
+
+describe('sérialisation', () => {
+	// ⚠️ Le piège `structuredClone` / proxy `$state` ne se reproduit PAS en node :
+	// il est vérifié dans un vrai navigateur par `serialize.svelte.test.ts`.
+
+	it('n’emporte que ce qu’il faut pour reconstruire', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
+
+		const snapshot = a.serialize();
+		expect(snapshot.objects).toEqual([{ name: 'f', kind: 'function', definition: 'x^2' }]);
+		// le statut se recalcule, il ne se range pas
+		expect(JSON.stringify(snapshot)).not.toContain('status');
+	});
+
+	it('se relit à l’identique', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'a*x' });
+		a.create({ kind: 'value', name: 'a', definition: '3' });
+		const snapshot = a.serialize();
+
+		const restored = new Atelier();
+		restored.restore(snapshot);
+
+		expect(restored.names).toEqual(['f', 'a']);
+		expect(restored.get('f')?.status).toBe('ok');
+	});
+
+	it('recalcule les états au lieu de les croire', () => {
+		// Un état rangé quand `a` existait, relu sans `a` : l'atelier doit voir
+		// l'attente tout seul, sans qu'on la lui ait rangée.
+		const restored = new Atelier();
+		restored.restore({
+			version: 1,
+			objects: [{ name: 'f', kind: 'function', definition: 'a*x' }]
+		});
+
+		expect(restored.get('f')?.status).toBe('pending');
+		expect(restored.get('f')?.missing?.map((m) => m.name)).toEqual(['a']);
+	});
+
+	// ⚠️ Ce test disait « ignore … sans tout perdre » et gravait une perte
+	// silencieuse dans le marbre : deux objets disparaissaient sans un mot. Sans
+	// compte, l'atelier est la seule mémoire de l'élève — ce qu'on ne peut pas
+	// restaurer doit au moins être DIT.
+	it('rend compte de ce qu’il n’a pas pu restaurer', () => {
+		const restored = new Atelier();
+		const report = restored.restore({
+			version: 1,
+			objects: [
+				{ name: 'f', kind: 'function', definition: 'x^2' },
+				{ name: '2f', kind: 'function', definition: 'x' },
+				{ name: 'g', kind: 'function', definition: 'x^3' }
+			]
+		});
+
+		expect(restored.names).toEqual(['f', 'g']);
+		expect(report.skipped).toHaveLength(1);
+		expect(report.skipped[0].name).toBe('2f');
+		expect(report.skipped[0].reason).toBeTruthy();
+	});
+
+	it('ne perd pas un doublon en silence', () => {
+		const restored = new Atelier();
+		const report = restored.restore({
+			version: 1,
+			objects: [
+				{ name: 'f', kind: 'function', definition: 'x^2' },
+				{ name: 'f', kind: 'function', definition: 'x^3' }
+			]
+		});
+
+		expect(report.skipped.map((s) => s.name)).toEqual(['f']);
+	});
+
+	it('ne signale rien quand tout est restauré', () => {
+		const restored = new Atelier();
+		const report = restored.restore({
+			version: 1,
+			objects: [{ name: 'f', kind: 'function', definition: 'x^2' }]
+		});
+
+		expect(report.restored).toBe(1);
+		expect(report.skipped).toEqual([]);
+	});
+});
