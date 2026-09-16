@@ -121,7 +121,12 @@ export function actionsFor(object: AtelierObject): ObjectAction[] {
 				disabledReason: `« ${object.name} » est une grandeur en ${object.unit} : un curseur n’aurait pas de sens ici.`
 			};
 		}
-		if (blocked) return { ...action, disabledReason: blocked };
+		// ⚠️ Retirer du graphe reste possible même quand l'objet ne peut plus rien
+		// produire : sinon une fonction qui casse laisse un marqueur « tracé » que
+		// l'élève ne peut plus enlever, alors que sa courbe a déjà disparu.
+		if (blocked && !(action.id === 'plot' && object.plotted)) {
+			return { ...action, disabledReason: blocked };
+		}
 		// L'objet va bien, mais la vue qui rendrait cette action n'existe pas
 		// encore : on le dit, plutôt que de laisser un bouton sans effet.
 		if (NOT_YET.has(action.id)) return { ...action, disabledReason: NOT_YET_REASON };

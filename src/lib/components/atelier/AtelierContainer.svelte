@@ -94,6 +94,12 @@
 	});
 
 	// Option B : la courbe suit l'objet. Un seul sens — l'atelier détient l'état.
+	//
+	// ⚠️ Cet effet LIT `graph.functions` (via `syncPlots`) et l'ÉCRIT : Svelte le
+	// rejoue donc une fois de plus après chaque synchronisation. Il ne boucle que
+	// parce que `syncPlots` est **idempotent** — la seconde passe ne réécrit
+	// rien. Toute modification qui rendrait `syncPlots` inconditionnel donnerait
+	// un `effect_update_depth_exceeded`.
 	$effect(() => {
 		void atelier.revision;
 		syncPlots(atelier, graph);
@@ -154,11 +160,12 @@
 		<section class="vue" class:pleine={activeView === 'graphe'}>
 			{#if activeView === 'graphe'}
 				<!--
-					Sans son panneau : dans l'atelier, c'est « Mes objets » qui tient ce
-					rôle. Deux panneaux de fonctions côte à côte poseraient la question
-					de savoir lequel fait foi — et la réponse est déjà tranchée.
+					`panel={false}` : dans l'atelier, c'est « Mes objets » qui tient ce
+					rôle. Deux listes de fonctions côte à côte ne posent pas seulement la
+					question de savoir laquelle fait foi — l'élève y PERD sa saisie, que
+					la synchronisation réécrit aussitôt avec la définition de l'objet.
 				-->
-				<GrapheurContainer store={graph} />
+				<GrapheurContainer store={graph} panel={false} />
 			{:else}
 				<p class="a-venir">
 					La vue « {VIEWS.find((v) => v.id === activeView)?.label} » arrive au prochain lot.

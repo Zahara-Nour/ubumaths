@@ -292,7 +292,10 @@ export function adoptGrapheurState(storage: Storage | null): AdoptOutcome {
 		if (definition === '') continue;
 		const name = ADOPTED_NAMES[objects.length];
 		if (name === undefined) break;
-		objects.push({ name, kind: 'function', definition });
+		// `plotted` : une courbe reprise de `/grapheur` était TRACÉE là-bas. Sans
+		// ce mot, elle arriverait en objet non tracé et la vue Graphe serait vide
+		// sans explication.
+		objects.push({ name, kind: 'function', definition, plotted: true });
 	}
 
 	if (objects.length === 0) return { kind: 'nothing' };

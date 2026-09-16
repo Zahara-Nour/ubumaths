@@ -13,6 +13,7 @@
  */
 
 import type { Atelier } from './atelier.svelte';
+import type { AtelierObject } from './types';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import { isExplicitFunction } from '$lib/grapheur/types';
 
@@ -22,17 +23,31 @@ import { isExplicitFunction } from '$lib/grapheur/types';
  * Tenue à part du grapheur : celui-ci ne connaît pas les noms de l'atelier, et
  * il ne doit pas avoir à les connaître. C'est aussi ce qui garantit qu'on ne
  * touche jamais aux courbes ajoutées à la main dans `/grapheur`.
+ *
+ * ⚠️ Clé sur le COUPLE (atelier, grapheur), et pas sur le seul grapheur : deux
+ * ateliers partageant un même grapheur partiraient sinon en ping-pong — chaque
+ * synchronisation retirerait les courbes de l'autre, dont l'effet les reposerait.
+ * L'invariant est structurel plutôt que supposé.
  */
-const posted = new WeakMap<GrapheurStore, Map<string, string>>();
+const posted = new WeakMap<Atelier, WeakMap<GrapheurStore, Map<string, string>>>();
 
-/** Ce qu'un objet doit donner au grapheur, ou `null` s'il ne peut rien donner. */
-function drawable(atelier: Atelier, name: string): string | null {
-	const object = atelier.get(name);
-	if (!object || object.kind !== 'function') return null;
-	// Un objet qui ne peut rien produire ne peuple pas le graphe : une courbe
-	// absente sans explication est pire qu'une action désactivée qui en donne une.
-	if (object.status !== 'ok' || !object.plotted) return null;
-	return object.definition;
+/** Ce qu'une courbe doit valoir, ou `null` si l'objet ne doit pas être tracé. */
+interface Wanted {
+	readonly definition: string;
+	/**
+	 * Une courbe reste EN PLACE, masquée, tant que son objet ne peut rien
+	 * produire.
+	 *
+	 * ⚠️ La retirer puis la recréer lui donnerait un nouvel identifiant et une
+	 * nouvelle couleur : en pleine saisie, chaque frappe intermédiaire fautive
+	 * ferait changer la courbe de couleur. Seul un retrait VOULU la supprime.
+	 */
+	readonly visible: boolean;
+}
+
+function wantedFor(object: AtelierObject): Wanted | null {
+	if (object.kind !== 'function' || !object.plotted) return null;
+	return { definition: object.definition, visible: object.status === 'ok' };
 }
 
 /**
@@ -42,13 +57,15 @@ function drawable(atelier: Atelier, name: string): string | null {
  * Sans cela, chaque frappe recréerait les courbes et le graphe clignoterait.
  */
 export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
-	const mine = posted.get(graph) ?? new Map<string, string>();
-	posted.set(graph, mine);
+	const perGraph = posted.get(atelier) ?? new WeakMap<GrapheurStore, Map<string, string>>();
+	posted.set(atelier, perGraph);
+	const mine = perGraph.get(graph) ?? new Map<string, string>();
+	perGraph.set(graph, mine);
 
-	const wanted = new Map<string, string>();
+	const wanted = new Map<string, Wanted>();
 	for (const object of atelier.objects) {
-		const definition = drawable(atelier, object.name);
-		if (definition !== null) wanted.set(object.name, definition);
+		const target = wantedFor(object);
+		if (target !== null) wanted.set(object.name, target);
 	}
 
 	// Retirer ce qui ne doit plus être tracé.
@@ -60,18 +77,31 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 	}
 
 	// Poser ou mettre à jour le reste.
-	for (const [name, definition] of wanted) {
+	for (const [name, target] of wanted) {
 		const id = mine.get(name);
 		if (id === undefined) {
-			mine.set(name, graph.addFunction(definition));
+			const fresh = graph.addFunction(target.definition);
+			if (!target.visible) graph.updateFunction(fresh, { visible: false });
+			mine.set(name, fresh);
 			continue;
 		}
+
 		const current = graph.getFunction(id);
 		if (current === undefined) {
 			// La courbe a disparu du grapheur (effacement manuel) : on la repose.
-			mine.set(name, graph.addFunction(definition));
-		} else if (isExplicitFunction(current) && current.latex !== definition) {
-			graph.updateFunction(id, { latex: definition });
+			const fresh = graph.addFunction(target.definition);
+			if (!target.visible) graph.updateFunction(fresh, { visible: false });
+			mine.set(name, fresh);
+			continue;
 		}
+
+		// N'écrire que ce qui diffère : c'est cette condition qui rend la
+		// synchronisation idempotente, donc l'effet qui l'appelle non bouclant.
+		const changes: { latex?: string; visible?: boolean } = {};
+		if (isExplicitFunction(current) && current.latex !== target.definition) {
+			changes.latex = target.definition;
+		}
+		if (current.visible !== target.visible) changes.visible = target.visible;
+		if (Object.keys(changes).length > 0) graph.updateFunction(id, changes);
 	}
 }
