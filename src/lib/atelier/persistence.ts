@@ -50,7 +50,9 @@ const MAX_SERIALIZED_LENGTH = 500_000;
 const storedObjectSchema = z.object({
 	name: z.string().min(1).max(8),
 	kind: z.enum(['value', 'function', 'sequence', 'list']),
-	definition: z.string().max(4000)
+	definition: z.string().max(4000),
+	/** Affiché dans la vue Graphe. Absent = non tracé. */
+	plotted: z.boolean().optional()
 });
 
 /**
@@ -66,6 +68,7 @@ export interface StoredObject {
 	readonly name: string;
 	readonly kind: ObjectKind;
 	readonly definition: string;
+	readonly plotted?: boolean;
 }
 
 export interface AtelierState {

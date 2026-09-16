@@ -68,6 +68,14 @@ interface AtelierObjectBase {
 	 */
 	readonly message?: string;
 	/**
+	 * L'objet est-il affiché dans la vue Graphe ?
+	 *
+	 * C'est un état d'AFFICHAGE, pas une propriété mathématique : il vit sur
+	 * l'objet parce que l'atelier détient l'état (décision figée n° 1), et la
+	 * vue n'en est qu'une projection.
+	 */
+	readonly plotted?: boolean;
+	/**
 	 * Ce qui manque, pour `pending` seulement.
 	 *
 	 * Se vide tout seul dès que les objets nommés apparaissent : une attente se

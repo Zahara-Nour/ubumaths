@@ -242,7 +242,15 @@ export class Atelier {
 		if (index === -1) return { ok: false, message: `« ${name} » n'existe pas.` };
 
 		const dependents = this.allDependents(name);
-		this.items[index] = this.build(name, this.items[index].kind, definition);
+		// ⚠️ `build()` fabrique un objet NEUF : ce qui relève de l'affichage doit
+		// être reporté à la main, sinon modifier une fonction fait disparaître sa
+		// courbe. Même famille que le curseur écrasé (revue #334, point 7) : tout
+		// état d'affichage ajouté ici devra être reporté là.
+		const previous = this.items[index];
+		const rebuilt = this.build(name, previous.kind, definition);
+		this.items[index] = (
+			previous.plotted ? { ...rebuilt, plotted: true } : rebuilt
+		) as AtelierObject;
 		this.recomputeAll();
 
 		return { ok: true, object: this.get(name)!, recomputed: dependents };
@@ -290,7 +298,10 @@ export class Atelier {
 		const objects: StoredObject[] = this.items.map((o) => ({
 			name: o.name,
 			kind: o.kind,
-			definition: o.definition
+			definition: o.definition,
+			// Rangé seulement quand il est vrai : un atelier sans courbe tracée ne
+			// paie pas ce champ dans l'URL, qui est le mécanisme de partage.
+			...(o.plotted ? { plotted: true } : {})
 		}));
 		return { version: ATELIER_STATE_VERSION, objects };
 	}
@@ -316,10 +327,25 @@ export class Atelier {
 				definition: stored.definition
 			});
 			if (!result.ok) skipped.push({ name: stored.name, reason: result.message });
+			else if (stored.plotted) this.setPlotted(stored.name, true);
 		}
 
 		this.recomputeAll();
 		return { restored: this.items.length, skipped };
+	}
+
+	/**
+	 * Afficher — ou retirer — cet objet de la vue Graphe.
+	 *
+	 * Le modèle ne juge pas : marquer un objet en attente est permis, c'est la
+	 * vue qui décide de ce qu'elle sait dessiner. Sinon l'élève cliquerait
+	 * « Tracer » sans rien voir se passer, une fois de plus.
+	 */
+	setPlotted(name: string, plotted: boolean): void {
+		const index = this.items.findIndex((o) => o.name === name);
+		if (index === -1) return;
+		this.items[index] = { ...this.items[index], plotted } as AtelierObject;
+		this.recomputeAll();
 	}
 
 	/** Les objets dont la définition cite `name`, directement. */
@@ -499,6 +525,8 @@ export class Atelier {
 		this.revision++;
 
 		this.items = this.items.map((o) => {
+			// `{ ...o }` conserve `plotted` : c'est un état d'affichage, il ne se
+			// recalcule pas.
 			const next = { ...o } as AtelierObject & {
 				status: AtelierObject['status'];
 				message?: string;

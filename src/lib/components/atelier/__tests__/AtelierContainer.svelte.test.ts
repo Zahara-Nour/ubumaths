@@ -110,3 +110,66 @@ describe('tout changement est enregistré', () => {
 		expect(second.names).toEqual(['f']);
 	});
 });
+
+// =============================================================================
+// La vue Graphe — option B : la courbe suit l'objet
+// =============================================================================
+
+describe('vue Graphe', () => {
+	/** Clique l'action nommée sur l'objet sélectionné. */
+	function clickAction(container: HTMLElement, label: string) {
+		const bouton = [...container.querySelectorAll('.action')].find(
+			(b) => b.textContent?.trim() === label
+		) as HTMLButtonElement | undefined;
+		bouton?.click();
+	}
+
+	function selectCard(container: HTMLElement, name: string) {
+		const carte = [...container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === name
+		);
+		(carte?.querySelector('button') as HTMLButtonElement | undefined)?.click();
+	}
+
+	it('bascule sur le graphe quand on trace', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		const { container } = render(AtelierContainer, { atelier, ephemeral: true });
+
+		selectCard(container, 'f');
+		await new Promise((r) => setTimeout(r, 0));
+		clickAction(container, 'Tracer');
+		await new Promise((r) => setTimeout(r, 0));
+
+		expect(atelier.get('f')?.plotted).toBe(true);
+		expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('Graphe');
+	});
+
+	it('propose ensuite de retirer du graphe', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		atelier.setPlotted('f', true);
+		const { container } = render(AtelierContainer, { atelier, ephemeral: true });
+
+		selectCard(container, 'f');
+		await new Promise((r) => setTimeout(r, 0));
+
+		const labels = [...container.querySelectorAll('.action')].map((b) => b.textContent?.trim());
+		expect(labels).toContain('Retirer du graphe');
+	});
+
+	// ⚠️ Le grapheur de l'atelier ne range RIEN : sans clé propre, il chargerait
+	// les courbes de /grapheur puis les écraserait (revue #334).
+	it('ne touche pas au rangement de /grapheur', async () => {
+		localStorage.setItem('chiphre-grapheur-state', 'sentinelle-grapheur');
+
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^{777}' });
+		atelier.setPlotted('f', true);
+		render(AtelierContainer, { atelier, ephemeral: true });
+		await new Promise((r) => setTimeout(r, 700));
+
+		expect(localStorage.getItem('chiphre-grapheur-state')).toBe('sentinelle-grapheur');
+		localStorage.removeItem('chiphre-grapheur-state');
+	});
+});

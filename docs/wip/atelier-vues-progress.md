@@ -101,6 +101,51 @@ fermée » et vérifiait la perte. **Deuxième fois dans ce chantier** (le premi
 Et `session.svelte.ts` → `session.ts` : aucune rune dedans, le suffixe n'avait
 pas lieu d'être.
 
+## Lot 2 — la vue Graphe
+
+### La décision : **option B**, tranchée le 2026-09-16
+
+Quand l'élève clique « Tracer » sur `f`, qui détient la courbe ?
+
+|                                                                         |                                                 |
+| ----------------------------------------------------------------------- | ----------------------------------------------- |
+| A — l'atelier pousse une copie                                          | ⛔ deux vérités : modifier `f` ne redessine pas |
+| **B — le grapheur est synchronisé depuis l'atelier, dans un seul sens** | ✅ retenue                                      |
+| C — les fonctions du grapheur SONT les objets de l'atelier              | 🔜 plus tard                                    |
+
+B tient la décision figée n° 1 — l'atelier détient l'état, la courbe le reflète —
+**sans refondre le grapheur**, qui vient de passer en production. Et elle répond
+à une question que A laissait ouverte : que se passe-t-il si on ajoute une
+fonction depuis le panneau du grapheur ? En B la question disparaît, puisque ce
+panneau n'est pas affiché dans l'atelier — c'est « Mes objets » qui tient ce rôle.
+
+> 🔜 **C reste intéressant pour plus tard** (noté avec David le 2026-09-16).
+> **Déclencheur : quand le grapheur n'aura plus d'autre usage que l'atelier.**
+> Tant que `/grapheur` vit seul, son `functions` doit rester à lui.
+
+### Ce que ça donne
+
+`plot-sync.ts` reporte les objets tracés vers le grapheur. **Idempotent** :
+re-synchroniser sans changement ne fait rien, sinon chaque frappe recréerait les
+courbes et le graphe clignoterait. Et il ne touche jamais aux courbes ajoutées à
+la main dans `/grapheur` — il ne connaît que celles qu'il a posées.
+
+Un objet qui ne peut rien produire (`pending`, `error`) **n'est pas tracé** :
+une courbe absente sans explication est pire qu'une action désactivée qui en
+donne une.
+
+### Un bug trouvé par un test
+
+`update()` reconstruit l'objet et **perdait son état tracé** : l'élève modifiait
+sa fonction, sa courbe disparaissait. Même famille que le curseur écrasé signalé
+en revue #334 — tout état d'affichage ajouté devra être reporté au même endroit,
+un commentaire le dit désormais dans le code.
+
+### Le test qui a rougi comme prévu
+
+Celui qui vérifiait que « Tracer » annonce son prochain lot. Il a rougi au moment
+exact où l'action a été câblée, et il continue de surveiller les autres.
+
 ## Ce que ce lot n'est pas
 
 Les trois vues sont des **espaces réservés** : elles affichent leur nom et

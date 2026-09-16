@@ -136,13 +136,26 @@ describe('objets qui ne peuvent rien produire (§3 L2)', () => {
 
 	// ⚠️ Une action dont la vue n'existe pas encore est VISIBLE et désactivée
 	// avec sa raison — jamais un bouton qui ne répond pas. Cette liste se vide au
-	// fil des lots ; ce test rougira alors, et c'est voulu.
+	// fil des lots : ce test a déjà rougi une fois, quand « Tracer » a été câblé.
 	it('dit qu’une action attend son lot, au lieu de ne rien faire', () => {
 		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
 
-		const tracer = action('f', 'plot');
-		expect(tracer).toBeDefined();
-		expect(tracer?.disabledReason).toContain('prochain lot');
+		const deriver = action('f', 'derive');
+		expect(deriver).toBeDefined();
+		expect(deriver?.disabledReason).toContain('prochain lot');
+	});
+
+	// « Tracer », lui, répond depuis le lot « vue Graphe ».
+	it('propose de tracer une fonction utilisable', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		expect(action('f', 'plot')?.disabledReason).toBeUndefined();
+	});
+
+	// Un même bouton qui bascule, plutôt que deux dont un est inutile.
+	it('propose de retirer du graphe ce qui y est déjà', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		a.setPlotted('f', true);
+		expect(action('f', 'plot')?.label).toBe('Retirer du graphe');
 	});
 });
 
