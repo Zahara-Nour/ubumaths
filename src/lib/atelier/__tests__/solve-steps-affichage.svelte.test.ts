@@ -15,7 +15,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { convertLatexToMarkup } from 'mathlive';
-import { solveSteps, answerOf } from '../solve-steps';
+import { solveSteps } from '../solve-steps';
 
 /** Le marqueur que MathLive pose sur ce qu'il n'a pas su composer. */
 const ERROR_MARKER = 'ML__error';
@@ -41,7 +41,7 @@ describe('le marqueur d’erreur de MathLive', () => {
 
 describe('chaque étape se compose sans erreur', () => {
 	it('premier degré : les blocs alignés et colorés passent', () => {
-		const steps = solveSteps('3x+5=14')!;
+		const { steps } = solveSteps('3x+5=14')!;
 
 		// L'étape 2 porte un `\begin{aligned}` ET un `\textcolor{blue}` : si ce
 		// décor disparaissait, le test ne garderait plus rien.
@@ -58,7 +58,7 @@ describe('chaque étape se compose sans erreur', () => {
 	});
 
 	it('second degré : discriminant, radicaux et ensemble de solutions passent', () => {
-		const steps = solveSteps('x^2-3x+1=0')!;
+		const { steps } = solveSteps('x^2-3x+1=0')!;
 
 		const latex = steps.map((s) => s.expressionLatex ?? '').join(' ');
 		expect(latex).toContain('\\Delta');
@@ -76,7 +76,34 @@ describe('chaque étape se compose sans erreur', () => {
 			// refait le calcul de la fonction qu'il prétend garder reste vert
 			// quand cette fonction change, pendant que la ligne affiche
 			// autre chose.
-			expect(markupOf(answerOf(solveSteps(equation)!))).not.toContain(ERROR_MARKER);
+			expect(markupOf(solveSteps(equation)!.answer)).not.toContain(ERROR_MARKER);
+		}
+	});
+});
+
+describe('les inéquations se composent aussi', () => {
+	/**
+	 * Les inéquations amènent des commandes que les équations n'employaient
+	 * pas : `\leqslant`, `\geqslant`, `\cup`, `\infty`, et les crochets
+	 * d'intervalle. Aucun test serveur ne peut dire si MathLive les connaît.
+	 */
+	it('premier degré, second degré et rationnelle', () => {
+		for (const source of [
+			'2x+1<7',
+			'-2x>=6',
+			'x^2-4>=0',
+			'x^2-3x+2>0',
+			'(x-1)/(x+2)>0',
+			'1/(x-1)<0'
+		]) {
+			const solved = solveSteps(source);
+			expect(solved, source).not.toBeNull();
+
+			expect(markupOf(solved!.answer), `réponse de ${source}`).not.toContain(ERROR_MARKER);
+			for (const step of solved!.steps) {
+				if (step.expressionLatex === undefined) continue;
+				expect(markupOf(step.expressionLatex), `étape de ${source}`).not.toContain(ERROR_MARKER);
+			}
 		}
 	});
 });

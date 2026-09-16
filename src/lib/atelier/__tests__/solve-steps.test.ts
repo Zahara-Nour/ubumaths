@@ -10,33 +10,33 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { solveSteps, answerOf } from '../solve-steps';
+import { solveSteps } from '../solve-steps';
 
 describe('solveSteps — cas nominaux', () => {
 	it('N1 : une équation du premier degré rend ses étapes, en français accentué', () => {
-		const steps = solveSteps('3x+5=14');
+		const solved = solveSteps('3x+5=14');
 
-		expect(steps).not.toBeNull();
-		expect(steps!.length).toBe(4);
-		expect(steps![0].title).toBe('Équation du premier degré');
-		expect(steps![steps!.length - 1].title).toBe('Solution : x = 3');
+		expect(solved).not.toBeNull();
+		expect(solved!.steps.length).toBe(4);
+		expect(solved!.steps[0].title).toBe('Équation du premier degré');
+		expect(solved!.steps[3].title).toBe('Solution : x = 3');
 	});
 
 	it('N1 bis : chaque étape porte son explication (verbosité détaillée)', () => {
-		const steps = solveSteps('3x+5=14');
+		const { steps } = solveSteps('3x+5=14')!;
 
 		// Les étapes de transformation expliquent ce qu'on fait et pourquoi.
-		const withExplanation = steps!.filter((s) => s.explanation !== undefined);
-		expect(withExplanation.length).toBe(steps!.length);
+		const withExplanation = steps.filter((s) => s.explanation !== undefined);
+		expect(withExplanation.length).toBe(steps.length);
 	});
 
 	it('N2 : une équation du second degré rend de vraies mathématiques', () => {
-		const steps = solveSteps('x^2-3x+1=0');
+		const solved = solveSteps('x^2-3x+1=0');
 
-		expect(steps).not.toBeNull();
-		expect(steps![0].title).toBe('Équation du second degré');
+		expect(solved).not.toBeNull();
+		expect(solved!.steps[0].title).toBe('Équation du second degré');
 
-		const latex = steps!.map((s) => s.expressionLatex ?? '').join(' ');
+		const latex = solved!.steps.map((s) => s.expressionLatex ?? '').join(' ');
 		// ⚠️ Le formateur de terminal écrivait « sqrt(5) » et « 3/2+{1/2}sqrt(5) ».
 		// C'est précisément ce que ce lot fait disparaître.
 		expect(latex).not.toContain('sqrt(');
@@ -44,10 +44,10 @@ describe('solveSteps — cas nominaux', () => {
 	});
 
 	it('N3 : une équation sans solution réelle le dit', () => {
-		const steps = solveSteps('x^2+1=0');
+		const solved = solveSteps('x^2+1=0');
 
-		expect(steps).not.toBeNull();
-		const last = steps![steps!.length - 1];
+		expect(solved).not.toBeNull();
+		const last = solved!.steps[solved!.steps.length - 1];
 		expect(last.title).toBe('Pas de solution réelle');
 		expect(last.expressionLatex).toBe('S = \\emptyset');
 	});
@@ -61,13 +61,13 @@ describe('solveSteps — le renderer suit le degré', () => {
 	 * au lieu de la soustraction. Sans ce test, l'inversion passerait la CI.
 	 */
 	it('une équation du premier degré n’est jamais titrée « second degré »', () => {
-		const titles = solveSteps('2x-7=3x+1')!.map((s) => s.title);
+		const titles = solveSteps('2x-7=3x+1')!.steps.map((s) => s.title);
 		expect(titles).not.toContain('Équation du second degré');
 		expect(titles[0]).toBe('Équation du premier degré');
 	});
 
 	it('une équation du second degré n’est jamais titrée « premier degré »', () => {
-		const titles = solveSteps('x^2=4')!.map((s) => s.title);
+		const titles = solveSteps('x^2=4')!.steps.map((s) => s.title);
 		expect(titles).not.toContain('Équation du premier degré');
 		expect(titles[0]).toBe('Équation du second degré');
 	});
@@ -94,27 +94,19 @@ describe('solveSteps lit des MATHÉMATIQUES, pas une ligne de commande', () => {
 
 		expect(espace).not.toBeNull();
 		// La même équation, écrite deux fois : la même réponse.
-		expect(answerOf(espace!)).toBe(answerOf(colle!));
-		expect(answerOf(espace!)).toBe('x = \\dfrac{5}{11}');
+		expect(espace!.answer).toBe(colle!.answer);
+		expect(espace!.answer).toBe('x = \\dfrac{5}{11}');
 	});
 
 	it('un « -v » est une soustraction, pas une option', () => {
-		const steps = solveSteps('3-v=1');
+		const solved = solveSteps('3-v=1');
 
-		expect(steps).not.toBeNull();
-		expect(answerOf(steps!)).toBe('v = 2');
+		expect(solved).not.toBeNull();
+		expect(solved!.answer).toBe('v = 2');
 	});
 });
 
 describe('solveSteps — les replis', () => {
-	it('une inéquation se replie : ce n’est pas une équation', () => {
-		// ⚠️ Mesuré : sans cette garde, `2x+1<7` rend quatre étapes dont la
-		// dernière est titrée « Solution : x = 3 » alors que son LaTeX dit
-		// `x < 3`. Le titre ment sur la nature du résultat.
-		expect(solveSteps('2x+1<7')).toBeNull();
-		expect(solveSteps('x^2>=4')).toBeNull();
-	});
-
 	it('L1 : un degré 3 se replie', () => {
 		expect(solveSteps('x^3-x=0')).toBeNull();
 	});
@@ -148,21 +140,21 @@ describe('solveSteps — les replis', () => {
 	});
 });
 
-describe('answerOf — la réponse que garde la ligne', () => {
+describe('la réponse que garde la ligne', () => {
 	/**
 	 * La ligne d'historique montre la réponse ; les étapes se déplient sous elle
 	 * (décision Q1). La réponse est lue sur la DERNIÈRE ÉTAPE, jamais dans la
 	 * sortie texte du moteur — c'est la règle de `render.ts`, mesures à l'appui.
 	 */
 	it('rend la solution d’une équation du premier degré', () => {
-		expect(answerOf(solveSteps('3x+5=14')!)).toBe('x = 3');
+		expect(solveSteps('3x+5=14')!.answer).toBe('x = 3');
 	});
 
 	it('rend l’ensemble des solutions d’une équation du second degré', () => {
-		expect(answerOf(solveSteps('x^2=4')!)).toBe('S = \\left\\{ -2 \\,;\\, 2 \\right\\}');
+		expect(solveSteps('x^2=4')!.answer).toBe('S = \\left\\{ -2 \\,;\\, 2 \\right\\}');
 	});
 
 	it('rend l’ensemble vide quand il n’y a pas de solution réelle', () => {
-		expect(answerOf(solveSteps('x^2+1=0')!)).toBe('S = \\emptyset');
+		expect(solveSteps('x^2+1=0')!.answer).toBe('S = \\emptyset');
 	});
 });

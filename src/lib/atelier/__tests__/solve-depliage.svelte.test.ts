@@ -88,6 +88,21 @@ describe('le dépliage des étapes', () => {
 		expect(racine.textContent).not.toContain(TITRE);
 	});
 
+	it('une inéquation déplie aussi ses étapes', async () => {
+		// ⚠️ Le chemin des inéquations ne passe PAS par le succès du moteur : sur
+		// `2x+1<7` il échoue et ne rend rien. Si le bouton n'apparaissait pas
+		// ici, l'élève n'aurait toujours qu'une ligne vide.
+		const racine = afficher('.résoudre 2x+1<7');
+
+		expect(racine.textContent).toContain('Comment ?');
+
+		cliquer(bouton(racine, 'Comment ?'));
+		await tick();
+
+		expect(racine.textContent).toContain('Inéquation du premier degré');
+		expect(racine.textContent).toContain('On divise les deux membres par 2');
+	});
+
 	it('une commande sans étapes n’offre pas le bouton', () => {
 		// Degré 3 : repli. La ligne garde la sortie du moteur, sans « Comment ? ».
 		const racine = afficher('.résoudre x^3-x=0');
