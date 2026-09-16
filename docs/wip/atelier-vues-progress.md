@@ -151,3 +151,37 @@ exact où l'action a été câblée, et il continue de surveiller les autres.
 Les trois vues sont des **espaces réservés** : elles affichent leur nom et
 attendent leur lot. Les actions qui dépendent d'une vue (tracer, tabuler) ne sont
 pas encore câblées — seule « Supprimer » l'est, parce qu'elle ne dépend de rien.
+
+## Ce que la revue #337 a corrigé
+
+Six points, dont un bloquant qui cassait le lot entier.
+
+**Le panneau du grapheur écrivait par-dessus l'élève.** J'avais écrit dans un
+commentaire que `GrapheurContainer` était monté « sans son panneau » — c'était
+faux : il rendait `FunctionPanel` sans condition. Dans l'atelier, deux panneaux
+pilotaient donc le même store, et la synchronisation réécrivait ce que l'élève
+tapait dans celui du grapheur. Une prop `panel` (par défaut `true`) le masque
+côté atelier ; `/calc` et `/grapheur` ne changent pas.
+
+> ⚠️ **Un commentaire qui décrit un comportement est une assertion.** Celui-ci
+> décrivait l'intention, pas le code, et il a rendu le bug invisible à ma
+> relecture. Le vérifier coûtait un `grep`.
+
+**Une définition fautive masque la courbe au lieu de la détruire.** En cours de
+frappe, `f(x)=2x+` est momentanément invalide : détruire puis recréer la courbe
+lui donnait une nouvelle couleur à chaque caractère. Elle reste désormais en
+place, `visible: false`.
+
+**« Retirer du graphe » reste actif sur un objet cassé** — c'est justement le
+moment où l'on veut l'enlever.
+
+**Le `WeakMap` est clé sur le couple (atelier, grapheur).** Clé sur le seul
+atelier, deux grapheurs auraient partagé un état de synchronisation qui ne
+décrivait ni l'un ni l'autre.
+
+**`adoptGrapheurState` marque `plotted: true`.** Sans ça, la première
+synchronisation effaçait les courbes qu'elle venait d'adopter.
+
+**Un commentaire dit pourquoi l'effet ne boucle pas** : la synchronisation est
+idempotente, et c'est la seule raison — sans elle,
+`effect_update_depth_exceeded`.
