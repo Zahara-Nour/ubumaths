@@ -60,7 +60,17 @@ export const getClassStudentsSchema = z.object({
  * (ancienne semaine dimanche→jeudi) rendait le vendredi impossible à saisir
  * dans une école qui travaille du lundi au vendredi.
  */
-const dayOfWeekSchema = z.number().int().min(0).max(6);
+const dayOfWeekSchema = z
+	.number()
+	.int()
+	.min(0, 'Jour de la semaine invalide')
+	.max(6, 'Jour de la semaine invalide');
+
+/**
+ * Numéro de période dans la journée (1 à 10), tel que le définit le
+ * `timetable.periods` de l'école.
+ */
+const periodNumberSchema = z.number().int().min(1, 'Période invalide').max(10, 'Période invalide');
 
 /**
  * Time format HH:MM or HH:MM:SS
@@ -75,7 +85,7 @@ const timeSchema = z
 export const createScheduleEntrySchema = z.object({
 	class_id: formDataTransforms.uuid,
 	day_of_week: formDataTransforms.int.pipe(dayOfWeekSchema),
-	period_number: formDataTransforms.int.pipe(z.number().int().min(1).max(10)),
+	period_number: formDataTransforms.int.pipe(periodNumberSchema),
 	start_time: timeSchema,
 	end_time: timeSchema,
 	subject: formDataTransforms.optionalString.nullable(),
@@ -89,7 +99,7 @@ export const createScheduleEntrySchema = z.object({
 export const updateScheduleEntrySchema = z.object({
 	id: formDataTransforms.uuid,
 	day_of_week: formDataTransforms.int.pipe(dayOfWeekSchema),
-	period_number: formDataTransforms.int.pipe(z.number().int().min(1).max(10)),
+	period_number: formDataTransforms.int.pipe(periodNumberSchema),
 	start_time: timeSchema,
 	end_time: timeSchema,
 	subject: formDataTransforms.optionalString.nullable(),

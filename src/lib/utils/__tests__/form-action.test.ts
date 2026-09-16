@@ -32,6 +32,19 @@ function actionResponse(result: ActionResult, httpStatus = 200): Response {
 	});
 }
 
+/**
+ * Ce que `fetch` rend quand il a SUIVI la redirection 303 de `handle` :
+ * la page de login, en HTML, avec `redirected = true`.
+ */
+function followedLoginPage(): Response {
+	const response = new Response('<!doctype html><html lang="fr">…</html>', {
+		status: 200,
+		headers: { 'content-type': 'text/html' }
+	});
+	Object.defineProperty(response, 'redirected', { value: true });
+	return response;
+}
+
 describe('submitAction', () => {
 	let fetchMock: ReturnType<typeof vi.fn>;
 
@@ -69,7 +82,7 @@ describe('submitAction', () => {
 
 		expect(outcome).toEqual({
 			ok: false,
-			message: 'Number must be less than or equal to 4'
+			message: 'day_of_week : Number must be less than or equal to 4'
 		});
 	});
 
@@ -102,15 +115,57 @@ describe('submitAction', () => {
 
 		const outcome = await submitAction('?/createScheduleEntry', new FormData());
 
-		expect(outcome.ok).toBe(false);
+		expect(outcome).toEqual({ ok: false, message: 'Session expirée, reconnectez-vous' });
 	});
 
-	it('rend un échec quand le réseau tombe', async () => {
+	// « Failed to fetch » (Chrome) / « Load failed » (Safari) ne se montrent pas à
+	// une utilisatrice francophone.
+	it('rend un échec en français quand le réseau tombe', async () => {
 		fetchMock.mockRejectedValue(new Error('Failed to fetch'));
 
 		const outcome = await submitAction('?/createScheduleEntry', new FormData());
 
-		expect(outcome).toEqual({ ok: false, message: 'Failed to fetch' });
+		expect(outcome).toEqual({ ok: false, message: 'Une erreur est survenue' });
+	});
+
+	// La panne la plus probable : `handle` ne peut plus lire le profil et redirige
+	// en 303 vers /auth/login. `fetch` suit, et rend du HTML — `deserialize`
+	// jetterait « Unexpected token '<' » sous les yeux de l'utilisatrice.
+	it('rend un échec lisible quand fetch a suivi la redirection de session', async () => {
+		fetchMock.mockResolvedValue(followedLoginPage());
+
+		const outcome = await submitAction('?/createScheduleEntry', new FormData());
+
+		expect(outcome).toEqual({ ok: false, message: 'Session expirée, reconnectez-vous' });
+	});
+
+	it('rend un échec sur une réponse qui n’est pas du JSON', async () => {
+		fetchMock.mockResolvedValue(
+			new Response('<html>502 Bad Gateway</html>', {
+				status: 502,
+				headers: { 'content-type': 'text/html' }
+			})
+		);
+
+		const outcome = await submitAction('?/createScheduleEntry', new FormData());
+
+		expect(outcome).toEqual({ ok: false, message: 'Une erreur est survenue' });
+	});
+
+	// Un JSON valide qui n'est pas un ActionResult (page d'erreur d'un WAF, `null`) :
+	// sans branche par défaut, le helper rendait `undefined` et l'appelant jetait —
+	// l'échec redevenait muet.
+	it.each([
+		['un JSON étranger', '{"error":"blocked"}'],
+		['un corps null', 'null']
+	])('rend un échec sur %s', async (_label, body) => {
+		fetchMock.mockResolvedValue(
+			new Response(body, { status: 200, headers: { 'content-type': 'application/json' } })
+		);
+
+		const outcome = await submitAction('?/createScheduleEntry', new FormData());
+
+		expect(outcome).toEqual({ ok: false, message: 'Une erreur est survenue' });
 	});
 
 	it('poste en form action SvelteKit', async () => {
@@ -123,7 +178,7 @@ describe('submitAction', () => {
 		expect(fetchMock).toHaveBeenCalledWith('?/createScheduleEntry', {
 			method: 'POST',
 			body,
-			headers: { 'x-sveltekit-action': 'true' }
+			headers: { accept: 'application/json', 'x-sveltekit-action': 'true' }
 		});
 	});
 });

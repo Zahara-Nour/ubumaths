@@ -1212,8 +1212,8 @@ describe('miscellaneous validation modules', () => {
 				start_time: '08:00',
 				end_time: '09:00',
 				subject: 'Maths',
-				room: null,
-				notes: null
+				room: '',
+				notes: ''
 			};
 
 			const result = createScheduleEntrySchema.safeParse(data);
@@ -1228,8 +1228,8 @@ describe('miscellaneous validation modules', () => {
 				start_time: '08:00',
 				end_time: '09:00',
 				subject: 'Maths',
-				room: null,
-				notes: null
+				room: '',
+				notes: ''
 			};
 
 			const result = createScheduleEntrySchema.safeParse(data);
@@ -1244,8 +1244,8 @@ describe('miscellaneous validation modules', () => {
 				start_time: '9:00', // Missing leading zero
 				end_time: '10:00',
 				subject: 'Maths',
-				room: null,
-				notes: null
+				room: '',
+				notes: ''
 			};
 
 			const result = createScheduleEntrySchema.safeParse(data);
@@ -1260,8 +1260,8 @@ describe('miscellaneous validation modules', () => {
 				start_time: '08:00',
 				end_time: '09:00',
 				subject: 'Maths',
-				room: null,
-				notes: null
+				room: '',
+				notes: ''
 			};
 
 			const result = createScheduleEntrySchema.safeParse(data);

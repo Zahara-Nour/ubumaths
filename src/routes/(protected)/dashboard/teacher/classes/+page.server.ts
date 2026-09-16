@@ -329,7 +329,7 @@ export const actions: Actions = {
 			.single();
 
 		if (classError || !classData) {
-			return fail(404, { message: 'Class not found' });
+			return fail(404, { message: 'Classe introuvable' });
 		}
 
 		// Insert schedule entry
@@ -346,7 +346,7 @@ export const actions: Actions = {
 
 		if (insertError) {
 			console.error('Error creating schedule entry:', insertError);
-			return fail(500, { message: 'Failed to create schedule entry' });
+			return fail(500, { message: 'Impossible de créer le créneau' });
 		}
 
 		return { success: true, message: 'Créneau créé avec succès' };
@@ -397,7 +397,7 @@ export const actions: Actions = {
 			.single();
 
 		if (scheduleError || !scheduleData) {
-			return fail(404, { message: 'Schedule entry not found' });
+			return fail(404, { message: 'Créneau introuvable' });
 		}
 
 		// Update schedule entry
@@ -416,7 +416,7 @@ export const actions: Actions = {
 
 		if (updateError) {
 			console.error('Error updating schedule entry:', updateError);
-			return fail(500, { message: 'Failed to update schedule entry' });
+			return fail(500, { message: 'Impossible de modifier le créneau' });
 		}
 
 		return { success: true, message: 'Créneau modifié avec succès' };
@@ -456,7 +456,7 @@ export const actions: Actions = {
 			.single();
 
 		if (scheduleError || !scheduleData) {
-			return fail(404, { message: 'Schedule entry not found' });
+			return fail(404, { message: 'Créneau introuvable' });
 		}
 
 		// Delete schedule entry
@@ -464,7 +464,7 @@ export const actions: Actions = {
 
 		if (deleteError) {
 			console.error('Error deleting schedule entry:', deleteError);
-			return fail(500, { message: 'Failed to delete schedule entry' });
+			return fail(500, { message: 'Impossible de supprimer le créneau' });
 		}
 
 		return { success: true, message: 'Créneau supprimé avec succès' };
