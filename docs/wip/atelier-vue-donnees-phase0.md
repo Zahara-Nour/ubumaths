@@ -1,16 +1,16 @@
 ---
 titre: Atelier — vue Données (lot 4), comportements attendus
-statut: Phase 0, en attente de validation
+statut: Phase 0, validée le 2026-09-16 — les tests peuvent être écrits
 date: 2026-09-16
 scope: la vue Données, le type liste, le nuage de points, l'ajustement affine
 ---
 
 # Vue Données — comportements attendus
 
-> **Aucun code avant validation.** Le §4 de la
-> [Phase 0 générale](atelier-recherche-eleve-phase0.md) est déjà validé : ce
-> document ne le réécrit pas, il ajoute ce que les **mesures du 2026-09-16**
-> changent, et pose **trois questions** (§5).
+> **Validée le 2026-09-16**, les trois questions du §5 tranchées dans le sens
+> des recommandations. Le §4 de la
+> [Phase 0 générale](atelier-recherche-eleve-phase0.md) reste la référence : ce
+> document ajoute ce que les **mesures** changent.
 
 Le lot 4 est celui qui relie d'un coup une colonne de nombres, les statistiques,
 le nuage de points et l'ajustement affine. C'est aussi le seul lot du v1 qui
@@ -133,9 +133,9 @@ Un troisième traçable, à côté de la fonction et de la suite.
 
 ---
 
-## 5. Les trois questions à trancher
+## 5. Les trois questions — tranchées le 2026-09-16
 
-### Q1 — Que faire quand l'élève sépare ses valeurs par des virgules ?
+### Q1 — Une liste séparée par des virgules ? → **refusée, avec la correction montrée**
 
 `12, 15, 9` est ce qu'un élève écrira spontanément — c'est ce qu'il voit
 partout. Aujourd'hui l'atelier le lit comme **une seule valeur illisible**.
@@ -146,25 +146,25 @@ partout. Aujourd'hui l'atelier le lit comme **une seule valeur illisible**.
 | **B — accepter la virgule quand elle est suivie d'une espace** | Accepte l'écriture spontanée    | **C'est exactement la règle jugée intenable** au §4 E2 : une espace change le sens          |
 | **C — accepter les deux, la virgule ne pouvant être décimale** | Tolérant                        | `3,14` deviendrait deux valeurs — et c'est l'écriture décimale française, la plus fréquente |
 
-**Ma recommandation : A**, avec un message qui **montre** la correction :
+**Tranché : A**, avec un message qui **montre** la correction :
 « Sépare tes valeurs par des points-virgules : `12 ; 15 ; 9` ». Refuser sans
 montrer serait dur ; accepter serait rouvrir l'ambiguïté que D8 a fermée.
 
-### Q2 — L'étendue : côté atelier, ou dans `mathAST` ?
+### Q2 — L'étendue ? → **calculée côté atelier**
 
-`.stats` ne la rend pas. **Ma recommandation : côté atelier.** L'atelier
+`.stats` ne la rend pas. **Tranché : côté atelier.** L'atelier
 recalcule déjà ses statistiques d'affichage à partir des valeurs qu'il détient,
 et `max − min` ne justifie pas de toucher un module partagé avec le CLI. Si
 d'autres manques apparaissent, on reverra en bloc.
 
-### Q3 — Le nuage, dans le grapheur ou dans la vue Données ?
+### Q3 — Le nuage ? → **un troisième traçable dans le grapheur**
 
 | Approche                                                 | Avantages                                                                                          | Inconvénients                                                                                       |
 | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | **A — un `ScatterPlottable` au grapheur** _(recommandé)_ | Le nuage vit dans le même repère que les courbes : on **voit** l'ajustement passer dans les points | Touche le grapheur, en production                                                                   |
 | **B — un graphe séparé dans la vue Données**             | N'y touche pas                                                                                     | Deux repères rivaux, et l'ajustement ne peut pas se superposer aux points — ce qui est **le geste** |
 
-**Ma recommandation : A.** Superposer le nuage et sa droite d'ajustement est
+**Tranché : A.** Superposer le nuage et sa droite d'ajustement est
 tout l'intérêt pédagogique ; deux repères séparés rendraient le lot inutile.
 Le risque sur `/grapheur` est borné par le comportement N2 du §4 : sans nuage
 posé, rien ne change.

@@ -121,6 +121,34 @@ export function readNumber(raw: string): number | null {
 }
 
 /**
+ * L'élève a-t-il séparé ses valeurs par des virgules ? Si oui, le message.
+ *
+ * ⚠️ Décision Q1 (2026-09-16) : on **refuse en montrant la correction**. Accepter
+ * la virgule rouvrirait l'ambiguïté que le §4 E2 a fermée — `3,14` est
+ * l'écriture décimale française, la plus fréquente, et la distinguer de `3, 14`
+ * par une espace est intenable en classe.
+ *
+ * Le test est précis pour ne pas accuser un décimal : un segment n'est fautif
+ * que s'il **ne se lit pas** comme un nombre ET que le découper sur les virgules
+ * donne plusieurs nombres valides. `3,14` se lit, donc il passe ; `12,15,9` ne
+ * se lit pas et donne trois nombres, donc il est repris.
+ */
+function commaUsedAsSeparator(definition: string): string | null {
+	for (const segment of definition.split(';')) {
+		if (!segment.includes(',')) continue;
+		if (readNumber(segment) !== null) continue;
+
+		const pieces = segment.split(',').map((piece) => piece.trim());
+		if (pieces.length < 2 || pieces.some((piece) => readNumber(piece) === null)) continue;
+
+		// Montrer la correction sur SA saisie, pas sur un exemple générique :
+		// l'élève voit ce qu'il aurait dû taper.
+		return `Sépare tes valeurs par des points-virgules : ${pieces.join(' ; ')}`;
+	}
+	return null;
+}
+
+/**
  * Lire une définition selon le type de l'objet.
  *
  * Une définition vide ne rend jamais d'erreur : l'objet est « incomplet », ce
@@ -134,6 +162,11 @@ export function parseDefinition(
 	if (definition.trim() === '') return {};
 
 	if (kind === 'list') {
+		const misused = commaUsedAsSeparator(definition);
+		if (misused !== null) {
+			return { values: [], skipped: 0, error: misused };
+		}
+
 		const parts = definition.split(';');
 		const values: number[] = [];
 		let skipped = 0;
