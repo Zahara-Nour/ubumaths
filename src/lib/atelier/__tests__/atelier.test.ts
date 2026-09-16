@@ -630,3 +630,60 @@ describe('dépendre d’un objet incomplet', () => {
 		expect(a.get('h')?.missing?.map((m) => m.name)).toEqual(['f']);
 	});
 });
+
+// =============================================================================
+// Sérialisation de l'atelier (§5)
+// =============================================================================
+
+describe('sérialisation', () => {
+	// ⚠️ Le piège `structuredClone` / proxy `$state` ne se reproduit PAS en node :
+	// il est vérifié dans un vrai navigateur par `serialize.svelte.test.ts`.
+
+	it('n’emporte que ce qu’il faut pour reconstruire', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
+
+		const snapshot = a.serialize();
+		expect(snapshot.objects).toEqual([{ name: 'f', kind: 'function', definition: 'x^2' }]);
+		// le statut se recalcule, il ne se range pas
+		expect(JSON.stringify(snapshot)).not.toContain('status');
+	});
+
+	it('se relit à l’identique', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'a*x' });
+		a.create({ kind: 'value', name: 'a', definition: '3' });
+		const snapshot = a.serialize();
+
+		const restored = new Atelier();
+		restored.restore(snapshot);
+
+		expect(restored.names).toEqual(['f', 'a']);
+		expect(restored.get('f')?.status).toBe('ok');
+	});
+
+	it('recalcule les états au lieu de les croire', () => {
+		// Un état rangé quand `a` existait, relu sans `a` : l'atelier doit voir
+		// l'attente tout seul, sans qu'on la lui ait rangée.
+		const restored = new Atelier();
+		restored.restore({
+			version: 1,
+			objects: [{ name: 'f', kind: 'function', definition: 'a*x' }]
+		});
+
+		expect(restored.get('f')?.status).toBe('pending');
+		expect(restored.get('f')?.missing?.map((m) => m.name)).toEqual(['a']);
+	});
+
+	it('ignore un objet de forme inattendue sans tout perdre', () => {
+		const restored = new Atelier();
+		restored.restore({
+			version: 1,
+			objects: [
+				{ name: 'f', kind: 'function', definition: 'x^2' },
+				{ name: '2f', kind: 'function', definition: 'x' },
+				{ name: 'g', kind: 'function', definition: 'x^3' }
+			]
+		});
+
+		expect(restored.names).toEqual(['f', 'g']);
+	});
+});
