@@ -210,6 +210,26 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 }
 
 /**
+ * L'entrée cite-t-elle la dérivée d'un objet qui ne peut rien produire ?
+ *
+ * ⚠️ Vu à l'écran : `k'` sur un objet en attente rendait « Unexpected token: ' »
+ * — un message de parseur, en anglais, là où l'élève attend qu'on lui dise ce
+ * qui manque.
+ */
+function derivativeOfUnusable(session: CalcSession, input: string): string | null {
+	for (const match of input.matchAll(/([A-Za-z](?:_\d+)?)['\u2019]/g)) {
+		const object = session.atelier.get(match[1]);
+		if (object === undefined) {
+			return `« ${match[1]} » n'existe pas : sa dérivée non plus.`;
+		}
+		if (object.status !== 'ok') {
+			return object.message ?? `« ${match[1]} » ne peut rien produire pour le moment.`;
+		}
+	}
+	return null;
+}
+
+/**
  * Traiter ce que l'élève vient de taper.
  *
  * ⚠️ Le moteur est remis en accord avec l'atelier **avant** toute évaluation :
@@ -239,6 +259,11 @@ export function runInput(
 		syncEngine(session.atelier, session.engine);
 		return result;
 	}
+
+	// ⚠️ Une dérivée d'objet indisponible se refuse ICI, en français : laissée au
+	// moteur, elle rendait « Unexpected token: ' » — un message de parseur.
+	const blocked = derivativeOfUnusable(session, input);
+	if (blocked !== null) return { kind: 'refus', message: blocked };
 
 	// `f'(2)` doit valoir 1 : le moteur ne sait pas lier `f'`, l'atelier traduit.
 	const result = session.engine.execute(expandInput(session.atelier, input));

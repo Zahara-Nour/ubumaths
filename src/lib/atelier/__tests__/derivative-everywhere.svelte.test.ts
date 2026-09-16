@@ -79,23 +79,31 @@ describe('une dérivée se trace', () => {
 	});
 
 	/**
-	 * ⚠️ **Le grapheur garde ses paramètres.** Ma première correction envoyait
-	 * l'expression ENTIÈREMENT substituée : `a*x` devenait `1*x`, et le curseur
-	 * `a` du grapheur ne faisait plus rien bouger. Un test du lot 2 l'a attrapé.
+	 * ⛔ **Ce test disait l'inverse, et il avait tort.**
 	 *
-	 * Le grapheur sait résoudre ses paramètres — il ne sait pas ce qu'est `f'`.
-	 * On ne développe donc que les dérivées.
+	 * Je l'avais écrit pour « verrouiller » l'idée qu'il fallait préserver `a*x`
+	 * afin de ne pas figer le curseur du grapheur. Mesuré depuis : le grapheur
+	 * n'a **aucun** paramètre alimenté par l'atelier — il parse `a*x`, garde la
+	 * courbe visible, et ne dessine rien.
+	 *
+	 * Il n'y avait donc aucun curseur à préserver : seulement une courbe
+	 * invisible. C'est la valeur substituée qui se trace.
+	 *
+	 * 🔜 Quand « Régler le curseur » sera câblé (D3), les valeurs de l'atelier
+	 * devront devenir de vrais paramètres du grapheur — et ce test redeviendra
+	 * vrai, autrement.
 	 */
-	it('ne fige pas les paramètres pilotés par un curseur', () => {
+	it('substitue la valeur, pour que la courbe se dessine', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' }, 'text');
-		atelier.create({ kind: 'value', name: 'a', definition: '1' }, 'text');
+		atelier.create({ kind: 'value', name: 'a', definition: '5' }, 'text');
 		const graph = new GrapheurStore(null);
 		atelier.setPlotted('f', true);
 
 		syncPlots(atelier, graph);
 
-		expect(drawn(graph).join('')).toContain('a');
+		expect(drawn(graph).join('')).toContain('5');
+		expect(drawn(graph).join('')).not.toMatch(/\ba\b/);
 	});
 
 	it('une fonction ordinaire se trace toujours', () => {

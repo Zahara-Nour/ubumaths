@@ -10,6 +10,7 @@ import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import { syncPlots } from '../plot-sync';
+import { isExplicitFunction } from '$lib/grapheur/types';
 
 /** Les expressions actuellement tracées, dans l'ordre. */
 function drawn(graph: GrapheurStore): string[] {
@@ -101,7 +102,17 @@ describe('report des objets vers le grapheur', () => {
 
 		atelier.createFromOffer('a');
 		syncPlots(atelier, graph);
-		expect(graph.visibleFunctions.map((f) => ('latex' in f ? f.latex : ''))).toEqual(['a*x']);
+
+		// ⚠️ **Ce test vérifiait `['a*x']`** — la chaîne transmise. Mesuré le
+		// 2026-09-16 : le grapheur parse `a*x` SANS ERREUR, garde la courbe
+		// visible, et ne dessine RIEN, parce que ses `parameters` sont vides et
+		// que `a` y est une variable libre. La chaîne était juste, l'écran vide.
+		//
+		// Ce qui compte, c'est que la courbe soit DESSINABLE : plus aucune
+		// variable libre en dehors de `x`.
+		expect(graph.visibleFunctions).toHaveLength(1);
+		const curve = graph.visibleFunctions[0];
+		expect(isExplicitFunction(curve) && curve.latex).not.toContain('a');
 	});
 
 	// ⚠️ Idempotence : re-synchroniser sans changement ne doit RIEN faire, sinon

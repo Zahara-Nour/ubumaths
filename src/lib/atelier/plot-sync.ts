@@ -16,7 +16,7 @@ import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import { isExplicitFunction, isScatter } from '$lib/grapheur/types';
-import { expandInput } from './engine';
+import { expressionOf } from './engine';
 import { isList } from './types';
 
 /**
@@ -58,15 +58,22 @@ interface Wanted {
 function wantedFor(atelier: Atelier, object: AtelierObject): Wanted | null {
 	if (object.kind !== 'function' || !object.plotted) return null;
 
-	// ⚠️ Seules les DÉRIVÉES sont développées, pas les noms. Sans ça, `g = f'`
-	// était marqué « tracé » et **aucune courbe n'apparaissait** : le grapheur ne
-	// sait pas lire `f'`.
+	// ⚠️ Le grapheur reçoit l'expression ENTIÈREMENT substituée — dérivées ET
+	// valeurs. Il ne connaît ni `f'`, ni `a` : ses propres `parameters` sont
+	// vides, puisque c'est l'atelier qui détient les valeurs (décision n° 1).
 	//
-	// ⚠️⚠️ Mais surtout PAS `expressionOf`, qui substitue tout : `a*x` deviendrait
-	// `1*x`, et le curseur `a` du grapheur ne ferait plus rien bouger. Le
-	// grapheur sait résoudre ses paramètres — il ne sait pas ce qu'est `f'`.
+	// ⚠️⚠️ J'ai cru un moment devoir préserver `a*x` « pour ne pas figer le
+	// curseur du grapheur ». C'était faux, et mesuré : le grapheur parse `a*x`
+	// SANS ERREUR, garde la courbe visible, et ne dessine rien — `a` y est une
+	// variable libre. Le test qui m'avait convaincu vérifiait la chaîne
+	// transmise, pas que la courbe apparaisse.
+	//
+	// 🔜 Le jour où « Régler le curseur » sera câblé, les valeurs de l'atelier
+	// devront devenir de vrais paramètres du grapheur (décision D3) — c'est là
+	// que le curseur reprendra son sens, pas avant.
+	const substituted = expressionOf(atelier, object.name);
 	return {
-		definition: expandInput(atelier, object.definition),
+		definition: substituted.ok ? substituted.expression : object.definition,
 		visible: object.status === 'ok'
 	};
 }
