@@ -34,6 +34,21 @@ export interface RenderedResult {
 // Constantes
 // =============================================================================
 
+/**
+ * Les sequences de couleur d un terminal.
+ *
+ * WARN **Invisible en node, presente en navigateur.** `chalk` detecte le
+ * support des couleurs selon l environnement : le meme appel rend
+ * « d/dx(x^2) = 2x » cote serveur et « ESC[1md/dx(x^2)ESC[22m = ESC[36m2xESC[39m »
+ * dans Chromium. Un test serveur ne peut donc PAS voir ce defaut — celui qui le
+ * garde est dans `render-ansi.svelte.test.ts`.
+ *
+ * La seconde alternative attrape la forme deja depouillee de son ESC, telle
+ * qu elle est apparue a l ecran : « [1md/dx(f) [22m ».
+ */
+// eslint-disable-next-line no-control-regex -- c'est precisement ce caractere qu'il faut retirer
+const ANSI_SEQUENCE = /\u001b[[][0-9;]*m|(?<![a-zA-Z0-9])[[][0-9;]+m/g;
+
 /** La ligne « LaTeX: 2 x » que les commandes ajoutent : une sortie de terminal. */
 const LATEX_LINE = /^\s*LaTeX\s*:/;
 
@@ -91,7 +106,10 @@ function onlySafeCommands(text: string): boolean {
 
 /** Le texte débarrassé de ce qui ne regarde pas l'élève. */
 function cleanText(output: string): string {
+	// Depouiller AVANT de filtrer : la ligne « LaTeX: » commence par une
+	// sequence de couleur en navigateur, et le filtre ne la reconnaissait plus.
 	return output
+		.replace(ANSI_SEQUENCE, '')
 		.split('\n')
 		.filter((line) => !LATEX_LINE.test(line))
 		.join('\n')
