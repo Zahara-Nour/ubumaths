@@ -133,18 +133,28 @@ cite le nom — et c'est sûr, parce que c'est le chemin d'évaluation (`f(2)` r
 commande.** Conséquence : toute commande prenant un argument numérique ou en
 tiret après l'expression meurt sans être appelée.
 
-| Appel                      | Web                                   | CLI |
-| -------------------------- | ------------------------------------- | --- |
-| `.taylor sin(x) 5 0`       | « Unexpected token: 5 »               | ✅  |
-| `.integrate x^2 x 0 1`     | « Unexpected token in expression: 0 » | ✅  |
-| `.solve x^2-1=0 --verbose` | « Consecutive signs not allowed: -- » | ✅  |
+| Appel                      | Ce que le dispatch répondait          |
+| -------------------------- | ------------------------------------- |
+| `.taylor sin(x) 5 0`       | « Unexpected token: 5 »               |
+| `.integrate x^2 x 0 1`     | « Unexpected token in expression: 0 » |
+| `.solve x^2-1=0 --verbose` | « Consecutive signs not allowed: -- » |
 
-Seul `equiv` bénéficie d'une exception dans ce dispatch. `.taylor` est donc
-**entièrement inutilisable** dans l'atelier — même `.taylor sin(x)` seul échoue.
+Seul `equiv` bénéficiait d'une exception. `.taylor` était donc **entièrement
+inutilisable** dans l'atelier — même `.taylor sin(x)` seul échouait.
 
-Je ne le corrige pas ici : c'est du code partagé avec `/cas` et `/calc`, et ça
-mérite sa PR et ses tests. `.taylor` est marquée `unavailable` avec sa raison en
-français — **visible et désactivée**, comme les actions du §3, jamais cachée.
+> ⛔ **Correction du 2026-09-16 : j'avais écrit ici que « ça marche dans le
+> CLI ». C'était FAUX.** `repl.ts` a exactement le même dispatch, donc le même
+> défaut. Je l'avais déduit du test unitaire de `taylor.command.ts`, qui appelle
+> `command.execute(ctx)` **directement** et court-circuite le dispatch — un test
+> vert qui ne dit rien du chemin réel. Vérifier aurait demandé de lire les vingt
+> lignes de `repl.ts`, ce que je n'avais pas fait avant de l'affirmer, ni dans ce
+> document, ni dans la PR #339.
+
+**Réparé depuis**, dans sa propre PR : le drapeau `requiresAst` existait déjà
+(`true` par défaut, mis à `false` par les commandes qui relisent `ctx.input`),
+mais **il n'était pas dans le contrat `Command`** du registre — les deux
+dispatches ne pouvaient donc pas le consulter. `.taylor` est de nouveau
+proposée, avec son exemple.
 
 ### Le test qui a attrapé quatre exemples faux
 

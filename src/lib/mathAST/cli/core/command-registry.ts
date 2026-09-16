@@ -28,6 +28,22 @@ export interface Command {
 	readonly description: string;
 
 	/**
+	 * Whether this command needs `ctx.ast` to be parsed for it.
+	 *
+	 * Absent or `true`: the dispatcher parses the whole argument string as an
+	 * expression, and reports a parse error instead of calling the command.
+	 *
+	 * `false`: the command reads `ctx.input` itself, so a parse failure is NOT
+	 * an error — the dispatcher calls it anyway with `ast` undefined.
+	 *
+	 * ⚠️ This flag existed on `BaseCommand` but not on this interface, so the
+	 * dispatchers could not see it. Every command taking `expr <number>…` or an
+	 * option in dashes therefore died on its own arguments: `.taylor sin(x) 5 0`
+	 * reported « Unexpected token: 5 » without ever being called.
+	 */
+	readonly requiresAst?: boolean;
+
+	/**
 	 * Execute the command with the given context.
 	 *
 	 * @param ctx - Command execution context

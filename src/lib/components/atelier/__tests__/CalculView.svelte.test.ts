@@ -189,16 +189,28 @@ describe('les commandes se découvrent', () => {
 		expect(container.querySelector('.commandes .quoi')?.textContent).toContain('Dériver');
 	});
 
-	// ⚠️ `.taylor` est cassée dans l'interface web : visible et DÉSACTIVÉE avec
-	// sa raison, jamais cachée — sinon l'élève conclut que l'outil ne sait pas.
+	// ⚠️ Visible et DÉSACTIVÉE avec sa raison, jamais cachée — sinon l'élève
+	// conclut que l'outil ne sait pas faire. Les commandes qui écrivent dans le
+	// moteur sont dans ce cas : dans l'atelier, les noms viennent du panneau.
 	it('désactive une commande indisponible sans la cacher', async () => {
+		const { type, container } = open();
+
+		await type('.pose');
+
+		const bouton = container.querySelector('.commandes button') as HTMLButtonElement;
+		expect(bouton.disabled).toBe(true);
+		expect(bouton.textContent).toContain('panneau');
+	});
+
+	// `.taylor` était désactivée tant que le dispatch la tuait sur ses propres
+	// arguments. Le correctif l'a rendue utilisable : elle doit redevenir active.
+	it('propose .taylor, réparée', async () => {
 		const { type, container } = open();
 
 		await type('.tay');
 
 		const bouton = container.querySelector('.commandes button') as HTMLButtonElement;
-		expect(bouton.disabled).toBe(true);
-		expect(bouton.textContent).toContain('ne fonctionne pas encore');
+		expect(bouton.disabled).toBe(false);
 	});
 
 	it('ne propose plus rien une fois la commande choisie', async () => {
