@@ -1,15 +1,15 @@
 ---
 titre: Atelier — vue Calcul (lot 3), comportements attendus
-statut: Phase 0, en attente de validation
+statut: Phase 0, validée le 2026-09-16 — les tests peuvent être écrits
 date: 2026-09-16
 scope: la vue Calcul de l'atelier ; fusion /calc + /cas en partant de /cas
 ---
 
 # Vue Calcul — comportements attendus
 
-> **Aucun code avant validation.** Ce document propose les comportements en
-> français (nominal `N` / limite `L` / erreur `E`) et pose **trois questions**
-> (§7) dont deux sont des décisions d'architecture.
+> **Validé le 2026-09-16.** Les trois questions du §7 sont tranchées dans le
+> sens des recommandations. Les comportements ci-dessous (nominal `N` / limite
+> `L` / erreur `E`) sont ceux que les tests doivent vérifier.
 
 Le lot 2 a donné à l'élève de quoi **nommer** et **tracer**. Le lot 3 lui donne
 de quoi **calculer sur ce qu'il a nommé** — c'est celui qui fait de « Mes
@@ -140,9 +140,55 @@ relève des listes (lot 4).
 
 ---
 
-## 7. Les trois questions à trancher
+## 6 bis. ⚠️ Une commande reçoit l'expression, jamais le nom
 
-### Q1 — Qui détient les noms : l'atelier ou le moteur ? _(architecture)_
+**Mesuré le 2026-09-16.** Avec `f` défini dans l'`EvalState` comme `x^2-3x+1` :
+
+| Appel                  | Ce que le moteur rend                                                             | Verdict                   |
+| ---------------------- | --------------------------------------------------------------------------------- | ------------------------- |
+| `.diff f(x)`           | `2x-3`                                                                            | ✅ juste                  |
+| `.solve f(x)=0`        | « Equation inconnue » / « Type d'equation non supporte: unknown »                 | ❌ échec **visible**      |
+| `.variations f(x)`     | « Derivee : f'(x) = f'(x) », « Points critiques : aucun », domaine ℝ, sans erreur | ☠️ **faux et silencieux** |
+| `.variations x^2-3x+1` | « Points critiques : x = 3/2 », signe de la dérivée, sens de variation            | ✅ juste                  |
+| `.solve x^2-3x+1=0`    | Discriminant Δ = 5, les deux racines, étape par étape                             | ✅ juste                  |
+
+Le troisième est le dangereux : **l'élève lit un tableau de variations
+d'apparence normale, qui ne dit rien de sa fonction.** Aucune erreur, aucun
+message — juste une réponse vide présentée comme une réponse.
+
+> **Règle : la vue Calcul substitue la définition de l'objet avant d'appeler une
+> commande.** Elle n'envoie jamais `f(x)` au moteur, toujours `x^2-3x+1`.
+
+| #      | Cas                                   | Attendu                                                                                    |
+| ------ | ------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **N1** | « Variations » sur `f`                | La commande reçoit `x^2-3x+1` ; le résultat nomme des points critiques                     |
+| **N2** | « Résoudre `f(x) = 0` »               | La commande reçoit `x^2-3x+1=0` ; le discriminant apparaît                                 |
+| **L1** | `f` cite `g`, elle-même définie       | La substitution est **récursive** — sinon `g(x)` repart au défaut ci-dessus                |
+| **L2** | `f` est en attente d'un nom inconnu   | Aucune commande n'est lancée : l'action est désactivée avec le message de l'objet          |
+| **E1** | La substitution boucle (`f` cite `f`) | Détecté et nommé en français (§2.3 L2) ; **aucune commande lancée, aucune boucle infinie** |
+
+---
+
+## 6 ter. Ce que le moteur rend aujourd'hui, et qu'il faut nettoyer
+
+Trois défauts de sortie, tous mesurés le 2026-09-16 :
+
+| Entrée                | Sortie actuelle                       | Problème                                                                                  |
+| --------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `12[km] + 300[m]`     | `\dfrac{123}{10} km`                  | Du **LaTeX dans le champ texte**. En `font-mono`, l'élève lit `\dfrac{123}{10} km`        |
+| `.diff x^2`           | `d/dx(x^2) = 2x\nLaTeX: 2 x`          | Le LaTeX est **collé dans la chaîne**, précédé du mot « LaTeX: » — une sortie de terminal |
+| n'importe quel calcul | `latex` vaut **toujours `undefined`** | Le champ existe dans le type `ReplExecutionResult` mais **aucun chemin ne le remplit**    |
+
+Le troisième est la vraie information : le rendu mathématique (§3 N1) n'est pas
+« déjà là, il suffit de brancher » — c'est du travail, et il faut décider où le
+LaTeX est produit. Le faire **dans la vue** (à partir de l'AST, que le moteur
+rend déjà dans `ast`) évite de toucher `mathAST`, partagé avec le CLI.
+
+---
+
+## 7. Les trois questions — tranchées le 2026-09-16
+
+### Q1 — Qui détient les noms ? → **B, l'atelier détient**
 
 `WebReplEngine` tient son propre `EvalState` (variables + fonctions). L'atelier
 tient ses objets. Si les deux vivent côte à côte, `f` défini dans le panneau et
@@ -160,27 +206,26 @@ l'atelier reste la source. C est la bonne fin de course, avec le même
 déclencheur que pour le grapheur : _quand `/cas` n'aura plus d'autre usage que
 l'atelier_.
 
-### Q2 — Que deviennent `/calc` et `/cas` ? _(architecture)_
+### Q2 — Que deviennent `/calc` et `/cas` ? → **gardées, décision au lot 5**
 
 Le cadrage §13 laisse la question ouverte. Trois sorties : les garder telles
 quelles ; les rediriger vers `/atelier` ; les supprimer.
 
-**Ma recommandation : les garder ce lot-ci, décider au lot 5.** Les rediriger
-maintenant supprimerait le seul moyen de comparer l'ancien et le nouveau
-pendant qu'on construit. Mais **mettre `/atelier` en navigation dès ce lot** :
-il est aujourd'hui inatteignable, et un outil que l'élève ne trouve pas
-n'existe pas.
+**Tranché : gardées ce lot-ci, décision au lot 5.** Les rediriger maintenant
+supprimerait le seul moyen de comparer l'ancien et le nouveau pendant qu'on
+construit. Mais **`/atelier` entre en navigation dès ce lot** : il est
+aujourd'hui inatteignable, et un outil que l'élève ne trouve pas n'existe pas.
 
-### Q3 — Les commandes : franciser, ou garder l'anglais ?
+### Q3 — Franciser les commandes ? → **alias français côté atelier**
 
 Le registre est partagé avec le CLI de `mathAST` (`pnpm repl`), où l'anglais a
 sa place.
 
-**Ma recommandation : une couche de traduction côté atelier**, pas un
-renommage dans `mathAST`. Les alias français (`.dériver`, `.résoudre`,
-`.simplifier`) s'ajoutent, les anglais continuent de marcher, le CLI ne bouge
-pas. Et les commandes de développeur (`.parse`, `.tree`, `.hash`, `.export`)
-restent tapables sans être proposées.
+**Tranché : une couche de traduction côté atelier**, pas un renommage dans
+`mathAST`. Les alias français (`.dériver`, `.résoudre`, `.simplifier`)
+s'ajoutent, les anglais continuent de marcher, le CLI ne bouge pas. Et les
+commandes de développeur (`.parse`, `.tree`, `.hash`, `.export`) restent
+tapables sans être proposées.
 
 ---
 
