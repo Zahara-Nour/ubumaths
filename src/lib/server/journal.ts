@@ -28,6 +28,7 @@ import type {
 	CreateJournalEntryInput,
 	UpdateJournalEntryInput
 } from '$lib/server/validation/journal';
+import { getOrderedSchoolDays, type WeekConfig } from '$lib/utils/week-config';
 
 // ============================================================================
 // TYPES
@@ -224,10 +225,12 @@ export async function getJournalEntriesForWeek(
 	const endDate = new Date(startDate);
 	endDate.setDate(endDate.getDate() + 6);
 
-	// Get class info
+	// `schools(timetable)` en jointure SIMPLE, pas `!inner` : sous RLS, un inner
+	// ferait disparaître la classe elle-même si l'école était masquée. Ici, au
+	// pire, la configuration vaut `null` et le repli s'applique.
 	const { data: classData, error: classError } = await supabase
 		.from('classes')
-		.select('id, name, grade')
+		.select('id, name, grade, schools(timetable)')
 		.eq('id', classId)
 		.single();
 
@@ -292,6 +295,13 @@ export async function getJournalEntriesForWeek(
 		entriesMap.set(entry.entry_date, entry);
 	}
 
+	// Les jours chômés viennent de l'école, jamais d'un littéral : le vendredi
+	// est travaillé dans un lycée français et chômé dans une semaine du Golfe.
+	const weekConfig =
+		(classData.schools as { timetable?: { week_config?: WeekConfig } } | null)?.timetable
+			?.week_config ?? null;
+	const schoolDays = getOrderedSchoolDays(weekConfig);
+
 	// Build days array
 	const days: JournalWeekDay[] = [];
 	const today = new Date();
@@ -304,7 +314,7 @@ export async function getJournalEntriesForWeek(
 		const dateStr = currentDate.toISOString().split('T')[0];
 		const dayOfWeek = currentDate.getDay();
 		const isToday = currentDate.getTime() === today.getTime();
-		const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+		const isWeekend = !schoolDays.includes(dayOfWeek);
 
 		const entry = entriesMap.get(dateStr);
 

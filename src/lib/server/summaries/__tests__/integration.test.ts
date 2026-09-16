@@ -507,10 +507,11 @@ describe('Integration: Multi-Timezone Scenarios', () => {
 			weekend_days: [0, 6]
 		};
 
-		// Rewards run on the day AFTER the last day of the week
-		// DEFAULT_WEEK_CONFIG has last_day = 6 (Saturday), so rewards run on Sunday (0)
-		expect(isWeeklyRewardsDay(DEFAULT_WEEK_CONFIG, 0)).toBe(true); // Sunday (day after Saturday)
-		expect(isWeeklyRewardsDay(DEFAULT_WEEK_CONFIG, 6)).toBe(false); // Saturday is last_day, not rewards day
+		// Rewards run on the day AFTER the last day of the week.
+		// DEFAULT_WEEK_CONFIG décrit la semaine française (last_day = 0, dimanche),
+		// donc les récompenses tombent le lundi.
+		expect(isWeeklyRewardsDay(DEFAULT_WEEK_CONFIG, 1)).toBe(true); // lundi (lendemain du dimanche)
+		expect(isWeeklyRewardsDay(DEFAULT_WEEK_CONFIG, 0)).toBe(false); // dimanche est last_day, pas le jour des récompenses
 
 		// Israeli config: last_day = 6 (Saturday), rewards run on Sunday (0)
 		expect(isWeeklyRewardsDay(israeliConfig, 0)).toBe(true); // Sunday (day after Saturday)
