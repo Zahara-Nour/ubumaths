@@ -1,0 +1,192 @@
+---
+titre: Atelier — vue Calcul (lot 3), comportements attendus
+statut: Phase 0, en attente de validation
+date: 2026-09-16
+scope: la vue Calcul de l'atelier ; fusion /calc + /cas en partant de /cas
+---
+
+# Vue Calcul — comportements attendus
+
+> **Aucun code avant validation.** Ce document propose les comportements en
+> français (nominal `N` / limite `L` / erreur `E`) et pose **trois questions**
+> (§7) dont deux sont des décisions d'architecture.
+
+Le lot 2 a donné à l'élève de quoi **nommer** et **tracer**. Le lot 3 lui donne
+de quoi **calculer sur ce qu'il a nommé** — c'est celui qui fait de « Mes
+objets » un outil de recherche plutôt qu'une liste.
+
+---
+
+## 1. Ce qui existe, re-mesuré aujourd'hui
+
+Les constats du cadrage dataient du 2026-09-15. Je les ai tous rejoués.
+
+| Constat                                                                                                                                                                                                                                                                   | Mesure du 2026-09-16                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Le moteur sait faire beaucoup plus que ce qu'il montre.** 26 commandes au registre + 10 branchées en dur (`latex`, `custom`, `auto`, `exact`, `decimal`, `unitmode`, `convert`, `stats`, `linreg`, `export`) = **36 réelles**. `/calc` en propose **8**, écrites en dur | **28 invisibles** dans `/calc` — le cadrage disait 22, il ne comptait que 4 des 10 hors registre                         |
+| **Aucune des deux pages ne rend le résultat en mathématiques.** `/cas` affiche du HTML échappé en `font-mono` ; `/calc` affiche le texte brut, avec le commentaire « _will be replaced by proper LaTeX rendering_ »                                                       | Vrai. `ResultDisplay.svelte:142`                                                                                         |
+| **Le registre parle anglais.** « Differentiate expression », « Solve equation », « Compute domain of definition »…                                                                                                                                                        | **24 des 26** descriptions sont en anglais. Seules `help` et `variations` sont en français                               |
+| **Deux moteurs, deux espaces de noms.** `/calc` et `/cas` instancient chacun leur `WebReplEngine`                                                                                                                                                                         | Vrai, et l'atelier en ajoute un **troisième** espace de noms : le sien                                                   |
+| **Aucune de ces pages n'est atteignable.** Ni `/calc`, ni `/cas`, ni **`/atelier`**                                                                                                                                                                                       | Zéro lien entrant dans tout `src`. L'atelier qu'on construit est invisible                                               |
+| **La provenance n'est pas branchée** (dette D10)                                                                                                                                                                                                                          | Vrai : `Atelier.create()` et `update()` ne prennent pas de provenance, tout passe par le défaut `'url'` → lecture custom |
+
+Le dernier point n'est pas une dette théorique : **la vue Calcul est l'endroit
+exact où elle se paie**, puisque c'est elle qui aura à la fois un éditeur
+MathLive (qui produit du LaTeX) et un champ de commande (qui produit du texte).
+
+---
+
+## 2. La saisie
+
+Un seul champ, comme aujourd'hui dans `/cas` : ce que l'élève tape est soit une
+**définition** (ça crée ou met à jour un objet), soit un **calcul** (ça produit
+une ligne d'historique), soit une **commande** (ça commence par un point).
+
+| #      | Cas                                            | Attendu                                                                                                                   |
+| ------ | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **N1** | `f(x) = x^2 - 3x + 1`                          | Objet `f` créé dans le panneau (§2.1 N1 de la Phase 0 générale) ; l'historique le confirme en une ligne                   |
+| **N2** | `2 + 3`                                        | Ligne d'historique `5`. **Aucun objet créé** — un calcul jeté n'encombre pas le panneau                                   |
+| **N3** | `f(2)` alors que `f` est un objet de l'atelier | `−1`. Le moteur connaît les objets du panneau **sans que l'élève les redéclare**                                          |
+| **N4** | `.dériver f`                                   | Commande reconnue en français (§5)                                                                                        |
+| **N5** | Une définition frappée dans l'éditeur MathLive | Lue en **LaTeX** (D10)                                                                                                    |
+| **N6** | La même définition tapée au clavier texte      | Lue en **custom** (D10). `sin(x)` reste `sin(x)`, jamais `s·i·n·(x)`                                                      |
+| **L1** | `3 = 3`                                        | Test d'égalité, pas une définition : le moteur sait déjà le faire (`executeEquality`), rien n'est créé                    |
+| **L2** | `x = 3`                                        | Refus §2.2 E1 — `x` est réservé. Le message existe déjà                                                                   |
+| **L3** | Champ vide, touche Entrée                      | Rien. Pas de ligne d'historique vide                                                                                      |
+| **E1** | `f(x) = x^^2`                                  | L'objet `f` **existe et porte son erreur** (§2.1 E2) ; l'historique dit ce qui ne se lit pas ; l'atelier reste utilisable |
+| **E2** | `.dériiver f` (commande inconnue)              | Message en français nommant la commande, **plus les deux plus proches** — pas « unknown command »                         |
+
+> ⚠️ **N3 est le cœur du lot.** Sans lui, l'élève définit `f` dans le panneau
+> puis doit le redéfinir pour l'évaluer — c'est exactement le défaut n° 2 du
+> cadrage (« deux stores, un seul moteur »), reproduit **à l'intérieur** de
+> l'atelier. Il dépend de la question **Q1** (§7).
+
+---
+
+## 3. Le résultat
+
+| #      | Cas                                     | Attendu                                                                                                                    |
+| ------ | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **N1** | `1/3 + 1/6`                             | `1/2` **rendu en mathématiques**, pas en `font-mono`. C'est une fraction, elle doit se voir comme une fraction             |
+| **N2** | `sqrt(8)`                               | `2√2` en mode exact — l'exactitude est une des deux promesses du cadrage                                                   |
+| **N3** | Le même en mode décimal                 | `2,83`. La bascule est visible, et **son état aussi** : l'élève doit savoir dans quel mode il est sans faire d'essai       |
+| **N4** | `12 km + 300 m`                         | `12,3 km`. Les unités sont l'autre promesse (moitié collège de la cible)                                                   |
+| **N5** | Un résultat long                        | Il s'enroule ou défile dans son cadre ; il ne pousse jamais le panneau d'objets hors de l'écran                            |
+| **L1** | Un résultat que le moteur rend en texte | Affiché tel quel, lisiblement. **Mieux vaut du texte propre qu'un rendu mathématique faux**                                |
+| **L2** | Historique long (50 lignes)             | Défile ; la saisie reste visible sans défiler                                                                              |
+| **E1** | Le calcul échoue                        | Message en français, l'historique garde la ligne fautive (l'élève doit pouvoir la relire et la corriger), l'atelier intact |
+
+> Le rendu mathématique est le point 1 de l'ordre de travail du cadrage, et il
+> n'est fait **nulle part** aujourd'hui. Sans lui, tout le reste du lot s'affiche
+> en `font-mono` — et un élève de 6ᵉ ne lit pas `(x^2-1)/(x+1)`.
+
+---
+
+## 4. Garder un résultat (décision D5)
+
+Le geste « je tiens quelque chose » de la recherche : promouvoir une ligne
+d'historique en objet nommé.
+
+| #      | Cas                                                  | Attendu                                                                                   |
+| ------ | ---------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **N1** | « Garder » sur la ligne `2√2`                        | Un nom est **proposé** (`a`, sinon `b`…) et modifiable ; l'objet apparaît dans le panneau |
+| **N2** | Garder un résultat qui est une expression en `x`     | Créé comme **fonction**, donc traçable — le type suit le contenu, pas le geste            |
+| **N3** | Garder deux résultats de suite                       | Deux objets, deux noms distincts. Jamais d'écrasement silencieux                          |
+| **L1** | Garder sous un nom déjà pris                         | Refus §2.2 L1, avec son message. Ni fusion, ni écrasement                                 |
+| **L2** | Garder une ligne en erreur                           | L'action n'est **pas proposée** : il n'y a rien à garder                                  |
+| **L3** | Garder un résultat qui cite un objet supprimé depuis | L'objet créé est **en attente** de ce nom (D9), il n'est pas refusé                       |
+| **E1** | L'atelier est plein (plafond D8)                     | Refus nommé et chiffré, en français                                                       |
+
+---
+
+## 5. Les commandes deviennent découvrables
+
+Aujourd'hui, un élève ne peut pas savoir que `.variations` existe.
+
+| #      | Cas                                                                             | Attendu                                                                                                                        |
+| ------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **N1** | L'élève tape `.`                                                                | La liste des commandes **réelles** apparaît — depuis `getCommands()`, jamais une liste écrite en dur                           |
+| **N2** | Il tape `.d`                                                                    | Filtré sur les commandes qui commencent par `d`, alias compris                                                                 |
+| **N3** | Chaque commande est décrite **en français**                                     | « Dériver une expression », pas « Differentiate expression »                                                                   |
+| **N4** | Une commande porte un exemple                                                   | `.dériver x^2` → l'élève voit à quoi ça ressemble avant de l'écrire                                                            |
+| **L1** | Deux commandes partagent un alias                                               | ⚠️ **Mesuré : `.help` et `.hash` réclament tous deux l'alias `h`.** La liste doit rester déterministe et le conflit être nommé |
+| **L2** | Une commande sans intérêt pour un élève (`.parse`, `.tree`, `.hash`, `.export`) | Reléguée : elle reste tapable, mais ne s'affiche pas en premier. Voir **Q3**                                                   |
+| **E1** | Le registre change (commande ajoutée au moteur)                                 | Elle apparaît **sans toucher à l'interface** — c'est ce que la liste en dur interdit aujourd'hui                               |
+
+---
+
+## 6. Les actions du panneau enfin câblées
+
+Le lot 2 a laissé six actions « visibles, désactivées, avec leur raison ». La
+vue Calcul en câble **quatre** — celles qui produisent un calcul symbolique.
+
+| Action                  | Attendu                                                                                                  |
+| ----------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Dériver**             | Les **deux gestes distincts** de D7 : « afficher la dérivée » (attaché à `f`) et « garder `f'` » (objet) |
+| **Résoudre `f(x) = 0`** | Les solutions affichées près de l'objet ; aucune solution est une **réponse**, pas une erreur            |
+| **Variations**          | Affichage attaché (§3 N4), sans créer d'objet                                                            |
+| **Image d'un nombre**   | L'élève donne un nombre, lit `f(nombre)`                                                                 |
+
+| #      | Cas                                       | Attendu                                                                      |
+| ------ | ----------------------------------------- | ---------------------------------------------------------------------------- |
+| **N1** | « Dériver » sur `f(x) = x^2`              | `2x` affiché sur `f`                                                         |
+| **N2** | Puis « garder `f'` »                      | Objet `f'` dans le panneau, **traçable** comme n'importe quelle fonction     |
+| **L1** | Le CAS ne sait pas traiter cette fonction | Action **visible, désactivée, avec la raison en français** (§3 L1)           |
+| **L2** | `f` est en attente d'un nom inconnu       | Toutes ces actions sont désactivées avec le message de l'objet — déjà le cas |
+| **E1** | L'action échoue au calcul                 | Message en français ; **l'objet et l'atelier restent intacts** (§3 E1)       |
+
+Restent non câblées après ce lot : `table`, `slider`, `convert`, et tout ce qui
+relève des listes (lot 4).
+
+---
+
+## 7. Les trois questions à trancher
+
+### Q1 — Qui détient les noms : l'atelier ou le moteur ? _(architecture)_
+
+`WebReplEngine` tient son propre `EvalState` (variables + fonctions). L'atelier
+tient ses objets. Si les deux vivent côte à côte, `f` défini dans le panneau et
+`f` défini au clavier sont **deux `f` différents** — le défaut n° 2 du cadrage,
+reproduit à l'intérieur de l'atelier.
+
+| Approche                                                           | Avantages                                                                                                                 | Inconvénients                                                                                             |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **A — le moteur détient, l'atelier reflète**                       | Zéro travail sur le moteur ; `f(2)` marche tout de suite                                                                  | **Contredit la décision figée n° 1.** La persistance, l'URL et le panneau devraient tous relire le moteur |
+| **B — l'atelier détient, il pousse dans le moteur** _(recommandé)_ | Tient la décision figée n° 1 ; un seul sens, comme `plot-sync` au lot 2 ; le moteur redevient un calculateur sans mémoire | Il faut pousser avant chaque évaluation. Coût mesurable : à faire, pas à supposer                         |
+| **C — fusion : l'atelier EST l'`EvalState`**                       | Un seul objet, aucune synchronisation                                                                                     | Refonte du moteur, partagé avec `/cas` et les tests de `mathAST`. Hors de portée de ce lot                |
+
+**Ma recommandation : B**, pour la même raison qu'au lot 2 — un seul sens, et
+l'atelier reste la source. C est la bonne fin de course, avec le même
+déclencheur que pour le grapheur : _quand `/cas` n'aura plus d'autre usage que
+l'atelier_.
+
+### Q2 — Que deviennent `/calc` et `/cas` ? _(architecture)_
+
+Le cadrage §13 laisse la question ouverte. Trois sorties : les garder telles
+quelles ; les rediriger vers `/atelier` ; les supprimer.
+
+**Ma recommandation : les garder ce lot-ci, décider au lot 5.** Les rediriger
+maintenant supprimerait le seul moyen de comparer l'ancien et le nouveau
+pendant qu'on construit. Mais **mettre `/atelier` en navigation dès ce lot** :
+il est aujourd'hui inatteignable, et un outil que l'élève ne trouve pas
+n'existe pas.
+
+### Q3 — Les commandes : franciser, ou garder l'anglais ?
+
+Le registre est partagé avec le CLI de `mathAST` (`pnpm repl`), où l'anglais a
+sa place.
+
+**Ma recommandation : une couche de traduction côté atelier**, pas un
+renommage dans `mathAST`. Les alias français (`.dériver`, `.résoudre`,
+`.simplifier`) s'ajoutent, les anglais continuent de marcher, le CLI ne bouge
+pas. Et les commandes de développeur (`.parse`, `.tree`, `.hash`, `.export`)
+restent tapables sans être proposées.
+
+---
+
+## 8. Ce que ce lot ne fait pas
+
+- Les listes, les statistiques, le nuage de points → **lot 4**
+- Le partage par URL et le mode éphémère → **lot 5**
+- `table`, `slider`, `convert` restent désactivés avec leur raison
+- Aucune refonte de `WebReplEngine` (c'est C, et C n'est pas ce lot)
