@@ -43,13 +43,13 @@ montrée n'était pas celle qui avait été calculée. Corrigé dans la même PR
 
 ## État par défaut
 
-| #   | Module                   | Branche             | PR                                                       | État                                     |
-| --- | ------------------------ | ------------------- | -------------------------------------------------------- | ---------------------------------------- |
-| 1   | `taylor`                 | `fix/taylor-signes` | [#352](https://github.com/Zahara-Nour/ubumaths/pull/352) | PR ouverte, CI en cours                  |
-| 2   | `pedagogical-arithmetic` | —                   | —                                                        | cause confirmée, pas commencé            |
-| 3   | `variations`             | —                   | —                                                        | pas commencé                             |
-| 4   | `units` (4b + 4c)        | —                   | —                                                        | pas commencé                             |
-| 5   | `numtype`                | —                   | —                                                        | relevé d'exhaustivité fait, pas commencé |
+| #   | Module                   | PR                                                       | État                                                     |
+| --- | ------------------------ | -------------------------------------------------------- | -------------------------------------------------------- |
+| 1   | `taylor`                 | [#352](https://github.com/Zahara-Nour/ubumaths/pull/352) | ✅ **mergée**                                            |
+| 2   | `pedagogical-arithmetic` | [#354](https://github.com/Zahara-Nour/ubumaths/pull/354) | ✅ **mergée**                                            |
+| 3   | `variations`             | —                                                        | commité sur `fix/variations-extrema`, typecheck en cours |
+| 4   | `units` (4b + 4c)        | —                                                        | cause localisée, pas commencé                            |
+| 5   | `numtype`                | —                                                        | relevé d'exhaustivité fait, pas commencé                 |
 
 ## 1. `taylor` — fait
 
@@ -84,8 +84,18 @@ Sur `8/12 + 9/12`, la division `8/12` déclenche donc `reduce-fraction` (30)
 > **La priorité n'ordonne que les règles essayées sur un même nœud ; entre
 > nœuds, c'est la profondeur qui gagne.**
 
-`mapNodeTopDown` existe déjà (`transforms.ts:496`) — candidat, à peser contre
-le risque de changer l'ordre des étapes ailleurs.
+**Correctif retenu** : une passe préalable détermine la meilleure priorité
+applicable dans tout l'arbre, et seules les règles de cette priorité ont
+ensuite le droit de mordre. `mapNodeTopDown` a été écarté (il aurait combattu
+la règle « parenthèses d'abord », voulue).
+
+⚠️ **La même cause de classe dégradait deux autres familles**, corrigées du
+même coup : la notation scientifique (`10^4` développé en `10·10·10·10` avant
+de multiplier) et les radicaux (`√2 × √8` décomposait `√8`). Décision produit
+de David : chemin en une étape pour les radicaux.
+
+Le snapshot de démonstration **gravait le cycle** comme sortie attendue : il
+perd 3079 lignes pour 471 ajoutées.
 
 ⚠️ Piège documenté : `__tests__/fractions.test.ts` teste les règles en
 isolation via `applyRule()` (ne traverse pas le pipeline) et
@@ -112,3 +122,33 @@ L'angle mort est ailleurs : ces fichiers nomment les membres **sans**
 Deux `switch` sur `NumericType` : `format-fr.ts:121` et `format-fr.ts:205`.
 (Les `switch (type)` de `variations/` et des tokenizers portent sur d'autres
 types — ne pas les confondre.)
+
+## 3. `variations` — deux causes, chacune prouvée séparément
+
+**A. `findAdjacentIntervals` retenait l'intervalle DÉGÉNÉRÉ.** Le zéro de la
+dérivée produit un `constant [3/2 ; 3/2]` qui s'intercale entre le décroissant
+et le croissant ; la boucle écrasant `before`, c'est lui qui restait.
+Corrigé dans `extrema.ts` et **non** en cessant d'émettre ces intervalles :
+`variations/format.ts` s'en sert pour la colonne du point critique dans le
+tableau (grep fait, comme le demandait le doc de départ).
+
+**B. Le solveur linéaire ne posait pas `approximate` sur la solution 0.**
+`normalize(0)` rend un numérateur VIDE, donc la branche rationnelle de
+`solvers/linear.ts` (qui teste `numerator.length === 1`) ne le voyait pas. Or
+`sign/analyze.ts` écarte tout zéro sans `approximate` comme point de découpe →
+un seul intervalle `unknown` → **toute fonction dont la dérivée s'annule en 0**
+perdait son tableau de variations.
+
+Un helper `ensureApproximate` compensait déjà ce défaut dans `solve.ts` et
+`rational.ts` (« Handles the case where the linear solver doesn't set
+approximate for zero »), mais le chemin de l'analyse de signe n'y passe pas —
+une garde centralisée ne protège que ce qui passe par elle. Corrigé à la source.
+
+**Part de chaque correctif, mesurée en les neutralisant un à un** : A seul
+répare 4 cas sur 5 ; B n'est nécessaire que pour `x^2`. `x^4` relève de A.
+
+⚠️ **Pourquoi la suite était verte** — pire qu'une borne inférieure : les tests
+de `compute.test.ts` sont écrits `if (result.extrema.length > 0) { ... } else
+{ ... }`, avec des commentaires « Extrema not found due to sign analysis
+limitations » et des titres « when extrema are found ». Le défaut était encodé
+comme résultat acceptable.
