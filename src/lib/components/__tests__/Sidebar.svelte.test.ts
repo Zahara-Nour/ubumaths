@@ -24,6 +24,16 @@ describe('Sidebar (Outils libres)', () => {
 	});
 
 	describe('outils ouverts sans connexion', () => {
+		/**
+		 * ⚠️ L'atelier est resté INATTEIGNABLE tant qu'aucun lien n'y menait :
+		 * zéro lien entrant dans tout `src`, mesuré le 2026-09-16. Un outil que
+		 * l'élève ne trouve pas n'existe pas.
+		 */
+		it('affiche Atelier pour un visiteur', async () => {
+			render(Sidebar, { profile: null });
+			await expect.element(page.getByText('Atelier', { exact: true })).toBeInTheDocument();
+		});
+
 		it('affiche Grapheur et Géométrie pour un visiteur', async () => {
 			render(Sidebar, { profile: null });
 

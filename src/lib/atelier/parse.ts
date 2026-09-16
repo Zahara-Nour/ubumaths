@@ -56,6 +56,19 @@ function parseByProvenance(definition: string, provenance: Provenance) {
 }
 
 /**
+ * L'arbre d'une définition, ou `null` si elle ne se lit pas.
+ *
+ * Le pont vers le moteur (`engine.ts`) en a besoin : `createFunctionBinding` et
+ * `setBinding` travaillent sur des arbres, pas sur du texte. Passer par ici
+ * garantit que le moteur lit la définition **exactement** comme le panneau —
+ * même provenance, donc même syntaxe (décision D10).
+ */
+export function astOf(definition: string, provenance: Provenance = 'url'): MathNode | null {
+	if (definition.trim() === '') return null;
+	return parseByProvenance(definition, provenance).ast ?? null;
+}
+
+/**
  * Réécrire un texte collé en LaTeX, pour que le champ montre ce qui a été
  * compris.
  *

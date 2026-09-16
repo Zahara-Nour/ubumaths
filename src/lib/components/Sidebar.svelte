@@ -9,6 +9,7 @@
 		Calculator,
 		Laugh,
 		ChartSpline,
+		FlaskConical,
 		Shapes
 	} from '@lucide/svelte';
 	import type { LucideIcon } from '@lucide/svelte';
@@ -36,8 +37,10 @@
 				roles: ['student', 'teacher']
 			},
 			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
-			// Sans `roles` : le grapheur et les démos de géométrie ne lisent aucune
-			// donnée serveur, ils sont donc ouverts, y compris hors connexion.
+			// Sans `roles` : l'atelier, le grapheur et les démos de géométrie ne lisent
+			// aucune donnée serveur, ils sont donc ouverts, y compris hors connexion.
+			// L'atelier vient en tête : c'est lui qui réunit les trois registres.
+			{ label: 'Atelier', href: '/atelier', icon: FlaskConical },
 			{ label: 'Grapheur', href: '/grapheur', icon: ChartSpline },
 			{ label: 'Géométrie', href: '/geometry-demo', icon: Shapes },
 			{
