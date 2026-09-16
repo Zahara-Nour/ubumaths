@@ -17,8 +17,8 @@ import type { Provenance } from './parse';
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName } from './names';
-import { readNumber } from './parse';
-import { syncEngine, expressionOf } from './engine';
+import { astOf, readNumber } from './parse';
+import { syncEngine, expressionOf, expandInput } from './engine';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { resolveCommand, suggestFor, commandCatalog } from './commands';
 import { renderResult } from './render';
@@ -79,10 +79,26 @@ const DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*(?:\(\s*([A-Za-z])\s*\))?\s*=\s*(.
 // Fonctions
 // =============================================================================
 
-/** Le type d'objet qu'annonce une définition, d'après sa forme. */
-function kindOf(parameter: string | undefined): ObjectKind {
+/**
+ * Le type d'objet qu'annonce une définition.
+ *
+ * La FORME tranche quand elle le peut : `u(n) = …` est une suite, `f(x) = …`
+ * une fonction. Sans paramètre, c'est le CONTENU qui décide — sans quoi
+ * `g = f'` produisait une VALEUR nommée « f' », que l'atelier croyait saine et
+ * à laquelle il proposait un curseur, comme à un nombre.
+ */
+function kindOf(parameter: string | undefined, body: string): ObjectKind {
 	if (parameter === 'n') return 'sequence';
-	return parameter === undefined ? 'value' : 'function';
+	if (parameter !== undefined) return 'function';
+
+	const ast = astOf(body);
+	if (ast === null) return 'value';
+	const variables = new Set(getVariables(ast));
+	if (variables.has('x')) return 'function';
+	// `f'` n'a pas de variable libre, mais désigne bien une fonction : c'est le
+	// nœud lui-même qui le dit (`derivativeOrder`).
+	if (/[A-Za-z](?:_\d+)?['’]/.test(body)) return 'function';
+	return 'value';
 }
 
 /**
@@ -107,7 +123,7 @@ function defineObject(
 			return { kind: 'refus', message: nameRejectionMessage(rejection, name) };
 		}
 		const created = atelier.create(
-			{ kind: kindOf(parameter), name, definition: body.trim() },
+			{ kind: kindOf(parameter, body), name, definition: body.trim() },
 			provenance
 		);
 		if (!created.ok) return { kind: 'refus', message: created.message };
@@ -224,7 +240,8 @@ export function runInput(
 		return result;
 	}
 
-	const result = session.engine.execute(input);
+	// `f'(2)` doit valoir 1 : le moteur ne sait pas lier `f'`, l'atelier traduit.
+	const result = session.engine.execute(expandInput(session.atelier, input));
 	const rendered = renderResult(result);
 	return {
 		kind: 'calcul',
