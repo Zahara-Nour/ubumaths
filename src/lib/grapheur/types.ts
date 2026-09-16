@@ -141,10 +141,33 @@ export interface SequencePlottable extends PlottableBase {
 	readonly cobwebSteps: number;
 }
 
-export type Plottable = ExplicitFunction | SequencePlottable;
+/**
+ * A cloud of points from two arbitrary series of numbers.
+ *
+ * ⚠️ Distinct from a sequence drawn as `ranks`: there the abscissa IS the rank
+ * and the ordinate comes from a formula. Here both coordinates are data the
+ * student typed. It lives in the grapheur rather than in a chart of its own so
+ * that an affine fit can be **superimposed on its own points** — which is the
+ * whole pedagogical point.
+ */
+export interface ScatterPlottable extends PlottableBase {
+	readonly type: 'scatter';
+	/** What the panel shows, usually « L / M ». */
+	readonly label: string;
+	/** Abscissas. */
+	readonly xs: readonly number[];
+	/** Ordinates. Pairs beyond the shorter series are not drawn (§4 L1). */
+	readonly ys: readonly number[];
+}
+
+export type Plottable = ExplicitFunction | SequencePlottable | ScatterPlottable;
 
 export function isExplicitFunction(p: Plottable): p is ExplicitFunction {
 	return p.type === 'explicit';
+}
+
+export function isScatter(p: Plottable): p is ScatterPlottable {
+	return p.type === 'scatter';
 }
 
 export function isSequence(p: Plottable): p is SequencePlottable {
@@ -461,9 +484,42 @@ const sequenceStateSchema = z.object({
 });
 
 /** Version 1 states only contained explicit functions; they still validate here. */
-const plottableStateSchema = z.discriminatedUnion('type', [
+/**
+ * Plafond des séries d'un nuage.
+ *
+ * ⚠️ Le même que `MAX_LIST_VALUES` de l'atelier (décision D8) : ce qui se trace
+ * vient d'une liste, et deux plafonds différents laisseraient passer un état
+ * qu'on ne saurait pas relire.
+ */
+const MAX_SCATTER_POINTS = 200;
+
+/** Une série de nombres finis, bornée. */
+const seriesSchema = z
+	.array(z.number().finite('Scatter values must be finite'))
+	.max(MAX_SCATTER_POINTS, `Too many points (max ${MAX_SCATTER_POINTS})`);
+
+const scatterStateSchema = z.object({
+	// Même exigence que les deux autres traçables : un id qui n'est pas un UUID
+	// se relirait ici mais nulle part ailleurs.
+	id: z.string().uuid('Scatter ID must be a valid UUID'),
+	type: z.literal('scatter'),
+	label: z.string().max(100, 'Label too long').default(''),
+	xs: seriesSchema.default([]),
+	ys: seriesSchema.default([]),
+	color: z.string().min(1, 'Color is required').max(50, 'Color string too long'),
+	visible: z.boolean(),
+	lineWidth: z
+		.number()
+		.int('Line width must be an integer')
+		.min(1, 'Line width minimum is 1')
+		.max(5, 'Line width maximum is 5'),
+	lineStyle: lineStyleSchema.default('solid')
+});
+
+export const plottableStateSchema = z.discriminatedUnion('type', [
 	explicitFunctionStateSchema,
-	sequenceStateSchema
+	sequenceStateSchema,
+	scatterStateSchema
 ]);
 
 const parameterSchema = z.object({

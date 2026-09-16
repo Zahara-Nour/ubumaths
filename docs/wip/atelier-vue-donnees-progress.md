@@ -47,8 +47,35 @@ Le test est précis pour ne pas accuser un décimal : un segment n'est fautif qu
 s'il **ne se lit pas** comme un nombre ET que le découper sur les virgules donne
 plusieurs nombres valides. `3,14` passe, `1,5 ; 2,5` passe, `12,15,9` est repris.
 
+## Étape 3a — le nuage comme type traçable (fait)
+
+`ScatterPlottable` rejoint `ExplicitFunction` et `SequencePlottable` dans
+`Plottable`, avec sa garde `isScatter` et son schéma de persistance.
+
+Il vit dans le grapheur (Q3) parce que **superposer le nuage et sa droite
+d'ajustement est tout l'intérêt** : deux repères séparés rendraient le geste
+impossible.
+
+### Deux pièges relevés
+
+**Le `{:else}` de la boucle de rendu.** `GraphSVG` fait
+`{#if type === 'explicit'} … {:else} <SequencePlot>` : un troisième type y
+tomberait et serait dessiné **comme une suite**. Un test vérifie qu'un nuage
+n'est ni une fonction ni une suite ; le rendu devra tester le type
+explicitement.
+
+**L'identifiant devait être un UUID.** Mon schéma acceptait
+`z.string().min(1)`, alors que les deux autres traçables exigent un UUID — un
+nuage se serait rangé ici et nulle part ailleurs. Trouvé parce que mon test de
+non-régression sur les fonctions utilisait `id: 'f1'` et échouait : c'est en
+cherchant pourquoi que l'incohérence est apparue.
+
+Le plafond des séries est celui de D8 (200), le même que `MAX_LIST_VALUES` :
+deux plafonds différents laisseraient passer un état qu'on ne saurait pas
+relire.
+
 ## Étapes suivantes
 
-- [ ] Étape 3 — le nuage de points dans le grapheur (Q3)
+- [ ] Étape 3b — le rendu du nuage et son ajout au store
 - [ ] Étape 4 — l'ajustement affine crée une fonction traçable (§3)
 - [ ] Étape 5 — la vue Données et ses actions
