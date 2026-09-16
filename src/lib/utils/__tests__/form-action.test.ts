@@ -106,16 +106,21 @@ describe('submitAction', () => {
 		expect(outcome).toEqual({ ok: false, message: 'Internal Error' });
 	});
 
-	// Une session expirée renvoie une redirection vers /login : ce n'est pas un
-	// succès, et `response.ok` la prenait pour tel (fetch suit les redirections).
-	it('rend un échec sur une redirection', async () => {
+	// Une redirection levée par l'ACTION est un succès : elle a écrit, puis
+	// renvoie ailleurs (la validation d'une énigme retourne à la liste). À ne pas
+	// confondre avec la redirection de `handle`, couverte plus bas.
+	it('rend un succès et la destination sur une redirection d’action', async () => {
 		fetchMock.mockResolvedValue(
-			actionResponse({ type: 'redirect', status: 303, location: '/login' })
+			actionResponse({ type: 'redirect', status: 303, location: '/dashboard/validations' })
 		);
 
-		const outcome = await submitAction('?/createScheduleEntry', new FormData());
+		const outcome = await submitAction('?/validate', new FormData());
 
-		expect(outcome).toEqual({ ok: false, message: 'Session expirée, reconnectez-vous' });
+		expect(outcome).toEqual({
+			ok: true,
+			data: undefined,
+			redirect: '/dashboard/validations'
+		});
 	});
 
 	// « Failed to fetch » (Chrome) / « Load failed » (Safari) ne se montrent pas à

@@ -6,6 +6,7 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { invalidateAll, goto } from '$app/navigation';
+	import { submitAction } from '$lib/utils/form-action';
 	import {
 		formatPeriodTimes,
 		validateTimetable,
@@ -264,26 +265,15 @@
 			})
 		);
 
-		try {
-			const response = await fetch('?/updateTimetable', {
-				method: 'POST',
-				body: formData,
-				headers: {
-					'x-sveltekit-action': 'true'
-				}
-			});
+		const outcome = await submitAction('?/updateTimetable', formData);
 
-			if (response.ok) {
-				await invalidateAll();
-				toaster.success('Emploi du temps mis à jour avec succès');
-			} else {
-				const result = await response.json();
-				toaster.error(result?.message || 'Erreur lors de la sauvegarde');
-			}
-		} catch (error) {
-			console.error('Error saving timetable:', error);
-			toaster.error('Erreur lors de la sauvegarde');
+		if (!outcome.ok) {
+			toaster.error(outcome.message);
+			return;
 		}
+
+		await invalidateAll();
+		toaster.success('Emploi du temps mis à jour avec succès');
 	}
 
 	// ========================================
@@ -316,25 +306,15 @@
 		const formData = new FormData();
 		formData.append('id', yearId);
 
-		try {
-			const response = await fetch('?/setActiveYear', {
-				method: 'POST',
-				body: formData,
-				headers: {
-					'x-sveltekit-action': 'true'
-				}
-			});
+		const outcome = await submitAction('?/setActiveYear', formData);
 
-			if (response.ok) {
-				await invalidateAll();
-				toaster.success('Année active définie');
-			} else {
-				toaster.error("Erreur lors de la définition de l'année active");
-			}
-		} catch (error) {
-			console.error('Error setting active year:', error);
-			toaster.error("Erreur lors de la définition de l'année active");
+		if (!outcome.ok) {
+			toaster.error(outcome.message);
+			return;
 		}
+
+		await invalidateAll();
+		toaster.success('Année active définie');
 	}
 
 	// ========================================

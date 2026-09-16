@@ -17,7 +17,9 @@
  *
  * Deux redirections à ne pas confondre :
  * - celle levée par l'ACTION revient elle aussi en 200, avec
- *   `{ type: 'redirect' }` dans le corps ;
+ *   `{ type: 'redirect' }` dans le corps. C'est un SUCCÈS : l'action a écrit,
+ *   puis renvoie ailleurs. Sa destination est rendue dans `redirect`, à charge
+ *   pour l'appelant d'y naviguer ;
  * - celle levée par `handle` (profil illisible → `/auth/login`, cf.
  *   `hooks.server.ts`) est un VRAI 3xx, que `fetch` suit jusqu'à une page HTML.
  *   `deserialize` jetterait alors `Unexpected token '<'` — le message même que
@@ -40,7 +42,7 @@ import type { ActionResult } from '@sveltejs/kit';
  * Verdict d'un form action, lu là où il se trouve VRAIMENT.
  */
 export type ActionOutcome<T = Record<string, unknown>> =
-	| { ok: true; data: T | undefined }
+	| { ok: true; data: T | undefined; redirect?: string }
 	| { ok: false; message: string };
 
 // ============================================================================
@@ -87,7 +89,7 @@ function extractMessage(data: unknown): string {
  *
  * @param action - Action ciblée, ex. `'?/createScheduleEntry'`
  * @param body - Données du formulaire
- * @returns `{ ok: true, data }` seulement si l'action a bien réussi
+ * @returns `{ ok: true, data, redirect? }` seulement si l'action a bien réussi
  *
  * @example
  * const outcome = await submitAction('?/createScheduleEntry', formData);
@@ -145,10 +147,12 @@ export async function submitAction<T = Record<string, unknown>>(
 		case 'error':
 			return { ok: false, message: extractMessage(result.error) };
 
-		// Redirection levée par l'action : elle n'écrit rien, la traiter en succès
-		// afficherait un badge vert sur une action jamais exécutée.
+		// Une redirection levée par l'ACTION est un succès délibéré : le serveur a
+		// fait le travail, puis renvoie ailleurs (`validate` d'une énigme écrit le
+		// verdict puis retourne à la liste). `use:enhance` navigue ; ici c'est à
+		// l'appelant de le faire, avec la destination qu'on lui rend.
 		case 'redirect':
-			return { ok: false, message: SESSION_EXPIRED_MESSAGE };
+			return { ok: true, data: undefined, redirect: result.location };
 
 		// Le type garantit l'exhaustivité, pas le runtime : le corps vient du
 		// réseau. Sans ce défaut, un JSON étranger rendrait `undefined` et
