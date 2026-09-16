@@ -32,27 +32,42 @@ describe('instance fournie par contexte', () => {
 	// ⚠️ L'isolation en mémoire ne suffit pas : sans clé propre, une seconde
 	// instance chargerait l'état rangé par `/grapheur` puis l'écraserait à sa
 	// première modification. L'élève perdrait ses courbes sans un mot.
+	//
+	// Les marqueurs sont volontairement improbables : chercher « 42 » dans le
+	// stockage passait en local sur un fichier isolé, et échouait en CI où
+	// soixante-neuf fichiers de tests ont déjà écrit des identifiants et des
+	// horodatages qui contiennent n'importe quel petit nombre.
+	const MARKER_OWN = '{909091}';
+	const MARKER_VOLATILE = '{909092}';
+
 	it('range son état sous SA clé, sans contaminer celle du grapheur', async () => {
 		const own = new GrapheurStore('atelier-test');
-		own.addFunction('x^{42}');
+		own.addFunction(`x^${MARKER_OWN}`);
 		await new Promise((r) => setTimeout(r, 700)); // debounce de sauvegarde
 
-		expect(localStorage.getItem('atelier-test')).toContain('42');
-		expect(localStorage.getItem('chiphre-grapheur-state') ?? '').not.toContain('42');
+		expect(localStorage.getItem('atelier-test') ?? '').toContain('909091');
+		expect(localStorage.getItem('chiphre-grapheur-state') ?? '').not.toContain('909091');
 
 		localStorage.removeItem('atelier-test');
 	});
 
 	it('ne range rien du tout quand la clé est nulle', async () => {
+		// Le `fullReset()` du beforeEach programme une sauvegarde différée du
+		// singleton : sans cette attente, SA clé apparaît pendant le test et se
+		// fait prendre pour une écriture de l'instance à clé nulle.
+		await new Promise((r) => setTimeout(r, 700));
+		const before = new Set(Object.keys(localStorage));
+
 		const volatile = new GrapheurStore(null);
-		volatile.addFunction('x^{43}');
+		volatile.addFunction(`x^${MARKER_VOLATILE}`);
 		await new Promise((r) => setTimeout(r, 700));
 
 		expect(volatile.functions.length).toBe(1);
-		// nulle part : ni sous la clé du grapheur, ni ailleurs
+		// Aucune clé neuve, et le marqueur nulle part.
+		expect(Object.keys(localStorage).filter((k) => !before.has(k))).toEqual([]);
 		const everything = Object.keys(localStorage)
 			.map((k) => localStorage.getItem(k) ?? '')
 			.join('');
-		expect(everything).not.toContain('43');
+		expect(everything).not.toContain('909092');
 	});
 });

@@ -81,6 +81,24 @@ désormais injectable au constructeur, `null` signifiant « ne range rien ».
 TypeScript ne le propage pas jusqu'au `catch`, et le chemin « quota dépassé »
 — qu'aucun test ne parcourt — restait non typé.
 
+## ⚠️ Deux tests fragiles, corrigés — la CI les a attrapés
+
+Mes propres tests de persistance passaient en local et **échouaient en CI**. Deux
+causes, toutes deux de conception :
+
+1. **Un marqueur trop banal.** Je cherchais la chaîne `42` dans le stockage : en
+   local, fichier lancé seul, stockage vierge ; en CI, soixante-neuf fichiers de
+   tests ont déjà écrit des identifiants et des horodatages qui contiennent
+   n'importe quel petit nombre. Marqueurs remplacés par `909091` / `909092`.
+2. **Le singleton écrivait pendant le test.** Le `fullReset()` du `beforeEach`
+   programme une sauvegarde différée de 500 ms ; elle retombait pendant l'attente
+   du test, et **sa** clé passait pour une écriture de l'instance à clé nulle.
+   Le test laisse maintenant le singleton se calmer avant son instantané.
+
+**La leçon, réutilisable** : lancer le fichier seul (`test:client <fichier>`) ne
+prouve rien sur un test qui touche au stockage partagé. Il faut lancer le
+**dossier** — c'est ce qui a reproduit l'échec en local.
+
 ## Ce que ça n'est pas
 
 Le singleton **vit toujours** et reste l'instance par défaut. Ce n'est pas un
