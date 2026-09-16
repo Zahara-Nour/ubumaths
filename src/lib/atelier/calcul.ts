@@ -119,6 +119,38 @@ function defineObject(
 	return { kind: 'definition', name, object: updated.object };
 }
 
+/**
+ * Remplacer, dans l'argument d'une commande, les noms d'objets par leur
+ * expression.
+ *
+ * ⚠️ **Le défaut que ça répare a été vu à l'écran.** `.dériver f` rendait **0**
+ * avec un message de succès : le moteur lit `f` comme une variable libre et la
+ * dérive par rapport à `x`. L'action « Dériver » du panneau, elle, donnait
+ * `2x-3` — parce qu'elle substitue. Deux chemins, deux réponses, dont une
+ * fausse et silencieuse.
+ *
+ * On ne remplace qu'un nom **isolé** ou **appelé** (`f` ou `f(x)`) : sans ça,
+ * le `f` de `\frac` ou d'un mot quelconque serait réécrit.
+ */
+function substituteNames(session: CalcSession, argument: string): string {
+	if (argument.trim() === '') return argument;
+
+	let result = argument;
+	for (const object of session.atelier.objects) {
+		if (object.status !== 'ok') continue;
+		const expression = expressionOf(session.atelier, object.name);
+		if (!expression.ok) continue;
+
+		// `f(x)` d'abord : sinon le `f` seul de `f(x)` serait remplacé, et il
+		// resterait un `(x)` orphelin.
+		const called = new RegExp(`\\b${object.name}\\s*\\(\\s*[xn]\\s*\\)`, 'g');
+		const alone = new RegExp(`(?<![A-Za-z_])${object.name}(?![A-Za-z_0-9])`, 'g');
+		result = result.replace(called, `(${expression.expression})`);
+		result = result.replace(alone, `(${expression.expression})`);
+	}
+	return result;
+}
+
 /** Exécuter une commande, après l'avoir traduite vers ce que comprend le moteur. */
 function runCommand(session: CalcSession, input: string): CalcResult {
 	const { engine } = session;
@@ -142,7 +174,14 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		return { kind: 'refus', message: `« .${typed} » n'est pas une commande.${suffix}` };
 	}
 
-	const result = engine.execute(resolved);
+	// L'argument reçoit les EXPRESSIONS, pas les noms — règle du §6 bis, ici
+	// appliquée à la commande tapée à la main.
+	const executed =
+		space === -1
+			? resolved
+			: `${resolved.slice(0, space)} ${substituteNames(session, resolved.slice(space + 1))}`;
+
+	const result = engine.execute(executed);
 	// `fromCommand` : pour une commande, `result.ast` porte l'ENTRÉE. Le rendre
 	// afficherait « x^2 » là où `.dériver x^2` répond « 2x » (voir `render.ts`).
 	const rendered = renderResult(result, { fromCommand: true });
