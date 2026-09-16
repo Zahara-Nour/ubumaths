@@ -106,6 +106,51 @@ describe('nuage de points', () => {
 	});
 });
 
+/**
+ * §3 N2 : le nuage SUIT ses listes — l'option B du lot 2, appliquée aux
+ * données. Sans ça, l'élève corrige une valeur et son nuage reste figé.
+ */
+describe('le nuage suit ses listes', () => {
+	it('se met à jour quand une liste change', async () => {
+		const { syncPlots } = await import('../plot-sync');
+		const d = deskWith({ L: '1 ; 2', M: '2 ; 4' });
+		const graph = new GrapheurStore(null);
+		d.runFromPanel('scatter', 'L', graph);
+
+		d.atelier.update('L', '1 ; 2 ; 3');
+		d.atelier.update('M', '2 ; 4 ; 6');
+		syncPlots(d.atelier, graph);
+
+		const nuage = graph.functions.find(isScatter)!;
+		expect(nuage.xs).toEqual([1, 2, 3]);
+		expect(nuage.ys).toEqual([2, 4, 6]);
+	});
+
+	it('ne pose pas un second nuage en se synchronisant deux fois', async () => {
+		const { syncPlots } = await import('../plot-sync');
+		const d = deskWith({ L: '1 ; 2', M: '2 ; 4' });
+		const graph = new GrapheurStore(null);
+		d.runFromPanel('scatter', 'L', graph);
+
+		syncPlots(d.atelier, graph);
+		syncPlots(d.atelier, graph);
+
+		expect(graph.functions.filter(isScatter).length).toBe(1);
+	});
+
+	it('disparaît quand on le retire', async () => {
+		const { syncPlots } = await import('../plot-sync');
+		const d = deskWith({ L: '1 ; 2', M: '2 ; 4' });
+		const graph = new GrapheurStore(null);
+		d.runFromPanel('scatter', 'L', graph);
+
+		d.atelier.setPlotted('L', false);
+		syncPlots(d.atelier, graph);
+
+		expect(graph.functions.filter(isScatter).length).toBe(0);
+	});
+});
+
 describe('ajustement affine', () => {
 	it('crée une fonction traçable', () => {
 		const d = deskWith({ L: '1 ; 2 ; 3 ; 4', M: '2 ; 4 ; 6 ; 8' });

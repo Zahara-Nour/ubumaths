@@ -19,6 +19,7 @@ import type { Atelier } from './atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, runAction, promote, type CalcResult, type CalcSession } from './calcul';
 import { describeList, fitAffine } from './stats';
+import { syncPlots } from './plot-sync';
 import { isList, type ListObject } from './types';
 import { nextName } from './names';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
@@ -174,7 +175,12 @@ export class CalcDesk {
 
 		const drawn = Math.min(xs.values.length, ys.values.length);
 		const ignored = Math.max(xs.values.length, ys.values.length) - drawn;
-		graph.addScatter(xs.values, ys.values, `${xs.name} / ${ys.name}`);
+
+		// ⚠️ On MARQUE la liste plutôt que de poser le nuage directement : c'est
+		// la synchronisation qui pose et qui suit, exactement comme « Tracer » au
+		// lot 2. Sans ça, modifier la liste laisserait le nuage figé (§3 N2).
+		this.atelier.setPlotted(xs.name, true);
+		syncPlots(this.atelier, graph);
 
 		// §4 L1 : on dit ce qui n'a pas été tracé, sinon l'élève compte ses points
 		// et ne comprend pas.

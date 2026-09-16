@@ -138,12 +138,27 @@ disparu, et son style mort avec.
 - la règle du séparateur, en permanence, avec le rappel que `3,14` reste **un
   seul nombre**.
 
+## Étape 6 — le nuage suit ses listes (fait)
+
+C'est l'option B du lot 2, appliquée aux données : sans elle, l'élève corrige
+une valeur et **son nuage reste figé**.
+
+« Nuage de points » ne pose donc plus le nuage directement — elle **marque la
+liste d'abscisses**, et `syncPlots` pose, met à jour et retire. Exactement comme
+« Tracer » sur une fonction.
+
+⚠️ C'est la liste d'**abscisses** qui porte le marqueur, pas le couple : sinon
+retirer le nuage demanderait de savoir laquelle des deux listes le tenait.
+
+La synchronisation reste **idempotente** — elle n'écrit que si les séries
+diffèrent — pour la même raison qu'au lot 2 : l'effet qui l'appelle lit ce
+qu'elle écrit.
+
 ## Ce qui reste
 
-- [ ] Le report des nuages quand les listes changent (l'option B pour les
-      nuages : aujourd'hui `addScatter` pose, mais rien ne suit les
-      modifications)
 - [ ] Choisir explicitement la liste des ordonnées, si « la suivante » ne suffit
-      pas à l'usage
+      pas à l'usage réel
+- [ ] Harmoniser l'écart-type avec `.stats` (dette notée plus haut, avec son
+      déclencheur)
 - [ ] Étape 4 — l'ajustement affine crée une fonction traçable (§3)
 - [ ] Étape 5 — la vue Données et ses actions
