@@ -3,6 +3,17 @@ import type { ActionResult } from '@sveltejs/kit';
 
 // `deserialize` décode le `data` encodé en devalue. Le mock le remplace par un
 // JSON.parse : le test porte sur la lecture du VERDICT, pas sur l'encodage.
+const invalidateAllMock = vi.fn();
+const toasterWarning = vi.fn();
+
+vi.mock('$app/navigation', () => ({
+	invalidateAll: () => invalidateAllMock()
+}));
+
+vi.mock('$lib/stores/toaster.svelte', () => ({
+	toaster: { warning: (m: string) => toasterWarning(m) }
+}));
+
 vi.mock('$app/forms', () => ({
 	deserialize: (text: string) => {
 		const parsed = JSON.parse(text);
@@ -10,7 +21,7 @@ vi.mock('$app/forms', () => ({
 	}
 }));
 
-const { submitAction } = await import('../form-action');
+const { submitAction, refreshPageData } = await import('../form-action');
 
 /**
  * Construit la réponse qu'un form action SvelteKit rend VRAIMENT.
@@ -185,5 +196,32 @@ describe('submitAction', () => {
 			body,
 			headers: { accept: 'application/json', 'x-sveltekit-action': 'true' }
 		});
+	});
+});
+
+describe('refreshPageData', () => {
+	beforeEach(() => {
+		invalidateAllMock.mockReset();
+		toasterWarning.mockReset();
+	});
+
+	it('recharge les données de la page', async () => {
+		invalidateAllMock.mockResolvedValue(undefined);
+
+		await refreshPageData();
+
+		expect(invalidateAllMock).toHaveBeenCalledOnce();
+	});
+
+	// L'écriture a réussi ; c'est le rechargement qui tombe. Laissé nu, ce rejet
+	// sautait le message de succès et la fermeture de la modale : l'écran se
+	// figeait sans rien dire.
+	it('avertit sans jeter quand le rechargement échoue', async () => {
+		invalidateAllMock.mockRejectedValue(new Error('Failed to fetch'));
+
+		await expect(refreshPageData()).resolves.toBeUndefined();
+		expect(toasterWarning).toHaveBeenCalledWith(
+			"Enregistré, mais l'affichage n'a pas pu être rafraîchi"
+		);
 	});
 });

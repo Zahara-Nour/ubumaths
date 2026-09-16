@@ -11,11 +11,18 @@ import {
 } from '../week-config';
 
 describe('DEFAULT_WEEK_CONFIG', () => {
-	test('is a valid Israeli school week', () => {
-		expect(DEFAULT_WEEK_CONFIG.first_day).toBe(0); // Sunday
-		expect(DEFAULT_WEEK_CONFIG.last_day).toBe(6); // Saturday
-		expect(DEFAULT_WEEK_CONFIG.school_days).toEqual([0, 1, 2, 3, 4]); // Sun-Thu
-		expect(DEFAULT_WEEK_CONFIG.weekend_days).toEqual([5, 6]); // Fri-Sat
+	// Le défaut décrit la semaine FRANÇAISE : c'est le repli d'une école sans
+	// configuration, et un défaut dimanche→jeudi rendait le vendredi chômé
+	// partout où il servait de secours.
+	test('décrit la semaine française', () => {
+		expect(DEFAULT_WEEK_CONFIG.first_day).toBe(1); // lundi
+		expect(DEFAULT_WEEK_CONFIG.last_day).toBe(0); // dimanche (fin de semaine)
+		expect(DEFAULT_WEEK_CONFIG.school_days).toEqual([1, 2, 3, 4, 5]); // lun-ven
+		expect(DEFAULT_WEEK_CONFIG.weekend_days).toEqual([0, 6]); // dim + sam
+	});
+
+	test('le vendredi est un jour de classe', () => {
+		expect(isSchoolDay(5, DEFAULT_WEEK_CONFIG)).toBe(true);
 	});
 
 	test('passes validation', () => {
@@ -25,7 +32,7 @@ describe('DEFAULT_WEEK_CONFIG', () => {
 
 describe('getLastDayOfWeek', () => {
 	test('returns last day from config', () => {
-		expect(getLastDayOfWeek(DEFAULT_WEEK_CONFIG)).toBe(6);
+		expect(getLastDayOfWeek(DEFAULT_WEEK_CONFIG)).toBe(0);
 	});
 
 	test('works with custom week config', () => {
@@ -40,17 +47,17 @@ describe('getLastDayOfWeek', () => {
 });
 
 describe('isSchoolDay', () => {
-	test('returns true for school days (Sun-Thu)', () => {
-		expect(isSchoolDay(0, DEFAULT_WEEK_CONFIG)).toBe(true); // Sunday
-		expect(isSchoolDay(1, DEFAULT_WEEK_CONFIG)).toBe(true); // Monday
-		expect(isSchoolDay(2, DEFAULT_WEEK_CONFIG)).toBe(true); // Tuesday
-		expect(isSchoolDay(3, DEFAULT_WEEK_CONFIG)).toBe(true); // Wednesday
-		expect(isSchoolDay(4, DEFAULT_WEEK_CONFIG)).toBe(true); // Thursday
+	test('returns true for school days (Mon-Fri)', () => {
+		expect(isSchoolDay(1, DEFAULT_WEEK_CONFIG)).toBe(true); // lundi
+		expect(isSchoolDay(2, DEFAULT_WEEK_CONFIG)).toBe(true); // mardi
+		expect(isSchoolDay(3, DEFAULT_WEEK_CONFIG)).toBe(true); // mercredi
+		expect(isSchoolDay(4, DEFAULT_WEEK_CONFIG)).toBe(true); // jeudi
+		expect(isSchoolDay(5, DEFAULT_WEEK_CONFIG)).toBe(true); // vendredi
 	});
 
-	test('returns false for weekend days (Fri-Sat)', () => {
-		expect(isSchoolDay(5, DEFAULT_WEEK_CONFIG)).toBe(false); // Friday
-		expect(isSchoolDay(6, DEFAULT_WEEK_CONFIG)).toBe(false); // Saturday
+	test('returns false for weekend days (Sat-Sun)', () => {
+		expect(isSchoolDay(6, DEFAULT_WEEK_CONFIG)).toBe(false); // samedi
+		expect(isSchoolDay(0, DEFAULT_WEEK_CONFIG)).toBe(false); // dimanche
 	});
 
 	test('works with Western week (Mon-Fri)', () => {
@@ -69,7 +76,7 @@ describe('isSchoolDay', () => {
 
 describe('getSchoolDays', () => {
 	test('returns array of school days', () => {
-		expect(getSchoolDays(DEFAULT_WEEK_CONFIG)).toEqual([0, 1, 2, 3, 4]);
+		expect(getSchoolDays(DEFAULT_WEEK_CONFIG)).toEqual([1, 2, 3, 4, 5]);
 	});
 
 	test('returns reference to school_days array', () => {
@@ -80,7 +87,7 @@ describe('getSchoolDays', () => {
 
 describe('getWeekendDays', () => {
 	test('returns array of weekend days', () => {
-		expect(getWeekendDays(DEFAULT_WEEK_CONFIG)).toEqual([5, 6]);
+		expect(getWeekendDays(DEFAULT_WEEK_CONFIG)).toEqual([0, 6]);
 	});
 
 	test('returns reference to weekend_days array', () => {
@@ -339,14 +346,20 @@ describe('getOrderedSchoolDays()', () => {
 	});
 
 	test('falls back to the default configuration when there is none', () => {
-		expect(getOrderedSchoolDays(undefined)).toEqual([0, 1, 2, 3, 4]);
-		expect(getOrderedSchoolDays(null)).toEqual([0, 1, 2, 3, 4]);
+		expect(getOrderedSchoolDays(undefined)).toEqual([1, 2, 3, 4, 5]);
+		expect(getOrderedSchoolDays(null)).toEqual([1, 2, 3, 4, 5]);
 	});
 
 	test('falls back to the default when the configuration lists no school day', () => {
 		// Une config vide ne doit pas produire une grille sans colonne.
 		expect(
 			getOrderedSchoolDays({ first_day: 1, last_day: 0, school_days: [], weekend_days: [] })
-		).toEqual([0, 1, 2, 3, 4]);
+		).toEqual([1, 2, 3, 4, 5]);
+	});
+
+	// Le repli sert à des écrans qui décident si « aujourd'hui » est travaillé :
+	// il ne doit jamais rendre le vendredi chômé par défaut.
+	test('le repli tient le vendredi pour travaillé', () => {
+		expect(getOrderedSchoolDays(null)).toContain(5);
 	});
 });

@@ -9,19 +9,25 @@ export interface WeekConfig {
 }
 
 /**
- * Default week configuration for Israeli schools
- * - Sunday (0) to Thursday (4): School days
- * - Friday (5) and Saturday (6): Weekend days
+ * Semaine par défaut : la semaine scolaire française.
  *
- * Day numbering follows JavaScript Date.getDay():
- * 0 = Sunday, 1 = Monday, 2 = Tuesday, 3 = Wednesday,
- * 4 = Thursday, 5 = Friday, 6 = Saturday
+ * C'est le REPLI, celui qu'on obtient quand une école n'a pas encore de
+ * configuration. Il valait autrefois dimanche→jeudi, héritage de l'ancien
+ * établissement : tout code qui retombait dessus tenait alors le vendredi pour
+ * chômé — dans un lycée qui y fait cours. Un défaut se choisit donc pour
+ * l'école qu'on a, pas pour celle qu'on a eue.
+ *
+ * `last_day: 0` (dimanche) ferme une semaine ouverte le lundi ; c'est aussi ce
+ * dont dérive le jour des récompenses hebdomadaires (`isWeeklyRewardsDay`),
+ * qui tombe donc le lundi.
+ *
+ * Numérotation JavaScript `Date.getDay()` : 0 = dimanche … 6 = samedi.
  */
 export const DEFAULT_WEEK_CONFIG: WeekConfig = {
-	first_day: 0, // Sunday
-	last_day: 6, // Saturday
-	school_days: [0, 1, 2, 3, 4], // Sunday-Thursday
-	weekend_days: [5, 6] // Friday-Saturday
+	first_day: 1, // lundi
+	last_day: 0, // dimanche (la semaine se referme le week-end)
+	school_days: [1, 2, 3, 4, 5], // lundi-vendredi
+	weekend_days: [0, 6] // dimanche + samedi
 };
 
 /**
@@ -33,7 +39,7 @@ export const DEFAULT_WEEK_CONFIG: WeekConfig = {
  * @example
  * ```typescript
  * const config = DEFAULT_WEEK_CONFIG;
- * getLastDayOfWeek(config); // Returns 6 (Saturday)
+ * getLastDayOfWeek(config); // Returns 0 (dimanche)
  * ```
  */
 export function getLastDayOfWeek(config: WeekConfig): number {
@@ -54,8 +60,8 @@ export function getLastDayOfWeek(config: WeekConfig): number {
  * @example
  * ```typescript
  * const config = DEFAULT_WEEK_CONFIG;
- * isSchoolDay(0, config); // Returns true (Sunday is a school day in Israel)
- * isSchoolDay(5, config); // Returns false (Friday is weekend in Israel)
+ * isSchoolDay(5, config); // Returns true (le vendredi est travaillé)
+ * isSchoolDay(0, config); // Returns false (dimanche)
  * ```
  */
 export function isSchoolDay(dayOfWeek: number, config: WeekConfig): boolean {
@@ -75,7 +81,7 @@ export function isSchoolDay(dayOfWeek: number, config: WeekConfig): boolean {
  * @example
  * ```typescript
  * const config = DEFAULT_WEEK_CONFIG;
- * getSchoolDays(config); // Returns [0, 1, 2, 3, 4] (Sunday-Thursday)
+ * getSchoolDays(config); // Returns [1, 2, 3, 4, 5] (lundi-vendredi)
  * ```
  */
 export function getSchoolDays(config: WeekConfig): number[] {
@@ -127,7 +133,7 @@ export function getOrderedSchoolDays(config: WeekConfig | null | undefined): num
  * @example
  * ```typescript
  * const config = DEFAULT_WEEK_CONFIG;
- * getWeekendDays(config); // Returns [5, 6] (Friday-Saturday)
+ * getWeekendDays(config); // Returns [0, 6] (dimanche et samedi)
  * ```
  */
 export function getWeekendDays(config: WeekConfig): number[] {
