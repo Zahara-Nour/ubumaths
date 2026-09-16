@@ -16,6 +16,7 @@ import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import { isExplicitFunction, isScatter } from '$lib/grapheur/types';
+import { expandInput } from './engine';
 import { isList } from './types';
 
 /**
@@ -54,9 +55,20 @@ interface Wanted {
 	readonly visible: boolean;
 }
 
-function wantedFor(object: AtelierObject): Wanted | null {
+function wantedFor(atelier: Atelier, object: AtelierObject): Wanted | null {
 	if (object.kind !== 'function' || !object.plotted) return null;
-	return { definition: object.definition, visible: object.status === 'ok' };
+
+	// ⚠️ Seules les DÉRIVÉES sont développées, pas les noms. Sans ça, `g = f'`
+	// était marqué « tracé » et **aucune courbe n'apparaissait** : le grapheur ne
+	// sait pas lire `f'`.
+	//
+	// ⚠️⚠️ Mais surtout PAS `expressionOf`, qui substitue tout : `a*x` deviendrait
+	// `1*x`, et le curseur `a` du grapheur ne ferait plus rien bouger. Le
+	// grapheur sait résoudre ses paramètres — il ne sait pas ce qu'est `f'`.
+	return {
+		definition: expandInput(atelier, object.definition),
+		visible: object.status === 'ok'
+	};
 }
 
 /**
@@ -108,7 +120,7 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 
 	const wanted = new Map<string, Wanted | WantedScatter>();
 	for (const object of atelier.objects) {
-		const curve = wantedFor(object);
+		const curve = wantedFor(atelier, object);
 		if (curve !== null) {
 			wanted.set(object.name, curve);
 			continue;
