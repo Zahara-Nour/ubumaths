@@ -5,8 +5,8 @@
 	import { Input } from '$lib/components/ui/input';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { invalidateAll, goto } from '$app/navigation';
-	import { submitAction } from '$lib/utils/form-action';
+	import { goto } from '$app/navigation';
+	import { submitAction, refreshPageData } from '$lib/utils/form-action';
 	import {
 		formatPeriodTimes,
 		validateTimetable,
@@ -272,7 +272,7 @@
 			return;
 		}
 
-		await invalidateAll();
+		await refreshPageData();
 		toaster.success('Emploi du temps mis à jour avec succès');
 	}
 
@@ -313,7 +313,7 @@
 			return;
 		}
 
-		await invalidateAll();
+		await refreshPageData();
 		toaster.success('Année active définie');
 	}
 
@@ -364,7 +364,7 @@
 			closePeriodDialog();
 			closeHolidayDialog();
 			closeDuplicateDialog();
-			invalidateAll().then(() => {});
+			void refreshPageData();
 		} else if (form?.error) {
 			toaster.error(form.error);
 		}

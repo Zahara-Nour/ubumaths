@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Badge } from '$lib/components/ui/badge';
 	import { ArrowLeft, Users, Check, X } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { submitAction, refreshPageData } from '$lib/utils/form-action';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -38,25 +39,18 @@
 			const form = new FormData();
 			form.append('class_ids', JSON.stringify(selectedClassIds));
 
-			const response = await fetch('?/assign', {
-				method: 'POST',
-				body: form
-			});
+			const outcome = await submitAction('?/assign', form);
 
-			const result = await response.json();
-
-			if (result.type === 'success' || result.data?.success) {
-				toaster.success(
-					`Évaluation assignée à ${selectedClassIds.length} classe${selectedClassIds.length > 1 ? 's' : ''}`
-				);
-				selectedClassIds = [];
-				await invalidateAll();
-			} else {
-				toaster.error(result.data?.error || "Échec de l'assignation");
+			if (!outcome.ok) {
+				toaster.error(outcome.message);
+				return;
 			}
-		} catch (error) {
-			console.error('Assignment failed:', error);
-			toaster.error("Échec de l'assignation");
+
+			toaster.success(
+				`Évaluation assignée à ${selectedClassIds.length} classe${selectedClassIds.length > 1 ? 's' : ''}`
+			);
+			selectedClassIds = [];
+			await refreshPageData();
 		} finally {
 			isSubmitting = false;
 		}
@@ -65,27 +59,18 @@
 	async function handleUnassign(assignmentId: string) {
 		if (!confirm('Supprimer cette assignation ?')) return;
 
-		try {
-			const form = new FormData();
-			form.append('assignment_id', assignmentId);
+		const form = new FormData();
+		form.append('assignment_id', assignmentId);
 
-			const response = await fetch('?/unassign', {
-				method: 'POST',
-				body: form
-			});
+		const outcome = await submitAction('?/unassign', form);
 
-			const result = await response.json();
-
-			if (result.type === 'success' || result.data?.success) {
-				toaster.success('Assignation supprimée');
-				await invalidateAll();
-			} else {
-				toaster.error(result.data?.error || 'Échec de la suppression');
-			}
-		} catch (error) {
-			console.error('Unassignment failed:', error);
-			toaster.error('Échec de la suppression');
+		if (!outcome.ok) {
+			toaster.error(outcome.message);
+			return;
 		}
+
+		toaster.success('Assignation supprimée');
+		await refreshPageData();
 	}
 </script>
 

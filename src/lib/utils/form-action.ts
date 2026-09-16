@@ -32,7 +32,9 @@
  */
 
 import { deserialize } from '$app/forms';
+import { invalidateAll } from '$app/navigation';
 import type { ActionResult } from '@sveltejs/kit';
+import { toaster } from '$lib/stores/toaster.svelte';
 
 // ============================================================================
 // TYPES
@@ -159,5 +161,29 @@ export async function submitAction<T = Record<string, unknown>>(
 		// l'appelant jetterait — l'échec redeviendrait muet.
 		default:
 			return { ok: false, message: DEFAULT_ERROR_MESSAGE };
+	}
+}
+
+/**
+ * Recharge les données de la page après une écriture réussie.
+ *
+ * `invalidateAll()` peut rejeter (réseau coupé entre l'écriture et le
+ * rechargement). Laissé nu, ce rejet saute le message de succès et la fermeture
+ * de la modale : l'écran se fige sans rien dire, alors que l'écriture, elle, a
+ * bien eu lieu — le symptôme même que ce module existe pour supprimer.
+ *
+ * L'échec n'est donc pas tu : l'utilisateur apprend que son enregistrement a
+ * réussi mais que l'affichage est périmé.
+ *
+ * @example
+ * toaster.success('Créneau créé');
+ * await refreshPageData();
+ */
+export async function refreshPageData(): Promise<void> {
+	try {
+		await invalidateAll();
+	} catch (err) {
+		console.error('[refreshPageData] Rechargement des données échoué :', err);
+		toaster.warning("Enregistré, mais l'affichage n'a pas pu être rafraîchi");
 	}
 }

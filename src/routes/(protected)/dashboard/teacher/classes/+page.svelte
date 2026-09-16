@@ -57,9 +57,8 @@
 	import ScheduleEntryModal from '$lib/components/ScheduleEntryModal.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { invalidateAll } from '$app/navigation';
 	import { enhance } from '$app/forms';
-	import { submitAction } from '$lib/utils/form-action';
+	import { submitAction, refreshPageData } from '$lib/utils/form-action';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import {
 		Mail,
@@ -180,7 +179,7 @@
 				return;
 			}
 
-			await invalidateAll();
+			await refreshPageData();
 			toaster.success(courseId ? 'Cours associé' : 'Association supprimée');
 		} finally {
 			isUpdatingAssociation[classId] = false;
@@ -347,7 +346,7 @@
 
 		// L'entrée optimiste disparaît dans les deux cas : elle ne doit survivre ni
 		// au refus (sinon la grille montre un créneau qui n'existe pas) ni au
-		// succès (invalidateAll rend la vraie ligne).
+		// succès (le rechargement rend la vraie ligne).
 		delete optimisticEntries[entryKey];
 		pendingRequests.delete(entryKey);
 
@@ -358,7 +357,7 @@
 
 		// Small delay to show the transition smoothly
 		setTimeout(async () => {
-			await invalidateAll();
+			await refreshPageData();
 			toaster.success('Créneau "Maths" ajouté');
 		}, 100);
 	}
@@ -436,7 +435,7 @@
 		}
 
 		// Refresh all page data to show new/updated entry
-		await invalidateAll();
+		await refreshPageData();
 		toaster.success(
 			modalMode === 'create' ? 'Créneau créé avec succès' : 'Créneau modifié avec succès'
 		);
@@ -472,7 +471,7 @@
 		}
 
 		// Refresh all page data to remove deleted entry
-		await invalidateAll();
+		await refreshPageData();
 		toaster.success('Créneau supprimé avec succès');
 		modalOpen = false;
 	}

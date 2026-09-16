@@ -400,8 +400,11 @@ export const actions: Actions = {
 			return fail(404, { message: 'Créneau introuvable' });
 		}
 
-		// Update schedule entry
-		const { error: updateError } = await supabase
+		// ⚠️ `.select()` n'est pas décoratif : une écriture refusée par la RLS ne
+		// rend PAS d'erreur, elle rend zéro ligne. Sans les lignes rendues, cette
+		// action ne sait pas si elle a modifié quoi que ce soit, et annonce un
+		// succès dans les deux cas.
+		const { data: updated, error: updateError } = await supabase
 			.from('class_schedules')
 			.update({
 				day_of_week: dayOfWeek,
@@ -412,11 +415,17 @@ export const actions: Actions = {
 				room: room || null,
 				notes: notes || null
 			})
-			.eq('id', id);
+			.eq('id', id)
+			.select('id');
 
 		if (updateError) {
 			console.error('Error updating schedule entry:', updateError);
 			return fail(500, { message: 'Impossible de modifier le créneau' });
+		}
+
+		if (!updated || updated.length === 0) {
+			console.error('[updateScheduleEntry] Aucune ligne modifiée pour', id);
+			return fail(403, { message: 'Créneau non modifié : droits insuffisants' });
 		}
 
 		return { success: true, message: 'Créneau modifié avec succès' };
@@ -459,12 +468,23 @@ export const actions: Actions = {
 			return fail(404, { message: 'Créneau introuvable' });
 		}
 
-		// Delete schedule entry
-		const { error: deleteError } = await supabase.from('class_schedules').delete().eq('id', id);
+		// Même piège que sur l'update : une suppression refusée affecte zéro ligne
+		// en silence. L'écran a déjà annoncé des suppressions qui n'avaient pas eu
+		// lieu (cf. docs/ref/rls-echecs-silencieux.md).
+		const { data: deleted, error: deleteError } = await supabase
+			.from('class_schedules')
+			.delete()
+			.eq('id', id)
+			.select('id');
 
 		if (deleteError) {
 			console.error('Error deleting schedule entry:', deleteError);
 			return fail(500, { message: 'Impossible de supprimer le créneau' });
+		}
+
+		if (!deleted || deleted.length === 0) {
+			console.error('[deleteScheduleEntry] Aucune ligne supprimée pour', id);
+			return fail(403, { message: 'Créneau non supprimé : droits insuffisants' });
 		}
 
 		return { success: true, message: 'Créneau supprimé avec succès' };
