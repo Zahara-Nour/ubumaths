@@ -47,8 +47,10 @@ describe('Unit Factory Functions', () => {
 			it('should create liter (L)', () => {
 				const result = unit('L');
 				expect(result).not.toBeNull();
-				expect(result?.components).toEqual(new Map([['L', 1]]));
-				expect(result?.coefficient).toBe(1);
+				// Le litre porte la signature d'un volume (`m^3`), comme l'hectare
+				// porte celle d'une aire : `L` et `dm^3` doivent être comparables.
+				expect(result?.components).toEqual(new Map([['m', 3]]));
+				expect(result?.coefficient).toBe(0.001);
 			});
 
 			it('should create dimensionless (1)', () => {
@@ -107,8 +109,9 @@ describe('Unit Factory Functions', () => {
 			it('should create gigaliters (GL)', () => {
 				const result = unit('GL');
 				expect(result).not.toBeNull();
-				expect(result?.components).toEqual(new Map([['L', 1]]));
-				expect(result?.coefficient).toBe(1e9);
+				expect(result?.components).toEqual(new Map([['m', 3]]));
+				// 1 GL = 1e9 L = 1e6 m^3
+				expect(result?.coefficient).toBeCloseTo(1e6, 3);
 			});
 		});
 
@@ -188,8 +191,8 @@ describe('Unit Factory Functions', () => {
 			it('should resolve lowercase litre alias (l)', () => {
 				const result = unit('l');
 				expect(result).not.toBeNull();
-				expect(result?.components).toEqual(new Map([['L', 1]]));
-				expect(result?.coefficient).toBe(1);
+				expect(result?.components).toEqual(new Map([['m', 3]]));
+				expect(result?.coefficient).toBe(0.001);
 			});
 
 			it('should resolve metre alias', () => {

@@ -782,3 +782,34 @@ describe('Edge Cases', () => {
 		});
 	});
 });
+
+// =============================================================================
+// Unités dérivées : signature SI complète (regression)
+// =============================================================================
+
+describe('les unités dérivées gardent leur signature SI', () => {
+	// Le parser posait `baseSymbol^1` en ignorant le `components` de la
+	// définition : l'hectare valait `{ m: 1 }` au lieu de `{ m: 2 }`, le newton
+	// `{ g: 1 }`. Le défaut restait invisible tant que les deux côtés de
+	// l'addition étaient également faux (`N + N` passait).
+	test('1 ha + 1 m^2 est cohérent', () => {
+		const result = checkDimensionalConsistency('1\\unit{ha} + 1\\unit{m^2}');
+		expect(result.isConsistent).toBe(true);
+		expect(result.errors).toHaveLength(0);
+	});
+
+	test('1 a + 1 m^2 est cohérent', () => {
+		const result = checkDimensionalConsistency('1\\unit{a} + 1\\unit{m^2}');
+		expect(result.isConsistent).toBe(true);
+	});
+
+	test('1 L + 1 dm^3 est cohérent', () => {
+		const result = checkDimensionalConsistency('1\\unit{L} + 1\\unit{dm^3}');
+		expect(result.isConsistent).toBe(true);
+	});
+
+	test('une aire reste incompatible avec une longueur', () => {
+		const result = checkDimensionalConsistency('1\\unit{ha} + 1\\unit{m}');
+		expect(result.isConsistent).toBe(false);
+	});
+});

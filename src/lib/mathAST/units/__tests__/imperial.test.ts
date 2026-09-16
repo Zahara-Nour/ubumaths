@@ -67,30 +67,35 @@ describe('Imperial units - resolveUnit (catalog presence)', () => {
 		it('resolves "gal" (US gallon) to volume unit, coefficient 3.785411784 L', () => {
 			const def = resolveUnit('gal');
 			expect(def).not.toBeNull();
-			expect(def?.baseSymbol).toBe('L');
+			// Les volumes sont rattachés au mètre cube, comme le litre lui-même.
+			expect(def?.baseSymbol).toBe('m');
+			expect(def?.components).toEqual(new Map([['m', 3]]));
 			expect(def?.dimension).toBe('volume');
-			expect(def?.coefficient).toBeCloseTo(3.785411784, 12);
+			expect(def?.coefficient).toBeCloseTo(0.003785411784, 15);
 		});
 
 		it('resolves "qt" (US quart) to volume unit, coefficient 0.946352946 L', () => {
 			const def = resolveUnit('qt');
 			expect(def).not.toBeNull();
-			expect(def?.baseSymbol).toBe('L');
-			expect(def?.coefficient).toBeCloseTo(0.946352946, 12);
+			expect(def?.baseSymbol).toBe('m');
+			expect(def?.components).toEqual(new Map([['m', 3]]));
+			expect(def?.coefficient).toBeCloseTo(0.000946352946, 15);
 		});
 
 		it('resolves "pt" (US pint) to volume unit, coefficient 0.473176473 L', () => {
 			const def = resolveUnit('pt');
 			expect(def).not.toBeNull();
-			expect(def?.baseSymbol).toBe('L');
-			expect(def?.coefficient).toBeCloseTo(0.473176473, 12);
+			expect(def?.baseSymbol).toBe('m');
+			expect(def?.components).toEqual(new Map([['m', 3]]));
+			expect(def?.coefficient).toBeCloseTo(0.000473176473, 15);
 		});
 
 		it('resolves "floz" (US fluid ounce) to volume unit, coefficient 0.0295735295625 L', () => {
 			const def = resolveUnit('floz');
 			expect(def).not.toBeNull();
-			expect(def?.baseSymbol).toBe('L');
-			expect(def?.coefficient).toBeCloseTo(0.0295735295625, 14);
+			expect(def?.baseSymbol).toBe('m');
+			expect(def?.components).toEqual(new Map([['m', 3]]));
+			expect(def?.coefficient).toBeCloseTo(2.95735295625e-5, 17);
 		});
 	});
 });
@@ -110,11 +115,11 @@ describe('Imperial units - parseUnit', () => {
 		expect(u?.coefficient).toBeCloseTo(453.59237, 9);
 	});
 
-	it('parses "gal" as Unit with components Map([["L", 1]])', () => {
+	it('parses "gal" as Unit with components Map([["m", 3]])', () => {
 		const u = parse('gal');
 		expect(u).not.toBeNull();
-		expect(u?.components).toEqual(new Map([['L', 1]]));
-		expect(u?.coefficient).toBeCloseTo(3.785411784, 12);
+		expect(u?.components).toEqual(new Map([['m', 3]]));
+		expect(u?.coefficient).toBeCloseTo(0.003785411784, 15);
 	});
 
 	it('parses composite "ft^2" (square foot)', () => {

@@ -94,11 +94,13 @@ describe('Unit Resolution', () => {
 
 		test('resolves liter', () => {
 			const result = resolveUnit('L');
+			// Le litre porte la signature d'un volume (`m^3`) : 1 L = 0,001 m^3.
 			expect(result).toEqual({
 				symbol: 'L',
 				name: 'litre',
-				baseSymbol: 'L',
-				coefficient: 1,
+				baseSymbol: 'm',
+				components: new Map([['m', 3]]),
+				coefficient: 0.001,
 				dimension: 'volume'
 			});
 		});
@@ -400,8 +402,8 @@ describe('Unit Creation', () => {
 
 		test('creates liter unit', () => {
 			const unit = createUnit('L');
-			expect(unit.components.get('L')).toBe(1);
-			expect(unit.coefficient).toBe(1);
+			expect(unit.components.get('m')).toBe(3);
+			expect(unit.coefficient).toBe(0.001);
 		});
 
 		test('throws error for invalid unit', () => {
@@ -658,14 +660,14 @@ describe('Unit Comparison', () => {
 			expect(unitsAreCompatible(m2, cm2)).toBe(true);
 		});
 
-		test('m³ and L volume handling', () => {
+		test('m³ and L sont le même volume', () => {
 			const m3 = powerUnit(createUnit('m'), 3);
 			const L = createUnit('L');
-			// Note: This test documents current behavior
-			// L has 'length' dimension with exponent 1, while m³ has 'length' with exponent 3
-			// They are NOT directly compatible in the current implementation
-			// This is a design decision that may need Phase 2 enhancement
-			expect(unitsAreCompatible(m3, L)).toBe(false);
+			// Ce test assertait l'INVERSE, en documentant le défaut comme une
+			// « design decision that may need Phase 2 enhancement ». Un litre est
+			// un volume : il doit être comparable à un mètre cube, sinon la
+			// conversion L <-> dm^3, qui est au programme de 6e, rend null.
+			expect(unitsAreCompatible(m3, L)).toBe(true);
 		});
 
 		test('m and m² are not compatible (different powers)', () => {
@@ -1157,10 +1159,9 @@ describe('Integration: Real-world physics scenarios', () => {
 		const L = createUnit('L');
 		const m3 = powerUnit(createUnit('m'), 3);
 
-		// Both represent volume but have different dimensional representations
-		// L has 'length' dimension (exponent 1), m³ has 'length' dimension (exponent 3)
-		// Phase 1: They are NOT compatible due to different exponents
-		// This is a known limitation that may be addressed in Phase 2
-		expect(unitsAreCompatible(L, m3)).toBe(false);
+		// Ce test assertait l'INVERSE, en renvoyant la correction à une « Phase 2 »
+		// qui n'est jamais venue. Les deux écritures désignent le même volume.
+		expect(unitsAreCompatible(L, m3)).toBe(true);
+		expect(getConversionFactor(L, m3)).toBeCloseTo(0.001, 12);
 	});
 });
