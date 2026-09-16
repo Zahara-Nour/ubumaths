@@ -121,9 +121,29 @@ Libérer une action dans `actions.ts` sans la brancher donne un bouton **actif e
 muet** — le bloquant de la revue #339. Un test d'écran clique donc « Statistiques »
 sur une vraie carte et vérifie qu'une ligne apparaît.
 
-## Étapes suivantes
+## Étape 5 — la vue Données (fait)
 
-- [ ] Étape 5 — la vue Données elle-même (saisie des listes)
-- [ ] Étape 6 — le report des nuages quand les listes changent
+`DataView.svelte` : une colonne par liste, la saisie en direct, un aperçu
+chiffré sans qu'on clique (`n = 3 · moyenne 12`), et les problèmes écrits sous
+la colonne concernée.
+
+Les trois vues du v1 existent désormais : l'écran « arrive au prochain lot » a
+disparu, et son style mort avec.
+
+### Ce que la vue montre sans qu'on demande
+
+- le nombre de valeurs **écartées** quand il y en a (§4 E1) ;
+- la **correction** quand l'élève a séparé par des virgules — sur sa propre
+  saisie, pas sur un exemple générique ;
+- la règle du séparateur, en permanence, avec le rappel que `3,14` reste **un
+  seul nombre**.
+
+## Ce qui reste
+
+- [ ] Le report des nuages quand les listes changent (l'option B pour les
+      nuages : aujourd'hui `addScatter` pose, mais rien ne suit les
+      modifications)
+- [ ] Choisir explicitement la liste des ordonnées, si « la suivante » ne suffit
+      pas à l'usage
 - [ ] Étape 4 — l'ajustement affine crée une fonction traçable (§3)
 - [ ] Étape 5 — la vue Données et ses actions

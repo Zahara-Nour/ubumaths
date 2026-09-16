@@ -14,6 +14,7 @@
 	import type { ObjectAction } from '$lib/atelier/actions';
 	import ObjectPanel from './ObjectPanel.svelte';
 	import CalculView from './CalculView.svelte';
+	import DataView from './DataView.svelte';
 	import { CalcDesk } from '$lib/atelier/desk.svelte';
 	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
 	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
@@ -189,9 +190,7 @@
 				-->
 				<GrapheurContainer store={graph} panel={false} />
 			{:else}
-				<p class="a-venir">
-					La vue « {VIEWS.find((v) => v.id === activeView)?.label} » arrive au prochain lot.
-				</p>
+				<DataView />
 			{/if}
 		</section>
 	</main>
@@ -266,11 +265,6 @@
 	.vue.pleine {
 		padding: 0;
 		display: flex;
-	}
-	.a-venir {
-		margin: 0;
-		color: var(--color-muted-foreground);
-		font-size: 0.875rem;
 	}
 
 	@media (max-width: 720px) {
