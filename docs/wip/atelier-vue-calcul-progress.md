@@ -191,6 +191,30 @@ joliment composé — le pire des deux mondes. D'où l'option `fromCommand`.
 Au passage, deux annotations de terminal disparaissent de ce que lit l'élève :
 la ligne « LaTeX: 2 x » et le suffixe « (variables: x) ».
 
-## Étapes suivantes
+## Étapes 6 et 7 — l'écran, et la porte d'entrée (fait)
 
-- [ ] Étape 7 — `/atelier` en navigation (Q2)
+`src/lib/components/atelier/CalculView.svelte`, branchée dans le conteneur, plus
+une entrée **Atelier** dans la barre latérale (Q2).
+
+Un seul champ ; l'historique rend chaque résultat en mathématiques via
+`convertLatexToMarkup`, avec le texte comme repli ; chaque ligne porte
+« Garder… » ; taper un point ouvre la liste des commandes réelles, décrites en
+français, `.taylor` **visible et désactivée** avec sa raison.
+
+### Deux défauts que les tests d'écran ont attrapés
+
+**Collision de classe `.avis`.** `AtelierContainer` a déjà une région
+`aria-live` de ce nom. Mon test interrogeait `.avis` et lisait **celle du
+conteneur** — vide — en croyant lire celle de la vue : le clic sur « Garder »
+fonctionnait pourtant, l'objet était bien créé. Renommée `.retour`.
+
+**Le signe moins de MathLive n'est pas un tiret.** Le résultat rendu est
+« −1 » (U+2212), pas « -1 ». Chercher le tiret ASCII faisait échouer un rendu
+parfaitement correct.
+
+> ⚠️ **`pnpm exec eslint <fichier>` a fait un SIGABRT** sur trois `.svelte`,
+> alors que la mémoire le disait sûr parce que ciblé. Avec la RAM déjà sous
+> pression, il ne l'est pas : `projectService` charge tout le projet. La CI s'en
+> charge.
+
+## Étapes suivantes

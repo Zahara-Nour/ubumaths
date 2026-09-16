@@ -13,6 +13,7 @@
 	import type { AtelierObject } from '$lib/atelier/types';
 	import type { ObjectAction } from '$lib/atelier/actions';
 	import ObjectPanel from './ObjectPanel.svelte';
+	import CalculView from './CalculView.svelte';
 	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
 	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
 	import { syncPlots } from '$lib/atelier/plot-sync';
@@ -158,7 +159,9 @@
 		</ul>
 
 		<section class="vue" class:pleine={activeView === 'graphe'}>
-			{#if activeView === 'graphe'}
+			{#if activeView === 'calcul'}
+				<CalculView />
+			{:else if activeView === 'graphe'}
 				<!--
 					`panel={false}` : dans l'atelier, c'est « Mes objets » qui tient ce
 					rôle. Deux listes de fonctions côte à côte ne posent pas seulement la
