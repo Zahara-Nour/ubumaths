@@ -21,7 +21,17 @@ import { DEFAULT_TAYLOR_OPTIONS, MAX_TAYLOR_TERMS, TaylorError } from './types';
 import { differentiate } from '../differentiation';
 import { evaluate, evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { substitute } from '../eval/substitute';
-import { number, variable, add, multiply, power, opposite, divide } from '../factory';
+import {
+	number,
+	variable,
+	add,
+	subtract,
+	multiply,
+	power,
+	opposite,
+	divide,
+	delimiter
+} from '../factory';
 import { numericNode } from '../common/numeric';
 
 // =============================================================================
@@ -171,16 +181,19 @@ function buildTerm(
 		return null;
 	}
 
-	// Build (x - a) term
+	// Build (x - a) term.
+	// Les parenthèses sont portées par l'AST : le rendu n'en ajoute aucune
+	// d'après la priorité des opérateurs, donc `power(add(x, -1), 2)`
+	// s'afficherait « x + -1^2 », qui se lit x + 1 — une autre expression.
 	let baseTerm: MathNode;
 	if (center === 0) {
 		baseTerm = varNode;
 	} else if (center > 0) {
 		// (x - a)
-		baseTerm = add(varNode, opposite(number(center.toString())));
+		baseTerm = delimiter('parentheses', subtract(varNode, number(center.toString())));
 	} else {
 		// (x - (-a)) = (x + |a|)
-		baseTerm = add(varNode, number(Math.abs(center).toString()));
+		baseTerm = delimiter('parentheses', add(varNode, number(Math.abs(center).toString())));
 	}
 
 	// Degree 0: just the coefficient
@@ -337,10 +350,10 @@ export function taylorExpand(
 	// Add remaining terms
 	for (let i = 1; i < terms.length; i++) {
 		const term = terms[i];
-		// Handle negative terms (wrapped in opposite)
+		// Un terme négatif arrive enveloppé dans `opposite` : on l'ajoute comme
+		// une soustraction, sinon la somme s'affiche « x + -t » au lieu de « x - t ».
 		if (term.type === 'opposite') {
-			// Use subtraction for negative terms for better formatting
-			result = add(result, term);
+			result = subtract(result, term.operand);
 		} else {
 			result = add(result, term);
 		}

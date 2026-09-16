@@ -22,6 +22,7 @@ import {
 	divide
 } from '../../factory';
 import { toCustom } from '../../custom-generator';
+import { toLatex } from '../../latex-generator';
 import { evaluate, substitute } from '../../eval';
 import type { MathNode } from '../../types';
 
@@ -529,5 +530,45 @@ describe('Taylor expansion output format', () => {
 		const output = toCustom(taylor);
 		// cos(x) starts with 1 (constant term)
 		expect(output).toContain('1');
+	});
+});
+
+// =============================================================================
+// Sign Rendering (regression)
+// =============================================================================
+
+describe('Taylor expansion sign rendering', () => {
+	// Un terme négatif doit se lire « - t », jamais « + -t » : c'est ce que
+	// promet déjà la doc du module (`x - x^3/6 + x^5/120`).
+	it('renders sin(x) with a subtraction, not a plus-minus', () => {
+		const taylor = taylorExpand(sin(variable('x')), { variable: 'x', center: 0, terms: 4 });
+		expect(toLatex(taylor)).toBe('x - \\dfrac{1}{6} x^3');
+	});
+
+	it('renders cos(x) with a subtraction, not a plus-minus', () => {
+		const taylor = taylorExpand(cos(variable('x')), { variable: 'x', center: 0, terms: 4 });
+		expect(toLatex(taylor)).toBe('1 - \\dfrac{1}{2} x^2');
+	});
+
+	it('alternates signs correctly for ln(1+x)', () => {
+		const expr = ln(add(number('1'), variable('x')));
+		const taylor = taylorExpand(expr, { variable: 'x', center: 0, terms: 4 });
+		expect(toLatex(taylor)).toBe('x - \\dfrac{1}{2} x^2 + \\dfrac{1}{3} x^3');
+	});
+
+	// Balayage : aucune expansion ne doit laisser un « + - » à l'affichage,
+	// quel que soit le centre (le centre non nul construit lui aussi un
+	// `x + (-c)` pour la base des termes).
+	it.each([
+		['sin(x)', () => sin(variable('x')), 0],
+		['cos(x)', () => cos(variable('x')), 0],
+		['exp(x)', () => exp(variable('x')), 0],
+		['ln(x) centré en 1', () => ln(variable('x')), 1],
+		['exp(x) centré en 1', () => exp(variable('x')), 1],
+		['sin(x) centré en -1', () => sin(variable('x')), -1]
+	])('never emits "+ -" for %s', (_label, build, center) => {
+		const taylor = taylorExpand(build(), { variable: 'x', center, terms: 4 });
+		expect(toLatex(taylor)).not.toContain('+ -');
+		expect(toCustom(taylor)).not.toContain('+-');
 	});
 });
