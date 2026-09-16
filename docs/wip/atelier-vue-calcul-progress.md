@@ -218,3 +218,76 @@ parfaitement correct.
 > charge.
 
 ## Étapes suivantes
+
+## Ce que la revue #339 a corrigé — trois bloquants
+
+Tous les trois **vérifiés par la mesure** avant d'être acceptés, et tous du même
+type que les défauts récurrents du chantier : la perte silencieuse, et le
+résultat faux sans erreur.
+
+### 1. Les quatre actions libérées étaient des boutons morts
+
+`actions.ts` les avait sorties de `NOT_YET`, donc le panneau les affichait
+**actives** — mais `runAction` n'était appelé par **aucun composant**. L'élève
+cliquait « Dériver » : rien. Pas de résultat, pas de message. C'était une
+**régression** sur le lot 2, qui affichait au moins « prochain lot ».
+
+Mes tests ne pouvaient pas le voir : ils testaient `runAction` en isolation et
+`actionsFor` en isolation, **jamais le lien entre les deux**.
+
+Correctif : `src/lib/atelier/desk.svelte.ts`, un pupitre qui vit dans le
+CONTENEUR — parce qu'une action cliquée dans « Mes objets » doit écrire dans le
+même historique que la saisie au clavier. « Image d'un nombre » prépare la
+saisie (`f(`) plutôt que d'ouvrir une boîte de dialogue.
+
+### 2. `promote` relisait la sortie texte — trois objets faux, tous « réussis »
+
+La règle « on ne reparse jamais la sortie texte » était respectée dans
+`render.ts` et violée un module plus loin. Mesuré :
+
+| Saisie                 | Ce qui était gardé, avec un message de succès |
+| ---------------------- | --------------------------------------------- |
+| `.résoudre x^2-4=0`    | **`0`** — pas les racines                     |
+| `.variations x^2-3x+1` | une **fonction traçable** « Expression : … »  |
+| `.aide`                | « MathAST CAS - Commandes disponibles »       |
+
+`CalcResult` porte désormais l'**arbre** du résultat, et `promote` refuse tout
+ce qui n'en a pas. Une commande ne portant pas l'arbre de son résultat (celui
+qu'elle rend est l'arbre de l'ENTRÉE), on refuse avec un message français plutôt
+que de deviner. Garder la dérivée demandera un chemin symbolique, pas textuel.
+
+### 3. L'atelier et le moteur divergeaient dans les deux sens
+
+Mesuré :
+
+- `.effacer` vide les liaisons du moteur ; le panneau affiche toujours `a = 3`,
+  mais `a + 1` rend « a+1 », `success: true`, **sans erreur** ;
+- `.poser b = 5` marche, puis la première modification d'un objet du panneau
+  **détruit `b` sans un mot** — `syncEngine` repose tout.
+
+Les sept commandes qui écrivent dans l'`EvalState` (`let`, `def`, `unset`,
+`undef`, `clear`, `inv`, `def'`) sont désormais **visibles et désactivées**, avec
+la raison : « Dans l'atelier, les noms se créent dans le panneau. »
+
+### Et trois points améliorables
+
+**La découverte sans accent** : `.der` ne proposait rien alors que `.deriver`
+s'exécute très bien. Le filtre regarde désormais la graphie sans accent et les
+raccourcis.
+
+**`{@html}` bridé** : la branche « le texte contient déjà du LaTeX » est la
+seule où le rendu ne vient pas de notre arbre. MathLive accepte `\htmlStyle`,
+`\class`, `\cssId`, qui posent des attributs. Liste **blanche** de ce qu'on
+accepte (de quoi écrire un nombre avec son unité), plutôt qu'une liste noire
+qu'on oublierait de tenir.
+
+**`runAction` jetait son `latex`** dans la branche succès : une grandeur
+s'affichait en texte là où `f(2)` s'affiche en mathématiques.
+
+### Deux fois, mes propres manipulations ont tronqué un fichier
+
+Une substitution par expression régulière a **supprimé** `unset` et `undef` du
+catalogue ; une substitution par index a **effacé `runAction`**. Les deux ont été
+attrapées immédiatement — la première par mon propre test d'invariant (« aucune
+commande du registre sans traduction »), la seconde par l'échec d'import des
+tests. Les invariants paient.

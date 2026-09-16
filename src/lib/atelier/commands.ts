@@ -124,29 +124,60 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map([
 			unavailable: 'Cette commande ne fonctionne pas encore dans l’atelier.'
 		}
 	],
-	['let', { french: 'poser', description: 'Poser une valeur', example: '.poser a = 3' }],
+	[
+		'let',
+		{
+			french: 'poser',
+			description: 'Poser une valeur',
+			unavailable:
+				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
+		}
+	],
 	[
 		'def',
-		{ french: 'définir', description: 'Définir une fonction', example: '.définir f(x) = x^2' }
+		{
+			french: 'définir',
+			description: 'Définir une fonction',
+			unavailable:
+				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
+		}
 	],
-	['vars', { french: 'valeurs', description: 'Lister les valeurs connues' }],
-	['fns', { french: 'fonctions', description: 'Lister les fonctions connues' }],
-	['unset', { french: 'oublier', description: 'Oublier une valeur', example: '.oublier a' }],
+	[
+		'clear',
+		{
+			french: 'effacer',
+			description: 'Effacer toutes les valeurs',
+			unavailable:
+				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
+		}
+	],
+	[
+		'unset',
+		{
+			french: 'oublier',
+			description: 'Oublier une valeur',
+			unavailable:
+				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
+		}
+	],
 	[
 		'undef',
 		{
 			french: 'oublier-fonction',
 			description: 'Oublier une fonction',
-			example: '.oublier-fonction f'
+			unavailable:
+				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
 		}
 	],
-	['clear', { french: 'effacer', description: 'Effacer toutes les valeurs' }],
+	['vars', { french: 'valeurs', description: 'Lister les valeurs connues du moteur' }],
+	['fns', { french: 'fonctions', description: 'Lister les fonctions connues du moteur' }],
 	[
 		'inv',
 		{
 			french: 'réciproque',
 			description: 'Afficher ou donner la réciproque d’une fonction',
-			example: '.réciproque f'
+			unavailable:
+				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
 		}
 	],
 	[
@@ -154,7 +185,8 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map([
 		{
 			french: 'dérivée-de',
 			description: 'Donner soi-même la dérivée d’une fonction',
-			example: '.dérivée-de f = 2x'
+			unavailable:
+				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
 		}
 	],
 	[
@@ -228,9 +260,16 @@ const OFF_REGISTRY: ReadonlyMap<string, Translation> = new Map([
 	['export', { french: 'exporter', description: 'Exporter la session', advanced: true }]
 ]);
 
-/** Les accents retirés, pour accepter `.deriver` comme `.dériver`. */
-function plain(text: string): string {
-	return text.normalize('NFD').replace(/[̀-ͯ]/g, '');
+/**
+ * Les accents retirés, pour accepter `.deriver` comme `.dériver`.
+ *
+ * ⚠️ La plage est écrite en échappements (`\u0300-\u036f`) et non en caractères
+ * combinants littéraux : ceux-ci sont invisibles à la relecture, et une
+ * normalisation NFC du fichier les effacerait en silence — tous les alias sans
+ * accent cesseraient de marcher sans qu'aucune ligne n'ait l'air modifiée.
+ */
+export function plain(text: string): string {
+	return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
 // =============================================================================

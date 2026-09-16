@@ -14,6 +14,7 @@
 	import type { ObjectAction } from '$lib/atelier/actions';
 	import ObjectPanel from './ObjectPanel.svelte';
 	import CalculView from './CalculView.svelte';
+	import { CalcDesk } from '$lib/atelier/desk.svelte';
 	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
 	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
 	import { syncPlots } from '$lib/atelier/plot-sync';
@@ -81,6 +82,15 @@
 	 */
 	const graph = new GrapheurStore(null);
 
+	/**
+	 * Le pupitre de la vue Calcul.
+	 *
+	 * ⚠️ Il vit ICI, et non dans `CalculView` : une action cliquée dans « Mes
+	 * objets » doit écrire dans le MÊME historique que la saisie au clavier. Sans
+	 * ça, « Dériver » ne produisait rien du tout — le bouton était actif et muet.
+	 */
+	const desk = new CalcDesk(atelier);
+
 	let lastSeenRevision = $state(-1);
 
 	// ⚠️ UNE seule source de « ça a changé ». Prévenir la session depuis chaque
@@ -116,8 +126,6 @@
 	}
 
 	function handleAction(action: ObjectAction, object: AtelierObject) {
-		// Les actions arriveront avec leurs vues ; pour l'instant seules celles
-		// qui ne dépendent d'aucune vue sont câblées.
 		if (action.id === 'remove') {
 			atelier.remove(object.name);
 			if (selected === object.name) selected = null;
@@ -126,7 +134,13 @@
 		if (action.id === 'plot') {
 			atelier.setPlotted(object.name, !object.plotted);
 			activeView = 'graphe';
+			return;
 		}
+
+		// Les actions de calcul répondent dans la vue Calcul : on y bascule, sans
+		// quoi l'élève cliquerait et ne verrait jamais la réponse arriver.
+		const outcome = desk.runFromPanel(action.id, object.name);
+		if (outcome !== 'unsupported') activeView = 'calcul';
 	}
 </script>
 
@@ -160,7 +174,7 @@
 
 		<section class="vue" class:pleine={activeView === 'graphe'}>
 			{#if activeView === 'calcul'}
-				<CalculView />
+				<CalculView {desk} />
 			{:else if activeView === 'graphe'}
 				<!--
 					`panel={false}` : dans l'atelier, c'est « Mes objets » qui tient ce

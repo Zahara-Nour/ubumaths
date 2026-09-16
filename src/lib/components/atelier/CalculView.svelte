@@ -10,117 +10,94 @@
 	 * Spécification : `docs/wip/atelier-vue-calcul-phase0.md`.
 	 */
 	import { convertLatexToMarkup } from 'mathlive';
-	import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-	import { useAtelier } from '$lib/atelier/context';
-	import { runInput, promote, type CalcResult, type CalcSession } from '$lib/atelier/calcul';
-	import { commandCatalog, type AtelierCommand } from '$lib/atelier/commands';
+	import type { CalcDesk, Entry } from '$lib/atelier/desk.svelte';
+	import { commandCatalog, plain, type AtelierCommand } from '$lib/atelier/commands';
 	import { Button } from '$lib/components/ui/button';
 
-	/** Une ligne d'historique, avec de quoi la garder. */
-	interface Entry {
-		readonly id: number;
-		readonly input: string;
-		readonly result: CalcResult;
-	}
+	/**
+	 * Le pupitre vient du CONTENEUR, pas d'ici : c'est lui qui reçoit les actions
+	 * cliquées dans « Mes objets », et elles doivent écrire dans le même
+	 * historique que la saisie au clavier.
+	 */
+	let { desk }: { desk: CalcDesk } = $props();
 
-	const atelier = useAtelier();
-	const engine = new WebReplEngine();
-	const session: CalcSession = { atelier, engine };
-
-	let draft = $state('');
-	let entries = $state<Entry[]>([]);
-	let nextId = 0;
-	let notice = $state<string | null>(null);
 	let field = $state<HTMLInputElement | null>(null);
 
-	/** Les commandes à proposer, filtrées par ce qui est déjà tapé (§5 N1, N2). */
+	/**
+	 * Les commandes à proposer, filtrées par ce qui est déjà tapé (§5 N1, N2).
+	 *
+	 * ⚠️ Le filtre regarde AUSSI la graphie sans accent et les raccourcis : sans
+	 * ça, `.der` ne proposait rien alors que `.deriver` s'exécute très bien — la
+	 * découverte et l'exécution n'étaient pas d'accord, et c'est la découverte
+	 * qui est le point de ce lot.
+	 */
 	const suggestions = $derived.by(() => {
-		if (!draft.startsWith('.')) return [] as AtelierCommand[];
-		const typed = draft.slice(1).split(' ')[0].toLowerCase();
+		if (!desk.draft.startsWith('.')) return [] as AtelierCommand[];
 		// Un espace signifie que la commande est choisie : on ne propose plus rien.
-		if (draft.slice(1).includes(' ')) return [] as AtelierCommand[];
-		return commandCatalog(engine)
-			.filter((c) => c.french.toLowerCase().startsWith(typed) || c.name.startsWith(typed))
+		if (desk.draft.slice(1).includes(' ')) return [] as AtelierCommand[];
+		const typed = plain(desk.draft.slice(1).split(' ')[0]).toLowerCase();
+		return commandCatalog(desk.session.engine)
+			.filter((c) =>
+				[c.french, c.name, ...c.aliases].some((form) => plain(form).toLowerCase().startsWith(typed))
+			)
 			.slice(0, 8);
 	});
 
 	/**
 	 * Le rendu mathématique d'une ligne, ou `null` s'il n'y en a pas de sûr.
 	 *
-	 * ⚠️ `convertLatexToMarkup` reçoit du LaTeX produit par nous (`render.ts`),
-	 * jamais une saisie brute — et le repli est le TEXTE, échappé par Svelte.
-	 * Si la conversion échoue, on n'affiche pas du markup à moitié construit.
+	 * Le repli est le TEXTE, échappé par Svelte : si la conversion échoue, on
+	 * n'affiche pas du markup à moitié construit.
 	 */
-	function markupOf(result: CalcResult): string | null {
-		if (result.kind !== 'calcul' && result.kind !== 'commande') return null;
-		if (result.latex === undefined) return null;
+	function markupOf(entry: Entry): string | null {
+		if (entry.latex === undefined || entry.failed) return null;
 		try {
-			return convertLatexToMarkup(result.latex, { defaultMode: 'inline-math' });
+			return convertLatexToMarkup(entry.latex, { defaultMode: 'inline-math' });
 		} catch {
 			return null;
 		}
 	}
 
-	/** Ce que la ligne affiche en toutes lettres. */
-	function textOf(result: CalcResult): string {
-		switch (result.kind) {
-			case 'calcul':
-			case 'commande':
-				return result.output;
-			case 'refus':
-				return result.message;
-			case 'definition':
-				return `« ${result.name} » est dans tes objets.`;
-			default:
-				return '';
-		}
-	}
-
 	function submit(event: SubmitEvent) {
 		event.preventDefault();
-		const text = draft;
-		const result = runInput(session, text, 'keyboard');
-		if (result.kind === 'vide') return;
-
-		entries = [...entries, { id: nextId++, input: text, result }];
-		draft = '';
-		notice = null;
+		desk.submit(desk.draft);
 	}
 
-	function keep(entry: Entry) {
-		const kept = promote(session, entry.result);
-		notice = kept.ok ? `Gardé sous le nom « ${kept.object.name} ».` : kept.message;
-	}
-
-	/** Compléter la commande en cours, sans effacer ce qui suit. */
+	/** Remplacer la commande en cours par celle que l'élève vient de choisir. */
 	function complete(command: AtelierCommand) {
-		draft = `.${command.french} `;
+		desk.draft = `.${command.french} `;
 		// Rendre la main au champ : l'élève vient de choisir dans une liste, il
 		// veut taper la suite, pas recliquer.
 		field?.focus();
 	}
 
-	/** Une ligne est gardable si elle a produit quelque chose à garder (§4 L2). */
-	function canKeep(result: CalcResult): boolean {
-		return (result.kind === 'calcul' || result.kind === 'commande') && result.output.trim() !== '';
+	/**
+	 * Une ligne est gardable si elle porte l'ARBRE de son résultat (§4 L2).
+	 *
+	 * ⚠️ Auparavant « Garder… » s'affichait sur toute sortie non vide, `.aide`
+	 * comprise — et gardait alors « MathAST CAS - Commandes disponibles » comme
+	 * un objet mathématique.
+	 */
+	function canKeep(entry: Entry): boolean {
+		return entry.result?.kind === 'calcul' && entry.result.ast !== undefined;
 	}
 </script>
 
 <div class="calcul">
 	<ol class="historique">
-		{#each entries as entry (entry.id)}
-			{@const markup = markupOf(entry.result)}
-			<li class:refus={entry.result.kind === 'refus'}>
-				<p class="saisie">{entry.input}</p>
+		{#each desk.entries as entry (entry.id)}
+			{@const markup = markupOf(entry)}
+			<li class:refus={entry.failed}>
+				<p class="saisie">{entry.label}</p>
 				<div class="reponse">
 					{#if markup !== null}
 						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 						<span class="math">{@html markup}</span>
 					{:else}
-						<span class="texte">{textOf(entry.result)}</span>
+						<span class="texte">{entry.text}</span>
 					{/if}
-					{#if canKeep(entry.result)}
-						<Button variant="ghost" size="sm" class="garder" onclick={() => keep(entry)}>
+					{#if canKeep(entry)}
+						<Button variant="ghost" size="sm" class="garder" onclick={() => desk.keep(entry)}>
 							Garder…
 						</Button>
 					{/if}
@@ -133,7 +110,7 @@
 		`aria-live` : ce que « Garder » a produit doit être ANNONCÉ, pas seulement
 		affiché — sinon un lecteur d'écran ne voit jamais apparaître le message.
 	-->
-	<p class="retour" aria-live="polite" class:vide={notice === null}>{notice ?? ''}</p>
+	<p class="retour" aria-live="polite" class:vide={desk.notice === null}>{desk.notice ?? ''}</p>
 
 	{#if suggestions.length > 0}
 		<ul class="commandes" aria-label="Commandes disponibles">
@@ -156,14 +133,14 @@
 	<form onsubmit={submit}>
 		<input
 			bind:this={field}
-			bind:value={draft}
+			bind:value={desk.draft}
 			type="text"
 			autocomplete="off"
 			spellcheck="false"
 			aria-label="Calcul, définition ou commande"
 			placeholder="f(x) = x^2 − 3x + 1, ou 12 km + 300 m, ou un point pour les commandes"
 		/>
-		<Button type="submit" disabled={draft.trim() === ''}>Calculer</Button>
+		<Button type="submit" disabled={desk.draft.trim() === ''}>Calculer</Button>
 	</form>
 </div>
 

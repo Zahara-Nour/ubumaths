@@ -195,12 +195,42 @@ describe('garder un résultat sous un nom', () => {
 	// §4 N2 : le type suit le CONTENU, pas le geste
 	it('garde une expression en x comme fonction, donc traçable', () => {
 		const s = session();
-		const result = runInput(s, '.dériver x^2');
+		const result = runInput(s, '(x^2-1)/(x+1)');
 
 		const kept = promote(s, result, 'g');
 
 		expect(kept.ok).toBe(true);
 		expect(s.atelier.get('g')?.kind).toBe('function');
+	});
+
+	/**
+	 * ⚠️ Le défaut que ça répare, mesuré le 2026-09-16 — trois objets faux
+	 * créés avec un message de SUCCÈS, parce que `promote` relisait la sortie
+	 * TEXTE de la commande :
+	 *
+	 * | `.résoudre x^2-4=0`     | gardait « 0 », pas les racines                |
+	 * | `.variations x^2-3x+1`  | créait une FONCTION « Expression : x^2-3x+1 » |
+	 * | `.aide`                 | gardait « MathAST CAS - Commandes… »          |
+	 *
+	 * Une commande ne porte pas l'arbre de son résultat : on refuse, plutôt que
+	 * de deviner.
+	 */
+	it('refuse de garder le résultat d’une commande, plutôt que d’en deviner un', () => {
+		const s = session();
+
+		for (const input of ['.résoudre x^2-4=0', '.variations x^2-3x+1', '.aide']) {
+			const kept = promote(s, runInput(s, input));
+			expect(kept.ok, input).toBe(false);
+		}
+		expect(s.atelier.names).toEqual([]);
+	});
+
+	it('dit en français pourquoi le résultat d’une commande ne se garde pas', () => {
+		const s = session();
+
+		const kept = promote(s, runInput(s, '.variations x^2-3x+1'));
+
+		expect(kept.ok === false && kept.message).toContain('commande');
 	});
 
 	it('garde deux résultats sous deux noms distincts', () => {

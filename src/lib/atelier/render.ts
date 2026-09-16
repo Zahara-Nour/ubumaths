@@ -43,6 +43,48 @@ const VARIABLES_NOTE = /\s*\(\s*variables\s*:[^)]*\)\s*/g;
 /** Une commande LaTeX dans le texte — le moteur en mêle aux résultats en unités. */
 const HAS_LATEX_COMMAND = /\\[a-zA-Z]+/;
 
+/** Tous les jetons `\commande` d'une chaîne. */
+const LATEX_TOKENS = /\\([a-zA-Z]+)/g;
+
+/**
+ * Les seules commandes qu'on accepte de laisser passer **depuis le texte**.
+ *
+ * ⚠️ Cette branche est la seule où le LaTeX rendu ne vient PAS de notre arbre :
+ * c'est le texte du moteur, lui-même dérivé de ce que l'élève a tapé. Il finit
+ * dans un `{@html}` après `convertLatexToMarkup`, et MathLive accepte des
+ * commandes qui posent des attributs (`\htmlStyle`, `\class`, `\cssId`).
+ * Plutôt que de lister ce qu'on refuse — liste qu'on oublierait de tenir à jour
+ * — on liste ce qu'on accepte : uniquement de quoi écrire un nombre avec son
+ * unité, ce que cette branche existe pour préserver.
+ */
+const SAFE_LATEX_COMMANDS: ReadonlySet<string> = new Set([
+	'dfrac',
+	'frac',
+	'sqrt',
+	'cdot',
+	'times',
+	'div',
+	'pi',
+	'infty',
+	'approx',
+	'le',
+	'ge',
+	'ne',
+	'pm',
+	'text',
+	'left',
+	'right',
+	'mathrm'
+]);
+
+/** Le texte n'emploie-t-il que des commandes LaTeX sûres ? */
+function onlySafeCommands(text: string): boolean {
+	for (const [, name] of text.matchAll(LATEX_TOKENS)) {
+		if (!SAFE_LATEX_COMMANDS.has(name)) return false;
+	}
+	return true;
+}
+
 // =============================================================================
 // Fonctions
 // =============================================================================
@@ -78,7 +120,7 @@ export function renderResult(
 	// Le moteur mêle déjà du LaTeX au texte pour les grandeurs
 	// (« \dfrac{123}{10} km »). C'est le seul endroit où l'unité survit :
 	// l'arbre, lui, l'a perdue et ne rend que \dfrac{123}{10}.
-	if (HAS_LATEX_COMMAND.test(text) && !text.includes('\n')) {
+	if (HAS_LATEX_COMMAND.test(text) && !text.includes('\n') && onlySafeCommands(text)) {
 		return { latex: text, text };
 	}
 

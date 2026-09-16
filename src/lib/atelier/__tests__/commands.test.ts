@@ -127,6 +127,35 @@ describe('le catalogue des commandes', () => {
 		}
 	});
 
+	/**
+	 * ⚠️ Q1 option B : **l'atelier détient les noms.** Une commande qui écrit
+	 * dans l'`EvalState` fabrique un nom que le panneau ignore, et les deux
+	 * divergent en silence — mesuré le 2026-09-16, dans les deux sens :
+	 *
+	 * - `.effacer` vide les liaisons du moteur ; le panneau affiche toujours
+	 *   `a = 3`, mais `a + 1` rend « a+1 » avec `success: true` ;
+	 * - `.poser b = 5` marche, puis la première modification d'un objet du
+	 *   panneau détruit `b` sans un mot — `syncEngine` repose tout.
+	 */
+	it('rend indisponible toute commande qui écrirait dans le moteur', () => {
+		const catalog = commandCatalog(new WebReplEngine());
+
+		for (const name of ['let', 'def', 'unset', 'undef', 'clear', 'inv', "def'"]) {
+			const command = catalog.find((c) => c.name === name);
+			expect(command, name).toBeDefined();
+			expect(command?.unavailable, name).toBeTruthy();
+		}
+	});
+
+	// Celles qui LISENT seulement restent utilisables : elles ne mentent jamais.
+	it('laisse utilisables les commandes qui ne font que lire', () => {
+		const catalog = commandCatalog(new WebReplEngine());
+
+		for (const name of ['vars', 'fns', 'simplify', 'diff', 'solve', 'variations']) {
+			expect(catalog.find((c) => c.name === name)?.unavailable, name).toBeUndefined();
+		}
+	});
+
 	it('est stable d’un appel à l’autre', () => {
 		const engine = new WebReplEngine();
 

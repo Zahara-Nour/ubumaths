@@ -12,12 +12,14 @@
 
 import type { Atelier, Created, Refused } from './atelier.svelte';
 import type { AtelierObject, ObjectKind } from './types';
+import type { MathNode } from '$lib/mathAST/types';
 import type { Provenance } from './parse';
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName } from './names';
-import { astOf, readNumber } from './parse';
+import { readNumber } from './parse';
 import { syncEngine, expressionOf } from './engine';
+import { toCustom } from '$lib/mathAST/custom-generator';
 import { resolveCommand, suggestFor, commandCatalog } from './commands';
 import { renderResult } from './render';
 
@@ -40,6 +42,13 @@ export type CalcResult =
 			readonly input: string;
 			readonly output: string;
 			readonly latex?: string;
+			/**
+			 * L'arbre du RÉSULTAT — le seul support sûr pour « Garder ».
+			 *
+			 * Sans lui il faudrait relire la sortie texte, ce que `render.ts`
+			 * interdit, mesures à l'appui.
+			 */
+			readonly ast?: MathNode;
 	  }
 	| {
 			readonly kind: 'commande';
@@ -183,28 +192,17 @@ export function runInput(
 		kind: 'calcul',
 		input,
 		output: rendered.text,
-		...(rendered.latex && { latex: rendered.latex })
+		...(rendered.latex && { latex: rendered.latex }),
+		...(result.success && result.ast !== undefined && { ast: result.ast })
 	};
 }
 
-/** L'expression qu'une ligne d'historique permet de garder, s'il y en a une. */
-function keepable(result: CalcResult): string | null {
-	if (result.kind === 'calcul') return result.output.trim() || null;
-	if (result.kind !== 'commande') return null;
-
-	// Les commandes répondent en plusieurs lignes, sur le modèle
-	// « d/dx(x^2) = 2x » puis « LaTeX: 2 x ». C'est ce qui suit le dernier `=`
-	// de la première ligne qui est le résultat.
-	const first = result.output.split('\n')[0];
-	const equals = first.lastIndexOf('=');
-	const candidate = (equals === -1 ? first : first.slice(equals + 1)).trim();
-	return candidate === '' ? null : candidate;
-}
-
-/** Le type d'un résultat qu'on garde : il suit le CONTENU, pas le geste (§4 N2). */
-function kindOfExpression(expression: string): ObjectKind | null {
-	const ast = astOf(expression);
-	if (ast === null) return null;
+/**
+ * Le type d'un objet qu'on garde : il suit le CONTENU, pas le geste (§4 N2).
+ *
+ * Lu sur l'ARBRE, jamais sur le texte.
+ */
+function kindOfNode(ast: MathNode): ObjectKind {
 	const variables = new Set(getVariables(ast));
 	if (variables.has('x')) return 'function';
 	if (variables.has('n')) return 'sequence';
@@ -226,16 +224,29 @@ export function promote(
 ): Created | Refused {
 	const { atelier } = session;
 
-	const expression = keepable(result);
-	if (expression === null) {
-		// Une définition a déjà produit son objet ; une erreur n'a rien produit.
-		return { ok: false, message: "Il n'y a rien à garder dans cette ligne." };
+	// ⚠️ **Seul un calcul se garde, et seulement par son ARBRE.**
+	//
+	// Redériver l'objet depuis la sortie texte donnait des objets faux avec un
+	// message de SUCCÈS — mesuré le 2026-09-16 :
+	//   • `.résoudre x^2-4=0` gardait « 0 », pas les racines ;
+	//   • `.variations x^2-3x+1` créait une FONCTION traçable nommée
+	//     « Expression : x^2-3x+1 », le mot lu comme un produit de lettres ;
+	//   • `.aide` gardait « MathAST CAS - Commandes disponibles ».
+	//
+	// Une commande ne porte pas l'arbre de son résultat — celui qu'elle rend est
+	// l'arbre de l'ENTRÉE. On refuse donc, plutôt que de deviner.
+	if (result.kind !== 'calcul' || result.ast === undefined) {
+		return {
+			ok: false,
+			message:
+				result.kind === 'commande'
+					? 'Le résultat d’une commande ne peut pas encore être gardé. Écris le calcul directement pour le garder.'
+					: 'Il n’y a rien à garder dans cette ligne.'
+		};
 	}
 
-	const kind = kindOfExpression(expression);
-	if (kind === null) {
-		return { ok: false, message: `« ${expression} » ne peut pas devenir un objet.` };
-	}
+	const kind = kindOfNode(result.ast);
+	const definition = toCustom(result.ast);
 
 	const chosen = name ?? nextName(kind, atelier.names);
 	const rejection = validateName(chosen, atelier.names);
@@ -243,7 +254,7 @@ export function promote(
 		return { ok: false, message: nameRejectionMessage(rejection, chosen) };
 	}
 
-	const created = atelier.create({ kind, name: chosen, definition: expression });
+	const created = atelier.create({ kind, name: chosen, definition });
 	if (created.ok) syncEngine(atelier, session.engine);
 	return created;
 }

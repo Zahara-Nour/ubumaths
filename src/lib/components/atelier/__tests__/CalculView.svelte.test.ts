@@ -105,6 +105,61 @@ describe('le parcours de la vue Calcul', () => {
 	});
 });
 
+/**
+ * ⚠️ Le bloquant trouvé en revue : le lot avait rendu « Dériver », « Résoudre »,
+ * « Variations » et « Image d'un nombre » ACTIVES dans le panneau, mais aucun
+ * composant n'appelait `runAction`. L'élève cliquait, et rien n'arrivait — pas
+ * même le message « prochain lot » que le lot précédent affichait.
+ */
+describe('les actions du panneau répondent vraiment', () => {
+	async function clickAction(label: string) {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2-3x+1' });
+		const view = open(atelier);
+
+		// Les actions n'apparaissent que sur l'objet SÉLECTIONNÉ : il faut donc
+		// d'abord cliquer la carte, comme le ferait l'élève.
+		const carte = [...view.container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === 'f'
+		) as HTMLElement | undefined;
+		expect(carte, 'carte de f').toBeTruthy();
+		carte!.querySelector('button')?.click();
+		await settle();
+
+		const bouton = [...carte!.querySelectorAll('button')].find((b) =>
+			b.textContent?.trim().startsWith(label)
+		) as HTMLButtonElement | undefined;
+		expect(bouton, `bouton « ${label} »`).toBeTruthy();
+		bouton!.click();
+		await settle();
+		return view;
+	}
+
+	it('« Dériver » écrit une ligne dans l’historique', async () => {
+		const { container } = await clickAction('Dériver');
+
+		expect(container.querySelector('.historique')?.textContent).toContain('2x');
+	});
+
+	it('et bascule sur la vue Calcul pour qu’on voie la réponse', async () => {
+		const { container } = await clickAction('Dériver');
+
+		expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('Calcul');
+	});
+
+	it('« Variations » parle de la fonction, pas de son nom', async () => {
+		const { container } = await clickAction('Variations');
+
+		expect(container.querySelector('.historique')?.textContent).toContain('3/2');
+	});
+
+	it('« Image d’un nombre » prépare la saisie', async () => {
+		const { field } = await clickAction('Image');
+
+		expect(field.value).toBe('f(');
+	});
+});
+
 describe('les commandes se découvrent', () => {
 	it('propose les commandes dès le point', async () => {
 		const { type, container } = open();

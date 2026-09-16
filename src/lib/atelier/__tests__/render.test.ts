@@ -90,6 +90,37 @@ describe('les grandeurs gardent leur unité', () => {
 	});
 });
 
+/**
+ * ⚠️ La branche « le texte contient déjà du LaTeX » est la SEULE où le LaTeX
+ * rendu ne vient pas de notre arbre : c'est le texte du moteur, dérivé de ce
+ * que l'élève a tapé, et il finit dans un `{@html}`. MathLive accepte des
+ * commandes qui posent des attributs HTML (`\htmlStyle`, `\class`, `\cssId`).
+ */
+describe('le texte promu en LaTeX est bridé', () => {
+	it('laisse passer ce qui écrit un nombre avec son unité', () => {
+		const rendered = renderResult({
+			success: true,
+			output: '\\dfrac{123}{10} km'
+		} as never);
+
+		expect(rendered.latex).toBe('\\dfrac{123}{10} km');
+	});
+
+	it('refuse une commande qui poserait des attributs', () => {
+		for (const hostile of [
+			'\\htmlStyle{color:red}{1}',
+			'\\class{x}{1}',
+			'\\cssId{y}{1}',
+			'\\href{javascript:alert(1)}{1}'
+		]) {
+			const rendered = renderResult({ success: true, output: hostile } as never);
+			expect(rendered.latex, hostile).toBeUndefined();
+			// Et le texte reste affiché, échappé par Svelte
+			expect(rendered.text, hostile).toBe(hostile);
+		}
+	});
+});
+
 describe('ce qui ne regarde pas l’élève', () => {
 	it('retire la ligne « LaTeX: … » que les commandes ajoutent', () => {
 		const engine = new WebReplEngine();
