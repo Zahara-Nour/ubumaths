@@ -138,6 +138,17 @@ export class Atelier {
 	/** Les objets, dans leur ordre de création. */
 	private items = $state<AtelierObject[]>([]);
 
+	/**
+	 * Compteur de modifications — la SEULE source de « quelque chose a changé ».
+	 *
+	 * ⚠️ Sans lui, chaque endroit qui modifie l'atelier devait penser à prévenir
+	 * la session ; un seul oubli et le travail de l'élève n'était plus enregistré.
+	 * C'est arrivé : les créations depuis le panneau ne déclenchaient aucune
+	 * sauvegarde. Un `$effect` qui lit `revision` couvre tout, y compris les
+	 * actions qui n'existent pas encore.
+	 */
+	revision = $state(0);
+
 	get objects(): readonly AtelierObject[] {
 		return this.items;
 	}
@@ -482,6 +493,10 @@ export class Atelier {
 				}
 			}
 		}
+
+		// Une passe de recalcul = une modification de l'atelier. C'est le passage
+		// obligé de toute mutation, donc le seul endroit où compter.
+		this.revision++;
 
 		this.items = this.items.map((o) => {
 			const next = { ...o } as AtelierObject & {
