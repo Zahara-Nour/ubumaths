@@ -19,17 +19,26 @@ const TYPE_DESCRIPTIONS: Record<NumericType, TypeDescription> = {
 		nameFr: 'Entier',
 		descriptionFr: 'Un nombre entier est un nombre sans partie décimale, positif, négatif ou nul.',
 		examples: ['0', '1', '-5', '42', '100'],
-		parents: ['rational', 'algebraic', 'real', 'complex'],
+		parents: ['decimal', 'rational', 'algebraic', 'real', 'complex'],
 		children: []
+	},
+	decimal: {
+		id: 'decimal',
+		nameFr: 'Décimal',
+		descriptionFr:
+			"Un nombre décimal s'écrit avec un nombre fini de chiffres après la virgule. Tout décimal est rationnel : 2,5 = 5/2.",
+		examples: ['0,5', '2,5', '-3,25', '0,001', '7'],
+		parents: ['rational', 'algebraic', 'real', 'complex'],
+		children: ['integer']
 	},
 	rational: {
 		id: 'rational',
 		nameFr: 'Rationnel',
 		descriptionFr:
 			"Un nombre rationnel peut s'écrire comme une fraction de deux entiers (avec un dénominateur non nul).",
-		examples: ['1/2', '3/4', '-2/3', '0.5', '0.333...'],
+		examples: ['1/2', '3/4', '-2/3', '0,5', '0,333...'],
 		parents: ['algebraic', 'real', 'complex'],
-		children: ['integer']
+		children: ['decimal']
 	},
 	irrational_algebraic: {
 		id: 'irrational_algebraic',
@@ -47,7 +56,7 @@ const TYPE_DESCRIPTIONS: Record<NumericType, TypeDescription> = {
 			"Un nombre algébrique est solution d'une équation polynomiale à coefficients entiers. Il peut être rationnel ou irrationnel.",
 		examples: ['2', '1/2', '√2', '∛7', '√2 + 1'],
 		parents: ['real', 'complex'],
-		children: ['integer', 'rational', 'irrational_algebraic']
+		children: ['integer', 'decimal', 'rational', 'irrational_algebraic']
 	},
 	transcendental: {
 		id: 'transcendental',
@@ -65,7 +74,14 @@ const TYPE_DESCRIPTIONS: Record<NumericType, TypeDescription> = {
 			'Un nombre réel est un nombre qui peut être représenté sur la droite numérique. Il inclut les entiers, rationnels, et irrationnels.',
 		examples: ['0', '1/2', '√2', 'π', '-3.14'],
 		parents: ['complex'],
-		children: ['integer', 'rational', 'irrational_algebraic', 'algebraic', 'transcendental']
+		children: [
+			'integer',
+			'decimal',
+			'rational',
+			'irrational_algebraic',
+			'algebraic',
+			'transcendental'
+		]
 	},
 	complex: {
 		id: 'complex',
@@ -74,7 +90,15 @@ const TYPE_DESCRIPTIONS: Record<NumericType, TypeDescription> = {
 			"Un nombre complexe s'écrit sous la forme a + bi, où a et b sont réels et i² = -1.",
 		examples: ['i', '2 + 3i', '√(-1)', '1 - i', 'e^(iπ)'],
 		parents: [],
-		children: ['integer', 'rational', 'irrational_algebraic', 'algebraic', 'transcendental', 'real']
+		children: [
+			'integer',
+			'decimal',
+			'rational',
+			'irrational_algebraic',
+			'algebraic',
+			'transcendental',
+			'real'
+		]
 	},
 	unknown: {
 		id: 'unknown',
@@ -121,6 +145,8 @@ function getBaseDescription(base: NumericType): string {
 	switch (base) {
 		case 'integer':
 			return 'un nombre entier';
+		case 'decimal':
+			return 'un nombre décimal';
 		case 'rational':
 			return 'un nombre rationnel';
 		case 'irrational_algebraic':
@@ -205,6 +231,8 @@ export function getTypeNameWithArticle(type: NumericType): string {
 	switch (type) {
 		case 'integer':
 			return 'un entier';
+		case 'decimal':
+			return 'un décimal';
 		case 'rational':
 			return 'un rationnel';
 		case 'irrational_algebraic':

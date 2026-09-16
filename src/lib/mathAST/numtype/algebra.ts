@@ -34,13 +34,14 @@ import type { NumericType } from './types';
  */
 const TYPE_LEVEL: Record<NumericType, number> = {
 	integer: 1,
-	rational: 2,
-	irrational_algebraic: 3,
-	algebraic: 4,
-	transcendental: 4, // Same level as algebraic, different branch
-	real: 5,
-	complex: 6,
-	unknown: 7 // Top element for unknown
+	decimal: 2, // ℤ ⊂ 𝔻 ⊂ ℚ
+	rational: 3,
+	irrational_algebraic: 4,
+	algebraic: 5,
+	transcendental: 5, // Same level as algebraic, different branch
+	real: 6,
+	complex: 7,
+	unknown: 8 // Top element for unknown
 };
 
 /**
@@ -48,7 +49,8 @@ const TYPE_LEVEL: Record<NumericType, number> = {
  * A type can have multiple direct parents.
  */
 const DIRECT_PARENTS: Record<NumericType, readonly NumericType[]> = {
-	integer: ['rational'],
+	integer: ['decimal'],
+	decimal: ['rational'],
 	rational: ['algebraic'],
 	irrational_algebraic: ['algebraic'],
 	algebraic: ['real'],
@@ -62,7 +64,8 @@ const DIRECT_PARENTS: Record<NumericType, readonly NumericType[]> = {
  * All ancestor types (transitive closure of parent relationship).
  */
 const ALL_ANCESTORS: Record<NumericType, ReadonlySet<NumericType>> = {
-	integer: new Set<NumericType>(['rational', 'algebraic', 'real', 'complex']),
+	integer: new Set<NumericType>(['decimal', 'rational', 'algebraic', 'real', 'complex']),
+	decimal: new Set<NumericType>(['rational', 'algebraic', 'real', 'complex']),
 	rational: new Set<NumericType>(['algebraic', 'real', 'complex']),
 	irrational_algebraic: new Set<NumericType>(['algebraic', 'real', 'complex']),
 	algebraic: new Set<NumericType>(['real', 'complex']),

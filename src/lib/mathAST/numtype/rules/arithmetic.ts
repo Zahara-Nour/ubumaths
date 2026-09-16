@@ -38,7 +38,7 @@
  */
 
 import type { MathType, NumericType, ParityInfo, SignInfo } from '../types';
-import { join } from '../algebra';
+import { join, isSubtype } from '../algebra';
 import {
 	addBounds,
 	subtractBounds,
@@ -324,13 +324,11 @@ export function inferDivisionType(numeratorType: MathType, denominatorType: Math
 	// Division of integers yields rational (in general)
 	let base: NumericType;
 
-	if (numeratorType.base === 'integer' && denominatorType.base === 'integer') {
-		base = 'rational';
-	} else if (numeratorType.base === 'integer' && denominatorType.base === 'rational') {
-		base = 'rational';
-	} else if (numeratorType.base === 'rational' && denominatorType.base === 'integer') {
-		base = 'rational';
-	} else if (numeratorType.base === 'rational' && denominatorType.base === 'rational') {
+	// Un quotient de rationnels est rationnel — et RIEN DE PLUS PRÉCIS : 2,5/3
+	// vaut 0,8333…, donc un quotient de décimaux n'est pas décimal. Écrit en
+	// `isSubtype` plutôt qu'en égalités strictes pour que les entiers et les
+	// décimaux, qui sont des rationnels, passent ici et non dans `join`.
+	if (isSubtype(numeratorType.base, 'rational') && isSubtype(denominatorType.base, 'rational')) {
 		base = 'rational';
 	} else {
 		base = join(numeratorType.base, denominatorType.base);

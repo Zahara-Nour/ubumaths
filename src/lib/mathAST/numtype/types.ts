@@ -32,6 +32,7 @@ import type { IntervalDomain } from '$lib/math/intervals/types';
  */
 export type NumericType =
 	| 'integer'
+	| 'decimal' // 2,5 — écriture décimale finie : ℕ ⊂ ℤ ⊂ 𝔻 ⊂ ℚ
 	| 'rational'
 	| 'irrational_algebraic' // √2, ∛5
 	| 'transcendental' // π, e, sin(1)
@@ -178,6 +179,9 @@ export const INTEGER_TYPE: MathType = { base: 'integer' };
 /**
  * Default MathType for rational expressions.
  */
+export const DECIMAL_TYPE: MathType = { base: 'decimal' };
+
+/** Type rationnel. */
 export const RATIONAL_TYPE: MathType = { base: 'rational' };
 
 /**
