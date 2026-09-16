@@ -44,6 +44,9 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 	function: [
 		{ id: 'plot', label: 'Tracer' },
 		{ id: 'derive', label: 'Dériver' },
+		// D7 : les DEUX gestes, distincts. « Dériver » affiche, « Garder » crée
+		// un objet — donc quelque chose de traçable et de citable.
+		{ id: 'keep-derivative', label: 'Garder la dérivée' },
 		{ id: 'table', label: 'Tabuler' },
 		{ id: 'solve', label: 'Résoudre f(x) = 0' },
 		{ id: 'variations', label: 'Variations' },

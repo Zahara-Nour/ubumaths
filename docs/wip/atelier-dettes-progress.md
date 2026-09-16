@@ -61,6 +61,26 @@ ce que `'keyboard'` désigne vraiment.
 `parseDefinition`, donc sans mémoire une définition LaTeX serait relue en texte
 dès qu'un **autre** objet change.
 
-## 5. Garder `f'` par voie symbolique
+## 5. Garder la dérivée — par voie symbolique
 
-À suivre.
+Décision D7 : **les deux gestes, distincts**. « Dériver » affiche et ne crée
+rien ; « Garder la dérivée » crée un objet, donc quelque chose de **traçable et
+citable**.
+
+La dérivée est calculée sur l'**arbre** de l'expression substituée
+(`differentiate` de `mathAST`), jamais en relisant du texte — le lot 3 a montré
+où mène l'autre chemin.
+
+### ⚠️ L'objet ne s'appelle pas `f’`
+
+C'était l'intention, et elle ne tient pas : **l'apostrophe n'est pas un
+caractère d'identifiant pour le parseur**. Un objet nommé `f’` n'aurait jamais
+pu être cité dans une autre définition — `f’(x) + 1` ne l'aurait pas vu.
+
+Élargir la forme des noms toucherait `referencesOf`, `hasObjectNameShape` et la
+lecture des dépendances : bien au-delà de cette dette. L'objet prend donc le
+prochain nom libre, et le message dit ce qu'il est : « g(x) = 2x−3 — la dérivée
+de f ». Un test vérifie qu'il est **citable** : `g(2)` rend `1`.
+
+C'est un écart assumé avec la lettre de D7, qui en garde l'esprit — le geste
+existe, et son résultat est utilisable.
