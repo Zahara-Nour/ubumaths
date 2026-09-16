@@ -90,6 +90,9 @@
 	 * objets » doit écrire dans le MÊME historique que la saisie au clavier. Sans
 	 * ça, « Dériver » ne produisait rien du tout — le bouton était actif et muet.
 	 */
+	// Capture volontaire : le pupitre garde CETTE instance d'atelier pour toute
+	// la vie du conteneur, comme le grapheur ci-dessus.
+	// svelte-ignore state_referenced_locally
 	const desk = new CalcDesk(atelier);
 
 	let lastSeenRevision = $state(-1);

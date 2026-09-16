@@ -157,8 +157,16 @@ class GrapheurStore {
 	/** Only visible functions */
 	visibleFunctions = $derived(this.functions.filter((f) => f.visible));
 
-	/** Functions with valid AST (parseable) */
-	validFunctions = $derived(this.functions.filter((f) => f.ast !== undefined));
+	/**
+	 * Functions with a valid AST (parseable).
+	 *
+	 * ⚠️ A scatter has no AST at all — its two series ARE the data. It is
+	 * therefore excluded rather than counted as invalid: the panel shows this
+	 * count as « n valides », and a cloud of points is not a failed parse.
+	 */
+	validFunctions = $derived(
+		this.functions.filter((f) => f.type !== 'scatter' && f.ast !== undefined)
+	);
 
 	/** Viewport metrics for convenience */
 	viewportMetrics = $derived<ViewportMetrics>({
