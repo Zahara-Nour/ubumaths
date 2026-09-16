@@ -9,6 +9,8 @@
  * @module atelier/types
  */
 
+import type { Provenance } from './parse';
+
 // =============================================================================
 // Types
 // =============================================================================
@@ -82,6 +84,15 @@ interface AtelierObjectBase {
 	 * répare sans que l'élève ait à y revenir (§2.5 N2).
 	 */
 	readonly missing?: readonly MissingReference[];
+	/**
+	 * D'où vient la définition — décision D10 : c'est la provenance qui choisit
+	 * le parseur, jamais le contenu.
+	 *
+	 * ⚠️ Elle vit SUR l'objet parce que `recomputeAll` repart toujours de
+	 * `parseDefinition` : sans mémoire, une définition LaTeX serait relue en
+	 * texte au premier recalcul, donc dès qu'un autre objet change.
+	 */
+	readonly provenance?: Provenance;
 }
 
 export interface ValueObject extends AtelierObjectBase {
@@ -105,6 +116,15 @@ export interface SequenceObject extends AtelierObjectBase {
 
 export interface ListObject extends AtelierObjectBase {
 	readonly kind: 'list';
+	/**
+	 * Le nom de la liste qui sert d'ORDONNÉES quand celle-ci est tracée.
+	 *
+	 * ⚠️ État d'affichage, comme `plotted`, et il vit ici pour la même raison :
+	 * c'est l'atelier qui détient l'état. Sans lui, la synchronisation
+	 * recalculerait « la suivante du panneau » et ignorerait le choix que
+	 * l'élève vient de faire en cliquant « Nuage avec N ».
+	 */
+	readonly plottedWith?: string;
 	/** Les valeurs analysées. Les entrées non numériques sont écartées (§4 E1). */
 	readonly values: readonly number[];
 	/** Nombre d'entrées écartées, pour pouvoir le signaler (§4 E1). */

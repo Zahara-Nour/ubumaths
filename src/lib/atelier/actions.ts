@@ -15,8 +15,9 @@
  * @module atelier/actions
  */
 
+import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
-import { isValue } from './types';
+import { isValue, isList } from './types';
 
 /** Une action proposée sur un objet. */
 export interface ObjectAction {
@@ -53,6 +54,9 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 		{ id: 'plot-cobweb', label: 'Tracer en escalier' },
 		{ id: 'table', label: 'Premiers termes' }
 	],
+	// ⚠️ « Nuage » et « Ajustement » sont remplacés par une action PAR PARTENAIRE
+	// quand l'atelier est connu (voir `partnerActions`). Ces deux-là ne servent
+	// donc qu'au repli, quand `actionsFor` est appelée sans atelier.
 	list: [
 		{ id: 'stats', label: 'Statistiques' },
 		{ id: 'scatter', label: 'Nuage de points' },
@@ -79,6 +83,38 @@ const NOT_YET: ReadonlySet<string> = new Set([
 	'rename'
 ]);
 
+/**
+ * Les nuages et ajustements possibles, une action par partenaire.
+ *
+ * ⚠️ C'est le catalogue lui-même qui porte le choix, plutôt qu'un écran de
+ * sélection : le mécanisme du §3 sert exactement à ça — une action apparaît si
+ * elle a un sens. Avec deux listes il n'y a qu'un partenaire, donc rien ne
+ * change pour l'élève ; à trois, « la suivante » aurait été un choix arbitraire
+ * fait à sa place.
+ *
+ * L'identifiant porte le nom de la partenaire (`scatter:M`) : c'est lui que
+ * l'exécution relit, donc rien n'est redeviné au moment du clic.
+ */
+function partnerActions(object: AtelierObject, atelier: Atelier): ObjectAction[] {
+	const partners = atelier.objects.filter((o) => isList(o) && o.name !== object.name);
+
+	if (partners.length === 0) {
+		const reason = 'Il faut deux listes : crée-en une seconde dans « Mes objets ».';
+		return [
+			{ id: 'scatter', label: 'Nuage de points', disabledReason: reason },
+			{ id: 'fit', label: 'Ajustement affine', disabledReason: reason }
+		];
+	}
+
+	// Une seule partenaire : inutile de la nommer deux fois dans la même liste
+	// d'actions — mais on la nomme quand même, pour que l'élève sache SANS
+	// cliquer ce qui va être tracé.
+	return partners.flatMap((partner) => [
+		{ id: `scatter:${partner.name}`, label: `Nuage avec ${partner.name}` },
+		{ id: `fit:${partner.name}`, label: `Ajustement avec ${partner.name}` }
+	]);
+}
+
 /** Pourquoi un objet ne peut rien produire, s'il ne peut rien produire. */
 function blockedBy(object: AtelierObject): string | undefined {
 	switch (object.status) {
@@ -99,10 +135,16 @@ function blockedBy(object: AtelierObject): string | undefined {
  *
  * @param object - L'objet tel que l'atelier le connaît, statut compris
  */
-export function actionsFor(object: AtelierObject): ObjectAction[] {
+export function actionsFor(object: AtelierObject, atelier?: Atelier): ObjectAction[] {
 	const blocked = blockedBy(object);
 
-	const specific = BY_KIND[object.kind].map((action) => {
+	// Les listes voient leurs partenaires, quand l'atelier est là pour les dire.
+	const catalogue =
+		isList(object) && atelier !== undefined
+			? [BY_KIND.list[0], ...partnerActions(object, atelier)]
+			: BY_KIND[object.kind];
+
+	const specific = catalogue.map((action) => {
 		// « Tracer » devient « Retirer du graphe » quand la courbe est là : un
 		// même bouton qui bascule, plutôt que deux boutons dont un est inutile.
 		if (action.id === 'plot' && object.plotted) {
@@ -120,11 +162,16 @@ export function actionsFor(object: AtelierObject): ObjectAction[] {
 		// produire : sinon une fonction qui casse laisse un marqueur « tracé » que
 		// l'élève ne peut plus enlever, alors que sa courbe a déjà disparu.
 		if (blocked && !(action.id === 'plot' && object.plotted)) {
-			return { ...action, disabledReason: blocked };
+			// ⚠️ Une raison déjà posée par `partnerActions` (« il faut deux listes »)
+			// est plus précise que « cet objet ne peut rien produire » : on la garde.
+			return { ...action, disabledReason: action.disabledReason ?? blocked };
 		}
 		// L'objet va bien, mais la vue qui rendrait cette action n'existe pas
 		// encore : on le dit, plutôt que de laisser un bouton sans effet.
-		if (NOT_YET.has(action.id)) return { ...action, disabledReason: NOT_YET_REASON };
+		// `scatter:M` et `fit:M` portent leur partenaire : c'est la racine qui
+		// décide si l'action attend son lot.
+		const root = action.id.split(':')[0];
+		if (NOT_YET.has(root)) return { ...action, disabledReason: NOT_YET_REASON };
 		return action;
 	});
 

@@ -71,8 +71,14 @@ function wantedScatterFor(atelier: Atelier, object: AtelierObject): WantedScatte
 	if (!isList(object) || object.plotted !== true) return null;
 
 	const lists = atelier.objects.filter(isList);
+
+	// Le choix de l'élève d'abord : il a cliqué « Nuage avec N », pas « avec la
+	// suivante ». Le repli ne sert qu'aux ateliers à deux listes, où il n'y a
+	// qu'une réponse possible.
+	const chosen =
+		object.plottedWith === undefined ? undefined : lists.find((l) => l.name === object.plottedWith);
 	const index = lists.findIndex((l) => l.name === object.name);
-	const partner = lists[index + 1] ?? (index === 0 ? undefined : lists[0]);
+	const partner = chosen ?? lists[index + 1] ?? (index === 0 ? undefined : lists[0]);
 	if (partner === undefined) return null;
 
 	return {

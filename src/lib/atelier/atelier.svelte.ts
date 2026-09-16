@@ -25,6 +25,7 @@ import type {
 	ValueObject
 } from './types';
 import { validateName, nextName, nameRejectionMessage } from './names';
+import type { Provenance } from './parse';
 import { parseDefinition, referencesOf, renameInDefinition } from './parse';
 import { ATELIER_STATE_VERSION, type AtelierState, type StoredObject } from './persistence';
 
@@ -166,7 +167,7 @@ export class Atelier {
 	// Création
 	// ---------------------------------------------------------------------------
 
-	create(input: CreateInput): Created | Refused {
+	create(input: CreateInput, provenance: Provenance = 'url'): Created | Refused {
 		const definition = input.definition ?? '';
 
 		// Plafonds du v1 (décision D8) : ils existent pour qu'un atelier tienne
@@ -182,7 +183,7 @@ export class Atelier {
 		if (input.name === undefined) {
 			// #329 : ne pas se nommer comme un objet que la définition cite déjà,
 			// sinon l'atelier fabrique lui-même la circularité qu'il dénonce.
-			const cited = referencesOf(definition).map((r) => r.name);
+			const cited = referencesOf(definition, provenance).map((r) => r.name);
 			name = nextName(input.kind, this.names, cited);
 		} else {
 			const rejection = validateName(input.name, this.names);
@@ -190,7 +191,7 @@ export class Atelier {
 			name = input.name;
 		}
 
-		this.items.push(this.build(name, input.kind, definition));
+		this.items.push(this.build(name, input.kind, definition, provenance));
 		this.recomputeAll();
 		return { ok: true, object: this.get(name)! };
 	}
@@ -237,7 +238,7 @@ export class Atelier {
 	// Modification
 	// ---------------------------------------------------------------------------
 
-	update(name: string, definition: string): Updated | Refused {
+	update(name: string, definition: string, provenance: Provenance = 'url'): Updated | Refused {
 		const index = this.items.findIndex((o) => o.name === name);
 		if (index === -1) return { ok: false, message: `« ${name} » n'existe pas.` };
 
@@ -247,7 +248,7 @@ export class Atelier {
 		// courbe. Même famille que le curseur écrasé (revue #334, point 7) : tout
 		// état d'affichage ajouté ici devra être reporté là.
 		const previous = this.items[index];
-		const rebuilt = this.build(name, previous.kind, definition);
+		const rebuilt = this.build(name, previous.kind, definition, provenance);
 		this.items[index] = (
 			previous.plotted ? { ...rebuilt, plotted: true } : rebuilt
 		) as AtelierObject;
@@ -341,17 +342,27 @@ export class Atelier {
 	 * vue qui décide de ce qu'elle sait dessiner. Sinon l'élève cliquerait
 	 * « Tracer » sans rien voir se passer, une fois de plus.
 	 */
-	setPlotted(name: string, plotted: boolean): void {
+	setPlotted(name: string, plotted: boolean, withList?: string): void {
 		const index = this.items.findIndex((o) => o.name === name);
 		if (index === -1) return;
-		this.items[index] = { ...this.items[index], plotted } as AtelierObject;
+		// `plottedWith` ne vaut que pour une liste ; posé ici pour que la
+		// synchronisation n'ait rien à redeviner.
+		this.items[index] = {
+			...this.items[index],
+			plotted,
+			...(withList !== undefined && { plottedWith: withList })
+		} as AtelierObject;
 		this.recomputeAll();
 	}
 
 	/** Les objets dont la définition cite `name`, directement. */
 	dependents(name: string): readonly string[] {
 		return this.items
-			.filter((o) => o.name !== name && referencesOf(o.definition).some((ref) => ref.name === name))
+			.filter(
+				(o) =>
+					o.name !== name &&
+					referencesOf(o.definition, o.provenance).some((ref) => ref.name === name)
+			)
 			.map((o) => o.name);
 	}
 
@@ -382,11 +393,17 @@ export class Atelier {
 	 * ensuite, tranche entre les quatre états en tenant compte de tout
 	 * l'atelier — erreurs, cycles, attentes propagées.
 	 */
-	private build(name: string, kind: ObjectKind, definition: string): AtelierObject {
-		const parsed = parseDefinition(kind, definition);
+	private build(
+		name: string,
+		kind: ObjectKind,
+		definition: string,
+		provenance: Provenance = 'url'
+	): AtelierObject {
+		const parsed = parseDefinition(kind, definition, provenance);
 		const base = {
 			name,
 			definition,
+			provenance,
 			status: (definition.trim() === '' ? 'incomplete' : 'ok') as ObjectStatus
 		};
 
@@ -455,11 +472,13 @@ export class Atelier {
 		const missing = new Map<string, MissingReference[]>();
 
 		for (const o of this.items) {
-			ownError.set(o.name, parseDefinition(o.kind, o.definition).error);
+			// La provenance de l'objet, pas un défaut : sinon une définition LaTeX
+			// serait relue en texte à chaque recalcul.
+			ownError.set(o.name, parseDefinition(o.kind, o.definition, o.provenance).error);
 
 			// Une suite qui se cite elle-même est une récurrence, pas un cycle :
 			// `u(n+1) = 0,5·u(n) + 3` est une définition parfaitement saine.
-			const refs = referencesOf(o.definition).filter(
+			const refs = referencesOf(o.definition, o.provenance).filter(
 				(r) => !(r.name === o.name && o.kind === 'sequence')
 			);
 			deps.set(

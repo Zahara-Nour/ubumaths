@@ -151,6 +151,28 @@ describe('le nuage suit ses listes', () => {
 	});
 });
 
+describe('l’élève choisit sa partenaire', () => {
+	it('trace le nuage avec CELLE qu’il a cliquée', () => {
+		const d = deskWith({ L: '1 ; 2', M: '9 ; 9', N: '3 ; 6' });
+		const graph = new GrapheurStore(null);
+
+		d.runFromPanel('scatter:N', 'L', graph);
+
+		const nuage = graph.functions.find(isScatter)!;
+		expect(nuage.ys).toEqual([3, 6]);
+		expect(d.entries[0].text).toContain('N');
+	});
+
+	it('ajuste avec celle qu’il a cliquée', () => {
+		const d = deskWith({ L: '1 ; 2 ; 3', M: '9 ; 9 ; 9', N: '2 ; 4 ; 6' });
+
+		d.runFromPanel('fit:N', 'L');
+
+		// La droite de L/N est y = 2x, pas la constante de L/M
+		expect(d.entries[0].text).toContain('2');
+	});
+});
+
 describe('ajustement affine', () => {
 	it('crée une fonction traçable', () => {
 		const d = deskWith({ L: '1 ; 2 ; 3 ; 4', M: '2 ; 4 ; 6 ; 8' });

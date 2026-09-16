@@ -83,7 +83,7 @@ export class CalcDesk {
 
 	/** Traiter ce que l'élève vient de taper. */
 	submit(text: string): void {
-		const result = runInput(this.session, text, 'keyboard');
+		const result = runInput(this.session, text, 'text');
 		if (result.kind === 'vide') return;
 
 		this.#push({
@@ -114,14 +114,20 @@ export class CalcDesk {
 	}
 
 	/**
-	 * La liste à prendre comme ordonnées : **la suivante dans le panneau**.
+	 * La liste à prendre comme ordonnées.
 	 *
-	 * Un choix explicite serait plus riche, mais demanderait un écran de plus
-	 * pour un geste que l'élève fait sur deux colonnes voisines. L'atelier dit
-	 * toujours laquelle il a prise, donc rien n'est deviné en silence.
+	 * ⚠️ Elle est **nommée par l'identifiant de l'action** (`scatter:M`) : c'est
+	 * l'élève qui a choisi en cliquant, le catalogue lui ayant proposé une action
+	 * par partenaire possible. Rien n'est redeviné ici.
+	 *
+	 * Sans nom — appel programmatique, ou atelier à deux listes — on retombe sur
+	 * la suivante du panneau, ce qui ne laisse aucune ambiguïté à deux.
 	 */
-	#partnerOf(name: string): ListObject | null {
+	#partnerOf(name: string, wanted?: string): ListObject | null {
 		const lists = this.atelier.objects.filter(isList);
+		if (wanted !== undefined) {
+			return lists.find((l) => l.name === wanted) ?? null;
+		}
 		const index = lists.findIndex((l) => l.name === name);
 		if (index === -1) return null;
 		return lists[index + 1] ?? lists[0 === index ? 1 : 0] ?? null;
@@ -160,9 +166,9 @@ export class CalcDesk {
 	}
 
 	/** Poser le nuage de deux listes dans le grapheur. */
-	#scatter(name: string, graph: GrapheurStore | undefined): void {
+	#scatter(name: string, graph: GrapheurStore | undefined, partner?: string): void {
 		const xs = this.#listNamed(name);
-		const ys = xs === null ? null : this.#partnerOf(name);
+		const ys = xs === null ? null : this.#partnerOf(name, partner);
 
 		if (xs === null || ys === null || graph === undefined) {
 			this.#push({
@@ -179,7 +185,7 @@ export class CalcDesk {
 		// ⚠️ On MARQUE la liste plutôt que de poser le nuage directement : c'est
 		// la synchronisation qui pose et qui suit, exactement comme « Tracer » au
 		// lot 2. Sans ça, modifier la liste laisserait le nuage figé (§3 N2).
-		this.atelier.setPlotted(xs.name, true);
+		this.atelier.setPlotted(xs.name, true, ys.name);
 		syncPlots(this.atelier, graph);
 
 		// §4 L1 : on dit ce qui n'a pas été tracé, sinon l'élève compte ses points
@@ -196,9 +202,9 @@ export class CalcDesk {
 	}
 
 	/** Ajuster une droite sur deux listes, et en faire une fonction. */
-	#fit(name: string): void {
+	#fit(name: string, partner?: string): void {
 		const xs = this.#listNamed(name);
-		const ys = xs === null ? null : this.#partnerOf(name);
+		const ys = xs === null ? null : this.#partnerOf(name, partner);
 
 		if (xs === null || ys === null) {
 			this.#push({
@@ -245,16 +251,21 @@ export class CalcDesk {
 			return 'needs-argument';
 		}
 
-		if (actionId === 'stats') {
+		// ⚠️ `scatter:M` nomme sa partenaire : la racine dit QUOI faire, le suffixe
+		// AVEC QUI. Sans cette lecture, les actions du catalogue seraient des
+		// boutons morts — le bloquant de la revue #339.
+		const [root, partner] = actionId.split(':');
+
+		if (root === 'stats') {
 			this.#describe(name);
 			return 'ok';
 		}
-		if (actionId === 'scatter') {
-			this.#scatter(name, graph);
+		if (root === 'scatter') {
+			this.#scatter(name, graph, partner);
 			return 'ok';
 		}
-		if (actionId === 'fit') {
-			this.#fit(name);
+		if (root === 'fit') {
+			this.#fit(name, partner);
 			return 'ok';
 		}
 
