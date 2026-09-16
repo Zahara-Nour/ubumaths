@@ -222,8 +222,17 @@ function derivativeOfUnusable(session: CalcSession, input: string): string | nul
 		if (object === undefined) {
 			return `« ${match[1]} » n'existe pas : sa dérivée non plus.`;
 		}
-		if (object.status !== 'ok') {
-			return object.message ?? `« ${match[1]} » ne peut rien produire pour le moment.`;
+		// ⚠️ **Seule une définition ILLISIBLE bloque la dérivation.**
+		//
+		// Un objet « en attente » se dérive très bien : `k(x) = bx` ne peut pas
+		// être ÉVALUÉ — on ne connaît pas `b` — mais `k'(x) = b` se calcule sans
+		// rien savoir de `b`. Mesuré : `mathAST` rend `b*x → b`, `a*x+b → a`,
+		// `b*sin(x) → b·cos(x)`.
+		//
+		// Mon premier garde confondait les deux et refusait une dérivée
+		// parfaitement légitime — relevé par David.
+		if (object.status === 'error') {
+			return object.message ?? `« ${match[1]} » ne se lit pas : sa dérivée non plus.`;
 		}
 	}
 	return null;

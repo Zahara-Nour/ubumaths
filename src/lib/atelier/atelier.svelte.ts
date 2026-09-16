@@ -155,6 +155,19 @@ export class Atelier {
 	}
 
 	/** Les noms pris, tous types confondus (décision D1). */
+	/**
+	 * Les noms portés par une FONCTION ou une SUITE.
+	 *
+	 * ⚠️ Le parseur en a besoin pour lire `k'` : sans déclaration, `mathAST`
+	 * n'accepte l'apostrophe que sur `f g h u v w`. Et on ne lui donne que les
+	 * noms réels — tout déclarer casserait la lecture de `zzz(x)`.
+	 */
+	get functionNames(): readonly string[] {
+		return this.items
+			.filter((o) => o.kind === 'function' || o.kind === 'sequence')
+			.map((o) => o.name);
+	}
+
 	get names(): readonly string[] {
 		return this.items.map((o) => o.name);
 	}
@@ -183,7 +196,7 @@ export class Atelier {
 		if (input.name === undefined) {
 			// #329 : ne pas se nommer comme un objet que la définition cite déjà,
 			// sinon l'atelier fabrique lui-même la circularité qu'il dénonce.
-			const cited = referencesOf(definition, provenance).map((r) => r.name);
+			const cited = referencesOf(definition, provenance, this.functionNames).map((r) => r.name);
 			name = nextName(input.kind, this.names, cited);
 		} else {
 			const rejection = validateName(input.name, this.names);
@@ -361,7 +374,9 @@ export class Atelier {
 			.filter(
 				(o) =>
 					o.name !== name &&
-					referencesOf(o.definition, o.provenance).some((ref) => ref.name === name)
+					referencesOf(o.definition, o.provenance, this.functionNames).some(
+						(ref) => ref.name === name
+					)
 			)
 			.map((o) => o.name);
 	}
@@ -399,7 +414,7 @@ export class Atelier {
 		definition: string,
 		provenance: Provenance = 'url'
 	): AtelierObject {
-		const parsed = parseDefinition(kind, definition, provenance);
+		const parsed = parseDefinition(kind, definition, provenance, this.functionNames);
 		const base = {
 			name,
 			definition,
@@ -474,11 +489,14 @@ export class Atelier {
 		for (const o of this.items) {
 			// La provenance de l'objet, pas un défaut : sinon une définition LaTeX
 			// serait relue en texte à chaque recalcul.
-			ownError.set(o.name, parseDefinition(o.kind, o.definition, o.provenance).error);
+			ownError.set(
+				o.name,
+				parseDefinition(o.kind, o.definition, o.provenance, this.functionNames).error
+			);
 
 			// Une suite qui se cite elle-même est une récurrence, pas un cycle :
 			// `u(n+1) = 0,5·u(n) + 3` est une définition parfaitement saine.
-			const refs = referencesOf(o.definition, o.provenance).filter(
+			const refs = referencesOf(o.definition, o.provenance, this.functionNames).filter(
 				(r) => !(r.name === o.name && o.kind === 'sequence')
 			);
 			deps.set(
