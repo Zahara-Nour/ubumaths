@@ -155,14 +155,29 @@ function expandDerivatives(
 		}
 	}
 
-	// Descente générique : l'arbre a des formes variées (left/right, args, operand).
-	const copy: Record<string, unknown> = Array.isArray(node) ? [...node] : { ...node };
+	// Descente générique : les nœuds portent leurs enfants sous des noms variés
+	// (`left`/`right`, `args`, `operand`, `base`/`exponent`…). Les parcourir tous
+	// évite d'énumérer les 27 formes de `MathNode` — et d'en oublier une à la
+	// prochaine qui s'ajoutera.
+	//
+	// ⚠️ Le double passage par `unknown` est délibéré : `MathNode` est une union
+	// discriminée, et TypeScript refuse à juste titre qu'un objet reconstruit clé
+	// par clé s'y convertisse directement. C'est la seule forme du module qui ne
+	// se vérifie pas statiquement — les tests couvrent les cas, y compris les
+	// dérivées imbriquées et composées.
+	const copy = { ...(node as unknown as Record<string, unknown>) };
 	for (const [key, value] of Object.entries(copy)) {
-		if (value !== null && typeof value === 'object') {
+		if (Array.isArray(value)) {
+			copy[key] = value.map((item) =>
+				item !== null && typeof item === 'object'
+					? expandDerivatives(item as MathNode, functions)
+					: item
+			);
+		} else if (value !== null && typeof value === 'object') {
 			copy[key] = expandDerivatives(value as MathNode, functions);
 		}
 	}
-	return copy as MathNode;
+	return copy as unknown as MathNode;
 }
 
 /** Les définitions des AUTRES objets, sous la forme qu'attend `substituteAll`. */
