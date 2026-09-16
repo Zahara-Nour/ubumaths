@@ -18,7 +18,13 @@ import { getPolynomialDegree } from '../classify';
 import { getVariables } from '../../eval/substitute';
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { number, fraction, opposite, equals, variable as varNode } from '../../factory';
-import { preprocess, denormalize, normalize, normalFormsEquivalent } from '../../normal';
+import {
+	preprocess,
+	denormalize,
+	normalize,
+	normalFormsEquivalent,
+	ZERO_NORMAL_FORM
+} from '../../normal';
 import { toLatex } from '../../latex-generator';
 import { describeSolution, describeCoefficients } from '../descriptions-fr';
 
@@ -235,7 +241,15 @@ export const linearSolver: EquationSolver = {
 			// Try to evaluate numerically
 			try {
 				const norm = normalize(solutionSimplified);
-				if (norm.numerator.length === 1 && norm.denominator.length === 1) {
+				// Zéro : le numérateur normalisé est VIDE, pas de longueur 1 — la
+				// branche rationnelle ci-dessous ne le voyait donc pas et
+				// `approximate` restait indéfini. Or un zéro sans `approximate`
+				// est écarté comme point de découpe par l'analyse de signe
+				// (`sign/analyze.ts`), si bien que toute fonction dont la dérivée
+				// s'annule en 0 perdait son tableau de variations.
+				if (norm.numerator.length === 0 || normalFormsEquivalent(norm, ZERO_NORMAL_FORM)) {
+					approximate = 0;
+				} else if (norm.numerator.length === 1 && norm.denominator.length === 1) {
 					const numTerm = norm.numerator[0];
 					const denTerm = norm.denominator[0];
 

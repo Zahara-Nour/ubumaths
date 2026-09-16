@@ -193,6 +193,16 @@ export function findAdjacentIntervals(
 			continue;
 		}
 
+		// Un intervalle réduit à un point (`constant [a ; a]`, émis pour le zéro
+		// de la dérivée) n'est pas un voisin : il SÉPARE les deux vrais voisins.
+		// Le retenir revient à comparer « constant » à « croissant » au lieu de
+		// « décroissant » à « croissant », et aucun extremum n'est jamais trouvé.
+		// On ne le supprime pas de `monotonicIntervals` : le tableau de
+		// variations (`format.ts`) s'en sert pour afficher la colonne du point.
+		if (Number.isFinite(lower) && Number.isFinite(upper) && Math.abs(upper - lower) < 1e-10) {
+			continue;
+		}
+
 		// Check if this interval is immediately before x
 		// Upper bound should be at or near x
 		if (Number.isFinite(upper) && Math.abs(upper - xNumeric) < 1e-10) {
