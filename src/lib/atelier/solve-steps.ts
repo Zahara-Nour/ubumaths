@@ -41,44 +41,6 @@ const CONCLUSIONS: ReadonlySet<string> = new Set([
 ]);
 
 /**
- * Les options de la commande `.solve`, retirées avant de lire l'équation.
- *
- * Copié tel quel de `solve.command.ts` (`parseOptions`) : l'atelier doit
- * découper l'argument EXACTEMENT comme le moteur, sinon les étapes décrivent
- * une autre équation que celle qu'il a résolue.
- */
-const SOLVE_OPTIONS = /--verbose|-v|--quiet|-q/g;
-
-/**
- * `<équation> [variable]` — la variable facultative que la commande accepte.
- *
- * Copié tel quel de `solve.command.ts` (`parseInput`), pour la même raison.
- */
-const TRAILING_VARIABLE = /^(.+=.+?)\s+([a-zA-Z_][a-zA-Z0-9_]*)$/;
-
-// =============================================================================
-// Fonctions
-// =============================================================================
-
-/**
- * Découper l'argument de `.résoudre` comme le moteur le découpe.
- *
- * ⚠️ **Ne pas le faire a affiché une réponse fausse avec l'autorité d'une
- * démonstration.** `.résoudre 3x+5=14 x` était passé tel quel : mathAST lisait
- * « 3x+5 = 14x » et la ligne annonçait `x = 5/11`, cinq étapes à l'appui,
- * pendant que le moteur répondait `x = 3`.
- */
-function readArgument(argument: string): {
-	readonly equation: string;
-	readonly variable: string | null;
-} {
-	const withoutOptions = argument.replace(SOLVE_OPTIONS, '').trim();
-	const match = TRAILING_VARIABLE.exec(withoutOptions);
-	if (match === null) return { equation: withoutOptions, variable: null };
-	return { equation: match[1].trim(), variable: match[2] };
-}
-
-/**
  * Les étapes de résolution d'une équation, prêtes à afficher — ou `null`.
  *
  * ⚠️ **`null` n'est pas un échec : c'est le repli.** L'appelant garde alors la
@@ -91,24 +53,32 @@ function readArgument(argument: string): {
  * Quand ce module rend des étapes, `answerOf` rend forcément une réponse non
  * vide : la garde de conclusion l'exige.
  *
- * @param argument - La queue de la commande, noms d'objets DÉJÀ substitués
- *   (§6 bis) : `3x+5=14`, `3x+5=14 x`, `3x+5=14 -v`…
+ * @param argument - L'équation, noms d'objets DÉJÀ substitués (§6 bis), lue
+ *   telle quelle : `3x+5=14 x` est l'équation `3x+5=14x`, pas « résoudre
+ *   `3x+5=14` en x ».
  */
 export function solveSteps(argument: string): readonly RenderedStep[] | null {
 	try {
-		const { equation, variable } = readArgument(argument);
-
-		const node = astOf(equation, 'text');
+		// ⚠️ **On lit l'argument comme des MATHÉMATIQUES, pas comme une ligne de
+		// commande.** Le moteur, lui, applique deux conventions de terminal qui
+		// n'ont pas leur place devant un élève, et qui lui font résoudre une
+		// autre équation que celle qui est écrite :
+		//   • `<équation> [variable]` : `.solve 3x+5=14 x` ampute le `x` final
+		//     et répond « x = 3 », alors que `3x+5=14x` donne 5/11 ;
+		//   • le retrait des options : `.solve 3-v=1` lit `-v` comme un drapeau,
+		//     résout « 3 = 1 » et répond « contradictoire », alors que v = 2.
+		// Le parseur, lui, lit l'espace comme une multiplication implicite —
+		// mesuré, `3x+5=14 x` donne `3x+5=14x`. C'est ce que l'élève a écrit,
+		// c'est ce qu'on résout. Les étapes réparent donc ces deux défauts au
+		// lieu de les propager.
+		const node = astOf(argument, 'text');
 		// ⚠️ `relation` ne veut pas dire `équation` : `2x+1<7` est une relation,
 		// et mathAST en rend quatre étapes dont la dernière est titrée
 		// « Solution : x = 3 » alors que son LaTeX dit `x < 3`. Le moteur, lui,
 		// refuse les inéquations — on refuse comme lui.
 		if (node === null || node.type !== 'relation' || node.relation !== '=') return null;
 
-		const steps = generateEquationSteps(node, {
-			level: 'college',
-			...(variable !== null && { variable })
-		});
+		const steps = generateEquationSteps(node, { level: 'college' });
 		if (steps.length === 0) return null;
 
 		// ⚠️ **Le renderer se lit dans les étapes, jamais sur un degré

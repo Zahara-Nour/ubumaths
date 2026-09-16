@@ -55,25 +55,42 @@ assertions ne garderaient rien.
 
 ## La revue de code — un bloquant réel, corrigé
 
-### Le défaut : une réponse FAUSSE, démontrée
+### Le défaut signalé, et ma correction à l'envers
 
-`.résoudre 3x+5=14 x` — la variable explicite que la commande accepte.
+La revue a relevé que `.résoudre 3x+5=14 x` affichait `x = 5/11` pendant que le
+moteur répondait `x = 3`, et a conclu que la ligne mentait. **J'ai corrigé dans
+le mauvais sens** : j'ai reproduit le découpage du moteur pour les faire
+coïncider sur `x = 3`.
+
+**David a relevé l'erreur : `x = 5/11` est la BONNE réponse.** Il y a un `x` au
+second membre — `3x+5 = 14x` donne bien 5/11.
+
+Mesuré, le parseur lit l'espace comme une multiplication implicite :
 
 ```
-avant :  ligne « x = 5/11 »  (5 étapes à l'appui)   moteur « x = 3 »
-après :  ligne « x = 3 »     (4 étapes)             moteur « x = 3 »
+3x+5=14 x   ->  3x+5=14x
+3-v=1       ->  3-v=1
 ```
 
-**Cause** : le moteur découpe `<équation> [variable]` et retire ses options
-(`-v`, `--verbose`, `-q`, `--quiet`) **avant** de parser (`solve.command.ts`,
-`parseInput` et `parseOptions`). Je passais la queue brute de la commande, donc
-`pedagogical-solve` lisait « 3x+5 = 14x ». Le découpage du moteur est désormais
-reproduit à l'identique dans `readArgument` — les étapes doivent décrire ce que
-le moteur a résolu, pas autre chose.
+C'est **le moteur** qui se trompe, en appliquant deux conventions de terminal
+qui n'ont pas leur place devant un élève :
 
-Variante bénigne du même défaut, corrigée aussi : `.résoudre 3x+5=14 -v` se
-lisait « 14 - v », deux variables → repli silencieux. Les étapes ne
-s'affichaient **jamais** dès qu'une option était tapée.
+| entrée             | moteur                                                               | juste      |
+| ------------------ | -------------------------------------------------------------------- | ---------- |
+| `.solve 3x+5=14 x` | `x = 3` — il ampute le `x`, le prenant pour un argument « variable » | `x = 5/11` |
+| `.solve 3-v=1`     | « contradictoire » — il lit `-v` comme un drapeau et résout `3 = 1`  | `v = 2`    |
+
+`solveSteps` lit donc l'argument **comme des mathématiques**, sans aucune
+convention de ligne de commande. Les étapes **réparent** ces deux défauts au
+lieu de les propager : la ligne affiche `x = 5/11` et `v = 2`, et la sortie du
+moteur reste en repli, invisible tant que le LaTeX se compose.
+
+Les deux défauts du moteur sont versés au lot de correction de mathAST
+(`mathast-5-defauts-prompt.md`).
+
+**La leçon** : un finding d'auditeur désigne un endroit juste, pas forcément le
+bon coupable. Ici les deux valeurs divergeaient bien — mais c'était l'autre qui
+était fausse. J'ai aligné sans vérifier laquelle des deux disait vrai.
 
 ### Les autres corrections
 

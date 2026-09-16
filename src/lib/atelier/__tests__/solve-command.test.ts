@@ -59,6 +59,38 @@ describe('`.résoudre` rend les étapes pédagogiques', () => {
 	});
 });
 
+describe('la ligne corrige le moteur au lieu de le suivre', () => {
+	/**
+	 * ⚠️ **Divergence VOULUE, et c'est l'inverse d'un défaut.** Le moteur
+	 * applique des conventions de terminal qui lui font résoudre une autre
+	 * équation que celle qui est écrite : il ampute le `x` final de
+	 * `3x+5=14 x` (« x = 3 ») et lit le `-v` de `3-v=1` comme un drapeau
+	 * (« contradictoire »).
+	 *
+	 * L'élève, lui, écrit des mathématiques — et le parseur les lit comme
+	 * telles : `3x+5=14 x` EST l'équation `3x+5=14x`. La ligne affiche donc la
+	 * réponse des étapes, qui est la bonne ; la sortie du moteur reste en
+	 * repli, invisible tant que le LaTeX se compose.
+	 */
+	it('un x en fin d’équation reste dans l’équation', () => {
+		const result = runInput(session(), '.résoudre 3x+5=14 x');
+
+		expect(result.kind).toBe('commande');
+		if (result.kind !== 'commande') return;
+		expect(result.latex).toBe('x = \\dfrac{5}{11}');
+		// Le moteur, lui, répond « x = 3 » — c'est LUI qui se trompe.
+		expect(result.output).toContain('3');
+	});
+
+	it('un « -v » reste une soustraction', () => {
+		const result = runInput(session(), '.résoudre 3-v=1');
+
+		expect(result.kind).toBe('commande');
+		if (result.kind !== 'commande') return;
+		expect(result.latex).toBe('v = 2');
+	});
+});
+
 describe('`.résoudre` se replie sans rien perdre', () => {
 	it('L1 : un degré 3 garde la sortie actuelle du moteur', () => {
 		const result = runInput(session(), '.résoudre x^3-x=0');
