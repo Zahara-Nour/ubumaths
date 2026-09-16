@@ -22,7 +22,7 @@ import { syncEngine, expressionOf, expandInput } from './engine';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { resolveCommand, suggestFor, commandCatalog } from './commands';
 import { renderResult } from './render';
-import { solveSteps, answerOf } from './solve-steps';
+import { solveSteps } from './solve-steps';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 
 // =============================================================================
@@ -208,12 +208,23 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	const rendered = renderResult(result, { fromCommand: true });
 
 	// ⚠️ **Les étapes remplacent le formateur de terminal, jamais la réponse.**
-	// `solveSteps` rend `null` dès qu'il ne sait pas faire (degré ≥ 3, équation
-	// non polynomiale, paramètre, liste qui ne conclut pas) : la ligne garde
-	// alors exactement ce qu'elle affichait avant ce lot.
-	const steps = name === 'solve' && result.success ? solveSteps(argument) : null;
-	if (steps !== null) {
-		return { kind: 'commande', input, output: rendered.text, latex: answerOf(steps), steps };
+	// `solveSteps` rend `null` dès qu'il ne sait pas faire (degré ≥ 3, non
+	// polynomial, paramètre, liste qui ne conclut pas) : la ligne garde alors
+	// exactement ce qu'elle affichait avant ce lot.
+	//
+	// ⚠️ **On ne conditionne PAS au succès du moteur.** Sur une inéquation il
+	// échoue et ne rend rien — mesuré, `.résoudre 2x+1<7` affichait une ligne
+	// entièrement vide, sans même un message. Les étapes sont alors la seule
+	// chose que l'élève recevra.
+	const solved = name === 'solve' ? solveSteps(argument) : null;
+	if (solved !== null) {
+		return {
+			kind: 'commande',
+			input,
+			output: rendered.text,
+			latex: solved.answer,
+			steps: solved.steps
+		};
 	}
 
 	return {

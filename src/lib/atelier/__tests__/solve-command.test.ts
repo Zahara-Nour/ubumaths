@@ -154,3 +154,42 @@ describe('la ligne d’historique porte les étapes', () => {
 		expect(desk.entries[0].text.length).toBeGreaterThan(0);
 	});
 });
+
+describe('`.résoudre` sur une inéquation', () => {
+	/**
+	 * ⚠️ **Ici les étapes ne remplacent rien : elles sont TOUT.** Mesuré avant
+	 * ce lot, `.résoudre 2x+1<7` rendait une ligne entièrement vide — pas une
+	 * erreur, pas un message. Le moteur n'a rien pour les inéquations, d'où le
+	 * fait qu'on n'attende pas son succès pour produire les étapes.
+	 */
+	it('la ligne porte la forme résolue là où le moteur ne rend rien', () => {
+		const result = runInput(session(), '.résoudre 2x+1<7');
+
+		expect(result.kind).toBe('commande');
+		if (result.kind !== 'commande') return;
+		expect(result.latex).toBe('x < 3');
+		expect(result.steps).toBeDefined();
+		// Le moteur, lui, n'a rien produit : c'est le trou que ce lot comble.
+		expect(result.output).toBe('');
+	});
+
+	it('une inéquation du second degré rend son ensemble de solutions', () => {
+		const result = runInput(session(), '.résoudre x^2-4>=0');
+
+		expect(result.kind).toBe('commande');
+		if (result.kind !== 'commande') return;
+		expect(result.latex).toBe('S = ]-\\infty ; -2] \\cup [2 ; +\\infty[');
+	});
+
+	it('l’inéquation peut citer un objet de l’atelier', () => {
+		const s = session();
+		runInput(s, 'f(x) = x^2 - 4');
+
+		const result = runInput(s, '.résoudre f(x)>=0');
+
+		expect(result.kind).toBe('commande');
+		if (result.kind !== 'commande') return;
+		expect(result.steps).toBeDefined();
+		expect(result.latex).toBe('S = ]-\\infty ; -2] \\cup [2 ; +\\infty[');
+	});
+});
