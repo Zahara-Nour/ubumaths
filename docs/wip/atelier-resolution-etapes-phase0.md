@@ -38,6 +38,18 @@ ne va pas dans le bloc ci-dessus, point par point :
 
 C'est la sortie d'un terminal, affichée telle quelle dans une page web.
 
+### Il y a deux implémentations, et l'atelier est branché sur la mauvaise
+
+Ce bloc ne vient **pas** de `pedagogical-solve`. Il vient de
+`src/lib/mathAST/cli/commands/solve.command.ts`, qui ne cite jamais le module
+pédagogique (zéro référence) et refabrique ses propres étapes avec son propre
+formatage à la main.
+
+`pedagogical-solve`, lui, est employé par les corrections de questions, en
+production. Le lot ne consiste donc pas à « ajouter les étapes » : il consiste à
+**brancher l'atelier sur le module pédagogique** au lieu du formateur de
+terminal.
+
 ---
 
 ## 2. Ce que ça devient

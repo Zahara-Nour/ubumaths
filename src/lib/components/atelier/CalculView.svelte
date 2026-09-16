@@ -13,6 +13,7 @@
 	import type { CalcDesk, Entry } from '$lib/atelier/desk.svelte';
 	import { commandCatalog, plain, type AtelierCommand } from '$lib/atelier/commands';
 	import { Button } from '$lib/components/ui/button';
+	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
 
 	/**
 	 * Le pupitre vient du CONTENEUR, pas d'ici : c'est lui qui reçoit les actions
@@ -22,6 +23,19 @@
 	let { desk }: { desk: CalcDesk } = $props();
 
 	let field = $state<HTMLInputElement | null>(null);
+
+	/**
+	 * Les lignes dont les étapes sont dépliées (décision Q1).
+	 *
+	 * La ligne montre la RÉPONSE ; le raisonnement s'ouvre à la demande. Sept
+	 * `.résoudre` de suite déplieraient sinon une quarantaine de blocs, et
+	 * l'historique cesserait d'être lisible.
+	 */
+	let unfolded = $state<number[]>([]);
+
+	function toggleSteps(id: number) {
+		unfolded = unfolded.includes(id) ? unfolded.filter((x) => x !== id) : [...unfolded, id];
+	}
 
 	/**
 	 * Les commandes à proposer, filtrées par ce qui est déjà tapé (§5 N1, N2).
@@ -101,7 +115,23 @@
 							Garder…
 						</Button>
 					{/if}
+					{#if entry.steps !== undefined}
+						<Button
+							variant="ghost"
+							size="sm"
+							class="comment"
+							aria-expanded={unfolded.includes(entry.id)}
+							onclick={() => toggleSteps(entry.id)}
+						>
+							{unfolded.includes(entry.id) ? 'Masquer le détail' : 'Comment ?'}
+						</Button>
+					{/if}
 				</div>
+				{#if entry.steps !== undefined && unfolded.includes(entry.id)}
+					<div class="etapes">
+						<GeneratedStepsCorrection steps={entry.steps} />
+					</div>
+				{/if}
 			</li>
 		{/each}
 	</ol>
@@ -195,6 +225,15 @@
 	}
 	.texte {
 		white-space: pre-wrap;
+	}
+
+	/* Les étapes dépliées : un bloc indenté sous la réponse, qui défile dans son
+	   cadre comme le reste — un `\begin{aligned}` est large. */
+	.etapes {
+		margin-top: 0.5rem;
+		padding-left: 0.75rem;
+		border-left: 2px solid var(--color-border);
+		overflow-x: auto;
 	}
 
 	/* ⚠️ Pas « .avis » : `AtelierContainer` a déjà une région de ce nom, et deux

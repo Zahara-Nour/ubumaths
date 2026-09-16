@@ -22,6 +22,8 @@ import { syncEngine, expressionOf, expandInput } from './engine';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { resolveCommand, suggestFor, commandCatalog } from './commands';
 import { renderResult } from './render';
+import { solveSteps, answerOf } from './solve-steps';
+import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 
 // =============================================================================
 // Types
@@ -55,6 +57,11 @@ export type CalcResult =
 			readonly input: string;
 			readonly output: string;
 			readonly latex?: string;
+			/**
+			 * Les étapes pédagogiques, quand `pedagogical-solve` sait les
+			 * produire. Absentes = repli : la ligne garde la sortie du moteur.
+			 */
+			readonly steps?: readonly RenderedStep[];
 	  }
 	| { readonly kind: 'refus'; readonly message: string };
 
@@ -192,15 +199,23 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 
 	// L'argument reçoit les EXPRESSIONS, pas les noms — règle du §6 bis, ici
 	// appliquée à la commande tapée à la main.
-	const executed =
-		space === -1
-			? resolved
-			: `${resolved.slice(0, space)} ${substituteNames(session, resolved.slice(space + 1))}`;
+	const argument = space === -1 ? '' : substituteNames(session, resolved.slice(space + 1));
+	const executed = space === -1 ? resolved : `${resolved.slice(0, space)} ${argument}`;
 
 	const result = engine.execute(executed);
 	// `fromCommand` : pour une commande, `result.ast` porte l'ENTRÉE. Le rendre
 	// afficherait « x^2 » là où `.dériver x^2` répond « 2x » (voir `render.ts`).
 	const rendered = renderResult(result, { fromCommand: true });
+
+	// ⚠️ **Les étapes remplacent le formateur de terminal, jamais la réponse.**
+	// `solveSteps` rend `null` dès qu'il ne sait pas faire (degré ≥ 3, équation
+	// non polynomiale, paramètre, liste qui ne conclut pas) : la ligne garde
+	// alors exactement ce qu'elle affichait avant ce lot.
+	const steps = name === 'solve' && result.success ? solveSteps(argument) : null;
+	if (steps !== null) {
+		return { kind: 'commande', input, output: rendered.text, latex: answerOf(steps), steps };
+	}
+
 	return {
 		kind: 'commande',
 		input,
