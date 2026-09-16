@@ -41,6 +41,7 @@
 
 import type { Class, ClassSchedule } from '$lib/types/database-helpers';
 import { formatTimeDisplay, getDayName } from './schedule';
+import { getOrderedSchoolDays, type WeekConfig } from './week-config';
 
 /**
  * Current time information in multiple formats
@@ -137,8 +138,9 @@ function isWithinTimeRange(schedule: ClassSchedule, currentTime: string): boolea
  * Searches through all teacher's classes to find a schedule that matches
  * the current (or provided) day and time. Returns first match found.
  *
- * SCHOOL DAYS: Only matches Sunday (0) through Thursday (4).
- * Weekend days (Friday=5, Saturday=6) always return null.
+ * Aucun jour n'est exclu a priori : la source de vérité est l'emploi du temps
+ * lui-même. Un garde `day > 4`, hérité de la semaine dimanche→jeudi de
+ * l'ancienne école, rendait `null` tous les vendredis d'un lycée français.
  *
  * @param classes - Array of classes with schedules to search
  * @param currentDay - Optional: Day of week (0-6) to check (default: current day)
@@ -166,12 +168,6 @@ export function findCurrentSchedule(
 		currentDay !== undefined && currentTime !== undefined
 			? { day: currentDay, time: currentTime }
 			: getCurrentDayAndTime();
-
-	// Check if it's a school day (Sunday=0 to Thursday=4)
-	// Weekend days (Friday=5, Saturday=6) have no classes
-	if (day < 0 || day > 4) {
-		return null;
-	}
 
 	// Search through all classes and their schedules
 	for (const cls of classes) {
@@ -240,22 +236,23 @@ export function formatScheduleMatch(match: ScheduleMatch): string {
 }
 
 /**
- * Check if a given day is a weekend day
+ * Le jour est-il chômé dans CETTE école ?
  *
- * Weekend = Friday (5) or Saturday (6)
- * School days = Sunday (0) through Thursday (4)
+ * Le week-end n'est pas une constante : il valait vendredi/samedi dans
+ * l'ancienne école du Golfe, il vaut samedi/dimanche au lycée français. La
+ * réponse vient donc de `week_config`, jamais d'un littéral.
  *
- * @param day - Optional: Day of week (0-6) to check (default: current day)
- * @returns true if Friday or Saturday, false otherwise
+ * @param config - Configuration de semaine de l'école (`schools.timetable.week_config`)
+ * @param day - Jour à tester (0-6) ; par défaut, aujourd'hui
+ * @returns true si le jour ne fait pas partie des jours de classe
  *
  * @example
- * isWeekend(5); // true (Friday)
- * isWeekend(0); // false (Sunday - school day)
- * isWeekend(); // true if today is Friday or Saturday
+ * isWeekend(frenchWeek, 5); // false — le vendredi est travaillé
+ * isWeekend(gulfWeek, 5); // true
  */
-export function isWeekend(day?: number): boolean {
+export function isWeekend(config: WeekConfig | null | undefined, day?: number): boolean {
 	const checkDay = day !== undefined ? day : getCurrentDayAndTime().day;
-	return checkDay === 5 || checkDay === 6; // Friday=5, Saturday=6
+	return !getOrderedSchoolDays(config).includes(checkDay);
 }
 
 /**
@@ -268,25 +265,27 @@ export function isWeekend(day?: number): boolean {
  * 4. Default: No class at current time
  *
  * @param classes - Array of teacher's classes with schedules
+ * @param config - Configuration de semaine de l'école
  * @param currentDay - Optional: Day of week to check (default: current day)
  * @returns French error message string
  *
  * @example
- * getNoClassMessage([], undefined);
+ * getNoClassMessage([], frenchWeek);
  * // Returns: "Aucune classe assignée"
  *
- * getNoClassMessage(classes, 5);
- * // Returns: "Pas de cours aujourd'hui (weekend)"
+ * getNoClassMessage(classes, frenchWeek, 0);
+ * // Returns: "Pas de cours aujourd'hui (week-end)"
  */
 export function getNoClassMessage(
 	classes: (Class & { schedules?: ClassSchedule[] })[],
+	config: WeekConfig | null | undefined,
 	currentDay?: number
 ): string {
 	const day = currentDay !== undefined ? currentDay : getCurrentDayAndTime().day;
 
-	// Priority 1: Check if weekend (Friday/Saturday)
-	if (isWeekend(day)) {
-		return "Pas de cours aujourd'hui (weekend)";
+	// Priorité 1 : jour chômé selon la configuration de l'école
+	if (isWeekend(config, day)) {
+		return "Pas de cours aujourd'hui (week-end)";
 	}
 
 	// Priority 2: Check if teacher has no classes assigned

@@ -1196,13 +1196,40 @@ describe('miscellaneous validation modules', () => {
 			expect(result.success).toBe(true);
 		});
 
-		it('should reject invalid day_of_week', () => {
+		// Les jours ouvrés sont décrits par `week_config` de l'école (0-6, convention
+		// JS), pas par ce schéma : une semaine lundi→vendredi et une semaine
+		// dimanche→jeudi doivent passer la même validation. Le vendredi était rejeté
+		// en production — la grille l'affichait, le serveur le refusait en silence.
+		it.each([
+			['dimanche', '0'],
+			['vendredi', '5'],
+			['samedi', '6']
+		])('accepte le %s comme jour de cours', (_label, dayOfWeek) => {
 			const data = {
 				class_id: '550e8400-e29b-41d4-a716-446655440000',
-				day_of_week: '5', // Max is 4 (Israeli school week)
+				day_of_week: dayOfWeek,
 				period_number: '1',
 				start_time: '08:00',
-				end_time: '09:00'
+				end_time: '09:00',
+				subject: 'Maths',
+				room: '',
+				notes: ''
+			};
+
+			const result = createScheduleEntrySchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it.each([['7'], ['-1']])('rejette un jour hors de la semaine (%s)', (dayOfWeek) => {
+			const data = {
+				class_id: '550e8400-e29b-41d4-a716-446655440000',
+				day_of_week: dayOfWeek,
+				period_number: '1',
+				start_time: '08:00',
+				end_time: '09:00',
+				subject: 'Maths',
+				room: '',
+				notes: ''
 			};
 
 			const result = createScheduleEntrySchema.safeParse(data);
@@ -1215,7 +1242,10 @@ describe('miscellaneous validation modules', () => {
 				day_of_week: '1',
 				period_number: '1',
 				start_time: '9:00', // Missing leading zero
-				end_time: '10:00'
+				end_time: '10:00',
+				subject: 'Maths',
+				room: '',
+				notes: ''
 			};
 
 			const result = createScheduleEntrySchema.safeParse(data);
@@ -1228,7 +1258,10 @@ describe('miscellaneous validation modules', () => {
 				day_of_week: '1',
 				period_number: '11', // Max is 10
 				start_time: '08:00',
-				end_time: '09:00'
+				end_time: '09:00',
+				subject: 'Maths',
+				room: '',
+				notes: ''
 			};
 
 			const result = createScheduleEntrySchema.safeParse(data);

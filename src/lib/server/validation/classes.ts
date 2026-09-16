@@ -52,9 +52,25 @@ export const getClassStudentsSchema = z.object({
 // ============================================================================
 
 /**
- * Day of week (0 = Sunday, 4 = Thursday for Israeli school week)
+ * Jour de la semaine, convention JavaScript (0 = dimanche … 6 = samedi).
+ *
+ * Les jours OUVRÉS ne se décident pas ici : ils vivent dans `week_config` de
+ * l'école (`school_days`), et la grille d'emploi du temps n'affiche que
+ * ceux-là. Ce schéma borne la convention, rien de plus — la borner à 4
+ * (ancienne semaine dimanche→jeudi) rendait le vendredi impossible à saisir
+ * dans une école qui travaille du lundi au vendredi.
  */
-const dayOfWeekSchema = z.number().int().min(0).max(4);
+const dayOfWeekSchema = z
+	.number()
+	.int()
+	.min(0, 'Jour de la semaine invalide')
+	.max(6, 'Jour de la semaine invalide');
+
+/**
+ * Numéro de période dans la journée (1 à 10), tel que le définit le
+ * `timetable.periods` de l'école.
+ */
+const periodNumberSchema = z.number().int().min(1, 'Période invalide').max(10, 'Période invalide');
 
 /**
  * Time format HH:MM or HH:MM:SS
@@ -69,7 +85,7 @@ const timeSchema = z
 export const createScheduleEntrySchema = z.object({
 	class_id: formDataTransforms.uuid,
 	day_of_week: formDataTransforms.int.pipe(dayOfWeekSchema),
-	period_number: formDataTransforms.int.pipe(z.number().int().min(1).max(10)),
+	period_number: formDataTransforms.int.pipe(periodNumberSchema),
 	start_time: timeSchema,
 	end_time: timeSchema,
 	subject: formDataTransforms.optionalString.nullable(),
@@ -83,7 +99,7 @@ export const createScheduleEntrySchema = z.object({
 export const updateScheduleEntrySchema = z.object({
 	id: formDataTransforms.uuid,
 	day_of_week: formDataTransforms.int.pipe(dayOfWeekSchema),
-	period_number: formDataTransforms.int.pipe(z.number().int().min(1).max(10)),
+	period_number: formDataTransforms.int.pipe(periodNumberSchema),
 	start_time: timeSchema,
 	end_time: timeSchema,
 	subject: formDataTransforms.optionalString.nullable(),

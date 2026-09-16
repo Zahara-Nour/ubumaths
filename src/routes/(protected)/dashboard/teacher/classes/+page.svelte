@@ -59,6 +59,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { enhance } from '$app/forms';
+	import { submitAction } from '$lib/utils/form-action';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import {
 		Mail,
@@ -172,22 +173,15 @@
 		formData.append('courseId', courseId);
 
 		try {
-			const response = await fetch('?/associateCourse', {
-				method: 'POST',
-				body: formData,
-				headers: { 'x-sveltekit-action': 'true' }
-			});
+			const outcome = await submitAction('?/associateCourse', formData);
 
-			if (response.ok) {
-				await invalidateAll();
-				toaster.success(courseId ? 'Cours associé' : 'Association supprimée');
-			} else {
-				const result = await response.json();
-				toaster.error(result?.message || "Erreur lors de l'association");
+			if (!outcome.ok) {
+				toaster.error(outcome.message);
+				return;
 			}
-		} catch (error) {
-			console.error('Error associating course:', error);
-			toaster.error('Une erreur est survenue');
+
+			await invalidateAll();
+			toaster.success(courseId ? 'Cours associé' : 'Association supprimée');
 		} finally {
 			isUpdatingAssociation[classId] = false;
 		}
@@ -349,41 +343,24 @@
 		formData.append('room', '');
 		formData.append('notes', '');
 
-		try {
-			const response = await fetch('?/createScheduleEntry', {
-				method: 'POST',
-				body: formData,
-				headers: {
-					'x-sveltekit-action': 'true'
-				}
-			});
+		const outcome = await submitAction('?/createScheduleEntry', formData);
 
-			if (response.ok) {
-				// Success: Remove optimistic entry and refresh data
-				delete optimisticEntries[entryKey];
-				pendingRequests.delete(entryKey);
+		// L'entrée optimiste disparaît dans les deux cas : elle ne doit survivre ni
+		// au refus (sinon la grille montre un créneau qui n'existe pas) ni au
+		// succès (invalidateAll rend la vraie ligne).
+		delete optimisticEntries[entryKey];
+		pendingRequests.delete(entryKey);
 
-				// Small delay to show the transition smoothly
-				setTimeout(async () => {
-					await invalidateAll();
-					toaster.success('Créneau "Maths" ajouté');
-				}, 100);
-			} else {
-				// Error: Remove optimistic entry and show error
-				delete optimisticEntries[entryKey];
-				pendingRequests.delete(entryKey);
-
-				const result = await response.json();
-				toaster.error(result?.message || 'Erreur lors de la création');
-			}
-		} catch (error) {
-			// Error: Remove optimistic entry
-			delete optimisticEntries[entryKey];
-			pendingRequests.delete(entryKey);
-
-			console.error('Error creating Maths entry:', error);
-			toaster.error('Erreur lors de la création');
+		if (!outcome.ok) {
+			toaster.error(outcome.message);
+			return;
 		}
+
+		// Small delay to show the transition smoothly
+		setTimeout(async () => {
+			await invalidateAll();
+			toaster.success('Créneau "Maths" ajouté');
+		}, 100);
 	}
 
 	/**
@@ -450,31 +427,20 @@
 		data.append('room', formData.room);
 		data.append('notes', formData.notes);
 
-		try {
-			// Submit to SvelteKit form action
-			const response = await fetch(action, {
-				method: 'POST',
-				body: data,
-				headers: {
-					'x-sveltekit-action': 'true' // Required for SvelteKit actions
-				}
-			});
+		const outcome = await submitAction(action, data);
 
-			if (response.ok) {
-				// Refresh all page data to show new/updated entry
-				await invalidateAll();
-				toaster.success(
-					modalMode === 'create' ? 'Créneau créé avec succès' : 'Créneau modifié avec succès'
-				);
-				modalOpen = false;
-			} else {
-				const result = await response.json();
-				toaster.error(result?.message || 'Une erreur est survenue');
-			}
-		} catch (error) {
-			console.error('Error saving schedule entry:', error);
-			toaster.error('Une erreur est survenue');
+		if (!outcome.ok) {
+			// La modale reste ouverte : le créneau saisi n'est pas perdu.
+			toaster.error(outcome.message);
+			return;
 		}
+
+		// Refresh all page data to show new/updated entry
+		await invalidateAll();
+		toaster.success(
+			modalMode === 'create' ? 'Créneau créé avec succès' : 'Créneau modifié avec succès'
+		);
+		modalOpen = false;
 	}
 
 	/**
@@ -498,29 +464,17 @@
 		const formData = new FormData();
 		formData.append('id', selectedEntry.id);
 
-		try {
-			// Submit delete request
-			const response = await fetch('?/deleteScheduleEntry', {
-				method: 'POST',
-				body: formData,
-				headers: {
-					'x-sveltekit-action': 'true'
-				}
-			});
+		const outcome = await submitAction('?/deleteScheduleEntry', formData);
 
-			if (response.ok) {
-				// Refresh all page data to remove deleted entry
-				await invalidateAll();
-				toaster.success('Créneau supprimé avec succès');
-				modalOpen = false;
-			} else {
-				const result = await response.json();
-				toaster.error(result?.message || 'Une erreur est survenue');
-			}
-		} catch (error) {
-			console.error('Error deleting schedule entry:', error);
-			toaster.error('Une erreur est survenue');
+		if (!outcome.ok) {
+			toaster.error(outcome.message);
+			return;
 		}
+
+		// Refresh all page data to remove deleted entry
+		await invalidateAll();
+		toaster.success('Créneau supprimé avec succès');
+		modalOpen = false;
 	}
 </script>
 
