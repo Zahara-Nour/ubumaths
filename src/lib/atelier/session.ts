@@ -107,16 +107,25 @@ export function openSession(atelier: Atelier, options: SessionOptions): Session 
 	};
 	target?.addEventListener('storage', onStorage as EventListener);
 
+	// Fermeture d'onglet, navigation, mise en arrière-plan sur mobile : `pagehide`
+	// est le dernier moment fiable pour ranger. `beforeunload` ne se déclenche pas
+	// sur iOS.
+	const onPagehide = () => {
+		if (timer !== null) saveNow();
+	};
+	target?.addEventListener('pagehide', onPagehide as EventListener);
+
 	return {
 		touch,
 		saveNow,
 		close() {
+			// ⚠️ Ranger AVANT de fermer : une sauvegarde différée jetée, c'est le
+			// travail de l'élève perdu parce qu'il a cliqué un lien dans la demi-
+			// seconde. `saveNow` annule le minuteur lui-même.
+			if (timer !== null) saveNow();
 			closed = true;
-			if (timer !== null) {
-				clearTimeout(timer);
-				timer = null;
-			}
 			target?.removeEventListener('storage', onStorage as EventListener);
+			target?.removeEventListener('pagehide', onPagehide as EventListener);
 		}
 	};
 }

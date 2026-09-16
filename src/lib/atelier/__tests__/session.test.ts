@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { openSession } from '../session.svelte';
+import { openSession } from '../session';
 import { saveAtelier, ATELIER_STORAGE_KEY, ATELIER_STATE_VERSION } from '../persistence';
 
 function fakeStorage(): Storage {
@@ -138,17 +138,53 @@ describe('sauvegarde', () => {
 		session.close();
 	});
 
-	it('ne sauve plus après avoir été fermée', () => {
+	// ⚠️ Ce test disait « ne sauve plus après avoir été fermée » et gravait une
+	// perte : l'élève supprime un objet, clique un lien dans la demi-seconde, et
+	// son geste disparaît. Fermer doit RANGER ce qui attend, pas le jeter.
+	it('range ce qui attendait avant de fermer', () => {
 		const storage = fakeStorage();
 		const atelier = new Atelier();
 		const session = openSession(atelier, { storage });
 
-		atelier.create({ kind: 'function', name: 'f', definition: 'x' });
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		session.touch();
 		session.close();
+
+		expect(storage.getItem(ATELIER_STORAGE_KEY)).toContain('x^2');
+	});
+
+	it('ne sauve plus rien APRÈS la fermeture', () => {
+		const storage = fakeStorage();
+		const atelier = new Atelier();
+		const session = openSession(atelier, { storage });
+		session.close();
+
+		atelier.create({ kind: 'function', name: 'g', definition: 'x^3' });
+		session.touch();
 		vi.advanceTimersByTime(600);
 
-		expect(storage.getItem(ATELIER_STORAGE_KEY)).toBeNull();
+		expect(storage.getItem(ATELIER_STORAGE_KEY) ?? '').not.toContain('x^3');
+	});
+
+	// La fermeture d'onglet est le dernier moment fiable pour ranger — et
+	// `beforeunload` ne se déclenche pas sur iOS.
+	it('range quand l’onglet part', () => {
+		const storage = fakeStorage();
+		const listeners = new Map<string, (e: Event) => void>();
+		const target = {
+			addEventListener: (type: string, fn: (e: Event) => void) => listeners.set(type, fn),
+			removeEventListener: () => {}
+		} as unknown as Window;
+
+		const atelier = new Atelier();
+		const session = openSession(atelier, { storage, target });
+
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		session.touch();
+		listeners.get('pagehide')?.(new Event('pagehide'));
+
+		expect(storage.getItem(ATELIER_STORAGE_KEY)).toContain('x^2');
+		session.close();
 	});
 });
 

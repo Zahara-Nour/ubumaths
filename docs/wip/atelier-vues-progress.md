@@ -65,6 +65,42 @@ Un `svelte-ignore state_referenced_locally` sur `view` : elle donne la vue **de
 départ** — celle qu'une URL demande — et l'élève change d'onglet librement
 ensuite. Pattern documenté dans `docs/ref/warning-svelte.md` §1.
 
+## ⚠️ Revue #336 — deux pertes du travail de l'élève
+
+### 1. Créer un objet n'enregistrait rien
+
+`sessionTouch` n'était appelé qu'à un seul endroit, pour « Supprimer ». L'élève
+cliquait « + Fonction », saisissait, rechargeait — tout avait disparu.
+
+**Corrigé par un compteur de révision** dans le modèle, suivi par un `$effect` du
+conteneur : **une seule source de « ça a changé »**. Prévenir la session depuis
+chaque appelant ne tenait pas — c'est exactement comme ça que le trou est né, et
+chaque action à venir l'aurait rouvert.
+
+### 2. `close()` jetait la sauvegarde en attente
+
+L'élève supprime un objet, clique un lien dans les 500 ms : geste perdu. Fermer
+**range** désormais ce qui attend, et un écouteur `pagehide` couvre la fermeture
+d'onglet — `beforeunload` ne se déclenche pas sur iOS.
+
+⚠️ **Mon test gravait ce défaut** : il s'appelait « ne sauve plus après avoir été
+fermée » et vérifiait la perte. **Deuxième fois dans ce chantier** (le premier
+était « ignore un objet de forme inattendue sans tout perdre », PR #335).
+
+### Trois corrections de fond
+
+- **a11y** : `aria-disabled` plutôt que `disabled`, et la **raison est écrite**,
+  plus seulement en infobulle. Une infobulle ne se lit ni au clavier, ni au
+  doigt, ni au lecteur d'écran — or c'est elle qui dit ce qui manque. Les avis
+  passent en `aria-live`.
+- **L'interface parlait anglais** : « FUNCTION », « SEQUENCE » s'affichaient.
+- **Les boutons morts** : toute action dont la vue n'existe pas encore dit
+  « Cette action arrive dans un prochain lot » au lieu de ne rien faire. Un test
+  vérifie ce message — **il rougira quand les vues arriveront, et c'est voulu**.
+
+Et `session.svelte.ts` → `session.ts` : aucune rune dedans, le suffixe n'avait
+pas lieu d'être.
+
 ## Ce que ce lot n'est pas
 
 Les trois vues sont des **espaces réservés** : elles affichent leur nom et

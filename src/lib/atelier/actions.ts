@@ -28,9 +28,12 @@ export interface ObjectAction {
 	readonly disabledReason?: string;
 }
 
+/** Ce qu'on répond quand la vue qui rendrait l'action n'existe pas encore. */
+const NOT_YET_REASON = 'Cette action arrive dans un prochain lot.';
+
 /** Les gestes qui restent possibles quand plus rien d'autre ne l'est. */
 const ALWAYS: readonly ObjectAction[] = [
-	{ id: 'rename', label: 'Renommer' },
+	{ id: 'rename', label: 'Renommer', disabledReason: NOT_YET_REASON },
 	{ id: 'remove', label: 'Supprimer' }
 ];
 
@@ -56,6 +59,30 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 		{ id: 'fit', label: 'Ajustement affine' }
 	]
 };
+
+/**
+ * Actions dont la vue n'existe pas encore.
+ *
+ * ⚠️ Mieux vaut un bouton qui dit pourquoi il ne répond pas qu'un bouton mort :
+ * un élève qui clique sans rien voir arriver conclut que l'outil est cassé.
+ * Cette liste se vide au fur et à mesure des lots (§3 E1).
+ */
+const NOT_YET: ReadonlySet<string> = new Set([
+	'plot',
+	'plot-points',
+	'plot-cobweb',
+	'derive',
+	'table',
+	'solve',
+	'variations',
+	'image',
+	'slider',
+	'convert',
+	'stats',
+	'scatter',
+	'fit',
+	'rename'
+]);
 
 /** Pourquoi un objet ne peut rien produire, s'il ne peut rien produire. */
 function blockedBy(object: AtelierObject): string | undefined {
@@ -89,7 +116,11 @@ export function actionsFor(object: AtelierObject): ObjectAction[] {
 				disabledReason: `« ${object.name} » est une grandeur en ${object.unit} : un curseur n’aurait pas de sens ici.`
 			};
 		}
-		return blocked ? { ...action, disabledReason: blocked } : action;
+		if (blocked) return { ...action, disabledReason: blocked };
+		// L'objet va bien, mais la vue qui rendrait cette action n'existe pas
+		// encore : on le dit, plutôt que de laisser un bouton sans effet.
+		if (NOT_YET.has(action.id)) return { ...action, disabledReason: NOT_YET_REASON };
+		return action;
 	});
 
 	// « Convertir » n'existe que s'il y a une unité à convertir.

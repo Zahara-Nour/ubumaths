@@ -73,8 +73,14 @@ describe('panneau d’objets', () => {
 			(b) => b.textContent?.trim() === 'Tracer'
 		) as HTMLButtonElement | undefined;
 
-		expect(tracer?.disabled).toBe(true);
-		expect(tracer?.title).toContain('a');
+		// `aria-disabled` et non `disabled` : le bouton reste atteignable au
+		// clavier, donc sa raison peut être lue.
+		expect(tracer?.getAttribute('aria-disabled')).toBe('true');
+
+		// Et la raison est ÉCRITE, pas seulement en infobulle : une infobulle ne
+		// se lit ni au clavier, ni au doigt, ni au lecteur d'écran.
+		const raison = container.querySelector(`#${tracer?.getAttribute('aria-describedby')}`);
+		expect(raison?.textContent).toContain('a');
 	});
 
 	it('laisse toujours renommer et supprimer, même en erreur', async () => {
@@ -87,7 +93,7 @@ describe('panneau d’objets', () => {
 
 		const boutons = [...container.querySelectorAll('.action')] as HTMLButtonElement[];
 		const supprimer = boutons.find((b) => b.textContent?.trim() === 'Supprimer');
-		expect(supprimer?.disabled).toBe(false);
+		expect(supprimer?.getAttribute('aria-disabled')).toBe('false');
 	});
 
 	// §2.1 N3 — « + Fonction » crée un objet nommé, vide, et le sélectionne

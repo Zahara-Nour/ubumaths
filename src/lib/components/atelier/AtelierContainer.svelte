@@ -9,7 +9,7 @@
 	import { onMount } from 'svelte';
 	import { Atelier } from '$lib/atelier/atelier.svelte';
 	import { provideAtelier } from '$lib/atelier/context';
-	import { openSession, type SessionNotice } from '$lib/atelier/session.svelte';
+	import { openSession, type Session, type SessionNotice } from '$lib/atelier/session';
 	import type { AtelierObject } from '$lib/atelier/types';
 	import type { ObjectAction } from '$lib/atelier/actions';
 	import ObjectPanel from './ObjectPanel.svelte';
@@ -47,18 +47,39 @@
 
 	// Le cycle de vie n'a de sens que dans un navigateur : la session lit le
 	// stockage et écoute les autres onglets.
+	// `$state` et non un simple `let` : l'effet ci-dessous doit se redéclencher
+	// quand la session s'ouvre, sinon il part une fois sur `null` et ne revient
+	// jamais — rien n'est alors jamais enregistré.
+	let session = $state<Session | null>(null);
+
 	onMount(() => {
 		if (ephemeral) return;
-		const session = openSession(atelier, {
+		session = openSession(atelier, {
 			storage: readStorage(),
 			target: window,
 			onNotice: (notice) => (notices = [...notices, notice])
 		});
-		sessionTouch = session.touch;
-		return session.close;
+		// Le chargement initial compte comme une modification : on note la
+		// révision de départ pour ne pas ré-enregistrer ce qu'on vient de lire.
+		lastSeenRevision = atelier.revision;
+		return () => {
+			session?.close();
+			session = null;
+		};
 	});
 
-	let sessionTouch: (() => void) | null = null;
+	let lastSeenRevision = $state(-1);
+
+	// ⚠️ UNE seule source de « ça a changé ». Prévenir la session depuis chaque
+	// endroit qui modifie l'atelier ne tenait pas : les créations depuis le
+	// panneau ne déclenchaient aucune sauvegarde, et chaque action à venir
+	// aurait rouvert le trou.
+	$effect(() => {
+		const current = atelier.revision;
+		if (session === null || current === lastSeenRevision) return;
+		lastSeenRevision = current;
+		session.touch();
+	});
 
 	/** Un navigateur peut refuser `localStorage` — ce n'est pas une erreur (§5 E1). */
 	function readStorage(): Storage | null {
@@ -75,7 +96,6 @@
 		if (action.id === 'remove') {
 			atelier.remove(object.name);
 			if (selected === object.name) selected = null;
-			sessionTouch?.();
 		}
 	}
 </script>
@@ -97,13 +117,16 @@
 			{/each}
 		</nav>
 
-		{#if notices.length > 0}
-			<ul class="avis">
-				{#each notices as notice, i (i)}
-					<li data-kind={notice.kind}>{notice.message}</li>
-				{/each}
-			</ul>
-		{/if}
+		<!--
+			`aria-live` : un avertissement de perte de données doit être ANNONCÉ,
+			pas seulement affiché. La région existe toujours, sinon un lecteur
+			d'écran ne verrait jamais apparaître son contenu.
+		-->
+		<ul class="avis" aria-live="polite" class:vide={notices.length === 0}>
+			{#each notices as notice, i (i)}
+				<li data-kind={notice.kind}>{notice.message}</li>
+			{/each}
+		</ul>
 
 		<section class="vue">
 			<p class="a-venir">
@@ -166,6 +189,9 @@
 		padding: 0.375rem 0.625rem;
 		border-radius: 0.375rem;
 		background: var(--color-muted);
+	}
+	.avis.vide {
+		padding: 0;
 	}
 	.avis li[data-kind='warning'] {
 		color: var(--color-destructive);

@@ -2,7 +2,7 @@
  * Le conteneur — l'atelier vu comme un tout.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
@@ -54,5 +54,59 @@ describe('conteneur', () => {
 
 		const { container } = render(AtelierContainer, { atelier, ephemeral: true });
 		expect(container.textContent).toContain('x^2');
+	});
+});
+
+// =============================================================================
+// Ce que la revue de la PR #336 a trouvé : la création n'était pas enregistrée
+// =============================================================================
+
+describe('tout changement est enregistré', () => {
+	const KEY = 'chiphre-atelier';
+
+	afterEach(() => localStorage.removeItem(KEY));
+
+	// ⚠️ Le trou : `sessionTouch` n'était appelé que pour « Supprimer ». Créer un
+	// objet depuis le panneau ne rangeait rien — l'élève rechargeait et avait
+	// tout perdu. Un seul endroit oublié suffisait.
+	it('enregistre une création faite depuis le panneau', async () => {
+		localStorage.removeItem(KEY);
+		const { container } = render(AtelierContainer, {});
+
+		const bouton = [...container.querySelectorAll('.creer button')].find(
+			(b) => b.textContent?.trim() === '+ Fonction'
+		) as HTMLButtonElement;
+		bouton.click();
+
+		await new Promise((r) => setTimeout(r, 700));
+		expect(localStorage.getItem(KEY)).toContain('"f"');
+	});
+
+	it('enregistre une modification du modèle, d’où qu’elle vienne', async () => {
+		localStorage.removeItem(KEY);
+		const atelier = new Atelier();
+		render(AtelierContainer, { atelier });
+
+		// Personne n'a prévenu la session : c'est le compteur de révision qui
+		// couvre ce cas, et il couvrira aussi les actions qui n'existent pas encore.
+		atelier.create({ kind: 'function', name: 'h', definition: 'x^3' });
+
+		await new Promise((r) => setTimeout(r, 700));
+		expect(localStorage.getItem(KEY)).toContain('x^3');
+	});
+
+	it('relit ce qui a été rangé au montage suivant', async () => {
+		localStorage.removeItem(KEY);
+		const first = new Atelier();
+		const { unmount } = render(AtelierContainer, { atelier: first });
+		first.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		await new Promise((r) => setTimeout(r, 700));
+		unmount();
+
+		const second = new Atelier();
+		render(AtelierContainer, { atelier: second });
+		await new Promise((r) => setTimeout(r, 50));
+
+		expect(second.names).toEqual(['f']);
 	});
 });

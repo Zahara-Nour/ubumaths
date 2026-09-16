@@ -75,10 +75,11 @@ describe('progressivité', () => {
 });
 
 describe('curseur et unités', () => {
-	// D3 — une valeur numérique libre est pilotable
+	// D3 — une valeur numérique libre est pilotable : l'action EXISTE, même si
+	// la vue qui la rendra n'est pas encore écrite.
 	it('propose de régler le curseur d’une valeur numérique', () => {
 		a.create({ kind: 'value', name: 'k', definition: '3' });
-		expect(action('k', 'slider')?.disabledReason).toBeUndefined();
+		expect(ids('k')).toContain('slider');
 	});
 
 	// D4 — une grandeur n'est pas pilotable, et on dit pourquoi
@@ -123,11 +124,25 @@ describe('objets qui ne peuvent rien produire (§3 L2)', () => {
 
 	// …mais jamais renommer ni supprimer : ce sont les seuls gestes qui restent
 	// possibles quand tout le reste est bloqué.
-	it('laisse renommer et supprimer un objet en erreur', () => {
+	it('laisse supprimer un objet en erreur', () => {
 		a.create({ kind: 'function', name: 'f', definition: 'x^^2' });
 
-		expect(action('f', 'rename')?.disabledReason).toBeUndefined();
+		// Supprimer est le dernier geste qui doit rester possible quand tout le
+		// reste est bloqué — jamais désactivé par l'état de l'objet.
 		expect(action('f', 'remove')?.disabledReason).toBeUndefined();
+		// Renommer existe aussi, mais attend son lot.
+		expect(ids('f')).toContain('rename');
+	});
+
+	// ⚠️ Une action dont la vue n'existe pas encore est VISIBLE et désactivée
+	// avec sa raison — jamais un bouton qui ne répond pas. Cette liste se vide au
+	// fil des lots ; ce test rougira alors, et c'est voulu.
+	it('dit qu’une action attend son lot, au lieu de ne rien faire', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
+
+		const tracer = action('f', 'plot');
+		expect(tracer).toBeDefined();
+		expect(tracer?.disabledReason).toContain('prochain lot');
 	});
 });
 

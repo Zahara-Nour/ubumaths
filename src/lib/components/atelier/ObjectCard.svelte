@@ -19,6 +19,14 @@
 
 	const actions = $derived(actionsFor(object));
 
+	/** Les libellés français des types — l'interface ne parle pas anglais. */
+	const KIND_LABELS: Record<AtelierObject['kind'], string> = {
+		value: 'valeur',
+		function: 'fonction',
+		sequence: 'suite',
+		list: 'liste'
+	};
+
 	/** Ce que l'élève lit quand l'objet ne peut rien produire. */
 	const stateLabel = $derived.by(() => {
 		switch (object.status) {
@@ -38,7 +46,7 @@
 	<button type="button" class="entete" onclick={() => onSelect?.(object.name)}>
 		<span class="nom">{object.name}</span>
 		<span class="definition">{object.definition || '…'}</span>
-		<span class="type">{object.kind}</span>
+		<span class="type">{KIND_LABELS[object.kind]}</span>
 		{#if stateLabel}
 			<span class="etat">{stateLabel}</span>
 		{/if}
@@ -51,15 +59,31 @@
 	{#if selected}
 		<div class="actions">
 			{#each actions as action (action.id)}
+				<!--
+					`aria-disabled` et non `disabled` : un bouton désactivé sort de
+					l'ordre de tabulation, donc sa raison n'est jamais lue au clavier ni
+					par un lecteur d'écran — or c'est justement elle qui dit à l'élève ce
+					qui lui manque. Il reste atteignable, et le geste ne fait rien.
+				-->
 				<button
 					type="button"
 					class="action"
-					disabled={action.disabledReason !== undefined}
-					title={action.disabledReason}
-					onclick={() => onAction?.(action, object)}
+					aria-disabled={action.disabledReason !== undefined}
+					aria-describedby={action.disabledReason
+						? `${object.name}-${action.id}-raison`
+						: undefined}
+					onclick={() => {
+						if (action.disabledReason !== undefined) return;
+						onAction?.(action, object);
+					}}
 				>
 					{action.label}
 				</button>
+				{#if action.disabledReason}
+					<span id="{object.name}-{action.id}-raison" class="raison">
+						{action.disabledReason}
+					</span>
+				{/if}
 			{/each}
 		</div>
 	{/if}
@@ -141,9 +165,15 @@
 		background: var(--color-background);
 		cursor: pointer;
 	}
-	.action:disabled {
+	.action[aria-disabled='true'] {
 		opacity: 0.55;
-		cursor: help;
+		cursor: not-allowed;
 		border-style: dashed;
+	}
+
+	.raison {
+		flex-basis: 100%;
+		font-size: 0.6875rem;
+		color: var(--color-muted-foreground);
 	}
 </style>
