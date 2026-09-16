@@ -15,7 +15,8 @@
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { isExplicitFunction } from '$lib/grapheur/types';
+import { isExplicitFunction, isScatter } from '$lib/grapheur/types';
+import { isList } from './types';
 
 /**
  * Les courbes posées par l'atelier, par nom d'objet.
@@ -30,6 +31,14 @@ import { isExplicitFunction } from '$lib/grapheur/types';
  * L'invariant est structurel plutôt que supposé.
  */
 const posted = new WeakMap<Atelier, WeakMap<GrapheurStore, Map<string, string>>>();
+
+/** Ce qu'un nuage doit valoir. */
+interface WantedScatter {
+	readonly kind: 'scatter';
+	readonly xs: readonly number[];
+	readonly ys: readonly number[];
+	readonly label: string;
+}
 
 /** Ce qu'une courbe doit valoir, ou `null` si l'objet ne doit pas être tracé. */
 interface Wanted {
@@ -51,6 +60,35 @@ function wantedFor(object: AtelierObject): Wanted | null {
 }
 
 /**
+ * Le nuage qu'une liste marquée demande, avec sa partenaire.
+ *
+ * ⚠️ Un nuage relie DEUX listes, mais c'est la liste d'**abscisses** qui porte
+ * le marqueur : sans ça, retirer le nuage demanderait de savoir laquelle des
+ * deux le tenait. La partenaire est la suivante du panneau — et la vue Données
+ * le dit à l'élève au moment où elle la choisit.
+ */
+function wantedScatterFor(atelier: Atelier, object: AtelierObject): WantedScatter | null {
+	if (!isList(object) || object.plotted !== true) return null;
+
+	const lists = atelier.objects.filter(isList);
+	const index = lists.findIndex((l) => l.name === object.name);
+	const partner = lists[index + 1] ?? (index === 0 ? undefined : lists[0]);
+	if (partner === undefined) return null;
+
+	return {
+		kind: 'scatter',
+		xs: object.values,
+		ys: partner.values,
+		label: `${object.name} / ${partner.name}`
+	};
+}
+
+/** Deux séries sont-elles identiques ? Sinon le nuage doit être réécrit. */
+function sameSeries(a: readonly number[], b: readonly number[]): boolean {
+	return a.length === b.length && a.every((value, i) => value === b[i]);
+}
+
+/**
  * Mettre le grapheur en accord avec l'atelier.
  *
  * ⚠️ **Idempotente** : appelée deux fois sans changement, elle ne fait rien.
@@ -62,10 +100,15 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 	const mine = perGraph.get(graph) ?? new Map<string, string>();
 	perGraph.set(graph, mine);
 
-	const wanted = new Map<string, Wanted>();
+	const wanted = new Map<string, Wanted | WantedScatter>();
 	for (const object of atelier.objects) {
-		const target = wantedFor(object);
-		if (target !== null) wanted.set(object.name, target);
+		const curve = wantedFor(object);
+		if (curve !== null) {
+			wanted.set(object.name, curve);
+			continue;
+		}
+		const cloud = wantedScatterFor(atelier, object);
+		if (cloud !== null) wanted.set(object.name, cloud);
 	}
 
 	// Retirer ce qui ne doit plus être tracé.
@@ -79,6 +122,21 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 	// Poser ou mettre à jour le reste.
 	for (const [name, target] of wanted) {
 		const id = mine.get(name);
+
+		// Les nuages ont leur propre pose : deux séries de nombres, pas un latex.
+		if ('kind' in target) {
+			const current = id === undefined ? undefined : graph.getFunction(id);
+			if (current === undefined || !isScatter(current)) {
+				mine.set(name, graph.addScatter(target.xs, target.ys, target.label));
+				continue;
+			}
+			// N'écrire que ce qui diffère — l'idempotence, là aussi.
+			if (!sameSeries(current.xs, target.xs) || !sameSeries(current.ys, target.ys)) {
+				graph.updateScatter(id!, { xs: target.xs, ys: target.ys, label: target.label });
+			}
+			continue;
+		}
+
 		if (id === undefined) {
 			const fresh = graph.addFunction(target.definition);
 			if (!target.visible) graph.updateFunction(fresh, { visible: false });

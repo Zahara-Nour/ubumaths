@@ -30,6 +30,7 @@
 	} from '$lib/grapheur/analysis';
 	import IntegralArea from './IntegralArea.svelte';
 	import SequencePlot from './SequencePlot.svelte';
+	import ScatterPlot from './ScatterPlot.svelte';
 	import CurveHover from './CurveHover.svelte';
 	import type { PinnedLabelTarget } from '$lib/grapheur/pinned-labels';
 	import IntersectionPoints from './IntersectionPoints.svelte';
@@ -391,11 +392,14 @@
 		}
 
 		const descriptions = funcs
-			.map((p) =>
-				p.type === 'sequence'
-					? `suite ${p.name}${p.latex ? ` : ${p.latex}` : ''}`
-					: p.latex || 'fonction inconnue'
-			)
+			.map((p) => {
+				// ⚠️ Les trois types sont nommés : avec l'union élargie, un `else`
+				// aurait décrit un nuage comme « fonction inconnue » — le texte que
+				// lit un lecteur d'écran.
+				if (p.type === 'sequence') return `suite ${p.name}${p.latex ? ` : ${p.latex}` : ''}`;
+				if (p.type === 'scatter') return `nuage de points ${p.label}`;
+				return p.latex || 'fonction inconnue';
+			})
 			.join(', ');
 
 		return `Graphique mathematique avec ${funcs.length} trace(s): ${descriptions}. Fenetre de x=${xMin} a ${xMax}, y=${yMin} a ${yMax}.`;
@@ -526,7 +530,13 @@
 							/>
 						{/if}
 					{/if}
-				{:else}
+				{:else if plottable.type === 'sequence'}
+					<!--
+						⚠️ Le type est testé EXPLICITEMENT, et non laissé à un `{:else}` :
+						un nuage de points tomberait sinon dans cette branche et serait
+						dessiné comme une suite, dont il n'a ni le `mode`, ni l'`ast`, ni
+						le `firstIndex`.
+					-->
 					<SequencePlot
 						sequence={plottable}
 						viewport={grapheurStore.viewport}
@@ -534,6 +544,8 @@
 						bindings={grapheurStore.parameterBindings}
 						isInteracting={grapheurStore.isInteracting}
 					/>
+				{:else}
+					<ScatterPlot scatter={plottable} {transformer} />
 				{/if}
 			{/each}
 		</g>

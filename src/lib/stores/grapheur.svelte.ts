@@ -24,7 +24,9 @@ import type {
 	PlottableState,
 	SequenceState,
 	SnappedPoint,
-	Parameter
+	Parameter,
+	ScatterPlottable,
+	ScatterState
 } from '$lib/grapheur/types';
 import {
 	DEFAULT_PARAMETER_MAX,
@@ -32,6 +34,7 @@ import {
 	GRAPH_STATE_VERSION,
 	graphStateSchema,
 	isSequence,
+	isScatter,
 	nextParameterName,
 	RESERVED_PARAMETER_NAMES
 } from '$lib/grapheur/types';
@@ -154,8 +157,16 @@ class GrapheurStore {
 	/** Only visible functions */
 	visibleFunctions = $derived(this.functions.filter((f) => f.visible));
 
-	/** Functions with valid AST (parseable) */
-	validFunctions = $derived(this.functions.filter((f) => f.ast !== undefined));
+	/**
+	 * Functions with a valid AST (parseable).
+	 *
+	 * ⚠️ A scatter has no AST at all — its two series ARE the data. It is
+	 * therefore excluded rather than counted as invalid: the panel shows this
+	 * count as « n valides », and a cloud of points is not a failed parse.
+	 */
+	validFunctions = $derived(
+		this.functions.filter((f) => f.type !== 'scatter' && f.ast !== undefined)
+	);
 
 	/** Viewport metrics for convenience */
 	viewportMetrics = $derived<ViewportMetrics>({
@@ -451,6 +462,63 @@ class GrapheurStore {
 	}
 
 	/**
+	 * Pose un nuage de points à partir de deux séries.
+	 *
+	 * ⚠️ Les séries arrivent **déjà lues** : c'est l'atelier qui détient les
+	 * listes et qui a écarté ce qui n'était pas un nombre. Le grapheur ne fait
+	 * que les dessiner — un seul sens, comme pour les courbes (option B).
+	 *
+	 * @param xs - Abscisses
+	 * @param ys - Ordonnées ; les paires incomplètes ne seront pas dessinées
+	 * @param label - Ce que le panneau affiche, par exemple « L / M »
+	 * @returns L'identifiant du nuage posé
+	 */
+	addScatter(xs: readonly number[], ys: readonly number[], label = ''): string {
+		const id = crypto.randomUUID();
+		const scatter: ScatterPlottable = {
+			id,
+			type: 'scatter',
+			label,
+			xs: [...xs],
+			ys: [...ys],
+			color: getNextColor(this.usedColors),
+			visible: true,
+			lineWidth: 2,
+			lineStyle: 'solid'
+		};
+
+		this.functions = [...this.functions, scatter];
+		this.scheduleSave();
+		return id;
+	}
+
+	/**
+	 * Met un nuage à jour.
+	 *
+	 * ⚠️ Un identifiant inconnu ne casse pas : la synchronisation depuis
+	 * l'atelier peut arriver après un retrait, et faire tomber l'écran pour ça
+	 * serait disproportionné.
+	 */
+	updateScatter(
+		id: string,
+		updates: Partial<Pick<ScatterPlottable, 'xs' | 'ys' | 'label' | 'color' | 'visible'>>
+	): void {
+		const index = this.functions.findIndex((f) => f.id === id && f.type === 'scatter');
+		if (index === -1) return;
+
+		const current = this.functions[index] as ScatterPlottable;
+		const next: ScatterPlottable = {
+			...current,
+			...updates,
+			...(updates.xs && { xs: [...updates.xs] }),
+			...(updates.ys && { ys: [...updates.ys] })
+		};
+
+		this.functions = [...this.functions.slice(0, index), next, ...this.functions.slice(index + 1)];
+		this.scheduleSave();
+	}
+
+	/**
 	 * Update a sequence's properties
 	 *
 	 * Re-parses the expression whenever the expression, the mode or the name
@@ -708,6 +776,23 @@ class GrapheurStore {
 					return sequenceState;
 				}
 
+				// ⚠️ Le nuage AVANT le repli sur « fonction » : avec trois membres dans
+				// l'union, le `else` implicite ne veut plus dire « explicit ».
+				if (isScatter(p)) {
+					const scatterState: ScatterState = {
+						id: p.id,
+						type: p.type,
+						label: p.label,
+						xs: [...p.xs],
+						ys: [...p.ys],
+						color: p.color,
+						visible: p.visible,
+						lineWidth: p.lineWidth,
+						lineStyle: p.lineStyle
+					};
+					return scatterState;
+				}
+
 				const functionState: ExplicitFunctionState = {
 					id: p.id,
 					type: p.type,
@@ -762,6 +847,21 @@ class GrapheurStore {
 
 			// Re-parse everything (AST is not stored)
 			this.functions = state.functions.map((p): Plottable => {
+				// Un nuage n'a rien à reparser : ses deux séries sont la donnée.
+				if (p.type === 'scatter') {
+					const scatter: ScatterPlottable = {
+						id: p.id,
+						type: p.type,
+						label: p.label,
+						xs: p.xs,
+						ys: p.ys,
+						color: p.color,
+						visible: p.visible,
+						lineWidth: p.lineWidth,
+						lineStyle: p.lineStyle ?? 'solid'
+					};
+					return scatter;
+				}
 				if (p.type === 'sequence') {
 					const parseResult = parseSequence(
 						p.latex,

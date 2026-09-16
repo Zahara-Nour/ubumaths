@@ -14,6 +14,7 @@
 	import type { ObjectAction } from '$lib/atelier/actions';
 	import ObjectPanel from './ObjectPanel.svelte';
 	import CalculView from './CalculView.svelte';
+	import DataView from './DataView.svelte';
 	import { CalcDesk } from '$lib/atelier/desk.svelte';
 	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
 	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
@@ -89,6 +90,9 @@
 	 * objets » doit écrire dans le MÊME historique que la saisie au clavier. Sans
 	 * ça, « Dériver » ne produisait rien du tout — le bouton était actif et muet.
 	 */
+	// Capture volontaire : le pupitre garde CETTE instance d'atelier pour toute
+	// la vie du conteneur, comme le grapheur ci-dessus.
+	// svelte-ignore state_referenced_locally
 	const desk = new CalcDesk(atelier);
 
 	let lastSeenRevision = $state(-1);
@@ -137,10 +141,15 @@
 			return;
 		}
 
-		// Les actions de calcul répondent dans la vue Calcul : on y bascule, sans
-		// quoi l'élève cliquerait et ne verrait jamais la réponse arriver.
-		const outcome = desk.runFromPanel(action.id, object.name);
-		if (outcome !== 'unsupported') activeView = 'calcul';
+		// Les actions de calcul et de données répondent dans la vue Calcul : on y
+		// bascule, sans quoi l'élève cliquerait et ne verrait jamais la réponse
+		// arriver. `graph` suit, parce que « Nuage de points » écrit dedans.
+		const outcome = desk.runFromPanel(action.id, object.name, graph);
+		if (outcome === 'unsupported') return;
+
+		// Un nuage se voit dans le Graphe, pas dans l'historique : c'est là que
+		// l'élève doit regarder.
+		activeView = action.id === 'scatter' ? 'graphe' : 'calcul';
 	}
 </script>
 
@@ -184,9 +193,7 @@
 				-->
 				<GrapheurContainer store={graph} panel={false} />
 			{:else}
-				<p class="a-venir">
-					La vue « {VIEWS.find((v) => v.id === activeView)?.label} » arrive au prochain lot.
-				</p>
+				<DataView />
 			{/if}
 		</section>
 	</main>
@@ -261,11 +268,6 @@
 	.vue.pleine {
 		padding: 0;
 		display: flex;
-	}
-	.a-venir {
-		margin: 0;
-		color: var(--color-muted-foreground);
-		font-size: 0.875rem;
 	}
 
 	@media (max-width: 720px) {

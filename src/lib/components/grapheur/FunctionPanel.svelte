@@ -89,8 +89,17 @@ Features:
 		{#each grapheurStore.functions as plottable (plottable.id)}
 			{#if plottable.type === 'explicit'}
 				<FunctionInput func={plottable} />
-			{:else}
+			{:else if plottable.type === 'sequence'}
 				<SequenceInput sequence={plottable} />
+			{:else}
+				<!--
+					Un nuage vient de l'atelier : il n'a pas d'expression à éditer ici,
+					et ses listes se modifient dans la vue Données. On le nomme, pour
+					qu'il ne soit pas un tracé fantôme dans la liste.
+				-->
+				<p class="scatter-row text-sm text-muted-foreground">
+					Nuage <strong>{plottable.label}</strong>
+				</p>
 			{/if}
 		{/each}
 

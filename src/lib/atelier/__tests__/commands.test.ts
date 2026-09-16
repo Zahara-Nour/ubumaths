@@ -114,6 +114,17 @@ describe('le catalogue des commandes', () => {
 				{ commande: command.french, sortie: result.output.slice(0, 80), ok: result.success },
 				`l'exemple de « .${command.french} » n'aboutit pas`
 			).toMatchObject({ ok: true });
+
+			// ⚠️ « Réussit » ne suffit pas : `.stats 12 15 9` réussit en ne lisant
+			// QUE « 12 » et en annonçant « n=1 ». Un exemple qui donne plusieurs
+			// valeurs doit les compter toutes, sinon il enseigne une écriture
+			// fausse — et le test le laisserait passer.
+			if (command.name === 'stats') {
+				const valeurs = command.example.slice(command.example.indexOf(' ')).split(',').length;
+				expect(result.output, `« .${command.french} » n'a pas lu toutes ses valeurs`).toContain(
+					`n=${valeurs}`
+				);
+			}
 		}
 	});
 

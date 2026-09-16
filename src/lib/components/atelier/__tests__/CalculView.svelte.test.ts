@@ -153,6 +153,32 @@ describe('les actions du panneau répondent vraiment', () => {
 		expect(container.querySelector('.historique')?.textContent).toContain('3/2');
 	});
 
+	/**
+	 * ⚠️ Même garde qu'au lot 3 : libérer une action dans `actions.ts` sans la
+	 * brancher donne un bouton actif et muet. Ces trois-là viennent d'être
+	 * libérées, donc elles doivent répondre.
+	 */
+	it('« Statistiques » répond sur une liste', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '12 ; 15 ; 9' });
+		const view = open(atelier);
+
+		const carte = [...view.container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === 'L'
+		) as HTMLElement;
+		carte.querySelector('button')?.click();
+		await settle();
+		const bouton = [...carte.querySelectorAll('button')].find((b) =>
+			b.textContent?.trim().startsWith('Statistiques')
+		) as HTMLButtonElement;
+		expect(bouton, 'bouton Statistiques').toBeTruthy();
+		expect(bouton.disabled).toBe(false);
+		bouton.click();
+		await settle();
+
+		expect(view.container.querySelector('.historique')?.textContent).toMatch(/Médiane/);
+	});
+
 	it('« Image d’un nombre » prépare la saisie', async () => {
 		const { field } = await clickAction('Image');
 
