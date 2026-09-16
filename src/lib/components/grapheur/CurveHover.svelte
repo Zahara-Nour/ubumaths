@@ -17,7 +17,10 @@
 	 * @component
 	 */
 
-	import { grapheurStore } from '$lib/stores/grapheur.svelte';
+	import { useGrapheurStore } from '$lib/stores/grapheur-context';
+
+	// L'instance de l'atelier qui nous contient, ou celle par défaut.
+	const grapheurStore = useGrapheurStore();
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
 	import type { Point } from '$lib/geometry-core/viewport';
 	import type {

@@ -8,7 +8,7 @@
 	import CalculatorKeyboard from './CalculatorKeyboard.svelte';
 	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
 	import { calculatorStore } from '$lib/stores/calculator.svelte';
-	import { grapheurStore } from '$lib/stores/grapheur.svelte';
+	import { grapheurStore, type GrapheurStore } from '$lib/stores/grapheur.svelte';
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -58,6 +58,23 @@
 			.refine((s) => SAFE_MATH_CHARS.test(s), 'Invalid characters in result')
 			.optional()
 	});
+
+	let {
+		store
+	}: {
+		/**
+		 * L'instance de grapheur à piloter.
+		 *
+		 * Sans elle, c'est le singleton — le comportement actuel de `/calc`.
+		 * ⚠️ Ce composant est AU-DESSUS du fournisseur, donc `useGrapheurStore()`
+		 * n'y verrait rien : l'instance doit descendre par cette prop, sans quoi
+		 * « Tracer » écrirait dans le singleton et la courbe n'apparaîtrait
+		 * jamais, sans erreur.
+		 */
+		store?: GrapheurStore;
+	} = $props();
+
+	const graph = $derived(store ?? grapheurStore);
 
 	let activeTab = $state('calc');
 	let showKeyboard = $state(false);
@@ -145,7 +162,7 @@
 	 * Ajoute la fonction au grapheurStore et bascule vers l'onglet Graphique
 	 */
 	function handlePlot(expression: string) {
-		grapheurStore.addFunction(expression);
+		graph.addFunction(expression);
 		activeTab = 'graph';
 	}
 
@@ -373,7 +390,7 @@
 
 	<Tabs.Content value="graph" class="mt-4">
 		<div class="h-[600px] rounded-lg border border-border">
-			<GrapheurContainer />
+			<GrapheurContainer store={graph} />
 		</div>
 	</Tabs.Content>
 </Tabs.Root>

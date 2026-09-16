@@ -54,6 +54,13 @@ import {
 // =============================================================================
 
 const STORAGE_KEY = 'chiphre-grapheur-state';
+
+/**
+ * Où une instance range son état.
+ *
+ * `null` = aucune persistance : l'instance vit en mémoire et ne touche à rien.
+ */
+export type GrapheurStorageKey = string | null;
 const DEBOUNCE_MS = 500;
 
 // =============================================================================
@@ -177,8 +184,19 @@ class GrapheurStore {
 	// Initialization
 	// ===========================================================================
 
-	constructor() {
-		if (browser) {
+	/**
+	 * Clé de rangement de CETTE instance.
+	 *
+	 * ⚠️ Deux instances qui partagent une clé se marchent dessus : la seconde
+	 * charge l'état de la première, puis l'écrase à sa première modification.
+	 * Un atelier qui veut son propre grapheur passe donc sa propre clé — ou
+	 * `null` pour ne rien conserver.
+	 */
+	private readonly storageKey: GrapheurStorageKey;
+
+	constructor(storageKey: GrapheurStorageKey = STORAGE_KEY) {
+		this.storageKey = storageKey;
+		if (browser && this.storageKey !== null) {
 			this.loadFromStorage();
 
 			// Note: $effect cannot be used in constructor (outside component context)
@@ -722,7 +740,8 @@ class GrapheurStore {
 	 */
 	private loadFromStorage(): void {
 		try {
-			const stored = localStorage.getItem(STORAGE_KEY);
+			if (this.storageKey === null) return;
+			const stored = localStorage.getItem(this.storageKey);
 			if (!stored) return;
 
 			const parsed = JSON.parse(stored);
@@ -825,10 +844,14 @@ class GrapheurStore {
 	 */
 	private saveToStorage(): void {
 		if (!browser) return;
+		// Une instance sans clé ne range rien : inutile de sérialiser pour rien,
+		// et le garde doit être HORS du `try` pour valoir aussi dans le `catch`.
+		const key = this.storageKey;
+		if (key === null) return;
 
 		try {
 			const state = this.serialize();
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+			localStorage.setItem(key, JSON.stringify(state));
 		} catch (error) {
 			console.warn('Failed to save grapheur state to localStorage:', error);
 
@@ -840,7 +863,7 @@ class GrapheurStore {
 						...this.serialize(),
 						functions: this.serialize().functions.slice(0, 10)
 					};
-					localStorage.setItem(STORAGE_KEY, JSON.stringify(reducedState));
+					localStorage.setItem(key, JSON.stringify(reducedState));
 				} catch {
 					// If still failing, just clear storage
 					this.clearStorage();
@@ -854,7 +877,8 @@ class GrapheurStore {
 	 */
 	clearStorage(): void {
 		if (!browser) return;
-		localStorage.removeItem(STORAGE_KEY);
+		if (this.storageKey === null) return;
+		localStorage.removeItem(this.storageKey);
 	}
 
 	/**
