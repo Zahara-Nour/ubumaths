@@ -557,7 +557,7 @@ function formatIdentifyCoefficients(
 function formatComputeDiscriminant(
 	op: EquationOperation & { kind: 'compute-discriminant' }
 ): string {
-	const substituted = `${paren(op.b)}^2 - 4 \\cdot ${paren(op.a)} \\cdot ${paren(op.c)}`;
+	const substituted = `${paren(op.b)}^2 - 4 \\times ${paren(op.a)} \\times ${paren(op.c)}`;
 	const result = fmt(op.discriminant);
 	return `\\Delta = b^2 - 4ac = ${substituted} = ${result}`;
 }
@@ -571,7 +571,7 @@ function formatApplyQuadraticFormula(
 	op: EquationOperation & { kind: 'apply-quadratic-formula' }
 ): string {
 	if (op.case === 'double') {
-		const substituted = `\\dfrac{-${paren(op.b)}}{2 \\cdot ${paren(op.a)}}`;
+		const substituted = `\\dfrac{-${paren(op.b)}}{2 \\times ${paren(op.a)}}`;
 		return [
 			'\\begin{aligned}',
 			'  x &= \\dfrac{-b}{2a} \\\\',
@@ -579,11 +579,16 @@ function formatApplyQuadraticFormula(
 			'\\end{aligned}'
 		].join(' ');
 	}
-	const substituted = `\\dfrac{-${paren(op.b)} \\pm \\sqrt{${fmt(op.discriminant)}}}{2 \\cdot ${paren(op.a)}}`;
+	// ⚠️ **Les deux racines s'écrivent toutes les deux** (dit par David). L'étape
+	// n'affichait qu'une ligne avec un `\pm`, juste après une étape annonçant
+	// « deux solutions distinctes » : l'élève lisait deux solutions, puis une
+	// seule expression. Chaque racine porte donc son indice et son signe.
+	const denominator = `2 \\times ${paren(op.a)}`;
+	const numerator = (sign: '-' | '+') => `-${paren(op.b)} ${sign} \\sqrt{${fmt(op.discriminant)}}`;
 	return [
 		'\\begin{aligned}',
-		'  x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\',
-		`  &= ${substituted}`,
+		`  x_1 &= \\dfrac{-b - \\sqrt{\\Delta}}{2a} = \\dfrac{${numerator('-')}}{${denominator}} \\\\`,
+		`  x_2 &= \\dfrac{-b + \\sqrt{\\Delta}}{2a} = \\dfrac{${numerator('+')}}{${denominator}}`,
 		'\\end{aligned}'
 	].join(' ');
 }
@@ -644,7 +649,7 @@ function formatExtractSquareRoot(
  */
 function formatZeroProduct(op: EquationOperation & { kind: 'zero-product' }): string {
 	const factorsNullified = op.factors.map((f) => `${fmt(f)} = 0`).join(' \\;\\text{ou}\\; ');
-	const product = op.factors.map((f) => `\\left(${fmt(f)}\\right)`).join(' \\cdot ');
+	const product = op.factors.map((f) => `\\left(${fmt(f)}\\right)`).join(' \\times ');
 	return `${product} = 0 \\;\\Longleftrightarrow\\; ${factorsNullified}`;
 }
 

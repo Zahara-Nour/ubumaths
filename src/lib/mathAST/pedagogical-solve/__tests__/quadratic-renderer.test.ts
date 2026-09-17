@@ -225,13 +225,20 @@ describe('QuadraticEquationRenderer', () => {
 			expect(r.expressionLatex).toMatch(/= 1$/);
 		});
 
-		it('apply-quadratic-formula LaTeX contient la formule générale ET la substituée (two-distinct)', () => {
+		it('apply-quadratic-formula LaTeX contient la formule générale ET la substituée, par racine', () => {
+			// ⚠️ La forme a changé : les DEUX racines s'écrivent, chacune avec son
+			// signe, au lieu d'une seule ligne en `\pm` (demandé par David — un
+			// élève lit « deux solutions distinctes » à l'étape d'avant, puis
+			// n'en voyait qu'une ici). L'intention du test est inchangée :
+			// formule générale ET forme substituée, dans un bloc aligné.
 			const steps = generateQuadraticEquationSteps(eqStandardPositive(), { level: 'lycee' });
 			const a = steps.find((s) => s.operation?.kind === 'apply-quadratic-formula')!;
 			const r = renderer.render(a, { verbosity: 'summarized', schoolLevel: 'lycee' });
-			expect(r.expressionLatex).toContain('\\dfrac{-b \\pm \\sqrt{\\Delta}}{2a}');
+			expect(r.expressionLatex).toContain('\\dfrac{-b - \\sqrt{\\Delta}}{2a}');
+			expect(r.expressionLatex).toContain('\\dfrac{-b + \\sqrt{\\Delta}}{2a}');
 			// substituted with b=5, a=1, Δ=1
-			expect(r.expressionLatex).toContain('\\dfrac{-\\left(5\\right) \\pm \\sqrt{1}}');
+			expect(r.expressionLatex).toContain('\\dfrac{-\\left(5\\right) - \\sqrt{1}}');
+			expect(r.expressionLatex).toContain('\\dfrac{-\\left(5\\right) + \\sqrt{1}}');
 			expect(r.expressionLatex).toContain('\\begin{aligned}');
 		});
 
