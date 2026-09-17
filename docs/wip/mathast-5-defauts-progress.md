@@ -203,17 +203,42 @@ Conséquence, `√12 × √18 = 6√6` tombait d'un bloc : l'élève devait calc
 
 Deux chemins mènent au résultat. On prend le plus simple selon le cas :
 
-| Cas                                                 | Règle qui gagne                | Résultat                      |
-| --------------------------------------------------- | ------------------------------ | ----------------------------- |
-| les **deux** racines se simplifient                 | `extract-both-radicals` (108)  | `√12 × √18 = 2√3 × 3√2 = 6√6` |
-| **une seule** se simplifie, produit = carré parfait | `multiply-radicals` (110)      | `√2 × √8 = √16 = 4`           |
-| **une seule** se simplifie, produit quelconque      | `extract-perfect-square` (100) | `√12 × √2 = 2√3 × √2 = 2√6`   |
-| aucune ne se simplifie                              | `multiply-radicals` (110)      | `√2 × √6 = √12 = 2√3`         |
+| Cas                                            | Règle qui gagne                | Résultat                           |
+| ---------------------------------------------- | ------------------------------ | ---------------------------------- |
+| les **deux** racines se simplifient            | `extract-both-radicals` (108)  | `√12 × √18 = 2√3 × 3√2 = 6√6`      |
+| **une seule**, produit carré parfait **≤ 225** | `multiply-radicals` (110)      | `√2 × √8 = √16 = 4`                |
+| **une seule**, produit **> 225** ou non carré  | `extract-perfect-square` (100) | `√7 × √63 = √7 × 3√7 = 3 × 7 = 21` |
+| aucune ne se simplifie                         | `multiply-radicals` (110)      | `√2 × √6 = √12 = 2√3`              |
 
-⚠️ **Le cas « les deux se simplifient » gagne même si le produit est un
-carré parfait.** `√18 × √50` passait par `√900`, ce qui demande de
-reconnaître 900 = 30² ; `3√2 × 5√2` est plus doux. Arbitrage de David
-après avoir vu le rendu.
+⚠️ **Le cas « les deux se simplifient » gagne quel que soit le produit.**
+`√18 × √50` passait par `√900` ; `3√2 × 5√2` est plus doux.
+
+### Le vrai critère : garder de petits nombres
+
+Première formulation, fausse : « reconnaître 900 = 30² est difficile ».
+Corrigée par David — **le problème est en amont**, il faut d'abord calculer
+18 × 50. C'est le travail sur grands nombres qu'on évite, pas la
+reconnaissance du carré.
+
+D'où le seuil `CARRE_PARFAIT_CONNU_MAX = 225` : le programme français exige
+les carrés parfaits jusqu'à 15². En deçà, `√(produit)` ne demande aucun
+calcul ; au-delà, il faudrait multiplier les deux radicandes **puis**
+reconnaître un grand carré — deux efforts.
+
+```
+produit ≤ 225                        produit > 225
+  √2 × √8   = √16  = 4                 √7 × √63  = √7 × 3√7   = 3 × 7  = 21
+  √32 × √2  = √64  = 8                 √11 × √99 = √11 × 3√11 = 3 × 11 = 33
+  √2 × √50  = √100 = 10                √18 × √50 = 3√2 × 5√2  = 15 × 2 = 30
+  √98 × √2  = √196 = 14
+  √3 × √75  = √225 = 15   ← la limite
+```
+
+⚠️ **Un croisement, arbitré et non mécanique.** Quand les deux racines se
+simplifient ET que le produit est un carré connu, les deux critères
+divergent : `√8 × √18` (produit 144) extrait (`2√2 × 3√2 = 6 × 2 = 12`)
+plutôt que de passer par `√144`. On manipule 2, 3, 6, 2 au lieu de calculer
+8 × 18 — conforme au principe, mais c'est un choix.
 
 Le garde vit dans la **condition** de `multiply-radicals`, pas dans sa
 priorité : étant la plus prioritaire (110), elle doit se retirer
