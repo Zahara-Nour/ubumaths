@@ -1102,7 +1102,10 @@ function formatRationalSignTable(op: EquationOperation & { kind: 'rational-sign-
 	];
 
 	const numColumns = lines[0].length;
-	const colSpec = '|c|' + 'c'.repeat(numColumns - 2) + '|';
+	// ⚠️ Une colonne par case : la première (`|c|`) porte l'étiquette de ligne,
+	// les autres les valeurs. La forme d'origine en déclarait UNE de moins
+	// (`- 2`), ce qui laissait la dernière colonne hors spécification.
+	const colSpec = '|c|' + 'c'.repeat(numColumns - 1) + '|';
 	const rows = lines.map((r) => r.join(' & ')).join(' \\\\\n\\hline\n');
 	return `\\begin{array}{${colSpec}}\n\\hline\n${rows} \\\\\n\\hline\n\\end{array}`;
 }
