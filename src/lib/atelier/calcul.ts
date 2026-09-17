@@ -67,7 +67,17 @@ export type CalcResult =
 
 /** Ce qu'une action attachée à un objet a produit. */
 export type ActionOutcome =
-	| { readonly ok: true; readonly output: string; readonly latex?: string }
+	| {
+			readonly ok: true;
+			readonly output: string;
+			readonly latex?: string;
+			/**
+			 * Les étapes pédagogiques, quand l'action sait les produire.
+			 *
+			 * Absentes = repli : la ligne garde la sortie du moteur.
+			 */
+			readonly steps?: readonly RenderedStep[];
+	  }
 	| { readonly ok: false; readonly message: string };
 
 // =============================================================================
@@ -430,8 +440,25 @@ export function runAction(
 		return { ok: false, message: `L'action « ${actionId} » n'est pas encore disponible.` };
 	}
 
-	const result = engine.execute(build(substituted.expression));
+	const command = build(substituted.expression);
+	const result = engine.execute(command);
 	const rendered = renderResult(result, { fromCommand: true });
+
+	// ⚠️ **Le bouton et la commande doivent dire la MÊME chose.** Depuis que
+	// `.résoudre` passe par `pedagogical-solve`, l'élève qui TAPE reçoit le
+	// raisonnement en français ; celui qui CLIQUE recevait encore le bloc de
+	// terminal. Le même geste, deux résultats — la forme exacte du défaut que
+	// `substituteNames` documente plus haut.
+	//
+	// On ne conditionne pas au succès du moteur : sur une inéquation il échoue
+	// et ne rend rien, alors que les étapes, elles, existent.
+	if (actionId === 'solve') {
+		const solved = solveSteps(`${substituted.expression}=0`);
+		if (solved !== null) {
+			return { ok: true, output: rendered.text, latex: solved.answer, steps: solved.steps };
+		}
+	}
+
 	if (!result.success) {
 		return { ok: false, message: rendered.text || 'Le calcul n’a pas abouti.' };
 	}

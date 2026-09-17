@@ -350,6 +350,7 @@ export class CalcDesk {
 			label: `${label} ${name}`,
 			text: outcome.ok ? outcome.output : outcome.message,
 			...(outcome.ok && outcome.latex !== undefined ? { latex: outcome.latex } : {}),
+			...(outcome.ok && outcome.steps !== undefined ? { steps: outcome.steps } : {}),
 			failed: !outcome.ok
 		});
 		this.notice = null;
