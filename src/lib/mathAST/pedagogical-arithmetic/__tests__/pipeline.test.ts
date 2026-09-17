@@ -396,6 +396,37 @@ describe('produit de racines — un pas à la fois', () => {
 		}
 	});
 
+	// Le programme français exige les carrés parfaits jusqu'à 15² = 225 : en
+	// deçà, `√(produit)` ne demande aucun calcul. Au-delà, il faudrait
+	// multiplier deux nombres puis reconnaître un grand carré — on extrait.
+	it('√3 × √75 passe par √225 (à la limite du connu)', () => {
+		const etapes = sequence(racines('3', '75'));
+		expect(etapes).toHaveLength(2);
+		expect(etapes[0]).toContain('\\sqrt{225}');
+		expect(etapes[1]).toMatch(/= 15$/);
+	});
+
+	it('√98 × √2 passe par √196', () => {
+		const etapes = sequence(racines('98', '2'));
+		expect(etapes[0]).toContain('\\sqrt{196}');
+		expect(etapes[etapes.length - 1]).toMatch(/= 14$/);
+	});
+
+	it('√7 × √63 extrait d abord (441 dépasse 225)', () => {
+		const etapes = sequence(racines('7', '63'));
+		expect(etapes.join(' | ')).not.toContain('\\sqrt{441}');
+		expect(etapes).toHaveLength(3);
+		expect(etapes[0]).toContain('\\sqrt{7} \\times 3 \\sqrt{7}');
+		expect(etapes[1]).toContain('3 \\times 7');
+		expect(etapes[2]).toMatch(/= 21$/);
+	});
+
+	it('√11 × √99 extrait d abord (1089 dépasse 225)', () => {
+		const etapes = sequence(racines('11', '99'));
+		expect(etapes.join(' | ')).not.toContain('\\sqrt{1089}');
+		expect(etapes[etapes.length - 1]).toMatch(/= 33$/);
+	});
+
 	// Chemin A : rien à extraire au départ, la règle double ne mord pas.
 	it('√2 × √8 n utilise pas l extraction double', () => {
 		const etapes = generatePedagogicalArithmeticSteps(racines('2', '8'), {

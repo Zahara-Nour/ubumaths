@@ -92,6 +92,17 @@ function isPerfectSquare(n: bigint): boolean {
 	return simplifyRadical(n, 2n).radicand === 1n;
 }
 
+/**
+ * Plus grand carré parfait qu'un élève est censé reconnaître : 15² = 225.
+ * Le programme français exige les carrés parfaits jusque-là.
+ *
+ * Au-delà, passer par `√(produit)` demande DEUX efforts hors de portée —
+ * multiplier les deux radicandes, puis reconnaître un grand carré. Extraire
+ * d'abord garde tous les nombres petits : `√7 × √63` devient `3 × 7`, pas
+ * `√441`.
+ */
+const CARRE_PARFAIT_CONNU_MAX = 225n;
+
 /** Build `c · √r` (cross-style multiplication). When `c === 1n`, returns `√r`. */
 function coefficientTimesSqrt(c: bigint, r: bigint): MathNode {
 	if (c === 1n) return sqrt(number(r.toString()));
@@ -184,10 +195,13 @@ function applyMultiplyRadicals(bindings: MatchBindings): MathNode | null {
 	// √900, qui demande de reconnaître 900 = 30².
 	if (gauche && droite) return null;
 
-	// Une seule se simplifie, et le produit n'est pas un carré parfait →
-	// `extract-perfect-square` la traite d'abord, pour garder de petits
-	// nombres (√12 × √2 plutôt que √24).
-	if ((gauche || droite) && !isPerfectSquare(product)) return null;
+	// Une seule se simplifie : on ne multiplie d'abord que si le produit
+	// tombe sur un carré parfait CONNU. Sinon `extract-perfect-square` la
+	// traite d'abord, pour garder de petits nombres — √12 × √2 plutôt que
+	// √24, et √7 × 3√7 plutôt que √441.
+	if ((gauche || droite) && !(isPerfectSquare(product) && product <= CARRE_PARFAIT_CONNU_MAX)) {
+		return null;
+	}
 
 	const coefficient = lf.c * rf.c;
 	if (product === 1n) return number(coefficient.toString());
