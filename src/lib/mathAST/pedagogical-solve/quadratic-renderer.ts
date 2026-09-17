@@ -75,7 +75,17 @@ function variableOf(step: EquationStep): string {
 
 /** Format a coefficient with surrounding parentheses for substitution display. */
 function paren(node: MathNode): string {
-	return `\\left(${fmt(node)}\\right)`;
+	const latex = fmt(node);
+
+	// ⚠️ **Un entier positif se pose nu ; tout le reste garde ses parenthèses.**
+	// Elles ne sont pas décoratives : sans elles, `(-3)^2` devient `-3^2`, soit
+	// −9 au lieu de 9 ; `4 \times (-6)` devient `4 \times -6` ; et `-(-3)`
+	// devient `--3`. Une fraction en garde aussi — `\dfrac{1}{2}^2` élèverait
+	// le seul dénominateur.
+	//
+	// La règle s'écrit donc en positif : on ne retire les parenthèses QUE pour
+	// ce dont on est sûr, un nombre sans signe ni structure.
+	return /^\d+(?:[.,]\d+)?$/.test(latex) ? latex : `\\left(${latex}\\right)`;
 }
 
 /** Pick the right discriminant-comparison symbol for the supérieur narrative. */

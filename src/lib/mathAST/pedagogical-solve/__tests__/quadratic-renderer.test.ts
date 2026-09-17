@@ -221,7 +221,9 @@ describe('QuadraticEquationRenderer', () => {
 			const cd = steps.find((s) => s.operation?.kind === 'compute-discriminant')!;
 			const r = renderer.render(cd, { verbosity: 'summarized', schoolLevel: 'lycee' });
 			expect(r.expressionLatex).toContain('\\Delta = b^2 - 4ac');
-			expect(r.expressionLatex).toContain('\\left(5\\right)^2');
+			// b = 5 est positif : il se pose nu (les parenthèses restent pour un
+			// négatif, où `-3^2` vaudrait −9).
+			expect(r.expressionLatex).toContain('5^2');
 			expect(r.expressionLatex).toMatch(/= 1$/);
 		});
 
@@ -237,8 +239,8 @@ describe('QuadraticEquationRenderer', () => {
 			expect(r.expressionLatex).toContain('\\dfrac{-b - \\sqrt{\\Delta}}{2a}');
 			expect(r.expressionLatex).toContain('\\dfrac{-b + \\sqrt{\\Delta}}{2a}');
 			// substituted with b=5, a=1, Δ=1
-			expect(r.expressionLatex).toContain('\\dfrac{-\\left(5\\right) - \\sqrt{1}}');
-			expect(r.expressionLatex).toContain('\\dfrac{-\\left(5\\right) + \\sqrt{1}}');
+			expect(r.expressionLatex).toContain('\\dfrac{-5 - \\sqrt{1}}');
+			expect(r.expressionLatex).toContain('\\dfrac{-5 + \\sqrt{1}}');
 			expect(r.expressionLatex).toContain('\\begin{aligned}');
 		});
 
