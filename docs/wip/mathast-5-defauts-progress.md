@@ -179,3 +179,124 @@ après les cinq merges :
 pas exactement 0,001 en flottant. C'est le comportement normal du module
 (`km/h -> m/s` rend déjà 0,2777777777777778) ; les tests utilisent
 `toBeCloseTo(..., 12)`. À ne pas prendre pour un défaut résiduel.
+
+---
+
+# Suite — détail des produits de racines
+
+Le chantier des 5 défauts a laissé les radicaux dans un état que David a
+jugé trop rapide : `√2 × √8 = 4` en une seule étape. Deux PR de suite ont
+détaillé le chemin.
+
+## Le problème
+
+`multiply-radicals` multipliait **et** extrayait le carré parfait dans la
+même étape — c'était écrit noir sur blanc dans le code :
+
+> `√a × √b → c√r` … Coefficient extraction happens here so that
+> `√2 × √8 → √16 → 4` **directly without a separate extract step**.
+
+Conséquence, `√12 × √18 = 6√6` tombait d'un bloc : l'élève devait calculer
+216, puis le factoriser, sans qu'aucune ligne ne le montre.
+
+## Les règles de choix (décidées par David)
+
+Deux chemins mènent au résultat. On prend le plus simple selon le cas :
+
+| Cas                                                 | Règle qui gagne                | Résultat                      |
+| --------------------------------------------------- | ------------------------------ | ----------------------------- |
+| les **deux** racines se simplifient                 | `extract-both-radicals` (108)  | `√12 × √18 = 2√3 × 3√2 = 6√6` |
+| **une seule** se simplifie, produit = carré parfait | `multiply-radicals` (110)      | `√2 × √8 = √16 = 4`           |
+| **une seule** se simplifie, produit quelconque      | `extract-perfect-square` (100) | `√12 × √2 = 2√3 × √2 = 2√6`   |
+| aucune ne se simplifie                              | `multiply-radicals` (110)      | `√2 × √6 = √12 = 2√3`         |
+
+⚠️ **Le cas « les deux se simplifient » gagne même si le produit est un
+carré parfait.** `√18 × √50` passait par `√900`, ce qui demande de
+reconnaître 900 = 30² ; `3√2 × 5√2` est plus doux. Arbitrage de David
+après avoir vu le rendu.
+
+Le garde vit dans la **condition** de `multiply-radicals`, pas dans sa
+priorité : étant la plus prioritaire (110), elle doit se retirer
+d'elle-même pour laisser l'extraction passer devant.
+
+## Deux formes que personne n'écrit
+
+Basculer la priorité seule ne suffisait pas. Sur `3√2 × 5√2`, la règle
+écrivait `15√4`, puis l'extraction donnait `15 2` — quatre étapes dont
+deux formes illisibles. Quand le produit des radicandes tombe juste **et**
+qu'il y a des coefficients, la règle écrit donc le produit d'entiers :
+
+```
+√18 × √50 = 3√2 × 5√2
+          = 15 × 2
+          = 30
+```
+
+Sans coefficient, elle garde la racine (`√2 × √8 = √16`), qui est tout
+l'intérêt de l'étape. Le départage se fait sur `coefficient !== 1`.
+
+## `highlightsOf` — un crochet déclaratif sur les règles
+
+`extract-both-radicals` réécrit **deux** sous-arbres dans la même étape,
+donc son `before` est le produit entier. Or le renderer surligne
+`step.before` par défaut (`renderer.ts:107`,
+`step.highlightSubTrees ?? [step.before]`) : toute la ligne serait passée
+en bleu au lieu de désigner les deux racines.
+
+Le mécanisme `highlightSubTrees` existait déjà côté rendu et côté
+pipeline, mais n'était accessible **qu'au code de la passe
+`group-multiplications-in-addition`**, pas aux règles du moteur. Il est
+désormais déclaratif :
+
+```ts
+highlightsOf: (before) => [√12, √18]
+```
+
+Le pipeline appelle ce crochet en construisant l'étape. Toute règle future
+qui réécrit plusieurs sous-arbres en profitera sans toucher au pipeline.
+
+Rendu obtenu :
+
+```
+[0] On extrait le facteur carré parfait sous chaque racine
+    🔵√12 × 🔵√18  =  2√3 × 3√2
+[1] On multiplie les racines (la racine du produit)
+    🔵2√3 × 3√2    =  6√6
+```
+
+Le contraste se voit sur `√12 × √2`, où seule `√12` passe en bleu : une
+racine, une règle simple, surlignage par défaut.
+
+## Une étape sans explication supprimée
+
+La règle lit aussi les racines à coefficient (`c√a × d√b`), ce qui lui
+permet de conclure le chemin « extraire d'abord ». Sans ça,
+`2√3 × 3√2 = 6√6` tombait dans `evaluate-final`, le repli du pipeline
+libellé **« On calcule »**. Un test interdit désormais qu'une étape y
+retombe.
+
+## Le piège de test, encore
+
+Le test « `√12 × √18` ne passe pas par `√216` » **passait déjà** sur le
+comportement fautif : une étape unique `√12 × √18 = 6√6` ne contient pas
+non plus « √216 ». Il a fallu y ajouter la borne sur le nombre d'étapes et
+la présence de `2√3 × 3√2` pour qu'il morde. Même famille que les cinq
+formes relevées plus haut.
+
+## Infrastructure
+
+Les étapes de radicaux ne sont pas un cas à part. Chaîne vérifiée :
+
+```
+extract-perfect-square / extract-both-radicals / multiply-radicals
+      ↓  (PedagogicalArithmeticRule)
+generatePedagogicalArithmeticSteps   → PedagogicalArithmeticStep[]  (extends BaseStep)
+      ↓
+PedagogicalArithmeticRenderer.renderAll()   → RenderedStep[]
+      ↓
+correction-generator.ts:266
+      ↓
+GeneratedStepsCorrection.svelte
+```
+
+`BaseStep` (`common/step-recorder-base.ts:26`) est partagé par 12 modules.
