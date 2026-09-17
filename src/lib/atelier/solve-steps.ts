@@ -59,26 +59,6 @@ const CONCLUSIONS: ReadonlySet<string> = new Set([
 ]);
 
 /**
- * Les étapes dont le LaTeX ne s'affiche NULLE PART dans l'application.
- *
- * ⚠️ Les renderers composent le tableau de signes en `\begin{array}{|c|ccc|}`
- * avec des `\hline`. MathLive ne connaît pas cet environnement — mesuré, il
- * rend une boîte d'erreur — et aucun composant du dépôt ne sait l'afficher
- * autrement. Le défaut dépasse l'atelier : les corrections de questions
- * emploient les mêmes étapes en production.
- *
- * On garde l'étape et on retire son LaTeX : son titre (« On dresse le tableau
- * de signes ») et son explication (« le polynôme est du signe de a à
- * l'extérieur des racines… ») se suffisent. Se replier priverait l'élève de
- * TOUT — le moteur ne rend rien sur une inéquation — et afficher la boîte
- * cassée serait pire encore.
- */
-const UNDISPLAYABLE_LATEX: ReadonlySet<string> = new Set([
-	'quadratic-sign-table',
-	'rational-sign-table'
-]);
-
-/**
  * Ce qu'une résolution donne à afficher : la réponse pour la ligne, les étapes
  * pour le dépliage.
  *
@@ -119,19 +99,6 @@ function answerFor(step: EquationStep, rendered: RenderedStep): string | null {
 
 	// Pas de conclusion : la dernière étape doit au moins avoir isolé l'inconnue.
 	return isSolvedForm(step.after) ? toLatex(step.after) : null;
-}
-
-/**
- * L'étape, privée de son rendu quand celui-ci ne s'affiche pas.
- *
- * `expressionLatex` étant facultatif dans `RenderedStep`, et
- * `GeneratedStepsCorrection` ne l'affichant que s'il est présent, le retirer
- * suffit : l'étape garde son titre et son explication.
- */
-function withoutUndisplayableLatex(step: RenderedStep): RenderedStep {
-	if (!UNDISPLAYABLE_LATEX.has(step.rule)) return step;
-	const { expressionLatex: _ignored, ...rest } = step;
-	return rest;
 }
 
 /**
@@ -203,7 +170,7 @@ export function solveSteps(argument: string): SolvedSteps | null {
 		const answer = answerFor(steps[steps.length - 1], rendered[rendered.length - 1]);
 		if (answer === null) return null;
 
-		return { steps: rendered.map(withoutUndisplayableLatex), answer };
+		return { steps: rendered, answer };
 	} catch {
 		// Degré ≥ 3, non-polynomial, coefficients paramétriques, inconnue
 		// introuvable (`b*x+5=14` → « cannot detect a single variable », une

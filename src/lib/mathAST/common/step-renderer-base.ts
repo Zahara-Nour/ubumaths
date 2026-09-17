@@ -18,6 +18,7 @@
 
 import type { Verbosity } from './verbosity';
 import type { BaseStep } from './step-recorder-base';
+import type { SignTableGrid } from '../pedagogical-solve/sign-table-grid';
 
 // =============================================================================
 // School Level
@@ -112,6 +113,18 @@ export interface RenderedStep {
 
 	/** Sub-steps for collapsible / nested display */
 	readonly subSteps?: readonly RenderedStep[];
+
+	/**
+	 * Le tableau de signes en DONNÉES, quand l'étape en est un.
+	 *
+	 * ⚠️ `expressionLatex` porte pour cette étape un `\begin{array}` avec des
+	 * `\hline` : **MathLive ne connaît pas cet environnement** — mesuré, il
+	 * rend une boîte d'erreur — et aucun composant du dépôt ne l'affichait.
+	 * L'affichage part donc de cette grille, que `VariationTable.svelte` sait
+	 * dessiner. Le LaTeX reste là pour les exports (Typst, PDF) qui, eux,
+	 * composent les tableaux.
+	 */
+	readonly signTable?: SignTableGrid;
 }
 
 // =============================================================================

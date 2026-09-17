@@ -58,18 +58,14 @@ describe('inéquations du second degré et rationnelles', () => {
 
 describe('le tableau de signes', () => {
 	/**
-	 * ⚠️ **Le tableau de signes ne s'affiche NULLE PART dans l'application.**
-	 * Les renderers le produisent en `\begin{array}{|c|ccc|}` avec des
-	 * `\hline` — MathLive ne compose pas cet environnement, et aucun composant
-	 * du dépôt ne sait le faire autrement. Mesuré : `quadratic-sign-table` et
-	 * `rational-sign-table` rendent tous deux une boîte d'erreur.
+	 * ⚠️ **Le tableau ne s'affichait NULLE PART.** Les renderers le composent en
+	 * `\begin{array}{|c|ccc|}` avec des `\hline` — MathLive ne connaît pas cet
+	 * environnement et rendait une boîte d'erreur. L'atelier retirait donc son
+	 * LaTeX, faute de mieux.
 	 *
-	 * Trois issues étaient possibles : se replier (l'élève n'a plus RIEN, le
-	 * moteur ne rendant rien non plus sur une inéquation) ; afficher la boîte
-	 * cassée ; ou garder l'étape sans son LaTeX. C'est la troisième, parce que
-	 * le titre et l'explication se suffisent — « On dresse le tableau de
-	 * signes » + « le polynôme est du signe de a à l'extérieur des racines… ».
-	 * Le raisonnement reste continu, et la réponse arrive.
+	 * Le lot suivant a branché `VariationTable.svelte`, qui dessine le tableau à
+	 * partir de la grille que `pedagogical-solve` calcule. L'étape porte
+	 * désormais cette grille, et garde son LaTeX pour les exports.
 	 */
 	it('une inéquation du second degré à deux racines est traitée', () => {
 		const solved = solveSteps('x^2-3x+2>0');
@@ -78,15 +74,16 @@ describe('le tableau de signes', () => {
 		expect(solved!.answer).toBe('S = ]-\\infty ; 1[ \\cup ]2 ; +\\infty[');
 	});
 
-	it('l’étape du tableau garde son titre et son explication, sans son LaTeX', () => {
+	it('l’étape du tableau porte sa grille', () => {
 		const solved = solveSteps('x^2-3x+2>0')!;
 		const table = solved.steps.find((s) => s.rule === 'quadratic-sign-table');
 
 		expect(table).toBeDefined();
 		expect(table!.title).toContain('tableau de signes');
-		expect(table!.explanation).toBeDefined();
-		// ⚠️ C'est CE champ qui rendait une boîte d'erreur à l'écran.
-		expect(table!.expressionLatex).toBeUndefined();
+		// ⚠️ C'est CE champ qui rend le tableau affichable — sans lui, le
+		// composant retombe sur le LaTeX, et la boîte d'erreur revient.
+		expect(table!.signTable).toBeDefined();
+		expect(table!.signTable!.points).toEqual(['-\\infty', '1', '2', '+\\infty']);
 	});
 
 	it('idem pour une inéquation rationnelle', () => {
@@ -94,16 +91,12 @@ describe('le tableau de signes', () => {
 		const table = solved.steps.find((s) => s.rule === 'rational-sign-table');
 
 		expect(table).toBeDefined();
-		expect(table!.title).toContain('tableau de signes');
-		expect(table!.expressionLatex).toBeUndefined();
-	});
-
-	it('les autres étapes gardent le leur', () => {
-		const solved = solveSteps('x^2-3x+2>0')!;
-		const withLatex = solved.steps.filter((s) => s.expressionLatex !== undefined);
-
-		// Seule l'étape du tableau est privée de son rendu.
-		expect(withLatex.length).toBe(solved.steps.length - 1);
+		expect(table!.signTable).toBeDefined();
+		expect(table!.signTable!.rows.map((r) => r.label)).toEqual([
+			'P(x)',
+			'Q(x)',
+			'\\dfrac{P(x)}{Q(x)}'
+		]);
 	});
 });
 
