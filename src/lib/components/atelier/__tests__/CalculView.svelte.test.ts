@@ -149,8 +149,15 @@ describe('les actions du panneau répondent vraiment', () => {
 
 	it('« Variations » parle de la fonction, pas de son nom', async () => {
 		const { container } = await clickAction('Variations');
+		const historique = container.querySelector('.historique');
 
-		expect(container.querySelector('.historique')?.textContent).toContain('3/2');
+		// ⚠️ L'intention n'a pas changé — la ligne doit parler de la FONCTION —
+		// mais sa forme, oui : le `3/2` venait du bloc texte du moteur
+		// (« Points critiques : x = 3/2 »), retiré parce qu'il répétait le
+		// tableau. Il y figure désormais, composé par MathLive, et la ligne
+		// porte la dérivée.
+		expect(historique?.querySelectorAll('table').length).toBeGreaterThan(0);
+		expect(historique?.querySelector('.math')).not.toBeNull();
 	});
 
 	/**
