@@ -461,6 +461,10 @@ export function generatePedagogicalArithmeticSteps(
 		if (!found) break;
 		const recordBindings = bindingsToRecord(found.bindings);
 		const nextGlobal = cleanupTrivialParens(found.replacedTree);
+		// Une règle qui réécrit plusieurs sous-arbres d'un coup désigne
+		// elle-même ce qu'il faut surligner ; sinon le renderer retombe sur
+		// `before`, qui serait ici l'expression entière.
+		const highlights = found.rule.highlightsOf?.(found.subBefore);
 		collected.push({
 			id: stepId++,
 			rule: found.rule.name,
@@ -470,6 +474,7 @@ export function generatePedagogicalArithmeticSteps(
 			bindings: recordBindings,
 			globalBefore: current,
 			globalAfter: nextGlobal,
+			...(highlights && highlights.length > 0 ? { highlightSubTrees: highlights } : {}),
 			verbosityLevel: 'summarized'
 		});
 		current = nextGlobal;

@@ -84,6 +84,19 @@ export interface PedagogicalArithmeticRule {
 	readonly explanations?: Partial<
 		Record<SchoolLevel, (bindings: Record<string, MathNode>) => string | undefined>
 	>;
+
+	/**
+	 * Optionnel — les sous-arbres de `before` que le rendu doit surligner.
+	 *
+	 * Le renderer surligne `step.before` par défaut, ce qui convient aux
+	 * règles qui réécrivent UN nœud. Une règle qui en réécrit plusieurs d'un
+	 * coup a forcément pour `before` l'expression entière : sans ce crochet,
+	 * toute la ligne passerait en bleu au lieu de désigner les morceaux
+	 * travaillés.
+	 *
+	 * Rendre un tableau vide revient à laisser le défaut s'appliquer.
+	 */
+	readonly highlightsOf?: (before: MathNode) => readonly MathNode[];
 }
 
 // =============================================================================

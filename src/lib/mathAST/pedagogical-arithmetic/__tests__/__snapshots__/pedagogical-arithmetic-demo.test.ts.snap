@@ -1287,7 +1287,7 @@ exports[`snapshot — radicals > '√2 × √3 → √6' [both] 1`] = `
     │   & \\textcolor{blue}{\\sqrt{2} \\times \\sqrt{3}} \\\\
     │   & = \\sqrt{6}
     │ \\end{aligned}
-    │ (Pour deux nombres positifs a et b, √a × √b = √(a × b). On extrait ensuite l'éventuel carré parfait.)
+    │ (Pour deux nombres positifs a et b, √a × √b = √(a × b). Les coefficients devant les racines se multiplient entre eux.)
 "
 `;
 
@@ -1299,36 +1299,49 @@ exports[`snapshot — radicals > '√2 × √3 → √6' 1`] = `
 [0] On multiplie les racines (la racine du produit)
     │ @blue{sqrt(2)*sqrt(3)}
     │ = sqrt(6)
-    │ (Pour deux nombres positifs a et b, √a × √b = √(a × b). On extrait ensuite l'éventuel carré parfait.)
+    │ (Pour deux nombres positifs a et b, √a × √b = √(a × b). Les coefficients devant les racines se multiplient entre eux.)
 "
 `;
 
-exports[`snapshot — radicals > '√2 × √8 → 4 (collapse complet)' [both] 1`] = `
+exports[`snapshot — radicals > '√2 × √8 → √16 → 4 (produit = carré pa…' [both] 1`] = `
 "
-###### √2 × √8 → 4 (collapse complet) ######
+###### √2 × √8 → √16 → 4 (produit = carré parfait) ######
 
 ========== COLLEGE (detailed) ==========
 [0] On multiplie les racines (la racine du produit)
     │ @blue{sqrt(2)*sqrt(8)}
-    │ = 4
+    │ = sqrt(16)
     ├ (latex)
     │ \\begin{aligned}
     │   & \\textcolor{blue}{\\sqrt{2} \\times \\sqrt{8}} \\\\
+    │   & = \\sqrt{16}
+    │ \\end{aligned}
+    │ (Pour deux nombres positifs a et b, √a × √b = √(a × b). Les coefficients devant les racines se multiplient entre eux.)
+[1] On extrait le facteur carré parfait sous la racine
+    │ @blue{sqrt(16)}
+    │ = 4
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\sqrt{16}} \\\\
     │   & = 4
     │ \\end{aligned}
-    │ (Pour deux nombres positifs a et b, √a × √b = √(a × b). On extrait ensuite l'éventuel carré parfait.)
+    │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
 "
 `;
 
-exports[`snapshot — radicals > '√2 × √8 → 4 (collapse complet)' 1`] = `
+exports[`snapshot — radicals > '√2 × √8 → √16 → 4 (produit = carré pa…' 1`] = `
 "
-###### √2 × √8 → 4 (collapse complet) ######
+###### √2 × √8 → √16 → 4 (produit = carré parfait) ######
 
 ========== COLLEGE (detailed) ==========
 [0] On multiplie les racines (la racine du produit)
     │ @blue{sqrt(2)*sqrt(8)}
+    │ = sqrt(16)
+    │ (Pour deux nombres positifs a et b, √a × √b = √(a × b). Les coefficients devant les racines se multiplient entre eux.)
+[1] On extrait le facteur carré parfait sous la racine
+    │ @blue{sqrt(16)}
     │ = 4
-    │ (Pour deux nombres positifs a et b, √a × √b = √(a × b). On extrait ensuite l'éventuel carré parfait.)
+    │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
 "
 `;
 
@@ -1358,6 +1371,48 @@ exports[`snapshot — radicals > '√8 → 2√2' 1`] = `
     │ @blue{sqrt(8)}
     │ = 2sqrt(2)
     │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
+"
+`;
+
+exports[`snapshot — radicals > '√12 × √18 → 2√3 × 3√2 → 6√6 (extracti…' [both] 1`] = `
+"
+###### √12 × √18 → 2√3 × 3√2 → 6√6 (extraction d abord) ######
+
+========== COLLEGE (detailed) ==========
+[0] On extrait le facteur carré parfait sous chaque racine
+    │ @blue{sqrt(12)}*@blue{sqrt(18)}
+    │ = 2sqrt(3)*3sqrt(2)
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\sqrt{12}} \\times \\textcolor{blue}{\\sqrt{18}} \\\\
+    │   & = 2 \\sqrt{3} \\times 3 \\sqrt{2}
+    │ \\end{aligned}
+    │ (On décompose chaque nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
+[1] On multiplie les racines (la racine du produit)
+    │ @blue{2sqrt(3)*3sqrt(2)}
+    │ = 6sqrt(6)
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{2 \\sqrt{3} \\times 3 \\sqrt{2}} \\\\
+    │   & = 6 \\sqrt{6}
+    │ \\end{aligned}
+    │ (Pour deux nombres positifs a et b, √a × √b = √(a × b). Les coefficients devant les racines se multiplient entre eux.)
+"
+`;
+
+exports[`snapshot — radicals > '√12 × √18 → 2√3 × 3√2 → 6√6 (extracti…' 1`] = `
+"
+###### √12 × √18 → 2√3 × 3√2 → 6√6 (extraction d abord) ######
+
+========== COLLEGE (detailed) ==========
+[0] On extrait le facteur carré parfait sous chaque racine
+    │ @blue{sqrt(12)}*@blue{sqrt(18)}
+    │ = 2sqrt(3)*3sqrt(2)
+    │ (On décompose chaque nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
+[1] On multiplie les racines (la racine du produit)
+    │ @blue{2sqrt(3)*3sqrt(2)}
+    │ = 6sqrt(6)
+    │ (Pour deux nombres positifs a et b, √a × √b = √(a × b). Les coefficients devant les racines se multiplient entre eux.)
 "
 `;
 
