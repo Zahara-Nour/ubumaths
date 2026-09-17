@@ -7,13 +7,13 @@ Une branche + une PR par défaut, dans l'ordre. Ce fichier note ce qui a été
 
 ## État
 
-| #   | Module                   | PR                                                       | État       |
-| --- | ------------------------ | -------------------------------------------------------- | ---------- |
-| 1   | `taylor`                 | [#352](https://github.com/Zahara-Nour/ubumaths/pull/352) | ✅ mergée  |
-| 2   | `pedagogical-arithmetic` | [#354](https://github.com/Zahara-Nour/ubumaths/pull/354) | ✅ mergée  |
-| 3   | `variations`             | [#355](https://github.com/Zahara-Nour/ubumaths/pull/355) | ✅ mergée  |
-| 4   | `units`                  | [#356](https://github.com/Zahara-Nour/ubumaths/pull/356) | PR ouverte |
-| 5   | `numtype`                | —                                                        | commité    |
+| #   | Module                   | PR                                                       | État      |
+| --- | ------------------------ | -------------------------------------------------------- | --------- |
+| 1   | `taylor`                 | [#352](https://github.com/Zahara-Nour/ubumaths/pull/352) | ✅ mergée |
+| 2   | `pedagogical-arithmetic` | [#354](https://github.com/Zahara-Nour/ubumaths/pull/354) | ✅ mergée |
+| 3   | `variations`             | [#355](https://github.com/Zahara-Nour/ubumaths/pull/355) | ✅ mergée |
+| 4   | `units`                  | [#356](https://github.com/Zahara-Nour/ubumaths/pull/356) | ✅ mergée |
+| 5   | `numtype`                | [#358](https://github.com/Zahara-Nour/ubumaths/pull/358) | ✅ mergée |
 
 Script de reproduction rejoué avant de commencer : les cinq défauts se
 reproduisaient **à l'identique** du doc de départ, ligne pour ligne.
@@ -161,3 +161,21 @@ Les quatre branches sont regroupées en un `isSubtype(..., 'rational')`.
 > Leçon #343 confirmée et précisée : ce n'est pas l'union qui est dangereuse,
 > ce sont les **égalités strictes** sur ses membres. Les `Record` exhaustifs
 > sont un bon filet ; `x === 'membre'` n'en a aucun.
+
+## Vérification finale
+
+Le script de reproduction d'origine, rejoué **sans modification** sur `main`
+après les cinq merges :
+
+```
+1. taylor      sin(x) -> x - \dfrac{1}{6} x^3      (était : x + -\dfrac{1}{6} x^3)
+2. fractions   2/3+3/4 -> 2 étapes                  (était : 51)
+3. variations  x^2 -> extrema = 1                   (était : 0, intervalle `unknown`)
+4. units       L -> dm^3 = 0,9999999999999998       (était : null)
+5. numtype     2.5 -> decimal                       (était : real)
+```
+
+⚠️ Le facteur `L -> dm^3` vaut 0,999999999999999**8**, pas 1 : `0.1^3` ne vaut
+pas exactement 0,001 en flottant. C'est le comportement normal du module
+(`km/h -> m/s` rend déjà 0,2777777777777778) ; les tests utilisent
+`toBeCloseTo(..., 12)`. À ne pas prendre pour un défaut résiduel.
