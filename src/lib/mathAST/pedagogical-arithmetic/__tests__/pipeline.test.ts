@@ -354,6 +354,48 @@ describe('produit de racines — un pas à la fois', () => {
 		expect(toLatex(etapes[etapes.length - 1].globalAfter!)).toContain('2 \\sqrt{6}');
 	});
 
+	// Quand les DEUX racines se simplifient, on extrait d'abord même si le
+	// produit est un carré parfait : 3√2 × 5√2 est plus doux que √900, qui
+	// demande de reconnaître 900 = 30².
+	it('√18 × √50 extrait d abord plutôt que de passer par √900', () => {
+		const etapes = sequence(racines('18', '50'));
+		expect(etapes.join(' | ')).not.toContain('\\sqrt{900}');
+		expect(etapes).toHaveLength(3);
+		expect(etapes[0]).toContain('3 \\sqrt{2} \\times 5 \\sqrt{2}');
+		expect(etapes[1]).toContain('15 \\times 2');
+		expect(etapes[2]).toMatch(/= 30$/);
+	});
+
+	it('√20 × √45 extrait d abord', () => {
+		const etapes = sequence(racines('20', '45'));
+		expect(etapes.join(' | ')).not.toContain('\\sqrt{900}');
+		expect(etapes[0]).toContain('2 \\sqrt{5} \\times 3 \\sqrt{5}');
+		expect(etapes[1]).toContain('6 \\times 5');
+		expect(etapes[etapes.length - 1]).toMatch(/= 30$/);
+	});
+
+	it('√12 × √27 extrait d abord', () => {
+		const etapes = sequence(racines('12', '27'));
+		expect(etapes[0]).toContain('2 \\sqrt{3} \\times 3 \\sqrt{3}');
+		expect(etapes[1]).toContain('6 \\times 3');
+		expect(etapes[etapes.length - 1]).toMatch(/= 18$/);
+	});
+
+	// ⚠️ Aucune étape ne doit montrer `15√4` ni `15 2` : ce sont les formes
+	// que produisait le chemin « multiplier d'abord » sur des racines à
+	// coefficient, et aucun professeur ne les écrit.
+	it('ne produit jamais de forme c√(carré parfait)', () => {
+		for (const [a, b] of [
+			['18', '50'],
+			['20', '45'],
+			['12', '27'],
+			['8', '18']
+		]) {
+			const joint = sequence(racines(a, b)).join(' | ');
+			expect(joint).not.toMatch(/\d \\sqrt\{(1|4|9|16|25|36|49|64|81|100)\}/);
+		}
+	});
+
 	// Chemin A : rien à extraire au départ, la règle double ne mord pas.
 	it('√2 × √8 n utilise pas l extraction double', () => {
 		const etapes = generatePedagogicalArithmeticSteps(racines('2', '8'), {

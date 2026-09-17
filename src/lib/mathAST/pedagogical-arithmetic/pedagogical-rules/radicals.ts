@@ -176,14 +176,31 @@ function applyMultiplyRadicals(bindings: MatchBindings): MathNode | null {
 	const product = lf.r * rf.r;
 	if (product < 1n) return null;
 
-	// Cas 2 : une racine se simplifie et le produit n'est pas un carré parfait
-	// → laisser l'extraction passer devant.
-	if (!isPerfectSquare(product) && (radicandSimplifies(lf.r) || radicandSimplifies(rf.r))) {
-		return null;
-	}
+	const gauche = radicandSimplifies(lf.r);
+	const droite = radicandSimplifies(rf.r);
+
+	// Les DEUX racines se simplifient → `extract-both-radicals` prend la main,
+	// même si le produit est un carré parfait : 3√2 × 5√2 est plus doux que
+	// √900, qui demande de reconnaître 900 = 30².
+	if (gauche && droite) return null;
+
+	// Une seule se simplifie, et le produit n'est pas un carré parfait →
+	// `extract-perfect-square` la traite d'abord, pour garder de petits
+	// nombres (√12 × √2 plutôt que √24).
+	if ((gauche || droite) && !isPerfectSquare(product)) return null;
 
 	const coefficient = lf.c * rf.c;
 	if (product === 1n) return number(coefficient.toString());
+
+	// Avec des coefficients ET un produit de radicandes qui tombe juste, on
+	// écrit le produit d'entiers plutôt que `c√(carré parfait)` : 3√2 × 5√2
+	// donne « 15 × 2 », pas « 15√4 », que personne n'écrit. Sans coefficient,
+	// on garde la racine (√2 × √8 = √16) : c'est tout l'intérêt de l'étape.
+	if (isPerfectSquare(product) && coefficient !== 1n) {
+		const racine = simplifyRadical(product, 2n).coefficient;
+		return multiply(number(coefficient.toString()), number(racine.toString()), 'cross');
+	}
+
 	return coefficientTimesSqrt(coefficient, product);
 }
 
