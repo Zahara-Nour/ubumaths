@@ -224,7 +224,7 @@ exports[`snapshot — c-zero > 2x² + 6x = 0 1`] = `
 [4] On factorise par x
     │ \\begin{aligned}   x^2 + 3x &= 0 \\\\   x \\left( x + 3\\right) &= 0 \\end{aligned}
 [5] Par la propriété du produit nul
-    │ \\left(x\\right) \\cdot \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x + 3 = 0
+    │ \\left(x\\right) \\times \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x + 3 = 0
 [6] On résout chaque facteur séparément
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
   x + 3 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
@@ -247,7 +247,7 @@ exports[`snapshot — c-zero > 2x² + 6x = 0 1`] = `
 [3] Factorisation par x
     │ \\begin{aligned}   x^2 + 3x &= 0 \\\\   x \\left( x + 3\\right) &= 0 \\end{aligned}
 [4] Produit nul
-    │ \\left(x\\right) \\cdot \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x + 3 = 0
+    │ \\left(x\\right) \\times \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x + 3 = 0
 [5] Résolution par facteur
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
   x + 3 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
@@ -288,7 +288,7 @@ exports[`snapshot — c-zero > 5x² − 10x = 0 1`] = `
 [4] On factorise par x
     │ \\begin{aligned}   x^2 - 2x &= 0 \\\\   x \\left( x - 2\\right) &= 0 \\end{aligned}
 [5] Par la propriété du produit nul
-    │ \\left(x\\right) \\cdot \\left(x - 2\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x - 2 = 0
+    │ \\left(x\\right) \\times \\left(x - 2\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x - 2 = 0
 [6] On résout chaque facteur séparément
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
   x - 2 = 0 &\\;\\Longleftrightarrow\\; x = 2 \\end{aligned}
@@ -311,7 +311,7 @@ exports[`snapshot — c-zero > 5x² − 10x = 0 1`] = `
 [3] Factorisation par x
     │ \\begin{aligned}   x^2 - 2x &= 0 \\\\   x \\left( x - 2\\right) &= 0 \\end{aligned}
 [4] Produit nul
-    │ \\left(x\\right) \\cdot \\left(x - 2\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x - 2 = 0
+    │ \\left(x\\right) \\times \\left(x - 2\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x - 2 = 0
 [5] Résolution par facteur
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
   x - 2 = 0 &\\;\\Longleftrightarrow\\; x = 2 \\end{aligned}
@@ -348,7 +348,7 @@ exports[`snapshot — c-zero > x² + 3x = 0 1`] = `
 [3] On factorise par x
     │ \\begin{aligned}   x^2 + 3x &= 0 \\\\   x \\left( x + 3\\right) &= 0 \\end{aligned}
 [4] Par la propriété du produit nul
-    │ \\left(x\\right) \\cdot \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x + 3 = 0
+    │ \\left(x\\right) \\times \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x + 3 = 0
 [5] On résout chaque facteur séparément
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
   x + 3 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
@@ -368,7 +368,7 @@ exports[`snapshot — c-zero > x² + 3x = 0 1`] = `
 [2] Factorisation par x
     │ \\begin{aligned}   x^2 + 3x &= 0 \\\\   x \\left( x + 3\\right) &= 0 \\end{aligned}
 [3] Produit nul
-    │ \\left(x\\right) \\cdot \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x + 3 = 0
+    │ \\left(x\\right) \\times \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x + 3 = 0
 [4] Résolution par facteur
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
   x + 3 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
@@ -401,7 +401,7 @@ exports[`snapshot — factorise > (2x + 1)(x − 4) = 0 1`] = `
 [2] L’équation est déjà sous forme factorisée
     │ \\left( 2x + 1\\right) \\left( x - 4\\right) = 0
 [3] Par la propriété du produit nul
-    │ \\left(2x + 1\\right) \\cdot \\left(x - 4\\right) = 0 \\;\\Longleftrightarrow\\; 2x + 1 = 0 \\;\\text{ou}\\; x - 4 = 0
+    │ \\left(2x + 1\\right) \\times \\left(x - 4\\right) = 0 \\;\\Longleftrightarrow\\; 2x + 1 = 0 \\;\\text{ou}\\; x - 4 = 0
 [4] On résout chaque facteur séparément
     │ \\begin{aligned}   2x + 1 = 0 &\\;\\Longleftrightarrow\\; x = -\\dfrac{1}{2} \\\\
   x - 4 = 0 &\\;\\Longleftrightarrow\\; x = 4 \\end{aligned}
@@ -418,7 +418,7 @@ exports[`snapshot — factorise > (2x + 1)(x − 4) = 0 1`] = `
 [1] Forme factorisée
     │ \\left( 2x + 1\\right) \\left( x - 4\\right) = 0
 [2] Produit nul
-    │ \\left(2x + 1\\right) \\cdot \\left(x - 4\\right) = 0 \\;\\Longleftrightarrow\\; 2x + 1 = 0 \\;\\text{ou}\\; x - 4 = 0
+    │ \\left(2x + 1\\right) \\times \\left(x - 4\\right) = 0 \\;\\Longleftrightarrow\\; 2x + 1 = 0 \\;\\text{ou}\\; x - 4 = 0
 [3] Résolution par facteur
     │ \\begin{aligned}   2x + 1 = 0 &\\;\\Longleftrightarrow\\; x = -\\dfrac{1}{2} \\\\
   x - 4 = 0 &\\;\\Longleftrightarrow\\; x = 4 \\end{aligned}
@@ -451,7 +451,7 @@ exports[`snapshot — factorise > (x + 1)(x − 5) = 0 1`] = `
 [2] L’équation est déjà sous forme factorisée
     │ \\left( x + 1\\right) \\left( x - 5\\right) = 0
 [3] Par la propriété du produit nul
-    │ \\left(x + 1\\right) \\cdot \\left(x - 5\\right) = 0 \\;\\Longleftrightarrow\\; x + 1 = 0 \\;\\text{ou}\\; x - 5 = 0
+    │ \\left(x + 1\\right) \\times \\left(x - 5\\right) = 0 \\;\\Longleftrightarrow\\; x + 1 = 0 \\;\\text{ou}\\; x - 5 = 0
 [4] On résout chaque facteur séparément
     │ \\begin{aligned}   x + 1 = 0 &\\;\\Longleftrightarrow\\; x = -1 \\\\
   x - 5 = 0 &\\;\\Longleftrightarrow\\; x = 5 \\end{aligned}
@@ -468,7 +468,7 @@ exports[`snapshot — factorise > (x + 1)(x − 5) = 0 1`] = `
 [1] Forme factorisée
     │ \\left( x + 1\\right) \\left( x - 5\\right) = 0
 [2] Produit nul
-    │ \\left(x + 1\\right) \\cdot \\left(x - 5\\right) = 0 \\;\\Longleftrightarrow\\; x + 1 = 0 \\;\\text{ou}\\; x - 5 = 0
+    │ \\left(x + 1\\right) \\times \\left(x - 5\\right) = 0 \\;\\Longleftrightarrow\\; x + 1 = 0 \\;\\text{ou}\\; x - 5 = 0
 [3] Résolution par facteur
     │ \\begin{aligned}   x + 1 = 0 &\\;\\Longleftrightarrow\\; x = -1 \\\\
   x - 5 = 0 &\\;\\Longleftrightarrow\\; x = 5 \\end{aligned}
@@ -501,7 +501,7 @@ exports[`snapshot — factorise > (x − 2)(x + 3) = 0 1`] = `
 [2] L’équation est déjà sous forme factorisée
     │ \\left( x - 2\\right) \\left( x + 3\\right) = 0
 [3] Par la propriété du produit nul
-    │ \\left(x - 2\\right) \\cdot \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x - 2 = 0 \\;\\text{ou}\\; x + 3 = 0
+    │ \\left(x - 2\\right) \\times \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x - 2 = 0 \\;\\text{ou}\\; x + 3 = 0
 [4] On résout chaque facteur séparément
     │ \\begin{aligned}   x - 2 = 0 &\\;\\Longleftrightarrow\\; x = 2 \\\\
   x + 3 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
@@ -518,7 +518,7 @@ exports[`snapshot — factorise > (x − 2)(x + 3) = 0 1`] = `
 [1] Forme factorisée
     │ \\left( x - 2\\right) \\left( x + 3\\right) = 0
 [2] Produit nul
-    │ \\left(x - 2\\right) \\cdot \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x - 2 = 0 \\;\\text{ou}\\; x + 3 = 0
+    │ \\left(x - 2\\right) \\times \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x - 2 = 0 \\;\\text{ou}\\; x + 3 = 0
 [3] Résolution par facteur
     │ \\begin{aligned}   x - 2 = 0 &\\;\\Longleftrightarrow\\; x = 2 \\\\
   x + 3 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
@@ -559,14 +559,14 @@ exports[`snapshot — non-standard-form > 3x² = 2x + 1 1`] = `
 [3] On identifie les coefficients a, b et c
     │ a = 3, \\quad b = -2, \\quad c = -1
 [4] On calcule le discriminant Δ = b² − 4ac
-    │ \\Delta = b^2 - 4ac = \\left(-2\\right)^2 - 4 \\cdot \\left(3\\right) \\cdot \\left(-1\\right) = 16
+    │ \\Delta = b^2 - 4ac = \\left(-2\\right)^2 - 4 \\times \\left(3\\right) \\times \\left(-1\\right) = 16
 [5] Δ > 0 : deux solutions distinctes
     │ 3x^2 - 2x - 1 = 0
 [6] On applique la formule : x = (−b ± √Δ) / (2a)
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-2\\right) \\pm \\sqrt{16}}{2 \\cdot \\left(3\\right)} \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-b - \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-2\\right) - \\sqrt{16}}{2 \\times \\left(3\\right)} \\\\   x_2 &= \\dfrac{-b + \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-2\\right) + \\sqrt{16}}{2 \\times \\left(3\\right)} \\end{aligned}
 [7] On simplifie les solutions
-    │ \\begin{aligned}   x_1 &= \\dfrac{2 - \\sqrt{16}}{2\\cdot 3} = -\\dfrac{1}{3} \\\\
-  x_2 &= \\dfrac{2 + \\sqrt{16}}{2\\cdot 3} = 1 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{2 - \\sqrt{16}}{2\\times 3} = -\\dfrac{1}{3} \\\\
+  x_2 &= \\dfrac{2 + \\sqrt{16}}{2\\times 3} = 1 \\end{aligned}
 [8] Solutions
     │ S = \\left\\{ -\\dfrac{1}{3} \\,;\\, 1 \\right\\}
 
@@ -584,12 +584,12 @@ exports[`snapshot — non-standard-form > 3x² = 2x + 1 1`] = `
 [2] Coefficients a, b, c
     │ a = 3, \\quad b = -2, \\quad c = -1
 [3] Discriminant : Δ > 0
-    │ \\Delta = b^2 - 4ac = \\left(-2\\right)^2 - 4 \\cdot \\left(3\\right) \\cdot \\left(-1\\right) = 16
+    │ \\Delta = b^2 - 4ac = \\left(-2\\right)^2 - 4 \\times \\left(3\\right) \\times \\left(-1\\right) = 16
 [4] Formule du second degré
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-2\\right) \\pm \\sqrt{16}}{2 \\cdot \\left(3\\right)} \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-b - \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-2\\right) - \\sqrt{16}}{2 \\times \\left(3\\right)} \\\\   x_2 &= \\dfrac{-b + \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-2\\right) + \\sqrt{16}}{2 \\times \\left(3\\right)} \\end{aligned}
 [5] Simplification
-    │ \\begin{aligned}   x_1 &= \\dfrac{2 - \\sqrt{16}}{2\\cdot 3} = -\\dfrac{1}{3} \\\\
-  x_2 &= \\dfrac{2 + \\sqrt{16}}{2\\cdot 3} = 1 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{2 - \\sqrt{16}}{2\\times 3} = -\\dfrac{1}{3} \\\\
+  x_2 &= \\dfrac{2 + \\sqrt{16}}{2\\times 3} = 1 \\end{aligned}
 [6] Ensemble des solutions
     │ S = \\left\\{ -\\dfrac{1}{3} \\,;\\, 1 \\right\\}
 "
@@ -627,14 +627,14 @@ exports[`snapshot — non-standard-form > x² + 2 = x + 8 1`] = `
 [3] On identifie les coefficients a, b et c
     │ a = 1, \\quad b = -1, \\quad c = -6
 [4] On calcule le discriminant Δ = b² − 4ac
-    │ \\Delta = b^2 - 4ac = \\left(-1\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(-6\\right) = 25
+    │ \\Delta = b^2 - 4ac = \\left(-1\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(-6\\right) = 25
 [5] Δ > 0 : deux solutions distinctes
     │ x^2 - x - 6 = 0
 [6] On applique la formule : x = (−b ± √Δ) / (2a)
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-1\\right) \\pm \\sqrt{25}}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-b - \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-1\\right) - \\sqrt{25}}{2 \\times \\left(1\\right)} \\\\   x_2 &= \\dfrac{-b + \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-1\\right) + \\sqrt{25}}{2 \\times \\left(1\\right)} \\end{aligned}
 [7] On simplifie les solutions
-    │ \\begin{aligned}   x_1 &= \\dfrac{1 - \\sqrt{25}}{2\\cdot 1} = -2 \\\\
-  x_2 &= \\dfrac{1 + \\sqrt{25}}{2\\cdot 1} = 3 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{1 - \\sqrt{25}}{2\\times 1} = -2 \\\\
+  x_2 &= \\dfrac{1 + \\sqrt{25}}{2\\times 1} = 3 \\end{aligned}
 [8] Solutions
     │ S = \\left\\{ -2 \\,;\\, 3 \\right\\}
 
@@ -652,12 +652,12 @@ exports[`snapshot — non-standard-form > x² + 2 = x + 8 1`] = `
 [2] Coefficients a, b, c
     │ a = 1, \\quad b = -1, \\quad c = -6
 [3] Discriminant : Δ > 0
-    │ \\Delta = b^2 - 4ac = \\left(-1\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(-6\\right) = 25
+    │ \\Delta = b^2 - 4ac = \\left(-1\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(-6\\right) = 25
 [4] Formule du second degré
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-1\\right) \\pm \\sqrt{25}}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-b - \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-1\\right) - \\sqrt{25}}{2 \\times \\left(1\\right)} \\\\   x_2 &= \\dfrac{-b + \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-1\\right) + \\sqrt{25}}{2 \\times \\left(1\\right)} \\end{aligned}
 [5] Simplification
-    │ \\begin{aligned}   x_1 &= \\dfrac{1 - \\sqrt{25}}{2\\cdot 1} = -2 \\\\
-  x_2 &= \\dfrac{1 + \\sqrt{25}}{2\\cdot 1} = 3 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{1 - \\sqrt{25}}{2\\times 1} = -2 \\\\
+  x_2 &= \\dfrac{1 + \\sqrt{25}}{2\\times 1} = 3 \\end{aligned}
 [6] Ensemble des solutions
     │ S = \\left\\{ -2 \\,;\\, 3 \\right\\}
 "
@@ -695,14 +695,14 @@ exports[`snapshot — non-standard-form > x² + 5x = −6 1`] = `
 [3] On identifie les coefficients a, b et c
     │ a = 1, \\quad b = 5, \\quad c = 6
 [4] On calcule le discriminant Δ = b² − 4ac
-    │ \\Delta = b^2 - 4ac = \\left(5\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(6\\right) = 1
+    │ \\Delta = b^2 - 4ac = \\left(5\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(6\\right) = 1
 [5] Δ > 0 : deux solutions distinctes
     │ x^2 + 5x + 6 = 0
 [6] On applique la formule : x = (−b ± √Δ) / (2a)
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(5\\right) \\pm \\sqrt{1}}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-b - \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(5\\right) - \\sqrt{1}}{2 \\times \\left(1\\right)} \\\\   x_2 &= \\dfrac{-b + \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(5\\right) + \\sqrt{1}}{2 \\times \\left(1\\right)} \\end{aligned}
 [7] On simplifie les solutions
-    │ \\begin{aligned}   x_1 &= \\dfrac{-5 - \\sqrt{1}}{2\\cdot 1} = -3 \\\\
-  x_2 &= \\dfrac{-5 + \\sqrt{1}}{2\\cdot 1} = -2 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-5 - \\sqrt{1}}{2\\times 1} = -3 \\\\
+  x_2 &= \\dfrac{-5 + \\sqrt{1}}{2\\times 1} = -2 \\end{aligned}
 [8] Solutions
     │ S = \\left\\{ -3 \\,;\\, -2 \\right\\}
 
@@ -720,12 +720,12 @@ exports[`snapshot — non-standard-form > x² + 5x = −6 1`] = `
 [2] Coefficients a, b, c
     │ a = 1, \\quad b = 5, \\quad c = 6
 [3] Discriminant : Δ > 0
-    │ \\Delta = b^2 - 4ac = \\left(5\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(6\\right) = 1
+    │ \\Delta = b^2 - 4ac = \\left(5\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(6\\right) = 1
 [4] Formule du second degré
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(5\\right) \\pm \\sqrt{1}}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-b - \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(5\\right) - \\sqrt{1}}{2 \\times \\left(1\\right)} \\\\   x_2 &= \\dfrac{-b + \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(5\\right) + \\sqrt{1}}{2 \\times \\left(1\\right)} \\end{aligned}
 [5] Simplification
-    │ \\begin{aligned}   x_1 &= \\dfrac{-5 - \\sqrt{1}}{2\\cdot 1} = -3 \\\\
-  x_2 &= \\dfrac{-5 + \\sqrt{1}}{2\\cdot 1} = -2 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-5 - \\sqrt{1}}{2\\times 1} = -3 \\\\
+  x_2 &= \\dfrac{-5 + \\sqrt{1}}{2\\times 1} = -2 \\end{aligned}
 [6] Ensemble des solutions
     │ S = \\left\\{ -3 \\,;\\, -2 \\right\\}
 "
@@ -763,13 +763,13 @@ exports[`snapshot — standard-double > 2x² − 4x + 2 = 0 1`] = `
 [3] On identifie les coefficients a, b et c
     │ a = 1, \\quad b = -2, \\quad c = 1
 [4] On calcule le discriminant Δ = b² − 4ac
-    │ \\Delta = b^2 - 4ac = \\left(-2\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(1\\right) = 0
+    │ \\Delta = b^2 - 4ac = \\left(-2\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(1\\right) = 0
 [5] Δ = 0 : une solution double
     │ x^2 - 2x + 1 = 0
 [6] On applique la formule : x = −b / (2a)
-    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(-2\\right)}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(-2\\right)}{2 \\times \\left(1\\right)} \\end{aligned}
 [7] On simplifie les solutions
-    │ x_0 = \\dfrac{2}{2\\cdot 1} = 1
+    │ x_0 = \\dfrac{2}{2\\times 1} = 1
 [8] Solutions
     │ S = \\left\\{ 1 \\right\\}
 
@@ -787,11 +787,11 @@ exports[`snapshot — standard-double > 2x² − 4x + 2 = 0 1`] = `
 [2] Coefficients a, b, c
     │ a = 1, \\quad b = -2, \\quad c = 1
 [3] Discriminant : Δ = 0
-    │ \\Delta = b^2 - 4ac = \\left(-2\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(1\\right) = 0
+    │ \\Delta = b^2 - 4ac = \\left(-2\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(1\\right) = 0
 [4] Formule du second degré
-    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(-2\\right)}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(-2\\right)}{2 \\times \\left(1\\right)} \\end{aligned}
 [5] Simplification
-    │ x_0 = \\dfrac{2}{2\\cdot 1} = 1
+    │ x_0 = \\dfrac{2}{2\\times 1} = 1
 [6] Ensemble des solutions
     │ S = \\left\\{ 1 \\right\\}
 "
@@ -825,13 +825,13 @@ exports[`snapshot — standard-double > x² + 6x + 9 = 0 1`] = `
 [2] On identifie les coefficients a, b et c
     │ a = 1, \\quad b = 6, \\quad c = 9
 [3] On calcule le discriminant Δ = b² − 4ac
-    │ \\Delta = b^2 - 4ac = \\left(6\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(9\\right) = 0
+    │ \\Delta = b^2 - 4ac = \\left(6\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(9\\right) = 0
 [4] Δ = 0 : une solution double
     │ x^2 + 6x + 9 = 0
 [5] On applique la formule : x = −b / (2a)
-    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(6\\right)}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(6\\right)}{2 \\times \\left(1\\right)} \\end{aligned}
 [6] On simplifie les solutions
-    │ x_0 = \\dfrac{-6}{2\\cdot 1} = -3
+    │ x_0 = \\dfrac{-6}{2\\times 1} = -3
 [7] Solutions
     │ S = \\left\\{ -3 \\right\\}
 
@@ -846,11 +846,11 @@ exports[`snapshot — standard-double > x² + 6x + 9 = 0 1`] = `
 [1] Coefficients a, b, c
     │ a = 1, \\quad b = 6, \\quad c = 9
 [2] Discriminant : Δ = 0
-    │ \\Delta = b^2 - 4ac = \\left(6\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(9\\right) = 0
+    │ \\Delta = b^2 - 4ac = \\left(6\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(9\\right) = 0
 [3] Formule du second degré
-    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(6\\right)}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(6\\right)}{2 \\times \\left(1\\right)} \\end{aligned}
 [4] Simplification
-    │ x_0 = \\dfrac{-6}{2\\cdot 1} = -3
+    │ x_0 = \\dfrac{-6}{2\\times 1} = -3
 [5] Ensemble des solutions
     │ S = \\left\\{ -3 \\right\\}
 "
@@ -884,13 +884,13 @@ exports[`snapshot — standard-double > x² − 2x + 1 = 0 1`] = `
 [2] On identifie les coefficients a, b et c
     │ a = 1, \\quad b = -2, \\quad c = 1
 [3] On calcule le discriminant Δ = b² − 4ac
-    │ \\Delta = b^2 - 4ac = \\left(-2\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(1\\right) = 0
+    │ \\Delta = b^2 - 4ac = \\left(-2\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(1\\right) = 0
 [4] Δ = 0 : une solution double
     │ x^2 - 2x + 1 = 0
 [5] On applique la formule : x = −b / (2a)
-    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(-2\\right)}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(-2\\right)}{2 \\times \\left(1\\right)} \\end{aligned}
 [6] On simplifie les solutions
-    │ x_0 = \\dfrac{2}{2\\cdot 1} = 1
+    │ x_0 = \\dfrac{2}{2\\times 1} = 1
 [7] Solutions
     │ S = \\left\\{ 1 \\right\\}
 
@@ -905,11 +905,11 @@ exports[`snapshot — standard-double > x² − 2x + 1 = 0 1`] = `
 [1] Coefficients a, b, c
     │ a = 1, \\quad b = -2, \\quad c = 1
 [2] Discriminant : Δ = 0
-    │ \\Delta = b^2 - 4ac = \\left(-2\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(1\\right) = 0
+    │ \\Delta = b^2 - 4ac = \\left(-2\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(1\\right) = 0
 [3] Formule du second degré
-    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(-2\\right)}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(-2\\right)}{2 \\times \\left(1\\right)} \\end{aligned}
 [4] Simplification
-    │ x_0 = \\dfrac{2}{2\\cdot 1} = 1
+    │ x_0 = \\dfrac{2}{2\\times 1} = 1
 [5] Ensemble des solutions
     │ S = \\left\\{ 1 \\right\\}
 "
@@ -939,7 +939,7 @@ exports[`snapshot — standard-negatif > 2x² + 3x + 4 = 0 1`] = `
 [2] On identifie les coefficients a, b et c
     │ a = 2, \\quad b = 3, \\quad c = 4
 [3] On calcule le discriminant Δ = b² − 4ac
-    │ \\Delta = b^2 - 4ac = \\left(3\\right)^2 - 4 \\cdot \\left(2\\right) \\cdot \\left(4\\right) = -23
+    │ \\Delta = b^2 - 4ac = \\left(3\\right)^2 - 4 \\times \\left(2\\right) \\times \\left(4\\right) = -23
 [4] Δ < 0 : pas de solution réelle
     │ 2x^2 + 3x + 4 = 0
 [5] Pas de solution réelle
@@ -954,7 +954,7 @@ exports[`snapshot — standard-negatif > 2x² + 3x + 4 = 0 1`] = `
 [1] Coefficients a, b, c
     │ a = 2, \\quad b = 3, \\quad c = 4
 [2] Discriminant : Δ < 0
-    │ \\Delta = b^2 - 4ac = \\left(3\\right)^2 - 4 \\cdot \\left(2\\right) \\cdot \\left(4\\right) = -23
+    │ \\Delta = b^2 - 4ac = \\left(3\\right)^2 - 4 \\times \\left(2\\right) \\times \\left(4\\right) = -23
 [3] S = ∅
     │ S = \\emptyset
 "
@@ -984,7 +984,7 @@ exports[`snapshot — standard-negatif > x² + 2x + 5 = 0 1`] = `
 [2] On identifie les coefficients a, b et c
     │ a = 1, \\quad b = 2, \\quad c = 5
 [3] On calcule le discriminant Δ = b² − 4ac
-    │ \\Delta = b^2 - 4ac = \\left(2\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(5\\right) = -16
+    │ \\Delta = b^2 - 4ac = \\left(2\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(5\\right) = -16
 [4] Δ < 0 : pas de solution réelle
     │ x^2 + 2x + 5 = 0
 [5] Pas de solution réelle
@@ -999,7 +999,7 @@ exports[`snapshot — standard-negatif > x² + 2x + 5 = 0 1`] = `
 [1] Coefficients a, b, c
     │ a = 1, \\quad b = 2, \\quad c = 5
 [2] Discriminant : Δ < 0
-    │ \\Delta = b^2 - 4ac = \\left(2\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(5\\right) = -16
+    │ \\Delta = b^2 - 4ac = \\left(2\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(5\\right) = -16
 [3] S = ∅
     │ S = \\emptyset
 "
@@ -1029,7 +1029,7 @@ exports[`snapshot — standard-negatif > x² + x + 1 = 0 1`] = `
 [2] On identifie les coefficients a, b et c
     │ a = 1, \\quad b = 1, \\quad c = 1
 [3] On calcule le discriminant Δ = b² − 4ac
-    │ \\Delta = b^2 - 4ac = \\left(1\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(1\\right) = -3
+    │ \\Delta = b^2 - 4ac = \\left(1\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(1\\right) = -3
 [4] Δ < 0 : pas de solution réelle
     │ x^2 + x + 1 = 0
 [5] Pas de solution réelle
@@ -1044,7 +1044,7 @@ exports[`snapshot — standard-negatif > x² + x + 1 = 0 1`] = `
 [1] Coefficients a, b, c
     │ a = 1, \\quad b = 1, \\quad c = 1
 [2] Discriminant : Δ < 0
-    │ \\Delta = b^2 - 4ac = \\left(1\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(1\\right) = -3
+    │ \\Delta = b^2 - 4ac = \\left(1\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(1\\right) = -3
 [3] S = ∅
     │ S = \\emptyset
 "
@@ -1082,14 +1082,14 @@ exports[`snapshot — standard-positif > 3x² − 3x − 18 = 0 1`] = `
 [3] On identifie les coefficients a, b et c
     │ a = 1, \\quad b = -1, \\quad c = -6
 [4] On calcule le discriminant Δ = b² − 4ac
-    │ \\Delta = b^2 - 4ac = \\left(-1\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(-6\\right) = 25
+    │ \\Delta = b^2 - 4ac = \\left(-1\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(-6\\right) = 25
 [5] Δ > 0 : deux solutions distinctes
     │ x^2 - x - 6 = 0
 [6] On applique la formule : x = (−b ± √Δ) / (2a)
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-1\\right) \\pm \\sqrt{25}}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-b - \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-1\\right) - \\sqrt{25}}{2 \\times \\left(1\\right)} \\\\   x_2 &= \\dfrac{-b + \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-1\\right) + \\sqrt{25}}{2 \\times \\left(1\\right)} \\end{aligned}
 [7] On simplifie les solutions
-    │ \\begin{aligned}   x_1 &= \\dfrac{1 - \\sqrt{25}}{2\\cdot 1} = -2 \\\\
-  x_2 &= \\dfrac{1 + \\sqrt{25}}{2\\cdot 1} = 3 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{1 - \\sqrt{25}}{2\\times 1} = -2 \\\\
+  x_2 &= \\dfrac{1 + \\sqrt{25}}{2\\times 1} = 3 \\end{aligned}
 [8] Solutions
     │ S = \\left\\{ -2 \\,;\\, 3 \\right\\}
 
@@ -1107,12 +1107,12 @@ exports[`snapshot — standard-positif > 3x² − 3x − 18 = 0 1`] = `
 [2] Coefficients a, b, c
     │ a = 1, \\quad b = -1, \\quad c = -6
 [3] Discriminant : Δ > 0
-    │ \\Delta = b^2 - 4ac = \\left(-1\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(-6\\right) = 25
+    │ \\Delta = b^2 - 4ac = \\left(-1\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(-6\\right) = 25
 [4] Formule du second degré
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-1\\right) \\pm \\sqrt{25}}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-b - \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-1\\right) - \\sqrt{25}}{2 \\times \\left(1\\right)} \\\\   x_2 &= \\dfrac{-b + \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-1\\right) + \\sqrt{25}}{2 \\times \\left(1\\right)} \\end{aligned}
 [5] Simplification
-    │ \\begin{aligned}   x_1 &= \\dfrac{1 - \\sqrt{25}}{2\\cdot 1} = -2 \\\\
-  x_2 &= \\dfrac{1 + \\sqrt{25}}{2\\cdot 1} = 3 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{1 - \\sqrt{25}}{2\\times 1} = -2 \\\\
+  x_2 &= \\dfrac{1 + \\sqrt{25}}{2\\times 1} = 3 \\end{aligned}
 [6] Ensemble des solutions
     │ S = \\left\\{ -2 \\,;\\, 3 \\right\\}
 "
@@ -1146,14 +1146,14 @@ exports[`snapshot — standard-positif > x² + 5x + 6 = 0 1`] = `
 [2] On identifie les coefficients a, b et c
     │ a = 1, \\quad b = 5, \\quad c = 6
 [3] On calcule le discriminant Δ = b² − 4ac
-    │ \\Delta = b^2 - 4ac = \\left(5\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(6\\right) = 1
+    │ \\Delta = b^2 - 4ac = \\left(5\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(6\\right) = 1
 [4] Δ > 0 : deux solutions distinctes
     │ x^2 + 5x + 6 = 0
 [5] On applique la formule : x = (−b ± √Δ) / (2a)
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(5\\right) \\pm \\sqrt{1}}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-b - \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(5\\right) - \\sqrt{1}}{2 \\times \\left(1\\right)} \\\\   x_2 &= \\dfrac{-b + \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(5\\right) + \\sqrt{1}}{2 \\times \\left(1\\right)} \\end{aligned}
 [6] On simplifie les solutions
-    │ \\begin{aligned}   x_1 &= \\dfrac{-5 - \\sqrt{1}}{2\\cdot 1} = -3 \\\\
-  x_2 &= \\dfrac{-5 + \\sqrt{1}}{2\\cdot 1} = -2 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-5 - \\sqrt{1}}{2\\times 1} = -3 \\\\
+  x_2 &= \\dfrac{-5 + \\sqrt{1}}{2\\times 1} = -2 \\end{aligned}
 [7] Solutions
     │ S = \\left\\{ -3 \\,;\\, -2 \\right\\}
 
@@ -1168,12 +1168,12 @@ exports[`snapshot — standard-positif > x² + 5x + 6 = 0 1`] = `
 [1] Coefficients a, b, c
     │ a = 1, \\quad b = 5, \\quad c = 6
 [2] Discriminant : Δ > 0
-    │ \\Delta = b^2 - 4ac = \\left(5\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(6\\right) = 1
+    │ \\Delta = b^2 - 4ac = \\left(5\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(6\\right) = 1
 [3] Formule du second degré
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(5\\right) \\pm \\sqrt{1}}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-b - \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(5\\right) - \\sqrt{1}}{2 \\times \\left(1\\right)} \\\\   x_2 &= \\dfrac{-b + \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(5\\right) + \\sqrt{1}}{2 \\times \\left(1\\right)} \\end{aligned}
 [4] Simplification
-    │ \\begin{aligned}   x_1 &= \\dfrac{-5 - \\sqrt{1}}{2\\cdot 1} = -3 \\\\
-  x_2 &= \\dfrac{-5 + \\sqrt{1}}{2\\cdot 1} = -2 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-5 - \\sqrt{1}}{2\\times 1} = -3 \\\\
+  x_2 &= \\dfrac{-5 + \\sqrt{1}}{2\\times 1} = -2 \\end{aligned}
 [5] Ensemble des solutions
     │ S = \\left\\{ -3 \\,;\\, -2 \\right\\}
 "
@@ -1207,14 +1207,14 @@ exports[`snapshot — standard-positif > x² + 7x + 12 = 0 1`] = `
 [2] On identifie les coefficients a, b et c
     │ a = 1, \\quad b = 7, \\quad c = 12
 [3] On calcule le discriminant Δ = b² − 4ac
-    │ \\Delta = b^2 - 4ac = \\left(7\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(12\\right) = 1
+    │ \\Delta = b^2 - 4ac = \\left(7\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(12\\right) = 1
 [4] Δ > 0 : deux solutions distinctes
     │ x^2 + 7x + 12 = 0
 [5] On applique la formule : x = (−b ± √Δ) / (2a)
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(7\\right) \\pm \\sqrt{1}}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-b - \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(7\\right) - \\sqrt{1}}{2 \\times \\left(1\\right)} \\\\   x_2 &= \\dfrac{-b + \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(7\\right) + \\sqrt{1}}{2 \\times \\left(1\\right)} \\end{aligned}
 [6] On simplifie les solutions
-    │ \\begin{aligned}   x_1 &= \\dfrac{-7 - \\sqrt{1}}{2\\cdot 1} = -4 \\\\
-  x_2 &= \\dfrac{-7 + \\sqrt{1}}{2\\cdot 1} = -3 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-7 - \\sqrt{1}}{2\\times 1} = -4 \\\\
+  x_2 &= \\dfrac{-7 + \\sqrt{1}}{2\\times 1} = -3 \\end{aligned}
 [7] Solutions
     │ S = \\left\\{ -4 \\,;\\, -3 \\right\\}
 
@@ -1229,12 +1229,12 @@ exports[`snapshot — standard-positif > x² + 7x + 12 = 0 1`] = `
 [1] Coefficients a, b, c
     │ a = 1, \\quad b = 7, \\quad c = 12
 [2] Discriminant : Δ > 0
-    │ \\Delta = b^2 - 4ac = \\left(7\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(12\\right) = 1
+    │ \\Delta = b^2 - 4ac = \\left(7\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(12\\right) = 1
 [3] Formule du second degré
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(7\\right) \\pm \\sqrt{1}}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-b - \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(7\\right) - \\sqrt{1}}{2 \\times \\left(1\\right)} \\\\   x_2 &= \\dfrac{-b + \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(7\\right) + \\sqrt{1}}{2 \\times \\left(1\\right)} \\end{aligned}
 [4] Simplification
-    │ \\begin{aligned}   x_1 &= \\dfrac{-7 - \\sqrt{1}}{2\\cdot 1} = -4 \\\\
-  x_2 &= \\dfrac{-7 + \\sqrt{1}}{2\\cdot 1} = -3 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-7 - \\sqrt{1}}{2\\times 1} = -4 \\\\
+  x_2 &= \\dfrac{-7 + \\sqrt{1}}{2\\times 1} = -3 \\end{aligned}
 [5] Ensemble des solutions
     │ S = \\left\\{ -4 \\,;\\, -3 \\right\\}
 "
@@ -1268,14 +1268,14 @@ exports[`snapshot — standard-positif > x² − 5x + 6 = 0 1`] = `
 [2] On identifie les coefficients a, b et c
     │ a = 1, \\quad b = -5, \\quad c = 6
 [3] On calcule le discriminant Δ = b² − 4ac
-    │ \\Delta = b^2 - 4ac = \\left(-5\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(6\\right) = 1
+    │ \\Delta = b^2 - 4ac = \\left(-5\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(6\\right) = 1
 [4] Δ > 0 : deux solutions distinctes
     │ x^2 - 5x + 6 = 0
 [5] On applique la formule : x = (−b ± √Δ) / (2a)
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-5\\right) \\pm \\sqrt{1}}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-b - \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-5\\right) - \\sqrt{1}}{2 \\times \\left(1\\right)} \\\\   x_2 &= \\dfrac{-b + \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-5\\right) + \\sqrt{1}}{2 \\times \\left(1\\right)} \\end{aligned}
 [6] On simplifie les solutions
-    │ \\begin{aligned}   x_1 &= \\dfrac{5 - \\sqrt{1}}{2\\cdot 1} = 2 \\\\
-  x_2 &= \\dfrac{5 + \\sqrt{1}}{2\\cdot 1} = 3 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{5 - \\sqrt{1}}{2\\times 1} = 2 \\\\
+  x_2 &= \\dfrac{5 + \\sqrt{1}}{2\\times 1} = 3 \\end{aligned}
 [7] Solutions
     │ S = \\left\\{ 2 \\,;\\, 3 \\right\\}
 
@@ -1290,12 +1290,12 @@ exports[`snapshot — standard-positif > x² − 5x + 6 = 0 1`] = `
 [1] Coefficients a, b, c
     │ a = 1, \\quad b = -5, \\quad c = 6
 [2] Discriminant : Δ > 0
-    │ \\Delta = b^2 - 4ac = \\left(-5\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(6\\right) = 1
+    │ \\Delta = b^2 - 4ac = \\left(-5\\right)^2 - 4 \\times \\left(1\\right) \\times \\left(6\\right) = 1
 [3] Formule du second degré
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-5\\right) \\pm \\sqrt{1}}{2 \\cdot \\left(1\\right)} \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{-b - \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-5\\right) - \\sqrt{1}}{2 \\times \\left(1\\right)} \\\\   x_2 &= \\dfrac{-b + \\sqrt{\\Delta}}{2a} = \\dfrac{-\\left(-5\\right) + \\sqrt{1}}{2 \\times \\left(1\\right)} \\end{aligned}
 [4] Simplification
-    │ \\begin{aligned}   x_1 &= \\dfrac{5 - \\sqrt{1}}{2\\cdot 1} = 2 \\\\
-  x_2 &= \\dfrac{5 + \\sqrt{1}}{2\\cdot 1} = 3 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{5 - \\sqrt{1}}{2\\times 1} = 2 \\\\
+  x_2 &= \\dfrac{5 + \\sqrt{1}}{2\\times 1} = 3 \\end{aligned}
 [5] Ensemble des solutions
     │ S = \\left\\{ 2 \\,;\\, 3 \\right\\}
 "

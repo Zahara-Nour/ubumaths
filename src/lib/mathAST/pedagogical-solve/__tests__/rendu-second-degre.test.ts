@@ -32,17 +32,17 @@ describe('le dénominateur 2a des solutions substituées', () => {
 	 *   a = 2   →  `\dfrac{3 - \sqrt{1}}{2 2}`    se lit « vingt-deux »
 	 *   a = -1  →  `\dfrac{-3 - \sqrt{5}}{2 -1}`  se lit « 2 − 1 », soit 1 : FAUX
 	 */
-	it('a = 1 : un point médian, pas une juxtaposition', () => {
+	it('a = 1 : un signe de multiplication, pas une juxtaposition', () => {
 		const latex = rawSolutionsLatex('x^2-3x+1=0');
 
-		expect(latex).toContain('2 \\cdot 1');
+		expect(latex).toContain('2 \\times 1');
 		expect(latex).not.toContain('{2 1}');
 	});
 
 	it('a = 2 : « 2 2 » ne doit pas se lire vingt-deux', () => {
 		const latex = rawSolutionsLatex('2x^2-3x+1=0');
 
-		expect(latex).toContain('2 \\cdot 2');
+		expect(latex).toContain('2 \\times 2');
 		expect(latex).not.toContain('{2 2}');
 	});
 
@@ -50,7 +50,7 @@ describe('le dénominateur 2a des solutions substituées', () => {
 		const latex = rawSolutionsLatex('-x^2+3x-1=0');
 
 		// Sans le séparateur, le dénominateur valait 1 au lieu de -2.
-		expect(latex).toContain('2 \\cdot');
+		expect(latex).toContain('2 \\times');
 		expect(latex).not.toContain('{2 -1}');
 	});
 

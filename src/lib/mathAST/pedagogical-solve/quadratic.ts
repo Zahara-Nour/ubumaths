@@ -485,7 +485,7 @@ function buildApplyQuadraticFormulaStep(
 	// pire fausse : `2 1`, `2 2` (« vingt-deux »), et surtout `2 -1`, qui se lit
 	// comme une soustraction et donne 1 au lieu de -2. La forme substituée d'un
 	// dénominateur s'écrit `2 \cdot a`, comme au tableau.
-	const twoA = multiply(number('2'), a, 'dot');
+	const twoA = multiply(number('2'), a, 'cross');
 
 	let rawSolutions: readonly MathNode[];
 	let description: string;
