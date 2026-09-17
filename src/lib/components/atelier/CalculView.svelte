@@ -14,6 +14,7 @@
 	import { commandCatalog, plain, type AtelierCommand } from '$lib/atelier/commands';
 	import { Button } from '$lib/components/ui/button';
 	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
+	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
 
 	/**
 	 * Le pupitre vient du CONTENEUR, pas d'ici : c'est lui qui reçoit les actions
@@ -133,6 +134,16 @@
 						<GeneratedStepsCorrection steps={entry.steps} />
 					</div>
 				{/if}
+				<!--
+					Le tableau de variations se montre d'emblée : c'est la réponse
+					elle-même, pas un détail à déplier. La ligne au-dessus ne porte
+					alors que le texte du moteur, en repli.
+				-->
+				{#if entry.table !== undefined}
+					<div class="tableau">
+						<VariationTable node={entry.table} />
+					</div>
+				{/if}
 			</li>
 		{/each}
 	</ol>
@@ -226,6 +237,13 @@
 	}
 	.texte {
 		white-space: pre-wrap;
+	}
+
+	/* Un tableau déborde en largeur bien plus qu'une formule : il défile dans
+	   son cadre plutôt que d'élargir la page. */
+	.tableau {
+		margin-top: 0.5rem;
+		overflow-x: auto;
 	}
 
 	/* Les étapes dépliées : un bloc indenté sous la réponse, qui défile dans son

@@ -28,6 +28,7 @@ import { isList, type ListObject } from './types';
 import { nextName } from './names';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
+import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 
 // =============================================================================
 // Types
@@ -51,6 +52,13 @@ export interface Entry {
 	 * dense, le raisonnement est là quand l'élève le demande.
 	 */
 	readonly steps?: readonly RenderedStep[];
+	/**
+	 * Le tableau de variations, quand l'action en a produit un.
+	 *
+	 * Il se dessine sous la ligne — le moteur, lui, n'en rendait qu'une
+	 * description en texte de terminal.
+	 */
+	readonly table?: VariationTableNode;
 	/** Présent seulement pour une saisie : c'est ce que « Garder » consomme. */
 	readonly result?: CalcResult;
 }
@@ -351,6 +359,7 @@ export class CalcDesk {
 			text: outcome.ok ? outcome.output : outcome.message,
 			...(outcome.ok && outcome.latex !== undefined ? { latex: outcome.latex } : {}),
 			...(outcome.ok && outcome.steps !== undefined ? { steps: outcome.steps } : {}),
+			...(outcome.ok && outcome.table !== undefined ? { table: outcome.table } : {}),
 			failed: !outcome.ok
 		});
 		this.notice = null;

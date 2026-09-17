@@ -24,6 +24,9 @@ import { resolveCommand, suggestFor, commandCatalog } from './commands';
 import { renderResult } from './render';
 import { solveSteps } from './solve-steps';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
+import { computeVariations } from '$lib/mathAST/variations';
+import { variationTableNode } from '$lib/ubumark/builders/variation-table';
+import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 
 // =============================================================================
 // Types
@@ -77,6 +80,12 @@ export type ActionOutcome =
 			 * Absentes = repli : la ligne garde la sortie du moteur.
 			 */
 			readonly steps?: readonly RenderedStep[];
+			/**
+			 * Le tableau de variations, quand l'action en produit un.
+			 *
+			 * Absent = repli : la ligne garde le bloc texte du moteur.
+			 */
+			readonly table?: VariationTableNode;
 	  }
 	| { readonly ok: false; readonly message: string };
 
@@ -396,6 +405,27 @@ const ACTION_COMMANDS: Readonly<Record<string, (expression: string) => string>> 
 };
 
 /**
+ * Le tableau de variations d'une expression — ou `null`.
+ *
+ * ⚠️ Rien n'est recalculé ici : `computeVariations` trouve les sens, les points
+ * critiques et les limites, et le pont les traduit. Aucun chemin ne jette : une
+ * exception remonterait jusqu'à `desk.runFromPanel`, qui n'afficherait alors
+ * AUCUNE ligne.
+ *
+ * @param expression - L'expression SUBSTITUÉE (§6 bis)
+ * @param name - Le nom de l'objet, pour étiqueter les lignes `f'(x)` et `f(x)`
+ */
+function variationTableOf(expression: string, name: string): VariationTableNode | null {
+	try {
+		const node = astOf(expression, 'text');
+		if (node === null) return null;
+		return variationTableNode(computeVariations(node, { variable: 'x' }), name);
+	} catch {
+		return null;
+	}
+}
+
+/**
  * Lancer une action du panneau sur un objet.
  *
  * ⚠️ **L'expression est substituée avant l'appel** (§6 bis) : passer `f(x)` au
@@ -457,6 +487,14 @@ export function runAction(
 		if (solved !== null) {
 			return { ok: true, output: rendered.text, latex: solved.answer, steps: solved.steps };
 		}
+	}
+
+	// ⚠️ Même histoire pour les variations : le moteur rendait « Derivee »,
+	// « decroissante », « Signe de f'(x) » alignés à l'espace, sans un accent —
+	// alors que `VariationTable.svelte` dessine le tableau depuis toujours.
+	if (actionId === 'variations') {
+		const table = variationTableOf(substituted.expression, name);
+		if (table !== null) return { ok: true, output: rendered.text, table };
 	}
 
 	if (!result.success) {
