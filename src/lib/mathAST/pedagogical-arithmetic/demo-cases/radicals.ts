@@ -29,8 +29,15 @@ export const RADICALS: readonly DemoCase[] = [
 		schoolLevels: ['college', 'lycee']
 	},
 	{
-		label: '√2 × √8 → 4 (collapse complet)',
+		label: '√2 × √8 → √16 → 4 (produit = carré parfait)',
 		expression: multiply(sqrt(number('2')), sqrt(number('8')), 'cross'),
+		schoolLevels: ['college', 'lycee']
+	},
+	{
+		// L'autre chemin : 216 n'est pas un carré parfait et les deux racines
+		// se simplifient, donc on extrait AVANT de multiplier.
+		label: '√12 × √18 → 2√3 × 3√2 → 6√6 (extraction d abord)',
+		expression: multiply(sqrt(number('12')), sqrt(number('18')), 'cross'),
 		schoolLevels: ['college', 'lycee']
 	}
 ];

@@ -92,23 +92,49 @@ describe('radicals rules', () => {
 			expect(latex).toContain('6');
 		});
 
-		it('√2 × √8 → 4 (full collapse via extraction)', () => {
+		// La règle ne fait plus QUE multiplier : l'extraction du carré parfait
+		// est une étape à part, pour que l'élève voie √2 × √8 = √16 puis
+		// √16 = 4 au lieu du résultat d'un bloc.
+		it('√2 × √8 → √16 (sans extraire)', () => {
 			const result = applyRule(
 				multiplyRadicals.rule,
 				multiply(sqrt(number('2')), sqrt(number('8')), 'cross')
 			);
 			expect(result).not.toBeNull();
-			// √16 → 4 ; the result should be the integer 4
-			expect(toLatex(result!)).toBe('4');
+			expect(toLatex(result!)).toBe('\\sqrt{16}');
 		});
 
-		it('√3 × √12 → 6 (extraction of √36)', () => {
+		it('√3 × √12 → √36 (sans extraire)', () => {
 			const result = applyRule(
 				multiplyRadicals.rule,
 				multiply(sqrt(number('3')), sqrt(number('12')), 'cross')
 			);
 			expect(result).not.toBeNull();
-			expect(toLatex(result!)).toBe('6');
+			expect(toLatex(result!)).toBe('\\sqrt{36}');
+		});
+
+		// Chemin B : quand le produit n'est pas un carré parfait et qu'une
+		// racine se simplifie, la règle se RETIRE pour laisser l'extraction
+		// passer devant — sinon il faudrait factoriser 216 de tête.
+		it('ne mord PAS sur √12 × √18 (laisse extraire d abord)', () => {
+			const result = applyRule(
+				multiplyRadicals.rule,
+				multiply(sqrt(number('12')), sqrt(number('18')), 'cross')
+			);
+			expect(result).toBeNull();
+		});
+
+		it('multiplie les racines à coefficient : 2√3 × 3√2 → 6√6', () => {
+			const result = applyRule(
+				multiplyRadicals.rule,
+				multiply(
+					multiply(number('2'), sqrt(number('3')), 'implicit'),
+					multiply(number('3'), sqrt(number('2')), 'implicit'),
+					'cross'
+				)
+			);
+			expect(result).not.toBeNull();
+			expect(toLatex(result!)).toBe('6 \\sqrt{6}');
 		});
 
 		it('does NOT fire on x × √3 (left is not a √)', () => {

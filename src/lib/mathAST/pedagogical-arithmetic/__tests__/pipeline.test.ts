@@ -257,3 +257,94 @@ describe('addition de fractions — le pipeline ne doit pas cycler', () => {
 		expect(result.steps.length).toBeLessThan(50);
 	});
 });
+
+// =============================================================================
+// Produits de racines : le chemin doit être détaillé
+// =============================================================================
+
+describe('produit de racines — un pas à la fois', () => {
+	// `multiply-radicals` multipliait ET extrayait dans la même étape, si bien
+	// que √12 × √18 = 6√6 tombait d'un coup : l'élève devait calculer 216 puis
+	// le factoriser de tête. Deux chemins existent, et on prend le plus simple :
+	//
+	//  - produit = carré parfait  -> multiplier d'abord (on tombe sur un entier)
+	//  - sinon, si une racine se simplifie -> extraire d'abord (nombres petits)
+	//  - sinon -> multiplier (seul chemin possible)
+
+	const sequence = (expr: MathNode): string[] =>
+		generatePedagogicalArithmeticSteps(expr, { schoolLevel: 'college' }).steps.map(
+			(s) => `${toLatex(s.globalBefore)} = ${toLatex(s.globalAfter)}`
+		);
+
+	const racines = (a: string, b: string) => multiply(sqrt(number(a)), sqrt(number(b)), 'cross');
+
+	it('√2 × √8 passe par √16 (produit = carré parfait)', () => {
+		const etapes = sequence(racines('2', '8'));
+		expect(etapes).toHaveLength(2);
+		expect(etapes[0]).toContain('\\sqrt{16}');
+		expect(etapes[1]).toMatch(/= 4$/);
+	});
+
+	it('√50 × √2 passe par √100', () => {
+		const etapes = sequence(racines('50', '2'));
+		expect(etapes).toHaveLength(2);
+		expect(etapes[0]).toContain('\\sqrt{100}');
+		expect(etapes[1]).toMatch(/= 10$/);
+	});
+
+	it('√3 × √12 passe par √36', () => {
+		const etapes = sequence(racines('3', '12'));
+		expect(etapes[0]).toContain('\\sqrt{36}');
+		expect(etapes[etapes.length - 1]).toMatch(/= 6$/);
+	});
+
+	it('√2 × √6 passe par √12 (rien à extraire au départ)', () => {
+		const etapes = sequence(racines('2', '6'));
+		expect(etapes).toHaveLength(2);
+		expect(etapes[0]).toContain('\\sqrt{12}');
+		expect(etapes[1]).toContain('2 \\sqrt{3}');
+	});
+
+	it('√2 × √3 tient en une étape (rien à simplifier)', () => {
+		const etapes = sequence(racines('2', '3'));
+		expect(etapes).toHaveLength(1);
+		expect(etapes[0]).toContain('\\sqrt{6}');
+	});
+
+	it('√12 × √18 extrait d abord et NE passe PAS par √216', () => {
+		const etapes = sequence(racines('12', '18'));
+		// Le point de ce changement : ne jamais exiger de factoriser 216.
+		expect(etapes.join(' | ')).not.toContain('\\sqrt{216}');
+		// ⚠️ Sans cette borne, le test passerait sur le comportement FAUTIF :
+		// une étape unique `√12 × √18 = 6√6` ne contient pas non plus « √216 ».
+		expect(etapes.length).toBeGreaterThanOrEqual(2);
+		expect(etapes.join(' | ')).toContain('2 \\sqrt{3}');
+		expect(etapes.join(' | ')).toContain('3 \\sqrt{2}');
+		expect(etapes[etapes.length - 1]).toContain('6 \\sqrt{6}');
+	});
+
+	it('√8 × √27 extrait d abord', () => {
+		const etapes = sequence(racines('8', '27'));
+		expect(etapes.join(' | ')).not.toContain('\\sqrt{216}');
+		expect(etapes.length).toBeGreaterThanOrEqual(2);
+		expect(etapes.join(' | ')).toContain('2 \\sqrt{2}');
+		expect(etapes.join(' | ')).toContain('3 \\sqrt{3}');
+		expect(etapes[etapes.length - 1]).toContain('6 \\sqrt{6}');
+	});
+
+	// Aucune étape ne doit être un « On calcule » du repli : chaque passage
+	// mérite son explication.
+	it('aucune étape ne retombe sur evaluate-final', () => {
+		for (const [a, b] of [
+			['2', '8'],
+			['12', '18'],
+			['2', '6'],
+			['50', '2']
+		]) {
+			const regles = generatePedagogicalArithmeticSteps(racines(a, b), {
+				schoolLevel: 'college'
+			}).steps.map((s) => s.rule);
+			expect(regles).not.toContain('evaluate-final');
+		}
+	});
+});

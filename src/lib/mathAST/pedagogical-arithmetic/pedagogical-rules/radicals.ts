@@ -61,6 +61,37 @@ function bindingNode(bindings: MatchBindings, name: string): MathNode | undefine
 	return found as MathNode;
 }
 
+/**
+ * Lis un facteur de la forme `√r` ou `c√r` (c entier positif littéral).
+ * Rend `null` pour tout le reste.
+ */
+function asRadicalFactor(node: MathNode | undefined): { c: bigint; r: bigint } | null {
+	if (!node) return null;
+
+	const bare = asSqrtRadicand(node);
+	if (bare !== null) return { c: 1n, r: bare };
+
+	if (node.type !== 'multiplication') return null;
+	const left = node.left;
+	const right = node.right;
+	if (!isNumber(left) || !/^\d+$/.test(left.value)) return null;
+	const r = asSqrtRadicand(right);
+	if (r === null) return null;
+	const c = BigInt(left.value);
+	if (c <= 0n) return null;
+	return { c, r };
+}
+
+/** `true` si `√n` se simplifie tout seul (n a un facteur carré non trivial). */
+function radicandSimplifies(n: bigint): boolean {
+	return simplifyRadical(n, 2n).coefficient !== 1n;
+}
+
+/** `true` si `n` est un carré parfait — `√n` est alors un entier. */
+function isPerfectSquare(n: bigint): boolean {
+	return simplifyRadical(n, 2n).radicand === 1n;
+}
+
 /** Build `c · √r` (cross-style multiplication). When `c === 1n`, returns `√r`. */
 function coefficientTimesSqrt(c: bigint, r: bigint): MathNode {
 	if (c === 1n) return sqrt(number(r.toString()));
@@ -120,22 +151,40 @@ export const extractPerfectSquare: PedagogicalArithmeticRule = {
 // =============================================================================
 
 /**
- * `√a × √b → c√r` with `c² · r = a · b` and `r ≥ 1`. Coefficient extraction
- * happens here so that `√2 × √8 → √16 → 4` directly without a separate
- * extract step.
+ * `c√a × d√b → (cd)√(ab)`, **sans extraire** le carré parfait : l'extraction
+ * est une étape à part (`extract-perfect-square`), pour que l'élève voie
+ * `√2 × √8 = √16` puis `√16 = 4` au lieu de `√2 × √8 = 4` d'un bloc.
+ *
+ * Deux chemins mènent au résultat, et on prend le plus simple selon le cas :
+ *
+ * 1. **produit = carré parfait** → multiplier d'abord. On tombe sur un entier,
+ *    c'est le chemin qui « paie » : `√2 × √8 = √16 = 4`.
+ * 2. **sinon, si une des racines se simplifie** → on ne multiplie PAS, on rend
+ *    la main à `extract-perfect-square`. Sans ça, `√12 × √18` obligerait à
+ *    calculer 216 puis à le factoriser de tête, alors que `2√3 × 3√2 = 6√6`
+ *    ne demande que des petits nombres.
+ * 3. **sinon** → multiplier, c'est le seul chemin : `√2 × √6 = √12`.
  */
 function applyMultiplyRadicals(bindings: MatchBindings): MathNode | null {
 	const left = bindingNode(bindings, 'l');
 	const right = bindingNode(bindings, 'r');
 	if (!left || !right) return null;
-	const a = asSqrtRadicand(left);
-	const b = asSqrtRadicand(right);
-	if (a === null || b === null) return null;
-	const product = a * b;
+	const lf = asRadicalFactor(left);
+	const rf = asRadicalFactor(right);
+	if (!lf || !rf) return null;
+
+	const product = lf.r * rf.r;
 	if (product < 1n) return null;
-	if (product === 1n) return number('1');
-	const result = simplifyRadical(product, 2n);
-	return coefficientTimesSqrt(result.coefficient, result.radicand);
+
+	// Cas 2 : une racine se simplifie et le produit n'est pas un carré parfait
+	// → laisser l'extraction passer devant.
+	if (!isPerfectSquare(product) && (radicandSimplifies(lf.r) || radicandSimplifies(rf.r))) {
+		return null;
+	}
+
+	const coefficient = lf.c * rf.c;
+	if (product === 1n) return number(coefficient.toString());
+	return coefficientTimesSqrt(coefficient, product);
 }
 
 export const multiplyRadicals: PedagogicalArithmeticRule = {
@@ -157,7 +206,7 @@ export const multiplyRadicals: PedagogicalArithmeticRule = {
 	},
 	explanations: {
 		college: () =>
-			"Pour deux nombres positifs a et b, √a × √b = √(a × b). On extrait ensuite l'éventuel carré parfait."
+			'Pour deux nombres positifs a et b, √a × √b = √(a × b). Les coefficients devant les racines se multiplient entre eux.'
 	}
 };
 
