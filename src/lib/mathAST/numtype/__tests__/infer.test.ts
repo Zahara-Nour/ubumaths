@@ -5,6 +5,8 @@
 import { describe, it, expect } from 'vitest';
 import { parseLatex } from '../../parser';
 import { inferType } from '../infer';
+import { isSubtype } from '../algebra';
+import { isRationalType } from '../predicates';
 import type { TypeContext } from '../types';
 
 describe('inferType - literals', () => {
@@ -21,10 +23,15 @@ describe('inferType - literals', () => {
 			expect(inferType(parseLatex('100.00')).base).toBe('integer');
 		});
 
-		it('should infer real for non-integer decimals', () => {
-			expect(inferType(parseLatex('3.14')).base).toBe('real');
-			expect(inferType(parseLatex('1.5')).base).toBe('real');
-			expect(inferType(parseLatex('0.1')).base).toBe('real');
+		it('should infer decimal for non-integer decimals', () => {
+			// Un nombre à virgule FINIE est décimal, donc rationnel — et non
+			// « réel », ce qui le rendait incomparable à ℚ. Le module se
+			// contredisait lui-même : `format-fr.ts` donne déjà `0.5` en exemple
+			// de nombre rationnel.
+			expect(inferType(parseLatex('3.14')).base).toBe('decimal');
+			expect(inferType(parseLatex('1.5')).base).toBe('decimal');
+			expect(inferType(parseLatex('0.1')).base).toBe('decimal');
+			expect(inferType(parseLatex('-2.5')).base).toBe('decimal');
 		});
 
 		it('should track sign information', () => {
@@ -84,8 +91,9 @@ describe('inferType - arithmetic', () => {
 			expect(inferType(parseLatex('2 + \\frac{1}{2}')).base).toBe('rational');
 		});
 
-		it('should return real for integer + real', () => {
-			expect(inferType(parseLatex('2 + 3.14')).base).toBe('real');
+		it('should return decimal for integer + decimal', () => {
+			// 2 + 3,14 = 5,14 : un décimal, pas un « réel » quelconque.
+			expect(inferType(parseLatex('2 + 3.14')).base).toBe('decimal');
 		});
 
 		it('should return real for algebraic + transcendental', () => {
@@ -247,5 +255,76 @@ describe('inferType - caching', () => {
 		const ctx2: TypeContext = { variables: new Map([['x', 'rational']]) };
 		expect(inferType(node, ctx1).base).toBe('integer');
 		expect(inferType(node, ctx2).base).toBe('rational');
+	});
+});
+
+// =============================================================================
+// La chaîne ℕ ⊂ ℤ ⊂ 𝔻 ⊂ ℚ (regression)
+// =============================================================================
+
+describe('le décimal s insère entre l entier et le rationnel', () => {
+	it('un décimal fini est décimal, pas réel', () => {
+		expect(inferType(parseLatex('2.5')).base).toBe('decimal');
+	});
+
+	it('un entier écrit avec des décimales reste entier', () => {
+		expect(inferType(parseLatex('1.0')).base).toBe('integer');
+		expect(inferType(parseLatex('7')).base).toBe('integer');
+	});
+
+	it('une fraction reste rationnelle', () => {
+		expect(inferType(parseLatex('\\frac{3}{4}')).base).toBe('rational');
+	});
+
+	it('les racines et pi ne bougent pas', () => {
+		expect(inferType(parseLatex('\\sqrt{2}')).base).toBe('irrational_algebraic');
+		expect(inferType(parseLatex('\\pi')).base).toBe('transcendental');
+	});
+
+	it('la chaîne d inclusions est respectée', () => {
+		expect(isSubtype('integer', 'decimal')).toBe(true);
+		expect(isSubtype('decimal', 'rational')).toBe(true);
+		expect(isSubtype('decimal', 'real')).toBe(true);
+		// et pas l'inverse
+		expect(isSubtype('decimal', 'integer')).toBe(false);
+		expect(isSubtype('rational', 'decimal')).toBe(false);
+	});
+
+	// C'est la conséquence qui compte : `inferType` n'a qu'un consommateur en
+	// production, le moteur de contraintes du pattern matcher. Une règle
+	// contrainte aux rationnels ne mordait pas sur 2,5.
+	it('2,5 satisfait une contrainte de rationalité', () => {
+		expect(isRationalType(parseLatex('2.5'))).toBe(true);
+		expect(isRationalType(parseLatex('\\sqrt{2}'))).toBe(false);
+	});
+});
+
+// =============================================================================
+// Les opérations sur les décimaux (regression #343 : élargir une union)
+// =============================================================================
+
+describe('les opérations savent qu un décimal est rationnel', () => {
+	// ⚠️ Ces cas sont l'angle mort de l'élargissement d'union : les règles
+	// testaient `base === 'rational'` en égalité STRICTE. Un décimal y filait
+	// sans mordre, et tombait dans la branche générique.
+
+	it('un quotient de décimaux est rationnel, pas décimal', () => {
+		// 2,5 / 3 = 0,8333… : rationnel, et surtout PAS décimal. La branche
+		// générique (`join`) aurait conclu « décimal », ce qui est faux.
+		expect(inferType(parseLatex('\\frac{2.5}{3}')).base).toBe('rational');
+		expect(inferType(parseLatex('\\frac{1}{3}')).base).toBe('rational');
+	});
+
+	it('une puissance entière d un décimal reste au plus rationnelle', () => {
+		const t = inferType(parseLatex('2.5^2')).base;
+		expect(['decimal', 'rational']).toContain(t);
+	});
+
+	it('une somme de décimaux reste décimale', () => {
+		expect(inferType(parseLatex('2.5 + 1.25')).base).toBe('decimal');
+	});
+
+	it('un produit de décimaux reste décimal', () => {
+		expect(inferType(parseLatex('2.5 \\times 4')).base).toBe('decimal');
 	});
 });

@@ -146,7 +146,9 @@ describe('meet (greatest lower bound)', () => {
 
 describe('utility functions', () => {
 	it('getParents should return direct parents', () => {
-		expect(getParents('integer')).toEqual(['rational']);
+		// ℕ ⊂ ℤ ⊂ 𝔻 ⊂ ℚ : le décimal s'intercale entre l'entier et le rationnel.
+		expect(getParents('integer')).toEqual(['decimal']);
+		expect(getParents('decimal')).toEqual(['rational']);
 		expect(getParents('rational')).toEqual(['algebraic']);
 		expect(getParents('algebraic')).toEqual(['real']);
 		expect(getParents('transcendental')).toEqual(['real']);
@@ -155,11 +157,16 @@ describe('utility functions', () => {
 	});
 
 	it('getAncestors should return all ancestors', () => {
+		expect(getAncestors('integer')).toContain('decimal');
 		expect(getAncestors('integer')).toContain('rational');
 		expect(getAncestors('integer')).toContain('algebraic');
 		expect(getAncestors('integer')).toContain('real');
 		expect(getAncestors('integer')).toContain('complex');
-		expect(getAncestors('integer').size).toBe(4);
+		expect(getAncestors('integer').size).toBe(5);
+
+		expect(getAncestors('decimal')).toContain('rational');
+		expect(getAncestors('decimal')).not.toContain('integer');
+		expect(getAncestors('decimal').size).toBe(4);
 	});
 
 	it('isLeafType should identify leaf types', () => {

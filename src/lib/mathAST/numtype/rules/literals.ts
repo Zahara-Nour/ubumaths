@@ -149,8 +149,11 @@ export function inferNumberType(node: NumberNode): MathType {
 	const endpoint = numericNode(value);
 	const bounds: IntervalDomain = intervalSet([closedInterval(endpoint, endpoint)]);
 
+	// Un littéral à virgule finie est DÉCIMAL (donc rationnel), pas « réel » :
+	// `2.5` vaut 5/2. Le classer réel le rendait incomparable à ℚ, si bien
+	// qu'une règle de réécriture contrainte aux rationnels ne mordait pas.
 	return {
-		base: isInteger ? 'integer' : 'real',
+		base: isInteger ? 'integer' : 'decimal',
 		sign,
 		finite: true,
 		...(parity !== undefined && { parity }),

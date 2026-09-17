@@ -187,7 +187,7 @@ function inferIntegerExponentType(
 		}
 
 		// rational ^ positive_integer = rational
-		if (baseType.base === 'rational') {
+		if (isSubtype(baseType.base, 'rational')) {
 			let sign: SignInfo | undefined;
 			if (baseType.sign === 'positive') {
 				sign = 'positive';
@@ -228,7 +228,7 @@ function inferIntegerExponentType(
 		}
 
 		// rational ^ negative_integer = rational
-		if (baseType.base === 'rational') {
+		if (isSubtype(baseType.base, 'rational')) {
 			return { base: 'rational', finite: true };
 		}
 
@@ -265,7 +265,7 @@ function inferSymbolicIntegerExponentType(baseType: MathType, exponentType: Math
 		return { base: 'integer', ...(sign !== undefined && { sign }), finite: true };
 	}
 
-	if (baseType.base === 'rational') {
+	if (isSubtype(baseType.base, 'rational')) {
 		let sign: SignInfo | undefined;
 		if (baseType.sign === 'positive') {
 			sign = 'positive';
@@ -344,7 +344,7 @@ function inferRationalExponentType(
 		}
 
 		// Positive rational base with rational exponent
-		if (baseType.base === 'rational') {
+		if (isSubtype(baseType.base, 'rational')) {
 			return { base: 'algebraic', sign: 'positive', finite: true };
 		}
 
@@ -439,7 +439,7 @@ export function inferSqrtType(operandType: MathType, operandValue?: number): Mat
 	}
 
 	// sqrt of positive rational
-	if (operandType.base === 'rational' && operandType.sign === 'positive') {
+	if (isSubtype(operandType.base, 'rational') && operandType.sign === 'positive') {
 		return { base: 'algebraic', sign: 'positive', finite: true, ...(bounds && { bounds }) };
 	}
 

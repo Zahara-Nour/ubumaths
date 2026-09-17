@@ -118,7 +118,19 @@ describe('describeTypeDetailed', () => {
 		expect(desc.id).toBe('rational');
 		expect(desc.nameFr).toBe('Rationnel');
 		expect(desc.examples).toContain('1/2');
+		// `children` liste les enfants DIRECTS : depuis l'ajout de 𝔻, l'entier
+		// n'est plus fils du rationnel mais du décimal (ℤ ⊂ 𝔻 ⊂ ℚ).
+		expect(desc.children).toContain('decimal');
+	});
+
+	it('should return full description for decimal', () => {
+		const type: MathType = { base: 'decimal' };
+		const desc = describeTypeDetailed(type);
+
+		expect(desc.id).toBe('decimal');
+		expect(desc.nameFr).toBe('Décimal');
 		expect(desc.children).toContain('integer');
+		expect(desc.parents).toContain('rational');
 	});
 
 	it('should return full description for complex', () => {
@@ -150,6 +162,7 @@ describe('getTypeName', () => {
 	it('should return French name for all types', () => {
 		const names: Record<NumericType, string> = {
 			integer: 'Entier',
+			decimal: 'Décimal',
 			rational: 'Rationnel',
 			irrational_algebraic: 'Algébrique irrationnel',
 			algebraic: 'Algébrique',
@@ -173,6 +186,7 @@ describe('getTypeNameWithArticle', () => {
 	it('should return type name with article for all types', () => {
 		const namesWithArticle: Record<NumericType, string> = {
 			integer: 'un entier',
+			decimal: 'un décimal',
 			rational: 'un rationnel',
 			irrational_algebraic: 'un algébrique irrationnel',
 			algebraic: 'un algébrique',
