@@ -28,6 +28,13 @@ afterEach(() => {
 	cible = null;
 });
 
+function deskMonte(desk: CalcDesk): HTMLElement {
+	cible = document.createElement('div');
+	document.body.appendChild(cible);
+	monte = mount(CalculView, { target: cible, props: { desk } });
+	return cible;
+}
+
 function afficher(saisie: string): HTMLElement {
 	const atelier = new Atelier();
 	const desk = new CalcDesk(atelier);
@@ -108,5 +115,30 @@ describe('le dépliage des étapes', () => {
 		const racine = afficher('.résoudre x^3-x=0');
 
 		expect(racine.textContent).not.toContain('Comment ?');
+	});
+});
+
+describe('le bouton « Résoudre » du panneau', () => {
+	/**
+	 * ⚠️ Le panneau et la saisie écrivent dans le MÊME historique, mais par deux
+	 * chemins distincts (`runFromPanel` / `submit`). Que la commande déplie ses
+	 * étapes ne dit rien du bouton.
+	 */
+	it('sa ligne déplie les étapes comme celle d’une commande', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2 - 3x + 2' });
+		const desk = new CalcDesk(atelier);
+		desk.runFromPanel('solve', 'f');
+
+		const racine = deskMonte(desk);
+
+		expect(racine.textContent).toContain('Comment ?');
+		expect(racine.textContent).not.toContain('Équation du second degré');
+
+		cliquer(bouton(racine, 'Comment ?'));
+		await tick();
+
+		expect(racine.textContent).toContain('Équation du second degré');
+		expect(racine.textContent).toContain('On calcule le discriminant');
 	});
 });
