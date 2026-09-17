@@ -273,6 +273,11 @@ export {
 export { LinearEquationRenderer, formatTransformationLines } from './linear-renderer';
 export { QuadraticEquationRenderer } from './quadratic-renderer';
 
+// Le tableau de signes comme DONNÉE : le `\begin{array}` et le tableau de
+// l'application en dérivent tous deux, pour qu'ils ne divergent jamais.
+export { quadraticSignTableGrid, rationalSignTableGrid } from './quadratic-renderer';
+export type { SignMark, SignTableGrid, SignTableRow } from './sign-table-grid';
+
 export type {
 	EquationOperation,
 	EquationStep,

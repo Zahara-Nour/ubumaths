@@ -26,6 +26,8 @@
 <script lang="ts">
 	import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
+	import { signTableNode } from '$lib/ubumark/builders/sign-table';
 
 	interface Props {
 		steps: readonly RenderedStep[];
@@ -42,7 +44,17 @@
 			<span class="step-title">{step.title}</span>
 		</div>
 
-		{#if step.expressionLatex}
+		<!--
+			⚠️ Un tableau de signes ne passe PAS par le LaTeX. Les renderers le
+			composent en `\begin{array}` avec des `\hline`, que MathLive ne sait
+			pas rendre — il affichait une boîte d'erreur. La grille, elle, se
+			dessine.
+		-->
+		{#if step.signTable}
+			<div class="step-expression step-table">
+				<VariationTable node={signTableNode(step.signTable)} />
+			</div>
+		{:else if step.expressionLatex}
 			<div class="step-expression">
 				<MarkdownRenderer content={`$$${step.expressionLatex}$$`} />
 			</div>
@@ -110,6 +122,12 @@
 
 	.step-title {
 		font-weight: 500;
+	}
+
+	/* Un tableau déborde en largeur bien plus qu'une formule : il défile dans
+	   son cadre plutôt que d'élargir la page. */
+	.step-table {
+		overflow-x: auto;
 	}
 
 	.step-expression {

@@ -22,6 +22,7 @@ import type {
 import { toLatex } from '../latex-generator';
 import { computeNumericValue } from '../solve/numeric-value';
 import type { MathNode } from '../types';
+import type { SignMark, SignTableGrid, SignTableRow } from './sign-table-grid';
 import type { EquationStep, EquationOperation, QuadraticSchoolLevel } from './types';
 
 // =============================================================================
@@ -337,6 +338,14 @@ const EXPLANATIONS: Record<
 	}
 };
 
+/** La grille du tableau de signes que porte l'étape, s'il y en a un. */
+function signTableOf(step: EquationStep): SignTableGrid | null {
+	const op = step.operation;
+	if (op?.kind === 'quadratic-sign-table') return quadraticSignTableGrid(op);
+	if (op?.kind === 'rational-sign-table') return rationalSignTableGrid(op);
+	return null;
+}
+
 // =============================================================================
 // Renderer
 // =============================================================================
@@ -355,6 +364,11 @@ export class QuadraticEquationRenderer
 		const expressionLatex = formatExpressionLatex(step);
 		const renderedSubSteps = step.subSteps?.map((s) => this.render(s, options));
 
+		// ⚠️ Le tableau de signes voyage aussi en DONNÉES : son `\begin{array}`
+		// n'est affichable par aucun composant du dépôt (MathLive ne connaît pas
+		// l'environnement). `VariationTable.svelte`, lui, dessine la grille.
+		const signTable = signTableOf(step);
+
 		const base: RenderedStep = {
 			id: step.id,
 			rule: step.rule,
@@ -362,6 +376,7 @@ export class QuadraticEquationRenderer
 			...(explanation !== undefined && { explanation }),
 			expressionLatex,
 			schoolLevel: level,
+			...(signTable !== null && { signTable }),
 			...(renderedSubSteps !== undefined &&
 				renderedSubSteps.length > 0 && { subSteps: renderedSubSteps })
 		};
@@ -656,58 +671,98 @@ function formatSolveEachFactor(op: EquationOperation & { kind: 'solve-each-facto
  * - 1 root (Δ = 0)  : signe(a), 0, signe(a)
  * - 0 roots (Δ < 0) : signe(a) on the whole line
  */
-function formatSignTable(op: EquationOperation & { kind: 'quadratic-sign-table' }): string {
+/**
+ * Build the quadratic sign table as DATA.
+ *
+ * Sign rules :
+ * - 2 roots (Δ > 0) : signe(a), 0, signe(−a), 0, signe(a)
+ * - 1 root (Δ = 0)  : signe(a), 0, signe(a)
+ * - 0 roots (Δ < 0) : signe(a) on the whole line
+ *
+ * ⚠️ Cette fonction est la SEULE à décider des signes du second degré : le
+ * `\begin{array}` et le tableau de l'application en dérivent tous deux.
+ */
+export function quadraticSignTableGrid(
+	op: EquationOperation & { kind: 'quadratic-sign-table' }
+): SignTableGrid | null {
 	const aValue = computeNumericValueLite(op.a);
-	const aSign = aValue !== null && aValue < 0 ? '-' : '+';
-	const oppSign = aSign === '+' ? '-' : '+';
-	const polyLabel = formatQuadraticPolynomialLabel(op);
+	const aSign: '+' | '-' = aValue !== null && aValue < 0 ? '-' : '+';
+	const oppSign: '+' | '-' = aSign === '+' ? '-' : '+';
+	const label = formatQuadraticPolynomialLabel(op);
 
 	const sortedRoots = sortRoots(op.roots);
-	const numRoots = sortedRoots.length;
 
 	// Defensive: a quadratic has at most 2 distinct roots. If a future caller
-	// passes more (degree-3 extension, internal bug), fall back to the row of
-	// roots without trying to mis-format a misdimensioned table.
-	if (numRoots > 2) {
-		return `\\text{tableau de signes (${numRoots} racines, hors V1)}`;
-	}
+	// passes more (degree-3 extension, internal bug), refuse rather than
+	// mis-dimension a table.
+	if (sortedRoots.length > 2) return null;
 
-	if (numRoots === 0) {
-		// Δ < 0 : single sign over all ℝ
-		return [
-			'\\begin{array}{|c|ccc|}',
-			'\\hline',
-			`${op.variable} & -\\infty & & +\\infty \\\\`,
-			'\\hline',
-			`${polyLabel} & & ${aSign} & \\\\`,
-			'\\hline',
-			'\\end{array}'
-		].join(' ');
-	}
+	const points = ['-\\infty', ...sortedRoots.map((r) => fmt(r)), '+\\infty'];
+	const intervals: ('+' | '-')[] =
+		sortedRoots.length === 2
+			? [aSign, oppSign, aSign]
+			: sortedRoots.length === 1
+				? [aSign, aSign]
+				: [aSign];
+	const marks: (SignMark | null)[] = [null, ...sortedRoots.map((): SignMark => 'zero'), null];
 
-	if (numRoots === 1) {
-		// Δ = 0 : signe(a), 0, signe(a)
-		const r0 = fmt(sortedRoots[0]);
-		return [
-			'\\begin{array}{|c|ccccc|}',
-			'\\hline',
-			`${op.variable} & -\\infty & & ${r0} & & +\\infty \\\\`,
-			'\\hline',
-			`${polyLabel} & & ${aSign} & 0 & ${aSign} & \\\\`,
-			'\\hline',
-			'\\end{array}'
-		].join(' ');
-	}
+	return { variable: op.variable, points, rows: [{ label, intervals, marks }] };
+}
 
-	// numRoots === 2 : Δ > 0
-	const r1 = fmt(sortedRoots[0]);
-	const r2 = fmt(sortedRoots[1]);
+/**
+ * Format the quadratic sign table as a LaTeX `\begin{array}` block.
+ *
+ * Layout :
+ * - Header row with `x`, then alternating roots and the labels `-\infty` /
+ *   `+\infty` at the boundaries.
+ * - Body row with the polynomial label on the left, then alternating signs
+ *   (`+`, `-`, `0`) on the intervals and roots.
+ */
+function formatSignTable(op: EquationOperation & { kind: 'quadratic-sign-table' }): string {
+	const grid = quadraticSignTableGrid(op);
+	if (grid === null) {
+		return `\\text{tableau de signes (${op.roots.length} racines, hors V1)}`;
+	}
+	return formatGridInline(grid);
+}
+
+/**
+ * Render a one-row grid as the historical single-line `\begin{array}`.
+ *
+ * Kept byte-identical to what the quadratic formatter emitted before the grid
+ * was extracted — `__tests__/sign-table-grid.test.ts` pins it.
+ */
+function formatGridInline(grid: SignTableGrid): string {
+	const row = grid.rows[0];
+	const xCells: string[] = [grid.variable];
+	const bodyCells: string[] = [row.label];
+
+	grid.points.forEach((point, index) => {
+		if (index > 0) {
+			xCells.push('');
+			bodyCells.push(row.intervals[index - 1]);
+		}
+		xCells.push(point);
+		const mark = row.marks[index];
+		// Les bornes infinies ne portent jamais rien ; un `zero` s'écrit « 0 ».
+		bodyCells.push(
+			index === 0 || index === grid.points.length - 1 ? '' : mark === 'zero' ? '0' : ''
+		);
+	});
+
+	// Une case vide ne produit qu'UNE espace entre ses deux `&` : la forme
+	// historique s'écrivait `& &`, et `__tests__/sign-table-grid.test.ts` la
+	// fige au caractère près.
+	const line = (cells: readonly string[]): string =>
+		cells.join(' & ').replace(/ {2,}/g, ' ').trimEnd();
+
+	const columns = xCells.length;
 	return [
-		'\\begin{array}{|c|ccccccc|}',
+		`\\begin{array}{|c|${'c'.repeat(columns - 1)}|}`,
 		'\\hline',
-		`${op.variable} & -\\infty & & ${r1} & & ${r2} & & +\\infty \\\\`,
+		`${line(xCells)} \\\\`,
 		'\\hline',
-		`${polyLabel} & & ${aSign} & 0 & ${oppSign} & 0 & ${aSign} & \\\\`,
+		`${line(bodyCells)} \\\\`,
 		'\\hline',
 		'\\end{array}'
 	].join(' ');
@@ -887,7 +942,17 @@ function formatConcludeRational(
  * The quotient row is the product of the P and Q signs per interval, with
  * `0` at numerator roots and `||` (double-bar, undefined) at denominator zeros.
  */
-function formatRationalSignTable(op: EquationOperation & { kind: 'rational-sign-table' }): string {
+/**
+ * Build the rational sign table as DATA.
+ *
+ * ⚠️ Cette fonction est la SEULE à décider des signes d'un quotient : le
+ * `\\begin{array}` et le tableau de l'application en dérivent tous deux.
+ * Rend `null` quand un point critique n'est pas évaluable numériquement — le
+ * tableau serait structurellement faux.
+ */
+export function rationalSignTableGrid(
+	op: EquationOperation & { kind: 'rational-sign-table' }
+): SignTableGrid | null {
 	type Critical = {
 		node: MathNode;
 		value: number;
@@ -903,14 +968,10 @@ function formatRationalSignTable(op: EquationOperation & { kind: 'rational-sign-
 	//    polynomial's sign does not change across it ; the renderer skips the
 	//    sign flip for even multiplicities.
 	const criticals: Critical[] = [];
-	let droppedCount = 0;
 	for (let i = 0; i < op.numeratorRoots.length; i++) {
 		const r = op.numeratorRoots[i];
 		const v = computeNumericValue(r);
-		if (v === null) {
-			droppedCount++;
-			continue;
-		}
+		if (v === null) return null;
 		criticals.push({
 			node: r,
 			value: v,
@@ -923,10 +984,7 @@ function formatRationalSignTable(op: EquationOperation & { kind: 'rational-sign-
 	for (let i = 0; i < op.denominatorZeros.length; i++) {
 		const z = op.denominatorZeros[i];
 		const v = computeNumericValue(z);
-		if (v === null) {
-			droppedCount++;
-			continue;
-		}
+		if (v === null) return null;
 		const m = op.denominatorMultiplicities[i] ?? 1;
 		// Merge if a root and a zero coincide (rare but possible after canon).
 		const same = criticals.find((c) => Math.abs(c.value - v) < 1e-9);
@@ -938,13 +996,6 @@ function formatRationalSignTable(op: EquationOperation & { kind: 'rational-sign-
 		}
 	}
 	criticals.sort((a, b) => a.value - b.value);
-
-	// Defensive : if any critical point couldn't be evaluated to a numeric value
-	// (e.g. parametric roots that slipped past the upstream guards), the table
-	// would be structurally wrong. Render a sentinel instead.
-	if (droppedCount > 0) {
-		return `\\text{tableau de signes (${droppedCount} valeurs symboliques non évaluables, hors V1)}`;
-	}
 
 	// 2. Determine starting sign (at -∞) for P and Q.
 	// `op.degP`/`op.degQ` are the actual polynomial degrees, distinct from the
@@ -962,49 +1013,97 @@ function formatRationalSignTable(op: EquationOperation & { kind: 'rational-sign-
 	let qSign = signAtMinusInf(qLeadSign, op.degQ);
 	const flip = (s: '+' | '-'): '+' | '-' => (s === '+' ? '-' : '+');
 
-	// 3. Build each row column-by-column.
-	//    Layout : `x | -∞ | gap | c1 | gap | c2 | ... | +∞`
-	//    where each gap shows the sign on that interval, and each ci shows
-	//    `0` (root of that row's polynomial) or `||` (denom zero in P/Q row).
+	// 3. Walk the critical points, recording the sign on each interval and the
+	//    mark carried at each point.
 	const variable = op.variable;
-	const xRow: string[] = [variable, '-\\infty'];
-	const pRow: string[] = ['P(' + variable + ')', ''];
-	const qRow: string[] = ['Q(' + variable + ')', ''];
-	const fracRow: string[] = [`\\dfrac{P(${variable})}{Q(${variable})}`, ''];
+	const points: string[] = ['-\\infty'];
+	const pIntervals: ('+' | '-')[] = [];
+	const qIntervals: ('+' | '-')[] = [];
+	const fIntervals: ('+' | '-')[] = [];
+	const pMarks: (SignMark | null)[] = [null];
+	const qMarks: (SignMark | null)[] = [null];
+	const fMarks: (SignMark | null)[] = [null];
 
 	for (const c of criticals) {
-		// Interval cell : current signs
-		xRow.push('');
-		pRow.push(pSign);
-		qRow.push(qSign);
-		fracRow.push(quotientSign(pSign, qSign));
-		// Critical point cell : the value
-		xRow.push(fmt(c.node));
-		pRow.push(c.isP ? '0' : '');
-		qRow.push(c.isQ ? '0' : '');
-		// Quotient row : `||` if denom zero, `0` if num root only, else current sign
-		if (c.isQ) fracRow.push('||');
-		else if (c.isP) fracRow.push('0');
-		else fracRow.push('');
+		pIntervals.push(pSign);
+		qIntervals.push(qSign);
+		fIntervals.push(quotientSign(pSign, qSign));
+
+		points.push(fmt(c.node));
+		pMarks.push(c.isP ? 'zero' : null);
+		qMarks.push(c.isQ ? 'zero' : null);
+		// Le quotient porte une double barre là où Q s'annule : la valeur est
+		// interdite, pas nulle.
+		fMarks.push(c.isQ ? 'bar' : c.isP ? 'zero' : null);
+
 		// Flip signs as we cross the critical point — only at odd-multiplicity
 		// roots/zeros (double roots are tangents and don't change sign).
 		if (c.isP && c.multP % 2 === 1) pSign = flip(pSign);
 		if (c.isQ && c.multQ % 2 === 1) qSign = flip(qSign);
 	}
-	// Final interval to +∞
-	xRow.push('');
-	pRow.push(pSign);
-	qRow.push(qSign);
-	fracRow.push(quotientSign(pSign, qSign));
-	xRow.push('+\\infty');
-	pRow.push('');
-	qRow.push('');
-	fracRow.push('');
 
-	// 4. Assemble LaTeX : `\begin{array}{|c|...|}` with 1 + 2*N + 1 columns.
-	const numColumns = xRow.length;
+	// Final interval to +∞
+	pIntervals.push(pSign);
+	qIntervals.push(qSign);
+	fIntervals.push(quotientSign(pSign, qSign));
+	points.push('+\\infty');
+	pMarks.push(null);
+	qMarks.push(null);
+	fMarks.push(null);
+
+	const rows: SignTableRow[] = [
+		{ label: `P(${variable})`, intervals: pIntervals, marks: pMarks },
+		{ label: `Q(${variable})`, intervals: qIntervals, marks: qMarks },
+		{
+			label: `\\dfrac{P(${variable})}{Q(${variable})}`,
+			intervals: fIntervals,
+			marks: fMarks
+		}
+	];
+
+	return { variable, points, rows };
+}
+
+/**
+ * Format the rational sign table as a LaTeX `\begin{array}` block.
+ *
+ * ⚠️ La forme produite ici est figée au caractère près par
+ * `__tests__/sign-table-grid.test.ts`, spécification de colonnes comprise —
+ * elle compte une colonne de moins qu'il n'y a de cases, et c'était déjà le
+ * cas avant l'extraction de la grille.
+ */
+function formatRationalSignTable(op: EquationOperation & { kind: 'rational-sign-table' }): string {
+	const grid = rationalSignTableGrid(op);
+	if (grid === null) {
+		return '\\text{tableau de signes (valeurs symboliques non évaluables, hors V1)}';
+	}
+
+	// Reconstituer les lignes plates attendues par le format historique :
+	// `[étiquette, '', signe, marque, signe, …, signe, '']`.
+	const flatten = (label: string, cells: readonly string[]): string[] => [label, ...cells];
+
+	const xCells: string[] = [];
+	const bodyCells: string[][] = grid.rows.map(() => []);
+	grid.points.forEach((point, index) => {
+		if (index > 0) {
+			xCells.push('');
+			grid.rows.forEach((row, r) => bodyCells[r].push(row.intervals[index - 1]));
+		}
+		xCells.push(point);
+		grid.rows.forEach((row, r) => {
+			const mark = row.marks[index];
+			bodyCells[r].push(mark === 'zero' ? '0' : mark === 'bar' ? '||' : '');
+		});
+	});
+
+	const lines = [
+		flatten(grid.variable, xCells),
+		...grid.rows.map((row, r) => flatten(row.label, bodyCells[r]))
+	];
+
+	const numColumns = lines[0].length;
 	const colSpec = '|c|' + 'c'.repeat(numColumns - 2) + '|';
-	const rows = [xRow, pRow, qRow, fracRow].map((r) => r.join(' & ')).join(' \\\\\n\\hline\n');
+	const rows = lines.map((r) => r.join(' & ')).join(' \\\\\n\\hline\n');
 	return `\\begin{array}{${colSpec}}\n\\hline\n${rows} \\\\\n\\hline\n\\end{array}`;
 }
 

@@ -86,24 +86,34 @@ describe('les inéquations se composent aussi', () => {
 	 * Les inéquations amènent des commandes que les équations n'employaient
 	 * pas : `\leqslant`, `\geqslant`, `\cup`, `\infty`, et les crochets
 	 * d'intervalle. Aucun test serveur ne peut dire si MathLive les connaît.
+	 *
+	 * ⚠️ **Une étape qui porte une grille ne passe PAS par le LaTeX.** Son
+	 * `expressionLatex` reste un `\begin{array}`, gardé pour les exports qui
+	 * composent les tableaux — MathLive, lui, n'en veut pas, et c'est
+	 * `VariationTable.svelte` qui dessine la grille. Ces étapes-là sont
+	 * couvertes par `tableau-signes.svelte.test.ts`, qui monte le composant.
 	 */
 	it('premier degré, second degré et rationnelle', () => {
-		for (const source of [
-			'2x+1<7',
-			'-2x>=6',
-			'x^2-4>=0',
-			'x^2-3x+2>0',
-			'(x-1)/(x+2)>0',
-			'1/(x-1)<0'
-		]) {
+		const cas = ['2x+1<7', '-2x>=6', 'x^2-4>=0', 'x^2-3x+2>0', '(x-1)/(x+2)>0', '1/(x-1)<0'];
+		let grilles = 0;
+
+		for (const source of cas) {
 			const solved = solveSteps(source);
 			expect(solved, source).not.toBeNull();
 
 			expect(markupOf(solved!.answer), `réponse de ${source}`).not.toContain(ERROR_MARKER);
 			for (const step of solved!.steps) {
+				if (step.signTable !== undefined) {
+					grilles++;
+					continue;
+				}
 				if (step.expressionLatex === undefined) continue;
 				expect(markupOf(step.expressionLatex), `étape de ${source}`).not.toContain(ERROR_MARKER);
 			}
 		}
+
+		// Sans ce compte, la boucle ci-dessus se viderait en silence le jour où
+		// les grilles cesseraient d'être produites.
+		expect(grilles).toBe(3);
 	});
 });
