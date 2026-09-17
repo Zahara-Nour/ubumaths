@@ -40,7 +40,7 @@ describe('le LaTeX des tableaux de signes ne bouge pas', () => {
 
 	it('rationnelle simple', () => {
 		expect(tableLatexOf('(x-1)/(x+2)>0')).toMatchInlineSnapshot(`
-			"\\begin{array}{|c|cccccc|}
+			"\\begin{array}{|c|ccccccc|}
 			\\hline
 			x & -\\infty &  & -2 &  & 1 &  & +\\infty \\\\
 			\\hline
@@ -56,7 +56,7 @@ describe('le LaTeX des tableaux de signes ne bouge pas', () => {
 
 	it('rationnelle sans racine au numérateur', () => {
 		expect(tableLatexOf('1/(x-1)<0')).toMatchInlineSnapshot(`
-			"\\begin{array}{|c|cccc|}
+			"\\begin{array}{|c|ccccc|}
 			\\hline
 			x & -\\infty &  & 1 &  & +\\infty \\\\
 			\\hline

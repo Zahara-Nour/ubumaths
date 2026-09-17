@@ -37,6 +37,7 @@ import {
 	divide,
 	fraction,
 	implicitMultiply,
+	multiply,
 	number,
 	opposite,
 	parentheses,
@@ -478,7 +479,13 @@ function buildApplyQuadraticFormulaStep(
 	// the literal `-(b_value)` for pedagogy — that path uses `op.b` directly,
 	// not `negB`.
 	const negB = smartNegate(b);
-	const twoA = implicitMultiply(number('2'), a);
+	// ⚠️ **Le point médian n'est pas cosmétique.** `a` est TOUJOURS un nombre ici
+	// (les coefficients paramétriques sont refusés en amont), et une
+	// multiplication implicite entre deux nombres est au mieux illisible, au
+	// pire fausse : `2 1`, `2 2` (« vingt-deux »), et surtout `2 -1`, qui se lit
+	// comme une soustraction et donne 1 au lieu de -2. La forme substituée d'un
+	// dénominateur s'écrit `2 \cdot a`, comme au tableau.
+	const twoA = multiply(number('2'), a, 'dot');
 
 	let rawSolutions: readonly MathNode[];
 	let description: string;
