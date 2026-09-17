@@ -15,6 +15,7 @@ import { applyRule } from '../../pattern/rule';
 import { toLatex } from '../../latex-generator';
 import {
 	RADICAL_RULES,
+	extractBothRadicals,
 	extractPerfectSquare,
 	multiplyRadicals
 } from '../pedagogical-rules/radicals';
@@ -154,12 +155,49 @@ describe('radicals rules', () => {
 		});
 	});
 
+	describe('extractBothRadicals', () => {
+		it('√12 × √18 → 2√3 × 3√2 (les deux d un coup)', () => {
+			const result = applyRule(
+				extractBothRadicals.rule,
+				multiply(sqrt(number('12')), sqrt(number('18')), 'cross')
+			);
+			expect(result).not.toBeNull();
+			expect(toLatex(result!)).toBe('2 \\sqrt{3} \\times 3 \\sqrt{2}');
+		});
+
+		it('ne mord PAS quand une seule racine se simplifie (√12 × √2)', () => {
+			const result = applyRule(
+				extractBothRadicals.rule,
+				multiply(sqrt(number('12')), sqrt(number('2')), 'cross')
+			);
+			expect(result).toBeNull();
+		});
+
+		it('ne mord PAS quand aucune ne se simplifie (√2 × √3)', () => {
+			const result = applyRule(
+				extractBothRadicals.rule,
+				multiply(sqrt(number('2')), sqrt(number('3')), 'cross')
+			);
+			expect(result).toBeNull();
+		});
+
+		// Le crochet qui évite de peindre toute la ligne en bleu : `before`
+		// étant le produit entier, le renderer ne peut pas deviner seul que
+		// seules les deux racines ont changé.
+		it('désigne les deux racines à surligner', () => {
+			const avant = multiply(sqrt(number('12')), sqrt(number('18')), 'cross');
+			const cibles = extractBothRadicals.highlightsOf!(avant);
+			expect(cibles.map((n) => toLatex(n))).toEqual(['\\sqrt{12}', '\\sqrt{18}']);
+		});
+	});
+
 	describe('RADICAL_RULES export', () => {
-		it('contains 3 rules (extract + multiply + rationalize-denominator)', () => {
+		it('contains 4 rules (extract + extract-both + multiply + rationalize-denominator)', () => {
 			// simplifyRootOfSquare is opt-in (decision C-1) and intentionally
 			// NOT in RADICAL_RULES — added by the loader only when the flag
 			// is set.
-			expect(RADICAL_RULES).toHaveLength(3);
+			expect(RADICAL_RULES).toHaveLength(4);
+			expect(RADICAL_RULES.map((r) => r.name)).toContain('extract-both-radicals');
 		});
 	});
 });

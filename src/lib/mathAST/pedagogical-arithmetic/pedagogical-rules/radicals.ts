@@ -211,6 +211,76 @@ export const multiplyRadicals: PedagogicalArithmeticRule = {
 };
 
 // =============================================================================
+// extractBothRadicals (priority 108)
+// =============================================================================
+
+/** Le nœud `√r` à l'intérieur d'un facteur `√r` ou `c√r`. */
+function sqrtNodeOf(node: MathNode | undefined): MathNode | null {
+	if (!node) return null;
+	if (asSqrtRadicand(node) !== null) return node;
+	if (node.type !== 'multiplication') return null;
+	return asSqrtRadicand(node.right) !== null ? node.right : null;
+}
+
+/**
+ * `√a × √b → c√a' × d√b'` quand les DEUX racines se simplifient — en une
+ * seule étape, pour ne pas faire deux lignes là où l'élève fait un geste.
+ *
+ * Ne mord que sur ce cas : si une seule racine se simplifie,
+ * `extract-perfect-square` la traite seule ; si le produit est un carré
+ * parfait, `multiply-radicals` (110) passe devant et multiplie d'abord.
+ */
+function applyExtractBothRadicals(bindings: MatchBindings): MathNode | null {
+	const left = bindingNode(bindings, 'l');
+	const right = bindingNode(bindings, 'r');
+	if (!left || !right) return null;
+	const lf = asRadicalFactor(left);
+	const rf = asRadicalFactor(right);
+	if (!lf || !rf) return null;
+	if (!radicandSimplifies(lf.r) || !radicandSimplifies(rf.r)) return null;
+
+	const ls = simplifyRadical(lf.r, 2n);
+	const rs = simplifyRadical(rf.r, 2n);
+	return multiply(
+		coefficientTimesSqrt(lf.c * ls.coefficient, ls.radicand),
+		coefficientTimesSqrt(rf.c * rs.coefficient, rs.radicand),
+		'cross'
+	);
+}
+
+export const extractBothRadicals: PedagogicalArithmeticRule = {
+	name: 'extract-both-radicals',
+	rule: createRule(
+		P.parse('l * r'),
+		(bindings) => applyExtractBothRadicals(bindings) ?? (bindingNode(bindings, 'l') as MathNode),
+		{
+			name: 'extract-both-radicals',
+			condition: (bindings) => applyExtractBothRadicals(bindings) !== null
+		}
+	),
+	applicableLevels: ['college', 'lycee', 'superieur'],
+	priority: 108,
+	// Les deux racines changent dans la même étape, donc `before` est le
+	// produit entier : on désigne les deux racines pour que le rendu ne peigne
+	// pas toute la ligne en bleu.
+	highlightsOf: (before) => {
+		if (before.type !== 'multiplication') return [];
+		const l = sqrtNodeOf(before.left);
+		const r = sqrtNodeOf(before.right);
+		return l && r ? [l, r] : [];
+	},
+	descriptions: {
+		college: () => 'On extrait le facteur carré parfait sous chaque racine',
+		lycee: () => 'Extraction des carrés parfaits',
+		superieur: () => 'simpl. √'
+	},
+	explanations: {
+		college: () =>
+			'On décompose chaque nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.'
+	}
+};
+
+// =============================================================================
 // rationalizeDenominator (priority 105) — Track C
 // =============================================================================
 
@@ -333,6 +403,7 @@ export const simplifyRootOfSquare: PedagogicalArithmeticRule = {
  * decision C-1.
  */
 export const RADICAL_RULES: readonly PedagogicalArithmeticRule[] = [
+	extractBothRadicals,
 	multiplyRadicals,
 	extractPerfectSquare,
 	rationalizeDenominator

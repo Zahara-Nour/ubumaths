@@ -311,25 +311,55 @@ describe('produit de racines — un pas à la fois', () => {
 		expect(etapes[0]).toContain('\\sqrt{6}');
 	});
 
-	it('√12 × √18 extrait d abord et NE passe PAS par √216', () => {
+	it('√12 × √18 extrait les DEUX racines en une étape, sans passer par √216', () => {
 		const etapes = sequence(racines('12', '18'));
 		// Le point de ce changement : ne jamais exiger de factoriser 216.
 		expect(etapes.join(' | ')).not.toContain('\\sqrt{216}');
 		// ⚠️ Sans cette borne, le test passerait sur le comportement FAUTIF :
 		// une étape unique `√12 × √18 = 6√6` ne contient pas non plus « √216 ».
-		expect(etapes.length).toBeGreaterThanOrEqual(2);
-		expect(etapes.join(' | ')).toContain('2 \\sqrt{3}');
-		expect(etapes.join(' | ')).toContain('3 \\sqrt{2}');
-		expect(etapes[etapes.length - 1]).toContain('6 \\sqrt{6}');
+		expect(etapes).toHaveLength(2);
+		expect(etapes[0]).toContain('2 \\sqrt{3} \\times 3 \\sqrt{2}');
+		expect(etapes[1]).toContain('6 \\sqrt{6}');
 	});
 
-	it('√8 × √27 extrait d abord', () => {
+	it('√8 × √27 extrait les deux racines en une étape', () => {
 		const etapes = sequence(racines('8', '27'));
 		expect(etapes.join(' | ')).not.toContain('\\sqrt{216}');
-		expect(etapes.length).toBeGreaterThanOrEqual(2);
-		expect(etapes.join(' | ')).toContain('2 \\sqrt{2}');
-		expect(etapes.join(' | ')).toContain('3 \\sqrt{3}');
-		expect(etapes[etapes.length - 1]).toContain('6 \\sqrt{6}');
+		expect(etapes).toHaveLength(2);
+		expect(etapes[0]).toContain('2 \\sqrt{2} \\times 3 \\sqrt{3}');
+		expect(etapes[1]).toContain('6 \\sqrt{6}');
+	});
+
+	// Les deux racines changent dans la même étape, donc `before` est le
+	// produit entier : sans `highlightSubTrees`, le renderer peindrait toute
+	// la ligne en bleu au lieu de désigner les deux racines traitées.
+	it('l étape d extraction double désigne les deux racines', () => {
+		const etapes = generatePedagogicalArithmeticSteps(racines('12', '18'), {
+			schoolLevel: 'college'
+		}).steps;
+		expect(etapes[0].rule).toBe('extract-both-radicals');
+		expect(etapes[0].highlightSubTrees).toHaveLength(2);
+		expect(etapes[0].highlightSubTrees!.map((n) => toLatex(n))).toEqual([
+			'\\sqrt{12}',
+			'\\sqrt{18}'
+		]);
+	});
+
+	// Une seule racine simplifiable : la règle double ne doit PAS mordre.
+	it('√12 × √2 n utilise pas l extraction double', () => {
+		const etapes = generatePedagogicalArithmeticSteps(racines('12', '2'), {
+			schoolLevel: 'college'
+		}).steps;
+		expect(etapes.map((s) => s.rule)).not.toContain('extract-both-radicals');
+		expect(toLatex(etapes[etapes.length - 1].globalAfter!)).toContain('2 \\sqrt{6}');
+	});
+
+	// Chemin A : rien à extraire au départ, la règle double ne mord pas.
+	it('√2 × √8 n utilise pas l extraction double', () => {
+		const etapes = generatePedagogicalArithmeticSteps(racines('2', '8'), {
+			schoolLevel: 'college'
+		}).steps;
+		expect(etapes.map((s) => s.rule)).not.toContain('extract-both-radicals');
 	});
 
 	// Aucune étape ne doit être un « On calcule » du repli : chaque passage

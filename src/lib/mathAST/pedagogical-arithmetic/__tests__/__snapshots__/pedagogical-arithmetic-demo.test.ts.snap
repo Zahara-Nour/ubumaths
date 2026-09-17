@@ -1379,25 +1379,16 @@ exports[`snapshot — radicals > '√12 × √18 → 2√3 × 3√2 → 6√6 (e
 ###### √12 × √18 → 2√3 × 3√2 → 6√6 (extraction d abord) ######
 
 ========== COLLEGE (detailed) ==========
-[0] On extrait le facteur carré parfait sous la racine
-    │ @blue{sqrt(12)}*sqrt(18)
-    │ = 2sqrt(3)*sqrt(18)
-    ├ (latex)
-    │ \\begin{aligned}
-    │   & \\textcolor{blue}{\\sqrt{12}} \\times \\sqrt{18} \\\\
-    │   & = 2 \\sqrt{3} \\times \\sqrt{18}
-    │ \\end{aligned}
-    │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
-[1] On extrait le facteur carré parfait sous la racine
-    │ 2sqrt(3)*@blue{sqrt(18)}
+[0] On extrait le facteur carré parfait sous chaque racine
+    │ @blue{sqrt(12)}*@blue{sqrt(18)}
     │ = 2sqrt(3)*3sqrt(2)
     ├ (latex)
     │ \\begin{aligned}
-    │   & 2 \\sqrt{3} \\times \\textcolor{blue}{\\sqrt{18}} \\\\
+    │   & \\textcolor{blue}{\\sqrt{12}} \\times \\textcolor{blue}{\\sqrt{18}} \\\\
     │   & = 2 \\sqrt{3} \\times 3 \\sqrt{2}
     │ \\end{aligned}
-    │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
-[2] On multiplie les racines (la racine du produit)
+    │ (On décompose chaque nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
+[1] On multiplie les racines (la racine du produit)
     │ @blue{2sqrt(3)*3sqrt(2)}
     │ = 6sqrt(6)
     ├ (latex)
@@ -1414,15 +1405,11 @@ exports[`snapshot — radicals > '√12 × √18 → 2√3 × 3√2 → 6√6 (e
 ###### √12 × √18 → 2√3 × 3√2 → 6√6 (extraction d abord) ######
 
 ========== COLLEGE (detailed) ==========
-[0] On extrait le facteur carré parfait sous la racine
-    │ @blue{sqrt(12)}*sqrt(18)
-    │ = 2sqrt(3)*sqrt(18)
-    │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
-[1] On extrait le facteur carré parfait sous la racine
-    │ 2sqrt(3)*@blue{sqrt(18)}
+[0] On extrait le facteur carré parfait sous chaque racine
+    │ @blue{sqrt(12)}*@blue{sqrt(18)}
     │ = 2sqrt(3)*3sqrt(2)
-    │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
-[2] On multiplie les racines (la racine du produit)
+    │ (On décompose chaque nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
+[1] On multiplie les racines (la racine du produit)
     │ @blue{2sqrt(3)*3sqrt(2)}
     │ = 6sqrt(6)
     │ (Pour deux nombres positifs a et b, √a × √b = √(a × b). Les coefficients devant les racines se multiplient entre eux.)
