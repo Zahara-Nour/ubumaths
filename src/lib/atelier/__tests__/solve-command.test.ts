@@ -119,7 +119,11 @@ describe('`.résoudre` se replie sans rien perdre', () => {
 	});
 
 	it('les autres commandes ne portent pas d’étapes', () => {
-		const result = runInput(session(), '.dériver x^2');
+		// ⚠️ Ce test employait `.dériver`, qui PORTE désormais des étapes lui
+		// aussi (lot `pedagogical-differentiation`). Son intention est
+		// inchangée — une commande sans raisonnement à montrer n'invente pas
+		// d'étapes — mais il lui fallait une commande qui le reste.
+		const result = runInput(session(), '.simplifier (x+1)^2');
 
 		expect(result.kind).toBe('commande');
 		if (result.kind !== 'commande') return;
