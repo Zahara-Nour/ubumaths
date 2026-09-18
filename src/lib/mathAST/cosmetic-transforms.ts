@@ -392,8 +392,81 @@ export function removeMultOperatorAST(ast: MathNode): MathNode {
 }
 
 /**
+ * Le degré d'un terme dans ses variables — 0 pour une constante.
+ *
+ * Lu sur la STRUCTURE, sans analyse polynomiale : la plus grande puissance
+ * portée par une variable du terme. `3x^2` vaut 2, `2x` vaut 1, `5` vaut 0,
+ * `sin(x)` vaut 0 — une fonction n'a pas de degré, elle se range à
+ * l'alphabétique comme avant.
+ */
+function termDegree(node: MathNode): number {
+	if (node.type === 'variable') return 1;
+
+	// ⚠️ Le champ s'appelle `superscript`, pas `exponent` — mesuré sur l'arbre
+	// de `x^2`. Le nommer de travers rendait 0 pour toute puissance, et le
+	// trinôme sortait dans le désordre.
+	if (node.type === 'superscript') {
+		if (node.base.type !== 'variable' || node.superscript.type !== 'number') return 0;
+		const value = Number(node.superscript.value);
+		return Number.isFinite(value) ? value : 0;
+	}
+
+	if (node.type === 'multiplication') {
+		return Math.max(termDegree(node.left), termDegree(node.right));
+	}
+
+	if (node.type === 'opposite' || node.type === 'positive') {
+		return termDegree(node.operand);
+	}
+
+	if (node.type === 'delimiter') return termDegree(node.content);
+
+	return 0;
+}
+
+/**
+ * L'ordre des FACTEURS d'un produit : le coefficient devant.
+ *
+ * ⚠️ **`compareNodes` ne convient pas ici, et c'est le défaut qu'on répare.**
+ * Il a été écrit pour comparer les facteurs SYMBOLIQUES d'un monôme, où le
+ * coefficient est stocké à part et n'entre donc jamais dans la liste ; sa table
+ * de priorités range les nombres après tout le reste (`normal/monomial.ts`).
+ * Appliqué à un produit brut, il envoyait le coefficient au bout : `2x`
+ * devenait `x 2`, et `5 sin(x)` devenait `sin(x) 5`. Relevé par David — ça
+ * n'avait jamais été voulu.
+ */
+function compareFactors(a: MathNode, b: MathNode): number {
+	const aNumber = a.type === 'number';
+	const bNumber = b.type === 'number';
+	if (aNumber !== bNumber) return aNumber ? -1 : 1;
+	return compareNodes(a, b);
+}
+
+/**
+ * L'ordre des TERMES d'une somme : degré décroissant.
+ *
+ * C'est l'ordre d'un polynôme au tableau — `3x² + 2x + 1`. L'ancien les rangeait
+ * par le même comparateur que les facteurs, ce qui donnait `1 + 3x² + 2x` :
+ * ni croissant, ni décroissant. À degré égal, on garde l'ordre alphabétique
+ * d'avant, pour que `c+a+b` reste `a + b + c`.
+ */
+function compareTerms(a: MathNode, b: MathNode): number {
+	const degreeA = termDegree(a);
+	const degreeB = termDegree(b);
+	if (degreeA !== degreeB) return degreeA > degreeB ? -1 : 1;
+	return compareNodes(a, b);
+}
+
+/**
  * Sort terms in sums and factors in products into canonical order.
- * b + a → a + b, y * x → x * y
+ *
+ * `b + a → a + b`, `x × 2 → 2x`, `1 + 2x + 3x² → 3x² + 2x + 1`.
+ *
+ * ⚠️ **Cette fonction sert d'abord à COMPARER**, appliquée aux deux côtés avant
+ * confrontation (`constraintId: null` dans le pipeline) : c'est ce qui fait que
+ * `1+x` et `x+1` ne sont pas une faute de forme. N'importe quel ordre total y
+ * conviendrait — celui-ci est en plus celui qu'on écrit au tableau, ce qui la
+ * rend utilisable à l'affichage.
  */
 export function sortTermsAndFactorsAST(ast: MathNode): MathNode {
 	return mapNode(ast, (node) => {
@@ -402,7 +475,7 @@ export function sortTermsAndFactorsAST(ast: MathNode): MathNode {
 			const terms = flattenSumShallow(node);
 			if (terms.length <= 1) return node;
 
-			const sorted = [...terms].sort((a, b) => compareNodes(a.term, b.term));
+			const sorted = [...terms].sort((a, b) => compareTerms(a.term, b.term));
 
 			// Check if already sorted
 			const changed = sorted.some((t, i) => t.term !== terms[i].term || t.sign !== terms[i].sign);
@@ -416,7 +489,14 @@ export function sortTermsAndFactorsAST(ast: MathNode): MathNode {
 			const factors = flattenProductShallow(node);
 			if (factors.length <= 1) return node;
 
-			const sorted = [...factors].sort((a, b) => compareNodes(a.factor, b.factor));
+			// ⚠️ **Le style de multiplication appartient à la POSITION, pas au
+			// facteur.** Le premier porte `implicit` par convention, les suivants
+			// l'opérateur qui les précède. Les déplacer avec leur facteur faisait
+			// diverger `2*x` et `x*2` après tri — donc deux écritures
+			// commutatives ne se rejoignaient plus, ce que cette fonction existe
+			// précisément pour garantir.
+			const reordered = [...factors].sort((a, b) => compareFactors(a.factor, b.factor));
+			const sorted = reordered.map((f, i) => ({ factor: f.factor, style: factors[i].style }));
 
 			const changed = sorted.some((f, i) => f.factor !== factors[i].factor);
 			if (!changed) return node;
