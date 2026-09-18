@@ -35,6 +35,8 @@ import {
 	algebraicFactoringRules,
 	algebraicExpandingRules
 } from '../pattern/rule-sets/algebraic-identities';
+// Import direct lui aussi, pour la même raison de cycle de chunk.
+import { commonFactorRules } from '../pattern/rule-sets/common-factor';
 import { distributeBinomialProduct } from './pedagogical-rules';
 import type { PedagogicalSimplifyCategory, SimplifyIntent } from './types';
 
@@ -123,7 +125,14 @@ export function selectRulesForIntent(
 
 	switch (intent) {
 		case 'factoriser': {
-			const rules = dedupeByName([...algebraicFactoringRules, ...identitiesAndUtilities]);
+			// ⚠️ La mise en facteur commun n'existait pas : `algebraicFactoringRules`
+			// ne contient que des identités remarquables. Sans elle, `eˣ + x·eˣ`
+			// restait tel quel au lieu de devenir `(x+1)eˣ`.
+			const rules = dedupeByName([
+				...commonFactorRules,
+				...algebraicFactoringRules,
+				...identitiesAndUtilities
+			]);
 			return { rules, useNormalize: false };
 		}
 		case 'developper': {
