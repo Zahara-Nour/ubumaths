@@ -25,6 +25,7 @@ import { renderResult } from './render';
 import { solveSteps } from './solve-steps';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { computeVariations } from '$lib/mathAST/variations';
+import { toLatex } from '$lib/mathAST/latex-generator';
 import { variationTableNode } from '$lib/ubumark/builders/variation-table';
 import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 
@@ -405,21 +406,36 @@ const ACTION_COMMANDS: Readonly<Record<string, (expression: string) => string>> 
 };
 
 /**
- * Le tableau de variations d'une expression — ou `null`.
+ * Le tableau de variations d'une expression, et la dérivée qui l'accompagne —
+ * ou `null`.
  *
  * ⚠️ Rien n'est recalculé ici : `computeVariations` trouve les sens, les points
  * critiques et les limites, et le pont les traduit. Aucun chemin ne jette : une
  * exception remonterait jusqu'à `desk.runFromPanel`, qui n'afficherait alors
  * AUCUNE ligne.
  *
+ * ⚠️ **La dérivée voyage avec le tableau parce qu'elle est la seule chose qu'il
+ * ne dit PAS.** Le tableau montre le SIGNE de f', jamais f' elle-même — et
+ * c'est ce qu'on écrit au-dessus d'un tableau de variations. Tout le reste du
+ * bloc texte du moteur (domaine, points critiques, signe, extremum, limites) y
+ * figure déjà, en moins lisible. Relevé par David sur capture.
+ *
  * @param expression - L'expression SUBSTITUÉE (§6 bis)
  * @param name - Le nom de l'objet, pour étiqueter les lignes `f'(x)` et `f(x)`
  */
-function variationTableOf(expression: string, name: string): VariationTableNode | null {
+function variationTableOf(
+	expression: string,
+	name: string
+): { readonly table: VariationTableNode; readonly derivative: string } | null {
 	try {
 		const node = astOf(expression, 'text');
 		if (node === null) return null;
-		return variationTableNode(computeVariations(node, { variable: 'x' }), name);
+
+		const variations = computeVariations(node, { variable: 'x' });
+		const table = variationTableNode(variations, name);
+		if (table === null) return null;
+
+		return { table, derivative: `${name}'(x) = ${toLatex(variations.derivative)}` };
 	} catch {
 		return null;
 	}
@@ -493,8 +509,15 @@ export function runAction(
 	// « decroissante », « Signe de f'(x) » alignés à l'espace, sans un accent —
 	// alors que `VariationTable.svelte` dessine le tableau depuis toujours.
 	if (actionId === 'variations') {
-		const table = variationTableOf(substituted.expression, name);
-		if (table !== null) return { ok: true, output: rendered.text, table };
+		const variations = variationTableOf(substituted.expression, name);
+		if (variations !== null) {
+			return {
+				ok: true,
+				output: rendered.text,
+				latex: variations.derivative,
+				table: variations.table
+			};
+		}
 	}
 
 	if (!result.success) {
