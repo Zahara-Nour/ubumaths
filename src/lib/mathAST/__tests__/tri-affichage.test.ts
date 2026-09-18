@@ -56,6 +56,24 @@ describe('le coefficient passe devant', () => {
 	});
 });
 
+describe('un nombre négatif est un nombre', () => {
+	/**
+	 * ⚠️ `-3` s'écrit `opposite(number)`, pas `number`. Ne tester que le type
+	 * laissait les coefficients négatifs derrière : `-sin(3x) × 3` devenait
+	 * `sin(3x) × -3`, pire que le défaut qu'on répare. Trouvé en appliquant le
+	 * tri aux dérivées.
+	 */
+	it('un coefficient négatif passe devant lui aussi', () => {
+		// Les parenthèses viennent de l'écriture source `(-3)` ; ce qui compte
+		// est que le facteur soit passé DEVANT le sinus.
+		expect(sorted('sin(x)*(-3)')).toBe('\\left( -3 \\right) \\times \\sin\\left( x \\right)');
+	});
+
+	it('et il se range comme son opposé', () => {
+		expect(sorted('x*(-2)')).toBe('\\left( -2 \\right) \\times x');
+	});
+});
+
 describe('les termes se rangent par degré décroissant', () => {
 	/**
 	 * C'est l'ordre d'un polynôme au tableau. L'ancien mélangeait les degrés :

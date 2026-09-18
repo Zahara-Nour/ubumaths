@@ -436,8 +436,12 @@ function termDegree(node: MathNode): number {
  * n'avait jamais été voulu.
  */
 function compareFactors(a: MathNode, b: MathNode): number {
-	const aNumber = a.type === 'number';
-	const bNumber = b.type === 'number';
+	// ⚠️ **Un nombre négatif n'est pas un nœud `number`** : `-3` s'écrit
+	// `opposite(number)`. Ne tester que `type === 'number'` laissait `-3`
+	// derrière — `-sin(3x) × 3` devenait `sin(3x) × -3`, ce qui est pire que le
+	// défaut qu'on répare. `extractRational` couvre les deux formes.
+	const aNumber = extractRational(a) !== null;
+	const bNumber = extractRational(b) !== null;
 	if (aNumber !== bNumber) return aNumber ? -1 : 1;
 	return compareNodes(a, b);
 }

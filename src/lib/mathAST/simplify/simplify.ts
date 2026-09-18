@@ -29,6 +29,7 @@ import { getSimplifyRuleDescription } from './descriptions-fr';
 
 // Pattern rules
 import { absSimplifyRules } from '../pattern/rule-sets/abs';
+import { foldCoefficients } from './fold-coefficients';
 import { trigSimplifyRules } from '../pattern/rule-sets/trig-identities';
 import { hypSimplifyRules } from '../pattern/rule-sets/hyperbolic-identities';
 import { algebraicSimplifyRules } from '../pattern/rule-sets/algebraic-identities';
@@ -174,10 +175,20 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 		onStep: isRecording ? makeStepBridge(recorder) : undefined
 	});
 
+	// ⚠️ **Hors de la stratégie à point fixe, et il le faut.** Regrouper `2 × 3`
+	// en `6` ne peut que réduire — mais la passe de normalisation, elle,
+	// développe `(x+1)²` en même temps, et le coût de la forme développée fait
+	// rejeter l'ensemble. Appliqué ici, le regroupement survit sans que rien ne
+	// soit développé.
+	// ⚠️ Pas de regroupement quand on a été interrompu : le contrat est de rendre
+	// le nœud d'ORIGINE, à l'identique — un test l'assert par `toBe`, pas par
+	// égalité de structure. `mapNode` reconstruit l'arbre même sans changement.
+	const result = engineResult.aborted ? engineResult.result : foldCoefficients(engineResult.result);
+
 	return {
-		result: engineResult.result,
+		result,
 		steps: recorder.getStepsFiltered(verbosity),
-		cost: computeCost(engineResult.result),
+		cost: computeCost(result),
 		...(engineResult.aborted && { aborted: true })
 	};
 }
