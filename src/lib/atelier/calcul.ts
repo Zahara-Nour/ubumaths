@@ -23,6 +23,7 @@ import { toCustom } from '$lib/mathAST/custom-generator';
 import { resolveCommand, suggestFor, commandCatalog } from './commands';
 import { renderResult } from './render';
 import { solveSteps } from './solve-steps';
+import { deriveSteps } from './derive-steps';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { computeVariations } from '$lib/mathAST/variations';
 import { toLatex } from '$lib/mathAST/latex-generator';
@@ -236,6 +237,22 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// échoue et ne rend rien — mesuré, `.résoudre 2x+1<7` affichait une ligne
 	// entièrement vide, sans même un message. Les étapes sont alors la seule
 	// chose que l'élève recevra.
+	// ⚠️ **Le bouton et la commande doivent dire la MÊME chose** — leçon du lot
+	// `.résoudre`, où seul l'un des deux chemins avait d'abord été branché.
+	// Ici il n'y a pas d'objet à nommer, donc la dérivée est rendue seule.
+	if (name === 'diff') {
+		const derived = deriveSteps(argument);
+		if (derived !== null) {
+			return {
+				kind: 'commande',
+				input,
+				output: rendered.text,
+				latex: derived.answer,
+				steps: derived.steps
+			};
+		}
+	}
+
 	const solved = name === 'solve' ? solveSteps(argument) : null;
 	if (solved !== null) {
 		return {
@@ -508,6 +525,15 @@ export function runAction(
 	// ⚠️ Même histoire pour les variations : le moteur rendait « Derivee »,
 	// « decroissante », « Signe de f'(x) » alignés à l'espace, sans un accent —
 	// alors que `VariationTable.svelte` dessine le tableau depuis toujours.
+	// ⚠️ « Dériver » rendait la notation d'un terminal : `d/dx(x^2*sin(x)) = …`,
+	// avec un `:/` parasite sur les quotients et aucune règle nommée.
+	if (actionId === 'derive') {
+		const derived = deriveSteps(substituted.expression, name);
+		if (derived !== null) {
+			return { ok: true, output: rendered.text, latex: derived.answer, steps: derived.steps };
+		}
+	}
+
 	if (actionId === 'variations') {
 		const variations = variationTableOf(substituted.expression, name);
 		if (variations !== null) {

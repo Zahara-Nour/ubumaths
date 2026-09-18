@@ -156,7 +156,7 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	negation: (b) => `Avec f = ${bind(b, 'f')}, on a (-f)' = -f'.`,
 	'linear-coefficient': (b) =>
 		`La constante ${bind(b, 'c')} sort de la dérivation : ` +
-		`(${bind(b, 'c')} \\cdot f)' = ${bind(b, 'c')} \\cdot f'.`,
+		`(${bind(b, 'c')} \\times f)' = ${bind(b, 'c')} \\times f'.`,
 	'sum-with-constant': (b) =>
 		`La constante ${bind(b, 'c')} a une dérivée nulle, ` +
 		`donc seule la dérivée de ${bind(b, 'f')} contribue.`,
@@ -167,13 +167,13 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'power-natural': (b) => `(x^n)' = n x^{n-1} avec n = ${bind(b, 'n')}.`,
 	'power-constant-exp': (b) =>
 		`Avec f = ${bind(b, 'base')} et l'exposant constant ${bind(b, 'exp')}, ` +
-		`on a (f^c)' = c \\cdot f^{c-1} \\cdot f'.`,
+		`on a (f^c)' = c \\times f^{c-1} \\times f'.`,
 	'power-constant-base': (b) =>
 		`Avec la base constante ${bind(b, 'base')}, on a ` +
-		`(${bind(b, 'base')}^g)' = ${bind(b, 'base')}^g \\cdot \\ln(${bind(b, 'base')}) \\cdot g'.`,
+		`(${bind(b, 'base')}^g)' = ${bind(b, 'base')}^g \\times \\ln(${bind(b, 'base')}) \\times g'.`,
 	'general-power': (b) =>
 		`Avec f = ${bind(b, 'base')} et g = ${bind(b, 'exp')} dépendant tous deux de la variable, ` +
-		`on applique (f^g)' = f^g \\cdot (g' \\ln(f) + g f' / f).`,
+		`on applique (f^g)' = f^g \\times (g' \\ln(f) + g f' / f).`,
 	// ---- Product / Quotient ----
 	product: (b) =>
 		`Avec u = ${bind(b, 'u')} et v = ${bind(b, 'v')}, ` + `on applique (uv)' = u'v + uv'.`,
@@ -182,14 +182,14 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	inverse: (b) => `Avec f = ${bind(b, 'f')}, on a (1/f)' = -f'/f^2.`,
 	'derivative-of-inverse': () => `(1/x)' = -1/x^2.`,
 	// ---- Trigonometric ----
-	sin: (b) => `Avec u = ${bind(b, 'u')}, on a (\\sin u)' = \\cos(u) \\cdot u'.`,
-	cos: (b) => `Avec u = ${bind(b, 'u')}, on a (\\cos u)' = -\\sin(u) \\cdot u'.`,
+	sin: (b) => `Avec u = ${bind(b, 'u')}, on a (\\sin u)' = \\cos(u) \\times u'.`,
+	cos: (b) => `Avec u = ${bind(b, 'u')}, on a (\\cos u)' = -\\sin(u) \\times u'.`,
 	tan: (b) => `Avec u = ${bind(b, 'u')}, on a (\\tan u)' = u' / \\cos^2(u).`,
 	arcsin: (b) => `Avec u = ${bind(b, 'u')}, on a (\\arcsin u)' = u' / \\sqrt{1 - u^2}.`,
 	arccos: (b) => `Avec u = ${bind(b, 'u')}, on a (\\arccos u)' = -u' / \\sqrt{1 - u^2}.`,
 	arctan: (b) => `Avec u = ${bind(b, 'u')}, on a (\\arctan u)' = u' / (1 + u^2).`,
 	// ---- Exponential / Logarithm ----
-	exp: (b) => `Avec u = ${bind(b, 'u')}, on a (e^u)' = e^u \\cdot u'.`,
+	exp: (b) => `Avec u = ${bind(b, 'u')}, on a (e^u)' = e^u \\times u'.`,
 	ln: (b) => `Avec u = ${bind(b, 'u')}, on a (\\ln u)' = u'/u.`,
 	log: (b) =>
 		`Avec u = ${bind(b, 'u')} et base ${bind(b, 'base')}, ` +
@@ -198,8 +198,8 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	sqrt: (b) => `Avec u = ${bind(b, 'u')}, on a (\\sqrt u)' = u'/(2\\sqrt u).`,
 	'derivative-of-sqrt': () => `(\\sqrt x)' = 1/(2\\sqrt x).`,
 	// ---- Hyperbolic ----
-	sinh: (b) => `Avec u = ${bind(b, 'u')}, on a (\\sinh u)' = \\cosh(u) \\cdot u'.`,
-	cosh: (b) => `Avec u = ${bind(b, 'u')}, on a (\\cosh u)' = \\sinh(u) \\cdot u'.`,
+	sinh: (b) => `Avec u = ${bind(b, 'u')}, on a (\\sinh u)' = \\cosh(u) \\times u'.`,
+	cosh: (b) => `Avec u = ${bind(b, 'u')}, on a (\\cosh u)' = \\sinh(u) \\times u'.`,
 	tanh: (b) => `Avec u = ${bind(b, 'u')}, on a (\\tanh u)' = u' / \\cosh^2(u).`,
 	asinh: (b) => `Avec u = ${bind(b, 'u')}, on a (\\operatorname{argsh} u)' = u'/\\sqrt{u^2 + 1}.`,
 	acosh: (b) => `Avec u = ${bind(b, 'u')}, on a (\\operatorname{argch} u)' = u'/\\sqrt{u^2 - 1}.`,
