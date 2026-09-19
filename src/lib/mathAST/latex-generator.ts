@@ -37,6 +37,7 @@ import type {
 } from './types';
 import { flattenRelationChain } from './flatten';
 import { format } from './units/formatter';
+import { needsParenthesesUnderSign } from './common/sign-parentheses';
 
 // =============================================================================
 // Types
@@ -1111,9 +1112,20 @@ export class LatexGenerator {
 		}
 	}
 
+	/**
+	 * ⚠️ **L'opposé d'une somme garde ses parenthèses.** Sans elles,
+	 * `opposite(add(x, 2))` — c'est-à-dire −(x + 2) — s'écrivait `-x + 2`,
+	 * chaine qui se relit `(−x) + 2` : une AUTRE expression. Le calcul était
+	 * juste, son écriture était fausse.
+	 *
+	 * Le défaut restait invisible parce qu'un `-(x+2)` écrit à la main porte un
+	 * nœud `delimiter` explicite, et que la normalisation distribue le signe.
+	 * Seule une RÈGLE construisant `opposite(somme)` directement l'expose —
+	 * `abs-negative` le fait sur `|x + 2|` quand `x < −3`.
+	 */
 	private generateOpposite(node: OppositeNode): string {
 		const operand = this.generateNode(node.operand);
-		return `-${operand}`;
+		return needsParenthesesUnderSign(node.operand) ? `-\\left( ${operand} \\right)` : `-${operand}`;
 	}
 
 	private generatePositive(node: PositiveNode): string {

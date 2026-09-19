@@ -149,6 +149,7 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 		enableHyperbolic = true,
 		enableAlgebraic = true,
 		enableAbs = true,
+		costFunction = computeCost,
 		signal,
 		timeoutMs
 	} = options ?? {};
@@ -167,7 +168,7 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 		rules,
 		preProcess: normalizePass,
 		postProcess: normalizePass,
-		strategy: { kind: 'cost-fixpoint', cost: computeCost },
+		strategy: { kind: 'cost-fixpoint', cost: costFunction },
 		maxIterations,
 		typeCtx: ctx,
 		signal,
@@ -188,7 +189,7 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 	return {
 		result,
 		steps: recorder.getStepsFiltered(verbosity),
-		cost: computeCost(result),
+		cost: costFunction(result),
 		...(engineResult.aborted && { aborted: true })
 	};
 }

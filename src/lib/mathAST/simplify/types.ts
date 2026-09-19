@@ -39,6 +39,21 @@ export interface SimplifyOptions {
 	readonly enableAbs?: boolean;
 
 	/**
+	 * Barème de coût sur mesure, pour départager deux écritures équivalentes.
+	 *
+	 * ⚠️ C'est l'échappatoire documentée du Compute Engine : « To influence how
+	 * the complexity of an expression is measured, set the `costFunction`
+	 * property of the compute engine ». Leur barème par défaut — le nôtre
+	 * aussi, maintenant qu'il est porté — vient de `ComplexityFunction` de
+	 * Mathematica : il départage des formes équivalentes pour un CAS, et « le
+	 * plus simple » y veut dire « le moins de nœuds pondérés ». Ce n'est pas la
+	 * même chose que « ce qu'un élève écrirait ».
+	 *
+	 * Absent, le barème porté s'applique (`computeCost`).
+	 */
+	readonly costFunction?: (node: MathNode) => number;
+
+	/**
 	 * Cooperative interruption signal. When aborted, simplify returns the best
 	 * form found so far with `aborted: true` (no exception thrown). Combine
 	 * freely with `timeoutMs`.
