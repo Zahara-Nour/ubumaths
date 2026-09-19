@@ -16,8 +16,10 @@ describe('computeCost', () => {
 			expect(computeCost(number('5'))).toBe(1);
 		});
 
-		it('should cost 1 for a two-digit number', () => {
-			expect(computeCost(number('42'))).toBe(1);
+		it('should cost 2 for a two-digit number', () => {
+			// ⚠️ Attendait 1 : la version inventée ne comptait qu'à partir de trois
+			// chiffres, et par demi-points. Le barème porté compte les chiffres.
+			expect(computeCost(number('42'))).toBe(2);
 		});
 
 		it('should penalize long numbers', () => {
@@ -80,9 +82,21 @@ describe('cheapest', () => {
 		expect(cheapest(complex, simple)).toBe(simple);
 	});
 
-	it('should return first argument on tie', () => {
-		const a = variable('x');
-		const b = variable('y');
-		expect(cheapest(a, b)).toBe(a);
+	it('accepte un nouveau légèrement plus cher, jusqu’à 20 %', () => {
+		// Le biais porté : `cost(new) <= 1.2 * cost(old)`.
+		const ancien = add(variable('x'), variable('y')); // 3 + 1 + 1 = 5
+		const unPeuPlusCher = sqrt(variable('x')); // 5 + 1 = 6, seuil 6
+		expect(cheapest(ancien, unPeuPlusCher)).toBe(unPeuPlusCher);
+	});
+
+	it('should return the NEW form on tie', () => {
+		// ⚠️ Sémantique portée : `cheapest(ancien, nouveau)` est DIRECTIONNEL et
+		// biaisé vers le nouveau (`cost(new) <= 1.2 * cost(old)`). La version
+		// précédente était symétrique et donnait l'égalité au premier : le nom du
+		// Compute Engine avait voyagé, son contenu non — et elle n'avait aucun
+		// appelant. Détail par détail dans `cost-portage-ce.test.ts`.
+		const ancien = variable('x');
+		const nouveau = variable('y');
+		expect(cheapest(ancien, nouveau)).toBe(nouveau);
 	});
 });

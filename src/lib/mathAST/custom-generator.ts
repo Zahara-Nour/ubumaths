@@ -50,6 +50,7 @@ import type {
 } from './types';
 import { flattenRelationChain } from './flatten';
 import { format } from './units/formatter';
+import { needsParenthesesUnderSign } from './common/sign-parentheses';
 
 // =============================================================================
 // Types
@@ -1237,9 +1238,14 @@ export class CustomGenerator {
 		}
 	}
 
+	/**
+	 * ⚠️ **L'opposé d'une somme garde ses parenthèses** — sinon `-(x+2)`
+	 * s'écrivait `-x+2`, chaîne qui se relit `(−x) + 2`. Voir
+	 * `common/sign-parentheses.ts`.
+	 */
 	private generateOpposite(node: OppositeNode): string {
 		const operand = this.generateNode(node.operand);
-		return `-${operand}`;
+		return needsParenthesesUnderSign(node.operand) ? `-(${operand})` : `-${operand}`;
 	}
 
 	private generatePositive(node: PositiveNode): string {

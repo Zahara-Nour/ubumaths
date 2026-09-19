@@ -162,8 +162,18 @@ describe('abs of linear expressions with bounds', () => {
 		expect(simplifyLatex(abs(add(x, number('2'))), ctxBounds('x', gtBounds(0)))).toBe('x + 2');
 	});
 
-	it('|x + 2| -> -x - 2 when x < -3', () => {
-		expect(simplifyLatex(abs(add(x, number('2'))), ctxBounds('x', ltBounds(-3)))).toBe('-x - 2');
+	it('|x + 2| -> -(x + 2) when x < -3', () => {
+		// ⚠️ Attendait `-x - 2`. Les deux écritures sont justes ; le barème porté
+		// du Compute Engine préfère désormais la forme non distribuée, qui ne porte
+		// qu'UN opérateur de signe (Negate 4) là où l'autre en porte deux
+		// (Negate 4 + Subtract 4). CE ferait le même choix.
+		//
+		// ⚠️⚠️ Et c'est ce test qui a révélé que `toLatex` PERDAIT les parenthèses
+		// de cette forme : il rendait `-x + 2`, chaîne qui se relit `(−x) + 2`.
+		// Voir `mathAST/__tests__/oppose-d-une-somme.test.ts`.
+		expect(simplifyLatex(abs(add(x, number('2'))), ctxBounds('x', ltBounds(-3)))).toBe(
+			'-\\left( x + 2 \\right)'
+		);
 	});
 
 	it('|x + 2| unchanged when x in [-5, 0] (sum crosses zero)', () => {
