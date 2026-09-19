@@ -20,11 +20,12 @@ import { validateName, nameRejectionMessage, nextName } from './names';
 import { astOf, readNumber } from './parse';
 import { syncEngine, expressionOf, expandInput } from './engine';
 import { toCustom } from '$lib/mathAST/custom-generator';
-import { resolveCommand, suggestFor, commandCatalog } from './commands';
+import { resolveCommand, suggestFor, commandCatalog, ATELIER_ONLY_COMMANDS } from './commands';
 import { renderResult } from './render';
 import { solveSteps } from './solve-steps';
 import { deriveSteps } from './derive-steps';
 import { simplifySteps } from './simplify-steps';
+import { factorSteps } from './factor-steps';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { computeVariations } from '$lib/mathAST/variations';
 import { toLatex } from '$lib/mathAST/latex-generator';
@@ -196,6 +197,40 @@ function substituteNames(session: CalcSession, argument: string): string {
 	return result;
 }
 
+/**
+ * Exécuter une commande que l'atelier sert lui-même.
+ *
+ * ⚠️ Les trois issues de `factorSteps` donnent trois lignes DIFFÉRENTES, et
+ * c'est le cœur du geste : sans moteur derrière, une ligne muette ou une
+ * expression renvoyée telle quelle passerait pour une réponse. « Je ne sais
+ * pas factoriser 3x + 6 » n'est PAS un refus de l'atelier — la commande a bien
+ * tourné — donc la ligne n'est pas rouge.
+ */
+function runAtelierCommand(name: string, input: string, argument: string): CalcResult {
+	if (argument.trim() === '') {
+		return {
+			kind: 'refus',
+			message: 'Il manque l’expression à factoriser. Par exemple : .factoriser x^2-4'
+		};
+	}
+
+	const outcome = factorSteps(argument);
+	switch (outcome.kind) {
+		case 'factorisee':
+			return {
+				kind: 'commande',
+				input,
+				output: outcome.text,
+				latex: outcome.answer,
+				steps: outcome.steps
+			};
+		case 'inchangee':
+			return { kind: 'commande', input, output: outcome.message };
+		case 'illisible':
+			return { kind: 'refus', message: outcome.message };
+	}
+}
+
 /** Exécuter une commande, après l'avoir traduite vers ce que comprend le moteur. */
 function runCommand(session: CalcSession, input: string): CalcResult {
 	const { engine } = session;
@@ -243,6 +278,14 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// L'argument reçoit les EXPRESSIONS, pas les noms — règle du §6 bis, ici
 	// appliquée à la commande tapée à la main.
 	const argument = space === -1 ? '' : substituteNames(session, resolved.slice(space + 1));
+	// ⚠️ **Certaines commandes ne vont PAS au moteur.** Il ne les connaît pas
+	// et répondrait « Unknown command », en anglais. On sort donc ici, avant
+	// `engine.execute` — et sans moteur derrière, il n'y a aucun repli : ce que
+	// rend `runAtelierCommand` est tout ce que l'élève verra.
+	if (ATELIER_ONLY_COMMANDS.has(known.name)) {
+		return runAtelierCommand(known.name, input, argument);
+	}
+
 	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${argument}`;
 
 	const result = engine.execute(executed);

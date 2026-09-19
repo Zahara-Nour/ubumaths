@@ -210,6 +210,8 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	['sum-cubes-numeric', 'factorisation'],
 	['diff-cubes-symbolic', 'factorisation'],
 	['diff-cubes-numeric', 'factorisation'],
+	['common-factor-products', 'factorisation'],
+	['common-factor-bare-term', 'factorisation'],
 
 	// ---- distribution ---------------------------------------------------------
 	['expand-sum-squared', 'distribution'],

@@ -48,6 +48,8 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'sum-cubes-numeric': 'Factorisation : a³ + b³ = (a+b)(a² - ab + b²)',
 	'diff-cubes-symbolic': 'Factorisation : a³ - b³ = (a-b)(a² + ab + b²)',
 	'diff-cubes-numeric': 'Factorisation : a³ - b³ = (a-b)(a² + ab + b²)',
+	'common-factor-products': 'Factorisation par facteur commun : a·c + b·c = (a+b)·c',
+	'common-factor-bare-term': 'Factorisation par facteur commun : c + b·c = (b+1)·c',
 
 	// ---- valeur absolue -------------------------------------------------------
 	'abs-negation': 'Simplification : |-x| = |x|',
@@ -157,6 +159,8 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'perfect-square-trinomial': () => 'On reconnaît un trinôme carré parfait',
 	'sum-cubes-symbolic': () => 'On factorise a³ + b³',
 	'diff-cubes-symbolic': () => 'On factorise a³ - b³',
+	'common-factor-products': () => 'On met le facteur commun en évidence',
+	'common-factor-bare-term': () => 'On met le facteur commun en évidence',
 	// trig
 	pythagorean: () => 'On utilise sin²(x) + cos²(x) = 1',
 	'sin-negative': () => 'sin est impaire : sin(-x) = -sin(x)',
@@ -196,6 +200,8 @@ const COLLEGE_TITLES: RuleFnMap<TitleFn> = {
 	'distribute-binomial-product': () => 'On distribue chaque terme',
 	'diff-squares-numeric': () => 'On factorise avec l’identité a² - b²',
 	'perfect-square-trinomial': () => 'On reconnaît a² ± 2ab + b² = (a±b)²',
+	'common-factor-products': () => 'On met en facteur ce qui est commun',
+	'common-factor-bare-term': () => 'On met en facteur ce qui est commun',
 	'combine-like-terms': () => 'On regroupe les termes en x',
 	'simplify-fraction': () => 'On simplifie la fraction'
 };
@@ -215,6 +221,8 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	'distribute-binomial-product': () => 'Distribution',
 	'diff-squares-symbolic': () => 'Factorisation a² - b²',
 	'perfect-square-trinomial': () => 'Trinôme carré parfait',
+	'common-factor-products': () => 'Facteur commun',
+	'common-factor-bare-term': () => 'Facteur commun',
 	pythagorean: () => 'Pythagore',
 	'sin-negative': () => 'Imparité de sin',
 	'cos-negative': () => 'Parité de cos',
@@ -246,6 +254,10 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		'On reconnaît une différence de deux carrés : a² - b² = (a+b)(a-b).',
 	'perfect-square-trinomial': () =>
 		'On reconnaît un trinôme du second degré qui est le carré parfait d’un binôme.',
+	'common-factor-products': () =>
+		'Les deux termes ont un facteur commun : on l’écrit une seule fois, devant la somme de ce qui reste — a·c + b·c = (a+b)·c.',
+	'common-factor-bare-term': () =>
+		'Le facteur commun est écrit seul dans l’un des termes : il y compte donc pour 1, et c’est de là que vient le 1 de la parenthèse — c + b·c = (b+1)·c.',
 	pythagorean: () => 'L’identité fondamentale : pour tout x réel, sin²(x) + cos²(x) = 1.',
 	'sin-negative': () => 'La fonction sinus est impaire : sin(-x) = -sin(x).',
 	'cos-negative': () => 'La fonction cosinus est paire : cos(-x) = cos(x).',
@@ -270,7 +282,11 @@ const COLLEGE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'distribute-binomial-product': () =>
 		'On distribue : chaque terme du premier facteur multiplie chaque terme du second.',
 	'combine-like-terms': () => 'Les termes en x se regroupent entre eux, ceux en x² entre eux, etc.',
-	'simplify-fraction': () => 'On divise le numérateur et le dénominateur par un même nombre.'
+	'simplify-fraction': () => 'On divise le numérateur et le dénominateur par un même nombre.',
+	'common-factor-products': () =>
+		'Le même facteur se trouve dans les deux termes : on l’écrit une fois devant la parenthèse.',
+	'common-factor-bare-term': () =>
+		'Le facteur commun est seul dans l’un des termes : il compte pour 1 dans la parenthèse.'
 };
 
 const PRIMAIRE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
