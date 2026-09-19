@@ -72,6 +72,14 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map([
 			example: '.simplifier (x^2-1)/(x+1)'
 		}
 	],
+	[
+		'factor',
+		{
+			french: 'factoriser',
+			description: 'Factoriser une expression',
+			example: '.factoriser x^2-4'
+		}
+	],
 	['diff', { french: 'dériver', description: 'Dériver une expression', example: '.dériver x^2' }],
 	[
 		'solve',
@@ -218,6 +226,21 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map([
 ]);
 
 /**
+ * Les commandes que l'ATELIER sert lui-même — le moteur ne les connaît pas.
+ *
+ * ⚠️ Troisième catégorie, à ne pas confondre avec `OFF_REGISTRY` : celles-ci
+ * ne sont pas « absentes du registre mais branchées dans le moteur », elles
+ * n'existent **nulle part** dans le moteur. Les envoyer à `engine.execute`
+ * rendrait « Unknown command », en anglais. `runCommand` doit donc sortir
+ * AVANT d'appeler le moteur — c'est à ça que sert cette liste.
+ *
+ * `factoriser` est la première : le registre n'a ni `factor` ni `expand`, et
+ * l'intention `factoriser` de `pedagogical-simplify` n'était donc atteignable
+ * depuis aucune interface.
+ */
+export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set(['factor']);
+
+/**
  * Les commandes branchées en dur dans le moteur, absentes du registre.
  *
  * ⚠️ `getCommands()` ne les connaît pas : sans cette table, `.convertir` et
@@ -318,8 +341,8 @@ export function commandCatalog(engine: WebReplEngine): AtelierCommand[] {
 	for (const [name, translation] of TRANSLATIONS) {
 		const registry = fromRegistry.get(name);
 		// Une commande traduite mais absente du registre ne s'invente pas : le
-		// moteur ne saurait pas l'exécuter.
-		if (!registry && !OFF_REGISTRY.has(name)) continue;
+		// moteur ne saurait pas l'exécuter — sauf si c'est l'atelier qui la sert.
+		if (!registry && !OFF_REGISTRY.has(name) && !ATELIER_ONLY_COMMANDS.has(name)) continue;
 		add(name, translation, registry?.aliases ?? []);
 	}
 	for (const [name, translation] of OFF_REGISTRY) {

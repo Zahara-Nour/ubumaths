@@ -8,7 +8,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { commandCatalog, resolveCommand, suggestFor } from '../commands';
+import { commandCatalog, resolveCommand, suggestFor, ATELIER_ONLY_COMMANDS } from '../commands';
+import { Atelier } from '../atelier.svelte';
+import { runInput } from '../calcul';
 
 describe('le catalogue des commandes', () => {
 	it('vient du registre, pas d’une liste écrite en dur', () => {
@@ -99,6 +101,30 @@ describe('le catalogue des commandes', () => {
 	it('ne propose que des exemples qui s’exécutent vraiment', () => {
 		for (const command of commandCatalog(new WebReplEngine())) {
 			if (command.example === undefined || command.unavailable !== undefined) continue;
+
+			// ⚠️ **Une garde ne protège que ce qui passe par elle.** Les
+			// commandes servies par l'atelier ne vont jamais au moteur : les
+			// faire passer ici les accuserait à tort, et les SAUTER laisserait
+			// leur exemple sans garde. On les juge donc sur LEUR chemin, celui
+			// que l'élève emprunte — et une commande de l'atelier ajoutée
+			// demain hérite de la garde sans que personne y pense.
+			//
+			// ⚠️ La barre est le LATEX, pas l'absence de refus : « .factoriser
+			// 3x+6 » rend bien une ligne, mais cette ligne dit « je ne sais pas
+			// factoriser ». Un exemple doit MONTRER ce que la commande fait.
+			if (ATELIER_ONLY_COMMANDS.has(command.name)) {
+				const result = runInput(
+					{ atelier: new Atelier(), engine: new WebReplEngine() },
+					command.example
+				);
+				const latex = result.kind === 'commande' ? result.latex : undefined;
+				expect(
+					{ commande: command.french, kind: result.kind, repond: latex !== undefined },
+					`l'exemple de « .${command.french} » ne montre pas ce qu'elle fait`
+				).toMatchObject({ kind: 'commande', repond: true });
+				continue;
+			}
+
 			// Un moteur neuf par exemple : aucun ne doit dépendre d'un autre.
 			// Le décor passe par `resolveCommand` comme le ferait la vue — sans
 			// quoi c'est le DÉCOR qui échoue, et l'exemple est accusé à tort.
