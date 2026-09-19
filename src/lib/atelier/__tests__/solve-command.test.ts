@@ -119,11 +119,13 @@ describe('`.résoudre` se replie sans rien perdre', () => {
 	});
 
 	it('les autres commandes ne portent pas d’étapes', () => {
-		// ⚠️ Ce test employait `.dériver`, qui PORTE désormais des étapes lui
-		// aussi (lot `pedagogical-differentiation`). Son intention est
-		// inchangée — une commande sans raisonnement à montrer n'invente pas
-		// d'étapes — mais il lui fallait une commande qui le reste.
-		const result = runInput(session(), '.simplifier (x+1)^2');
+		// ⚠️ Ce test a déjà changé de commande DEUX fois : `.dériver` porte des
+		// étapes depuis le lot `pedagogical-differentiation`, `.simplifier`
+		// depuis le lot `pedagogical-simplify`. Son intention n'a pas bougé —
+		// une commande sans raisonnement à montrer n'invente pas d'étapes — il
+		// lui faut seulement une commande qui le reste. `.équivalent` répond
+		// oui ou non : il n'y a rien à dérouler derrière.
+		const result = runInput(session(), '.équivalent (x+1)^2 x^2+2x+1');
 
 		expect(result.kind).toBe('commande');
 		if (result.kind !== 'commande') return;

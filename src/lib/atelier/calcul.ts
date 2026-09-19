@@ -24,6 +24,7 @@ import { resolveCommand, suggestFor, commandCatalog } from './commands';
 import { renderResult } from './render';
 import { solveSteps } from './solve-steps';
 import { deriveSteps } from './derive-steps';
+import { simplifySteps } from './simplify-steps';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { computeVariations } from '$lib/mathAST/variations';
 import { toLatex } from '$lib/mathAST/latex-generator';
@@ -201,27 +202,48 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	const resolved = resolveCommand(input);
 
 	const space = resolved.indexOf(' ');
-	const name = (space === -1 ? resolved.slice(1) : resolved.slice(1, space)).trim().toLowerCase();
+	const typed = (space === -1 ? resolved.slice(1) : resolved.slice(1, space)).trim().toLowerCase();
 
 	// ⚠️ On vérifie AVANT d'exécuter : le moteur répondrait « Unknown command »
 	// en anglais, sans dire ce qui s'en approche (§2 E2).
-	const known = commandCatalog(engine).some(
-		(c) => c.name.toLowerCase() === name || c.aliases.some((a) => a.toLowerCase() === name)
+	const known = commandCatalog(engine).find(
+		(c) => c.name.toLowerCase() === typed || c.aliases.some((a) => a.toLowerCase() === typed)
 	);
-	if (!known) {
-		const typed = (
+	if (known === undefined) {
+		const written = (
 			input.indexOf(' ') === -1 ? input.slice(1) : input.slice(1, input.indexOf(' '))
 		).trim();
-		const close = suggestFor(engine, typed);
+		const close = suggestFor(engine, written);
 		const suffix =
 			close.length === 0 ? '' : ` Peut-être : ${close.map((c) => `« .${c} »`).join(' ou ')} ?`;
-		return { kind: 'refus', message: `« .${typed} » n'est pas une commande.${suffix}` };
+		return { kind: 'refus', message: `« .${written} » n'est pas une commande.${suffix}` };
 	}
+
+	/**
+	 * ⚠️ **Le catalogue tranche, y compris pour l'exécution.**
+	 *
+	 * `resolveCommand` ne traduit que le nom FRANÇAIS : un raccourci partait au
+	 * moteur tel quel, et le moteur l'arbitre autrement. Mesuré le 2026-09-19 —
+	 * deux raccourcis sont revendiqués par deux commandes chacun (`s` par
+	 * `simplify` et `solve`, `h` par `help` et `hash`), et le moteur donne le
+	 * second à chaque fois, à l'inverse du catalogue que l'élève lit :
+	 *
+	 *   .s x+x   → ligne VIDE (solve, « l'entrée doit être une équation »)
+	 *   .h       → ligne VIDE (hash, sans argument)
+	 *
+	 * Le catalogue annonçait pourtant « .s → Simplifier » et « .h → Aide », et
+	 * son arbitrage est délibéré (« `aide` est utile à un élève, `empreinte` ne
+	 * l'est pas »). On exécute donc le nom CANONIQUE, pas ce qui a été tapé.
+	 *
+	 * C'est aussi ce qui permet aux étapes pédagogiques de reconnaître la
+	 * commande : sans ça, `.simp` ne dépliait rien là où `.simplifier` dépliait.
+	 */
+	const name = known.name.toLowerCase();
 
 	// L'argument reçoit les EXPRESSIONS, pas les noms — règle du §6 bis, ici
 	// appliquée à la commande tapée à la main.
 	const argument = space === -1 ? '' : substituteNames(session, resolved.slice(space + 1));
-	const executed = space === -1 ? resolved : `${resolved.slice(0, space)} ${argument}`;
+	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${argument}`;
 
 	const result = engine.execute(executed);
 	// `fromCommand` : pour une commande, `result.ast` porte l'ENTRÉE. Le rendre
@@ -249,6 +271,23 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 				output: rendered.text,
 				latex: derived.answer,
 				steps: derived.steps
+			};
+		}
+	}
+
+	// ⚠️ Même forme que `.dériver`, pour la même raison : le moteur ne SAIT pas
+	// faire une partie de ce qu'on lui demande. Mesuré — `.simplifier x+x` et
+	// `.simplifier sqrt(8)` rendaient l'entrée inchangée. L'étape n'est donc pas
+	// qu'une explication ici : c'est aussi la bonne réponse.
+	if (name === 'simplify') {
+		const simplified = simplifySteps(argument);
+		if (simplified !== null) {
+			return {
+				kind: 'commande',
+				input,
+				output: rendered.text,
+				latex: simplified.answer,
+				steps: simplified.steps
 			};
 		}
 	}
