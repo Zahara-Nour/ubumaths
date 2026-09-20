@@ -1675,17 +1675,24 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 		}
 
 		case 'positive': {
+			// §D.2 / finding F1 — une grandeur affine seule sous une chaîne de
+			// signes est une température de valeur signée : `+(-20[°C])` vaut
+			// 253,15 K. Dans une somme, c'est le cas `addition` qui intercepte ces
+			// signes avant d'arriver ici.
+			const signedPositive = signedAffineQuantity(node);
+			if (signedPositive !== null) {
+				return normalizeUnit(signedAffineNode(signedPositive), ctx);
+			}
 			// Positive sign is identity
 			return normalizeOperand(node.operand, ctx);
 		}
 
 		case 'opposite': {
-			// §D.2 / finding B2 — `-20[°C]` seul est la température −20 °C, donc
-			// `253,15 K` : l'opposé porte sur la VALEUR, pas sur l'absolu. Dans une
-			// somme, c'est le cas `addition` qui intercepte cet opposé avant ici.
-			const affine = affineQuantity(node.operand);
-			if (affine !== null) {
-				return normalizeUnit({ ...affine, expression: opposite(affine.expression) }, ctx);
+			// §D.2 / findings B2 et F1 — `-20[°C]` et `-(-20[°C])` sont des
+			// températures : le signe porte sur la VALEUR, pas sur l'absolu.
+			const signedOpposite = signedAffineQuantity(node);
+			if (signedOpposite !== null) {
+				return normalizeUnit(signedAffineNode(signedOpposite), ctx);
 			}
 			const form = normalizeOperand(node.operand, ctx);
 			return negNormalForm(form);
@@ -1712,7 +1719,7 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 
 		case 'superscript': {
 			// §D.2 — `(20[°C])^2` n'a pas de sens : la puissance entière reste opaque.
-			if (affineQuantity(node.base) !== null) {
+			if (signedAffineQuantity(node.base) !== null) {
 				return normalizeOpaqueNode(node);
 			}
 
@@ -1946,6 +1953,51 @@ function affineQuantity(node: MathNode): (MathNode & { type: 'unit' }) | null {
 }
 
 /**
+ * La grandeur affine que porte ce nœud sous une **chaîne de signes**, et la
+ * parité de cette chaîne. `-(-20[°C])` rend `20[°C]` non nié, `+(-20[°C])`
+ * rend `20[°C]` nié (finding F1 de la seconde revue).
+ */
+type SignedAffine = {
+	readonly quantity: MathNode & { type: 'unit' };
+	readonly negated: boolean;
+};
+
+function signedAffineQuantity(node: MathNode): SignedAffine | null {
+	let current = node;
+	let negated = false;
+
+	for (;;) {
+		if (current.type === 'delimiter') {
+			current = current.content;
+			continue;
+		}
+		if (current.type === 'positive') {
+			current = current.operand;
+			continue;
+		}
+		if (current.type === 'opposite') {
+			negated = !negated;
+			current = current.operand;
+			continue;
+		}
+		break;
+	}
+
+	const quantity = affineQuantity(current);
+	return quantity === null ? null : { quantity, negated };
+}
+
+/**
+ * La grandeur affine, signe replié **dans la valeur** : `-(+20[°C])` est la
+ * température −20 °C, soit 253,15 K — pas l'opposé de 293,15 K.
+ */
+function signedAffineNode(signed: SignedAffine): MathNode & { type: 'unit' } {
+	return signed.negated
+		? { ...signed.quantity, expression: opposite(signed.quantity.expression) }
+		: signed.quantity;
+}
+
+/**
  * Normalise un opérande de produit, de quotient ou de puissance. Une grandeur
  * affine y reste **opaque en bloc** : lue en absolu elle donnerait
  * `2 × 20[°C] = 586,3 K`, ce que §D.2 interdit. Son opposé aussi
@@ -1956,10 +2008,8 @@ function normalizeOperand(node: MathNode, ctx?: NormalizeContext): NormalForm {
 	let current = node;
 	while (current.type === 'delimiter') current = current.content;
 
-	if (affineQuantity(current) !== null) return normalizeOpaqueNode(current);
-	if (current.type === 'opposite' && affineQuantity(current.operand) !== null) {
-		return normalizeOpaqueNode(current);
-	}
+	// Signes compris : `2 × (−20[°C])` n'est pas `−2 × 20[°C]` (finding F2).
+	if (signedAffineQuantity(current) !== null) return normalizeOpaqueNode(current);
 	return normalizeNode(node, ctx);
 }
 

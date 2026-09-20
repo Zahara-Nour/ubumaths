@@ -118,6 +118,17 @@ function normalizePass(node: MathNode): MathNode {
 function makeTidyThenExpandIfCheaper(cost: (node: MathNode) => number) {
 	return (node: MathNode): MathNode => {
 		const tidied = tidy(node);
+
+		// Une température écrite ne se troque JAMAIS contre son absolu, quel que
+		// soit le coût du candidat : `normalize` rend `293,15[K]` là où l'élève a
+		// écrit `20[°C]`, et le coût ne l'arbitre pas (findings I3 puis F3 —
+		// `(x+2)(x−2)+20[°C]` sortait `x²+293,15[K]−4`). L'arithmétique affine
+		// bien formée reste rendue : c'est `tidy` qui la fait (§D.2), pas le
+		// candidat développé — `30[°C]−20[°C]` donne bien `10[K]`.
+		// Conséquence assumée : une somme qui porte une température n'est pas
+		// développée.
+		if (containsAffineQuantity(tidied)) return tidied;
+
 		let expanded: MathNode;
 		try {
 			expanded = tidy(normalizePass(node));
@@ -128,11 +139,6 @@ function makeTidyThenExpandIfCheaper(cost: (node: MathNode) => number) {
 		const expandedCost = cost(expanded);
 		const tidiedCost = cost(tidied);
 		if (expandedCost < tidiedCost) return expanded;
-		// L'égalité ne suffit pas pour une température : `20[°C]` et `293,15[K]`
-		// coûtent pareil, et l'élève a écrit des degrés (finding I3). Une
-		// différence de deux absolues, elle, coûte strictement moins (`10[K]`),
-		// donc elle passe par la ligne au-dessus.
-		if (containsAffineQuantity(tidied)) return tidied;
 		if (expandedCost === tidiedCost && termCount(expanded) <= termCount(tidied)) return expanded;
 		return tidied;
 	};

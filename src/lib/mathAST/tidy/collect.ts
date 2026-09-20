@@ -42,7 +42,15 @@ import {
 	divRational,
 	absRational
 } from '../normal/rational';
-import { func, number, subscript, superscript, withUnit, sqrt as sqrtNode } from '../factory';
+import {
+	func,
+	number,
+	opposite,
+	subscript,
+	superscript,
+	withUnit,
+	sqrt as sqrtNode
+} from '../factory';
 import { isDelimiter, isFunction } from '../guards';
 import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { format as formatUnit } from '../units/formatter';
@@ -51,6 +59,7 @@ import { recognizeDerivedUnit } from '../units/conversion';
 import { schoolFamily } from '../units/selection';
 import { buildSum } from './build';
 import { decimalString } from './decimal';
+import { tidySignedTemperature, tidyTemperatureSum } from './affine';
 import { sortFactors, sortTerms } from './order';
 
 // =============================================================================
@@ -159,6 +168,41 @@ function containsOpaqueNode(node: MathNode): boolean {
 /** Une unité affine (°C, °F) ne se compose ni ne s'additionne (finding C5). */
 function isAffineUnit(unit: Unit): boolean {
 	return unit.offset !== undefined && unit.offset !== 0;
+}
+
+/**
+ * La grandeur affine **signée** que porte ce nœud, signes repliés en un seul
+ * atome : `-(-20[°C])` rend `20[°C]`, `+(-20[°C])` rend `-20[°C]`. `null` si
+ * le nœud ne porte aucun signe, ou pas de grandeur affine — une grandeur
+ * affine nue suit le chemin ordinaire (finding F2).
+ */
+function signedAffineAtom(node: MathNode): MathNode | null {
+	let current = node;
+	let negated = false;
+	let signed = false;
+
+	for (;;) {
+		if (current.type === 'delimiter') {
+			current = current.content;
+			continue;
+		}
+		if (current.type === 'positive') {
+			signed = true;
+			current = current.operand;
+			continue;
+		}
+		if (current.type === 'opposite') {
+			signed = true;
+			negated = !negated;
+			current = current.operand;
+			continue;
+		}
+		break;
+	}
+
+	if (!signed) return null;
+	if (current.type !== 'unit' || !isAffineUnit(current.unit)) return null;
+	return negated ? opposite(current) : current;
 }
 
 /**
@@ -400,6 +444,15 @@ function absorbFactor(
 	acc: Accumulator,
 	alreadyTidied = false
 ): void {
+	// §D.2 / finding F2 — une grandeur affine SIGNÉE est un atome opaque en
+	// bloc : sortir son signe changerait l'atome (`2·(−20 °C)` n'est pas
+	// `−2·20 °C`) et `areEquivalent(tidy(x), x)` deviendrait faux.
+	const affineAtom = signedAffineAtom(node);
+	if (affineAtom !== null) {
+		addFactor(acc, affineAtom, exponent);
+		return;
+	}
+
 	switch (node.type) {
 		case 'delimiter':
 			absorbFactor(node.content, exponent, acc, alreadyTidied);
@@ -810,6 +863,16 @@ function tidyAtom(node: MathNode): MathNode {
 
 /** Une expression : somme de termes, regroupés puis ordonnés puis réécrits. */
 export function tidyExpression(node: MathNode): MathNode {
+	// §D.2 — l'arithmétique des températures est à part : elle ne se ramène pas
+	// à une somme de termes semblables (`30[°C]-20[°C]` vaut `10[K]`).
+	const temperature = tidyTemperatureSum(node);
+	if (temperature !== null) return temperature;
+
+	// §D.2 / finding F1 — une chaîne de signes autour d'une température seule se
+	// replie dans sa valeur : `-(-20[°C])` s'écrit `20[°C]`.
+	const signedTemperature = tidySignedTemperature(node);
+	if (signedTemperature !== null) return signedTemperature;
+
 	return buildSum(sortTerms(chooseUnits(collectLikeTerms(toSumTerms(node)))));
 }
 

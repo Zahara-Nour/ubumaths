@@ -34,6 +34,7 @@ import { CustomTokenizer, type CustomToken, type CustomTokenType } from './token
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
 import { MathAST, compose, matrix, euler, complex } from '../../factory';
 import { parse as parseUnit } from '../../units/parser';
+import { UNIT_TOKEN_TEXT, UNIT_WRITING } from './unit-writing';
 import {
 	SecurityError,
 	getEffectiveSecurityOptions,
@@ -128,24 +129,6 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 /**
  * Custom error class for parse errors with location information
  */
-// =============================================================================
-// Unités
-// =============================================================================
-
-/**
- * Le texte que rend un jeton dans une écriture d'unité, quand sa valeur ne le
- * porte pas telle quelle.
- */
-const UNIT_TOKEN_TEXT: Readonly<Record<string, string>> = {
-	CARET: '^',
-	MINUS: '-',
-	SLASH: '/',
-	STAR: '*'
-};
-
-/** Les caractères qu'une écriture d'unité peut contenir. */
-const UNIT_WRITING = /^[A-Za-z0-9€$°μΩ.^/*-]+$/;
-
 export class ParseException extends Error {
 	readonly position: number;
 	readonly length: number;

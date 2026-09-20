@@ -143,6 +143,28 @@ Commit `cb8226096`, 33 rouges. Décisions prises pour les points produit :
 - **Racine** un facteur d'unité est positif par construction : plus de
   `abs()` sur lui sous une racine, donc `sqrt(4[m^2]) ≡ 2[m]` (et non `2`).
 
+## Troisième lot — seconde revue (2026-09-20)
+
+- **F1** `normal/normalize.ts` : `signedAffineQuantity` épluche la chaîne
+  `delimiter`/`positive`/`opposite` et replie sa parité **dans la valeur** ;
+  un `case 'positive'` fait désormais comme `case 'opposite'`.
+  `-(-20[°C]) ≡ 20[°C]`, `+(-20[°C]) ≡ 253,15 K`.
+- **F2** `tidy/collect.ts` : `signedAffineAtom` fait de la grandeur affine
+  signée un **atome opaque** dans un produit — `2·(−20 °C)` ne devient pas
+  `−2·20 °C`, qui changerait l'atome.
+- **§D.2 dans `tidy`** : nouveau `tidy/affine.ts`. `tidy` fait lui-même
+  l'arithmétique affine bien formée, en rationnels exacts (une absolue plus des
+  écarts reste dans son unité ; deux absolues de signes opposés donnent un
+  écart en K) ; les formes interdites sont rendues **telles qu'elles sont
+  écrites**, sans réordonnancement.
+- **F3** `simplify/simplify.ts` : le garde passe **avant** le calcul du
+  candidat développé — une forme qui porte une température n'est jamais
+  troquée contre son absolu, quel que soit le coût. Conséquence assumée :
+  `(x+2)(x−2)+20[°C]` n'est pas développé.
+- **F4/F5** `parser/custom/unit-writing.ts` : `UNIT_TOKEN_TEXT`
+  (`Partial<Record<string, string>>`) et `UNIT_WRITING` partagés par les deux
+  parseurs ; le JSDoc de `ParseException` lui est rendu.
+
 ## État
 
 - [x] Tests rouges prouvés (commit 1)

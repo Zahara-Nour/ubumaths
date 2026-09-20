@@ -193,8 +193,8 @@ describe('F1/F2 — signes autour d’une température : la valeur est conservé
 	});
 
 	it('2*(-20[°C]) : le signe reste dans la grandeur opaque', () => {
-		expect(t('2*(-20[°C])')).toContain('-20[°C]');
-		expect(t('2*(-20[°C])')).not.toContain('-2');
+		// `-20[°C]` contient `-2` : on pinne l'écriture exacte, sans facteur -2 sorti.
+		expect(t('2*(-20[°C])')).toBe('2(-20[°C])');
 	});
 });
 
