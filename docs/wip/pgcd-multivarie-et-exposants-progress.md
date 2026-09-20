@@ -74,9 +74,14 @@ La promotion est donc **conditionnée** : la constante ne se laisse traiter comm
 une exponentielle que s'il y a une vraie exponentielle avec qui se combiner. Un
 `e` isolé n'a rien à absorber, le promouvoir ne servait qu'à casser.
 
-## L'affichage bouge, cinq fois
+## L'affichage bouge, huit fois — et j'avais annoncé cinq
 
-Empreinte de `simplify` sur 45 témoins, `main` contre la branche :
+Mon empreinte comptait 45 témoins ; la revue en a pris 139 et trouvé trois
+déplacements de plus. **C'est la deuxième fois de suite** que j'affirme sur un
+corpus trop étroit : sur la PR #386 j'avais écrit « l'affichage ne bouge pas »
+et il bougeait neuf fois. La leçon n'est pas « élargir le corpus », c'est que
+l'empreinte doit contenir la classe que le correctif vise, et que je ne peux pas
+la deviner sans la construire exprès.
 
 | entrée                    | `main`                 | branche           |
 | ------------------------- | ---------------------- | ----------------- |
@@ -85,10 +90,48 @@ Empreinte de `simplify` sur 45 témoins, `main` contre la branche :
 | `(a²b−ab²)/(a²−b²)`       | la fraction développée | `ab/(a+b)`        |
 | `(xy+y²)/(x²−y²)`         | inchangée              | `y/(x−y)`         |
 | `(ab+ac)/(b²−c²)`         | inchangée              | `a/(b−c)`         |
+| `(x³+x²y)/(x²−y²)`        | inchangée              | `x²/(x−y)`        |
+| `(x²+xy)/(y²+xy)`         | inchangée              | `x/y`             |
+| `exp(x+1)/exp(1)`         | `exp(x+1)/e`           | `exp(x)`          |
 
-Toutes sont des réductions justes. **Aucune exponentielle ne bouge** : `e`,
-`e^x`, `e^{2}`, `exp(1)`, `e^{x+1}/e` s'affichent au caractère près comme avant,
-ce qui est la preuve que l'identification reste sur le chemin du décideur.
+**La dernière contredit ce que j'avais écrit.** J'affirmais « aucune
+exponentielle ne bouge », et j'en tirais la preuve que l'identification restait
+du côté du décideur. La phrase était fausse et l'argument tombait avec elle.
+
+La cause est une asymétrie : `combineExpAcrossFraction` promeut la constante
+d'Euler sans la condition qui garde les deux autres sites. C'est **voulu** — les
+deux côtés d'une fraction forment un seul geste, et `exp(x+1)/exp(1)` est
+précisément ce qu'il faut réduire, son dénominateur ne portant qu'une constante.
+L'asymétrie est désormais écrite dans le code.
+
+Ce qui reste vrai, et qui est mesuré : les écritures avec la **lettre** `e` ne
+bougent pas. `e`, `e^x`, `e^{2}`, `e²/x`, `e^{x+1}/e` s'affichent au caractère
+près comme avant.
+
+### Élargissement du domaine de définition
+
+`(xy+y²)/(x²−y²)` s'affiche maintenant `y/(x−y)`. En `x = −y ≠ 0`, l'original
+vaut `0/0` et le réduit vaut `−1/2`. Le décideur déclare donc égales deux
+fonctions de domaines différents. Ce n'est pas nouveau — la division exacte de
+la PR #386 fait déjà exactement ça, et David l'a tranché en validant
+`(x²−y²)/(x−y) ≡ x+y`. Cette branche étend la classe de cas concernés.
+
+## Le coût, et le budget de correction
+
+Les plafonds internes du pgcd bornent sa **terminaison**, pas son **temps**. Sur
+une fraction dense à quatre variables de degré 3, aucun n'est atteint :
+
+|                         | `main` | branche, sans pré-filtre | branche, avec |
+| ----------------------- | ------ | ------------------------ | ------------- |
+| `f ≡ f + 0`, 20 monômes | 18 ms  | 164 ms                   | **19 ms**     |
+
+`validation-rule-evaluator.ts` corrige une réponse d'élève avec un budget de
+500 ms, et un dépassement la compte **fausse**. Un pré-filtre de taille au site
+d'appel supprime le risque : mesuré, le contrat de ce chantier ne consomme
+jamais plus de 16 (produit des nombres de termes) là où la fraction dense en
+consomme 420. Le plafond est posé à 64, quatre fois la marge du contrat.
+
+Sur le corpus banal, le pgcd n'était déjà jamais atteint : rien ne change.
 
 ## Hors périmètre, et pourquoi
 
@@ -102,7 +145,7 @@ le pinnent tel quel.
 ## Vert
 
 - `pgcd-multivarie.test.ts` 28/28 (10 étaient rouges) · `pgcd-multivarie-unit.test.ts` 28/28
-- `euler-puissance.test.ts` 22/22 (11 étaient rouges)
+- `euler-puissance.test.ts` 27/27 (11 étaient rouges, plus 4 posés après la revue)
 - mathAST : 322 fichiers, 14 598 tests
 - questions, utils, grapheur, transpilers, exercices : 89 fichiers, 4 185 tests
 - `lint:fast` propre

@@ -1058,6 +1058,17 @@ function normalFormFromPolynomial(terms: readonly NormalTerm[]): NormalForm {
 }
 
 /**
+ * Au-delà de ce produit « nombre de termes du numérateur × du dénominateur »,
+ * on n'essaie plus le pgcd multivarié.
+ *
+ * Mesuré : le contrat des quotients multivariés ne consomme jamais plus de 16,
+ * et une fraction dense à quatre variables et degré 3 en consomme 420 pour un
+ * coût de plusieurs centaines de millisecondes. Le budget de correction d'une
+ * réponse d'élève est de 500 ms ; le dépasser la compterait fausse.
+ */
+const GCD_MAX_PRODUCT_TERMS = 64;
+
+/**
  * Creates a NormalForm from numerator and denominator polynomials.
  * Automatically reduces common monomial factors and numeric coefficients.
  */
@@ -1170,8 +1181,23 @@ function normalFormFromFraction(
 		// Comme le repli par divisibilité, il travaille sur ce qui RESTE, et
 		// n'essaie rien quand un des deux côtés est constant : un diviseur
 		// constant réussirait toujours et défigurerait la fraction.
+		// ⚠️ Pré-filtre de TAILLE. Les plafonds internes du pgcd bornent sa
+		// terminaison, pas son temps : sur une fraction dense à quatre variables
+		// aucun n'est atteint et le calcul coûte des centaines de millisecondes.
+		// Or `validation-rule-evaluator.ts` corrige une réponse d'élève avec un
+		// budget de 500 ms, et un dépassement compte juste une réponse FAUSSE.
+		//
+		// Mesuré : le contrat de ce chantier ne dépasse jamais 16 (produit des
+		// nombres de termes), tandis que la fraction dense qui coûte cher en
+		// consomme 420. Soixante-quatre laisse donc quatre fois la marge du
+		// contrat et exclut la zone dangereuse d'un facteur six. Sur le corpus
+		// banal, ce pré-filtre ne change rien : le pgcd n'y était déjà jamais
+		// atteint.
+		const gcdSizeBudget = reducedNumerator.length * reducedDenominator.length;
+
 		if (
 			!divided &&
+			gcdSizeBudget <= GCD_MAX_PRODUCT_TERMS &&
 			!isConstantPolynomial(reducedNumerator) &&
 			!isConstantPolynomial(reducedDenominator)
 		) {
@@ -4885,6 +4911,18 @@ function combineExpAcrossFraction(
 
 	const numTerm = numerator[0];
 	const denTerm = denominator[0];
+
+	// ⚠️ Ici, contrairement à `combineExpInMonomial` et
+	// `combineExpInPolynomial`, la promotion de la constante d'Euler n'est PAS
+	// conditionnée à la présence d'une vraie exponentielle dans le même monôme :
+	// les deux côtés d'une fraction forment un seul geste, et c'est justement
+	// `exp(x+1)/exp(1)` qu'il s'agit de réduire — le dénominateur n'y porte
+	// qu'une constante. L'asymétrie est donc voulue.
+	//
+	// Elle a un prix, mesuré et assumé : `exp(x+1)/exp(1)` s'affiche désormais
+	// `exp(x)` là où `main` gardait la fraction. C'est le SEUL déplacement
+	// exponentiel sur 139 témoins, il est juste, et il est plus court. Les
+	// écritures avec la lettre `e` ne bougent pas : `e^{x+1}/e` garde sa forme.
 
 	// Collect exp factors from numerator
 	const numExpFactors: Array<{ arg: MathNode; exp: Rational }> = [];

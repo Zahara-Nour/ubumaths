@@ -41,9 +41,12 @@
 
 import { describe, it, expect } from 'vitest';
 import { areEquivalent } from '../../equivalence';
+import { parseCustom } from '../../parser/custom';
 import { parseLatex } from '../../parser';
 import { simplify } from '../../simplify';
+import { solve } from '../../solve/solve';
 import { toLatex } from '../../index';
+import type { RelationNode } from '../../types';
 
 const eq = (a: string, b: string) => areEquivalent(parseLatex(a), parseLatex(b));
 
@@ -121,5 +124,74 @@ describe('réduire pour comparer, pas pour écrire', () => {
 	it('l’affichage garde la notation de l’élève', () => {
 		expect(toLatex(simplify(parseLatex('e^{x}')).result)).toBe('e^x');
 		expect(toLatex(simplify(parseLatex('\\exp(x)')).result)).toContain('exp');
+	});
+});
+
+// =============================================================================
+// La promotion de la constante doit rester CONDITIONNELLE
+// =============================================================================
+
+/**
+ * La constante d'Euler n'est traitée comme une base exponentielle que s'il y a
+ * une vraie fonction `exp` avec qui se combiner. Sans cette condition, `e²`
+ * devient `exp(2)` dans la forme NORMALE — donc sur le chemin d'écriture, que
+ * ce chantier n'a pas le droit de toucher.
+ *
+ * Ce que ça casse, mesuré en levant la condition : le solveur ne reconnaît plus
+ * la forme qu'il attend et `ln(x²+1) − 2 = 0` passe de **deux solutions à
+ * zéro**. Un test préexistant de `solve/__tests__/transcendental-extraction`
+ * l'attrape, mais il ne nomme ni la condition ni l'exponentielle-comme-base :
+ * qui relirait ce fichier-ci croirait la condition libre.
+ */
+describe('un `e` isolé n’a rien à absorber, on ne le promeut pas', () => {
+	const resoudre = (equation: string) =>
+		solve(parseCustom(equation) as RelationNode, { variable: 'x' });
+
+	it.each([['ln(x^2+1)-2=0'], ['ln(x^2+1)=2'], ['ln(x^2-1)-2=0']])(
+		'%s garde ses deux solutions',
+		(equation) => {
+			expect(resoudre(equation).solutions.length).toBe(2);
+		}
+	);
+
+	it('et l’affichage de e² ne bouge pas', () => {
+		expect(toLatex(simplify(parseLatex('e^{2}')).result)).toBe('e^2');
+		expect(toLatex(simplify(parseLatex('\\frac{e^{2}}{x}')).result)).toContain('e^2');
+	});
+});
+
+// =============================================================================
+// Le pgcd ne doit pas faire dépasser le budget de correction
+// =============================================================================
+
+/**
+ * Les plafonds internes du pgcd bornent sa terminaison, pas son temps. Sur une
+ * fraction dense à quatre variables, aucun n'est atteint et le calcul coûtait
+ * 164 ms là où `main` répondait en 18. La correction d'une réponse d'élève
+ * dispose de 500 ms : un dépassement la compte FAUSSE.
+ *
+ * Un pré-filtre de taille au site d'appel ramène le coût à 19 ms. Mesuré : le
+ * contrat des quotients multivariés ne consomme jamais plus de 16 (produit des
+ * nombres de termes), la fraction dense en consomme 420.
+ */
+describe('une fraction dense ne fait pas exploser le budget', () => {
+	it('rend la main bien avant les 500 ms de la correction', () => {
+		const V = ['x', 'y', 'z', 'w'];
+		const monomes: string[] = [];
+		for (let i = 0; i < 4; i++)
+			for (let j = i; j < 4; j++) for (let k = j; k < 4; k++) monomes.push(`${V[i]}${V[j]}${V[k]}`);
+
+		const numerateur = monomes.map((m, i) => `${(i % 3) + 1}${m}`).join('+');
+		const denominateur = monomes.map((m, i) => `${(i % 4) + 1}${m}`).join('+') + '+1';
+		const fraction = `\\frac{${numerateur}}{${denominateur}}`;
+
+		const started = performance.now();
+		const verdict = areEquivalent(parseLatex(fraction), parseLatex(`${fraction}+0`), {
+			timeoutMs: 500
+		});
+
+		// La réponse est vraie : une fraction est égale à elle-même plus zéro.
+		expect(verdict).toBe(true);
+		expect(performance.now() - started).toBeLessThan(150);
 	});
 });
