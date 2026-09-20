@@ -71,8 +71,7 @@ describe('simplify — les règles « 1 − f² » tirent après normalizePass',
 		expect(latex('1-\\sin^2(x)')).toBe('\\cos\\left( x \\right)^2');
 	});
 
-	it('cosh²(x) − sinh²(x) reste hors de portée (règle masquée par diff-squares-symbolic, §6.5)', () => {
-		// Garde-fou : ce test documente l'état, il ne le valide pas.
-		expect(custom('cosh(x)^2-sinh(x)^2')).not.toBe('1');
+	it('cosh²(x) − sinh²(x) → 1 (§6.5 corrigé : l’identité passe avant la factorisation)', () => {
+		expect(custom('cosh(x)^2-sinh(x)^2')).toBe('1');
 	});
 });

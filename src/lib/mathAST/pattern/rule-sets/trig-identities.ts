@@ -127,7 +127,11 @@ export const trigPythagoreanRules: Rule[] = [
 			P.func('cos', [P._('a')], { power: P.num(2) })
 		),
 		() => number('1'),
-		{ name: 'pythagorean', group: 'PYTHAGOREAN' }
+		// Priorité 2, comme son homologue hyperbolique : une identité qui rend une
+		// constante passe avant toute factorisation (cf. §6.5 du relevé). Ici la
+		// somme n'est appariée par aucune règle algébrique, mais la règle ne doit
+		// pas dépendre de cette chance.
+		{ name: 'pythagorean', group: 'PYTHAGOREAN', priority: 2 }
 	),
 	createRule(
 		P.sub(P.num(1), P.func('sin', [P._('a')], { power: P.num(2) })),
@@ -609,7 +613,11 @@ export const trigHigherPowerRules: Rule[] = [
 const SIMPLIFY_PYTHAGOREAN = new Set([
 	'pythagorean',
 	'one-minus-sin-squared',
-	'one-minus-cos-squared'
+	'one-minus-cos-squared',
+	// `sec²(a) − 1 → tan²(a)` **retire** un `sec` : elle sert l'exclusion au lieu
+	// de la contredire. Ses jumelles `tan²+1 → sec²`, `cot²+1 → csc²` et
+	// `csc²−1 → cot²` restent écartées, elles introduiraient sec, csc ou cot.
+	'sec-squared-minus-one'
 ]);
 const SIMPLIFY_QUOTIENT = new Set(['sin-over-cos']);
 
