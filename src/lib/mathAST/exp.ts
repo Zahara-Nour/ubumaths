@@ -99,6 +99,7 @@ import {
 import { normalize } from './normal/normalize';
 import { denormalize } from './normal/denormalize';
 import { normalFormsEquivalent, hashNormalForm } from './normal/hash';
+import { equivalenceForm } from './normal/normalize';
 
 import { substitute as substituteFunc, evaluate as evaluateFunc } from './eval';
 import type { EvalBindings, EvalOptions, EvalResult } from './eval';
@@ -627,7 +628,9 @@ export class Exp {
 	 */
 	isEquivalent(other: ExpOrNode): boolean {
 		const otherExp = other instanceof Exp ? other : Exp.from(other);
-		return normalFormsEquivalent(this.normal, otherExp.normal);
+		// `equivalenceForm`, pas `this.normal` : le décideur réduit la
+		// trigonométrie, la forme affichée non (cf. sa docstring).
+		return normalFormsEquivalent(equivalenceForm(this.node), equivalenceForm(otherExp.node));
 	}
 
 	/**

@@ -25,13 +25,22 @@ import { describe, it, expect } from 'vitest';
 import { areEquivalent } from '../../equivalence';
 import { parseCustom } from '../../parser/custom';
 import { parseLatex } from '../../parser';
-import { normalize } from '../normalize';
+import { equivalenceForm, normalize } from '../normalize';
 import { preprocess } from '../rules';
 import { hashNormalForm } from '../hash';
 import type { MathNode } from '../../types';
 
 const eq = (a: string, b: string) => areEquivalent(parseCustom(a), parseCustom(b));
-const hash = (node: MathNode) => hashNormalForm(normalize(preprocess(node)));
+
+/**
+ * L'empreinte du **décideur**. `normalize` seul ne réduit pas la trigonométrie
+ * — c'est tout l'objet du choix d'architecture : réduire pour comparer, pas
+ * pour écrire.
+ */
+const hash = (node: MathNode) => hashNormalForm(equivalenceForm(node));
+
+/** L'empreinte ordinaire, celle de la forme qui s'affiche. */
+const plainHash = (node: MathNode) => hashNormalForm(normalize(preprocess(node)));
 
 // =============================================================================
 // 1. Les définitions
@@ -168,6 +177,13 @@ describe('non-régression', () => {
 
 	it('une expression sans trigonométrie garde son hash', () => {
 		expect(hash(parseCustom('x^2+2x+1'))).toBe(hash(parseCustom('(x+1)^2')));
+		expect(plainHash(parseCustom('x^2+2x+1'))).toBe(plainHash(parseCustom('(x+1)^2')));
+	});
+
+	it('la forme qui s’affiche n’est pas réduite : sin²(x) reste sin²(x)', () => {
+		expect(plainHash(parseCustom('sin(x)^2'))).toBe(plainHash(parseCustom('sin(x)^2')));
+		expect(plainHash(parseCustom('sin(x)^2'))).not.toBe(plainHash(parseCustom('1-cos(x)^2')));
+		expect(hash(parseCustom('sin(x)^2'))).toBe(hash(parseCustom('1-cos(x)^2')));
 	});
 
 	it('aucune exception sur les formes dégénérées', () => {

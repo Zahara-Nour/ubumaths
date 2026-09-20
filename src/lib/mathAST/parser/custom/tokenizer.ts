@@ -171,6 +171,9 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 	'sinh',
 	'cosh',
 	'tanh',
+	'coth',
+	'sech',
+	'csch',
 	// Inverse hyperbolic functions
 	'arcsinh',
 	'arccosh',
@@ -220,6 +223,9 @@ const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
 	'sinh', // 4 chars
 	'cosh', // 4 chars
 	'tanh', // 4 chars
+	'coth', // 4 chars — avant 'cot', sinon "coth" se lit "cot"+"h"
+	'sech', // 4 chars — avant 'sec'
+	'csch', // 4 chars — avant 'csc'
 	'sqrt', // 4 chars
 	'mean', // 4 chars
 	'ceil', // 4 chars

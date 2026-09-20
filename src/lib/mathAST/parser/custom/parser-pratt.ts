@@ -1368,6 +1368,26 @@ class CustomPrattParser {
 			return this.parseBraceGroup();
 		}
 
+		// Dans un exposant, les parenthèses ne font que grouper, exactement comme
+		// les accolades : `x^(1/2)` et `x^{1/2}` doivent donner le MÊME arbre —
+		// sinon l'exposant rationnel n'est plus reconnu comme tel. On ne garde
+		// donc pas de nœud `delimiter` ici. Avant, `^(` était une erreur de
+		// syntaxe : cette branche n'élargit la grammaire que sur ce cas.
+		if (this.check('LPAREN')) {
+			this.advance(); // consume (
+			if (this.check('RPAREN')) {
+				this.error(
+					'Empty exponent group not allowed',
+					this.currentToken.position,
+					1,
+					'EMPTY_GROUP'
+				);
+			}
+			const content = this.parseExpression(BP.NONE);
+			this.expect('RPAREN', "Expected ')' after exponent");
+			return content;
+		}
+
 		// CRITICAL: Minus REQUIRES braces for exponent
 		if (this.check('MINUS')) {
 			this.error(
