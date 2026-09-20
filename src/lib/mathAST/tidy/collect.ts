@@ -17,7 +17,8 @@
  * @module mathAST/tidy/collect
  */
 
-import type { FunctionNode, MathNode, Unit, UnitNode } from '../types';
+import type { FunctionNode, MathNode, UnitNode } from '../types';
+import type { Unit } from '../units/types';
 import type { Rational } from '../normal/types';
 import type { TidyTerm } from './types';
 import { flattenProductShallow, flattenSumShallow } from '../flatten';

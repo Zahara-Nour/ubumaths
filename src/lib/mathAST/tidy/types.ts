@@ -10,7 +10,8 @@
  * @module mathAST/tidy/types
  */
 
-import type { MathNode, Unit } from '../types';
+import type { MathNode } from '../types';
+import type { Unit } from '../units/types';
 import type { Rational } from '../normal/types';
 
 /**

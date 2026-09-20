@@ -70,7 +70,7 @@ describe('tidy — invariants', () => {
 		expect(t('(x+1)^2')).toBe('(x+1)^2');
 		expect(t('x*(x+1)')).toBe('x(x+1)');
 		expect(t('(x+1)*(x-1)')).toBe('(x+1)(x-1)');
-		expect(t('2*(x+h)^2-2*x^2')).toBe('2(x+h)^2-2x^2');
+		expect(t('2*(x+h)^2-2*x^2')).toBe('2(h+x)^2-2x^2');
 	});
 
 	it('ne factorise jamais', () => {
@@ -244,8 +244,10 @@ describe('tidy — ordre canonique', () => {
 		expect(t('sin(x)*x')).toBe('xsin(x)');
 	});
 
-	it('à degré égal, ordre alphabétique de l’écriture du terme', () => {
-		expect(t('-2*x^2+2*(x+h)^2')).toBe('2(x+h)^2-2x^2');
+	it('à degré égal, ordre alphabétique de l’écriture du terme — partout, sommes imbriquées comprises', () => {
+		// (h+x), pas (x+h) : un seul ordre canonique, sinon (x+h)² et (h+x)² ne se
+		// regroupent pas (revue du 2026-09-20, K1). Même choix que le Compute Engine.
+		expect(t('-2*x^2+2*(x+h)^2')).toBe('2(h+x)^2-2x^2');
 	});
 });
 
