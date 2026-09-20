@@ -71,6 +71,41 @@ describe('un facteur commun polynomial se simplifie, à plusieurs variables', ()
 });
 
 // =============================================================================
+// Le repli doit opérer sur ce qui RESTE, pas sur la fraction d'origine
+// =============================================================================
+
+/**
+ * Trouvé par une campagne aléatoire indépendante : 1386 verdicts vérifiés en
+ * 8 points numériques, 0 faux positif mais **339 faux négatifs**, tous de la
+ * même forme.
+ *
+ * Quand `gcdPolynomials` extrait un facteur **monôme** commun — un `z`, un `2`,
+ * un `xy` — il a bel et bien réduit quelque chose, et le repli multivarié était
+ * sauté pour cette raison. Or ce qui reste après cette extraction peut encore
+ * porter un facteur commun **polynomial**. `z(x+y)²/(z(x+y))` devient
+ * `(x+y)²/(x+y)` après le monôme, et plus personne ne le regardait.
+ *
+ * La division exacte doit donc s'appliquer à ce qui reste, pas à la fraction
+ * d'origine. Elle ne peut rien défaire : elle part du couple déjà réduit.
+ */
+describe('un facteur monôme déjà extrait ne doit pas masquer le facteur polynomial', () => {
+	it.each([
+		['\\frac{z(x+y)^2}{z(x+y)}', 'x+y'],
+		['\\frac{zx^2-zy^2}{zx-zy}', 'x+y'],
+		['\\frac{2z(x+y)^2}{2z(x+y)}', 'x+y'],
+		['\\frac{xy(a+b)^2}{xy(a+b)}', 'a+b'],
+		['\\frac{6x^{2}yz^{2}+6x^{2}yz^{3}-4y^{3}z^{2}-4y^{3}z^{3}}{-3x^{2}z+2y^{2}z}', '-2yz-2yz^{2}']
+	])('%s ≡ %s', (a, b) => {
+		expect(eq(a, b)).toBe(true);
+	});
+
+	it('et rien n’est inventé pour autant', () => {
+		expect(eq('\\frac{z(x+y)^2}{z(x+2y)}', 'x+y')).toBe(false);
+		expect(eq('\\frac{zx^2-zy^2}{zx-zy}', 'x-y')).toBe(false);
+	});
+});
+
+// =============================================================================
 // Le risque majeur : aucun faux positif
 // =============================================================================
 

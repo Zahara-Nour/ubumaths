@@ -482,6 +482,12 @@ function compareMonomialsGradedLex(
 	a: readonly SymbolicFactor[],
 	b: readonly SymbolicFactor[]
 ): number {
+	// ⚠️ Précondition : un monôme porte au plus UN facteur par base, ce que
+	// `mulTerms` garantit. Sur une entrée non canonique la comparaison est
+	// fausse — mesuré, `cmp([x¹, x²], [x³])` rend −1 au lieu de 0, le degré
+	// total additionnant 1+2 tandis que la table ci-dessous n'en retient qu'un.
+	// Rien dans `normalize` ne produit ça ; on ne paie pas une fusion défensive
+	// à chaque comparaison pour un cas qui n'arrive pas.
 	// Degré total (les exposants sont des entiers positifs, cf. la garde)
 	let degreeA = 0n;
 	for (const factor of a) degreeA += factor.exponent.n;
@@ -642,7 +648,14 @@ export function exactDividePolynomials(
 	const quotient = collectLikeTerms(quotientTerms);
 
 	// Filet de sécurité : le produit doit redonner le dividende, sinon rien.
-	if (hashPolynomial(mulPolynomials(b, quotient)) !== hashPolynomial(collectLikeTerms([...a]))) {
+	// Les DEUX côtés passent par `collectLikeTerms`, qui trie canoniquement.
+	// `mulPolynomials` court-circuite quand un facteur vaut `1` et rend l'autre
+	// tel quel, non trié : sans ce `collectLikeTerms`-ci, le filet comparerait un
+	// tableau brut à un tableau trié et rejetterait une division valide.
+	if (
+		hashPolynomial(collectLikeTerms(mulPolynomials(b, quotient))) !==
+		hashPolynomial(collectLikeTerms([...a]))
+	) {
 		return null;
 	}
 

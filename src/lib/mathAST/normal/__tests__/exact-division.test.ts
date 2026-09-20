@@ -78,3 +78,44 @@ describe('exactDividePolynomials rend null quand elle ne tombe pas juste', () =>
 		expect(divide('x\\sqrt{x}', '\\sqrt{x}')).toBeNull();
 	});
 });
+
+// =============================================================================
+// La fonction est exportée : elle doit tenir sur une entrée NON canonique
+// =============================================================================
+
+/**
+ * Le filet de sécurité compare `b·q` au dividende par leurs hachages, et
+ * `hashPolynomial` joint les termes dans l'ORDRE du tableau. Les deux côtés
+ * sont normalement triés par `collectLikeTerms`, sauf sur un chemin :
+ * `mulPolynomials` court-circuite quand un facteur vaut `1` et rend l'autre
+ * **tel quel**, non re-trié.
+ *
+ * Conséquence mesurée : quand le quotient vaut `1` et que le diviseur arrive
+ * dans un ordre non canonique, le filet compare un tableau brut à un tableau
+ * trié, et rejette une division pourtant valide.
+ *
+ * C'est un faux négatif, jamais un faux positif, et `normalize` ne peut pas
+ * l'atteindre — tout ce qu'il produit passe par `collectLikeTerms`. Mais la
+ * fonction est exportée, et le prochain appelant qui construit un polynôme à la
+ * main tomberait dedans sans que rien ne l'en avertisse.
+ */
+describe('un ordre de termes non canonique ne doit rien changer', () => {
+	it.each(['x+y', 'x+y+z', 'x^2-y^2', '2a-3b'])(
+		'(%s) divisé par lui-même écrit à l’envers vaut 1',
+		(latex) => {
+			const canonique = poly(latex);
+			const envers = [...canonique].reverse();
+
+			expect(exactDividePolynomials(canonique, envers)).not.toBeNull();
+			expect(exactDividePolynomials(envers, envers)).not.toBeNull();
+			expect(exactDividePolynomials(envers, canonique)).not.toBeNull();
+		}
+	);
+
+	it('le quotient vaut bien 1, pas seulement « non null »', () => {
+		const canonique = poly('x+y');
+		const quotient = exactDividePolynomials(canonique, [...canonique].reverse());
+		if (quotient === null) throw new Error('quotient null');
+		expect(polynomialsEqual(quotient, poly('1'))).toBe(true);
+	});
+});
