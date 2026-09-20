@@ -586,24 +586,51 @@ class CustomRDParser {
 	}
 
 	/**
-	 * atomWithFraction := atom ('/' atom)*
+	 * atomWithFraction := fractionOperand ('/' fractionOperand)*
 	 *
 	 * CRITICAL: This is where '/' is handled at PRIMARY level.
 	 * This ensures `2+3/4` parses as `2+(3/4)`, not `(2+3)/4`.
 	 * The `/` operator binds tighter than `+` or `*` because it consumes
-	 * only the immediately adjacent atoms, not full expressions.
+	 * only the immediately adjacent operands, not full expressions.
 	 */
 	private parseAtomWithFraction(): MathNode {
-		let left = this.parseAtom();
+		let left = this.parseFractionOperand();
 
 		// Handle tight-binding / at PRIMARY level
 		while (this.check('SLASH')) {
 			this.advance(); // consume /
-			const right = this.parseAtom(); // Parse ONLY next atom
+			const right = this.parseFractionOperand(); // Parse ONLY next operand
 			left = this.applyColor(MathAST.divide(left, right, 'fraction'));
 		}
 
 		return left;
+	}
+
+	/**
+	 * fractionOperand := atom ('^' powerOperand | '_' subscriptOperand | '[' unit ']')*
+	 *
+	 * Un opérande de fraction est un atome **et ses postfixes**. La barre lie
+	 * plus fort que `+` ou `*`, mais moins fort qu'une puissance : `x^2/x` est
+	 * `x²` divisé par `x`, et `1/x^2` est `1` divisé par `x²`. En s'arrêtant à
+	 * l'atome nu, `x^2/x` était refusé et `x/x^2` lu `(x/x)^2` — relevé du
+	 * 2026-09-20, §6.9. Même chaînage de gauche à droite que `parsePower`.
+	 */
+	private parseFractionOperand(): MathNode {
+		let operand = this.parseAtom();
+
+		while (this.check('CARET') || this.check('UNDERSCORE') || this.check('LBRACKET')) {
+			if (this.check('CARET')) {
+				this.advance();
+				operand = this.applyColor(MathAST.superscript(operand, this.parsePowerOperand()));
+			} else if (this.check('UNDERSCORE')) {
+				this.advance();
+				operand = this.applyColor(MathAST.subscript(operand, this.parseSubscriptOperand()));
+			} else {
+				operand = this.parseUnitPostfix(operand);
+			}
+		}
+
+		return operand;
 	}
 
 	/**

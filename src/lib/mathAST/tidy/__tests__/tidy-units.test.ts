@@ -97,7 +97,9 @@ describe('B1 — unités scolaires seulement, valeur ≥ 1 préférée', () => {
 		['30[s]', '30[s]'],
 		['90[s]', '1.5[min]'],
 		['2[mm]', '2[mm]'],
-		['1/3[km]', '1/3[km]'],
+		// Parenthèses obligatoires : depuis la correction de la priorité du `/`,
+		// `1/3[km]` se lit `1/(3 km)` — l'unité appartient au nombre qu'elle suit.
+		['(1/3)[km]', '(1/3)[km]'],
 		['7[j]', '7[j]'],
 		['1[an]', '1[an]'],
 		['48[h]', '2[j]'],

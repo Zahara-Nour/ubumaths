@@ -384,6 +384,26 @@ function startsWithUnarySign(s: string): boolean {
 // Generator Class
 // =============================================================================
 
+/**
+ * Parenthèse l'expression d'une grandeur quand le crochet d'unité, qui est un
+ * **postfixe**, se rattacherait au mauvais opérande à la relecture :
+ * `1/3[km]` se relit `1/(3 km)`, une autre grandeur. Sommes, différences,
+ * quotients et signes sont concernés ; un atome, une puissance ou un produit
+ * se relisent à l'identique.
+ */
+function wrapQuantityExpression(expression: MathNode, written: string): string {
+	switch (expression.type) {
+		case 'addition':
+		case 'subtraction':
+		case 'division':
+		case 'opposite':
+		case 'positive':
+			return `(${written})`;
+		default:
+			return written;
+	}
+}
+
 export class CustomGenerator {
 	private readonly options: Required<CustomGeneratorOptions>;
 	private spans: ColoredSpan[] = [];
@@ -919,8 +939,16 @@ export class CustomGenerator {
 		const nodeMeta = node.metadata;
 		const unitMeta = node.unitMetadata ?? nodeMeta;
 
+		// Le crochet d'unité est un postfixe : il se rattache, à la relecture, au
+		// seul opérande qui le précède. Sans parenthèses, `1/3[km]` se relirait
+		// `1/(3 km)` — une autre grandeur. On parenthèse donc ce dont la valeur
+		// changerait : sommes, différences, quotients et signes.
+		const needsParentheses = wrapQuantityExpression(node.expression, '') !== '';
+
+		if (needsParentheses) this.emit('(', nodeMeta);
 		// Visit the expression with the node's metadata
 		this.visitWithSpansInherited(node.expression, nodeMeta);
+		if (needsParentheses) this.emit(')', nodeMeta);
 
 		// Emit the unit in bracket notation
 		this.emit('[', unitMeta);
@@ -1363,7 +1391,7 @@ export class CustomGenerator {
 	private generateUnit(node: UnitNode): string {
 		const expr = this.generateNode(node.expression);
 		const unitStr = format(node.unit, 'original');
-		return `${expr}[${unitStr}]`;
+		return `${wrapQuantityExpression(node.expression, expr)}[${unitStr}]`;
 	}
 
 	/**

@@ -376,7 +376,17 @@ describe('CustomGenerator - Units', () => {
 			MathAST.add(MathAST.variable('x'), MathAST.number('1')),
 			parseUnit('m/s^2')
 		);
-		expect(toCustom(expr)).toBe('x+1[m/s^2]');
+		// Parenthèses obligatoires : le crochet d'unité est un postfixe, donc
+		// `x+1[m/s^2]` se relirait `x + (1 m/s²)` — une autre expression.
+		expect(toCustom(expr)).toBe('(x+1)[m/s^2]');
+	});
+
+	it('ce qui est écrit se relit à l’identique', () => {
+		const expr = MathAST.withUnit(
+			MathAST.add(MathAST.variable('x'), MathAST.number('1')),
+			parseUnit('m/s^2')
+		);
+		expect(toCustom(parseCustom(toCustom(expr)))).toBe(toCustom(expr));
 	});
 });
 
