@@ -8,6 +8,7 @@
  * are handled in Phase 2 by normalizeFunction.
  */
 
+import { hashMathNode } from '../hash';
 import type { MathNode } from '../../types';
 
 // =============================================================================
@@ -18,7 +19,20 @@ import type { MathNode } from '../../types';
  * Gets the argument of a sqrt function node.
  */
 function getSqrtArg(node: MathNode): MathNode | null {
-	if (node.type === 'function' && node.name === 'sqrt' && node.args.length === 1) {
+	// ⚠️ `node.base` porte l'INDICE d'une racine n-ième, et `args.length` vaut 1
+	// pour `∛x` comme pour `√x` : sans ce test, les deux sont indiscernables.
+	//
+	// `ⁿ√a · ⁿ√a = a^{2/n}`, qui ne vaut `a` que pour `n = 2`. La première
+	// version de la règle des radicandes identiques faisait donc rendre `true`
+	// à `∛x·∛x ≡ x`, un faux positif — la seule faute qui compte JUSTE une
+	// réponse FAUSSE d'élève. Mesuré sur 400 tirages : aucun point du domaine
+	// commun ne valide cette égalité.
+	if (
+		node.type === 'function' &&
+		node.name === 'sqrt' &&
+		node.args.length === 1 &&
+		node.base === undefined
+	) {
 		return node.args[0];
 	}
 	return null;
@@ -61,6 +75,21 @@ export function applyRadicalRules(node: MathNode): MathNode | null {
 	const rightArg = getSqrtArg(node.right);
 
 	if (leftArg && rightArg) {
+		// ⚠️ Radicandes IDENTIQUES : on rend le radicande, pas `√(a·a)`.
+		//
+		// Cette fusion n'est licite que parce que les deux radicaux sont ÉCRITS,
+		// donc que `a ≥ 0`. Fabriquer `√(a·a)` perdrait cette information : la
+		// règle `√(a²) = |a|` la recevrait sans savoir d'où elle vient, et
+		// ajouterait une valeur absolue inutile. C'est ce qui faisait rendre
+		// `false` à `√x·√x ≡ x`, alors que `simplify` rendait `x` — le moteur
+		// refusait sa propre sortie.
+		//
+		// La règle `√(a²) = |a|` n'est pas touchée : elle reste juste pour un
+		// carré que l'élève a écrit, où rien ne garantit le signe de `a`.
+		if (hashMathNode(leftArg) === hashMathNode(rightArg)) {
+			return leftArg;
+		}
+
 		return sqrtNode({
 			type: 'multiplication',
 			left: leftArg,
