@@ -3,30 +3,33 @@
  *
  * Une fonction par étape du contrat (docs/wip/tidy-phase0.md, §A) :
  *
- * | étape | fonction                                                       |
- * | ----- | -------------------------------------------------------------- |
- * | 1     | `flattenSumShallow` / `flattenProductShallow` (briques) |
- * | 3     | `absorbFactor` (neutres, signes, `-(-x)`, `x/(-y)`)            |
- * | 4     | `absorbRational` (arithmétique exacte, jamais de décimal)      |
- * | 5     | `collectLikeTerms` (clé = hash des facteurs + unité)           |
- * | 6     | `addFactor` (exposants additionnés sur une base identique)     |
- * | 7     | `absorbSquareRoot` / `reduceRadicalFactors`                     |
- * | 9     | `tidyFunction` (arguments au propre, `sin^2(x)` → superscript) |
- * | 10    | `absorbQuantity` (l'unité survit)                              |
+ * | étape | fonction                                                        |
+ * | ----- | --------------------------------------------------------------- |
+ * | 1     | `flattenSumShallow` / `flattenProductShallow` (briques)          |
+ * | 3     | `absorbFactor` (neutres, signes, `-(-x)`, `x/(-y)`)              |
+ * | 4     | `absorbRational` (arithmétique exacte, jamais de décimal)        |
+ * | 5     | `collectLikeTerms` (clé = hash des facteurs + unité)             |
+ * | 6     | `addFactor` (exposants additionnés sur une base identique)       |
+ * | 7     | `absorbSquareRoot` / `reduceRadicalFactors`                      |
+ * | 9     | `tidyFunction` (arguments au propre, `sin^2(x)` → superscript)   |
+ * | 10    | `absorbQuantity` / `composeUnit` (les grandeurs se composent)    |
  *
  * @module mathAST/tidy/collect
  */
 
-import type { FunctionNode, MathNode, UnitNode } from '../types';
+import type { FunctionNode, MathNode, SuperscriptNode, UnitNode } from '../types';
 import type { Unit } from '../units/types';
 import type { Rational } from '../normal/types';
-import type { TidyTerm } from './types';
+import type { TidyFactor, TidyTerm } from './types';
 import { flattenProductShallow, flattenSumShallow } from '../flatten';
+import { getChildren } from '../transforms';
 import { extractRational } from '../common/numeric';
-import { hashMathNode } from '../normal/hash';
+import { hashMathNode, hashUnit } from '../normal/hash';
+import { extractPerfectPower } from '../normal/radical';
 import {
 	ONE,
 	addRational,
+	floorRational,
 	fromInteger,
 	isInteger as isIntegerRational,
 	isOne as isOneRational,
@@ -39,18 +42,34 @@ import {
 } from '../normal/rational';
 import { func, number, subscript, superscript, withUnit, sqrt as sqrtNode } from '../factory';
 import { isDelimiter, isFunction } from '../guards';
+import { multiply as unitMultiply, power as unitPower } from '../units/operations';
+import { parse as parseUnit } from '../units/parser';
+import { format as formatUnit } from '../units/formatter';
 import { buildSum } from './build';
-import { compareNestedTerms, compareTerms, sortFactors } from './order';
+import { sortFactors, sortTerms } from './order';
 
 // =============================================================================
 // Types internes
 // =============================================================================
 
+/** Un facteur en cours d'accumulation — la version mutable de `TidyFactor`. */
+type MutableFactor = {
+	base: MathNode;
+	exponent: Rational;
+	readonly key: string;
+};
+
+/** Un facteur d'unité en cours d'accumulation (`km^2`, `h^-1`, …). */
+type MutableUnitFactor = {
+	readonly unit: Unit;
+	exponent: Rational;
+};
+
 /** Accumulateur mutable, local à un terme : il ne sort jamais du module. */
 type Accumulator = {
 	coefficient: Rational;
-	readonly factors: Map<string, { base: MathNode; exponent: Rational }>;
-	unit: Unit | null;
+	readonly factors: Map<string, MutableFactor>;
+	readonly unitFactors: Map<string, MutableUnitFactor>;
 };
 
 // =============================================================================
@@ -60,42 +79,132 @@ type Accumulator = {
 /** Au-delà, la recherche du plus grand carré diviseur coûterait trop cher. */
 const MAX_RADICAND_FOR_FACTORING = 1_000_000_000_000n;
 
+/**
+ * Plafond d'évaluation d'une puissance numérique (finding R2).
+ *
+ * `2^10` vaut 1024, mais `2^100000` est un entier de 30 103 chiffres : le
+ * replier coûte cher et rend une écriture illisible. Au-delà du plafond la
+ * puissance reste symbolique. Le plafond borne aussi la conversion
+ * `bigint → number` des exposants, qui serait sinon silencieusement fausse.
+ */
+const MAX_NUMERIC_EXPONENT = 256n;
+
 // =============================================================================
-// Helpers rationnels
+// Helpers rationnels et numériques
 // =============================================================================
 
-function floorDivideBigInt(a: bigint, b: bigint): bigint {
-	const quotient = a / b;
-	return a % b !== 0n && a < 0n !== b < 0n ? quotient - 1n : quotient;
+/** L'exposant tient-il dans le plafond d'évaluation ? */
+function isEvaluableExponent(exponent: Rational): boolean {
+	if (!isIntegerRational(exponent)) return false;
+	const magnitude = exponent.n < 0n ? -exponent.n : exponent.n;
+	return magnitude <= MAX_NUMERIC_EXPONENT;
 }
 
 /**
- * Sépare un entier positif en `square² · rest` avec `rest` sans facteur carré.
- * `8 → { square: 2n, rest: 2n }`, `9 → { square: 3n, rest: 1n }`.
+ * La valeur rationnelle d'un nœud, `extractRational` étendu aux quotients de
+ * nombres : `extractRational` ne descend pas dans une `division`, si bien que
+ * `sqrt(1/2)` passait pour un radicande symbolique (finding C7).
  */
-function splitSquareFactor(value: bigint): { square: bigint; rest: bigint } {
-	let square = 1n;
-	let rest = value;
-	for (let p = 2n; p * p <= rest; p++) {
-		const pSquared = p * p;
-		while (rest % pSquared === 0n) {
-			square *= p;
-			rest /= pSquared;
-		}
+function rationalValue(node: MathNode): Rational | null {
+	const direct = extractRational(node);
+	if (direct !== null) return direct;
+
+	if (node.type === 'division') {
+		const numerator = rationalValue(node.numerator);
+		const denominator = rationalValue(node.denominator);
+		if (numerator === null || denominator === null) return null;
+		if (isZeroRational(denominator)) return null;
+		return rational(numerator.n * denominator.d, numerator.d * denominator.n);
 	}
-	return { square, rest };
+	if (node.type === 'delimiter') return rationalValue(node.content);
+	if (node.type === 'opposite') {
+		const inner = rationalValue(node.operand);
+		return inner === null ? null : negRational(inner);
+	}
+	if (node.type === 'positive') return rationalValue(node.operand);
+	return null;
+}
+
+function isZeroNumberNode(node: MathNode): boolean {
+	const value = extractRational(node);
+	return value !== null && isZeroRational(value);
+}
+
+/**
+ * Ce terme divise-t-il par zéro ? Un tel terme n'est jamais fusionné avec un
+ * autre, et un coefficient nul ne l'efface pas : `0/0` n'est pas `0`
+ * (finding C2).
+ */
+function dividesByZero(term: TidyTerm): boolean {
+	return term.factors.some((factor) => factor.exponent.n < 0n && isZeroNumberNode(factor.base));
+}
+
+/**
+ * Ce nœud contient-il un infini ou un zéro signé ? Ces nœuds sont opaques
+ * **partout** : un terme qui en contient un ressort tel quel (finding C3).
+ */
+function containsOpaqueNode(node: MathNode): boolean {
+	if (node.type === 'infinity' || node.type === 'signed-zero') return true;
+	return getChildren(node).some(containsOpaqueNode);
 }
 
 // =============================================================================
-// Clé d'une unité
+// Unités
 // =============================================================================
 
+/** Une unité affine (°C, °F) ne se compose ni ne s'additionne (finding C5). */
+function isAffineUnit(unit: Unit): boolean {
+	return unit.offset !== undefined && unit.offset !== 0;
+}
+
 /**
- * `hashUnit` n'est pas exporté par `normal/hash` : on passe par un nœud
- * grandeur factice, dont le hash contient déjà l'unité.
+ * L'écriture d'une unité composée, dans la grammaire du parseur d'unités :
+ * facteurs positifs joints par `.`, chaque facteur négatif derrière un `/`
+ * (`km.m/s^2`). `null` dès qu'un exposant n'est pas entier.
+ *
+ * Passer par l'écriture — comme `combineUnitFactors` de `normal/denormalize` —
+ * préserve l'unité écrite par l'utilisateur : `12[km]·3[km]` donne `36[km^2]`
+ * et non `36[m^2]`.
  */
-function unitKey(unit: Unit | null): string {
-	return unit === null ? '' : hashMathNode(withUnit(number('1'), unit));
+function unitLabel(factors: readonly MutableUnitFactor[]): string | null {
+	const positive: string[] = [];
+	const negative: string[] = [];
+
+	for (const { unit, exponent } of factors) {
+		if (exponent.d !== 1n) return null;
+		const symbol = unit.original ?? formatUnit(unit);
+		const magnitude = exponent.n < 0n ? -exponent.n : exponent.n;
+		const part = magnitude === 1n ? symbol : `${symbol}^${magnitude}`;
+		(exponent.n < 0n ? negative : positive).push(part);
+	}
+
+	if (positive.length === 0) {
+		return factors
+			.map(({ unit, exponent }) => `${unit.original ?? formatUnit(unit)}^${exponent.n}`)
+			.join('.');
+	}
+	return positive.join('.') + negative.map((part) => `/${part}`).join('');
+}
+
+/** Étape 10 — compose les facteurs d'unité d'un terme en une seule unité. */
+function composeUnit(factors: readonly MutableUnitFactor[]): Unit | null {
+	if (factors.length === 0) return null;
+	if (factors.length === 1 && isOneRational(factors[0].exponent)) return factors[0].unit;
+
+	const label = unitLabel(factors);
+	const parsed = label === null ? null : parseUnit(label);
+	if (parsed !== null) return parsed;
+
+	// Repli : composition par les opérations du module units, sans écriture
+	// d'origine (exposant fractionnaire, ou écriture que le parseur refuse).
+	const raise = ({ unit, exponent }: MutableUnitFactor): Unit =>
+		isOneRational(exponent) ? unit : unitPower(unit, Number(exponent.n) / Number(exponent.d));
+
+	return factors.reduce<Unit | null>(
+		(combined, factor) =>
+			combined === null ? raise(factor) : unitMultiply(combined, raise(factor)),
+		null
+	);
 }
 
 // =============================================================================
@@ -105,42 +214,59 @@ function unitKey(unit: Unit | null): string {
 function addFactor(acc: Accumulator, base: MathNode, exponent: Rational): void {
 	const key = hashMathNode(base);
 	const existing = acc.factors.get(key);
-	const merged = existing ? addRational(existing.exponent, exponent) : exponent;
 
+	if (existing === undefined) {
+		if (isZeroRational(exponent)) return;
+		acc.factors.set(key, { base, exponent, key });
+		return;
+	}
+
+	const merged = addRational(existing.exponent, exponent);
 	if (isZeroRational(merged)) {
 		acc.factors.delete(key);
 		return;
 	}
-	acc.factors.set(key, { base: existing ? existing.base : base, exponent: merged });
+	existing.exponent = merged;
+}
+
+function addUnitFactor(acc: Accumulator, unit: Unit, exponent: Rational): void {
+	const key = hashUnit(unit);
+	const existing = acc.unitFactors.get(key);
+
+	if (existing === undefined) {
+		acc.unitFactors.set(key, { unit, exponent });
+		return;
+	}
+	existing.exponent = addRational(existing.exponent, exponent);
 }
 
 /** Étape 4 — arithmétique exacte : `r^exponent` replié dans le coefficient. */
 function absorbRational(r: Rational, exponent: Rational, acc: Accumulator): boolean {
-	if (!isIntegerRational(exponent)) return false;
-	if (r.n === 0n && exponent.n < 0n) return false; // division par zéro : on laisse tel quel
+	if (!isEvaluableExponent(exponent)) return false;
+	if (isZeroRational(r) && exponent.n <= 0n) return false; // 0^-1 et 0^0 restent écrits
 
 	acc.coefficient = mulRational(acc.coefficient, powRational(r, Number(exponent.n)));
 	return true;
 }
 
 /**
- * Étape 7 — radicaux numériques. `sqrt(n/d) = (square/d)·sqrt(rest)`, puis
- * `sqrt(rest)^e = rest^⌊e/2⌋ · sqrt(rest)^(e mod 2)` — ce qui rationalise aussi
- * `1/sqrt(2) → sqrt(2)/2`.
+ * Étape 7 — radicaux numériques. `sqrt(n/d) = (carré extrait/d)·sqrt(reste)`,
+ * puis `sqrt(reste)^e = reste^⌊e/2⌋ · sqrt(reste)^(e mod 2)` — ce qui
+ * rationalise aussi `1/sqrt(2) → sqrt(2)/2`.
  */
 function absorbSquareRoot(radicand: Rational, exponent: Rational, acc: Accumulator): boolean {
-	if (!isIntegerRational(exponent)) return false;
+	if (!isEvaluableExponent(exponent)) return false;
 	if (!isPositiveRational(radicand)) return false;
 
 	const product = radicand.n * radicand.d;
 	if (product > MAX_RADICAND_FOR_FACTORING) return false;
 
-	const { square, rest } = splitSquareFactor(product);
-	const outside = rational(square, radicand.d);
+	const [extracted, rest] = extractPerfectPower(product, 2n);
+	const outside = rational(extracted, radicand.d);
 	acc.coefficient = mulRational(acc.coefficient, powRational(outside, Number(exponent.n)));
 
 	if (rest > 1n) {
-		const halves = floorDivideBigInt(exponent.n, 2n);
+		const halves = floorRational(rational(exponent.n, 2n));
 		const remainder = exponent.n - 2n * halves;
 		acc.coefficient = mulRational(acc.coefficient, powRational(fromInteger(rest), Number(halves)));
 		if (remainder === 1n) addFactor(acc, sqrtNode(number(rest.toString())), ONE);
@@ -148,47 +274,49 @@ function absorbSquareRoot(radicand: Rational, exponent: Rational, acc: Accumulat
 	return true;
 }
 
-/** Le radicande entier positif d'un `sqrt(...)`, ou `null`. */
+/** Le radicande rationnel positif d'un `sqrt(...)`, ou `null`. */
 function squareRootRadicand(node: MathNode): Rational | null {
 	if (!isFunction(node)) return null;
 	if (node.name !== 'sqrt' || node.args.length !== 1) return null;
 	if (node.power !== undefined || node.base !== undefined) return null;
-	const r = extractRational(node.args[0]);
-	return r !== null && isPositiveRational(r) ? r : null;
+	const value = rationalValue(node.args[0]);
+	return value !== null && isPositiveRational(value) ? value : null;
 }
 
 /**
  * Après fusion des facteurs, `sqrt(2)·sqrt(2)` est devenu `sqrt(2)^2` : on
- * repasse ces facteurs radicaux dans l'étape 7.
+ * repasse ces facteurs radicaux dans l'étape 7, jusqu'au point fixe (chaque
+ * passe retire au moins un facteur radical, donc la boucle termine).
  */
 function reduceRadicalFactors(acc: Accumulator): void {
-	for (let pass = 0; pass < 4; pass++) {
-		let changed = false;
-		for (const [key, factor] of [...acc.factors]) {
+	let changed = true;
+	while (changed) {
+		changed = false;
+		for (const [key, factor] of acc.factors) {
 			if (isOneRational(factor.exponent)) continue;
 			const radicand = squareRootRadicand(factor.base);
 			if (radicand === null) continue;
-			if (!isIntegerRational(factor.exponent)) continue;
 
 			acc.factors.delete(key);
-			if (!absorbSquareRoot(radicand, factor.exponent, acc)) {
+			if (absorbSquareRoot(radicand, factor.exponent, acc)) {
+				changed = true;
+			} else {
 				acc.factors.set(key, factor);
-				continue;
 			}
-			changed = true;
 		}
-		if (!changed) return;
 	}
 }
 
-/** Étape 10 — une grandeur numérique cède sa valeur au coefficient. */
+/** Étape 10 — une grandeur numérique cède sa valeur et son unité au terme. */
 function absorbQuantity(node: UnitNode, exponent: Rational, acc: Accumulator): boolean {
-	if (!isOneRational(exponent) || acc.unit !== null) return false;
-	const value = extractRational(node.expression);
-	if (value === null) return false;
+	if (isAffineUnit(node.unit)) return false;
+	if (!isIntegerRational(exponent)) return false;
 
-	acc.coefficient = mulRational(acc.coefficient, value);
-	acc.unit = node.unit;
+	const value = rationalValue(node.expression);
+	if (value === null) return false;
+	if (!absorbRational(value, exponent, acc)) return false;
+
+	addUnitFactor(acc, node.unit, exponent);
 	return true;
 }
 
@@ -211,45 +339,62 @@ function absorbFunctionPower(node: FunctionNode, exponent: Rational, acc: Accumu
 	return true;
 }
 
+/** `0^0` n'a pas de valeur : la puissance reste écrite (finding C6). */
+function isIndeterminatePower(node: SuperscriptNode, totalExponent: Rational): boolean {
+	return isZeroRational(totalExponent) && isZeroNumberNode(node.base);
+}
+
 /**
  * Étapes 1, 3, 4, 6, 7, 10 — absorbe `node^exponent` dans l'accumulateur.
  *
  * Les délimiteurs sont traversés : à l'intérieur d'un produit ils ne portent
  * aucune information (les parenthèses sont **réécrites** à la construction).
+ *
+ * `alreadyTidied` évite de remettre au propre une base déjà traitée : une base
+ * opaque est d'abord mise au propre, puis **ré-absorbée** (finding C1), pour
+ * que `x·(3−1)` donne `2x` dès la première passe.
  */
-function absorbFactor(node: MathNode, exponent: Rational, acc: Accumulator): void {
+function absorbFactor(
+	node: MathNode,
+	exponent: Rational,
+	acc: Accumulator,
+	alreadyTidied = false
+): void {
 	switch (node.type) {
 		case 'delimiter':
-			absorbFactor(node.content, exponent, acc);
+			absorbFactor(node.content, exponent, acc, alreadyTidied);
 			return;
 
 		case 'positive':
-			absorbFactor(node.operand, exponent, acc);
+			absorbFactor(node.operand, exponent, acc, alreadyTidied);
 			return;
 
 		case 'opposite':
 			if (isIntegerRational(exponent)) {
 				if (exponent.n % 2n !== 0n) acc.coefficient = negRational(acc.coefficient);
-				absorbFactor(node.operand, exponent, acc);
+				absorbFactor(node.operand, exponent, acc, alreadyTidied);
 				return;
 			}
 			break;
 
 		case 'multiplication':
-			absorbFactor(node.left, exponent, acc);
-			absorbFactor(node.right, exponent, acc);
+			absorbFactor(node.left, exponent, acc, alreadyTidied);
+			absorbFactor(node.right, exponent, acc, alreadyTidied);
 			return;
 
 		case 'division':
-			absorbFactor(node.numerator, exponent, acc);
-			absorbFactor(node.denominator, negRational(exponent), acc);
+			absorbFactor(node.numerator, exponent, acc, alreadyTidied);
+			absorbFactor(node.denominator, negRational(exponent), acc, alreadyTidied);
 			return;
 
 		case 'superscript': {
 			const innerExponent = extractRational(node.superscript);
 			if (innerExponent !== null) {
-				absorbFactor(node.base, mulRational(exponent, innerExponent), acc);
-				return;
+				const total = mulRational(exponent, innerExponent);
+				if (!isIndeterminatePower(node, total)) {
+					absorbFactor(node.base, total, acc, alreadyTidied);
+					return;
+				}
 			}
 			break;
 		}
@@ -275,7 +420,20 @@ function absorbFactor(node: MathNode, exponent: Rational, acc: Accumulator): voi
 			break;
 	}
 
-	addFactor(acc, tidyAtom(node), exponent);
+	if (alreadyTidied) {
+		addFactor(acc, node, exponent);
+		return;
+	}
+
+	// Finding C1 : la base est mise au propre AVANT d'être absorbée. Si la mise
+	// au propre l'a changée (`3−1` devient `2`), on la ré-absorbe pour que le
+	// nombre rejoigne le coefficient au lieu de rester un facteur.
+	const cleaned = tidyAtom(node);
+	if (hashMathNode(cleaned) === hashMathNode(node)) {
+		addFactor(acc, cleaned, exponent);
+		return;
+	}
+	absorbFactor(cleaned, exponent, acc, true);
 }
 
 // =============================================================================
@@ -283,17 +441,38 @@ function absorbFactor(node: MathNode, exponent: Rational, acc: Accumulator): voi
 // =============================================================================
 
 function toTerm(node: MathNode): TidyTerm {
-	const acc: Accumulator = { coefficient: ONE, factors: new Map(), unit: null };
+	const acc: Accumulator = {
+		coefficient: ONE,
+		factors: new Map<string, MutableFactor>(),
+		unitFactors: new Map<string, MutableUnitFactor>()
+	};
 
 	for (const { factor } of flattenProductShallow(node)) {
 		absorbFactor(factor, ONE, acc);
 	}
 	reduceRadicalFactors(acc);
 
+	const factors: TidyFactor[] = [...acc.factors.values()].map(({ base, exponent, key }) => ({
+		base,
+		exponent,
+		key
+	}));
+
 	return {
 		coefficient: acc.coefficient,
-		factors: sortFactors([...acc.factors.values()]),
-		unit: acc.unit
+		factors: sortFactors(factors),
+		unit: composeUnit([...acc.unitFactors.values()]),
+		verbatim: false
+	};
+}
+
+/** Un terme rendu tel quel : il porte un nœud opaque (infini, zéro signé). */
+function verbatimTerm(node: MathNode, negative: boolean): TidyTerm {
+	return {
+		coefficient: negative ? { n: -1n, d: 1n } : ONE,
+		factors: [{ base: node, exponent: ONE, key: hashMathNode(node) }],
+		unit: null,
+		verbatim: true
 	};
 }
 
@@ -306,6 +485,22 @@ function negateTerm(term: TidyTerm): TidyTerm {
 }
 
 /**
+ * Ce terme n'est qu'une somme, sans coefficient ni unité : ses propres termes
+ * remontent dans la somme englobante. Le coefficient doit valoir exactement 1 —
+ * à −1 il s'agit de `-(x+2)`, que le contrat laisse tel quel (pas de
+ * distribution).
+ */
+function expandableSum(term: TidyTerm): MathNode | null {
+	if (term.verbatim || term.unit !== null) return null;
+	if (!isOneRational(term.coefficient)) return null;
+	if (term.factors.length !== 1) return null;
+
+	const [factor] = term.factors;
+	if (!isOneRational(factor.exponent)) return null;
+	return isSumNode(factor.base) ? factor.base : null;
+}
+
+/**
  * Étape 1 — aplatir la somme. Un délimiteur précédé d'un `+` ne sépare rien
  * (`(a+b)+c → a+b+c`) ; précédé d'un `-` il reste opaque, sinon `tidy`
  * distribuerait le signe — ce que le contrat interdit (`-(x+2)` inchangé).
@@ -314,11 +509,22 @@ function toSumTerms(node: MathNode): TidyTerm[] {
 	const terms: TidyTerm[] = [];
 
 	for (const { sign, term } of flattenSumShallow(node)) {
+		if (containsOpaqueNode(term)) {
+			terms.push(verbatimTerm(term, sign === '-'));
+			continue;
+		}
 		if (sign === '+' && isDelimiter(term) && isSumNode(term.content)) {
 			terms.push(...toSumTerms(term.content));
 			continue;
 		}
+
 		const collected = toTerm(term);
+		// Précédé d'un `-`, une somme reste groupée : `-(x+2)` n'est pas distribué.
+		const inner = sign === '+' ? expandableSum(collected) : null;
+		if (inner !== null) {
+			terms.push(...toSumTerms(inner));
+			continue;
+		}
 		terms.push(sign === '-' ? negateTerm(collected) : collected);
 	}
 
@@ -329,11 +535,14 @@ function toSumTerms(node: MathNode): TidyTerm[] {
 function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 	const groups = new Map<string, { coefficient: Rational; term: TidyTerm }>();
 
-	for (const term of terms) {
-		const key =
-			term.factors.map((f) => `${hashMathNode(f.base)}^${f.exponent.n}/${f.exponent.d}`).join('*') +
-			'|' +
-			unitKey(term.unit);
+	terms.forEach((term, index) => {
+		// Un terme opaque ou singulier ne se regroupe avec rien : clé unique.
+		const groupable = !term.verbatim && !dividesByZero(term);
+		const key = groupable
+			? term.factors.map((f) => `${f.key}^${f.exponent.n}/${f.exponent.d}`).join('*') +
+				'|' +
+				(term.unit === null ? '' : hashUnit(term.unit))
+			: `!${index}`;
 
 		const existing = groups.get(key);
 		if (existing) {
@@ -341,11 +550,13 @@ function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 		} else {
 			groups.set(key, { coefficient: term.coefficient, term });
 		}
-	}
+	});
 
 	const result: TidyTerm[] = [];
 	for (const { coefficient, term } of groups.values()) {
-		if (isZeroRational(coefficient)) continue;
+		// Un coefficient nul efface le terme — sauf s'il divise par zéro : `0/0`
+		// n'est pas `0` (finding C2).
+		if (isZeroRational(coefficient) && !dividesByZero(term)) continue;
 		result.push({ ...term, coefficient });
 	}
 	return result;
@@ -367,15 +578,18 @@ function tidyFunction(node: FunctionNode): MathNode {
 
 /**
  * Une base de facteur : ce que `tidy` ne sait pas décomposer ressort tel quel,
- * enfants mis au propre (§E du contrat).
+ * enfants mis au propre (§E du contrat). Les nœuds opaques (infini, zéro
+ * signé) ne sont pas touchés.
  */
 function tidyAtom(node: MathNode): MathNode {
+	if (containsOpaqueNode(node)) return node;
+
 	switch (node.type) {
 		case 'function':
 			return tidyFunction(node);
 		case 'addition':
 		case 'subtraction':
-			return tidyNestedSum(node);
+			return tidyExpression(node);
 		case 'unit':
 			return withUnit(tidyExpression(node.expression), node.unit);
 		case 'superscript':
@@ -396,23 +610,9 @@ function tidyAtom(node: MathNode): MathNode {
 	}
 }
 
-function tidySum(node: MathNode, compare: (a: TidyTerm, b: TidyTerm) => number): MathNode {
-	const terms = collectLikeTerms(toSumTerms(node));
-	return buildSum([...terms].sort(compare));
-}
-
 /** Une expression : somme de termes, regroupés puis ordonnés puis réécrits. */
 export function tidyExpression(node: MathNode): MathNode {
-	return tidySum(node, compareTerms);
-}
-
-/**
- * Une somme entre parenthèses (base d'un facteur) : mêmes regroupements, mais
- * l'ordre d'écriture des termes de même degré est conservé. Voir
- * `compareNestedTerms`.
- */
-function tidyNestedSum(node: MathNode): MathNode {
-	return tidySum(node, compareNestedTerms);
+	return buildSum(sortTerms(collectLikeTerms(toSumTerms(node))));
 }
 
 /**

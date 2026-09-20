@@ -11,8 +11,8 @@ import { areEquivalent } from '../../equivalence';
 import {
 	add,
 	subtract,
-	multiply,
-	division,
+	implicitMultiply,
+	fraction,
 	number,
 	positiveInfinity,
 	withUnit
@@ -81,11 +81,11 @@ describe('C3 — infini opaque (nœuds construits par la fabrique : « ∞ » pa
 	});
 
 	it('∞ / ∞ reste ∞ / ∞', () => {
-		unchanged(division(inf, inf));
+		unchanged(fraction(inf, inf));
 	});
 
 	it('∞ · ∞ reste ∞ · ∞', () => {
-		unchanged(multiply(inf, inf));
+		unchanged(implicitMultiply(inf, inf));
 	});
 
 	it('x + ∞ + x : les x se regroupent, ∞ reste', () => {
@@ -107,7 +107,7 @@ describe('C4 — produit et quotient de grandeurs', () => {
 	});
 
 	it('6[km] / 2[h] → 3[km/h]', () => {
-		const node = division(withUnit(number('6'), unitOf('km')), withUnit(number('2'), unitOf('h')));
+		const node = fraction(withUnit(number('6'), unitOf('km')), withUnit(number('2'), unitOf('h')));
 		expect(toCustom(tidy(node))).toBe('3[km/h]');
 	});
 

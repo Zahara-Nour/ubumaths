@@ -17,8 +17,6 @@ import type { MathNode } from '../types';
 import { stripUnnecessaryBrackets } from '../transforms';
 import { tidyNode } from './collect';
 
-export type { TidyFactor, TidyTerm } from './types';
-
 /**
  * Met une expression au propre.
  *
@@ -33,7 +31,10 @@ export type { TidyFactor, TidyTerm } from './types';
 export function tidy(node: MathNode): MathNode {
 	try {
 		return tidyNode(stripUnnecessaryBrackets(node));
-	} catch {
-		return node;
+	} catch (error) {
+		// Seul un débordement de pile (expression pathologiquement profonde) est
+		// rattrapé : toute autre exception est un bug de `tidy` et doit remonter.
+		if (error instanceof RangeError) return node;
+		throw error;
 	}
 }

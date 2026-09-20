@@ -23,7 +23,7 @@ import {
 	superscript,
 	withUnit
 } from '../factory';
-import { absBigInt, isNegative as isNegativeRational } from '../normal/rational';
+import { absBigInt, isNegative as isNegativeRational, negRational } from '../normal/rational';
 
 // =============================================================================
 // Parenthésage
@@ -126,7 +126,7 @@ export function buildTermMagnitude(term: TidyTerm, allowBare: boolean): MathNode
 	const numeratorFactors = term.factors.filter((f) => !isNegativeRational(f.exponent));
 	const denominatorFactors = term.factors
 		.filter((f) => isNegativeRational(f.exponent))
-		.map((f) => ({ base: f.base, exponent: { n: -f.exponent.n, d: f.exponent.d } }));
+		.map((f) => ({ ...f, exponent: negRational(f.exponent) }));
 
 	const numeratorValue = absBigInt(term.coefficient.n);
 	const denominatorValue = term.coefficient.d;

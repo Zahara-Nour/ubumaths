@@ -1,12 +1,16 @@
 /**
- * Étape 8 du contrat : l'ordre canonique.
+ * Étape 8 du contrat : l'ordre canonique — **le même partout**, sommes
+ * imbriquées comprises (finding K1 de la revue).
  *
  * - **Facteurs** : nombre (porté par le coefficient), puis variables, puis
  *   fonctions, puis le reste (sommes et puissances de sommes) ; à catégorie
  *   égale, ordre alphabétique de l'écriture de la base.
  * - **Termes** : degré décroissant (la constante finit donc dernière), puis,
  *   à degré égal, comparaison facteur par facteur de leur **écriture** —
- *   c'est elle qui met `4hx` avant `2h^2` et `2(x+h)^2` avant `2x^2`.
+ *   c'est elle qui met `4hx` avant `2h^2` et `(h+x)^2` avant `x^2`.
+ *
+ * L'écriture d'un terme est calculée **une fois par terme** avant le tri, pas
+ * à chaque comparaison.
  *
  * @module mathAST/tidy/order
  */
@@ -18,6 +22,17 @@ import { toCustom } from '../custom-generator';
 import { hashMathNode } from '../normal/hash';
 import { ZERO, addRational, compareRational } from '../normal/rational';
 import { buildFactor } from './build';
+
+// =============================================================================
+// Types
+// =============================================================================
+
+/** Clé d'ordre d'un terme, calculée une fois avant le tri. */
+type TermOrderKey = {
+	readonly degree: Rational;
+	readonly factorTexts: readonly string[];
+	readonly coefficient: Rational;
+};
 
 // =============================================================================
 // Constantes
@@ -34,8 +49,8 @@ const CATEGORY_OTHER = 2;
 
 /**
  * L'écriture d'un nœud, utilisée comme clé d'ordre. `toCustom` lève sur les
- * quelques nœuds qu'il ne sait pas écrire (lettres grecques non gérées) : on
- * retombe alors sur le hash, déterministe lui aussi.
+ * quelques nœuds qu'il ne sait pas écrire (lettre grecque non gérée, style de
+ * multiplication absent) : on retombe alors sur le hash, déterministe lui aussi.
  */
 function writtenForm(node: MathNode): string {
 	try {
@@ -93,40 +108,35 @@ function termDegree(term: TidyTerm): Rational {
 	return degree;
 }
 
-/**
- * Ordre canonique des termes d'une somme.
- *
- * Le tri de second rang compare l'**écriture des facteurs**, un par un :
- * `h` vient avant `h^2` (donc `4hx` avant `2h^2`) et `(x+h)^2` avant `x^2`
- * (la parenthèse ouvrante précède toute lettre).
- */
-export function compareTerms(a: TidyTerm, b: TidyTerm): number {
-	const degreeComparison = compareRational(termDegree(b), termDegree(a));
+function termOrderKey(term: TidyTerm): TermOrderKey {
+	return {
+		degree: termDegree(term),
+		factorTexts: term.factors.map((factor) => writtenForm(buildFactor(factor))),
+		coefficient: term.coefficient
+	};
+}
+
+function compareOrderKeys(a: TermOrderKey, b: TermOrderKey): number {
+	const degreeComparison = compareRational(b.degree, a.degree);
 	if (degreeComparison !== 0) return degreeComparison;
 
-	const shared = Math.min(a.factors.length, b.factors.length);
+	const shared = Math.min(a.factorTexts.length, b.factorTexts.length);
 	for (let i = 0; i < shared; i++) {
-		const textA = writtenForm(buildFactor(a.factors[i]));
-		const textB = writtenForm(buildFactor(b.factors[i]));
-		if (textA !== textB) return textA < textB ? -1 : 1;
+		if (a.factorTexts[i] !== b.factorTexts[i]) {
+			return a.factorTexts[i] < b.factorTexts[i] ? -1 : 1;
+		}
 	}
 
-	if (a.factors.length !== b.factors.length) return a.factors.length - b.factors.length;
+	if (a.factorTexts.length !== b.factorTexts.length) {
+		return a.factorTexts.length - b.factorTexts.length;
+	}
 
 	return compareRational(b.coefficient, a.coefficient);
 }
 
-/**
- * Ordre des termes d'une somme **imbriquée** — celle qui sert de base à un
- * facteur, donc écrite entre parenthèses.
- *
- * ⚠️ Seul le degré départage ici : à degré égal l'ordre d'écriture d'origine
- * est conservé (le tri est stable). C'est ce qu'exige le test
- * « à degré égal, ordre alphabétique de l'écriture du terme », qui veut
- * `2(x+h)^2-2x^2` : le départage alphabétique de l'étape 8 rendrait `(h+x)`.
- * Un délimiteur est une frontière (cf. `flatten`) : `tidy` regroupe ce qu'il y
- * a dedans, mais ne réordonne pas au travers.
- */
-export function compareNestedTerms(a: TidyTerm, b: TidyTerm): number {
-	return compareRational(termDegree(b), termDegree(a));
+/** Ordonne les termes d'une somme, quel que soit son niveau d'imbrication. */
+export function sortTerms(terms: readonly TidyTerm[]): TidyTerm[] {
+	const decorated = terms.map((term) => ({ term, key: termOrderKey(term) }));
+	decorated.sort((a, b) => compareOrderKeys(a.key, b.key));
+	return decorated.map((entry) => entry.term);
 }
