@@ -52,7 +52,8 @@ import {
 	isConstantPolynomial,
 	gcdPolynomials,
 	divPolynomialByMonomial,
-	exactDividePolynomials
+	exactDividePolynomials,
+	gcdPolynomialsMultivariate
 } from './polynomial';
 import { ZERO_TERM, mulTerms } from './term';
 import { EMPTY_MONOMIAL, symbolicFactor, sortSymbolicFactors } from './monomial';
@@ -79,7 +80,9 @@ import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { parse as parseUnit } from '../units/parser';
 import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units/formatter';
-import { opposite, piConstant } from '../factory';
+import { euler, number, opposite, piConstant } from '../factory';
+import { isEulerConstant, isNumber } from '../guards';
+import { expandEulerPowers } from './rules/euler-power';
 import { canFactorOutNegative, isEvenFunction, isOddFunction } from './parity.js';
 
 // =============================================================================
@@ -1055,6 +1058,17 @@ function normalFormFromPolynomial(terms: readonly NormalTerm[]): NormalForm {
 }
 
 /**
+ * Au-delà de ce produit « nombre de termes du numérateur × du dénominateur »,
+ * on n'essaie plus le pgcd multivarié.
+ *
+ * Mesuré : le contrat des quotients multivariés ne consomme jamais plus de 16,
+ * et une fraction dense à quatre variables et degré 3 en consomme 420 pour un
+ * coût de plusieurs centaines de millisecondes. Le budget de correction d'une
+ * réponse d'élève est de 500 ms ; le dépasser la compterait fausse.
+ */
+const GCD_MAX_PRODUCT_TERMS = 64;
+
+/**
  * Creates a NormalForm from numerator and denominator polynomials.
  * Automatically reduces common monomial factors and numeric coefficients.
  */
@@ -1136,16 +1150,70 @@ function normalFormFromFraction(
 			? null
 			: exactDividePolynomials(reducedNumerator, reducedDenominator);
 
+		let divided = false;
 		if (directQuotient !== null) {
 			// Le dénominateur divise le numérateur : la fraction vaut q/1
 			reducedNumerator = directQuotient;
 			reducedDenominator = [...ONE_POLYNOMIAL];
+			divided = true;
 		} else if (!isConstantPolynomial(reducedNumerator)) {
 			// Sens inverse : le numérateur divise le dénominateur → 1/q
 			const inverseQuotient = exactDividePolynomials(reducedDenominator, reducedNumerator);
 			if (inverseQuotient !== null) {
 				reducedNumerator = [...ONE_POLYNOMIAL];
 				reducedDenominator = inverseQuotient;
+				divided = true;
+			}
+		}
+
+		// Aucun des deux ne divise l'autre : il reste le cas où ils PARTAGENT
+		// un facteur. `(x²−y²)/(x²+2xy+y²)` n'était réduit par personne, alors
+		// que `simplify` affiche `(x−y)/(x+y)` : le moteur refusait encore sa
+		// propre sortie. Le pgcd multivarié s'en charge.
+		//
+		// ⚠️ Le candidat rendu par `gcdPolynomialsMultivariate` n'est PAS
+		// prouvé. Il n'a pas à l'être : les DEUX divisions exactes ci-dessous
+		// le vérifient, et une seule qui échoue fait tout abandonner — la
+		// fraction reste telle quelle. Un candidat faux produit donc un faux
+		// négatif, jamais un faux positif, et un faux positif du décideur
+		// compterait une réponse d'élève FAUSSE.
+		//
+		// Comme le repli par divisibilité, il travaille sur ce qui RESTE, et
+		// n'essaie rien quand un des deux côtés est constant : un diviseur
+		// constant réussirait toujours et défigurerait la fraction.
+		// ⚠️ Pré-filtre de TAILLE. Les plafonds internes du pgcd bornent sa
+		// terminaison, pas son temps : sur une fraction dense à quatre variables
+		// aucun n'est atteint et le calcul coûte des centaines de millisecondes.
+		// Or `validation-rule-evaluator.ts` corrige une réponse d'élève avec un
+		// budget de 500 ms, et un dépassement compte juste une réponse FAUSSE.
+		//
+		// Mesuré : le contrat de ce chantier ne dépasse jamais 16 (produit des
+		// nombres de termes), tandis que la fraction dense qui coûte cher en
+		// consomme 420. Soixante-quatre laisse donc quatre fois la marge du
+		// contrat et exclut la zone dangereuse d'un facteur six. Sur le corpus
+		// banal, ce pré-filtre ne change rien : le pgcd n'y était déjà jamais
+		// atteint.
+		const gcdSizeBudget = reducedNumerator.length * reducedDenominator.length;
+
+		if (
+			!divided &&
+			gcdSizeBudget <= GCD_MAX_PRODUCT_TERMS &&
+			!isConstantPolynomial(reducedNumerator) &&
+			!isConstantPolynomial(reducedDenominator)
+		) {
+			const commonFactor = gcdPolynomialsMultivariate(reducedNumerator, reducedDenominator);
+			if (commonFactor !== null) {
+				const gcdNumerator = exactDividePolynomials(reducedNumerator, commonFactor);
+				const gcdDenominator = exactDividePolynomials(reducedDenominator, commonFactor);
+				if (
+					gcdNumerator !== null &&
+					gcdDenominator !== null &&
+					gcdNumerator.length > 0 &&
+					gcdDenominator.length > 0
+				) {
+					reducedNumerator = gcdNumerator;
+					reducedDenominator = gcdDenominator;
+				}
 			}
 		}
 	}
@@ -2018,7 +2086,12 @@ function normalizeInner(node: MathNode, ctx?: NormalizeContext): NormalForm {
  * opaque.
  */
 export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalForm {
-	const withDefinitions = expandTrigDefinitions(node);
+	// `e^{x}` est parsé comme une puissance de la VARIABLE `e` : la machinerie
+	// qui combine les exponentielles, qui ne connaît que les nœuds fonction
+	// `exp`, ne le voyait jamais passer. Ici, et ici seulement — la forme
+	// affichée garde la notation de l'élève.
+	const withEuler = expandEulerPowers(node);
+	const withDefinitions = expandTrigDefinitions(withEuler);
 	const withArcs = expandCommensurableArcs(withDefinitions, {
 		// La décomposition d'un argument ne doit rien raconter à l'élève : on ne
 		// passe que l'interruption, jamais l'enregistreur d'étapes.
@@ -4486,6 +4559,58 @@ function getExpArg(node: MathNode & { type: 'function'; name: 'exp' }): MathNode
 }
 
 /**
+ * `e`, la constante, EST `exp(1)` — et la machinerie de combinaison ne le
+ * voyait pas.
+ *
+ * `normalize` réécrit `exp(1)` en constante d'Euler, tandis que `exp(2)` reste
+ * un nœud fonction. Les facteurs exponentiels d'un monôme n'en retenaient donc
+ * qu'un côté sur deux, et seul l'exposant `1` faisait la différence. Mesuré sur
+ * `main`, sans aucune lettre `e` en jeu :
+ *
+ *   exp(x+2)/exp(2) ≡ exp(x)   → true
+ *   exp(x+1)/exp(1) ≡ exp(x)   → false
+ */
+function isExpLikeBase(node: MathNode): boolean {
+	return isExpFunction(node) || isEulerConstant(node);
+}
+
+/**
+ * La constante d'Euler ne se laisse traiter comme une exponentielle QUE s'il y
+ * a une vraie exponentielle avec qui se combiner.
+ *
+ * ⚠️ Sans cette condition, `e²` devenait `exp(2)` dans la forme NORMALE, donc
+ * sur le chemin d'écriture, alors que ce module n'a le droit de bouger que la
+ * comparaison. Mesuré : `ln(x²+1) − 2 = 0` passait de deux solutions à zéro,
+ * le solveur ne reconnaissant plus la forme qu'il attendait. Promouvoir un `e`
+ * isolé ne sert à rien de toute façon : il n'a rien à absorber.
+ */
+function hasRealExpFactor(monomial: readonly import('./types').SymbolicFactor[]): boolean {
+	return monomial.some((factor) => isExpFunction(factor.base));
+}
+
+/**
+ * L'argument d'une base exponentielle, `1` pour la constante d'Euler.
+ */
+function getExpLikeArg(node: MathNode): MathNode {
+	if (isEulerConstant(node)) return number('1');
+	return getExpArg(node as MathNode & { type: 'function'; name: 'exp' });
+}
+
+/**
+ * Le nœud exponentiel d'un argument, sous sa forme **canonique**.
+ *
+ * `exp(1)` s'écrit `e` partout ailleurs dans la bibliothèque — `types.ts` le
+ * dit : « e (Euler's number) is MathConstant('euler'), not a variable ». Une
+ * combinaison qui rendrait le nœud fonction produirait une empreinte différente
+ * de celle du même nombre écrit directement, et `exp(x+1)/exp(x) ≡ exp(1)`
+ * resterait faux après avoir été correctement combiné.
+ */
+function expNodeFor(argument: MathNode): MathNode {
+	if (isNumber(argument) && argument.value === '1') return euler();
+	return { type: 'function', name: 'exp', args: [argument] };
+}
+
+/**
  * Scales a MathNode by a rational exponent.
  * Returns exp * node where exp is represented as a MathNode.
  */
@@ -4532,11 +4657,12 @@ function combineExpInMonomial(
 ): import('./types').SymbolicFactor[] {
 	const expFactors: Array<{ arg: MathNode; exp: Rational }> = [];
 	const otherFactors: import('./types').SymbolicFactor[] = [];
+	const promoteEuler = hasRealExpFactor(monomial);
 
 	// Separate exp factors from other factors
 	for (const factor of monomial) {
-		if (isExpFunction(factor.base)) {
-			expFactors.push({ arg: getExpArg(factor.base), exp: factor.exponent });
+		if (isExpFunction(factor.base) || (promoteEuler && isEulerConstant(factor.base))) {
+			expFactors.push({ arg: getExpLikeArg(factor.base), exp: factor.exponent });
 		} else {
 			otherFactors.push(factor);
 		}
@@ -4574,7 +4700,7 @@ function combineExpInMonomial(
 	const normalizedSum = denormalize(sumForm);
 
 	// Create the combined exp factor
-	const combinedExpNode: MathNode = { type: 'function', name: 'exp', args: [normalizedSum] };
+	const combinedExpNode: MathNode = expNodeFor(normalizedSum);
 	otherFactors.push(symbolicFactor(combinedExpNode, ONE));
 
 	return sortSymbolicFactors(otherFactors);
@@ -4748,7 +4874,10 @@ function combineExpInPolynomial(terms: NormalTerm[]): NormalTerm[] {
 		// Check if monomial needs exp combination:
 		// - 2+ exp factors: exp(a) * exp(b) → exp(a+b)
 		// - 1 exp factor with exponent ≠ 1: exp(x)^n → exp(n*x)
-		const expFactors = term.monomial.filter((f) => isExpFunction(f.base));
+		const promote = hasRealExpFactor(term.monomial);
+		const expFactors = term.monomial.filter(
+			(f) => isExpFunction(f.base) || (promote && isEulerConstant(f.base))
+		);
 		const needsCombination =
 			expFactors.length >= 2 || (expFactors.length === 1 && !isOne(expFactors[0].exponent));
 
@@ -4783,13 +4912,25 @@ function combineExpAcrossFraction(
 	const numTerm = numerator[0];
 	const denTerm = denominator[0];
 
+	// ⚠️ Ici, contrairement à `combineExpInMonomial` et
+	// `combineExpInPolynomial`, la promotion de la constante d'Euler n'est PAS
+	// conditionnée à la présence d'une vraie exponentielle dans le même monôme :
+	// les deux côtés d'une fraction forment un seul geste, et c'est justement
+	// `exp(x+1)/exp(1)` qu'il s'agit de réduire — le dénominateur n'y porte
+	// qu'une constante. L'asymétrie est donc voulue.
+	//
+	// Elle a un prix, mesuré et assumé : `exp(x+1)/exp(1)` s'affiche désormais
+	// `exp(x)` là où `main` gardait la fraction. C'est le SEUL déplacement
+	// exponentiel sur 139 témoins, il est juste, et il est plus court. Les
+	// écritures avec la lettre `e` ne bougent pas : `e^{x+1}/e` garde sa forme.
+
 	// Collect exp factors from numerator
 	const numExpFactors: Array<{ arg: MathNode; exp: Rational }> = [];
 	const numOtherFactors: import('./types').SymbolicFactor[] = [];
 
 	for (const factor of numTerm.monomial) {
-		if (isExpFunction(factor.base)) {
-			numExpFactors.push({ arg: getExpArg(factor.base), exp: factor.exponent });
+		if (isExpLikeBase(factor.base)) {
+			numExpFactors.push({ arg: getExpLikeArg(factor.base), exp: factor.exponent });
 		} else {
 			numOtherFactors.push(factor);
 		}
@@ -4800,8 +4941,8 @@ function combineExpAcrossFraction(
 	const denOtherFactors: import('./types').SymbolicFactor[] = [];
 
 	for (const factor of denTerm.monomial) {
-		if (isExpFunction(factor.base)) {
-			denExpFactors.push({ arg: getExpArg(factor.base), exp: factor.exponent });
+		if (isExpLikeBase(factor.base)) {
+			denExpFactors.push({ arg: getExpLikeArg(factor.base), exp: factor.exponent });
 		} else {
 			denOtherFactors.push(factor);
 		}
@@ -4865,7 +5006,7 @@ function combineExpAcrossFraction(
 
 	// Create combined exp(sum) and put it in numerator
 	const normalizedSum = denormalize(sumForm);
-	const combinedExpNode: MathNode = { type: 'function', name: 'exp', args: [normalizedSum] };
+	const combinedExpNode: MathNode = expNodeFor(normalizedSum);
 
 	const newNumMonomial = [...numOtherFactors, symbolicFactor(combinedExpNode, ONE)];
 	const newNumTerm: NormalTerm = {
