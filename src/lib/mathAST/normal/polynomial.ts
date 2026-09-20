@@ -8,7 +8,14 @@
 import { checkAbort, getActiveAbortChecker } from '../common/abort';
 import type { NormalTerm, AlgebraicCoefficient, SymbolicFactor } from './types';
 import { hashMathNode, hashPolynomial } from './hash';
-import { ALGEBRAIC_ONE, addAlgebraic, divAlgebraic, isZeroAlgebraic } from './algebraic';
+import {
+	ALGEBRAIC_ONE,
+	addAlgebraic,
+	divAlgebraic,
+	gcdAlgebraic,
+	isOneAlgebraic,
+	isZeroAlgebraic
+} from './algebraic';
 import {
 	ONE_TERM,
 	mulTerms,
@@ -775,4 +782,373 @@ function nodeToStringSimple(node: import('../types').MathNode): string {
 		default:
 			return `[${node.type}]`;
 	}
+}
+
+// =============================================================================
+// Pgcd multivarié (facteur commun sans divisibilité)
+// =============================================================================
+
+/**
+ * Plafonds du pgcd multivarié.
+ *
+ * Le pgcd n'est PAS prouvé correct — il n'a pas à l'être, tout candidat étant
+ * revérifié par division exacte des deux côtés. Ce qui doit être garanti, c'est
+ * qu'il **s'arrête**, et vite : il tourne dans `areEquivalent`, donc sur le
+ * chemin d'une correction d'élève.
+ *
+ * Trois plafonds, chacun sur une grandeur qui peut enfler indépendamment :
+ *
+ * - `GCD_MAX_STEPS` — nombre total de tours de pseudo-division, **partagé par
+ *   toute la récursion** (un budget, pas une profondeur). C'est la grandeur qui
+ *   explose sur les suites de restes : les coefficients grossissent à chaque
+ *   tour, et la récursion sur les coefficients repart pour un tour de plus.
+ * - `GCD_MAX_TERMS` — taille d'un polynôme intermédiaire. La pseudo-division
+ *   multiplie par le coefficient dominant du diviseur : un reste peut compter
+ *   beaucoup plus de termes que les deux entrées réunies.
+ * - `GCD_MAX_VARIABLES` — nombre de bases distinctes. Le coût de la récursion
+ *   est exponentiel en ce nombre ; au-delà de quelques variables, on renonce.
+ *
+ * ## La mesure qui les fixe
+ *
+ * Décor : les deux suites ciblées du 2026-09-20 — `src/lib/mathAST/normal`
+ * (1859 cas, 34 fichiers) et `src/lib/mathAST/simplify` (207 cas, 9 fichiers)
+ * —, plafonds abaissés par dichotomie jusqu'à ce qu'un cas bascule au rouge.
+ * Le plancher trouvé est le maximum réellement consommé par un appel :
+ *
+ * - **15 tours** (14 → un cas du contrat échoue, 15 → tout passe) ;
+ * - **4 termes** de reste intermédiaire (3 → un cas échoue, 4 → tout passe) ;
+ * - **3 variables** au plus dans tout le corpus.
+ *
+ * Aux plafonds abaissés à ce plancher exact, les deux suites rendent les mêmes
+ * compteurs qu'aux plafonds larges : rien d'autre dans ces 2066 cas n'en
+ * consomme davantage. Les valeurs retenues sont ~33× (tours) et 75× (termes)
+ * la mesure — assez large pour ne jamais mordre sur ce que les élèves
+ * écrivent, assez bas pour qu'un cas pathologique rende `null` en quelques
+ * millisecondes au lieu de geler l'onglet.
+ */
+const GCD_MAX_STEPS = 500;
+const GCD_MAX_TERMS = 300;
+const GCD_MAX_VARIABLES = 5;
+
+/** Budget PARTAGÉ par toute la récursion : un seul compteur, décrémenté partout. */
+interface GcdBudget {
+	steps: number;
+}
+
+/**
+ * Dépense un tour du budget.
+ * @returns `false` quand le plafond est atteint — l'appelant rend alors `null`.
+ */
+function spendStep(budget: GcdBudget): boolean {
+	if (budget.steps <= 0) return false;
+	budget.steps -= 1;
+	return true;
+}
+
+/** Recense les bases distinctes d'un polynôme, indexées par hachage. */
+function collectBases(p: readonly NormalTerm[]): Map<string, import('../types').MathNode> {
+	const bases = new Map<string, import('../types').MathNode>();
+	for (const term of p) {
+		for (const factor of term.monomial) {
+			const hash = hashMathNode(factor.base);
+			if (!bases.has(hash)) bases.set(hash, factor.base);
+		}
+	}
+	return bases;
+}
+
+/** Degré d'un polynôme en une base donnée (0 si la base est absente). */
+function degreeInBase(p: readonly NormalTerm[], baseHash: string): number {
+	let degree = 0;
+	for (const term of p) {
+		for (const factor of term.monomial) {
+			if (hashMathNode(factor.base) === baseHash) {
+				const exponent = Number(factor.exponent.n);
+				if (exponent > degree) degree = exponent;
+			}
+		}
+	}
+	return degree;
+}
+
+/**
+ * Vue récursive d'un polynôme : `p = Σ coeffs[i]·base^i`, où chaque `coeffs[i]`
+ * est un polynôme dans les AUTRES bases.
+ *
+ * ⚠️ Même précondition que `compareMonomialsGradedLex` : un monôme ne porte
+ * qu'un facteur par base.
+ */
+function splitByBase(p: readonly NormalTerm[], baseHash: string): NormalTerm[][] {
+	const buckets: NormalTerm[][] = [];
+	for (const term of p) {
+		let degree = 0;
+		const rest: SymbolicFactor[] = [];
+		for (const factor of term.monomial) {
+			if (hashMathNode(factor.base) === baseHash) {
+				degree = Number(factor.exponent.n);
+			} else {
+				rest.push(factor);
+			}
+		}
+		while (buckets.length <= degree) buckets.push([]);
+		buckets[degree].push({ coefficient: term.coefficient, monomial: rest });
+	}
+	return buckets.map((bucket) => collectLikeTerms(bucket));
+}
+
+/** Reconstruit `coefficient·base^degree` comme polynôme. */
+function mulByBasePower(
+	p: readonly NormalTerm[],
+	base: import('../types').MathNode,
+	degree: number
+): NormalTerm[] {
+	if (degree === 0) return [...p];
+	const power: NormalTerm[] = [
+		{ coefficient: ALGEBRAIC_ONE, monomial: [{ base, exponent: { n: BigInt(degree), d: 1n } }] }
+	];
+	return mulPolynomials(p, power);
+}
+
+/**
+ * Divise tous les coefficients par leur pgcd algébrique, pour empêcher les
+ * entiers d'enfler le long de la suite de restes.
+ *
+ * Multiplier un candidat de pgcd par une constante ne change pas sa validité :
+ * les coefficients vivent dans un corps, donc `exactDividePolynomials` réussit
+ * de la même façon. En cas de division impossible (radicaux mélangés), on rend
+ * le polynôme inchangé — on renonce à la normalisation, pas au calcul.
+ */
+function normalizeNumericContent(p: readonly NormalTerm[]): NormalTerm[] {
+	if (p.length <= 1) return [...p];
+
+	let content = p[0].coefficient;
+	for (let i = 1; i < p.length; i++) {
+		content = gcdAlgebraic(content, p[i].coefficient);
+	}
+	if (isZeroAlgebraic(content) || isOneAlgebraic(content)) return [...p];
+
+	const result: NormalTerm[] = [];
+	for (const term of p) {
+		const coefficient = divAlgebraic(term.coefficient, content);
+		if (coefficient === null || isZeroAlgebraic(coefficient)) return [...p];
+		result.push({ coefficient, monomial: term.monomial });
+	}
+	return result;
+}
+
+/**
+ * Contenu d'un polynôme vu en `baseHash` : pgcd de ses coefficients, qui sont
+ * eux-mêmes des polynômes dans les autres bases. C'est ici que la récursion
+ * descend d'une variable.
+ *
+ * @returns Le contenu, ou `null` si le budget est épuisé.
+ */
+function contentInBase(
+	p: readonly NormalTerm[],
+	baseHash: string,
+	budget: GcdBudget
+): NormalTerm[] | null {
+	const coefficients = splitByBase(p, baseHash).filter((c) => c.length > 0);
+	if (coefficients.length === 0) return [...ONE_POLYNOMIAL];
+
+	let content = coefficients[0];
+	for (let i = 1; i < coefficients.length; i++) {
+		if (isConstantPolynomial(content)) return [...ONE_POLYNOMIAL];
+		const next = gcdRecursive(content, coefficients[i], budget);
+		if (next === null) return null;
+		content = next;
+	}
+	return isConstantPolynomial(content) ? [...ONE_POLYNOMIAL] : content;
+}
+
+/**
+ * Pseudo-reste de `a` par `b` en la base `baseHash`.
+ *
+ * Boucle classique : tant que le degré du reste atteint celui du diviseur, on
+ * lui retranche `lc(r)·base^(deg r − deg b)·b` après l'avoir multiplié par
+ * `lc(b)` — la multiplication par `lc(b)` évite de diviser des coefficients qui
+ * ne forment pas un corps.
+ *
+ * Deux garde-fous : le budget partagé, et la décroissance STRICTE du degré,
+ * qui est ce qui fait terminer la boucle. Si elle est prise en défaut (des
+ * coefficients qui ne s'annulent pas comme prévu), on rend `null` plutôt que de
+ * tourner.
+ */
+function pseudoRemainderInBase(
+	a: readonly NormalTerm[],
+	b: readonly NormalTerm[],
+	baseHash: string,
+	base: import('../types').MathNode,
+	budget: GcdBudget
+): NormalTerm[] | null {
+	const degreeB = degreeInBase(b, baseHash);
+	// Un diviseur de degré 0 en la base divise formellement tout : le
+	// pseudo-reste est nul. Le court-circuit évite `deg(a)` tours inutiles.
+	if (degreeB === 0) return [];
+
+	const coefficientsB = splitByBase(b, baseHash);
+	const leadB = coefficientsB[degreeB];
+	if (leadB === undefined || leadB.length === 0) return null;
+
+	const abortChecker = getActiveAbortChecker();
+	let remainder: readonly NormalTerm[] = a;
+
+	while (remainder.length > 0) {
+		checkAbort(abortChecker);
+		const degreeR = degreeInBase(remainder, baseHash);
+		if (degreeR < degreeB) break;
+		if (!spendStep(budget)) return null;
+
+		const leadR = splitByBase(remainder, baseHash)[degreeR];
+		if (leadR === undefined || leadR.length === 0) return null;
+
+		const scaled = mulPolynomials(leadB, remainder);
+		const subtracted = mulPolynomials(mulByBasePower(leadR, base, degreeR - degreeB), b);
+		const next = subPolynomials(scaled, subtracted);
+
+		if (next.length > GCD_MAX_TERMS) return null;
+		// Le degré DOIT décroître strictement : c'est la terminaison.
+		if (next.length > 0 && degreeInBase(next, baseHash) >= degreeR) return null;
+
+		remainder = normalizeNumericContent(next);
+	}
+
+	return [...remainder];
+}
+
+/**
+ * Cœur récursif du pgcd multivarié : suite de restes primitive sur une variable
+ * principale, récursion sur les coefficients.
+ *
+ * @returns Un CANDIDAT de pgcd — non prouvé —, ou `null` si l'on renonce.
+ */
+function gcdRecursive(
+	a: readonly NormalTerm[],
+	b: readonly NormalTerm[],
+	budget: GcdBudget
+): NormalTerm[] | null {
+	if (a.length === 0) return [...b];
+	if (b.length === 0) return [...a];
+	// Une constante n'a pas de facteur commun polynomial : le pgcd est une
+	// constante, et un diviseur constant ne réduit rien ici.
+	if (isConstantPolynomial(a) || isConstantPolynomial(b)) return [...ONE_POLYNOMIAL];
+	if (a.length > GCD_MAX_TERMS || b.length > GCD_MAX_TERMS) return null;
+
+	// Variable principale : une base présente des DEUX côtés. S'il n'y en a
+	// aucune, tout diviseur commun est sans variable, donc constant.
+	const basesA = collectBases(a);
+	const basesB = collectBases(b);
+	const shared = [...basesA.keys()].filter((hash) => basesB.has(hash)).sort();
+	if (shared.length === 0) return [...ONE_POLYNOMIAL];
+
+	// Le plus petit degré d'abord : c'est la variable la moins chère à éliminer.
+	// Départage par hachage trié, pour que le résultat ne dépende pas de l'ordre
+	// de construction des termes.
+	let baseHash = shared[0];
+	let bestDegree = Math.max(degreeInBase(a, baseHash), degreeInBase(b, baseHash));
+	for (const candidate of shared.slice(1)) {
+		const degree = Math.max(degreeInBase(a, candidate), degreeInBase(b, candidate));
+		if (degree < bestDegree) {
+			bestDegree = degree;
+			baseHash = candidate;
+		}
+	}
+	const base = basesA.get(baseHash);
+	if (base === undefined) return null;
+
+	// Contenus et parties primitives : le pgcd est (pgcd des contenus) × (pgcd
+	// des parties primitives).
+	const contentA = contentInBase(a, baseHash, budget);
+	if (contentA === null) return null;
+	const contentB = contentInBase(b, baseHash, budget);
+	if (contentB === null) return null;
+
+	const contentGcd = gcdRecursive(contentA, contentB, budget);
+	if (contentGcd === null) return null;
+
+	const primitiveA = isOnePolynomial(contentA) ? [...a] : exactDividePolynomials(a, contentA);
+	if (primitiveA === null) return null;
+	const primitiveB = isOnePolynomial(contentB) ? [...b] : exactDividePolynomials(b, contentB);
+	if (primitiveB === null) return null;
+
+	let current: readonly NormalTerm[] = primitiveA;
+	let next: readonly NormalTerm[] = primitiveB;
+	if (degreeInBase(current, baseHash) < degreeInBase(next, baseHash)) {
+		[current, next] = [next, current];
+	}
+
+	const abortChecker = getActiveAbortChecker();
+	while (next.length > 0) {
+		checkAbort(abortChecker);
+		if (!spendStep(budget)) return null;
+
+		const remainder = pseudoRemainderInBase(current, next, baseHash, base, budget);
+		if (remainder === null) return null;
+
+		current = next;
+		if (remainder.length === 0) {
+			next = [];
+		} else {
+			const remainderContent = contentInBase(remainder, baseHash, budget);
+			if (remainderContent === null) return null;
+			const primitive = isOnePolynomial(remainderContent)
+				? [...remainder]
+				: exactDividePolynomials(remainder, remainderContent);
+			if (primitive === null) return null;
+			next = normalizeNumericContent(primitive);
+		}
+	}
+
+	return normalizeNumericContent(mulPolynomials(contentGcd, current));
+}
+
+/**
+ * Pgcd multivarié de deux polynômes — un **candidat**, pas une certitude.
+ *
+ * Algorithme : suite de restes **primitive** (primitive PRS), récursive sur les
+ * variables. À chaque niveau on choisit une variable principale présente des
+ * deux côtés, on sépare contenu et partie primitive (le contenu étant lui-même
+ * un pgcd de polynômes dans les variables restantes → récursion), puis on
+ * déroule la suite des pseudo-restes en rendant chaque reste primitif. Le pgcd
+ * est le produit du pgcd des contenus par le dernier reste non nul.
+ *
+ * Variante choisie parmi les trois classiques (euclidienne à coefficients
+ * fractionnaires, PRS primitive, PRS sous-résultante) : la **PRS primitive**.
+ * Elle coûte un pgcd récursif de contenus à chaque tour, mais elle garde les
+ * coefficients petits, et c'est la seule des trois qui reste lisible. La suite
+ * sous-résultante serait plus rapide sur de gros degrés ; à 2 ou 3 variables et
+ * degré ≤ 4 — ce que les élèves écrivent — la différence ne se mesure pas.
+ *
+ * ## Ce qui rend l'approche sûre
+ *
+ * Ce résultat n'est PAS prouvé être le pgcd. L'appelant DOIT le vérifier en
+ * divisant exactement les deux polynômes par lui, et abandonner si l'une des
+ * deux divisions échoue. Un candidat faux donne alors un faux négatif — une
+ * fraction non réduite —, jamais un faux positif. C'est la propriété qui
+ * compte : un faux positif du décideur compte une réponse d'élève FAUSSE.
+ *
+ * @param a - Premier polynôme
+ * @param b - Second polynôme
+ * @returns Un candidat de pgcd, ou `null` (hors domaine, plafond atteint, ou
+ *   renoncement d'une division intermédiaire)
+ */
+export function gcdPolynomialsMultivariate(
+	a: readonly NormalTerm[],
+	b: readonly NormalTerm[]
+): NormalTerm[] | null {
+	if (a.length === 0 || b.length === 0) return null;
+
+	// Même domaine que la division exacte : exposants entiers strictement
+	// positifs. Hors de là, l'ordre monomial n'est plus bien fondé.
+	if (!hasPositiveIntegerExponents(a) || !hasPositiveIntegerExponents(b)) return null;
+
+	const bases = new Set([...collectBases(a).keys(), ...collectBases(b).keys()]);
+	if (bases.size > GCD_MAX_VARIABLES) return null;
+
+	const budget: GcdBudget = { steps: GCD_MAX_STEPS };
+	const gcd = gcdRecursive(a, b, budget);
+	if (gcd === null || gcd.length === 0) return null;
+	// Un diviseur constant ne réduit rien et défigurerait la fraction.
+	if (isConstantPolynomial(gcd)) return null;
+	return gcd;
 }
