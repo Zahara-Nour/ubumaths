@@ -104,7 +104,9 @@ describe('tidy — aplatir et parenthèses', () => {
 	it('garde celles qu’exige la priorité', () => {
 		expect(t('2*(x+1)')).toBe('2(x+1)');
 		expect(t('(x+1)^2')).toBe('(x+1)^2');
-		expect(t('x/(2y)')).toBe('x/(2y)');
+		// Dans une fraction, pas de délimiteur : les accolades sont la convention
+		// linéaire de `toCustom`, et `\dfrac` n'en a pas besoin.
+		expect(t('x/(2y)')).toBe('x/{2y}');
 	});
 });
 
@@ -145,8 +147,8 @@ describe('tidy — arithmétique exacte', () => {
 		['1/2+1/3', '5/6'],
 		['2/4*6/8', '3/8'],
 		['3/6', '1/2'],
-		['(2x)/(4y)', 'x/(2y)'],
-		['(6x)/(4y)', '(3x)/(2y)'],
+		['(2x)/(4y)', 'x/{2y}'],
+		['(6x)/(4y)', '{3x}/{2y}'],
 		['2*x*3*y', '6xy'],
 		['2*(3x)', '6x'],
 		['x/2*4', '2x']

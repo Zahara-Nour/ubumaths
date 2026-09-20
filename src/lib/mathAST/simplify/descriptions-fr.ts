@@ -9,6 +9,8 @@
  */
 export const PHASE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	rules: 'Application des regles de simplification',
+	tidy: 'Mise au propre',
+	'post-tidy': 'Mise au propre après les règles, développement si moins cher',
 	normalize: 'Normalisation polynomiale',
 	'post-normalize': 'Re-normalisation post-regles'
 };
@@ -27,6 +29,8 @@ export function getSimplifyRuleDescription(rule: string): string {
 		'abs-negative': 'Simplification de |x| en -x (x negatif)',
 		// Pipeline phases
 		'pattern-rules': 'Regles de simplification par pattern matching',
+		tidy: 'Mise au propre',
+		'post-tidy': 'Mise au propre après les règles, développement si moins cher',
 		normalize: 'Mise en forme canonique'
 	};
 

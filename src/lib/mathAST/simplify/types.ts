@@ -76,7 +76,7 @@ export interface SimplifyOptions {
 /**
  * Phase identifier for a simplify step.
  */
-export type SimplifyPhase = 'rules' | 'normalize' | 'identity' | 'post-normalize';
+export type SimplifyPhase = 'rules' | 'tidy' | 'post-tidy' | 'identity';
 
 /**
  * A recorded step in the simplification process.

@@ -260,6 +260,15 @@ export function rewrite(node: MathNode, config: EngineConfig): EngineResult {
 				}
 			}
 
+			// Le délai est aussi vérifié après le post-traitement : c'est là que
+			// `simplify` calcule son candidat développé, le plus coûteux. Sans ce
+			// contrôle, un post-traitement hors budget suivi du point fixe sortait
+			// de la boucle sans jamais signaler l'abandon.
+			if (abortChecker?.()) {
+				aborted = true;
+				break;
+			}
+
 			// Cost check (final, `<=` so canonical form wins on equal cost)
 			if (strategy.kind === 'cost-fixpoint') {
 				const cost = strategy.cost(current);
