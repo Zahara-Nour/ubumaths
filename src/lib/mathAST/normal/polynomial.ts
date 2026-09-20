@@ -5,6 +5,7 @@
  * A polynomial is represented as a sorted list of terms with distinct monomials.
  */
 
+import { checkAbort, getActiveAbortChecker } from '../common/abort';
 import type { NormalTerm, AlgebraicCoefficient, SymbolicFactor } from './types';
 import { hashMathNode } from './hash';
 import { ALGEBRAIC_ONE, addAlgebraic, isZeroAlgebraic } from './algebraic';
@@ -169,10 +170,14 @@ export function mulPolynomials(a: readonly NormalTerm[], b: readonly NormalTerm[
 	if (isOnePolynomial(a)) return [...b];
 	if (isOnePolynomial(b)) return [...a];
 
-	// Distribution
+	// Distribution. La boucle externe consulte le signal d'interruption : c'est
+	// ici que le développement d'une puissance de somme large consomme le tas,
+	// et un `timeoutMs` ne bornait rien tant que personne ne le lisait.
+	const abortChecker = getActiveAbortChecker();
 	const products: NormalTerm[] = [];
 
 	for (const termA of a) {
+		checkAbort(abortChecker);
 		for (const termB of b) {
 			const product = mulTerms(termA, termB);
 			if (!isZeroTerm(product)) {
@@ -207,16 +212,20 @@ export function powPolynomial(p: readonly NormalTerm[], n: number): NormalTerm[]
 	if (p.length === 0) return [];
 
 	// Use repeated squaring
+	const abortChecker = getActiveAbortChecker();
 	let result = [...ONE_POLYNOMIAL];
 	let base = [...p];
 	let exp = n;
 
 	while (exp > 0) {
+		checkAbort(abortChecker);
 		if (exp % 2 === 1) {
 			result = mulPolynomials(result, base);
 		}
-		base = mulPolynomials(base, base);
+		// Le dernier carré est inutile : `exp` vaut 1, la boucle s'arrête après.
+		// Il coûtait pourtant le carré du plus gros polynôme de tout le calcul.
 		exp = Math.floor(exp / 2);
+		if (exp > 0) base = mulPolynomials(base, base);
 	}
 
 	return result;

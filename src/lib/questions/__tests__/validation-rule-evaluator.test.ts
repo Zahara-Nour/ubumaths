@@ -292,6 +292,33 @@ describe('EquivalenceRule evaluation', () => {
 		expect(result.valid).toBe(true);
 	});
 
+	/**
+	 * Ce module tourne dans le navigateur de l'élève et `areEquivalent` est
+	 * synchrone : sans borne, une réponse pathologique gèle l'onglet.
+	 *
+	 * Mesuré, tas plafonné à 700 Mo, avant le budget : cette paire exacte TUE le
+	 * processus. `validateAlgebraic` bornait déjà à 500 ms pour la même raison ;
+	 * ces deux appels-ci ne bornaient rien.
+	 *
+	 * Le test n'affirme rien sur `valid` : sur abandon, la réponse est comptée
+	 * fausse, ce qui est la réponse conservatrice d'un décideur qui n'a pas pu
+	 * prouver l'égalité.
+	 */
+	it('rend la main sur une réponse pathologique au lieu de geler l’onglet', () => {
+		const rule: EquivalenceRule = {
+			type: 'equivalent',
+			expression: '(x+y+z+w+a+b+c+d+e+f)^{10}'
+		};
+		const context: EvaluationContext = {
+			variables: {},
+			answer: '(x+y+z+w+a+b+c+d+e+f+g)^{11}'
+		};
+
+		const started = performance.now();
+		evaluateRule(rule, context);
+		expect(performance.now() - started).toBeLessThan(3000);
+	});
+
 	it('resolves variables in expression', () => {
 		const rule: EquivalenceRule = { type: 'equivalent', expression: '{{a}} * {{b}}' };
 		const context: EvaluationContext = { variables: { a: 3, b: 4 }, answer: '12' };
