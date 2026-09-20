@@ -2,6 +2,10 @@
 
 > À donner tel quel au début d'une session neuve.
 > Rédigé le 2026-09-20 après une session qui a tourné en rond.
+>
+> ✅ **Relevé fait le 2026-09-20** — CE exécuté, panel mesuré des deux côtés,
+> Q1–Q3 répondues : [simplify-reecriture-releve.md](simplify-reecriture-releve.md).
+> Reprendre au **§7 du relevé** (décisions de David), pas au §1 de ce brief.
 
 ## L'objectif, en une phrase
 
