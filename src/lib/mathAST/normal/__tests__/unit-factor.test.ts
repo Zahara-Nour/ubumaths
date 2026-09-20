@@ -49,16 +49,22 @@ describe('unités — équivalence', () => {
 	});
 });
 
-describe('unités — ce que denormalize rend', () => {
-	it('12[km] ressort 12[km]', () => {
-		expect(round('12[km]')).toBe('12[km]');
+/**
+ * Bascule de la PR 3 (§D.1) : le facteur n'est plus posé par unité NOMMÉE mais
+ * par unité DE BASE, coefficient exact replié dans le nombre. `normalize` est
+ * le décideur, pas le metteur en page : il rend la grandeur en unités de base,
+ * et c'est `tidy` qui choisit l'écriture (`12000[m]` → `12 km`).
+ */
+describe('unités — ce que denormalize rend : l’unité de base', () => {
+	it('12[km] ressort 12000[m]', () => {
+		expect(round('12[km]')).toBe('12000[m]');
 	});
 
-	it('12[km]+3[km] ressort 15[km]', () => {
-		expect(round('12[km]+3[km]')).toBe('15[km]');
+	it('12[km]+3[km] ressort 15000[m]', () => {
+		expect(round('12[km]+3[km]')).toBe('15000[m]');
 	});
 
-	it('2*3[km] ressort 6[km]', () => {
-		expect(round('2*3[km]')).toBe('6[km]');
+	it('2*3[km] ressort 6000[m]', () => {
+		expect(round('2*3[km]')).toBe('6000[m]');
 	});
 });

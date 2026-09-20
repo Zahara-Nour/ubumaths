@@ -399,6 +399,8 @@ export const SPECIAL_UNITS: ReadonlyMap<string, BaseUnitDef> = new Map([
 			symbol: '°F',
 			baseSymbol: 'K',
 			coefficient: 5 / 9,
+			// 5/9 n'a pas d'écriture décimale finie : le rationnel exact prime.
+			exact: { n: 5, d: 9 },
 			offset: 459.67,
 			dimension: 'temperature',
 			name: 'fahrenheit'
@@ -412,6 +414,8 @@ export const SPECIAL_UNITS: ReadonlyMap<string, BaseUnitDef> = new Map([
 			symbol: '°',
 			baseSymbol: 'rad',
 			coefficient: Math.PI / 180,
+			// π/180, π porté en facteur symbolique : 180[°] ≡ π rad.
+			exact: { n: 1, d: 180, piPower: 1 },
 			dimension: 'angle',
 			name: 'degré'
 		}
@@ -422,6 +426,8 @@ export const SPECIAL_UNITS: ReadonlyMap<string, BaseUnitDef> = new Map([
 			symbol: 'deg',
 			baseSymbol: 'rad',
 			coefficient: Math.PI / 180,
+			// π/180, π porté en facteur symbolique : 180[deg] ≡ π rad.
+			exact: { n: 1, d: 180, piPower: 1 },
 			dimension: 'angle',
 			name: 'degré'
 		}

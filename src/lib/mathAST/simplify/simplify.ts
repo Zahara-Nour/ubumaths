@@ -43,6 +43,8 @@ import { normalizeExtended, denormalizeExtended } from '../normal';
 // Mise au propre
 import { tidy } from '../tidy';
 import { flattenSumShallow } from '../flatten';
+import { getChildren } from '../transforms';
+import { isUnit } from '../guards';
 
 // Rewriting engine
 import { rewrite, type RewriteStep } from '../common/rewriting-engine';
@@ -116,6 +118,17 @@ function normalizePass(node: MathNode): MathNode {
 function makeTidyThenExpandIfCheaper(cost: (node: MathNode) => number) {
 	return (node: MathNode): MathNode => {
 		const tidied = tidy(node);
+
+		// Une température écrite ne se troque JAMAIS contre son absolu, quel que
+		// soit le coût du candidat : `normalize` rend `293,15[K]` là où l'élève a
+		// écrit `20[°C]`, et le coût ne l'arbitre pas (findings I3 puis F3 —
+		// `(x+2)(x−2)+20[°C]` sortait `x²+293,15[K]−4`). L'arithmétique affine
+		// bien formée reste rendue : c'est `tidy` qui la fait (§D.2), pas le
+		// candidat développé — `30[°C]−20[°C]` donne bien `10[K]`.
+		// Conséquence assumée : une somme qui porte une température n'est pas
+		// développée.
+		if (containsAffineQuantity(tidied)) return tidied;
+
 		let expanded: MathNode;
 		try {
 			expanded = tidy(normalizePass(node));
@@ -129,6 +142,12 @@ function makeTidyThenExpandIfCheaper(cost: (node: MathNode) => number) {
 		if (expandedCost === tidiedCost && termCount(expanded) <= termCount(tidied)) return expanded;
 		return tidied;
 	};
+}
+
+/** Cette expression porte-t-elle une grandeur affine (°C, °F) ? */
+function containsAffineQuantity(node: MathNode): boolean {
+	if (isUnit(node) && (node.unit.offset ?? 0) !== 0) return true;
+	return getChildren(node).some(containsAffineQuantity);
 }
 
 /** Nombre de termes de la somme de tête (1 pour tout ce qui n'est pas une somme). */

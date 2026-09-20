@@ -26,7 +26,7 @@ import {
 	normalizeToBase,
 	recognizeDerivedUnit
 } from '../units/conversion';
-import { getUnitFamily } from '../units/definitions';
+import { selectBestUnit } from '../units/selection';
 import { UnitAST } from '../units/factory';
 import type { MathNode } from '../types';
 import { isUnit } from '../guards';
@@ -37,13 +37,6 @@ import { mapNode } from '../transforms';
 // =============================================================================
 // Constants
 // =============================================================================
-
-/**
- * Ideal numeric range for "best" unit selection.
- * Values in this range are considered human-readable.
- */
-const MIN_READABLE = 0.1;
-const MAX_READABLE = 1000;
 
 /**
  * Epsilon for floating-point comparisons.
@@ -149,27 +142,6 @@ function collectUnitsFromExpression(node: MathNode): {
 }
 
 /**
- * Get the primary base symbol from a unit.
- *
- * For simple units, returns the first component's symbol.
- * For composite units (like m/s), returns null.
- *
- * @param unit - The unit to analyze
- * @returns The base symbol or null for composite units
- */
-function getPrimaryBaseSymbol(unit: Unit): string | null {
-	const entries = Array.from(unit.components.entries());
-
-	// Simple unit: exactly one component with exponent 1
-	if (entries.length === 1 && entries[0][1] === 1) {
-		return entries[0][0];
-	}
-
-	// Composite or powered unit - no primary symbol
-	return null;
-}
-
-/**
  * Create a pure SI base unit (coefficient = 1) from a unit.
  *
  * Takes any unit and returns the equivalent SI base unit with coefficient = 1.
@@ -190,67 +162,14 @@ function toSIBaseUnit(unit: Unit): Unit {
 }
 
 /**
- * Select the "best" unit for a given value.
+ * Retire les enveloppes d'unité d'une expression, en gardant les expressions.
  *
- * Chooses the unit that puts the value in the most readable range (0.1 to 1000).
- * If no unit fits this range, selects the unit with the closest fit.
- *
- * @param valueInSI - The numeric value in SI base units
- * @param baseUnit - The SI base unit
- * @returns Object with converted value and selected unit
+ * `5[km] + 3[km]` → `5 + 3`. Le pipeline tient l'unité à part (analyse
+ * dimensionnelle + `transformToTargetUnit`) : l'évaluation n'a besoin que des
+ * nombres.
  */
-function selectBestUnit(valueInSI: number, baseUnit: Unit): { value: number; unit: Unit } {
-	// Handle zero and near-zero values - keep SI base unit
-	if (Math.abs(valueInSI) < EPSILON) {
-		return { value: valueInSI, unit: baseUnit };
-	}
-
-	const baseSymbol = getPrimaryBaseSymbol(baseUnit);
-
-	// For composite units, fall back to SI
-	if (baseSymbol === null) {
-		return { value: valueInSI, unit: baseUnit };
-	}
-
-	// Get the family of compatible units
-	const family = getUnitFamily(baseSymbol);
-
-	let bestUnit: Unit = baseUnit;
-	let bestValue: number = valueInSI;
-	let bestScore: number = Infinity;
-
-	for (const symbol of family) {
-		const candidateUnit = UnitAST.unit(symbol);
-		if (candidateUnit === null) continue;
-
-		// Calculate the value in this unit
-		const factor = getConversionFactor(baseUnit, candidateUnit);
-		if (factor === null) continue;
-
-		const convertedValue = valueInSI * factor;
-		const absValue = Math.abs(convertedValue);
-
-		// Check if in ideal range
-		if (absValue >= MIN_READABLE && absValue <= MAX_READABLE) {
-			return { value: convertedValue, unit: candidateUnit };
-		}
-
-		// Calculate score (distance from ideal range on log scale)
-		let score: number;
-		if (absValue < MIN_READABLE) {
-			score = Math.log10(MIN_READABLE / absValue);
-		} else {
-			score = Math.log10(absValue / MAX_READABLE);
-		}
-
-		if (score < bestScore) {
-			bestScore = score;
-			bestValue = convertedValue;
-			bestUnit = candidateUnit;
-		}
-	}
-
-	return { value: bestValue, unit: bestUnit };
+function stripUnits(node: MathNode): MathNode {
+	return mapNode(node, (n) => (isUnit(n) ? n.expression : n));
 }
 
 /**
@@ -849,8 +768,13 @@ export function evaluateWithUnits(
 	// Step 6: Transform expression to conversion target unit
 	const transformedNode = transformToTargetUnit(node, conversionTargetUnit);
 
-	// Step 7: Evaluate the transformed expression
-	const evalResult = evaluate(transformedNode, {
+	// Step 7: Evaluate the transformed expression.
+	// Les unités sont retirées avant l'évaluation : tout est déjà exprimé dans
+	// `conversionTargetUnit`, et `finalUnit` porte l'unité du résultat. Depuis
+	// la PR « grandeurs » (§D.1), le mode exact passe par `normalize`, qui
+	// convertit les grandeurs en unités de base — il rendrait `5000 m` là où
+	// cette fonction attend la valeur dans l'unité cible (`5`, unité `km`).
+	const evalResult = evaluate(stripUnits(transformedNode), {
 		mode: opts.mode,
 		precision: opts.precision,
 		functions: opts.functions
