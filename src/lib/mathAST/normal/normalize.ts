@@ -81,7 +81,7 @@ import { parse as parseUnit } from '../units/parser';
 import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units/formatter';
 import { euler, number, opposite, piConstant } from '../factory';
-import { isEulerConstant, isNumber } from '../guards';
+import { isEulerConstant, isNumber, isOpposite } from '../guards';
 import { expandEulerPowers } from './rules/euler-power';
 import { canFactorOutNegative, isEvenFunction, isOddFunction } from './parity.js';
 
@@ -2313,9 +2313,18 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 				// les carrés). Sans ça, `(∛8)² ≡ 4` restait faux.
 				if (ratExp.d === 1n && ratExp.n >= 0n) {
 					const radicalForm = normalizeNode(node.base, ctx);
+					// ⚠️ Radicande NÉGATIF exclu. `∛(−8)` vaut `−2`, mais élever ce que
+					// rend une forme normale de radical négatif fabrique une valeur
+					// fausse — mesuré, `(∛−8)²` donnait `64` au lieu de `4`.
+					const radicalValue =
+						radicalForm.numerator.length === 1
+							? getPureRationalCoeff(radicalForm.numerator[0].coefficient)
+							: null;
 					if (
 						isConstantPolynomial(radicalForm.numerator) &&
-						isOnePolynomial(radicalForm.denominator)
+						isOnePolynomial(radicalForm.denominator) &&
+						radicalValue !== null &&
+						radicalValue.n > 0n
 					) {
 						const result = powNormalForm(radicalForm, Number(ratExp.n));
 						recordNormalizationStep(ctx, 'power-of-sqrt', node, result, 'summarized');
@@ -2324,6 +2333,23 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 				}
 
 				const sqrtArg = (node.base as MathNode & { type: 'function' }).args[0];
+
+				// ⚠️ Radicande NÉGATIF et indice ≠ 2 : on ne conclut pas.
+				// `(∛−8)²` vaut `4`, mais `normalizeSymbolicPower(−8, 2/3)` rend
+				// `64` — il applique le numérateur de l'exposant et perd le
+				// dénominateur. Mesuré aussi sur `(∛−x)²`, qui donnait `x²` au lieu
+				// de `x^{2/3}`. Tant que cette voie est fausse, le nœud reste opaque.
+				if (radicalBase !== 2n) {
+					const argForm = normalizeNode(sqrtArg, ctx);
+					const argValue =
+						argForm.numerator.length === 1 && isOnePolynomial(argForm.denominator)
+							? getPureRationalCoeff(argForm.numerator[0].coefficient)
+							: null;
+					const negativeConstant = argValue !== null && argValue.n < 0n;
+					if (negativeConstant || isOpposite(sqrtArg)) {
+						return normalizeOpaqueNode(node);
+					}
+				}
 				// L'exposant se divise par l'INDICE du radical, pas par 2 :
 				// `(∛x)²` vaut `x^{2/3}`, et le 2 en dur le rendait `x`.
 				const newExp: Rational = { n: ratExp.n, d: ratExp.d * radicalBase };
@@ -3475,6 +3501,19 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 
 	// Get the root index from node.base (defaults to 2 for sqrt)
 	// For \sqrt[3]{x}, base contains the index 3
+	//
+	// ⚠️ Un indice PRÉSENT mais illisible — symbolique (`ⁿ√x`), nul, négatif,
+	// fractionnaire — ne doit PAS retomber sur 2. Le défaut silencieux rendait
+	// `true` à `ⁿ√x² ≡ x`, `¹√x² ≡ x` et `⁰√x² ≡ x` : trois faux positifs, donc
+	// trois réponses fausses comptées justes. On rend le nœud opaque : on ne
+	// sait pas, on ne conclut pas.
+	if (node.base !== undefined) {
+		const indexValue = getRationalExponent(node.base);
+		if (indexValue === null || indexValue.d !== 1n || indexValue.n < 2n) {
+			return normalizeOpaqueNode(node);
+		}
+	}
+
 	let rootIndex = 2n;
 	if (node.base && node.base.type === 'number') {
 		const indexVal = parseFloat(node.base.value);
@@ -3612,6 +3651,15 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 		const result = normalFormFromPolynomial(polynomialFromTerm(term));
 		recordNormalizationStep(ctx, 'sqrt-to-half-power', node, result, 'detailed');
 		return result;
+	}
+
+	// ⚠️ Passé ce point, les branches ci-dessous raisonnent en RACINE CARRÉE :
+	// extraction de carrés parfaits, exposants pairs, conjugués. Appliquées à un
+	// indice ≠ 2, elles perdent l'indice en silence — mesuré, `∛(−8)` devenait
+	// `√(−8)`. Un radical d'indice supérieur dont le radicande n'est ni un entier
+	// positif, ni une variable, ni un symbole, reste donc opaque.
+	if (rootIndex !== 2n) {
+		return normalizeOpaqueNode(node);
 	}
 
 	// B4. √(n·monomial) — extract perfect square factors
@@ -4484,6 +4532,7 @@ function normalizeSymbolicPower(
 	}
 
 	// Complex base with rational exponent - treat as opaque
+	//
 	const powerNode: MathNode = {
 		type: 'superscript',
 		base,

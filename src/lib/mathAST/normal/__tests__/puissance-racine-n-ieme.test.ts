@@ -97,3 +97,125 @@ describe('l’affichage cesse de se contredire', () => {
 		expect(toLatex(simplify(parseLatex('\\sqrt[3]{x}\\sqrt[3]{x}\\sqrt[3]{x}')).result)).toBe('x');
 	});
 });
+
+// =============================================================================
+// Un indice qu'on ne sait pas lire n'est PAS un 2
+// =============================================================================
+
+/**
+ * Trouvé par la revue, et **antérieur à ce chantier**. Le helper qui lit
+ * l'indice rend `null` quand il ne sait pas — mais ne pas appliquer la règle ne
+ * laissait pas l'expression tranquille : on retombait sur `normalizeSqrt`, qui
+ * lisait l'indice avec un **défaut silencieux à 2**.
+ *
+ * Mesuré, identique sur `main` et sur la première version de cette branche :
+ *
+ * | paire | verdict | valeur réelle |
+ * | --- | --- | --- |
+ * | `ⁿ√x² ≡ x` | `true` | `x^{2/n}` |
+ * | `¹√x² ≡ x` | `true` | `x²` |
+ * | `⁰√x² ≡ x` | `true` | indéfini |
+ * | `^{−2}√x² ≡ x` | `true` | `1/x` |
+ *
+ * Quatre faux positifs, donc quatre réponses fausses comptées justes. Un indice
+ * présent mais illisible rend maintenant le nœud **opaque** : on ne sait pas,
+ * on ne conclut pas. `ⁿ√x` est une écriture de lycée, pas un cas tordu.
+ */
+describe('un indice illisible rend le nœud opaque', () => {
+	it.each([
+		['\\sqrt[n]{x}^{2}', 'x'],
+		['\\sqrt[1]{x}^{2}', 'x'],
+		['\\sqrt[0]{x}^{2}', 'x'],
+		['\\sqrt[-2]{x}^{2}', 'x'],
+		['\\sqrt[2.5]{x}^{2}', 'x'],
+		['\\sqrt[n]{x}\\sqrt[n]{x}', 'x'],
+		['\\sqrt[x]{x}^{2}', 'x']
+	])('%s ≢ %s', (a, b) => {
+		expect(eq(a, b)).toBe(false);
+	});
+
+	it('et reste réflexif', () => {
+		for (const s of ['\\sqrt[n]{x}^{2}', '\\sqrt[0]{x}', '\\sqrt[-2]{x}^{2}']) {
+			expect(eq(s, s)).toBe(true);
+		}
+	});
+});
+
+// =============================================================================
+// Un radicande négatif d'indice impair : on refuse plutôt que de mentir
+// =============================================================================
+
+/**
+ * `∛(−8)` vaut `−2` et `(∛−8)²` vaut `4`. Le moteur ne sait ni l'un ni l'autre.
+ *
+ * Ce qu'il faisait, mesuré : `∛(−8)` normalisait en `√(−8)` — l'indice perdu —
+ * et `(∛−8)²` rendait `−8` sur `main`, puis `64` avec la première version de ce
+ * correctif, le court-circuit numérique élevant une forme déjà corrompue. Deux
+ * valeurs fausses, la seconde plus éloignée que la première.
+ *
+ * Désormais le nœud reste opaque. C'est un faux négatif — `(∛−8)² ≡ 4` rend
+ * `false` — mais l'écran ne montre plus une valeur fausse à l'élève.
+ */
+describe('radicande négatif d’indice impair : opaque, pas faux', () => {
+	it('ne se transforme plus en racine carrée', () => {
+		expect(eq('\\sqrt[3]{-8}', '\\sqrt{-8}')).toBe(false);
+	});
+
+	it.each([
+		['\\sqrt[3]{-8}^{2}', '64'],
+		['\\sqrt[3]{-8}^{2}', '-8'],
+		['\\sqrt[5]{-8}^{2}', '64'],
+		['\\sqrt[3]{-x}^{2}', 'x^{2}'],
+		['\\sqrt[3]{-x}^{2}', '-x']
+	])('%s ≢ %s', (a, b) => {
+		expect(eq(a, b)).toBe(false);
+	});
+
+	it('l’affichage ne montre plus de valeur fausse', () => {
+		expect(toLatex(simplify(parseLatex('\\sqrt[3]{-8}^{2}')).result)).not.toBe('64');
+		expect(toLatex(simplify(parseLatex('\\sqrt[3]{-8}^{2}')).result)).not.toBe('-8');
+	});
+
+	it('un radicande positif n’est pas touché', () => {
+		expect(eq('\\sqrt[3]{8}^{2}', '4')).toBe(true);
+		expect(eq('\\sqrt[3]{27}^{2}', '9')).toBe(true);
+	});
+});
+
+// =============================================================================
+// Une base somme doit être parenthésée à l'affichage
+// =============================================================================
+
+/**
+ * Le générateur LaTeX ne parenthèse pas par priorité : il s'appuie sur la
+ * présence d'un nœud délimiteur, que le parseur pose mais qu'une construction
+ * interne peut ne pas poser.
+ *
+ * Mesuré, et **préexistant** : `superscript(addition(x, 1), 3/2)` se rendait
+ * `x + 1^{3/2}`, qui se relit `x + (1^{3/2})`, soit `x + 1`. Trois snapshots
+ * du module de dérivation l'enregistraient sur un chemin élève : la dérivée de
+ * `1/(x+1)` s'affichait `−1/(x + 1²)`.
+ *
+ * Ce correctif-ci élargissait la surface du bug — deux sorties justes
+ * devenaient fausses — d'où sa réparation ici plutôt qu'un contournement.
+ */
+describe('une base somme est parenthésée', () => {
+	it.each([
+		['\\sqrt[3]{x+1}^{2}', '\\left( x + 1 \\right)^{2/3}'],
+		['\\sqrt[4]{x+1}^{6}', '\\left( x + 1 \\right)^{3/2}'],
+		['\\sqrt{x+1}^{3}', '\\left( x + 1 \\right)^{3/2}']
+	])('%s se rend %s', (entree, attendu) => {
+		expect(toLatex(simplify(parseLatex(entree)).result)).toBe(attendu);
+	});
+
+	it('la dérivée d’un inverse ne montre plus une base nue', () => {
+		const rendu = toLatex(simplify(parseLatex('\\frac{-1}{(x+1)^{2}}')).result);
+		expect(rendu).toContain('\\left( x + 1 \\right)');
+		expect(rendu).not.toContain('x + 1^');
+	});
+
+	it('et une base qui n’est pas une somme n’est pas parenthésée', () => {
+		expect(toLatex(simplify(parseLatex('x^{2}')).result)).toBe('x^2');
+		expect(toLatex(simplify(parseLatex('\\sqrt{x}^{3}')).result)).toBe('\\sqrt{x}^3');
+	});
+});
