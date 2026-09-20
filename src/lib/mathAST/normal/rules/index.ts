@@ -7,6 +7,7 @@
 
 export { applyRadicalRules, simplifyRadicals } from './radicals.js';
 export { expandTrigDefinitions } from './trig-definitions.js';
+export { expandCommensurableArcs, type ArcExpansionContext } from './trig-multiple-arcs.js';
 
 import type { MathNode } from '../../types.js';
 import { simplifyRadicals } from './radicals.js';

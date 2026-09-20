@@ -253,11 +253,15 @@ describe('Edge cases - expressions that should not be simplified', () => {
 		// x - y has mixed signs, so parity rule should not apply
 		const expr = Exp.cos(Exp.subtract(Exp.variable('x'), Exp.variable('y')));
 
-		// Should NOT be equivalent to cos(y-x)
-		const different = Exp.cos(Exp.subtract(Exp.variable('y'), Exp.variable('x')));
+		// `cos` est PAIRE et `y − x = −(x − y)` : les deux sont donc égaux, et le
+		// décideur le voit depuis que les arcs commensurables sont traités.
+		// L'ancienne version de ce test assertait l'inverse (« They are different
+		// because x-y !== y-x ») : elle enregistrait la limite du décideur comme
+		// un fait mathématique. Vérifié numériquement : cos(1,3−0,4) et
+		// cos(0,4−1,3) valent tous deux 0,62160996827…
+		const mirrored = Exp.cos(Exp.subtract(Exp.variable('y'), Exp.variable('x')));
 
-		// They are different because x-y !== y-x
-		expect(expr.isEquivalent(different)).toBe(false);
+		expect(expr.isEquivalent(mirrored)).toBe(true);
 	});
 
 	test('sin(x-y) keeps its original form', () => {

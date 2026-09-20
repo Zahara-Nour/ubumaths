@@ -145,10 +145,11 @@ describe('les relations valent par argument', () => {
 		expect(eq(a, b)).toBe(false);
 	});
 
-	it('arcs multiples : hors de portée de cette étape, et sans faux positif', () => {
-		// Étape 2 (Tchebychev) : ces deux-là sont pourtant égaux.
-		expect(eq('sin(2x)', '2*sin(x)*cos(x)')).toBe(false);
-		expect(eq('cos(2x)', '1-2*sin(x)^2')).toBe(false);
+	it('arcs multiples : traités depuis l’étape 2 (Tchebychev)', () => {
+		// Ces deux marqueurs attendaient `false` tant que seule l'étape 1 existait.
+		// Le contrat complet des arcs vit dans `trig-multiple-arcs.test.ts`.
+		expect(eq('sin(2x)', '2*sin(x)*cos(x)')).toBe(true);
+		expect(eq('cos(2x)', '1-2*sin(x)^2')).toBe(true);
 	});
 });
 

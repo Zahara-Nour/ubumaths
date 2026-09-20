@@ -63,7 +63,7 @@ import {
 	floatToRational
 } from './rational';
 import { simplifyRadical, integerNthRoot } from './radical';
-import { preprocess, expandTrigDefinitions } from './rules/index.js';
+import { preprocess, expandTrigDefinitions, expandCommensurableArcs } from './rules/index.js';
 import { denormalize } from './denormalize';
 import { tryUnivariateGcd, dividePolynomials } from './univariate-gcd';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
@@ -763,8 +763,9 @@ function rationalizeComplexDenominator(
  * la forme canonique unique `A(cos u) + sin(u)·B(cos u)` de l'anneau quotient
  * R[s,c]/(s²+c²−1). Deux écritures d'un même élément y ont le même hash.
  *
- * Les relations valent À ARGUMENT CONSTANT : `sin(2x)` et `sin(x)` restent deux
- * atomes indépendants. Les arcs commensurables sont une étape ultérieure.
+ * Les relations valent À ARGUMENT CONSTANT : pour Pythagore, `sin(2x)` et
+ * `sin(x)` restent deux atomes indépendants. C'est `expandCommensurableArcs`
+ * qui, en amont, les a déjà ramenés au même générateur quand c'était possible.
  */
 const PYTHAGOREAN_PARTNERS: Readonly<Record<string, string>> = {
 	sin: 'cos',
@@ -1928,12 +1929,33 @@ export function normalize(node: MathNode, ctx?: NormalizeContext): NormalForm {
  * reconnaissance de motifs de l'intégration lit cette même forme. Décision de
  * David du 2026-09-20 : réduire pour comparer, pas pour écrire.
  *
- * Limite assumée : les relations valent **à argument constant**. `sin(2x)` et
- * `sin(x)` restent indépendants ; les arcs commensurables (Tchebychev, formules
- * d'addition) sont une étape ultérieure.
+ * S'y ajoute, entre les deux, les **arcs commensurables** : tout `sin(k·u)` et
+ * `cos(k·u)` à coefficient entier se réécrit en polynôme de `sin(u)` et
+ * `cos(u)`, et les arguments à plusieurs termes passent par les formules
+ * d'addition (`rules/trig-multiple-arcs.ts`). C'est une réécriture d'ARBRE, donc
+ * elle vient avant la normalisation et donc avant Pythagore.
+ *
+ * Limites assumées, toutes deux des faux négatifs : un coefficient non entier
+ * (`sin(x/2)`) et un multiple au-delà du plafond (`sin(40x)`) laissent le nœud
+ * opaque.
  */
 export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalForm {
-	return reducePythagorasInNormalForm(normalize(expandTrigDefinitions(node), ctx), ctx);
+	const withDefinitions = expandTrigDefinitions(node);
+	const withArcs = expandCommensurableArcs(withDefinitions, {
+		// La décomposition d'un argument ne doit rien raconter à l'élève : on ne
+		// passe que l'interruption, jamais l'enregistreur d'étapes.
+		normalizeArgument: (argument) => normalize(argument, arcDecompositionContext(ctx)),
+		abortChecker: ctx?.abortChecker
+	});
+	return reducePythagorasInNormalForm(normalize(withArcs, ctx), ctx);
+}
+
+/**
+ * Le contexte réduit sous lequel tournent les décompositions d'arguments :
+ * l'interruption seule, sans enregistreur ni verbosité.
+ */
+function arcDecompositionContext(ctx: NormalizeContext | undefined): NormalizeContext | undefined {
+	return ctx?.abortChecker ? { abortChecker: ctx.abortChecker } : undefined;
 }
 
 /**
