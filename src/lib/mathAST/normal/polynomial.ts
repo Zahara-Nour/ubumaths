@@ -7,8 +7,8 @@
 
 import { checkAbort, getActiveAbortChecker } from '../common/abort';
 import type { NormalTerm, AlgebraicCoefficient, SymbolicFactor } from './types';
-import { hashMathNode } from './hash';
-import { ALGEBRAIC_ONE, addAlgebraic, isZeroAlgebraic } from './algebraic';
+import { hashMathNode, hashPolynomial } from './hash';
+import { ALGEBRAIC_ONE, addAlgebraic, divAlgebraic, isZeroAlgebraic } from './algebraic';
 import {
 	ONE_TERM,
 	mulTerms,
@@ -451,6 +451,202 @@ export function divPolynomialByMonomial(
 	}
 
 	return collectLikeTerms(result);
+}
+
+// =============================================================================
+// Exact Multivariate Division (for fraction reduction)
+// =============================================================================
+
+/**
+ * Ordre monomial utilisé par la division exacte : **graded lex**.
+ *
+ * Degré total d'abord, puis lexicographique sur les hachages de bases pris dans
+ * l'ordre croissant. Deux raisons de ce choix :
+ *
+ * 1. C'est un ordre monomial valide — total, compatible avec la multiplication
+ *    (`m1 > m2` ⟹ `m1·m > m2·m`) et bien fondé sur les exposants entiers
+ *    positifs. C'est ce qui **garantit la terminaison** : à chaque tour le
+ *    monôme de tête du reste décroît strictement, et il n'existe qu'un nombre
+ *    fini de monômes sous un degré donné.
+ * 2. Le degré total en premier fait chuter le degré du reste dès le premier
+ *    tour, là où l'ordre lexicographique pur peut traîner longtemps sur des
+ *    monômes de même degré. Le départage par hachage de base — et non par
+ *    l'ordre d'apparition des facteurs — rend l'ordre déterministe, quelle que
+ *    soit la manière dont les termes ont été construits.
+ *
+ * @param a - Premier monôme
+ * @param b - Second monôme
+ * @returns Négatif si a < b, positif si a > b, 0 s'ils sont identiques
+ */
+function compareMonomialsGradedLex(
+	a: readonly SymbolicFactor[],
+	b: readonly SymbolicFactor[]
+): number {
+	// Degré total (les exposants sont des entiers positifs, cf. la garde)
+	let degreeA = 0n;
+	for (const factor of a) degreeA += factor.exponent.n;
+	let degreeB = 0n;
+	for (const factor of b) degreeB += factor.exponent.n;
+	if (degreeA !== degreeB) return degreeA < degreeB ? -1 : 1;
+
+	// À degré égal : lexicographique sur les bases triées par hachage
+	const exponentsA = new Map<string, bigint>();
+	for (const factor of a) exponentsA.set(hashMathNode(factor.base), factor.exponent.n);
+	const exponentsB = new Map<string, bigint>();
+	for (const factor of b) exponentsB.set(hashMathNode(factor.base), factor.exponent.n);
+
+	const bases = [...new Set([...exponentsA.keys(), ...exponentsB.keys()])].sort();
+	for (const base of bases) {
+		const expA = exponentsA.get(base) ?? 0n;
+		const expB = exponentsB.get(base) ?? 0n;
+		if (expA !== expB) return expA > expB ? 1 : -1;
+	}
+
+	return 0;
+}
+
+/**
+ * Vérifie que tous les exposants d'un polynôme sont des entiers strictement
+ * positifs.
+ *
+ * La division exacte ne sait raisonner que là-dessus : un exposant fractionnaire
+ * (`x^{1/2}`) ou négatif (`x^{-1}`) casserait la bonne fondation de l'ordre
+ * monomial, donc la terminaison. Hors de ce domaine, on renonce.
+ */
+function hasPositiveIntegerExponents(p: readonly NormalTerm[]): boolean {
+	for (const term of p) {
+		for (const factor of term.monomial) {
+			if (factor.exponent.d !== 1n || factor.exponent.n <= 0n) return false;
+		}
+	}
+	return true;
+}
+
+/**
+ * Terme de tête d'un polynôme pour l'ordre graded lex.
+ *
+ * Les polynômes sont stockés dans l'ordre canonique du module, qui n'est pas
+ * l'ordre monomial de la division : on cherche donc explicitement le maximum.
+ */
+function leadingTermGradedLex(p: readonly NormalTerm[]): NormalTerm | null {
+	if (p.length === 0) return null;
+
+	let best = p[0];
+	for (let i = 1; i < p.length; i++) {
+		if (compareMonomialsGradedLex(p[i].monomial, best.monomial) > 0) {
+			best = p[i];
+		}
+	}
+	return best;
+}
+
+/**
+ * Divise un terme par un autre, exactement.
+ *
+ * @returns Le quotient, ou `null` si le monôme de `b` ne divise pas celui de
+ *   `a` (exposant négatif) ou si les coefficients ne se divisent pas dans le
+ *   domaine algébrique.
+ */
+function divideTermExactly(a: NormalTerm, b: NormalTerm): NormalTerm | null {
+	const monomial = divMonomials(a.monomial, b.monomial);
+	for (const factor of monomial) {
+		if (factor.exponent.n < 0n) return null;
+	}
+
+	const coefficient = divAlgebraic(a.coefficient, b.coefficient);
+	if (coefficient === null || isZeroAlgebraic(coefficient)) return null;
+
+	return { coefficient, monomial };
+}
+
+/**
+ * Division exacte de deux polynômes, à plusieurs variables.
+ *
+ * Rend `q` tel que `a = b·q` **exactement**, ou `null` si `b` ne divise pas
+ * `a`. Ce n'est PAS un pgcd multivarié : on ne cherche pas un facteur commun,
+ * on teste une divisibilité.
+ *
+ * Algorithme : division multivariée classique pour l'ordre graded lex décrit
+ * sur `compareMonomialsGradedLex`. Tant que le reste n'est pas nul, si son
+ * terme de tête est divisible par celui de `b`, on lui retranche
+ * `(lt(r)/lt(b))·b` ; sinon on rend `null`.
+ *
+ * ## Le filet de sécurité
+ *
+ * Avant de rendre `q`, on **recalcule `b·q` et on le compare à `a`**. Un faux
+ * positif du décideur d'équivalence compte juste une réponse fausse d'élève :
+ * c'est le risque numéro un ici, et cette vérification le rend structurellement
+ * impossible — si le produit ne redonne pas `a`, on rend `null`, quoi qu'ait
+ * cru la boucle.
+ *
+ * @param a - Dividende
+ * @param b - Diviseur
+ * @returns `q` tel que `a = b·q`, ou `null`
+ *
+ * @example
+ * // (x+y)² / (x+y) = x+y
+ * exactDividePolynomials(xPlusYSquared, xPlusY)
+ *
+ * // (x+y)² / (x+2y) → null : le reste ne s'annule pas
+ * exactDividePolynomials(xPlusYSquared, xPlusTwoY)
+ */
+export function exactDividePolynomials(
+	a: readonly NormalTerm[],
+	b: readonly NormalTerm[]
+): NormalTerm[] | null {
+	// Division par zéro : pas de quotient
+	if (b.length === 0) return null;
+	// 0 = b·0
+	if (a.length === 0) return [];
+	if (isOnePolynomial(b)) return [...a];
+
+	// Hors du domaine des exposants entiers positifs, on renonce
+	if (!hasPositiveIntegerExponents(a) || !hasPositiveIntegerExponents(b)) return null;
+
+	const divisorLead = leadingTermGradedLex(b);
+	if (divisorLead === null) return null;
+
+	// Comme `mulPolynomials`, la boucle consulte le signal d'interruption : le
+	// reste peut enfler avant de s'annuler, et un `timeoutMs` ne borne que ce
+	// qu'on lui donne à lire.
+	const abortChecker = getActiveAbortChecker();
+
+	const quotientTerms: NormalTerm[] = [];
+	let remainder: readonly NormalTerm[] = a;
+	let previousLead: readonly SymbolicFactor[] | null = null;
+
+	while (remainder.length > 0) {
+		checkAbort(abortChecker);
+
+		const remainderLead = leadingTermGradedLex(remainder);
+		if (remainderLead === null) break;
+
+		// Garde-fou de terminaison : le monôme de tête DOIT décroître strictement.
+		// La théorie le garantit, mais une division de coefficients inexacte la
+		// prendrait en défaut, et une boucle infinie gèlerait l'onglet de l'élève.
+		if (
+			previousLead !== null &&
+			compareMonomialsGradedLex(remainderLead.monomial, previousLead) >= 0
+		) {
+			return null;
+		}
+		previousLead = remainderLead.monomial;
+
+		const factor = divideTermExactly(remainderLead, divisorLead);
+		if (factor === null) return null;
+
+		quotientTerms.push(factor);
+		remainder = subPolynomials(remainder, mulPolynomials(b, [factor]));
+	}
+
+	const quotient = collectLikeTerms(quotientTerms);
+
+	// Filet de sécurité : le produit doit redonner le dividende, sinon rien.
+	if (hashPolynomial(mulPolynomials(b, quotient)) !== hashPolynomial(collectLikeTerms([...a]))) {
+		return null;
+	}
+
+	return quotient;
 }
 
 // =============================================================================
