@@ -2714,8 +2714,11 @@ describe('Symbolic Sqrt Simplification', () => {
 	 * venait. Conséquence mesurée : `simplify(√x·√x)` rendait `x` et
 	 * `areEquivalent` déclarait l'entrée non équivalente à cette sortie.
 	 *
-	 * Le bloc `(√x)² = x` quelques lignes plus bas asserte déjà la bonne valeur
-	 * pour la MÊME expression : les deux étaient contradictoires.
+	 * Preuve qu'elles n'actaient aucune décision : les sept ont été posées par un
+	 * seul commit, `a38c17eea` du 2026-01-10, dont le message dit lui-même
+	 * « √(x³) = x√x (not |x|√x) because √x already requires x ≥ 0 ». Il a adopté
+	 * le raisonnement de domaine pour l'EXTRACTION sans l'appliquer à la FUSION.
+	 * Avant lui, ces mêmes tests asseraient `x`.
 	 *
 	 * `√(x·x) = |x|` reste vrai, et son bloc est inchangé : là, l'élève a écrit
 	 * un produit sous UN radical, et rien ne garantit le signe de `x`.

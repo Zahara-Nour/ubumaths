@@ -19,7 +19,20 @@ import type { MathNode } from '../../types';
  * Gets the argument of a sqrt function node.
  */
 function getSqrtArg(node: MathNode): MathNode | null {
-	if (node.type === 'function' && node.name === 'sqrt' && node.args.length === 1) {
+	// ⚠️ `node.base` porte l'INDICE d'une racine n-ième, et `args.length` vaut 1
+	// pour `∛x` comme pour `√x` : sans ce test, les deux sont indiscernables.
+	//
+	// `ⁿ√a · ⁿ√a = a^{2/n}`, qui ne vaut `a` que pour `n = 2`. La première
+	// version de la règle des radicandes identiques faisait donc rendre `true`
+	// à `∛x·∛x ≡ x`, un faux positif — la seule faute qui compte JUSTE une
+	// réponse FAUSSE d'élève. Mesuré sur 400 tirages : aucun point du domaine
+	// commun ne valide cette égalité.
+	if (
+		node.type === 'function' &&
+		node.name === 'sqrt' &&
+		node.args.length === 1 &&
+		node.base === undefined
+	) {
 		return node.args[0];
 	}
 	return null;

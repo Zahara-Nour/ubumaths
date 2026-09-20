@@ -45,16 +45,24 @@ sens dangereux.
 
 Elle ne dit pas non plus que le moteur peut se permettre un **faux positif**.
 Déclarer équivalentes deux expressions qui ne le sont pas compte JUSTE une
-réponse FAUSSE d'élève. C'est la seule faute qui ne se rattrape pas, et c'est
-pour ça que chaque mécanisme de réduction livré ici vérifie son résultat avant
-de l'utiliser.
+réponse FAUSSE d'élève. C'est la seule faute qui ne se rattrape pas.
+
+⚠️ **Toutes les réductions du moteur ne vérifient PAS leur résultat.** Celles qui
+calculent un facteur, comme la division exacte et le pgcd multivarié, le font :
+elles recalculent le produit avant d'accepter. Celles qui appliquent une
+identité, comme `√a·√a → a`, reposent sur la justesse de leur condition — et
+cette condition-là a déjà été trop large une fois, en s'appliquant aux racines
+n-ièmes. **Ne pas lire cette section comme une garantie.**
 
 ## Conséquence pratique quand on ajoute une règle
 
 Avant d'écrire une réduction, se poser la question dans cet ordre :
 
-1. **La règle peut-elle produire un faux positif ?** Si oui, elle doit vérifier
-   son résultat — par exemple en recalculant le produit après une division.
+1. **La règle peut-elle produire un faux positif ?** Si elle calcule un facteur,
+   elle doit vérifier son résultat en recalculant le produit. Si elle applique
+   une identité, il faut prouver que sa condition d'application est exactement
+   celle de l'identité — pas « à peu près ». `√a·√a → a` a été livrée avec une
+   condition qui attrapait aussi `∛a·∛a`, où l'identité est fausse.
 2. **Élargit-elle le domaine ?** Si oui, c'est permis par la convention, et ça
    n'a pas à être rediscuté.
 3. **Le restreint-elle ?** Alors la règle est probablement fausse : la

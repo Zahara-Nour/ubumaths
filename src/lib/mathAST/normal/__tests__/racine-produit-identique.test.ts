@@ -74,6 +74,39 @@ describe('la règle √(a²) = |a| n’est pas touchée', () => {
 	});
 });
 
+/**
+ * ⚠️ La règle ne vaut QUE pour l'indice 2.
+ *
+ * `√a · √a = a` parce que `√a` est la puissance 1/2. Pour un indice `n`,
+ * `ⁿ√a · ⁿ√a = a^{2/n}`, qui ne vaut `a` que si `n = 2`.
+ *
+ * Le piège est dans le nœud : `parseLatex('\sqrt[3]{x}')` rend une fonction
+ * nommée `sqrt` avec **un seul argument**, l'indice étant rangé à part dans
+ * `base`. Un test sur le nom et le nombre d'arguments ne les distingue donc
+ * pas, et la première version de ce correctif faisait rendre `true` à
+ * `∛x·∛x ≡ x`.
+ *
+ * Mesuré, campagne numérique de 400 tirages : aucun point du domaine commun ne
+ * valide cette égalité. Sur `main` elle rendait `false`. C'était un faux
+ * positif introduit par ce correctif, c'est-à-dire la seule faute qui compte
+ * JUSTE une réponse FAUSSE d'élève.
+ */
+describe('la règle s’arrête à l’indice 2', () => {
+	it.each([
+		['\\sqrt[3]{x}\\sqrt[3]{x}', 'x'],
+		['\\sqrt[4]{x}\\sqrt[4]{x}', 'x'],
+		['\\sqrt[3]{x}\\sqrt{x}', 'x'],
+		['\\sqrt[3]{8}\\sqrt[3]{8}', '8'],
+		['\\sqrt[5]{x}\\sqrt[5]{x}', 'x']
+	])('%s ≢ %s', (a, b) => {
+		expect(eq(a, b)).toBe(false);
+	});
+
+	it('et l’indice 2 explicite marche comme l’implicite', () => {
+		expect(eq('\\sqrt[2]{x}\\sqrt[2]{x}', 'x')).toBe(true);
+	});
+});
+
 describe('ce qui n’est pas égal ne le devient pas', () => {
 	it.each([
 		['\\sqrt{x}\\sqrt{x}', 'y'],
@@ -104,5 +137,83 @@ describe('le moteur ne refuse plus sa propre sortie', () => {
 	])('%s', (entree) => {
 		const node = parseLatex(entree);
 		expect(areEquivalent(node, simplify(node).result)).toBe(true);
+	});
+});
+
+// =============================================================================
+// La limite : une chaîne de quatre racines sur un radicande composé
+// =============================================================================
+
+/**
+ * Le correctif casse la chaîne de fusion, et ça se paie à partir de quatre
+ * racines quand le radicande n'est pas une simple variable.
+ *
+ * Le produit plat est associé à gauche : `((√b·√b)·√b)·√b`. La règle exige que
+ * ses DEUX enfants soient des racines. En rendant le radicande, qui n'en est
+ * plus une, elle casse la chaîne : le parent devient `b·√b` et les deux
+ * dernières racines ne fusionnent jamais. Sur `main`, le retour `√(b·b)` restait
+ * une racine et la chaîne allait jusqu'à `√(b⁴)`.
+ *
+ * Ce qui reste bloque alors sur une faiblesse **préexistante** : un facteur dont
+ * la base est composée et l'exposant 1 ne se remet pas à plat. Mesuré,
+ * `(x+1)·√(x+1)·√(x+1) ≢ (x+1)²` rend le même hachage faux sur `main` et ici.
+ *
+ * Bilan mesuré sur `(√b)^n ≡ b^{n/2}`, 10 radicandes × n de 2 à 5 :
+ *
+ * | | `main` | branche |
+ * | --- | --- | --- |
+ * | réussites | 15/40 | **26/40** |
+ *
+ * Quinze gains, tous à n = 2 et n = 3, contre quatre reculs, tous à n = 4 sur
+ * un radicande composé. Un élève écrit `√x·√x`, pas quatre racines de `xy` à la
+ * suite. Le compromis est assumé, mais il n'est pas nul et ce bloc le pinne.
+ */
+describe('limite assumée : quatre racines d’un radicande composé', () => {
+	it.each([
+		['\\sqrt{xy}\\sqrt{xy}\\sqrt{xy}\\sqrt{xy}', '(xy)^{2}'],
+		['\\sqrt{2x}\\sqrt{2x}\\sqrt{2x}\\sqrt{2x}', '(2x)^{2}']
+	])('%s ≢ %s, faute de chaîne', (a, b) => {
+		expect(eq(a, b)).toBe(false);
+	});
+
+	it('mais deux et trois racines marchent, y compris sur un radicande composé', () => {
+		expect(eq('\\sqrt{xy}\\sqrt{xy}', 'xy')).toBe(true);
+		expect(eq('\\sqrt{xy}\\sqrt{xy}\\sqrt{xy}', 'xy\\sqrt{xy}')).toBe(true);
+		expect(eq('\\sqrt{2x}\\sqrt{2x}', '2x')).toBe(true);
+	});
+
+	it('et une variable simple va jusqu’au bout', () => {
+		expect(eq('\\sqrt{x}\\sqrt{x}\\sqrt{x}\\sqrt{x}', 'x^{2}')).toBe(true);
+	});
+});
+
+// =============================================================================
+// Gains collatéraux, mesurés
+// =============================================================================
+
+/**
+ * Le correctif répare au passage le piège classique des complexes, et la garde
+ * d'indice supprime un faux positif de `main`.
+ */
+describe('gains collatéraux', () => {
+	it('le piège des complexes : √(−1)·√(−1) vaut −1, pas 1', () => {
+		expect(eq('\\sqrt{-1}\\sqrt{-1}', '-1')).toBe(true);
+		expect(eq('\\sqrt{-1}\\sqrt{-1}', '1')).toBe(false);
+	});
+
+	it('la garde d’indice retire un faux positif de main : ∛x·∛y ≢ √(xy)', () => {
+		expect(eq('\\sqrt[3]{x}\\sqrt[3]{y}', '\\sqrt{xy}')).toBe(false);
+		// Contrepartie : `∛x·∛y ≡ ∛(xy)`, vrai, n'est plus prouvé. Faux négatif
+		// assumé — la fusion ne sait pas transporter l'indice.
+		expect(eq('\\sqrt[3]{x}\\sqrt[3]{y}', '\\sqrt[3]{xy}')).toBe(false);
+	});
+
+	it.each([
+		['\\sqrt{\\frac{1}{x}}\\sqrt{\\frac{1}{x}}', '\\frac{1}{x}'],
+		['\\sqrt{\\sin(x)}\\sqrt{\\sin(x)}', '\\sin(x)'],
+		['\\sqrt{-x}\\sqrt{-x}', '-x'],
+		['\\sqrt{x}\\sqrt{x}+\\sqrt{y}\\sqrt{y}', 'x+y']
+	])('%s ≡ %s', (a, b) => {
+		expect(eq(a, b)).toBe(true);
 	});
 });

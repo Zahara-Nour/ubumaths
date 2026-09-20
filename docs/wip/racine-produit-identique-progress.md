@@ -21,23 +21,51 @@ identiques, la fusion rend le radicande, pas un carré dont la provenance sera
 oubliée. La règle `√(a²) = |a|` n'est pas touchée, et reste juste pour un carré
 que l'élève a écrit.
 
-**Le gain, mesuré.** Sur `(√b)^n ≡ b^{n/2}` pour quatre radicandes et n de 2 à 5,
-soit seize cas : `main` en réussit 6, la branche 11. Aucun recul.
+**Le gain et le recul, mesurés.** Sur `(√b)^n ≡ b^{n/2}`, dix radicandes et n
+de 2 à 5, soit quarante cas :
 
-| radicande | `main` | branche |
-| --------- | ------ | ------- |
-| `x`       | 3/4    | **4/4** |
-| `x+1`     | 0/4    | **2/4** |
-| `xy`      | 1/4    | **2/4** |
-| `2x`      | 1/4    | **2/4** |
+|           | `main` | branche   |
+| --------- | ------ | --------- |
+| réussites | 15/40  | **26/40** |
 
-**Aucun déplacement d'affichage** sur 39 témoins, dont quatorze produits de
-racines — la classe visée est bien dans le corpus, cette fois. `simplify`
-rendait déjà la bonne valeur ; seul le décideur se trompait.
+Quinze gains, tous à n = 2 et n = 3. Et **quatre reculs**, tous à n = 4 sur un
+radicande composé (`xy`, `2x`, `x/2`, `x²`). J'avais d'abord écrit « aucun
+recul » : c'était faux, et mon tableau par radicande masquait l'échange, un
+succès perdu à n=4 étant compensé par deux gains à n=2 et n=3.
 
-**Sept tests actualisés, chacun avec sa raison.** Ils assertaient `√a·√a = |a|`.
-Le même fichier assertait déjà `(√x)² = x` quelques lignes plus bas, pour la
-même expression : les deux étaient contradictoires.
+**Pourquoi ce recul.** Le produit plat est associé à gauche,
+`((√b·√b)·√b)·√b`, et la règle exige que ses deux enfants soient des racines.
+En rendant le radicande, qui n'en est plus une, elle casse la chaîne. Ce qui
+reste bute alors sur une faiblesse **préexistante** : un facteur à base composée
+et exposant 1 ne se remet pas à plat. Un élève écrit `√x·√x`, pas quatre racines
+de `xy` à la suite ; le compromis est assumé et pinné par un test.
+
+**Aucun déplacement d'affichage** sur 49 témoins, vérifié indépendamment par la
+revue — racines, valeurs absolues, complexes, trigo, puissances fractionnaires,
+racines n-ièmes. Réserve honnête : les unités n'ont pas pu être mesurées par ce
+chemin d'entrée, ni par moi ni par la revue.
+
+**Un faux positif introduit, puis corrigé.** La première version s'appliquait
+aux racines n-ièmes : `parseLatex('\sqrt[3]{x}')` rend une fonction `sqrt` à un
+seul argument, l'indice étant rangé dans `base`. `∛x·∛x ≡ x` passait de `false`
+à `true`, alors que la valeur est `x^{2/3}` — campagne de 400 tirages, aucun
+point du domaine commun ne la valide. La garde d'indice ferme le trou.
+
+**Deux effets de cette garde, mesurés.** Elle supprime un faux positif de
+`main` : `∛x·∛y ≡ √(xy)` y rendait `true`, ce qui est faux. Et elle introduit un
+faux négatif : `∛x·∛y ≡ ∛(xy)`, vrai, n'est plus prouvé, la fusion ne sachant
+pas transporter l'indice. Direction sûre.
+
+**Gains collatéraux mesurés**, tous `false` sur `main` : le piège classique des
+complexes (`√(−1)·√(−1)` vaut `−1` et non `1`), `√(1/x)·√(1/x) ≡ 1/x`,
+`√(sin x)·√(sin x) ≡ sin x`, `√(−x)·√(−x) ≡ −x`.
+
+**Sept tests actualisés, chacun avec sa raison.** Ils assertaient `√a·√a = |a|`,
+et n'actaient aucune décision : les sept ont été posés par un seul commit,
+`a38c17eea` du 2026-01-10, dont le message dit lui-même « √(x³) = x√x (not
+|x|√x) **because √x already requires x ≥ 0** ». Il a donc adopté le raisonnement
+de domaine pour l'extraction et ne l'a pas appliqué à la fusion. Avant lui, ces
+mêmes tests asseraient `x`.
 
 **Une faiblesse préexistante rencontrée en chemin, non traitée.** Un facteur
 dont la base est un polynôme et l'exposant 1 ne se remet pas à plat :
