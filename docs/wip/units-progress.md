@@ -92,6 +92,57 @@ rendrait `0,25 h`) ; `0.005[m] → 0,5 cm` fixe la borne basse, incluse.
   pas boucler entre `collect` et `build`.
 - `tidy/types.ts`, `tidy/build.ts` — `TidyQuantity`, écriture décimale.
 
+## Revue de code (Opus) — 3 bloquants, 5 importants, tous reproduits en tests rouges
+
+Commit `cb8226096`, 33 rouges. Décisions prises pour les points produit :
+
+- **B1** `5[m] → 0.5[dam]` : le mode `best` retient la première unité au-dessus du
+  plancher en partant de la plus grande. Pour `tidy` : **unités scolaires seulement**
+  (km/m/cm/mm, kg/g/mg, L/mL, h/min/s) et **valeur ≥ 1 préférée** ; `0,005 m → 5 mm`
+  (écart avec l'exemple du §D.3, erratum 2 de la phase 0). `1/3[km]` garde son unité.
+- **B2** `-20[°C]+30[°C] ≢ 30[°C]-20[°C]` (et `simplify(30°C−20°C) → -20[°C]+303.15[K]`) :
+  dans une somme, l'opposé d'une grandeur affine est une soustraction ; seule, c'est une
+  température (`-20[°C] ≡ 253.15[K]`).
+- **B3** `1[nN]` inexact : le coefficient d'une unité préfixée résolue est un produit
+  flottant ; préfixe et unité de base composés en rationnels séparément.
+- **I1** unité sans composant → exception ; **I2** volumes et aires (familles L/mL,
+  km²/m²/cm²/mm², m³/cm³) ; **I3** `simplify('20[°C]') → 293.15[K]` (pas de candidat
+  développé quand la forme propre porte une affine, sauf s'il n'en a plus) ; **I4**
+  `15[min]` illisible par le parseur maison (crochet d'unité lu comme écriture brute) ;
+  **I5** une seule unité par dimension dans une somme ; `sqrt(4[m^2]) ≡ 2` (l'unité
+  disparaît sous une racine).
+
+## Second lot — les findings de la revue (2026-09-20)
+
+- **B1** unités **scolaires** seulement (`km/m/cm/mm`, `kg/g/mg`, `h/min/s/ms`,
+  aires, volumes) et **valeur ≥ 1 préférée** : `5[m]` reste `5 m` (plus de
+  `0,5 dam`), `0,3[kg] → 300 g`, `90[s] → 1,5 min`. Le plancher 0,5 du premier
+  lot disparaît : `SCHOOL_FAMILIES` + « la plus grande unité dont la valeur est
+  ≥ 1, à défaut la plus petite » (`units/selection.ts`, `tidy/collect.ts`).
+  Une valeur sans écriture décimale finie garde son unité écrite (`1/3 [km]`).
+- **B2** dans une somme, `opposite(grandeur affine)` est une **soustraction**
+  (`-20[°C]+30[°C] ≡ 10 K`) ; seule sous un opposé, c'est une température
+  (`-20[°C] ≡ 253,15 K`). `sumOperand` / `allowsAffineReading` /
+  `normalizeSumOperand` remplacent `forbidsAffineReading`, avec le signe
+  effectif (opposés internes **et** opérateur).
+- **B3** le coefficient d'une unité **préfixée** (`nN`, `nJ`, `nL`) est un
+  produit flottant : le préfixe et l'unité de base sont composés en rationnels
+  (`splitSiPrefix`, `units/exact.ts`). `1000000000[nN]` a le hash de `1[N]`.
+- **I1** `parseUnitTerms("1")` jetait un `TypeError` : garde-fou dans
+  `units/parser.ts` (liste de jetons vide) et dans `exactConversion`.
+- **I2** familles des **aires** (`m^2`) et des **volumes** (`m^3` : m³/L/mL),
+  que `getPrimaryBaseSymbol` ne voyait pas : `2500[mL] → 2,5 L`.
+- **I3** `simplify` ne troque plus une température écrite contre son absolu à
+  coût égal (`20[°C]` reste `20[°C]`) ; une différence, strictement moins
+  chère, passe toujours (`30[°C]-20[°C] → 10[K]`).
+- **I4** le contenu d'un crochet d'unité est relu comme une **écriture brute**
+  jusqu'au `]` (les deux parseurs maison) : `2[min]` ne butait plus sur la
+  fonction `min`. Test dédié `parser/custom/__tests__/unit-brackets.test.ts`.
+- **I5** une somme garde **une seule unité par dimension** : un terme
+  symbolique impose la sienne (`x[km]+500[m] → x[km]+0,5[km]`).
+- **Racine** un facteur d'unité est positif par construction : plus de
+  `abs()` sur lui sous une racine, donc `sqrt(4[m^2]) ≡ 2[m]` (et non `2`).
+
 ## État
 
 - [x] Tests rouges prouvés (commit 1)

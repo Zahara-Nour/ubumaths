@@ -43,6 +43,8 @@ import { normalizeExtended, denormalizeExtended } from '../normal';
 // Mise au propre
 import { tidy } from '../tidy';
 import { flattenSumShallow } from '../flatten';
+import { getChildren } from '../transforms';
+import { isUnit } from '../guards';
 
 // Rewriting engine
 import { rewrite, type RewriteStep } from '../common/rewriting-engine';
@@ -126,9 +128,20 @@ function makeTidyThenExpandIfCheaper(cost: (node: MathNode) => number) {
 		const expandedCost = cost(expanded);
 		const tidiedCost = cost(tidied);
 		if (expandedCost < tidiedCost) return expanded;
+		// L'égalité ne suffit pas pour une température : `20[°C]` et `293,15[K]`
+		// coûtent pareil, et l'élève a écrit des degrés (finding I3). Une
+		// différence de deux absolues, elle, coûte strictement moins (`10[K]`),
+		// donc elle passe par la ligne au-dessus.
+		if (containsAffineQuantity(tidied)) return tidied;
 		if (expandedCost === tidiedCost && termCount(expanded) <= termCount(tidied)) return expanded;
 		return tidied;
 	};
+}
+
+/** Cette expression porte-t-elle une grandeur affine (°C, °F) ? */
+function containsAffineQuantity(node: MathNode): boolean {
+	if (isUnit(node) && (node.unit.offset ?? 0) !== 0) return true;
+	return getChildren(node).some(containsAffineQuantity);
 }
 
 /** Nombre de termes de la somme de tête (1 pour tout ce qui n'est pas une somme). */

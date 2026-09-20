@@ -128,6 +128,24 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 /**
  * Custom error class for parse errors with location information
  */
+// =============================================================================
+// Unités
+// =============================================================================
+
+/**
+ * Le texte que rend un jeton dans une écriture d'unité, quand sa valeur ne le
+ * porte pas telle quelle.
+ */
+const UNIT_TOKEN_TEXT: Readonly<Record<string, string>> = {
+	CARET: '^',
+	MINUS: '-',
+	SLASH: '/',
+	STAR: '*'
+};
+
+/** Les caractères qu'une écriture d'unité peut contenir. */
+const UNIT_WRITING = /^[A-Za-z0-9€$°μΩ.^/*-]+$/;
+
 export class ParseException extends Error {
 	readonly position: number;
 	readonly length: number;
@@ -1640,26 +1658,17 @@ class CustomPrattParser {
 	private parseUnitPostfix(left: MathNode): MathNode {
 		this.advance(); // consume [
 
-		// Collect unit string until ]
+		// Le contenu d'un crochet d'unité est une **écriture d'unité brute**, pas
+		// une expression : on recolle le texte des jetons jusqu'au `]`, quel que
+		// soit leur type. Sans cela, `2[min]` échouait — le tokenizer y voit la
+		// fonction `min` (finding I4 de la revue du 2026-09-20).
 		let unitStr = '';
 
 		while (!this.check('RBRACKET') && !this.check('EOF')) {
 			const token = this.currentToken;
-			if (token.type === 'LETTER') {
-				unitStr += token.value;
-			} else if (token.type === 'NUMBER') {
-				unitStr += token.value;
-			} else if (token.type === 'CARET') {
-				unitStr += '^';
-			} else if (token.type === 'MINUS') {
-				unitStr += '-';
-			} else if (token.type === 'SLASH') {
-				unitStr += '/';
-			} else if (token.type === 'STAR') {
-				unitStr += '*';
-			} else {
-				break;
-			}
+			const text = UNIT_TOKEN_TEXT[token.type] ?? token.value;
+			if (text === '' || !UNIT_WRITING.test(text)) break;
+			unitStr += text;
 			this.advance();
 		}
 

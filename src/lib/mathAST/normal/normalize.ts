@@ -68,7 +68,7 @@ import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { parse as parseUnit } from '../units/parser';
 import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units/formatter';
-import { piConstant } from '../factory';
+import { opposite, piConstant } from '../factory';
 import { canFactorOutNegative, isEvenFunction, isOddFunction } from './parity.js';
 
 // =============================================================================
@@ -1650,9 +1650,11 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 
 		case 'addition': {
 			// §D.2 — une composition interdite laisse ses grandeurs affines opaques.
-			const normalizeSide = forbidsAffineReading(node) ? normalizeOperand : normalizeNode;
-			const leftForm = normalizeSide(node.left, ctx);
-			const rightForm = normalizeSide(node.right, ctx);
+			const left = sumOperand(node.left, false);
+			const right = sumOperand(node.right, false);
+			const allowed = allowsAffineReading(left, right);
+			const leftForm = normalizeSumOperand(left, allowed, ctx);
+			const rightForm = normalizeSumOperand(right, allowed, ctx);
 			const result = addNormalForms(leftForm, rightForm);
 			// Record combine-like-terms step
 			recordNormalizationStep(ctx, 'combine-like-terms', node, result, 'detailed');
@@ -1660,10 +1662,12 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 		}
 
 		case 'subtraction': {
-			// §D.2 — `d K − a°C` est interdit : les deux grandeurs restent opaques.
-			const normalizeSide = forbidsAffineReading(node) ? normalizeOperand : normalizeNode;
-			const leftForm = normalizeSide(node.left, ctx);
-			const rightForm = normalizeSide(node.right, ctx);
+			// §D.2 — `d K − a°C` est interdit : la grandeur affine reste opaque.
+			const left = sumOperand(node.left, false);
+			const right = sumOperand(node.right, true);
+			const allowed = allowsAffineReading(left, right);
+			const leftForm = normalizeSumOperand(left, allowed, ctx);
+			const rightForm = normalizeSumOperand(right, allowed, ctx);
 			const result = subNormalForms(leftForm, rightForm);
 			// Record combine-like-terms step
 			recordNormalizationStep(ctx, 'combine-like-terms', node, result, 'detailed');
@@ -1676,6 +1680,13 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 		}
 
 		case 'opposite': {
+			// §D.2 / finding B2 — `-20[°C]` seul est la température −20 °C, donc
+			// `253,15 K` : l'opposé porte sur la VALEUR, pas sur l'absolu. Dans une
+			// somme, c'est le cas `addition` qui intercepte cet opposé avant ici.
+			const affine = affineQuantity(node.operand);
+			if (affine !== null) {
+				return normalizeUnit({ ...affine, expression: opposite(affine.expression) }, ctx);
+			}
 			const form = normalizeOperand(node.operand, ctx);
 			return negNormalForm(form);
 		}
@@ -1927,7 +1938,7 @@ function normalizeUnit(node: MathNode & { type: 'unit' }, ctx?: NormalizeContext
  * 2 choisit l'absolu pour une grandeur seule ; c'est la convention de
  * `evaluateWithUnits`.
  */
-function affineQuantity(node: MathNode): MathNode | null {
+function affineQuantity(node: MathNode): (MathNode & { type: 'unit' }) | null {
 	let current = node;
 	while (current.type === 'delimiter') current = current.content;
 	if (current.type !== 'unit') return null;
@@ -1935,35 +1946,112 @@ function affineQuantity(node: MathNode): MathNode | null {
 }
 
 /**
- * Normalise un opérande. Une grandeur affine y reste **opaque en bloc** :
- * lue en absolu elle donnerait `2 × 20[°C] = 586,3 K`, ce que §D.2 interdit.
- * Aucune exception n'est levée — c'est la différence assumée avec
- * `evaluateWithUnits`, qui refuse bruyamment.
+ * Normalise un opérande de produit, de quotient ou de puissance. Une grandeur
+ * affine y reste **opaque en bloc** : lue en absolu elle donnerait
+ * `2 × 20[°C] = 586,3 K`, ce que §D.2 interdit. Son opposé aussi
+ * (`2 × (−20[°C])`). Aucune exception n'est levée — c'est la différence
+ * assumée avec `evaluateWithUnits`, qui refuse bruyamment.
  */
 function normalizeOperand(node: MathNode, ctx?: NormalizeContext): NormalForm {
-	const affine = affineQuantity(node);
-	return affine === null ? normalizeNode(node, ctx) : normalizeOpaqueNode(affine);
+	let current = node;
+	while (current.type === 'delimiter') current = current.content;
+
+	if (affineQuantity(current) !== null) return normalizeOpaqueNode(current);
+	if (current.type === 'opposite' && affineQuantity(current.operand) !== null) {
+		return normalizeOpaqueNode(current);
+	}
+	return normalizeNode(node, ctx);
 }
 
 /**
- * Cette somme ou différence compose-t-elle deux grandeurs affines d'une façon
- * que §D.2 interdit ? Les règles reprises de `evaluateWithUnits` :
+ * Un opérande d'une somme : le nœud tel quel, la grandeur affine qu'il porte
+ * éventuellement, et le signe que les opposés et la soustraction lui donnent.
  *
- * | opération        | lecture                                    |
- * | ---------------- | ------------------------------------------ |
- * | `a°C − b°C`      | absolue − absolue → écart (`(a−b) K`)      |
- * | `a°C ± d K`      | absolue ± écart → absolue                  |
- * | `d K + a°C`      | écart + absolue → absolue                  |
- * | `a°C + b°C`      | **interdit** (somme de deux absolues)      |
- * | `d K − a°C`      | **interdit** (écart − absolue)             |
- *
- * Les deux formes interdites laissent leurs grandeurs affines opaques, donc le
- * nœud entier n'est équivalent qu'à lui-même.
+ * `-20[°C]` **dans une somme** n'est pas la température −20 °C : c'est le
+ * retranchement de 20 °C (finding B2). Seul, sous un opposé, il redevient une
+ * température, et c'est le cas `opposite` de `normalizeNode` qui le lit.
  */
-function forbidsAffineReading(node: MathNode & { type: 'addition' | 'subtraction' }): boolean {
-	const leftAffine = affineQuantity(node.left) !== null;
-	const rightAffine = affineQuantity(node.right) !== null;
-	return node.type === 'addition' ? leftAffine && rightAffine : !leftAffine && rightAffine;
+type SumOperand = {
+	readonly original: MathNode;
+	readonly affine: (MathNode & { type: 'unit' }) | null;
+	/** Le signe EFFECTIF dans la somme : opposés internes et soustraction. */
+	readonly negated: boolean;
+	/** Le signe porté par les opposés internes SEULS — l'opérateur l'ignore. */
+	readonly stripped: boolean;
+};
+
+function sumOperand(node: MathNode, negatedByOperator: boolean): SumOperand {
+	let current = node;
+	let stripped = false;
+
+	for (;;) {
+		if (current.type === 'delimiter') {
+			current = current.content;
+			continue;
+		}
+		if (current.type === 'positive') {
+			current = current.operand;
+			continue;
+		}
+		if (current.type === 'opposite') {
+			stripped = !stripped;
+			current = current.operand;
+			continue;
+		}
+		break;
+	}
+
+	const affine = affineQuantity(current);
+	// Sans grandeur affine, rien ne change : le nœud d'origine est normalisé tel
+	// quel, signe compris.
+	if (affine === null) {
+		return { original: node, affine: null, negated: negatedByOperator, stripped: false };
+	}
+	return { original: node, affine, negated: negatedByOperator !== stripped, stripped };
+}
+
+/**
+ * Cette somme compose-t-elle ses grandeurs affines d'une façon que §D.2
+ * autorise ? Les règles reprises de `evaluateWithUnits`, en termes de signe
+ * **effectif** de chaque opérande (opposés et soustraction compris) :
+ *
+ * | opération        | lecture                                         |
+ * | ---------------- | ----------------------------------------------- |
+ * | `a°C − b°C`      | absolue − absolue → écart (`(a−b) K`)           |
+ * | `−a°C + b°C`     | la même chose (finding B2)                      |
+ * | `a°C ± d K`      | absolue ± écart → absolue                       |
+ * | `d K + a°C`      | écart + absolue → absolue                       |
+ * | `a°C + b°C`      | **interdit** (somme de deux absolues)           |
+ * | `d K − a°C`      | **interdit** (écart − absolue) : seule la droite |
+ * |                  | reste opaque, `d K` garde sa valeur             |
+ *
+ * Dans les deux formes interdites, la grandeur affine reste opaque — le nœud
+ * n'est alors équivalent qu'à lui-même.
+ */
+function allowsAffineReading(left: SumOperand, right: SumOperand): boolean {
+	const leftAffine = left.affine !== null;
+	const rightAffine = right.affine !== null;
+	if (!leftAffine && !rightAffine) return true;
+
+	// Deux absolues : leur différence est un écart, leur somme n'a pas de sens.
+	if (leftAffine && rightAffine) return left.negated !== right.negated;
+
+	// Une seule absolue : on lui ajoute ou retranche un écart, jamais l'inverse.
+	return leftAffine ? !left.negated : !right.negated;
+}
+
+/** La forme d'un opérande de somme, opaque si §D.2 interdit la lecture. */
+function normalizeSumOperand(
+	operand: SumOperand,
+	allowed: boolean,
+	ctx?: NormalizeContext
+): NormalForm {
+	if (operand.affine === null) return normalizeNode(operand.original, ctx);
+
+	// Seuls les opposés internes sont appliqués ici : le signe de l'opérateur
+	// reste porté par `addNormalForms` / `subNormalForms`.
+	const form = allowed ? normalizeNode(operand.affine, ctx) : normalizeOpaqueNode(operand.affine);
+	return operand.stripped ? negNormalForm(form) : form;
 }
 
 // =============================================================================
@@ -2924,8 +3012,11 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 							if (halfExp >= 1n) {
 								// Extract x^halfExp from √(x^exponent)
 								extractedFactors.push(symbolicFactor(base, { n: halfExp, d: 1n }));
-								// Track if this extracted exponent is odd (needs abs)
-								if (halfExp % 2n === 1n) {
+								// Track if this extracted exponent is odd (needs abs).
+								// Un facteur d'unité (`U(m)`) n'est pas un nombre signé : il
+								// est positif par construction, et `abs(1[m])` perdait l'unité
+								// — `sqrt(4[m^2])` valait `2` (revue du 2026-09-20).
+								if (halfExp % 2n === 1n && base.type !== 'unit') {
 									hasOddExtractedExponent = true;
 								}
 							}

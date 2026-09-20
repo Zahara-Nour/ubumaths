@@ -39,8 +39,8 @@ import {
 	negRational,
 	powRational,
 	rational,
-	rationalToNumber,
-	divRational
+	divRational,
+	absRational
 } from '../normal/rational';
 import { func, number, subscript, superscript, withUnit, sqrt as sqrtNode } from '../factory';
 import { isDelimiter, isFunction } from '../guards';
@@ -48,8 +48,9 @@ import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { format as formatUnit } from '../units/formatter';
 import { exactConversion, dimensionKey } from '../units/exact';
 import { recognizeDerivedUnit } from '../units/conversion';
-import { getPrimaryBaseSymbol, selectBestUnit } from '../units/selection';
+import { schoolFamily } from '../units/selection';
 import { buildSum } from './build';
+import { decimalString } from './decimal';
 import { sortFactors, sortTerms } from './order';
 
 // =============================================================================
@@ -672,50 +673,63 @@ function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 // =============================================================================
 
 /**
- * Plancher de lisibilité de `tidy`.
+ * Réécrit une grandeur **numérique** dans une unité **scolaire** : la plus
+ * grande dont la valeur est ≥ 1, et à défaut la plus petite (§D.3, révisé par
+ * le finding B1 du 2026-09-20 — `5[m]` ne s'écrit pas `0,5 dam`).
  *
- * §D.3 annonce « entre 0,1 et 1000 », mais ses propres exemples demandent un
- * plancher plus haut : `1[km]-999[m]` doit rendre `1 m` (et non `0,1 dam`, que
- * 0,1 autoriserait) et `0.25[h]` doit rendre `15 min` (et non `0,25 h`).
- * `0.005[m] → 0,5 cm` fixe la borne : le plancher est 0,5, inclus.
- */
-const TIDY_MIN_READABLE = 0.5;
-
-/**
- * Réécrit une grandeur **numérique** dans l'unité adaptée à son ordre de
- * grandeur (§D.3) :
- *
- * - unité simple (`m`, `s`, `g`) : la famille donne la meilleure unité
- *   (`12000[m] → 12 km`, `3600[s] → 1 h`) ;
+ * - famille scolaire (`km/m/cm/mm`, `kg/g/mg`, `h/min/s/ms`, `L/mL`, aires,
+ *   volumes) : la meilleure unité de la famille ;
  * - unité composée sans famille (`kg.m/s^2`) : l'unité dérivée reconnue (`N`) ;
- * - sinon l'unité écrite est conservée (`6[km^2]`, `12[km/h]`).
+ * - sinon l'unité écrite est conservée (`12[km/h]`).
  *
- * Une grandeur **symbolique** (`x[m]`) garde son unité : pas de choix d'unité,
- * pas de décimal. Une **température** n'a pas de `quantity` (unité affine),
- * elle ne passe jamais par ici.
+ * Une valeur sans écriture décimale finie (`1/3 [km]`) garde son unité écrite
+ * et sa fraction. Une grandeur **symbolique** (`x[m]`) et une **température**
+ * (unité affine, donc sans `quantity`) ne passent jamais par ici.
+ *
+ * `imposed` est l'unité qu'un terme symbolique de la même dimension impose à
+ * toute la somme (finding I5) : `x[km]+500[m]` s'écrit `x[km]+0,5[km]`.
  */
-function chooseUnit(term: TidyTerm): TidyTerm {
+function chooseUnit(term: TidyTerm, imposed: Unit | null): TidyTerm {
 	const quantity = term.quantity;
 	if (quantity === null || term.verbatim || term.factors.length > 0) return term;
 
 	const value = baseValue(term.coefficient, quantity);
+
 	const rewritten = (unit: Unit): TidyTerm | null => {
 		const conversion = exactConversion(unitWriting(unit));
 		if (conversion === null || conversion.piPower !== 0 || conversion.offset !== null) return null;
+		const coefficient = divRational(value, conversion.coefficient);
+		// Sans écriture décimale finie, l'unité écrite est conservée.
+		if (decimalString(absRational(coefficient)) === null) return null;
 		return {
 			...term,
-			coefficient: divRational(value, conversion.coefficient),
+			coefficient,
 			unit,
 			quantity: { ...quantity, factor: conversion.coefficient },
 			decimal: true
 		};
 	};
 
-	// Unité simple : la famille donne la meilleure unité.
-	if (getPrimaryBaseSymbol(quantity.baseUnit) !== null) {
-		const best = selectBestUnit(rationalToNumber(value), quantity.baseUnit, TIDY_MIN_READABLE);
-		const chosen = rewritten(best.unit);
+	if (imposed !== null) {
+		const chosen = rewritten(imposed);
 		if (chosen !== null) return chosen;
+	}
+
+	// Famille scolaire : la plus grande unité dont la valeur est ≥ 1.
+	const family = schoolFamily(quantity.baseUnit.components);
+	if (family !== null) {
+		let smallest: TidyTerm | null = null;
+		for (const symbol of family) {
+			const unit = parseUnit(symbol);
+			if (unit === null) continue;
+			const candidate = rewritten(unit);
+			if (candidate === null) continue;
+			const magnitude = absRational(candidate.coefficient);
+			if (magnitude.n >= magnitude.d) return candidate;
+			smallest = candidate;
+		}
+		if (smallest !== null) return smallest;
+		return term;
 	}
 
 	// Unité composée sans famille : l'unité dérivée nommée, quand il y en a une.
@@ -725,8 +739,25 @@ function chooseUnit(term: TidyTerm): TidyTerm {
 		if (chosen !== null) return chosen;
 	}
 
-	// Sinon l'unité écrite est conservée, la valeur en décimal.
-	return { ...term, decimal: true };
+	// Sinon l'unité écrite est conservée, la valeur en décimal si elle est finie.
+	return decimalString(absRational(term.coefficient)) === null ? term : { ...term, decimal: true };
+}
+
+/**
+ * Finding I5 — une somme garde **une seule unité par dimension**. Un terme
+ * symbolique impose son unité : `x[m]+2000[m]` ne devient pas `x[m]+2[km]`.
+ */
+function chooseUnits(terms: readonly TidyTerm[]): TidyTerm[] {
+	const imposed = new Map<string, Unit>();
+	for (const term of terms) {
+		if (term.quantity === null || term.unit === null) continue;
+		if (term.verbatim || term.factors.length === 0) continue;
+		if (!imposed.has(term.quantity.dimension)) imposed.set(term.quantity.dimension, term.unit);
+	}
+
+	return terms.map((term) =>
+		chooseUnit(term, term.quantity === null ? null : (imposed.get(term.quantity.dimension) ?? null))
+	);
 }
 
 // =============================================================================
@@ -779,7 +810,7 @@ function tidyAtom(node: MathNode): MathNode {
 
 /** Une expression : somme de termes, regroupés puis ordonnés puis réécrits. */
 export function tidyExpression(node: MathNode): MathNode {
-	return buildSum(sortTerms(collectLikeTerms(toSumTerms(node)).map(chooseUnit)));
+	return buildSum(sortTerms(chooseUnits(collectLikeTerms(toSumTerms(node)))));
 }
 
 /**

@@ -21,7 +21,14 @@ import type { BaseUnitDef } from './types';
 import { extractRational } from '../common/numeric';
 import { number } from '../factory';
 import { ONE, mulRational, powRational, rational } from '../normal/rational';
-import { resolveUnit } from './definitions';
+import {
+	BASE_UNITS,
+	DERIVED_UNITS,
+	SI_PREFIXES,
+	SPECIAL_UNITS,
+	UNIT_ALIASES,
+	resolveUnit
+} from './definitions';
 import { parseUnitTerms } from './parser';
 
 // =============================================================================
@@ -57,8 +64,10 @@ function exactFromWriting(value: number): Rational | null {
 	return extractRational(number(String(value)));
 }
 
-/** Le coefficient exact d'une unité nommée vers son unité de base. */
-function exactCoefficient(def: BaseUnitDef): { coefficient: Rational; piPower: number } | null {
+/** Le coefficient exact que porte une définition, écrite ou déclarée. */
+function definitionCoefficient(
+	def: BaseUnitDef
+): { coefficient: Rational; piPower: number } | null {
 	if (def.exact !== undefined) {
 		return {
 			coefficient: rational(BigInt(def.exact.n), BigInt(def.exact.d)),
@@ -67,6 +76,66 @@ function exactCoefficient(def: BaseUnitDef): { coefficient: Rational; piPower: n
 	}
 	const coefficient = exactFromWriting(def.coefficient);
 	return coefficient === null ? null : { coefficient, piPower: 0 };
+}
+
+/**
+ * Le préfixe SI d'un symbole, quand `resolveUnit` est passé par là.
+ *
+ * Reproduit les étapes de `resolveUnit` dans l'ordre : unité spéciale (qui ne
+ * prend pas de préfixe), alias, puis préfixe le plus long devant une unité de
+ * base ou une unité dérivée nommée. `null` si le symbole ne se décompose pas.
+ */
+function splitSiPrefix(symbol: string): { factor: number; def: BaseUnitDef } | null {
+	if (SPECIAL_UNITS.has(symbol)) return null;
+
+	let normalized = symbol;
+	const visited = new Set<string>();
+	while (UNIT_ALIASES.has(normalized)) {
+		if (visited.has(normalized)) return null;
+		visited.add(normalized);
+		normalized = UNIT_ALIASES.get(normalized) ?? normalized;
+	}
+	if (SPECIAL_UNITS.has(normalized)) return null;
+
+	for (const [prefix, factor] of SI_PREFIXES) {
+		if (prefix === '' || !normalized.startsWith(prefix)) continue;
+		const rest = normalized.slice(prefix.length);
+
+		const base = BASE_UNITS.get(rest);
+		if (base !== undefined) {
+			return {
+				factor,
+				def: { symbol: rest, baseSymbol: rest, coefficient: 1, dimension: base.dimension }
+			};
+		}
+
+		const derived = DERIVED_UNITS.get(rest);
+		if (derived !== undefined) return { factor, def: derived };
+	}
+	return null;
+}
+
+/**
+ * Le coefficient exact d'une unité nommée vers son unité de base.
+ *
+ * Une unité **préfixée** (`nN`, `μWh`, `mL`) reçoit de `resolveUnit` un
+ * coefficient qui est un **produit flottant** (`1e-9 × 1000` ne vaut pas
+ * exactement `1e-6`, mesuré) : le préfixe et l'unité de base sont donc
+ * composés ici en rationnels, chacun lu de son écriture propre (finding B3).
+ */
+function exactCoefficient(
+	symbol: string,
+	def: BaseUnitDef
+): { coefficient: Rational; piPower: number } | null {
+	if (def.exact !== undefined) return definitionCoefficient(def);
+
+	const split = splitSiPrefix(symbol);
+	if (split === null) return definitionCoefficient(def);
+
+	const prefix = exactFromWriting(split.factor);
+	const base = definitionCoefficient(split.def);
+	if (prefix === null || base === null) return null;
+	return { coefficient: mulRational(prefix, base.coefficient), piPower: base.piPower };
 }
 
 /** Cette définition est-elle affine (°C, °F) ? */
@@ -87,6 +156,8 @@ function isAffineDef(def: BaseUnitDef): boolean {
  * @returns La conversion exacte, ou `null`
  */
 export function exactConversion(writing: string): ExactConversion | null {
+	// Une unité sans composant s'écrit `"1"` : pas de conversion, pas d'exception
+	// (finding I1).
 	const terms = parseUnitTerms(writing);
 	if (terms === null || terms.length === 0) return null;
 
@@ -109,7 +180,7 @@ export function exactConversion(writing: string): ExactConversion | null {
 			offset = shift;
 		}
 
-		const exact = exactCoefficient(def);
+		const exact = exactCoefficient(symbol, def);
 		if (exact === null) return null;
 		coefficient = mulRational(coefficient, powRational(exact.coefficient, exponent));
 		piPower += exact.piPower * exponent;

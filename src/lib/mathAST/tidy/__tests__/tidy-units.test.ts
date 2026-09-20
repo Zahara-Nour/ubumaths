@@ -97,7 +97,12 @@ describe('B1 — unités scolaires seulement, valeur ≥ 1 préférée', () => {
 		['30[s]', '30[s]'],
 		['90[s]', '1.5[min]'],
 		['2[mm]', '2[mm]'],
-		['1/3[km]', '1/3[km]']
+		['1/3[km]', '1/3[km]'],
+		['7[j]', '7[j]'],
+		['1[an]', '1[an]'],
+		['48[h]', '2[j]'],
+		['36[h]', '1.5[j]'],
+		['400[j]', '400[j]']
 	])('%s → %s (jamais dam, hm, dm, hg, dag, dg)', (input, expected) => {
 		expect(t(input)).toBe(expected);
 	});

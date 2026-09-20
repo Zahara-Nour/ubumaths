@@ -327,7 +327,11 @@ export function parse(input: string): Unit | null {
 export function parseUnitTerms(input: string): readonly UnitTerm[] | null {
 	const trimmed = input.trim();
 	if (trimmed.length === 0) return null;
-	return parseTerms(tokenize(trimmed));
+	// `tokenize` rend une liste VIDE sur un caractère inconnu — l'unité sans
+	// composant s'écrit `"1"` et tombait ici en `TypeError` (finding I1).
+	const tokens = tokenize(trimmed);
+	if (tokens.length === 0) return null;
+	return parseTerms(tokens);
 }
 
 export function parseOrThrow(input: string): Unit {
