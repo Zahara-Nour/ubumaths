@@ -42,6 +42,7 @@ import {
 	superscript,
 	variable
 } from '../factory';
+import { toCustom } from '../custom-generator';
 import { toLatex } from '../index';
 import { parseLatex } from '../parser';
 import { differentiate } from '../differentiation';
@@ -118,4 +119,36 @@ describe('l’aller-retour reste fidèle', () => {
 			expect(toLatex(parseLatex(rendu))).toBe(rendu);
 		}
 	);
+});
+
+// =============================================================================
+// Le générateur maison a exactement le même défaut
+// =============================================================================
+
+/**
+ * Les deux générateurs s'appuient sur le même mécanisme — un nœud délimiteur
+ * explicite — et ont donc le même trou. Mesuré sur 61 nœuds construits :
+ * 31 aller-retours infidèles côté syntaxe maison.
+ *
+ * Ils avaient même **divergé** : le garde-fou sur une base somme d'une
+ * puissance existait côté LaTeX et pas ici. `(x+1)^2` s'écrivait `x+1^2`.
+ */
+describe('la syntaxe maison parenthèse aussi', () => {
+	it.each([
+		['un produit à gauche', multiply(somme(), y(), 'implicit'), '(x+1)y'],
+		['un produit à droite', multiply(y(), somme(), 'implicit'), 'y(x+1)'],
+		['une soustraction à droite', subtract(y(), somme()), 'y-(x+1)'],
+		['une puissance', superscript(somme(), number('2')), '(x+1)^2'],
+		['une division en ligne', divide(somme(), y(), 'inline'), '(x+1):/y']
+	])('%s', (_titre, node, attendu) => {
+		expect(toCustom(node)).toBe(attendu);
+	});
+
+	it.each([
+		['une addition reste plate', add(y(), somme()), 'y+x+1'],
+		['à gauche d’une soustraction', subtract(somme(), y()), 'x+1-y'],
+		['un produit de facteurs simples', multiply(variable('x'), y(), 'implicit'), 'xy']
+	])('%s', (_titre, node, attendu) => {
+		expect(toCustom(node)).toBe(attendu);
+	});
 });

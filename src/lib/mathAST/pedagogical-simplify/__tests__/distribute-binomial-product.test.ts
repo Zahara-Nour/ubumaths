@@ -72,6 +72,13 @@ describe('distribute-binomial-product — sign combinations', () => {
 		// `xy − 2x − y − 2` et non `xy − 2x − y + 2` : mesuré en x=3, y=5,
 		// `(x−1)(y−2)` vaut 6 et la sortie de la règle valait 2. Le rendu
 		// masquait une erreur de signe.
+		//
+		// ⚠️ Cette chaîne fige la forme GROUPÉE `(ac − ad) − (bc − bd)`, qui est
+		// ce que la règle construit — et non les quatre termes plats que son
+		// docstring annonce. Ce n'est pas une décision, c'est l'état actuel :
+		// si on veut la forme plate, c'est ici qu'il faudra le dire. Les signes,
+		// eux, sont verrouillés par les cas numériques plus bas, qui ne
+		// dépendent d'aucun rendu.
 		expect(tex(result)).toBe('xy-x2-(1y-12)');
 	});
 });

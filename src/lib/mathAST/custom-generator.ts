@@ -1199,15 +1199,32 @@ export class CustomGenerator {
 		return `${left}+${right}`;
 	}
 
+	/**
+	 * Parenthèse un opérande quand c'est une SOMME et que l'omettre changerait
+	 * le sens. Même prédicat que sous un signe unaire, dans
+	 * `common/sign-parentheses.ts`, et mêmes endroits que `latex-generator`.
+	 *
+	 * Ce générateur s'appuie, comme son jumeau, sur la présence d'un nœud
+	 * délimiteur explicite, que le parseur pose mais qu'une construction interne
+	 * ne pose pas. Mesuré sur 61 nœuds construits : 31 aller-retours infidèles,
+	 * `(x+1)y` s'écrivant `x+1y`, qui se relit `x + y`.
+	 */
+	private groupIfSum(node: MathNode): string {
+		const rendered = this.generateNode(node);
+		return needsParenthesesUnderSign(node) ? `(${rendered})` : rendered;
+	}
+
 	private generateSubtraction(node: SubtractionNode): string {
 		const left = this.generateNode(node.left);
-		const right = this.generateNode(node.right);
+		// L'opérande DROIT seulement : `y-(x+1)` vaut `y−x−1`, alors que `y-x+1`
+		// se relit `y−x+1`. À gauche il n'y a pas d'ambiguïté.
+		const right = this.groupIfSum(node.right);
 		return `${left}-${right}`;
 	}
 
 	private generateMultiplication(node: MultiplicationNode): string {
-		const left = this.generateNode(node.left);
-		const right = this.generateNode(node.right);
+		const left = this.groupIfSum(node.left);
+		const right = this.groupIfSum(node.right);
 
 		switch (node.displayStyle) {
 			case 'implicit': {
@@ -1241,8 +1258,11 @@ export class CustomGenerator {
 	}
 
 	private generateDivision(node: DivisionNode): string {
-		const num = this.generateNode(node.numerator);
-		const denom = this.generateNode(node.denominator);
+		// Les écritures EN LIGNE (`:/`, `:`) ne groupent pas d'elles-mêmes ; la
+		// fraction, si.
+		const grouped = node.displayStyle !== 'fraction';
+		const num = grouped ? this.groupIfSum(node.numerator) : this.generateNode(node.numerator);
+		const denom = grouped ? this.groupIfSum(node.denominator) : this.generateNode(node.denominator);
 
 		switch (node.displayStyle) {
 			case 'fraction': {
@@ -1366,7 +1386,9 @@ export class CustomGenerator {
 	}
 
 	private generateSuperscript(node: SuperscriptNode): string {
-		const base = this.generateNode(node.base);
+		// ⚠️ Ce garde-fou existait côté LaTeX et pas ici : les deux générateurs
+		// avaient divergé, et `(x+1)^2` s'écrivait `x+1^2`.
+		const base = this.groupIfSum(node.base);
 		const superscript = this.generateNode(node.superscript);
 		const needsBraces = needsBracesForPower(node.superscript);
 		const wrappedSuperscript = needsBraces ? `{${superscript}}` : superscript;

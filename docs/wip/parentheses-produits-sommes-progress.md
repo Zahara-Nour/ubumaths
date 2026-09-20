@@ -55,18 +55,53 @@ chaîne `xy-x2-1y+12` paraissait juste alors que l'arbre était
 Les quatre combinaisons sont désormais vérifiées **numériquement**, en quatre
 points, et non par leur rendu.
 
-## Huit snapshots actualisés
+## Huit snapshots actualisés, et tous ne corrigent pas une valeur
 
-Trois en dérivation, cinq en limites. Tous enregistraient le rendu sans
-parenthèses. Échantillon du diff :
+Sur les dix-huit paires distinctes du diff, la revue a vérifié chacune sur sept
+points. **Treize vont du faux vers le juste, cinq sont à valeur inchangée.**
+J'avais présenté les huit comme des corrections : c'était trop rapide.
+
+Les corrections réelles, dont la plus parlante :
 
 ```
-- \dfrac{2 x x - 1 - x^2 + 1}{(x - 1)^2}
-+ \dfrac{2 x (x - 1) - (x^2 + 1)}{(x - 1)^2}
-
-- x^2 - 4 = x - 2 x + 2
-+ x^2 - 4 = (x - 2)(x + 2)
+- \dfrac{2 x x - 1 - x^2 + 1}{(x - 1)^2}      valeurs [0.18, 3.36, 1.88, …]
++ \dfrac{2 x (x - 1) - (x^2 + 1)}{(x - 1)^2}  valeurs [-3.08, -0.39, 0.73, …]
+  dérivée exacte, calculée à part               [-3.08, -0.39, 0.73, …]
 ```
+
+Et une qui divisait par zéro **au point même de la limite** : l'ancien rendu
+`\dfrac{-1}{-1 2 + \sqrt x}` s'annulait en `x = 4`.
+
+Les cinq à valeur inchangée sont des facteurs `1` parasites produits en amont
+par `pedagogical-limits` : `x - 2 1` devient `(x - 2) 1`, et
+`\dfrac{1}{1 \sqrt x + 2}` devient `\dfrac{1}{1(\sqrt x + 2)}`. Le nouveau
+rendu est plus fidèle à l'arbre, mais deux d'entre eux **alourdissent la lecture
+sans rien corriger**. Le coupable est le `1·` parasite, pas la parenthèse.
+
+## Le générateur maison avait le même défaut
+
+Mesuré par la revue : **31 aller-retours infidèles sur 61** nœuds construits,
+avec `toCustom`. Les deux générateurs avaient même **divergé** — le garde-fou
+sur une base somme d'une puissance existait côté LaTeX et pas côté maison, si
+bien que `(x+1)^2` s'écrivait `x+1^2`.
+
+Les deux utilisent désormais le **même prédicat**, `needsParenthesesUnderSign`
+de `common/sign-parentheses.ts`, qu'ils importaient déjà tous les deux pour le
+signe unaire. C'est la même question, posée aux mêmes endroits.
+
+## À trancher : la forme de l'étape « on distribue »
+
+La règle construit `(ac − ad) − (bc − bd)`, pas les quatre termes plats que son
+docstring annonce. Tant que le générateur ne parenthésait pas, la différence ne
+se voyait pas. Maintenant l'élève lit, à l'étape « On distribue chaque terme » :
+
+```
+2 x x + 2 x 4 - \left( 3 x + 3 4 \right)
+```
+
+Le résultat final reste juste. C'est un arbitrage pédagogique, pas un bug, et
+**le test fige la forme groupée** : si on veut les quatre termes plats, il
+faudra le changer aussi.
 
 ## Vert
 
