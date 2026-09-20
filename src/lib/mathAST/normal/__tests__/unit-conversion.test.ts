@@ -163,3 +163,19 @@ describe('racine d’une grandeur — l’unité ne disparaît pas', () => {
 		expect(eq('sqrt(4[m^2])', '2')).toBe(false);
 	});
 });
+
+describe('F1 — signes en chaîne autour d’une grandeur affine (seconde revue)', () => {
+	it.each([
+		['-(-20[°C])', '20[°C]'],
+		['-(+20[°C])', '-20[°C]'],
+		['+(-20[°C])', '253.15[K]'],
+		['-(-20[°C])', '293.15[K]']
+	])('%s ≡ %s', (a, b) => {
+		expect(eq(a, b)).toBe(true);
+	});
+
+	it('2*(-20[°C]) ≡ 2*(-20[°C]) et ≢ -2*20[°C] (composition interdite, opaque en bloc)', () => {
+		expect(eq('2*(-20[°C])', '2*(-20[°C])')).toBe(true);
+		expect(eq('2*(-20[°C])', '-40[°C]')).toBe(false);
+	});
+});

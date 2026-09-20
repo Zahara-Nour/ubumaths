@@ -169,3 +169,59 @@ describe('I1 — une unité sans composant ne fait pas lever', () => {
 		expect(() => simplify(node)).not.toThrow();
 	});
 });
+
+// =============================================================================
+// Seconde revue du 2026-09-20 — températures signées et garde de simplify
+// =============================================================================
+
+describe('F1/F2 — signes autour d’une température : la valeur est conservée', () => {
+	it.each([
+		'-(-20[°C])',
+		'-(+20[°C])',
+		'+(-20[°C])',
+		'2*(-20[°C])',
+		'(-20[°C])*2',
+		'-(30[°C]-20[°C])'
+	])('tidy et simplify conservent la valeur de %s', (input) => {
+		const node = parseCustom(input);
+		expect(areEquivalent(tidy(node), node)).toBe(true);
+		expect(areEquivalent(simplify(node).result, node)).toBe(true);
+	});
+
+	it('-(-20[°C]) → 20[°C]', () => {
+		expect(simp('-(-20[°C])')).toBe('20[°C]');
+	});
+
+	it('2*(-20[°C]) : le signe reste dans la grandeur opaque', () => {
+		expect(t('2*(-20[°C])')).toContain('-20[°C]');
+		expect(t('2*(-20[°C])')).not.toContain('-2');
+	});
+});
+
+describe('§D.2 dans tidy — l’arithmétique affine bien formée', () => {
+	it.each([
+		['30[°C]-20[°C]', '10[K]'],
+		['20[°C]+5[K]', '25[°C]'],
+		['20[°C]-5[K]', '15[°C]'],
+		['5[K]+20[°C]', '25[°C]'],
+		['20[°C]+5[°C]', '20[°C]+5[°C]'],
+		['5[K]-20[°C]', '5[K]-20[°C]']
+	])('%s → %s', (input, expected) => {
+		expect(t(input)).toBe(expected);
+	});
+});
+
+describe('F3 — simplify ne développe jamais une forme qui porte une température', () => {
+	it.each(['(x+2)*(x-2)+20[°C]', '5*(x+1)-5x+20[°C]', 'x^2-1+7[°C]', '20[°C]'])(
+		'%s : pas de kelvin qui fuit',
+		(input) => {
+			const out = simp(input);
+			expect(out).not.toContain('[K]');
+			expect(out).toMatch(/\[°C\]/);
+		}
+	);
+
+	it('mais une différence de deux absolues devient bien un écart en K', () => {
+		expect(simp('30[°C]-20[°C]')).toBe('10[K]');
+	});
+});
