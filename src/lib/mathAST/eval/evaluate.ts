@@ -63,6 +63,7 @@ import { normalizeExtended } from '../normal/normalize-extended';
 import { denormalizeExtended } from '../normal/denormalize';
 import { mapNode } from '../transforms';
 import { areEquivalent } from '../equivalence';
+import { getActiveAbortChecker } from '../common/abort';
 import { compareNumericNodes } from './compare-numeric';
 
 // =============================================================================
@@ -903,11 +904,19 @@ function evaluateToBoolean(node: MathNode): boolean | undefined {
 		const rel = node.relation;
 
 		// Equality and inequality use semantic equivalence
-		if (rel === '=' || rel === '≡') {
-			return areEquivalent(node.left, node.right);
-		}
-		if (rel === '!=' || rel === '≢') {
-			return !areEquivalent(node.left, node.right);
+		if (rel === '=' || rel === '≡' || rel === '!=' || rel === '≢') {
+			const equal = areEquivalent(node.left, node.right);
+
+			// `areEquivalent` rend `false` aussi bien quand il a PROUVÉ la
+			// différence que quand il a ABANDONNÉ, et il ne distingue pas les
+			// deux. Or cet appel n'a pas de budget à lui : il peut hériter d'un
+			// signal d'interruption installé par un `simplify(x, { timeoutMs })`
+			// englobant. Nier un `false` d'abandon fabriquerait un « ces deux
+			// expressions diffèrent » affirmatif et faux. On rend « non
+			// évaluable », ce que cette fonction sait déjà exprimer.
+			if (!equal && getActiveAbortChecker()?.()) return undefined;
+
+			return rel === '=' || rel === '≡' ? equal : !equal;
 		}
 
 		// Ordering relations use numeric comparison
