@@ -49,7 +49,7 @@ describe('bug 2 — sin²(x)+cos²(x) → 1 quelle que soit l’écriture', () =
 
 describe('bug 1 — quotients à coefficients', () => {
 	it('(2x)/(4y) → x/(2y)', () => {
-		expect(custom('(2x)/(4y)')).toBe('x/{2y}');
+		expect(custom('(2x)/(4y)')).toBe('x/(2y)');
 	});
 
 	it('(-x)/(-y) → x/y', () => {

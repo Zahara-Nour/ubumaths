@@ -161,16 +161,21 @@ describe('la fonction de coût est injectable', () => {
 	 * toucher au barème par défaut ni à ses deux appelants.
 	 */
 	it('un coût sur mesure change la forme retenue', () => {
-		// Un barème qui déteste les puissances : `x·x` doit alors l'emporter
-		// sur `x²`, alors que le barème porté fait l'inverse.
-		const detesteLesPuissances = (node: MathNode): number =>
-			node.type === 'superscript' ? 1000 : computeCost(node);
+		// Depuis que `simplify` repose sur `tidy` (phase 0, §B), le barème
+		// n'arbitre plus la mise au propre — `x·x` s'écrit `x²` par construction —
+		// mais seulement les règles et le développement. Un barème qui déteste
+		// une puissance de somme fait donc développer `(x+1)²`, que le barème
+		// porté garde factorisée.
+		const detesteLesPuissancesDeSommes = (node: MathNode): number =>
+			node.type === 'superscript' && node.base.type === 'delimiter' ? 1000 : computeCost(node);
 
-		const parDefaut = simplify(parse('x*x')).result;
-		const surMesure = simplify(parse('x*x'), { costFunction: detesteLesPuissances }).result;
+		const parDefaut = simplify(parse('(x+1)^2')).result;
+		const surMesure = simplify(parse('(x+1)^2'), {
+			costFunction: detesteLesPuissancesDeSommes
+		}).result;
 
-		expect(toLatex(parDefaut)).toBe('x^2');
-		expect(toLatex(surMesure)).not.toBe('x^2');
+		expect(toLatex(parDefaut)).toBe('\\left( x + 1 \\right)^2');
+		expect(toLatex(surMesure)).toBe('x^2 + 2 x + 1');
 	});
 
 	it('sans option, rien ne change', () => {

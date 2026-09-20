@@ -9,6 +9,8 @@
  */
 export const PHASE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	rules: 'Application des regles de simplification',
+	tidy: 'Mise au propre',
+	'post-tidy': 'Mise au propre après les règles, développement si moins cher',
 	normalize: 'Normalisation polynomiale',
 	'post-normalize': 'Re-normalisation post-regles'
 };

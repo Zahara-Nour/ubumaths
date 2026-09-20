@@ -1,17 +1,20 @@
 /**
  * Simplify Pipeline
  *
- * Orchestrates the simplification engines (normalize, pattern rules) with a
- * cost function to produce the simplest form of a mathematical expression.
+ * Orchestre la mise au propre (`tidy`), les règles de motif et, en dernier
+ * recours, le développement par `normalize` — arbitré par une fonction de
+ * coût — pour rendre l'écriture la plus propre d'une expression.
  *
- * Algorithm (per iteration, executed by the rewrite engine):
- * 1. preProcess — preprocess + normalizeExtended + denormalizeExtended
- *    (handles ∞, signed zero, polynomial canonical form)
- * 2. apply pattern rules (abs + trig + hyp + algebraic — single bottom-up pass)
- * 3. cost check (intermediate, strict `<`)
- * 4. postProcess — same pipeline as preProcess
- * 5. cost check (final, `<=` so canonical form wins ties)
- * 6. fixpoint check
+ * Spécification : docs/wip/tidy-phase0.md §B. Par itération du moteur :
+ * 1. preProcess — `tidy` : aplatir, regrouper, ordonner, SANS développer
+ * 2. règles de motif (abs + trig + hyp + algébriques, une passe ascendante)
+ * 3. contrôle de coût intermédiaire (strict `<`)
+ * 4. postProcess — `tidy`, puis « développer seulement si moins cher » :
+ *    le candidat `tidy(normalizePass(n))` ne remplace la forme mise au propre
+ *    que si son coût est STRICTEMENT inférieur. C'est la seule place où
+ *    `normalize` intervient encore dans `simplify`.
+ * 5. contrôle de coût final (`<=`)
+ * 6. point fixe
  *
  * The orchestrator is a thin wrapper around `rewrite()` from
  * `common/rewriting-engine.ts`. It builds the engine config and bridges step
@@ -29,7 +32,6 @@ import { getSimplifyRuleDescription } from './descriptions-fr';
 
 // Pattern rules
 import { absSimplifyRules } from '../pattern/rule-sets/abs';
-import { foldCoefficients } from './fold-coefficients';
 import { trigSimplifyRules } from '../pattern/rule-sets/trig-identities';
 import { hypSimplifyRules } from '../pattern/rule-sets/hyperbolic-identities';
 import { algebraicSimplifyRules } from '../pattern/rule-sets/algebraic-identities';
@@ -38,8 +40,13 @@ import { algebraicSimplifyRules } from '../pattern/rule-sets/algebraic-identitie
 import { preprocess } from '../normal/rules';
 import { normalizeExtended, denormalizeExtended } from '../normal';
 
+// Mise au propre
+import { tidy } from '../tidy';
+import { flattenSumShallow } from '../flatten';
+
 // Rewriting engine
 import { rewrite, type RewriteStep } from '../common/rewriting-engine';
+import { AbortError, checkAbort, getActiveAbortChecker } from '../common/abort';
 
 // =============================================================================
 // Rule Set Builder
@@ -83,6 +90,54 @@ function normalizePass(node: MathNode): MathNode {
 }
 
 // =============================================================================
+// Post-traitement : tidy, puis développer seulement si moins cher
+// =============================================================================
+
+/**
+ * Le post-traitement d'une itération : la forme mise au propre, ou la forme
+ * développée si — et seulement si — elle coûte strictement moins.
+ *
+ * `normalize` développe tout ; c'est ce qui rend `2x+1` pour `(x+1)²−x²`, ou
+ * `x−1` pour `(x²−1)/(x+1)`, mais aussi `x²+2x+1` pour `(x+1)²`. Le coût
+ * départage : `(x+1)²` (9) reste, `2x+1` (13 < 18) gagne. Pas de biais en
+ * faveur du candidat, contrairement à `cheapest`.
+ *
+ * À coût égal, le candidat ne gagne que s'il n'a **pas plus de termes** : une
+ * identité (`sin(x+π) → −sin(x)`, 15 contre 15) passe, un développement
+ * (`2(x+1) → 2x+2`, 13 contre 13) ne passe pas.
+ *
+ * `normalizePass` peut lever une forme indéterminée : on garde alors la forme
+ * mise au propre. Mais une `AbortError` — `normalize` s'interrompt
+ * coopérativement — doit remonter au moteur, qui rend alors le nœud d'origine.
+ */
+function makeTidyThenExpandIfCheaper(cost: (node: MathNode) => number) {
+	return (node: MathNode): MathNode => {
+		const tidied = tidy(node);
+		let expanded: MathNode;
+		try {
+			expanded = tidy(normalizePass(node));
+		} catch (error) {
+			if (error instanceof AbortError) throw error;
+			return tidied;
+		}
+		// Le moteur ne consulte pas le délai après le post-traitement, et c'est
+		// ici que le développement coûte : contrôle coopératif sur le vérificateur
+		// que le moteur a installé (`withActiveAbortChecker`), comme `normalize`.
+		checkAbort(getActiveAbortChecker());
+		const expandedCost = cost(expanded);
+		const tidiedCost = cost(tidied);
+		if (expandedCost < tidiedCost) return expanded;
+		if (expandedCost === tidiedCost && termCount(expanded) <= termCount(tidied)) return expanded;
+		return tidied;
+	};
+}
+
+/** Nombre de termes de la somme de tête (1 pour tout ce qui n'est pas une somme). */
+function termCount(node: MathNode): number {
+	return flattenSumShallow(node).length;
+}
+
+// =============================================================================
 // Step Bridge
 // =============================================================================
 
@@ -99,19 +154,19 @@ function normalizePass(node: MathNode): MathNode {
 function makeStepBridge(recorder: SimplifyStepRecorder): (step: RewriteStep) => void {
 	return (step) => {
 		if (step.kind === 'preProcess') {
-			recorder.setPhase('normalize');
+			recorder.setPhase('tidy');
 			recorder.recordStep(
-				'normalize',
-				getSimplifyRuleDescription('normalize'),
+				'tidy',
+				getSimplifyRuleDescription('tidy'),
 				step.before,
 				step.after,
 				'detailed'
 			);
 		} else if (step.kind === 'postProcess') {
-			recorder.setPhase('post-normalize');
+			recorder.setPhase('post-tidy');
 			recorder.recordStep(
-				'post-normalize',
-				getSimplifyRuleDescription('normalize'),
+				'post-tidy',
+				getSimplifyRuleDescription('post-tidy'),
 				step.before,
 				step.after,
 				'detailed'
@@ -164,10 +219,21 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 		enableAlgebraic
 	});
 
-	const engineResult = rewrite(node, {
+	// Le moteur part de la forme mise au propre : la barrière de coût compare
+	// au meilleur candidat connu, et « regrouper toujours » signifie que `2x`
+	// n'a pas à battre `x+x` (5 contre 9) pour être retenu. Sans cela, tout ce
+	// que `tidy` fait de plus cher au sens du barème — regroupement, extraction
+	// d'un radical — serait rejeté (relevé du 2026-09-20, §3).
+	const start = tidy(node);
+	if (isRecording && start !== node) {
+		recorder.setPhase('tidy');
+		recorder.recordStep('tidy', getSimplifyRuleDescription('tidy'), node, start, 'detailed');
+	}
+
+	const engineResult = rewrite(start, {
 		rules,
-		preProcess: normalizePass,
-		postProcess: normalizePass,
+		preProcess: tidy,
+		postProcess: makeTidyThenExpandIfCheaper(costFunction),
 		strategy: { kind: 'cost-fixpoint', cost: costFunction },
 		maxIterations,
 		typeCtx: ctx,
@@ -176,15 +242,10 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 		onStep: isRecording ? makeStepBridge(recorder) : undefined
 	});
 
-	// ⚠️ **Hors de la stratégie à point fixe, et il le faut.** Regrouper `2 × 3`
-	// en `6` ne peut que réduire — mais la passe de normalisation, elle,
-	// développe `(x+1)²` en même temps, et le coût de la forme développée fait
-	// rejeter l'ensemble. Appliqué ici, le regroupement survit sans que rien ne
-	// soit développé.
-	// ⚠️ Pas de regroupement quand on a été interrompu : le contrat est de rendre
-	// le nœud d'ORIGINE, à l'identique — un test l'assert par `toBe`, pas par
-	// égalité de structure. `mapNode` reconstruit l'arbre même sans changement.
-	const result = engineResult.aborted ? engineResult.result : foldCoefficients(engineResult.result);
+	// Le repli des coefficients (`2 × 3 → 6`) est fait par `tidy` à chaque
+	// itération : plus rien à faire ici. En cas d'interruption, le contrat est de
+	// rendre le nœud d'ORIGINE, à l'identique.
+	const result = engineResult.aborted ? node : engineResult.result;
 
 	return {
 		result,

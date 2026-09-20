@@ -37,19 +37,20 @@ describe('les coefficients se regroupent devant un facteur parenthésé', () => 
 	 * `6` sans que `(x+1)²` soit développé.
 	 */
 	it('deux nombres adjacents', () => {
-		expect(simplified('2*3*(x+1)^2')).toBe('6 \\times \\left( x + 1 \\right)^2');
+		expect(simplified('2*3*(x+1)^2')).toBe('6 \\left( x + 1 \\right)^2');
 	});
 
 	it('deux nombres séparés par le facteur', () => {
 		// ⚠️ Les deux nombres ne sont PAS adjacents dans l'arbre — `3 × (x+1)²`
 		// puis `× 2`. C'est pour ce cas qu'une règle de réécriture par paires ne
 		// suffisait pas : il faut aplatir le produit pour les réunir.
-		expect(simplified('3*(x+1)^2*2')).toBe('6 \\times \\left( x + 1 \\right)^2');
+		expect(simplified('3*(x+1)^2*2')).toBe('6 \\left( x + 1 \\right)^2');
 	});
 
 	it('le cas qui a fait trouver le défaut', () => {
 		// La dérivée de (x²+1)³, telle que `pedagogical-differentiation` la rend.
-		expect(simplified('3*(x^2+1)^2*2*x')).toBe('6 \\times \\left( x^2 + 1 \\right)^2 \\times x');
+		// Ordre canonique de tidy : nombre, variables, puis puissances de sommes.
+		expect(simplified('3*(x^2+1)^2*2*x')).toBe('6 x \\left( x^2 + 1 \\right)^2');
 	});
 });
 
@@ -87,6 +88,6 @@ describe('ce qui marchait continue de marcher', () => {
 	});
 
 	it('un coefficient unique ne bouge pas', () => {
-		expect(simplified('3*(x+1)^2')).toBe('3 \\times \\left( x + 1 \\right)^2');
+		expect(simplified('3*(x+1)^2')).toBe('3 \\left( x + 1 \\right)^2');
 	});
 });
