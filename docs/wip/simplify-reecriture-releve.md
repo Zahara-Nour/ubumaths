@@ -287,7 +287,7 @@ défectueux aussi sur l'entrée brute : `3x+2x−x → −x+2x+3x`). Le pipeline
 
 ## 6. Trouvé en chemin, hors périmètre de `simplify` — à traiter à part
 
-### 6.1 ⚠️ `areEquivalent` est faux sur les quotients à coefficients
+### 6.1 ✅ corrigé — `areEquivalent` était faux sur les quotients à coefficients
 
 | paire                   | `areEquivalent` | hash A                | hash B             |
 | ----------------------- | --------------- | --------------------- | ------------------ |
@@ -306,20 +306,20 @@ d'équivalence » et il sert à la validation des réponses : un élève qui éc
 `areEquivalent` avant de le corriger (`normalize` « ne se touche pas » — sauf
 qu'ici il est faux).
 
-### 6.2 Le parseur maison lit `2sqrt(2)` comme `2·s·q·r·t·(2)`
+### 6.2 ✅ corrigé — le parseur maison lisait `2sqrt(2)` comme `2·s·q·r·t·(2)`
 
 AST vu : cinq multiplications imbriquées, variables `s`, `q`, `r`, `t`, puis
 `(2)` entre parenthèses. `toCustom` réimprime `2sqrt(2)`, ce qui masque tout.
 `2*sqrt(2)` et le LaTeX `2\sqrt{2}` parsent bien. Concerne le REPL et tout ce
 qui parse la syntaxe maison avec un nombre collé à un nom de fonction.
 
-### 6.3 `normalize` perd l'unité
+### 6.3 ✅ corrigé — `normalize` perdait l'unité
 
 `hashNormalForm(normalize(12[km]))` = `12`. La précaution prise dans
 `cost.ts` (une unité ne coûte que 1 + son contenu) est sans effet : l'unité
 est tombée avant que le coût n'arbitre.
 
-### 6.4 La règle `pythagorean` (et les 31 motifs `f^n`) n'apparie qu'une des deux formes de l'AST
+### 6.4 ✅ corrigé — la règle `pythagorean` (et les 31 motifs `f^n`) n'appariait qu'une des deux formes de l'AST
 
 Cf. §4 : motif sur `function.power`, mais `\sin(x)^2`, la syntaxe maison et la
 sortie de `normalize` sont en `superscript(function, 2)`. Et les deux formes
@@ -462,10 +462,44 @@ Les quatre bugs annexes du §6 (6.5, 6.7, 6.8, 6.9) ont été corrigés ensuite,
 dans cet ordre de valeur : le décideur d'équivalence d'abord, le parseur
 ensuite, les règles en dernier.
 
-Trouvés en chemin, non traités : le rendu LaTeX du module de limites garde des
-parenthèses inutiles au numérateur et un double signe (`--sin(x)`) ; `f(x)/2`
-est lu différemment par les deux parseurs maison ; `x_i` lit `i` comme l'unité
-imaginaire.
+### Le §6 est clos — mesuré sur `main` le 2026-09-20
+
+Les quatre derniers points ouverts du §6 sont tombés d'eux-mêmes, emportés par
+les chantiers `tidy`, unités et parseur. Relancé sur `main` à `e282f4d25` :
+
+| point | vérification                              | verdict        |
+| ----- | ----------------------------------------- | -------------- |
+| 6.1   | `(2x)/(4y) ≡ x/(2y)`, et les deux autres  | `true`         |
+| 6.2   | `2sqrt(2) ≡ 2*sqrt(2)`                    | `true`         |
+| 6.3   | `hash(12[km])` = `12000*U[m^1:1:0](N(1))` | l'unité est là |
+| 6.4   | `\sin^2(x) ≡ \sin(x)^2`                   | `true`         |
+
+Le §6.10 (trigonométrie opaque pour `normalize`) a demandé deux étapes :
+PR #382 pour un même argument, PR #384 pour les **arcs commensurables**
+(Tchebychev et formules d'addition), qui rend `sin(2x) ≡ 2 sin x cos x` et
+offre la linéarisation sans règle dédiée. Quatre limites y sont assumées, toutes
+des faux négatifs : coefficient non entier, atome non monomial, plafond de
+développement, argument d'une autre fonction.
+
+Trouvés en chemin, restant ouverts :
+
+- **`x_i` lit `i` comme l'unité imaginaire** — mesuré, `toCustom(parseCustom('x_i'))`
+  rend `x_{0 + 1i}`. Un indice nommé `i` est pourtant l'écriture la plus courante
+  d'une suite.
+- **Le rendu LaTeX du module de limites** garde des parenthèses inutiles au
+  numérateur et un double signe (`--sin(x)`).
+- **`timeoutMs` ne protège pas l'arithmétique polynomiale** — `polynomial.ts`,
+  `rational.ts` et `univariate-gcd.ts` ne consultent aucun signal
+  d'interruption. Mesuré, `(sin x + cos y + sin z + cos w + x + y + z)^8` meurt
+  en dépassement mémoire avec un budget de 500 ms exactement comme sans.
+  Conséquence sur le chemin élève : `validateAlgebraic` borne à 500 ms en
+  écrivant « so a pathological learner input cannot freeze the UI », et la
+  promesse n'est pas tenue pour ces entrées ; `validation-rule-evaluator.ts`
+  ne borne rien du tout. Y ajouter un budget avant de rendre le signal effectif
+  serait un garde-fou décoratif.
+
+`f(x)/2`, lu différemment par les deux parseurs maison, est réparé : il fait
+l'aller-retour à l'identique depuis la PR #383.
 
 ---
 
