@@ -52,6 +52,7 @@ import {
 	ONE,
 	isOne,
 	gcd as gcdBigInt,
+	lcm as lcmBigInt,
 	negRational,
 	absRational,
 	floorRational,
@@ -869,9 +870,14 @@ function normalFormFromFraction(
 		return normalFormFromFraction(complexRationalized.numerator, complexRationalized.denominator);
 	}
 
+	// Dernier pas : signe et contenu numérique des coefficients. Sans lui,
+	// (2x)/(4y) et x/(2y), ou (-x)/(-y) et x/y, avaient deux formes normales
+	// différentes — donc n'étaient pas « équivalents » (relevé du 2026-09-20).
+	const primitive = normalizeQuotientCoefficients(reducedNumerator, reducedDenominator);
+
 	const form: NormalForm = {
-		numerator: reducedNumerator,
-		denominator: reducedDenominator,
+		numerator: primitive.numerator,
+		denominator: primitive.denominator,
 		hash: '' // Will be computed below
 	};
 
@@ -880,6 +886,57 @@ function normalFormFromFraction(
 		...form,
 		hash: hashNormalForm(form)
 	};
+}
+
+/**
+ * Met un quotient à dénominateur symbolique sous forme canonique du point de
+ * vue de ses coefficients numériques :
+ *
+ * - **signe** : le premier terme du dénominateur est positif
+ *   (`x/(-y)` → `(-x)/y`, `(-x)/(-y)` → `x/y`) ;
+ * - **contenu** : si tous les coefficients (numérateur et dénominateur) sont
+ *   des rationnels purs, ils deviennent des entiers premiers entre eux
+ *   (`(2x)/(4y)` → `x/(2y)`, `(x/2)/(y/3)` → `(3x)/(2y)`).
+ *
+ * Les dénominateurs constants ne passent pas ici : ils sont repliés dans les
+ * coefficients en amont, et un polynôme garde ses coefficients rationnels.
+ */
+function normalizeQuotientCoefficients(
+	numerator: readonly NormalTerm[],
+	denominator: readonly NormalTerm[]
+): { numerator: readonly NormalTerm[]; denominator: readonly NormalTerm[] } {
+	let num = numerator;
+	let den = denominator;
+
+	// (a) Signe : le premier terme du dénominateur commande.
+	const lead = den[0]?.coefficient.terms[0];
+	if (lead !== undefined && lead.rational.n < 0n) {
+		num = negPolynomial(num);
+		den = negPolynomial(den);
+	}
+
+	// (b) Contenu : entiers premiers entre eux, seulement si tout est rationnel pur.
+	const coefficients = [...num, ...den].map((term) => getPureRationalCoeff(term.coefficient));
+	if (!coefficients.every((r): r is Rational => r !== null)) {
+		return { numerator: num, denominator: den };
+	}
+
+	let commonDenominator = 1n;
+	for (const r of coefficients) commonDenominator = lcmBigInt(commonDenominator, r.d);
+	let commonNumerator = 0n;
+	for (const r of coefficients) {
+		commonNumerator = gcdBigInt(commonNumerator, (r.n * commonDenominator) / r.d);
+	}
+	if (commonNumerator === 0n || (commonDenominator === 1n && commonNumerator === 1n)) {
+		return { numerator: num, denominator: den };
+	}
+
+	// Multiplier chaque coefficient par lcm/pgcd : un polynôme constant fait l'affaire.
+	const scale: NormalTerm = {
+		coefficient: algebraicFromRational(rational(commonDenominator, commonNumerator)),
+		monomial: EMPTY_MONOMIAL
+	};
+	return { numerator: mulPolynomials(num, [scale]), denominator: mulPolynomials(den, [scale]) };
 }
 
 /**
@@ -1756,9 +1813,17 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 		}
 
 		case 'unit': {
-			// Unit nodes: normalize the expression part
-			// The unit is not part of algebraic normalization
-			return normalizeNode(node.expression, ctx);
+			// L'unité est un facteur symbolique opaque : 12[km] → 12 · U(km).
+			// Sans lui, 12[km] et 12 avaient la même forme normale, et simplify
+			// dépouillait toute grandeur de son unité (relevé du 2026-09-20).
+			// Le facteur porte l'unité seule (expression 1) : denormalizeTerm le
+			// reconnaît et reconstruit unit(reste du terme, unité).
+			const unitFactor: MathNode = {
+				type: 'unit',
+				expression: { type: 'number', value: '1' },
+				unit: node.unit
+			};
+			return mulNormalForms(normalizeNode(node.expression, ctx), normalizeOpaqueNode(unitFactor));
 		}
 
 		case 'composition':
@@ -2965,6 +3030,17 @@ function normalizeFunction(
 	ctx?: NormalizeContext
 ): NormalForm {
 	const { name } = node;
+
+	// 1. Une fonction élevée à une puissance — nœud `function` avec `power`,
+	//    forme produite par les parseurs pour `\sin^2(x)` — a la même forme
+	//    normale que `superscript(sin(x), 2)`. On la réécrit ainsi AVANT tout le
+	//    reste : une seule forme, et l'exposant est porté par le facteur, donc
+	//    sin²(x)·sin(x) → sin³(x). Sans ce pas, les deux écritures avaient deux
+	//    hash (`^N(2)` contre `^2`) et n'étaient pas « équivalentes ».
+	if (node.power !== undefined) {
+		const { power, ...withoutPower } = node;
+		return normalizeNode({ type: 'superscript', base: withoutPower, superscript: power }, ctx);
+	}
 
 	// 2. Handle sqrt specially (before canonicalization to detect √(a×a))
 	if (name === 'sqrt' && node.args.length === 1) {

@@ -48,7 +48,12 @@ const CUSTOM_PATTERNS: readonly RegExp[] = [
 	// Functions without backslash: sqrt(, sin(, cos(, tan(, ln(, log(, exp(, abs(
 	// These are custom syntax - LaTeX requires \sqrt, \sin, etc.
 	// Also includes statistical functions: mean, median, variance, stdev, min, max, sum
-	/\b(sqrt|sin|cos|tan|cot|sec|csc|arcsin|arccos|arctan|sinh|cosh|tanh|ln|log|exp|abs|mean|median|variance|stdev|min|max|sum)\s*\(/
+	//
+	// Pas de frontière de mot en tête : `2sqrt(2)`, `xsin(x)`, `3ln(x)` sont de
+	// la syntaxe maison (un nom de fonction collé à un nombre ou à une lettre).
+	// Et `[(^]` en queue : `sin^2(x)` aussi. Une entrée LaTeX porte un backslash
+	// et a déjà été reconnue plus haut.
+	/(sqrt|sin|cos|tan|cot|sec|csc|arcsin|arccos|arctan|sinh|cosh|tanh|ln|log|exp|abs|mean|median|variance|stdev|min|max|sum)\s*[(^]/
 ];
 
 /**

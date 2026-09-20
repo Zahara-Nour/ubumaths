@@ -6,7 +6,9 @@
  * but human-readable expression.
  */
 
-import type { MathNode } from '../types';
+import type { MathNode, UnitNode } from '../types';
+import type { Unit } from '../units/types';
+import { multiply as unitMultiply, power as unitPower } from '../units/operations';
 import type {
 	NormalForm,
 	NormalTerm,
@@ -378,6 +380,29 @@ export function denormalizeMonomial(monomial: readonly SymbolicFactor[]): MathNo
 }
 
 /**
+ * Un facteur d'unité est un nœud unit d'expression 1, tel que normalize le pose.
+ */
+function isUnitFactor(factor: SymbolicFactor): factor is SymbolicFactor & { base: UnitNode } {
+	const { base } = factor;
+	return base.type === 'unit' && base.expression.type === 'number' && base.expression.value === '1';
+}
+
+/**
+ * Recompose une unité à partir de ses facteurs (km · h⁻¹ → km/h).
+ */
+function combineUnitFactors(factors: readonly (SymbolicFactor & { base: UnitNode })[]): Unit {
+	let combined: Unit | null = null;
+	for (const { base, exponent } of factors) {
+		const raised = isOneRational(exponent)
+			? base.unit
+			: unitPower(base.unit, Number(exponent.n) / Number(exponent.d));
+		combined = combined === null ? raised : unitMultiply(combined, raised);
+	}
+	// factors est non vide par construction (appelé après un filter non vide)
+	return combined as Unit;
+}
+
+/**
  * Denormalizes a normal term to a MathNode.
  *
  * A normal term is: coefficient * monomial
@@ -386,6 +411,18 @@ export function denormalizeMonomial(monomial: readonly SymbolicFactor[]): MathNo
  * @returns A MathNode representing the term
  */
 export function denormalizeTerm(term: NormalTerm): MathNode {
+	// Facteurs d'unité (posés par normalize : nœud unit d'expression 1) : on les
+	// retire du monôme, on dénormalise le reste, et on l'enveloppe dans un seul
+	// nœud unit — 15 · U(km) redevient 15[km].
+	const unitFactors = term.monomial.filter(isUnitFactor);
+	if (unitFactors.length > 0) {
+		const rest = denormalizeTerm({
+			coefficient: term.coefficient,
+			monomial: term.monomial.filter((factor) => !isUnitFactor(factor))
+		});
+		return { type: 'unit', expression: rest, unit: combineUnitFactors(unitFactors) };
+	}
+
 	const coeffNode = denormalizeCoefficient(term.coefficient);
 	const monomialNode = denormalizeMonomial(term.monomial);
 

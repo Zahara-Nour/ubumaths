@@ -6,6 +6,11 @@
 >
 > **Tout ce qui suit a été exécuté.** Aucune ligne ne vient d'une lecture de
 > source. Les scripts sont en annexe et rejouent l'ensemble en ~2 s.
+>
+> ✅ **Les 4 bugs du §6 sont corrigés** (branche `fix/simplify-4-bugs`,
+> [simplify-4-bugs-progress.md](simplify-4-bugs-progress.md)). Le §4 et le
+> §6.4 ont été corrigés le même jour : la règle `pythagorean` n'était pas
+> « morte », elle ne tirait que sur une des deux formes de l'AST.
 
 ---
 
@@ -145,7 +150,7 @@ numériques chez eux).
 | « `isCheaper` : biais 1,2 »                              | Confirmé, et mesuré à l'œuvre : `(x+1)²−x²` a un ratio 1,44 → refusé ; `(3x+2)²−x²+5x−3` a 1,15 → accepté                                                                                       |
 | « leurs deux 🙁 »                                        | **Deux causes différentes** : `(x+1)²−x²` = seuil de coût (leur `Expand` rend bien `2x+1`) ; `2(x+h)²−2x²` = leur `Expand` ne distribue pas `2(h+x)²` (mesuré : `Expand` rend `-2x² + 2(h+x)²`) |
 | « `sortTermsAndFactorsAST` rend `3x+2x−x → −x+2x+3x` »   | Confirmé sur l'entrée brute                                                                                                                                                                     |
-| « la règle `pythagorean` ne se déclenche jamais »        | Confirmé, **et la raison est trouvée** (§4)                                                                                                                                                     |
+| « la règle `pythagorean` ne se déclenche jamais »        | **Vrai pour `\sin(x)^2` et la syntaxe maison, faux pour le LaTeX `\sin^2(x)`** — là elle tire (test existant vert). Raison au §4                                                                |
 | « `areEquivalent((-x)/(-y), x/y)` faux — à élucider »    | **Élucidé** : bug de la forme normale des quotients (§6.1)                                                                                                                                      |
 
 ---
@@ -210,12 +215,16 @@ Partout ailleurs : zéro règle. Tout le reste du panel (fractions, radicaux,
 regroupement, `exp(x)·exp(2x) → exp(3x)`, `ln(exp(x)) → x`, quotients
 rationnels) est l'œuvre de **`normalize` seul**.
 
-**Pourquoi `pythagorean` ne matche jamais.** Le motif est
-`P.func('sin', [P._('a')], { power: P.num(2) })` — un nœud `function` portant
-une propriété `power`. Or ni le parseur ni `normalizePass` ne produisent cette
-forme : `sin(x)^2` est **`superscript(function sin, 2)`** (AST vu). `tryMatch`
-direct sur les trois formes (`sin²+cos²` parsé, `cos²+sin²` parsé, sortie de
-`normalizePass`) : **non, non, non**. La règle est morte depuis sa naissance.
+**Pourquoi `pythagorean` ne tirait pas sur le panel.** L'AST a **deux formes**
+pour `sin²(x)` : le nœud `function` avec `power` (produit par les parseurs pour
+`\sin^2(x)`) et `superscript(function, 2)` (pour `\sin(x)^2` et la syntaxe
+maison `sin(x)^2`). Le motif `P.func('sin', [P._('a')], { power: P.num(2) })`
+n'apparie que la première ; `normalizePass` produit la seconde. `tryMatch`
+direct sur les trois formes du panel (`sin²+cos²` maison, `cos²+sin²` maison,
+sortie de `normalizePass`) : **non, non, non**. Mais le test existant
+`simplifyLatex('\\sin^2(x) + \\cos^2(x)') → '1'` est vert : sur du LaTeX
+`\sin^2`, la règle tire. (Première version de ce paragraphe : « morte depuis sa
+naissance » — c'était trop dire, corrigé le jour même.)
 
 **Le `*` explicite** (`6*(x+1)^2`, `6*x*(x^2+1)^2`) : c'est le `displayStyle`
 de l'entrée qui survit à `normalize → denormalize`. Entrée implicite
@@ -310,10 +319,11 @@ qui parse la syntaxe maison avec un nombre collé à un nom de fonction.
 `cost.ts` (une unité ne coûte que 1 + son contenu) est sans effet : l'unité
 est tombée avant que le coût n'arbitre.
 
-### 6.4 La règle `pythagorean` (et probablement tout le groupe `PYTHAGOREAN`) ne peut pas matcher
+### 6.4 La règle `pythagorean` (et les 31 motifs `f^n`) n'apparie qu'une des deux formes de l'AST
 
-Cf. §4 : motif sur `function.power`, AST en `superscript(function, 2)`. Les
-sept règles du groupe utilisent la même forme.
+Cf. §4 : motif sur `function.power`, mais `\sin(x)^2`, la syntaxe maison et la
+sortie de `normalize` sont en `superscript(function, 2)`. Et les deux formes
+ont deux hash différents : `\sin^2(x) ≢ \sin(x)^2` pour `areEquivalent`.
 
 ---
 

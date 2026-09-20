@@ -415,11 +415,20 @@ function matchSuperscript(
 		return failMatch();
 	}
 
-	if (!isSuperscript(node)) {
-		return failMatch();
+	if (isSuperscript(node)) {
+		return matchPair(base, exponent, node.base, node.superscript, bindings, ctx);
 	}
 
-	return matchPair(base, exponent, node.base, node.superscript, bindings, ctx);
+	// L'AST a deux formes pour f^n(x) : `superscript(f(x), n)` et le nœud
+	// `function` avec `power` (produit par les parseurs pour `\sin^2(x)`).
+	// Un motif de puissance apparie les deux ; la forme normale, elle, n'en
+	// garde qu'une (voir normalizeFunction).
+	if (isFunction(node) && node.power !== undefined) {
+		const { power, ...withoutPower } = node;
+		return matchPair(base, exponent, withoutPower, power, bindings, ctx);
+	}
+
+	return failMatch();
 }
 
 /**
@@ -435,6 +444,18 @@ function matchFunction(
 	bindings: MatchBindings,
 	ctx?: TypeContext
 ): MatchResult {
+	// Un motif `P.func(name, args, { power })` apparie aussi la forme
+	// `superscript(function, exposant)` — celle que normalize produit — en la
+	// lisant comme un nœud function avec power. Symétrique de matchSuperscript.
+	if (
+		pattern.power !== undefined &&
+		isSuperscript(node) &&
+		isFunction(node.base) &&
+		node.base.power === undefined
+	) {
+		node = { ...node.base, power: node.superscript };
+	}
+
 	if (!isFunction(node)) {
 		return failMatch();
 	}

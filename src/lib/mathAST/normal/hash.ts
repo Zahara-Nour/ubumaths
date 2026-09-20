@@ -15,6 +15,7 @@ import type {
 	Rational
 } from './types';
 import type { MathNode } from '../types';
+import type { Unit } from '../units/types';
 
 // =============================================================================
 // Primitive Hashes
@@ -55,6 +56,17 @@ export function hashRadicalArray(radicals: readonly SimplifiedRadical[]): string
 // =============================================================================
 // MathNode Hash
 // =============================================================================
+
+/**
+ * Hash déterministe d'une unité : composants triés par symbole, puis coefficient.
+ */
+function hashUnit(unit: Unit): string {
+	const components = [...unit.components.entries()]
+		.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+		.map(([symbol, exponent]) => `${symbol}^${exponent}`)
+		.join('*');
+	return `${components}:${unit.coefficient}`;
+}
 
 /**
  * Creates a hash for a MathNode.
@@ -123,7 +135,9 @@ export function hashMathNode(node: MathNode): string {
 			return `R:${node.relation}(${hashMathNode(node.left)},${hashMathNode(node.right)})`;
 
 		case 'unit':
-			return `U(${hashMathNode(node.expression)})`;
+			// L'unité fait partie du hash : 12[km] et 12[m] ne sont pas la même
+			// grandeur. Composants triés pour ne pas dépendre de l'ordre d'insertion.
+			return `U[${hashUnit(node.unit)}](${hashMathNode(node.expression)})`;
 
 		case 'composition':
 			return `C(${hashMathNode(node.outer)},${hashMathNode(node.inner)})`;
