@@ -2302,11 +2302,31 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 				return normalizeNode(newExpNode, ctx);
 			}
 
-			// Special case: (√a)^n → a^{n/2}
-			if (ratExp !== null && isSqrtFunction(node.base)) {
+			// Special case: (ⁿ√a)^k → a^{k/n}
+			const radicalBase = isSqrtFunction(node.base)
+				? radicalIndex(node.base as MathNode & { type: 'function' })
+				: null;
+			if (ratExp !== null && radicalBase !== null) {
+				// Radicande déjà réductible à un nombre — `∛8` vaut `2` : on élève
+				// ce nombre, au lieu de partir sur `8^{2/3}` que personne ne sait
+				// ensuite évaluer (l'extraction de puissance parfaite ne traite que
+				// les carrés). Sans ça, `(∛8)² ≡ 4` restait faux.
+				if (ratExp.d === 1n && ratExp.n >= 0n) {
+					const radicalForm = normalizeNode(node.base, ctx);
+					if (
+						isConstantPolynomial(radicalForm.numerator) &&
+						isOnePolynomial(radicalForm.denominator)
+					) {
+						const result = powNormalForm(radicalForm, Number(ratExp.n));
+						recordNormalizationStep(ctx, 'power-of-sqrt', node, result, 'summarized');
+						return result;
+					}
+				}
+
 				const sqrtArg = (node.base as MathNode & { type: 'function' }).args[0];
-				// New exponent is n/2 (multiply by 1/2)
-				const newExp: Rational = { n: ratExp.n, d: ratExp.d * 2n };
+				// L'exposant se divise par l'INDICE du radical, pas par 2 :
+				// `(∛x)²` vaut `x^{2/3}`, et le 2 en dur le rendait `x`.
+				const newExp: Rational = { n: ratExp.n, d: ratExp.d * radicalBase };
 				// Simplify the rational
 				const g = gcdBigInt(newExp.n < 0n ? -newExp.n : newExp.n, newExp.d);
 				const simplifiedExp: Rational = { n: newExp.n / g, d: newExp.d / g };
@@ -4549,6 +4569,25 @@ function isExpFunction(node: MathNode): node is MathNode & { type: 'function'; n
  */
 function isSqrtFunction(node: MathNode): node is MathNode & { type: 'function'; name: 'sqrt' } {
 	return node.type === 'function' && node.name === 'sqrt' && node.args.length === 1;
+}
+
+/**
+ * L'indice d'un radical : 2 par défaut, la valeur de `base` quand elle est un
+ * entier ≥ 2, `null` quand l'indice est là mais qu'on ne sait pas le lire.
+ *
+ * ⚠️ `parseLatex('\sqrt[3]{x}')` rend une fonction nommée `sqrt` avec **un
+ * seul argument**, l'indice étant rangé à part dans `base`. Un test de la forme
+ * `name === 'sqrt' && args.length === 1` confond donc `∛x` et `√x`. C'est le
+ * même angle mort que celui fermé dans `rules/radicals.ts` : ici il faisait
+ * diviser l'exposant par 2 au lieu de l'indice, et rendait `true` à
+ * `(∛x)² ≡ x` — un faux positif, la seule faute qui compte JUSTE une réponse
+ * FAUSSE d'élève.
+ */
+function radicalIndex(node: MathNode & { type: 'function' }): bigint | null {
+	if (node.base === undefined) return 2n;
+	const value = getRationalExponent(node.base);
+	if (value === null || value.d !== 1n || value.n < 2n) return null;
+	return value.n;
 }
 
 /**
