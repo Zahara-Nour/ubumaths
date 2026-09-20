@@ -328,11 +328,26 @@ function matchSubtraction(
 		return matchSumPattern(toSumPattern(left, right), node, bindings, ctx);
 	}
 
-	if (!isSubtraction(node)) {
-		return failMatch();
+	if (isSubtraction(node)) {
+		return matchPair(left, right, node.left, node.right, bindings, ctx);
 	}
 
-	return matchPair(left, right, node.left, node.right, bindings, ctx);
+	// `denormalize` écrit une somme dont le premier terme est négatif `−b + a`
+	// (c'est ainsi que `1 − sin²(x)` ressort de normalizePass), et un opposé
+	// peut aussi se trouver à droite : `a + (−b)`. Les deux sont la différence
+	// `a − b` : on les apparie comme telle, sinon aucune règle écrite avec
+	// `P.sub` ne voit la sortie de la forme normale (relevé du 2026-09-20, §6.6).
+	if (isAddition(node)) {
+		if (isOpposite(node.left)) {
+			const swapped = matchPair(left, right, node.right, node.left.operand, bindings, ctx);
+			if (swapped.success) return swapped;
+		}
+		if (isOpposite(node.right)) {
+			return matchPair(left, right, node.left, node.right.operand, bindings, ctx);
+		}
+	}
+
+	return failMatch();
 }
 
 /**

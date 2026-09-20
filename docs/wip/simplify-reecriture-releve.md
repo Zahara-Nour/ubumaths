@@ -336,9 +336,21 @@ replie sur l'entrée. Pinné en `it.todo` dans `simplify/__tests__/releve-bugs.t
 ### 6.6 Les motifs `P.sub` n'apparient plus après `normalizePass`
 
 `1 − sin²(x)` devient `−sin²(x) + 1` (addition d'un opposé) avant les règles,
-et `P.sub(1, sin²)` n'apparie qu'une soustraction : `simplify` ne rend jamais
-`cos²(x)`. Toutes les règles écrites avec `P.sub` ont ce problème dans
-`simplify` — à traiter dans la réécriture.
+et `P.sub(1, sin²)` n'appariait qu'une soustraction : `simplify` ne rendait
+jamais `cos²(x)`. Cause exacte : `denormalizePolynomial` n'émet une
+soustraction que pour les termes après le premier, et la constante est rangée
+en dernier. Mesuré : 6 des 17 règles de `simplify` ont un `P.sub` en racine ;
+seule la famille « constante moins quelque chose » était cassée.
+
+✅ Corrigé dans l'appariement (branche `fix/match-subtraction-shape`,
+[match-subtraction-shape-progress.md](match-subtraction-shape-progress.md)) :
+`−b + a` et `a + (−b)` s'apparient comme `a − b`.
+
+### 6.7 `sec²(x) − 1` n'apparie pas `sec-squared-minus-one`, même sur l'AST brut
+
+Mesuré le 2026-09-20 en sondant les motifs `P.sub` : sur `sec(x)^2-1` parsé en
+syntaxe maison, seule `diff-squares-numeric` apparie. Non investigué (le nom
+`sec` est peut-être inconnu du parseur maison).
 
 ---
 
