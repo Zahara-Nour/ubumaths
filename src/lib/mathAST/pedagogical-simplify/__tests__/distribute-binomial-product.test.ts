@@ -10,6 +10,7 @@ import { parseLatex } from '../../parser';
 import { toLatex } from '../../latex-generator';
 import { applyRulesDeepOnceTracked } from '../../pattern/rule';
 import { distributeBinomialProduct } from '../pedagogical-rules';
+import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 
 const tex = (n: Parameters<typeof toLatex>[0]) =>
 	toLatex(n)
@@ -65,7 +66,20 @@ describe('distribute-binomial-product — sign combinations', () => {
 		// Normalize (Phase B) collapses these into `xy-2x-y+2` ; this test
 		// locks the rule's raw output to catch sign regressions independent
 		// of normalize's ordering.
-		expect(tex(result)).toBe('xy-x2-1y+12');
+		// ⚠️ L'attente précédente, `xy-x2-1y+12`, était VERTE parce que le
+		// générateur LaTeX ne parenthésait pas l'opérande droit d'une
+		// soustraction. La règle produisait `(xy − x2) − (1y + 12)`, qui vaut
+		// `xy − 2x − y − 2` et non `xy − 2x − y + 2` : mesuré en x=3, y=5,
+		// `(x−1)(y−2)` vaut 6 et la sortie de la règle valait 2. Le rendu
+		// masquait une erreur de signe.
+		//
+		// ⚠️ Cette chaîne fige la forme GROUPÉE `(ac − ad) − (bc − bd)`, qui est
+		// ce que la règle construit — et non les quatre termes plats que son
+		// docstring annonce. Ce n'est pas une décision, c'est l'état actuel :
+		// si on veut la forme plate, c'est ici qu'il faudra le dire. Les signes,
+		// eux, sont verrouillés par les cas numériques plus bas, qui ne
+		// dépendent d'aucun rendu.
+		expect(tex(result)).toBe('xy-x2-(1y-12)');
 	});
 });
 
@@ -116,4 +130,41 @@ describe('distribute-binomial-product — typical pedagogical inputs', () => {
 		// (subject to factory implicit-mul ordering)
 		expect(out.length).toBeGreaterThan(0);
 	});
+});
+
+// =============================================================================
+// La règle doit être JUSTE, pas seulement bien écrite
+// =============================================================================
+
+/**
+ * Les quatre combinaisons de signes, vérifiées **numériquement** et non par
+ * leur rendu. C'est ce qui manquait : le seul test de signes comparait une
+ * chaîne, et cette chaîne était fausse d'une manière que le générateur LaTeX
+ * rendait invisible.
+ */
+describe('les quatre combinaisons de signes, vérifiées numériquement', () => {
+	const valeurs = [
+		{ x: 3, y: 5 },
+		{ x: -2, y: 7 },
+		{ x: 0.5, y: -1.5 },
+		{ x: 10, y: 0 }
+	];
+
+	const evalue = (node: Parameters<typeof toLatex>[0], pt: { x: number; y: number }): number => {
+		const json = JSON.stringify(node)
+			.replaceAll('{"type":"variable","name":"x"}', `{"type":"number","value":"${pt.x}"}`)
+			.replaceAll('{"type":"variable","name":"y"}', `{"type":"number","value":"${pt.y}"}`);
+		return evaluateNodeToApproximatedNumber(JSON.parse(json));
+	};
+
+	it.each([['(x+1)(y+2)'], ['(x+1)(y-2)'], ['(x-1)(y+2)'], ['(x-1)(y-2)']])(
+		'%s se développe sans changer de valeur',
+		(source) => {
+			const entree = parseLatex(source);
+			const { result } = applyRulesDeepOnceTracked([distributeBinomialProduct], entree);
+			for (const pt of valeurs) {
+				expect(evalue(result, pt)).toBeCloseTo(evalue(entree, pt), 10);
+			}
+		}
+	);
 });
