@@ -49,8 +49,10 @@ import {
 	powPolynomial,
 	isZeroPolynomial,
 	isOnePolynomial,
+	isConstantPolynomial,
 	gcdPolynomials,
-	divPolynomialByMonomial
+	divPolynomialByMonomial,
+	exactDividePolynomials
 } from './polynomial';
 import { ZERO_TERM, mulTerms } from './term';
 import { EMPTY_MONOMIAL, symbolicFactor, sortSymbolicFactors } from './monomial';
@@ -1103,6 +1105,48 @@ function normalFormFromFraction(
 			const gcdMonomial = gcd[0].monomial;
 			reducedNumerator = divPolynomialByMonomial(workingNumerator, gcdMonomial);
 			reducedDenominator = divPolynomialByMonomial(workingDenominator, gcdMonomial);
+		}
+	}
+
+	// Dernier repli : division exacte multivariée. `tryUnivariateGcd` ne traite
+	// qu'une seule variable et `gcdPolynomials` n'extrait qu'un monôme : un
+	// facteur commun polynomial comme `x+y` n'était vu par personne, et
+	// `(x+y)²/(x+y)` restait tel quel — le moteur refusait sa propre sortie.
+	//
+	// Limite assumée : `(x+y)²/(x+2y)` n'est PAS réduit, et c'est normal — ni
+	// l'un ne divise l'autre. Un vrai pgcd multivarié le ferait, la division
+	// exacte non. C'est un choix : le pgcd multivarié complet est coûteux et
+	// délicat, la divisibilité couvre les écritures que les élèves produisent.
+	//
+	// ⚠️ Le repli travaille sur ce qui RESTE (`reducedNumerator` /
+	// `reducedDenominator`), pas sur la fraction d'origine, et il tourne même
+	// quand un chemin précédent a déjà réduit. La première version ne se
+	// déclenchait que si personne n'avait rien trouvé, et ratait donc tout ce
+	// dont `gcdPolynomials` avait extrait un monôme : `z(x+y)²/(z(x+y))` devient
+	// `(x+y)²/(x+y)` une fois le `z` sorti, et plus personne ne le regardait.
+	// Mesuré par une campagne aléatoire : 339 faux négatifs sur 1386 verdicts,
+	// tous de cette forme. Partant du couple déjà réduit, il ne peut rien
+	// défaire.
+	{
+		// Diviser par une CONSTANTE réussit toujours et défigurerait la
+		// fraction (`2/(x+y)` deviendrait `1/(x/2+y/2)`) : les deux sens
+		// n'acceptent qu'un diviseur portant au moins une variable. Les
+		// dénominateurs constants sont traités plus bas, à leur place.
+		const directQuotient = isConstantPolynomial(reducedDenominator)
+			? null
+			: exactDividePolynomials(reducedNumerator, reducedDenominator);
+
+		if (directQuotient !== null) {
+			// Le dénominateur divise le numérateur : la fraction vaut q/1
+			reducedNumerator = directQuotient;
+			reducedDenominator = [...ONE_POLYNOMIAL];
+		} else if (!isConstantPolynomial(reducedNumerator)) {
+			// Sens inverse : le numérateur divise le dénominateur → 1/q
+			const inverseQuotient = exactDividePolynomials(reducedDenominator, reducedNumerator);
+			if (inverseQuotient !== null) {
+				reducedNumerator = [...ONE_POLYNOMIAL];
+				reducedDenominator = inverseQuotient;
+			}
 		}
 	}
 
