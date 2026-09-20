@@ -14,7 +14,14 @@
 import type { MathNode } from '../types';
 import type { NormalForm, NormalTerm, Rational, NormalizationStep, SymbolicFactor } from './types';
 import { type Verbosity, shouldIncludeStep } from '../common/verbosity.js';
-import { type AbortChecker, AbortError, checkAbort, makeAbortChecker } from '../common/abort.js';
+import {
+	type AbortChecker,
+	AbortError,
+	checkAbort,
+	getActiveAbortChecker,
+	makeAbortChecker,
+	withActiveAbortChecker
+} from '../common/abort.js';
 import { hashPolynomial, hashNormalForm, hashMathNode } from './hash';
 import { StepRecorder, getRuleDescription } from './step-recorder.js';
 import {
@@ -1887,6 +1894,33 @@ function buildPowerNode(base: MathNode, exponent: Rational): MathNode {
  * @returns The canonical NormalForm
  */
 export function normalize(node: MathNode, ctx?: NormalizeContext): NormalForm {
+	// L'arithmétique polynomiale ne reçoit pas `ctx` : `mulPolynomials`,
+	// `powPolynomial` et leurs voisins sont appelés depuis une centaine
+	// d'endroits qui n'en ont pas. Le signal d'interruption leur est donc rendu
+	// lisible par le canal ambiant prévu pour ça dans `common/abort.ts`, comme
+	// le fait déjà `rewriting-engine` pour l'appariement de motifs.
+	//
+	// Sans ça, `timeoutMs` ne bornait rien sur le chemin le plus coûteux :
+	// mesuré, `(x+y+z+w+a+b+c+d)^8` tuait le processus avec un budget de 500 ms
+	// exactement comme sans budget.
+	// ⚠️ Quand l'appelant ne demande AUCUN budget, on ne masque pas pour autant
+	// un signal ambiant déjà installé : c'est voulu. Un `simplify(x, {timeoutMs})`
+	// installe le sien, et tout ce qu'il appelle doit être borné avec lui, sans
+	// quoi le budget ne vaudrait que pour le premier étage.
+	//
+	// La contrepartie : un `areEquivalent` sans budget, imbriqué dans un extent
+	// budgété dont le délai est écoulé, rend `false` faute d'avoir pu conclure.
+	// C'est conservateur partout où ce `false` est lu tel quel. Le seul endroit
+	// où il était NIÉ — donc transformé en affirmation — est la relation `!=` de
+	// `eval/evaluate.ts`, qui rend désormais « non évaluable » dans ce cas.
+	const abortChecker = ctx?.abortChecker;
+	if (abortChecker === undefined || getActiveAbortChecker() === abortChecker) {
+		return normalizeInner(node, ctx);
+	}
+	return withActiveAbortChecker(abortChecker, () => normalizeInner(node, ctx));
+}
+
+function normalizeInner(node: MathNode, ctx?: NormalizeContext): NormalForm {
 	// First, apply preprocessing rules (Phase 1)
 	const simplified = preprocess(node);
 

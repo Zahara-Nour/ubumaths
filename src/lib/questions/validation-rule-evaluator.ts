@@ -54,6 +54,35 @@ export interface EvaluationResult {
 // ============================================================================
 
 /**
+ * Budget d'horloge pour la comparaison symbolique d'une réponse d'élève.
+ *
+ * Ce module tourne dans le navigateur de l'élève, et `areEquivalent` est
+ * synchrone : sans borne, une réponse pathologique gèle l'onglet. Mesuré, tas
+ * plafonné à 700 Mo, une réponse `(x+y+z+w+a+b+c+d+e+f+g)^11` comparée à
+ * `(x+y+z+w+a+b+c+d+e+f)^10` TUE le processus sans budget, et rend la main en
+ * un demi-seconde avec.
+ *
+ * Même valeur que `validateAlgebraic` dans `answer-validator.ts` : c'est le
+ * même geste, la correction d'une réponse, et deux budgets différents pour le
+ * même geste ne se justifieraient pas.
+ *
+ * ⚠️ **Tout budget crée une bande où une réponse VRAIE est comptée fausse**, et
+ * celle-ci ne fait pas exception. Frontière mesurée, tas à 700 Mo, sur
+ * `(v₁+…+vₙ)^d` comparé à la même somme écrite à l'envers :
+ *
+ * | variables | degré | sans budget      | avec 500 ms       |
+ * | --------- | ----- | ---------------- | ----------------- |
+ * | 6         | 10    | 252 ms → `true`  | 242 ms → `true`   |
+ * | 6         | 12    | 1343 ms → `true` | 642 ms → **`false`** |
+ *
+ * `(x+y+z+w+a+b)^12` fait dix-huit caractères de LaTeX et bascule. C'est le
+ * prix du budget, pas un défaut : sans lui, l'onglet de l'élève meurt. Mais si
+ * une plainte arrive un jour sur une bonne réponse comptée fausse, c'est ici
+ * qu'il faut regarder, et c'est le seuil qu'il faut remonter.
+ */
+const EQUIVALENCE_BUDGET_MS = 500;
+
+/**
  * Evaluate a validation rule against a student answer
  *
  * @param rule - The validation rule to evaluate
@@ -304,7 +333,7 @@ function evaluateEquivalenceRule(rule: EquivalenceRule, ctx: EvaluationContext):
 		}
 
 		// Fall back to symbolic equivalence check
-		const valid = areEquivalent(ctx.answer, resolvedExpr);
+		const valid = areEquivalent(ctx.answer, resolvedExpr, { timeoutMs: EQUIVALENCE_BUDGET_MS });
 		return {
 			valid,
 			reason: valid ? undefined : `${ctx.answer} is not equivalent to ${resolvedExpr}`,
@@ -312,7 +341,7 @@ function evaluateEquivalenceRule(rule: EquivalenceRule, ctx: EvaluationContext):
 		};
 	} catch {
 		// If evaluation fails, try symbolic comparison
-		const valid = areEquivalent(ctx.answer, resolvedExpr);
+		const valid = areEquivalent(ctx.answer, resolvedExpr, { timeoutMs: EQUIVALENCE_BUDGET_MS });
 		return {
 			valid,
 			reason: valid ? undefined : `${ctx.answer} is not equivalent to ${resolvedExpr}`,
