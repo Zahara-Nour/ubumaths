@@ -198,6 +198,17 @@ la convention de `evaluateWithUnits`.
 Une grandeur **numérique** est écrite dans l'unité qui place sa valeur entre
 0,1 et 1000 (`selectBestUnit`, mode `best`), en **décimal** :
 
+> **Erratum 2 du 2026-09-20 (revue de la PR 3, mesuré)** : le mode `best`
+> parcourt la famille de la plus grande unité à la plus petite et retient la
+> première au-dessus du plancher — il rend `5 m → 0,5 dam`, `0,3 kg → 3 hg`,
+> `30 s → 0,5 min`. Décision prise pour `tidy` : **unités scolaires seulement**
+> (km/m/cm/mm, kg/g/mg, L/mL, h/min/s) et **valeur ≥ 1 préférée** — la plus
+> grande unité scolaire dont la valeur est ≥ 1, sinon la plus petite. D'où
+> `0,005 m → 5 mm` (et non `0,5 cm` comme ci-dessous, exemple hérité du mode
+> `best`), `600 m → 600 m`, `0,3 kg → 300 g`. Une valeur sans écriture décimale
+> finie garde son unité (`1/3 km`). L'évaluation (`evaluateWithUnits`) garde
+> son mode `best` inchangé.
+
 | entrée          | attendu   |
 | --------------- | --------- |
 | `12000[m]`      | `12 km`   |
