@@ -2705,18 +2705,31 @@ describe('Log Expansion', () => {
 // =============================================================================
 
 describe('Symbolic Sqrt Simplification', () => {
-	describe('√x × √x = |x| (via Phase 1 combining then A1 rule)', () => {
-		test('sqrt(x) * sqrt(x) = |x|', () => {
-			// Phase 1: sqrt(x) * sqrt(x) → sqrt(x*x)
-			// Phase 2: sqrt(x*x) → |x| (A1 rule)
+	/**
+	 * ⚠️ Ces tests assertaient `|x|`, et ils enregistraient un bug.
+	 *
+	 * La fusion `√a · √b → √(a·b)` n'est licite que parce que les deux radicaux
+	 * sont ÉCRITS, donc que `a ≥ 0`. Fabriquer `√(a·a)` perdait cette
+	 * information, et la règle `√(a²) = |a|` la recevait sans savoir d'où elle
+	 * venait. Conséquence mesurée : `simplify(√x·√x)` rendait `x` et
+	 * `areEquivalent` déclarait l'entrée non équivalente à cette sortie.
+	 *
+	 * Le bloc `(√x)² = x` quelques lignes plus bas asserte déjà la bonne valeur
+	 * pour la MÊME expression : les deux étaient contradictoires.
+	 *
+	 * `√(x·x) = |x|` reste vrai, et son bloc est inchangé : là, l'élève a écrit
+	 * un produit sous UN radical, et rien ne garantit le signe de `x`.
+	 */
+	describe('√x × √x = x (écrire √x impose déjà x ≥ 0)', () => {
+		test('sqrt(x) * sqrt(x) = x', () => {
 			const expr = mul(sqrt(variable('x')), sqrt(variable('x')));
-			const expected = abs(variable('x'));
+			const expected = variable('x');
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt(y) * sqrt(y) = |y|', () => {
+		test('sqrt(y) * sqrt(y) = y', () => {
 			const expr = mul(sqrt(variable('y')), sqrt(variable('y')));
-			const expected = abs(variable('y'));
+			const expected = variable('y');
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 	});
@@ -2800,18 +2813,20 @@ describe('Symbolic Sqrt Simplification', () => {
 		});
 	});
 
-	describe('√(x+1) × √(x+1) = |x+1|', () => {
-		test('sqrt(x+1) * sqrt(x+1) = |x+1|', () => {
+	// Même raison que le bloc `√x × √x` ci-dessus : le radicande est garanti
+	// positif par l'écriture des deux radicaux.
+	describe('√(x+1) × √(x+1) = x+1', () => {
+		test('sqrt(x+1) * sqrt(x+1) = x+1', () => {
 			const xplus1 = add(variable('x'), num('1'));
 			const expr = mul(sqrt(xplus1), sqrt(xplus1));
-			const expected = abs(add(variable('x'), num('1')));
+			const expected = add(variable('x'), num('1'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt(2x+3) * sqrt(2x+3) = |2x+3|', () => {
+		test('sqrt(2x+3) * sqrt(2x+3) = 2x+3', () => {
 			const twoxplus3 = add(mul(num('2'), variable('x')), num('3'));
 			const expr = mul(sqrt(twoxplus3), sqrt(twoxplus3));
-			const expected = abs(add(mul(num('2'), variable('x')), num('3')));
+			const expected = add(mul(num('2'), variable('x')), num('3'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 	});
@@ -2837,12 +2852,12 @@ describe('Symbolic Sqrt Simplification', () => {
 	});
 
 	describe('Fractional exponents in monomials', () => {
-		test('sqrt(x) * sqrt(x) = |x| (via A1)', () => {
+		test('sqrt(x) * sqrt(x) = x', () => {
 			// Phase 1 combines sqrt(x)*sqrt(x) → sqrt(x*x) = sqrt(x²)
 			// A1 rule: sqrt(a*a) = |a| → |x|
 			const xhalf = sqrt(variable('x'));
 			const expr = mul(xhalf, xhalf);
-			const expected = abs(variable('x'));
+			const expected = variable('x');
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
@@ -3249,10 +3264,10 @@ describe('Symbolic Sqrt Simplification', () => {
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt(xy) * sqrt(xy) = |xy|', () => {
+		test('sqrt(xy) * sqrt(xy) = xy', () => {
 			const xy = mul(variable('x'), variable('y'));
 			const expr = mul(sqrt(xy), sqrt(xy));
-			const expected = abs(mul(variable('x'), variable('y')));
+			const expected = mul(variable('x'), variable('y'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
@@ -3436,21 +3451,20 @@ describe('Symbolic Sqrt Simplification', () => {
 		});
 
 		test('sqrt(x+1) * sqrt(x+1) * sqrt(x+1) * sqrt(x+1) = (x+1)²', () => {
-			// sqrt handling conservatively wraps in abs: result is abs(x²+2x+1)
-			// Mathematically |(x+1)²| = (x+1)², but abs can't be stripped from
-			// expanded polynomials (only from superscript nodes with even exponent)
+			// Chaque paire `√(x+1)·√(x+1)` vaut `x+1`, sans valeur absolue : écrire
+			// les deux radicaux impose déjà `x+1 ≥ 0`. Le test attendait
+			// `|(x+1)²|`, ce qui enregistrait le détour par `√((x+1)²)`.
 			const xplus1 = add(variable('x'), num('1'));
 			const expr = mul(mul(sqrt(xplus1), sqrt(xplus1)), mul(sqrt(xplus1), sqrt(xplus1)));
-			const squaredForm = denormalize(normalize(power(xplus1, num('2'))));
-			const expected = abs(squaredForm);
+			const expected = denormalize(normalize(power(xplus1, num('2'))));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 	});
 
 	describe('Edge cases: Greek letters as variables', () => {
-		test('sqrt(alpha) * sqrt(alpha) = |alpha|', () => {
+		test('sqrt(alpha) * sqrt(alpha) = alpha', () => {
 			const expr = mul(sqrt(greek('alpha')), sqrt(greek('alpha')));
-			const expected = abs(greek('alpha'));
+			const expected = greek('alpha');
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
@@ -3470,10 +3484,10 @@ describe('Symbolic Sqrt Simplification', () => {
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt(sqrt(x) * sqrt(x)) = sqrt(|x|)', () => {
-			// sqrt(x) * sqrt(x) = |x|, then sqrt(|x|)
+		test('sqrt(sqrt(x) * sqrt(x)) = sqrt(x)', () => {
+			// sqrt(x) * sqrt(x) = x, donc sqrt(x)
 			const expr = sqrt(mul(sqrt(variable('x')), sqrt(variable('x'))));
-			const expected = sqrt(abs(variable('x')));
+			const expected = sqrt(variable('x'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
@@ -3497,10 +3511,10 @@ describe('Symbolic Sqrt Simplification', () => {
 			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
 		});
 
-		test('sqrt(x) * sqrt(x) = |x|', () => {
+		test('sqrt(x) * sqrt(x) = x', () => {
 			// sqrt(x)*sqrt(x) = sqrt(x*x) = sqrt(x²) = |x|
 			const expr1 = mul(sqrt(variable('x')), sqrt(variable('x')));
-			const expr2 = abs(variable('x'));
+			const expr2 = variable('x');
 			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
 		});
 
@@ -3607,13 +3621,13 @@ describe('Denormalization of Fractional Exponents', () => {
 			expect(latex).toBe('\\sqrt{x}');
 		});
 
-		test('sqrt(x) * sqrt(x) roundtrips to |x|', () => {
-			// sqrt(x)*sqrt(x) = sqrt(x²) = |x|
+		test('sqrt(x) * sqrt(x) roundtrips to x', () => {
+			// Ecrire deux fois `√x` impose x >= 0 : le produit vaut x.
 			const expr = mul(sqrt(variable('x')), sqrt(variable('x')));
 			const normalized = normalize(expr);
 			const denormalized = denormalize(normalized);
 			const latex = toLatex(denormalized);
-			expect(latex).toBe('\\left| x \\right|');
+			expect(latex).toBe('x');
 		});
 
 		test('(sqrt(x))^2 roundtrips to x', () => {
