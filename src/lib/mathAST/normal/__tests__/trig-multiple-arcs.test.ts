@@ -165,6 +165,18 @@ describe('limites assumées : faux négatif, jamais faux positif', () => {
 		expect(eq('sin(40x)', 'sin(40x)')).toBe(true);
 		expect(eq('sin(40x)', '2*sin(20x)*cos(20x)')).toBe(false);
 	});
+
+	it('un atome non monomial reste opaque, même à coefficient entier : sin(2x/y)', () => {
+		// Le coefficient 2 est bien entier, mais `x/y` ne se dénormalise pas en
+		// monôme : la décomposition échoue avant Tchebychev. `sin(2x)` marche.
+		expect(eq('sin(2*x/y)', '2*sin(x/y)*cos(x/y)')).toBe(false);
+		expect(eq('sin(2x)', '2*sin(x)*cos(x)')).toBe(true);
+	});
+
+	it('la réduction ne traverse pas l’argument d’une autre fonction : ln(sin²x)', () => {
+		expect(eq('ln(sin(x)^2)', 'ln(1-cos(x)^2)')).toBe(false);
+		expect(eq('sin(x)^2', '1-cos(x)^2')).toBe(true);
+	});
 });
 
 // =============================================================================
@@ -205,6 +217,49 @@ describe('non-régression', () => {
 		expect(toCustom(simplify(parseCustom('sin(2x)')).result)).toBe('sin(2x)');
 		expect(toCustom(simplify(parseCustom('sin(x)*cos(x)')).result)).toBe('cos(x)sin(x)');
 		expect(toCustom(simplify(parseCustom('sin(x)^2')).result)).toBe('sin(x)^2');
+	});
+});
+
+// =============================================================================
+// Le plafond doit compter ce que le développement COÛTE EN AVAL, pas par nœud
+// =============================================================================
+
+/**
+ * Le plafond par nœud ne borne rien quand le nœud développé se retrouve sous un
+ * produit ou une puissance. `\sin(7x+5y)` fait 8×6 = 48 termes, très en dessous
+ * du plafond de 256, mais élevé à la puissance 4 il porte la base de 2 termes à
+ * 55, et l'arithmétique polynomiale en aval meurt en dépassement mémoire.
+ *
+ * Mesuré, tas plafonné à 700 Mo, `timeoutMs: 200` :
+ *
+ * | expression                       | main   | branche avant correctif |
+ * | -------------------------------- | ------ | ----------------------- |
+ * | `(\sin(7x+5y)+\cos(6z))^4`       | 9,2 ms | processus tué (OOM)     |
+ * | `(\cosh(9z+7y)-\tanh(4x-12y))^2` | 8,3 ms | processus tué (OOM)     |
+ *
+ * La loi de composition est **multiplicative** à travers les produits et les
+ * puissances, pas additive : c'est le produit des tailles qu'il faut borner, sur
+ * tout l'arbre, avant de développer quoi que ce soit.
+ */
+describe('le coût se compose, il ne s’additionne pas', () => {
+	it.each([
+		['une puissance amplifie la base', '(\\sin(7x+5y)+\\cos(6z))^4'],
+		['les hyperboliques aussi', '(\\cosh(9z+7y)-\\tanh(4x-12y))^2'],
+		[
+			'un produit multiplie les tailles',
+			'\\sin(12x)\\cos(12y)\\sin(12z)\\sin(11a)\\cos(11b)\\sin(11c)'
+		]
+	])('%s : %s rend la main', (_titre, expression) => {
+		const started = performance.now();
+		expect(areEquivalent(parseLatex(expression), parseLatex('1'), { timeoutMs: 200 })).toBe(false);
+		expect(performance.now() - started).toBeLessThan(1000);
+	});
+
+	it('refuser reste un faux négatif : ces formes restent égales à elles-mêmes', () => {
+		for (const expression of ['(\\sin(7x+5y)+\\cos(6z))^4', '(\\cosh(9z+7y)-\\tanh(4x-12y))^2']) {
+			const node = parseLatex(expression);
+			expect(areEquivalent(node, node, { timeoutMs: 200 })).toBe(true);
+		}
 	});
 });
 

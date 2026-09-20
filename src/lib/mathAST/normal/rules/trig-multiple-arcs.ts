@@ -31,13 +31,18 @@
  * `cos(a+b) = cos a cos b − sin a sin b` contre
  * `cosh(a+b) = cosh a cosh b + sinh a sinh b`.
  *
- * Deux limites **assumées**, toutes deux des faux négatifs — jamais un faux
+ * Quatre limites **assumées**, toutes des faux négatifs — jamais un faux
  * positif :
  * - un coefficient **non entier** (`sin(x/2)`) laisse le nœud tel quel : le
  *   traiter demanderait de prendre `x/2` pour générateur, donc un générateur
  *   qui dépend de l'expression ;
+ * - un **atome non monomial** : `sin(2x/y)` reste opaque bien que son
+ *   coefficient soit entier, parce que `x/y` ne se dénormalise pas en monôme.
+ *   Mesuré : `sin(2x/y) ≢ 2 sin(x/y) cos(x/y)`, là où `sin(2x)` marche ;
  * - au-delà du **plafond**, l'arc reste opaque plutôt que de produire un
- *   polynôme de degré arbitraire.
+ *   polynôme de degré arbitraire ;
+ * - la réduction ne traverse pas l'**argument d'une autre fonction** :
+ *   `ln(sin²x) ≢ ln(1−cos²x)`.
  *
  * Comme à l'étape 1 : **réduire pour comparer, pas pour écrire**. Ce module
  * vit sur le chemin de `equivalenceForm` seul, jamais dans `preprocess` ni
@@ -47,7 +52,18 @@
 import type { AbortChecker } from '../../common/abort';
 import { checkAbort } from '../../common/abort';
 import { add, func, multiply, number, opposite, power, subtract, superscript } from '../../factory';
-import { isFunction } from '../../guards';
+import {
+	isAddition,
+	isDelimiter,
+	isDivision,
+	isFunction,
+	isMultiplication,
+	isNumber,
+	isOpposite,
+	isPositive,
+	isSubtraction,
+	isSuperscript
+} from '../../guards';
 import { findFirst, mapNode } from '../../transforms';
 import type { MathNode } from '../../types';
 import { denormalizeMonomial, denormalizeTerm } from '../denormalize';
@@ -134,11 +150,15 @@ const ARC_FAMILIES: Readonly<Record<string, TrigFamily>> = {
  *
  * ⚠️ Ce qui coûte vraiment n'est PAS k, c'est la puissance d'une somme large :
  * `(sin(kx)+cos(ky))^6` passe de 81 ms (k=4) à 3,0 s (k=12), et `^8` meurt en
- * dépassement mémoire dès k=8 (tas 900 Mo). Mais ce mur est ANTÉRIEUR et ne
- * tient pas aux arcs multiples : `(sin(x)+cos(y)+sin(z)+cos(w)+x+y+z)^8`, que
- * ce module laisse intact (tous les multiples valent 1), meurt pareillement,
- * tout comme `(a+b+…+m)^8` sans la moindre trigonométrie. Le plafond ne protège
- * pas de ce mur-là ; il borne seulement ce que ce module y apporte.
+ * dépassement mémoire dès k=8 (tas 900 Mo).
+ *
+ * Il existe bien un mur ANTÉRIEUR, indépendant de ce module :
+ * `(a+b+…+m)^8`, sans la moindre trigonométrie, meurt pareillement, parce que
+ * `polynomial.ts` ne consulte aucun signal d'interruption. Mais il serait faux
+ * d'en conclure que ce module n'y ajoute rien : mesuré tas à 700 Mo,
+ * `(\sin(7x+5y)+\cos(6z))^4` rend `false` en 9,2 ms sans ce module et TUE le
+ * processus avec, parce que développer porte la base de 2 termes à 55. Ce
+ * plafond-ci ne borne donc pas assez — voir `MAX_ARC_TOTAL_TERMS`.
  */
 const MAX_ARC_MULTIPLE = 12n;
 
@@ -156,6 +176,34 @@ const MAX_ARC_MULTIPLE = 12n;
  * (`sin(2x+y)` en produit 6, `sin(x+y)sin(x−y)` 4).
  */
 const MAX_ARC_EXPANSION_TERMS = 256n;
+
+/**
+ * Plafond sur le nombre de termes que le développement produit **sur tout
+ * l'arbre**, une fois composé.
+ *
+ * Le plafond par nœud ne borne rien dès que le nœud développé se retrouve sous
+ * un produit ou une puissance, parce que la loi de composition est
+ * multiplicative : `sin(7x+5y)` ne fait que 48 termes, mais `(…)^4` porte une
+ * base de 2 termes à 55, et l'arithmétique polynomiale en aval meurt en
+ * dépassement mémoire là où elle rendait `false` en 9 ms sans ce module.
+ *
+ * L'estimation se fait donc en une passe descendante, AVANT de développer quoi
+ * que ce soit : somme sur les additions, produit sur les produits et les
+ * quotients, puissance sur les exposants entiers. Au-dessus du plafond, le
+ * module rend l'arbre intact — refuser ne produit que des faux négatifs.
+ *
+ * Calibré par la mesure : le contrat le plus lourd (`sin(12x+12y)`, 169 termes)
+ * passe, le premier cas mortel mesuré (`(cosh(9z+7y)−tanh(4x−12y))^2`, estimé
+ * 4 225) est refusé.
+ */
+const MAX_ARC_TOTAL_TERMS = 2048n;
+
+/**
+ * Borne haute du nombre de termes de `estimateExpansionTerms`, au-delà de
+ * laquelle on cesse de multiplier : sans elle, `(…)^12` sur un arbre profond
+ * fabrique des `bigint` de plusieurs milliers de chiffres pour rien.
+ */
+const ESTIMATE_SATURATION = MAX_ARC_TOTAL_TERMS + 1n;
 
 // =============================================================================
 // Fonctions — fabrique de nœuds
@@ -260,7 +308,11 @@ function chebyshevFirstKind(degree: number, abortChecker?: AbortChecker): bigint
  * `sin(ku) = sin(u)·U_{k−1}(cos u)` et `sinh(ku) = sinh(u)·U_{k−1}(cosh u)`.
  */
 function chebyshevSecondKind(degree: number, abortChecker?: AbortChecker): bigint[] {
-	if (degree === 0) return [1n];
+	// `U₋₁ = 0` : la boucle ci-dessous partirait de `U₁ = 2c` pour tout degré
+	// négatif, soit `sin(0·u) = 2 sin(u) cos(u)` — un faux positif. Le multiple
+	// nul est écarté en amont par `expandArcAt`, mais la fonction ne doit pas
+	// dépendre de son appelant pour rester juste.
+	if (degree <= 0) return degree === 0 ? [1n] : [0n];
 	let previous: bigint[] = [1n];
 	let current: bigint[] = [0n, 2n];
 	for (let step = 1; step < degree; step++) {
@@ -508,6 +560,98 @@ function containsExpandableArc(node: MathNode): boolean {
 }
 
 /**
+ * L'exposant entier d'un `^`, quand il en a un et qu'il est petit. Un exposant
+ * symbolique, négatif ou démesuré ne se développe pas ici : il vaut `null`, et
+ * l'estimation sature.
+ */
+function integerExponent(node: MathNode): number | null {
+	if (!isNumber(node)) return null;
+	if (!/^\d+$/.test(node.value)) return null;
+	const exponent = Number(node.value);
+	return Number.isSafeInteger(exponent) && exponent <= 64 ? exponent : null;
+}
+
+/**
+ * Majorant du nombre de termes que le développement produirait pour `node`,
+ * composé selon la structure : somme sur `+` et `−`, produit sur `×`, `/` et
+ * sur l'imbrication d'un arc dans un arc, puissance sur un exposant entier.
+ *
+ * C'est une borne haute, pas un compte : `(a+b)^4` vaut 5 monômes réels et
+ * l'estimation en annonce 16. La sous-estimation serait dangereuse, la
+ * surestimation ne coûte qu'un refus — donc on majore, et on sature dès qu'on
+ * dépasse le plafond pour ne pas fabriquer de grands `bigint` inutiles.
+ */
+function estimateExpansionTerms(node: MathNode, ctx: ArcExpansionContext): bigint {
+	checkAbort(ctx.abortChecker);
+
+	if (isAddition(node) || isSubtraction(node)) {
+		const total = estimateExpansionTerms(node.left, ctx) + estimateExpansionTerms(node.right, ctx);
+		return total > ESTIMATE_SATURATION ? ESTIMATE_SATURATION : total;
+	}
+
+	if (isMultiplication(node)) {
+		const total = estimateExpansionTerms(node.left, ctx) * estimateExpansionTerms(node.right, ctx);
+		return total > ESTIMATE_SATURATION ? ESTIMATE_SATURATION : total;
+	}
+
+	if (isDivision(node)) {
+		const total =
+			estimateExpansionTerms(node.numerator, ctx) * estimateExpansionTerms(node.denominator, ctx);
+		return total > ESTIMATE_SATURATION ? ESTIMATE_SATURATION : total;
+	}
+
+	if (isOpposite(node) || isPositive(node)) return estimateExpansionTerms(node.operand, ctx);
+	if (isDelimiter(node)) return estimateExpansionTerms(node.content, ctx);
+
+	if (isSuperscript(node)) {
+		const base = estimateExpansionTerms(node.base, ctx);
+		if (base <= 1n) return 1n;
+		const exponent = integerExponent(node.superscript);
+		if (exponent === null) return ESTIMATE_SATURATION;
+		let total = 1n;
+		for (let i = 0; i < exponent; i++) {
+			total *= base;
+			if (total > ESTIMATE_SATURATION) return ESTIMATE_SATURATION;
+		}
+		return total;
+	}
+
+	if (isFunction(node)) {
+		// L'arc porté par le nœud et ce que ses arguments développent déjà se
+		// COMPOSENT : `sin(2·sin(3x))` décompose l'arc extérieur sur un atome qui
+		// est lui-même un polynôme. Prendre le maximum sous-estimerait — et c'est
+		// la sous-estimation qui coûte cher.
+		let inner = 1n;
+		for (const arg of node.args) {
+			inner *= estimateExpansionTerms(arg, ctx);
+			if (inner > ESTIMATE_SATURATION) return ESTIMATE_SATURATION;
+		}
+
+		const decomposition =
+			node.args.length === 1 && ARC_FAMILIES[node.name] !== undefined
+				? decomposeAngle(ctx.normalizeArgument(node.args[0]))
+				: null;
+		const own = decomposition === null ? 1n : (expansionSize(decomposition) ?? ESTIMATE_SATURATION);
+
+		let total = own * inner;
+		if (total > ESTIMATE_SATURATION) return ESTIMATE_SATURATION;
+		if (node.power !== undefined && !isInverseNotation(node.power)) {
+			const exponent = integerExponent(node.power);
+			if (exponent === null) return ESTIMATE_SATURATION;
+			let powered = 1n;
+			for (let i = 0; i < exponent; i++) {
+				powered *= total;
+				if (powered > ESTIMATE_SATURATION) return ESTIMATE_SATURATION;
+			}
+			total = powered;
+		}
+		return total > ESTIMATE_SATURATION ? ESTIMATE_SATURATION : total;
+	}
+
+	return 1n;
+}
+
+/**
  * Ramène tous les arcs commensurables d'un arbre au générateur de coefficient 1.
  *
  * De bas en haut : l'argument d'un arc est déjà développé quand on l'atteint,
@@ -517,5 +661,6 @@ function containsExpandableArc(node: MathNode): boolean {
  */
 export function expandCommensurableArcs(node: MathNode, ctx: ArcExpansionContext): MathNode {
 	if (!containsExpandableArc(node)) return node;
+	if (estimateExpansionTerms(node, ctx) > MAX_ARC_TOTAL_TERMS) return node;
 	return mapNode(node, (current) => expandArcAt(current, ctx) ?? current);
 }
