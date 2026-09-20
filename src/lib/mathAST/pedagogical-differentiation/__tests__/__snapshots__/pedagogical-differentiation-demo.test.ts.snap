@@ -998,19 +998,19 @@ Expression: \\frac{x^2+1}{x-1} (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [quotient] Règle du quotient
-  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x^2 + 1}{x - 1})'} \\\\ & = \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x^2 + 1}{x - 1})'} \\\\ & = \\dfrac{2 x x - 1 - x^2 + 1}{\\left( x - 1 \\right)^2} \\end{aligned}
   - [sum-with-constant] La constante a une dérivée nulle
     \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
     - [power-natural] Règle de la puissance (2)
       \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
   - [diff-with-constant] La constante a une dérivée nulle
     \\begin{aligned} & \\textcolor{blue}{(x - 1)'} \\\\ & = 1 \\end{aligned}
-Result: \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2}
+Result: \\dfrac{2 x x - 1 - x^2 + 1}{\\left( x - 1 \\right)^2}
 
 ========== LYCEE (detailed) ==========
 - [quotient] Règle du quotient
   · Avec u = x^2 + 1 et v = x - 1, on applique (u/v)' = (u'v - uv') / v^2.
-  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x^2 + 1}{x - 1})'} \\\\ & = \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x^2 + 1}{x - 1})'} \\\\ & = \\dfrac{2 x x - 1 - x^2 + 1}{\\left( x - 1 \\right)^2} \\end{aligned}
   - [sum-with-constant] La constante a une dérivée nulle
     · La constante 1 a une dérivée nulle, donc seule la dérivée de x^2 contribue.
     \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
@@ -1020,23 +1020,23 @@ Result: \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2}
   - [diff-with-constant] La constante a une dérivée nulle
     · La constante 1 a une dérivée nulle, donc seule la dérivée de x contribue (au signe près).
     \\begin{aligned} & \\textcolor{blue}{(x - 1)'} \\\\ & = 1 \\end{aligned}
-Result: \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2}
+Result: \\dfrac{2 x x - 1 - x^2 + 1}{\\left( x - 1 \\right)^2}
 
 ========== SUPERIEUR (summarized) ==========
 - [quotient] (u/v)' = (u'v - uv')/v^2
-  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x^2 + 1}{x - 1})'} \\\\ & = \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x^2 + 1}{x - 1})'} \\\\ & = \\dfrac{2 x x - 1 - x^2 + 1}{\\left( x - 1 \\right)^2} \\end{aligned}
   - [sum-with-constant] (f+c)' = f'
     \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
     - [power-natural] (x^n)' = nx^{n-1}
       \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
   - [diff-with-constant] (f-c)' = f'
     \\begin{aligned} & \\textcolor{blue}{(x - 1)'} \\\\ & = 1 \\end{aligned}
-Result: \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2}
+Result: \\dfrac{2 x x - 1 - x^2 + 1}{\\left( x - 1 \\right)^2}
 
 ========== SUPERIEUR (detailed) ==========
 - [quotient] (u/v)' = (u'v - uv')/v^2
   · Avec u = x^2 + 1 et v = x - 1, on applique (u/v)' = (u'v - uv') / v^2.
-  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x^2 + 1}{x - 1})'} \\\\ & = \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x^2 + 1}{x - 1})'} \\\\ & = \\dfrac{2 x x - 1 - x^2 + 1}{\\left( x - 1 \\right)^2} \\end{aligned}
   - [sum-with-constant] (f+c)' = f'
     · La constante 1 a une dérivée nulle, donc seule la dérivée de x^2 contribue.
     \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
@@ -1046,7 +1046,7 @@ Result: \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2}
   - [diff-with-constant] (f-c)' = f'
     · La constante 1 a une dérivée nulle, donc seule la dérivée de x contribue (au signe près).
     \\begin{aligned} & \\textcolor{blue}{(x - 1)'} \\\\ & = 1 \\end{aligned}
-Result: \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2}
+Result: \\dfrac{2 x x - 1 - x^2 + 1}{\\left( x - 1 \\right)^2}
 "
 `;
 
@@ -1058,35 +1058,35 @@ Expression: \\frac{1}{x+1} (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [inverse] Dérivée de l'inverse
-  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x + 1})'} \\\\ & = \\dfrac{-1}{x + 1^2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x + 1})'} \\\\ & = \\dfrac{-1}{\\left( x + 1 \\right)^2} \\end{aligned}
   - [sum-with-constant] La constante a une dérivée nulle
     \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
-Result: \\dfrac{-1}{x + 1^2}
+Result: \\dfrac{-1}{\\left( x + 1 \\right)^2}
 
 ========== LYCEE (detailed) ==========
 - [inverse] Dérivée de l'inverse
   · Avec f = x + 1, on a (1/f)' = -f'/f^2.
-  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x + 1})'} \\\\ & = \\dfrac{-1}{x + 1^2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x + 1})'} \\\\ & = \\dfrac{-1}{\\left( x + 1 \\right)^2} \\end{aligned}
   - [sum-with-constant] La constante a une dérivée nulle
     · La constante 1 a une dérivée nulle, donc seule la dérivée de x contribue.
     \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
-Result: \\dfrac{-1}{x + 1^2}
+Result: \\dfrac{-1}{\\left( x + 1 \\right)^2}
 
 ========== SUPERIEUR (summarized) ==========
 - [inverse] (1/f)' = -f'/f^2
-  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x + 1})'} \\\\ & = \\dfrac{-1}{x + 1^2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x + 1})'} \\\\ & = \\dfrac{-1}{\\left( x + 1 \\right)^2} \\end{aligned}
   - [sum-with-constant] (f+c)' = f'
     \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
-Result: \\dfrac{-1}{x + 1^2}
+Result: \\dfrac{-1}{\\left( x + 1 \\right)^2}
 
 ========== SUPERIEUR (detailed) ==========
 - [inverse] (1/f)' = -f'/f^2
   · Avec f = x + 1, on a (1/f)' = -f'/f^2.
-  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x + 1})'} \\\\ & = \\dfrac{-1}{x + 1^2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x + 1})'} \\\\ & = \\dfrac{-1}{\\left( x + 1 \\right)^2} \\end{aligned}
   - [sum-with-constant] (f+c)' = f'
     · La constante 1 a une dérivée nulle, donc seule la dérivée de x contribue.
     \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
-Result: \\dfrac{-1}{x + 1^2}
+Result: \\dfrac{-1}{\\left( x + 1 \\right)^2}
 "
 `;
 
@@ -1198,35 +1198,35 @@ Expression: \\frac{x}{x+1} (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [quotient] Règle du quotient
-  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x}{x + 1})'} \\\\ & = \\dfrac{x + 1 - x}{x + 1^2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x}{x + 1})'} \\\\ & = \\dfrac{x + 1 - x}{\\left( x + 1 \\right)^2} \\end{aligned}
   - [sum-with-constant] La constante a une dérivée nulle
     \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
-Result: \\dfrac{x + 1 - x}{x + 1^2}
+Result: \\dfrac{x + 1 - x}{\\left( x + 1 \\right)^2}
 
 ========== LYCEE (detailed) ==========
 - [quotient] Règle du quotient
   · Avec u = x et v = x + 1, on applique (u/v)' = (u'v - uv') / v^2.
-  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x}{x + 1})'} \\\\ & = \\dfrac{x + 1 - x}{x + 1^2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x}{x + 1})'} \\\\ & = \\dfrac{x + 1 - x}{\\left( x + 1 \\right)^2} \\end{aligned}
   - [sum-with-constant] La constante a une dérivée nulle
     · La constante 1 a une dérivée nulle, donc seule la dérivée de x contribue.
     \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
-Result: \\dfrac{x + 1 - x}{x + 1^2}
+Result: \\dfrac{x + 1 - x}{\\left( x + 1 \\right)^2}
 
 ========== SUPERIEUR (summarized) ==========
 - [quotient] (u/v)' = (u'v - uv')/v^2
-  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x}{x + 1})'} \\\\ & = \\dfrac{x + 1 - x}{x + 1^2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x}{x + 1})'} \\\\ & = \\dfrac{x + 1 - x}{\\left( x + 1 \\right)^2} \\end{aligned}
   - [sum-with-constant] (f+c)' = f'
     \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
-Result: \\dfrac{x + 1 - x}{x + 1^2}
+Result: \\dfrac{x + 1 - x}{\\left( x + 1 \\right)^2}
 
 ========== SUPERIEUR (detailed) ==========
 - [quotient] (u/v)' = (u'v - uv')/v^2
   · Avec u = x et v = x + 1, on applique (u/v)' = (u'v - uv') / v^2.
-  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x}{x + 1})'} \\\\ & = \\dfrac{x + 1 - x}{x + 1^2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x}{x + 1})'} \\\\ & = \\dfrac{x + 1 - x}{\\left( x + 1 \\right)^2} \\end{aligned}
   - [sum-with-constant] (f+c)' = f'
     · La constante 1 a une dérivée nulle, donc seule la dérivée de x contribue.
     \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
-Result: \\dfrac{x + 1 - x}{x + 1^2}
+Result: \\dfrac{x + 1 - x}{\\left( x + 1 \\right)^2}
 "
 `;
 

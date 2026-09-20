@@ -1269,7 +1269,18 @@ export class LatexGenerator {
 		const base = this.generateNode(node.base);
 		const superscript = this.generateNode(node.superscript);
 		const wrappedSuperscript = this.needsBraces(superscript) ? `{${superscript}}` : superscript;
-		return `${base}^${wrappedSuperscript}`;
+
+		// ⚠️ Une base qui est une SOMME doit être parenthésée. Le générateur ne
+		// parenthèse pas par priorité : il s'appuie sur la présence d'un nœud
+		// délimiteur, que le parseur pose mais qu'une construction interne peut
+		// ne pas poser. Mesuré, `superscript(addition(x, 1), 2/3)` se rendait
+		// `x + 1^{2/3}`, qui se relit `x + (1^{2/3})`, soit `x + 1`. Une
+		// expression montrée à l'élève sous une forme qui ne se relit pas comme
+		// elle-même.
+		const baseNeedsParentheses = node.base.type === 'addition' || node.base.type === 'subtraction';
+		const wrappedBase = baseNeedsParentheses ? `\\left( ${base} \\right)` : base;
+
+		return `${wrappedBase}^${wrappedSuperscript}`;
 	}
 
 	private generateRelation(node: RelationNode): string {
