@@ -41,5 +41,5 @@
   - R1 : `index.ts` n'avale que `RangeError`, tout autre bug remonte ;
   - réutilisation : `extractPerfectPower`, `floorRational`, `negRational`, `hashUnit` exporté (seule ligne touchée hors `tidy/`).
 - [x] `pnpm lint:fast` : rien à signaler (un instantané de map restauré sous variable nommée : la boucle la modifie)
-- [ ] `pnpm check:incremental` = 0 erreur
-- [ ] PR, CI verte, merge, worktree supprimé
+- [x] `pnpm check:incremental` = 0 erreur
+- [x] PR, CI verte, merge, worktree supprimé — PR #378 mergée le 2026-09-20

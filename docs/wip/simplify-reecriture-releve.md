@@ -371,27 +371,20 @@ parenthèses.
 
 ---
 
-## 7. À trancher par David — la colonne « attendu »
+## 7. Tranché — la phase 0 validée, puis livrée
 
-Les cases que le relevé **ne permet pas** de figer seul :
+Les sept questions ouvertes ici ont été tranchées par David le 2026-09-20 en
+validant [tidy-phase0.md](tidy-phase0.md) (§C, colonne « attendu ») : `x+x → 2x`
+et `√8 → 2√2` par une seconde forme canonique, **`tidy`**, qui regroupe sans
+développer ; `1/√2 → √2/2` ; `(x+1)(x−1) → x²−1` et `x(x+1) → x²+x`
+(développement seulement si moins cher) ; `−(x+2)` inchangé ;
+`x² cos(x) + 2x sin(x)` ; `4hx+2h²`. Livré en trois PR : #378 (`tidy`), #379
+(`simplify` recâblé), #380 (grandeurs). Suivi : [tidy-progress.md](tidy-progress.md),
+[simplify-tidy-progress.md](simplify-tidy-progress.md), [units-progress.md](units-progress.md).
 
-1. **`x+x → 2x` et `√8 → 2√2`** — oui dans le brief. Mais §3 montre que c'est le
-   même mécanisme qui protège `(x+1)²`. Les obtenir impose de **ne plus juger
-   le regroupement de termes semblables et l'extraction de radicaux par le
-   coût contre l'entrée**, et de réserver la barrière au développement. Est-ce
-   la ligne : « regrouper/réduire toujours, développer seulement si moins
-   cher » ?
-2. **`1/√2`** → `√2/2` (CE le fait) ou laisser ?
-3. **`(x+1)(x−1)`** → `x²−1` (les deux moteurs) ou garder factorisé ?
-4. **`x(x+1)`** → Q4.
-5. **`−(x+2)`** → `−x−2` (CE) ou garder ?
-6. **`2x·sin(x) + x²·cos(x)`** → ordre : degré de `x` décroissant
-   (`x² cos(x) + 2x sin(x)`, ce que nous rendons) ?
-7. **`2(x+h)²−2x²`** → `4hx+2h²` (nous, ordre actuel) ou `2h²+4hx` ?
-   **Réglé depuis, plus à trancher** (PR #376 et #377, le même jour) : `12[km]`
-   garde son unité (§6.3), le bug d'équivalence des quotients (§6.1), les deux
-   formes de `sin²(x)` (§6.4), et les motifs `P.sub` après `normalizePass`
-   (§6.6). Restent ouverts, hors panel : `cosh²−sinh²` (§6.5) et `sec²−1` (§6.7).
+Restent ouverts, hors périmètre : §6.5 (`cosh²−sinh²`), §6.7 (`sec²−1`),
+§6.8 (`1/√2` pour `areEquivalent` — corrigé de fait ? à mesurer), §6.9 (`^`
+après `/` dans le parseur maison).
 
 ---
 

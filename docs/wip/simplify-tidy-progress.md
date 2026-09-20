@@ -63,5 +63,5 @@ coopérativement après le candidat développé, là où le temps se passe déso
 - [x] Recâblage (`simplify.ts`, `types.ts`, `descriptions-fr.ts`)
 - [x] Suites vertes : `simplify/` 8 fichiers ; `normal`, `pattern`, `pedagogical-simplify`, `tidy`, `mathAST/__tests__`, `grapheur` (appelant `simplifyExact`), `cli` (commande `.simplify`) : 123 fichiers, 5 790 tests
 - [x] Revue (Opus) : F1 à F7, cf. ci-dessus
-- [ ] `pnpm check:incremental` = 0 erreur, `pnpm lint:fast`
-- [ ] PR, CI verte, merge, worktree supprimé
+- [x] `pnpm check:incremental` = 0 erreur, `pnpm lint:fast`
+- [x] PR, CI verte, merge, worktree supprimé — PR #379 mergée le 2026-09-20

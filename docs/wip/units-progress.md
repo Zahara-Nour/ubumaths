@@ -173,5 +173,5 @@ Commit `cb8226096`, 33 rouges. Décisions prises pour les points produit :
 - [x] Tests de la PR #376 mis à jour
 - [x] Suites vertes (`normal`, `tidy`, `simplify`, `units`, `eval`, `pattern`)
 - [ ] Suites `grapheur`, `cli`
-- [ ] Revue, `pnpm check:incremental`, `pnpm lint:fast`
-- [ ] PR, CI verte, merge, worktree supprimé
+- [x] Revue, `pnpm check:incremental`, `pnpm lint:fast`
+- [x] PR, CI verte, merge, worktree supprimé — PR #380 mergée le 2026-09-20
