@@ -780,6 +780,13 @@ const PYTHAGOREAN_PARTNERS: Readonly<Record<string, string>> = {
 const MAX_PYTHAGOREAN_EXPANSION_DEGREE = 64;
 
 /**
+ * Plafond sur le nombre de termes qu'un seul monôme peut produire en se
+ * réduisant. 4 096 couvre très largement toute expression scolaire (`sin^20`
+ * seul en produit 11) et borne le pire cas à quelques millisecondes.
+ */
+const MAX_PYTHAGOREAN_EXPANSION_TERMS = 4096;
+
+/**
  * Reconnaît un facteur réductible : `sin(u)^k` ou `sinh(u)^k` avec k entier ≥ 2.
  *
  * Écarté volontairement :
@@ -860,7 +867,32 @@ function pythagoreanIdentityPolynomial(functionName: string, partnerNode: MathNo
  * et le facteur produit ne porte que `cos`. Une seule passe par facteur suffit,
  * il n'y a pas de point fixe à chercher.
  */
+/**
+ * Combien de termes la réduction d'un monôme va produire.
+ *
+ * Le coût est le **produit** des demi-degrés des facteurs réductibles, pas leur
+ * maximum : quatre `sin^40` dans un même monôme, c'est 21⁴ termes, cinq `sin^64`
+ * et le processus meurt d'un dépassement mémoire. Le plafond par facteur ne
+ * borne donc rien ; c'est le produit qu'il faut compter, avant de développer.
+ */
+function pythagoreanExpansionSize(term: NormalTerm): number {
+	let size = 1;
+	for (const factor of term.monomial) {
+		const reducible = pythagoreanReducibleFactor(factor);
+		if (reducible === null) continue;
+		size *= reducible.halfPower + 1;
+		if (size > MAX_PYTHAGOREAN_EXPANSION_TERMS) return size;
+	}
+	return size;
+}
+
 function reducePythagorasInTerm(term: NormalTerm): NormalTerm[] {
+	// Au-delà du plafond, le monôme est laissé tel quel : un faux négatif, jamais
+	// un faux positif — deux expressions égales gardent alors deux empreintes.
+	if (pythagoreanExpansionSize(term) > MAX_PYTHAGOREAN_EXPANSION_TERMS) {
+		return [term];
+	}
+
 	const keptFactors: SymbolicFactor[] = [];
 	const expansions: Array<{ identity: NormalTerm[]; halfPower: number }> = [];
 
@@ -922,13 +954,20 @@ function polynomialNeedsPythagoras(terms: readonly NormalTerm[]): boolean {
  * Même patron que `combineExpInPolynomial` pour les exponentielles : la relation
  * entre atomes se règle sur le polynôme normalisé, pas dans l'arbre.
  */
-function reducePythagorasInPolynomial(terms: readonly NormalTerm[]): NormalTerm[] {
+function reducePythagorasInPolynomial(
+	terms: readonly NormalTerm[],
+	ctx?: NormalizeContext
+): NormalTerm[] {
 	if (!polynomialNeedsPythagoras(terms)) {
 		return [...terms];
 	}
 
 	let result: NormalTerm[] = [];
 	for (const term of terms) {
+		// La réduction tourne APRÈS le retour de `normalize` : sans ce contrôle,
+		// aucun `timeoutMs` ne la couvre. C'est la seule protection contre le gel
+		// du navigateur pendant la correction d'une copie.
+		checkAbort(ctx?.abortChecker);
 		result = addPolynomials(result, reducePythagorasInTerm(term));
 	}
 
@@ -953,22 +992,38 @@ function reducePythagorasInPolynomial(terms: readonly NormalTerm[]): NormalTerm[
  * Le repassage par `normalFormFromFraction` est nécessaire : après réduction,
  * `cos²x/(1−sin²x)` devient `cos²x/cos²x`, que seul le pgcd ramène à 1.
  */
-function reducePythagorasInNormalForm(form: NormalForm): NormalForm {
+function reducePythagorasInNormalForm(form: NormalForm, ctx?: NormalizeContext): NormalForm {
 	if (!polynomialNeedsPythagoras(form.numerator) && !polynomialNeedsPythagoras(form.denominator)) {
 		return form;
 	}
 
-	const numerator = reducePythagorasInPolynomial(form.numerator);
+	const numerator = reducePythagorasInPolynomial(form.numerator, ctx);
 	if (numerator.length === 0) {
 		return ZERO_NORMAL_FORM;
 	}
 
-	const denominator = reducePythagorasInPolynomial(form.denominator);
+	const denominator = reducePythagorasInPolynomial(form.denominator, ctx);
 	if (denominator.length === 0) {
-		throw new Error('normalize: division by zero');
+		// Le dénominateur s'annule une fois réduit : l'expression n'est pas
+		// définie. Ce n'est pas au décideur de trancher ça — il rend la forme
+		// NON réduite, et deux écritures identiques restent identiques.
+		// `areEquivalent(e, e)` doit valoir vrai, même pour `1/(sin²+cos²−1)`.
+		throw new PythagoreanReductionError();
 	}
 
 	return normalFormFromFraction(numerator, denominator);
+}
+
+/**
+ * La réduction a annulé un dénominateur : l'expression n'est pas définie.
+ * Signalée à part d'une vraie division par zéro pour que le décideur retombe
+ * sur la comparaison non réduite au lieu de propager une erreur.
+ */
+class PythagoreanReductionError extends Error {
+	constructor() {
+		super('normalize: pythagorean reduction cancels the denominator');
+		this.name = 'PythagoreanReductionError';
+	}
 }
 
 /**
@@ -1878,7 +1933,32 @@ export function normalize(node: MathNode, ctx?: NormalizeContext): NormalForm {
  * d'addition) sont une étape ultérieure.
  */
 export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalForm {
-	return reducePythagorasInNormalForm(normalize(expandTrigDefinitions(node), ctx));
+	return reducePythagorasInNormalForm(normalize(expandTrigDefinitions(node), ctx), ctx);
+}
+
+/**
+ * Les deux formes qui décident si `a` et `b` sont équivalentes.
+ *
+ * Normalement les formes **réduites**. Mais la réduction peut annuler un
+ * dénominateur (`1/(sin²+cos²−1)` devient `1/0`) : l'expression n'est alors pas
+ * définie, et ce n'est pas au décideur d'en juger. Dans ce cas il retombe sur
+ * les deux formes **non réduites**, des deux côtés à la fois — sans quoi il
+ * comparerait des formes de natures différentes. `areEquivalent(e, e)` reste
+ * ainsi vrai, comme il se doit.
+ */
+export function equivalenceForms(
+	a: MathNode,
+	b: MathNode,
+	ctx?: NormalizeContext
+): readonly [NormalForm, NormalForm] {
+	try {
+		return [equivalenceForm(a, ctx), equivalenceForm(b, ctx)];
+	} catch (error) {
+		if (error instanceof PythagoreanReductionError) {
+			return [normalize(a, ctx), normalize(b, ctx)];
+		}
+		throw error;
+	}
 }
 
 /**
@@ -4792,7 +4872,7 @@ function powNormalForm(a: NormalForm, n: number): NormalForm {
 export function isZeroExpression(node: MathNode, options?: NormalizeAbortOptions): boolean {
 	const abortChecker = makeAbortChecker(options?.signal, options?.timeoutMs);
 	try {
-		const form = normalize(node, abortChecker ? { abortChecker } : undefined);
+		const form = equivalenceForm(node, abortChecker ? { abortChecker } : undefined);
 		return form.numerator.length === 0;
 	} catch (e) {
 		// Conservative on abort: caller cannot prove zero in time.
@@ -4816,7 +4896,7 @@ export function isZeroExpression(node: MathNode, options?: NormalizeAbortOptions
 export function isOneExpression(node: MathNode, options?: NormalizeAbortOptions): boolean {
 	const abortChecker = makeAbortChecker(options?.signal, options?.timeoutMs);
 	try {
-		const form = normalize(node, abortChecker ? { abortChecker } : undefined);
+		const form = equivalenceForm(node, abortChecker ? { abortChecker } : undefined);
 		return isOnePolynomial(form.numerator) && isOnePolynomial(form.denominator);
 	} catch (e) {
 		// Conservative on abort: caller cannot prove one in time. Re-throw any

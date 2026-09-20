@@ -419,6 +419,32 @@ Coût mesuré : nul sur une expression sans trigonométrie, facteur 2,2 avec. Le
 seul effet visible est le cas `sin(x)` du test de performance de l'intégration,
 17,6 ms → 19,6 ms en isolation.
 
+**Quatre défauts de plomberie**, trouvés par la revue et corrigés dans la même
+PR. Le cœur mathématique, lui, a résisté : deux campagnes de 27 000 expressions
+n'ont sorti **aucun faux positif**.
+
+- **Le délai d'interruption ne couvrait pas la réduction**, qui tourne après le
+  retour de `normalize`. Mesuré : 5,2 s pour un `timeoutMs` de 200 ms, et le
+  processus mourait d'un dépassement mémoire à cinq facteurs. Le coût est le
+  **produit** des demi-degrés des facteurs d'un monôme, pas leur maximum : le
+  plafond par facteur ne bornait donc rien. Un plafond sur le nombre de termes
+  produits (4 096) plus un contrôle du délai par terme ramènent ce cas à 7 ms.
+  Au plafond, le monôme est laissé tel quel : un faux négatif, jamais un faux
+  positif.
+- **La réflexivité était cassée** : `areEquivalent(e, e)` rendait faux pour
+  `1/(sin²+cos²−1)`, dont la réduction annule le dénominateur, et
+  `Exp.isEquivalent` **jetait**. Le décideur retombe désormais sur les deux
+  formes non réduites, des deux côtés à la fois.
+- **Deux notions d'égalité coexistaient** : `isZeroExpression` et
+  `isOneExpression`, que `geometry-core` utilise pour comparer deux valeurs,
+  ignoraient la réduction. Elles passent par le même décideur.
+- **`Exp.hash` contredisait `Exp.isEquivalent`** alors que sa docstring promet
+  l'inverse.
+
+Faux négatif connu, non traité : la réduction ne traverse pas les arguments de
+fonction, donc `ln(sin²x) ≢ ln(1−cos²x)`. `areEquivalent` n'est pas une
+congruence.
+
 ---
 
 ## 7. Tranché — la phase 0 validée, puis livrée

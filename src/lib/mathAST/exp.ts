@@ -99,7 +99,7 @@ import {
 import { normalize } from './normal/normalize';
 import { denormalize } from './normal/denormalize';
 import { normalFormsEquivalent, hashNormalForm } from './normal/hash';
-import { equivalenceForm } from './normal/normalize';
+import { equivalenceForm, equivalenceForms } from './normal/normalize';
 
 import { substitute as substituteFunc, evaluate as evaluateFunc } from './eval';
 import type { EvalBindings, EvalOptions, EvalResult } from './eval';
@@ -608,7 +608,18 @@ export class Exp {
 	 * Two mathematically equivalent expressions will have the same hash.
 	 */
 	get hash(): string {
-		return hashNormalForm(this.normal);
+		// L'empreinte du **décideur**, pas celle de la forme affichée : la
+		// docstring promet que deux expressions équivalentes ont le même hash,
+		// et `isEquivalent` réduit la trigonométrie. Sans cela, `sin²(x)` et
+		// `1−cos²(x)` étaient équivalents mais de hash différents, et tout
+		// dédoublonnage par `hash` divergeait du décideur.
+		try {
+			return hashNormalForm(equivalenceForm(this.node));
+		} catch {
+			// La réduction annule un dénominateur : l'empreinte de la forme
+			// affichée fait foi, comme pour `isEquivalent`.
+			return hashNormalForm(this.normal);
+		}
 	}
 
 	/**
@@ -628,9 +639,11 @@ export class Exp {
 	 */
 	isEquivalent(other: ExpOrNode): boolean {
 		const otherExp = other instanceof Exp ? other : Exp.from(other);
-		// `equivalenceForm`, pas `this.normal` : le décideur réduit la
-		// trigonométrie, la forme affichée non (cf. sa docstring).
-		return normalFormsEquivalent(equivalenceForm(this.node), equivalenceForm(otherExp.node));
+		// `equivalenceForms`, pas `this.normal` : le décideur réduit la
+		// trigonométrie, la forme affichée non (cf. sa docstring), et il retombe
+		// sur les formes non réduites quand la réduction annule un dénominateur.
+		const [formA, formB] = equivalenceForms(this.node, otherExp.node);
+		return normalFormsEquivalent(formA, formB);
 	}
 
 	/**
