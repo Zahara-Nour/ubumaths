@@ -9,10 +9,13 @@
 import { describe, it, expect } from 'vitest';
 import { simplify } from '../simplify';
 import { parseCustom } from '../../parser/custom';
+import { parseLatex } from '../../parser';
 import { toCustom } from '../../custom-generator';
+import { toLatex } from '../../latex-generator';
 import { areEquivalent } from '../../equivalence';
 
 const s = (input: string) => toCustom(simplify(parseCustom(input)).result);
+const l = (input: string) => toLatex(simplify(parseLatex(input)).result);
 
 describe('panel — fractions', () => {
 	it.each([
@@ -20,7 +23,7 @@ describe('panel — fractions', () => {
 		['1/2+1/3', '5/6'],
 		['3/6', '1/2'],
 		['2/4*6/8', '3/8'],
-		['(2x)/(4y)', 'x/(2y)']
+		['(2x)/(4y)', 'x/{2y}']
 	])('%s → %s', (input, expected) => {
 		expect(s(input)).toBe(expected);
 	});
@@ -122,6 +125,24 @@ describe('panel — grandeurs (avant la PR 3 : l’unité survit)', () => {
 		['2[km]*3[km]', '6[km^2]']
 	])('%s → %s', (input, expected) => {
 		expect(s(input)).toBe(expected);
+	});
+});
+
+describe('panel — rendu LaTeX des fractions (ce que l’élève lit dans le grapheur)', () => {
+	// Revue du 2026-09-20 : un délimiteur posé par tidy autour d'un numérateur
+	// composite donnait `\dfrac{\left( x + 1 \right)}{2}`. Aucun test ne
+	// regardait le LaTeX.
+	it.each([
+		['\\frac{x+1}{2}', '\\dfrac{x + 1}{2}'],
+		['\\frac{2}{x+1}', '\\dfrac{2}{x + 1}'],
+		['\\frac{ab}{2}', '\\dfrac{a b}{2}'],
+		['\\frac{2x}{4y}', '\\dfrac{x}{2 y}'],
+		['\\frac{1}{x}+\\frac{1}{y}', '\\dfrac{x + y}{x y}'],
+		['\\frac{3}{2}x^2', '\\dfrac{3 x^2}{2}'],
+		['2(x+1)', '2 \\left( x + 1 \\right)'],
+		['(x+1)^2', '\\left( x + 1 \\right)^2']
+	])('%s → %s', (input, expected) => {
+		expect(l(input)).toBe(expected);
 	});
 });
 

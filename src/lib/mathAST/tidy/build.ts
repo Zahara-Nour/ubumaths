@@ -51,27 +51,6 @@ function needsParenthesesAsAtom(node: MathNode): boolean {
 	}
 }
 
-/**
- * Ce nœud a-t-il besoin de parenthèses de part et d'autre d'une barre de
- * fraction ? Sans elles `toCustom` produit des accolades (`x/{2y}`).
- */
-function needsParenthesesInFraction(node: MathNode): boolean {
-	switch (node.type) {
-		case 'addition':
-		case 'subtraction':
-		case 'multiplication':
-		case 'division':
-		case 'opposite':
-		case 'positive':
-		case 'superscript':
-		case 'subscript':
-		case 'unit':
-			return true;
-		default:
-			return false;
-	}
-}
-
 // =============================================================================
 // Rendu d'un facteur
 // =============================================================================
@@ -112,8 +91,13 @@ function buildProduct(atoms: readonly MathNode[]): MathNode {
 	return atoms.reduce((left, right) => multiply(left, right, 'implicit'));
 }
 
-function wrapForFraction(node: MathNode): MathNode {
-	return needsParenthesesInFraction(node) ? parentheses(node) : node;
+/**
+ * Une somme seule au numérateur ou au dénominateur arrive parenthésée par
+ * `buildFactor` (il le faut dans `2(x+1)` ou `(x+1)²`) ; de part et d'autre
+ * d'une barre de fraction, ces parenthèses sont de trop.
+ */
+function withoutOuterParentheses(node: MathNode): MathNode {
+	return node.type === 'delimiter' && node.delimiters === 'parentheses' ? node.content : node;
 }
 
 /**
@@ -154,9 +138,13 @@ export function buildTermMagnitude(term: TidyTerm, allowBare: boolean): MathNode
 		const denominatorAtoms: MathNode[] = [];
 		if (denominatorValue !== 1n) denominatorAtoms.push(number(denominatorValue.toString()));
 		for (const factor of denominatorFactors) denominatorAtoms.push(buildFactor(factor));
+		// Pas de délimiteur de part et d'autre de la barre : c'est la convention
+		// de l'AST (celle de `denormalize`). En LaTeX, `\dfrac` n'en a pas
+		// besoin — `\dfrac{\left( x+1 \right)}{2}` serait faux à l'écran — et
+		// en linéaire, `toCustom` pose des accolades : `x/{2y}`.
 		result = divide(
-			wrapForFraction(result),
-			wrapForFraction(buildProduct(denominatorAtoms)),
+			withoutOuterParentheses(result),
+			withoutOuterParentheses(buildProduct(denominatorAtoms)),
 			'fraction'
 		);
 	}

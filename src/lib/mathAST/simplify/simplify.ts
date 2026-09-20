@@ -46,7 +46,8 @@ import { flattenSumShallow } from '../flatten';
 
 // Rewriting engine
 import { rewrite, type RewriteStep } from '../common/rewriting-engine';
-import { AbortError, checkAbort, getActiveAbortChecker } from '../common/abort';
+import { AbortError } from '../common/abort';
+import { nodesEqual } from '../pattern/match';
 
 // =============================================================================
 // Rule Set Builder
@@ -77,7 +78,9 @@ function buildSimplifyRules(options: {
 /**
  * Single normalize pass: preprocess → normalizeExtended → denormalizeExtended.
  *
- * Used as both the preProcess and postProcess hooks of the rewrite engine.
+ * N'est plus qu'un candidat : le « développer si moins cher » du
+ * post-traitement (`makeTidyThenExpandIfCheaper`). `tidy` tient les deux
+ * crochets du moteur.
  * `normalizeExtended` propagates infinity / signed-zero through arithmetic
  * (arctan(∞) → π/2, sinh(∞) → ∞, …) and then delegates to regular normalize
  * for polynomial canonical form (arithmetic identities, like-term collection,
@@ -120,10 +123,6 @@ function makeTidyThenExpandIfCheaper(cost: (node: MathNode) => number) {
 			if (error instanceof AbortError) throw error;
 			return tidied;
 		}
-		// Le moteur ne consulte pas le délai après le post-traitement, et c'est
-		// ici que le développement coûte : contrôle coopératif sur le vérificateur
-		// que le moteur a installé (`withActiveAbortChecker`), comme `normalize`.
-		checkAbort(getActiveAbortChecker());
 		const expandedCost = cost(expanded);
 		const tidiedCost = cost(tidied);
 		if (expandedCost < tidiedCost) return expanded;
@@ -225,7 +224,7 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 	// que `tidy` fait de plus cher au sens du barème — regroupement, extraction
 	// d'un radical — serait rejeté (relevé du 2026-09-20, §3).
 	const start = tidy(node);
-	if (isRecording && start !== node) {
+	if (isRecording && !nodesEqual(start, node)) {
 		recorder.setPhase('tidy');
 		recorder.recordStep('tidy', getSimplifyRuleDescription('tidy'), node, start, 'detailed');
 	}
@@ -243,9 +242,10 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 	});
 
 	// Le repli des coefficients (`2 × 3 → 6`) est fait par `tidy` à chaque
-	// itération : plus rien à faire ici. En cas d'interruption, le contrat est de
-	// rendre le nœud d'ORIGINE, à l'identique.
-	const result = engineResult.aborted ? node : engineResult.result;
+	// itération : plus rien à faire ici. En cas d'interruption, on rend le
+	// meilleur-jusqu'ici ; s'il n'y en a pas (le moteur en est resté à la forme
+	// de départ), le nœud d'ORIGINE, à l'identique.
+	const result = engineResult.aborted && engineResult.result === start ? node : engineResult.result;
 
 	return {
 		result,
