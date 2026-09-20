@@ -167,6 +167,26 @@ export interface BaseUnitDef {
 	readonly offset?: number;
 
 	/**
+	 * Coefficient exact, pour les définitions sans écriture décimale finie.
+	 *
+	 * `coefficient` est un flottant : `5/9` s'y écrit `0,5555…` et `π/180`
+	 * `0,01745…`. Les formes normales exigent l'exactitude (§D.1 de
+	 * `docs/wip/tidy-phase0.md`) : quand ce champ est présent il prime, et
+	 * `coefficient` ne sert plus qu'à l'évaluation numérique.
+	 *
+	 * `piPower` porte π en **facteur symbolique** : le degré vaut `1/180` avec
+	 * `piPower: 1`, ce qui rend `180[°] ≡ π rad` exact.
+	 *
+	 * Absent pour toutes les unités décimales (`km` : `1000`, `ft` : `0.3048`),
+	 * dont l'écriture de `coefficient` est déjà exacte.
+	 */
+	readonly exact?: {
+		readonly n: number;
+		readonly d: number;
+		readonly piPower?: number;
+	};
+
+	/**
 	 * Full SI base signature for named derived units (Newton, Joule, ...).
 	 *
 	 * When present, takes precedence over `baseSymbol` when building Unit

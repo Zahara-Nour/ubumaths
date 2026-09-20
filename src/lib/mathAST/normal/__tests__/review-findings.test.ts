@@ -58,9 +58,15 @@ describe('unités affines (°C) — opaques en bloc, jamais composées', () => {
 	});
 });
 
-describe('limite assumée — aucune conversion entre unités', () => {
-	it('12[km] ≢ 12000[m] : les unités sont opaques, normalize ne convertit pas', () => {
-		expect(eq('12[km]', '12000[m]')).toBe(false);
+/**
+ * Bascule de la PR 3 (§D.1, décision 2 du 2026-09-20) : la « limite assumée »
+ * de la PR #376 — un facteur opaque par unité nommée, sans conversion — est
+ * remplacée par un facteur par unité DE BASE, coefficient rationnel exact.
+ * Deux grandeurs de même dimension sont donc équivalentes à conversion près.
+ */
+describe('conversion — deux grandeurs de même dimension sont équivalentes', () => {
+	it('12[km] ≡ 12000[m] : normalize convertit, exactement', () => {
+		expect(eq('12[km]', '12000[m]')).toBe(true);
 	});
 });
 

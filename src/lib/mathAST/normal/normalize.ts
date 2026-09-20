@@ -65,8 +65,10 @@ import { preprocess } from './rules/index.js';
 import { denormalize } from './denormalize';
 import { tryUnivariateGcd, dividePolynomials } from './univariate-gcd';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
-import { parse as parseUnit, parseUnitTerms } from '../units/parser';
+import { parse as parseUnit } from '../units/parser';
+import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units/formatter';
+import { piConstant } from '../factory';
 import { canFactorOutNegative, isEvenFunction, isOddFunction } from './parity.js';
 
 // =============================================================================
@@ -1647,8 +1649,10 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 		}
 
 		case 'addition': {
-			const leftForm = normalizeNode(node.left, ctx);
-			const rightForm = normalizeNode(node.right, ctx);
+			// §D.2 — une composition interdite laisse ses grandeurs affines opaques.
+			const normalizeSide = forbidsAffineReading(node) ? normalizeOperand : normalizeNode;
+			const leftForm = normalizeSide(node.left, ctx);
+			const rightForm = normalizeSide(node.right, ctx);
 			const result = addNormalForms(leftForm, rightForm);
 			// Record combine-like-terms step
 			recordNormalizationStep(ctx, 'combine-like-terms', node, result, 'detailed');
@@ -1656,8 +1660,10 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 		}
 
 		case 'subtraction': {
-			const leftForm = normalizeNode(node.left, ctx);
-			const rightForm = normalizeNode(node.right, ctx);
+			// §D.2 — `d K − a°C` est interdit : les deux grandeurs restent opaques.
+			const normalizeSide = forbidsAffineReading(node) ? normalizeOperand : normalizeNode;
+			const leftForm = normalizeSide(node.left, ctx);
+			const rightForm = normalizeSide(node.right, ctx);
 			const result = subNormalForms(leftForm, rightForm);
 			// Record combine-like-terms step
 			recordNormalizationStep(ctx, 'combine-like-terms', node, result, 'detailed');
@@ -1666,17 +1672,18 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 
 		case 'positive': {
 			// Positive sign is identity
-			return normalizeNode(node.operand, ctx);
+			return normalizeOperand(node.operand, ctx);
 		}
 
 		case 'opposite': {
-			const form = normalizeNode(node.operand, ctx);
+			const form = normalizeOperand(node.operand, ctx);
 			return negNormalForm(form);
 		}
 
 		case 'multiplication': {
-			const leftForm = normalizeNode(node.left, ctx);
-			const rightForm = normalizeNode(node.right, ctx);
+			// §D.2 — `2 × 20[°C]` n'est ni `40[°C]` ni `586,3 K` : opaque.
+			const leftForm = normalizeOperand(node.left, ctx);
+			const rightForm = normalizeOperand(node.right, ctx);
 			const result = mulNormalForms(leftForm, rightForm);
 			// Record combine-like-terms step (for coefficient multiplication)
 			recordNormalizationStep(ctx, 'combine-like-terms', node, result, 'detailed');
@@ -1684,8 +1691,8 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 		}
 
 		case 'division': {
-			const numForm = normalizeNode(node.numerator, ctx);
-			const denForm = normalizeNode(node.denominator, ctx);
+			const numForm = normalizeOperand(node.numerator, ctx);
+			const denForm = normalizeOperand(node.denominator, ctx);
 			const result = divNormalForms(numForm, denForm);
 			// Record simplify-fraction step
 			recordNormalizationStep(ctx, 'simplify-fraction', node, result, 'summarized');
@@ -1693,6 +1700,11 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 		}
 
 		case 'superscript': {
+			// §D.2 — `(20[°C])^2` n'a pas de sens : la puissance entière reste opaque.
+			if (affineQuantity(node.base) !== null) {
+				return normalizeOpaqueNode(node);
+			}
+
 			// Special case: exp(arg)^n → exp(n*arg) (combination approach)
 			const ratExp = getRationalExponent(node.superscript);
 			if (ratExp !== null && isExpFunction(node.base)) {
@@ -1839,49 +1851,119 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 // =============================================================================
 
 /**
- * Une grandeur avec unité : l'expression, multipliée par **un facteur
- * symbolique opaque par unité nommée**, élevé à son exposant signé.
+ * Une grandeur avec unité : l'expression **convertie en unités de base**,
+ * multipliée par un facteur symbolique opaque par unité **de base**, élevé à
+ * son exposant signé.
  *
- * `12[km]` → `12 · U(km)` ; `12[km/h]` → `12 · U(km) · U(h)⁻¹` ;
- * `2[km]·3[km]` et `6[km^2]` → `6 · U(km)²` — la même forme, c'est le but.
+ * `12[km]` → `12000 · U(m)` ; `90[km/h]` → `25 · U(m) · U(s)⁻¹` ;
+ * `2[km]·3[km]` et `6[km^2]` → `6000000 · U(m)²` — la même forme, c'est le but.
  *
- * Sans cela, 12[km] et 12 avaient la même forme normale, et simplify
- * dépouillait toute grandeur de son unité (relevé du 2026-09-20). Chaque
- * facteur porte l'unité seule (expression 1) : denormalizeTerm les reconnaît
- * et reconstruit unit(reste du terme, unité recomposée).
+ * Le coefficient est **rationnel exact**, composé unité nommée par unité
+ * nommée (`exactConversion`) : `km/h` vaut `5/18`, jamais le flottant
+ * `0,2777…`. Les angles portent π en facteur symbolique, ce qui rend
+ * `180[°] ≡ π rad`.
  *
- * Aucune conversion : `km` et `m` sont deux facteurs distincts, donc
- * `12[km] ≢ 12000[m]`. Limite assumée.
+ * Deux grandeurs de même dimension ont donc la même forme normale à
+ * conversion près : `12[km] ≡ 12000[m]` (§D.1). L'écriture propre — choisir
+ * `12 km` plutôt que `12000 m` — est le travail de `tidy`, pas du décideur.
  *
- * Les unités affines (°C, °F) ne se composent pas (le module units le refuse)
- * : elles restent opaques en bloc, expression comprise.
+ * Une grandeur **affine** (°C, °F) se lit ici en **absolu** : `20[°C]` vaut
+ * `(20 + 273,15) K`. Ce n'est légitime que pour une grandeur SEULE ; opérande
+ * d'une opération, elle est interceptée en amont par `normalizeOperand`.
  */
 function normalizeUnit(node: MathNode & { type: 'unit' }, ctx?: NormalizeContext): NormalForm {
-	if ((node.unit.offset ?? 0) !== 0) {
-		return normalizeOpaqueNode(node);
-	}
-
-	const terms = parseUnitTerms(node.unit.original ?? formatUnit(node.unit));
-	if (terms === null) {
+	const writing = node.unit.original ?? formatUnit(node.unit);
+	const conversion = exactConversion(writing);
+	if (conversion === null) {
 		return normalizeOpaqueNode(node);
 	}
 
 	let form = normalizeNode(node.expression, ctx);
-	for (const { symbol, exponent } of terms) {
+
+	// Décalage affine : la lecture absolue d'une grandeur seule (20 °C = 293,15 K).
+	if (conversion.offset !== null) {
+		form = addNormalForms(form, normalFormFromRational(conversion.offset));
+	}
+
+	form = mulNormalForms(form, normalFormFromRational(conversion.coefficient));
+
+	// π en facteur symbolique : le degré vaut π/180 rad exactement.
+	if (conversion.piPower !== 0) {
+		const piForm = normalizeNode(piConstant(), ctx);
+		const raised = powNormalForm(piForm, Math.abs(conversion.piPower));
+		form = mulNormalForms(
+			form,
+			conversion.piPower > 0 ? raised : divNormalForms(ONE_NORMAL_FORM, raised)
+		);
+	}
+
+	for (const [symbol, exponent] of conversion.components) {
 		if (exponent === 0) continue;
-		const named = parseUnit(symbol);
-		if (named === null) {
+		const base = parseUnit(symbol);
+		if (base === null) {
 			return normalizeOpaqueNode(node);
 		}
 		const factor: MathNode = {
 			type: 'unit',
 			expression: { type: 'number', value: '1' },
-			unit: named
+			unit: base
 		};
 		const raised = powNormalForm(normalizeOpaqueNode(factor), Math.abs(exponent));
 		form = mulNormalForms(form, exponent > 0 ? raised : divNormalForms(ONE_NORMAL_FORM, raised));
 	}
+
 	return form;
+}
+
+// =============================================================================
+// Grandeurs affines (°C, °F) — §D.2
+// =============================================================================
+
+/**
+ * La grandeur affine (°C, °F) que porte ce nœud, délimiteurs traversés.
+ *
+ * Une valeur en °C se lit soit comme une température **absolue** (20 °C =
+ * 293,15 K), soit comme un **écart** (une hausse de 20 °C = 20 K). La décision
+ * 2 choisit l'absolu pour une grandeur seule ; c'est la convention de
+ * `evaluateWithUnits`.
+ */
+function affineQuantity(node: MathNode): MathNode | null {
+	let current = node;
+	while (current.type === 'delimiter') current = current.content;
+	if (current.type !== 'unit') return null;
+	return (current.unit.offset ?? 0) === 0 ? null : current;
+}
+
+/**
+ * Normalise un opérande. Une grandeur affine y reste **opaque en bloc** :
+ * lue en absolu elle donnerait `2 × 20[°C] = 586,3 K`, ce que §D.2 interdit.
+ * Aucune exception n'est levée — c'est la différence assumée avec
+ * `evaluateWithUnits`, qui refuse bruyamment.
+ */
+function normalizeOperand(node: MathNode, ctx?: NormalizeContext): NormalForm {
+	const affine = affineQuantity(node);
+	return affine === null ? normalizeNode(node, ctx) : normalizeOpaqueNode(affine);
+}
+
+/**
+ * Cette somme ou différence compose-t-elle deux grandeurs affines d'une façon
+ * que §D.2 interdit ? Les règles reprises de `evaluateWithUnits` :
+ *
+ * | opération        | lecture                                    |
+ * | ---------------- | ------------------------------------------ |
+ * | `a°C − b°C`      | absolue − absolue → écart (`(a−b) K`)      |
+ * | `a°C ± d K`      | absolue ± écart → absolue                  |
+ * | `d K + a°C`      | écart + absolue → absolue                  |
+ * | `a°C + b°C`      | **interdit** (somme de deux absolues)      |
+ * | `d K − a°C`      | **interdit** (écart − absolue)             |
+ *
+ * Les deux formes interdites laissent leurs grandeurs affines opaques, donc le
+ * nœud entier n'est équivalent qu'à lui-même.
+ */
+function forbidsAffineReading(node: MathNode & { type: 'addition' | 'subtraction' }): boolean {
+	const leftAffine = affineQuantity(node.left) !== null;
+	const rightAffine = affineQuantity(node.right) !== null;
+	return node.type === 'addition' ? leftAffine && rightAffine : !leftAffine && rightAffine;
 }
 
 // =============================================================================

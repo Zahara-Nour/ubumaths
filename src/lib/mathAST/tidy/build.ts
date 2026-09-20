@@ -23,7 +23,13 @@ import {
 	superscript,
 	withUnit
 } from '../factory';
-import { absBigInt, isNegative as isNegativeRational, negRational } from '../normal/rational';
+import {
+	absBigInt,
+	absRational,
+	isNegative as isNegativeRational,
+	negRational
+} from '../normal/rational';
+import { decimalString } from './decimal';
 
 // =============================================================================
 // Parenthésage
@@ -107,6 +113,16 @@ function withoutOuterParentheses(node: MathNode): MathNode {
  * légitime que si le terme est à lui seul toute l'expression.
  */
 export function buildTermMagnitude(term: TidyTerm, allowBare: boolean): MathNode {
+	// §D.3 — la valeur d'une grandeur numérique s'écrit en décimal (`12,5 km`),
+	// jamais en fraction. Un décimal infini (`1/3 [km]`) garde la fraction.
+	if (term.decimal && term.factors.length === 0) {
+		const decimal = decimalString(absRational(term.coefficient));
+		if (decimal !== null) {
+			const value = number(decimal);
+			return term.unit === null ? value : withUnit(value, term.unit);
+		}
+	}
+
 	const numeratorFactors = term.factors.filter((f) => !isNegativeRational(f.exponent));
 	const denominatorFactors = term.factors
 		.filter((f) => isNegativeRational(f.exponent))

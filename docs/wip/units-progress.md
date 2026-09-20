@@ -40,12 +40,65 @@
 - `normal/__tests__/unit-conversion.test.ts` : §D.1 (équivalences, exactitude, angles, °F), §D.2 (températures).
 - `tidy/__tests__/tidy-units.test.ts` : §D.3 (numériques, symboliques, températures, dérivées), idempotence, `simplify`.
 
+## Ce qui a été implémenté (2026-09-20)
+
+### Où vit le pré-pas affine
+
+**Dans `normal/normalize.ts`, en tête des cas binaires** — pas dans
+`preprocess`. Raison mesurée : `areEquivalent` appelle `normalize(a)`
+directement, et `normalize` appelle `preprocess` lui-même ; une règle posée
+dans `normal/rules/` aurait été appliquée, mais elle aurait dû réécrire l'AST
+(fabriquer `(a−b)[K]`) là où les cas binaires peuvent simplement **choisir
+comment lire chaque opérande**. Trois fonctions :
+
+- `affineQuantity(node)` — la grandeur affine que porte un nœud, délimiteurs
+  traversés ;
+- `normalizeOperand(node)` — `normalizeOpaqueNode` pour une grandeur affine,
+  `normalizeNode` sinon ; utilisé par `multiplication`, `division`,
+  `opposite`, `positive` ;
+- `forbidsAffineReading(node)` — la table de §D.2 pour `addition` /
+  `subtraction` : seules `a°C + b°C` et `d K − a°C` laissent leurs grandeurs
+  opaques ; tout le reste se lit en absolu et l'arithmétique des formes
+  normales rend le bon résultat (`30°C − 20°C` = `6063/20 − 5863/20` = `10 K`).
+
+`superscript` rend le nœud entier opaque quand sa base est affine. Aucune
+exception n'est jamais levée — c'est la différence assumée avec
+`evaluateWithUnits`, qui refuse bruyamment.
+
+### Le plancher de lisibilité de `tidy` vaut 0,5, pas 0,1
+
+§D.3 annonce « entre 0,1 et 1000 », mais ses propres exemples l'excluent :
+`1[km]-999[m] → 1 m` (0,1 rendrait `0,1 dam`) et `0.25[h] → 15 min` (0,1
+rendrait `0,25 h`) ; `0.005[m] → 0,5 cm` fixe la borne basse, incluse.
+`selectBestUnit` prend donc un plancher en paramètre : l'évaluation garde 0,1,
+`tidy` demande 0,5 (`TIDY_MIN_READABLE`).
+
+### Fichiers
+
+- `units/exact.ts` (nouveau) — `exactConversion(écriture)` : coefficient
+  rationnel exact, puissance de π, composants de base, décalage affine.
+- `units/types.ts` — `BaseUnitDef.exact` (`{ n, d, piPower? }`).
+- `units/definitions.ts` — `exact` sur `°F` (5/9), `°` et `deg` (π/180).
+- `units/selection.ts` (nouveau) — `selectBestUnit` / `getPrimaryBaseSymbol`
+  déplacés depuis `eval/evaluate-with-units.ts`, plancher paramétrable.
+- `normal/normalize.ts` — `normalizeUnit` pose un facteur par unité **de
+  base** ; pré-pas affine (ci-dessus).
+- `eval/evaluate-with-units.ts` — les unités sont retirées avant l'évaluation
+  (le mode exact passe par `normalize`, qui convertit désormais).
+- `tidy/collect.ts` — unités accumulées par **symbole nommé** (`km/h·h → km`),
+  regroupement par **dimension**, `chooseUnit` (meilleure unité, unité dérivée
+  reconnue, décimal).
+- `tidy/decimal.ts` (nouveau) — `decimalString`, dans un module à part pour ne
+  pas boucler entre `collect` et `build`.
+- `tidy/types.ts`, `tidy/build.ts` — `TidyQuantity`, écriture décimale.
+
 ## État
 
-- [ ] Tests rouges prouvés (commit 1)
-- [ ] `normalize` : conversion exacte, angles, °F, pré-pas affine
-- [ ] `tidy` : meilleure unité, regroupement par dimension, dérivées
-- [ ] Tests de la PR #376 mis à jour
-- [ ] Suites vertes (`normal`, `tidy`, `simplify`, `units`, `eval`, `grapheur`, `cli`)
+- [x] Tests rouges prouvés (commit 1)
+- [x] `normalize` : conversion exacte, angles, °F, pré-pas affine
+- [x] `tidy` : meilleure unité, regroupement par dimension, dérivées
+- [x] Tests de la PR #376 mis à jour
+- [x] Suites vertes (`normal`, `tidy`, `simplify`, `units`, `eval`, `pattern`)
+- [ ] Suites `grapheur`, `cli`
 - [ ] Revue, `pnpm check:incremental`, `pnpm lint:fast`
 - [ ] PR, CI verte, merge, worktree supprimé

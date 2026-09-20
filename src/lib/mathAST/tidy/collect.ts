@@ -20,7 +20,7 @@
 import type { FunctionNode, MathNode, SuperscriptNode, UnitNode } from '../types';
 import type { Unit } from '../units/types';
 import type { Rational } from '../normal/types';
-import type { TidyFactor, TidyTerm } from './types';
+import type { TidyFactor, TidyQuantity, TidyTerm } from './types';
 import { flattenProductShallow, flattenSumShallow } from '../flatten';
 import { getChildren } from '../transforms';
 import { extractRational } from '../common/numeric';
@@ -38,13 +38,17 @@ import {
 	mulRational,
 	negRational,
 	powRational,
-	rational
+	rational,
+	rationalToNumber,
+	divRational
 } from '../normal/rational';
 import { func, number, subscript, superscript, withUnit, sqrt as sqrtNode } from '../factory';
 import { isDelimiter, isFunction } from '../guards';
-import { multiply as unitMultiply, power as unitPower } from '../units/operations';
-import { parse as parseUnit } from '../units/parser';
+import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { format as formatUnit } from '../units/formatter';
+import { exactConversion, dimensionKey } from '../units/exact';
+import { recognizeDerivedUnit } from '../units/conversion';
+import { getPrimaryBaseSymbol, selectBestUnit } from '../units/selection';
 import { buildSum } from './build';
 import { sortFactors, sortTerms } from './order';
 
@@ -59,17 +63,16 @@ type MutableFactor = {
 	readonly key: string;
 };
 
-/** Un facteur d'unité en cours d'accumulation (`km^2`, `h^-1`, …). */
-type MutableUnitFactor = {
-	readonly unit: Unit;
-	exponent: Rational;
-};
-
-/** Accumulateur mutable, local à un terme : il ne sort jamais du module. */
+/**
+ * Accumulateur mutable, local à un terme : il ne sort jamais du module.
+ *
+ * `unitSymbols` compte les unités **nommées** (`km`, `h`) et leurs exposants
+ * signés : c'est ce qui fait que `v[km/h]·t[h]` rend `km` et non `km.h/h`.
+ */
 type Accumulator = {
 	coefficient: Rational;
 	readonly factors: Map<string, MutableFactor>;
-	readonly unitFactors: Map<string, MutableUnitFactor>;
+	readonly unitSymbols: Map<string, number>;
 };
 
 // =============================================================================
@@ -159,52 +162,74 @@ function isAffineUnit(unit: Unit): boolean {
 
 /**
  * L'écriture d'une unité composée, dans la grammaire du parseur d'unités :
- * facteurs positifs joints par `.`, chaque facteur négatif derrière un `/`
- * (`km.m/s^2`). `null` dès qu'un exposant n'est pas entier.
+ * unités positives jointes par `.`, chaque unité négative derrière un `/`
+ * (`km.m/s^2`). `null` s'il ne reste aucune unité (tout s'est annulé).
  *
  * Passer par l'écriture — comme `combineUnitFactors` de `normal/denormalize` —
  * préserve l'unité écrite par l'utilisateur : `12[km]·3[km]` donne `36[km^2]`
- * et non `36[m^2]`.
+ * et non `36[m^2]`, et `v[km/h]·t[h]` donne `km`, pas `km.h/h`.
  */
-function unitLabel(factors: readonly MutableUnitFactor[]): string | null {
+function unitLabel(symbols: ReadonlyMap<string, number>): string | null {
 	const positive: string[] = [];
 	const negative: string[] = [];
 
-	for (const { unit, exponent } of factors) {
-		if (exponent.d !== 1n) return null;
-		const symbol = unit.original ?? formatUnit(unit);
-		const magnitude = exponent.n < 0n ? -exponent.n : exponent.n;
-		const part = magnitude === 1n ? symbol : `${symbol}^${magnitude}`;
-		(exponent.n < 0n ? negative : positive).push(part);
+	for (const [symbol, exponent] of symbols) {
+		if (exponent === 0) continue;
+		const magnitude = Math.abs(exponent);
+		const part = magnitude === 1 ? symbol : `${symbol}^${magnitude}`;
+		(exponent < 0 ? negative : positive).push(part);
 	}
 
+	if (positive.length === 0 && negative.length === 0) return null;
 	if (positive.length === 0) {
-		return factors
-			.map(({ unit, exponent }) => `${unit.original ?? formatUnit(unit)}^${exponent.n}`)
+		// Pas d'unité au numérateur : `s^-1` plutôt que `/s`, qui n'a pas de
+		// premier terme et que le parseur d'unités refuse.
+		return [...symbols]
+			.filter(([, exponent]) => exponent !== 0)
+			.map(([symbol, exponent]) => `${symbol}^${exponent}`)
 			.join('.');
 	}
 	return positive.join('.') + negative.map((part) => `/${part}`).join('');
 }
 
-/** Étape 10 — compose les facteurs d'unité d'un terme en une seule unité. */
-function composeUnit(factors: readonly MutableUnitFactor[]): Unit | null {
-	if (factors.length === 0) return null;
-	if (factors.length === 1 && isOneRational(factors[0].exponent)) return factors[0].unit;
+/** L'écriture d'une unité, telle que l'utilisateur l'a posée. */
+function unitWriting(unit: Unit): string {
+	return unit.original ?? formatUnit(unit);
+}
 
-	const label = unitLabel(factors);
-	const parsed = label === null ? null : parseUnit(label);
-	if (parsed !== null) return parsed;
+/** Étape 10 — compose les unités nommées d'un terme en une seule unité. */
+function composeUnit(symbols: ReadonlyMap<string, number>): Unit | null {
+	const label = unitLabel(symbols);
+	if (label === null) return null;
+	return parseUnit(label);
+}
 
-	// Repli : composition par les opérations du module units, sans écriture
-	// d'origine (exposant fractionnaire, ou écriture que le parseur refuse).
-	const raise = ({ unit, exponent }: MutableUnitFactor): Unit =>
-		isOneRational(exponent) ? unit : unitPower(unit, Number(exponent.n) / Number(exponent.d));
+/**
+ * L'unité de base d'une conversion, coefficient 1 : `km` → `m`,
+ * `kg.m/s^2` → `g.m/s^2`. `null` si l'écriture n'est pas relisible.
+ */
+function baseUnitOf(components: ReadonlyMap<string, number>): Unit | null {
+	const label = unitLabel(components);
+	return label === null ? null : parseUnit(label);
+}
 
-	return factors.reduce<Unit | null>(
-		(combined, factor) =>
-			combined === null ? raise(factor) : unitMultiply(combined, raise(factor)),
-		null
-	);
+/**
+ * Ce qu'il faut savoir d'une grandeur pour la regrouper et la réécrire.
+ * `null` pour une unité que la table ne sait pas convertir exactement.
+ */
+function quantityOf(unit: Unit): TidyQuantity | null {
+	const conversion = exactConversion(unitWriting(unit));
+	if (conversion === null || conversion.offset !== null) return null;
+	// π en facteur (le degré) : la valeur en unité de base n'est pas rationnelle
+	// (`180[°]` vaut `π rad`, pas `1 rad`). L'unité écrite est conservée.
+	if (conversion.piPower !== 0) return null;
+	const baseUnit = baseUnitOf(conversion.components);
+	if (baseUnit === null) return null;
+	return {
+		factor: conversion.coefficient,
+		baseUnit,
+		dimension: dimensionKey(conversion)
+	};
 }
 
 // =============================================================================
@@ -229,15 +254,21 @@ function addFactor(acc: Accumulator, base: MathNode, exponent: Rational): void {
 	existing.exponent = merged;
 }
 
-function addUnitFactor(acc: Accumulator, unit: Unit, exponent: Rational): void {
-	const key = hashUnit(unit);
-	const existing = acc.unitFactors.get(key);
+/**
+ * Ajoute les unités **nommées** d'une écriture, exposants multipliés par celui
+ * du facteur. `false` si l'écriture n'est pas relisible : la grandeur reste
+ * alors un facteur opaque.
+ */
+function addUnitFactor(acc: Accumulator, unit: Unit, exponent: number): boolean {
+	const terms = parseUnitTerms(unitWriting(unit));
+	if (terms === null) return false;
 
-	if (existing === undefined) {
-		acc.unitFactors.set(key, { unit, exponent });
-		return;
+	for (const term of terms) {
+		const total = (acc.unitSymbols.get(term.symbol) ?? 0) + term.exponent * exponent;
+		if (total === 0) acc.unitSymbols.delete(term.symbol);
+		else acc.unitSymbols.set(term.symbol, total);
 	}
-	existing.exponent = addRational(existing.exponent, exponent);
+	return true;
 }
 
 /** Étape 4 — arithmétique exacte : `r^exponent` replié dans le coefficient. */
@@ -311,16 +342,20 @@ function reduceRadicalFactors(acc: Accumulator): void {
 	}
 }
 
-/** Étape 10 — une grandeur numérique cède sa valeur et son unité au terme. */
+/**
+ * Étape 10 — une grandeur cède son unité au terme, et son expression au reste
+ * de l'accumulation : une valeur rejoint le coefficient (`12[km]`), un symbole
+ * devient un facteur ordinaire (`v[km/h]` → facteur `v`, unité `km/h`).
+ *
+ * Une unité affine (°C, °F) ne se compose pas : la grandeur reste opaque
+ * **en bloc** (finding C5, et §D.2).
+ */
 function absorbQuantity(node: UnitNode, exponent: Rational, acc: Accumulator): boolean {
 	if (isAffineUnit(node.unit)) return false;
-	if (!isIntegerRational(exponent)) return false;
+	if (!isEvaluableExponent(exponent)) return false;
+	if (!addUnitFactor(acc, node.unit, Number(exponent.n))) return false;
 
-	const value = rationalValue(node.expression);
-	if (value === null) return false;
-	if (!absorbRational(value, exponent, acc)) return false;
-
-	addUnitFactor(acc, node.unit, exponent);
+	absorbFactor(node.expression, exponent, acc);
 	return true;
 }
 
@@ -448,7 +483,7 @@ function toTerm(node: MathNode): TidyTerm {
 	const acc: Accumulator = {
 		coefficient: ONE,
 		factors: new Map<string, MutableFactor>(),
-		unitFactors: new Map<string, MutableUnitFactor>()
+		unitSymbols: new Map<string, number>()
 	};
 
 	for (const { factor } of flattenProductShallow(node)) {
@@ -462,11 +497,15 @@ function toTerm(node: MathNode): TidyTerm {
 		key
 	}));
 
+	const unit = composeUnit(acc.unitSymbols);
+
 	return {
 		coefficient: acc.coefficient,
 		factors: sortFactors(factors),
-		unit: composeUnit([...acc.unitFactors.values()]),
-		verbatim: false
+		unit,
+		verbatim: false,
+		quantity: unit === null ? null : quantityOf(unit),
+		decimal: false
 	};
 }
 
@@ -476,7 +515,9 @@ function verbatimTerm(node: MathNode, negative: boolean): TidyTerm {
 		coefficient: negative ? { n: -1n, d: 1n } : ONE,
 		factors: [{ base: node, exponent: ONE, key: hashMathNode(node) }],
 		unit: null,
-		verbatim: true
+		verbatim: true,
+		quantity: null,
+		decimal: false
 	};
 }
 
@@ -535,25 +576,85 @@ function toSumTerms(node: MathNode): TidyTerm[] {
 	return terms;
 }
 
-/** Étape 5 — termes semblables : même clé structurelle, coefficients repliés. */
+/**
+ * Un groupe en cours de regroupement. Tant que tous les termes partagent la
+ * même écriture d'unité, le coefficient reste dans cette écriture ; dès qu'une
+ * écriture diffère (`12[km]` et `500[m]`), le groupe bascule **en unités de
+ * base** et n'en ressort plus — c'est `chooseUnit` qui rendra son écriture.
+ */
+type TermGroup = {
+	coefficient: Rational;
+	term: TidyTerm;
+	inBase: boolean;
+};
+
+/** La valeur d'un terme en unités de base. */
+function baseValue(coefficient: Rational, quantity: TidyQuantity): Rational {
+	return mulRational(coefficient, quantity.factor);
+}
+
+/** Bascule un groupe en unités de base : même valeur, autre écriture. */
+function switchToBase(group: TermGroup, quantity: TidyQuantity): void {
+	group.coefficient = baseValue(group.coefficient, quantity);
+	group.term = {
+		...group.term,
+		unit: quantity.baseUnit,
+		quantity: { ...quantity, factor: ONE }
+	};
+	group.inBase = true;
+}
+
+/**
+ * Étape 5 — termes semblables : même clé structurelle, coefficients repliés.
+ *
+ * Deux grandeurs de même **dimension** sont semblables même écrites dans des
+ * unités différentes (§D.3) : `12[km]+500[m]` fait un seul terme.
+ */
 function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
-	const groups = new Map<string, { coefficient: Rational; term: TidyTerm }>();
+	const groups = new Map<string, TermGroup>();
 
 	terms.forEach((term, index) => {
 		// Un terme opaque ou singulier ne se regroupe avec rien : clé unique.
 		const groupable = !term.verbatim && !dividesByZero(term);
+		const unitKey =
+			term.quantity !== null
+				? `D:${term.quantity.dimension}`
+				: term.unit === null
+					? ''
+					: `U:${hashUnit(term.unit)}`;
 		const key = groupable
 			? term.factors.map((f) => `${f.key}^${f.exponent.n}/${f.exponent.d}`).join('*') +
 				'|' +
-				(term.unit === null ? '' : hashUnit(term.unit))
+				unitKey
 			: `!${index}`;
 
 		const existing = groups.get(key);
-		if (existing) {
-			existing.coefficient = addRational(existing.coefficient, term.coefficient);
-		} else {
-			groups.set(key, { coefficient: term.coefficient, term });
+		if (existing === undefined) {
+			groups.set(key, { coefficient: term.coefficient, term, inBase: false });
+			return;
 		}
+
+		const quantity = term.quantity;
+		const existingQuantity = existing.term.quantity;
+		if (quantity === null || existingQuantity === null) {
+			existing.coefficient = addRational(existing.coefficient, term.coefficient);
+			return;
+		}
+
+		// Écritures différentes : tout le groupe passe en unités de base.
+		const existingUnit = existing.term.unit;
+		const incomingUnit = term.unit;
+		const sameWriting =
+			existingUnit !== null &&
+			incomingUnit !== null &&
+			hashUnit(existingUnit) === hashUnit(incomingUnit);
+		if (!existing.inBase && !sameWriting) {
+			switchToBase(existing, existingQuantity);
+		}
+		existing.coefficient = addRational(
+			existing.coefficient,
+			existing.inBase ? baseValue(term.coefficient, quantity) : term.coefficient
+		);
 	});
 
 	const result: TidyTerm[] = [];
@@ -564,6 +665,68 @@ function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 		result.push({ ...term, coefficient });
 	}
 	return result;
+}
+
+// =============================================================================
+// Étape 10 (suite) — l'unité adaptée à l'ordre de grandeur (§D.3)
+// =============================================================================
+
+/**
+ * Plancher de lisibilité de `tidy`.
+ *
+ * §D.3 annonce « entre 0,1 et 1000 », mais ses propres exemples demandent un
+ * plancher plus haut : `1[km]-999[m]` doit rendre `1 m` (et non `0,1 dam`, que
+ * 0,1 autoriserait) et `0.25[h]` doit rendre `15 min` (et non `0,25 h`).
+ * `0.005[m] → 0,5 cm` fixe la borne : le plancher est 0,5, inclus.
+ */
+const TIDY_MIN_READABLE = 0.5;
+
+/**
+ * Réécrit une grandeur **numérique** dans l'unité adaptée à son ordre de
+ * grandeur (§D.3) :
+ *
+ * - unité simple (`m`, `s`, `g`) : la famille donne la meilleure unité
+ *   (`12000[m] → 12 km`, `3600[s] → 1 h`) ;
+ * - unité composée sans famille (`kg.m/s^2`) : l'unité dérivée reconnue (`N`) ;
+ * - sinon l'unité écrite est conservée (`6[km^2]`, `12[km/h]`).
+ *
+ * Une grandeur **symbolique** (`x[m]`) garde son unité : pas de choix d'unité,
+ * pas de décimal. Une **température** n'a pas de `quantity` (unité affine),
+ * elle ne passe jamais par ici.
+ */
+function chooseUnit(term: TidyTerm): TidyTerm {
+	const quantity = term.quantity;
+	if (quantity === null || term.verbatim || term.factors.length > 0) return term;
+
+	const value = baseValue(term.coefficient, quantity);
+	const rewritten = (unit: Unit): TidyTerm | null => {
+		const conversion = exactConversion(unitWriting(unit));
+		if (conversion === null || conversion.piPower !== 0 || conversion.offset !== null) return null;
+		return {
+			...term,
+			coefficient: divRational(value, conversion.coefficient),
+			unit,
+			quantity: { ...quantity, factor: conversion.coefficient },
+			decimal: true
+		};
+	};
+
+	// Unité simple : la famille donne la meilleure unité.
+	if (getPrimaryBaseSymbol(quantity.baseUnit) !== null) {
+		const best = selectBestUnit(rationalToNumber(value), quantity.baseUnit, TIDY_MIN_READABLE);
+		const chosen = rewritten(best.unit);
+		if (chosen !== null) return chosen;
+	}
+
+	// Unité composée sans famille : l'unité dérivée nommée, quand il y en a une.
+	if (quantity.baseUnit.components.size >= 2) {
+		const derived = recognizeDerivedUnit(quantity.baseUnit);
+		const chosen = derived === null ? null : rewritten(derived);
+		if (chosen !== null) return chosen;
+	}
+
+	// Sinon l'unité écrite est conservée, la valeur en décimal.
+	return { ...term, decimal: true };
 }
 
 // =============================================================================
@@ -616,7 +779,7 @@ function tidyAtom(node: MathNode): MathNode {
 
 /** Une expression : somme de termes, regroupés puis ordonnés puis réécrits. */
 export function tidyExpression(node: MathNode): MathNode {
-	return buildSum(sortTerms(collectLikeTerms(toSumTerms(node))));
+	return buildSum(sortTerms(collectLikeTerms(toSumTerms(node)).map(chooseUnit)));
 }
 
 /**
