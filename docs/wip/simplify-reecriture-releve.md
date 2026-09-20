@@ -383,7 +383,7 @@ développer ; `1/√2 → √2/2` ; `(x+1)(x−1) → x²−1` et `x(x+1) → x�
 [simplify-tidy-progress.md](simplify-tidy-progress.md), [units-progress.md](units-progress.md).
 
 Restent ouverts, hors périmètre : §6.5 (`cosh²−sinh²`), §6.7 (`sec²−1`),
-§6.8 (`1/√2` pour `areEquivalent` — corrigé de fait ? à mesurer), §6.9 (`^`
+§6.8 (`1/√2 ≢ √2/2` pour `areEquivalent` — mesuré encore faux sur `main` le 2026-09-20 après #380), §6.9 (`^`
 après `/` dans le parseur maison).
 
 ---
