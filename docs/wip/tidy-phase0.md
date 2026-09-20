@@ -145,9 +145,19 @@ de `normalize` :
 ### D.1 Équivalence (`normalize`) — décision 2
 
 `normalize` convertit toute grandeur en unités de base, avec des coefficients
-**rationnels exacts** (`floatToRational` sur les coefficients des définitions :
-`1000`, `1/3600`, `3048/10000`). Un facteur opaque par unité **de base**
-(`m`, `s`, `kg`, `K`, …), le coefficient replié dans le nombre.
+**rationnels exacts**. Un facteur opaque par unité **de base** (`m`, `s`,
+`kg`, `K`, …), le coefficient replié dans le nombre.
+
+> **Erratum du 2026-09-20 (mesuré après validation)** : la première version
+> disait « `floatToRational` sur les coefficients des définitions ». Faux :
+> `floatToRational(273.15)` rend `8535937499999999/31250000000000`, pas
+> `5463/20`, et `floatToRational(1/3600)` n'est pas `1/3600`. L'exactitude
+> vient de **l'écriture décimale des définitions** (`parseDecimalToRational`
+> sur `"273.15"`, `"0.3048"`, `"1000"` : exact), composée **par unité nommée**
+> (`km/h` = `1000` × `3600⁻¹` = `5/18`, jamais le flottant `0,2777…`). Deux
+> familles n'ont pas d'écriture décimale finie et demandent une définition
+> exacte : `°F` (`5/9`) et les angles `°`/`deg` (`π/180`, à porter comme
+> multiple **symbolique** de π, ce que `normalize` sait déjà faire : `30° ≡ π/6`).
 
 | paire                     | attendu                   |
 | ------------------------- | ------------------------- |
