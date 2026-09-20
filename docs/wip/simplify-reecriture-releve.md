@@ -371,14 +371,10 @@ Les cases que le relevé **ne permet pas** de figer seul :
 6. **`2x·sin(x) + x²·cos(x)`** → ordre : degré de `x` décroissant
    (`x² cos(x) + 2x sin(x)`, ce que nous rendons) ?
 7. **`2(x+h)²−2x²`** → `4hx+2h²` (nous, ordre actuel) ou `2h²+4hx` ?
-8. **`12[km]`** → `12 km` : oui, mais c'est un bug de `normalize` (§6.3), pas
-   un réglage de `simplify` — le corriger là ?
-
-Et deux décisions de chantier, hors panel :
-
-- le bug d'équivalence §6.1 : avant, pendant, ou après la réécriture ?
-- la règle `pythagorean` §6.4 : réparer le motif (petit) ou attendre la
-  réécriture ?
+   **Réglé depuis, plus à trancher** (PR #376 et #377, le même jour) : `12[km]`
+   garde son unité (§6.3), le bug d'équivalence des quotients (§6.1), les deux
+   formes de `sin²(x)` (§6.4), et les motifs `P.sub` après `normalizePass`
+   (§6.6). Restent ouverts, hors panel : `cosh²−sinh²` (§6.5) et `sec²−1` (§6.7).
 
 ---
 
