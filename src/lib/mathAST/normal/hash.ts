@@ -58,14 +58,19 @@ export function hashRadicalArray(radicals: readonly SimplifiedRadical[]): string
 // =============================================================================
 
 /**
- * Hash déterministe d'une unité : composants triés par symbole, puis coefficient.
+ * Hash déterministe d'une unité : composants triés par symbole, coefficient,
+ * puis décalage affine (sans lui, °C et K auraient le même hash).
+ *
+ * Coefficient et décalage sont des flottants comparés ici exactement, là où
+ * `unitsEqual` tolère 1e-9. Ils viennent tous de la table des définitions,
+ * donc une même unité donne toujours les mêmes bits.
  */
 function hashUnit(unit: Unit): string {
 	const components = [...unit.components.entries()]
 		.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
 		.map(([symbol, exponent]) => `${symbol}^${exponent}`)
 		.join('*');
-	return `${components}:${unit.coefficient}`;
+	return `${components}:${unit.coefficient}:${unit.offset ?? 0}`;
 }
 
 /**

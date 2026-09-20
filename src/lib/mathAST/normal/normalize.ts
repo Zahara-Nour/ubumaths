@@ -65,6 +65,8 @@ import { preprocess } from './rules/index.js';
 import { denormalize } from './denormalize';
 import { tryUnivariateGcd, dividePolynomials } from './univariate-gcd';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { parse as parseUnit, parseUnitTerms } from '../units/parser';
+import { format as formatUnit } from '../units/formatter';
 import { canFactorOutNegative, isEvenFunction, isOddFunction } from './parity.js';
 
 // =============================================================================
@@ -894,9 +896,10 @@ function normalFormFromFraction(
  *
  * - **signe** : le premier terme du dénominateur est positif
  *   (`x/(-y)` → `(-x)/y`, `(-x)/(-y)` → `x/y`) ;
- * - **contenu** : si tous les coefficients (numérateur et dénominateur) sont
- *   des rationnels purs, ils deviennent des entiers premiers entre eux
- *   (`(2x)/(4y)` → `x/(2y)`, `(x/2)/(y/3)` → `(3x)/(2y)`).
+ * - **contenu** : les parties rationnelles de tous les coefficients
+ *   (numérateur et dénominateur, radicaux compris) deviennent des entiers
+ *   premiers entre eux (`(2x)/(4y)` → `x/(2y)`, `(x/2)/(y/3)` → `(3x)/(2y)`,
+ *   `(2√2·x)/(4y)` → `(√2·x)/(2y)`).
  *
  * Les dénominateurs constants ne passent pas ici : ils sont repliés dans les
  * coefficients en amont, et un polynôme garde ses coefficients rationnels.
@@ -915,16 +918,21 @@ function normalizeQuotientCoefficients(
 		den = negPolynomial(den);
 	}
 
-	// (b) Contenu : entiers premiers entre eux, seulement si tout est rationnel pur.
-	const coefficients = [...num, ...den].map((term) => getPureRationalCoeff(term.coefficient));
-	if (!coefficients.every((r): r is Rational => r !== null)) {
+	// (b) Contenu : entiers premiers entre eux. On lit la partie rationnelle de
+	// CHAQUE terme algébrique (2√2 → 2, 3i → 3) : (2√2·x)/(4y) et (√2·x)/(2y)
+	// tombent ainsi sur la même forme. Multiplier par un rationnel positif
+	// préserve le signe posé en (a) et ne crée aucun facteur commun.
+	const rationals = [...num, ...den].flatMap((term) =>
+		term.coefficient.terms.map((algebraic) => algebraic.rational)
+	);
+	if (rationals.length === 0) {
 		return { numerator: num, denominator: den };
 	}
 
 	let commonDenominator = 1n;
-	for (const r of coefficients) commonDenominator = lcmBigInt(commonDenominator, r.d);
+	for (const r of rationals) commonDenominator = lcmBigInt(commonDenominator, r.d);
 	let commonNumerator = 0n;
-	for (const r of coefficients) {
+	for (const r of rationals) {
 		commonNumerator = gcdBigInt(commonNumerator, (r.n * commonDenominator) / r.d);
 	}
 	if (commonNumerator === 0n || (commonDenominator === 1n && commonNumerator === 1n)) {
@@ -1813,17 +1821,7 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 		}
 
 		case 'unit': {
-			// L'unité est un facteur symbolique opaque : 12[km] → 12 · U(km).
-			// Sans lui, 12[km] et 12 avaient la même forme normale, et simplify
-			// dépouillait toute grandeur de son unité (relevé du 2026-09-20).
-			// Le facteur porte l'unité seule (expression 1) : denormalizeTerm le
-			// reconnaît et reconstruit unit(reste du terme, unité).
-			const unitFactor: MathNode = {
-				type: 'unit',
-				expression: { type: 'number', value: '1' },
-				unit: node.unit
-			};
-			return mulNormalForms(normalizeNode(node.expression, ctx), normalizeOpaqueNode(unitFactor));
+			return normalizeUnit(node, ctx);
 		}
 
 		case 'composition':
@@ -1834,6 +1832,56 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 		default:
 			return normalizeOpaqueNode(node);
 	}
+}
+
+// =============================================================================
+// Unités
+// =============================================================================
+
+/**
+ * Une grandeur avec unité : l'expression, multipliée par **un facteur
+ * symbolique opaque par unité nommée**, élevé à son exposant signé.
+ *
+ * `12[km]` → `12 · U(km)` ; `12[km/h]` → `12 · U(km) · U(h)⁻¹` ;
+ * `2[km]·3[km]` et `6[km^2]` → `6 · U(km)²` — la même forme, c'est le but.
+ *
+ * Sans cela, 12[km] et 12 avaient la même forme normale, et simplify
+ * dépouillait toute grandeur de son unité (relevé du 2026-09-20). Chaque
+ * facteur porte l'unité seule (expression 1) : denormalizeTerm les reconnaît
+ * et reconstruit unit(reste du terme, unité recomposée).
+ *
+ * Aucune conversion : `km` et `m` sont deux facteurs distincts, donc
+ * `12[km] ≢ 12000[m]`. Limite assumée.
+ *
+ * Les unités affines (°C, °F) ne se composent pas (le module units le refuse)
+ * : elles restent opaques en bloc, expression comprise.
+ */
+function normalizeUnit(node: MathNode & { type: 'unit' }, ctx?: NormalizeContext): NormalForm {
+	if ((node.unit.offset ?? 0) !== 0) {
+		return normalizeOpaqueNode(node);
+	}
+
+	const terms = parseUnitTerms(node.unit.original ?? formatUnit(node.unit));
+	if (terms === null) {
+		return normalizeOpaqueNode(node);
+	}
+
+	let form = normalizeNode(node.expression, ctx);
+	for (const { symbol, exponent } of terms) {
+		if (exponent === 0) continue;
+		const named = parseUnit(symbol);
+		if (named === null) {
+			return normalizeOpaqueNode(node);
+		}
+		const factor: MathNode = {
+			type: 'unit',
+			expression: { type: 'number', value: '1' },
+			unit: named
+		};
+		const raised = powNormalForm(normalizeOpaqueNode(factor), Math.abs(exponent));
+		form = mulNormalForms(form, exponent > 0 ? raised : divNormalForms(ONE_NORMAL_FORM, raised));
+	}
+	return form;
 }
 
 // =============================================================================
@@ -3025,6 +3073,17 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
  * Normalizes a function call.
  * Arguments are normalized first to ensure canonical representation.
  */
+/**
+ * `-1` en exposant d'une fonction nommée : la réciproque, pas l'inverse.
+ * La fabrique refuse les littéraux signés, donc `-1` se lit `opposite(1)`.
+ */
+function isInverseNotation(power: MathNode): boolean {
+	if (power.type === 'opposite') {
+		return power.operand.type === 'number' && power.operand.value === '1';
+	}
+	return power.type === 'number' && power.value === '-1';
+}
+
 function normalizeFunction(
 	node: MathNode & { type: 'function' },
 	ctx?: NormalizeContext
@@ -3037,7 +3096,9 @@ function normalizeFunction(
 	//    reste : une seule forme, et l'exposant est porté par le facteur, donc
 	//    sin²(x)·sin(x) → sin³(x). Sans ce pas, les deux écritures avaient deux
 	//    hash (`^N(2)` contre `^2`) et n'étaient pas « équivalentes ».
-	if (node.power !== undefined) {
+	//    Exception : `f^{-1}` sur une fonction nommée est la notation de la
+	//    réciproque (`\sin^{-1}` = arcsin), pas `1/f` — on la laisse opaque.
+	if (node.power !== undefined && !isInverseNotation(node.power)) {
 		const { power, ...withoutPower } = node;
 		return normalizeNode({ type: 'superscript', base: withoutPower, superscript: power }, ctx);
 	}

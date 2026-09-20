@@ -440,21 +440,20 @@ function matchSuperscript(
  */
 function matchFunction(
 	pattern: Extract<Pattern, { type: 'function-pattern' }>,
-	node: MathNode,
+	candidate: MathNode,
 	bindings: MatchBindings,
 	ctx?: TypeContext
 ): MatchResult {
 	// Un motif `P.func(name, args, { power })` apparie aussi la forme
 	// `superscript(function, exposant)` — celle que normalize produit — en la
 	// lisant comme un nœud function avec power. Symétrique de matchSuperscript.
-	if (
+	const node: MathNode =
 		pattern.power !== undefined &&
-		isSuperscript(node) &&
-		isFunction(node.base) &&
-		node.base.power === undefined
-	) {
-		node = { ...node.base, power: node.superscript };
-	}
+		isSuperscript(candidate) &&
+		isFunction(candidate.base) &&
+		candidate.base.power === undefined
+			? { ...candidate.base, power: candidate.superscript }
+			: candidate;
 
 	if (!isFunction(node)) {
 		return failMatch();

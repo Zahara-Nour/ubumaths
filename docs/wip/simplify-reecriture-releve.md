@@ -327,6 +327,21 @@ ont deux hash différents : `\sin^2(x) ≢ \sin(x)^2` pour `areEquivalent`.
 
 ---
 
+### 6.5 `cosh²(x) − sinh²(x)` ne rend pas `1` (trouvé en corrigeant 6.4)
+
+La règle algébrique `diff-squares-symbolic` tire avant `hyperbolic-pythagorean`
+(qui apparie, mesuré) et produit `(cosh+sinh)(cosh−sinh)`, que post-normalize
+replie sur l'entrée. Pinné en `it.todo` dans `simplify/__tests__/releve-bugs.test.ts`.
+
+### 6.6 Les motifs `P.sub` n'apparient plus après `normalizePass`
+
+`1 − sin²(x)` devient `−sin²(x) + 1` (addition d'un opposé) avant les règles,
+et `P.sub(1, sin²)` n'apparie qu'une soustraction : `simplify` ne rend jamais
+`cos²(x)`. Toutes les règles écrites avec `P.sub` ont ce problème dans
+`simplify` — à traiter dans la réécriture.
+
+---
+
 ## 7. À trancher par David — la colonne « attendu »
 
 Les cases que le relevé **ne permet pas** de figer seul :

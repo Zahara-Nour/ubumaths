@@ -39,20 +39,47 @@ Le `case 'unit'` de `normalizeNode` rendait la forme normale de l'expression
 seule, et `hashMathNode` ignorait l'unité (`U(expr)`). Donc `12[km] ≡ 12`,
 `12[km] ≡ 12[m]`, et `simplify` dépouillait toute grandeur de son unité.
 
-## Les correctifs (5 fichiers)
+## Les correctifs (6 fichiers)
 
-| fichier                      | changement                                                                                                                                                                                                                                                                                                                               |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `cli/core/input-detector.ts` | regex sans frontière de mot en tête, `[(^]` en queue                                                                                                                                                                                                                                                                                     |
-| `normal/normalize.ts`        | (2) `normalizeFunction` : `function{power}` → `superscript(function, power)` avant tout · (1) `normalizeQuotientCoefficients` : signe du 1ᵉʳ terme du dénominateur, puis coefficients entiers premiers entre eux si tout est rationnel pur · (4) `case 'unit'` : `12[km]` → `12 · U(km)`, l'unité est un facteur opaque d'expression `1` |
-| `normal/hash.ts`             | (4) `hashUnit` : composants triés + coefficient, dans le hash du nœud `unit`                                                                                                                                                                                                                                                             |
-| `normal/denormalize.ts`      | (4) `denormalizeTerm` retire les facteurs d'unité, dénormalise le reste, reconstruit `unit(reste, unité)` (`combineUnitFactors` : produit et puissances)                                                                                                                                                                                 |
-| `pattern/match.ts`           | (2) `matchSuperscript` accepte un `function{power}`, `matchFunction` avec `power` accepte un `superscript(function, n)` — un motif `f^n` apparie les deux formes                                                                                                                                                                         |
+| fichier                      | changement                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cli/core/input-detector.ts` | regex sans frontière de mot en tête, `[(^]` en queue                                                                                                                                                                                                                                                                                                                                                                 |
+| `normal/normalize.ts`        | (2) `normalizeFunction` : `function{power}` → `superscript(function, power)` avant tout, sauf `^{-1}` (réciproque) · (1) `normalizeQuotientCoefficients` : signe du 1ᵉʳ terme du dénominateur, puis parties rationnelles de tous les termes algébriques mises en entiers premiers entre eux · (4) `normalizeUnit` : un facteur opaque par unité nommée (`12[km/h]` → `12 · U(km) · U(h)⁻¹`), affines opaques en bloc |
+| `normal/hash.ts`             | (4) `hashUnit` : composants triés, coefficient **et décalage affine** (sans lui °C ≡ K)                                                                                                                                                                                                                                                                                                                              |
+| `normal/denormalize.ts`      | (4) `denormalizeTerm` retire les facteurs d'unité, dénormalise le reste, recompose l'écriture (`km^2`, `km/h`) relue par le parseur d'unités → `unit(reste, unité)`                                                                                                                                                                                                                                                  |
+| `pattern/match.ts`           | (2) `matchSuperscript` accepte un `function{power}`, `matchFunction` avec `power` accepte un `superscript(function, n)` — un motif `f^n` apparie les deux formes                                                                                                                                                                                                                                                     |
+
+`units/parser.ts` expose `parseUnitTerms` (découpe `km/h` en `[km¹, h⁻¹]`), la clé
+qui rend `km·km` et `km^2` identiques en forme normale.
 
 **Pourquoi pas les 31 motifs réécrits en `P.pow`** : `pedagogical-simplify`
 applique les règles trig à l'AST **brut** (phase A, avant `normalize`), et ses
 tests parsent `\sin^2(x)`. Réécrire les motifs les aurait cassés. La tolérance
 est dans l'appariement ; la forme normale, elle, n'en garde qu'une.
+
+## Revue de code (Opus) — 11 findings, 3 critiques, tous traités
+
+Reproduits sur le chemin réel avant correction, chacun pinné dans
+`normal/__tests__/review-findings.test.ts` (rouges prouvés, 9 cas) :
+
+- **`2[km]·3[km]` s'affichait `6[m^2]`** : la composition par les opérations du
+  module units perdait l'écriture d'origine. Et, trouvé en le testant :
+  `6[km^2] ≢ 2[km]·3[km]` — la forme normale n'était pas canonique par
+  composition. D'où le design final : un facteur par unité nommée.
+- **`20[°C] ≡ 20[K]`** : le décalage affine manquait au hash.
+- **`2[°C]·3[m]` levait `AffineCompositionError`** dans `denormalize` : les
+  affines sont désormais opaques en bloc, jamais composées.
+- **`\sin^{-1}(x) ≡ 1/\sin(x)`** : la réécriture en puissance ignorait la
+  notation de la réciproque. `^{-1}` sur une fonction nommée reste opaque.
+- **`(2√2·x)/(4y) ≢ (√2·x)/(2y)`** : l'étape « contenu » abandonnait dès qu'un
+  coefficient portait un radical. Elle lit maintenant la partie rationnelle de
+  chaque terme algébrique.
+- Le test `tryMatch(...).not.toBeNull()` ne prouvait rien (`tryMatch` rend
+  `undefined`) : corrigé en `toBeDefined()`, **et** preuve rouge refaite par
+  neutralisation de la branche `matchFunction` (copie, pas `git checkout`).
+- Qualité : cast `as Unit` retiré, paramètre `node` non réassigné, flottants
+  du hash documentés, limite « aucune conversion » (`12[km] ≢ 12000[m]`)
+  écrite dans le code et pinnée en test.
 
 ## Trouvé en chemin (hors périmètre, non corrigé)
 
@@ -80,6 +107,7 @@ TDD strict : 5 fichiers de tests rouges (prouvés rouges, commit
 - [x] Bug 4 corrigé (unités)
 - [x] Suites `normal/`, `simplify/`, `pattern/`, `cli/`, `pedagogical-simplify/`, `units/` : 87 fichiers, 4 237 tests verts, 0 régression
 - [x] `pnpm lint:fast` : rien à signaler
-- [ ] `pnpm check:incremental` = 0 erreur
-- [ ] `code-reviewer` (Opus)
+- [x] `pnpm check:incremental` = 0 erreur (1ʳᵉ passe, avant revue)
+- [x] `code-reviewer` (Opus) : 11 findings, tous traités
+- [ ] `pnpm check:incremental` = 0 erreur (2ᵉ passe, après revue)
 - [ ] PR, CI verte, merge, worktree supprimé
