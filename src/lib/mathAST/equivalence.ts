@@ -6,7 +6,7 @@
  */
 
 import type { MathNode } from './types';
-import { normalize, type NormalizeAbortOptions } from './normal/normalize';
+import { equivalenceForms, type NormalizeAbortOptions } from './normal/normalize';
 import { normalFormsEquivalent } from './normal/hash';
 import { evaluate, evaluateNodeToApproximatedNumber } from './eval/evaluate';
 import { EQUALITY_TOLERANCE } from './common/constants';
@@ -34,8 +34,7 @@ export function areEquivalent(a: MathNode, b: MathNode, options?: NormalizeAbort
 
 	// Try structural equivalence via normalization
 	try {
-		const formA = normalize(a, ctx);
-		const formB = normalize(b, ctx);
+		const [formA, formB] = equivalenceForms(a, b, ctx);
 		return normalFormsEquivalent(formA, formB);
 	} catch (e) {
 		// On abort, return false (conservative — we couldn't prove equivalence).

@@ -40,13 +40,11 @@ describe('une identité qui rend une constante passe avant la factorisation', ()
 		expect(s('cosh(2x)^2-sinh(2x)^2')).toBe('1');
 	});
 
-	// ⚠️ `areEquivalent` ne peut pas arbitrer ici : `normalize` traite `cosh(x)`
-	// et `sinh(x)` comme deux atomes opaques indépendants et ne connaît aucune
-	// identité trigonométrique — mesuré, `sin²+cos² ≢ 1` de la même façon. Les
-	// règles de motif vont au-delà de la forme normale polynomiale ; c'est une
-	// propriété du système, pas un défaut de ce correctif.
-	it('normalize ignore l’identité, c’est la règle qui la connaît', () => {
-		expect(areEquivalent(parseCustom('cosh(x)^2-sinh(x)^2'), parseCustom('1'))).toBe(false);
+	// Le décideur d'équivalence connaît désormais l'identité — il réduit la
+	// trigonométrie pour comparer, sans toucher à la forme qui s'affiche. La
+	// règle de motif, elle, reste ce qui la fait **apparaître** dans le résultat.
+	it('l’équivalence et la règle disent la même chose', () => {
+		expect(areEquivalent(parseCustom('cosh(x)^2-sinh(x)^2'), parseCustom('1'))).toBe(true);
 		expect(s('cosh(x)^2-sinh(x)^2')).toBe('1');
 	});
 });

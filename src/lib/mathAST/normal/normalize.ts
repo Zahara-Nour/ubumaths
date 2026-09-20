@@ -35,6 +35,7 @@ import {
 	ZERO_POLYNOMIAL,
 	ONE_POLYNOMIAL,
 	addPolynomials,
+	collectLikeTerms,
 	subPolynomials,
 	mulPolynomials,
 	negPolynomial,
@@ -62,7 +63,7 @@ import {
 	floatToRational
 } from './rational';
 import { simplifyRadical, integerNthRoot } from './radical';
-import { preprocess } from './rules/index.js';
+import { preprocess, expandTrigDefinitions } from './rules/index.js';
 import { denormalize } from './denormalize';
 import { tryUnivariateGcd, dividePolynomials } from './univariate-gcd';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
@@ -743,6 +744,286 @@ function rationalizeComplexDenominator(
 	}
 
 	return { numerator: newNumerator, denominator: newDenominator };
+}
+
+// =============================================================================
+// Réduction de Pythagore
+// =============================================================================
+
+/**
+ * Les deux couples liés par une identité de Pythagore.
+ *
+ * Clé = la fonction qu'on ÉLIMINE (son exposant retombe à 0 ou 1),
+ * valeur = sa partenaire, qui reste la variable du polynôme.
+ *
+ *   sin(u)²  = 1 − cos(u)²
+ *   sinh(u)² = cosh(u)² − 1
+ *
+ * Choisir `sin`/`sinh` comme éliminée n'est pas arbitraire : c'est ce qui donne
+ * la forme canonique unique `A(cos u) + sin(u)·B(cos u)` de l'anneau quotient
+ * R[s,c]/(s²+c²−1). Deux écritures d'un même élément y ont le même hash.
+ *
+ * Les relations valent À ARGUMENT CONSTANT : `sin(2x)` et `sin(x)` restent deux
+ * atomes indépendants. Les arcs commensurables sont une étape ultérieure.
+ */
+const PYTHAGOREAN_PARTNERS: Readonly<Record<string, string>> = {
+	sin: 'cos',
+	sinh: 'cosh'
+};
+
+/**
+ * Plafond de développement. `sin(u)^k` produit un polynôme de degré k en cos(u)
+ * avec ⌊k/2⌋+1 termes : c'est borné, mais un exposant absurde ferait exploser la
+ * mémoire avant de rendre un verdict utile. Au-delà, on laisse le monôme tel
+ * quel — la forme reste correcte, elle n'est simplement plus canonique.
+ */
+const MAX_PYTHAGOREAN_EXPANSION_DEGREE = 64;
+
+/**
+ * Plafond sur le nombre de termes qu'un seul monôme peut produire en se
+ * réduisant. 4 096 couvre très largement toute expression scolaire (`sin^20`
+ * seul en produit 11) et borne le pire cas à quelques millisecondes.
+ */
+const MAX_PYTHAGOREAN_EXPANSION_TERMS = 4096;
+
+/**
+ * Reconnaît un facteur réductible : `sin(u)^k` ou `sinh(u)^k` avec k entier ≥ 2.
+ *
+ * Écarté volontairement :
+ * - exposant FRACTIONNAIRE (`sqrt(sin u)`) — Pythagore ne passe pas la racine ;
+ * - exposant négatif — il vit déjà au dénominateur, qui est réduit de son côté ;
+ * - `sin` portant une puissance, une dérivée ou la notation de réciproque.
+ */
+function pythagoreanReducibleFactor(factor: SymbolicFactor): {
+	functionName: string;
+	partnerNode: MathNode;
+	halfPower: number;
+	keepsOddFactor: boolean;
+} | null {
+	const exponent = factor.exponent;
+	if (exponent.d !== 1n || exponent.n < 2n) {
+		return null;
+	}
+
+	const base = factor.base;
+	if (base.type !== 'function' || base.args.length !== 1) {
+		return null;
+	}
+	if (base.power !== undefined || base.base !== undefined) {
+		return null;
+	}
+	if (base.isInverse === true || base.derivativeOrder !== undefined) {
+		return null;
+	}
+
+	const partnerName = PYTHAGOREAN_PARTNERS[base.name];
+	if (partnerName === undefined) {
+		return null;
+	}
+	if (exponent.n > BigInt(MAX_PYTHAGOREAN_EXPANSION_DEGREE)) {
+		return null;
+	}
+
+	const power = Number(exponent.n);
+	return {
+		functionName: base.name,
+		// L'argument est DÉJÀ canonicalisé (canonicalizeFunctionNode l'a passé par
+		// normalize puis denormalize), donc `cos(u)` construit ici a exactement le
+		// même hash que celui qu'aurait produit la normalisation de `cos(u)`.
+		partnerNode: { type: 'function', name: partnerName, args: [base.args[0]] },
+		halfPower: Math.floor(power / 2),
+		keepsOddFactor: power % 2 === 1
+	};
+}
+
+/**
+ * Le polynôme qui remplace `sin(u)²` : `1 − cos(u)²`, ou `cosh(u)² − 1`.
+ */
+function pythagoreanIdentityPolynomial(functionName: string, partnerNode: MathNode): NormalTerm[] {
+	const partnerSquared: readonly SymbolicFactor[] = [symbolicFactor(partnerNode, fromInteger(2))];
+	const one: NormalTerm = { coefficient: ALGEBRAIC_ONE, monomial: EMPTY_MONOMIAL };
+	const plusPartnerSquared: NormalTerm = {
+		coefficient: ALGEBRAIC_ONE,
+		monomial: partnerSquared
+	};
+	const minusPartnerSquared: NormalTerm = {
+		coefficient: algebraicFromRational(fromInteger(-1)),
+		monomial: partnerSquared
+	};
+	const minusOne: NormalTerm = {
+		coefficient: algebraicFromRational(fromInteger(-1)),
+		monomial: EMPTY_MONOMIAL
+	};
+
+	// sinh(u)² = cosh(u)² − 1 ; sin(u)² = 1 − cos(u)²
+	return functionName === 'sinh' ? [plusPartnerSquared, minusOne] : [one, minusPartnerSquared];
+}
+
+/**
+ * Réduit UN terme. Un monôme devient un POLYNÔME : `sin(u)^k` s'y remplace par
+ * `(1−cos²u)^⌊k/2⌋ · sin(u)^(k mod 2)`, qui a plusieurs termes.
+ *
+ * Terminaison : l'exposant de `sin` dans le résultat vaut 0 ou 1, jamais plus,
+ * et le facteur produit ne porte que `cos`. Une seule passe par facteur suffit,
+ * il n'y a pas de point fixe à chercher.
+ */
+/**
+ * Combien de termes la réduction d'un monôme va produire.
+ *
+ * Le coût est le **produit** des demi-degrés des facteurs réductibles, pas leur
+ * maximum : quatre `sin^40` dans un même monôme, c'est 21⁴ termes, cinq `sin^64`
+ * et le processus meurt d'un dépassement mémoire. Le plafond par facteur ne
+ * borne donc rien ; c'est le produit qu'il faut compter, avant de développer.
+ */
+function pythagoreanExpansionSize(term: NormalTerm): number {
+	let size = 1;
+	for (const factor of term.monomial) {
+		const reducible = pythagoreanReducibleFactor(factor);
+		if (reducible === null) continue;
+		size *= reducible.halfPower + 1;
+		if (size > MAX_PYTHAGOREAN_EXPANSION_TERMS) return size;
+	}
+	return size;
+}
+
+function reducePythagorasInTerm(term: NormalTerm): NormalTerm[] {
+	// Au-delà du plafond, le monôme est laissé tel quel : un faux négatif, jamais
+	// un faux positif — deux expressions égales gardent alors deux empreintes.
+	if (pythagoreanExpansionSize(term) > MAX_PYTHAGOREAN_EXPANSION_TERMS) {
+		return [term];
+	}
+
+	const keptFactors: SymbolicFactor[] = [];
+	const expansions: Array<{ identity: NormalTerm[]; halfPower: number }> = [];
+
+	for (const factor of term.monomial) {
+		const reducible = pythagoreanReducibleFactor(factor);
+		if (reducible === null) {
+			keptFactors.push(factor);
+			continue;
+		}
+
+		if (reducible.keepsOddFactor) {
+			keptFactors.push(symbolicFactor(factor.base, ONE));
+		}
+		expansions.push({
+			identity: pythagoreanIdentityPolynomial(reducible.functionName, reducible.partnerNode),
+			halfPower: reducible.halfPower
+		});
+	}
+
+	if (expansions.length === 0) {
+		return [term];
+	}
+
+	let result: NormalTerm[] = [
+		{ coefficient: term.coefficient, monomial: sortSymbolicFactors(keptFactors) }
+	];
+	for (const expansion of expansions) {
+		result = mulPolynomials(result, powPolynomial(expansion.identity, expansion.halfPower));
+	}
+
+	return result;
+}
+
+/**
+ * Garde bon marché : y a-t-il seulement quelque chose à réduire ?
+ *
+ * Appelée à chaque construction de forme normale, elle doit coûter presque rien
+ * sur les expressions sans trigonométrie — d'où le test d'exposant (comparaison
+ * de bigints) AVANT tout examen du nœud de base.
+ */
+function polynomialNeedsPythagoras(terms: readonly NormalTerm[]): boolean {
+	for (const term of terms) {
+		for (const factor of term.monomial) {
+			if (factor.exponent.d !== 1n || factor.exponent.n < 2n) {
+				continue;
+			}
+			const base = factor.base;
+			if (base.type === 'function' && PYTHAGOREAN_PARTNERS[base.name] !== undefined) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/**
+ * Réduit un polynôme entier par Pythagore, terme par terme.
+ *
+ * Même patron que `combineExpInPolynomial` pour les exponentielles : la relation
+ * entre atomes se règle sur le polynôme normalisé, pas dans l'arbre.
+ */
+function reducePythagorasInPolynomial(
+	terms: readonly NormalTerm[],
+	ctx?: NormalizeContext
+): NormalTerm[] {
+	if (!polynomialNeedsPythagoras(terms)) {
+		return [...terms];
+	}
+
+	let result: NormalTerm[] = [];
+	for (const term of terms) {
+		// La réduction tourne APRÈS le retour de `normalize` : sans ce contrôle,
+		// aucun `timeoutMs` ne la couvre. C'est la seule protection contre le gel
+		// du navigateur pendant la correction d'une copie.
+		checkAbort(ctx?.abortChecker);
+		result = addPolynomials(result, reducePythagorasInTerm(term));
+	}
+
+	// `addPolynomials` court-circuite quand l'accumulateur est vide et rend alors
+	// ses termes DANS L'ORDRE REÇU. Or le hash d'un polynôme est l'ordre de ses
+	// termes : sans ce dernier tri, `1−cos²x` issu de `sin²x` et `1−cos²x` écrit
+	// tel quel avaient deux hash. Le tri canonique est donc obligatoire ici.
+	return collectLikeTerms(result);
+}
+
+/**
+ * Réduit la forme normale FINALE par Pythagore, numérateur et dénominateur.
+ *
+ * Pourquoi à la SORTIE, et pas dans les constructeurs internes : la réduction
+ * quitte l'anneau libre R[s,c] pour son quotient, et la simplification de
+ * fraction (pgcd) n'y a plus le même sens. Réduire un intermédiaire détruirait
+ * les facteurs communs — `sin²(x)/sin(x)` verrait son numérateur devenir
+ * `1−cos²x`, premier avec `sin x`, et ne vaudrait plus `sin(x)`. On laisse donc
+ * tout le calcul se faire dans l'anneau libre, où le pgcd fonctionne, et on ne
+ * passe au quotient qu'une fois, sur le résultat.
+ *
+ * Le repassage par `normalFormFromFraction` est nécessaire : après réduction,
+ * `cos²x/(1−sin²x)` devient `cos²x/cos²x`, que seul le pgcd ramène à 1.
+ */
+function reducePythagorasInNormalForm(form: NormalForm, ctx?: NormalizeContext): NormalForm {
+	if (!polynomialNeedsPythagoras(form.numerator) && !polynomialNeedsPythagoras(form.denominator)) {
+		return form;
+	}
+
+	const numerator = reducePythagorasInPolynomial(form.numerator, ctx);
+	if (numerator.length === 0) {
+		return ZERO_NORMAL_FORM;
+	}
+
+	const denominator = reducePythagorasInPolynomial(form.denominator, ctx);
+	if (denominator.length === 0) {
+		// Le dénominateur s'annule une fois réduit : l'expression n'est pas
+		// définie. Ce n'est pas au décideur de trancher ça — il rend la forme
+		// NON réduite, et deux écritures identiques restent identiques.
+		// `areEquivalent(e, e)` doit valoir vrai, même pour `1/(sin²+cos²−1)`.
+		throw new PythagoreanReductionError();
+	}
+
+	return normalFormFromFraction(numerator, denominator);
+}
+
+/**
+ * La réduction a annulé un dénominateur : l'expression n'est pas définie.
+ * Signalée à part d'une vraie division par zéro pour que le décideur retombe
+ * sur la comparaison non réduite au lieu de propager une erreur.
+ */
+class PythagoreanReductionError extends Error {
+	constructor() {
+		super('normalize: pythagorean reduction cancels the denominator');
+		this.name = 'PythagoreanReductionError';
+	}
 }
 
 /**
@@ -1625,6 +1906,59 @@ export function normalize(node: MathNode, ctx?: NormalizeContext): NormalForm {
 
 	// Then normalize (Phase 2)
 	return normalizeNode(simplified, ctx);
+}
+
+/**
+ * La forme qui **décide l'équivalence**, et elle seule.
+ *
+ * `areEquivalent` ne compare que des empreintes : il suffit donc de réduire ici,
+ * sans toucher à la forme que `normalize` rend et que tout le reste affiche.
+ * Deux gestes, dans cet ordre :
+ *
+ * 1. les **définitions** — `tan`, `cot`, `sec`, `csc` s'écrivent avec `sin` et
+ *    `cos`, et leurs hyperboliques avec `sinh` et `cosh` ; il faut que l'arbre
+ *    le dise avant que la normalisation ne fige ses atomes ;
+ * 2. **Pythagore** — passage au quotient `R[s,c]/(s²+c²−1)`, qui donne à tout
+ *    polynôme trigonométrique l'écriture unique `A(cos u) + sin(u)·B(cos u)`.
+ *
+ * Pourquoi pas dans `normalize` : la réduction y réécrirait `sin²(x)` en
+ * `1 − cos²(x)` et `tan(x)` en `sin(x)/cos(x)` pour **tout le monde**. Mesuré :
+ * `tan(-x)` perdait sa parité, `cosh²+sinh²` s'affichait `2cosh²−1`, l'option
+ * qui coupe la trigonométrie pour le primaire ne coupait plus rien, et la
+ * reconnaissance de motifs de l'intégration lit cette même forme. Décision de
+ * David du 2026-09-20 : réduire pour comparer, pas pour écrire.
+ *
+ * Limite assumée : les relations valent **à argument constant**. `sin(2x)` et
+ * `sin(x)` restent indépendants ; les arcs commensurables (Tchebychev, formules
+ * d'addition) sont une étape ultérieure.
+ */
+export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalForm {
+	return reducePythagorasInNormalForm(normalize(expandTrigDefinitions(node), ctx), ctx);
+}
+
+/**
+ * Les deux formes qui décident si `a` et `b` sont équivalentes.
+ *
+ * Normalement les formes **réduites**. Mais la réduction peut annuler un
+ * dénominateur (`1/(sin²+cos²−1)` devient `1/0`) : l'expression n'est alors pas
+ * définie, et ce n'est pas au décideur d'en juger. Dans ce cas il retombe sur
+ * les deux formes **non réduites**, des deux côtés à la fois — sans quoi il
+ * comparerait des formes de natures différentes. `areEquivalent(e, e)` reste
+ * ainsi vrai, comme il se doit.
+ */
+export function equivalenceForms(
+	a: MathNode,
+	b: MathNode,
+	ctx?: NormalizeContext
+): readonly [NormalForm, NormalForm] {
+	try {
+		return [equivalenceForm(a, ctx), equivalenceForm(b, ctx)];
+	} catch (error) {
+		if (error instanceof PythagoreanReductionError) {
+			return [normalize(a, ctx), normalize(b, ctx)];
+		}
+		throw error;
+	}
 }
 
 /**
@@ -4538,7 +4872,7 @@ function powNormalForm(a: NormalForm, n: number): NormalForm {
 export function isZeroExpression(node: MathNode, options?: NormalizeAbortOptions): boolean {
 	const abortChecker = makeAbortChecker(options?.signal, options?.timeoutMs);
 	try {
-		const form = normalize(node, abortChecker ? { abortChecker } : undefined);
+		const form = equivalenceForm(node, abortChecker ? { abortChecker } : undefined);
 		return form.numerator.length === 0;
 	} catch (e) {
 		// Conservative on abort: caller cannot prove zero in time.
@@ -4562,7 +4896,7 @@ export function isZeroExpression(node: MathNode, options?: NormalizeAbortOptions
 export function isOneExpression(node: MathNode, options?: NormalizeAbortOptions): boolean {
 	const abortChecker = makeAbortChecker(options?.signal, options?.timeoutMs);
 	try {
-		const form = normalize(node, abortChecker ? { abortChecker } : undefined);
+		const form = equivalenceForm(node, abortChecker ? { abortChecker } : undefined);
 		return isOnePolynomial(form.numerator) && isOnePolynomial(form.denominator);
 	} catch (e) {
 		// Conservative on abort: caller cannot prove one in time. Re-throw any

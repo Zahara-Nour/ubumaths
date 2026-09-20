@@ -138,7 +138,15 @@ describe('improperIntegrate — bound validation', () => {
 });
 
 describe('improperIntegrate — performance', () => {
-	it('all 8 pedagogical cases complete under 50 ms each', () => {
+	// ⚠️ Temps MURAL, donc sensible à la charge de la machine : le seuil protège
+	// contre une explosion de complexité, pas contre quelques pour cent. Mesuré
+	// en isolation le 2026-09-20 : sept cas entre 0,3 et 1,1 ms, et `sin(x)` de 0
+	// à l'infini à 17,6 ms (19,6 ms depuis que le décideur d'équivalence réduit
+	// la trigonométrie, soit +11 % sur ce seul cas). Sous la charge de la suite
+	// complète ces durées triplent, et le seuil de 50 ms, calibré en isolation,
+	// tombait à 50,6 ms. D'où 150 ms : un ordre de grandeur au-dessus du pire cas
+	// mesuré, ce qui laisse le test détecter ce qu'il doit détecter.
+	it('all 8 pedagogical cases complete under 150 ms each', () => {
 		const cases: Array<{ name: string; expr: MathNode; a: number; b: number }> = [
 			{ name: '1: e^{-x}', expr: exp(opposite(x())), a: 0, b: Infinity },
 			{
@@ -169,7 +177,7 @@ describe('improperIntegrate — performance', () => {
 			const t0 = performance.now();
 			improperIntegrate(c.expr, 'x', c.a, c.b);
 			const dt = performance.now() - t0;
-			expect(dt).toBeLessThan(50);
+			expect(dt).toBeLessThan(150);
 		}
 	});
 });

@@ -388,6 +388,63 @@ enregistrait le bug. Et l'unité appartient désormais à l'opérande qu'elle su
 générateur parenthèse ce qui serait ambigu à la relecture (`(1/3)[km]`,
 `(x+1)[m/s^2]`).
 
+### 6.10 ✅ corrigé — la trigonométrie était opaque pour `normalize`
+
+`sin(x)`, `cos(x)`, `tan(x)`, `sec(x)` étaient quatre atomes **indépendants**,
+sans aucune relation. D'où une famille entière de faux négatifs pour
+`areEquivalent`, donc pour la correction des copies : `tan(x) ≢ sin(x)/cos(x)`
+et `sec(x) ≢ 1/cos(x)` alors que ce sont les **définitions** ; `sin²+cos² ≢ 1` ;
+`1−sin² ≢ cos²` ; `cosh²−sinh² ≢ 1`.
+
+**Réduire pour comparer, pas pour écrire** (décision de David, 2026-09-20).
+`areEquivalent` ne compare que des empreintes : la réduction vit donc sur le
+chemin de l'équivalence seul (`equivalenceForm`), et `normalize` rend la forme
+qui s'affiche, inchangée. Deux gestes : les définitions s'éliminent
+(`tan`, `cot`, `sec`, `csc` et leurs hyperboliques), puis Pythagore réduit
+(`sin²(u) → 1 − cos²(u)`, `sinh²(u) → cosh²(u) − 1`), ce qui donne à tout
+polynôme trigonométrique l'écriture unique `A(cos u) + sin(u)·B(cos u)`.
+
+L'autre voie — réduire la forme normale elle-même — a été mesurée puis écartée :
+neuf tests cassaient, `tan(-x)` perdait sa parité, `cosh²+sinh²` s'affichait
+`2cosh²−1`, l'option qui coupe la trigonométrie pour le primaire ne coupait plus
+rien, et la reconnaissance de motifs de l'intégration lit cette même forme.
+
+Limite assumée : les relations valent **à argument constant**. `sin(2x)` et
+`sin(x)` restent indépendants — deux tests le pinnent. Les arcs commensurables
+(Tchebychev, formules d'addition) sont une étape ultérieure ; la linéarisation,
+elle, n'aura pas besoin de règle : `sin²x` et `(1−cos 2x)/2` convergent d'eux-mêmes
+vers `1−cos²x`.
+
+Coût mesuré : nul sur une expression sans trigonométrie, facteur 2,2 avec. Le
+seul effet visible est le cas `sin(x)` du test de performance de l'intégration,
+17,6 ms → 19,6 ms en isolation.
+
+**Quatre défauts de plomberie**, trouvés par la revue et corrigés dans la même
+PR. Le cœur mathématique, lui, a résisté : deux campagnes de 27 000 expressions
+n'ont sorti **aucun faux positif**.
+
+- **Le délai d'interruption ne couvrait pas la réduction**, qui tourne après le
+  retour de `normalize`. Mesuré : 5,2 s pour un `timeoutMs` de 200 ms, et le
+  processus mourait d'un dépassement mémoire à cinq facteurs. Le coût est le
+  **produit** des demi-degrés des facteurs d'un monôme, pas leur maximum : le
+  plafond par facteur ne bornait donc rien. Un plafond sur le nombre de termes
+  produits (4 096) plus un contrôle du délai par terme ramènent ce cas à 7 ms.
+  Au plafond, le monôme est laissé tel quel : un faux négatif, jamais un faux
+  positif.
+- **La réflexivité était cassée** : `areEquivalent(e, e)` rendait faux pour
+  `1/(sin²+cos²−1)`, dont la réduction annule le dénominateur, et
+  `Exp.isEquivalent` **jetait**. Le décideur retombe désormais sur les deux
+  formes non réduites, des deux côtés à la fois.
+- **Deux notions d'égalité coexistaient** : `isZeroExpression` et
+  `isOneExpression`, que `geometry-core` utilise pour comparer deux valeurs,
+  ignoraient la réduction. Elles passent par le même décideur.
+- **`Exp.hash` contredisait `Exp.isEquivalent`** alors que sa docstring promet
+  l'inverse.
+
+Faux négatif connu, non traité : la réduction ne traverse pas les arguments de
+fonction, donc `ln(sin²x) ≢ ln(1−cos²x)`. `areEquivalent` n'est pas une
+congruence.
+
 ---
 
 ## 7. Tranché — la phase 0 validée, puis livrée

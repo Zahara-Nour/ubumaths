@@ -195,7 +195,7 @@ export {
 // Normalization
 // =============================================================================
 
-export { normalize, ZERO_NORMAL_FORM, ONE_NORMAL_FORM } from './normalize.js';
+export { normalize, equivalenceForm, ZERO_NORMAL_FORM, ONE_NORMAL_FORM } from './normalize.js';
 export type { NormalizeContext, NormalizeAbortOptions } from './normalize.js';
 
 export { normalizeExtended, containsExtendedNodes } from './normalize-extended.js';

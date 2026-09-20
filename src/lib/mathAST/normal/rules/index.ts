@@ -6,6 +6,7 @@
  */
 
 export { applyRadicalRules, simplifyRadicals } from './radicals.js';
+export { expandTrigDefinitions } from './trig-definitions.js';
 
 import type { MathNode } from '../../types.js';
 import { simplifyRadicals } from './radicals.js';
@@ -21,6 +22,12 @@ import { hashMathNode } from '../hash.js';
  * Only radical combination rules:
  * - √a * √b = √(ab) for symbolic radicals
  * - √(a/b) = √a / √b
+ *
+ * ⚠️ Les définitions trigonométriques (`expandTrigDefinitions`) ne sont PAS
+ * appliquées ici : elles réécriraient `tan(x)` en `sin(x)/cos(x)` dans la forme
+ * rendue par `denormalize`, donc dans tout ce qui s'affiche. Elles vivent sur le
+ * chemin de l'équivalence seul (`equivalenceForm`), avec la réduction de
+ * Pythagore.
  *
  * All other rules (arithmetic, powers) are handled in Phase 2
  * (polynomial normalization).
