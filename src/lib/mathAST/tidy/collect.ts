@@ -292,7 +292,11 @@ function reduceRadicalFactors(acc: Accumulator): void {
 	let changed = true;
 	while (changed) {
 		changed = false;
-		for (const [key, factor] of acc.factors) {
+		// Instantané obligatoire : la boucle retire, remet et ajoute des entrées
+		// dans `acc.factors` — itérer la map elle-même revisiterait une clé remise
+		// en fin de map dans la même passe.
+		const snapshot = [...acc.factors];
+		for (const [key, factor] of snapshot) {
 			if (isOneRational(factor.exponent)) continue;
 			const radicand = squareRootRadicand(factor.base);
 			if (radicand === null) continue;
