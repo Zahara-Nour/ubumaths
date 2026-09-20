@@ -352,6 +352,23 @@ Mesuré le 2026-09-20 en sondant les motifs `P.sub` : sur `sec(x)^2-1` parsé en
 syntaxe maison, seule `diff-squares-numeric` apparie. Non investigué (le nom
 `sec` est peut-être inconnu du parseur maison).
 
+### 6.8 `areEquivalent(1/√2, √2/2)` est faux
+
+Trouvé le 2026-09-20 par l'invariant « valeur conservée » des tests de `tidy` :
+`normalize` ne rationalise pas un radical **numérique** au dénominateur (hash
+`(1)/(1*R2:2)` d'un côté, `(1/2)*R2` de l'autre). Idem `1/√3 ≢ √3/3`,
+`2/√2 ≢ √2`. Même famille que le bug 1 (§6.1) : un élève qui rationalise est
+compté faux. À corriger dans `normalize` (`normalFormFromFraction`, dénominateur
+constant à radical — `divAlgebraic` rend `null` et la branche abandonne).
+
+### 6.9 Parseur maison : `^` perd la priorité après `/`
+
+Mesuré le 2026-09-20 : `parseCustom('x^2/x')` **lève** « Unexpected token: / »,
+et `parseCustom('x/x^2')` rend `superscript(division(x, x), 2)`, c'est-à-dire
+`(x/x)^2`. Idem `1/x^2` → `(1/x)^2`. Le parseur LaTeX lit juste. Touche le REPL
+et toute saisie en syntaxe maison ; les tests de `tidy` contournent avec des
+parenthèses.
+
 ---
 
 ## 7. À trancher par David — la colonne « attendu »

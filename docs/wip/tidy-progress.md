@@ -27,8 +27,11 @@
 
 ## État
 
-- [ ] Tests rouges prouvés (commit 1)
-- [ ] Module `tidy` implémenté, tests verts
+- [x] Tests rouges prouvés (commit `51a97ca4d`)
+- [x] Module `tidy` implémenté par `mathast-expert` (Opus), 5 fichiers, 895 lignes : 118 tests verts
+  - 4 cas d'abord rouges pour des raisons **hors de `tidy`**, vérifiées : `1/√2 ≢ √2/2` pour `areEquivalent` (relevé §6.8) ; `x^2/x` refusé et `x/x^2` lu `(x/x)^2` par le parseur maison (§6.9). Tests ajustés : parenthèses, et l'invariant d'équivalence exclut `1/√2` avec la raison.
+  - `simplifyRadicals` ne fait que `√a·√b → √(ab)` : l'extraction `√8 → 2√2` est écrite dans `tidy/collect.ts`.
+  - ⚠️ **À valider par David** : à degré égal, une somme **imbriquée** (base d'un facteur, entre parenthèses) n'est triée que par degré, ordre d'écriture conservé — `(x+h)` reste `(x+h)`, `2*(1+x)^2` reste `2(1+x)^2`. La somme de tête, elle, est alphabétique (`b+a → a+b`). Sans ça, le contrat rendrait `2(h+x)^2`.
 - [ ] Revue du diff
 - [ ] `pnpm check:incremental` = 0 erreur, `pnpm lint:fast`
 - [ ] PR, CI verte, merge, worktree supprimé
