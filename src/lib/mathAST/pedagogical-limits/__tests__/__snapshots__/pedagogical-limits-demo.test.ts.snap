@@ -141,10 +141,10 @@ Status: exact, Value: 4
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{x + 2}{1} \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - 4 \\right)} \\\\ & = x - 2 x + 2 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - 4 \\right)} \\\\ & = \\left( x - 2 \\right) \\left( x + 2 \\right) \\end{aligned}
   - [factor-denominator] Factorisation du dénominateur
     · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = x - 2 1 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = \\left( x - 2 \\right) 1 \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 2
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x + 2}{1}} \\\\ & = 4 \\end{aligned}
@@ -169,10 +169,10 @@ Status: exact, Value: 4
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{x + 2}{1} \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - 4 \\right)} \\\\ & = x - 2 x + 2 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - 4 \\right)} \\\\ & = \\left( x - 2 \\right) \\left( x + 2 \\right) \\end{aligned}
   - [factor-denominator] Factorisation du dénominateur
     · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = x - 2 1 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = \\left( x - 2 \\right) 1 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x + 2}{1}} \\\\ & = 4 \\end{aligned}
@@ -207,10 +207,10 @@ Status: exact, Value: 5
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\dfrac{x + 2}{1} \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - x - 6 \\right)} \\\\ & = x - 3 x + 2 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - x - 6 \\right)} \\\\ & = \\left( x - 3 \\right) \\left( x + 2 \\right) \\end{aligned}
   - [factor-denominator] Factorisation du dénominateur
     · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 3 \\right)} \\\\ & = x - 3 1 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x - 3 \\right)} \\\\ & = \\left( x - 3 \\right) 1 \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 3
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{x + 2}{1}} \\\\ & = 5 \\end{aligned}
@@ -235,10 +235,10 @@ Status: exact, Value: 5
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\dfrac{x + 2}{1} \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - x - 6 \\right)} \\\\ & = x - 3 x + 2 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - x - 6 \\right)} \\\\ & = \\left( x - 3 \\right) \\left( x + 2 \\right) \\end{aligned}
   - [factor-denominator] Factorisation du dénominateur
     · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 3 \\right)} \\\\ & = x - 3 1 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x - 3 \\right)} \\\\ & = \\left( x - 3 \\right) 1 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{x + 2}{1}} \\\\ & = 5 \\end{aligned}
@@ -273,10 +273,10 @@ Status: exact, Value: 3
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\dfrac{x^2 + x + 1}{1} \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 1 \\right)} \\\\ & = x - 1 x^2 + x + 1 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 1 \\right)} \\\\ & = \\left( x - 1 \\right) \\left( x^2 + x + 1 \\right) \\end{aligned}
   - [factor-denominator] Factorisation du dénominateur
     · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 1 \\right)} \\\\ & = x - 1 1 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x - 1 \\right)} \\\\ & = \\left( x - 1 \\right) 1 \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 1
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{x^2 + x + 1}{1}} \\\\ & = 3 \\end{aligned}
@@ -301,10 +301,10 @@ Status: exact, Value: 3
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\dfrac{x^2 + x + 1}{1} \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 1 \\right)} \\\\ & = x - 1 x^2 + x + 1 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 1 \\right)} \\\\ & = \\left( x - 1 \\right) \\left( x^2 + x + 1 \\right) \\end{aligned}
   - [factor-denominator] Factorisation du dénominateur
     · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 1 \\right)} \\\\ & = x - 1 1 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x - 1 \\right)} \\\\ & = \\left( x - 1 \\right) 1 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{x^2 + x + 1}{1}} \\\\ & = 3 \\end{aligned}
@@ -339,10 +339,10 @@ Status: exact, Value: 12
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{x^2 + 2 x + 4}{1} \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 8 \\right)} \\\\ & = x - 2 x^2 + 2 x + 4 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 8 \\right)} \\\\ & = \\left( x - 2 \\right) \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
   - [factor-denominator] Factorisation du dénominateur
     · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = x - 2 1 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = \\left( x - 2 \\right) 1 \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 2
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x^2 + 2 x + 4}{1}} \\\\ & = 12 \\end{aligned}
@@ -367,10 +367,10 @@ Status: exact, Value: 12
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{x^2 + 2 x + 4}{1} \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 8 \\right)} \\\\ & = x - 2 x^2 + 2 x + 4 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 8 \\right)} \\\\ & = \\left( x - 2 \\right) \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
   - [factor-denominator] Factorisation du dénominateur
     · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = x - 2 1 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = \\left( x - 2 \\right) 1 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x^2 + 2 x + 4}{1}} \\\\ & = 12 \\end{aligned}
@@ -917,11 +917,11 @@ Expression: (2-sqrt(x))/(4-x), x → 4 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 2 + \\sqrt{x}} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 4
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 2 + \\sqrt{x}}} \\\\ & = 0.25 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = 0.25 \\end{aligned}
 - [conclude] La limite vaut 0.25
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 2 + \\sqrt{x}}} \\\\ & = 0.25 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = 0.25 \\end{aligned}
 Status: exact, Value: 0.25
 
 ========== LYCEE (detailed) ==========
@@ -932,22 +932,22 @@ Status: exact, Value: 0.25
   · Numérateur et dénominateur tendent vers 0. Une simplification (factorisation, rationalisation) est nécessaire.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)} \\end{aligned}
 - [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 2 + \\sqrt{x}} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
   - [simplify-after-rationalization] Simplification après rationalisation
-    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{4 - x}{\\left( 4 - x \\right) 2 + \\sqrt{x}}} \\\\ & = \\dfrac{-1}{-1 2 + \\sqrt{x}} \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{4 - x}{\\left( 4 - x \\right) \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 4
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 2 + \\sqrt{x}}} \\\\ & = 0.25 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = 0.25 \\end{aligned}
 - [conclude] La limite vaut 0.25
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 2 + \\sqrt{x}}} \\\\ & = 0.25 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = 0.25 \\end{aligned}
 Status: exact, Value: 0.25
 
 ========== SUPERIEUR (summarized) ==========
 - [multiply-by-conjugate] Multiplication par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 2 + \\sqrt{x}} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 2 + \\sqrt{x}}} \\\\ & = 0.25 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = 0.25 \\end{aligned}
 Status: exact, Value: 0.25
 
 ========== SUPERIEUR (detailed) ==========
@@ -955,12 +955,12 @@ Status: exact, Value: 0.25
   · On peut tenter L'Hôpital ou un développement asymptotique.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)} \\end{aligned}
 - [multiply-by-conjugate] Multiplication par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 2 + \\sqrt{x}} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
   - [simplify-after-rationalization] Simplification post-rationalisation
-    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{4 - x}{\\left( 4 - x \\right) 2 + \\sqrt{x}}} \\\\ & = \\dfrac{-1}{-1 2 + \\sqrt{x}} \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{4 - x}{\\left( 4 - x \\right) \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 2 + \\sqrt{x}}} \\\\ & = 0.25 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = 0.25 \\end{aligned}
 Status: exact, Value: 0.25
 "
 `;
@@ -973,11 +973,11 @@ Expression: (sqrt(x+1)-1)/x, x → 0 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\sqrt{x + 1} + 1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)} \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 0
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\sqrt{x + 1} + 1}} \\\\ & = 0.5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = 0.5 \\end{aligned}
 - [conclude] La limite vaut 0.5
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\sqrt{x + 1} + 1}} \\\\ & = 0.5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = 0.5 \\end{aligned}
 Status: exact, Value: 0.5
 
 ========== LYCEE (detailed) ==========
@@ -988,22 +988,22 @@ Status: exact, Value: 0.5
   · Numérateur et dénominateur tendent vers 0. Une simplification (factorisation, rationalisation) est nécessaire.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x} \\end{aligned}
 - [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\sqrt{x + 1} + 1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)} \\end{aligned}
   - [simplify-after-rationalization] Simplification après rationalisation
-    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{x + 1 - 1}{x \\sqrt{x + 1} + 1}} \\\\ & = \\dfrac{1}{1 \\sqrt{x + 1} + 1} \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{x + 1 - 1}{x \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)} \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 0
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\sqrt{x + 1} + 1}} \\\\ & = 0.5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = 0.5 \\end{aligned}
 - [conclude] La limite vaut 0.5
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\sqrt{x + 1} + 1}} \\\\ & = 0.5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = 0.5 \\end{aligned}
 Status: exact, Value: 0.5
 
 ========== SUPERIEUR (summarized) ==========
 - [multiply-by-conjugate] Multiplication par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\sqrt{x + 1} + 1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\sqrt{x + 1} + 1}} \\\\ & = 0.5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = 0.5 \\end{aligned}
 Status: exact, Value: 0.5
 
 ========== SUPERIEUR (detailed) ==========
@@ -1011,12 +1011,12 @@ Status: exact, Value: 0.5
   · On peut tenter L'Hôpital ou un développement asymptotique.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x} \\end{aligned}
 - [multiply-by-conjugate] Multiplication par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\sqrt{x + 1} + 1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)} \\end{aligned}
   - [simplify-after-rationalization] Simplification post-rationalisation
-    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{x + 1 - 1}{x \\sqrt{x + 1} + 1}} \\\\ & = \\dfrac{1}{1 \\sqrt{x + 1} + 1} \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{x + 1 - 1}{x \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\sqrt{x + 1} + 1}} \\\\ & = 0.5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = 0.5 \\end{aligned}
 Status: exact, Value: 0.5
 "
 `;
@@ -1029,11 +1029,11 @@ Expression: (sqrt(x)-2)/(x-4), x → 4 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\sqrt{x} + 2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)} \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 4
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\sqrt{x} + 2}} \\\\ & = 0.25 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = 0.25 \\end{aligned}
 - [conclude] La limite vaut 0.25
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\sqrt{x} + 2}} \\\\ & = 0.25 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = 0.25 \\end{aligned}
 Status: exact, Value: 0.25
 
 ========== LYCEE (detailed) ==========
@@ -1044,22 +1044,22 @@ Status: exact, Value: 0.25
   · Numérateur et dénominateur tendent vers 0. Une simplification (factorisation, rationalisation) est nécessaire.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)} \\end{aligned}
 - [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\sqrt{x} + 2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)} \\end{aligned}
   - [simplify-after-rationalization] Simplification après rationalisation
-    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{x - 4}{\\left( x - 4 \\right) \\sqrt{x} + 2}} \\\\ & = \\dfrac{1}{1 \\sqrt{x} + 2} \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{x - 4}{\\left( x - 4 \\right) \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)} \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 4
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\sqrt{x} + 2}} \\\\ & = 0.25 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = 0.25 \\end{aligned}
 - [conclude] La limite vaut 0.25
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\sqrt{x} + 2}} \\\\ & = 0.25 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = 0.25 \\end{aligned}
 Status: exact, Value: 0.25
 
 ========== SUPERIEUR (summarized) ==========
 - [multiply-by-conjugate] Multiplication par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\sqrt{x} + 2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\sqrt{x} + 2}} \\\\ & = 0.25 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = 0.25 \\end{aligned}
 Status: exact, Value: 0.25
 
 ========== SUPERIEUR (detailed) ==========
@@ -1067,12 +1067,12 @@ Status: exact, Value: 0.25
   · On peut tenter L'Hôpital ou un développement asymptotique.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)} \\end{aligned}
 - [multiply-by-conjugate] Multiplication par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\sqrt{x} + 2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)} \\end{aligned}
   - [simplify-after-rationalization] Simplification post-rationalisation
-    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{x - 4}{\\left( x - 4 \\right) \\sqrt{x} + 2}} \\\\ & = \\dfrac{1}{1 \\sqrt{x} + 2} \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{x - 4}{\\left( x - 4 \\right) \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\sqrt{x} + 2}} \\\\ & = 0.25 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = 0.25 \\end{aligned}
 Status: exact, Value: 0.25
 "
 `;

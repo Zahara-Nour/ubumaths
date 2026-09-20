@@ -73,18 +73,22 @@ function buildExpansion(
 	// First pair: ac (signRight) ad
 	const pair1 = rightSign === '+' ? add(ac, ad) : subtract(ac, ad);
 
-	// Sign of bc and bd in the final sum:
-	//   leftSign=+ : keep rightSign for bd → pair2 = bc (signRight) bd, joined with `+`
-	//   leftSign=- : flip rightSign for bd → pair2 = bc (flipRight) bd, joined with `-`
-	const flippedRightSign: '+' | '-' = rightSign === '+' ? '-' : '+';
+	// La seconde paire garde TOUJOURS le signe du binôme droit : c'est le
+	// groupement `leftSign` qui distribue le sien.
+	//
+	// ⚠️ Cette fonction appliquait un signe INVERSÉ pour `leftSign = '-'`, et les
+	// deux combinaisons concernées étaient fausses. `(a−b)(c−d)` rendait
+	// `(ac − ad) − (bc + bd)`, soit `ac − ad − bc − bd` au lieu de
+	// `ac − ad − bc + bd`. Mesuré en x=3, y=5 : `(x−1)(y−2)` vaut 6 et la sortie
+	// de la règle valait 2.
+	//
+	// Le seul test qui couvrait les signes comparait une CHAÎNE, et le
+	// générateur LaTeX ne parenthésait pas l'opérande droit d'une soustraction :
+	// la chaîne paraissait juste. Les quatre combinaisons sont désormais
+	// vérifiées numériquement.
+	const pair2 = rightSign === '+' ? add(bc, bd) : subtract(bc, bd);
 
-	if (leftSign === '+') {
-		const pair2 = rightSign === '+' ? add(bc, bd) : subtract(bc, bd);
-		return add(pair1, pair2);
-	}
-	// leftSign === '-'
-	const pair2 = flippedRightSign === '+' ? add(bc, bd) : subtract(bc, bd);
-	return subtract(pair1, pair2);
+	return leftSign === '+' ? add(pair1, pair2) : subtract(pair1, pair2);
 }
 
 export const distributeBinomialProduct: Rule = createRule(

@@ -1070,13 +1070,34 @@ export class LatexGenerator {
 
 	private generateSubtraction(node: SubtractionNode): string {
 		const left = this.generateNode(node.left);
-		const right = this.generateNode(node.right);
+		// ⚠️ L'opérande DROIT seulement : `y − (x+1)` vaut `y − x − 1`, alors que
+		// `y - x + 1` se relit `y − x + 1`. À gauche, `(x+1) − y` se rend
+		// `x + 1 - y` sans ambiguïté, et parenthéser alourdirait pour rien.
+		const right = this.groupIfSum(node.right, this.generateNode(node.right));
 		return `${left} - ${right}`;
 	}
 
+	/**
+	 * Parenthèse un rendu quand son nœud est une SOMME et que l'omettre
+	 * changerait le sens.
+	 *
+	 * Le générateur ne parenthèse pas par priorité : il s'appuie sur la présence
+	 * d'un nœud délimiteur, que le parseur pose mais qu'une construction interne
+	 * — `differentiate`, `normalize`, `tidy` — ne pose pas. Mesuré, `(x+1)·y` se
+	 * rendait `x + 1 y`, qui se relit `x + y`, et la dérivée de `(x²+1)/(x−1)`
+	 * montrait son numérateur sous la forme `2 x x - 1 - x^2 + 1`.
+	 */
+	private groupIfSum(node: MathNode, rendered: string): string {
+		return node.type === 'addition' || node.type === 'subtraction'
+			? `\\left( ${rendered} \\right)`
+			: rendered;
+	}
+
 	private generateMultiplication(node: MultiplicationNode): string {
-		const left = this.generateNode(node.left);
-		const right = this.generateNode(node.right);
+		// Les deux opérandes : `(x+1)y` comme `y(x+1)` perdent leur sens sans
+		// parenthèses.
+		const left = this.groupIfSum(node.left, this.generateNode(node.left));
+		const right = this.groupIfSum(node.right, this.generateNode(node.right));
 
 		switch (node.displayStyle) {
 			case 'implicit':
@@ -1095,8 +1116,12 @@ export class LatexGenerator {
 	}
 
 	private generateDivision(node: DivisionNode): string {
-		const num = this.generateNode(node.numerator);
-		const denom = this.generateNode(node.denominator);
+		const numRaw = this.generateNode(node.numerator);
+		const denomRaw = this.generateNode(node.denominator);
+		// `\dfrac` groupe déjà ; les écritures EN LIGNE, non.
+		const grouped = node.displayStyle !== 'fraction';
+		const num = grouped ? this.groupIfSum(node.numerator, numRaw) : numRaw;
+		const denom = grouped ? this.groupIfSum(node.denominator, denomRaw) : denomRaw;
 
 		switch (node.displayStyle) {
 			case 'fraction':
