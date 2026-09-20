@@ -13,7 +13,8 @@ import { parseLatex } from '../../parser';
 import { normalize } from '../normalize';
 import { preprocess } from '../rules';
 import { hashNormalForm } from '../hash';
-import { withUnit } from '../../factory';
+import { withUnit, number } from '../../factory';
+import { dimensionless } from '../../units/factory';
 import { parseOrThrow as unitOf } from '../../units/parser';
 import type { MathNode } from '../../types';
 
@@ -114,5 +115,51 @@ describe('températures — différence, écart, compositions interdites', () =>
 		for (const input of ['20[°C]+5[°C]', '2*20[°C]', '(20[°C])^2', '20[°C]*3[m]', '5[K]-20[°C]']) {
 			expect(() => normalize(preprocess(parseCustom(input)))).not.toThrow();
 		}
+	});
+});
+
+// =============================================================================
+// Revue du 2026-09-20 — findings reproduits, chacun un test rouge avant correction
+// =============================================================================
+
+describe('B2 — l’opposé d’une grandeur affine', () => {
+	it('-20[°C]+30[°C] ≡ 10[K] (un opposé dans une somme est une soustraction)', () => {
+		expect(eq('-20[°C]+30[°C]', '10[K]')).toBe(true);
+	});
+
+	it('30[°C]-20[°C] ≡ -20[°C]+30[°C] (normalize est commutatif)', () => {
+		expect(eq('30[°C]-20[°C]', '-20[°C]+30[°C]')).toBe(true);
+	});
+
+	it('-20[°C] seul est une température : ≡ 253.15[K]', () => {
+		expect(eq('-20[°C]', '253.15[K]')).toBe(true);
+	});
+});
+
+describe('B3 — exactitude des unités préfixées dérivées', () => {
+	it.each([
+		['1[nN]', '0.000000001[N]'],
+		['1000000000[nN]', '1[N]'],
+		['1[nL]', '0.000000001[L]'],
+		['1000[nJ]', '0.000001[J]']
+	])('%s ≡ %s', (a, b) => {
+		expect(eq(a, b)).toBe(true);
+	});
+
+	it('même hash, sans flottant : 1000000000[nN] et 1[N]', () => {
+		expect(hash(parseCustom('1000000000[nN]'))).toBe(hash(parseCustom('1[N]')));
+	});
+});
+
+describe('I1 — une unité sans composant ne fait pas lever normalize', () => {
+	it('withUnit(5, sans dimension)', () => {
+		expect(() => normalize(preprocess(withUnit(number('5'), dimensionless())))).not.toThrow();
+	});
+});
+
+describe('racine d’une grandeur — l’unité ne disparaît pas', () => {
+	it('sqrt(4[m^2]) ≡ 2[m], ≢ 2', () => {
+		expect(eq('sqrt(4[m^2])', '2[m]')).toBe(true);
+		expect(eq('sqrt(4[m^2])', '2')).toBe(false);
 	});
 });
