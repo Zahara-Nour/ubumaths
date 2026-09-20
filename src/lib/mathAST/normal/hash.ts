@@ -65,7 +65,7 @@ export function hashRadicalArray(radicals: readonly SimplifiedRadical[]): string
  * `unitsEqual` tolère 1e-9. Ils viennent tous de la table des définitions,
  * donc une même unité donne toujours les mêmes bits.
  */
-function hashUnit(unit: Unit): string {
+export function hashUnit(unit: Unit): string {
 	const components = [...unit.components.entries()]
 		.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
 		.map(([symbol, exponent]) => `${symbol}^${exponent}`)
