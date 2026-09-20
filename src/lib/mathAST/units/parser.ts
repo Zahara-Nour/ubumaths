@@ -44,6 +44,9 @@ interface Term {
 	exponent: number;
 }
 
+/** Une unité nommée et son exposant signé, telle qu'elle apparaît dans l'écriture. */
+export type UnitTerm = Readonly<Term>;
+
 // =============================================================================
 // Tokenizer
 // =============================================================================
@@ -314,6 +317,19 @@ export function parse(input: string): Unit | null {
  * parseOrThrow('m')    // { components: Map([['m', 1]]), coefficient: 1, original: 'm' }
  * parseOrThrow('xyz')  // throws Error: Invalid unit string: xyz
  */
+/**
+ * Découpe une écriture d'unité en ses unités nommées, sans les résoudre :
+ * `km/h` → `[{ km, 1 }, { h, -1 }]`, `kg.m/s^2` → `[{ kg, 1 }, { m, 1 }, { s, -2 }]`.
+ *
+ * C'est la clé de la forme normale des grandeurs : `km·km` et `km^2` doivent
+ * donner les mêmes facteurs. Rend `null` si l'écriture n'est pas valide.
+ */
+export function parseUnitTerms(input: string): readonly UnitTerm[] | null {
+	const trimmed = input.trim();
+	if (trimmed.length === 0) return null;
+	return parseTerms(tokenize(trimmed));
+}
+
 export function parseOrThrow(input: string): Unit {
 	const result = parse(input);
 	if (!result) {

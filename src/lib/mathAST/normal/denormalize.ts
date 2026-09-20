@@ -6,7 +6,11 @@
  * but human-readable expression.
  */
 
-import type { MathNode } from '../types';
+import type { MathNode, UnitNode } from '../types';
+import type { Unit } from '../units/types';
+import { multiply as unitMultiply, power as unitPower } from '../units/operations';
+import { parse as parseUnit } from '../units/parser';
+import { format as formatUnit } from '../units/formatter';
 import type {
 	NormalForm,
 	NormalTerm,
@@ -378,6 +382,65 @@ export function denormalizeMonomial(monomial: readonly SymbolicFactor[]): MathNo
 }
 
 /**
+ * Un facteur d'unité est un nœud unit d'expression 1, tel que normalize le pose.
+ */
+function isUnitFactor(factor: SymbolicFactor): factor is SymbolicFactor & { base: UnitNode } {
+	const { base } = factor;
+	return base.type === 'unit' && base.expression.type === 'number' && base.expression.value === '1';
+}
+
+/**
+ * Recompose une unité à partir de ses facteurs : `U(km)² → km^2`,
+ * `U(km)·U(h)⁻¹ → km/h`. L'écriture est relue par le parseur d'unités, qui
+ * recalcule composants et coefficient et garde l'écriture d'origine — sans
+ * quoi `2[km]·3[km]` s'affichait `6[m^2]`.
+ *
+ * Repli (exposant fractionnaire, écriture que le parseur refuse) : composition
+ * par les opérations du module units, sans écriture d'origine.
+ */
+function combineUnitFactors(factors: readonly (SymbolicFactor & { base: UnitNode })[]): Unit {
+	const label = unitLabel(factors);
+	const parsed = label === null ? null : parseUnit(label);
+	if (parsed !== null) {
+		return parsed;
+	}
+
+	const raise = ({ base, exponent }: SymbolicFactor & { base: UnitNode }): Unit =>
+		isOneRational(exponent)
+			? base.unit
+			: unitPower(base.unit, Number(exponent.n) / Number(exponent.d));
+	const [first, ...rest] = factors;
+	if (first === undefined) {
+		throw new Error('combineUnitFactors: aucun facteur');
+	}
+	return rest.reduce((combined, factor) => unitMultiply(combined, raise(factor)), raise(first));
+}
+
+/**
+ * L'écriture d'une unité composée, dans la grammaire du parseur d'unités :
+ * facteurs positifs joints par `.`, chaque facteur négatif derrière un `/`
+ * (`kg.m/s^2`). `null` dès qu'un exposant n'est pas entier.
+ */
+function unitLabel(factors: readonly (SymbolicFactor & { base: UnitNode })[]): string | null {
+	const positive: string[] = [];
+	const negative: string[] = [];
+	for (const { base, exponent } of factors) {
+		if (exponent.d !== 1n) return null;
+		const symbol = base.unit.original ?? formatUnit(base.unit);
+		const magnitude = exponent.n < 0n ? -exponent.n : exponent.n;
+		const part = magnitude === 1n ? symbol : `${symbol}^${magnitude}`;
+		(exponent.n < 0n ? negative : positive).push(part);
+	}
+	if (positive.length === 0) {
+		// Pas de numérateur : la grammaire exige un symbole en tête → exposants négatifs explicites
+		return factors
+			.map(({ base, exponent }) => `${base.unit.original ?? formatUnit(base.unit)}^${exponent.n}`)
+			.join('.');
+	}
+	return positive.join('.') + negative.map((part) => `/${part}`).join('');
+}
+
+/**
  * Denormalizes a normal term to a MathNode.
  *
  * A normal term is: coefficient * monomial
@@ -386,6 +449,18 @@ export function denormalizeMonomial(monomial: readonly SymbolicFactor[]): MathNo
  * @returns A MathNode representing the term
  */
 export function denormalizeTerm(term: NormalTerm): MathNode {
+	// Facteurs d'unité (posés par normalize : nœud unit d'expression 1) : on les
+	// retire du monôme, on dénormalise le reste, et on l'enveloppe dans un seul
+	// nœud unit — 15 · U(km) redevient 15[km].
+	const unitFactors = term.monomial.filter(isUnitFactor);
+	if (unitFactors.length > 0) {
+		const rest = denormalizeTerm({
+			coefficient: term.coefficient,
+			monomial: term.monomial.filter((factor) => !isUnitFactor(factor))
+		});
+		return { type: 'unit', expression: rest, unit: combineUnitFactors(unitFactors) };
+	}
+
 	const coeffNode = denormalizeCoefficient(term.coefficient);
 	const monomialNode = denormalizeMonomial(term.monomial);
 
