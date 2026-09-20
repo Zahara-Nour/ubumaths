@@ -130,7 +130,10 @@ export const hypPythagoreanRules: Rule[] = [
 			P.func('sinh', [P._('a')], { power: P.num(2) })
 		),
 		() => number('1'),
-		{ name: 'hyperbolic-pythagorean' }
+		// Priorité 2 : rendre la constante `1` l'emporte sur la factorisation
+		// `a²−b² → (a+b)(a−b)` de `diff-squares-symbolic`, qui porte 1 et passait
+		// donc devant (relevé du 2026-09-20, §6.5).
+		{ name: 'hyperbolic-pythagorean', priority: 2 }
 	),
 
 	// 1 + sinh²(a) → cosh²(a)

@@ -327,11 +327,21 @@ ont deux hash différents : `\sin^2(x) ≢ \sin(x)^2` pour `areEquivalent`.
 
 ---
 
-### 6.5 `cosh²(x) − sinh²(x)` ne rend pas `1` (trouvé en corrigeant 6.4)
+### 6.5 ✅ corrigé — `cosh²(x) − sinh²(x)` ne rendait pas `1`
 
-La règle algébrique `diff-squares-symbolic` tire avant `hyperbolic-pythagorean`
-(qui apparie, mesuré) et produit `(cosh+sinh)(cosh−sinh)`, que post-normalize
-replie sur l'entrée. Pinné en `it.todo` dans `simplify/__tests__/releve-bugs.test.ts`.
+Cause mesurée : `diff-squares-symbolic` (`a²−b² → (a+b)(a−b)`) porte
+`priority: 1`, les règles pythagoriciennes n'en portaient aucune (donc 0), et le
+tri des règles est décroissant. La factorisation passait devant, produisait une
+forme plus chère, que la mise au propre repliait sur l'entrée. `sin²+cos²` y
+échappait pour une seule raison : c'est une **addition**, que
+`diff-squares-symbolic` n'apparie pas.
+
+Correctif : `priority: 2` sur `pythagorean` et `hyperbolic-pythagorean` — une
+identité qui rend une constante passe avant toute factorisation.
+
+⚠️ À savoir : `normalize` ne connaît **aucune** identité trigonométrique
+(`sin²+cos² ≢ 1` pour `areEquivalent`, mesuré). Ces identités vivent dans les
+règles de motif, au-delà de la forme normale polynomiale.
 
 ### 6.6 Les motifs `P.sub` n'apparient plus après `normalizePass`
 
@@ -346,28 +356,37 @@ seule la famille « constante moins quelque chose » était cassée.
 [match-subtraction-shape-progress.md](match-subtraction-shape-progress.md)) :
 `−b + a` et `a + (−b)` s'apparient comme `a − b`.
 
-### 6.7 `sec²(x) − 1` n'apparie pas `sec-squared-minus-one`, même sur l'AST brut
+### 6.7 ✅ élucidé — `sec²(x) − 1` : ce n'était pas un défaut d'appariement
 
-Mesuré le 2026-09-20 en sondant les motifs `P.sub` : sur `sec(x)^2-1` parsé en
-syntaxe maison, seule `diff-squares-numeric` apparie. Non investigué (le nom
-`sec` est peut-être inconnu du parseur maison).
+La règle `sec-squared-minus-one` existe, mais `trigSimplifyRules` l'écartait
+**délibérément** : un commentaire explicite bannit les identités qui
+introduiraient `sec`, `csc` ou `cot`, hors programme au lycée. Or
+`sec²(a) − 1 → tan²(a)` **retire** un `sec` : elle sert cette exclusion au lieu
+de la contredire, et a été réintégrée. Ses jumelles `tan²+1 → sec²`,
+`cot²+1 → csc²` et `csc²−1 → cot²` restent écartées, à dessein.
 
-### 6.8 `areEquivalent(1/√2, √2/2)` est faux
+### 6.8 ✅ corrigé — `areEquivalent(1/√2, √2/2)` était faux
 
-Trouvé le 2026-09-20 par l'invariant « valeur conservée » des tests de `tidy` :
-`normalize` ne rationalise pas un radical **numérique** au dénominateur (hash
-`(1)/(1*R2:2)` d'un côté, `(1/2)*R2` de l'autre). Idem `1/√3 ≢ √3/3`,
-`2/√2 ≢ √2`. Même famille que le bug 1 (§6.1) : un élève qui rationalise est
-compté faux. À corriger dans `normalize` (`normalFormFromFraction`, dénominateur
-constant à radical — `divAlgebraic` rend `null` et la branche abandonne).
+`normalFormFromFraction` savait rationaliser un dénominateur **binôme**
+(`1/(1+√2)`, par conjugué) et les exposants fractionnaires d'un monôme
+symbolique (`1/√x`), mais pas un dénominateur réduit à un seul terme algébrique
+portant un radical : `rationalizeByConjugate` exige exactement deux termes.
+`rationalizeMonomialRadical` comble le trou — `1/√2 → √2/2`, `1/(2√2) → √2/4`,
+`x/√2 → x√2/2`. C'était un bug de correction des copies.
 
-### 6.9 Parseur maison : `^` perd la priorité après `/`
+### 6.9 ✅ corrigé — parseur maison : `^` perdait la priorité après `/`
 
-Mesuré le 2026-09-20 : `parseCustom('x^2/x')` **lève** « Unexpected token: / »,
-et `parseCustom('x/x^2')` rend `superscript(division(x, x), 2)`, c'est-à-dire
-`(x/x)^2`. Idem `1/x^2` → `(1/x)^2`. Le parseur LaTeX lit juste. Touche le REPL
-et toute saisie en syntaxe maison ; les tests de `tidy` contournent avec des
-parenthèses.
+Le `/` se traitait au niveau de l'**atome nu**, donc il ne voyait ni exposant ni
+indice ni unité. `x^2/x`, `x^2/2`, `2^3/4`, `sin(x)^2/2` et `20[m]/2` étaient
+**refusés** ; `x/x^2` et `1/x^2` étaient lus `(x/x)^2`. Un opérande de fraction
+prend désormais ses postfixes, dans les deux parseurs maison.
+
+Conséquences mesurées : la limite `(1−cos x)/x²` en 0, jusqu'ici en erreur faute
+de stratégie, est maintenant calculée par L'Hôpital et rend `0,5` — le snapshot
+enregistrait le bug. Et l'unité appartient désormais à l'opérande qu'elle suit
+(`20[m]/2[s]` est enfin une vitesse), donc `1/3[km]` se lit `1/(3 km)` : le
+générateur parenthèse ce qui serait ambigu à la relecture (`(1/3)[km]`,
+`(x+1)[m/s^2]`).
 
 ---
 
@@ -382,9 +401,14 @@ développer ; `1/√2 → √2/2` ; `(x+1)(x−1) → x²−1` et `x(x+1) → x�
 (`simplify` recâblé), #380 (grandeurs). Suivi : [tidy-progress.md](tidy-progress.md),
 [simplify-tidy-progress.md](simplify-tidy-progress.md), [units-progress.md](units-progress.md).
 
-Restent ouverts, hors périmètre : §6.5 (`cosh²−sinh²`), §6.7 (`sec²−1`),
-§6.8 (`1/√2 ≢ √2/2` pour `areEquivalent` — mesuré encore faux sur `main` le 2026-09-20 après #380), §6.9 (`^`
-après `/` dans le parseur maison).
+Les quatre bugs annexes du §6 (6.5, 6.7, 6.8, 6.9) ont été corrigés ensuite,
+dans cet ordre de valeur : le décideur d'équivalence d'abord, le parseur
+ensuite, les règles en dernier.
+
+Trouvés en chemin, non traités : le rendu LaTeX du module de limites garde des
+parenthèses inutiles au numérateur et un double signe (`--sin(x)`) ; `f(x)/2`
+est lu différemment par les deux parseurs maison ; `x_i` lit `i` comme l'unité
+imaginaire.
 
 ---
 

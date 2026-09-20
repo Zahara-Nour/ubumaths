@@ -553,16 +553,45 @@ class CustomPrattParser {
 	 * only the immediately adjacent atoms, not full expressions.
 	 */
 	private parseAtomWithFraction(): MathNode {
-		let left = this.parseAtom();
+		let left = this.parseFractionOperand();
 
 		// Handle tight-binding / at PRIMARY level
 		while (this.check('SLASH')) {
 			this.advance(); // consume /
-			const right = this.parseAtom(); // Parse ONLY next atom
+			const right = this.parseFractionOperand(); // Parse ONLY next operand
 			left = this.applyColor(MathAST.divide(left, right, 'fraction'));
 		}
 
 		return left;
+	}
+
+	/**
+	 * Un opérande de fraction : un atome **et ses postfixes** (`^`, `_`, `[unité]`).
+	 *
+	 * La barre de fraction lie plus fort que `+` ou `*`, mais moins fort qu'une
+	 * puissance : `x^2/x` est `x²` divisé par `x`, et `1/x^2` est `1` divisé par
+	 * `x²`. En s'arrêtant à l'atome nu, `x^2/x` était refusé (le `/` ne trouvait
+	 * pas sa place) et `x/x^2` était lu `(x/x)^2` — relevé du 2026-09-20, §6.9.
+	 *
+	 * Même chaînage que partout ailleurs dans ce parseur : les postfixes
+	 * s'appliquent de gauche à droite (`x^2^3` est `(x²)³`).
+	 */
+	private parseFractionOperand(): MathNode {
+		let operand = this.parseAtom();
+
+		while (this.check('CARET') || this.check('UNDERSCORE') || this.check('LBRACKET')) {
+			if (this.check('CARET')) {
+				this.advance();
+				operand = this.applyColor(MathAST.superscript(operand, this.parsePowerOperand()));
+			} else if (this.check('UNDERSCORE')) {
+				this.advance();
+				operand = this.applyColor(MathAST.subscript(operand, this.parseSubscriptOperand()));
+			} else {
+				operand = this.parseUnitPostfix(operand);
+			}
+		}
+
+		return operand;
 	}
 
 	/**

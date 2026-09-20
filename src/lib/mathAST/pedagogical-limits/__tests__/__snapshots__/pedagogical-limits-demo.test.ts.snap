@@ -557,16 +557,37 @@ exports[`pedagogical-limits demo cases > category: known-limits > renders (1-cos
 Expression: (1-cos(x))/x^2, x → 0 (variable: x)
 
 ========== LYCEE (summarized) ==========
-(error: Pedagogical limit not implemented: no strategy applied for indeterminate form 'none')
+(error: Pedagogical limit not implemented: 0/0 form requires L'Hôpital (out of lycée syllabus) or a technique not yet implemented)
 
 ========== LYCEE (detailed) ==========
-(error: Pedagogical limit not implemented: no strategy applied for indeterminate form 'none')
+(error: Pedagogical limit not implemented: 0/0 form requires L'Hôpital (out of lycée syllabus) or a technique not yet implemented)
 
 ========== SUPERIEUR (summarized) ==========
-(error: Pedagogical limit not implemented: no strategy applied for indeterminate form 'none')
+- [apply-lhopital] Règle de L'Hôpital
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( 1 - \\cos\\left( x \\right) \\right)}{x^2}} \\\\ & = \\dfrac{--\\sin\\left( x \\right)}{2 x} \\end{aligned}
+- [apply-lhopital] Règle de L'Hôpital
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{--\\sin\\left( x \\right)}{2 x}} \\\\ & = \\dfrac{\\cos\\left( x \\right)}{2} \\end{aligned}
+- [apply-direct-substitution] Continuité : substitution directe
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( x \\right)}{2}} \\\\ & = 0.5 \\end{aligned}
+Status: exact, Value: 0.5
 
 ========== SUPERIEUR (detailed) ==========
-(error: Pedagogical limit not implemented: no strategy applied for indeterminate form 'none')
+- [detect-indeterminate-form] Forme indéterminée 0/0
+  · On peut tenter L'Hôpital ou un développement asymptotique.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( 1 - \\cos\\left( x \\right) \\right)}{x^2}} \\\\ & = \\dfrac{\\left( 1 - \\cos\\left( x \\right) \\right)}{x^2} \\end{aligned}
+- [apply-lhopital] Règle de L'Hôpital
+  · Sous les hypothèses de L'Hôpital, la limite du quotient est égale à la limite du quotient des dérivées.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( 1 - \\cos\\left( x \\right) \\right)}{x^2}} \\\\ & = \\dfrac{--\\sin\\left( x \\right)}{2 x} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée 0/0
+  · On peut tenter L'Hôpital ou un développement asymptotique.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{--\\sin\\left( x \\right)}{2 x}} \\\\ & = \\dfrac{--\\sin\\left( x \\right)}{2 x} \\end{aligned}
+- [apply-lhopital] Règle de L'Hôpital
+  · Sous les hypothèses de L'Hôpital, la limite du quotient est égale à la limite du quotient des dérivées.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{--\\sin\\left( x \\right)}{2 x}} \\\\ & = \\dfrac{\\cos\\left( x \\right)}{2} \\end{aligned}
+- [apply-direct-substitution] Continuité : substitution directe
+  · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( x \\right)}{2}} \\\\ & = 0.5 \\end{aligned}
+Status: exact, Value: 0.5
 "
 `;
 

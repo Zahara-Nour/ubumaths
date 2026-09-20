@@ -21,6 +21,7 @@ import {
 	ALGEBRAIC_ONE,
 	ALGEBRAIC_IMAGINARY,
 	algebraicFromRational,
+	algebraicTerm,
 	addAlgebraic,
 	subAlgebraic,
 	negAlgebraic,
@@ -477,6 +478,58 @@ function rationalizeDenominator(
 }
 
 // =============================================================================
+// Rationalisation d'un dénominateur monôme radical
+// =============================================================================
+
+/**
+ * Rationalise un dénominateur réduit à **un seul terme algébrique portant des
+ * racines carrées** : `1/√2 → √2/2`, `1/(2√2) → √2/4`, `x/√2 → x√2/2`.
+ *
+ * C'est la convention enseignée — on ne laisse pas de radical au dénominateur —
+ * et c'est ce que `tidy` écrit. Sans ce pas, `areEquivalent(1/√2, √2/2)`
+ * rendait faux et un élève qui rationalisait était compté faux (relevé du
+ * 2026-09-20, §6.8). La rationalisation par conjugué ne couvre que les
+ * **binômes** (`1/(1+√2)`), qui ont deux termes algébriques.
+ *
+ * Le multiplicateur est le produit des radicaux du dénominateur : son carré est
+ * rationnel, donc `a∏√rᵢ × ∏√rᵢ = a∏rᵢ`. Le monôme symbolique éventuel reste
+ * au dénominateur (`1/(x√2) → √2/(2x)`) ; les exposants fractionnaires des
+ * variables sont l'affaire de `rationalizeDenominator`.
+ *
+ * Rend `null` — et laisse la fraction intacte — s'il y a plus d'un terme
+ * algébrique, aucun radical, une racine d'indice autre que 2 (`1/∛2` demande
+ * `∛4`, pas `∛2`), ou l'unité imaginaire, dont
+ * `rationalizeComplexDenominator` s'occupe.
+ */
+function rationalizeMonomialRadical(
+	numerator: NormalTerm[],
+	denominator: NormalTerm[]
+): { numerator: NormalTerm[]; denominator: NormalTerm[] } | null {
+	if (denominator.length !== 1) return null;
+
+	const denTerm = denominator[0];
+	if (denTerm.coefficient.terms.length !== 1) return null;
+
+	const algebraic = denTerm.coefficient.terms[0];
+	if (algebraic.radicals.length === 0) return null;
+	if (algebraic.hasImaginaryUnit === true) return null;
+	if (algebraic.radicals.some((radical) => radical.index !== 2n)) return null;
+
+	// Le produit des racines, coefficient rationnel 1 : (∏√rᵢ)² = ∏rᵢ.
+	const multiplier: NormalTerm = {
+		coefficient: { terms: [algebraicTerm(ONE, [...algebraic.radicals])] },
+		monomial: EMPTY_MONOMIAL
+	};
+
+	const newDenominator = mulPolynomials(denominator, [multiplier]);
+	if (newDenominator.length !== 1 || !isPureRationalCoeff(newDenominator[0].coefficient)) {
+		return null;
+	}
+
+	return { numerator: mulPolynomials(numerator, [multiplier]), denominator: newDenominator };
+}
+
+// =============================================================================
 // Rationalization by Conjugate - For binomial denominators with radicals
 // =============================================================================
 
@@ -850,6 +903,15 @@ function normalFormFromFraction(
 	// After rationalization, check if denominator became 1
 	if (isOnePolynomial(reducedDenominator)) {
 		return normalFormFromPolynomial(reducedNumerator);
+	}
+
+	// Rationalise un dénominateur monôme radical : 1/√2 → √2/2.
+	const monomialRationalized = rationalizeMonomialRadical(reducedNumerator, reducedDenominator);
+	if (monomialRationalized !== null) {
+		// Le dénominateur est désormais rationnel : on repasse par la porte
+		// d'entrée pour la réduction par le pgcd et le repli d'un dénominateur
+		// constant, comme le fait la rationalisation par conjugué.
+		return normalFormFromFraction(monomialRationalized.numerator, monomialRationalized.denominator);
 	}
 
 	// Rationalize by conjugate: clear radicals from binomial denominators
