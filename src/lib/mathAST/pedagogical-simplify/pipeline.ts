@@ -27,14 +27,16 @@
  * @module mathAST/pedagogical-simplify/pipeline
  */
 
+import { tidy } from '../tidy';
 import type { MathNode } from '../types';
 import type { Rule } from '../pattern/types';
-import { applyRulesDeepOnceTracked } from '../pattern/rule';
+import { applyRule, applyRulesDeepOnceTracked } from '../pattern/rule';
 import { nodesEqual } from '../pattern/match';
 import { normalize, denormalize } from '../normal';
 import { StepRecorder } from '../normal/step-recorder';
 import type { SchoolLevel } from '../common/step-renderer-base';
 import { getPedagogicalSimplifyRuleDescription } from './descriptions-fr';
+import { commonContentFactorRules } from '../pattern/rule-sets/common-factor';
 import { categorizeRule, selectRulesForIntent } from './intent-rules';
 import {
 	PedagogicalSimplifyNotImplemented,
@@ -370,7 +372,42 @@ export function generatePedagogicalSimplifySteps(
 		}
 
 		if (!useNormalize) {
-			return { result: phaseA.result, steps: phaseA.steps };
+			// ⚠️ Couper `normalize` ne veut pas dire ne RIEN mettre au propre.
+			// `factoriser` le coupe à juste titre — il défferait la factorisation
+			// — mais rien ne le remplaçait, et les coefficients restaient bruts :
+			// `(2/4)x + x` rendait `(2/4 + 1)x` au lieu de `(3/2)x`.
+			//
+			// `tidy` est exactement l'outil qui manque : il met au propre sans
+			// jamais DÉVELOPPER, donc sans défaire ce que la phase A vient de
+			// factoriser. C'est tout son contrat.
+			// ⚠️ La mise en facteur du CONTENU — numérique et monôme — s'applique
+			// aux sommes MAXIMALES seulement, et après la phase A.
+			//
+			// En profondeur, elle factoriserait une sous-somme avant que la somme
+			// entière ne soit vue : `x² + 2x + 1` se parse `((x² + 2x) + 1)`, et
+			// le parcours remontant visite `x² + 2x` d'abord. Il deviendrait
+			// `x(x+2)`, et `perfect-square-trinomial` ne reconnaîtrait plus le
+			// trinôme. L'élève perdrait la phrase « On reconnaît un trinôme carré
+			// parfait », qui est la raison d'être de ce module.
+			//
+			// À la racine, l'ordre est le bon : les identités ont déjà eu leur
+			// chance sur la somme entière, et ce qui reste est un contenu à
+			// sortir. On relance ensuite la phase A pour que les identités voient
+			// la somme intérieure — c'est ce qui donne `3x² + 6x + 3 → 3(x+1)²`.
+			const withContent = extractCommonContentInMaximalSums(phaseA.result, makeStep);
+			const afterContent = withContent.changed
+				? runPatternLoop(withContent.result, rules, maxIterations, effectiveSignal, makeStep)
+				: null;
+
+			const factored = afterContent?.result ?? withContent.result;
+			const steps = [...phaseA.steps, ...withContent.steps, ...(afterContent?.steps ?? [])];
+
+			// Couper `normalize` ne veut pas dire ne RIEN mettre au propre.
+			// `factoriser` le coupe à juste titre — il défferait la factorisation
+			// — mais rien ne le remplaçait, et les coefficients restaient bruts :
+			// `(2/4)x + x` rendait `(2/4 + 1)x` au lieu de `(3/2)x`. `tidy` met au
+			// propre sans jamais DÉVELOPPER : c'est tout son contrat.
+			return { result: tidyWithoutReordering(factored), steps };
 		}
 
 		const phaseB = runNormalizePass(phaseA.result, effectiveSignal, makeStep);
@@ -389,6 +426,114 @@ export function generatePedagogicalSimplifySteps(
 	} finally {
 		dispose();
 	}
+}
+
+/**
+ * Met au propre **sans réordonner** un produit déjà factorisé.
+ *
+ * `tidy` range les facteurs dans son ordre canonique : `(x+1)e^x` y devient
+ * `e^x(x+1)`. Les deux écritures sont justes, mais c'est la première qu'on
+ * écrit au tableau pour une dérivée, et l'ordre vient ici d'une factorisation
+ * que l'élève vient de suivre — le moteur n'a pas à la rebattre.
+ *
+ * On met donc chaque facteur au propre séparément, en gardant l'ordre. Tout ce
+ * qui n'est pas un produit passe par `tidy` entier : `√8` devient `2√2`,
+ * `2x + 3x` devient `5x`.
+ */
+function tidyWithoutReordering(node: MathNode): MathNode {
+	if (node.type !== 'multiplication') return tidy(node);
+	return {
+		...node,
+		left: tidyWithoutReordering(node.left),
+		right: tidyWithoutReordering(node.right)
+	};
+}
+
+/**
+ * Applique la mise en facteur du contenu aux sommes **maximales** — celles qui
+ * ne sont pas elles-mêmes un terme d'une somme plus grande.
+ *
+ * ⚠️ C'est la condition qui rend la règle sûre. Appliquée à n'importe quelle
+ * somme, elle factoriserait une sous-somme avant que la somme entière ne soit
+ * vue : `x² + 2x + 1` se parse `((x² + 2x) + 1)`, et un parcours remontant
+ * visite `x² + 2x` d'abord. Il deviendrait `x(x+2)`, et
+ * `perfect-square-trinomial` ne reconnaîtrait plus le trinôme — l'élève
+ * perdrait la phrase « On reconnaît un trinôme carré parfait », qui est la
+ * raison d'être de ce module.
+ *
+ * Restreindre à la seule RACINE ne suffit pas : `x²y + xy` passe d'abord par la
+ * mise en facteur symbolique, qui rend `y(x² + x)`. La somme `x² + x` n'est
+ * plus à la racine, mais elle est maximale — son parent est un produit — et
+ * elle a bien un contenu à sortir.
+ */
+function extractCommonContentInMaximalSums(
+	node: MathNode,
+	makeStep: StepFactory
+): { result: MathNode; steps: PedagogicalSimplifyStep[]; changed: boolean } {
+	// Les réécritures sont d'abord collectées localement : le contexte global
+	// d'une étape est l'expression avant et après TOUTE la passe, qu'on ne
+	// connaît qu'une fois le parcours terminé.
+	const rewrites: Array<{ rule: string; before: MathNode; after: MathNode }> = [];
+
+	const visit = (current: MathNode, insideSum: boolean): MathNode => {
+		const isSum = current.type === 'addition' || current.type === 'subtraction';
+
+		// Une somme imbriquée dans une somme n'est pas maximale : on la traverse
+		// sans jamais l'attaquer.
+		if (isSum && insideSum) {
+			return mapChildren(current, (child) => visit(child, true));
+		}
+
+		const withChildren = mapChildren(current, (child) => visit(child, isSum));
+		if (!isSum) return withChildren;
+
+		for (const rule of commonContentFactorRules) {
+			const transformed = applyRule(rule, withChildren);
+			if (transformed !== null && !nodesEqual(transformed, withChildren)) {
+				rewrites.push({ rule: rule.name, before: withChildren, after: transformed });
+				return transformed;
+			}
+		}
+		return withChildren;
+	};
+
+	const result = visit(node, false);
+	const steps = rewrites.map((r) => makeStep(r.rule, r.before, r.after, node, result));
+	return { result, steps, changed: rewrites.length > 0 };
+}
+
+/** Reconstruit un nœud en transformant ses enfants directs. */
+function mapChildren(node: MathNode, transform: (child: MathNode) => MathNode): MathNode {
+	const rebuilt = { ...node } as Record<string, unknown>;
+	let changed = false;
+	for (const key of [
+		'left',
+		'right',
+		'operand',
+		'content',
+		'base',
+		'superscript',
+		'numerator',
+		'denominator'
+	]) {
+		const child = rebuilt[key];
+		if (child !== undefined && child !== null && typeof child === 'object' && 'type' in child) {
+			const next = transform(child as MathNode);
+			if (next !== child) {
+				rebuilt[key] = next;
+				changed = true;
+			}
+		}
+	}
+	const args = rebuilt.args;
+	if (Array.isArray(args)) {
+		const nextArgs = args.map((a) => transform(a as MathNode));
+		if (nextArgs.some((a, i) => a !== args[i])) {
+			rebuilt.args = nextArgs;
+			changed = true;
+		}
+	}
+	return changed ? (rebuilt as unknown as MathNode) : node;
 }
 
 /**

@@ -78,6 +78,13 @@ describe('ce que `.factoriser` sait faire', () => {
 	it('le facteur commun — la règle qui n’avait aucun appelant', () => {
 		const result = commande('.factoriser exp(x)+x*exp(x)');
 
+		// ⚠️ L'ordre est celui de la FACTORISATION, pas celui de `tidy`.
+		// `tidy`, branché sur cette intention pour mettre au propre les
+		// coefficients, range les facteurs dans son ordre canonique et aurait
+		// écrit `e^x(x+1)`. Les deux écritures sont justes, mais c'est
+		// `(x+1)e^x` qu'on écrit au tableau pour une dérivée, et l'ordre vient
+		// d'une factorisation que l'élève vient de suivre : le moteur n'a pas à
+		// la rebattre. Décision de David, 2026-09-21.
 		expect(result.latex).toBe('\\left( x + 1 \\right) \\exp\\left( x \\right)');
 		expect(result.steps![0].title).toBe('On met le facteur commun en évidence');
 	});
@@ -117,15 +124,21 @@ describe('ce que `.factoriser` sait faire', () => {
 
 describe('quand elle ne sait pas, elle le DIT', () => {
 	it('une somme qu’elle n’a pas su factoriser', () => {
-		// ⚠️ Mesuré : le module ne sait pas extraire un facteur commun NUMÉRIQUE.
-		// `3x + 6` devrait donner `3(x + 2)` et ne donne rien. Renvoyer
-		// « 3x + 6 » comme réponse ferait croire que c'est la forme factorisée.
-		const result = commande('.factoriser 3x+6');
+		// ⚠️ Ce test utilisait `3x + 6`, et son commentaire disait lui-même que
+		// le module « ne sait pas extraire un facteur commun NUMÉRIQUE » et que
+		// « `3x + 6` devrait donner `3(x + 2)` ». Il enregistrait donc la
+		// limitation. Elle est levée depuis le 2026-09-21, et il faut une somme
+		// qui n'a réellement aucun facteur commun pour continuer à éprouver le
+		// chemin « je ne sais pas ».
+		const result = commande('.factoriser 2x+3y');
 
 		expect(result.latex).toBeUndefined();
 		expect(result.steps).toBeUndefined();
 		expect(result.output).toContain('ne sais pas factoriser');
-		expect(result.output).toContain('3');
+	});
+
+	it('et ce qu’elle sait maintenant, elle le dit', () => {
+		expect(commande('.factoriser 3x+6').latex).toBe('3 \\left( x + 2 \\right)');
 	});
 
 	it('une expression qui n’est pas une somme n’a rien à factoriser', () => {
