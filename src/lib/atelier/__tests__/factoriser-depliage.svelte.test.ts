@@ -105,16 +105,20 @@ describe('le dépliage de `.factoriser`', () => {
 	});
 });
 
+// ⚠️ Ces lignes utilisaient `3x + 6`, que le moteur ne savait pas factoriser.
+// Il le sait depuis le 2026-09-21, et `3x + 6` a donc des étapes. Il faut une
+// somme réellement infactorisable pour continuer à éprouver le chemin « je ne
+// sais pas » : `2x + 3y` n'a aucun facteur commun.
 describe('les lignes sans étapes', () => {
 	it('« je ne sais pas » s’affiche en clair, sans bouton', () => {
-		const racine = afficher('.factoriser 3x+6');
+		const racine = afficher('.factoriser 2x+3y');
 
 		expect(racine.textContent).toContain('Je ne sais pas factoriser');
 		expect(racine.textContent).not.toContain('Comment ?');
 	});
 
 	it('et la ligne n’est PAS rouge — la commande a bien tourné', () => {
-		const racine = afficher('.factoriser 3x+6');
+		const racine = afficher('.factoriser 2x+3y');
 
 		expect(racine.querySelector('li.refus')).toBeNull();
 	});

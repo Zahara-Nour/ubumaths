@@ -78,7 +78,11 @@ describe('ce que `.factoriser` sait faire', () => {
 	it('le facteur commun — la règle qui n’avait aucun appelant', () => {
 		const result = commande('.factoriser exp(x)+x*exp(x)');
 
-		expect(result.latex).toBe('\\left( x + 1 \\right) \\exp\\left( x \\right)');
+		// ⚠️ L'ordre a changé le 2026-09-21 : `tidy`, désormais branché sur cette
+		// intention pour mettre au propre les coefficients, écrit ses facteurs
+		// dans SON ordre canonique. `(x+1)e^x` devient `e^x(x+1)`. Les deux
+		// écritures sont justes ; celle-ci est celle du moteur partout ailleurs.
+		expect(result.latex).toBe('\\exp\\left( x \\right) \\left( x + 1 \\right)');
 		expect(result.steps![0].title).toBe('On met le facteur commun en évidence');
 	});
 
@@ -117,15 +121,21 @@ describe('ce que `.factoriser` sait faire', () => {
 
 describe('quand elle ne sait pas, elle le DIT', () => {
 	it('une somme qu’elle n’a pas su factoriser', () => {
-		// ⚠️ Mesuré : le module ne sait pas extraire un facteur commun NUMÉRIQUE.
-		// `3x + 6` devrait donner `3(x + 2)` et ne donne rien. Renvoyer
-		// « 3x + 6 » comme réponse ferait croire que c'est la forme factorisée.
-		const result = commande('.factoriser 3x+6');
+		// ⚠️ Ce test utilisait `3x + 6`, et son commentaire disait lui-même que
+		// le module « ne sait pas extraire un facteur commun NUMÉRIQUE » et que
+		// « `3x + 6` devrait donner `3(x + 2)` ». Il enregistrait donc la
+		// limitation. Elle est levée depuis le 2026-09-21, et il faut une somme
+		// qui n'a réellement aucun facteur commun pour continuer à éprouver le
+		// chemin « je ne sais pas ».
+		const result = commande('.factoriser 2x+3y');
 
 		expect(result.latex).toBeUndefined();
 		expect(result.steps).toBeUndefined();
 		expect(result.output).toContain('ne sais pas factoriser');
-		expect(result.output).toContain('3');
+	});
+
+	it('et ce qu’elle sait maintenant, elle le dit', () => {
+		expect(commande('.factoriser 3x+6').latex).toBe('3 \\left( x + 2 \\right)');
 	});
 
 	it('une expression qui n’est pas une somme n’a rien à factoriser', () => {
