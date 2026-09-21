@@ -82,6 +82,82 @@ describe('tidy raconte — ce qu’il tait', () => {
 });
 
 // =============================================================================
+// Lot 2 — les quatre gestes du niveau du facteur
+// =============================================================================
+
+/**
+ * Le lot 1 sortait tout le travail fait terme par terme en UN geste grossier,
+ * `tidy-terms`. Le lot 2 le remplace par les gestes que l'élève nomme.
+ *
+ * ⚠️ **Une étape = une FAMILLE, pas une occurrence** (spécification validée) :
+ * `√8 + √12` rend UNE étape « on extrait les carrés parfaits », appliquée
+ * partout, pas une par radical.
+ */
+describe('tidy raconte — les gestes du facteur', () => {
+	it('calcule les nombres', () => {
+		const { resultat, etapes } = raconte('2*3*x');
+		expect(resultat).toBe('6x');
+		expect(etapes).toEqual([{ regle: 'tidy-fold-numbers', avant: '2*3*x', apres: '6x' }]);
+	});
+
+	it('extrait les carrés parfaits du radical', () => {
+		const { resultat, etapes } = raconte('sqrt(8)');
+		expect(resultat).toBe('2sqrt(2)');
+		expect(etapes).toEqual([
+			{ regle: 'tidy-extract-radicals', avant: 'sqrt(8)', apres: '2sqrt(2)' }
+		]);
+	});
+
+	it('regroupe les facteurs de même base', () => {
+		const { resultat, etapes } = raconte('x*x*x');
+		expect(resultat).toBe('x^3');
+		expect(etapes).toEqual([{ regle: 'tidy-merge-factors', avant: 'x*x*x', apres: 'x^3' }]);
+	});
+
+	it('simplifie les signes', () => {
+		const { resultat, etapes } = raconte('-(-x)');
+		expect(resultat).toBe('x');
+		expect(etapes).toEqual([{ regle: 'tidy-simplify-signs', avant: '-(-x)', apres: 'x' }]);
+	});
+
+	it('applique une famille partout, en une seule étape', () => {
+		const { resultat, etapes } = raconte('sqrt(8)+sqrt(12)');
+		expect(resultat).toBe('2sqrt(2)+2sqrt(3)');
+		expect(etapes).toEqual([
+			{
+				regle: 'tidy-extract-radicals',
+				avant: 'sqrt(8)+sqrt(12)',
+				apres: '2sqrt(2)+2sqrt(3)'
+			}
+		]);
+	});
+
+	it('met les fractions au même dénominateur, et le dit', () => {
+		const { resultat, etapes } = raconte('2/6+1/4');
+		expect(resultat).toBe('7/12');
+		expect(etapes).toEqual([
+			{ regle: 'tidy-fold-numbers', avant: '2/6+1/4', apres: '1/3+1/4' },
+			{ regle: 'tidy-add-fractions', avant: '1/3+1/4', apres: '7/12' }
+		]);
+	});
+
+	it('porte les phrases françaises du lot 2', () => {
+		const recorder = new TidyStepRecorder();
+		tidy(parseCustom('sqrt(8)'), { recorder });
+		expect(recorder.getSteps().map((s) => s.description)).toEqual([
+			'On extrait du radical les facteurs qui sont des carrés parfaits'
+		]);
+	});
+
+	it('ne laisse plus le geste grossier du lot 1 sur ces cas', () => {
+		const grossiers = ['2*3*x', 'sqrt(8)', 'x*x*x', '-(-x)', 'sqrt(8)+sqrt(12)', '2/6+1/4']
+			.flatMap((source) => raconte(source).etapes)
+			.filter((e) => e.regle === 'tidy-terms');
+		expect(grossiers).toEqual([]);
+	});
+});
+
+// =============================================================================
 // Ce que la revue a trouvé — aucune écriture inventée, aucun silence trompeur
 // =============================================================================
 
@@ -167,7 +243,12 @@ const PANEL = [
 	'3x+2x=5',
 	'(3x+2x)',
 	'x*0',
-	'30[°C]-20[°C]'
+	'30[°C]-20[°C]',
+	// Lot 2 — les quatre familles du niveau du facteur.
+	'sqrt(8)+sqrt(12)',
+	'2*3*x*(x^2+1)^2',
+	'x^2/x',
+	'-(-x)/(-y)'
 ];
 
 describe('tidy raconte — les invariants', () => {
