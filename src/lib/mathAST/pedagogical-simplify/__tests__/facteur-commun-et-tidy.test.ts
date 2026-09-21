@@ -51,7 +51,9 @@ describe('le facteur monôme sort', () => {
 	it.each([
 		['x^2+2x', 'x \\left( x + 2 \\right)'],
 		['x^2-x', 'x \\left( x - 1 \\right)'],
-		['xy+x', 'x \\left( y + 1 \\right)'],
+		// L'ordre est celui de la regle symbolique, qui ecrit (somme)xfacteur —
+		// le meme que pour (x+1)e^x.
+		['xy+x', '\\left( y + 1 \\right) x'],
 		['x^3+x^2', 'x^2 \\left( x + 1 \\right)']
 	])('%s → %s', (source, attendu) => {
 		expect(factoriser(source)).toBe(attendu);

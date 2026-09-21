@@ -407,7 +407,7 @@ export function generatePedagogicalSimplifySteps(
 			// — mais rien ne le remplaçait, et les coefficients restaient bruts :
 			// `(2/4)x + x` rendait `(2/4 + 1)x` au lieu de `(3/2)x`. `tidy` met au
 			// propre sans jamais DÉVELOPPER : c'est tout son contrat.
-			return { result: tidy(factored), steps };
+			return { result: tidyWithoutReordering(factored), steps };
 		}
 
 		const phaseB = runNormalizePass(phaseA.result, effectiveSignal, makeStep);
@@ -426,6 +426,27 @@ export function generatePedagogicalSimplifySteps(
 	} finally {
 		dispose();
 	}
+}
+
+/**
+ * Met au propre **sans réordonner** un produit déjà factorisé.
+ *
+ * `tidy` range les facteurs dans son ordre canonique : `(x+1)e^x` y devient
+ * `e^x(x+1)`. Les deux écritures sont justes, mais c'est la première qu'on
+ * écrit au tableau pour une dérivée, et l'ordre vient ici d'une factorisation
+ * que l'élève vient de suivre — le moteur n'a pas à la rebattre.
+ *
+ * On met donc chaque facteur au propre séparément, en gardant l'ordre. Tout ce
+ * qui n'est pas un produit passe par `tidy` entier : `√8` devient `2√2`,
+ * `2x + 3x` devient `5x`.
+ */
+function tidyWithoutReordering(node: MathNode): MathNode {
+	if (node.type !== 'multiplication') return tidy(node);
+	return {
+		...node,
+		left: tidyWithoutReordering(node.left),
+		right: tidyWithoutReordering(node.right)
+	};
 }
 
 /**

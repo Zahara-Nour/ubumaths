@@ -78,11 +78,14 @@ describe('ce que `.factoriser` sait faire', () => {
 	it('le facteur commun — la règle qui n’avait aucun appelant', () => {
 		const result = commande('.factoriser exp(x)+x*exp(x)');
 
-		// ⚠️ L'ordre a changé le 2026-09-21 : `tidy`, désormais branché sur cette
-		// intention pour mettre au propre les coefficients, écrit ses facteurs
-		// dans SON ordre canonique. `(x+1)e^x` devient `e^x(x+1)`. Les deux
-		// écritures sont justes ; celle-ci est celle du moteur partout ailleurs.
-		expect(result.latex).toBe('\\exp\\left( x \\right) \\left( x + 1 \\right)');
+		// ⚠️ L'ordre est celui de la FACTORISATION, pas celui de `tidy`.
+		// `tidy`, branché sur cette intention pour mettre au propre les
+		// coefficients, range les facteurs dans son ordre canonique et aurait
+		// écrit `e^x(x+1)`. Les deux écritures sont justes, mais c'est
+		// `(x+1)e^x` qu'on écrit au tableau pour une dérivée, et l'ordre vient
+		// d'une factorisation que l'élève vient de suivre : le moteur n'a pas à
+		// la rebattre. Décision de David, 2026-09-21.
+		expect(result.latex).toBe('\\left( x + 1 \\right) \\exp\\left( x \\right)');
 		expect(result.steps![0].title).toBe('On met le facteur commun en évidence');
 	});
 

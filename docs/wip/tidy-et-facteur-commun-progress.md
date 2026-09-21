@@ -68,6 +68,27 @@ plus à la racine, mais elle est maximale, et elle a bien un contenu à sortir.
 Résultat : les six échecs disparaissent, aucun snapshot n'est touché, la
 narration est intacte et `x(x+1) + 2` reste intact.
 
+## L'ordre des facteurs vient de la factorisation, pas de `tidy`
+
+`tidy` range les facteurs dans son ordre canonique, et écrivait donc
+`e^x(x+1)` là où la factorisation avait produit `(x+1)e^x`. Les deux écritures
+sont justes, mais c'est la seconde qu'on écrit au tableau pour une dérivée, et
+l'ordre vient d'une factorisation que l'élève vient de suivre : le moteur n'a
+pas à la rebattre. **Décision de David, 2026-09-21.**
+
+La mise au propre s'applique donc à chaque facteur d'un produit **séparément**,
+en gardant l'ordre. Tout ce qui n'est pas un produit passe par `tidy` entier :
+
+```
+e^x + xe^x        ->  (x+1)e^x          l'ordre de la factorisation
+(2/4)x + x        ->  (3/2)x            le coefficient est mis au propre
+√8                ->  2√2               pas un produit factorisé
+2x + 3x           ->  5x
+```
+
+Conséquence assumée : la règle symbolique écrit `(somme)·facteur`, donc
+`xy + x` rend `(y+1)x` et non `x(y+1)`. C'est le même ordre que `(x+1)e^x`.
+
 ## L'affichage
 
 Empreinte de **140 rendus** — 35 expressions × 4 intentions — construite autour
