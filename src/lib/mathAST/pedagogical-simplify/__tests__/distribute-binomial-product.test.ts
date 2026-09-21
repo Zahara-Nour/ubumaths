@@ -72,14 +72,12 @@ describe('distribute-binomial-product — sign combinations', () => {
 		// `xy − 2x − y − 2` et non `xy − 2x − y + 2` : mesuré en x=3, y=5,
 		// `(x−1)(y−2)` vaut 6 et la sortie de la règle valait 2. Le rendu
 		// masquait une erreur de signe.
-		//
-		// ⚠️ Cette chaîne fige la forme GROUPÉE `(ac − ad) − (bc − bd)`, qui est
-		// ce que la règle construit — et non les quatre termes plats que son
-		// docstring annonce. Ce n'est pas une décision, c'est l'état actuel :
-		// si on veut la forme plate, c'est ici qu'il faudra le dire. Les signes,
-		// eux, sont verrouillés par les cas numériques plus bas, qui ne
-		// dépendent d'aucun rendu.
-		expect(tex(result)).toBe('xy-x2-(1y-12)');
+		// Quatre termes PLATS, comme l'annonce le docstring de la règle et comme
+		// l'élève l'attend à l'étape « on distribue chaque terme ». La règle
+		// construisait `(ac − ad) − (bc − bd)` : mathématiquement juste, mais
+		// l'élève y lisait une parenthèse au moment même où on lui demande de
+		// développer. Décision de David, 2026-09-21.
+		expect(tex(result)).toBe('xy-x2-1y+12');
 	});
 });
 
@@ -167,4 +165,36 @@ describe('les quatre combinaisons de signes, vérifiées numériquement', () => 
 			}
 		}
 	);
+});
+
+// =============================================================================
+// Quatre termes plats, pas une forme groupée
+// =============================================================================
+
+/**
+ * L'étape s'appelle « On distribue chaque terme » : elle doit en montrer
+ * quatre, sans parenthèses. La règle construisait `(ac − ad) − (bc − bd)`, ce
+ * qui est juste mais se lit mal à cet endroit précis. Tant que le générateur
+ * ne parenthésait pas, la différence ne se voyait pas.
+ *
+ * Décision de David, 2026-09-21.
+ */
+describe('les quatre combinaisons donnent quatre termes plats', () => {
+	it.each([
+		['(x+1)(y+2)', 'xy+x2+1y+12'],
+		['(x+1)(y-2)', 'xy-x2+1y-12'],
+		['(x-1)(y+2)', 'xy+x2-1y-12'],
+		['(x-1)(y-2)', 'xy-x2-1y+12']
+	])('%s → %s', (source, attendu) => {
+		const { result } = applyRulesDeepOnceTracked([distributeBinomialProduct], parseLatex(source));
+		expect(tex(result)).toBe(attendu);
+	});
+
+	it('aucune parenthèse dans l’étape montrée à l’élève', () => {
+		const { result } = applyRulesDeepOnceTracked(
+			[distributeBinomialProduct],
+			parseLatex('(2x-3)(x+4)')
+		);
+		expect(toLatex(result)).not.toContain('\\left(');
+	});
 });

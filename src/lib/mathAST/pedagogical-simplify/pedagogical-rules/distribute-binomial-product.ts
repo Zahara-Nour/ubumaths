@@ -48,14 +48,24 @@ function leftRightOf(n: MathNode): { left: MathNode; right: MathNode } {
 }
 
 /**
- * Combine four implicit products via add/sub matching the (left, right) sign
- * pattern of the two binomials.
+ * Assemble les quatre produits en une chaîne PLATE, associée à gauche, selon
+ * le couple de signes des deux binômes.
  *
- * leftSign, rightSign ∈ {'+', '-'} :
  *   (+, +) →  ac + ad + bc + bd
  *   (+, -) →  ac - ad + bc - bd
  *   (-, +) →  ac + ad - bc - bd
  *   (-, -) →  ac - ad - bc + bd
+ *
+ * Le signe de chaque terme se lit directement : `ac` est toujours positif,
+ * `ad` prend celui du binôme droit, `bc` celui du gauche, et `bd` le produit
+ * des deux.
+ *
+ * ⚠️ **Plate, et pas groupée.** Cette fonction rendait `(ac − ad) − (bc − bd)`,
+ * mathématiquement juste mais lu par l'élève avec une parenthèse à l'étape même
+ * où on lui demande de développer. Tant que le générateur LaTeX ne parenthésait
+ * pas une somme sous une soustraction, la différence ne se voyait pas — et elle
+ * masquait au passage une erreur de SIGNE, corrigée en PR #390. Décision de
+ * David, 2026-09-21 : quatre termes séparés.
  */
 function buildExpansion(
 	a: MathNode,
@@ -70,25 +80,11 @@ function buildExpansion(
 	const bc = multiply(b, c, 'implicit');
 	const bd = multiply(b, d, 'implicit');
 
-	// First pair: ac (signRight) ad
-	const pair1 = rightSign === '+' ? add(ac, ad) : subtract(ac, ad);
+	const bdSign: '+' | '-' = leftSign === rightSign ? '+' : '-';
+	const join = (accumulated: MathNode, term: MathNode, sign: '+' | '-'): MathNode =>
+		sign === '+' ? add(accumulated, term) : subtract(accumulated, term);
 
-	// La seconde paire garde TOUJOURS le signe du binôme droit : c'est le
-	// groupement `leftSign` qui distribue le sien.
-	//
-	// ⚠️ Cette fonction appliquait un signe INVERSÉ pour `leftSign = '-'`, et les
-	// deux combinaisons concernées étaient fausses. `(a−b)(c−d)` rendait
-	// `(ac − ad) − (bc + bd)`, soit `ac − ad − bc − bd` au lieu de
-	// `ac − ad − bc + bd`. Mesuré en x=3, y=5 : `(x−1)(y−2)` vaut 6 et la sortie
-	// de la règle valait 2.
-	//
-	// Le seul test qui couvrait les signes comparait une CHAÎNE, et le
-	// générateur LaTeX ne parenthésait pas l'opérande droit d'une soustraction :
-	// la chaîne paraissait juste. Les quatre combinaisons sont désormais
-	// vérifiées numériquement.
-	const pair2 = rightSign === '+' ? add(bc, bd) : subtract(bc, bd);
-
-	return leftSign === '+' ? add(pair1, pair2) : subtract(pair1, pair2);
+	return join(join(join(ac, ad, rightSign), bc, leftSign), bd, bdSign);
 }
 
 export const distributeBinomialProduct: Rule = createRule(
