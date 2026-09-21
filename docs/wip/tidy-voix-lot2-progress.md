@@ -33,10 +33,44 @@ doit rendre UNE étape, appliquée partout. Il faut donc pouvoir décomposer ave
 un **sous-ensemble de familles activées**, matérialiser, puis en activer une de
 plus — et non instrumenter la descente.
 
+## La conception retenue : OBSERVER, pas re-décomposer
+
+La piste du « budget de familles » est **morte, mesurée** : `buildSum` et
+`sortFactors` ne savent pas écrire une forme partiellement repliée.
+
+| forme laissée non repliée      | ce que `buildSum` rend |
+| ------------------------------ | ---------------------- |
+| `2*3*x` sans repli des nombres | `x*2*3`                |
+| `x*x*x` sans fusion            | `xxx`                  |
+| `-(-x)` sans repli des signes  | `--x`                  |
+
+Aucune de ces écritures n'est celle d'un élève, et une matérialisation « budget
+vide » émettrait en prime une étape parasite `2*3*x → x*2*3`.
+
+À la place, un carnet `FamilyWatch` porté par l'`Accumulator`, **créé seulement
+si un enregistreur est passé**. Chaque famille y pose son drapeau quand elle a
+réellement changé l'écriture, et `soleFamilyRule` nomme le geste **si une seule
+famille a bougé sur toute la somme** — d'où « une famille appliquée partout »
+en une étape. Aucune décision d'`absorbFactor` n'est touchée : l'invariant 1
+tient par construction.
+
+⚠️ **Limite assumée : deux familles qui bougent ensemble retombent sur le
+filet.** `2·3·√8` rend `12√2` sous « On met chaque terme au propre », parce
+qu'il faudrait montrer une expression où les nombres sont repliés et le radical
+non — et cette expression n'est pas écrivable (mesure ci-dessus).
+
+## Contradiction de mon propre contrat, levée
+
+Le test du lot 1 épinglait `['tidy-terms', 'tidy-collect-like-terms']` sur
+`sqrt(12)+sqrt(3)`, écrit quand `tidy-terms` était le seul geste disponible. Or
+c'est **exactement la même famille** que `sqrt(8)+sqrt(12)`, que le lot 2 exige
+de nommer `tidy-extract-radicals` : aucune règle de principe ne peut les
+distinguer. Le test du lot 1 est donc mis à jour — c'est le but du lot 2.
+
 ## État
 
 - [x] Contrat écrit en tests rouges : 8 rouges / 123 verts
-- [ ] Implémentation
+- [x] Implémentation (`mathast-expert`, Opus) — 5 gestes, filet `tidy-terms` conservé
 - [ ] Revue `code-reviewer`
 - [ ] `check:incremental` + `lint:fast`
 - [ ] PR, CI verte, merge, worktree supprimé

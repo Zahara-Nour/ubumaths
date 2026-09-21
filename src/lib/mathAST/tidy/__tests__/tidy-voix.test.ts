@@ -59,9 +59,16 @@ describe('tidy raconte — les gestes', () => {
 	});
 
 	it('met chaque terme au propre avant de regrouper', () => {
+		// Écrit au lot 1, quand `tidy-terms` était le seul geste disponible. Le
+		// lot 2 nomme la famille qui travaille réellement ici : l'extraction des
+		// carrés parfaits. `sqrt(12)+sqrt(3)` et `sqrt(8)+sqrt(12)` sont le MÊME
+		// geste, aucune règle de principe ne peut les nommer différemment.
 		const { resultat, etapes } = raconte('sqrt(12)+sqrt(3)');
 		expect(resultat).toBe('3sqrt(3)');
-		expect(etapes.map((e) => e.regle)).toEqual(['tidy-terms', 'tidy-collect-like-terms']);
+		expect(etapes.map((e) => e.regle)).toEqual([
+			'tidy-extract-radicals',
+			'tidy-collect-like-terms'
+		]);
 		expect(etapes[0].avant).toBe('sqrt(12)+sqrt(3)');
 		expect(etapes[1].apres).toBe('3sqrt(3)');
 	});
@@ -292,7 +299,7 @@ describe('tidy raconte — les invariants', () => {
 		const recorder = new TidyStepRecorder();
 		tidy(parseCustom('sqrt(12)+sqrt(3)'), { recorder });
 		expect(recorder.getSteps().map((s) => s.description)).toEqual([
-			'On met chaque terme au propre',
+			'On extrait du radical les facteurs qui sont des carrés parfaits',
 			'On regroupe les termes semblables'
 		]);
 	});
