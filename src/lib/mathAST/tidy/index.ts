@@ -16,6 +16,7 @@
 import type { MathNode } from '../types';
 import { stripUnnecessaryBrackets } from '../transforms';
 import { tidyNode } from './collect';
+import type { TidyOptions } from './step-recorder';
 
 /**
  * Met une expression au propre.
@@ -26,11 +27,12 @@ import { tidyNode } from './collect';
  * conservées.
  *
  * @param node - L'expression à mettre au propre
+ * @param options - `recorder` pour écouter les étapes ; absent, rien n'est construit en trop
  * @returns Une nouvelle expression, l'entrée inchangée en cas d'imprévu
  */
-export function tidy(node: MathNode): MathNode {
+export function tidy(node: MathNode, options?: TidyOptions): MathNode {
 	try {
-		return tidyNode(stripUnnecessaryBrackets(node));
+		return tidyNode(stripUnnecessaryBrackets(node), options);
 	} catch (error) {
 		// Seul un débordement de pile (expression pathologiquement profonde) est
 		// rattrapé : toute autre exception est un bug de `tidy` et doit remonter.

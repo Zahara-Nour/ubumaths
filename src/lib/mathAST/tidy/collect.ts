@@ -1,3 +1,4 @@
+import type { TidyOptions } from './step-recorder';
 /**
  * Le cœur de `tidy` : relire une expression comme une somme de termes.
  *
@@ -862,7 +863,7 @@ function tidyAtom(node: MathNode): MathNode {
 }
 
 /** Une expression : somme de termes, regroupés puis ordonnés puis réécrits. */
-export function tidyExpression(node: MathNode): MathNode {
+export function tidyExpression(node: MathNode, options?: TidyOptions): MathNode {
 	// §D.2 — l'arithmétique des températures est à part : elle ne se ramène pas
 	// à une somme de termes semblables (`30[°C]-20[°C]` vaut `10[K]`).
 	const temperature = tidyTemperatureSum(node);
@@ -915,7 +916,7 @@ function tidyStructure(node: MathNode): MathNode {
 }
 
 /** Point d'entrée récursif : aiguille entre structure et expression. */
-export function tidyNode(node: MathNode): MathNode {
+export function tidyNode(node: MathNode, options?: TidyOptions): MathNode {
 	switch (node.type) {
 		case 'relation':
 		case 'matrix':
@@ -932,6 +933,6 @@ export function tidyNode(node: MathNode): MathNode {
 		case 'hole':
 			return node;
 		default:
-			return tidyExpression(node);
+			return tidyExpression(node, options);
 	}
 }
