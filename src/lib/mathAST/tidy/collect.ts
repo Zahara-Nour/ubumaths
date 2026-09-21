@@ -1,4 +1,4 @@
-import type { TidyOptions } from './step-recorder';
+import type { TidyOptions, TidyRule, TidyStepRecorder } from './step-recorder';
 /**
  * Le cœur de `tidy` : relire une expression comme une somme de termes.
  *
@@ -25,7 +25,7 @@ import type { TidyFactor, TidyQuantity, TidyTerm } from './types';
 import { flattenProductShallow, flattenSumShallow } from '../flatten';
 import { getChildren } from '../transforms';
 import { extractRational } from '../common/numeric';
-import { hashMathNode, hashUnit } from '../normal/hash';
+import { hashMathNode, hashUnit, nodesEqual } from '../normal/hash';
 import { extractPerfectPower } from '../normal/radical';
 import {
 	ONE,
@@ -874,7 +874,55 @@ export function tidyExpression(node: MathNode, options?: TidyOptions): MathNode 
 	const signedTemperature = tidySignedTemperature(node);
 	if (signedTemperature !== null) return signedTemperature;
 
-	return buildSum(sortTerms(chooseUnits(collectLikeTerms(toSumTerms(node)))));
+	const terms = toSumTerms(node);
+	const recorder = options?.recorder;
+
+	// Chemin muet : aucune expression intermédiaire n'est construite.
+	if (recorder === undefined) {
+		return buildSum(sortTerms(chooseUnits(collectLikeTerms(terms))));
+	}
+
+	return narrateSum(node, terms, recorder);
+}
+
+/**
+ * Raconte la mise au propre d'une somme.
+ *
+ * `tidy` décompose en `TidyTerm[]`, accumule, reconstruit : il n'existe aucune
+ * expression intermédiaire « naturelle ». On en **matérialise** une avec
+ * `buildSum` entre deux stages du pipeline, et chaque stage devient un geste.
+ *
+ * Un geste qui ne change pas l'écriture n'est pas une étape : la comparaison
+ * est structurelle (`nodesEqual`), jamais par référence — reconstruire rend
+ * toujours un objet neuf.
+ */
+function narrateSum(
+	source: MathNode,
+	terms: readonly TidyTerm[],
+	recorder: TidyStepRecorder
+): MathNode {
+	let previous = source;
+
+	const step = (rule: TidyRule, after: MathNode): MathNode => {
+		if (!nodesEqual(previous, after)) {
+			recorder.recordRule(rule, previous, after);
+			previous = after;
+		}
+		return after;
+	};
+
+	// Le travail fait terme par terme pendant la décomposition — nombres,
+	// radicaux, facteurs, signes — sort ici d'un bloc. Le lot 2 le remplacera
+	// par ses quatre gestes fins.
+	step('tidy-terms', buildSum(terms));
+
+	const collected = collectLikeTerms(terms);
+	step('tidy-collect-like-terms', buildSum(collected));
+
+	const united = chooseUnits(collected);
+	step('tidy-choose-unit', buildSum(united));
+
+	return step('tidy-sort-terms', buildSum(sortTerms(united)));
 }
 
 /**

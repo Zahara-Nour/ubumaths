@@ -32,7 +32,11 @@ import { StepRecorderBase, type BaseStep } from '../common/step-recorder-base.js
  * terme pendant la décomposition (nombres, radicaux, facteurs, signes). Le
  * lot 2 le remplacera par ses quatre gestes fins.
  */
-export type TidyRule = 'tidy-terms' | 'tidy-collect-like-terms' | 'tidy-sort-terms' | 'tidy-choose-unit';
+export type TidyRule =
+	| 'tidy-terms'
+	| 'tidy-collect-like-terms'
+	| 'tidy-sort-terms'
+	| 'tidy-choose-unit';
 
 /** Une étape de mise au propre. */
 export interface TidyStep extends BaseStep<TidyRule> {}
