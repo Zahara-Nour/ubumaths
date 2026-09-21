@@ -15,7 +15,7 @@ Et ce n'est pas un oubli. `tidy` ne réécrit pas, il **décompose, accumule,
 reconstruit** :
 
 ```ts
-tidyExpression = buildSum( sortTerms( chooseUnits( collectLikeTerms( toSumTerms(node) ) ) ) )
+tidyExpression = buildSum(sortTerms(chooseUnits(collectLikeTerms(toSumTerms(node)))));
 ```
 
 L'état intermédiaire n'est pas un AST, c'est un `TidyTerm[]`. On ne montre pas
@@ -27,15 +27,15 @@ existe. Le refactor est donc partiel, pas total.
 
 ## Ce qui est bon marché, et ce qui ne l'est pas
 
-| geste                        | où il vit                             | coût                          |
-| ---------------------------- | ------------------------------------- | ----------------------------- |
+| geste                           | où il vit                             | coût                          |
+| ------------------------------- | ------------------------------------- | ----------------------------- |
 | regrouper les termes semblables | `collectLikeTerms`, stage du pipeline | **matérialiser entre stages** |
-| ranger                       | `sortTerms`, stage du pipeline        | **matérialiser entre stages** |
-| écrire dans la bonne unité   | `chooseUnits`, stage du pipeline      | **matérialiser entre stages** |
-| calculer les nombres         | `absorbRational`, dans `toTerm`       | ouvrir la décomposition       |
-| simplifier les radicaux      | `absorbSquareRoot`, dans `toTerm`     | ouvrir la décomposition       |
-| regrouper les facteurs       | `absorbFactor`, dans `toTerm`         | ouvrir la décomposition       |
-| signes et neutres            | `toTerm` + `removeSignsAST`           | ouvrir la décomposition       |
+| ranger                          | `sortTerms`, stage du pipeline        | **matérialiser entre stages** |
+| écrire dans la bonne unité      | `chooseUnits`, stage du pipeline      | **matérialiser entre stages** |
+| calculer les nombres            | `absorbRational`, dans `toTerm`       | ouvrir la décomposition       |
+| simplifier les radicaux         | `absorbSquareRoot`, dans `toTerm`     | ouvrir la décomposition       |
+| regrouper les facteurs          | `absorbFactor`, dans `toTerm`         | ouvrir la décomposition       |
+| signes et neutres               | `toTerm` + `removeSignsAST`           | ouvrir la décomposition       |
 
 `toTerm` traite **un terme à la fois**, pendant la décomposition. Les quatre
 gestes du bas y sont enfouis ensemble.
