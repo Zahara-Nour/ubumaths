@@ -14,10 +14,12 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import type { MathNode } from '../../types';
 import { tidy } from '../index';
 import { TidyStepRecorder } from '../step-recorder';
 import { parseCustom } from '../../parser/custom';
 import { toCustom } from '../../custom-generator';
+import { nodesEqual } from '../../normal/hash';
 
 interface EtapeLue {
 	readonly regle: string;
@@ -25,11 +27,12 @@ interface EtapeLue {
 	readonly apres: string;
 }
 
-function raconte(source: string): { resultat: string; etapes: EtapeLue[] } {
+function raconte(source: string): { resultat: string; noeud: MathNode; etapes: EtapeLue[] } {
 	const recorder = new TidyStepRecorder();
-	const resultat = tidy(parseCustom(source), { recorder });
+	const noeud = tidy(parseCustom(source), { recorder });
 	return {
-		resultat: toCustom(resultat),
+		resultat: toCustom(noeud),
+		noeud,
 		etapes: recorder.getSteps().map((s) => ({
 			regle: s.rule,
 			avant: toCustom(s.before),
@@ -44,17 +47,15 @@ function raconte(source: string): { resultat: string; etapes: EtapeLue[] } {
 
 describe('tidy raconte — les gestes', () => {
 	it('regroupe les termes semblables', () => {
-		expect(raconte('3x+2x-x')).toEqual({
-			resultat: '4x',
-			etapes: [{ regle: 'tidy-collect-like-terms', avant: '3x+2x-x', apres: '4x' }]
-		});
+		const { resultat, etapes } = raconte('3x+2x-x');
+		expect(resultat).toBe('4x');
+		expect(etapes).toEqual([{ regle: 'tidy-collect-like-terms', avant: '3x+2x-x', apres: '4x' }]);
 	});
 
 	it('range par degré décroissant', () => {
-		expect(raconte('2+x^2+x')).toEqual({
-			resultat: 'x^2+x+2',
-			etapes: [{ regle: 'tidy-sort-terms', avant: '2+x^2+x', apres: 'x^2+x+2' }]
-		});
+		const { resultat, etapes } = raconte('2+x^2+x');
+		expect(resultat).toBe('x^2+x+2');
+		expect(etapes).toEqual([{ regle: 'tidy-sort-terms', avant: '2+x^2+x', apres: 'x^2+x+2' }]);
 	});
 
 	it('met chaque terme au propre avant de regrouper', () => {
@@ -81,6 +82,63 @@ describe('tidy raconte — ce qu’il tait', () => {
 });
 
 // =============================================================================
+// Ce que la revue a trouvé — aucune écriture inventée, aucun silence trompeur
+// =============================================================================
+
+describe('tidy raconte — n’invente aucune écriture', () => {
+	it('ne montre jamais une grandeur en fraction', () => {
+		const { resultat, etapes } = raconte('0.005[m]');
+		expect(resultat).toBe('5[mm]');
+		expect(etapes).toEqual([{ regle: 'tidy-choose-unit', avant: '0.005[m]', apres: '5[mm]' }]);
+	});
+
+	it('convertit les unités en un seul geste', () => {
+		const { resultat, etapes } = raconte('12[km]+500[m]');
+		expect(resultat).toBe('12.5[km]');
+		expect(etapes).toEqual([
+			{ regle: 'tidy-choose-unit', avant: '12[km]+500[m]', apres: '12.5[km]' }
+		]);
+	});
+
+	it('choisit l’unité adaptée d’un terme seul', () => {
+		const { resultat, etapes } = raconte('3600[s]');
+		expect(resultat).toBe('1[h]');
+		expect(etapes).toEqual([{ regle: 'tidy-choose-unit', avant: '3600[s]', apres: '1[h]' }]);
+	});
+
+	it('regroupe des grandeurs de même unité sans parler de conversion', () => {
+		const etapes = raconte('2[km]+3[km]').etapes;
+		expect(etapes.map((e) => e.regle)).toEqual(['tidy-collect-like-terms']);
+	});
+
+	it('ne fabrique pas un terme de coefficient nul', () => {
+		const { resultat, etapes } = raconte('x*0');
+		expect(resultat).toBe('0');
+		expect(etapes.map((e) => e.apres)).toEqual(['0']);
+	});
+
+	it('part de ce que l’élève a écrit, parenthèses comprises', () => {
+		const etapes = raconte('(3x+2x)').etapes;
+		expect(etapes[0]?.avant).toBe('(3x+2x)');
+	});
+});
+
+describe('tidy raconte — il ne se tait pas quand le résultat change', () => {
+	it('raconte une relation entière, pas un membre', () => {
+		const { resultat, etapes } = raconte('3x+2x=5');
+		expect(resultat).toBe('5x=5');
+		expect(etapes).toEqual([{ regle: 'tidy-collect-like-terms', avant: '3x+2x=5', apres: '5x=5' }]);
+	});
+
+	it('raconte une soustraction de températures', () => {
+		const { resultat, etapes } = raconte('30[°C]-20[°C]');
+		expect(resultat).toBe('10[K]');
+		expect(etapes.length).toBeGreaterThan(0);
+		expect(etapes[etapes.length - 1].apres).toBe('10[K]');
+	});
+});
+
+// =============================================================================
 // Les invariants de la spécification
 // =============================================================================
 
@@ -99,17 +157,38 @@ const PANEL = [
 	'sqrt(8)',
 	'2*(x+1)^2+3*(x+1)^2',
 	'x*(x+1)',
-	'(x+1)^2'
+	'(x+1)^2',
+	// Les quatre classes que l'ancien panel ignorait, et où la revue a trouvé
+	// les défauts : grandeurs, relation, parenthèses superflues, terme annulé.
+	'0.005[m]',
+	'12[km]+500[m]',
+	'3600[s]',
+	'2[km]+3[km]',
+	'3x+2x=5',
+	'(3x+2x)',
+	'x*0',
+	'30[°C]-20[°C]'
 ];
 
 describe('tidy raconte — les invariants', () => {
 	it.each(PANEL)('la chaîne part de l’entrée et recolle sur tidy() — %s', (source) => {
 		const entree = parseCustom(source);
-		const { etapes, resultat } = raconte(source);
+		const { etapes, resultat, noeud } = raconte(source);
 		expect(resultat).toBe(toCustom(tidy(entree)));
-		if (etapes.length === 0) return;
-		expect(etapes[0].avant).toBe(toCustom(entree));
-		expect(etapes[etapes.length - 1].apres).toBe(resultat);
+		if (etapes.length > 0) {
+			expect(etapes[0].avant).toBe(toCustom(entree));
+			expect(etapes[etapes.length - 1].apres).toBe(resultat);
+		} else {
+			// ⚠️ Pas d'échappatoire ici. L'ancienne version sortait par le haut
+			// quand il n'y avait aucune étape — et c'est exactement la forme des
+			// défauts trouvés en revue : le résultat change, la chaîne est vide.
+			//
+			// La comparaison est STRUCTURELLE : `x*(x+1)` s'imprime `x(x+1)`, mais
+			// le `×` implicite est une convention de `toCustom`, pas un geste de
+			// `tidy`. Le silence doit vouloir dire « rien n'a bougé », pas
+			// « rien ne s'imprime pareil ».
+			expect(nodesEqual(entree, noeud)).toBe(true);
+		}
 	});
 
 	it.each(PANEL)('chaque étape enchaîne sur la suivante — %s', (source) => {

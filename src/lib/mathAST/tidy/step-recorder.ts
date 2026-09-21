@@ -14,7 +14,7 @@
 
 import type { MathNode } from '../types';
 import type { Verbosity } from '../common/verbosity';
-import { StepRecorderBase, type BaseStep } from '../common/step-recorder-base.js';
+import { StepRecorderBase, type BaseStep } from '../common/step-recorder-base';
 
 // =============================================================================
 // Types
@@ -39,7 +39,7 @@ export type TidyRule =
 	| 'tidy-choose-unit';
 
 /** Une étape de mise au propre. */
-export interface TidyStep extends BaseStep<TidyRule> {}
+export type TidyStep = BaseStep<TidyRule>;
 
 // =============================================================================
 // Constantes
@@ -50,7 +50,7 @@ export const TIDY_RULE_DESCRIPTIONS: Readonly<Record<TidyRule, string>> = {
 	'tidy-terms': 'On met chaque terme au propre',
 	'tidy-collect-like-terms': 'On regroupe les termes semblables',
 	'tidy-sort-terms': 'On range par degré décroissant',
-	'tidy-choose-unit': 'On écrit dans la même unité'
+	'tidy-choose-unit': "On choisit l'unité adaptée"
 };
 
 // =============================================================================
@@ -82,7 +82,15 @@ export class TidyStepRecorder extends StepRecorderBase<TidyStep, TidyRule> {
 	}
 }
 
-/** Ce que `tidy` accepte en second argument. */
+/**
+ * Ce que `tidy` accepte en second argument.
+ *
+ * ⚠️ **Un enregistreur vaut pour UN appel.** `tidy` ajoute ses étapes à la
+ * suite sans jamais vider : réutiliser la même instance sur deux expressions
+ * met bout à bout deux chaînes qui ne se recollent pas. Les invariants de
+ * chaîne (`étape[i].après === étape[i+1].avant`) ne valent qu'à l'intérieur
+ * d'un appel.
+ */
 export interface TidyOptions {
 	/** À qui raconter. Absent, `tidy` ne construit aucune expression en trop. */
 	readonly recorder?: TidyStepRecorder;

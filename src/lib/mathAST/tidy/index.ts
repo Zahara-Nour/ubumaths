@@ -18,6 +18,9 @@ import { stripUnnecessaryBrackets } from '../transforms';
 import { tidyNode } from './collect';
 import type { TidyOptions } from './step-recorder';
 
+export { TidyStepRecorder, TIDY_RULE_DESCRIPTIONS } from './step-recorder';
+export type { TidyOptions, TidyRule, TidyStep } from './step-recorder';
+
 /**
  * Met une expression au propre.
  *
@@ -32,7 +35,10 @@ import type { TidyOptions } from './step-recorder';
  */
 export function tidy(node: MathNode, options?: TidyOptions): MathNode {
 	try {
-		return tidyNode(stripUnnecessaryBrackets(node), options);
+		// ⚠️ Le 3ᵉ argument est l'expression TELLE QUE L'ÉLÈVE L'A ÉCRITE. Sans lui,
+		// la chaîne partirait du nœud déjà dépouillé de ses parenthèses : `(3x+2x)`
+		// commencerait à `3x+2x`, une réécriture qu'il ne voit jamais.
+		return tidyNode(stripUnnecessaryBrackets(node), options, node);
 	} catch (error) {
 		// Seul un débordement de pile (expression pathologiquement profonde) est
 		// rattrapé : toute autre exception est un bug de `tidy` et doit remonter.

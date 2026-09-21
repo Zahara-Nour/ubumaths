@@ -1,4 +1,3 @@
-import type { TidyOptions, TidyRule, TidyStepRecorder } from './step-recorder';
 /**
  * Le cœur de `tidy` : relire une expression comme une somme de termes.
  *
@@ -18,10 +17,12 @@ import type { TidyOptions, TidyRule, TidyStepRecorder } from './step-recorder';
  * @module mathAST/tidy/collect
  */
 
-import type { FunctionNode, MathNode, SuperscriptNode, UnitNode } from '../types';
+import type { FunctionNode, MathNode, RelationNode, SuperscriptNode, UnitNode } from '../types';
 import type { Unit } from '../units/types';
 import type { Rational } from '../normal/types';
 import type { TidyFactor, TidyQuantity, TidyTerm } from './types';
+import type { TidyOptions, TidyRule } from './step-recorder';
+import { TidyStepRecorder } from './step-recorder';
 import { flattenProductShallow, flattenSumShallow } from '../flatten';
 import { getChildren } from '../transforms';
 import { extractRational } from '../common/numeric';
@@ -870,34 +871,85 @@ function tidyAtom(node: MathNode): MathNode {
 }
 
 /** Une expression : somme de termes, regroupés puis ordonnés puis réécrits. */
-export function tidyExpression(node: MathNode, options?: TidyOptions): MathNode {
+export function tidyExpression(node: MathNode, options?: TidyOptions, source?: MathNode): MathNode {
+	const recorder = options?.recorder;
+	const written = source ?? node;
+
 	// §D.2 — l'arithmétique des températures est à part : elle ne se ramène pas
 	// à une somme de termes semblables (`30[°C]-20[°C]` vaut `10[K]`).
 	const temperature = tidyTemperatureSum(node);
-	if (temperature !== null) return temperature;
+	if (temperature !== null) {
+		recordDirect(recorder, 'tidy-collect-like-terms', written, temperature);
+		return temperature;
+	}
 
 	// §D.2 / finding F1 — une chaîne de signes autour d'une température seule se
 	// replie dans sa valeur : `-(-20[°C])` s'écrit `20[°C]`.
 	const signedTemperature = tidySignedTemperature(node);
-	if (signedTemperature !== null) return signedTemperature;
+	if (signedTemperature !== null) {
+		recordDirect(recorder, 'tidy-terms', written, signedTemperature);
+		return signedTemperature;
+	}
 
 	const terms = toSumTerms(node);
-	const recorder = options?.recorder;
 
 	// Chemin muet : aucune expression intermédiaire n'est construite.
 	if (recorder === undefined) {
 		return buildSum(sortTerms(chooseUnits(collectLikeTerms(terms))));
 	}
 
-	return narrateSum(node, terms, recorder);
+	return narrateSum(written, terms, recorder);
+}
+
+/** Enregistre un geste d'un seul tenant, quand il n'y a pas de stage à couper. */
+function recordDirect(
+	recorder: TidyStepRecorder | undefined,
+	rule: TidyRule,
+	before: MathNode,
+	after: MathNode
+): void {
+	if (recorder !== undefined && !nodesEqual(before, after)) {
+		recorder.recordRule(rule, before, after);
+	}
+}
+
+/**
+ * L'ensemble des écritures d'unité portées par des termes, en une clé.
+ *
+ * Sert à nommer le geste : dès que cet ensemble change, ce que l'élève voit est
+ * une **conversion**, quel que soit le stage du pipeline qui l'a produite.
+ * `12[km]+500[m] → 12,5[km]` passe de `km|m` à `km` ; `2[km]+3[km] → 5[km]`
+ * reste sur `km`, et reste donc un regroupement.
+ */
+function unitWritings(terms: readonly TidyTerm[]): string {
+	const writings = new Set<string>();
+	for (const term of terms) {
+		if (term.unit !== null) writings.add(unitWriting(term.unit));
+	}
+	return [...writings].sort().join('|');
+}
+
+/**
+ * Matérialise des termes en expression, pour la montrer.
+ *
+ * ⚠️ **Toujours à travers `chooseUnits`, et sans les coefficients nuls.** Le
+ * chemin muet ne construit `buildSum` qu'une fois, tout à la fin : l'appeler
+ * au milieu expose des états internes que personne n'écrirait. Mesuré en
+ * revue : `0,005 m` s'affichait `(1/200) m` faute de drapeau décimal (posé par
+ * `chooseUnit` seul), et `x×0` s'affichait `0x` parce que c'est
+ * `collectLikeTerms` qui jette les coefficients nuls.
+ */
+function materialise(terms: readonly TidyTerm[]): MathNode {
+	const written = terms.filter((term) => term.verbatim || !isZeroRational(term.coefficient));
+	return buildSum(chooseUnits(written));
 }
 
 /**
  * Raconte la mise au propre d'une somme.
  *
  * `tidy` décompose en `TidyTerm[]`, accumule, reconstruit : il n'existe aucune
- * expression intermédiaire « naturelle ». On en **matérialise** une avec
- * `buildSum` entre deux stages du pipeline, et chaque stage devient un geste.
+ * expression intermédiaire « naturelle ». On en matérialise une entre deux
+ * stages du pipeline, et chaque stage devient un geste.
  *
  * Un geste qui ne change pas l'écriture n'est pas une étape : la comparaison
  * est structurelle (`nodesEqual`), jamais par référence — reconstruire rend
@@ -918,18 +970,67 @@ function narrateSum(
 		return after;
 	};
 
-	// Le travail fait terme par terme pendant la décomposition — nombres,
-	// radicaux, facteurs, signes — sort ici d'un bloc. Le lot 2 le remplacera
-	// par ses quatre gestes fins.
-	step('tidy-terms', buildSum(terms));
-
+	const united = chooseUnits(terms);
 	const collected = collectLikeTerms(terms);
-	step('tidy-collect-like-terms', buildSum(collected));
+	const unitedCollected = chooseUnits(collected);
 
-	const united = chooseUnits(collected);
-	step('tidy-choose-unit', buildSum(united));
+	// Le travail fait terme par terme pendant la décomposition — nombres,
+	// radicaux, facteurs, signes — sort d'un bloc. Le lot 2 le remplacera par
+	// ses quatre gestes fins.
+	const perTerm: TidyRule =
+		unitWritings(terms) === unitWritings(united) ? 'tidy-terms' : 'tidy-choose-unit';
+	step(perTerm, materialise(terms));
 
-	return step('tidy-sort-terms', buildSum(sortTerms(united)));
+	const grouping: TidyRule =
+		unitWritings(united) === unitWritings(unitedCollected)
+			? 'tidy-collect-like-terms'
+			: 'tidy-choose-unit';
+	step(grouping, materialise(collected));
+
+	return step('tidy-sort-terms', buildSum(sortTerms(unitedCollected)));
+}
+
+/**
+ * Met une relation au propre, en la racontant ENTIÈRE.
+ *
+ * Décision de David (2026-09-21) : l'élève voit `3x+2x=5 → 5x=5`, jamais
+ * `3x+2x → 5x` tout seul. On met donc chaque membre au propre avec son propre
+ * enregistreur, puis on rejoue ses étapes sur la relation complète.
+ */
+function tidyRelation(
+	node: RelationNode,
+	options: TidyOptions | undefined,
+	written: MathNode
+): MathNode {
+	const recorder = options?.recorder;
+	if (recorder === undefined) {
+		return { ...node, left: tidyNode(node.left), right: tidyNode(node.right) };
+	}
+
+	let previous = written;
+	let left = node.left;
+	let right = node.right;
+
+	const replay = (side: 'left' | 'right'): void => {
+		const own = new TidyStepRecorder();
+		const member = side === 'left' ? node.left : node.right;
+		const tidied = tidyNode(member, { recorder: own }, member);
+		for (const recorded of own.getSteps()) {
+			const after: MathNode =
+				side === 'left'
+					? { ...node, left: recorded.after, right }
+					: { ...node, left, right: recorded.after };
+			recorder.recordRule(recorded.rule, previous, after);
+			previous = after;
+		}
+		if (side === 'left') left = tidied;
+		else right = tidied;
+	};
+
+	replay('left');
+	replay('right');
+
+	return { ...node, left, right };
 }
 
 /**
@@ -971,9 +1072,10 @@ function tidyStructure(node: MathNode): MathNode {
 }
 
 /** Point d'entrée récursif : aiguille entre structure et expression. */
-export function tidyNode(node: MathNode, options?: TidyOptions): MathNode {
+export function tidyNode(node: MathNode, options?: TidyOptions, source?: MathNode): MathNode {
 	switch (node.type) {
 		case 'relation':
+			return tidyRelation(node, options, source ?? node);
 		case 'matrix':
 		case 'piecewise':
 		case 'limit':
@@ -988,6 +1090,6 @@ export function tidyNode(node: MathNode, options?: TidyOptions): MathNode {
 		case 'hole':
 			return node;
 		default:
-			return tidyExpression(node, options);
+			return tidyExpression(node, options, source);
 	}
 }
