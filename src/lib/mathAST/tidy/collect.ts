@@ -85,7 +85,38 @@ type Accumulator = {
 	coefficient: Rational;
 	readonly factors: Map<string, MutableFactor>;
 	readonly unitSymbols: Map<string, number>;
+	/** Le carnet de la narration. `undefined` : personne n'écoute. */
+	readonly watch: FamilyWatch;
+	/**
+	 * Combien de signes ont été absorbés dans ce terme, le `−` porté par la
+	 * somme compris. Deux signes qui se rencontrent se simplifient ; un seul est
+	 * simplement porté devant, et ce n'est pas un geste.
+	 */
+	signCount: number;
 };
+
+/**
+ * Les familles de travail que `tidy` fait **terme par terme**, pendant la
+ * décomposition — les quatre gestes du niveau du facteur.
+ *
+ * ⚠️ Elles sont **observées**, jamais pilotées : un drapeau est posé quand la
+ * famille a réellement changé l'écriture, et le résultat de `tidy` ne dépend
+ * d'aucun de ces drapeaux. C'est ce qui garantit l'invariant 1 (le résultat ne
+ * bouge pas, enregistreur ou non).
+ */
+/**
+ * Les familles de gestes que le carnet observe.
+ *
+ * ⚠️ **On ne nomme un geste que si on est certain qu'il est le SEUL à avoir
+ * travaillé.** `'other'` est la sentinelle du doute : elle n'a volontairement
+ * pas d'entrée dans `FAMILY_RULE`, donc sa présence force le filet
+ * `tidy-terms`. Une étiquette qui ment à l'élève est pire qu'une étiquette
+ * grossière.
+ */
+export type TidyFamily = 'numbers' | 'radicals' | 'factors' | 'signs' | 'other';
+
+/** Le carnet des familles qui ont travaillé, ou `undefined` si nul n'écoute. */
+type FamilyWatch = Set<TidyFamily> | undefined;
 
 // =============================================================================
 // Constantes
@@ -293,6 +324,9 @@ function addFactor(acc: Accumulator, base: MathNode, exponent: Rational): void {
 		return;
 	}
 
+	// Deux facteurs de même base se rejoignent : « on regroupe les facteurs ».
+	acc.watch?.add('factors');
+
 	const merged = addRational(existing.exponent, exponent);
 	if (isZeroRational(merged)) {
 		acc.factors.delete(key);
@@ -323,7 +357,22 @@ function absorbRational(r: Rational, exponent: Rational, acc: Accumulator): bool
 	if (!isEvaluableExponent(exponent)) return false;
 	if (isZeroRational(r) && exponent.n <= 0n) return false; // 0^-1 et 0^0 restent écrits
 
-	acc.coefficient = mulRational(acc.coefficient, powRational(r, Number(exponent.n)));
+	const value = powRational(r, Number(exponent.n));
+	if (acc.watch !== undefined) {
+		// Une puissance numérique calcule à elle seule : `2^3` rend `8`.
+		// ⚠️ Mais `1/3` arrive ici en `absorbRational(3, −1)` — un dénominateur
+		// n'est pas un calcul, d'où le test sur `±1` et non sur « exposant ≠ 1 ».
+		const computes = exponent.n !== 1n && exponent.n !== -1n;
+		// Sinon il faut DEUX nombres : `3x` n'en a qu'un, `2·3·x` replie 3 dans un
+		// coefficient qui valait déjà 2.
+		// ⚠️ En valeur absolue : `x·(−2)` pose d'abord un coefficient `−1`, qui
+		// n'est pas « un » au sens strict et ferait passer le 2 pour un calcul.
+		const second =
+			!isOneRational(absRational(acc.coefficient)) && !isOneRational(absRational(value));
+		if (computes || second) acc.watch.add('numbers');
+	}
+
+	acc.coefficient = mulRational(acc.coefficient, value);
 	return true;
 }
 
@@ -340,6 +389,14 @@ function absorbSquareRoot(radicand: Rational, exponent: Rational, acc: Accumulat
 	if (product > MAX_RADICAND_FOR_FACTORING) return false;
 
 	const [extracted, rest] = extractPerfectPower(product, 2n);
+	// `sqrt(3)` ressort `sqrt(3)` : rien n'a été extrait, donc rien à raconter.
+	// ⚠️ Et « on extrait les carrés parfaits » ne se dit que si un carré SORT.
+	// `1/√2 → √2/2` est une rationalisation, `√3² → 3` une annulation : aucune
+	// phrase ne les décrit, donc elles passent sous le filet plutôt que de
+	// mentir à l'élève.
+	if (extracted > 1n) acc.watch?.add('radicals');
+	else if (radicand.d > 1n || !isOneRational(exponent)) acc.watch?.add('other');
+
 	const outside = rational(extracted, radicand.d);
 	acc.coefficient = mulRational(acc.coefficient, powRational(outside, Number(exponent.n)));
 
@@ -466,7 +523,14 @@ function absorbFactor(
 
 		case 'opposite':
 			if (isIntegerRational(exponent)) {
-				if (exponent.n % 2n !== 0n) acc.coefficient = negRational(acc.coefficient);
+				// ⚠️ Un signe PORTÉ n'est pas un signe SIMPLIFIÉ : `−x·x·x` déplace le
+				// moins devant, et le vrai geste y est la fusion des facteurs. On ne
+				// nomme que lorsqu'un SECOND signe vient rencontrer le premier —
+				// `−(−x)`, `(−x)/(−y)`.
+				if (exponent.n % 2n !== 0n) {
+					acc.signCount += 1;
+					acc.coefficient = negRational(acc.coefficient);
+				}
 				absorbFactor(node.operand, exponent, acc, alreadyTidied);
 				return;
 			}
@@ -528,6 +592,10 @@ function absorbFactor(
 		addFactor(acc, cleaned, exponent);
 		return;
 	}
+	// ⚠️ `tidyAtom` repart dans `tidyExpression` SANS options : le carnet n'y voit
+	// rien. `x·x·(y+2·3)` a donc aussi replié `2·3` en `6`, et nommer l'étape
+	// « on regroupe les facteurs » tairait la moitié du geste. Sentinelle.
+	acc.watch?.add('other');
 	absorbFactor(cleaned, exponent, acc, true);
 }
 
@@ -535,17 +603,26 @@ function absorbFactor(
 // Un terme, une somme
 // =============================================================================
 
-function toTerm(node: MathNode): TidyTerm {
+function toTerm(node: MathNode, watch: FamilyWatch, carriedSigns = 0): TidyTerm {
 	const acc: Accumulator = {
 		coefficient: ONE,
 		factors: new Map<string, MutableFactor>(),
-		unitSymbols: new Map<string, number>()
+		unitSymbols: new Map<string, number>(),
+		watch,
+		// ⚠️ Le `−` de tête est consommé par `flattenSumShallow`, donc il n'atteint
+		// jamais `absorbFactor`. Sans lui, `−(−x)` ne comptait qu'UN signe et
+		// passait sous le filet alors que deux signes s'y annulent.
+		signCount: carriedSigns
 	};
 
 	for (const { factor } of flattenProductShallow(node)) {
 		absorbFactor(factor, ONE, acc);
 	}
 	reduceRadicalFactors(acc);
+
+	// Deux signes qui se rencontrent se simplifient : `−(−x)`, `(−x)·(−y)`.
+	// Un seul est porté devant — `−x·x·x` — et le vrai geste y est ailleurs.
+	if (acc.signCount >= 2) acc.watch?.add('signs');
 
 	const factors: TidyFactor[] = [...acc.factors.values()].map(({ base, exponent, key }) => ({
 		base,
@@ -606,7 +683,7 @@ function expandableSum(term: TidyTerm): MathNode | null {
  * (`(a+b)+c → a+b+c`) ; précédé d'un `-` il reste opaque, sinon `tidy`
  * distribuerait le signe — ce que le contrat interdit (`-(x+2)` inchangé).
  */
-function toSumTerms(node: MathNode): TidyTerm[] {
+function toSumTerms(node: MathNode, watch: FamilyWatch): TidyTerm[] {
 	const terms: TidyTerm[] = [];
 
 	for (const { sign, term } of flattenSumShallow(node)) {
@@ -615,15 +692,15 @@ function toSumTerms(node: MathNode): TidyTerm[] {
 			continue;
 		}
 		if (sign === '+' && isDelimiter(term) && isSumNode(term.content)) {
-			terms.push(...toSumTerms(term.content));
+			terms.push(...toSumTerms(term.content, watch));
 			continue;
 		}
 
-		const collected = toTerm(term);
+		const collected = toTerm(term, watch, sign === '-' ? 1 : 0);
 		// Précédé d'un `-`, une somme reste groupée : `-(x+2)` n'est pas distribué.
 		const inner = sign === '+' ? expandableSum(collected) : null;
 		if (inner !== null) {
-			terms.push(...toSumTerms(inner));
+			terms.push(...toSumTerms(inner, watch));
 			continue;
 		}
 		terms.push(sign === '-' ? negateTerm(collected) : collected);
@@ -891,14 +968,17 @@ export function tidyExpression(node: MathNode, options?: TidyOptions, source?: M
 		return signedTemperature;
 	}
 
-	const terms = toSumTerms(node);
+	// Invariant 2 — narration gratuite : sans enregistreur il n'y a pas de
+	// carnet, donc pas un `Set` de plus ni une décomposition de plus.
+	const families: FamilyWatch = recorder === undefined ? undefined : new Set<TidyFamily>();
+	const terms = toSumTerms(node, families);
 
 	// Chemin muet : aucune expression intermédiaire n'est construite.
-	if (recorder === undefined) {
+	if (recorder === undefined || families === undefined) {
 		return buildSum(sortTerms(chooseUnits(collectLikeTerms(terms))));
 	}
 
-	return narrateSum(written, terms, recorder);
+	return narrateSum(written, terms, families, recorder);
 }
 
 /** Enregistre un geste d'un seul tenant, quand il n'y a pas de stage à couper. */
@@ -930,6 +1010,65 @@ function unitWritings(terms: readonly TidyTerm[]): string {
 }
 
 /**
+ * Le nom de chaque famille observée.
+ *
+ * ⚠️ `'other'` n'y figure pas, et ce n'est pas un oubli : c'est la sentinelle du
+ * doute, posée quand une famille a travaillé sans qu'on sache laquelle (la
+ * récursion de `tidyAtom`) ou quand aucune phrase française ne décrit
+ * honnêtement le geste (la rationalisation d'un dénominateur). Sa présence
+ * force le filet `tidy-terms`.
+ */
+const FAMILY_RULE: Readonly<Partial<Record<TidyFamily, TidyRule>>> = {
+	numbers: 'tidy-fold-numbers',
+	radicals: 'tidy-extract-radicals',
+	factors: 'tidy-merge-factors',
+	signs: 'tidy-simplify-signs'
+};
+
+/**
+ * Le nom du geste fait terme par terme — `undefined` s'il n'y en a pas.
+ *
+ * ⚠️ **Une étape = une FAMILLE appliquée partout**, pas une occurrence : on ne
+ * nomme donc que lorsqu'une SEULE famille a travaillé sur toute la somme.
+ *
+ * Nommer les gestes d'une somme où deux familles ont bougé demanderait une
+ * expression intermédiaire où l'une est faite et l'autre non — et cette
+ * expression n'est pas écrivable. Mesuré (sonde du 2026-09-21, `buildSum` +
+ * `sortFactors`) : un produit dont les nombres ne sont pas repliés se réécrit
+ * `x*2*3`, trois `x` non fusionnés se réécrivent `xxx`, et `-(-x)` dont les
+ * signes ne sont pas repliés se réécrit `--x`. Le filet `tidy-terms` sort
+ * alors le travail d'un bloc, comme au lot 1.
+ */
+function soleFamilyRule(families: ReadonlySet<TidyFamily>): TidyRule | undefined {
+	if (families.size !== 1) return undefined;
+	const [only] = families;
+	return FAMILY_RULE[only];
+}
+
+/** Un terme « nu » : un nombre, sans facteur ni unité. */
+function isBareNumber(term: TidyTerm): boolean {
+	return !term.verbatim && term.unit === null && term.factors.length === 0;
+}
+
+/**
+ * Ce regroupement met-il des fractions au même dénominateur — et RIEN d'autre ?
+ *
+ * Il y faut au moins deux nombres nus dont l'un est une fraction (`3+1` se
+ * calcule, il ne se met pas au même dénominateur).
+ *
+ * ⚠️ Et il faut que le regroupement n'ait fusionné QUE ces nombres. Sans ce
+ * second test, `3+1/2+x+x → 7/2+2x` s'annonçait « on met au même dénominateur
+ * et on calcule » en taisant le `x+x → 2x` qu'il faisait au passage.
+ */
+function mergesFractions(terms: readonly TidyTerm[], collected: readonly TidyTerm[]): boolean {
+	const bare = terms.filter(isBareNumber);
+	if (bare.length < 2 || !bare.some((term) => term.coefficient.d !== 1n)) return false;
+
+	const others = (list: readonly TidyTerm[]) => list.filter((term) => !isBareNumber(term)).length;
+	return others(collected) === others(terms);
+}
+
+/**
  * Matérialise des termes en expression, pour la montrer.
  *
  * ⚠️ **Toujours à travers `chooseUnits`, et sans les coefficients nuls.** Le
@@ -958,6 +1097,7 @@ function materialise(terms: readonly TidyTerm[]): MathNode {
 function narrateSum(
 	source: MathNode,
 	terms: readonly TidyTerm[],
+	families: ReadonlySet<TidyFamily>,
 	recorder: TidyStepRecorder
 ): MathNode {
 	let previous = source;
@@ -974,17 +1114,22 @@ function narrateSum(
 	const collected = collectLikeTerms(terms);
 	const unitedCollected = chooseUnits(collected);
 
-	// Le travail fait terme par terme pendant la décomposition — nombres,
-	// radicaux, facteurs, signes — sort d'un bloc. Le lot 2 le remplacera par
-	// ses quatre gestes fins.
+	// Le travail fait terme par terme pendant la décomposition. Une seule
+	// famille a bougé : elle porte son nom. Plusieurs : le filet `tidy-terms`.
+	// Une écriture d'unité qui change prime sur tout — c'est une conversion que
+	// l'élève voit, quel que soit le stage qui l'a produite.
 	const perTerm: TidyRule =
-		unitWritings(terms) === unitWritings(united) ? 'tidy-terms' : 'tidy-choose-unit';
+		unitWritings(terms) !== unitWritings(united)
+			? 'tidy-choose-unit'
+			: (soleFamilyRule(families) ?? 'tidy-terms');
 	step(perTerm, materialise(terms));
 
 	const grouping: TidyRule =
-		unitWritings(united) === unitWritings(unitedCollected)
-			? 'tidy-collect-like-terms'
-			: 'tidy-choose-unit';
+		unitWritings(united) !== unitWritings(unitedCollected)
+			? 'tidy-choose-unit'
+			: mergesFractions(terms, collected)
+				? 'tidy-add-fractions'
+				: 'tidy-collect-like-terms';
 	step(grouping, materialise(collected));
 
 	return step('tidy-sort-terms', buildSum(sortTerms(unitedCollected)));

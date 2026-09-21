@@ -59,9 +59,16 @@ describe('tidy raconte — les gestes', () => {
 	});
 
 	it('met chaque terme au propre avant de regrouper', () => {
+		// Écrit au lot 1, quand `tidy-terms` était le seul geste disponible. Le
+		// lot 2 nomme la famille qui travaille réellement ici : l'extraction des
+		// carrés parfaits. `sqrt(12)+sqrt(3)` et `sqrt(8)+sqrt(12)` sont le MÊME
+		// geste, aucune règle de principe ne peut les nommer différemment.
 		const { resultat, etapes } = raconte('sqrt(12)+sqrt(3)');
 		expect(resultat).toBe('3sqrt(3)');
-		expect(etapes.map((e) => e.regle)).toEqual(['tidy-terms', 'tidy-collect-like-terms']);
+		expect(etapes.map((e) => e.regle)).toEqual([
+			'tidy-extract-radicals',
+			'tidy-collect-like-terms'
+		]);
 		expect(etapes[0].avant).toBe('sqrt(12)+sqrt(3)');
 		expect(etapes[1].apres).toBe('3sqrt(3)');
 	});
@@ -78,6 +85,146 @@ describe('tidy raconte — ce qu’il tait', () => {
 		['une expression déjà au propre', 'x^2+x+2']
 	])('ne dit rien sur %s', (_cas, source) => {
 		expect(raconte(source).etapes).toEqual([]);
+	});
+});
+
+// =============================================================================
+// Lot 2 — les quatre gestes du niveau du facteur
+// =============================================================================
+
+/**
+ * Le lot 1 sortait tout le travail fait terme par terme en UN geste grossier,
+ * `tidy-terms`. Le lot 2 le remplace par les gestes que l'élève nomme.
+ *
+ * ⚠️ **Une étape = une FAMILLE, pas une occurrence** (spécification validée) :
+ * `√8 + √12` rend UNE étape « on extrait les carrés parfaits », appliquée
+ * partout, pas une par radical.
+ */
+describe('tidy raconte — les gestes du facteur', () => {
+	it('calcule les nombres', () => {
+		const { resultat, etapes } = raconte('2*3*x');
+		expect(resultat).toBe('6x');
+		expect(etapes).toEqual([{ regle: 'tidy-fold-numbers', avant: '2*3*x', apres: '6x' }]);
+	});
+
+	it('extrait les carrés parfaits du radical', () => {
+		const { resultat, etapes } = raconte('sqrt(8)');
+		expect(resultat).toBe('2sqrt(2)');
+		expect(etapes).toEqual([
+			{ regle: 'tidy-extract-radicals', avant: 'sqrt(8)', apres: '2sqrt(2)' }
+		]);
+	});
+
+	it('regroupe les facteurs de même base', () => {
+		const { resultat, etapes } = raconte('x*x*x');
+		expect(resultat).toBe('x^3');
+		expect(etapes).toEqual([{ regle: 'tidy-merge-factors', avant: 'x*x*x', apres: 'x^3' }]);
+	});
+
+	it('simplifie les signes', () => {
+		const { resultat, etapes } = raconte('-(-x)');
+		expect(resultat).toBe('x');
+		expect(etapes).toEqual([{ regle: 'tidy-simplify-signs', avant: '-(-x)', apres: 'x' }]);
+	});
+
+	it('applique une famille partout, en une seule étape', () => {
+		const { resultat, etapes } = raconte('sqrt(8)+sqrt(12)');
+		expect(resultat).toBe('2sqrt(2)+2sqrt(3)');
+		expect(etapes).toEqual([
+			{
+				regle: 'tidy-extract-radicals',
+				avant: 'sqrt(8)+sqrt(12)',
+				apres: '2sqrt(2)+2sqrt(3)'
+			}
+		]);
+	});
+
+	it('met les fractions au même dénominateur, et le dit', () => {
+		const { resultat, etapes } = raconte('2/6+1/4');
+		expect(resultat).toBe('7/12');
+		expect(etapes).toEqual([
+			{ regle: 'tidy-fold-numbers', avant: '2/6+1/4', apres: '1/3+1/4' },
+			{ regle: 'tidy-add-fractions', avant: '1/3+1/4', apres: '7/12' }
+		]);
+	});
+
+	it('porte les phrases françaises du lot 2', () => {
+		const recorder = new TidyStepRecorder();
+		tidy(parseCustom('sqrt(8)'), { recorder });
+		expect(recorder.getSteps().map((s) => s.description)).toEqual([
+			'On extrait du radical les facteurs qui sont des carrés parfaits'
+		]);
+	});
+
+	it('ne laisse plus le geste grossier du lot 1 sur ces cas', () => {
+		const grossiers = ['2*3*x', 'sqrt(8)', 'x*x*x', '-(-x)', 'sqrt(8)+sqrt(12)', '2/6+1/4']
+			.flatMap((source) => raconte(source).etapes)
+			.filter((e) => e.regle === 'tidy-terms');
+		expect(grossiers).toEqual([]);
+	});
+});
+
+/**
+ * La règle centrale du lot 2, et elle n'était couverte par AUCUN test : la
+ * revue l'a prouvé en remplaçant « exactement une famille » par « au moins
+ * une » — 360 tests sur 360 restaient verts.
+ *
+ * Nommer un geste quand deux familles ont travaillé, ce serait **mentir à
+ * l'élève** : l'étiquette tairait la moitié du travail. Il faudrait montrer une
+ * expression où l'une est faite et l'autre non, et cette expression n'est pas
+ * écrivable — `2*3*x` sans repli des nombres se réécrit `x*2*3`, `x*x*x` sans
+ * fusion se réécrit `xxx`, `-(-x)` se réécrit `--x`.
+ */
+describe('tidy raconte — deux familles ensemble retombent sur le filet', () => {
+	it.each([
+		['nombres ET radicaux', '2*3*sqrt(8)', '12sqrt(2)'],
+		['facteurs ET une récursion non observée', 'x*x*(y+2*3)', 'x^2(y+6)']
+	])('%s → le filet', (_cas, source, attendu) => {
+		const { resultat, etapes } = raconte(source);
+		expect(resultat).toBe(attendu);
+		expect(etapes.map((e) => e.regle)).toEqual(['tidy-terms']);
+	});
+});
+
+/**
+ * Un geste ne se nomme que si la phrase est VRAIE. Ces cas-là passent sous le
+ * filet faute de phrase honnête, et c'est délibéré.
+ */
+describe('tidy raconte — il ne dit jamais une phrase fausse', () => {
+	it.each([
+		['une rationalisation n’extrait aucun carré parfait', '1/sqrt(2)', 'sqrt(2)/2'],
+		['une annulation carré/racine non plus', 'sqrt(3)^2', '3'],
+		['un signe PORTÉ n’est pas un signe simplifié', 'x*(-2)', '-2x']
+	])('%s', (_cas, source, attendu) => {
+		const { resultat, etapes } = raconte(source);
+		expect(resultat).toBe(attendu);
+		expect(etapes.map((e) => e.regle)).toEqual(['tidy-terms']);
+	});
+
+	it('une puissance numérique calcule à elle seule', () => {
+		expect(raconte('2^3').etapes.map((e) => e.regle)).toEqual(['tidy-fold-numbers']);
+	});
+
+	it('un dénominateur n’est PAS un calcul', () => {
+		// `1/3` arrive en `absorbRational(3, −1)`. Un garde naïf sur « exposant ≠ 1 »
+		// ferait passer cette expression sous le filet.
+		expect(raconte('1/3+x*x').etapes.map((e) => e.regle)).toEqual([
+			'tidy-merge-factors',
+			'tidy-sort-terms'
+		]);
+	});
+
+	it('un moins porté laisse son nom à la fusion des facteurs', () => {
+		expect(raconte('-x*x*x').etapes.map((e) => e.regle)).toEqual(['tidy-merge-factors']);
+	});
+
+	it('« au même dénominateur » ne s’attribue pas le regroupement des autres termes', () => {
+		// `3+1/2+x+x → 7/2+2x` fait AUSSI `x+x → 2x` : la phrase des fractions
+		// tairait la moitié du geste.
+		expect(raconte('3+1/2+x+x').etapes.map((e) => e.regle)).toEqual([
+			'tidy-collect-like-terms',
+			'tidy-sort-terms'
+		]);
 	});
 });
 
@@ -167,7 +314,17 @@ const PANEL = [
 	'3x+2x=5',
 	'(3x+2x)',
 	'x*0',
-	'30[°C]-20[°C]'
+	'30[°C]-20[°C]',
+	// Lot 2 — les quatre familles du niveau du facteur.
+	'sqrt(8)+sqrt(12)',
+	'2*3*x*(x^2+1)^2',
+	'x^2/x',
+	'-(-x)/(-y)',
+	'2*3*sqrt(8)',
+	'1/sqrt(2)',
+	'2^3',
+	'0.5+0.25',
+	'3+1/2+x+x'
 ];
 
 describe('tidy raconte — les invariants', () => {
@@ -211,7 +368,7 @@ describe('tidy raconte — les invariants', () => {
 		const recorder = new TidyStepRecorder();
 		tidy(parseCustom('sqrt(12)+sqrt(3)'), { recorder });
 		expect(recorder.getSteps().map((s) => s.description)).toEqual([
-			'On met chaque terme au propre',
+			'On extrait du radical les facteurs qui sont des carrés parfaits',
 			'On regroupe les termes semblables'
 		]);
 	});

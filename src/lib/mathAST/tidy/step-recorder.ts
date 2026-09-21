@@ -28,12 +28,17 @@ import { StepRecorderBase, type BaseStep } from '../common/step-recorder-base';
  * (`pedagogical-simplify/intent-rules.ts`), et deux gestes différents ne
  * doivent pas y porter le même nom.
  *
- * `tidy-terms` est le geste grossier du lot 1 : tout ce qui se fait terme par
- * terme pendant la décomposition (nombres, radicaux, facteurs, signes). Le
- * lot 2 le remplacera par ses quatre gestes fins.
+ * `tidy-terms` est le **filet** : ce que le travail terme par terme (nombres,
+ * radicaux, facteurs, signes) a changé sans qu'une seule famille puisse en
+ * répondre sort encore d'un bloc — voir `soleFamilyRule` dans `collect.ts`.
  */
 export type TidyRule =
 	| 'tidy-terms'
+	| 'tidy-fold-numbers'
+	| 'tidy-extract-radicals'
+	| 'tidy-merge-factors'
+	| 'tidy-simplify-signs'
+	| 'tidy-add-fractions'
 	| 'tidy-collect-like-terms'
 	| 'tidy-sort-terms'
 	| 'tidy-choose-unit';
@@ -48,6 +53,11 @@ export type TidyStep = BaseStep<TidyRule>;
 /** Ce que chaque geste dit à l'élève. */
 export const TIDY_RULE_DESCRIPTIONS: Readonly<Record<TidyRule, string>> = {
 	'tidy-terms': 'On met chaque terme au propre',
+	'tidy-fold-numbers': 'On calcule les nombres',
+	'tidy-extract-radicals': 'On extrait du radical les facteurs qui sont des carrés parfaits',
+	'tidy-merge-factors': 'On regroupe les facteurs de même base',
+	'tidy-simplify-signs': 'On simplifie les signes',
+	'tidy-add-fractions': 'On met au même dénominateur et on calcule',
 	'tidy-collect-like-terms': 'On regroupe les termes semblables',
 	'tidy-sort-terms': 'On range par degré décroissant',
 	'tidy-choose-unit': "On choisit l'unité adaptée"
