@@ -256,7 +256,7 @@ exports[`pedagogical-simplify-demo — snapshots > puissances > (x²)³ 1`] = `
 "# (x²)³ — intent=reduire — (x^2)^3
 
 ## lycee (verbosity=detailed)
-- [expand-power] On développe la puissance
+- [pow-of-pow] (aᵐ)ⁿ = aᵐⁿ
   \\begin{aligned} \\textcolor{blue}{\\left( x^2 \\right)^3} & \\\\ = x^6 \\end{aligned}
 => x^6"
 `;
@@ -266,8 +266,10 @@ exports[`pedagogical-simplify-demo — snapshots > puissances > 2³ · 2⁵ 1`] 
 
 ## lycee (verbosity=detailed)
 - [same-base-mul] aᵐ · aⁿ = aᵐ⁺ⁿ
-  \\begin{aligned} \\textcolor{blue}{2^3 \\cdot 2^5} & \\\\ = 2^{3 + 5} \\end{aligned}
-=> 2^{3 + 5}"
+  \\begin{aligned} \\textcolor{blue}{2^3 \\cdot 2^5} & \\\\ = 2^8 \\end{aligned}
+- [expand-power] On développe la puissance
+  \\begin{aligned} \\textcolor{blue}{2^8} & \\\\ = 256 \\end{aligned}
+=> 256"
 `;
 
 exports[`pedagogical-simplify-demo — snapshots > puissances > x² · x³ 1`] = `
@@ -275,8 +277,8 @@ exports[`pedagogical-simplify-demo — snapshots > puissances > x² · x³ 1`] =
 
 ## lycee (verbosity=detailed)
 - [same-base-mul] aᵐ · aⁿ = aᵐ⁺ⁿ
-  \\begin{aligned} \\textcolor{blue}{x^2 \\cdot x^3} & \\\\ = x^{2 + 3} \\end{aligned}
-=> x^{2 + 3}"
+  \\begin{aligned} \\textcolor{blue}{x^2 \\cdot x^3} & \\\\ = x^5 \\end{aligned}
+=> x^5"
 `;
 
 exports[`pedagogical-simplify-demo — snapshots > radicaux > √2 · √3 1`] = `
