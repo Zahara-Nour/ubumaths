@@ -820,12 +820,19 @@ function chooseUnits(terms: readonly TidyTerm[]): TidyTerm[] {
 
 /** Étape 9 — les arguments d'une fonction sont mis au propre. */
 function tidyFunction(node: FunctionNode): MathNode {
-	return func(node.name, node.args.map(tidyExpression), {
-		...(node.power !== undefined && { power: tidyExpression(node.power) }),
-		...(node.base !== undefined && { base: tidyExpression(node.base) }),
-		...(node.derivativeOrder !== undefined && { derivativeOrder: node.derivativeOrder }),
-		...(node.isInverse === true && { isInverse: node.isInverse })
-	});
+	// ⚠️ Jamais `.map(tidyExpression)` : `map` passe l'INDEX en second argument,
+	// qui atterrirait dans `options`. Et la narration reste au niveau de tête —
+	// on ne raconte pas la mise au propre des arguments d'une fonction.
+	return func(
+		node.name,
+		node.args.map((arg) => tidyExpression(arg)),
+		{
+			...(node.power !== undefined && { power: tidyExpression(node.power) }),
+			...(node.base !== undefined && { base: tidyExpression(node.base) }),
+			...(node.derivativeOrder !== undefined && { derivativeOrder: node.derivativeOrder }),
+			...(node.isInverse === true && { isInverse: node.isInverse })
+		}
+	);
 }
 
 /**
@@ -934,7 +941,7 @@ function tidyStructure(node: MathNode): MathNode {
 		case 'relation':
 			return { ...node, left: tidyNode(node.left), right: tidyNode(node.right) };
 		case 'matrix':
-			return { ...node, rows: node.rows.map((row) => row.map(tidyNode)) };
+			return { ...node, rows: node.rows.map((row) => row.map((cell) => tidyNode(cell))) };
 		case 'piecewise':
 			return {
 				...node,
