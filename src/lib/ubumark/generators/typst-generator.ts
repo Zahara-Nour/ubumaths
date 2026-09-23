@@ -1540,6 +1540,8 @@ function convertLatexFractions(str: string): string {
  * Includes built-in functions, Greek letters, and math symbols.
  */
 const KNOWN_TYPST_SYMBOLS = new Set([
+	// Spacing produced from LaTeX `\ `
+	'space',
 	// Functions
 	'sin',
 	'cos',
@@ -2297,6 +2299,10 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\:/g, ' med ');
 	result = result.replace(/\\;/g, ' thick ');
 	result = result.replace(/\\!/g, ' negthin ');
+	// LaTeX control space `\ ` (as in `400\ \text{m}^2`): in Typst math a
+	// backslash before a space is a LINE BREAK. `\\` pairs are matched first so
+	// the line break `x \\ y` is left for step 10.
+	result = result.replace(/\\\\|\\ /g, (m) => (m === '\\ ' ? ' space ' : m));
 
 	// 8. LaTeX tilde (~) is a non-breaking space in math mode
 	// In Typst math, ~ would be interpreted as tilde symbol, so convert to space

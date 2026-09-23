@@ -1609,6 +1609,18 @@ describe('convertLatexToTypstMath - Math Spaces', () => {
 		expect(convertLatexToTypstMath('a\\;b')).toBe('a thick b');
 	});
 
+	it('converts the LaTeX control space \\  to a Typst space, not a line break', () => {
+		// « au moins $400\ \text{m}^2$ » : en maths Typst, `\` suivi d'un espace
+		// est un saut de ligne — « 400 » s'affichait au-dessus de « m² ».
+		expect(convertLatexToTypstMath('400\\ \\text{m}^2')).toBe('400 space "m"^2');
+		expect(convertLatexToTypstMath('5\\ x')).toBe('5 space x');
+	});
+
+	it('keeps the LaTeX line break \\\\ as a Typst line break', () => {
+		expect(convertLatexToTypstMath('x \\\\ y')).toBe('x \\ y');
+		expect(convertLatexToTypstMath('x\\\\ y')).toBe('x\\ y');
+	});
+
 	it('should convert \\! to negative thin space with surrounding spaces', () => {
 		expect(convertLatexToTypstMath('a\\!b')).toBe('a negthin b');
 	});
