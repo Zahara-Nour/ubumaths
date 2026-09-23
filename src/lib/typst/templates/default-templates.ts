@@ -1663,7 +1663,7 @@ Dans un cinema, le prix d'une place adulte est 12 euros et le prix d'une place e
 Une famille de 5 personnes paie 48 euros au total.
 Combien y a-t-il d'adultes et d'enfants dans cette famille?`,
 	// Same sample, rendered the way {{exercises_badge}} numbers exercises
-	exercises_badge: `#grid(columns: (auto, 1fr, auto), column-gutter: 0.5em, align: horizon, box(fill: rgb("#fc8f1b"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: rgb("#111111"), weight: "bold")[1]], [#text(weight: "bold")[Equations]], [])
+	exercises_badge: `#grid(columns: (auto, 1fr, auto), column-gutter: 0.5em, align: horizon, box(fill: rgb("#d97706"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]], [#text(weight: "bold")[Equations]], [])
 
 Resoudre les equations suivantes:
 
@@ -1673,14 +1673,14 @@ b) 3x - 7 = 2x + 4
 
 #v(1cm)
 
-#grid(columns: (auto, 1fr, auto), column-gutter: 0.5em, align: horizon, box(fill: rgb("#fc8f1b"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: rgb("#111111"), weight: "bold")[2]], [#text(weight: "bold")[Perimetre]], [])
+#grid(columns: (auto, 1fr, auto), column-gutter: 0.5em, align: horizon, box(fill: rgb("#d97706"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[2]], [#text(weight: "bold")[Perimetre]], [])
 
 Un rectangle a un perimetre de 36 cm. Sa longueur est le triple de sa largeur.
 Calculer les dimensions de ce rectangle.
 
 #v(1cm)
 
-#grid(columns: (auto, 1fr, auto), column-gutter: 0.5em, align: horizon, box(fill: rgb("#fc8f1b"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: rgb("#111111"), weight: "bold")[3]], [#text(weight: "bold")[Cinema]], [])
+#grid(columns: (auto, 1fr, auto), column-gutter: 0.5em, align: horizon, box(fill: rgb("#d97706"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[3]], [#text(weight: "bold")[Cinema]], [])
 
 Dans un cinema, le prix d'une place adulte est 12 euros et le prix d'une place enfant est 8 euros.
 Une famille de 5 personnes paie 48 euros au total.

@@ -77,10 +77,10 @@ export interface WorksheetGeneratorInput {
  */
 type ExerciseHeaderStyle = 'heading' | 'badge';
 
-// Ambre du site (`--color-primary` clair) et son texte (`--color-primary-foreground`) :
-// le blanc sur cet ambre se lit mal une fois imprimé.
-const BADGE_FILL = 'rgb("#fc8f1b")';
-const BADGE_TEXT = 'rgb("#111111")';
+// Ambre du site, foncé pour qu'un numéro en blanc reste lisible une fois
+// imprimé (l'ambre clair `--color-primary` n'offre que 2,4:1 contre le blanc).
+const BADGE_FILL = 'rgb("#d97706")';
+const BADGE_TEXT = 'white';
 
 /**
  * Parameters for the legacy generateWorksheetTypst function
@@ -723,9 +723,11 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	 * introduces, so sections did not stand out.
 	 *
 	 * `sticky`: the title never stays alone at the bottom of a column.
+	 * `above`: well over the gap between exercises (1.8em), so a new section
+	 * reads as a clean break from the previous one.
 	 */
 	private generateSectionHeaderBadge(section: InstanceSection): string {
-		let content = `#block(width: 100%, sticky: true, above: 2.2em, below: 1em)[
+		let content = `#block(width: 100%, sticky: true, above: 3.5em, below: 1em)[
   #text(fill: ${BADGE_FILL}, weight: "bold", size: 1.15em)[#smallcaps[${escapeTypst(section.title)}]]
   #v(-0.6em)
   #line(length: 100%, stroke: 1.2pt + ${BADGE_FILL})`;
@@ -787,7 +789,10 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 
 		// Close the header block and open the statement one (breakable: a long
 		// statement still splits across columns, just never right after the number)
-		content += '\n]\n#block(width: 100%, inset: 0pt)[\n';
+		// Badge: the statement hugs its header instead of inheriting the 1.8em
+		// gap the templates set between exercises.
+		const statementSpacing = headerStyle === 'badge' ? ', above: 0.5em' : '';
+		content += `\n]\n#block(width: 100%, inset: 0pt${statementSpacing})[\n`;
 
 		// Exercise statement
 		const statementAst = parseMarkdown(exercise.statement);
