@@ -81,6 +81,15 @@ const DEFAULT_OPTIONS: ResolvedLatexToMarkdownOptions = {
 	additionalFunctionNames: undefined
 };
 
+/** Ligne vide qui sépare un bloc (formule centrée, liste) du paragraphe voisin */
+const BLOCK_SEPARATOR = '\n\n';
+
+/** Étiquette de question en tête de cellule : `\text{a. }`, `\text{b) }`… */
+const CELL_LABEL_REGEX = /^\\text\{\s*[a-zA-Z]\s*[.)]\s*\}\s*/;
+
+/** Relation qui fait d'un morceau séparé par `\quad` une formule autonome */
+const RELATION_REGEX = /=|<|>|\\le(?![a-zA-Z])|\\ge(?![a-zA-Z])|\\leq|\\geq|\\neq/;
+
 // ===========================
 // Main Transpiler Function
 // ===========================
@@ -242,15 +251,33 @@ function processTokens(
 	stats: TranspileStats
 ): string {
 	const parts: string[] = [];
+	// Vrai juste après un bloc (formule centrée, liste) : l'espace ou le saut de
+	// ligne source qui le suit ne doit pas se retrouver en tête du paragraphe suivant.
+	let afterBlock = false;
 
 	for (const token of tokens) {
+		if (afterBlock && (token.type === 'whitespace' || token.type === 'newline')) {
+			continue;
+		}
 		const result = convertSingleToken(token, context, stats);
 		if (result !== '') {
 			parts.push(result);
+			afterBlock =
+				(token.type === 'math-display' || token.type === 'environment') &&
+				result.endsWith(BLOCK_SEPARATOR);
 		}
 	}
 
 	return parts.join('');
+}
+
+/**
+ * Isole un bloc (formule centrée, liste) du texte qui l'entoure par une ligne
+ * vide avant et après. `cleanupMarkdown` réduit ensuite les lignes vides en trop.
+ */
+function asBlock(markdown: string): string {
+	if (markdown === '') return '';
+	return `${BLOCK_SEPARATOR}${markdown}${BLOCK_SEPARATOR}`;
 }
 
 /**
@@ -389,6 +416,9 @@ function handleSpecialCommand(token: CommandToken, _context: ConversionContext):
 		case 'bigskip':
 		case 'vspace':
 		case 'vfill':
+		// falls through - Réglages de longueurs (\setlength{\itemsep}{3mm}…) : pure mise en page
+		case 'setlength':
+		case 'addtolength':
 			return '';
 
 		// Commands that extract content from first argument
@@ -460,7 +490,7 @@ function convertEnvironmentToken(token: EnvironmentToken, context: ConversionCon
 					listStack: [...context.listStack, name as ListType],
 					inListItem: true
 				};
-				result = converter(token, listContext);
+				result = asBlock(converter(token, listContext));
 				return result;
 			}
 		}
@@ -489,7 +519,7 @@ function convertEnvironmentToken(token: EnvironmentToken, context: ConversionCon
 
 		// Handle math environments
 		if (isMathEnvironment(name)) {
-			result = convertMathEnvironment(token, context);
+			result = asBlock(convertMathEnvironment(token, context));
 			return result;
 		}
 
@@ -699,15 +729,23 @@ function normalizeMathLatex(latex: string): string {
  * Attempts to convert LaTeX math to custom syntax.
  */
 function convertMathInlineToken(token: MathInlineToken, context: ConversionContext): string {
+	return convertInlineMathLatex(token.latex, context, token.line, token.column);
+}
+
+/**
+ * Convertit une formule en ligne (le contenu d'un `$…$`) : notation ubumark si
+ * possible, sinon LaTeX entre dollars. Partagé par `$…$` et les cellules des
+ * grilles de formules.
+ */
+function convertInlineMathLatex(
+	latex: string,
+	context: ConversionContext,
+	line: number,
+	column: number
+): string {
 	// Try converting to custom syntax
 	const mathOptions = getMathConversionOptions(context);
-	const result = convertMathToCustomSyntax(
-		token.latex,
-		context,
-		token.line,
-		token.column,
-		mathOptions
-	);
+	const result = convertMathToCustomSyntax(latex, context, line, column, mathOptions);
 
 	// If conversion failed, content is still LaTeX → use dollar signs
 	if (!result.converted) {
@@ -732,6 +770,18 @@ function convertMathInlineToken(token: MathInlineToken, context: ConversionConte
  * Attempts to convert LaTeX math to custom syntax.
  */
 function convertMathDisplayToken(token: MathDisplayToken, context: ConversionContext): string {
+	// Grille de formules (array, ou formules séparées par \quad) → liste, une formule par item
+	const formulaList = convertFormulaList(token.latex, context, token.line, token.column);
+	if (formulaList !== null) {
+		return asBlock(formulaList);
+	}
+	return asBlock(convertDisplayMathLatex(token, context));
+}
+
+/**
+ * Convertit le contenu d'une formule centrée en une seule formule de bloc.
+ */
+function convertDisplayMathLatex(token: MathDisplayToken, context: ConversionContext): string {
 	// Try converting to custom syntax
 	const mathOptions = getMathConversionOptions(context);
 	const result = convertMathToCustomSyntax(
@@ -758,6 +808,101 @@ function convertMathDisplayToken(token: MathDisplayToken, context: ConversionCon
 		default:
 			return `$$${content}$$`;
 	}
+}
+
+// ===========================
+// Grilles de formules → listes
+// ===========================
+
+/**
+ * Transforme une formule centrée qui n'est qu'une grille de formules en liste
+ * Markdown, une formule par item, dans l'ordre de lecture (ligne par ligne).
+ * Le générateur PDF (Typst) ne sait pas rendre `\begin{array}`.
+ *
+ * Si toutes les cellules commencent par `\text{a. }`, `\text{b. }`… → liste
+ * numérotée sans l'étiquette ; sinon liste à puces.
+ *
+ * @returns la liste, ou null si le contenu n'est pas une simple grille
+ */
+function convertFormulaList(
+	latex: string,
+	context: ConversionContext,
+	line: number,
+	column: number
+): string | null {
+	const cells = extractArrayGridCells(latex) ?? extractQuadSeparatedFormulas(latex);
+	if (cells === null || cells.length < 2) {
+		return null;
+	}
+
+	const numbered = cells.every((cell) => CELL_LABEL_REGEX.test(cell));
+	const items = cells.map((cell, index) => {
+		const formula = numbered ? cell.replace(CELL_LABEL_REGEX, '') : cell;
+		const markdown = convertInlineMathLatex(formula, context, line, column);
+		return numbered ? `${index + 1}. ${markdown}` : `- ${markdown}`;
+	});
+	return items.join('\n');
+}
+
+/**
+ * Cellules d'un `\begin{array}{ll} … \end{array}` qui occupe TOUTE la formule.
+ * Refuse (null) : colonnes autres que l/c/r (bordures `|`, `p{…}`), `\hline`,
+ * environnement imbriqué, ou array inclus dans une formule plus large
+ * (`\left\{\begin{array}…\right.`).
+ */
+function extractArrayGridCells(latex: string): string[] | null {
+	const match = latex.trim().match(/^\\begin\{array\}\{([^{}]*)\}([\s\S]*)\\end\{array\}$/);
+	if (!match) {
+		return null;
+	}
+	const [, columnSpec, body] = match;
+	if (!/^[lcr\s]+$/.test(columnSpec)) {
+		return null;
+	}
+	if (/\\hline|\\cline|\\begin\{|\\end\{/.test(body)) {
+		return null;
+	}
+
+	// Lignes séparées par `\\` (éventuellement suivi d'un espacement `[3mm]`),
+	// cellules par `&` non échappé
+	return body
+		.split(/\\\\(?:\s*\[[^\]]*\])?/)
+		.flatMap((row) => row.split(/(?<!\\)&/))
+		.map(cleanFormulaCell)
+		.filter((cell) => cell !== '');
+}
+
+/**
+ * Formules juxtaposées par `\quad` / `\qquad` (`E(x)=… \qquad F(x)=…`).
+ * Chaque morceau doit être une relation autonome : `x=2 \quad\text{ou}\quad x=3`
+ * ou `f(x)=x^2 \quad \text{pour } x>0` restent une seule formule.
+ */
+function extractQuadSeparatedFormulas(latex: string): string[] | null {
+	if (/\\begin\{|\\left|\\right/.test(latex)) {
+		return null;
+	}
+	const parts = latex
+		.split(/(?:\s*\\q?quad(?![a-zA-Z])\s*)+/)
+		.map(cleanFormulaCell)
+		.filter((part) => part !== '');
+	if (parts.length < 2) {
+		return null;
+	}
+	const allStandalone = parts.every(
+		(part) =>
+			RELATION_REGEX.test(part) && (!part.startsWith('\\text') || CELL_LABEL_REGEX.test(part))
+	);
+	return allStandalone ? parts : null;
+}
+
+/**
+ * Nettoie une cellule : espaces et ponctuation finale (`.` `,`) retirés.
+ */
+function cleanFormulaCell(cell: string): string {
+	return cell
+		.trim()
+		.replace(/(?:\\[,;:!]|\s)*[.,]$/, '')
+		.trim();
 }
 
 /**

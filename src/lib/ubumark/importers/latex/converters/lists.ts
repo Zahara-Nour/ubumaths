@@ -35,8 +35,11 @@ function processItemText(text: string, context: ConversionContext, startLine: nu
 	// Tokenize the content to process any LaTeX commands, passing the starting line
 	const tokens = tokenize(text, startLine);
 
-	// Convert the tokens using the context's processChildren
-	return context.processChildren(tokens);
+	// Convert the tokens using the context's processChildren.
+	// Les blocs (formule centrée, liste) arrivent entourés de lignes vides : on les
+	// garde, les lignes de suite de l'item étant indentées, la liste n'est pas
+	// coupée — et un vrai changement de paragraphe reste un changement de paragraphe.
+	return context.processChildren(tokens).trim();
 }
 
 /** List environment names */
@@ -146,7 +149,8 @@ export function parseListItems(content: string): ListItem[] {
 	const nestedRanges = findNestedEnvironments(content);
 
 	// Find all \item commands not inside nested environments
-	const itemRegex = /\\item(?:\s*\[([^\]]*)\])?\s*/g;
+	// `(?![a-zA-Z])` : `\itemsep` (dans `\setlength{\itemsep}{3mm}`) n'est pas un `\item`
+	const itemRegex = /\\item(?![a-zA-Z])(?:\s*\[([^\]]*)\])?\s*/g;
 	const itemPositions: Array<{
 		label?: string;
 		startIndex: number;
