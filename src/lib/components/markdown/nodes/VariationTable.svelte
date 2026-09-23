@@ -29,6 +29,7 @@
 		DomainPoint,
 		VariationMarker
 	} from '$lib/ubumark/types/variation-table';
+	import { withImplicitEndpoints } from '$lib/ubumark/parser/variation-table-parser';
 
 	interface Props {
 		node: VariationTableNode;
@@ -68,8 +69,12 @@
 
 	// Separate sign rows from variation rows
 	let signRows = $derived(node.rows.filter((row): row is SignRow => row.type === 'sign'));
+	// Bornes sans valeur (tableau de 1re, sans limites) : position déduite de la
+	// valeur voisine, sinon aucune flèche n'était dessinée vers ±∞
 	let variationRows = $derived(
-		node.rows.filter((row): row is VariationRow => row.type === 'variation')
+		node.rows
+			.filter((row): row is VariationRow => row.type === 'variation')
+			.map((row) => withImplicitEndpoints(row, node.domain))
 	);
 
 	/**
