@@ -283,9 +283,19 @@ describe('generateTypst', () => {
 		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Typst uses #enum() for ordered lists with proper numbering
-		expect(typst).toContain('#enum(numbering: "1)"');
+		expect(typst).toContain('#enum(numbering: "a)"');
 		expect(typst).toContain('[First]');
 		expect(typst).toContain('[Second]');
+	});
+
+	it('numbers nested ordered lists a) then 1) then i)', async () => {
+		const markdown = '1. Un\n   1. Deux\n      1. Trois';
+
+		const typst = await markdownToTypst(markdown, { includeSetup: false });
+
+		// Hiérarchie de l'établissement : lettre, puis chiffre, puis romain
+		const patterns = [...typst.matchAll(/#enum\(numbering: "([^"]+)"/g)].map((m) => m[1]);
+		expect(patterns).toEqual(['a)', '1)', 'i)']);
 	});
 
 	it('should generate ordered list with custom start number', () => {
@@ -323,7 +333,7 @@ describe('generateTypst', () => {
 		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Should use #enum with start: 3
-		expect(typst).toContain('#enum(start: 3, numbering: "1)"');
+		expect(typst).toContain('#enum(start: 3, numbering: "a)"');
 		expect(typst).toContain('[Third item]');
 		expect(typst).toContain('[Fourth item]');
 	});
@@ -473,7 +483,7 @@ describe('markdownToTypst', () => {
 		const typst = await markdownToTypst(markdown, { includeSetup: false });
 
 		// Ordered lists use #enum() with proper numbering
-		expect(typst).toContain('#enum(numbering: "1)"');
+		expect(typst).toContain('#enum(numbering: "a)"');
 		expect(typst).toContain('[First]');
 		expect(typst).toContain('[Second]');
 		expect(typst).toContain('[Third]');
@@ -1359,7 +1369,7 @@ describe('Edge Cases', () => {
 		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Ordered list uses #enum() with nested bullet list using #list()
-		expect(typst).toContain('#enum(numbering: "1)"');
+		expect(typst).toContain('#enum(numbering: "a)"');
 		expect(typst).toContain('Parent');
 		expect(typst).toContain('#list(');
 		expect(typst).toContain('[Child]');

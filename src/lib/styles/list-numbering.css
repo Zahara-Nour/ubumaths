@@ -7,6 +7,7 @@
  *
  * Schemes:
  * - 1-a-i: 1) a) i) (French academic style)
+ * - a-1-i: a) 1) i) (default for nested lists, same as the PDF)
  * - a-i: a) i) (flat exercises)
  * - 1.a.i: 1. a. i. (dot separator)
  * - I.A.1: I. A. 1. (Roman numerals first)
@@ -85,6 +86,47 @@ ol[class*='scheme-'] > li::before {
 .scheme-1-a-i .enumerate-depth-6 > li::before {
 	counter-increment: enum4;
 	content: counter(enum4) ') ';
+}
+
+/* ============================================================================
+   SCHEME: a) 1) i) (a-1-i)
+   Letters first, then numbers: default for nested lists, same as the PDF
+   ============================================================================ */
+
+/* Depth 1: a) b) c) */
+.scheme-a-1-i.enumerate-depth-1 {
+	counter-reset: enum1;
+}
+
+.scheme-a-1-i.enumerate-depth-1 > li::before {
+	counter-increment: enum1;
+	content: counter(enum1, lower-alpha) ') ';
+}
+
+/* Depth 2: 1) 2) 3) */
+.scheme-a-1-i .enumerate-depth-2 {
+	counter-reset: enum2;
+}
+
+.scheme-a-1-i .enumerate-depth-2 > li::before {
+	counter-increment: enum2;
+	content: counter(enum2) ') ';
+}
+
+/* Depth 3+: i) ii) iii) */
+.scheme-a-1-i .enumerate-depth-3,
+.scheme-a-1-i .enumerate-depth-4,
+.scheme-a-1-i .enumerate-depth-5,
+.scheme-a-1-i .enumerate-depth-6 {
+	counter-reset: enum3;
+}
+
+.scheme-a-1-i .enumerate-depth-3 > li::before,
+.scheme-a-1-i .enumerate-depth-4 > li::before,
+.scheme-a-1-i .enumerate-depth-5 > li::before,
+.scheme-a-1-i .enumerate-depth-6 > li::before {
+	counter-increment: enum3;
+	content: counter(enum3, lower-roman) ') ';
 }
 
 /* ============================================================================

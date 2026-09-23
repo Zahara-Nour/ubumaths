@@ -431,9 +431,10 @@ function generateHeading(node: HeadingNode, options: Required<TypstTranspilerOpt
 // ============================================================================
 
 /**
- * Numbering patterns for French academic style (1) a) i))
+ * Numbering patterns by depth: a) then 1) then i). Same hierarchy as the
+ * screen's default scheme for nested lists (`a-1-i` in types/list-numbering).
  */
-const ENUM_NUMBERING_PATTERNS = ['1)', 'a)', 'i)', '1)'];
+const ENUM_NUMBERING_PATTERNS = ['a)', '1)', 'i)'];
 
 /**
  * Get numbering pattern for a given enumerate depth
@@ -446,7 +447,7 @@ function getNumberingPattern(depth: number): string {
  * Generate list node with depth tracking for proper numbering
  *
  * Uses numbered lists for ordered, bullet lists for unordered.
- * Ordered lists use the French academic style: 1) a) i)
+ * Ordered lists are numbered a) 1) i)
  *
  * @param node - List node
  * @param options - Generator options

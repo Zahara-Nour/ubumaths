@@ -77,10 +77,11 @@ export interface WorksheetGeneratorInput {
  */
 type ExerciseHeaderStyle = 'heading' | 'badge';
 
-// Ambre du site, foncé pour qu'un numéro en blanc reste lisible une fois
-// imprimé (l'ambre clair `--color-primary` n'offre que 2,4:1 contre le blanc).
-const BADGE_FILL = 'rgb("#d97706")';
+// Carré numéro : ambre tirant sur le rouge, assez soutenu pour un chiffre blanc.
+const BADGE_FILL = 'rgb("#e8590c")';
 const BADGE_TEXT = 'white';
+// Titres de section : l'ambre du site (`--color-primary` clair).
+const SECTION_COLOR = 'rgb("#fc8f1b")';
 
 /**
  * Parameters for the legacy generateWorksheetTypst function
@@ -728,9 +729,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	 */
 	private generateSectionHeaderBadge(section: InstanceSection): string {
 		let content = `#block(width: 100%, sticky: true, above: 3.5em, below: 1em)[
-  #text(fill: ${BADGE_FILL}, weight: "bold", size: 1.15em)[#smallcaps[${escapeTypst(section.title)}]]
+  #text(fill: ${SECTION_COLOR}, weight: "bold", size: 1.15em)[#smallcaps[${escapeTypst(section.title)}]]
   #v(-0.6em)
-  #line(length: 100%, stroke: 1.2pt + ${BADGE_FILL})`;
+  #line(length: 100%, stroke: 1.2pt + ${SECTION_COLOR})`;
 		if (section.instructions) {
 			content += `
   #v(-0.4em)
