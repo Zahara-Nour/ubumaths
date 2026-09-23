@@ -8,8 +8,9 @@
  * - {{class}} - Class name
  * - {{student_name}} - Student's full name
  * - {{exercises}} - Rendered exercises content ("Exercice N : titre" headers)
- * - {{exercises_badge}} - Same content, but each exercise number is rendered in
- *   white on a red square (student-PDF style). Use one or the other, not both.
+ * - {{exercises_badge}} - Same content, but each exercise number is rendered on
+ *   an amber square and sections as amber small caps over a rule (student-PDF
+ *   style). Use one or the other, not both.
  * - {{total_points}} - Total points for the worksheet
  * - {{duration}} - Estimated duration in minutes
  * - {{instructions}} - General instructions
@@ -619,7 +620,7 @@ export const MINIMAL_TEMPLATE: DefaultTemplate = {
 
 /**
  * Modern template
- * Contemporary design with stylized exercise numbers (red background, white text)
+ * Contemporary design with stylized exercise numbers (amber square)
  */
 export const MODERN_TEMPLATE: DefaultTemplate = {
 	id: DEFAULT_TEMPLATE_IDS.modern,
@@ -747,7 +748,7 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
 
 #v(1cm)
 
-// Zone des exercices (numéros en blanc sur carré rouge)
+// Zone des exercices (numéros sur carré ambre)
 {{exercises_badge}}
 
 // Footer moderne
@@ -1510,14 +1511,15 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
 
 /**
  * Student-view template
- * Two columns separated by a rule, header spanning both, exercise numbers in
- * white on a red square. Opts into the badge numbering via {{exercises_badge}}.
+ * Two columns separated by a rule, header spanning both, exercise numbers on an
+ * amber square, sections in amber small caps over a rule. Opts into the badge
+ * numbering via {{exercises_badge}}.
  */
 export const STUDENT_STYLE_TEMPLATE: DefaultTemplate = {
 	id: DEFAULT_TEMPLATE_IDS.studentStyle,
 	name: 'Fiche élève',
 	description:
-		"Deux colonnes avec filet, en-tête pleine largeur, numéro d'exercice en blanc sur carré rouge",
+		"Deux colonnes avec filet, en-tête pleine largeur, numéro d'exercice sur carré ambre, sections soulignées",
 	type: 'worksheet',
 	is_system: true,
 	placeholders: COMMON_PLACEHOLDERS,
@@ -1566,7 +1568,7 @@ export const STUDENT_STYLE_TEMPLATE: DefaultTemplate = {
   ]
 ]
 
-// Exercices (numéros en blanc sur carré rouge)
+// Exercices (numéros sur carré ambre, sections soulignées en ambre)
 {{exercises_badge}}
 `
 };
@@ -1661,7 +1663,7 @@ Dans un cinema, le prix d'une place adulte est 12 euros et le prix d'une place e
 Une famille de 5 personnes paie 48 euros au total.
 Combien y a-t-il d'adultes et d'enfants dans cette famille?`,
 	// Same sample, rendered the way {{exercises_badge}} numbers exercises
-	exercises_badge: `#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]] #h(0.5em) #text(weight: "bold")[Equations]
+	exercises_badge: `#grid(columns: (auto, 1fr, auto), column-gutter: 0.5em, align: horizon, box(fill: rgb("#fc8f1b"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: rgb("#111111"), weight: "bold")[1]], [#text(weight: "bold")[Equations]], [])
 
 Resoudre les equations suivantes:
 
@@ -1671,14 +1673,14 @@ b) 3x - 7 = 2x + 4
 
 #v(1cm)
 
-#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[2]] #h(0.5em) #text(weight: "bold")[Perimetre]
+#grid(columns: (auto, 1fr, auto), column-gutter: 0.5em, align: horizon, box(fill: rgb("#fc8f1b"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: rgb("#111111"), weight: "bold")[2]], [#text(weight: "bold")[Perimetre]], [])
 
 Un rectangle a un perimetre de 36 cm. Sa longueur est le triple de sa largeur.
 Calculer les dimensions de ce rectangle.
 
 #v(1cm)
 
-#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[3]] #h(0.5em) #text(weight: "bold")[Cinema]
+#grid(columns: (auto, 1fr, auto), column-gutter: 0.5em, align: horizon, box(fill: rgb("#fc8f1b"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: rgb("#111111"), weight: "bold")[3]], [#text(weight: "bold")[Cinema]], [])
 
 Dans un cinema, le prix d'une place adulte est 12 euros et le prix d'une place enfant est 8 euros.
 Une famille de 5 personnes paie 48 euros au total.

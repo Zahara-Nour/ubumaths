@@ -71,10 +71,16 @@ export interface WorksheetGeneratorInput {
  *
  * - `heading`: bold "Exercice N : title" line (default, used by every template
  *   written against the `{{exercises}}` placeholder)
- * - `badge`: the number in white on a red rounded square, like the student PDF
- *   (opted into by a template using the `{{exercises_badge}}` placeholder)
+ * - `badge`: the number in dark on an amber rounded square, like the student PDF
+ *   (opted into by a template using the `{{exercises_badge}}` placeholder).
+ *   Section titles follow suit: amber small caps over an amber rule.
  */
 type ExerciseHeaderStyle = 'heading' | 'badge';
+
+// Ambre du site (`--color-primary` clair) et son texte (`--color-primary-foreground`) :
+// le blanc sur cet ambre se lit mal une fois imprimé.
+const BADGE_FILL = 'rgb("#fc8f1b")';
+const BADGE_TEXT = 'rgb("#111111")';
 
 /**
  * Parameters for the legacy generateWorksheetTypst function
@@ -674,7 +680,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		for (const group of groupExercisesForDisplay(orderedExercises, sections, {
 			preserveExerciseOrder: true
 		})) {
-			if (group.section) content += this.generateSectionHeaderSimple(group.section);
+			if (group.section) content += this.generateSectionHeaderSimple(group.section, headerStyle);
 
 			for (const { exercise, number } of group.exercises) {
 				content += this.generateSingleExerciseSimple(
@@ -694,7 +700,12 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	/**
 	 * Generate section header for templates (simplified version)
 	 */
-	private generateSectionHeaderSimple(section: InstanceSection): string {
+	private generateSectionHeaderSimple(
+		section: InstanceSection,
+		headerStyle: ExerciseHeaderStyle = 'heading'
+	): string {
+		if (headerStyle === 'badge') return this.generateSectionHeaderBadge(section);
+
 		let content = `#block(width: 100%, inset: (top: 0.5em, bottom: 0.3em))[
   #text(size: 1.2em, weight: "bold")[${escapeTypst(section.title)}]`;
 		if (section.instructions) {
@@ -703,6 +714,27 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
   #text(size: 0.95em, style: "italic")[${escapeTypst(section.instructions)}]`;
 		}
 		content += '\n]\n#v(0.3em)\n\n';
+		return content;
+	}
+
+	/**
+	 * Section header matching the badge numbering: amber small-caps title over an
+	 * amber rule. Plain bold text was weaker than the badged exercise headings it
+	 * introduces, so sections did not stand out.
+	 *
+	 * `sticky`: the title never stays alone at the bottom of a column.
+	 */
+	private generateSectionHeaderBadge(section: InstanceSection): string {
+		let content = `#block(width: 100%, sticky: true, above: 2.2em, below: 1em)[
+  #text(fill: ${BADGE_FILL}, weight: "bold", size: 1.15em)[#smallcaps[${escapeTypst(section.title)}]]
+  #v(-0.6em)
+  #line(length: 100%, stroke: 1.2pt + ${BADGE_FILL})`;
+		if (section.instructions) {
+			content += `
+  #v(-0.4em)
+  #text(style: "italic", fill: luma(35%))[${escapeTypst(section.instructions)}]`;
+		}
+		content += '\n]\n\n';
 		return content;
 	}
 
@@ -721,23 +753,32 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 
 		// Exercise header, in its own `sticky` block so a column or page break can
 		// never leave the number alone at the bottom, away from its statement.
-		if (headerStyle === 'badge') {
-			// Number in white on a red rounded square, like the student PDF
-			const titlePart = exercise.title
-				? ` #h(0.5em) #text(weight: "bold")[${escapeTypst(exercise.title)}]`
+		const pointsBox =
+			config.show_points && exercise.points
+				? `#box(fill: rgb("#dcdcdc"), inset: (x: 6pt, y: 3pt), radius: 3pt)[${exercise.points} ${
+						exercise.points > 1 ? this.labels.pointAbbrevPlural : this.labels.pointAbbrev
+					}]`
 				: '';
+
+		if (headerStyle === 'badge') {
+			// Numéro sur carré ambre, titre et points dans une grille alignée
+			// `horizon` : posé en ligne, le titre suivait la ligne de base du
+			// numéro et paraissait décalé par rapport au carré.
+			const title = exercise.title ? `#text(weight: "bold")[${escapeTypst(exercise.title)}]` : '';
 			content += `#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[
-  #box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[${number}]]${titlePart}`;
+  #grid(
+    columns: (auto, 1fr, auto),
+    column-gutter: 0.5em,
+    align: horizon,
+    box(fill: ${BADGE_FILL}, radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: ${BADGE_TEXT}, weight: "bold")[${number}]],
+    [${title}],
+    [${pointsBox}]
+  )`;
 		} else {
 			const titleSuffix = exercise.title ? ` : ${escapeTypst(exercise.title)}` : '';
 			content += `#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[
   #text(size: 1.1em, weight: "bold")[${this.labels.exercise} ${number}${titleSuffix}]`;
-		}
-
-		if (config.show_points && exercise.points) {
-			content += ` #h(1fr) #box(fill: rgb("#dcdcdc"), inset: (x: 6pt, y: 3pt), radius: 3pt)[${exercise.points} ${
-				exercise.points > 1 ? this.labels.pointAbbrevPlural : this.labels.pointAbbrev
-			}]`;
+			if (pointsBox) content += ` #h(1fr) ${pointsBox}`;
 		}
 
 		if (exercise.custom_instructions) {

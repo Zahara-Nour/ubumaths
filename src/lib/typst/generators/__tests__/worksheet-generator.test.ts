@@ -420,7 +420,7 @@ describe('WorksheetGenerator', () => {
 			expect(result.typstContent).not.toContain('rgb("#dc2626")');
 		});
 
-		it('numbers exercises with a red badge when the template uses {{exercises_badge}}', () => {
+		it('numbers exercises with an amber badge when the template uses {{exercises_badge}}', () => {
 			const badgeTemplate: WorksheetTemplateRow = {
 				...mockTemplate,
 				template_content: `#set page(paper: "a4", columns: 2)
@@ -434,13 +434,36 @@ describe('WorksheetGenerator', () => {
 				template: badgeTemplate
 			});
 
-			// Number in white on a red rounded square, no "Exercice N" heading
+			// Numéro en foncé sur carré ambre (couleur du site), sans « Exercice N »
 			expect(result.typstContent).toContain(
-				'#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]]'
+				'box(fill: rgb("#fc8f1b"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: rgb("#111111"), weight: "bold")[1]]'
 			);
+			expect(result.typstContent).not.toContain('rgb("#dc2626")');
 			expect(result.typstContent).toContain('Equation lineaire');
 			expect(result.typstContent).not.toContain('Exercice 1');
 			expect(result.typstContent).not.toContain('{{exercises_badge}}');
+		});
+
+		it('centres the exercise title vertically on its badge', () => {
+			const badgeTemplate: WorksheetTemplateRow = {
+				...mockTemplate,
+				template_content: '{{exercises_badge}}'
+			};
+			const generator = new WorksheetGenerator(createMockConfig());
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance: createMockInstance(),
+				template: badgeTemplate
+			});
+
+			// Badge et titre dans deux cellules d'une grille alignée `horizon` :
+			// posés en ligne, le titre suivait la ligne de base et paraissait décalé.
+			const header = result.typstContent.match(
+				/#grid\(\n\s+columns: \(auto, 1fr, auto\),[\s\S]*?\n\s+\)/
+			);
+			expect(header?.[0]).toContain('align: horizon');
+			expect(header?.[0]).toContain('rgb("#fc8f1b")');
+			expect(header?.[0]).toContain('Equation lineaire');
 		});
 	});
 
@@ -541,6 +564,46 @@ describe('WorksheetGenerator', () => {
 
 			expect(result.typstContent).toContain('Calculs');
 			expect(result.typstContent).toContain('Sans calculatrice.');
+			// Le style ambre est réservé aux modèles à carrés numérotés
+			expect(result.typstContent).not.toContain('#fc8f1b');
+		});
+
+		it('marks sections with an amber small-caps title and rule in badge templates', () => {
+			const generator = new WorksheetGenerator(createMockConfig());
+			const instance = createMockInstance();
+			instance.sections = [
+				{ id: 's1', title: 'Calculs', instructions: 'Sans calculatrice.', position: 1 }
+			];
+			instance.exercises[0].section_id = 's1';
+			instance.exercises[1].section_id = 's1';
+
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance,
+				template: {
+					id: 't',
+					name: 'T',
+					description: null,
+					template_content: '{{exercises_badge}}',
+					placeholders: [],
+					created_by: 'teacher-id',
+					created_at: '2024-01-01',
+					updated_at: '2024-01-01'
+				}
+			});
+
+			const content = result.typstContent;
+			expect(content).toContain(
+				'#text(fill: rgb("#fc8f1b"), weight: "bold", size: 1.15em)[#smallcaps[Calculs]]'
+			);
+			expect(content).toContain('#line(length: 100%, stroke: 1.2pt + rgb("#fc8f1b"))');
+			expect(content).toContain('Sans calculatrice.');
+			// Le titre de section ne reste jamais seul en bas de colonne,
+			// et il précède bien son premier exercice
+			const sectionAt = content.indexOf('#smallcaps[Calculs]');
+			const sectionBlock = content.slice(content.lastIndexOf('#block(', sectionAt), sectionAt);
+			expect(sectionBlock).toContain('sticky: true');
+			expect(sectionAt).toBeLessThan(content.indexOf('Equation lineaire'));
 		});
 	});
 
