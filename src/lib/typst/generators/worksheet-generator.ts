@@ -283,24 +283,27 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			competences: ''
 		};
 
-		// Add correction banner if in correction mode
-		let result = '';
-		if (mode === 'correction') {
-			result += `#block(width: 100%, fill: rgb("#228b22"), inset: 10pt)[
-  #align(center)[
-    #text(size: 1.4em, weight: "bold", fill: white)[${this.labels.correction.toUpperCase()}]
+		const rendered = renderTemplate(templateContent, templateData);
+		if (mode !== 'correction') return rendered;
+
+		// Bandeau flottant pleine largeur (`scope: "parent"` : au-dessus des deux
+		// colonnes d'une fiche qui en a deux), en tête de la première page.
+		const banner = `
+#place(top + center, scope: "parent", float: true, clearance: 0.8em)[
+  #block(width: 100%, fill: rgb("#228b22"), inset: 10pt)[
+    #align(center)[
+      #text(size: 1.4em, weight: "bold", fill: white)[${this.labels.correction.toUpperCase()}]
+    ]
   ]
 ]
-
-#v(0.5em)
-
 `;
-		}
-
-		// Render template with data
-		result += renderTemplate(templateContent, templateData);
-
-		return result;
+		// Le bandeau doit suivre le `#set page(…)` du modèle : un `set page` qui
+		// vient APRÈS du contenu ouvre une nouvelle page, et le bandeau restait
+		// seul sur une page 1 vide.
+		const insertAt = endOfLastPageSetup(rendered);
+		return insertAt === null
+			? banner + '\n' + rendered
+			: rendered.slice(0, insertAt) + '\n' + banner + rendered.slice(insertAt);
 	}
 
 	/**
@@ -977,4 +980,28 @@ function removeSetupSection(typst: string): string {
 	}
 
 	return typst.substring(contentStart);
+}
+
+/**
+ * Position juste après le dernier appel `#set page(…)` d'un document Typst
+ * (parenthèses équilibrées, chaînes ignorées), ou null s'il n'y en a pas.
+ */
+function endOfLastPageSetup(typst: string): number | null {
+	const start = typst.lastIndexOf('#set page(');
+	if (start === -1) return null;
+
+	let depth = 0;
+	let inString = false;
+	for (let i = start + '#set page'.length; i < typst.length; i++) {
+		const char = typst[i];
+		if (inString) {
+			if (char === '\\') i++;
+			else if (char === '"') inString = false;
+			continue;
+		}
+		if (char === '"') inString = true;
+		else if (char === '(') depth++;
+		else if (char === ')' && --depth === 0) return i + 1;
+	}
+	return null;
 }

@@ -13,6 +13,7 @@ import {
 	generateWorksheetTypst,
 	generateBatchTypst
 } from '../worksheet-generator';
+import { DEFAULT_TEMPLATES } from '../../templates/default-templates';
 import type {
 	WorksheetRow,
 	InstanceData,
@@ -161,6 +162,33 @@ describe('WorksheetGenerator', () => {
 	});
 
 	describe('correction mode', () => {
+		it.each(DEFAULT_TEMPLATES.map((t) => [t.name, t.template_content]))(
+			'place le bandeau CORRECTION après la mise en page du modèle « %s »',
+			(_name, templateContent) => {
+				const generator = new WorksheetGenerator(createMockConfig(), {}, { mode: 'correction' });
+				const result = generator.generate({
+					worksheet: createMockWorksheet(),
+					instance: createMockInstance(),
+					template: {
+						id: 't',
+						name: 'T',
+						description: null,
+						template_content: templateContent,
+						placeholders: [],
+						created_by: 'teacher-id',
+						created_at: '2024-01-01',
+						updated_at: '2024-01-01'
+					}
+				});
+				const content = result.typstContent;
+				// Un `#set page` APRÈS du contenu ouvre une nouvelle page : le bandeau
+				// placé avant restait seul sur une page 1 vide.
+				const banner = content.indexOf('CORRECTION');
+				expect(banner).toBeGreaterThan(-1);
+				expect(content.lastIndexOf('#set page(')).toBeLessThan(banner);
+			}
+		);
+
 		it('includes CORRECTION banner in correction mode', () => {
 			const generator = new WorksheetGenerator(createMockConfig(), undefined, {
 				mode: 'correction'

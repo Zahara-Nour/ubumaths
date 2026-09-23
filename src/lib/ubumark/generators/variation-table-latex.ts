@@ -21,6 +21,7 @@ import type {
 	VariationValue,
 	DomainPoint
 } from '../types/variation-table';
+import { withImplicitEndpoints } from '../parser/variation-table-parser';
 
 // ============================================================================
 // CONFIGURATION
@@ -384,10 +385,12 @@ function convertSignMarkerToLatex(marker: string): string {
 function generateVariationLine(row: VariationRow, domain: DomainPoint[]): string {
 	const parts: string[] = [];
 	let previousPosition: string | null = null;
+	// Bornes sans valeur (tableau de 1re) : sinon la colonne est sautée
+	const filled = withImplicitEndpoints(row, domain);
 
 	for (let i = 0; i < domain.length; i++) {
 		const point = domain[i].expression;
-		const value = row.values.get(point);
+		const value = filled.values.get(point);
 
 		if (!value) {
 			continue;

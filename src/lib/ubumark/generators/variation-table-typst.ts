@@ -21,6 +21,7 @@ import type {
 	DomainPoint
 } from '../types/variation-table';
 import { convertLatexToTypstMath } from './typst-generator';
+import { withImplicitEndpoints } from '../parser/variation-table-parser';
 import { toFrenchDecimal } from '$lib/utils/french-math';
 
 // ============================================================================
@@ -405,11 +406,13 @@ function convertSignMarkerToTypst(marker: string): string {
  */
 function generateVariationRow(row: VariationRow, domain: DomainPoint[]): string {
 	const elements: string[] = [];
+	// Bornes sans valeur (tableau de 1re) : une colonne vide `()` en bout de ligne fait planter vartable
+	const filled = withImplicitEndpoints(row, domain);
 
 	// Generate one element per domain point (n elements for n domain points)
 	for (let i = 0; i < domain.length; i++) {
 		const point = domain[i].expression;
-		const value = row.values.get(point);
+		const value = filled.values.get(point);
 
 		// Format the element for this domain point
 		const formatted = formatPointVariation(value);
