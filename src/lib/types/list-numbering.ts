@@ -35,6 +35,15 @@ export const NUMBERING_SCHEMES: Record<string, NumberingScheme> = {
 			{ style: 'roman', separator: ')' }
 		]
 	},
+	'a-1-i': {
+		id: 'a-1-i',
+		name: 'a) 1) i)',
+		levels: [
+			{ style: 'alpha', separator: ')' },
+			{ style: 'numeric', separator: ')' },
+			{ style: 'roman', separator: ')' }
+		]
+	},
 	'a-i': {
 		id: 'a-i',
 		name: 'a) i)',
@@ -82,6 +91,7 @@ export interface ListNumberingConfig {
 
 export const DEFAULT_CONFIG: ListNumberingConfig = {
 	scheme: 'auto',
-	schemeWithNesting: '1-a-i',
+	// Même hiérarchie que le PDF (ubumark/generators/typst-generator.ts)
+	schemeWithNesting: 'a-1-i',
 	schemeWithoutNesting: 'a-i'
 };

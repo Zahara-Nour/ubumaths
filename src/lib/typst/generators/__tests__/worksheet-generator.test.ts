@@ -434,9 +434,9 @@ describe('WorksheetGenerator', () => {
 				template: badgeTemplate
 			});
 
-			// Numéro en blanc sur carré ambre foncé, sans « Exercice N »
+			// Numéro en blanc sur carré ambre tirant sur le rouge, sans « Exercice N »
 			expect(result.typstContent).toContain(
-				'box(fill: rgb("#d97706"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]]'
+				'box(fill: rgb("#e8590c"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]]'
 			);
 			expect(result.typstContent).not.toContain('rgb("#dc2626")');
 			expect(result.typstContent).toContain('Equation lineaire');
@@ -462,7 +462,7 @@ describe('WorksheetGenerator', () => {
 				/#grid\(\n\s+columns: \(auto, 1fr, auto\),[\s\S]*?\n\s+\)/
 			);
 			expect(header?.[0]).toContain('align: horizon');
-			expect(header?.[0]).toContain('rgb("#d97706")');
+			expect(header?.[0]).toContain('rgb("#e8590c")');
 			expect(header?.[0]).toContain('Equation lineaire');
 		});
 
@@ -588,7 +588,7 @@ describe('WorksheetGenerator', () => {
 			expect(result.typstContent).toContain('Calculs');
 			expect(result.typstContent).toContain('Sans calculatrice.');
 			// Le style ambre est réservé aux modèles à carrés numérotés
-			expect(result.typstContent).not.toContain('#d97706');
+			expect(result.typstContent).not.toMatch(/#e8590c|#fc8f1b/);
 		});
 
 		it('marks sections with an amber small-caps title and rule in badge templates', () => {
@@ -617,9 +617,9 @@ describe('WorksheetGenerator', () => {
 
 			const content = result.typstContent;
 			expect(content).toContain(
-				'#text(fill: rgb("#d97706"), weight: "bold", size: 1.15em)[#smallcaps[Calculs]]'
+				'#text(fill: rgb("#fc8f1b"), weight: "bold", size: 1.15em)[#smallcaps[Calculs]]'
 			);
-			expect(content).toContain('#line(length: 100%, stroke: 1.2pt + rgb("#d97706"))');
+			expect(content).toContain('#line(length: 100%, stroke: 1.2pt + rgb("#fc8f1b"))');
 			expect(content).toContain('Sans calculatrice.');
 			// Le titre de section ne reste jamais seul en bas de colonne,
 			// et il précède bien son premier exercice
