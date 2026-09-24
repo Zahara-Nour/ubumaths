@@ -12,6 +12,7 @@
  */
 
 import { parseLatexQuantity } from './parser';
+import { normalizeStudentQuantity } from './student-input';
 import { compareQuantities, type Tolerance } from './ce-integration';
 import { unitsAreCompatible } from './operations';
 import type { PrecisionType } from '$lib/questions/types';
@@ -99,8 +100,12 @@ export function validateQuantityAnswer(
 	precision?: PrecisionType,
 	requiredUnit?: string
 ): ValidationResult {
+	// Saisie MathLive de l'élève (`5\operatorname{\mathrm{km}}`, `\frac{90km}{h}`…)
+	// ramenée à `valeur\unit{écriture}` ; la réponse attendue n'est pas touchée.
+	const normalizedUser = normalizeStudentQuantity(userAnswer);
+
 	// Parse both answers
-	const userQuantity = parseLatexQuantity(userAnswer);
+	const userQuantity = parseLatexQuantity(normalizedUser);
 	const expectedQuantity = parseLatexQuantity(expectedAnswer);
 
 	// Check for parse failures
@@ -178,7 +183,7 @@ export function validateQuantityAnswer(
 	const tolerance = precisionToTolerance(precision);
 
 	// Use compareQuantities for value comparison with unit conversion
-	const comparisonResult = compareQuantities(userAnswer, expectedAnswer, tolerance);
+	const comparisonResult = compareQuantities(normalizedUser, expectedAnswer, tolerance);
 
 	// Build parsed details from comparison result
 	const parsed = {

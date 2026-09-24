@@ -12,7 +12,8 @@
  * @module questions/constraint-validators
  */
 
-import { parseLatexQuantity } from './units/parser';
+import { parseLatexQuantity, extractUnitFromLatex } from './units/parser';
+import { normalizeStudentQuantity } from './units/student-input';
 import { checkExactUnitMatch } from './units/validator';
 
 // ============================================================================
@@ -1308,7 +1309,13 @@ export function checkUnit(answersLatex: string[], expectedAnswers: string[]): nu
 		const expected = expectedAnswers[i];
 		if (!expected) continue;
 
-		const userQuantity = parseLatexQuantity(answersLatex[i]);
+		// Saisie MathLive ramenée à `valeur\unit{écriture}`, seulement quand une unité
+		// est attendue : sans unité attendue, `5km` reste le produit 5·k·m.
+		const userLatex =
+			extractUnitFromLatex(expected) !== null
+				? normalizeStudentQuantity(answersLatex[i])
+				: answersLatex[i];
+		const userQuantity = parseLatexQuantity(userLatex);
 		const expectedQuantity = parseLatexQuantity(expected);
 
 		// Skip if either side doesn't have a parseable unit

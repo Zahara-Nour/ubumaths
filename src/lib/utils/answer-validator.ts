@@ -29,6 +29,7 @@ import {
 	type ConstraintSeverity
 } from '$lib/mathAST/cosmetic-transforms';
 import { extractUnitFromLatex } from '$lib/questions/units/parser';
+import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
 import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
 import { checkRequiredForm, getRequiredFormFeedback } from '$lib/questions/required-form-validator';
@@ -112,7 +113,8 @@ function extractNumericLatexPart(latex: string): string {
 	const unit = extractUnitFromLatex(latex);
 	if (unit === null) return latex.trim();
 	// Remove the \unit{...} wrapper (only the unit we found) and trim.
-	return latex.replace(/\\unit\{[^}]*\}/, '').trim();
+	// Accolades imbriquées admises : `3\unit{m.s^{-1}}` → `3`.
+	return latex.replace(/\\unit\{(?:[^{}]|\{[^{}]*\})*\}/, '').trim();
 }
 
 /**
@@ -737,7 +739,9 @@ function validateSingleBlank(
 
 	// unit: numeric part must be a simple number; cosmetic checks on numeric part.
 	if (blank.unit?.expected) {
-		const numericLatex = extractNumericLatexPart(effectiveLatex);
+		// Saisie MathLive (`5\operatorname{\mathrm{km}}`…) ramenée à `valeur\unit{…}`
+		// avant d'isoler la partie numérique, comme à l'étape 2.
+		const numericLatex = extractNumericLatexPart(normalizeStudentQuantity(effectiveLatex));
 		const raw = cosmeticViolations(numericLatex, severities, formOptions);
 		const { status, violations } = mapCosmeticViolations(raw, false);
 
