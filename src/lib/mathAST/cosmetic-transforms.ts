@@ -731,6 +731,42 @@ export function isSimpleNumberLatex(latex: string): boolean {
 }
 
 /**
+ * La valeur d'une grandeur (partie numérique d'un blanc à unité) : un nombre
+ * simple, une fraction de nombres (`\frac{1}{3}`) ou une notation scientifique
+ * (`2{,}5\times10^{3}`), signe compris. Une fraction est parfois la SEULE
+ * écriture exacte : `\frac{1}{3}\unit{km}` attendu ne pouvait pas être donné
+ * juste quand seul un nombre simple était admis. Un calcul non effectué
+ * (`2+3`) reste refusé.
+ */
+export function isQuantityValueLatex(latex: string): boolean {
+	if (isSimpleNumberLatex(latex)) return true;
+	const parsed = parseLatexSafe(latex.trim());
+	if (!parsed.ast || parsed.errors.length > 0) return false;
+
+	let node: MathNode = parsed.ast;
+	if (node.type === 'opposite' || node.type === 'positive') {
+		node = node.operand;
+	}
+
+	if (node.type === 'division') {
+		return node.numerator.type === 'number' && node.denominator.type === 'number';
+	}
+
+	if (node.type === 'multiplication' && node.right.type === 'superscript') {
+		const { base, superscript: exponent } = node.right;
+		const exponentValue = exponent.type === 'opposite' ? exponent.operand : exponent;
+		return (
+			node.left.type === 'number' &&
+			base.type === 'number' &&
+			base.value === '10' &&
+			exponentValue.type === 'number'
+		);
+	}
+
+	return false;
+}
+
+/**
  * Detect cosmetic constraint violations on a single LaTeX answer using the AST
  * pipeline (zeros / spaces / fractions / nullTerms / factorZero / brackets /
  * signs / factorOne / products), WITHOUT comparing against any expected form.

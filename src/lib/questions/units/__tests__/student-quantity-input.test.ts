@@ -340,3 +340,57 @@ describe('validateAnswer — chiffres mal groupés : l’unité n’est pas mise
 		}
 	);
 });
+
+describe('validateAnswer — valeur en fraction ou en notation scientifique', () => {
+	// Avant : la partie numérique d'un blanc à unité devait être un nombre simple ;
+	// `\frac{1}{3}\unit{km}` attendu était donc IMPOSSIBLE à donner juste.
+	it.each([
+		['\\frac{1}{3}\\mathrm{km}', '\\frac{1}{3}\\unit{km}'],
+		['\\frac{1}{2}\\,\\mathrm{km}', '0.5\\unit{km}'],
+		['-\\frac{1}{2}^{\\circ}C', '-0.5\\unit{°C}'],
+		['2{,}5\\times10^{3}\\mathrm{m}', '2500\\unit{m}'],
+		['2{,}5\\cdot10^{-3}\\mathrm{km}', '2.5\\unit{m}']
+	])('%s est juste pour %s', (latex, expected) => {
+		const instance = createInstance([
+			{ expectedAnswer: expected, type: 'math', unit: { expected: true } }
+		]);
+		const result = validateAnswer([latex], instance, [latex]);
+		expect(result.isCorrect, `${latex} → ${result.status} ${result.feedback ?? ''}`).toBe(true);
+	});
+
+	it('un calcul non effectué reste refusé : 2+3 km', () => {
+		const instance = createInstance([
+			{ expectedAnswer: '5\\unit{km}', type: 'math', unit: { expected: true } }
+		]);
+		const result = validateAnswer(['2+3\\mathrm{km}'], instance, ['2+3\\mathrm{km}']);
+		expect(result.isCorrect).toBe(false);
+	});
+});
+
+describe('parseLatexQuantity — le signe et le reste de l’écriture ne sont pas ignorés', () => {
+	// Avant : les motifs fraction et notation scientifique n'étaient pas ancrés :
+	// `-\frac{1}{2}` valait +0,5 (un « −½ km » était juste pour « ½ km »), et
+	// `2+\frac{1}{2}` valait ½.
+	it.each([
+		['-\\frac{1}{2}\\unit{km}', -0.5],
+		['+\\frac{1}{2}\\unit{km}', 0.5],
+		['\\frac{1}{4}\\unit{km}', 0.25],
+		['-2{,}5\\times10^{3}\\unit{m}', -2500]
+	])('%s vaut %s', (latex, value) => {
+		expect(parseLatexQuantity(latex)?.value).toBeCloseTo(value, 12);
+	});
+
+	it.each(['2+\\frac{1}{2}\\unit{km}', '2+3\\times10^{2}\\unit{m}'])(
+		'%s n’est pas lu comme sa seule fraction / puissance',
+		(latex) => {
+			const value = parseLatexQuantity(latex)?.value;
+			expect(value === 0.5 || value === 300).toBe(false);
+		}
+	);
+
+	it('−½ km pour ½ km est faux', () => {
+		expect(validateQuantityAnswer('-\\frac{1}{2}\\mathrm{km}', '0.5\\unit{km}').isCorrect).toBe(
+			false
+		);
+	});
+});

@@ -156,7 +156,11 @@ describe('conversions sans tolérance : le bruit des flottants ne rend pas faux'
 	it.each([
 		['20,001\\unit{°C}', '20\\unit{°C}'],
 		['1001\\unit{cm^3}', '1\\unit{L}'],
-		['0,11\\unit{L}', '100\\unit{mL}']
+		['0,11\\unit{L}', '100\\unit{mL}'],
+		// Marge d'arrondi relative : ni plancher absolu (0 m n'est pas 5·10⁻¹⁰ m),
+		// ni tolérance aux grandes valeurs (10⁹ m + 0,5 m reste faux)
+		['0\\unit{m}', '0.0000000005\\unit{m}'],
+		['1000000000.5\\unit{m}', '1000000000\\unit{m}']
 	])('%s ≠ %s (une vraie différence reste fausse)', (answer, expected) => {
 		expect(validateQuantityAnswer(answer, expected).isCorrect).toBe(false);
 	});
