@@ -16,7 +16,7 @@ describe('RichTextEditor — insertion des nœuds enrichis', () => {
 	 * porte les boutons de nœuds enrichis.
 	 */
 	async function renderEditorWithInsertionOpen() {
-		const result = render(RichTextEditor, {});
+		const result = await render(RichTextEditor, {});
 		await new Promise((r) => setTimeout(r, 200));
 
 		const toggle = result.container.querySelector<HTMLButtonElement>('[title="Insertion"]');

@@ -39,7 +39,7 @@ describe('TopObservablesToConsolidate', () => {
 				}
 			]
 		});
-		render(TopObservablesToConsolidate, { classId: 'class-1' });
+		await render(TopObservablesToConsolidate, { classId: 'class-1' });
 		await expect.element(page.getByText('Modéliser un problème')).toBeVisible();
 		await expect.element(page.getByText('CHER-A1')).toBeVisible();
 		await expect
@@ -49,7 +49,7 @@ describe('TopObservablesToConsolidate', () => {
 
 	it('shows congratulations when no rows', async () => {
 		mockFetch({ rows: [] });
-		render(TopObservablesToConsolidate, { classId: 'class-1' });
+		await render(TopObservablesToConsolidate, { classId: 'class-1' });
 		await expect.element(page.getByText(/Bravo, tous les observables/)).toBeVisible();
 	});
 });

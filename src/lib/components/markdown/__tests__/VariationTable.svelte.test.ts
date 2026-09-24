@@ -20,9 +20,9 @@ import type {
 } from '$lib/ubumark/types/variation-table';
 
 // Type-safe render wrapper for Svelte 5 component
-const renderTable = (props: { node: VariationTableNode; class?: string }) =>
+const renderTable = async (props: { node: VariationTableNode; class?: string }) =>
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	render(VariationTable as any, { props });
+	await render(VariationTable as any, { props });
 
 // =============================================================================
 // Test Helpers
@@ -89,7 +89,7 @@ describe('VariationTable Component', () => {
 	describe('Basic Structure', () => {
 		it('should render a table element', async () => {
 			const node = createBasicTable();
-			renderTable({ node });
+			await renderTable({ node });
 
 			const table = page.getByRole('table');
 			await expect.element(table).toBeInTheDocument();
@@ -97,7 +97,7 @@ describe('VariationTable Component', () => {
 
 		it('should render container with variation-table class', async () => {
 			const node = createBasicTable();
-			renderTable({ node });
+			await renderTable({ node });
 
 			// Use document.querySelector for CSS class selection
 			const container = document.querySelector('.variation-table');
@@ -106,7 +106,7 @@ describe('VariationTable Component', () => {
 
 		it('should render header row', async () => {
 			const node = createBasicTable();
-			renderTable({ node });
+			await renderTable({ node });
 
 			const header = document.querySelector('.vt-header');
 			expect(header).not.toBeNull();
@@ -114,7 +114,7 @@ describe('VariationTable Component', () => {
 
 		it('should render domain cells in header', async () => {
 			const node = createBasicTable();
-			renderTable({ node });
+			await renderTable({ node });
 
 			const domainCells = document.querySelectorAll('.vt-domain-cell');
 			expect(domainCells.length).toBe(3); // -inf, 0, +inf
@@ -122,7 +122,7 @@ describe('VariationTable Component', () => {
 
 		it('should apply custom class to container', async () => {
 			const node = createBasicTable();
-			renderTable({ node, class: 'my-custom-class' });
+			await renderTable({ node, class: 'my-custom-class' });
 
 			const container = document.querySelector('.variation-table.my-custom-class');
 			expect(container).not.toBeNull();
@@ -143,7 +143,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const signRows = document.querySelectorAll('.vt-sign-row');
 			expect(signRows.length).toBe(1);
@@ -157,7 +157,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const plusSigns = document.querySelectorAll('.vt-sign-plus');
 			expect(plusSigns.length).toBeGreaterThan(0);
@@ -172,7 +172,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const minusSigns = document.querySelectorAll('.vt-sign-minus');
 			expect(minusSigns.length).toBeGreaterThan(0);
@@ -187,7 +187,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const zeroMarkers = document.querySelectorAll('.vt-zero');
 			expect(zeroMarkers.length).toBe(1);
@@ -202,7 +202,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			// The asymptote double bar is now drawn with CSS borders on an empty
 			// `.vt-asymptote-bar` span (sign variant `.vt-asymptote-bar-sign`),
@@ -219,7 +219,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const hatches = document.querySelectorAll('.vt-hatch');
 			expect(hatches.length).toBeGreaterThan(0);
@@ -233,7 +233,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const discontinuityMarkers = document.querySelectorAll('.vt-discontinuity');
 			expect(discontinuityMarkers.length).toBe(1);
@@ -256,7 +256,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const variationRows = document.querySelectorAll('.vt-variation-row');
 			expect(variationRows.length).toBe(1);
@@ -270,7 +270,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const topValues = document.querySelectorAll('.vt-pos-top');
 			expect(topValues.length).toBeGreaterThan(0);
@@ -284,7 +284,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const bottomValues = document.querySelectorAll('.vt-pos-bottom');
 			expect(bottomValues.length).toBeGreaterThan(0);
@@ -298,7 +298,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const centerValues = document.querySelectorAll('.vt-pos-center');
 			expect(centerValues.length).toBeGreaterThan(0);
@@ -319,7 +319,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const upArrows = document.querySelectorAll('.vt-arrow-up');
 			expect(upArrows.length).toBe(1);
@@ -334,7 +334,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const downArrows = document.querySelectorAll('.vt-arrow-down');
 			expect(downArrows.length).toBe(1);
@@ -347,7 +347,7 @@ describe('VariationTable Component', () => {
 				createVariationRow('f(x)', { '0': { expression: '-11', position: 'bottom' } })
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			expect(document.querySelectorAll('.vt-arrow-down').length).toBe(1);
 			expect(document.querySelectorAll('.vt-arrow-up').length).toBe(1);
@@ -362,7 +362,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const svgArrows = document.querySelectorAll('.vt-arrow svg, svg.vt-arrow');
 			expect(svgArrows.length).toBeGreaterThan(0);
@@ -377,7 +377,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const upArrows = document.querySelectorAll('.vt-arrow-up');
 			const downArrows = document.querySelectorAll('.vt-arrow-down');
@@ -410,7 +410,7 @@ describe('VariationTable Component', () => {
 				]
 			};
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const asymptoteLimits = document.querySelectorAll('.vt-asymptote-limits');
 			expect(asymptoteLimits.length).toBe(1);
@@ -441,7 +441,7 @@ describe('VariationTable Component', () => {
 				]
 			};
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			// An asymptote WITH two limits is not a forbidden zone: arrows are drawn
 			// toward each limit (none crosses the asymptote). Here f goes 0 → -∞ on
@@ -474,7 +474,7 @@ describe('VariationTable Component', () => {
 				]
 			};
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const forbiddenCells = document.querySelectorAll('.vt-forbidden-cell');
 			expect(forbiddenCells.length).toBe(1);
@@ -501,7 +501,7 @@ describe('VariationTable Component', () => {
 				rows: []
 			};
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const openBounds = document.querySelectorAll('.vt-open');
 			expect(openBounds.length).toBe(2);
@@ -530,7 +530,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const signRows = document.querySelectorAll('.vt-sign-row');
 			const variationRows = document.querySelectorAll('.vt-variation-row');
@@ -552,7 +552,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const signRows = document.querySelectorAll('.vt-sign-row');
 			expect(signRows.length).toBe(2);
@@ -573,7 +573,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const upArrows = document.querySelectorAll('.vt-arrow-up');
 			expect(upArrows.length).toBe(1);
@@ -588,7 +588,7 @@ describe('VariationTable Component', () => {
 				})
 			);
 
-			renderTable({ node });
+			await renderTable({ node });
 
 			const downArrows = document.querySelectorAll('.vt-arrow-down');
 			expect(downArrows.length).toBe(1);

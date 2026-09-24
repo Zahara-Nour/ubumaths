@@ -32,7 +32,7 @@ describe('StudentGradeHistogram', () => {
 				{ grade: 4, count: 3, avg_stability_after: 7.8 }
 			]
 		});
-		render(StudentGradeHistogram, {
+		await render(StudentGradeHistogram, {
 			classId: 'class-1',
 			studentId: 'student-1',
 			studentName: 'Alice'
@@ -52,7 +52,7 @@ describe('StudentGradeHistogram', () => {
 				{ grade: 4, count: 0, avg_stability_after: 0 }
 			]
 		});
-		render(StudentGradeHistogram, {
+		await render(StudentGradeHistogram, {
 			classId: 'class-1',
 			studentId: 'student-1',
 			studentName: 'Alice'
@@ -62,7 +62,7 @@ describe('StudentGradeHistogram', () => {
 
 	it('renders student name in title', async () => {
 		mockFetch({ buckets: [] });
-		render(StudentGradeHistogram, {
+		await render(StudentGradeHistogram, {
 			classId: 'class-1',
 			studentId: 'student-1',
 			studentName: 'Alice Martin'

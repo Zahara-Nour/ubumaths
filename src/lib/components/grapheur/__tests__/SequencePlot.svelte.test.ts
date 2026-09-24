@@ -40,16 +40,16 @@ describe('SequencePlot', () => {
 		};
 	}
 
-	function renderPlot(overrides: Partial<SequencePlottable> = {}) {
-		return render(SequencePlot, {
+	async function renderPlot(overrides: Partial<SequencePlottable> = {}) {
+		return await render(SequencePlot, {
 			sequence: sequence(overrides),
 			viewport,
 			transformer
 		});
 	}
 
-	it('trace un point par terme visible', () => {
-		const { container } = renderPlot({
+	it('trace un point par terme visible', async () => {
+		const { container } = await renderPlot({
 			mode: 'explicit',
 			latex: 'n',
 			firstTerm: null,
@@ -62,24 +62,24 @@ describe('SequencePlot', () => {
 		expect(points.length).toBeGreaterThan(5);
 	});
 
-	it('dessine l’escalier et la droite y = x pour une récurrence', () => {
-		const { container } = renderPlot();
+	it('dessine l’escalier et la droite y = x pour une récurrence', async () => {
+		const { container } = await renderPlot();
 
 		expect(container.querySelector('path.cobweb-path')).not.toBeNull();
 		expect(container.querySelector('path.cobweb-function')).not.toBeNull();
 		expect(container.querySelector('line.identity-line')).not.toBeNull();
 	});
 
-	it('n’affiche pas d’escalier en représentation « rangs »', () => {
-		const { container } = renderPlot({ representation: 'ranks' });
+	it('n’affiche pas d’escalier en représentation « rangs »', async () => {
+		const { container } = await renderPlot({ representation: 'ranks' });
 
 		expect(container.querySelector('path.cobweb-path')).toBeNull();
 		expect(container.querySelector('line.identity-line')).toBeNull();
 		expect(container.querySelectorAll('circle.sequence-point').length).toBeGreaterThan(0);
 	});
 
-	it('n’affiche pas d’escalier pour une suite explicite', () => {
-		const { container } = renderPlot({
+	it('n’affiche pas d’escalier pour une suite explicite', async () => {
+		const { container } = await renderPlot({
 			mode: 'explicit',
 			latex: '3n+2',
 			firstTerm: null,
@@ -89,32 +89,32 @@ describe('SequencePlot', () => {
 		expect(container.querySelector('path.cobweb-path')).toBeNull();
 	});
 
-	it('n’affiche pas d’escalier quand f dépend du rang', () => {
-		const { container } = renderPlot({ latex: 'u_n+n', representation: 'cobweb' });
+	it('n’affiche pas d’escalier quand f dépend du rang', async () => {
+		const { container } = await renderPlot({ latex: 'u_n+n', representation: 'cobweb' });
 
 		// Repli automatique sur le nuage de rangs, faute d'escalier possible.
 		expect(container.querySelector('path.cobweb-path')).toBeNull();
 		expect(container.querySelectorAll('circle.sequence-point').length).toBeGreaterThan(0);
 	});
 
-	it('n’affiche aucun point en représentation « escalier »', () => {
+	it('n’affiche aucun point en représentation « escalier »', async () => {
 		// Les deux représentations s'excluent : en escalier l'abscisse porte u_n et
 		// non le rang, donc superposer le nuage (n, u_n) mettrait deux axes des
 		// abscisses incompatibles sur la même grille.
-		const { container } = renderPlot({ representation: 'cobweb' });
+		const { container } = await renderPlot({ representation: 'cobweb' });
 
 		expect(container.querySelector('path.cobweb-path')).not.toBeNull();
 		expect(container.querySelectorAll('circle.sequence-point').length).toBe(0);
 	});
 
-	it('ne tronque pas l’escalier sur la largeur de la fenêtre', () => {
+	it('ne tronque pas l’escalier sur la largeur de la fenêtre', async () => {
 		// Régression : les termes étaient calculés jusqu'à ceil(viewport.xMax), or
 		// l'escalier vit dans le plan (u_n, u_{n+1}) et n'a rien à voir avec les
 		// rangs affichés — un zoom sur x ∈ [-2 ; 3] réduisait silencieusement
 		// l'escalier à 3 marches au lieu des 20 demandées.
 		const etroit: Viewport = { xMin: -2, xMax: 3, yMin: -2, yMax: 12 };
 
-		const { container } = render(SequencePlot, {
+		const { container } = await render(SequencePlot, {
 			sequence: sequence({ cobwebSteps: 20 }),
 			viewport: etroit,
 			transformer: createTransformer(etroit, 700, 700)
@@ -126,8 +126,8 @@ describe('SequencePlot', () => {
 		expect((d.match(/L/g) ?? []).length).toBe(40);
 	});
 
-	it('ne rend rien quand la suite est masquée', () => {
-		const { container } = renderPlot({ visible: false });
+	it('ne rend rien quand la suite est masquée', async () => {
+		const { container } = await renderPlot({ visible: false });
 
 		expect(container.querySelector('g.sequence-plot')).toBeNull();
 	});

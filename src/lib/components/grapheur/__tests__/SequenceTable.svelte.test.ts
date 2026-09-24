@@ -43,8 +43,8 @@ describe('SequenceTable', () => {
 	}
 
 	// La colonne affiche les valeurs exactes par défaut : 13/2 plutôt que 6,5.
-	it('rend les termes en maths, pas en texte', () => {
-		const { container } = render(SequenceTable, { sequence: sequence() });
+	it('rend les termes en maths, pas en texte', async () => {
+		const { container } = await render(SequenceTable, { sequence: sequence() });
 
 		const third = container.querySelectorAll('tbody tr')[2];
 		expect(third?.querySelector('.ML__latex')).not.toBeNull();
@@ -52,7 +52,7 @@ describe('SequenceTable', () => {
 	});
 
 	it('liste les termes successifs d’une récurrence, en décimal', async () => {
-		const { container } = render(SequenceTable, { sequence: sequence() });
+		const { container } = await render(SequenceTable, { sequence: sequence() });
 
 		await page.getByRole('button', { name: 'exact' }).click();
 
@@ -65,8 +65,8 @@ describe('SequenceTable', () => {
 		]);
 	});
 
-	it('démarre au premier rang choisi', () => {
-		const { container } = render(SequenceTable, {
+	it('démarre au premier rang choisi', async () => {
+		const { container } = await render(SequenceTable, {
 			sequence: sequence({ mode: 'explicit', latex: '3n+2', firstIndex: 2, firstTerm: null })
 		});
 
@@ -77,8 +77,8 @@ describe('SequenceTable', () => {
 		]);
 	});
 
-	it('annonce l’absence de terme quand l’expression est invalide', () => {
-		const { container } = render(SequenceTable, {
+	it('annonce l’absence de terme quand l’expression est invalide', async () => {
+		const { container } = await render(SequenceTable, {
 			sequence: sequence({ mode: 'explicit', latex: '', firstTerm: null })
 		});
 
@@ -86,8 +86,8 @@ describe('SequenceTable', () => {
 		expect(container.textContent).toContain('Aucun terme');
 	});
 
-	it('s’arrête au premier terme non défini', () => {
-		const { container } = render(SequenceTable, {
+	it('s’arrête au premier terme non défini', async () => {
+		const { container } = await render(SequenceTable, {
 			sequence: sequence({ latex: '\\frac{1}{u_n-1}', firstTerm: 2 })
 		});
 

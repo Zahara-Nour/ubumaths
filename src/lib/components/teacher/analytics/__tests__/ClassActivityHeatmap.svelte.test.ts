@@ -42,13 +42,13 @@ describe('ClassActivityHeatmap', () => {
 
 	it('renders alert badge for students above threshold', async () => {
 		mockFetch(sampleHeatmap);
-		render(ClassActivityHeatmap, { classId: 'class-1' });
+		await render(ClassActivityHeatmap, { classId: 'class-1' });
 		await expect.element(page.getByText('12 jours')).toBeVisible();
 	});
 
 	it('shows "no students" empty state', async () => {
 		mockFetch({ days: [], students: [], cells: [] });
-		render(ClassActivityHeatmap, { classId: 'class-1' });
+		await render(ClassActivityHeatmap, { classId: 'class-1' });
 		await expect
 			.element(page.getByText(`Aucun ${lore.entities.student} dans cette classe.`))
 			.toBeVisible();
@@ -56,7 +56,7 @@ describe('ClassActivityHeatmap', () => {
 
 	it('anonymizes names when anonymized=true', async () => {
 		mockFetch(sampleHeatmap);
-		render(ClassActivityHeatmap, { classId: 'class-1', anonymized: true });
+		await render(ClassActivityHeatmap, { classId: 'class-1', anonymized: true });
 		await expect.element(page.getByText(`${lore.entities.student} 1`)).toBeVisible();
 		await expect.element(page.getByText(`${lore.entities.student} 2`)).toBeVisible();
 	});

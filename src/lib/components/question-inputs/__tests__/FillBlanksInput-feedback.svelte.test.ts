@@ -27,7 +27,7 @@ const twoBlankStatement =
 
 describe('FillBlanksInput — messages par trou', () => {
 	it('affiche le message du trou 2, préfixé de son numéro', async () => {
-		render(FillBlanksInput, {
+		await render(FillBlanksInput, {
 			props: {
 				statement: twoBlankStatement,
 				blanks: twoBlanks,
@@ -43,7 +43,7 @@ describe('FillBlanksInput — messages par trou', () => {
 	});
 
 	it('sans blankFeedback (écran de test), aucun message', async () => {
-		render(FillBlanksInput, {
+		await render(FillBlanksInput, {
 			props: {
 				statement: twoBlankStatement,
 				blanks: twoBlanks,
@@ -56,7 +56,7 @@ describe('FillBlanksInput — messages par trou', () => {
 	});
 
 	it('un seul trou : pas de doublon avec le feedback global de l’écran', async () => {
-		render(FillBlanksInput, {
+		await render(FillBlanksInput, {
 			props: {
 				statement: 'Distance : $\\placeholder[0]{}$' as ResolvedMarkdown,
 				blanks: [twoBlanks[1]],

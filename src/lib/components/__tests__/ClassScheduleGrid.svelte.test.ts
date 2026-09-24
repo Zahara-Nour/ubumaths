@@ -17,8 +17,8 @@ describe('ClassScheduleGrid', () => {
 		return [...container.querySelectorAll('th')].map((th) => th.textContent?.trim() ?? '');
 	}
 
-	it('affiche les jours de classe de la semaine occidentale', () => {
-		const { container } = render(ClassScheduleGrid, {
+	it('affiche les jours de classe de la semaine occidentale', async () => {
+		const { container } = await render(ClassScheduleGrid, {
 			schedules: [],
 			periods,
 			weekConfig: {
@@ -35,8 +35,8 @@ describe('ClassScheduleGrid', () => {
 		expect(jours).not.toContain('Dimanche');
 	});
 
-	it('ordonne les colonnes depuis le premier jour de la semaine', () => {
-		const { container } = render(ClassScheduleGrid, {
+	it('ordonne les colonnes depuis le premier jour de la semaine', async () => {
+		const { container } = await render(ClassScheduleGrid, {
 			schedules: [],
 			periods,
 			weekConfig: {
@@ -56,8 +56,8 @@ describe('ClassScheduleGrid', () => {
 	// Le repli décrit la semaine française : sans configuration, la grille
 	// montrait une colonne Dimanche et aucune colonne Vendredi — un emploi du
 	// temps impossible à remplir dans un lycée français.
-	it('retombe sur la semaine française sans semaine fournie', () => {
-		const { container } = render(ClassScheduleGrid, { schedules: [], periods });
+	it('retombe sur la semaine française sans semaine fournie', async () => {
+		const { container } = await render(ClassScheduleGrid, { schedules: [], periods });
 
 		const jours = entetes(container);
 		expect(jours).toContain('Lundi');

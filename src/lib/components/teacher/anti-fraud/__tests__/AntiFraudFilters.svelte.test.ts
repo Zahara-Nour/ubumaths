@@ -9,17 +9,17 @@ import AntiFraudFilters from '../AntiFraudFilters.svelte';
 
 describe('AntiFraudFilters', () => {
 	it('renders the "Inclure les flags résolus" toggle', async () => {
-		render(AntiFraudFilters, { showResolved: false });
+		await render(AntiFraudFilters, { showResolved: false });
 		await expect.element(page.getByText(/Inclure les flags résolus/)).toBeVisible();
 	});
 
 	it('renders the help text', async () => {
-		render(AntiFraudFilters, { showResolved: false });
+		await render(AntiFraudFilters, { showResolved: false });
 		await expect.element(page.getByText(/Décoché par défaut/)).toBeVisible();
 	});
 
 	it('renders with showResolved=true', async () => {
-		render(AntiFraudFilters, { showResolved: true });
+		await render(AntiFraudFilters, { showResolved: true });
 		await expect.element(page.getByText(/Inclure les flags résolus/)).toBeVisible();
 	});
 });

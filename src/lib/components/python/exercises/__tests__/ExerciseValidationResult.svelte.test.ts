@@ -81,43 +81,43 @@ const resultWithHidden: Result = {
 
 describe('ExerciseValidationResult', () => {
 	it('renders nothing when no result and not loading', async () => {
-		render(ExerciseValidationResult, { props: { result: null } });
+		await render(ExerciseValidationResult, { props: { result: null } });
 		// No banner, no "Validation"
 		const validation = page.getByText('Validation', { exact: false });
 		await expect.element(validation).not.toBeInTheDocument();
 	});
 
 	it('shows a loading state', async () => {
-		render(ExerciseValidationResult, { props: { result: null, loading: true } });
+		await render(ExerciseValidationResult, { props: { result: null, loading: true } });
 		await expect.element(page.getByText('Validation en cours…')).toBeVisible();
 	});
 
 	it('shows the success banner for a valid result', async () => {
-		render(ExerciseValidationResult, { props: { result: validResult } });
+		await render(ExerciseValidationResult, { props: { result: validResult } });
 		await expect.element(page.getByText('Validation réussie')).toBeVisible();
 		await expect.element(page.getByText('2/2 tests passent')).toBeVisible();
 	});
 
 	it('shows the failure banner with passed/total count for an invalid result', async () => {
-		render(ExerciseValidationResult, { props: { result: invalidResult } });
+		await render(ExerciseValidationResult, { props: { result: invalidResult } });
 		await expect.element(page.getByText('Validation échouée')).toBeVisible();
 		await expect.element(page.getByText('1/2 tests passent')).toBeVisible();
 	});
 
 	it('lists ast_issues for AST strategy failures', async () => {
-		render(ExerciseValidationResult, { props: { result: astFailResult } });
+		await render(ExerciseValidationResult, { props: { result: astFailResult } });
 		await expect.element(page.getByText('Tu dois utiliser une boucle')).toBeVisible();
 		await expect.element(page.getByText("N'utilise pas print()")).toBeVisible();
 	});
 
 	it('shows the global-error banner for results with .error', async () => {
-		render(ExerciseValidationResult, { props: { result: errorResult } });
+		await render(ExerciseValidationResult, { props: { result: errorResult } });
 		await expect.element(page.getByText('Erreur', { exact: true })).toBeVisible();
 		await expect.element(page.getByText("Délai d'exécution dépassé")).toBeVisible();
 	});
 
 	it('shows the diff message when present on a failed test case', async () => {
-		render(ExerciseValidationResult, { props: { result: resultWithDiff } });
+		await render(ExerciseValidationResult, { props: { result: resultWithDiff } });
 		// The detail panel needs to be open to read the diff — open the first <details>
 		const summaries = page.getByRole('group');
 		const firstSummary = summaries.first();
@@ -128,7 +128,7 @@ describe('ExerciseValidationResult', () => {
 	});
 
 	it('renders hidden test cases as opaque rows with no details panel', async () => {
-		render(ExerciseValidationResult, { props: { result: resultWithHidden } });
+		await render(ExerciseValidationResult, { props: { result: resultWithHidden } });
 		// The visible test case is a collapsible <details> (role "group"); its
 		// summary label is split across template lines, so we assert the group
 		// itself rather than matching the whitespace-split "Test 1" text.

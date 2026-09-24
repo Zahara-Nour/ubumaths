@@ -8,8 +8,8 @@ import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 
 describe('conteneur', () => {
-	it('monte le panneau et les trois vues du v1', () => {
-		const { container } = render(AtelierContainer, { ephemeral: true });
+	it('monte le panneau et les trois vues du v1', async () => {
+		const { container } = await render(AtelierContainer, { ephemeral: true });
 
 		expect(container.textContent).toContain('Mes objets');
 		for (const label of ['Calcul', 'Graphe', 'Données']) {
@@ -17,15 +17,15 @@ describe('conteneur', () => {
 		}
 	});
 
-	it('ouvre sur la vue demandée', () => {
-		const { container } = render(AtelierContainer, { ephemeral: true, view: 'graphe' });
+	it('ouvre sur la vue demandée', async () => {
+		const { container } = await render(AtelierContainer, { ephemeral: true, view: 'graphe' });
 
 		const courant = container.querySelector('[aria-current="page"]');
 		expect(courant?.textContent?.trim()).toBe('Graphe');
 	});
 
 	it('change de vue au clic', async () => {
-		const { container } = render(AtelierContainer, { ephemeral: true });
+		const { container } = await render(AtelierContainer, { ephemeral: true });
 
 		const onglets = [...container.querySelectorAll('.onglet')] as HTMLButtonElement[];
 		onglets.find((b) => b.textContent?.trim() === 'Données')?.click();
@@ -40,7 +40,7 @@ describe('conteneur', () => {
 		localStorage.setItem('chiphre-atelier', sentinel);
 
 		const atelier = new Atelier();
-		render(AtelierContainer, { atelier, ephemeral: true });
+		await render(AtelierContainer, { atelier, ephemeral: true });
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		await new Promise((r) => setTimeout(r, 700));
 
@@ -48,11 +48,11 @@ describe('conteneur', () => {
 		localStorage.removeItem('chiphre-atelier');
 	});
 
-	it('pilote l’instance qu’on lui donne', () => {
+	it('pilote l’instance qu’on lui donne', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 
-		const { container } = render(AtelierContainer, { atelier, ephemeral: true });
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
 		expect(container.textContent).toContain('x^2');
 	});
 });
@@ -71,7 +71,7 @@ describe('tout changement est enregistré', () => {
 	// tout perdu. Un seul endroit oublié suffisait.
 	it('enregistre une création faite depuis le panneau', async () => {
 		localStorage.removeItem(KEY);
-		const { container } = render(AtelierContainer, {});
+		const { container } = await render(AtelierContainer, {});
 
 		const bouton = [...container.querySelectorAll('.creer button')].find(
 			(b) => b.textContent?.trim() === '+ Fonction'
@@ -85,7 +85,7 @@ describe('tout changement est enregistré', () => {
 	it('enregistre une modification du modèle, d’où qu’elle vienne', async () => {
 		localStorage.removeItem(KEY);
 		const atelier = new Atelier();
-		render(AtelierContainer, { atelier });
+		await render(AtelierContainer, { atelier });
 
 		// Personne n'a prévenu la session : c'est le compteur de révision qui
 		// couvre ce cas, et il couvrira aussi les actions qui n'existent pas encore.
@@ -98,13 +98,13 @@ describe('tout changement est enregistré', () => {
 	it('relit ce qui a été rangé au montage suivant', async () => {
 		localStorage.removeItem(KEY);
 		const first = new Atelier();
-		const { unmount } = render(AtelierContainer, { atelier: first });
+		const { unmount } = await render(AtelierContainer, { atelier: first });
 		first.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		await new Promise((r) => setTimeout(r, 700));
 		unmount();
 
 		const second = new Atelier();
-		render(AtelierContainer, { atelier: second });
+		await render(AtelierContainer, { atelier: second });
 		await new Promise((r) => setTimeout(r, 50));
 
 		expect(second.names).toEqual(['f']);
@@ -134,7 +134,7 @@ describe('vue Graphe', () => {
 	it('bascule sur le graphe quand on trace', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
-		const { container } = render(AtelierContainer, { atelier, ephemeral: true });
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
 
 		selectCard(container, 'f');
 		await new Promise((r) => setTimeout(r, 0));
@@ -149,7 +149,7 @@ describe('vue Graphe', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		atelier.setPlotted('f', true);
-		const { container } = render(AtelierContainer, { atelier, ephemeral: true });
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
 
 		selectCard(container, 'f');
 		await new Promise((r) => setTimeout(r, 0));
@@ -166,7 +166,7 @@ describe('vue Graphe', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^{777}' });
 		atelier.setPlotted('f', true);
-		render(AtelierContainer, { atelier, ephemeral: true });
+		await render(AtelierContainer, { atelier, ephemeral: true });
 		await new Promise((r) => setTimeout(r, 700));
 
 		expect(localStorage.getItem('chiphre-grapheur-state')).toBe('sentinelle-grapheur');

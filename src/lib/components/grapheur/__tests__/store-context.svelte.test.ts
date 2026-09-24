@@ -18,7 +18,7 @@ beforeEach(() => {
 describe('instance fournie par contexte', () => {
 	it('agit sur l’instance fournie, pas sur le singleton', async () => {
 		const own = new GrapheurStore();
-		const { container } = render(ProvideStore, { store: own });
+		const { container } = await render(ProvideStore, { store: own });
 
 		const add = container.querySelector('button');
 		expect(add).toBeTruthy();

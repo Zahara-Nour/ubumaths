@@ -203,7 +203,7 @@ const RESSOURCE: Element = {
 	openUrl: `/api/documents/${DOCUMENT}`
 };
 
-function monter(documents: ChapterDocument[], refuse = false) {
+async function monter(documents: ChapterDocument[], refuse = false) {
 	const appels: { url: string; body: unknown }[] = [];
 	vi.stubGlobal(
 		'fetch',
@@ -215,7 +215,7 @@ function monter(documents: ChapterDocument[], refuse = false) {
 		})
 	);
 
-	const { container, rerender } = render(ChapterSectionsEditor, {
+	const { container, rerender } = await render(ChapterSectionsEditor, {
 		chapterId: CHAPITRE,
 		sections: [section(COURS, 'Le cours', 1), section(METHODES, 'Méthodes', 2)],
 		documents,
@@ -240,7 +240,7 @@ describe('ChapterSectionsEditor — ranger au glisser-déposer', () => {
 	 * en base.
 	 */
 	it('enregistre l’entrée du seul document dans une section vide', async () => {
-		const { appels, zones } = monter([document(null)]);
+		const { appels, zones } = await monter([document(null)]);
 
 		await glisser(zones.nonClassees, zones.cours, RESSOURCE);
 
@@ -256,7 +256,7 @@ describe('ChapterSectionsEditor — ranger au glisser-déposer', () => {
 
 	/** Le même geste d'une section à l'autre : le rangement doit suivre. */
 	it('enregistre le passage d’une section à une autre', async () => {
-		const { appels, zones } = monter([document(COURS)]);
+		const { appels, zones } = await monter([document(COURS)]);
 
 		await glisser(zones.cours, zones.methodes, RESSOURCE);
 
@@ -269,7 +269,7 @@ describe('ChapterSectionsEditor — ranger au glisser-déposer', () => {
 
 	/** Sortir une ressource d'une section la rend à « Non classé », en base aussi. */
 	it('enregistre la sortie vers « Non classé »', async () => {
-		const { appels, zones } = monter([document(COURS)]);
+		const { appels, zones } = await monter([document(COURS)]);
 
 		await glisser(zones.cours, zones.nonClassees, RESSOURCE);
 
@@ -291,7 +291,7 @@ describe('ChapterSectionsEditor — ce qu’un glisser ne doit PAS faire', () =>
 	 * chaque hésitation du professeur réécrirait tous les rangs de la section.
 	 */
 	it('n’appelle rien quand la ressource retombe à sa place', async () => {
-		const { appels, zones } = monter([document(COURS)]);
+		const { appels, zones } = await monter([document(COURS)]);
 
 		await glisserSurPlace(zones.cours, RESSOURCE);
 
@@ -304,7 +304,7 @@ describe('ChapterSectionsEditor — ce qu’un glisser ne doit PAS faire', () =>
 	 * ombre laissée là ferait une seconde ligne, grisée et intraînable.
 	 */
 	it('remet la ressource à sa place quand le serveur refuse', async () => {
-		const { appels, zones } = monter([document(null)], true);
+		const { appels, zones } = await monter([document(null)], true);
 
 		await glisser(zones.nonClassees, zones.cours, RESSOURCE);
 
@@ -324,7 +324,7 @@ describe('ChapterSectionsEditor — réordonner les sections', () => {
 	 * arrive.
 	 */
 	it('enregistre le nouvel ordre', async () => {
-		const { appels, zones } = monter([]);
+		const { appels, zones } = await monter([]);
 
 		const cours = { id: COURS, title: 'Le cours', ressources: [] };
 		const methodes = { id: METHODES, title: 'Méthodes', ressources: [] };
@@ -384,7 +384,7 @@ describe('ChapterSectionsEditor — un rafraîchissement pendant le geste', () =
 	 * `each_key_duplicate`.
 	 */
 	it('ne duplique pas la ressource quand le rangement est refusé', async () => {
-		const { zones, rerender } = monter([document(null)], true);
+		const { zones, rerender } = await monter([document(null)], true);
 
 		const ombre: Element = {
 			...RESSOURCE,

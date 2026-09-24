@@ -30,7 +30,7 @@ describe('DocumentUpload — le sélecteur de fichier', () => {
 	}
 
 	it('reste monté après la sélection', async () => {
-		const { container } = render(DocumentUpload, { chapterId, supabase: {} as never });
+		const { container } = await render(DocumentUpload, { chapterId, supabase: {} as never });
 
 		const input = container.querySelector<HTMLInputElement>('#file-input');
 		expect(input).not.toBeNull();
@@ -49,7 +49,7 @@ describe('DocumentUpload — le sélecteur de fichier', () => {
 	// L'y remettre ramènerait le 413 — et SvelteKit refuserait le formulaire,
 	// faute d'`enctype`.
 	it('ne met pas le fichier dans le formulaire', async () => {
-		const { container } = render(DocumentUpload, { chapterId, supabase: {} as never });
+		const { container } = await render(DocumentUpload, { chapterId, supabase: {} as never });
 
 		choisir(container.querySelector<HTMLInputElement>('#file-input')!, pdf('polycopie.pdf'));
 		await new Promise((resolve) => setTimeout(resolve, 20));
@@ -63,7 +63,7 @@ describe('DocumentUpload — le sélecteur de fichier', () => {
 	});
 
 	it('oublie le fichier quand on le retire', async () => {
-		const { container } = render(DocumentUpload, { chapterId, supabase: {} as never });
+		const { container } = await render(DocumentUpload, { chapterId, supabase: {} as never });
 
 		const input = container.querySelector<HTMLInputElement>('#file-input');
 		choisir(input!, pdf('a-retirer.pdf'));
@@ -143,7 +143,7 @@ describe('DocumentUpload — envoi direct au stockage', () => {
 			})
 		);
 
-		const { container } = render(DocumentUpload, { chapterId, supabase });
+		const { container } = await render(DocumentUpload, { chapterId, supabase });
 
 		choisir(container.querySelector<HTMLInputElement>('#file-input')!, pdf('cours.pdf'));
 		await new Promise((resolve) => setTimeout(resolve, 20));
@@ -192,7 +192,7 @@ describe('DocumentUpload — envoi direct au stockage', () => {
 			)
 		);
 
-		const { container } = render(DocumentUpload, { chapterId, supabase });
+		const { container } = await render(DocumentUpload, { chapterId, supabase });
 
 		choisir(container.querySelector<HTMLInputElement>('#file-input')!, pdf('trop-gros.pdf'));
 		await new Promise((resolve) => setTimeout(resolve, 20));
@@ -216,7 +216,7 @@ describe('DocumentUpload — envoi direct au stockage', () => {
 			})
 		);
 
-		const { container } = render(DocumentUpload, { chapterId, supabase: {} as never });
+		const { container } = await render(DocumentUpload, { chapterId, supabase: {} as never });
 
 		container.querySelector<HTMLFormElement>('[data-testid="upload-form"]')!.requestSubmit();
 		await new Promise((resolve) => setTimeout(resolve, 40));

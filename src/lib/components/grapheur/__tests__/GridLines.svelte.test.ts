@@ -7,8 +7,8 @@ import type { Viewport } from '$lib/grapheur/types';
 const WIDTH = 800;
 const HEIGHT = 400;
 
-function renderGrid(viewport: Viewport) {
-	const { container } = render(GridLines, {
+async function renderGrid(viewport: Viewport) {
+	const { container } = await render(GridLines, {
 		viewport,
 		transformer: createTransformer(viewport, WIDTH, HEIGHT),
 		width: WIDTH,
@@ -32,8 +32,8 @@ function renderGrid(viewport: Viewport) {
  * calculées axe par axe.
  */
 describe('GridLines', () => {
-	it('gradue chaque axe séparément quand les échelles diffèrent', () => {
-		const { verticalMajor, horizontalMajor } = renderGrid({
+	it('gradue chaque axe séparément quand les échelles diffèrent', async () => {
+		const { verticalMajor, horizontalMajor } = await renderGrid({
 			xMin: -10,
 			xMax: 10,
 			yMin: -1000,
@@ -44,8 +44,8 @@ describe('GridLines', () => {
 		expect(horizontalMajor.length).toBeGreaterThanOrEqual(5);
 	});
 
-	it('suit aussi un axe des ordonnées écrasé', () => {
-		const { verticalMajor, horizontalMajor } = renderGrid({
+	it('suit aussi un axe des ordonnées écrasé', async () => {
+		const { verticalMajor, horizontalMajor } = await renderGrid({
 			xMin: -500,
 			xMax: 500,
 			yMin: -1,
@@ -61,8 +61,8 @@ describe('GridLines', () => {
 	 * `x + pas === x` en flottant : une boucle qui accumule n'avance plus jamais.
 	 * Le glissement d'axe y mène, `setViewport` ne bornant pas l'amplitude.
 	 */
-	it('ne boucle pas sur une fenêtre dégénérée', () => {
-		const { verticalMajor, horizontalMajor } = renderGrid({
+	it('ne boucle pas sur une fenêtre dégénérée', async () => {
+		const { verticalMajor, horizontalMajor } = await renderGrid({
 			xMin: 1e6 - 5e-10,
 			xMax: 1e6 + 5e-10,
 			yMin: -10,
@@ -73,8 +73,8 @@ describe('GridLines', () => {
 		expect(horizontalMajor.length).toBeGreaterThan(0);
 	});
 
-	it('plafonne le nombre de lignes par axe', () => {
-		const { verticalMajor, horizontalMajor } = renderGrid({
+	it('plafonne le nombre de lignes par axe', async () => {
+		const { verticalMajor, horizontalMajor } = await renderGrid({
 			xMin: -1e-300,
 			xMax: 1e-300,
 			yMin: -10,
@@ -91,8 +91,8 @@ describe('GridLines', () => {
 	 * différentes. Deux amplitudes égales sur un canevas non carré donnent donc
 	 * deux pas différents — et c'est voulu.
 	 */
-	it('gradue selon les pixels, pas selon l’amplitude', () => {
-		const { verticalMajor, horizontalMajor } = renderGrid({
+	it('gradue selon les pixels, pas selon l’amplitude', async () => {
+		const { verticalMajor, horizontalMajor } = await renderGrid({
 			xMin: -10,
 			xMax: 10,
 			yMin: -10,
@@ -105,9 +105,9 @@ describe('GridLines', () => {
 		expect(horizontalMajor).toHaveLength(5);
 	});
 
-	it('donne le même pas aux deux axes sur un canevas carré', () => {
+	it('donne le même pas aux deux axes sur un canevas carré', async () => {
 		const viewport: Viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 };
-		const { container } = render(GridLines, {
+		const { container } = await render(GridLines, {
 			viewport,
 			transformer: createTransformer(viewport, 800, 800),
 			width: 800,

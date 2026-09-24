@@ -36,7 +36,7 @@ describe('TopCapacitiesToRemediate', () => {
 				}
 			]
 		});
-		render(TopCapacitiesToRemediate, { classId: 'class-1' });
+		await render(TopCapacitiesToRemediate, { classId: 'class-1' });
 		await expect.element(page.getByText('Calcul fractions')).toBeVisible();
 		await expect
 			.element(page.getByText(new RegExp(`75% des ${lore.entities.student}s concernés`)))
@@ -45,7 +45,7 @@ describe('TopCapacitiesToRemediate', () => {
 
 	it('shows congratulations when no rows', async () => {
 		mockFetch({ rows: [] });
-		render(TopCapacitiesToRemediate, { classId: 'class-1' });
+		await render(TopCapacitiesToRemediate, { classId: 'class-1' });
 		await expect
 			.element(page.getByText(new RegExp(`Bravo, votre ${lore.entities.class}`)))
 			.toBeVisible();
@@ -57,7 +57,7 @@ describe('TopCapacitiesToRemediate', () => {
 			status: 500,
 			json: async () => ({ error: 'Boom' })
 		} as Response);
-		render(TopCapacitiesToRemediate, { classId: 'class-1' });
+		await render(TopCapacitiesToRemediate, { classId: 'class-1' });
 		await expect.element(page.getByText('⚠ Boom')).toBeVisible();
 	});
 });

@@ -105,7 +105,7 @@ function instanceFor(blanks: InstanceBlank[]): QuestionInstance {
 
 describe('FillBlanksInput — onglet « Unités »', () => {
 	it('focus dans un trou à unité : onglet « Unités » en plus des onglets par défaut', async () => {
-		render(FillBlanksInput, { props: { statement, blanks: [unitBlank] } });
+		await render(FillBlanksInput, { props: { statement, blanks: [unitBlank] } });
 		await focusedMathField();
 
 		await expect.poll(() => unitsLayout()).toBeDefined();
@@ -117,7 +117,7 @@ describe('FillBlanksInput — onglet « Unités »', () => {
 	});
 
 	it('5 puis la touche « km » : la valeur du trou est acceptée par la correction', async () => {
-		render(FillBlanksInput, { props: { statement, blanks: [unitBlank] } });
+		await render(FillBlanksInput, { props: { statement, blanks: [unitBlank] } });
 		const mathField = await focusedMathField();
 		await expect.poll(() => unitsLayout()).toBeDefined();
 
@@ -134,7 +134,9 @@ describe('FillBlanksInput — onglet « Unités »', () => {
 	});
 
 	it('blur puis démontage : le clavier retrouve ses onglets par défaut', async () => {
-		const { unmount } = render(FillBlanksInput, { props: { statement, blanks: [unitBlank] } });
+		const { unmount } = await render(FillBlanksInput, {
+			props: { statement, blanks: [unitBlank] }
+		});
 		const mathField = await focusedMathField();
 		await expect.poll(() => unitsLayout()).toBeDefined();
 
@@ -148,8 +150,8 @@ describe('FillBlanksInput — onglet « Unités »', () => {
 	});
 
 	it('focus qui passe à une question sans trou à unité : l’onglet disparaît', async () => {
-		render(FillBlanksInput, { props: { statement, blanks: [unitBlank] } });
-		render(FillBlanksInput, {
+		await render(FillBlanksInput, { props: { statement, blanks: [unitBlank] } });
+		await render(FillBlanksInput, {
 			props: { statement, blanks: [{ type: 'math', expectedAnswer: '3' }] }
 		});
 		await focusedMathField();
@@ -165,7 +167,7 @@ describe('FillBlanksInput — onglet « Unités »', () => {
 			expectedAnswer: '30\\unit{°}',
 			unit: { expected: true }
 		};
-		render(FillBlanksInput, { props: { statement, blanks: [angleBlank] } });
+		await render(FillBlanksInput, { props: { statement, blanks: [angleBlank] } });
 		const mathField = await focusedMathField();
 		await expect.poll(() => unitsLayout()).toBeDefined();
 

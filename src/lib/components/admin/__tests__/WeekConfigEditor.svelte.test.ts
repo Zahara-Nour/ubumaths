@@ -21,7 +21,7 @@ describe('WeekConfigEditor presets', () => {
 	}
 
 	it('applies the western preset (Monday -> Sunday)', async () => {
-		const { container } = render(WeekConfigEditor);
+		const { container } = await render(WeekConfigEditor);
 
 		await page.getByRole('button', { name: 'Occidental (Lun-Ven)' }).click();
 
@@ -32,7 +32,7 @@ describe('WeekConfigEditor presets', () => {
 	});
 
 	it('applies the israeli preset (Sunday -> Saturday)', async () => {
-		const { container } = render(WeekConfigEditor);
+		const { container } = await render(WeekConfigEditor);
 
 		await page.getByRole('button', { name: 'Israélien (Dim-Jeu)' }).click();
 
@@ -42,7 +42,7 @@ describe('WeekConfigEditor presets', () => {
 	});
 
 	it('applies the middle east preset (Saturday -> Friday)', async () => {
-		const { container } = render(WeekConfigEditor);
+		const { container } = await render(WeekConfigEditor);
 
 		await page.getByRole('button', { name: 'Moyen-Orient (Sam-Mer)' }).click();
 

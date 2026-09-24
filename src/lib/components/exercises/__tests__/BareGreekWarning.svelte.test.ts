@@ -19,7 +19,7 @@ function variation(statement: string, solution = ''): ExerciseVariation {
 
 describe('BareGreekWarning', () => {
 	it('signale ~2pi~ et propose \\pi, champ par champ', async () => {
-		render(BareGreekWarning, { variation: variation('Calculer ~2pi r~.', '~alpha+1~') });
+		await render(BareGreekWarning, { variation: variation('Calculer ~2pi r~.', '~alpha+1~') });
 		await expect.element(page.getByText('Lettre grecque sans antislash')).toBeVisible();
 		const liste = page.getByRole('listitem');
 		await expect.element(liste.nth(0)).toHaveTextContent('Énoncé : pi → \\pi');
@@ -27,7 +27,7 @@ describe('BareGreekWarning', () => {
 	});
 
 	it('rien n’est affiché quand les lettres grecques ont leur antislash', async () => {
-		render(BareGreekWarning, { variation: variation('~2\\pi r~', '~\\alpha+1~') });
+		await render(BareGreekWarning, { variation: variation('~2\\pi r~', '~\\alpha+1~') });
 		await expect.element(page.getByText('Lettre grecque sans antislash')).not.toBeInTheDocument();
 	});
 });

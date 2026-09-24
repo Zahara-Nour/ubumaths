@@ -43,33 +43,33 @@ describe('SequenceInput', () => {
 		return container.querySelector('[aria-label="Insérer le terme précédent"]');
 	}
 
-	it('propose le bouton d’insertion du terme précédent en récurrence', () => {
-		const { container } = render(SequenceInput, { sequence: sequence() });
+	it('propose le bouton d’insertion du terme précédent en récurrence', async () => {
+		const { container } = await render(SequenceInput, { sequence: sequence() });
 
 		expect(insertButton(container)).not.toBeNull();
 	});
 
-	it('ne le propose pas pour une suite explicite, qui n’a pas de terme précédent', () => {
-		const { container } = render(SequenceInput, {
+	it('ne le propose pas pour une suite explicite, qui n’a pas de terme précédent', async () => {
+		const { container } = await render(SequenceInput, {
 			sequence: sequence({ mode: 'explicit', latex: '3n+2', firstTerm: null })
 		});
 
 		expect(insertButton(container)).toBeNull();
 	});
 
-	it('porte le nom de la suite', () => {
-		const { container } = render(SequenceInput, {
+	it('porte le nom de la suite', async () => {
+		const { container } = await render(SequenceInput, {
 			sequence: sequence({ name: 'v', latex: '2v_n' })
 		});
 
 		expect(insertButton(container)?.textContent?.replace(/\s/g, '')).toBe('vn');
 	});
 
-	it('affiche le membre de gauche selon le mode', () => {
-		const recurrence = render(SequenceInput, { sequence: sequence() });
+	it('affiche le membre de gauche selon le mode', async () => {
+		const recurrence = await render(SequenceInput, { sequence: sequence() });
 		expect(recurrence.container.textContent?.replace(/\s/g, '')).toContain('un+1=');
 
-		const explicite = render(SequenceInput, {
+		const explicite = await render(SequenceInput, {
 			sequence: sequence({ mode: 'explicit', latex: '3n+2', firstTerm: null })
 		});
 		expect(explicite.container.textContent?.replace(/\s/g, '')).toContain('un=');
@@ -81,22 +81,22 @@ describe('SequenceInput', () => {
 	 * retaper une valeur ne le montre pas.
 	 */
 	describe('curseur du premier terme', () => {
-		it('affiche le curseur pour une récurrence', () => {
-			const { container } = render(SequenceInput, { sequence: sequence() });
+		it('affiche le curseur pour une récurrence', async () => {
+			const { container } = await render(SequenceInput, { sequence: sequence() });
 
 			expect(container.querySelector('[aria-label="Premier terme (curseur)"]')).not.toBeNull();
 		});
 
-		it('n’affiche pas de curseur pour une suite explicite', () => {
-			const { container } = render(SequenceInput, {
+		it('n’affiche pas de curseur pour une suite explicite', async () => {
+			const { container } = await render(SequenceInput, {
 				sequence: sequence({ mode: 'explicit', latex: '3n+2', firstTerm: null })
 			});
 
 			expect(container.querySelector('[aria-label="Premier terme (curseur)"]')).toBeNull();
 		});
 
-		it('expose des bornes réglables', () => {
-			const { container } = render(SequenceInput, { sequence: sequence() });
+		it('expose des bornes réglables', async () => {
+			const { container } = await render(SequenceInput, { sequence: sequence() });
 
 			const min = container.querySelector<HTMLInputElement>(
 				'[aria-label="Borne inférieure du curseur"]'
@@ -109,8 +109,8 @@ describe('SequenceInput', () => {
 			expect(max?.value).toBe('10');
 		});
 
-		it('garde le champ de saisie exacte à côté du curseur', () => {
-			const { container } = render(SequenceInput, { sequence: sequence() });
+		it('garde le champ de saisie exacte à côté du curseur', async () => {
+			const { container } = await render(SequenceInput, { sequence: sequence() });
 
 			expect(container.querySelector('[aria-label="Premier terme"]')).not.toBeNull();
 		});

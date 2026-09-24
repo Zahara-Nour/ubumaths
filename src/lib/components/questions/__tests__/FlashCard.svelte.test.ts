@@ -32,7 +32,7 @@ describe('FlashCard — face réponse sans réponse structurée', () => {
 	}
 
 	it('renvoie vers l’explication quand il y en a une', async () => {
-		const { container } = render(FlashCard, {
+		const { container } = await render(FlashCard, {
 			instance: instance({
 				correction: { steps: [resolvedMarkdown('On réduit au même dénominateur.')] }
 			} as Partial<QuestionInstance>)
@@ -44,7 +44,7 @@ describe('FlashCard — face réponse sans réponse structurée', () => {
 	});
 
 	it('le dit explicitement quand il n’y a rien à montrer', async () => {
-		const { container } = render(FlashCard, { instance: instance() });
+		const { container } = await render(FlashCard, { instance: instance() });
 
 		await flipToAnswer(container);
 
@@ -52,7 +52,7 @@ describe('FlashCard — face réponse sans réponse structurée', () => {
 	});
 
 	it('ne montre pas le repli quand la question a des blancs', async () => {
-		const { container } = render(FlashCard, {
+		const { container } = await render(FlashCard, {
 			instance: instance({
 				blanks: [{ expectedAnswer: '5/4', type: 'math' }]
 			} as Partial<QuestionInstance>)

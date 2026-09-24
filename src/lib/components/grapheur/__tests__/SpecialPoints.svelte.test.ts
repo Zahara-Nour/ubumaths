@@ -7,10 +7,10 @@ import type { Viewport } from '$lib/grapheur/types';
 
 const viewport: Viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 };
 
-function renderPoints() {
+async function renderPoints() {
 	grapheurStore.setViewport(viewport);
 
-	return render(SpecialPoints, {
+	return await render(SpecialPoints, {
 		transformer: createTransformer(viewport, 800, 800)
 	});
 }
@@ -31,18 +31,18 @@ describe('SpecialPoints', () => {
 		grapheurStore.fullReset();
 	});
 
-	it('affiche le sommet d’une parabole', () => {
+	it('affiche le sommet d’une parabole', async () => {
 		grapheurStore.addFunction('x^2-2');
-		const { container } = renderPoints();
+		const { container } = await renderPoints();
 
 		const markers = container.querySelectorAll('path.extremum-marker');
 		expect(markers).toHaveLength(1);
 		expect(titles(container, 'path.extremum-marker')[0]).toContain('Min');
 	});
 
-	it('affiche les deux zéros de x²−2', () => {
+	it('affiche les deux zéros de x²−2', async () => {
 		grapheurStore.addFunction('x^2-2');
-		const { container } = renderPoints();
+		const { container } = await renderPoints();
 
 		expect(container.querySelectorAll('path.root-marker')).toHaveLength(2);
 	});
@@ -51,9 +51,9 @@ describe('SpecialPoints', () => {
 	 * `<title>` ne porte que du texte, donc pas de LaTeX : la valeur exacte y est
 	 * écrite en syntaxe custom. C'est ce qu'un lecteur d'écran annonce.
 	 */
-	it('écrit la valeur exacte dans l’étiquette d’un zéro', () => {
+	it('écrit la valeur exacte dans l’étiquette d’un zéro', async () => {
 		grapheurStore.addFunction('x^2-2');
-		const { container } = renderPoints();
+		const { container } = await renderPoints();
 
 		const labels = titles(container, 'path.root-marker');
 		expect(labels).toHaveLength(2);
@@ -61,25 +61,25 @@ describe('SpecialPoints', () => {
 		expect(labels.every((l) => !l.includes('1.414'))).toBe(true);
 	});
 
-	it('écrit l’ordonnée exacte et réduite d’un extremum', () => {
+	it('écrit l’ordonnée exacte et réduite d’un extremum', async () => {
 		grapheurStore.addFunction('x^2-2');
-		const { container } = renderPoints();
+		const { container } = await renderPoints();
 
 		expect(titles(container, 'path.extremum-marker')[0]).toBe('Min : (0 ; -2)');
 	});
 
-	it('retombe sur la valeur approchée quand il n’y a pas d’exacte', () => {
+	it('retombe sur la valeur approchée quand il n’y a pas d’exacte', async () => {
 		grapheurStore.addFunction('e^x-x-2');
-		const { container } = renderPoints();
+		const { container } = await renderPoints();
 
 		const labels = titles(container, 'path.root-marker');
 		expect(labels.length).toBeGreaterThan(0);
 		expect(labels.every((l) => /\d/.test(l))).toBe(true);
 	});
 
-	it('n’invente pas de zéro pour (x-1)²', () => {
+	it('n’invente pas de zéro pour (x-1)²', async () => {
 		grapheurStore.addFunction('(x-1)^2');
-		const { container } = renderPoints();
+		const { container } = await renderPoints();
 
 		const labels = titles(container, 'path.root-marker');
 		expect(labels).toHaveLength(1);
@@ -94,7 +94,7 @@ describe('SpecialPoints', () => {
 	 * d'infobulle à eux — elle serait inatteignable — et pourquoi la forme
 	 * rendue (√2) se lit dans l'infobulle du survol.
 	 */
-	it('s’efface au profit du survol quand celui-ci s’y accroche', () => {
+	it('s’efface au profit du survol quand celui-ci s’y accroche', async () => {
 		grapheurStore.addFunction('x^2-2');
 		grapheurStore.setSnappedPoint({
 			x: Math.SQRT2,
@@ -103,17 +103,17 @@ describe('SpecialPoints', () => {
 			functionIds: [grapheurStore.functions[0].id]
 		});
 
-		const { container } = renderPoints();
+		const { container } = await renderPoints();
 
 		// Le zéro en −√2 reste, celui en +√2 laisse la place au survol.
 		expect(container.querySelectorAll('path.root-marker')).toHaveLength(1);
 		expect(titles(container, 'path.root-marker')[0]).toContain('-sqrt(2)');
 	});
 
-	it('n’analyse rien pendant une interaction', () => {
+	it('n’analyse rien pendant une interaction', async () => {
 		grapheurStore.addFunction('x^2-2');
 		grapheurStore.setInteracting(true);
-		const { container } = renderPoints();
+		const { container } = await renderPoints();
 
 		expect(container.querySelectorAll('path.root-marker')).toHaveLength(0);
 		grapheurStore.setInteracting(false);

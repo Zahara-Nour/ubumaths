@@ -19,7 +19,7 @@ async function settle() {
 }
 
 async function openData(atelier = new Atelier()) {
-	const view = render(AtelierContainer, { atelier, ephemeral: true, view: 'donnees' });
+	const view = await render(AtelierContainer, { atelier, ephemeral: true, view: 'donnees' });
 	await settle();
 	return { ...view, atelier };
 }

@@ -23,8 +23,8 @@ describe('ParameterInput', () => {
 		grapheurStore.fullReset();
 	});
 
-	it('affiche le nom, la valeur et le curseur', () => {
-		const { container } = render(ParameterInput, { parameter });
+	it('affiche le nom, la valeur et le curseur', async () => {
+		const { container } = await render(ParameterInput, { parameter });
 
 		// Le nom vit dans un champ depuis qu'il est modifiable, plus dans le texte.
 		expect(
@@ -36,8 +36,8 @@ describe('ParameterInput', () => {
 		).toBe('3');
 	});
 
-	it('expose des bornes réglables', () => {
-		const { container } = render(ParameterInput, { parameter });
+	it('expose des bornes réglables', async () => {
+		const { container } = await render(ParameterInput, { parameter });
 
 		expect(
 			container.querySelector<HTMLInputElement>('[aria-label="Borne inférieure de a"]')?.value
@@ -47,16 +47,16 @@ describe('ParameterInput', () => {
 		).toBe('5');
 	});
 
-	it('permet de renommer le paramètre', () => {
-		const { container } = render(ParameterInput, { parameter });
+	it('permet de renommer le paramètre', async () => {
+		const { container } = await render(ParameterInput, { parameter });
 
 		expect(
 			container.querySelector<HTMLInputElement>('[aria-label="Nom du paramètre a"]')?.value
 		).toBe('a');
 	});
 
-	it('propose de supprimer le paramètre', () => {
-		const { container } = render(ParameterInput, { parameter });
+	it('propose de supprimer le paramètre', async () => {
+		const { container } = await render(ParameterInput, { parameter });
 
 		expect(container.querySelector('[aria-label="Supprimer le paramètre a"]')).not.toBeNull();
 	});
@@ -67,23 +67,23 @@ describe('FunctionPanel — section des paramètres', () => {
 		grapheurStore.fullReset();
 	});
 
-	it('propose d’ajouter un paramètre', () => {
-		const { container } = render(FunctionPanel);
+	it('propose d’ajouter un paramètre', async () => {
+		const { container } = await render(FunctionPanel);
 
 		expect(container.querySelector('[aria-label="Ajouter un paramètre"]')).not.toBeNull();
 	});
 
-	it('n’affiche aucune section tant qu’il n’y a pas de paramètre', () => {
-		const { container } = render(FunctionPanel);
+	it('n’affiche aucune section tant qu’il n’y a pas de paramètre', async () => {
+		const { container } = await render(FunctionPanel);
 
 		expect(container.querySelector('[aria-label="Paramètres"]')).toBeNull();
 	});
 
-	it('liste les paramètres déclarés, nommés a puis b', () => {
+	it('liste les paramètres déclarés, nommés a puis b', async () => {
 		grapheurStore.addParameter();
 		grapheurStore.addParameter();
 
-		const { container } = render(FunctionPanel);
+		const { container } = await render(FunctionPanel);
 		const section = container.querySelector('[aria-label="Paramètres"]');
 
 		expect(section).not.toBeNull();

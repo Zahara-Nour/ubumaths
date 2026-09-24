@@ -22,13 +22,13 @@ describe('FunctionInput — le curseur de tangente garde une largeur stable', ()
 		grapheurStore.setViewport({ xMin: -10, xMax: 10, yMin: -10, yMax: 10 });
 	});
 
-	function renderWithTangent() {
+	async function renderWithTangent() {
 		const id = grapheurStore.addFunction('x^3-3x');
 		grapheurStore.updateFunction(id, { tangentAt: 0 });
 
 		// Le panneau lit le store : le composant suit donc les changements de
 		// valeur, ce qu'un instantané de la fonction ne ferait pas.
-		const { container } = render(FunctionPanel);
+		const { container } = await render(FunctionPanel);
 		// Le conteneur de test n'a pas de largeur propre ; on en donne une au
 		// panneau — surtout pas au curseur, dont la largeur est ce qu'on mesure.
 		(container.querySelector('.function-panel') as HTMLElement).style.width = '460px';
@@ -37,7 +37,7 @@ describe('FunctionInput — le curseur de tangente garde une largeur stable', ()
 	}
 
 	it('la largeur du curseur ne dépend pas de la valeur affichée', async () => {
-		const { id, container } = renderWithTangent();
+		const { id, container } = await renderWithTangent();
 		const slider = container.querySelector('[aria-label="Abscisse du point de tangence"]')!;
 
 		const widths = new Set<number>();
@@ -50,8 +50,8 @@ describe('FunctionInput — le curseur de tangente garde une largeur stable', ()
 		expect([...widths]).toHaveLength(1);
 	});
 
-	it('le curseur occupe une largeur exploitable', () => {
-		const { container } = renderWithTangent();
+	it('le curseur occupe une largeur exploitable', async () => {
+		const { container } = await renderWithTangent();
 		const slider = container.querySelector('[aria-label="Abscisse du point de tangence"]')!;
 
 		expect(slider.getBoundingClientRect().width).toBeGreaterThan(100);

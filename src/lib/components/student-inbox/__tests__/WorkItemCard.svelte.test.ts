@@ -52,7 +52,7 @@ function makeItem(source: WorkSource, overrides: Partial<WorkItem> = {}): WorkIt
 describe('WorkItemCard - title', () => {
 	it('renders the item title', async () => {
 		const item = makeItem('exercise', { title: 'Théorème de Pythagore' });
-		render(WorkItemCard, { props: { item } });
+		await render(WorkItemCard, { props: { item } });
 
 		await expect.element(page.getByText('Théorème de Pythagore')).toBeVisible();
 	});
@@ -74,7 +74,7 @@ describe('WorkItemCard - badge per source', () => {
 	for (const [source, expectedLabel] of cases) {
 		it(`renders "${expectedLabel}" badge for source=${source}`, async () => {
 			const item = makeItem(source);
-			render(WorkItemCard, { props: { item } });
+			await render(WorkItemCard, { props: { item } });
 
 			await expect.element(page.getByText(expectedLabel, { exact: true })).toBeVisible();
 		});
@@ -97,7 +97,7 @@ describe('WorkItemCard - CTA verb per source', () => {
 	for (const [source, expectedCta] of cases) {
 		it(`renders "${expectedCta}" CTA for source=${source} (default todo, not viewed)`, async () => {
 			const item = makeItem(source);
-			render(WorkItemCard, { props: { item } });
+			await render(WorkItemCard, { props: { item } });
 
 			await expect.element(page.getByText(expectedCta, { exact: true })).toBeVisible();
 		});
@@ -111,7 +111,7 @@ describe('WorkItemCard - CTA verb per source', () => {
 describe('WorkItemCard - viewed indicator', () => {
 	it('shows viewed dot when viewed=true && status="todo"', async () => {
 		const item = makeItem('exercise', { viewed: true, status: 'todo' });
-		render(WorkItemCard, { props: { item } });
+		await render(WorkItemCard, { props: { item } });
 
 		// The dot is a <span title="Déjà ouvert"> ; Playwright's getByTitle
 		// matches the `title` attribute.
@@ -120,7 +120,7 @@ describe('WorkItemCard - viewed indicator', () => {
 
 	it('does NOT show viewed dot when viewed=false', async () => {
 		const item = makeItem('exercise', { viewed: false, status: 'todo' });
-		render(WorkItemCard, { props: { item } });
+		await render(WorkItemCard, { props: { item } });
 
 		await expect.element(page.getByTitle('Déjà ouvert')).not.toBeInTheDocument();
 	});
@@ -128,7 +128,7 @@ describe('WorkItemCard - viewed indicator', () => {
 	it('does NOT show viewed dot when status="done" (item lives in "Fait" section)', async () => {
 		const doneAt = new Date(Date.now() - 60 * 60 * 1000).toISOString(); // 1h ago
 		const item = makeItem('exercise', { viewed: true, status: 'done', doneAt });
-		render(WorkItemCard, { props: { item } });
+		await render(WorkItemCard, { props: { item } });
 
 		await expect.element(page.getByTitle('Déjà ouvert')).not.toBeInTheDocument();
 	});
@@ -142,7 +142,7 @@ describe('WorkItemCard - done date label', () => {
 	it('shows "Fait <relative>" when status="done"', async () => {
 		const doneAt = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(); // 2d ago
 		const item = makeItem('worksheet', { status: 'done', doneAt, dueAt: null });
-		render(WorkItemCard, { props: { item } });
+		await render(WorkItemCard, { props: { item } });
 
 		// We render "Fait <relative>" via date-fns `formatDistanceToNow` (French
 		// locale, addSuffix:true → "il y a 2 jours"). Assert on the prefix; the
@@ -152,7 +152,7 @@ describe('WorkItemCard - done date label', () => {
 
 	it('does NOT show any date line when both dueAt and doneAt are null', async () => {
 		const item = makeItem('python', { status: 'todo', dueAt: null, doneAt: null });
-		render(WorkItemCard, { props: { item } });
+		await render(WorkItemCard, { props: { item } });
 
 		// The title still renders, but no "Fait" prefix is shown
 		await expect.element(page.getByText(/^Fait /)).not.toBeInTheDocument();

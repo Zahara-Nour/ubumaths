@@ -9,11 +9,11 @@ const viewport: Viewport = { xMin: -1, xMax: 6, yMin: -4, yMax: 4 };
 const WIDTH = 800;
 const HEIGHT = 800;
 
-function hoverAt(x: number, y: number) {
+async function hoverAt(x: number, y: number) {
 	grapheurStore.setViewport(viewport);
 	grapheurStore.setCursor({ x, y });
 
-	return render(CurveHover, {
+	return await render(CurveHover, {
 		transformer: createTransformer(viewport, WIDTH, HEIGHT),
 		width: WIDTH,
 		height: HEIGHT
@@ -31,11 +31,11 @@ describe('CurveHover — termes de suite', () => {
 		grapheurStore.setInteracting(false);
 	});
 
-	it('affiche la valeur exacte du terme survolé', () => {
+	it('affiche la valeur exacte du terme survolé', async () => {
 		const id = grapheurStore.addSequence('explicit', '3\\cdot\\left(-\\frac12\\right)^n');
 		grapheurStore.updateSequence(id, { firstIndex: 0 });
 
-		const { container } = hoverAt(3, -0.375);
+		const { container } = await hoverAt(3, -0.375);
 		const math = container.querySelector('.tooltip-math');
 
 		expect(math).not.toBeNull();
@@ -45,21 +45,21 @@ describe('CurveHover — termes de suite', () => {
 		expect(math?.textContent).not.toContain('0.375');
 	});
 
-	it('nomme le rang survolé', () => {
+	it('nomme le rang survolé', async () => {
 		const id = grapheurStore.addSequence('explicit', '2n');
 		grapheurStore.updateSequence(id, { firstIndex: 0 });
 
-		const { container } = hoverAt(2, 4);
+		const { container } = await hoverAt(2, 4);
 
 		// u₂ = 4 : le rang comme la valeur sont dans l'étiquette.
 		expect(container.querySelector('.tooltip-math')?.textContent).toContain('2');
 		expect(container.querySelector('.tooltip-math')?.textContent).toContain('4');
 	});
 
-	it('n’affiche rien loin de tout terme', () => {
+	it('n’affiche rien loin de tout terme', async () => {
 		grapheurStore.addSequence('explicit', '2n');
 
-		const { container } = hoverAt(2.5, -3.5);
+		const { container } = await hoverAt(2.5, -3.5);
 
 		expect(container.querySelector('.tooltip-math')).toBeNull();
 		expect(container.querySelector('text.tooltip-text')).toBeNull();
