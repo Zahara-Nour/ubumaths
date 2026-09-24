@@ -103,7 +103,8 @@ describe('PythonPlaygroundStore', () => {
 		});
 
 		// Mock Worker - must be done before importing module
-		globalThis.Worker = vi.fn().mockImplementation((url: URL, options?: WorkerOptions) => {
+		// `function` et non flèche : vitest 4 appelle le mock avec `new`
+		globalThis.Worker = vi.fn().mockImplementation(function (url: URL, options?: WorkerOptions) {
 			return new MockWorker(url, options);
 		}) as unknown as typeof Worker;
 
@@ -1213,7 +1214,9 @@ describe('PythonPlaygroundStore', () => {
 	describe('Worker Not Supported', () => {
 		it('should handle Worker constructor error', async () => {
 			// Make Worker throw an error
-			globalThis.Worker = vi.fn().mockImplementation(() => {
+			// Une flèche lèverait « is not a constructor » (vitest 4) : l'erreur
+			// testée ne serait plus celle-ci, et le test passerait pour une autre raison
+			globalThis.Worker = vi.fn().mockImplementation(function () {
 				throw new Error('Worker is not supported');
 			}) as unknown as typeof Worker;
 

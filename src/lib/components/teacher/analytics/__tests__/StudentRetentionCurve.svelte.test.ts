@@ -4,7 +4,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 import StudentRetentionCurve from '../StudentRetentionCurve.svelte';
 
 describe('StudentRetentionCurve', () => {

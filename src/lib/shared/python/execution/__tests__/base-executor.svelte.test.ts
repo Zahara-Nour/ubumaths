@@ -134,7 +134,8 @@ describe('BasePythonExecutor.validateExercise', () => {
 	beforeEach(() => {
 		MockWorker.reset();
 		vi.clearAllMocks();
-		globalThis.Worker = vi.fn().mockImplementation((url: URL, options?: WorkerOptions) => {
+		// `function` et non flèche : vitest 4 appelle le mock avec `new`
+		globalThis.Worker = vi.fn().mockImplementation(function (url: URL, options?: WorkerOptions) {
 			return new MockWorker(url, options);
 		}) as unknown as typeof Worker;
 		executor = new TestExecutor();

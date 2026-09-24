@@ -9,7 +9,7 @@
  * @module components/markdown/__tests__/VariationTable.svelte.test
  */
 
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import VariationTable from '../nodes/VariationTable.svelte';

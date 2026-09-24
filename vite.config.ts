@@ -4,6 +4,7 @@ import { loadEnv } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { readFileSync } from 'fs';
 import { visualizer } from 'rollup-plugin-visualizer';
+import { playwright } from '@vitest/browser-playwright';
 import { baseTestConfig } from './vitest.base.config';
 
 // Read version from package.json at build time
@@ -146,7 +147,7 @@ export default defineConfig(({ mode }) => {
 						environment: 'browser',
 						browser: {
 							enabled: true,
-							provider: 'playwright',
+							provider: playwright(),
 							instances: [{ browser: 'chromium' }]
 						},
 						include: ['src/**/*.svelte.{test,spec}.{js,ts}'],

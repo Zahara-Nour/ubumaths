@@ -14,7 +14,7 @@
  * Source : src/lib/components/srs/CapacityFsrsBadge.svelte (chantier 2026-06-10)
  */
 
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import CapacityFsrsBadge from '../CapacityFsrsBadge.svelte';

@@ -7,7 +7,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { lore } from '$lib/config/lore';
 import { render } from 'vitest-browser-svelte';
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 import ClassCapacityGrid from '../ClassCapacityGrid.svelte';
 
 const sampleGrid = {
