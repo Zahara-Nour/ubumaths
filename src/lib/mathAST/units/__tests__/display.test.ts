@@ -16,7 +16,7 @@ function renderWithMathLive(latex: string) {
 	const markup = convertLatexToMarkup(latex);
 	return {
 		hasError: markup.includes('ML__error'),
-		text: markup.replace(/<[^>]+>/g, '').replace(/​/g, '')
+		text: markup.replace(/<[^>]+>/g, '').replace(/\u200b/g, '')
 	};
 }
 
