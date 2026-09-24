@@ -2526,6 +2526,10 @@ export function convertLatexToTypstMath(latex: string): string {
 	// parses as unknown variable "xbracket". The leading space in replacements above
 	// handles most cases, but the French interval regex return value may also need it.
 	result = result.replace(/([a-zA-Z0-9)])bracket\./g, '$1 bracket.');
+	// Même risque après le symbole : « ]0 » donnerait « bracket.r0 », que Typst lit
+	// comme un modificateur inconnu (« unknown symbol modifier ») et qui fait échouer
+	// tout le document.
+	result = result.replace(/(bracket\.[lr])(?=[a-zA-Z0-9])/g, '$1 ');
 
 	// Restore content block brackets (from \textcolor conversion)
 	result = result.replace(/<<<CONTENT_L>>>/g, '[');
