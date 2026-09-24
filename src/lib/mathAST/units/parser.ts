@@ -9,7 +9,7 @@
  *   unit_expr = term (('.' | '*' | '·' | '/') term)*
  *   term      = symbol ('^' exponent)?
  *   symbol    = [a-zA-Z€$°μΩ]+
- *   exponent  = '-'? [0-9]+
+ *   exponent  = '-'? [0-9]+  |  '{' '-'? [0-9]+ '}'
  *
  * @module mathAST/units/parser
  */
@@ -90,6 +90,11 @@ function tokenize(input: string): Token[] {
 			position++; // Skip ^
 			let exponentStr = '';
 
+			// Exposant entre accolades, comme ailleurs dans la notation : `s^{-1}`.
+			// La forme nue `s^-1` reste acceptée.
+			const braced = input[position] === '{';
+			if (braced) position++;
+
 			// Optional minus sign
 			if (position < input.length && input[position] === '-') {
 				exponentStr += '-';
@@ -107,10 +112,16 @@ function tokenize(input: string): Token[] {
 				return [];
 			}
 
+			const exponentEnd = position;
+			if (braced) {
+				if (input[position] !== '}') return []; // accolade non refermée
+				position++;
+			}
+
 			tokens.push({
 				type: 'EXPONENT',
 				value: exponentStr,
-				position: position - exponentStr.length
+				position: exponentEnd - exponentStr.length
 			});
 			continue;
 		}
@@ -332,6 +343,24 @@ export function parseUnitTerms(input: string): readonly UnitTerm[] | null {
 	const tokens = tokenize(trimmed);
 	if (tokens.length === 0) return null;
 	return parseTerms(tokens);
+}
+
+/**
+ * Les morceaux d'une écriture d'unité, dans l'ordre où elle est écrite :
+ * symboles, opérateurs (`.`, `*`, `·`, `/`) et exposants. Sert à l'AFFICHER
+ * telle que l'auteur l'a écrite (`km/h` garde sa barre), là où `parse` la
+ * réduit à ses composants. Rend `null` si l'écriture n'est pas lisible.
+ *
+ * @example
+ * tokenizeUnitWriting('m.s^{-1}')
+ * // [{ SYMBOL m }, { OPERATOR . }, { SYMBOL s }, { EXPONENT -1 }]
+ */
+export function tokenizeUnitWriting(
+	input: string
+): readonly { type: 'SYMBOL' | 'OPERATOR' | 'EXPONENT'; value: string }[] | null {
+	const tokens = tokenize(input.trim());
+	if (tokens.length === 0) return null;
+	return tokens.flatMap((t) => (t.type === 'EOF' ? [] : [{ type: t.type, value: t.value }]));
 }
 
 export function parseOrThrow(input: string): Unit {

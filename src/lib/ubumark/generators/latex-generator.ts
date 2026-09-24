@@ -38,6 +38,7 @@ import {
 } from '$lib/exercises/services/image-dimensions';
 import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
 import { toFrenchDecimal } from '$lib/utils/french-math';
+import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { generateVariationTableLatex } from './variation-table-latex';
 import { generateProbabilityTreeLatex } from './probability-tree-latex';
 
@@ -257,7 +258,7 @@ function generateInline(node: InlineNode, _options: Required<LatexTranspilerOpti
 			const latex =
 				node.syntax === 'custom'
 					? expressionToLatex(node.expression, 'custom')
-					: toFrenchDecimal(node.expression);
+					: displayUnitsInLatex(toFrenchDecimal(node.expression));
 			return `$${latex}$`;
 		}
 
@@ -471,7 +472,7 @@ function generateMathBlock(node: MathBlockNode): string {
 	const latex =
 		node.syntax === 'custom'
 			? expressionToLatex(node.expression, 'custom')
-			: toFrenchDecimal(node.expression);
+			: displayUnitsInLatex(toFrenchDecimal(node.expression));
 	return `\\[${latex}\\]`;
 }
 

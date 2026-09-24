@@ -28,6 +28,7 @@ import { Tokenizer } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from './color-stack';
 import { MathAST, compose, matrix, complex, euler } from '../../factory';
 import { parse as parseUnit } from '../../units/parser';
+import { UNIT_SPACE_MESSAGE } from '../custom/unit-writing';
 import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
 import { SecurityError, checkInputLength, getEffectiveSecurityOptions } from '../security';
 import type { ParserSecurityOptions } from '../security';
@@ -2118,33 +2119,45 @@ class PrattParser {
 	 */
 	private parseUnitString(): string {
 		let unitStr = '';
+		// Accolades d'exposant ouvertes : `\unit{m.s^{-1}}` — seule l'accolade
+		// fermante de profondeur 0 termine l'unité.
+		let depth = 0;
+		// Fin du jeton précédent, pour retrouver une espace que le tokenizer a
+		// sautée : `\unit{m s^-1}` se recollerait en `ms`, la milliseconde.
+		// L'espace qui suit une commande (`\cdot s`) la termine : elle ne compte pas.
+		let previousEnd: number | null = null;
 
-		// Collect tokens until closing brace
-		while (!this.check('RBRACE') && !this.check('EOF')) {
+		while (!this.check('EOF') && !(this.check('RBRACE') && depth === 0)) {
 			const token = this.currentToken;
-			if (token.type === 'LETTER') {
-				unitStr += token.value;
-			} else if (token.type === 'NUMBER') {
-				unitStr += token.value;
+			let piece: string;
+			if (token.type === 'LETTER' || token.type === 'NUMBER') {
+				piece = token.value;
 			} else if (token.type === 'CARET') {
-				unitStr += '^';
+				piece = '^';
 			} else if (token.type === 'MINUS') {
-				unitStr += '-';
+				piece = '-';
 			} else if (token.type === 'SLASH') {
-				unitStr += '/';
+				piece = '/';
 			} else if (token.type === 'STAR') {
-				unitStr += '*';
+				piece = '*';
+			} else if (token.type === 'LBRACE') {
+				piece = '{';
+				depth++;
+			} else if (token.type === 'RBRACE') {
+				piece = '}';
+				depth--;
 			} else if (token.type === 'COMMAND') {
 				// Some commands like \cdot might appear in units
-				if (token.value === 'cdot') {
-					unitStr += '.';
-				} else {
-					// Skip unknown commands in units
-					unitStr += token.value;
-				}
+				piece = token.value === 'cdot' ? '.' : token.value;
 			} else {
 				break;
 			}
+
+			if (previousEnd !== null && token.position > previousEnd) {
+				this.error(UNIT_SPACE_MESSAGE, previousEnd, 1, 'INVALID_UNIT');
+			}
+			unitStr += piece;
+			previousEnd = token.type === 'COMMAND' ? null : token.position + token.length;
 			this.advance();
 		}
 

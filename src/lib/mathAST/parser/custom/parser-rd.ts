@@ -41,7 +41,7 @@ import { CustomTokenizer, type CustomToken, type CustomTokenType } from './token
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
 import { MathAST, euler, complex } from '../../factory';
 import { parse as parseUnit } from '../../units/parser';
-import { UNIT_TOKEN_TEXT, UNIT_WRITING } from './unit-writing';
+import { readUnitWriting, UNIT_SPACE_MESSAGE } from './unit-writing';
 import {
 	SecurityError,
 	getEffectiveSecurityOptions,
@@ -1284,14 +1284,13 @@ class CustomRDParser {
 		// une expression : on recolle le texte des jetons jusqu'au `]`, quel que
 		// soit leur type. Sans cela, `2[min]` échouait — le tokenizer y voit la
 		// fonction `min` (finding I4 de la revue du 2026-09-20).
-		let unitStr = '';
-
-		while (!this.check('RBRACKET') && !this.check('EOF')) {
-			const token = this.currentToken;
-			const text = UNIT_TOKEN_TEXT[token.type] ?? token.value;
-			if (text === '' || !UNIT_WRITING.test(text)) break;
-			unitStr += text;
-			this.advance();
+		const { text: unitStr, spaceAt } = readUnitWriting(
+			() => this.currentToken,
+			() => this.advance(),
+			(token) => token.type === 'RBRACKET' || token.type === 'EOF'
+		);
+		if (spaceAt !== null) {
+			this.error(UNIT_SPACE_MESSAGE, spaceAt, 1, 'INVALID_UNIT');
 		}
 
 		this.expect('RBRACKET', "Expected ']' after unit");

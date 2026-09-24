@@ -51,7 +51,8 @@ import type {
 	TypstTranspilerOptions
 } from '$lib/exercises/types';
 import { getDimensionsForFormat } from '$lib/exercises/services/image-dimensions';
-import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
+import { expressionToRawLatex } from '$lib/components/markdown/utils/math-utils';
+import { unitWritingToTypst } from '$lib/mathAST/units/display';
 import { toFrenchDecimal } from '$lib/utils/french-math';
 import { generateVariationTableTypst } from './variation-table-typst';
 import { generateProbabilityTreeTypst } from './probability-tree-typst';
@@ -354,7 +355,7 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
 		case 'math-inline': {
 			const latex =
 				node.syntax === 'custom'
-					? expressionToLatex(node.expression, 'custom')
+					? expressionToRawLatex(node.expression, 'custom')
 					: toFrenchDecimal(node.expression);
 			// Convert LaTeX math to Typst math syntax
 			const typstMath = convertLatexToTypstMath(latex);
@@ -681,7 +682,7 @@ const ALIGNMENT_SYMBOL_PATTERN =
 function generateMathBlock(node: MathBlockNode): string {
 	const latex =
 		node.syntax === 'custom'
-			? expressionToLatex(node.expression, 'custom')
+			? expressionToRawLatex(node.expression, 'custom')
 			: toFrenchDecimal(node.expression);
 
 	// Check if this is an aligned equation (contains \begin{align} etc.)
@@ -1857,33 +1858,6 @@ function replaceLatexCmd(
 	});
 }
 
-/**
- * Convertit le contenu d'un `\unit{…}` (forme saisie : `cm`, `m^2`, `km/h`, `m.s^-1`)
- * en Typst : lettres en romain, `/` en chaîne (une barre nue ferait une
- * fraction en Typst), `.` en point de produit, exposants conservés.
- *
- * @example
- * convertUnitToTypst('km/h') → 'upright("km")"/"upright("h")'
- */
-function convertUnitToTypst(unit: string): string {
-	const parts: string[] = [];
-	const tokenPattern = /\^\s*(\{[^{}]*\}|-?\d+)|([^\s^/.·{}\\]+)|(\/)|(\.|·|\\cdot)/g;
-	for (const [, exponent, symbol, slash, dot] of unit.matchAll(tokenPattern)) {
-		if (exponent !== undefined) {
-			const last = parts.pop() ?? '';
-			parts.push(`${last}^(${exponent.replace(/[{}]/g, '')})`);
-		} else if (symbol !== undefined) {
-			parts.push(/^-?\d+$/.test(symbol) ? symbol : `upright("${symbol}")`);
-		} else if (slash !== undefined) {
-			parts.push('"/"');
-		} else if (dot !== undefined) {
-			parts.push('dot.op');
-		}
-	}
-	// Barre collée à ses voisins : « km/h », pas « km / h »
-	return parts.join(' ').replace(/ "\/" /g, '"/"');
-}
-
 export function convertLatexToTypstMath(latex: string): string {
 	let result = latex;
 
@@ -1902,7 +1876,7 @@ export function convertLatexToTypstMath(latex: string): string {
 	// ne doivent être touchés par aucune règle suivante (double prime, fraction).
 	const unitPlaceholders: string[] = [];
 	result = result.replace(/\s*~?\s*\\unit\s*\{((?:[^{}]|\{[^{}]*\})*)\}/g, (_m, unit: string) => {
-		unitPlaceholders.push(convertUnitToTypst(unit));
+		unitPlaceholders.push(unitWritingToTypst(unit));
 		return ` thin <<<UNIT${unitPlaceholders.length - 1}>>>`;
 	});
 
