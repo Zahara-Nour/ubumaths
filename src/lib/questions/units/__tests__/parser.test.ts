@@ -498,32 +498,25 @@ describe('Unit Expression Parsing', () => {
 	// --- Parentheses ---
 
 	describe('Parentheses', () => {
-		test('parses (m/s) with parentheses', () => {
-			const unit = parseUnitExpression('(m/s)');
-			expect(unit).not.toBeNull();
-			expect(unit?.components.get('m')).toBe(1);
+		// Décision du 2026-09-24 (docs/ref/notation-unites.md) : une seule règle
+		// d'écriture pour toute l'application. Les parenthèses ne servent qu'au
+		// dénominateur (`kg/(m.s)`) ; une unité entière entre parenthèses, au carré
+		// ou imbriquée, est refusée — pour m²/s², écrire `m^2/s^2`.
+		test('parses a parenthesised denominator: kg/(m.s)', () => {
+			const unit = parseUnitExpression('kg/(m.s)');
+			expect(unit?.components.get('g')).toBe(1);
+			expect(unit?.components.get('m')).toBe(-1);
 			expect(unit?.components.get('s')).toBe(-1);
 		});
 
-		test('parses (m/s)² with power after parentheses', () => {
-			const unit = parseUnitExpression('(m/s)²');
-			expect(unit).not.toBeNull();
-			expect(unit?.components.get('m')).toBe(2);
-			expect(unit?.components.get('s')).toBe(-2);
+		test.each(['(m/s)', '(m/s)²', '(m/s)^2', '((m/s))'])('refuses %s', (writing) => {
+			expect(parseUnitExpression(writing)).toBeNull();
 		});
 
-		test('parses (m/s)^2 with caret after parentheses', () => {
-			const unit = parseUnitExpression('(m/s)^2');
-			expect(unit).not.toBeNull();
+		test('m^2/s^2 is the way to write (m/s)²', () => {
+			const unit = parseUnitExpression('m^2/s^2');
 			expect(unit?.components.get('m')).toBe(2);
 			expect(unit?.components.get('s')).toBe(-2);
-		});
-
-		test('parses nested parentheses', () => {
-			const unit = parseUnitExpression('((m/s))');
-			expect(unit).not.toBeNull();
-			expect(unit?.components.get('m')).toBe(1);
-			expect(unit?.components.get('s')).toBe(-1);
 		});
 	});
 
