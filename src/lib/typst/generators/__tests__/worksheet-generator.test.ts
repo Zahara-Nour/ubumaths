@@ -516,6 +516,33 @@ describe('WorksheetGenerator', () => {
 			);
 			expect(statementBlock).toContain('above: 0.5em');
 		});
+
+		it('frames the « Moderne » score box in the amber of the badges, not the old red', () => {
+			const modern = DEFAULT_TEMPLATES.find((t) => t.name === 'Moderne');
+
+			expect(modern?.template_content).toContain('stroke: 2pt + rgb("#e8590c")');
+			expect(modern?.template_content).not.toContain('#dc2626');
+		});
+
+		it('keeps the statement close to its heading header too ({{exercises}})', () => {
+			const generator = new WorksheetGenerator(createMockConfig());
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance: createMockInstance(),
+				template: { ...mockTemplate, template_content: '{{exercises}}' }
+			});
+
+			// Même défaut qu'avec le badge : le bloc de l'énoncé héritait de l'espacement
+			// entre blocs du modèle (souvent 1,8em) et flottait loin de « Exercice N ».
+			const content = result.typstContent;
+			expect(content).toContain('Exercice 1');
+			const statementAt = content.indexOf('Solve for x');
+			const statementBlock = content.slice(
+				content.lastIndexOf('#block(', statementAt),
+				statementAt
+			);
+			expect(statementBlock).toContain('above: 0.5em');
+		});
 	});
 
 	describe('numbering styles', () => {
@@ -685,7 +712,9 @@ describe('WorksheetGenerator', () => {
 			expect(result.typstContent).toContain(
 				'#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[\n  #text(size: 1.1em, weight: "bold")[Exercice 1'
 			);
-			expect(result.typstContent).toContain(']\n#block(width: 100%, inset: 0pt)[\n  Solve for x');
+			expect(result.typstContent).toContain(
+				']\n#block(width: 100%, inset: 0pt, above: 0.5em)[\n  Solve for x'
+			);
 		});
 
 		it('renders the header through the sticky exercise-header helper without a template', () => {

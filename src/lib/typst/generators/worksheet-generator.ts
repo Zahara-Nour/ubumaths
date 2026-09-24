@@ -49,6 +49,7 @@ import { documentLabels, labelPlaceholders, type DocumentLabels } from '../label
 import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '$lib/types/locale';
 import { localizedText, worksheetLocale } from '$lib/types/worksheets';
 import { formatNumber } from '../utils';
+import { SECTION_COLOR, exerciseBadge } from '../worksheet-palette';
 
 // ============================================================================
 // TYPES
@@ -71,17 +72,11 @@ export interface WorksheetGeneratorInput {
  *
  * - `heading`: bold "Exercice N : title" line (default, used by every template
  *   written against the `{{exercises}}` placeholder)
- * - `badge`: the number in dark on an amber rounded square, like the student PDF
+ * - `badge`: the number in white on an amber rounded square, like the student PDF
  *   (opted into by a template using the `{{exercises_badge}}` placeholder).
  *   Section titles follow suit: amber small caps over an amber rule.
  */
 type ExerciseHeaderStyle = 'heading' | 'badge';
-
-// Carré numéro : ambre tirant sur le rouge, assez soutenu pour un chiffre blanc.
-const BADGE_FILL = 'rgb("#e8590c")';
-const BADGE_TEXT = 'white';
-// Titres de section : l'ambre du site (`--color-primary` clair).
-const SECTION_COLOR = 'rgb("#fc8f1b")';
 
 /**
  * Parameters for the legacy generateWorksheetTypst function
@@ -776,7 +771,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
     columns: (auto, 1fr, auto),
     column-gutter: 0.5em,
     align: horizon,
-    box(fill: ${BADGE_FILL}, radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: ${BADGE_TEXT}, weight: "bold")[${number}]],
+    ${exerciseBadge(number)},
     [${title}],
     [${pointsBox}]
   )`;
@@ -793,10 +788,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 
 		// Close the header block and open the statement one (breakable: a long
 		// statement still splits across columns, just never right after the number)
-		// Badge: the statement hugs its header instead of inheriting the 1.8em
-		// gap the templates set between exercises.
-		const statementSpacing = headerStyle === 'badge' ? ', above: 0.5em' : '';
-		content += `\n]\n#block(width: 100%, inset: 0pt${statementSpacing})[\n`;
+		// Quel que soit le style (badge ou « Exercice N »), l'énoncé colle à son titre
+		// au lieu d'hériter de l'espacement entre blocs du modèle (souvent 1,8em).
+		content += `\n]\n#block(width: 100%, inset: 0pt, above: 0.5em)[\n`;
 
 		// Exercise statement
 		const statementAst = parseMarkdown(exercise.statement);

@@ -33,6 +33,10 @@ interface VariationTableTypstOptions {
 	extraOptions?: string;
 }
 
+/** Fond blanc sous le « 0 » (équation bloc) que vartable dessine sur le trait d'une racine */
+const ZERO_ON_BAR_SHOW_RULE =
+	'#show math.equation.where(block: true): it => if it.body == [0] { box(fill: white, inset: (y: 2pt), it) } else { it }';
+
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
@@ -91,7 +95,7 @@ function formatTypstTuple(elements: string[]): string {
  * //   domain: ($-infinity$, $-1$, $0$, $1$, $+infinity$),
  * //   label: ($f'(x)$, $f(x)$),
  * //   contents: (
- * //     ($+$, "z", $-$, "z", $+$, "z", $-$),
+ * //     ($+$, ("0", $-$), ("0", $+$), ("0", $-$)),
  * //     ((bottom, $-infinity$), (top, $3$), (bottom, $0$), (top, $2$), (bottom, $-infinity$))
  * //   )
  * // )
@@ -119,9 +123,14 @@ export function generateVariationTableTypst(
 
 		// Wrap in a scaled block to fit column width
 		// Text enlarged then scaled down = readable text but reduced padding
+		// `reflow: true` (Typst ≥ 0.12) : la mise en page suit la taille réduite ;
+		// sans lui, scale() garde la hauteur d'origine → grand blanc sous le tableau.
+		// Règle `show` : vartable pose `$ 0 $` sur le trait des racines sans fond, le trait
+		// barre alors le chiffre (« ø ») ; un fond blanc interrompt le trait sous le 0.
 		return `${importStatement}#block(width: 100%, breakable: false)[
 #set text(size: 1.6em)
-#scale(x: 55%, y: 55%, origin: top + left)[
+${ZERO_ON_BAR_SHOW_RULE}
+#scale(x: 55%, y: 55%, origin: top + left, reflow: true)[
 #tabvar(
   variable: ${variable},
   domain: ${domain},
@@ -300,7 +309,7 @@ function generateContent(node: VariationTableNode): string {
  * Each element represents an interval.
  * If there's a marker at the START of an interval, it's combined as a tuple.
  *
- * Format: ($+$, ("z", $-$), ...) or ($+$, $-$, ...)
+ * Format: ($+$, ("0", $-$), ...) or ($+$, $-$, ...)
  *
  * @param row - Sign row
  * @param domain - Domain points
@@ -370,7 +379,9 @@ function generateSignRow(row: SignRow, domain: DomainPoint[]): string {
 function convertSignMarkerToTypst(marker: string): string {
 	switch (marker) {
 		case 'zero':
-			return '"z"';
+			// vartable 0.2.1 : seul "0" dessine le trait AVEC le « 0 » exigé par l'usage
+			// français ; tout autre marqueur (dont "z") donne un trait nu.
+			return '"0"';
 		case 'asymptote':
 			return '"||"';
 		case 'forbidden':

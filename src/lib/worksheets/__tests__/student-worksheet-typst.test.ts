@@ -41,7 +41,7 @@ describe('generateStudentWorksheetTypst', () => {
 
 		// The badge lives inside a sticky block...
 		expect(typst).toMatch(
-			/#block\(sticky: true, below: 0\.6em\)\[\n#box\(fill: rgb\("#dc2626"\)[^\n]*\[1\]\]/
+			/#block\(sticky: true, below: 0\.6em\)\[\n#box\(fill: rgb\("#e8590c"\)[^\n]*\[1\]\]/
 		);
 		// ...and the statement is outside of it
 		expect(typst).toMatch(/\]\n\n#list\(/);
@@ -63,6 +63,16 @@ describe('generateStudentWorksheetTypst', () => {
 
 		expect(typst).toContain('= Corrections');
 		expect(typst).toMatch(/#block\(fill: rgb\("#f0fdf4"\)[^\n]*\[\n {2}#block\(sticky: true/);
+	});
+
+	it('numérote exercices et corrigés sur la charte ambre de la fiche enseignant, plus en rouge', () => {
+		const typst = generateStudentWorksheetTypst(createWorksheet(), true);
+		const badge =
+			'#box(fill: rgb("#e8590c"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]]';
+
+		// Une fois dans l'énoncé, une fois dans le corrigé
+		expect(typst.split(badge)).toHaveLength(3);
+		expect(typst).not.toContain('#dc2626');
 	});
 });
 

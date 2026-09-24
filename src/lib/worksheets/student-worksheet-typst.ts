@@ -27,6 +27,7 @@ import {
 	processTableCellContent
 } from '$lib/ubumark/generators/typst-generator';
 import { parseMarkdown } from '$lib/ubumark';
+import { exerciseBadge } from '$lib/typst/worksheet-palette';
 
 // ============================================================================
 // HELPERS
@@ -162,7 +163,7 @@ export function generateStudentWorksheetTypst(
 		}
 
 		exerciseNumber++;
-		// Exercise header: red box with white number, optional bold title
+		// En-tête : numéro blanc sur carré ambre (charte partagée avec la fiche enseignant), titre en gras
 		// Use processTableCellContent to handle math expressions in titles
 		const titlePart = exercise.title
 			? ` #h(0.5em) #text(weight: "bold")[${processTableCellContent(exercise.title)}]`
@@ -174,7 +175,7 @@ export function generateStudentWorksheetTypst(
 		// Header, points and instructions go in a single `sticky` block: a column
 		// or page break can then never leave the number alone at the bottom,
 		// separated from the statement it introduces.
-		let header = `${essentialPrefix}#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[${exerciseNumber}]]${titlePart}`;
+		let header = `${essentialPrefix}#${exerciseBadge(exerciseNumber)}${titlePart}`;
 
 		// Points if available
 		if (exercise.points) {
@@ -225,7 +226,7 @@ ${exerciseContent}]\n`;
 
 			// Sticky header inside the panel: same reason as the exercises above
 			typst += `#block(fill: rgb("#f0fdf4"), radius: 4pt, inset: 12pt, width: 100%)[
-  #block(sticky: true, below: 0.6em)[#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[${number}]]${titlePart}]
+  #block(sticky: true, below: 0.6em)[#${exerciseBadge(number)}${titlePart}]
 `;
 			const correctionAst = parseMarkdown(correction);
 			typst += generateTypst(correctionAst, { includeSetup: false });

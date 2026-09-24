@@ -724,7 +724,7 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
   [],
   rect(
     fill: white,
-    stroke: 2pt + rgb("#dc2626"),
+    stroke: 2pt + rgb("#e8590c"),
     radius: 8pt,
     inset: (x: 15pt, y: 8pt)
   )[
