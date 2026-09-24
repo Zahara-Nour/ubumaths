@@ -120,7 +120,7 @@ export interface CustomToken {
 /**
  * Valid symbol names that can appear after backslash
  */
-const VALID_SYMBOLS: ReadonlySet<string> = new Set([
+export const VALID_SYMBOLS: ReadonlySet<string> = new Set([
 	'alpha',
 	'beta',
 	'gamma',
