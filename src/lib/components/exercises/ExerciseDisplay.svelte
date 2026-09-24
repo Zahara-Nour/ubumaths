@@ -34,7 +34,7 @@
 	} from '$lib/exercises/generator/instance-generator';
 	import type { Exercise, ExerciseInstance } from '$lib/exercises/types';
 	import { getExerciseContentSafe } from '$lib/exercises/types';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import { genericFunctionsConfig as toGenericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 	import { Button } from '$lib/components/ui/button';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 
@@ -181,18 +181,7 @@
 	 * - []: Empty array → disable generic function parsing
 	 * - ['f', 'P', ...]: Custom list → use those identifiers
 	 */
-	let genericFunctionsConfig = $derived.by<GenericFunctionConfig | undefined>(() => {
-		if (exercise.generic_functions === undefined || exercise.generic_functions === null) {
-			// Use parser defaults
-			return undefined;
-		}
-		// Custom configuration from exercise
-		return {
-			names: exercise.generic_functions,
-			allowDerivatives: true,
-			allowInverse: true
-		};
-	});
+	let genericFunctionsConfig = $derived(toGenericFunctionsConfig(exercise.generic_functions));
 </script>
 
 <!-- ============================================================================ -->

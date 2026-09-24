@@ -670,7 +670,10 @@ export const worksheetExerciseWithDataResponseSchema = worksheetExerciseResponse
 			title: z.string().nullable(),
 			variables: z.unknown().nullable(),
 			shared: z.unknown().nullable(),
-			variations: z.array(z.unknown()).nullable()
+			variations: z.array(z.unknown()).nullable(),
+			// Lettres déclarées comme fonctions : sans cette clé, le schéma la
+			// retire en silence et le PDF imprime `C'(x)` en erreur.
+			generic_functions: z.array(z.string()).nullable().optional()
 		})
 		.nullable()
 		.optional()
@@ -965,7 +968,12 @@ export const studentExerciseViewSchema = z.object({
 	/** Exercise tags for categorization */
 	tags: z.array(z.string()).optional(),
 	/** Indicates if this exercise is essential/priority */
-	is_essential: z.boolean().optional()
+	is_essential: z.boolean().optional(),
+	/**
+	 * Lettres déclarées comme fonctions par l'exercice. Sans cette clé, le schéma
+	 * la retire en silence et le PDF imprime `C'(x)` en erreur.
+	 */
+	generic_functions: z.array(z.string()).nullable().optional()
 });
 
 /**

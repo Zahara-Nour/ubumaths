@@ -27,6 +27,8 @@ import {
 	processTableCellContent
 } from '$lib/ubumark/generators/typst-generator';
 import { parseMarkdown } from '$lib/ubumark';
+import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
+import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 import { exerciseBadge } from '$lib/typst/worksheet-palette';
 
 // ============================================================================
@@ -139,8 +141,12 @@ export function generateStudentWorksheetTypst(
 	let exerciseNumber = 0;
 
 	// Collect corrections for later (if includeSolution)
-	const corrections: { number: number; title: string | null | undefined; correction: string }[] =
-		[];
+	const corrections: {
+		number: number;
+		title: string | null | undefined;
+		correction: string;
+		genericFunctions: GenericFunctionConfig | undefined;
+	}[] = [];
 
 	for (const exercise of sortedExercises) {
 		// Check if we're entering a new section
@@ -192,7 +198,10 @@ export function generateStudentWorksheetTypst(
 
 		// Statement (already resolved markdown)
 		const statementAst = parseMarkdown(exercise.statement);
-		exerciseContent += generateTypst(statementAst, { includeSetup: false }) + '\n\n';
+		// Fonctions déclarées par l'exercice : sans elles, `C'(x)` s'imprime en erreur.
+		const genericFunctions = genericFunctionsConfig(exercise.generic_functions);
+		exerciseContent +=
+			generateTypst(statementAst, { includeSetup: false, genericFunctions }) + '\n\n';
 
 		// Wrap essential exercises with orange left border
 		if (exercise.is_essential) {
@@ -207,7 +216,8 @@ ${exerciseContent}]\n`;
 			corrections.push({
 				number: exerciseNumber,
 				title: exercise.title,
-				correction: exercise.correction
+				correction: exercise.correction,
+				genericFunctions
 			});
 		}
 
@@ -219,7 +229,7 @@ ${exerciseContent}]\n`;
 		typst += `#pagebreak()\n\n`;
 		typst += `= ${labels.corrections}\n\n`;
 
-		for (const { number, title, correction } of corrections) {
+		for (const { number, title, correction, genericFunctions } of corrections) {
 			const titlePart = title
 				? ` #h(0.5em) #text(weight: "bold")[${processTableCellContent(title)}]`
 				: '';
@@ -229,7 +239,7 @@ ${exerciseContent}]\n`;
   #block(sticky: true, below: 0.6em)[#${exerciseBadge(number)}${titlePart}]
 `;
 			const correctionAst = parseMarkdown(correction);
-			typst += generateTypst(correctionAst, { includeSetup: false });
+			typst += generateTypst(correctionAst, { includeSetup: false, genericFunctions });
 			typst += `\n]\n\n#v(1em)\n`;
 		}
 	}

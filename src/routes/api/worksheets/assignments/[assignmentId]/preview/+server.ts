@@ -504,6 +504,13 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				is_essential: we.is_essential ?? false
 			};
 
+			// Fonctions déclarées : lues sur l'exercice (frais), pas sur l'instance
+			// stockée — les instances antérieures n'ont pas ce champ. Sans elles, le
+			// PDF imprime `C'(x)` en erreur.
+			if (exerciseData.generic_functions) {
+				exerciseView.generic_functions = exerciseData.generic_functions;
+			}
+
 			if (resolved.hints && resolved.hints.length > 0) {
 				exerciseView.hints = resolved.hints;
 			}

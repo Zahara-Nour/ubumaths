@@ -194,7 +194,9 @@
 				),
 				parameters: {},
 				statement: content.statement_md,
-				solution: content.solution_md
+				solution: content.solution_md,
+				// Fonctions déclarées : sans elles, `C'(x)` s'imprime en erreur dans le PDF.
+				generic_functions: we.exercise?.generic_functions
 			};
 		});
 

@@ -212,6 +212,12 @@ export interface ResolvedExercise {
 	selectedVariationLabel?: string;
 	/** Hints from the selected variation */
 	hints?: ExerciseHint[];
+	/**
+	 * Lettres que l'exercice déclare comme fonctions (`exercises.generic_functions`).
+	 * Absent : défauts du parseur. Sans elles, `C'(x)` s'imprime en erreur dans le PDF.
+	 * Les instances stockées avant l'ajout du champ ne l'ont pas.
+	 */
+	generic_functions?: string[] | null;
 }
 
 /** Section data for PDF generation */
@@ -573,6 +579,8 @@ export interface WorksheetExerciseWithExercise extends WorksheetExerciseRow {
 		shared?: SharedExerciseDefaults | null;
 		/** Exercise variations for different guidance levels */
 		variations?: ExerciseVariation[] | null;
+		/** Lettres déclarées comme fonctions (`C'(x)`, `u(x)`…) ; absent = défauts du parseur */
+		generic_functions?: string[] | null;
 	};
 }
 
@@ -640,6 +648,8 @@ export interface StudentExerciseView {
 	resources?: ExerciseResource[];
 	/** Indicates if this exercise is essential/priority */
 	is_essential?: boolean;
+	/** Lettres déclarées comme fonctions par l'exercice ; absent = défauts du parseur */
+	generic_functions?: string[] | null;
 }
 
 /**

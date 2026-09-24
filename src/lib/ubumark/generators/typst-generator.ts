@@ -48,7 +48,8 @@ import type {
 	ImageNode,
 	BlockquoteNode,
 	CodeBlockNode,
-	TypstTranspilerOptions
+	TypstTranspilerOptions,
+	ResolvedTypstTranspilerOptions
 } from '$lib/exercises/types';
 import { getDimensionsForFormat } from '$lib/exercises/services/image-dimensions';
 import { expressionToRawLatex } from '$lib/components/markdown/utils/math-utils';
@@ -114,7 +115,7 @@ function trackExternalImage(url: string): void {
 // DEFAULT OPTIONS
 // ============================================================================
 
-const DEFAULT_OPTIONS: Required<TypstTranspilerOptions> = {
+const DEFAULT_OPTIONS: ResolvedTypstTranspilerOptions = {
 	paperSize: 'a4',
 	fontSize: 11,
 	language: 'fr',
@@ -122,6 +123,8 @@ const DEFAULT_OPTIONS: Required<TypstTranspilerOptions> = {
 	includeSetup: true,
 	title: '',
 	author: ''
+	// `genericFunctions` n'a pas de défaut ici : son absence veut dire « défauts
+	// du parseur », comme à l'écran.
 };
 
 // ============================================================================
@@ -200,7 +203,7 @@ export function generateTypst(ast: DocumentNode, options: TypstTranspilerOptions
  * @param options - Generator options
  * @returns Typst setup string
  */
-function generateSetup(options: Required<TypstTranspilerOptions>): string {
+function generateSetup(options: ResolvedTypstTranspilerOptions): string {
 	const { paperSize, fontSize, language, title, author } = options;
 
 	let setup = `#set page(paper: "${paperSize}")\n`;
@@ -251,7 +254,7 @@ function generateSetup(options: Required<TypstTranspilerOptions>): string {
  * @param options - Generator options
  * @returns Typst body content
  */
-function generateBody(ast: DocumentNode, options: Required<TypstTranspilerOptions>): string {
+function generateBody(ast: DocumentNode, options: ResolvedTypstTranspilerOptions): string {
 	return ast.children.map((node) => generateBlock(node, options)).join('\n\n');
 }
 
@@ -262,7 +265,7 @@ function generateBody(ast: DocumentNode, options: Required<TypstTranspilerOption
  * @param options - Generator options
  * @returns Typst string for this block
  */
-function generateBlock(node: BlockNode, options: Required<TypstTranspilerOptions>): string {
+function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions): string {
 	switch (node.type) {
 		case 'paragraph':
 			return generateParagraph(node, options);
@@ -277,7 +280,7 @@ function generateBlock(node: BlockNode, options: Required<TypstTranspilerOptions
 			return generateTable(node, options);
 
 		case 'math-block':
-			return generateMathBlock(node);
+			return generateMathBlock(node, options);
 
 		case 'image':
 			return transpileImage(node, options);
@@ -319,7 +322,7 @@ function generateBlock(node: BlockNode, options: Required<TypstTranspilerOptions
  * @param options - Generator options
  * @returns Typst paragraph string
  */
-function generateParagraph(node: ParagraphNode, options: Required<TypstTranspilerOptions>): string {
+function generateParagraph(node: ParagraphNode, options: ResolvedTypstTranspilerOptions): string {
 	const content = node.children.map((child: InlineNode) => generateInline(child, options)).join('');
 	return content;
 }
@@ -331,7 +334,7 @@ function generateParagraph(node: ParagraphNode, options: Required<TypstTranspile
  * @param options - Generator options
  * @returns Typst inline content
  */
-function generateInline(node: InlineNode, _options: Required<TypstTranspilerOptions>): string {
+function generateInline(node: InlineNode, options: ResolvedTypstTranspilerOptions): string {
 	switch (node.type) {
 		case 'text': {
 			// Unescape markdown escape sequences (handles multiple levels like \\*)
@@ -355,7 +358,7 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
 		case 'math-inline': {
 			const latex =
 				node.syntax === 'custom'
-					? expressionToRawLatex(node.expression, 'custom')
+					? expressionToRawLatex(node.expression, 'custom', options.genericFunctions)
 					: toFrenchDecimal(node.expression);
 			// Convert LaTeX math to Typst math syntax
 			const typstMath = convertLatexToTypstMath(latex);
@@ -419,7 +422,7 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
  * @param options - Generator options
  * @returns Typst heading
  */
-function generateHeading(node: HeadingNode, options: Required<TypstTranspilerOptions>): string {
+function generateHeading(node: HeadingNode, options: ResolvedTypstTranspilerOptions): string {
 	const content = node.children.map((child: InlineNode) => generateInline(child, options)).join('');
 
 	const prefix = '='.repeat(node.level);
@@ -457,7 +460,7 @@ function getNumberingPattern(depth: number): string {
  */
 function generateList(
 	node: ListNode,
-	options: Required<TypstTranspilerOptions>,
+	options: ResolvedTypstTranspilerOptions,
 	enumerateDepth: number = 0
 ): string {
 	// Calculate new depth: only ordered lists increment enumerate depth
@@ -495,7 +498,7 @@ function generateList(
  */
 function generateListItemContent(
 	item: ListItemNode,
-	options: Required<TypstTranspilerOptions>,
+	options: ResolvedTypstTranspilerOptions,
 	currentDepth: number
 ): string {
 	const blocks: string[] = [];
@@ -541,7 +544,7 @@ function generateListItemContent(
  * @param options - Generator options
  * @returns Typst table
  */
-function generateTable(node: TableNode, _options: Required<TypstTranspilerOptions>): string {
+function generateTable(node: TableNode, _options: ResolvedTypstTranspilerOptions): string {
 	if (node.transpose) {
 		// Transposed table: transpose data, first column is bold (headers)
 		// Number of output columns = 1 (header) + number of data rows
@@ -677,12 +680,13 @@ const ALIGNMENT_SYMBOL_PATTERN =
  * For aligned equations (align, aligned, etc.), uses a grid for proper alignment.
  *
  * @param node - Math block node
+ * @param options - Generator options (fonctions déclarées de l'exercice)
  * @returns Typst math block
  */
-function generateMathBlock(node: MathBlockNode): string {
+function generateMathBlock(node: MathBlockNode, options: ResolvedTypstTranspilerOptions): string {
 	const latex =
 		node.syntax === 'custom'
-			? expressionToRawLatex(node.expression, 'custom')
+			? expressionToRawLatex(node.expression, 'custom', options.genericFunctions)
 			: toFrenchDecimal(node.expression);
 
 	// Check if this is an aligned equation (contains \begin{align} etc.)
@@ -894,7 +898,7 @@ ${gridRows.join(',\n')}
  * // #box(height: 1em)[#image("icon.png")]
  * ```
  */
-export function transpileImage(node: ImageNode, options: Required<TypstTranspilerOptions>): string {
+export function transpileImage(node: ImageNode, options: ResolvedTypstTranspilerOptions): string {
 	const isInline = node.sizeClass === 'inline';
 
 	// Handle external URLs: use virtual paths for Typst WASM compatibility
@@ -1044,10 +1048,7 @@ function buildAlignedImage(node: ImageNode, imageCommand: string): string {
  * @param options - Generator options
  * @returns Typst quote block
  */
-function generateBlockquote(
-	node: BlockquoteNode,
-	options: Required<TypstTranspilerOptions>
-): string {
+function generateBlockquote(node: BlockquoteNode, options: ResolvedTypstTranspilerOptions): string {
 	const content = node.children.map((child) => generateBlock(child, options)).join('\n\n');
 
 	return `#quote(block: true)[${content}]`;

@@ -251,7 +251,11 @@ function resolveExercise(
 		solution_ast: instance.solution_ast,
 		selectedVariationIndex: instance.selectedVariationIndex,
 		selectedVariationLabel: instance.selectedVariationLabel,
-		hints: instance.resolvedHints
+		hints: instance.resolvedHints,
+		// Suit l'exercice jusqu'au PDF : sans elle, `C'(x)` s'y imprime en erreur.
+		...(exercise.exercise.generic_functions != null && {
+			generic_functions: exercise.exercise.generic_functions
+		})
 	};
 }
 

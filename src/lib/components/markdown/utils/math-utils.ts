@@ -15,6 +15,25 @@ import type { MathNode } from '$lib/mathAST/types';
 import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 /**
+ * Configuration du parseur à partir des fonctions déclarées par un exercice
+ * (colonne `exercises.generic_functions`).
+ *
+ * - `undefined` / `null` : l'exercice ne déclare rien → `undefined`, donc les
+ *   défauts du parseur (f, g, h, u, v, w, F, G, H).
+ * - une liste (même vide) : exactement ces lettres, avec dérivées (`C'`) et
+ *   réciproques (`f^{-1}`).
+ *
+ * Source unique pour l'écran (`ExerciseDisplay`) et le PDF : les deux doivent
+ * lire `C'(x)` de la même façon.
+ */
+export function genericFunctionsConfig(
+	names: readonly string[] | null | undefined
+): GenericFunctionConfig | undefined {
+	if (names === undefined || names === null) return undefined;
+	return { names: [...names], allowDerivatives: true, allowInverse: true };
+}
+
+/**
  * Convert a math expression to LaTeX for rendering.
  *
  * If the syntax is already LaTeX, returns the expression unchanged.

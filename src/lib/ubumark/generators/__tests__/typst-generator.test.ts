@@ -15,7 +15,7 @@ import {
 	markdownToTypst,
 	convertLatexToTypstMath
 } from '../typst-generator';
-import type { DocumentNode, ImageNode, TypstTranspilerOptions } from '$lib/exercises/types';
+import type { DocumentNode, ImageNode, ResolvedTypstTranspilerOptions } from '$lib/exercises/types';
 
 describe('escapeTypst', () => {
 	it('should escape hash character', () => {
@@ -626,7 +626,7 @@ describe('Code Block Generation', () => {
 });
 
 describe('Image Generation - Basic', () => {
-	const defaultOptions: Required<TypstTranspilerOptions> = {
+	const defaultOptions: ResolvedTypstTranspilerOptions = {
 		paperSize: 'a4',
 		fontSize: 11,
 		language: 'fr',
@@ -652,7 +652,7 @@ describe('Image Generation - Basic', () => {
 });
 
 describe('Image Generation - Size Classes', () => {
-	const defaultOptions: Required<TypstTranspilerOptions> = {
+	const defaultOptions: ResolvedTypstTranspilerOptions = {
 		paperSize: 'a4',
 		fontSize: 11,
 		language: 'fr',
@@ -712,7 +712,7 @@ describe('Image Generation - Size Classes', () => {
 });
 
 describe('Image Generation - Width Percent', () => {
-	const defaultOptions: Required<TypstTranspilerOptions> = {
+	const defaultOptions: ResolvedTypstTranspilerOptions = {
 		paperSize: 'a4',
 		fontSize: 11,
 		language: 'fr',
@@ -762,7 +762,7 @@ describe('Image Generation - Width Percent', () => {
 });
 
 describe('Image Generation - Alignment', () => {
-	const defaultOptions: Required<TypstTranspilerOptions> = {
+	const defaultOptions: ResolvedTypstTranspilerOptions = {
 		paperSize: 'a4',
 		fontSize: 11,
 		language: 'fr',
@@ -810,7 +810,7 @@ describe('Image Generation - Alignment', () => {
 });
 
 describe('Image Generation - Caption (Figure)', () => {
-	const defaultOptions: Required<TypstTranspilerOptions> = {
+	const defaultOptions: ResolvedTypstTranspilerOptions = {
 		paperSize: 'a4',
 		fontSize: 11,
 		language: 'fr',
@@ -852,7 +852,7 @@ describe('Image Generation - Caption (Figure)', () => {
 });
 
 describe('Image Generation - Inline', () => {
-	const defaultOptions: Required<TypstTranspilerOptions> = {
+	const defaultOptions: ResolvedTypstTranspilerOptions = {
 		paperSize: 'a4',
 		fontSize: 11,
 		language: 'fr',
@@ -880,7 +880,7 @@ describe('Image Generation - Inline', () => {
 });
 
 describe('Image Generation - All Attributes Combined', () => {
-	const defaultOptions: Required<TypstTranspilerOptions> = {
+	const defaultOptions: ResolvedTypstTranspilerOptions = {
 		paperSize: 'a4',
 		fontSize: 11,
 		language: 'fr',
@@ -925,7 +925,7 @@ describe('Image Generation - All Attributes Combined', () => {
 });
 
 describe('Image Generation - Aspect Ratio Handling', () => {
-	const defaultOptions: Required<TypstTranspilerOptions> = {
+	const defaultOptions: ResolvedTypstTranspilerOptions = {
 		paperSize: 'a4',
 		fontSize: 11,
 		language: 'fr',
@@ -981,7 +981,7 @@ describe('Image Generation - Aspect Ratio Handling', () => {
 
 describe('Image Generation - Path Resolution', () => {
 	it('should resolve image path with base path', () => {
-		const options: Required<TypstTranspilerOptions> = {
+		const options: ResolvedTypstTranspilerOptions = {
 			paperSize: 'a4',
 			fontSize: 11,
 			language: 'fr',
@@ -1004,7 +1004,7 @@ describe('Image Generation - Path Resolution', () => {
 	it('should use virtual paths for external URL images', () => {
 		// External images are mapped to virtual paths for Typst WASM compatibility
 		// The caller must fetch the images and map them using mapShadow
-		const options: Required<TypstTranspilerOptions> = {
+		const options: ResolvedTypstTranspilerOptions = {
 			paperSize: 'a4',
 			fontSize: 11,
 			language: 'fr',
@@ -1034,7 +1034,7 @@ describe('Image Generation - Path Resolution', () => {
 			'../typst-generator'
 		);
 
-		const options: Required<TypstTranspilerOptions> = {
+		const options: ResolvedTypstTranspilerOptions = {
 			paperSize: 'a4',
 			fontSize: 11,
 			language: 'fr',
@@ -1060,7 +1060,7 @@ describe('Image Generation - Path Resolution', () => {
 	});
 
 	it('should generate inline image with virtual path for external images', () => {
-		const options: Required<TypstTranspilerOptions> = {
+		const options: ResolvedTypstTranspilerOptions = {
 			paperSize: 'a4',
 			fontSize: 11,
 			language: 'fr',
@@ -1086,7 +1086,7 @@ describe('Image Generation - Path Resolution', () => {
 });
 
 describe('Image Generation - Block Without Caption', () => {
-	const defaultOptions: Required<TypstTranspilerOptions> = {
+	const defaultOptions: ResolvedTypstTranspilerOptions = {
 		paperSize: 'a4',
 		fontSize: 11,
 		language: 'fr',

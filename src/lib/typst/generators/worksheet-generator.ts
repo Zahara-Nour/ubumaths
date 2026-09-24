@@ -44,6 +44,7 @@ import type { GeneratorConfig, GeneratorContext, GenerateResult } from '../types
 import { groupExercisesForDisplay } from '$lib/worksheets/exercise-numbering';
 import { BaseTypstGenerator } from './base-generator';
 import { generateTypst, escapeTypst, parseMarkdown } from '$lib/ubumark';
+import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 import { getDefaultTemplate, renderTemplate } from '../templates';
 import { documentLabels, labelPlaceholders, type DocumentLabels } from '../labels';
 import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '$lib/types/locale';
@@ -611,7 +612,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const statementAst = parseMarkdown(exercise.statement);
 		const statementTypst = generateTypst(statementAst, {
 			includeSetup: false,
-			language: 'fr'
+			language: 'fr',
+			genericFunctions: genericFunctionsConfig(exercise.generic_functions)
 		});
 
 		// Indent the statement content
@@ -639,7 +641,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			const solutionAst = parseMarkdown(exercise.solution);
 			const solutionTypst = generateTypst(solutionAst, {
 				includeSetup: false,
-				language: 'fr'
+				language: 'fr',
+				genericFunctions: genericFunctionsConfig(exercise.generic_functions)
 			});
 
 			// Indent the solution content
@@ -796,7 +799,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const statementAst = parseMarkdown(exercise.statement);
 		const statementTypst = generateTypst(statementAst, {
 			includeSetup: false,
-			language: 'fr'
+			language: 'fr',
+			genericFunctions: genericFunctionsConfig(exercise.generic_functions)
 		});
 
 		// Indent the statement content
@@ -826,7 +830,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			const solutionAst = parseMarkdown(exercise.solution);
 			const solutionTypst = generateTypst(solutionAst, {
 				includeSetup: false,
-				language: 'fr'
+				language: 'fr',
+				genericFunctions: genericFunctionsConfig(exercise.generic_functions)
 			});
 
 			const indentedSolution = solutionTypst
