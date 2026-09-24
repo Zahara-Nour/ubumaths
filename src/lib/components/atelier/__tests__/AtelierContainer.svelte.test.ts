@@ -101,7 +101,7 @@ describe('tout changement est enregistré', () => {
 		const { unmount } = await render(AtelierContainer, { atelier: first });
 		first.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		await new Promise((r) => setTimeout(r, 700));
-		unmount();
+		await unmount();
 
 		const second = new Atelier();
 		await render(AtelierContainer, { atelier: second });

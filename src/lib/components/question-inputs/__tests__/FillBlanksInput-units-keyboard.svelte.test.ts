@@ -145,7 +145,7 @@ describe('FillBlanksInput — onglet « Unités »', () => {
 
 		mathField.focus();
 		await expect.poll(() => unitsLayout()).toBeDefined();
-		unmount();
+		await unmount();
 		expect(unitsLayout()).toBeUndefined();
 	});
 
