@@ -100,9 +100,10 @@ describe('AudioManager', () => {
 		window.AudioContext = MockAudioContext as unknown as typeof AudioContext;
 
 		// Mock Audio for OGG detection
-		window.Audio = vi.fn().mockImplementation(() => ({
-			canPlayType: vi.fn().mockReturnValue('maybe')
-		})) as unknown as typeof Audio;
+		// `function` et non flèche : vitest 4 appelle le mock avec `new`
+		window.Audio = vi.fn().mockImplementation(function () {
+			return { canPlayType: vi.fn().mockReturnValue('maybe') };
+		}) as unknown as typeof Audio;
 
 		// Mock fetch
 		global.fetch = vi.fn().mockResolvedValue({

@@ -423,17 +423,13 @@ describe('GoogleDriveClient', () => {
 			expect(mockFetch).toHaveBeenCalledTimes(2);
 		});
 
-		it(
-			'should throw GoogleRateLimitError after max retries',
-			async () => {
-				// All calls return rate limit
-				mockFetch.mockResolvedValue(createErrorResponse(429, 'Rate limit exceeded'));
+		it('should throw GoogleRateLimitError after max retries', async () => {
+			// All calls return rate limit
+			mockFetch.mockResolvedValue(createErrorResponse(429, 'Rate limit exceeded'));
 
-				await expect(client.findFolder('test')).rejects.toThrow(GoogleRateLimitError);
-				// 1 initial + 3 retries = 4 calls
-				expect(mockFetch).toHaveBeenCalledTimes(4);
-			},
-			{ timeout: 30000 }
-		);
+			await expect(client.findFolder('test')).rejects.toThrow(GoogleRateLimitError);
+			// 1 initial + 3 retries = 4 calls
+			expect(mockFetch).toHaveBeenCalledTimes(4);
+		}, 30000); // vitest 4 : un objet d'options n'est plus accepté en 3ᵉ argument, un nombre si
 	});
 });

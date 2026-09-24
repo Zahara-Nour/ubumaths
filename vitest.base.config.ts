@@ -18,7 +18,7 @@
  * ```
  */
 
-import type { InlineConfig } from 'vitest';
+import type { InlineConfig } from 'vitest/node';
 
 /**
  * Base test configuration shared by all test configs
@@ -47,9 +47,10 @@ export const dbTestConfig: Partial<InlineConfig> = {
 	testTimeout: 30000, // 30s for database operations
 	hookTimeout: 30000,
 	pool: 'forks',
-	poolOptions: {
-		forks: {
-			singleFork: true // Sequential to avoid race conditions
-		}
-	}
+	// Un seul fork à la fois : séquentiel, pour éviter les courses sur la base.
+	// vitest 4 a supprimé `poolOptions.forks.singleFork` ; le guide propose
+	// `maxWorkers: 1, isolate: false`, mais on garde l'isolation par défaut
+	// (un processus neuf par fichier) pour qu'aucun état de module ne fuie
+	// d'un fichier à l'autre.
+	maxWorkers: 1
 };

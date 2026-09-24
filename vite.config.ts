@@ -1,5 +1,5 @@
 import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'vitest/config';
+import { defineConfig, type ViteUserConfig } from 'vitest/config';
 import { loadEnv } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { readFileSync } from 'fs';
@@ -22,10 +22,20 @@ const APP_VERSION = pkg.version;
  *
  * See PERFORMANCE_OPTIMIZATIONS.md for detailed explanation
  */
-export default defineConfig(({ mode }) => {
+// Retour typé explicitement : sur une fonction `async`, l'inférence ne
+// retrouve pas la bonne surcharge de `defineConfig` (TS2769).
+export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
 	// Load environment variables for server-side code
 	const env = loadEnv(mode, process.cwd(), '');
 	Object.assign(process.env, env);
+
+	// Fournisseur du mode navigateur (projet `client`), chargé seulement sous
+	// vitest : son import tire `vitest/node` (~250 ms, ~70 Mo mesurés le
+	// 2026-09-24), inutiles à `pnpm dev` et au build. Vitest pose `VITEST`
+	// avant de lire cette config.
+	const browserProvider = process.env.VITEST
+		? (await import('@vitest/browser-playwright')).playwright()
+		: undefined;
 
 	return {
 		plugins: [
@@ -143,10 +153,11 @@ export default defineConfig(({ mode }) => {
 					extends: './vite.config.ts',
 					test: {
 						name: 'client',
-						environment: 'browser',
+						// Pas d'`environment: 'browser'` : vitest 4 le refuse, le mode
+						// navigateur s'active par `browser.enabled` seul.
 						browser: {
 							enabled: true,
-							provider: 'playwright',
+							provider: browserProvider,
 							instances: [{ browser: 'chromium' }]
 						},
 						include: ['src/**/*.svelte.{test,spec}.{js,ts}'],

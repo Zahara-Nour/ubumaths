@@ -6,7 +6,7 @@
  * test QuestionCard), rien n'apparaît.
  */
 
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FillBlanksInput from '../FillBlanksInput.svelte';

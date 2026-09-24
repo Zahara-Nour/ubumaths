@@ -20,7 +20,7 @@
  *   mockIds,
  *   mockProfiles,
  *   createMockProfile
- * } from 'tests/helpers';
+ * } from '$tests/helpers';
  *
  * describe('My API tests', () => {
  *   it('should handle authenticated request', async () => {
@@ -40,17 +40,17 @@
  *
  * ### Full Import (Recommended)
  * ```typescript
- * import { createMockSupabase, mockSuccess, mockIds } from 'tests/helpers';
+ * import { createMockSupabase, mockSuccess, mockIds } from '$tests/helpers';
  * ```
  *
  * ### Supabase Only
  * ```typescript
- * import { createMockSupabase, mockSuccess } from 'tests/helpers/supabase';
+ * import { createMockSupabase, mockSuccess } from '$tests/helpers/supabase';
  * ```
  *
  * ### Fixtures Only
  * ```typescript
- * import { mockIds, createMockProfile } from 'tests/helpers/fixtures';
+ * import { mockIds, createMockProfile } from '$tests/helpers/fixtures';
  * ```
  */
 

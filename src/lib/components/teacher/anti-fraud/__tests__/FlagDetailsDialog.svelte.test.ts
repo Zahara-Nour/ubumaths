@@ -4,7 +4,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 import FlagDetailsDialog from '../FlagDetailsDialog.svelte';
 
 const sampleFlag = {

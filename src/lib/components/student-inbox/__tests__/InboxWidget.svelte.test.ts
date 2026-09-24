@@ -11,7 +11,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 import InboxWidget from '../InboxWidget.svelte';
 import type { StudentWorkInbox, WorkItem, WorkSource } from '$lib/types/student-inbox';
 

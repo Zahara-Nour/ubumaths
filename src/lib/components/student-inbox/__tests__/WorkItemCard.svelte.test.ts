@@ -13,7 +13,7 @@
 import { describe, it, expect } from 'vitest';
 import { lore } from '$lib/config/lore';
 import { render } from 'vitest-browser-svelte';
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 import WorkItemCard from '../WorkItemCard.svelte';
 import type { WorkItem, WorkSource } from '$lib/types/student-inbox';
 

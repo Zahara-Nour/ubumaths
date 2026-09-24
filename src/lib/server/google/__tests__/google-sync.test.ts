@@ -14,8 +14,11 @@ const classroomClientInstance: any = {
 };
 
 // Mock the Google Classroom client
+// `function` et non flèche : vitest 4 appelle le mock avec `new`
 vi.mock('$lib/server/google/classroom-api', () => ({
-	GoogleClassroomClient: vi.fn(() => classroomClientInstance)
+	GoogleClassroomClient: vi.fn(function () {
+		return classroomClientInstance;
+	})
 }));
 
 // Mock encryption/decryption
