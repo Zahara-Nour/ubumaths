@@ -48,6 +48,7 @@ describe('fiche accessible par le lien de consultation', () => {
 	let citee: string;
 	let nonCitee: string;
 	let lecteur: SupabaseClient<Database>;
+	let sansDeclaration: { id: string };
 
 	async function ouvrir(token: string, worksheetId: string) {
 		const { data, error } = await lecteur.rpc('get_worksheet_by_share_token', {
@@ -55,7 +56,11 @@ describe('fiche accessible par le lien de consultation', () => {
 			p_worksheet_id: worksheetId
 		});
 		expect(error).toBeNull();
-		return data as { id: string; title: string; exercises: unknown[] } | null;
+		return data as {
+			id: string;
+			title: string;
+			exercises: { exercise_id: string; exercise: { generic_functions?: string[] | null } }[];
+		} | null;
 	}
 
 	beforeAll(async () => {
@@ -79,10 +84,22 @@ describe('fiche accessible par le lien de consultation', () => {
 		[citee, nonCitee] = fiches;
 
 		const exercise = (await TestData.exercise(teacher.id).create()) as { id: string };
+		// Lettres déclarées comme fonctions : le PDF en a besoin pour lire C'(x)
+		const { error: declarationError } = await service
+			.from('exercises')
+			.update({ generic_functions: ['C', 'u', 'v'] })
+			.eq('id', exercise.id);
+		if (declarationError) throw new Error(`déclaration : ${declarationError.message}`);
+		sansDeclaration = (await TestData.exercise(teacher.id).create()) as { id: string };
 		await insert('worksheet_exercises', {
 			worksheet_id: citee,
 			exercise_id: exercise.id,
 			position: 1
+		});
+		await insert('worksheet_exercises', {
+			worksheet_id: citee,
+			exercise_id: sansDeclaration.id,
+			position: 2
 		});
 
 		// Une séance publiée, d'aujourd'hui, qui cite la première fiche.
@@ -118,7 +135,19 @@ describe('fiche accessible par le lien de consultation', () => {
 
 		expect(fiche?.id).toBe(citee);
 		expect(fiche?.title).toBe('Fiche citée');
-		expect(fiche?.exercises).toHaveLength(1);
+		expect(fiche?.exercises).toHaveLength(2);
+	});
+
+	it('renvoie les fonctions déclarées par chaque exercice (C′(x) dans le PDF)', async () => {
+		// Décision de David (2026-09-24) : le porteur du lien peut lire la liste des
+		// lettres déclarées comme fonctions — aucune donnée d'élève.
+		const fiche = await ouvrir(TOKEN, citee);
+		const exercices = fiche?.exercises ?? [];
+		expect(exercices[0]?.exercise.generic_functions).toEqual(['C', 'u', 'v']);
+		// Sans déclaration : null, donc les lettres par défaut du parseur
+		const autre = exercices.find((e) => e.exercise_id === sansDeclaration.id);
+		expect(autre?.exercise.generic_functions ?? null).toBeNull();
+		expect(autre && 'generic_functions' in autre.exercise).toBe(true);
 	});
 
 	it('REFUSE une fiche non citée, même avec un jeton valide', async () => {
