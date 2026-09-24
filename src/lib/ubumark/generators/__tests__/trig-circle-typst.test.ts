@@ -59,3 +59,29 @@ describe('Cercle trigonométrique — inéquation', () => {
 		expect(arc.anchor).toBe('origin');
 	});
 });
+
+describe('Cercle trigonométrique — bornes des arcs', () => {
+	/** Dernier cercle dessiné au point (x ; y) : c'est lui qu'on voit. */
+	function dernierAuPoint(code: string, x: string, y: string): string {
+		const tous = [
+			...code.matchAll(/circle\(\(([-\d.]+), ([-\d.]+)\), radius: [\d.]+, fill: (\w+)/g)
+		];
+		const ici = tous.filter((m) => m[1] === x && m[2] === y);
+		return ici[ici.length - 1]?.[3] ?? 'aucun';
+	}
+
+	it('borne exclue nommée (sin x > √2/2) : le rond vide est visible, pas le point plein', () => {
+		const code = typst(
+			'preset: custom\nangles: pi/4, 3pi/4\nequation: sin(x) > sqrt(2)/2\nmode: arc'
+		);
+		expect(dernierAuPoint(code, '1.768', '1.768')).toBe('white');
+		expect(dernierAuPoint(code, '-1.768', '1.768')).toBe('white');
+	});
+
+	it('borne incluse (sin x >= √2/2) : rond plein', () => {
+		const code = typst(
+			'preset: custom\nangles: pi/4, 3pi/4\nequation: sin(x) >= sqrt(2)/2\nmode: arc'
+		);
+		expect(dernierAuPoint(code, '1.768', '1.768')).not.toBe('white');
+	});
+});

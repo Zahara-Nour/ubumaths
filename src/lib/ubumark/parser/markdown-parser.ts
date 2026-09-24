@@ -1377,6 +1377,7 @@ function parseTextFormatting(text: string): InlineNode[] {
  * Special handling for:
  * - ```variation blocks → parsed as variation-table nodes
  * - ```probtree blocks → parsed as probability-tree nodes
+ * - ```trig blocks → parsed as trig-circle nodes
  * - Other code blocks → parsed as code-block nodes
  *
  * @param content - Text content that may contain code blocks
@@ -1432,6 +1433,14 @@ function parseContentWithCodeBlocks(
 			const restoredCode = restoreMathPlaceholders(code, placeholders);
 			const lines = ['```probtree', ...restoredCode.split('\n'), '```'];
 			const result = parseProbabilityTree(lines, 0, lines.length - 1);
+			if (result.node) {
+				blocks.push(result.node);
+			}
+		} else if (language === 'trig') {
+			// Cercle trigonométrique dans un item de liste (sinon : code brut à l'écran et dans le PDF)
+			const restoredCode = restoreMathPlaceholders(code, placeholders);
+			const lines = ['```trig', ...restoredCode.split('\n'), '```'];
+			const result = parseTrigCircle(lines, 0, lines.length - 1);
 			if (result.node) {
 				blocks.push(result.node);
 			}

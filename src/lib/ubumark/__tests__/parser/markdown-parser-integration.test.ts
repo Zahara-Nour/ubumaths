@@ -306,3 +306,29 @@ code block
 		});
 	});
 });
+
+describe('Cercle trigonométrique dans un item de liste', () => {
+	// 2026-09-24 : un bloc ```trig en retrait dans une liste s'affichait en code
+	// brut (« preset: custom angles: … »), à l'écran comme dans le PDF.
+	it('est analysé comme un cercle, et le texte qui le suit reste dans l’item', () => {
+		const markdown = `
+1. Sur le cercle :
+
+   \`\`\`trig
+   preset: custom
+   angles: pi/3, -pi/3
+   equation: cos(x) >= 1/2
+   mode: arc
+   \`\`\`
+   Donc ~x~ est dans l'arc.
+2. Suite.
+`;
+		const ast = parseMarkdown(markdown);
+		const list = ast.children[0] as ListNode;
+		expect(list.items).toHaveLength(2);
+		const types = list.items[0].children.map((c) => c.type);
+		expect(types).toContain('trig-circle');
+		expect(types).not.toContain('code-block');
+		expect(types[types.length - 1]).toBe('paragraph');
+	});
+});
