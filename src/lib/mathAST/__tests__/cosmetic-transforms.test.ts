@@ -737,3 +737,36 @@ describe('checkForm', () => {
 		expect(result.status).toBe('correct');
 	});
 });
+
+describe('removeZeros — une virgule entre chiffres ne sépare pas deux nombres', () => {
+	// 2026-09-24 : la virgule de `\,` (espace fine), de `{,}` et la virgule
+	// décimale après un chiffre étaient prises pour un séparateur. `1\,000\,000`
+	// perdait un groupe (→ « zéros inutiles », refusé en mode strict) et `1,05`
+	// (virgule décimale telle que MathLive l'écrit) devenait `1,5`.
+	it.each([
+		'1\\,000\\,000',
+		'2\\,000\\,000\\,000',
+		'1\\,000\\,500',
+		'12\\,000\\,000',
+		'100\\,000\\,000',
+		'1,05',
+		'1{,}05',
+		'2,005',
+		'1{,}000\\,5'
+	])('%s est laissé intact', (latex) => {
+		expect(removeZeros(latex)).toBe(latex);
+	});
+
+	it.each([
+		['007', '7'],
+		['x=007', 'x=7'],
+		['(01)', '(1)'],
+		['-01', '-1'],
+		['1{,}20', '1{,}2'],
+		['1,20', '1,2'],
+		['0\\,565', '565'],
+		['1\\,000\\,000{,}50', '1\\,000\\,000{,}5']
+	])('%s → %s (les vrais zéros inutiles restent détectés)', (latex, expected) => {
+		expect(removeZeros(latex)).toBe(expected);
+	});
+});

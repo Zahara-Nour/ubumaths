@@ -49,6 +49,15 @@ export { stripUnnecessaryBrackets as stripUnnecessaryBracketsAST } from './trans
 // =============================================================================
 
 /**
+ * Ce qui peut précéder des zéros de tête : le début, un opérateur ou un
+ * délimiteur. Une virgule n'en est un QUE si elle sépare deux nombres : pas
+ * celle de `\\,` (espace fine de groupement), ni celle de `{,}`, ni une
+ * virgule décimale collée à un chiffre (`1,05`, telle que MathLive l'écrit).
+ * Sans cette garde, `1\\,000\\,000` perdait un groupe et `1,05` devenait `1,5`.
+ */
+const ZERO_DELIMITER = String.raw`(^|(?<!\\)[+\-*/=({]|(?<![\\{\d]),)`;
+
+/**
  * Remove unnecessary leading and trailing zeros from a LaTeX string.
  *
  * - Leading zeros: 01 → 1, 007 → 7 (but 0.5 stays)
@@ -64,29 +73,31 @@ export function removeZeros(latex: string): string {
 	// Do NOT strip zeros after digit-grouping spaces (e.g., 6 020, 6\,020)
 	// Match at start of string or after operators/delimiters (not after digits or spaces)
 	// The (?<!\\) lookbehind prevents matching \, (LaTeX thin space) as a comma delimiter
-	result = result.replace(/(^|(?<!\\)[+\-*/=({,])0+(\d)/g, '$1$2');
+	result = result.replace(new RegExp(`${ZERO_DELIMITER}0+(\\d)`, 'g'), '$1$2');
 
 	// Leading zeros followed by digit-grouping thin space: 0\,565 → 565
 	// A zero at a position where leading zeros are valid (start or after operator),
 	// followed by \, and then digits, is a superfluous leading zero with grouping.
-	result = result.replace(/(^|[+\-*/=({,])0+(?:\\,\s?)+(\d)/g, '$1$2');
+	result = result.replace(new RegExp(`${ZERO_DELIMITER}0+(?:\\\\,\\s?)+(\\d)`, 'g'), '$1$2');
 
 	// Handle trailing decimal zeros: 1.0 → 1, 1.20 → 1.2, 1.00 → 1
+	// Des chiffres qui reprennent après une espace fine (`1{,}000\,5`, décimales
+	// groupées par trois) ne sont pas des zéros de fin.
 	// Also handles French comma (with {,}): 1{,}0 → 1
 	// Using a loop to handle all occurrences
-	result = result.replace(/(\d+)\.(\d*?)0+(?=\D|$)/g, (_, intPart, decPart) => {
+	result = result.replace(/(\d+)\.(\d*?)0+(?!\d|\\,\s?\d)/g, (_, intPart, decPart) => {
 		if (decPart === '') return intPart; // 1.0 → 1
 		return `${intPart}.${decPart}`;
 	});
 
 	// Handle French decimal comma format: {,}0 trailing
-	result = result.replace(/(\d+)\{,\}(\d*?)0+(?=\D|$)/g, (_, intPart, decPart) => {
+	result = result.replace(/(\d+)\{,\}(\d*?)0+(?!\d|\\,\s?\d)/g, (_, intPart, decPart) => {
 		if (decPart === '') return intPart;
 		return `${intPart}{,}${decPart}`;
 	});
 
 	// Handle plain comma as decimal: 1,0 → 1
-	result = result.replace(/(\d+),(\d*?)0+(?=\D|$)/g, (_, intPart, decPart) => {
+	result = result.replace(/(\d+),(\d*?)0+(?!\d|\\,\s?\d)/g, (_, intPart, decPart) => {
 		if (decPart === '') return intPart;
 		return `${intPart},${decPart}`;
 	});
