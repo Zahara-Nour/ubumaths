@@ -18,16 +18,18 @@ lecture de fichiers arbitraires via `@vitest/mocker`, corrigée en `vitest >= 4.
 ## Mesures
 
 Scripts dans le scratchpad de session : lots serveur (12), client, intégration
-(lots de 6 fichiers), un JSON par lot pour comparer test par test.
+(20 lots de 6 fichiers), un JSON par lot, comparaison test par test.
 
-- Référence avant : faite (voir la PR). Instable connu : `m4-action-role-guards.test.ts`
-  (timeout sous charge, repasse 13/13 isolé).
+- Serveur + client : 36 646 tests avant / après, 1 écart (le test instable
+  `m4-action-role-guards`, rouge avant par timeout sous charge, vert après).
+- Intégration : 116 fichiers, 1 036 réussis, 12 ignorés, 0 écart.
+- `pnpm audit` : 0 vulnérabilité (main : 2 modérées, GHSA-82fw-gwwq-j7x9).
+- `check:incremental` : 1615 fichiers, 0 erreur.
 
 ## État
 
-- [x] Référence serveur + client
-- [ ] Référence intégration
-- [ ] Bump + config
-- [ ] Mesure après, comparaison
-- [ ] `pnpm audit`, `check:incremental`, `lint:fast`
-- [ ] PR
+- [x] Référence serveur + client + intégration
+- [x] Bump + config + adaptations
+- [x] Mesure après, comparaison
+- [x] `pnpm audit`, `check:incremental`, `lint:fast`
+- [ ] PR, CI, merge

@@ -81,12 +81,29 @@ Le **suffixe** est la seule chose qui route un test vers le bon runner. À respe
 | `vitest.integration.config.ts`         | `tests/integration/**`    | node + Supabase local | `pnpm test:integration` |
 | `playwright.config.ts`                 | `e2e/**`                  | 3 navigateurs         | `pnpm test:e2e`         |
 
-> Coverage (`provider: v8`) est configuré dans `vite.config.ts`, scope `src/**/*.{ts,svelte}`.
+> Un bloc `coverage` (`provider: v8`) figure dans `vite.config.ts`, mais **`@vitest/coverage-v8` n'est pas installé** et aucun script ni job CI ne lance la couverture : ce bloc est inerte.
 
 ### Décisions de config actées
 
 - **Plus de config Docker triggers.** `vitest.triggers.config.ts` et les scripts `test:triggers*` sont supprimés. Les tests de base de données sont des **tests d'intégration** sous `tests/integration/database/`, exécutés par le runner d'intégration contre le Supabase local.
 - **`tests/unit/` n'existe plus.** Tout test unitaire est co-localisé sous `src/**/__tests__/`. Le projet `server` ne cible donc que `src/**`.
+- **vitest 4** (depuis 2026-09-24) : fournisseur `@vitest/browser-playwright`, chargé dans `vite.config.ts` **seulement sous vitest** (`process.env.VITEST`) pour épargner ~70 Mo à `pnpm dev` et au build. Intégration séquentielle par `maxWorkers: 1` (ex-`singleFork`), un processus neuf par fichier.
+
+### Écrire un test sous vitest 4 — les pièges
+
+- **Contexte navigateur** : `import { page } from 'vitest/browser'` (plus `@vitest/browser/context`).
+- **Mock appelé avec `new`** (`Worker`, `Audio`, une classe mockée par `vi.mock`) : `function` ou `class`, **jamais une flèche**, sinon « is not a constructor ». Piège : un test d'erreur peut alors passer pour une autre raison que celle qu'il teste.
+
+  ```ts
+  globalThis.Worker = vi.fn().mockImplementation(function (url: URL) {
+  	return new MockWorker(url);
+  }) as unknown as typeof Worker;
+  ```
+
+- **Options de test** en 2ᵉ argument (`it('nom', { timeout: 30000 }, fn)`) ou un nombre en 3ᵉ ; un objet en 3ᵉ argument fait échouer tout le fichier.
+- **Helpers de test** : importer par l'alias `$tests/helpers`, jamais `'tests/helpers'` (résolu par hasard en vitest 3, inconnu en 4).
+- **Ne pas étaler le résultat de `render`** (`{ ...view, champ }`) dans un objet rendu par une fonction `async` : depuis `vitest-browser-svelte` 2.1, `render` porte un `then`, et l'`await` de l'appelant rend alors le résultat brut de `render`, sans les champs ajoutés. Rendre explicitement ce que le helper expose.
+- **MathLive** : garder `await import('mathlive')` dans les tests client (un import statique passe en vitest 4 mais produit des erreurs SSR au démontage).
 
 ---
 
