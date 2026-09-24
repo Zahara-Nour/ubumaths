@@ -21,6 +21,7 @@ import type {
 	VariationValue,
 	DomainPoint
 } from '../types/variation-table';
+import { withImplicitEndpoints } from '../parser/variation-table-parser';
 
 // ============================================================================
 // CONFIGURATION
@@ -312,10 +313,14 @@ function generateSignLine(row: SignRow, domain: DomainPoint[]): string {
 	for (let i = 0; i < domain.length; i++) {
 		const point = domain[i].expression;
 
-		// Check for point value (marker)
+		// Entrée du point : une par point, vide sans marqueur — sinon tout ce qui
+		// suit se décale d'une colonne. Seule la dernière peut manquer (tkz-tab la
+		// tolère, et c'est la forme historique de ce générateur).
 		const pointValue = row.values.get(point);
-		if (pointValue && pointValue.type === 'marker') {
-			values.push(convertSignMarkerToLatex(pointValue.marker));
+		const marker =
+			pointValue && pointValue.type === 'marker' ? convertSignMarkerToLatex(pointValue.marker) : '';
+		if (i < domain.length - 1 || marker !== '') {
+			values.push(marker);
 		}
 
 		// Check for interval value (sign)
@@ -338,8 +343,8 @@ function generateSignLine(row: SignRow, domain: DomainPoint[]): string {
 		}
 	}
 
-	// tkzTabLine format: start with comma
-	return `\\tkzTabLine{,${values.join(',')}}`;
+	// La première entrée est celle du premier point (vide sans marqueur)
+	return `\\tkzTabLine{${values.join(',')}}`;
 }
 
 /**
@@ -353,7 +358,8 @@ function convertSignMarkerToLatex(marker: string): string {
 		case 'zero':
 			return 'z';
 		case 'asymptote':
-			return '||';
+			// Double barre de tkz-tab (`||` s'imprimait en texte)
+			return 'd';
 		case 'forbidden':
 			return 'h';
 		case 'discontinuity':
@@ -384,33 +390,68 @@ function convertSignMarkerToLatex(marker: string): string {
 function generateVariationLine(row: VariationRow, domain: DomainPoint[]): string {
 	const parts: string[] = [];
 	let previousPosition: string | null = null;
+	// Bornes sans valeur (tableau de 1re) : sinon la colonne est sautée
+	const filled = withImplicitEndpoints(row, domain);
 
 	for (let i = 0; i < domain.length; i++) {
 		const point = domain[i].expression;
-		const value = row.values.get(point);
+		const value = filled.values.get(point);
 
+		// Point sans valeur (utile à une ligne de signes seulement) : tkz-tab veut
+		// une entrée par colonne, `R/` = rien ici, la flèche passe
 		if (!value) {
+			parts.push('R/');
 			continue;
 		}
 
-		// Determine direction based on position change
-		const direction = getVariationDirection(previousPosition, value.position);
-
-		// Format the value
-		const formattedValue = formatVariationValue(value);
-
-		// Combine direction and value
-		if (direction) {
-			parts.push(`${direction}/${formattedValue}`);
-		} else {
-			// First point has no direction
-			parts.push(formattedValue);
-		}
-
-		previousPosition = value.position;
+		parts.push(formatVariationEntry(value, previousPosition));
+		previousPosition =
+			value.marker === 'asymptote' && value.limits ? value.limits[1].position : value.position;
 	}
 
 	return `\\tkzTabVar{${parts.join(',')}}`;
+}
+
+/**
+ * Une entrée de \\tkzTabVar. Le préfixe `+/` / `-/` donne la HAUTEUR de la
+ * valeur (en haut, en bas), pas le sens de la flèche — y compris pour la
+ * première entrée, que tkz-tab exige préfixée. Vérifié en compilant avec
+ * tkz-tab : `+/ ` (borne sans valeur), `-D+/$a$/$b$` (asymptote, deux
+ * limites, sans autre préfixe), `-D/$v$` (limite à gauche de la double barre,
+ * en fin de domaine), `D+/$v$` (limite à droite, en début de domaine).
+ */
+function formatVariationEntry(value: VariationValue, previousPosition: string | null): string {
+	if (value.marker === 'asymptote' && value.limits) {
+		return formatVariationValue(value);
+	}
+
+	if (value.marker === 'asymptote' && value.limitSide) {
+		const height = heightPrefix(value.position) ?? '-';
+		const expr = `$${formatMathExpression(value.expression)}$`;
+		return value.limitSide === 'left' ? `${height}D/${expr}` : `D${height}/${expr}`;
+	}
+
+	if (value.marker === 'asymptote') {
+		// Double barre sans limite : pas d'équivalent tkz-tab, forme historique conservée
+		return previousPosition === null
+			? '||'
+			: `${getVariationDirection(previousPosition, value.position)}/||`;
+	}
+
+	// tkz-tab n'a pas de hauteur « centre » : on garde alors l'ancien repère
+	// (plus haut ou plus bas que la valeur précédente)
+	const height =
+		heightPrefix(value.position) ??
+		(previousPosition === null ? '-' : getVariationDirection(previousPosition, value.position));
+	// Borne sans valeur : position seule
+	return value.expression === '' ? `${height}/ ` : `${height}/${formatVariationValue(value)}`;
+}
+
+/** `+` pour une valeur en haut, `-` en bas, null au centre */
+function heightPrefix(position: string): '+' | '-' | null {
+	if (position === 'top' || position === 'limit-top') return '+';
+	if (position === 'bottom' || position === 'limit-bottom') return '-';
+	return null;
 }
 
 /**
@@ -484,9 +525,10 @@ function formatVariationValue(value: VariationValue): string {
 		return '||';
 	}
 
-	// Regular value
-	const formatted = formatMathExpression(value.expression);
-	return `$${formatted}$`;
+	// Regular value — une `/` (e/2, 1/2) couperait l'entrée tkz-tab en deux :
+	// les accolades la protègent
+	const formatted = `$${formatMathExpression(value.expression)}$`;
+	return formatted.includes('/') ? `{${formatted}}` : formatted;
 }
 
 // ============================================================================

@@ -15,9 +15,13 @@
  * ```
  */
 
+import { multiply } from '../../factory';
+import { tidy } from '../../tidy';
+import type { MathNode } from '../../types';
 import { P } from '../builder';
-import { createRule } from '../rule';
-import type { Rule, MatchBindings } from '../types';
+import { createRule, instantiate } from '../rule';
+import { getBindingNode } from '../types';
+import type { Rule, MatchBindings, SumPatternElement } from '../types';
 import { isMathNodeBinding } from '../types';
 
 // =============================================================================
@@ -55,6 +59,36 @@ function isNotZero(bindings: MatchBindings): boolean {
  * - (a/b)^n = a^n / b^n (power of quotient)
  * - x^(-1) = 1/x (negative one exponent)
  */
+
+/**
+ * Retire les délimiteurs d'un nœud.
+ *
+ * ⚠️ `parseLatex('(e^x)^3')` rend `pow(paren(pow(e, x)), 3)` : le délimiteur
+ * empêchait le motif de voir la puissance intérieure, et la règle ne se
+ * déclenchait jamais sur l'écriture que l'élève produit. `(x²)³` passait quand
+ * même, mais par la forme normale, qui sait réduire un exposant RATIONNEL — pas
+ * un exposant symbolique.
+ */
+function unwrapDelimiters(node: MathNode | null): MathNode | null {
+	let current = node;
+	while (current !== null && current.type === 'delimiter') current = current.content;
+	return current;
+}
+
+/**
+ * Construit le motif de remplacement, puis met son EXPOSANT au propre.
+ *
+ * Les règles de puissances assemblent une somme ou un produit d'exposants et
+ * s'arrêtent là. Personne ne les réduit ensuite : l'exposant vit à l'intérieur
+ * d'une base que la forme normale traite comme opaque, et n'est donc jamais
+ * visité. `tidy` le met au propre sans rien développer.
+ */
+function tidyExponent(pattern: SumPatternElement, bindings: MatchBindings): MathNode {
+	const built = instantiate(pattern, bindings);
+	if (built.type !== 'superscript') return built;
+	return { ...built, superscript: tidy(built.superscript) };
+}
+
 export const powerRules: readonly Rule[] = [
 	// x^1 = x (power of one)
 	createRule(P.pow(P._('x'), P.num(1)), P._('x'), {
@@ -110,16 +144,41 @@ export const powerRules: readonly Rule[] = [
 	}),
 
 	// (a^m)^n = a^(m*n) (power of a power)
+	//
+	// ⚠️ L'exposant est mis au propre. Sans ça, `(e^x)^3` rendait `e^x^3` — une
+	// écriture qui ne se relit même pas — au lieu de `e^{3x}` : la règle
+	// construisait le produit des exposants et personne ne le réduisait ensuite,
+	// l'exposant vivant à l'intérieur d'une base opaque.
 	createRule(
-		P.pow(P.pow(P._('a'), P._('m')), P._('n')),
-		P.pow(P._('a'), P.mul(P._('m'), P._('n'))),
-		{ name: 'pow-of-pow' }
+		P.pow(P._('inner'), P._('n')),
+		(bindings) => {
+			const inner = unwrapDelimiters(getBindingNode(bindings, 'inner'));
+			const outer = getBindingNode(bindings, 'n');
+			// Inatteignable : `condition` a déjà exigé une puissance à l'intérieur.
+			if (inner === null || inner.type !== 'superscript' || outer === null) {
+				throw new Error('pow-of-pow: puissance intérieure absente');
+			}
+			return {
+				type: 'superscript',
+				base: inner.base,
+				superscript: tidy(multiply(inner.superscript, outer, 'implicit'))
+			};
+		},
+		{
+			name: 'pow-of-pow',
+			condition: (bindings) => {
+				const inner = unwrapDelimiters(getBindingNode(bindings, 'inner'));
+				return inner !== null && inner.type === 'superscript';
+			}
+		}
 	),
 
 	// a^m * a^n = a^(m+n) (same base, sum of exponents)
+	//
+	// ⚠️ Même raison : `e^x · e^{2x}` rendait `e^{x + 2x}` au lieu de `e^{3x}`.
 	createRule(
 		P.mul(P.pow(P._('a'), P._('m')), P.pow(P._('a'), P._('n'))),
-		P.pow(P._('a'), P.add(P._('m'), P._('n'))),
+		(bindings) => tidyExponent(P.pow(P._('a'), P.add(P._('m'), P._('n'))), bindings),
 		{ name: 'same-base-mul' }
 	),
 

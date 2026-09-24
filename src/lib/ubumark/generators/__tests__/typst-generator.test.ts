@@ -283,9 +283,19 @@ describe('generateTypst', () => {
 		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Typst uses #enum() for ordered lists with proper numbering
-		expect(typst).toContain('#enum(numbering: "1)"');
+		expect(typst).toContain('#enum(numbering: "a)"');
 		expect(typst).toContain('[First]');
 		expect(typst).toContain('[Second]');
+	});
+
+	it('numbers nested ordered lists a) then 1) then i)', async () => {
+		const markdown = '1. Un\n   1. Deux\n      1. Trois';
+
+		const typst = await markdownToTypst(markdown, { includeSetup: false });
+
+		// Hiérarchie de l'établissement : lettre, puis chiffre, puis romain
+		const patterns = [...typst.matchAll(/#enum\(numbering: "([^"]+)"/g)].map((m) => m[1]);
+		expect(patterns).toEqual(['a)', '1)', 'i)']);
 	});
 
 	it('should generate ordered list with custom start number', () => {
@@ -323,7 +333,7 @@ describe('generateTypst', () => {
 		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Should use #enum with start: 3
-		expect(typst).toContain('#enum(start: 3, numbering: "1)"');
+		expect(typst).toContain('#enum(start: 3, numbering: "a)"');
 		expect(typst).toContain('[Third item]');
 		expect(typst).toContain('[Fourth item]');
 	});
@@ -473,7 +483,7 @@ describe('markdownToTypst', () => {
 		const typst = await markdownToTypst(markdown, { includeSetup: false });
 
 		// Ordered lists use #enum() with proper numbering
-		expect(typst).toContain('#enum(numbering: "1)"');
+		expect(typst).toContain('#enum(numbering: "a)"');
 		expect(typst).toContain('[First]');
 		expect(typst).toContain('[Second]');
 		expect(typst).toContain('[Third]');
@@ -1359,7 +1369,7 @@ describe('Edge Cases', () => {
 		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Ordered list uses #enum() with nested bullet list using #list()
-		expect(typst).toContain('#enum(numbering: "1)"');
+		expect(typst).toContain('#enum(numbering: "a)"');
 		expect(typst).toContain('Parent');
 		expect(typst).toContain('#list(');
 		expect(typst).toContain('[Child]');
@@ -1431,6 +1441,29 @@ describe('Edge Cases', () => {
 // ============================================================================
 // LATEX TO TYPST MATH CONVERSION TESTS
 // ============================================================================
+
+describe('convertLatexToTypstMath - Unités (\\unit)', () => {
+	// Le générateur LaTeX de mathAST écrit « 2~\unit{cm} » pour ~2[cm]~ ;
+	// avant ce correctif le PDF affichait « 2 unitcm ».
+	it('convertit une unité simple en romain, précédée d’une espace fine', () => {
+		expect(convertLatexToTypstMath('2~\\unit{cm}')).toBe('2 thin upright("cm")');
+	});
+
+	it('garde les exposants d’une unité', () => {
+		expect(convertLatexToTypstMath('3{,}5~\\unit{m^2}')).toBe('3","5 thin upright("m")^(2)');
+		expect(convertLatexToTypstMath('3~\\unit{m.s^-1}')).toBe(
+			'3 thin upright("m") dot.op upright("s")^(-1)'
+		);
+	});
+
+	it('rend la barre d’une unité composée comme un symbole, pas comme une fraction', () => {
+		expect(convertLatexToTypstMath('90~\\unit{km/h}')).toBe('90 thin upright("km")"/"upright("h")');
+	});
+
+	it('ne laisse jamais passer le nom de commande « unit »', () => {
+		expect(convertLatexToTypstMath('\\unit{cm^3}')).not.toMatch(/unit"|"unit/);
+	});
+});
 
 describe('convertLatexToTypstMath - Vectors and Accents', () => {
 	it('should convert \\vec{x} to arrow(x)', () => {
@@ -1599,6 +1632,18 @@ describe('convertLatexToTypstMath - Math Spaces', () => {
 		expect(convertLatexToTypstMath('a\\;b')).toBe('a thick b');
 	});
 
+	it('converts the LaTeX control space \\  to a Typst space, not a line break', () => {
+		// « au moins $400\ \text{m}^2$ » : en maths Typst, `\` suivi d'un espace
+		// est un saut de ligne — « 400 » s'affichait au-dessus de « m² ».
+		expect(convertLatexToTypstMath('400\\ \\text{m}^2')).toBe('400 space "m"^2');
+		expect(convertLatexToTypstMath('5\\ x')).toBe('5 space x');
+	});
+
+	it('keeps the LaTeX line break \\\\ as a Typst line break', () => {
+		expect(convertLatexToTypstMath('x \\\\ y')).toBe('x \\ y');
+		expect(convertLatexToTypstMath('x\\\\ y')).toBe('x\\ y');
+	});
+
 	it('should convert \\! to negative thin space with surrounding spaces', () => {
 		expect(convertLatexToTypstMath('a\\!b')).toBe('a negthin b');
 	});
@@ -1637,6 +1682,15 @@ describe('convertLatexToTypstMath - French Interval Notation', () => {
 		// Raw [ ] are replaced with bracket.l/bracket.r to avoid parser confusion
 		// when math is inside content blocks (e.g., #enum items)
 		expect(convertLatexToTypstMath('[a, b]')).toBe('bracket.l a, b bracket.r');
+	});
+
+	it('should separate a closing bracket from a following digit or letter', () => {
+		// Régression : « ]0, +\infty[ » (intervalle à virgule) donnait « bracket.r0 »,
+		// que Typst lit comme un modificateur inconnu → tout le PDF de la fiche échoue.
+		const out = convertLatexToTypstMath(']0, +\\infty[');
+		expect(out).not.toMatch(/bracket\.[lr][a-zA-Z0-9]/);
+		expect(out).toContain('bracket.r 0');
+		expect(convertLatexToTypstMath('[a]b')).not.toMatch(/bracket\.rb/);
 	});
 
 	it('should prevent variable fusion between letters and bracket symbols', () => {

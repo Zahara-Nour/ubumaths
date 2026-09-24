@@ -492,12 +492,15 @@ describe('Pattern Matching Integration', () => {
 				expect(nodesEqual(result, number('3'))).toBe(true);
 			});
 
-			it('simplifies (x^2)^3 to x^(2*3) (power of power)', () => {
+			// ⚠️ Ce test attendait `x^(2*3)`, l'exposant NON réduit. Il enregistrait
+			// une limitation : la règle construisait le produit des exposants et
+			// personne ne le réduisait ensuite, l'exposant vivant à l'intérieur
+			// d'une base que la forme normale traite comme opaque. Mesuré,
+			// `(e^x)^3` rendait `e^x^3`, qui ne se relit même pas.
+			it('simplifies (x^2)^3 to x^6 (power of power)', () => {
 				const node = superscript(superscript(variable('x'), number('2')), number('3'));
 				const result = applyRules([...powerRules], node);
-				expect(
-					nodesEqual(result, superscript(variable('x'), multiply(number('2'), number('3'))))
-				).toBe(true);
+				expect(nodesEqual(result, superscript(variable('x'), number('6')))).toBe(true);
 			});
 
 			it('simplifies (a^m)^n to a^(m*n) with symbolic exponents', () => {
@@ -508,15 +511,15 @@ describe('Pattern Matching Integration', () => {
 				).toBe(true);
 			});
 
-			it('simplifies x^2 * x^3 to x^(2+3) (same base product)', () => {
+			// Même raison que le bloc ci-dessus : `x^(2+3)` enregistrait la somme
+			// non réduite.
+			it('simplifies x^2 * x^3 to x^5 (same base product)', () => {
 				const node = multiply(
 					superscript(variable('x'), number('2')),
 					superscript(variable('x'), number('3'))
 				);
 				const result = applyRules([...powerRules], node);
-				expect(nodesEqual(result, superscript(variable('x'), add(number('2'), number('3'))))).toBe(
-					true
-				);
+				expect(nodesEqual(result, superscript(variable('x'), number('5')))).toBe(true);
 			});
 
 			it('simplifies a^m * a^n to a^(m+n) with symbolic exponents', () => {

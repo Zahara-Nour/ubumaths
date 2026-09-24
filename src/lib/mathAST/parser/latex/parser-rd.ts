@@ -30,10 +30,11 @@
 
 import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } from '../../types';
 import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
-import { Tokenizer } from './tokenizer';
+import { Tokenizer, isLatexSpacing } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from './color-stack';
 import { MathAST } from '../../factory';
-import { parse as parseUnit } from '../../units/parser';
+import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
+import { UNIT_EXPONENT_MESSAGE_LATEX, UNIT_SPACE_MESSAGE } from '../custom/unit-writing';
 import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
 import {
 	SecurityError,
@@ -230,7 +231,7 @@ class RDParser {
 	 */
 	private skipWhitespace(): Token {
 		let token = this.tokenizer.nextToken();
-		while (token.type === 'WHITESPACE') {
+		while (isLatexSpacing(token)) {
 			token = this.tokenizer.nextToken();
 		}
 		return token;
@@ -630,33 +631,28 @@ class RDParser {
 	}
 
 	/**
-	 * postfix := primary ('~' '\unit' group)?
+	 * postfix := primary ('\unit' group)?
+	 *
+	 * Le `~` ou toute autre commande d'espacement qui précède (`3~\unit{cm}`,
+	 * `3\,\unit{cm}`) a déjà été sautée comme un blanc (`isLatexSpacing`).
 	 */
 	private parsePostfix(): MathNode {
 		let node = this.parsePrimary();
 
-		if (this.check('TILDE')) {
-			this.advance();
-
-			// Expect \unit command
-			if (!this.checkCommand('unit')) {
-				this.error(
-					`Expected \\unit after ~`,
-					this.currentToken.position,
-					this.currentToken.length,
-					'INVALID_UNIT'
-				);
-			}
+		if (this.checkCommand('unit')) {
 			this.advance(); // consume \unit
 
 			this.expect('LBRACE', "Expected '{' for \\unit");
 			const unitStr = this.parseUnitString();
 			this.expect('RBRACE', "Expected '}' after \\unit");
+			if (this.check('CARET')) {
+				this.error(UNIT_EXPONENT_MESSAGE_LATEX, this.currentToken.position, 1, 'INVALID_UNIT');
+			}
 
 			const unit = parseUnit(unitStr);
 			if (!unit) {
 				this.error(
-					`Invalid unit: ${unitStr}`,
+					unitErrorMessage(unitStr),
 					this.currentToken.position,
 					unitStr.length,
 					'INVALID_UNIT'
@@ -1462,11 +1458,14 @@ class RDParser {
 		this.expect('LBRACE', "Expected '{' for \\unit");
 		const unitStr = this.parseUnitString();
 		this.expect('RBRACE', "Expected '}' after \\unit");
+		if (this.check('CARET')) {
+			this.error(UNIT_EXPONENT_MESSAGE_LATEX, this.currentToken.position, 1, 'INVALID_UNIT');
+		}
 
 		const unit = parseUnit(unitStr);
 		if (!unit) {
 			this.error(
-				`Invalid unit: ${unitStr}`,
+				unitErrorMessage(unitStr),
 				this.currentToken.position,
 				unitStr.length,
 				'INVALID_UNIT'
@@ -1487,33 +1486,47 @@ class RDParser {
 	 */
 	private parseUnitString(): string {
 		let unitStr = '';
+		// Accolades d'exposant ouvertes : `\unit{m.s^{-1}}` — seule l'accolade
+		// fermante de profondeur 0 termine l'unité.
+		let depth = 0;
+		// Fin du jeton précédent, pour retrouver une espace que le tokenizer a
+		// sautée : `\unit{m s^-1}` se recollerait en `ms`, la milliseconde.
+		// L'espace qui suit une commande (`\cdot s`) la termine : elle ne compte pas.
+		let previousEnd: number | null = null;
 
-		// Collect tokens until closing brace
-		while (!this.check('RBRACE') && !this.check('EOF')) {
+		while (!this.check('EOF') && !(this.check('RBRACE') && depth === 0)) {
 			const token = this.currentToken;
-			if (token.type === 'LETTER') {
-				unitStr += token.value;
-			} else if (token.type === 'NUMBER') {
-				unitStr += token.value;
+			let piece: string;
+			if (token.type === 'LETTER' || token.type === 'NUMBER') {
+				piece = token.value;
 			} else if (token.type === 'CARET') {
-				unitStr += '^';
+				piece = '^';
 			} else if (token.type === 'MINUS') {
-				unitStr += '-';
+				piece = '-';
 			} else if (token.type === 'SLASH') {
-				unitStr += '/';
+				piece = '/';
 			} else if (token.type === 'STAR') {
-				unitStr += '*';
+				piece = '*';
+			} else if (token.type === 'LPAREN' || token.type === 'RPAREN') {
+				piece = token.value;
+			} else if (token.type === 'LBRACE') {
+				piece = '{';
+				depth++;
+			} else if (token.type === 'RBRACE') {
+				piece = '}';
+				depth--;
 			} else if (token.type === 'COMMAND') {
 				// Some commands like \cdot might appear in units
-				if (token.value === 'cdot') {
-					unitStr += '.';
-				} else {
-					// Skip unknown commands in units
-					unitStr += token.value;
-				}
+				piece = token.value === 'cdot' ? '.' : token.value;
 			} else {
 				break;
 			}
+
+			if (previousEnd !== null && token.position > previousEnd) {
+				this.error(UNIT_SPACE_MESSAGE, previousEnd, 1, 'INVALID_UNIT');
+			}
+			unitStr += piece;
+			previousEnd = token.type === 'COMMAND' ? null : token.position + token.length;
 			this.advance();
 		}
 

@@ -340,6 +340,19 @@ describe('VariationTable Component', () => {
 			expect(downArrows.length).toBe(1);
 		});
 
+		it('dessine les deux flèches d’un minimum quand les bornes n’ont pas de valeur', async () => {
+			// Tableau de 1re : pas de limites en -inf / +inf, seulement le minimum
+			const node = createBasicTable();
+			node.rows.push(
+				createVariationRow('f(x)', { '0': { expression: '-11', position: 'bottom' } })
+			);
+
+			renderTable({ node });
+
+			expect(document.querySelectorAll('.vt-arrow-down').length).toBe(1);
+			expect(document.querySelectorAll('.vt-arrow-up').length).toBe(1);
+		});
+
 		it('should render SVG arrows', async () => {
 			const node = createBasicTable();
 			node.rows.push(

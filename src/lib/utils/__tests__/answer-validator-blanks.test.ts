@@ -394,6 +394,26 @@ describe('Per-blank validation — Multi-blank aggregation', () => {
 		const result = validateAnswer(['42', 'impair'], instance);
 		expect(result.isCorrect).toBe(false);
 	});
+
+	it('D18. per-blank message: le trou 2 sans unité porte son propre message', () => {
+		const instance = createInstance([
+			mathBlank('3'),
+			mathBlank('5\\unit{km}', { unit: { expected: true } })
+		]);
+
+		const result = validateAnswer(['3', '5'], instance);
+		expect(result.isCorrect).toBe(false);
+		expect(result.blankFeedback).toEqual([undefined, 'N’oublie pas l’unité.']);
+		// Le message global reste inchangé à plusieurs trous
+		expect(result.feedback).toBe('Les blancs suivants sont incorrects: 2');
+	});
+
+	it('D19. per-blank message: un seul blanc → son message devient le feedback global', () => {
+		const instance = createInstance([mathBlank('5\\unit{km}', { unit: { expected: true } })]);
+
+		const result = validateAnswer(['5'], instance);
+		expect(result.feedback).toBe('N’oublie pas l’unité.');
+	});
 });
 
 // ============================================================================
@@ -545,5 +565,33 @@ describe('Per-blank validation — Edge cases', () => {
 		// Student didn't change the prefilled value
 		const result = validateAnswer(['40'], instance);
 		expect(result.isCorrect).toBe(false);
+	});
+});
+
+describe('Zéros : un nombre bien écrit n’est pas « zéros inutiles »', () => {
+	// 2026-09-24 : `1\,000\,000` et `1,05` étaient jugés « Il y a un ou des zéros
+	// inutiles » (refusés en mode strict).
+	it.each([
+		['1000000', '1\\,000\\,000'],
+		['2500000', '2\\,500\\,000'],
+		['1.05', '1,05'],
+		['3.007', '3,007']
+	])('%s tapé %s : juste, sans retour de forme', (expected, typed) => {
+		const instance = createInstance([mathBlank(expected)], { constraints: { zeros: 'strict' } });
+		const result = validateAnswer([typed], instance, [typed]);
+		expect(result.isCorrect, `${typed} → ${result.status} ${result.feedback ?? ''}`).toBe(true);
+		expect(result.status ?? 'correct').toBe('correct');
+	});
+
+	it('1,5 pour 1,05 reste faux', () => {
+		const instance = createInstance([mathBlank('1.05')]);
+		expect(validateAnswer(['1,5'], instance, ['1,5']).isCorrect).toBe(false);
+	});
+
+	it('un vrai zéro inutile reste signalé : 1,50', () => {
+		const instance = createInstance([mathBlank('1.5')], { constraints: { zeros: 'strict' } });
+		const result = validateAnswer(['1,50'], instance, ['1,50']);
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Il y a un ou des zéros inutiles.');
 	});
 });

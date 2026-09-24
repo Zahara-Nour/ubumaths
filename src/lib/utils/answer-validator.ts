@@ -29,6 +29,7 @@ import {
 	type ConstraintSeverity
 } from '$lib/mathAST/cosmetic-transforms';
 import { extractUnitFromLatex } from '$lib/questions/units/parser';
+import { normalizeStudentQuantity, studentNumericLatex } from '$lib/questions/units/student-input';
 import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
 import { checkRequiredForm, getRequiredFormFeedback } from '$lib/questions/required-form-validator';
@@ -112,7 +113,8 @@ function extractNumericLatexPart(latex: string): string {
 	const unit = extractUnitFromLatex(latex);
 	if (unit === null) return latex.trim();
 	// Remove the \unit{...} wrapper (only the unit we found) and trim.
-	return latex.replace(/\\unit\{[^}]*\}/, '').trim();
+	// Accolades imbriquées admises : `3\unit{m.s^{-1}}` → `3`.
+	return latex.replace(/\\unit\{(?:[^{}]|\{[^{}]*\})*\}/, '').trim();
 }
 
 /**
@@ -670,6 +672,10 @@ function validateSingleBlank(
 			blank.precision,
 			blank.unit.required
 		);
+		// L'unité est en cause : l'élève doit lire pourquoi (message figé, cf. units/feedback)
+		if (!result.isCorrect && result.unitAtFault && result.feedback) {
+			return { isCorrect: false, feedback: result.feedback };
+		}
 		isCorrect = result.isCorrect;
 	} else if (blank.precision) {
 		const result = validateNumerical(userAnswer, blank.expectedAnswer, blank.precision);
@@ -737,7 +743,13 @@ function validateSingleBlank(
 
 	// unit: numeric part must be a simple number; cosmetic checks on numeric part.
 	if (blank.unit?.expected) {
-		const numericLatex = extractNumericLatexPart(effectiveLatex);
+		// Saisie MathLive (`5\operatorname{\mathrm{km}}`…) ramenée à `valeur\unit{…}`
+		// avant d'isoler la partie numérique, comme à l'étape 2.
+		// Partie numérique telle que tapée (`2{,}5`, `12\\,500`) : la forme normalisée
+		// (`2,5`, `12500`) serait refusée ou jugée mal espacée par le contrôle de forme
+		const numericLatex =
+			studentNumericLatex(effectiveLatex) ??
+			extractNumericLatexPart(normalizeStudentQuantity(effectiveLatex));
 		const raw = cosmeticViolations(numericLatex, severities, formOptions);
 		const { status, violations } = mapCosmeticViolations(raw, false);
 
@@ -820,6 +832,10 @@ export function validateBlanks(
 	let worstStatus: ValidationStatus | undefined;
 	const allViolations: NonNullable<ValidationResult['constraintViolations']> = [];
 	const incorrectIndexes: number[] = [];
+	// Message propre au trou unique, s'il en a un (unité en cause, règle de validation…)
+	let singleBlankFeedback: string | undefined;
+	// Message propre à chaque trou incorrect (index = index du trou), affiché près du trou
+	const blankFeedback: (string | undefined)[] = new Array(blanks.length).fill(undefined);
 	let hasConstraintResults = false;
 	let emptyCount = 0;
 
@@ -832,6 +848,8 @@ export function validateBlanks(
 
 		if (!result.isCorrect) {
 			incorrectIndexes.push(i + 1);
+			if (blanks.length === 1) singleBlankFeedback = result.feedback;
+			blankFeedback[i] = result.feedback;
 		}
 
 		// Aggregate worst status (priority: bad_form > unoptimal_form > correct)
@@ -870,6 +888,9 @@ export function validateBlanks(
 
 	const allCorrect = incorrectIndexes.length === 0;
 	const result: ValidationResult = { isCorrect: allCorrect };
+	if (blankFeedback.some((message) => message !== undefined)) {
+		result.blankFeedback = blankFeedback;
+	}
 
 	// Include constraint results when constraint checking occurred
 	if (hasConstraintResults || worstStatus !== undefined) {
@@ -885,6 +906,8 @@ export function validateBlanks(
 			result.feedback = "Tu n'as pas tout complété.";
 		} else if (worstStatus === 'bad_form') {
 			result.feedback = allViolations[0]?.feedback;
+		} else if (singleBlankFeedback) {
+			result.feedback = singleBlankFeedback;
 		} else {
 			result.feedback = `Les blancs suivants sont incorrects: ${incorrectIndexes.join(', ')}`;
 		}

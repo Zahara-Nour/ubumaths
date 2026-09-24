@@ -140,8 +140,8 @@ describe('generateVariationTableTypst - Sign Rows', () => {
 		const typst = generateVariationTableTypst(node);
 
 		// n-1 elements for n domain points
-		// First interval: $+$, second interval: ("z", $-$)
-		expect(typst).toContain('($+$, ("z", $-$))');
+		// First interval: $+$, second interval: ("0", $-$)
+		expect(typst).toContain('($+$, ("0", $-$))');
 	});
 
 	it('should combine zero marker with following sign', () => {
@@ -164,8 +164,8 @@ describe('generateVariationTableTypst - Sign Rows', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		// Zero marker combined with sign: ("z", $-$)
-		expect(typst).toContain('($+$, ("z", $-$))');
+		// Zero marker combined with sign: ("0", $-$)
+		expect(typst).toContain('($+$, ("0", $-$))');
 	});
 
 	it('should combine asymptote marker with following sign', () => {
@@ -265,7 +265,7 @@ describe('generateVariationTableTypst - Sign Rows', () => {
 		// vartable draws "||" at left border when first element starts with "||"
 		expect(typst).toContain('("||", $-$)');
 		// Second interval with zero marker
-		expect(typst).toContain('("z", $+$)');
+		expect(typst).toContain('("0", $+$)');
 	});
 
 	it('should handle empty intervals with empty strings', () => {
@@ -651,7 +651,7 @@ describe('generateVariationTableTypst - Complex Tables', () => {
 		// Verify sign row - interval-based format with markers combined
 		// Domain: 5 points -> 4 intervals
 		// Markers at -1, 0, 1 combined with their following signs
-		expect(typst).toContain('($+$, ("z", $-$), ("z", $+$), ("z", $-$))');
+		expect(typst).toContain('($+$, ("0", $-$), ("0", $+$), ("0", $-$))');
 
 		// Verify variation row (point format)
 		// 5 points for 5 domain points: each point gets (position, $value$)
@@ -692,8 +692,8 @@ describe('generateVariationTableTypst - Complex Tables', () => {
 		const typst = generateVariationTableTypst(node);
 
 		// Interval-based format with markers combined
-		expect(typst).toContain('($-$, ("z", $+$))');
-		expect(typst).toContain('($+$, ("z", $-$))');
+		expect(typst).toContain('($-$, ("0", $+$))');
+		expect(typst).toContain('($+$, ("0", $-$))');
 	});
 
 	it('should convert complex math expressions', () => {
@@ -926,5 +926,37 @@ ${tableTypst}`;
 		expect(fullDoc).toContain('#set page');
 		expect(fullDoc).toContain('#import "@preview/vartable');
 		expect(fullDoc).toContain('#tabvar(');
+	});
+});
+
+// ============================================================================
+// RENDU PDF : zéro sur le trait et hauteur réelle du tableau
+// ============================================================================
+
+describe('generateVariationTableTypst - Rendu PDF', () => {
+	it('marque une racine par "0" (trait + 0 affiché par vartable), pas par "z"', () => {
+		// Dans vartable 0.2.1, seul le marqueur "0" dessine le « 0 » sur le trait ;
+		// "z" tombe dans le cas par défaut : un trait nu, sans 0.
+		const typst = generateVariationTableTypst(createBasicNode());
+
+		expect(typst).toContain('($+$, ("0", $-$))');
+		expect(typst).not.toContain('"z"');
+	});
+
+	it('pose le « 0 » sur fond blanc pour que le trait ne le barre pas', () => {
+		// vartable centre `$ 0 $` (équation bloc) sur le trait sans fond : sans cette règle,
+		// le trait traverse le chiffre et le 0 ressemble à « ø ».
+		const typst = generateVariationTableTypst(createBasicNode());
+
+		expect(typst).toContain(
+			'#show math.equation.where(block: true): it => if it.body == [0] { box(fill: white, inset: (y: 2pt), it) } else { it }'
+		);
+	});
+
+	it("réduit le tableau avec reflow pour que sa hauteur suive l'échelle", () => {
+		// Sans reflow, scale() garde la hauteur d'origine → grand blanc sous le tableau
+		const typst = generateVariationTableTypst(createBasicNode());
+
+		expect(typst).toMatch(/#scale\(x: 55%, y: 55%, origin: top \+ left, reflow: true\)/);
 	});
 });

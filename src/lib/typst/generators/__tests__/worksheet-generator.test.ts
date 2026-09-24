@@ -13,6 +13,7 @@ import {
 	generateWorksheetTypst,
 	generateBatchTypst
 } from '../worksheet-generator';
+import { DEFAULT_TEMPLATES } from '../../templates/default-templates';
 import type {
 	WorksheetRow,
 	InstanceData,
@@ -161,6 +162,33 @@ describe('WorksheetGenerator', () => {
 	});
 
 	describe('correction mode', () => {
+		it.each(DEFAULT_TEMPLATES.map((t) => [t.name, t.template_content]))(
+			'place le bandeau CORRECTION après la mise en page du modèle « %s »',
+			(_name, templateContent) => {
+				const generator = new WorksheetGenerator(createMockConfig(), {}, { mode: 'correction' });
+				const result = generator.generate({
+					worksheet: createMockWorksheet(),
+					instance: createMockInstance(),
+					template: {
+						id: 't',
+						name: 'T',
+						description: null,
+						template_content: templateContent,
+						placeholders: [],
+						created_by: 'teacher-id',
+						created_at: '2024-01-01',
+						updated_at: '2024-01-01'
+					}
+				});
+				const content = result.typstContent;
+				// Un `#set page` APRÈS du contenu ouvre une nouvelle page : le bandeau
+				// placé avant restait seul sur une page 1 vide.
+				const banner = content.indexOf('CORRECTION');
+				expect(banner).toBeGreaterThan(-1);
+				expect(content.lastIndexOf('#set page(')).toBeLessThan(banner);
+			}
+		);
+
 		it('includes CORRECTION banner in correction mode', () => {
 			const generator = new WorksheetGenerator(createMockConfig(), undefined, {
 				mode: 'correction'
@@ -420,7 +448,7 @@ describe('WorksheetGenerator', () => {
 			expect(result.typstContent).not.toContain('rgb("#dc2626")');
 		});
 
-		it('numbers exercises with a red badge when the template uses {{exercises_badge}}', () => {
+		it('numbers exercises with an amber badge when the template uses {{exercises_badge}}', () => {
 			const badgeTemplate: WorksheetTemplateRow = {
 				...mockTemplate,
 				template_content: `#set page(paper: "a4", columns: 2)
@@ -434,13 +462,86 @@ describe('WorksheetGenerator', () => {
 				template: badgeTemplate
 			});
 
-			// Number in white on a red rounded square, no "Exercice N" heading
+			// Numéro en blanc sur carré ambre tirant sur le rouge, sans « Exercice N »
 			expect(result.typstContent).toContain(
-				'#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]]'
+				'box(fill: rgb("#e8590c"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]]'
 			);
+			expect(result.typstContent).not.toContain('rgb("#dc2626")');
 			expect(result.typstContent).toContain('Equation lineaire');
 			expect(result.typstContent).not.toContain('Exercice 1');
 			expect(result.typstContent).not.toContain('{{exercises_badge}}');
+		});
+
+		it('centres the exercise title vertically on its badge', () => {
+			const badgeTemplate: WorksheetTemplateRow = {
+				...mockTemplate,
+				template_content: '{{exercises_badge}}'
+			};
+			const generator = new WorksheetGenerator(createMockConfig());
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance: createMockInstance(),
+				template: badgeTemplate
+			});
+
+			// Badge et titre dans deux cellules d'une grille alignée `horizon` :
+			// posés en ligne, le titre suivait la ligne de base et paraissait décalé.
+			const header = result.typstContent.match(
+				/#grid\(\n\s+columns: \(auto, 1fr, auto\),[\s\S]*?\n\s+\)/
+			);
+			expect(header?.[0]).toContain('align: horizon');
+			expect(header?.[0]).toContain('rgb("#e8590c")');
+			expect(header?.[0]).toContain('Equation lineaire');
+		});
+
+		it('keeps the statement close to its badge header', () => {
+			const badgeTemplate: WorksheetTemplateRow = {
+				...mockTemplate,
+				template_content: '{{exercises_badge}}'
+			};
+			const generator = new WorksheetGenerator(createMockConfig());
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance: createMockInstance(),
+				template: badgeTemplate
+			});
+
+			// Sans `above` explicite, l'énoncé héritait de l'espacement entre
+			// exercices (1,8em) et flottait loin de son titre.
+			const content = result.typstContent;
+			const statementAt = content.indexOf('Solve for x');
+			const statementBlock = content.slice(
+				content.lastIndexOf('#block(', statementAt),
+				statementAt
+			);
+			expect(statementBlock).toContain('above: 0.5em');
+		});
+
+		it('frames the « Moderne » score box in the amber of the badges, not the old red', () => {
+			const modern = DEFAULT_TEMPLATES.find((t) => t.name === 'Moderne');
+
+			expect(modern?.template_content).toContain('stroke: 2pt + rgb("#e8590c")');
+			expect(modern?.template_content).not.toContain('#dc2626');
+		});
+
+		it('keeps the statement close to its heading header too ({{exercises}})', () => {
+			const generator = new WorksheetGenerator(createMockConfig());
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance: createMockInstance(),
+				template: { ...mockTemplate, template_content: '{{exercises}}' }
+			});
+
+			// Même défaut qu'avec le badge : le bloc de l'énoncé héritait de l'espacement
+			// entre blocs du modèle (souvent 1,8em) et flottait loin de « Exercice N ».
+			const content = result.typstContent;
+			expect(content).toContain('Exercice 1');
+			const statementAt = content.indexOf('Solve for x');
+			const statementBlock = content.slice(
+				content.lastIndexOf('#block(', statementAt),
+				statementAt
+			);
+			expect(statementBlock).toContain('above: 0.5em');
 		});
 	});
 
@@ -541,6 +642,49 @@ describe('WorksheetGenerator', () => {
 
 			expect(result.typstContent).toContain('Calculs');
 			expect(result.typstContent).toContain('Sans calculatrice.');
+			// Le style ambre est réservé aux modèles à carrés numérotés
+			expect(result.typstContent).not.toMatch(/#e8590c|#fc8f1b/);
+		});
+
+		it('marks sections with an amber small-caps title and rule in badge templates', () => {
+			const generator = new WorksheetGenerator(createMockConfig());
+			const instance = createMockInstance();
+			instance.sections = [
+				{ id: 's1', title: 'Calculs', instructions: 'Sans calculatrice.', position: 1 }
+			];
+			instance.exercises[0].section_id = 's1';
+			instance.exercises[1].section_id = 's1';
+
+			const result = generator.generate({
+				worksheet: createMockWorksheet(),
+				instance,
+				template: {
+					id: 't',
+					name: 'T',
+					description: null,
+					template_content: '{{exercises_badge}}',
+					placeholders: [],
+					created_by: 'teacher-id',
+					created_at: '2024-01-01',
+					updated_at: '2024-01-01'
+				}
+			});
+
+			const content = result.typstContent;
+			expect(content).toContain(
+				'#text(fill: rgb("#fc8f1b"), weight: "bold", size: 1.15em)[#smallcaps[Calculs]]'
+			);
+			expect(content).toContain('#line(length: 100%, stroke: 1.2pt + rgb("#fc8f1b"))');
+			expect(content).toContain('Sans calculatrice.');
+			// Le titre de section ne reste jamais seul en bas de colonne,
+			// et il précède bien son premier exercice
+			const sectionAt = content.indexOf('#smallcaps[Calculs]');
+			const sectionBlock = content.slice(content.lastIndexOf('#block(', sectionAt), sectionAt);
+			expect(sectionBlock).toContain('sticky: true');
+			// Nette cassure avec la section précédente : plus d'espace avant une
+			// section qu'entre deux exercices (1,8em)
+			expect(sectionBlock).toContain('above: 3.5em');
+			expect(sectionAt).toBeLessThan(content.indexOf('Equation lineaire'));
 		});
 	});
 
@@ -568,7 +712,9 @@ describe('WorksheetGenerator', () => {
 			expect(result.typstContent).toContain(
 				'#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[\n  #text(size: 1.1em, weight: "bold")[Exercice 1'
 			);
-			expect(result.typstContent).toContain(']\n#block(width: 100%, inset: 0pt)[\n  Solve for x');
+			expect(result.typstContent).toContain(
+				']\n#block(width: 100%, inset: 0pt, above: 0.5em)[\n  Solve for x'
+			);
 		});
 
 		it('renders the header through the sticky exercise-header helper without a template', () => {

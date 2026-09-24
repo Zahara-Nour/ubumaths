@@ -1,0 +1,67 @@
+# Saisie des unités par l'élève — progression
+
+> ✅ **CHANTIER TERMINÉ le 2026-09-24** (#410 → #414). Reste hors chantier : bug des zéros `1\,000\,000` (journal).
+
+> Spécification validée par David le 2026-09-24. Worktree `../ubumaths-wt-saisie-unites`, branche `feat/saisie-unites` (une PR par phase).
+> Notation de référence : `docs/ref/notation-unites.md`.
+
+## Constat de départ (mesuré le 2026-09-24)
+
+- La correction des trous avec unité (`blank.unit.expected` → `validateQuantityAnswer`) attend `5\unit{km}`. Aucun champ élève ne sait produire `\unit` (seule la page `admin/debug/mathfield` a une macro et des boutons).
+- Vrai MathLive (Chromium, `typedText`) : `5 km` → `5km` → lu **5 sans unité**, en silence. `5\,\mathrm{km}`, `5\text{ km}`, `20\degree C` idem ; `90\frac{km}{h}` → valeur illisible.
+- Le message de `validateQuantityAnswer` (`incompatible_units`, `wrong_unit`…) est calculé puis PERDU : `validateSingleBlank` ne garde que `isCorrect`.
+- Deux lecteurs d'unités divergents : `questions/units/parser.ts` (`parseUnitExpression`) lit encore `kg/m.s` = kg·m⁻¹·s et accepte `m²` ; `mathAST/units/parser.ts` refuse `kg/m.s` (#409) et refuse `m²`.
+- Les élèves saisissent dans `FillBlanksInput` → `MathPrompt` (`<math-field readonly>` + `\placeholder`). `MathInput.svelte` n'est utilisé nulle part. Aucun clavier virtuel personnalisé en prod.
+
+## Mesure au VRAI clavier (2026-09-24, prod, champ MathLive par défaut, frappes réelles)
+
+⚠️ Très différent de la commande `typedText` : ne jamais mesurer autrement qu'au vrai clavier.
+
+| Frappes                            | Valeur MathLive                                                          |
+| ---------------------------------- | ------------------------------------------------------------------------ |
+| `5 km` / `5km`                     | `5\operatorname{\mathrm{km}}`                                            |
+| `90 km/h`                          | `\frac{90\operatorname{\mathrm{km}}}{h}` — le nombre passe au NUMÉRATEUR |
+| `3 m/s`                            | `\frac{3m}{s}`                                                           |
+| `20 °C`                            | `20\degree C`                                                            |
+| `12,5 kg`                          | `12,5\operatorname{\mathrm{kg}}`                                         |
+| `5 min`                            | `5\min` — la fonction minimum                                            |
+| `2 h`, `4 L`, `8 mL`, `3 m`, `7 g` | `2h`, `4L`, `8mL`, `3m`, `7g`                                            |
+| `5 m s` et `5 ms`                  | `5ms` tous les deux                                                      |
+| `5 cm^2`                           | `5\operatorname{\mathrm{cm}}^2`                                          |
+| `3 m.s^-1`                         | `3m.s^{-1}`                                                              |
+
+## Phases
+
+| Phase | Contenu                                                                                                     | Agent                     | État                                                            |
+| ----- | ----------------------------------------------------------------------------------------------------------- | ------------------------- | --------------------------------------------------------------- |
+| 1     | Une seule règle : la correction lit les unités avec le lecteur mathAST (+ exposants Unicode `m²`)           | pedagogy-expert (Opus)    | ✅ livrée (#410) — `(m/s)^2` refusé (décision David)            |
+| 2     | A — lecture tolérante dans les trous avec unité (`5km`, `5\,\mathrm{km}`, `20\degree C`, `90\frac{km}{h}`…) | pedagogy-expert (Opus)    | ✅ livrée (#411)                                                |
+| 3     | Messages à l'élève (grandeur, unité imposée, manquante, ambiguë)                                            | pedagogy-expert (Opus)    | ✅ livrée (#412) + affichage (diaporamas, un message par blanc) |
+| 4     | B — onglet « Unités » du clavier virtuel, filtré par grandeur, insère la forme affichée (`\mathrm{km}`)     | frontend-developer (Opus) | ✅ livrée (#414)                                                |
+| —     | code-reviewer en fin de chantier                                                                            | code-reviewer             | ✅ bloquant corrigé, re-revue : pas de finding bloquant         |
+
+Hors périmètre (décidé) : réponses littérales avec unité (« 2x cm ») — chantier séparé.
+
+## Messages validés (Phase 3)
+
+| Situation                   | Message                                                                               |
+| --------------------------- | ------------------------------------------------------------------------------------- |
+| Grandeur différente         | « Cette unité ne mesure pas la bonne grandeur. Pour un produit d'unités, écris m·s. » |
+| Unité imposée non respectée | « Donne ta réponse en km. »                                                           |
+| Unité manquante             | « N'oublie pas l'unité. »                                                             |
+| Unité ambiguë               | « Écris kg/(m·s) ou kg·m⁻¹·s⁻¹. »                                                     |
+
+## Journal
+
+- 2026-09-24 — worktree créé, spécification validée.
+- 2026-09-24 — Phase 1 livrée (#410). Vrai clavier mesuré (table ci-dessus). Phase 2 codée (`src/lib/questions/units/student-input.ts`).
+- Limites connues de la Phase 2 : séparateur de milliers tapé (`1\,000\operatorname{m}`) non lu ; `5\cdot\operatorname{km}` non lu. Mesure faite dans un champ MathLive ÉDITABLE : à revérifier dans un trou (`\placeholder` d'un champ readonly) en Phase 4.
+- 2026-09-24 — Phase 2 livrée (#411). Phase 3 codée : messages dans `src/lib/questions/units/feedback.ts`. Trace UI : affichés dans `FlashCard.svelte` (l.379) ; PERDUS dans `QuestionSlide.svelte` (ne montre que `message`) et `QuestionCard.svelte` (« NO visual feedback », voulu ?) ; aucun message par trou quand il y en a plusieurs (`ValidationResult` sans champ par trou). Effet de bord : le message d'une règle de validation d'un trou unique atteint désormais l'élève. → question posée à David.
+- 2026-09-24 — Phase 3 livrée (#412). David : messages aussi dans les diaporamas et un message par blanc ; tests toujours SANS retour. Affichage codé (frontend-developer) : `ValidationResult.blankFeedback`, liste « Blanc 2 : … » sous l'énoncé (un `\placeholder` MathLive ne peut porter ni légende ni aria-describedby), région `role="status"`. « Trou » → « Blanc » pour s'aligner sur « Remplissez les blancs ».
+- 2026-09-24 — Phase 4 codée. Catalogue + touches : `src/lib/questions/units/keyboard-units.ts` (`unitKeysFor`, `buildUnitsKeyboardLayout`). Une touche insère `unitWritingToLatex(écriture)`, PAS `\unit` (relu par `normalizeStudentQuantity`). Mécanisme : `FillBlanksInput` pose `mathVirtualKeyboard.layouts = ['default', onglet]` au `focusin` d'une question à trou à unité, remet `'default'` au `focusout` et au démontage. Correctif : `normalizeStudentQuantity` retire les groupes vides `{}` (la touche ° insère `{}^{\circ}`, que le vrai MathLive rend tel quel : `30{}^{\circ}`).
+- ⚠️ BUG préexistant trouvé (hors Phase 4) : `validateQuantityAnswer('5\unit{°C}', '5\unit{°C}')` → faux (« Valeur incorrecte ») : `compareQuantities` passe par `getConversionFactor`, qui rend null pour une unité affine. Toute réponse en °C est refusée. ✅ CORRIGÉ : `compareQuantities` passe par `convertAffine`. Et au passage : sans tolérance, l'égalité EXACTE des flottants refusait 1000 cm³ = 1 L, 0,1 L = 100 mL, 1,2 m² = 12000 cm² → comparaison au bruit relatif 1e-9 près (20,001 °C ≠ 20 °C reste faux).
+- ✅ Geste réel vérifié (prod, Chrome, clics souris sur le clavier virtuel, champ readonly + `\placeholder`) : touche 5, onglet « Unités », touche km → `5\mathrm{km}`, aucun `focusout` pendant l'usage du clavier, onglet retiré au clic hors du champ.
+- Non vérifié : clavier sur un vrai appareil tactile (les touches ne doivent pas faire perdre le focus au champ) ; les tests navigateur tournent dans une iframe où MathLive n'a qu'un proxy de clavier (enveloppé dans le test).
+- 2026-09-24 — Revue finale (code-reviewer) : BLOQUANT — tout décimal juste d'un trou à unité (`2{,}5\mathrm{km}`) était refusé en « bad_form » (le contrôle de forme lisait `2,5`) ; aussi `\mathrm{m}\cdot\mathrm{s}` recollé en `m\cdots`, milliers espacés `12\,500` coupés, `\euro` non lu. Corrigé : `studentNumericLatex` (partie numérique en LaTeX pour la forme), dépliage entouré d'espaces, tête numérique avec milliers, `\euro`→€. 10 tests rouges avant.
+- 2026-09-24 — Re-revue : « pas de finding bloquant ». Corrigé en plus : chiffres mal groupés (`12\,5\,\mathrm{m}`) accusaient l'unité → la tête prend tout groupement, le contrôle d'espacement le juge.
+- ⚠️ BUG PRÉEXISTANT signalé (hors chantier, contrôle cosmétique des zéros) : `1\,000\,000` est jugé « Il y a un ou des zéros inutiles » → refusé (bad_form) dans un blanc numérique simple ; `1\,000` et `10\,000` passent. À traiter à part.

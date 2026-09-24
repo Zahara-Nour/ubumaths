@@ -23,6 +23,7 @@
 	- valuesLatex: Bindable array of LaTeX values (for math blanks, empty for text)
 	- disabled: Whether inputs are disabled
 	- validationResults: Per-blank validation state
+	- blankFeedback: Per-blank message after validation (« Blanc 2 : … »)
 	- onSubmit: Callback when Enter is pressed in a blank
 -->
 
@@ -38,6 +39,7 @@
 		replacePromptsWithPrefilled
 	} from '$lib/components/markdown/utils/math-utils';
 	import { toFrenchDecimal } from '$lib/utils/french-math';
+	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
 	import type { BlockNode, InlineNode } from '$lib/ubumark';
 
 	// Node components (reuse from MarkdownRenderer)
@@ -76,6 +78,11 @@
 		onlyBlanks?: boolean;
 		/** Per-blank validation: true=correct, false=incorrect, null=not validated */
 		validationResults?: (boolean | null)[];
+		/**
+		 * Message propre à chaque trou après correction (index = index du trou),
+		 * cf. ValidationResult.blankFeedback. Ne rien passer = aucun message affiché.
+		 */
+		blankFeedback?: (string | undefined)[];
 		/** Callback when Enter is pressed in a blank */
 		onSubmit?: () => void;
 		/** LaTeX to insert when Space is pressed in math mode */
@@ -93,6 +100,7 @@
 		showCorrectAnswers = false,
 		onlyBlanks = false,
 		validationResults = [],
+		blankFeedback = [],
 		onSubmit,
 		mathModeSpace
 	}: Props = $props();
@@ -183,6 +191,70 @@
 		return applyValidationToInputStates(withValues, validationResults);
 	});
 
+	// Messages par trou, listés sous l'énoncé : un trou MathLive (\placeholder) vit
+	// dans le math-field, on ne peut ni y accrocher une légende ni un aria-describedby.
+	// Avec un seul trou, le message est déjà le feedback global de l'écran → pas de doublon.
+	let blankMessages = $derived.by(() => {
+		if (flashMode || showCorrectAnswers || blanks.length < 2) return [];
+		return blankFeedback.flatMap((message, index) =>
+			message ? [{ blankNumber: index + 1, message }] : []
+		);
+	});
+
+	// Touches de l'onglet « Unités » : seulement quand l'élève peut répondre à un trou à unité
+	let unitKeys = $derived.by(() => {
+		if (flashMode || effectiveDisabled) return [];
+		const unitBlanks = blanks.filter((blank) => blank.type === 'math' && blank.unit?.expected);
+		return unitKeysFor(
+			unitBlanks.map((blank) => blank.expectedAnswer),
+			unitBlanks.map((blank) => blank.unit?.required)
+		);
+	});
+
+	let container: HTMLDivElement | undefined = $state();
+
+	/**
+	 * Onglet « Unités » du clavier virtuel MathLive.
+	 *
+	 * Le clavier est un singleton global (`window.mathVirtualKeyboard`) partagé
+	 * par tous les champs de la page : l'onglet est ajouté quand le focus ENTRE
+	 * dans cette question et retiré quand il en SORT (ou au démontage). Une autre
+	 * question, un autre champ MathLive, retrouvent ainsi le clavier par défaut.
+	 * `focusin`/`focusout` remontent depuis le shadow DOM du math-field ; les
+	 * touches du clavier virtuel ne prennent pas le focus, donc ne le font pas sortir.
+	 */
+	$effect(() => {
+		const element = container;
+		if (!element || unitKeys.length === 0) return;
+
+		const layout = buildUnitsKeyboardLayout(unitKeys);
+		let applied = false;
+
+		const restoreDefault = () => {
+			if (!applied) return;
+			applied = false;
+			const keyboard = window.mathVirtualKeyboard;
+			if (keyboard) keyboard.layouts = 'default';
+		};
+		const addUnitsTab = () => {
+			const keyboard = window.mathVirtualKeyboard;
+			if (!keyboard) return;
+			keyboard.layouts = ['default', layout];
+			applied = true;
+		};
+
+		element.addEventListener('focusin', addUnitsTab);
+		element.addEventListener('focusout', restoreDefault);
+		// Déjà focalisé quand l'onglet change (unités recalculées) : l'appliquer tout de suite
+		if (element.contains(document.activeElement)) addUnitsTab();
+
+		return () => {
+			element.removeEventListener('focusin', addUnitsTab);
+			element.removeEventListener('focusout', restoreDefault);
+			restoreDefault();
+		};
+	});
+
 	// Build correctValues map for MathPrompt pre-fill (flash back mode)
 	let mathCorrectValues = $derived.by(() => {
 		if (!showCorrectAnswers) return undefined;
@@ -260,7 +332,7 @@
 	}
 </script>
 
-<div class="fill-blanks-container">
+<div class="fill-blanks-container" bind:this={container}>
 	{#if augmentedAST}
 		{#each augmentedAST.children as node, i (i)}
 			{#if node.type === 'paragraph'}
@@ -331,6 +403,20 @@
 			{/if}
 		{/each}
 	{/if}
+
+	<!-- Messages par blanc (après correction) -->
+	<div role="status" aria-live="polite" aria-label="Messages par blanc">
+		{#if blankMessages.length > 0}
+			<ul class="mt-2 space-y-1 text-sm text-destructive">
+				{#each blankMessages as { blankNumber, message } (blankNumber)}
+					<li>
+						<span class="font-semibold">Blanc {blankNumber}&nbsp;:</span>
+						{message}
+					</li>
+				{/each}
+			</ul>
+		{/if}
+	</div>
 
 	<!-- Helper text -->
 	{#if !flashMode && !effectiveDisabled && blanks.length > 0}

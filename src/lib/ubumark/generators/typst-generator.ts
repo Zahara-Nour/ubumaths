@@ -51,7 +51,8 @@ import type {
 	TypstTranspilerOptions
 } from '$lib/exercises/types';
 import { getDimensionsForFormat } from '$lib/exercises/services/image-dimensions';
-import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
+import { expressionToRawLatex } from '$lib/components/markdown/utils/math-utils';
+import { unitWritingToTypst } from '$lib/mathAST/units/display';
 import { toFrenchDecimal } from '$lib/utils/french-math';
 import { generateVariationTableTypst } from './variation-table-typst';
 import { generateProbabilityTreeTypst } from './probability-tree-typst';
@@ -354,7 +355,7 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
 		case 'math-inline': {
 			const latex =
 				node.syntax === 'custom'
-					? expressionToLatex(node.expression, 'custom')
+					? expressionToRawLatex(node.expression, 'custom')
 					: toFrenchDecimal(node.expression);
 			// Convert LaTeX math to Typst math syntax
 			const typstMath = convertLatexToTypstMath(latex);
@@ -431,9 +432,10 @@ function generateHeading(node: HeadingNode, options: Required<TypstTranspilerOpt
 // ============================================================================
 
 /**
- * Numbering patterns for French academic style (1) a) i))
+ * Numbering patterns by depth: a) then 1) then i). Same hierarchy as the
+ * screen's default scheme for nested lists (`a-1-i` in types/list-numbering).
  */
-const ENUM_NUMBERING_PATTERNS = ['1)', 'a)', 'i)', '1)'];
+const ENUM_NUMBERING_PATTERNS = ['a)', '1)', 'i)'];
 
 /**
  * Get numbering pattern for a given enumerate depth
@@ -446,7 +448,7 @@ function getNumberingPattern(depth: number): string {
  * Generate list node with depth tracking for proper numbering
  *
  * Uses numbered lists for ordered, bullet lists for unordered.
- * Ordered lists use the French academic style: 1) a) i)
+ * Ordered lists are numbered a) 1) i)
  *
  * @param node - List node
  * @param options - Generator options
@@ -680,7 +682,7 @@ const ALIGNMENT_SYMBOL_PATTERN =
 function generateMathBlock(node: MathBlockNode): string {
 	const latex =
 		node.syntax === 'custom'
-			? expressionToLatex(node.expression, 'custom')
+			? expressionToRawLatex(node.expression, 'custom')
 			: toFrenchDecimal(node.expression);
 
 	// Check if this is an aligned equation (contains \begin{align} etc.)
@@ -1539,6 +1541,8 @@ function convertLatexFractions(str: string): string {
  * Includes built-in functions, Greek letters, and math symbols.
  */
 const KNOWN_TYPST_SYMBOLS = new Set([
+	// Spacing produced from LaTeX `\ `
+	'space',
 	// Functions
 	'sin',
 	'cos',
@@ -1778,6 +1782,34 @@ function addImplicitMultiplicationSpaces(str: string): string {
 }
 
 /**
+ * Protège les virgules LITTÉRALES de premier niveau d'un texte destiné à devenir
+ * UN argument d'une fonction Typst générée (`display(…)`, cellule de `mat(…)`).
+ *
+ * En Typst, une virgule nue dans `display(a, b)` sépare deux arguments ; on la
+ * remplace par le marqueur de virgule décimale, restitué en `","` (virgule
+ * affichée) en fin de conversion. Restent intactes :
+ * - les virgules imbriquées dans `(…)` ou `{…}` (`frac(1, 2)`, `f(a, b)`, `x_{i,j}`) ;
+ * - l'espace fine LaTeX `\,`.
+ * Les crochets ne comptent pas comme imbrication : ils deviennent plus tard
+ * `bracket.l`/`bracket.r`, qui ne protègent rien (`[0, 5]`, `]0, 5[`).
+ */
+function protectTopLevelCommas(text: string): string {
+	let depth = 0;
+	let out = '';
+	for (let i = 0; i < text.length; i++) {
+		const char = text[i];
+		if (char === '(' || char === '{') depth++;
+		else if (char === ')' || char === '}') depth = Math.max(0, depth - 1);
+		if (char === ',' && depth === 0 && text[i - 1] !== '\\') {
+			out += '<<<DECIMAL_COMMA>>>';
+		} else {
+			out += char;
+		}
+	}
+	return out;
+}
+
+/**
  * Convert LaTeX math to Typst math syntax
  *
  * Typst uses different syntax than LaTeX for math mode.
@@ -1835,6 +1867,18 @@ export function convertLatexToTypstMath(latex: string): string {
 			preview: result.slice(0, 200)
 		});
 	}
+
+	// ========================================================================
+	// UNITÉS (Étape 1 sur 2)
+	// ========================================================================
+	// mathAST écrit « 2~\unit{cm} » pour ~2[cm]~. La commande est convertie AVANT
+	// tout le reste et mise de côté dans un marqueur : ses guillemets et sa barre
+	// ne doivent être touchés par aucune règle suivante (double prime, fraction).
+	const unitPlaceholders: string[] = [];
+	result = result.replace(/\s*~?\s*\\unit\s*\{((?:[^{}]|\{[^{}]*\})*)\}/g, (_m, unit: string) => {
+		unitPlaceholders.push(unitWritingToTypst(unit));
+		return ` thin <<<UNIT${unitPlaceholders.length - 1}>>>`;
+	});
 
 	// ========================================================================
 	// DOUBLE QUOTE AS DOUBLE PRIME (Step 1 of 2)
@@ -1951,7 +1995,13 @@ export function convertLatexToTypstMath(latex: string): string {
 			.map((line: string) => line.trim())
 			.filter((line: string) => line.length > 0);
 		// Wrap each line in display() for normal size
-		return 'cases(' + lines.map((line: string) => `display(${line})`).join(', ') + ')';
+		// Virgules de premier niveau protégées : sinon `display(… -300, n in NN)`
+		// reçoit deux arguments (« unexpected argument ») et tout le PDF échoue.
+		return (
+			'cases(' +
+			lines.map((line: string) => `display(${protectTopLevelCommas(line)})`).join(', ') +
+			')'
+		);
 	});
 
 	// Convert \begin{pmatrix/bmatrix/vmatrix/Vmatrix/matrix} to Typst mat()
@@ -1978,7 +2028,8 @@ export function convertLatexToTypstMath(latex: string): string {
 				.map((row: string) =>
 					row
 						.split('&')
-						.map((cell: string) => cell.trim())
+						// Une virgule dans une cellule n'est pas un séparateur de colonnes
+						.map((cell: string) => protectTopLevelCommas(cell.trim()))
 						.join(', ')
 				);
 			const idx = matPrefixes.length;
@@ -1986,6 +2037,15 @@ export function convertLatexToTypstMath(latex: string): string {
 			return `<<<mat${idx}>>>${rows.join('; ')})`;
 		});
 	}
+
+	// \sqrt sans accolades : en LaTeX, `\sqrt5` ou `\sqrt x` prend UN seul jeton
+	// (un caractère ou une commande) comme argument. On le ramène à la forme
+	// `\sqrt{5}` traitée juste après ; sinon Typst affichait « sqrt5 » en toutes lettres.
+	// `\sqrt{…}` et `\sqrt[n]{…}` ne sont pas concernés (lookahead).
+	result = result.replace(
+		/\\sqrt(?![a-zA-Z])\s*(?![{[\s])(\\[a-zA-Z]+|[a-zA-Z0-9])/g,
+		(_match, arg: string) => `\\sqrt{${arg}}`
+	);
 
 	// Convert \sqrt[n]{x} to root(n, x) - MUST be done BEFORE simple \sqrt conversion
 	// Uses balanced brace matching to handle nested braces in the argument
@@ -2142,6 +2202,8 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = replaceLatexCmd(result, 'cap', 'sect');
 	result = replaceLatexCmd(result, 'setminus', '∖');
 	result = replaceLatexCmd(result, 'emptyset', 'emptyset');
+	// \varnothing (∅ rond de LaTeX) : Typst n'a qu'un ensemble vide, `emptyset`
+	result = replaceLatexCmd(result, 'varnothing', 'emptyset');
 
 	// Convert common symbols
 	result = replaceLatexCmd(result, 'forall', 'forall');
@@ -2296,6 +2358,10 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\:/g, ' med ');
 	result = result.replace(/\\;/g, ' thick ');
 	result = result.replace(/\\!/g, ' negthin ');
+	// LaTeX control space `\ ` (as in `400\ \text{m}^2`): in Typst math a
+	// backslash before a space is a LINE BREAK. `\\` pairs are matched first so
+	// the line break `x \\ y` is left for step 10.
+	result = result.replace(/\\\\|\\ /g, (m) => (m === '\\ ' ? ' space ' : m));
 
 	// 8. LaTeX tilde (~) is a non-breaking space in math mode
 	// In Typst math, ~ would be interpreted as tilde symbol, so convert to space
@@ -2307,6 +2373,14 @@ export function convertLatexToTypstMath(latex: string): string {
 	// ========================================================================
 	// END NEW CONVERSIONS
 	// ========================================================================
+
+	// Prime après un indice : en LaTeX, `f_k'` met le prime sur f (f indice k,
+	// prime en exposant). En Typst, `f_k'` le met sur l'indice (k'). On le
+	// déplace avant l'indice : `f'_k`, que Typst rend comme LaTeX.
+	result = result.replace(
+		/([a-zA-Z])_([a-zA-Z0-9]|\{[^{}]*\})('+)/g,
+		(_match, base: string, sub: string, primes: string) => `${base}${primes}_${sub}`
+	);
 
 	// Convert subscript and superscript braces to parentheses
 	// LaTeX: x^{2n} or x_{ij}  ->  Typst: x^(2n) or x_(ij)
@@ -2465,6 +2539,10 @@ export function convertLatexToTypstMath(latex: string): string {
 	// parses as unknown variable "xbracket". The leading space in replacements above
 	// handles most cases, but the French interval regex return value may also need it.
 	result = result.replace(/([a-zA-Z0-9)])bracket\./g, '$1 bracket.');
+	// Même risque après le symbole : « ]0 » donnerait « bracket.r0 », que Typst lit
+	// comme un modificateur inconnu (« unknown symbol modifier ») et qui fait échouer
+	// tout le document.
+	result = result.replace(/(bracket\.[lr])(?=[a-zA-Z0-9])/g, '$1 ');
 
 	// Restore content block brackets (from \textcolor conversion)
 	result = result.replace(/<<<CONTENT_L>>>/g, '[');
@@ -2480,6 +2558,9 @@ export function convertLatexToTypstMath(latex: string): string {
 	// MATRIX PLACEHOLDER RESTORATION
 	// ========================================================================
 	result = result.replace(/<<<mat(\d+)>>>/g, (_, idx) => matPrefixes[parseInt(idx)]);
+
+	// UNITÉS (Étape 2 sur 2)
+	result = result.replace(/<<<UNIT(\d+)>>>/g, (_, idx) => unitPlaceholders[parseInt(idx)]);
 
 	// Final trim: bracket symbol insertions may add leading/trailing spaces
 	result = result.trim();

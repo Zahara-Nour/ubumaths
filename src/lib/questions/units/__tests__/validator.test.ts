@@ -158,7 +158,9 @@ describe('Unit Compatibility', () => {
 
 			expect(result.isCorrect).toBe(false);
 			expect(result.errorType).toBe('incompatible_units');
-			expect(result.feedback).toBe('Les unités ne sont pas compatibles.');
+			expect(result.feedback).toBe(
+				'Cette unité ne mesure pas la bonne grandeur. Pour un produit d’unités, écris m·s.'
+			);
 		});
 
 		test('rejects length vs time', () => {
@@ -570,7 +572,9 @@ describe('French Feedback Messages', () => {
 	test('provides French message for incompatible units', () => {
 		const result = validateQuantityAnswer('5\\unit{m}', '5\\unit{kg}');
 
-		expect(result.feedback).toBe('Les unités ne sont pas compatibles.');
+		expect(result.feedback).toBe(
+			'Cette unité ne mesure pas la bonne grandeur. Pour un produit d’unités, écris m·s.'
+		);
 	});
 
 	test('provides French message for incorrect value', () => {
@@ -582,7 +586,7 @@ describe('French Feedback Messages', () => {
 	test('provides French message for wrong unit (requiredUnit)', () => {
 		const result = validateQuantityAnswer('5\\unit{km}', '5000\\unit{m}', undefined, 'm');
 
-		expect(result.feedback).toBe('Unité incorrecte.');
+		expect(result.feedback).toBe('Donne ta réponse en m.');
 	});
 
 	test('provides no feedback for correct answer', () => {

@@ -161,7 +161,7 @@ describe('generateVariationTableLatex - Sign Lines', () => {
 		expect(latex).toContain('z');
 	});
 
-	it('should convert asymptote marker to ||', () => {
+	it('should convert asymptote marker to d (double barre tkz-tab)', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
 			variable: 'x',
@@ -181,7 +181,8 @@ describe('generateVariationTableLatex - Sign Lines', () => {
 
 		const latex = generateVariationTableLatex(node);
 
-		expect(latex).toContain('||');
+		// `||` s'imprimait en texte dans la ligne de signes ; `d` est la double barre
+		expect(latex).toContain('\\tkzTabLine{,+,d,+}');
 	});
 
 	it('should convert forbidden marker to h', () => {
@@ -230,6 +231,57 @@ describe('generateVariationTableLatex - Sign Lines', () => {
 		expect(latex).toContain('t');
 	});
 
+	it('garde une colonne vide pour un point intérieur sans marqueur (pas de décalage)', () => {
+		// Le point 3 ne sert qu'à la ligne de variation
+		const node: VariationTableNode = {
+			type: 'variation-table',
+			variable: 'x',
+			domain: [
+				{ expression: '-inf' },
+				{ expression: '1' },
+				{ expression: '3' },
+				{ expression: '5' },
+				{ expression: '+inf' }
+			],
+			rows: [
+				{
+					type: 'sign',
+					label: 'f(x)',
+					values: new Map([
+						['-inf,1', { type: 'sign', value: '-' }],
+						['1', { type: 'marker', marker: 'zero' }],
+						['1,3', { type: 'sign', value: '+' }],
+						['3,5', { type: 'sign', value: '+' }],
+						['5', { type: 'marker', marker: 'zero' }],
+						['5,+inf', { type: 'sign', value: '-' }]
+					])
+				}
+			]
+		};
+		expect(generateVariationTableLatex(node)).toContain('\\tkzTabLine{,-,z,+,,+,z,-}');
+	});
+
+	it('met le marqueur du premier point en première entrée, sans entrée en trop', () => {
+		const node: VariationTableNode = {
+			type: 'variation-table',
+			variable: 'x',
+			domain: [{ expression: '0' }, { expression: '1' }, { expression: '+inf' }],
+			rows: [
+				{
+					type: 'sign',
+					label: 'f(x)',
+					values: new Map([
+						['0', { type: 'marker', marker: 'asymptote' }],
+						['0,1', { type: 'sign', value: '-' }],
+						['1', { type: 'marker', marker: 'zero' }],
+						['1,+inf', { type: 'sign', value: '+' }]
+					])
+				}
+			]
+		};
+		expect(generateVariationTableLatex(node)).toMatch(/\\tkzTabLine\{[^,]+,-,z,\+\}/);
+	});
+
 	it('should handle empty intervals', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
@@ -255,7 +307,8 @@ describe('generateVariationTableLatex - Sign Lines', () => {
 
 		const latex = generateVariationTableLatex(node);
 
-		expect(latex).toContain('\\tkzTabLine{,+,z,,}');
+		// Intervalle 0,1 vide, point 1 sans marqueur (entrée vide), intervalle 1,+inf vide
+		expect(latex).toContain('\\tkzTabLine{,+,z,,,}');
 	});
 });
 
@@ -284,7 +337,8 @@ describe('generateVariationTableLatex - Variation Lines', () => {
 
 		const latex = generateVariationTableLatex(node);
 
-		expect(latex).toContain('\\tkzTabVar{$-\\infty$,+/$3$,-/$-\\infty$}');
+		// Chaque entrée porte sa hauteur, la première comprise (tkz-tab l'exige)
+		expect(latex).toContain('\\tkzTabVar{-/$-\\infty$,+/$3$,-/$-\\infty$}');
 	});
 
 	it('should determine direction from position changes', () => {
@@ -312,6 +366,128 @@ describe('generateVariationTableLatex - Variation Lines', () => {
 		expect(latex).toContain('+/$5$');
 		expect(latex).toContain('-/$2$');
 		expect(latex).toContain('+/$10$');
+	});
+
+	it('préfixe la première entrée selon sa hauteur', () => {
+		const node: VariationTableNode = {
+			type: 'variation-table',
+			variable: 'x',
+			domain: [{ expression: '0' }, { expression: '1' }],
+			rows: [
+				{
+					type: 'variation',
+					label: 'f(x)',
+					values: new Map([
+						['0', { expression: '1', position: 'top' }],
+						['1', { expression: '0', position: 'bottom' }]
+					])
+				}
+			]
+		};
+		expect(generateVariationTableLatex(node)).toContain('\\tkzTabVar{+/$1$,-/$0$}');
+	});
+
+	it('écrit une borne sans valeur « +/ » (position seule), pas « $$ »', () => {
+		const node: VariationTableNode = {
+			type: 'variation-table',
+			variable: 'x',
+			domain: [{ expression: '-inf' }, { expression: '3' }, { expression: '+inf' }],
+			rows: [
+				{
+					type: 'variation',
+					label: 'f(x)',
+					values: new Map([['3', { expression: '-11', position: 'bottom' }]])
+				}
+			]
+		};
+		expect(generateVariationTableLatex(node)).toContain('\\tkzTabVar{+/ ,-/$-11$,+/ }');
+	});
+
+	it('écrit une asymptote à une limite en fin de domaine « -D/ » (valeur à gauche)', () => {
+		const node: VariationTableNode = {
+			type: 'variation-table',
+			variable: 'x',
+			domain: [{ expression: '-inf' }, { expression: '1' }],
+			rows: [
+				{
+					type: 'variation',
+					label: 'f(x)',
+					values: new Map([
+						['-inf', { expression: '0', position: 'top' }],
+						[
+							'1',
+							{ expression: '-inf', position: 'bottom', marker: 'asymptote', limitSide: 'left' }
+						]
+					])
+				}
+			]
+		};
+		expect(generateVariationTableLatex(node)).toContain('\\tkzTabVar{+/$0$,-D/$-\\infty$}');
+	});
+
+	it('écrit une asymptote à une limite en début de domaine « D+/ » (valeur à droite)', () => {
+		const node: VariationTableNode = {
+			type: 'variation-table',
+			variable: 'x',
+			domain: [{ expression: '0' }, { expression: '1' }, { expression: '+inf' }],
+			rows: [
+				{
+					type: 'variation',
+					label: 'f(x)',
+					values: new Map([
+						['0', { expression: '+inf', position: 'top', marker: 'asymptote', limitSide: 'right' }],
+						['1', { expression: '1', position: 'bottom' }],
+						['+inf', { expression: '+inf', position: 'top' }]
+					])
+				}
+			]
+		};
+		expect(generateVariationTableLatex(node)).toContain(
+			'\\tkzTabVar{D+/$+\\infty$,-/$1$,+/$+\\infty$}'
+		);
+	});
+
+	it('écrit « R/ » pour un point intermédiaire sans valeur (une entrée par colonne)', () => {
+		// Domaine partagé avec une ligne de signes : 1 et 5 n'ont de sens que pour les signes
+		const node: VariationTableNode = {
+			type: 'variation-table',
+			variable: 'x',
+			domain: [
+				{ expression: '-inf' },
+				{ expression: '1' },
+				{ expression: '3' },
+				{ expression: '5' },
+				{ expression: '+inf' }
+			],
+			rows: [
+				{
+					type: 'variation',
+					label: 'f(x)',
+					values: new Map([['3', { expression: '8', position: 'top' }]])
+				}
+			]
+		};
+		expect(generateVariationTableLatex(node)).toContain('\\tkzTabVar{-/ ,R/,+/$8$,R/,-/ }');
+	});
+
+	it('protège par des accolades une valeur qui contient « / » (séparateur tkz-tab)', () => {
+		const node: VariationTableNode = {
+			type: 'variation-table',
+			variable: 'x',
+			domain: [{ expression: '0' }, { expression: '1' }, { expression: '2' }],
+			rows: [
+				{
+					type: 'variation',
+					label: 'f(x)',
+					values: new Map([
+						['0', { expression: '1', position: 'top' }],
+						['1', { expression: 'e/2', position: 'bottom' }],
+						['2', { expression: '3', position: 'top' }]
+					])
+				}
+			]
+		};
+		expect(generateVariationTableLatex(node)).toContain('\\tkzTabVar{+/$1$,-/{$e/2$},+/$3$}');
 	});
 
 	it('should format infinity values correctly', () => {
@@ -391,7 +567,8 @@ describe('generateVariationTableLatex - Variation Lines', () => {
 
 		const latex = generateVariationTableLatex(node);
 
-		expect(latex).toContain('-D+/$-\\infty$/$+\\infty$');
+		// La double barre porte déjà ses hauteurs : aucun préfixe devant
+		expect(latex).toContain(',-D+/$-\\infty$/$+\\infty$,');
 	});
 
 	it('should handle asymptotes with inverted limits (+D-/)', () => {
@@ -425,7 +602,7 @@ describe('generateVariationTableLatex - Variation Lines', () => {
 
 		const latex = generateVariationTableLatex(node);
 
-		expect(latex).toContain('+D-/$+\\infty$/$-\\infty$');
+		expect(latex).toContain(',+D-/$+\\infty$/$-\\infty$,');
 	});
 });
 
@@ -712,7 +889,7 @@ describe('generateVariationTableLatex - Complex Tables', () => {
 		expect(latex).toContain('\\tkzTabLine{,+,z,-,z,+,z,-}');
 
 		// Verify variation line
-		expect(latex).toContain('\\tkzTabVar{$-\\infty$,+/$3$,-/$0$,+/$2$,-/$-\\infty$}');
+		expect(latex).toContain('\\tkzTabVar{-/$-\\infty$,+/$3$,-/$0$,+/$2$,-/$-\\infty$}');
 	});
 
 	it('should handle multiple sign rows', () => {

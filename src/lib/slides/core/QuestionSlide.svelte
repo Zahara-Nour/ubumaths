@@ -170,6 +170,7 @@
 						bind:valuesLatex={fillBlankValuesLatex}
 						disabled={isInputDisabled}
 						validationResults={[]}
+						blankFeedback={validationResult?.blankFeedback ?? []}
 						onSubmit={handleSubmit}
 						mathModeSpace={(instance.options?.constraints?.spaces ?? 'warn') !== 'off'
 							? '\\,'
@@ -210,6 +211,9 @@
 				{/if}
 				{#if validationResult.message}
 					<span class="feedback-message">{validationResult.message}</span>
+				{/if}
+				{#if validationResult.feedback}
+					<span class="feedback-message">{validationResult.feedback}</span>
 				{/if}
 			</div>
 		{/if}

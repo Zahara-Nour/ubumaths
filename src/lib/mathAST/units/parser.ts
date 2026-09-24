@@ -6,10 +6,10 @@
  * as well as exponent notation (^).
  *
  * Grammar:
- *   unit_expr = term (('.' | '*' | '·' | '/') term)*
+ *   unit_expr = term (('.' | '*' | '·') term)* ('/' (term | '(' term (('.' | '*' | '·') term)* ')'))*
  *   term      = symbol ('^' exponent)?
  *   symbol    = [a-zA-Z€$°μΩ]+
- *   exponent  = '-'? [0-9]+
+ *   exponent  = '-'? [0-9]+  |  '{' '-'? [0-9]+ '}'
  *
  * @module mathAST/units/parser
  */
@@ -25,7 +25,7 @@ import { multiply } from './operations';
 /**
  * Token types for the parser
  */
-type TokenType = 'SYMBOL' | 'OPERATOR' | 'EXPONENT' | 'EOF';
+type TokenType = 'SYMBOL' | 'OPERATOR' | 'EXPONENT' | 'LPAREN' | 'RPAREN' | 'EOF';
 
 /**
  * Token structure
@@ -84,11 +84,23 @@ function tokenize(input: string): Token[] {
 			continue;
 		}
 
+		// Parenthèses du dénominateur : `kg/(m.s)`
+		if (char === '(' || char === ')') {
+			tokens.push({ type: char === '(' ? 'LPAREN' : 'RPAREN', value: char, position });
+			position++;
+			continue;
+		}
+
 		// Exponent marker: ^
 		if (char === '^') {
 			// Read exponent value
 			position++; // Skip ^
 			let exponentStr = '';
+
+			// Exposant entre accolades, comme ailleurs dans la notation : `s^{-1}`.
+			// La forme nue `s^-1` reste acceptée.
+			const braced = input[position] === '{';
+			if (braced) position++;
 
 			// Optional minus sign
 			if (position < input.length && input[position] === '-') {
@@ -107,10 +119,16 @@ function tokenize(input: string): Token[] {
 				return [];
 			}
 
+			const exponentEnd = position;
+			if (braced) {
+				if (input[position] !== '}') return []; // accolade non refermée
+				position++;
+			}
+
 			tokens.push({
 				type: 'EXPONENT',
 				value: exponentStr,
-				position: position - exponentStr.length
+				position: exponentEnd - exponentStr.length
 			});
 			continue;
 		}
@@ -146,29 +164,39 @@ function tokenize(input: string): Token[] {
  *
  * Processes a sequence of tokens and extracts terms with their exponents.
  * Handles implicit exponent of 1 when not specified.
- * Tracks division state to negate exponents after a / operator.
+ *
+ * Portée du `/` : il porte sur le symbole qui le suit, ou sur un groupe entre
+ * parenthèses (`kg/(m.s)`). Un produit APRÈS un `/` sans parenthèses
+ * (`kg/m.s`) est **ambigu** — l'usage le lit kg/(m·s), l'ancienne règle
+ * kg·m⁻¹·s — et il est refusé (`'ambiguous'`) plutôt que lu en silence.
+ * `kg/m/s` reste admis : chaque `/` porte sur un seul symbole.
  *
  * @param tokens - Array of tokens
- * @returns Array of terms, or null if parsing fails
+ * @returns Array of terms, `'ambiguous'`, or null if parsing fails
  */
-function parseTerms(tokens: Token[]): Term[] | null {
+function parseTerms(tokens: Token[]): Term[] | 'ambiguous' | null {
 	const terms: Term[] = [];
 	let i = 0;
-	let inDivision = false; // Track if we're in division mode
+	let inDivision = false; // le terme suivant est au dénominateur
+	let inGroup = false; // dans `/( … )`
+
+	const at = (type: TokenType) => i < tokens.length && tokens[i].type === type;
 
 	// Check for empty input
 	if (tokens.length === 1 && tokens[0].type === 'EOF') {
 		return null;
 	}
 
-	// Expect first token to be a symbol
-	if (tokens[i].type !== 'SYMBOL') {
-		return null;
-	}
+	while (i < tokens.length && !at('EOF')) {
+		// Une parenthèse n'ouvre qu'un dénominateur, jamais imbriquée
+		if (at('LPAREN')) {
+			if (!inDivision || inGroup || tokens[i - 1]?.value !== '/') return null;
+			inGroup = true;
+			i++;
+		}
 
-	while (i < tokens.length && tokens[i].type !== 'EOF') {
 		// Expect SYMBOL
-		if (tokens[i].type !== 'SYMBOL') {
+		if (!at('SYMBOL')) {
 			return null;
 		}
 
@@ -177,46 +205,48 @@ function parseTerms(tokens: Token[]): Term[] | null {
 
 		// Check for optional exponent
 		let exponent = 1;
-		if (i < tokens.length && tokens[i].type === 'EXPONENT') {
+		if (at('EXPONENT')) {
 			exponent = parseInt(tokens[i].value, 10);
 			i++;
 		}
 
-		// Apply division mode: negate exponent if we're after a /
-		if (inDivision) {
-			exponent = -exponent;
-		}
+		terms.push({ symbol, exponent: inDivision ? -exponent : exponent });
 
-		terms.push({ symbol, exponent });
+		// Fin d'un groupe : rien ne peut suivre qu'un autre `/` ou la fin
+		if (at('RPAREN')) {
+			if (!inGroup) return null;
+			inGroup = false;
+			i++;
+			if (!at('EOF') && !(at('OPERATOR') && tokens[i].value === '/')) return null;
+		}
 
 		// Check for operator (or EOF)
-		if (i < tokens.length) {
-			if (tokens[i].type === 'EOF') {
-				break;
-			}
-
-			if (tokens[i].type !== 'OPERATOR') {
-				return null;
-			}
-
-			const operator = tokens[i].value;
-			i++;
-
-			// Check that there's a symbol after the operator (not EOF or invalid)
-			if (i >= tokens.length || tokens[i].type === 'EOF') {
-				return null; // Trailing operator
-			}
-
-			// Update division state based on operator
-			if (operator === '/') {
-				inDivision = true;
-			} else {
-				// Multiplication operators (., *, ·) reset division mode
-				inDivision = false;
-			}
+		if (at('EOF')) {
+			break;
 		}
+		if (!at('OPERATOR')) {
+			return null;
+		}
+
+		const operator = tokens[i].value;
+		i++;
+
+		// Check that there's a symbol after the operator (not EOF or invalid)
+		if (at('EOF')) {
+			return null; // Trailing operator
+		}
+
+		if (operator === '/') {
+			if (inGroup) return null; // pas de `/` dans un groupe
+			inDivision = true;
+		} else if (inDivision && !inGroup) {
+			// `kg/m.s` : le produit suit un `/` sans parenthèses
+			return 'ambiguous';
+		}
+		// Dans un groupe, le produit reste au dénominateur
 	}
 
+	if (inGroup) return null; // parenthèse non refermée
 	return terms;
 }
 
@@ -254,7 +284,7 @@ export function parse(input: string): Unit | null {
 
 	// Parse terms
 	const terms = parseTerms(tokens);
-	if (!terms || terms.length === 0) {
+	if (!terms || terms === 'ambiguous' || terms.length === 0) {
 		return null;
 	}
 
@@ -331,7 +361,52 @@ export function parseUnitTerms(input: string): readonly UnitTerm[] | null {
 	// composant s'écrit `"1"` et tombait ici en `TypeError` (finding I1).
 	const tokens = tokenize(trimmed);
 	if (tokens.length === 0) return null;
-	return parseTerms(tokens);
+	const terms = parseTerms(tokens);
+	return terms === 'ambiguous' ? null : terms;
+}
+
+/**
+ * Pourquoi une écriture d'unité est refusée, quand on sait le dire mieux que
+ * « invalide ». Rend `null` pour une écriture valide ou sans diagnostic précis.
+ *
+ * @example
+ * unitWritingProblem('kg/m.s') // 'Ambiguous unit "kg/m.s": write kg/(m.s) for kg/(m·s)'
+ */
+export function unitWritingProblem(input: string): string | null {
+	const trimmed = input.trim();
+	const tokens = tokenize(trimmed);
+	if (tokens.length === 0 || parseTerms(tokens) !== 'ambiguous') return null;
+	const slash = trimmed.indexOf('/');
+	const denominator = trimmed.slice(slash + 1);
+	const hint = denominator.includes('/')
+		? 'put the denominator in parentheses'
+		: `write ${trimmed.slice(0, slash)}/(${denominator}) for ${trimmed.slice(0, slash)}/(${denominator.replace(/[.*]/g, '·')})`;
+	return `Ambiguous unit "${trimmed}": ${hint}`;
+}
+
+/** Le message d'erreur d'une écriture d'unité refusée, commun aux parseurs. */
+export function unitErrorMessage(input: string): string {
+	return unitWritingProblem(input) ?? `Invalid unit: ${input}`;
+}
+
+/**
+ * Les morceaux d'une écriture d'unité, dans l'ordre où elle est écrite :
+ * symboles, opérateurs (`.`, `*`, `·`, `/`) et exposants. Sert à l'AFFICHER
+ * telle que l'auteur l'a écrite (`km/h` garde sa barre), là où `parse` la
+ * réduit à ses composants. Rend `null` si l'écriture n'est pas lisible.
+ *
+ * @example
+ * tokenizeUnitWriting('m.s^{-1}')
+ * // [{ SYMBOL m }, { OPERATOR . }, { SYMBOL s }, { EXPONENT -1 }]
+ */
+export function tokenizeUnitWriting(
+	input: string
+):
+	| readonly { type: 'SYMBOL' | 'OPERATOR' | 'EXPONENT' | 'LPAREN' | 'RPAREN'; value: string }[]
+	| null {
+	const tokens = tokenize(input.trim());
+	if (tokens.length === 0) return null;
+	return tokens.flatMap((t) => (t.type === 'EOF' ? [] : [{ type: t.type, value: t.value }]));
 }
 
 export function parseOrThrow(input: string): Unit {

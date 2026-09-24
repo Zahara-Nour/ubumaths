@@ -837,3 +837,49 @@ export function getVariationRows(node: VariationTableNode): VariationRow[] {
 export function getDomainPointCount(node: VariationTableNode): number {
 	return node.domain.length;
 }
+
+/**
+ * Complète les bornes (premier et dernier point du domaine) laissées sans valeur
+ * par une position seule, sans expression, opposée à celle de la valeur voisine :
+ * autour d'un minimum les bornes sont en haut, autour d'un maximum en bas.
+ *
+ * C'est le tableau de variations d'un trinôme en 1re, sans limites en ±∞. Sans
+ * ce complément, le PDF plantait (vartable : colonne vide), l'écran ne dessinait
+ * pas de flèche et l'export LaTeX sautait la colonne.
+ *
+ * Appliqué au RENDU seulement : l'arbre (et donc le Markdown de l'auteur, que
+ * l'éditeur peut réécrire) reste tel qu'il a été écrit. Rien n'est deviné à côté
+ * d'une valeur centrée ou d'une asymptote.
+ *
+ * @returns une nouvelle ligne ; la ligne d'origine n'est pas modifiée
+ */
+export function withImplicitEndpoints(row: VariationRow, domain: DomainPoint[]): VariationRow {
+	if (domain.length < 2) return row;
+
+	const values = new Map(row.values);
+	const fill = (endpoint: DomainPoint, neighbours: DomainPoint[]) => {
+		if (values.has(endpoint.expression)) return;
+		const neighbour = neighbours.map((p) => values.get(p.expression)).find((v) => v !== undefined);
+		const position = neighbour && !neighbour.marker ? oppositePosition(neighbour.position) : null;
+		if (position) values.set(endpoint.expression, { expression: '', position });
+	};
+
+	fill(domain[0], domain.slice(1));
+	fill(domain[domain.length - 1], domain.slice(0, -1).reverse());
+
+	return { ...row, values };
+}
+
+/** Position opposée (haut ↔ bas), ou null pour une valeur centrée */
+function oppositePosition(position: VariationPosition): VariationPosition | null {
+	switch (position) {
+		case 'top':
+		case 'limit-top':
+			return 'bottom';
+		case 'bottom':
+		case 'limit-bottom':
+			return 'top';
+		default:
+			return null;
+	}
+}
