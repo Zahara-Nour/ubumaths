@@ -10,6 +10,7 @@
 import { parseCustomSafe } from '$lib/mathAST/parser/custom';
 import { toLatex, parseLatexSafe } from '$lib/mathAST';
 import { toFrenchDecimal } from '$lib/utils/french-math';
+import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import type { MathNode } from '$lib/mathAST/types';
 import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
@@ -29,6 +30,21 @@ import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
  * @returns LaTeX string suitable for MathLive rendering
  */
 export function expressionToLatex(
+	expression: string,
+	syntax: 'latex' | 'custom',
+	genericFunctions?: GenericFunctionConfig | null
+): string {
+	// `\unit` (siunitx) n'existe ni dans MathLive ni dans le préambule de
+	// l'export `.tex` : on l'affiche en LaTeX de base.
+	return displayUnitsInLatex(expressionToRawLatex(expression, syntax, genericFunctions));
+}
+
+/**
+ * Comme {@link expressionToLatex}, mais les grandeurs gardent leur `\unit{…}`.
+ * Pour le PDF : le convertisseur Typst traduit `\unit` lui-même — une barre
+ * d'unité (`km/h`) déjà traduite y deviendrait une fraction.
+ */
+export function expressionToRawLatex(
 	expression: string,
 	syntax: 'latex' | 'custom',
 	genericFunctions?: GenericFunctionConfig | null
