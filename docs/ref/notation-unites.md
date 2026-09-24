@@ -102,6 +102,25 @@ Règles communes : symboles en romain, espace avant l'unité, exposant entier (l
 - ⚠️ **Ne jamais traduire avant Typst** : le PDF reçoit le LaTeX brut (`expressionToRawLatex`). En Typst, une barre nue fait une fraction : `\mathrm{km}/\mathrm{h}` y deviendrait km sur h.
 - ⚠️ **Ne jamais relire la forme traduite** : `\mathrm{m}\cdot\mathrm{s}^{-1}` se relit comme un produit de variables, plus comme une grandeur.
 
+## 3 bis. Ce que l'élève tape (réponses)
+
+L'élève ne tape jamais `\unit` : dans un blanc **à unité** (`blank.unit.expected`), la correction lit ce que MathLive produit vraiment (mesuré au vrai clavier, 2026-09-24) et le ramène à `valeur\unit{écriture}` — `normalizeStudentQuantity` (`src/lib/questions/units/student-input.ts`) :
+
+| L'élève tape        | MathLive rend                            | Lu                                            |
+| ------------------- | ---------------------------------------- | --------------------------------------------- |
+| `5 km`              | `5\operatorname{\mathrm{km}}`            | 5 km                                          |
+| `90 km/h`           | `\frac{90\operatorname{\mathrm{km}}}{h}` | 90 km/h                                       |
+| `20 °C`             | `20\degree C`                            | 20 °C                                         |
+| `5 min`             | `5\min`                                  | 5 min                                         |
+| `2,5 km`            | `2{,}5\operatorname{\mathrm{km}}`        | 2,5 km                                        |
+| `12 500 m` (espace) | `12\,500\,m`                             | 12 500 m                                      |
+| `5 m s` ou `5 ms`   | `5ms`                                    | 5 **ms** (milliseconde — jamais réinterprété) |
+
+- Dans un blanc **sans** unité, rien ne change : `5km` reste le produit 5·k·m.
+- Une grandeur incompatible est refusée avec un message (« Cette unité ne mesure pas la bonne grandeur… ») : c'est le garde-fou de `m s` / `ms`. Messages : `src/lib/questions/units/feedback.ts`.
+- **Clavier virtuel** : onglet « Unités » (touches de la grandeur attendue, `src/lib/questions/units/keyboard-units.ts`) ; une touche insère la forme affichée (`\mathrm{km}`), relue par la même normalisation — pas de macro `\unit`.
+- La correction lit les unités avec la même règle que ce document (`parseUnitExpression` délègue à mathAST) ; exposants Unicode (`m²`) admis en réponse.
+
 ## 4. Défauts connus, non corrigés
 
 - La page `admin/debug/mathfield` déclare sa propre macro `\unit` (fond vert, police sans empattement), pour son champ de saisie uniquement. Elle ne suit pas les règles d'affichage ci-dessus.

@@ -1,5 +1,7 @@
 # Saisie des unités par l'élève — progression
 
+> ✅ **CHANTIER TERMINÉ le 2026-09-24** (#410 → #414). Reste hors chantier : bug des zéros `1\,000\,000` (journal).
+
 > Spécification validée par David le 2026-09-24. Worktree `../ubumaths-wt-saisie-unites`, branche `feat/saisie-unites` (une PR par phase).
 > Notation de référence : `docs/ref/notation-unites.md`.
 
@@ -35,8 +37,8 @@
 | 1     | Une seule règle : la correction lit les unités avec le lecteur mathAST (+ exposants Unicode `m²`)           | pedagogy-expert (Opus)    | ✅ livrée (#410) — `(m/s)^2` refusé (décision David)            |
 | 2     | A — lecture tolérante dans les trous avec unité (`5km`, `5\,\mathrm{km}`, `20\degree C`, `90\frac{km}{h}`…) | pedagogy-expert (Opus)    | ✅ livrée (#411)                                                |
 | 3     | Messages à l'élève (grandeur, unité imposée, manquante, ambiguë)                                            | pedagogy-expert (Opus)    | ✅ livrée (#412) + affichage (diaporamas, un message par blanc) |
-| 4     | B — onglet « Unités » du clavier virtuel, filtré par grandeur, insère la forme affichée (`\mathrm{km}`)     | frontend-developer (Opus) | codée, geste réel vérifié ; PR en cours                         |
-| —     | code-reviewer en fin de chantier                                                                            | code-reviewer             | à faire                                                         |
+| 4     | B — onglet « Unités » du clavier virtuel, filtré par grandeur, insère la forme affichée (`\mathrm{km}`)     | frontend-developer (Opus) | ✅ livrée (#414)                                                |
+| —     | code-reviewer en fin de chantier                                                                            | code-reviewer             | ✅ bloquant corrigé, re-revue : pas de finding bloquant         |
 
 Hors périmètre (décidé) : réponses littérales avec unité (« 2x cm ») — chantier séparé.
 
