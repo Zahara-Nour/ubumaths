@@ -9,7 +9,7 @@
 $3~\unit{m.s^-1}$  LaTeX : la commande \unit, précédée de ~
 ```
 
-S'affiche « 3 m·s⁻¹ » : à l'écran, dans l'export `.tex` et dans le PDF.
+S'affiche « 3 m·s⁻¹ » : à l'écran, dans l'export `.tex` et dans le PDF. `kg/(m.s)` s'affiche « kg/(m·s) », parenthèses comprises.
 
 ---
 
@@ -18,7 +18,7 @@ S'affiche « 3 m·s⁻¹ » : à l'écran, dans l'export `.tex` et dans le PDF.
 | Contexte              | Écriture                 | Remarque                                                                                          |
 | --------------------- | ------------------------ | ------------------------------------------------------------------------------------------------- |
 | Notation custom `~…~` | `~2[cm]~`, `~(2+3)[cm]~` | Crochets **juste après** le nombre ou la parenthèse. Une espace avant `[` est tolérée (`2 [cm]`). |
-| LaTeX `$…$`           | `$2~\unit{cm}$`          | Le `~` est **obligatoire** : `3 \unit{cm}` et `3\,\unit{cm}` sont refusés par le parseur LaTeX.   |
+| LaTeX `$…$`           | `$2~\unit{cm}$`          | `~`, `\,`, une espace ou rien : `3\,\unit{cm}` et `3\unit{cm}` se lisent pareil.                  |
 
 Une unité **se déclare**, elle ne se devine pas : `~12 km~` sans crochets est le produit `12·k·m`, pas une grandeur.
 
@@ -51,7 +51,15 @@ Liste complète : `src/lib/mathAST/units/definitions.ts`. `%` n'est **pas** une 
 | `.` `*` `·` | produit  | `·` (point médian)               |
 | `/`         | quotient | `/` (barre, jamais une fraction) |
 
-⚠️ **Le `/` ne porte que jusqu'au point suivant** : `kg/m.s` se lit **kg·m⁻¹·s**, pas kg/(m·s). Les parenthèses ne sont pas acceptées (`kg/(m.s)` est refusé) : écrire `kg.m^-1.s^-1`.
+⛔ **Un produit après un `/` doit être entre parenthèses.** `kg/m.s` est **refusé** comme ambigu (« Ambiguous unit "kg/m.s": write kg/(m.s) … ») : l'usage le lit kg/(m·s), l'ancienne règle le lisait kg·m⁻¹·s. Écrire :
+
+| Pour     | Écrire                          |
+| -------- | ------------------------------- |
+| kg/(m·s) | `kg/(m.s)` ou `kg.m^-1.s^-1`    |
+| J/(kg·K) | `J/(kg.K)`                      |
+| kg·s/m   | `kg.s/m` (produit AVANT le `/`) |
+
+Les parenthèses ne servent qu'au dénominateur, sans imbrication ; après `)`, seul un autre `/` peut suivre. `kg/m/s` reste admis (chaque `/` porte sur un symbole : kg·m⁻¹·s⁻¹). Le formateur d'unités écrit les parenthèses lui-même (`g/(m.s)`) : ce qu'il produit se relit.
 
 ### Exposants
 
@@ -64,11 +72,17 @@ Les deux formes sont acceptées et équivalentes :
 
 Refusés : `m2` (exposant sans `^`), `s^(-1)` (parenthèses), `m^{-}` et `m^{}` (exposant vide), `m^{2` (accolade non refermée).
 
+⛔ **Pas d'exposant après le crochet.** `3[m]^2` est refusé : on y lisait (3 m)², soit 9 m², quand l'auteur voulait presque toujours 3 m². Écrire `3[m^2]` pour 3 m², `(3[m])^2` pour (3 m)². En LaTeX : `3~\unit{m^2}`, ou `\left(3~\unit{m}\right)^2`. Une grandeur élevée à une puissance par le code (tidy, calcul) est toujours écrite avec ses parenthèses.
+
 ### Espaces
 
 ⛔ **Pas d'espace à l'intérieur de l'unité.** `3[m s^-1]` est une erreur (« Space inside a unit »). Avant le 2026-09-24, l'espace disparaissait et `m s` devenait `ms`, **la milliseconde** : 1000 s⁻¹ au lieu de m·s⁻¹, sans aucun message. Écrire `m.s^-1`.
 
-Admis : une espace **autour** de l'unité (`3[ km/h ]`) et, en LaTeX, celle qui termine une commande (`\unit{m\cdot s^-1}`).
+Admis : une espace **autour** de l'unité (`3[ km/h ]`) et, en LaTeX, celle qui termine une commande (`\unit{m\cdot s^-1}`). `\unit{m\,s}` est refusé comme `m s`.
+
+### Espacements LaTeX
+
+Le parseur LaTeX **ignore** les commandes d'espacement, qui n'ont aucun sens mathématique : `~`, `\,`, `\:`, `\;`, `\>`, `\ `, `\!`, `\quad`, `\qquad` (et `\enspace`, `\thinspace`, `\medspace`, `\thickspace`, `\negthinspace`). `2\,x` se lit `2x`, `3~x` aussi.
 
 ### Températures
 
@@ -90,8 +104,6 @@ Règles communes : symboles en romain, espace avant l'unité, exposant entier (l
 
 ## 4. Défauts connus, non corrigés
 
-- `~3[m^2]^2~` produit `3~\mathrm{m}^{2}^2` : un double exposant, refusé par LaTeX.
-- LaTeX : seul `~` est admis entre le nombre et `\unit` ; `\,` et une espace simple sont refusés.
 - La page `admin/debug/mathfield` déclare sa propre macro `\unit` (fond vert, police sans empattement), pour son champ de saisie uniquement. Elle ne suit pas les règles d'affichage ci-dessus.
 
 ## 5. Code et tests
@@ -107,4 +119,5 @@ Tests :
 
 - `src/lib/mathAST/parser/custom/__tests__/unit-writing-braces-spaces.test.ts` : accolades, espaces, dans les 4 parseurs ;
 - `src/lib/mathAST/units/__tests__/display.test.ts` : traduction, et rendu MathLive réel via `mathlive/ssr` ;
-- `src/lib/ubumark/generators/__tests__/unit-rendering.test.ts` : de l'énoncé ubumark aux trois sorties.
+- `src/lib/ubumark/generators/__tests__/unit-rendering.test.ts` : de l'énoncé ubumark aux trois sorties ;
+- `src/lib/mathAST/parser/custom/__tests__/unit-pieges.test.ts` : portée du `/`, exposant après une unité, espacements LaTeX.

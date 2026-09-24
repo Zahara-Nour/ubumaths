@@ -33,8 +33,8 @@ import type { ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../
 import { CustomTokenizer, type CustomToken, type CustomTokenType } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
 import { MathAST, compose, matrix, euler, complex } from '../../factory';
-import { parse as parseUnit } from '../../units/parser';
-import { readUnitWriting, UNIT_SPACE_MESSAGE } from './unit-writing';
+import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
+import { readUnitWriting, UNIT_EXPONENT_MESSAGE, UNIT_SPACE_MESSAGE } from './unit-writing';
 import {
 	SecurityError,
 	getEffectiveSecurityOptions,
@@ -1704,11 +1704,14 @@ class CustomPrattParser {
 		}
 
 		this.expect('RBRACKET', "Expected ']' after unit");
+		if (this.check('CARET')) {
+			this.error(UNIT_EXPONENT_MESSAGE, this.currentToken.position, 1, 'INVALID_UNIT');
+		}
 
 		const unit = parseUnit(unitStr);
 		if (!unit) {
 			this.error(
-				`Invalid unit: ${unitStr}`,
+				unitErrorMessage(unitStr),
 				this.currentToken.position,
 				unitStr.length,
 				'INVALID_UNIT'

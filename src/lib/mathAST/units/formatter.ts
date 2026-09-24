@@ -156,7 +156,11 @@ function formatFraction(u: Unit): string {
 		return numeratorStr;
 	}
 
-	return `${numeratorStr}/${denominatorStr}`;
+	// Plusieurs facteurs au dénominateur : parenthèses obligatoires, sinon
+	// `g/m.s` se relirait comme un produit après la barre (refusé, ambigu)
+	return denominator.length > 1
+		? `${numeratorStr}/(${denominatorStr})`
+		: `${numeratorStr}/${denominatorStr}`;
 }
 
 // =============================================================================

@@ -24,11 +24,11 @@ import type {
 } from '../../types';
 import type { MatrixType } from '../../matrix/types';
 import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
-import { Tokenizer } from './tokenizer';
+import { Tokenizer, isLatexSpacing } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from './color-stack';
 import { MathAST, compose, matrix, complex, euler } from '../../factory';
-import { parse as parseUnit } from '../../units/parser';
-import { UNIT_SPACE_MESSAGE } from '../custom/unit-writing';
+import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
+import { UNIT_EXPONENT_MESSAGE_LATEX, UNIT_SPACE_MESSAGE } from '../custom/unit-writing';
 import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
 import { SecurityError, checkInputLength, getEffectiveSecurityOptions } from '../security';
 import type { ParserSecurityOptions } from '../security';
@@ -264,7 +264,7 @@ class PrattParser {
 	 */
 	private skipWhitespace(): Token {
 		let token = this.tokenizer.nextToken();
-		while (token.type === 'WHITESPACE') {
+		while (isLatexSpacing(token)) {
 			token = this.tokenizer.nextToken();
 		}
 		return token;
@@ -276,7 +276,7 @@ class PrattParser {
 	private peekNextNonWhitespace(): Token {
 		let offset = 0;
 		let token = this.tokenizer.peekAt(offset);
-		while (token.type === 'WHITESPACE') {
+		while (isLatexSpacing(token)) {
 			offset++;
 			token = this.tokenizer.peekAt(offset);
 		}
@@ -444,10 +444,10 @@ class PrattParser {
 			case 'GREATER':
 				return this.parseRelation(left, '>');
 
-			case 'TILDE':
-				return this.parseUnit(left);
-
 			case 'COMMAND':
+				if (token.value === 'unit') {
+					return this.parseUnit(left);
+				}
 				if (RELATION_COMMANDS.has(token.value)) {
 					const relType = RELATION_COMMAND_MAP[token.value];
 					if (relType) {
@@ -519,10 +519,10 @@ class PrattParser {
 			case 'GREATER':
 				return BP.RELATION;
 
-			case 'TILDE':
-				return BP.MULTIPLY + 1; // Slightly higher than multiply to bind units
-
 			case 'COMMAND':
+				if (token.value === 'unit') {
+					return BP.MULTIPLY + 1; // Slightly higher than multiply to bind units
+				}
 				if (RELATION_COMMANDS.has(token.value)) {
 					return BP.RELATION;
 				}
@@ -2059,11 +2059,14 @@ class PrattParser {
 		this.expect('LBRACE', "Expected '{' for \\unit");
 		const unitStr = this.parseUnitString();
 		this.expect('RBRACE', "Expected '}' after \\unit");
+		if (this.check('CARET')) {
+			this.error(UNIT_EXPONENT_MESSAGE_LATEX, this.currentToken.position, 1, 'INVALID_UNIT');
+		}
 
 		const unit = parseUnit(unitStr);
 		if (!unit) {
 			this.error(
-				`Invalid unit: ${unitStr}`,
+				unitErrorMessage(unitStr),
 				this.currentToken.position,
 				unitStr.length,
 				'INVALID_UNIT'
@@ -2081,30 +2084,25 @@ class PrattParser {
 	// =========================================================================
 
 	/**
-	 * Parse unit after tilde: expr ~ \unit{...}
+	 * Parse unit postfix: expr \unit{...}
+	 *
+	 * Le `~` ou toute autre commande d'espacement qui précède (`3~\unit{cm}`,
+	 * `3\,\unit{cm}`) a déjà été sautée comme un blanc (`isLatexSpacing`).
 	 */
 	private parseUnit(left: MathNode): MathNode {
-		this.advance(); // consume ~
-
-		// Expect \unit command
-		if (!this.checkCommand('unit')) {
-			this.error(
-				`Expected \\unit after ~`,
-				this.currentToken.position,
-				this.currentToken.length,
-				'INVALID_UNIT'
-			);
-		}
 		this.advance(); // consume \unit
 
 		this.expect('LBRACE', "Expected '{' for \\unit");
 		const unitStr = this.parseUnitString();
 		this.expect('RBRACE', "Expected '}' after \\unit");
+		if (this.check('CARET')) {
+			this.error(UNIT_EXPONENT_MESSAGE_LATEX, this.currentToken.position, 1, 'INVALID_UNIT');
+		}
 
 		const unit = parseUnit(unitStr);
 		if (!unit) {
 			this.error(
-				`Invalid unit: ${unitStr}`,
+				unitErrorMessage(unitStr),
 				this.currentToken.position,
 				unitStr.length,
 				'INVALID_UNIT'
@@ -2140,6 +2138,8 @@ class PrattParser {
 				piece = '/';
 			} else if (token.type === 'STAR') {
 				piece = '*';
+			} else if (token.type === 'LPAREN' || token.type === 'RPAREN') {
+				piece = token.value;
 			} else if (token.type === 'LBRACE') {
 				piece = '{';
 				depth++;

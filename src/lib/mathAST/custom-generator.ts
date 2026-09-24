@@ -891,7 +891,11 @@ export class CustomGenerator {
 	 * Emits spans for a superscript node with proper bracing.
 	 */
 	private visitSuperscriptSpans(node: SuperscriptNode): void {
+		// Grandeur élevée à une puissance : parenthèses (voir generateSuperscript)
+		const wrapBase = node.base.type === 'unit';
+		if (wrapBase) this.emit('(', node.metadata);
 		this.visitWithSpans(node.base);
+		if (wrapBase) this.emit(')', node.metadata);
 		this.emit('^', node.metadata);
 
 		const needsBraces = needsBracesForPower(node.superscript);
@@ -1388,7 +1392,10 @@ export class CustomGenerator {
 	private generateSuperscript(node: SuperscriptNode): string {
 		// ⚠️ Ce garde-fou existait côté LaTeX et pas ici : les deux générateurs
 		// avaient divergé, et `(x+1)^2` s'écrivait `x+1^2`.
-		const base = this.groupIfSum(node.base);
+		// Une grandeur élevée à une puissance aussi : `3[m]^2` est refusé par le
+		// parseur (on y lisait 9 m² quand l'auteur voulait 3 m²)
+		const base =
+			node.base.type === 'unit' ? `(${this.generateNode(node.base)})` : this.groupIfSum(node.base);
 		const superscript = this.generateNode(node.superscript);
 		const needsBraces = needsBracesForPower(node.superscript);
 		const wrappedSuperscript = needsBraces ? `{${superscript}}` : superscript;

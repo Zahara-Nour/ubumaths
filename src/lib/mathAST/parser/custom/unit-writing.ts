@@ -21,15 +21,29 @@ export const UNIT_TOKEN_TEXT: Partial<Record<string, string>> = {
 	STAR: '*',
 	// Exposant entre accolades, comme ailleurs dans la notation : `m.s^{-1}`
 	LBRACE: '{',
-	RBRACE: '}'
+	RBRACE: '}',
+	// Dénominateur entre parenthèses : `kg/(m.s)`
+	LPAREN: '(',
+	RPAREN: ')'
 };
 
 /** Les caractères qu'une écriture d'unité peut contenir. */
-export const UNIT_WRITING = /^[A-Za-z0-9€$°μΩ.^/*{}-]+$/;
+export const UNIT_WRITING = /^[A-Za-z0-9€$°μΩ.^/*{}()-]+$/;
 
 /** Message d'une espace dans une unité (`3[m s^-1]` se lirait « par milliseconde »). */
 export const UNIT_SPACE_MESSAGE =
 	'Space inside a unit: join the symbols with "." or "/" (m.s^-1, km/h)';
+
+/**
+ * Message d'un exposant collé au crochet d'unité : `3[m]^2` se lisait (3 m)²,
+ * soit 9 m², quand l'auteur voulait presque toujours 3 m².
+ */
+export const UNIT_EXPONENT_MESSAGE =
+	'Exponent after a unit: write 3[m^2] for 3 m², or (3[m])^2 for (3 m)²';
+
+/** Le même message pour le parseur LaTeX. */
+export const UNIT_EXPONENT_MESSAGE_LATEX =
+	'Exponent after a unit: write 3~\\unit{m^2} for 3 m², or \\left(3~\\unit{m}\\right)^2 for (3 m)²';
 
 /** Ce que l'écriture d'unité doit savoir d'un jeton : son texte et sa place. */
 interface UnitWritingToken {

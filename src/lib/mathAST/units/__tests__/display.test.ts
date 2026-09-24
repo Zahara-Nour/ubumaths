@@ -68,7 +68,8 @@ describe('rendu MathLive réel', () => {
 		['2~\\unit{cm}', '2 cm'],
 		['3~\\unit{m.s^{-1}}', '3 m⋅s−1'],
 		['90~\\unit{km/h}', '90 km/h'],
-		['20~\\unit{°C}', '20 ∘C']
+		['20~\\unit{°C}', '20 ∘C'],
+		['3~\\unit{kg/(m.s)}', '3 kg/(m⋅s)']
 	])('%s s’affiche sans erreur : « %s »', (latex, visible) => {
 		const r = renderWithMathLive(displayUnitsInLatex(latex));
 		expect(r.hasError).toBe(false);

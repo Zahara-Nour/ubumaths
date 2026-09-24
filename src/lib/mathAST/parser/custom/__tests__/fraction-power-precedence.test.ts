@@ -94,7 +94,10 @@ describe('ce qui marchait continue de marcher', () => {
 		['3/6', '3/6'],
 		['2/4*6/8', '2/4*6/8'],
 		['x[m]', 'x[m]'],
-		['x[m]^2', 'x[m]^2'],
+		// `x[m]^2` est refusé depuis le 2026-09-24 (docs/ref/notation-unites.md,
+		// piège 2) : on y lisait (x m)² quand l'auteur voulait x m². La puissance
+		// d'une grandeur s'écrit avec ses parenthèses.
+		['(x[m])^2', '(x[m])^2'],
 		['a:/b', 'a:/b'],
 		['|x|/2', '|x|/2'],
 		['x^2*y', 'x^2*y'],

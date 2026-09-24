@@ -376,7 +376,10 @@ export class LatexGenerator {
 				break;
 
 			case 'superscript':
+				// Grandeur élevée à une puissance : parenthèses (voir generateSuperscript)
+				if (node.base.type === 'unit') this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.base);
+				if (node.base.type === 'unit') this.emit(' \\right)', node.metadata);
 				this.emit('^', node.metadata);
 				this.emit('{', node.metadata);
 				this.visitWithSpans(node.superscript);
@@ -1299,7 +1302,11 @@ export class LatexGenerator {
 		// `x + 1^{2/3}`, qui se relit `x + (1^{2/3})`, soit `x + 1`. Une
 		// expression montrée à l'élève sous une forme qui ne se relit pas comme
 		// elle-même.
-		const baseNeedsParentheses = node.base.type === 'addition' || node.base.type === 'subtraction';
+		// Une grandeur aussi : `3~\unit{m^2}^2` empilerait deux exposants
+		const baseNeedsParentheses =
+			node.base.type === 'addition' ||
+			node.base.type === 'subtraction' ||
+			node.base.type === 'unit';
 		const wrappedBase = baseNeedsParentheses ? `\\left( ${base} \\right)` : base;
 
 		return `${wrappedBase}^${wrappedSuperscript}`;

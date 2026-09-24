@@ -9,6 +9,7 @@
  *
  * - symboles en romain (`\mathrm{km}`, `upright("km")`) ;
  * - `.`, `*`, `·` en point de produit ; `/` reste une barre, jamais une fraction ;
+ * - parenthèses du dénominateur conservées (`kg/(m.s)`) ;
  * - exposants complets (`s^{-1}` : le `1` monte avec le `-`).
  *
  * @module mathAST/units/display
@@ -63,6 +64,7 @@ export function unitWritingToLatex(writing: string): string {
 		.map((token) => {
 			if (token.type === 'SYMBOL') return symbolToLatex(token.value);
 			if (token.type === 'EXPONENT') return `^{${token.value}}`;
+			if (token.type === 'LPAREN' || token.type === 'RPAREN') return token.value;
 			return token.value === '/' ? '/' : '\\cdot';
 		})
 		.join('');
@@ -83,6 +85,10 @@ export function unitWritingToTypst(writing: string): string {
 	for (const token of tokens) {
 		if (token.type === 'SYMBOL') parts.push(`upright(${JSON.stringify(token.value)})`);
 		else if (token.type === 'EXPONENT') parts.push(`${parts.pop() ?? ''}^(${token.value})`);
+		// Parenthèses en symboles : collées à `"/"`, une parenthèse nue serait
+		// lue par Typst comme un appel
+		else if (token.type === 'LPAREN') parts.push('paren.l');
+		else if (token.type === 'RPAREN') parts.push('paren.r');
 		else parts.push(token.value === '/' ? '"/"' : 'dot.op');
 	}
 	// Barre collée à ses voisins : « km/h », pas « km / h »
