@@ -466,6 +466,36 @@ export function tokenize(input: string): Token[] {
 // =============================================================================
 
 /**
+ * Les commandes d'espacement LaTeX : elles n'ont aucun sens mathématique, le
+ * parseur les saute comme des blancs. `~` (espace insécable) en fait partie :
+ * `3~\unit{cm}`, `3\,\unit{cm}` et `3\unit{cm}` se lisent pareil.
+ */
+const SPACING_COMMANDS = new Set([
+	',',
+	':',
+	';',
+	'>',
+	' ',
+	'!',
+	'quad',
+	'qquad',
+	'enspace',
+	'thinspace',
+	'medspace',
+	'thickspace',
+	'negthinspace'
+]);
+
+/** Un jeton qui ne compte pas : blanc, `~` ou commande d'espacement. */
+export function isLatexSpacing(token: Token): boolean {
+	return (
+		token.type === 'WHITESPACE' ||
+		token.type === 'TILDE' ||
+		(token.type === 'COMMAND' && SPACING_COMMANDS.has(token.value))
+	);
+}
+
+/**
  * Filters out whitespace tokens from a token array.
  * Useful when whitespace is not semantically significant.
  *

@@ -30,11 +30,11 @@
 
 import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } from '../../types';
 import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
-import { Tokenizer } from './tokenizer';
+import { Tokenizer, isLatexSpacing } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from './color-stack';
 import { MathAST } from '../../factory';
-import { parse as parseUnit } from '../../units/parser';
-import { UNIT_SPACE_MESSAGE } from '../custom/unit-writing';
+import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
+import { UNIT_EXPONENT_MESSAGE_LATEX, UNIT_SPACE_MESSAGE } from '../custom/unit-writing';
 import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
 import {
 	SecurityError,
@@ -231,7 +231,7 @@ class RDParser {
 	 */
 	private skipWhitespace(): Token {
 		let token = this.tokenizer.nextToken();
-		while (token.type === 'WHITESPACE') {
+		while (isLatexSpacing(token)) {
 			token = this.tokenizer.nextToken();
 		}
 		return token;
@@ -631,33 +631,28 @@ class RDParser {
 	}
 
 	/**
-	 * postfix := primary ('~' '\unit' group)?
+	 * postfix := primary ('\unit' group)?
+	 *
+	 * Le `~` ou toute autre commande d'espacement qui précède (`3~\unit{cm}`,
+	 * `3\,\unit{cm}`) a déjà été sautée comme un blanc (`isLatexSpacing`).
 	 */
 	private parsePostfix(): MathNode {
 		let node = this.parsePrimary();
 
-		if (this.check('TILDE')) {
-			this.advance();
-
-			// Expect \unit command
-			if (!this.checkCommand('unit')) {
-				this.error(
-					`Expected \\unit after ~`,
-					this.currentToken.position,
-					this.currentToken.length,
-					'INVALID_UNIT'
-				);
-			}
+		if (this.checkCommand('unit')) {
 			this.advance(); // consume \unit
 
 			this.expect('LBRACE', "Expected '{' for \\unit");
 			const unitStr = this.parseUnitString();
 			this.expect('RBRACE', "Expected '}' after \\unit");
+			if (this.check('CARET')) {
+				this.error(UNIT_EXPONENT_MESSAGE_LATEX, this.currentToken.position, 1, 'INVALID_UNIT');
+			}
 
 			const unit = parseUnit(unitStr);
 			if (!unit) {
 				this.error(
-					`Invalid unit: ${unitStr}`,
+					unitErrorMessage(unitStr),
 					this.currentToken.position,
 					unitStr.length,
 					'INVALID_UNIT'
@@ -1463,11 +1458,14 @@ class RDParser {
 		this.expect('LBRACE', "Expected '{' for \\unit");
 		const unitStr = this.parseUnitString();
 		this.expect('RBRACE', "Expected '}' after \\unit");
+		if (this.check('CARET')) {
+			this.error(UNIT_EXPONENT_MESSAGE_LATEX, this.currentToken.position, 1, 'INVALID_UNIT');
+		}
 
 		const unit = parseUnit(unitStr);
 		if (!unit) {
 			this.error(
-				`Invalid unit: ${unitStr}`,
+				unitErrorMessage(unitStr),
 				this.currentToken.position,
 				unitStr.length,
 				'INVALID_UNIT'
@@ -1509,6 +1507,8 @@ class RDParser {
 				piece = '/';
 			} else if (token.type === 'STAR') {
 				piece = '*';
+			} else if (token.type === 'LPAREN' || token.type === 'RPAREN') {
+				piece = token.value;
 			} else if (token.type === 'LBRACE') {
 				piece = '{';
 				depth++;
