@@ -535,11 +535,14 @@ export class LatexGenerator {
 		const rightMeta = getRightDelimiterMetadata(node) ?? node.metadata;
 
 		switch (node.delimiters) {
-			case 'parentheses':
-				this.emit('\\left( ', leftMeta);
+			case 'parentheses': {
+				// Crochet de calcul (`shape: 'square'`) : \left[ … \right]
+				const square = node.shape === 'square';
+				this.emit(square ? '\\left[ ' : '\\left( ', leftMeta);
 				this.visitWithSpans(node.content);
-				this.emit(' \\right)', rightMeta);
+				this.emit(square ? ' \\right]' : ' \\right)', rightMeta);
 				break;
+			}
 			default: {
 				const exhaustive: never = node.delimiters;
 				throw new Error(`Unknown delimiter type: ${exhaustive}`);
@@ -1275,7 +1278,10 @@ export class LatexGenerator {
 
 		switch (node.delimiters) {
 			case 'parentheses':
-				return `\\left( ${content} \\right)`;
+				// Crochet de calcul (`shape: 'square'`) : \left[ … \right]
+				return node.shape === 'square'
+					? `\\left[ ${content} \\right]`
+					: `\\left( ${content} \\right)`;
 			default: {
 				const exhaustive: never = node.delimiters;
 				throw new Error(`Unknown delimiter type: ${exhaustive}`);

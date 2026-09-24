@@ -12,6 +12,7 @@ import type {
 	CompositionNode,
 	DelimiterNode,
 	DelimiterSemantic,
+	DelimiterShape,
 	DelimiterType,
 	DivisionDisplayStyle,
 	DivisionNode,
@@ -79,6 +80,8 @@ export interface UnaryOpOptions {
  * Options for delimiter nodes
  */
 export interface DelimiterOptions {
+	/** Forme d'affichage : `square` pour un crochet de calcul. */
+	shape?: DelimiterShape;
 	delimiterMetadata?: NodeMetadata;
 	leftDelimiterMetadata?: NodeMetadata;
 	rightDelimiterMetadata?: NodeMetadata;
@@ -169,6 +172,7 @@ function isDelimiterOptions(opt: unknown): opt is DelimiterOptions {
 		typeof opt === 'object' &&
 		opt !== null &&
 		('delimiterMetadata' in opt ||
+			'shape' in opt ||
 			'leftDelimiterMetadata' in opt ||
 			'rightDelimiterMetadata' in opt ||
 			'metadata' in opt)
@@ -764,6 +768,7 @@ export function delimiter(
 		delimiters: type,
 		content,
 		...(semantic && { semantic }),
+		...(opts.shape && { shape: opts.shape }),
 		...(opts.delimiterMetadata && { delimiterMetadata: opts.delimiterMetadata }),
 		...(opts.leftDelimiterMetadata && { leftDelimiterMetadata: opts.leftDelimiterMetadata }),
 		...(opts.rightDelimiterMetadata && { rightDelimiterMetadata: opts.rightDelimiterMetadata }),

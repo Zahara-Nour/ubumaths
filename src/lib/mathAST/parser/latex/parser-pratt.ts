@@ -917,9 +917,14 @@ class PrattParser {
 
 		// Get the opening delimiter
 		const openToken = this.currentToken;
-		let delimiterType: 'paren' | 'abs' | 'floor' | 'ceil' = 'paren';
+		let delimiterType: 'paren' | 'square' | 'abs' | 'floor' | 'ceil' = 'paren';
 
 		if (openToken.type === 'LPAREN' || (openToken.type === 'COMMAND' && openToken.value === '(')) {
+			this.advance();
+		} else if (openToken.type === 'LBRACKET') {
+			// Crochet de calcul `\left[ … \right]` — les `[` nus restent réservés
+			// (intervalles à la française `]0;1[`)
+			delimiterType = 'square';
 			this.advance();
 		} else if (openToken.type === 'PIPE') {
 			delimiterType = 'abs';
@@ -969,6 +974,16 @@ class PrattParser {
 					);
 				}
 				break;
+			case 'square':
+				if (closeToken.type !== 'RBRACKET') {
+					this.error(
+						`Expected ']' after \\right, got ${closeToken.value || closeToken.type}`,
+						closeToken.position,
+						closeToken.length,
+						'MISSING_DELIMITER'
+					);
+				}
+				break;
 			case 'abs':
 				if (closeToken.type !== 'PIPE') {
 					this.error(
@@ -1010,6 +1025,10 @@ class PrattParser {
 				return this.applyColor(MathAST.func('floor', [content]));
 			case 'ceil':
 				return this.applyColor(MathAST.func('ceil', [content]));
+			case 'square':
+				return this.applyColor(
+					MathAST.delimiter('parentheses', content, 'grouping', { shape: 'square' })
+				);
 			default:
 				return this.applyColor(MathAST.delimiter('parentheses', content, 'grouping'));
 		}

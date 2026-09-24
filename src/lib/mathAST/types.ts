@@ -353,6 +353,12 @@ export type DelimiterType = 'parentheses';
 export type DelimiterSemantic = 'grouping' | 'interval' | 'set' | 'matrix' | 'vector';
 
 /**
+ * Forme d'affichage d'un délimiteur « parenthèses ». `square` : crochet de
+ * calcul `[x-1]^2`, même sens mathématique que des parenthèses. Absent = rondes.
+ */
+export type DelimiterShape = 'square';
+
+/**
  * Represents content surrounded by delimiters
  * semantic provides meaning for interpretation
  */
@@ -361,6 +367,8 @@ export interface DelimiterNode extends BaseNode {
 	readonly delimiters: DelimiterType;
 	readonly content: MathNode;
 	readonly semantic?: DelimiterSemantic;
+	/** Forme d'affichage (crochets de calcul) ; sans effet sur le sens. */
+	readonly shape?: DelimiterShape;
 	readonly delimiterMetadata?: NodeMetadata;
 	readonly leftDelimiterMetadata?: NodeMetadata;
 	readonly rightDelimiterMetadata?: NodeMetadata;

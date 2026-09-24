@@ -41,7 +41,12 @@ import { CustomTokenizer, type CustomToken, type CustomTokenType } from './token
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
 import { MathAST, euler, complex } from '../../factory';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
-import { readUnitWriting, UNIT_EXPONENT_MESSAGE, UNIT_SPACE_MESSAGE } from './unit-writing';
+import {
+	isGroupingBracket,
+	readUnitWriting,
+	UNIT_EXPONENT_MESSAGE,
+	UNIT_SPACE_MESSAGE
+} from './unit-writing';
 import {
 	SecurityError,
 	getEffectiveSecurityOptions,
@@ -578,7 +583,7 @@ class CustomRDParser {
 	private parsePostfix(): MathNode {
 		let node = this.parseAtomWithFraction();
 
-		if (this.check('LBRACKET')) {
+		if (this.checkUnitBracket()) {
 			node = this.parseUnitPostfix(node);
 		}
 
@@ -618,7 +623,7 @@ class CustomRDParser {
 	private parseFractionOperand(): MathNode {
 		let operand = this.parseAtom();
 
-		while (this.check('CARET') || this.check('UNDERSCORE') || this.check('LBRACKET')) {
+		while (this.check('CARET') || this.check('UNDERSCORE') || this.checkUnitBracket()) {
 			if (this.check('CARET')) {
 				this.advance();
 				operand = this.applyColor(MathAST.superscript(operand, this.parsePowerOperand()));
@@ -672,6 +677,10 @@ class CustomRDParser {
 
 			case 'QUESTION':
 				return this.parseHole();
+
+			// `[` en position d'atome : toujours un crochet de calcul
+			case 'LBRACKET':
+				return this.parseSquareBrackets();
 
 			default:
 				this.error(
@@ -732,6 +741,11 @@ class CustomRDParser {
 		// e.g., 2|x| = 2 * |x|
 		if (token.type === 'PIPE') {
 			return true;
+		}
+
+		// Crochet de calcul après une expression : `2[x+1]` (une unité n'en est pas un)
+		if (token.type === 'LBRACKET') {
+			return this.isGroupingBracketHere();
 		}
 
 		// These CAN start implicit multiplication
@@ -859,6 +873,40 @@ class CustomRDParser {
 
 		// Parentheses create a DelimiterNode
 		return this.applyColor(MathAST.parentheses(content));
+	}
+
+	/**
+	 * Crochet de calcul : `[x-1]` — des parenthèses de forme `square`.
+	 */
+	private parseSquareBrackets(): MathNode {
+		this.advance(); // consume [
+
+		if (this.check('RBRACKET')) {
+			this.error('Empty brackets not allowed', this.currentToken.position, 1, 'EMPTY_GROUP');
+		}
+
+		const content = this.parseExpression();
+		this.expect('RBRACKET', "Expected ']' after expression");
+
+		return this.applyColor(
+			MathAST.delimiter('parentheses', content, 'grouping', { shape: 'square' })
+		);
+	}
+
+	/**
+	 * Le jeton courant est-il un `[` de crochet de calcul (et non d'unité) ?
+	 * Regarde en avant jusqu'au `]` apparié, sans rien consommer.
+	 */
+	private isGroupingBracketHere(): boolean {
+		if (!this.check('LBRACKET')) return false;
+		return isGroupingBracket((offset) =>
+			offset === 0 ? this.currentToken : this.tokenizer.peekAt(offset - 1)
+		);
+	}
+
+	/** Le jeton courant est-il un `[` d'unité ? */
+	private checkUnitBracket(): boolean {
+		return this.check('LBRACKET') && !this.isGroupingBracketHere();
 	}
 
 	/**
@@ -1086,7 +1134,7 @@ class CustomRDParser {
 	private parsePostfixStopAtPipe(): MathNode {
 		let node = this.parseAtomWithFractionStopAtPipe();
 
-		if (this.check('LBRACKET')) {
+		if (this.checkUnitBracket()) {
 			node = this.parseUnitPostfix(node);
 		}
 

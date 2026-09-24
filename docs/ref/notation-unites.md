@@ -22,7 +22,19 @@ S'affiche « 3 m·s⁻¹ » : à l'écran, dans l'export `.tex` et dans le PDF. 
 
 Une unité **se déclare**, elle ne se devine pas : `~12 km~` sans crochets est le produit `12·k·m`, pas une grandeur.
 
-⚠️ `[cm]` seul, sans nombre, est refusé en custom. En LaTeX, `\unit{cm}` seul devient « 1 cm ».
+⚠️ `[cm]` seul, sans nombre, n'est **pas** une unité : en début d'expression, un crochet est un crochet de calcul (c × m). En LaTeX, `\unit{cm}` seul devient « 1 cm ».
+
+### Crochet d'unité ou crochet de calcul ?
+
+Depuis le 2026-09-24, `[…]` sert aussi de crochet de calcul. La règle ne change rien à une unité :
+
+| Position                         | Contenu                                                             | Lu comme                                | Exemples                                                |
+| -------------------------------- | ------------------------------------------------------------------- | --------------------------------------- | ------------------------------------------------------- |
+| Début d'expression               | tout                                                                | crochet de calcul                       | `[x-1]^2`, `2+[x-1]`                                    |
+| Après un nombre, une lettre, `)` | un calcul : `+`, `=`, `<`, `>`, ou un `-` qui n'est pas un exposant | crochet de calcul (multiplié)           | `2[x+1]`, `2[(x+2)^2-4]+3`                              |
+| Après un nombre, une lettre, `)` | tout le reste                                                       | **unité** (erreur si elle n'existe pas) | `3[cm]`, `3[m.s^-1]`, `3[kg/(m.s)]` ; `3[kms]` → erreur |
+
+Une faute de frappe dans une unité reste donc une erreur, jamais un produit silencieux. Affichage : `\left[ … \right]` (écran, PDF), relu par le parseur LaTeX. Limite : `[[` ouvre toujours une matrice — écrire `[ [x-1]^2+1]` avec une espace.
 
 ## 2. L'écriture de l'unité
 

@@ -368,6 +368,7 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 		// Structural
 		case 'delimiter':
 			transformedNode = delimiter(node.delimiters, mapNode(node.content, fn), node.semantic, {
+				shape: node.shape,
 				delimiterMetadata: node.delimiterMetadata,
 				leftDelimiterMetadata: node.leftDelimiterMetadata,
 				rightDelimiterMetadata: node.rightDelimiterMetadata,
@@ -597,6 +598,7 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 				mapNodeTopDown(transformedParent.content, fn),
 				transformedParent.semantic,
 				{
+					shape: transformedParent.shape,
 					delimiterMetadata: transformedParent.delimiterMetadata,
 					leftDelimiterMetadata: transformedParent.leftDelimiterMetadata,
 					rightDelimiterMetadata: transformedParent.rightDelimiterMetadata,
@@ -890,6 +892,7 @@ export function cloneNode<T extends MathNode>(node: T): T {
 		// Structural
 		case 'delimiter':
 			return delimiter(node.delimiters, cloneNode(node.content), node.semantic, {
+				shape: node.shape,
 				delimiterMetadata: node.delimiterMetadata,
 				leftDelimiterMetadata: node.leftDelimiterMetadata,
 				rightDelimiterMetadata: node.rightDelimiterMetadata,
@@ -1135,6 +1138,7 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 			if (node.delimiters !== 'parentheses') {
 				// Rebuild with stripped content but keep the delimiter
 				return delimiter(node.delimiters, strippedContent, node.semantic, {
+					shape: node.shape,
 					delimiterMetadata: node.delimiterMetadata,
 					leftDelimiterMetadata: node.leftDelimiterMetadata,
 					rightDelimiterMetadata: node.rightDelimiterMetadata,
@@ -1159,6 +1163,7 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 				// Special case: if it's a negative and allowFirstNegative is true, keep brackets
 				if (isNegativeNode(strippedContent) && allowFirstNegative) {
 					return delimiter(node.delimiters, strippedContent, node.semantic, {
+						shape: node.shape,
 						delimiterMetadata: node.delimiterMetadata,
 						leftDelimiterMetadata: node.leftDelimiterMetadata,
 						rightDelimiterMetadata: node.rightDelimiterMetadata,
@@ -1184,6 +1189,7 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 				) {
 					// Keep brackets
 					return delimiter(node.delimiters, strippedContent, node.semantic, {
+						shape: node.shape,
 						delimiterMetadata: node.delimiterMetadata,
 						leftDelimiterMetadata: node.leftDelimiterMetadata,
 						rightDelimiterMetadata: node.rightDelimiterMetadata,
@@ -1199,6 +1205,7 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 				if (needsBracketsForOpposite(strippedContent, isFirstTerm, allowFirstNegative)) {
 					// Keep the brackets
 					return delimiter(node.delimiters, strippedContent, node.semantic, {
+						shape: node.shape,
 						delimiterMetadata: node.delimiterMetadata,
 						leftDelimiterMetadata: node.leftDelimiterMetadata,
 						rightDelimiterMetadata: node.rightDelimiterMetadata,
@@ -1235,6 +1242,7 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 
 			// Default: keep brackets (lower precedence in parent, unknown context, etc.)
 			return delimiter(node.delimiters, strippedContent, node.semantic, {
+				shape: node.shape,
 				delimiterMetadata: node.delimiterMetadata,
 				leftDelimiterMetadata: node.leftDelimiterMetadata,
 				rightDelimiterMetadata: node.rightDelimiterMetadata,
