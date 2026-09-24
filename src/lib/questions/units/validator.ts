@@ -11,7 +11,14 @@
  * @module questions/units/validator
  */
 
-import { parseLatexQuantity } from './parser';
+import { parseLatexQuantity, extractUnitFromLatex, parseUnitExpression } from './parser';
+import { unitWritingProblem } from '$lib/mathAST/units/parser';
+import {
+	UNIT_FEEDBACK,
+	ambiguousUnitMessage,
+	requiredUnitMessage,
+	unknownUnitMessage
+} from './feedback';
 import { normalizeStudentQuantity } from './student-input';
 import { compareQuantities, type Tolerance } from './ce-integration';
 import { unitsAreCompatible } from './operations';
@@ -28,6 +35,12 @@ export interface ValidationResult {
 	isCorrect: boolean;
 	feedback: string | null;
 	errorType?: 'invalid_input' | 'incompatible_units' | 'wrong_unit' | 'wrong_value' | 'wrong_both';
+	/**
+	 * Vrai quand c'est l'UNITÉ qui est en cause (grandeur différente, unité
+	 * oubliée, unité imposée non utilisée, écriture ambiguë ou inconnue) :
+	 * `feedback` porte alors un message destiné à l'élève (`./feedback`).
+	 */
+	unitAtFault?: boolean;
 	parsed: {
 		value: number | null;
 		unit: string | null;
@@ -42,10 +55,9 @@ export interface ValidationResult {
 // DEFAULT MESSAGES
 // ============================================================================
 
+// Les messages où l'UNITÉ est en cause vivent dans `./feedback` (textes figés).
 const DEFAULT_MESSAGES = {
 	invalidInput: 'Réponse invalide. Vérifiez le format.',
-	incompatibleUnits: 'Les unités ne sont pas compatibles.',
-	incorrectUnit: 'Unité incorrecte.',
 	incorrectValue: 'Valeur incorrecte.',
 	wrongBoth: 'Valeur et unité incorrectes.'
 };
@@ -110,10 +122,12 @@ export function validateQuantityAnswer(
 
 	// Check for parse failures
 	if (!userQuantity) {
+		const unitMessage = unitWritingFeedback(normalizedUser);
 		return {
 			isCorrect: false,
-			feedback: DEFAULT_MESSAGES.invalidInput,
+			feedback: unitMessage ?? DEFAULT_MESSAGES.invalidInput,
 			errorType: 'invalid_input',
+			...(unitMessage ? { unitAtFault: true } : {}),
 			parsed: null,
 			expected: expectedQuantity
 				? {
@@ -143,10 +157,14 @@ export function validateQuantityAnswer(
 
 	// Check unit compatibility first
 	if (!unitsAreCompatible(userQuantity.unit, expectedQuantity.unit)) {
+		// Aucune unité tapée alors qu'une grandeur est attendue : l'unité est oubliée
+		const missingUnit =
+			userQuantity.unit.components.size === 0 && expectedQuantity.unit.components.size > 0;
 		return {
 			isCorrect: false,
-			feedback: DEFAULT_MESSAGES.incompatibleUnits,
+			feedback: missingUnit ? UNIT_FEEDBACK.missingUnit : UNIT_FEEDBACK.wrongMagnitude,
 			errorType: 'incompatible_units',
+			unitAtFault: true,
 			parsed: {
 				value: typeof userQuantity.value === 'number' ? userQuantity.value : null,
 				unit: userUnitStr
@@ -165,8 +183,9 @@ export function validateQuantityAnswer(
 		if (!unitsMatch) {
 			return {
 				isCorrect: false,
-				feedback: DEFAULT_MESSAGES.incorrectUnit,
+				feedback: requiredUnitMessage(requiredUnit),
 				errorType: 'wrong_unit',
+				unitAtFault: true,
 				parsed: {
 					value: typeof userQuantity.value === 'number' ? userQuantity.value : null,
 					unit: userUnitStr
@@ -228,6 +247,19 @@ export function validateQuantityAnswer(
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
+
+/**
+ * Message élève quand la saisie normalisée porte une écriture d'unité que le
+ * parseur refuse : ambiguë (`kg/m.s`) ou inconnue (`xyz`). Null si la saisie
+ * n'a pas d'unité ou si l'unité est lisible (l'erreur est alors ailleurs).
+ */
+function unitWritingFeedback(normalizedUser: string): string | null {
+	const writing = extractUnitFromLatex(normalizedUser);
+	if (!writing) return null;
+	if (unitWritingProblem(writing) !== null) return ambiguousUnitMessage(writing);
+	if (parseUnitExpression(writing) === null) return unknownUnitMessage(writing);
+	return null;
+}
 
 /**
  * Check if two units match exactly (same components and coefficient)
