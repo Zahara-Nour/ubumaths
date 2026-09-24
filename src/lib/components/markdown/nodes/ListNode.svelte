@@ -32,10 +32,12 @@
 	import CodeBlock from './CodeBlock.svelte';
 	import VariationTable from './VariationTable.svelte';
 	import ProbabilityTree from './ProbabilityTree.svelte';
+	import TrigCircle from './TrigCircle.svelte';
 	// Self-import for recursive rendering (Svelte 5 pattern)
 	import ListNode from './ListNode.svelte';
 	import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 	import type { ProbabilityTreeNode } from '$lib/ubumark/types/probability-tree';
+	import type { TrigCircleNode } from '$lib/ubumark/types/trig-circle';
 
 	interface Props {
 		ordered: boolean;
@@ -184,6 +186,13 @@
 	}
 
 	/**
+	 * Cercle trigonométrique (```trig en retrait dans un item de liste)
+	 */
+	function isTrigCircleNode(node: ASTNode): node is TrigCircleNode {
+		return node.type === 'trig-circle';
+	}
+
+	/**
 	 * Check if node is a block-level element (for hardbreak removal)
 	 */
 	function isBlockNode(node: ASTNode): boolean {
@@ -195,7 +204,8 @@
 			'table',
 			'horizontal-rule',
 			'variation-table',
-			'probability-tree'
+			'probability-tree',
+			'trig-circle'
 		].includes(node.type);
 	}
 
@@ -307,6 +317,8 @@
 						<VariationTable node={child} />
 					{:else if isProbabilityTreeNode(child)}
 						<ProbabilityTree node={child} />
+					{:else if isTrigCircleNode(child)}
+						<TrigCircle node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
@@ -380,6 +392,8 @@
 						<VariationTable node={child} />
 					{:else if isProbabilityTreeNode(child)}
 						<ProbabilityTree node={child} />
+					{:else if isTrigCircleNode(child)}
+						<TrigCircle node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
