@@ -324,3 +324,19 @@ describe('validateAnswer — écritures relevées par la revue finale', () => {
 		expect(result.isCorrect).toBe(false);
 	});
 });
+
+describe('validateAnswer — chiffres mal groupés : l’unité n’est pas mise en cause', () => {
+	// Relevé par la re-revue : `12\,5\,\mathrm{m}` répondait « Unité inconnue : 5 m. ».
+	// Le groupement est jugé par le contrôle d'espacement, comme pour un nombre seul.
+	it.each(['12\\,5\\mathrm{m}', '12\\,50\\,\\mathrm{m}', '1\\,2\\,5\\mathrm{m}'])(
+		'%s : aucun message « Unité inconnue »',
+		(latex) => {
+			const instance = createInstance([
+				{ expectedAnswer: '125\\unit{m}', type: 'math', unit: { expected: true } }
+			]);
+			const result = validateAnswer([latex], instance, [latex]);
+			expect(result.feedback ?? '').not.toMatch(/Unité inconnue/);
+			expect(normalizeStudentQuantity(latex)).toMatch(/^\d+\\unit\{m\}$/);
+		}
+	);
+});

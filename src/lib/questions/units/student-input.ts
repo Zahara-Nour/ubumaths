@@ -42,9 +42,11 @@ const DEGREE_PATTERN =
  * Tête numérique : signe, entier ou décimal (virgule ou point), puis
  * éventuellement `\cdot 10^{n}` / `\times 10^{n}` (notation scientifique).
  */
-// Milliers séparés par une espace (`12 500`, après remplacement de `\,`) avant
-// l'entier nu : sinon `12\,500 m` se coupait après 12 (« Unité inconnue : 500 m »)
-const NUMBER_SOURCE = String.raw`[+-]?(?:\d{1,3}(?: \d{3})+|\d+)(?:[.,]\d+)?`;
+// Chiffres séparés par des espaces (`12 500`, après remplacement de `\,`) : tous
+// dans la tête, bien ou mal groupés. Sinon `12\,500 m` se coupait après 12
+// (« Unité inconnue : 500 m ») ; le groupement est jugé par le contrôle
+// d'espacement, comme pour un nombre seul.
+const NUMBER_SOURCE = String.raw`[+-]?\d+(?: \d+)*(?:[.,]\d+)?`;
 const SCIENTIFIC_SOURCE = String.raw`\s*(?:\\cdot|\\times)\s*10\^(?:\{[+-]?\d+\}|[+-]?\d)`;
 const NUMERIC_HEAD = new RegExp(String.raw`^\s*(${NUMBER_SOURCE}(?:${SCIENTIFIC_SOURCE})?)`);
 
