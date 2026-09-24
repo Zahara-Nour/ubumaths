@@ -276,3 +276,67 @@ describe('validateAnswer — trou à unité (pipeline complet)', () => {
 		expect(result.isCorrect).toBe(false);
 	});
 });
+
+// ============================================================================
+// REVUE DE FIN DE CHANTIER (2026-09-24) — réponses justes refusées
+// ============================================================================
+
+describe('validateAnswer — écritures relevées par la revue finale', () => {
+	// Décimaux : la valeur était juste, mais le contrôle de forme lisait `2,5`
+	// (forme normalisée) au lieu de `2{,}5` et répondait « bad_form ».
+	// Produits d'unités tapés au clavier « Unités » : `\mathrm{m}\cdot\mathrm{s}`
+	// se recollait en `m\cdots` (« Unité inconnue »). Milliers espacés : `12\,500`
+	// était coupé après 12 (« Unité inconnue : 500 m »).
+	it.each([
+		['2{,}5\\mathrm{km}', '2.5\\unit{km}'],
+		['1{,}5\\mathrm{h}', '90\\unit{min}'],
+		['12{,}5\\operatorname{\\mathrm{kg}}', '12.5\\unit{kg}'],
+		['3\\mathrm{m}\\cdot\\mathrm{s}^{-1}', '3\\unit{m.s^{-1}}'],
+		['3\\mathrm{m}\\times\\mathrm{s}', '3\\unit{m.s}'],
+		['5\\frac{\\mathrm{kg}}{\\mathrm{m}\\cdot\\mathrm{s}}', '5\\unit{kg/(m.s)}'],
+		['12\\,500\\,\\mathrm{m}', '12500\\unit{m}'],
+		['1\\,000\\operatorname{\\mathrm{m}}', '1000\\unit{m}'],
+		['5\\euro', '5\\unit{€}']
+	])('%s est juste pour %s', (latex, expected) => {
+		const instance = createInstance([
+			{ expectedAnswer: expected, type: 'math', unit: { expected: true } }
+		]);
+		const result = validateAnswer([latex], instance, [latex]);
+		expect(result.isCorrect, `${latex} → ${result.status} ${result.feedback ?? ''}`).toBe(true);
+	});
+
+	it('question à deux blancs : un décimal juste ne reçoit aucun message', () => {
+		const instance = createInstance([
+			{ expectedAnswer: '3', type: 'math' },
+			{ expectedAnswer: '2.5\\unit{km}', type: 'math', unit: { expected: true } }
+		]);
+		const answers = ['3', '2{,}5\\mathrm{km}'];
+		const result = validateAnswer(answers, instance, answers);
+		expect(result.isCorrect).toBe(true);
+		expect(result.blankFeedback?.[1]).toBeUndefined();
+	});
+
+	it('une vraie erreur de valeur décimale reste fausse', () => {
+		const instance = createInstance([
+			{ expectedAnswer: '2.5\\unit{km}', type: 'math', unit: { expected: true } }
+		]);
+		const result = validateAnswer(['2{,}6\\mathrm{km}'], instance, ['2{,}6\\mathrm{km}']);
+		expect(result.isCorrect).toBe(false);
+	});
+});
+
+describe('validateAnswer — chiffres mal groupés : l’unité n’est pas mise en cause', () => {
+	// Relevé par la re-revue : `12\,5\,\mathrm{m}` répondait « Unité inconnue : 5 m. ».
+	// Le groupement est jugé par le contrôle d'espacement, comme pour un nombre seul.
+	it.each(['12\\,5\\mathrm{m}', '12\\,50\\,\\mathrm{m}', '1\\,2\\,5\\mathrm{m}'])(
+		'%s : aucun message « Unité inconnue »',
+		(latex) => {
+			const instance = createInstance([
+				{ expectedAnswer: '125\\unit{m}', type: 'math', unit: { expected: true } }
+			]);
+			const result = validateAnswer([latex], instance, [latex]);
+			expect(result.feedback ?? '').not.toMatch(/Unité inconnue/);
+			expect(normalizeStudentQuantity(latex)).toMatch(/^\d+\\unit\{m\}$/);
+		}
+	);
+});

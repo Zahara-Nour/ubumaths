@@ -29,7 +29,7 @@ import {
 	type ConstraintSeverity
 } from '$lib/mathAST/cosmetic-transforms';
 import { extractUnitFromLatex } from '$lib/questions/units/parser';
-import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
+import { normalizeStudentQuantity, studentNumericLatex } from '$lib/questions/units/student-input';
 import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
 import { checkRequiredForm, getRequiredFormFeedback } from '$lib/questions/required-form-validator';
@@ -745,7 +745,11 @@ function validateSingleBlank(
 	if (blank.unit?.expected) {
 		// Saisie MathLive (`5\operatorname{\mathrm{km}}`…) ramenée à `valeur\unit{…}`
 		// avant d'isoler la partie numérique, comme à l'étape 2.
-		const numericLatex = extractNumericLatexPart(normalizeStudentQuantity(effectiveLatex));
+		// Partie numérique telle que tapée (`2{,}5`, `12\\,500`) : la forme normalisée
+		// (`2,5`, `12500`) serait refusée ou jugée mal espacée par le contrôle de forme
+		const numericLatex =
+			studentNumericLatex(effectiveLatex) ??
+			extractNumericLatexPart(normalizeStudentQuantity(effectiveLatex));
 		const raw = cosmeticViolations(numericLatex, severities, formOptions);
 		const { status, violations } = mapCosmeticViolations(raw, false);
 

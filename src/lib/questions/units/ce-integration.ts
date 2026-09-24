@@ -19,6 +19,7 @@ import { evaluateExpression } from '$lib/math';
 import type { Unit, Quantity } from './types';
 import { parseLatexQuantity, parseUnitExpression } from './parser';
 import { unitsAreCompatible, getConversionFactor, createUnit } from './operations';
+import { convertAffine } from '$lib/mathAST/units/conversion';
 
 // ============================================================================
 // TYPES
@@ -247,9 +248,15 @@ export function compareQuantities(
 		};
 	}
 
-	// Convert user value to expected unit for comparison
-	const conversionFactor = getConversionFactor(userQuantity.unit, expectedQuantity.unit);
-	if (conversionFactor === null) {
+	// Convert user value to expected unit for comparison.
+	// Conversion affine (°C, °F) comprise : un simple facteur multiplicatif est
+	// nul pour une unité à décalage, et TOUTE réponse en °C était refusée.
+	const userValueInExpectedUnit = convertAffine(
+		userValue,
+		userQuantity.unit,
+		expectedQuantity.unit
+	);
+	if (userValueInExpectedUnit === null) {
 		// Should not happen since we checked compatibility above
 		return {
 			isEqual: false,
@@ -260,8 +267,6 @@ export function compareQuantities(
 			error: 'incompatible_units'
 		};
 	}
-
-	const userValueInExpectedUnit = userValue * conversionFactor;
 
 	// Compare values with tolerance
 	const isEqual = compareValuesWithTolerance(userValueInExpectedUnit, expectedValue, tolerance);
@@ -294,6 +299,9 @@ function evaluateValueFromQuantity(quantity: Quantity): number | null {
 
 	return null;
 }
+
+/** Bruit relatif des flottants toléré quand aucune tolérance n'est demandée */
+const FLOAT_NOISE = 1e-9;
 
 /**
  * Compare two numeric values with optional tolerance
@@ -338,9 +346,12 @@ function compareValuesWithTolerance(
 		}
 	}
 
-	// If no tolerance specified, require exact equality
+	// Sans tolérance : égalité, au bruit des flottants près. Une conversion
+	// (1000 cm³ → L, 68 °F → °C) rend 1.0000000000000002 ou 20.000000000000057 ;
+	// l'égalité stricte refusait ces réponses justes. 1e-9 en relatif n'absorbe
+	// que ce bruit : 20,001 °C contre 20 °C reste faux.
 	if (!tolerance?.absolute && !tolerance?.relative) {
-		return actual === expected;
+		return Math.abs(actual - expected) <= FLOAT_NOISE * Math.max(1, Math.abs(expected));
 	}
 
 	return false;

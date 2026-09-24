@@ -42,7 +42,11 @@ const DEGREE_PATTERN =
  * Tête numérique : signe, entier ou décimal (virgule ou point), puis
  * éventuellement `\cdot 10^{n}` / `\times 10^{n}` (notation scientifique).
  */
-const NUMBER_SOURCE = String.raw`[+-]?\d+(?:[.,]\d+)?`;
+// Chiffres séparés par des espaces (`12 500`, après remplacement de `\,`) : tous
+// dans la tête, bien ou mal groupés. Sinon `12\,500 m` se coupait après 12
+// (« Unité inconnue : 500 m ») ; le groupement est jugé par le contrôle
+// d'espacement, comme pour un nombre seul.
+const NUMBER_SOURCE = String.raw`[+-]?\d+(?: \d+)*(?:[.,]\d+)?`;
 const SCIENTIFIC_SOURCE = String.raw`\s*(?:\\cdot|\\times)\s*10\^(?:\{[+-]?\d+\}|[+-]?\d)`;
 const NUMERIC_HEAD = new RegExp(String.raw`^\s*(${NUMBER_SOURCE}(?:${SCIENTIFIC_SOURCE})?)`);
 
@@ -87,7 +91,9 @@ function unwrapCommands(str: string): string {
 	while (match !== null) {
 		const group = readGroup(result, match.index + match[0].length);
 		if (!group) break;
-		result = result.slice(0, match.index) + group.content + result.slice(group.end);
+		// Une espace de chaque côté : `\mathrm{m}\cdot\mathrm{s}` ne doit pas se
+		// recoller en `m\cdots` (commande inconnue)
+		result = result.slice(0, match.index) + ` ${group.content} ` + result.slice(group.end);
 		match = pattern.exec(result);
 	}
 	return result;
@@ -137,6 +143,55 @@ function cleanUnitWriting(writing: string): string {
 // FONCTION PRINCIPALE
 // ============================================================================
 
+/** Une saisie découpée : tête numérique (telle que tapée, espaces comprises) et unité */
+interface StudentQuantityParts {
+	head: string;
+	writing: string;
+}
+
+/**
+ * Découpe la saisie d'un élève (trou à unité) en tête numérique et écriture
+ * d'unité nettoyée ; null si ce n'est pas un nombre suivi d'une unité.
+ */
+function splitStudentQuantity(latex: string): StudentQuantityParts | null {
+	// Habillages et notations sans ambiguïté
+	const cleaned = unwrapCommands(latex)
+		.replace(/\{,\}/g, ',')
+		// Groupe vide : support du degré (`{}^{\circ}`, forme affichée de °) ou
+		// séparateur anti-espacement (`1{}000`) ; il ne porte aucun sens
+		.replace(/\{\s*\}/g, '')
+		.replace(/\\min(?![A-Za-z])/g, 'min')
+		.replace(/\\euro(?![A-Za-z])/g, '€')
+		.replace(DEGREE_PATTERN, '°')
+		.replace(SPACING_PATTERN, ' ')
+		.replace(/°\s+/g, '°')
+		.replace(/ {2,}/g, ' ')
+		.trim();
+
+	// MathLive range le nombre DANS le numérateur : \frac{90km}{h} = 90 km/h
+	const fraction = splitWholeFraction(cleaned);
+	if (fraction) {
+		const numeratorHead = fraction.numerator.trim().match(NUMERIC_HEAD);
+		if (numeratorHead) {
+			const numeratorUnit = fraction.numerator.trim().slice(numeratorHead[0].length).trim();
+			if (UNIT_CHARACTER.test(numeratorUnit)) {
+				return {
+					head: numeratorHead[1].trim(),
+					writing: cleanUnitWriting(`\\frac{${numeratorUnit}}{${fraction.denominator}}`)
+				};
+			}
+		}
+	}
+
+	const head = cleaned.match(FRACTION_HEAD) ?? cleaned.match(NUMERIC_HEAD);
+	if (!head) return null;
+
+	const rest = cleaned.slice(head[0].length).trim();
+	if (!UNIT_CHARACTER.test(rest)) return null;
+
+	return { head: head[1].trim(), writing: cleanUnitWriting(rest) };
+}
+
 /**
  * Ramène la saisie LaTeX d'un élève (trou à unité) à `valeur\unit{écriture}`.
  *
@@ -144,13 +199,14 @@ function cleanUnitWriting(writing: string): string {
  * - déjà canonique (contient `\unit{`) → rendue telle quelle (espaces de bord retirées) ;
  * - pas de tête numérique, ou rien qui ressemble à une unité après elle
  *   (`5`, `2+3`, `x`) → rendue telle quelle (sans dimension pour le parseur) ;
- * - sinon → `tête\unit{écriture}`, l'écriture étant nettoyée mais jamais
+ * - sinon → `valeur\unit{écriture}`, la valeur en écriture simple (`12500`,
+ *   `2,5` : ce que lit `parseLatexQuantity`), l'écriture nettoyée mais jamais
  *   réinterprétée : c'est `parseLatexQuantity` qui accepte ou refuse.
  *
  * @example
  * normalizeStudentQuantity('5\\operatorname{\\mathrm{km}}') // '5\\unit{km}'
  * normalizeStudentQuantity('\\frac{90\\operatorname{\\mathrm{km}}}{h}') // '90\\unit{km/h}'
- * normalizeStudentQuantity('20\\degree C') // '20\\unit{°C}'
+ * normalizeStudentQuantity('12\\,500\\,\\mathrm{m}') // '12500\\unit{m}'
  * normalizeStudentQuantity('5ms') // '5\\unit{ms}' (milliseconde)
  */
 export function normalizeStudentQuantity(latex: string): string {
@@ -158,33 +214,20 @@ export function normalizeStudentQuantity(latex: string): string {
 	const original = latex.trim();
 	if (original === '' || original.includes('\\unit{')) return original;
 
-	// Habillages et notations sans ambiguïté
-	const cleaned = unwrapCommands(original)
-		.replace(/\{,\}/g, ',')
-		.replace(/\\min(?![A-Za-z])/g, 'min')
-		.replace(DEGREE_PATTERN, '°')
-		.replace(SPACING_PATTERN, ' ')
-		.replace(/°\s+/g, '°')
-		.trim();
+	const parts = splitStudentQuantity(original);
+	if (!parts) return original;
+	return `${parts.head.replace(/ /g, '')}\\unit{${parts.writing}}`;
+}
 
-	// MathLive range le nombre DANS le numérateur : \frac{90km}{h} = 90 km/h
-	const fraction = splitWholeFraction(cleaned);
-	if (fraction) {
-		const numeratorHead = fraction.numerator.match(NUMERIC_HEAD);
-		if (numeratorHead) {
-			const numeratorUnit = fraction.numerator.slice(numeratorHead[0].length).trim();
-			if (UNIT_CHARACTER.test(numeratorUnit)) {
-				const writing = cleanUnitWriting(`\\frac{${numeratorUnit}}{${fraction.denominator}}`);
-				return `${numeratorHead[1].trim()}\\unit{${writing}}`;
-			}
-		}
-	}
-
-	const head = cleaned.match(FRACTION_HEAD) ?? cleaned.match(NUMERIC_HEAD);
-	if (!head) return original;
-
-	const rest = cleaned.slice(head[0].length).trim();
-	if (!UNIT_CHARACTER.test(rest)) return original;
-
-	return `${head[1].trim()}\\unit{${cleanUnitWriting(rest)}}`;
+/**
+ * La partie numérique de la saisie d'un élève (trou à unité), en LaTeX, pour
+ * le contrôle de FORME : `2{,}5`, `12\\,500` — et non `2,5` ou `12500`, que le
+ * contrôle de forme refuse ou juge mal espacés. Null si la saisie n'est pas un
+ * nombre suivi d'une unité (l'appelant garde alors son propre découpage).
+ */
+export function studentNumericLatex(latex: string): string | null {
+	if (typeof latex !== 'string' || latex.includes('\\unit{')) return null;
+	const parts = splitStudentQuantity(latex.trim());
+	if (!parts) return null;
+	return parts.head.replace(/,/g, '{,}').replace(/ /g, '\\,');
 }

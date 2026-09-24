@@ -39,6 +39,7 @@
 		replacePromptsWithPrefilled
 	} from '$lib/components/markdown/utils/math-utils';
 	import { toFrenchDecimal } from '$lib/utils/french-math';
+	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
 	import type { BlockNode, InlineNode } from '$lib/ubumark';
 
 	// Node components (reuse from MarkdownRenderer)
@@ -200,6 +201,60 @@
 		);
 	});
 
+	// Touches de l'onglet « Unités » : seulement quand l'élève peut répondre à un trou à unité
+	let unitKeys = $derived.by(() => {
+		if (flashMode || effectiveDisabled) return [];
+		const unitBlanks = blanks.filter((blank) => blank.type === 'math' && blank.unit?.expected);
+		return unitKeysFor(
+			unitBlanks.map((blank) => blank.expectedAnswer),
+			unitBlanks.map((blank) => blank.unit?.required)
+		);
+	});
+
+	let container: HTMLDivElement | undefined = $state();
+
+	/**
+	 * Onglet « Unités » du clavier virtuel MathLive.
+	 *
+	 * Le clavier est un singleton global (`window.mathVirtualKeyboard`) partagé
+	 * par tous les champs de la page : l'onglet est ajouté quand le focus ENTRE
+	 * dans cette question et retiré quand il en SORT (ou au démontage). Une autre
+	 * question, un autre champ MathLive, retrouvent ainsi le clavier par défaut.
+	 * `focusin`/`focusout` remontent depuis le shadow DOM du math-field ; les
+	 * touches du clavier virtuel ne prennent pas le focus, donc ne le font pas sortir.
+	 */
+	$effect(() => {
+		const element = container;
+		if (!element || unitKeys.length === 0) return;
+
+		const layout = buildUnitsKeyboardLayout(unitKeys);
+		let applied = false;
+
+		const restoreDefault = () => {
+			if (!applied) return;
+			applied = false;
+			const keyboard = window.mathVirtualKeyboard;
+			if (keyboard) keyboard.layouts = 'default';
+		};
+		const addUnitsTab = () => {
+			const keyboard = window.mathVirtualKeyboard;
+			if (!keyboard) return;
+			keyboard.layouts = ['default', layout];
+			applied = true;
+		};
+
+		element.addEventListener('focusin', addUnitsTab);
+		element.addEventListener('focusout', restoreDefault);
+		// Déjà focalisé quand l'onglet change (unités recalculées) : l'appliquer tout de suite
+		if (element.contains(document.activeElement)) addUnitsTab();
+
+		return () => {
+			element.removeEventListener('focusin', addUnitsTab);
+			element.removeEventListener('focusout', restoreDefault);
+			restoreDefault();
+		};
+	});
+
 	// Build correctValues map for MathPrompt pre-fill (flash back mode)
 	let mathCorrectValues = $derived.by(() => {
 		if (!showCorrectAnswers) return undefined;
@@ -277,7 +332,7 @@
 	}
 </script>
 
-<div class="fill-blanks-container">
+<div class="fill-blanks-container" bind:this={container}>
 	{#if augmentedAST}
 		{#each augmentedAST.children as node, i (i)}
 			{#if node.type === 'paragraph'}
@@ -349,8 +404,8 @@
 		{/each}
 	{/if}
 
-	<!-- Messages par trou (après correction) -->
-	<div role="status" aria-live="polite" aria-label="Messages par trou">
+	<!-- Messages par blanc (après correction) -->
+	<div role="status" aria-live="polite" aria-label="Messages par blanc">
 		{#if blankMessages.length > 0}
 			<ul class="mt-2 space-y-1 text-sm text-destructive">
 				{#each blankMessages as { blankNumber, message } (blankNumber)}
