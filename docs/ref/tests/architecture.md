@@ -102,7 +102,7 @@ Le **suffixe** est la seule chose qui route un test vers le bon runner. À respe
 
 - **Options de test** en 2ᵉ argument (`it('nom', { timeout: 30000 }, fn)`) ou un nombre en 3ᵉ ; un objet en 3ᵉ argument fait échouer tout le fichier.
 - **Helpers de test** : importer par l'alias `$tests/helpers`, jamais `'tests/helpers'` (résolu par hasard en vitest 3, inconnu en 4).
-- **Ne pas étaler le résultat de `render`** (`{ ...view, champ }`) dans un objet rendu par une fonction `async` : depuis `vitest-browser-svelte` 2.1, `render` porte un `then`, et l'`await` de l'appelant rend alors le résultat brut de `render`, sans les champs ajoutés. Rendre explicitement ce que le helper expose.
+- **`render` est asynchrone** (`vitest-browser-svelte` 3, depuis 2026-09-25) : toujours `await render(…)`, et `await unmount()` / `await rerender(…)`. Un helper qui appelle `render` devient `async`, et ses appels sont attendus. ⚠️ Un `render` oublié sans `await` monte quand même le composant (le montage précède le premier `await`) : **aucun test ne rougira**, seule la relecture ou un grep le voit.
 - **MathLive** : garder `await import('mathlive')` dans les tests client (un import statique passe en vitest 4 mais produit des erreurs SSR au démontage).
 
 ---

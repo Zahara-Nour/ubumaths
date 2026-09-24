@@ -36,10 +36,9 @@ async function open(atelier = new Atelier()) {
 		await settle();
 	}
 
-	// ⚠️ Ne pas étaler `view` : depuis vitest-browser-svelte 2.1, le résultat de
-	// `render` porte un `then`. Étalé ici puis rendu par un helper `async`
-	// (`clickAction`), il est déballé par l'`await` de l'appelant, qui reçoit
-	// alors le résultat brut de `render` — sans `field` ni `atelier`.
+	// On rend explicitement ce que le helper expose, sans étaler `view`
+	// (en vitest-browser-svelte 2.x, l'étalement copiait un `then` qui faisait
+	// perdre `field` et `atelier` à l'`await` de l'appelant).
 	return { container: view.container, atelier, field, type, submit };
 }
 
