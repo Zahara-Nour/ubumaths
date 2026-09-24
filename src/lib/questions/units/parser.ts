@@ -13,9 +13,8 @@
  */
 
 import type { Unit, Quantity } from './types';
-import { createUnit, multiplyUnits, divideUnits, powerUnit, dimensionlessUnit } from './operations';
-import { resolveUnit } from './definitions';
-import { tokenize, type Token } from './tokenizer';
+import { dimensionlessUnit } from './operations';
+import { parse as parseUnit } from '$lib/mathAST/units/parser';
 
 // ============================================================================
 // LATEX PATTERNS
@@ -176,13 +175,13 @@ function extractValue(latex: string): number | string | null {
 /**
  * Parse a unit expression string into a Unit type
  *
- * Uses the tokenizer to break down the expression and builds the Unit
- * using operations (multiply, divide, power).
+ * Une seule règle pour toute l'application : la lecture est déléguée à
+ * `mathAST/units/parser.ts` (référence : `docs/ref/notation-unites.md`). Seuls
+ * les exposants Unicode (`m²`, `s⁻¹`), que MathLive ou un clavier peuvent
+ * produire, sont d'abord convertis en `^n`, ainsi que `·` et `×` en `*`.
  *
- * Precedence rules:
- * - ^ (power) highest
- * - *, ., x (multiply)
- * - / (divide) - applies to next unit only: a/b.c = (a/b).c
+ * Portée du `/` : il porte sur le symbole qui le suit ou sur un groupe entre
+ * parenthèses. `kg/m.s` est ambigu et REFUSÉ (`null`) : écrire `kg/(m.s)`.
  *
  * @param unitStr - Unit expression string (e.g., "km/h", "m.s^-2", "kg.m^2.s^-2")
  * @returns Parsed Unit or null if parsing fails
@@ -194,311 +193,18 @@ function extractValue(latex: string): number | string | null {
  * @example Composite units
  * parseUnitExpression('km/h') // km.h^-1
  * parseUnitExpression('m.s^-2') // m.s^-2
- * parseUnitExpression('m/s^2') // m.s^-2
+ * parseUnitExpression('m²') // m^2
+ * parseUnitExpression('kg/m.s') // null (ambigu)
  */
 export function parseUnitExpression(unitStr: string): Unit | null {
 	if (!unitStr || unitStr.trim() === '') {
 		return null;
 	}
 
-	// Normalize the string
-	let normalized = unitStr.trim();
+	// Exposants Unicode → ^n, `·` → `*` ; `×` → `*` (inconnu de mathAST)
+	const normalized = normalizeSuperscripts(unitStr.trim()).replace(/\u00d7/g, '*');
 
-	// Convert Unicode superscripts to ^n notation
-	normalized = normalizeSuperscripts(normalized);
-
-	// Normalize multiplication operators
-	normalized = normalized.replace(/\u00d7/g, '*'); // ×
-	normalized = normalized.replace(/\u00b7/g, '*'); // ·
-	normalized = normalized.replace(/\./g, '*'); // .
-
-	try {
-		// Use tokenizer to break down the expression
-		const tokens = tokenize(normalized);
-		return parseTokensToUnit(tokens);
-	} catch {
-		// Fallback: try simple parsing without tokenizer
-		return parseUnitExpressionSimple(normalized);
-	}
-}
-
-/**
- * Parse tokens into a Unit
- *
- * Implements operator precedence:
- * 1. ^ (power) - handled during token processing
- * 2. * (multiply) and / (divide)
- *
- * Division applies only to the immediately following term:
- * a/b*c = (a/b)*c, not a/(b*c)
- *
- * @param tokens - Array of tokens from tokenizer
- * @returns Parsed Unit
- */
-function parseTokensToUnit(tokens: Token[]): Unit {
-	// Filter out EOF tokens
-	const filteredTokens = tokens.filter((t) => t.type !== 'EOF');
-
-	if (filteredTokens.length === 0) {
-		throw new Error('No valid unit tokens found');
-	}
-
-	let result = dimensionlessUnit();
-	let pendingDivide = false;
-	let i = 0;
-
-	while (i < filteredTokens.length) {
-		const token = filteredTokens[i];
-
-		if (token.type === 'UNIT') {
-			// Resolve and create unit from symbol
-			const unitDef = resolveUnit(token.value);
-			if (!unitDef) {
-				throw new Error(`Unknown unit: ${token.value}`);
-			}
-
-			// Create unit directly from resolved definition (avoid redundant resolve call).
-			//
-			// ⚠️ Les unités dérivées (N, J, W, ha, L, ...) portent un `components`
-			// qui donne leur signature SI complète. L'ignorer et poser
-			// `baseSymbol^1` réduisait l'hectare à `{ m: 1 }` et le newton à
-			// `{ g: 1 }` : `1 ha + 1 m^2` était déclaré impossible à additionner.
-			// Le défaut ne se voyait pas quand les deux côtés étaient également
-			// faux (`N + N`). Même expansion que `mathAST/units/parser.ts:276`.
-			let unit: Unit = {
-				components: unitDef.components
-					? new Map(unitDef.components)
-					: new Map([[unitDef.baseSymbol, 1]]),
-				coefficient: unitDef.coefficient
-			};
-
-			// Check for following EXPONENT token (superscript) or ^ operator
-			if (i + 1 < filteredTokens.length) {
-				const nextToken = filteredTokens[i + 1];
-
-				// Handle superscript exponent (EXPONENT token)
-				if (nextToken.type === 'EXPONENT') {
-					const exp = parseFloat(nextToken.value);
-					if (isNaN(exp)) {
-						throw new Error(`Invalid exponent: ${nextToken.value}`);
-					}
-					unit = powerUnit(unit, exp);
-					i += 1; // Skip exponent
-				}
-				// Handle caret exponent (^ operator followed by NUMBER)
-				else if (nextToken.type === 'OPERATOR' && nextToken.value === '^') {
-					if (i + 2 < filteredTokens.length && filteredTokens[i + 2].type === 'NUMBER') {
-						const exp = parseFloat(filteredTokens[i + 2].value);
-						if (isNaN(exp)) {
-							throw new Error(`Invalid exponent: ${filteredTokens[i + 2].value}`);
-						}
-						unit = powerUnit(unit, exp);
-						i += 2; // Skip ^ and exponent
-					}
-				}
-			}
-
-			// Apply pending divide or multiply
-			if (pendingDivide) {
-				result = divideUnits(result, unit);
-				pendingDivide = false;
-			} else {
-				result = multiplyUnits(result, unit);
-			}
-		} else if (token.type === 'OPERATOR' || token.type === 'DOT') {
-			if (token.value === '/') {
-				pendingDivide = true;
-			} else if (
-				token.value === '*' ||
-				token.value === '.' ||
-				token.value === '\u00b7' ||
-				token.value === '\u00d7'
-			) {
-				pendingDivide = false;
-			}
-			// ^ is handled with units
-		} else if (token.type === 'NUMBER') {
-			// Standalone number (coefficient) - typically at the start
-			// For now, ignore standalone numbers in unit expressions
-		} else if (token.type === 'LPAREN') {
-			// Find matching rparen and parse recursively
-			const closingIndex = findMatchingParen(filteredTokens, i);
-			if (closingIndex === -1) {
-				throw new Error('Unmatched parenthesis');
-			}
-
-			const innerTokens = filteredTokens.slice(i + 1, closingIndex);
-			let innerUnit = parseTokensToUnit(innerTokens);
-
-			// Check for power after closing paren (EXPONENT or ^)
-			if (closingIndex + 1 < filteredTokens.length) {
-				const afterParen = filteredTokens[closingIndex + 1];
-
-				if (afterParen.type === 'EXPONENT') {
-					const exp = parseFloat(afterParen.value);
-					if (isNaN(exp)) {
-						throw new Error(`Invalid exponent: ${afterParen.value}`);
-					}
-					innerUnit = powerUnit(innerUnit, exp);
-					i = closingIndex + 1;
-				} else if (afterParen.type === 'OPERATOR' && afterParen.value === '^') {
-					if (
-						closingIndex + 2 < filteredTokens.length &&
-						filteredTokens[closingIndex + 2].type === 'NUMBER'
-					) {
-						const exp = parseFloat(filteredTokens[closingIndex + 2].value);
-						if (isNaN(exp)) {
-							throw new Error(`Invalid exponent: ${filteredTokens[closingIndex + 2].value}`);
-						}
-						innerUnit = powerUnit(innerUnit, exp);
-						i = closingIndex + 2;
-					} else {
-						i = closingIndex;
-					}
-				} else {
-					i = closingIndex;
-				}
-			} else {
-				i = closingIndex;
-			}
-
-			// Apply pending divide or multiply
-			if (pendingDivide) {
-				result = divideUnits(result, innerUnit);
-				pendingDivide = false;
-			} else {
-				result = multiplyUnits(result, innerUnit);
-			}
-		}
-
-		i++;
-	}
-
-	return result;
-}
-
-/**
- * Find the index of the matching closing parenthesis
- *
- * @param tokens - Token array
- * @param openIndex - Index of the opening parenthesis
- * @returns Index of matching closing paren, or -1 if not found
- */
-function findMatchingParen(tokens: Token[], openIndex: number): number {
-	let depth = 1;
-	for (let i = openIndex + 1; i < tokens.length; i++) {
-		if (tokens[i].type === 'LPAREN') {
-			depth++;
-		} else if (tokens[i].type === 'RPAREN') {
-			depth--;
-			if (depth === 0) {
-				return i;
-			}
-		}
-	}
-	return -1;
-}
-
-/**
- * Simple fallback parser for unit expressions
- *
- * Used when tokenizer is not available or fails.
- * Handles basic patterns like "km/h", "m.s^-2".
- *
- * @param str - Normalized unit string
- * @returns Parsed Unit or null
- */
-function parseUnitExpressionSimple(str: string): Unit | null {
-	// Handle fraction: a/b
-	if (str.includes('/')) {
-		const slashIndex = str.indexOf('/');
-		const numPart = str.slice(0, slashIndex).trim();
-		const denPart = str.slice(slashIndex + 1).trim();
-
-		const numerator = parseUnitProduct(numPart);
-		const denominator = parseUnitProduct(denPart);
-
-		if (!numerator || !denominator) {
-			return null;
-		}
-
-		return divideUnits(numerator, denominator);
-	}
-
-	// Handle product: a*b or a.b
-	return parseUnitProduct(str);
-}
-
-/**
- * Parse a product of units (e.g., 'kg*m*m' or 'kg.m.m')
- *
- * @param str - Unit product string
- * @returns Parsed Unit or null
- */
-function parseUnitProduct(str: string): Unit | null {
-	if (!str || str === '1') {
-		return dimensionlessUnit();
-	}
-
-	// Remove parentheses
-	str = str.replace(/^\(|\)$/g, '');
-
-	// Split on multiplication operators
-	const parts = str.split(/[*]/);
-	let result = dimensionlessUnit();
-
-	for (const part of parts) {
-		const trimmed = part.trim();
-		if (!trimmed) continue;
-
-		const unit = parseUnitWithExponent(trimmed);
-		if (!unit) {
-			return null;
-		}
-
-		result = multiplyUnits(result, unit);
-	}
-
-	return result;
-}
-
-/**
- * Parse a single unit with optional exponent (e.g., 'm^2', 's^-1')
- *
- * @param str - Single unit string
- * @returns Parsed Unit or null
- */
-function parseUnitWithExponent(str: string): Unit | null {
-	// Check for exponent
-	const caretIndex = str.indexOf('^');
-
-	if (caretIndex !== -1) {
-		const symbol = str.slice(0, caretIndex).trim();
-		const expStr = str.slice(caretIndex + 1).trim();
-
-		// Remove braces from exponent if present
-		const cleanExp = expStr.replace(/^\{|\}$/g, '');
-		const exponent = parseFloat(cleanExp);
-
-		if (isNaN(exponent)) {
-			return null;
-		}
-
-		// Validate unit symbol
-		if (!resolveUnit(symbol)) {
-			return null;
-		}
-
-		const baseUnit = createUnit(symbol);
-		return powerUnit(baseUnit, exponent);
-	}
-
-	// No exponent - simple unit
-	if (!resolveUnit(str)) {
-		return null;
-	}
-
-	return createUnit(str);
+	return parseUnit(normalized);
 }
 
 // ============================================================================
