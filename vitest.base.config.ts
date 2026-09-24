@@ -18,7 +18,7 @@
  * ```
  */
 
-import type { InlineConfig } from 'vitest';
+import type { InlineConfig } from 'vitest/node';
 
 /**
  * Base test configuration shared by all test configs

@@ -1,5 +1,5 @@
 import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'vitest/config';
+import { defineConfig, type ViteUserConfig } from 'vitest/config';
 import { loadEnv } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { readFileSync } from 'fs';
@@ -22,7 +22,9 @@ const APP_VERSION = pkg.version;
  *
  * See PERFORMANCE_OPTIMIZATIONS.md for detailed explanation
  */
-export default defineConfig(async ({ mode }) => {
+// Retour typé explicitement : sur une fonction `async`, l'inférence ne
+// retrouve pas la bonne surcharge de `defineConfig` (TS2769).
+export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
 	// Load environment variables for server-side code
 	const env = loadEnv(mode, process.cwd(), '');
 	Object.assign(process.env, env);
