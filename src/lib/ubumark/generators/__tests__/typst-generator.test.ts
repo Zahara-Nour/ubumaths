@@ -3255,3 +3255,24 @@ describe('convertLatexToTypstMath - Implicit Multiplication', () => {
 		expect(convertLatexToTypstMath('\\int f(x) dx')).toBe('integral f(x) dif x');
 	});
 });
+
+describe('convertLatexToTypstMath - Lettre grecque collée à une lettre', () => {
+	// 2026-09-24 : `2k\pi` donnait `2k p i` et `r\theta` donnait `r t h e t a` —
+	// le nom grec, collé à la lettre qui précède, était ensuite découpé lettre à
+	// lettre comme un produit implicite.
+	it.each([
+		['2k\\pi', '2k pi'],
+		['r\\theta', 'r theta'],
+		['\\ell=r\\theta', 'ell=r theta'],
+		['a\\alpha', 'a alpha'],
+		['\\frac{\\pi}{3}+2k\\pi', 'frac(pi, 3)+2k pi']
+	])('%s → %s', (latex, typst) => {
+		expect(convertLatexToTypstMath(latex)).toBe(typst);
+	});
+
+	it('après un chiffre ou seul, rien ne change', () => {
+		expect(convertLatexToTypstMath('2\\pi')).toBe('2pi');
+		expect(convertLatexToTypstMath('\\pi')).toBe('pi');
+		expect(convertLatexToTypstMath('k \\pi')).toBe('k pi');
+	});
+});

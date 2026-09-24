@@ -2143,7 +2143,11 @@ export function convertLatexToTypstMath(latex: string): string {
 	];
 	for (const letter of greekLetters) {
 		const regex = new RegExp(`\\\\${letter}(?![a-zA-Z])`, 'g');
-		result = result.replace(regex, letter);
+		// Collé à une lettre (`2k\pi`, `r\theta`), le nom grec formerait `kpi`, que le
+		// produit implicite découpe ensuite en `k p i` : une espace l'en sépare.
+		result = result.replace(regex, (_match, offset: number, str: string) =>
+			offset > 0 && /[a-zA-Z]/.test(str[offset - 1]) ? ` ${letter}` : letter
+		);
 	}
 
 	// Ellipsis (dots) - MUST be before \cdot conversion
