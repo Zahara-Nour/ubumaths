@@ -22,43 +22,43 @@ describe('HintTranslationEditor', () => {
 	];
 
 	it("invite à créer les indices en français quand il n'y en a pas", async () => {
-		render(HintTranslationEditor, { hints: [] });
+		await render(HintTranslationEditor, { hints: [] });
 
 		await expect.element(page.getByText(/Aucun indice à traduire/)).toBeInTheDocument();
 	});
 
 	it("ancre chaque champ sur l'identifiant français", async () => {
-		render(HintTranslationEditor, { hints });
+		await render(HintTranslationEditor, { hints });
 
 		await expect.element(page.getByText('pythagore')).toBeInTheDocument();
 		await expect.element(page.getByText('video')).toBeInTheDocument();
 	});
 
-	it('offre le contenu seulement pour un indice en ligne', () => {
-		const { container } = render(HintTranslationEditor, { hints });
+	it('offre le contenu seulement pour un indice en ligne', async () => {
+		const { container } = await render(HintTranslationEditor, { hints });
 
 		// ubumark porte du texte inline ; une vidéo porte une URL, rien à traduire.
 		expect(container.querySelector('#hint-en-content-pythagore')).not.toBeNull();
 		expect(container.querySelector('#hint-en-content-video')).toBeNull();
 	});
 
-	it('offre la description seulement quand le français en a une', () => {
-		const { container } = render(HintTranslationEditor, { hints });
+	it('offre la description seulement quand le français en a une', async () => {
+		const { container } = await render(HintTranslationEditor, { hints });
 
 		expect(container.querySelector('#hint-en-desc-video')).not.toBeNull();
 		expect(container.querySelector('#hint-en-desc-pythagore')).toBeNull();
 	});
 
-	it("n'offre jamais de champ pour l'identifiant, le type ou le lien", () => {
-		const { container } = render(HintTranslationEditor, { hints });
+	it("n'offre jamais de champ pour l'identifiant, le type ou le lien", async () => {
+		const { container } = await render(HintTranslationEditor, { hints });
 
 		const champs = [...container.querySelectorAll('input, textarea')].map((e) => e.id);
 		expect(champs.length).toBeGreaterThan(0);
 		expect(champs.every((id) => /^hint-en-(title|desc|content)-/.test(id))).toBe(true);
 	});
 
-	it('affiche la traduction déjà saisie', () => {
-		const { container } = render(HintTranslationEditor, {
+	it('affiche la traduction déjà saisie', async () => {
+		const { container } = await render(HintTranslationEditor, {
 			hints,
 			translations: { en: { hints: { pythagore: { title: 'Reminder' } } } }
 		});

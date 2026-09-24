@@ -27,7 +27,7 @@ describe('ListNode — cercle trigonométrique dans un item', () => {
 	it('affiche le cercle et son arc', async () => {
 		const list = parseMarkdown(markdown).children[0] as ListAst;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const screen = render(ListNode as any, {
+		const screen = await render(ListNode as any, {
 			props: { ordered: true, items: list.items }
 		});
 		const el = screen.container;

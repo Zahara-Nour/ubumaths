@@ -45,14 +45,14 @@ describe('ClassCompetenceGrid', () => {
 
 	it('renders competence column headers', async () => {
 		mockFetch(sampleGrid);
-		render(ClassCompetenceGrid, { classId: 'class-1' });
+		await render(ClassCompetenceGrid, { classId: 'class-1' });
 		await expect.element(page.getByText('Chercher')).toBeVisible();
 		await expect.element(page.getByText('Modéliser')).toBeVisible();
 	});
 
 	it('shows freshness chip when last_saisie_at present', async () => {
 		mockFetch(sampleGrid);
-		render(ClassCompetenceGrid, { classId: 'class-1' });
+		await render(ClassCompetenceGrid, { classId: 'class-1' });
 		await expect.element(page.getByText(/Dernière saisie/)).toBeVisible();
 	});
 
@@ -64,7 +64,7 @@ describe('ClassCompetenceGrid', () => {
 			columnSatisfaitPct: {},
 			last_saisie_at: null
 		});
-		render(ClassCompetenceGrid, { classId: 'class-1' });
+		await render(ClassCompetenceGrid, { classId: 'class-1' });
 		await expect
 			.element(page.getByText(`Aucun ${lore.entities.student} dans cette classe.`))
 			.toBeVisible();
@@ -72,7 +72,7 @@ describe('ClassCompetenceGrid', () => {
 
 	it('anonymizes student names in projection mode', async () => {
 		mockFetch(sampleGrid);
-		render(ClassCompetenceGrid, { classId: 'class-1', anonymized: true });
+		await render(ClassCompetenceGrid, { classId: 'class-1', anonymized: true });
 		await expect.element(page.getByText(`${lore.entities.student} 1`)).toBeVisible();
 		await expect.element(page.getByText(`${lore.entities.student} 2`)).toBeVisible();
 	});

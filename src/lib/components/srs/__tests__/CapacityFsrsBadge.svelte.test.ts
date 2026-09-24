@@ -25,14 +25,14 @@ describe('CapacityFsrsBadge', () => {
 	// ========================================================================
 
 	describe('non_commencee — rendu masqué', () => {
-		it('renders nothing for badge=non_commencee', () => {
-			const { container } = render(CapacityFsrsBadge, { badge: 'non_commencee' });
+		it('renders nothing for badge=non_commencee', async () => {
+			const { container } = await render(CapacityFsrsBadge, { badge: 'non_commencee' });
 			// Le composant `{#if badge !== 'non_commencee'}` n'émet aucun span
 			expect(container.querySelector('span')).toBeNull();
 		});
 
-		it('renders nothing for non_commencee even with showLabel=true', () => {
-			const { container } = render(CapacityFsrsBadge, {
+		it('renders nothing for non_commencee even with showLabel=true', async () => {
+			const { container } = await render(CapacityFsrsBadge, {
 				badge: 'non_commencee',
 				showLabel: true
 			});
@@ -45,62 +45,62 @@ describe('CapacityFsrsBadge', () => {
 	// ========================================================================
 
 	describe('a_remedier — badge rouge avec AlertCircle', () => {
-		it('renders the badge', () => {
-			render(CapacityFsrsBadge, { badge: 'a_remedier' });
+		it('renders the badge', async () => {
+			await render(CapacityFsrsBadge, { badge: 'a_remedier' });
 			const badge = page.getByLabelText('À remédier');
 			expect(badge).toBeTruthy();
 		});
 
 		it('applies title="À remédier" attribute', async () => {
-			const { container } = render(CapacityFsrsBadge, { badge: 'a_remedier' });
+			const { container } = await render(CapacityFsrsBadge, { badge: 'a_remedier' });
 			const span = container.querySelector('span[title="À remédier"]');
 			expect(span).not.toBeNull();
 		});
 
-		it('uses red color classes for a_remedier', () => {
-			const { container } = render(CapacityFsrsBadge, { badge: 'a_remedier' });
+		it('uses red color classes for a_remedier', async () => {
+			const { container } = await render(CapacityFsrsBadge, { badge: 'a_remedier' });
 			const span = container.querySelector('span') as HTMLElement;
 			expect(span.className).toContain('text-red-600');
 		});
 	});
 
 	describe('a_renforcer — badge ambre avec RefreshCw', () => {
-		it('renders with title="À renforcer"', () => {
-			const { container } = render(CapacityFsrsBadge, { badge: 'a_renforcer' });
+		it('renders with title="À renforcer"', async () => {
+			const { container } = await render(CapacityFsrsBadge, { badge: 'a_renforcer' });
 			const span = container.querySelector('span[title="À renforcer"]');
 			expect(span).not.toBeNull();
 		});
 
-		it('uses amber color classes', () => {
-			const { container } = render(CapacityFsrsBadge, { badge: 'a_renforcer' });
+		it('uses amber color classes', async () => {
+			const { container } = await render(CapacityFsrsBadge, { badge: 'a_renforcer' });
 			const span = container.querySelector('span') as HTMLElement;
 			expect(span.className).toContain('text-amber-600');
 		});
 	});
 
 	describe('acquise_en_memoire — badge emerald avec CheckCircle', () => {
-		it('renders with title="Acquise"', () => {
-			const { container } = render(CapacityFsrsBadge, { badge: 'acquise_en_memoire' });
+		it('renders with title="Acquise"', async () => {
+			const { container } = await render(CapacityFsrsBadge, { badge: 'acquise_en_memoire' });
 			const span = container.querySelector('span[title="Acquise"]');
 			expect(span).not.toBeNull();
 		});
 
-		it('uses emerald color classes', () => {
-			const { container } = render(CapacityFsrsBadge, { badge: 'acquise_en_memoire' });
+		it('uses emerald color classes', async () => {
+			const { container } = await render(CapacityFsrsBadge, { badge: 'acquise_en_memoire' });
 			const span = container.querySelector('span') as HTMLElement;
 			expect(span.className).toContain('text-emerald-600');
 		});
 	});
 
 	describe('en_apprentissage — badge bleu avec Clock', () => {
-		it('renders with title="En apprentissage"', () => {
-			const { container } = render(CapacityFsrsBadge, { badge: 'en_apprentissage' });
+		it('renders with title="En apprentissage"', async () => {
+			const { container } = await render(CapacityFsrsBadge, { badge: 'en_apprentissage' });
 			const span = container.querySelector('span[title="En apprentissage"]');
 			expect(span).not.toBeNull();
 		});
 
-		it('uses blue color classes', () => {
-			const { container } = render(CapacityFsrsBadge, { badge: 'en_apprentissage' });
+		it('uses blue color classes', async () => {
+			const { container } = await render(CapacityFsrsBadge, { badge: 'en_apprentissage' });
 			const span = container.querySelector('span') as HTMLElement;
 			expect(span.className).toContain('text-blue-600');
 		});
@@ -111,15 +111,15 @@ describe('CapacityFsrsBadge', () => {
 	// ========================================================================
 
 	describe('showLabel', () => {
-		it('hides the label text by default (showLabel undefined)', () => {
-			const { container } = render(CapacityFsrsBadge, { badge: 'a_remedier' });
+		it('hides the label text by default (showLabel undefined)', async () => {
+			const { container } = await render(CapacityFsrsBadge, { badge: 'a_remedier' });
 			// Le span externe contient juste l'icône, pas de span interne avec texte
 			const innerSpan = container.querySelector('span > span');
 			expect(innerSpan).toBeNull();
 		});
 
-		it('shows the label text when showLabel=true', () => {
-			const { container } = render(CapacityFsrsBadge, {
+		it('shows the label text when showLabel=true', async () => {
+			const { container } = await render(CapacityFsrsBadge, {
 				badge: 'a_remedier',
 				showLabel: true
 			});
@@ -128,14 +128,14 @@ describe('CapacityFsrsBadge', () => {
 			expect(innerSpan?.textContent).toBe('À remédier');
 		});
 
-		it('shows different label for each badge when showLabel=true', () => {
+		it('shows different label for each badge when showLabel=true', async () => {
 			const labels: Record<string, string> = {
 				a_renforcer: 'À renforcer',
 				acquise_en_memoire: 'Acquise',
 				en_apprentissage: 'En apprentissage'
 			};
 			for (const [badge, expectedLabel] of Object.entries(labels)) {
-				const { container } = render(CapacityFsrsBadge, {
+				const { container } = await render(CapacityFsrsBadge, {
 					badge: badge as 'a_renforcer' | 'acquise_en_memoire' | 'en_apprentissage',
 					showLabel: true
 				});
@@ -150,22 +150,22 @@ describe('CapacityFsrsBadge', () => {
 	// ========================================================================
 
 	describe('accessibilité', () => {
-		it('sets aria-label to the badge label', () => {
-			const { container } = render(CapacityFsrsBadge, { badge: 'a_remedier' });
+		it('sets aria-label to the badge label', async () => {
+			const { container } = await render(CapacityFsrsBadge, { badge: 'a_remedier' });
 			const span = container.querySelector('span[aria-label]') as HTMLElement;
 			expect(span).not.toBeNull();
 			expect(span.getAttribute('aria-label')).toBe('À remédier');
 		});
 
-		it('aria-label is identical to title for screen readers + tooltip alignment', () => {
-			const { container } = render(CapacityFsrsBadge, { badge: 'a_renforcer' });
+		it('aria-label is identical to title for screen readers + tooltip alignment', async () => {
+			const { container } = await render(CapacityFsrsBadge, { badge: 'a_renforcer' });
 			const span = container.querySelector('span') as HTMLElement;
 			expect(span.getAttribute('aria-label')).toBe('À renforcer');
 			expect(span.getAttribute('title')).toBe('À renforcer');
 		});
 
-		it('icon has aria-hidden=true (decorative)', () => {
-			const { container } = render(CapacityFsrsBadge, { badge: 'a_remedier' });
+		it('icon has aria-hidden=true (decorative)', async () => {
+			const { container } = await render(CapacityFsrsBadge, { badge: 'a_remedier' });
 			const svg = container.querySelector('svg');
 			expect(svg?.getAttribute('aria-hidden')).toBe('true');
 		});
@@ -185,7 +185,7 @@ describe('CapacityFsrsBadge', () => {
 				'non_commencee'
 			] as const;
 			for (const badge of badges) {
-				expect(() => render(CapacityFsrsBadge, { badge })).not.toThrow();
+				expect(async () => await render(CapacityFsrsBadge, { badge })).not.toThrow();
 			}
 		});
 	});

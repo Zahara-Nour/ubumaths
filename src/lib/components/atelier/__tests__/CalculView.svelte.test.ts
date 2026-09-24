@@ -19,8 +19,8 @@ async function settle() {
 	await tick();
 }
 
-function open(atelier = new Atelier()) {
-	const view = render(AtelierContainer, { atelier, ephemeral: true });
+async function open(atelier = new Atelier()) {
+	const view = await render(AtelierContainer, { atelier, ephemeral: true });
 	const field = view.container.querySelector('input[type="text"]') as HTMLInputElement;
 	const form = view.container.querySelector('form') as HTMLFormElement;
 
@@ -36,23 +36,22 @@ function open(atelier = new Atelier()) {
 		await settle();
 	}
 
-	// ⚠️ Ne pas étaler `view` : depuis vitest-browser-svelte 2.1, le résultat de
-	// `render` porte un `then`. Étalé ici puis rendu par un helper `async`
-	// (`clickAction`), il est déballé par l'`await` de l'appelant, qui reçoit
-	// alors le résultat brut de `render` — sans `field` ni `atelier`.
+	// On rend explicitement ce que le helper expose, sans étaler `view`
+	// (en vitest-browser-svelte 2.x, l'étalement copiait un `then` qui faisait
+	// perdre `field` et `atelier` à l'`await` de l'appelant).
 	return { container: view.container, atelier, field, type, submit };
 }
 
 describe('le parcours de la vue Calcul', () => {
-	it('ouvre sur un champ de saisie', () => {
-		const { field } = open();
+	it('ouvre sur un champ de saisie', async () => {
+		const { field } = await open();
 
 		expect(field).toBeTruthy();
 		expect(field.getAttribute('aria-label')).toContain('Calcul');
 	});
 
 	it('crée un objet quand on écrit une définition', async () => {
-		const { atelier, submit, container } = open();
+		const { atelier, submit, container } = await open();
 
 		await submit('f(x) = x^2 - 3x + 1');
 
@@ -65,7 +64,7 @@ describe('le parcours de la vue Calcul', () => {
 	it('évalue une fonction du panneau sans la redéclarer', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2-3x+1' });
-		const { submit, container } = open(atelier);
+		const { submit, container } = await open(atelier);
 
 		await submit('f(2)');
 
@@ -75,7 +74,7 @@ describe('le parcours de la vue Calcul', () => {
 	});
 
 	it('rend une fraction en mathématiques, pas en texte brut', async () => {
-		const { submit, container } = open();
+		const { submit, container } = await open();
 
 		await submit('1/3 + 1/6');
 
@@ -84,7 +83,7 @@ describe('le parcours de la vue Calcul', () => {
 	});
 
 	it('garde un résultat sous un nom proposé', async () => {
-		const { atelier, submit, container } = open();
+		const { atelier, submit, container } = await open();
 		await submit('1/3 + 1/6');
 
 		const garder = [...container.querySelectorAll('button')].find((b) =>
@@ -100,7 +99,7 @@ describe('le parcours de la vue Calcul', () => {
 	});
 
 	it('dit pourquoi quand une saisie est refusée', async () => {
-		const { atelier, submit, container } = open();
+		const { atelier, submit, container } = await open();
 
 		await submit('x = 3');
 
@@ -119,7 +118,7 @@ describe('les actions du panneau répondent vraiment', () => {
 	async function clickAction(label: string) {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2-3x+1' });
-		const view = open(atelier);
+		const view = await open(atelier);
 
 		// Les actions n'apparaissent que sur l'objet SÉLECTIONNÉ : il faut donc
 		// d'abord cliquer la carte, comme le ferait l'élève.
@@ -172,7 +171,7 @@ describe('les actions du panneau répondent vraiment', () => {
 	it('« Statistiques » répond sur une liste', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'list', name: 'L', definition: '12 ; 15 ; 9' });
-		const view = open(atelier);
+		const view = await open(atelier);
 
 		const carte = [...view.container.querySelectorAll('.objet')].find(
 			(el) => el.querySelector('.nom')?.textContent?.trim() === 'L'
@@ -199,7 +198,7 @@ describe('les actions du panneau répondent vraiment', () => {
 
 describe('les commandes se découvrent', () => {
 	it('propose les commandes dès le point', async () => {
-		const { type, container } = open();
+		const { type, container } = await open();
 
 		await type('.');
 
@@ -210,7 +209,7 @@ describe('les commandes se découvrent', () => {
 	});
 
 	it('filtre sur ce qui est tapé', async () => {
-		const { type, container } = open();
+		const { type, container } = await open();
 
 		await type('.dér');
 
@@ -219,7 +218,7 @@ describe('les commandes se découvrent', () => {
 	});
 
 	it('décrit les commandes en français', async () => {
-		const { type, container } = open();
+		const { type, container } = await open();
 
 		await type('.dér');
 
@@ -230,7 +229,7 @@ describe('les commandes se découvrent', () => {
 	// conclut que l'outil ne sait pas faire. Les commandes qui écrivent dans le
 	// moteur sont dans ce cas : dans l'atelier, les noms viennent du panneau.
 	it('désactive une commande indisponible sans la cacher', async () => {
-		const { type, container } = open();
+		const { type, container } = await open();
 
 		await type('.pose');
 
@@ -242,7 +241,7 @@ describe('les commandes se découvrent', () => {
 	// `.taylor` était désactivée tant que le dispatch la tuait sur ses propres
 	// arguments. Le correctif l'a rendue utilisable : elle doit redevenir active.
 	it('propose .taylor, réparée', async () => {
-		const { type, container } = open();
+		const { type, container } = await open();
 
 		await type('.tay');
 
@@ -251,7 +250,7 @@ describe('les commandes se découvrent', () => {
 	});
 
 	it('ne propose plus rien une fois la commande choisie', async () => {
-		const { type, container } = open();
+		const { type, container } = await open();
 
 		await type('.dériver x^2');
 

@@ -15,7 +15,7 @@ function profile(role: 'student' | 'teacher' | 'admin'): Tables<'profiles'> {
 describe('Sidebar (Outils libres)', () => {
 	describe('items toujours visibles (sans profil ou tout rôle)', () => {
 		it('affiche Accueil, Jeux, Upsilon, Zygomatics quand profile est null', async () => {
-			render(Sidebar, { profile: null });
+			await render(Sidebar, { profile: null });
 			await expect.element(page.getByText('Accueil', { exact: true })).toBeInTheDocument();
 			await expect.element(page.getByText('Jeux', { exact: true })).toBeInTheDocument();
 			await expect.element(page.getByText('Upsilon', { exact: true })).toBeInTheDocument();
@@ -30,26 +30,26 @@ describe('Sidebar (Outils libres)', () => {
 		 * l'élève ne trouve pas n'existe pas.
 		 */
 		it('affiche Atelier pour un visiteur', async () => {
-			render(Sidebar, { profile: null });
+			await render(Sidebar, { profile: null });
 			await expect.element(page.getByText('Atelier', { exact: true })).toBeInTheDocument();
 		});
 
 		it('affiche Grapheur et Géométrie pour un visiteur', async () => {
-			render(Sidebar, { profile: null });
+			await render(Sidebar, { profile: null });
 
 			await expect.element(page.getByText('Grapheur', { exact: true })).toBeInTheDocument();
 			await expect.element(page.getByText('Géométrie', { exact: true })).toBeInTheDocument();
 		});
 
 		it('pointe vers les bonnes routes', async () => {
-			const { container } = render(Sidebar, { profile: null });
+			const { container } = await render(Sidebar, { profile: null });
 
 			expect(container.querySelector('a[href="/grapheur"]')).not.toBeNull();
 			expect(container.querySelector('a[href="/geometry-demo"]')).not.toBeNull();
 		});
 
 		it('rend bien une icône pour chacun', async () => {
-			const { container } = render(Sidebar, { profile: null });
+			const { container } = await render(Sidebar, { profile: null });
 
 			// Une icône Lucide manquante ne casse pas le rendu : le lien s'afficherait
 			// sans son SVG. On vérifie donc explicitement sa présence.
@@ -62,30 +62,30 @@ describe('Sidebar (Outils libres)', () => {
 
 	describe('items role-restricted', () => {
 		it('affiche Python pour un élève (role student+teacher)', async () => {
-			render(Sidebar, { profile: profile('student') });
+			await render(Sidebar, { profile: profile('student') });
 			await expect.element(page.getByText('Python', { exact: true })).toBeInTheDocument();
 		});
 
 		it('affiche Python et Whiteboard pour un prof', async () => {
-			render(Sidebar, { profile: profile('teacher') });
+			await render(Sidebar, { profile: profile('teacher') });
 			await expect.element(page.getByText('Python', { exact: true })).toBeInTheDocument();
 			await expect.element(page.getByText('Whiteboard', { exact: true })).toBeInTheDocument();
 		});
 
 		it("n'affiche pas Whiteboard pour un élève", async () => {
-			render(Sidebar, { profile: profile('student') });
+			await render(Sidebar, { profile: profile('student') });
 			expect(page.getByText('Whiteboard', { exact: true }).elements()).toHaveLength(0);
 		});
 
 		it("n'affiche pas Python sans profile (role-restricted)", async () => {
-			render(Sidebar, { profile: null });
+			await render(Sidebar, { profile: null });
 			expect(page.getByText('Python', { exact: true }).elements()).toHaveLength(0);
 		});
 	});
 
 	describe('séparation serious / fun', () => {
 		it('rend Zygomatics après le séparateur <hr> (section fun)', async () => {
-			const { container } = render(Sidebar, { profile: null });
+			const { container } = await render(Sidebar, { profile: null });
 			const hr = container.querySelector('hr');
 			expect(hr).not.toBeNull();
 			const zygo = await page.getByText('Zygomatics', { exact: true }).element();
@@ -94,7 +94,7 @@ describe('Sidebar (Outils libres)', () => {
 		});
 
 		it("ne rend pas de <hr> si aucun item n'est en section fun", async () => {
-			const { container } = render(Sidebar, {
+			const { container } = await render(Sidebar, {
 				profile: null,
 				items: [{ label: 'Accueil', href: '/', icon: Home }]
 			});
@@ -111,17 +111,17 @@ describe('Sidebar (Outils libres)', () => {
 
 		for (const { role, label } of cases) {
 			it(`n'affiche pas Mon travail (${label})`, async () => {
-				render(Sidebar, { profile: role ? profile(role) : null });
+				await render(Sidebar, { profile: role ? profile(role) : null });
 				expect(page.getByText('Mon travail', { exact: true }).elements()).toHaveLength(0);
 			});
 
 			it(`n'affiche pas Cahier (${label})`, async () => {
-				render(Sidebar, { profile: role ? profile(role) : null });
+				await render(Sidebar, { profile: role ? profile(role) : null });
 				expect(page.getByText('Cahier', { exact: true }).elements()).toHaveLength(0);
 			});
 
 			it(`n'affiche pas Worksheets (${label})`, async () => {
-				render(Sidebar, { profile: role ? profile(role) : null });
+				await render(Sidebar, { profile: role ? profile(role) : null });
 				expect(page.getByText('Worksheets', { exact: true }).elements()).toHaveLength(0);
 			});
 		}

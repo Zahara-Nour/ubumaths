@@ -49,7 +49,7 @@ describe('CalculatorKeyboard', () => {
 	describe('basic rendering', () => {
 		it('should render when visible is true', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			// Check for digit buttons
 			await expect.element(page.getByRole('button', { name: '0' })).toBeVisible();
@@ -59,7 +59,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should not render when visible is false', async () => {
 			const props = { ...getDefaultProps(), visible: false };
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			// Container should have no buttons
 			const buttons = page.getByRole('button');
@@ -68,7 +68,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should render scientific function keys', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			await expect.element(page.getByRole('button', { name: 'sin' })).toBeVisible();
 			await expect.element(page.getByRole('button', { name: 'cos' })).toBeVisible();
@@ -79,7 +79,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should render operator keys', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			await expect.element(page.getByRole('button', { name: '+' })).toBeVisible();
 			await expect.element(page.getByRole('button', { name: '-' })).toBeVisible();
@@ -87,7 +87,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should render special keys', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			await expect.element(page.getByRole('button', { name: '=' })).toBeVisible();
 			await expect.element(page.getByRole('button', { name: 'C', exact: true })).toBeVisible();
@@ -96,7 +96,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should render all digit keys 0-9', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			for (let i = 0; i <= 9; i++) {
 				await expect.element(page.getByRole('button', { name: String(i) })).toBeVisible();
@@ -111,7 +111,7 @@ describe('CalculatorKeyboard', () => {
 	describe('input callbacks', () => {
 		it('should call onInput with digit value when digit clicked', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			const button7 = page.getByRole('button', { name: '7' });
 			await button7.click();
@@ -121,7 +121,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should call onInput with LaTeX value for sin', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			const sinButton = page.getByRole('button', { name: 'sin' });
 			await sinButton.click();
@@ -131,7 +131,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should call onInput with pi symbol', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			// pi button shows Greek letter
 			const piButton = page.getByRole('button', { name: '\u03C0' });
@@ -142,7 +142,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should call onInput with sqrt LaTeX', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			// sqrt button shows symbol
 			const sqrtButton = page.getByRole('button', { name: '\u221A' });
@@ -153,7 +153,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should call onInput with division operator', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			const divButton = page.getByRole('button', { name: '\u00F7' });
 			await divButton.click();
@@ -163,7 +163,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should call onInput with multiplication operator', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			const multButton = page.getByRole('button', { name: '\u00D7' });
 			await multButton.click();
@@ -179,7 +179,7 @@ describe('CalculatorKeyboard', () => {
 	describe('action callbacks', () => {
 		it('should call onSubmit when = clicked', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			const submitButton = page.getByRole('button', { name: '=' });
 			await submitButton.click();
@@ -189,7 +189,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should call onBackspace when backspace arrow clicked', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			// Backspace button shows left arrow
 			const backspaceButton = page.getByRole('button', { name: '\u2190' });
@@ -200,7 +200,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should call onClear when C clicked', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			const clearButton = page.getByRole('button', { name: 'C', exact: true });
 			await clearButton.click();
@@ -210,7 +210,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should call onAllClear when AC clicked', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			const allClearButton = page.getByRole('button', { name: 'AC' });
 			await allClearButton.click();
@@ -226,7 +226,7 @@ describe('CalculatorKeyboard', () => {
 	describe('extended functions panel', () => {
 		it('should show Plus button initially', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			// Button should show "Plus..." when panel is closed
 			await expect.element(page.getByText(/Plus/)).toBeVisible();
@@ -234,7 +234,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should not show extended functions by default', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			// arcsin should not be visible initially
 			await expect.element(page.getByRole('button', { name: 'arcsin' })).not.toBeInTheDocument();
@@ -242,7 +242,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should show extended functions when toggle clicked', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			// Click the toggle button
 			const toggleButton = page.getByText(/Plus/);
@@ -256,7 +256,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should show Moins button when panel is expanded', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			// Click to expand
 			const toggleButton = page.getByText(/Plus/);
@@ -268,7 +268,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should hide extended functions when Moins clicked', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			// Open the panel
 			const toggleButton = page.getByText(/Plus/);
@@ -284,7 +284,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should call onInput for extended function keys', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			// Open extended panel
 			const toggleButton = page.getByText(/Plus/);
@@ -299,7 +299,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should include parentheses in extended functions', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			// Open extended panel
 			const toggleButton = page.getByText(/Plus/);
@@ -318,7 +318,7 @@ describe('CalculatorKeyboard', () => {
 	describe('edge cases', () => {
 		it('should handle rapid button clicks', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			const button1 = page.getByRole('button', { name: '1' });
 
@@ -332,7 +332,7 @@ describe('CalculatorKeyboard', () => {
 
 		it('should handle multiple different button clicks', async () => {
 			const props = getDefaultProps();
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			await page.getByRole('button', { name: '1' }).click();
 			await page.getByRole('button', { name: '+' }).click();
@@ -361,7 +361,7 @@ describe('CalculatorKeyboard', () => {
 				onAllClear: vi.fn()
 			};
 
-			render(CalculatorKeyboard, { props });
+			await render(CalculatorKeyboard, { props });
 
 			// Component should be visible (has buttons)
 			await expect.element(page.getByRole('button', { name: '0' })).toBeVisible();

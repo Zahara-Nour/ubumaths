@@ -36,28 +36,31 @@ describe('UntranslatedExercisesNotice', () => {
 		}
 	} as unknown as WorksheetExerciseWithExercise;
 
-	it('says nothing on a French worksheet', () => {
-		const { container } = render(Notice, { exercises: [frenchOnly], config: {} });
+	it('says nothing on a French worksheet', async () => {
+		const { container } = await render(Notice, { exercises: [frenchOnly], config: {} });
 
 		expect(container.textContent).toBe('');
 	});
 
 	it('names the exercises that would come out in French', async () => {
-		render(Notice, { exercises: [frenchOnly, translated], config: { language: 'en' } });
+		await render(Notice, { exercises: [frenchOnly, translated], config: { language: 'en' } });
 
 		await expect.element(page.getByText('1 exercice sortira en français')).toBeInTheDocument();
 		// The translated one must not be blamed.
 		await expect.element(page.getByText('Produit scalaire')).toBeInTheDocument();
 	});
 
-	it('says nothing when everything is translated', () => {
-		const { container } = render(Notice, { exercises: [translated], config: { language: 'en' } });
+	it('says nothing when everything is translated', async () => {
+		const { container } = await render(Notice, {
+			exercises: [translated],
+			config: { language: 'en' }
+		});
 
 		expect(container.textContent).toBe('');
 	});
 
 	it('agrees in number', async () => {
-		render(Notice, {
+		await render(Notice, {
 			exercises: [frenchOnly, { ...frenchOnly, id: 'we-3' }],
 			config: { language: 'en' }
 		});

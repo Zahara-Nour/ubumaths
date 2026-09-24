@@ -9,11 +9,11 @@ const viewport: Viewport = { xMin: -5, xMax: 5, yMin: -5, yMax: 5 };
 const WIDTH = 800;
 const HEIGHT = 800;
 
-function hoverAt(x: number, y: number) {
+async function hoverAt(x: number, y: number) {
 	grapheurStore.setViewport(viewport);
 	grapheurStore.setCursor({ x, y });
 
-	return render(CurveHover, {
+	return await render(CurveHover, {
 		transformer: createTransformer(viewport, WIDTH, HEIGHT),
 		width: WIDTH,
 		height: HEIGHT
@@ -30,9 +30,9 @@ describe('CurveHover — valeurs exactes', () => {
 		grapheurStore.setInteracting(false);
 	});
 
-	it('affiche √2 rendu en maths sur le zéro de x²−2', () => {
+	it('affiche √2 rendu en maths sur le zéro de x²−2', async () => {
 		grapheurStore.addFunction('x^2-2');
-		const { container } = hoverAt(Math.SQRT2, 0);
+		const { container } = await hoverAt(Math.SQRT2, 0);
 
 		const math = container.querySelector('.tooltip-math');
 
@@ -44,9 +44,9 @@ describe('CurveHover — valeurs exactes', () => {
 		expect(math?.textContent).not.toContain('1.41');
 	});
 
-	it('affiche l’ordonnée simplifiée du sommet de x²−2', () => {
+	it('affiche l’ordonnée simplifiée du sommet de x²−2', async () => {
 		grapheurStore.addFunction('x^2-2');
-		const { container } = hoverAt(0, -2);
+		const { container } = await hoverAt(0, -2);
 
 		const math = container.querySelector('.tooltip-math');
 		expect(math).not.toBeNull();
@@ -56,17 +56,17 @@ describe('CurveHover — valeurs exactes', () => {
 		expect(math?.textContent).not.toContain('^');
 	});
 
-	it('retombe sur le texte quand aucune valeur exacte n’est connue', () => {
+	it('retombe sur le texte quand aucune valeur exacte n’est connue', async () => {
 		grapheurStore.addFunction('e^x-x-2');
-		const { container } = hoverAt(1.146, 0);
+		const { container } = await hoverAt(1.146, 0);
 
 		expect(container.querySelector('.tooltip-math')).toBeNull();
 		expect(container.querySelector('text.tooltip-text')?.textContent).toContain('Racine');
 	});
 
-	it('n’affiche rien quand le curseur est loin de tout', () => {
+	it('n’affiche rien quand le curseur est loin de tout', async () => {
 		grapheurStore.addFunction('x^2-2');
-		const { container } = hoverAt(4.5, 4.5);
+		const { container } = await hoverAt(4.5, 4.5);
 
 		expect(container.querySelector('.tooltip-math')).toBeNull();
 		expect(container.querySelector('text.tooltip-text')).toBeNull();

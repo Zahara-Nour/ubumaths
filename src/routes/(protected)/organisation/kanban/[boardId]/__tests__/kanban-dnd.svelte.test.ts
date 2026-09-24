@@ -69,7 +69,7 @@ const AUTRE_CARTE: Element = {
 	position: 1
 };
 
-function monter(cartesAFaire: Element[] = [CARTE_TIREE], refuse = false) {
+async function monter(cartesAFaire: Element[] = [CARTE_TIREE], refuse = false) {
 	const appels: { url: string; method?: string; body: unknown }[] = [];
 	vi.stubGlobal(
 		'fetch',
@@ -87,7 +87,7 @@ function monter(cartesAFaire: Element[] = [CARTE_TIREE], refuse = false) {
 		})
 	);
 
-	const { container } = render(KanbanBoardPage, {
+	const { container } = await render(KanbanBoardPage, {
 		data: {
 			board: {
 				id: TABLEAU,
@@ -133,7 +133,7 @@ describe('Kanban — déplacer une carte entre deux colonnes', () => {
 	});
 
 	it('enregistre le changement de colonne', async () => {
-		const { appels, zones } = monter();
+		const { appels, zones } = await monter();
 
 		// 1. La prise : l'ombre REMPLACE la carte dans sa colonne.
 		const ombre: Element = {
@@ -203,7 +203,7 @@ describe('Kanban — réordonner dans la même colonne', () => {
 	 * c'est ce qui rend le défaut trompeur : ce qu'on essaie d'abord marche.
 	 */
 	it('enregistre le nouvel ordre', async () => {
-		const { appels, zones } = monter([CARTE_TIREE, AUTRE_CARTE]);
+		const { appels, zones } = await monter([CARTE_TIREE, AUTRE_CARTE]);
 
 		const ombre: Element = {
 			...CARTE_TIREE,
@@ -244,7 +244,7 @@ describe('Kanban — les colonnes, et ce qu’un refus doit rendre', () => {
 
 	/** Les colonnes se glissent aussi, et l'ombre y tend le même piège. */
 	it('enregistre le nouvel ordre des colonnes', async () => {
-		const { appels, zones } = monter();
+		const { appels, zones } = await monter();
 
 		// ⚠️ La zone ne contient QUE des colonnes : `dndzone` apparie ses enfants
 		// directs avec `items` par index, et le bloc « Créer une colonne » y
@@ -291,7 +291,7 @@ describe('Kanban — les colonnes, et ce qu’un refus doit rendre', () => {
 	 * et une carte en double lève `each_key_duplicate`.
 	 */
 	it('remet la carte dans sa colonne quand le serveur refuse', async () => {
-		const { zones } = monter([CARTE_TIREE], true);
+		const { zones } = await monter([CARTE_TIREE], true);
 
 		const ombre: Element = {
 			...CARTE_TIREE,

@@ -12,7 +12,7 @@ import AnalyticsModal from '../AnalyticsModal.svelte';
 
 describe('AnalyticsModal', () => {
 	it('renders title when open', async () => {
-		render(AnalyticsModal, {
+		await render(AnalyticsModal, {
 			open: true,
 			title: 'Calculer la somme',
 			description: 'Élèves concernés.',
@@ -25,7 +25,7 @@ describe('AnalyticsModal', () => {
 	});
 
 	it('renders the description', async () => {
-		render(AnalyticsModal, {
+		await render(AnalyticsModal, {
 			open: true,
 			title: 'Titre',
 			description: 'Une description distinctive.',
@@ -35,7 +35,7 @@ describe('AnalyticsModal', () => {
 	});
 
 	it('shows empty state when no students', async () => {
-		render(AnalyticsModal, {
+		await render(AnalyticsModal, {
 			open: true,
 			title: 'Vide',
 			students: []
@@ -46,7 +46,7 @@ describe('AnalyticsModal', () => {
 	});
 
 	it('renders student names', async () => {
-		render(AnalyticsModal, {
+		await render(AnalyticsModal, {
 			open: true,
 			title: 'Liste',
 			students: [
@@ -59,7 +59,7 @@ describe('AnalyticsModal', () => {
 	});
 
 	it('renders captions when provided', async () => {
-		render(AnalyticsModal, {
+		await render(AnalyticsModal, {
 			open: true,
 			title: 'Avec captions',
 			students: [{ student_id: 's1', display_name: 'Alice', caption: '🆘 À remédier' }]

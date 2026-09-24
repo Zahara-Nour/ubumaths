@@ -22,25 +22,25 @@ function cardFor(container: HTMLElement, name: string): HTMLElement | undefined 
 }
 
 describe('panneau d’objets', () => {
-	it('annonce un atelier vide plutôt que de ne rien montrer', () => {
-		const { container } = render(WithAtelier, { atelier: new Atelier() });
+	it('annonce un atelier vide plutôt que de ne rien montrer', async () => {
+		const { container } = await render(WithAtelier, { atelier: new Atelier() });
 		expect(container.textContent).toContain('Rien encore');
 	});
 
-	it('montre les objets avec leur nom et leur définition', () => {
+	it('montre les objets avec leur nom et leur définition', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
-		const { container } = render(WithAtelier, { atelier });
+		const { container } = await render(WithAtelier, { atelier });
 
 		expect(cardFor(container, 'f')).toBeTruthy();
 		expect(container.textContent).toContain('x^2');
 	});
 
 	// §3 N1 — la progressivité doit SE VOIR, pas seulement se calculer
-	it('n’affiche aucune action de fonction dans un atelier de nombres', () => {
+	it('n’affiche aucune action de fonction dans un atelier de nombres', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'value', name: 'k', definition: '3' });
-		const { container } = render(WithAtelier, { atelier });
+		const { container } = await render(WithAtelier, { atelier });
 
 		cardFor(container, 'k')?.querySelector('button')?.click();
 		expect(actionLabels(container)).not.toContain('Dériver');
@@ -51,7 +51,7 @@ describe('panneau d’objets', () => {
 	it('affiche les actions d’une fonction quand on la sélectionne', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
-		const { container } = render(WithAtelier, { atelier });
+		const { container } = await render(WithAtelier, { atelier });
 
 		cardFor(container, 'f')?.querySelector('button')?.click();
 		await new Promise((r) => setTimeout(r, 0));
@@ -64,7 +64,7 @@ describe('panneau d’objets', () => {
 	it('désactive les actions d’un objet en attente, en disant ce qui manque', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' });
-		const { container } = render(WithAtelier, { atelier });
+		const { container } = await render(WithAtelier, { atelier });
 
 		cardFor(container, 'f')?.querySelector('button')?.click();
 		await new Promise((r) => setTimeout(r, 0));
@@ -86,7 +86,7 @@ describe('panneau d’objets', () => {
 	it('laisse toujours renommer et supprimer, même en erreur', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^^2' });
-		const { container } = render(WithAtelier, { atelier });
+		const { container } = await render(WithAtelier, { atelier });
 
 		cardFor(container, 'f')?.querySelector('button')?.click();
 		await new Promise((r) => setTimeout(r, 0));
@@ -99,7 +99,7 @@ describe('panneau d’objets', () => {
 	// §2.1 N3 — « + Fonction » crée un objet nommé, vide, et le sélectionne
 	it('crée un objet nommé automatiquement au clic', async () => {
 		const atelier = new Atelier();
-		const { container } = render(WithAtelier, { atelier });
+		const { container } = await render(WithAtelier, { atelier });
 
 		const bouton = [...container.querySelectorAll('.creer button')].find(
 			(b) => b.textContent?.trim() === '+ Fonction'
@@ -112,10 +112,10 @@ describe('panneau d’objets', () => {
 		expect(cardFor(container, 'f')).toBeTruthy();
 	});
 
-	it('affiche le message d’un objet qui ne peut rien produire', () => {
+	it('affiche le message d’un objet qui ne peut rien produire', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' });
-		const { container } = render(WithAtelier, { atelier });
+		const { container } = await render(WithAtelier, { atelier });
 
 		expect(container.textContent).toContain('En attente');
 	});

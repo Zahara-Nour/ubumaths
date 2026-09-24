@@ -61,7 +61,7 @@ describe('AntiFraudFlagsList', () => {
 
 	it('renders student names with capacity after fetch', async () => {
 		mockFetch(sampleFlags);
-		render(AntiFraudFlagsList, { classId: 'class-1' });
+		await render(AntiFraudFlagsList, { classId: 'class-1' });
 		await expect.element(page.getByText('Alice Martin')).toBeVisible();
 		await expect.element(page.getByText('Bob Dupont')).toBeVisible();
 		await expect.element(page.getByText('Additionner')).toBeVisible();
@@ -69,7 +69,7 @@ describe('AntiFraudFlagsList', () => {
 
 	it('shows empty state when no flags', async () => {
 		mockFetch({ flags: [], total: 0, resolved_count: 0 });
-		render(AntiFraudFlagsList, { classId: 'class-1' });
+		await render(AntiFraudFlagsList, { classId: 'class-1' });
 		await expect
 			.element(page.getByText(new RegExp(`Aucun ${lore.entities.student} à surveiller`)))
 			.toBeVisible();
@@ -77,14 +77,14 @@ describe('AntiFraudFlagsList', () => {
 
 	it('anonymizes student names when anonymized=true', async () => {
 		mockFetch(sampleFlags);
-		render(AntiFraudFlagsList, { classId: 'class-1', anonymized: true });
+		await render(AntiFraudFlagsList, { classId: 'class-1', anonymized: true });
 		await expect.element(page.getByText(`${lore.entities.student} 1`)).toBeVisible();
 		await expect.element(page.getByText(`${lore.entities.student} 2`)).toBeVisible();
 	});
 
 	it('renders flag type labels and score', async () => {
 		mockFetch(sampleFlags);
-		render(AntiFraudFlagsList, { classId: 'class-1' });
+		await render(AntiFraudFlagsList, { classId: 'class-1' });
 		await expect.element(page.getByText('Rafale de reviews')).toBeVisible();
 		await expect.element(page.getByText('Synthèse multi-signaux')).toBeVisible();
 		await expect.element(page.getByText(/score 85\/100/)).toBeVisible();
@@ -92,7 +92,7 @@ describe('AntiFraudFlagsList', () => {
 
 	it('renders "Marquer comme OK" button on each non-resolved flag', async () => {
 		mockFetch(sampleFlags);
-		render(AntiFraudFlagsList, { classId: 'class-1' });
+		await render(AntiFraudFlagsList, { classId: 'class-1' });
 		const buttons = page.getByText('Marquer comme OK');
 		await expect.element(buttons.first()).toBeVisible();
 	});
@@ -103,7 +103,7 @@ describe('AntiFraudFlagsList', () => {
 			status: 403,
 			json: async () => ({ error: 'Forbidden' })
 		} as Response);
-		render(AntiFraudFlagsList, { classId: 'class-1' });
+		await render(AntiFraudFlagsList, { classId: 'class-1' });
 		await expect.element(page.getByText(/Forbidden/)).toBeVisible();
 	});
 });

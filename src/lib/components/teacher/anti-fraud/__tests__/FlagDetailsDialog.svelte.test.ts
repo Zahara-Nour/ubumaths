@@ -19,7 +19,7 @@ const sampleFlag = {
 
 describe('FlagDetailsDialog', () => {
 	it('renders title and capacity when open', async () => {
-		render(FlagDetailsDialog, {
+		await render(FlagDetailsDialog, {
 			open: true,
 			flag: sampleFlag,
 			studentName: 'Alice Martin'
@@ -30,7 +30,7 @@ describe('FlagDetailsDialog', () => {
 	});
 
 	it('renders severity / score / sample_size badges', async () => {
-		render(FlagDetailsDialog, {
+		await render(FlagDetailsDialog, {
 			open: true,
 			flag: sampleFlag,
 			studentName: 'Alice'
@@ -41,7 +41,7 @@ describe('FlagDetailsDialog', () => {
 	});
 
 	it('renders details JSONB entries', async () => {
-		render(FlagDetailsDialog, {
+		await render(FlagDetailsDialog, {
 			open: true,
 			flag: sampleFlag,
 			studentName: 'Alice'

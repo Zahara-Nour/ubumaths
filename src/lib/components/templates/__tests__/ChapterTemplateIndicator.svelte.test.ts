@@ -36,8 +36,8 @@ function instanciation(delta: Partial<InstantiationWithStatus> = {}): Instantiat
 
 describe('ChapterTemplateIndicator', () => {
 	/** ⚠️ LE cas : le montage lui-même levait, et emportait la page avec lui. */
-	it('se monte sans exiger de contexte de son hôte', () => {
-		const { container } = render(ChapterTemplateIndicator, {
+	it('se monte sans exiger de contexte de son hôte', async () => {
+		const { container } = await render(ChapterTemplateIndicator, {
 			instantiation: instanciation(),
 			onDetach: () => {}
 		});
@@ -46,8 +46,8 @@ describe('ChapterTemplateIndicator', () => {
 	});
 
 	/** Détaché, mise à jour disponible : les trois tooltips du composant. */
-	it('se monte aussi avec tous ses tooltips', () => {
-		const { container } = render(ChapterTemplateIndicator, {
+	it('se monte aussi avec tous ses tooltips', async () => {
+		const { container } = await render(ChapterTemplateIndicator, {
 			instantiation: instanciation({ isDetached: true, hasUpdate: true, latestVersion: 3 }),
 			hasUpdate: true,
 			onUpdate: () => {},
@@ -63,8 +63,8 @@ describe('ChapterTemplateIndicator', () => {
 	 * pour avoir passé un objet « pas de mise à jour » à la place que la page
 	 * annonçait « Template supprimé » sur tous les chapitres.
 	 */
-	it('n’affiche rien sans instanciation', () => {
-		const { container } = render(ChapterTemplateIndicator, { instantiation: null });
+	it('n’affiche rien sans instanciation', async () => {
+		const { container } = await render(ChapterTemplateIndicator, { instantiation: null });
 
 		expect(container.textContent?.trim()).toBe('');
 	});

@@ -51,7 +51,7 @@ describe('ClassCapacityGrid', () => {
 
 	it('renders student names and capacity names after fetch', async () => {
 		mockFetch(sampleGrid);
-		render(ClassCapacityGrid, { classId: 'class-1' });
+		await render(ClassCapacityGrid, { classId: 'class-1' });
 		await expect.element(page.getByText('Alice Martin')).toBeVisible();
 		await expect.element(page.getByText('Bob Dupont')).toBeVisible();
 		await expect.element(page.getByText('Additionner')).toBeVisible();
@@ -60,7 +60,7 @@ describe('ClassCapacityGrid', () => {
 
 	it('shows empty state when class has no students', async () => {
 		mockFetch({ students: [], capacities: [], cells: {}, columnStats: {} });
-		render(ClassCapacityGrid, { classId: 'class-1' });
+		await render(ClassCapacityGrid, { classId: 'class-1' });
 		await expect
 			.element(page.getByText(`Aucun ${lore.entities.student} dans cette classe.`))
 			.toBeVisible();
@@ -73,19 +73,19 @@ describe('ClassCapacityGrid', () => {
 			cells: {},
 			columnStats: {}
 		});
-		render(ClassCapacityGrid, { classId: 'class-1' });
+		await render(ClassCapacityGrid, { classId: 'class-1' });
 		await expect.element(page.getByText(/Aucune capacité famille A/)).toBeVisible();
 	});
 
 	it('renders column stats (% acquise / % à remédier)', async () => {
 		mockFetch(sampleGrid);
-		render(ClassCapacityGrid, { classId: 'class-1' });
+		await render(ClassCapacityGrid, { classId: 'class-1' });
 		await expect.element(page.getByText('50%').first()).toBeVisible();
 	});
 
 	it('replaces student names by anonymized labels in projection mode', async () => {
 		mockFetch(sampleGrid);
-		render(ClassCapacityGrid, { classId: 'class-1', anonymized: true });
+		await render(ClassCapacityGrid, { classId: 'class-1', anonymized: true });
 		await expect.element(page.getByText(`${lore.entities.student} 1`)).toBeVisible();
 		await expect.element(page.getByText(`${lore.entities.student} 2`)).toBeVisible();
 	});
@@ -96,7 +96,7 @@ describe('ClassCapacityGrid', () => {
 			status: 500,
 			json: async () => ({ error: 'Internal' })
 		} as Response);
-		render(ClassCapacityGrid, { classId: 'class-1' });
+		await render(ClassCapacityGrid, { classId: 'class-1' });
 		await expect.element(page.getByText('⚠ Internal')).toBeVisible();
 	});
 });

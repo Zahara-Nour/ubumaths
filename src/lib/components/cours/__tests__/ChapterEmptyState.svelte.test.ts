@@ -25,8 +25,8 @@ const texte = (container: HTMLElement) => container.textContent!.replace(/\s+/g,
 describe('ChapterEmptyState — dire « pas encore », pas « rien »', () => {
 	it.each(['documents', 'quiz', 'exercises', 'worksheets', 'checklist', 'chapter'] as const)(
 		'%s : annonce une attente, jamais un vide',
-		(kind) => {
-			const { container } = render(ChapterEmptyState, { kind });
+		async (kind) => {
+			const { container } = await render(ChapterEmptyState, { kind });
 			const t = texte(container);
 
 			expect(t.length).toBeGreaterThan(0);
@@ -35,16 +35,16 @@ describe('ChapterEmptyState — dire « pas encore », pas « rien »', () => {
 		}
 	);
 
-	it('ne révèle jamais un nombre de contenus non publiés', () => {
+	it('ne révèle jamais un nombre de contenus non publiés', async () => {
 		for (const kind of ['documents', 'quiz', 'exercises', 'worksheets', 'checklist'] as const) {
-			const { container } = render(ChapterEmptyState, { kind });
+			const { container } = await render(ChapterEmptyState, { kind });
 			// Aucun chiffre : l'élève ne doit pas déduire qu'un contrôle se prépare.
 			expect(texte(container)).not.toMatch(/\d/);
 		}
 	});
 
-	it('ne dit pas à l’élève que le chapitre est vide ou introuvable', () => {
-		const { container } = render(ChapterEmptyState, { kind: 'chapter' });
+	it('ne dit pas à l’élève que le chapitre est vide ou introuvable', async () => {
+		const { container } = await render(ChapterEmptyState, { kind: 'chapter' });
 		const t = texte(container);
 
 		expect(t).not.toMatch(/vide|introuvable|erreur|aucun contenu/i);

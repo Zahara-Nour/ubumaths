@@ -32,14 +32,14 @@ describe('SchoolConfigModal with a $state-proxied school', () => {
 	}
 
 	it("loads the school's saved week config instead of the defaults", async () => {
-		render(SchoolConfigModal, { open: true, school: proxiedSchool() });
+		await render(SchoolConfigModal, { open: true, school: proxiedSchool() });
 
 		await expect.element(page.getByText('Lun → Dim')).toBeInTheDocument();
 		await expect.element(page.getByText('Lun, Mar, Mer, Jeu, Ven')).toBeInTheDocument();
 	});
 
 	it('closes when cancelling', async () => {
-		render(SchoolConfigModal, { open: true, school: proxiedSchool() });
+		await render(SchoolConfigModal, { open: true, school: proxiedSchool() });
 
 		const title = page.getByText("Configuration de l'école");
 		await expect.element(title).toBeInTheDocument();

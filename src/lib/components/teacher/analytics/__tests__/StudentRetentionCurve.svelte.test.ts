@@ -30,7 +30,7 @@ describe('StudentRetentionCurve', () => {
 				{ week_start: '2026-05-08', retrievability_avg: 0.5, review_count: 1 }
 			]
 		});
-		render(StudentRetentionCurve, {
+		await render(StudentRetentionCurve, {
 			classId: 'class-1',
 			studentId: 'student-1',
 			studentName: 'Alice',
@@ -47,7 +47,7 @@ describe('StudentRetentionCurve', () => {
 				{ week_start: '2026-05-15', retrievability_avg: 0.85, review_count: 2 }
 			]
 		});
-		render(StudentRetentionCurve, {
+		await render(StudentRetentionCurve, {
 			classId: 'class-1',
 			studentId: 'student-1',
 			studentName: 'Alice',
@@ -58,7 +58,7 @@ describe('StudentRetentionCurve', () => {
 
 	it('includes student name and theme in title', async () => {
 		mockFetch({ points: [] });
-		render(StudentRetentionCurve, {
+		await render(StudentRetentionCurve, {
 			classId: 'class-1',
 			studentId: 'student-1',
 			studentName: 'Alice Martin',

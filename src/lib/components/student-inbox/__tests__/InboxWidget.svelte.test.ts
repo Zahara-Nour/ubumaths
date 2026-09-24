@@ -54,7 +54,7 @@ describe('InboxWidget - header and "Voir tout" link', () => {
 			...emptyInbox(),
 			thisWeek: [makeItem('exercise')]
 		};
-		render(InboxWidget, { props: { inbox } });
+		await render(InboxWidget, { props: { inbox } });
 
 		await expect.element(page.getByText('Mon travail')).toBeVisible();
 	});
@@ -65,14 +65,14 @@ describe('InboxWidget - header and "Voir tout" link', () => {
 			late: [makeItem('assessment')],
 			thisWeek: [makeItem('exercise'), makeItem('worksheet')]
 		};
-		render(InboxWidget, { props: { inbox } });
+		await render(InboxWidget, { props: { inbox } });
 
 		// Total = 3; "Voir tout (3)" should appear
 		await expect.element(page.getByText('Voir tout (3)')).toBeVisible();
 	});
 
 	it('hides the "Voir tout" link when totalCount === 0', async () => {
-		render(InboxWidget, { props: { inbox: emptyInbox() } });
+		await render(InboxWidget, { props: { inbox: emptyInbox() } });
 
 		await expect.element(page.getByText(/Voir tout/)).not.toBeInTheDocument();
 	});
@@ -92,7 +92,7 @@ describe('InboxWidget - urgent items ordering and slicing', () => {
 			late: [lateItem],
 			thisWeek: [weekItem]
 		};
-		render(InboxWidget, { props: { inbox } });
+		await render(InboxWidget, { props: { inbox } });
 
 		await expect.element(page.getByText('Devoir en retard')).toBeVisible();
 		await expect.element(page.getByText('Devoir cette semaine')).toBeVisible();
@@ -110,7 +110,7 @@ describe('InboxWidget - urgent items ordering and slicing', () => {
 				makeItem('worksheet', { title: 'Semaine 2' }) // should be cut
 			]
 		};
-		render(InboxWidget, { props: { inbox, maxItems: 3 } });
+		await render(InboxWidget, { props: { inbox, maxItems: 3 } });
 
 		await expect.element(page.getByText('Retard 1')).toBeVisible();
 		await expect.element(page.getByText('Retard 2')).toBeVisible();
@@ -131,7 +131,7 @@ describe('InboxWidget - non-urgent items only', () => {
 			noDeadline: [makeItem('python', { dueAt: null })],
 			later: [makeItem('worksheet')]
 		};
-		render(InboxWidget, { props: { inbox } });
+		await render(InboxWidget, { props: { inbox } });
 
 		// Should show calm message, not individual cards
 		await expect.element(page.getByText(/Rien d'urgent/)).toBeVisible();
@@ -142,7 +142,7 @@ describe('InboxWidget - non-urgent items only', () => {
 			...emptyInbox(),
 			noDeadline: [makeItem('python', { dueAt: null }), makeItem('exercise', { dueAt: null })]
 		};
-		render(InboxWidget, { props: { inbox } });
+		await render(InboxWidget, { props: { inbox } });
 
 		// 2 elements → plural "éléments"
 		await expect.element(page.getByText(/2 éléments en cours/)).toBeVisible();
@@ -155,13 +155,13 @@ describe('InboxWidget - non-urgent items only', () => {
 
 describe('InboxWidget - empty state', () => {
 	it('shows empty state message when totalCount === 0', async () => {
-		render(InboxWidget, { props: { inbox: emptyInbox() } });
+		await render(InboxWidget, { props: { inbox: emptyInbox() } });
 
 		await expect.element(page.getByText(/Rien d'assigné/)).toBeVisible();
 	});
 
 	it('does NOT show individual work cards when inbox is empty', async () => {
-		render(InboxWidget, { props: { inbox: emptyInbox() } });
+		await render(InboxWidget, { props: { inbox: emptyInbox() } });
 
 		// No card titles in the DOM
 		await expect.element(page.getByText(/Devoir/)).not.toBeInTheDocument();

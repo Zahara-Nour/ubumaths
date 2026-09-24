@@ -22,7 +22,7 @@ describe('GraphSVG — ordre des couches', () => {
 		grapheurStore.addFunction('1/x');
 		grapheurStore.setViewport({ xMin: -10, xMax: 10, yMin: -10, yMax: 10 });
 
-		const { container } = render(GraphSVG, {});
+		const { container } = await render(GraphSVG, {});
 		await new Promise((resolve) => setTimeout(resolve, 0));
 
 		const svg = container.querySelector('svg');
@@ -44,7 +44,7 @@ describe('GraphSVG — ordre des couches', () => {
 		grapheurStore.addFunction('1/x');
 		grapheurStore.setViewport({ xMin: -10, xMax: 10, yMin: -10, yMax: 10 });
 
-		const { container } = render(GraphSVG, {});
+		const { container } = await render(GraphSVG, {});
 		await new Promise((resolve) => setTimeout(resolve, 0));
 
 		const paths = [...container.querySelectorAll('g.asymptote-lines path')];

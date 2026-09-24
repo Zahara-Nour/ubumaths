@@ -17,9 +17,9 @@ async function settle() {
 	await tick();
 }
 
-function open(options: Record<string, unknown> = {}) {
+async function open(options: Record<string, unknown> = {}) {
 	const atelier = (options.atelier as Atelier) ?? new Atelier();
-	return { ...render(AtelierContainer, { atelier, ephemeral: true, ...options }), atelier };
+	return { ...(await render(AtelierContainer, { atelier, ephemeral: true, ...options })), atelier };
 }
 
 const buttonNamed = (container: HTMLElement, label: string) =>
@@ -28,14 +28,14 @@ const buttonNamed = (container: HTMLElement, label: string) =>
 		| undefined;
 
 describe('partager', () => {
-	it('propose le partage quand on est chez soi', () => {
-		const { container } = open();
+	it('propose le partage quand on est chez soi', async () => {
+		const { container } = await open();
 
 		expect(buttonNamed(container, 'Partager')).toBeTruthy();
 	});
 
 	it('refuse de partager un atelier vide, en disant pourquoi', async () => {
-		const { container } = open();
+		const { container } = await open();
 
 		buttonNamed(container, 'Partager')!.click();
 		await settle();
@@ -46,7 +46,7 @@ describe('partager', () => {
 	it('produit un lien quand il y a quelque chose à partager', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
-		const { container } = open({ atelier });
+		const { container } = await open({ atelier });
 
 		buttonNamed(container, 'Partager')!.click();
 
@@ -62,7 +62,7 @@ describe('partager', () => {
 	it('affiche le lien même si la copie échoue', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
-		const { container } = open({ atelier });
+		const { container } = await open({ atelier });
 
 		buttonNamed(container, 'Partager')!.click();
 		await vi.waitFor(() => expect(container.querySelector('.lien')).toBeTruthy());
@@ -77,21 +77,21 @@ describe('recevoir', () => {
 		objects: [{ name: 'f', kind: 'function' as const, definition: 'x^3' }]
 	};
 
-	it('dit que l’atelier personnel n’est pas touché', () => {
-		const { container } = open({ received: recu });
+	it('dit que l’atelier personnel n’est pas touché', async () => {
+		const { container } = await open({ received: recu });
 
 		expect(container.querySelector('.bandeau')?.textContent).toMatch(/n’a pas été modifié/);
 	});
 
-	it('propose de garder, et non de partager', () => {
-		const { container } = open({ received: recu });
+	it('propose de garder, et non de partager', async () => {
+		const { container } = await open({ received: recu });
 
 		expect(buttonNamed(container, 'Garder dans mon atelier')).toBeTruthy();
 		expect(buttonNamed(container, 'Partager')).toBeUndefined();
 	});
 
 	it('garde ce qu’on a reçu', async () => {
-		const { container, atelier } = open({ received: recu });
+		const { container, atelier } = await open({ received: recu });
 
 		buttonNamed(container, 'Garder dans mon atelier')!.click();
 		await settle();
@@ -102,7 +102,7 @@ describe('recevoir', () => {
 	it('dit sous quel nom, quand il a fallu renommer', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
-		const { container } = open({ atelier, received: recu });
+		const { container } = await open({ atelier, received: recu });
 
 		buttonNamed(container, 'Garder dans mon atelier')!.click();
 		await settle();
@@ -110,8 +110,8 @@ describe('recevoir', () => {
 		expect(container.querySelector('.retour-partage')?.textContent).toMatch(/gardé sous/);
 	});
 
-	it('montre ce que la relecture a eu à dire', () => {
-		const { container } = open({ notice: 'Ce lien est incomplet ou abîmé.' });
+	it('montre ce que la relecture a eu à dire', async () => {
+		const { container } = await open({ notice: 'Ce lien est incomplet ou abîmé.' });
 
 		expect(container.querySelector('.retour-partage')?.textContent).toContain('abîmé');
 	});
