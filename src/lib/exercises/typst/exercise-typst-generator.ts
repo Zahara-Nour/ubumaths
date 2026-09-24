@@ -31,6 +31,8 @@ import { generateExerciseInstance } from '$lib/exercises/generator/instance-gene
 import { generateTypst, escapeTypst } from '$lib/ubumark/generators/typst-generator';
 import { parseMarkdown } from '$lib/ubumark';
 import { createLogger } from '$lib/utils/logger';
+import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
+import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 const logger = createLogger('exercise-typst-generator');
 
@@ -121,6 +123,9 @@ export async function generateExerciseTypst(
 		includeMetadata = true
 	} = options;
 
+	// Fonctions déclarées par l'exercice (`C'(x)`), lues comme à l'écran
+	const genericFunctions = genericFunctionsConfig(exercise.generic_functions);
+
 	logger.info('generateExerciseTypst started', {
 		exerciseId: exercise.id,
 		variationIndex,
@@ -164,14 +169,14 @@ export async function generateExerciseTypst(
 		logger.info('Generating statement...', {
 			statementPreview: instance.statement_md?.slice(0, 100)
 		});
-		typst += generateStatement(instance.statement_md);
+		typst += generateStatement(instance.statement_md, genericFunctions);
 		logger.info('Statement generated');
 
 		if (includeSolution && instance.solution_md) {
 			logger.info('Generating solution...', {
 				solutionPreview: instance.solution_md?.slice(0, 100)
 			});
-			typst += generateSolution(instance.solution_md);
+			typst += generateSolution(instance.solution_md, genericFunctions);
 			logger.info('Solution generated');
 		} else {
 			logger.info('Solution skipped', { includeSolution, hasSolution: !!instance.solution_md });
@@ -335,7 +340,10 @@ function generateHeader(
  *
  * @param markdown - Statement markdown content
  */
-function generateStatement(markdown: string): string {
+function generateStatement(
+	markdown: string,
+	genericFunctions: GenericFunctionConfig | undefined
+): string {
 	logger.info('generateStatement: parsing markdown', { length: markdown?.length });
 	const ast = parseMarkdown(markdown);
 	logger.info('generateStatement: markdown parsed', {
@@ -344,7 +352,7 @@ function generateStatement(markdown: string): string {
 	});
 
 	logger.info('generateStatement: generating typst');
-	const typstContent = generateTypst(ast, { includeSetup: false });
+	const typstContent = generateTypst(ast, { includeSetup: false, genericFunctions });
 	logger.info('generateStatement: typst generated', { typstLength: typstContent?.length });
 
 	return typstContent + '\n\n';
@@ -355,7 +363,10 @@ function generateStatement(markdown: string): string {
  *
  * @param markdown - Solution markdown content
  */
-function generateSolution(markdown: string): string {
+function generateSolution(
+	markdown: string,
+	genericFunctions: GenericFunctionConfig | undefined
+): string {
 	logger.info('generateSolution: starting', { markdownLength: markdown?.length });
 
 	let content = `#v(1em)\n`;
@@ -370,7 +381,7 @@ function generateSolution(markdown: string): string {
 	});
 
 	logger.info('generateSolution: generating typst');
-	const typstOutput = generateTypst(ast, { includeSetup: false });
+	const typstOutput = generateTypst(ast, { includeSetup: false, genericFunctions });
 	logger.info('generateSolution: typst generated', { typstLength: typstOutput?.length });
 
 	content += typstOutput;

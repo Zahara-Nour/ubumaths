@@ -840,3 +840,57 @@ describe('generateBatchTypst', () => {
 		expect(setupMatches?.length || 0).toBeLessThanOrEqual(1);
 	});
 });
+
+// Fonctions déclarées par l'exercice (`exercises.generic_functions`) : sans elles,
+// `C'(x)` s'imprimait en rouge « Unexpected token: ' » dans l'énoncé ET le corrigé.
+describe('fonctions déclarées de l’exercice', () => {
+	const instanceWithC = (genericFunctions: string[] | null | undefined): InstanceData =>
+		createMockInstance({
+			exercises: [
+				{
+					exercise_id: 'ex-c',
+					title: 'Coût de fabrication',
+					position: 1,
+					parameters: {},
+					statement: "Calculer ~C'(x)~.",
+					solution: "On trouve ~C'(x)=2x~.",
+					generic_functions: genericFunctions
+				}
+			]
+		});
+
+	const render = (instance: InstanceData, withTemplate: boolean): string =>
+		generateWorksheetTypst({
+			worksheet: createMockWorksheet(),
+			instance,
+			config: createMockConfig(),
+			mode: 'correction',
+			template: withTemplate
+				? {
+						id: 'tpl',
+						name: 'tpl',
+						description: null,
+						template_content: DEFAULT_TEMPLATES[0].template_content,
+						placeholders: [],
+						created_by: null,
+						created_at: '2024-01-01',
+						updated_at: '2024-01-01'
+					}
+				: null
+		});
+
+	it.each([
+		['sans modèle', false],
+		['avec modèle', true]
+	])('énoncé et corrigé sans erreur quand C est déclaré (%s)', (_label, withTemplate) => {
+		const typst = render(instanceWithC(['C']), withTemplate);
+		expect(typst).not.toContain('Unexpected token');
+		// Énoncé et corrigé sont bien là tous les deux
+		expect(typst).toContain('Calculer');
+		expect(typst).toContain('On trouve');
+	});
+
+	it('sans déclaration, C reste une variable : l’erreur apparaît (témoin)', () => {
+		expect(render(instanceWithC(undefined), false)).toContain('Unexpected token');
+	});
+});

@@ -20,6 +20,7 @@
 import type { Variable, ResolvedVariable, DocumentNode } from '$lib/ubumark';
 import type { GradeCode } from '$lib/types/grades';
 import type { ContentLocale, TranslatedLocale } from '$lib/types/locale';
+import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 // ============================================================================
 // EXERCISE CATEGORY
@@ -1091,7 +1092,26 @@ export interface TypstTranspilerOptions {
 	 * Author for the document
 	 */
 	author?: string;
+
+	/**
+	 * Fonctions déclarées par l'exercice (`exercises.generic_functions`), même
+	 * sens qu'à l'écran (`expressionToLatex`) :
+	 * - `undefined` : défauts du parseur (f, g, h, u, v, w, F, G, H) ;
+	 * - `null` : aucune lettre n'est une fonction ;
+	 * - une configuration : ces lettres-là (`C'(x)` devient lisible).
+	 */
+	genericFunctions?: GenericFunctionConfig | null;
 }
+
+/**
+ * Options une fois les défauts appliqués. `genericFunctions` reste optionnel :
+ * son absence a un sens (« défauts du parseur ») distinct de `null`, qu'un
+ * `Required<>` effacerait.
+ */
+export type ResolvedTypstTranspilerOptions = Required<
+	Omit<TypstTranspilerOptions, 'genericFunctions'>
+> &
+	Pick<TypstTranspilerOptions, 'genericFunctions'>;
 
 // Note: RenderOptions, ParseResult, and MathPlaceholder are re-exported from $lib/ubumark
 

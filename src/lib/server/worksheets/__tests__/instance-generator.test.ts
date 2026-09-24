@@ -712,4 +712,42 @@ describe('Instance Generator', () => {
 			expect(instance.exercises[0].statement_ast).toHaveProperty('type', 'document');
 		});
 	});
+	// Les fonctions déclarées doivent suivre l'exercice jusqu'au PDF.
+	describe('fonctions déclarées (generic_functions)', () => {
+		const withGeneric = (genericFunctions: string[] | null | undefined) =>
+			mockExercises.map((we, i) =>
+				i === 0 ? { ...we, exercise: { ...we.exercise!, generic_functions: genericFunctions } } : we
+			);
+
+		it('recopie la liste déclarée dans l’exercice résolu', () => {
+			const instance = generateWorksheetInstance({
+				worksheetId: 'w-gf',
+				studentId: 's1',
+				exercises: withGeneric(['C', 'u', 'v']),
+				config: {}
+			});
+			const resolved = instance.exercises.find((e) => e.exercise_id === 'e1');
+			expect(resolved?.generic_functions).toEqual(['C', 'u', 'v']);
+		});
+
+		it('recopie aussi dans l’aperçu (graine forcée)', () => {
+			const instance = generatePreviewInstance({
+				worksheetId: 'w-gf',
+				exercises: withGeneric(['C']),
+				config: {},
+				variantSeed: 42
+			});
+			expect(instance.exercises[0].generic_functions).toEqual(['C']);
+		});
+
+		it('laisse le champ absent quand l’exercice ne déclare rien (défauts du parseur)', () => {
+			const instance = generatePreviewInstance({
+				worksheetId: 'w-gf',
+				exercises: withGeneric(undefined),
+				config: {},
+				variantSeed: 42
+			});
+			expect(instance.exercises[0].generic_functions ?? undefined).toBeUndefined();
+		});
+	});
 });

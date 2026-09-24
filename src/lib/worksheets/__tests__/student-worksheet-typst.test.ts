@@ -122,3 +122,25 @@ describe('student worksheet language', () => {
 		expect(typst).not.toContain('= Corrections');
 	});
 });
+
+// Fonctions déclarées par l'exercice : le PDF élève doit les recevoir, énoncé ET corrigé.
+describe('generateStudentWorksheetTypst — fonctions déclarées', () => {
+	const worksheetWithC = (genericFunctions: string[] | null | undefined) => {
+		const worksheet = createWorksheet();
+		worksheet.exercises![0].statement = "Calculer ~C'(x)~.";
+		worksheet.exercises![0].correction = "On trouve ~C'(x)=2x~.";
+		worksheet.exercises![0].generic_functions = genericFunctions;
+		return worksheet;
+	};
+
+	it('énoncé et corrigé sans erreur quand C est déclaré', () => {
+		const typst = generateStudentWorksheetTypst(worksheetWithC(['C']), true);
+		expect(typst).not.toContain('Unexpected token');
+		expect(typst).toContain('On trouve');
+	});
+
+	it('sans déclaration, l’erreur apparaît (témoin)', () => {
+		const typst = generateStudentWorksheetTypst(worksheetWithC(undefined), true);
+		expect(typst).toContain('Unexpected token');
+	});
+});

@@ -99,7 +99,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				title,
 				variables,
 				shared,
-				variations
+				variations,
+				generic_functions
 			)
 		`
 		)
