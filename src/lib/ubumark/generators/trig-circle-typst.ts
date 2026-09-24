@@ -69,6 +69,7 @@ export function generateTrigCircleTypst(
 		const importStatement = '#import "@preview/cetz:0.3.0"\n\n';
 
 		const parts: string[] = [];
+		const angles = displayedAngles(node);
 
 		// Import and canvas start
 		parts.push('  import cetz.draw: *');
@@ -97,15 +98,15 @@ export function generateTrigCircleTypst(
 
 		// Draw projection lines if enabled
 		if (node.config.showProjections) {
-			parts.push(generateProjections(node.angles, opts));
+			parts.push(generateProjections(angles, opts));
 		}
 
 		// Draw angle points
-		parts.push(generatePoints(node.angles, node.config.color, opts));
+		parts.push(generatePoints(angles, node.config.color, opts));
 
 		// Draw labels if enabled
 		if (node.config.showLabels) {
-			parts.push(generateLabels(node.angles, opts));
+			parts.push(generateLabels(angles, opts));
 		}
 
 		// Draw axis values if enabled
@@ -141,6 +142,18 @@ function angleToCoords(radians: number, radius: number): { x: number; y: number 
 		x: radius * Math.cos(radians),
 		y: radius * Math.sin(radians)
 	};
+}
+
+/**
+ * Angles à dessiner : ceux du bloc, puis les solutions d'une équation qui n'y
+ * figurent pas déjà (même règle que l'affichage écran, `TrigCircle.svelte`).
+ */
+function displayedAngles(node: TrigCircleNode): TrigAngle[] {
+	const angles = [...node.angles];
+	for (const solution of node.solution?.angles ?? []) {
+		if (!angles.some((a) => Math.abs(a.radians - solution.radians) < 1e-6)) angles.push(solution);
+	}
+	return angles;
 }
 
 /**
@@ -233,11 +246,13 @@ function generateArcs(
 	for (let i = 0; i < arcs.length; i++) {
 		const arc = arcs[i];
 		const startDeg = (arc.startAngle * 180) / Math.PI;
-		const endDeg = (arc.endAngle * 180) / Math.PI;
+		// L'arc va dans le sens direct : s'il passe par 0 (de 300° à 60°), il finit à 420°
+		let endDeg = (arc.endAngle * 180) / Math.PI;
+		if (endDeg <= startDeg) endDeg += 360;
 
-		// Use arc with start and stop angles
+		// Sans `anchor: "origin"`, CeTZ prend (0, 0) pour le DÉBUT de l'arc, pas son centre
 		lines.push(
-			`  arc((0, 0), radius: ${formatNumber(opts.radius)}, start: ${formatNumber(startDeg)}deg, stop: ${formatNumber(endDeg)}deg)`
+			`  arc((0, 0), radius: ${formatNumber(opts.radius)}, start: ${formatNumber(startDeg)}deg, stop: ${formatNumber(endDeg)}deg, anchor: "origin")`
 		);
 
 		// Draw endpoint markers

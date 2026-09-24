@@ -353,3 +353,19 @@ Some text after.`;
 		expect(trigNode.angles).toHaveLength(4);
 	});
 });
+
+describe('parseAngleExpression — angles négatifs', () => {
+	// 2026-09-24 : `-pi/3` n'était reconnu par aucun motif et disparaissait du
+	// cercle sans message ; `-2*pi/3` s'affichait avec le signe dans le numérateur.
+	it.each([
+		['-pi/3', (5 * Math.PI) / 3, '-\\frac{\\pi}{3}'],
+		['-pi', Math.PI, '-\\pi'],
+		['-2*pi/3', (4 * Math.PI) / 3, '-\\frac{2\\pi}{3}'],
+		['-3pi/4', (5 * Math.PI) / 4, '-\\frac{3\\pi}{4}']
+	])('%s', (expr, radians, latex) => {
+		const angle = parseAngleExpression(expr);
+		expect(angle).not.toBeNull();
+		expect(angle!.radians).toBeCloseTo(radians, 10);
+		expect(angle!.latex).toBe(latex);
+	});
+});
