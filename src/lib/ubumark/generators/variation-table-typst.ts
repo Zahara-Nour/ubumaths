@@ -127,19 +127,25 @@ export function generateVariationTableTypst(
 		// sans lui, scale() garde la hauteur d'origine → grand blanc sous le tableau.
 		// Règle `show` : vartable pose `$ 0 $` sur le trait des racines sans fond, le trait
 		// barre alors le chiffre (« ø ») ; un fond blanc interrompt le trait sous le 0.
+		// Échelle AJUSTÉE : 55 % au plus, moins si le tableau dépasserait la colonne
+		// (`layout` donne la largeur disponible, `measure` celle du tableau). Une échelle
+		// fixe coupait la droite d'un tableau large (5 abscisses et une double barre).
 		return `${importStatement}#block(width: 100%, breakable: false)[
 #set text(size: 1.6em)
 ${ZERO_ON_BAR_SHOW_RULE}
-#scale(x: 55%, y: 55%, origin: top + left, reflow: true)[
-#tabvar(
-  variable: ${variable},
-  domain: ${domain},
-  label: ${labels},
-  contents: (
+#layout(size => {
+  let table = tabvar(
+    variable: ${variable},
+    domain: ${domain},
+    label: ${labels},
+    contents: (
 ${content}
+    )
   )
-)
-]
+  let natural = measure(table).width
+  let k = calc.min(0.55, size.width / natural) * 100%
+  scale(x: k, y: k, origin: top + left, reflow: true, table)
+})
 ]`;
 	} catch (error) {
 		return `// Error: ${error instanceof Error ? error.message : 'Failed to generate variation table'}`;
