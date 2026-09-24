@@ -1661,6 +1661,15 @@ describe('convertLatexToTypstMath - French Interval Notation', () => {
 		expect(convertLatexToTypstMath('[a, b]')).toBe('bracket.l a, b bracket.r');
 	});
 
+	it('should separate a closing bracket from a following digit or letter', () => {
+		// Régression : « ]0, +\infty[ » (intervalle à virgule) donnait « bracket.r0 »,
+		// que Typst lit comme un modificateur inconnu → tout le PDF de la fiche échoue.
+		const out = convertLatexToTypstMath(']0, +\\infty[');
+		expect(out).not.toMatch(/bracket\.[lr][a-zA-Z0-9]/);
+		expect(out).toContain('bracket.r 0');
+		expect(convertLatexToTypstMath('[a]b')).not.toMatch(/bracket\.rb/);
+	});
+
 	it('should prevent variable fusion between letters and bracket symbols', () => {
 		// Regression test: "x[" must NOT produce "xbracket.l" which Typst parses
 		// as unknown variable "xbracket" with field access ".l"
