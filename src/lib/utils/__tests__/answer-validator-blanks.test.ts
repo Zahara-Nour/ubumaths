@@ -394,6 +394,26 @@ describe('Per-blank validation — Multi-blank aggregation', () => {
 		const result = validateAnswer(['42', 'impair'], instance);
 		expect(result.isCorrect).toBe(false);
 	});
+
+	it('D18. per-blank message: le trou 2 sans unité porte son propre message', () => {
+		const instance = createInstance([
+			mathBlank('3'),
+			mathBlank('5\\unit{km}', { unit: { expected: true } })
+		]);
+
+		const result = validateAnswer(['3', '5'], instance);
+		expect(result.isCorrect).toBe(false);
+		expect(result.blankFeedback).toEqual([undefined, 'N’oublie pas l’unité.']);
+		// Le message global reste inchangé à plusieurs trous
+		expect(result.feedback).toBe('Les blancs suivants sont incorrects: 2');
+	});
+
+	it('D19. per-blank message: un seul trou → feedback global inchangé', () => {
+		const instance = createInstance([mathBlank('5\\unit{km}', { unit: { expected: true } })]);
+
+		const result = validateAnswer(['5'], instance);
+		expect(result.feedback).toBe('N’oublie pas l’unité.');
+	});
 });
 
 // ============================================================================

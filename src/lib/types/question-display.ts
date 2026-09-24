@@ -149,6 +149,12 @@ export interface ValidationResult {
 	/** Detailed feedback (optional) */
 	feedback?: string;
 
+	/**
+	 * Message propre à chaque trou incorrect (index = index du trou), absent si aucun
+	 * trou n'a de message. Rempli par validateBlanks (réponses ordonnées uniquement).
+	 */
+	blankFeedback?: (string | undefined)[];
+
 	// Extended validation info for constraint checking
 
 	/** Detailed validation status (correct, unoptimal_form, bad_form, incorrect, empty) */

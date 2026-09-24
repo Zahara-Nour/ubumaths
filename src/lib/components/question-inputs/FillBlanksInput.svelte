@@ -23,6 +23,7 @@
 	- valuesLatex: Bindable array of LaTeX values (for math blanks, empty for text)
 	- disabled: Whether inputs are disabled
 	- validationResults: Per-blank validation state
+	- blankFeedback: Per-blank message after validation (« Blanc 2 : … »)
 	- onSubmit: Callback when Enter is pressed in a blank
 -->
 
@@ -76,6 +77,11 @@
 		onlyBlanks?: boolean;
 		/** Per-blank validation: true=correct, false=incorrect, null=not validated */
 		validationResults?: (boolean | null)[];
+		/**
+		 * Message propre à chaque trou après correction (index = index du trou),
+		 * cf. ValidationResult.blankFeedback. Ne rien passer = aucun message affiché.
+		 */
+		blankFeedback?: (string | undefined)[];
 		/** Callback when Enter is pressed in a blank */
 		onSubmit?: () => void;
 		/** LaTeX to insert when Space is pressed in math mode */
@@ -93,6 +99,7 @@
 		showCorrectAnswers = false,
 		onlyBlanks = false,
 		validationResults = [],
+		blankFeedback = [],
 		onSubmit,
 		mathModeSpace
 	}: Props = $props();
@@ -181,6 +188,16 @@
 			value: values[i] ?? s.value
 		}));
 		return applyValidationToInputStates(withValues, validationResults);
+	});
+
+	// Messages par trou, listés sous l'énoncé : un trou MathLive (\placeholder) vit
+	// dans le math-field, on ne peut ni y accrocher une légende ni un aria-describedby.
+	// Avec un seul trou, le message est déjà le feedback global de l'écran → pas de doublon.
+	let blankMessages = $derived.by(() => {
+		if (flashMode || showCorrectAnswers || blanks.length < 2) return [];
+		return blankFeedback.flatMap((message, index) =>
+			message ? [{ blankNumber: index + 1, message }] : []
+		);
 	});
 
 	// Build correctValues map for MathPrompt pre-fill (flash back mode)
@@ -331,6 +348,20 @@
 			{/if}
 		{/each}
 	{/if}
+
+	<!-- Messages par trou (après correction) -->
+	<div role="status" aria-live="polite" aria-label="Messages par trou">
+		{#if blankMessages.length > 0}
+			<ul class="mt-2 space-y-1 text-sm text-destructive">
+				{#each blankMessages as { blankNumber, message } (blankNumber)}
+					<li>
+						<span class="font-semibold">Blanc {blankNumber}&nbsp;:</span>
+						{message}
+					</li>
+				{/each}
+			</ul>
+		{/if}
+	</div>
 
 	<!-- Helper text -->
 	{#if !flashMode && !effectiveDisabled && blanks.length > 0}

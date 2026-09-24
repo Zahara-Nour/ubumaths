@@ -830,6 +830,8 @@ export function validateBlanks(
 	const incorrectIndexes: number[] = [];
 	// Message propre au trou unique, s'il en a un (unité en cause, règle de validation…)
 	let singleBlankFeedback: string | undefined;
+	// Message propre à chaque trou incorrect (index = index du trou), affiché près du trou
+	const blankFeedback: (string | undefined)[] = new Array(blanks.length).fill(undefined);
 	let hasConstraintResults = false;
 	let emptyCount = 0;
 
@@ -843,6 +845,7 @@ export function validateBlanks(
 		if (!result.isCorrect) {
 			incorrectIndexes.push(i + 1);
 			if (blanks.length === 1) singleBlankFeedback = result.feedback;
+			blankFeedback[i] = result.feedback;
 		}
 
 		// Aggregate worst status (priority: bad_form > unoptimal_form > correct)
@@ -881,6 +884,9 @@ export function validateBlanks(
 
 	const allCorrect = incorrectIndexes.length === 0;
 	const result: ValidationResult = { isCorrect: allCorrect };
+	if (blankFeedback.some((message) => message !== undefined)) {
+		result.blankFeedback = blankFeedback;
+	}
 
 	// Include constraint results when constraint checking occurred
 	if (hasConstraintResults || worstStatus !== undefined) {
