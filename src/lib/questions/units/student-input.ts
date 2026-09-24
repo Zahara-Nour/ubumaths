@@ -161,6 +161,9 @@ export function normalizeStudentQuantity(latex: string): string {
 	// Habillages et notations sans ambiguïté
 	const cleaned = unwrapCommands(original)
 		.replace(/\{,\}/g, ',')
+		// Groupe vide : support du degré (`{}^{\circ}`, forme affichée de °) ou
+		// séparateur anti-espacement (`1{}000`) ; il ne porte aucun sens
+		.replace(/\{\s*\}/g, '')
 		.replace(/\\min(?![A-Za-z])/g, 'min')
 		.replace(DEGREE_PATTERN, '°')
 		.replace(SPACING_PATTERN, ' ')
