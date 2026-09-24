@@ -221,22 +221,23 @@ src/routes/{(public),(protected),api}/            (protected) = auth requise ; a
 
 ## Documentation
 
-| Doc                                                                     | Contenu                                           |
-| ----------------------------------------------------------------------- | ------------------------------------------------- |
-| [git-workflow.md](docs/claude/git-workflow.md)                          | **Workflow git OBLIGATOIRE**                      |
-| [worktrees.md](docs/claude/worktrees.md)                                | **Worktrees** : règles + verrous partagés         |
-| [architecture.md](docs/claude/architecture.md)                          | Structure, routing, perf                          |
-| [best-practices.md](docs/claude/best-practices.md)                      | Svelte 5, TypeScript                              |
-| [ui-components.md](docs/claude/ui-components.md)                        | Shadcn, MySelect, Tailwind                        |
-| [database.md](docs/claude/database.md)                                  | Supabase, migrations                              |
-| [quality-standards.md](docs/claude/quality-standards.md)                | Tests, linting, Zod                               |
-| [panel-simplifications.md](docs/ref/panel-simplifications.md)           | **Ce que `simplify` et les 4 intentions rendent** |
-| [convention-equivalence.md](docs/ref/convention-equivalence.md)         | **Ce que `areEquivalent` veut dire** (domaines)   |
-| [observabilite-erreurs-prod.md](docs/ref/observabilite-erreurs-prod.md) | **Lire les erreurs de prod** (Vercel, 7 j)        |
-| [warning-svelte.md](docs/ref/warning-svelte.md)                         | `svelte-ignore` légitime vs dette a11y            |
-| [css-color-tokens.md](docs/ref/css-color-tokens.md)                     | `var(--color-*)`, jamais `hsl(var(--x))`          |
-| [realtime.md](docs/claude/realtime.md)                                  | Realtime, chat, présence                          |
-| [docs/ref/tests/](docs/ref/tests/)                                      | Architecture des tests + TDD                      |
+| Doc                                                                     | Contenu                                            |
+| ----------------------------------------------------------------------- | -------------------------------------------------- |
+| [git-workflow.md](docs/claude/git-workflow.md)                          | **Workflow git OBLIGATOIRE**                       |
+| [worktrees.md](docs/claude/worktrees.md)                                | **Worktrees** : règles + verrous partagés          |
+| [architecture.md](docs/claude/architecture.md)                          | Structure, routing, perf                           |
+| [best-practices.md](docs/claude/best-practices.md)                      | Svelte 5, TypeScript                               |
+| [ui-components.md](docs/claude/ui-components.md)                        | Shadcn, MySelect, Tailwind                         |
+| [database.md](docs/claude/database.md)                                  | Supabase, migrations                               |
+| [quality-standards.md](docs/claude/quality-standards.md)                | Tests, linting, Zod                                |
+| [panel-simplifications.md](docs/ref/panel-simplifications.md)           | **Ce que `simplify` et les 4 intentions rendent**  |
+| [convention-equivalence.md](docs/ref/convention-equivalence.md)         | **Ce que `areEquivalent` veut dire** (domaines)    |
+| [notation-unites.md](docs/ref/notation-unites.md)                       | **Écrire une grandeur** : `~3[m.s^-1]~`, affichage |
+| [observabilite-erreurs-prod.md](docs/ref/observabilite-erreurs-prod.md) | **Lire les erreurs de prod** (Vercel, 7 j)         |
+| [warning-svelte.md](docs/ref/warning-svelte.md)                         | `svelte-ignore` légitime vs dette a11y             |
+| [css-color-tokens.md](docs/ref/css-color-tokens.md)                     | `var(--color-*)`, jamais `hsl(var(--x))`           |
+| [realtime.md](docs/claude/realtime.md)                                  | Realtime, chat, présence                           |
+| [docs/ref/tests/](docs/ref/tests/)                                      | Architecture des tests + TDD                       |
 
 Toute la doc : [docs/](docs/).
 
