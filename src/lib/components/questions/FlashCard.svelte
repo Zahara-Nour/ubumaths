@@ -87,6 +87,7 @@
 	let fillBlankValues = $state<string[]>([]);
 	let fillBlankValuesLatex = $state<string[]>([]);
 	let blankValidationResults = $state<(boolean | null)[]>([]);
+	let blankFeedback = $state<(string | undefined)[]>([]);
 
 	// ============================================================================
 	// DERIVED STATE
@@ -134,6 +135,7 @@
 				b.prefilled && b.type === 'math' ? toFrenchDecimal(b.prefilled) : ''
 			);
 			blankValidationResults = instance.blanks.map(() => null);
+			blankFeedback = [];
 		}
 
 		if (getQuestionType(instance) === 'multiple_choice' && instance.shuffledChoices) {
@@ -216,6 +218,7 @@
 		validationStatus = validationResult.status;
 		validationMessage = validationResult.message || '';
 		validationFeedback = validationResult.feedback || '';
+		blankFeedback = validationResult.blankFeedback ?? [];
 
 		const answerData: AnswerData = {
 			value: answer,
@@ -318,6 +321,7 @@
 										disabled={!interactive || isInputDisabled}
 										flashMode={!interactive}
 										validationResults={isSubmitted ? blankValidationResults : []}
+										blankFeedback={isSubmitted && showValidationFeedback ? blankFeedback : []}
 										onSubmit={handleSubmit}
 										mathModeSpace={(instance.options?.constraints?.spaces ?? 'warn') !== 'off'
 											? '\\,'
