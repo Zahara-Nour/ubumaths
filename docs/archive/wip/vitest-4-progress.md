@@ -32,4 +32,4 @@ Scripts dans le scratchpad de session : lots serveur (12), client, intégration
 - [x] Bump + config + adaptations
 - [x] Mesure après, comparaison
 - [x] `pnpm audit`, `check:incremental`, `lint:fast`
-- [ ] PR, CI, merge
+- [x] PR #421, CI verte, mergée le 2026-09-24 (`75730b6ae`) ; branche et worktree supprimés
