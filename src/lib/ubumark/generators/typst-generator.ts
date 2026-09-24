@@ -1857,6 +1857,33 @@ function replaceLatexCmd(
 	});
 }
 
+/**
+ * Convertit le contenu d'un `\unit{…}` (forme saisie : `cm`, `m^2`, `km/h`, `m.s^-1`)
+ * en Typst : lettres en romain, `/` en chaîne (une barre nue ferait une
+ * fraction en Typst), `.` en point de produit, exposants conservés.
+ *
+ * @example
+ * convertUnitToTypst('km/h') → 'upright("km")"/"upright("h")'
+ */
+function convertUnitToTypst(unit: string): string {
+	const parts: string[] = [];
+	const tokenPattern = /\^\s*(\{[^{}]*\}|-?\d+)|([^\s^/.·{}\\]+)|(\/)|(\.|·|\\cdot)/g;
+	for (const [, exponent, symbol, slash, dot] of unit.matchAll(tokenPattern)) {
+		if (exponent !== undefined) {
+			const last = parts.pop() ?? '';
+			parts.push(`${last}^(${exponent.replace(/[{}]/g, '')})`);
+		} else if (symbol !== undefined) {
+			parts.push(/^-?\d+$/.test(symbol) ? symbol : `upright("${symbol}")`);
+		} else if (slash !== undefined) {
+			parts.push('"/"');
+		} else if (dot !== undefined) {
+			parts.push('dot.op');
+		}
+	}
+	// Barre collée à ses voisins : « km/h », pas « km / h »
+	return parts.join(' ').replace(/ "\/" /g, '"/"');
+}
+
 export function convertLatexToTypstMath(latex: string): string {
 	let result = latex;
 
@@ -1866,6 +1893,18 @@ export function convertLatexToTypstMath(latex: string): string {
 			preview: result.slice(0, 200)
 		});
 	}
+
+	// ========================================================================
+	// UNITÉS (Étape 1 sur 2)
+	// ========================================================================
+	// mathAST écrit « 2~\unit{cm} » pour ~2[cm]~. La commande est convertie AVANT
+	// tout le reste et mise de côté dans un marqueur : ses guillemets et sa barre
+	// ne doivent être touchés par aucune règle suivante (double prime, fraction).
+	const unitPlaceholders: string[] = [];
+	result = result.replace(/\s*~?\s*\\unit\s*\{((?:[^{}]|\{[^{}]*\})*)\}/g, (_m, unit: string) => {
+		unitPlaceholders.push(convertUnitToTypst(unit));
+		return ` thin <<<UNIT${unitPlaceholders.length - 1}>>>`;
+	});
 
 	// ========================================================================
 	// DOUBLE QUOTE AS DOUBLE PRIME (Step 1 of 2)
@@ -2545,6 +2584,9 @@ export function convertLatexToTypstMath(latex: string): string {
 	// MATRIX PLACEHOLDER RESTORATION
 	// ========================================================================
 	result = result.replace(/<<<mat(\d+)>>>/g, (_, idx) => matPrefixes[parseInt(idx)]);
+
+	// UNITÉS (Étape 2 sur 2)
+	result = result.replace(/<<<UNIT(\d+)>>>/g, (_, idx) => unitPlaceholders[parseInt(idx)]);
 
 	// Final trim: bracket symbol insertions may add leading/trailing spaces
 	result = result.trim();

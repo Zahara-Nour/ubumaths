@@ -1442,6 +1442,29 @@ describe('Edge Cases', () => {
 // LATEX TO TYPST MATH CONVERSION TESTS
 // ============================================================================
 
+describe('convertLatexToTypstMath - Unités (\\unit)', () => {
+	// Le générateur LaTeX de mathAST écrit « 2~\unit{cm} » pour ~2[cm]~ ;
+	// avant ce correctif le PDF affichait « 2 unitcm ».
+	it('convertit une unité simple en romain, précédée d’une espace fine', () => {
+		expect(convertLatexToTypstMath('2~\\unit{cm}')).toBe('2 thin upright("cm")');
+	});
+
+	it('garde les exposants d’une unité', () => {
+		expect(convertLatexToTypstMath('3{,}5~\\unit{m^2}')).toBe('3","5 thin upright("m")^(2)');
+		expect(convertLatexToTypstMath('3~\\unit{m.s^-1}')).toBe(
+			'3 thin upright("m") dot.op upright("s")^(-1)'
+		);
+	});
+
+	it('rend la barre d’une unité composée comme un symbole, pas comme une fraction', () => {
+		expect(convertLatexToTypstMath('90~\\unit{km/h}')).toBe('90 thin upright("km")"/"upright("h")');
+	});
+
+	it('ne laisse jamais passer le nom de commande « unit »', () => {
+		expect(convertLatexToTypstMath('\\unit{cm^3}')).not.toMatch(/unit"|"unit/);
+	});
+});
+
 describe('convertLatexToTypstMath - Vectors and Accents', () => {
 	it('should convert \\vec{x} to arrow(x)', () => {
 		expect(convertLatexToTypstMath('\\vec{x}')).toBe('arrow(x)');
