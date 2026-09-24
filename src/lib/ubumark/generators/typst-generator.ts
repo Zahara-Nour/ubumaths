@@ -1781,6 +1781,34 @@ function addImplicitMultiplicationSpaces(str: string): string {
 }
 
 /**
+ * Protège les virgules LITTÉRALES de premier niveau d'un texte destiné à devenir
+ * UN argument d'une fonction Typst générée (`display(…)`, cellule de `mat(…)`).
+ *
+ * En Typst, une virgule nue dans `display(a, b)` sépare deux arguments ; on la
+ * remplace par le marqueur de virgule décimale, restitué en `","` (virgule
+ * affichée) en fin de conversion. Restent intactes :
+ * - les virgules imbriquées dans `(…)` ou `{…}` (`frac(1, 2)`, `f(a, b)`, `x_{i,j}`) ;
+ * - l'espace fine LaTeX `\,`.
+ * Les crochets ne comptent pas comme imbrication : ils deviennent plus tard
+ * `bracket.l`/`bracket.r`, qui ne protègent rien (`[0, 5]`, `]0, 5[`).
+ */
+function protectTopLevelCommas(text: string): string {
+	let depth = 0;
+	let out = '';
+	for (let i = 0; i < text.length; i++) {
+		const char = text[i];
+		if (char === '(' || char === '{') depth++;
+		else if (char === ')' || char === '}') depth = Math.max(0, depth - 1);
+		if (char === ',' && depth === 0 && text[i - 1] !== '\\') {
+			out += '<<<DECIMAL_COMMA>>>';
+		} else {
+			out += char;
+		}
+	}
+	return out;
+}
+
+/**
  * Convert LaTeX math to Typst math syntax
  *
  * Typst uses different syntax than LaTeX for math mode.
@@ -1954,7 +1982,13 @@ export function convertLatexToTypstMath(latex: string): string {
 			.map((line: string) => line.trim())
 			.filter((line: string) => line.length > 0);
 		// Wrap each line in display() for normal size
-		return 'cases(' + lines.map((line: string) => `display(${line})`).join(', ') + ')';
+		// Virgules de premier niveau protégées : sinon `display(… -300, n in NN)`
+		// reçoit deux arguments (« unexpected argument ») et tout le PDF échoue.
+		return (
+			'cases(' +
+			lines.map((line: string) => `display(${protectTopLevelCommas(line)})`).join(', ') +
+			')'
+		);
 	});
 
 	// Convert \begin{pmatrix/bmatrix/vmatrix/Vmatrix/matrix} to Typst mat()
@@ -1981,7 +2015,8 @@ export function convertLatexToTypstMath(latex: string): string {
 				.map((row: string) =>
 					row
 						.split('&')
-						.map((cell: string) => cell.trim())
+						// Une virgule dans une cellule n'est pas un séparateur de colonnes
+						.map((cell: string) => protectTopLevelCommas(cell.trim()))
 						.join(', ')
 				);
 			const idx = matPrefixes.length;
@@ -1989,6 +2024,15 @@ export function convertLatexToTypstMath(latex: string): string {
 			return `<<<mat${idx}>>>${rows.join('; ')})`;
 		});
 	}
+
+	// \sqrt sans accolades : en LaTeX, `\sqrt5` ou `\sqrt x` prend UN seul jeton
+	// (un caractère ou une commande) comme argument. On le ramène à la forme
+	// `\sqrt{5}` traitée juste après ; sinon Typst affichait « sqrt5 » en toutes lettres.
+	// `\sqrt{…}` et `\sqrt[n]{…}` ne sont pas concernés (lookahead).
+	result = result.replace(
+		/\\sqrt(?![a-zA-Z])\s*(?![{[\s])(\\[a-zA-Z]+|[a-zA-Z0-9])/g,
+		(_match, arg: string) => `\\sqrt{${arg}}`
+	);
 
 	// Convert \sqrt[n]{x} to root(n, x) - MUST be done BEFORE simple \sqrt conversion
 	// Uses balanced brace matching to handle nested braces in the argument
@@ -2145,6 +2189,8 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = replaceLatexCmd(result, 'cap', 'sect');
 	result = replaceLatexCmd(result, 'setminus', '∖');
 	result = replaceLatexCmd(result, 'emptyset', 'emptyset');
+	// \varnothing (∅ rond de LaTeX) : Typst n'a qu'un ensemble vide, `emptyset`
+	result = replaceLatexCmd(result, 'varnothing', 'emptyset');
 
 	// Convert common symbols
 	result = replaceLatexCmd(result, 'forall', 'forall');
@@ -2314,6 +2360,14 @@ export function convertLatexToTypstMath(latex: string): string {
 	// ========================================================================
 	// END NEW CONVERSIONS
 	// ========================================================================
+
+	// Prime après un indice : en LaTeX, `f_k'` met le prime sur f (f indice k,
+	// prime en exposant). En Typst, `f_k'` le met sur l'indice (k'). On le
+	// déplace avant l'indice : `f'_k`, que Typst rend comme LaTeX.
+	result = result.replace(
+		/([a-zA-Z])_([a-zA-Z0-9]|\{[^{}]*\})('+)/g,
+		(_match, base: string, sub: string, primes: string) => `${base}${primes}_${sub}`
+	);
 
 	// Convert subscript and superscript braces to parentheses
 	// LaTeX: x^{2n} or x_{ij}  ->  Typst: x^(2n) or x_(ij)
