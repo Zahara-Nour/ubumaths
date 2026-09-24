@@ -34,7 +34,12 @@ import { CustomTokenizer, type CustomToken, type CustomTokenType } from './token
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
 import { MathAST, compose, matrix, euler, complex } from '../../factory';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
-import { readUnitWriting, UNIT_EXPONENT_MESSAGE, UNIT_SPACE_MESSAGE } from './unit-writing';
+import {
+	isGroupingBracket,
+	readUnitWriting,
+	UNIT_EXPONENT_MESSAGE,
+	UNIT_SPACE_MESSAGE
+} from './unit-writing';
 import {
 	SecurityError,
 	getEffectiveSecurityOptions,
@@ -345,6 +350,10 @@ class CustomPrattParser {
 			case 'DOUBLE_LBRACKET':
 				return this.parseMatrixLiteral();
 
+			// `[` en position préfixe : toujours un crochet de calcul
+			case 'LBRACKET':
+				return this.parseAtomWithFraction();
+
 			case 'KEYWORD':
 				return this.parseKeyword();
 
@@ -396,6 +405,10 @@ class CustomPrattParser {
 				return this.parseSubscript(left);
 
 			case 'LBRACKET':
+				// Crochet de calcul après une expression : multiplication implicite
+				if (this.isGroupingBracketHere()) {
+					return this.parseImplicitMultiply(left);
+				}
 				return this.parseUnitPostfix(left);
 
 			case 'EQUALS':
@@ -505,6 +518,10 @@ class CustomPrattParser {
 				return BP.RELATION;
 
 			case 'LBRACKET':
+				// Crochet de calcul : multiplication implicite ; unité : lie très fort
+				if (this.isGroupingBracketHere()) {
+					return BP.MULTIPLY;
+				}
 				// Units bind tightly to the preceding expression
 				return BP.POWER + 1;
 
@@ -579,7 +596,7 @@ class CustomPrattParser {
 	private parseFractionOperand(): MathNode {
 		let operand = this.parseAtom();
 
-		while (this.check('CARET') || this.check('UNDERSCORE') || this.check('LBRACKET')) {
+		while (this.check('CARET') || this.check('UNDERSCORE') || this.checkUnitBracket()) {
 			if (this.check('CARET')) {
 				this.advance();
 				operand = this.applyColor(MathAST.superscript(operand, this.parsePowerOperand()));
@@ -633,6 +650,9 @@ class CustomPrattParser {
 
 			case 'DOUBLE_LBRACKET':
 				return this.parseMatrixLiteral();
+
+			case 'LBRACKET':
+				return this.parseSquareBrackets();
 
 			default:
 				this.error(
@@ -917,6 +937,40 @@ class CustomPrattParser {
 
 		// Parentheses create a DelimiterNode
 		return this.applyColor(MathAST.parentheses(content));
+	}
+
+	/**
+	 * Crochet de calcul : `[x-1]` — des parenthèses de forme `square`.
+	 */
+	private parseSquareBrackets(): MathNode {
+		this.advance(); // consume [
+
+		if (this.check('RBRACKET')) {
+			this.error('Empty brackets not allowed', this.currentToken.position, 1, 'EMPTY_GROUP');
+		}
+
+		const content = this.parseExpression(BP.NONE);
+		this.expect('RBRACKET', "Expected ']' after expression");
+
+		return this.applyColor(
+			MathAST.delimiter('parentheses', content, 'grouping', { shape: 'square' })
+		);
+	}
+
+	/**
+	 * Le jeton courant est-il un `[` de crochet de calcul (et non d'unité) ?
+	 * Regarde en avant jusqu'au `]` apparié, sans rien consommer.
+	 */
+	private isGroupingBracketHere(): boolean {
+		if (!this.check('LBRACKET')) return false;
+		return isGroupingBracket((offset) =>
+			offset === 0 ? this.currentToken : this.tokenizer.peekAt(offset - 1)
+		);
+	}
+
+	/** Le jeton courant est-il un `[` d'unité ? */
+	private checkUnitBracket(): boolean {
+		return this.check('LBRACKET') && !this.isGroupingBracketHere();
 	}
 
 	/**
@@ -1321,7 +1375,7 @@ class CustomPrattParser {
 
 		// Check for additional postfix operators (^, _, [])
 		let right = absValue;
-		while (this.check('CARET') || this.check('UNDERSCORE') || this.check('LBRACKET')) {
+		while (this.check('CARET') || this.check('UNDERSCORE') || this.checkUnitBracket()) {
 			if (this.check('CARET')) {
 				this.advance();
 				const exp = this.parsePowerOperand();
@@ -1330,7 +1384,7 @@ class CustomPrattParser {
 				this.advance();
 				const sub = this.parseSubscriptOperand();
 				right = this.applyColor(MathAST.subscript(right, sub));
-			} else if (this.check('LBRACKET')) {
+			} else if (this.checkUnitBracket()) {
 				right = this.parseUnitPostfix(right);
 			}
 		}

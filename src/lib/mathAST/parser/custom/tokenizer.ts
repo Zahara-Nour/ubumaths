@@ -453,11 +453,10 @@ export class CustomTokenizer {
 			return this.scanMultiChar('DOUBLE_LBRACKET', '[[', 2);
 		}
 
-		// ]] (matrix end)
-		if (char === ']' && this.peekChar(1) === ']') {
-			if (this.matrixDepth > 0) {
-				this.matrixDepth--;
-			}
+		// ]] (matrix end) — seulement dans une matrice : ailleurs, deux crochets
+		// de calcul qui se ferment ensemble (`2[3(x+1)-[x-2]]`).
+		if (char === ']' && this.peekChar(1) === ']' && this.matrixDepth > 0) {
+			this.matrixDepth--;
 			return this.scanMultiChar('DOUBLE_RBRACKET', ']]', 2);
 		}
 

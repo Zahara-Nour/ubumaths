@@ -511,7 +511,8 @@ function hasBracketViolation(latex: string, allowFirstNegative: boolean): boolea
  * Check if a node is a delimiter with parentheses (not brackets, braces, abs, etc.)
  */
 function isParenthesisDelimiter(node: MathNode): node is DelimiterNode {
-	return isDelimiter(node) && node.delimiters === 'parentheses';
+	// Un crochet de calcul `\left[ … \right]` n'est pas une parenthèse : non vérifié
+	return isDelimiter(node) && node.delimiters === 'parentheses' && node.shape !== 'square';
 }
 
 /**

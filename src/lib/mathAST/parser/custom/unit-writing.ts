@@ -9,6 +9,8 @@
  * @module mathAST/parser/custom/unit-writing
  */
 
+import { tokenize } from './tokenizer';
+
 /**
  * Le texte que rend un jeton dans une écriture d'unité, quand sa valeur ne le
  * porte pas telle quelle. Partiel : tout jeton absent de la table rend sa
@@ -84,4 +86,83 @@ export function readUnitWriting(
 	}
 
 	return { text, spaceAt };
+}
+
+// =============================================================================
+// Crochet d'unité ou crochet de calcul
+// =============================================================================
+
+/** Ce que la classification doit savoir d'un jeton : son type. */
+interface TypedToken {
+	readonly type: string;
+}
+
+/** Les jetons qui font d'un contenu entre crochets une expression. */
+const EXPRESSION_TOKENS: ReadonlySet<string> = new Set([
+	'PLUS',
+	'EQUALS',
+	'LESS',
+	'GREATER',
+	'LESS_EQUAL',
+	'GREATER_EQUAL',
+	'NOT_EQUAL'
+]);
+
+/**
+ * Un crochet POSTFIXE (`2[…]`) est-il un crochet de calcul plutôt qu'une unité ?
+ *
+ * Oui quand son contenu est clairement une expression : il contient `+`, `=`,
+ * `<`, `>` (ou `<=`, `>=`, `!=`), ou un `-` qui n'est pas le signe d'un
+ * exposant — un signe d'exposant suit `^` ou `^{` (`m.s^-1`, `m.s^{-1}`).
+ * Sinon le crochet reste une unité, et ses erreurs restent les siennes
+ * (`3[kms]`, `3[m s]`).
+ *
+ * Regarde en avant jusqu'au `]` apparié (crochets imbriqués comptés) SANS rien
+ * consommer. `tokenAt(0)` est le `[` lui-même. Un crochet jamais fermé n'est
+ * pas un crochet de calcul : l'erreur d'unité (« Expected ']' ») reste celle
+ * d'avant.
+ *
+ * Partagé par les deux parseurs maison et par le générateur de notation.
+ */
+export function isGroupingBracket(tokenAt: (offset: number) => TypedToken): boolean {
+	let depth = 1;
+	let isExpression = false;
+	let previous = '';
+	let beforePrevious = '';
+
+	for (let offset = 1; ; offset++) {
+		const type = tokenAt(offset).type;
+		if (type === 'EOF') return false;
+		if (type === 'LBRACKET') depth++;
+		else if (type === 'DOUBLE_LBRACKET') depth += 2;
+		else if (type === 'RBRACKET') depth--;
+		else if (type === 'DOUBLE_RBRACKET') depth -= 2;
+		if (depth <= 0) return isExpression;
+
+		if (EXPRESSION_TOKENS.has(type)) isExpression = true;
+		if (type === 'MINUS') {
+			const isExponentSign =
+				previous === 'CARET' || (previous === 'LBRACE' && beforePrevious === 'CARET');
+			if (!isExponentSign) isExpression = true;
+		}
+		beforePrevious = previous;
+		previous = type;
+	}
+}
+
+/**
+ * La même classification sur un texte : le contenu `content` écrit `[content]`
+ * derrière un nombre serait-il relu comme un crochet de calcul ? Sert au
+ * générateur de notation, qui écrit `(…)` quand la réponse est non.
+ */
+export function isGroupingBracketContent(content: string): boolean {
+	let tokens: readonly TypedToken[];
+	try {
+		tokens = tokenize(`[${content}]`);
+	} catch {
+		// Texte illisible : les parenthèses sont le choix sûr
+		return false;
+	}
+	const eof: TypedToken = { type: 'EOF' };
+	return isGroupingBracket((offset) => tokens[offset] ?? eof);
 }

@@ -51,6 +51,7 @@ import type {
 import { flattenRelationChain } from './flatten';
 import { format } from './units/formatter';
 import { needsParenthesesUnderSign } from './common/sign-parentheses';
+import { isGroupingBracketContent } from './parser/custom/unit-writing';
 
 // =============================================================================
 // Types
@@ -783,11 +784,13 @@ export class CustomGenerator {
 		const rightMeta = getRightDelimiterMetadata(node) ?? node.metadata;
 
 		switch (node.delimiters) {
-			case 'parentheses':
-				this.emit('(', leftMeta);
+			case 'parentheses': {
+				const square = this.isWrittenSquare(node);
+				this.emit(square ? '[' : '(', leftMeta);
 				this.visitWithSpans(node.content);
-				this.emit(')', rightMeta);
+				this.emit(square ? ']' : ')', rightMeta);
 				break;
+			}
 			default: {
 				const exhaustive: never = node.delimiters;
 				throw new Error(`Unknown delimiter type: ${exhaustive}`);
@@ -1368,12 +1371,21 @@ export class CustomGenerator {
 		return `${result}(${args})`;
 	}
 
+	/**
+	 * Un crochet de calcul s'écrit `[…]` seulement si son contenu serait relu
+	 * comme tel derrière une expression : sinon `2[x]` se relirait comme une
+	 * unité « x ». Dans ce cas, des parenthèses — même sens mathématique.
+	 */
+	private isWrittenSquare(node: DelimiterNode): boolean {
+		return node.shape === 'square' && isGroupingBracketContent(this.generateNode(node.content));
+	}
+
 	private generateDelimiter(node: DelimiterNode): string {
 		const content = this.generateNode(node.content);
 
 		switch (node.delimiters) {
 			case 'parentheses':
-				return `(${content})`;
+				return this.isWrittenSquare(node) ? `[${content}]` : `(${content})`;
 			default: {
 				const exhaustive: never = node.delimiters;
 				throw new Error(`Unknown delimiter type: ${exhaustive}`);
