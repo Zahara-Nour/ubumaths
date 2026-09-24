@@ -8,6 +8,7 @@
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import ExerciseResourceEditor from './ExerciseResourceEditor.svelte';
 	import VariationEditor from './VariationEditor.svelte';
+	import BareGreekWarning from './BareGreekWarning.svelte';
 	import { hasEnglishStatement } from '$lib/exercises/translation-draft';
 	import LaTeXImportDialog from './LaTeXImportDialog.svelte';
 	import GenericFunctionInput from './GenericFunctionInput.svelte';
@@ -732,6 +733,7 @@
 								{/if}
 							</div>
 						{/if}
+						<BareGreekWarning variation={variations[index]} />
 						<VariationEditor
 							bind:variation={variations[index]}
 							{supabase}
