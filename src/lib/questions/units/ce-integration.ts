@@ -300,8 +300,13 @@ function evaluateValueFromQuantity(quantity: Quantity): number | null {
 	return null;
 }
 
-/** Bruit relatif des flottants toléré quand aucune tolérance n'est demandée */
-const FLOAT_NOISE = 1e-9;
+/**
+ * Bruit relatif des flottants toléré quand aucune tolérance n'est demandée.
+ * Une conversion laisse ~1e-15 en relatif (20.000000000000057) ; 1e-12 en laisse
+ * passer, mais pas 0,5 m sur 10⁹ m (5e-10). Relatif pur : aucun plancher absolu,
+ * sinon 0 m était accepté pour 5·10⁻¹⁰ m. (`expected === 0` est traité à part.)
+ */
+const FLOAT_NOISE = 1e-12;
 
 /**
  * Compare two numeric values with optional tolerance
@@ -348,10 +353,10 @@ function compareValuesWithTolerance(
 
 	// Sans tolérance : égalité, au bruit des flottants près. Une conversion
 	// (1000 cm³ → L, 68 °F → °C) rend 1.0000000000000002 ou 20.000000000000057 ;
-	// l'égalité stricte refusait ces réponses justes. 1e-9 en relatif n'absorbe
-	// que ce bruit : 20,001 °C contre 20 °C reste faux.
+	// l'égalité stricte refusait ces réponses justes. La marge relative (FLOAT_NOISE)
+	// n'absorbe que ce bruit : 20,001 °C contre 20 °C reste faux.
 	if (!tolerance?.absolute && !tolerance?.relative) {
-		return Math.abs(actual - expected) <= FLOAT_NOISE * Math.max(1, Math.abs(expected));
+		return Math.abs(actual - expected) <= FLOAT_NOISE * Math.abs(expected);
 	}
 
 	return false;

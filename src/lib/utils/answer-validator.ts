@@ -26,6 +26,7 @@ import {
 	checkForm as checkFormUnified,
 	cosmeticViolations,
 	isSimpleNumberLatex,
+	isQuantityValueLatex,
 	type ConstraintSeverity
 } from '$lib/mathAST/cosmetic-transforms';
 import { extractUnitFromLatex } from '$lib/questions/units/parser';
@@ -753,7 +754,8 @@ function validateSingleBlank(
 		const raw = cosmeticViolations(numericLatex, severities, formOptions);
 		const { status, violations } = mapCosmeticViolations(raw, false);
 
-		if (!isSimpleNumberLatex(numericLatex)) {
+		// Nombre, fraction de nombres ou notation scientifique (cf. isQuantityValueLatex)
+		if (!isQuantityValueLatex(numericLatex)) {
 			const feedback = CONSTRAINT_FEEDBACK['form'].single;
 			return {
 				isCorrect: false,

@@ -48,11 +48,12 @@ const VALUE_PATTERNS = {
 	// Standard decimal/integer (with optional sign and LaTeX spacing)
 	decimal: /(-?\d+(?:[.,]\d+)?)/,
 
-	// LaTeX fraction: \frac{a}{b}
-	fraction: /\\frac\{([^}]+)\}\{([^}]+)\}/,
+	// LaTeX fraction: \frac{a}{b}, signe compris. ANCRÉE : non ancrée, elle lisait
+	// `-\frac{1}{2}` comme +½ et `2+\frac{1}{2}` comme ½.
+	fraction: /^([+-])?\s*\\d?frac\{([^{}]+)\}\{([^{}]+)\}$/,
 
-	// Scientific notation: a \times 10^{b} or a \cdot 10^{b}
-	scientific: /(-?\d+(?:[.,]\d+)?)\s*(?:\\times|\\cdot)\s*10\^?\{?(-?\d+)\}?/
+	// Scientific notation: a \times 10^{b} or a \cdot 10^{b} — ancrée elle aussi
+	scientific: /^([+-]?\d+(?:[.,]\d+)?)\s*(?:\\times|\\cdot)\s*10\^?\{?([+-]?\d+)\}?$/
 };
 
 // ============================================================================
@@ -121,8 +122,12 @@ function extractValue(latex: string): number | string | null {
 	// Trim and normalize
 	let str = latex.trim();
 
-	// Replace comma decimal separator with period
-	str = str.replace(/,/g, '.');
+	// Virgule décimale (`{,}` tel que l'application l'écrit, ou `,` tapée) → point ;
+	// espace fine de groupement entre chiffres (`12\,500`) retirée
+	str = str
+		.replace(/\{,\}/g, '.')
+		.replace(/(\d)\\,\s?(?=\d)/g, '$1')
+		.replace(/,/g, '.');
 
 	// Try scientific notation first
 	const scientificMatch = str.match(VALUE_PATTERNS.scientific);
@@ -135,15 +140,16 @@ function extractValue(latex: string): number | string | null {
 	// Try fraction
 	const fractionMatch = str.match(VALUE_PATTERNS.fraction);
 	if (fractionMatch) {
-		const numerator = extractValue(fractionMatch[1]);
-		const denominator = extractValue(fractionMatch[2]);
+		const sign = fractionMatch[1] === '-' ? -1 : 1;
+		const numerator = extractValue(fractionMatch[2]);
+		const denominator = extractValue(fractionMatch[3]);
 
 		if (typeof numerator === 'number' && typeof denominator === 'number' && denominator !== 0) {
-			return numerator / denominator;
+			return (sign * numerator) / denominator;
 		}
 
 		// Return as string if we can't evaluate
-		return `\\frac{${fractionMatch[1]}}{${fractionMatch[2]}}`;
+		return `${fractionMatch[1] === '-' ? '-' : ''}\\frac{${fractionMatch[2]}}{${fractionMatch[3]}}`;
 	}
 
 	// Check if string contains arithmetic operators (but not at the start for negative)
