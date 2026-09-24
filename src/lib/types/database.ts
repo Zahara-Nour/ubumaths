@@ -16772,6 +16772,10 @@ export type Database = {
         Args: { p_date: string; p_riddle_id: string; p_selected_by: string }
         Returns: string
       }
+      shared_coursework_is_restricted: {
+        Args: { p_shared_coursework_id: string }
+        Returns: boolean
+      }
       shares_tournament: { Args: { target_user_id: string }; Returns: boolean }
       soft_delete_message: {
         Args: { p_message_id: string }
