@@ -408,7 +408,7 @@ describe('Per-blank validation — Multi-blank aggregation', () => {
 		expect(result.feedback).toBe('Les blancs suivants sont incorrects: 2');
 	});
 
-	it('D19. per-blank message: un seul trou → feedback global inchangé', () => {
+	it('D19. per-blank message: un seul blanc → son message devient le feedback global', () => {
 		const instance = createInstance([mathBlank('5\\unit{km}', { unit: { expected: true } })]);
 
 		const result = validateAnswer(['5'], instance);

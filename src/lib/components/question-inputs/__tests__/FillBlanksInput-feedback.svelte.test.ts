@@ -14,7 +14,7 @@ import type { ResolvedMarkdown } from '$lib/ubumark';
 import type { InstanceBlank } from '$lib/questions/types';
 
 /** Région des messages par trou (MathLive a ses propres role=status) */
-const messagesRegion = () => page.getByRole('status', { name: 'Messages par trou' });
+const messagesRegion = () => page.getByRole('status', { name: 'Messages par blanc' });
 
 const MISSING_UNIT = 'N’oublie pas l’unité.';
 

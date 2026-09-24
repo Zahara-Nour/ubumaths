@@ -404,8 +404,8 @@
 		{/each}
 	{/if}
 
-	<!-- Messages par trou (après correction) -->
-	<div role="status" aria-live="polite" aria-label="Messages par trou">
+	<!-- Messages par blanc (après correction) -->
+	<div role="status" aria-live="polite" aria-label="Messages par blanc">
 		{#if blankMessages.length > 0}
 			<ul class="mt-2 space-y-1 text-sm text-destructive">
 				{#each blankMessages as { blankNumber, message } (blankNumber)}
