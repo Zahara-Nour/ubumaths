@@ -189,23 +189,26 @@ export function parseAngleExpression(expr: string): TrigAngle | null {
 		const m = parseInt(nPiOverM[2], 10);
 		if (m === 0) return null;
 		const radians = normalizeAngle((n * Math.PI) / m);
+		// Le signe se place devant la fraction : −2π/3, pas (−2π)/3
+		const abs = Math.abs(n);
 		return {
 			expression: `${n}π/${m}`,
 			radians,
-			latex: n === 1 ? `\\frac{\\pi}{${m}}` : `\\frac{${n}\\pi}{${m}}`
+			latex: `${n < 0 ? '-' : ''}${abs === 1 ? `\\frac{\\pi}{${m}}` : `\\frac{${abs}\\pi}{${m}}`}`
 		};
 	}
 
-	// Pattern: pi/n (e.g., "pi/3", "pi/6")
-	const piOverN = normalized.match(/^pi\s*\/\s*(\d+)$/);
+	// Pattern: pi/n or -pi/n (e.g., "pi/3", "-pi/6")
+	const piOverN = normalized.match(/^(-?)pi\s*\/\s*(\d+)$/);
 	if (piOverN) {
-		const n = parseInt(piOverN[1], 10);
+		const sign = piOverN[1];
+		const n = parseInt(piOverN[2], 10);
 		if (n === 0) return null;
-		const radians = normalizeAngle(Math.PI / n);
+		const radians = normalizeAngle(((sign ? -1 : 1) * Math.PI) / n);
 		return {
-			expression: `π/${n}`,
+			expression: `${sign}π/${n}`,
 			radians,
-			latex: `\\frac{\\pi}{${n}}`
+			latex: `${sign}\\frac{\\pi}{${n}}`
 		};
 	}
 
@@ -221,12 +224,13 @@ export function parseAngleExpression(expr: string): TrigAngle | null {
 		};
 	}
 
-	// Pattern: just "pi"
-	if (normalized === 'pi') {
+	// Pattern: just "pi" or "-pi"
+	if (normalized === 'pi' || normalized === '-pi') {
+		const sign = normalized.startsWith('-') ? '-' : '';
 		return {
-			expression: 'π',
+			expression: `${sign}π`,
 			radians: Math.PI,
-			latex: '\\pi'
+			latex: `${sign}\\pi`
 		};
 	}
 
