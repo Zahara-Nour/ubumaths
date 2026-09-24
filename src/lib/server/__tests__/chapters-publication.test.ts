@@ -14,7 +14,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createMockSupabase, mockSuccess, mockError } from 'tests/helpers';
+import { createMockSupabase, mockSuccess, mockError } from '$tests/helpers';
 
 const CHAPITRE = '99999999-9999-4999-8999-999999999999';
 const ELEMENT = '11111111-1111-4111-8111-111111111111';

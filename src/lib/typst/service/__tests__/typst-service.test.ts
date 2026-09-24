@@ -14,13 +14,16 @@ vi.mock('../../compiler', () => ({
 }));
 
 // Mock the cache module
+// `function` et non flèche : vitest 4 appelle le mock avec `new`
 vi.mock('../../cache', () => ({
-	TypstCache: vi.fn().mockImplementation(() => ({
-		get: vi.fn().mockReturnValue(null),
-		set: vi.fn(),
-		clear: vi.fn(),
-		getStats: vi.fn().mockReturnValue({ size: 0, hits: 0, misses: 0, evictions: 0 })
-	}))
+	TypstCache: vi.fn().mockImplementation(function () {
+		return {
+			get: vi.fn().mockReturnValue(null),
+			set: vi.fn(),
+			clear: vi.fn(),
+			getStats: vi.fn().mockReturnValue({ size: 0, hits: 0, misses: 0, evictions: 0 })
+		};
+	})
 }));
 
 // Get the mocked function
@@ -65,7 +68,9 @@ describe('TypstService', () => {
 		};
 
 		// Reset the mock implementation for each test
-		(TypstCache as Mock).mockImplementation(() => mockCache);
+		(TypstCache as Mock).mockImplementation(function () {
+			return mockCache;
+		});
 	});
 
 	afterEach(() => {

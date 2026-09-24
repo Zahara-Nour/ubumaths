@@ -13,7 +13,7 @@
  *   createMockProfile,
  *   createMockStudent,
  *   createMockTeacher
- * } from 'tests/helpers/fixtures';
+ * } from '$tests/helpers/fixtures';
  *
  * describe('Profile tests', () => {
  *   it('should use mock profile', () => {

@@ -19,7 +19,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createMockSupabase, mockSuccess, mockError } from 'tests/helpers';
+import { createMockSupabase, mockSuccess, mockError } from '$tests/helpers';
 import type { TemplateContentSnapshot } from '$lib/types/chapter-templates';
 
 const CHAPITRE = '99999999-9999-4999-8999-999999999999';
