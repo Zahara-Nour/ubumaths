@@ -30,13 +30,13 @@
 
 ## Phases
 
-| Phase | Contenu                                                                                                     | Agent                     | État                                                 |
-| ----- | ----------------------------------------------------------------------------------------------------------- | ------------------------- | ---------------------------------------------------- |
-| 1     | Une seule règle : la correction lit les unités avec le lecteur mathAST (+ exposants Unicode `m²`)           | pedagogy-expert (Opus)    | ✅ livrée (#410) — `(m/s)^2` refusé (décision David) |
-| 2     | A — lecture tolérante dans les trous avec unité (`5km`, `5\,\mathrm{km}`, `20\degree C`, `90\frac{km}{h}`…) | pedagogy-expert (Opus)    | codée — 47 tests, 42 rouges sans elle                |
-| 3     | Messages à l'élève (grandeur, unité imposée, manquante, ambiguë)                                            | pedagogy-expert (Opus)    | à faire                                              |
-| 4     | B — onglet « Unités » du clavier virtuel, filtré par grandeur, insère `\unit{…}`                            | frontend-developer (Opus) | à faire                                              |
-| —     | code-reviewer en fin de chantier                                                                            | code-reviewer             | à faire                                              |
+| Phase | Contenu                                                                                                     | Agent                     | État                                                                    |
+| ----- | ----------------------------------------------------------------------------------------------------------- | ------------------------- | ----------------------------------------------------------------------- |
+| 1     | Une seule règle : la correction lit les unités avec le lecteur mathAST (+ exposants Unicode `m²`)           | pedagogy-expert (Opus)    | ✅ livrée (#410) — `(m/s)^2` refusé (décision David)                    |
+| 2     | A — lecture tolérante dans les trous avec unité (`5km`, `5\,\mathrm{km}`, `20\degree C`, `90\frac{km}{h}`…) | pedagogy-expert (Opus)    | ✅ livrée (#411)                                                        |
+| 3     | Messages à l'élève (grandeur, unité imposée, manquante, ambiguë)                                            | pedagogy-expert (Opus)    | codée — 10 tests, 7 rouges sans elle ; affiché dans FlashCard seulement |
+| 4     | B — onglet « Unités » du clavier virtuel, filtré par grandeur, insère `\unit{…}`                            | frontend-developer (Opus) | à faire                                                                 |
+| —     | code-reviewer en fin de chantier                                                                            | code-reviewer             | à faire                                                                 |
 
 Hors périmètre (décidé) : réponses littérales avec unité (« 2x cm ») — chantier séparé.
 
@@ -54,3 +54,4 @@ Hors périmètre (décidé) : réponses littérales avec unité (« 2x cm ») �
 - 2026-09-24 — worktree créé, spécification validée.
 - 2026-09-24 — Phase 1 livrée (#410). Vrai clavier mesuré (table ci-dessus). Phase 2 codée (`src/lib/questions/units/student-input.ts`).
 - Limites connues de la Phase 2 : séparateur de milliers tapé (`1\,000\operatorname{m}`) non lu ; `5\cdot\operatorname{km}` non lu. Mesure faite dans un champ MathLive ÉDITABLE : à revérifier dans un trou (`\placeholder` d'un champ readonly) en Phase 4.
+- 2026-09-24 — Phase 2 livrée (#411). Phase 3 codée : messages dans `src/lib/questions/units/feedback.ts`. Trace UI : affichés dans `FlashCard.svelte` (l.379) ; PERDUS dans `QuestionSlide.svelte` (ne montre que `message`) et `QuestionCard.svelte` (« NO visual feedback », voulu ?) ; aucun message par trou quand il y en a plusieurs (`ValidationResult` sans champ par trou). Effet de bord : le message d'une règle de validation d'un trou unique atteint désormais l'élève. → question posée à David.
