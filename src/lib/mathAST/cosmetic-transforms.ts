@@ -80,27 +80,17 @@ export function removeZeros(latex: string): string {
 	// followed by \, and then digits, is a superfluous leading zero with grouping.
 	result = result.replace(new RegExp(`${ZERO_DELIMITER}0+(?:\\\\,\\s?)+(\\d)`, 'g'), '$1$2');
 
-	// Handle trailing decimal zeros: 1.0 → 1, 1.20 → 1.2, 1.00 → 1
-	// Des chiffres qui reprennent après une espace fine (`1{,}000\,5`, décimales
-	// groupées par trois) ne sont pas des zéros de fin.
-	// Also handles French comma (with {,}): 1{,}0 → 1
-	// Using a loop to handle all occurrences
-	result = result.replace(/(\d+)\.(\d*?)0+(?!\d|\\,\s?\d)/g, (_, intPart, decPart) => {
-		if (decPart === '') return intPart; // 1.0 → 1
-		return `${intPart}.${decPart}`;
-	});
-
-	// Handle French decimal comma format: {,}0 trailing
-	result = result.replace(/(\d+)\{,\}(\d*?)0+(?!\d|\\,\s?\d)/g, (_, intPart, decPart) => {
-		if (decPart === '') return intPart;
-		return `${intPart}{,}${decPart}`;
-	});
-
-	// Handle plain comma as decimal: 1,0 → 1
-	result = result.replace(/(\d+),(\d*?)0+(?!\d|\\,\s?\d)/g, (_, intPart, decPart) => {
-		if (decPart === '') return intPart;
-		return `${intPart},${decPart}`;
-	});
+	// Zéros de fin d'une partie décimale : 1.0 → 1, 1.20 → 1.2, 1{,}0 → 1, 1,20 → 1,2.
+	// La partie décimale est lue EN ENTIER, groupes à l'espace fine compris
+	// (`formatDecimalPart` écrit `141\,592\,65`) : `2,500\,0` → `2,5`, mais
+	// `1,000\,5` (1,0005) garde ses zéros, qui ne sont pas de fin.
+	result = result.replace(
+		/(\d+)(\.|\{,\}|,)(\d+(?:\\,\s?\d+)*)/g,
+		(_, intPart: string, separator: string, decimals: string) => {
+			const kept = decimals.replace(/(?:0|\\,\s?)+$/, '');
+			return kept === '' ? intPart : `${intPart}${separator}${kept}`;
+		}
+	);
 
 	return result;
 }
