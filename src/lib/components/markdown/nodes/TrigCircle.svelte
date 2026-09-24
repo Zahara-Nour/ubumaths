@@ -397,25 +397,6 @@
 				<g class="trig-arcs">
 					{#each displayArcs as arc, i (i)}
 						<path d={createArcPath(arc)} class="trig-solution-arc" />
-						<!-- Endpoint markers -->
-						{@const startPoint = angleToPoint(arc.startAngle)}
-						{@const endPoint = angleToPoint(arc.endAngle)}
-						<circle
-							cx={startPoint.x}
-							cy={startPoint.y}
-							r={POINT_RADIUS}
-							class="trig-arc-endpoint"
-							class:trig-endpoint-open={!arc.includeStart}
-							class:trig-endpoint-closed={arc.includeStart}
-						/>
-						<circle
-							cx={endPoint.x}
-							cy={endPoint.y}
-							r={POINT_RADIUS}
-							class="trig-arc-endpoint"
-							class:trig-endpoint-open={!arc.includeEnd}
-							class:trig-endpoint-closed={arc.includeEnd}
-						/>
 					{/each}
 				</g>
 			{/if}
@@ -557,6 +538,33 @@
 					/>
 				{/each}
 			</g>
+
+			<!-- Bornes des arcs, APRÈS les points : un point nommé à une borne exclue
+			     (sin x > √2/2) recouvrait le rond vide qui la marque -->
+			{#if node.config.mode === 'arc' && displayArcs.length > 0}
+				<g class="trig-arc-endpoints">
+					{#each displayArcs as arc, i (i)}
+						{@const startPoint = angleToPoint(arc.startAngle)}
+						{@const endPoint = angleToPoint(arc.endAngle)}
+						<circle
+							cx={startPoint.x}
+							cy={startPoint.y}
+							r={POINT_RADIUS}
+							class="trig-arc-endpoint"
+							class:trig-endpoint-open={!arc.includeStart}
+							class:trig-endpoint-closed={arc.includeStart}
+						/>
+						<circle
+							cx={endPoint.x}
+							cy={endPoint.y}
+							r={POINT_RADIUS}
+							class="trig-arc-endpoint"
+							class:trig-endpoint-open={!arc.includeEnd}
+							class:trig-endpoint-closed={arc.includeEnd}
+						/>
+					{/each}
+				</g>
+			{/if}
 
 			<!-- Angle labels -->
 			{#if node.config.showLabels}

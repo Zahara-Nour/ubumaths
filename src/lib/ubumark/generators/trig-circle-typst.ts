@@ -104,6 +104,12 @@ export function generateTrigCircleTypst(
 		// Draw angle points
 		parts.push(generatePoints(angles, node.config.color, opts));
 
+		// Bornes des arcs APRÈS les points : sinon le point d'un angle nommé à une
+		// borne exclue recouvre le rond vide qui la marque
+		if (node.config.mode === 'arc' && node.solution?.arcs && node.solution.arcs.length > 0) {
+			parts.push(generateArcEndpoints(node.solution.arcs, node.config.color, opts));
+		}
+
 		// Draw labels if enabled
 		if (node.config.showLabels) {
 			parts.push(generateLabels(angles, opts));
@@ -254,35 +260,41 @@ function generateArcs(
 		lines.push(
 			`  arc((0, 0), radius: ${formatNumber(opts.radius)}, start: ${formatNumber(startDeg)}deg, stop: ${formatNumber(endDeg)}deg, anchor: "origin")`
 		);
-
-		// Draw endpoint markers
-		const startPoint = angleToCoords(arc.startAngle, opts.radius);
-		const endPoint = angleToCoords(arc.endAngle, opts.radius);
-
-		if (arc.includeStart) {
-			lines.push(
-				`  circle((${formatNumber(startPoint.x)}, ${formatNumber(startPoint.y)}), radius: ${formatNumber(opts.pointRadius)}, fill: ${typstColor})`
-			);
-		} else {
-			lines.push(
-				`  circle((${formatNumber(startPoint.x)}, ${formatNumber(startPoint.y)}), radius: ${formatNumber(opts.pointRadius)}, fill: white, stroke: ${typstColor})`
-			);
-		}
-
-		if (arc.includeEnd) {
-			lines.push(
-				`  circle((${formatNumber(endPoint.x)}, ${formatNumber(endPoint.y)}), radius: ${formatNumber(opts.pointRadius)}, fill: ${typstColor})`
-			);
-		} else {
-			lines.push(
-				`  circle((${formatNumber(endPoint.x)}, ${formatNumber(endPoint.y)}), radius: ${formatNumber(opts.pointRadius)}, fill: white, stroke: ${typstColor})`
-			);
-		}
 	}
 
 	lines.push('  set-style(stroke: black)');
 	lines.push('');
 
+	return lines.join('\n');
+}
+
+/**
+ * Bornes des arcs : rond plein si la borne est incluse, vide sinon. Dessinées
+ * après les points des angles, et un peu plus grandes, pour les recouvrir.
+ */
+function generateArcEndpoints(
+	arcs: TrigArc[],
+	color: string,
+	opts: Required<TrigCircleTypstOptions>
+): string {
+	const typstColor = getTypstColor(color);
+	const radius = formatNumber(opts.pointRadius * 1.6);
+	const lines: string[] = ['  // Arc endpoints'];
+	lines.push(`  set-style(stroke: (paint: ${typstColor}, thickness: 1.5pt))`);
+	for (const arc of arcs) {
+		for (const [angle, included] of [
+			[arc.startAngle, arc.includeStart],
+			[arc.endAngle, arc.includeEnd]
+		] as const) {
+			const p = angleToCoords(angle, opts.radius);
+			const fill = included ? typstColor : 'white';
+			lines.push(
+				`  circle((${formatNumber(p.x)}, ${formatNumber(p.y)}), radius: ${radius}, fill: ${fill})`
+			);
+		}
+	}
+	lines.push('  set-style(stroke: black)');
+	lines.push('');
 	return lines.join('\n');
 }
 
