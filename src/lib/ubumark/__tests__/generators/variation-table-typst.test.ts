@@ -59,7 +59,7 @@ describe('generateVariationTableTypst - Basic Structure', () => {
 		const node = createBasicNode();
 		const typst = generateVariationTableTypst(node);
 
-		expect(typst).toContain('#tabvar(');
+		expect(typst).toContain('tabvar(');
 		expect(typst).toContain('variable:');
 		expect(typst).toContain('domain:');
 		expect(typst).toContain('label:');
@@ -637,7 +637,7 @@ describe('generateVariationTableTypst - Complex Tables', () => {
 
 		// Verify structure
 		expect(typst).toContain('#import "@preview/vartable:0.2.1": tabvar');
-		expect(typst).toContain('#tabvar(');
+		expect(typst).toContain('tabvar(');
 
 		// Verify variable
 		expect(typst).toContain('variable: $x$');
@@ -925,7 +925,7 @@ ${tableTypst}`;
 
 		expect(fullDoc).toContain('#set page');
 		expect(fullDoc).toContain('#import "@preview/vartable');
-		expect(fullDoc).toContain('#tabvar(');
+		expect(fullDoc).toContain('tabvar(');
 	});
 });
 
@@ -957,6 +957,16 @@ describe('generateVariationTableTypst - Rendu PDF', () => {
 		// Sans reflow, scale() garde la hauteur d'origine → grand blanc sous le tableau
 		const typst = generateVariationTableTypst(createBasicNode());
 
-		expect(typst).toMatch(/#scale\(x: 55%, y: 55%, origin: top \+ left, reflow: true\)/);
+		expect(typst).toMatch(/scale\(x: k, y: k, origin: top \+ left, reflow: true, table\)/);
+	});
+
+	it('réduit un tableau large juste assez pour tenir dans la colonne (55 % au plus)', () => {
+		// Échelle fixe à 55 % : un tableau à 5 abscisses et double barre débordait de la
+		// colonne d'une fiche en deux colonnes, sa partie droite coupée (2026-09-24).
+		const typst = generateVariationTableTypst(createBasicNode());
+
+		expect(typst).toContain('#layout(size => {');
+		expect(typst).toContain('let natural = measure(table).width');
+		expect(typst).toContain('let k = calc.min(0.55, size.width / natural) * 100%');
 	});
 });
