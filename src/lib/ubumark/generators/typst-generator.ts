@@ -848,7 +848,9 @@ function generateAlignedGrid(rows: string[]): string {
 		const parts = row.split('&').map((p) => p.trim());
 
 		// Column 1: Initial expression (only first row) - use inline math
-		const col1 = i === 0 && parts[0] ? `[$${convertLatexToTypstMath(parts[0])}$]` : '[]';
+		// Calcul centré : fractions de premier niveau en taille normale, comme dans le texte
+		const col1 =
+			i === 0 && parts[0] ? `[$${convertLatexToTypstMath(markDisplayFractions(parts[0]))}$]` : '[]';
 
 		if (parts.length >= 2) {
 			const rightPart = parts.slice(1).join('&').trim();
@@ -884,14 +886,16 @@ function generateAlignedGrid(rows: string[]): string {
 			}
 
 			// Column 3: use inline math $...$ (no spaces) to avoid centering behavior
-			const col3 = col3Content ? `[$${convertLatexToTypstMath(col3Content)}$]` : '[]';
+			const col3 = col3Content
+				? `[$${convertLatexToTypstMath(markDisplayFractions(col3Content))}$]`
+				: '[]';
 			// Column 4: add left padding with #h(1em) for visual separation
 			const col4 = col4Content ? `[#h(1em)$${convertLatexToTypstMath(col4Content)}$]` : '[]';
 
 			gridRows.push(`  ${col1}, ${col2}, ${col3}, ${col4}`);
 		} else {
 			// No alignment point - put everything in column 3
-			const mathPart = parts[0] ? convertLatexToTypstMath(parts[0]) : '';
+			const mathPart = parts[0] ? convertLatexToTypstMath(markDisplayFractions(parts[0])) : '';
 			gridRows.push(`  ${col1}, [], [$${mathPart}$], []`);
 		}
 	}
