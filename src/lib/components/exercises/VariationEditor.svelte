@@ -19,6 +19,7 @@
 	} from '$lib/exercises/translation-draft';
 	import type { Variable } from '$lib/ubumark';
 	import type { SupabaseClient } from '@supabase/supabase-js';
+	import { provideContentLocale } from '$lib/components/markdown/content-locale';
 
 	interface Props {
 		variation: ExerciseVariation;
@@ -59,6 +60,8 @@
 	// must never carry an empty `translations` that makes it look translated.
 	// ---------------------------------------------------------------------------
 	let locale = $state<ContentLocale>('fr');
+	// Aperçu dans la langue de l'onglet : point décimal en anglais
+	provideContentLocale(() => locale);
 
 	const localeItems = [
 		{ value: 'fr', label: 'Français' },

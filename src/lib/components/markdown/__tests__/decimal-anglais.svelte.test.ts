@@ -8,6 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import MarkdownRenderer from '../MarkdownRenderer.svelte';
+import LocaleProviderHarness from './LocaleProviderHarness.svelte';
 
 const contenu = [
 	'Take ~p=0.3~ and $q=0.25$.',
@@ -56,5 +57,15 @@ describe('MarkdownRenderer — séparateur décimal selon la langue', () => {
 		const latex = await formules();
 		expect(latex).toContain('0{,}3');
 		expect(latex).not.toMatch(/\d\.\d/);
+	});
+
+	it('rendu sans prop sous un fournisseur (page élève, éditeur) : hérite de la langue', async () => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const screen = await render(LocaleProviderHarness as any, {
+			props: { content: 'Take ~p=0.3~.', locale: 'en' }
+		});
+		const el = screen.container;
+		await expect.poll(() => el.querySelectorAll('math-span').length).toBe(1);
+		expect(el.querySelector('math-span')?.textContent).toContain('0.3');
 	});
 });
