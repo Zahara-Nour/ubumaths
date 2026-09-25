@@ -189,20 +189,23 @@ export function generateTypst(ast: DocumentNode, options: TypstTranspilerOptions
 }
 
 /**
- * En-tête de lisibilité, émis avant le corps (portée : le conteneur où le corps
- * est inséré — les générateurs de fiche l'insèrent par exercice) :
+ * En-tête de lisibilité, émis avant le corps de chaque document généré (souvent
+ * par exercice ; parfois au niveau du document — règles et fonctions idempotentes).
+ * Les formules des tableaux, tableaux de variation et étiquettes gardent des
+ * fractions réduites (compacité voulue) : seul le texte courant est concerné.
  *  - l'interligne suit la hauteur RÉELLE des formules du texte : une fraction en
  *    taille normale dans une ligne faisait chevaucher les lignes voisines
  *    (mesuré avec le compilateur de prod) ;
  *  - `ubu-item` : item de liste dont le numéro est DANS la première ligne, donc
  *    aligné sur sa ligne de base (`enum` le colle en haut d'un premier item haut) ;
+ *    `w` = numéro le plus large de la liste, dont la place est réservée (comme `enum`) ;
  *  - `ubu-item-bloc` : item qui commence par un bloc (formule centrée, cercle…),
  *    numéro à côté du bloc comme avant.
  */
 const PDF_READABILITY_HEADER = [
 	'#show math.equation.where(block: false): set text(top-edge: "bounds", bottom-edge: "bounds")',
-	'#let ubu-item(num, body, indent: 1.5em) = block(spacing: 1.5em, pad(left: indent, [#h(-indent)#box(width: indent - 0.4em, align(end, num))#h(0.4em)#body]))',
-	'#let ubu-item-bloc(num, body, indent: 1.5em) = block(spacing: 1.5em, grid(columns: (indent, 1fr), box(width: indent - 0.4em, align(end, num)), body))',
+	'#let ubu-item(num, body, w: "a)") = context { let n = measure(w).width + 0.5em; block(spacing: 1.5em, pad(left: n, [#h(-n)#box(width: n - 0.5em, align(end, num))#h(0.5em)#body])) }',
+	'#let ubu-item-bloc(num, body, w: "a)") = context { let n = measure(w).width + 0.5em; block(spacing: 1.5em, grid(columns: (n, 1fr), box(width: n - 0.5em, align(end, num)), body)) }',
 	'// ubumark: fin de l’en-tête',
 	''
 ].join('\n');
@@ -467,6 +470,57 @@ function getNumberingPattern(depth: number): string {
 	return ENUM_NUMBERING_PATTERNS[Math.min(depth - 1, ENUM_NUMBERING_PATTERNS.length - 1)];
 }
 
+/** Libellé du numéro `n` pour un motif `a)`, `1)` ou `i)` (comme `numbering` de Typst). */
+function listLabel(pattern: string, n: number): string {
+	if (pattern === '1)') return `${n})`;
+	if (pattern === 'a)') {
+		let label = '';
+		for (let k = n; k > 0; k = Math.floor((k - 1) / 26)) {
+			label = String.fromCharCode(97 + ((k - 1) % 26)) + label;
+		}
+		return `${label})`;
+	}
+	const romans: [number, string][] = [
+		[1000, 'm'],
+		[900, 'cm'],
+		[500, 'd'],
+		[400, 'cd'],
+		[100, 'c'],
+		[90, 'xc'],
+		[50, 'l'],
+		[40, 'xl'],
+		[10, 'x'],
+		[9, 'ix'],
+		[5, 'v'],
+		[4, 'iv'],
+		[1, 'i']
+	];
+	let label = '';
+	let k = n;
+	for (const [value, symbol] of romans) {
+		while (k >= value) {
+			label += symbol;
+			k -= value;
+		}
+	}
+	return `${label})`;
+}
+
+/**
+ * Numéro le plus large d'une liste (estimation typographique : m et w larges,
+ * i et l étroits) — sa place est réservée pour tous les items, comme `enum`.
+ */
+function widestLabel(pattern: string, first: number, last: number): string {
+	const width = (label: string) =>
+		[...label].reduce((sum, ch) => sum + (/[mw]/.test(ch) ? 1.5 : /[il)]/.test(ch) ? 0.5 : 1), 0);
+	let widest = listLabel(pattern, first);
+	for (let n = first + 1; n <= last; n++) {
+		const label = listLabel(pattern, n);
+		if (width(label) > width(widest)) widest = label;
+	}
+	return widest;
+}
+
 /**
  * Generate list node with depth tracking for proper numbering
  *
@@ -490,11 +544,11 @@ function generateList(
 	// Numéro de chaque item : style de la profondeur et numéro de départ pour une liste
 	// numérotée, puce sinon. Calculé par Typst (`numbering`), comme le faisait `enum`.
 	const pattern = getNumberingPattern(newDepth);
+	const widest = node.ordered
+		? widestLabel(pattern, startNumber, startNumber + node.items.length - 1)
+		: '•';
 	const items = node.items.map((item: ListItemNode, index: number) => {
-		// Puce : retrait de 1em comme `list` (1,5em réduisait la colonne utile : débord mesuré)
-		const num = node.ordered
-			? `numbering("${pattern}", ${startNumber + index})`
-			: '[•], indent: 1em';
+		const num = `${node.ordered ? `numbering("${pattern}", ${startNumber + index})` : '[•]'}, w: "${widest}"`;
 		const content = generateListItemContent(item, options, newDepth);
 		// Item qui commence par un bloc (formule centrée, cercle…) : numéro à côté du bloc
 		const helper =
@@ -1524,12 +1578,27 @@ function visibleWidth(latex: string): number {
 export function markDisplayFractions(latex: string): string {
 	// Contexte de chaque accolade ouverte : fraction, exposant/indice, ou groupe neutre
 	const stack: ('frac' | 'script' | 'group')[] = [];
-	let pendingFracBraces = 0; // accolades num/dén encore attendues pour la fraction lue
+	// Index des accolades qui ouvrent un argument de fraction (numérateur ou dénominateur)
+	const fracBraces = new Set<number>();
 	let out = '';
 	for (let i = 0; i < latex.length; i++) {
-		const rest = latex.slice(i);
-		const frac = rest.match(/^\\(d?)frac(?![a-zA-Z])\s*/);
+		// `\{` `\}` (ensembles) : accolades échappées, pas des groupes
+		if (latex[i] === '\\' && (latex[i + 1] === '{' || latex[i + 1] === '}')) {
+			out += latex.slice(i, i + 2);
+			i++;
+			continue;
+		}
+		const frac = latex.slice(i).match(/^\\(d?)frac(?![a-zA-Z])\s*/);
 		if (frac) {
+			const open = i + frac[0].length;
+			const numEnd = latex[open] === '{' ? findMatchingBrace(latex, open) : -1;
+			let denStart = numEnd + 1;
+			while (numEnd !== -1 && /\s/.test(latex[denStart] ?? '')) denStart++;
+			const denEnd =
+				numEnd !== -1 && latex[denStart] === '{' ? findMatchingBrace(latex, denStart) : -1;
+			if (numEnd !== -1) fracBraces.add(open);
+			if (denEnd !== -1) fracBraces.add(denStart);
+
 			const prevChar = out.replace(/\s+$/, '').slice(-1);
 			const topLevel =
 				!stack.includes('frac') &&
@@ -1537,35 +1606,24 @@ export function markDisplayFractions(latex: string): string {
 				prevChar !== '^' &&
 				prevChar !== '_';
 			let replaced = frac[0];
-			if (frac[1] === 'd' && topLevel) {
-				const open = i + frac[0].length;
-				const numEnd = latex[open] === '{' ? findMatchingBrace(latex, open) : -1;
-				let denStart = numEnd + 1;
-				while (denStart > 0 && /\s/.test(latex[denStart] ?? '')) denStart++;
-				const denEnd =
-					numEnd !== -1 && latex[denStart] === '{' ? findMatchingBrace(latex, denStart) : -1;
-				if (denEnd !== -1) {
-					const width = Math.max(
-						visibleWidth(latex.slice(open + 1, numEnd)),
-						visibleWidth(latex.slice(denStart + 1, denEnd))
-					);
-					if (width <= DISPLAY_FRACTION_MAX_WIDTH)
-						replaced = frac[0].replace('\\dfrac', '\\ubudfrac');
+			if (frac[1] === 'd' && topLevel && denEnd !== -1) {
+				const width = Math.max(
+					visibleWidth(latex.slice(open + 1, numEnd)),
+					visibleWidth(latex.slice(denStart + 1, denEnd))
+				);
+				if (width <= DISPLAY_FRACTION_MAX_WIDTH) {
+					replaced = frac[0].replace('\\dfrac', '\\ubudfrac');
 				}
 			}
 			out += replaced;
 			i += frac[0].length - 1;
-			// `\dfrac12` (sans accolades) : aucune accolade de fraction à attendre
-			pendingFracBraces = latex[i + 1] === '{' ? 2 : 0;
 			continue;
 		}
 		const c = latex[i];
 		if (c === '{') {
 			const prev = out.replace(/\s+$/, '').slice(-1);
-			if (pendingFracBraces > 0) {
-				stack.push('frac');
-				pendingFracBraces--;
-			} else stack.push(prev === '^' || prev === '_' ? 'script' : 'group');
+			if (fracBraces.has(i)) stack.push('frac');
+			else stack.push(prev === '^' || prev === '_' ? 'script' : 'group');
 		} else if (c === '}') {
 			stack.pop();
 		}
@@ -1676,7 +1734,6 @@ const KNOWN_TYPST_SYMBOLS = new Set([
 	'sqrt',
 	'root',
 	'frac',
-	'display',
 	'binom',
 	'integral',
 	'display',

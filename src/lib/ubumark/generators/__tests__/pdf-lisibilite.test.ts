@@ -62,6 +62,23 @@ describe('fractions dans le texte', () => {
 		expect(formule('$\\dfrac12 + x^{2} + \\dfrac{1}{3}$')).toContain('display(frac(1, 3))');
 	});
 
+	// Relecture 2026-09-25 : une fraction au DÉNOMINATEUR passait en taille normale
+	it.each([
+		['\\dfrac{x^{2}}{\\dfrac{1}{2}}'],
+		['\\dfrac{\\sqrt{2}}{\\dfrac{1}{3}}'],
+		['\\dfrac{1{,}5}{\\dfrac{1}{2}}'],
+		['\\dfrac{\\dfrac{1}{2}}{\\dfrac{3}{4}}']
+	])('%s : seule la fraction extérieure est en taille normale', (latex) => {
+		const f = formule(`$${latex}$`);
+		expect(f.match(/display\(/g)).toHaveLength(1);
+		expect(f.startsWith('display(frac(')).toBe(true);
+	});
+
+	it('accolades échappées `\\{ \\}` : ne comptent pas comme des groupes', () => {
+		expect(formule('$x^{\\left.a\\right\\} \\dfrac{1}{2}}$')).not.toContain('display');
+		expect(formule('$\\left\\{\\dfrac{1}{2}\\right\\}$')).toContain('display(frac(1, 2))');
+	});
+
 	it('formule centrée ($$…$$) : inchangée', () => {
 		expect(typst('$$\\dfrac{1}{2}$$')).not.toContain('display(');
 	});
@@ -80,24 +97,48 @@ describe('numéros de liste dans la première ligne', () => {
 	it('liste numérotée : chaque item appelle l’aide `ubu-item` avec son numéro', () => {
 		const code = typst('1. alpha\n2. beta');
 		expect(code).not.toContain('#enum(');
-		expect(code).toContain('#ubu-item(numbering("a)", 1))[alpha]');
-		expect(code).toContain('#ubu-item(numbering("a)", 2))[beta]');
+		expect(code).toContain('#ubu-item(numbering("a)", 1), w: "a)")[alpha]');
+		expect(code).toContain('#ubu-item(numbering("a)", 2), w: "a)")[beta]');
 	});
 
 	it('le numéro de départ est respecté', () => {
-		expect(typst('3. alpha\n4. beta')).toContain('#ubu-item(numbering("a)", 3))[alpha]');
+		expect(typst('3. alpha\n4. beta')).toContain('#ubu-item(numbering("a)", 3), w: "c)")[alpha]');
 	});
 
 	it('sous-liste : style de sa profondeur', () => {
-		expect(typst('1. Calculer :\n   a. x\n2. Fin.')).toContain('#ubu-item(numbering("1)", 1))[x]');
+		expect(typst('1. Calculer :\n   a. x\n2. Fin.')).toContain(
+			'#ubu-item(numbering("1)", 1), w: "1)")[x]'
+		);
 	});
 
 	it('liste à puces : puce', () => {
-		expect(typst('- alpha\n- beta')).toContain('#ubu-item([•], indent: 1em)[alpha]');
+		expect(typst('- alpha\n- beta')).toContain('#ubu-item([•], w: "•")[alpha]');
 	});
 
 	it('item qui commence par un bloc : numéro à côté du bloc (grille)', () => {
-		expect(typst('1. $$x^2=4$$\n2. b')).toContain('#ubu-item-bloc(numbering("a)", 1))[');
+		expect(typst('1. $$x^2=4$$\n2. b')).toContain('#ubu-item-bloc(numbering("a)", 1), w: "a)")[');
+	});
+
+	// Relecture 2026-09-25 : la largeur du numéro était fixe (1,1 em) — `10)`, `m)`,
+	// `viii)` débordaient. Comme `enum`, la liste réserve la place de son PLUS LARGE numéro.
+	it.each([
+		[
+			'11 items de profondeur 2 : « 10) » (même largeur que « 11) », le premier est gardé)',
+			'1. p\n' + Array.from({ length: 11 }, (_, i) => `   ${i + 1}. x`).join('\n'),
+			'"10)"'
+		],
+		[
+			'13 items de profondeur 1 : « m) »',
+			Array.from({ length: 13 }, (_, i) => `${i + 1}. x`).join('\n'),
+			'"m)"'
+		],
+		[
+			'8 items de profondeur 3 : « viii) »',
+			'1. a\n   1. b\n' + Array.from({ length: 8 }, (_, i) => `      ${i + 1}. x`).join('\n'),
+			'"viii)"'
+		]
+	])('%s', (_cas, md, largeur) => {
+		expect(typst(md)).toContain(`w: ${largeur})`);
 	});
 
 	it('l’aide `ubu-item` est définie une seule fois, avant son usage', () => {

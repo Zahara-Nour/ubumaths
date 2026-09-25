@@ -286,7 +286,7 @@ describe('generateTypst', () => {
 		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Numéro calculé par Typst, placé dans la première ligne de l'item (ubu-item)
-		expect(typst).toContain('#ubu-item(numbering("a)", 1))[First]');
+		expect(typst).toContain('#ubu-item(numbering("a)", 1), w: "a)")[First]');
 		expect(typst).toContain('[First]');
 		expect(typst).toContain('[Second]');
 	});
@@ -297,7 +297,7 @@ describe('generateTypst', () => {
 		const typst = await markdownToTypst(markdown, { includeSetup: false });
 
 		// Hiérarchie de l'établissement : lettre, puis chiffre, puis romain
-		const patterns = [...typst.matchAll(/#ubu-item\(numbering\("([^"]+)", 1\)\)/g)].map(
+		const patterns = [...typst.matchAll(/#ubu-item\(numbering\("([^"]+)", 1\), w:/g)].map(
 			(m) => m[1]
 		);
 		expect(patterns).toEqual(['a)', '1)', 'i)']);
@@ -338,7 +338,7 @@ describe('generateTypst', () => {
 		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Le numéro de départ est celui du premier item
-		expect(typst).toContain('#ubu-item(numbering("a)", 3))[Third item]');
+		expect(typst).toContain('#ubu-item(numbering("a)", 3), w: "c)")[Third item]');
 		expect(typst).toContain('[Third item]');
 		expect(typst).toContain('[Fourth item]');
 	});
@@ -368,7 +368,7 @@ describe('generateTypst', () => {
 		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Puce dans la première ligne de l'item (ubu-item)
-		expect(typst).toContain('#ubu-item([•], indent: 1em)[Item]');
+		expect(typst).toContain('#ubu-item([•], w: "•")[Item]');
 		expect(typst).toContain('[Item]');
 	});
 
@@ -488,7 +488,7 @@ describe('markdownToTypst', () => {
 		const typst = await markdownToTypst(markdown, { includeSetup: false });
 
 		// Numéro calculé par Typst, dans la première ligne de l'item
-		expect(typst).toContain('#ubu-item(numbering("a)", 1))[First]');
+		expect(typst).toContain('#ubu-item(numbering("a)", 1), w: "a)")[First]');
 		expect(typst).toContain('[First]');
 		expect(typst).toContain('[Second]');
 		expect(typst).toContain('[Third]');
@@ -1374,9 +1374,9 @@ describe('Edge Cases', () => {
 		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Liste numérotée, avec une sous-liste à puces
-		expect(typst).toContain('#ubu-item(numbering("a)", 1))[Parent');
+		expect(typst).toContain('#ubu-item(numbering("a)", 1), w: "a)")[Parent');
 		expect(typst).toContain('Parent');
-		expect(typst).toContain('#ubu-item([•], indent: 1em)');
+		expect(typst).toContain('#ubu-item([•], w: "•")');
 		expect(typst).toContain('[Child]');
 	});
 

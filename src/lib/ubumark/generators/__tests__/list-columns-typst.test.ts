@@ -21,7 +21,7 @@ const typst = (md: string) =>
 
 /** Cellules `ubu-item(numbering("p", n))` de la grille, dans l'ordre. */
 function cellules(code: string): { start: number; numbering: string }[] {
-	return [...code.matchAll(/ ubu-item\(numbering\("([^"]+)", (\d+)\)\)/g)].map((m) => ({
+	return [...code.matchAll(/ ubu-item\(numbering\("([^"]+)", (\d+)\), w:/g)].map((m) => ({
 		start: Number(m[2]),
 		numbering: m[1]
 	}));
@@ -56,7 +56,7 @@ describe('Typst — liste numérotée en colonnes', () => {
 
 	it('sous-liste en colonnes : style de sa profondeur (1)), liste principale normale', () => {
 		const code = typst('1. Calculer :\n   :colonnes 3\n   a. x\n   b. y\n   c. z\n2. Fin.');
-		expect(code).toContain('#ubu-item(numbering("a)", 1))[Calculer');
+		expect(code).toContain('#ubu-item(numbering("a)", 1), w: "a)")[Calculer');
 		expect(cellules(code)).toEqual([
 			{ start: 1, numbering: '1)' },
 			{ start: 2, numbering: '1)' },
@@ -74,7 +74,7 @@ describe('Typst — liste à puces en colonnes', () => {
 	it('grille de cellules à puce `ubu-item([•])`', () => {
 		const code = typst(':colonnes 2\n- a\n- b\n- c');
 		expect(code).toContain('grid(columns: (1fr, 1fr)');
-		expect(code.match(/ ubu-item\(\[•\], indent: 1em\)/g)).toHaveLength(3);
+		expect(code.match(/ ubu-item\(\[•\], w: "•"\)/g)).toHaveLength(3);
 	});
 });
 
