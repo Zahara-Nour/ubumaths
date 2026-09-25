@@ -858,14 +858,13 @@ function generateAlignedEquation(content: string): string {
 function generateAlignedGrid(rows: string[]): string {
 	const gridRows: string[] = [];
 
-	for (let i = 0; i < rows.length; i++) {
-		const row = rows[i];
+	for (const row of rows) {
 		const parts = row.split('&').map((p) => p.trim());
 
-		// Column 1: Initial expression (only first row) - use inline math
+		// Column 1: membre de gauche de CHAQUE ligne (vide pour une continuation `&=`).
+		// Il n'était écrit que pour la première ligne : `3p&=0.45` sortait « = 0,45 ».
 		// Calcul centré : fractions de premier niveau en taille normale, comme dans le texte
-		const col1 =
-			i === 0 && parts[0] ? `[$${convertLatexToTypstMath(markDisplayFractions(parts[0]))}$]` : '[]';
+		const col1 = parts[0] ? `[$${convertLatexToTypstMath(markDisplayFractions(parts[0]))}$]` : '[]';
 
 		if (parts.length >= 2) {
 			const rightPart = parts.slice(1).join('&').trim();
@@ -909,9 +908,10 @@ function generateAlignedGrid(rows: string[]): string {
 
 			gridRows.push(`  ${col1}, ${col2}, ${col3}, ${col4}`);
 		} else {
-			// No alignment point - put everything in column 3
+			// No alignment point - put everything in column 3 (pas aussi en colonne 1 :
+			// l'expression était écrite deux fois sur une première ligne sans `&`)
 			const mathPart = parts[0] ? convertLatexToTypstMath(markDisplayFractions(parts[0])) : '';
-			gridRows.push(`  ${col1}, [], [$${mathPart}$], []`);
+			gridRows.push(`  [], [], [$${mathPart}$], []`);
 		}
 	}
 
