@@ -96,14 +96,26 @@ if command -v docker >/dev/null 2>&1; then
 fi
 
 # --- Guard 3: refuse a run that cannot say anything new ----------------------
-# Anything that can change the verdict: sources, the tsconfig this script uses,
-# the svelte/vite config, and the dependency set.
-shopt -s nullglob
-guard_watch=(src tsconfig*.json svelte.config.* vite.config.* package.json)
-shopt -u nullglob
+# Tout ce qui peut changer le verdict. Le 2026-09-24, une correction de
+# `vitest.base.config.ts` a été REJOUÉE avec l'ancienne erreur : la liste ne
+# surveillait que `vite.config.*`, alors que le typecheck suit ses imports.
+# D'où un périmètre large plutôt qu'une liste de noms à tenir à jour :
+#   - src/ : fichiers ET dossiers. Un dossier change de date quand on y crée,
+#     supprime ou renomme un fichier — une suppression ne laisse aucun fichier
+#     « plus récent » ;
+#   - la racine : toute config .ts/.js/.json importable par vite.config.ts,
+#     les tsconfig, package.json, le lockfile (dépendances mises à jour sans
+#     toucher package.json) et les .env (types de `$env`).
+# Voir scripts/__tests__/check-incremental-garde.test.ts.
+something_newer_than_marker() {
+	find src -newer "$marker" -print 2>/dev/null | head -1
+	find . -maxdepth 1 -type f \( -name '*.ts' -o -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \
+		-o -name '*.json' -o -name 'pnpm-lock.yaml' -o -name '.env*' \) \
+		-newer "$marker" -print 2>/dev/null | head -1
+}
 if [ "${FORCE:-0}" != "1" ] && [ "${FRESH:-0}" != "1" ] &&
 	[ -f "$marker" ] && [ -f "$last_output" ] && [ -f "$last_status" ] &&
-	[ -z "$(find "${guard_watch[@]}" -type f -newer "$marker" 2>/dev/null | head -1)" ]; then
+	[ -z "$(something_newer_than_marker)" ]; then
 	cat "$last_output"
 	echo ""
 	echo "↑ Résultat REJOUÉ : rien n'a changé depuis le dernier check ($(date -r "$marker" '+%H:%M:%S'))."
