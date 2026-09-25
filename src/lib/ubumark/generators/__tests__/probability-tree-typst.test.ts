@@ -6,7 +6,9 @@
  *   l'arbre (`0","3`) repassait par le convertisseur, qui changeait les guillemets
  *   en primes doubles ;
  * - une issue en bout de branche (`P(A∩B)=0,24`), centrée sur son point, débordait
- *   à gauche sur l'étiquette de l'évènement.
+ *   à gauche sur l'étiquette de l'évènement ;
+ * - un arbre de Bernoulli à 3 épreuves, placé sous une sous-question d'un corrigé,
+ *   débordait de sa colonne sur la colonne voisine.
  */
 import { describe, it, expect } from 'vitest';
 import { parseProbabilityTree } from '../../parser/probability-tree-parser';
@@ -41,5 +43,13 @@ describe('arbre pondéré — PDF', () => {
 		const code = typst(ARBRE);
 		const issue = code.split('\n').find((l) => l.includes('sect'));
 		expect(issue).toContain('anchor: "west"');
+	});
+
+	it('arbre réduit à la largeur disponible, jamais agrandi', () => {
+		const code = typst(ARBRE);
+		expect(code).toContain('#layout(size => {');
+		expect(code).toContain('let tree = cetz.canvas({');
+		expect(code).toContain('calc.min(1, size.width / measure(tree).width)');
+		expect(code).toContain('reflow: true');
 	});
 });
