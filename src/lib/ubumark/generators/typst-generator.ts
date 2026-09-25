@@ -1202,8 +1202,11 @@ function convertLatexOneArgCommand(str: string, latexCmd: string, typstFunc: str
 
 			const content = result.slice(openBraceIndex + 1, closeIndex);
 
-			// Replace the whole \command{...} with func(...)
-			const replacement = `${typstFunc}(${content})`;
+			// Replace the whole \command{...} with func(...). Collé derrière un nom
+			// (`\lambda\vec{u}`, `k\vec{u}`), on sépare : sinon `lambdaarrow`, variable
+			// inconnue qui fait échouer tout le PDF.
+			const needsSpace = startIndex > 0 && /[a-zA-Z]/.test(result[startIndex - 1]);
+			const replacement = `${needsSpace ? ' ' : ''}${typstFunc}(${content})`;
 			result = result.slice(0, startIndex) + replacement + result.slice(closeIndex + 1);
 
 			changed = true;

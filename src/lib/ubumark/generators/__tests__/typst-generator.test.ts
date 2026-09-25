@@ -3281,3 +3281,21 @@ describe('convertLatexToTypstMath - Lettre grecque collée à une lettre', () =>
 		expect(convertLatexToTypstMath('k \\pi')).toBe('k pi');
 	});
 });
+
+describe('convertLatexToTypstMath - Vecteur collé derrière un nom', () => {
+	// 2026-09-25 : `\lambda\vec{u}` donnait `lambdaarrow(u)`, variable inconnue qui
+	// fait échouer TOUT le PDF (corrigé « Cauchy-Schwarz », fiche produit scalaire).
+	it.each([
+		['\\lambda\\vec{u}', 'lambda arrow(u)'],
+		['\\lambda\\overrightarrow{AB}', 'lambda arrow(A B)'],
+		['k\\vec{u}', 'k arrow(u)']
+	])('%s → %s', (latex, typst) => {
+		expect(convertLatexToTypstMath(latex)).toBe(typst);
+	});
+
+	it('après un chiffre, une parenthèse ou en début : inchangé', () => {
+		expect(convertLatexToTypstMath('2\\vec{u}')).toBe('2arrow(u)');
+		expect(convertLatexToTypstMath('\\vec{u}')).toBe('arrow(u)');
+		expect(convertLatexToTypstMath('(\\vec{u})')).toBe('(arrow(u))');
+	});
+});
