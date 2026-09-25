@@ -150,4 +150,24 @@ describe('toFrenchDecimal', () => {
 			expect(toFrenchDecimal('y + 1234')).toBe('y + 1\\,234');
 		});
 	});
+
+	// Constaté le 2026-09-25 (fiches de probabilités) : un décimal écrit avec la virgule
+	// LaTeX, `0{,}0484`, s'affichait « 0,0 484 » (écran et PDF). La virgule coupait le
+	// nombre en deux et « 0484 » était groupé comme un entier, depuis la droite.
+	describe('virgule LaTeX {,} déjà présente', () => {
+		it('groupe les décimales depuis la gauche, comme après un point', () => {
+			expect(toFrenchDecimal('1-0{,}0484')).toBe('1-0{,}048\\,4');
+			expect(toFrenchDecimal('0{,}5625')).toBe('0{,}562\\,5');
+		});
+
+		it('laisse intacte une partie décimale de moins de 4 chiffres', () => {
+			expect(toFrenchDecimal('0{,}105')).toBe('0{,}105');
+		});
+
+		it('rend le même résultat que la notation à point, et reste stable si réappliqué', () => {
+			expect(toFrenchDecimal('0{,}0484')).toBe(toFrenchDecimal('0.0484'));
+			const once = toFrenchDecimal('0.0484');
+			expect(toFrenchDecimal(once)).toBe(once);
+		});
+	});
 });
