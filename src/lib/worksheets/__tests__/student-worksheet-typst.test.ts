@@ -43,8 +43,10 @@ describe('generateStudentWorksheetTypst', () => {
 		expect(typst).toMatch(
 			/#block\(sticky: true, below: 0\.6em\)\[\n#box\(fill: rgb\("#e8590c"\)[^\n]*\[1\]\]/
 		);
-		// ...and the statement is outside of it
-		expect(typst).toMatch(/\]\n\n#list\(/);
+		// ...and the statement is outside of it (après l'en-tête de lisibilité, sans contenu)
+		expect(typst).toMatch(
+			/\]\n\n#show math\.equation[^\n]*\n(?:#let [^\n]*\n)+\/\/ ubumark: fin de l’en-tête\n#ubu-item\(/
+		);
 	});
 
 	it('keeps the points and instructions with the header', () => {
@@ -52,7 +54,10 @@ describe('generateStudentWorksheetTypst', () => {
 		worksheet.exercises![0].custom_instructions = 'Detailler les etapes.';
 
 		const typst = generateStudentWorksheetTypst(worksheet, false);
-		const stickyBlock = typst.slice(typst.indexOf('#block(sticky: true'), typst.indexOf('#list('));
+		const stickyBlock = typst.slice(
+			typst.indexOf('#block(sticky: true'),
+			typst.indexOf('#show math.equation')
+		);
 
 		expect(stickyBlock).toContain('3 points');
 		expect(stickyBlock).toContain('Detailler les etapes.');

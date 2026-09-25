@@ -184,8 +184,31 @@ export function generateTypst(ast: DocumentNode, options: TypstTranspilerOptions
 	const setup = opts.includeSetup ? generateSetup(opts) : '';
 	const body = generateBody(ast, opts);
 
-	return setup + body;
+	// Document vide : pas d'en-tête (rien à rendre lisible)
+	return setup + (body.trim() ? PDF_READABILITY_HEADER : '') + body;
 }
+
+/**
+ * En-tête de lisibilité, émis avant le corps de chaque document généré (souvent
+ * par exercice ; parfois au niveau du document — règles et fonctions idempotentes).
+ * Les formules des tableaux, tableaux de variation et étiquettes gardent des
+ * fractions réduites (compacité voulue) : seul le texte courant est concerné.
+ *  - l'interligne suit la hauteur RÉELLE des formules du texte : une fraction en
+ *    taille normale dans une ligne faisait chevaucher les lignes voisines
+ *    (mesuré avec le compilateur de prod) ;
+ *  - `ubu-item` : item de liste dont le numéro est DANS la première ligne, donc
+ *    aligné sur sa ligne de base (`enum` le colle en haut d'un premier item haut) ;
+ *    `w` = numéro le plus large de la liste, dont la place est réservée (comme `enum`) ;
+ *  - `ubu-item-bloc` : item qui commence par un bloc (formule centrée, cercle…),
+ *    numéro à côté du bloc comme avant.
+ */
+const PDF_READABILITY_HEADER = [
+	'#show math.equation.where(block: false): set text(top-edge: "bounds", bottom-edge: "bounds")',
+	'#let ubu-item(num, body, w: "a)") = context { let n = measure(w).width + 0.5em; block(spacing: 1.5em, pad(left: n, [#h(-n)#box(width: n - 0.5em, align(end, num))#h(0.5em)#body])) }',
+	'#let ubu-item-bloc(num, body, w: "a)") = context { let n = measure(w).width + 0.5em; block(spacing: 1.5em, grid(columns: (n, 1fr), box(width: n - 0.5em, align(end, num)), body)) }',
+	'// ubumark: fin de l’en-tête',
+	''
+].join('\n');
 
 // ============================================================================
 // SETUP GENERATION
@@ -360,8 +383,8 @@ function generateInline(node: InlineNode, options: ResolvedTypstTranspilerOption
 				node.syntax === 'custom'
 					? expressionToRawLatex(node.expression, 'custom', options.genericFunctions)
 					: toFrenchDecimal(node.expression);
-			// Convert LaTeX math to Typst math syntax
-			const typstMath = convertLatexToTypstMath(latex);
+			// Convert LaTeX math to Typst math syntax (fractions de premier niveau en taille normale)
+			const typstMath = convertLatexToTypstMath(markDisplayFractions(latex));
 			// DEBUG LOG: Keep for Typst debugging - logs each inline math conversion
 			console.log('[typst-gen] math-inline:', { latex, typstMath });
 
@@ -447,6 +470,57 @@ function getNumberingPattern(depth: number): string {
 	return ENUM_NUMBERING_PATTERNS[Math.min(depth - 1, ENUM_NUMBERING_PATTERNS.length - 1)];
 }
 
+/** Libellé du numéro `n` pour un motif `a)`, `1)` ou `i)` (comme `numbering` de Typst). */
+function listLabel(pattern: string, n: number): string {
+	if (pattern === '1)') return `${n})`;
+	if (pattern === 'a)') {
+		let label = '';
+		for (let k = n; k > 0; k = Math.floor((k - 1) / 26)) {
+			label = String.fromCharCode(97 + ((k - 1) % 26)) + label;
+		}
+		return `${label})`;
+	}
+	const romans: [number, string][] = [
+		[1000, 'm'],
+		[900, 'cm'],
+		[500, 'd'],
+		[400, 'cd'],
+		[100, 'c'],
+		[90, 'xc'],
+		[50, 'l'],
+		[40, 'xl'],
+		[10, 'x'],
+		[9, 'ix'],
+		[5, 'v'],
+		[4, 'iv'],
+		[1, 'i']
+	];
+	let label = '';
+	let k = n;
+	for (const [value, symbol] of romans) {
+		while (k >= value) {
+			label += symbol;
+			k -= value;
+		}
+	}
+	return `${label})`;
+}
+
+/**
+ * Numéro le plus large d'une liste (estimation typographique : m et w larges,
+ * i et l étroits) — sa place est réservée pour tous les items, comme `enum`.
+ */
+function widestLabel(pattern: string, first: number, last: number): string {
+	const width = (label: string) =>
+		[...label].reduce((sum, ch) => sum + (/[mw]/.test(ch) ? 1.5 : /[il)]/.test(ch) ? 0.5 : 1), 0);
+	let widest = listLabel(pattern, first);
+	for (let n = first + 1; n <= last; n++) {
+		const label = listLabel(pattern, n);
+		if (width(label) > width(widest)) widest = label;
+	}
+	return widest;
+}
+
 /**
  * Generate list node with depth tracking for proper numbering
  *
@@ -467,45 +541,30 @@ function generateList(
 	const newDepth = node.ordered ? enumerateDepth + 1 : enumerateDepth;
 	const startNumber = node.start ?? 1;
 
+	// Numéro de chaque item : style de la profondeur et numéro de départ pour une liste
+	// numérotée, puce sinon. Calculé par Typst (`numbering`), comme le faisait `enum`.
+	const pattern = getNumberingPattern(newDepth);
+	const widest = node.ordered
+		? widestLabel(pattern, startNumber, startNumber + node.items.length - 1)
+		: '•';
+	const items = node.items.map((item: ListItemNode, index: number) => {
+		const num = `${node.ordered ? `numbering("${pattern}", ${startNumber + index})` : '[•]'}, w: "${widest}"`;
+		const content = generateListItemContent(item, options, newDepth);
+		// Item qui commence par un bloc (formule centrée, cercle…) : numéro à côté du bloc
+		const helper =
+			item.children[0] && item.children[0].type !== 'paragraph' ? 'ubu-item-bloc' : 'ubu-item';
+		return { helper, num, content };
+	});
+
 	// `:colonnes N` : grille lue en lignes (a) b) / c) d)). `columns()` de Typst ne se
-	// répartit pas dans une page déjà en deux colonnes ; chaque cellule est donc un
-	// enum d'UN item portant son propre numéro, ce qui garde style et numéro de départ.
+	// répartit pas dans une page déjà en deux colonnes.
 	if (node.columns && node.columns > 1) {
-		const pattern = getNumberingPattern(newDepth);
-		const cells = node.items.map((item: ListItemNode, index: number) => {
-			const content = generateListItemContent(item, options, newDepth);
-			return node.ordered
-				? `enum(start: ${startNumber + index}, numbering: "${pattern}", [${content}])`
-				: `list([${content}])`;
-		});
+		const cells = items.map(({ helper, num, content }) => `${helper}(${num})[${content}]`);
 		const fractions = Array(node.columns).fill('1fr').join(', ');
 		return `#grid(columns: (${fractions}), column-gutter: 1em, row-gutter: 1.5em,\n  ${cells.join(',\n  ')}\n)`;
 	}
 
-	// For ordered lists, use #enum() to ensure proper numbering at all levels
-	if (node.ordered) {
-		const pattern = getNumberingPattern(newDepth);
-		const enumItems = node.items
-			.map((item: ListItemNode) => {
-				const content = generateListItemContent(item, options, newDepth);
-				return `[${content}]`;
-			})
-			.join(',\n  ');
-
-		// Include start parameter only if not starting at 1
-		const startParam = startNumber !== 1 ? `start: ${startNumber}, ` : '';
-		return `#enum(${startParam}numbering: "${pattern}",\n  ${enumItems}\n)`;
-	}
-
-	// For bullet lists, use #list() with explicit spacing between items
-	const listItems = node.items
-		.map((item: ListItemNode) => {
-			const content = generateListItemContent(item, options, newDepth);
-			return `[${content}]`;
-		})
-		.join(',\n  ');
-
-	return `#list(spacing: 1.5em,\n  ${listItems}\n)`;
+	return items.map(({ helper, num, content }) => `#${helper}(${num})[${content}]`).join('\n');
 }
 
 /**
@@ -1495,6 +1554,85 @@ function addSpaceAfterSubscriptParens(str: string): string {
 }
 
 /**
+ * Au-delà de cette largeur « visible » (caractères, commandes et accolades ôtées),
+ * une fraction en taille normale déborderait de la colonne : elle reste réduite.
+ * Calibré sur les fiches réelles (compilateur de prod).
+ */
+const DISPLAY_FRACTION_MAX_WIDTH = 30;
+
+/** Largeur visible approchée d'un morceau de LaTeX. */
+function visibleWidth(latex: string): number {
+	return latex
+		.replace(/\\(?:left|right|,|;|!|quad)/g, '')
+		.replace(/\\[a-zA-Z]+/g, 'x')
+		.replace(/[{}\s]/g, '').length;
+}
+
+/**
+ * Marque `\dfrac` → `\ubudfrac` pour les fractions d'une formule du TEXTE qui
+ * doivent garder leur taille normale : premier niveau seulement (pas dans une
+ * autre fraction, ni en exposant/indice) et assez étroites pour la colonne. Typst
+ * réduit sinon toute fraction d'une ligne de texte, alors que l'écran (KaTeX,
+ * `\dfrac`) les affiche en taille normale. Un `\frac` écrit par l'auteur est respecté.
+ */
+export function markDisplayFractions(latex: string): string {
+	// Contexte de chaque accolade ouverte : fraction, exposant/indice, ou groupe neutre
+	const stack: ('frac' | 'script' | 'group')[] = [];
+	// Index des accolades qui ouvrent un argument de fraction (numérateur ou dénominateur)
+	const fracBraces = new Set<number>();
+	let out = '';
+	for (let i = 0; i < latex.length; i++) {
+		// `\{` `\}` (ensembles) : accolades échappées, pas des groupes
+		if (latex[i] === '\\' && (latex[i + 1] === '{' || latex[i + 1] === '}')) {
+			out += latex.slice(i, i + 2);
+			i++;
+			continue;
+		}
+		const frac = latex.slice(i).match(/^\\(d?)frac(?![a-zA-Z])\s*/);
+		if (frac) {
+			const open = i + frac[0].length;
+			const numEnd = latex[open] === '{' ? findMatchingBrace(latex, open) : -1;
+			let denStart = numEnd + 1;
+			while (numEnd !== -1 && /\s/.test(latex[denStart] ?? '')) denStart++;
+			const denEnd =
+				numEnd !== -1 && latex[denStart] === '{' ? findMatchingBrace(latex, denStart) : -1;
+			if (numEnd !== -1) fracBraces.add(open);
+			if (denEnd !== -1) fracBraces.add(denStart);
+
+			const prevChar = out.replace(/\s+$/, '').slice(-1);
+			const topLevel =
+				!stack.includes('frac') &&
+				!stack.includes('script') &&
+				prevChar !== '^' &&
+				prevChar !== '_';
+			let replaced = frac[0];
+			if (frac[1] === 'd' && topLevel && denEnd !== -1) {
+				const width = Math.max(
+					visibleWidth(latex.slice(open + 1, numEnd)),
+					visibleWidth(latex.slice(denStart + 1, denEnd))
+				);
+				if (width <= DISPLAY_FRACTION_MAX_WIDTH) {
+					replaced = frac[0].replace('\\dfrac', '\\ubudfrac');
+				}
+			}
+			out += replaced;
+			i += frac[0].length - 1;
+			continue;
+		}
+		const c = latex[i];
+		if (c === '{') {
+			const prev = out.replace(/\s+$/, '').slice(-1);
+			if (fracBraces.has(i)) stack.push('frac');
+			else stack.push(prev === '^' || prev === '_' ? 'script' : 'group');
+		} else if (c === '}') {
+			stack.pop();
+		}
+		out += c;
+	}
+	return out;
+}
+
+/**
  * Convert LaTeX \frac{...}{...} and \dfrac{...}{...} to Typst frac(..., ...)
  * Handles nested braces properly (e.g., \dfrac{(-1)^{n+1}}{u^2_n})
  *
@@ -1503,7 +1641,7 @@ function addSpaceAfterSubscriptParens(str: string): string {
  */
 function convertLatexFractions(str: string): string {
 	let result = str;
-	const fracPattern = /\\d?frac\s*\{/g;
+	const fracPattern = /\\(?:ubud|d)?frac\s*\{/g;
 	let match;
 
 	// Keep converting until no more matches (handles nested fractions)
@@ -1539,7 +1677,11 @@ function convertLatexFractions(str: string): string {
 			// Example: \times\dfrac{...} should become "\times frac(...)" not "\timesfrac(...)"
 			// This allows the later \times conversion to match properly.
 			const needsSpace = startIndex > 0 && /[a-zA-Z]/.test(result[startIndex - 1]);
-			const replacement = (needsSpace ? ' ' : '') + 'frac(' + numerator + ', ' + denominator + ')';
+			const fraction = 'frac(' + numerator + ', ' + denominator + ')';
+			// `\ubudfrac` : fraction de premier niveau d'une formule du texte (markDisplayFractions)
+			const replacement =
+				(needsSpace ? ' ' : '') +
+				(match[0].startsWith('\\ubud') ? 'display(' + fraction + ')' : fraction);
 			result = result.slice(0, startIndex) + replacement + result.slice(denomEnd + 1);
 
 			changed = true;
