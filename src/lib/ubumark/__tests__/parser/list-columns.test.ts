@@ -135,3 +135,42 @@ describe('résumés texte', () => {
 		expect(stripMarkdown(':colonnes 2\n1. alpha\n2. beta')).not.toContain('colonnes');
 	});
 });
+
+describe('cas limites relevés en relecture (2026-09-25)', () => {
+	const sousListes = (md: string): ListNode[] => {
+		const out: ListNode[] = [];
+		const visit = (nodes: { type: string }[]) => {
+			for (const n of nodes) {
+				if (n.type !== 'list') continue;
+				out.push(n as ListNode);
+				for (const item of (n as ListNode).items) visit(item.children);
+			}
+		};
+		visit(parseMarkdown(md).children);
+		return out;
+	};
+
+	it('marqueur après une continuation tardive, devant une sous-liste DÉJÀ ouverte : texte visible', () => {
+		const md = '1. a\n   a. x\n\n   texte parent\n   :colonnes 2\n   b. y\n   c. z';
+		expect(sousListes(md).map((l) => l.columns)).toEqual([undefined, undefined]);
+		expect(JSON.stringify(parseMarkdown(md))).toContain(':colonnes 2');
+	});
+
+	it('marqueur sans sous-liste suivi d’une ligne vide : paragraphes distincts', () => {
+		const [liste] = listes('- a\n  :colonnes 2\n\n  texte\n- b');
+		const paragraphes = liste.items[0].children.filter((c) => c.type === 'paragraph');
+		const textes = paragraphes.map((p) => JSON.stringify(p));
+		expect(textes.some((t) => t.includes(':colonnes 2') && t.includes('texte'))).toBe(false);
+		expect(liste.items).toHaveLength(2);
+	});
+
+	it('deux marqueurs de suite dans une liste : le second s’applique, le premier est visible', () => {
+		const md = '1. a\n   :colonnes 2\n   :colonnes 3\n   a. x\n   b. y';
+		expect(sousListes(md).map((l) => l.columns)).toEqual([undefined, 3]);
+		expect(JSON.stringify(parseMarkdown(md))).toContain(':colonnes 2');
+	});
+
+	it('stripMarkdown garde un marqueur qui n’annonce pas de liste (il est visible)', () => {
+		expect(stripMarkdown('Texte\n:colonnes 2\n\nFin')).toContain(':colonnes 2');
+	});
+});

@@ -66,3 +66,13 @@ describe('schéma de l’éditeur', () => {
 		expect(listes.map((l) => l.attrs?.columns)).toEqual([2, 3]);
 	});
 });
+
+describe('marqueur resté texte : l’aller-retour ne casse pas la liste', () => {
+	it('`- a` + marqueur sans sous-liste + ligne vide + texte : toujours une seule liste de 2 items', () => {
+		const md = '- a\n  :colonnes 2\n\n  texte\n- b';
+		const retour = roundtrip(md);
+		const listes = parseMarkdown(retour).children.filter((c) => c.type === 'list') as ListNode[];
+		expect(listes).toHaveLength(1);
+		expect(listes[0].items).toHaveLength(2);
+	});
+});

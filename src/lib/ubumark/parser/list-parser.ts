@@ -225,32 +225,33 @@ export function parseList(lines: string[]): ListNode[] {
 	// Track if we're in "late continuation mode" (content after nested items at parent level)
 	let inLateContination = false;
 
-	// `:colonnes N` en retrait, en attente de la sous-liste qu'il annonce
-	let pendingColumns: { columns: number; text: string } | null = null;
+	// `:colonnes N` en retrait consommé : index de l'item qui ouvre sa sous-liste
+	let columnsForItemAt: { index: number; columns: number } | null = null;
 
-	/** Marqueur qui n'annonçait pas de sous-liste : il redevient du texte visible. */
-	const flushPendingColumns = () => {
-		if (!pendingColumns || !currentItem) return;
-		if (inLateContination) currentItem.lateContinations.push(pendingColumns.text);
-		else pendingContinuation.push(pendingColumns.text);
-		pendingColumns = null;
-	};
-
-	for (const line of lines) {
+	for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+		const line = lines[lineIndex];
 		const isBlank = line.trim() === '';
 		const parsed = parseListItemLine(line);
 
-		if (pendingColumns) {
-			if (isBlank) continue; // ligne vide tolérée entre le marqueur et sa sous-liste
-			if (parsed && currentItem && parsed.indent > currentItem.indent) {
-				if (pendingColumns.columns > 1) parsed.columnsBefore = pendingColumns.columns;
-				pendingColumns = null;
-			} else {
-				flushPendingColumns();
+		// `:colonnes N` en retrait : ne vaut que s'il annonce une NOUVELLE sous-liste du
+		// dernier item (lignes vides tolérées). Sinon, aucun traitement particulier : il
+		// suit le chemin du texte ordinaire et reste visible, à sa place.
+		const columns =
+			!parsed && currentItem && !inCodeFence && !isBlank ? parseColumnsMarker(line) : null;
+		if (columns !== null) {
+			let next = lineIndex + 1;
+			while (next < lines.length && lines[next].trim() === '') next++;
+			const nextItem = next < lines.length ? parseListItemLine(lines[next]) : null;
+			const lastItem = rawItems[rawItems.length - 1];
+			if (nextItem && lastItem && nextItem.indent > lastItem.indent) {
+				columnsForItemAt = { index: next, columns };
+				lineIndex = next - 1;
+				continue;
 			}
-		} else if (!parsed && currentItem && !inCodeFence && parseColumnsMarker(line) !== null) {
-			pendingColumns = { columns: parseColumnsMarker(line)!, text: line.trim() };
-			continue;
+		}
+		if (parsed && columnsForItemAt?.index === lineIndex) {
+			if (columnsForItemAt.columns > 1) parsed.columnsBefore = columnsForItemAt.columns;
+			columnsForItemAt = null;
 		}
 
 		if (parsed) {
@@ -384,8 +385,6 @@ export function parseList(lines: string[]): ListNode[] {
 			currentItem.hasBlankBeforeNested = true;
 		}
 	}
-
-	flushPendingColumns();
 
 	// Don't forget to save the last pending continuation
 	if (currentItem && pendingContinuation.length > 0) {

@@ -2563,8 +2563,12 @@ export function stripMarkdown(markdown: string): string {
 	// Remove headings: # text → text
 	text = text.replace(/^#+\s+/gm, '');
 
-	// Remove `:colonnes N` list layout markers
-	text = text.replace(/^[ \t]*:colonnes[ \t]+[1-4][ \t]*$\n?/gm, '');
+	// Remove `:colonnes N` list layout markers — only those followed by a list item
+	// (the others stay visible in the rendered text, so they stay here too)
+	text = text.replace(
+		/^[ \t]*:colonnes[ \t]+[1-4][ \t]*\n(?=(?:[ \t]*\n)*[ \t]*(?:[-*+]|\d+[.)]|[a-z][.)])[ \t])/gm,
+		''
+	);
 
 	// Remove list markers
 	text = text.replace(/^\s*[-*+]\s+/gm, '');
