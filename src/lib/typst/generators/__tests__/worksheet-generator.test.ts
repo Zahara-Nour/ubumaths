@@ -712,8 +712,10 @@ describe('WorksheetGenerator', () => {
 			expect(result.typstContent).toContain(
 				'#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[\n  #text(size: 1.1em, weight: "bold")[Exercice 1'
 			);
-			expect(result.typstContent).toContain(
-				']\n#block(width: 100%, inset: 0pt, above: 0.5em)[\n  Solve for x'
+			// Énoncé dans un bloc à part, juste après l'en-tête ; il commence par l'en-tête
+			// de lisibilité (règles et fonctions, sans contenu), puis le texte
+			expect(result.typstContent).toMatch(
+				/\]\n#block\(width: 100%, inset: 0pt, above: 0\.5em\)\[\n {2}#show math\.equation[\s\S]*?\/\/ ubumark: fin de l’en-tête\n\s*Solve for x/
 			);
 		});
 

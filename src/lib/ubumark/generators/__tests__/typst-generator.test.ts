@@ -17,6 +17,9 @@ import {
 } from '../typst-generator';
 import type { DocumentNode, ImageNode, ResolvedTypstTranspilerOptions } from '$lib/exercises/types';
 
+/** Corps du document, après l’en-tête de lisibilité (règles et fonctions d’items). */
+const corps = (typst: string) => typst.split('// ubumark: fin de l’en-tête')[1] ?? typst;
+
 describe('escapeTypst', () => {
 	it('should escape hash character', () => {
 		expect(escapeTypst('#')).toBe('\\#');
@@ -183,7 +186,7 @@ describe('generateTypst', () => {
 		expect(typst).toContain('Calculate');
 		// Inline math without box wrapper for proper baseline alignment
 		expect(typst).toContain('$x^2$');
-		expect(typst).not.toContain('#box');
+		expect(corps(typst)).not.toContain('#box');
 		expect(typst).toContain('please');
 	});
 
@@ -206,7 +209,7 @@ describe('generateTypst', () => {
 
 		// All inline math uses standard inline mode like LaTeX
 		// No box wrapper for proper baseline alignment
-		expect(typst).not.toContain('#box');
+		expect(corps(typst)).not.toContain('#box');
 		expect(typst).not.toContain('display(');
 		expect(typst).toContain('lim');
 	});
@@ -282,8 +285,8 @@ describe('generateTypst', () => {
 
 		const typst = generateTypst(ast, { includeSetup: false });
 
-		// Typst uses #enum() for ordered lists with proper numbering
-		expect(typst).toContain('#enum(numbering: "a)"');
+		// Numéro calculé par Typst, placé dans la première ligne de l'item (ubu-item)
+		expect(typst).toContain('#ubu-item(numbering("a)", 1))[First]');
 		expect(typst).toContain('[First]');
 		expect(typst).toContain('[Second]');
 	});
@@ -294,7 +297,9 @@ describe('generateTypst', () => {
 		const typst = await markdownToTypst(markdown, { includeSetup: false });
 
 		// Hiérarchie de l'établissement : lettre, puis chiffre, puis romain
-		const patterns = [...typst.matchAll(/#enum\(numbering: "([^"]+)"/g)].map((m) => m[1]);
+		const patterns = [...typst.matchAll(/#ubu-item\(numbering\("([^"]+)", 1\)\)/g)].map(
+			(m) => m[1]
+		);
 		expect(patterns).toEqual(['a)', '1)', 'i)']);
 	});
 
@@ -332,8 +337,8 @@ describe('generateTypst', () => {
 
 		const typst = generateTypst(ast, { includeSetup: false });
 
-		// Should use #enum with start: 3
-		expect(typst).toContain('#enum(start: 3, numbering: "a)"');
+		// Le numéro de départ est celui du premier item
+		expect(typst).toContain('#ubu-item(numbering("a)", 3))[Third item]');
 		expect(typst).toContain('[Third item]');
 		expect(typst).toContain('[Fourth item]');
 	});
@@ -362,8 +367,8 @@ describe('generateTypst', () => {
 
 		const typst = generateTypst(ast, { includeSetup: false });
 
-		// Bullet lists use #list() for proper paragraph spacing
-		expect(typst).toContain('#list(');
+		// Puce dans la première ligne de l'item (ubu-item)
+		expect(typst).toContain('#ubu-item([•], indent: 1em)[Item]');
 		expect(typst).toContain('[Item]');
 	});
 
@@ -482,8 +487,8 @@ describe('markdownToTypst', () => {
 
 		const typst = await markdownToTypst(markdown, { includeSetup: false });
 
-		// Ordered lists use #enum() with proper numbering
-		expect(typst).toContain('#enum(numbering: "a)"');
+		// Numéro calculé par Typst, dans la première ligne de l'item
+		expect(typst).toContain('#ubu-item(numbering("a)", 1))[First]');
 		expect(typst).toContain('[First]');
 		expect(typst).toContain('[Second]');
 		expect(typst).toContain('[Third]');
@@ -1368,10 +1373,10 @@ describe('Edge Cases', () => {
 
 		const typst = generateTypst(ast, { includeSetup: false });
 
-		// Ordered list uses #enum() with nested bullet list using #list()
-		expect(typst).toContain('#enum(numbering: "a)"');
+		// Liste numérotée, avec une sous-liste à puces
+		expect(typst).toContain('#ubu-item(numbering("a)", 1))[Parent');
 		expect(typst).toContain('Parent');
-		expect(typst).toContain('#list(');
+		expect(typst).toContain('#ubu-item([•], indent: 1em)');
 		expect(typst).toContain('[Child]');
 	});
 
