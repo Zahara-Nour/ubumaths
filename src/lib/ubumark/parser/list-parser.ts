@@ -31,6 +31,7 @@ interface RawListItem {
 	continuations: string[]; // Additional paragraphs for this item (loose list support)
 	hasBlankBeforeNested: boolean; // true if there's a blank line before nested content
 	lateContinations: string[]; // Continuations that come AFTER nested items
+	columnsBefore?: number; // `:colonnes N` placé juste avant cet item (ouvre une sous-liste)
 }
 
 // ============================================================================
@@ -55,6 +56,20 @@ const UNORDERED_LIST_REGEX = /^(\s*)([-*+])(?:\s+(.*))?$/;
  * Allows empty content (CommonMark: list item starting with block)
  */
 const LIST_ITEM_REGEX = /^(\s*)(?:(\d+|[a-z])[.)]|([-*+]))(?:\s+(.*))?$/;
+
+/**
+ * Marqueur `:colonnes N` (N de 1 à 4) sur sa propre ligne, avant une liste.
+ * N hors de 1..4 ou non numérique : pas un marqueur, la ligne reste du texte.
+ */
+const COLUMNS_MARKER_REGEX = /^:colonnes[ \t]+([1-4])[ \t]*$/;
+
+/**
+ * Lit un marqueur `:colonnes N` (retrait ignoré) ; null si la ligne n'en est pas un.
+ */
+export function parseColumnsMarker(line: string): number | null {
+	const match = line.trim().match(COLUMNS_MARKER_REGEX);
+	return match ? Number(match[1]) : null;
+}
 
 // ============================================================================
 // LIST DETECTION
@@ -210,9 +225,33 @@ export function parseList(lines: string[]): ListNode[] {
 	// Track if we're in "late continuation mode" (content after nested items at parent level)
 	let inLateContination = false;
 
+	// `:colonnes N` en retrait, en attente de la sous-liste qu'il annonce
+	let pendingColumns: { columns: number; text: string } | null = null;
+
+	/** Marqueur qui n'annonçait pas de sous-liste : il redevient du texte visible. */
+	const flushPendingColumns = () => {
+		if (!pendingColumns || !currentItem) return;
+		if (inLateContination) currentItem.lateContinations.push(pendingColumns.text);
+		else pendingContinuation.push(pendingColumns.text);
+		pendingColumns = null;
+	};
+
 	for (const line of lines) {
 		const isBlank = line.trim() === '';
 		const parsed = parseListItemLine(line);
+
+		if (pendingColumns) {
+			if (isBlank) continue; // ligne vide tolérée entre le marqueur et sa sous-liste
+			if (parsed && currentItem && parsed.indent > currentItem.indent) {
+				if (pendingColumns.columns > 1) parsed.columnsBefore = pendingColumns.columns;
+				pendingColumns = null;
+			} else {
+				flushPendingColumns();
+			}
+		} else if (!parsed && currentItem && !inCodeFence && parseColumnsMarker(line) !== null) {
+			pendingColumns = { columns: parseColumnsMarker(line)!, text: line.trim() };
+			continue;
+		}
 
 		if (parsed) {
 			// This is a new list item
@@ -346,6 +385,8 @@ export function parseList(lines: string[]): ListNode[] {
 		}
 	}
 
+	flushPendingColumns();
+
 	// Don't forget to save the last pending continuation
 	if (currentItem && pendingContinuation.length > 0) {
 		if (inLateContination) {
@@ -406,6 +447,7 @@ function buildListHierarchy(items: RawListItem[], baseIndent: number = 0): ListN
 				start: item.ordered ? item.startNumber : undefined,
 				items: []
 			};
+			if (item.columnsBefore) currentList.columns = item.columnsBefore;
 			lists.push(currentList);
 		}
 

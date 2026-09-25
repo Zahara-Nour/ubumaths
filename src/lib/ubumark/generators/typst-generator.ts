@@ -467,6 +467,21 @@ function generateList(
 	const newDepth = node.ordered ? enumerateDepth + 1 : enumerateDepth;
 	const startNumber = node.start ?? 1;
 
+	// `:colonnes N` : grille lue en lignes (a) b) / c) d)). `columns()` de Typst ne se
+	// répartit pas dans une page déjà en deux colonnes ; chaque cellule est donc un
+	// enum d'UN item portant son propre numéro, ce qui garde style et numéro de départ.
+	if (node.columns && node.columns > 1) {
+		const pattern = getNumberingPattern(newDepth);
+		const cells = node.items.map((item: ListItemNode, index: number) => {
+			const content = generateListItemContent(item, options, newDepth);
+			return node.ordered
+				? `enum(start: ${startNumber + index}, numbering: "${pattern}", [${content}])`
+				: `list([${content}])`;
+		});
+		const fractions = Array(node.columns).fill('1fr').join(', ');
+		return `#grid(columns: (${fractions}), column-gutter: 1em, row-gutter: 1.5em,\n  ${cells.join(',\n  ')}\n)`;
+	}
+
 	// For ordered lists, use #enum() to ensure proper numbering at all levels
 	if (node.ordered) {
 		const pattern = getNumberingPattern(newDepth);

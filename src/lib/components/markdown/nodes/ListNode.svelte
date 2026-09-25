@@ -43,6 +43,8 @@
 		ordered: boolean;
 		start?: number;
 		items: ListItemNode[];
+		/** `:colonnes N` : nombre de colonnes (2 à 4), items lus en lignes */
+		columns?: number;
 		class?: string;
 		/** Current enumerate depth (ordered lists only increment this) */
 		enumerateDepth?: number;
@@ -64,6 +66,7 @@
 		ordered,
 		start = 1,
 		items,
+		columns,
 		class: className = '',
 		enumerateDepth = 0,
 		effectiveScheme = null,
@@ -73,6 +76,16 @@
 		hints = [],
 		onHintOpen
 	}: Props = $props();
+
+	// `:colonnes N` : grille remplie ligne par ligne (même ordre que le PDF). L'écart
+	// vertical passe par row-gap : la marge haute des items décalerait la 2e colonne.
+	const isGrid = $derived(!!columns && columns > 1);
+	const gridStyle = $derived(
+		isGrid
+			? `display: grid; grid-template-columns: repeat(${columns}, minmax(0, 1fr)); column-gap: 1.5rem; row-gap: 1.5rem;`
+			: undefined
+	);
+	const itemClass = $derived(isGrid ? 'text-foreground' : 'mt-6 text-foreground first:mt-0');
 
 	// Compute depth for this list (only ordered lists increment depth)
 	const currentDepth = $derived(ordered ? enumerateDepth + 1 : enumerateDepth);
@@ -252,10 +265,14 @@
 </script>
 
 {#if ordered}
-	<ol class="{listClasses} my-1 text-foreground {className}" start={start > 1 ? start : undefined}>
+	<ol
+		class="{listClasses} my-1 text-foreground {className}"
+		start={start > 1 ? start : undefined}
+		style={gridStyle}
+	>
 		{#each items as item, itemIndex (itemIndex)}
 			{@const processedChildren = removeBlockBoundaryHardbreaks(item.children)}
-			<li class="mt-6 text-foreground first:mt-0">
+			<li class={itemClass}>
 				{#each processedChildren as child, childIndex (childIndex)}
 					{#if isListNode(child)}
 						<!-- Recursive list rendering with depth tracking -->
@@ -263,6 +280,7 @@
 							ordered={child.ordered}
 							start={child.start}
 							items={child.items}
+							columns={child.columns}
 							enumerateDepth={currentDepth}
 							{effectiveScheme}
 							{onHashtagClick}
@@ -327,10 +345,10 @@
 		{/each}
 	</ol>
 {:else}
-	<ul class="{listClasses} my-1 ml-4 text-foreground {className}">
+	<ul class="{listClasses} my-1 ml-4 text-foreground {className}" style={gridStyle}>
 		{#each items as item, itemIndex (itemIndex)}
 			{@const processedChildren = removeBlockBoundaryHardbreaks(item.children)}
-			<li class="mt-6 text-foreground first:mt-0">
+			<li class={itemClass}>
 				{#each processedChildren as child, childIndex (childIndex)}
 					{#if isListNode(child)}
 						<!-- Recursive list rendering with depth tracking (itemize doesn't increment depth) -->
@@ -338,6 +356,7 @@
 							ordered={child.ordered}
 							start={child.start}
 							items={child.items}
+							columns={child.columns}
 							enumerateDepth={currentDepth}
 							{effectiveScheme}
 							{onHashtagClick}

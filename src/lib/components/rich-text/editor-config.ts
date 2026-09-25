@@ -43,6 +43,7 @@ import { NumberLineExtension } from '$lib/extensions/number-line-extension';
 import { ProbabilityTreeExtension } from '$lib/extensions/probability-tree-extension';
 import { TrigCircleExtension } from '$lib/extensions/trig-circle-extension';
 import { CustomListItem } from '$lib/extensions/list-item-extension';
+import { ListColumns } from '$lib/extensions/list-columns-extension';
 
 // Note: Underline is included in StarterKit v3
 // Link is disabled in StarterKit and replaced with CustomLink to preserve title attribute
@@ -108,6 +109,9 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 
 		// Custom ListItem with Mod+Enter to create new paragraph in same item
 		CustomListItem.configure({}),
+
+		// `:colonnes N` : attribut `columns` des listes, conservé par le schéma
+		ListColumns,
 
 		// Custom Code extensions with backtick input rules
 		CustomCode.configure({}),
