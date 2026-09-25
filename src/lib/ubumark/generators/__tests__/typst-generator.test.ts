@@ -3339,3 +3339,22 @@ describe('align* : ligne qui commence par \\left', () => {
 		expect(typst).toContain('[$<=$]');
 	});
 });
+
+describe('convertLatexToTypstMath - Minuscule suivie d’une majuscule', () => {
+	// 2026-09-25 : `kAD^2` donnait `kA D^2` — `kA` variable inconnue qui fait échouer
+	// tout le PDF (corrigé de l'exercice de recherche 709bf53b, carré EFGH).
+	it.each([
+		['kAD^2', 'k A D^2'],
+		['kAB', 'k A B'],
+		['aB', 'a B'],
+		['2kAB', '2k A B']
+	])('%s → %s', (latex, typst) => {
+		expect(convertLatexToTypstMath(latex)).toBe(typst);
+	});
+
+	it('fonction ou nom grec suivi d’une majuscule : préservé', () => {
+		expect(convertLatexToTypstMath('\\sin A')).toBe('sin A');
+		expect(convertLatexToTypstMath('\\Delta')).toBe('Delta');
+		expect(convertLatexToTypstMath('\\cos\\widehat{A}')).toBe('cos hat(A)');
+	});
+});

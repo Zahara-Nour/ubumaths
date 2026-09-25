@@ -1914,6 +1914,11 @@ function addImplicitMultiplicationSpaces(str: string): string {
 		return `__p${protections.length - 1}__`;
 	});
 
+	// Minuscule suivie d'une majuscule : toujours deux facteurs (`kAD` = k × A × D).
+	// Sans cette coupure, `k` restait collé (`kA D`), variable inconnue → PDF en échec.
+	// `Delta` (majuscule puis minuscules) n'est pas touché ; `sinA` devient `sin A`.
+	protected_ = protected_.replace(/([a-z])(?=[A-Z])/g, '$1 ');
+
 	// Apply implicit multiplication to remaining content
 	// Match 2+ lowercase letters, uppercase+lowercase (e.g., Delta, Gamma),
 	// or 2+ uppercase letters (e.g., AB, MI - common in geometry)
