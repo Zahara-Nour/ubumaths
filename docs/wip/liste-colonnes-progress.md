@@ -36,7 +36,15 @@ Branche `feat/liste-colonnes`, worktree `../ubumaths-wt-colonnes`. Démarré le 
 
 ## État
 
-- [ ] Tests rouges (parseur, Typst, écran, aller-retour éditeur)
-- [ ] Implémentation
-- [ ] PDF réel compilé (compilateur de prod)
-- [ ] code-reviewer
+- [x] Tests rouges puis verts : parseur (26), Typst + LaTeX (7), écran (4, client), éditeur (9, dont schéma)
+- [x] Implémentation (commit be73bc38e)
+- [x] PDF réel compilé avec le compilateur de prod (sous-liste 3 colonnes, liste 2 colonnes départ à 3)
+- [x] Non-régression : empreinte AST + Typst des 973 textes de la prod identique à `main`
+- [x] code-reviewer : aucune régression sans marqueur ; cas limites #1, #2, #3, #5, #6 corrigés (d06f2a488)
+      par une lecture en avance (marqueur consommé seulement s'il ouvre une NOUVELLE sous-liste du dernier
+      item, sinon texte ordinaire). #4 toléré (retrait du marqueur non vérifié : sans danger).
+- [ ] typecheck, PR, CI, merge
+
+## Hors lot (décision David)
+
+- Bouton « colonnes » dans l'éditeur riche : plus tard.
