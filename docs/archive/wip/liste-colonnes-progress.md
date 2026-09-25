@@ -43,7 +43,7 @@ Branche `feat/liste-colonnes`, worktree `../ubumaths-wt-colonnes`. Démarré le 
 - [x] code-reviewer : aucune régression sans marqueur ; cas limites #1, #2, #3, #5, #6 corrigés (d06f2a488)
       par une lecture en avance (marqueur consommé seulement s'il ouvre une NOUVELLE sous-liste du dernier
       item, sinon texte ordinaire). #4 toléré (retrait du marqueur non vérifié : sans danger).
-- [ ] typecheck, PR, CI, merge
+- [x] typecheck 0 erreur, PR #432, CI verte, fusionnée le 2026-09-25
 
 ## Hors lot (décision David)
 
