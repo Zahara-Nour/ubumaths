@@ -75,7 +75,13 @@ export function generateProbabilityTreeTypst(
 		// Calculate positions and generate tree
 		const treeData = generateTreeData(node.root, node.config.showOutcomes, opts);
 
-		return `${importStatement}#cetz.canvas({
+		// Échelle AJUSTÉE, comme le tableau de variations : un arbre de Bernoulli à
+		// 3 épreuves, placé sous une sous-question, débordait sur la colonne voisine.
+		// `layout` donne la largeur disponible, `measure` celle de l'arbre ; on ne
+		// réduit que s'il dépasse (jamais d'agrandissement). `reflow: true` : la mise
+		// en page suit la taille réduite, sans blanc sous l'arbre.
+		return `${importStatement}#layout(size => {
+let tree = cetz.canvas({
   import cetz.draw: *
 
   // Styles
@@ -85,6 +91,9 @@ export function generateProbabilityTreeTypst(
   )
 
 ${treeData}
+})
+let k = calc.min(1, size.width / measure(tree).width) * 100%
+scale(x: k, y: k, origin: top + left, reflow: true, tree)
 })`;
 	} catch (error) {
 		return `// Error: ${error instanceof Error ? error.message : 'Failed to generate probability tree'}`;
