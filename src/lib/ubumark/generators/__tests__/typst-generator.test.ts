@@ -3358,3 +3358,36 @@ describe('convertLatexToTypstMath - Minuscule suivie d’une majuscule', () => {
 		expect(convertLatexToTypstMath('\\cos\\widehat{A}')).toBe('cos hat(A)');
 	});
 });
+
+describe('align* : membre de gauche des lignes suivantes', () => {
+	// 2026-09-26 : seule la PREMIÈRE ligne d'un align* gardait son membre de gauche
+	// dans le PDF. `0.2+p+2p+0.35&=1\\ 3p&=0.45\\ p&=0.15` s'affichait
+	// « 0,2+p+2p+0,35 = 1 / = 0,45 / = 0,15 » : une chaîne d'égalités fausse.
+	const lignes = (typst: string) =>
+		typst.split('\n').filter((l) => l.trim().startsWith('[') && l.includes('[$'));
+
+	it('chaque ligne garde son membre de gauche', async () => {
+		const typst = await markdownToTypst('$$\\begin{align*}a+b&=1\\\\2x&=4\\\\y&=5\\end{align*}$$', {
+			includeSetup: false
+		});
+		const [l1, l2, l3] = lignes(typst);
+		expect(l1).toContain('[$a+b$], [$=$], [$1$]');
+		expect(l2).toContain('[$2x$], [$=$], [$4$]');
+		expect(l3).toContain('[$y$], [$=$], [$5$]');
+	});
+
+	it('ligne de continuation (&= en tête) : colonne de gauche vide, comme avant', async () => {
+		const typst = await markdownToTypst('$$\\begin{align*}x&=1+1\\\\&=2\\end{align*}$$', {
+			includeSetup: false
+		});
+		expect(lignes(typst)[1]).toMatch(/^\s*\[\], \[\$=\$\], \[\$2\$\]/);
+	});
+
+	it('ligne sans & : l’expression n’est écrite qu’une fois', async () => {
+		const typst = await markdownToTypst('$$\\begin{align*}x+1\\\\y&=2\\end{align*}$$', {
+			includeSetup: false
+		});
+		const premiere = lignes(typst)[0];
+		expect(premiere.match(/x\s*\+\s*1/g)).toHaveLength(1);
+	});
+});
