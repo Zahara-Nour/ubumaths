@@ -31,6 +31,7 @@ interface RawListItem {
 	continuations: string[]; // Additional paragraphs for this item (loose list support)
 	hasBlankBeforeNested: boolean; // true if there's a blank line before nested content
 	lateContinations: string[]; // Continuations that come AFTER nested items
+	columnsBefore?: number; // `:colonnes N` placé juste avant cet item (ouvre une sous-liste)
 }
 
 // ============================================================================
@@ -55,6 +56,20 @@ const UNORDERED_LIST_REGEX = /^(\s*)([-*+])(?:\s+(.*))?$/;
  * Allows empty content (CommonMark: list item starting with block)
  */
 const LIST_ITEM_REGEX = /^(\s*)(?:(\d+|[a-z])[.)]|([-*+]))(?:\s+(.*))?$/;
+
+/**
+ * Marqueur `:colonnes N` (N de 1 à 4) sur sa propre ligne, avant une liste.
+ * N hors de 1..4 ou non numérique : pas un marqueur, la ligne reste du texte.
+ */
+const COLUMNS_MARKER_REGEX = /^:colonnes[ \t]+([1-4])[ \t]*$/;
+
+/**
+ * Lit un marqueur `:colonnes N` (retrait ignoré) ; null si la ligne n'en est pas un.
+ */
+export function parseColumnsMarker(line: string): number | null {
+	const match = line.trim().match(COLUMNS_MARKER_REGEX);
+	return match ? Number(match[1]) : null;
+}
 
 // ============================================================================
 // LIST DETECTION
@@ -210,9 +225,34 @@ export function parseList(lines: string[]): ListNode[] {
 	// Track if we're in "late continuation mode" (content after nested items at parent level)
 	let inLateContination = false;
 
-	for (const line of lines) {
+	// `:colonnes N` en retrait consommé : index de l'item qui ouvre sa sous-liste
+	let columnsForItemAt: { index: number; columns: number } | null = null;
+
+	for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+		const line = lines[lineIndex];
 		const isBlank = line.trim() === '';
 		const parsed = parseListItemLine(line);
+
+		// `:colonnes N` en retrait : ne vaut que s'il annonce une NOUVELLE sous-liste du
+		// dernier item (lignes vides tolérées). Sinon, aucun traitement particulier : il
+		// suit le chemin du texte ordinaire et reste visible, à sa place.
+		const columns =
+			!parsed && currentItem && !inCodeFence && !isBlank ? parseColumnsMarker(line) : null;
+		if (columns !== null) {
+			let next = lineIndex + 1;
+			while (next < lines.length && lines[next].trim() === '') next++;
+			const nextItem = next < lines.length ? parseListItemLine(lines[next]) : null;
+			const lastItem = rawItems[rawItems.length - 1];
+			if (nextItem && lastItem && nextItem.indent > lastItem.indent) {
+				columnsForItemAt = { index: next, columns };
+				lineIndex = next - 1;
+				continue;
+			}
+		}
+		if (parsed && columnsForItemAt?.index === lineIndex) {
+			if (columnsForItemAt.columns > 1) parsed.columnsBefore = columnsForItemAt.columns;
+			columnsForItemAt = null;
+		}
 
 		if (parsed) {
 			// This is a new list item
@@ -406,6 +446,7 @@ function buildListHierarchy(items: RawListItem[], baseIndent: number = 0): ListN
 				start: item.ordered ? item.startNumber : undefined,
 				items: []
 			};
+			if (item.columnsBefore) currentList.columns = item.columnsBefore;
 			lists.push(currentList);
 		}
 

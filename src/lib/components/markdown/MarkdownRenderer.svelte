@@ -211,6 +211,7 @@
 						ordered={node.ordered}
 						start={node.start}
 						items={node.items}
+						columns={node.columns}
 						effectiveScheme={effectiveListScheme}
 						{onHashtagClick}
 						{onMentionClick}

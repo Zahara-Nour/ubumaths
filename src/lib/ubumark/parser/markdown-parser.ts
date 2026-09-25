@@ -45,7 +45,7 @@ import {
 	splitTextWithPlaceholders,
 	restoreMathPlaceholders
 } from './math-extractor';
-import { parseList, findListBlocks, isListItem } from './list-parser';
+import { parseList, findListBlocks, isListItem, parseColumnsMarker } from './list-parser';
 import {
 	parseTable,
 	findTableBlocksWithDirective,
@@ -445,6 +445,18 @@ function parseBlocks(
 	const listBlocks = findListBlocks(lines);
 	const tableBlocks = findTableBlocksWithDirective(lines);
 
+	/**
+	 * `:colonnes N` → index de la liste qu'il annonce (lignes vides tolérées),
+	 * ou null s'il n'est suivi d'aucune liste : il reste alors du texte visible.
+	 */
+	const listAfterColumnsMarker = (index: number): number | null => {
+		if (parseColumnsMarker(lines[index]) === null) return null;
+		let next = index + 1;
+		while (next < lines.length && lines[next].trim() === '') next++;
+		return listBlocks.some(([start]) => start === next) ? next : null;
+	};
+	let pendingColumns: number | null = null;
+
 	while (i < lines.length) {
 		const line = lines[i];
 
@@ -579,12 +591,25 @@ function parseBlocks(
 			continue;
 		}
 
+		// `:colonnes N` juste avant une liste : on le consomme et on l'applique à la liste
+		const listAfterMarker = listAfterColumnsMarker(i);
+		if (listAfterMarker !== null) {
+			pendingColumns = parseColumnsMarker(lines[i]);
+			i = listAfterMarker;
+			continue;
+		}
+
 		// Check if this line is part of a list block
 		const listBlock = listBlocks.find(([start, end]) => i >= start && i <= end);
 		if (listBlock) {
 			const [start, end] = listBlock;
 			const listLines = lines.slice(start, end + 1);
 			const lists = parseList(listLines);
+			// Seule la première liste du bloc suit le marqueur ; `:colonnes 1` = liste normale
+			if (pendingColumns !== null && pendingColumns > 1 && lists.length > 0) {
+				lists[0].columns = pendingColumns;
+			}
+			pendingColumns = null;
 			// Post-process lists to parse inline content
 			const processedLists = lists.map((list) =>
 				processListInlineContent(list, placeholders, options)
@@ -711,7 +736,8 @@ function parseBlocks(
 			!isAlignmentRow(lines[i]) &&
 			!isHeading(lines[i]) &&
 			!isHorizontalRule(lines[i]) &&
-			!isMathPlaceholder(lines[i].trim())
+			!isMathPlaceholder(lines[i].trim()) &&
+			listAfterColumnsMarker(i) === null
 		) {
 			paragraphLines.push(lines[i]);
 			i++;
@@ -2536,6 +2562,13 @@ export function stripMarkdown(markdown: string): string {
 
 	// Remove headings: # text → text
 	text = text.replace(/^#+\s+/gm, '');
+
+	// Remove `:colonnes N` list layout markers — only those followed by a list item
+	// (the others stay visible in the rendered text, so they stay here too)
+	text = text.replace(
+		/^[ \t]*:colonnes[ \t]+[1-4][ \t]*\n(?=(?:[ \t]*\n)*[ \t]*(?:[-*+]|\d+[.)]|[a-z][.)])[ \t])/gm,
+		''
+	);
 
 	// Remove list markers
 	text = text.replace(/^\s*[-*+]\s+/gm, '');

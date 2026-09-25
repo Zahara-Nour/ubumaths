@@ -151,7 +151,7 @@ function convertBulletListToMarkdown(
 		return `${indent}- ${itemContent}`;
 	});
 
-	return items.join('\n');
+	return columnsMarker(list, indent) + items.join('\n');
 }
 
 /**
@@ -188,7 +188,16 @@ function convertOrderedListToMarkdown(
 		return `${indent}${marker} ${itemContent}`;
 	});
 
-	return items.join('\n');
+	return columnsMarker(list, indent) + items.join('\n');
+}
+
+/**
+ * `:colonnes N` sur la ligne juste avant la liste, au même retrait que ses items
+ * (un marqueur de sous-liste a le retrait de la sous-liste).
+ */
+function columnsMarker(list: JSONContent, indent: string): string {
+	const columns = Number(list.attrs?.columns);
+	return columns > 1 ? `${indent}:colonnes ${columns}\n` : '';
 }
 
 /**

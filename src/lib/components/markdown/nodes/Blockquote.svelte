@@ -105,7 +105,12 @@
 		{:else if isMathBlockNode(child)}
 			<MathBlock expression={child.expression} syntax={child.syntax} />
 		{:else if isListNode(child)}
-			<ListNode ordered={child.ordered} start={child.start} items={child.items} />
+			<ListNode
+				ordered={child.ordered}
+				start={child.start}
+				items={child.items}
+				columns={child.columns}
+			/>
 		{:else if isTableNode(child)}
 			<TableNode
 				header={child.header}

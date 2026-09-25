@@ -256,6 +256,8 @@ export interface ListNode extends BaseNode {
 	type: 'list';
 	ordered: boolean; // true for numbered lists, false for bullet lists
 	start?: number; // Starting number for ordered lists (default: 1)
+	/** Nombre de colonnes (2 à 4), posé par le marqueur `:colonnes N` ; absent = une colonne */
+	columns?: number;
 	items: ListItemNode[];
 }
 

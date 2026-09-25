@@ -298,6 +298,11 @@ function convertList(list: ListNode): JSONContent {
 		result.attrs = { start: list.start };
 	}
 
+	// `:colonnes N` devient un attribut de la liste (réécrit à l'export)
+	if (list.columns && list.columns > 1) {
+		result.attrs = { ...result.attrs, columns: list.columns };
+	}
+
 	return result;
 }
 
