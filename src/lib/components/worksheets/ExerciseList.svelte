@@ -32,7 +32,8 @@
 	import * as Card from '$lib/components/ui/card';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { GripVertical, Trash2, Loader2, Settings2, Star } from '@lucide/svelte';
+	import { GripVertical, Trash2, Loader2, Settings2, Star, Pencil } from '@lucide/svelte';
+	import { exerciseEditHref } from '$lib/worksheets/exercise-edit-link';
 	import type {
 		WorksheetExerciseWithExercise,
 		WorksheetSectionRow,
@@ -561,6 +562,19 @@
 											<div class="shrink-0 text-sm text-muted-foreground">
 												{exercise.points ?? '-'} pts
 											</div>
+
+											<!-- Édition de l'exercice lui-même (même onglet, retour à la fiche) :
+											     aussi sur une fiche publiée, car on corrige toujours un exercice -->
+											<Button
+												variant="ghost"
+												size="icon"
+												class="h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+												href={exerciseEditHref(exercise.exercise_id, worksheetId)}
+												aria-label="Modifier la {lore.learning.exercise}"
+												title="Modifier la {lore.learning.exercise}"
+											>
+												<Pencil class="h-3 w-3" />
+											</Button>
 
 											<!-- Actions -->
 											{#if !readonly}

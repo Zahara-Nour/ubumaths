@@ -28,8 +28,10 @@
 		Loader2,
 		ListTodo,
 		ChevronRight,
-		ChevronDown
+		ChevronDown,
+		ArrowLeft
 	} from '@lucide/svelte';
+	import { worksheetReturnHref } from '$lib/worksheets/exercise-edit-link';
 	import { generateExerciseTypst } from '$lib/exercises/typst/exercise-typst-generator';
 	import { getTypstService, PRIORITY } from '$lib/typst/service';
 	import {
@@ -59,6 +61,9 @@
 	 * when combined with the URL update in handleVariationChange.
 	 */
 	let initialVariation = page.url.searchParams.get('variation') || 'guided';
+
+	/** Ouverte depuis une fiche (`?fiche=<uuid>`) : bouton « Retour à la fiche » */
+	const worksheetReturn = $derived(worksheetReturnHref(page.url.searchParams));
 
 	/**
 	 * Update URL when variation changes (without triggering navigation)
@@ -489,6 +494,12 @@
 </svelte:head>
 
 <div class="container mx-auto py-6">
+	{#if worksheetReturn}
+		<Button variant="ghost" size="sm" href={worksheetReturn} class="mb-2 -ml-2">
+			<ArrowLeft class="mr-1 h-4 w-4" />
+			Retour à la fiche
+		</Button>
+	{/if}
 	<div class="mb-6 flex items-start justify-between">
 		<div class="flex items-center gap-3">
 			<div>
