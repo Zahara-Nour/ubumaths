@@ -147,3 +147,15 @@ describe('numéros de liste dans la première ligne', () => {
 		expect(code.indexOf('#let ubu-item(')).toBeLessThan(code.indexOf('#ubu-item(numbering'));
 	});
 });
+
+describe('fractions dans un align*', () => {
+	// 2026-09-25 : les cellules d'un align* étaient des formules du texte → fractions
+	// réduites même dans un calcul centré (corrigé « Al-Kashi », produit scalaire).
+	it('fraction de premier niveau d’une ligne : taille normale ; en exposant : réduite', () => {
+		const code = typst(
+			'$$\\begin{align*}\\cos x&=\\dfrac{5}{40}\\\\&=e^{\\dfrac{1}{2}}\\end{align*}$$'
+		);
+		expect(code).toContain('[$display(frac(5, 40))$]');
+		expect(code).toContain('e^(frac(1, 2))');
+	});
+});

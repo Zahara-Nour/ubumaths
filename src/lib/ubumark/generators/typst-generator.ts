@@ -744,8 +744,10 @@ function generateTable(node: TableNode, _options: ResolvedTypstTranspilerOptions
  * Pattern to match alignment symbols in LaTeX align environments.
  * Matches: \Rightarrow, \Leftrightarrow, =, <, >, \leq, \geq, \neq, etc.
  */
+// `(?![a-zA-Z])` : la commande doit finir là — sans quoi `\\left(` était lu `\\le` (≤)
+// suivi de « ft(… », et `\\leqslant` comme `\\leq` suivi de « slant ».
 const ALIGNMENT_SYMBOL_PATTERN =
-	/^(\\(Rightarrow|Leftarrow|Leftrightarrow|iff|implies|impliedby|leq|geq|leqslant|geqslant|neq|ne|lt|gt|le|ge)|[=<>])/;
+	/^(\\(Rightarrow|Leftarrow|Leftrightarrow|iff|implies|impliedby|leq|geq|leqslant|geqslant|neq|ne|lt|gt|le|ge)(?![a-zA-Z])|[=<>])/;
 
 /**
  * Generate math block node
@@ -846,7 +848,9 @@ function generateAlignedGrid(rows: string[]): string {
 		const parts = row.split('&').map((p) => p.trim());
 
 		// Column 1: Initial expression (only first row) - use inline math
-		const col1 = i === 0 && parts[0] ? `[$${convertLatexToTypstMath(parts[0])}$]` : '[]';
+		// Calcul centré : fractions de premier niveau en taille normale, comme dans le texte
+		const col1 =
+			i === 0 && parts[0] ? `[$${convertLatexToTypstMath(markDisplayFractions(parts[0]))}$]` : '[]';
 
 		if (parts.length >= 2) {
 			const rightPart = parts.slice(1).join('&').trim();
@@ -882,14 +886,16 @@ function generateAlignedGrid(rows: string[]): string {
 			}
 
 			// Column 3: use inline math $...$ (no spaces) to avoid centering behavior
-			const col3 = col3Content ? `[$${convertLatexToTypstMath(col3Content)}$]` : '[]';
+			const col3 = col3Content
+				? `[$${convertLatexToTypstMath(markDisplayFractions(col3Content))}$]`
+				: '[]';
 			// Column 4: add left padding with #h(1em) for visual separation
 			const col4 = col4Content ? `[#h(1em)$${convertLatexToTypstMath(col4Content)}$]` : '[]';
 
 			gridRows.push(`  ${col1}, ${col2}, ${col3}, ${col4}`);
 		} else {
 			// No alignment point - put everything in column 3
-			const mathPart = parts[0] ? convertLatexToTypstMath(parts[0]) : '';
+			const mathPart = parts[0] ? convertLatexToTypstMath(markDisplayFractions(parts[0])) : '';
 			gridRows.push(`  ${col1}, [], [$${mathPart}$], []`);
 		}
 	}
@@ -1202,8 +1208,11 @@ function convertLatexOneArgCommand(str: string, latexCmd: string, typstFunc: str
 
 			const content = result.slice(openBraceIndex + 1, closeIndex);
 
-			// Replace the whole \command{...} with func(...)
-			const replacement = `${typstFunc}(${content})`;
+			// Replace the whole \command{...} with func(...). Collé derrière un nom
+			// (`\lambda\vec{u}`, `k\vec{u}`), on sépare : sinon `lambdaarrow`, variable
+			// inconnue qui fait échouer tout le PDF.
+			const needsSpace = startIndex > 0 && /[a-zA-Z]/.test(result[startIndex - 1]);
+			const replacement = `${needsSpace ? ' ' : ''}${typstFunc}(${content})`;
 			result = result.slice(0, startIndex) + replacement + result.slice(closeIndex + 1);
 
 			changed = true;
@@ -1734,6 +1743,7 @@ const KNOWN_TYPST_SYMBOLS = new Set([
 	'sqrt',
 	'root',
 	'frac',
+	'compose',
 	'binom',
 	'integral',
 	'display',
@@ -2018,6 +2028,11 @@ function replaceLatexCmd(
 
 export function convertLatexToTypstMath(latex: string): string {
 	let result = latex;
+
+	// Degrés : `60^{\circ}` / `60^\circ` → `60°` ; `\circ` seul (composition) → `compose`.
+	// Avant tout traitement des exposants : sinon « circ » s'affichait en toutes lettres.
+	result = result.replace(/\^\s*\{\s*\\circ\s*\}|\^\s*\\circ(?![a-zA-Z])/g, '°');
+	result = replaceLatexCmd(result, 'circ', 'compose');
 
 	// Debug: log if we have mathcal that might not be converted
 	if (result.includes('mathcal')) {

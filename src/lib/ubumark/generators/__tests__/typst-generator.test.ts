@@ -3281,3 +3281,61 @@ describe('convertLatexToTypstMath - Lettre grecque collée à une lettre', () =>
 		expect(convertLatexToTypstMath('k \\pi')).toBe('k pi');
 	});
 });
+
+describe('convertLatexToTypstMath - Vecteur collé derrière un nom', () => {
+	// 2026-09-25 : `\lambda\vec{u}` donnait `lambdaarrow(u)`, variable inconnue qui
+	// fait échouer TOUT le PDF (corrigé « Cauchy-Schwarz », fiche produit scalaire).
+	it.each([
+		['\\lambda\\vec{u}', 'lambda arrow(u)'],
+		['\\lambda\\overrightarrow{AB}', 'lambda arrow(A B)'],
+		['k\\vec{u}', 'k arrow(u)']
+	])('%s → %s', (latex, typst) => {
+		expect(convertLatexToTypstMath(latex)).toBe(typst);
+	});
+
+	it('après un chiffre, une parenthèse ou en début : inchangé', () => {
+		expect(convertLatexToTypstMath('2\\vec{u}')).toBe('2arrow(u)');
+		expect(convertLatexToTypstMath('\\vec{u}')).toBe('arrow(u)');
+		expect(convertLatexToTypstMath('(\\vec{u})')).toBe('(arrow(u))');
+	});
+});
+
+describe('convertLatexToTypstMath - Degrés et composition', () => {
+	// 2026-09-25 : `60^{\circ}` s'affichait « 60 » suivi du mot « circ » en exposant.
+	it.each([
+		['60^{\\circ}', '60°'],
+		['60^\\circ', '60°'],
+		['99{,}59^{\\circ}', '99","59°'],
+		['\\cos(30^{\\circ})', 'cos(30°)'],
+		['g\\circ f', 'g compose f']
+	])('%s → %s', (latex, typst) => {
+		expect(convertLatexToTypstMath(latex)).toBe(typst);
+	});
+});
+
+describe('align* : ligne qui commence par \\left', () => {
+	// 2026-09-25 : `&\left(…` était découpé comme `\le` (≤) suivi de « ft(… » —
+	// variable inconnue qui fait échouer tout le PDF (corrigé R1, produit scalaire).
+	it('`\\left(` n’est pas pris pour `\\le`', async () => {
+		const typst = await markdownToTypst(
+			'$$\\begin{align*}&\\left(a+b\\right)^2\\\\&=a^2+2ab+b^2\\end{align*}$$',
+			{ includeSetup: false }
+		);
+		expect(typst).not.toContain('<=');
+		expect(typst).not.toMatch(/\bft\(/);
+	});
+
+	it('`\\leqslant` en entier, pas `\\leq` + « slant »', async () => {
+		const typst = await markdownToTypst('$$\\begin{align*}x&\\leqslant 2\\\\y&=3\\end{align*}$$', {
+			includeSetup: false
+		});
+		expect(typst).toContain('[$lt.eq.slant$]');
+	});
+
+	it('`\\le` en tête de ligne reste un symbole d’alignement', async () => {
+		const typst = await markdownToTypst('$$\\begin{align*}x&\\le 2\\\\y&\\leq 3\\end{align*}$$', {
+			includeSetup: false
+		});
+		expect(typst).toContain('[$<=$]');
+	});
+});
