@@ -26,6 +26,7 @@
 	import { Editor } from '@tiptap/core';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { getListColumns } from '$lib/extensions/list-columns-extension';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Input } from '$lib/components/ui/input';
 	import {
@@ -43,6 +44,7 @@
 		List,
 		ListOrdered,
 		ListTodo,
+		Columns2,
 		Heading,
 		Palette,
 		Highlighter,
@@ -222,6 +224,8 @@
 	let isSuperscript = $state(false);
 	let isBulletList = $state(false);
 	let isOrderedList = $state(false);
+	/** Colonnes de la liste sous le curseur (1 = normale) ; null hors d'une liste */
+	let listColumns = $state<number | null>(null);
 	let isTaskList = $state(false);
 	let isBlockquote = $state(false);
 	let isCodeBlock = $state(false);
@@ -366,6 +370,7 @@
 		isSuperscript = editor.isActive('superscript');
 		isBulletList = editor.isActive('bulletList');
 		isOrderedList = editor.isActive('orderedList');
+		listColumns = getListColumns(editor);
 		isTaskList = editor.isActive('taskList');
 		isBlockquote = editor.isActive('blockquote');
 		isCodeBlock = editor.isActive('codeBlock');
@@ -1517,6 +1522,42 @@
 					>
 						<ListTodo class="h-4 w-4" />
 					</Button>
+
+					<!-- Colonnes de la liste sous le curseur (marqueur ubumark `:colonnes N`) -->
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger disabled={disabled || listColumns === null}>
+							{#snippet child({ props })}
+								<button
+									{...props}
+									type="button"
+									title="Colonnes de la liste"
+									aria-label="Colonnes de la liste"
+									class="inline-flex h-9 cursor-pointer items-center justify-center gap-1 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 {listColumns !==
+										null && listColumns > 1
+										? 'bg-secondary'
+										: ''}"
+								>
+									<Columns2 class="h-4 w-4" />
+									{#if listColumns !== null && listColumns > 1}
+										<span class="text-xs">{listColumns}</span>
+									{/if}
+								</button>
+							{/snippet}
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content>
+							<DropdownMenu.Label>Colonnes de la liste</DropdownMenu.Label>
+							<DropdownMenu.RadioGroup value={String(listColumns ?? 1)}>
+								{#each [1, 2, 3, 4] as n (n)}
+									<DropdownMenu.RadioItem
+										value={String(n)}
+										onclick={() => editor?.chain().focus().setListColumns(n).run()}
+									>
+										{n === 1 ? '1 (liste normale)' : `${n} colonnes`}
+									</DropdownMenu.RadioItem>
+								{/each}
+							</DropdownMenu.RadioGroup>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
 
 					<div class="mx-1 h-6 w-px bg-border"></div>
 
