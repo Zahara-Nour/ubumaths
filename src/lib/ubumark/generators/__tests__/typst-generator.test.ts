@@ -3312,3 +3312,30 @@ describe('convertLatexToTypstMath - Degrés et composition', () => {
 		expect(convertLatexToTypstMath(latex)).toBe(typst);
 	});
 });
+
+describe('align* : ligne qui commence par \\left', () => {
+	// 2026-09-25 : `&\left(…` était découpé comme `\le` (≤) suivi de « ft(… » —
+	// variable inconnue qui fait échouer tout le PDF (corrigé R1, produit scalaire).
+	it('`\\left(` n’est pas pris pour `\\le`', async () => {
+		const typst = await markdownToTypst(
+			'$$\\begin{align*}&\\left(a+b\\right)^2\\\\&=a^2+2ab+b^2\\end{align*}$$',
+			{ includeSetup: false }
+		);
+		expect(typst).not.toContain('<=');
+		expect(typst).not.toMatch(/\bft\(/);
+	});
+
+	it('`\\leqslant` en entier, pas `\\leq` + « slant »', async () => {
+		const typst = await markdownToTypst('$$\\begin{align*}x&\\leqslant 2\\\\y&=3\\end{align*}$$', {
+			includeSetup: false
+		});
+		expect(typst).toContain('[$lt.eq.slant$]');
+	});
+
+	it('`\\le` en tête de ligne reste un symbole d’alignement', async () => {
+		const typst = await markdownToTypst('$$\\begin{align*}x&\\le 2\\\\y&\\leq 3\\end{align*}$$', {
+			includeSetup: false
+		});
+		expect(typst).toContain('[$<=$]');
+	});
+});

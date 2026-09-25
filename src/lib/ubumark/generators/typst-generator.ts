@@ -744,8 +744,10 @@ function generateTable(node: TableNode, _options: ResolvedTypstTranspilerOptions
  * Pattern to match alignment symbols in LaTeX align environments.
  * Matches: \Rightarrow, \Leftrightarrow, =, <, >, \leq, \geq, \neq, etc.
  */
+// `(?![a-zA-Z])` : la commande doit finir là — sans quoi `\\left(` était lu `\\le` (≤)
+// suivi de « ft(… », et `\\leqslant` comme `\\leq` suivi de « slant ».
 const ALIGNMENT_SYMBOL_PATTERN =
-	/^(\\(Rightarrow|Leftarrow|Leftrightarrow|iff|implies|impliedby|leq|geq|leqslant|geqslant|neq|ne|lt|gt|le|ge)|[=<>])/;
+	/^(\\(Rightarrow|Leftarrow|Leftrightarrow|iff|implies|impliedby|leq|geq|leqslant|geqslant|neq|ne|lt|gt|le|ge)(?![a-zA-Z])|[=<>])/;
 
 /**
  * Generate math block node
