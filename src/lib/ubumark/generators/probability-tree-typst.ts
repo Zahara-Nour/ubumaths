@@ -262,7 +262,8 @@ function generateBranches(
 		if (showOutcomes && branch.child.isLeaf && branch.child.outcome) {
 			const outcomeLabel = formatTypstMath(branch.child.outcome);
 			lines.push(
-				`  content((${childPos.x + NODE_LABEL_WIDTH + OUTCOME_OFFSET_X}, ${childY}), text(size: 0.85em)[$${outcomeLabel}$])`
+				// Ancrée à gauche : centrée, une issue longue débordait sur l'étiquette de l'évènement
+				`  content((${childPos.x + NODE_LABEL_WIDTH + OUTCOME_OFFSET_X}, ${childY}), text(size: 0.85em)[$${outcomeLabel}$], anchor: "west")`
 			);
 		}
 
@@ -280,16 +281,16 @@ function generateBranches(
  * Uses Typst string comma "," for proper decimal display.
  *
  * @example
- * "0.85" → "0\",\"85"
- * "3.14159" → "3\",\"14159"
+ * "0.85" → "0{,}85" (puis `0","85` après conversion)
  *
  * @param text - Text containing decimal numbers
  * @returns Text with decimals converted to French format
  */
 function toFrenchDecimalTypst(text: string): string {
-	// Match decimal numbers (digits with decimal point)
-	// Pattern: integer part (optional), decimal point, decimal part
-	return text.replace(/(\d+)\.(\d+)/g, '$1","$2');
+	// Virgule LaTeX `{,}`, que le convertisseur transforme en `","` : préparer ici
+	// `","` directement faisait repasser ses guillemets dans le convertisseur, qui en
+	// faisait des primes doubles (`0″,″3` dans le PDF).
+	return text.replace(/(\d+)\.(\d+)/g, '$1{,}$2');
 }
 
 /**
