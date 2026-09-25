@@ -612,7 +612,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const statementAst = parseMarkdown(exercise.statement);
 		const statementTypst = generateTypst(statementAst, {
 			includeSetup: false,
-			language: 'fr',
+			language: this.locale,
 			genericFunctions: genericFunctionsConfig(exercise.generic_functions)
 		});
 
@@ -641,7 +641,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			const solutionAst = parseMarkdown(exercise.solution);
 			const solutionTypst = generateTypst(solutionAst, {
 				includeSetup: false,
-				language: 'fr',
+				language: this.locale,
 				genericFunctions: genericFunctionsConfig(exercise.generic_functions)
 			});
 
@@ -799,7 +799,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const statementAst = parseMarkdown(exercise.statement);
 		const statementTypst = generateTypst(statementAst, {
 			includeSetup: false,
-			language: 'fr',
+			language: this.locale,
 			genericFunctions: genericFunctionsConfig(exercise.generic_functions)
 		});
 
@@ -830,7 +830,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			const solutionAst = parseMarkdown(exercise.solution);
 			const solutionTypst = generateTypst(solutionAst, {
 				includeSetup: false,
-				language: 'fr',
+				language: this.locale,
 				genericFunctions: genericFunctionsConfig(exercise.generic_functions)
 			});
 

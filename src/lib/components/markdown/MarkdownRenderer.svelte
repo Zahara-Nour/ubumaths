@@ -52,6 +52,8 @@
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
+	import { provideContentLocale } from './content-locale';
+	import type { ContentLocale } from '$lib/types/locale';
 
 	interface Props {
 		/** Markdown content to render (template or resolved instance) */
@@ -92,6 +94,11 @@
 		hints?: ExerciseHint[];
 		/** Callback when a hint is opened */
 		onHintOpen?: (hintId: string) => void;
+		/**
+		 * Langue du contenu : `en` écrit les décimaux avec un point, `fr` avec une
+		 * virgule. Absente : celle d'un rendu parent, sinon le français.
+		 */
+		locale?: ContentLocale;
 	}
 
 	let {
@@ -109,8 +116,11 @@
 		onMentionClick,
 		genericFunctions,
 		hints = [],
-		onHintOpen
+		onHintOpen,
+		locale
 	}: Props = $props();
+
+	provideContentLocale(() => locale);
 
 	/**
 	 * Parse the markdown content into an AST.

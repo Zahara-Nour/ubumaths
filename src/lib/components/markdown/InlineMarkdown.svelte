@@ -22,6 +22,8 @@
 	import type { InlineNode, ParagraphNode } from '$lib/ubumark';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import InlineRenderer from './InlineRenderer.svelte';
+	import { provideContentLocale } from './content-locale';
+	import type { ContentLocale } from '$lib/types/locale';
 
 	interface Props {
 		/** Markdown content to render inline */
@@ -30,9 +32,13 @@
 		class?: string;
 		/** Configuration for generic function names (f, g, h, P, Q, etc.) */
 		genericFunctions?: GenericFunctionConfig | null;
+		/** Langue du contenu (séparateur décimal) ; absente : celle du parent, sinon fr */
+		locale?: ContentLocale;
 	}
 
-	let { content, class: className = '', genericFunctions }: Props = $props();
+	let { content, class: className = '', genericFunctions, locale }: Props = $props();
+
+	provideContentLocale(() => locale);
 
 	/**
 	 * Parse the content and extract inline nodes from the first paragraph.

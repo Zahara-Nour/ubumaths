@@ -5,8 +5,13 @@
  * - Decimal point → comma with proper LaTeX spacing: {,}
  * - Thin spaces every 3 digits (if >= 4 digits): \,
  *
+ * Un document en anglais garde le point décimal (décision du 2026-09-25) mais
+ * groupe aussi par espaces fines : voir {@link toLocaleDecimal}.
+ *
  * @module utils/french-math
  */
+
+import type { ContentLocale } from '$lib/types/locale';
 
 // =============================================================================
 // Types
@@ -77,7 +82,11 @@ function formatDecimalPart(decPart: string, applySpaces: boolean): string {
  * @param options - Formatting options
  * @returns French-formatted LaTeX string
  */
-function formatSingleNumber(numStr: string, options: Required<FrenchDecimalOptions>): string {
+function formatSingleNumber(
+	numStr: string,
+	options: Required<FrenchDecimalOptions>,
+	separator: string
+): string {
 	// Match: optional digits, optional decimal point, optional more digits
 	const match = numStr.match(/^(\d*)(?:\.(\d+))?$/);
 	if (!match) return numStr;
@@ -95,8 +104,8 @@ function formatSingleNumber(numStr: string, options: Required<FrenchDecimalOptio
 	// Format decimal part
 	const formattedDec = formatDecimalPart(decPart, options.formatSpaces);
 
-	// Use {,} for proper LaTeX spacing (avoids extra space after comma)
-	return `${formattedInt}{,}${formattedDec}`;
+	// `{,}` en français : espacement LaTeX correct (pas d'espace après la virgule)
+	return `${formattedInt}${separator}${formattedDec}`;
 }
 
 // =============================================================================
@@ -130,7 +139,28 @@ function formatSingleNumber(numStr: string, options: Required<FrenchDecimalOptio
  * toFrenchDecimal("1234.56", { formatSpaces: false }) → "1234{,}56"
  */
 export function toFrenchDecimal(latex: string, options: FrenchDecimalOptions = {}): string {
+	return toLocaleDecimal(latex, 'fr', options);
+}
+
+/** Séparateur décimal écrit en LaTeX, par langue du document. */
+const DECIMAL_SEPARATORS: Record<ContentLocale, string> = { fr: '{,}', en: '.' };
+
+/**
+ * Nombres d'une formule LaTeX mis en forme selon la langue du document :
+ * virgule en français (`3{,}14`), point en anglais (`3.14`) ; groupement par
+ * espaces fines dès 4 chiffres dans les deux langues (`12\,500`, `3.141\,59`).
+ * Une langue inconnue est traitée en français, comme les libellés du document.
+ *
+ * @example
+ * toLocaleDecimal("1234.5678", "en") → "1\\,234.567\\,8"
+ */
+export function toLocaleDecimal(
+	latex: string,
+	locale: ContentLocale | string | undefined,
+	options: FrenchDecimalOptions = {}
+): string {
 	const opts = { ...DEFAULT_OPTIONS, ...options };
+	const separator = locale === 'en' ? DECIMAL_SEPARATORS.en : DECIMAL_SEPARATORS.fr;
 
 	// Match all numbers and convert them to French notation
 	// Pattern: digit sequences with optional decimal point
@@ -139,6 +169,6 @@ export function toFrenchDecimal(latex: string, options: FrenchDecimalOptions = {
 	// comme un entier et s'affichait « 0,0 484 ».
 	return latex.replace(/(\{,\})?(\d+(?:\.\d+)?)/g, (match, latexComma, numStr) => {
 		if (latexComma) return `{,}${formatDecimalPart(numStr, opts.formatSpaces)}`;
-		return formatSingleNumber(numStr, opts);
+		return formatSingleNumber(numStr, opts, separator);
 	});
 }

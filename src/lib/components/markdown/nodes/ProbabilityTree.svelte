@@ -23,7 +23,8 @@
 		ProbTreeNode,
 		ProbTreeBranch
 	} from '$lib/ubumark/types/probability-tree';
-	import { toFrenchDecimal } from '$lib/utils/french-math';
+	import { toLocaleDecimal } from '$lib/utils/french-math';
+	import { readContentLocale } from '../content-locale';
 
 	interface Props {
 		node: ProbabilityTreeNode;
@@ -31,6 +32,9 @@
 	}
 
 	let { node, class: className = '' }: Props = $props();
+
+	// Langue du contenu (séparateur décimal), posée par MarkdownRenderer
+	const contentLocale = readContentLocale();
 
 	// =========================================================================
 	// LAYOUT CONSTANTS
@@ -210,15 +214,15 @@
 
 	/**
 	 * Convert expression to proper LaTeX for MathLive rendering
-	 * Applies French decimal formatting (comma separator, thin spaces)
+	 * Nombres selon la langue du contenu : virgule en français, point en anglais
 	 */
 	function toLatex(expr: string): string {
 		const processed = expr
 			.replace(/\+inf/g, '+\\infty')
 			.replace(/-inf/g, '-\\infty')
 			.replace(/^inf$/g, '\\infty');
-		// Apply French number formatting (3.14 → 3{,}14)
-		return toFrenchDecimal(processed);
+		// 3.14 → 3{,}14 en français, 3.14 en anglais
+		return toLocaleDecimal(processed, contentLocale());
 	}
 
 	/**
