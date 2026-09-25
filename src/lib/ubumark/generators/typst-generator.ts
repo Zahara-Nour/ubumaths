@@ -1737,6 +1737,7 @@ const KNOWN_TYPST_SYMBOLS = new Set([
 	'sqrt',
 	'root',
 	'frac',
+	'compose',
 	'binom',
 	'integral',
 	'display',
@@ -2021,6 +2022,11 @@ function replaceLatexCmd(
 
 export function convertLatexToTypstMath(latex: string): string {
 	let result = latex;
+
+	// Degrés : `60^{\circ}` / `60^\circ` → `60°` ; `\circ` seul (composition) → `compose`.
+	// Avant tout traitement des exposants : sinon « circ » s'affichait en toutes lettres.
+	result = result.replace(/\^\s*\{\s*\\circ\s*\}|\^\s*\\circ(?![a-zA-Z])/g, '°');
+	result = replaceLatexCmd(result, 'circ', 'compose');
 
 	// Debug: log if we have mathcal that might not be converted
 	if (result.includes('mathcal')) {

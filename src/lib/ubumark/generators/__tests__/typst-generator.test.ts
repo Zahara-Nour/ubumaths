@@ -3299,3 +3299,16 @@ describe('convertLatexToTypstMath - Vecteur collé derrière un nom', () => {
 		expect(convertLatexToTypstMath('(\\vec{u})')).toBe('(arrow(u))');
 	});
 });
+
+describe('convertLatexToTypstMath - Degrés et composition', () => {
+	// 2026-09-25 : `60^{\circ}` s'affichait « 60 » suivi du mot « circ » en exposant.
+	it.each([
+		['60^{\\circ}', '60°'],
+		['60^\\circ', '60°'],
+		['99{,}59^{\\circ}', '99","59°'],
+		['\\cos(30^{\\circ})', 'cos(30°)'],
+		['g\\circ f', 'g compose f']
+	])('%s → %s', (latex, typst) => {
+		expect(convertLatexToTypstMath(latex)).toBe(typst);
+	});
+});
