@@ -19,6 +19,7 @@
 	import type { InputState } from '$lib/ubumark';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import { expressionToLatex, extractPromptIndices } from '../utils/math-utils';
+	import { readContentLocale } from '../content-locale';
 
 	/**
 	 * MathLive math-field element interface
@@ -73,9 +74,12 @@
 		mathModeSpace
 	}: Props = $props();
 
+	// Langue du contenu (séparateur décimal), posée par MarkdownRenderer
+	const contentLocale = readContentLocale();
+
 	// Convert to LaTeX for rendering, embedding prefilled values in placeholder syntax
 	let latex = $derived.by(() => {
-		let base = expressionToLatex(expression, syntax, genericFunctions);
+		let base = expressionToLatex(expression, syntax, genericFunctions, contentLocale());
 		if (prefilledValues && !correctValues) {
 			for (const [id, value] of Object.entries(prefilledValues)) {
 				base = base.replace(

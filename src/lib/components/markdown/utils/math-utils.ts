@@ -9,7 +9,7 @@
 
 import { parseCustomSafe } from '$lib/mathAST/parser/custom';
 import { toLatex, parseLatexSafe } from '$lib/mathAST';
-import { toFrenchDecimal } from '$lib/utils/french-math';
+import { toLocaleDecimal } from '$lib/utils/french-math';
 import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import type { MathNode } from '$lib/mathAST/types';
 import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
@@ -43,6 +43,7 @@ export function genericFunctionsConfig(
  * @param expression - The math expression string
  * @param syntax - The syntax type: 'latex' or 'custom'
  * @param genericFunctions - Optional configuration for generic function names.
+ * @param locale - Langue du contenu : `en` garde le point décimal, sinon virgule
  *   - undefined: Use parser defaults (f, g, h, u, v, w, F, G, H)
  *   - null: Disable generic function parsing entirely
  *   - GenericFunctionConfig: Custom configuration
@@ -51,11 +52,12 @@ export function genericFunctionsConfig(
 export function expressionToLatex(
 	expression: string,
 	syntax: 'latex' | 'custom',
-	genericFunctions?: GenericFunctionConfig | null
+	genericFunctions?: GenericFunctionConfig | null,
+	locale?: string
 ): string {
 	// `\unit` (siunitx) n'existe ni dans MathLive ni dans le préambule de
 	// l'export `.tex` : on l'affiche en LaTeX de base.
-	return displayUnitsInLatex(expressionToRawLatex(expression, syntax, genericFunctions));
+	return displayUnitsInLatex(expressionToRawLatex(expression, syntax, genericFunctions, locale));
 }
 
 /**
@@ -66,7 +68,8 @@ export function expressionToLatex(
 export function expressionToRawLatex(
 	expression: string,
 	syntax: 'latex' | 'custom',
-	genericFunctions?: GenericFunctionConfig | null
+	genericFunctions?: GenericFunctionConfig | null,
+	locale?: string
 ): string {
 	let latex: string;
 
@@ -84,8 +87,9 @@ export function expressionToRawLatex(
 		}
 	}
 
-	// Convert to French decimal notation (comma separator, thin spaces)
-	return toFrenchDecimal(latex);
+	// Nombres selon la langue du document : virgule en français, point en anglais
+	// (espaces fines de groupement dans les deux). Sans langue : français.
+	return toLocaleDecimal(latex, locale);
 }
 
 /**
@@ -168,14 +172,16 @@ export function hasPrompts(expression: string, syntax: 'latex' | 'custom'): bool
  * @param expression - The math expression string
  * @param syntax - The syntax type: 'latex' or 'custom'
  * @param genericFunctions - Optional configuration for generic function names
+ * @param locale - Langue du contenu : `en` garde le point décimal, sinon virgule
  * @returns LaTeX string with placeholders replaced by \boxed{?}
  */
 export function expressionToFlashLatex(
 	expression: string,
 	syntax: 'latex' | 'custom',
-	genericFunctions?: GenericFunctionConfig | null
+	genericFunctions?: GenericFunctionConfig | null,
+	locale?: string
 ): string {
-	const latex = expressionToLatex(expression, syntax, genericFunctions);
+	const latex = expressionToLatex(expression, syntax, genericFunctions, locale);
 	return latex.replace(/\\placeholder\[\d+\]\{[^}]*\}/g, '\\boxed{?}');
 }
 

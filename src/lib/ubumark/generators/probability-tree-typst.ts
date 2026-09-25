@@ -27,11 +27,14 @@ interface ProbTreeTypstOptions {
 	levelSpacing?: number;
 	/** Vertical spacing between siblings (default: 1.5) */
 	siblingSpacing?: number;
+	/** Langue du document : `en` garde le point décimal, sinon virgule (défaut : fr) */
+	language?: string;
 }
 
 const DEFAULT_OPTIONS: Required<ProbTreeTypstOptions> = {
 	levelSpacing: 3,
-	siblingSpacing: 1.5
+	siblingSpacing: 1.5,
+	language: 'fr'
 };
 
 // Layout constants for label positioning
@@ -127,7 +130,7 @@ function generateTreeData(
 	if (root.label) {
 		const rootPos = positions.get(root.id);
 		if (rootPos) {
-			const label = formatTypstMath(root.label);
+			const label = formatTypstMath(root.label, opts.language);
 			// Only generate label if non-empty after processing
 			// Negate Y to match Typst canvas coordinate system
 			// Center the label in the NODE_LABEL_WIDTH space
@@ -255,21 +258,21 @@ function generateBranches(
 		const probY = midY + normalY * PROBABILITY_LABEL_OFFSET_Y;
 
 		// Probability label (above line, perpendicular offset)
-		const probLabel = formatTypstMath(branch.probability.display);
+		const probLabel = formatTypstMath(branch.probability.display, opts.language);
 		lines.push(
 			`  content((${probX.toFixed(2)}, ${probY.toFixed(2)}), text(size: 0.8em)[$${probLabel}$])`
 		);
 
 		// Event label at child position (centered in NODE_LABEL_WIDTH space)
 		// Add extra gap for leaf nodes to avoid labels being too close to branch ends
-		const eventLabel = formatTypstMath(branch.eventLabel);
+		const eventLabel = formatTypstMath(branch.eventLabel, opts.language);
 		const leafGap = branch.child.isLeaf ? LEAF_LABEL_GAP : 0;
 		const eventLabelX = childPos.x + leafGap + NODE_LABEL_WIDTH / 2;
 		lines.push(`  content((${eventLabelX}, ${childY}), $${eventLabel}$)`);
 
 		// Outcome at leaf (positioned to the right of event label space)
 		if (showOutcomes && branch.child.isLeaf && branch.child.outcome) {
-			const outcomeLabel = formatTypstMath(branch.child.outcome);
+			const outcomeLabel = formatTypstMath(branch.child.outcome, opts.language);
 			lines.push(
 				// Ancrée à gauche : centrée, une issue longue débordait sur l'étiquette de l'évènement
 				`  content((${childPos.x + NODE_LABEL_WIDTH + OUTCOME_OFFSET_X}, ${childY}), text(size: 0.85em)[$${outcomeLabel}$], anchor: "west")`
@@ -288,14 +291,17 @@ function generateBranches(
 /**
  * Convert decimal numbers to French notation for Typst math mode.
  * Uses Typst string comma "," for proper decimal display.
+ * En anglais, le point est gardé (décision du 2026-09-25).
  *
  * @example
  * "0.85" → "0{,}85" (puis `0","85` après conversion)
  *
  * @param text - Text containing decimal numbers
+ * @param language - Langue du document
  * @returns Text with decimals converted to French format
  */
-function toFrenchDecimalTypst(text: string): string {
+function toFrenchDecimalTypst(text: string, language: string): string {
+	if (language === 'en') return text;
 	// Virgule LaTeX `{,}`, que le convertisseur transforme en `","` : préparer ici
 	// `","` directement faisait repasser ses guillemets dans le convertisseur, qui en
 	// faisait des primes doubles (`0″,″3` dans le PDF).
@@ -311,9 +317,10 @@ function toFrenchDecimalTypst(text: string): string {
  * - Dollar sign stripping
  *
  * @param expr - Expression (may contain LaTeX)
+ * @param language - Langue du document (séparateur décimal)
  * @returns Typst math expression
  */
-function formatTypstMath(expr: string): string {
+function formatTypstMath(expr: string, language: string): string {
 	// Strip surrounding $...$ delimiters if present (they'll be added by the generator)
 	let result = expr.trim();
 	if (result.startsWith('$') && result.endsWith('$')) {
@@ -328,7 +335,7 @@ function formatTypstMath(expr: string): string {
 
 	// Convert decimal numbers to French notation BEFORE LaTeX conversion
 	// This ensures "0.85" becomes "0","85" in Typst
-	result = toFrenchDecimalTypst(result);
+	result = toFrenchDecimalTypst(result, language);
 
 	// Convert any LaTeX commands to Typst
 	result = convertLatexToTypstMath(result);

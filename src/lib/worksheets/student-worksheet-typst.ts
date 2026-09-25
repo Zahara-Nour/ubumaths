@@ -172,7 +172,7 @@ export function generateStudentWorksheetTypst(
 		// En-tête : numéro blanc sur carré ambre (charte partagée avec la fiche enseignant), titre en gras
 		// Use processTableCellContent to handle math expressions in titles
 		const titlePart = exercise.title
-			? ` #h(0.5em) #text(weight: "bold")[${processTableCellContent(exercise.title)}]`
+			? ` #h(0.5em) #text(weight: "bold")[${processTableCellContent(exercise.title, locale)}]`
 			: '';
 
 		// Star prefix for essential exercises
@@ -201,7 +201,8 @@ export function generateStudentWorksheetTypst(
 		// Fonctions déclarées par l'exercice : sans elles, `C'(x)` s'imprime en erreur.
 		const genericFunctions = genericFunctionsConfig(exercise.generic_functions);
 		exerciseContent +=
-			generateTypst(statementAst, { includeSetup: false, genericFunctions }) + '\n\n';
+			generateTypst(statementAst, { includeSetup: false, genericFunctions, language: locale }) +
+			'\n\n';
 
 		// Wrap essential exercises with orange left border
 		if (exercise.is_essential) {
@@ -231,7 +232,7 @@ ${exerciseContent}]\n`;
 
 		for (const { number, title, correction, genericFunctions } of corrections) {
 			const titlePart = title
-				? ` #h(0.5em) #text(weight: "bold")[${processTableCellContent(title)}]`
+				? ` #h(0.5em) #text(weight: "bold")[${processTableCellContent(title, locale)}]`
 				: '';
 
 			// Sticky header inside the panel: same reason as the exercises above
@@ -239,7 +240,11 @@ ${exerciseContent}]\n`;
   #block(sticky: true, below: 0.6em)[#${exerciseBadge(number)}${titlePart}]
 `;
 			const correctionAst = parseMarkdown(correction);
-			typst += generateTypst(correctionAst, { includeSetup: false, genericFunctions });
+			typst += generateTypst(correctionAst, {
+				includeSetup: false,
+				genericFunctions,
+				language: locale
+			});
 			typst += `\n]\n\n#v(1em)\n`;
 		}
 	}

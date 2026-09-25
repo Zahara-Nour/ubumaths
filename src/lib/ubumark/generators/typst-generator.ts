@@ -54,7 +54,7 @@ import type {
 import { getDimensionsForFormat } from '$lib/exercises/services/image-dimensions';
 import { expressionToRawLatex } from '$lib/components/markdown/utils/math-utils';
 import { unitWritingToTypst } from '$lib/mathAST/units/display';
-import { toFrenchDecimal } from '$lib/utils/french-math';
+import { toLocaleDecimal } from '$lib/utils/french-math';
 import { generateVariationTableTypst } from './variation-table-typst';
 import { generateProbabilityTreeTypst } from './probability-tree-typst';
 import { generateTrigCircleTypst } from './trig-circle-typst';
@@ -318,10 +318,14 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 			return generateCodeBlock(node);
 
 		case 'variation-table':
-			return generateVariationTableTypst(node as unknown as VariationTableNode);
+			return generateVariationTableTypst(node as unknown as VariationTableNode, {
+				language: options.language
+			});
 
 		case 'probability-tree':
-			return generateProbabilityTreeTypst(node as unknown as ProbabilityTreeNode);
+			return generateProbabilityTreeTypst(node as unknown as ProbabilityTreeNode, {
+				language: options.language
+			});
 
 		case 'trig-circle':
 			return generateTrigCircleTypst(node as unknown as TrigCircleNode);
@@ -381,8 +385,13 @@ function generateInline(node: InlineNode, options: ResolvedTypstTranspilerOption
 		case 'math-inline': {
 			const latex =
 				node.syntax === 'custom'
-					? expressionToRawLatex(node.expression, 'custom', options.genericFunctions)
-					: toFrenchDecimal(node.expression);
+					? expressionToRawLatex(
+							node.expression,
+							'custom',
+							options.genericFunctions,
+							options.language
+						)
+					: toLocaleDecimal(node.expression, options.language);
 			// Convert LaTeX math to Typst math syntax (fractions de premier niveau en taille normale)
 			const typstMath = convertLatexToTypstMath(markDisplayFractions(latex));
 			// DEBUG LOG: Keep for Typst debugging - logs each inline math conversion
@@ -618,7 +627,7 @@ function generateListItemContent(
  * @param options - Generator options
  * @returns Typst table
  */
-function generateTable(node: TableNode, _options: ResolvedTypstTranspilerOptions): string {
+function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions): string {
 	if (node.transpose) {
 		// Transposed table: transpose data, first column is bold (headers)
 		// Number of output columns = 1 (header) + number of data rows
@@ -631,11 +640,11 @@ function generateTable(node: TableNode, _options: ResolvedTypstTranspilerOptions
 		for (let col = 0; col < node.header.length; col++) {
 			const cells: string[] = [
 				// First cell: header in bold (may contain math like $z_i$)
-				`[*${processTableCellContent(node.header[col].content)}*]`
+				`[*${processTableCellContent(node.header[col].content, options.language)}*]`
 			];
 			// Data cells from each row (may contain math)
 			for (const row of node.rows) {
-				cells.push(`[${processTableCellContent(row[col]?.content || '')}]`);
+				cells.push(`[${processTableCellContent(row[col]?.content || '', options.language)}]`);
 			}
 			rows.push(cells.join(', '));
 		}
@@ -667,7 +676,7 @@ function generateTable(node: TableNode, _options: ResolvedTypstTranspilerOptions
 		// Corner cell: header styling only if non-empty
 		const headerCells = node.header
 			.map((cell: { content: string }, index: number) => {
-				const content = processTableCellContent(cell.content);
+				const content = processTableCellContent(cell.content, options.language);
 				if (index === 0) {
 					// Corner cell: bold only if has content
 					return content.trim() ? `[*${content}*]` : `[${content}]`;
@@ -681,7 +690,7 @@ function generateTable(node: TableNode, _options: ResolvedTypstTranspilerOptions
 			.map((row: { content: string }[]) =>
 				row
 					.map((cell: { content: string }, cellIndex: number) => {
-						const content = processTableCellContent(cell.content);
+						const content = processTableCellContent(cell.content, options.language);
 						return cellIndex === 0 ? `[*${content}*]` : `[${content}]`;
 					})
 					.join(', ')
@@ -716,14 +725,20 @@ function generateTable(node: TableNode, _options: ResolvedTypstTranspilerOptions
 
 	// Build header cells (may contain math like $z_i$)
 	const headerCells = node.header
-		.map((cell: { content: string }) => `[*${processTableCellContent(cell.content)}*]`)
+		.map(
+			(cell: { content: string }) =>
+				`[*${processTableCellContent(cell.content, options.language)}*]`
+		)
 		.join(', ');
 
 	// Build body rows (may contain math)
 	const bodyRows = node.rows
 		.map((row: { content: string }[]) =>
 			row
-				.map((cell: { content: string }) => `[${processTableCellContent(cell.content)}]`)
+				.map(
+					(cell: { content: string }) =>
+						`[${processTableCellContent(cell.content, options.language)}]`
+				)
 				.join(', ')
 		)
 		.join(',\n  ');
@@ -762,8 +777,8 @@ const ALIGNMENT_SYMBOL_PATTERN =
 function generateMathBlock(node: MathBlockNode, options: ResolvedTypstTranspilerOptions): string {
 	const latex =
 		node.syntax === 'custom'
-			? expressionToRawLatex(node.expression, 'custom', options.genericFunctions)
-			: toFrenchDecimal(node.expression);
+			? expressionToRawLatex(node.expression, 'custom', options.genericFunctions, options.language)
+			: toLocaleDecimal(node.expression, options.language);
 
 	// Check if this is an aligned equation (contains \begin{align} etc.)
 	const alignMatch = latex.match(/\\begin\s*\{(align|aligned)\*?\}([\s\S]*?)\\end\s*\{\1\*?\}/);
@@ -2797,9 +2812,10 @@ export function escapeTypst(text: string): string {
  * 4. Reassembling with proper Typst math delimiters
  *
  * @param content - Cell content possibly containing inline math
+ * @param language - Langue du document (`en` : point décimal ; sinon virgule)
  * @returns Processed content safe for Typst tables
  */
-export function processTableCellContent(content: string): string {
+export function processTableCellContent(content: string, language?: string): string {
 	// Match inline math: $...$ (non-greedy, doesn't cross line breaks)
 	// Capture: text before, math content, text after
 	const parts: string[] = [];
@@ -2814,10 +2830,9 @@ export function processTableCellContent(content: string): string {
 		}
 
 		// Convert and add the math segment
-		// Apply toFrenchDecimal first to convert decimal points to French commas
+		// Nombres selon la langue du document (virgule en français, point en anglais)
 		const mathContent = match[1];
-		const frenchMath = toFrenchDecimal(mathContent);
-		const typstMath = convertLatexToTypstMath(frenchMath);
+		const typstMath = convertLatexToTypstMath(toLocaleDecimal(mathContent, language));
 		parts.push(`$${typstMath}$`);
 
 		lastIndex = match.index + match[0].length;

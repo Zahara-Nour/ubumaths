@@ -5,6 +5,7 @@
 	import { parseMarkdown } from '$lib/ubumark';
 	import { convertLatexToMarkup } from 'mathlive';
 	import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
+	import { readContentLocale } from '$lib/components/markdown/content-locale';
 	import { Figure } from '$lib/geometry-core/graph/figure';
 	import type { GeoSlider } from '$lib/geometry-core/types/elements';
 	import {
@@ -110,6 +111,9 @@
 		renderMode = 'normal',
 		onViewportChange
 	}: Props = $props();
+
+	// Langue du contenu (séparateur décimal des étiquettes), posée par MarkdownRenderer
+	const contentLocale = readContentLocale();
 
 	let svgRef: SVGSVGElement | undefined = $state();
 	let containerRef: HTMLDivElement | undefined = $state();
@@ -341,7 +345,7 @@
 					return html;
 				}
 				if (node.type === 'math-inline') {
-					const latex = expressionToLatex(node.expression, node.syntax);
+					const latex = expressionToLatex(node.expression, node.syntax, undefined, contentLocale());
 					return convertLatexToMarkup(latex, { defaultMode: 'inline-math' });
 				}
 				// line-break, link, blank, hashtag, mention, hint-reference, internal-link

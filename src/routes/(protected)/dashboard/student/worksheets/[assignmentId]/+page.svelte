@@ -16,6 +16,8 @@
 		StudentSectionView
 	} from '$lib/types/worksheets';
 	import { groupExercisesForDisplay } from '$lib/worksheets/exercise-numbering';
+	import { provideContentLocale } from '$lib/components/markdown/content-locale';
+	import { isContentLocale } from '$lib/types/locale';
 
 	interface Props {
 		data: PageData;
@@ -27,6 +29,10 @@
 	let worksheet = $derived(data.worksheet);
 	let exercises = $derived<StudentExerciseView[]>(worksheet.exercises ?? []);
 	let sections = $derived<StudentSectionView[]>(worksheet.sections ?? []);
+
+	// Langue de la fiche pour tous les rendus markdown de la page (point décimal en
+	// anglais) ; une valeur inattendue retombe sur le français.
+	provideContentLocale(() => (isContentLocale(worksheet.language) ? worksheet.language : 'fr'));
 	let exerciseCount = $derived(exercises.length);
 	let assignmentId = $derived(worksheet.assignment_id);
 

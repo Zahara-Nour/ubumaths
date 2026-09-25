@@ -22,7 +22,7 @@ import type {
 } from '../types/variation-table';
 import { convertLatexToTypstMath } from './typst-generator';
 import { withImplicitEndpoints } from '../parser/variation-table-parser';
-import { toFrenchDecimal } from '$lib/utils/french-math';
+import { toLocaleDecimal } from '$lib/utils/french-math';
 
 // ============================================================================
 // CONFIGURATION
@@ -31,6 +31,8 @@ import { toFrenchDecimal } from '$lib/utils/french-math';
 interface VariationTableTypstOptions {
 	/** Extra styling or configuration (reserved for future use) */
 	extraOptions?: string;
+	/** Langue du document : `en` garde le point décimal, sinon virgule (défaut : fr) */
+	language?: string;
 }
 
 /** Fond blanc sous le « 0 » (équation bloc) que vartable dessine sur le trait d'une racine */
@@ -103,8 +105,9 @@ function formatTypstTuple(elements: string[]): string {
  */
 export function generateVariationTableTypst(
 	node: VariationTableNode,
-	_options: VariationTableTypstOptions = {}
+	options: VariationTableTypstOptions = {}
 ): string {
+	const language = options.language ?? 'fr';
 	// Validate input
 	if (node.rows.length === 0) {
 		return '// Error: Variation table has no rows';
@@ -117,9 +120,9 @@ export function generateVariationTableTypst(
 	try {
 		const importStatement = '#import "@preview/vartable:0.2.1": tabvar\n\n';
 		const variable = formatVariable(node.variable);
-		const domain = generateDomain(node.domain);
+		const domain = generateDomain(node.domain, language);
 		const labels = generateLabels(node.rows);
-		const content = generateContent(node);
+		const content = generateContent(node, language);
 
 		// Wrap in a scaled block to fit column width
 		// Text enlarged then scaled down = readable text but reduced padding
@@ -177,14 +180,15 @@ function formatVariable(variable: string): string {
  * Format: ($point1$, $point2$, ...)
  *
  * @param domain - Array of domain points
+ * @param language - Langue du document (séparateur décimal)
  * @returns Domain tuple string
  *
  * @example
  * "($-infinity$, $0$, $2$, $+infinity$)"
  */
-function generateDomain(domain: DomainPoint[]): string {
+function generateDomain(domain: DomainPoint[], language: string): string {
 	const points = domain.map((point) => {
-		const expr = formatMathExpression(point.expression);
+		const expr = formatMathExpression(point.expression, language);
 		// Note: vartable doesn't have built-in open bound notation like LaTeX ]a[
 		// Open bounds would need to be handled via styling if supported
 		return `$${expr}$`;
@@ -199,9 +203,10 @@ function generateDomain(domain: DomainPoint[]): string {
  * Converts LaTeX expressions to Typst math syntax
  *
  * @param expr - Math expression (may be LaTeX)
+ * @param language - Langue du document (séparateur décimal)
  * @returns Typst math expression
  */
-function formatMathExpression(expr: string): string {
+function formatMathExpression(expr: string, language: string): string {
 	// Strip $...$ delimiters if present - in variation tables everything is math,
 	// so users may write $e^{-1/4}$ but the generator already wraps in $...$
 	let cleaned = expr.trim();
@@ -217,9 +222,8 @@ function formatMathExpression(expr: string): string {
 		return '+infinity';
 	}
 
-	// Apply French decimal formatting first, then convert to Typst
-	const frenchExpr = toFrenchDecimal(cleaned);
-	return convertLatexToTypstMath(frenchExpr);
+	// Nombres selon la langue du document, puis conversion en Typst
+	return convertLatexToTypstMath(toLocaleDecimal(cleaned, language));
 }
 
 // ============================================================================
@@ -278,9 +282,10 @@ function generateLabels(rows: (SignRow | VariationRow)[]): string {
  * - `((top, $0$),)` = tuple containing one tuple = correct single-row contents
  *
  * @param node - Variation table node
+ * @param language - Langue du document (séparateur décimal)
  * @returns Content rows indented and formatted
  */
-function generateContent(node: VariationTableNode): string {
+function generateContent(node: VariationTableNode, language: string): string {
 	const lines: string[] = [];
 
 	for (let i = 0; i < node.rows.length; i++) {
@@ -296,7 +301,7 @@ function generateContent(node: VariationTableNode): string {
 			const line = generateSignRow(row, node.domain);
 			lines.push(`    ${line}${needsComma ? ',' : ''}`);
 		} else {
-			const line = generateVariationRow(row, node.domain);
+			const line = generateVariationRow(row, node.domain, language);
 			lines.push(`    ${line}${needsComma ? ',' : ''}`);
 		}
 	}
@@ -415,13 +420,14 @@ function convertSignMarkerToTypst(marker: string): string {
  *
  * @param row - Variation row
  * @param domain - Domain points
+ * @param language - Langue du document (séparateur décimal)
  * @returns Variation row tuple with n elements
  *
  * @example
  * // Domain: (-inf, 0, +inf) with values: -inf->bottom, 0->top, +inf->bottom
  * // Generates: ((bottom, $-infinity$), (top, $0$), (bottom, $-infinity$))
  */
-function generateVariationRow(row: VariationRow, domain: DomainPoint[]): string {
+function generateVariationRow(row: VariationRow, domain: DomainPoint[], language: string): string {
 	const elements: string[] = [];
 	// Bornes sans valeur (tableau de 1re) : une colonne vide `()` en bout de ligne fait planter vartable
 	const filled = withImplicitEndpoints(row, domain);
@@ -432,7 +438,7 @@ function generateVariationRow(row: VariationRow, domain: DomainPoint[]): string 
 		const value = filled.values.get(point);
 
 		// Format the element for this domain point
-		const formatted = formatPointVariation(value);
+		const formatted = formatPointVariation(value, language);
 		elements.push(formatted);
 	}
 
@@ -449,9 +455,10 @@ function generateVariationRow(row: VariationRow, domain: DomainPoint[]): string 
  * - "||" for asymptotes
  *
  * @param value - Value at the domain point
+ * @param language - Langue du document (séparateur décimal)
  * @returns Formatted point tuple
  */
-function formatPointVariation(value: VariationValue | undefined): string {
+function formatPointVariation(value: VariationValue | undefined, language: string): string {
 	// Handle missing values - empty tuple for intermediate points
 	if (!value) {
 		return '()';
@@ -462,15 +469,15 @@ function formatPointVariation(value: VariationValue | undefined): string {
 		// For asymptote with two limits: (leftPos, rightPos, "||", leftValue, rightValue)
 		if (value.limits) {
 			const [leftLimit, rightLimit] = value.limits;
-			const leftExpr = formatMathExpression(leftLimit.expression);
-			const rightExpr = formatMathExpression(rightLimit.expression);
+			const leftExpr = formatMathExpression(leftLimit.expression, language);
+			const rightExpr = formatMathExpression(rightLimit.expression, language);
 			const leftPos = convertPositionForVartable(leftLimit.position);
 			const rightPos = convertPositionForVartable(rightLimit.position);
 			return `(${leftPos}, ${rightPos}, "||", $${leftExpr}$, $${rightExpr}$)`;
 		}
 		// For single-limit asymptote (left side): show limit then asymptote bar
 		if (value.limitSide === 'left') {
-			const limitExpr = formatMathExpression(value.expression);
+			const limitExpr = formatMathExpression(value.expression, language);
 			const limitPos = convertPositionForVartable(value.position);
 			return `(${limitPos}, "||", $${limitExpr}$)`;
 		}
@@ -478,7 +485,7 @@ function formatPointVariation(value: VariationValue | undefined): string {
 		// vartable always expects (position, "||", $value$) — direction is determined by
 		// element position in the domain array, not by tuple element order
 		if (value.limitSide === 'right') {
-			const limitExpr = formatMathExpression(value.expression);
+			const limitExpr = formatMathExpression(value.expression, language);
 			const limitPos = convertPositionForVartable(value.position);
 			return `(${limitPos}, "||", $${limitExpr}$)`;
 		}
@@ -487,7 +494,7 @@ function formatPointVariation(value: VariationValue | undefined): string {
 	}
 
 	// Normal value: (position, $value$)
-	const expr = formatMathExpression(value.expression);
+	const expr = formatMathExpression(value.expression, language);
 	const pos = convertPositionForVartable(value.position);
 	return `(${pos}, $${expr}$)`;
 }

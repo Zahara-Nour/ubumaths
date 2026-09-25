@@ -38,6 +38,7 @@
 		replacePromptsWithValues,
 		replacePromptsWithPrefilled
 	} from '../utils/math-utils';
+	import { readContentLocale } from '../content-locale';
 
 	interface Props {
 		children: InlineNode[];
@@ -99,6 +100,9 @@
 		internalLinkRole = 'student',
 		onInternalLinkClick
 	}: Props = $props();
+
+	// Langue du contenu (séparateur décimal), posée par MarkdownRenderer
+	const contentLocale = readContentLocale();
 
 	/**
 	 * Check if adjacent node is inline-block (math, blank, hint, or internal-link) for whitespace handling
@@ -167,16 +171,27 @@
 						? expressionDisplayMap?.[child.expressionName]
 						: undefined}
 					{@const baseLatex =
-						displayExpr ?? expressionToLatex(child.expression, child.syntax, genericFunctions)}
+						displayExpr ??
+						expressionToLatex(child.expression, child.syntax, genericFunctions, contentLocale())}
 					{@const flashLatex = prefilledValues
 						? replacePromptsWithPrefilled(baseLatex, prefilledValues)
 						: (displayExpr ??
-							expressionToFlashLatex(child.expression, child.syntax, genericFunctions))}
+							expressionToFlashLatex(
+								child.expression,
+								child.syntax,
+								genericFunctions,
+								contentLocale()
+							))}
 					{#key flashLatex}
 						<MathInline expression={flashLatex} syntax="latex" />
 					{/key}
 				{:else if correctionMode && correctValues}
-					{@const latex = expressionToLatex(child.expression, child.syntax, genericFunctions)}
+					{@const latex = expressionToLatex(
+						child.expression,
+						child.syntax,
+						genericFunctions,
+						contentLocale()
+					)}
 					{@const filledLatex = replacePromptsWithValues(latex, correctValues)}
 					{#key filledLatex}
 						<MathInline expression={filledLatex} syntax="latex" />

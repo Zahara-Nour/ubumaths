@@ -21,6 +21,7 @@
 <script lang="ts">
 	import 'mathlive';
 	import { expressionToLatex } from '../utils/math-utils';
+	import { readContentLocale } from '../content-locale';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 	interface Props {
@@ -33,8 +34,11 @@
 
 	let { expression, syntax, class: className = '', genericFunctions }: Props = $props();
 
+	// Langue du contenu (séparateur décimal), posée par MarkdownRenderer
+	const contentLocale = readContentLocale();
+
 	// Convert to LaTeX for rendering
-	let latex = $derived(expressionToLatex(expression, syntax, genericFunctions));
+	let latex = $derived(expressionToLatex(expression, syntax, genericFunctions, contentLocale()));
 </script>
 
 <div class="math-block-container flex justify-center {className}">
