@@ -134,7 +134,11 @@ export function toFrenchDecimal(latex: string, options: FrenchDecimalOptions = {
 
 	// Match all numbers and convert them to French notation
 	// Pattern: digit sequences with optional decimal point
-	return latex.replace(/(\d+(?:\.\d+)?)/g, (match, numStr) => {
+	// Chiffres qui suivent une virgule LaTeX `{,}` déjà écrite (`0{,}0484`) : ce sont
+	// des décimales, groupées depuis la gauche. Sans ce cas, « 0484 » était groupé
+	// comme un entier et s'affichait « 0,0 484 ».
+	return latex.replace(/(\{,\})?(\d+(?:\.\d+)?)/g, (match, latexComma, numStr) => {
+		if (latexComma) return `{,}${formatDecimalPart(numStr, opts.formatSpaces)}`;
 		return formatSingleNumber(numStr, opts);
 	});
 }
