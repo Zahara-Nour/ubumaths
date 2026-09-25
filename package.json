@@ -57,6 +57,7 @@
 		"kill:servers": "bash scripts/kill-servers.sh",
 		"db:types": "pnpm supabase gen types typescript --project-id cnevnzsvixxpnurautls > src/lib/types/database.ts",
 		"check:barrels": "tsx scripts/check-barrel-exports.ts",
+		"check:await-render": "tsx scripts/check-await-render.ts",
 		"check:ubumark": "tsx scripts/check-ubumark.ts",
 		"db:migrate": "supabase db push",
 		"db:start": "bash scripts/with-db-lock.sh supabase start",

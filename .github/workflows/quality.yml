@@ -62,6 +62,12 @@ jobs:
       - name: Guard barrel exports (no orphaned component re-exports)
         run: npx tsx scripts/check-barrel-exports.ts
 
+      # vitest-browser-svelte 3 : `render` rend une Promise. Un appel sans
+      # `await` monte quand même le composant — le test passe, rien ne rougit,
+      # et le typecheck exclut les tests. ListNode-trig l'a montré pendant #431.
+      - name: Guard awaited render (vitest-browser-svelte 3)
+        run: npx tsx scripts/check-await-render.ts
+
       # Persist eslint's per-file cache across runs so a PR only re-lints CHANGED
       # files instead of the whole tree (the type-aware lint is the slow part).
       # The key is unique per commit (always saves a fresh cache); restore-keys
