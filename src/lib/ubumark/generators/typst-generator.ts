@@ -2039,6 +2039,14 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\^\s*\{\s*\\circ\s*\}|\^\s*\\circ(?![a-zA-Z])/g, '°');
 	result = replaceLatexCmd(result, 'circ', 'compose');
 
+	// `RR`, `NN`, `ZZ`, `QQ`, `CC` écrits par l'auteur (issue « deux boules rouges ») :
+	// deux lettres. Sinon Typst y lit un ensemble de nombres (P(RR) → P(ℝ)). Avant la
+	// conversion de `\mathbb{R}` / `\R` en `RR`, seule source légitime de ces symboles.
+	result = result.replace(
+		/(?<![A-Za-z\\])(RR|NN|ZZ|QQ|CC)(?![A-Za-z])/g,
+		(pair: string) => `${pair[0]} ${pair[1]}`
+	);
+
 	// Debug: log if we have mathcal that might not be converted
 	if (result.includes('mathcal')) {
 		logger.trace('convertLatexToTypstMath: input contains mathcal', {

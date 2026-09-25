@@ -63,3 +63,20 @@ describe('8. virgule littérale dans un argument de fonction Typst généré', (
 		);
 	});
 });
+
+describe('9. deux majuscules identiques écrites par l’auteur (issues RR, NN…)', () => {
+	// Fiche de probabilités (2026-09-25) : l'issue « deux boules rouges », `$P(RR)$`,
+	// s'affichait P(ℝ) dans le PDF. `RR`, `NN`, `ZZ`, `QQ`, `CC` sont les ensembles de
+	// nombres en Typst ; ils ne doivent venir que de `\mathbb{…}` (ou `\R`).
+	it('RR de l’auteur : deux lettres R', () => {
+		expect(convertLatexToTypstMath('P(RR)=\\dfrac{9}{25}')).toContain('P(R R)');
+		expect(convertLatexToTypstMath('NN')).toBe('N N');
+		expect(convertLatexToTypstMath('CC')).toBe('C C');
+	});
+
+	it('les ensembles de nombres restent des ensembles', () => {
+		expect(convertLatexToTypstMath('x\\in\\mathbb{R}')).toContain('RR');
+		expect(convertLatexToTypstMath('n\\in\\mathbb{N}')).toContain('NN');
+		expect(convertLatexToTypstMath('x\\in\\R')).toContain('RR');
+	});
+});
