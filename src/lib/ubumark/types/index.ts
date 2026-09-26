@@ -195,6 +195,7 @@ export type {
 	ResolvedVariable,
 	// Random
 	NumberOrVariable,
+	ArithmeticExclusion,
 	Exclusion,
 	RandomSpec,
 	// Eval

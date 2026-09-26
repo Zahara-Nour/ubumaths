@@ -146,7 +146,20 @@ export type NumberOrVariable =
  */
 export type Exclusion =
 	| { type: 'value'; value: NumberOrVariable }
-	| { type: 'range'; min: NumberOrVariable; max: NumberOrVariable };
+	| { type: 'range'; min: NumberOrVariable; max: NumberOrVariable }
+	| ArithmeticExclusion;
+
+/**
+ * Exclusions arithmétiques, reprises de TinyMath :
+ * - `m(x)`  → `multiple-of` : exclut les multiples de x ;
+ * - `d(x)`  → `divisor-of` : exclut les diviseurs de x ;
+ * - `cd(x)` → `common-divisor-with` : exclut les nombres ayant un diviseur
+ *   commun avec x (ne garde que les nombres premiers avec x).
+ */
+export interface ArithmeticExclusion {
+	type: 'multiple-of' | 'divisor-of' | 'common-divisor-with';
+	of: NumberOrVariable;
+}
 
 /**
  * Random number specification

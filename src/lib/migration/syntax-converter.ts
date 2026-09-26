@@ -1026,6 +1026,103 @@ export function toBareVariableSyntax(expression: string): string {
 	return expression.replace(/\{\{([a-zA-Z_][a-zA-Z0-9_]*)\}\}/g, '$1');
 }
 
+// ----------------------------------------------------------------------------
+// Tirages : syntaxe TinyMath → syntaxe du générateur
+// ----------------------------------------------------------------------------
+
+const PLAIN_NUMBER = /^-?\d+(\.\d+)?$/;
+const PLAIN_IDENTIFIER = /^[a-zA-Z_]\w*$/;
+
+/** Découpe sur `separator` hors parenthèses et accolades */
+function splitTopLevel(input: string, separator: string): string[] {
+	const parts: string[] = [];
+	let depth = 0;
+	let current = '';
+	for (let i = 0; i < input.length; i++) {
+		const char = input[i];
+		if (char === '(' || char === '{') depth++;
+		if (char === ')' || char === '}') depth--;
+		if (depth === 0 && input.startsWith(separator, i)) {
+			parts.push(current);
+			current = '';
+			i += separator.length - 1;
+		} else {
+			current += char;
+		}
+	}
+	parts.push(current);
+	return parts;
+}
+
+/** Opérande du générateur : nombre, variable, `{{…}}` ; sinon `{{eval:…}}` */
+function asGeneratorOperand(raw: string): string {
+	const operand = raw.trim();
+	if (
+		PLAIN_NUMBER.test(operand) ||
+		PLAIN_IDENTIFIER.test(operand) ||
+		/^\{\{.*\}\}$/.test(operand)
+	) {
+		return operand;
+	}
+	return `{{eval:${operand.replace(/^eval:/, '')}}}`;
+}
+
+/** Une exclusion TinyMath (`cda`, `m2`, `cd(b+a)`, `-(a)`) dans la syntaxe du générateur */
+function convertExclusionItem(raw: string): string {
+	const item = raw.trim();
+	const call = item.match(/^(m|d|cd)\((.+)\)$/);
+	if (call) return `${call[1]}(${asGeneratorOperand(call[2])})`;
+	const commonDivisor = item.match(/^cd([a-zA-Z_]\w*|\d+)$/);
+	if (commonDivisor) return `cd(${commonDivisor[1]})`;
+	const multipleOrDivisor = item.match(/^(m|d)(\d+)$/);
+	if (multipleOrDivisor) return `${multipleOrDivisor[1]}(${multipleOrDivisor[2]})`;
+	if (item.includes('..')) return item;
+	return asGeneratorOperand(item);
+}
+
+/**
+ * Normalise un tirage converti depuis TinyMath pour que le générateur l'accepte.
+ *
+ * - bornes calculées → `{{eval:…}}` : `1..a-1` → `1..{{eval:a-1}}` ;
+ * - exclusions TinyMath → `m(x)`, `d(x)`, `cd(x)` ; exclusion calculée → `{{eval:…}}` ;
+ * - relatif qui inclut 0 (`0..5;+-`) → `-5..5` (même ensemble de valeurs ;
+ *   le générateur exige un minimum > 0 pour `;±`) ; `;+-` → `;±`.
+ *
+ * Toute autre expression (`eval:…`, listes `a|b`, `digits:…`) est rendue intacte.
+ */
+export function normalizeRandomRange(expression: string): string {
+	// `eval:` en tête = une valeur calculée ; `digits:` où qu'il soit = autre générateur
+	if (/^eval:|(^|[^a-zA-Z])digits:/.test(expression) || expression.includes('|')) {
+		return expression;
+	}
+
+	const [rangePart, ...exclusionParts] = splitTopLevel(expression, '!');
+	const bounds = splitTopLevel(rangePart, '..');
+	if (bounds.length !== 2) return expression;
+
+	const [min, maxAndSuffix] = bounds;
+	const [maxAndStep, ...suffixParts] = splitTopLevel(maxAndSuffix, ';');
+	// Pas d'un tirage décimal (`0.5..9.99:0.01`) : conservé tel quel
+	const stepMatch = maxAndStep.match(/^(.*):(\d+(?:\.\d+)?)$/);
+	const max = stepMatch ? stepMatch[1] : maxAndStep;
+	const step = stepMatch ? `:${stepMatch[2]}` : '';
+	let suffix = suffixParts.length > 0 ? `;${suffixParts.join(';')}` : '';
+	if (suffix === ';+-') suffix = ';±';
+
+	let range: string;
+	if (suffix === ';±' && min.trim() === '0') {
+		const upper = asGeneratorOperand(max);
+		const lower = PLAIN_NUMBER.test(upper) ? `-${upper}` : `{{eval:-(${max.trim()})}}`;
+		range = `${lower}..${upper}`;
+	} else {
+		range = `${asGeneratorOperand(min)}..${asGeneratorOperand(max)}${step}${suffix}`;
+	}
+
+	if (exclusionParts.length === 0) return range;
+	const exclusions = splitTopLevel(exclusionParts.join('!'), ',').map(convertExclusionItem);
+	return `${range}!${exclusions.join(',')}`;
+}
+
 /**
  * Fix math delimiters: convert $$...$$ to $...$ when used inline.
  *

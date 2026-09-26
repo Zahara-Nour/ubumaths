@@ -418,6 +418,13 @@ function parseNumberOrVariable(str: string): NumberOrVariable {
 	return { type: 'number', value: num };
 }
 
+/** Préfixe TinyMath → type d'exclusion arithmétique */
+const ARITHMETIC_EXCLUSIONS = {
+	m: 'multiple-of',
+	d: 'divisor-of',
+	cd: 'common-divisor-with'
+} as const;
+
 /**
  * Parse exclusions: "5,7..9,{{a}},{{b}}..{{c}}"
  */
@@ -427,6 +434,14 @@ function parseExclusions(spec: string): Exclusion[] {
 
 	for (const part of parts) {
 		const trimmed = part.trim();
+
+		// Exclusion arithmétique : m(x), d(x), cd(x) — parenthèses obligatoires
+		const arithmetic = trimmed.match(/^(m|d|cd)\((.+)\)$/);
+		if (arithmetic) {
+			const type = ARITHMETIC_EXCLUSIONS[arithmetic[1] as keyof typeof ARITHMETIC_EXCLUSIONS];
+			exclusions.push({ type, of: parseNumberOrVariable(arithmetic[2]) });
+			continue;
+		}
 
 		// Variable reference (Markdown) - single variable, not a range
 		const varPattern = /^\{\{(\w+)\}\}$/;

@@ -346,3 +346,21 @@ describe('detectCircularDependencies', () => {
 		});
 	});
 });
+
+describe('detectCircularDependencies — exclusions arithmétiques m/d/cd', () => {
+	it('un cycle passant par cd(…) est détecté', () => {
+		const variables: Variable[] = [
+			{ name: 'a', expression: '{{2..9!cd(b)}}' },
+			{ name: 'b', expression: '{{2..9!cd(a)}}' }
+		];
+		expect(detectCircularDependencies(variables).valid).toBe(false);
+	});
+
+	it('une dépendance simple par m(…) n’est pas un cycle', () => {
+		const variables: Variable[] = [
+			{ name: 'a', expression: '2..9' },
+			{ name: 'b', expression: '{{2..9!m(a)}}' }
+		];
+		expect(detectCircularDependencies(variables).valid).toBe(true);
+	});
+});
