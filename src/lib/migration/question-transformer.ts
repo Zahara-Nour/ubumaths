@@ -64,12 +64,15 @@ import {
 	fixMathDelimiters,
 	toSimplifiedSyntax,
 	normalizeRandomRange,
+	convertTinyMathExclusion,
+	convertLegacyMarkup,
 	rewriteTinyMathDraw,
 	toBareVariableSyntax,
 	toExpressionTemplate
 } from './syntax-converter';
 import { convertPlaceholders, convertSolutionPlaceholders } from './placeholder-converter';
 import { convertConditionals } from './conditional-converter';
+import { slashFractionsToLatex } from './answer-latex';
 import { QUESTION_IMAGES_BUCKET } from '$lib/questions/constants';
 // Note: No AsciiMath→LaTeX conversion here. Variables use custom mathAST syntax.
 // LaTeX conversion happens at question instantiation when inside $...$
@@ -436,6 +439,38 @@ function splitDigitsParts(spec: string): [string, string] | null {
 /**
  * Convert old variable definitions to new format
  */
+const HTML_TAG = /<[a-z][^>]*>/i;
+
+// Tirage TinyMath : `$e[1;9]`, `$er[2;5]`, `$e{3}`, `$er{1}`, exclusions `\{…}` comprises
+const TINYMATH_DRAW_REGEX = /\$er?(?:\[[^\]]*\]|\{[^}]*\})(?:\\\{[^}]*\})?/g;
+// Ce qui peut entourer les tirages d'un tirage composé : calcul et références `&n`
+const COMPOSITE_REST_REGEX = /^[\s\d&+\-*:/()^,.]*$/;
+
+/**
+ * Tirage composé (`$e[1;9]*10+$e[1;9]`, `2*$e{3}`, `&1*1000+$e[0;9]`) : chaque tirage
+ * devient une variable auxiliaire (`a1`, `a2`…), la variable d'origine le calcul
+ * `[_…_]` qui les combine. Converti tel quel, `1..9*10+1..9` tirait des décimaux et
+ * `$e[1;5]*10` devenait `1..50`. `null` si l'expression n'est pas un tirage composé.
+ */
+function splitCompositeDraw(name: string, expression: string): [string, string][] | null {
+	const draws = expression.match(TINYMATH_DRAW_REGEX);
+	if (!draws) return null;
+	const rest = expression.replace(TINYMATH_DRAW_REGEX, '');
+	// Un tirage seul (éventuellement `-$e[…]`) garde la conversion directe
+	if (/^\s*-?\s*$/.test(rest) && draws.length === 1) return null;
+	if (!COMPOSITE_REST_REGEX.test(rest)) return null;
+
+	let k = 0;
+	const helpers: [string, string][] = [];
+	const combined = expression.replace(TINYMATH_DRAW_REGEX, (draw) => {
+		k++;
+		helpers.push([`&${name}${k}`, draw]);
+		return `&${name}${k}`;
+	});
+	// Virgule décimale TinyMath (`&1*0,1`) → point
+	return [...helpers, [`&${name}`, `[_${combined.replace(/(\d),(\d)/g, '$1.$2')}_]`]];
+}
+
 function convertVariables(
 	oldVars: Variables | undefined,
 	warnings: string[]
@@ -444,7 +479,14 @@ function convertVariables(
 
 	const variables: QuestionVariable[] = [];
 
-	for (const [varName, expression] of Object.entries(oldVars)) {
+	// Tirages composés éclatés d'abord (variables auxiliaires placées avant leur calcul)
+	const entries = Object.entries(oldVars).flatMap(([varName, expression]): [string, string][] => {
+		const rawName = varName.substring(1);
+		const name = /^\d+$/.test(rawName) ? numberToLetterName(parseInt(rawName, 10)) : rawName;
+		return splitCompositeDraw(name, expression) ?? [[varName, expression]];
+	});
+
+	for (const [varName, expression] of entries) {
 		// Remove & prefix from variable name and convert numeric to letter
 		const rawName = varName.substring(1);
 		const name = /^\d+$/.test(rawName) ? numberToLetterName(parseInt(rawName, 10)) : rawName;
@@ -475,7 +517,9 @@ function convertVariables(
 			// puis tirages dans la syntaxe du générateur (bornes calculées, exclusions m/d/cd)
 			// (variable mêlant texte et calcul, `&4/[_&3*&1_]` → `{{d}}/{{eval:c*a}}` :
 			// forme gabarit, comme les expressions — cf. toExpressionTemplate)
-			const simplified = normalizeRandomRange(toExpressionTemplate(afterTinyCAS));
+			const simplified = normalizeRandomRange(
+				convertTinyMathExclusion(toExpressionTemplate(afterTinyCAS))
+			);
 
 			// Handle complex digits: expressions where parts contain ranges (..)
 			// e.g., "digits:0..2.1..2" → split into intermediate variables
@@ -647,7 +691,7 @@ function convertStatement(
 	// Join parts with double newline (paragraph break)
 	// Apply fixMathDelimiters to convert inline $$...$$ to $...$
 	return {
-		statement: templateMarkdown(fixMathDelimiters(parts.join('\n\n'))),
+		statement: templateMarkdown(fixMathDelimiters(convertLegacyMarkup(parts.join('\n\n')))),
 		expressionVariable
 	};
 }
@@ -759,7 +803,8 @@ function extractBlanksFromSolutions(
 				warnings.push(...conversionResult.warnings.map((w) => `Blank solution: ${w}`));
 			}
 			const blank: NonNullable<QuestionVariation['blanks']>[number] = {
-				expectedAnswer: conversionResult.converted || rawAnswer
+				// `p/q` → `\dfrac{p}{q}` : le correcteur lit la réponse attendue en LaTeX
+				expectedAnswer: slashFractionsToLatex(conversionResult.converted || rawAnswer)
 			};
 
 			// Detect unit in solution
@@ -863,7 +908,9 @@ function convertChoices(
 				warnings.push(`Choice ${index}: ${conversionResult.errors.join(', ')}`);
 			}
 			// Apply fixMathDelimiters to convert inline $$...$$ to $...$
-			const converted = fixMathDelimiters(conversionResult.converted || choice.text);
+			const converted = fixMathDelimiters(
+				convertLegacyMarkup(conversionResult.converted || choice.text)
+			);
 			content = templateMarkdown(converted);
 		} else if (choice.image) {
 			// Convert image using mapping if available
@@ -939,8 +986,8 @@ function convertLegacySyntax(text: string, warnings: string[]): string {
 	const conditionalResult = convertConditionals(converted);
 	converted = conditionalResult.converted;
 
-	// Step 4: Fix math delimiters (convert inline $$...$$ to $...$)
-	converted = fixMathDelimiters(converted);
+	// Step 4: Fix math delimiters (convert inline $$...$$ to $...$), balises TinyMath
+	converted = fixMathDelimiters(convertLegacyMarkup(converted));
 
 	return converted;
 }
@@ -1652,7 +1699,9 @@ function detectSharedFields(
 					}
 				}
 			}
-			shared.statement = templateMarkdown(fixMathDelimiters(parts.join('\n\n')));
+			shared.statement = templateMarkdown(
+				fixMathDelimiters(convertLegacyMarkup(parts.join('\n\n')))
+			);
 			for (let i = 0; i < variationCount; i++) {
 				perVariation[i].statement = shared.statement;
 				expressionVariables.push(undefined);
@@ -1695,7 +1744,9 @@ function detectSharedFields(
 						}
 					}
 				}
-				perVariation[i].statement = templateMarkdown(fixMathDelimiters(parts.join('\n\n')));
+				perVariation[i].statement = templateMarkdown(
+					fixMathDelimiters(convertLegacyMarkup(parts.join('\n\n')))
+				);
 				expressionVariables.push(undefined);
 			}
 		}
@@ -2179,7 +2230,8 @@ function extractBlanks(
 		if (answer !== undefined) {
 			const conversionResult = convertTinyCASToNew(String(answer));
 			blanks.push({
-				expectedAnswer: conversionResult.converted || String(answer)
+				// `p/q` → `\dfrac{p}{q}` : le correcteur lit la réponse attendue en LaTeX
+				expectedAnswer: slashFractionsToLatex(conversionResult.converted || String(answer))
 			});
 		} else {
 			warnings.push(`Missing solution for blank at position ${i}`);
@@ -2335,7 +2387,11 @@ export function transformQuestion(
 				: undefined,
 			shared, // Include shared defaults when fields are reused across variations
 			variations,
-			exerciseInstruction: oldQuestion.help ? fixMathDelimiters(oldQuestion.help) : undefined,
+			// Aide TinyMath en HTML (`<section>`, `${get(color2)}`) : illisible en texte brut
+			exerciseInstruction:
+				oldQuestion.help && !HTML_TAG.test(oldQuestion.help)
+					? fixMathDelimiters(oldQuestion.help)
+					: undefined,
 			options: convertedOptions,
 			// displayOptions are attached to expression variables directly, not at template level
 			grades: [mapGrade(oldQuestion.grade)],
@@ -2343,6 +2399,12 @@ export function transformQuestion(
 			status: 'draft', // Import as draft for review
 			multipleAnswers: oldQuestion.multipleAnswers
 		};
+
+		if (oldQuestion.help && HTML_TAG.test(oldQuestion.help)) {
+			warnings.push(
+				'aide TinyMath en HTML non reprise dans la consigne (à réécrire à la relecture)'
+			);
+		}
 
 		// Add optional fields
 		if (oldQuestion.defaultDelay > 0) {

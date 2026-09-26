@@ -1139,6 +1139,35 @@ function convertExclusionItem(raw: string): string {
 }
 
 /**
+ * Exclusion TinyMath restée en fin de tirage (`\{…}`, éléments séparés par `;`) →
+ * syntaxe du générateur `!…` (séparés par `,`). La conversion des tirages simples la
+ * traitait déjà ; restaient un tirage relatif (`2..9;+-\{cd(a);cd(b)}`), une liste
+ * (`x|y|z\{c}`) et un nombre à n chiffres (`digits:a\{m10}`, réécrit en plage
+ * `{{eval:10^(a-1)}}..{{eval:10^a-1}}`, le générateur `digits:` n'ayant pas d'exclusion).
+ * Toute autre expression est rendue intacte.
+ */
+export function convertTinyMathExclusion(expression: string): string {
+	const match = expression.match(/^(.*)\\\{(.*)\}$/);
+	if (!match) return expression;
+	const [, base, rawItems] = match;
+	const items = rawItems.split(';').map((item) => item.trim());
+
+	// Liste : les exclusions sont des valeurs ou des variables, comparées telles quelles
+	if (base.includes('|')) return `${base}!${items.join(',')}`;
+
+	const digits = base.match(/^digits:(.+)$/);
+	if (digits) {
+		const count = digits[1].trim();
+		const range = PLAIN_NUMBER.test(count)
+			? `${10 ** (Number(count) - 1)}..${10 ** Number(count) - 1}`
+			: `{{eval:10^(${count}-1)}}..{{eval:10^${count}-1}}`;
+		return `${range}!${items.join(',')}`;
+	}
+
+	return `${base}!${items.join(',')}`;
+}
+
+/**
  * Normalise un tirage converti depuis TinyMath pour que le générateur l'accepte.
  *
  * - bornes calculées → `{{eval:…}}` : `1..a-1` → `1..{{eval:a-1}}` ;
@@ -1216,6 +1245,20 @@ export function toExpressionTemplate(converted: string): string {
 		(_match, content: string) =>
 			`{{eval:${content.replace(/\{\{([a-zA-Z_][a-zA-Z0-9_]*)\}\}/g, '$1')}}}`
 	);
+}
+
+/**
+ * Mise en forme TinyMath → markdown : `<b>`/`<strong>` → `**…**`, `<i>`/`<em>` → `*…*`,
+ * `<br>` → paragraphe, `[°X°]` (« afficher X mis en forme ») → `X`, que la conversion
+ * des formules met ensuite en forme. Ces balises s'affichaient telles quelles.
+ */
+export function convertLegacyMarkup(text: string): string {
+	if (!text) return text;
+	return text
+		.replace(/<\/?(?:b|strong)>/gi, '**')
+		.replace(/<\/?(?:i|em)>/gi, '*')
+		.replace(/<br\s*\/?>/gi, '\n\n')
+		.replace(/\[°([\s\S]*?)°\]/g, '$1');
 }
 
 /**

@@ -32,8 +32,7 @@ import { parseCustomSafe, toLatex } from '$lib/mathAST';
  * Important: Process block math ($$...$$) before inline ($...$) to avoid
  * misinterpreting $$ as two inline delimiters.
  */
-const BLOCK_MATH_REGEX = /\$\$([\s\S]+?)\$\$/g;
-const INLINE_MATH_REGEX = /\$([^$\n]+)\$/g;
+const MATH_ZONE_REGEX = /\$\$([\s\S]+?)\$\$|\$([^$\n]+)\$/g;
 
 /**
  * Regex to match expression markers at the start of math content.
@@ -112,17 +111,11 @@ function convertMathZonesToLatex(content: string): string {
 		return prefix + (latex ?? mathContent);
 	};
 
-	// Convert block math $$...$$ first (before inline to avoid conflicts)
-	result = result.replace(BLOCK_MATH_REGEX, (_match, innerContent: string) => {
-		const converted = convertExpression(innerContent);
-		return `$$${converted}$$`;
-	});
-
-	// Convert inline math $...$
-	result = result.replace(INLINE_MATH_REGEX, (_match, innerContent: string) => {
-		const converted = convertExpression(innerContent);
-		return `$${converted}$`;
-	});
+	// Blocs `$$…$$` et formules `$…$` en UNE passe : en deux passes, le texte entre deux
+	// blocs d'une même ligne (`$$x$$ et $$y$$`) était lu comme une formule `$ et $`
+	result = result.replace(MATH_ZONE_REGEX, (_match, block: string | undefined, inline: string) =>
+		block !== undefined ? `$$${convertExpression(block)}$$` : `$${convertExpression(inline)}$`
+	);
 
 	return result;
 }
