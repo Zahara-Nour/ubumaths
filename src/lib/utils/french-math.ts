@@ -167,8 +167,14 @@ export function toLocaleDecimal(
 	// Chiffres qui suivent une virgule LaTeX `{,}` déjà écrite (`0{,}0484`) : ce sont
 	// des décimales, groupées depuis la gauche. Sans ce cas, « 0484 » était groupé
 	// comme un entier et s'affichait « 0,0 484 ».
-	return latex.replace(/(\{,\})?(\d+(?:\.\d+)?)/g, (match, latexComma, numStr) => {
-		if (latexComma) return `{,}${formatDecimalPart(numStr, opts.formatSpaces)}`;
-		return formatSingleNumber(numStr, opts, separator);
-	});
+	// Un code couleur (`\\textcolor{#FF5722}`, `#2196F3`) n'est pas un nombre : groupé
+	// (`#FF5\\,722`), la couleur devenait invalide et toute correction colorée cassait.
+	return latex.replace(
+		/(#[0-9A-Fa-f]{3,8}(?![0-9A-Za-z]))|(\{,\})?(\d+(?:\.\d+)?)/g,
+		(match, hexColor, latexComma, numStr) => {
+			if (hexColor) return hexColor;
+			if (latexComma) return `{,}${formatDecimalPart(numStr, opts.formatSpaces)}`;
+			return formatSingleNumber(numStr, opts, separator);
+		}
+	);
 }

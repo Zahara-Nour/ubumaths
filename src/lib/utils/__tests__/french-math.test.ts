@@ -171,3 +171,16 @@ describe('toFrenchDecimal', () => {
 		});
 	});
 });
+
+// Couleurs des corrections (`\textcolor{#FF5722}{…}`) : les chiffres d'un code couleur
+// ne sont pas un nombre. Groupés (`#FF5\,722`, `#2\,196F3`), la couleur devenait invalide.
+describe('toFrenchDecimal — codes couleur', () => {
+	it.each([
+		['\\textcolor{#FF5722}{3}', '\\textcolor{#FF5722}{3}'],
+		['3 \\textcolor{#2196F3}{\\times 9}', '3 \\textcolor{#2196F3}{\\times 9}'],
+		['\\color{#4CAF50} 12', '\\color{#4CAF50} 12'],
+		['\\textcolor{#FF5722}{8000} + 1234.5', '\\textcolor{#FF5722}{8\\,000} + 1\\,234{,}5']
+	])('%s', (input, expected) => {
+		expect(toFrenchDecimal(input)).toBe(expected);
+	});
+});
