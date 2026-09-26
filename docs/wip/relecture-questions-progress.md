@@ -103,3 +103,6 @@ Après relecture (`code-reviewer`) :
 - #364 : consigne en HTML TinyMath (`<h3 class="${get(color2)}-text">`) non convertie — à reprendre.
 - #397 : conditionnel `{{if:…}}` contenant un `align` multiligne → « Failed to parse random »
   (indépendant des couleurs) — groupe « conditionnels » à traiter.
+- ⚠️ Signe explicite TinyMath dans une évaluation (`[+_g_]`, #586, #601) : `{{eval:+g}}` perd le
+  signe → `f(x)=7x9` au lieu de `7x+9`, sortie d'apparence VALIDE. Prochain groupe à corriger ;
+  d'ici là, relire tout énoncé à `[+_…_]`.
