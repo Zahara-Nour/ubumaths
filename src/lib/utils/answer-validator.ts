@@ -35,6 +35,7 @@ import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
 import { checkRequiredForm, getRequiredFormFeedback } from '$lib/questions/required-form-validator';
 import { validateQuantityAnswer } from '$lib/questions/units/validator';
+import { rulesDecide } from '$lib/questions/rules-suffice';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -234,7 +235,8 @@ function toNumericAnswer(userAnswer: string): number {
 function evaluateValidationRules(
 	rules: ValidationRule[],
 	userAnswer: string,
-	instance: QuestionInstance
+	instance: QuestionInstance,
+	evaluateAnswer = false
 ): ValidationResult | undefined {
 	// Build context from resolved variables
 	const variables: Record<string, number | string> = {};
@@ -249,7 +251,9 @@ function evaluateValidationRules(
 	const ctx: EvaluationContext = {
 		variables,
 		answer: userAnswer,
-		numericAnswer: toNumericAnswer(userAnswer)
+		// rulesSuffice : `12/2` vaut 6 pour les règles (la forme est jugée ensuite).
+		// Sinon, comportement historique : `Number()` seul.
+		numericAnswer: evaluateAnswer ? toNumericAnswer(userAnswer) : Number(userAnswer)
 	};
 
 	// Evaluate each rule
@@ -638,15 +642,6 @@ function checkSimpleNumberForm(
 }
 
 /**
- * Mode « la règle suffit » actif : il faut le réglage ET au moins une règle.
- * Sans règle, on retombe sur la comparaison à `expectedAnswer` — jamais sur
- * « toute réponse est juste ».
- */
-function rulesDecide(blank: InstanceBlank): boolean {
-	return blank.rulesSuffice === true && (blank.validationRules?.length ?? 0) > 0;
-}
-
-/**
  * Verdict d'une seule case sur la VALEUR (sans contrôle de forme), avec le même
  * pipeline que la correction : règles, `rulesSuffice`, mode inféré.
  * Sert à colorer chaque case après soumission.
@@ -672,7 +667,12 @@ function validateBlankValue(
 ): boolean {
 	// Check validation rules first (pre-condition)
 	if (blank.validationRules && blank.validationRules.length > 0) {
-		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
+		const ruleResult = evaluateValidationRules(
+			blank.validationRules,
+			userAnswer,
+			instance,
+			rulesDecide(blank)
+		);
 		if (ruleResult) return false;
 	}
 
@@ -723,8 +723,17 @@ function validateSingleBlank(
 
 	// 1. Validation rules (pre-condition)
 	if (blank.validationRules && blank.validationRules.length > 0) {
-		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
+		const ruleResult = evaluateValidationRules(
+			blank.validationRules,
+			userAnswer,
+			instance,
+			rulesDecide(blank)
+		);
 		if (ruleResult) {
+			// rulesSuffice : la règle EST le verdict ; ses messages techniques (en
+			// anglais, « 5 does not divide 12 ») ne sont pas destinés à l'élève
+			// → retour ordinaire d'une réponse fausse.
+			if (rulesDecide(blank)) return { isCorrect: false };
 			return { isCorrect: false, feedback: ruleResult.feedback };
 		}
 	}

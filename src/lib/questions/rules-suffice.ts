@@ -19,6 +19,11 @@ interface BlankLike {
 	validationRules?: readonly unknown[];
 }
 
+interface InstanceBlankLike extends BlankLike {
+	type?: string;
+	unit?: { expected: boolean };
+}
+
 interface VariationLike {
 	blanks?: readonly BlankLike[];
 	blankDefaults?: { rulesSuffice?: boolean };
@@ -52,7 +57,22 @@ export function findRulesSufficeBlanksWithoutRules(
 	});
 }
 
+/**
+ * Mode « la règle suffit » actif sur une case d'INSTANCE : il faut le réglage
+ * ET au moins une règle, sur une case mathématique sans unité (les règles sont
+ * numériques). Sinon, on retombe sur la comparaison à `expectedAnswer` —
+ * jamais sur « toute réponse est juste ».
+ */
+export function rulesDecide(blank: InstanceBlankLike): boolean {
+	return (
+		blank.rulesSuffice === true &&
+		(blank.validationRules?.length ?? 0) > 0 &&
+		blank.type !== 'text' &&
+		!blank.unit?.expected
+	);
+}
+
 /** Une instance a-t-elle au moins une case à plusieurs bonnes réponses ? */
-export function hasRulesSufficeBlank(instance: { blanks?: readonly BlankLike[] }): boolean {
-	return (instance.blanks ?? []).some((blank) => blank.rulesSuffice === true);
+export function hasRulesSufficeBlank(instance: { blanks?: readonly InstanceBlankLike[] }): boolean {
+	return (instance.blanks ?? []).some(rulesDecide);
 }

@@ -8,12 +8,13 @@
 
 import type { QuestionInstance } from '$lib/questions/types';
 import { isBlankValueCorrect } from '$lib/utils/answer-validator';
+import { rulesDecide } from '$lib/questions/rules-suffice';
 
 export function computeBlankVerdicts(values: string[], instance: QuestionInstance): boolean[] {
 	const blanks = instance.blanks ?? [];
 	return values.slice(0, blanks.length).map((value, i) => {
 		const blank = blanks[i];
-		if (blank.rulesSuffice) return isBlankValueCorrect(value, blank, instance);
+		if (rulesDecide(blank)) return isBlankValueCorrect(value, blank, instance);
 		return value.trim().toLowerCase() === blank.expectedAnswer.trim().toLowerCase();
 	});
 }

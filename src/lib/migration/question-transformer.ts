@@ -1832,7 +1832,7 @@ function detectSharedFields(
 	const testAnswersIsShared = testAnswerss.length === 1 && variationCount > 1;
 
 	// Variations dont les cases passent en `rulesSuffice` (posé sur les cases plus bas)
-	const rulesSufficeByVariation: boolean[] = new Array(variationCount).fill(false);
+	const rulesSufficeByVariation: boolean[] = Array.from({ length: variationCount }, () => false);
 
 	if (testAnswerss.length > 0) {
 		if (testAnswersIsShared) {

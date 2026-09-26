@@ -8,6 +8,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { computeBlankVerdicts } from '../blank-verdicts';
+import { hasRulesSufficeBlank } from '$lib/questions/rules-suffice';
 import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 
@@ -55,5 +56,24 @@ describe('computeBlankVerdicts', () => {
 
 	it('pas de cases → tableau vide', () => {
 		expect(computeBlankVerdicts([], { ...instance([]), blanks: undefined })).toEqual([]);
+	});
+});
+
+describe('hasRulesSufficeBlank (titre « Une réponse possible »)', () => {
+	it('vrai pour une case en rulesSuffice avec règles', () => {
+		expect(hasRulesSufficeBlank(instance([ruleBlank]))).toBe(true);
+	});
+
+	it('faux sans règle : le validateur ignore alors le mode', () => {
+		expect(hasRulesSufficeBlank(instance([{ ...ruleBlank, validationRules: undefined }]))).toBe(
+			false
+		);
+	});
+
+	it('faux pour une case texte ou avec unité', () => {
+		expect(hasRulesSufficeBlank(instance([{ ...ruleBlank, type: 'text' }]))).toBe(false);
+		expect(hasRulesSufficeBlank(instance([{ ...ruleBlank, unit: { expected: true } }]))).toBe(
+			false
+		);
 	});
 });

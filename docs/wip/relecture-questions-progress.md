@@ -33,3 +33,30 @@ Comportement livré :
 - FlashCard : chaque case est colorée par le validateur réel en mode `rulesSuffice` ; le verso
   titre « Une réponse possible ».
 - Transformateur : `{{a}}`, découpage des `&&`, `equation_root`, `rulesSuffice` posé sur les cases.
+
+Écart à la spec validée : la forme n'est PAS comparée à `expectedAnswer` (le contrôle « exact »
+exige l'identité : 3 contre 2 serait de mauvaise forme). En `rulesSuffice`, la réponse doit être un
+nombre simple (comme une case à précision). Limite : une fraction (`1/2`) serait refusée — à
+élargir si une question à plusieurs réponses fractionnaires apparaît.
+
+Après relecture (`code-reviewer`) :
+
+- `12/2` n'est évalué pour les règles qu'en mode `rulesSuffice` : les questions existantes gardent
+  exactement leur verdict et leur message.
+- Mode ignoré sur une case texte ou avec unité (règles numériques).
+- En `rulesSuffice`, pas de message technique de règle à l'élève (retour ordinaire).
+- Éditeur de templates : `shared.blankDefaults.rulesSuffice` conservé à la sauvegarde.
+
+## À traiter plus tard (noté, pas corrigé)
+
+- Plusieurs cases `rulesSuffice` aux mêmes règles acceptent deux fois la même valeur (« 3 et 3 »).
+  Pas toujours une erreur (« un diviseur de 12 et un de 15 ») → décision pédagogique. Aucune des
+  8 questions n'a plus d'une case par variante (mesuré).
+- Appariement glouton en ordre indifférent : peut refuser une affectation valide si une case
+  `rulesSuffice` côtoie une case exacte.
+- Messages des règles en anglais (« 5 does not divide 12 ») encore montrés à l'élève dans le mode
+  historique (règles = pré-condition). Défaut antérieur.
+- `MigrationQuestionEditForm` n'affiche pas `rulesSuffice` au relecteur.
+- #216 variante 3 : `$l{1;4;7}+2-mod(&1+&2;3)` mal convertie (≈ 1 tirage sur 2 échoue) — `it.fails`
+  dans `transformer-test-answers.test.ts`. #210, #481, #535, #611 ne génèrent pas (tirages).
+- #621 : pas de `solutionss`, égalités `testAnswers` ignorées → réponse attendue à reprendre.

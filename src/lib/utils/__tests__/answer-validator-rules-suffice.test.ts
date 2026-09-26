@@ -68,8 +68,11 @@ describe('rulesSuffice — cas nominal', () => {
 		expect(check(answer)).toMatchObject({ isCorrect: true, status: 'correct' });
 	});
 
-	it('refuse un non-diviseur', () => {
-		expect(check('5').isCorrect).toBe(false);
+	it('refuse un non-diviseur, sans message technique en anglais', () => {
+		const verdict = check('5');
+		expect(verdict.isCorrect).toBe(false);
+		expect(verdict.feedback ?? '').not.toMatch(/divide/);
+		expect(verdict.blankFeedback ?? []).not.toContainEqual(expect.stringMatching(/divide/));
 	});
 });
 
@@ -92,6 +95,25 @@ describe('rulesSuffice — cas limites', () => {
 	it('sans le mode, seule la réponse tirée est juste (comportement inchangé)', () => {
 		const blank = divisorBlank({ rulesSuffice: undefined });
 		expect(check('2', blank).isCorrect).toBe(true);
+		expect(check('3', blank).isCorrect).toBe(false);
+	});
+
+	it('sans le mode, 12/2 garde le verdict historique de la règle (non-régression)', () => {
+		const blank = divisorBlank({ rulesSuffice: undefined });
+		const verdict = check('12/2', blank, '\\frac{12}{2}');
+		expect(verdict.isCorrect).toBe(false);
+		// `Number('12/2')` = NaN → la règle échoue, comme avant ce correctif
+		expect(verdict.feedback).toBe('Invalid numeric answer');
+	});
+
+	it('case texte : le mode est ignoré (comparaison à la réponse attendue)', () => {
+		// 3 passe la règle de divisibilité : refusé parce que comparé à « deux »
+		const blank = divisorBlank({ type: 'text', expectedAnswer: 'deux' });
+		expect(check('3', blank).isCorrect).toBe(false);
+	});
+
+	it('case avec unité : le mode est ignoré (comparaison à la réponse attendue)', () => {
+		const blank = divisorBlank({ unit: { expected: true } });
 		expect(check('3', blank).isCorrect).toBe(false);
 	});
 
