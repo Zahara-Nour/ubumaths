@@ -215,10 +215,13 @@ export function buildCorrectionContext(
 	if (exprVar) {
 		expression = exprVar.value;
 	} else {
-		// Fallback to expression1
-		const expr1Var = resolvedVariables.find((v) => v.name === 'expression1');
-		if (expr1Var) {
-			expression = expr1Var.value;
+		// Repli : la variable d'expression de la variation (`expression1`,
+		// `expression2`… selon la variation dont elle vient)
+		const exprNVar = resolvedVariables
+			.filter((v) => /^expression\d+$/.test(v.name))
+			.sort((a, b) => Number(a.name.slice(10)) - Number(b.name.slice(10)))[0];
+		if (exprNVar) {
+			expression = exprNVar.value;
 		}
 	}
 

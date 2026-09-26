@@ -351,7 +351,10 @@ export function getVariationCount(q: QuestionBase): number {
 		q.solutionss?.length || 0,
 		q.variabless?.length || 0,
 		q.choicess?.length || 0,
-		q.images?.length || 0
+		q.images?.length || 0,
+		// Plusieurs énoncés secondaires / champs réponse = plusieurs variations (#344)
+		q.enounces2?.length || 0,
+		q.answerFields?.length || 0
 	];
 
 	// Return the maximum count (they should all be the same)

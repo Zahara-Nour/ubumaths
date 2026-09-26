@@ -369,17 +369,14 @@ describe('TinyCAS Syntax Converter', () => {
 			expect(result.warnings?.some((w) => w.includes('unconverted'))).toBe(true);
 		});
 
-		it('should convert evaluations with plus sign with warning', () => {
+		it('convertit le terme signé [+_…_] en modificateur ;+', () => {
 			const result = convertTinyCASToNew('[+_&1+&2_]');
-			expect(result.converted).toBe('{{eval:+a+b}}');
-			expectWarning('[+_&1+&2_]', 'Evaluation with + sign');
+			expect(result.converted).toBe('{{eval:a+b;+}}');
 		});
 
-		it('should convert evaluations with parentheses modifier with warning', () => {
+		it('convertit le négatif entre parenthèses [(_…_] en modificateur ;()', () => {
 			const result = convertTinyCASToNew('[(_&1+&2_]');
-			// The converter adds closing parenthesis in the output
-			expect(result.converted).toBe('{{eval:(a+b)}}');
-			expectWarning('[(_&1+&2_]', 'Evaluation with parentheses');
+			expect(result.converted).toBe('{{eval:a+b;()}}');
 		});
 
 		it('should handle multi-line evaluations', () => {
@@ -399,22 +396,21 @@ describe('TinyCAS Syntax Converter', () => {
 			expect(decimal.converted).toBe('{{eval:3.14*a}}');
 			expect(decimal.warnings?.some((w) => w.includes('Decimal'))).toBe(true);
 
-			// Plus sign evaluation
+			// Terme signé : modificateur ;+
 			const plus = convertTinyCASToNew('[+_&1_]');
-			expect(plus.converted).toBe('{{eval:+a}}');
-			expect(plus.warnings?.some((w) => w.includes('+ sign'))).toBe(true);
+			expect(plus.converted).toBe('{{eval:a;+}}');
 
-			// Parentheses evaluation
+			// Négatif entre parenthèses : modificateur ;()
 			const parens = convertTinyCASToNew('[(_&1+5_]');
-			expect(parens.converted).toBe('{{eval:(a+5)}}');
-			expect(parens.warnings?.some((w) => w.includes('parentheses'))).toBe(true);
+			expect(parens.converted).toBe('{{eval:a+5;()}}');
 		});
 
 		it('should handle multiple special modifiers in one string', () => {
 			const input = '[._&1_] and [+_&2_] and [(_&3_]';
 			const result = convertTinyCASToNew(input);
-			expect(result.converted).toBe('{{eval:a}} and {{eval:+b}} and {{eval:(c)}}');
-			expect(result.warnings?.length).toBe(3);
+			expect(result.converted).toBe('{{eval:a}} and {{eval:b;+}} and {{eval:c;()}}');
+			// Seule l'évaluation décimale reste signalée
+			expect(result.warnings?.length).toBe(1);
 		});
 	});
 
@@ -723,11 +719,7 @@ describe('TinyCAS Syntax Converter', () => {
 
 	describe('16. Warning System Tests', () => {
 		it('should generate appropriate warnings for complex patterns', () => {
-			const patterns = [
-				{ input: '[._&1_]', warning: 'Decimal evaluation' },
-				{ input: '[+_&1_]', warning: '+ sign' },
-				{ input: '[(_&1_]', warning: 'parentheses' }
-			];
+			const patterns = [{ input: '[._&1_]', warning: 'Decimal evaluation' }];
 
 			patterns.forEach(({ input, warning }) => {
 				expectWarning(input, warning);
@@ -747,7 +739,7 @@ describe('TinyCAS Syntax Converter', () => {
 		});
 
 		it('should accumulate multiple warnings', () => {
-			const input = '[._&1_] and [+_&2_]';
+			const input = '[._&1_] and [._&2_]';
 			const result = convertTinyCASToNew(input);
 			expect(result.warnings?.length).toBeGreaterThanOrEqual(2);
 		});

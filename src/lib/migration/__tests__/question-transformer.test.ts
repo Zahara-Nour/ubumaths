@@ -127,12 +127,10 @@ describe('Question Transformer', () => {
 				expect(result.success).toBe(true);
 				// type no longer stored — inferred from structure
 				expect('type' in result.template!).toBe(false);
-				expect(result.template?.shared?.blankDefaults?.precision).toEqual({
-					type: 'decimal',
-					digits: 2
-				});
+				// result-type decimal : aucune précision d'office (arrondi faux accepté sinon)
+				expect(result.template?.shared?.blankDefaults?.precision).toBeUndefined();
 				expect(result.warnings).toContain(
-					'Decimal precision set to 2 places by default - verify if correct'
+					'result-type decimal : aucune précision ajoutée (résultat exact attendu)'
 				);
 			});
 		});

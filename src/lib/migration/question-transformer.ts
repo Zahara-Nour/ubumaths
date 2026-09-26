@@ -64,6 +64,7 @@ import {
 	fixMathDelimiters,
 	toSimplifiedSyntax,
 	normalizeRandomRange,
+	rewriteTinyMathDraw,
 	toBareVariableSyntax,
 	toExpressionTemplate
 } from './syntax-converter';
@@ -448,8 +449,8 @@ function convertVariables(
 		const rawName = varName.substring(1);
 		const name = /^\d+$/.test(rawName) ? numberToLetterName(parseInt(rawName, 10)) : rawName;
 
-		// Convert TinyCAS syntax to new syntax
-		const conversionResult = convertTinyCASToNew(expression);
+		// Convert TinyCAS syntax to new syntax (tirages particuliers réécrits d'abord)
+		const conversionResult = convertTinyCASToNew(rewriteTinyMathDraw(expression));
 
 		if (!conversionResult.success) {
 			warnings.push(
@@ -795,9 +796,14 @@ function convertSolution(
 		return questionType === 'multiple_choice' ? ['0'] : '';
 	}
 
-	// For multiple choice, solutions are indices
+	// For multiple choice, solutions are indices — or a TinyMath ternary
+	// (`(&1)*(&2) >0 ?? 0 :: 1`), converted to `{{if:…|0|1}}` and resolved by the generator
 	if (questionType === 'multiple_choice') {
-		return solutions.map((s) => String(s));
+		return solutions.map((s) => {
+			const raw = String(s);
+			if (/^\d+$/.test(raw.trim())) return raw.trim();
+			return convertTinyCASToNew(raw).converted || raw;
+		});
 	}
 
 	// For other types, convert the expression syntax
@@ -2334,14 +2340,13 @@ export function transformQuestion(
 			template.delay = oldQuestion.defaultDelay;
 		}
 
-		// Add precision for decimal questions (via shared blankDefaults)
+		// `result-type: decimal` (TinyMath) = solution calculée en écriture décimale,
+		// SANS arrondi : l'évaluation rend déjà 1.5 (et non 3/2), et le contrôle de
+		// forme refuse 3/2. Une précision « 2 décimales » acceptait des arrondis
+		// faux (1,23 pour 1,234) : aucune n'est ajoutée. Un résultat décimal
+		// infini (1/3) se règle à la relecture de la question.
 		if (oldQuestion['result-type'] === 'decimal') {
-			if (!template.shared) template.shared = {};
-			template.shared.blankDefaults = {
-				...template.shared.blankDefaults,
-				precision: { type: 'decimal', digits: 2 }
-			};
-			warnings.push('Decimal precision set to 2 places by default - verify if correct');
+			warnings.push('result-type decimal : aucune précision ajoutée (résultat exact attendu)');
 		}
 
 		return {

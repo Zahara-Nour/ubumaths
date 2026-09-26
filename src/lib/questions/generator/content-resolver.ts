@@ -14,6 +14,7 @@
  * @module questions/generator/content-resolver
  */
 
+import { evaluateConditionStrict } from './condition-evaluator';
 import type { ResolvedVariable } from '../types';
 import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/ubumark';
 import { resolvedMarkdown } from '$lib/ubumark';
@@ -225,6 +226,25 @@ export function convertToLatex(expression: string): string {
 		return toLatex(parseResult.ast, { preserveHoles: true });
 	}
 	return expression;
+}
+
+/**
+ * Bon choix d'un QCM donné par une condition : `{{if:condition|A|B}}` → A si la
+ * condition est vraie pour les variables tirées, B sinon (forme produite depuis
+ * le ternaire TinyMath `condition ?? A :: B`). Toute autre valeur est rendue
+ * telle quelle.
+ */
+export function resolveConditionalChoice(
+	value: string,
+	resolvedVariables: ResolvedVariable[]
+): string {
+	const match = value.trim().match(/^\{\{if:(.+)\|([^|{}]*)\|([^|{}]*)\}\}$/);
+	if (!match) return value;
+	const [, condition, whenTrue, whenFalse] = match;
+	// L'évaluateur de conditions note l'égalité « = » (comme TinyMath).
+	// Condition illisible → erreur (la génération échoue) plutôt qu'un choix B
+	// désigné en silence comme bon.
+	return evaluateConditionStrict(condition, resolvedVariables) ? whenTrue.trim() : whenFalse.trim();
 }
 
 /**

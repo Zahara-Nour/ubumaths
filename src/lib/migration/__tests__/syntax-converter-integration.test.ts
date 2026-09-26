@@ -445,11 +445,12 @@ describe('TinyCAS Syntax Converter > Integration Tests - Error Handling', () => 
 	});
 
 	it('should accumulate warnings from all pattern types', () => {
-		const input = '$e{2;4} [._&x_] [+_&y_] [(_&z_] $l{$e[1;5]:10}';
+		const input = '$e{2;4} [._&x_] [._&w_] [+_&y_] [(_&z_] $l{$e[1;5]:10}';
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.warnings!.length).toBeGreaterThanOrEqual(3); // Multiple warnings
+		// Les termes signés sont désormais traduits sans avertissement
+		expect(result.warnings!.length).toBeGreaterThanOrEqual(2); // Multiple warnings
 		expect(result.stats!.total).toBeGreaterThan(0); // Still converted patterns
 	});
 
