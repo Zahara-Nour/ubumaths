@@ -189,3 +189,17 @@ describe('Math zone conversion — formule LaTeX d’auteur non réécrite', () 
 		expect(result).toBe('$$2 \\times \\dfrac{\\sqrt{3}}{2}$$');
 	});
 });
+
+// Deux formules `$$…$$` sur une même ligne : le texte entre elles était lu comme une
+// formule `$…$` (« et » → `\exponentialE t`, « ou » → `o u`).
+describe('Math zone conversion — texte entre deux formules en bloc', () => {
+	it('le texte entre deux $$…$$ reste du texte', () => {
+		const result = resolveMarkdownContent(templateMarkdown('$$x=1$$ et $$y=2$$'), []);
+		expect(result).toBe('$$x = 1$$ et $$y = 2$$');
+	});
+
+	it('formules en ligne et en bloc mêlées', () => {
+		const result = resolveMarkdownContent(templateMarkdown('soit $a=1$ ou $$b=2$$ donc $c=3$'), []);
+		expect(result).toBe('soit $a = 1$ ou $$b = 2$$ donc $c = 3$');
+	});
+});
