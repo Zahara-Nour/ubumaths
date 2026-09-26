@@ -66,6 +66,13 @@ describe('correctChoiceIndex conditionnel', () => {
 	});
 });
 
+describe('condition illisible', () => {
+	it('fait échouer la génération au lieu de désigner en silence le choix B', () => {
+		const generated = generateInstance(signQcm('{{if:inconnue>0|0|1}}'), 1);
+		expect(generated.success).toBe(false);
+	});
+});
+
 describe('#336 « Quel est le signe de ce produit ? » (TinyMath), de bout en bout', () => {
 	it('seul le bon signe est juste', () => {
 		const questions = JSON.parse(

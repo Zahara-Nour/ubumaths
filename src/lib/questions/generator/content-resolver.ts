@@ -14,7 +14,7 @@
  * @module questions/generator/content-resolver
  */
 
-import { evaluateConditions } from './condition-evaluator';
+import { evaluateConditionStrict } from './condition-evaluator';
 import type { ResolvedVariable } from '../types';
 import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/ubumark';
 import { resolvedMarkdown } from '$lib/ubumark';
@@ -241,8 +241,10 @@ export function resolveConditionalChoice(
 	const match = value.trim().match(/^\{\{if:(.+)\|([^|{}]*)\|([^|{}]*)\}\}$/);
 	if (!match) return value;
 	const [, condition, whenTrue, whenFalse] = match;
-	// L'évaluateur de conditions note l'égalité « = » (comme TinyMath)
-	return evaluateConditions([condition], resolvedVariables) ? whenTrue.trim() : whenFalse.trim();
+	// L'évaluateur de conditions note l'égalité « = » (comme TinyMath).
+	// Condition illisible → erreur (la génération échoue) plutôt qu'un choix B
+	// désigné en silence comme bon.
+	return evaluateConditionStrict(condition, resolvedVariables) ? whenTrue.trim() : whenFalse.trim();
 }
 
 /**

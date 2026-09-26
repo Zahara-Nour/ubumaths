@@ -217,7 +217,9 @@ export function buildCorrectionContext(
 	} else {
 		// Repli : la variable d'expression de la variation (`expression1`,
 		// `expression2`… selon la variation dont elle vient)
-		const exprNVar = resolvedVariables.find((v) => /^expression\d+$/.test(v.name));
+		const exprNVar = resolvedVariables
+			.filter((v) => /^expression\d+$/.test(v.name))
+			.sort((a, b) => Number(a.name.slice(10)) - Number(b.name.slice(10)))[0];
 		if (exprNVar) {
 			expression = exprNVar.value;
 		}

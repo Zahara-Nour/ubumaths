@@ -169,6 +169,18 @@ function evaluateSingleCondition(condition: string, bindings: EvalBindings): boo
 }
 
 /**
+ * Évalue UNE condition et laisse remonter l'erreur si elle est illisible
+ * (variable absente, syntaxe non convertie). À utiliser quand un « faux »
+ * silencieux serait dangereux : le bon choix d'un QCM en dépend.
+ */
+export function evaluateConditionStrict(
+	condition: string,
+	resolvedVariables: ResolvedVariable[]
+): boolean {
+	return evaluateSingleCondition(condition, buildBindings(resolvedVariables));
+}
+
+/**
  * Evaluate all conditions against resolved variables.
  *
  * All conditions must be true (implicit AND between conditions).
