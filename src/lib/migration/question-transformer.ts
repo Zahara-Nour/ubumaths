@@ -795,9 +795,14 @@ function convertSolution(
 		return questionType === 'multiple_choice' ? ['0'] : '';
 	}
 
-	// For multiple choice, solutions are indices
+	// For multiple choice, solutions are indices — or a TinyMath ternary
+	// (`(&1)*(&2) >0 ?? 0 :: 1`), converted to `{{if:…|0|1}}` and resolved by the generator
 	if (questionType === 'multiple_choice') {
-		return solutions.map((s) => String(s));
+		return solutions.map((s) => {
+			const raw = String(s);
+			if (/^\d+$/.test(raw.trim())) return raw.trim();
+			return convertTinyCASToNew(raw).converted || raw;
+		});
 	}
 
 	// For other types, convert the expression syntax

@@ -75,6 +75,12 @@ interface ConversionRule {
 /**
  * Main syntax converter class
  */
+/**
+ * Terme TinyMath qui finit par une inconnue littérale (pas une variable &N) :
+ * `-(&1+(&2))x` → [coefficient, `x`] ; `&1x^2` → [`&1`, `x^2`].
+ */
+const TRAILING_UNKNOWN = /^(.*[^a-zA-Z&\d_]|&\d+|\d+)([a-z](?:\^\d+)?)$/;
+
 export class TinyCASConverter {
 	private stats: ConversionStats = {
 		randomIntegers: 0,
@@ -577,26 +583,24 @@ export class TinyCASConverter {
 			return `{{eval:${convertedExpr}}}`;
 		});
 
-		// Pattern for evaluation with + sign [+_..._]
+		// Terme signé [+_x_] : x affiché AVEC son signe (+7 / -7) → modificateur `;+`.
+		// Si le terme se termine par une inconnue (`-(&1+&2)x`, `&1x^2`), seul le
+		// coefficient est évalué : {{eval:-(a+b);+}}x
 		const pattern3 = /\[\+_([\s\S]*?)_\]/g;
-		result = result.replace(pattern3, (match, expr) => {
+		result = result.replace(pattern3, (match, expr: string) => {
 			this.stats.evaluations++;
-			this.warnings.push(
-				`Evaluation with + sign [+_${expr}_] converted - may need special handling`
-			);
-			const convertedExpr = convertVarsInExpr(expr);
-			return `{{eval:+${convertedExpr}}}`;
+			const monomial = expr.match(TRAILING_UNKNOWN);
+			if (monomial) {
+				return `{{eval:${convertVarsInExpr(monomial[1])};+}}${monomial[2]}`;
+			}
+			return `{{eval:${convertVarsInExpr(expr)};+}}`;
 		});
 
-		// Pattern for evaluation with parentheses [(_..._]
+		// Négatif entre parenthèses [(_x_] : -5 → (-5) → modificateur `;()`
 		const pattern4 = /\[\(_([\s\S]*?)_\]/g;
-		result = result.replace(pattern4, (match, expr) => {
+		result = result.replace(pattern4, (match, expr: string) => {
 			this.stats.evaluations++;
-			this.warnings.push(
-				`Evaluation with parentheses [(_${expr}_] converted - may need special handling`
-			);
-			const convertedExpr = convertVarsInExpr(expr);
-			return `{{eval:(${convertedExpr})}}`;
+			return `{{eval:${convertVarsInExpr(expr)};()}}`;
 		});
 
 		return result;

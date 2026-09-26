@@ -30,6 +30,7 @@ import { resolveVariables } from './variable-resolver';
 import {
 	resolveMarkdownContent,
 	resolveSolution,
+	resolveConditionalChoice,
 	resolveExpression,
 	insertExpressionMarkers,
 	resolveAnswerFormat,
@@ -235,11 +236,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		// Resolve correctChoiceIndex from explicit value or derive from isCorrect on choices
 		let resolvedCorrectChoiceIndex: string | string[] | undefined;
 		if (resolvedVariation.correctChoiceIndex) {
-			resolvedCorrectChoiceIndex = resolveSolution(
-				resolvedVariation.correctChoiceIndex,
-				resolvedVariables,
-				seed
-			);
+			// `{{if:condition|A|B}}` (ternaire TinyMath) : choisi selon les variables tirées
+			const rawIndex = resolvedVariation.correctChoiceIndex;
+			const withConditions = Array.isArray(rawIndex)
+				? rawIndex.map((value) => resolveConditionalChoice(value, resolvedVariables))
+				: resolveConditionalChoice(rawIndex, resolvedVariables);
+			resolvedCorrectChoiceIndex = resolveSolution(withConditions, resolvedVariables, seed);
 		} else if (resolvedVariation.choices) {
 			// Derive from isCorrect flags on choices
 			const correctIndexes = resolvedVariation.choices
