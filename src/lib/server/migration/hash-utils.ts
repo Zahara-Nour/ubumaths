@@ -25,6 +25,14 @@ interface QuestionBase {
 }
 
 /**
+ * Questions TinyMath distinctes dont la signature d'origine est celle d'une autre :
+ * #360 (≠ #356 : autre liste de fractions, CM2) et #439 (≠ #435 : consigne et correction).
+ * Les autres paires confondues sont de vrais doublons (74/136, 629/630…) ou ne diffèrent
+ * que par la correction (78/140, 80/142) : elles gardent la même signature.
+ */
+const DISTINCT_TWINS = new Set([360, 439]);
+
+/**
  * Generate a stable SHA-256 hash for a question
  *
  * CRITICAL: This function MUST be used consistently across all migration code:
@@ -77,8 +85,19 @@ export function generateStableQuestionHash(question: QuestionBase): string {
 	// Create a stable JSON representation
 	const content = JSON.stringify(normalized, sortedKeys);
 
+	// ⚠️ Le tableau `sortedKeys` sert de FILTRE à JSON.stringify, à tous les niveaux : le
+	// contenu des variables (`&1: …`) n'entre pas dans la signature. Deux questions qui ne
+	// diffèrent que par là la partagent. Le calcul reste tel quel (le suivi en base est
+	// indexé dessus) ; les jumelles DISTINCTES connues reçoivent leur propre signature.
+	const globalIndex = (question._migration as { globalIndex?: number } | undefined)?.globalIndex;
+	const suffix =
+		globalIndex !== undefined && DISTINCT_TWINS.has(globalIndex) ? `#${globalIndex}` : '';
+
 	// Generate SHA-256 hash
-	return crypto.createHash('sha256').update(content).digest('hex');
+	return crypto
+		.createHash('sha256')
+		.update(content + suffix)
+		.digest('hex');
 }
 
 /**
