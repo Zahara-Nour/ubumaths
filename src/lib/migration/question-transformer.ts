@@ -498,6 +498,24 @@ function convertVariables(
 // ============================================================================
 
 /**
+ * Énoncé d'une variation, énoncé secondaire (`enounces2`) compris.
+ * TinyMath affiche l'énoncé puis l'énoncé secondaire (souvent un tableau ou une
+ * donnée indispensable) : ils sont réunis ici, avant toute conversion.
+ */
+function fullEnounce(
+	enounces: string[],
+	enounces2: string[],
+	index: number,
+	answerField?: string
+): string | undefined {
+	const enonce = enounces[index] || enounces[0];
+	const enonce2 = enounces2[index] || enounces2[0];
+	// Énoncé secondaire identique au champ réponse (#487-489) : déjà affiché par lui
+	if (!enonce2 || enonce2.trim() === answerField?.trim()) return enonce;
+	return enonce ? `${enonce}\n\n${enonce2}` : enonce2;
+}
+
+/**
  * Result of statement conversion including extracted expression variable
  */
 interface StatementResult {
@@ -649,8 +667,23 @@ function convertStatement(
  * '\\text{Le double de }$$&1$$\\text{ est }$$...$$\\text{.}'
  * → 'Le double de ${{a}}$ est $?$.'
  */
+/**
+ * Champ réponse TinyMath : `$$` bascule en mode formule ; un `$$` non refermé
+ * court jusqu'à la fin (#486 : `\text{… est }$$...\text{.}`). On le referme.
+ */
+function closeAnswerField(answerField: string): string {
+	const delimiters = (answerField.match(/\$\$/g) || []).length;
+	return delimiters % 2 === 1 ? `${answerField}$$` : answerField;
+}
+
+/** Expression TinyMath affichée telle quelle dans l'énoncé (mode « champ réponse ») */
+function displayedExpression(expression: string): string {
+	const converted = convertTinyCASToNew(expression).converted || expression;
+	return converted.includes('$$') ? converted : `$$${converted}$$`;
+}
+
 function convertAnswerFieldToStatement(answerField: string, warnings: string[]): string {
-	let result = answerField;
+	let result = closeAnswerField(answerField);
 
 	// Step 1: Convert \text{...} → plain text
 	result = result.replace(/\\text\{([^}]*)\}/g, '$1');
@@ -660,6 +693,11 @@ function convertAnswerFieldToStatement(answerField: string, warnings: string[]):
 		if (content === '...') {
 			// Blank marker → $?$
 			return '$?$';
+		}
+		// Case DANS une formule : $$x=...$$ → $x=?$
+		if (content.includes('...')) {
+			const converted = convertTinyCASToNew(content.replace(/\.\.\./g, '?'));
+			return '$' + (converted.converted || content) + '$';
 		}
 		// Math expression (may contain variable references like &1)
 		const converted = convertTinyCASToNew(content);
@@ -1556,6 +1594,7 @@ function detectSharedFields(
 
 	// ---- Detect enounces sharing (→ statement) ----
 	const enounces = oldQuestion.enounces || [];
+	const enounces2 = oldQuestion.enounces2 || [];
 	const expressions = oldQuestion.expressions || [];
 	const answerFields = oldQuestion.answerFields || [];
 
@@ -1566,7 +1605,12 @@ function detectSharedFields(
 		// AnswerField mode: convert answerField to statement with $?$
 		// The answerField replaces the expression in the statement
 		const answerFieldIsShared = answerFields.length === 1 && variationCount > 1;
-		const enounceIsShared = enounces.length === 1 && variationCount > 1;
+		// Énoncé secondaire et expression font partie de l'énoncé : partagés eux aussi
+		const enounceIsShared =
+			enounces.length <= 1 &&
+			enounces2.length <= 1 &&
+			expressions.length <= 1 &&
+			variationCount > 1;
 		// Images drive per-variation statements when they are the source of variations
 		const imagesArePerVariation =
 			images !== undefined && images.length > 1 && images.length === variationCount;
@@ -1577,13 +1621,15 @@ function detectSharedFields(
 			!imagesArePerVariation
 		) {
 			// Shared answerField
-			const enonce = enounces[0];
+			const enonce = fullEnounce(enounces, enounces2, 0, answerFields[0]);
 			const convertedField = convertAnswerFieldToStatement(answerFields[0], warnings);
 			const parts: string[] = [];
 			if (enonce) {
 				const enonceResult = convertTinyCASToNew(enonce);
 				parts.push(enonceResult.converted || enonce);
 			}
+			// L'expression est affichée avant la ligne de réponse (TinyMath : Question.svelte)
+			if (expressions[0]) parts.push(displayedExpression(expressions[0]));
 			parts.push(convertedField);
 			// Add all images if present (shared across variations)
 			if (images && images.length > 0 && imageMapping) {
@@ -1606,14 +1652,16 @@ function detectSharedFields(
 		} else {
 			// Per-variation answerField
 			for (let i = 0; i < variationCount; i++) {
-				const enonce = enounces[i] || enounces[0];
 				const af = answerFields[i] || answerFields[0];
+				const enonce = fullEnounce(enounces, enounces2, i, af);
 				const convertedField = convertAnswerFieldToStatement(af, warnings);
 				const parts: string[] = [];
 				if (enonce) {
 					const enonceResult = convertTinyCASToNew(enonce);
 					parts.push(enonceResult.converted || enonce);
 				}
+				const expression = expressions[i] || expressions[0];
+				if (expression) parts.push(displayedExpression(expression));
 				parts.push(convertedField);
 				// Add image: one per variation or all
 				if (images && images.length > 0 && imageMapping) {
@@ -1653,12 +1701,13 @@ function detectSharedFields(
 			images !== undefined && images.length > 1 && images.length === variationCount;
 		const statementIsShared =
 			(enounceIsShared || enounces.length === 0) &&
+			enounces2.length <= 1 &&
 			(expressionIsShared || expressions.length === 0) &&
 			!imagesArePerVariation;
 
 		if (statementIsShared) {
 			// Shared enounce AND shared/no expression - generate statement once
-			const enonce = enounces[0];
+			const enonce = fullEnounce(enounces, enounces2, 0);
 			const expression = expressions[0];
 			const result = convertStatement(
 				enonce,
@@ -1678,7 +1727,7 @@ function detectSharedFields(
 		} else {
 			// Per-variation statements or expressions
 			for (let i = 0; i < variationCount; i++) {
-				const enonce = enounces[i] || enounces[0];
+				const enonce = fullEnounce(enounces, enounces2, i);
 				const expression = expressions[i] || expressions[0];
 				// Distribute images: one per variation when images drive variations
 				const variationImages = imagesArePerVariation ? [images![i]] : images;
@@ -2010,7 +2059,13 @@ function createVariationsWithShared(
 			const af = answerFields[i] || answerFields[0];
 
 			// Count blanks from $$...$$ markers in answerField
-			const blankCount = af ? (af.match(/\$\$\.\.\.\$\$/g) || []).length : 0;
+			// Chaque « ... » d'une formule est une case ($$...$$, $$x=...$$, $$... h ... min$$)
+			const blankCount = af
+				? (closeAnswerField(af).match(/\$\$(.*?)\$\$/g) || []).reduce(
+						(count, segment) => count + (segment.match(/\.\.\./g) || []).length,
+						0
+					)
+				: 0;
 
 			if (solutions && solutions.length > 0 && blankCount > 0) {
 				const blanks = extractBlanksFromSolutions(
