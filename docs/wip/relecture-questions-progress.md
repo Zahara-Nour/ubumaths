@@ -28,7 +28,7 @@ Constats mesurés (validateur réel, 2026-09-26) sur les 8 questions à `testAns
 Comportement livré :
 
 - `rulesSuffice: true` (case réponse ou `blankDefaults`) → juste ⇔ toutes les règles passent ;
-  `expectedAnswer` n'est plus qu'un exemple (et un modèle de forme). Sans règle, le mode est
+  `expectedAnswer` n'est plus qu'un exemple ; la réponse doit être un nombre simple. Sans règle, le mode est
   ignoré (jamais « tout est juste ») et le template est refusé à la validation.
 - FlashCard : chaque case est colorée par le validateur réel en mode `rulesSuffice` ; le verso
   titre « Une réponse possible ».
