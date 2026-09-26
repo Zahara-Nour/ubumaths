@@ -1128,6 +1128,43 @@ export function normalizeRandomRange(expression: string): string {
 	return `${range}!${exclusions.join(',')}`;
 }
 
+/** Le texte est-il UN SEUL jeton `{{…}}` (l'accolade ouvrante fermée tout à la fin) ? */
+function isSingleToken(text: string): boolean {
+	const trimmed = text.trim();
+	if (!trimmed.startsWith('{{')) return false;
+	let depth = 0;
+	for (let i = 0; i < trimmed.length; i++) {
+		if (trimmed[i] === '{') depth++;
+		if (trimmed[i] === '}') depth--;
+		if (depth === 0) return i === trimmed.length - 1;
+	}
+	return false;
+}
+
+/**
+ * Variable d'expression (affichée dans l'énoncé) à partir de la sortie TinyCAS.
+ *
+ * - expression sans évaluation (`{{a}} + {{b}}`) ou entièrement évaluée
+ *   (`{{eval:{{a}}*10}}`) : syntaxe simplifiée à noms nus, comme avant
+ *   (`a + b`, `eval:a*10`) ;
+ * - expression MIXTE (`{{a}} + {{eval:10-{{a}}}}`) : forme gabarit conservée,
+ *   `{{a}} + {{eval:10-a}}`. Simplifiée, elle devenait `a + eval:10-a`
+ *   (« free variables: v, l ») ou une évaluation unique qui affichait le
+ *   résultat, c'est-à-dire la réponse.
+ */
+export function toExpressionTemplate(converted: string): string {
+	const hasEvaluation = /\{\{eval:/.test(converted);
+	if (!hasEvaluation || isSingleToken(converted)) {
+		return toBareVariableSyntax(toSimplifiedSyntax(converted));
+	}
+	// Noms nus À L'INTÉRIEUR des évaluations seulement : {{eval:10-{{a}}}} → {{eval:10-a}}
+	return converted.replace(
+		/\{\{eval:((?:[^{}]|\{[^{}]*\}|\{\{[^}]*\}\})*)\}\}/g,
+		(_match, content: string) =>
+			`{{eval:${content.replace(/\{\{([a-zA-Z_][a-zA-Z0-9_]*)\}\}/g, '$1')}}}`
+	);
+}
+
 /**
  * Fix math delimiters: convert $$...$$ to $...$ when used inline.
  *

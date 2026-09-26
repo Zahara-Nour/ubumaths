@@ -64,7 +64,8 @@ import {
 	fixMathDelimiters,
 	toSimplifiedSyntax,
 	normalizeRandomRange,
-	toBareVariableSyntax
+	toBareVariableSyntax,
+	toExpressionTemplate
 } from './syntax-converter';
 import { convertPlaceholders, convertSolutionPlaceholders } from './placeholder-converter';
 import { convertConditionals } from './conditional-converter';
@@ -559,7 +560,8 @@ function convertStatement(
 
 			// Convert to bare variable syntax: {{a}}^{{b}} → a^b
 			// The resolver handles bare variable name substitution automatically
-			const bareExpr = toBareVariableSyntax(toSimplifiedSyntax(afterTinyCAS));
+			// (expression mixte texte + évaluation : forme gabarit, cf. toExpressionTemplate)
+			const bareExpr = toExpressionTemplate(afterTinyCAS);
 
 			expressionVariable = {
 				name: varName,
@@ -1726,7 +1728,8 @@ function detectSharedFields(
 			if (expr2) {
 				const conversionResult = convertTinyCASToNew(expr2);
 				const afterTinyCAS = conversionResult.converted || expr2;
-				const bareExpr = toBareVariableSyntax(toSimplifiedSyntax(afterTinyCAS));
+				// (expression mixte texte + évaluation : forme gabarit, cf. toExpressionTemplate)
+				const bareExpr = toExpressionTemplate(afterTinyCAS);
 
 				const expr2Var: QuestionVariable = {
 					name: `expression${2}`,
