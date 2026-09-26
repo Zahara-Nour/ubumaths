@@ -6,6 +6,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import {
 	generateStableQuestionHash,
 	generateQuestionDescription,
@@ -314,5 +316,38 @@ describe('Hash Stability Regression Tests', () => {
 		// Store the hash for reference (can be updated if hash function changes intentionally)
 		// Current hash for this test question:
 		console.log('Reference hash for test question:', hash1);
+	});
+});
+
+// Le filtre de clés passé à JSON.stringify s'applique à TOUS les niveaux : le contenu des
+// variables (`&1: …`) n'entre pas dans la signature. #356/#360 et #435/#439, distinctes,
+// partageaient donc la leur (clé UNIQUE du suivi → #360 impossible à enregistrer).
+describe('generateStableQuestionHash — jumelles distinctes', () => {
+	const questions = JSON.parse(
+		readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
+	) as Array<Record<string, unknown>>;
+	const hashOf = (i: number) => generateStableQuestionHash(questions[i]);
+
+	it('#360 et #439 ont leur propre signature', () => {
+		expect(hashOf(360)).not.toBe(hashOf(356));
+		expect(hashOf(439)).not.toBe(hashOf(435));
+	});
+
+	it('les vrais doublons gardent la même signature (rejet « doublon de »)', () => {
+		expect(hashOf(136)).toBe(hashOf(74));
+		expect(hashOf(630)).toBe(hashOf(629));
+	});
+
+	it('toutes les autres signatures sont inchangées (suivi en base indexé dessus)', () => {
+		// Signature d'origine de #356 (calcul inchangé pour elle)
+		expect(hashOf(356)).toMatch(/^[0-9a-f]{64}$/);
+		const withoutIndex = (i: number) => {
+			const { _migration: _m, ...rest } = questions[i];
+			return generateStableQuestionHash(rest);
+		};
+		for (let i = 0; i < questions.length; i++) {
+			if (i === 360 || i === 439) continue;
+			expect(hashOf(i)).toBe(withoutIndex(i));
+		}
 	});
 });
