@@ -729,6 +729,50 @@ describe('transforms', () => {
 				const div = result as ReturnType<typeof fraction>;
 				expect(div.denominator.type).toBe('number');
 			});
+
+			it('strips parentheses around a negative denominator of a fraction: \\frac{1}{(-2)}', () => {
+				const node = fraction(number('1'), parentheses(opposite(number('2'))));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('division');
+				const div = result as ReturnType<typeof fraction>;
+				expect(div.denominator.type).toBe('opposite');
+			});
+		});
+
+		// Division en ligne (« : » ou « / ») : même règle que ×, pas de contexte isolé
+		describe('inside inline divisions (ratio / inline)', () => {
+			it.each(['ratio', 'inline'] as const)(
+				'keeps parentheses around a negative divisor: 49 %s (-65)',
+				(style) => {
+					const node = divide(number('49'), parentheses(opposite(number('65'))), style);
+					const result = stripUnnecessaryBrackets(node);
+
+					expect(result.type).toBe('division');
+					const div = result as ReturnType<typeof fraction>;
+					expect(div.denominator.type).toBe('delimiter');
+				}
+			);
+
+			it('keeps parentheses around a nested inline division on the right: 12:(6:2)', () => {
+				const node = divide(
+					number('12'),
+					parentheses(divide(number('6'), number('2'), 'ratio')),
+					'ratio'
+				);
+				const result = stripUnnecessaryBrackets(node);
+
+				const div = result as ReturnType<typeof fraction>;
+				expect(div.denominator.type).toBe('delimiter');
+			});
+
+			it('strips parentheses around a negative dividend: (-65):49', () => {
+				const node = divide(parentheses(opposite(number('65'))), number('49'), 'ratio');
+				const result = stripUnnecessaryBrackets(node);
+
+				const div = result as ReturnType<typeof fraction>;
+				expect(div.numerator.type).toBe('opposite');
+			});
 		});
 
 		describe('inside exponents', () => {

@@ -1017,9 +1017,12 @@ function isSimpleElement(node: MathNode): boolean {
 		case 'hole':
 		case 'constant':
 		case 'function': // Functions already have their own delimiters
-		case 'division': // Fractions are visually delimited
 		case 'delimiter': // Already delimited
 			return true;
+		// Seule la fraction (\frac) est visuellement délimitée ; « : » et « / » en ligne
+		// suivent la précédence (12:(6:2) garde ses parenthèses)
+		case 'division':
+			return node.displayStyle === 'fraction';
 		default:
 			return false;
 	}
@@ -1309,18 +1312,27 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 				}
 			);
 
-		case 'division':
-			// For fractions, strip brackets in numerator and denominator
-			// Numerator and denominator are "root-like" contexts (isolated)
+		case 'division': {
+			// Fraction (\frac) : numérateur et dénominateur sont des contextes isolés (racine).
+			// Division en ligne (« : », « / ») : opérateur binaire comme ×, donc un négatif
+			// à droite garde ses parenthèses (49 : (-65), pas 49 : -65).
+			const isFraction = node.displayStyle === 'fraction';
+			const numeratorCtx: StripContext = isFraction
+				? { ...childCtx, isRoot: true, isFirstTerm: true }
+				: { ...childCtx, isFirstTerm: true, parentType: 'division', isLeftOperand: true };
+			const denominatorCtx: StripContext = isFraction
+				? { ...childCtx, isRoot: true, isFirstTerm: true }
+				: { ...childCtx, parentType: 'division', isLeftOperand: false };
 			return divide(
-				stripBracketsInternal(node.numerator, { ...childCtx, isRoot: true, isFirstTerm: true }),
-				stripBracketsInternal(node.denominator, { ...childCtx, isRoot: true, isFirstTerm: true }),
+				stripBracketsInternal(node.numerator, numeratorCtx),
+				stripBracketsInternal(node.denominator, denominatorCtx),
 				node.displayStyle,
 				{
 					operatorMetadata: node.operatorMetadata,
 					metadata: node.metadata
 				}
 			);
+		}
 
 		// Unary operations
 		case 'opposite':
