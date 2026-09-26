@@ -2,7 +2,7 @@
 	"globalIndex": 350,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "« Décomposer » → « Décompose ». Réponse attendue « b+c/a » → « b+\\frac{c}{a} » (saisie MathLive refusée [form], correction affichée « 9+999/1000 »). Forme exigée « n:integer + p:integer / q:integer » (sinon \\frac{9000}{1000}+\\frac{999}{1000} acceptée, reducedFractions étant désactivé ; limite : la fraction < 1 n'est pas vérifiée). Contrainte spaces désactivée : l'énoncé et la correction écrivent \\dfrac{9999}{1000} sans espace, et recopier 1000 était sanctionné [spaces]. Specs : juste aux bornes (dixièmes et millièmes), décimal et somme de fractions refusés, mauvais reste refusé.",
+	"editNotes": "« Décomposer » → « Décompose ». Réponse attendue « b+c/a » → « b+\\frac{c}{a} » (saisie MathLive refusée [form], correction affichée « 9+999/1000 »). Forme exigée « n:integer + p:integer / q:integer » (sinon \\frac{9000}{1000}+\\frac{999}{1000} acceptée, reducedFractions étant désactivé ; limite : la fraction < 1 n'est pas vérifiée). Contrainte spaces désactivée : l'énoncé et la correction écrivent \\dfrac{9999}{1000} sans espace, et recopier 1000 était sanctionné [spaces]. Specs : juste aux bornes (dixièmes et millièmes), décimal et somme de fractions refusés, mauvais reste refusé. Contrainte `spaces` rétablie (décision de David) : à l'écran, l'énoncé affiche déjà « 1 000 » (mise en forme française des formules).",
 	"template": {
 		"title": "Décomposer une fraction",
 		"description": "Une fraction décimale (jusqu'aux millièmes) en une somme d'un entier et d'une fraction décimale inférieure à $1$",
@@ -41,8 +41,7 @@
 		],
 		"options": {
 			"constraints": {
-				"reducedFractions": "off",
-				"spaces": "off"
+				"reducedFractions": "off"
 			}
 		},
 		"grades": ["CM2"],
@@ -66,9 +65,23 @@
 					"b": "9",
 					"c": "999"
 				},
-				"answers": ["9+\\frac{999}{1000}"],
+				"answers": ["9+\\frac{999}{1\\,000}"],
 				"expected": {
 					"status": "correct"
+				}
+			},
+			{
+				"description": "millièmes, 1000 écrit sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1000",
+					"b": "9",
+					"c": "999"
+				},
+				"answers": ["9+\\frac{999}{1000}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
 				}
 			},
 			{
@@ -92,7 +105,7 @@
 					"b": "3",
 					"c": "456"
 				},
-				"answers": ["\\frac{456}{1000}+3"],
+				"answers": ["\\frac{456}{1\\,000}+3"],
 				"expected": {
 					"status": "correct"
 				}
