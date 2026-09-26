@@ -80,3 +80,20 @@ describe('9. deux majuscules identiques écrites par l’auteur (issues RR, NN�
 		expect(convertLatexToTypstMath('x\\in\\R')).toContain('RR');
 	});
 });
+
+describe('10. lettre grecque suivie d’une parenthèse (point Ω(1 ; 2))', () => {
+	// Fiches de géométrie repérée (2026-09-26) : `$\Omega(1\,;2)$` donnait
+	// `Omega(1 thin ;2)`, que Typst lit comme un APPEL de fonction dont le `;`
+	// sépare des lignes d'arguments → « expected content, found array », et tout
+	// le PDF de la fiche échouait (compilateur de prod). Une lettre latine,
+	// `A(1 thin ;2)`, n'est pas concernée.
+	it('une espace sépare le nom grec de sa parenthèse', () => {
+		expect(convertLatexToTypstMath('\\Omega(1\\,;2)')).toBe('Omega (1 thin ;2)');
+		expect(convertLatexToTypstMath('\\varphi(x)')).toBe('varphi (x)');
+	});
+
+	it('sans parenthèse, rien ne change', () => {
+		expect(convertLatexToTypstMath('\\Omega A=5')).toBe('Omega A=5');
+		expect(convertLatexToTypstMath('2\\pi')).toBe('2pi');
+	});
+});
