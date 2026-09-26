@@ -39,7 +39,10 @@ function withMigration(
 ): QuestionBase {
 	return {
 		...q,
-		...{ _migration: { ...defaultMigration._migration, ...overrides } }
+		_migration: {
+			...defaultMigration._migration,
+			...overrides
+		}
 	} as QuestionBase;
 }
 
@@ -166,17 +169,16 @@ describe('Correction Integration', () => {
 		});
 
 		describe('Placeholder Syntax Conversion', () => {
-			it('should convert &sol to {{sol}} (variable reference)', () => {
-				// Note: TinyCAS converter treats &sol as a variable named "sol"
-				// Correction-specific placeholders like &solution would be handled differently
+			it('convertit &sol en {{solution}}', () => {
+				// Les marqueurs de correction passent AVANT la syntaxe TinyCAS, qui
+				// ferait de &sol une variable « sol » inexistante
 				const result = testLegacySyntaxConversion('La réponse est &sol');
-				expect(result).toBe('La réponse est {{sol}}');
+				expect(result).toBe('La réponse est {{solution}}');
 			});
 
-			it('should convert indexed solutions to {{solN}}', () => {
-				// Note: TinyCAS converter treats these as variable references
+			it('convertit &solN (1..n) en {{solution:N-1}} (0..n-1)', () => {
 				const result = testLegacySyntaxConversion('Solutions: &sol1 et &sol2');
-				expect(result).toBe('Solutions: {{sol1}} et {{sol2}}');
+				expect(result).toBe('Solutions: {{solution:0}} et {{solution:1}}');
 			});
 
 			it('should convert &answer placeholders', () => {
@@ -242,7 +244,7 @@ describe('Correction Integration', () => {
 				const input = 'Résultat &sol avec &1 et &2, @@&1<5 ?? petit@@';
 				const result = testLegacySyntaxConversion(input);
 
-				expect(result).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
+				expect(result).toContain('{{solution}}'); // TinyCAS converts &sol to {{solution}}
 				expect(result).toContain('{{a}}');
 				expect(result).toContain('{{b}}');
 				// Variables inside conditionals keep their {{}} wrapper
@@ -253,7 +255,7 @@ describe('Correction Integration', () => {
 				const input = 'La réponse &sol est correcte car [_&1+&2_] = &sol, ${get(color1)}';
 				const result = testLegacySyntaxConversion(input);
 
-				expect(result).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
+				expect(result).toContain('{{solution}}'); // TinyCAS converts &sol to {{solution}}
 				expect(result).toContain('{{eval:a+b}}');
 				expect(result).toContain('{{color:'); // Color conversion
 			});
@@ -271,7 +273,7 @@ describe('Correction Integration', () => {
 				const result = testLegacySyntaxConversion(input);
 
 				// Variables inside conditionals keep their {{}} wrapper
-				expect(result).toContain('{{if:{{a}}<5|La réponse {{sol}} est petite}}');
+				expect(result).toContain('{{if:{{a}}<5|La réponse {{solution}} est petite}}');
 			});
 		});
 	});
@@ -318,7 +320,7 @@ describe('Correction Integration', () => {
 
 				expect(result).toBeDefined();
 				expect(result?.steps).toHaveLength(1);
-				expect(result?.steps?.[0]).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
+				expect(result?.steps?.[0]).toContain('{{solution}}'); // TinyCAS converts &sol to {{solution}}
 			});
 
 			it('should transform multiple correction details to separate steps', () => {
@@ -336,7 +338,7 @@ describe('Correction Integration', () => {
 				expect(result?.steps).toHaveLength(3);
 				expect(result?.steps?.[0]).toContain('{{a}}');
 				expect(result?.steps?.[0]).toContain('{{b}}');
-				expect(result?.steps?.[1]).toContain('{{sol}}');
+				expect(result?.steps?.[1]).toContain('{{solution}}');
 				expect(result?.steps?.[2]).toBe('Étape 3: Vérification');
 			});
 
@@ -351,7 +353,7 @@ describe('Correction Integration', () => {
 
 				// Variables inside conditionals keep their {{}} wrapper
 				expect(result?.steps?.[0]).toContain('{{if:{{a}}<10|');
-				expect(result?.steps?.[0]).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
+				expect(result?.steps?.[0]).toContain('{{solution}}'); // TinyCAS converts &sol to {{solution}}
 			});
 		});
 
@@ -515,7 +517,7 @@ describe('Correction Integration', () => {
 				const stepsText = steps?.join(' ') || '';
 				expect(stepsText).toContain('{{a}}');
 				expect(stepsText).toContain('{{b}}');
-				expect(stepsText).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
+				expect(stepsText).toContain('{{solution}}'); // TinyCAS converts &sol to {{solution}}
 			});
 
 			it('should transform question with correctionFormat', () => {
@@ -665,7 +667,7 @@ describe('Correction Integration', () => {
 				// Access steps array and check content
 				const stepsText = correction?.steps?.join(' ') || '';
 				expect(stepsText).toContain('{{eval:');
-				expect(stepsText).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
+				expect(stepsText).toContain('{{solution}}'); // TinyCAS converts &sol to {{solution}}
 				expect(stepsText).toContain('{{if:');
 			});
 
@@ -693,7 +695,7 @@ describe('Correction Integration', () => {
 				const steps = result.template?.variations[0].correction?.steps;
 				expect(steps).toBeDefined();
 				expect(steps?.join(' ')).toContain('{{color:');
-				expect(steps?.join(' ')).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
+				expect(steps?.join(' ')).toContain('{{solution}}'); // TinyCAS converts &sol to {{solution}}
 			});
 
 			it('should handle all syntax types in single correction', () => {
@@ -724,7 +726,7 @@ describe('Correction Integration', () => {
 				expect(steps).toBeDefined();
 				const stepsText = steps?.join(' ') || '';
 				expect(stepsText).toContain('{{eval:');
-				expect(stepsText).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
+				expect(stepsText).toContain('{{solution}}'); // TinyCAS converts &sol to {{solution}}
 				expect(stepsText).toContain('{{color:');
 				expect(stepsText).toContain('{{if:');
 			});
@@ -800,7 +802,7 @@ describe('Correction Integration', () => {
 				const stepsText = steps?.join(' ') || '';
 				expect(stepsText).toContain('{{a}}');
 				expect(stepsText).toContain('{{b}}');
-				expect(stepsText).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
+				expect(stepsText).toContain('{{solution}}'); // TinyCAS converts &sol to {{solution}}
 			});
 		});
 

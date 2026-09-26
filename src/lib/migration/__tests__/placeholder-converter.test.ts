@@ -45,9 +45,11 @@ describe('Placeholder Converter', () => {
 		});
 
 		it('should convert indexed &solN', () => {
-			expectConversion('&sol1', '{{solution:1}}');
-			expectConversion('&sol2', '{{solution:2}}');
-			expectConversion('&sol10', '{{solution:10}}');
+			// TinyMath numérote &solN à partir de 1 (correctionItem.ts : solutions_latex[p1 - 1]),
+			// le nouveau système à partir de 0 (solution_0 = première solution)
+			expectConversion('&sol1', '{{solution:0}}');
+			expectConversion('&sol2', '{{solution:1}}');
+			expectConversion('&sol10', '{{solution:9}}');
 		});
 
 		it('should convert &solution to HTML format', () => {
@@ -56,7 +58,7 @@ describe('Placeholder Converter', () => {
 		});
 
 		it('should handle multiple solution placeholders', () => {
-			expectConversion('&sol1 and &sol2', '{{solution:1}} and {{solution:2}}');
+			expectConversion('&sol1 and &sol2', '{{solution:0}} and {{solution:1}}');
 			expectConversion('First: &sol, second: &sol', 'First: {{solution}}, second: {{solution}}');
 		});
 
@@ -227,7 +229,7 @@ describe('Placeholder Converter', () => {
 	describe('8. convertSinglePlaceholder Tests', () => {
 		it('should convert individual placeholders correctly', () => {
 			expect(convertSinglePlaceholder('&sol')).toBe('{{solution}}');
-			expect(convertSinglePlaceholder('&sol1')).toBe('{{solution:1}}');
+			expect(convertSinglePlaceholder('&sol1')).toBe('{{solution:0}}');
 			expect(convertSinglePlaceholder('&solution')).toBe('{{solution:html}}');
 			expect(convertSinglePlaceholder('&answer')).toBe('{{answer}}');
 			expect(convertSinglePlaceholder('&answer2')).toBe('{{answer:2}}');
@@ -407,7 +409,7 @@ describe('Placeholder Converter', () => {
 		it('should handle multi-solution corrections', () => {
 			expectConversion(
 				'Les solutions sont &sol1 et &sol2.',
-				'Les solutions sont {{solution:1}} et {{solution:2}}.'
+				'Les solutions sont {{solution:0}} et {{solution:1}}.'
 			);
 		});
 	});

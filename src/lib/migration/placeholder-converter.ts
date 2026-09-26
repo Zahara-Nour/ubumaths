@@ -63,7 +63,7 @@ export const LEGACY_PLACEHOLDER_PATTERNS = {
 	/**
 	 * Solution placeholder: &sol or &sol1, &sol2, etc.
 	 * - &sol -> {{solution}}
-	 * - &sol1 -> {{solution:1}}
+	 * - &sol1 -> {{solution:0}} (TinyMath numérote à partir de 1, le nouveau système à 0)
 	 */
 	solution: /&sol(\d+)?(?![a-zA-Z])/g,
 
@@ -113,6 +113,29 @@ export const LEGACY_PLACEHOLDER_PATTERNS = {
 };
 
 /**
+ * `&sol` → `{{solution}}` ; `&solN` → `{{solution:N-1}}`.
+ *
+ * TinyMath numérote les solutions à partir de 1 (`correctionItem.ts` :
+ * `solutions_latex[p1 - 1]`), le résolveur de correction à partir de 0
+ * (`solution_0` = première solution).
+ */
+function solutionPlaceholder(index: string | undefined): string {
+	return index ? `{{solution:${Number(index) - 1}}}` : '{{solution}}';
+}
+
+/**
+ * Convertit SEULEMENT les marqueurs de solution (`&solution`, `&sol`, `&solN`).
+ * À appliquer avant la syntaxe TinyCAS, qui les prendrait pour des variables.
+ */
+export function convertSolutionPlaceholders(text: string): string {
+	return text
+		.replace(LEGACY_PLACEHOLDER_PATTERNS.solutionHtml, '{{solution:html}}')
+		.replace(LEGACY_PLACEHOLDER_PATTERNS.solution, (_match, index: string | undefined) =>
+			solutionPlaceholder(index)
+		);
+}
+
+/**
  * Convert a single placeholder to the new syntax
  *
  * @param placeholder - The legacy placeholder to convert
@@ -120,7 +143,7 @@ export const LEGACY_PLACEHOLDER_PATTERNS = {
  *
  * @example
  * convertSinglePlaceholder('&sol')      // '{{solution}}'
- * convertSinglePlaceholder('&sol2')     // '{{solution:2}}'
+ * convertSinglePlaceholder('&sol2')     // '{{solution:1}}'
  * convertSinglePlaceholder('&answer')   // '{{answer}}'
  * convertSinglePlaceholder('&1')        // '{{1}}'
  */
@@ -133,8 +156,7 @@ export function convertSinglePlaceholder(placeholder: string): string {
 	// &sol or &solN
 	const solMatch = placeholder.match(/^&sol(\d+)?$/);
 	if (solMatch) {
-		const index = solMatch[1];
-		return index ? `{{solution:${index}}}` : '{{solution}}';
+		return solutionPlaceholder(solMatch[1]);
 	}
 
 	// &answer or &answerN
@@ -314,10 +336,9 @@ export function convertPlaceholders(input: string): PlaceholderConversionResult 
 	});
 
 	// Step 3: Convert &sol and &solN
-	replaceWithTracking(LEGACY_PLACEHOLDER_PATTERNS.solution, (match) => {
-		const index = match[1];
-		return index ? `{{solution:${index}}}` : '{{solution}}';
-	});
+	replaceWithTracking(LEGACY_PLACEHOLDER_PATTERNS.solution, (match) =>
+		solutionPlaceholder(match[1])
+	);
 
 	// Step 4: Convert &answer and &answerN
 	replaceWithTracking(LEGACY_PLACEHOLDER_PATTERNS.answer, (match) => {
