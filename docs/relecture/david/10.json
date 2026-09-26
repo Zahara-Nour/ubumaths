@@ -1,8 +1,8 @@
 {
 	"globalIndex": 10,
-	"verdict": "approved",
-	"reviewer": "david",
-	"reviewedAt": "2026-02-24T07:12:27.365+00:00",
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Approuvée par David ; correction décidée par David le 2026-09-26 : au moins deux chiffres non nuls (plus d'énoncé réduit à « 2 » ou « (2×100) »).",
 	"template": {
 		"delay": 20,
 		"level": 2,
@@ -41,7 +41,7 @@
 						}
 					}
 				],
-				"conditions": ["a+b+c>=2"]
+				"conditions": ["a*b+a*c+b*c != 0"]
 			}
 		],
 		"testSpecs": [

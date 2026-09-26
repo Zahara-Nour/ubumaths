@@ -1,8 +1,8 @@
 {
 	"globalIndex": 3,
-	"verdict": "approved",
-	"reviewer": "david",
-	"reviewedAt": "2026-02-18T17:48:10.336+00:00",
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Approuvée par David ; correction décidée par David le 2026-09-26 : espace après la virgule (« $e$, le »).",
 	"template": {
 		"delay": 10,
 		"level": 4,
@@ -51,7 +51,7 @@
 						"expectedAnswer": "{{b}}"
 					}
 				],
-				"statement": "Dans le nombre ${{e}}$,le chiffre des centaines est $?$."
+				"statement": "Dans le nombre ${{e}}$, le chiffre des centaines est $?$."
 			},
 			{
 				"blanks": [

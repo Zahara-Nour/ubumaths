@@ -1,8 +1,8 @@
 {
 	"globalIndex": 6,
-	"verdict": "approved",
-	"reviewer": "david",
-	"reviewedAt": "2026-02-21T09:01:07.798+00:00",
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Approuvée par David ; correction décidée par David le 2026-09-26 : variations 4 à 6 supprimées (copies exactes des variations 1 à 3).",
 	"template": {
 		"delay": 20,
 		"level": 7,
@@ -39,51 +39,6 @@
 		},
 		"subdomain": "Ecriture",
 		"variations": [
-			{
-				"blanks": [
-					{
-						"prefilled": "expression",
-						"expectedAnswer": "eval:expression"
-					}
-				],
-				"statement": "",
-				"variables": [
-					{
-						"name": "expression",
-						"expression": "00{{a}}{{b}}{{c}}{{d}}"
-					}
-				]
-			},
-			{
-				"blanks": [
-					{
-						"prefilled": "expression",
-						"expectedAnswer": "eval:expression"
-					}
-				],
-				"statement": "",
-				"variables": [
-					{
-						"name": "expression",
-						"expression": "00{{a}}{{b}}{{c}}{{d}}0"
-					}
-				]
-			},
-			{
-				"blanks": [
-					{
-						"prefilled": "expression",
-						"expectedAnswer": "eval:expression"
-					}
-				],
-				"statement": "",
-				"variables": [
-					{
-						"name": "expression",
-						"expression": "00{{a}}{{b}}{{c}}{{d}}00"
-					}
-				]
-			},
 			{
 				"blanks": [
 					{
@@ -270,91 +225,6 @@
 					"d": "5"
 				},
 				"answers": ["00304\\,500"],
-				"expected": {
-					"status": "bad_form",
-					"constraintViolations": ["zeros", "form"]
-				}
-			},
-			{
-				"description": "001001 → 1 001 (zéros intérieurs)",
-				"variationIndex": 3,
-				"variables": {
-					"a": "1",
-					"b": "0",
-					"c": "0",
-					"d": "1"
-				},
-				"answers": ["1\\,001"],
-				"expected": {
-					"status": "correct"
-				}
-			},
-			{
-				"description": "zéros intérieurs supprimés à tort",
-				"variationIndex": 3,
-				"variables": {
-					"a": "1",
-					"b": "0",
-					"c": "0",
-					"d": "1"
-				},
-				"answers": ["11"],
-				"expected": {
-					"status": "incorrect"
-				}
-			},
-			{
-				"description": "0099990 → 99 990",
-				"variationIndex": 4,
-				"variables": {
-					"a": "9",
-					"b": "9",
-					"c": "9",
-					"d": "9"
-				},
-				"answers": ["99\\,990"],
-				"expected": {
-					"status": "correct"
-				}
-			},
-			{
-				"description": "zéro final supprimé à tort",
-				"variationIndex": 4,
-				"variables": {
-					"a": "9",
-					"b": "9",
-					"c": "9",
-					"d": "9"
-				},
-				"answers": ["9\\,999"],
-				"expected": {
-					"status": "incorrect"
-				}
-			},
-			{
-				"description": "00999900 → 999 900",
-				"variationIndex": 5,
-				"variables": {
-					"a": "9",
-					"b": "9",
-					"c": "9",
-					"d": "9"
-				},
-				"answers": ["999\\,900"],
-				"expected": {
-					"status": "correct"
-				}
-			},
-			{
-				"description": "zéros de tête conservés",
-				"variationIndex": 5,
-				"variables": {
-					"a": "9",
-					"b": "9",
-					"c": "9",
-					"d": "9"
-				},
-				"answers": ["00999\\,900"],
 				"expected": {
 					"status": "bad_form",
 					"constraintViolations": ["zeros", "form"]

@@ -1,13 +1,13 @@
 {
 	"globalIndex": 11,
-	"verdict": "approved",
-	"reviewer": "david",
-	"reviewedAt": "2026-02-24T22:32:54.091+00:00",
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Approuvée par David ; corrections décidées par David le 2026-09-26 : plus de terme nul dans la réponse attendue (406 → 400 + 6, 470 → 400 + 70) grâce à trois variations (aucun zéro / zéro aux dizaines / zéro aux unités) ; titre « d'un nombre ».",
 	"template": {
 		"delay": 20,
 		"level": 3,
 		"theme": "Entiers",
-		"title": "Décomposer l'écriture décimale un nombre",
+		"title": "Décomposer l'écriture décimale d'un nombre",
 		"domain": "Apprivoiser",
 		"grades": ["CE1"],
 		"status": "draft",
@@ -27,11 +27,63 @@
 					},
 					{
 						"name": "b",
-						"expression": "0..9"
+						"expression": "1..9"
 					},
 					{
 						"name": "c",
-						"expression": "0..9"
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*100+b*10+c"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100}}+{{c}}"
+					}
+				],
+				"statement": "Décompose ce nombre en centaines, dizaines et unités comme dans l'exemple :\n$$235=200+30+5$$\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*100+b*10+c"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100}}+{{eval:b*10}}"
+					}
+				],
+				"statement": "Décompose ce nombre en centaines, dizaines et unités comme dans l'exemple :\n$$235=200+30+5$$\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "0"
 					},
 					{
 						"name": "expression",
@@ -120,6 +172,59 @@
 				"answers": ["900+90+9"],
 				"expected": {
 					"status": "correct"
+				}
+			},
+			{
+				"description": "406 = 400 + 6",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4",
+					"b": "0",
+					"c": "6"
+				},
+				"answers": ["400+6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "406 : terme nul inutile",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4",
+					"b": "0",
+					"c": "6"
+				},
+				"answers": ["400+0+6"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["nullTerms"]
+				}
+			},
+			{
+				"description": "470 = 400 + 70",
+				"variationIndex": 2,
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "0"
+				},
+				"answers": ["400+70"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "470 : erreur de rang",
+				"variationIndex": 2,
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "0"
+				},
+				"answers": ["400+7"],
+				"expected": {
+					"status": "incorrect"
 				}
 			}
 		]

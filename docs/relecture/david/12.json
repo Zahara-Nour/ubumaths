@@ -1,13 +1,13 @@
 {
 	"globalIndex": 12,
-	"verdict": "approved",
-	"reviewer": "david",
-	"reviewedAt": "2026-03-08T16:22:26.797+00:00",
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Approuvée par David ; corrections décidées par David le 2026-09-26 : le tirage ne reproduit plus l'exemple 345 ; titre « d'un nombre ».",
 	"template": {
 		"delay": 30,
 		"level": 4,
 		"theme": "Entiers",
-		"title": "Décomposer l'écriture décimale un nombre",
+		"title": "Décomposer l'écriture décimale d'un nombre",
 		"domain": "Apprivoiser",
 		"grades": ["CE1"],
 		"status": "draft",
@@ -43,7 +43,8 @@
 						"name": "expression",
 						"expression": "eval:a*100 + b*10 + c"
 					}
-				]
+				],
+				"conditions": ["a*100+b*10+c != 345"]
 			}
 		],
 		"description": "En centaines, dizaines et unités, à l'aide de produits",

@@ -1,0 +1,405 @@
+{
+	"globalIndex": 20,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Modifiée par David (sans verdict), relue par Claude ; corrections décidées par David le 2026-09-26 : chaque variation attend la graduation de SON image (les 20 attendaient 560, défaut hérité de TinyMath) ; niveau CP → CE1 (nombres jusqu'à 560) ; point final retiré du titre.",
+	"template": {
+		"delay": 20,
+		"level": 1,
+		"theme": "Entiers",
+		"title": "Repérer sur une demi-droite graduée",
+		"domain": "Apprivoiser",
+		"grades": ["CE1"],
+		"status": "draft",
+		"subdomain": "Repérage",
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "560"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-0-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "250"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-1-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "520"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-2-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "210"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-3-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "180"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-4-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "330"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-5-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "360"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-6-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "200"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-7-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "460"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-8-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "380"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-9-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "230"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-10-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "450"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-11-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "260"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-12-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "390"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-13-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "400"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-14-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "420"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-15-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "250"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-16-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "450"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-17-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "450"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-18-600.webp)"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "200"
+					}
+				],
+				"statement": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-19-600.webp)"
+			}
+		],
+		"testSpecs": [
+			{
+				"description": "image 0 : le point ? est en 560",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["560"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 1 : le point ? est en 250",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["250"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 2 : le point ? est en 520",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["520"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 3 : le point ? est en 210",
+				"variationIndex": 3,
+				"variables": {},
+				"answers": ["210"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 4 : le point ? est en 180",
+				"variationIndex": 4,
+				"variables": {},
+				"answers": ["180"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 5 : le point ? est en 330",
+				"variationIndex": 5,
+				"variables": {},
+				"answers": ["330"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 6 : le point ? est en 360",
+				"variationIndex": 6,
+				"variables": {},
+				"answers": ["360"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 7 : le point ? est en 200",
+				"variationIndex": 7,
+				"variables": {},
+				"answers": ["200"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 8 : le point ? est en 460",
+				"variationIndex": 8,
+				"variables": {},
+				"answers": ["460"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 9 : le point ? est en 380",
+				"variationIndex": 9,
+				"variables": {},
+				"answers": ["380"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 10 : le point ? est en 230",
+				"variationIndex": 10,
+				"variables": {},
+				"answers": ["230"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 11 : le point ? est en 450",
+				"variationIndex": 11,
+				"variables": {},
+				"answers": ["450"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 12 : le point ? est en 260",
+				"variationIndex": 12,
+				"variables": {},
+				"answers": ["260"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 13 : le point ? est en 390",
+				"variationIndex": 13,
+				"variables": {},
+				"answers": ["390"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 14 : le point ? est en 400",
+				"variationIndex": 14,
+				"variables": {},
+				"answers": ["400"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 15 : le point ? est en 420",
+				"variationIndex": 15,
+				"variables": {},
+				"answers": ["420"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 16 : le point ? est en 250",
+				"variationIndex": 16,
+				"variables": {},
+				"answers": ["250"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 17 : le point ? est en 450",
+				"variationIndex": 17,
+				"variables": {},
+				"answers": ["450"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 18 : le point ? est en 450",
+				"variationIndex": 18,
+				"variables": {},
+				"answers": ["450"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 19 : le point ? est en 200",
+				"variationIndex": 19,
+				"variables": {},
+				"answers": ["200"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 0 : une graduation de trop à gauche (550)",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["550"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "image 7 : 560 (ancienne réponse unique) refusé",
+				"variationIndex": 7,
+				"variables": {},
+				"answers": ["560"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "image 7 : décalage d'une graduation (190)",
+				"variationIndex": 7,
+				"variables": {},
+				"answers": ["190"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "image 19 : lecture en unités au lieu de dizaines (155)",
+				"variationIndex": 19,
+				"variables": {},
+				"answers": ["155"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "réponse vide",
+				"variationIndex": 3,
+				"variables": {},
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				}
+			}
+		]
+	}
+}

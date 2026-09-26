@@ -2,7 +2,7 @@
 
 Questions TinyMath #0–#20, #25–#33, #96–#106 (Entiers), relues par David entre février et avril 2026.
 Reprise le 2026-09-26 (Claude). **Son verdict et son contenu font foi** : rien n'est rejugé.
-**Rien n'est encore en base** : ce rapport attend le feu vert de David.
+**Rien n'est encore en base.**
 
 ## Bilan
 
@@ -31,7 +31,11 @@ spec « bonne réponse » par variation, toutes vertes, 50 tirages par variation
 - **Espaces des milliers** : « 34 56 » ou « 3 4 5 6 » étaient acceptés comme justes pour 3456 (seule la
   présence d'une espace était vérifiée). Désormais : groupes de 3, sinon forme perfectible.
 
-## À décider par David
+## Décisions de David (2026-09-26) — appliquées
+
+> 1 oui (réponses + CE1) · 2 oui · 3 oui · 4 corriger. Vérification : **41 importables, 0 échec**.
+
+### Points soumis
 
 1. **#20 « Quel est ce nombre ? » (droites graduées)** — **19 des 20 variations attendent une mauvaise
    réponse** : toutes attendent 560 alors que chaque image montre une droite différente (défaut hérité de
@@ -43,7 +47,8 @@ spec « bonne réponse » par variation, toutes vertes, 50 tirages par variation
    → restreindre b à un chiffre ?
 3. **#11** : quand un chiffre vaut 0, la réponse attendue contient un terme nul (406 → « 400 + 0 + 6 ») ;
    l'élève qui écrit « 400 + 6 » est bien compté juste, mais la correction affiche la forme avec le 0.
-   → retirer les termes nuls de la réponse affichée ?
+   → retirer les termes nuls de la réponse affichée ? _(Appliqué par trois variations — aucun zéro /
+   zéro aux dizaines / zéro aux unités — car l'option d'affichage ne s'applique pas à la réponse.)_
 4. Détails (sans effet sur la correction) : espace manquante après la virgule (#1 v2, #3 v1 : « $d$,le ») ;
    #6 : variations 3–5 identiques aux variations 0–2 ; #10 : la condition laisse passer des énoncés
    triviaux (« 2 » seul) ; #9 et #12 : un tirage peut reproduire l'exemple de l'énoncé.

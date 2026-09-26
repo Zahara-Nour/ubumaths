@@ -1,13 +1,13 @@
 {
 	"globalIndex": 9,
-	"verdict": "approved",
-	"reviewer": "david",
-	"reviewedAt": "2026-02-21T18:44:01.885+00:00",
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Approuvée par David ; corrections décidées par David le 2026-09-26 : le second terme doit être un chiffre (« 60 + 14 » refusé), le tirage ne reproduit plus l'exemple 74, titre « d'un nombre ».",
 	"template": {
 		"delay": 20,
 		"level": 1,
 		"theme": "Entiers",
-		"title": "Décomposer l'écriture décimale un nombre",
+		"title": "Décomposer l'écriture décimale d'un nombre",
 		"domain": "Apprivoiser",
 		"grades": ["CP"],
 		"status": "draft",
@@ -17,7 +17,7 @@
 				"blanks": [
 					{
 						"requiredForm": {
-							"pattern": "a:multipleOf(10)+b:inN*"
+							"pattern": "a:multipleOf(10)+b:inN* & lt(10)"
 						},
 						"expectedAnswer": "{{eval:a*10}}+{{b}}"
 					}
@@ -36,7 +36,8 @@
 						"name": "expression",
 						"expression": "eval:a*10+b"
 					}
-				]
+				],
+				"conditions": ["a*10+b != 74"]
 			}
 		],
 		"description": "En dizaines et unités",
@@ -100,6 +101,19 @@
 				"answers": ["10+9"],
 				"expected": {
 					"status": "correct"
+				}
+			},
+			{
+				"description": "74 = 60 + 14 : décomposition refusée (unités > 9)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "3"
+				},
+				"answers": ["40+13"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
 				}
 			}
 		]

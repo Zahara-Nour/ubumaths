@@ -1,8 +1,8 @@
 {
 	"globalIndex": 1,
-	"verdict": "approved",
-	"reviewer": "david",
-	"reviewedAt": "2026-02-16T05:23:54.911+00:00",
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Approuvée par David ; correction décidée par David le 2026-09-26 : espace après la virgule (« $d$, le »).",
 	"template": {
 		"delay": 10,
 		"level": 2,
@@ -55,7 +55,7 @@
 						"expectedAnswer": "c"
 					}
 				],
-				"statement": "Dans le nombre ${{d}}$,le chiffre des **unités** est $?$."
+				"statement": "Dans le nombre ${{d}}$, le chiffre des **unités** est $?$."
 			}
 		],
 		"description": "Jusqu'aux centaines",
