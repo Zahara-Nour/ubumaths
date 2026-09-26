@@ -103,3 +103,10 @@ Après relecture (`code-reviewer`) :
 - #364 : consigne en HTML TinyMath (`<h3 class="${get(color2)}-text">`) non convertie — à reprendre.
 - #397 : conditionnel `{{if:…}}` contenant un `align` multiligne → « Failed to parse random »
   (indépendant des couleurs) — groupe « conditionnels » à traiter.
+- ⚠️ Signe explicite TinyMath dans une évaluation (`[+_g_]`, #586, #601) : `{{eval:+g}}` perd le
+  signe → `f(x)=7x9` au lieu de `7x+9`, sortie d'apparence VALIDE. Prochain groupe à corriger ;
+  d'ici là, relire tout énoncé à `[+_…_]`.
+- ⚠️ Variables TinyMath nommées `e` (&5) ou `i` (&9) : l'évaluateur les lisait comme constantes
+  (Euler, imaginaire) → réponses attendues fausses sans erreur (80 questions utilisent &5, dont 9 de
+  David : #3, 16, 17, 18, 19, 101, 103, 104, 106) et boucle sur `10^e` (#47). Noms sans e ni i
+  depuis #461. **Les versions corrigées de David portent encore `e`** : à renommer en Phase 2.

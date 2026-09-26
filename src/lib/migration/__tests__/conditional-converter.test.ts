@@ -49,12 +49,12 @@ describe('Conditional Converter', () => {
 		it('should convert single digit variables to letters', () => {
 			expect(convertConditionVariables('&1')).toBe('{{a}}');
 			expect(convertConditionVariables('&2')).toBe('{{b}}');
-			expect(convertConditionVariables('&9')).toBe('{{i}}');
+			expect(convertConditionVariables('&9')).toBe('{{k}}'); // sans e ni i
 		});
 
 		it('should convert multi-digit variables to letters', () => {
-			expect(convertConditionVariables('&10')).toBe('{{j}}');
-			expect(convertConditionVariables('&99')).toBe('{{cu}}');
+			expect(convertConditionVariables('&10')).toBe('{{l}}');
+			expect(convertConditionVariables('&99')).toBe('{{dc}}');
 		});
 
 		it('should convert multiple variables', () => {
@@ -69,7 +69,7 @@ describe('Conditional Converter', () => {
 
 		it('should preserve spaces', () => {
 			expect(convertConditionVariables('&1 + &2 = &3')).toBe('{{a}} + {{b}} = {{c}}');
-			expect(convertConditionVariables('&5 < &6')).toBe('{{e}} < {{f}}');
+			expect(convertConditionVariables('&5 < &6')).toBe('{{f}} < {{g}}');
 		});
 
 		it('should handle empty or null input', () => {
@@ -454,7 +454,7 @@ describe('Conditional Converter', () => {
 		it('should handle LaTeX in conditional text', () => {
 			expectConversion(
 				'@@&5>=10 ?? $$&1\\times &3 = [_(&5-&6):10_]\\textcolor{${get(correct_color)}}{&6}$$@@',
-				'{{if:{{e}}>=10|$$&1\\times &3 = [_(&5-&6):10_]\\textcolor{${get(correct_color)}}{&6}$$}}'
+				'{{if:{{f}}>=10|$$&1\\times &3 = [_(&5-&6):10_]\\textcolor{${get(correct_color)}}{&6}$$}}'
 			);
 		});
 
