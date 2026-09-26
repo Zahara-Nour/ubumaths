@@ -2,10 +2,10 @@
 	"globalIndex": 404,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Réponse attendue convertie en {{eval:expression}} : l’évaluation rend un décimal arrondi, si bien que toute bonne réponse (fraction) était refusée et que la correction affichait ce décimal. Remplacée par la fraction exacte \\frac{ab}{c} (irréductible : c premier avec a et b).",
+	"editNotes": "Réponse attendue convertie en {{eval:expression}} : l’évaluation rend un décimal arrondi, si bien que toute bonne réponse (fraction) était refusée et que la correction affichait ce décimal. Remplacée par la fraction exacte \\frac{ab}{c} (irréductible : c premier avec a et b). Description corrigée (« Division par un entier » recopiée de #403) : la question divise un entier par une fraction (décision de David).",
 	"template": {
 		"title": "Calculer un quotient",
-		"description": "Division par un entier, avec fraction",
+		"description": "Division d'un entier par une fraction",
 		"variations": [
 			{
 				"statement": "Calcule.\n\n$${{expression1}}$$",
