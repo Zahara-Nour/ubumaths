@@ -159,3 +159,25 @@ describe('fractions dans un align*', () => {
 		expect(code).toContain('e^(frac(1, 2))');
 	});
 });
+
+describe('vecteur en colonne dans le texte', () => {
+	// 2026-09-26 (fiches de géométrie repérée) : `$\vec{n}\begin{pmatrix}1\\-2\end{pmatrix}$`
+	// sortait en taille d'indice dans le PDF, comme les fractions avant la variante E.
+	it('matrice de premier niveau : taille normale', () => {
+		expect(formule('Soit $\\vec{n}\\begin{pmatrix}1\\\\-2\\end{pmatrix}$.')).toContain(
+			'display(mat(delim: "(", 1; -2))'
+		);
+	});
+
+	it('matrice en exposant : inchangée', () => {
+		expect(formule('Soit $x^{\\begin{pmatrix}1\\\\2\\end{pmatrix}}$.')).not.toContain(
+			'display(mat'
+		);
+	});
+
+	it('formule centrée : inchangée (déjà en taille normale)', () => {
+		const out = typst('$$\\vec{u}\\begin{pmatrix}3\\\\4\\end{pmatrix}$$');
+		expect(out).toContain('mat(delim: "(", 3; 4)');
+		expect(out).not.toContain('display(mat');
+	});
+});

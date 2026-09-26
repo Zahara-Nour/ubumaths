@@ -1598,6 +1598,10 @@ function visibleWidth(latex: string): number {
  * autre fraction, ni en exposant/indice) et assez étroites pour la colonne. Typst
  * réduit sinon toute fraction d'une ligne de texte, alors que l'écran (KaTeX,
  * `\dfrac`) les affiche en taille normale. Un `\frac` écrit par l'auteur est respecté.
+ *
+ * Même règle pour une matrice de premier niveau (coordonnées d'un vecteur en
+ * colonne, `\vec{n}\begin{pmatrix}1\\-2\end{pmatrix}`) : marquée `\ubudisplay`,
+ * elle sort en `display(mat(…))` ; sinon Typst l'écrivait en taille d'indice.
  */
 export function markDisplayFractions(latex: string): string {
 	// Contexte de chaque accolade ouverte : fraction, exposant/indice, ou groupe neutre
@@ -1642,6 +1646,15 @@ export function markDisplayFractions(latex: string): string {
 			out += replaced;
 			i += frac[0].length - 1;
 			continue;
+		}
+		if (/^\\begin\s*\{[pbvV]?matrix\}/.test(latex.slice(i))) {
+			const prevChar = out.replace(/\s+$/, '').slice(-1);
+			const topLevel =
+				!stack.includes('frac') &&
+				!stack.includes('script') &&
+				prevChar !== '^' &&
+				prevChar !== '_';
+			if (topLevel) out += '\\ubudisplay';
 		}
 		const c = latex[i];
 		if (c === '{') {
@@ -2220,8 +2233,13 @@ export function convertLatexToTypstMath(latex: string): string {
 	};
 	const matPrefixes: string[] = [];
 	for (const [env, delim] of Object.entries(matrixDelimiters)) {
-		const regex = new RegExp(`\\\\begin\\s*\\{${env}\\}([\\s\\S]*?)\\\\end\\s*\\{${env}\\}`, 'g');
-		result = result.replace(regex, (_, content: string) => {
+		// `\ubudisplay` devant : matrice de premier niveau d'une formule du texte
+		// (markDisplayFractions), composée en taille normale
+		const regex = new RegExp(
+			`(\\\\ubudisplay\\s*)?\\\\begin\\s*\\{${env}\\}([\\s\\S]*?)\\\\end\\s*\\{${env}\\}`,
+			'g'
+		);
+		result = result.replace(regex, (_, display: string | undefined, content: string) => {
 			const rows = content
 				.split(/\\\\/)
 				.map((row: string) => row.trim())
@@ -2235,7 +2253,8 @@ export function convertLatexToTypstMath(latex: string): string {
 				);
 			const idx = matPrefixes.length;
 			matPrefixes.push(`mat(delim: ${delim}, `);
-			return `<<<mat${idx}>>>${rows.join('; ')})`;
+			const mat = `<<<mat${idx}>>>${rows.join('; ')})`;
+			return display ? `display(${mat})` : mat;
 		});
 	}
 
@@ -2345,9 +2364,14 @@ export function convertLatexToTypstMath(latex: string): string {
 		const regex = new RegExp(`\\\\${letter}(?![a-zA-Z])`, 'g');
 		// Collé à une lettre (`2k\pi`, `r\theta`), le nom grec formerait `kpi`, que le
 		// produit implicite découpe ensuite en `k p i` : une espace l'en sépare.
-		result = result.replace(regex, (_match, offset: number, str: string) =>
-			offset > 0 && /[a-zA-Z]/.test(str[offset - 1]) ? ` ${letter}` : letter
-		);
+		// Suivi d'une parenthèse (`\Omega(1\,;2)`), Typst lirait un APPEL de fonction
+		// dont le `;` sépare des lignes d'arguments, et tout le PDF échouerait : une
+		// espace après le nom en fait une simple parenthèse.
+		result = result.replace(regex, (match: string, offset: number, str: string) => {
+			const before = offset > 0 && /[a-zA-Z]/.test(str[offset - 1]) ? ' ' : '';
+			const after = str[offset + match.length] === '(' ? ' ' : '';
+			return `${before}${letter}${after}`;
+		});
 	}
 
 	// Ellipsis (dots) - MUST be before \cdot conversion
