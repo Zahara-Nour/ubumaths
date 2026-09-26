@@ -14,6 +14,7 @@
  */
 
 import { z } from 'zod';
+import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
 
 // ============================================================================
 // BUILDING BLOCKS (exported, non-strict)
@@ -287,6 +288,7 @@ export const blankDefaultsSchema = z.object({
 	precision: precisionSchema.optional(),
 	requiredForm: requiredFormSchema.optional(),
 	removeSpaces: z.boolean().optional(),
+	rulesSuffice: z.boolean().optional(),
 	unit: unitSchema.optional()
 });
 
@@ -298,6 +300,7 @@ export const blankSchema = z.object({
 	requiredForm: requiredFormSchema.optional(),
 	removeSpaces: z.boolean().optional(),
 	validationRules: z.array(validationRuleSchema).optional(),
+	rulesSuffice: z.boolean().optional(),
 	unit: unitSchema.optional()
 });
 
@@ -514,6 +517,7 @@ const blankDefaultsStrictZ = z
 		precision: precisionStrictZ.optional(),
 		requiredForm: requiredFormStrictZ.optional(),
 		removeSpaces: z.boolean().optional(),
+		rulesSuffice: z.boolean().optional(),
 		unit: unitStrictZ.optional()
 	})
 	.strict();
@@ -527,6 +531,7 @@ const blankStrictZ = z
 		requiredForm: requiredFormStrictZ.optional(),
 		removeSpaces: z.boolean().optional(),
 		validationRules: z.array(validationRuleStrictZ).optional(),
+		rulesSuffice: z.boolean().optional(),
 		unit: unitStrictZ.optional()
 	})
 	.strict();
@@ -613,4 +618,17 @@ export const questionTemplateSchema = z
 				'Chaque variation doit avoir un énoncé, ou un énoncé partagé doit être défini dans shared',
 			path: ['variations']
 		}
-	);
+	)
+	.superRefine((data, ctx) => {
+		// rulesSuffice sans aucune règle : toute réponse serait juste
+		data.variations.forEach((variation, variationIndex) => {
+			for (const blankIndex of findRulesSufficeBlanksWithoutRules(variation, data.shared)) {
+				ctx.addIssue({
+					code: 'custom',
+					message:
+						'rulesSuffice exige au moins une règle de validation (sinon toute réponse serait juste)',
+					path: ['variations', variationIndex, 'blanks', blankIndex, 'rulesSuffice']
+				});
+			}
+		});
+	});

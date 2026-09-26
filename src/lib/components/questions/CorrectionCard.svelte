@@ -23,6 +23,7 @@
 <script lang="ts">
 	import type { TestAnswerResult } from '$lib/types/test';
 	import { getQuestionType } from '$lib/questions/types';
+	import { hasRulesSufficeBlank } from '$lib/questions/rules-suffice';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -275,7 +276,12 @@
 
 						<!-- Correct Answer -->
 						<div class="correct-answer-section">
-							<h3 class="mb-3 text-lg font-semibold">Réponse correcte</h3>
+							<!-- Plusieurs bonnes réponses : celle affichée n'en est qu'un exemple -->
+							<h3 class="mb-3 text-lg font-semibold">
+								{hasRulesSufficeBlank(answerResult.instance)
+									? 'Une réponse possible'
+									: 'Réponse correcte'}
+							</h3>
 							<div class="rounded-lg border-2 border-green-600 bg-green-100 p-4 dark:bg-green-950">
 								{#if Array.isArray(answerResult.instance.correctChoiceIndex)}
 									<ul class="space-y-1">

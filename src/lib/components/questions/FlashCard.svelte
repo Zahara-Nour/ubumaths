@@ -18,6 +18,8 @@
 	import { getQuestionType } from '$lib/questions/types';
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
+	import { hasRulesSufficeBlank } from '$lib/questions/rules-suffice';
+	import { computeBlankVerdicts } from './blank-verdicts';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -243,10 +245,7 @@
 		onAnswerSubmit?.(answerData);
 
 		if (getQuestionType(instance) === 'fill_in_blanks' && instance.blanks) {
-			blankValidationResults = fillBlankValues.map((value, i) => {
-				const expected = instance.blanks![i].expectedAnswer;
-				return value.trim().toLowerCase() === expected.trim().toLowerCase();
-			});
+			blankValidationResults = computeBlankVerdicts(fillBlankValues, instance);
 		}
 
 		if (!isCorrect && showCorrectionOnWrong) {
@@ -424,7 +423,10 @@
 					<Card.Content class="space-y-6">
 						<!-- Correct answer -->
 						<div class="correct-answer">
-							<h3 class="mb-3 text-lg font-semibold">Réponse correcte</h3>
+							<!-- Plusieurs bonnes réponses : celle affichée n'en est qu'un exemple -->
+							<h3 class="mb-3 text-lg font-semibold">
+								{hasRulesSufficeBlank(instance) ? 'Une réponse possible' : 'Réponse correcte'}
+							</h3>
 							<div
 								class="rounded-lg border-2 border-green-600 bg-green-50 p-4 dark:bg-green-950/20"
 							>

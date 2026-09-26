@@ -344,6 +344,10 @@
 	let sharedBlankUnitRequired = $state(
 		initialTemplate?.shared?.blankDefaults?.unit?.required || ''
 	);
+	// Pas de contrôle dans le formulaire : conservé tel quel pour ne pas le perdre à la sauvegarde
+	let sharedBlankRulesSuffice = $state(
+		initialTemplate?.shared?.blankDefaults?.rulesSuffice ?? false
+	);
 	let sharedValidationRulesJson = $state(
 		JSON.stringify(initialTemplate?.shared?.validationRules || [], null, 2)
 	);
@@ -720,6 +724,7 @@
 			if (sharedBlankUnitRequired.trim())
 				blankDefaults.unit.required = sharedBlankUnitRequired.trim();
 		}
+		if (sharedBlankRulesSuffice) blankDefaults.rulesSuffice = true;
 		if (Object.keys(blankDefaults).length > 0) shared.blankDefaults = blankDefaults;
 		try {
 			const rules = JSON.parse(sharedValidationRulesJson);
@@ -854,6 +859,7 @@
 				: '';
 		sharedBlankUnitExpected = t.shared?.blankDefaults?.unit?.expected ?? false;
 		sharedBlankUnitRequired = t.shared?.blankDefaults?.unit?.required || '';
+		sharedBlankRulesSuffice = t.shared?.blankDefaults?.rulesSuffice ?? false;
 		sharedValidationRulesJson = JSON.stringify(t.shared?.validationRules || [], null, 2);
 		sharedAnswerFormatsJson = JSON.stringify(t.shared?.answerFormats || {}, null, 2);
 

@@ -194,6 +194,8 @@ export interface BlankDefaults {
 	requiredForm?: RequiredForm;
 	/** Prevent French digit grouping in prefilled values (insert {} between digits) */
 	removeSpaces?: boolean;
+	/** Voir `TemplateBlank.rulesSuffice` */
+	rulesSuffice?: boolean;
 	unit?: {
 		/** true = the student must provide the unit */
 		expected: boolean;
@@ -219,6 +221,13 @@ export interface TemplateBlank {
 	/** Prevent French digit grouping in prefilled value (insert {} between digits) */
 	removeSpaces?: boolean;
 	validationRules?: ValidationRule[];
+	/**
+	 * Question à plusieurs bonnes réponses (« Trouve un diviseur de 12 ») : la
+	 * réponse est juste si et seulement si elle respecte TOUTES les règles de
+	 * validation. `expectedAnswer` n'est plus qu'un exemple (affiché comme « une
+	 * réponse possible ») et le modèle de forme. Exige au moins une règle.
+	 */
+	rulesSuffice?: boolean;
 
 	/** Unit config (overrides blankDefaults.unit) */
 	unit?: {
@@ -564,6 +573,8 @@ export interface InstanceBlank {
 	precision?: PrecisionType;
 	requiredForm?: RequiredForm;
 	validationRules?: ValidationRule[];
+	/** Voir `TemplateBlank.rulesSuffice` (fusionné avec blankDefaults) */
+	rulesSuffice?: boolean;
 
 	/** Unit config (merged) */
 	unit?: {

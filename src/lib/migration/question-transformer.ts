@@ -1286,22 +1286,36 @@ function convertOptions(
 // ============================================================================
 
 /**
+ * Résultat de la conversion des `testAnswers` d'une variation.
+ *
+ * Dans TinyMath, un `testAnswers` REMPLAÇAIT la comparaison à la solution :
+ * « la réponse est juste si l'expression est vraie ». D'où `rulesSuffice`,
+ * posé dès qu'au moins une règle est produite.
+ */
+interface TestAnswersConversion {
+	rules: ValidationRule[];
+	rulesSuffice: boolean;
+}
+
+/**
  * Convert old testAnswerss patterns to typed ValidationRule objects
  *
- * Handles these patterns from old questions:
- * - `&answer>0` → PredicateRule or RangeRule
- * - `&answer!=0 && &answer!=1` → CustomExpressionRule (exclude values)
- * - `mod(&1;&answer)=0` → DivisorRule
- * - Complex boolean expressions → CustomExpressionRule
+ * Chaque expression est découpée sur `&&` ; chaque morceau devient une règle
+ * (les règles se combinent en ET) :
+ * - `mod(N;&answer)=0` → DivisorRule
+ * - `&answer>0` / `&answer<0` / `&answer>=0` → PredicateRule / RangeRule
+ * - `&answer != X`, `&answer < X`… → CustomExpressionRule (`answer != {{a}}`)
+ * - `P(&answer) = Q(&answer)` → EquationRootRule
+ * - `&answer = X` SEUL → aucune règle : il redit la solution (réponse unique)
  *
  * @param testAnswers - Array of test answer expressions for a variation
  * @param warnings - Array to collect warnings
- * @returns Array of ValidationRule objects, or undefined if no valid rules
+ * @returns Rules and rulesSuffice flag, or undefined if no rule was produced
  */
 function convertTestAnswers(
 	testAnswers: string[] | undefined,
 	warnings: string[]
-): ValidationRule[] | undefined {
+): TestAnswersConversion | undefined {
 	if (!testAnswers || testAnswers.length === 0) {
 		return undefined;
 	}
@@ -1309,165 +1323,94 @@ function convertTestAnswers(
 	const rules: ValidationRule[] = [];
 
 	for (const expr of testAnswers) {
-		const rule = parseTestAnswerExpression(expr, warnings);
-		if (rule) {
-			rules.push(rule);
+		const conjuncts = expr.split('&&').map((part) => part.trim());
+
+		// Égalité seule : réponse unique, la solution fait foi
+		if (conjuncts.length === 1 && /^&answer\s*=(?!=)/i.test(conjuncts[0])) {
+			warnings.push(`testAnswer equality ignored (the solution is the expected answer): ${expr}`);
+			continue;
+		}
+
+		for (const conjunct of conjuncts) {
+			rules.push(parseTestAnswerConjunct(conjunct, warnings));
 		}
 	}
 
-	return rules.length > 0 ? rules : undefined;
+	return rules.length > 0 ? { rules, rulesSuffice: true } : undefined;
 }
 
 /**
- * Parse a single testAnswer expression and convert to ValidationRule
+ * Convert one `&&`-free testAnswer expression to a ValidationRule
  *
- * @param expression - The test answer expression
+ * @param expression - The test answer expression (no `&&`)
  * @param warnings - Array to collect warnings
- * @returns A ValidationRule or undefined if parsing failed
+ * @returns A ValidationRule (CustomExpressionRule as fallback)
  */
-function parseTestAnswerExpression(
-	expression: string,
-	warnings: string[]
-): ValidationRule | undefined {
-	// Normalize the expression
+function parseTestAnswerConjunct(expression: string, warnings: string[]): ValidationRule {
 	const normalized = expression.trim();
 
 	// Pattern: &answer>0 (positive check)
 	if (/^&answer\s*>\s*0$/i.test(normalized)) {
-		return {
-			type: 'predicate',
-			predicate: 'isPositive'
-		};
+		return { type: 'predicate', predicate: 'isPositive' };
 	}
 
 	// Pattern: &answer>=0 (non-negative)
 	if (/^&answer\s*>=\s*0$/i.test(normalized)) {
-		return {
-			type: 'range',
-			min: '0',
-			max: 'Infinity',
-			inclusive: true
-		};
+		return { type: 'range', min: '0', max: 'Infinity', inclusive: true };
 	}
 
 	// Pattern: &answer<0 (negative check)
 	if (/^&answer\s*<\s*0$/i.test(normalized)) {
-		return {
-			type: 'predicate',
-			predicate: 'isNegative'
-		};
+		return { type: 'predicate', predicate: 'isNegative' };
 	}
 
-	// Pattern: mod(&var;&answer)=0 (divisor check)
-	// e.g., mod(&1;&answer)=0 → answer divides &1
-	const divisorMatch = normalized.match(/mod\s*\(\s*(&\d+(?:\*&\d+)*)\s*;\s*&answer\s*\)\s*=\s*0/i);
+	// Pattern: mod(N;&answer)=0 → answer divides N
+	const divisorMatch = normalized.match(/^mod\s*\(\s*([^;]+?)\s*;\s*&answer\s*\)\s*=\s*0$/i);
 	if (divisorMatch) {
-		const dividend = convertVariableReference(divisorMatch[1]);
+		return { type: 'divisor', dividend: toTemplateReferences(divisorMatch[1]) };
+	}
+
+	// Pattern: &answer OP X (exclusion, comparaison)
+	const comparisonMatch = normalized.match(/^&answer\s*(!=|>=|<=|>|<)\s*(.+)$/i);
+	if (comparisonMatch && !comparisonMatch[2].includes('&answer')) {
+		const [, operator, value] = comparisonMatch;
 		return {
-			type: 'divisor',
-			dividend
+			type: 'custom',
+			expression: `answer ${operator} ${toTemplateReferences(value.trim())}`,
+			description: `Legacy testAnswer: ${expression}`
 		};
 	}
 
-	// Pattern: &answer > min && &answer < max (range check)
-	const rangeMatch = normalized.match(
-		/&answer\s*([><]=?)\s*(\d+|&\d+)\s*&&\s*&answer\s*([><]=?)\s*(\d+|&\d+)/i
-	);
-	if (rangeMatch) {
-		const [, op1, val1, op2, val2] = rangeMatch;
-		let min = '',
-			max = '';
-		let inclusive = false;
-
-		// Figure out which is min and which is max
-		if (op1.includes('>') && op2.includes('<')) {
-			min = convertVariableReference(val1);
-			max = convertVariableReference(val2);
-			inclusive = op1.includes('=') || op2.includes('=');
-		} else if (op1.includes('<') && op2.includes('>')) {
-			min = convertVariableReference(val2);
-			max = convertVariableReference(val1);
-			inclusive = op1.includes('=') || op2.includes('=');
-		}
-
-		if (min && max) {
-			return {
-				type: 'range',
-				min,
-				max,
-				inclusive
-			};
-		}
+	// Pattern: équation dont la réponse est une racine, ex. (&answer)^2-…=0
+	const equationMatch = normalized.match(/^([^=!<>]+)=([^=]+)$/);
+	if (equationMatch && normalized.includes('&answer') && !/\bx\b/.test(normalized)) {
+		return {
+			type: 'equation_root',
+			equation: toTemplateReferences(normalized.replace(/&answer/gi, 'x')),
+			variable: 'x'
+		};
 	}
 
-	// For complex expressions, use CustomExpressionRule as fallback
-	// Convert old syntax to new syntax first
-	const convertedExpr = convertTestAnswerSyntax(normalized);
-
+	// Fallback: expression brute, syntaxe de l'évaluateur (`answer`, `{{a}}`, `==`)
 	warnings.push(`testAnswer expression converted to custom rule: ${expression}`);
-
 	return {
 		type: 'custom',
-		expression: convertedExpr,
+		expression: toTemplateReferences(normalized.replace(/&answer/gi, 'answer')).replace(
+			/(?<![!<>=])=(?!=)/g,
+			'=='
+		),
 		description: `Legacy testAnswer: ${expression}`
 	};
 }
 
 /**
- * Convert old testAnswer syntax to new format
+ * Convert old variable references to template references: `&1*&2` → `{{a}}*{{b}}`
  *
- * - &answer → answer
- * - &N → {{varN}} (variable reference)
- * - mod(a;b) → (a % b)
- * - != → !== (for consistency)
- *
- * @param expression - Old testAnswer expression
- * @returns Converted expression
+ * L'évaluateur des règles ne substitue que la forme `{{nom}}` : un nom nu
+ * (`a`) reste une variable libre et fait échouer la règle.
  */
-function convertTestAnswerSyntax(expression: string): string {
-	let result = expression;
-
-	// Convert &answer to 'answer'
-	result = result.replace(/&answer/gi, 'answer');
-
-	// Convert &N to letter name (a, b, c, ...) using bare variable names
-	// This is consistent with how variables are named in the rest of the transformation
-	result = result.replace(/&(\d+)/g, (_, num) => numberToLetterName(parseInt(num, 10)));
-
-	// Convert mod(a;b) to (a % b === 0 ? true : false) or keep as mod function call
-	result = result.replace(/mod\s*\(\s*([^;]+)\s*;\s*([^)]+)\s*\)\s*=\s*0/gi, '($1 % $2 === 0)');
-
-	// Convert != to !== for strict comparison
-	result = result.replace(/!=/g, '!==');
-
-	return result;
-}
-
-/**
- * Convert old variable reference (&1, &2, etc.) to letter names
- *
- * @param varRef - Old variable reference like "&1" or "&1*&2"
- * @returns Letter name like "a" or "a * b"
- */
-function convertVariableReference(varRef: string): string {
-	// Handle compound expressions like &1*&2
-	if (varRef.includes('*')) {
-		return varRef.replace(/&(\d+)/g, (_, num) => numberToLetterName(parseInt(num, 10)));
-	}
-
-	// Simple variable reference
-	const match = varRef.match(/^&(\d+)$/);
-	if (match) {
-		return numberToLetterName(parseInt(match[1], 10));
-	}
-
-	// Numeric literal
-	if (/^\d+$/.test(varRef)) {
-		return varRef;
-	}
-
-	// Unknown format, return as-is
-	return varRef;
+function toTemplateReferences(expression: string): string {
+	return expression.replace(/&(\d+)/g, (_, num) => `{{${numberToLetterName(parseInt(num, 10))}}}`);
 }
 
 // ============================================================================
@@ -1549,6 +1492,8 @@ interface SharedFieldsResult {
 	shared: SharedVariationDefaults;
 	/** Per-variation data that differs between variations */
 	perVariation: Partial<QuestionVariation>[];
+	/** Variations dont les cases passent en `rulesSuffice` (issu des testAnswerss) */
+	rulesSufficeByVariation: boolean[];
 }
 
 /**
@@ -1886,18 +1831,23 @@ function detectSharedFields(
 	const testAnswerss = oldQuestion.testAnswerss || [];
 	const testAnswersIsShared = testAnswerss.length === 1 && variationCount > 1;
 
+	// Variations dont les cases passent en `rulesSuffice` (posé sur les cases plus bas)
+	const rulesSufficeByVariation: boolean[] = Array.from({ length: variationCount }, () => false);
+
 	if (testAnswerss.length > 0) {
 		if (testAnswersIsShared) {
-			const validationRules = convertTestAnswers(testAnswerss[0], warnings);
-			if (validationRules && validationRules.length > 0) {
-				shared.validationRules = validationRules;
+			const conversion = convertTestAnswers(testAnswerss[0], warnings);
+			if (conversion) {
+				shared.validationRules = conversion.rules;
+				rulesSufficeByVariation.fill(conversion.rulesSuffice);
 			}
 		} else {
 			for (let i = 0; i < variationCount; i++) {
 				const testAnswers = testAnswerss[i] || testAnswerss[0];
-				const validationRules = convertTestAnswers(testAnswers, warnings);
-				if (validationRules && validationRules.length > 0) {
-					perVariation[i].validationRules = validationRules;
+				const conversion = convertTestAnswers(testAnswers, warnings);
+				if (conversion) {
+					perVariation[i].validationRules = conversion.rules;
+					rulesSufficeByVariation[i] = conversion.rulesSuffice;
 				}
 			}
 		}
@@ -1927,7 +1877,7 @@ function detectSharedFields(
 		}
 	}
 
-	return { shared, perVariation };
+	return { shared, perVariation, rulesSufficeByVariation };
 }
 
 /**
@@ -1973,7 +1923,7 @@ function createVariationsWithShared(
 	stats.variations = variationCount;
 
 	// Detect shared fields
-	const { shared, perVariation } = detectSharedFields(
+	const { shared, perVariation, rulesSufficeByVariation } = detectSharedFields(
 		oldQuestion,
 		variationCount,
 		migrationMode,
@@ -2093,7 +2043,9 @@ function createVariationsWithShared(
 			variation.conditions = pv.conditions;
 		}
 		if (pv.blanks && pv.blanks.length > 0) {
-			variation.blanks = pv.blanks;
+			variation.blanks = rulesSufficeByVariation[index]
+				? pv.blanks.map((blank) => ({ ...blank, rulesSuffice: true }))
+				: pv.blanks;
 		}
 		if (pv.answerFormats && Object.keys(pv.answerFormats).length > 0) {
 			variation.answerFormats = pv.answerFormats;
