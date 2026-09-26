@@ -466,6 +466,10 @@ class PrattParser {
 				if (token.value === 'times') {
 					return this.parseMultiplicationCommand(left, 'cross');
 				}
+				// `\div` (touche ÷ du clavier virtuel) : division en ligne, comme `:`
+				if (token.value === 'div') {
+					return this.parseDivision(left, 'ratio');
+				}
 				if (token.value === 'circ') {
 					return this.parseComposition(left);
 				}
@@ -526,7 +530,7 @@ class PrattParser {
 				if (RELATION_COMMANDS.has(token.value)) {
 					return BP.RELATION;
 				}
-				if (token.value === 'cdot' || token.value === 'times') {
+				if (token.value === 'cdot' || token.value === 'times' || token.value === 'div') {
 					return BP.MULTIPLY;
 				}
 				if (token.value === 'circ') {
@@ -1239,7 +1243,10 @@ class PrattParser {
 		}
 
 		// Check for multiplication commands
-		if (token.type === 'COMMAND' && (token.value === 'cdot' || token.value === 'times')) {
+		if (
+			token.type === 'COMMAND' &&
+			(token.value === 'cdot' || token.value === 'times' || token.value === 'div')
+		) {
 			return false;
 		}
 
