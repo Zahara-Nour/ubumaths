@@ -1035,6 +1035,36 @@ export function toBareVariableSyntax(expression: string): string {
 	return expression.replace(/\{\{([a-zA-Z_][a-zA-Z0-9_]*)\}\}/g, '$1');
 }
 
+/**
+ * Réécrit, AVANT conversion, les tirages TinyMath particuliers en tirages
+ * ordinaires `$e[min;max]` / `$er[min;max]`, que le convertisseur traite
+ * correctement. Ne touche qu'une variable dont c'est TOUTE l'expression.
+ *
+ * - `-$e[a;b]`       → `$e[-b;-a]`   (un entier de -b à -a ; devenait -a..b)
+ * - `$er{n}`         → `$er[10^(n-1);10^n-1]` (relatif à n chiffres ; devenait ±n)
+ * - `$e{n}\{excl}`   → `$e[10^(n-1);10^n-1]\{excl}` (l'exclusion était ignorée)
+ */
+export function rewriteTinyMathDraw(expression: string): string {
+	const trimmed = expression.trim();
+
+	const negative = trimmed.match(/^-\$e\[([^;\]]+);([^\]]+)\]$/);
+	if (negative) {
+		const negate = (bound: string) => (/^\d+$/.test(bound) ? `-${bound}` : `-(${bound})`);
+		return `$e[${negate(negative[2])};${negate(negative[1])}]`;
+	}
+
+	const nDigits = (n: string) => `${10 ** (Number(n) - 1)};${10 ** Number(n) - 1}`;
+
+	const relativeDigits = trimmed.match(/^\$er\{(\d+)\}$/);
+	if (relativeDigits) return `$er[${nDigits(relativeDigits[1])}]`;
+
+	const digitsWithExclusions = trimmed.match(/^\$e\{(\d+)\}(\\\{.*\})$/);
+	if (digitsWithExclusions)
+		return `$e[${nDigits(digitsWithExclusions[1])}]${digitsWithExclusions[2]}`;
+
+	return expression;
+}
+
 // ----------------------------------------------------------------------------
 // Tirages : syntaxe TinyMath → syntaxe du générateur
 // ----------------------------------------------------------------------------
