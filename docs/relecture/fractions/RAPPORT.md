@@ -4,8 +4,10 @@
 puis contrôle d'ensemble).
 
 > Feu vert d'import donné par David le 2026-09-26 avant la relecture (« oui, feu vert pour
-> l'import »). Aucune question n'est à arbitrer : les 58 sont importées en **BROUILLON**. Les
-> points ci-dessous « à regarder » n'empêchent pas l'import ; ils demandent une décision de David.
+> l'import »). ✅ **57/58 importées en BROUILLON** (vérifié en base : reliées, statut draft).
+> ⚠️ **#360 non importée** : même empreinte TinyMath que #356 alors que les deux questions sont
+> distinctes (listes de fractions différentes) ; la clé unique du suivi l'empêche. Les points
+> « à regarder » ci-dessous n'ont pas bloqué l'import ; ils demandent une décision de David.
 
 ## Bilan
 

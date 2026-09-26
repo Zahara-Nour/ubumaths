@@ -134,6 +134,19 @@ Après relecture (`code-reviewer`) :
   refusée) ; espaces des milliers mal placées acceptées.
 - En base : 79 templates (2 d'origine + 36 Relatifs + 41), tous en brouillon.
 
+## Lot Fractions — TERMINÉ (2026-09-26)
+
+- 57/58 importées en brouillon (feu vert d'import donné d'avance ; rapport `docs/relecture/fractions/RAPPORT.md`).
+- **#360 non importée** : même empreinte que #356 alors que les questions sont distinctes → pas de ligne de
+  suivi possible (clé UNIQUE). Décision de David attendue (même cas : #439).
+- #468 : `pgcd`, `10^$e[a;b]`, variables mixtes, accolade LaTeX devant un marqueur (analyseur en prod,
+  0 changement de résultat mesuré sur 12 576 instances). Génération : 515/633.
+- Défaut majeur restant dans le convertisseur : réponse `{{eval:expressionN}}` sur une fraction → décimal
+  arrondi (toute fraction juste refusée) ; corrigé à la main dans ~30 questions, toucherait les lots suivants.
+- 6 points « à regarder » pour David dans le rapport (espace des milliers, signes, parenthèses…).
+- En base : 136 templates, tous en brouillon.
+
 ## Prochaine étape
 
-Lots suivants (ex. Fractions 58, fin d'Entiers) : même méthode, rapport, feu vert.
+Corriger dans le convertisseur les défauts récurrents du lot Fractions (liste du rapport) avant le lot
+suivant, sinon chaque relecteur les corrige à la main. Puis lots suivants (fin d'Entiers…).
