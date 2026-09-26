@@ -31,11 +31,11 @@
 					},
 					{
 						"name": "g",
-						"expression": "{{eval:-(a+c/10^b)}}"
+						"expression": "{{eval:-(a+c/10^b);d}}"
 					},
 					{
 						"name": "h",
-						"expression": "{{eval:-(a+d/10)}}"
+						"expression": "{{eval:-(a+d/10);d}}"
 					}
 				],
 				"conditions": ["mod(c,10)!=0", "c!=d"],
@@ -82,11 +82,11 @@
 					},
 					{
 						"name": "g",
-						"expression": "{{eval:s*(p+c/10^b)}}"
+						"expression": "{{eval:s*(p+c/10^b);d}}"
 					},
 					{
 						"name": "h",
-						"expression": "{{eval:t*(q+d/10)}}"
+						"expression": "{{eval:t*(q+d/10);d}}"
 					}
 				],
 				"conditions": ["mod(c,10)!=0", "c!=d"],

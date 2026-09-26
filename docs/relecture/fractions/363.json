@@ -19,7 +19,7 @@
 					},
 					{
 						"name": "expression1",
-						"expression": "eval:b/a"
+						"expression": "eval:b/a;d"
 					}
 				],
 				"blanks": [

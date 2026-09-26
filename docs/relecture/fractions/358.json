@@ -33,7 +33,7 @@
 				],
 				"blanks": [
 					{
-						"expectedAnswer": "{{eval:{{expression1}}}}"
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
 					}
 				]
 			}
