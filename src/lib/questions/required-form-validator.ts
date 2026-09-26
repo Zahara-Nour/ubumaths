@@ -36,6 +36,7 @@ import { matches } from '$lib/mathAST/pattern/match';
 export const REQUIRED_FORM_FEEDBACK = {
 	product: 'La réponse doit être écrite sous forme de produit.',
 	sum: 'La réponse doit être écrite sous forme de somme.',
+	additionOnly: 'La réponse doit être une addition, sans soustraction.',
 	fraction: 'La réponse doit être écrite sous forme de fraction.',
 	power: 'La réponse doit être écrite sous forme de puissance.',
 	pattern: 'La réponse ne respecte pas la forme demandée.'
@@ -115,6 +116,22 @@ function isValidSum(node: MathNode): boolean {
 }
 
 /**
+ * Somme « sans soustraction » : addition au sommet, et aucun maillon de la
+ * chaîne d'additions n'est une soustraction. On ne descend pas dans les
+ * parenthèses : 2+(-9) est accepté, 2-12+3 et 5+(-3)-2 sont refusés.
+ */
+function isValidAdditionOnly(node: MathNode): boolean {
+	if (!isAddition(node)) return false;
+	const chain: MathNode[] = [node];
+	while (chain.length > 0) {
+		const current = chain.pop()!;
+		if (current.type === 'subtraction') return false;
+		if (isAddition(current)) chain.push(current.left, current.right);
+	}
+	return true;
+}
+
+/**
  * Checks if a node represents a valid fraction form.
  *
  * A valid fraction is any division node.
@@ -147,13 +164,15 @@ function isValidPower(node: MathNode): boolean {
  */
 function matchesPredefinedForm(
 	node: MathNode,
-	formType: 'product' | 'sum' | 'fraction' | 'power'
+	formType: Exclude<RequiredForm, { pattern: string }>
 ): boolean {
 	switch (formType) {
 		case 'product':
 			return isValidProduct(node);
 		case 'sum':
 			return isValidSum(node);
+		case 'additionOnly':
+			return isValidAdditionOnly(node);
 		case 'fraction':
 			return isValidFraction(node);
 		case 'power':

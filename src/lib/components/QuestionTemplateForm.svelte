@@ -356,7 +356,7 @@
 	);
 
 	// Valid required form values (used in buildTemplate)
-	const VALID_REQUIRED_FORMS = ['product', 'sum', 'fraction', 'power'] as const;
+	const VALID_REQUIRED_FORMS = ['product', 'sum', 'additionOnly', 'fraction', 'power'] as const;
 
 	// Help dialog states
 	let titleDescriptionHelpOpen = $state(false);

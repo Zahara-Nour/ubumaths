@@ -2,6 +2,7 @@ export const REQUIRED_FORM_OPTIONS = [
 	{ value: '', label: 'Aucune' },
 	{ value: 'product', label: 'Produit' },
 	{ value: 'sum', label: 'Somme' },
+	{ value: 'additionOnly', label: 'Somme sans soustraction' },
 	{ value: 'fraction', label: 'Fraction' },
 	{ value: 'power', label: 'Puissance' },
 	{ value: 'custom', label: 'Pattern personnalisé' }
