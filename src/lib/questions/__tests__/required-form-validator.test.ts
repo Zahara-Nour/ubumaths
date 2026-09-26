@@ -108,6 +108,35 @@ describe('required-form-validator', () => {
 		});
 	});
 
+	// Forme « additionOnly » : réécrire une soustraction en addition.
+	// La réponse doit être une somme dont AUCUN terme n'est soustrait ;
+	// les termes négatifs s'écrivent entre parenthèses (ou en tête).
+	describe('additionOnly form', () => {
+		it.each(['2 + (-9)', '2+\\left(-9\\right)', '-7 + 3', '3 + (-7)', '(-7)+3', '2+(-12)+3'])(
+			'accepte %s',
+			(latex) => {
+				expect(checkRequiredForm([latex], 'additionOnly')).toEqual([]);
+			}
+		);
+
+		it.each(['2 - 9', '-7 - (-3)', '2-12+3', '5-3+(-2)', '5+(-3)-2', '-7', '(-7)'])(
+			'refuse %s (soustraction ou pas une somme)',
+			(latex) => {
+				expect(checkRequiredForm([latex], 'additionOnly')).toEqual([0]);
+			}
+		);
+
+		it('la forme « sum » reste inchangée : x^2-3x+2 est une somme', () => {
+			expect(checkRequiredForm(['x^2-3x+2'], 'sum')).toEqual([]);
+		});
+
+		it('message dédié', () => {
+			expect(getRequiredFormFeedback('additionOnly', false)).toBe(
+				REQUIRED_FORM_FEEDBACK.additionOnly
+			);
+		});
+	});
+
 	// =========================================================================
 	// Fraction Form
 	// =========================================================================

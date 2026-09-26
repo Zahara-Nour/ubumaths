@@ -873,6 +873,8 @@ export interface ConstraintOptions {
  * Predefined forms:
  * - 'product': Must be a multiplication (e.g., 2×3, a×b), but 1×n is rejected
  * - 'sum': Must be an addition (e.g., 2+3, a+b)
+ * - 'additionOnly': somme dont aucun terme n'est soustrait (2+(-9), -7+3) ;
+ *   refuse 2-9, 2-12+3, 5+(-3)-2. Pour « réécris la soustraction en addition ».
  * - 'fraction': Must be a fraction (e.g., 1/2, a/b)
  * - 'power': Must be a power/exponent (e.g., x², 2³)
  *
@@ -885,7 +887,13 @@ export interface ConstraintOptions {
  * @example Custom pattern
  * { requiredForm: { pattern: 'a:integer * b:integer' } }
  */
-export type RequiredForm = 'product' | 'sum' | 'fraction' | 'power' | { pattern: string };
+export type RequiredForm =
+	| 'product'
+	| 'sum'
+	| 'additionOnly'
+	| 'fraction'
+	| 'power'
+	| { pattern: string };
 
 // ============================================================================
 // TEST SPECS

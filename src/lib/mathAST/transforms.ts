@@ -1163,16 +1163,10 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 			// Case 3: At root level, brackets around any expression are unnecessary
 			// (2+3), (2*3), etc. at root level -> strip them
 			if (isRoot) {
-				// Special case: if it's a negative and allowFirstNegative is true, keep brackets
-				if (isNegativeNode(strippedContent) && allowFirstNegative) {
-					return delimiter(node.delimiters, strippedContent, node.semantic, {
-						shape: node.shape,
-						delimiterMetadata: node.delimiterMetadata,
-						leftDelimiterMetadata: node.leftDelimiterMetadata,
-						rightDelimiterMetadata: node.rightDelimiterMetadata,
-						metadata: node.metadata
-					});
-				}
+				// allowFirstNegative ne vaut que pour le PREMIER TERME d'une somme
+				// ((-5)+3). Des parenthèses qui enveloppent toute l'expression, (-9),
+				// sont superflues : les garder faisait de (-9) et -9 deux formes
+				// différentes → `bad_form [form]` pour une écriture équivalente.
 				return strippedContent;
 			}
 

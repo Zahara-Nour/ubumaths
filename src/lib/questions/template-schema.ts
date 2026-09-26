@@ -25,7 +25,7 @@ import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
 export const constraintModeSchema = z.enum(['strict', 'warn', 'off']);
 
 export const requiredFormSchema = z.union([
-	z.enum(['product', 'sum', 'fraction', 'power']),
+	z.enum(['product', 'sum', 'additionOnly', 'fraction', 'power']),
 	z.object({ pattern: z.string() })
 ]);
 
@@ -330,7 +330,7 @@ export const optionsSchema = z.object({
 // ============================================================================
 
 const requiredFormStrictZ = z.union([
-	z.enum(['product', 'sum', 'fraction', 'power']),
+	z.enum(['product', 'sum', 'additionOnly', 'fraction', 'power']),
 	z.object({ pattern: z.string() }).strict()
 ]);
 
