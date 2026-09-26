@@ -63,3 +63,7 @@ supabase/.temp/
 # Downloaded question images (cached, actual images in Supabase)
 static/images/questions/
 /data/
+
+# Outillage des fiches d’exercices (scripts/fiches) : venv PyMuPDF, cache du compilateur
+scripts/fiches/.venv/
+__pycache__/
