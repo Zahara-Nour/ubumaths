@@ -595,3 +595,37 @@ describe('Zéros : un nombre bien écrit n’est pas « zéros inutiles »', () 
 		expect(result.feedback).toBe('Il y a un ou des zéros inutiles.');
 	});
 });
+
+// Option « parenthèses autour du premier terme négatif » : elle ne concerne que
+// le premier terme d'une somme. Un nombre seul, avec ou sans parenthèses, est la
+// même écriture au sens de la forme — jamais « mauvaise forme ».
+describe('allowBracketsInFirstNegativeTerm : un nombre seul', () => {
+	const opts = (brackets: 'off' | 'warn') => ({
+		constraints: { allowBracketsInFirstNegativeTerm: true, brackets }
+	});
+
+	it.each([
+		['(-9)', '-9'],
+		['-9', '(-9)']
+	])('attendu %s, réponse %s, brackets off → correct', (expected, answer) => {
+		const r = validateAnswer([answer], createInstance([mathBlank(expected)], opts('off')), [
+			answer
+		]);
+		expect(r.isCorrect).toBe(true);
+		expect(r.status).toBe('correct');
+	});
+
+	it('attendu -9, réponse (-9), brackets warn → au pire unoptimal_form [brackets]', () => {
+		const r = validateAnswer(['(-9)'], createInstance([mathBlank('-9')], opts('warn')), ['(-9)']);
+		expect(r.isCorrect).toBe(true);
+		expect(r.status).toBe('unoptimal_form');
+		expect(r.constraintViolations?.map((v) => v.constraint)).toEqual(['brackets']);
+	});
+
+	it('premier terme négatif d’une somme : (-5)+3 toujours accepté tel quel', () => {
+		const r = validateAnswer(['(-5)+3'], createInstance([mathBlank('(-5)+3')], opts('warn')), [
+			'(-5)+3'
+		]);
+		expect(r.status).toBe('correct');
+	});
+});
