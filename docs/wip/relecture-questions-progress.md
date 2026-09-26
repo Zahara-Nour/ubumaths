@@ -110,3 +110,5 @@ Après relecture (`code-reviewer`) :
   (Euler, imaginaire) → réponses attendues fausses sans erreur (80 questions utilisent &5, dont 9 de
   David : #3, 16, 17, 18, 19, 101, 103, 104, 106) et boucle sur `10^e` (#47). Noms sans e ni i
   depuis #461. **Les versions corrigées de David portent encore `e`** : à renommer en Phase 2.
+- Durées (#461…) : marqueurs TinyMath `[°…°]` non convertis dans l'énoncé, réponse attendue brute
+  `[_b+3_]` → groupe à traiter. #590 « Résoudre graphiquement » : vérifier le graphique.
