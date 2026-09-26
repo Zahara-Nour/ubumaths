@@ -1,0 +1,109 @@
+{
+	"globalIndex": 171,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Titre : point final retiré ; description : « Nombre à $1$ chiffres » → « Nombre à $1$ chiffre ». Specs : bornes, erreur (réponse ×10) refusée.",
+	"template": {
+		"title": "Compléter une multiplication à trou",
+		"description": "Multiplier par $30$, $40$, $50$, $60$, $70$, $80$, $90$. Nombre à $1$ chiffre.",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10}}*? = {{eval:a*10*b}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?*{{eval:a*10}} = {{eval:b*a*10}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 12,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "90×? = 810 : 9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 90 au lieu de 9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["90"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "?×30 = 60 : 2",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "?×70 = 630 : 9",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

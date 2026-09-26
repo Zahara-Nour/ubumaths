@@ -1,0 +1,84 @@
+{
+	"globalIndex": 150,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Énoncé : « Quelle est le quart » → « Quel est le quart ».",
+	"template": {
+		"title": "Trouver le quart",
+		"description": "Multiples de $4$ inférieurs à $40$",
+		"variations": [
+			{
+				"statement": "Quel est le quart de ${{eval:4*a}}$ ?\n\nLe quart de ${{eval:4*a}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..10"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le quart de ${{eval:4*a}}$ est {{solution:html}} car $4 \\times \\textcolor{{{color:primary.2}}}{{{a}}}={{eval:4*a}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Quadruple et quart",
+		"level": 3,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "quart de 28 = 7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 28−4",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["24"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "quart de 0 = 0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "quart de 40 = 10",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,79 @@
+{
+	"globalIndex": 45,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Typographie de la description corrigée.",
+	"template": {
+		"title": "Calculer une somme",
+		"description": "Nombres entiers à 2 chiffres qui se marient bien",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "12..{{eval:a*10-12}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:b}} +{{eval:a*10-b}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 12,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "56+14",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "56"
+				},
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "retenue oubliée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "56"
+				},
+				"answers": ["60"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "13+27",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "13"
+				},
+				"answers": ["40"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

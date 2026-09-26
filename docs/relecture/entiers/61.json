@@ -1,0 +1,78 @@
+{
+	"globalIndex": 61,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Compléter une addition à trou",
+		"description": "Nombres à 1 chiffre. Nombre plus grand en premier. Somme inférieure ou égale à 10",
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:min(10-a, a-1)}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{a}} + ? = {{eval:b+a}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			}
+		],
+		"grades": ["CP"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "A trou",
+		"level": 1,
+		"status": "draft",
+		"delay": 5,
+		"testSpecs": [
+			{
+				"description": "Bonne réponse 3",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : recopie la somme",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Bonne réponse 2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,181 @@
+{
+	"globalIndex": 222,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une expression avec parenthèses",
+		"description": "$2$ groupes de parenthèses (imbriqués ou non)",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..7"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:9-a}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..7"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-c}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "(a+b)*(c+d)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{\\left( {{a}} + {{b}} \\right)} \\times \\textcolor{{{color:primary.1}}}{\\left( {{c}} + {{d}} \\right)} \t\t\t\t\t\t\t\t&=  \\textcolor{{{color:primary.0}}}{{{eval:a+b}}} \\times \\textcolor{{{color:primary.1}}}{{{eval:c+d}}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "4..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:a-2}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..7"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-c}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "(a-b)*(c+d)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{\\left( {{a}}- {{b}} \\right)} \\times \\textcolor{{{color:primary.1}}}{\\left( {{c}} + {{d}} \\right)} \t\t\t\t\t\t\t\t&=  \\textcolor{{{color:primary.0}}}{{{eval:a-b}}} \\times \\textcolor{{{color:primary.1}}}{{{eval:c+d}}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..7"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:9-a}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression3",
+						"expression": "{{d}}*(({{eval:a*c}}+{{eval:b*c}}):{{c}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}  \t\t\t\t\t\t\t\t{{d}} \\times \\left( \\textcolor{{{color:primary.0}}}{\\left({{eval:a*c}} + {{eval:b*c}} \\right)} \\div {{c}} \\right)  \t\t\t\t\t\t\t\t&= {{d}} \\times \\left( \\textcolor{{{color:primary.0}}}{{{eval:a*c+b*c}}} \\div {{c}} \\right) \\\\ \t\t\t\t\t\t\t\t&= {{d}} \\times {{eval:a+b}}  \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Entiers",
+		"domain": "Priorités opératoires",
+		"subdomain": "Avec parenthèses",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "(6+3)×(7+2) = 81",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "3",
+					"c": "7",
+					"d": "2"
+				},
+				"answers": ["81"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur de priorité : 6+3×7+2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "3",
+					"c": "7",
+					"d": "2"
+				},
+				"answers": ["29"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "(9−2)×(3+4) = 49",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"answers": ["49"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7×((54+27):9) = 63",
+				"variationIndex": 2,
+				"variables": {
+					"a": "6",
+					"b": "3",
+					"c": "9",
+					"d": "7"
+				},
+				"answers": ["63"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

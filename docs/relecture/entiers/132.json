@@ -1,0 +1,121 @@
+{
+	"globalIndex": 132,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : second facteur en jaune (illisible sur fond blanc) → {{color:primary.1}}.",
+	"template": {
+		"title": "Calculer un produit d'entiers",
+		"description": "Les $2$ facteurs sont des multiples de $10$, $100$ ou $1000$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..3"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..3"
+					},
+					{
+						"name": "f",
+						"expression": "eval:a*10^b"
+					},
+					{
+						"name": "g",
+						"expression": "eval:c*10^d"
+					},
+					{
+						"name": "expression1",
+						"expression": "f*g"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\bold{\\textcolor{{{color:primary.0}}}{{{f}}}} \\times \\bold{\\textcolor{{{color:primary.1}}}{{{g}}}} &= \\bold{\\textcolor{{{color:primary.0}}}{{{a}} \\times {{eval:10^b}}}} \\times \\bold{\\textcolor{{{color:primary.1}}}{{{c}} \\times {{eval:10^d}}}} \\\\ &= {{a}} \\times {{c}} \\times {{eval:10^b}} \\times {{eval:10^d}} \\\\ &= {{eval:a*c}} \\times {{eval:10^(b+d)}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Produit",
+		"level": 6,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7 000×900 = 6 300 000",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "3",
+					"c": "9",
+					"d": "2"
+				},
+				"answers": ["6\\,300\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : un zéro de trop",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "3",
+					"c": "9",
+					"d": "2"
+				},
+				"answers": ["63\\,000\\,000"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "90×300 = 27 000",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "1",
+					"c": "3",
+					"d": "2"
+				},
+				"answers": ["27\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "27000 sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "1",
+					"c": "3",
+					"d": "2"
+				},
+				"answers": ["27000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			}
+		]
+	}
+}

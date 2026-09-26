@@ -1,0 +1,111 @@
+{
+	"globalIndex": 153,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer un produit d'entiers",
+		"description": "Premiers multiples de $25$ et $50$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*50"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a*25"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Produits particuliers",
+		"level": 1,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "6×50 = 300",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6"
+				},
+				"answers": ["300"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2×50 = 100",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2"
+				},
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 6×5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6"
+				},
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "6×25 = 150",
+				"variationIndex": 1,
+				"variables": {
+					"a": "6"
+				},
+				"answers": ["150"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2×25 = 50",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2"
+				},
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

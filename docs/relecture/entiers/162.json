@@ -1,0 +1,100 @@
+{
+	"globalIndex": 162,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Compléter une multiplication à trou",
+		"description": "Multiplication par $4$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*4={{eval:a*4}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "4*?={{eval:a*4}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 3,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "?×4 = 36 : 9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "?×4 = 8 : 2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : recopie du produit",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["28"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "4×? = 36 : 9",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

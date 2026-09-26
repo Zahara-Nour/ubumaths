@@ -1,0 +1,109 @@
+{
+	"globalIndex": 130,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Description : « Nombre à $1$ chiffres » → « Nombre à $1$ chiffre ».",
+	"template": {
+		"title": "Multiplier par $30$, $40$, $50$, $60$, $70$, $80$, $90$",
+		"description": "Nombre à $1$ chiffre",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10}}*{{b}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{b}}*{{eval:a*10}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Produit",
+		"level": 4,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "70×9 = 630",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["630"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 7×9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["63"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "3×90 = 270",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"answers": ["270"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 2 700",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"answers": ["2\\,700"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

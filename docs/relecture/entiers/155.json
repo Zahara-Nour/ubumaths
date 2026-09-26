@@ -1,0 +1,134 @@
+{
+	"globalIndex": 155,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction de la variation 2 : ligne redondante « = 800 = 800 » (a×100 puis la solution, identiques) supprimée. Maths vérifiées (2a+1)×50 = 100a+50. Specs : 1 050 avec espace juste, sans espace perfectible, bornes.",
+	"template": {
+		"title": "Calculer un produit d'entiers",
+		"description": "Multiplication par $50$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*2+1}}*50"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\bold{\\textcolor{{{color:primary.0}}}{{{eval:a*2+1}}}} \\times 50 &= \\bold{\\textcolor{{{color:primary.0}}}{({{a}} \\times 2 + 1)}} \\times 50 \\\\ &= {{a}} \\times 2 \\times 50  + 50 \\\\ &= {{a}} \\times 100  + 50 \\\\ &=  {{eval:a*100}}  + 50 \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:a*2}}*50"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\bold{\\textcolor{{{color:primary.0}}}{{{eval:a*2}}}} \\times 50 &= \\bold{\\textcolor{{{color:primary.0}}}{({{a}} \\times 2)}} \\times 50 \\\\ &= {{a}} \\times 2 \\times 50 \\\\ &= {{a}} \\times 100 \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Produits particuliers",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "21×50 = 1 050",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10"
+				},
+				"answers": ["1\\,050"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "21×50 sans espace des milliers",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10"
+				},
+				"answers": ["1050"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "5×50 = 250",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2"
+				},
+				"answers": ["250"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : oubli du +50",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8"
+				},
+				"answers": ["800"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "20×50 = 1 000",
+				"variationIndex": 1,
+				"variables": {
+					"a": "10"
+				},
+				"answers": ["1\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "4×50 = 200",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2"
+				},
+				"answers": ["200"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

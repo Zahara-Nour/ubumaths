@@ -1,0 +1,106 @@
+{
+	"globalIndex": 72,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Compléter une addition",
+		"description": "Nombres entiers à 2 chiffres (avec retenue)",
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:8-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:11-b}}..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10+d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*10+d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "A trou",
+		"level": 12,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "59 + ? = 96 → 37",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"c": "3",
+					"b": "9",
+					"d": "7"
+				},
+				"answers": ["37"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute 79 + ? = 98 → 19",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"c": "1",
+					"b": "9",
+					"d": "9"
+				},
+				"answers": ["19"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli de la retenue : 47",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"c": "3",
+					"b": "9",
+					"d": "7"
+				},
+				"answers": ["47"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "somme au lieu du terme manquant",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"c": "3",
+					"b": "9",
+					"d": "7"
+				},
+				"answers": ["155"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,121 @@
+{
+	"globalIndex": 134,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer un produit d'entiers",
+		"description": "Un facteur à $3$ chiffres",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "102..999"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*b"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "b*a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Produit",
+		"level": 8,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "7×953 = 6 671",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "953"
+				},
+				"answers": ["6\\,671"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "6671 sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "953"
+				},
+				"answers": ["6671"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "Erreur : retenue oubliée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "953"
+				},
+				"answers": ["6\\,331"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "164×3 = 492",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "164"
+				},
+				"answers": ["492"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 462",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "164"
+				},
+				"answers": ["462"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,127 @@
+{
+	"globalIndex": 209,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Trouver un diviseur",
+		"description": "Une décomposition est donnée",
+		"variations": [
+			{
+				"statement": "Trouve un diviseur de ${{eval:a*b}}$ (autre que $1$ et ${{eval:a*b}}$), sachant que :\n\n$${{eval:a*b}}={{a}}*{{b}}$$\n\nUn diviseur est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!a"
+					}
+				],
+				"validationRules": [
+					{
+						"type": "custom",
+						"expression": "answer != 1",
+						"description": "Legacy testAnswer: &answer!=1"
+					},
+					{
+						"type": "custom",
+						"expression": "answer != {{a}}*{{b}}",
+						"description": "Legacy testAnswer: &answer!=&1*&2"
+					},
+					{
+						"type": "divisor",
+						"dividend": "{{a}}*{{b}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}",
+						"rulesSuffice": true
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"subdomain": "Divisibilité",
+		"level": 1,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "24 = 6×4 : 6",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "4"
+				},
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "24 : 4 aussi",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "4"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "24 : 8, diviseur non affiché, accepté",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "4"
+				},
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "1 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "4"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "24 lui-même refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "4"
+				},
+				"answers": ["24"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "5 ne divise pas 24",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "4"
+				},
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

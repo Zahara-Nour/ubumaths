@@ -1,0 +1,67 @@
+{
+	"globalIndex": 84,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Trouver le triple",
+		"description": "Nombres de $1$ à $15$, $25$, $30$, $40$, $50$ et $100$",
+		"variations": [
+			{
+				"statement": "Quel est le triple de ${{a}}$ ?\n\nLe triple de ${{a}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9|11..15|25|30|40|50|100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:3*a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Triple et tiers",
+		"level": 4,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "triple de 12 → 36",
+				"variationIndex": 0,
+				"variables": {
+					"a": "12"
+				},
+				"answers": ["36"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "triple de 100 → 300",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100"
+				},
+				"answers": ["300"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "triple de 25 : 50 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "25"
+				},
+				"answers": ["50"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

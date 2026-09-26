@@ -1,0 +1,109 @@
+{
+	"globalIndex": 70,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Majuscule en tête de description (« Somme de deux termes… »).",
+	"template": {
+		"title": "Compléter une addition à trou",
+		"description": "Somme de deux termes dont le résultat est inférieur à $100$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..98"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:99-a}}"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{a}} + ? =  {{eval:b+a}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "? + {{b}} = {{eval:b+a}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "A trou",
+		"level": 10,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "Bonne réponse 28",
+				"variationIndex": 0,
+				"variables": {
+					"a": "70",
+					"b": "28"
+				},
+				"answers": ["28"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : erreur de retenue",
+				"variationIndex": 0,
+				"variables": {
+					"a": "70",
+					"b": "28"
+				},
+				"answers": ["38"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Bonne réponse 96",
+				"variationIndex": 1,
+				"variables": {
+					"a": "96",
+					"b": "1"
+				},
+				"answers": ["96"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : addition au lieu du complément",
+				"variationIndex": 1,
+				"variables": {
+					"a": "96",
+					"b": "1"
+				},
+				"answers": ["98"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,79 @@
+{
+	"globalIndex": 113,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Espaces parasites en tête de la description retirées.",
+	"template": {
+		"title": "Compléter une soustraction à trou",
+		"description": "Soustraire des centaines entières à un nombre",
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval: a*100 + b*10 + c }} - ? =  {{eval:a*100 + b*10 + c - d*100}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:d*100}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"subdomain": "A trou",
+		"level": 7,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "799-?=399 : 400",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "4"
+				},
+				"answers": ["400"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 4 au lieu de 400",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "4"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

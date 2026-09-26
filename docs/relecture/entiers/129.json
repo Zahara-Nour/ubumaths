@@ -1,0 +1,133 @@
+{
+	"globalIndex": 129,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Multiplier par 20",
+		"description": "Nombre à $2$ chiffres",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "11..15|15..20|25|30|40|50"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*20"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{a}} \\times \\bold{\\textcolor{{{color:primary.0}}}{20}} &= {{a}} \\times \\bold{\\textcolor{{{color:primary.0}}}{2 \\times 10}}  \\\\ &= {{eval:a*2}} \\times 10 \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "20*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\bold{\\textcolor{{{color:primary.0}}}{20}} \\times {{a}} &=  \\bold{\\textcolor{{{color:primary.0}}}{10 \\times 2}} \\times {{a}} \\\\ &= 10 \\times {{eval:a*2}}  \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Produit",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "16×20 = 320",
+				"variationIndex": 0,
+				"variables": {
+					"a": "16"
+				},
+				"answers": ["320"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 16×2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "16"
+				},
+				"answers": ["32"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "50×20 = 1 000",
+				"variationIndex": 0,
+				"variables": {
+					"a": "50"
+				},
+				"answers": ["1\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "1000 sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "50"
+				},
+				"answers": ["1000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "20×13 = 260",
+				"variationIndex": 1,
+				"variables": {
+					"a": "13"
+				},
+				"answers": ["260"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 13×20 lu 13×200",
+				"variationIndex": 1,
+				"variables": {
+					"a": "13"
+				},
+				"answers": ["2\\,600"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,108 @@
+{
+	"globalIndex": 213,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : tabulations en tête de ligne retirées (rendues en bloc de code markdown).",
+	"template": {
+		"title": "Utiliser un critère de divisibilité",
+		"description": "Par $10$",
+		"shared": {
+			"statement": "Le nombre ${{eval:a}}$ est-il divisible par $10$ ?",
+			"correctChoiceIndex": ["{{if:mod(a,10)=0|0|1}}"],
+			"correction": {
+				"steps": [
+					"{{if:mod({{a}}, 10)=0|{{solution:html}}, ${{eval:a}}$ est divisible par $10$ car il se termine par $0$.|{{solution:html}}, ${{eval:a}}$ n'est **pas** divisible par $10$ car il ne se termine **pas** par $0$.}}"
+				]
+			},
+			"choices": [
+				{
+					"content": "Oui"
+				},
+				{
+					"content": "Non"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Le nombre ${{eval:a}}$ est-il divisible par $10$ ?",
+				"correctChoiceIndex": ["{{if:mod(a,10)=0|0|1}}"],
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "digits:3"
+					},
+					{
+						"name": "a",
+						"expression": "eval:10*a1"
+					}
+				]
+			},
+			{
+				"statement": "Le nombre ${{eval:a}}$ est-il divisible par $10$ ?",
+				"correctChoiceIndex": ["{{if:mod(a,10)=0|0|1}}"],
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "digits:5"
+					},
+					{
+						"name": "a2",
+						"expression": "1..9"
+					},
+					{
+						"name": "a",
+						"expression": "eval:10*a1+a2"
+					}
+				]
+			}
+		],
+		"options": {
+			"shuffleChoices": false
+		},
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"subdomain": "Divisibilité",
+		"level": 5,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "5620 : Oui",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "562"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "562489 : Non",
+				"variationIndex": 1,
+				"variables": {
+					"a1": "56248",
+					"a2": "9"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "562489 : Oui refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a1": "56248",
+					"a2": "9"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

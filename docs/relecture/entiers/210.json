@@ -1,0 +1,165 @@
+{
+	"globalIndex": 210,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Trouver un diviseur",
+		"shared": {
+			"statement": "Trouve un diviseur de ${{eval:a*b}}$ (autre que $1$ et ${{eval:a*b}}$).\n\n$?$ est un diviseur de ${{eval:a*b}}$.",
+			"correction": {
+				"steps": [
+					"{{solution:html}} est un diviseur de ${{eval:a*b}}$ car ${{eval:a*b}}=\\textcolor{{{color:primary.2}}}{{{a}}} \\times {{b}}$"
+				]
+			},
+			"validationRules": [
+				{
+					"type": "custom",
+					"expression": "answer != 1",
+					"description": "Legacy testAnswer: &answer!=1"
+				},
+				{
+					"type": "custom",
+					"expression": "answer != {{a}}*{{b}}",
+					"description": "Legacy testAnswer: &answer!=&1*&2"
+				},
+				{
+					"type": "divisor",
+					"dividend": "{{a}}*{{b}}"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Trouve un diviseur de ${{eval:a*b}}$ (autre que $1$ et ${{eval:a*b}}$).\n\n$?$ est un diviseur de ${{eval:a*b}}$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|4|6|8"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!a,m(2)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}",
+						"rulesSuffice": true
+					}
+				]
+			},
+			{
+				"statement": "Trouve un diviseur de ${{eval:a*b}}$ (autre que $1$ et ${{eval:a*b}}$).\n\n$?$ est un diviseur de ${{eval:a*b}}$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3|5|7|9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!a,m(2)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}",
+						"rulesSuffice": true
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"subdomain": "Divisibilité",
+		"level": 2,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "54 : 6",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9"
+				},
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "54 : 2 accepté",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "54 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9"
+				},
+				"answers": ["54"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "63 : 7",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "63 : 21 accepté",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["21"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "1 refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "2 ne divise pas 63",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

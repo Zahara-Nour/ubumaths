@@ -1,0 +1,117 @@
+{
+	"globalIndex": 52,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Accent : « A la dizaine » → « À la dizaine ».",
+	"template": {
+		"title": "Trouver le complément",
+		"description": "À la dizaine supérieure",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*10"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+{{eval:c-b}}={{c}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:c-b}}+?={{c}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Complément",
+		"level": 2,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "Bonne réponse 9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "70"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : complément du chiffre des unités",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "70"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Bonne réponse 2",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "90"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : dizaine mal comptée",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "90"
+				},
+				"answers": ["12"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

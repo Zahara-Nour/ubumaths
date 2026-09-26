@@ -1,0 +1,129 @@
+{
+	"globalIndex": 23,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Comparer deux nombres entiers",
+		"description": "Nombres inférieurs à $10\\,000$",
+		"variations": [
+			{
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"correctChoiceIndex": ["{{if:h<j|0|1}}"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "0..9"
+					},
+					{
+						"name": "g",
+						"expression": "0..9"
+					},
+					{
+						"name": "h1",
+						"expression": "0..9"
+					},
+					{
+						"name": "h",
+						"expression": "eval:a*1000+b*100+c*10+h1"
+					},
+					{
+						"name": "j1",
+						"expression": "0..9"
+					},
+					{
+						"name": "j",
+						"expression": "eval:d*1000+f*100+g*10+j1"
+					}
+				],
+				"choices": [
+					{
+						"content": "$${{eval:h}}$$"
+					},
+					{
+						"content": "$${{eval:j}}$$"
+					}
+				],
+				"conditions": ["h!=j"]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"subdomain": "Comparer",
+		"level": 3,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "6281 < 7993 : bon choix 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "2",
+					"g": "8",
+					"h1": "3",
+					"j1": "1"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais choix",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "2",
+					"g": "8",
+					"h1": "3",
+					"j1": "1"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "2056 < 4342",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "0",
+					"c": "5",
+					"d": "4",
+					"f": "3",
+					"g": "4",
+					"h1": "6",
+					"j1": "2"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

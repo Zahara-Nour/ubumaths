@@ -1,0 +1,198 @@
+{
+	"globalIndex": 226,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Variation « quotient » : réponse attendue \\dfrac{a}{b} → a:b. Avec la fraction, « 3 » était accepté pour « le quotient de 9 par 3 » (valeur au lieu d'expression) et la fraction 9/3 elle-même était jugée non réduite. Notation « : » alignée sur #227.",
+	"template": {
+		"title": "Traduire une phrase en expression mathématique",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..{{eval:a-1}}!a"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Traduis cette phrase par une expression mathématique : la somme de ${{a}}$ et de ${{b}}$\n\nL'expression est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}+{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Traduis cette phrase par une expression mathématique : le produit de ${{a}}$ par ${{b}}$\n\nL'expression est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Traduis cette phrase par une expression mathématique : la différence entre ${{a}}$ et ${{b}}$\n\nL'expression est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}-{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Traduis cette phrase par une expression mathématique : le quotient de ${{a}}$ par ${{b}}$\n\nL'expression est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}:{{b}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Entiers",
+		"domain": "Vocabulaire",
+		"subdomain": "Traduire",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "Somme : 7+6",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"answers": ["7+6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Somme : 6+7 accepté",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"answers": ["6+7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Somme : le résultat 13 n'est pas une expression",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"answers": ["13"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "Somme : produit refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"answers": ["7\\times6"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Produit : 7×6",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"answers": ["7\\times6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Différence : 7−6",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"answers": ["7-6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Différence : ordre inversé refusé",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"answers": ["6-7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Quotient : 9:3",
+				"variationIndex": 3,
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"answers": ["9:3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Quotient : le résultat 3 n'est pas une expression",
+				"variationIndex": 3,
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "Quotient : ordre inversé refusé",
+				"variationIndex": 3,
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"answers": ["3:9"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Quotient : 7:6",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"answers": ["7:6"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

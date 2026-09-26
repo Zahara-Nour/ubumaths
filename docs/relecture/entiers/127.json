@@ -1,0 +1,78 @@
+{
+	"globalIndex": 127,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer un produit d'entiers",
+		"description": "Nombres à $1$ chiffre",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "a*b"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Produit",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7×9 = 63",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["63"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 7×8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["56"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 7+9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,111 @@
+{
+	"globalIndex": 128,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Multiplier par 20",
+		"description": "Nombre à $1$ chiffre",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*20"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "20*a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Produit",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7×20 = 140",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["140"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 7×2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "20×9 = 180",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["180"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : zéro oublié… en trop",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["1\\,800"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Borne 0 : 20×0 = 0",
+				"variationIndex": 1,
+				"variables": {
+					"a": "0"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

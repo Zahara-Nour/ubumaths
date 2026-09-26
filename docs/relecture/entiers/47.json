@@ -1,0 +1,123 @@
+{
+	"globalIndex": 47,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une somme",
+		"description": "Somme d’un nombre ayant au plus 4 chiffres et d’un nombre ayant un seul chiffre non nul",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "f",
+						"expression": "0..3"
+					},
+					{
+						"name": "g",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*1000 + b*100+c*10+d}} +{{eval:g*10^f}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 14,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "7996+8 espacé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "0",
+					"g": "8"
+				},
+				"answers": ["8\\,004"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "0",
+					"g": "8"
+				},
+				"answers": ["8004"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "retenue oubliée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "0",
+					"g": "8"
+				},
+				"answers": ["8\\,003"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "9999+9000",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "9",
+					"d": "9",
+					"f": "3",
+					"g": "9"
+				},
+				"answers": ["18\\,999"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

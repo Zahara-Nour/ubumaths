@@ -1,0 +1,78 @@
+{
+	"globalIndex": 48,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une somme",
+		"description": "Nombres entiers à 2 chiffres (avec retenue)",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:8-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:11-b}}..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} +{{eval:c*10+d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 15,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "59+37",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"c": "3",
+					"b": "9",
+					"d": "7"
+				},
+				"answers": ["96"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "retenue oubliée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"c": "3",
+					"b": "9",
+					"d": "7"
+				},
+				"answers": ["86"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

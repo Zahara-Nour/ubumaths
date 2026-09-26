@@ -1,0 +1,398 @@
+{
+	"globalIndex": 221,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une expression avec parenthèses",
+		"description": "Un niveau de parenthèse",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:11-a}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "(a+b)*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{\\left( {{a}} + {{b}} \\right)} \\times {{c}} \t\t\t\t\t\t\t\t&=  \\textcolor{{{color:primary.0}}}{{{eval:a+b}}} \\times {{c}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:11-a}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression2",
+						"expression": "c*(a+b)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t{{c}} \\times \\textcolor{{{color:primary.0}}}{\\left( {{a}} + {{b}} \\right)} \t\t\t\t\t\t\t\t&=  {{c}} \\times \\textcolor{{{color:primary.0}}}{{{eval:a+b}}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "4..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:a-2}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression3",
+						"expression": "(a-b)*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{\\left( {{a}} - {{b}} \\right)} \\times {{c}}  \t\t\t\t\t\t\t\t&=  \\textcolor{{{color:primary.0}}}{{{eval:a-b}}} \\times {{c}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "4..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:a-2}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression4",
+						"expression": "c*(a-b)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t{{c}} \\times \\textcolor{{{color:primary.0}}}{\\left( {{a}} - {{b}} \\right)} \t\t\t\t\t\t\t\t&=  {{c}} \\times \\textcolor{{{color:primary.0}}}{{{eval:a-b}}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression4}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:10-a}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression5",
+						"expression": "({{eval:a*c}}+{{eval:b*c}}):{{c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{\\left( {{eval:a*c}} + {{eval:b*c}} \\right)} \\div {{c}}  \t\t\t\t\t\t\t\t&=  \\textcolor{{{color:primary.0}}}{{{eval:(a+b)*c}}} \\div {{c}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression5}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:a-2}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression6",
+						"expression": "({{eval:a*c}}-{{eval:b*c}}):{{c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{\\left( {{eval:a*c}} - {{eval:b*c}} \\right)} \\div {{c}}  \t\t\t\t\t\t\t\t&=  \\textcolor{{{color:primary.0}}}{{{eval:(a-b)*c}}} \\div {{c}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression6}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression7",
+						"expression": "{{eval:(a+b)*c}}:({{a}}+{{b}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}  \t\t\t\t\t\t\t\t{{eval:(a+b)*c}} \\div \\textcolor{{{color:primary.0}}}{\\left( {{a}} + {{b}} \\right)} \t\t\t\t\t\t\t\t&= {{eval:(a+b)*c}} \\div \\textcolor{{{color:primary.0}}}{{{eval:a+b}}}   \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression7}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression8",
+						"expression": "{{eval:a+b+c}}-({{a}}+{{b}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t{{eval:a+b+c}} - \\textcolor{{{color:primary.0}}}{\\left( {{a}} + {{b}} \\right)}  \t\t\t\t\t\t\t\t&= {{eval:a+b+c}} - \\textcolor{{{color:primary.0}}}{{{eval:a+b}}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression8}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Entiers",
+		"domain": "Priorités opératoires",
+		"subdomain": "Avec parenthèses",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "(7+4)×9 = 99",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "4",
+					"c": "9"
+				},
+				"answers": ["99"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur de priorité : 7+4×9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "4",
+					"c": "9"
+				},
+				"answers": ["43"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "9×(7+4) = 99",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "4",
+					"c": "9"
+				},
+				"answers": ["99"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(8−6)×9 = 18",
+				"variationIndex": 2,
+				"variables": {
+					"a": "8",
+					"b": "6",
+					"c": "9"
+				},
+				"answers": ["18"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "9×(8−6) = 18",
+				"variationIndex": 3,
+				"variables": {
+					"a": "8",
+					"b": "6",
+					"c": "9"
+				},
+				"answers": ["18"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(63+27):9 = 10",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7",
+					"b": "3",
+					"c": "9"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(63−45):9 = 2",
+				"variationIndex": 5,
+				"variables": {
+					"a": "7",
+					"b": "5",
+					"c": "9"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "81:(6+3) = 9",
+				"variationIndex": 6,
+				"variables": {
+					"a": "6",
+					"b": "3",
+					"c": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "25−(7+9) = 9",
+				"variationIndex": 7,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 25−7+9",
+				"variationIndex": 7,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["27"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

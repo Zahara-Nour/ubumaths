@@ -1,0 +1,117 @@
+{
+	"globalIndex": 58,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Accord : « Au millier supérieure » → « Au millier supérieur ».",
+	"template": {
+		"title": "Trouver le complément",
+		"description": "Au millier supérieur",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..999"
+				},
+				{
+					"name": "d",
+					"expression": "eval:a*1000"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+{{eval:d-c}}={{d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:d-c}}+?={{d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Complément",
+		"level": 8,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "Bonne réponse 948",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"c": "948",
+					"d": "7000"
+				},
+				"answers": ["948"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : millier mal compté",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"c": "948",
+					"d": "7000"
+				},
+				"answers": ["1948"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Bonne réponse 70",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"c": "70",
+					"d": "3000"
+				},
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : centaine mal comptée",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"c": "70",
+					"d": "3000"
+				},
+				"answers": ["170"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

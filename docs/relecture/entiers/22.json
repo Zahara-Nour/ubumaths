@@ -1,0 +1,115 @@
+{
+	"globalIndex": 22,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Comparer deux nombres entiers",
+		"description": "Nombres inférieurs à $1\\,000$",
+		"variations": [
+			{
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"correctChoiceIndex": ["{{if:h<j|0|1}}"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "0..9"
+					},
+					{
+						"name": "g",
+						"expression": "1..9"
+					},
+					{
+						"name": "h",
+						"expression": "eval:a*100+b*10+c"
+					},
+					{
+						"name": "j",
+						"expression": "eval:d*100+f*10+g"
+					}
+				],
+				"choices": [
+					{
+						"content": "$${{h}}$$"
+					},
+					{
+						"content": "$${{j}}$$"
+					}
+				],
+				"conditions": ["h!=j"]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"subdomain": "Comparer",
+		"level": 2,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "628 < 799 : bon choix 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "2",
+					"g": "8"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "628 < 799 : mauvais choix",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "2",
+					"g": "8"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "205 < 434",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "0",
+					"c": "5",
+					"d": "4",
+					"f": "3",
+					"g": "4"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,86 @@
+{
+	"globalIndex": 116,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Soustraire $9$",
+		"variations": [
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:b*10+a"
+					},
+					{
+						"name": "expression1",
+						"expression": "c-9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{c}}\\bold{\\textcolor{{{color:primary.0}}}{-9}} \t\t\t\t\t\t\t\t&= {{c}}\\bold{\\textcolor{{{color:primary.0}}}{-10+1}} \\\\ \t\t\t\t\t\t\t\t&= {{eval:c-10}}+1 \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"subdomain": "Différence astucieuse",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "96-9 = 87",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9"
+				},
+				"answers": ["87"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : -10 sans +1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9"
+				},
+				"answers": ["86"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : -10-1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9"
+				},
+				"answers": ["85"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

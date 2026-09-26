@@ -1,0 +1,98 @@
+{
+	"globalIndex": 117,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Titre : « ...., » (quatre points) → points de suspension « … ».",
+	"template": {
+		"title": "Soustraire $19$, $29$, …",
+		"variations": [
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..8"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b*10+c"
+					},
+					{
+						"name": "f",
+						"expression": "eval:a*10+9"
+					},
+					{
+						"name": "expression1",
+						"expression": "d-f"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{d}}\\bold{\\textcolor{{{color:primary.0}}}{-{{f}}}} \t\t\t\t\t\t\t\t&= {{d}}\\bold{\\textcolor{{{color:primary.0}}}{-{{eval:f+1}}+1}} \\\\ \t\t\t\t\t\t\t\t&= {{eval:d-f-1}}+1 \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"subdomain": "Différence astucieuse",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "98-69 = 29",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["29"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : -70 sans +1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["28"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : -70-1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["27"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

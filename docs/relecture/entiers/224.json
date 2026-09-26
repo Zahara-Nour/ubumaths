@@ -1,0 +1,134 @@
+{
+	"globalIndex": 224,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une expression sans parenthèses",
+		"description": "Même priorité",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b}}:{{a}}*{{c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{{{eval:a*b}}\\div {{a}}} \\times {{c}} \t\t\t\t\t\t\t\t&=  \\textcolor{{{color:primary.0}}}{{{b}}} \\times {{c}}\\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:a+1}}..9"
+					},
+					{
+						"name": "expression2",
+						"expression": "c-a+b"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{{{c}} - {{a}}} + {{b}}  \t\t\t\t\t\t\t\t&=  \\textcolor{{{color:primary.0}}}{{{eval:c-a}}} + {{b}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Entiers",
+		"domain": "Priorités opératoires",
+		"subdomain": "Sans parenthèses",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "63:7×9 = 81",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["81"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 63:(7×9)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "9−6+9 = 12",
+				"variationIndex": 1,
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 9−(6+9)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["-6"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

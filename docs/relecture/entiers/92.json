@@ -1,0 +1,178 @@
+{
+	"globalIndex": 92,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Description : majuscule parasite « Nombres » → « nombres ». Maths vérifiées : a·10 − g ≥ 11 (b ≤ a − 2), donc 3 nombres à 2 chiffres. Specs : juste sur les 3 ordres, erreur de 10 refusée.",
+	"template": {
+		"title": "Additionner par regroupements",
+		"description": "$3$ nombres à $2$ chiffres",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:a-2}}"
+				},
+				{
+					"name": "c",
+					"expression": "digits:1"
+				},
+				{
+					"name": "d",
+					"expression": "digits:1"
+				},
+				{
+					"name": "f",
+					"expression": "1..9!c"
+				},
+				{
+					"name": "g",
+					"expression": "eval:b*10+c"
+				},
+				{
+					"name": "h",
+					"expression": "eval:d*10+f"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{g}}+{{eval:a*10-g}}+{{h}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\bold{\\textcolor{{{color:primary.0}}}{{{g}}}}+\\bold{\\textcolor{{{color:primary.0}}}{{{eval:a*10-g}}}} + {{h}} \t\t\t\t\t\t\t\t&= \\bold{\\textcolor{{{color:primary.0}}}{{{eval:a*10}}}} + {{h}}\\\\ \t\t\t\t\t\t\t\t&=  {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{g}}+{{h}}+{{eval:a*10-g}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\bold{\\textcolor{{{color:primary.0}}}{{{g}}}}+ {{h}} + \\bold{\\textcolor{{{color:primary.0}}}{{{eval:a*10-g}}}} \t\t\t\t\t\t\t\t&= {{h}}+\\bold{\\textcolor{{{color:primary.0}}}{{{eval:a*10}}}} \\\\ \t\t\t\t\t\t\t\t&=  {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{h}}+{{g}}+{{eval:a*10-g}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{h}}+\\bold{\\textcolor{{{color:primary.0}}}{{{g}}}}+\\bold{\\textcolor{{{color:primary.0}}}{{{eval:a*10-g}}}} \t\t\t\t\t\t\t\t&= {{h}}+\\bold{\\textcolor{{{color:primary.0}}}{{{eval:a*10}}}} \\\\ \t\t\t\t\t\t\t\t&=  {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme astucieuse",
+		"level": 7,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "ordre 1 : 51, 19, 43 → 113",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "5",
+					"c": "1",
+					"d": "4",
+					"f": "3",
+					"g": "51",
+					"h": "43"
+				},
+				"answers": ["113"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre 2 : 51, 19, 43 → 113",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "5",
+					"c": "1",
+					"d": "4",
+					"f": "3",
+					"g": "51",
+					"h": "43"
+				},
+				"answers": ["113"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre 3 : 51, 19, 43 → 113",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "5",
+					"c": "1",
+					"d": "4",
+					"f": "3",
+					"g": "51",
+					"h": "43"
+				},
+				"answers": ["113"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "103 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "5",
+					"c": "1",
+					"d": "4",
+					"f": "3",
+					"g": "51",
+					"h": "43"
+				},
+				"answers": ["103"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

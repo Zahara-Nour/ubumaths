@@ -1,0 +1,100 @@
+{
+	"globalIndex": 161,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Compléter une multiplication à trou",
+		"description": "Multiplication par $3$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*3={{eval:a*3}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "3*?={{eval:a*3}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 2,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "?×3 = 27 : 9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "?×3 = 6 : 2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : recopie du produit",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["21"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "3×? = 27 : 9",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

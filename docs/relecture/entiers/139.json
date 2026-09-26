@@ -1,0 +1,99 @@
+{
+	"globalIndex": 139,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Trouver le double",
+		"description": "Nombres de $1$ à $15$, $25$, $30$, $40$, $50$ et $100$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9|11..15|25|30|40|50|100"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Quel est le double de ${{a}}$ ?\n\nLe double de ${{a}}$ est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:2*a}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le résultat de $2*{{a}}$ ?\n\nLe double de ${{a}}$ est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:2*a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Double et moitié",
+		"level": 4,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "double de 40 = 80",
+				"variationIndex": 0,
+				"variables": {
+					"a": "40"
+				},
+				"answers": ["80"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : moitié",
+				"variationIndex": 0,
+				"variables": {
+					"a": "40"
+				},
+				"answers": ["20"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "2×100 = 200",
+				"variationIndex": 1,
+				"variables": {
+					"a": "100"
+				},
+				"answers": ["200"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 2+100",
+				"variationIndex": 1,
+				"variables": {
+					"a": "100"
+				},
+				"answers": ["102"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "double de 13 = 26",
+				"variationIndex": 1,
+				"variables": {
+					"a": "13"
+				},
+				"answers": ["26"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

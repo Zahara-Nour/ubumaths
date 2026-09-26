@@ -1,0 +1,71 @@
+{
+	"globalIndex": 126,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Table de multiplication",
+		"description": "Par $9$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..12"
+					},
+					{
+						"name": "expression1",
+						"expression": "9*a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Tables",
+		"level": 9,
+		"status": "draft",
+		"delay": 6,
+		"testSpecs": [
+			{
+				"description": "9×7 = 63",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["63"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 9+7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "9×12 = 108",
+				"variationIndex": 0,
+				"variables": {
+					"a": "12"
+				},
+				"answers": ["108"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

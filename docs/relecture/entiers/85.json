@@ -1,0 +1,79 @@
+{
+	"globalIndex": 85,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Tirage « 1..10|11..15|15..20 » (héritage TinyMath, 15 tiré deux fois plus souvent) remplacé par « 1..20 », conforme à la description. Specs : triple juste aux bornes, double refusé.",
+	"template": {
+		"title": "Trouver le triple",
+		"description": "Nombres de $1$ à $20$, $25$, $30$, $40$, $50$, $60$ et $100$",
+		"variations": [
+			{
+				"statement": "Quel est le triple de ${{a}}$ ?\n\nLe triple de ${{a}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..20|25|30|40|50|60|100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:3*a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Triple et tiers",
+		"level": 5,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "triple de 1 → 3",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "triple de 17 → 51",
+				"variationIndex": 0,
+				"variables": {
+					"a": "17"
+				},
+				"answers": ["51"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "triple de 100 → 300",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100"
+				},
+				"answers": ["300"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "triple de 17 : double 34 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "17"
+				},
+				"answers": ["34"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

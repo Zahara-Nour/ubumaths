@@ -1,0 +1,90 @@
+{
+	"globalIndex": 50,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une somme",
+		"description": "Nombres entiers à 3 chiffres (avec retenue)",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:8-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "1..7"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:8-b}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:11-c}}..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*100 + b*10 + c}} +{{eval:d*100+f*10+g}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 17,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "573+319",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"d": "3",
+					"b": "7",
+					"f": "1",
+					"c": "3",
+					"g": "9"
+				},
+				"answers": ["892"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "retenue oubliée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"d": "3",
+					"b": "7",
+					"f": "1",
+					"c": "3",
+					"g": "9"
+				},
+				"answers": ["882"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

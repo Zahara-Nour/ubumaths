@@ -1,0 +1,78 @@
+{
+	"globalIndex": 205,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer un quotient entier",
+		"description": "Le dividende est un nombre de dizaines (simple)",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..6"
+					},
+					{
+						"name": "b",
+						"expression": "3..5"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b*10}}:{{b}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"subdomain": "Quotient",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "250:5 = 50",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "5"
+				},
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne : 180:3 = 60",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "3"
+				},
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : zéro oublié",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "5"
+				},
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

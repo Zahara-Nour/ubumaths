@@ -1,0 +1,131 @@
+{
+	"globalIndex": 59,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Accent : « a trou » → « à trou » ; c = a*1000+b*100 était une chaîne non évaluée (sans eval:), rendue explicite.",
+	"template": {
+		"title": "Trouver le complément",
+		"description": "Complément à 10 000 - à trou",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*1000+b*100"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+{{eval:10000-(c)}}=10000"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:10000-(c)}}+?=10000"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Complément",
+		"level": 9,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "Bonne réponse 7\\,900",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7900"
+				},
+				"answers": ["7\\,900"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Sans espace des milliers",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7900"
+				},
+				"answers": ["7900"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "Erreur : recopie le nombre donné",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7900"
+				},
+				"answers": ["2\\,100"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Bonne réponse 2\\,100",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "2100"
+				},
+				"answers": ["2\\,100"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : oubli de la retenue",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "2100"
+				},
+				"answers": ["3\\,100"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,146 @@
+{
+	"globalIndex": 135,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Calcul du chiffre des unités par mod(f, 10) au lieu de (f:10-floor(f:10))*10 (risque d'arrondi flottant) ; f évalué ; correction : ajout de la règle « ne dépend que des chiffres des unités des facteurs ».",
+	"template": {
+		"title": "Chiffre des unités d'un produit",
+		"variations": [
+			{
+				"statement": "Quel est le chiffre des unités du produit de ${{eval:b}}$ par ${{eval:d}}$ ?\n\nLe chiffre des unités est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b1",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "eval:b1*10+a"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d1",
+						"expression": "1..9"
+					},
+					{
+						"name": "d2",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "eval:d1*100+d2*10+c"
+					},
+					{
+						"name": "f",
+						"expression": "eval:a*c"
+					},
+					{
+						"name": "g",
+						"expression": "eval:mod(f, 10)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le chiffre des unités d'un produit ne dépend que des chiffres des unités des facteurs : {{if:{{f}}>=10|${{a}}\\times {{c}} = {{eval:(f-g):10}}\\textcolor{{{color:primary.2}}}{{{g}}}$|${{a}}\\times {{c}} = \\textcolor{{{color:primary.2}}}{{{g}}}$}} "
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{g}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Produit",
+		"level": 9,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "97×386 : 7×6 = 42 → 2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b1": "9",
+					"c": "6",
+					"d1": "3",
+					"d2": "8"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 42 (produit des unités)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b1": "9",
+					"c": "6",
+					"d1": "3",
+					"d2": "8"
+				},
+				"answers": ["42"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 7+6 → 3",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b1": "9",
+					"c": "6",
+					"d1": "3",
+					"d2": "8"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "12×445 : 2×5 = 10 → 0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b1": "1",
+					"c": "5",
+					"d1": "4",
+					"d2": "4"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "11×101 : 1×1 = 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b1": "1",
+					"c": "1",
+					"d1": "1",
+					"d2": "0"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

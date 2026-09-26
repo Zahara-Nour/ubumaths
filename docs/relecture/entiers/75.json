@@ -1,0 +1,81 @@
+{
+	"globalIndex": 75,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Trouver le double",
+		"description": "Dizaines entières (jusqu'à $50$)",
+		"variations": [
+			{
+				"statement": "Quel est le double de ${{b}}$ ?\n\nLe double de ${{b}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "1..5"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "eval:a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:2*b}}"
+					}
+				]
+			}
+		],
+		"grades": ["CP"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Double et moitié",
+		"level": 2,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "double de 50 → 100",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "5",
+					"a": "50",
+					"b": "50"
+				},
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "double de 10 → 20",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "1",
+					"a": "10",
+					"b": "10"
+				},
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "double de 40 : 60 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "4",
+					"a": "40",
+					"b": "40"
+				},
+				"answers": ["60"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

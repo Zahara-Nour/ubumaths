@@ -1,0 +1,113 @@
+{
+	"globalIndex": 114,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Compléter une soustraction à trou",
+		"description": "Soustraire un nombre d'au plus $3$ chiffres à un nombre à $4$ chiffres, sans retenue",
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "2..9"
+					},
+					{
+						"name": "f",
+						"expression": "0..{{eval:b-1}}"
+					},
+					{
+						"name": "g",
+						"expression": "0..{{eval:c-1}}"
+					},
+					{
+						"name": "h",
+						"expression": "1..{{eval:d-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval: a*1000 + b*100 + c*10+d}}- ? = {{eval:a*1000 + b*100 + c*10+d-(f*100 + g*10+h) }}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval: f*100 + g*10+h }}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"subdomain": "A trou",
+		"level": 8,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "7997-?=7724 : 273",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "7",
+					"f": "2",
+					"g": "7",
+					"h": "3"
+				},
+				"answers": ["273"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : chiffres inversés",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "7",
+					"f": "2",
+					"g": "7",
+					"h": "3"
+				},
+				"answers": ["372"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "2265-?=2242 : 23",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "6",
+					"d": "5",
+					"f": "0",
+					"g": "2",
+					"h": "3"
+				},
+				"answers": ["23"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

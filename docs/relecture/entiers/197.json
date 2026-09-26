@@ -1,0 +1,99 @@
+{
+	"globalIndex": 197,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Utiliser la distributivité",
+		"description": "Multiplication par $102$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "15..49"
+					},
+					{
+						"name": "expression1",
+						"expression": "102*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} 102 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}  \t\t\t\t\t\t\t\t&= 100 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} + 2 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\\\ \t\t\t\t\t\t\t\t&= {{eval:100*a}} + {{eval:2*a}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Distributivité",
+		"level": 15,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "102 × 39 = 3978",
+				"variationIndex": 0,
+				"variables": {
+					"a": "39"
+				},
+				"answers": ["3\\,978"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne : 102 × 15 = 1530",
+				"variationIndex": 0,
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["1\\,530"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne : 102 × 49 = 4998",
+				"variationIndex": 0,
+				"variables": {
+					"a": "49"
+				},
+				"answers": ["4\\,998"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3978 sans espace : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "39"
+				},
+				"answers": ["3978"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "Erreur de signe dans la distributivité : 3\\,939",
+				"variationIndex": 0,
+				"variables": {
+					"a": "39"
+				},
+				"answers": ["3\\,939"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

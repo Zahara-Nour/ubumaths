@@ -1,0 +1,204 @@
+{
+	"globalIndex": 227,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Tirage vide corrigé : b ∈ 2..9 → 4..9 (b = 2 laissait c ∈ 2..1 ; b = 3 et a = 2 laissaient c ∈ {2}∖{2}). Énoncés : « la somme $a$ et de » → « la somme de $a$ et de » ; double espace « différence  entre » retirée.",
+	"template": {
+		"title": "Traduire une phrase en expression mathématique",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "4..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "2..{{eval:b-1}}!a"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Traduis cette phrase par une expression mathématique : la somme du produit de ${{a}}$ par ${{c}}$ et de ${{b}}$\n\nL'expression est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{c}}+{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Traduis cette phrase par une expression mathématique : le produit de ${{a}}$ par la différence entre ${{b}}$ et ${{c}}$\n\nL'expression est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*({{b}}-{{c}})"
+					}
+				]
+			},
+			{
+				"statement": "Traduis cette phrase par une expression mathématique : la différence entre ${{a}}$ et le quotient de ${{b}}$ par ${{c}}$\n\nL'expression est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}-{{b}}:{{c}}"
+					}
+				]
+			},
+			{
+				"statement": "Traduis cette phrase par une expression mathématique : le quotient de la somme de ${{a}}$ et de ${{c}}$ par ${{b}}$\n\nL'expression est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "({{a}}+{{c}}):{{b}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"products": "off"
+			}
+		},
+		"grades": ["5"],
+		"theme": "Entiers",
+		"domain": "Vocabulaire",
+		"subdomain": "Traduire",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7×8+9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["7\\times8+9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "9+7×8 accepté",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["9+7\\times8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Valeur 65 refusée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["65"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "Mauvaise structure 7×(8+9)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["7\\times(8+9)"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "7×(9−8)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["7\\times(9-8)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Parenthèses oubliées refusées",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["7\\times9-8"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "7−9:8",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["7-9:8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(7+8):9",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["(7+8):9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Parenthèses oubliées refusées",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["7+8:9"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Borne b = 4, a = 2 : c = 3",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "4",
+					"c": "3"
+				},
+				"answers": ["2\\times3+4"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

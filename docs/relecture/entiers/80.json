@@ -1,0 +1,79 @@
+{
+	"globalIndex": 80,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Trouver la moitié",
+		"description": "Nombres pairs de $1$ à $40$, $50$, $60$ et $100$",
+		"variations": [
+			{
+				"statement": "Quelle est la moitié de ${{b}}$ ?\n\nLa moitié de ${{b}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9|11..15|16..20|25|30|50"
+					},
+					{
+						"name": "b",
+						"expression": "eval:2*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La moitié de ${{eval:b}}$ est {{solution:html}} car ${{a}}+{{a}}={{eval:2*a}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Double et moitié",
+		"level": 7,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "moitié de 60 → 30",
+				"variationIndex": 0,
+				"variables": {
+					"a": "30",
+					"b": "60"
+				},
+				"answers": ["30"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "moitié de 38 → 19",
+				"variationIndex": 0,
+				"variables": {
+					"a": "19",
+					"b": "38"
+				},
+				"answers": ["19"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "moitié de 38 : 14 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "19",
+					"b": "38"
+				},
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

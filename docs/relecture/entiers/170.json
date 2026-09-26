@@ -1,0 +1,101 @@
+{
+	"globalIndex": 170,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Tirage « 11..15|15..20 » (15 tiré deux fois plus souvent) remplacé par « 11..20 ». Specs : bornes 11 et 50, erreur ÷10 refusée.",
+	"template": {
+		"title": "Compléter une multiplication à trou",
+		"description": "Multiplier par $20$. Nombre à $2$ chiffres.",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "11..20|25|30|40|50"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*20={{eval:a*20}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "20*?={{eval:20*a}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 11,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "?×20 = 220 : 11",
+				"variationIndex": 0,
+				"variables": {
+					"a": "11"
+				},
+				"answers": ["11"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "?×20 = 1 000 : 50",
+				"variationIndex": 0,
+				"variables": {
+					"a": "50"
+				},
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 320÷10",
+				"variationIndex": 0,
+				"variables": {
+					"a": "16"
+				},
+				"answers": ["32"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "20×? = 400 : 20",
+				"variationIndex": 1,
+				"variables": {
+					"a": "20"
+				},
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

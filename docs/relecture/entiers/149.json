@@ -1,0 +1,86 @@
+{
+	"globalIndex": 149,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Trouver le quadruple",
+		"description": "Dizaines entières (jusqu'à $50$)",
+		"variations": [
+			{
+				"statement": "Quel est le quadruple de ${{b}}$ ?\n\nLe quadruple de ${{b}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "1..5"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "eval:a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:4*b}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Quadruple et quart",
+		"level": 2,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "quadruple de 40 = 160",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "4"
+				},
+				"answers": ["160"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : double",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "4"
+				},
+				"answers": ["80"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "quadruple de 50 = 200",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "5"
+				},
+				"answers": ["200"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 2 000",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "5"
+				},
+				"answers": ["2\\,000"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

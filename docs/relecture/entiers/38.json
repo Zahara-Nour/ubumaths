@@ -1,0 +1,366 @@
+{
+	"globalIndex": 38,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une somme",
+		"description": "Somme sans retenue. Au moins un nombre à 2 chiffres.",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} + {{eval:c*10 + d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "{{eval:a*10 + b}} + {{eval:c*10 + d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression3",
+						"expression": "{{eval:a*10 + b}} + {{eval:c*10 + d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression4",
+						"expression": "{{eval:a*10 + b}} + {{eval:c*10 + d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression4}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "c",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression5",
+						"expression": "{{eval:a*10 + b}} + {{c}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression5}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression6",
+						"expression": "{{eval:a*10 + b}} + {{c}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression6}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression7",
+						"expression": "{{eval:a*10 + b}} + {{c}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression7}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "c",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression8",
+						"expression": "{{eval:a*10 + b}} + {{c}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression8}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CP"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 5,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0 : 99",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "7",
+					"c": "2",
+					"d": "2"
+				},
+				"answers": ["99"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 : 98",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4",
+					"b": "4",
+					"c": "5",
+					"d": "4"
+				},
+				"answers": ["98"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 : 98",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "4",
+					"c": "2",
+					"d": "4"
+				},
+				"answers": ["98"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 : 99",
+				"variationIndex": 3,
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "5",
+					"d": "2"
+				},
+				"answers": ["99"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 : 79",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7",
+					"b": "7",
+					"c": "2"
+				},
+				"answers": ["79"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5 : 49",
+				"variationIndex": 5,
+				"variables": {
+					"a": "4",
+					"b": "4",
+					"c": "5"
+				},
+				"answers": ["49"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v6 : 79",
+				"variationIndex": 6,
+				"variables": {
+					"a": "7",
+					"b": "4",
+					"c": "5"
+				},
+				"answers": ["79"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v7 : 49",
+				"variationIndex": 7,
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "2"
+				},
+				"answers": ["49"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "erreur",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "7",
+					"c": "2",
+					"d": "2"
+				},
+				"answers": ["89"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

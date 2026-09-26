@@ -1,0 +1,87 @@
+{
+	"globalIndex": 189,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Utiliser la distributivité",
+		"description": "Multiplication d'un nombre à $2$ chiffres par $11$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "13..45"
+					},
+					{
+						"name": "expression1",
+						"expression": "11*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} 11 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}  \t\t\t\t\t\t\t\t&= 10 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} + \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\\\ \t\t\t\t\t\t\t\t&= {{eval:10*a}} + {{a}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Distributivité",
+		"level": 7,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "11 × 36 = 396",
+				"variationIndex": 0,
+				"variables": {
+					"a": "36"
+				},
+				"answers": ["396"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne : 11 × 13 = 143",
+				"variationIndex": 0,
+				"variables": {
+					"a": "13"
+				},
+				"answers": ["143"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne : 11 × 45 = 495",
+				"variationIndex": 0,
+				"variables": {
+					"a": "45"
+				},
+				"answers": ["495"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur de signe dans la distributivité : 360",
+				"variationIndex": 0,
+				"variables": {
+					"a": "36"
+				},
+				"answers": ["360"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

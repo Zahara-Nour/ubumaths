@@ -1,0 +1,72 @@
+{
+	"globalIndex": 109,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Compléter une soustraction à trou",
+		"description": "Soustraire des dizaines entières à un nombre",
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:b*10+c}} - ? = {{eval:b*10+c - a*10}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10}}"
+					}
+				]
+			}
+		],
+		"grades": ["CP"],
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"subdomain": "A trou",
+		"level": 3,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "99-?=39 : 60",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 6 au lieu de 60",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

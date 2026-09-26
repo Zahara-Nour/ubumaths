@@ -1,0 +1,115 @@
+{
+	"globalIndex": 43,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une somme",
+		"description": "Somme d’un nombre ayant au plus trois chiffres et d’un nombre ayant un seul chiffre non nul",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..2"
+					},
+					{
+						"name": "f",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*100 + b*10+c}} +{{eval:f*10^d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 10,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "799+30",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "1",
+					"f": "3"
+				},
+				"answers": ["829"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "chiffre mal placé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "1",
+					"f": "3"
+				},
+				"answers": ["802"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "999+900 espacé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "9",
+					"d": "2",
+					"f": "9"
+				},
+				"answers": ["1\\,899"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "999+900 sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "9",
+					"d": "2",
+					"f": "9"
+				},
+				"answers": ["1899"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			}
+		]
+	}
+}

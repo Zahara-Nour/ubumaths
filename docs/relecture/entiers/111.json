@@ -1,0 +1,72 @@
+{
+	"globalIndex": 111,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Compléter une soustraction à trou",
+		"description": "Soustraire un nombre à un chiffre à un nombre à deux chiffres, avec franchissement de la dizaine",
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:b+1}}..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10+b}} - ? = {{eval:a*10+b-c}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"subdomain": "A trou",
+		"level": 5,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "78-?=69 : 9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : écart des unités 9-8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,100 @@
+{
+	"globalIndex": 56,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Trouver le complément",
+		"description": "Complément à 100",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..99"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+a=100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100-a}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a+?=100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100-a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Complément",
+		"level": 6,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "Bonne réponse 29",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"answers": ["29"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : oubli de la retenue",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"answers": ["39"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Bonne réponse 3",
+				"variationIndex": 1,
+				"variables": {
+					"a": "97"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : oubli de la retenue",
+				"variationIndex": 1,
+				"variables": {
+					"a": "97"
+				},
+				"answers": ["13"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

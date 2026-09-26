@@ -1,0 +1,90 @@
+{
+	"globalIndex": 49,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une somme",
+		"description": "Nombres entiers à 3 chiffres (sans retenue)",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:9-b}}"
+					},
+					{
+						"name": "c",
+						"expression": "1..8"
+					},
+					{
+						"name": "g",
+						"expression": "1..{{eval:9-c}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*100 + b*10 + c}} + {{eval:d*100 + f*10 + g}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 16,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "682+316",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"d": "3",
+					"b": "8",
+					"f": "1",
+					"c": "2",
+					"g": "6"
+				},
+				"answers": ["998"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "erreur",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"d": "3",
+					"b": "8",
+					"f": "1",
+					"c": "2",
+					"g": "6"
+				},
+				"answers": ["988"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

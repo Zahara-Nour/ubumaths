@@ -1,0 +1,137 @@
+{
+	"globalIndex": 214,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Utiliser un critère de divisibilité",
+		"description": "Par $3$",
+		"shared": {
+			"statement": "Le nombre ${{a}}{{b}}{{f}}$ est-il divisible par $3$ ?",
+			"choices": [
+				{
+					"content": "Oui"
+				},
+				{
+					"content": "Non"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Le nombre ${{a}}{{b}}{{f}}$ est-il divisible par $3$ ?",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..6"
+					},
+					{
+						"name": "d",
+						"expression": "c+3-mod(a+b+c, 3)"
+					},
+					{
+						"name": "f",
+						"expression": "eval:d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{a}}{{b}}{{f}}$ est divisible par $3$ car la somme de ses chiffres est divisible par $3$ :",
+						"${{a}}+{{b}}+{{f}}={{eval:a+b+f}}$ est divisible par $3$."
+					]
+				}
+			},
+			{
+				"statement": "Le nombre ${{a}}{{b}}{{f}}$ est-il divisible par $3$ ?",
+				"correctChoiceIndex": ["1"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..5"
+					},
+					{
+						"name": "d",
+						"expression": "c+4-mod(a+b+c, 3)"
+					},
+					{
+						"name": "f",
+						"expression": "eval:d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{a}}{{b}}{{f}}$ n'est pas divisible par $3$ car la somme de ses chiffres n'est pas divisible par $3$ :",
+						"${{a}}+{{b}}+{{f}}={{eval:a+b+f}}$ n'est pas divisible par $3$."
+					]
+				}
+			}
+		],
+		"options": {
+			"shuffleChoices": false
+		},
+		"grades": ["CM2"],
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"subdomain": "Divisibilité",
+		"level": 6,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "798 : Oui",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "6"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "798 : Non refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "6"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "799 : Non",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "5"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

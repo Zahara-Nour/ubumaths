@@ -1,0 +1,67 @@
+{
+	"globalIndex": 77,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Trouver le double",
+		"description": "Nombres de $1$ à $15$, $25$, $30$, $40$, $50$ et $100$",
+		"variations": [
+			{
+				"statement": "Quel est le double de ${{a}}$ ?\n\nLe double de ${{a}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9|11..15|25|30|40|50|100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:2*a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Double et moitié",
+		"level": 4,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "double de 12 → 24",
+				"variationIndex": 0,
+				"variables": {
+					"a": "12"
+				},
+				"answers": ["24"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "double de 100 → 200",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100"
+				},
+				"answers": ["200"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "double de 25 : 40 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "25"
+				},
+				"answers": ["40"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

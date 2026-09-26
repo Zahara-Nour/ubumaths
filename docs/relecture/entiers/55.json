@@ -1,0 +1,117 @@
+{
+	"globalIndex": 55,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Accent : « A la centaine » → « À la centaine » ; variable b inutilisée retirée.",
+	"template": {
+		"title": "Trouver le complément",
+		"description": "À la centaine supérieure",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..99"
+				},
+				{
+					"name": "d",
+					"expression": "eval:a*100"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+{{eval:d-c}}={{d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:d-c}}+?={{d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Complément",
+		"level": 5,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "Bonne réponse 98",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"c": "98",
+					"d": "700"
+				},
+				"answers": ["98"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : retenue mal gérée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"c": "98",
+					"d": "700"
+				},
+				"answers": ["108"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Bonne réponse 20",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"c": "20",
+					"d": "900"
+				},
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : centaine mal comptée",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"c": "20",
+					"d": "900"
+				},
+				"answers": ["120"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

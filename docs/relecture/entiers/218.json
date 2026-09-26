@@ -1,0 +1,129 @@
+{
+	"globalIndex": 218,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Titre : coquille « eudlienne » → « euclidienne », espace finale retirée ; choix « oui »/« non » → « Oui »/« Non » (la correction commence par le choix) ; double espace retirée.",
+	"template": {
+		"title": "Est-ce bien un reste de division euclidienne ?",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..10!a"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:a-1}}!b"
+				}
+			],
+			"choices": [
+				{
+					"content": "Oui"
+				},
+				{
+					"content": "Non"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "En regardant l'égalité ci-dessous, peut-on dire que ${{c}}$ est le reste de la division euclidienne de ${{eval:a*b+c}}$ par ${{a}}$ ?\n\n$${{expression1}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b+c}}=({{a}}* {{b}}) + {{c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, ${{c}}$ est le reste de la division euclidienne de ${{eval:a*b+c}}$ par ${{a}}$, car dans l'égalité ${{eval:a*b+c}}=({{a}} \\times {{b}}) + {{c}}$, on a bien ${{c}}<{{a}}$."
+					]
+				}
+			},
+			{
+				"statement": "En regardant l'égalité ci-dessous, peut-on dire que ${{eval:c+a}}$ est le reste de la division euclidienne de ${{eval:a*b+c}}$ par ${{a}}$ ?\n\n$${{expression2}}$$",
+				"correctChoiceIndex": ["1"],
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:a*b+c}}=({{a}}* {{eval:b-1}}) + {{eval:c+a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, ${{eval:c+a}}$ n'est pas le reste de la division euclidienne de ${{eval:a*b+c}}$ par ${{a}}$, car dans l'égalité ${{eval:a*b+c}}=({{a}} \\times {{eval:b-1}}) + {{eval:c+a}}$, on n'a **pas** ${{eval:c+a}}<{{a}}$."
+					]
+				}
+			}
+		],
+		"options": {
+			"shuffleChoices": false
+		},
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"subdomain": "Division euclidienne",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "76 = (7×10)+6 : Oui",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "6"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Non refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "6"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "76 = (7×9)+13 : Non",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "6"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Oui refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "6"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

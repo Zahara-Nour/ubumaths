@@ -1,0 +1,84 @@
+{
+	"globalIndex": 145,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Énoncé : « Quelle est le tiers » → « Quel est le tiers ».",
+	"template": {
+		"title": "Trouver le tiers",
+		"description": "Multiples de $3$ inférieurs à $30$",
+		"variations": [
+			{
+				"statement": "Quel est le tiers de ${{eval:3*a}}$ ?\n\nLe tiers de ${{eval:3*a}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..10"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le tiers de ${{eval:3*a}}$ est {{solution:html}} car $3 \\times \\textcolor{{{color:primary.2}}}{{{a}}}={{eval:3*a}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Triple et tiers",
+		"level": 3,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "tiers de 21 = 7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 21−3",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["18"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "tiers de 0 = 0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "tiers de 30 = 10",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

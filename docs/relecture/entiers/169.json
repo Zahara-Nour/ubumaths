@@ -1,0 +1,100 @@
+{
+	"globalIndex": 169,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Compléter une multiplication à trou",
+		"description": "Multiplier par $20$. Nombre à $1$ chiffre.",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*20={{eval:a*20}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "20*?={{eval:20*a}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 10,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "?×20 = 0 : 0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "?×20 = 180 : 9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 140÷10",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "20×? = 100 : 5",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

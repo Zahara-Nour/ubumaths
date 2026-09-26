@@ -1,0 +1,87 @@
+{
+	"globalIndex": 173,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Virgule ajoutée après le complément circonstanciel : « Dans $630$, combien de fois $9$ ? ».",
+	"template": {
+		"title": "Combien de fois ... dans ....",
+		"description": "Multiplier par $30$, $40$, $50$, $60$, $70$, $80$, $90$. Nombre à 1 chiffre.",
+		"variations": [
+			{
+				"statement": "Dans ${{eval:a*10*b}}$, combien de fois ${{b}}$ ?\n\nOn peut mettre $?$ fois ${{b}}$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 14,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "630 = 70 × 9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne haute : 810 = 90 × 9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 7 (oubli du zéro)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 63",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["63"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

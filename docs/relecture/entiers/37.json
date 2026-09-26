@@ -1,0 +1,78 @@
+{
+	"globalIndex": 37,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une somme",
+		"description": "Nombres à 1 chiffre. Nombre plus grand en premier.",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "a + b"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CP"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 4,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "7+6",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"answers": ["13"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "erreur",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"answers": ["12"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "9+8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "8"
+				},
+				"answers": ["17"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

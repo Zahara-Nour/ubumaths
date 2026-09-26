@@ -1,0 +1,108 @@
+{
+	"globalIndex": 54,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Trouver le complément",
+		"description": "Complément à 100 des dizaines entières",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*a"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+b=100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100-b}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "b+?=100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100-b}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Complément",
+		"level": 4,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "Bonne réponse 30",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "70"
+				},
+				"answers": ["30"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : dizaines au lieu du nombre",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "70"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Bonne réponse 80",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "20"
+				},
+				"answers": ["80"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : addition au lieu du complément",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "20"
+				},
+				"answers": ["120"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

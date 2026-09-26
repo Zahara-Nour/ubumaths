@@ -1,0 +1,71 @@
+{
+	"globalIndex": 125,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Table de multiplication",
+		"description": "Par $8$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..12"
+					},
+					{
+						"name": "expression1",
+						"expression": "8*a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Tables",
+		"level": 8,
+		"status": "draft",
+		"delay": 6,
+		"testSpecs": [
+			{
+				"description": "8×7 = 56",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["56"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 8+7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["15"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "8×12 = 96",
+				"variationIndex": 0,
+				"variables": {
+					"a": "12"
+				},
+				"answers": ["96"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

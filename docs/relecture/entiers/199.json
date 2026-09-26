@@ -1,0 +1,99 @@
+{
+	"globalIndex": 199,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Utiliser la distributivité",
+		"description": "Multiplication par $98$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "15..40"
+					},
+					{
+						"name": "expression1",
+						"expression": "98*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} 98 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}  \t\t\t\t\t\t\t\t&= 100 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} - 2 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\\\ \t\t\t\t\t\t\t\t&= {{eval:100*a}} - {{eval:2*a}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Distributivité",
+		"level": 17,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "98 × 33 = 3234",
+				"variationIndex": 0,
+				"variables": {
+					"a": "33"
+				},
+				"answers": ["3\\,234"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne : 98 × 15 = 1470",
+				"variationIndex": 0,
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["1\\,470"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne : 98 × 40 = 3920",
+				"variationIndex": 0,
+				"variables": {
+					"a": "40"
+				},
+				"answers": ["3\\,920"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3234 sans espace : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "33"
+				},
+				"answers": ["3234"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "Erreur de signe dans la distributivité : 3\\,267",
+				"variationIndex": 0,
+				"variables": {
+					"a": "33"
+				},
+				"answers": ["3\\,267"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

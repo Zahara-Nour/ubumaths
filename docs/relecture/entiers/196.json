@@ -1,0 +1,99 @@
+{
+	"globalIndex": 196,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Utiliser la distributivité",
+		"description": "Multiplication par $101$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "15..40"
+					},
+					{
+						"name": "expression1",
+						"expression": "101*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} 101 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}  \t\t\t\t\t\t\t\t&= 100 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} + \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\\\ \t\t\t\t\t\t\t\t&= {{eval:100*a}} + {{a}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Distributivité",
+		"level": 14,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "101 × 33 = 3333",
+				"variationIndex": 0,
+				"variables": {
+					"a": "33"
+				},
+				"answers": ["3\\,333"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne : 101 × 15 = 1515",
+				"variationIndex": 0,
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["1\\,515"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne : 101 × 40 = 4040",
+				"variationIndex": 0,
+				"variables": {
+					"a": "40"
+				},
+				"answers": ["4\\,040"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3333 sans espace : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "33"
+				},
+				"answers": ["3333"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "Erreur de signe dans la distributivité : 3\\,300",
+				"variationIndex": 0,
+				"variables": {
+					"a": "33"
+				},
+				"answers": ["3\\,300"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

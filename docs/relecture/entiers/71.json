@@ -1,0 +1,123 @@
+{
+	"globalIndex": 71,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Compléter une addition à trou",
+		"description": "Somme d’un nombre ayant au plus 4 chiffres et d’un nombre ayant un seul chiffre non nul",
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "f",
+						"expression": "0..3"
+					},
+					{
+						"name": "g",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*1000 + b*100+c*10+d}} + ? = {{eval:a*1000 + b*100+c*10+d + g*10^f}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:g*10^f}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "A trou",
+		"level": 11,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "Bonne réponse 8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "0",
+					"g": "8"
+				},
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : retenue",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "0",
+					"g": "8"
+				},
+				"answers": ["18"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Bonne réponse 6\\,000",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "1",
+					"c": "1",
+					"d": "5",
+					"f": "3",
+					"g": "6"
+				},
+				"answers": ["6\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Sans espace des milliers",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "1",
+					"c": "1",
+					"d": "5",
+					"f": "3",
+					"g": "6"
+				},
+				"answers": ["6000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			}
+		]
+	}
+}

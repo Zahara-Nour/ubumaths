@@ -1,0 +1,72 @@
+{
+	"globalIndex": 76,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Trouver la moitié",
+		"description": "Nombre pair inférieur à $20$",
+		"variations": [
+			{
+				"statement": "Quelle est la moitié de ${{eval:2*a}}$ ?\n\nLa moitié de ${{eval:2*a}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..10"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La moitié de ${{eval:2*a}}$ est {{solution:html}} car ${{a}}+{{a}}={{eval:2*a}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CP"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Double et moitié",
+		"level": 3,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "moitié de 14 → 7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "moitié de 0 → 0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "moitié de 14 : double 28 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["28"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

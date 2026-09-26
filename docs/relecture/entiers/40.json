@@ -1,0 +1,73 @@
+{
+	"globalIndex": 40,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Typographie de la description corrigée.",
+	"template": {
+		"title": "Calculer une somme",
+		"description": "Sommes d’un nombre à deux chiffres et de dizaines entières",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} + {{eval:c*10}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CP"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 7,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "69+30",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "3"
+				},
+				"answers": ["99"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "dizaines ajoutées aux unités",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "3"
+				},
+				"answers": ["72"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

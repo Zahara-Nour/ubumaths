@@ -1,0 +1,112 @@
+{
+	"globalIndex": 158,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer un produit d'entiers",
+		"description": "Multiplication par $100$ d'un nombre inférieur à $100$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..99"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "100*a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Puissances de $$10$$",
+		"level": 2,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "99×100 = 9 900",
+				"variationIndex": 0,
+				"variables": {
+					"a": "99"
+				},
+				"answers": ["9\\,900"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Sans espace des milliers",
+				"variationIndex": 0,
+				"variables": {
+					"a": "99"
+				},
+				"answers": ["9900"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "Erreur : ×10",
+				"variationIndex": 0,
+				"variables": {
+					"a": "99"
+				},
+				"answers": ["990"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "100×1 = 100",
+				"variationIndex": 1,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "100×71 = 7 100",
+				"variationIndex": 1,
+				"variables": {
+					"a": "71"
+				},
+				"answers": ["7\\,100"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

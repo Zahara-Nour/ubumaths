@@ -1,0 +1,83 @@
+{
+	"globalIndex": 180,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Typographie de la description : nombres en mathématiques.",
+	"template": {
+		"title": "Calculer un carré",
+		"description": "Entier de $1$ à $15$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..15"
+					},
+					{
+						"name": "expression1",
+						"expression": "a^2"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Carrés",
+		"level": 1,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "11² = 121",
+				"variationIndex": 0,
+				"variables": {
+					"a": "11"
+				},
+				"answers": ["121"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Bornes : 1² = 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "15² = 225",
+				"variationIndex": 0,
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["225"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 2 × 11 = 22",
+				"variationIndex": 0,
+				"variables": {
+					"a": "11"
+				},
+				"answers": ["22"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

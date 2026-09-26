@@ -1,0 +1,78 @@
+{
+	"globalIndex": 44,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une somme",
+		"description": "Nombres entiers à 2 chiffres dont la somme vaut 100",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "12..{{eval:a*10-12}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:b}}+{{eval:100-b}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 11,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "56+44",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "56"
+				},
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "retenue mal gérée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "56"
+				},
+				"answers": ["110"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "borne 12+88",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "12"
+				},
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

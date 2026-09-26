@@ -1,0 +1,126 @@
+{
+	"globalIndex": 93,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Description : majuscule parasite « Nombres » → « nombres ». Maths vérifiées (compléments ≥ 11). Specs : juste, avec résultat à 2 et 3 chiffres ; erreur refusée.",
+	"template": {
+		"title": "Additionner par regroupements",
+		"description": "$4$ nombres à $2$ chiffres",
+		"variations": [
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:a-2}}"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b*10+c"
+					},
+					{
+						"name": "f",
+						"expression": "3..9"
+					},
+					{
+						"name": "g",
+						"expression": "1..{{eval:f-2}}"
+					},
+					{
+						"name": "h",
+						"expression": "digits:1"
+					},
+					{
+						"name": "j",
+						"expression": "eval:g*10+h"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{d}}+{{eval:a*10-d}}+{{j}}+{{eval:f*10-j}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\bold{\\textcolor{{{color:primary.0}}}{{{d}}}}+\\bold{\\textcolor{{{color:primary.0}}}{{{eval:a*10-d}}}} + \\bold{\\textcolor{{{color:primary.1}}}{{{j}}}}+\\bold{\\textcolor{{{color:primary.1}}}{{{eval:f*10-j}}}} \t\t\t\t\t\t\t\t &= \\bold{\\textcolor{{{color:primary.0}}}{{{eval:a*10}}}} + \\bold{\\textcolor{{{color:primary.1}}}{{{eval:f*10}}}} \\\\  \t\t\t\t\t\t\t\t &=  {{solution}} \t\t\t\t\t\t\t\t \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme astucieuse",
+		"level": 8,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "51 + 19 + 23 + 17 → 110",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "5",
+					"c": "1",
+					"d": "51",
+					"f": "4",
+					"g": "2",
+					"h": "3",
+					"j": "23"
+				},
+				"answers": ["110"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "12 + 18 + 11 + 19 → 60",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "1",
+					"c": "2",
+					"d": "12",
+					"f": "3",
+					"g": "1",
+					"h": "1",
+					"j": "11"
+				},
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "51 + 19 + 23 + 17 : 100 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "5",
+					"c": "1",
+					"d": "51",
+					"f": "4",
+					"g": "2",
+					"h": "3",
+					"j": "23"
+				},
+				"answers": ["100"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

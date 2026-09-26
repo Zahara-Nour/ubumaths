@@ -1,0 +1,379 @@
+{
+	"globalIndex": 64,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Compléter une addition à trou",
+		"description": "Somme sans retenue,au moins un nombre à 2 chiffres",
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10 + d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*10 + d}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10 + d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*10 + d}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression3",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10 + d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*10 + d}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression4",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10 + d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*10 + d}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression5",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression6",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression7",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression8",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CP"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "A trou",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "Bonne réponse 22",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"c": "2",
+					"b": "7",
+					"d": "2"
+				},
+				"answers": ["22"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Bonne réponse 54",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4",
+					"c": "5",
+					"b": "4",
+					"d": "4"
+				},
+				"answers": ["54"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Bonne réponse 24",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"c": "2",
+					"b": "4",
+					"d": "4"
+				},
+				"answers": ["24"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Bonne réponse 52",
+				"variationIndex": 3,
+				"variables": {
+					"a": "4",
+					"c": "5",
+					"b": "7",
+					"d": "2"
+				},
+				"answers": ["52"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Bonne réponse 2",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7",
+					"b": "7",
+					"d": "2"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Bonne réponse 5",
+				"variationIndex": 5,
+				"variables": {
+					"a": "4",
+					"b": "4",
+					"d": "5"
+				},
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Bonne réponse 5",
+				"variationIndex": 6,
+				"variables": {
+					"a": "7",
+					"b": "4",
+					"d": "5"
+				},
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Bonne réponse 2",
+				"variationIndex": 7,
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"d": "2"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : seulement les unités",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"c": "2",
+					"b": "7",
+					"d": "2"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : recopie la somme",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7",
+					"b": "7",
+					"d": "2"
+				},
+				"answers": ["79"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

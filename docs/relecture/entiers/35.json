@@ -1,0 +1,78 @@
+{
+	"globalIndex": 35,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une somme",
+		"description": "Nombres à 1 chiffre. Nombre plus grand en premier. Somme inférieure ou égale à 10",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:min(10-a, a-1)}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "a + b"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CP"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 2,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "7+3=10",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "erreur",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"answers": ["11"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "4+2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "2"
+				},
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

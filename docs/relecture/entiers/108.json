@@ -1,0 +1,85 @@
+{
+	"globalIndex": 108,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Compléter une soustraction à trou",
+		"description": "Soustraire un nombre à un chiffre à un nombre à deux chiffres, sans franchissement de la dizaine",
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:b+1}}..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10+c}} - ? = {{eval:a*10+c-b}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			}
+		],
+		"grades": ["CP"],
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"subdomain": "A trou",
+		"level": 2,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "79-?=71 : 8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9"
+				},
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : additionne 79+71",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9"
+				},
+				"answers": ["150"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "26-?=25 : 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "6"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

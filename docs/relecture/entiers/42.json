@@ -1,0 +1,92 @@
+{
+	"globalIndex": 42,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une somme",
+		"description": "Nombres entiers à 2 chiffres (sans retenue entre les unités et les dizaines)",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:9-b}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} +{{eval:c*10+d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 9,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "78+91",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"c": "9",
+					"b": "8",
+					"d": "1"
+				},
+				"answers": ["169"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "erreur dizaines",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"c": "9",
+					"b": "8",
+					"d": "1"
+				},
+				"answers": ["159"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "25+12",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"c": "1",
+					"b": "5",
+					"d": "2"
+				},
+				"answers": ["37"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

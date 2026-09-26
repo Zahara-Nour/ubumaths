@@ -1,0 +1,244 @@
+{
+	"globalIndex": 216,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Point final retiré de la description. Maths vérifiées : chiffre des unités c ∈ [1 ; 9] et a+b+c multiple de 3 en variation 3.",
+	"template": {
+		"title": "Trouver un diviseur",
+		"description": "Nombre à $3$ chiffres",
+		"shared": {
+			"statement": "Trouve un diviseur de ${{d}}$ (autre que $1$ et ${{d}}$).\n\n$?$ est un diviseur de ${{eval:d}}$.",
+			"validationRules": [
+				{
+					"type": "custom",
+					"expression": "answer != 1",
+					"description": "Legacy testAnswer: &answer!=1"
+				},
+				{
+					"type": "custom",
+					"expression": "answer != {{d}}",
+					"description": "Legacy testAnswer: &answer!=&4"
+				},
+				{
+					"type": "divisor",
+					"dividend": "{{d}}"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Trouve un diviseur de ${{d}}$ (autre que $1$ et ${{d}}$).\n\n$?$ est un diviseur de ${{eval:d}}$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "2|4|6|8"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a*100+b*10+c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{solution:html}} est un diviseur de ${{eval:d}}$ car ${{d}}$ se termine par $0$, $2$, $4$, $6$ ou $8$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "2",
+						"rulesSuffice": true
+					}
+				]
+			},
+			{
+				"statement": "Trouve un diviseur de ${{d}}$ (autre que $1$ et ${{d}}$).\n\n$?$ est un diviseur de ${{eval:d}}$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "5|0"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a*100+b*10+c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{solution:html}} est un diviseur de ${{eval:d}}$ car ${{d}}$ se termine par $0$ ou $5$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "5",
+						"rulesSuffice": true
+					}
+				]
+			},
+			{
+				"statement": "Trouve un diviseur de ${{d}}$ (autre que $1$ et ${{d}}$).\n\n$?$ est un diviseur de ${{eval:d}}$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c1",
+						"expression": "1|4|7"
+					},
+					{
+						"name": "c",
+						"expression": "eval:c1+2-mod(a+b, 3)"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a*100+b*10+c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{solution:html}} est un diviseur de ${{eval:d}}$ car ${{a}}+{{b}}+{{eval:c}}={{eval:a+b+c}}$ est un multiple de $3$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "3",
+						"rulesSuffice": true
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"subdomain": "Divisibilité",
+		"level": 8,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "798 : 2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "798 : 3 aussi accepté",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "798 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["798"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "790 : 5",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "0"
+				},
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "790 : 10 accepté",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "0"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "790 : 3 refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "0"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "921 : 3",
+				"variationIndex": 2,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c1": "1"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "921 : 2 refusé",
+				"variationIndex": 2,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c1": "1"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

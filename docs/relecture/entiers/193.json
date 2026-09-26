@@ -1,0 +1,152 @@
+{
+	"globalIndex": 193,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Utiliser la distributivité",
+		"description": "Multiplication d'un nombre à $2$ chiffres par $9$",
+		"shared": {
+			"statement": "Calcule.\n\n$${{expression1}}$$",
+			"correction": {
+				"steps": [
+					"$$\\begin{align} 9 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}  \t\t\t\t\t\t\t\t&= 10 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} - \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\\\ \t\t\t\t\t\t\t\t&= {{eval:10*a}} - {{a}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+				]
+			}
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "12..19"
+					},
+					{
+						"name": "expression1",
+						"expression": "9*a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "23..29"
+					},
+					{
+						"name": "expression1",
+						"expression": "9*a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Distributivité",
+		"level": 11,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "9 × 17 = 153",
+				"variationIndex": 0,
+				"variables": {
+					"a": "17"
+				},
+				"answers": ["153"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "9 × 12 = 108",
+				"variationIndex": 0,
+				"variables": {
+					"a": "12"
+				},
+				"answers": ["108"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "9 × 19 = 171",
+				"variationIndex": 0,
+				"variables": {
+					"a": "19"
+				},
+				"answers": ["171"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 9 × 17 ≠ 170",
+				"variationIndex": 0,
+				"variables": {
+					"a": "17"
+				},
+				"answers": ["170"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "9 × 27 = 243",
+				"variationIndex": 1,
+				"variables": {
+					"a": "27"
+				},
+				"answers": ["243"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "9 × 23 = 207",
+				"variationIndex": 1,
+				"variables": {
+					"a": "23"
+				},
+				"answers": ["207"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "9 × 29 = 261",
+				"variationIndex": 1,
+				"variables": {
+					"a": "29"
+				},
+				"answers": ["261"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 9 × 27 ≠ 270",
+				"variationIndex": 1,
+				"variables": {
+					"a": "27"
+				},
+				"answers": ["270"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

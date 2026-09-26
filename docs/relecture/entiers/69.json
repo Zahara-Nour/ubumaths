@@ -1,0 +1,99 @@
+{
+	"globalIndex": 69,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Compléter une addition à trou",
+		"description": "Somme d’un nombre ayant au plus trois chiffres et d’un nombre ayant un seul chiffre non nul",
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..2"
+					},
+					{
+						"name": "f",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*100 + b*10+c}} + ? = {{eval:a*100 + b*10+c + f*10^d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:f*10^d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "A trou",
+		"level": 9,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "Bonne réponse 30",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "1",
+					"f": "3"
+				},
+				"answers": ["30"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : ordre de grandeur",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "1",
+					"f": "3"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Bonne réponse 900",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0",
+					"b": "0",
+					"c": "5",
+					"d": "2",
+					"f": "9"
+				},
+				"answers": ["900"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,91 @@
+{
+	"globalIndex": 159,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer un produit d'entiers",
+		"description": "Multiplication par $10$, $100$ ou $1000$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..99"
+					},
+					{
+						"name": "b",
+						"expression": "1..3"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{a}}*{{eval:10^b}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Puissances de $$10$$",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "99×1000 = 99 000",
+				"variationIndex": 0,
+				"variables": {
+					"a": "99",
+					"b": "3"
+				},
+				"answers": ["99\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2×10 = 20",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : ×100 au lieu de ×1000",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71",
+					"b": "3"
+				},
+				"answers": ["7\\,100"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71",
+					"b": "3"
+				},
+				"answers": ["71000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,108 @@
+{
+	"globalIndex": 24,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Comparer deux nombres entiers",
+		"description": "Jusqu'au million",
+		"variations": [
+			{
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"correctChoiceIndex": ["{{if:g<h|0|1}}"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..4"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:4-a}}..{{eval:7-a}}"
+					},
+					{
+						"name": "c",
+						"expression": "digits:a"
+					},
+					{
+						"name": "d",
+						"expression": "digits:b"
+					},
+					{
+						"name": "f",
+						"expression": "digits:b"
+					},
+					{
+						"name": "g",
+						"expression": "eval:d+c*10^b"
+					},
+					{
+						"name": "h",
+						"expression": "eval:f+c*10^b"
+					}
+				],
+				"choices": [
+					{
+						"content": "$${{eval:g}}$$"
+					},
+					{
+						"content": "$${{eval:h}}$$"
+					}
+				],
+				"conditions": ["g!=h"]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"subdomain": "Comparer",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "1874498 < 1877123",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "187",
+					"d": "4498",
+					"f": "7123"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais choix",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "187",
+					"d": "4498",
+					"f": "7123"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "a=0 : 2748 < 5372",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0",
+					"b": "4",
+					"c": "0",
+					"d": "2748",
+					"f": "5372"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

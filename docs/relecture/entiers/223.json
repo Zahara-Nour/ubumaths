@@ -1,0 +1,302 @@
+{
+	"globalIndex": 223,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une expression sans parenthèses",
+		"description": "Priorité de la multiplication et de la division sur l'addition et la soustraction",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}\t\t\t\t\t\t\t\t  {{a}} +  \\textcolor{{{color:primary.0}}}{{{b}} \\times {{c}}} \t\t\t\t\t\t\t\t  &=  {{a}} +  \\textcolor{{{color:primary.0}}}{{{eval:b*c}}} \\\\ \t\t\t\t\t\t\t\t  &= {{solution}} \t\t\t\t\t\t\t\t  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression2",
+						"expression": "b*c+a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}  \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{{{b}} \\times {{c}}} + {{a}} \t\t\t\t\t\t\t\t&=   \\textcolor{{{color:primary.0}}}{{{eval:b*c}}} + {{a}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression3",
+						"expression": "{{eval:a*b+c}}-{{a}}*{{b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}  \t\t\t\t\t\t\t\t{{eval:a*b+c}} - \\textcolor{{{color:primary.0}}}{{{a}} \\times {{b}}} \t\t\t\t\t\t\t\t&=  {{eval:a*b+c}} - \\textcolor{{{color:primary.0}}}{{{eval:a*b}}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression4",
+						"expression": "{{eval:b+d}}-{{eval:b*c}}:{{c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t{{eval:b+d}} - \\textcolor{{{color:primary.0}}}{{{eval:b*c}} \\div {{c}}} \t\t\t\t\t\t\t\t&=  {{eval:b+d}} - \\textcolor{{{color:primary.0}}}{{{b}}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression4}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression5",
+						"expression": "{{a}}+{{eval:b*c}}:{{c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t{{a}}+ \\textcolor{{{color:primary.0}}}{{{eval:b*c}} \\div {{c}}} \t\t\t\t\t\t\t\t&=  {{a}} + \\textcolor{{{color:primary.0}}}{{{b}}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression5}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression6",
+						"expression": "{{eval:b*c}}:{{c}}+{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}   \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{{{eval:b*c}} \\div {{c}}} + {{a}} \t\t\t\t\t\t\t\t&=  \\textcolor{{{color:primary.0}}}{{{b}}} + {{a}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression6}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Entiers",
+		"domain": "Priorités opératoires",
+		"subdomain": "Sans parenthèses",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7+9×9 = 88",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["88"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur de priorité : (7+9)×9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["144"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "9×9+7 = 88",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["88"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "72−7×9 = 9",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "16−81:9 = 7",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7+81:9 = 16",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["16"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "81:9+7 = 16",
+				"variationIndex": 5,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["16"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

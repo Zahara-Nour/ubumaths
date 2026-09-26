@@ -1,0 +1,158 @@
+{
+	"globalIndex": 94,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une somme",
+		"description": "Somme d’un nombre ayant au plus quatre chiffres et de $9$ ou $19$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "c",
+					"expression": "0..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "f",
+					"expression": "eval:a*1000+b*100+c*10+d"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "f+9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{f}}+\\bold{\\textcolor{{{color:primary.0}}}{9}} \t\t\t\t\t\t\t\t&= {{f}}+\\bold{\\textcolor{{{color:primary.0}}}{10-1}} \\\\ \t\t\t\t\t\t\t\t&= {{eval:f+10}}-1 \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "f+19"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{f}}+\\bold{\\textcolor{{{color:primary.0}}}{19}} \t\t\t\t\t\t\t\t&= {{f}}+\\bold{\\textcolor{{{color:primary.0}}}{20-1}} \\\\ \t\t\t\t\t\t\t\t&= {{eval:f+20}}-1 \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme astucieuse",
+		"level": 9,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "7 996 + 9 → 8 005",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "7996"
+				},
+				"answers": ["8\\,005"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 996 + 19 → 8 015",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "7996"
+				},
+				"answers": ["8\\,015"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "petit nombre 123 + 19 → 142",
+				"variationIndex": 1,
+				"variables": {
+					"a": "0",
+					"b": "1",
+					"c": "2",
+					"d": "3",
+					"f": "123"
+				},
+				"answers": ["142"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8005 sans espace : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "7996"
+				},
+				"answers": ["8005"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "+10 sans retirer 1 : 8 006 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "7996"
+				},
+				"answers": ["8\\,006"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

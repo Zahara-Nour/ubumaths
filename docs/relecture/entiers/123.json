@@ -1,0 +1,71 @@
+{
+	"globalIndex": 123,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Table de multiplication",
+		"description": "Par $6$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..12"
+					},
+					{
+						"name": "expression1",
+						"expression": "6*a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Tables",
+		"level": 6,
+		"status": "draft",
+		"delay": 6,
+		"testSpecs": [
+			{
+				"description": "6×7 = 42",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["42"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 6+7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["13"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "6×12 = 72",
+				"variationIndex": 0,
+				"variables": {
+					"a": "12"
+				},
+				"answers": ["72"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

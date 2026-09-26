@@ -1,0 +1,87 @@
+{
+	"globalIndex": 191,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Utiliser la distributivité",
+		"description": "Multiplication d'un nombre à $1$ ou $2$ chiffres par $21$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5|6|7|8|9|13|14|15|23|24|25|35|45"
+					},
+					{
+						"name": "expression1",
+						"expression": "21*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} 21 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}  \t\t\t\t\t\t\t\t&= 20 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} +  \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\\\ \t\t\t\t\t\t\t\t&= {{eval:20*a}} + {{a}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Distributivité",
+		"level": 9,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "21 × 24 = 504",
+				"variationIndex": 0,
+				"variables": {
+					"a": "24"
+				},
+				"answers": ["504"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne : 21 × 5 = 105",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["105"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne : 21 × 45 = 945",
+				"variationIndex": 0,
+				"variables": {
+					"a": "45"
+				},
+				"answers": ["945"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur de signe dans la distributivité : 480",
+				"variationIndex": 0,
+				"variables": {
+					"a": "24"
+				},
+				"answers": ["480"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

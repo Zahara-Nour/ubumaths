@@ -1,0 +1,93 @@
+{
+	"globalIndex": 68,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Point final retiré du titre.",
+	"template": {
+		"title": "Compléter une addition à trou",
+		"description": "Nombres entiers à 2 chiffres (sans retenue entre les unités et les dizaines)",
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:9-b}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10+d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*10+d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "A trou",
+		"level": 8,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "Bonne réponse 91",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"c": "9",
+					"b": "8",
+					"d": "1"
+				},
+				"answers": ["91"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : addition des deux nombres",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"c": "9",
+					"b": "8",
+					"d": "1"
+				},
+				"answers": ["247"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Bonne réponse 12",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"c": "1",
+					"b": "5",
+					"d": "2"
+				},
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

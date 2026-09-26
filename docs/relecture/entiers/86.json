@@ -1,0 +1,125 @@
+{
+	"globalIndex": 86,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Ajouter $9$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..7"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*10+b"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "c+9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{c}}+\\bold{\\textcolor{{{color:primary.0}}}{9}} \t\t\t\t\t\t\t\t&= {{c}}+\\bold{\\textcolor{{{color:primary.0}}}{10-1}} \\\\ \t\t\t\t\t\t\t\t&= {{eval:c+10}}-1 \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "9+c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\bold{\\textcolor{{{color:primary.0}}}{9}} + {{c}} \t\t\t\t\t\t\t\t&= \\bold{\\textcolor{{{color:primary.0}}}{10-1}} + {{c}}\\\\ \t\t\t\t\t\t\t\t&= {{c}} + 10-1 \\\\ \t\t\t\t\t\t\t\t&= {{eval:c+10}}-1 \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CP"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme astucieuse",
+		"level": 1,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "59 + 9 → 68",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "59"
+				},
+				"answers": ["68"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "9 + 22 → 31",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "22"
+				},
+				"answers": ["31"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "59 + 9 : +10 sans retirer 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "59"
+				},
+				"answers": ["69"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "9 + 22 : oubli de retenue",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "22"
+				},
+				"answers": ["21"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

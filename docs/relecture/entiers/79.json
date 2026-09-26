@@ -1,0 +1,79 @@
+{
+	"globalIndex": 79,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Tirage « 1..10|11..15|15..20 » (héritage TinyMath, 15 tiré deux fois plus souvent) remplacé par « 1..20 », conforme à la description. Specs : double juste aux bornes (1, 100), erreur de calcul refusée.",
+	"template": {
+		"title": "Trouver le double",
+		"description": "Nombres de $1$ à $20$, $25$, $30$, $40$, $50$, $60$ et $100$",
+		"variations": [
+			{
+				"statement": "Quel est le double de ${{a}}$ ?\n\nLe double de ${{a}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..20|25|30|40|50|60|100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:2*a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Double et moitié",
+		"level": 6,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "double de 1 → 2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "double de 18 → 36",
+				"variationIndex": 0,
+				"variables": {
+					"a": "18"
+				},
+				"answers": ["36"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "double de 100 → 200",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100"
+				},
+				"answers": ["200"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "double de 18 : 26 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "18"
+				},
+				"answers": ["26"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,83 @@
+{
+	"globalIndex": 60,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "c = a*1000+b*100 était une chaîne non évaluée (sans eval:), rendue explicite.",
+	"template": {
+		"title": "Trouver le complément",
+		"description": "Complément à 10 000 - description",
+		"variations": [
+			{
+				"statement": "Combien faut-il ajouter à ${{eval:10000-(c)}}$ pour obtenir $10\\,000$ ?\n\nIl faut ajouter $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*1000+b*100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Complément",
+		"level": 10,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "Bonne réponse 7\\,900",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7900"
+				},
+				"answers": ["7\\,900"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Sans espace des milliers",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7900"
+				},
+				"answers": ["7900"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "Erreur : oubli de la retenue",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7900"
+				},
+				"answers": ["8\\,900"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

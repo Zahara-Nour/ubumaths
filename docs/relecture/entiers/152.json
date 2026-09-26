@@ -1,0 +1,79 @@
+{
+	"globalIndex": 152,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Tirage « 1..10|11..15|15..20 » (héritage TinyMath, 15 tiré deux fois plus souvent) remplacé par « 1..20|25|30|40|50|60|100 », conforme à la description. Specs : bornes 1, 20, 100 ; double au lieu du quadruple refusé.",
+	"template": {
+		"title": "Trouver le quadruple",
+		"description": "Nombres de $1$ à $20$, $25$, $30$, $40$, $50$, $60$ et $100$",
+		"variations": [
+			{
+				"statement": "Quel est le quadruple de ${{a}}$ ?\n\nLe quadruple de ${{a}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..20|25|30|40|50|60|100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:4*a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Quadruple et quart",
+		"level": 5,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "4×20 = 80",
+				"variationIndex": 0,
+				"variables": {
+					"a": "20"
+				},
+				"answers": ["80"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "4×1 = 4",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "4×100 = 400",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100"
+				},
+				"answers": ["400"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : double de 15",
+				"variationIndex": 0,
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

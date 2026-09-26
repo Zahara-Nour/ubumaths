@@ -1,0 +1,112 @@
+{
+	"globalIndex": 175,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Point final retiré du titre.",
+	"template": {
+		"title": "Compléter une multiplication à trou",
+		"description": "Premiers multiples de $25$ et $50$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..4"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*50={{eval:a*50}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?*25={{eval:a*25}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 16,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "3 × 50 = 150",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne a = 0 : 0 × 50 = 0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 30",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3"
+				},
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "4 × 25 = 100",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 5",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4"
+				},
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,67 @@
+{
+	"globalIndex": 81,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Trouver le triple",
+		"description": "Nombre inférieur à $10$",
+		"variations": [
+			{
+				"statement": "Quel est le triple de ${{a}}$ ?\n\nLe triple de ${{a}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:3*a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Triple et tiers",
+		"level": 1,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "triple de 7 → 21",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["21"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "triple de 0 → 0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "triple de 7 : double 14 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

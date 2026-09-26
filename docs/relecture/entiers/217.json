@@ -1,0 +1,127 @@
+{
+	"globalIndex": 217,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Espace finale retirée du titre ; double espace retirée dans la correction.",
+	"template": {
+		"title": "Reconnaître un quotient et un reste dans une division euclidienne",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..10!a"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:a-1}}!b"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "En regardant l'égalité ci-dessous, quel est le **quotient** de la division euclidienne de ${{eval:a*b+c}}$ par ${{a}}$ ?\n\n$${{eval:a*b+c}}=({{a}} \\times {{b}})+{{c}}$$\n\nLe quotient est $?$.",
+				"correction": {
+					"steps": [
+						"Le quotient est {{solution:html}} car ${{eval:a*b+c}}=({{a}} \\times {{solution:0}}) + {{c}}$ et ${{c}} \\lt {{a}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "En regardant l'égalité ci-dessous, quel est le **reste** de la division euclidienne de ${{eval:a*b+c}}$ par ${{a}}$ ?\n\n$${{eval:a*b+c}}=({{a}} \\times {{b}})+{{c}}$$\n\nLe reste est $?$.",
+				"correction": {
+					"steps": [
+						"Le reste est {{solution:html}} car ${{eval:a*b+c}}=({{a}} \\times {{b}}) + {{solution:0}}$ et $\\textcolor{{{color:primary.2}}}{{{c}}} \\lt {{a}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"subdomain": "Division euclidienne",
+		"level": 1,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "76 = 7×10+6 : quotient 10",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "6"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Confusion avec le reste",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "6"
+				},
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Borne a = 2 : 7 = 2×3+1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "1"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Reste 6",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "6"
+				},
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Confusion avec le quotient",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "6"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

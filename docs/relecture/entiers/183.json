@@ -1,0 +1,87 @@
+{
+	"globalIndex": 183,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Utiliser la distributivité",
+		"description": "Multiplication d'un nombre à $1$ chiffre par $12$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "12*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} 12 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}  \t\t\t\t\t\t\t\t&= 10 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} + 2 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\\\ \t\t\t\t\t\t\t\t&= {{eval:10*a}} + {{eval:2*a}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Distributivité",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "12 × 7 = 84",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["84"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne : 12 × 0 = 0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne : 12 × 9 = 108",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["108"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur de signe dans la distributivité : 77",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["77"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

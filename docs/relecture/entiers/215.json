@@ -1,0 +1,136 @@
+{
+	"globalIndex": 215,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Utiliser un critère de divisibilité",
+		"description": "Par $9$",
+		"shared": {
+			"statement": "Le nombre ${{a}}{{b}}{{f}}$ est-il divisible par $9$ ?",
+			"choices": [
+				{
+					"content": "Oui"
+				},
+				{
+					"content": "Non"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Le nombre ${{a}}{{b}}{{f}}$ est-il divisible par $9$ ?",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "d",
+						"expression": "c+9-mod(a+b+c, 9)"
+					},
+					{
+						"name": "f",
+						"expression": "eval:d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{a}}{{b}}{{f}}$ est divisible par $9$ car la somme de ses chiffres est divisible par $9$ :",
+						"${{a}}+{{b}}+{{f}}={{eval:a+b+f}}$ est divisible par $9$."
+					]
+				}
+			},
+			{
+				"statement": "Le nombre ${{a}}{{b}}{{f}}$ est-il divisible par $9$ ?",
+				"correctChoiceIndex": ["1"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..1"
+					},
+					{
+						"name": "d",
+						"expression": "c+8-mod(a+b+c, 9)"
+					},
+					{
+						"name": "f",
+						"expression": "eval:d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{a}}{{b}}{{f}}$ n'est pas divisible par $9$ car la somme de ses chiffres n'est pas divisible par $9$ :",
+						"${{a}}+{{b}}+{{f}}={{eval:a+b+f}}$ n'est pas divisible par $9$."
+					]
+				}
+			}
+		],
+		"options": {
+			"shuffleChoices": false
+		},
+		"grades": ["CM2"],
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"subdomain": "Divisibilité",
+		"level": 7,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "Divisible par 9 : Oui",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Non divisible : Non",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Non divisible : Oui refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

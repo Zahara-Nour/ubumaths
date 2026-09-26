@@ -1,0 +1,181 @@
+{
+	"globalIndex": 202,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Utiliser la distributivité",
+		"description": "Factorisation pour un facteur $100$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "21..99"
+				},
+				{
+					"name": "b",
+					"expression": "2..98"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{b}}*{{a}}+{{eval:100-b}}*{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{b}} \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} + {{eval:100-b}} \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \t\t\t\t\t\t\t\t&=  100 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}\\\\  \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{a}}*{{b}}+{{eval:100-b}}*{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\times {{b}} + {{eval:100-b}} \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \t\t\t\t\t\t\t\t&=  100 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}\\\\  \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{b}}*{{a}}+{{a}}*{{eval:100-b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{b}} \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} + \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\times {{eval:100-b}} \t\t\t\t\t\t\t\t&=  100 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}\\\\  \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "{{a}}*{{b}}+{{a}}*{{eval:100-b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}  \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\times {{b}}+ \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\times {{eval:100-b}} \t\t\t\t\t\t\t\t&=  100 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}\\\\  \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression4}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Distributivité",
+		"level": 20,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "93×77+7×77 = 7 700",
+				"variationIndex": 0,
+				"variables": {
+					"a": "77",
+					"b": "93"
+				},
+				"answers": ["7\\,700"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Sans espace : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "77",
+					"b": "93"
+				},
+				"answers": ["7700"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "Erreur : facteur 10",
+				"variationIndex": 0,
+				"variables": {
+					"a": "77",
+					"b": "93"
+				},
+				"answers": ["770"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "97×17+83×97 = 9 700",
+				"variationIndex": 1,
+				"variables": {
+					"a": "97",
+					"b": "17"
+				},
+				"answers": ["9\\,700"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne : 2×21+21×98 = 2 100",
+				"variationIndex": 2,
+				"variables": {
+					"a": "21",
+					"b": "2"
+				},
+				"answers": ["2\\,100"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Borne : 99×98+99×2 = 9 900",
+				"variationIndex": 3,
+				"variables": {
+					"a": "99",
+					"b": "98"
+				},
+				"answers": ["9\\,900"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}
