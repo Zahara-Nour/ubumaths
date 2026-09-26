@@ -233,6 +233,7 @@ src/routes/{(public),(protected),api}/            (protected) = auth requise ; a
 | [panel-simplifications.md](docs/ref/panel-simplifications.md)           | **Ce que `simplify` et les 4 intentions rendent**  |
 | [convention-equivalence.md](docs/ref/convention-equivalence.md)         | **Ce que `areEquivalent` veut dire** (domaines)    |
 | [notation-unites.md](docs/ref/notation-unites.md)                       | **Écrire une grandeur** : `~3[m.s^-1]~`, affichage |
+| [fiches-exercices.md](docs/ref/fiches-exercices.md)                     | **Créer des fiches** : démarche, choix, pièges PDF |
 | [observabilite-erreurs-prod.md](docs/ref/observabilite-erreurs-prod.md) | **Lire les erreurs de prod** (Vercel, 7 j)         |
 | [warning-svelte.md](docs/ref/warning-svelte.md)                         | `svelte-ignore` légitime vs dette a11y             |
 | [css-color-tokens.md](docs/ref/css-color-tokens.md)                     | `var(--color-*)`, jamais `hsl(var(--x))`           |
