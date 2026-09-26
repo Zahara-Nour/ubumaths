@@ -60,7 +60,7 @@ importers:
         version: 3.0.4
       '@myriaddreamin/typst.ts':
         specifier: 0.6.1-rc5
-        version: 0.6.1-rc5
+        version: 0.6.1-rc5(@myriaddreamin/typst-ts-web-compiler@0.6.1-rc5)
       '@neoconfetti/svelte':
         specifier: ^2.2.2
         version: 2.2.2(svelte@5.56.3(@typescript-eslint/types@8.58.2))
@@ -269,6 +269,9 @@ importers:
       '@lucide/svelte':
         specifier: ^1.16.0
         version: 1.16.0(svelte@5.56.3(@typescript-eslint/types@8.58.2))
+      '@myriaddreamin/typst-ts-web-compiler':
+        specifier: 0.6.1-rc5
+        version: 0.6.1-rc5
       '@playwright/test':
         specifier: ^1.59.1
         version: 1.59.1
@@ -1076,6 +1079,9 @@ packages:
 
   '@marijn/find-cluster-break@1.0.2':
     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==}
+
+  '@myriaddreamin/typst-ts-web-compiler@0.6.1-rc5':
+    resolution: {integrity: sha512-jQDBIw3RAHcB40YQYGgaPkzjbCiFcElkFR9u6yHWBGwZo2TNz/xtHspJ82IeSxtisjeA25azEJCbl254Aq2HGg==}
 
   '@myriaddreamin/typst.ts@0.6.1-rc5':
     resolution: {integrity: sha512-FuVMuBTdfFZfIHLVShZ30qEdqzVGKM26k62OVC5UhoB2DSMi6D4o5tIgoCY4PzYcT8/dRgHcbmqA4Ep96VFvAQ==}
@@ -5566,9 +5572,13 @@ snapshots:
 
   '@marijn/find-cluster-break@1.0.2': {}
 
-  '@myriaddreamin/typst.ts@0.6.1-rc5':
+  '@myriaddreamin/typst-ts-web-compiler@0.6.1-rc5': {}
+
+  '@myriaddreamin/typst.ts@0.6.1-rc5(@myriaddreamin/typst-ts-web-compiler@0.6.1-rc5)':
     dependencies:
       idb: 7.1.1
+    optionalDependencies:
+      '@myriaddreamin/typst-ts-web-compiler': 0.6.1-rc5
 
   '@napi-rs/canvas-android-arm64@0.1.80':
     optional: true
