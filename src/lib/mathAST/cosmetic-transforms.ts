@@ -835,6 +835,15 @@ export function cosmeticViolations(
 	return violations;
 }
 
+/** Multiplication « * » (style `star`) réécrite en « × » (style `cross`) */
+function withCrossMultiplication(ast: MathNode): MathNode {
+	return mapNode(ast, (node) =>
+		node.type === 'multiplication' && node.displayStyle === 'star'
+			? { ...node, displayStyle: 'cross' }
+			: node
+	);
+}
+
 /**
  * Unified checkForm: applies cosmetic transformers to both answer and expected,
  * detects constraint violations, and compares final forms.
@@ -916,8 +925,10 @@ export function checkForm(
 	const expectedAST = applyFullASTPipeline(expectedParse.ast, options);
 
 	// === Final comparison ===
-	const answerFinal = toLatex(answerAST);
-	const expectedFinal = toLatex(expectedAST);
+	// « * » (réponses attendues écrites en syntaxe simple) et « × » (clavier de
+	// l'élève) sont le même signe : le style d'affichage n'est pas une forme.
+	const answerFinal = toLatex(withCrossMultiplication(answerAST));
+	const expectedFinal = toLatex(withCrossMultiplication(expectedAST));
 
 	if (answerFinal !== expectedFinal) {
 		return { valid: false, status: 'bad_form', violations, messages };
