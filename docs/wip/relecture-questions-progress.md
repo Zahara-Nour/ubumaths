@@ -100,3 +100,6 @@ Après relecture (`code-reviewer`) :
   brouillons de la relecture : ne pas l'utiliser pour eux.
 - `&solution` (→ `{{solution:html}}`) est rendu HORS formule (« est 1.5 ») : vérifier au rendu
   que l'élève voit « 1,5 » (notation décimale) — repéré sur #260.
+- #364 : consigne en HTML TinyMath (`<h3 class="${get(color2)}-text">`) non convertie — à reprendre.
+- #397 : conditionnel `{{if:…}}` contenant un `align` multiligne → « Failed to parse random »
+  (indépendant des couleurs) — groupe « conditionnels » à traiter.
