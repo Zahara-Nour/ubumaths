@@ -62,6 +62,15 @@ function extractMarkdownTokens(text: string): Token[] {
 	let i = 0;
 
 	while (i < text.length) {
+		// `{{{x…` : la première accolade est un groupe LaTeX collé à un marqueur
+		// (`\dfrac{{{a}}\textcolor{…}{…}}`, `\textcolor{{{color:…}}}`). Sinon tout le
+		// bloc serait lu comme un seul marqueur. `{{{{…` (tirage à borne calculée,
+		// `{{{{eval:a+1}}..20}}`) n'est pas concerné.
+		if (text.substring(i, i + 3) === '{{{' && text[i + 3] !== '{') {
+			i++;
+			continue;
+		}
+
 		// Check for {{ (double brace)
 		if (text.substring(i, i + 2) === '{{') {
 			const result = extractMarkdownBracedToken(text, i);

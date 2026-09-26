@@ -675,6 +675,14 @@ export class TinyCASConverter {
 			return `max(${a.trim()},${b.trim()})`;
 		});
 
+		// pgcd(a;b) → gcd(a,b) : dans un calcul `[_…_]`, il restait brut
+		// (« free variables: p, ; »). Les conditions le convertissaient déjà.
+		const pgcdPattern = /pgcd\(([^;)]+);([^)]+)\)/g;
+		result = result.replace(pgcdPattern, (match, a, b) => {
+			this.stats.minMaxFunctions++;
+			return `gcd(${a.trim()},${b.trim()})`;
+		});
+
 		return result;
 	}
 
@@ -1051,6 +1059,16 @@ export function rewriteTinyMathDraw(expression: string): string {
 	if (negative) {
 		const negate = (bound: string) => (/^\d+$/.test(bound) ? `-${bound}` : `-(${bound})`);
 		return `$e[${negate(negative[2])};${negate(negative[1])}]`;
+	}
+
+	// `10^$e[1;2]` : une puissance de 10 à exposant tiré → liste des valeurs
+	const power = trimmed.match(/^(\d+)\^\$e\[(\d+);(\d+)\]$/);
+	if (power) {
+		const [base, low, high] = power.slice(1).map(Number);
+		if (high - low <= 6) {
+			const values = Array.from({ length: high - low + 1 }, (_, k) => base ** (low + k));
+			return `$l{${values.join(';')}}`;
+		}
 	}
 
 	const nDigits = (n: string) => `${10 ** (Number(n) - 1)};${10 ** Number(n) - 1}`;
