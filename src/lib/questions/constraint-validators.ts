@@ -68,131 +68,8 @@ export function checkSpaces(answersLatex: string[]): number[] {
  * Check if a single LaTeX string has spacing violations
  */
 function hasSpacingViolation(latex: string): boolean {
-	// Normalize LaTeX thin space (\,) to regular space for analysis
-	// Also handle {,} which is French decimal separator in LaTeX
-	let normalized = latex.replace(/\\,/g, ' ');
-
-	// Replace {,} with a placeholder decimal separator
-	// This is the French decimal comma in LaTeX
-	normalized = normalized.replace(/\{,\}/g, '.');
-
-	// Also handle simple comma as decimal separator (common in French input)
-	// But only when it's clearly a decimal comma (digit,digit pattern)
-	// Note: This assumes input is pure numbers, not function calls like f(1,2)
-	normalized = normalized.replace(/(\d),(\d)/g, '$1.$2');
-
-	// Extract all number sequences (with potential spaces and decimal points)
-	// Pattern matches: optional minus, digits with optional spaces, optional decimal part
-	const numberPattern = /-?\d[\d\s]*(?:\.\d[\d\s]*)?/g;
-	const matches = normalized.match(numberPattern);
-
-	if (!matches) {
-		return false;
-	}
-
-	for (const match of matches) {
-		// Split by decimal point
-		const parts = match.replace(/^-/, '').split('.');
-		const integerPart = parts[0] || '';
-		const decimalPart = parts[1] || '';
-
-		// Check integer part: should have spaces creating groups of 3 from right
-		if (hasIntegerSpacingViolation(integerPart)) {
-			return true;
-		}
-
-		// Check decimal part: should have spaces creating groups of 3 from left
-		if (hasDecimalSpacingViolation(decimalPart)) {
-			return true;
-		}
-	}
-
-	return false;
-}
-
-/**
- * Check integer part for spacing violations
- * Groups of 3 from right: 1 234 567
- */
-function hasIntegerSpacingViolation(integerPart: string): boolean {
-	// Remove existing spaces to get pure digits
-	const digits = integerPart.replace(/\s/g, '');
-
-	// 3 or fewer digits: no spacing required (1, 12, 123)
-	if (digits.length <= 3) {
-		return false;
-	}
-
-	// 4+ digits: spacing is required (French math convention: 1 234, 12 345, etc.)
-	if (!integerPart.includes(' ')) {
-		return true; // Missing required spacing
-	}
-
-	// Verify spacing is at correct positions
-	return !isCorrectIntegerSpacing(integerPart);
-}
-
-/**
- * Verify integer spacing is correct (groups of 3 from right)
- */
-function isCorrectIntegerSpacing(integerPart: string): boolean {
-	const digits = integerPart.replace(/\s/g, '');
-
-	// Build expected format with spaces
-	const groups: string[] = [];
-	for (let i = digits.length; i > 0; i -= 3) {
-		const start = Math.max(0, i - 3);
-		groups.unshift(digits.slice(start, i));
-	}
-	const expected = groups.join(' ');
-
-	// Normalize actual spacing (collapse multiple spaces)
-	const actual = integerPart.replace(/\s+/g, ' ').trim();
-
-	return actual === expected;
-}
-
-/**
- * Check decimal part for spacing violations
- * Groups of 3 from left: 123 456
- */
-function hasDecimalSpacingViolation(decimalPart: string): boolean {
-	if (!decimalPart) {
-		return false;
-	}
-
-	// Remove existing spaces to get pure digits
-	const digits = decimalPart.replace(/\s/g, '');
-
-	// 3 or fewer digits: no spacing required
-	if (digits.length <= 3) {
-		return false;
-	}
-
-	// 4+ digits: spacing is required (French math convention)
-	if (!decimalPart.includes(' ')) {
-		return true;
-	}
-
-	return !isCorrectDecimalSpacing(decimalPart);
-}
-
-/**
- * Verify decimal spacing is correct (groups of 3 from left)
- */
-function isCorrectDecimalSpacing(decimalPart: string): boolean {
-	const digits = decimalPart.replace(/\s/g, '');
-
-	// Build expected format with spaces (groups of 3 from left)
-	const groups: string[] = [];
-	for (let i = 0; i < digits.length; i += 3) {
-		groups.push(digits.slice(i, i + 3));
-	}
-	const expected = groups.join(' ');
-
-	const actual = decimalPart.replace(/\s+/g, ' ').trim();
-
-	return actual === expected;
+	// Logique unique (groupes de 3), partagée avec le contrôle de forme
+	return checkSpacesViolation(latex);
 }
 
 // ============================================================================
@@ -222,6 +99,7 @@ import {
 	type VisitorContext
 } from '$lib/mathAST';
 import { gcd } from '$lib/mathAST/normal';
+import { checkSpacesViolation } from '$lib/mathAST/cosmetic-transforms';
 
 /**
  * Check for explicit multiplication symbols that should be implicit

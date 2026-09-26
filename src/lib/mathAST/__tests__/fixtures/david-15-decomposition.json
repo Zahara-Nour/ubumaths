@@ -1,0 +1,183 @@
+{
+	"delay": 40,
+	"level": 7,
+	"theme": "Entiers",
+	"title": "Décomposer l'écriture décimale un nombre",
+	"domain": "Apprivoiser",
+	"grades": ["CE2"],
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"brackets": "off",
+			"factorOne": "off"
+		}
+	},
+	"subdomain": "Décomposition",
+	"testSpecs": [
+		{
+			"answers": [
+				"\\left(1\\times1\\,000\\right)+\\left(2\\times100\\right)+\\left(3\\times10\\right)+4"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "4"
+			},
+			"description": "Réponse correcte (avec parenthèse)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\times1\\,000+2\\times100+3\\times10+4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "4"
+			},
+			"description": "Réponse correcte (sans parenthèse)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\,234"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "4"
+			},
+			"description": "Réponse sous mauvaise forme",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1234"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form", "spaces"]
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "4"
+			},
+			"description": "Réponse sous mauvaise forme avec mauvaise écriture des nombres (espaces)",
+			"variationIndex": 0
+		},
+		{
+			"answers": [
+				"\\left(1\\times1\\,000\\right)+4+\\left(2\\times100\\right)+\\left(3\\times10\\right)"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "4"
+			},
+			"description": "éponse correcte (avec parenthèse) - termes mélangés",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\times1\\,000+4+2\\times100+3\\times10"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "4"
+			},
+			"description": "Réponse correcte (sans parenthèse) - termes mélangés",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\,000+2\\times100+3\\times10+4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "4"
+			},
+			"description": "Réponse correcte (sans parenthèse) - facteur 1 enlevé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\,000+4+\\left(2\\times100\\right)+\\left(3\\times10\\right)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "4"
+			},
+			"description": "Réponse correcte (avec parenthèse) - facteur 1 enlevé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\,000+4+\\,2\\times100+3\\times10"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "4"
+			},
+			"description": "Réponse correcte (sans parenthèse) - facteur 1 enlevé - termes mélangés",
+			"variationIndex": 0
+		}
+	],
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "({{a}}*1000) + ({{b}}*100) + ({{c}}*10)+{{d}}"
+				}
+			],
+			"statement": "Décompose ce nombre comme dans cet exemple :\n$$2345 = (2 * 1000) + (3 * 100) +(4 * 10) + 5$$\n\n$${{expression}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "expression",
+					"expression": "eval:a*1000 + b*100 + c*10+d"
+				}
+			]
+		}
+	],
+	"description": "En milliers, centaines, dizaines et unités, à l'aide de produits"
+}

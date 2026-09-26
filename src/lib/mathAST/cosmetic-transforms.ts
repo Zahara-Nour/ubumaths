@@ -96,6 +96,91 @@ export function removeZeros(latex: string): string {
 }
 
 /**
+ * Check integer part for spacing violations
+ * Groups of 3 from right: 1 234 567
+ */
+function hasIntegerSpacingViolation(integerPart: string): boolean {
+	// Remove existing spaces to get pure digits
+	const digits = integerPart.replace(/\s/g, '');
+
+	// 3 or fewer digits: no spacing required (1, 12, 123)
+	if (digits.length <= 3) {
+		return false;
+	}
+
+	// 4+ digits: spacing is required (French math convention: 1 234, 12 345, etc.)
+	if (!integerPart.includes(' ')) {
+		return true; // Missing required spacing
+	}
+
+	// Verify spacing is at correct positions
+	return !isCorrectIntegerSpacing(integerPart);
+}
+
+/**
+ * Check decimal part for spacing violations
+ * Groups of 3 from left: 123 456
+ */
+function hasDecimalSpacingViolation(decimalPart: string): boolean {
+	if (!decimalPart) {
+		return false;
+	}
+
+	// Remove existing spaces to get pure digits
+	const digits = decimalPart.replace(/\s/g, '');
+
+	// 3 or fewer digits: no spacing required
+	if (digits.length <= 3) {
+		return false;
+	}
+
+	// 4+ digits: spacing is required (French math convention)
+	if (!decimalPart.includes(' ')) {
+		return true;
+	}
+
+	return !isCorrectDecimalSpacing(decimalPart);
+}
+
+/**
+ * Verify integer spacing is correct (groups of 3 from right)
+ */
+function isCorrectIntegerSpacing(integerPart: string): boolean {
+	const digits = integerPart.replace(/\s/g, '');
+
+	// Build expected format with spaces
+	const groups: string[] = [];
+	for (let i = digits.length; i > 0; i -= 3) {
+		const start = Math.max(0, i - 3);
+		groups.unshift(digits.slice(start, i));
+	}
+	const expected = groups.join(' ');
+
+	// Normalize actual spacing (collapse multiple spaces)
+	const actual = integerPart.replace(/\s+/g, ' ').trim();
+
+	return actual === expected;
+}
+
+/**
+ * Verify decimal spacing is correct (groups of 3 from left)
+ */
+function isCorrectDecimalSpacing(decimalPart: string): boolean {
+	const digits = decimalPart.replace(/\s/g, '');
+
+	// Build expected format with spaces (groups of 3 from left)
+	const groups: string[] = [];
+	for (let i = 0; i < digits.length; i += 3) {
+		groups.push(digits.slice(i, i + 3));
+	}
+	const expected = groups.join(' ');
+
+	const actual = decimalPart.replace(/\s+/g, ' ').trim();
+
+	return actual === expected;
+}
+
+/**
  * Check if a LaTeX string has spacing issues (missing grouping spaces in numbers).
  * French format uses thin spaces to group digits in groups of 3.
  *
@@ -119,13 +204,11 @@ export function checkSpacesViolation(latex: string): boolean {
 		const integerPart = parts[0] || '';
 		const decimalPart = parts[1] || '';
 
-		// Check integer part: 4+ digits need spaces
-		const intDigits = integerPart.replace(/\s/g, '');
-		if (intDigits.length > 3 && !integerPart.includes(' ')) return true;
-
-		// Check decimal part: 4+ digits need spaces
-		const decDigits = decimalPart.replace(/\s/g, '');
-		if (decDigits.length > 3 && !decimalPart.includes(' ')) return true;
+		// Groupes de 3 : depuis la droite pour la partie entière (1 234 567),
+		// depuis la virgule pour la partie décimale (0,123 4). Une espace mal
+		// placée (34 56) est une faute, pas seulement une espace absente.
+		if (hasIntegerSpacingViolation(integerPart)) return true;
+		if (hasDecimalSpacingViolation(decimalPart)) return true;
 	}
 
 	return false;
@@ -835,6 +918,15 @@ export function cosmeticViolations(
 	return violations;
 }
 
+/** Multiplication « * » (style `star`) réécrite en « × » (style `cross`) */
+function withCrossMultiplication(ast: MathNode): MathNode {
+	return mapNode(ast, (node) =>
+		node.type === 'multiplication' && node.displayStyle === 'star'
+			? { ...node, displayStyle: 'cross' }
+			: node
+	);
+}
+
 /**
  * Unified checkForm: applies cosmetic transformers to both answer and expected,
  * detects constraint violations, and compares final forms.
@@ -916,8 +1008,10 @@ export function checkForm(
 	const expectedAST = applyFullASTPipeline(expectedParse.ast, options);
 
 	// === Final comparison ===
-	const answerFinal = toLatex(answerAST);
-	const expectedFinal = toLatex(expectedAST);
+	// « * » (réponses attendues écrites en syntaxe simple) et « × » (clavier de
+	// l'élève) sont le même signe : le style d'affichage n'est pas une forme.
+	const answerFinal = toLatex(withCrossMultiplication(answerAST));
+	const expectedFinal = toLatex(withCrossMultiplication(expectedAST));
 
 	if (answerFinal !== expectedFinal) {
 		return { valid: false, status: 'bad_form', violations, messages };
