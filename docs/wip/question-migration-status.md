@@ -1,5 +1,11 @@
 # Question System Migration - Status February 2026
 
+> ⛔ **PÉRIMÉ (2026-09-26) — ne pas suivre ce document.** Il recommande des commandes qui
+> importaient sans relecture. La relecture et l'import passent désormais par l'outillage décrit dans
+> [`docs/relecture/README.md`](../relecture/README.md) ; suivi dans
+> [`relecture-questions-progress.md`](relecture-questions-progress.md). `migration:import`,
+> `rollback-migration` et `validate-phase1-questions` sont en simulation par défaut (`--publier`).
+
 ## Overview
 
 This document describes the current state of the question system migration and the work needed to complete it.
