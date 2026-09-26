@@ -172,9 +172,13 @@ function validateVariation(
 				errors.push(`${prefix} multiple_choice requires at least 2 choices`);
 			}
 
-			// Check that at least one choice is correct (only for per-variation choices with isCorrect)
+			// Au moins une bonne réponse : `isCorrect` sur un choix, ou `correctChoiceIndex`
+			// (QCM « dynamique », dont la bonne réponse dépend des variables)
 			if (variation.choices) {
-				const hasCorrect = variation.choices.some((choice) => choice.isCorrect);
+				const hasCorrect =
+					variation.choices.some((choice) => choice.isCorrect) ||
+					variation.correctChoiceIndex !== undefined ||
+					shared?.correctChoiceIndex !== undefined;
 				if (!hasCorrect) {
 					errors.push(`${prefix} multiple_choice requires at least one correct choice`);
 				}
