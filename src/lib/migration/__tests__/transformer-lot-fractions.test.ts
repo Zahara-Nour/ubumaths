@@ -36,7 +36,7 @@ function generatesAll(index: number, seeds = 15): string[] {
 
 describe('conversion', () => {
 	it('pgcd dans un calcul → gcd', () => {
-		expect(convertTinyCASToNew('[_&3*pgcd(&1;&2)_]').converted).toBe('{{eval:c*gcd(a,b)}}');
+		expect(convertTinyCASToNew('[_&3*pgcd(&1;&2)_]').converted).toBe('{{eval:c*gcd(a, b)}}');
 	});
 
 	it('puissance de 10 à exposant tiré → liste', () => {

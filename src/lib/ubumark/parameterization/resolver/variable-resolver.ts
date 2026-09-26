@@ -65,6 +65,21 @@ export function applyRemoveSpaces(latex: string): string {
 }
 
 /**
+ * Valeur non numérique d'une variable d'une lettre, liée dans un calcul : une formule en
+ * syntaxe maison (`2+3-mod(9+2+2, 3)`) est lue par parseCustom — `substitute` lirait la
+ * chaîne en LaTeX et échouerait. Une valeur LaTeX (`\\dfrac{9}{7}`) reste une chaîne.
+ */
+function toBinding(value: string): BindingValue {
+	// LaTeX, ou une seule lettre (`e` deviendrait la constante d'Euler) : chaîne, comme avant
+	if (value.includes('\\') || /^\s*[a-zA-Z]\s*$/.test(value)) return value;
+	try {
+		return parseCustom(value);
+	} catch {
+		return value;
+	}
+}
+
+/**
  * Wrap a value being string-substituted into an `{{eval:...}}` expression in
  * `{}` so it parses as a single grouped operand. This preserves the implied
  * grouping of negative or compound values: `{{a}}^2` with a=-5 becomes
@@ -390,7 +405,7 @@ export function resolveExpression(
 			for (const rv of alreadyResolved) {
 				if (rv.name.length === 1) {
 					const num = Number(rv.value);
-					bindings[rv.name] = Number.isFinite(num) ? num : rv.value;
+					bindings[rv.name] = Number.isFinite(num) ? num : toBinding(rv.value);
 				}
 			}
 
@@ -752,7 +767,7 @@ function evaluateSingleEval(evalToken: string, alreadyResolved: ResolvedVariable
 	for (const rv of alreadyResolved) {
 		if (rv.name.length === 1) {
 			const num = Number(rv.value);
-			bindings[rv.name] = Number.isFinite(num) ? num : rv.value;
+			bindings[rv.name] = Number.isFinite(num) ? num : toBinding(rv.value);
 		}
 	}
 

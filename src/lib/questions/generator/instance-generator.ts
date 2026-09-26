@@ -269,7 +269,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			if (expressionNames.size > 0) {
 				resolvedAnswerFormats = {};
 				for (const exprName of Array.from(expressionNames)) {
-					const rawFormat = resolvedVariation.answerFormats?.[exprName] ?? '?';
+					// Sans format : une case par `?` de l'expression (`(7*?)+?` → 2 cases ; une
+					// expression à cases n'affiche pas son format, cf. fill-blanks-utils)
+					const holes = (
+						resolvedVariables.find((v) => v.name === exprName)?.value.match(/\?/g) ?? []
+					).length;
+					const rawFormat =
+						resolvedVariation.answerFormats?.[exprName] ?? '?'.repeat(Math.max(1, holes));
 					resolvedAnswerFormats[exprName] = resolveAnswerFormat(rawFormat, resolvedVariables, seed);
 				}
 			}

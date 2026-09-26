@@ -441,10 +441,10 @@ function splitDigitsParts(spec: string): [string, string] | null {
  */
 const HTML_TAG = /<[a-z][^>]*>/i;
 
-// Tirage TinyMath : `$e[1;9]`, `$er[2;5]`, `$e{3}`, `$er{1}`, exclusions `\{…}` comprises
-const TINYMATH_DRAW_REGEX = /\$er?(?:\[[^\]]*\]|\{[^}]*\})(?:\\\{[^}]*\})?/g;
-// Ce qui peut entourer les tirages d'un tirage composé : calcul et références `&n`
-const COMPOSITE_REST_REGEX = /^[\s\d&+\-*:/()^,.]*$/;
+// Tirage TinyMath : `$e[1;9]`, `$er[2;5]`, `$e{3}`, `$er{1}`, liste `$l{…}`, exclusions `\{…}` comprises
+const TINYMATH_DRAW_REGEX = /\$(?:er?|l)(?:\[[^\]]*\]|\{[^}]*\})(?:\\\{[^}]*\})?/g;
+// Ce qui peut entourer les tirages d'un tirage composé : calcul, fonctions TinyMath et références `&n`
+const COMPOSITE_REST_REGEX = /^(?:[\s\d&+\-*:/()^,.;]|mod|pgcd|mini|maxi|abs)*$/;
 
 /**
  * Tirage composé (`$e[1;9]*10+$e[1;9]`, `2*$e{3}`, `&1*1000+$e[0;9]`) : chaque tirage
@@ -516,9 +516,10 @@ function convertVariables(
 			// {{a}}^{{b}} → a^b (resolver handles bare name substitution)
 			// puis tirages dans la syntaxe du générateur (bornes calculées, exclusions m/d/cd)
 			// (variable mêlant texte et calcul, `&4/[_&3*&1_]` → `{{d}}/{{eval:c*a}}` :
-			// forme gabarit, comme les expressions — cf. toExpressionTemplate)
+			// forme gabarit, comme les expressions — cf. toExpressionTemplate). Les exclusions
+			// `\{…}` d'abord : leurs calculs `{{eval:…}}` ne sont pas du texte mixte (#90)
 			const simplified = normalizeRandomRange(
-				convertTinyMathExclusion(toExpressionTemplate(afterTinyCAS))
+				toExpressionTemplate(convertTinyMathExclusion(afterTinyCAS))
 			);
 
 			// Handle complex digits: expressions where parts contain ranges (..)

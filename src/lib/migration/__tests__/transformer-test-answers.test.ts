@@ -213,10 +213,9 @@ describe('testAnswerss — de bout en bout (#216)', () => {
 		}
 	);
 
-	// Défaut CONNU, hors de ce correctif : la liste suivie d'un calcul
-	// `$l{1;4;7}+2-mod(&1+&2;3)` devient `1|4|7+2-mod(a+b;3)`, que le générateur
-	// ne sait pas tirer (≈ 1 tirage sur 2). Quand ce test passera, retirer `.fails`.
-	it.fails('variante 3 : génère sur 20 tirages', () => {
+	// La liste suivie d'un calcul `$l{1;4;7}+2-mod(&1+&2;3)` devenait `1|4|7+2-mod(a+b;3)`,
+	// que le générateur ne savait pas tirer : tirage composé depuis le lot Entiers
+	it('variante 3 : génère sur 20 tirages', () => {
 		const single = { ...template, variations: [template.variations[2]] };
 		for (let seed = 1; seed <= 20; seed++) {
 			expect(generateInstance(single, seed).success).toBe(true);
