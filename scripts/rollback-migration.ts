@@ -16,17 +16,20 @@
  * - Confirmation prompt before destructive operations
  * - Resets migration_tracking status
  *
+ * ⚠️ SIMULATION PAR DÉFAUT (décision du 2026-09-26) : rien n'est supprimé sans `--publier`.
+ *
  * Usage:
  *   pnpm tsx scripts/rollback-migration.ts --theme Entiers --domain Apprivoiser --subdomain Ecriture
- *   pnpm tsx scripts/rollback-migration.ts --all
- *   pnpm tsx scripts/rollback-migration.ts --dry-run
+ *   pnpm tsx scripts/rollback-migration.ts --all              (simulation)
+ *   pnpm tsx scripts/rollback-migration.ts --all --publier    (SUPPRIME en base)
  *
  * Options:
  *   --theme <name>      Filter by theme (e.g., "Entiers")
  *   --domain <name>     Filter by domain (e.g., "Apprivoiser")
  *   --subdomain <name>  Filter by subdomain (e.g., "Ecriture")
  *   --all               Rollback all imported migration questions
- *   --dry-run           Preview what would be deleted without making changes
+ *   --publier           ⚠️ Supprime réellement (sinon simulation)
+ *   --dry-run           Sans effet (la simulation est le défaut), conservé par compatibilité
  *   --force             Skip confirmation prompt (use with caution!)
  *   --batch <size>      Batch size for deletes (default: 100)
  *
@@ -43,7 +46,8 @@ import * as readline from 'readline';
 
 const CONFIG = {
 	BATCH_SIZE: parseInt(getArgValue('--batch') || '100'),
-	DRY_RUN: process.argv.includes('--dry-run'),
+	// Simulation par défaut : supprimer exige `--publier`
+	DRY_RUN: !process.argv.includes('--publier'),
 	FORCE: process.argv.includes('--force'),
 	ALL: process.argv.includes('--all'),
 	THEME: getArgValue('--theme'),
@@ -458,7 +462,7 @@ function printReport(results: RollbackResults): void {
 
 	if (CONFIG.DRY_RUN) {
 		console.log('\n[DRY RUN] No actual database changes were made.');
-		console.log('Run without --dry-run to perform the actual rollback.');
+		console.log('Add --publier to perform the actual rollback.');
 	}
 }
 
