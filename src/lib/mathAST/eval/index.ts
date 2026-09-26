@@ -145,7 +145,12 @@ export { evaluate } from './evaluate';
 export { compile, createSafeEvaluator, CompileError } from './compile';
 export type { CompiledFn } from './compile';
 
-export { evaluateWithModifiers, evaluateAstWithModifiers } from './evaluate-with-modifiers';
+export {
+	evaluateWithModifiers,
+	evaluateAstWithModifiers,
+	evalResultToCustom,
+	evalResultToNumber
+} from './evaluate-with-modifiers';
 
 // =============================================================================
 // Numeric Comparison

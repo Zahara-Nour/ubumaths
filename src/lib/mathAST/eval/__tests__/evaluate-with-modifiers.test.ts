@@ -126,9 +126,9 @@ describe('evaluateWithModifiers - bracketNegative modifier', () => {
 		expect(evaluateWithModifiers('0', { bracketNegative: true })).toBe('0');
 	});
 
-	it('brackets negative fraction result', () => {
+	it('brackets negative fraction result (exact par défaut)', () => {
 		const result = evaluateWithModifiers('-\\frac{1}{2}', { bracketNegative: true });
-		expect(result).toBe('(-0.5)');
+		expect(result).toBe('(-\\dfrac{1}{2})');
 	});
 });
 
@@ -252,5 +252,68 @@ describe('evaluateAstWithModifiers - AST input', () => {
 	it('evaluates AST with combined modifiers', () => {
 		const ast = parseLatex('-\\frac{1}{2}');
 		expect(evaluateAstWithModifiers(ast, { decimal: true, bracketNegative: true })).toBe('(-0.5)');
+	});
+});
+
+// =============================================================================
+// Résultat exact par défaut (comme TinyMath) — `;d` pour le décimal
+// =============================================================================
+
+describe('evaluateWithModifiers - résultat exact par défaut', () => {
+	it('fraction irréductible : 90/70 → \\dfrac{9}{7}', () => {
+		expect(evaluateWithModifiers('\\frac{90}{70}', {})).toBe('\\dfrac{9}{7}');
+	});
+
+	it('signe devant la fraction : -6/8 → -\\dfrac{3}{4}', () => {
+		expect(evaluateWithModifiers('\\frac{-6}{8}', {})).toBe('-\\dfrac{3}{4}');
+	});
+
+	it('somme de fractions : 1/3 + 1/6 → \\dfrac{1}{2}', () => {
+		expect(evaluateWithModifiers('\\frac{1}{3}+\\frac{1}{6}', {})).toBe('\\dfrac{1}{2}');
+	});
+
+	it('entier si le résultat tombe juste : 12/4 → 3', () => {
+		expect(evaluateWithModifiers('\\frac{12}{4}', {})).toBe('3');
+	});
+
+	it('racine simplifiée : √8 → 2 \\sqrt{2}', () => {
+		expect(evaluateWithModifiers('\\sqrt{8}', {})).toBe('2 \\sqrt{2}');
+	});
+
+	it('min de fractions : garde la fraction exacte', () => {
+		expect(evaluateWithModifiers('\\min(\\frac{2}{3}, \\frac{2}{9})', {})).toBe('\\dfrac{2}{9}');
+	});
+
+	it('un décimal dans le calcul donne un décimal : 0.5 + 0.25 → 0.75', () => {
+		expect(evaluateWithModifiers('0.5+0.25', {})).toBe('0.75');
+	});
+
+	it('décimal × entier : 1.2 × 3 → 3.6', () => {
+		expect(evaluateWithModifiers('1.2 \\times 3', {})).toBe('3.6');
+	});
+
+	it('`;d` force le décimal : 7/10 → 0.7', () => {
+		expect(evaluateWithModifiers('\\frac{7}{10}', { decimal: true })).toBe('0.7');
+	});
+
+	it('`;+` sur une fraction exacte : +\\dfrac{3}{4}', () => {
+		expect(evaluateWithModifiers('\\frac{3}{4}', { addPositive: true })).toBe('+\\dfrac{3}{4}');
+	});
+
+	it('`;()` sur une fraction négative : (-\\dfrac{3}{4})', () => {
+		expect(evaluateWithModifiers('\\frac{-3}{4}', { bracketNegative: true })).toBe(
+			'(-\\dfrac{3}{4})'
+		);
+	});
+});
+
+describe('evaluateWithModifiers - exact aussi pour ln, exponentielle, π ; `;d` pour la valeur', () => {
+	it('ln(2) exact, 0.693… avec `;d`', () => {
+		expect(evaluateWithModifiers('\\ln(2)', {})).toContain('\\ln');
+		expect(evaluateWithModifiers('\\ln(2)', { decimal: true }).startsWith('0.693147')).toBe(true);
+	});
+
+	it('π reste exact', () => {
+		expect(evaluateWithModifiers('12\\pi', {})).toBe('12 \\pi');
 	});
 });

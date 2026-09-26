@@ -18,6 +18,7 @@ import type {
 	NumberOrVariable
 } from '../../types';
 import { seededRandom } from '$lib/utils/random';
+import { evalResultToNumber } from '$lib/mathAST/eval';
 import { detectExpressionType } from '../parser/expression-normalizer';
 
 /**
@@ -334,7 +335,8 @@ function resolveNumberOrVariable(
 		throw new Error(`Variable "${value.name}" not found or not yet resolved`);
 	}
 
-	const num = parseFloat(variable.value);
+	// Une borne peut valoir une forme exacte (`\dfrac{9}{2}`, `2 \sqrt{2}`)
+	const num = evalResultToNumber(variable.value);
 	if (isNaN(num)) {
 		throw new Error(`Variable "${value.name}" does not resolve to a number: ${variable.value}`);
 	}

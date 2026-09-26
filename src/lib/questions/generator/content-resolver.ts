@@ -40,6 +40,39 @@ const INLINE_MATH_REGEX = /\$([^$\n]+)\$/g;
  */
 const EXPR_MARKER_REGEX = /^<<expr:(expression[a-zA-Z0-9]*)>>/;
 
+// Nombres exacts rendus par `{{eval:…}}` : `\dfrac{9}{7}`, `\sqrt{2}`, `\dfrac{\sqrt{3}}{2}`.
+// Arguments NUMÉRIQUES seulement : une formule d'auteur (`\dfrac{-b}{2a}`) n'est pas réécrite.
+const EXACT_SQRT_REGEX = /\\sqrt\{([\d.\s]+)\}/g;
+const EXACT_DFRAC_REGEX =
+	/\\dfrac\{((?:[-\d.\s]|sqrt\([\d.\s]+\))+)\}\{((?:[\d.\s]|sqrt\([\d.\s]+\))+)\}/g;
+
+/**
+ * Réécrit en syntaxe maison les nombres exacts que `{{eval:…}}` insère en LaTeX
+ * (`\dfrac{9}{7}` → `{{9}/{7}}`, `\sqrt{2}` → `sqrt(2)`), pour qu'une formule
+ * maison qui les contient reste convertible (`3*\dfrac{9}{7}` → `3 \times \dfrac{9}{7}`).
+ */
+function exactLatexToCustom(content: string): string {
+	let previous: string;
+	let result = content;
+	do {
+		previous = result;
+		result = result.replace(EXACT_SQRT_REGEX, 'sqrt($1)').replace(EXACT_DFRAC_REGEX, '{{$1}/{$2}}');
+	} while (result !== previous);
+	return result;
+}
+
+/**
+ * Formule maison → LaTeX. Si elle ne se lit pas telle quelle, second essai après
+ * réécriture des nombres exacts ; sinon `null` (formule LaTeX, laissée intacte).
+ */
+function customToLatex(content: string): string | null {
+	const direct = parseCustomSafe(content);
+	if (direct.ast) return toLatex(direct.ast, { preserveHoles: true });
+	if (!content.includes('\\dfrac') && !content.includes('\\sqrt')) return null;
+	const rewritten = parseCustomSafe(exactLatexToCustom(content));
+	return rewritten.ast ? toLatex(rewritten.ast, { preserveHoles: true }) : null;
+}
+
 /**
  * Convert content inside $...$ and $$...$$ from custom syntax to LaTeX
  *
@@ -73,14 +106,10 @@ function convertMathZonesToLatex(content: string): string {
 			mathContent = mathContent.slice(markerMatch[0].length);
 		}
 
-		const parseResult = parseCustomSafe(mathContent.trim());
-		if (parseResult.ast) {
-			// preserveHoles: ? stays as ? (not \placeholder[N]{}) for assignBlankIndices
-			const latex = toLatex(parseResult.ast, { preserveHoles: true });
-			return prefix + latex;
-		}
+		// preserveHoles: ? stays as ? (not \placeholder[N]{}) for assignBlankIndices
+		const latex = customToLatex(mathContent.trim());
 		// On parse error, return original (will show error at render time)
-		return prefix + mathContent;
+		return prefix + (latex ?? mathContent);
 	};
 
 	// Convert block math $$...$$ first (before inline to avoid conflicts)
@@ -220,12 +249,7 @@ export function resolveAnswerFormat(
  * @returns LaTeX string, or undefined if conversion fails
  */
 export function convertToLatex(expression: string): string {
-	const parseResult = parseCustomSafe(expression.trim());
-	if (parseResult.ast) {
-		// preserveHoles: ? stays as ? (not \placeholder[N]{}) for assignBlankIndices
-		return toLatex(parseResult.ast, { preserveHoles: true });
-	}
-	return expression;
+	return customToLatex(expression.trim()) ?? expression;
 }
 
 /**

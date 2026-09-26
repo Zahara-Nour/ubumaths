@@ -304,13 +304,14 @@ describe('resolveVariables', () => {
 			expect(resolved[2].value).toBe('15');
 		});
 
-		it('should handle decimal division results', () => {
-			const variables: Variable[] = [{ name: 'result', expression: '{{eval:7/2}}' }];
+		it('should handle division results: exact by default, decimal with `;d`', () => {
+			const variables: Variable[] = [
+				{ name: 'exact', expression: '{{eval:7/2}}' },
+				{ name: 'decimal', expression: '{{eval:7/2;d}}' }
+			];
 			const resolved = resolveVariables(variables);
-			// Compute engine may return '7/2' as LaTeX or '3.5' as decimal
-			// Just verify it's a valid representation of 3.5
-			const value = eval(resolved[0].value); // eval('7/2') = 3.5 or parseFloat('3.5') = 3.5
-			expect(value).toBe(3.5);
+			expect(resolved[0].value).toBe('\\dfrac{7}{2}');
+			expect(resolved[1].value).toBe('3.5');
 		});
 
 		it('should handle negative results', () => {
@@ -355,7 +356,7 @@ describe('resolveVariables', () => {
 				{ name: 'result', expression: '{{eval:10^{{n}}}}' }
 			];
 			const resolved = resolveVariables(variables);
-			expect(Number(resolved[1].value)).toBeCloseTo(0.01, 10);
+			expect(resolved[1].value).toBe('\\dfrac{1}{100}');
 		});
 
 		it('should treat a negative multi-char var as a grouped power base', () => {
@@ -1259,5 +1260,67 @@ describe('resolveVariables', () => {
 				expect(values).toContain('2'); // 5-3
 			});
 		});
+	});
+});
+
+// Une variable calculée peut valoir une forme exacte (`\dfrac{9}{7}`, `2 \sqrt{2}`) :
+// elle doit rester utilisable dans un calcul et comme borne de tirage.
+describe('resolveVariables — valeur exacte réutilisée', () => {
+	const valueOf = (variables: Variable[], name: string, seed?: number) =>
+		resolveVariables(variables, seed).find((v) => v.name === name)!.value;
+
+	it('produit implicite : 2{{c}}', () => {
+		const vars: Variable[] = [
+			{ name: 'c', expression: '{{eval:9/7}}' },
+			{ name: 'r', expression: '{{eval:2{{c}}}}' }
+		];
+		expect(valueOf(vars, 'r')).toBe('\\dfrac{18}{7}');
+	});
+
+	it('fonctions de la syntaxe maison : sqrt, abs, floor', () => {
+		const vars: Variable[] = [
+			{ name: 'c', expression: '{{eval:-9/4}}' },
+			{ name: 'r', expression: '{{eval:sqrt(abs({{c}}))}}' },
+			{ name: 's', expression: '{{eval:floor({{c}})}}' }
+		];
+		expect(valueOf(vars, 'r')).toBe('\\dfrac{3}{2}');
+		expect(valueOf(vars, 's')).toBe('-3');
+	});
+
+	it('logarithme exact réutilisé : 2{{c}} avec c = ln(2)', () => {
+		const vars: Variable[] = [
+			{ name: 'c', expression: '{{eval:ln(2)}}' },
+			{ name: 'r', expression: '{{eval:2{{c}};d}}' }
+		];
+		expect(Number(valueOf(vars, 'r'))).toBeCloseTo(2 * Math.LN2, 10);
+	});
+
+	it('nom de plusieurs lettres', () => {
+		const vars: Variable[] = [
+			{ name: 'coef', expression: '{{eval:2/3}}' },
+			{ name: 'r', expression: '{{eval:sqrt(coef*6)}}' }
+		];
+		expect(valueOf(vars, 'r')).toBe('2');
+	});
+
+	it('borne de tirage fractionnaire : 9/2 tire comme 4.5', () => {
+		const withBound = (c: string): Variable[] => [
+			{ name: 'c', expression: c },
+			{ name: 'n', expression: '{{1..{{c}}}}' }
+		];
+		for (let seed = 0; seed < 40; seed++) {
+			expect(valueOf(withBound('{{eval:9/2}}'), 'n', seed)).toBe(
+				valueOf(withBound('4.5'), 'n', seed)
+			);
+		}
+	});
+
+	it('borne de tirage irrationnelle : 2√2 + 1 ≈ 3.83, pas 2', () => {
+		const vars: Variable[] = [
+			{ name: 'c', expression: '{{eval:sqrt(8)+1}}' },
+			{ name: 'n', expression: '{{1..{{c}}}}' }
+		];
+		const draws = new Set(Array.from({ length: 40 }, (_, seed) => valueOf(vars, 'n', seed)));
+		expect(draws.has('3')).toBe(true);
 	});
 });

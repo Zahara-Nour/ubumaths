@@ -739,7 +739,8 @@ function extractBlanksFromSolutions(
 	answerFormat: string | undefined,
 	expressionVarName: string | undefined,
 	warnings: string[],
-	blankCount?: number
+	blankCount?: number,
+	decimalResult = false
 ): NonNullable<QuestionVariation['blanks']> {
 	const blanks: NonNullable<QuestionVariation['blanks']> = [];
 
@@ -769,8 +770,9 @@ function extractBlanksFromSolutions(
 			blanks.push(blank);
 		}
 	} else if (expressionVarName) {
-		// No explicit solutions → eval of expression
-		blanks.push({ expectedAnswer: `{{eval:{{${expressionVarName}}}}}` });
+		// No explicit solutions → eval of expression (exact ; `result-type: decimal` → `;d`)
+		const modifier = decimalResult ? ';d' : '';
+		blanks.push({ expectedAnswer: `{{eval:{{${expressionVarName}}}${modifier}}}` });
 	} else {
 		warnings.push('No solutions and no expression variable for blanks');
 	}
@@ -2046,7 +2048,14 @@ function createVariationsWithShared(
 			const answerFormat = oldAnswerFormats[i] || oldAnswerFormats[0];
 			const exprVarName = expressions.length <= 1 ? 'expression1' : `expression${i + 1}`;
 
-			const blanks = extractBlanksFromSolutions(solutions, answerFormat, exprVarName, warnings);
+			const blanks = extractBlanksFromSolutions(
+				solutions,
+				answerFormat,
+				exprVarName,
+				warnings,
+				undefined,
+				oldQuestion['result-type'] === 'decimal'
+			);
 			if (blanks.length > 0) {
 				perVariation[i].blanks = blanks;
 			}
@@ -2340,11 +2349,11 @@ export function transformQuestion(
 			template.delay = oldQuestion.defaultDelay;
 		}
 
-		// `result-type: decimal` (TinyMath) = solution calculée en écriture décimale,
-		// SANS arrondi : l'évaluation rend déjà 1.5 (et non 3/2), et le contrôle de
-		// forme refuse 3/2. Une précision « 2 décimales » acceptait des arrondis
-		// faux (1,23 pour 1,234) : aucune n'est ajoutée. Un résultat décimal
-		// infini (1/3) se règle à la relecture de la question.
+		// `result-type: decimal` (TinyMath) = solution calculée en écriture décimale
+		// (`;d` sur la réponse, cf. extractBlanksFromSolutions), SANS arrondi : une
+		// précision « 2 décimales » acceptait des arrondis faux (1,23 pour 1,234) :
+		// aucune n'est ajoutée. Un résultat décimal infini (1/3) se règle à la
+		// relecture de la question.
 		if (oldQuestion['result-type'] === 'decimal') {
 			warnings.push('result-type decimal : aucune précision ajoutée (résultat exact attendu)');
 		}

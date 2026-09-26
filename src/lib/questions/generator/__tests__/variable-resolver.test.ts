@@ -359,7 +359,7 @@ describe('resolveVariables - Complex Mathematical Examples', () => {
 			{ name: 'maxNum', expression: '{{eval:{{den}}-1}}' },
 			{ name: 'num1', expression: '{{random:1..{{maxNum}}}}' },
 			{ name: 'num2', expression: '{{random:1..{{maxNum}}!{{num1}}}}' },
-			{ name: 'answer', expression: '{{eval:({{num1}}+{{num2}})/{{den}}}}' }
+			{ name: 'answer', expression: '{{eval:({{num1}}+{{num2}})/{{den}};d}}' }
 		];
 
 		const resolved = resolveVariables(variables, 12345);
@@ -385,7 +385,7 @@ describe('resolveVariables - Complex Mathematical Examples', () => {
 			{ name: 'b', expression: '{{random:2..9!{{a}}}}' },
 			{ name: 'num', expression: '{{eval:{{a}}*{{gcd}}}}' },
 			{ name: 'den', expression: '{{eval:{{b}}*{{gcd}}}}' },
-			{ name: 'answer', expression: '{{eval:{{num}}/{{den}}}}' }
+			{ name: 'answer', expression: '{{eval:{{num}}/{{den}};d}}' }
 		];
 
 		const resolved = resolveVariables(variables, 54321);
@@ -421,8 +421,8 @@ describe('resolveVariables - Complex Mathematical Examples', () => {
 		const variables: QuestionVariable[] = [
 			{ name: 'price', expression: '{{random:10..100}}' },
 			{ name: 'discount', expression: '{{random:5..50}}' },
-			{ name: 'reduction', expression: '{{eval:{{price}} * {{discount}} / 100}}' },
-			{ name: 'final', expression: '{{eval:{{price}} - {{reduction}}}}' }
+			{ name: 'reduction', expression: '{{eval:{{price}} * {{discount}} / 100;d}}' },
+			{ name: 'final', expression: '{{eval:{{price}} - {{reduction}};d}}' }
 		];
 
 		const resolved = resolveVariables(variables, 33333);

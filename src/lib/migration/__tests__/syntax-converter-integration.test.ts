@@ -48,7 +48,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Complete Questions', ()
 
 		expect(result.success).toBe(true);
 		expect(result.converted).toContain('{{0.25|0.5|0.75}}');
-		expect(result.converted).toContain('{{eval:a/2}}');
+		expect(result.converted).toContain('{{eval:a/2;d}}');
 		expect(result.converted).toContain('{{rouge|bleu|vert}}');
 		expect(result.stats!.listSelections).toBe(2);
 		expect(result.stats!.evaluations).toBe(1);
@@ -426,7 +426,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Real World Examples', (
 
 		expect(result.success).toBe(true);
 		expect(result.converted).toContain('{{10..100}}');
-		expect(result.converted).toContain('{{eval:a/100}}');
+		expect(result.converted).toContain('{{eval:a/100;d}}');
 		expect(result.converted).toContain('{{eval:a*10}}');
 		expect(result.stats!.randomIntegers).toBe(1);
 		expect(result.stats!.evaluations).toBe(2);

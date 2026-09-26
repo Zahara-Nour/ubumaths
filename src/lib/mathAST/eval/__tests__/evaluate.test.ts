@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { evaluate } from '../evaluate';
 import { parseLatex } from '../../parser';
 import { parseCustom } from '../../parser/custom';
+import { toLatex } from '../../latex-generator';
 import {
 	number,
 	variable,
@@ -3282,5 +3283,70 @@ describe('gcd and mod functions', () => {
 				expect(result.value.value).toBe('4');
 			}
 		}
+	});
+});
+
+// =============================================================================
+// Mode exact : min, max, gcd, mod réduits (sinon `\min(12, 18)` au lieu de 12)
+// =============================================================================
+
+describe('evaluate - exact mode, fonctions à plusieurs arguments', () => {
+	function exactLatex(ast: MathNode): string {
+		const result = evaluate(ast, { mode: 'exact' });
+		if (!isEvalValue(result) || !isMathNode(result.value)) throw new Error('pas de valeur exacte');
+		return toLatex(result.value);
+	}
+
+	it('min(12, 18) = 12', () => {
+		expect(exactLatex(func('min', [number('12'), number('18')]))).toBe('12');
+	});
+
+	it('max(12, 18) = 18', () => {
+		expect(exactLatex(func('max', [number('12'), number('18')]))).toBe('18');
+	});
+
+	it('min(2/3, 2/9) garde la fraction choisie exacte', () => {
+		const ast = func('min', [
+			fraction(number('2'), number('3')),
+			fraction(number('2'), number('9'))
+		]);
+		expect(exactLatex(ast)).toBe('\\dfrac{2}{9}');
+	});
+
+	it('max(2/3, -3/4) = 2/3', () => {
+		const ast = func('max', [
+			fraction(number('2'), number('3')),
+			opposite(fraction(number('3'), number('4')))
+		]);
+		expect(exactLatex(ast)).toBe('\\dfrac{2}{3}');
+	});
+
+	it('max(√2, 3/2) compare les valeurs et garde la racine exacte', () => {
+		const ast = func('max', [sqrt(number('2')), fraction(number('3'), number('2'))]);
+		expect(exactLatex(ast)).toBe('\\dfrac{3}{2}');
+		const ast2 = func('max', [sqrt(number('3')), fraction(number('3'), number('2'))]);
+		expect(exactLatex(ast2)).toBe('\\sqrt{3}');
+	});
+
+	it('gcd(12, 18) = 6', () => {
+		expect(exactLatex(func('gcd', [number('12'), number('18')]))).toBe('6');
+	});
+
+	it('mod(12, 5) = 2 ; mod(-7, 5) = 3 (comme en mode décimal)', () => {
+		expect(exactLatex(func('mod', [number('12'), number('5')]))).toBe('2');
+		expect(exactLatex(func('mod', [opposite(number('7')), number('5')]))).toBe('3');
+	});
+
+	it('fonction imbriquée : min(gcd(12, 18), 4) + 1/2 = 9/2', () => {
+		const ast = add(
+			func('min', [func('gcd', [number('12'), number('18')]), number('4')]),
+			fraction(number('1'), number('2'))
+		);
+		expect(exactLatex(ast)).toBe('\\dfrac{9}{2}');
+	});
+
+	it('gcd avec un argument non entier reste non réduit (pas de valeur inventée)', () => {
+		const ast = func('gcd', [fraction(number('1'), number('2')), number('4')]);
+		expect(exactLatex(ast)).toContain('\\gcd');
 	});
 });

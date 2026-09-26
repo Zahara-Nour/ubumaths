@@ -13,6 +13,7 @@
 
 import type { RandomSpec, NumberOrVariable, ResolvedVariable } from '../types';
 import { seededRandom } from '$lib/utils/random';
+import { evalResultToNumber } from '$lib/mathAST/eval';
 
 /**
  * Variable context - can be array or object
@@ -42,7 +43,7 @@ export function resolveNumberOrVariable(
 		if (varValue === undefined) {
 			throw new Error(`Variable "${value.name}" not found or not yet resolved`);
 		}
-		const num = typeof varValue === 'number' ? varValue : parseFloat(varValue);
+		const num = typeof varValue === 'number' ? varValue : evalResultToNumber(varValue);
 		if (isNaN(num)) {
 			throw new Error(`Variable "${value.name}" does not resolve to a number: ${varValue}`);
 		}
@@ -55,7 +56,8 @@ export function resolveNumberOrVariable(
 		throw new Error(`Variable "${value.name}" not found or not yet resolved`);
 	}
 
-	const num = parseFloat(variable.value);
+	// Une borne peut valoir une forme exacte (`\dfrac{9}{2}`, `2 \sqrt{2}`)
+	const num = evalResultToNumber(variable.value);
 	if (isNaN(num)) {
 		throw new Error(`Variable "${value.name}" does not resolve to a number: ${variable.value}`);
 	}

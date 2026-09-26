@@ -14,6 +14,10 @@ import type { EvalModifiers } from '$lib/ubumark';
 import { parseLatex } from '$lib/mathAST/parser';
 import { evaluate, evaluateNodeToApproximatedNumber } from './evaluate';
 import type { MathNode } from '../types';
+import { mapNode } from '../transforms';
+import { toLatex } from '../latex-generator';
+import { toCustom } from '../custom-generator';
+import { parseCustom } from '../parser/custom';
 import type { EvalValue, ComplexValueResult } from './types';
 
 // =============================================================================
@@ -52,6 +56,65 @@ function formatNumber(value: number): string {
 	return parseFloat(formatted).toString();
 }
 
+/** Un nombre non entier écrit dans le calcul (`0.5`) : TinyMath rendait alors un décimal */
+function hasDecimalLiteral(node: MathNode): boolean {
+	let found = false;
+	mapNode(node, (n) => {
+		if (n.type === 'number' && !/^-?\d+$/.test(n.value)) found = true;
+		return n;
+	});
+	return found;
+}
+
+/**
+ * Résultat exact (`\dfrac{9}{7}`, `2 \sqrt{2}`, `\ln(2)`) → syntaxe maison (`9/7`, `2sqrt(2)`), pour
+ * le réutiliser dans un autre calcul. Toute autre valeur est rendue telle quelle.
+ */
+export function evalResultToCustom(value: string): string {
+	if (!value.includes('\\')) return value;
+	try {
+		const custom = toCustom(parseLatex(value));
+		// Aller-retour vérifié : sinon la valeur reste en LaTeX, comme avant
+		parseCustom(custom);
+		return custom;
+	} catch {
+		return value;
+	}
+}
+
+/**
+ * Valeur numérique d'un résultat d'évaluation : `3.5`, mais aussi `\dfrac{9}{2}` ou
+ * `2 \sqrt{2}` (que `parseFloat` lirait NaN ou 2). NaN si ce n'est pas un nombre.
+ */
+export function evalResultToNumber(value: string): number {
+	if (!value.includes('\\')) return parseFloat(value);
+	try {
+		return evaluateNodeToApproximatedNumber(parseLatex(value));
+	} catch {
+		return NaN;
+	}
+}
+
+/**
+ * Résultat exact : `\dfrac{9}{7}`, `-\dfrac{3}{4}`, `2 \sqrt{2}`, entier s'il tombe juste.
+ *
+ * Décimal si le calcul contient un décimal, ou si la forme exacte ne se calcule
+ * pas ou ne vaut pas la valeur décimale (garde-fou : jamais de valeur fausse).
+ */
+function formatExact(ast: MathNode, numValue: number): string {
+	if (Number.isInteger(numValue) || hasDecimalLiteral(ast)) return formatNumber(numValue);
+	try {
+		const exact = evaluate(ast, { mode: 'exact' });
+		if (exact.status !== 'value' || !isMathNode(exact.value)) return formatNumber(numValue);
+		const exactValue = evaluateNodeToApproximatedNumber(exact.value);
+		const tolerance = 1e-9 * Math.max(1, Math.abs(numValue));
+		if (!(Math.abs(exactValue - numValue) <= tolerance)) return formatNumber(numValue);
+		return toLatex(exact.value);
+	} catch {
+		return formatNumber(numValue);
+	}
+}
+
 // =============================================================================
 // Main Export
 // =============================================================================
@@ -62,8 +125,9 @@ function formatNumber(value: number): string {
  * This function provides a simple API for evaluating mathematical expressions
  * that matches the interface expected by the ubumark parameterization system.
  *
- * Supports formatting modifiers:
- * - `decimal`: Force decimal output (convert fractions to decimals)
+ * Résultat exact par défaut, comme TinyMath : `\dfrac{9}{7}`, `2 \sqrt{2}`
+ * (décimal si le calcul contient un décimal). Modifiers:
+ * - `decimal` (`;d`): écriture décimale (1/2 → 0.5)
  * - `addPositive`: Add + sign for positive results
  * - `bracketNegative`: Wrap negative results in parentheses
  * - `derivative`: Not implemented (reserved for future use)
@@ -116,7 +180,7 @@ function formatNumber(value: number): string {
  * @throws Error if evaluation fails
  */
 export function evaluateAstWithModifiers(ast: MathNode, modifiers: EvalModifiers = {}): string {
-	// Always use decimal mode internally to get a numeric value
+	// Valeur numérique d'abord (signe des modificateurs, garde-fou de formatExact)
 	const result = evaluate(ast, { mode: 'decimal' });
 
 	// Handle non-value results
@@ -139,9 +203,8 @@ export function evaluateAstWithModifiers(ast: MathNode, modifiers: EvalModifiers
 		numValue = result.value;
 	}
 
-	// Format the output
-	const output = formatNumber(numValue);
-	let formattedOutput = output;
+	// Format the output : exact par défaut (comme TinyMath), décimal avec `;d`
+	let formattedOutput = modifiers.decimal ? formatNumber(numValue) : formatExact(ast, numValue);
 
 	// Apply formatting modifiers
 	if (modifiers.addPositive && numValue > 0) {
