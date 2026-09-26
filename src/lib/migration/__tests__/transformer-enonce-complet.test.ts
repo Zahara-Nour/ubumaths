@@ -62,6 +62,17 @@ describe('#486 coefficient de proportionnalité (énoncé secondaire = tableau)'
 	});
 });
 
+describe('#487 énoncé secondaire identique au champ réponse', () => {
+	it('un seul tableau (avec sa case), et la question génère', () => {
+		for (const instance of instances(487, 5)) {
+			const statement = String(instance.statement);
+			expect(statement.match(/\\begin\{array\}/g)).toHaveLength(1);
+			expect(statement).not.toContain('...');
+			expect(instance.blanks).toHaveLength(1);
+		}
+	});
+});
+
 describe('les 38 questions à énoncé secondaire (`enounces2`)', () => {
 	it('le reprennent toutes dans l’énoncé transformé', () => {
 		const missing: number[] = [];
@@ -77,7 +88,10 @@ describe('les 38 questions à énoncé secondaire (`enounces2`)', () => {
 			const converted = (convertTinyCASToNew(question.enounces2![0]).converted ?? '')
 				.replace(/\s|\$/g, '')
 				.slice(0, 15);
-			if (!statements.includes(JSON.stringify(converted).slice(1, -1))) missing.push(globalIndex);
+			// Sauf s'il est identique au champ réponse (#487-489), déjà affiché par lui
+			const sameAsField = question.enounces2![0].trim() === question.answerFields?.[0]?.trim();
+			const shown = statements.includes(JSON.stringify(converted).slice(1, -1));
+			if (!shown && !sameAsField) missing.push(globalIndex);
 			checked++;
 		}
 		expect(checked).toBe(38);

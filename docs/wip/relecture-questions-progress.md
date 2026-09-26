@@ -112,3 +112,7 @@ Après relecture (`code-reviewer`) :
   depuis #461. **Les versions corrigées de David portent encore `e`** : à renommer en Phase 2.
 - Durées (#461…) : marqueurs TinyMath `[°…°]` non convertis dans l'énoncé, réponse attendue brute
   `[_b+3_]` → groupe à traiter. #590 « Résoudre graphiquement » : vérifier le graphique.
+- Champ réponse, expression désormais affichée (#462) : échec HONNÊTE plutôt qu'une question sans
+  sa donnée — #611 et #527 (`[_…_]` contenant une inconnue x : `{{eval:+-(a+(b))x}}`) ; #457/#459
+  (virgule décimale `&1,&2h`) ; #621 (aucune solution) ; #344 (2ᵉ `enounces2` perdu, 1 variation) ;
+  #486 point final dans la formule (`$?.$`) ; redondances visuelles #313, #455, #456.

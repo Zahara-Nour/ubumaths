@@ -502,10 +502,16 @@ function convertVariables(
  * TinyMath affiche l'énoncé puis l'énoncé secondaire (souvent un tableau ou une
  * donnée indispensable) : ils sont réunis ici, avant toute conversion.
  */
-function fullEnounce(enounces: string[], enounces2: string[], index: number): string | undefined {
+function fullEnounce(
+	enounces: string[],
+	enounces2: string[],
+	index: number,
+	answerField?: string
+): string | undefined {
 	const enonce = enounces[index] || enounces[0];
 	const enonce2 = enounces2[index] || enounces2[0];
-	if (!enonce2) return enonce;
+	// Énoncé secondaire identique au champ réponse (#487-489) : déjà affiché par lui
+	if (!enonce2 || enonce2.trim() === answerField?.trim()) return enonce;
 	return enonce ? `${enonce}\n\n${enonce2}` : enonce2;
 }
 
@@ -1615,7 +1621,7 @@ function detectSharedFields(
 			!imagesArePerVariation
 		) {
 			// Shared answerField
-			const enonce = fullEnounce(enounces, enounces2, 0);
+			const enonce = fullEnounce(enounces, enounces2, 0, answerFields[0]);
 			const convertedField = convertAnswerFieldToStatement(answerFields[0], warnings);
 			const parts: string[] = [];
 			if (enonce) {
@@ -1646,8 +1652,8 @@ function detectSharedFields(
 		} else {
 			// Per-variation answerField
 			for (let i = 0; i < variationCount; i++) {
-				const enonce = fullEnounce(enounces, enounces2, i);
 				const af = answerFields[i] || answerFields[0];
+				const enonce = fullEnounce(enounces, enounces2, i, af);
 				const convertedField = convertAnswerFieldToStatement(af, warnings);
 				const parts: string[] = [];
 				if (enonce) {
