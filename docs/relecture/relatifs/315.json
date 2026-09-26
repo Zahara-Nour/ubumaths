@@ -1,0 +1,283 @@
+{
+	"globalIndex": 315,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Tirages réécrits : la conversion ne générait pas (`digits:b\\{m(10)}` et décimaux composés `[._-a,c_]` non convertis, bonne réponse `&6<&7 ?? 0 :: 1` laissée brute, `$er{1}` traduit en `1..1;±` = ±1 seulement). Même intention que TinyMath : partie décimale c à 1 ou 2 chiffres sans zéro final (condition mod(c,10)!=0) comparée à un décimal à 1 chiffre d ≠ c (piège « plus de chiffres = plus grand »). Variation 1 : même partie entière a, deux négatifs -(a+c/10^b) et -(a+d/10). Variation 2 : parties entières p, q de 1 à 9, signes s, t indépendants. Bonne réponse calculée par (1+(g-h)/|g-h|)/2 (0 si le premier nombre est le plus petit) ; g ≠ h garanti par les conditions.",
+	"template": {
+		"title": "Comparer deux nombres relatifs.",
+		"description": "Valeurs décimales.",
+		"shared": {
+			"statement": "Quel est le plus petit de ces 2 nombres ?"
+		},
+		"variations": [
+			{
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..2"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:10^(b-1)}}..{{eval:10^b-1}}"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:-(a+c/10^b)}}"
+					},
+					{
+						"name": "h",
+						"expression": "{{eval:-(a+d/10)}}"
+					}
+				],
+				"conditions": ["mod(c,10)!=0", "c!=d"],
+				"correctChoiceIndex": "{{eval:(1+(g-h)/abs(g-h))/2}}",
+				"choices": [
+					{
+						"content": "$${{g}}$$"
+					},
+					{
+						"content": "$${{h}}$$"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "1..1;±"
+					},
+					{
+						"name": "t",
+						"expression": "1..1;±"
+					},
+					{
+						"name": "p",
+						"expression": "1..9"
+					},
+					{
+						"name": "q",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..2"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:10^(b-1)}}..{{eval:10^b-1}}"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:s*(p+c/10^b)}}"
+					},
+					{
+						"name": "h",
+						"expression": "{{eval:t*(q+d/10)}}"
+					}
+				],
+				"conditions": ["mod(c,10)!=0", "c!=d"],
+				"correctChoiceIndex": "{{eval:(1+(g-h)/abs(g-h))/2}}",
+				"choices": [
+					{
+						"content": "$${{g}}$$"
+					},
+					{
+						"content": "$${{h}}$$"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Relatifs",
+		"domain": "Apprivoiser",
+		"subdomain": "Comparer",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "même partie entière, plus de décimales : -3,45 < -3,4",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "45",
+					"d": "4"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "piège : -3,4 choisi",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "45",
+					"d": "4"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "piège longueur : -3,7 < -3,45",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "45",
+					"d": "7"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "piège longueur refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "45",
+					"d": "7"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "bornes : un chiffre, -9,9 < -9,1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "1",
+					"c": "1",
+					"d": "9"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bornes : -1,99 < -1,1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "99",
+					"d": "1"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "positif contre négatif : -8,5 < 5,95",
+				"variationIndex": 1,
+				"variables": {
+					"s": "1",
+					"t": "-1",
+					"p": "5",
+					"q": "8",
+					"b": "2",
+					"c": "95",
+					"d": "5"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "piège : le positif choisi",
+				"variationIndex": 1,
+				"variables": {
+					"s": "1",
+					"t": "-1",
+					"p": "5",
+					"q": "8",
+					"b": "2",
+					"c": "95",
+					"d": "5"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "deux négatifs : -4,5 < -3,4",
+				"variationIndex": 1,
+				"variables": {
+					"s": "-1",
+					"t": "-1",
+					"p": "4",
+					"q": "3",
+					"b": "1",
+					"c": "5",
+					"d": "4"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "deux positifs : 2,15 < 2,3",
+				"variationIndex": 1,
+				"variables": {
+					"s": "1",
+					"t": "1",
+					"p": "2",
+					"q": "2",
+					"b": "2",
+					"c": "15",
+					"d": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "deux positifs, piège longueur refusé",
+				"variationIndex": 1,
+				"variables": {
+					"s": "1",
+					"t": "1",
+					"p": "2",
+					"q": "2",
+					"b": "2",
+					"c": "15",
+					"d": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

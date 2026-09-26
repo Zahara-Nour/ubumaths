@@ -1,0 +1,202 @@
+{
+	"globalIndex": 318,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Titre « adition » → « addition » ; description « A l'aide » → « À l'aide ». Maths : réponse b unique, résultats dans [-4 ; 4]. Option TinyMath « parenthèses tolérées » conservée : (1) accepté, +1 perfectible, signe inversé faux.",
+	"template": {
+		"title": "Compléter une addition à trou",
+		"description": "Relatifs entre $-4$ et $4$. À l'aide de la droite graduée.",
+		"variations": [
+			{
+				"statement": "Complète en t'aidant de la droite graduée.\n\n$${{expression1}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "1..4"
+					},
+					{
+						"name": "expression1",
+						"expression": "(-{{a}})+? = {{eval:(-a)+b}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète en t'aidant de la droite graduée.\n\n$${{expression2}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:4-a}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "(-{{a}})-? = {{eval:(-a)-b}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète en t'aidant de la droite graduée.\n\n$${{expression3}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..4"
+					},
+					{
+						"name": "expression3",
+						"expression": "{{a}}-? = {{eval:a-b}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"brackets": "off",
+				"allowBracketsInFirstNegativeTerm": true
+			}
+		},
+		"grades": ["5"],
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"subdomain": "Sur la droite graduée",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "(-3)+? = -2 → 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "signe inversé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"answers": ["-1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "signe + superflu",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"answers": ["+1"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["signs"]
+				}
+			},
+			{
+				"description": "parenthèses tolérées (option TinyMath)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"answers": ["(1)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute : (-1)+? = 3",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(-3)-? = -4 → 1",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "signe inversé (soustraction)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"answers": ["-1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "1-? = -3 → 4",
+				"variationIndex": 2,
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "résultat recopié",
+				"variationIndex": 2,
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"answers": ["-3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

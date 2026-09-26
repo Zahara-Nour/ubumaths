@@ -1,0 +1,234 @@
+{
+	"globalIndex": 320,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Description « A l'aide » → « À l'aide ». Précision « décimale à 2 chiffres » ajoutée par défaut par la conversion retirée : le résultat est exact (demi-entier), la précision n'apporte rien et rendait « (-1,5) » bad_form alors que les mêmes parenthèses sont seulement perfectibles dans les questions voisines (#316) ; sans elle, -3/2 reste refusé (décimal attendu, comme result-type decimal de TinyMath) et -1,49 reste faux. Maths vérifiées aux bornes : résultats dans [-4 ; 4].",
+	"template": {
+		"title": "Calculer une somme ou une différence",
+		"description": "À l'aide de la droite graduée, entre $-4$ et $4$, nombres en ${,}5$",
+		"variations": [
+			{
+				"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression1}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "b",
+						"expression": "1..4"
+					},
+					{
+						"name": "expression1",
+						"expression": "(-a,5)+b"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression2}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:3-a}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "(-a,5)-b"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression3}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..4"
+					},
+					{
+						"name": "expression3",
+						"expression": "a,5-b"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"subdomain": "Sur la droite graduée",
+		"level": 5,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "(-2,5)+1 = -1,5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"answers": ["-1.5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "virgule MathLive",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"answers": ["-1{,}5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "erreur de signe",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"answers": ["1.5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "valeur voisine (pas d'arrondi toléré)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"answers": ["-1.49"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "fraction : décimal attendu",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"answers": ["-3/2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "parenthèses inutiles",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"answers": ["(-1.5)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				}
+			},
+			{
+				"description": "zéro final inutile",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"answers": ["-1.50"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			},
+			{
+				"description": "borne : (-3,5)+4 = 0,5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"answers": ["0.5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(-2,5)-1 = -3,5",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"answers": ["-3.5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "confusion avec l'addition",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"answers": ["-1.5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "1,5-4 = -2,5",
+				"variationIndex": 2,
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"answers": ["-2.5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "écart sans signe",
+				"variationIndex": 2,
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"answers": ["2.5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

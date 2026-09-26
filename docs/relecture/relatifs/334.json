@@ -1,0 +1,183 @@
+{
+	"globalIndex": 334,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Compléter une égalité",
+		"description": "Avec écriture simplifiée",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:a-1}}"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "-{{a}}+?= {{eval:-a+b}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "-{{a}}-?= {{eval:-a-b}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{c}}-? = {{eval:c-a}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"subdomain": "Sommes algébriques",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "-a+?",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"c": "1"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["9"]
+			},
+			{
+				"description": "-a+? mauvais signe",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"c": "1"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["-9"]
+			},
+			{
+				"description": "-a+? signe + superflu",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"c": "1"
+				},
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["signs"]
+				},
+				"answers": ["+9"]
+			},
+			{
+				"description": "-a-? bornes hautes",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "1"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["9"]
+			},
+			{
+				"description": "-a-? mauvais signe",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "1"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["-9"]
+			},
+			{
+				"description": "c-?",
+				"variationIndex": 2,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "1"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["9"]
+			},
+			{
+				"description": "c-? borne basse",
+				"variationIndex": 2,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "1"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["2"]
+			},
+			{
+				"description": "c-? mauvais signe",
+				"variationIndex": 2,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "1"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["-9"]
+			}
+		]
+	}
+}

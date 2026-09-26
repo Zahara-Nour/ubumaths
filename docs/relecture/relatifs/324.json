@@ -1,0 +1,90 @@
+{
+	"globalIndex": 324,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Ajouter deux nombres négatifs",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "(-a)+(-b)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"subdomain": "Sommes",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "bornes basses",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "1"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["-2"]
+			},
+			{
+				"description": "bornes hautes",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["-18"]
+			},
+			{
+				"description": "signe oublié",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "1"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["2"]
+			},
+			{
+				"description": "parenthèses inutiles",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "1"
+				},
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"answers": ["(-2)"]
+			}
+		]
+	}
+}

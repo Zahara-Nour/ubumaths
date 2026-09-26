@@ -1,0 +1,95 @@
+{
+	"globalIndex": 329,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Enlever un nombre positif à un nombre positif en dépassant $0$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{a}}-{{eval:a+b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$${{a}}\\bold{\\textcolor{{{color:primary.0}}}{-{{eval:a+b}}}}={{a}}\\textcolor{{{color:primary.0}}}{-{{a}}-{{b}}}=0-{{b}}=-{{b}}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"subdomain": "Différences",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "bornes basses",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "1"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["-1"]
+			},
+			{
+				"description": "a=1, b=8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "8"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["-8"]
+			},
+			{
+				"description": "signe oublié",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "1"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["1"]
+			},
+			{
+				"description": "parenthèses inutiles",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "1"
+				},
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"answers": ["(-1)"]
+			}
+		]
+	}
+}

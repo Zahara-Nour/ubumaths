@@ -1,0 +1,145 @@
+{
+	"globalIndex": 339,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse du QCM non convertie : la formule TinyMath « (&1)*(&2)*(&3)*(&4) >0 ?? 0 :: 1 » était recopiée brute dans correctChoiceIndex (aucun choix jamais juste) → remplacée par {{eval:(1-P/abs(P))/2}} (P = produit, jamais nul : variables ±30..99). Specs : 0 à 4 facteurs négatifs.",
+	"template": {
+		"title": "Déterminer le signe d'un produit",
+		"description": "$4$ facteurs",
+		"variations": [
+			{
+				"statement": "Quel est le signe de ce produit ?\n\n$${{expression1}}$$",
+				"correctChoiceIndex": ["{{eval:(1-a*b*c*d/abs(a*b*c*d))/2}}"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "b",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "c",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "d",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "(a)*(b)*(c)*(d)",
+						"displayOptions": {
+							"removeUnnecessaryBrackets": true
+						}
+					}
+				],
+				"choices": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				]
+			}
+		],
+		"options": {
+			"shuffleChoices": false
+		},
+		"grades": ["4"],
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"subdomain": "Produit",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "tous positifs",
+				"variationIndex": 0,
+				"variables": {
+					"a": "59",
+					"b": "92",
+					"c": "97",
+					"d": "49"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "un négatif",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-59",
+					"b": "92",
+					"c": "97",
+					"d": "49"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "deux négatifs",
+				"variationIndex": 0,
+				"variables": {
+					"a": "96",
+					"b": "-78",
+					"c": "-72",
+					"d": "30"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "trois négatifs",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-71",
+					"b": "-90",
+					"c": "34",
+					"d": "-34"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "trois négatifs : positif faux",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-71",
+					"b": "-90",
+					"c": "34",
+					"d": "-34"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "quatre négatifs (bornes)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-30",
+					"b": "-99",
+					"c": "-30",
+					"d": "-99"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

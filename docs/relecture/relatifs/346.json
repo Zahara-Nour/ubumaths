@@ -1,0 +1,254 @@
+{
+	"globalIndex": 346,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "La contrainte « brackets » (warn) pénalisait la réponse (-9) dans « (-63) : ☐ = 7 », alors que les parenthèses y sont nécessaires (facteur négatif après ×/: ; l'ancienne solution était d'ailleurs « (-&2) » / « (-[_&1*&2_]) ») → options.constraints.brackets = off. Specs : les 6 variations recalculées, erreur de signe.",
+	"template": {
+		"title": "Compléter une division à trou",
+		"description": "Nombres relatifs",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-{{eval:a*b}}):? = -{{a}} "
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "(-{{eval:a*b}}):?= {{a}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "(-{{b}})"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{eval:a*b}}:? = -{{a}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "(-{{b}})"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "?:b = -a "
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "(-{{eval:a*b}})"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "?:(-b)= a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "(-{{eval:a*b}})"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "?:(-b) = -a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*b}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"subdomain": "Quotient",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"testSpecs": [
+			{
+				"description": "v0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 signe faux",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["-2"]
+			},
+			{
+				"description": "v1",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["-9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 avec parenthèses",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["(-9)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 signe faux",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["9"]
+			},
+			{
+				"description": "v2",
+				"variationIndex": 2,
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3",
+				"variationIndex": 3,
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"answers": ["-6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 signe faux",
+				"variationIndex": 3,
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["6"]
+			},
+			{
+				"description": "v4 bornes",
+				"variationIndex": 4,
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"answers": ["-81"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5 bornes",
+				"variationIndex": 5,
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5 signe faux",
+				"variationIndex": 5,
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["-4"]
+			}
+		]
+	}
+}

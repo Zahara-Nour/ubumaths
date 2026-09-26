@@ -1,0 +1,182 @@
+{
+	"globalIndex": 333,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer",
+		"description": "Avec écriture simplifiée",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:a-1}}"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "-a+b"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "-a-b"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "c-a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"subdomain": "Sommes algébriques",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "-a+b positif",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"c": "1"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["7"]
+			},
+			{
+				"description": "-a+b nul",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "1"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["0"]
+			},
+			{
+				"description": "-a+b mauvais signe",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"c": "1"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["-7"]
+			},
+			{
+				"description": "-a-b bornes hautes",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "1"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["-18"]
+			},
+			{
+				"description": "-a-b signe oublié",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "1"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["18"]
+			},
+			{
+				"description": "c-a borne basse",
+				"variationIndex": 2,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "1"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["-1"]
+			},
+			{
+				"description": "c-a borne haute",
+				"variationIndex": 2,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "8"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["-1"]
+			},
+			{
+				"description": "c-a signe oublié",
+				"variationIndex": 2,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "1"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["1"]
+			}
+		]
+	}
+}

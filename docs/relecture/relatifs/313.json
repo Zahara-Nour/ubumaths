@@ -1,0 +1,168 @@
+{
+	"globalIndex": 313,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Ponctuation : titre « Trouver l'opposé d'un nombre : » → sans deux-points ; énoncé « Quel est l'opposé de ce nombre : » → « … de ce nombre ? » (phrase interrogative). Maths et validation vérifiées sur les deux variations (a de 1 à 20) : opposé juste, oubli du signe faux, (-7) / 0-7 / -(-7) / +7 en forme perfectible.",
+	"template": {
+		"title": "Trouver l'opposé d'un nombre",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..20"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Quel est l'opposé de ce nombre ?\n\n$${{a}}$$\n\nL'opposé de ${{a}}$ est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est l'opposé de ce nombre ?\n\n$$-{{a}}$$\n\nL'opposé de $-{{a}}$ est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Relatifs",
+		"domain": "Apprivoiser",
+		"subdomain": "La définition d'un nombre négatif",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "opposé d'un positif",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["-7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne basse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["-1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute",
+				"variationIndex": 0,
+				"variables": {
+					"a": "20"
+				},
+				"answers": ["-20"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "recopie du nombre",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "inverse au lieu d'opposé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["1/7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "parenthèses inutiles",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["(-7)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				}
+			},
+			{
+				"description": "opposé d'un négatif",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute (négatif)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "20"
+				},
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "recopie du nombre négatif",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["-7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "signe + superflu",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["+7"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["signs"]
+				}
+			},
+			{
+				"description": "-(-7) non simplifié",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["-(-7)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["signs"]
+				}
+			}
+		]
+	}
+}

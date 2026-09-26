@@ -1,0 +1,105 @@
+{
+	"globalIndex": 311,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "« Ecris » → « Écris » (majuscule accentuée). Specs : -15 juste ; 0-15 refusé (terme nul) ; 15 faux ; (-15) forme perfectible ; bornes a=2 et a=20.",
+	"template": {
+		"title": "Une soustraction enfin possible",
+		"variations": [
+			{
+				"statement": "Écris le résultat de :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..20"
+					},
+					{
+						"name": "expression1",
+						"expression": "0-a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"nullTerms": "strict"
+			}
+		},
+		"grades": ["5"],
+		"theme": "Relatifs",
+		"domain": "Apprivoiser",
+		"subdomain": "La définition d'un nombre négatif",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["-15"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne basse",
+				"variables": {
+					"a": "2"
+				},
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute",
+				"variables": {
+					"a": "20"
+				},
+				"answers": ["-20"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "recopie 0-15 : terme nul refusé",
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["0-15"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["nullTerms", "form"]
+				}
+			},
+			{
+				"description": "oubli du signe",
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["15"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "parenthèses inutiles",
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["(-15)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				}
+			}
+		]
+	}
+}

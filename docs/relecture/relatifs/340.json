@@ -1,0 +1,172 @@
+{
+	"globalIndex": 340,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"editNotes": "Fidèle ; résultats recalculés, bornes 2 et 9.",
+	"template": {
+		"title": "Calculer un produit",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-a)*b"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "(-a)*(-b)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a*(-b)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"subdomain": "Produit",
+		"level": 5,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "(-3)×2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"answers": ["-6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli du signe",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["6"]
+			},
+			{
+				"description": "parenthèses",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"answers": ["(-6)"]
+			},
+			{
+				"description": "(-9)×(-9)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"answers": ["81"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "signe faux",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["-81"]
+			},
+			{
+				"description": "+81",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["signs"]
+				},
+				"answers": ["+81"]
+			},
+			{
+				"description": "2×(-2)",
+				"variationIndex": 2,
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"answers": ["-4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2×(-2) signe faux",
+				"variationIndex": 2,
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["4"]
+			}
+		]
+	}
+}

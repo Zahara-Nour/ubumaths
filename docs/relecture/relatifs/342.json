@@ -1,0 +1,139 @@
+{
+	"globalIndex": 342,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Variation 1 « (a)² » : l'ancien tirage « -$e[1;9] » (entier de -9 à -1) était converti en plage « -1..9 » (0 et positifs possibles, le carré d'un négatif disparaissait) → « -9..-1 ». Specs : (-7)²=49, -7²=-49, bornes ±1 et ±9, confusions de signe refusées.",
+	"template": {
+		"title": "Carré et opposé d'un carré",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-9..-1"
+					},
+					{
+						"name": "expression1",
+						"expression": "(a)^2"
+					}
+				],
+				"correction": {
+					"steps": ["$$({{a}})^2=({{a}})\\times({{a}})={{solution}}$$"]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression2",
+						"expression": "-a^2"
+					}
+				],
+				"correction": {
+					"steps": ["$$-{{a}}^2=-{{a}} \\times {{a}}={{solution}}$$"]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"subdomain": "Carré",
+		"level": 1,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "(-7)²",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-7"
+				},
+				"answers": ["49"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(-7)² signe faux",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-7"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["-49"]
+			},
+			{
+				"description": "borne (-1)²",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-1"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne (-9)²",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-9"
+				},
+				"answers": ["81"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "-9²",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["-81"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "-9² confondu avec (-9)²",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["81"]
+			},
+			{
+				"description": "borne -1²",
+				"variationIndex": 1,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["-1"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

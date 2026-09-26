@@ -1,0 +1,6 @@
+{
+	"globalIndex": 330,
+	"verdict": "arbitrate",
+	"reviewer": "claude",
+	"question": "« Réécris cette soustraction en une addition équivalente » : avec la contrainte des signes désactivée (option d'origine « no-penalty-for-extraneous-signs », nécessaire car la réponse attendue 2+(-9) contient elle-même un double signe), le validateur accepte comme JUSTE la simple recopie de la soustraction (2-9 pour 2-9, -2-(-9) pour (-2)-(-9), -2-9 pour (-2)-9) et aussi 9-2 pour (-2)-(-9). Faut-il exiger une addition (nouvelle contrainte de forme « somme sans soustraction » à créer), accepter ce comportement, ou retirer la question ?"
+}

@@ -1,0 +1,100 @@
+{
+	"globalIndex": 322,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Ajouter $2$ nombres opposés",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..15"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-a)+a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a+(-a)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"subdomain": "Sommes",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "(-a)+a borne basse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["0"]
+			},
+			{
+				"description": "a+(-a) borne haute",
+				"variationIndex": 1,
+				"variables": {
+					"a": "15"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["0"]
+			},
+			{
+				"description": "réponse fausse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["1"]
+			},
+			{
+				"description": "-0 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"answers": ["-0"]
+			}
+		]
+	}
+}

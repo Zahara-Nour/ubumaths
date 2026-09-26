@@ -1,0 +1,100 @@
+{
+	"globalIndex": 328,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Enlever $1$ ou $2$ à un nombre négatif",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..7"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-a)-1"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "(-a)-2"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"subdomain": "Différences",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "-1 borne basse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["-2"]
+			},
+			{
+				"description": "-2 borne haute",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["-9"]
+			},
+			{
+				"description": "erreur typique : -a+2",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["-5"]
+			},
+			{
+				"description": "parenthèses inutiles",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"answers": ["(-2)"]
+			}
+		]
+	}
+}

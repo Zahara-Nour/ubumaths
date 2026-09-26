@@ -1,0 +1,130 @@
+{
+	"globalIndex": 312,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "« Ecris » → « Écris ». requiredForm « 0 - a » déplacé de shared vers la case : au niveau shared il n'est jamais appliqué aux questions à cases, si bien que « -15 » (simple recopie du nombre) et « 0+(-15) » étaient acceptés alors que l'ancienne question exigeait la seule forme 0-a (one-single-form-solution). Specs : 0-15 juste (bornes 2 et 20) ; -15, 0+(-15), 1-16 refusés (forme) ; 15 faux ; 0-(15) forme perfectible.",
+	"template": {
+		"title": "Nombre négatif défini par une soustraction",
+		"variations": [
+			{
+				"statement": "Écris la soustraction définissant le nombre :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..20"
+					},
+					{
+						"name": "expression1",
+						"expression": "-a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "0-{{a}}",
+						"requiredForm": {
+							"pattern": "0 - a"
+						}
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"nullTerms": "off"
+			}
+		},
+		"grades": ["5"],
+		"theme": "Relatifs",
+		"domain": "Apprivoiser",
+		"subdomain": "La définition d'un nombre négatif",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["0-15"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne basse",
+				"variables": {
+					"a": "2"
+				},
+				"answers": ["0-2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute",
+				"variables": {
+					"a": "20"
+				},
+				"answers": ["0-20"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "recopie du nombre : pas une soustraction",
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["-15"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "addition de l'opposé : pas la soustraction demandée",
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["0+(-15)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "autre soustraction égale",
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["1-16"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "oubli du signe",
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["15"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "parenthèses inutiles",
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["0-(15)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				}
+			}
+		]
+	}
+}

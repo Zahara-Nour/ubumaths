@@ -1,0 +1,204 @@
+{
+	"globalIndex": 337,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"editNotes": "Fidèle ; indices vérifiés sur les 8 variations (signe du facteur manquant = signe du produit / signe du facteur connu).",
+	"template": {
+		"title": "Déterminer le signe d'un facteur",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "30..99"
+				},
+				{
+					"name": "b",
+					"expression": "30..99"
+				}
+			],
+			"choices": [
+				{
+					"content": "positif"
+				},
+				{
+					"content": "négatif"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$(-{{a}})*?={{b}}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$(-{{a}})*?=-{{b}}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$${{a}}*?=-{{b}}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$${{a}}*?={{b}}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*(-{{a}})={{b}}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*(-{{a}})=-{{b}}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*{{a}}=-{{b}}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*{{a}}={{b}}$$",
+				"correctChoiceIndex": ["0"]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"subdomain": "Produit",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1",
+				"variationIndex": 1,
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2",
+				"variationIndex": 2,
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3",
+				"variationIndex": 3,
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4",
+				"variationIndex": 4,
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5",
+				"variationIndex": 5,
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v6",
+				"variationIndex": 6,
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v7",
+				"variationIndex": 7,
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 erreur de signe",
+				"variationIndex": 0,
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v3 bornes",
+				"variationIndex": 3,
+				"variables": {
+					"a": "30",
+					"b": "99"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v6 bornes",
+				"variationIndex": 6,
+				"variables": {
+					"a": "99",
+					"b": "30"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

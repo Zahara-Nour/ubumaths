@@ -1,0 +1,204 @@
+{
+	"globalIndex": 332,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Simplifier l'écriture",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Simplifie les doubles signes de cette expression.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "-a+(-b)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "-{{a}}-{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Simplifie les doubles signes de cette expression.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a+(-b)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}-{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Simplifie les doubles signes de cette expression.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "-a-(-b)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "-{{a}}+{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Simplifie les doubles signes de cette expression.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a-(-b)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}+{{b}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"signs": "strict"
+			}
+		},
+		"grades": ["5"],
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"subdomain": "Sommes algébriques",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "-a+(-b)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["-2-9"]
+			},
+			{
+				"description": "double signe laissé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["signs", "form"]
+				},
+				"answers": ["-2+(-9)"]
+			},
+			{
+				"description": "calcul au lieu de simplifier",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"answers": ["-11"]
+			},
+			{
+				"description": "a+(-b)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["2-9"]
+			},
+			{
+				"description": "a+(-b) termes permutés",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["-9+2"]
+			},
+			{
+				"description": "-a-(-b)",
+				"variationIndex": 2,
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["-2+9"]
+			},
+			{
+				"description": "-a-(-b) double signe laissé",
+				"variationIndex": 2,
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["signs", "form"]
+				},
+				"answers": ["-2-(-9)"]
+			},
+			{
+				"description": "a-(-b)",
+				"variationIndex": 3,
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["9+9"]
+			},
+			{
+				"description": "a-(-b) calculé",
+				"variationIndex": 3,
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"answers": ["11"]
+			}
+		]
+	}
+}

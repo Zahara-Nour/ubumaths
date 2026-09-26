@@ -1,0 +1,110 @@
+{
+	"globalIndex": 343,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse du QCM non convertie : la formule TinyMath « (&1):(&2)>0 ?? 0 :: 1 » était recopiée brute dans correctChoiceIndex (aucun choix jamais juste) → remplacée par {{eval:(1-P/abs(P))/2}} (P = produit a*b, même signe que le quotient, jamais nul : variables ±30..99). Rendu : removeUnnecessaryBrackets supprimait les parenthèses NÉCESSAIRES du diviseur négatif (« 49 : -65 ») → expression a:(b) sans cette option : « 49 : (-65) », « -97 : (78) » (parenthèses superflues sur un diviseur positif, mais notation correcte). Specs : 4 cas de signes.",
+	"template": {
+		"title": "Déterminer le signe d'un quotient",
+		"variations": [
+			{
+				"statement": "Quel est le signe de ce quotient ?\n\n$${{expression1}}$$",
+				"correctChoiceIndex": ["{{eval:(1-a*b/abs(a*b))/2}}"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "b",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "a:(b)"
+					}
+				],
+				"choices": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				],
+				"conditions": ["a<=0 || b<0"]
+			}
+		],
+		"options": {
+			"shuffleChoices": false
+		},
+		"grades": ["4"],
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"subdomain": "Quotient",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "49:(-65) négatif",
+				"variationIndex": 0,
+				"variables": {
+					"a": "49",
+					"b": "-65"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "49:(-65) : positif faux",
+				"variationIndex": 0,
+				"variables": {
+					"a": "49",
+					"b": "-65"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "(-71):(-90) positif",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-71",
+					"b": "-90"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(-97):78 négatif",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-97",
+					"b": "78"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bornes -30:(-99)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-30",
+					"b": "-99"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

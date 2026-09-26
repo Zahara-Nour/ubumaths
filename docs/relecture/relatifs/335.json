@@ -1,0 +1,6 @@
+{
+	"globalIndex": 335,
+	"verdict": "arbitrate",
+	"reviewer": "claude",
+	"question": "Défaut de conversion : les champs signés [+_&2_] de TinyMath (écrire +7 ou -7 selon le signe) sont devenus {{eval:+b}}, qui perd le « + » : l'énoncé affiche « 994-6 » au lieu de « 9+9+4-6 » (réponse attendue 988 !). Écrire a+b+c+d donne « 9+-7+-6+2 ». Aucune syntaxe actuelle ne produit un terme signé (+7 / -7) : faut-il ajouter au convertisseur/générateur un rendu « terme signé » (ex. {{signed:b}}), ou réécrire la question avec des valeurs absolues et des signes tirés séparément ? En l'état elle n'est pas importable."
+}
