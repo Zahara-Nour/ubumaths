@@ -17,6 +17,7 @@ import { generateInstance } from '../instance-generator';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
 import { getQuestionType } from '../../types';
 import { templateMarkdown } from '$lib/ubumark';
+import { validateAnswer } from '$lib/utils/answer-validator';
 
 /**
  * Helper to create a minimal fill-in-blanks template
@@ -831,5 +832,67 @@ describe('Fill-in-blanks: variable resolution in blanks', () => {
 		if (!result.success) return;
 
 		expect(result.instance.blanks![0].prefilled).toBe('5');
+	});
+});
+
+// ============================================================================
+// requiredForm hérité par les cases : case ?? blankDefaults ?? variation ?? shared
+// ============================================================================
+
+describe('Fill-in-blanks: requiredForm hérité de la variation / du shared', () => {
+	const statement = templateMarkdown('Écris $?$');
+
+	it('shared.requiredForm s’applique à une case qui n’en déclare pas', () => {
+		const template = makeFillInTemplateWithShared(
+			{ statement, blanks: [{ expectedAnswer: '0-15' }] },
+			{ requiredForm: { pattern: '0 - a' } }
+		);
+		const result = generateInstance(template, 42);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+		expect(result.instance.blanks?.[0].requiredForm).toEqual({ pattern: '0 - a' });
+
+		for (const answer of ['-15', '0+(-15)']) {
+			const r = validateAnswer([answer], result.instance, [answer]);
+			expect(r.isCorrect, answer).toBe(false);
+			expect(r.status, answer).toBe('bad_form');
+		}
+		const ok = validateAnswer(['0-15'], result.instance, ['0-15']);
+		expect(ok.isCorrect).toBe(true);
+	});
+
+	it('variation.requiredForm s’applique aussi', () => {
+		const template = makeFillInTemplate({
+			statement,
+			requiredForm: 'sum',
+			blanks: [{ expectedAnswer: '2+(-9)' }]
+		});
+		const result = generateInstance(template, 42);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+		expect(result.instance.blanks?.[0].requiredForm).toBe('sum');
+	});
+
+	it('priorité : case > blankDefaults > variation/shared', () => {
+		const template = makeFillInTemplateWithShared(
+			{
+				statement: templateMarkdown('$?$ et $?$'),
+				blankDefaults: { requiredForm: 'product' },
+				blanks: [{ expectedAnswer: '6', requiredForm: 'power' }, { expectedAnswer: '6' }]
+			},
+			{ requiredForm: 'sum' }
+		);
+		const result = generateInstance(template, 42);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+		expect(result.instance.blanks?.map((b) => b.requiredForm)).toEqual(['power', 'product']);
+	});
+
+	it('sans requiredForm nulle part, la case n’en a pas', () => {
+		const template = makeFillInTemplate({ statement, blanks: [{ expectedAnswer: '5' }] });
+		const result = generateInstance(template, 42);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+		expect(result.instance.blanks?.[0].requiredForm).toBeUndefined();
 	});
 });

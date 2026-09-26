@@ -310,7 +310,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					expectedAnswer,
 					type: blankResult.blankTypes[i],
 					precision: blank.precision ?? resolvedVariation.blankDefaults?.precision,
-					requiredForm: blank.requiredForm ?? resolvedVariation.blankDefaults?.requiredForm,
+					// Même héritage que le reste : case > blankDefaults > variation/shared
+					// (resolvedVariation.requiredForm = variation ?? shared).
+					requiredForm:
+						blank.requiredForm ??
+						resolvedVariation.blankDefaults?.requiredForm ??
+						resolvedVariation.requiredForm,
 					validationRules: blank.validationRules ?? resolvedVariation.validationRules,
 					unit: blank.unit ?? resolvedVariation.blankDefaults?.unit,
 					...((blank.rulesSuffice ?? resolvedVariation.blankDefaults?.rulesSuffice) && {
