@@ -195,6 +195,11 @@ export class TinyCASConverter {
 				// Generic color name without number
 				return `{{color:primary}}`;
 			}
+			// Couleur « bonne réponse » de TinyMath (#a3d651, un vert) → vert de la palette
+			if (colorName === 'correct_color') {
+				this.stats.colorReferences++;
+				return '{{color:primary.2}}';
+			}
 			// Not a color reference, leave as-is for now (might be other store variable)
 			this.warnings.push(`Store reference ${match} detected - may need manual review`);
 			return match;

@@ -124,6 +124,11 @@ function extractMarkdownBracedToken(
 	if (innerContent.startsWith('blank:') || innerContent.startsWith('color:')) {
 		return { token: null, endIndex: i };
 	}
+	// `{{{color:…}}}` = marqueur de couleur dans un groupe LaTeX (`\textcolor{{{color:x}}}{…}`,
+	// forme des corrections TinyMath converties) : ce n'est pas un tirage
+	if (/^\{(blank|color):[^{}]*\}$/.test(innerContent)) {
+		return { token: null, endIndex: i };
+	}
 
 	if (innerContent.startsWith('random:')) {
 		type = 'random';
