@@ -87,7 +87,11 @@ for (const f of fichiers) {
 	}
 	compilateur.addSource('/main.typ', readFileSync(f, 'utf8'));
 	// format 1 = PDF
-	const r = await compilateur.compile({ mainFilePath: '/main.typ', format: 1, diagnostics: 'full' });
+	const r = await compilateur.compile({
+		mainFilePath: '/main.typ',
+		format: 1,
+		diagnostics: 'full'
+	});
 	const erreurs = (r.diagnostics ?? []).filter(
 		(d) => d.severity === 'Error' || d.severity === 'error' || d.severity === 0
 	);
