@@ -63,6 +63,7 @@ import {
 	convertTinyCASToNew,
 	fixMathDelimiters,
 	toSimplifiedSyntax,
+	normalizeRandomRange,
 	toBareVariableSyntax
 } from './syntax-converter';
 import { convertPlaceholders } from './placeholder-converter';
@@ -460,7 +461,10 @@ function convertVariables(
 
 			// Convert to simplified syntax and use bare variable names
 			// {{a}}^{{b}} → a^b (resolver handles bare name substitution)
-			const simplified = toBareVariableSyntax(toSimplifiedSyntax(afterTinyCAS));
+			// puis tirages dans la syntaxe du générateur (bornes calculées, exclusions m/d/cd)
+			const simplified = normalizeRandomRange(
+				toBareVariableSyntax(toSimplifiedSyntax(afterTinyCAS))
+			);
 
 			// Handle complex digits: expressions where parts contain ranges (..)
 			// e.g., "digits:0..2.1..2" → split into intermediate variables

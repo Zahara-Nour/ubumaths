@@ -11,7 +11,12 @@
  * @module ubumark/parameterization/resolver/random-generator
  */
 
-import type { RandomSpec, ResolvedVariable, NumberOrVariable } from '../../types';
+import type {
+	ArithmeticExclusion,
+	RandomSpec,
+	ResolvedVariable,
+	NumberOrVariable
+} from '../../types';
 import { seededRandom } from '$lib/utils/random';
 import { detectExpressionType } from '../parser/expression-normalizer';
 
@@ -196,6 +201,8 @@ export function generateRandomNumber(
 
 	// 2. Resolve exclusions
 	const excludedValues = new Set<number>();
+	// Exclusions arithmétiques (m, d, cd), testées sur chaque valeur tirée
+	const arithmeticExclusions: { type: ArithmeticExclusion['type']; of: number }[] = [];
 
 	for (const exclusion of spec.exclusions) {
 		if (exclusion.type === 'value') {
@@ -205,7 +212,12 @@ export function generateRandomNumber(
 			if (spec.type === 'relative-integer') {
 				excludedValues.add(-value);
 			}
-		} else if (exclusion.type === 'range') {
+		} else if (exclusion.type !== 'range') {
+			arithmeticExclusions.push({
+				type: exclusion.type,
+				of: resolveNumberOrVariable(exclusion.of, resolvedVariables)
+			});
+		} else {
 			const excludeMin = resolveNumberOrVariable(exclusion.min, resolvedVariables);
 			const excludeMax = resolveNumberOrVariable(exclusion.max, resolvedVariables);
 
@@ -267,9 +279,34 @@ export function generateRandomNumber(
 					`Range: [${min}, ${max}], Excluded: ${excludedValues.size} values`
 			);
 		}
-	} while (excludedValues.has(value));
+	} while (
+		excludedValues.has(value) ||
+		arithmeticExclusions.some((exclusion) => isArithmeticallyExcluded(value, exclusion))
+	);
 
 	return value;
+}
+
+function gcd(a: number, b: number): number {
+	let x = Math.abs(a);
+	let y = Math.abs(b);
+	while (y !== 0) [x, y] = [y, x % y];
+	return x;
+}
+
+/** Sémantique TinyMath (`tinycas/src/math/transform.ts`) */
+function isArithmeticallyExcluded(
+	value: number,
+	exclusion: { type: ArithmeticExclusion['type']; of: number }
+): boolean {
+	switch (exclusion.type) {
+		case 'multiple-of':
+			return exclusion.of !== 0 && value % exclusion.of === 0;
+		case 'divisor-of':
+			return value !== 0 && exclusion.of % value === 0;
+		case 'common-divisor-with':
+			return gcd(value, exclusion.of) !== 1;
+	}
 }
 
 /**
