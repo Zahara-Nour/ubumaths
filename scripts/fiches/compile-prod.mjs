@@ -57,9 +57,12 @@ if (!existsSync(MATH_FONT)) {
 }
 
 const acces = new MemoryAccessModel();
+// Téléchargement immédiat : différé dans getBody, un paquet introuvable n'aurait
+// jamais rendu 404 (le `catch` était inaccessible) et l'erreur surgissait plus loin.
 const telecharger = (_m, url) => {
 	try {
-		return { statusCode: 200, getBody: () => execFileSync('curl', ['-sfL', url]) };
+		const corps = execFileSync('curl', ['-sfL', url]);
+		return { statusCode: 200, getBody: () => corps };
 	} catch {
 		return { statusCode: 404 };
 	}
