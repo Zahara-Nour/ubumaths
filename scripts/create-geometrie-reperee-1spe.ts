@@ -10,7 +10,7 @@
  * droite, intersections avec une droite parallèle à un axe) :
  *  - « Entraînement technique — Géométrie repérée » : 10 exercices `automatisme`
  *    neufs, entrelacés avec deux exercices existants de David (« Projeté
- *    orthogonal », « Forme canonique et et équation de cercle »), qu'on ne modifie
+ *    orthogonal », « Forme canonique et équation de cercle »), qu'on ne modifie
  *    pas — ils restent aussi dans leurs fiches d'origine ;
  *  - « Applications de la géométrie repérée » : 8 exercices `application` neufs
  *    en 3 sections.
@@ -60,7 +60,7 @@ const TOPIC = 'Géométrie repérée';
  */
 const EXISTANTS_APRES: Record<string, [string, string][]> = {
 	'05': [['96c54dc9', 'Projeté orthogonal']],
-	'07': [['5b2ac4dd', 'Forme canonique et et équation de cercle']]
+	'07': [['5b2ac4dd', 'Forme canonique et équation de cercle']]
 };
 
 /** Exercices existants de David placés à la fin de chaque section d'application. */
