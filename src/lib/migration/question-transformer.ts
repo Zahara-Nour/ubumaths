@@ -1476,7 +1476,10 @@ function assignCategory(oldQuestion: QuestionBase): {
 		theme: migration.theme,
 		domain: migration.domain,
 		subdomain: migration.subdomain,
-		level: migration.level
+		// TinyMath numérote les niveaux à partir de 0, la base à partir de 1
+		// (contrainte `question_templates_level_positive`) : +1 pour toutes,
+		// ce qui garde l'ordre d'origine (décision de David, 2026-09-26)
+		level: migration.level + 1
 	};
 }
 

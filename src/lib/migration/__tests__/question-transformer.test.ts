@@ -39,7 +39,10 @@ function withMigration(
 ): QuestionBase {
 	return {
 		...q,
-		...{ _migration: { ...defaultMigration._migration, ...overrides } }
+		_migration: {
+			...defaultMigration._migration,
+			...overrides
+		}
 	} as QuestionBase;
 }
 
@@ -500,7 +503,23 @@ describe('Question Transformer', () => {
 
 				expect(result.template?.theme).toBe('Fractions');
 				expect(result.template?.domain).toBe('Simplification');
-				expect(result.template?.level).toBe(3);
+				// Niveaux TinyMath à partir de 0, niveaux de la base à partir de 1 : +1
+				expect(result.template?.level).toBe(4);
+			});
+
+			it('niveau TinyMath 0 → niveau 1 (la base exige un niveau ≥ 1)', () => {
+				const oldQuestion: QuestionBase = {
+					description: 'Premier niveau',
+					enounces: ['Test'],
+					solutionss: [['1']],
+					defaultDelay: 30,
+					grade: 'CP'
+				};
+
+				const result = transformQuestion(withMigration(oldQuestion, { level: 0 }), 0);
+
+				expect(result.success).toBe(true);
+				expect(result.template?.level).toBe(1);
 			});
 
 			it('should fail without _migration metadata', () => {
@@ -540,7 +559,7 @@ describe('Question Transformer', () => {
 				expect(result.template?.theme).toBe('Entiers');
 				expect(result.template?.domain).toBe('Apprivoiser');
 				expect(result.template?.subdomain).toBe('Ecriture');
-				expect(result.template?.level).toBe(2);
+				expect(result.template?.level).toBe(3);
 			});
 		});
 
