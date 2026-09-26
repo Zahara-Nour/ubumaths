@@ -15,17 +15,22 @@
  * - Updates migration_tracking table with status
  * - Supports filtering by theme/domain/subdomain
  *
+ * ⛔ OBSOLÈTE pour la relecture des questions TinyMath : il importe l'export
+ * SANS les corrections de relecture. Utiliser `scripts/import-reviewed-questions.ts`.
+ *
+ * ⚠️ SIMULATION PAR DÉFAUT (décision du 2026-09-26) : rien n'est écrit sans `--publier`.
+ *
  * Usage:
- *   pnpm tsx scripts/import-questions-to-db.ts --approved-only
- *   pnpm tsx scripts/import-questions-to-db.ts --theme Entiers --domain Apprivoiser --subdomain Ecriture
- *   pnpm tsx scripts/import-questions-to-db.ts --dry-run
+ *   pnpm tsx scripts/import-questions-to-db.ts --approved-only             (simulation)
+ *   pnpm tsx scripts/import-questions-to-db.ts --approved-only --publier   (écrit en base)
  *
  * Options:
  *   --approved-only   Only import questions approved via review API
  *   --theme <name>    Filter by theme (e.g., "Entiers")
  *   --domain <name>   Filter by domain (e.g., "Apprivoiser")
  *   --subdomain <name> Filter by subdomain (e.g., "Ecriture")
- *   --dry-run         Preview without database changes
+ *   --publier         ⚠️ Écrit réellement en base (sinon simulation)
+ *   --dry-run         Sans effet (la simulation est le défaut), conservé par compatibilité
  *   --batch <size>    Batch size for inserts (default: 50)
  *   --source <path>   Override export directory path
  *
@@ -51,7 +56,8 @@ const __dirname = dirname(__filename);
 
 const CONFIG = {
 	BATCH_SIZE: parseInt(getArgValue('--batch') || '50'),
-	DRY_RUN: process.argv.includes('--dry-run'),
+	// Simulation par défaut : écrire exige `--publier`
+	DRY_RUN: !process.argv.includes('--publier'),
 	APPROVED_ONLY: process.argv.includes('--approved-only'),
 	THEME: getArgValue('--theme'),
 	DOMAIN: getArgValue('--domain'),
@@ -527,7 +533,7 @@ function printReport(results: ImportResults): void {
 
 	if (CONFIG.DRY_RUN) {
 		console.log('\n[DRY RUN] No actual database changes were made.');
-		console.log('Run without --dry-run to perform the actual import.');
+		console.log('Add --publier to perform the actual import.');
 	}
 }
 

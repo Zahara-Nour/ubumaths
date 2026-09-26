@@ -10,9 +10,13 @@
  * Usage:
  *   pnpm tsx scripts/validate-phase1-questions.ts [options]
  *
+ * ⚠️ SIMULATION PAR DÉFAUT (décision du 2026-09-26) : le statut `validated` n'est
+ * écrit dans `migration_tracking` qu'avec `--publier`.
+ *
  * Options:
  *   --sample N   Validate only N random questions (default: all)
  *   --verbose    Show detailed validation output
+ *   --publier    ⚠️ Écrit le statut en base (sinon simulation)
  *
  * @module scripts/validate-phase1-questions
  */
@@ -27,6 +31,8 @@ const CONFIG = {
 	SAMPLE_SIZE:
 		parseInt(process.argv.find((_, i) => process.argv[i - 1] === '--sample') || '0') || null,
 	VERBOSE: process.argv.includes('--verbose'),
+	// Simulation par défaut : écrire exige `--publier`
+	PUBLISH: process.argv.includes('--publier'),
 	PHASE: 1
 };
 
@@ -61,6 +67,7 @@ async function main() {
 	console.log('Configuration:');
 	console.log(`  - Sample size: ${CONFIG.SAMPLE_SIZE || 'ALL'}`);
 	console.log(`  - Verbose: ${CONFIG.VERBOSE ? 'YES' : 'NO'}`);
+	console.log(`  - Mode: ${CONFIG.PUBLISH ? 'PUBLICATION (écrit en base)' : 'SIMULATION'}`);
 	console.log('');
 
 	const supabase = createSupabaseClient();
@@ -139,18 +146,21 @@ async function main() {
 		}
 
 		// Update migration status for validated questions
-		if (results.validated > 0 && CONFIG.SAMPLE_SIZE === null) {
+		if (results.validated > 0 && CONFIG.SAMPLE_SIZE === null && !CONFIG.PUBLISH) {
+			console.log('\n[SIMULATION] Statuts non écrits — ajouter --publier pour les écrire.');
+		} else if (results.validated > 0 && CONFIG.SAMPLE_SIZE === null) {
 			// Only update if validating all questions
 			const validatedIds = idsToValidate.filter((id) => !results.errors.some((e) => e.id === id));
 
 			for (const id of validatedIds) {
-				await supabase
+				const { error: updateError } = await supabase
 					.from('migration_tracking')
 					.update({
 						migration_status: 'validated',
 						validated_at: new Date().toISOString()
 					})
 					.eq('new_template_id', id);
+				if (updateError) console.error(`  ❌ Statut non écrit pour ${id}: ${updateError.message}`);
 			}
 		}
 
