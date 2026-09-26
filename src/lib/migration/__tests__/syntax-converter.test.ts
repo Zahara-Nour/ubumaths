@@ -869,24 +869,24 @@ describe('TinyCAS Syntax Converter', () => {
 
 	describe('22. Mini/Maxi Function Tests', () => {
 		it('should convert mini function', () => {
-			expectConversion('mini(5;10)', 'min(5,10)');
-			expectConversion('mini(&1;&2)', 'min({{a}},{{b}})');
-			expectConversion('mini(10-&1;&1-1)', 'min(10-{{a}},{{a}}-1)');
+			expectConversion('mini(5;10)', 'min(5, 10)');
+			expectConversion('mini(&1;&2)', 'min({{a}}, {{b}})');
+			expectConversion('mini(10-&1;&1-1)', 'min(10-{{a}}, {{a}}-1)');
 		});
 
 		it('should convert maxi function', () => {
-			expectConversion('maxi(5;10)', 'max(5,10)');
-			expectConversion('maxi(&1;&2)', 'max({{a}},{{b}})');
-			expectConversion('maxi(&2;&3)', 'max({{b}},{{c}})');
+			expectConversion('maxi(5;10)', 'max(5, 10)');
+			expectConversion('maxi(&1;&2)', 'max({{a}}, {{b}})');
+			expectConversion('maxi(&2;&3)', 'max({{b}}, {{c}})');
 		});
 
 		it('should convert mini/maxi in complex expressions', () => {
-			expectConversion('$e[2;[_mini(10-&1;&1-1)_]]', '{{2..{{eval:min(10-a,a-1)}}}}');
+			expectConversion('$e[2;[_mini(10-&1;&1-1)_]]', '{{2..{{eval:min(10-a, a-1)}}}}');
 		});
 
 		it('should convert mini/maxi in correction text', () => {
-			expectConversion('mini(&2;&3) est plus petit', 'min({{b}},{{c}}) est plus petit');
-			expectConversion('maxi(&2;&3) est plus grand', 'max({{b}},{{c}}) est plus grand');
+			expectConversion('mini(&2;&3) est plus petit', 'min({{b}}, {{c}}) est plus petit');
+			expectConversion('maxi(&2;&3) est plus grand', 'max({{b}}, {{c}}) est plus grand');
 		});
 
 		it('should track mini/maxi function statistics', () => {
@@ -896,7 +896,7 @@ describe('TinyCAS Syntax Converter', () => {
 
 		it('should handle multiple mini/maxi in one string', () => {
 			const input = 'Compare mini(&1;&2) with maxi(&1;&2)';
-			const expected = 'Compare min({{a}},{{b}}) with max({{a}},{{b}})';
+			const expected = 'Compare min({{a}}, {{b}}) with max({{a}}, {{b}})';
 			expectConversion(input, expected);
 		});
 	});

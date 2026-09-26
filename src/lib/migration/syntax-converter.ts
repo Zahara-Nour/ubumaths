@@ -243,7 +243,8 @@ export class TinyCASConverter {
 	private convertRandomWithExclusions(input: string): string {
 		// Pattern for random with exclusions
 		// Note: \\{ in the original is actually \{ in the string
-		const pattern = /\$e\[([^;]+);([^\]]+)\]\\{([^}]+)\}/g;
+		// Une exclusion peut déjà contenir un calcul converti (`[_10-&1_]` → `{{eval:10-a}}`, #90)
+		const pattern = /\$e\[([^;]+);([^\]]+)\]\\{((?:[^{}]|\{\{[^{}]*\}\})+)\}/g;
 
 		return input.replace(pattern, (match, min, max, exclusions) => {
 			this.stats.exclusions++;
@@ -666,14 +667,14 @@ export class TinyCASConverter {
 		const miniPattern = /mini\(([^;)]+);([^)]+)\)/g;
 		let result = input.replace(miniPattern, (match, a, b) => {
 			this.stats.minMaxFunctions++;
-			return `min(${a.trim()},${b.trim()})`;
+			return `min(${a.trim()}, ${b.trim()})`;
 		});
 
 		// Pattern for maxi(a;b) - maximum function
 		const maxiPattern = /maxi\(([^;)]+);([^)]+)\)/g;
 		result = result.replace(maxiPattern, (match, a, b) => {
 			this.stats.minMaxFunctions++;
-			return `max(${a.trim()},${b.trim()})`;
+			return `max(${a.trim()}, ${b.trim()})`;
 		});
 
 		// pgcd(a;b) → gcd(a,b) : dans un calcul `[_…_]`, il restait brut
@@ -681,7 +682,17 @@ export class TinyCASConverter {
 		const pgcdPattern = /pgcd\(([^;)]+);([^)]+)\)/g;
 		result = result.replace(pgcdPattern, (match, a, b) => {
 			this.stats.minMaxFunctions++;
-			return `gcd(${a.trim()},${b.trim()})`;
+			return `gcd(${a.trim()}, ${b.trim()})`;
+		});
+
+		// mod(a;b) → mod(a, b) : hors calcul `[_…_]` (`&3+3-mod(&1+&2+&3;3)`, #214),
+		// le séparateur TinyMath restait et le calcul échouait (« Expected ')' »).
+		// Arguments séparés par « , » (virgule + espace) pour les quatre fonctions : une
+		// valeur insérée telle quelle (`mod(2+5+4,3)`) lirait `4,3` comme un décimal.
+		const modPattern = /\bmod\(([^;()]+(?:\([^()]*\)[^;()]*)*);([^()]+)\)/g;
+		result = result.replace(modPattern, (match, a, b) => {
+			this.stats.minMaxFunctions++;
+			return `mod(${a.trim()}, ${b.trim()})`;
 		});
 
 		return result;
@@ -1149,7 +1160,10 @@ function convertExclusionItem(raw: string): string {
 export function convertTinyMathExclusion(expression: string): string {
 	const match = expression.match(/^(.*)\\\{(.*)\}$/);
 	if (!match) return expression;
-	const [, base, rawItems] = match;
+	const [, rawBase, rawItems] = match;
+	// Nombre à n chiffres déjà mis en marqueur (`{{digits:a}}\{m10}`) : son contenu
+	const inner = isSingleToken(rawBase) ? rawBase.trim().slice(2, -2) : '';
+	const base = inner.startsWith('digits:') ? inner : rawBase;
 	const items = rawItems.split(';').map((item) => item.trim());
 
 	// Liste : les exclusions sont des valeurs ou des variables, comparées telles quelles
