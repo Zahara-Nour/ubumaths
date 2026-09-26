@@ -116,3 +116,11 @@ Après relecture (`code-reviewer`) :
   sa donnée — #611 et #527 (`[_…_]` contenant une inconnue x : `{{eval:+-(a+(b))x}}`) ; #457/#459
   (virgule décimale `&1,&2h`) ; #621 (aucune solution) ; #344 (2ᵉ `enounces2` perdu, 1 variation) ;
   #486 point final dans la formule (`$?.$`) ; redondances visuelles #313, #455, #456.
+
+## Lot pilote Relatifs — TERMINÉ (2026-09-26)
+
+- 36/36 importées en brouillon après feu vert de David (rapport : `docs/relecture/relatifs/RAPPORT.md`).
+- Arbitrages : #330 → `additionOnly` ; #335 → termes signés. Les 8 défauts de conversion du lot corrigés
+  (#464 parenthèses après « : », #465 validateur, #466 transformateur).
+- Génération du corpus : 198 → 507/633 sur la journée (#457-#466).
+- Tes 41 (David) : la variable `e` n'y pose PAS de problème (remplacée avant calcul ; vérifié sur 30 tirages).

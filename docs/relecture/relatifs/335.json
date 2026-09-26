@@ -1,6 +1,159 @@
 {
 	"globalIndex": 335,
-	"verdict": "arbitrate",
+	"verdict": "approved",
 	"reviewer": "claude",
-	"question": "Défaut de conversion : les champs signés [+_&2_] de TinyMath (écrire +7 ou -7 selon le signe) sont devenus {{eval:+b}}, qui perd le « + » : l'énoncé affiche « 994-6 » au lieu de « 9+9+4-6 » (réponse attendue 988 !). Écrire a+b+c+d donne « 9+-7+-6+2 ». Aucune syntaxe actuelle ne produit un terme signé (+7 / -7) : faut-il ajouter au convertisseur/générateur un rendu « terme signé » (ex. {{signed:b}}), ou réécrire la question avec des valeurs absolues et des signes tirés séparément ? En l'état elle n'est pas importable."
+	"template": {
+		"title": "Calculer une somme algébrique",
+		"description": "Avec écriture simplifiée",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "d",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a}}{{eval:b;+}}{{eval:c;+}}{{eval:d;+}}"
+					}
+				],
+				"conditions": [
+					"abs(a)/(a)+abs(b)/(b)+abs(c)/(c)+abs(d)/(d)>-4 && abs(a)/(a)+abs(b)/(b)+abs(c)/(c)+abs(d)/(d)<4 "
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"subdomain": "Sommes algébriques",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "9-7-6+2 = -2",
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "-6",
+					"d": "2"
+				},
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "signe du résultat oublié",
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "-6",
+					"d": "2"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "valeurs absolues additionnées (erreur typique)",
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "-6",
+					"d": "2"
+				},
+				"answers": ["24"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "recopie de la somme refusée",
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "-6",
+					"d": "2"
+				},
+				"answers": ["9-7-6+2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "parenthèses inutiles",
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "-6",
+					"d": "2"
+				},
+				"answers": ["(-2)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				}
+			},
+			{
+				"description": "bornes : -9+9+9-9 = 0",
+				"variables": {
+					"a": "-9",
+					"b": "9",
+					"c": "9",
+					"d": "-9"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bornes : 2+2+2-2 = 4",
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "2",
+					"d": "-2"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "9+9+4-6 = 16",
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "4",
+					"d": "-6"
+				},
+				"answers": ["16"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
 }

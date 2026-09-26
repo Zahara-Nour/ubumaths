@@ -1,7 +1,9 @@
 # Lot pilote « Relatifs » — rapport de relecture
 
-36 questions TinyMath (#311–#346), 5e–4e. Relecture le 2026-09-26 (Claude). **Rien n'est encore en
-base** : ce rapport attend le feu vert de David.
+36 questions TinyMath (#311–#346), 5e–4e. Relecture le 2026-09-26 (Claude).
+
+> ✅ **Feu vert de David le 2026-09-26. Les 36 questions sont importées en BROUILLON** (verdicts
+> reportés, `question_templates` reliés). David les publie lui-même.
 
 ## Bilan
 
@@ -33,7 +35,7 @@ au total), toutes vertes, et 50 tirages par variation sans échec.
 
 Chaque fichier `<n>.json` porte le détail dans `editNotes`.
 
-## Questions à arbitrer
+## Questions à arbitrer — tranchées par David (option a pour les deux)
 
 1. **#330 « Réécris cette soustraction en une addition équivalente »** — la réponse attendue
    2 + (−9) contient un double signe, donc la contrainte « signes » est désactivée (comme dans
@@ -45,9 +47,10 @@ Chaque fichier `<n>.json` porte le détail dans `editNotes`.
    → (a) j'ajoute au convertisseur un rendu « terme signé » (correctif de code), ou (b) on réécrit
    la question autrement ?
 
-## Défauts de conversion à corriger dans le code (relevés par ce lot)
+**Décisions** : #330 → nouvelle forme exigée `additionOnly` (#465) ; la recopie est refusée.
+#335 → termes signés `{{eval:x;+}}` (#466) ; l'énoncé affiche « 9 − 7 − 6 + 2 ».
 
-Ils touchent sûrement d'autres thèmes ; je les corrige à la source avant les lots suivants.
+## Défauts de conversion relevés par ce lot — ✅ tous corrigés (#464, #465, #466)
 
 1. QCM : bon choix calculé par un ternaire TinyMath recopié brut.
 2. `shared.requiredForm` ignoré pour les questions à cases (contrainte de forme sans effet).
