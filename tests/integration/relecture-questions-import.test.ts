@@ -26,7 +26,7 @@ import {
 } from '$lib/server/migration/review-db';
 import { parseReviewFile, type ReviewFile } from '$lib/migration/review/review-file';
 import { generateStableQuestionHash } from '$lib/server/migration/hash-utils';
-import type { QuestionBase } from '$lib/migration/old-question-types';
+import type { QuestionWithMigration } from '$lib/migration/old-question-types';
 import type { QuestionTemplate, TestSpec } from '$lib/questions/types';
 import { templateMarkdown } from '$lib/ubumark';
 
@@ -40,7 +40,7 @@ const NOW = '2026-09-26T12:00:00.000Z';
 let reviewerId = '';
 
 /** Ancienne question factice, unique par test (hash distinct) */
-function oldQuestion(globalIndex: number, label: string): QuestionBase {
+function oldQuestion(globalIndex: number, label: string): QuestionWithMigration {
 	return {
 		description: `${RUN} ${label}`,
 		enounces: ['Calcule le double de $$&1$$.'],
@@ -55,7 +55,7 @@ function oldQuestion(globalIndex: number, label: string): QuestionBase {
 			level: 1,
 			globalIndex
 		}
-	} as unknown as QuestionBase;
+	} as unknown as QuestionWithMigration;
 }
 
 const SPECS: TestSpec[] = [
@@ -99,12 +99,12 @@ function ctx(overrides: Partial<ReviewDbContext> = {}): ReviewDbContext {
 }
 
 const createdHashes: string[] = [];
-function track(q: QuestionBase): QuestionBase {
+function track(q: QuestionWithMigration): QuestionWithMigration {
 	createdHashes.push(generateStableQuestionHash(q as unknown as Record<string, unknown>));
 	return q;
 }
 
-async function trackingRow(q: QuestionBase) {
+async function trackingRow(q: QuestionWithMigration) {
 	const hash = generateStableQuestionHash(q as unknown as Record<string, unknown>);
 	const { data, error } = await supabase
 		.from('migration_tracking')
@@ -114,7 +114,7 @@ async function trackingRow(q: QuestionBase) {
 	return data;
 }
 
-async function editRow(q: QuestionBase) {
+async function editRow(q: QuestionWithMigration) {
 	const hash = generateStableQuestionHash(q as unknown as Record<string, unknown>);
 	const { data, error } = await supabase
 		.from('migration_edits')
@@ -238,6 +238,48 @@ describe('recordReview', () => {
 		);
 	});
 
+	it('verdict déjà rendu et différent : refus sans --remplacer, changé avec', async () => {
+		const q = track(oldQuestion(607, 'verdict-existant'));
+		const rejection = parseReviewFile({
+			globalIndex: 607,
+			verdict: 'rejected',
+			reviewer: 'david',
+			reason: 'hors programme'
+		});
+		expect((await recordReview(ctx(), q, rejection)).status).toBe('written');
+
+		const approval = approved(607, 'verdict-existant');
+		const refused = await recordReview(ctx(), q, approval);
+		expect(refused.status).toBe('refused');
+		expect(refused.reasons.join()).toMatch(/verdict existant « rejected »/);
+		expect((await trackingRow(q))[0].review_status).toBe('rejected');
+
+		expect((await recordReview(ctx({ allowReplaceEdit: true }), q, approval)).status).toBe(
+			'written'
+		);
+		expect((await trackingRow(q))[0].review_status).toBe('approved');
+	});
+
+	it('même empreinte qu’une autre question (doublon TinyMath) : refus, la ligne de l’autre intacte', async () => {
+		const q = track(oldQuestion(608, 'empreinte'));
+		// La ligne de suivi existe déjà, mais pour une AUTRE question (#74 ↔ #136)
+		const hash = generateStableQuestionHash(q as unknown as Record<string, unknown>);
+		const { error } = await supabase.from('migration_tracking').insert({
+			old_question_hash: hash,
+			old_question_index: 600,
+			old_description: 'autre question',
+			migration_status: 'pending'
+		});
+		expect(error).toBeNull();
+
+		const outcome = await recordReview(ctx(), q, approved(608, 'empreinte'));
+		expect(outcome.status).toBe('refused');
+		expect(outcome.reasons.join()).toMatch(/même empreinte que #600/);
+		const [row] = await trackingRow(q);
+		expect(row).toMatchObject({ old_question_index: 600, review_status: 'pending' });
+		expect(await editRow(q)).toHaveLength(0);
+	});
+
 	it('suivi existant : mis à jour, pas dupliqué ; `validated` ramené à `pending`', async () => {
 		const q = track(oldQuestion(606, 'suivi-existant'));
 		const hash = generateStableQuestionHash(q as unknown as Record<string, unknown>);
@@ -339,6 +381,20 @@ describe('importReviewedQuestion', () => {
 		const outcome = await importReviewedQuestion(ctx(), q);
 		expect(outcome.status).toBe('refused');
 		expect(await templatesTitled(`${RUN} rouge`)).toHaveLength(0);
+	});
+
+	it('version en base différente du fichier relu : refusée, rien inséré', async () => {
+		const q = track(oldQuestion(618, 'relu'));
+		await recordReview(ctx(), q, approved(618, 'relu'));
+		const reviewedLater = template('relu', { title: `${RUN} relu modifié` });
+		const outcome = await importReviewedQuestion(ctx(), q, reviewedLater);
+		expect(outcome.status).toBe('refused');
+		expect(outcome.reasons.join()).toMatch(/diffère du fichier relu/);
+		expect(await templatesTitled(`${RUN} relu`)).toHaveLength(0);
+
+		// Le même contenu que le fichier relu (copie indépendante) : importé
+		const same = JSON.parse(JSON.stringify(template('relu'))) as QuestionTemplate;
+		expect((await importReviewedQuestion(ctx(), q, same)).status).toBe('imported');
 	});
 
 	it('listImportCandidates : seulement approuvées et non importées, filtrables par index', async () => {

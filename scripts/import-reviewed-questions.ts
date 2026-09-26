@@ -25,6 +25,7 @@ import {
 	importReviewedQuestion,
 	listImportCandidates
 } from '../src/lib/server/migration/review-db';
+import { draftTemplate } from '../src/lib/migration/review/review-file';
 import {
 	argValue,
 	backupRows,
@@ -39,9 +40,11 @@ import {
 async function main(): Promise<number> {
 	const publish = hasFlag('--publier');
 	const lot = argValue('--lot');
-	const indices = lot
-		? readReviewFiles(lot).map((review) => review.globalIndex)
-		: parseIndexList(argValue('--index'));
+	// Avec --lot, seul le contenu RELU (fichier de verdict) est importable
+	const reviewed = lot
+		? new Map(readReviewFiles(lot).map((review) => [review.globalIndex, draftTemplate(review)]))
+		: undefined;
+	const indices = reviewed ? [...reviewed.keys()] : parseIndexList(argValue('--index'));
 	if (!indices) {
 		console.error('Préciser --lot <dossier> ou --index 1,2,3 (voir l’en-tête du script).');
 		return 1;
@@ -55,8 +58,14 @@ async function main(): Promise<number> {
 	const oldQuestions = await loadOldQuestions();
 	const reviewerId = await findReviewerId(supabase);
 	console.log(
-		`${indices.length} question(s) visée(s), ${candidates.length} approuvée(s) et non importée(s)\n`
+		`${indices.length} question(s) visée(s), ${candidates.length} approuvée(s) et non importée(s)`
 	);
+	const found = new Set(candidates.map((c) => c.globalIndex));
+	const missing = indices.filter((index) => !found.has(index));
+	if (missing.length > 0) {
+		console.log(`Sans candidat (non approuvée, déjà importée ou doublon) : ${missing.join(', ')}`);
+	}
+	console.log('');
 	if (candidates.length === 0) return 0;
 
 	if (publish) {
@@ -73,7 +82,13 @@ async function main(): Promise<number> {
 	for (const candidate of candidates) {
 		const old = oldQuestions.get(candidate.globalIndex);
 		if (!old) throw new Error(`ancienne question #${candidate.globalIndex} introuvable`);
-		const outcome = await importReviewedQuestion(ctx, old);
+		const expected = reviewed?.get(candidate.globalIndex);
+		if (reviewed && !expected) {
+			counts.refused++;
+			console.log(`#${candidate.globalIndex} : ❌ écartée — le fichier relu ne l’approuve pas`);
+			continue;
+		}
+		const outcome = await importReviewedQuestion(ctx, old, expected);
 		counts[outcome.status]++;
 		const mark = {
 			imported: `✅ importée → ${outcome.templateId}`,

@@ -67,3 +67,34 @@ Après relecture (`code-reviewer`) :
 - #216 variante 3 : `$l{1;4;7}+2-mod(&1+&2;3)` mal convertie (≈ 1 tirage sur 2 échoue) — `it.fails`
   dans `transformer-test-answers.test.ts`. #210, #481, #535, #611 ne génèrent pas (tirages).
 - #621 : pas de `solutionss`, égalités `testAnswers` ignorées → réponse attendue à reprendre.
+
+## Phase 1 — outillage (`chore/outillage-relecture`)
+
+- Simulation par défaut : `import-questions-to-db`, `validate-phase1-questions` **et
+  `rollback-migration`** (il supprimait par défaut ; même décision appliquée).
+- `pnpm question:specs` (vérifier / prévisualiser), `pnpm relecture:verdicts` (reporter les verdicts
+  d'un lot), `pnpm relecture:import` (importer en brouillon). Circuit : `docs/relecture/README.md`.
+- Importable ⇔ structure + schéma strict OK, ≥ 1 spec « correct » PAR variation, toutes les specs
+  vertes, 50 tirages par variation sans échec, niveau ≥ 1.
+- Garde-fous (relecture `code-reviewer`) : verdict déjà rendu et différent → refus sans
+  `--remplacer` ; import recoupé avec le fichier relu (contenu identique exigé) ; doublon
+  d'empreinte refusé ; rejet/arbitrage n'écrit jamais de version corrigée.
+
+## Décisions en attente de David
+
+- **Niveaux** : la base exige `level ≥ 1` ; TinyMath commence à 0 (136 questions) ; le transformateur
+  ne décale PAS (mesuré : 633/633 identiques) alors que son propre contrôle exige ≥ 1. Les 41 de
+  David : 0 changé en 1 à la main → paires au même niveau (#0/#1, #9/#10, #25/#26, #96/#97) qui se
+  bloqueraient à la publication (unicité thème/domaine/sous-domaine/niveau) ; #20 resté à 0.
+  Proposition : +1 pour tous. En attendant, l'outil écarte tout niveau < 1.
+
+## Pièges rencontrés
+
+- **12 paires TinyMath ont la même empreinte** (`generateStableQuestionHash`), clé UNIQUE du suivi :
+  74/136, 75/137, 78/140, 79/141, 80/142, 81/143, 82/144, 84/146, 85/147, 629/630 sont de vrais
+  doublons (→ rejet « doublon de #… ») ; **356/360 et 435/439 sont des questions distinctes** : #360
+  et #439 ne peuvent pas avoir leur propre ligne de suivi (à traiter au lot Fractions / Grandeurs).
+- Une spec sans `variationIndex` vise la variation 0.
+- `check:incremental` refuse de tourner quand Supabase local est démarré (RAM) : `db:stop` d'abord.
+- `rollback-migration` (existant) ne relit ni le delete ni l'update et `--all` supprimerait aussi les
+  brouillons de la relecture : ne pas l'utiliser pour eux.

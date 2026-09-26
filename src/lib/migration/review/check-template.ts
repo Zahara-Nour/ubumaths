@@ -78,10 +78,12 @@ function checkGeneration(
 }
 
 export function checkTemplate(
-	template: QuestionTemplate,
+	candidate: Omit<QuestionTemplate, 'id'> & { id?: string },
 	options: { instances?: number } = {}
 ): TemplateCheckReport {
 	const instances = options.instances ?? DEFAULT_INSTANCES_PER_VARIATION;
+	// Un template transformé n'a pas encore d'`id` (la base le donnera)
+	const template: QuestionTemplate = { ...candidate, id: candidate.id ?? 'verification' };
 
 	const templateErrors = validateTemplate(template);
 	const schema = questionTemplateSchema.safeParse(withoutId(template));
@@ -98,6 +100,21 @@ export function checkTemplate(
 	if (templateErrors.length > 0) reasons.push(`${templateErrors.length} erreur(s) de structure`);
 	if (schemaErrors.length > 0) reasons.push(`${schemaErrors.length} erreur(s) de schéma`);
 	if (specs.length === 0) reasons.push('aucune spec de test');
+	// Chaque variation doit prouver qu'une bonne réponse est acceptée
+	const uncovered = template.variations
+		.map((_, index) => index)
+		.filter(
+			(index) =>
+				!(template.testSpecs ?? []).some(
+					(spec) => (spec.variationIndex ?? 0) === index && spec.expected.status === 'correct'
+				)
+		);
+	if (specs.length > 0 && uncovered.length > 0) {
+		reasons.push(
+			`variation(s) sans spec « correct » : ${uncovered.map((index) => index + 1).join(', ')}`
+		);
+	}
+	if (generation.attempts === 0) reasons.push('aucun tirage effectué');
 	const failedSpecs = specs.filter((spec) => !spec.passed).length;
 	if (failedSpecs > 0) reasons.push(`${failedSpecs} spec(s) rouge(s) sur ${specs.length}`);
 	if (generation.failures.length > 0) {

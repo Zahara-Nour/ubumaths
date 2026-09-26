@@ -22,7 +22,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { toJson } from '$lib/types/database-helpers';
 import type { QuestionTemplate } from '$lib/questions/types';
-import type { QuestionBase } from '$lib/migration/old-question-types';
+import type { QuestionWithMigration } from '$lib/migration/old-question-types';
 import { transformQuestion } from '$lib/migration/question-transformer';
 import { checkTemplate } from '$lib/migration/review/check-template';
 import { toTemplateInsertRow } from '$lib/migration/review/template-insert-row';
@@ -45,7 +45,7 @@ export interface ReviewDbContext {
 	/** Instant ISO des écritures */
 	now: string;
 	dryRun: boolean;
-	/** Remplacer une version corrigée existante et différente */
+	/** Remplacer une version corrigée ou un verdict existants et différents */
 	allowReplaceEdit?: boolean;
 	/** Tirages par variation pour `checkTemplate` (défaut : 50) */
 	instances?: number;
@@ -74,11 +74,11 @@ export interface ImportCandidate {
 // HELPERS
 // ============================================================================
 
-function hashOf(oldQuestion: QuestionBase): string {
+function hashOf(oldQuestion: QuestionWithMigration): string {
 	return generateStableQuestionHash(oldQuestion as unknown as Record<string, unknown>);
 }
 
-function globalIndexOf(oldQuestion: QuestionBase): number {
+function globalIndexOf(oldQuestion: QuestionWithMigration): number {
 	return oldQuestion._migration.globalIndex;
 }
 
@@ -94,13 +94,19 @@ function canonicalJson(value: unknown): string {
 	});
 }
 
+/** Même contenu, à l'ordre des clés, au statut et à l'`id` près */
+function sameContent(a: object, b: object): boolean {
+	const normalize = (value: object) => ({ ...value, id: undefined, status: 'draft' });
+	return canonicalJson(normalize(a)) === canonicalJson(normalize(b));
+}
+
 // ============================================================================
 // REPORT D'UN VERDICT
 // ============================================================================
 
 export async function recordReview(
 	ctx: ReviewDbContext,
-	oldQuestion: QuestionBase,
+	oldQuestion: QuestionWithMigration,
 	review: ReviewFile
 ): Promise<ReviewOutcome> {
 	const { supabase } = ctx;
@@ -124,12 +130,24 @@ export async function recordReview(
 	const hash = hashOf(oldQuestion);
 	const { data: tracking, error: trackingError } = await supabase
 		.from('migration_tracking')
-		.select('id, migration_status, new_template_id')
+		.select('id, old_question_index, migration_status, new_template_id, review_status')
 		.eq('old_question_hash', hash)
 		.maybeSingle();
 	if (trackingError) throw new Error(`#${globalIndex} lecture du suivi : ${trackingError.message}`);
+	// 12 paires TinyMath partagent la même empreinte (doublons) : une seule ligne
+	// de suivi possible par paire, jamais celle de l'autre question
+	if (tracking && tracking.old_question_index !== globalIndex) {
+		return refused([`même empreinte que #${tracking.old_question_index} (doublon TinyMath)`]);
+	}
 	if (tracking?.new_template_id) {
 		return refused([`déjà importée (template ${tracking.new_template_id})`]);
+	}
+	const newStatus = buildTrackingReviewUpdate(review, ctx.reviewerId, ctx.now).review_status;
+	const decided = tracking?.review_status === 'approved' || tracking?.review_status === 'rejected';
+	if (decided && tracking.review_status !== newStatus && !ctx.allowReplaceEdit) {
+		return refused([
+			`verdict existant « ${tracking.review_status} » différent (--remplacer pour le changer)`
+		]);
 	}
 
 	if (template) {
@@ -205,6 +223,7 @@ export async function recordReview(
 			...(tracking?.migration_status === 'validated' && { migration_status: 'pending' })
 		})
 		.eq('id', trackingId)
+		.is('new_template_id', null)
 		.select('id');
 	if (updateError || updated?.length !== 1) {
 		throw new Error(
@@ -241,9 +260,14 @@ export async function listImportCandidates(
 	}));
 }
 
+/**
+ * @param expected - le template RELU (fichier de verdict validé par David) :
+ *   s'il est fourni, la version en base doit lui être identique
+ */
 export async function importReviewedQuestion(
 	ctx: ReviewDbContext,
-	oldQuestion: QuestionBase
+	oldQuestion: QuestionWithMigration,
+	expected?: Omit<QuestionTemplate, 'id'>
 ): Promise<ImportOutcome> {
 	const { supabase } = ctx;
 	const globalIndex = globalIndexOf(oldQuestion);
@@ -251,10 +275,17 @@ export async function importReviewedQuestion(
 
 	const { data: tracking, error: trackingError } = await supabase
 		.from('migration_tracking')
-		.select('id, review_status, new_template_id')
+		.select('id, old_question_index, review_status, new_template_id')
 		.eq('old_question_hash', hash)
 		.maybeSingle();
 	if (trackingError) throw new Error(`#${globalIndex} lecture du suivi : ${trackingError.message}`);
+	if (tracking && tracking.old_question_index !== globalIndex) {
+		return {
+			globalIndex,
+			status: 'refused',
+			reasons: [`même empreinte que #${tracking.old_question_index} (doublon TinyMath)`]
+		};
+	}
 	if (!tracking || tracking.review_status !== 'approved') {
 		return { globalIndex, status: 'skipped', reasons: ['non approuvée'] };
 	}
@@ -270,7 +301,7 @@ export async function importReviewedQuestion(
 		.maybeSingle();
 	if (editError) throw new Error(`#${globalIndex} lecture de la correction : ${editError.message}`);
 
-	let source: QuestionTemplate;
+	let source: Omit<QuestionTemplate, 'id'>;
 	if (edit) {
 		source = edit.edited_json as unknown as QuestionTemplate;
 	} else {
@@ -280,7 +311,14 @@ export async function importReviewedQuestion(
 		}
 		source = transformed.template;
 	}
-	const template: QuestionTemplate = { ...source, status: 'draft' };
+	const template: Omit<QuestionTemplate, 'id'> = { ...source, status: 'draft' };
+	if (expected && !sameContent(template, expected)) {
+		return {
+			globalIndex,
+			status: 'refused',
+			reasons: ['la version en base diffère du fichier relu (relancer relecture:verdicts)']
+		};
+	}
 
 	const report = checkTemplate(template, { instances: ctx.instances });
 	if (!report.passed) return { globalIndex, status: 'refused', reasons: report.reasons };

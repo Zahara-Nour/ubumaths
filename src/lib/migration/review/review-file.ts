@@ -153,7 +153,12 @@ export function buildEditNotes(review: ReviewFile): string | undefined {
 	return undefined;
 }
 
-/** Le template d'un verdict, toujours en brouillon (David publie lui-même) */
+/**
+ * Le template d'un verdict qui en porte un (`approved` / `corrected`), toujours
+ * en brouillon (David publie lui-même). Un rejet ou un arbitrage n'écrit jamais
+ * de version corrigée, même si le fichier contient un template.
+ */
 export function draftTemplate(review: ReviewFile): QuestionTemplate | undefined {
-	return review.template ? { ...review.template, status: 'draft' } : undefined;
+	const carriesTemplate = review.verdict === 'approved' || review.verdict === 'corrected';
+	return carriesTemplate && review.template ? { ...review.template, status: 'draft' } : undefined;
 }

@@ -15,7 +15,7 @@ import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import type { Database } from '../../src/lib/types/database';
 import { loadAllQuestions } from '../../src/lib/migration/question-data-loader';
-import type { QuestionBase } from '../../src/lib/migration/old-question-types';
+import type { QuestionWithMigration } from '../../src/lib/migration/old-question-types';
 import { parseReviewFile, type ReviewFile } from '../../src/lib/migration/review/review-file';
 
 // ============================================================================
@@ -121,8 +121,9 @@ export async function backupRows(
 // ============================================================================
 
 /** Les 633 questions TinyMath, indexées par `_migration.globalIndex` */
-export async function loadOldQuestions(): Promise<Map<number, QuestionBase>> {
-	const questions = await loadAllQuestions();
+export async function loadOldQuestions(): Promise<Map<number, QuestionWithMigration>> {
+	// Le fichier figé porte `_migration` sur chaque question
+	const questions = (await loadAllQuestions()) as QuestionWithMigration[];
 	return new Map(questions.map((q) => [q._migration.globalIndex, q]));
 }
 

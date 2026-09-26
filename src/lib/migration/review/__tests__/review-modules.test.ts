@@ -101,6 +101,20 @@ describe('checkTemplate', () => {
 		expect(report.reasons.join()).toMatch(/5 tirage\(s\) en échec sur 10/);
 	});
 
+	it('variation sans spec « correct » → non importable', () => {
+		const template = doubleTemplate();
+		template.variations.push({ ...template.variations[0] });
+		const report = checkTemplate(template, { instances: 1 });
+		expect(report.passed).toBe(false);
+		expect(report.reasons).toContain('variation(s) sans spec « correct » : 2');
+	});
+
+	it('zéro tirage → non importable (rien n’a été vérifié)', () => {
+		const report = checkTemplate(doubleTemplate(), { instances: 0 });
+		expect(report.generation.attempts).toBe(0);
+		expect(report.reasons).toContain('aucun tirage effectué');
+	});
+
 	it('niveau 0 (TinyMath) → non importable, la base exige ≥ 1', () => {
 		const report = checkTemplate(doubleTemplate({ level: 0 }), { instances: 1 });
 		expect(report.passed).toBe(false);
@@ -236,6 +250,17 @@ describe('buildTrackingReviewUpdate', () => {
 });
 
 describe('draftTemplate', () => {
+	it('un rejet ne porte jamais de version corrigée, même avec un template', () => {
+		const review = parseReviewFile({
+			globalIndex: 3,
+			verdict: 'rejected',
+			reviewer: 'claude',
+			reason: 'doublon',
+			template: doubleTemplate()
+		});
+		expect(draftTemplate(review)).toBeUndefined();
+	});
+
 	it('force le brouillon', () => {
 		const review = parseReviewFile({
 			globalIndex: 28,
