@@ -329,3 +329,24 @@ describe('buildCorrectionContext', () => {
 		expect(ctx.solutions).toEqual([]);
 	});
 });
+
+// Conditions TinyMath sur les variables : résolues à la génération ; une condition sur la
+// réponse de l'élève (`isCorrect`) reste pour le navigateur.
+describe('resolveCorrectionContent - conditions sur les variables', () => {
+	it('résout la condition sur une variable, garde celle sur la réponse', () => {
+		const pairVars: ResolvedVariable[] = [{ name: 'n', value: '1174' }];
+		const ctx = buildCorrectionContext(makeBlanks('oui'), undefined, undefined, pairVars);
+		const result = String(
+			resolveCorrectionContent(
+				templateMarkdown(
+					'{{if:mod({{n}},2)=0|{{solution}}, $ {{n}} $ est pair|impair}} {{if:isCorrect|Bravo !}}'
+				),
+				pairVars,
+				ctx
+			)
+		);
+		expect(result).toContain('oui, $1174$ est pair');
+		expect(result).not.toContain('impair');
+		expect(result).toContain('{{if:isCorrect|Bravo !}}');
+	});
+});

@@ -63,8 +63,9 @@ describe('Conditional Converter', () => {
 		});
 
 		it('should handle variables in function calls', () => {
-			expect(convertConditionVariables('mod(&1;2)=0')).toBe('mod({{a}};2)=0');
-			expect(convertConditionVariables('pgcd(&3;&1)=1')).toBe('pgcd({{c}};{{a}})=1');
+			expect(convertConditionVariables('mod(&1;2)=0')).toBe('mod({{a}},2)=0');
+			expect(convertConditionVariables('pgcd(&1;&2)=1')).toBe('gcd({{a}},{{b}})=1');
+			expect(convertConditionVariables('pgcd(&3;&1)=1')).toBe('gcd({{c}},{{a}})=1');
 		});
 
 		it('should preserve spaces', () => {
@@ -130,8 +131,8 @@ describe('Conditional Converter', () => {
 		});
 
 		it('should convert conditionals with function calls', () => {
-			expectConversion('@@mod(&1;2)=0 ?? even@@', '{{if:mod({{a}};2)=0|even}}');
-			expectConversion('@@pgcd(&3;&1)=1 ?? coprime@@', '{{if:pgcd({{c}};{{a}})=1|coprime}}');
+			expectConversion('@@mod(&1;2)=0 ?? even@@', '{{if:mod({{a}},2)=0|even}}');
+			expectConversion('@@pgcd(&3;&1)=1 ?? coprime@@', '{{if:gcd({{c}},{{a}})=1|coprime}}');
 		});
 
 		it('should handle whitespace in conditionals', () => {
@@ -169,7 +170,7 @@ describe('Conditional Converter', () => {
 		it('should convert conditionals with = and !=', () => {
 			expectConversion(
 				'@@mod(&1;2)=0 ?? even@@ @@mod(&1;2)!=0 ?? odd@@',
-				'{{if:mod({{a}};2)=0|even|odd}}'
+				'{{if:mod({{a}},2)=0|even|odd}}'
 			);
 		});
 
@@ -197,7 +198,7 @@ describe('Conditional Converter', () => {
 			expect(result.hasChanges).toBe(true);
 			expect(result.changes.length).toBe(1);
 			expect(result.changes[0].type).toBe('paired');
-			expect(result.converted).toContain('{{if:mod({{a}};2)=0|');
+			expect(result.converted).toContain('{{if:mod({{a}},2)=0|');
 		});
 
 		it('should convert time addition with carry check', () => {
@@ -465,7 +466,7 @@ describe('Conditional Converter', () => {
 		it('should handle HTML tags in text', () => {
 			expectConversion(
 				"@@mod(&1;2)!=0 ?? n'est <b>pas</b> divisible@@",
-				"{{if:mod({{a}};2)!=0|n'est <b>pas</b> divisible}}"
+				"{{if:mod({{a}},2)!=0|n'est <b>pas</b> divisible}}"
 			);
 		});
 	});

@@ -235,7 +235,7 @@ describe('Correction Integration', () => {
 					'@@mod(&1;2)=0 ?? pair@@ @@mod(&1;2)!=0 ?? impair@@'
 				);
 				// Variables inside conditionals keep their {{}} wrapper
-				expect(result).toBe('{{if:mod({{a}};2)=0|pair|impair}}');
+				expect(result).toBe('{{if:mod({{a}},2)=0|pair|impair}}');
 			});
 		});
 
@@ -589,7 +589,7 @@ describe('Correction Integration', () => {
 				const steps = result.template?.variations[0].correction?.steps;
 				expect(steps).toBeDefined();
 				// Note: Variables inside conditionals are converted to {{varName}} format
-				expect(steps?.join(' ')).toContain('{{if:mod({{a}};2)=0|');
+				expect(steps?.join(' ')).toContain('{{if:mod({{a}},2)=0|');
 			});
 
 			it('should handle correction with time addition conditional', () => {
