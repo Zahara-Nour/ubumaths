@@ -9,6 +9,7 @@
 
 import type { QuestionTemplate, QuestionVariation, SharedVariationDefaults } from '../types';
 import { getQuestionType } from '../types';
+import { findRulesSufficeBlanksWithoutRules } from '../rules-suffice';
 
 /**
  * Validate a question template
@@ -101,6 +102,13 @@ function validateVariation(
 		} else {
 			errors.push(`${prefix} Statement cannot be empty`);
 		}
+	}
+
+	// rulesSuffice sans aucune règle : toute réponse serait juste
+	for (const blankIndex of findRulesSufficeBlanksWithoutRules(variation, shared)) {
+		errors.push(
+			`${prefix} blank ${blankIndex + 1} has rulesSuffice but no validationRules (every answer would be accepted)`
+		);
 	}
 
 	// Validate correctChoiceIndex (required for multiple_choice, optional for fill_in_blanks)

@@ -206,6 +206,21 @@ function applyConstraints(
 // ============================================================================
 
 /**
+ * Valeur numérique de la réponse pour les règles : `12/2` vaut 6 (la forme
+ * est jugée ailleurs). NaN si la réponse n'est pas un nombre calculable.
+ */
+function toNumericAnswer(userAnswer: string): number {
+	const direct = Number(userAnswer);
+	if (userAnswer.trim() !== '' && !isNaN(direct)) return direct;
+	try {
+		const evaluated = evaluateExpression(userAnswer);
+		return typeof evaluated === 'number' ? evaluated : NaN;
+	} catch {
+		return NaN;
+	}
+}
+
+/**
  * Evaluate custom validation rules (testAnswers-style)
  *
  * Used for questions where the correct answer depends on generated variables
@@ -234,7 +249,7 @@ function evaluateValidationRules(
 	const ctx: EvaluationContext = {
 		variables,
 		answer: userAnswer,
-		numericAnswer: Number(userAnswer)
+		numericAnswer: toNumericAnswer(userAnswer)
 	};
 
 	// Evaluate each rule
@@ -596,6 +611,56 @@ export function validateAlgebraic(userAnswer: string, correctAnswer: string): Va
 // ============================================================================
 
 /**
+ * Contrôle de forme d'une réponse qui doit être un nombre simple (éventuellement
+ * négatif) : cases à précision, et cases `rulesSuffice` — dont `expectedAnswer`
+ * n'est qu'un exemple et ne peut pas servir de modèle de forme.
+ */
+function checkSimpleNumberForm(
+	latex: string,
+	constraints: ConstraintOptions
+): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	const severities = buildConstraintSeverities(constraints);
+	const formOptions = {
+		allowFirstNegative: constraints.allowBracketsInFirstNegativeTerm === true
+	};
+	const raw = cosmeticViolations(latex, severities, formOptions);
+	const { status, violations } = mapCosmeticViolations(raw, false);
+
+	if (!isSimpleNumberLatex(latex)) {
+		const feedback = CONSTRAINT_FEEDBACK['form'].single;
+		return {
+			status: 'bad_form',
+			violations: [{ constraint: 'form', severity: 'error', feedback }, ...violations]
+		};
+	}
+
+	return { status, violations };
+}
+
+/**
+ * Mode « la règle suffit » actif : il faut le réglage ET au moins une règle.
+ * Sans règle, on retombe sur la comparaison à `expectedAnswer` — jamais sur
+ * « toute réponse est juste ».
+ */
+function rulesDecide(blank: InstanceBlank): boolean {
+	return blank.rulesSuffice === true && (blank.validationRules?.length ?? 0) > 0;
+}
+
+/**
+ * Verdict d'une seule case sur la VALEUR (sans contrôle de forme), avec le même
+ * pipeline que la correction : règles, `rulesSuffice`, mode inféré.
+ * Sert à colorer chaque case après soumission.
+ */
+export function isBlankValueCorrect(
+	userAnswer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): boolean {
+	if (!userAnswer.trim()) return false;
+	return validateBlankValue(userAnswer, blank, instance);
+}
+
+/**
  * Check if a single answer matches a blank's expected value (value only, no form/constraints).
  * Uses inferred validation mode based on blank configuration.
  * Used for order-independent matching.
@@ -610,6 +675,9 @@ function validateBlankValue(
 		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
 		if (ruleResult) return false;
 	}
+
+	// Plusieurs bonnes réponses : les règles, déjà passées, suffisent
+	if (rulesDecide(blank)) return true;
 
 	// Inferred mode
 	if (blank.type === 'text') {
@@ -664,7 +732,10 @@ function validateSingleBlank(
 	// 2. Inferred mode (value correctness)
 	let isCorrect: boolean;
 
-	if (blank.type === 'text') {
+	if (rulesDecide(blank)) {
+		// Plusieurs bonnes réponses : les règles, déjà passées, suffisent.
+		isCorrect = true;
+	} else if (blank.type === 'text') {
 		isCorrect = isFuzzyTextMatch(userAnswer, blank.expectedAnswer);
 	} else if (blank.unit?.expected) {
 		const result = validateQuantityAnswer(
@@ -712,7 +783,7 @@ function validateSingleBlank(
 	//   - unit       → numeric part must be a simple number; the unit (conversion
 	//                  + required symbol) is already handled at step 2 by
 	//                  validateQuantityAnswer. We never feed \unit{} to checkForm.
-	//   - precision  → the answer must be a simple (possibly negative) number
+	//   - precision / rulesSuffice → the answer must be a simple (possibly negative) number
 	//   - exact      → compare normalised form against the expected answer
 	//
 	// Use userAnswer as fallback when userAnswerLatex is empty (e.g., prefilled
@@ -774,20 +845,11 @@ function validateSingleBlank(
 	}
 
 	// precision: the answer must be a simple (possibly negative) number.
-	if (blank.precision) {
-		const raw = cosmeticViolations(effectiveLatex, severities, formOptions);
-		const { status, violations } = mapCosmeticViolations(raw, false);
-
-		if (!isSimpleNumberLatex(effectiveLatex)) {
-			const feedback = CONSTRAINT_FEEDBACK['form'].single;
-			return {
-				isCorrect: false,
-				status: 'bad_form',
-				feedback,
-				constraintViolations: [{ constraint: 'form', severity: 'error', feedback }, ...violations]
-			};
-		}
-
+	// rulesSuffice : même exigence — `expectedAnswer` n'est qu'un exemple, il
+	// ne peut pas servir de modèle au contrôle « exact » ci-dessous, qui exige
+	// l'identité (3 contre 2 y serait jugé de mauvaise forme).
+	if (blank.precision || rulesDecide(blank)) {
+		const { status, violations } = checkSimpleNumberForm(effectiveLatex, constraints);
 		return {
 			isCorrect: status !== 'bad_form',
 			status,
@@ -1004,12 +1066,15 @@ function validateBlanksOrderIndependent(
 		}
 
 		if (blankLatex) {
-			const { status, violations } = applyConstraints(
-				[userAnswers[a]],
-				[blankLatex],
-				[blanks[b].expectedAnswer],
-				instance.options?.constraints ?? {}
-			);
+			// rulesSuffice : pas de modèle de forme, cf. checkSimpleNumberForm
+			const { status, violations } = rulesDecide(blanks[b])
+				? checkSimpleNumberForm(blankLatex, instance.options?.constraints ?? {})
+				: applyConstraints(
+						[userAnswers[a]],
+						[blankLatex],
+						[blanks[b].expectedAnswer],
+						instance.options?.constraints ?? {}
+					);
 			if (status === 'bad_form') worstStatus = 'bad_form';
 			else if (status === 'unoptimal_form' && worstStatus === 'correct')
 				worstStatus = 'unoptimal_form';

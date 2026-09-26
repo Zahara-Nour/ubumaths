@@ -64,3 +64,48 @@ describe('FlashCard — face réponse sans réponse structurée', () => {
 		expect(container.textContent).not.toContain("voir l'explication ci-dessous");
 	});
 });
+
+/**
+ * Question à plusieurs bonnes réponses (`rulesSuffice`) : la réponse montrée
+ * au verso n'est qu'UN exemple — le titre ne doit pas dire « la » réponse.
+ */
+describe('FlashCard — verso d’une question à plusieurs bonnes réponses', () => {
+	function instance(rulesSuffice: boolean | undefined): QuestionInstance {
+		return {
+			templateId: 'test',
+			statement: resolvedMarkdown('Trouve un diviseur de 12 : $?$'),
+			grades: ['6'],
+			theme: 'Entiers',
+			domain: 'Diviser',
+			level: 1,
+			generatedAt: new Date().toISOString(),
+			blanks: [
+				{
+					expectedAnswer: '2',
+					type: 'math',
+					rulesSuffice,
+					validationRules: [{ type: 'divisor', dividend: '12' }]
+				}
+			]
+		} as QuestionInstance;
+	}
+
+	async function flip(container: HTMLElement) {
+		container.querySelector<HTMLButtonElement>('[aria-label="Voir la correction"]')?.click();
+		await new Promise((r) => setTimeout(r, 0));
+	}
+
+	it('titre « Une réponse possible » en mode rulesSuffice', async () => {
+		const { container } = await render(FlashCard, { instance: instance(true) });
+		await flip(container);
+		expect(container.textContent).toContain('Une réponse possible');
+		expect(container.textContent).not.toContain('Réponse correcte');
+	});
+
+	it('titre « Réponse correcte » sinon (inchangé)', async () => {
+		const { container } = await render(FlashCard, { instance: instance(undefined) });
+		await flip(container);
+		expect(container.textContent).toContain('Réponse correcte');
+		expect(container.textContent).not.toContain('Une réponse possible');
+	});
+});

@@ -313,6 +313,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					requiredForm: blank.requiredForm ?? resolvedVariation.blankDefaults?.requiredForm,
 					validationRules: blank.validationRules ?? resolvedVariation.validationRules,
 					unit: blank.unit ?? resolvedVariation.blankDefaults?.unit,
+					...((blank.rulesSuffice ?? resolvedVariation.blankDefaults?.rulesSuffice) && {
+						rulesSuffice: true
+					}),
 					pool: blank.pool,
 					...(expressionName !== undefined && { expressionName })
 				};
