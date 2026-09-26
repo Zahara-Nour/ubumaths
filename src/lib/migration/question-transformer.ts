@@ -473,9 +473,9 @@ function convertVariables(
 			// Convert to simplified syntax and use bare variable names
 			// {{a}}^{{b}} → a^b (resolver handles bare name substitution)
 			// puis tirages dans la syntaxe du générateur (bornes calculées, exclusions m/d/cd)
-			const simplified = normalizeRandomRange(
-				toBareVariableSyntax(toSimplifiedSyntax(afterTinyCAS))
-			);
+			// (variable mêlant texte et calcul, `&4/[_&3*&1_]` → `{{d}}/{{eval:c*a}}` :
+			// forme gabarit, comme les expressions — cf. toExpressionTemplate)
+			const simplified = normalizeRandomRange(toExpressionTemplate(afterTinyCAS));
 
 			// Handle complex digits: expressions where parts contain ranges (..)
 			// e.g., "digits:0..2.1..2" → split into intermediate variables
