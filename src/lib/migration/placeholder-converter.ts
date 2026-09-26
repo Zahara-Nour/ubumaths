@@ -65,13 +65,15 @@ export const LEGACY_PLACEHOLDER_PATTERNS = {
 	 * - &sol -> {{solution}}
 	 * - &sol1 -> {{solution:0}} (TinyMath numérote à partir de 1, le nouveau système à 0)
 	 */
-	solution: /&sol(\d+)?(?![a-zA-Z])/g,
+	// TinyMath lit un seul chiffre (`/&sol([1-9]?)/`) : `&sol10` = solution 1 puis « 0 »
+	solution: /&sol([1-9])?(?![a-zA-Z])/g,
 
 	/**
 	 * HTML-formatted solution: &solution
 	 * -> {{solution:html}}
 	 */
-	solutionHtml: /&solution(?![a-zA-Z\d])/g,
+	// `&solutionN` (TinyMath `/&solution([1-9]?)/`) : N-ième solution
+	solutionHtml: /&solution([1-9])?(?![a-zA-Z])/g,
 
 	/**
 	 * Student answer: &answer or &answer1, &answer2, etc.
@@ -129,7 +131,9 @@ function solutionPlaceholder(index: string | undefined): string {
  */
 export function convertSolutionPlaceholders(text: string): string {
 	return text
-		.replace(LEGACY_PLACEHOLDER_PATTERNS.solutionHtml, '{{solution:html}}')
+		.replace(LEGACY_PLACEHOLDER_PATTERNS.solutionHtml, (_match, index: string | undefined) =>
+			index ? solutionPlaceholder(index) : '{{solution:html}}'
+		)
 		.replace(LEGACY_PLACEHOLDER_PATTERNS.solution, (_match, index: string | undefined) =>
 			solutionPlaceholder(index)
 		);
@@ -149,12 +153,13 @@ export function convertSolutionPlaceholders(text: string): string {
  */
 export function convertSinglePlaceholder(placeholder: string): string {
 	// &solution (HTML format) - must check before &sol
-	if (placeholder === '&solution') {
-		return '{{solution:html}}';
+	const solutionHtmlMatch = placeholder.match(/^&solution([1-9])?$/);
+	if (solutionHtmlMatch) {
+		return solutionHtmlMatch[1] ? solutionPlaceholder(solutionHtmlMatch[1]) : '{{solution:html}}';
 	}
 
 	// &sol or &solN
-	const solMatch = placeholder.match(/^&sol(\d+)?$/);
+	const solMatch = placeholder.match(/^&sol([1-9])?$/);
 	if (solMatch) {
 		return solutionPlaceholder(solMatch[1]);
 	}
@@ -331,9 +336,9 @@ export function convertPlaceholders(input: string): PlaceholderConversionResult 
 	});
 
 	// Step 2: Convert &solution before &sol (longer match first)
-	replaceWithTracking(LEGACY_PLACEHOLDER_PATTERNS.solutionHtml, () => {
-		return '{{solution:html}}';
-	});
+	replaceWithTracking(LEGACY_PLACEHOLDER_PATTERNS.solutionHtml, (match) =>
+		match[1] ? solutionPlaceholder(match[1]) : '{{solution:html}}'
+	);
 
 	// Step 3: Convert &sol and &solN
 	replaceWithTracking(LEGACY_PLACEHOLDER_PATTERNS.solution, (match) =>

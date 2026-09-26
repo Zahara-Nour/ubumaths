@@ -41,3 +41,20 @@ describe('#260 « Trouver la moitié » : correction « 2 × &sol1 = … »', ()
 		expect(checked).toBe(20);
 	});
 });
+
+describe('les 633 questions TinyMath : aucune solution convertie en variable fantôme', () => {
+	it('ni {{solN}}, ni {{solutionN}}, ni {{sol}} dans les corrections', () => {
+		const ghosts: string[] = [];
+		for (const question of questions) {
+			const { globalIndex } = question._migration;
+			const result = transformQuestion(question, globalIndex);
+			const text = JSON.stringify([
+				result.template?.shared?.correction,
+				result.template?.variations.map((v) => v.correction)
+			]);
+			const found = text.match(/\{\{(sol\d*|solution\d+)\}\}/g);
+			if (found) ghosts.push(`#${globalIndex}: ${[...new Set(found)].join(', ')}`);
+		}
+		expect(ghosts).toEqual([]);
+	});
+});

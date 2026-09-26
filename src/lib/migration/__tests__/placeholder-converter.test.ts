@@ -49,7 +49,12 @@ describe('Placeholder Converter', () => {
 			// le nouveau système à partir de 0 (solution_0 = première solution)
 			expectConversion('&sol1', '{{solution:0}}');
 			expectConversion('&sol2', '{{solution:1}}');
-			expectConversion('&sol10', '{{solution:9}}');
+			// Un seul chiffre, comme TinyMath : `&sol10` = solution 1 suivie de « 0 »
+			expectConversion('&sol10', '{{solution:0}}0');
+			// `&solutionN` : N-ième solution (même numérotation)
+			expectConversion('&solution1', '{{solution:0}}');
+			expectConversion('&solution2', '{{solution:1}}');
+			expectConversion('&solution', '{{solution:html}}');
 		});
 
 		it('should convert &solution to HTML format', () => {
