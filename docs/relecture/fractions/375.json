@@ -1,0 +1,155 @@
+{
+	"globalIndex": 375,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Même défaut que #374 : « {{solution:html}} » cassait la phrase de correction (texte lu comme des maths) et « <b>…</b> » s'affichait brut. Fraction la plus petite écrite explicitement (a/max(b,c)), gras en markdown. Specs : les deux ordres dans chaque variation.",
+	"template": {
+		"title": "Comparer deux fractions",
+		"description": "Fractions de même numérateur",
+		"shared": {
+			"statement": "Quelle est la plus petite de ces $2$ fractions ?",
+			"correctChoiceIndex": ["{{if:d<f|0|1}}"],
+			"correction": {
+				"steps": [
+					"$\\dfrac{{{a}}}{{{eval:max(b,c)}}}$ est plus petite que $\\dfrac{{{a}}}{{{eval:min(b,c)}}}$ car les deux fractions ont **même numérateur** et ${{eval:max(b,c)}}>{{eval:min(b,c)}}$."
+				]
+			},
+			"choices": [
+				{
+					"content": "$$\\dfrac{{{a}}}{{{b}}}$$"
+				},
+				{
+					"content": "$$\\dfrac{{{a}}}{{{c}}}$$"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
+				"correctChoiceIndex": ["{{if:d<f|0|1}}"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "8..19"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:a-1}}!a"
+					},
+					{
+						"name": "c",
+						"expression": "2..{{eval:a-1}}!a,b"
+					},
+					{
+						"name": "d",
+						"expression": "a/b"
+					},
+					{
+						"name": "f",
+						"expression": "a/c"
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
+				"correctChoiceIndex": ["{{if:d<f|0|1}}"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..{{eval:3*a-1}}!a"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:a+1}}..{{eval:3*a-1}}!a,b"
+					},
+					{
+						"name": "d",
+						"expression": "a/b"
+					},
+					{
+						"name": "f",
+						"expression": "a/c"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Comparer",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "12/5 vs 12/7 : 12/7 (choix 1)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "12",
+					"b": "5",
+					"c": "7"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais choix",
+				"variationIndex": 0,
+				"variables": {
+					"a": "12",
+					"b": "5",
+					"c": "7"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "bornes : 8/7 < 8/2 (choix 0)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "2"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2/5 < 2/3 (choix 0)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"c": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais choix",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"c": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

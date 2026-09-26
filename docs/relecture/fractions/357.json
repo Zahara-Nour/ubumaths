@@ -1,0 +1,96 @@
+{
+	"globalIndex": 357,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "« Ecris » → « Écris ». Numérateur 0..9 → 1..9 : le tirage 0/1000 donnait une question dégénérée (réponse 0). Specs : juste aux bornes ; confusion de rang et recopie refusées ; zéro inutile perfectible.",
+	"template": {
+		"title": "Forme décimale d'une fraction",
+		"description": "Millièmes",
+		"variations": [
+			{
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "a/1000"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Forme décimale",
+		"level": 6,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "borne basse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["0.001"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute, virgule",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["0{,}009"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "centièmes au lieu de millièmes",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4"
+				},
+				"answers": ["0.04"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "recopie de la fraction",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4"
+				},
+				"answers": ["\\frac{4}{1000}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "reducedFractions", "form"]
+				}
+			},
+			{
+				"description": "zéro inutile",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4"
+				},
+				"answers": ["0.0040"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros", "spaces"]
+				}
+			}
+		]
+	}
+}

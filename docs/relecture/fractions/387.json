@@ -1,0 +1,141 @@
+{
+	"globalIndex": 387,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue convertie en {{eval:expression}} : l’évaluation rend un décimal arrondi, si bien que toute bonne réponse (fraction) était refusée et que la correction affichait ce décimal. Remplacée par la fraction exacte \\frac{b+ac}{a} (irréductible : b premier avec a).",
+	"template": {
+		"title": "Additionner ou soustraire",
+		"description": "Un entier et une fraction",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!cd(a)"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "b/a+c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{b}}}{{{a}}} + {{c}} &= \\dfrac{{{b}}}{{{a}}} + \\dfrac{{{c}}\\textcolor{{{color:primary.1}}}{\\times {{a}}}}{\\textcolor{{{color:primary.1}}}{{{a}}}} \\\\ &= \\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{a}}}} + \\dfrac{{{eval:c*a}}}{\\textcolor{{{color:primary.0}}}{{{a}}}} \\\\ &= \\dfrac{{{b}}+{{eval:c*a}}}{\\textcolor{{{color:primary.0}}}{{{eval:a}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:b+a*c}}}{{{a}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "c+b/a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{c}} + \\dfrac{{{b}}}{{{a}}} &= \\dfrac{{{c}}\\textcolor{{{color:primary.1}}}{\\times {{a}}}}{\\textcolor{{{color:primary.1}}}{{{a}}}} + \\dfrac{{{b}}}{{{a}}} \\\\ &= \\dfrac{{{eval:c*a}}}{\\textcolor{{{color:primary.0}}}{{{a}}}} + \\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{a}}}} \\\\ &= \\dfrac{{{eval:c*a}}+{{b}}}{\\textcolor{{{color:primary.0}}}{{{eval:a}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:b+a*c}}}{{{a}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Addition et Soustraction",
+		"level": 6,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "7",
+					"c": "4"
+				},
+				"answers": ["\\frac{31}{6}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 entier ajouté au numérateur",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "7",
+					"c": "4"
+				},
+				"answers": ["\\frac{11}{6}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v1 bornes",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "9"
+				},
+				"answers": ["\\frac{89}{9}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["\\frac{72}{7}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 non simplifiée",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["\\frac{144}{14}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,127 @@
+{
+	"globalIndex": 361,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "« Ecris » → « Écris ». Forme exigée « n:number » ajoutée (l'ancienne question était de type décimal) : recopier la fraction \\frac{12}{3} n'était que perfectible [reducedFractions], elle est désormais refusée. Specs : juste aux bornes ; mauvais quotient refusé ; recopie refusée ; 4,0 perfectible.",
+	"template": {
+		"title": "Déterminer la forme décimale d'une fraction",
+		"description": "La forme décimale est un entier",
+		"variations": [
+			{
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:b*a}}/{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:b*a}}}{{{a}}} &= {{eval:b*a}} \\div {{a}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Forme décimale",
+		"level": 10,
+		"status": "draft",
+		"delay": 20,
+		"shared": {
+			"requiredForm": {
+				"pattern": "n:number"
+			}
+		},
+		"testSpecs": [
+			{
+				"description": "cas courant",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne basse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "dénominateur rendu",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "recopie de la fraction",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"answers": ["\\frac{12}{3}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "zéro inutile",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"answers": ["4.0"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			}
+		]
+	}
+}

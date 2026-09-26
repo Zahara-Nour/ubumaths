@@ -1,0 +1,210 @@
+{
+	"globalIndex": 381,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Conversion fautive : le membre de droite était calculé en décimal approché (« = 0.714285714285714 », « = -3.5 ») au lieu d'une fraction, et l'exclusion TinyMath de c et d (« \\{cd(&1);cd(&2)} ») restait brute, donc ignorée (c et d tirés positifs seulement, pouvant partager un diviseur avec a ou b). c et d : « 2..9;±!cd(a),cd(b) » (relatifs, premiers avec a et b, comme TinyMath). Membre de droite : fraction ab/cd avec le signe au numérateur (irréductible par construction) ; écriture {{{x}}} (comme #379) au lieu de ((x)) qui affichait des parenthèses autour des positifs. Specs : une bonne réponse par variation dont des négatives, signe oublié refusé, parenthèses perfectibles.",
+	"template": {
+		"title": "Compléter une multiplication à trou",
+		"description": "Quotients avec nombres relatifs",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±!cd(a),cd(b)"
+				},
+				{
+					"name": "d",
+					"expression": "2..9;±!cd(a),cd(b)"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(?/{{{c}}})*({{{b}}}/{{{d}}})={{eval:a*b*c*d/abs(c*d)}}/{{eval:abs(c*d)}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "({{{a}}}/?)*({{{b}}}/{{{d}}})={{eval:a*b*c*d/abs(c*d)}}/{{eval:abs(c*d)}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "({{{a}}}/{{{c}}})*(?/{{{d}}})={{eval:a*b*c*d/abs(c*d)}}/{{eval:abs(c*d)}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "({{{a}}}/{{{c}}})*({{{b}}}/?)={{eval:a*b*c*d/abs(c*d)}}/{{eval:abs(c*d)}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Fractions",
+		"domain": "A trou",
+		"subdomain": "Multiplication",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "(?/8)×(7/(-4))=35/32 → -5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-5",
+					"b": "7",
+					"c": "8",
+					"d": "-4"
+				},
+				"answers": ["-5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli du signe",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-5",
+					"b": "7",
+					"c": "8",
+					"d": "-4"
+				},
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "parenthèses : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-5",
+					"b": "7",
+					"c": "8",
+					"d": "-4"
+				},
+				"answers": ["(-5)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				}
+			},
+			{
+				"description": "(5/?)×(9/4)=45/8 → 2",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "2",
+					"d": "4"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(9/2)×(?/2)=-63/4 → -7",
+				"variationIndex": 2,
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "2",
+					"d": "2"
+				},
+				"answers": ["-7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(7/8)×((-7)/?)=-49/24 → 3",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "-7",
+					"c": "8",
+					"d": "3"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(7/8)×((-7)/?) : signe faux",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "-7",
+					"c": "8",
+					"d": "3"
+				},
+				"answers": ["-3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "dénominateur négatif : (-8)/(-3)×(2/?)=16/9 → 3",
+				"variationIndex": 3,
+				"variables": {
+					"a": "-8",
+					"b": "2",
+					"c": "-3",
+					"d": "3"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

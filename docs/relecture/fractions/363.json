@@ -1,0 +1,119 @@
+{
+	"globalIndex": 363,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Défaut de conversion : la réponse attendue était le décimal lui-même (recopier 0.75 était juste, \\frac{3}{4} refusé [form]). Remplacée par \\frac{b}{a}, avec la condition gcd(a,b)=1 pour que la fraction attendue soit la plus simple (les doublons 2/4, 5/10… disparaissent, les 11 décimaux restent). Specs : juste aux bornes ; recopie du décimal refusée ; fraction inversée refusée ; fraction non réduite perfectible.",
+	"template": {
+		"title": "Déterminer une forme fractionnaire",
+		"variations": [
+			{
+				"statement": "Réécris ce nombre décimal sous forme fractionnaire la plus simple.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|4|5|10"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:b/a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{b}}}{{{a}}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Forme décimale",
+		"level": 12,
+		"status": "draft",
+		"delay": 20,
+		"shared": {
+			"conditions": ["gcd(a,b)=1"]
+		},
+		"testSpecs": [
+			{
+				"description": "trois quarts",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"answers": ["\\frac{3}{4}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne basse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10",
+					"b": "9"
+				},
+				"answers": ["\\frac{9}{10}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "recopie du décimal",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"answers": ["0.75"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "fraction inversée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"answers": ["\\frac{4}{3}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "fraction non réduite",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"answers": ["\\frac{75}{100}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			}
+		]
+	}
+}

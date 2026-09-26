@@ -1,0 +1,160 @@
+{
+	"globalIndex": 372,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Conversion fautive : réponse attendue = décimal (-0.75) → la bonne réponse -3/4 était refusée (forme). Remplacée par -\\dfrac{a}{b} (v1, v2) et \\dfrac{a}{b} (v3). Le signe laissé au numérateur/dénominateur est perfectible (reducedFractions), un signe faux est refusé.",
+	"template": {
+		"title": "Simplifier une fraction",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!cd(a)"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Simplifie les signes.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-a)/b"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "-\\dfrac{{{a}}}{{{b}}}"
+					}
+				]
+			},
+			{
+				"statement": "Simplifie les signes.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a/(-b)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "-\\dfrac{{{a}}}{{{b}}}"
+					}
+				]
+			},
+			{
+				"statement": "Simplifie les signes.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "(-a)/(-b)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{a}}}{{{b}}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Simplification",
+		"level": 5,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "(-3)/4 → -3/4",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"answers": ["-\\frac{3}{4}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "signe au numérateur : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"answers": ["\\frac{-3}{4}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "signe perdu",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"answers": ["\\frac{3}{4}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "3/(-4) → -3/4",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"answers": ["-\\frac{3}{4}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "recopie : perfectible",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"answers": ["\\frac{3}{-4}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "(-1)/(-9) → 1/9 (bornes)",
+				"variationIndex": 2,
+				"variables": {
+					"a": "1",
+					"b": "9"
+				},
+				"answers": ["\\frac{1}{9}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(-3)/(-4) : signe faux",
+				"variationIndex": 2,
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"answers": ["-\\frac{3}{4}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

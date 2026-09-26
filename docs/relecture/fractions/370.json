@@ -1,0 +1,119 @@
+{
+	"globalIndex": 370,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Conversion fautive : réponse attendue = décimal approché (fraction simplifiée juste refusée) → \\dfrac{b}{c}. Description « simplification » → « Simplification » (majuscule). Specs : 9/8 (par 11) et 1/2 (par 2, borne b=1) justes, non simplifiée perfectible, décimal exact 1.125 refusé (forme), inverse faux.",
+	"template": {
+		"title": "Simplifier une fraction",
+		"description": "Simplification par $2$, $3$, $5$, $7$ ou $11$",
+		"variations": [
+			{
+				"statement": "Simplifie cette fraction.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7|11"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a),cd(b)"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b}}/{{eval:a*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:a*b}}}{{{eval:a*c}}} &= \\dfrac{{{eval:a*b}} \\textcolor{{{color:primary.0}}}{\\div {{a}}}}{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{a}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{b}}}{{{c}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Simplification",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "99/88 → 9/8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "11",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["\\frac{9}{8}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2/4 → 1/2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "2"
+				},
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "non simplifiée : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "11",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["\\frac{99}{88}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "décimal refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "11",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["1.125"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "inverse faux",
+				"variationIndex": 0,
+				"variables": {
+					"a": "11",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["\\frac{8}{9}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

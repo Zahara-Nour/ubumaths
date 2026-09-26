@@ -1,0 +1,141 @@
+{
+	"globalIndex": 395,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue convertie en {{eval:expression}} : l’évaluation rend un décimal arrondi, si bien que toute bonne réponse (fraction) était refusée et que la correction affichait ce décimal. Remplacée par la fraction exacte \\frac{b}{c} puis \\frac{c}{b} (irréductibles : c premier avec b).",
+	"template": {
+		"title": "Calculer un produit",
+		"description": "avec simplification simple",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "2..9!a,cd(b)"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule en remarquant la simplification.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{a/c}*{b/a}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\t\t\t\t\t\t\t\t\\begin{align} \t\t\t\t\t\t\t\t\\dfrac{{{a}}}{{{c}}} \\times \\dfrac{{{b}}}{{{a}}} \t\t\t\t\t\t\t\t&= \\dfrac{\\enclose{updiagonalstrike}[2px solid red]{{{a}}}}{{{c}}} \\times \\dfrac{{{b}}}{\\enclose{updiagonalstrike}[2px solid red]{{{a}}}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}}  \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{b}}}{{{c}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule en remarquant la simplification.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{c/a}*{a/b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\dfrac{{{c}}}{{{a}}} \\times \\dfrac{{{a}}}{{{b}}} \t\t\t\t\t\t\t\t&= \\dfrac{{{c}}}{\\enclose{updiagonalstrike}[2px solid red]{{{a}}}} \\times \\dfrac{\\enclose{updiagonalstrike}[2px solid red]{{{a}}}}{{{b}}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}}  \t\t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{c}}}{{{b}}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Multiplication",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "6",
+					"c": "7"
+				},
+				"answers": ["\\frac{6}{7}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 sans simplifier",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "6",
+					"c": "7"
+				},
+				"answers": ["\\frac{30}{35}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "v1 inverse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "6",
+					"c": "7"
+				},
+				"answers": ["\\frac{7}{6}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v2 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["\\frac{4}{9}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 bornes",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"c": "7"
+				},
+				"answers": ["\\frac{7}{9}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

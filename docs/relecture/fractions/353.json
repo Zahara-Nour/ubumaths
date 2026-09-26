@@ -1,0 +1,96 @@
+{
+	"globalIndex": 353,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "« Ecris » → « Écris ». Numérateur 0..9 → 1..9 : le tirage 0/100 donnait une question dégénérée (réponse 0). Specs : juste aux bornes ; confusion dixièmes/centièmes et recopie refusées ; zéro inutile perfectible.",
+	"template": {
+		"title": "Forme décimale d'une fraction",
+		"description": "Centièmes",
+		"variations": [
+			{
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "a/100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Forme décimale",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "borne basse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["0.01"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute, virgule",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["0{,}09"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "dixièmes au lieu de centièmes",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["0.7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "recopie de la fraction",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["\\frac{7}{100}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "zéro inutile",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["0.070"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			}
+		]
+	}
+}

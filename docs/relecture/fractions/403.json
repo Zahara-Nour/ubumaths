@@ -1,0 +1,91 @@
+{
+	"globalIndex": 403,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue convertie en {{eval:expression}} : l’évaluation rend un décimal arrondi, si bien que toute bonne réponse (fraction) était refusée et que la correction affichait ce décimal. Remplacée par la fraction exacte \\frac{a}{bc} (irréductible : b et c premiers avec a).",
+	"template": {
+		"title": "Calculer un quotient",
+		"description": "Division par un entier, avec fraction",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "expression1",
+						"expression": "{a/c}/b"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{\\dfrac{{{a}}}{{{c}}}}{\\textcolor{{{color:primary.0}}}{{{b}}}} &= \\dfrac{{{a}}}{{{c}}} \\textcolor{{{color:primary.0}}}{\\div \\dfrac{{{b}}}{1}} \\\\ &= \\dfrac{{{a}}}{{{c}}} \\textcolor{{{color:primary.0}}}{\\times \\dfrac{1}{{{b}}}} \\\\ &= \\dfrac{{{a}} \\times 1}{{{c}} \\times {{b}}}  \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{a}}}{{{eval:b*c}}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Division",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["\\frac{4}{81}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bornes basses",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "2"
+				},
+				"answers": ["\\frac{3}{4}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "numérateur multiplié",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["\\frac{36}{9}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

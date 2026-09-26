@@ -1,0 +1,105 @@
+{
+	"globalIndex": 369,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Conversion fautive : réponse attendue = décimal approché de la fraction (la fraction simplifiée juste était refusée). Remplacée par \\dfrac{b}{c} (irréductible : b et c premiers entre eux par construction). Specs : 1/9 juste (borne b=1), 7/4 juste, non simplifiée perfectible, inverse faux.",
+	"template": {
+		"title": "Simplifier une fraction",
+		"description": "Simplifier par $2$, $3$ ou $5$",
+		"variations": [
+			{
+				"statement": "Simplifie cette fraction par $2$ ; $3$ ou $5$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|3|5"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a),cd(b)"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b}}/{{eval:a*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:a*b}}}{{{eval:a*c}}} &= \\dfrac{{{eval:a*b}} \\textcolor{{{color:primary.0}}}{\\div {{a}}}}{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{a}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{b}}}{{{c}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Simplification",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "5/45 → 1/9 (b=1)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "1",
+					"c": "9"
+				},
+				"answers": ["\\frac{1}{9}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "21/12 → 7/4",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "7",
+					"c": "4"
+				},
+				"answers": ["\\frac{7}{4}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "non simplifiée : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "7",
+					"c": "4"
+				},
+				"answers": ["\\frac{21}{12}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "inverse faux",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "7",
+					"c": "4"
+				},
+				"answers": ["\\frac{4}{7}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

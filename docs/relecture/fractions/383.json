@@ -1,0 +1,132 @@
+{
+	"globalIndex": 383,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue convertie en {{eval:expression}} : l’évaluation donne un décimal arrondi (9/7 → 1.28571428571429), si bien que toute bonne réponse était refusée et que la correction affichait ce décimal. Remplacée par la fraction exacte \\frac{a+b}{c} (irréductible par construction : c premier avec a+b).",
+	"template": {
+		"title": "Additionner des fractions",
+		"description": "Fractions de même dénominateur, nombres positifs, sans simplification",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..13"
+					},
+					{
+						"name": "b",
+						"expression": "2..13"
+					},
+					{
+						"name": "c",
+						"expression": "2..25!cd(a),cd(b),cd({{eval:b+a}})"
+					},
+					{
+						"name": "expression1",
+						"expression": "a/c+b/c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{a}}}{\\textcolor{{{color:primary.0}}}{{{c}}}}+\\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} &= \\dfrac{{{a}}+{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:a+b}}}{{{c}}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Addition et Soustraction",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"answers": ["\\frac{9}{7}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bornes hautes",
+				"variationIndex": 0,
+				"variables": {
+					"a": "13",
+					"b": "13",
+					"c": "25"
+				},
+				"answers": ["\\frac{26}{25}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bornes basses",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "3"
+				},
+				"answers": ["\\frac{5}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "non simplifiée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"answers": ["\\frac{18}{14}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "addition des dénominateurs",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"answers": ["\\frac{9}{14}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "calcul non effectué",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"answers": ["\\frac{4+5}{7}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			}
+		]
+	}
+}

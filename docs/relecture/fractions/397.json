@@ -1,0 +1,207 @@
+{
+	"globalIndex": 397,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Conversion défectueuse réparée : (1) la correction reposait sur deux {{if:…|…}} contenant un align multiligne (accolades → conditionnel non reconnu : texte brut « \\imaginaryI f : 360 < 0 » ou les deux branches affichées, plus {{exp}} inconnu) ; (2) c et d en syntaxe TinyMath brute « 2..9;+-\\{cd(b);cd(a)} » : les exclusions étaient ignorées (fractions simplifiables, 6/4) ; (3) réponse attendue {{eval:…}} = décimal arrondi (toute bonne réponse refusée) ; (4) énoncé vide. Correction : la variation unique est scindée en deux variations identiques gardées par une condition sur le signe du produit (a·b·c·d < 0 / > 0), ce qui remplace les conditionnels : chacune porte la correction d'origine (signe mis en facteur, puis produit des valeurs absolues) et la réponse attendue exacte −\\frac{|ab|}{|cd|} ou \\frac{|ab|}{|cd|} ; c, d = « 2..9;±!cd(a),cd(b) » ; consigne « Calcule. » ajoutée ; variable f (inutile) supprimée.",
+	"template": {
+		"title": "Calculer un produit",
+		"description": "Nombres, relatifs, pas de simplification",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..9;±!cd(a),cd(b)"
+					},
+					{
+						"name": "d",
+						"expression": "2..9;±!cd(a),cd(b)"
+					},
+					{
+						"name": "expression1",
+						"expression": "{a}/{c}*{b}/{d}"
+					}
+				],
+				"conditions": ["a*b*c*d<0"],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{a}}}{{{c}}} \\times \\dfrac{{{b}}}{{{d}}} &= -\\dfrac{{{eval:abs(a)}}}{{{eval:abs(c)}}} \\times \\dfrac{{{eval:abs(b)}}}{{{eval:abs(d)}}} \\\\ &= -\\dfrac{{{eval:abs(a)}} \\times {{eval:abs(b)}}}{{{eval:abs(c)}} \\times {{eval:abs(d)}}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "-\\frac{{{eval:abs(a*b)}}}{{{eval:abs(c*d)}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..9;±!cd(a),cd(b)"
+					},
+					{
+						"name": "d",
+						"expression": "2..9;±!cd(a),cd(b)"
+					},
+					{
+						"name": "expression1",
+						"expression": "{a}/{c}*{b}/{d}"
+					}
+				],
+				"conditions": ["a*b*c*d>0"],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{a}}}{{{c}}} \\times \\dfrac{{{b}}}{{{d}}} &= \\dfrac{{{eval:abs(a)}}}{{{eval:abs(c)}}} \\times \\dfrac{{{eval:abs(b)}}}{{{eval:abs(d)}}} \\\\ &= \\dfrac{{{eval:abs(a)}} \\times {{eval:abs(b)}}}{{{eval:abs(c)}} \\times {{eval:abs(d)}}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:abs(a*b)}}}{{{eval:abs(c*d)}}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Multiplication",
+		"level": 6,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "négatif : bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-8",
+					"b": "3",
+					"c": "-5",
+					"d": "-5"
+				},
+				"answers": ["-\\frac{24}{25}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "négatif : signe dans le numérateur",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-8",
+					"b": "3",
+					"c": "-5",
+					"d": "-5"
+				},
+				"answers": ["\\frac{-24}{25}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "négatif : erreur de signe",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-8",
+					"b": "3",
+					"c": "-5",
+					"d": "-5"
+				},
+				"answers": ["\\frac{24}{25}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "négatif : bornes",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "-9",
+					"c": "8",
+					"d": "8"
+				},
+				"answers": ["-\\frac{81}{64}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "positif : quatre négatifs",
+				"variationIndex": 1,
+				"variables": {
+					"a": "-6",
+					"b": "-8",
+					"c": "-5",
+					"d": "-5"
+				},
+				"answers": ["\\frac{48}{25}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "positif : erreur de signe",
+				"variationIndex": 1,
+				"variables": {
+					"a": "-6",
+					"b": "-8",
+					"c": "-5",
+					"d": "-5"
+				},
+				"answers": ["-\\frac{48}{25}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "positif : signes laissés",
+				"variationIndex": 1,
+				"variables": {
+					"a": "-6",
+					"b": "-8",
+					"c": "-5",
+					"d": "-5"
+				},
+				"answers": ["\\frac{-48}{-25}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "positif : tous positifs",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "2",
+					"d": "4"
+				},
+				"answers": ["\\frac{45}{8}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

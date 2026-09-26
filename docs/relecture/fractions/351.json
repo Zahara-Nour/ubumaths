@@ -1,0 +1,154 @@
+{
+	"globalIndex": 351,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "« Décomposer » → « Décompose » ; double espace du sous-titre retiré. Réponse attendue « b+c/a » → « b+\\frac{c}{a} » (saisie MathLive refusée [form], correction affichée « 4+2/3 »). Forme exigée « n:integer + p:integer / q:integer » (refuse \\frac{12}{3}+\\frac{2}{3} ; limite : 3+\\frac{5}{3} passe encore). Specs : juste aux bornes, ordre inversé accepté ; décimal approché, somme de deux fractions, fraction inversée et nombre mixte collé refusés.",
+	"template": {
+		"title": "Décomposer une fraction",
+		"description": "Une fraction en une somme d'un entier et d'une fraction inférieure à $1$",
+		"variations": [
+			{
+				"statement": "Décompose cette fraction en une somme d'un entier et d'une fraction inférieure à $1$, comme dans l'exemple :\n\n$$14/3 = 4 + 2/3$$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b+c}}/{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:a*b+c}}}{{{a}}} &= \\dfrac{{{eval:a*b}}}{{{a}}} + \\dfrac{{{c}}}{{{a}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}+\\frac{{{c}}}{{{a}}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"reducedFractions": "off"
+			}
+		},
+		"grades": ["CM2"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Décomposition",
+		"level": 3,
+		"status": "draft",
+		"delay": 30,
+		"shared": {
+			"requiredForm": {
+				"pattern": "n:integer + p:integer / q:integer"
+			}
+		},
+		"testSpecs": [
+			{
+				"description": "bonne décomposition",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "2"
+				},
+				"answers": ["4+\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre inversé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "2"
+				},
+				"answers": ["\\frac{2}{3}+4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne basse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "1"
+				},
+				"answers": ["2+\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["9+\\frac{8}{9}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "valeur approchée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "2"
+				},
+				"answers": ["4.67"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "somme de deux fractions",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "2"
+				},
+				"answers": ["\\frac{12}{3}+\\frac{2}{3}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "fraction inversée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "2"
+				},
+				"answers": ["4+\\frac{3}{2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,126 @@
+{
+	"globalIndex": 355,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "« Ecris » → « Écris ». Tirages vérifiés (numérateur à 2–4 chiffres sur 10 ou 100 ; 10/10 donne 1, accepté). Specs : dixièmes et centièmes justes, borne 4 chiffres, virgule acceptée ; décalage de rang refusé ; zéro inutile perfectible.",
+	"template": {
+		"title": "Forme décimale d'une fraction",
+		"description": "Fraction décimale jusqu'au centième",
+		"variations": [
+			{
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "digits:a"
+					},
+					{
+						"name": "c",
+						"expression": "10|100"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{b}}/{{eval:c}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Forme décimale",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "centièmes",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "2345",
+					"c": "100"
+				},
+				"answers": ["23.45"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "dixièmes, virgule",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "274",
+					"c": "10"
+				},
+				"answers": ["27{,}4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne basse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "10",
+					"c": "10"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "9999",
+					"c": "100"
+				},
+				"answers": ["99.99"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "décalage de rang",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "2345",
+					"c": "100"
+				},
+				"answers": ["2.345"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "zéro inutile",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "2345",
+					"c": "100"
+				},
+				"answers": ["23.450"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			}
+		]
+	}
+}

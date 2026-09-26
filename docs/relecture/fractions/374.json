@@ -1,0 +1,168 @@
+{
+	"globalIndex": 374,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction illisible après conversion : « {{solution:html}} » insère la fraction en mode display ($$…$$) et le texte qui suit (« est plus petite que ») était lu comme des maths (« \\exponentialE s t p l u s… ») ; le gras « <b>…</b> » s'affichait en balises brutes. La fraction la plus petite est maintenant écrite explicitement (min(b,c)/a) et le gras en markdown. Specs : les deux ordres des choix dans chaque variation.",
+	"template": {
+		"title": "Comparer deux fractions",
+		"description": "Fractions de même dénominateur",
+		"shared": {
+			"statement": "Quelle est la plus petite de ces $2$ fractions ?",
+			"correctChoiceIndex": ["{{if:d<f|0|1}}"],
+			"correction": {
+				"steps": [
+					"$\\dfrac{{{eval:min(b,c)}}}{{{a}}}$ est plus petite que $\\dfrac{{{eval:max(b,c)}}}{{{a}}}$ car les deux fractions ont **même dénominateur** et ${{eval:min(b,c)}}<{{eval:max(b,c)}}$."
+				]
+			},
+			"choices": [
+				{
+					"content": "$$\\dfrac{{{b}}}{{{a}}}$$"
+				},
+				{
+					"content": "$$\\dfrac{{{c}}}{{{a}}}$$"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
+				"correctChoiceIndex": ["{{if:d<f|0|1}}"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "8..19"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:a-1}}!a"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:a-1}}!a,b"
+					},
+					{
+						"name": "d",
+						"expression": "b/a"
+					},
+					{
+						"name": "f",
+						"expression": "c/a"
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
+				"correctChoiceIndex": ["{{if:d<f|0|1}}"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..{{eval:3*a-1}}!a"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:a+1}}..{{eval:3*a-1}}!a,b"
+					},
+					{
+						"name": "d",
+						"expression": "b/a"
+					},
+					{
+						"name": "f",
+						"expression": "c/a"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Comparer",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "3/19 < 5/19 : bon choix 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "19",
+					"b": "5",
+					"c": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3/19 < 5/19 : mauvais choix",
+				"variationIndex": 0,
+				"variables": {
+					"a": "19",
+					"b": "5",
+					"c": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "bornes : 1/8 < 7/8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "1",
+					"c": "7"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "10/7 < 20/7 : bon choix 1",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "20",
+					"c": "10"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3/2 < 5/2 : bon choix 0",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "5"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3/2 < 5/2 : mauvais choix",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "5"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

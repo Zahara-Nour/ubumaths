@@ -1,0 +1,234 @@
+{
+	"globalIndex": 382,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue convertie en « {16}/10 » (accolades littérales) : la saisie MathLive \\frac{16}{10} était refusée (mauvaise forme). Remplacée par \\frac{a+b}{10} (resp. {100}) ; la correction affiche désormais la fraction. Fractions non réduites acceptées (option d'origine), l'écriture décimale est refusée (on attend une fraction).",
+	"template": {
+		"title": "Additionner des fractions",
+		"description": "Fractions décimales.",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..13"
+					},
+					{
+						"name": "b",
+						"expression": "2..13"
+					},
+					{
+						"name": "expression1",
+						"expression": "a/10+b/10"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{a}}}{\\textcolor{{{color:primary.0}}}{10}}+\\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{10}} &= \\dfrac{{{a}}+{{b}}}{\\textcolor{{{color:primary.0}}}{10}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:a+b}}}{10}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression2",
+						"expression": "a/10+b/10+c/10"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{a}}}{\\textcolor{{{color:primary.0}}}{10}}+\\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{10}}+\\dfrac{{{c}}}{\\textcolor{{{color:primary.0}}}{10}} &= \\dfrac{{{a}}+{{b}}+{{c}}}{\\textcolor{{{color:primary.0}}}{10}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:a+b+c}}}{10}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..80"
+					},
+					{
+						"name": "b",
+						"expression": "1..50"
+					},
+					{
+						"name": "expression3",
+						"expression": "a/100+b/100"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{a}}}{\\textcolor{{{color:primary.0}}}{100}}+\\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{100}} &= \\dfrac{{{a}}+{{b}}}{\\textcolor{{{color:primary.0}}}{100}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:a+b}}}{100}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"reducedFractions": "off"
+			}
+		},
+		"grades": ["CM1"],
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Addition et Soustraction",
+		"level": 1,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{16}{10}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 réduite aussi acceptée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{8}{5}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 somme = 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "7"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 addition des dénominateurs",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{16}{20}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v1 calcul non effectué",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{7+9}{10}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v2 bornes hautes",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["\\frac{27}{10}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 bornes basses",
+				"variationIndex": 1,
+				"variables": {
+					"a": "1",
+					"b": "1",
+					"c": "1"
+				},
+				"answers": ["\\frac{3}{10}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 centièmes",
+				"variationIndex": 2,
+				"variables": {
+					"a": "78",
+					"b": "8"
+				},
+				"answers": ["\\frac{86}{100}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 bornes hautes",
+				"variationIndex": 2,
+				"variables": {
+					"a": "80",
+					"b": "50"
+				},
+				"answers": ["\\frac{130}{100}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 dénominateur 10 faux",
+				"variationIndex": 2,
+				"variables": {
+					"a": "78",
+					"b": "8"
+				},
+				"answers": ["\\frac{86}{10}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

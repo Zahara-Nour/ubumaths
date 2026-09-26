@@ -1,0 +1,197 @@
+{
+	"globalIndex": 377,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction non convertie : conditions « {{if:…}} » dépendant des variables (non gérées dans une correction), marqueurs « [°…°] » bruts, « et » lu comme des maths (« \\exponentialE t ») et « {{c}} » non résolu. Réécrite sans condition en deux étapes : mise au même dénominateur, puis comparaison des numérateurs écrite avec min/max (toujours dans le bon sens). Specs : les deux issues possibles dans chaque variation.",
+	"template": {
+		"title": "Comparer deux fractions",
+		"description": "Fractions de dénominateurs multiples l'un de l'autre",
+		"shared": {
+			"statement": "Quelle est la plus petite de ces $2$ fractions ?",
+			"correctChoiceIndex": ["{{if:f<g|0|1}}"]
+		},
+		"variations": [
+			{
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
+				"correctChoiceIndex": ["{{if:f<g|0|1}}"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:b+1}}..9!d(b),m(b)"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:b*2}}..{{eval:c*a-1}}!{{eval:b*a}},d({{eval:c*a}}),m({{eval:c*a}})"
+					},
+					{
+						"name": "f",
+						"expression": "b/c"
+					},
+					{
+						"name": "g",
+						"expression": "{{d}}/{{eval:c*a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\dfrac{{{b}}}{{{c}}} = \\dfrac{{{b}} \\textcolor{{{color:primary.0}}}{\\times {{a}}}}{{{c}} \\textcolor{{{color:primary.0}}}{\\times {{a}}}} = \\dfrac{{{eval:a*b}}}{{{eval:a*c}}}$",
+						"Les deux fractions ont maintenant le même dénominateur : on compare les numérateurs. $\\dfrac{{{eval:min(a*b,d)}}}{{{eval:a*c}}}<\\dfrac{{{eval:max(a*b,d)}}}{{{eval:a*c}}}$."
+					]
+				},
+				"choices": [
+					{
+						"content": "$$\\dfrac{{{b}}}{{{c}}}$$"
+					},
+					{
+						"content": "$$\\dfrac{{{eval:d}}}{{{eval:c*a}}}$$"
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
+				"correctChoiceIndex": ["{{if:f<g|0|1}}"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:b+1}}..9!d(b),m(b)"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:b*a+1}}..80!{{eval:c*a}},d({{eval:b*a}}),m({{eval:b*a}})"
+					},
+					{
+						"name": "f",
+						"expression": "c/b"
+					},
+					{
+						"name": "g",
+						"expression": "{{d}}/{{eval:b*a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\dfrac{{{c}}}{{{b}}} = \\dfrac{{{c}} \\textcolor{{{color:primary.0}}}{\\times {{a}}}}{{{b}} \\textcolor{{{color:primary.0}}}{\\times {{a}}}} = \\dfrac{{{eval:a*c}}}{{{eval:a*b}}}$",
+						"Les deux fractions ont maintenant le même dénominateur : on compare les numérateurs. $\\dfrac{{{eval:min(a*c,d)}}}{{{eval:a*b}}}<\\dfrac{{{eval:max(a*c,d)}}}{{{eval:a*b}}}$."
+					]
+				},
+				"choices": [
+					{
+						"content": "$$\\dfrac{{{c}}}{{{b}}}$$"
+					},
+					{
+						"content": "$$\\dfrac{{{eval:d}}}{{{eval:b*a}}}$$"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Comparer",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "9/8 vs 72/56 : 9/8 (63/56)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9",
+					"d": "72"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais choix",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9",
+					"d": "72"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "9/8 vs 60/56 : 60/56",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9",
+					"d": "60"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3/5 vs 25/45 : 25/45",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "3",
+					"c": "5",
+					"d": "25"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais choix",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "3",
+					"c": "5",
+					"d": "25"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "3/5 vs 28/45 : 3/5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "3",
+					"c": "5",
+					"d": "28"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

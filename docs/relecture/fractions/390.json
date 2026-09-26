@@ -1,0 +1,155 @@
+{
+	"globalIndex": 390,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Point ajouté à la consigne (« Calcule » → « Calcule. »). Parenthèses autour de la fraction conservées (écriture d'origine).",
+	"template": {
+		"title": "Calculer une fraction d'une quantité",
+		"description": "Dans les $2$ sens",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9!cd(b)"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "({{b}}/{{c}})*{{eval:a*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\t\t\t\t\t\t\t\t\\begin{align} \t\t\t\t\t\t\t\t\\dfrac{\\textcolor{{{color:primary.0}}}{{{b}}}}{\\textcolor{{{color:primary.1}}}{{{c}}}} \\times {{eval:a*c}} \t\t\t\t\t\t\t\t&= {{eval:a*c}}\\textcolor{{{color:primary.1}}}{\\div {{c}}} \\textcolor{{{color:primary.0}}}{\\times {{b}}} \\\\ \t\t\t\t\t\t\t\t&= {{a}} \\textcolor{{{color:primary.0}}}{\\times {{b}}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}}  \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:a*c}}*({{b}}/{{c}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\t\t\t\t\t\t\t\t\\begin{align} {{eval:a*c}} \\times \\dfrac{\\textcolor{{{color:primary.0}}}{{{b}}}}{\\textcolor{{{color:primary.1}}}{{{c}}}}  \t\t\t\t\t\t\t\t&= {{eval:a*c}}\\textcolor{{{color:primary.1}}}{\\div {{c}}} \\textcolor{{{color:primary.0}}}{\\times {{b}}} \\\\ \t\t\t\t\t\t\t\t&= {{a}} \\textcolor{{{color:primary.0}}}{\\times {{b}}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}}  \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Fraction d'une quantité",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "6",
+					"c": "5"
+				},
+				"answers": ["48"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 bornes hautes",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["81"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 fraction non simplifiée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "6",
+					"c": "5"
+				},
+				"answers": ["\\frac{240}{5}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "v1 oubli de diviser",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "6",
+					"c": "5"
+				},
+				"answers": ["240"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v2 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["63"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 calcul non terminé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["7\\times9"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			}
+		]
+	}
+}

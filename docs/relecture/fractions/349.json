@@ -1,0 +1,168 @@
+{
+	"globalIndex": 349,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue « b+c/a » remplacée par « b+\\frac{c}{a} » : toute saisie MathLive (3+\\frac{45}{100}) était refusée [form] et la correction affichait « 3+45/100 » en ligne. Forme exigée ajoutée (motif « n:integer + p:integer / q:integer ») : sans elle, avec reducedFractions désactivé, la non-décomposition \\frac{300}{100}+\\frac{45}{100} était acceptée comme juste. Limite connue : le motif ne vérifie pas que la fraction est < 1 (2+\\frac{145}{100} passe). Specs : juste aux bornes, somme commutée et fraction simplifiée acceptées ; écriture décimale et somme de deux fractions refusées ; mauvaise partie fractionnaire refusée.",
+	"template": {
+		"title": "Décomposer une fraction",
+		"description": "Une fraction décimale (jusqu'aux centièmes) en une somme d'un entier et d'une fraction décimale inférieure à $1$",
+		"variations": [
+			{
+				"statement": "Décompose cette fraction en une somme d'un entier et d'une fraction décimale inférieure à $1$, comme dans l'exemple :\n\n$$345/100 = 3 + 45/100$$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "10|100"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b+c}}/{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:a*b+c}}}{{{a}}} &= \\dfrac{{{eval:a*b}}}{{{a}}} + \\dfrac{{{c}}}{{{a}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}+\\frac{{{c}}}{{{a}}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"reducedFractions": "off"
+			}
+		},
+		"grades": ["CM1"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Décomposition",
+		"level": 1,
+		"status": "draft",
+		"delay": 30,
+		"shared": {
+			"requiredForm": {
+				"pattern": "n:integer + p:integer / q:integer"
+			}
+		},
+		"testSpecs": [
+			{
+				"description": "bonne décomposition",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100",
+					"b": "3",
+					"c": "45"
+				},
+				"answers": ["3+\\frac{45}{100}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre inversé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100",
+					"b": "3",
+					"c": "45"
+				},
+				"answers": ["\\frac{45}{100}+3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "fraction simplifiée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100",
+					"b": "3",
+					"c": "45"
+				},
+				"answers": ["3+\\frac{9}{20}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne basse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10",
+					"b": "2",
+					"c": "1"
+				},
+				"answers": ["2+\\frac{1}{10}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100",
+					"b": "9",
+					"c": "99"
+				},
+				"answers": ["9+\\frac{99}{100}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "écriture décimale",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100",
+					"b": "3",
+					"c": "45"
+				},
+				"answers": ["3.45"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "somme de deux fractions",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100",
+					"b": "3",
+					"c": "45"
+				},
+				"answers": ["\\frac{300}{100}+\\frac{45}{100}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "mauvais reste",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100",
+					"b": "3",
+					"c": "45"
+				},
+				"answers": ["3+\\frac{4}{100}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

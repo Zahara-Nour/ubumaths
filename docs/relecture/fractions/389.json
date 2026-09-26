@@ -1,0 +1,113 @@
+{
+	"globalIndex": 389,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne à l'impératif (« Calculer » → « Calcule »).",
+	"template": {
+		"title": "Calculer une fraction d'une quantité",
+		"variations": [
+			{
+				"statement": "Calcule ${{b}}/{{c}}$ de ${{eval:a*c}}$.\n\n$\\dfrac{{{b}}}{{{c}}}$ de ${{eval:a*c}}$ est égal à $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(b)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\dfrac{\\textcolor{{{color:primary.0}}}{{{b}}}}{\\textcolor{{{color:primary.1}}}{{{c}}}} \\text{ de } {{eval:a*c}} \t\t\t\t\t\t\t\t&= {{eval:a*c}}\\textcolor{{{color:primary.1}}}{\\div {{c}}} \\textcolor{{{color:primary.0}}}{\\times {{b}}} \\\\ \t\t\t\t\t\t\t\t&= {{a}} \\times {{b}} \\\\ \t\t\t\t\t\t\t\t&= {{solution:0}}  \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*b}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Fraction d'une quantité",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "6",
+					"c": "5"
+				},
+				"answers": ["48"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bornes hautes",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["81"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bornes basses",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "3"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli de diviser",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "6",
+					"c": "5"
+				},
+				"answers": ["240"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "calcul non terminé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "6",
+					"c": "5"
+				},
+				"answers": ["8\\times6"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			}
+		]
+	}
+}

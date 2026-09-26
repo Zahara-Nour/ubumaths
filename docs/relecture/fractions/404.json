@@ -1,0 +1,105 @@
+{
+	"globalIndex": 404,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue convertie en {{eval:expression}} : l’évaluation rend un décimal arrondi, si bien que toute bonne réponse (fraction) était refusée et que la correction affichait ce décimal. Remplacée par la fraction exacte \\frac{ab}{c} (irréductible : c premier avec a et b).",
+	"template": {
+		"title": "Calculer un quotient",
+		"description": "Division par un entier, avec fraction",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a),cd(b)"
+					},
+					{
+						"name": "expression1",
+						"expression": "a/{c/b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\dfrac{{{a}}}{\\textcolor{{{color:primary.0}}}{\\dfrac{{{c}}}{{{b}}}}} \t\t\t\t\t\t\t\t&= {{a}}  \\textcolor{{{color:primary.0}}}{\\times \\dfrac{{{b}}}{{{c}}}} \\\\ \t\t\t\t\t\t\t\t&= \\dfrac{{{a}} \\times {{b}}}{{{c}}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}}  \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:a*b}}}{{{c}}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Division",
+		"level": 5,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "6",
+					"c": "5"
+				},
+				"answers": ["\\frac{12}{5}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bornes",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "8"
+				},
+				"answers": ["\\frac{81}{8}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli de l’inverse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "6",
+					"c": "5"
+				},
+				"answers": ["\\frac{10}{6}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "non simplifiée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "6",
+					"c": "5"
+				},
+				"answers": ["\\frac{24}{10}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			}
+		]
+	}
+}

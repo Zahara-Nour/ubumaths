@@ -1,0 +1,118 @@
+{
+	"globalIndex": 371,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Conversion fautive : réponse attendue = décimal approché (fraction juste refusée) → \\dfrac{b/pgcd(a,b)}{a/pgcd(a,b)}. Tirage de b : « 1..9 sauf a » → « 1..9 sauf multiples de a », sinon b multiple de a (ex. 36/18) donnait un entier que la forme fraction afficherait « 2/1 ». Specs : 36/54 → 2/3, simplification partielle 4/6 perfectible, bornes, inverse faux.",
+	"template": {
+		"title": "Simplifier une fraction",
+		"description": "La simplification peut se faire en plusieurs étapes",
+		"variations": [
+			{
+				"statement": "Simplifie le plus possible.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!m(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:b*c}}/{{eval:a*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:b*c}}}{{{eval:a*c}}} &= \\dfrac{{{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{eval:c*gcd(a,b)}}}}{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div  {{eval:c*gcd(a,b)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{eval:b/gcd(a,b)}}}{{{eval:a/gcd(a,b)}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Simplification",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "36/54 → 2/3",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "simplification partielle",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"answers": ["\\frac{4}{6}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "borne : 2/18 → 1/9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "1",
+					"c": "2"
+				},
+				"answers": ["\\frac{1}{9}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "63/72 → 7/8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "9"
+				},
+				"answers": ["\\frac{7}{8}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "inverse faux",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"answers": ["\\frac{3}{2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

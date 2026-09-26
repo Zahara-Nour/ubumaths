@@ -1,0 +1,173 @@
+{
+	"globalIndex": 373,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Conversion fautive : réponse attendue = décimal (fraction juste refusée) → ±\\dfrac{b/pgcd}{a/pgcd}. Tirage de b « sauf a » → « sauf multiples de a » (sinon réponse entière affichée -2/1). Specs par variation : fraction irréductible juste, signe mal placé ou fraction non simplifiée perfectibles, signe faux refusé.",
+	"template": {
+		"title": "Simplifier une fraction",
+		"description": "Simplifier le plus possible (avec signes)",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9!m(a)"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Simplifie le plus possible.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-{{eval:b*c}})/{{eval:a*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{-{{eval:b*c}}}{{{eval:a*c}}} &= -\\dfrac{{{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{eval:c*gcd(a,b)}}}}{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div  {{eval:c*gcd(a,b)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "-\\dfrac{{{eval:b/gcd(a,b)}}}{{{eval:a/gcd(a,b)}}}"
+					}
+				]
+			},
+			{
+				"statement": "Simplifie le plus possible.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:b*c}}/(-{{eval:a*c}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:b*c}}}{-{{eval:a*c}}} &= -\\dfrac{{{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{eval:c*gcd(a,b)}}}}{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div  {{eval:c*gcd(a,b)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "-\\dfrac{{{eval:b/gcd(a,b)}}}{{{eval:a/gcd(a,b)}}}"
+					}
+				]
+			},
+			{
+				"statement": "Simplifie le plus possible.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "(-{{eval:b*c}})/(-{{eval:a*c}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{-{{eval:b*c}}}{-{{eval:a*c}}} &= \\dfrac{{{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{eval:c*gcd(a,b)}}}}{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div  {{eval:c*gcd(a,b)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{eval:b/gcd(a,b)}}}{{{eval:a/gcd(a,b)}}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Simplification",
+		"level": 6,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "(-36)/54 → -2/3",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"answers": ["-\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "non simplifiée : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"answers": ["\\frac{-36}{54}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "signe perdu",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "36/(-54) → -2/3",
+				"variationIndex": 1,
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"answers": ["-\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(-36)/(-54) → 2/3",
+				"variationIndex": 2,
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(-36)/(-54) : signe faux",
+				"variationIndex": 2,
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"answers": ["-\\frac{2}{3}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

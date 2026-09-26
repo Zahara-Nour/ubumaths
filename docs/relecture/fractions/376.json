@@ -1,0 +1,149 @@
+{
+	"globalIndex": 376,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction non convertie : conditions TinyMath « {{if:…}} » (non résolues côté variables), marqueurs « [°…°] » bruts et tabulations affichés tels quels. Par construction b/a < 1 < d/c, la plus petite est toujours b/a : correction réécrite sans condition. Specs : bon choix et mauvais choix dans les deux variations (ordres inversés), bornes.",
+	"template": {
+		"title": "Comparer deux fractions",
+		"description": "En comparant à $1$",
+		"shared": {
+			"statement": "Quelle est la plus petite de ces $2$ fractions ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "8..19"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:a-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "8..19!a"
+				},
+				{
+					"name": "d",
+					"expression": "{{eval:c+1}}..{{eval:2*c-1}}!b"
+				},
+				{
+					"name": "f",
+					"expression": "b/a"
+				},
+				{
+					"name": "g",
+					"expression": "d/c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{{{b}}}{{{a}}}$ est plus petite que $\\dfrac{{{d}}}{{{c}}}$ car $\\dfrac{{{b}}}{{{a}}}<1$ (numérateur plus petit que le dénominateur) et $\\dfrac{{{d}}}{{{c}}}>1$ (numérateur plus grand que le dénominateur)."
+				]
+			}
+		},
+		"variations": [
+			{
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
+				"correctChoiceIndex": ["{{if:f<g|0|1}}"],
+				"choices": [
+					{
+						"content": "$$\\dfrac{{{b}}}{{{a}}}$$"
+					},
+					{
+						"content": "$$\\dfrac{{{d}}}{{{c}}}$$"
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
+				"correctChoiceIndex": ["{{if:g<f|0|1}}"],
+				"choices": [
+					{
+						"content": "$$\\dfrac{{{d}}}{{{c}}}$$"
+					},
+					{
+						"content": "$$\\dfrac{{{b}}}{{{a}}}$$"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Comparer",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "15/16 vs 31/19 (choix 0)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "16",
+					"b": "15",
+					"c": "19",
+					"d": "31"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais choix",
+				"variationIndex": 0,
+				"variables": {
+					"a": "16",
+					"b": "15",
+					"c": "19",
+					"d": "31"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "bornes : 1/8 vs 9/8... c=8,d=9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "19",
+					"b": "18",
+					"c": "8",
+					"d": "9"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre inversé (choix 1)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "16",
+					"b": "15",
+					"c": "19",
+					"d": "31"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre inversé : mauvais choix",
+				"variationIndex": 1,
+				"variables": {
+					"a": "16",
+					"b": "15",
+					"c": "19",
+					"d": "31"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

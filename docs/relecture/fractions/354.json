@@ -1,0 +1,121 @@
+{
+	"globalIndex": 354,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Défaut de conversion : la variable a = « 1..9*10+1..9 » tirait des décimaux (1.1, 4.4…) et l'énoncé devenait \\dfrac{1.1}{100} (réponse 0.011). Remplacée par u = 1..9, v = 1..9, a = 10u+v (11 à 99 sans multiple de 10, comme l'ancienne question). « Ecris » → « Écris ». Specs : juste aux bornes, virgule acceptée ; décalage de rang et recopie refusés ; zéro inutile perfectible.",
+	"template": {
+		"title": "Forme décimale d'une fraction",
+		"description": "Centièmes (2)",
+		"variations": [
+			{
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "v",
+						"expression": "1..9"
+					},
+					{
+						"name": "a",
+						"expression": "{{eval:10*u+v}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a}}/100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Forme décimale",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "cas courant",
+				"variationIndex": 0,
+				"variables": {
+					"u": "4",
+					"v": "7"
+				},
+				"answers": ["0.47"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne basse",
+				"variationIndex": 0,
+				"variables": {
+					"u": "1",
+					"v": "1"
+				},
+				"answers": ["0{,}11"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute",
+				"variationIndex": 0,
+				"variables": {
+					"u": "9",
+					"v": "9"
+				},
+				"answers": ["0.99"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "décalage de rang",
+				"variationIndex": 0,
+				"variables": {
+					"u": "4",
+					"v": "7"
+				},
+				"answers": ["4.7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "recopie de la fraction",
+				"variationIndex": 0,
+				"variables": {
+					"u": "4",
+					"v": "7"
+				},
+				"answers": ["\\frac{47}{100}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "zéro inutile",
+				"variationIndex": 0,
+				"variables": {
+					"u": "4",
+					"v": "7"
+				},
+				"answers": ["0.470"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			}
+		]
+	}
+}

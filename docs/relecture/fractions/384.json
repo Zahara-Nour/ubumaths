@@ -1,0 +1,175 @@
+{
+	"globalIndex": 384,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue convertie en {{eval:expression}} : l’évaluation donne un décimal arrondi (9/7 → 1.28571428571429), si bien que toute bonne réponse était refusée et que la correction affichait ce décimal. Remplacée par la fraction exacte \\frac{a+b}{c} et \\frac{a-b}{c} (irréductibles par construction : c premier avec a+b, a-b).",
+	"template": {
+		"title": "Additionner ou soustraire des fractions",
+		"description": "Fractions de même dénominateur, nombres positifs, sans simplification",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..13"
+					},
+					{
+						"name": "b",
+						"expression": "2..13"
+					},
+					{
+						"name": "c",
+						"expression": "2..25!cd(a),cd(b),cd({{eval:b+a}})"
+					},
+					{
+						"name": "expression1",
+						"expression": "a/c+b/c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{a}}}{\\textcolor{{{color:primary.0}}}{{{c}}}}+\\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} &= \\dfrac{{{a}}+{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:a+b}}}{{{c}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..13"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:a-1}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..25!cd(a),cd(b),cd({{eval:a-b}})"
+					},
+					{
+						"name": "expression2",
+						"expression": "a/c-b/c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{a}}}{\\textcolor{{{color:primary.0}}}{{{c}}}}-\\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} &= \\dfrac{{{a}}-{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:a-b}}}{{{c}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Addition et Soustraction",
+		"level": 3,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "addition",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"answers": ["\\frac{9}{7}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "addition bornes",
+				"variationIndex": 0,
+				"variables": {
+					"a": "13",
+					"b": "13",
+					"c": "25"
+				},
+				"answers": ["\\frac{26}{25}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "addition des dénominateurs",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"answers": ["\\frac{9}{14}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "soustraction",
+				"variationIndex": 1,
+				"variables": {
+					"a": "11",
+					"b": "4",
+					"c": "9"
+				},
+				"answers": ["\\frac{7}{9}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "soustraction résultat 1/c",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "5"
+				},
+				"answers": ["\\frac{1}{5}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "soustraction des dénominateurs",
+				"variationIndex": 1,
+				"variables": {
+					"a": "11",
+					"b": "4",
+					"c": "9"
+				},
+				"answers": ["\\frac{7}{0}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "soustraction non simplifiée",
+				"variationIndex": 1,
+				"variables": {
+					"a": "11",
+					"b": "4",
+					"c": "9"
+				},
+				"answers": ["\\frac{14}{18}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			}
+		]
+	}
+}

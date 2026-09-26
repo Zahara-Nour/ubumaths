@@ -1,0 +1,157 @@
+{
+	"globalIndex": 347,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue « a/b » remplacée par « \\frac{a}{b} » : la saisie MathLive \\frac{5}{3} était refusée (bad_form [form]), seul le texte 5/3 passait. Conditions ajoutées gcd(a,b)=1 et mod(10000,b)!=0 : la correction affirme « on ne peut pas le mettre sous forme décimale », faux pour 19/4 ou 14/4 (qui était en plus affiché non réduit) ; b reste parmi 3, 6, 7, 9, 11–15, 17–19. Specs : juste sur les 2 variations et aux bornes ; fraction inversée et arrondi décimal refusés ; fraction équivalente non réduite perfectible.",
+	"template": {
+		"title": "Définition par quotient",
+		"description": "$$?*b=a$$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..19"
+				},
+				{
+					"name": "b",
+					"expression": "2..19!cd(a)"
+				}
+			],
+			"conditions": ["gcd(a,b)=1", "mod(10000,b)!=0"]
+		},
+		"variations": [
+			{
+				"statement": "Détermine le facteur manquant.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "b*?=a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Dans ${{b}} \\times \\cdots = {{a}}$, le nombre cherché est le résultat de ${{a}} \\div {{b}}$ qui s'écrit ${{solution:0}}$ car on ne peut pas le mettre sous forme décimale."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{a}}}{{{b}}}"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le facteur manquant.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?*b=a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Dans $ \\cdots \\times {{b}} = {{a}}$, le nombre cherché est le résultat de ${{a}} \\div {{b}}$ qui s'écrit ${{solution:0}}$ car on ne peut pas le mettre sous forme décimale."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{a}}}{{{b}}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Définition",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "b × ? = a",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "3"
+				},
+				"answers": ["\\frac{5}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "? × b = a",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"b": "3"
+				},
+				"answers": ["\\frac{5}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne basse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "19"
+				},
+				"answers": ["\\frac{2}{19}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute",
+				"variationIndex": 1,
+				"variables": {
+					"a": "19",
+					"b": "18"
+				},
+				"answers": ["\\frac{19}{18}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "fraction inversée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "12",
+					"b": "7"
+				},
+				"answers": ["\\frac{7}{12}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "valeur approchée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "12",
+					"b": "7"
+				},
+				"answers": ["1.71"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "fraction égale non réduite",
+				"variationIndex": 1,
+				"variables": {
+					"a": "12",
+					"b": "7"
+				},
+				"answers": ["\\frac{24}{14}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,166 @@
+{
+	"globalIndex": 398,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponses attendues « 1/{{a}} » et « {{b}}/{{a}} » : sous cette forme la saisie MathLive \\frac{1}{a} était refusée (mauvaise forme) ; remplacées par \\frac{1}{a} et \\frac{b}{a}. Énoncé : les nombres affichés « 1/a » et « a/b » (barre oblique en mode maths) sont écrits en \\dfrac comme dans TinyMath.",
+	"template": {
+		"title": "Calculer l'inverse d'un nombre",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..19"
+				},
+				{
+					"name": "b",
+					"expression": "2..19!cd(a)"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Quel est l'inverse de ce nombre :\n\n$${{a}}$$\n\nL'inverse de ce nombre est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{1}{{{a}}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est l'inverse de ce nombre :\n\n$$\\dfrac{1}{{{a}}}$$\n\nL'inverse de ce nombre est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est l'inverse de ce nombre :\n\n$$\\dfrac{{{a}}}{{{b}}}$$\n\nL'inverse de ce nombre est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{b}}}{{{a}}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Inverse",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v1 inverse d’un entier",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"answers": ["\\frac{1}{7}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 opposé au lieu de l’inverse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"answers": ["-7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v1 écriture puissance",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"answers": ["7^{-1}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v1 borne",
+				"variationIndex": 0,
+				"variables": {
+					"a": "19",
+					"b": "3"
+				},
+				"answers": ["\\frac{1}{19}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 inverse de 1/a",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 fraction non simplifiée",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"answers": ["\\frac{7}{1}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "v3 inverse de a/b",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"answers": ["\\frac{3}{7}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 même fraction",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"answers": ["\\frac{7}{3}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v3 bornes",
+				"variationIndex": 2,
+				"variables": {
+					"a": "19",
+					"b": "18"
+				},
+				"answers": ["\\frac{18}{19}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,113 @@
+{
+	"globalIndex": 400,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue convertie en {{eval:expression}} : l’évaluation rend un décimal arrondi, si bien que toute bonne réponse (fraction) était refusée et que la correction affichait ce décimal. Remplacée par la fraction exacte \\frac{ab}{cd} (irréductible : c et d premiers avec a et b). Le signe « : » de l’énoncé est conservé (écriture d’origine, la correction utilise ÷).",
+	"template": {
+		"title": "Calculer un quotient",
+		"description": "Pas de simplification, avec le symbole de la division",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(b),cd(a)"
+					},
+					{
+						"name": "d",
+						"expression": "2..9!cd(b),cd(a)"
+					},
+					{
+						"name": "expression1",
+						"expression": "{a/c}:{d/b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{a}}}{{{c}}} \\textcolor{{{color:primary.0}}}{\\div \\dfrac{{{d}}}{{{b}}}} &= \\dfrac{{{a}}}{{{c}}} \\textcolor{{{color:primary.0}}}{\\times \\dfrac{{{b}}}{{{d}}}} \\\\ &= \\dfrac{{{a}} \\times {{b}}}{{{c}} \\times {{d}}}  \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:a*b}}}{{{eval:c*d}}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Division",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "6",
+					"c": "5",
+					"d": "5"
+				},
+				"answers": ["\\frac{54}{25}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bornes",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "9",
+					"d": "9"
+				},
+				"answers": ["\\frac{4}{81}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli de l’inverse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "6",
+					"c": "5",
+					"d": "5"
+				},
+				"answers": ["\\frac{45}{30}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "calcul non effectué",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "6",
+					"c": "5",
+					"d": "5"
+				},
+				"answers": ["\\frac{9\\times6}{5\\times5}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["reducedFractions", "form"]
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,141 @@
+{
+	"globalIndex": 393,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue convertie en {{eval:expression}} : l’évaluation rend un décimal arrondi, si bien que toute bonne réponse (fraction) était refusée et que la correction affichait ce décimal. Remplacée par la fraction exacte \\frac{ac}{b} (irréductible : b premier avec a et c).",
+	"template": {
+		"title": "Calculer un produit",
+		"description": "un entier par un quotient",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..10!cd(a)"
+				},
+				{
+					"name": "c",
+					"expression": "2..9!cd(b)"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*{c/b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{a}} \\times \\dfrac{{{c}}}{{{b}}} &= \\dfrac{{{a}} \\times {{c}}}{{{b}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:a*c}}}{{{b}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{c/b}*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{c}}}{{{b}}} \\times {{a}} &= \\dfrac{{{c}} \\times {{a}}}{{{b}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:a*c}}}{{{b}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Multiplication",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "4"
+				},
+				"answers": ["\\frac{32}{7}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 dénominateur multiplié aussi",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "4"
+				},
+				"answers": ["\\frac{32}{56}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v1 non simplifiée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "4"
+				},
+				"answers": ["\\frac{64}{14}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "v2 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "9"
+				},
+				"answers": ["\\frac{63}{10}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 bornes basses",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "2"
+				},
+				"answers": ["\\frac{4}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

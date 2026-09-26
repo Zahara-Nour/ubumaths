@@ -1,0 +1,179 @@
+{
+	"globalIndex": 388,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue convertie en {{eval:expression}} : l’évaluation rend un décimal arrondi, si bien que toute bonne réponse (fraction) était refusée et que la correction affichait ce décimal. Remplacée par la fraction exacte réduite \\frac{d/pgcd(c;d)}{c/pgcd(c;d)} (le résultat vaut d/c). Pour que cette réponse ne soit jamais \\frac{2}{1}, d ne peut plus être un multiple de c (« !c » → « !m(c) ») : les tirages à résultat entier (4/2, 6/3, 8/4…) disparaissent, ce qui ne change pas l'objectif. Consigne : « simplifiant le plus possible résultat » → « … le résultat ». Une fraction non réduite reste « forme perfectible » (avertissement par défaut), pas une erreur.",
+	"template": {
+		"title": "Additionner ou soustraire",
+		"description": "Fractions de même dénominateur, nombres positifs, simplification intermediaire possible, simplification finale",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..{{eval:a-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..9!m(c)"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule en simplifiant le plus possible le résultat.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:b*d}}/{{eval:a*c}}+{{eval:(a-b)*d}}/{{eval:a*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:b*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:a*c}}}} + \\dfrac{{{eval:(a-b)*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:a*c}}}} &= \\dfrac{{{eval:b*d}}+{{eval:(a-b)*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:a*c}}}} \\\\ &= \\dfrac{{{eval:a*d}}}{{{eval:a*c}}} \\\\ &=  \\dfrac{{{eval:a*d}}\\textcolor{{{color:primary.1}}}{\\div {{eval:gcd(a*c,a*d)}}}}{{{eval:a*c}}\\textcolor{{{color:primary.1}}}{\\div {{eval:gcd(a*c,a*d)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:d/gcd(c,d)}}}{{{eval:c/gcd(c,d)}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule en simplifiant le plus possible le résultat.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:a*d}}/{{eval:b*c}}-{{eval:(a-b)*d}}/{{eval:b*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:a*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:b*c}}}} - \\dfrac{{{eval:(a-b)*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:b*c}}}} &= \\dfrac{{{eval:a*d}}-{{eval:(a-b)*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:b*c}}}} \\\\ &= \\dfrac{{{eval:b*d}}}{{{eval:b*c}}} \\\\ &=  \\dfrac{{{eval:b*d}}\\textcolor{{{color:primary.1}}}{\\div {{eval:gcd(b*c,b*d)}}}}{{{eval:b*c}}\\textcolor{{{color:primary.1}}}{\\div {{eval:gcd(b*c,b*d)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:d/gcd(c,d)}}}{{{eval:c/gcd(c,d)}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Addition et Soustraction",
+		"level": 7,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "6",
+					"c": "4",
+					"d": "5"
+				},
+				"answers": ["\\frac{5}{4}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 simplification incomplète",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "6",
+					"c": "4",
+					"d": "5"
+				},
+				"answers": ["\\frac{15}{12}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "v1 pas simplifiée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "6",
+					"c": "4",
+					"d": "5"
+				},
+				"answers": ["\\frac{45}{36}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "v1 addition des dénominateurs",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "6",
+					"c": "4",
+					"d": "5"
+				},
+				"answers": ["\\frac{45}{72}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v1 bornes hautes",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "9",
+					"d": "8"
+				},
+				"answers": ["\\frac{8}{9}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "6",
+					"b": "2",
+					"c": "6",
+					"d": "4"
+				},
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 bornes basses",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "2",
+					"d": "3"
+				},
+				"answers": ["\\frac{3}{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

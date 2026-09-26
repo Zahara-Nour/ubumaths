@@ -1,0 +1,139 @@
+{
+	"globalIndex": 356,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "« Ecris » → « Écris » ; sous-titre « par coeur » → « par cœur ». Les 10 fractions de la liste vérifiées une à une. Specs : juste sur les cas extrêmes (demi, millièmes), fraction impropre ; erreurs de rang et recopie refusées.",
+	"template": {
+		"title": "Déterminer la forme décimale d'une fraction",
+		"description": "Cas à connaître par cœur",
+		"variations": [
+			{
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1/2|1/4|1/10|2/10|3/2|5/2|1/100|2/1000|7/2|9/2"
+					},
+					{
+						"name": "expression1",
+						"expression": "a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Forme décimale",
+		"level": 5,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "un demi",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1/2"
+				},
+				"answers": ["0.5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sept demis, virgule",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7/2"
+				},
+				"answers": ["3{,}5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "neuf demis",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9/2"
+				},
+				"answers": ["4.5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "un quart",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1/4"
+				},
+				"answers": ["0.25"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "confusion 1/2 = 1,2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1/2"
+				},
+				"answers": ["1.2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "confusion 1/4 = 0,4",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1/4"
+				},
+				"answers": ["0.4"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "recopie de la fraction",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1/4"
+				},
+				"answers": ["\\frac{1}{4}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "millièmes",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2/1000"
+				},
+				"answers": ["0.002"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "millièmes mal placés",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2/1000"
+				},
+				"answers": ["0.02"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,130 @@
+{
+	"globalIndex": 358,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Défaut de conversion : la variable a = « 1..9*100+0..9*10+1..9 » tirait des décimaux et l'énoncé devenait faux (numérateur non entier). Remplacée par u = 1..9, w = 0..9, v = 1..9, a = 100u+10w+v (101 à 999, chiffre des unités non nul, comme l'ancienne question). « Ecris » → « Écris ». Specs : juste aux bornes et avec zéro intercalé ; décalage de rang et recopie refusés.",
+	"template": {
+		"title": "Forme décimale d'une fraction",
+		"description": "Millièmes (2)",
+		"variations": [
+			{
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "w",
+						"expression": "0..9"
+					},
+					{
+						"name": "v",
+						"expression": "1..9"
+					},
+					{
+						"name": "a",
+						"expression": "{{eval:100*u+10*w+v}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a}}/1000"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Forme décimale",
+		"level": 7,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "cas courant",
+				"variationIndex": 0,
+				"variables": {
+					"u": "4",
+					"w": "7",
+					"v": "3"
+				},
+				"answers": ["0.473"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "zéro intercalé, virgule",
+				"variationIndex": 0,
+				"variables": {
+					"u": "3",
+					"w": "0",
+					"v": "5"
+				},
+				"answers": ["0{,}305"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne basse",
+				"variationIndex": 0,
+				"variables": {
+					"u": "1",
+					"w": "0",
+					"v": "1"
+				},
+				"answers": ["0.101"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne haute",
+				"variationIndex": 0,
+				"variables": {
+					"u": "9",
+					"w": "9",
+					"v": "9"
+				},
+				"answers": ["0.999"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "centièmes au lieu de millièmes",
+				"variationIndex": 0,
+				"variables": {
+					"u": "4",
+					"w": "7",
+					"v": "3"
+				},
+				"answers": ["4.73"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "recopie de la fraction",
+				"variationIndex": 0,
+				"variables": {
+					"u": "4",
+					"w": "7",
+					"v": "3"
+				},
+				"answers": ["\\frac{473}{1000}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "form"]
+				}
+			}
+		]
+	}
+}

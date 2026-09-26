@@ -1,0 +1,144 @@
+{
+	"globalIndex": 348,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne « Calculer. » → « Calcule. » (impératif à la 2e personne, comme les autres consignes). Tirages vérifiés : b premier avec a, la fraction b/a de l'énoncé est donc irréductible. Specs : juste sur les 2 variations et aux bornes ; recopier a ou le quotient refusé ; fraction non simplifiée perfectible.",
+	"template": {
+		"title": "Définition par quotient",
+		"description": "$$a/b*a=?$$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3|6|7|9|11|12|13"
+				},
+				{
+					"name": "b",
+					"expression": "2..10!cd(a)"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{b/a}*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\textcolor{{{color:primary.0}}}{\\dfrac{{{b}}}{{{a}}}} \\times {{a}}={{solution}} $ désigne le résultat de la division $\\textcolor{{{color:primary.0}}}{{{b}} \\div {{a}}}$ et $\\textcolor{{{color:primary.0}}}{{{b}} \\div {{a}}} \\times {{a}} = {{b}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a*{b/a}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{a}} \\times \\textcolor{{{color:primary.0}}}{\\dfrac{{{b}}}{{{a}}}} ={{solution}} $ désigne le résultat de la division $\\textcolor{{{color:primary.0}}}{{{b}} \\div {{a}}}$ et ${{a}} \\times \\textcolor{{{color:primary.0}}}{{{b}} \\div {{a}}} = {{b}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Définition",
+		"level": 2,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "b/a × a",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "a × b/a",
+				"variationIndex": 1,
+				"variables": {
+					"a": "13",
+					"b": "10"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne basse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "recopie de a",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "recopie de la fraction",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"answers": ["\\frac{4}{7}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "fraction non simplifiée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"answers": ["\\frac{28}{7}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			}
+		]
+	}
+}

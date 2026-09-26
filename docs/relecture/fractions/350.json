@@ -1,0 +1,143 @@
+{
+	"globalIndex": 350,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "« Décomposer » → « Décompose ». Réponse attendue « b+c/a » → « b+\\frac{c}{a} » (saisie MathLive refusée [form], correction affichée « 9+999/1000 »). Forme exigée « n:integer + p:integer / q:integer » (sinon \\frac{9000}{1000}+\\frac{999}{1000} acceptée, reducedFractions étant désactivé ; limite : la fraction < 1 n'est pas vérifiée). Contrainte spaces désactivée : l'énoncé et la correction écrivent \\dfrac{9999}{1000} sans espace, et recopier 1000 était sanctionné [spaces]. Specs : juste aux bornes (dixièmes et millièmes), décimal et somme de fractions refusés, mauvais reste refusé.",
+	"template": {
+		"title": "Décomposer une fraction",
+		"description": "Une fraction décimale (jusqu'aux millièmes) en une somme d'un entier et d'une fraction décimale inférieure à $1$",
+		"variations": [
+			{
+				"statement": "Décompose cette fraction en une somme d'un entier et d'une fraction décimale inférieure à $1$, comme dans l'exemple :\n\n$$3456/1000 = 3 + 456/1000$$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "10|100|1000"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b+c}}/{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:a*b+c}}}{{{a}}} &= \\dfrac{{{eval:a*b}}}{{{a}}} + \\dfrac{{{c}}}{{{a}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}+\\frac{{{c}}}{{{a}}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"reducedFractions": "off",
+				"spaces": "off"
+			}
+		},
+		"grades": ["CM2"],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Décomposition",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
+		"shared": {
+			"requiredForm": {
+				"pattern": "n:integer + p:integer / q:integer"
+			}
+		},
+		"testSpecs": [
+			{
+				"description": "millièmes, borne haute",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1000",
+					"b": "9",
+					"c": "999"
+				},
+				"answers": ["9+\\frac{999}{1000}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "dixièmes, borne basse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10",
+					"b": "2",
+					"c": "1"
+				},
+				"answers": ["2+\\frac{1}{10}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre inversé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1000",
+					"b": "3",
+					"c": "456"
+				},
+				"answers": ["\\frac{456}{1000}+3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "écriture décimale",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1000",
+					"b": "3",
+					"c": "456"
+				},
+				"answers": ["3.456"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "somme de deux fractions",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1000",
+					"b": "3",
+					"c": "456"
+				},
+				"answers": ["\\frac{3000}{1000}+\\frac{456}{1000}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "mauvais reste",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1000",
+					"b": "3",
+					"c": "456"
+				},
+				"answers": ["3+\\frac{456}{100}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}
