@@ -331,16 +331,25 @@ function detectQuestionType(oldQuestion: QuestionBase): string {
 // ============================================================================
 
 /**
- * Convert a 1-based number to a letter name (Excel column style)
- * 1→a, 2→b, ..., 26→z, 27→aa, 28→ab, etc.
+ * Lettres des noms de variables : l'alphabet SANS `e` ni `i`.
+ *
+ * L'évaluateur lit `e` comme la constante d'Euler et `i` comme l'unité
+ * imaginaire : une variable ainsi nommée n'était pas remplacée dans un calcul
+ * (`eval:e+1` avec e = 3 donnait 3,718…, et `10^e` faisait boucler le calcul).
+ */
+const VARIABLE_LETTERS = 'abcdfghjklmnopqrstuvwxyz';
+
+/**
+ * Convert a 1-based number to a letter name (Excel column style, sans e ni i)
+ * 1→a, 2→b, 3→c, 4→d, 5→f, 6→g, 7→h, 8→j, …, 24→z, 25→aa, etc.
  */
 export function numberToLetterName(num: number): string {
 	let result = '';
 	let n = num;
 	while (n > 0) {
 		n--; // Adjust for 0-based indexing
-		result = String.fromCharCode(97 + (n % 26)) + result;
-		n = Math.floor(n / 26);
+		result = VARIABLE_LETTERS[n % VARIABLE_LETTERS.length] + result;
+		n = Math.floor(n / VARIABLE_LETTERS.length);
 	}
 	return result;
 }

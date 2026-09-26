@@ -115,13 +115,13 @@ describe('Placeholder Converter', () => {
 		it('should convert single digit variables to letters', () => {
 			expectConversion('&1', '{{a}}');
 			expectConversion('&2', '{{b}}');
-			expectConversion('&9', '{{i}}');
+			expectConversion('&9', '{{k}}'); // sans e ni i
 		});
 
 		it('should convert multi-digit variables to letters', () => {
-			expectConversion('&10', '{{j}}');
-			expectConversion('&99', '{{cu}}');
-			expectConversion('&123', '{{ds}}');
+			expectConversion('&10', '{{l}}');
+			expectConversion('&99', '{{dc}}');
+			expectConversion('&123', '{{fc}}');
 		});
 
 		it('should handle multiple numbered variables', () => {
@@ -241,7 +241,7 @@ describe('Placeholder Converter', () => {
 			expect(convertSinglePlaceholder('&expression')).toBe('{{expression}}');
 			expect(convertSinglePlaceholder('&exp')).toBe('{{expression:raw}}');
 			expect(convertSinglePlaceholder('&1')).toBe('{{a}}');
-			expect(convertSinglePlaceholder('&42')).toBe('{{ap}}');
+			expect(convertSinglePlaceholder('&42')).toBe('{{at}}');
 			expect(convertSinglePlaceholder('${get(color1)}')).toBe('{{color:color1}}');
 			expect(convertSinglePlaceholder('${myColor}')).toBe('{{color:myColor}}');
 		});

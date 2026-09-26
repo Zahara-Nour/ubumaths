@@ -287,8 +287,8 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should convert numeric variable references', () => {
 			expectConversion('&1', '{{a}}');
 			expectConversion('&2', '{{b}}');
-			expectConversion('&10', '{{j}}');
-			expectConversion('&999', '{{alk}}');
+			expectConversion('&10', '{{l}}'); // sans e ni i
+			expectConversion('&999', '{{asq}}');
 		});
 
 		it('should convert named variable references', () => {
@@ -802,7 +802,7 @@ describe('TinyCAS Syntax Converter', () => {
 		});
 
 		it('should preserve mathematical operators', () => {
-			expectConversion('&1 + &2 - &3 × &4 ÷ &5', '{{a}} + {{b}} - {{c}} × {{d}} ÷ {{e}}');
+			expectConversion('&1 + &2 - &3 × &4 ÷ &5', '{{a}} + {{b}} - {{c}} × {{d}} ÷ {{f}}');
 		});
 	});
 
@@ -836,8 +836,8 @@ describe('TinyCAS Syntax Converter', () => {
 
 	describe('21. Ternary Operator Tests', () => {
 		it('should convert simple comparison ternary', () => {
-			expectConversion('&5<&6 ?? 0 :: 1', '{{if:e<f|0|1}}');
-			expectConversion('&7<&8 ?? 0 :: 1', '{{if:g<h|0|1}}');
+			expectConversion('&5<&6 ?? 0 :: 1', '{{if:f<g|0|1}}');
+			expectConversion('&7<&8 ?? 0 :: 1', '{{if:h<j|0|1}}');
 		});
 
 		it('should convert equality ternary', () => {
