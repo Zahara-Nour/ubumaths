@@ -155,9 +155,19 @@ Après relecture (`code-reviewer`) :
 - Défaut connu (prod, hors PR) : deux `$$…$$` sur une même ligne séparés par du texte → texte abîmé
   (« et » → `\exponentialE t`).
 
+## Défauts récurrents du convertisseur — LIVRÉS (#470, #471, 2026-09-26)
+
+- #470 : réponse `p/q` → `\dfrac` ; tirages composés (`$e[1;9]*10+$e[1;9]`, `$e[1;5]*10`, `2*$e{3}`)
+  → variables auxiliaires ; exclusions `\{…}` (relatif, liste, n chiffres) ; `<b>`, `[°…°]` ; aide HTML
+  non recopiée ; formules `$$…$$`/`$…$` en une passe (« et » → `\exponentialE t` corrigé en prod).
+- #471 (décision de David, option 1) : `{{if:…}}` sur les variables tirées résolu à la génération ;
+  condition sur la réponse de l'élève laissée intacte ; texte sans marqueur plus déformé (« On 7
+  multiplié ») ; conditions TinyMath `pgcd`→`gcd`, `;`→`,`.
+- Corpus : 515 → 524/633 génèrent ; plus aucun `{{if:…}}` brut ; base (136) inchangée.
+- Restent connus : `\dfrac{-3}{4}` attendu (variable négative) jugé perfectible ; calcul avec une lettre
+  tirée (#532 `[_&3&4_]`) ; `$ers[…]` ; aucun code navigateur ne résout `{{if:isCorrect…}}` ;
+  #360/#439 (empreinte partagée) en attente de David.
+
 ## Prochaine étape
 
-Défauts récurrents restants du convertisseur (rapport Fractions) : fraction attendue `p/q` au lieu de
-`\frac{p}{q}` ; `$e[..]*k+$e[..]` qui tire des décimaux ; exclusion `;+-\{…}` perdue ; `{{if:…}}` à
-accolades ; `[°…°]`, `<b>`, `{{solution:html}}` dans les corrections ; `help` HTML recopié ;
-`\frac{-a}{b}` attendu jugé perfectible. Puis lots suivants (fin d'Entiers…).
+Lot suivant de la relecture (fin d'Entiers, Décimaux…) : même méthode, rapport, import en brouillon.
