@@ -8,10 +8,17 @@
   nommé `rulesSuffice`. La correction affichée à l'élève (« une réponse possible ») est dans la
   même PR.
 
+- 2026-09-26 — Phase 0 validée :
+  1. **Lot pilote : Relatifs** (36 questions, 5e-4e).
+  2. **Import en brouillon après le feu vert de David sur chaque lot** (pas au fil de l'eau).
+  3. **Marqueur « relu par Claude »** : `reviewed_by` = David, `conversion_notes` commence par
+     « Relu par Claude le … ».
+  4. **Scripts dangereux** (`migration:import`, `validate-phase1-questions`) : passés en
+     **simulation par défaut**, écriture seulement avec `--publier`.
+
 ## Phase 0 — spécification
 
-Présentée le 2026-09-26. Points encore ouverts : lot pilote, rythme d'import, marqueur
-« relu par Claude », sort des scripts dangereux.
+Présentée et validée le 2026-09-26 (cf. décisions ci-dessus).
 
 ## Chantier en cours : `fix/regle-suffit`
 
