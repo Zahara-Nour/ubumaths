@@ -66,7 +66,7 @@ import {
 	normalizeRandomRange,
 	toBareVariableSyntax
 } from './syntax-converter';
-import { convertPlaceholders } from './placeholder-converter';
+import { convertPlaceholders, convertSolutionPlaceholders } from './placeholder-converter';
 import { convertConditionals } from './conditional-converter';
 import { QUESTION_IMAGES_BUCKET } from '$lib/questions/constants';
 // Note: No AsciiMath→LaTeX conversion here. Variables use custom mathAST syntax.
@@ -845,8 +845,9 @@ function convertChoices(
  * Apply all legacy syntax conversions to a text string
  *
  * Conversion order:
+ * 0. Solution placeholders (&solution, &sol, &solN) — avant TinyCAS
  * 1. TinyCAS syntax (variable references, evaluations)
- * 2. Placeholder syntax (&sol, &answer, &expression, etc.)
+ * 2. Other placeholders (&answer, &expression, etc.)
  * 3. Conditional syntax (@@condition ?? text@@)
  *
  * @param text - The text to convert
@@ -856,20 +857,24 @@ function convertChoices(
 function convertLegacySyntax(text: string, warnings: string[]): string {
 	if (!text) return text;
 
-	// Step 1: Convert TinyCAS syntax
-	const casResult = convertTinyCASToNew(text);
-	let converted = text;
+	// Step 0: marqueurs de SOLUTION (&solution, &sol, &solN) avant la syntaxe
+	// TinyCAS, qui ferait de `&sol1` une variable `{{sol1}}` inexistante
+	const withPlaceholders = convertSolutionPlaceholders(text);
+
+	// Step 2: Convert TinyCAS syntax
+	const casResult = convertTinyCASToNew(withPlaceholders);
+	let converted = withPlaceholders;
 
 	if (!casResult.success) {
 		warnings.push(`TinyCAS conversion warning: ${casResult.errors?.join(', ')}`);
 	} else {
-		converted = casResult.converted || text;
+		converted = casResult.converted || withPlaceholders;
 		if (casResult.warnings) {
 			warnings.push(...casResult.warnings.map((w) => `TinyCAS: ${w}`));
 		}
 	}
 
-	// Step 2: Convert placeholder syntax (&sol, &answer, etc.)
+	// Step 2b: Convert placeholder syntax (&answer, &expression, etc.)
 	const placeholderResult = convertPlaceholders(converted);
 	converted = placeholderResult.converted;
 

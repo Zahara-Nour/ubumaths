@@ -98,3 +98,5 @@ Après relecture (`code-reviewer`) :
 - `check:incremental` refuse de tourner quand Supabase local est démarré (RAM) : `db:stop` d'abord.
 - `rollback-migration` (existant) ne relit ni le delete ni l'update et `--all` supprimerait aussi les
   brouillons de la relecture : ne pas l'utiliser pour eux.
+- `&solution` (→ `{{solution:html}}`) est rendu HORS formule (« est 1.5 ») : vérifier au rendu
+  que l'élève voit « 1,5 » (notation décimale) — repéré sur #260.
