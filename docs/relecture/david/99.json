@@ -1,0 +1,106 @@
+{
+	"globalIndex": 99,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-04-12T06:21:24.395+00:00",
+	"template": {
+		"delay": 15,
+		"level": 4,
+		"theme": "Entiers",
+		"title": "Calculer une différence (résultat positif)",
+		"domain": "Soustraire",
+		"grades": ["CE1"],
+		"status": "draft",
+		"subdomain": "Différence",
+		"testSpecs": [
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+8-5"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["08"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8"
+				},
+				"description": "unoptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:11-a}}..9"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval:a+b}}-{{a}}"
+					}
+				]
+			}
+		],
+		"description": "Une dizaine et un nombre à un chiffre (avec franchissement de la dizaine)",
+		"exerciseInstruction": "Calcule."
+	}
+}

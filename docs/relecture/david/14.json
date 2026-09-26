@@ -1,0 +1,139 @@
+{
+	"globalIndex": 14,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-03-09T11:46:59.533+00:00",
+	"template": {
+		"delay": 20,
+		"level": 6,
+		"theme": "Entiers",
+		"title": "Décomposer l'écriture décimale un nombre",
+		"domain": "Apprivoiser",
+		"grades": ["CE2"],
+		"status": "draft",
+		"subdomain": "Décomposition",
+		"testSpecs": [
+			{
+				"answers": ["1\\,000+200+30+4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "reponse correcte",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1000+200+30+4"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "reponse correcte mais mauvaise écriture des nombres (epsaces)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,000+4+200+30"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "reponse correcte avec permutation des termes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,234"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "reponse sous mauvaise forme (écriture correcte)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1234"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form", "spaces"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "reponse sous mauvaise forme (écriture incorrecte des nombres - espaces)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\times1000+2\\times100+3\\times10+4"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form", "spaces", "factorOne"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "reponse sous mauvaise forme (somme de produits)",
+				"variationIndex": 0
+			}
+		],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000}}+{{eval:b*100}}+{{eval:c*10}}+{{d}}"
+					}
+				],
+				"statement": "Décompose ce nombre comme dans cet exemple :\n$$2345 = 2000+ 300 + 40 + 5$$\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*1000+b*100+c*10+d"
+					}
+				]
+			}
+		],
+		"description": "En milliers, centaines, dizaines et unités"
+	}
+}

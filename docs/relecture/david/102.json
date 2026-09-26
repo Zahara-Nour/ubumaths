@@ -1,0 +1,124 @@
+{
+	"globalIndex": 102,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-04-12T16:42:39.703+00:00",
+	"template": {
+		"delay": 15,
+		"level": 7,
+		"theme": "Entiers",
+		"title": "Calculer une différence (résultat positif)",
+		"domain": "Soustraire",
+		"grades": ["CE1"],
+		"status": "draft",
+		"subdomain": "Différence",
+		"testSpecs": [
+			{
+				"answers": ["565"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "5",
+					"d": "2"
+				},
+				"description": "corect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["65"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "5",
+					"d": "2"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0\\,565"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "5",
+					"d": "2"
+				},
+				"description": "unoptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["765-200"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "5",
+					"d": "2"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "5",
+					"d": "2"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*100 + b*10 + c}}  - {{eval:d*100}}"
+					}
+				]
+			}
+		],
+		"description": "  Soustraire des centaines entières à un nombre",
+		"exerciseInstruction": "Calcule."
+	}
+}

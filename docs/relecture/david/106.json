@@ -1,0 +1,142 @@
+{
+	"globalIndex": 106,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-04-12T20:23:47.774+00:00",
+	"template": {
+		"delay": 20,
+		"level": 11,
+		"theme": "Entiers",
+		"title": "Calculer une différence (résultat positif)",
+		"domain": "Soustraire",
+		"grades": ["CM1"],
+		"status": "draft",
+		"subdomain": "Différence",
+		"testSpecs": [
+			{
+				"answers": ["229"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "2",
+					"c": "7",
+					"d": "2",
+					"f": "5",
+					"g": "6"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["22"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "2",
+					"c": "7",
+					"d": "2",
+					"f": "5",
+					"g": "6"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["229,0"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "2",
+					"c": "7",
+					"d": "2",
+					"f": "5",
+					"g": "6"
+				},
+				"description": "unomptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["456-227"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "2",
+					"c": "7",
+					"d": "2",
+					"f": "5",
+					"g": "6"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "4",
+					"b": "2",
+					"c": "7",
+					"d": "2",
+					"f": "5",
+					"g": "6"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "g",
+						"expression": "1..{{eval:c-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*100 + f*10 + g}}  - {{eval: d*100 + b*10 + c}} "
+					}
+				]
+			}
+		],
+		"description": "Nombres à $3$ chiffres (avec retenue)",
+		"exerciseInstruction": "Calcule."
+	}
+}

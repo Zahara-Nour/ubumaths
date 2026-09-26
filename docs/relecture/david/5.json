@@ -1,0 +1,96 @@
+{
+	"globalIndex": 5,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-02-20T07:58:08.359+00:00",
+	"template": {
+		"delay": 30,
+		"level": 6,
+		"theme": "Entiers",
+		"title": "Ecrire un grand nombre entier avec des espaces",
+		"domain": "Apprivoiser",
+		"grades": ["CM1"],
+		"status": "draft",
+		"options": {
+			"constraints": {
+				"spaces": "strict"
+			}
+		},
+		"subdomain": "Ecriture",
+		"variations": [
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"removeSpaces": true,
+						"expectedAnswer": "expression"
+					}
+				],
+				"statement": "Réécris en espaçant correctement les chiffres.\n\n$$?$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "4..7"
+					},
+					{
+						"name": "expression",
+						"expression": "digits:a"
+					}
+				]
+			}
+		],
+		"description": "Jusqu'à 7 chiffres",
+		"testSpecs": [
+			{
+				"description": "7 chiffres bien espacés",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"expression": "1234567"
+				},
+				"answers": ["1\\,234\\,567"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 chiffres sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"expression": "1234567"
+				},
+				"answers": ["1234567"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "form"]
+				}
+			},
+			{
+				"description": "4 chiffres (borne basse)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"expression": "1234"
+				},
+				"answers": ["1\\,234"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "4 chiffres sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"expression": "1234"
+				},
+				"answers": ["1234"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "form"]
+				}
+			}
+		]
+	}
+}

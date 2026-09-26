@@ -1,0 +1,143 @@
+{
+	"globalIndex": 10,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-02-24T07:12:27.365+00:00",
+	"template": {
+		"delay": 20,
+		"level": 2,
+		"theme": "Entiers",
+		"title": "Décomposition décimale -> nombre entier (jusqu'aux centaines)",
+		"domain": "Apprivoiser",
+		"grades": ["CE1"],
+		"status": "draft",
+		"subdomain": "Décomposition",
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "Réécris cette expression sous la forme d'un nombre entier.\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression",
+						"expression": "(a*100) +  (b*10) + c",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"conditions": ["a+b+c>=2"]
+			}
+		],
+		"testSpecs": [
+			{
+				"description": "(3×100)+7 = 307",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "7"
+				},
+				"answers": ["307"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oublie le zéro des dizaines",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "7"
+				},
+				"answers": ["37"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "laisse une somme",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "7"
+				},
+				"answers": ["300+7"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "(4×10)+2 = 42",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0",
+					"b": "4",
+					"c": "2"
+				},
+				"answers": ["42"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ajoute un zéro de trop",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0",
+					"b": "4",
+					"c": "2"
+				},
+				"answers": ["402"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "zéro de tête inutile",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0",
+					"b": "4",
+					"c": "2"
+				},
+				"answers": ["042"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			},
+			{
+				"description": "(5×100)+(6×10) = 560",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "6",
+					"c": "0"
+				},
+				"answers": ["560"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

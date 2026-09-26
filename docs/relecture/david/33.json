@@ -1,0 +1,97 @@
+{
+	"globalIndex": 33,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-04-18T13:46:04.36+00:00",
+	"template": {
+		"delay": 15,
+		"level": 9,
+		"theme": "Entiers",
+		"title": "Table d'addition'",
+		"domain": "Additionner",
+		"grades": ["CP"],
+		"status": "draft",
+		"subdomain": "Tables",
+		"testSpecs": [
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10,0"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "unoptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9+1"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression",
+						"expression": "a+9"
+					}
+				]
+			}
+		],
+		"description": "de 9",
+		"exerciseInstruction": "Calcule."
+	}
+}

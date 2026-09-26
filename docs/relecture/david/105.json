@@ -1,0 +1,124 @@
+{
+	"globalIndex": 105,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-04-12T20:12:28.068+00:00",
+	"template": {
+		"delay": 15,
+		"level": 10,
+		"theme": "Entiers",
+		"title": "Calculer une différence (résultat positif)",
+		"domain": "Soustraire",
+		"grades": ["CE2"],
+		"status": "draft",
+		"subdomain": "Différence",
+		"testSpecs": [
+			{
+				"answers": ["28"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "1",
+					"d": "5"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["27"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "1",
+					"d": "5"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["028"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "1",
+					"d": "5"
+				},
+				"description": "unoptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["45-17"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "1",
+					"d": "5"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "1",
+					"d": "5"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*10 + d}}  - {{eval: c*10 + b}}"
+					}
+				]
+			}
+		],
+		"description": "Nombres à $2$ chiffres (avec retenue)",
+		"exerciseInstruction": "Calcule."
+	}
+}

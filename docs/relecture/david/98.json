@@ -1,0 +1,115 @@
+{
+	"globalIndex": 98,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-04-11T16:51:42.037+00:00",
+	"template": {
+		"delay": 10,
+		"level": 3,
+		"theme": "Entiers",
+		"title": "Calculer une différence (résultat positif)",
+		"domain": "Soustraire",
+		"grades": ["CP"],
+		"status": "draft",
+		"subdomain": "Différence",
+		"testSpecs": [
+			{
+				"answers": ["32"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["33"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["72-40"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["032"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "unoptimal form (zeros)",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval:b*10+c}}-{{eval:a*10}}"
+					}
+				]
+			}
+		],
+		"description": "Soustraire des dizaines entières à un nombre",
+		"exerciseInstruction": "Calcule."
+	}
+}

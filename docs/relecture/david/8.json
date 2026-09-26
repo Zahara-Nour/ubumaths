@@ -1,0 +1,121 @@
+{
+	"globalIndex": 8,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-02-21T09:16:05.735+00:00",
+	"template": {
+		"delay": 30,
+		"level": 9,
+		"theme": "Entiers",
+		"title": "Enigme pour trouver un nombre",
+		"domain": "Apprivoiser",
+		"grades": ["CM2"],
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..9"
+				}
+			]
+		},
+		"status": "draft",
+		"subdomain": "Ecriture",
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*21}}"
+					}
+				],
+				"statement": "Je suis un nombre à 3 chiffres. Mon **chiffre des unités** est ${{a}}$. Le **nombre de mes dizaines** est le double du **chiffre des unités**. Qui suis-je ?\n\nJe suis le nombre $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*31}}"
+					}
+				],
+				"statement": "Je suis un nombre à 3 chiffres. Mon **chiffre des unités** est ${{a}}$. Le **nombre de mes dizaines** est le triple du **chiffre des unités**. Qui suis-je ?\n\nJe suis le nombre $?$."
+			}
+		],
+		"testSpecs": [
+			{
+				"description": "unités 5, 10 dizaines → 105",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["105"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "confond nombre et chiffre des dizaines (10 collé à 25)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["1025"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "prend le chiffre des dizaines = 2×5 mal placé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["15"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "borne haute : 189",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["189"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "unités 5, 15 dizaines → 155",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["155"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "concatène 15 et 35",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["1535"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "borne haute : 279",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["279"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

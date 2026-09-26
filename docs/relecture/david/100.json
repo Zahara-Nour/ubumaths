@@ -1,0 +1,115 @@
+{
+	"globalIndex": 100,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-04-12T06:31:03.85+00:00",
+	"template": {
+		"delay": 15,
+		"level": 5,
+		"theme": "Entiers",
+		"title": "Calculer une différence (résultat positif)",
+		"domain": "Soustraire",
+		"grades": ["CE1"],
+		"status": "draft",
+		"subdomain": "Différence",
+		"testSpecs": [
+			{
+				"answers": ["38"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["45-7"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["38,0"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"description": "unoptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:b+1}}..9"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval:a*10+b}}-{{c}}"
+					}
+				]
+			}
+		],
+		"description": "Soustraire un nombre à un chiffre à un nombre à deux chiffres, avec franchissement de la dizaine",
+		"exerciseInstruction": "Calcule."
+	}
+}

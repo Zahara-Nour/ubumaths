@@ -1,0 +1,525 @@
+{
+	"globalIndex": 104,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-04-12T17:08:53.402+00:00",
+	"template": {
+		"delay": 15,
+		"level": 9,
+		"theme": "Entiers",
+		"title": "Calculer une différence (résultat positif)",
+		"domain": "Soustraire",
+		"grades": ["CE2"],
+		"status": "draft",
+		"subdomain": "Différence",
+		"testSpecs": [
+			{
+				"answers": ["676"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "6",
+					"d": "2"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["76"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "6",
+					"d": "2"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0\\,676"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "6",
+					"d": "2"
+				},
+				"description": "unoptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["876-200"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "6",
+					"d": "2"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "6",
+					"d": "2"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			},
+			{
+				"description": "v2 correct : 345 - 70 = 275",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "7"
+				},
+				"answers": ["275"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 erreur typique : chiffre retranché au plus petit sans retenue (375)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "7"
+				},
+				"answers": ["375"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v2 erreur : 7 unités retranchées au lieu de 7 dizaines (338)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "7"
+				},
+				"answers": ["338"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v2 borne : 100 - 90 = 10",
+				"variationIndex": 1,
+				"variables": {
+					"a": "1",
+					"b": "0",
+					"c": "0",
+					"d": "9"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 zéro inutile : 0\\,275",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "7"
+				},
+				"answers": ["0\\,275"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			},
+			{
+				"description": "v3 correct : 5038 - 4000 = 1\\,038",
+				"variationIndex": 2,
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "3",
+					"d": "8",
+					"f": "4"
+				},
+				"answers": ["1\\,038"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 sans espace des milliers : 1038",
+				"variationIndex": 2,
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "3",
+					"d": "8",
+					"f": "4"
+				},
+				"answers": ["1038"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "v3 erreur : chiffres permutés (1\\,380)",
+				"variationIndex": 2,
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "3",
+					"d": "8",
+					"f": "4"
+				},
+				"answers": ["1\\,380"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v3 borne : 2000 - 1000 = 1\\,000",
+				"variationIndex": 2,
+				"variables": {
+					"a": "2",
+					"b": "0",
+					"c": "0",
+					"d": "0",
+					"f": "1"
+				},
+				"answers": ["1\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 correct : 3241 - 700 = 2\\,541",
+				"variationIndex": 3,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "4",
+					"d": "1",
+					"f": "7"
+				},
+				"answers": ["2\\,541"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 erreur : 7 dizaines retranchées au lieu de 7 centaines (3\\,171)",
+				"variationIndex": 3,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "4",
+					"d": "1",
+					"f": "7"
+				},
+				"answers": ["3\\,171"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v4 borne : 1000 - 900 = 100",
+				"variationIndex": 3,
+				"variables": {
+					"a": "1",
+					"b": "0",
+					"c": "0",
+					"d": "0",
+					"f": "9"
+				},
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 zéro inutile : 0\\,100",
+				"variationIndex": 3,
+				"variables": {
+					"a": "1",
+					"b": "0",
+					"c": "0",
+					"d": "0",
+					"f": "9"
+				},
+				"answers": ["0\\,100"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			},
+			{
+				"description": "v5 correct : 4567 - 30 = 4\\,537",
+				"variationIndex": 4,
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "6",
+					"d": "7",
+					"f": "3"
+				},
+				"answers": ["4\\,537"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5 erreur : 3 unités retranchées au lieu de 3 dizaines (4\\,564)",
+				"variationIndex": 4,
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "6",
+					"d": "7",
+					"f": "3"
+				},
+				"answers": ["4\\,564"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v5 sans espace des milliers : 4537",
+				"variationIndex": 4,
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "6",
+					"d": "7",
+					"f": "3"
+				},
+				"answers": ["4537"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "v5 borne : 1000 - 90 = 910",
+				"variationIndex": 4,
+				"variables": {
+					"a": "1",
+					"b": "0",
+					"c": "0",
+					"d": "0",
+					"f": "9"
+				},
+				"answers": ["910"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5 erreur : 1\\,090 (retenue oubliée)",
+				"variationIndex": 4,
+				"variables": {
+					"a": "1",
+					"b": "0",
+					"c": "0",
+					"d": "0",
+					"f": "9"
+				},
+				"answers": ["1\\,090"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*100 + b*10 + c}}  - {{eval:d*100}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*100 + b*10 + c}}  - {{eval:d*10}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*1000 + b*100 + c*10 + d}}  - {{eval:f*1000}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*1000 + b*100 + c*10 + d}}  - {{eval:f*100}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*1000 + b*100 + c*10 + d}}  - {{eval:f*10}}"
+					}
+				]
+			}
+		],
+		"description": "Soustraire des dizaines entières, des centaines entières ou des milliers entiers à un nombre",
+		"exerciseInstruction": "Calcule."
+	}
+}

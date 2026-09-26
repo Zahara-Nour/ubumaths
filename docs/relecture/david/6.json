@@ -1,0 +1,365 @@
+{
+	"globalIndex": 6,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-02-21T09:01:07.798+00:00",
+	"template": {
+		"delay": 20,
+		"level": 7,
+		"theme": "Entiers",
+		"title": "Ecrire un grand nombre entier sans les zéros inutiles",
+		"domain": "Apprivoiser",
+		"grades": ["CM1"],
+		"shared": {
+			"statement": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0|1..9"
+				},
+				{
+					"name": "c",
+					"expression": "0|1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				}
+			]
+		},
+		"status": "draft",
+		"options": {
+			"constraints": {
+				"zeros": "strict"
+			}
+		},
+		"subdomain": "Ecriture",
+		"variations": [
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "",
+				"variables": [
+					{
+						"name": "expression",
+						"expression": "00{{a}}{{b}}{{c}}{{d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "",
+				"variables": [
+					{
+						"name": "expression",
+						"expression": "00{{a}}{{b}}{{c}}{{d}}0"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "",
+				"variables": [
+					{
+						"name": "expression",
+						"expression": "00{{a}}{{b}}{{c}}{{d}}00"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "",
+				"variables": [
+					{
+						"name": "expression",
+						"expression": "00{{a}}{{b}}{{c}}{{d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "",
+				"variables": [
+					{
+						"name": "expression",
+						"expression": "00{{a}}{{b}}{{c}}{{d}}0"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "",
+				"variables": [
+					{
+						"name": "expression",
+						"expression": "00{{a}}{{b}}{{c}}{{d}}00"
+					}
+				]
+			}
+		],
+		"testSpecs": [
+			{
+				"description": "003045 → 3 045",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"answers": ["3\\,045"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "zéros de tête conservés",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"answers": ["003\\,045"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["zeros", "form"]
+				}
+			},
+			{
+				"description": "zéro intérieur supprimé à tort",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"answers": ["345"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "zéros enlevés mais sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"answers": ["3045"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "0030450 → 30 450",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"answers": ["30\\,450"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "zéro final supprimé à tort",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"answers": ["3\\,045"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "zéros de tête conservés",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"answers": ["0030\\,450"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["zeros", "form"]
+				}
+			},
+			{
+				"description": "00304500 → 304 500",
+				"variationIndex": 2,
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"answers": ["304\\,500"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "zéros finaux supprimés à tort",
+				"variationIndex": 2,
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"answers": ["3\\,045"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "zéros de tête conservés",
+				"variationIndex": 2,
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"answers": ["00304\\,500"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["zeros", "form"]
+				}
+			},
+			{
+				"description": "001001 → 1 001 (zéros intérieurs)",
+				"variationIndex": 3,
+				"variables": {
+					"a": "1",
+					"b": "0",
+					"c": "0",
+					"d": "1"
+				},
+				"answers": ["1\\,001"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "zéros intérieurs supprimés à tort",
+				"variationIndex": 3,
+				"variables": {
+					"a": "1",
+					"b": "0",
+					"c": "0",
+					"d": "1"
+				},
+				"answers": ["11"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "0099990 → 99 990",
+				"variationIndex": 4,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "9",
+					"d": "9"
+				},
+				"answers": ["99\\,990"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "zéro final supprimé à tort",
+				"variationIndex": 4,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "9",
+					"d": "9"
+				},
+				"answers": ["9\\,999"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "00999900 → 999 900",
+				"variationIndex": 5,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "9",
+					"d": "9"
+				},
+				"answers": ["999\\,900"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "zéros de tête conservés",
+				"variationIndex": 5,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "9",
+					"d": "9"
+				},
+				"answers": ["00999\\,900"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["zeros", "form"]
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,112 @@
+{
+	"globalIndex": 13,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-03-09T08:41:24.907+00:00",
+	"template": {
+		"delay": 20,
+		"level": 5,
+		"theme": "Entiers",
+		"title": "Décomposition décimale -> nombre entier (jusqu'aux milliers)",
+		"domain": "Apprivoiser",
+		"grades": ["CE2"],
+		"status": "draft",
+		"subdomain": "Décomposition",
+		"testSpecs": [
+			{
+				"answers": ["1234"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse correcte mal formatée (manque espace)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,234"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse correcte bien formatée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,234,0"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse correcte avec partie décimale inutile",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,000+200+30+4"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse sous forme incorrecte",
+				"variationIndex": 0
+			}
+		],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "Réécris cette expression sous la forme d'un nombre entier.\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression",
+						"expression": "(a*1000) +  (b*100) + (c*10) + d",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				]
+			}
+		]
+	}
+}

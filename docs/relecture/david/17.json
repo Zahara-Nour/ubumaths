@@ -1,0 +1,104 @@
+{
+	"globalIndex": 17,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-03-09T14:37:40.736+00:00",
+	"template": {
+		"delay": 20,
+		"level": 9,
+		"theme": "Entiers",
+		"title": "Décomposition décimale -> nombre entier",
+		"domain": "Apprivoiser",
+		"grades": ["CM1"],
+		"status": "draft",
+		"subdomain": "Décomposition",
+		"testSpecs": [
+			{
+				"answers": ["12\\,345"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"e": "5"
+				},
+				"description": "Réponse correcte",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"e": "5"
+				},
+				"description": "Réponse vide",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12\\,346"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"e": "5"
+				},
+				"description": "Réponse incorrecte",
+				"variationIndex": 0
+			}
+		],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "Réécris cette expression sous la forme d'un nombre entier.\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "e",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression",
+						"expression": "(a*10000) +  (b*1000) + (c*100) + (d*10) + e",
+						"displayOptions": {
+							"shuffleTerms": true,
+							"removeNullTerms": true
+						}
+					}
+				]
+			}
+		],
+		"description": "Termes mélangés"
+	}
+}

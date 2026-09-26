@@ -1,0 +1,109 @@
+{
+	"globalIndex": 4,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-02-19T05:54:59.553+00:00",
+	"template": {
+		"delay": 15,
+		"level": 5,
+		"theme": "Entiers",
+		"title": "Ecrire un grand nombre entier avec des espaces",
+		"domain": "Apprivoiser",
+		"grades": ["CE2"],
+		"status": "draft",
+		"options": {
+			"constraints": {
+				"spaces": "strict"
+			}
+		},
+		"subdomain": "Ecriture",
+		"variations": [
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"expectedAnswer": "expression"
+					}
+				],
+				"statement": "Réécris en espaçant correctement les chiffres.\n\n$$?$$",
+				"variables": [
+					{
+						"name": "expression",
+						"expression": "1000..9999"
+					}
+				]
+			}
+		],
+		"description": "Nombre à 4 chiffres",
+		"testSpecs": [
+			{
+				"description": "3456 bien espacé",
+				"variationIndex": 0,
+				"variables": {
+					"expression": "3456"
+				},
+				"answers": ["3\\,456"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3456 avec espace ordinaire",
+				"variationIndex": 0,
+				"variables": {
+					"expression": "3456"
+				},
+				"answers": ["3 456"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3456 recopié sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"expression": "3456"
+				},
+				"answers": ["3456"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "form"]
+				}
+			},
+			{
+				"description": "chiffre modifié",
+				"variationIndex": 0,
+				"variables": {
+					"expression": "3456"
+				},
+				"answers": ["3\\,457"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "1000 (borne basse)",
+				"variationIndex": 0,
+				"variables": {
+					"expression": "1000"
+				},
+				"answers": ["1\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "1000 sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"expression": "1000"
+				},
+				"answers": ["1000"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "form"]
+				}
+			}
+		]
+	}
+}

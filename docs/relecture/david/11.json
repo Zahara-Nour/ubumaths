@@ -1,0 +1,127 @@
+{
+	"globalIndex": 11,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-02-24T22:32:54.091+00:00",
+	"template": {
+		"delay": 20,
+		"level": 3,
+		"theme": "Entiers",
+		"title": "Décomposer l'écriture décimale un nombre",
+		"domain": "Apprivoiser",
+		"grades": ["CE1"],
+		"status": "draft",
+		"subdomain": "Décomposition",
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100}}+{{eval:b*10}}+{{c}}"
+					}
+				],
+				"statement": "Décompose ce nombre en centaines, dizaines et unités comme dans l'exemple :\n$$235=200+30+5$$\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*100+b*10+c"
+					}
+				]
+			}
+		],
+		"description": "En centaines, dizaines et unités",
+		"testSpecs": [
+			{
+				"description": "235 = 200+30+5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "5"
+				},
+				"answers": ["200+30+5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre inversé accepté",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "5"
+				},
+				"answers": ["5+30+200"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "additionne les chiffres",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "5"
+				},
+				"answers": ["2+3+5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "nombre recopié",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "5"
+				},
+				"answers": ["235"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "décomposition non canonique",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "5"
+				},
+				"answers": ["100+130+5"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "borne : 999",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["900+90+9"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

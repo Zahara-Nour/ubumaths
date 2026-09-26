@@ -1,0 +1,123 @@
+{
+	"globalIndex": 19,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-03-09T19:56:49.498+00:00",
+	"template": {
+		"delay": 50,
+		"level": 11,
+		"theme": "Entiers",
+		"title": "Décomposer l'écriture décimale un nombre",
+		"domain": "Apprivoiser",
+		"grades": ["CM1"],
+		"status": "draft",
+		"options": {
+			"constraints": {
+				"brackets": "off",
+				"factorOne": "off"
+			}
+		},
+		"subdomain": "Décomposition",
+		"testSpecs": [
+			{
+				"answers": [
+					"\\left(1\\times10\\,000\\right)+\\left(2\\times1\\,000\\right)+\\left(3\\times100\\right)+\\left(4\\times10\\right)+5"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse correcte (avec parentheses)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\times10\\,000+2\\times1\\,000+3\\times100+4\\times10+5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse correcte (sans parentheses) ",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\times10\\,000+3\\times1\\,000+3\\times100+4\\times10+5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse incorrecte",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\times10\\,000+4\\times10+2\\times1\\,000+3\\times100+5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse correcte (sans parentheses)  - termes mélangés",
+				"variationIndex": 0
+			}
+		],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "({{a}}*10000) + ({{b}}*1000) + ({{c}}*100)+({{d}}*10)+{{n}}"
+					}
+				],
+				"statement": "Décompose ce nombre comme dans cet exemple :\n$$23456 = (2 * 10000) +(3 * 1000) + (4*100) +(5*10) + 6$$\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*10000 + b*1000 + c*100+d*10+n"
+					}
+				]
+			}
+		],
+		"description": "En dizaines de milliers, milliers, centaines, dizaines et unités, à l'aide de produits"
+	}
+}

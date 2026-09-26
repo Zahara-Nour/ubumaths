@@ -1,0 +1,151 @@
+{
+	"globalIndex": 103,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-04-12T16:55:45.204+00:00",
+	"template": {
+		"delay": 15,
+		"level": 8,
+		"theme": "Entiers",
+		"title": "Calculer une différence (résultat positif)",
+		"domain": "Soustraire",
+		"grades": ["CE1"],
+		"status": "draft",
+		"subdomain": "Différence",
+		"testSpecs": [
+			{
+				"answers": ["9\\,333"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "7",
+					"d": "6",
+					"f": "5",
+					"g": "4",
+					"h": "3"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9\\,331"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "7",
+					"d": "6",
+					"f": "5",
+					"g": "4",
+					"h": "3"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9333"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "7",
+					"d": "6",
+					"f": "5",
+					"g": "4",
+					"h": "3"
+				},
+				"description": "unoptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9\\,876-543"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "7",
+					"d": "6",
+					"f": "5",
+					"g": "4",
+					"h": "3"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "7",
+					"d": "6",
+					"f": "5",
+					"g": "4",
+					"h": "3"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "2..9"
+					},
+					{
+						"name": "f",
+						"expression": "0..{{eval:b-1}}"
+					},
+					{
+						"name": "g",
+						"expression": "0..{{eval:c-1}}"
+					},
+					{
+						"name": "h",
+						"expression": "1..{{eval:d-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*1000 + b*100 + c*10+d}}-{{eval: f*100 + g*10+h}}"
+					}
+				]
+			}
+		],
+		"description": "Soustraire un nombre d'au plus $3$ chiffres à un nombre à $4$ chiffres, sans retenue",
+		"exerciseInstruction": "Calcule."
+	}
+}

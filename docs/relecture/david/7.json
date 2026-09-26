@@ -1,0 +1,108 @@
+{
+	"globalIndex": 7,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-02-20T08:00:48.526+00:00",
+	"template": {
+		"delay": 30,
+		"level": 8,
+		"theme": "Entiers",
+		"title": "Ecrire un grand nombre entier avec des espaces",
+		"domain": "Apprivoiser",
+		"grades": ["CM2"],
+		"status": "draft",
+		"options": {
+			"constraints": {
+				"spaces": "strict"
+			}
+		},
+		"subdomain": "Ecriture",
+		"variations": [
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"removeSpaces": true,
+						"expectedAnswer": "expression"
+					}
+				],
+				"statement": "Réécris en espaçant correctement les chiffres.\n\n$$?$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "4..10"
+					},
+					{
+						"name": "expression",
+						"expression": "digits:a"
+					}
+				]
+			}
+		],
+		"description": "Jusqu'à 10 chiffres",
+		"testSpecs": [
+			{
+				"description": "10 chiffres bien espacés (borne haute)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10",
+					"expression": "1234567890"
+				},
+				"answers": ["1\\,234\\,567\\,890"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "10 chiffres sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10",
+					"expression": "1234567890"
+				},
+				"answers": ["1234567890"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "form"]
+				}
+			},
+			{
+				"description": "chiffre modifié",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10",
+					"expression": "1234567890"
+				},
+				"answers": ["1\\,234\\,567\\,891"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "4 chiffres (borne basse)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"expression": "5000"
+				},
+				"answers": ["5\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "4 chiffres sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"expression": "5000"
+				},
+				"answers": ["5000"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "form"]
+				}
+			}
+		]
+	}
+}

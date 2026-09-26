@@ -1,0 +1,116 @@
+{
+	"globalIndex": 18,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-03-09T17:56:20.306+00:00",
+	"template": {
+		"delay": 20,
+		"level": 10,
+		"theme": "Entiers",
+		"title": "Décomposer l'écriture décimale un nombre",
+		"domain": "Apprivoiser",
+		"grades": ["CM1"],
+		"status": "draft",
+		"subdomain": "Décomposition",
+		"testSpecs": [
+			{
+				"answers": ["10\\,000\\,+\\,2\\,000\\,+\\,300\\,+\\,40+5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse correcte",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10\\,000\\,+\\,2\\,000\\,+\\,300\\,+\\,40+6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse incorrecte",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10\\,000\\,+\\,5+2\\,000\\,+\\,300\\,+\\,40"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse correcte avec mélange des termes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12\\,345"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse incorrecte - mauvaise forme",
+				"variationIndex": 0
+			}
+		],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10000}}+{{eval:b*1000}}+{{eval:c*100}}+{{eval:d*10}}+{{n}}"
+					}
+				],
+				"statement": "Décompose ce nombre en dizaines de milliers, milliers, centaines, dizaines et unités, comme dans cet exemple :\n$$23456 = 20000 + 3000 + 400 + 50 + 6$$\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*10000+b*1000+c*100+d*10+n"
+					}
+				]
+			}
+		],
+		"description": "En dizaines de milliers, milliers, centaines, dizaines et unités"
+	}
+}

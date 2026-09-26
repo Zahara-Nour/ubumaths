@@ -1,0 +1,138 @@
+{
+	"globalIndex": 0,
+	"verdict": "approved",
+	"reviewer": "david",
+	"reviewedAt": "2026-02-15T19:59:31.086+00:00",
+	"template": {
+		"delay": 10,
+		"level": 1,
+		"theme": "Entiers",
+		"title": "Connaître la position décimale",
+		"domain": "Apprivoiser",
+		"grades": ["CP"],
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*10+b"
+				}
+			]
+		},
+		"status": "draft",
+		"subdomain": "Ecriture",
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "a"
+					}
+				],
+				"statement": "Dans le nombre ${{c}}$, le chiffre des **dizaines** est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "b"
+					}
+				],
+				"statement": "Dans le nombre ${{c}}$, le chiffre des **unités** est $?$."
+			}
+		],
+		"description": "Jusqu'aux dizaines.",
+		"testSpecs": [
+			{
+				"description": "47 : chiffre des dizaines = 4",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "7"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "47 : confond dizaines et unités",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "47 : zéro inutile devant 4",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "7"
+				},
+				"answers": ["04"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			},
+			{
+				"description": "90 : chiffre des dizaines = 9 (borne)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "0"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "47 : chiffre des unités = 7",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4",
+					"b": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "47 : confond unités et dizaines",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4",
+					"b": "7"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "90 : chiffre des unités = 0 (borne)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "0"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}
