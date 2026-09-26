@@ -124,3 +124,16 @@ Après relecture (`code-reviewer`) :
   (#464 parenthèses après « : », #465 validateur, #466 transformateur).
 - Génération du corpus : 198 → 507/633 sur la journée (#457-#466).
 - Tes 41 (David) : la variable `e` n'y pose PAS de problème (remplacée avant calcul ; vérifié sur 30 tirages).
+
+## Phase 2 — les 41 de David : TERMINÉE (2026-09-26)
+
+- 41/41 importées en brouillon (`docs/relecture/david/RAPPORT.md`) : 33 telles quelles (+ specs, niveau +1),
+  7 corrigées selon ses décisions (#1, #3, #6, #9, #10, #11, #12), #20 corrigée (19 réponses fausses héritées
+  de TinyMath, CP → CE1).
+- Ses specs ont révélé 2 défauts de code corrigés (#467) : « \* » ≠ « × » au contrôle de forme (bonne réponse
+  refusée) ; espaces des milliers mal placées acceptées.
+- En base : 79 templates (2 d'origine + 36 Relatifs + 41), tous en brouillon.
+
+## Prochaine étape
+
+Lots suivants (ex. Fractions 58, fin d'Entiers) : même méthode, rapport, feu vert.

@@ -2,7 +2,8 @@
 
 Questions TinyMath #0–#20, #25–#33, #96–#106 (Entiers), relues par David entre février et avril 2026.
 Reprise le 2026-09-26 (Claude). **Son verdict et son contenu font foi** : rien n'est rejugé.
-**Rien n'est encore en base.**
+
+> ✅ **Feu vert de David le 2026-09-26 : les 41 questions sont importées en BROUILLON.** David les publie lui-même.
 
 ## Bilan
 
