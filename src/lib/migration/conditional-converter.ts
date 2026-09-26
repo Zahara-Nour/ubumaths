@@ -86,15 +86,22 @@ export const CONDITIONAL_PATTERNS = {
  *
  * @example
  * convertConditionVariables('&2+&3<60')    // '{{b}}+{{c}}<60'
- * convertConditionVariables('mod(&1;2)=0') // 'mod({{a}};2)=0'
+ * convertConditionVariables('mod(&1;2)=0') // 'mod({{a}},2)=0'
  * convertConditionVariables('&1 > &2')     // '{{a}} > {{b}}'
  */
 export function convertConditionVariables(condition: string): string {
 	if (!condition) return condition;
 
-	return condition.replace(CONDITIONAL_PATTERNS.variable, (match, num) => {
-		return `{{${numberToLetterName(parseInt(num, 10))}}}`;
-	});
+	return (
+		condition
+			.replace(CONDITIONAL_PATTERNS.variable, (match, num) => {
+				return `{{${numberToLetterName(parseInt(num, 10))}}}`;
+			})
+			// Fonctions TinyMath : `pgcd` → `gcd`, séparateur d'arguments `;` → `,`
+			// (sinon la condition est illisible et reste affichée brute)
+			.replace(/\bpgcd\(/g, 'gcd(')
+			.replace(/;/g, ',')
+	);
 }
 
 /**

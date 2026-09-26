@@ -18,7 +18,7 @@
 import type { ResolvedVariable, InstanceBlank } from '../types';
 import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/ubumark';
 import { templateMarkdown, resolvedMarkdown } from '$lib/ubumark';
-import { resolveMarkdownContent } from './content-resolver';
+import { resolveMarkdownContent, resolveVariableConditionals } from './content-resolver';
 
 // ============================================================================
 // TYPES
@@ -250,8 +250,16 @@ export function resolveCorrectionContent(
 	context: CorrectionContext,
 	seed?: number
 ): ResolvedMarkdown {
+	// Step 0: conditions sur les variables tirées résolues ici ; les autres restent au client
+	const withoutVariableConditionals = resolveVariableConditionals(
+		String(template),
+		resolvedVariables
+	);
+
 	// Step 1: Escape client-side placeholders
-	const { escaped, answerMatches, ifMatches } = escapeClientPlaceholders(String(template));
+	const { escaped, answerMatches, ifMatches } = escapeClientPlaceholders(
+		withoutVariableConditionals
+	);
 
 	// Step 2: Pre-process correction syntax
 	const preprocessed = preprocessCorrectionSyntax(escaped);

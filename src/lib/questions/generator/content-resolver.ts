@@ -142,11 +142,18 @@ export function resolveMarkdownContent(
 	resolvedVariables: ResolvedVariable[],
 	seed?: number
 ): ResolvedMarkdown {
+	// Stage 0: conditions sur les variables tirées (`{{if:…}}`) → branche retenue
+	const withoutConditionals = resolveVariableConditionals(String(markdown), resolvedVariables);
+
 	// Stage 1: Resolve variables, random expressions, and eval expressions
-	// Use displayValue when available (e.g., removeSpaces inserts {} between digits)
-	let resolvedContent = resolveVariableExpression(markdown, resolvedVariables, seed, {
-		useDisplayValue: true
-	});
+	// Use displayValue when available (e.g., removeSpaces inserts {} between digits).
+	// Sans aucun marqueur `{{…}}`, le résolveur remplacerait les noms de variables écrits
+	// en clair (prévu pour `a^b*a^c`) : dans un texte, « Il a gagné » deviendrait « Il 4 gagné »
+	let resolvedContent = withoutConditionals.includes('{{')
+		? resolveVariableExpression(withoutConditionals, resolvedVariables, seed, {
+				useDisplayValue: true
+			})
+		: withoutConditionals;
 
 	// Stage 2: Resolve color references
 	resolvedContent = resolveColorReferences(resolvedContent, seed);
@@ -243,6 +250,97 @@ export function resolveAnswerFormat(
  */
 export function convertToLatex(expression: string): string {
 	return customToLatex(expression.trim()) ?? expression;
+}
+
+/** Fin (exclue) du marqueur `{{if:…}}` ouvert en `start` : accolades équilibrées, -1 sinon */
+function conditionalEnd(text: string, start: number): number {
+	let depth = 0;
+	for (let i = start; i < text.length; i++) {
+		if (text[i] === '{') depth++;
+		else if (text[i] === '}' && --depth === 0) return i + 1;
+	}
+	return -1;
+}
+
+/**
+ * Découpe `condition|alors|sinon` sur les `|` hors accolades (une branche peut contenir du
+ * LaTeX) ; `\\left|`, `\\right|` et `\\|` (valeur absolue, norme) ne séparent pas.
+ */
+function splitConditional(inner: string): string[] {
+	const parts: string[] = [];
+	let depth = 0;
+	let current = '';
+	for (const char of inner) {
+		if (char === '{') depth++;
+		if (char === '}') depth--;
+		const isDelimiter = /(?:\\left|\\right|\\)$/.test(current);
+		if (char === '|' && depth === 0 && !isDelimiter) {
+			parts.push(current);
+			current = '';
+		} else {
+			current += char;
+		}
+	}
+	parts.push(current);
+	return parts;
+}
+
+/** Mots de la syntaxe des conditions qui ne sont pas des noms de variables */
+const CONDITION_KEYWORDS = new Set(['and', 'or', 'not']);
+
+/**
+ * La condition ne nomme-t-elle QUE des variables tirées ? (`mod({{a}},2)=0` oui ;
+ * `{{answer}}={{a}}`, `isCorrect`, `x=x` non : réponse de l'élève ou inconnue, que le
+ * calcul trancherait à tort). Les noms suivis de `(` sont des fonctions.
+ */
+function isVariableCondition(condition: string, resolvedVariables: ResolvedVariable[]): boolean {
+	const names = new Set(resolvedVariables.map((v) => v.name));
+	const identifiers = condition
+		.replace(/\{\{(\w+)\}\}/g, ' $1 ')
+		.match(/[a-zA-Z_]\w*(?!\w*\s*\()/g);
+	return (identifiers ?? []).every((id) => names.has(id) || CONDITION_KEYWORDS.has(id));
+}
+
+/**
+ * `{{if:condition|alors}}` ou `{{if:condition|alors|sinon}}` dont la condition porte sur
+ * les VARIABLES tirées (`{{if:mod(a,2)=0|… est pair}}`, repris de TinyMath) : remplacé
+ * à la génération par la branche retenue. Une condition illisible avec les variables
+ * (`isCorrect`, réponse de l'élève) est laissée telle quelle : le navigateur la résout.
+ * Les branches peuvent contenir des accolades (`\\begin{align}`) et d'autres `{{if:…}}`.
+ */
+export function resolveVariableConditionals(
+	text: string,
+	resolvedVariables: ResolvedVariable[]
+): string {
+	let result = '';
+	let index = 0;
+	while (index < text.length) {
+		const start = text.indexOf('{{if:', index);
+		const end = start === -1 ? -1 : conditionalEnd(text, start);
+		if (end === -1) {
+			result += text.slice(index);
+			break;
+		}
+		result += text.slice(index, start);
+		const parts = splitConditional(text.slice(start + '{{if:'.length, end - 2));
+		let replacement = text.slice(start, end);
+		if (
+			(parts.length === 2 || parts.length === 3) &&
+			isVariableCondition(parts[0], resolvedVariables)
+		) {
+			try {
+				const branch = evaluateConditionStrict(parts[0], resolvedVariables)
+					? parts[1]
+					: (parts[2] ?? '');
+				replacement = resolveVariableConditionals(branch, resolvedVariables);
+			} catch {
+				// Condition côté élève : conservée
+			}
+		}
+		result += replacement;
+		index = end;
+	}
+	return result;
 }
 
 /**

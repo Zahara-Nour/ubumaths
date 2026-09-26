@@ -9,7 +9,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { resolveMarkdownContent, resolveExpression } from '../content-resolver';
+import {
+	resolveMarkdownContent,
+	resolveExpression,
+	resolveVariableConditionals
+} from '../content-resolver';
 import { templateMarkdown } from '$lib/ubumark';
 import type { ResolvedVariable } from '../../types';
 
@@ -201,5 +205,97 @@ describe('Math zone conversion — texte entre deux formules en bloc', () => {
 	it('formules en ligne et en bloc mêlées', () => {
 		const result = resolveMarkdownContent(templateMarkdown('soit $a=1$ ou $$b=2$$ donc $c=3$'), []);
 		expect(result).toBe('soit $a = 1$ ou $$b = 2$$ donc $c = 3$');
+	});
+});
+
+// Conditions TinyMath sur les variables tirées (`@@ cond ?? texte @@` → `{{if:…}}`) :
+// résolues à la génération ; une condition sur la réponse de l'élève reste au navigateur.
+describe('resolveVariableConditionals', () => {
+	const vars = (entries: Record<string, string>): ResolvedVariable[] =>
+		Object.entries(entries).map(([name, value]) => ({ name, value }));
+
+	it('garde la branche « alors » ou « sinon »', () => {
+		const text = '{{if:mod({{a}},2)=0|pair|impair}}';
+		expect(resolveVariableConditionals(text, vars({ a: '4' }))).toBe('pair');
+		expect(resolveVariableConditionals(text, vars({ a: '5' }))).toBe('impair');
+	});
+
+	it('sans « sinon » : rien quand la condition est fausse', () => {
+		const text = 'Donc {{if:{{a}}>0|a est positif}}.';
+		expect(resolveVariableConditionals(text, vars({ a: '-2' }))).toBe('Donc .');
+	});
+
+	it('pgcd converti : gcd dans la condition', () => {
+		expect(
+			resolveVariableConditionals(
+				'{{if:gcd({{a}},{{b}})=1|irréductible|simplifiable}}',
+				vars({ a: '6', b: '9' })
+			)
+		).toBe('simplifiable');
+	});
+
+	it('branche avec accolades LaTeX et `align` sur plusieurs lignes', () => {
+		const text =
+			'{{if:{{a}}+{{b}}!=0|$$\\begin{align} x &= \\textcolor{red}{1} \\\\ y &= 2 \\end{align}$$}}';
+		expect(resolveVariableConditionals(text, vars({ a: '1', b: '2' }))).toBe(
+			'$$\\begin{align} x &= \\textcolor{red}{1} \\\\ y &= 2 \\end{align}$$'
+		);
+	});
+
+	it('conditions imbriquées', () => {
+		const text = '{{if:{{a}}>0|{{if:{{a}}>10|grand|petit}}|négatif}}';
+		expect(resolveVariableConditionals(text, vars({ a: '3' }))).toBe('petit');
+		expect(resolveVariableConditionals(text, vars({ a: '30' }))).toBe('grand');
+	});
+
+	it('condition sur la réponse de l’élève : laissée au navigateur', () => {
+		const text = '{{if:isCorrect|Bravo !|Réessaie}}';
+		expect(resolveVariableConditionals(text, vars({ a: '1' }))).toBe(text);
+	});
+
+	it('dans un énoncé, avant la résolution des variables', () => {
+		const result = resolveMarkdownContent(
+			templateMarkdown('{{if:{{a}}>0|On ajoute $ {{a}} $|On enlève $ {{b}} $}}.'),
+			vars({ a: '-7', b: '7' })
+		);
+		expect(result).toBe('On enlève $7$.');
+	});
+});
+
+describe('resolveVariableConditionals — cas relevés à la relecture', () => {
+	const vars = (entries: Record<string, string>): ResolvedVariable[] =>
+		Object.entries(entries).map(([name, value]) => ({ name, value }));
+
+	it.each([
+		['{{if:{{answer}}={{a}}|Bravo|Non}}'],
+		['{{if:x=x|toujours|jamais}}'],
+		['{{if:{{a}}<0 and isCorrect|A|B}}'],
+		['{{if:e>2|A|B}}']
+	])('%s : un nom qui n’est pas une variable tirée → laissé au navigateur', (text) => {
+		expect(resolveVariableConditionals(text, vars({ a: '-3' }))).toBe(text);
+	});
+
+	it('valeur absolue \\left| … \\right| dans une branche', () => {
+		const text = '{{if:{{a}}<0|$\\left|{{a}}\\right|=-{{a}}$|$\\left|{{a}}\\right|={{a}}$}}';
+		expect(resolveVariableConditionals(text, vars({ a: '-3' }))).toBe(
+			'$\\left|{{a}}\\right|=-{{a}}$'
+		);
+	});
+});
+
+describe('resolveMarkdownContent — texte sans marqueur', () => {
+	it('un mot égal à un nom de variable n’est pas remplacé', () => {
+		const result = resolveMarkdownContent(templateMarkdown('Il a {{if:b<0|perdu|gagné}}.'), [
+			{ name: 'a', value: '4' },
+			{ name: 'b', value: '2' }
+		]);
+		expect(result).toBe('Il a gagné.');
+	});
+
+	it('branche réduite à un mot : pas d’erreur', () => {
+		const result = resolveMarkdownContent(templateMarkdown('{{if:b<0|Simple|Retenue}}'), [
+			{ name: 'b', value: '2' }
+		]);
+		expect(result).toBe('Retenue');
 	});
 });
