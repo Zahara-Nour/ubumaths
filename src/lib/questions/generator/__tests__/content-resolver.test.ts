@@ -143,3 +143,49 @@ describe('Content Resolver', () => {
 		});
 	});
 });
+
+// Un calcul exact (`{{eval:…}}`) rend du LaTeX (`\dfrac{9}{7}`, `2 \sqrt{2}`) ; inséré dans
+// une formule en syntaxe maison, il ne doit pas empêcher sa conversion (#381, #579, #586).
+describe('Math zone conversion — résultat exact inséré dans une formule maison', () => {
+	const vars = (entries: Record<string, string>): ResolvedVariable[] =>
+		Object.entries(entries).map(([name, value]) => ({ name, value }));
+
+	it('produit par une fraction exacte : 3*{{eval:9/7}}', () => {
+		const result = resolveMarkdownContent(templateMarkdown('$$3*{{eval:9/7}}$$'), []);
+		expect(result).toBe('$$3 \\times \\dfrac{9}{7}$$');
+	});
+
+	it('fonction affine à coefficients exacts', () => {
+		const result = resolveMarkdownContent(
+			templateMarkdown('$$f(x)={{{eval:a/b}}}x+{{eval:c/d}}$$'),
+			vars({ a: '4', b: '9', c: '9', d: '7' })
+		);
+		expect(result).toBe('$$f\\left( x \\right) = \\dfrac{4}{9} x + \\dfrac{9}{7}$$');
+	});
+
+	it('fraction négative et racine', () => {
+		const result = resolveMarkdownContent(
+			templateMarkdown('$$x={{eval:-6/8}}$$\n\n$$y={{eval:sqrt(8)}}+1$$'),
+			[]
+		);
+		expect(result).toBe('$$x = -\\dfrac{3}{4}$$\n\n$$y = 2 \\sqrt{2} + 1$$');
+	});
+
+	it('une formule entièrement LaTeX reste telle quelle', () => {
+		const content = '$$\\begin{align} \\dfrac{9}{7} &= {{eval:18/14}} \\end{align}$$';
+		const result = resolveMarkdownContent(templateMarkdown(content), []);
+		expect(result).toBe('$$\\begin{align} \\dfrac{9}{7} &= \\dfrac{9}{7} \\end{align}$$');
+	});
+});
+
+describe('Math zone conversion — formule LaTeX d’auteur non réécrite', () => {
+	it('\\dfrac à arguments littéraux : laissé tel quel', () => {
+		const content = '$$x=\\dfrac{-b}{2a}$$';
+		expect(resolveMarkdownContent(templateMarkdown(content), [])).toBe(content);
+	});
+
+	it('racine d’une fraction exacte insérée : \\dfrac{\\sqrt{3}}{2}', () => {
+		const result = resolveMarkdownContent(templateMarkdown('$$2*\\dfrac{\\sqrt{3}}{2}$$'), []);
+		expect(result).toBe('$$2 \\times \\dfrac{\\sqrt{3}}{2}$$');
+	});
+});

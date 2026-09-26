@@ -387,7 +387,8 @@
 
 					<p class="text-xs text-muted-foreground">
 						Syntaxe: <code class="rounded bg-muted px-1">{'{{1..10}}'}</code> (aleatoire),
-						<code class="rounded bg-muted px-1">{'{{eval:a+b}}'}</code> (calcul),
+						<code class="rounded bg-muted px-1">{'{{eval:a/b}}'}</code> (calcul exact),
+						<code class="rounded bg-muted px-1">{'{{eval:a/b;d}}'}</code> (décimal),
 						<code class="rounded bg-muted px-1">{'{{var}}'}</code> (reference)
 					</p>
 				</Card.Content>

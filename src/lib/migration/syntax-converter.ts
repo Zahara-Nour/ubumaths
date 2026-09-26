@@ -579,8 +579,9 @@ export class TinyCASConverter {
 			}
 			this.stats.evaluations++;
 			this.warnings.push(`Decimal evaluation [._${expr}_] converted - verify decimal handling`);
+			// `{{eval:…}}` est exact (fraction) : `;d` garde le décimal voulu par `[._`
 			const convertedExpr = convertVarsInExpr(decimalExpr);
-			return `{{eval:${convertedExpr}}}`;
+			return `{{eval:${convertedExpr};d}}`;
 		});
 
 		// Terme signé [+_x_] : x affiché AVEC son signe (+7 / -7) → modificateur `;+`.
@@ -875,7 +876,7 @@ export function validateConversion(original: string, converted: string): boolean
 // "[_&1*10+&2_]" → "{{eval:a*10+b}}"
 // "[_2*&1_]" → "{{eval:2*a}}"
 // "[_10-&1_]" → "{{eval:10-a}}"
-// "[._expression_]" → "{{eval:expression}}" (decimal eval, with warning; literal
+// "[._expression_]" → "{{eval:expression;d}}" (decimal eval; literal
 //   commas `0,1`→`0.1`; variable-composed decimals like `&1,&3` left unconverted)
 // "[+_expression_]" → "{{eval:+expression}}" (with warning)
 // "[(_expression_]" → "{{eval:(expression)}}" (with warning)

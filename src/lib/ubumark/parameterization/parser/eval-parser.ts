@@ -6,7 +6,7 @@
  * Supports modifiers: {{eval:expression;modifiers}}
  *
  * Modifiers:
- * - d/decimal: Force decimal output
+ * - d/decimal: écriture décimale (sinon résultat exact : fraction, racine)
  * - +/positive: Add + sign for positive results
  * - ()/bracket: Wrap negative results in parentheses
  * - '/derivative: Take derivative before evaluating

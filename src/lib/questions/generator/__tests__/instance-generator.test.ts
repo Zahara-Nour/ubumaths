@@ -24,6 +24,10 @@ function getVarValue(resolvedVariables: ResolvedVariable[] | undefined, varName:
 	return variable ? parseFloat(variable.value) : NaN;
 }
 
+function gcd(a: number, b: number): number {
+	return b === 0 ? a : gcd(b, a % b);
+}
+
 describe('generateInstance - Numerical Exact Questions', () => {
 	it('should generate simple numerical question instance', () => {
 		const template: QuestionTemplate = {
@@ -405,7 +409,12 @@ describe('generateInstance - Complex Variable Resolution', () => {
 		expect(num1).not.toBe(num2); // Exclusion working
 		expect(num1).toBeLessThan(den); // Bounds working
 		expect(num2).toBeLessThan(den);
-		expect(result.instance.blanks![0].expectedAnswer).toBe(((num1 + num2) / den).toString());
+		// Résultat exact (comme TinyMath) : fraction irréductible ou entier
+		const sum = num1 + num2;
+		const divisor = gcd(sum, den);
+		const expected =
+			den / divisor === 1 ? String(sum / divisor) : `\\dfrac{${sum / divisor}}{${den / divisor}}`;
+		expect(result.instance.blanks![0].expectedAnswer).toBe(expected);
 	});
 
 	it('should generate GCD simplification instance', () => {
@@ -829,9 +838,9 @@ describe('generateInstance - Real-World Templates', () => {
 					variables: [
 						{ name: 'price', expression: '{{random:50..200}}' },
 						{ name: 'discount', expression: '{{random:10..50}}' },
-						{ name: 'reduction', expression: '{{eval:price * discount / 100}}' }
+						{ name: 'reduction', expression: '{{eval:price * discount / 100;d}}' }
 					],
-					blanks: [{ expectedAnswer: '{{eval:price - reduction}}' }]
+					blanks: [{ expectedAnswer: '{{eval:price - reduction;d}}' }]
 				}
 			],
 			grades: ['6', '5'],

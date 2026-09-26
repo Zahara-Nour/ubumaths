@@ -55,7 +55,7 @@ import {
 	gcd as gcdBigInt
 } from '../normal/rational';
 import { integerNthRoot } from '../normal/radical';
-import { number, divide, boolean as booleanNode } from '../factory';
+import { number, divide, opposite, boolean as booleanNode } from '../factory';
 import { numericNode } from '../common/numeric';
 import { normalize } from '../normal/normalize';
 import { denormalize } from '../normal/denormalize';
@@ -796,6 +796,45 @@ function validateEvaluable(node: MathNode, exactMode: boolean = false): void {
 // =============================================================================
 
 /**
+ * Réduit `min`, `max`, `gcd` et `mod` quand leurs arguments se calculent.
+ *
+ * Sans cela, le mode exact rendait `\min(12, 18)` au lieu de 12. `min`/`max`
+ * gardent l'argument choisi sous sa forme exacte (`\dfrac{2}{9}`, `\sqrt{3}`) ;
+ * `gcd`/`mod` exigent des entiers, sinon la fonction reste telle quelle.
+ * Parcours ascendant : une fonction imbriquée est réduite avant son parent.
+ */
+function reduceMultiArgFunctions(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		if (!isFunction(n)) return n;
+		const funcName = n.name.toLowerCase();
+
+		if (funcName === 'gcd' || funcName === 'mod') {
+			try {
+				const result = evaluateToRational(n);
+				if (result.d !== 1n) return n;
+				return result.n < 0n
+					? opposite(number((-result.n).toString()))
+					: number(result.n.toString());
+			} catch {
+				return n;
+			}
+		}
+
+		if ((funcName === 'min' || funcName === 'max') && n.args.length > 0) {
+			try {
+				const values = n.args.map((arg) => rationalToNumber(evaluateToRational(arg)));
+				const chosen = funcName === 'min' ? Math.min(...values) : Math.max(...values);
+				return n.args[values.indexOf(chosen)];
+			} catch {
+				return n;
+			}
+		}
+
+		return n;
+	});
+}
+
+/**
  * Evaluates rounding functions (floor, ceil, round) in an AST when their
  * arguments can be computed to a numeric value.
  *
@@ -1100,7 +1139,8 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 			}
 
 			// Standard exact mode: use regular normalize/denormalize
-			const normalForm = normalize(processedNode);
+			// min, max, gcd, mod : normalize ne les calcule pas → réduits d'abord
+			const normalForm = normalize(reduceMultiArgFunctions(processedNode));
 			let simplifiedNode = denormalize(normalForm);
 
 			// Post-process to evaluate rounding functions (floor, ceil, round, abs)

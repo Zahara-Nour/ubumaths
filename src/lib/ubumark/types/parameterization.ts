@@ -250,7 +250,7 @@ export type RandomSpec =
  * {{eval:{{a}}*{{b}}|d,+}} -> "+15" (if a*b = 15)
  */
 export interface EvalModifiers {
-	/** Force decimal output (convert fractions to decimals) */
+	/** Écriture décimale ; sans lui, le résultat est exact (fraction irréductible, racine) */
 	decimal?: boolean;
 	/** Add + sign for positive results */
 	addPositive?: boolean;

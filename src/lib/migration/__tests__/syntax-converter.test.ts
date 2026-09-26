@@ -344,19 +344,19 @@ describe('TinyCAS Syntax Converter', () => {
 
 		it('should convert decimal evaluations with warning', () => {
 			const result = convertTinyCASToNew('[._&1+0.5_]');
-			expect(result.converted).toBe('{{eval:a+0.5}}');
+			expect(result.converted).toBe('{{eval:a+0.5;d}}');
 			expectWarning('[._&1+0.5_]', 'Decimal evaluation');
 		});
 
 		// Regression (globalIndex 426): decimal eval with a multiplier, no comma.
 		it('should convert a comma-free decimal eval (unit conversion shape)', () => {
-			expect(convertTinyCASToNew('[._&1*1000_]').converted).toBe('{{eval:a*1000}}');
-			expect(convertTinyCASToNew('[._&1*0.1_]').converted).toBe('{{eval:a*0.1}}');
+			expect(convertTinyCASToNew('[._&1*1000_]').converted).toBe('{{eval:a*1000;d}}');
+			expect(convertTinyCASToNew('[._&1*0.1_]').converted).toBe('{{eval:a*0.1;d}}');
 		});
 
 		// Regression: a French decimal *literal* comma (digit,digit) becomes a dot.
 		it('should normalize literal decimal commas inside a decimal eval', () => {
-			expect(convertTinyCASToNew('[._&1*0,1+&2*0,01_]').converted).toBe('{{eval:a*0.1+b*0.01}}');
+			expect(convertTinyCASToNew('[._&1*0,1+&2*0,01_]').converted).toBe('{{eval:a*0.1+b*0.01;d}}');
 		});
 
 		// Regression (globalIndex 411): a decimal *composed from two variables*
@@ -393,7 +393,7 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should handle special evaluation modifiers', () => {
 			// Decimal evaluation
 			const decimal = convertTinyCASToNew('[._3.14*&1_]');
-			expect(decimal.converted).toBe('{{eval:3.14*a}}');
+			expect(decimal.converted).toBe('{{eval:3.14*a;d}}');
 			expect(decimal.warnings?.some((w) => w.includes('Decimal'))).toBe(true);
 
 			// Terme signé : modificateur ;+
@@ -408,7 +408,7 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should handle multiple special modifiers in one string', () => {
 			const input = '[._&1_] and [+_&2_] and [(_&3_]';
 			const result = convertTinyCASToNew(input);
-			expect(result.converted).toBe('{{eval:a}} and {{eval:b;+}} and {{eval:c;()}}');
+			expect(result.converted).toBe('{{eval:a;d}} and {{eval:b;+}} and {{eval:c;()}}');
 			// Seule l'évaluation décimale reste signalée
 			expect(result.warnings?.length).toBe(1);
 		});

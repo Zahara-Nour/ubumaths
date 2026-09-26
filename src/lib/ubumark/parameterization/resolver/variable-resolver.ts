@@ -25,7 +25,7 @@ import { normalizeExpression } from '../parser/expression-normalizer';
 import { generateRandomNumber } from './random-generator';
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { parseLatex } from '$lib/mathAST/parser';
-import { substitute, evaluateAstWithModifiers } from '$lib/mathAST/eval';
+import { substitute, evaluateAstWithModifiers, evalResultToCustom } from '$lib/mathAST/eval';
 import type { BindingValue } from '$lib/mathAST/eval';
 import { toFrenchDecimal } from '$lib/utils/french-math';
 
@@ -77,7 +77,9 @@ export function applyRemoveSpaces(latex: string): string {
  */
 function braceWrap(value: string): string {
 	if (/^\s*[+\-*/^]\s*$/.test(value)) return value;
-	return `{${value}}`;
+	// Un résultat exact (`\dfrac{9}{7}`) repasse en syntaxe maison : sinon tout le calcul
+	// part dans parseLatex, qui ne lit ni `2{…}` ni `sqrt(…)`
+	return `{${evalResultToCustom(value)}}`;
 }
 
 /**
