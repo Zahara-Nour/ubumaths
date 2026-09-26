@@ -329,6 +329,51 @@ describe('applyDisplayTransforms', () => {
 			expect(result).toMatch(/b/);
 			expect(result).toMatch(/c/);
 		});
+
+		// Un nombre négatif à droite d'un opérateur binaire garde ses parenthèses,
+		// quel que soit l'opérateur (× comme :, / en ligne, −).
+		describe('négatif à droite d’un opérateur binaire', () => {
+			const strip = (expr: string) =>
+				applyDisplayTransforms(expr, makeOptions({ removeUnnecessaryBrackets: true }));
+
+			it('division « : » : 49:(-65) garde les parenthèses', () => {
+				expect(strip('49:(-65)')).toBe('49 : \\left( -65 \\right)');
+			});
+
+			it('division « : » : 49:(-x) garde les parenthèses', () => {
+				expect(strip('49:(-x)')).toBe('49 : \\left( -x \\right)');
+			});
+
+			// En syntaxe ubumark, « / » est une fraction : le dénominateur est isolé,
+			// aucune parenthèse n'est nécessaire (le « / » en ligne est testé côté mathAST)
+			it('fraction « / » : 49/(-65) → \\dfrac{49}{-65}', () => {
+				expect(strip('49/(-65)')).toBe('\\dfrac{49}{-65}');
+			});
+
+			it('multiplication « × » : 49*(-65) garde les parenthèses (non-régression)', () => {
+				expect(strip('49*(-65)')).toBe('49 \\times \\left( -65 \\right)');
+			});
+
+			it('soustraction : 5-(-3) garde les parenthèses (non-régression)', () => {
+				expect(strip('5-(-3)')).toBe('5 - \\left( -3 \\right)');
+			});
+
+			it('négatif en tête de division : (-65):49 → -65 : 49', () => {
+				expect(strip('(-65):49')).toBe('-65 : 49');
+			});
+
+			it('division enchaînée : 12:(6:2) garde les parenthèses', () => {
+				expect(strip('12:(6:2)')).toBe('12 : \\left( 6 : 2 \\right)');
+			});
+
+			it('division enchaînée à gauche : (12:6):2 → 12 : 6 : 2', () => {
+				expect(strip('(12:6):2')).toBe('12 : 6 : 2');
+			});
+
+			it('parenthèses inutiles autour d’un nombre après « : » : 49:(5) → 49 : 5', () => {
+				expect(strip('49:(5)')).toBe('49 : 5');
+			});
+		});
 	});
 
 	// ============================================================================
