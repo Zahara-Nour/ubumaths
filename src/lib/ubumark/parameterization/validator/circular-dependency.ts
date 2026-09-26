@@ -174,6 +174,9 @@ export function getVariableNames(expression: string): string[] {
 						} else if (exclusion.type === 'range') {
 							if (exclusion.min.type === 'variable') names.push(exclusion.min.name);
 							if (exclusion.max.type === 'variable') names.push(exclusion.max.name);
+						} else if (exclusion.of.type === 'variable') {
+							// m(x), d(x), cd(x)
+							names.push(exclusion.of.name);
 						}
 					}
 				}

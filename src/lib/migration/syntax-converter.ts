@@ -1091,14 +1091,21 @@ function convertExclusionItem(raw: string): string {
  * Toute autre expression (`eval:…`, listes `a|b`, `digits:…`) est rendue intacte.
  */
 export function normalizeRandomRange(expression: string): string {
-	if (/^(eval|digits):/.test(expression) || expression.includes('|')) return expression;
+	// `eval:` en tête = une valeur calculée ; `digits:` où qu'il soit = autre générateur
+	if (/^eval:|(^|[^a-zA-Z])digits:/.test(expression) || expression.includes('|')) {
+		return expression;
+	}
 
 	const [rangePart, ...exclusionParts] = splitTopLevel(expression, '!');
 	const bounds = splitTopLevel(rangePart, '..');
 	if (bounds.length !== 2) return expression;
 
 	const [min, maxAndSuffix] = bounds;
-	const [max, ...suffixParts] = splitTopLevel(maxAndSuffix, ';');
+	const [maxAndStep, ...suffixParts] = splitTopLevel(maxAndSuffix, ';');
+	// Pas d'un tirage décimal (`0.5..9.99:0.01`) : conservé tel quel
+	const stepMatch = maxAndStep.match(/^(.*):(\d+(?:\.\d+)?)$/);
+	const max = stepMatch ? stepMatch[1] : maxAndStep;
+	const step = stepMatch ? `:${stepMatch[2]}` : '';
 	let suffix = suffixParts.length > 0 ? `;${suffixParts.join(';')}` : '';
 	if (suffix === ';+-') suffix = ';±';
 
@@ -1108,7 +1115,7 @@ export function normalizeRandomRange(expression: string): string {
 		const lower = PLAIN_NUMBER.test(upper) ? `-${upper}` : `{{eval:-(${max.trim()})}}`;
 		range = `${lower}..${upper}`;
 	} else {
-		range = `${asGeneratorOperand(min)}..${asGeneratorOperand(max)}${suffix}`;
+		range = `${asGeneratorOperand(min)}..${asGeneratorOperand(max)}${step}${suffix}`;
 	}
 
 	if (exclusionParts.length === 0) return range;

@@ -276,7 +276,10 @@ export function generateRandomNumber(
 		if (attempts > MAX_ATTEMPTS) {
 			throw new Error(
 				`Unable to generate random number with given exclusions after ${MAX_ATTEMPTS} attempts. ` +
-					`Range: [${min}, ${max}], Excluded: ${excludedValues.size} values`
+					`Range: [${min}, ${max}], Excluded: ${excludedValues.size} values` +
+					(arithmeticExclusions.length > 0
+						? ` + ${arithmeticExclusions.map((e) => `${e.type}(${e.of})`).join(', ')}`
+						: '')
 			);
 		}
 	} while (
@@ -285,6 +288,11 @@ export function generateRandomNumber(
 	);
 
 	return value;
+}
+
+/** Entier à l'imprécision des flottants près (0.3 / 0.1 = 2.9999999999999996) */
+function isWholeNumber(x: number): boolean {
+	return Math.abs(x - Math.round(x)) < 1e-9;
 }
 
 function gcd(a: number, b: number): number {
@@ -301,9 +309,9 @@ function isArithmeticallyExcluded(
 ): boolean {
 	switch (exclusion.type) {
 		case 'multiple-of':
-			return exclusion.of !== 0 && value % exclusion.of === 0;
+			return exclusion.of !== 0 && isWholeNumber(value / exclusion.of);
 		case 'divisor-of':
-			return value !== 0 && exclusion.of % value === 0;
+			return value !== 0 && isWholeNumber(exclusion.of / value);
 		case 'common-divisor-with':
 			return gcd(value, exclusion.of) !== 1;
 	}

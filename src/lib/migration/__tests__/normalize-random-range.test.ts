@@ -32,7 +32,10 @@ describe('normalizeRandomRange', () => {
 		// Relatifs
 		['2..9;+-', '2..9;±'],
 		['0..5;+-', '-5..5'],
-		['0..5;±', '-5..5']
+		['0..5;±', '-5..5'],
+		// Pas décimal conservé
+		['1..a:0.5', '1..a:0.5'],
+		['1..a-1:0.5', '1..{{eval:a-1}}:0.5']
 	])('%s → %s', (input, expected) => {
 		expect(normalizeRandomRange(input)).toBe(expected);
 	});
@@ -45,7 +48,9 @@ describe('normalizeRandomRange', () => {
 		'rouge|vert',
 		'2|4|6|8',
 		'b/a',
-		'digits:2.1'
+		'digits:2.1',
+		'0.5..9.99:0.01',
+		'5*digits:5+1..4'
 	])('laisse intact : %s', (input) => {
 		expect(normalizeRandomRange(input)).toBe(input);
 	});

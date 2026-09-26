@@ -111,7 +111,15 @@ describe('generateRandomNumber — exclusions arithmétiques', () => {
 		expect([...values].sort((x, y) => x - y)).toEqual([3, 7, 9]);
 	});
 
-	it('tout est exclu : erreur explicite, pas de boucle infinie', () => {
-		expect(() => generateRandomNumber(spec('{{2..4!m(2),m(3)}}'), [], 1)).toThrow();
+	it('tout est exclu : erreur explicite qui nomme les exclusions, pas de boucle infinie', () => {
+		expect(() => generateRandomNumber(spec('{{2..4!m(2),m(3)}}'), [], 1)).toThrow(
+			/multiple-of\(2\), multiple-of\(3\)/
+		);
+	});
+
+	it('m(x) sur un tirage décimal : juste malgré les flottants (0,3 est multiple de 0,1)', () => {
+		const values = draws('{{0.1..0.5:0.1!m(0.3)}}');
+		expect(values.size).toBeGreaterThan(2);
+		expect([...values].every((v) => Math.abs(v - 0.3) > 1e-9)).toBe(true);
 	});
 });
