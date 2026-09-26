@@ -146,7 +146,18 @@ Après relecture (`code-reviewer`) :
 - 6 points « à regarder » pour David dans le rapport (espace des milliers, signes, parenthèses…).
 - En base : 136 templates, tous en brouillon.
 
+## Calcul exact comme TinyMath — LIVRÉ (#469, 2026-09-26)
+
+- `{{eval:…}}` rend la forme exacte (`\dfrac{9}{7}`, `2 \sqrt{2}`, `\ln(2)`) ; `;d` = décimal ; un calcul
+  contenant un décimal reste décimal. Convertisseur : `[._…_]` et `result-type: decimal` → `;d`.
+- 13 brouillons en base ont reçu `;d` avant le merge (sauvegarde `data/migration-output/backups/eval-d-*`).
+- Mesure : aucune réponse ni énoncé en base ne change ; 52 anciennes questions passent au résultat exact.
+- Défaut connu (prod, hors PR) : deux `$$…$$` sur une même ligne séparés par du texte → texte abîmé
+  (« et » → `\exponentialE t`).
+
 ## Prochaine étape
 
-Corriger dans le convertisseur les défauts récurrents du lot Fractions (liste du rapport) avant le lot
-suivant, sinon chaque relecteur les corrige à la main. Puis lots suivants (fin d'Entiers…).
+Défauts récurrents restants du convertisseur (rapport Fractions) : fraction attendue `p/q` au lieu de
+`\frac{p}{q}` ; `$e[..]*k+$e[..]` qui tire des décimaux ; exclusion `;+-\{…}` perdue ; `{{if:…}}` à
+accolades ; `[°…°]`, `<b>`, `{{solution:html}}` dans les corrections ; `help` HTML recopié ;
+`\frac{-a}{b}` attendu jugé perfectible. Puis lots suivants (fin d'Entiers…).
