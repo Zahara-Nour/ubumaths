@@ -26,7 +26,7 @@ Vérification indépendante (`pnpm question:specs --lot docs/relecture/entiers`)
   variable formule liée en syntaxe maison. 6 questions ne généraient pas ; il n'en reste aucune.
 - #474 (**défaut de production**) : les codes couleur des corrections étaient groupés comme des
   nombres (`#FF5722` → `#FF5\,722`) : texte non coloré, ou rouge au lieu de bleu.
-- #475 (**défaut de production**, en cours de merge) : `\div`, produit par la touche ÷ du clavier
+- #475 (**défaut de production**) : `\div`, produit par la touche ÷ du clavier
   des réponses, n'était pas lu : une réponse juste tapée avec ÷ était jugée fausse.
 
 ## Corrections notables

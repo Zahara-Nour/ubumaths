@@ -168,6 +168,16 @@ Après relecture (`code-reviewer`) :
   tirée (#532 `[_&3&4_]`) ; `$ers[…]` ; aucun code navigateur ne résout `{{if:isCorrect…}}` ;
   #360/#439 (empreinte partagée) en attente de David.
 
+## Lot Entiers — RELU, en attente d'import (2026-09-26)
+
+- 187 verdicts (`docs/relecture/entiers/RAPPORT.md`) : 132 approuvées, 48 corrigées, 7 « copies »
+  (#136–#147, même question rangée aussi dans « Multiplier ») en attente de décision de David.
+- Code : #473 (conversion Entiers), #474 (couleurs `#FF5722` groupées → corrections non colorées,
+  PROD), #475 (`\div` de la touche ÷ non lu → bonne réponse jugée fausse, PROD).
+- #472 : signature propre pour #360/#439 (le contenu des variables n'entrait pas dans le calcul).
+- Fractions complet : 58/58 importées. Base : 137 templates, tous brouillons.
+
 ## Prochaine étape
 
-Lot suivant de la relecture (fin d'Entiers, Décimaux…) : même méthode, rapport, import en brouillon.
+Réponses de David sur le rapport Entiers (copies, quotient en fraction, feu vert d'import), puis
+import ; lots suivants (Décimaux, Relatifs restants…).
