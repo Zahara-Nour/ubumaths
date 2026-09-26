@@ -39,7 +39,7 @@ function extractMarkers(answer: string): { text: string; markers: string[] } | n
 		}
 		if (depth !== 0) return null; // accolades déséquilibrées
 		markers.push(answer.slice(i, end + 1));
-		text += `\u0000${markers.length - 1}\u0000`;
+		text += `\uE000${markers.length - 1}\uE000`;
 		i = end + 1;
 	}
 	return { text, markers };
@@ -58,7 +58,7 @@ export function slashFractionsToLatex(answer: string): string {
 
 	const free = PLACEHOLDER_LETTERS.filter((letter) => !text.includes(letter));
 	if (markers.length > free.length) return answer;
-	const withLetters = text.replace(/\u0000(\d+)\u0000/g, (_m, n: string) => free[Number(n)]);
+	const withLetters = text.replace(/\uE000(\d+)\uE000/g, (_m, n: string) => free[Number(n)]);
 
 	let latex: string;
 	try {
