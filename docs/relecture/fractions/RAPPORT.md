@@ -4,10 +4,12 @@
 puis contrôle d'ensemble).
 
 > Feu vert d'import donné par David le 2026-09-26 avant la relecture (« oui, feu vert pour
-> l'import »). ✅ **57/58 importées en BROUILLON** (vérifié en base : reliées, statut draft).
-> ⚠️ **#360 non importée** : même empreinte TinyMath que #356 alors que les deux questions sont
-> distinctes (listes de fractions différentes) ; la clé unique du suivi l'empêche. Les points
-> « à regarder » ci-dessous n'ont pas bloqué l'import ; ils demandent une décision de David.
+> l'import »). ✅ **58/58 importées en BROUILLON** (vérifié en base : reliées, statut draft).
+> #360 importée après #472 (sa signature était celle de #356 : le contenu des variables n'entrait
+> pas dans le calcul). Décisions de David sur les points « à regarder » : espace des milliers
+> exigée dès 4 chiffres (règle inchangée ; l'écran affiche déjà « 1 000 », #350 corrigée),
+> « Simplifie les signes » reste perfectible, parenthèses d'origine gardées (objet de l'exercice),
+> description de #404 corrigée, niveau de #392-#393 inchangé.
 
 ## Bilan
 
