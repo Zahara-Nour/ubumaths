@@ -897,20 +897,26 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, unitChoice: UnitChoice
 
 	const value = baseValue(term.coefficient, quantity);
 
-	const rewritten = (unit: Unit): TidyTerm | null => {
+	const rewritten = (unit: Unit, finiteOnly = true): TidyTerm | null => {
 		const conversion = exactConversion(unitWriting(unit));
 		if (conversion === null || conversion.piPower !== 0 || conversion.offset !== null) return null;
 		const coefficient = divRational(value, conversion.coefficient);
+		const finite = decimalString(absRational(coefficient)) !== null;
 		// Sans écriture décimale finie, l'unité écrite est conservée.
-		if (decimalString(absRational(coefficient)) === null) return null;
+		if (!finite && finiteOnly) return null;
 		return {
 			...term,
 			coefficient,
 			unit,
 			quantity: { ...quantity, factor: conversion.coefficient },
-			decimal: true
+			decimal: finite
 		};
 	};
+
+	// `'written'`, rien ne tombe juste : la fraction revient dans l'unité ÉCRITE, pas
+	// dans l'unité de base où le regroupement d'une somme l'a laissée (relecture de #483)
+	const writtenFraction = (): TidyTerm | null =>
+		unitChoice === 'written' && term.written !== null ? rewritten(term.written, false) : null;
 
 	if (imposed !== null) {
 		const chosen = rewritten(imposed);
@@ -937,7 +943,7 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, unitChoice: UnitChoice
 			smallest = candidate;
 		}
 		if (smallest !== null) return smallest;
-		return term;
+		return writtenFraction() ?? term;
 	}
 
 	// Unité composée sans famille : l'unité dérivée nommée, quand il y en a une.
@@ -948,6 +954,8 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, unitChoice: UnitChoice
 	}
 
 	// Sinon l'unité écrite est conservée, la valeur en décimal si elle est finie.
+	const fraction = writtenFraction();
+	if (fraction !== null) return fraction;
 	return decimalString(absRational(term.coefficient)) === null ? term : { ...term, decimal: true };
 }
 

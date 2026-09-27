@@ -126,3 +126,14 @@ describe('mode scolaire (défaut) — inchangé, sauf le quotient de même dimen
 		expect(customSchool('2[rad]')).toBe('2[rad]');
 	});
 });
+
+// Relecture de #483 (écart A) : une somme regroupée passe par l'unité de base ;
+// sans écriture décimale finie, la fraction revient dans l'unité ÉCRITE.
+describe("unitChoice: 'written' — fraction dans l'unité écrite", () => {
+	it.each([
+		['3[h]*1[km/h]+20[min]*1[km/h]', '(10/3)[km]'],
+		['1[km]+1[km]/3', '(4/3)[km]']
+	])('%s → %s', (input, expected) => {
+		expect(customWritten(input)).toBe(expected);
+	});
+});
