@@ -8,8 +8,9 @@
  * - un terme libre `w` dans `T + w` peut être absent (w = 0).
  * La valeur est vérifiée avant : le motif ne juge que la FORME.
  *
- * `$x` : dans un motif, une lettre est un joker ; `$x` est LA variable x. Avec `x` libre,
- * `(-x-2)^2` passerait (x = −x) — test en bas.
+ * `$x` : dans un motif, une lettre est un joker ; `$x` est LA variable x. Avec `x` libre, le
+ * joker x devrait valoir un nombre simple : les formes canoniques échouent — test en bas.
+ * Relecture #489 : sur ce troisième essai, chaque joker doit valoir un NOMBRE SIMPLE.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -43,14 +44,32 @@ describe('forme canonique u*($x+v)^2+w', () => {
 		expect(requiredFormVerdict(answer, CANONICAL)).toBe('violated');
 	});
 
-	it('x libre (sans $) : (-x-2)^2 passerait — le motif doit écrire $x', () => {
-		expect(requiredFormVerdict('(-x-2)^2', { pattern: 'u*(x+v)^2+w' })).toBe('ok');
+	// Relecture #489 : à valeur égale, écritures NON canoniques — chaque joker doit valoir un
+	// nombre simple (entier, décimal, fraction d'entiers, signe éventuel), sans zéro ajouté.
+	it.each([
+		'2(x+1)^2-3(x+1)^2',
+		'(x+1)^2-(x+1)^2+(x+1)^2',
+		'(x+2)^2-(2x+6)',
+		'-(x+1)^2-2\\times3',
+		'-2\\cdot3-(x+1)^2',
+		'(x+0)^2+1',
+		'(x+1)^2+(-3)',
+		'(x+1)^2-(-3)'
+	])('refusé (calcul non effectué) : %s', (answer) => {
+		expect(requiredFormVerdict(answer, CANONICAL)).toBe('violated');
+	});
+
+	it('x libre (sans $) : x devrait valoir un nombre, donc (x-1)^2-3 échoue — le motif doit écrire $x', () => {
+		expect(requiredFormVerdict('(x-1)^2-3', { pattern: 'u*(x+v)^2+w' })).toBe('violated');
+		expect(requiredFormVerdict('(-x-2)^2', { pattern: 'u*(x+v)^2+w' })).toBe('violated');
 	});
 });
 
 describe('soustraction lue comme somme signée', () => {
-	it('(u+v)^2 : (z-7)^2 se lit (z+(−7))^2, comme (-7+z)^2 déjà reconnu', () => {
-		expect(requiredFormVerdict('(z-7)^2', { pattern: '(u+v)^2' })).toBe('ok');
+	// Le troisième essai n'accepte que des jokers valant un nombre simple : u = z n'en est pas
+	// un, donc (z-7)^2 reste refusé pour (u+v)^2 — comportement de main, conséquence acceptée.
+	it("(u+v)^2 : (z-7)^2 reste refusé (u = z n'est pas un nombre), (-7+z)^2 accepté comme sur main", () => {
+		expect(requiredFormVerdict('(z-7)^2', { pattern: '(u+v)^2' })).toBe('violated');
 		expect(requiredFormVerdict('(-7+z)^2', { pattern: '(u+v)^2' })).toBe('ok');
 	});
 

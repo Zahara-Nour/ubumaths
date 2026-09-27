@@ -28,7 +28,8 @@ import {
 	mapNode
 } from '$lib/mathAST';
 import { P } from '$lib/mathAST/pattern/builder';
-import { matches } from '$lib/mathAST/pattern/match';
+import { matches, tryMatch } from '$lib/mathAST/pattern/match';
+import { isMathNodeBinding } from '$lib/mathAST/pattern/types';
 
 // =============================================================================
 // CONSTANTS
@@ -304,6 +305,26 @@ function hasLiteral(pattern: unknown): boolean {
 
 const MAX_IMPLICIT_VARIANTS = 64;
 
+/** Entier ou décimal non nul (le zéro ajouté, `(x+0)^2`, n'est pas une forme réduite) */
+function isNonZeroNumber(node: MathNode): boolean {
+	return isNumber(node) && Number(node.value.replace(',', '.')) !== 0;
+}
+
+/**
+ * Nombre simple : entier, décimal ou fraction de deux entiers, avec un signe éventuel.
+ * Pas de `x`, pas de calcul non effectué, pas de `(-3)` entre parenthèses.
+ */
+function isSimpleNumber(node: MathNode): boolean {
+	const unsigned = isOpposite(node) ? node.operand : node;
+	if (isNonZeroNumber(unsigned)) return true;
+	return (
+		isDivision(unsigned) &&
+		isNonZeroNumber(unsigned.numerator) &&
+		isNumber(unsigned.denominator) &&
+		isNonZeroNumber(unsigned.denominator)
+	);
+}
+
 /**
  * Élément neutre implicite : dans `u*T`, un joker libre (sans contrainte, écrit une seule
  * fois) peut valoir 1 (`T`) ou −1 (`−T`) ; dans `T + w`, il peut valoir 0 (`T`). Seulement
@@ -384,10 +405,16 @@ function matchesCustomPattern(node: MathNode, patternStr: string): boolean {
 		if (matches(loose, looseNode)) return true;
 		// Puis en dernier recours (#609) : soustractions lues comme sommes signées, et éléments
 		// neutres implicites (u = ±1, w = 0). Seulement ajouté : rien de reconnu ne cesse de l'être.
+		// Chaque joker doit alors valoir un nombre simple : sinon `2(x+1)^2-3(x+1)^2` ou
+		// `(x+1)^2-2\\times3` passeraient (calcul non effectué, relecture #489).
 		const signedNode = asSignedSums(looseNode);
-		return withImplicitNeutrals(loose).some((variant) =>
-			matches(variant as typeof pattern, signedNode)
-		);
+		return withImplicitNeutrals(loose).some((variant) => {
+			const bindings = tryMatch(variant as typeof pattern, signedNode);
+			return (
+				bindings !== undefined &&
+				[...bindings.values()].every((value) => isMathNodeBinding(value) && isSimpleNumber(value))
+			);
+		});
 	} catch {
 		// Invalid pattern - treat as no match
 		return false;
