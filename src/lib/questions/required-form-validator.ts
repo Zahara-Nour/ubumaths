@@ -21,7 +21,8 @@ import {
 	isNumber,
 	isOpposite,
 	flattenProductShallow,
-	stripUnnecessaryBrackets
+	stripUnnecessaryBrackets,
+	mapNode
 } from '$lib/mathAST';
 import { P } from '$lib/mathAST/pattern/builder';
 import { matches } from '$lib/mathAST/pattern/match';
@@ -181,6 +182,47 @@ function matchesPredefinedForm(
 }
 
 /**
+ * Parenthèses de regroupement retirées : la structure de l'arbre porte déjà le groupement.
+ * `(9+2):4` et `\\frac{9+2}{4}` ont alors la même forme (la fraction n'a pas de parenthèses).
+ * Les autres délimiteurs (valeur absolue…) sont gardés.
+ */
+function withoutGroupingParentheses(node: MathNode): MathNode {
+	return mapNode(node, (n) =>
+		n.type === 'delimiter' && n.delimiters === 'parentheses' && groupsAnOperation(n.content)
+			? n.content
+			: n
+	);
+}
+
+/**
+ * Parenthèses qui groupent une opération (`(9+2)`) : seulement du groupement. Celles d'un
+ * nombre négatif (`0+(-15)`) portent un sens (addition de l'opposé ≠ soustraction) : gardées.
+ */
+function groupsAnOperation(content: MathNode): boolean {
+	return ['addition', 'subtraction', 'multiplication', 'division', 'superscript'].includes(
+		content.type
+	);
+}
+
+/** Même chose dans un motif : `(a + b) / c` ; une séquence (`(__reste)`) garde ses parenthèses */
+function patternWithoutParentheses(pattern: unknown): unknown {
+	if (Array.isArray(pattern)) return pattern.map(patternWithoutParentheses);
+	if (!pattern || typeof pattern !== 'object') return pattern;
+	const node = pattern as Record<string, unknown>;
+	if (node.type === 'delimiter-pattern') {
+		const content = node.content as { type?: string } | undefined;
+		const operation =
+			/^(addition|subtraction|multiplication|division|superscript|sum|product)-pattern$/;
+		if (content && operation.test(String(content.type))) {
+			return patternWithoutParentheses(content);
+		}
+	}
+	return Object.fromEntries(
+		Object.entries(node).map(([key, value]) => [key, patternWithoutParentheses(value)])
+	);
+}
+
+/**
  * Checks if a node matches a custom pattern.
  *
  * Uses the pattern matching system from mathAST.
@@ -192,7 +234,10 @@ function matchesPredefinedForm(
 function matchesCustomPattern(node: MathNode, patternStr: string): boolean {
 	try {
 		const pattern = P.parse(patternStr);
-		return matches(pattern, node);
+		// Tel qu'écrit, OU sans parenthèses de regroupement : rien de ce qui était reconnu
+		// ne cesse de l'être (`(a)^2`, `k*(__reste)`), et `(9+2):4` ≡ `\\frac{9+2}{4}` s'ajoute
+		const loose = patternWithoutParentheses(pattern) as typeof pattern;
+		return matches(pattern, node) || matches(loose, withoutGroupingParentheses(node));
 	} catch {
 		// Invalid pattern - treat as no match
 		return false;
