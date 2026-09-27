@@ -251,7 +251,7 @@ export class TinyCASConverter {
 			this.stats.exclusions++;
 
 			// Count variable references in exclusions
-			const varMatches = exclusions.match(/&(\w+)/g);
+			const varMatches = exclusions.match(/&(\d+|[a-zA-Z_]\w*)/g);
 			if (varMatches) {
 				this.stats.variableRefs += varMatches.length;
 			}
@@ -533,13 +533,13 @@ export class TinyCASConverter {
 		// Helper function to convert variables within expressions
 		const convertVarsInExpr = (expr: string): string => {
 			// Count variable conversions
-			const varMatches = expr.match(/&(\w+)/g);
+			const varMatches = expr.match(/&(\d+|[a-zA-Z_]\w*)/g);
 			if (varMatches) {
 				this.stats.variableRefs += varMatches.length;
 			}
 			// Convert variable references within the expression (numeric → letters)
 			// Simplified syntax - the parser now supports bare variable names
-			return expr.replace(/&(\w+)/g, (match, varName) => {
+			return expr.replace(/&(\d+|[a-zA-Z_]\w*)/g, (match, varName) => {
 				const name = /^\d+$/.test(varName) ? numberToLetterName(parseInt(varName, 10)) : varName;
 				return name;
 			});
@@ -636,7 +636,7 @@ export class TinyCASConverter {
 			// Convert variable references in all parts (numeric → letters)
 			// Simplified syntax - the parser now supports bare variable names
 			const convertVars = (s: string) =>
-				s.replace(/&(\w+)/g, (match, varName) => {
+				s.replace(/&(\d+|[a-zA-Z_]\w*)/g, (match, varName) => {
 					const name = /^\d+$/.test(varName) ? numberToLetterName(parseInt(varName, 10)) : varName;
 					return name;
 				});
@@ -708,7 +708,7 @@ export class TinyCASConverter {
 
 		// Convert variable references (numeric → letters)
 		// Simplified syntax - the parser now supports bare variable names
-		processedExclusions = processedExclusions.replace(/&(\w+)/g, (match, varName) => {
+		processedExclusions = processedExclusions.replace(/&(\d+|[a-zA-Z_]\w*)/g, (match, varName) => {
 			const name = /^\d+$/.test(varName) ? numberToLetterName(parseInt(varName, 10)) : varName;
 			return name;
 		});
@@ -735,7 +735,7 @@ export class TinyCASConverter {
 		}
 		if (converted.includes('&') && /&\w+/.test(converted)) {
 			// Check if it's actually a variable reference (not HTML entity like &amp;)
-			const matches = converted.match(/&(\w+)/g);
+			const matches = converted.match(/&(\d+|[a-zA-Z_]\w*)/g);
 			if (matches && matches.some((m) => !m.match(/&(amp|lt|gt|quot|apos|nbsp);/))) {
 				this.warnings.push('Possible unconverted variable reference detected');
 			}
