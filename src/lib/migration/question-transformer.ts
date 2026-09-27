@@ -832,7 +832,8 @@ function extractBlanksFromSolutions(
 			warnings.push(`Expected ${expectedCount} solution(s) for blanks but got ${solutions.length}`);
 		}
 		for (let i = 0; i < count; i++) {
-			const rawAnswer = String(solutions[i]);
+			// Une espace finale (`[_&1*&1_mm^2_] `) cachait la grandeur (relecture de #485)
+			const rawAnswer = String(solutions[i]).trim();
 			// Grandeur entière (`&1 mm`, `&2 h &4 min`) → calcul ; jamais `;hms` dans un attendu
 			const quantity = wholeQuantity(rawAnswer);
 			const conversionResult = convertTinyCASToNew(

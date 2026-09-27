@@ -133,3 +133,23 @@ describe('questions converties : énoncé, réponse attendue, correction', () =>
 		expect(instance.blanks?.[0].expectedAnswer).toBe('4');
 	});
 });
+
+// Relecture de #485 : une solution TinyMath terminée par une espace (`[_&1*&1_mm^2_] `)
+describe('solution grandeur suivie d’une espace', () => {
+	it('#436 aire d’un carré (v0) : case à unité, attendu sans espace', () => {
+		const instance = instanceOf(436, { a1: '3' }, 0);
+		expect(instance.blanks?.[0].expectedAnswer).toBe('9[mm^2]');
+		expect(instance.blanks?.[0].unit).toEqual({ expected: true });
+		expect(validateAnswer(['9\\unit{mm^2}'], instance).isCorrect).toBe(true);
+	});
+
+	it('#442 aire d’un triangle quelconque : case à unité', () => {
+		const template = transformQuestion(questions[442], 442).template!;
+		for (const variation of template.variations) {
+			expect(variation.blanks?.[0].unit).toEqual({ expected: true });
+			expect(variation.blanks?.[0].expectedAnswer).toBe(
+				variation.blanks?.[0].expectedAnswer.trim()
+			);
+		}
+	});
+});
