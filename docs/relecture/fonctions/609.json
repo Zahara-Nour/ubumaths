@@ -2,7 +2,7 @@
 	"globalIndex": 609,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Forme canonique exigée par motif u*($x+v)^2+w sur chaque case (forme développée et factorisée refusées). Image de la parabole remise dans chaque énoncé, image de correction + phrase (sommet, lecture de a) dans la correction. {{{eval:…}}} nettoyé en {{eval:…}} (coefficient ±1 écrit en dur). Consigne à l'impératif.",
+	"editNotes": "Forme canonique exigée par motif u*($x+v)^2+w sur chaque case (forme développée et factorisée refusées). Image de la parabole remise dans chaque énoncé, image de correction + phrase (sommet, lecture de a) dans la correction. {{{eval:…}}} nettoyé en {{eval:…}} (coefficient ±1 écrit en dur). Consigne à l'impératif. Décision de David (2026-09-28) : le coefficient écrit sous la fraction (−(x+2)²/2 − 1) est juste (#490).",
 	"template": {
 		"title": "Déterminer la forme canonique.",
 		"description": "Graphiquement",
@@ -784,13 +784,13 @@
 				}
 			},
 			{
-				"description": "v0 carré divisé par 2 : refusé par le motif (écriture équivalente non standard)",
+				"description": "v0 carré divisé par 2 : juste (coefficient sous la fraction, décision de David)",
 				"variationIndex": 0,
 				"variables": {},
 				"answers": ["-\\frac{(x+2)^2}{2}-1"],
 				"expected": {
-					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"status": "correct",
+					"constraintViolations": []
 				}
 			}
 		]
