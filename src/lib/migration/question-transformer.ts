@@ -17,6 +17,13 @@
  * @module migration/question-transformer
  */
 
+import {
+	isQuantityDefinition,
+	isTinyMathUnit,
+	rewriteTinyMathQuantities,
+	splitQuantityVariable,
+	wholeQuantity
+} from './quantity-converter';
 import type {
 	QuestionBase,
 	OldGrade,
@@ -483,7 +490,10 @@ function convertVariables(
 	const entries = Object.entries(oldVars).flatMap(([varName, expression]): [string, string][] => {
 		const rawName = varName.substring(1);
 		const name = /^\d+$/.test(rawName) ? numberToLetterName(parseInt(rawName, 10)) : rawName;
-		return splitCompositeDraw(name, expression) ?? [[varName, expression]];
+		return (
+			splitQuantityVariable(name, expression) ??
+			splitCompositeDraw(name, expression) ?? [[varName, expression]]
+		);
 	});
 
 	for (const [varName, expression] of entries) {
@@ -771,6 +781,29 @@ function solutionHasUnit(solution: string): boolean {
 	return unitPattern.test(solution);
 }
 
+/** Grandeurs d'une variation : variables TinyMath qui en sont (`&4`), unité imprimée */
+interface QuantityContext {
+	variables?: Set<string>;
+	unitInField?: boolean;
+}
+
+/** Champ réponse où l'unité est imprimée après la case : `$$... cm$$`, `$$...\\,h$$` */
+function unitPrintedAfterBlank(answerField: string | undefined): boolean {
+	if (!answerField) return false;
+	return [
+		...closeAnswerField(answerField).matchAll(/\.\.\.\s*(?:\\,)?\s*([a-zA-Zµ][\w.^{}-]*)/g)
+	].some((match) => isTinyMathUnit(match[1]));
+}
+
+/** Variables TinyMath (`&4`) dont la définition est une grandeur */
+function quantityVariables(variables: Variables | undefined): Set<string> {
+	return new Set(
+		Object.entries(variables ?? {})
+			.filter(([, expression]) => isQuantityDefinition(String(expression)))
+			.map(([name]) => name)
+	);
+}
+
 /**
  * Extract blanks from solutionss for result/rewrite or answerField questions.
  *
@@ -785,7 +818,8 @@ function extractBlanksFromSolutions(
 	expressionVarName: string | undefined,
 	warnings: string[],
 	blankCount?: number,
-	decimalResult = false
+	decimalResult = false,
+	quantities: QuantityContext = {}
 ): NonNullable<QuestionVariation['blanks']> {
 	const blanks: NonNullable<QuestionVariation['blanks']> = [];
 
@@ -798,8 +832,13 @@ function extractBlanksFromSolutions(
 			warnings.push(`Expected ${expectedCount} solution(s) for blanks but got ${solutions.length}`);
 		}
 		for (let i = 0; i < count; i++) {
-			const rawAnswer = String(solutions[i]);
-			const conversionResult = convertTinyCASToNew(rawAnswer);
+			// Une espace finale (`[_&1*&1_mm^2_] `) cachait la grandeur (relecture de #485)
+			const rawAnswer = String(solutions[i]).trim();
+			// Grandeur entière (`&1 mm`, `&2 h &4 min`) → calcul ; jamais `;hms` dans un attendu
+			const quantity = wholeQuantity(rawAnswer);
+			const conversionResult = convertTinyCASToNew(
+				rewriteTinyMathQuantities(quantity ?? rawAnswer, true)
+			);
 			if (conversionResult.warnings) {
 				warnings.push(...conversionResult.warnings.map((w) => `Blank solution: ${w}`));
 			}
@@ -808,8 +847,13 @@ function extractBlanksFromSolutions(
 				expectedAnswer: slashFractionsToLatex(conversionResult.converted || rawAnswer)
 			};
 
-			// Detect unit in solution
-			if (solutionHasUnit(rawAnswer)) {
+			// Case à unité : l'attendu est une grandeur — sauf si l'unité est imprimée
+			// après la case (`$$... cm$$`) : la case attend alors un nombre
+			const isQuantity =
+				solutionHasUnit(rawAnswer) ||
+				quantity !== null ||
+				quantities.variables?.has(rawAnswer.trim()) === true;
+			if (isQuantity && !quantities.unitInField) {
 				blank.unit = { expected: true };
 			}
 
@@ -2067,6 +2111,7 @@ function createVariationsWithShared(
 
 	// Handle blanks based on migration mode
 	const expressions = oldQuestion.expressions || [];
+	const variabless = oldQuestion.variabless || [];
 	const solutionss = oldQuestion.solutionss || [];
 	const oldAnswerFormats = oldQuestion.answerFormats || [];
 
@@ -2106,10 +2151,18 @@ function createVariationsWithShared(
 				exprVarName,
 				warnings,
 				undefined,
-				oldQuestion['result-type'] === 'decimal'
+				oldQuestion['result-type'] === 'decimal',
+				{ variables: quantityVariables(variabless[i] || variabless[0]) }
 			);
 			if (blanks.length > 0) {
 				perVariation[i].blanks = blanks;
+			}
+
+			// Énoncé seul dont la réponse est une grandeur (#467, #468) : TinyMath ouvrait
+			// la case sous l'énoncé ; sans expression, le gabarit n'en a aucune
+			const statement = perVariation[i].statement ?? shared.statement;
+			if (expressions.length === 0 && statement && blanks.some((blank) => blank.unit)) {
+				perVariation[i].statement = templateMarkdown(`${statement}\n\n$?$`);
 			}
 
 			// Per-variation answerFormats (when not shared)
@@ -2140,7 +2193,12 @@ function createVariationsWithShared(
 					undefined, // No answerFormat for answerFields
 					undefined, // No expression variable
 					warnings,
-					blankCount
+					blankCount,
+					false,
+					{
+						variables: quantityVariables(variabless[i] || variabless[0]),
+						unitInField: unitPrintedAfterBlank(af)
+					}
 				);
 				if (blanks.length > 0) {
 					perVariation[i].blanks = blanks;
