@@ -28,6 +28,7 @@ import {
 	number,
 	opposite,
 	positive,
+	percentage,
 	relation,
 	signedZero,
 	subscript,
@@ -189,6 +190,7 @@ export function getChildren(node: MathNode): MathNode[] {
 		// Unary operations
 		case 'opposite':
 		case 'positive':
+		case 'percentage':
 			return [node.operand];
 
 		// Function
@@ -342,6 +344,10 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 				operatorMetadata: node.operatorMetadata,
 				metadata: node.metadata
 			});
+			break;
+
+		case 'percentage':
+			transformedNode = percentage(mapNode(node.operand, fn), node.metadata);
 			break;
 
 		// Function
@@ -564,6 +570,9 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 				operatorMetadata: transformedParent.operatorMetadata,
 				metadata: transformedParent.metadata
 			});
+
+		case 'percentage':
+			return percentage(mapNodeTopDown(transformedParent.operand, fn), transformedParent.metadata);
 
 		// Function
 		case 'function':
@@ -868,6 +877,9 @@ export function cloneNode<T extends MathNode>(node: T): T {
 				operatorMetadata: node.operatorMetadata,
 				metadata: node.metadata
 			}) as T;
+
+		case 'percentage':
+			return percentage(cloneNode(node.operand), node.metadata) as T;
 
 		// Function
 		case 'function':
@@ -1340,6 +1352,18 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 					operatorMetadata: node.operatorMetadata,
 					metadata: node.metadata
 				}
+			);
+
+		// Pourcentage : `(a+5)%` garde ses parenthèses (précédence inconnue → conservées)
+		case 'percentage':
+			return percentage(
+				stripBracketsInternal(node.operand, {
+					...childCtx,
+					isFirstTerm: true,
+					parentType: 'percentage',
+					isLeftOperand: true
+				}),
+				node.metadata
 			);
 
 		case 'positive':

@@ -15,7 +15,9 @@
 
 import type { MathNode } from './types';
 import type { Rational } from './normal/types';
-import { number, opposite, multiply, divide, add, subtract } from './factory';
+import { number, opposite, multiply, divide, add, subtract, percentage } from './factory';
+import { isPercentage } from './guards';
+import { areEquivalent } from './equivalence';
 import { extractRational } from './common/numeric';
 import { mapNode, stripUnnecessaryBrackets, removeNullTermsAST } from './transforms';
 import {
@@ -687,6 +689,51 @@ function isOneNode(node: MathNode): boolean {
 export type ConstraintSeverity = 'strict' | 'warn' | 'off';
 
 /** Result of the checkForm pipeline */
+/**
+ * Une écriture en pourcentage : `20 %`, `-20 %`, `(20 %)` — le symbole porte sur
+ * toute la réponse, pas sur un morceau (`10 % × 50` n'en est pas une).
+ */
+export function isPercentWriting(node: MathNode): boolean {
+	let current = node;
+	while (
+		current.type === 'delimiter' ||
+		current.type === 'opposite' ||
+		current.type === 'positive'
+	) {
+		current = current.type === 'delimiter' ? current.content : current.operand;
+	}
+	return isPercentage(current);
+}
+
+/**
+ * Une écriture finale de nombre, signe compris : un nombre (`0,2`, `-3`) ou une
+ * fraction de deux nombres (`\frac{1}{5}`). Ni calcul, ni pourcentage.
+ */
+function isFinalNumberWriting(node: MathNode): boolean {
+	let current = node;
+	while (current.type === 'delimiter') current = current.content;
+	if (current.type === 'opposite' || current.type === 'positive') current = current.operand;
+	if (current.type === 'number') return true;
+	return (
+		current.type === 'division' &&
+		current.numerator.type === 'number' &&
+		current.denominator.type === 'number'
+	);
+}
+
+/**
+ * La réponse est la valeur d'un pourcentage attendu, symbole oublié : `20` pour
+ * `20 %`, `12,5` pour `12,5 %`. Sert au message « N'oublie pas le symbole % ».
+ */
+export function forgotPercentSign(answerLatex: string, expectedLatex: string): boolean {
+	const answer = parseLatexSafe(normalizeDecimalComma(removeSpaces(answerLatex)));
+	const expected = parseLatexSafe(normalizeDecimalComma(removeSpaces(expectedLatex)));
+	if (!answer.ast || answer.errors.length > 0) return false;
+	if (!expected.ast || expected.errors.length > 0) return false;
+	if (!isPercentWriting(expected.ast) || !isFinalNumberWriting(answer.ast)) return false;
+	return areEquivalent(percentage(answer.ast), expected.ast, { timeoutMs: 500 });
+}
+
 export interface CheckFormResult {
 	valid: boolean;
 	status: 'correct' | 'bad_form' | 'unoptimal_form';
@@ -1007,6 +1054,18 @@ export function checkForm(
 
 	const expectedAST = applyFullASTPipeline(expectedParse.ast, options);
 
+	// === Pourcentage (décisions du 2026-09-27) ===
+	// Attendu `20 %`, réponse de même valeur sans le symbole : perfectible, mais
+	// SEULEMENT pour une écriture finale (`0,2`, `1/5`). Un calcul non effectué
+	// (`0,1+0,1`, `2 × 10 %`) suit la comparaison de forme : mauvaise forme.
+	// L'inverse (`710 %` pour 7,1) échoue aussi à la comparaison finale.
+	if (isPercentWriting(expectedAST) && isFinalNumberWriting(answerParse.ast)) {
+		const severity = constraints['percent'] ?? 'warn';
+		const withPercent =
+			severity === 'off' ? violations : [...violations, { id: 'percent', severity }];
+		return verdictOf(withPercent, messages);
+	}
+
 	// === Final comparison ===
 	// « * » (réponses attendues écrites en syntaxe simple) et « × » (clavier de
 	// l'élève) sont le même signe : le style d'affichage n'est pas une forme.
@@ -1018,6 +1077,14 @@ export function checkForm(
 	}
 
 	// Form OK — check constraint violations
+	return verdictOf(violations, messages);
+}
+
+/** Verdict d'une forme conforme : les violations strictes refusent, les autres avertissent */
+function verdictOf(
+	violations: Array<{ id: string; severity: 'strict' | 'warn' }>,
+	messages: string[]
+): CheckFormResult {
 	const strictViolations = violations.filter((v) => v.severity === 'strict');
 	const warnViolations = violations.filter((v) => v.severity === 'warn');
 

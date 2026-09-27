@@ -119,6 +119,9 @@ export function hashMathNode(node: MathNode): string {
 		case 'positive':
 			return `+(${hashMathNode(node.operand)})`;
 
+		case 'percentage':
+			return `%(${hashMathNode(node.operand)})`;
+
 		case 'function': {
 			const argsHash = node.args.map(hashMathNode).join(',');
 			let hash = `F:${node.name}(${argsHash})`;

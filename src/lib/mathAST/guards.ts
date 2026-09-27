@@ -19,6 +19,7 @@ import type {
 	DivisionNode,
 	OppositeNode,
 	PositiveNode,
+	PercentageNode,
 	FunctionNode,
 	DelimiterNode,
 	SubscriptNode,
@@ -186,6 +187,13 @@ export function isOpposite(node: MathNode): node is OppositeNode {
  */
 export function isPositive(node: MathNode): node is PositiveNode {
 	return node.type === 'positive';
+}
+
+/**
+ * Type guard for PercentageNode (`20 %`)
+ */
+export function isPercentage(node: MathNode): node is PercentageNode {
+	return node.type === 'percentage';
 }
 
 /**
@@ -656,6 +664,7 @@ export function hasUnitDescendant(node: MathNode): boolean {
 			return hasUnitDescendant(node.left) || hasUnitDescendant(node.right);
 
 		case 'logical-not':
+		case 'percentage':
 			return hasUnitDescendant(node.operand);
 
 		case 'signed-zero':

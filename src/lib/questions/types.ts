@@ -825,6 +825,7 @@ export type ConstraintId =
 	| 'factorZero'
 	| 'signs'
 	| 'reducedFractions'
+	| 'percent'
 	| 'unit';
 
 /**
@@ -865,6 +866,8 @@ export interface ConstraintOptions {
 	factorZero?: ConstraintMode;
 	signs?: ConstraintMode;
 	reducedFractions?: ConstraintMode;
+	/** Pourcentage attendu, réponse de même valeur sans le symbole (`0,2` pour `20 %`) */
+	percent?: ConstraintMode;
 	// Unit matching (numerical_with_unit questions)
 	unit?: ConstraintMode;
 }

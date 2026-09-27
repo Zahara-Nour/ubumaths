@@ -374,6 +374,7 @@ function computeDomainNode(
 		// Unary operations
 		case 'opposite':
 		case 'positive':
+		case 'percentage':
 			return computeDomainNode(node.operand, variable, steps, options);
 
 		// Functions - main complexity

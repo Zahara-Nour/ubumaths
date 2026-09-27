@@ -910,16 +910,13 @@ Le score est de 95\\,\\% des élèves.
 		expect(result.warnings).toHaveLength(0);
 	});
 
-	it('should preserve spacing commands inside math mode', () => {
-		// In math mode, \\, and \\% should be preserved for MathLive to render
+	it('reads a percentage with its thin space inside math mode', () => {
+		// `95\\,\\%` est un pourcentage pour mathAST depuis le 2026-09-27 : il devient
+		// `~95%~` (réaffiché « 95 % » avec l'espace fine), plus un repli en LaTeX brut
 		const input = `\\begin{EXO}{}{}
 Le score est de $95\\,\\%$ des élèves.
 \\end{EXO}`;
 		const result = transpileLatexToMarkdown(input);
-		// Math with spacing commands falls back to original LaTeX with $...$ delimiters
-		// because \, and \% are not supported by mathAST parser
-		expect(result.markdown).toContain('$95\\,\\%$');
-		// Warning for unsupported math feature is expected
-		expect(result.warnings.length).toBeGreaterThanOrEqual(0);
+		expect(result.markdown).toContain('~95%~');
 	});
 });

@@ -18,6 +18,7 @@ import type {
 	DivisionNode,
 	OppositeNode,
 	PositiveNode,
+	PercentageNode,
 	FunctionNode,
 	DelimiterNode,
 	SubscriptNode,
@@ -37,7 +38,7 @@ import type {
 } from './types';
 import { flattenRelationChain } from './flatten';
 import { format } from './units/formatter';
-import { needsParenthesesUnderSign } from './common/sign-parentheses';
+import { needsParenthesesUnderPercent, needsParenthesesUnderSign } from './common/sign-parentheses';
 
 // =============================================================================
 // Types
@@ -358,6 +359,15 @@ export class LatexGenerator {
 				this.emit('+', node.operatorMetadata ?? node.metadata);
 				this.visitWithSpans(node.operand);
 				break;
+
+			case 'percentage': {
+				const wrap = needsParenthesesUnderPercent(node.operand);
+				if (wrap) this.emit('\\left( ', node.metadata);
+				this.visitWithSpans(node.operand);
+				if (wrap) this.emit(' \\right)', node.metadata);
+				this.emit('\\,\\%', node.metadata);
+				break;
+			}
 
 			case 'function':
 				this.visitFunctionSpans(node);
@@ -968,6 +978,9 @@ export class LatexGenerator {
 			case 'positive':
 				content = this.generatePositive(node);
 				break;
+			case 'percentage':
+				content = this.generatePercentage(node);
+				break;
 			case 'function':
 				content = this.generateFunction(node);
 				break;
@@ -1159,6 +1172,14 @@ export class LatexGenerator {
 	private generatePositive(node: PositiveNode): string {
 		const operand = this.generateNode(node.operand);
 		return `+${operand}`;
+	}
+
+	/** Pourcentage : `20\,\%` ; une expression composée est parenthésée */
+	private generatePercentage(node: PercentageNode): string {
+		const operand = this.generateNode(node.operand);
+		return needsParenthesesUnderPercent(node.operand)
+			? `\\left( ${operand} \\right)\\,\\%`
+			: `${operand}\\,\\%`;
 	}
 
 	/**

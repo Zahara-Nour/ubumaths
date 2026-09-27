@@ -48,6 +48,7 @@ function needsParenthesesAsAtom(node: MathNode): boolean {
 		case 'division':
 		case 'opposite':
 		case 'positive':
+		case 'percentage':
 		case 'relation':
 		case 'logical':
 		case 'logical-not':

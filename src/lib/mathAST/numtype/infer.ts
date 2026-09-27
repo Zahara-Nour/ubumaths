@@ -173,6 +173,13 @@ function inferTypeUncached(node: MathNode, ctx: TypeContext): MathType {
 		case 'positive':
 			return inferPositiveType(inferType(node.operand, ctx));
 
+		// Pourcentage : l'opérande divisé par 100 (même type qu'un quotient par 100)
+		case 'percentage':
+			return inferDivisionType(
+				inferType(node.operand, ctx),
+				inferType({ type: 'number', value: '100' }, ctx)
+			);
+
 		case 'superscript':
 			return inferSuperscriptType(node.base, node.superscript, ctx);
 

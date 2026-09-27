@@ -11,6 +11,7 @@ export const CONSTRAINT_IDS: ConstraintId[] = [
 	'factorZero',
 	'signs',
 	'reducedFractions',
+	'percent',
 	'unit'
 ];
 
@@ -25,6 +26,7 @@ export const CONSTRAINT_LABELS: Record<ConstraintId, string> = {
 	factorZero: 'Facteur 0 (0 * x)',
 	signs: 'Signes (-- = +)',
 	reducedFractions: 'Fractions irréductibles',
+	percent: 'Pourcentage',
 	unit: 'Unité'
 };
 

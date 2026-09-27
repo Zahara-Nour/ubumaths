@@ -320,6 +320,10 @@ export class Tokenizer {
 		const char = this.input[this.position];
 		this.position++;
 
+		// `%` nu (réponse attendue écrite `20%`) : le même pourcentage que `\%`,
+		// jamais une variable nommée « % » multipliée en silence
+		if (char === '%') return this.makeToken('COMMAND', '%', startPos, 1);
+
 		const type = this.charToTokenType(char);
 		return this.makeToken(type, char, startPos);
 	}

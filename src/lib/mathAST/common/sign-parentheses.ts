@@ -29,3 +29,23 @@ import type { MathNode } from '../types';
 export function needsParenthesesUnderSign(node: MathNode): boolean {
 	return node.type === 'addition' || node.type === 'subtraction';
 }
+
+/**
+ * Le symbole `%` est un postfixe : il se rattache au dernier atome à la relecture.
+ * `(a+5)%`, `(2x)%`, `(-3)%` gardent donc leurs parenthèses ; un atome, un appel de
+ * fonction ou une expression déjà parenthésée s'écrit tel quel (`20%`, `a%`).
+ */
+export function needsParenthesesUnderPercent(node: MathNode): boolean {
+	switch (node.type) {
+		case 'number':
+		case 'variable':
+		case 'greek':
+		case 'constant':
+		case 'hole':
+		case 'function':
+		case 'delimiter':
+			return false;
+		default:
+			return true;
+	}
+}

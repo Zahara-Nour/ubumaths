@@ -110,6 +110,7 @@ function leftmostIsNumber(node: MathNode): boolean {
 			return leftmostIsNumber(node.left);
 		case 'opposite':
 		case 'positive':
+		case 'percentage':
 			return leftmostIsNumber(node.operand);
 		default:
 			return false;

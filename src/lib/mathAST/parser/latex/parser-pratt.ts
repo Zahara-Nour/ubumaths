@@ -284,6 +284,27 @@ class PrattParser {
 	}
 
 	/**
+	 * `\text{\%}` ou `\text{ \%}` à la position courante : le symbole pourcentage
+	 * écrit en texte (attendus saisis à la main), lu comme `\%`.
+	 */
+	private isTextPercentHere(): boolean {
+		if (!this.checkCommand('text')) return false;
+		const expected: Array<(token: Token) => boolean> = [
+			(token) => token.type === 'LBRACE',
+			(token) => token.type === 'COMMAND' && token.value === '%',
+			(token) => token.type === 'RBRACE'
+		];
+		let offset = 0;
+		for (const matches of expected) {
+			let token = this.tokenizer.peekAt(offset);
+			while (isLatexSpacing(token)) token = this.tokenizer.peekAt(++offset);
+			if (!matches(token)) return false;
+			offset++;
+		}
+		return true;
+	}
+
+	/**
 	 * Check if the current token matches the given type
 	 */
 	private check(type: Token['type']): boolean {
@@ -448,6 +469,25 @@ class PrattParser {
 				if (token.value === 'unit') {
 					return this.parseUnit(left);
 				}
+				// Pourcentage, postfixe : `20\%`, `20\,\%` (l'espace fine est filtrée)
+				if (this.isTextPercentHere()) {
+					if (left.type === 'percentage') {
+						this.error('Unexpected token: \\%', token.position, token.length, 'UNEXPECTED_TOKEN');
+					}
+					this.advance(); // \text
+					this.advance(); // {
+					this.advance(); // \%
+					this.advance(); // }
+					return MathAST.percentage(left);
+				}
+				if (token.value === '%') {
+					// `20\%\%` : erreur de lecture, jamais lu en silence
+					if (left.type === 'percentage') {
+						this.error('Unexpected token: \\%', token.position, token.length, 'UNEXPECTED_TOKEN');
+					}
+					this.advance();
+					return MathAST.percentage(left);
+				}
 				if (RELATION_COMMANDS.has(token.value)) {
 					const relType = RELATION_COMMAND_MAP[token.value];
 					if (relType) {
@@ -526,6 +566,10 @@ class PrattParser {
 			case 'COMMAND':
 				if (token.value === 'unit') {
 					return BP.MULTIPLY + 1; // Slightly higher than multiply to bind units
+				}
+				// `%` lie plus fort que le signe (`-20\%` = -(20 %)), moins que la puissance
+				if (token.value === '%' || this.isTextPercentHere()) {
+					return BP.UNARY + 1;
 				}
 				if (RELATION_COMMANDS.has(token.value)) {
 					return BP.RELATION;

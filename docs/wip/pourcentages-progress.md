@@ -39,6 +39,7 @@ générables ; #492, #504, #505 corrigées avec la saisie réelle `20\%`.
 ## Avancement
 
 - [x] Phase 0 validée (2026-09-27)
-- [ ] mathAST : nœud pourcentage, parseurs, affichage, évaluation, équivalence
-- [ ] correcteur : forme (perfectible / mauvaise forme), message « N'oublie pas le symbole % »
+- [x] mathAST : nœud `percentage` (postfixe), parseurs maison et LaTeX, affichage, évaluation, équivalence
+- [x] correcteur : contrainte `percent` (perfectible), mauvaise forme, message « N'oublie pas le symbole % »
+      — base : aucune différence hors mélanges non seedés ; lot 483–510 : 19 → 24 générables
 - [ ] relecture du lot Proportionnalité

@@ -94,6 +94,7 @@ function collectViolations(
 
 		case 'opposite':
 		case 'positive':
+		case 'percentage':
 			collectViolations(node.operand, bindings, violations);
 			break;
 

@@ -62,6 +62,7 @@ export type CustomTokenType =
 	| 'QUESTION' // ? (for holes/placeholders)
 	| 'PRIME' // ' (apostrophe for derivatives)
 	| 'EXCLAMATION' // ! (logical NOT)
+	| 'PERCENT' // % (pourcentage, postfixe)
 	| 'AND_AND' // && (logical AND)
 	| 'OR_OR' // || (logical OR)
 	| 'LPAREN' // (
@@ -723,6 +724,8 @@ export class CustomTokenizer {
 				return 'COMMA';
 			case '!':
 				return 'EXCLAMATION';
+			case '%':
+				return 'PERCENT';
 			default:
 				// Unknown character - treat as a letter for now
 				return 'LETTER';
@@ -917,6 +920,8 @@ export function tokenTypeToString(type: CustomTokenType): string {
 			return "'''";
 		case 'EXCLAMATION':
 			return "'!'";
+		case 'PERCENT':
+			return "'%'";
 		case 'AND_AND':
 			return "'&&'";
 		case 'OR_OR':

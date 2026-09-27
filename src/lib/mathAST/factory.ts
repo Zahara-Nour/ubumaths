@@ -40,6 +40,7 @@ import type {
 	PiecewiseNode,
 	PiecewisePiece,
 	PositiveNode,
+	PercentageNode,
 	RelationNode,
 	RelationType,
 	SignedZeroNode,
@@ -502,6 +503,18 @@ export function positive(operand: MathNode, options?: UnaryOpOptions | NodeMetad
 		operand,
 		...(opts.operatorMetadata && { operatorMetadata: opts.operatorMetadata }),
 		...(opts.metadata && { metadata: opts.metadata })
+	} as const;
+}
+
+/**
+ * Pourcentage : `operand %` (`percentage(number('20'))` → « 20 % », valeur 1/5)
+ * @param operand - Ce qui est exprimé en pourcentage
+ */
+export function percentage(operand: MathNode, metadata?: NodeMetadata): PercentageNode {
+	return {
+		type: 'percentage',
+		operand,
+		...(metadata && { metadata })
 	} as const;
 }
 
@@ -1931,6 +1944,7 @@ export const MathAST = {
 
 	// Unary operations
 	opposite,
+	percentage,
 	positive,
 
 	// Functions

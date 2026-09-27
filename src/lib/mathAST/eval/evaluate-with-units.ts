@@ -112,6 +112,7 @@ function collectUnitsFromExpression(node: MathNode): {
 					break;
 				case 'opposite':
 				case 'positive':
+				case 'percentage':
 					traverse(n.operand);
 					break;
 				case 'delimiter':
@@ -407,6 +408,7 @@ function detectAffineComposition(node: MathNode): boolean {
 				break;
 			case 'opposite':
 			case 'positive':
+			case 'percentage':
 				visit(n.operand, withinComposition);
 				break;
 			case 'delimiter':
