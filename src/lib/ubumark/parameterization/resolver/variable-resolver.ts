@@ -85,6 +85,78 @@ function toBinding(value: string): BindingValue {
 }
 
 /**
+ * Remplace les noms de variables nus (`c*b*a`) en UN seul passage : une valeur substituée
+ * n'est jamais relue. Sinon la lettre tirée « b » (a = « b ») deviendrait la valeur de la
+ * variable `b` : « 6 × 2 × 2 » au lieu de « 6 × 2 × b ». Les bornes de mot évitent de
+ * toucher le `a` de `tan` ou de `max` ; les noms longs passent avant les courts.
+ */
+function substituteBareNames(text: string, resolved: ResolvedVariable[]): string {
+	if (resolved.length === 0) return text;
+	const values = new Map(resolved.map((v) => [v.name, v.value]));
+	const names = [...values.keys()].sort((a, b) => b.length - a.length);
+	const regex = new RegExp(`\\b(?:${names.join('|')})\\b`, 'g');
+	return text.replace(regex, (name) => values.get(name) ?? name);
+}
+
+/**
+ * Liaisons des variables d'une lettre pour un calcul. Une lettre qui est la VALEUR tirée
+ * d'une variable (a = « b ») et que l'auteur n'a pas écrite dans ce calcul n'est pas liée :
+ * dans `{{eval:{{expression1}}}}` avec expression1 = « 6*2*b », le `b` est l'inconnue, pas
+ * la variable `b`. Une lettre écrite par l'auteur (`{{eval:b*c}}`) reste liée.
+ */
+function singleLetterBindings(
+	authorExpression: string,
+	resolved: ResolvedVariable[]
+): Record<string, BindingValue> {
+	const authorLetters = lettersWrittenBy(authorExpression, resolved);
+	const drawn = new Set(resolved.map((v) => v.value.trim()).filter((v) => /^[a-zA-Z]$/.test(v)));
+	const bindings: Record<string, BindingValue> = {};
+	for (const rv of resolved) {
+		if (rv.name.length !== 1) continue;
+		if (drawn.has(rv.name) && !authorLetters.has(rv.name)) continue;
+		const num = Number(rv.value);
+		bindings[rv.name] = Number.isFinite(num) ? num : toBinding(rv.value);
+	}
+	return withForwardReferences(bindings, drawn);
+}
+
+/**
+ * Une valeur liée peut citer une variable d'une lettre déclarée APRÈS elle (`k = 2*y`,
+ * `y = 5`) : on la résout ici, jusqu'au bout, pour que le calcul lui-même se fasse en un seul
+ * passage. Les lettres tirées (a = « b ») y restent des inconnues : la valeur de a n'est
+ * jamais relue comme la variable `b`.
+ */
+function withForwardReferences(
+	bindings: Record<string, BindingValue>,
+	drawn: ReadonlySet<string>
+): Record<string, BindingValue> {
+	const inner = Object.fromEntries(Object.entries(bindings).filter(([name]) => !drawn.has(name)));
+	const resolved: Record<string, BindingValue> = {};
+	for (const [name, value] of Object.entries(bindings)) {
+		resolved[name] = typeof value === 'object' ? substitute(value, inner) : value;
+	}
+	return resolved;
+}
+
+/** Lettres écrites par l'auteur dans un calcul, hors `{{var}}` et noms longs substitués */
+function lettersWrittenBy(expression: string, resolved: ResolvedVariable[]): Set<string> {
+	let text = expression;
+	for (const token of tokenize(text).reverse()) {
+		text = text.slice(0, token.start) + ' 1 ' + text.slice(token.end);
+	}
+	const longNames = resolved.filter((v) => v.name.length > 1).map((v) => v.name);
+	if (longNames.length > 0) {
+		text = text.replace(new RegExp(`\\b(?:${longNames.join('|')})\\b`, 'g'), ' 1 ');
+	}
+	try {
+		return getVariables(text.includes('\\') ? parseLatex(text) : parseCustom(text));
+	} catch {
+		// Illisible : toutes les lettres, comme avant (liées)
+		return new Set(text.match(/[a-zA-Z]/g) ?? []);
+	}
+}
+
+/**
  * Lettres venues des VARIABLES CITÉES par ce calcul : `a` vaut « x » (tirée dans `$l{x;y;z}`),
  * ou `expression1` vaut « x*3*4 ». Le calcul littéral n'est ouvert que pour elles : une lettre
  * tapée dans le calcul lui-même (`{{eval:2*x}}` au lieu de `{{p}}`) reste une erreur. `e` et
@@ -302,13 +374,7 @@ export function resolveExpression(
 	// STAGE 0: If no {{...}} tokens, apply bare variable name substitution
 	// This allows expressions like "a^b*a^c" to work without explicit {{}}
 	if (!result.includes('{{')) {
-		for (const resolvedVar of alreadyResolved) {
-			// Use word boundary to avoid partial replacements
-			// e.g., don't replace 'a' in 'tan' or 'max'
-			const regex = new RegExp(`\\b${resolvedVar.name}\\b`, 'g');
-			result = result.replace(regex, resolvedVar.value);
-		}
-		return result;
+		return substituteBareNames(result, alreadyResolved);
 	}
 
 	// STAGE 1: Replace variable references {{name}}
@@ -441,17 +507,11 @@ export function resolveExpression(
 			const ast = hasLatex ? parseLatex(exprToParse) : parseCustom(exprToParse);
 
 			// Build bindings from single-letter variables for AST substitution
-			const bindings: Record<string, BindingValue> = {};
-			for (const rv of alreadyResolved) {
-				if (rv.name.length === 1) {
-					const num = Number(rv.value);
-					bindings[rv.name] = Number.isFinite(num) ? num : toBinding(rv.value);
-				}
-			}
+			const bindings = singleLetterBindings(parsed.expression, alreadyResolved);
 
 			// Substitute variables in AST and evaluate
 			for (const name of getVariables(ast)) referenced.add(name);
-			const substituted = substitute(ast, bindings);
+			const substituted = substitute(ast, bindings, { maxIterations: 1 });
 			const evaluatedValue = evaluateAstWithModifiers(
 				substituted,
 				parsed.modifiers,
@@ -811,16 +871,10 @@ function evaluateSingleEval(evalToken: string, alreadyResolved: ResolvedVariable
 	const hasLatex = exprToParse.includes('\\');
 	const ast = hasLatex ? parseLatex(exprToParse) : parseCustom(exprToParse);
 
-	const bindings: Record<string, BindingValue> = {};
-	for (const rv of alreadyResolved) {
-		if (rv.name.length === 1) {
-			const num = Number(rv.value);
-			bindings[rv.name] = Number.isFinite(num) ? num : toBinding(rv.value);
-		}
-	}
+	const bindings = singleLetterBindings(parsed.expression, alreadyResolved);
 
 	for (const name of getVariables(ast)) referenced.add(name);
-	const substituted = substitute(ast, bindings);
+	const substituted = substitute(ast, bindings, { maxIterations: 1 });
 	const evaluatedValue = evaluateAstWithModifiers(
 		substituted,
 		parsed.modifiers,
