@@ -21,6 +21,7 @@ import { resolvedMarkdown } from '$lib/ubumark';
 import { resolveVariableExpression } from './variable-resolver';
 import { resolveColorReferences } from '../parser/color-parser';
 import { parseCustomSafe, toLatex } from '$lib/mathAST';
+import { parse as parseUnit } from '$lib/mathAST/units/parser';
 
 // ============================================================================
 // MATH ZONE CONVERSION
@@ -121,6 +122,79 @@ function convertMathZonesToLatex(content: string): string {
 }
 
 // ============================================================================
+// GRANDEURS INSÉRÉES (chantier Grandeurs, relecture du lot 4)
+// ============================================================================
+
+/** Une grandeur en syntaxe maison : `28[mm]`, `-3[m]`, `5.003[km]` */
+const HOUSE_QUANTITY = String.raw`-?\d+(?:\.\d+)?\[[^\[\]\s]+\]`;
+
+/** Une durée écrite par `;hms` : `{2[h]}{15[min]}` (deux ou trois morceaux) */
+const HMS_REGEX = new RegExp(
+	String.raw`\{(${HOUSE_QUANTITY})\}\{(${HOUSE_QUANTITY})\}(?:\{(${HOUSE_QUANTITY})\})?`,
+	'g'
+);
+
+/**
+ * Une grandeur isolée, pas collée à un mot ni à un autre nombre : ni la fin d'un décimal à
+ * virgule (`1,5[m]`), ni celle d'un nombre groupé par `{}` (`12{}345[m]`)
+ */
+const QUANTITY_REGEX = /(?<![\w.,}\]])(-?\d+(?:\.\d+)?)\[([^[\]\s]+)\]/g;
+
+/**
+ * Zones d'un contenu : code (```…```, `…`) et zones maison (`~~…~~`, `~…~`) laissés tels quels,
+ * formules `$$…$$`/`$…$` ; le reste est du texte
+ */
+const ZONE_REGEX = /```[\s\S]*?```|`[^`\n]*`|\$\$[\s\S]+?\$\$|\$[^$\n]+\$|~~[\s\S]+?~~|~[^~\n]+~/g;
+
+/** `28[mm]` → `28~\unit{mm}`, seulement si l'unité existe (un crochet de calcul reste tel quel) */
+function quantityToLatex(quantity: string): string {
+	return quantity.replace(QUANTITY_REGEX, (match, value: string, unit: string) =>
+		parseUnit(unit) === null ? match : `${value}~\\unit{${unit}}`
+	);
+}
+
+/** Les grandeurs d'un contenu LaTeX : durées composées d'abord, puis grandeurs isolées */
+function latexQuantities(latex: string): string {
+	const durations = latex.replace(HMS_REGEX, (match, ...parts: Array<string | undefined>) => {
+		const pieces = parts.slice(0, 3).filter((p): p is string => typeof p === 'string');
+		const converted = pieces.map(quantityToLatex);
+		return converted.some((c, i) => c === pieces[i]) ? match : converted.join('~');
+	});
+	return quantityToLatex(durations);
+}
+
+/**
+ * Une grandeur insérée dans une formule d'auteur (`$$ 7[mm] \times 4 = 28[mm] $$`, que la
+ * conversion maison → LaTeX laisse telle quelle) ou dans le TEXTE (« la réponse est
+ * 28[mm] ») s'affichait brute. Formule : `\unit` ; texte : une formule `$…$`. Les zones
+ * maison `~…~` restent en syntaxe maison (le rendu les convertit).
+ */
+function displayQuantities(content: string): string {
+	let result = '';
+	let last = 0;
+	for (const zone of content.matchAll(ZONE_REGEX)) {
+		const start = zone.index ?? 0;
+		result += textQuantities(content.slice(last, start));
+		const text = zone[0];
+		result += text.startsWith('$') ? latexQuantities(text) : text;
+		last = start + text.length;
+	}
+	return result + textQuantities(content.slice(last));
+}
+
+/** Dans le texte, une grandeur (ou une durée composée) devient une formule */
+function textQuantities(text: string): string {
+	const durations = text.replace(HMS_REGEX, (match) => {
+		const latex = latexQuantities(match);
+		return latex === match ? match : `$${latex}$`;
+	});
+	return durations.replace(QUANTITY_REGEX, (match) => {
+		const latex = quantityToLatex(match);
+		return latex === match ? match : `$${latex}$`;
+	});
+}
+
+// ============================================================================
 // CONTENT RESOLUTION
 // ============================================================================
 
@@ -161,6 +235,9 @@ export function resolveMarkdownContent(
 	// Stage 3: Convert math zones ($...$, $$...$$) from custom to LaTeX
 	// Note: ~...~ and ~~...~~ remain in custom syntax
 	resolvedContent = convertMathZonesToLatex(resolvedContent);
+
+	// Stage 4: grandeurs restées brutes (formule d'auteur, texte)
+	resolvedContent = displayQuantities(resolvedContent);
 
 	return resolvedMarkdown(resolvedContent);
 }
