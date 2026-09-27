@@ -168,16 +168,17 @@ Après relecture (`code-reviewer`) :
   tirée (#532 `[_&3&4_]`) ; `$ers[…]` ; aucun code navigateur ne résout `{{if:isCorrect…}}` ;
   #360/#439 (empreinte partagée) en attente de David.
 
-## Lot Entiers — RELU, en attente d'import (2026-09-26)
+## Lot Entiers — TERMINÉ (2026-09-27)
 
-- 187 verdicts (`docs/relecture/entiers/RAPPORT.md`) : 132 approuvées, 48 corrigées, 7 « copies »
-  (#136–#147, même question rangée aussi dans « Multiplier ») en attente de décision de David.
-- Code : #473 (conversion Entiers), #474 (couleurs `#FF5722` groupées → corrections non colorées,
-  PROD), #475 (`\div` de la touche ÷ non lu → bonne réponse jugée fausse, PROD).
-- #472 : signature propre pour #360/#439 (le contenu des variables n'entrait pas dans le calcul).
-- Fractions complet : 58/58 importées. Base : 137 templates, tous brouillons.
+- 187/187 importées en brouillon (`docs/relecture/entiers/RAPPORT.md`) : 115 approuvées, 72 corrigées.
+- Décisions de David : copies Additionner/Multiplier gardées (corrections additives / multiplicatives,
+  #476 ; même décision pour #629/#630) ; quotient en `:`, `÷` ou fraction (#477) ; #24 à 6 chiffres ;
+  #48 CE2, #49-#50 CM1 ; #183-#188 facteur 2..9 ; #139/#77 « sauf 10 ».
+- Code : #473 (conversion), #474 (couleurs `#FF5722` groupées, PROD), #475 (`\div` non lu, PROD),
+  #476 (signatures des copies), #477 (forme exigée par motif avec les nombres tirés).
+- Base : 324 templates, tous brouillons. Thème Entiers complet (228 = 187 + 41 de David).
 
 ## Prochaine étape
 
-Réponses de David sur le rapport Entiers (copies, quotient en fraction, feu vert d'import), puis
-import ; lots suivants (Décimaux, Relatifs restants…).
+Lots suivants : Décimaux, Grandeurs (#439 à importer), Calcul littéral, Fonctions, Suites (#629/#630
+à garder toutes les deux), Proportionnalité, Probabilités, Puissances, Racines… Même méthode.

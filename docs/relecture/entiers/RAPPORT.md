@@ -4,8 +4,9 @@
 (Claude, sept relecteurs en trois vagues, puis contrôle d'ensemble). Les 41 autres questions
 Entiers sont celles de David (`docs/relecture/david/`).
 
-> ⏳ **Rien n'est importé** : le feu vert d'import de David portait sur le lot Fractions. Les
-> questions « à regarder » ci-dessous attendent sa décision.
+> ✅ **Feu vert de David le 2026-09-27 : les 187 questions sont importées en BROUILLON** (vérifié en
+> base : reliées au suivi, statut draft, 187 emplacements thème/domaine/sous-domaine/niveau
+> distincts). David les publie lui-même.
 
 ## Bilan
 
