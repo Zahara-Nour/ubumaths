@@ -296,3 +296,22 @@ describe('parseEvalExpressionWithModifiers', () => {
 		});
 	});
 });
+
+// Chantier Grandeurs, lot 2 : « exprimé en » et durées
+describe('modificateurs de grandeur : ;[unité] et ;hms', () => {
+	it.each([
+		['{{eval:3[h];[min]}}', { expression: '3[h]', modifiers: { unit: 'min' } }],
+		['{{eval:a*b;[mm^2]}}', { expression: 'a*b', modifiers: { unit: 'mm^2' } }],
+		['{{eval:a;[km/h],+}}', { expression: 'a', modifiers: { unit: 'km/h', addPositive: true } }],
+		['{{eval:135[min];hms}}', { expression: '135[min]', modifiers: { hms: true } }]
+	])('%s', (token, expected) => {
+		expect(parseEvalExpressionWithModifiers(token)).toEqual(expected);
+	});
+
+	it('une grandeur sans modificateur reste une expression', () => {
+		expect(parseEvalExpressionWithModifiers('{{eval:3[h]+20[min]}}')).toEqual({
+			expression: '3[h]+20[min]',
+			modifiers: {}
+		});
+	});
+});

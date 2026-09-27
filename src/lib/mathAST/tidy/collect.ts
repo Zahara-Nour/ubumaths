@@ -345,6 +345,29 @@ function writtenUnitOf(symbols: ReadonlyMap<string, number>, unit: Unit): Unit |
 }
 
 /**
+ * Écart B (relecture de #483) — une unité qui écrit deux fois la même dimension
+ * (`min.km/h`, `h.min`) se réécrit avec la première unité écrite de chaque
+ * dimension : `min.km/h` → `km`. `null` si l'unité est déjà cohérente ou si
+ * aucune écriture ne s'en déduit.
+ */
+function coherentUnitOf(unit: Unit): Unit | null {
+	const terms = parseUnitTerms(unitWriting(unit));
+	if (terms === null) return null;
+	const symbols = new Map<string, number>();
+	const bases = new Set<string>();
+	let repeated = false;
+	for (const { symbol, exponent } of terms) {
+		symbols.set(symbol, (symbols.get(symbol) ?? 0) + exponent);
+		const own = exactConversion(symbol);
+		if (own === null || own.components.size !== 1) continue;
+		const [[base]] = own.components;
+		if (bases.has(base)) repeated = true;
+		bases.add(base);
+	}
+	return repeated ? writtenUnitOf(symbols, unit) : null;
+}
+
+/**
  * Ce qu'il faut savoir d'une grandeur pour la regrouper et la réécrire.
  * `null` pour une unité que la table ne sait pas convertir exactement.
  */
@@ -915,8 +938,13 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, unitChoice: UnitChoice
 
 	// `'written'`, rien ne tombe juste : la fraction revient dans l'unité ÉCRITE, pas
 	// dans l'unité de base où le regroupement d'une somme l'a laissée (relecture de #483)
-	const writtenFraction = (): TidyTerm | null =>
-		unitChoice === 'written' && term.written !== null ? rewritten(term.written, false) : null;
+	// Écart B : sinon, une unité qui écrit deux fois la même dimension (`min.km/h`) est
+	// simplifiée (`km`), la valeur en fraction si rien ne tombe juste.
+	const writtenFraction = (): TidyTerm | null => {
+		if (unitChoice === 'written' && term.written !== null) return rewritten(term.written, false);
+		const coherent = term.unit === null ? null : coherentUnitOf(term.unit);
+		return coherent === null ? null : rewritten(coherent, false);
+	};
 
 	if (imposed !== null) {
 		const chosen = rewritten(imposed);

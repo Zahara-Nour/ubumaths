@@ -137,3 +137,31 @@ describe("unitChoice: 'written' — fraction dans l'unité écrite", () => {
 		expect(customWritten(input)).toBe(expected);
 	});
 });
+
+// Relecture de #483 (écart B) : une même dimension au numérateur et au
+// dénominateur (`min·km/h`) se convertit et se simplifie, dans les deux modes.
+describe('unités de même dimension en haut et en bas — simplifiées (écart B)', () => {
+	const SIMPLIFIED: ReadonlyArray<readonly [string, string]> = [
+		['(1[h]+30[min])*60[km/h]', '90[km]'],
+		['90[min]*60[km/h]', '90[km]'],
+		['(3[h]+20[min])*1[km/h]', '(10/3)[km]'],
+		['20[min]*1[km/h]', '(1/3)[km]'],
+		['2[h]*3[km/min]', '360[km]']
+	];
+
+	it.each(SIMPLIFIED)('mode scolaire : %s → %s', (input, expected) => {
+		expect(customSchool(input)).toBe(expected);
+	});
+
+	it.each(SIMPLIFIED)("mode 'written' : %s → %s", (input, expected) => {
+		expect(customWritten(input)).toBe(expected);
+	});
+
+	it.each(SIMPLIFIED.map(([input]) => input))('idempotent et équivalent : %s', (input) => {
+		for (const options of [undefined, WRITTEN]) {
+			const once = tidy(parseCustom(input), options);
+			expect(nodesEqual(tidy(once, options), once)).toBe(true);
+			expect(areEquivalent(once, parseCustom(input))).toBe(true);
+		}
+	});
+});
