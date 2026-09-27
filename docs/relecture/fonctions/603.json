@@ -1,0 +1,260 @@
+{
+	"globalIndex": 603,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "v3 : `\\bold{` jamais refermé autour du terme en couleur (LaTeX cassé, déjà dans TinyMath) → accolade ajoutée ; résultat final mis dans la formule (`=$-6` → `=-6$.`) ; « expression  ? » double espace ; point final.",
+	"template": {
+		"title": "",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "f",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["abs(a) != abs(b) && abs(a) != abs(c)"]
+		},
+		"variations": [
+			{
+				"statement": "Quel est le coefficient du terme de degré 2 dans cette expression ?\n\n$${{eval:ax^2}}{{eval:b;+}}x{{eval:c;+}}$$\n\nLe coefficient est $?$.",
+				"correction": {
+					"steps": [
+						"L'expression est sous la forme développée. Le coefficient du terme de degré 2 se lit directement dans $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}x^2{{eval:b;+}}x{{eval:c;+}}$. C'est donc ${{a}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le coefficient du terme de degré 2 dans cette expression ?\n\n$${{a}}(x{{eval:b;+}})(x{{eval:c;+}})$$\n\nLe coefficient est $?$.",
+				"correction": {
+					"steps": [
+						"L'expression est sous la forme factorisée. Le coefficient du terme de degré 2 se lit directement dans $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}(x{{eval:b;+}})(x{{eval:c;+}})$. C'est donc ${{a}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le coefficient du terme de degré 2 dans cette expression ?\n\n$${{a}}(x{{eval:b;+}})^2{{eval:c;+}}$$\n\nLe coefficient est $?$.",
+				"correction": {
+					"steps": [
+						"L'expression est sous la forme canonique. Le coefficient du terme de degré 2 se lit directement dans $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}(x{{eval:b;+}})^2{{eval:c;+}}$. C'est donc ${{a}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le coefficient du terme de degré 2 dans cette expression ?\n\n$$({{eval:dx}}{{eval:b;+}})({{eval:fx}}{{eval:c;+}})$$\n\nLe coefficient est $?$.",
+				"correction": {
+					"steps": [
+						"Attention, l'expression n'est pas complètement sous la forme factorisée.",
+						"Le coefficient du terme de degré 2 s'obtient en multipliant les coefficients des termes de degré 1 dans l'expression $(\\bold{\\textcolor{{{color:primary.0}}}{{{eval:dx}}}}{{eval:b;+}})(\\bold{\\textcolor{{{color:primary.0}}}{{{eval:fx}}}}{{eval:c;+}})$.",
+						"C'est donc ${{d}} \\times {{eval:f;()}}={{eval:d*(f)}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:d*(f)}}"
+					}
+				],
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le coefficient du terme de degré 2 dans cette expression ?\n\n$${{a}}({{eval:dx}}{{eval:b;+}})({{eval:fx}}{{eval:c;+}})$$\n\nLe coefficient est $?$.",
+				"correction": {
+					"steps": [
+						"Attention, l'expression n'est pas complètement sous la forme factorisée.",
+						"Le coefficient du terme de degré 2 s'obtient en multipliant le coefficient devant la parenthèse et les coefficients des termes de degré 1 dans l'expression $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}(\\bold{\\textcolor{{{color:primary.0}}}{{{eval:dx}}}}{{eval:b;+}})(\\bold{\\textcolor{{{color:primary.0}}}{{{eval:fx}}}}{{eval:c;+}})$.",
+						"C'est donc ${{a}} \\times {{eval:d;()}} \\times {{eval:f;()}}={{eval:a*(d)*(f)}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(d)*(f)}}"
+					}
+				],
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					}
+				]
+			}
+		],
+		"grades": ["1_SPE"],
+		"theme": "Fonctions",
+		"domain": "Polynôme du second degré",
+		"subdomain": "Apprivoiser",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "développée : a",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-4",
+					"b": "5",
+					"c": "1",
+					"d": "2",
+					"f": "-3"
+				},
+				"answers": ["-4"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "développée : b lu à la place de a",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-4",
+					"b": "5",
+					"c": "1",
+					"d": "2",
+					"f": "-3"
+				},
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "factorisée : a",
+				"variationIndex": 1,
+				"variables": {
+					"a": "-4",
+					"b": "5",
+					"c": "1",
+					"d": "2",
+					"f": "-3"
+				},
+				"answers": ["-4"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "canonique : a",
+				"variationIndex": 2,
+				"variables": {
+					"a": "-4",
+					"b": "5",
+					"c": "1",
+					"d": "2",
+					"f": "-3"
+				},
+				"answers": ["-4"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "(dx+b)(fx+c) : d×f",
+				"variationIndex": 3,
+				"variables": {
+					"a": "-4",
+					"b": "5",
+					"c": "1",
+					"d": "2",
+					"f": "-3"
+				},
+				"answers": ["-6"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "(dx+b)(fx+c) : 1 (pas de coefficient devant) refusé",
+				"variationIndex": 3,
+				"variables": {
+					"a": "-4",
+					"b": "5",
+					"c": "1",
+					"d": "2",
+					"f": "-3"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "a(dx+b)(fx+c) : a×d×f",
+				"variationIndex": 4,
+				"variables": {
+					"a": "-4",
+					"b": "5",
+					"c": "1",
+					"d": "2",
+					"f": "-3"
+				},
+				"answers": ["24"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "a(dx+b)(fx+c) : a seul refusé",
+				"variationIndex": 4,
+				"variables": {
+					"a": "-4",
+					"b": "5",
+					"c": "1",
+					"d": "2",
+					"f": "-3"
+				},
+				"answers": ["-4"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			}
+		]
+	}
+}

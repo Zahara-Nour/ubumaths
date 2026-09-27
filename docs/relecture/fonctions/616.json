@@ -1,0 +1,94 @@
+{
+	"globalIndex": 616,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue cassée : « ['_{{b}}/x_] » (opérateur de dérivation TinyMath non converti, aucune réponse juste possible) → {{eval:-(b)/x^2}} avec x = x|x ; variable a inutilisée retirée ; correction ajoutée (TinyMath n'en avait pas). Titre et description sans point final.",
+	"template": {
+		"title": "Calculer une dérivée",
+		"description": "Fonctions usuelles avec coefficient",
+		"variations": [
+			{
+				"statement": "Calcule la dérivée de cette fonction.\n\n$$f(x)={{b}}/x$$\n\n$f'(x)=?$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "x",
+						"expression": "x|x"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(b)/x^2}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La dérivée de $x \\mapsto \\dfrac{1}{x}$ est $x \\mapsto -\\dfrac{1}{x^2}$, et $f(x) = {{b}} \\times \\dfrac{1}{x}$.",
+						"Donc $f'(x) = {{eval:b;()}} \\times \\left( -\\dfrac{1}{x^2} \\right) = {{solution:0}}$."
+					]
+				}
+			}
+		],
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"grades": ["1_SPE"],
+		"theme": "Fonctions",
+		"domain": "Dérivation",
+		"subdomain": "Apprivoiser",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "b>0 juste",
+				"variationIndex": 0,
+				"variables": {
+					"b": "9"
+				},
+				"answers": ["-\\frac{9}{x^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "b<0 juste",
+				"variationIndex": 0,
+				"variables": {
+					"b": "-7"
+				},
+				"answers": ["\\frac{7}{x^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "signe oublié",
+				"variationIndex": 0,
+				"variables": {
+					"b": "9"
+				},
+				"answers": ["\\frac{9}{x^2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "coefficient oublié",
+				"variationIndex": 0,
+				"variables": {
+					"b": "9"
+				},
+				"answers": ["-\\frac{1}{x^2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

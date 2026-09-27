@@ -1,0 +1,149 @@
+{
+	"globalIndex": 596,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : `{{expression}}` rendait « abs(4+9) » en texte brut hors formule → égalité entière en LaTeX : `$\\left\\lvert a+b \\right\\rvert=\\left\\lvert … \\right\\rvert=…$`.",
+	"template": {
+		"title": "Calculer la valeur d'une valeur absolue",
+		"description": "D'une expression simple à calculer",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "abs({{a}}{{eval:b;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\left\\lvert {{a}}{{eval:b;+}} \\right\\rvert=\\left\\lvert {{eval:a+(b)}} \\right\\rvert={{eval:abs(a+(b))}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "abs({{a}}*{{eval:b;()}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\left\\lvert {{a}} \\times {{eval:b;()}} \\right\\rvert=\\left\\lvert {{eval:a*(b)}} \\right\\rvert={{eval:abs(a*(b))}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["2"],
+		"theme": "Fonctions",
+		"domain": "Valeur absolue",
+		"subdomain": "Apprivoiser",
+		"level": 6,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "|9-7| = 2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "-7"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|-6-8| = 14",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-6",
+					"b": "-8"
+				},
+				"answers": ["14"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|-6-8| : -14 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-6",
+					"b": "-8"
+				},
+				"answers": ["-14"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|-6+2| : 8 (|a|+|b|) refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-6",
+					"b": "2"
+				},
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|9×(-7)| = 63",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "-7"
+				},
+				"answers": ["63"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|9×(-7)| : -63 refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "-7"
+				},
+				"answers": ["-63"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,139 @@
+{
+	"globalIndex": 585,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : « {{expression}} » rendait « f(x)=4x+9 » en texte brut → $f(x)=…$ en formule. Titre : « d'une fonction affine ».",
+	"template": {
+		"title": "Déterminer si un point appartient à la courbe représentative d'une fonction affine",
+		"shared": {
+			"choices": [
+				{
+					"content": "Oui"
+				},
+				{
+					"content": "Non"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Le point $A({{c}};{{eval:d}})$ appartient-il à la courbe représentative de la fonction affine :\n\n$${{expression1}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..6;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "-5..5"
+					},
+					{
+						"name": "d",
+						"expression": "a*(c)+(b)"
+					},
+					{
+						"name": "expression1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$f(\\bold{\\textcolor{{{color:primary.0}}}{{{c}}}})={{a}} \\times \\bold{\\textcolor{{{color:primary.0}}}{{{eval:c;()}}}} {{eval:b;+}}= \\bold{\\textcolor{{{color:primary.1}}}{{{eval:d}}}}$ donc le point $A(\\bold{\\textcolor{{{color:primary.0}}}{{{c}}}};\\bold{\\textcolor{{{color:primary.1}}}{{{eval:d}}}})$ appartient à la courbe représentative de la fonction affine $f(x)={{a}}x{{eval:b;+}}$."
+					]
+				}
+			},
+			{
+				"statement": "Le point $A({{c}};{{eval:d}})$ appartient-il à la courbe représentative de la fonction affine :\n\n$${{expression2}}$$",
+				"correctChoiceIndex": ["1"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..6;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "-5..5"
+					},
+					{
+						"name": "d1",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a*(c)+(b)+(d1)"
+					},
+					{
+						"name": "expression2",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$f(\\bold{\\textcolor{{{color:primary.0}}}{{{c}}}})={{a}} \\times \\bold{\\textcolor{{{color:primary.0}}}{{{eval:c;()}}}} {{eval:b;+}}= {{eval:a*(c)+(b)}} \\bold{\\textcolor{red}{\\ne}} \\bold{\\textcolor{{{color:primary.1}}}{{{eval:d}}}}$ donc le point $A(\\bold{\\textcolor{{{color:primary.0}}}{{{c}}}};\\bold{\\textcolor{{{color:primary.1}}}{{{eval:d}}}})$ n'appartient pas à la courbe représentative de la fonction affine $f(x)={{a}}x{{eval:b;+}}$."
+					]
+				}
+			}
+		],
+		"options": {
+			"shuffleChoices": false
+		},
+		"grades": ["3"],
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Apprivoiser",
+		"level": 7,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0 appartient",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "-7",
+					"c": "-3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 n'appartient pas",
+				"variationIndex": 1,
+				"variables": {
+					"a": "6",
+					"b": "-7",
+					"c": "-3",
+					"d1": "1"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 Non refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "-7",
+					"c": "-3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

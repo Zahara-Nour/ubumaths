@@ -1,0 +1,6 @@
+{
+	"globalIndex": 609,
+	"verdict": "arbitrate",
+	"reviewer": "claude",
+	"question": "Forme canonique lue sur une parabole (15 images, a ∈ {±1/2, ±3/4, 1/4, ±1, 3, 4, -5}). Sans forme exigée, la forme développée (« -1/2x²-2x-3 ») est acceptée comme juste : il faut un requiredForm. Mais le motif générique « u*(x+v)^2+w » est REFUSÉ pour la bonne réponse « -\\frac{1}{2}(x+2)^2-1 » (il n'accepte que « -2+3(x+1)^2 », ordre inverse), et un motif par variation « u*(x+2)^2-1 » marche pour a ≠ ±1 mais pas pour « -(x+1)^2+3 » ni « (x-1)^2-3 » (u ne capte pas le coefficient implicite ±1). Deux options : (1) accepter la question telle quelle, forme développée comptée juste (perd l'objectif) ; (2) la laisser en attente d'un correctif du motif (#482 : ordre libre des termes et coefficient implicite ±1 dans u). Laquelle ? À noter pour la reprise : images TinyMath en .png présentes (forme-canonique-N-600.png et correction_…), à remettre dans l'énoncé et la correction par variation ; « {{{eval:-1/2}}} » à nettoyer en « {{eval:-1/2}} »."
+}

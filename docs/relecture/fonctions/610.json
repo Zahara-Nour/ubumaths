@@ -1,0 +1,147 @@
+{
+	"globalIndex": 610,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction réécrite : « {{expression}} » affiché brut hors formule, tabulations TinyMath dans la formule ; calcul de P(c) conservé (terme en x masqué quand son coefficient est nul). Maths : v1 c ∉ {a ; b} donc P(c) ≠ 0 ; v2 c ∈ {a ; b} donc P(c) = 0.",
+	"template": {
+		"title": "Vérifier si un nombre est racine d'un polynôme",
+		"shared": {
+			"statement": "Est-ce que ${{c}}$ est racine de ce polynôme ?\n\n$${{expression1}}$$",
+			"choices": [
+				{
+					"content": "Oui"
+				},
+				{
+					"content": "Non"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Est-ce que ${{c}}$ est racine de ce polynôme ?\n\n$${{expression1}}$$",
+				"correctChoiceIndex": ["1"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..3;±!a"
+					},
+					{
+						"name": "c",
+						"expression": "1..3;±!a,b"
+					},
+					{
+						"name": "expression1",
+						"expression": "x^2{{eval:-(a+(b));+}}x{{eval:(a)*(b);+}}",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"On remplace $x$ par ${{c}}$ dans le polynôme :",
+						"${{eval:c;()}}^2 {{if:{{b}} + ({{a}}) != 0|{{eval:-(a+(b));+}} \\times {{eval:c;()}}}} {{eval:(a)*(b);+}} = {{eval:(c)^2}} {{if:{{b}} + ({{a}}) != 0|{{eval:-(a+(b))*(c);+}}}} {{eval:(a)*(b);+}} = {{eval:(c)^2-(a+(b))*(c)+(a)*(b)}} \\ne 0$.",
+						"Le résultat n'est pas nul : **non**, ${{c}}$ n'est pas une racine de ce polynôme."
+					]
+				}
+			},
+			{
+				"statement": "Est-ce que ${{c}}$ est racine de ce polynôme ?\n\n$${{expression1}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..3;±!a"
+					},
+					{
+						"name": "c",
+						"expression": "a|b"
+					},
+					{
+						"name": "expression1",
+						"expression": "x^2{{eval:-(a+(b));+}}x{{eval:(a)*(b);+}}",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"On remplace $x$ par ${{c}}$ dans le polynôme :",
+						"${{eval:c;()}}^2 {{if:{{b}} + ({{a}}) != 0|{{eval:-(a+(b));+}} \\times {{eval:c;()}}}} {{eval:(a)*(b);+}} = {{eval:(c)^2}} {{if:{{b}} + ({{a}}) != 0|{{eval:-(a+(b))*(c);+}}}} {{eval:(a)*(b);+}} = {{eval:(c)^2-(a+(b))*(c)+(a)*(b)}}$.",
+						"Le résultat est nul : **oui**, ${{c}}$ est une racine de ce polynôme."
+					]
+				}
+			}
+		],
+		"grades": ["1_SPE"],
+		"theme": "Fonctions",
+		"domain": "Polynôme du second degré",
+		"subdomain": "Racines",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "c non racine : Non",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "1"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "c non racine : Oui refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "1"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "c racine : Oui",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "-2",
+					"c": "-2"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "c racine : Non refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

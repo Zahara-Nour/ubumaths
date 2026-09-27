@@ -1,0 +1,6 @@
+{
+	"globalIndex": 617,
+	"verdict": "rejected",
+	"reviewer": "claude",
+	"reason": "Questions de cours à réponse libre (flash, sans case ni choix) : le format actuel ne sait pas corriger une réponse rédigée (la conversion produit une case « {{eval:{{expression1}}}} » absente de l'énoncé, génération en échec). De plus la réponse à « Que doit-on faire en premier ? » (« la tracer sur la calculatrice ») est pédagogiquement discutable : on commence par l'ensemble de définition. À refaire en QCM si besoin."
+}

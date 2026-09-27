@@ -1,0 +1,239 @@
+{
+	"globalIndex": 615,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction « {{solution:html}} » affichait la réponse LaTeX brute hors formule (« -\\dfrac{1}{x^2} ») → « $f'(x) = …$ ». Titre et description sans point final. Réponses vérifiées : 1, 2x, a·x^(a-1), -1/x², 1/(2√x), 0.",
+	"template": {
+		"title": "Calculer une dérivée",
+		"description": "Fonctions usuelles",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..5"
+				}
+			],
+			"correction": {
+				"steps": ["$f'(x) = {{solution:0}}$"]
+			}
+		},
+		"variations": [
+			{
+				"statement": "Calcule la dérivée de cette fonction.\n\n$$f(x)=x$$\n\n$f'(x)=?$",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Calcule la dérivée de cette fonction.\n\n$$f(x)=x^2$$\n\n$f'(x)=?$",
+				"blanks": [
+					{
+						"expectedAnswer": "2x"
+					}
+				]
+			},
+			{
+				"statement": "Calcule la dérivée de cette fonction.\n\n$$f(x)=x^{{a}}$$\n\n$f'(x)=?$",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}x^{{eval:a-1}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule la dérivée de cette fonction.\n\n$$f(x)=1/x$$\n\n$f'(x)=?$",
+				"blanks": [
+					{
+						"expectedAnswer": "-\\dfrac{1}{x^2}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule la dérivée de cette fonction.\n\n$$f(x)=sqrt(x)$$\n\n$f'(x)=?$",
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{1}{2 \\sqrt{x}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule la dérivée de cette fonction.\n\n$$f(x)={{a}}$$\n\n$f'(x)=?$",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"grades": ["1_SPE"],
+		"theme": "Fonctions",
+		"domain": "Dérivation",
+		"subdomain": "Apprivoiser",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0 juste",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 erreur 0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v1 juste",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3"
+				},
+				"answers": ["2x"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 erreur x^2",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3"
+				},
+				"answers": ["x^2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v1 erreur 2",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v2 juste",
+				"variationIndex": 2,
+				"variables": {
+					"a": "4"
+				},
+				"answers": ["4x^3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 erreur x^3",
+				"variationIndex": 2,
+				"variables": {
+					"a": "4"
+				},
+				"answers": ["x^3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v2 erreur 4x^4",
+				"variationIndex": 2,
+				"variables": {
+					"a": "4"
+				},
+				"answers": ["4x^4"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v3 juste",
+				"variationIndex": 3,
+				"variables": {
+					"a": "3"
+				},
+				"answers": ["-\\frac{1}{x^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 erreur \\frac{1}{x^2}",
+				"variationIndex": 3,
+				"variables": {
+					"a": "3"
+				},
+				"answers": ["\\frac{1}{x^2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v4 juste",
+				"variationIndex": 4,
+				"variables": {
+					"a": "3"
+				},
+				"answers": ["\\frac{1}{2\\sqrt{x}}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 erreur \\frac{1}{\\sqrt{x}}",
+				"variationIndex": 4,
+				"variables": {
+					"a": "3"
+				},
+				"answers": ["\\frac{1}{\\sqrt{x}}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v5 juste",
+				"variationIndex": 5,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5 erreur 5",
+				"variationIndex": 5,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,129 @@
+{
+	"globalIndex": 613,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : les racines ({{solution:0}}, {{solution:1}}) s'affichaient hors formule ; étape de factorisation explicitée par variation. Consigne à l'impératif. Maths : racines -b et -c, |b| ≠ |c|, ordre libre.",
+	"template": {
+		"title": "Déterminer les racines d'un polynôme du second degré",
+		"description": "Le polynôme n'est pas complètement factorisé",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["abs(b) != abs(c)"]
+		},
+		"variations": [
+			{
+				"statement": "Détermine les racines de ce polynôme du second degré.\n\n$$({{a}}x{{eval:a*(b);+}})(x{{eval:c;+}})$$\n\nLes racines sont $?$ et $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(b)}}"
+					},
+					{
+						"expectedAnswer": "{{eval:-(c)}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le polynôme n'est **pas** complètement factorisé : on factorise ${{a}}$ dans le premier facteur, $({{a}}x{{eval:a*(b);+}}) = {{a}}(x{{eval:b;+}})$.",
+						"La forme factorisée est ${{a}}(x{{eval:b;+}})(x{{eval:c;+}})$.",
+						"Les racines sont donc ${{eval:-(b)}}$ et ${{eval:-(c)}}$."
+					]
+				}
+			},
+			{
+				"statement": "Détermine les racines de ce polynôme du second degré.\n\n$$(x{{eval:b;+}})({{a}}x{{eval:a*(c);+}})$$\n\nLes racines sont $?$ et $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(b)}}"
+					},
+					{
+						"expectedAnswer": "{{eval:-(c)}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le polynôme n'est **pas** complètement factorisé : on factorise ${{a}}$ dans le second facteur, $({{a}}x{{eval:a*(c);+}}) = {{a}}(x{{eval:c;+}})$.",
+						"La forme factorisée est ${{a}}(x{{eval:b;+}})(x{{eval:c;+}})$.",
+						"Les racines sont donc ${{eval:-(b)}}$ et ${{eval:-(c)}}$."
+					]
+				}
+			}
+		],
+		"options": {
+			"orderIndependent": true
+		},
+		"grades": ["1_SPE"],
+		"theme": "Fonctions",
+		"domain": "Polynôme du second degré",
+		"subdomain": "Racines",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v1 racines",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "5",
+					"c": "2"
+				},
+				"answers": ["-5", "-2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 racine -a*b du facteur non factorisé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "5",
+					"c": "2"
+				},
+				"answers": ["-25", "-2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v2 racines ordre libre",
+				"variationIndex": 1,
+				"variables": {
+					"a": "-3",
+					"b": "1",
+					"c": "-4"
+				},
+				"answers": ["4", "-1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 erreur de signe",
+				"variationIndex": 1,
+				"variables": {
+					"a": "-3",
+					"b": "1",
+					"c": "-4"
+				},
+				"answers": ["1", "-4"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

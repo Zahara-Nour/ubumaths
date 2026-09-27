@@ -1,0 +1,102 @@
+{
+	"globalIndex": 600,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne « Résouds » → « Résous ».",
+	"template": {
+		"title": "Résoudre une équation avec une valeur absolue",
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$$abs(x{{eval:-(a);+}})={{b}}$$\n\n$x=?$ ou $x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\left\\lvert x{{eval:-(a);+}} \\right\\rvert={{b}} \t\t\t\t\t\t\t\t& \\quad \\lrArr \\quad \t\t\t\t\t\t\t\t    \\begin{cases} \t\t\t\t\t\t\t\t       x{{eval:-(a);+}}= {{b}} \\\\ \t\t\t\t\t\t\t\t\t   \\text{ou} \\\\ \t\t\t\t\t\t\t\t       x{{eval:-(a);+}}= -{{b}}  \t\t\t\t\t\t\t        \\end{cases} \\\\ \t\t\t\t\t\t\t\t& \\quad \\lrArr \\quad \t\t\t\t\t\t\t\t    \\begin{cases} \t\t\t\t\t\t\t\t       x= {{b}}{{eval:a;+}} \\\\ \t\t\t\t\t\t\t\t\t   \\text{ou} \\\\ \t\t\t\t\t\t\t\t       x= -{{b}}{{eval:a;+}}  \t\t\t\t\t\t\t        \\end{cases} \\\\ \t\t\t\t\t\t\t\t& \\quad \\lrArr \\quad \t\t\t\t\t\t\t\t    \\begin{cases} \t\t\t\t\t\t\t\t       x= {{solution:0}} \\\\ \t\t\t\t\t\t\t\t\t   \\text{ou} \\\\ \t\t\t\t\t\t\t\t       x= {{solution:1}}  \t\t\t\t\t\t\t        \\end{cases} \\\\ \t\t\t\t\t\t\t \\end{align}$$"
+					]
+				},
+				"conditions": ["abs(a) != abs(b)"],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+b}}"
+					},
+					{
+						"expectedAnswer": "{{eval:a-b}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"orderIndependent": true
+		},
+		"grades": ["2"],
+		"theme": "Fonctions",
+		"domain": "Valeur absolue",
+		"subdomain": "Equations",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "|x-4|=9 : 13 ou -5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "9"
+				},
+				"answers": ["13", "-5"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "ordre libre",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "9"
+				},
+				"answers": ["-5", "13"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "signe de a inversé : -13 ou 5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "9"
+				},
+				"answers": ["-13", "5"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|x+6|=1 : -5 ou -7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-6",
+					"b": "1"
+				},
+				"answers": ["-5", "-7"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			}
+		]
+	}
+}

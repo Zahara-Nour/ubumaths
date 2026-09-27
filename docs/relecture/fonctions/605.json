@@ -1,0 +1,103 @@
+{
+	"globalIndex": 605,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction réécrite : « L'expression {{expression}} » s'affichait vide, tabulations TinyMath et conditions {{if}} redondantes retirées (une seule phrase : forme canonique, alpha, bêta, sommet). Consigne à l'impératif (« Détermine »). Maths vérifiées : sommet (-b ; c) pour tous les tirages.",
+	"template": {
+		"title": "Déterminer les coordonnées du sommet",
+		"variations": [
+			{
+				"statement": "Détermine les coordonnées du sommet $S$ de la parabole qui représente ce polynôme du second degré.\n\n$${{a}}(x{{eval:b;+}})^2{{eval:c;+}}$$\n\n$S\\left( \\, ? \\, ; \\, ? \\, \\right)$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..5;±"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Cette expression est la forme canonique $a(x-\\alpha)^2+\\beta$ avec $a = {{a}}$, $\\alpha = {{eval:-(b)}}$ et $\\beta = {{c}}$.",
+						"Le sommet de la parabole est donc $S\\left( \\textcolor{{{color:primary.0}}}{{{eval:-(b)}}} \\,;\\, \\textcolor{{{color:primary.0}}}{{{c}}} \\right)$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(b)}}"
+					},
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			}
+		],
+		"grades": ["1_SPE"],
+		"theme": "Fonctions",
+		"domain": "Polynôme du second degré",
+		"subdomain": "Apprivoiser",
+		"level": 5,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "sommet juste, b>0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "5",
+					"c": "5"
+				},
+				"answers": ["-5", "5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sommet juste, b<0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-4",
+					"b": "-5",
+					"c": "1"
+				},
+				"answers": ["5", "1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "erreur de signe sur l'abscisse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "5",
+					"c": "5"
+				},
+				"answers": ["5", "5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "coordonnées inversées",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "-4",
+					"c": "-2"
+				},
+				"answers": ["-2", "4"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

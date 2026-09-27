@@ -1,0 +1,81 @@
+{
+	"globalIndex": 599,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne « Résouds » → « Résous ».",
+	"template": {
+		"title": "Résoudre une équation avec une valeur absolue",
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$$abs(x)={{a}}$$\n\n$x=?$ ou $x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\t\t\t\t\t\t\t\t\\left\\lvert x \\right\\rvert={{a}} \t\t\t\t\t\t\t\t\\quad \\lrArr \\quad \t\t\t\t\t\t\t\t    \\begin{cases} \t\t\t\t\t\t\t\t       x= {{solution:0}} \\\\ \t\t\t\t\t\t\t\t\t   \\text{ou} \\\\ \t\t\t\t\t\t\t\t       x= {{solution:1}}  \t\t\t\t\t\t\t        \\end{cases} \t\t\t\t\t\t\t $$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					},
+					{
+						"expectedAnswer": "-{{a}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"orderIndependent": true
+		},
+		"grades": ["2"],
+		"theme": "Fonctions",
+		"domain": "Valeur absolue",
+		"subdomain": "Equations",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "|x|=7 : 7 ou -7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7", "-7"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "ordre libre : -7 ou 7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["-7", "7"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "solution négative oubliée : 7 et 7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7", "7"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			}
+		]
+	}
+}

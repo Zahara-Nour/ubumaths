@@ -1,0 +1,86 @@
+{
+	"globalIndex": 594,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer la valeur d'une valeur absolue",
+		"description": "Nombres entiers",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-9..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "abs(a)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["2"],
+		"theme": "Fonctions",
+		"domain": "Valeur absolue",
+		"subdomain": "Apprivoiser",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "|-6| = 6",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-6"
+				},
+				"answers": ["6"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "signe gardé : -6 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-6"
+				},
+				"answers": ["-6"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|0| = 0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|4| = 4",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,417 @@
+{
+	"globalIndex": 598,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne « Calculer » → « Calcule » ; v6/v7 : `abs(xb)` affichait « |x b| » → `abs({{eval:x+b}})` avec `x = x|x` ; corrections : deux étapes conditionnelles (dont une vide) fusionnées en `if|sinon`, résultat mis dans la formule (était du texte brut après `$=$`) ; v2 : garde TinyMath `&2=1` jamais vraie (b<0) → `b=-1`, qui affichait « -1x ».",
+	"template": {
+		"title": "Calculer une valeur absolue",
+		"description": "Valeur absolue d'une expression littérale dont il faut étudier le signe",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "-3..-1"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule cette expression si $x \\ge 0$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expression1",
+						"expression": "abs({{eval:ax}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:{{a}}=1|$x \\ge 0$ donc $\\left\\lvert x \\right\\rvert = x$|$x \\ge 0$ donc ${{a}}x \\ge 0$ et $\\left\\lvert {{a}}x \\right\\rvert = {{a}}x$}}"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:ax}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule cette expression si $x \\le 0$.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expression2",
+						"expression": "abs({{eval:ax}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:{{a}}=1|$x \\le 0$ donc $\\left\\lvert x \\right\\rvert = -x$|$x \\le 0$ donc ${{a}}x \\le 0$ et $\\left\\lvert {{a}}x \\right\\rvert = -{{a}}x$}}"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-ax}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule cette expression si $x \\ge 0$.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expression3",
+						"expression": "abs({{eval:(b)x}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:{{b}}=-1|$x \\ge 0$ donc $-x \\le 0$ et $\\left\\lvert -x \\right\\rvert = x$|$x \\ge 0$ donc ${{b}}x \\le 0$ et $\\left\\lvert {{b}}x \\right\\rvert = {{eval:-(b)}}x$}}"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(b)x}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule cette expression si $x \\le 0$.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expression4",
+						"expression": "abs({{eval:(b)x}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:{{b}}=-1|$x \\le 0$ donc $-x \\ge 0$ et $\\left\\lvert -x \\right\\rvert = -x$|$x \\le 0$ donc ${{b}}x \\ge 0$ et $\\left\\lvert {{b}}x \\right\\rvert = {{b}}x$}}"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:bx}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule cette expression si $x \\ge -{{a}}$.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "abs(x+a)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$x \\ge -{{a}}$ donc $x+{{a}} \\ge 0$ et $\\left\\lvert x+{{a}} \\right\\rvert = x+{{a}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "x+{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule cette expression si $x \\le -{{a}}$.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "abs(x+a)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$x \\le -{{a}}$ donc $x+{{a}} \\le 0$ et $\\left\\lvert x+{{a}} \\right\\rvert = -x-{{a}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "-x-{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule cette expression si $x \\ge {{eval:-(b)}}$.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expression7",
+						"expression": "abs({{eval:x+b}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$x \\ge {{eval:-(b)}}$ donc $x{{b}} \\ge 0$ et $\\left\\lvert x{{b}} \\right\\rvert = x{{b}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "x{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule cette expression si $x \\le {{eval:-(b)}}$.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expression8",
+						"expression": "abs({{eval:x+b}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$x \\le {{eval:-(b)}}$ donc $x{{b}} \\le 0$ et $\\left\\lvert x{{b}} \\right\\rvert = {{eval:-(b)}}-x$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(b)}}-x"
+					}
+				]
+			}
+		],
+		"grades": ["2"],
+		"theme": "Fonctions",
+		"domain": "Valeur absolue",
+		"subdomain": "Apprivoiser",
+		"level": 8,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "|3x|, x≥0 : 3x",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "-2"
+				},
+				"answers": ["3x"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|x|, x≥0 : x",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "-2"
+				},
+				"answers": ["x"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|3x|, x≤0 : -3x",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "-2"
+				},
+				"answers": ["-3x"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|3x|, x≤0 : 3x refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "-2"
+				},
+				"answers": ["3x"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|-2x|, x≥0 : 2x",
+				"variationIndex": 2,
+				"variables": {
+					"a": "3",
+					"b": "-2"
+				},
+				"answers": ["2x"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|-2x|, x≥0 : -2x refusé",
+				"variationIndex": 2,
+				"variables": {
+					"a": "3",
+					"b": "-2"
+				},
+				"answers": ["-2x"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|-x|, x≤0 : -x",
+				"variationIndex": 3,
+				"variables": {
+					"a": "3",
+					"b": "-1"
+				},
+				"answers": ["-x"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|-2x|, x≤0 : -2x",
+				"variationIndex": 3,
+				"variables": {
+					"a": "3",
+					"b": "-2"
+				},
+				"answers": ["-2x"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|x+3|, x≥-3 : x+3",
+				"variationIndex": 4,
+				"variables": {
+					"a": "3",
+					"b": "-2"
+				},
+				"answers": ["x+3"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|x+3|, x≤-3 : -x-3",
+				"variationIndex": 5,
+				"variables": {
+					"a": "3",
+					"b": "-2"
+				},
+				"answers": ["-x-3"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|x+3|, x≤-3 : -(x+3) non développé",
+				"variationIndex": 5,
+				"variables": {
+					"a": "3",
+					"b": "-2"
+				},
+				"answers": ["-(x+3)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "|x+3|, x≤-3 : x+3 refusé",
+				"variationIndex": 5,
+				"variables": {
+					"a": "3",
+					"b": "-2"
+				},
+				"answers": ["x+3"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|x-2|, x≥2 : x-2",
+				"variationIndex": 6,
+				"variables": {
+					"a": "3",
+					"b": "-2"
+				},
+				"answers": ["x-2"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|x-2|, x≤2 : 2-x",
+				"variationIndex": 7,
+				"variables": {
+					"a": "3",
+					"b": "-2"
+				},
+				"answers": ["2-x"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|x-2|, x≤2 : -x+2 ordre libre",
+				"variationIndex": 7,
+				"variables": {
+					"a": "3",
+					"b": "-2"
+				},
+				"answers": ["-x+2"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "|x-2|, x≤2 : x-2 refusé",
+				"variationIndex": 7,
+				"variables": {
+					"a": "3",
+					"b": "-2"
+				},
+				"answers": ["x-2"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			}
+		]
+	}
+}

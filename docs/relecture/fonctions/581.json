@@ -1,0 +1,119 @@
+{
+	"globalIndex": 581,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Génération en échec : les points de suspension « ... » de l'énoncé étaient pris pour une plage aléatoire (a..b) et l'énoncé entier mis entre {{…}}. Énoncé reformulé en question « comment s'appelle le nombre … ? ». Espace finale retirée du choix « l'ordonnée à l'origine ».",
+	"template": {
+		"title": "Vocabulaire des fonctions affines",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9!a,{{eval:-(a)}}"
+				}
+			],
+			"choices": [
+				{
+					"content": "le coefficient directeur"
+				},
+				{
+					"content": "l'ordonnée à l'origine"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Dans la fonction affine $f(x)={{a}}x{{eval:b;+}}$, comment s'appelle le nombre ${{a}}$ ?",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Dans la fonction affine $f(x)={{a}}x{{eval:b;+}}$, comment s'appelle le nombre ${{b}}$ ?",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Dans la fonction affine $f(x)={{b}}{{eval:a;+}}x$, comment s'appelle le nombre ${{a}}$ ?",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Dans la fonction affine $f(x)={{b}}{{eval:a;+}}x$, comment s'appelle le nombre ${{b}}$ ?",
+				"correctChoiceIndex": ["1"]
+			}
+		],
+		"options": {
+			"shuffleChoices": false
+		},
+		"grades": ["3"],
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Apprivoiser",
+		"level": 3,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "a = coef directeur",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "b = ordonnée à l'origine",
+				"variationIndex": 1,
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 a",
+				"variationIndex": 2,
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 b",
+				"variationIndex": 3,
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "confusion",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

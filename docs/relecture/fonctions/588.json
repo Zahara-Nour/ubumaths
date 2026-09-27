@@ -1,0 +1,572 @@
+{
+	"globalIndex": 588,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Typographie « affine : ». Choix en images (tableau juste / signes inversés), mélangés ; paire 12 vérifiée à l'image.",
+	"template": {
+		"title": "Reconnaître le tableau de signe d'une fonction affine",
+		"shared": {
+			"correctChoiceIndex": ["0"]
+		},
+		"variations": [
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression1}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "f(x)=-6x+7"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-0-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-0-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression2}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "f(x)=-9x-1"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-1-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-1-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression3}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "f(x)=-5x+9"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-2-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-2-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression4}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "f(x)=3x+3"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-3-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-3-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression5}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "f(x)=7x-8"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-4-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-4-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression6}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "f(x)=-2x-4"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-5-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-5-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression7}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "f(x)=6x+8"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-6-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-6-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression8}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "f(x)=4x+9"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-7-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-7-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression9}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "f(x)=-7x+2"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-8-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-8-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression10}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "f(x)=2x+5"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-9-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-9-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression11}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression11",
+						"expression": "f(x)=8x-1"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-10-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-10-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression12}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression12",
+						"expression": "f(x)=-4x"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-11-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-11-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression13}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression13",
+						"expression": "f(x)=-5x-1"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-12-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-12-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression14}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression14",
+						"expression": "f(x)=-x+7"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-13-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-13-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression15}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression15",
+						"expression": "f(x)=x-8"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-14-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-14-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression16}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression16",
+						"expression": "f(x)=-7x+6"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-15-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-15-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression17}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression17",
+						"expression": "f(x)=x"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-16-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-16-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression18}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression18",
+						"expression": "f(x)=-3x+4"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-17-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-17-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression19}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression19",
+						"expression": "f(x)=-5x-5"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-18-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-18-600.png)"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression20}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression20",
+						"expression": "f(x)=5x-7"
+					}
+				],
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-19-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-19-600.png)"
+					}
+				]
+			}
+		],
+		"grades": ["3"],
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Variations-Signe",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0",
+				"variationIndex": 0,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v12",
+				"variationIndex": 12,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v16",
+				"variationIndex": 16,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "tableau inversé",
+				"variationIndex": 12,
+				"variables": {},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v1",
+				"variationIndex": 1,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2",
+				"variationIndex": 2,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3",
+				"variationIndex": 3,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4",
+				"variationIndex": 4,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5",
+				"variationIndex": 5,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v6",
+				"variationIndex": 6,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v7",
+				"variationIndex": 7,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v8",
+				"variationIndex": 8,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v9",
+				"variationIndex": 9,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v10",
+				"variationIndex": 10,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v11",
+				"variationIndex": 11,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v13",
+				"variationIndex": 13,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v14",
+				"variationIndex": 14,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v15",
+				"variationIndex": 15,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v17",
+				"variationIndex": 17,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v18",
+				"variationIndex": 18,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v19",
+				"variationIndex": 19,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

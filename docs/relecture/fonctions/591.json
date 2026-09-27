@@ -1,0 +1,164 @@
+{
+	"globalIndex": 591,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Opposé d'une expression",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Quel est l'opposé de l'expression :\n\n$${{eval:ax}}$$\n\nL'opposé est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(a)x}}"
+					}
+				],
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					}
+				]
+			},
+			{
+				"statement": "Quel est l'opposé de l'expression :\n\n$$x{{eval:b;+}}$$\n\nL'opposé est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-x{{eval:-(b);+}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est l'opposé de l'expression :\n\n$${{b}}-x$$\n\nL'opposé est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(b)}}+x"
+					}
+				]
+			}
+		],
+		"grades": ["2"],
+		"theme": "Fonctions",
+		"domain": "Valeur absolue",
+		"subdomain": "Apprivoiser",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"x": "x|x"
+				},
+				"answers": ["-2x"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 a=-1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-1",
+					"x": "x|x"
+				},
+				"answers": ["x"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 inchangé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"x": "x|x"
+				},
+				"answers": ["2x"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v1",
+				"variationIndex": 1,
+				"variables": {
+					"b": "9"
+				},
+				"answers": ["-x-9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 ordre libre",
+				"variationIndex": 1,
+				"variables": {
+					"b": "9"
+				},
+				"answers": ["-9-x"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 signe",
+				"variationIndex": 1,
+				"variables": {
+					"b": "9"
+				},
+				"answers": ["-x+9"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v1 parenthèses non supprimées",
+				"variationIndex": 1,
+				"variables": {
+					"b": "9"
+				},
+				"answers": ["-(x+9)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v2",
+				"variationIndex": 2,
+				"variables": {
+					"b": "9"
+				},
+				"answers": ["x-9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 signe",
+				"variationIndex": 2,
+				"variables": {
+					"b": "9"
+				},
+				"answers": ["9+x"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

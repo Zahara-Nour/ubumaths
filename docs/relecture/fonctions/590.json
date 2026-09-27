@@ -1,0 +1,819 @@
+{
+	"globalIndex": 590,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Graphique perdu à la conversion : image remise dans chaque énoncé + image de correction correction_equation-i. Consigne à l'impératif « Résous ». Variation 19 (image 19 : f(x)=2/3 x − 2, équation f(x)=0) : réponse d'origine 0 FAUSSE, corrigée en 3 (lu sur l'image et sur l'image de correction, recoupé avec #582/#583).",
+	"template": {
+		"title": "Résoudre l'équation $f(x)=k$",
+		"description": "Graphiquement",
+		"variations": [
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-0-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-3"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-0-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-1-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-1"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "-1"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-1-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-2-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "-1"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-2-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-3-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-4"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-3-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-4-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "-1"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-4-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-5-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-1"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-5-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-6-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "4"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-6-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-7-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-3"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "-1"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-7-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-8-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "4"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "-1"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-8-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-9-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-9-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-10-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "-3"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-10-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-11-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-11-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-12-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-4"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "-3"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-12-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-13-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-1"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-13-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-14-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-2"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-14-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-15-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-15-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-16-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-1"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-16-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-17-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-17-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-18-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-18-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-19-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-19-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-20-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-3"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-20-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-21-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-2"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-21-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-22-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-22-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-23-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-23-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-24-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-24-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-25-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "-2"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-25-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-26-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-2"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "4"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-26-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-27-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-27-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-28-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-28-600.png)"]
+				}
+			},
+			{
+				"statement": "Résous graphiquement l'équation $f(x)={{a}}$.\n\n![Question image](fonctions-affines/exemples/fonction_affine-29-600.png)\n\n$f\\left(?\\right)={{a}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				],
+				"correction": {
+					"steps": ["![Correction](fonctions-affines/equation/correction_equation-29-600.png)"]
+				}
+			}
+		],
+		"grades": ["2"],
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Equations",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "image 0",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 15",
+				"variationIndex": 15,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 19 (corrigée)",
+				"variationIndex": 19,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ancienne réponse erronée",
+				"variationIndex": 19,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "lit l'ordonnée à l'origine",
+				"variationIndex": 15,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "image 1",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["-1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 2",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["-1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 3",
+				"variationIndex": 3,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 4",
+				"variationIndex": 4,
+				"variables": {},
+				"answers": ["-1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 5",
+				"variationIndex": 5,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 6",
+				"variationIndex": 6,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 7",
+				"variationIndex": 7,
+				"variables": {},
+				"answers": ["-1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 8",
+				"variationIndex": 8,
+				"variables": {},
+				"answers": ["-1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 9",
+				"variationIndex": 9,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 10",
+				"variationIndex": 10,
+				"variables": {},
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 11",
+				"variationIndex": 11,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 12",
+				"variationIndex": 12,
+				"variables": {},
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 13",
+				"variationIndex": 13,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 14",
+				"variationIndex": 14,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 16",
+				"variationIndex": 16,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 17",
+				"variationIndex": 17,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 18",
+				"variationIndex": 18,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 20",
+				"variationIndex": 20,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 21",
+				"variationIndex": 21,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 22",
+				"variationIndex": 22,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 23",
+				"variationIndex": 23,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 24",
+				"variationIndex": 24,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 25",
+				"variationIndex": 25,
+				"variables": {},
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 26",
+				"variationIndex": 26,
+				"variables": {},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 27",
+				"variationIndex": 27,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 28",
+				"variationIndex": 28,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 29",
+				"variationIndex": 29,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

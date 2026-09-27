@@ -1,0 +1,101 @@
+{
+	"globalIndex": 584,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : le résultat {{solution:html}} était hors des $…$ (« =$-61 » en texte) → {{solution}} dans la formule.",
+	"template": {
+		"title": "Déterminer une image par une fonction affine",
+		"variations": [
+			{
+				"statement": "Quelle est l'image de ${{c}}$ par la fonction affine :\n\n$$f(x)={{a}}x{{eval:b;+}}$$\n\n$f({{c}})=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "-9..9"
+					},
+					{
+						"name": "d",
+						"expression": "a*(c)+(b)"
+					}
+				],
+				"correction": {
+					"steps": ["$f({{c}})={{a}} \\times {{eval:c;()}}{{eval:b;+}}={{solution}}$."]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:d}}"
+					}
+				]
+			}
+		],
+		"grades": ["3"],
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Apprivoiser",
+		"level": 6,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "f(-6)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "-6"
+				},
+				"answers": ["-61"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "signe",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "-6"
+				},
+				"answers": ["61"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "9×(-6)+7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "-6"
+				},
+				"answers": ["-47"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "c = 0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "0"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

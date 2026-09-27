@@ -206,9 +206,19 @@ Après relecture (`code-reviewer`) :
   au vrai clavier à faire d'abord).
 - Base : 516 templates, tous brouillons.
 
+## Lot Fonctions — 37/39 IMPORTÉES (2026-09-27)
+
+- `docs/relecture/fonctions/RAPPORT.md` : 4 approuvées, 33 corrigées, #617 rejetée (cours à réponse
+  rédigée), #609 en attente (forme canonique : le moteur de motifs impose l'ordre d'une somme de deux
+  termes et ne voit pas le coefficient implicite ±1 — PR proposée).
+- Convertisseur : #487 (`&1x`, variable de fonction `x`).
+- Questions ouvertes à David : décimal exact accepté ? (#583, #589) ; facteur répété (#602–#604) ;
+  #601 v5.
+- Base : 553 templates, tous brouillons.
+
 ## Prochaine étape
 
-Lot 3 Grandeurs (4 questions), puis lots restants (115 questions) : Fonctions 39 (#609 : forme
-canonique), Proportionnalité 28 (#507–#509 : grandeurs déjà convertibles), Puissances 21, Suites 15
-(#629/#630), Racines 10, Probabilités 2. Défauts de conversion : listes des rapports Décimaux,
-Calcul littéral et Grandeurs.
+Restent : #609 (après correctif du motif), Grandeurs #462/#464/#466/#468 (lot 3, mesure MathLive au
+vrai clavier), et 76 questions : Proportionnalité 28 (#507–#509 grandeurs), Puissances 21, Suites 15
+(#629/#630), Racines 10, Probabilités 2. Défauts de conversion : listes des rapports Décimaux, Calcul
+littéral, Grandeurs et Fonctions.

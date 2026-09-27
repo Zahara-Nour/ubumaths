@@ -1,0 +1,709 @@
+{
+	"globalIndex": 583,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Graphique perdu à la conversion : image remise dans l'énoncé de chaque variation + image de correction correction_coef_directeur-i. Faute « coefficent » corrigée. Réponses vérifiées par recoupement avec #582/#590.",
+	"template": {
+		"title": "Déterminer le coefficient directeur",
+		"description": "Graphiquement",
+		"variations": [
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-0-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-0-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-1-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-1-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-2-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-2-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-3-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-3-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-4-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-4-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-5-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-5-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-6-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-6-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-7-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-7-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-8-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-8-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-9-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-9-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-10-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-10-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-11-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-11-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-12-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-12-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-13-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-13-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-14-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-14-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-15-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{1}{2}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-15-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-16-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-\\frac{3}{2}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-16-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-17-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-\\frac{4}{3}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-17-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-18-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{4}{3}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-18-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-19-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{2}{3}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-19-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-20-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-\\frac{4}{3}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-20-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-21-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-\\frac{2}{3}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-21-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-22-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{2}{3}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-22-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-23-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-\\frac{3}{2}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-23-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-24-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-\\frac{1}{3}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-24-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-25-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-\\frac{1}{2}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-25-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-26-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-\\frac{1}{2}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-26-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-27-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{3}{4}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-27-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-28-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-\\frac{3}{4}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-28-600.png)"
+					]
+				}
+			},
+			{
+				"statement": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-29-600.png)\n\nLe coefficient directeur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{2}{3}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"![Correction](fonctions-affines/coef-directeur/correction_coef_directeur-29-600.png)"
+					]
+				}
+			}
+		],
+		"grades": ["2"],
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Apprivoiser",
+		"level": 5,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "image 0 entier",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 15 fraction",
+				"variationIndex": 15,
+				"variables": {},
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 16 fraction négative",
+				"variationIndex": 16,
+				"variables": {},
+				"answers": ["-\\frac{3}{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "inverse",
+				"variationIndex": 15,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "erreur de signe",
+				"variationIndex": 16,
+				"variables": {},
+				"answers": ["\\frac{3}{2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "non réduite",
+				"variationIndex": 15,
+				"variables": {},
+				"answers": ["\\frac{2}{4}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "image 1",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 2",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 3",
+				"variationIndex": 3,
+				"variables": {},
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 4",
+				"variationIndex": 4,
+				"variables": {},
+				"answers": ["-4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 5",
+				"variationIndex": 5,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 6",
+				"variationIndex": 6,
+				"variables": {},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 7",
+				"variationIndex": 7,
+				"variables": {},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 8",
+				"variationIndex": 8,
+				"variables": {},
+				"answers": ["-4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 9",
+				"variationIndex": 9,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 10",
+				"variationIndex": 10,
+				"variables": {},
+				"answers": ["-1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 11",
+				"variationIndex": 11,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 12",
+				"variationIndex": 12,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 13",
+				"variationIndex": 13,
+				"variables": {},
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 14",
+				"variationIndex": 14,
+				"variables": {},
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 17",
+				"variationIndex": 17,
+				"variables": {},
+				"answers": ["-\\frac{4}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 18",
+				"variationIndex": 18,
+				"variables": {},
+				"answers": ["\\frac{4}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 19",
+				"variationIndex": 19,
+				"variables": {},
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 20",
+				"variationIndex": 20,
+				"variables": {},
+				"answers": ["-\\frac{4}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 21",
+				"variationIndex": 21,
+				"variables": {},
+				"answers": ["-\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 22",
+				"variationIndex": 22,
+				"variables": {},
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 23",
+				"variationIndex": 23,
+				"variables": {},
+				"answers": ["-\\frac{3}{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 24",
+				"variationIndex": 24,
+				"variables": {},
+				"answers": ["-\\frac{1}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 25",
+				"variationIndex": 25,
+				"variables": {},
+				"answers": ["-\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 26",
+				"variationIndex": 26,
+				"variables": {},
+				"answers": ["-\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 27",
+				"variationIndex": 27,
+				"variables": {},
+				"answers": ["\\frac{3}{4}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 28",
+				"variationIndex": 28,
+				"variables": {},
+				"answers": ["-\\frac{3}{4}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 29",
+				"variationIndex": 29,
+				"variables": {},
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

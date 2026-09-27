@@ -1,0 +1,259 @@
+{
+	"globalIndex": 580,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"editNotes": "Images vérifiées (droites 0-5, courbes non rectilignes 6-11 : échantillon lu).",
+	"template": {
+		"title": "Reconnaître une fonction affine",
+		"description": "A partir de la représentation graphique",
+		"shared": {
+			"choices": [
+				{
+					"content": "Oui"
+				},
+				{
+					"content": "Non"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Cette courbe représente-t-elle une fonction affine ?\n\n![Question image 1](fonctions-affines/reconnaitre/reconnaitre_fonction_affine-0-600.png)",
+				"correctChoiceIndex": ["0"],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, cette courbe représente une fonction affine car c'est une droite."
+					]
+				}
+			},
+			{
+				"statement": "Cette courbe représente-t-elle une fonction affine ?\n\n![Question image 1](fonctions-affines/reconnaitre/reconnaitre_fonction_affine-1-600.png)",
+				"correctChoiceIndex": ["0"],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, cette courbe représente une fonction affine car c'est une droite."
+					]
+				}
+			},
+			{
+				"statement": "Cette courbe représente-t-elle une fonction affine ?\n\n![Question image 1](fonctions-affines/reconnaitre/reconnaitre_fonction_affine-2-600.png)",
+				"correctChoiceIndex": ["0"],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, cette courbe représente une fonction affine car c'est une droite."
+					]
+				}
+			},
+			{
+				"statement": "Cette courbe représente-t-elle une fonction affine ?\n\n![Question image 1](fonctions-affines/reconnaitre/reconnaitre_fonction_affine-3-600.png)",
+				"correctChoiceIndex": ["0"],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, cette courbe représente une fonction affine car c'est une droite."
+					]
+				}
+			},
+			{
+				"statement": "Cette courbe représente-t-elle une fonction affine ?\n\n![Question image 1](fonctions-affines/reconnaitre/reconnaitre_fonction_affine-4-600.png)",
+				"correctChoiceIndex": ["0"],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, cette courbe représente une fonction affine car c'est une droite."
+					]
+				}
+			},
+			{
+				"statement": "Cette courbe représente-t-elle une fonction affine ?\n\n![Question image 1](fonctions-affines/reconnaitre/reconnaitre_fonction_affine-5-600.png)",
+				"correctChoiceIndex": ["0"],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, cette courbe représente une fonction affine car c'est une droite."
+					]
+				}
+			},
+			{
+				"statement": "Cette courbe représente-t-elle une fonction affine ?\n\n![Question image 1](fonctions-affines/reconnaitre/reconnaitre_fonction_affine-6-600.png)",
+				"correctChoiceIndex": ["1"],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, cette courbe ne représente pas une fonction affine car ce n'est pas une droite."
+					]
+				}
+			},
+			{
+				"statement": "Cette courbe représente-t-elle une fonction affine ?\n\n![Question image 1](fonctions-affines/reconnaitre/reconnaitre_fonction_affine-7-600.png)",
+				"correctChoiceIndex": ["1"],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, cette courbe ne représente pas une fonction affine car ce n'est pas une droite."
+					]
+				}
+			},
+			{
+				"statement": "Cette courbe représente-t-elle une fonction affine ?\n\n![Question image 1](fonctions-affines/reconnaitre/reconnaitre_fonction_affine-8-600.png)",
+				"correctChoiceIndex": ["1"],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, cette courbe ne représente pas une fonction affine car ce n'est pas une droite."
+					]
+				}
+			},
+			{
+				"statement": "Cette courbe représente-t-elle une fonction affine ?\n\n![Question image 1](fonctions-affines/reconnaitre/reconnaitre_fonction_affine-9-600.png)",
+				"correctChoiceIndex": ["1"],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, cette courbe ne représente pas une fonction affine car ce n'est pas une droite."
+					]
+				}
+			},
+			{
+				"statement": "Cette courbe représente-t-elle une fonction affine ?\n\n![Question image 1](fonctions-affines/reconnaitre/reconnaitre_fonction_affine-10-600.png)",
+				"correctChoiceIndex": ["1"],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, cette courbe ne représente pas une fonction affine car ce n'est pas une droite."
+					]
+				}
+			},
+			{
+				"statement": "Cette courbe représente-t-elle une fonction affine ?\n\n![Question image 1](fonctions-affines/reconnaitre/reconnaitre_fonction_affine-11-600.png)",
+				"correctChoiceIndex": ["1"],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, cette courbe ne représente pas une fonction affine car ce n'est pas une droite."
+					]
+				}
+			}
+		],
+		"options": {
+			"shuffleChoices": false
+		},
+		"grades": ["3"],
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Apprivoiser",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "image 0",
+				"variationIndex": 0,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 1",
+				"variationIndex": 1,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 2",
+				"variationIndex": 2,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 3",
+				"variationIndex": 3,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 4",
+				"variationIndex": 4,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 5",
+				"variationIndex": 5,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 6",
+				"variationIndex": 6,
+				"variables": {},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 7",
+				"variationIndex": 7,
+				"variables": {},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 8",
+				"variationIndex": 8,
+				"variables": {},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 9",
+				"variationIndex": 9,
+				"variables": {},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 10",
+				"variationIndex": 10,
+				"variables": {},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "image 11",
+				"variationIndex": 11,
+				"variables": {},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sinusoïde : Oui refusé",
+				"variationIndex": 6,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}
