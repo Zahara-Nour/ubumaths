@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { requiredFormVerdict } from '../required-form-validator';
+import { REQUIRED_FORM_FEEDBACK, requiredFormVerdict } from '../required-form-validator';
 import { validateAnswer } from '$lib/utils/answer-validator';
 import { generateInstance } from '../generator/instance-generator';
 import { requiredFormSchema, questionTemplateSchema } from '../template-schema';
@@ -167,5 +167,92 @@ describe('éditeur : le motif acceptable survit à l’aller-retour', () => {
 		expect(customRequiredForm(' (u-v)^2 ', '  ')).toEqual({ pattern: '(u-v)^2' });
 		expect(acceptableOf('product')).toBe('');
 		expect(acceptableOf(undefined)).toBe('');
+	});
+});
+
+// Relecture de code de #482
+describe('correcteur : cases à ordre libre (orderIndependent)', () => {
+	const instance = {
+		blanks: [
+			{ expectedAnswer: '(z-7)^2', type: 'math', requiredForm: SQUARE },
+			{ expectedAnswer: '(y-3)^2', type: 'math', requiredForm: SQUARE }
+		],
+		statement: '$$?$$ et $$?$$',
+		multipleAnswers: true,
+		options: { orderIndependent: true }
+	} as unknown as QuestionInstance;
+	const validate = (answers: string[]) => validateAnswer(answers, instance, answers);
+
+	it('binôme opposé (motif respecté) : juste, même si l’attendu est écrit autrement', () => {
+		const result = validate(['(7-z)^2', '(y-3)^2']);
+		expect(result.isCorrect).toBe(true);
+		expect(result.status ?? 'correct').toBe('correct');
+	});
+
+	it('produit de facteurs égaux : perfectible', () => {
+		const result = validate(['(z-7)(z-7)', '(y-3)^2']);
+		expect(result.status).toBe('unoptimal_form');
+		expect(result.isCorrect).toBe(true);
+	});
+
+	it('recopie développée : refusée', () => {
+		expect(validate(['z^2-14z+49', '(y-3)^2']).status).toBe('bad_form');
+	});
+});
+
+describe('correcteur : un refus n’affiche jamais le message « juste »', () => {
+	const instance = {
+		blanks: [{ expectedAnswer: '(z-7)^2', type: 'math', requiredForm: SQUARE }],
+		statement: '$$?$$',
+		options: { constraints: { factorOne: 'strict' } }
+	} as unknown as QuestionInstance;
+
+	it('produit acceptable avec un facteur 1 interdit : refusé, message du facteur 1', () => {
+		const result = validateAnswer(['1(z-7)(z-7)'], instance, ['1(z-7)(z-7)']);
+		expect(result.status).toBe('bad_form');
+		expect(result.feedback).not.toBe(REQUIRED_FORM_FEEDBACK.acceptable);
+		expect(result.constraintViolations?.map((v) => v.severity)).not.toContain('warning');
+	});
+
+	it('plusieurs cases : une perfectible, une refusée → message du refus', () => {
+		const two = {
+			blanks: [
+				{ expectedAnswer: '(z-7)^2', type: 'math', requiredForm: SQUARE },
+				{ expectedAnswer: '(y-3)^2', type: 'math', requiredForm: SQUARE }
+			],
+			statement: '$$?$$ et $$?$$',
+			multipleAnswers: true,
+			options: {}
+		} as unknown as QuestionInstance;
+		const answers = ['(z-7)(z-7)', 'y^2-6y+9'];
+		const result = validateAnswer(answers, two, answers);
+		expect(result.status).toBe('bad_form');
+		expect(result.feedback).not.toBe(REQUIRED_FORM_FEEDBACK.acceptable);
+	});
+});
+
+describe('générateur : QCM, variables tirées dans les motifs', () => {
+	it('{{a}} remplacé dans la forme exigée de la variation', () => {
+		const template = {
+			id: 't',
+			title: 'Factoriser',
+			status: 'draft',
+			variations: [
+				{
+					statement: 'Factorise',
+					variables: [{ name: 'a', expression: '7' }],
+					choices: [{ content: '$(z-7)^2$' }, { content: '$z^2$' }],
+					correctChoiceIndex: '0',
+					requiredForm: { pattern: '(u-{{a}})^2', acceptable: 'u*{{a}}' }
+				}
+			],
+			grades: ['2'],
+			theme: 'Calcul littéral',
+			domain: 'Transformation',
+			level: 1
+		} as unknown as QuestionTemplate;
+		const generated = generateInstance(template, 1);
+		if (!generated.success) throw new Error(generated.errors.join(' ; '));
+		expect(generated.instance.requiredForm).toEqual({ pattern: '(u-7)^2', acceptable: 'u*7' });
 	});
 });

@@ -515,7 +515,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			choices: resolvedChoices,
 			shuffledChoices,
 			multipleAnswers: template.multipleAnswers,
-			requiredForm: resolvedVariation.requiredForm,
+			requiredForm: resolveRequiredForm(resolvedVariation.requiredForm, resolvedVariables, seed),
 			generatedAt: new Date().toISOString(),
 			seed,
 			selectedVariationIndex: variationIndex

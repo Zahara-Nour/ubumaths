@@ -622,6 +622,21 @@ export function validateAlgebraic(userAnswer: string, correctAnswer: string): Va
 // ============================================================================
 
 /**
+ * Case à forme exigée : le motif a déjà jugé la forme, seules restent les contraintes
+ * cosmétiques (parenthèses inutiles, facteur 1…). L'attendu n'est pas un modèle de forme.
+ */
+function requiredFormCosmetics(
+	latex: string,
+	constraints: ConstraintOptions
+): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	const severities = buildConstraintSeverities(constraints);
+	const formOptions = {
+		allowFirstNegative: constraints.allowBracketsInFirstNegativeTerm === true
+	};
+	return mapCosmeticViolations(cosmeticViolations(latex, severities, formOptions), false);
+}
+
+/**
  * Contrôle de forme d'une réponse qui doit être un nombre simple (éventuellement
  * négatif) : cases à précision, et cases `rulesSuffice` — dont `expectedAnswer`
  * n'est qu'un exemple et ne peut pas servir de modèle de forme.
@@ -717,11 +732,23 @@ function withAcceptableForm(
 	status: ValidationStatus,
 	violations: NonNullable<ValidationResult['constraintViolations']>
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	// Refusée pour une autre raison : l'avertissement « juste » n'a rien à dire
+	if (status === 'bad_form') return { status, violations };
 	const feedback = REQUIRED_FORM_FEEDBACK.acceptable;
 	return {
-		status: status === 'bad_form' ? 'bad_form' : 'unoptimal_form',
-		violations: [{ constraint: 'form', severity: 'warning', feedback }, ...violations]
+		status: 'unoptimal_form',
+		violations: [...violations, { constraint: 'form', severity: 'warning', feedback }]
 	};
+}
+
+/** Message d'un résultat : celui d'une ERREUR s'il est refusé, jamais un avertissement */
+function feedbackOf(
+	status: ValidationStatus,
+	violations: NonNullable<ValidationResult['constraintViolations']>
+): string | undefined {
+	const first =
+		status === 'bad_form' ? violations.find((v) => v.severity === 'error') : violations[0];
+	return (first ?? violations[0])?.feedback;
 }
 
 /**
@@ -835,8 +862,7 @@ function validateSingleBlank(
 
 	// requiredForm: form handled at step 3 → only cosmetic violations here.
 	if (blank.requiredForm) {
-		const raw = cosmeticViolations(effectiveLatex, severities, formOptions);
-		const cosmetic = mapCosmeticViolations(raw, false);
+		const cosmetic = requiredFormCosmetics(effectiveLatex, constraints);
 		const { status, violations } =
 			formVerdict === 'acceptable'
 				? withAcceptableForm(cosmetic.status, cosmetic.violations)
@@ -1010,7 +1036,7 @@ export function validateBlanks(
 		if (emptyCount > 0 && blanks.length > 1) {
 			result.feedback = "Tu n'as pas tout complété.";
 		} else if (worstStatus === 'bad_form') {
-			result.feedback = allViolations[0]?.feedback;
+			result.feedback = feedbackOf('bad_form', allViolations);
 		} else if (singleBlankFeedback) {
 			result.feedback = singleBlankFeedback;
 		} else {
@@ -1112,14 +1138,18 @@ function validateBlanksOrderIndependent(
 
 		if (blankLatex) {
 			// rulesSuffice : pas de modèle de forme, cf. checkSimpleNumberForm
-			const { status, violations } = rulesDecide(blanks[b])
-				? checkSimpleNumberForm(blankLatex, instance.options?.constraints ?? {})
-				: applyConstraints(
-						[userAnswers[a]],
-						[blankLatex],
-						[blanks[b].expectedAnswer],
-						instance.options?.constraints ?? {}
-					);
+			// Forme exigée : déjà jugée par le motif ; ici seules les contraintes cosmétiques,
+			// comme pour une case seule (l'attendu n'est pas LA forme à reproduire)
+			const { status, violations } = blanks[b].requiredForm
+				? requiredFormCosmetics(blankLatex, instance.options?.constraints ?? {})
+				: rulesDecide(blanks[b])
+					? checkSimpleNumberForm(blankLatex, instance.options?.constraints ?? {})
+					: applyConstraints(
+							[userAnswers[a]],
+							[blankLatex],
+							[blanks[b].expectedAnswer],
+							instance.options?.constraints ?? {}
+						);
 			if (status === 'bad_form') worstStatus = 'bad_form';
 			else if (status === 'unoptimal_form' && worstStatus === 'correct')
 				worstStatus = 'unoptimal_form';
@@ -1134,7 +1164,7 @@ function validateBlanksOrderIndependent(
 	return {
 		isCorrect: worstStatus !== 'bad_form',
 		status: worstStatus,
-		feedback: allViolations[0]?.feedback,
+		feedback: feedbackOf(worstStatus, allViolations),
 		constraintViolations: allViolations
 	};
 }
