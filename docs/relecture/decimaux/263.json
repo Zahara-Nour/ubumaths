@@ -1,0 +1,108 @@
+{
+	"globalIndex": 263,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Le décimal « &1.&2&3 » (concaténation de 3 chiffres tirés) était mal converti (a.bc → résultat faux) : remplacé par {{eval:a+b/10+c/100;d}}.",
+	"template": {
+		"title": "Calculer une différence ",
+		"description": "Partie entière à $1$ chiffre et partie décimale à $1$ et $2$ chiffres (pas de retenue)",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:a+b/10+c/100;d}}"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "g",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "h",
+						"expression": "f.g"
+					},
+					{
+						"name": "expression1",
+						"expression": "d-h"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Soustraire",
+		"subdomain": "Différence",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7,99 − 2,7 = 5,29",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"f": "2",
+					"g": "7"
+				},
+				"answers": ["5{,}29"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "5.29 au point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"f": "2",
+					"g": "7"
+				},
+				"answers": ["5.29"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "alignement à droite : 7,72",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"f": "2",
+					"g": "7"
+				},
+				"answers": ["7{,}72"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,155 @@
+{
+	"globalIndex": 272,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Virgules décimales écrites « 0,5 » dans le LaTeX (titre, correction) remplacées par « 0.5 » : la virgule brute s'affichait comme une ponctuation (« 0, 5 ») ; le point est rendu en virgule française à l'affichage. Specs : juste (point/virgule) sur les 2 variations, bornes 2 et 20 ; seule la moitié et a + 0,5 refusés ; zéro inutile perfectible.",
+	"template": {
+		"title": "Multiplier par $1.5$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..20"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*1.5"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\times 1.5 &= \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} + \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\times 0.5 \\\\ &= {{a}} + {{eval:0.5*a;d}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "1.5*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} 1.5 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} &= \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} + 0.5 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\\\ &= {{a}} + {{eval:0.5*a;d}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Produit particulier",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "15 × 1,5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["22.5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "virgule",
+				"variationIndex": 0,
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["22{,}5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne 2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 borne 20",
+				"variationIndex": 1,
+				"variables": {
+					"a": "20"
+				},
+				"answers": ["30"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 virgule",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["10{,}5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "seulement la moitié",
+				"variationIndex": 0,
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["7.5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "a + 0,5",
+				"variationIndex": 1,
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["15{,}5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "zéro inutile",
+				"variationIndex": 1,
+				"variables": {
+					"a": "20"
+				},
+				"answers": ["30{,}0"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			}
+		]
+	}
+}

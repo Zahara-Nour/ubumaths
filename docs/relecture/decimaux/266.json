@@ -1,0 +1,117 @@
+{
+	"globalIndex": 266,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : la solution était écrite hors formule (« 54.510411 » en texte) → mise en $…$.",
+	"template": {
+		"title": "Placer la virgule dans le produit",
+		"variations": [
+			{
+				"statement": "La virgule a été oubliée dans le produit. Réécris le produit en rajoutant la virgule.\n\n$${{eval:c:10^(a-1);d}}*{{eval:d:10^(b-1);d}}={{eval:c*d}}$$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:10^(a-1)}}..{{eval:10^a-1}}!m(10)"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:10^(b-1)}}..{{eval:10^b-1}}!m(10)"
+					},
+					{
+						"name": "f",
+						"expression": "eval:c:10^(a-1)*d:10^(b-1);d"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:c:10^(a-1);d}}*{{eval:d:10^(b-1);d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Il y a $\\textcolor{{{color:primary.0}}}{{{eval:a-1}}\\text{ décimale(s)}}$ dans ${{eval:c:10^(a-1);d}}$  et $\\textcolor{{{color:primary.0}}}{{{eval:b-1}}\\text{  décimale(s)}}$ dans ${{eval:d:10^(b-1);d}}$, donc il y a en tout $\\textcolor{{{color:primary.0}}}{{{eval:a+b-2}} \\text{ décimales}}$  dans ${{solution}}$."
+					]
+				},
+				"conditions": ["mod(c*d,10)!=0"],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d:10^(a+b-2);d}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Produit",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "54,510 411",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "4",
+					"c": "9859",
+					"d": "5529"
+				},
+				"answers": ["54{,}510\\,411"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sans espace dans la partie décimale",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "4",
+					"c": "9859",
+					"d": "5529"
+				},
+				"answers": ["54{,}510411"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "virgule mal placée : 5 451,0411",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "4",
+					"c": "9859",
+					"d": "5529"
+				},
+				"answers": ["5\\,451{,}0411"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "1,2 × 3,4 = 4,08",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "12",
+					"d": "34"
+				},
+				"answers": ["4{,}08"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

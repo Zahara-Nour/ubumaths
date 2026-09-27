@@ -1,0 +1,116 @@
+{
+	"globalIndex": 276,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Défaut de conversion : le tirage digits:… produisait des zéros finaux ou nuls (7.0, 0.70, 0.0, affichés tels quels dans l'énoncé) ; condition ajoutée pour que le dernier chiffre décimal soit non nul, comme dans TinyMath. Variables renommées sans « _ » (a_int → p, a_dec → q) : un nom souligné est lu comme un indice dans les conditions. Specs : juste aux bornes (0,3 et 99,99, espace des milliers) ; sans espace perfectible ; décalage insuffisant refusé.",
+	"template": {
+		"title": "Calculer un produit",
+		"description": "Multiplier par $1000$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0..2"
+					},
+					{
+						"name": "q",
+						"expression": "1..2"
+					},
+					{
+						"name": "a",
+						"expression": "digits:p.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "a*1000"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Puissances de 10",
+		"level": 3,
+		"status": "draft",
+		"delay": 15,
+		"shared": {
+			"conditions": ["mod(a*10^q,10)!=0"]
+		},
+		"testSpecs": [
+			{
+				"description": "99,99 × 1000",
+				"variationIndex": 0,
+				"variables": {
+					"p": "2",
+					"q": "2",
+					"a": "99.99"
+				},
+				"answers": ["99\\,990"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0,3 × 1000",
+				"variationIndex": 0,
+				"variables": {
+					"p": "0",
+					"q": "1",
+					"a": "0.3"
+				},
+				"answers": ["300"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0,07 × 1000",
+				"variationIndex": 0,
+				"variables": {
+					"p": "0",
+					"q": "2",
+					"a": "0.07"
+				},
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"p": "2",
+					"q": "2",
+					"a": "99.99"
+				},
+				"answers": ["99990"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "× 100 seulement",
+				"variationIndex": 0,
+				"variables": {
+					"p": "0",
+					"q": "1",
+					"a": "0.3"
+				},
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

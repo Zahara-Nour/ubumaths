@@ -1,0 +1,113 @@
+{
+	"globalIndex": 244,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Titre « Trouver le plus petit entier supérieur » ne couvrait que la variation 1 → « Trouver l'entier supérieur ou inférieur le plus proche ». Specs : entier juste dans les deux sens, confusion supérieur/inférieur refusée, 8,0 perfectible.",
+	"template": {
+		"title": "Trouver l'entier supérieur ou inférieur le plus proche",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a+b*0.1;d"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Quel est le plus petit entier supérieur à ${{c}}$ ?\n\nLe plus petit entier supérieur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+1}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le plus grand entier inférieur à ${{c}}$ ?\n\nLe plus grand entier inférieur est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Comparer",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "Plus petit entier supérieur à 7,9 : 8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Réponse 7 (inférieur) : refusée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "8,0 : zéro inutile, perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["8{,}0"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			},
+			{
+				"description": "Plus grand entier inférieur à 7,9 : 7",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Réponse 8 (arrondi) : refusée",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

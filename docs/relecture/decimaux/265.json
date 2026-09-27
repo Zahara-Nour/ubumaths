@@ -1,0 +1,159 @@
+{
+	"globalIndex": 265,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Variation 2 : le facteur « 0.0&2 » était mal converti (0.0b → réponse attendue 0) : remplacé par {{eval:b/100;d}}. Correction : « 0, » → « 0{,} » (virgule décimale sans espace en LaTeX).",
+	"template": {
+		"title": "Calculer un produit",
+		"description": "Un entier par un décimal inférieur à $1$",
+		"shared": {
+			"statement": "Calcule.\n\n$${{expression1}}$$",
+			"conditions": ["mod(a*b,10)!=0"]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "0.b"
+					},
+					{
+						"name": "expression1",
+						"expression": "a*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{a}}\\times {{b}}={{eval:a*b}}$ donc ${{a}}\\times 0{,}\\textcolor{{{color:primary.0}}}{{{b}}}={{solution}}$ ($\\textcolor{{{color:primary.0}}}{1\\text{ décimale}} $)."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:b/100;d}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "a*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{a}}\\times {{b}}={{eval:a*b}}$ donc ${{a}}\\times 0{,}\\textcolor{{{color:primary.0}}}{0{{b}}}={{solution}}$ ($\\textcolor{{{color:primary.0}}}{2\\text{ décimales}} $)."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Produit",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7 × 0,9 = 6,3",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["6{,}3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "6.3 au point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["6.3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 × 0,09 = 0,63",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["0{,}63"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0.63 au point",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["0.63"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais nombre de décimales : 6,3",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["6{,}3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "virgule oubliée : 63",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["63"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

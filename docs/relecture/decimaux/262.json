@@ -1,0 +1,131 @@
+{
+	"globalIndex": 262,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "La partie entière à 2 chiffres « 1&1.&2 » (concaténation de chiffres tirés) ne générait pas : remplacée par {{eval:10+a+b/10;d}}.",
+	"template": {
+		"title": "Calculer une différence ",
+		"description": "Partie entière à $2$ chiffres et partie entière à $1$ (retenue sur la partie entière)",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:10+a+b/10;d}}"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:a+1}}..9"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "h",
+						"expression": "d.f"
+					},
+					{
+						"name": "expression1",
+						"expression": "c-h"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Soustraire",
+		"subdomain": "Différence",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "16,9 − 8,2 = 8,7 (virgule)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"d": "8",
+					"f": "2"
+				},
+				"answers": ["8{,}7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8.7 avec un point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"d": "8",
+					"f": "2"
+				},
+				"answers": ["8.7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli de la retenue : 18,7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"d": "8",
+					"f": "2"
+				},
+				"answers": ["18{,}7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "fraction 87/10",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"d": "8",
+					"f": "2"
+				},
+				"answers": ["\\frac{87}{10}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "8,70",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"d": "8",
+					"f": "2"
+				},
+				"answers": ["8{,}70"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,109 @@
+{
+	"globalIndex": 246,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Encadrer un nombre décimal par deux entiers consécutifs",
+		"variations": [
+			{
+				"statement": "Encadre ce nombre décimal par deux entiers consécutifs.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a+b*0.1;d"
+					},
+					{
+						"name": "expression1",
+						"expression": "?<c<?"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					},
+					{
+						"expectedAnswer": "{{eval:a+1}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Encadrer",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7 < 7,9 < 8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["7", "8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0 < 0,3 < 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0",
+					"b": "3"
+				},
+				"answers": ["0", "1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Bornes inversées : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["8", "7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "7,0 : zéro inutile, perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["7{,}0", "8"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			},
+			{
+				"description": "6 et 9 (non consécutifs) : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["6", "9"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,155 @@
+{
+	"globalIndex": 291,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Les décimaux « digits:… » pouvaient finir par 0 (ou valoir 0 / un entier déguisé) : conditions ajoutées (dernier chiffre non nul, partie entière du bon nombre de chiffres) ; variables a_int/a_dec renommées m/q (un nom à « _ » n'est pas lisible dans une condition).",
+	"template": {
+		"title": "Compléter une multiplication à trou",
+		"description": "Multiplier par $10$",
+		"shared": {
+			"variables": [
+				{
+					"name": "m",
+					"expression": "0..2"
+				},
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "a",
+					"expression": "digits:m.q"
+				}
+			],
+			"conditions": ["mod(a*10^q,10)!=0", "a>=10^(m-1)"]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*10={{eval:a*10;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{solution:0}} \\times 10 = {{eval:a*10;d}}$ car  ${{eval:a*10;d}} \\div 10 = {{solution:0}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "10*?={{eval:a*10;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$10 \\times {{solution:0}} = {{eval:a*10;d}}$ car  ${{eval:a*10;d}} \\div 10 = {{solution:0}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 3,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "18,38 × 10 (virgule)",
+				"variationIndex": 0,
+				"variables": {
+					"m": "2",
+					"q": "2",
+					"a": "18.38"
+				},
+				"answers": ["18{,}38"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "18.38 (point)",
+				"variationIndex": 0,
+				"variables": {
+					"m": "2",
+					"q": "2",
+					"a": "18.38"
+				},
+				"answers": ["18.38"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais décalage",
+				"variationIndex": 0,
+				"variables": {
+					"m": "2",
+					"q": "2",
+					"a": "18.38"
+				},
+				"answers": ["1{,}838"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "18,380 : zéro inutile",
+				"variationIndex": 0,
+				"variables": {
+					"m": "2",
+					"q": "2",
+					"a": "18.38"
+				},
+				"answers": ["18{,}380"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			},
+			{
+				"description": "10 × 0,4",
+				"variationIndex": 1,
+				"variables": {
+					"m": "0",
+					"q": "1",
+					"a": "0.4"
+				},
+				"answers": ["0{,}4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0,04 : mauvais décalage",
+				"variationIndex": 1,
+				"variables": {
+					"m": "0",
+					"q": "1",
+					"a": "0.4"
+				},
+				"answers": ["0{,}04"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

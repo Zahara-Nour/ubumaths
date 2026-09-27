@@ -1,0 +1,141 @@
+{
+	"globalIndex": 255,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Le décimal à 2 décimales « &4.&5&6 » (concaténation de 3 chiffres tirés) était mal converti (d.fg → résultat faux, ex. 8,2 + 1,55 = 33,2) : remplacé par {{eval:d+f/10+g/100;d}}.",
+	"template": {
+		"title": "Compléter une addition à trou",
+		"description": "Parties décimales à $1$ et $2$ chiffres (pas de retenue)",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..8"
+				},
+				{
+					"name": "c",
+					"expression": "a.b"
+				},
+				{
+					"name": "d",
+					"expression": "1..{{eval:9-a}}"
+				},
+				{
+					"name": "f",
+					"expression": "1..{{eval:9-b}}"
+				},
+				{
+					"name": "g",
+					"expression": "1..{{eval:9-b}}"
+				},
+				{
+					"name": "h",
+					"expression": "{{eval:d+f/10+g/100;d}}"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{c}}+?={{eval:h+c;d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{h}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?+{{c}}={{eval:h+c;d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{h}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"subdomain": "A trou",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "8,2 + ? = 9,75 → 1,55",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"d": "1",
+					"f": "5",
+					"g": "5"
+				},
+				"answers": ["1{,}55"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "1.55 au point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"d": "1",
+					"f": "5",
+					"g": "5"
+				},
+				"answers": ["1.55"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "? + 8,2 = 9,75 → 1,55",
+				"variationIndex": 1,
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"d": "1",
+					"f": "5",
+					"g": "5"
+				},
+				"answers": ["1{,}55"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "erreur 1,5",
+				"variationIndex": 1,
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"d": "1",
+					"f": "5",
+					"g": "5"
+				},
+				"answers": ["1{,}5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

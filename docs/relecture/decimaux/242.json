@@ -1,0 +1,108 @@
+{
+	"globalIndex": 242,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue cassée : le convertisseur attendait le décimal lui-même ({{eval:{{expression1}}}} → 0.8), une fraction était refusée et 0,8 accepté. Remplacée par {{eval:b/a}} (fraction exacte). Specs : 4/5 et 8/10 justes (fraction non simplifiée acceptée, comme TinyMath), décimal recopié refusé, fraction renversée refusée.",
+	"template": {
+		"title": "Déterminer une forme fractionnaire",
+		"variations": [
+			{
+				"statement": "Réécris ce nombre décimal sous forme fractionnaire.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|4|5|10"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:b/a;d"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b/a}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"reducedFractions": "off"
+			}
+		},
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Forme fractionnaire",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "0,8 = 4/5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "4"
+				},
+				"answers": ["\\frac{4}{5}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0,8 = 8/10 (non simplifiée, acceptée)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "4"
+				},
+				"answers": ["\\frac{8}{10}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Décimal recopié : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "4"
+				},
+				"answers": ["0{,}8"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "Fraction renversée 5/4 : refusée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "4"
+				},
+				"answers": ["\\frac{5}{4}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "0,5 = 50/100",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10",
+					"b": "5"
+				},
+				"answers": ["\\frac{50}{100}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

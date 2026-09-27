@@ -1,0 +1,281 @@
+{
+	"globalIndex": 283,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Défaut de conversion : le tirage digits:… produisait des zéros finaux ou nuls (7.0, 0.70, 0.0, affichés tels quels dans l'énoncé) ; condition ajoutée pour que le dernier chiffre décimal soit non nul, comme dans TinyMath. Variables renommées sans « _ » (c_int → p, c_dec → q) : un nom souligné est lu comme un indice dans les conditions. Specs : juste sur les 6 variations (espace des milliers, virgule, point) ; sans espace perfectible ; ×10 au lieu de ×100 refusé.",
+	"template": {
+		"title": "Calculer astucieusement un produit",
+		"description": "Utiliser $2$ facteurs dont le produit est $100$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "20|25|50"
+				},
+				{
+					"name": "b",
+					"expression": "eval:100:a"
+				},
+				{
+					"name": "p",
+					"expression": "1..2"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "digits:p.q"
+				}
+			],
+			"conditions": ["mod(c*10^q,10)!=0"]
+		},
+		"variations": [
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{a}}*{{eval:b}}*{{c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}  \\times  \\textcolor{{{color:primary.0}}}{{{b}}} \\times {{eval:c;d}} \t\t\t\t\t\t\t\t&= \\textcolor{{{color:primary.0}}}{100} \\times {{eval:c;d}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:b}}*{{a}}*{{c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{{{b}}}  \\times  \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{eval:c;d}} \t\t\t\t\t\t\t\t&= \\textcolor{{{color:primary.0}}}{100} \\times {{eval:c;d}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{eval:b}}*{{c}}*{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{b}}} \\times  {{eval:c;d}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \t\t\t\t\t\t\t\t&= \\textcolor{{{color:primary.0}}}{100} \\times {{eval:c;d}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "{{a}}*{{c}}*{{eval:b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{{{a}}}  \\times  {{eval:c;d}} \\times \\textcolor{{{color:primary.0}}}{{{b}}} \t\t\t\t\t\t\t\t&= \\textcolor{{{color:primary.0}}}{100} \\times {{eval:c;d}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression4}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "{{c}}*{{a}}*{{eval:b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t{{eval:c;d}} \\times \\textcolor{{{color:primary.0}}}{{{b}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \t\t\t\t\t\t\t\t&= {{eval:c;d}} \\times \\textcolor{{{color:primary.0}}}{100} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression5}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "{{c}}*{{eval:b}}*{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t{{eval:c;d}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{b}}} \t\t\t\t\t\t\t\t&= {{eval:c;d}} \\times \\textcolor{{{color:primary.0}}}{100} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression6}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Produits astucieux",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0 50×2×71.97",
+				"variationIndex": 0,
+				"variables": {
+					"a": "50",
+					"b": "2",
+					"p": "2",
+					"q": "2",
+					"c": "71.97"
+				},
+				"answers": ["7\\,197"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 25×4×3.141",
+				"variationIndex": 1,
+				"variables": {
+					"a": "25",
+					"b": "4",
+					"p": "1",
+					"q": "3",
+					"c": "3.141"
+				},
+				"answers": ["314{,}1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 20×5×12.5",
+				"variationIndex": 2,
+				"variables": {
+					"a": "20",
+					"b": "5",
+					"p": "2",
+					"q": "1",
+					"c": "12.5"
+				},
+				"answers": ["1\\,250"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 50×2×0.35",
+				"variationIndex": 3,
+				"variables": {
+					"a": "50",
+					"b": "2",
+					"p": "1",
+					"q": "2",
+					"c": "0.35"
+				},
+				"answers": ["35"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 25×4×99.999",
+				"variationIndex": 4,
+				"variables": {
+					"a": "25",
+					"b": "4",
+					"p": "2",
+					"q": "3",
+					"c": "99.999"
+				},
+				"answers": ["9\\,999{,}9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5 25×4×3.141",
+				"variationIndex": 5,
+				"variables": {
+					"a": "25",
+					"b": "4",
+					"p": "1",
+					"q": "3",
+					"c": "3.141"
+				},
+				"answers": ["314.1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "50",
+					"b": "2",
+					"p": "2",
+					"q": "2",
+					"c": "71.97"
+				},
+				"answers": ["7197"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "×10 au lieu de ×100",
+				"variationIndex": 3,
+				"variables": {
+					"a": "50",
+					"b": "2",
+					"p": "2",
+					"q": "2",
+					"c": "71.97"
+				},
+				"answers": ["719.7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

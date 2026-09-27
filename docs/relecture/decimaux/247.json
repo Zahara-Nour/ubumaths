@@ -1,0 +1,122 @@
+{
+	"globalIndex": 247,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Encadrer un nombre décimal au dixième près",
+		"variations": [
+			{
+				"statement": "Encadre ce nombre décimal au dixième près.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a+b*0.1+c*0.01;d"
+					},
+					{
+						"name": "expression1",
+						"expression": "?<d<?"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+b*0.1;d}}"
+					},
+					{
+						"expectedAnswer": "{{eval:a+(b+1)*0.1;d}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Encadrer",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7,9 < 7,99 < 8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["7{,}9", "8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Tapé avec un point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["7.9", "8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8,0 accepté (zéros libres, comme TinyMath)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["7{,}9", "8{,}0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0 < 0,03 < 0,1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0",
+					"b": "0",
+					"c": "3"
+				},
+				"answers": ["0", "0{,}1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Encadrement au centième au lieu du dixième : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["7{,}98", "8{,}01"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,162 @@
+{
+	"globalIndex": 228,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Énoncé de la variation 2 : « dizièmes » → « dixièmes ». Specs : chiffre juste pour chaque position (dont unités nulles), chiffre d'une autre position refusé, « 07 » refusé (zéro inutile).",
+	"template": {
+		"title": "Connaître la position décimale",
+		"description": "Des unités jusqu'aux centièmes",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "0..9!a,b"
+				},
+				{
+					"name": "d",
+					"expression": "eval:a*0.01+b*0.1+c;d"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Quel est le chiffre des **centièmes** dans le nombre ${{d}}$ ?\n\nLe chiffre des centièmes est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le chiffre des **dixièmes** dans le nombre ${{d}}$ ?\n\nLe chiffre des dixièmes est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le chiffre des **unités** dans le nombre ${{d}}$ ?\n\nLe chiffre des unités est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"zeros": "strict"
+			}
+		},
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Ecriture",
+		"level": 1,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "Centièmes de 1,97 : 7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Chiffre des dixièmes à la place des centièmes : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "« 07 » : zéro inutile refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"answers": ["07"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["zeros", "form"]
+				}
+			},
+			{
+				"description": "Dixièmes de 1,97 : 9",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Centièmes à la place des dixièmes : refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Unités de 1,97 : 1",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Unités de 0,52 : 0",
+				"variationIndex": 2,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"c": "0"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

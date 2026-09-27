@@ -1,0 +1,163 @@
+{
+	"globalIndex": 258,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Les corrections des deux variations étaient inversées dès TinyMath (la 1re ligne de la correction ne reprenait pas l'ordre de l'énoncé) : échangées.",
+	"template": {
+		"title": "Additionner par regroupements",
+		"description": "Regrouper pour obtenir un nombre entier. $3$ nombres à une décimale.",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "digits:1"
+				},
+				{
+					"name": "b",
+					"expression": "10-a"
+				},
+				{
+					"name": "c",
+					"expression": "0..9"
+				},
+				{
+					"name": "d",
+					"expression": "0..{{eval:9-c}}"
+				},
+				{
+					"name": "f",
+					"expression": "eval:c+a/10;d"
+				},
+				{
+					"name": "g",
+					"expression": "eval:d+(b)/10;d"
+				},
+				{
+					"name": "h1",
+					"expression": "digits:1"
+				},
+				{
+					"name": "h2",
+					"expression": "1..9!a,{{eval:b}}"
+				},
+				{
+					"name": "h",
+					"expression": "eval:h1+(h2)/10"
+				},
+				{
+					"name": "j",
+					"expression": "eval:h;d"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "f+j+g"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\bold{\\textcolor{{{color:primary.0}}}{{{eval:f;d}}}}+ {{eval:j;d}} + \\bold{\\textcolor{{{color:primary.0}}}{{{eval:g;d}}}} &= {{eval:j;d}} + \\bold{\\textcolor{{{color:primary.0}}}{{{eval:f+g;d}}}} \\\\ &=  {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "j+f+g"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{eval:j;d}} +\\bold{\\textcolor{{{color:primary.0}}}{{{eval:f;d}}}} + \\bold{\\textcolor{{{color:primary.0}}}{{{eval:g;d}}}} &= {{eval:j;d}} + \\bold{\\textcolor{{{color:primary.0}}}{{{eval:f+g;d}}}} \\\\ &=  {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"subdomain": "Somme astucieuse",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "9,5 + 3,2 + 0,5 = 13,2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"c": "9",
+					"d": "0",
+					"h1": "3",
+					"h2": "2"
+				},
+				"answers": ["13{,}2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "13.2 au point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"c": "9",
+					"d": "0",
+					"h1": "3",
+					"h2": "2"
+				},
+				"answers": ["13.2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3,2 + 9,5 + 0,5 = 13,2",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"c": "9",
+					"d": "0",
+					"h1": "3",
+					"h2": "2"
+				},
+				"answers": ["13{,}2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "erreur 12,2",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"c": "9",
+					"d": "0",
+					"h1": "3",
+					"h2": "2"
+				},
+				"answers": ["12{,}2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,165 @@
+{
+	"globalIndex": 280,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Défaut de conversion : le tirage digits:… produisait des zéros finaux ou nuls (7.0, 0.70, 0.0, affichés tels quels dans l'énoncé) ; condition ajoutée pour que le dernier chiffre décimal soit non nul, comme dans TinyMath. (condition propre à la variation décimale ; la variation entière garde c ≠ 0 et c ≠ 1.) Virgules décimales écrites « 0,5 » dans le LaTeX (titre, correction) remplacées par « 0.5 » : la virgule brute s'affichait comme une ponctuation (« 0, 5 ») ; le point est rendu en virgule française à l'affichage. Specs : juste (point/virgule), groupement des décimales 0,183 8 ; sans groupement perfectible [spaces] ; mauvais rang refusé.",
+	"template": {
+		"title": "Multiplier par $0.01$",
+		"description": "Nombre entier ou décimal",
+		"shared": {
+			"conditions": ["c != 0 && c != 1"]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..3"
+					},
+					{
+						"name": "b",
+						"expression": "1..2"
+					},
+					{
+						"name": "c",
+						"expression": "digits:a.b"
+					},
+					{
+						"name": "expression1",
+						"expression": "c*0.01"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{eval:c;d}} \\bold{\\textcolor{{{color:primary.0}}}{\\times 0.01}} &= {{eval:c;d}} \\bold{\\textcolor{{{color:primary.0}}}{\\div 100}} \\\\ &=  {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"conditions": ["mod(c*10^b,10)!=0"]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "digits:1..3"
+					},
+					{
+						"name": "expression2",
+						"expression": "0.01*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\bold{\\textcolor{{{color:primary.0}}}{0.01 \\times}} {{eval:c;d}} &= {{eval:c;d}} \\bold{\\textcolor{{{color:primary.0}}}{\\div 100}} \\\\ &=  {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Puissances de 10",
+		"level": 7,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "18,38 × 0,01",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "18.38"
+				},
+				"answers": ["0{,}183\\,8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0,7 × 0,01",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0",
+					"b": "1",
+					"c": "0.7"
+				},
+				"answers": ["0.007"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 514",
+				"variationIndex": 1,
+				"variables": {
+					"c": "514"
+				},
+				"answers": ["5{,}14"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 point",
+				"variationIndex": 1,
+				"variables": {
+					"c": "30"
+				},
+				"answers": ["0.3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "décimales non groupées",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "18.38"
+				},
+				"answers": ["0.1838"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "×0,1 au lieu de ×0,01",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "18.38"
+				},
+				"answers": ["1.838"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "×100",
+				"variationIndex": 1,
+				"variables": {
+					"c": "514"
+				},
+				"answers": ["51\\,400"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

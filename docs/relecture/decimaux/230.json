@@ -1,0 +1,230 @@
+{
+	"globalIndex": 230,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Description : « Jusqu'au centièmes » → « Jusqu'aux centièmes ». Specs : décimal juste en virgule ET en point, zéro final perfectible, dixièmes/centièmes inversés refusés, écriture fractionnaire refusée.",
+	"template": {
+		"title": "Définition à l'aide de fractions décimales",
+		"description": "Jusqu'aux centièmes",
+		"shared": {
+			"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$"
+		},
+		"variations": [
+			{
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "0"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Ecriture",
+		"level": 3,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "5 + 8/10 + 1/100 = 5,81 (virgule)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"answers": ["5{,}81"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "5,81 tapé avec un point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"answers": ["5.81"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Dixièmes et centièmes inversés : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"answers": ["5{,}18"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Zéro final 5,810 : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"answers": ["5{,}810"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			},
+			{
+				"description": "Fraction 581/100 : pas un décimal",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"answers": ["\\frac{581}{100}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "5 + 1/100 = 5,01",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1"
+				},
+				"answers": ["5{,}01"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "5,1 (zéro des dixièmes oublié) : refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1"
+				},
+				"answers": ["5{,}1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "5 + 8/10 = 5,8",
+				"variationIndex": 2,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "0"
+				},
+				"answers": ["5{,}8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "5,08 : refusé",
+				"variationIndex": 2,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "0"
+				},
+				"answers": ["5{,}08"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,115 @@
+{
+	"globalIndex": 237,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Définition à l'aide de fractions décimales (2)",
+		"description": "Jusqu'aux millièmes",
+		"variations": [
+			{
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "1..3"
+					},
+					{
+						"name": "c",
+						"expression": "digits:b"
+					},
+					{
+						"name": "d",
+						"expression": "a+c/1000"
+					},
+					{
+						"name": "expression1",
+						"expression": "d"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Ecriture",
+		"level": 10,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "5 + 187/1000 = 5,187",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "3",
+					"c": "187"
+				},
+				"answers": ["5{,}187"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "5,187 tapé avec un point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "3",
+					"c": "187"
+				},
+				"answers": ["5.187"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "5 + 7/1000 = 5,007",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "1",
+					"c": "7"
+				},
+				"answers": ["5{,}007"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "5,7 : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "1",
+					"c": "7"
+				},
+				"answers": ["5{,}7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "5 + 45/1000 = 5,045 ; 5,45 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "2",
+					"c": "45"
+				},
+				"answers": ["5{,}45"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

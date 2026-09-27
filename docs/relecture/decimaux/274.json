@@ -1,0 +1,129 @@
+{
+	"globalIndex": 274,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Défaut de conversion : le tirage digits:… produisait des zéros finaux ou nuls (7.0, 0.70, 0.0, affichés tels quels dans l'énoncé) ; condition ajoutée pour que le dernier chiffre décimal soit non nul, comme dans TinyMath. Variables renommées sans « _ » (a_int → p, a_dec → q) : un nom souligné est lu comme un indice dans les conditions. Specs : juste (point/virgule), résultat entier, borne 0,x ; décalage d'un rang de trop et recopie refusés.",
+	"template": {
+		"title": "Calculer un produit",
+		"description": "Multiplier par $10$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0..2"
+					},
+					{
+						"name": "q",
+						"expression": "1..2"
+					},
+					{
+						"name": "a",
+						"expression": "digits:p.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "a*10"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Puissances de 10",
+		"level": 1,
+		"status": "draft",
+		"delay": 15,
+		"shared": {
+			"conditions": ["mod(a*10^q,10)!=0"]
+		},
+		"testSpecs": [
+			{
+				"description": "18,38 × 10",
+				"variationIndex": 0,
+				"variables": {
+					"p": "2",
+					"q": "2",
+					"a": "18.38"
+				},
+				"answers": ["183.8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "virgule",
+				"variationIndex": 0,
+				"variables": {
+					"p": "2",
+					"q": "2",
+					"a": "18.38"
+				},
+				"answers": ["183{,}8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0,4 × 10",
+				"variationIndex": 0,
+				"variables": {
+					"p": "0",
+					"q": "1",
+					"a": "0.4"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "× 100 au lieu de × 10",
+				"variationIndex": 0,
+				"variables": {
+					"p": "2",
+					"q": "2",
+					"a": "18.38"
+				},
+				"answers": ["1\\,838"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "recopie",
+				"variationIndex": 0,
+				"variables": {
+					"p": "1",
+					"q": "1",
+					"a": "6.4"
+				},
+				"answers": ["6.4"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "zéro inutile",
+				"variationIndex": 0,
+				"variables": {
+					"p": "0",
+					"q": "1",
+					"a": "0.4"
+				},
+				"answers": ["04"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			}
+		]
+	}
+}

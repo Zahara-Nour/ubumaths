@@ -1,0 +1,155 @@
+{
+	"globalIndex": 277,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Défaut de conversion : le tirage digits:… produisait des zéros finaux ou nuls (7.0, 0.70, 0.0, affichés tels quels dans l'énoncé) ; condition ajoutée pour que le dernier chiffre décimal soit non nul, comme dans TinyMath. Variables renommées sans « _ » (b_int → p, b_dec → q) : un nom souligné est lu comme un indice dans les conditions. Specs : juste sur les 2 variations (×10, ×1000, espace des milliers, virgule) ; sans espace perfectible ; décalage dans le mauvais sens refusé.",
+	"template": {
+		"title": "Calculer un produit",
+		"description": "Multiplier par $10$, $100$ ou $1000$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "0..4-a"
+				},
+				{
+					"name": "q",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "digits:p.q"
+				}
+			],
+			"conditions": ["mod(b*10^q,10)!=0"]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:10^a}}*{{b}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{b}}*{{eval:10^a}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Puissances de 10",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "1000 × 4,6803",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"p": "1",
+					"q": "4",
+					"b": "4.6803"
+				},
+				"answers": ["4\\,680{,}3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "10 × 0,7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"p": "0",
+					"q": "1",
+					"b": "0.7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 449,6803 × 10",
+				"variationIndex": 1,
+				"variables": {
+					"a": "1",
+					"p": "3",
+					"q": "4",
+					"b": "449.6803"
+				},
+				"answers": ["4\\,496{,}803"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 point",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"p": "1",
+					"q": "2",
+					"b": "3.25"
+				},
+				"answers": ["325"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"p": "1",
+					"q": "4",
+					"b": "4.6803"
+				},
+				"answers": ["4680.3"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "division au lieu de multiplication",
+				"variationIndex": 1,
+				"variables": {
+					"a": "1",
+					"p": "0",
+					"q": "1",
+					"b": "0.7"
+				},
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

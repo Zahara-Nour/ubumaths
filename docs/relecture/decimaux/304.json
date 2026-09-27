@@ -1,0 +1,179 @@
+{
+	"globalIndex": 304,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Les décimaux « digits:… » pouvaient finir par 0 (ou valoir 0 / un entier déguisé) : conditions ajoutées (dernier chiffre non nul, partie entière du bon nombre de chiffres) ; variables a_int/a_dec renommées m/q (un nom à « _ » n'est pas lisible dans une condition).",
+	"template": {
+		"title": "Calculer un quotient",
+		"description": "Diviser par $0,1$ ; $0,01$ ou $0,001$",
+		"shared": {
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..2"
+				},
+				{
+					"name": "q",
+					"expression": "0..3"
+				},
+				{
+					"name": "a",
+					"expression": "digits:m.q"
+				},
+				{
+					"name": "b",
+					"expression": "0.1|0.01|0.001"
+				},
+				{
+					"name": "c1",
+					"expression": "1..9|11..99|101..999"
+				},
+				{
+					"name": "c",
+					"expression": "eval:c1:1000"
+				}
+			],
+			"conditions": ["mod(a*10^q,10)!=0", "a>=10^(m-1)"]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:c;d}}:{{b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t{{eval:c;d}} \\textcolor{{{color:primary.0}}}{\\div {{eval:b;d}}} \t\t\t\t\t\t\t\t&= {{eval:c;d}} \\textcolor{{{color:primary.0}}}{\\times {{eval:1:b;d}}} \\\\ \t\t\t\t\t\t\t\t&=  {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a:b"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t{{eval:a;d}} \\textcolor{{{color:primary.0}}}{\\div {{eval:b;d}}} \t\t\t\t\t\t\t\t&= {{eval:a;d}} \\textcolor{{{color:primary.0}}}{\\times {{eval:1:b;d}}} \\\\ \t\t\t\t\t\t\t\t&=  {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"subdomain": "Quotient",
+		"level": 6,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "0,003 : 0,01 = 0,3",
+				"variationIndex": 0,
+				"variables": {
+					"m": "2",
+					"q": "3",
+					"a": "18.388",
+					"b": "0.01",
+					"c1": "3"
+				},
+				"answers": ["0{,}3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "point",
+				"variationIndex": 0,
+				"variables": {
+					"m": "2",
+					"q": "3",
+					"a": "18.388",
+					"b": "0.01",
+					"c1": "3"
+				},
+				"answers": ["0.3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "divise au lieu de multiplier",
+				"variationIndex": 0,
+				"variables": {
+					"m": "2",
+					"q": "3",
+					"a": "18.388",
+					"b": "0.01",
+					"c1": "3"
+				},
+				"answers": ["0{,}000\\,03"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "18,388 : 0,01 = 1 838,8",
+				"variationIndex": 1,
+				"variables": {
+					"m": "2",
+					"q": "3",
+					"a": "18.388",
+					"b": "0.01",
+					"c1": "3"
+				},
+				"answers": ["1\\,838{,}8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "1838,8 sans espace",
+				"variationIndex": 1,
+				"variables": {
+					"m": "2",
+					"q": "3",
+					"a": "18.388",
+					"b": "0.01",
+					"c1": "3"
+				},
+				"answers": ["1838{,}8"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "mauvais sens",
+				"variationIndex": 1,
+				"variables": {
+					"m": "2",
+					"q": "3",
+					"a": "18.388",
+					"b": "0.01",
+					"c1": "3"
+				},
+				"answers": ["0{,}183\\,88"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

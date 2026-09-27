@@ -1,0 +1,116 @@
+{
+	"globalIndex": 232,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Définition à l'aide de fractions décimales (2)",
+		"description": "Jusqu'aux centièmes",
+		"variations": [
+			{
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "1..2"
+					},
+					{
+						"name": "c",
+						"expression": "digits:b"
+					},
+					{
+						"name": "d",
+						"expression": "a+c/100"
+					},
+					{
+						"name": "expression1",
+						"expression": "d"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Ecriture",
+		"level": 5,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "5 + 18/100 = 5,18",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "2",
+					"c": "18"
+				},
+				"answers": ["5{,}18"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "5,18 tapé avec un point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "2",
+					"c": "18"
+				},
+				"answers": ["5.18"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "5 + 6/100 = 5,06",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "1",
+					"c": "6"
+				},
+				"answers": ["5{,}06"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "5,6 (centièmes lus comme dixièmes) : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "1",
+					"c": "6"
+				},
+				"answers": ["5{,}6"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "5 + 20/100 = 5,2 ; 5,20 perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "2",
+					"c": "20"
+				},
+				"answers": ["5{,}20"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			}
+		]
+	}
+}

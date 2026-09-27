@@ -1,0 +1,92 @@
+{
+	"globalIndex": 308,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Titre « a trou » → « à trou ». « digits:0 » donnait 0 (? : 1000 = 0) : nombre de chiffres tiré dans 1..4.",
+	"template": {
+		"title": "Compléter une division à trou",
+		"description": "Diviser par $1000$",
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "digits:a"
+					},
+					{
+						"name": "expression1",
+						"expression": "?:1000 = {{eval:b:1000;d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"subdomain": "A trou",
+		"level": 3,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "? : 1000 = 0,824",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "824"
+				},
+				"answers": ["824"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais sens",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "824"
+				},
+				"answers": ["0{,}824"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "4 321",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "4321"
+				},
+				"answers": ["4\\,321"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "4321 sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "4321"
+				},
+				"answers": ["4321"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			}
+		]
+	}
+}

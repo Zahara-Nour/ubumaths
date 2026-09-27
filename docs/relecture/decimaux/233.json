@@ -1,0 +1,160 @@
+{
+	"globalIndex": 233,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Connaître la position décimale",
+		"description": "Des unités jusqu'aux millièmes",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "0..9!a,b"
+				},
+				{
+					"name": "d",
+					"expression": "0..9!a,b,c"
+				},
+				{
+					"name": "f",
+					"expression": "eval:a*0.001+b*0.01+c*0.1+d;d"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Quel est le chiffre des **millièmes** dans le nombre ${{f}}$ ?\n\nLe chiffre des millièmes est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le chiffre des **centièmes** dans le nombre ${{f}}$ ?\n\nLe chiffre des centièmes est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le chiffre des **dixièmes** dans le nombre ${{f}}$ ?\n\nLe chiffre des dixièmes est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le chiffre des **unités** dans le nombre ${{f}}$ ?\n\nLe chiffre des unités est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Ecriture",
+		"level": 6,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "Millièmes de 6,197 : 7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Centièmes à la place des millièmes : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Centièmes de 6,197 : 9",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Dixièmes de 6,197 : 1",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Millièmes à la place des dixièmes : refusé",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Unités de 6,197 : 6",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6"
+				},
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,154 @@
+{
+	"globalIndex": 279,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Défaut de conversion : le tirage digits:… produisait des zéros finaux ou nuls (7.0, 0.70, 0.0, affichés tels quels dans l'énoncé) ; condition ajoutée pour que le dernier chiffre décimal soit non nul, comme dans TinyMath. Virgules décimales écrites « 0,5 » dans le LaTeX (titre, correction) remplacées par « 0.5 » : la virgule brute s'affichait comme une ponctuation (« 0, 5 ») ; le point est rendu en virgule française à l'affichage. Specs : juste (point/virgule) sur les 2 variations, borne 0,x ; ×10 au lieu de ×0,1 refusé.",
+	"template": {
+		"title": "Multiplier par $0.1$",
+		"description": "Nombre décimal",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..2"
+				},
+				{
+					"name": "c",
+					"expression": "digits:a.b"
+				}
+			],
+			"conditions": ["mod(c*10^b,10)!=0"]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "c*0.1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{eval:c;d}} \\bold{\\textcolor{{{color:primary.0}}}{\\times 0.1}} &= {{eval:c;d}} \\bold{\\textcolor{{{color:primary.0}}}{\\div 10}} \\\\ &=  {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "0.1*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\bold{\\textcolor{{{color:primary.0}}}{0.1 \\times}} {{eval:c;d}} &= {{eval:c;d}} \\bold{\\textcolor{{{color:primary.0}}}{\\div 10}} \\\\ &=  {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Puissances de 10",
+		"level": 6,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "18,38 × 0,1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "18.38"
+				},
+				"answers": ["1.838"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "virgule",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "18.38"
+				},
+				"answers": ["1{,}838"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 0,7",
+				"variationIndex": 1,
+				"variables": {
+					"a": "0",
+					"b": "1",
+					"c": "0.7"
+				},
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 point",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "1",
+					"c": "452.3"
+				},
+				"answers": ["45.23"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "×10",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "18.38"
+				},
+				"answers": ["183.8"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "recopie",
+				"variationIndex": 1,
+				"variables": {
+					"a": "0",
+					"b": "1",
+					"c": "0.7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

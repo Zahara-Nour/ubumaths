@@ -1,0 +1,182 @@
+{
+	"globalIndex": 286,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Défaut de conversion : le tirage digits:… produisait des zéros finaux ou nuls (7.0, 0.70, 0.0, affichés tels quels dans l'énoncé) ; condition ajoutée pour que le dernier chiffre décimal soit non nul, comme dans TinyMath. Sous-titre : « obternir » → « obtenir ». Specs : juste sur les 4 variations (dont 0,3) ; oubli du facteur 10 et ×100 refusés.",
+	"template": {
+		"title": "Utiliser la distributivité",
+		"description": "Factorisation pour obtenir un facteur égal à $10$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "digits:1.1"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				}
+			],
+			"conditions": ["mod(10*a, 10) != 0"]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{b}}*{{a}}+{{eval:10-b}}*{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\t\t\t\t\t\t\t\t\\begin{align} \t\t\t\t\t\t\t\t\t{{b}} \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} + {{eval:10-b}} \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \t\t\t\t\t\t\t\t\t&=  \\left( {{b}} + {{eval:10-b}} \\right) \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}}\\\\  \t\t\t\t\t\t\t\t\t&=  10 \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}}\\\\  \t\t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{a}}*{{b}}+{{eval:10-b}}*{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\t\t\t\t\t\t\t\t\\begin{align} \t\t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \\times {{b}} + {{eval:10-b}} \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \t\t\t\t\t\t\t\t\t&=  \\left( {{b}} + {{eval:10-b}} \\right) \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}}\\\\  \t\t\t\t\t\t\t\t\t&=  10 \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}}\\\\  \t\t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{b}}*{{a}}+{{a}}*{{eval:10-b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\t{{b}} \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} + \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \\times {{eval:10-b}} \t\t\t\t\t\t\t\t\t&=  \\left( {{b}} + {{eval:10-b}} \\right) \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}}\\\\  \t\t\t\t\t\t\t\t\t&=  10 \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}}\\\\  \t\t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "{{a}}*{{b}}+{{a}}*{{eval:10-b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}  \t\t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \\times {{b}}+ \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \\times {{eval:10-b}} \t\t\t\t\t\t\t\t\t&= \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \\times \\left( {{b}} + {{eval:10-b}} \\right)\\\\  \t\t\t\t\t\t\t\t\t&= \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \\times 10 \\\\  \t\t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression4}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Distributivité",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0 5,8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5.8",
+					"b": "8"
+				},
+				"answers": ["58"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 0,3",
+				"variationIndex": 1,
+				"variables": {
+					"a": "0.3",
+					"b": "2"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 9,9",
+				"variationIndex": 2,
+				"variables": {
+					"a": "9.9",
+					"b": "5"
+				},
+				"answers": ["99"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 1,2",
+				"variationIndex": 3,
+				"variables": {
+					"a": "1.2",
+					"b": "7"
+				},
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli du 10",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5.8",
+					"b": "8"
+				},
+				"answers": ["5.8"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "×100",
+				"variationIndex": 3,
+				"variables": {
+					"a": "1.2",
+					"b": "7"
+				},
+				"answers": ["120"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

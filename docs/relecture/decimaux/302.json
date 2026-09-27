@@ -1,0 +1,111 @@
+{
+	"globalIndex": 302,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "La plage « 0..4-a » était lue 0..4 (quotient à 7 décimales) : condition q ≤ 4 − a ; 0 exclu. Les décimaux « digits:… » pouvaient finir par 0 (ou valoir 0 / un entier déguisé) : conditions ajoutées (dernier chiffre non nul, partie entière du bon nombre de chiffres); variables b_int/b_dec renommées m/q.",
+	"template": {
+		"title": "Calculer un quotient",
+		"description": "Diviser par $10$, $100$ ou $1000$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "m",
+						"expression": "0..4"
+					},
+					{
+						"name": "q",
+						"expression": "0..4-a"
+					},
+					{
+						"name": "b",
+						"expression": "digits:m.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{b}}:{{eval:10^a}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"subdomain": "Quotient",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"shared": {
+			"conditions": ["q<=4-a", "b!=0", "mod(b*10^q,10)!=0", "b>=10^(m-1)"]
+		},
+		"testSpecs": [
+			{
+				"description": "4 498,7 : 1000",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"m": "4",
+					"q": "1",
+					"b": "4498.7"
+				},
+				"answers": ["4{,}498\\,7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "4,4987 sans espace : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"m": "4",
+					"q": "1",
+					"b": "4498.7"
+				},
+				"answers": ["4{,}4987"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "mauvais décalage",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"m": "4",
+					"q": "1",
+					"b": "4498.7"
+				},
+				"answers": ["44{,}987"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "18,38 : 100",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"m": "2",
+					"q": "2",
+					"b": "18.38"
+				},
+				"answers": ["0{,}183\\,8"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

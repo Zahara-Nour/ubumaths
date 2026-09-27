@@ -1,0 +1,114 @@
+{
+	"globalIndex": 249,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une somme ",
+		"description": "Partie entière et partie décimale à $1$ chiffre (pas de retenue)",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "c",
+						"expression": "a.b"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:9-b}}"
+					},
+					{
+						"name": "g",
+						"expression": "d.f"
+					},
+					{
+						"name": "expression1",
+						"expression": "c+g"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "6,8 + 2,1 = 8,9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "2",
+					"f": "1"
+				},
+				"answers": ["8{,}9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8.9 au point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "2",
+					"f": "1"
+				},
+				"answers": ["8.9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "erreur : 8,8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "2",
+					"f": "1"
+				},
+				"answers": ["8{,}8"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "réponse 89 (virgule oubliée)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "2",
+					"f": "1"
+				},
+				"answers": ["89"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

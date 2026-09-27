@@ -1,0 +1,168 @@
+{
+	"globalIndex": 253,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Le complément tiré par « digits:0.b_dec » pouvait finir par un zéro (0,70 attendu, 1,3 à l'écran) : complément construit par {{eval:…;d}} avec dernier chiffre non nul. Accent « À l'entier ».",
+	"template": {
+		"title": "Trouver le complément ",
+		"description": "À l'entier supérieur",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b_int",
+					"expression": "0"
+				},
+				{
+					"name": "b_dec",
+					"expression": "1..2"
+				},
+				{
+					"name": "b1",
+					"expression": "0..9"
+				},
+				{
+					"name": "b2",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:(b_dec-1)*(b1/10+b2/100)+(2-b_dec)*b2/10;d}}"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+{{eval:a-b;d}}={{a}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:a-b;d}}+?={{a}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"subdomain": "A trou",
+		"level": 1,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "? + 6,32 = 7 → 0,68",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b_int": "0",
+					"b_dec": "2",
+					"b1": "6",
+					"b2": "8"
+				},
+				"answers": ["0{,}68"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0.68 au point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b_int": "0",
+					"b_dec": "2",
+					"b1": "6",
+					"b2": "8"
+				},
+				"answers": ["0.68"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "6,32 + ? = 7 → 0,68",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b_int": "0",
+					"b_dec": "2",
+					"b1": "6",
+					"b2": "8"
+				},
+				"answers": ["0{,}68"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "complément à 10 chiffre à chiffre : 0,78",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b_int": "0",
+					"b_dec": "2",
+					"b1": "6",
+					"b2": "8"
+				},
+				"answers": ["0{,}78"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "? + 8,9 = 9 → 0,1",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b_int": "0",
+					"b_dec": "1",
+					"b1": "0",
+					"b2": "1"
+				},
+				"answers": ["0{,}1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0,10 zéro inutile",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b_int": "0",
+					"b_dec": "1",
+					"b1": "0",
+					"b2": "1"
+				},
+				"answers": ["0{,}10"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			}
+		]
+	}
+}

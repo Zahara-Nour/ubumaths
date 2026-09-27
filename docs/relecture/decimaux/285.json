@@ -1,0 +1,255 @@
+{
+	"globalIndex": 285,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Sous-titre : « Utiiser » → « Utiliser ». Virgules décimales écrites « 0,5 » dans le LaTeX (titre, correction) remplacées par « 0.5 » : la virgule brute s'affichait comme une ponctuation (« 0, 5 ») ; le point est rendu en virgule française à l'affichage. (aussi dans la liste 0.2|0.25|0.5 du tirage). Specs : juste sur les 6 variations avec 0,2 / 0,25 / 0,5 ; c et 100c refusés.",
+	"template": {
+		"title": "Calculer astucieusement un produit",
+		"description": "Utiliser $2$ facteurs dont le produit est $10$ (avec $0.2$ ; $0.25$ ; $0.5$)",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.2|0.25|0.5"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10:a"
+				},
+				{
+					"name": "c",
+					"expression": "3..19"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*b*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{{{eval:a;d}}}  \\times  \\textcolor{{{color:primary.0}}}{{{b}}} \\times {{c}} \t\t\t\t\t\t\t\t&= \\textcolor{{{color:primary.0}}}{10} \\times {{c}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "b*a*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{{{b}}}  \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \\times {{c}} \t\t\t\t\t\t\t\t&= \\textcolor{{{color:primary.0}}}{10} \\times {{c}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "b*c*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{{{b}}} \\times  {{c}} \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \t\t\t\t\t\t\t\t&= \\textcolor{{{color:primary.0}}}{10} \\times {{c}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a*c*b"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{{{eval:a;d}}}  \\times  {{c}} \\times \\textcolor{{{color:primary.0}}}{{{b}}} \t\t\t\t\t\t\t\t&= \\textcolor{{{color:primary.0}}}{10} \\times {{c}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression4}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "c*b*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t{{c}} \\times \\textcolor{{{color:primary.0}}}{{{b}}} \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \t\t\t\t\t\t\t\t&= {{c}} \\times \\textcolor{{{color:primary.0}}}{10} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression5}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "c*a*b"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \t\t\t\t\t\t\t\t{{c}} \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \\times \\textcolor{{{color:primary.0}}}{{{b}}} \t\t\t\t\t\t\t\t&= {{c}} \\times \\textcolor{{{color:primary.0}}}{10} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression6}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Produits astucieux",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0 0,25×40×19",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0.25",
+					"b": "40",
+					"c": "19"
+				},
+				"answers": ["190"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 0,2×50×3",
+				"variationIndex": 1,
+				"variables": {
+					"a": "0.2",
+					"b": "50",
+					"c": "3"
+				},
+				"answers": ["30"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 0,5×20×7",
+				"variationIndex": 2,
+				"variables": {
+					"a": "0.5",
+					"b": "20",
+					"c": "7"
+				},
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3",
+				"variationIndex": 3,
+				"variables": {
+					"a": "0.25",
+					"b": "40",
+					"c": "11"
+				},
+				"answers": ["110"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4",
+				"variationIndex": 4,
+				"variables": {
+					"a": "0.2",
+					"b": "50",
+					"c": "19"
+				},
+				"answers": ["190"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5",
+				"variationIndex": 5,
+				"variables": {
+					"a": "0.5",
+					"b": "20",
+					"c": "4"
+				},
+				"answers": ["40"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli du 10",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0.25",
+					"b": "40",
+					"c": "19"
+				},
+				"answers": ["19"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "×100",
+				"variationIndex": 5,
+				"variables": {
+					"a": "0.5",
+					"b": "20",
+					"c": "4"
+				},
+				"answers": ["400"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

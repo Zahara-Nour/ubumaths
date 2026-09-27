@@ -1,0 +1,153 @@
+{
+	"globalIndex": 310,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Titre « a trou » → « à trou ». Les décimaux « digits:… » pouvaient finir par 0 (ou valoir 0 / un entier déguisé) : conditions ajoutées (dernier chiffre non nul, partie entière du bon nombre de chiffres) ; variables a_int/a_dec renommées m/q (un nom à « _ » n'est pas lisible dans une condition).",
+	"template": {
+		"title": "Compléter une division à trou",
+		"description": "Diviser par $0,1$ ; $0,01$ ou $0,001$",
+		"shared": {
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..2"
+				},
+				{
+					"name": "q",
+					"expression": "0..3"
+				},
+				{
+					"name": "a",
+					"expression": "digits:m.q"
+				},
+				{
+					"name": "b",
+					"expression": "0.1|0.01|0.001"
+				},
+				{
+					"name": "c1",
+					"expression": "1..9|11..99|101..999"
+				},
+				{
+					"name": "c",
+					"expression": "eval:c1:1000"
+				}
+			],
+			"conditions": ["mod(a*10^q,10)!=0", "a>=10^(m-1)"]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?:{{eval:b;d}} = {{eval:c:b;d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?:{{eval:b;d}} = {{eval:a:b;d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"subdomain": "A trou",
+		"level": 5,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "? : 0,01 = 0,3",
+				"variationIndex": 0,
+				"variables": {
+					"m": "2",
+					"q": "3",
+					"a": "18.388",
+					"b": "0.01",
+					"c1": "3"
+				},
+				"answers": ["0{,}003"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "point",
+				"variationIndex": 0,
+				"variables": {
+					"m": "2",
+					"q": "3",
+					"a": "18.388",
+					"b": "0.01",
+					"c1": "3"
+				},
+				"answers": ["0.003"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais sens : 30",
+				"variationIndex": 0,
+				"variables": {
+					"m": "2",
+					"q": "3",
+					"a": "18.388",
+					"b": "0.01",
+					"c1": "3"
+				},
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "? : 0,01 = 1 838,8",
+				"variationIndex": 1,
+				"variables": {
+					"m": "2",
+					"q": "3",
+					"a": "18.388",
+					"b": "0.01",
+					"c1": "3"
+				},
+				"answers": ["18{,}388"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais décalage",
+				"variationIndex": 1,
+				"variables": {
+					"m": "2",
+					"q": "3",
+					"a": "18.388",
+					"b": "0.01",
+					"c1": "3"
+				},
+				"answers": ["183\\,880"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

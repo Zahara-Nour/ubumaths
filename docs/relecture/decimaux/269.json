@@ -1,0 +1,207 @@
+{
+	"globalIndex": 269,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Les décimaux « digits:a_int.a_dec » et « digits:2.1 » pouvaient finir par 0 : reconstruits par {{eval:…;d}} (partie entière à 1 ou 2 chiffres, 0 à 2 décimales, dernière non nulle). Typographie « $…$, calcule : » (espace avant la virgule supprimée), accent « Déterminer ».",
+	"template": {
+		"title": "Calculer un produit",
+		"description": "Déterminer un produit à partir d'un autre",
+		"shared": {
+			"variables": [
+				{
+					"name": "a_int",
+					"expression": "1..2"
+				},
+				{
+					"name": "a_dec",
+					"expression": "0..2"
+				},
+				{
+					"name": "ai1",
+					"expression": "1..9"
+				},
+				{
+					"name": "ai2",
+					"expression": "10..99"
+				},
+				{
+					"name": "ad1",
+					"expression": "1..9"
+				},
+				{
+					"name": "ad2",
+					"expression": "1..99!m(10)"
+				},
+				{
+					"name": "a",
+					"expression": "{{eval:(2-a_int)*ai1+(a_int-1)*ai2+a_dec*(2-a_dec)*ad1/10+a_dec*(a_dec-1)/2*ad2/100;d}}"
+				},
+				{
+					"name": "b1",
+					"expression": "10..99"
+				},
+				{
+					"name": "b2",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:b1+b2/10;d}}"
+				},
+				{
+					"name": "c",
+					"expression": "10|100|1000"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Sachant que ${{eval:a;d}} * {{eval:b;d}}={{eval:a*b;d}}$, calcule :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*c;d}}* {{b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{eval:a*c;d}}$ est $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que ${{eval:a;d}}$,",
+						"donc le résultat de ${{eval:a*c;d}} \\times {{eval:b;d}}$ est  $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que celui de ${{eval:a;d}}\\times{{eval:b;d}}$,",
+						" c'est-à-dire $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\times} {{eval:a*b;d}} = {{solution}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*c*b;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Sachant que ${{eval:b;d}} * {{eval:a;d}}={{eval:a*b;d}}$, calcule :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{b}}*{{eval:a*c;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{eval:a*c;d}}$ est $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que ${{eval:a;d}}$,",
+						"donc le résultat de ${{eval:b;d}} \\times {{eval:a*c;d}} $ est  $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que celui de ${{eval:b;d}} \\times {{eval:a;d}}$,",
+						"c'est-à-dire $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\times} {{eval:a*b;d}} = {{solution}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*c*b;d}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Produit",
+		"level": 5,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "183,8 × 44,6 = 8 197,48",
+				"variationIndex": 0,
+				"variables": {
+					"a_int": "2",
+					"a_dec": "2",
+					"ai1": "1",
+					"ai2": "18",
+					"ad1": "1",
+					"ad2": "38",
+					"b1": "44",
+					"b2": "6",
+					"c": "10"
+				},
+				"answers": ["8\\,197{,}48"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8197,48 sans espace : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a_int": "2",
+					"a_dec": "2",
+					"ai1": "1",
+					"ai2": "18",
+					"ad1": "1",
+					"ad2": "38",
+					"b1": "44",
+					"b2": "6",
+					"c": "10"
+				},
+				"answers": ["8197{,}48"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "44,6 × 183,8 = 8 197,48",
+				"variationIndex": 1,
+				"variables": {
+					"a_int": "2",
+					"a_dec": "2",
+					"ai1": "1",
+					"ai2": "18",
+					"ad1": "1",
+					"ad2": "38",
+					"b1": "44",
+					"b2": "6",
+					"c": "10"
+				},
+				"answers": ["8\\,197{,}48"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais décalage : 81 974,8",
+				"variationIndex": 0,
+				"variables": {
+					"a_int": "2",
+					"a_dec": "2",
+					"ai1": "1",
+					"ai2": "18",
+					"ad1": "1",
+					"ad2": "38",
+					"b1": "44",
+					"b2": "6",
+					"c": "10"
+				},
+				"answers": ["81\\,974{,}8"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "64 000 × 91,1 = 5 830 400",
+				"variationIndex": 0,
+				"variables": {
+					"a_int": "2",
+					"a_dec": "0",
+					"ai1": "1",
+					"ai2": "64",
+					"ad1": "1",
+					"ad2": "1",
+					"b1": "91",
+					"b2": "1",
+					"c": "1000"
+				},
+				"answers": ["5\\,830\\,400"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

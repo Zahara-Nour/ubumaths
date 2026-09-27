@@ -1,0 +1,213 @@
+{
+	"globalIndex": 229,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Connaître la position décimale",
+		"description": "Des centaines jusqu'aux centièmes",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "0..9!a,b"
+				},
+				{
+					"name": "d",
+					"expression": "0..9!a,b,c"
+				},
+				{
+					"name": "f",
+					"expression": "0..9!a,b,c,d"
+				},
+				{
+					"name": "g",
+					"expression": "eval:a*0.01+b*0.1+c+d*10+f*100;d"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Quel est le chiffre des **centièmes** dans le nombre ${{g}}$ ?\n\nLe chiffre des centièmes est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le chiffre des **dixièmes** dans le nombre ${{g}}$ ?\n\nLe chiffre des dixièmes est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le chiffre des **unités** dans le nombre ${{g}}$ ?\n\nLe chiffre des unités est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le chiffre des **dizaines** dans le nombre ${{g}}$ ?\n\nLe chiffre des dizaines est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le chiffre des **centaines** dans le nombre ${{g}}$ ?\n\nLe chiffre des centaines est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{f}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"zeros": "strict"
+			}
+		},
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Ecriture",
+		"level": 2,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "Centièmes de 261,97 : 7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Dixièmes à la place des centièmes : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Dixièmes de 261,97 : 9",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Unités de 261,97 : 1",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Dizaines de 261,97 : 6",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2"
+				},
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Centaines de 261,97 : 2",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Centaines de 61,97 : 0",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "0"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Dizaines à la place des centaines : refusé",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2"
+				},
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

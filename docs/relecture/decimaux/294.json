@@ -1,0 +1,151 @@
+{
+	"globalIndex": 294,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "La plage « 0..4-a » était lue 0..4 (le « -a » ignoré : partie entière à 4 chiffres pour ×1000) : remplacée par une condition m ≤ 4 − a. Les décimaux « digits:… » pouvaient finir par 0 (ou valoir 0 / un entier déguisé) : conditions ajoutées (dernier chiffre non nul, partie entière du bon nombre de chiffres); variables b_int/b_dec renommées m/q.",
+	"template": {
+		"title": "Compléter une multiplication à trou",
+		"description": "Multiplier par $10$, $100$ ou $1000$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "0..4-a"
+				},
+				{
+					"name": "q",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "digits:m.q"
+				}
+			],
+			"conditions": ["m<=4-a", "mod(b*10^q,10)!=0", "b>=10^(m-1)"]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*{{eval:10^a}} = {{eval:10^a*b;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\textcolor{{{color:primary.2}}}{{{eval:b;d}}} \\times {{eval:10^a}} = {{eval:b*10^a;d}}$ car  ${{eval:b*10^a;d}} \\div {{eval:10^a}} = {{solution:0}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:10^a}}*? = {{eval:10^a*b;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{eval:10^a}} \\times \\textcolor{{{color:primary.2}}}{{{eval:b;d}}} = {{eval:b*10^a;d}}$ car  ${{eval:b*10^a;d}} \\div {{eval:10^a}} = {{solution:0}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 6,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "449,680 3 × 10",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"m": "3",
+					"q": "4",
+					"b": "449.6803"
+				},
+				"answers": ["449{,}680\\,3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "449,6803 sans espace : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"m": "3",
+					"q": "4",
+					"b": "449.6803"
+				},
+				"answers": ["449{,}6803"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "0,708 × 1000 (point)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"m": "0",
+					"q": "3",
+					"b": "0.708"
+				},
+				"answers": ["0.708"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0,708 (virgule)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"m": "0",
+					"q": "3",
+					"b": "0.708"
+				},
+				"answers": ["0{,}708"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7,08 : mauvais décalage",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"m": "0",
+					"q": "3",
+					"b": "0.708"
+				},
+				"answers": ["7{,}08"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

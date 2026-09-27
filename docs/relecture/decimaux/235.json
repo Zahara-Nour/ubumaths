@@ -1,0 +1,267 @@
+{
+	"globalIndex": 235,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Définition à l'aide de fractions décimales",
+		"description": "Jusqu'aux millièmes",
+		"shared": {
+			"statement": "Quel est le nombre décimal représenté par cette expression ?\n\n$${{expression1}}$$"
+		},
+		"variations": [
+			{
+				"statement": "Quel est le nombre décimal représenté par cette expression ?\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le nombre décimal représenté par cette expression ?\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "0"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le nombre décimal représenté par cette expression ?\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le nombre décimal représenté par cette expression ?\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "0"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Ecriture",
+		"level": 8,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "5 + 8/10 + 1/100 + 4/1000 = 5,814",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"answers": ["5{,}814"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "5,814 tapé avec un point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"answers": ["5.814"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Ordre des chiffres inversé 5,418 : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"answers": ["5{,}418"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "5 + 1/100 + 4/1000 = 5,014",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1",
+					"d": "4"
+				},
+				"answers": ["5{,}014"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "5,14 (zéro des dixièmes oublié) : refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1",
+					"d": "4"
+				},
+				"answers": ["5{,}14"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "5 + 8/10 + 4/1000 = 5,804",
+				"variationIndex": 2,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "0",
+					"d": "4"
+				},
+				"answers": ["5{,}804"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "5 + 4/1000 = 5,004",
+				"variationIndex": 3,
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "0",
+					"d": "4"
+				},
+				"answers": ["5{,}004"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "5,4 : refusé",
+				"variationIndex": 3,
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "0",
+					"d": "4"
+				},
+				"answers": ["5{,}4"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

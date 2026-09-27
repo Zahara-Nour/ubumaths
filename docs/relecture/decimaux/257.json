@@ -1,0 +1,132 @@
+{
+	"globalIndex": 257,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Compléter une addition à trou",
+		"description": "Partie entière et partie décimale à $1$ chiffre (avec retenues)",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "a.b"
+				},
+				{
+					"name": "d",
+					"expression": "{{eval:10-a}}..9"
+				},
+				{
+					"name": "f",
+					"expression": "{{eval:10-b}}..9"
+				},
+				{
+					"name": "g",
+					"expression": "d.f"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{c}}+?={{eval:g+c;d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{g}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?+{{c}}={{eval:g+c;d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{g}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"subdomain": "A trou",
+		"level": 5,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7,9 + ? = 15,2 → 7,3",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "7",
+					"f": "3"
+				},
+				"answers": ["7{,}3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7.3 au point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "7",
+					"f": "3"
+				},
+				"answers": ["7.3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "? + 7,9 = 15,2 → 7,3",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "7",
+					"f": "3"
+				},
+				"answers": ["7{,}3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "erreur 8,3",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "7",
+					"f": "3"
+				},
+				"answers": ["8{,}3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

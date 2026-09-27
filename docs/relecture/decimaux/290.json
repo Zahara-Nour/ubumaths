@@ -1,0 +1,136 @@
+{
+	"globalIndex": 290,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Corrections et description : « 0,5 » → « 0{,}5 » (virgule décimale sans espace en LaTeX).",
+	"template": {
+		"title": "Compléter une multiplication à trou",
+		"description": "Multiplier un nombre décimal par $0{,}5$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|4|6|8"
+				},
+				{
+					"name": "b",
+					"expression": "digits:1"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a+b/10;d"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*0,5 = {{eval:c*0.5;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{solution:0}} \\times 0{,}5 = {{eval:c*0.5;d}}$ car  ${{eval:c*0.5;d}} \\times 2 = {{solution:0}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?*0,5 = {{eval:0.5*c;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$0{,}5 \\times {{solution:0}}  = {{eval:c*0.5;d}}$ car  ${{eval:c*0.5;d}} \\times 2 = {{solution:0}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 2,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "6,8 × 0,5 = 3,4 (virgule)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "8"
+				},
+				"answers": ["6{,}8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "6.8 (point)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "8"
+				},
+				"answers": ["6.8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "multiplie au lieu de diviser : 1,7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "8"
+				},
+				"answers": ["1{,}7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "0,5 × 6,8",
+				"variationIndex": 1,
+				"variables": {
+					"a": "6",
+					"b": "8"
+				},
+				"answers": ["6{,}8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "6,80 : zéro inutile",
+				"variationIndex": 1,
+				"variables": {
+					"a": "6",
+					"b": "8"
+				},
+				"answers": ["6{,}80"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				}
+			}
+		]
+	}
+}

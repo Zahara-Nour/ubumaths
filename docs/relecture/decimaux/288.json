@@ -1,0 +1,203 @@
+{
+	"globalIndex": 288,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Défaut de conversion : le tirage digits:… produisait des zéros finaux ou nuls (7.0, 0.70, 0.0, affichés tels quels dans l'énoncé) ; condition ajoutée pour que le dernier chiffre décimal soit non nul, comme dans TinyMath. Variables renommées sans « _ » (a_int → p, a_dec → q) : un nom souligné est lu comme un indice dans les conditions. Consigne « Calculer » → « Calcule. ». Specs : juste sur les 4 variations (espace des milliers, bornes b = 2 et 98) ; sans espace perfectible ; ×10 refusé.",
+	"template": {
+		"title": "Utiliser la distributivité",
+		"description": "Factorisation pour obtenir un facteur égal à $100$",
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..2"
+				},
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "a",
+					"expression": "digits:p.q"
+				},
+				{
+					"name": "b",
+					"expression": "2..98"
+				}
+			],
+			"conditions": ["mod(a*10^q,10)!=0"]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{b}}*{{a}}+{{eval:100-b}}*{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\t\t\t\t\t\t\t\t\\begin{align} \t\t\t\t\t\t\t\t\t{{b}} \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} + {{eval:100-b}} \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \t\t\t\t\t\t\t\t\t&=  \\left( {{b}} + {{eval:100-b}} \\right) \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}}\\\\  \t\t\t\t\t\t\t\t\t&=  100 \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}}\\\\  \t\t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{a}}*{{b}}+{{eval:100-b}}*{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\t\t\t\t\t\t\t\t\\begin{align}\t\t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \\times {{b}} + {{eval:100-b}} \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \t\t\t\t\t\t\t\t\t&=  \\left( {{b}} + {{eval:100-b}} \\right) \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}}\\\\  \t\t\t\t\t\t\t\t\t&=  100 \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}}\\\\  \t\t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{b}}*{{a}}+{{a}}*{{eval:100-b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\t\t\t\t\t\t\t\t\\begin{align} \t\t\t\t\t\t\t\t\t{{b}} \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} + \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \\times {{eval:100-b}} \t\t\t\t\t\t\t\t\t&=  \\left( {{b}} + {{eval:100-b}} \\right) \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}}\\\\  \t\t\t\t\t\t\t\t\t&=  100 \\times \\textcolor{{{color:primary.0}}}{{{eval:a;d}}}\\\\  \t\t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "{{a}}*{{b}}+{{a}}*{{eval:100-b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}\t\t\t\t\t\t\t\t\t\\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \\times {{b}}+ \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \\times {{eval:100-b}} \t\t\t\t\t\t\t\t\t\t&=  \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \\times \\left( {{b}} + {{eval:100-b}} \\right) \\\\ \t\t\t\t\t\t\t\t\t\t&=  \\textcolor{{{color:primary.0}}}{{{eval:a;d}}} \\times 100 \\\\ \t\t\t\t\t\t\t\t\t\t&= {{solution}} \t\t\t\t\t\t\t\t\t\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression4}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Distributivité",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0",
+				"variationIndex": 0,
+				"variables": {
+					"p": "2",
+					"q": "2",
+					"a": "18.38",
+					"b": "64"
+				},
+				"answers": ["1\\,838"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 0,5",
+				"variationIndex": 1,
+				"variables": {
+					"p": "1",
+					"q": "1",
+					"a": "0.5",
+					"b": "2"
+				},
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 99,99",
+				"variationIndex": 2,
+				"variables": {
+					"p": "2",
+					"q": "2",
+					"a": "99.99",
+					"b": "2"
+				},
+				"answers": ["9\\,999"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 3,7",
+				"variationIndex": 3,
+				"variables": {
+					"p": "1",
+					"q": "1",
+					"a": "3.7",
+					"b": "98"
+				},
+				"answers": ["370"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"p": "2",
+					"q": "2",
+					"a": "18.38",
+					"b": "64"
+				},
+				"answers": ["1838"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "×10",
+				"variationIndex": 3,
+				"variables": {
+					"p": "1",
+					"q": "1",
+					"a": "3.7",
+					"b": "98"
+				},
+				"answers": ["37"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

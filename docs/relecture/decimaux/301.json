@@ -1,0 +1,91 @@
+{
+	"globalIndex": 301,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "« digits:0 » donnait 0 (0 : 1000) : nombre de chiffres tiré dans 1..4.",
+	"template": {
+		"title": "Calculer un quotient",
+		"description": "Diviser par $1000$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "digits:a"
+					},
+					{
+						"name": "expression1",
+						"expression": "b:1000"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"subdomain": "Quotient",
+		"level": 3,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "4321 : 1000",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "4321"
+				},
+				"answers": ["4{,}321"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "4321"
+				},
+				"answers": ["4.321"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais décalage",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "4321"
+				},
+				"answers": ["43{,}21"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "7 : 1000",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "7"
+				},
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

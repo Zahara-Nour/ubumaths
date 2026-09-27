@@ -1,0 +1,117 @@
+{
+	"globalIndex": 238,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Décomposer en unités, dixièmes, centièmes",
+		"description": "avec décimaux",
+		"variations": [
+			{
+				"statement": "Décompose comme dans cet exemple :\n\n$$5,34=5+0,3+0,04$$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:a+b/10+c/100;d"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}+{{eval:b*0.1;d}}+{{eval:c*0.01;d}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"nullTerms": "off"
+			}
+		},
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Décomposition",
+		"level": 1,
+		"status": "draft",
+		"delay": 25,
+		"testSpecs": [
+			{
+				"description": "5,81 = 5 + 0,8 + 0,01",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"answers": ["5+0{,}8+0{,}01"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Décomposition tapée avec des points",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"answers": ["5+0.8+0.01"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Termes dans un autre ordre",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"answers": ["0{,}01+5+0{,}8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Nombre recopié sans décomposer : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"answers": ["5{,}81"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "Dixièmes et centièmes inversés : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"answers": ["5+0{,}08+0{,}1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

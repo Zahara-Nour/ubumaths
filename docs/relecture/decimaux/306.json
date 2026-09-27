@@ -1,0 +1,89 @@
+{
+	"globalIndex": 306,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Titre « a trou » → « à trou ». Les décimaux « digits:… » pouvaient finir par 0 (ou valoir 0 / un entier déguisé) : conditions ajoutées (dernier chiffre non nul, partie entière du bon nombre de chiffres) ; « digits:0.0 » donnait 0 : a ≠ 0 exigé ; variables a_int/a_dec renommées m/q (un nom à « _ » n'est pas lisible dans une condition).",
+	"template": {
+		"title": "Compléter une division à trou",
+		"description": "Diviser par $10$",
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "0..3"
+					},
+					{
+						"name": "q",
+						"expression": "0..1"
+					},
+					{
+						"name": "a",
+						"expression": "digits:m.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "?:10 = {{eval:a:10;d}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"subdomain": "A trou",
+		"level": 1,
+		"status": "draft",
+		"delay": 15,
+		"shared": {
+			"conditions": ["a!=0", "mod(a*10^q,10)!=0", "a>=10^(m-1)"]
+		},
+		"testSpecs": [
+			{
+				"description": "? : 10",
+				"variationIndex": 0,
+				"variables": {
+					"m": "2",
+					"q": "1",
+					"a": "18.3"
+				},
+				"answers": ["18{,}3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "point",
+				"variationIndex": 0,
+				"variables": {
+					"m": "2",
+					"q": "1",
+					"a": "18.3"
+				},
+				"answers": ["18.3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais sens",
+				"variationIndex": 0,
+				"variables": {
+					"m": "2",
+					"q": "1",
+					"a": "18.3"
+				},
+				"answers": ["0{,}183"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

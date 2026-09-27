@@ -1,0 +1,100 @@
+{
+	"globalIndex": 261,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une différence ",
+		"description": "Partie entière et partie décimale à $1$ chiffre (pas de retenue)",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					},
+					{
+						"name": "c",
+						"expression": "a.b"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "g",
+						"expression": "d.f"
+					},
+					{
+						"name": "expression1",
+						"expression": "c-g"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Soustraire",
+		"subdomain": "Différence",
+		"level": 1,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "6,8 − 4,2 = 2,6",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "4",
+					"f": "2"
+				},
+				"answers": ["2{,}6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2.6 au point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "4",
+					"f": "2"
+				},
+				"answers": ["2.6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "addition au lieu de soustraction : 11",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "4",
+					"f": "2"
+				},
+				"answers": ["11"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

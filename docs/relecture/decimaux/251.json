@@ -1,0 +1,114 @@
+{
+	"globalIndex": 251,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une somme ",
+		"description": "Partie entière et partie décimale à $1$ chiffre (avec retenue pour la partie décimale)",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "a.b"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:8-a}}"
+					},
+					{
+						"name": "f",
+						"expression": "{{eval:10-b}}..9"
+					},
+					{
+						"name": "g",
+						"expression": "d.f"
+					},
+					{
+						"name": "expression1",
+						"expression": "c+g"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "5,9 + 2,3 = 8,2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"answers": ["8{,}2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8.2 au point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"answers": ["8.2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "retenue oubliée : 7,12",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"answers": ["7{,}12"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "retenue oubliée : 7,2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"answers": ["7{,}2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

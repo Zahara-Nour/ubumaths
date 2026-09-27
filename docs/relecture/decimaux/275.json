@@ -1,0 +1,129 @@
+{
+	"globalIndex": 275,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Défaut de conversion : le tirage digits:… produisait des zéros finaux ou nuls (7.0, 0.70, 0.0, affichés tels quels dans l'énoncé) ; condition ajoutée pour que le dernier chiffre décimal soit non nul, comme dans TinyMath. Variables renommées sans « _ » (a_int → p, a_dec → q) : un nom souligné est lu comme un indice dans les conditions. Specs : juste avec espace des milliers, 0,07 × 100 = 7, décimal restant (virgule) ; oubli de l'espace perfectible [spaces] ; décalage d'un seul rang refusé.",
+	"template": {
+		"title": "Calculer un produit",
+		"description": "Multiplier par $100$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0..2"
+					},
+					{
+						"name": "q",
+						"expression": "1..2"
+					},
+					{
+						"name": "a",
+						"expression": "digits:p.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "a*100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Puissances de 10",
+		"level": 2,
+		"status": "draft",
+		"delay": 15,
+		"shared": {
+			"conditions": ["mod(a*10^q,10)!=0"]
+		},
+		"testSpecs": [
+			{
+				"description": "18,38 × 100",
+				"variationIndex": 0,
+				"variables": {
+					"p": "2",
+					"q": "2",
+					"a": "18.38"
+				},
+				"answers": ["1\\,838"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0,07 × 100",
+				"variationIndex": 0,
+				"variables": {
+					"p": "0",
+					"q": "2",
+					"a": "0.07"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "6,4 × 100",
+				"variationIndex": 0,
+				"variables": {
+					"p": "1",
+					"q": "1",
+					"a": "6.4"
+				},
+				"answers": ["640"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3,5 × 100",
+				"variationIndex": 0,
+				"variables": {
+					"p": "2",
+					"q": "1",
+					"a": "3.5"
+				},
+				"answers": ["350"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"p": "2",
+					"q": "2",
+					"a": "18.38"
+				},
+				"answers": ["1838"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "× 10 seulement",
+				"variationIndex": 0,
+				"variables": {
+					"p": "2",
+					"q": "2",
+					"a": "18.38"
+				},
+				"answers": ["183.8"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,121 @@
+{
+	"globalIndex": 268,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Le décimal « digits:1.1 » pouvait finir par 0 (« 7 × 8.0 ») : construit par {{eval:b1+b2/10;d}}, décimale non nulle.",
+	"template": {
+		"title": "Calculer un produit",
+		"description": "Un des facteurs est un entier",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b1",
+					"expression": "1..9"
+				},
+				{
+					"name": "b2",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:b1+b2/10;d}}"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*b"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "b*a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["CM2"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Produit",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7 × 3,6 = 25,2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b1": "3",
+					"b2": "6"
+				},
+				"answers": ["25{,}2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "25.2 au point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b1": "3",
+					"b2": "6"
+				},
+				"answers": ["25.2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3,6 × 7 = 25,2",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b1": "3",
+					"b2": "6"
+				},
+				"answers": ["25{,}2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "retenue oubliée : 21,42",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b1": "3",
+					"b2": "6"
+				},
+				"answers": ["21{,}42"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

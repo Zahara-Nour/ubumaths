@@ -1,0 +1,131 @@
+{
+	"globalIndex": 248,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Encadrer un nombre décimal au centième près",
+		"variations": [
+			{
+				"statement": "Encadre ce nombre décimal au centième près.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "f",
+						"expression": "eval:a+b*0.1+c*0.01+d*0.001;d"
+					},
+					{
+						"name": "expression1",
+						"expression": "?<f<?"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+b*0.1+c*0.01;d}}"
+					},
+					{
+						"expectedAnswer": "{{eval:a+b*0.1+(c+1)*0.01;d}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"grades": ["CM1"],
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Encadrer",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7,99 < 7,996 < 8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"answers": ["7{,}99", "8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Tapé avec un point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"answers": ["7.99", "8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8,00 accepté (zéros libres)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"answers": ["7{,}99", "8{,}00"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Encadrement au millième : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"answers": ["7{,}995", "7{,}997"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Bornes inversées : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"answers": ["8", "7{,}99"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

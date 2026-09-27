@@ -1,0 +1,128 @@
+{
+	"globalIndex": 297,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Les décimaux « digits:… » pouvaient finir par 0 (ou valoir 0 / un entier déguisé) : conditions ajoutées (dernier chiffre non nul, partie entière du bon nombre de chiffres). Corrections et description : « 0,001 » → « 0{,}001 » (virgule décimale LaTeX).",
+	"template": {
+		"title": "Compléter une multiplication à trou",
+		"description": "Multiplier par $0{,}001$ un nombre décimal",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..1"
+				},
+				{
+					"name": "c",
+					"expression": "digits:a.b"
+				}
+			],
+			"conditions": ["mod(c*10^b,10)!=0", "c>=10^(a-1)"]
+		},
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*0,001 = {{eval:c*0.001;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\textcolor{{{color:primary.2}}}{{{eval:c;d}}} \\times 0{,}001 = {{eval:c*0.001;d}}$ car  ${{eval:c*0.001;d}} \\times 1\\,000 = {{solution:0}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "0,001*?={{eval:0.001*c;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$0{,}001 \\times \\textcolor{{{color:primary.2}}}{{{eval:c;d}}} = {{eval:c*0.001;d}}$ car  ${{eval:c*0.001;d}} \\times 1\\,000 = {{solution:0}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 9,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "× 0,001, virgule",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "18.3"
+				},
+				"answers": ["18{,}3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "point",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "18.3"
+				},
+				"answers": ["18.3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "mauvais décalage",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "18.3"
+				},
+				"answers": ["1{,}83"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "0,001 × ?",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "18.3"
+				},
+				"answers": ["18{,}3"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

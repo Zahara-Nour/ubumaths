@@ -1,0 +1,105 @@
+{
+	"globalIndex": 243,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue cassée : le convertisseur attendait le décimal lui-même ({{eval:{{expression1}}}} → 0.8), une fraction était refusée et 0,8 accepté. Remplacée par {{eval:b/a}} (fraction irréductible). Consigne : « …, en simplifiant la fraction au maximum » ajouté (l'exigence de simplification n'était que dans la description, invisible pour l'élève). Specs : fraction simplifiée juste, non simplifiée perfectible, décimal recopié refusé.",
+	"template": {
+		"title": "Déterminer une forme fractionnaire",
+		"description": "Simplification exigée",
+		"variations": [
+			{
+				"statement": "Réécris ce nombre décimal sous forme fractionnaire, en simplifiant la fraction au maximum.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|4|5|10"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:b/a;d"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b/a}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Forme fractionnaire",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "0,5 = 1/2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10",
+					"b": "5"
+				},
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "5/10 non simplifiée : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10",
+					"b": "5"
+				},
+				"answers": ["\\frac{5}{10}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "0,75 = 3/4",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"answers": ["\\frac{3}{4}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Décimal recopié : refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"answers": ["0{,}75"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "Fraction renversée : refusée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"answers": ["\\frac{4}{3}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

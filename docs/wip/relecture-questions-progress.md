@@ -178,7 +178,17 @@ Après relecture (`code-reviewer`) :
   #476 (signatures des copies), #477 (forme exigée par motif avec les nombres tirés).
 - Base : 324 templates, tous brouillons. Thème Entiers complet (228 = 187 + 41 de David).
 
+## Lot Décimaux — TERMINÉ (2026-09-27)
+
+- 83/83 importées en brouillon (`docs/relecture/decimaux/RAPPORT.md`) : 23 approuvées, 60 corrigées.
+- #478 : statut des réponses à plusieurs cases ; conditions converties `mod(a, 3)`.
+- 4 points « à regarder » pour David (espace dans la partie décimale, 0 en tête, fractions non
+  simplifiées, niveau de #248).
+- Base : 407 templates, tous brouillons.
+
 ## Prochaine étape
 
-Lots suivants : Décimaux, Grandeurs (#439 à importer), Calcul littéral, Fonctions, Suites (#629/#630
-à garder toutes les deux), Proportionnalité, Probabilités, Puissances, Racines… Même méthode.
+Lots restants (228 questions) : Calcul littéral 68, Grandeurs 45 (#439), Fonctions 39,
+Proportionnalité 28, Puissances 21, Suites 15 (#629/#630), Racines 10, Probabilités 2.
+Défauts de conversion du lot Décimaux à corriger d'abord (liste du rapport) si les lots suivants
+les rencontrent.

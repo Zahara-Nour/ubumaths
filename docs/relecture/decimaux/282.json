@@ -1,0 +1,179 @@
+{
+	"globalIndex": 282,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Défaut de conversion : le tirage digits:… produisait des zéros finaux ou nuls (7.0, 0.70, 0.0, affichés tels quels dans l'énoncé) ; condition ajoutée pour que le dernier chiffre décimal soit non nul, comme dans TinyMath. Variables renommées sans « _ » (b_int → p, b_dec → q) : un nom souligné est lu comme un indice dans les conditions. La condition exclut aussi b = 0 (0,001 × 0). Virgules décimales écrites « 0,5 » dans le LaTeX (titre, correction) remplacées par « 0.5 » : la virgule brute s'affichait comme une ponctuation (« 0, 5 ») ; le point est rendu en virgule française à l'affichage. Specs : juste (point/virgule) sur les 2 variations ; mauvais rang refusé ; décimales non groupées perfectible.",
+	"template": {
+		"title": "Calculer un produit",
+		"description": "Multiplier par $0.1$, $0.01$ ou $0.001$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "0..4-a"
+				},
+				{
+					"name": "b",
+					"expression": "digits:p.q"
+				}
+			],
+			"conditions": ["b != 0 && b != 1", "q = 0 || mod(b*10^q,10) != 0"]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:10^(-a);d}}*{{eval:b;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\bold{\\textcolor{{{color:primary.0}}}{{{eval:10^(-a);d}}}} \\times {{eval:b;d}} &= {{eval:b;d}} \\bold{\\textcolor{{{color:primary.0}}}{\\div {{eval:10^a;d}}}} \\\\ &=  {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:b;d}}*{{eval:10^(-a);d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{eval:b;d}} \\bold{\\textcolor{{{color:primary.0}}}{\\times {{eval:10^(-a);d}}}} &= {{eval:b;d}} \\bold{\\textcolor{{{color:primary.0}}}{\\div {{eval:10^a;d}}}} \\\\ &=  {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Puissances de 10",
+		"level": 9,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "0,001 × 449,7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"p": "3",
+					"q": "1",
+					"b": "449.7"
+				},
+				"answers": ["0{,}449\\,7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0,1 × 7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"p": "1",
+					"q": "0",
+					"b": "7"
+				},
+				"answers": ["0.7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 7 × 0,1",
+				"variationIndex": 1,
+				"variables": {
+					"a": "1",
+					"p": "1",
+					"q": "0",
+					"b": "7"
+				},
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 12,5 × 0,01",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"p": "2",
+					"q": "1",
+					"b": "12.5"
+				},
+				"answers": ["0.125"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "non groupé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"p": "3",
+					"q": "1",
+					"b": "449.7"
+				},
+				"answers": ["0.4497"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "mauvais rang",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"p": "3",
+					"q": "1",
+					"b": "449.7"
+				},
+				"answers": ["0.04497"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "×10",
+				"variationIndex": 1,
+				"variables": {
+					"a": "1",
+					"p": "1",
+					"q": "0",
+					"b": "7"
+				},
+				"answers": ["70"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}
