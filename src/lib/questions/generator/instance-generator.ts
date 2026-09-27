@@ -136,16 +136,17 @@ function resolveRequiredForm(
 	resolvedVariables: ResolvedVariable[],
 	seed?: number
 ): RequiredForm | undefined {
-	if (!requiredForm || typeof requiredForm === 'string' || !requiredForm.pattern.includes('{{')) {
-		return requiredForm;
-	}
+	if (!requiredForm || typeof requiredForm === 'string') return requiredForm;
 	// Chaque marqueur remplacé par sa valeur ; tout ce qui n'est pas un nombre positif est
 	// parenthésé (`9 / (-3)` reconnaît `9:(-3)` ; une formule `a+1` reste un seul opérande)
-	const pattern = requiredForm.pattern.replace(MARKER_REGEX, (marker) => {
-		const value = resolveExpression(marker, resolvedVariables, seed).trim();
-		return /^\d+(?:\.\d+)?$/.test(value) ? value : `(${value})`;
-	});
-	return { pattern };
+	const resolve = (pattern: string) =>
+		pattern.replace(MARKER_REGEX, (marker) => {
+			const value = resolveExpression(marker, resolvedVariables, seed).trim();
+			return /^\d+(?:\.\d+)?$/.test(value) ? value : `(${value})`;
+		});
+	return requiredForm.acceptable === undefined
+		? { pattern: resolve(requiredForm.pattern) }
+		: { pattern: resolve(requiredForm.pattern), acceptable: resolve(requiredForm.acceptable) };
 }
 
 /** Un marqueur `{{…}}`, imbrications comprises (`{{eval:{{a}}*2}}`) */
@@ -514,7 +515,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			choices: resolvedChoices,
 			shuffledChoices,
 			multipleAnswers: template.multipleAnswers,
-			requiredForm: resolvedVariation.requiredForm,
+			requiredForm: resolveRequiredForm(resolvedVariation.requiredForm, resolvedVariables, seed),
 			generatedAt: new Date().toISOString(),
 			seed,
 			selectedVariationIndex: variationIndex
