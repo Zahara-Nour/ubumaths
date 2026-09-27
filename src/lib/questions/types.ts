@@ -893,7 +893,11 @@ export type RequiredForm =
 	| 'additionOnly'
 	| 'fraction'
 	| 'power'
-	| { pattern: string };
+	| {
+			pattern: string;
+			/** Forme juste mais pas celle demandée : perfectible (`(z-7)(z-7)` pour un carré) */
+			acceptable?: string;
+	  };
 
 // ============================================================================
 // TEST SPECS

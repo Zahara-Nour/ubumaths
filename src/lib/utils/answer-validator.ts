@@ -33,7 +33,11 @@ import { extractUnitFromLatex } from '$lib/questions/units/parser';
 import { normalizeStudentQuantity, studentNumericLatex } from '$lib/questions/units/student-input';
 import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
-import { checkRequiredForm, getRequiredFormFeedback } from '$lib/questions/required-form-validator';
+import {
+	getRequiredFormFeedback,
+	REQUIRED_FORM_FEEDBACK,
+	requiredFormVerdict
+} from '$lib/questions/required-form-validator';
 import { validateQuantityAnswer } from '$lib/questions/units/validator';
 import { rulesDecide } from '$lib/questions/rules-suffice';
 
@@ -385,11 +389,13 @@ export function validateAnswer(
 		);
 
 		// Apply required form check (multiple_choice only; fill_in_blanks uses per-blank)
+		let acceptableForm = false;
 		if (result.isCorrect && instance.requiredForm && userAnswerLatex) {
 			const latex = Array.isArray(userAnswerLatex) ? userAnswerLatex : [userAnswerLatex];
-			const formViolations = checkRequiredForm(latex, instance.requiredForm);
+			const verdicts = latex.map((l) => requiredFormVerdict(l, instance.requiredForm!));
+			acceptableForm = verdicts.includes('acceptable');
 
-			if (formViolations.length > 0) {
+			if (verdicts.includes('violated')) {
 				const feedback = getRequiredFormFeedback(instance.requiredForm, latex.length > 1);
 				return {
 					isCorrect: false,
@@ -417,14 +423,15 @@ export function validateAnswer(
 				instance.options?.constraints ?? {}
 			);
 
-			result.status = status;
-			result.constraintViolations = violations;
+			const form = acceptableForm ? withAcceptableForm(status, violations) : { status, violations };
+			result.status = form.status;
+			result.constraintViolations = form.violations;
 
-			if (status === 'bad_form') {
+			if (form.status === 'bad_form') {
 				result.isCorrect = false;
-				result.feedback = violations[0]?.feedback;
-			} else if (status === 'unoptimal_form') {
-				result.feedback = violations[0]?.feedback;
+				result.feedback = form.violations[0]?.feedback;
+			} else if (form.status === 'unoptimal_form') {
+				result.feedback = form.violations[0]?.feedback;
 			}
 		}
 
@@ -703,6 +710,21 @@ function validateBlankValue(
 }
 
 /**
+ * Forme juste mais pas celle demandée (motif `acceptable`) : perfectible. S'ajoute au
+ * résultat des contraintes cosmétiques, sans jamais rendre juste un refus.
+ */
+function withAcceptableForm(
+	status: ValidationStatus,
+	violations: NonNullable<ValidationResult['constraintViolations']>
+): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	const feedback = REQUIRED_FORM_FEEDBACK.acceptable;
+	return {
+		status: status === 'bad_form' ? 'bad_form' : 'unoptimal_form',
+		violations: [{ constraint: 'form', severity: 'warning', feedback }, ...violations]
+	};
+}
+
+/**
  * Full per-blank pipeline: validationRules -> inferred mode -> requiredForm -> constraints.
  */
 function validateSingleBlank(
@@ -770,17 +792,18 @@ function validateSingleBlank(
 	}
 
 	// 3. Required form check (per-blank)
-	if (blank.requiredForm && userAnswerLatex) {
-		const formViolations = checkRequiredForm([userAnswerLatex], blank.requiredForm);
-		if (formViolations.length > 0) {
-			const feedback = getRequiredFormFeedback(blank.requiredForm, false);
-			return {
-				isCorrect: false,
-				status: 'bad_form',
-				feedback,
-				constraintViolations: [{ constraint: 'form', severity: 'error', feedback }]
-			};
-		}
+	const formVerdict =
+		blank.requiredForm && userAnswerLatex
+			? requiredFormVerdict(userAnswerLatex, blank.requiredForm)
+			: 'ok';
+	if (blank.requiredForm && formVerdict === 'violated') {
+		const feedback = getRequiredFormFeedback(blank.requiredForm, false);
+		return {
+			isCorrect: false,
+			status: 'bad_form',
+			feedback,
+			constraintViolations: [{ constraint: 'form', severity: 'error', feedback }]
+		};
 	}
 
 	// 4. Form check (mode-aware) + cosmetic violations.
@@ -813,7 +836,11 @@ function validateSingleBlank(
 	// requiredForm: form handled at step 3 → only cosmetic violations here.
 	if (blank.requiredForm) {
 		const raw = cosmeticViolations(effectiveLatex, severities, formOptions);
-		const { status, violations } = mapCosmeticViolations(raw, false);
+		const cosmetic = mapCosmeticViolations(raw, false);
+		const { status, violations } =
+			formVerdict === 'acceptable'
+				? withAcceptableForm(cosmetic.status, cosmetic.violations)
+				: cosmetic;
 		return {
 			isCorrect: status !== 'bad_form',
 			status,
@@ -1071,11 +1098,15 @@ function validateBlanksOrderIndependent(
 		const blankLatex = userAnswersLatex?.[a];
 
 		if (blanks[b].requiredForm && blankLatex) {
-			const formViolations = checkRequiredForm([blankLatex], blanks[b].requiredForm!);
-			if (formViolations.length > 0) {
+			const verdict = requiredFormVerdict(blankLatex, blanks[b].requiredForm!);
+			if (verdict === 'violated') {
 				const feedback = getRequiredFormFeedback(blanks[b].requiredForm!, false);
 				allViolations.push({ constraint: 'form', severity: 'error', feedback });
 				worstStatus = 'bad_form';
+			} else if (verdict === 'acceptable') {
+				const feedback = REQUIRED_FORM_FEEDBACK.acceptable;
+				allViolations.push({ constraint: 'form', severity: 'warning', feedback });
+				if (worstStatus === 'correct') worstStatus = 'unoptimal_form';
 			}
 		}
 

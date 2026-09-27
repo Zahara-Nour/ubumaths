@@ -26,7 +26,7 @@ export const constraintModeSchema = z.enum(['strict', 'warn', 'off']);
 
 export const requiredFormSchema = z.union([
 	z.enum(['product', 'sum', 'additionOnly', 'fraction', 'power']),
-	z.object({ pattern: z.string() })
+	z.object({ pattern: z.string(), acceptable: z.string().optional() })
 ]);
 
 export const unitSchema = z.object({ expected: z.boolean(), required: z.string().optional() });
@@ -331,7 +331,7 @@ export const optionsSchema = z.object({
 
 const requiredFormStrictZ = z.union([
 	z.enum(['product', 'sum', 'additionOnly', 'fraction', 'power']),
-	z.object({ pattern: z.string() }).strict()
+	z.object({ pattern: z.string(), acceptable: z.string().optional() }).strict()
 ]);
 
 const unitStrictZ = unitSchema.strict();

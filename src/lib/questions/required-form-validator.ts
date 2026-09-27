@@ -40,7 +40,8 @@ export const REQUIRED_FORM_FEEDBACK = {
 	additionOnly: 'La réponse doit être une addition, sans soustraction.',
 	fraction: 'La réponse doit être écrite sous forme de fraction.',
 	power: 'La réponse doit être écrite sous forme de puissance.',
-	pattern: 'La réponse ne respecte pas la forme demandée.'
+	pattern: 'La réponse ne respecte pas la forme demandée.',
+	acceptable: 'La réponse est juste, mais pas écrite sous la forme demandée.'
 } as const;
 
 // =============================================================================
@@ -340,6 +341,25 @@ export function checkRequiredForm(answersLatex: string[], requiredForm: Required
 	}
 
 	return violations;
+}
+
+/** Verdict de forme d'UNE réponse : respectée, seulement acceptable (perfectible), ou non */
+export type RequiredFormVerdict = 'ok' | 'acceptable' | 'violated';
+
+/**
+ * La forme exigée, puis le motif `acceptable` s'il existe : `(z-7)(z-7)` pour un carré
+ * `(u-v)^2` est juste mais pas sous la forme demandée → perfectible, pas refusé.
+ */
+export function requiredFormVerdict(
+	answerLatex: string,
+	requiredForm: RequiredForm
+): RequiredFormVerdict {
+	if (checkRequiredForm([answerLatex], requiredForm).length === 0) return 'ok';
+	if (typeof requiredForm !== 'string' && requiredForm.acceptable !== undefined) {
+		const acceptable = { pattern: requiredForm.acceptable };
+		if (checkRequiredForm([answerLatex], acceptable).length === 0) return 'acceptable';
+	}
+	return 'violated';
 }
 
 /**

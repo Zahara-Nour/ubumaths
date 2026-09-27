@@ -29,7 +29,7 @@
 	import MyCheckbox from './MyCheckbox.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
 	import { ChevronDown, CircleQuestionMark } from '@lucide/svelte';
-	import { REQUIRED_FORM_OPTIONS } from '$lib/questions/form-options';
+	import { ACCEPTABLE_PLACEHOLDER, REQUIRED_FORM_OPTIONS } from '$lib/questions/form-options';
 
 	interface Props {
 		open: boolean;
@@ -42,9 +42,11 @@
 		sharedCorrectionString: string;
 		sharedRequiredFormSelect: string;
 		sharedRequiredFormPattern: string;
+		sharedRequiredFormAcceptable: string;
 		sharedBlankPrecision: PrecisionType;
 		sharedBlankRequiredFormSelect: string;
 		sharedBlankRequiredFormPattern: string;
+		sharedBlankRequiredFormAcceptable: string;
 		sharedBlankUnitExpected: boolean;
 		sharedBlankUnitRequired: string;
 		sharedValidationRulesJson: string;
@@ -63,9 +65,11 @@
 		sharedCorrectionString = $bindable(),
 		sharedRequiredFormSelect = $bindable(),
 		sharedRequiredFormPattern = $bindable(),
+		sharedRequiredFormAcceptable = $bindable(),
 		sharedBlankPrecision = $bindable(),
 		sharedBlankRequiredFormSelect = $bindable(),
 		sharedBlankRequiredFormPattern = $bindable(),
+		sharedBlankRequiredFormAcceptable = $bindable(),
 		sharedBlankUnitExpected = $bindable(),
 		sharedBlankUnitRequired = $bindable(),
 		sharedValidationRulesJson = $bindable(),
@@ -245,6 +249,11 @@
 									bind:value={sharedRequiredFormPattern}
 									placeholder="Pattern personnalisé (ex: a:integer * b:integer)"
 								/>
+								<Input
+									type="text"
+									bind:value={sharedRequiredFormAcceptable}
+									placeholder={ACCEPTABLE_PLACEHOLDER}
+								/>
 							{/if}
 						</Collapsible.Content>
 					</Collapsible.Root>
@@ -278,6 +287,11 @@
 										type="text"
 										bind:value={sharedBlankRequiredFormPattern}
 										placeholder="Pattern personnalisé"
+									/>
+									<Input
+										type="text"
+										bind:value={sharedBlankRequiredFormAcceptable}
+										placeholder={ACCEPTABLE_PLACEHOLDER}
 									/>
 								{/if}
 							</div>
