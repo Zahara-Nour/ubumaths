@@ -2,7 +2,7 @@
 	"globalIndex": 583,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Graphique perdu à la conversion : image remise dans l'énoncé de chaque variation + image de correction correction_coef_directeur-i. Faute « coefficent » corrigée. Réponses vérifiées par recoupement avec #582/#590.",
+	"editNotes": "Graphique perdu à la conversion : image remise dans l'énoncé de chaque variation + image de correction correction_coef_directeur-i. Faute « coefficent » corrigée. Réponses vérifiées par recoupement avec #582/#590. Décision de David (2026-09-27) : le décimal exact est juste (option de case acceptDecimal, #488).",
 	"template": {
 		"title": "Déterminer le coefficient directeur",
 		"description": "Graphiquement",
@@ -703,7 +703,32 @@
 				"expected": {
 					"status": "correct"
 				}
+			},
+			{
+				"description": "v15 décimal exact 0,5 : juste",
+				"variationIndex": 15,
+				"variables": {},
+				"answers": ["0{,}5"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v15 décimal faux 0,6 : faux",
+				"variationIndex": 15,
+				"variables": {},
+				"answers": ["0{,}6"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
 			}
-		]
+		],
+		"shared": {
+			"blankDefaults": {
+				"acceptDecimal": true
+			}
+		}
 	}
 }

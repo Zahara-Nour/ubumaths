@@ -2,7 +2,7 @@
 	"globalIndex": 589,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Faute « s'annulle » → « s'annule », espace avant « ? ».",
+	"editNotes": "Faute « s'annulle » → « s'annule », espace avant « ? ». Décision de David (2026-09-27) : le décimal exact est juste (option de case acceptDecimal, #488).",
 	"template": {
 		"title": "Racine d'une fonction affine",
 		"shared": {
@@ -15,7 +15,10 @@
 					"name": "b",
 					"expression": "1..9;±"
 				}
-			]
+			],
+			"blankDefaults": {
+				"acceptDecimal": true
+			}
 		},
 		"variations": [
 			{
@@ -102,6 +105,32 @@
 				"answers": ["-2"],
 				"expected": {
 					"status": "correct"
+				}
+			},
+			{
+				"description": "décimal exact -1,8 : juste",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"answers": ["-1{,}8"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "décimal arrondi -1,9 : faux",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"answers": ["-1{,}9"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
 				}
 			}
 		]

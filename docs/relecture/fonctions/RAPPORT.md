@@ -4,9 +4,9 @@
 second degré, dérivation. Relecture le 2026-09-27 (Claude, trois relecteurs puis contrôle
 d'ensemble).
 
-> ✅ **Feu vert de David le 2026-09-27 : 37 questions importées en BROUILLON** (vérifié en base :
-> reliées au suivi, statut draft, 37 emplacements distincts). #609 en attente (point 1 ci-dessous),
-> #617 rejetée. David les publie lui-même.
+> ✅ **Feu vert de David le 2026-09-27 : 38 questions importées en BROUILLON** (vérifié en base :
+> reliées au suivi, statut draft, 38 emplacements distincts), dont #609 après #489 ; #617 rejetée.
+> David les publie lui-même.
 
 ## Bilan
 
@@ -55,18 +55,15 @@ Chaque fichier `<n>.json` porte le détail dans `editNotes`.
 - **#617** : questions de cours à réponse rédigée (« Que cherche-t-on à savoir quand on étudie une
   fonction ? »), sans case ni choix : le format ne sait pas les corriger.
 
-## À décider par David
+## Décisions de David (2026-09-27) — appliquées
 
-1. **#609 (forme canonique lue sur une parabole)** : sans forme exigée, la forme développée est
-   comptée juste — l'objectif de la question est perdu. Le motif (#482) ne sait pas encore l'exiger :
-   il impose l'ordre d'une somme de DEUX termes (`u(x+v)^2+w` refuse `−½(x+2)²−1`) et ne voit pas
-   le coefficient implicite ±1 (`(x−1)²−3`, `−(x+1)²+3`). Proposition : corriger ces deux limites du
-   moteur de motifs (petite PR, tests d'abord), puis importer #609 avec la forme canonique exigée.
-2. **Décimal exact** (#583, #589) : `0,5` est refusé quand `\frac{1}{2}` est attendu. L'accepter ?
-3. **Facteur répété** (#602–#604) : un tirage peut donner `3(x+5)(x+5)` (TinyMath l'autorisait).
-   Ajouter `b ≠ c` ?
-4. **#601 v5** : une fraction rationnelle simplifiable reste classée « non polynôme » (à cause du
-   domaine) — un élève peut contester. Garder ?
+1. **#609** : forme canonique exigée (`u*($x+v)^2+w`) après correctif du moteur de motifs (#489 :
+   soustraction lue comme somme, coefficient implicite ±1, jokers limités aux nombres simples).
+   Importée ; images remises. Reste refusé : `-\frac{(x+2)^2}{2}-1` (coefficient sous la fraction).
+2. **Décimal exact accepté** (#583, #589) : option de case `acceptDecimal` (#488) ; `0,5` juste pour ½.
+3. **Facteur répété exclu** (#603, #604) : c ≠ b, comme #602.
+4. **#601** : v5 sans quotient simplifiable ; nouvelles v6 (se ramène au degré 1, « Non ») et v7 (se
+   ramène au second degré pour x ≠ 0, « Oui »), corrections avec la simplification.
 
 ## Défauts de conversion restants (corrigés à la main dans ce lot)
 

@@ -2,7 +2,7 @@
 	"globalIndex": 601,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Expressions concaténées `{{eval:ax^3}}{{eval:b;+}}x^2…` : un coefficient nul produisait « -3x^20x+2 » / « -5x^20x0 » (énoncé faux) → une seule évaluation `eval:ax^3+bx^2+cx+d` (termes nuls retirés) ; corrections : `{{expression}}` brut → formule LaTeX, « 3ème » → « troisième », « fraction entre… » → « quotient d'un polynôme du second degré par une expression affine », `{{solution:html}},` → « Oui : » / « Non : ».",
+	"editNotes": "Expressions concaténées `{{eval:ax^3}}{{eval:b;+}}x^2…` : un coefficient nul produisait « -3x^20x+2 » / « -5x^20x0 » (énoncé faux) → une seule évaluation `eval:ax^3+bx^2+cx+d` (termes nuls retirés) ; corrections : `{{expression}}` brut → formule LaTeX, « 3ème » → « troisième », « fraction entre… » → « quotient d'un polynôme du second degré par une expression affine », `{{solution:html}},` → « Oui : » / « Non : ». Décision de David (2026-09-27) : v5 ne tire plus de quotient simplifiable (condition : x = −d n'annule pas le numérateur) ; nouvelles variations : v6 (x²+2x+1)/(x+1) → se ramène à x+1, degré 1 : Non ; v7 (x³+2x²+x)/x → se ramène à x²+2x+1 pour x ≠ 0 : Oui. Corrections avec la simplification.",
 	"template": {
 		"title": "Reconnaître un polynôme du second degré",
 		"shared": {
@@ -204,6 +204,61 @@
 					"steps": [
 						"Non : l'expression $\\dfrac{{{eval:ax^2+bx+c}}}{x{{eval:d;+}}}$ est le quotient d'un polynôme du second degré par une expression affine : ce n'est pas un polynôme."
 					]
+				},
+				"conditions": ["a*d*d-b*d+c!=0"]
+			},
+			{
+				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression7}}$$",
+				"correctChoiceIndex": ["1"],
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "p",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "q",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "expression7",
+						"expression": "{{{eval:x^2+(p+q)*x+p*q}}}/{x{{eval:p;+}}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Non : pour $x \\neq {{eval:-p}}$, $\\dfrac{{{eval:x^2+(p+q)*x+p*q}}}{x{{eval:p;+}}} = \\dfrac{\\left(x{{eval:p;+}}\\right)\\left(x{{eval:q;+}}\\right)}{x{{eval:p;+}}} = x{{eval:q;+}}$ : l'expression se ramène à un polynôme de degré 1, pas du second degré."
+					]
+				}
+			},
+			{
+				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression8}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "p",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "q",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "expression8",
+						"expression": "{{{eval:x^3+(p+q)*x^2+p*q*x}}}/{x}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Oui : pour $x \\neq 0$, $\\dfrac{{{eval:x^3+(p+q)*x^2+p*q*x}}}{x} = {{eval:x^2+(p+q)*x+p*q}}$ : l'expression se ramène à un polynôme du second degré."
+					]
 				}
 			}
 		],
@@ -359,6 +414,58 @@
 					"d": "2"
 				},
 				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "quotient simplifiable en degré 1 : Non",
+				"variationIndex": 6,
+				"variables": {
+					"p": "1",
+					"q": "1"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "quotient simplifiable en degré 1 : Oui refusé",
+				"variationIndex": 6,
+				"variables": {
+					"p": "-2",
+					"q": "-3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "quotient simplifiable en degré 2 : Oui",
+				"variationIndex": 7,
+				"variables": {
+					"p": "1",
+					"q": "1"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "quotient simplifiable en degré 2 : Non refusé",
+				"variationIndex": 7,
+				"variables": {
+					"p": "-2",
+					"q": "-3"
+				},
+				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
