@@ -13,10 +13,12 @@
 import type { EvalModifiers } from '$lib/ubumark';
 import { parseLatex } from '$lib/mathAST/parser';
 import { evaluate, evaluateNodeToApproximatedNumber } from './evaluate';
+import { getVariables } from './substitute';
 import type { MathNode } from '../types';
 import { mapNode } from '../transforms';
 import { toLatex } from '../latex-generator';
 import { toCustom } from '../custom-generator';
+import { tidy } from '../tidy';
 import { parseCustom } from '../parser/custom';
 import type { EvalValue, ComplexValueResult } from './types';
 
@@ -54,6 +56,41 @@ function formatNumber(value: number): string {
 
 	// Parse and re-stringify to remove trailing zeros
 	return parseFloat(formatted).toString();
+}
+
+/**
+ * Écriture d'un résultat littéral valable à la fois en syntaxe maison et en LaTeX
+ * (`5(3x+2)`, `3x^2`, `-3x`) : il s'insère aussi bien dans une formule maison que dans une
+ * formule LaTeX ou une réponse attendue. Une fraction garde l'écriture LaTeX (`\\dfrac{x}{2}`).
+ */
+function literalWriting(node: MathNode): string {
+	let hasDivision = false;
+	mapNode(node, (n) => {
+		if (n.type === 'division') hasDivision = true;
+		return n;
+	});
+	return hasDivision ? toLatex(node) : toCustom(node);
+}
+
+/** Une division dont le dénominateur se calcule et vaut 0 */
+function hasZeroDenominator(node: MathNode): boolean {
+	let zero = false;
+	mapNode(node, (n) => {
+		if (n.type === 'division') {
+			const d = evaluate(n.denominator, { mode: 'decimal' });
+			if (d.status === 'value' && d.value === 0) zero = true;
+		}
+		return n;
+	});
+	return zero;
+}
+
+/** `;+` et `;()` sur un résultat littéral : le signe se lit en tête de l'écriture */
+function withSignModifiers(latex: string, modifiers: EvalModifiers): string {
+	const negative = latex.startsWith('-');
+	if (modifiers.addPositive && !negative) return `+${latex}`;
+	if (modifiers.bracketNegative && negative) return `(${latex})`;
+	return latex;
 }
 
 /** Un nombre non entier écrit dans le calcul (`0.5`) : TinyMath rendait alors un décimal */
@@ -179,12 +216,27 @@ function formatExact(ast: MathNode, numValue: number): string {
  * @returns Formatted result as string
  * @throws Error if evaluation fails
  */
-export function evaluateAstWithModifiers(ast: MathNode, modifiers: EvalModifiers = {}): string {
+export function evaluateAstWithModifiers(
+	ast: MathNode,
+	modifiers: EvalModifiers = {},
+	literalLetters: ReadonlySet<string> = new Set()
+): string {
 	// Valeur numérique d'abord (signe des modificateurs, garde-fou de formatExact)
 	const result = evaluate(ast, { mode: 'decimal' });
 
 	// Handle non-value results
 	if (result.status === 'unevaluable') {
+		// Calcul littéral (comme TinyMath) : il reste des lettres → expression RÉDUITE par
+		// tidy, jamais développée (`2*3*x` → `6x`, `3a+2b+5a` → `8a+2b`)
+		// Seulement pour des lettres TIRÉES (`literalLetters`) : une lettre venue d'une faute de
+		// frappe (`{{eval:invalid}}`) ou d'une variable non définie reste une erreur
+		const letters = [...getVariables(ast)];
+		if (letters.length > 0 && letters.every((letter) => literalLetters.has(letter))) {
+			const reduced = tidy(ast);
+			// `a/(b-c)` avec b = c : dénominateur nul, comme dans un calcul numérique
+			if (hasZeroDenominator(reduced)) throw new Error('Division by zero');
+			return withSignModifiers(literalWriting(reduced), modifiers);
+		}
 		throw new Error(result.reason);
 	}
 	if (result.status === 'indeterminate') {
