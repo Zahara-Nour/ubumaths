@@ -19,7 +19,7 @@ import { tidyNode } from './collect';
 import type { TidyOptions } from './step-recorder';
 
 export { TidyStepRecorder, TIDY_RULE_DESCRIPTIONS } from './step-recorder';
-export type { TidyOptions, TidyRule, TidyStep } from './step-recorder';
+export type { TidyOptions, TidyRule, TidyStep, UnitChoice } from './step-recorder';
 
 /**
  * Met une expression au propre.

@@ -104,4 +104,15 @@ export class TidyStepRecorder extends StepRecorderBase<TidyStep, TidyRule> {
 export interface TidyOptions {
 	/** À qui raconter. Absent, `tidy` ne construit aucune expression en trop. */
 	readonly recorder?: TidyStepRecorder;
+	/**
+	 * Le choix de l'unité d'une grandeur numérique (§D.3 et lot 1 des grandeurs
+	 * dans `{{eval}}`, 2026-09-27) :
+	 * - `'school'` (défaut) : la plus grande unité scolaire dont la valeur est ≥ 1 ;
+	 * - `'written'` : l'unité écrite d'abord, si la valeur y a une écriture
+	 *   décimale finie — sinon le choix scolaire, sinon l'écriture inchangée.
+	 */
+	readonly unitChoice?: UnitChoice;
 }
+
+/** Les deux politiques de choix d'unité de `tidy`. */
+export type UnitChoice = 'school' | 'written';
