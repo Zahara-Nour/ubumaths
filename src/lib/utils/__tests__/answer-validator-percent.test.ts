@@ -70,6 +70,48 @@ describe('attendu en pourcentage', () => {
 	});
 });
 
+describe('attendu en pourcentage — calcul non effectué de même valeur', () => {
+	it.each([
+		'0{,}1+0{,}1',
+		'1-0{,}8',
+		'100\\%-80\\%',
+		'40\\%\\div 2',
+		'2\\times 10\\%',
+		'0{,}2\\times 100\\%'
+	])('%s : mauvaise forme, pas perfectible', (answer) => {
+		const result = check(answer, '20\\%');
+		expect(result.isCorrect).toBe(false);
+		expect(result.status).toBe('bad_form');
+	});
+
+	it('`-0{,}2` pour `-20 %` : perfectible (écriture finale signée)', () => {
+		expect(check('-0{,}2', '-20\\%').status).toBe('unoptimal_form');
+	});
+});
+
+describe('attendu écrit avec \\text', () => {
+	it.each(['20\\text{ \\%}', '20\\text{\\%}'])('attendu %s : `20\\%` juste', (expected) => {
+		const result = check('20\\%', expected);
+		expect(result.isCorrect).toBe(true);
+		expect(result.status ?? 'correct').toBe('correct');
+	});
+});
+
+describe('plusieurs cases, ordre indifférent', () => {
+	it('`20` et `30` pour `20 %` et `30 %` : rappel du symbole', () => {
+		const instance: QuestionInstance = {
+			...createInstance([
+				{ expectedAnswer: '20\\%', type: 'math' },
+				{ expectedAnswer: '30\\%', type: 'math' }
+			]),
+			options: { orderIndependent: true }
+		};
+		const result = validateAnswer(['20', '30'], instance, ['20', '30']);
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe(FORGOTTEN_SIGN);
+	});
+});
+
 describe('attendu en nombre', () => {
 	it('`7{,}1` : juste', () => {
 		expect(check('7{,}1', '7{,}1')).toMatchObject({ isCorrect: true });

@@ -234,6 +234,7 @@ function mayHaveRestrictedDomain(expr: MathNode): boolean {
 			return mayHaveRestrictedDomain(expr.left) || mayHaveRestrictedDomain(expr.right);
 		case 'opposite':
 		case 'positive':
+		case 'percentage':
 			return mayHaveRestrictedDomain(expr.operand);
 		case 'delimiter':
 			return mayHaveRestrictedDomain(expr.content);

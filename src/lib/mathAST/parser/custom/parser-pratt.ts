@@ -604,6 +604,10 @@ class CustomPrattParser {
 		) {
 			if (this.check('PERCENT')) {
 				// Pourcentage, postfixe : `20%`, `x^2%` = (x²) %, `(a+5)%`
+				// `20%%` : erreur de lecture, jamais un pourcentage de pourcentage silencieux
+				if (operand.type === 'percentage') {
+					this.error('Unexpected token: %', this.currentToken.position, 1, 'UNEXPECTED_TOKEN');
+				}
 				this.advance();
 				operand = this.applyColor(MathAST.percentage(operand));
 			} else if (this.check('CARET')) {

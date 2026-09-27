@@ -706,6 +706,22 @@ export function isPercentWriting(node: MathNode): boolean {
 }
 
 /**
+ * Une écriture finale de nombre, signe compris : un nombre (`0,2`, `-3`) ou une
+ * fraction de deux nombres (`\frac{1}{5}`). Ni calcul, ni pourcentage.
+ */
+function isFinalNumberWriting(node: MathNode): boolean {
+	let current = node;
+	while (current.type === 'delimiter') current = current.content;
+	if (current.type === 'opposite' || current.type === 'positive') current = current.operand;
+	if (current.type === 'number') return true;
+	return (
+		current.type === 'division' &&
+		current.numerator.type === 'number' &&
+		current.denominator.type === 'number'
+	);
+}
+
+/**
  * La réponse est la valeur d'un pourcentage attendu, symbole oublié : `20` pour
  * `20 %`, `12,5` pour `12,5 %`. Sert au message « N'oublie pas le symbole % ».
  */
@@ -714,7 +730,7 @@ export function forgotPercentSign(answerLatex: string, expectedLatex: string): b
 	const expected = parseLatexSafe(normalizeDecimalComma(removeSpaces(expectedLatex)));
 	if (!answer.ast || answer.errors.length > 0) return false;
 	if (!expected.ast || expected.errors.length > 0) return false;
-	if (!isPercentWriting(expected.ast) || isPercentWriting(answer.ast)) return false;
+	if (!isPercentWriting(expected.ast) || !isFinalNumberWriting(answer.ast)) return false;
 	return areEquivalent(percentage(answer.ast), expected.ast, { timeoutMs: 500 });
 }
 
@@ -1039,10 +1055,11 @@ export function checkForm(
 	const expectedAST = applyFullASTPipeline(expectedParse.ast, options);
 
 	// === Pourcentage (décisions du 2026-09-27) ===
-	// Attendu `20 %`, réponse de même valeur sans le symbole (`0,2`, `1/5`) : la
-	// valeur est juste (vérifiée en amont), l'écriture perfectible. L'inverse
-	// (`710 %` pour 7,1) échoue à la comparaison finale : mauvaise forme.
-	if (isPercentWriting(expectedAST) && !isPercentWriting(answerAST)) {
+	// Attendu `20 %`, réponse de même valeur sans le symbole : perfectible, mais
+	// SEULEMENT pour une écriture finale (`0,2`, `1/5`). Un calcul non effectué
+	// (`0,1+0,1`, `2 × 10 %`) suit la comparaison de forme : mauvaise forme.
+	// L'inverse (`710 %` pour 7,1) échoue aussi à la comparaison finale.
+	if (isPercentWriting(expectedAST) && isFinalNumberWriting(answerParse.ast)) {
 		const severity = constraints['percent'] ?? 'warn';
 		const withPercent =
 			severity === 'off' ? violations : [...violations, { id: 'percent', severity }];

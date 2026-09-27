@@ -9,7 +9,8 @@ import { parseLatex } from '../parser';
 import { parseCustom } from '../parser/custom';
 import { toLatex } from '../latex-generator';
 import { toCustom } from '../custom-generator';
-import { evaluate } from '../eval';
+import { evaluate, substitute } from '../eval';
+import { computeDomain } from '../domain/compute';
 import { areEquivalent } from '../equivalence';
 import { tidy } from '../tidy';
 import { simplify } from '../simplify';
@@ -114,5 +115,35 @@ describe('pourcentage — transformations', () => {
 		const node = MathAST.percentage(MathAST.variable('a'));
 		const mapped = mapNode(node, (n) => (n.type === 'variable' ? MathAST.number('30') : n));
 		expect(mapped).toEqual(MathAST.percentage(MathAST.number('30')));
+	});
+});
+
+describe('pourcentage — double symbole', () => {
+	it.each(['20%%', '%%'])('syntaxe maison %s → erreur de lecture', (input) => {
+		expect(() => parseCustom(input)).toThrow();
+	});
+
+	it('LaTeX 20\\%\\% → erreur de lecture', () => {
+		expect(() => parseLatex('20\\%\\%')).toThrow();
+	});
+});
+
+describe('pourcentage — \\text', () => {
+	it.each(['20\\text{ \\%}', '20\\text{\\%}', '20\\,\\text{\\%}'])('%s', (input) => {
+		expect(parseLatex(input)).toEqual(MathAST.percentage(MathAST.number('20')));
+	});
+});
+
+describe('pourcentage — parcours qui descendent dans l’opérande', () => {
+	it('domaine de (1/x)% : 0 exclu, comme pour 1/x', () => {
+		const withPercent = computeDomain(parseCustom('(1/x)%'), 'x');
+		const plain = computeDomain(parseCustom('1/x'), 'x');
+		expect(JSON.stringify(withPercent.domain)).toBe(JSON.stringify(plain.domain));
+	});
+
+	it('2k avec k = 5% ne s’écrit pas « 25% »', () => {
+		const node = substitute(parseCustom('2k'), { k: parseCustom('5%') });
+		expect(toCustom(node)).not.toBe('25%');
+		expect(evaluate(node, { mode: 'decimal' })).toMatchObject({ value: 0.1 });
 	});
 });
