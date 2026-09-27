@@ -1,0 +1,92 @@
+{
+	"globalIndex": 458,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Ne générait pas (décimal &1,&2, marqueur expression). Heure décimale tirée par ses minutes, réponse en minutes (case numérique, « min » écrit après), correction réécrite.",
+	"template": {
+		"title": "Convertir des durées",
+		"description": "heures en minutes, heures décimales",
+		"variations": [
+			{
+				"statement": "Convertis en minutes.\n\n${{eval:a+k/60;d}}~\\unit{h} = ?~\\unit{min}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..5"
+					},
+					{
+						"name": "k",
+						"expression": "6|30|15"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{eval:a+k/60;d}}~\\unit{h} = {{a}}~\\unit{h} + {{eval:k/60;d}}~\\unit{h} = {{a}} \\times 60~\\unit{min} + {{eval:k/60;d}} \\times 60~\\unit{min} = {{eval:a*60}}~\\unit{min} + {{k}}~\\unit{min} = {{eval:a*60+k}}~\\unit{min}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*60+k}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Durées",
+		"subdomain": "Convertir",
+		"level": 10,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "2,25 h = 135 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"k": "15"
+				},
+				"answers": ["135"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2,25 h lu 2 h 25 min = 145 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"k": "15"
+				},
+				"answers": ["145"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "×100 au lieu de ×60",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"k": "15"
+				},
+				"answers": ["225"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "5,1 h = 306 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"k": "6"
+				},
+				"answers": ["306"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

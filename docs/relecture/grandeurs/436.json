@@ -1,0 +1,275 @@
+{
+	"globalIndex": 436,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Grandeurs déjà bien converties (case à unité, unité équivalente acceptée, sans unité refusé). Double espace « $  est » retiré.",
+	"template": {
+		"title": "Calcul de l'aire d'un carré.",
+		"description": "A partir d'une description",
+		"shared": {
+			"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+			"correction": {
+				"steps": [
+					"L'aire d'un carré de côté ${{a}}$ est ${{a}} \\times {{a}} =$ {{solution:html}}."
+				]
+			}
+		},
+		"variations": [
+			{
+				"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[mm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*a;[mm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[cm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*a;[cm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[dm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*a;[dm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[m]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*a;[m^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[dam]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*a;[dam^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[hm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*a;[hm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[km]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*a;[km^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Aires",
+		"subdomain": "Aire d'un carré",
+		"level": 1,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "7 mm × 7 mm = 49 mm²",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "7"
+				},
+				"answers": ["49\\unit{mm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "périmètre 28 mm",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "7"
+				},
+				"answers": ["28\\unit{mm}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "unité de longueur 49 mm",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "7"
+				},
+				"answers": ["49\\unit{mm}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "7 cm × 7 cm = 49 cm²",
+				"variationIndex": 1,
+				"variables": {
+					"a1": "7"
+				},
+				"answers": ["49\\unit{cm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 dm × 7 dm = 49 dm²",
+				"variationIndex": 2,
+				"variables": {
+					"a1": "7"
+				},
+				"answers": ["49\\unit{dm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 m × 7 m = 49 m²",
+				"variationIndex": 3,
+				"variables": {
+					"a1": "7"
+				},
+				"answers": ["49\\unit{m^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 dam × 7 dam = 49 dam²",
+				"variationIndex": 4,
+				"variables": {
+					"a1": "7"
+				},
+				"answers": ["49\\unit{dam^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 hm × 7 hm = 49 hm²",
+				"variationIndex": 5,
+				"variables": {
+					"a1": "7"
+				},
+				"answers": ["49\\unit{hm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 km × 7 km = 49 km²",
+				"variationIndex": 6,
+				"variables": {
+					"a1": "7"
+				},
+				"answers": ["49\\unit{km^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

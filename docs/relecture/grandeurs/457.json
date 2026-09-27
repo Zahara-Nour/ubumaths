@@ -1,0 +1,107 @@
+{
+	"globalIndex": 457,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Ne générait pas (décimal &1,&2). Heure décimale tirée par ses minutes (6|30|15 ↔ 0,1|0,5|0,25 h), unités en \\unit, consigne « heures et minutes ».",
+	"template": {
+		"title": "Convertir des durées",
+		"description": "heures en HMS, heures décimales",
+		"variations": [
+			{
+				"statement": "Convertis en heures et minutes.\n\n${{eval:a+k/60;d}}~\\unit{h} = ?~\\unit{h}~?~\\unit{min}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..5"
+					},
+					{
+						"name": "k",
+						"expression": "6|30|15"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{eval:a+k/60;d}}~\\unit{h} = {{a}}~\\unit{h} + {{eval:k/60;d}}~\\unit{h} = {{a}}~\\unit{h} + {{eval:k/60;d}} \\times 60~\\unit{min} = {{a}}~\\unit{h}~{{k}}~\\unit{min}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					},
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Durées",
+		"subdomain": "Convertir",
+		"level": 9,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "2,25 h = 2 h 15 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"k": "15"
+				},
+				"answers": ["2", "15"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2,25 h lu 2 h 25 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"k": "15"
+				},
+				"answers": ["2", "25"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "3,1 h = 3 h 6 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"k": "6"
+				},
+				"answers": ["3", "6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3,1 h lu 3 h 10 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"k": "6"
+				},
+				"answers": ["3", "10"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "5,5 h = 5 h 30 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"k": "30"
+				},
+				"answers": ["5", "30"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

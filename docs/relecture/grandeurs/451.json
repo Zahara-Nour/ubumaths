@@ -1,0 +1,60 @@
+{
+	"globalIndex": 451,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Énoncé cassé (marqueur brut « <<expr:expression1>> », unités collées au nombre) : réécrit « $a~min = ?~s$ » ; correction en unités propres. Case numérique, « s » écrit après la case.",
+	"template": {
+		"title": "Convertir des durées",
+		"description": "minutes en secondes",
+		"variations": [
+			{
+				"statement": "Convertis.\n\n${{a}}~\\unit{min} = ?~\\unit{s}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..10"
+					}
+				],
+				"correction": {
+					"steps": ["${{a}}~\\unit{min} = {{a}} \\times 60~\\unit{s} = {{eval:a*60}}~\\unit{s}$"]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*60}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Durées",
+		"subdomain": "Convertir",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "bonne conversion",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8"
+				},
+				"answers": ["480"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "facteur 100",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8"
+				},
+				"answers": ["800"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

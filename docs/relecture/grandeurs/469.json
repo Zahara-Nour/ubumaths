@@ -1,0 +1,286 @@
+{
+	"globalIndex": 469,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "« Conplète » → « Complète » ; marqueur brut <<expr:…>> et unités lues comme lettres (« k m ») : énoncés et corrections réécrits avec \\unit ; fractions en \\dfrac ; 0,001 écrit 0.001 (virgule à l'affichage).",
+	"template": {
+		"title": "Convertir des vitesses",
+		"variations": [
+			{
+				"statement": "Complète.\n\n${{a}}~\\unit{km.h^{-1}} = ?~\\unit{m.h^{-1}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{a}}~\\unit{km.h^{-1}} = \\dfrac{{{a}}~\\unit{km}}{1~\\unit{h}} = \\dfrac{{{eval:a*1000}}~\\unit{m}}{1~\\unit{h}} = {{eval:a*1000}}~\\unit{m.h^{-1}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n${{a}}~\\unit{km.h^{-1}} = ?~\\unit{km.s^{-1}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3600|7200"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{a}}~\\unit{km.h^{-1}} = \\dfrac{{{a}}~\\unit{km}}{1~\\unit{h}} = \\dfrac{{{a}}~\\unit{km}}{3600~\\unit{s}} = {{eval:a/3600}}~\\unit{km.s^{-1}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a/3600}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n${{a}}~\\unit{m.s^{-1}} = ?~\\unit{km.s^{-1}}$",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "1..9"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*1000"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{a}}~\\unit{m.s^{-1}} = \\dfrac{{{a}}~\\unit{m}}{1~\\unit{s}} = \\dfrac{{{a1}}~\\unit{km}}{1~\\unit{s}} = {{a1}}~\\unit{km.s^{-1}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a1}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n${{a}}~\\unit{m.s^{-1}} = ?~\\unit{m.h^{-1}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{a}}~\\unit{m.s^{-1}} = \\dfrac{{{a}}~\\unit{m}}{1~\\unit{s}} = \\dfrac{{{a}} \\times 3600~\\unit{m}}{3600~\\unit{s}} = \\dfrac{{{eval:a*3600}}~\\unit{m}}{1~\\unit{h}} = {{eval:a*3600}}~\\unit{m.h^{-1}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*3600}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n${{a}}~\\unit{m.s^{-1}} = ?~\\unit{m.ms^{-1}}$",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "1..9"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*1000"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{a}}~\\unit{m.s^{-1}} = \\dfrac{{{a}}~\\unit{m}}{1~\\unit{s}} = \\dfrac{{{a}}~\\unit{m}}{1000~\\unit{ms}} = \\dfrac{{{a1}}~\\unit{m}}{1~\\unit{ms}} = {{a1}}~\\unit{m.ms^{-1}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a1}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n${{a}}~\\unit{m.ms^{-1}} = ?~\\unit{m.s^{-1}}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{a}}~\\unit{m.ms^{-1}} = \\dfrac{{{a}}~\\unit{m}}{1~\\unit{ms}} = \\dfrac{{{a}}~\\unit{m}}{0.001~\\unit{s}} = {{eval:a*1000}}~\\unit{m.s^{-1}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Grandeurs",
+		"domain": "Vitesses",
+		"subdomain": "Convertir",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7 km/h = 7 000 m/h",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7000 sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "×100",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["700"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "7 200 km/h = 2 km/s",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7200"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "heure non convertie",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7200"
+				},
+				"answers": ["7200"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "7 000 m/s = 7 km/s",
+				"variationIndex": 2,
+				"variables": {
+					"a1": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sens de conversion inversé",
+				"variationIndex": 2,
+				"variables": {
+					"a1": "7"
+				},
+				"answers": ["7000"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "2 m/s = 7 200 m/h",
+				"variationIndex": 3,
+				"variables": {
+					"a": "2"
+				},
+				"answers": ["7\\,200"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "×60 seulement",
+				"variationIndex": 3,
+				"variables": {
+					"a": "2"
+				},
+				"answers": ["120"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "7 000 m/s = 7 m/ms",
+				"variationIndex": 4,
+				"variables": {
+					"a1": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "inchangé",
+				"variationIndex": 4,
+				"variables": {
+					"a1": "7"
+				},
+				"answers": ["7000"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "9 m/ms = 9 000 m/s",
+				"variationIndex": 5,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["9\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "inchangé",
+				"variationIndex": 5,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

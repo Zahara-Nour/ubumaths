@@ -1,0 +1,80 @@
+{
+	"globalIndex": 454,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Énoncé cassé (marqueur brut « <<expr:expression1>> », unités collées au nombre) : réécrit « $a~h~b~min = ?~min$ » ; calcul par nombres (a×60+b) ; correction en unités propres. Case numérique, « min » écrit après la case.",
+	"template": {
+		"title": "Convertir des durées",
+		"description": "HMS en minutes (2)",
+		"variations": [
+			{
+				"statement": "Convertis.\n\n${{a}}~\\unit{h}\\,{{b}}~\\unit{min} = ?~\\unit{min}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					},
+					{
+						"name": "b",
+						"expression": "1..59"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{a}}~\\unit{h}\\,{{b}}~\\unit{min} = {{a}} \\times 60~\\unit{min} + {{b}}~\\unit{min} = {{eval:a*60+b}}~\\unit{min}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*60+b}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Durées",
+		"subdomain": "Convertir",
+		"level": 6,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "bonne conversion",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "56"
+				},
+				"answers": ["176"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "heure comptée pour 100 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "56"
+				},
+				"answers": ["256"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "borne 1 h 59",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "59"
+				},
+				"answers": ["119"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

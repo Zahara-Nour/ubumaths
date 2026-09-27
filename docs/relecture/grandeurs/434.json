@@ -1,0 +1,303 @@
+{
+	"globalIndex": 434,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Grandeurs déjà bien converties (case à unité, unité équivalente acceptée, sans unité refusé). Condition a>b ajoutée : la longueur est plus grande que la largeur (TinyMath tirait b≠a seulement). Défaut de la source TinyMath : les 7 variations tiraient toutes des côtés en mm, seule l'unité de la réponse changeait (et la case à unité accepte toute unité équivalente : 7 variations identiques). Chaque variation a maintenant ses côtés dans sa propre unité (mm … km), comme #432/#438. Correction : « * » brut remplacé par × (et fraction pour ÷2). Double espace « $  est » retiré.",
+	"template": {
+		"title": "Calcul du périmètre d'un rectangle.",
+		"description": "A partir d'une description",
+		"shared": {
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[mm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[mm]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le périmètre d'un rectangle de longueur ${{c}}$ et de largeur ${{d}}$ est $2 \\times ({{c}}+{{d}}) =$ {{solution:html}}."
+				]
+			},
+			"conditions": ["a>b"]
+		},
+		"variations": [
+			{
+				"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c+d)*2;[mm]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				],
+				"variables": [
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c+d)*2;[cm]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				],
+				"variables": [
+					{
+						"name": "c",
+						"expression": "eval:a[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[cm]"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c+d)*2;[dm]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				],
+				"variables": [
+					{
+						"name": "c",
+						"expression": "eval:a[dm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dm]"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c+d)*2;[m]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				],
+				"variables": [
+					{
+						"name": "c",
+						"expression": "eval:a[m]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[m]"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c+d)*2;[dam]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				],
+				"variables": [
+					{
+						"name": "c",
+						"expression": "eval:a[dam]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dam]"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c+d)*2;[hm]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				],
+				"variables": [
+					{
+						"name": "c",
+						"expression": "eval:a[hm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[hm]"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c+d)*2;[km]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				],
+				"variables": [
+					{
+						"name": "c",
+						"expression": "eval:a[km]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[km]"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Périmètres",
+		"subdomain": "Périmètre d'un rectangle",
+		"level": 1,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "2 × (8+5) mm = 26 mm",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["26\\unit{mm}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "demi-périmètre 13",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["13\\unit{mm}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "sans unité",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["26"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "2 × (8+5) cm = 26 cm",
+				"variationIndex": 1,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["26\\unit{cm}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2 × (8+5) dm = 26 dm",
+				"variationIndex": 2,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["26\\unit{dm}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2 × (8+5) m = 26 m",
+				"variationIndex": 3,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["26\\unit{m}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2 × (8+5) dam = 26 dam",
+				"variationIndex": 4,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["26\\unit{dam}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2 × (8+5) hm = 26 hm",
+				"variationIndex": 5,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["26\\unit{hm}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2 × (8+5) km = 26 km",
+				"variationIndex": 6,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["26\\unit{km}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

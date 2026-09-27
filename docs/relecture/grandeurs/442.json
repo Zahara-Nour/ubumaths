@@ -1,0 +1,364 @@
+{
+	"globalIndex": 442,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : « ${c*d}/2 =$ » (astérisque brut, accolades visibles) → « $\\dfrac{c \\times d}{2} =$ » ; « hauteur » → « hauteur associée » ; « A partir » → « À partir » ; espace double.",
+	"template": {
+		"title": "Calcul de l'aire d'un triangle quelconque.",
+		"description": "À partir d'une description",
+		"shared": {
+			"statement": "Quelle est l'aire d'un **triangle** de base ${{c}}$ et de hauteur associée ${{d}}$ ?\n\nL'aire du triangle est $?$.",
+			"correction": {
+				"steps": [
+					"L'aire d'un triangle de base ${{c}}$ et de hauteur associée ${{d}}$ est $\\dfrac{{{c}} \\times {{d}}}{2} =$ {{solution:html}}."
+				]
+			}
+		},
+		"variations": [
+			{
+				"statement": "Quelle est l'aire d'un **triangle** de base ${{c}}$ et de hauteur associée ${{d}}$ ?\n\nL'aire du triangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d/2;[mm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **triangle** de base ${{c}}$ et de hauteur associée ${{d}}$ ?\n\nL'aire du triangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[cm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d/2;[cm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **triangle** de base ${{c}}$ et de hauteur associée ${{d}}$ ?\n\nL'aire du triangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d/2;[dm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **triangle** de base ${{c}}$ et de hauteur associée ${{d}}$ ?\n\nL'aire du triangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[m]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[m]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d/2;[m^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **triangle** de base ${{c}}$ et de hauteur associée ${{d}}$ ?\n\nL'aire du triangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dam]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dam]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d/2;[dam^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **triangle** de base ${{c}}$ et de hauteur associée ${{d}}$ ?\n\nL'aire du triangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[hm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[hm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d/2;[hm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **triangle** de base ${{c}}$ et de hauteur associée ${{d}}$ ?\n\nL'aire du triangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[km]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[km]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d/2;[km^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Aires",
+		"subdomain": "Aire d'un triangle quelconque",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0 aire juste avec unité",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["31{,}5\\unit{mm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 aire juste avec unité",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["31{,}5\\unit{cm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 aire juste avec unité",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["31{,}5\\unit{dm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 aire juste avec unité",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["31{,}5\\unit{m^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 aire juste avec unité",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["31{,}5\\unit{dam^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5 aire juste avec unité",
+				"variationIndex": 5,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["31{,}5\\unit{hm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v6 aire juste avec unité",
+				"variationIndex": 6,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["31{,}5\\unit{km^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli de la division par 2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["63\\unit{mm^2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "unité de longueur au lieu d'aire",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["31{,}5\\unit{mm}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "sans unité",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["31{,}5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "unité d'aire équivalente",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["0{,}315\\unit{cm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

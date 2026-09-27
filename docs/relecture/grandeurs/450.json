@@ -1,0 +1,71 @@
+{
+	"globalIndex": 450,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Énoncé cassé (marqueur brut « <<expr:expression1>> », unités collées au nombre) : réécrit « $60a~min = ?~h$ » ; correction « 480 min = 8 × 60 min = 8 h » en unités propres. Case numérique, « h » écrit après la case.",
+	"template": {
+		"title": "Convertir des durées",
+		"description": "minutes en heures",
+		"variations": [
+			{
+				"statement": "Convertis.\n\n${{eval:a*60}}~\\unit{min} = ?~\\unit{h}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..10"
+					}
+				],
+				"correction": {
+					"steps": ["${{eval:a*60}}~\\unit{min} = {{a}} \\times 60~\\unit{min} = {{a}}~\\unit{h}$"]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Durées",
+		"subdomain": "Convertir",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "bonne conversion",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8"
+				},
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "division par 100",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8"
+				},
+				"answers": ["4{,}8"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "borne 10 h",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

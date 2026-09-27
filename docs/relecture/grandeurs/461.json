@@ -1,0 +1,124 @@
+{
+	"globalIndex": 461,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponses attendues cassées (« [_b+3_] », « if:b+c>59 ») : heures et minutes calculées par variables q, r ; unités en \\unit ; correction réécrite sans ligne vide.",
+	"template": {
+		"title": "Ajouter des durées",
+		"description": "en HMS",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n${{a}}~\\unit{h}~{{b}}~\\unit{min} + {{c}}~\\unit{min} = ?~\\unit{h}~?~\\unit{min}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "1..59"
+					},
+					{
+						"name": "c",
+						"expression": "1..59"
+					},
+					{
+						"name": "q",
+						"expression": "eval:a+floor(((b)+(c))/60)"
+					},
+					{
+						"name": "r",
+						"expression": "eval:(b)+(c)-60*floor(((b)+(c))/60)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:b+c>=60|$$\\begin{align}{{a}}~\\unit{h}~{{b}}~\\unit{min} + {{c}}~\\unit{min} &= {{a}}~\\unit{h} + {{eval:b+c}}~\\unit{min}\\\\ &= {{a}}~\\unit{h} + 60~\\unit{min} + {{r}}~\\unit{min}\\\\ &= {{a}}~\\unit{h} + 1~\\unit{h} + {{r}}~\\unit{min}\\\\ &= {{q}}~\\unit{h}~{{r}}~\\unit{min}\\end{align}$$|${{a}}~\\unit{h}~{{b}}~\\unit{min} + {{c}}~\\unit{min} = {{a}}~\\unit{h}~{{eval:b+c}}~\\unit{min}$}}"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{q}}"
+					},
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Durées",
+		"subdomain": "Calculer",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "3 h 56 min + 59 min = 4 h 55 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "56",
+					"c": "59"
+				},
+				"answers": ["4", "55"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "115 min non convertis",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "56",
+					"c": "59"
+				},
+				"answers": ["3", "115"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "heure de retenue oubliée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "56",
+					"c": "59"
+				},
+				"answers": ["3", "55"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "sans retenue : 1 h 37 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "5",
+					"c": "32"
+				},
+				"answers": ["1", "37"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "pile 60 min : 2 h 0 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "30",
+					"c": "30"
+				},
+				"answers": ["2", "0"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

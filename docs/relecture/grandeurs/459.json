@@ -1,0 +1,95 @@
+{
+	"globalIndex": 459,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Ne générait pas (décimal &1,&2). Heure décimale construite par eval, unités en \\unit, consigne « heures et minutes ».",
+	"template": {
+		"title": "Convertir des durées",
+		"description": "heures en HMS, heures décimales (2)",
+		"variations": [
+			{
+				"statement": "Convertis en heures et minutes.\n\n${{eval:a+b/10;d}}~\\unit{h} = ?~\\unit{h}~?~\\unit{min}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}{{eval:a+b/10;d}}~\\unit{h} &= {{a}}~\\unit{h} + {{eval:b/10;d}}~\\unit{h}\\\\ &= {{a}}~\\unit{h} + {{b}} \\times 0.1~\\unit{h}\\\\ &= {{a}}~\\unit{h} + {{b}} \\times 6~\\unit{min}\\\\ &= {{a}}~\\unit{h}~{{eval:6*b}}~\\unit{min}\\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					},
+					{
+						"expectedAnswer": "{{eval:6*b}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Durées",
+		"subdomain": "Convertir",
+		"level": 11,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "1,7 h = 1 h 42 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "7"
+				},
+				"answers": ["1", "42"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "1,7 h lu 1 h 7 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "7"
+				},
+				"answers": ["1", "7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "1,7 h lu 1 h 70 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "7"
+				},
+				"answers": ["1", "70"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "2,9 h = 2 h 54 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"answers": ["2", "54"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

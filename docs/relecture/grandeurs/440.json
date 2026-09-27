@@ -1,0 +1,352 @@
+{
+	"globalIndex": 440,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Grandeurs déjà bien converties (case à unité, unité équivalente acceptée, sans unité refusé). Correction : « * » brut remplacé par × (et fraction pour ÷2). Vocabulaire : « triangle rectangle de longueur … et de largeur … » remplacé par « dont les côtés de l'angle droit mesurent … et … ». Double espace « $  est » retiré.",
+	"template": {
+		"title": "Calcul de l'aire d'un triangle rectangle.",
+		"description": "A partir d'une description",
+		"shared": {
+			"statement": "Quelle est l'aire d'un **triangle rectangle** dont les côtés de l'angle droit mesurent ${{c}}$ et ${{d}}$ ?\n\nL'aire du triangle rectangle est $?$.",
+			"correction": {
+				"steps": [
+					"L'aire d'un triangle rectangle dont les côtés de l'angle droit mesurent ${{c}}$ et ${{d}}$ est $\\dfrac{{{c}} \\times {{d}}}{2} =$ {{solution:html}}."
+				]
+			}
+		},
+		"variations": [
+			{
+				"statement": "Quelle est l'aire d'un **triangle rectangle** dont les côtés de l'angle droit mesurent ${{c}}$ et ${{d}}$ ?\n\nL'aire du triangle rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d/2;[mm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **triangle rectangle** dont les côtés de l'angle droit mesurent ${{c}}$ et ${{d}}$ ?\n\nL'aire du triangle rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[cm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d/2;[cm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **triangle rectangle** dont les côtés de l'angle droit mesurent ${{c}}$ et ${{d}}$ ?\n\nL'aire du triangle rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d/2;[dm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **triangle rectangle** dont les côtés de l'angle droit mesurent ${{c}}$ et ${{d}}$ ?\n\nL'aire du triangle rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[m]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[m]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d/2;[m^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **triangle rectangle** dont les côtés de l'angle droit mesurent ${{c}}$ et ${{d}}$ ?\n\nL'aire du triangle rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dam]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dam]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d/2;[dam^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **triangle rectangle** dont les côtés de l'angle droit mesurent ${{c}}$ et ${{d}}$ ?\n\nL'aire du triangle rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[hm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[hm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d/2;[hm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **triangle rectangle** dont les côtés de l'angle droit mesurent ${{c}}$ et ${{d}}$ ?\n\nL'aire du triangle rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[km]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[km]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d/2;[km^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Aires",
+		"subdomain": "Aire d'un triangle rectangle",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "8 × 5 ÷ 2 = 20 mm²",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["20\\unit{mm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli du ÷2 (40)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["40\\unit{mm^2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "sans unité",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["20"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "8 × 5 ÷ 2 = 20 cm²",
+				"variationIndex": 1,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["20\\unit{cm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8 × 5 ÷ 2 = 20 dm²",
+				"variationIndex": 2,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["20\\unit{dm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8 × 5 ÷ 2 = 20 m²",
+				"variationIndex": 3,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["20\\unit{m^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8 × 5 ÷ 2 = 20 dam²",
+				"variationIndex": 4,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["20\\unit{dam^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8 × 5 ÷ 2 = 20 hm²",
+				"variationIndex": 5,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["20\\unit{hm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8 × 5 ÷ 2 = 20 km²",
+				"variationIndex": 6,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["20\\unit{km^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "résultat décimal 7 × 9 ÷ 2 = 31,5 mm²",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["31{,}5\\unit{mm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

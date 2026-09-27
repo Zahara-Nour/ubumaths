@@ -1,0 +1,437 @@
+{
+	"globalIndex": 431,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Unités de l'énoncé déclarées entre crochets (a[km] = ?[m]) : la conversion les écrivait « a km », lu comme le produit k·m (affiché « 7 k m » en italique). Facteurs de conversion vérifiés sur toutes les variations ; réponse attendue forcée en décimal exact (;d). Case numérique, unité écrite après la case.",
+	"template": {
+		"title": "Convertir dans une autre unité",
+		"description": "Unités de volume",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a[hm^3] = ?[m^3]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000000;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a[dam^3] = ?[m^3]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a[dm^3] = ?[m^3]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a[cm^3] = ?[m^3]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.000001;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "a[km^3] = ?[hm^3]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "a[hm^3] = ?[dam^3]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "a[m^3] = ?[dm^3]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "a[dm^3] = ?[cm^3]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression9}}$$",
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "a[cm^3] = ?[mm^3]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression10}}$$",
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "a[mm^3] = ?[cm^3]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression11}}$$",
+				"variables": [
+					{
+						"name": "expression11",
+						"expression": "a[cm^3] = ?[dm^3]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression12}}$$",
+				"variables": [
+					{
+						"name": "expression12",
+						"expression": "a[dm^3] = ?[m^3]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression13}}$$",
+				"variables": [
+					{
+						"name": "expression13",
+						"expression": "a[m^3] = ?[dam^3]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression14}}$$",
+				"variables": [
+					{
+						"name": "expression14",
+						"expression": "a[dam^3] = ?[hm^3]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression15}}$$",
+				"variables": [
+					{
+						"name": "expression15",
+						"expression": "a[hm^3] = ?[km^3]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Unités",
+		"subdomain": "Unités composées",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7 hm^3 = 7\\,000\\,000 m^3",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7\\,000\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "erreur d'un rang (hm^3→m^3)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["70\\,000\\,000"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "7 dam^3 = 7\\,000 m^3",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 dm^3 = 0{,}007 m^3",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 cm^3 = 0{,}000\\,007 m^3",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["0{,}000\\,007"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 km^3 = 7\\,000 hm^3",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 hm^3 = 7\\,000 dam^3",
+				"variationIndex": 5,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 m^3 = 7\\,000 dm^3",
+				"variationIndex": 6,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "erreur d'un rang (m^3→dm^3)",
+				"variationIndex": 6,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "7 dm^3 = 7\\,000 cm^3",
+				"variationIndex": 7,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 cm^3 = 7\\,000 mm^3",
+				"variationIndex": 8,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 mm^3 = 0{,}007 cm^3",
+				"variationIndex": 9,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 cm^3 = 0{,}007 dm^3",
+				"variationIndex": 10,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 dm^3 = 0{,}007 m^3",
+				"variationIndex": 11,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 m^3 = 0{,}007 dam^3",
+				"variationIndex": 12,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "erreur d'un rang (m^3→dam^3)",
+				"variationIndex": 12,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "7 dam^3 = 0{,}007 hm^3",
+				"variationIndex": 13,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 hm^3 = 0{,}007 km^3",
+				"variationIndex": 14,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,95 @@
+{
+	"globalIndex": 456,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne corrigée (« heures et minutes », pas de secondes), expression en double retirée, unités en \\unit.",
+	"template": {
+		"title": "Convertir des durées",
+		"description": "minutes en HMS (2)",
+		"variations": [
+			{
+				"statement": "Convertis en heures et minutes.\n\n${{eval:a*60+b}}~\\unit{min} = ?~\\unit{h}~?~\\unit{min}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					},
+					{
+						"name": "b",
+						"expression": "1..59"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{eval:a*60+b}}~\\unit{min} = {{eval:a*60}}~\\unit{min} + {{b}}~\\unit{min} = {{a}} \\times 60~\\unit{min} + {{b}}~\\unit{min} = {{a}}~\\unit{h}~{{b}}~\\unit{min}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					},
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Durées",
+		"subdomain": "Convertir",
+		"level": 8,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "176 min = 2 h 56 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "56"
+				},
+				"answers": ["2", "56"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "cases inversées",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "56"
+				},
+				"answers": ["56", "2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "1 h 116 min : pas converti jusqu'au bout",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "56"
+				},
+				"answers": ["1", "116"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "65 min = 1 h 5 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "5"
+				},
+				"answers": ["1", "5"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

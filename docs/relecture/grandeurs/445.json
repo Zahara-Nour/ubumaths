@@ -1,0 +1,364 @@
+{
+	"globalIndex": 445,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : « $c*d =$ » (astérisque brut) → « $c \\times d =$ » ; « A partir » → « À partir » ; espace double.",
+	"template": {
+		"title": "Calcul de l'aire d'un parallélogramme.",
+		"description": "À partir d'une description",
+		"shared": {
+			"statement": "Quelle est l'aire d'un **parallélogramme** de base ${{c}}$ et de hauteur ${{d}}$ ?\n\nL'aire du parallélogramme est $?$.",
+			"correction": {
+				"steps": [
+					"L'aire d'un parallélogramme de base ${{c}}$ et de hauteur ${{d}}$ est ${{c}} \\times {{d}} =$ {{solution:html}}."
+				]
+			}
+		},
+		"variations": [
+			{
+				"statement": "Quelle est l'aire d'un **parallélogramme** de base ${{c}}$ et de hauteur ${{d}}$ ?\n\nL'aire du parallélogramme est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d;[mm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **parallélogramme** de base ${{c}}$ et de hauteur ${{d}}$ ?\n\nL'aire du parallélogramme est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[cm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d;[cm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **parallélogramme** de base ${{c}}$ et de hauteur ${{d}}$ ?\n\nL'aire du parallélogramme est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d;[dm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **parallélogramme** de base ${{c}}$ et de hauteur ${{d}}$ ?\n\nL'aire du parallélogramme est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[m]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[m]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d;[m^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **parallélogramme** de base ${{c}}$ et de hauteur ${{d}}$ ?\n\nL'aire du parallélogramme est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dam]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dam]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d;[dam^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **parallélogramme** de base ${{c}}$ et de hauteur ${{d}}$ ?\n\nL'aire du parallélogramme est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[hm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[hm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d;[hm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **parallélogramme** de base ${{c}}$ et de hauteur ${{d}}$ ?\n\nL'aire du parallélogramme est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[km]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[km]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d;[km^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Grandeurs",
+		"domain": "Aires",
+		"subdomain": "Aire d'un parallélogramme",
+		"level": 1,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "v0 bonne réponse avec unité",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["88\\unit{mm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 bonne réponse avec unité",
+				"variationIndex": 1,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["88\\unit{cm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 bonne réponse avec unité",
+				"variationIndex": 2,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["88\\unit{dm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 bonne réponse avec unité",
+				"variationIndex": 3,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["88\\unit{m^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 bonne réponse avec unité",
+				"variationIndex": 4,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["88\\unit{dam^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5 bonne réponse avec unité",
+				"variationIndex": 5,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["88\\unit{hm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v6 bonne réponse avec unité",
+				"variationIndex": 6,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["88\\unit{km^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "unité de longueur",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["88\\unit{mm}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "demi-produit (formule du triangle)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["44\\unit{mm^2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "sans unité",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["88"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "unité d'aire équivalente",
+				"variationIndex": 1,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["8\\,800\\unit{mm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

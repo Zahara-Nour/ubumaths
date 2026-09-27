@@ -1,0 +1,379 @@
+{
+	"globalIndex": 443,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "« asociée » → « associée » ; « A partir » → « À partir » ; espaces multiples dans la correction.",
+	"template": {
+		"title": "Trouver la base d'un triangle quelconque.",
+		"description": "À partir de son aire et de la hauteur associée.",
+		"variations": [
+			{
+				"statement": "Quelle est la base d'un **triangle** de hauteur associée ${{c}}$ et d'aire ${{eval:c*d:2;[mm^2]}}$ ?\n\nLa base mesure $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La base d'un triangle de hauteur associée ${{c}}$ et d'aire ${{eval:c*d:2;[mm^2]}}$ est {{solution:html}} car $\\frac{{{c}} \\times \\textcolor{{{color:primary.2}}}{{{d}}}}{2} = {{eval:c*d:2;[mm^2]}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la base d'un **triangle** de hauteur associée ${{c}}$ et d'aire ${{eval:c*d:2;[cm^2]}}$ ?\n\nLa base mesure $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[cm]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La base d'un triangle de hauteur associée ${{c}}$ et d'aire ${{eval:c*d:2;[cm^2]}}$ est {{solution:html}} car $\\frac{{{c}} \\times \\textcolor{{{color:primary.2}}}{{{d}}}}{2} = {{eval:c*d:2;[cm^2]}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la base d'un **triangle** de hauteur associée ${{c}}$ et d'aire ${{eval:c*d:2;[dm^2]}}$ ?\n\nLa base mesure $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dm]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La base d'un triangle de hauteur associée ${{c}}$ et d'aire ${{eval:c*d:2;[dm^2]}}$ est {{solution:html}} car $\\frac{{{c}} \\times \\textcolor{{{color:primary.2}}}{{{d}}}}{2} = {{eval:c*d:2;[dm^2]}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la base d'un **triangle** de hauteur associée ${{c}}$ et d'aire ${{eval:c*d:2;[m^2]}}$ ?\n\nLa base mesure $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[m]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[m]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La base d'un triangle de hauteur associée ${{c}}$ et d'aire ${{eval:c*d:2;[m^2]}}$ est {{solution:html}} car $\\frac{{{c}} \\times \\textcolor{{{color:primary.2}}}{{{d}}}}{2} = {{eval:c*d:2;[m^2]}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la base d'un **triangle** de hauteur associée ${{c}}$ et d'aire ${{eval:c*d:2;[dam^2]}}$ ?\n\nLa base mesure $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dam]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dam]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La base d'un triangle de hauteur associée ${{c}}$ et d'aire ${{eval:c*d:2;[dam^2]}}$ est {{solution:html}} car $\\frac{{{c}} \\times \\textcolor{{{color:primary.2}}}{{{d}}}}{2} = {{eval:c*d:2;[dam^2]}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la base d'un **triangle** de hauteur associée ${{c}}$ et d'aire ${{eval:c*d:2;[hm^2]}}$ ?\n\nLa base mesure $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[hm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[hm]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La base d'un triangle de hauteur associée ${{c}}$ et d'aire ${{eval:c*d:2;[hm^2]}}$ est {{solution:html}} car $\\frac{{{c}} \\times \\textcolor{{{color:primary.2}}}{{{d}}}}{2} = {{eval:c*d:2;[hm^2]}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la base d'un **triangle** de hauteur associée ${{c}}$ et d'aire ${{eval:c*d:2;[km^2]}}$ ?\n\nLa base mesure $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[km]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[km]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La base d'un triangle de hauteur associée ${{c}}$ et d'aire ${{eval:c*d:2;[km^2]}}$ est {{solution:html}} car $\\frac{{{c}} \\times \\textcolor{{{color:primary.2}}}{{{d}}}}{2} = {{eval:c*d:2;[km^2]}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Aires",
+		"subdomain": "Aire d'un triangle quelconque",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0 bonne réponse avec unité",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["11\\unit{mm}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 bonne réponse avec unité",
+				"variationIndex": 1,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["11\\unit{cm}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 bonne réponse avec unité",
+				"variationIndex": 2,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["11\\unit{dm}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 bonne réponse avec unité",
+				"variationIndex": 3,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["11\\unit{m}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 bonne réponse avec unité",
+				"variationIndex": 4,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["11\\unit{dam}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5 bonne réponse avec unité",
+				"variationIndex": 5,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["11\\unit{hm}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v6 bonne réponse avec unité",
+				"variationIndex": 6,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["11\\unit{km}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli du facteur 2 (aire ÷ hauteur)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["5{,}5\\unit{mm}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "sans unité",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["11"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "unité équivalente",
+				"variationIndex": 1,
+				"variables": {
+					"a": "8",
+					"b": "11"
+				},
+				"answers": ["110\\unit{mm}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

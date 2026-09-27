@@ -1,0 +1,341 @@
+{
+	"globalIndex": 438,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Grandeurs déjà bien converties (case à unité, unité équivalente acceptée, sans unité refusé). Condition a>b ajoutée : la longueur est plus grande que la largeur (TinyMath tirait b≠a seulement). Double espace « $  est » retiré.",
+	"template": {
+		"title": "Calcul de l'aire d'un rectangle.",
+		"description": "A partir d'une description",
+		"shared": {
+			"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+			"correction": {
+				"steps": [
+					"L'aire d'un rectangle de longueur ${{c}}$ et de largeur ${{d}}$ est ${{c}} \\times {{d}} =$ {{solution:html}}."
+				]
+			},
+			"conditions": ["a>b"]
+		},
+		"variations": [
+			{
+				"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d;[mm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[cm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d;[cm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d;[dm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[m]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[m]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d;[m^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dam]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dam]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d;[dam^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[hm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[hm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d;[hm^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[km]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[km]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*d;[km^2]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Aires",
+		"subdomain": "Aire d'un rectangle",
+		"level": 1,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "8 mm × 5 mm = 40 mm²",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["40\\unit{mm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "périmètre 26 mm",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["26\\unit{mm}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "unité équivalente 0,4 cm²",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["0{,}4\\unit{cm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8 cm × 5 cm = 40 cm²",
+				"variationIndex": 1,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["40\\unit{cm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8 dm × 5 dm = 40 dm²",
+				"variationIndex": 2,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["40\\unit{dm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8 m × 5 m = 40 m²",
+				"variationIndex": 3,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["40\\unit{m^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8 dam × 5 dam = 40 dam²",
+				"variationIndex": 4,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["40\\unit{dam^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8 hm × 5 hm = 40 hm²",
+				"variationIndex": 5,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["40\\unit{hm^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8 km × 5 km = 40 km²",
+				"variationIndex": 6,
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"answers": ["40\\unit{km^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

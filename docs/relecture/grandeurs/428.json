@@ -1,0 +1,254 @@
+{
+	"globalIndex": 428,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Liste de grandeurs réparée : éléments « a km » (produit, a jamais substitué, génération en échec) remplacés par « {{a}}[km] » ; unités déclarées entre crochets (b[m], ?[m]) ; espace initiale de la consigne retirée.",
+	"template": {
+		"title": "Calculer avec des unités",
+		"variations": [
+			{
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{a}}[km]|{{a}}[hm]|{{a}}[dam]|{{a}}[dm]|{{a}}[cm]|{{a}}[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "b[m]"
+					},
+					{
+						"name": "expression1",
+						"expression": "c + d = ?[m]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c+d)/(1[m]);d}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{a}}[kg]|{{a}}[hg]|{{a}}[dag]|{{a}}[dg]|{{a}}[cg]|{{a}}[mg]"
+					},
+					{
+						"name": "d",
+						"expression": "b[g]"
+					},
+					{
+						"name": "expression2",
+						"expression": "c + d = ?[g]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c+d)/(1[g]);d}}"
+					}
+				]
+			},
+			{
+				"statement": "Complète.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{a}}[kL]|{{a}}[hL]|{{a}}[daL]|{{a}}[dL]|{{a}}[cL]|{{a}}[mL]"
+					},
+					{
+						"name": "d",
+						"expression": "b[L]"
+					},
+					{
+						"name": "expression3",
+						"expression": "c + d = ?[L]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c+d)/(1[L]);d}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Unités",
+		"subdomain": "Unités simples",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7 mm + 9 m = 9,007 m",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mm]"
+				},
+				"answers": ["9{,}007"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "addition sans conversion (16)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mm]"
+				},
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "9 hm + 2 m = 902 m",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "9[hm]"
+				},
+				"answers": ["902"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 mg + 9 g = 9,007 g",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mg]"
+				},
+				"answers": ["9{,}007"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "addition sans conversion (16)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mg]"
+				},
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "9 hg + 2 g = 902 g",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "9[hg]"
+				},
+				"answers": ["902"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 mL + 9 L = 9,007 L",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mL]"
+				},
+				"answers": ["9{,}007"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "addition sans conversion (16)",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mL]"
+				},
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "9 hL + 2 L = 902 L",
+				"variationIndex": 2,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "9[hL]"
+				},
+				"answers": ["902"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "k : 7 km + 9 m = 7 009 m",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[km]"
+				},
+				"answers": ["7\\,009"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "k sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[km]"
+				},
+				"answers": ["7009"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			}
+		]
+	}
+}

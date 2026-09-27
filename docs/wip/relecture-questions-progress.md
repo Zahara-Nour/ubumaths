@@ -196,9 +196,19 @@ Après relecture (`code-reviewer`) :
   nombre mixte refusé. Règle globale « signe libre sous un carré » mesurée puis écartée (#609).
 - Base : 475 templates, tous brouillons.
 
+## Lot Grandeurs — 41/45 IMPORTÉES (2026-09-27)
+
+- 41 relues et importées en brouillon (`docs/relecture/grandeurs/RAPPORT.md`) : 1 approuvée,
+  40 corrigées ; 4 choix des relecteurs validés par David.
+- Moteur : chantier `docs/wip/grandeurs-eval-progress.md` (#483 tidy unité écrite, #484 `{{eval}}`
+  avec grandeurs, #485 convertisseur, #486 affichage).
+- **Restent #462, #464, #466, #468** : réponse « 2 h 15 min » (lot 3 du chantier, mesure MathLive
+  au vrai clavier à faire d'abord).
+- Base : 516 templates, tous brouillons.
+
 ## Prochaine étape
 
-Lots restants (160 questions) : Grandeurs 45 (#439), Fonctions 39 (#609 : forme canonique),
-Proportionnalité 28, Puissances 21, Suites 15 (#629/#630), Racines 10, Probabilités 2.
-Défauts de conversion à corriger d'abord si les lots suivants les rencontrent : listes des rapports
-Décimaux et Calcul littéral (`$ers`, exclusions, produits collés, « Développer » par `{{eval}}`).
+Lot 3 Grandeurs (4 questions), puis lots restants (115 questions) : Fonctions 39 (#609 : forme
+canonique), Proportionnalité 28 (#507–#509 : grandeurs déjà convertibles), Puissances 21, Suites 15
+(#629/#630), Racines 10, Probabilités 2. Défauts de conversion : listes des rapports Décimaux,
+Calcul littéral et Grandeurs.

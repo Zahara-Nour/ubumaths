@@ -1,0 +1,118 @@
+{
+	"globalIndex": 470,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Fraction de la correction cassée (\\frac490 km 7 h : accolades triples mangées) → \\dfrac{ … }{ … } ; point final retiré du titre.",
+	"template": {
+		"title": "Calculer une vitesse moyenne",
+		"variations": [
+			{
+				"statement": "Quelle est la vitesse moyenne d'une voiture parcourant ${{eval:{b}*{c};[km]}}$ en ${{c}}$ ? (n'oublie pas l'unité)\n\nLa vitesse est de $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10 "
+					},
+					{
+						"name": "b",
+						"expression": "eval:(a)[km.h^{-1}]"
+					},
+					{
+						"name": "c1",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "c1[h]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La vitesse d'une voiture parcourant ${{eval:{b}*{c};[km]}}$ en ${{c}}$ est de $\\dfrac{ {{eval:{b}*{c};[km]}} }{ {{eval:c;[h]}} } = {{solution}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b;[km.h^{-1}]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Grandeurs",
+		"domain": "Vitesses",
+		"subdomain": "Calculer",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "70 km/h (écriture \\unit)",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "7",
+					"c1": "7"
+				},
+				"answers": ["70\\unit{km.h^{-1}}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "70 km/h tapé au clavier",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "7",
+					"c1": "7"
+				},
+				"answers": ["\\frac{70\\operatorname{\\mathrm{km}}}{h}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sans unité",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "7",
+					"c1": "7"
+				},
+				"answers": ["70"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "distance recopiée",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "7",
+					"c1": "7"
+				},
+				"answers": ["490\\unit{km}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "unité de longueur",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "7",
+					"c1": "7"
+				},
+				"answers": ["70\\unit{km}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

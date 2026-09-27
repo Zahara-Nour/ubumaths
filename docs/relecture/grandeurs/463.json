@@ -1,0 +1,124 @@
+{
+	"globalIndex": 463,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponses attendues cassées (« [_a+2_] », « if:… ») : heures et minutes calculées par variables q, r ; unités en \\unit ; correction réécrite.",
+	"template": {
+		"title": "Ajouter des durées (2)",
+		"description": "en HMS (2)",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n${{a}}~\\unit{h}~{{eval:c*10}}~\\unit{min} + {{b}}~\\unit{h}~{{eval:d*10}}~\\unit{min} = ?~\\unit{h}~?~\\unit{min}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "1..4"
+					},
+					{
+						"name": "c",
+						"expression": "1..5"
+					},
+					{
+						"name": "d",
+						"expression": "1..5!{{eval:6-c}}"
+					},
+					{
+						"name": "q",
+						"expression": "eval:a+b+floor(((c*10)+(d*10))/60)"
+					},
+					{
+						"name": "r",
+						"expression": "eval:(c*10)+(d*10)-60*floor(((c*10)+(d*10))/60)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:c+d>=6|$$\\begin{align}{{a}}~\\unit{h}~{{eval:c*10}}~\\unit{min} + {{b}}~\\unit{h}~{{eval:d*10}}~\\unit{min} &= {{a}}~\\unit{h} + {{b}}~\\unit{h} + {{eval:c*10}}~\\unit{min} + {{eval:d*10}}~\\unit{min}\\\\ &= {{eval:a+b}}~\\unit{h} + 60~\\unit{min} + {{r}}~\\unit{min}\\\\ &= {{eval:a+b}}~\\unit{h} + 1~\\unit{h} + {{r}}~\\unit{min}\\\\ &= {{q}}~\\unit{h}~{{r}}~\\unit{min}\\end{align}$$|${{a}}~\\unit{h}~{{eval:c*10}}~\\unit{min} + {{b}}~\\unit{h}~{{eval:d*10}}~\\unit{min} = {{q}}~\\unit{h}~{{r}}~\\unit{min}$}}"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{q}}"
+					},
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Durées",
+		"subdomain": "Calculer",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "3 h 50 min + 4 h 40 min = 8 h 30 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "4"
+				},
+				"answers": ["8", "30"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "90 min non convertis",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "4"
+				},
+				"answers": ["7", "90"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "retenue oubliée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "4"
+				},
+				"answers": ["7", "30"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "sans retenue : 5 h 40 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "1",
+					"c": "1",
+					"d": "3"
+				},
+				"answers": ["5", "40"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

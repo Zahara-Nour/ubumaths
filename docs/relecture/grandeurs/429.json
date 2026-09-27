@@ -1,0 +1,279 @@
+{
+	"globalIndex": 429,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Liste de grandeurs réparée ({{a}}[km] au lieu de « a km », génération en échec) ; case à unité (unit.expected) : l'élève choisit son unité, toute unité équivalente est juste, sans unité refusé ; consigne réécrite à l'impératif (« Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire. ») ; « = ? » ajouté pour placer la case.",
+	"template": {
+		"title": "Calculer avec des unités",
+		"description": "L'unité est choisie par l'utilisateur",
+		"shared": {
+			"statement": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$${{expression1}}=?$$"
+		},
+		"variations": [
+			{
+				"statement": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$${{expression1}}=?$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{a}}[km]|{{a}}[hm]|{{a}}[dam]|{{a}}[dm]|{{a}}[cm]|{{a}}[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "b[m]"
+					},
+					{
+						"name": "expression1",
+						"expression": "c + d"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c+d}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$${{expression1}}=?$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{a}}[kg]|{{a}}[hg]|{{a}}[dag]|{{a}}[dg]|{{a}}[cg]|{{a}}[mg]"
+					},
+					{
+						"name": "d",
+						"expression": "b[g]"
+					},
+					{
+						"name": "expression1",
+						"expression": "c + d"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c+d}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$${{expression1}}=?$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{a}}[kL]|{{a}}[hL]|{{a}}[daL]|{{a}}[dL]|{{a}}[cL]|{{a}}[mL]"
+					},
+					{
+						"name": "d",
+						"expression": "b[L]"
+					},
+					{
+						"name": "expression1",
+						"expression": "c + d"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c+d}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Unités",
+		"subdomain": "Unités simples",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "7 mm + 9 m = 9,007 m",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mm]"
+				},
+				"answers": ["9{,}007\\unit{m}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "en mm : 9 007 mm",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mm]"
+				},
+				"answers": ["9\\,007\\unit{mm}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sans unité",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mm]"
+				},
+				"answers": ["9{,}007"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "addition sans conversion",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mm]"
+				},
+				"answers": ["16\\unit{m}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "7 mg + 9 g = 9,007 g",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mg]"
+				},
+				"answers": ["9{,}007\\unit{g}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "en mg : 9 007 mg",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mg]"
+				},
+				"answers": ["9\\,007\\unit{mg}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sans unité",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mg]"
+				},
+				"answers": ["9{,}007"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "addition sans conversion",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mg]"
+				},
+				"answers": ["16\\unit{g}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "7 mL + 9 L = 9,007 L",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mL]"
+				},
+				"answers": ["9{,}007\\unit{L}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "en mL : 9 007 mL",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mL]"
+				},
+				"answers": ["9\\,007\\unit{mL}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sans unité",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mL]"
+				},
+				"answers": ["9{,}007"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "addition sans conversion",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mL]"
+				},
+				"answers": ["16\\unit{L}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

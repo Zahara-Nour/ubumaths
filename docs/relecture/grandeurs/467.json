@@ -1,0 +1,113 @@
+{
+	"globalIndex": 467,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Unités de la correction en \\unit (« \\,min » rendait « min » en italique), align en $$…$$, phrase de conclusion ajoutée. Réponse en minutes avec unité (case à unité).",
+	"template": {
+		"title": "Soustraire des durées",
+		"description": "en HMS",
+		"variations": [
+			{
+				"statement": "J'ai commencé à regarder un épisode d'une série à ${{eval:(a[h]+b[min]);hms}}$, et je l'ai terminé à ${{eval:(a[h]+b[min]) + c[min];hms}}$. Quelle était la durée de cet épisode ? (n'oublie pas l'unité)\n\n$?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "1..59"
+					},
+					{
+						"name": "c",
+						"expression": "1..59"
+					}
+				],
+				"correction": {
+					"feedback": {
+						"correct": "La durée de l'épisode est de {{answer}}."
+					},
+					"steps": [
+						"{{if:{{b}}+{{c}}<60|${{eval:(a[h]+b[min]);hms}} + {{solution}} = {{eval:(a[h]+b[min]) + c[min];hms}}$|$$\\begin{align}{{eval:(a[h]+b[min]) + c[min];hms}} &= {{eval:(a[h]+b[min]);hms}} + {{eval:60-b}}~\\unit{min} + {{eval:c+b-60}}~\\unit{min}\\\\                  &= {{eval:(a[h]+b[min]);hms}} + {{solution}}\\end{align}$$}}",
+						"L'épisode a duré ${{solution}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c[min]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"zeros": "off",
+				"unit": "off"
+			}
+		},
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Durées",
+		"subdomain": "Calculer",
+		"level": 7,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "59 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "56",
+					"c": "59"
+				},
+				"answers": ["59\\unit{min}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sans unité",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "56",
+					"c": "59"
+				},
+				"answers": ["59"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "60 min au lieu de 59",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "56",
+					"c": "59"
+				},
+				"answers": ["60\\unit{min}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "sans passage à l'heure : 32 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "5",
+					"c": "32"
+				},
+				"answers": ["32\\unit{min}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

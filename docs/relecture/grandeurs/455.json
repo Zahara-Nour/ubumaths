@@ -1,0 +1,75 @@
+{
+	"globalIndex": 455,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne « en heures minutes secondes » alors qu'il n'y a pas de secondes → « Convertis en heures et minutes. » ; ligne redondante « $$170min$$ » supprimée ; unités propres dans l'énoncé et la correction. Deux cases numériques (h, min).",
+	"template": {
+		"title": "Convertir des durées",
+		"description": "minutes en HMS",
+		"variations": [
+			{
+				"statement": "Convertis en heures et minutes.\n\n${{eval:a*60+b}}~\\unit{min} = ?~\\unit{h}\\,?~\\unit{min}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					},
+					{
+						"name": "b1",
+						"expression": "1..5"
+					},
+					{
+						"name": "b",
+						"expression": "eval:b1*10"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{eval:a*60+b}}~\\unit{min} = {{a}} \\times 60~\\unit{min} + {{b}}~\\unit{min} = {{a}}~\\unit{h}\\,{{b}}~\\unit{min}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					},
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Durées",
+		"subdomain": "Convertir",
+		"level": 7,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "bonne conversion",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b1": "5"
+				},
+				"answers": ["2", "50"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "division décimale 170/100",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b1": "5"
+				},
+				"answers": ["1", "70"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

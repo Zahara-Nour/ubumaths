@@ -1,0 +1,215 @@
+{
+	"globalIndex": 448,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Énoncé cassé (marqueur brut « <<expr:expressionN>> », unités lues comme produits « d m^3 », « m L ») : chaque variation réécrite en « $a~\\unit{m^3} = ?~\\unit{L}$ », variables expressionN supprimées. Case numérique, unité écrite après la case.",
+	"template": {
+		"title": "Convertir dans une autre unité",
+		"description": "Unités de volume et de contenance",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{m^3} = ?~\\unit{L}$",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{L} = ?~\\unit{m^3}$",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{dm^3} = ?~\\unit{L}$",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{L} = ?~\\unit{dm^3}$",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{cm^3} = ?~\\unit{mL}$",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{mL} = ?~\\unit{cm^3}$",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{cm^3} = ?~\\unit{L}$",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				]
+			},
+			{
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{L} = ?~\\unit{cm^3}$",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Volumes",
+		"subdomain": "conversions",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0 bonne conversion",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 bonne conversion",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 bonne conversion",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 bonne conversion",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 bonne conversion",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5 bonne conversion",
+				"variationIndex": 5,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v6 bonne conversion",
+				"variationIndex": 6,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v7 bonne conversion",
+				"variationIndex": 7,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sens de conversion inversé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "facteur 100 au lieu de 1000",
+				"variationIndex": 7,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["700"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "7000 sans espace des milliers",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["7000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			}
+		]
+	}
+}
