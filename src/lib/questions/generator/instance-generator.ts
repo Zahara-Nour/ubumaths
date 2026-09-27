@@ -363,6 +363,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					...((blank.rulesSuffice ?? resolvedVariation.blankDefaults?.rulesSuffice) && {
 						rulesSuffice: true
 					}),
+					...((blank.acceptDecimal ?? resolvedVariation.blankDefaults?.acceptDecimal) && {
+						acceptDecimal: true
+					}),
 					pool: blank.pool,
 					...(expressionName !== undefined && { expressionName })
 				};

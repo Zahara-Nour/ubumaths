@@ -49,6 +49,7 @@
 		sharedBlankRequiredFormAcceptable: string;
 		sharedBlankUnitExpected: boolean;
 		sharedBlankUnitRequired: string;
+		sharedBlankAcceptDecimal: boolean;
 		sharedValidationRulesJson: string;
 		sharedAnswerFormatsJson: string;
 		sharedVariableHelpOpen: boolean;
@@ -72,6 +73,7 @@
 		sharedBlankRequiredFormAcceptable = $bindable(),
 		sharedBlankUnitExpected = $bindable(),
 		sharedBlankUnitRequired = $bindable(),
+		sharedBlankAcceptDecimal = $bindable(),
 		sharedValidationRulesJson = $bindable(),
 		sharedAnswerFormatsJson = $bindable(),
 		sharedVariableHelpOpen = $bindable()
@@ -305,6 +307,11 @@
 									/>
 								{/if}
 							</div>
+							<!-- Attendu 1/2 : 0,5 est juste (décimal exact, même valeur) -->
+							<MyCheckbox
+								bind:checked={sharedBlankAcceptDecimal}
+								label="Accepter le décimal exact"
+							/>
 						</Collapsible.Content>
 					</Collapsible.Root>
 

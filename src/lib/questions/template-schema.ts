@@ -289,6 +289,7 @@ export const blankDefaultsSchema = z.object({
 	requiredForm: requiredFormSchema.optional(),
 	removeSpaces: z.boolean().optional(),
 	rulesSuffice: z.boolean().optional(),
+	acceptDecimal: z.boolean().optional(),
 	unit: unitSchema.optional()
 });
 
@@ -301,6 +302,7 @@ export const blankSchema = z.object({
 	removeSpaces: z.boolean().optional(),
 	validationRules: z.array(validationRuleSchema).optional(),
 	rulesSuffice: z.boolean().optional(),
+	acceptDecimal: z.boolean().optional(),
 	unit: unitSchema.optional()
 });
 
@@ -518,6 +520,7 @@ const blankDefaultsStrictZ = z
 		requiredForm: requiredFormStrictZ.optional(),
 		removeSpaces: z.boolean().optional(),
 		rulesSuffice: z.boolean().optional(),
+		acceptDecimal: z.boolean().optional(),
 		unit: unitStrictZ.optional()
 	})
 	.strict();
@@ -532,6 +535,7 @@ const blankStrictZ = z
 		removeSpaces: z.boolean().optional(),
 		validationRules: z.array(validationRuleStrictZ).optional(),
 		rulesSuffice: z.boolean().optional(),
+		acceptDecimal: z.boolean().optional(),
 		unit: unitStrictZ.optional()
 	})
 	.strict();
