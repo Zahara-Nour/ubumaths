@@ -8,6 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { evaluateWithModifiers, evaluateAstWithModifiers } from '../evaluate-with-modifiers';
 import { parseLatex } from '$lib/mathAST/parser';
+import { parseCustom } from '$lib/mathAST/parser/custom';
 
 // =============================================================================
 // Basic Evaluation Tests
@@ -315,5 +316,47 @@ describe('evaluateWithModifiers - exact aussi pour ln, exponentielle, π ; `;d` 
 
 	it('π reste exact', () => {
 		expect(evaluateWithModifiers('12\\pi', {})).toBe('12 \\pi');
+	});
+});
+
+// Calcul littéral (comme TinyMath) : s'il reste des lettres, le résultat est l'expression
+// RÉDUITE par `tidy` — jamais développée (décision de David, lot Calcul littéral).
+describe('evaluateAstWithModifiers - expression avec des lettres : réduite par tidy', () => {
+	// Lettres tirées : seules celles-ci ouvrent le calcul littéral
+	const letters = new Set(['a', 'b', 'x', 'y']);
+	const evalCustom = (expr: string, modifiers = {}) =>
+		evaluateAstWithModifiers(parseCustom(expr), modifiers, letters);
+
+	it('une lettre qui ne vient pas d’un tirage reste une erreur (faute de frappe)', () => {
+		expect(() => evaluateAstWithModifiers(parseCustom('invalid'), {}, letters)).toThrow();
+		expect(() => evaluateAstWithModifiers(parseCustom('3*z'), {}, letters)).toThrow();
+	});
+
+	it.each([
+		['3*a', '3a'],
+		['a*3', '3a'],
+		['2*3*x', '6x'],
+		['3*x+4*x', '7x'],
+		['3a+2b+5a', '8a+2b'],
+		['x*x*3', '3x^2']
+	])('%s → %s', (expr, expected) => {
+		expect(evalCustom(expr)).toBe(expected);
+	});
+
+	it('pas de développement : 5(2+3x) reste un produit', () => {
+		expect(evalCustom('5*(2+3x)')).not.toContain('15');
+	});
+
+	it('`;+` : terme signé', () => {
+		expect(evalCustom('3*x', { addPositive: true })).toBe('+3x');
+		expect(evalCustom('-3*x', { addPositive: true })).toBe('-3x');
+	});
+
+	it('`;()` : terme négatif entre parenthèses', () => {
+		expect(evalCustom('-3*x', { bracketNegative: true })).toBe('(-3x)');
+	});
+
+	it('un calcul numérique ne change pas', () => {
+		expect(evalCustom('90/70')).toBe('\\dfrac{9}{7}');
 	});
 });

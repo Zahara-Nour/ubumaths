@@ -25,7 +25,12 @@ import { normalizeExpression } from '../parser/expression-normalizer';
 import { generateRandomNumber } from './random-generator';
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { parseLatex } from '$lib/mathAST/parser';
-import { substitute, evaluateAstWithModifiers, evalResultToCustom } from '$lib/mathAST/eval';
+import {
+	substitute,
+	evaluateAstWithModifiers,
+	evalResultToCustom,
+	getVariables
+} from '$lib/mathAST/eval';
 import type { BindingValue } from '$lib/mathAST/eval';
 import { toFrenchDecimal } from '$lib/utils/french-math';
 
@@ -76,6 +81,38 @@ function toBinding(value: string): BindingValue {
 		return parseCustom(value);
 	} catch {
 		return value;
+	}
+}
+
+/**
+ * Lettres venues des VARIABLES CITÉES par ce calcul : `a` vaut « x » (tirée dans `$l{x;y;z}`),
+ * ou `expression1` vaut « x*3*4 ». Le calcul littéral n'est ouvert que pour elles : une lettre
+ * tapée dans le calcul lui-même (`{{eval:2*x}}` au lieu de `{{p}}`) reste une erreur. `e` et
+ * `i` (constantes) sont exclues.
+ */
+function drawnLetters(resolved: ResolvedVariable[], referenced: ReadonlySet<string>): Set<string> {
+	const letters = new Set<string>();
+	for (const variable of resolved) {
+		if (!referenced.has(variable.name)) continue;
+		for (const letter of lettersOf(variable.value)) {
+			if (letter !== 'e' && letter !== 'i') letters.add(letter);
+		}
+	}
+	return letters;
+}
+
+/** Lettres (variables mathématiques) d'une valeur : `x*3*4` → x ; `\\dfrac{x}{2}` → x */
+function lettersOf(value: string): Set<string> {
+	const text = value.trim();
+	if (/^[a-zA-Z]$/.test(text)) return new Set([text]);
+	if (!/[a-zA-Z]/.test(text)) return new Set();
+	// Un mot de plusieurs lettres (unité `cm`, `mm`, texte) : pas du calcul littéral
+	const withoutFunctions = text.replace(/\\?(?:sqrt|ln|exp|log|sin|cos|tan|abs)\b/g, '');
+	if (/[a-zA-Z]{2,}/.test(withoutFunctions.replace(/\\[a-zA-Z]+/g, ''))) return new Set();
+	try {
+		return getVariables(text.includes('\\') ? parseLatex(text) : parseCustom(text));
+	} catch {
+		return new Set();
 	}
 }
 
@@ -359,6 +396,7 @@ export function resolveExpression(
 
 			// Resolve {{var}} tokens in the expression string before AST parsing
 			let exprToParse = parsed.expression;
+			const referenced = new Set<string>();
 			const varTokensInEval = tokenize(parsed.expression).filter((t) => t.type === 'variable');
 			if (varTokensInEval.length > 0) {
 				for (let j = varTokensInEval.length - 1; j >= 0; j--) {
@@ -370,6 +408,7 @@ export function resolveExpression(
 					if (!resolvedVar) {
 						throw new Error(`Variable "${varName}" not found in eval expression`);
 					}
+					referenced.add(varName);
 
 					// Wrap the substituted value in `{}` so it parses as a single
 					// grouped operand. Without this, a negative value loses its
@@ -392,6 +431,7 @@ export function resolveExpression(
 				.sort((a, b) => b.name.length - a.name.length);
 			for (const rv of multiCharVars) {
 				const regex = new RegExp(`\\b${rv.name}\\b`, 'g');
+				if (regex.test(exprToParse)) referenced.add(rv.name);
 				exprToParse = exprToParse.replace(regex, () => braceWrap(rv.value));
 			}
 
@@ -410,8 +450,13 @@ export function resolveExpression(
 			}
 
 			// Substitute variables in AST and evaluate
+			for (const name of getVariables(ast)) referenced.add(name);
 			const substituted = substitute(ast, bindings);
-			const evaluatedValue = evaluateAstWithModifiers(substituted, parsed.modifiers);
+			const evaluatedValue = evaluateAstWithModifiers(
+				substituted,
+				parsed.modifiers,
+				drawnLetters(alreadyResolved, referenced)
+			);
 			result = result.slice(0, token.start) + String(evaluatedValue) + result.slice(token.end);
 		} catch (error) {
 			throw new Error(
@@ -732,6 +777,7 @@ function evaluateSingleEval(evalToken: string, alreadyResolved: ResolvedVariable
 	if (!parsed) return null;
 
 	let exprToParse = parsed.expression;
+	const referenced = new Set<string>();
 
 	// Resolve {{var}} tokens in the expression
 	const varTokensInEval = tokenize(parsed.expression).filter((t) => t.type === 'variable');
@@ -742,6 +788,7 @@ function evaluateSingleEval(evalToken: string, alreadyResolved: ResolvedVariable
 
 		const resolvedVar = alreadyResolved.find((v) => v.name === varName);
 		if (!resolvedVar) return null; // Can't resolve yet — leave for Stage 3
+		referenced.add(varName);
 
 		// Wrap in `{}` to preserve grouping for negative values — see Stage 3.
 		exprToParse =
@@ -756,6 +803,7 @@ function evaluateSingleEval(evalToken: string, alreadyResolved: ResolvedVariable
 		.sort((a, b) => b.name.length - a.name.length);
 	for (const rv of multiCharVars) {
 		const regex = new RegExp(`\\b${rv.name}\\b`, 'g');
+		if (regex.test(exprToParse)) referenced.add(rv.name);
 		exprToParse = exprToParse.replace(regex, () => braceWrap(rv.value));
 	}
 
@@ -771,7 +819,12 @@ function evaluateSingleEval(evalToken: string, alreadyResolved: ResolvedVariable
 		}
 	}
 
+	for (const name of getVariables(ast)) referenced.add(name);
 	const substituted = substitute(ast, bindings);
-	const evaluatedValue = evaluateAstWithModifiers(substituted, parsed.modifiers);
+	const evaluatedValue = evaluateAstWithModifiers(
+		substituted,
+		parsed.modifiers,
+		drawnLetters(alreadyResolved, referenced)
+	);
 	return String(evaluatedValue);
 }

@@ -1324,3 +1324,64 @@ describe('resolveVariables — valeur exacte réutilisée', () => {
 		expect(draws.has('3')).toBe(true);
 	});
 });
+
+// Calcul littéral : seules les lettres tirées par les variables de CE calcul l'ouvrent.
+describe('resolveVariables — calcul littéral', () => {
+	const valueOf = (variables: Variable[], name: string) =>
+		resolveVariables(variables).find((v) => v.name === name)!.value;
+
+	it('coefficient × lettre tirée : 3x', () => {
+		const vars: Variable[] = [
+			{ name: 'a', expression: 'x|x' },
+			{ name: 'b', expression: '3' },
+			{ name: 'r', expression: '{{eval:b*a}}' }
+		];
+		expect(valueOf(vars, 'r')).toBe('3x');
+	});
+
+	it('pas de développement : 5(3x+2)', () => {
+		const vars: Variable[] = [
+			{ name: 'a', expression: 'x|x' },
+			{ name: 'r', expression: '{{eval:5*(2+3a)}}' }
+		];
+		expect(valueOf(vars, 'r')).toBe('5(3x+2)');
+	});
+
+	it('lettre non citée par une variable du calcul : erreur (faute de frappe)', () => {
+		const vars: Variable[] = [
+			{ name: 'p', expression: 'y|y' },
+			{ name: 'r', expression: '{{eval:2*y}}' }
+		];
+		expect(() => resolveVariables(vars)).toThrow();
+	});
+
+	it('dénominateur nul : erreur', () => {
+		const vars: Variable[] = [
+			{ name: 'a', expression: 'x|x' },
+			{ name: 'b', expression: '3' },
+			{ name: 'r', expression: '{{eval:a/(b-3)}}' }
+		];
+		expect(() => resolveVariables(vars)).toThrow();
+	});
+});
+
+describe('resolveVariables — calcul littéral par une expression', () => {
+	it('{{eval:{{e1}}}} avec e1 = x*3*4 : 12x', () => {
+		const vars: Variable[] = [
+			{ name: 'a', expression: 'x|x' },
+			{ name: 'e1', expression: 'a*3*4' },
+			{ name: 'r', expression: '{{eval:{{e1}}}}' }
+		];
+		expect(resolveVariables(vars).find((v) => v.name === 'r')!.value).toBe('12x');
+	});
+});
+
+describe('resolveVariables — une unité n’est pas une lettre', () => {
+	it('7 mm + 9 m : erreur, pas « 7m^2+9m »', () => {
+		const vars: Variable[] = [
+			{ name: 'c', expression: 'text:7 mm' },
+			{ name: 'r', expression: '{{eval:{{c}}+9}}' }
+		];
+		expect(() => resolveVariables(vars)).toThrow();
+	});
+});
