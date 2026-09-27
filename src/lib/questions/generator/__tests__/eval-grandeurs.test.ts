@@ -165,3 +165,19 @@ describe('non-régression : sans unité, rien ne change', () => {
 		expect(evalOf(expression)).toBe(expected);
 	});
 });
+
+// L'écriture de ;hms est une juxtaposition, lue comme un PRODUIT : réutilisée dans un
+// calcul, elle donnerait 2 h × 15 min en silence. Un produit de durées est refusé.
+describe('garde-fou : pas de produit de deux durées', () => {
+	it.each([
+		['{2[h]}{15[min]}', /produit de durées/i],
+		['2[h]*15[min]', /produit de durées/i],
+		['{2[h]}{15[min]};[min]', /produit de durées/i]
+	])('{{eval:%s}} → erreur', (expression, message) => {
+		expect(() => evalOf(expression)).toThrow(message);
+	});
+
+	it('une durée multipliée par un nombre reste permise : 2*15[min] → 30[min]', () => {
+		expect(evalOf('2*15[min]')).toBe('30[min]');
+	});
+});

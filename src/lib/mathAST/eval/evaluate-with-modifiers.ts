@@ -279,11 +279,39 @@ function hmsWriting(ast: MathNode): string {
 	return written.length === 1 ? written[0] : written.map((part) => `{${part}}`).join('');
 }
 
+/** Une grandeur de durée (`15[min]`, `{2[h]}`) */
+function isDuration(node: MathNode): boolean {
+	const inner = node.type === 'delimiter' ? node.content : node;
+	if (inner.type !== 'unit') return false;
+	const conversion = exactConversion(inner.unit.original ?? '');
+	return (
+		conversion !== null && conversion.components.size === 1 && conversion.components.get('s') === 1
+	);
+}
+
+/**
+ * Un produit de deux durées (`2[h]*15[min]`, ou `{2[h]}{15[min]}` écrit par `;hms`) : aucun
+ * exercice ne le calcule, et c'est la lecture d'une durée composée réutilisée — refusé.
+ */
+function multipliesDurations(ast: MathNode): boolean {
+	let found = false;
+	mapNode(ast, (n) => {
+		if (n.type === 'multiplication' && isDuration(n.left) && isDuration(n.right)) found = true;
+		return n;
+	});
+	return found;
+}
+
 /**
  * Un calcul avec des grandeurs : `tidy` (unité écrite d'abord) garde l'unité ; un
  * quotient de même dimension redevient un nombre (`3[h]/1[min]` → 180).
  */
 function evaluateQuantity(ast: MathNode, modifiers: EvalModifiers): string {
+	if (multipliesDurations(ast)) {
+		throw new Error(
+			`Produit de durées : ${toCustom(ast)} (une durée écrite par ;hms ne se réutilise pas dans un calcul)`
+		);
+	}
 	if (modifiers.hms) return hmsWriting(ast);
 	if (modifiers.unit !== undefined)
 		return withSignModifiers(expressedIn(ast, modifiers.unit), modifiers);
