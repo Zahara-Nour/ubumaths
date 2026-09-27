@@ -333,9 +333,21 @@ describe('generateStableQuestionHash — jumelles distinctes', () => {
 		expect(hashOf(439)).not.toBe(hashOf(435));
 	});
 
-	it('les vrais doublons gardent la même signature (rejet « doublon de »)', () => {
-		expect(hashOf(136)).toBe(hashOf(74));
-		expect(hashOf(630)).toBe(hashOf(629));
+	it('une copie par domaine : chaque exemplaire a sa signature', () => {
+		for (const [original, copy] of [
+			[74, 136],
+			[75, 137],
+			[78, 140],
+			[79, 141],
+			[80, 142],
+			[81, 143],
+			[82, 144],
+			[84, 146],
+			[85, 147],
+			[629, 630]
+		]) {
+			expect(hashOf(copy)).not.toBe(hashOf(original));
+		}
 	});
 
 	it('toutes les autres signatures sont inchangées (suivi en base indexé dessus)', () => {
@@ -346,7 +358,7 @@ describe('generateStableQuestionHash — jumelles distinctes', () => {
 			return generateStableQuestionHash(rest);
 		};
 		for (let i = 0; i < questions.length; i++) {
-			if (i === 360 || i === 439) continue;
+			if ([360, 439, 136, 137, 140, 141, 142, 143, 144, 146, 147, 630].includes(i)) continue;
 			expect(hashOf(i)).toBe(withoutIndex(i));
 		}
 	});

@@ -25,12 +25,13 @@ interface QuestionBase {
 }
 
 /**
- * Questions TinyMath distinctes dont la signature d'origine est celle d'une autre :
- * #360 (≠ #356 : autre liste de fractions, CM2) et #439 (≠ #435 : consigne et correction).
- * Les autres paires confondues sont de vrais doublons (74/136, 629/630…) ou ne diffèrent
- * que par la correction (78/140, 80/142) : elles gardent la même signature.
+ * Questions TinyMath dont la signature d'origine est celle d'une autre, et qu'on garde :
+ * - #360 (≠ #356 : autre liste de fractions, CM2) et #439 (≠ #435 : consigne, correction) ;
+ * - la même question rangée dans deux domaines, une copie par domaine (décision de David) :
+ *   « Multiplier » #136, #137, #140-#144, #146, #147 (« Additionner » #74-#85 : corrections
+ *   additives d'un côté, multiplicatives de l'autre) ; #630 (niveau suivant de #629, Suites).
  */
-const DISTINCT_TWINS = new Set([360, 439]);
+const DISTINCT_TWINS = new Set([360, 439, 136, 137, 140, 141, 142, 143, 144, 146, 147, 630]);
 
 /**
  * Generate a stable SHA-256 hash for a question
