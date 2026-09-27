@@ -911,6 +911,7 @@ export function validateBlanks(
 	const blankFeedback: (string | undefined)[] = new Array(blanks.length).fill(undefined);
 	let hasConstraintResults = false;
 	let emptyCount = 0;
+	let anyIncorrectValue = false;
 
 	for (let i = 0; i < blanks.length; i++) {
 		const result = validateSingleBlank(userAnswers[i], blanks[i], userAnswersLatex?.[i], instance);
@@ -923,6 +924,9 @@ export function validateBlanks(
 			incorrectIndexes.push(i + 1);
 			if (blanks.length === 1) singleBlankFeedback = result.feedback;
 			blankFeedback[i] = result.feedback;
+			// Case fausse (valeur) : sans statut propre, le statut global restait celui
+			// des cases justes (« correct ») alors que isCorrect valait false
+			if (result.status === undefined) anyIncorrectValue = true;
 		}
 
 		// Aggregate worst status (priority: bad_form > unoptimal_form > correct)
@@ -973,6 +977,7 @@ export function validateBlanks(
 		result.status = worstStatus;
 		result.constraintViolations = allViolations;
 	}
+	if (anyIncorrectValue && result.status !== undefined) result.status = 'incorrect';
 
 	if (!allCorrect) {
 		if (emptyCount > 0 && blanks.length > 1) {
