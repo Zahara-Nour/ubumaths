@@ -95,3 +95,25 @@ describe('relecture de code : cas limites', () => {
 		expect(formOk('9\\div(-3)', '9 / (-3)')).toBe(true);
 	});
 });
+
+// Somme de 3 termes ou plus : l'ordre des termes ne compte pas (décision de David, #239/#241).
+// Le motif `5 + 8/10 + 1/100` était lu `(5 + 8/10) + 1/100` : seules les permutations d'un
+// même niveau étaient essayées.
+describe('motif : somme sans ordre', () => {
+	it.each([
+		['5+\\frac{8}{10}+\\frac{1}{100}', true],
+		['\\frac{1}{100}+5+\\frac{8}{10}', true],
+		['\\frac{8}{10}+\\frac{1}{100}+5', true],
+		['5+\\frac{4}{5}+\\frac{1}{100}', false],
+		['5+\\frac{81}{100}', false],
+		['5{,}81', false]
+	])('5 + 8/10 + 1/100 — %s', (answer, ok) => {
+		expect(formOk(answer, '5 + 8/10 + 1/100')).toBe(ok);
+	});
+
+	it('millièmes, espace des milliers : 4/1\\,000', () => {
+		expect(
+			formOk('\\frac{4}{1\\,000}+5+\\frac{8}{10}+\\frac{1}{100}', '5 + 8/10 + 1/100 + 4/1000')
+		).toBe(true);
+	});
+});
