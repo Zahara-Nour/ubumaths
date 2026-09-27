@@ -20,12 +20,16 @@ import {
 	isSuperscript,
 	isNumber,
 	isOpposite,
+	isSubtraction,
+	add,
+	opposite,
 	flattenProductShallow,
 	stripUnnecessaryBrackets,
 	mapNode
 } from '$lib/mathAST';
 import { P } from '$lib/mathAST/pattern/builder';
-import { matches } from '$lib/mathAST/pattern/match';
+import { matches, tryMatch } from '$lib/mathAST/pattern/match';
+import { isMathNodeBinding } from '$lib/mathAST/pattern/types';
 
 // =============================================================================
 // CONSTANTS
@@ -250,6 +254,138 @@ function asUnorderedSums(pattern: unknown): unknown {
 }
 
 /**
+ * Opposé d'un terme, rangé comme le parseur range `-3y` (`(−3)·y`) : dans un produit, le
+ * signe va sur le premier facteur. Sinon `a − 3y` donnerait `a + (−(3y))`, que le motif
+ * `u*T` ne verrait pas.
+ */
+function negatedTerm(term: MathNode): MathNode {
+	if (isMultiplication(term)) return { ...term, left: negatedTerm(term.left) };
+	return opposite(term);
+}
+
+/**
+ * Soustraction lue comme somme signée : `a − b` → `a + (−b)`, à tous les niveaux.
+ * Côté motif, rien à faire : un `u - v` apparie déjà `a + (−b)` et `(−b) + a` (match.ts).
+ */
+function asSignedSums(node: MathNode): MathNode {
+	return mapNode(node, (n) => (isSubtraction(n) ? add(n.left, negatedTerm(n.right)) : n));
+}
+
+/** Nombre d'apparitions de chaque joker dans le motif */
+function wildcardCounts(pattern: unknown, counts = new Map<string, number>()): Map<string, number> {
+	if (Array.isArray(pattern)) pattern.forEach((p) => wildcardCounts(p, counts));
+	else if (pattern && typeof pattern === 'object') {
+		const node = pattern as Record<string, unknown>;
+		if (node.type === 'wildcard') {
+			const name = String(node.name);
+			counts.set(name, (counts.get(name) ?? 0) + 1);
+		}
+		Object.values(node).forEach((value) => wildcardCounts(value, counts));
+	}
+	return counts;
+}
+
+/** Le motif contient-il une séquence (`__reste`) ? Alors pas de forme implicite. */
+function hasSequence(pattern: unknown): boolean {
+	if (Array.isArray(pattern)) return pattern.some(hasSequence);
+	if (!pattern || typeof pattern !== 'object') return false;
+	const node = pattern as Record<string, unknown>;
+	if (node.type === 'sequence' || node.type === 'optional-sequence') return true;
+	return Object.values(node).some(hasSequence);
+}
+
+/** Le motif fixe-t-il au moins un élément (`$x`, `2`…) ? `(a + b)` seul, non : il prendrait toute somme. */
+function hasLiteral(pattern: unknown): boolean {
+	if (Array.isArray(pattern)) return pattern.some(hasLiteral);
+	if (!pattern || typeof pattern !== 'object') return false;
+	const node = pattern as Record<string, unknown>;
+	if (node.type === 'literal') return true;
+	return Object.values(node).some(hasLiteral);
+}
+
+const MAX_IMPLICIT_VARIANTS = 64;
+
+/** Entier ou décimal non nul (le zéro ajouté, `(x+0)^2`, n'est pas une forme réduite) */
+function isNonZeroNumber(node: MathNode): boolean {
+	return isNumber(node) && Number(node.value.replace(',', '.')) !== 0;
+}
+
+/**
+ * Nombre simple : entier, décimal ou fraction de deux entiers, avec un signe éventuel.
+ * Pas de `x`, pas de calcul non effectué, pas de `(-3)` entre parenthèses.
+ */
+function isSimpleNumber(node: MathNode): boolean {
+	const unsigned = isOpposite(node) ? node.operand : node;
+	if (isNonZeroNumber(unsigned)) return true;
+	return (
+		isDivision(unsigned) &&
+		isNonZeroNumber(unsigned.numerator) &&
+		isNumber(unsigned.denominator) &&
+		isNonZeroNumber(unsigned.denominator)
+	);
+}
+
+/**
+ * Élément neutre implicite : dans `u*T`, un joker libre (sans contrainte, écrit une seule
+ * fois) peut valoir 1 (`T`) ou −1 (`−T`) ; dans `T + w`, il peut valoir 0 (`T`). Seulement
+ * devant une STRUCTURE `T` (opération sans séquence, avec au moins un élément fixé) :
+ * `u*v`, `u*7`, `k*(__reste)` ou `(a + b)*c` n'acceptent pas n'importe quoi seul.
+ */
+function withImplicitNeutrals(pattern: unknown): unknown[] {
+	const counts = wildcardCounts(pattern);
+	const isFree = (p: unknown): boolean => {
+		const node = p as Record<string, unknown>;
+		return (
+			node?.type === 'wildcard' &&
+			node.constraint === undefined &&
+			counts.get(String(node.name)) === 1
+		);
+	};
+	const isStructure = (p: unknown): boolean =>
+		!['wildcard', 'literal'].includes(String((p as Record<string, unknown>)?.type)) &&
+		!hasSequence(p) &&
+		hasLiteral(p);
+
+	const variants = (p: unknown): unknown[] => {
+		if (Array.isArray(p)) {
+			return p.reduce<unknown[][]>(
+				(acc, item) =>
+					acc
+						.flatMap((prefix) => variants(item).map((v) => [...prefix, v]))
+						.slice(0, MAX_IMPLICIT_VARIANTS),
+				[[]]
+			);
+		}
+		if (!p || typeof p !== 'object') return [p];
+		const node = p as Record<string, unknown>;
+		const product = node.type === 'multiplication-pattern';
+		if (product || node.type === 'addition-pattern') {
+			for (const [free, other] of [
+				[node.left, node.right],
+				[node.right, node.left]
+			]) {
+				if (isFree(free) && isStructure(other)) {
+					return variants(other).flatMap((t) => {
+						const rebuilt = free === node.left ? { ...node, right: t } : { ...node, left: t };
+						return product ? [rebuilt, t, { type: 'opposite-pattern', operand: t }] : [rebuilt, t];
+					});
+				}
+			}
+		}
+		// Autres nœuds : produit cartésien des variantes de chaque enfant
+		let results: Record<string, unknown>[] = [{}];
+		for (const [key, value] of Object.entries(node)) {
+			const childVariants = variants(value);
+			results = results
+				.flatMap((r) => childVariants.map((v) => ({ ...r, [key]: v })))
+				.slice(0, MAX_IMPLICIT_VARIANTS);
+		}
+		return results;
+	};
+	return variants(pattern).slice(0, MAX_IMPLICIT_VARIANTS);
+}
+
+/**
  * Checks if a node matches a custom pattern.
  *
  * Uses the pattern matching system from mathAST.
@@ -264,7 +400,21 @@ function matchesCustomPattern(node: MathNode, patternStr: string): boolean {
 		// Tel qu'écrit, OU sans parenthèses de regroupement : rien de ce qui était reconnu
 		// ne cesse de l'être (`(a)^2`, `k*(__reste)`), et `(9+2):4` ≡ `\\frac{9+2}{4}` s'ajoute
 		const loose = patternWithoutParentheses(pattern) as typeof pattern;
-		return matches(pattern, node) || matches(loose, withoutGroupingParentheses(node));
+		if (matches(pattern, node)) return true;
+		const looseNode = withoutGroupingParentheses(node);
+		if (matches(loose, looseNode)) return true;
+		// Puis en dernier recours (#609) : soustractions lues comme sommes signées, et éléments
+		// neutres implicites (u = ±1, w = 0). Seulement ajouté : rien de reconnu ne cesse de l'être.
+		// Chaque joker doit alors valoir un nombre simple : sinon `2(x+1)^2-3(x+1)^2` ou
+		// `(x+1)^2-2\\times3` passeraient (calcul non effectué, relecture #489).
+		const signedNode = asSignedSums(looseNode);
+		return withImplicitNeutrals(loose).some((variant) => {
+			const bindings = tryMatch(variant as typeof pattern, signedNode);
+			return (
+				bindings !== undefined &&
+				[...bindings.values()].every((value) => isMathNodeBinding(value) && isSimpleNumber(value))
+			);
+		});
 	} catch {
 		// Invalid pattern - treat as no match
 		return false;
