@@ -79,7 +79,12 @@ perfectible. Mesurer d'abord ce que MathLive produit au **vrai clavier**.
 ## Avancement
 
 - [x] Phase 0 validée (2026-09-27)
-- [ ] Lot 1 — `tidy`
+- [x] Lot 1 — `tidy` (#483) : `unitChoice: 'written'` ; quotient de même dimension → nombre
+      (aussi en mode scolaire, symbolique compris : `x[h]/y[min]` → `60x/y`) ; fraction dans
+      l'unité écrite quand rien ne tombe juste.
+  - Reste pour le lot 2 (relecture de #483, écart B) : `(3[h]+20[min])*1[km/h]` → « 200 min·km/h »
+    (unités de même dimension au numérateur et au dénominateur non simplifiées) — un `{{eval}}`
+    produira ces calculs (`1[h]+30[min]` × 60 km/h doit donner 90 km).
 - [ ] Lot 2 — `{{eval}}`
 - [ ] Lot 4 — convertisseur
 - [ ] Lot 3 — durées composées
