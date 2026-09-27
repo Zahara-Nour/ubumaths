@@ -77,3 +77,26 @@ describe('hasRulesSufficeBlank (titre « Une réponse possible »)', () => {
 		);
 	});
 });
+
+// Relecture de #488 : une case `acceptDecimal` juge le décimal exact par sa valeur
+describe('computeBlankVerdicts — acceptDecimal', () => {
+	const decimalBlank: InstanceBlank = {
+		expectedAnswer: '\\frac{1}{2}',
+		type: 'math',
+		acceptDecimal: true
+	};
+
+	it.each([
+		['0{,}5', true],
+		['0.5', true],
+		['\\frac{1}{2}', true],
+		['0{,}6', false]
+	])('%s → %s', (value, expected) => {
+		expect(computeBlankVerdicts([value], instance([decimalBlank]))).toEqual([expected]);
+	});
+
+	it('sans l’option : comparaison textuelle comme avant (0,5 rouge)', () => {
+		const plain = { ...decimalBlank, acceptDecimal: undefined };
+		expect(computeBlankVerdicts(['0{,}5'], instance([plain]))).toEqual([false]);
+	});
+});
