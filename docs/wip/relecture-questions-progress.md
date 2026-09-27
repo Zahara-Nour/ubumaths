@@ -216,9 +216,15 @@ Après relecture (`code-reviewer`) :
   #601 v5.
 - Base : 553 templates, tous brouillons.
 
+## Lot Proportionnalité — 27/28 IMPORTÉES (2026-09-28)
+
+- `docs/relecture/proportionnalite/RAPPORT.md` : 2 approuvées, 25 corrigées, #510 rejetée (source
+  incohérente) ; décisions de David toutes validées (#491 : 1/2 perfectible pour 50 %).
+- Moteur : #491 pourcentages dans mathAST ; Fonctions : #488 `acceptDecimal`, #489/#490 motif de
+  forme canonique (#609 importée, 38/39 Fonctions en base).
+- Base : 581 templates, tous brouillons.
+
 ## Prochaine étape
 
-Restent : #609 (après correctif du motif), Grandeurs #462/#464/#466/#468 (lot 3, mesure MathLive au
-vrai clavier), et 76 questions : Proportionnalité 28 (#507–#509 grandeurs), Puissances 21, Suites 15
-(#629/#630), Racines 10, Probabilités 2. Défauts de conversion : listes des rapports Décimaux, Calcul
-littéral, Grandeurs et Fonctions.
+Restent Grandeurs #462/#464/#466/#468 (réponse « 2 h 15 min », mesure MathLive au vrai clavier) et
+48 questions : Puissances 21, Suites 15 (#629/#630), Racines 10, Probabilités 2.

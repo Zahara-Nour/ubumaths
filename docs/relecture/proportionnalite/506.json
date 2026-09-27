@@ -1,0 +1,101 @@
+{
+	"globalIndex": 506,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "« $1cm$ » s'affichait « 1 c m » (produit) → $1~\\unit{cm}$ ; consigne à l'impératif ; correction ajoutée (absente de la source).",
+	"template": {
+		"title": "Trouver l'échelle d'une carte",
+		"description": "Mêmes unités.",
+		"variations": [
+			{
+				"statement": "Sur une carte, $1~\\unit{cm}$ représente ${{c}}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b1",
+						"expression": "1..6"
+					},
+					{
+						"name": "b",
+						"expression": "eval:10^b1"
+					},
+					{
+						"name": "c",
+						"expression": "eval:(a*b)[cm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(1[cm])/c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"L'échelle est $\\dfrac{1~\\unit{cm}}{ {{c}} }={{solution:0}}$ (les deux longueurs sont dans la même unité)."
+					]
+				}
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Echelle d'une carte",
+		"subdomain": "Trouver l'échelle",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "1/90",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b1": "1"
+				},
+				"answers": ["\\frac{1}{90}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "1/7 000 000 avec espaces",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b1": "6"
+				},
+				"answers": ["\\frac{1}{7\\,000\\,000}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sans espace des milliers",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b1": "6"
+				},
+				"answers": ["\\frac{1}{7000000}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "mauvaise puissance de 10",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b1": "6"
+				},
+				"answers": ["\\frac{1}{700\\,000}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

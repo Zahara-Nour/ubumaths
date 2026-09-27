@@ -1,0 +1,95 @@
+{
+	"globalIndex": 498,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Description : « % » non échappé dans la formule (commentaire LaTeX, la fin disparaît) → « \\% ». Correction : « {{solution:html}} » placé hors de la formule → « = {{solution}}$ » dans la formule. Specs : juste aux bornes 1 et 15 ; 44 et 22 faux.",
+	"template": {
+		"title": "Calculer le pourcentage d'une quantité",
+		"description": "$$25\\%$$",
+		"variations": [
+			{
+				"statement": "Calcule $25\\%$ de ${{eval:a*4}}$.\n\n$25\\%$ de ${{eval:a*4}}$ est égal à $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..15"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$25\\%$ signifie $\\frac{1}{4}$ donc $25\\%$ de ${{eval:a*4}}$ est égal à ${{eval:a*4}} \\div 4= {{solution}}$. "
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Calculer",
+		"level": 5,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "juste a=11",
+				"variationIndex": 0,
+				"variables": {
+					"a": "11"
+				},
+				"answers": ["11"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "juste a=1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "juste a=15",
+				"variationIndex": 0,
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "nombre de départ",
+				"variationIndex": 0,
+				"variables": {
+					"a": "11"
+				},
+				"answers": ["44"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "moitié au lieu du quart",
+				"variationIndex": 0,
+				"variables": {
+					"a": "11"
+				},
+				"answers": ["22"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

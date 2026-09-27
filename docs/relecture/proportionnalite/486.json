@@ -1,0 +1,101 @@
+{
+	"globalIndex": 486,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Titre corrigé ; énoncé précisé (première ligne → deuxième) car c est un multiplicateur colonne→colonne ; réponse attendue réduite {{eval:b/a}} (3/9 était attendu alors que le correcteur le juge perfectible) ; fraction de la correction en mode math (elle s'affichait en \\dfrac brut).",
+	"template": {
+		"title": "Déterminer le coefficient de proportionnalité",
+		"description": "Valeur fractionnaire",
+		"variations": [
+			{
+				"statement": "Quel est le coefficient de proportionnalité de ce tableau, pour passer de la première ligne à la deuxième ?\n\n$$\\begin{array}{c|c}           {{a}}  &  {{eval:a*c}} \\\\           {{b}}  &  {{eval:b*c}}         \\end{array}$$\n\nLe coefficient de proportionnalité est $?.$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!m(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le coefficient de proportionnalité du tableau  $\\begin{array}{c|c}               {{a}}  &   {{eval:a*c}} \\\\               {{b}}  &  {{eval:b*c}}           \\end{array}$ est ${{solution:0}}$ car ${{b}} \\div {{a}} = {{eval:b*c}} \\div {{eval:a*c}} = {{solution:0}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b/a}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Tableaux de proportionnalité",
+		"subdomain": "Reconnaître",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "Fraction irréductible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "3",
+					"c": "3"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["\\frac{1}{3}"]
+			},
+			{
+				"description": "Fraction non réduite",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "3",
+					"c": "3"
+				},
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"answers": ["\\frac{3}{9}"]
+			},
+			{
+				"description": "Multiplicateur des colonnes c",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "3",
+					"c": "3"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["3"]
+			},
+			{
+				"description": "Fraction renversée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "6"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["\\frac{3}{2}"]
+			}
+		]
+	}
+}

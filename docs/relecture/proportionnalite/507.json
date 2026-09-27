@@ -1,0 +1,208 @@
+{
+	"globalIndex": 507,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "« $1 cm$ » (produit c·m) → $1~\\unit{cm}$ dans l'énoncé et la correction ; consigne à l'impératif.",
+	"template": {
+		"title": "Trouver l'échelle d'une carte",
+		"description": "Unités différentes.",
+		"shared": {
+			"statement": "Sur une carte, $1~\\unit{cm}$ représente ${{a}}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $?$.",
+			"correction": {
+				"steps": [
+					"$$\\frac{1~\\unit{cm}}{ {{a}} }=\\frac{1~\\unit{cm}}{ {{eval:a;[cm]}} }={{solution:0}}$$"
+				]
+			}
+		},
+		"variations": [
+			{
+				"statement": "Sur une carte, $1~\\unit{cm}$ représente ${{a}}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "a1[dm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(1[cm])/a}}"
+					}
+				]
+			},
+			{
+				"statement": "Sur une carte, $1~\\unit{cm}$ représente ${{a}}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "a1[m]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(1[cm])/a}}"
+					}
+				]
+			},
+			{
+				"statement": "Sur une carte, $1~\\unit{cm}$ représente ${{a}}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "a1[dam]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(1[cm])/a}}"
+					}
+				]
+			},
+			{
+				"statement": "Sur une carte, $1~\\unit{cm}$ représente ${{a}}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "a1[hm]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(1[cm])/a}}"
+					}
+				]
+			},
+			{
+				"statement": "Sur une carte, $1~\\unit{cm}$ représente ${{a}}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "a1[km]"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(1[cm])/a}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Echelle d'une carte",
+		"subdomain": "Trouver l'échelle",
+		"level": 2,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "3 dm → 1/30",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "3"
+				},
+				"answers": ["\\frac{1}{30}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3 m → 1/300",
+				"variationIndex": 1,
+				"variables": {
+					"a1": "3"
+				},
+				"answers": ["\\frac{1}{300}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3 dam → 1/3000",
+				"variationIndex": 2,
+				"variables": {
+					"a1": "3"
+				},
+				"answers": ["\\frac{1}{3\\,000}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3 hm → 1/30000",
+				"variationIndex": 3,
+				"variables": {
+					"a1": "3"
+				},
+				"answers": ["\\frac{1}{30\\,000}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3 km → 1/300000",
+				"variationIndex": 4,
+				"variables": {
+					"a1": "3"
+				},
+				"answers": ["\\frac{1}{300\\,000}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "conversion oubliée",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "7"
+				},
+				"answers": ["\\frac{1}{7}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "mauvaise conversion m→cm",
+				"variationIndex": 1,
+				"variables": {
+					"a1": "7"
+				},
+				"answers": ["\\frac{1}{70}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "sans espace des milliers",
+				"variationIndex": 4,
+				"variables": {
+					"a1": "3"
+				},
+				"answers": ["\\frac{1}{300000}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			}
+		]
+	}
+}

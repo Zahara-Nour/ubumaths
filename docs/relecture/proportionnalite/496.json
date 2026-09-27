@@ -1,0 +1,118 @@
+{
+	"globalIndex": 496,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Description : « % » non échappé dans la formule (commentaire LaTeX, la fin disparaît) → « \\% ». Correction : « {{solution:html}} » placé hors de la formule → « = {{solution}}$ » dans la formule. (la correction affichait « 7.1 » à point anglais hors formule). Specs : 7,1 et 7.1 justes, bornes 1 et 99 ; 71 et 0,71 faux ; 710 % refusé (bad_form).",
+	"template": {
+		"title": "Calculer le pourcentage d'une quantité",
+		"description": "$10\\%$ d'un nombre non multiple de $10$",
+		"variations": [
+			{
+				"statement": "Calcule $10\\%$ de ${{eval:a}}$.\n\n$10\\%$ de ${{a}}$ est égal à $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..100!m(10)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$10\\%$ signifie $\\frac{1}{10}$ donc $10\\%$ de ${{a}}$ est égal à ${{a}} \\div 10= {{solution}}$. "
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10%*a;d}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Calculer",
+		"level": 3,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "juste a=71",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"answers": ["7{,}1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "juste a=1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["0{,}1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "juste a=99",
+				"variationIndex": 0,
+				"variables": {
+					"a": "99"
+				},
+				"answers": ["9{,}9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "juste a=71",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"answers": ["7.1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "nombre de départ",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"answers": ["71"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "divisé par 100",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"answers": ["0{,}71"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "réponse en pourcentage refusée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"answers": ["710\\%"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			}
+		]
+	}
+}

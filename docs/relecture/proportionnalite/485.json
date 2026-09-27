@@ -1,0 +1,87 @@
+{
+	"globalIndex": 485,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Titre : « coefficent » → « coefficient ». Énoncé précisé (« pour passer de la première ligne à la deuxième ») : sinon b/a, coefficient colonne→colonne, est aussi un multiplicateur du tableau.",
+	"template": {
+		"title": "Déterminer le coefficient de proportionnalité",
+		"description": "Valeur entière",
+		"variations": [
+			{
+				"statement": "Quel est le coefficient de proportionnalité de ce tableau, pour passer de la première ligne à la deuxième ?\n\n$$\\begin{array}{c|c}           {{a}}        &   {{b}} \\\\           {{eval:a*c}}  &  {{eval:b*c}}         \\end{array}$$\n\nLe coefficient de proportionnalité est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!m(a),d(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le coefficient de proportionnalité du tableau  $\\begin{array}{c|c}               {{a}}        &   {{b}} \\\\               {{eval:a*c}}  &  {{eval:b*c}}           \\end{array}$ est {{solution:html}} car ${{eval:a*c}} \\div {{a}} = {{eval:b*c}} \\div {{b}} = {{solution:0}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Tableaux de proportionnalité",
+		"subdomain": "Reconnaître",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "Coefficient entier",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["9"]
+			},
+			{
+				"description": "Inverse (a÷ac)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["\\frac{1}{9}"]
+			},
+			{
+				"description": "Rapport des colonnes b/a",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "3"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["\\frac{2}{9}"]
+			}
+		]
+	}
+}

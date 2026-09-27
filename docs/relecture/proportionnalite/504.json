@@ -1,0 +1,95 @@
+{
+	"globalIndex": 504,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne à l'impératif ; % avec espace fine dans la correction (au lieu de « 34% » en texte).",
+	"template": {
+		"title": "Trouver le pourcentage d'augmentation",
+		"variations": [
+			{
+				"statement": "Donne le pourcentage d'augmentation associé à un coefficient multiplicateur de ${{eval:1+a/100;d}}$.\n\nLe pourcentage d'augmentation est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..30|31..49|51..70|71..90|100|50|200"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{eval:1+a/100;d}}=1+\\dfrac{ {{a}} }{100}$ donc le pourcentage d'augmentation est ${{a}}\\,\\%$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}%"
+					}
+				]
+			}
+		],
+		"grades": ["2"],
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Variations",
+		"level": 5,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "34 % saisi avec le symbole",
+				"variationIndex": 0,
+				"variables": {
+					"a": "34"
+				},
+				"answers": ["34\\%"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "100 %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100"
+				},
+				"answers": ["100\\%"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "écriture décimale : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "34"
+				},
+				"answers": ["0{,}34"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["percent"]
+				}
+			},
+			{
+				"description": "oubli du symbole %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "34"
+				},
+				"answers": ["34"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "confusion coefficient / pourcentage",
+				"variationIndex": 0,
+				"variables": {
+					"a": "34"
+				},
+				"answers": ["134\\%"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

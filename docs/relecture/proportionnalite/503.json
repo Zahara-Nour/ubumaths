@@ -1,0 +1,84 @@
+{
+	"globalIndex": 503,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne à l'impératif ; % avec espace fine ; résultat de la correction en mode mathématique. a=100 (coefficient 0) conservé comme dans TinyMath.",
+	"template": {
+		"title": "Trouver le coefficient multiplicateur",
+		"description": "Diminution",
+		"variations": [
+			{
+				"statement": "Donne le coefficient multiplicateur associé à une diminution de ${{a}}\\,\\%$.\n\nLe coefficient multiplicateur est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..100"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le coefficient multiplicateur est $1-\\dfrac{ {{a}} }{100}=1-{{eval:a/100;d}}={{eval:1-a/100;d}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:1-a/100;d}}"
+					}
+				]
+			}
+		],
+		"grades": ["2"],
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Variations",
+		"level": 4,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "0,29 pour -71 %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"answers": ["0{,}29"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0 pour -100 %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "taux au lieu du coefficient",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"answers": ["0{,}71"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "augmentation au lieu de diminution",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"answers": ["1{,}71"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

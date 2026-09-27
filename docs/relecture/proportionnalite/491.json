@@ -1,0 +1,118 @@
+{
+	"globalIndex": 491,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne à l'impératif. Décision de David (2026-09-28) : une fraction de même valeur mais d'un autre dénominateur (1/2 pour 50 %) est perfectible (forme exigée u/100, acceptable u/v).",
+	"template": {
+		"title": "Définition d'un pourcentage",
+		"description": "Convertir un pourcentage en une fraction de dénominateur $100$.",
+		"variations": [
+			{
+				"statement": "Écris sous la forme d'une fraction de dénominateur $100$ :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..100"
+					},
+					{
+						"name": "expression1",
+						"expression": "a%"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{a}}}{100}",
+						"requiredForm": {
+							"pattern": "u/100",
+							"acceptable": "u/v"
+						}
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"reducedFractions": "off"
+			}
+		},
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Définition",
+		"level": 1,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "Fraction sur 100",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["\\frac{71}{100}"]
+			},
+			{
+				"description": "Oubli du dénominateur",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["71"]
+			},
+			{
+				"description": "Décimal",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"answers": ["0{,}71"]
+			},
+			{
+				"description": "Pourcentage recopié",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"answers": ["71\\%"]
+			},
+			{
+				"description": "50 % : 50/100 juste",
+				"variationIndex": 0,
+				"variables": {
+					"a": "50"
+				},
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"answers": ["\\frac{50}{100}"]
+			},
+			{
+				"description": "50 % : 1/2 perfectible (dénominateur 100 demandé)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "50"
+				},
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["form"]
+				},
+				"answers": ["\\frac{1}{2}"]
+			}
+		]
+	}
+}

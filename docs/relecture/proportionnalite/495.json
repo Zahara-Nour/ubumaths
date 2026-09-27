@@ -1,0 +1,95 @@
+{
+	"globalIndex": 495,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Description : « % » non échappé dans la formule (commentaire LaTeX, la fin disparaît) → « \\% ». Correction : « {{solution:html}} » placé hors de la formule → « = {{solution}}$ » dans la formule. Specs : juste aux bornes 1 et 50 ; 360 et 3,6 faux.",
+	"template": {
+		"title": "Calculer le pourcentage d'une quantité",
+		"description": "$10\\%$ d'un multiple de $10$",
+		"variations": [
+			{
+				"statement": "Calcule $10\\%$ de ${{eval:a*10}}$.\n\n$10\\%$ de ${{eval:a*10}}$ est égal à $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..50"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$10\\%$ signifie $\\frac{1}{10}$ donc $10\\%$ de ${{eval:a*10}}$ est égal à ${{eval:a*10}} \\div 10= {{solution}}$. "
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Calculer",
+		"level": 2,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "juste a=36",
+				"variationIndex": 0,
+				"variables": {
+					"a": "36"
+				},
+				"answers": ["36"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "juste a=1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "juste a=50",
+				"variationIndex": 0,
+				"variables": {
+					"a": "50"
+				},
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "nombre de départ",
+				"variationIndex": 0,
+				"variables": {
+					"a": "36"
+				},
+				"answers": ["360"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "décalage de virgule de trop",
+				"variationIndex": 0,
+				"variables": {
+					"a": "36"
+				},
+				"answers": ["3{,}6"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,95 @@
+{
+	"globalIndex": 502,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne à l'impératif ; % avec espace fine ; résultat de la correction remis en mode mathématique (décimal affiché à la française).",
+	"template": {
+		"title": "Trouver le coefficient multiplicateur",
+		"description": "Augmentation",
+		"variations": [
+			{
+				"statement": "Donne le coefficient multiplicateur associé à une augmentation de ${{a}}\\,\\%$.\n\nLe coefficient multiplicateur est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..30|100|200|50"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le coefficient multiplicateur est $1+\\dfrac{ {{a}} }{100}={{eval:1+a/100;d}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:1+a/100;d}}"
+					}
+				]
+			}
+		],
+		"grades": ["2"],
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Variations",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "1,5 pour +50 %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "50"
+				},
+				"answers": ["1{,}5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3 pour +200 %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "200"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "1,07 pour +7 %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["1.07"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "taux au lieu du coefficient",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "confusion 1,7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7"
+				},
+				"answers": ["1{,}7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

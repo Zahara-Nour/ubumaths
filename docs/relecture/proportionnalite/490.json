@@ -1,0 +1,247 @@
+{
+	"globalIndex": 490,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Génération réparée : « € » sorti des {{eval:…}} ; réponses en euros → grandeur {{eval:(a*b*c)[€]}} avec unité attendue ; coquilles de source \\texgt{.} et \\{ de tomates pour } ; unités kg/L/h en \\text (italiques sinon).",
+	"template": {
+		"title": "Résoudre un petit exercice de proportionnalité",
+		"description": "petits nombres",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2,5|3,5"
+				},
+				{
+					"name": "b",
+					"expression": "2|4|6"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "${{b}}$ shawarmas coûtent ${{eval:b*a}}\\,€$. Combien coûtent ${{eval:c*b}}$ shawarmas ?\n\n${{eval:c*b}}$ shawarmas coûtent $?$.",
+				"correction": {
+					"steps": [
+						"${{eval:c*b}}$ shawarmas, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{b}}$ shawarmas à ${{eval:a*b}}\\,€$, donc le prix de ${{eval:c*b}}$ shawarmas est ${{eval:a*b}}\\,€\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a*b*c)[€]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "${{b}}$ shawarmas coûtent ${{eval:b*a}}\\,€$. Combien puis-je acheter de shawarmas avec ${{eval:c*b*a}}\\,€$ ?\n\nJe peux acheter $?$ shawarmas pour ${{eval:a*b*c}}\\,€$.",
+				"correction": {
+					"steps": [
+						"${{eval:c*b*a}}\\,€$, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{eval:b*a}}\\,€$ pour ${{b}}$ shawarmas, donc je peux acheter ${{b}}\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$ shawarmas."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*c}}"
+					}
+				]
+			},
+			{
+				"statement": "${{b}}\\,\\text{kg}$ de tomates coûtent ${{eval:b*a}}\\,€$. Combien coûtent ${{eval:c*b}}\\,\\text{kg}$ de tomates ?\n\n${{eval:c*b}}\\,\\text{kg}$ de tomates coûtent $?$.",
+				"correction": {
+					"steps": [
+						"${{eval:c*b}}\\,\\text{kg}$ de tomates, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{b}}\\,\\text{kg}$  à ${{eval:a*b}}\\,€$, donc le prix de ${{eval:c*b}}\\,\\text{kg}$ de tomates est ${{eval:a*b}}\\,€\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a*b*c)[€]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "${{b}}\\,\\text{kg}$ de tomates coûtent ${{eval:b*a}}\\,€$. Combien puis-je acheter de tomates avec ${{eval:c*b*a}}\\,€$ ?\n\nJe peux acheter $?$ de tomates pour ${{eval:c*b*a}}\\,€$.",
+				"correction": {
+					"steps": [
+						"${{eval:c*b*a}}\\,€$, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{eval:b*a}}\\,€$ pour ${{b}}\\,\\text{kg}$ de tomates, donc je peux acheter ${{b}}\\,\\text{kg}\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$ de tomates."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(b*c)[kg]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Une fuite d'eau laisse s'échapper ${{eval:b*a}}\\,\\text{L}$ d'eau en ${{b}}\\,\\text{h}$. Combien de litres d'eau s'échappent en ${{eval:c*b}}\\,\\text{h}$ ?\n\nIl s'échappe $?$ d'eau en ${{eval:c*b}}\\,\\text{h}$.",
+				"correction": {
+					"steps": [
+						"${{eval:c*b}}\\,\\text{h}$, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{b}}\\,\\text{h}$ pour ${{eval:a*b}}\\,\\text{L}$, donc il s'échappe  ${{eval:a*b}}\\,\\text{L}\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$ d'eau en ${{eval:c*b}}\\,\\text{h}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a*b*c)[L]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Une fuite d'eau laisse s'échapper ${{eval:b*a}}\\,\\text{L}$ d'eau en ${{b}}\\,\\text{h}$. En combien de temps s'échappe-t-il ${{eval:c*b*a}}\\,\\text{L}$ d'eau ?\n\nIl s'échappe ${{eval:c*b*a}}\\,\\text{L}$ d'eau en $?$.",
+				"correction": {
+					"steps": [
+						"${{eval:c*b*a}}\\,\\text{L}$, c'est $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ fois}}$ plus que ${{eval:b*a}}\\,\\text{L}$ en ${{b}}\\,\\text{h}$, donc il faut ${{b}}\\,\\text{h} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$ pour perdre ${{eval:a*b*c}}\\,\\text{L}$ d'eau."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(b*c)[h]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Tableaux de proportionnalité",
+		"subdomain": "Appliquer",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0 euros",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2,5",
+					"b": "4",
+					"c": "3"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["30\\,€"]
+			},
+			{
+				"description": "v0 sans unité",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2,5",
+					"b": "4",
+					"c": "3"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["30"]
+			},
+			{
+				"description": "v0 faux",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2,5",
+					"b": "4",
+					"c": "3"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["10\\,€"]
+			},
+			{
+				"description": "v1 nombre",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2,5",
+					"b": "4",
+					"c": "3"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["12"]
+			},
+			{
+				"description": "v2 euros",
+				"variationIndex": 2,
+				"variables": {
+					"a": "2,5",
+					"b": "4",
+					"c": "3"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["30\\,€"]
+			},
+			{
+				"description": "v3 kg",
+				"variationIndex": 3,
+				"variables": {
+					"a": "2,5",
+					"b": "4",
+					"c": "3"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["12\\,\\mathrm{kg}"]
+			},
+			{
+				"description": "v4 L",
+				"variationIndex": 4,
+				"variables": {
+					"a": "2,5",
+					"b": "4",
+					"c": "3"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["30\\,\\mathrm{L}"]
+			},
+			{
+				"description": "v5 h",
+				"variationIndex": 5,
+				"variables": {
+					"a": "2,5",
+					"b": "4",
+					"c": "3"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["12\\,\\mathrm{h}"]
+			},
+			{
+				"description": "v5 faux",
+				"variationIndex": 5,
+				"variables": {
+					"a": "2,5",
+					"b": "4",
+					"c": "3"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["30\\,\\mathrm{h}"]
+			}
+		]
+	}
+}

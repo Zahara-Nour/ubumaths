@@ -1,0 +1,166 @@
+{
+	"globalIndex": 487,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer une quatrième proportionnelle",
+		"description": "En travaillant sur les colonnes",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!m(a),d(a)"
+				},
+				{
+					"name": "c",
+					"expression": "2..9!a,b"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{a}}  &  ?  \\\\                       {{b}}  &   {{eval:b*c}}                       \\end{array}$",
+				"correction": {
+					"steps": [
+						"{{solution}}, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:b*c}}$ et ${{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*c}}"
+					}
+				]
+			},
+			{
+				"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{a}}  &   {{eval:a*c}} \\\\                       {{b}}  &  ?                        \\end{array}$",
+				"correction": {
+					"steps": [
+						"{{solution}}, car ${{a}}\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:a*c}}$ et ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*c}}"
+					}
+				]
+			},
+			{
+				"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{a}}  &   {{eval:a*c}} \\\\                       ?  &   {{eval:b*c}}                       \\end{array}$",
+				"correction": {
+					"steps": [
+						"{{solution}}, car ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{a}}$ et ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                        ?  &   {{eval:a*c}} \\\\                       {{b}}  &   {{eval:b*c}}                       \\end{array}$",
+				"correction": {
+					"steps": [
+						"{{solution}}, car ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{b}}$ et ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Tableaux de proportionnalité",
+		"subdomain": "Calculer une quatrième proportionnelle",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "3"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["21"]
+			},
+			{
+				"description": "v0 raisonnement additif",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "3"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["25"]
+			},
+			{
+				"description": "v1",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "3"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["27"]
+			},
+			{
+				"description": "v2",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "3"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["9"]
+			},
+			{
+				"description": "v3",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "3"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["7"]
+			},
+			{
+				"description": "v3 erreur",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "3"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["3"]
+			}
+		]
+	}
+}

@@ -1,0 +1,107 @@
+{
+	"globalIndex": 492,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne « Quelle est pourcentage correspondant à la fraction : » (faute + question) → « Écris cette fraction sous forme de pourcentage. ». Specs (règles pourcentage #491) : 71\\% juste, bornes 1 % et 100 % ; 0,71 et 71/100 perfectibles [percent] ; 71 sans symbole faux.",
+	"template": {
+		"title": "Définition d'un pourcentage",
+		"description": "convertir une fraction de dénominateur $100$ en pourcentage.",
+		"variations": [
+			{
+				"statement": "Écris cette fraction sous forme de pourcentage.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..100"
+					},
+					{
+						"name": "expression1",
+						"expression": "a/100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}%"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Définition",
+		"level": 2,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "71 %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"answers": ["71\\%"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne 1 %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["1\\%"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne 100 %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100"
+				},
+				"answers": ["100\\%"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "décimal 0,71 perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"answers": ["0{,}71"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["percent"]
+				}
+			},
+			{
+				"description": "fraction recopiée perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"answers": ["\\frac{71}{100}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["percent"]
+				}
+			},
+			{
+				"description": "oubli du symbole %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "71"
+				},
+				"answers": ["71"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

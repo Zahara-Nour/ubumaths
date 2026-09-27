@@ -1,0 +1,95 @@
+{
+	"globalIndex": 499,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Description : « % » non échappé dans la formule (commentaire LaTeX, la fin disparaît) → « \\% ». Correction : « {{solution:html}} » placé hors de la formule → « = {{solution}}$ » dans la formule. Specs : juste aux bornes 1 et 12 ; 9 (le quart) et 36 faux.",
+	"template": {
+		"title": "Calculer le pourcentage d'une quantité",
+		"description": "$$75\\%$$",
+		"variations": [
+			{
+				"statement": "Calcule $75\\%$ de ${{eval:a*4}}$.\n\n$75\\%$ de ${{eval:a*4}}$ est égal à $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..12"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$75\\%$ signifie $\\frac{3}{4}$ donc $75\\%$ de ${{eval:a*4}}$ est égal à $\\left({{eval:a*4}} \\div 4 \\right) \\times 3= {{solution}}$. "
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:75%*a*4}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Calculer",
+		"level": 6,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "juste a=9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["27"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "juste a=1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "juste a=12",
+				"variationIndex": 0,
+				"variables": {
+					"a": "12"
+				},
+				"answers": ["36"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "seulement le quart",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "nombre de départ",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["36"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,95 @@
+{
+	"globalIndex": 494,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Description : « % » non échappé dans la formule (commentaire LaTeX, la fin disparaît) → « \\% ». Correction : « {{solution:html}} » placé hors de la formule → « = {{solution}}$ » dans la formule. Specs : juste aux bornes 1 et 50 ; 72 et 18 faux.",
+	"template": {
+		"title": "Calculer le pourcentage d'une quantité",
+		"description": "$$50\\%$$",
+		"variations": [
+			{
+				"statement": "Calcule $50\\%$ de ${{eval:a*2}}$.\n\n$50\\%$ de ${{eval:a*2}}$ est égal à $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..50"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$50\\%$ signifie la moitié donc $50\\%$ de ${{eval:a*2}}$ est égal à ${{eval:a*2}} \\div 2= {{solution}}$. "
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Calculer",
+		"level": 1,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "juste a=36",
+				"variationIndex": 0,
+				"variables": {
+					"a": "36"
+				},
+				"answers": ["36"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "juste a=1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "juste a=50",
+				"variationIndex": 0,
+				"variables": {
+					"a": "50"
+				},
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli : nombre de départ",
+				"variationIndex": 0,
+				"variables": {
+					"a": "36"
+				},
+				"answers": ["72"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "moitié de la moitié",
+				"variationIndex": 0,
+				"variables": {
+					"a": "36"
+				},
+				"answers": ["18"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

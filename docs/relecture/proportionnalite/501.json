@@ -1,0 +1,359 @@
+{
+	"globalIndex": 501,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne « Quel est son nouveau prix? » (question, pas d'espace avant « ? ») → « Calcule son nouveau prix. » (énoncé partagé et variations). Correction : « =$ {{solution:html}} Qr » hors formule → « = {{solution}}$ Qr ». « Qr » écrit après la case → case numérique. Specs : les 5 variations aux bornes 20 et 200 ; la seule variation (15) et le prix de départ (200) faux.",
+	"template": {
+		"title": "Diminution",
+		"shared": {
+			"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix diminuer de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+			"correction": {
+				"steps": [
+					"La diminution est de ${{b}}\\% \\times {{eval:a}} = {{eval:b%*a}}$ Qr. Le nouveau prix est donc ${{eval:a}} - {{eval:b%*a}} = {{solution}}$ Qr. "
+				]
+			}
+		},
+		"variations": [
+			{
+				"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix diminuer de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "10"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(1-b/100)}}"
+					}
+				]
+			},
+			{
+				"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix diminuer de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "20"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(1-b/100)}}"
+					}
+				]
+			},
+			{
+				"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix diminuer de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "30"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(1-b/100)}}"
+					}
+				]
+			},
+			{
+				"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix diminuer de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "50"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(1-b/100)}}"
+					}
+				]
+			},
+			{
+				"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix diminuer de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(1-b/100)}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Variations",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v0 10 % de 150",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "15",
+					"a": "150",
+					"b": "10"
+				},
+				"answers": ["135"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 10 % de 20",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "2",
+					"a": "20",
+					"b": "10"
+				},
+				"answers": ["18"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 10 % de 200",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "20",
+					"a": "200",
+					"b": "10"
+				},
+				"answers": ["180"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 20 % de 150",
+				"variationIndex": 1,
+				"variables": {
+					"a1": "15",
+					"a": "150",
+					"b": "20"
+				},
+				"answers": ["120"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 20 % de 20",
+				"variationIndex": 1,
+				"variables": {
+					"a1": "2",
+					"a": "20",
+					"b": "20"
+				},
+				"answers": ["16"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 20 % de 200",
+				"variationIndex": 1,
+				"variables": {
+					"a1": "20",
+					"a": "200",
+					"b": "20"
+				},
+				"answers": ["160"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 30 % de 150",
+				"variationIndex": 2,
+				"variables": {
+					"a1": "15",
+					"a": "150",
+					"b": "30"
+				},
+				"answers": ["105"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 30 % de 20",
+				"variationIndex": 2,
+				"variables": {
+					"a1": "2",
+					"a": "20",
+					"b": "30"
+				},
+				"answers": ["14"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 30 % de 200",
+				"variationIndex": 2,
+				"variables": {
+					"a1": "20",
+					"a": "200",
+					"b": "30"
+				},
+				"answers": ["140"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 50 % de 150",
+				"variationIndex": 3,
+				"variables": {
+					"a1": "15",
+					"a": "150",
+					"b": "50"
+				},
+				"answers": ["75"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 50 % de 20",
+				"variationIndex": 3,
+				"variables": {
+					"a1": "2",
+					"a": "20",
+					"b": "50"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 50 % de 200",
+				"variationIndex": 3,
+				"variables": {
+					"a1": "20",
+					"a": "200",
+					"b": "50"
+				},
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 100 % de 150",
+				"variationIndex": 4,
+				"variables": {
+					"a1": "15",
+					"a": "150",
+					"b": "100"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 100 % de 20",
+				"variationIndex": 4,
+				"variables": {
+					"a1": "2",
+					"a": "20",
+					"b": "100"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 100 % de 200",
+				"variationIndex": 4,
+				"variables": {
+					"a1": "20",
+					"a": "200",
+					"b": "100"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "seulement la variation",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "15",
+					"a": "150",
+					"b": "10"
+				},
+				"answers": ["15"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "prix de départ",
+				"variationIndex": 4,
+				"variables": {
+					"a1": "20",
+					"a": "200",
+					"b": "100"
+				},
+				"answers": ["200"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

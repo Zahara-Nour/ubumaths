@@ -1,0 +1,120 @@
+{
+	"globalIndex": 483,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Coquille « multiplité » → « multiplié ».",
+	"template": {
+		"title": "Reconnaître si un tableau est un tableau de proportionnalité",
+		"description": "En regardant les colonnes",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!m(a),d(a)"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"choices": [
+				{
+					"content": "Oui"
+				},
+				{
+					"content": "Non"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}           \t\t\t\t\t{{a}}  &   {{eval:a*c}} \\\\           \t\t\t\t\t{{b}}  &   {{eval:b*c}}         \t\t\t\t\\end{array}$$",
+				"correctChoiceIndex": ["0"],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, $\\begin{array}{c|c}               {{a}}  &   {{eval:a*c}} \\\\               {{b}}  &   {{eval:b*c}}             \\end{array}$ est un tableau de proportionnalité, car $ {{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:a*c}}$ et $ {{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:b*c}} $",
+						"On a multiplié par le même nombre entre les 2 colonnes."
+					]
+				}
+			},
+			{
+				"statement": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}         \t\t\t\t\t{{a}}  &   {{eval:a*c}} \\\\        \t\t\t\t\t\t{{b}}  &   {{eval:b*(c+1)}}       \t\t\t\t\t\\end{array}$$",
+				"correctChoiceIndex": ["1"],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, $\\begin{array}{c|c}               {{a}}  &   {{eval:a*c}} \\\\               {{b}}  &   {{eval:b*(c+1)}}             \\end{array}$ n'est pas un tableau de proportionnalité, car $ {{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:a*c}}$ et $ {{b}} \\textcolor{{{color:primary.1}}}{\\times {{eval:c+1}}}={{eval:b*(c+1)}}$.",
+						"On n'a **pas** multiplié par le même nombre entre les 2 colonnes."
+					]
+				}
+			}
+		],
+		"options": {
+			"shuffleChoices": false
+		},
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Tableaux de proportionnalité",
+		"subdomain": "Reconnaître",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "Oui (proportionnel)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"selectedChoices": [0]
+			},
+			{
+				"description": "Non sur tableau proportionnel",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"selectedChoices": [1]
+			},
+			{
+				"description": "Non (non proportionnel)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "3"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"selectedChoices": [1]
+			},
+			{
+				"description": "Oui sur tableau non proportionnel",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "3"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"selectedChoices": [0]
+			}
+		]
+	}
+}

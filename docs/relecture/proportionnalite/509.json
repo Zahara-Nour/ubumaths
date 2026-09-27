@@ -1,0 +1,347 @@
+{
+	"globalIndex": 509,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction cassée (\\frac{{{c}}}{{{solution:0}}} rendait « \\frac90~\\unit{cm}~90 ») → accolades espacées ; conversion intermédiaire dans l'unité de la réponse (v1 en m, v3 en dam) ; \\,cm → \\unit{cm} ; consigne à l'impératif.",
+	"template": {
+		"title": "Calculer la longueur réelle",
+		"shared": {
+			"statement": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$."
+		},
+		"variations": [
+			{
+				"statement": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "10"
+					},
+					{
+						"name": "b1",
+						"expression": "2..9"
+					},
+					{
+						"name": "b2",
+						"expression": "0..1"
+					},
+					{
+						"name": "b",
+						"expression": "eval:b1*10^b2"
+					},
+					{
+						"name": "c",
+						"expression": "eval:(b)[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/10}}~\\unit{dm} }=\\frac{ {{c}} }{ {{solution:0}} }$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c)*a;[dm]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "100"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:b[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/100}}~\\unit{m} }=\\frac{ {{c}} }{ {{solution:0}} }$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c)*a;[m]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "100"
+					},
+					{
+						"name": "b1",
+						"expression": "2..9"
+					},
+					{
+						"name": "b2",
+						"expression": "0..1"
+					},
+					{
+						"name": "b",
+						"expression": "eval:b1*10^b2"
+					},
+					{
+						"name": "c",
+						"expression": "eval:(b)[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/100}}~\\unit{m} }=\\frac{ {{c}} }{ {{solution:0}} }$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c)*a;[m]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1000"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:b[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/1000}}~\\unit{dam} }=\\frac{ {{c}} }{ {{solution:0}} }$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c)*a;[dam]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "100000"
+					},
+					{
+						"name": "b1",
+						"expression": "2..9"
+					},
+					{
+						"name": "b2",
+						"expression": "0..1"
+					},
+					{
+						"name": "b",
+						"expression": "eval:b1*10^b2"
+					},
+					{
+						"name": "c",
+						"expression": "eval:(b)[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/100000}}~\\unit{km} }=\\frac{ {{c}} }{ {{solution:0}} }$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c)*a;[km]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			},
+			{
+				"statement": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1000000"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:b[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/100000}}~\\unit{km} }=\\frac{ {{c}} }{ {{solution:0}} }$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c)*a;[km]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"unit": "off"
+			}
+		},
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Echelle d'une carte",
+		"subdomain": "Utiliser l'échelle",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0 : 9 cm à 1/10 → 9 dm",
+				"variationIndex": 0,
+				"variables": {
+					"b1": "9",
+					"b2": "0"
+				},
+				"answers": ["9~\\unit{dm}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 : 9 cm à 1/100 → 9 m",
+				"variationIndex": 1,
+				"variables": {
+					"b": "9"
+				},
+				"answers": ["9~\\unit{m}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 : 90 cm à 1/100 → 90 m",
+				"variationIndex": 2,
+				"variables": {
+					"b1": "9",
+					"b2": "1"
+				},
+				"answers": ["90~\\unit{m}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 : 9 cm à 1/1000 → 9 dam",
+				"variationIndex": 3,
+				"variables": {
+					"b": "9"
+				},
+				"answers": ["9~\\unit{dam}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 : 30 cm à 1/100000 → 30 km",
+				"variationIndex": 4,
+				"variables": {
+					"b1": "3",
+					"b2": "1"
+				},
+				"answers": ["30~\\unit{km}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5 : 9 cm à 1/1000000 → 90 km",
+				"variationIndex": 5,
+				"variables": {
+					"b": "9"
+				},
+				"answers": ["90~\\unit{km}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "unité équivalente acceptée (900 cm)",
+				"variationIndex": 1,
+				"variables": {
+					"b": "9"
+				},
+				"answers": ["900~\\unit{cm}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "division au lieu de multiplication",
+				"variationIndex": 1,
+				"variables": {
+					"b": "9"
+				},
+				"answers": ["9~\\unit{cm}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

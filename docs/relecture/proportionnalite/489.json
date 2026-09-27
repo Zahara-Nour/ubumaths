@@ -1,0 +1,183 @@
+{
+	"globalIndex": 489,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction v0/v1 : la solution fractionnaire s'affichait en \\dfrac brut hors mode math ; v1 : « $$ » et accolade en trop hérités de la source. Ajout de acceptDecimal (27/2 = 13,5 exact était refusé en bad_form).",
+	"template": {
+		"title": "Calculer une quatrième proportionnelle",
+		"description": "En utilisant le coefficient de proportionnalité qui est fractionnaire",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!cd(a)"
+				},
+				{
+					"name": "c",
+					"expression": "2..9!cd(b),a"
+				}
+			],
+			"blankDefaults": {
+				"acceptDecimal": true
+			}
+		},
+		"variations": [
+			{
+				"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{a}}  &  {{b}}  \\\\                        ?  &  {{c}}                       \\end{array}$",
+				"correction": {
+					"steps": [
+						"${{solution:0}}$, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{c}}$ et ${{a}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{solution:0}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*c/b}}"
+					}
+				]
+			},
+			{
+				"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{b}}  &  {{a}}  \\\\                       {{c}}  &  ?                        \\end{array}$",
+				"correction": {
+					"steps": [
+						"${{solution:0}}$, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{c}}$ et ${{a}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{solution:0}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*c/b}}"
+					}
+				]
+			},
+			{
+				"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{b}}  &   ? \\\\                       {{c}}  &  {{eval:a*c/b}}                       \\end{array}$",
+				"correction": {
+					"steps": [
+						"{{solution}}, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{c}}$ et ${{solution:0}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{eval:a*c/b}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                        ?  &   {{b}} \\\\                        {{eval:a*c/b}}  &   {{c}}                       \\end{array}$",
+				"correction": {
+					"steps": [
+						"{{solution}}, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{c}}$ et ${{solution:0}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{eval:a*c/b}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Tableaux de proportionnalité",
+		"subdomain": "Calculer une quatrième proportionnelle",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0 fraction",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "3"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["\\frac{27}{2}"]
+			},
+			{
+				"description": "v0 décimal exact",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "3"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["13{,}5"]
+			},
+			{
+				"description": "v0 arrondi",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["3{,}11"]
+			},
+			{
+				"description": "v1 fraction",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["\\frac{28}{9}"]
+			},
+			{
+				"description": "v2",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["7"]
+			},
+			{
+				"description": "v3",
+				"variationIndex": 3,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "3"
+				},
+				"expected": {
+					"status": "correct"
+				},
+				"answers": ["9"]
+			},
+			{
+				"description": "v3 erreur",
+				"variationIndex": 3,
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "3"
+				},
+				"expected": {
+					"status": "incorrect"
+				},
+				"answers": ["3"]
+			}
+		]
+	}
+}

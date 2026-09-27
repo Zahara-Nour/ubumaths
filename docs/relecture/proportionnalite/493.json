@@ -1,0 +1,171 @@
+{
+	"globalIndex": 493,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Génération en échec : la correction TinyMath en `@@ … ?? … @@` convertie en `{{if:…}}` imbriqués dans un begin{align} était illisible pour le générateur. Toutes les valeurs tirées ont un pgcd avec 100 différent de 1, donc les branches « pgcd = 1 » étaient mortes : correction réécrite en une seule étape display (a % = a/100 = (a ÷ b)/(100 ÷ b) = solution), b = eval:gcd(a, 100) (sinon « gcd(10, 100) » s'affichait en clair). Consigne « Quelle est la fraction simplifiée correspondant à : » → « Écris ce pourcentage sous forme de fraction simplifiée. ». Specs : 1/10, 1/4, 3/4, 1 et 2 justes ; 25/100 perfectible [reducedFractions] ; 0,25 et 25 % refusés (forme) ; 4 et 2/100 faux. Note : pour 100 %, 200 %, 300 %, 400 % la « fraction simplifiée » attendue est un entier (1 à 4), comme dans TinyMath.",
+	"template": {
+		"title": "Définition d'un pourcentage",
+		"description": "Convertir un pourcentage en une fraction simplifiée.",
+		"variations": [
+			{
+				"statement": "Écris ce pourcentage sous forme de fraction simplifiée.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "10|20|30|40|50|60|70|80|90|100|25|75|200|300|400"
+					},
+					{
+						"name": "b",
+						"expression": "eval:gcd(a, 100)"
+					},
+					{
+						"name": "expression1",
+						"expression": "a%"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{a}}\\% &= \\dfrac{{{a}}}{100} \\\\ &= \\dfrac{{{a}} \\textcolor{{{color:primary.0}}}{\\div {{b}}}}{100 \\textcolor{{{color:primary.0}}}{\\div {{b}}}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Définition",
+		"level": 3,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "25 %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "25",
+					"b": "25"
+				},
+				"answers": ["\\frac{1}{4}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "10 %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10",
+					"b": "10"
+				},
+				"answers": ["\\frac{1}{10}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "75 %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "75",
+					"b": "25"
+				},
+				"answers": ["\\frac{3}{4}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "200 %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "200",
+					"b": "100"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "100 %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100",
+					"b": "100"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "non simplifiée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "25",
+					"b": "25"
+				},
+				"answers": ["\\frac{25}{100}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "décimal",
+				"variationIndex": 0,
+				"variables": {
+					"a": "25",
+					"b": "25"
+				},
+				"answers": ["0{,}25"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "pourcentage recopié",
+				"variationIndex": 0,
+				"variables": {
+					"a": "25",
+					"b": "25"
+				},
+				"answers": ["25\\%"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "inverse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "25",
+					"b": "25"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "200 % lu 2/100",
+				"variationIndex": 0,
+				"variables": {
+					"a": "200",
+					"b": "100"
+				},
+				"answers": ["\\frac{2}{100}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

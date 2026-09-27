@@ -1,0 +1,6 @@
+{
+	"globalIndex": 510,
+	"verdict": "rejected",
+	"reviewer": "claude",
+	"reason": "Source TinyMath incomplète et incohérente : l'énoncé mélange « Une voiture parcourt … en » (vitesse) et une question d'échelle copiée de #506, sans durée ni solution ; « (1 cm)/c » ne s'évalue pas (cm lu comme variables). Question à réécrire entièrement, pas à convertir."
+}

@@ -1,0 +1,116 @@
+{
+	"globalIndex": 497,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Description : « % » non échappé dans la formule (commentaire LaTeX, la fin disparaît) → « \\% ». Correction : « =$ {{solution:html}} » hors formule → « = {{solution}}$ ». Specs : 20/30/40 %, bornes b=1 et b=40 ; 10 % seul et 15,2 faux.",
+	"template": {
+		"title": "Calculer le pourcentage d'une quantité",
+		"description": "$20\\%$-$40\\%$ d'un multiple de $10$",
+		"variations": [
+			{
+				"statement": "Calcule ${{a}}\\%$ de ${{eval:b*10}}$.\n\n${{a}}\\%$ de ${{eval:b*10}}$ est égal à $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "20|30|40"
+					},
+					{
+						"name": "b",
+						"expression": "1..40"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$10\\%$ de ${{eval:b*10}}$ représente ${{b}}$ donc ${{a}}\\%$ représente ${{eval:a:10}} \\times {{b}} = {{solution}}$. "
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a%*b*10}}"
+					}
+				]
+			}
+		],
+		"grades": ["6"],
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Calculer",
+		"level": 4,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "juste a=40, b=38",
+				"variationIndex": 0,
+				"variables": {
+					"a": "40",
+					"b": "38"
+				},
+				"answers": ["152"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "juste a=20, b=1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "20",
+					"b": "1"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "juste a=40, b=40",
+				"variationIndex": 0,
+				"variables": {
+					"a": "40",
+					"b": "40"
+				},
+				"answers": ["160"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "juste a=30, b=7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "30",
+					"b": "7"
+				},
+				"answers": ["21"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "seulement 10 %",
+				"variationIndex": 0,
+				"variables": {
+					"a": "40",
+					"b": "38"
+				},
+				"answers": ["38"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "décalage de virgule",
+				"variationIndex": 0,
+				"variables": {
+					"a": "40",
+					"b": "38"
+				},
+				"answers": ["15{,}2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}
