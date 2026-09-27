@@ -664,6 +664,16 @@ function checkSimpleNumberForm(
 }
 
 /**
+ * Case `acceptDecimal` dont la réponse est un décimal (écriture décimale finie,
+ * signe compris) : la valeur, vérifiée avant, suffit — l'écriture attendue
+ * (`\frac{1}{2}`) n'est pas un modèle de forme. Un décimal arrondi n'arrive
+ * jamais ici : sa valeur diffère, il est refusé dès le contrôle de valeur.
+ */
+function acceptsExactDecimal(blank: InstanceBlank, latex: string): boolean {
+	return blank.acceptDecimal === true && isSimpleNumberLatex(latex);
+}
+
+/**
  * Verdict d'une seule case sur la VALEUR (sans contrôle de forme), avec le même
  * pipeline que la correction : règles, `rulesSuffice`, mode inféré.
  * Sert à colorer chaque case après soumission.
@@ -920,6 +930,19 @@ function validateSingleBlank(
 		};
 	}
 
+	// acceptDecimal : un décimal exact (valeur déjà vérifiée à l'étape 2) n'a pas à
+	// reproduire l'écriture attendue (`0{,}5` pour `\frac{1}{2}`) ; seules restent
+	// les contraintes cosmétiques d'un nombre simple (zéros inutiles, espaces).
+	if (acceptsExactDecimal(blank, effectiveLatex)) {
+		const { status, violations } = checkSimpleNumberForm(effectiveLatex, constraints);
+		return {
+			isCorrect: status !== 'bad_form',
+			status,
+			feedback: status !== 'correct' ? violations[0]?.feedback : undefined,
+			constraintViolations: violations
+		};
+	}
+
 	// exact: compare normalised form against expected answer (unchanged).
 	const { status, violations } = applyConstraints(
 		[userAnswer],
@@ -1142,7 +1165,7 @@ function validateBlanksOrderIndependent(
 			// comme pour une case seule (l'attendu n'est pas LA forme à reproduire)
 			const { status, violations } = blanks[b].requiredForm
 				? requiredFormCosmetics(blankLatex, instance.options?.constraints ?? {})
-				: rulesDecide(blanks[b])
+				: rulesDecide(blanks[b]) || acceptsExactDecimal(blanks[b], blankLatex)
 					? checkSimpleNumberForm(blankLatex, instance.options?.constraints ?? {})
 					: applyConstraints(
 							[userAnswers[a]],

@@ -196,6 +196,8 @@ export interface BlankDefaults {
 	removeSpaces?: boolean;
 	/** Voir `TemplateBlank.rulesSuffice` */
 	rulesSuffice?: boolean;
+	/** Voir `TemplateBlank.acceptDecimal` */
+	acceptDecimal?: boolean;
 	unit?: {
 		/** true = the student must provide the unit */
 		expected: boolean;
@@ -228,6 +230,12 @@ export interface TemplateBlank {
 	 * réponse possible ») et le modèle de forme. Exige au moins une règle.
 	 */
 	rulesSuffice?: boolean;
+	/**
+	 * Accepter le décimal exact : attendu `\frac{1}{2}`, l'élève peut répondre
+	 * `0{,}5` (écriture décimale finie de MÊME valeur). Un décimal arrondi
+	 * (0,33 pour 1/3) reste faux ; toute autre écriture est jugée comme avant.
+	 */
+	acceptDecimal?: boolean;
 
 	/** Unit config (overrides blankDefaults.unit) */
 	unit?: {
@@ -575,6 +583,8 @@ export interface InstanceBlank {
 	validationRules?: ValidationRule[];
 	/** Voir `TemplateBlank.rulesSuffice` (fusionné avec blankDefaults) */
 	rulesSuffice?: boolean;
+	/** Voir `TemplateBlank.acceptDecimal` (fusionné avec blankDefaults) */
+	acceptDecimal?: boolean;
 
 	/** Unit config (merged) */
 	unit?: {
