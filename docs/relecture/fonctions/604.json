@@ -2,7 +2,7 @@
 	"globalIndex": 604,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "v3/v4 : `correctChoiceIndex` `{{if:{{eval:d*(f)}} >0|0|1}}` non évaluable (génération en échec) → `{{if:d*f>0|0|1}}` / `{{if:a*d*f>0|0|1}}` ; corrections : deux étapes conditionnelles (dont une vide) fusionnées en « qui est {{if:…|positif|négatif}} », produit calculé affiché en v3/v4.",
+	"editNotes": "v3/v4 : `correctChoiceIndex` `{{if:{{eval:d*(f)}} >0|0|1}}` non évaluable (génération en échec) → `{{if:d*f>0|0|1}}` / `{{if:a*d*f>0|0|1}}` ; corrections : deux étapes conditionnelles (dont une vide) fusionnées en « qui est {{if:…|positif|négatif}} », produit calculé affiché en v3/v4. Décision de David (2026-09-27) : c ≠ b dans la forme factorisée (plus de facteur répété `3(x+5)(x+5)`, comme #602).",
 	"template": {
 		"title": "Déterminer la nature de l'extremum",
 		"shared": {
@@ -17,7 +17,7 @@
 				},
 				{
 					"name": "c",
-					"expression": "1..5;±"
+					"expression": "1..5;±!b"
 				},
 				{
 					"name": "d",

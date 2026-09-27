@@ -2,7 +2,7 @@
 	"globalIndex": 603,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "v3 : `\\bold{` jamais refermé autour du terme en couleur (LaTeX cassé, déjà dans TinyMath) → accolade ajoutée ; résultat final mis dans la formule (`=$-6` → `=-6$.`) ; « expression  ? » double espace ; point final.",
+	"editNotes": "v3 : `\\bold{` jamais refermé autour du terme en couleur (LaTeX cassé, déjà dans TinyMath) → accolade ajoutée ; résultat final mis dans la formule (`=$-6` → `=-6$.`) ; « expression  ? » double espace ; point final. Décision de David (2026-09-27) : c ≠ b dans la forme factorisée (plus de facteur répété `3(x+5)(x+5)`, comme #602).",
 	"template": {
 		"title": "",
 		"shared": {
@@ -17,7 +17,7 @@
 				},
 				{
 					"name": "c",
-					"expression": "1..5;±"
+					"expression": "1..5;±!b"
 				},
 				{
 					"name": "d",

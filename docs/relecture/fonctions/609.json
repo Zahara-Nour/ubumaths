@@ -1,6 +1,798 @@
 {
 	"globalIndex": 609,
-	"verdict": "arbitrate",
+	"verdict": "corrected",
 	"reviewer": "claude",
-	"question": "Forme canonique lue sur une parabole (15 images, a ∈ {±1/2, ±3/4, 1/4, ±1, 3, 4, -5}). Sans forme exigée, la forme développée (« -1/2x²-2x-3 ») est acceptée comme juste : il faut un requiredForm. Mais le motif générique « u*(x+v)^2+w » est REFUSÉ pour la bonne réponse « -\\frac{1}{2}(x+2)^2-1 » (il n'accepte que « -2+3(x+1)^2 », ordre inverse), et un motif par variation « u*(x+2)^2-1 » marche pour a ≠ ±1 mais pas pour « -(x+1)^2+3 » ni « (x-1)^2-3 » (u ne capte pas le coefficient implicite ±1). Deux options : (1) accepter la question telle quelle, forme développée comptée juste (perd l'objectif) ; (2) la laisser en attente d'un correctif du motif (#482 : ordre libre des termes et coefficient implicite ±1 dans u). Laquelle ? À noter pour la reprise : images TinyMath en .png présentes (forme-canonique-N-600.png et correction_…), à remettre dans l'énoncé et la correction par variation ; « {{{eval:-1/2}}} » à nettoyer en « {{eval:-1/2}} »."
+	"editNotes": "Forme canonique exigée par motif u*($x+v)^2+w sur chaque case (forme développée et factorisée refusées). Image de la parabole remise dans chaque énoncé, image de correction + phrase (sommet, lecture de a) dans la correction. {{{eval:…}}} nettoyé en {{eval:…}} (coefficient ±1 écrit en dur). Consigne à l'impératif. Décision de David (2026-09-28) : le coefficient écrit sous la fraction (−(x+2)²/2 − 1) est juste (#490).",
+	"template": {
+		"title": "Déterminer la forme canonique.",
+		"description": "Graphiquement",
+		"variations": [
+			{
+				"statement": "Détermine la forme canonique du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/forme-canonique/forme-canonique-0-600.png)\n\nLa forme canonique est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-1/2}}(x{{eval:-(-2);+}})^2{{eval:-1;+}}",
+						"requiredForm": {
+							"pattern": "u*($x+v)^2+w"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet de la parabole est $S(-2\\,;\\,-1)$ : la forme canonique s'écrit $a(x+2)^2-1$, et on lit $a$ grâce à un autre point de la parabole.",
+						"![Correction](polynome-second-degre/forme-canonique/correction-forme-canonique-0-600.png)",
+						"La forme canonique est $-\\frac{1}{2}(x+2)^2-1$."
+					]
+				}
+			},
+			{
+				"statement": "Détermine la forme canonique du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/forme-canonique/forme-canonique-1-600.png)\n\nLa forme canonique est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:3/4}}(x{{eval:-(-2);+}})^2{{eval:-1;+}}",
+						"requiredForm": {
+							"pattern": "u*($x+v)^2+w"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet de la parabole est $S(-2\\,;\\,-1)$ : la forme canonique s'écrit $a(x+2)^2-1$, et on lit $a$ grâce à un autre point de la parabole.",
+						"![Correction](polynome-second-degre/forme-canonique/correction-forme-canonique-1-600.png)",
+						"La forme canonique est $\\frac{3}{4}(x+2)^2-1$."
+					]
+				}
+			},
+			{
+				"statement": "Détermine la forme canonique du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/forme-canonique/forme-canonique-2-600.png)\n\nLa forme canonique est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-(x{{eval:-(-1);+}})^2{{eval:3;+}}",
+						"requiredForm": {
+							"pattern": "u*($x+v)^2+w"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet de la parabole est $S(-1\\,;\\,3)$ : la forme canonique s'écrit $a(x+1)^2+3$, et on lit $a$ grâce à un autre point de la parabole.",
+						"![Correction](polynome-second-degre/forme-canonique/correction-forme-canonique-2-600.png)",
+						"La forme canonique est $-(x+1)^2+3$."
+					]
+				}
+			},
+			{
+				"statement": "Détermine la forme canonique du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/forme-canonique/forme-canonique-3-600.png)\n\nLa forme canonique est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:3}}(x{{eval:-(-1);+}})^2{{eval:-2;+}}",
+						"requiredForm": {
+							"pattern": "u*($x+v)^2+w"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet de la parabole est $S(-1\\,;\\,-2)$ : la forme canonique s'écrit $a(x+1)^2-2$, et on lit $a$ grâce à un autre point de la parabole.",
+						"![Correction](polynome-second-degre/forme-canonique/correction-forme-canonique-3-600.png)",
+						"La forme canonique est $3(x+1)^2-2$."
+					]
+				}
+			},
+			{
+				"statement": "Détermine la forme canonique du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/forme-canonique/forme-canonique-4-600.png)\n\nLa forme canonique est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-5}}(x{{eval:-(-1);+}})^2{{eval:2;+}}",
+						"requiredForm": {
+							"pattern": "u*($x+v)^2+w"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet de la parabole est $S(-1\\,;\\,2)$ : la forme canonique s'écrit $a(x+1)^2+2$, et on lit $a$ grâce à un autre point de la parabole.",
+						"![Correction](polynome-second-degre/forme-canonique/correction-forme-canonique-4-600.png)",
+						"La forme canonique est $-5(x+1)^2+2$."
+					]
+				}
+			},
+			{
+				"statement": "Détermine la forme canonique du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/forme-canonique/forme-canonique-5-600.png)\n\nLa forme canonique est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:4}}(x{{eval:-(1);+}})^2{{eval:-1;+}}",
+						"requiredForm": {
+							"pattern": "u*($x+v)^2+w"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet de la parabole est $S(1\\,;\\,-1)$ : la forme canonique s'écrit $a(x-1)^2-1$, et on lit $a$ grâce à un autre point de la parabole.",
+						"![Correction](polynome-second-degre/forme-canonique/correction-forme-canonique-5-600.png)",
+						"La forme canonique est $4(x-1)^2-1$."
+					]
+				}
+			},
+			{
+				"statement": "Détermine la forme canonique du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/forme-canonique/forme-canonique-6-600.png)\n\nLa forme canonique est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:1/4}}(x{{eval:-(-2);+}})^2{{eval:-2;+}}",
+						"requiredForm": {
+							"pattern": "u*($x+v)^2+w"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet de la parabole est $S(-2\\,;\\,-2)$ : la forme canonique s'écrit $a(x+2)^2-2$, et on lit $a$ grâce à un autre point de la parabole.",
+						"![Correction](polynome-second-degre/forme-canonique/correction-forme-canonique-6-600.png)",
+						"La forme canonique est $\\frac{1}{4}(x+2)^2-2$."
+					]
+				}
+			},
+			{
+				"statement": "Détermine la forme canonique du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/forme-canonique/forme-canonique-7-600.png)\n\nLa forme canonique est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-3}}(x{{eval:-(-1);+}})^2{{eval:1;+}}",
+						"requiredForm": {
+							"pattern": "u*($x+v)^2+w"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet de la parabole est $S(-1\\,;\\,1)$ : la forme canonique s'écrit $a(x+1)^2+1$, et on lit $a$ grâce à un autre point de la parabole.",
+						"![Correction](polynome-second-degre/forme-canonique/correction-forme-canonique-7-600.png)",
+						"La forme canonique est $-3(x+1)^2+1$."
+					]
+				}
+			},
+			{
+				"statement": "Détermine la forme canonique du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/forme-canonique/forme-canonique-8-600.png)\n\nLa forme canonique est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-3/4}}(x{{eval:-(-2);+}})^2{{eval:2;+}}",
+						"requiredForm": {
+							"pattern": "u*($x+v)^2+w"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet de la parabole est $S(-2\\,;\\,2)$ : la forme canonique s'écrit $a(x+2)^2+2$, et on lit $a$ grâce à un autre point de la parabole.",
+						"![Correction](polynome-second-degre/forme-canonique/correction-forme-canonique-8-600.png)",
+						"La forme canonique est $-\\frac{3}{4}(x+2)^2+2$."
+					]
+				}
+			},
+			{
+				"statement": "Détermine la forme canonique du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/forme-canonique/forme-canonique-9-600.png)\n\nLa forme canonique est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-(x{{eval:-(2);+}})^2{{eval:3;+}}",
+						"requiredForm": {
+							"pattern": "u*($x+v)^2+w"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet de la parabole est $S(2\\,;\\,3)$ : la forme canonique s'écrit $a(x-2)^2+3$, et on lit $a$ grâce à un autre point de la parabole.",
+						"![Correction](polynome-second-degre/forme-canonique/correction-forme-canonique-9-600.png)",
+						"La forme canonique est $-(x-2)^2+3$."
+					]
+				}
+			},
+			{
+				"statement": "Détermine la forme canonique du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/forme-canonique/forme-canonique-10-600.png)\n\nLa forme canonique est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:4}}(x{{eval:-(-1);+}})^2{{eval:-2;+}}",
+						"requiredForm": {
+							"pattern": "u*($x+v)^2+w"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet de la parabole est $S(-1\\,;\\,-2)$ : la forme canonique s'écrit $a(x+1)^2-2$, et on lit $a$ grâce à un autre point de la parabole.",
+						"![Correction](polynome-second-degre/forme-canonique/correction-forme-canonique-10-600.png)",
+						"La forme canonique est $4(x+1)^2-2$."
+					]
+				}
+			},
+			{
+				"statement": "Détermine la forme canonique du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/forme-canonique/forme-canonique-11-600.png)\n\nLa forme canonique est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-3/4}}(x{{eval:-(2);+}})^2{{eval:1;+}}",
+						"requiredForm": {
+							"pattern": "u*($x+v)^2+w"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet de la parabole est $S(2\\,;\\,1)$ : la forme canonique s'écrit $a(x-2)^2+1$, et on lit $a$ grâce à un autre point de la parabole.",
+						"![Correction](polynome-second-degre/forme-canonique/correction-forme-canonique-11-600.png)",
+						"La forme canonique est $-\\frac{3}{4}(x-2)^2+1$."
+					]
+				}
+			},
+			{
+				"statement": "Détermine la forme canonique du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/forme-canonique/forme-canonique-12-600.png)\n\nLa forme canonique est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "-(x{{eval:-(-1);+}})^2{{eval:2;+}}",
+						"requiredForm": {
+							"pattern": "u*($x+v)^2+w"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet de la parabole est $S(-1\\,;\\,2)$ : la forme canonique s'écrit $a(x+1)^2+2$, et on lit $a$ grâce à un autre point de la parabole.",
+						"![Correction](polynome-second-degre/forme-canonique/correction-forme-canonique-12-600.png)",
+						"La forme canonique est $-(x+1)^2+2$."
+					]
+				}
+			},
+			{
+				"statement": "Détermine la forme canonique du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/forme-canonique/forme-canonique-13-600.png)\n\nLa forme canonique est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "(x{{eval:-(1);+}})^2{{eval:-3;+}}",
+						"requiredForm": {
+							"pattern": "u*($x+v)^2+w"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet de la parabole est $S(1\\,;\\,-3)$ : la forme canonique s'écrit $a(x-1)^2-3$, et on lit $a$ grâce à un autre point de la parabole.",
+						"![Correction](polynome-second-degre/forme-canonique/correction-forme-canonique-13-600.png)",
+						"La forme canonique est $(x-1)^2-3$."
+					]
+				}
+			},
+			{
+				"statement": "Détermine la forme canonique du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/forme-canonique/forme-canonique-14-600.png)\n\nLa forme canonique est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-1/2}}(x{{eval:-(2);+}})^2{{eval:-1;+}}",
+						"requiredForm": {
+							"pattern": "u*($x+v)^2+w"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet de la parabole est $S(2\\,;\\,-1)$ : la forme canonique s'écrit $a(x-2)^2-1$, et on lit $a$ grâce à un autre point de la parabole.",
+						"![Correction](polynome-second-degre/forme-canonique/correction-forme-canonique-14-600.png)",
+						"La forme canonique est $-\\frac{1}{2}(x-2)^2-1$."
+					]
+				}
+			}
+		],
+		"grades": ["1_SPE"],
+		"theme": "Fonctions",
+		"domain": "Polynôme du second degré",
+		"subdomain": "Apprivoiser",
+		"level": 9,
+		"status": "draft",
+		"delay": 40,
+		"testSpecs": [
+			{
+				"description": "v0 forme canonique juste",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["-\\frac{1}{2}(x+2)^2-1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 forme développée refusée",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["-\\frac{1}{2}x^2-2x-3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v0 autre sommet (signe de alpha inversé)",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["-\\frac{1}{2}(x-2)^2-1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v1 forme canonique juste",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["\\frac{3}{4}(x+2)^2-1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 forme développée refusée",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["\\frac{3}{4}x^2+3x+2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v1 autre sommet (signe de alpha inversé)",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["\\frac{3}{4}(x-2)^2-1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v2 coefficient implicite -1",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["-(x+1)^2+3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 forme développée refusée",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["-x^2-2x+2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v2 autre sommet (signe de alpha inversé)",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["-(x-1)^2+3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v3 forme canonique juste",
+				"variationIndex": 3,
+				"variables": {},
+				"answers": ["3(x+1)^2-2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 forme développée refusée",
+				"variationIndex": 3,
+				"variables": {},
+				"answers": ["3x^2+6x+1"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v3 autre sommet (signe de alpha inversé)",
+				"variationIndex": 3,
+				"variables": {},
+				"answers": ["3(x-1)^2-2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v4 forme canonique juste",
+				"variationIndex": 4,
+				"variables": {},
+				"answers": ["-5(x+1)^2+2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 forme développée refusée",
+				"variationIndex": 4,
+				"variables": {},
+				"answers": ["-5x^2-10x-3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v4 autre sommet (signe de alpha inversé)",
+				"variationIndex": 4,
+				"variables": {},
+				"answers": ["-5(x-1)^2+2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v5 forme canonique juste",
+				"variationIndex": 5,
+				"variables": {},
+				"answers": ["4(x-1)^2-1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5 forme développée refusée",
+				"variationIndex": 5,
+				"variables": {},
+				"answers": ["4x^2-8x+3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v5 autre sommet (signe de alpha inversé)",
+				"variationIndex": 5,
+				"variables": {},
+				"answers": ["4(x+1)^2-1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v6 forme canonique juste",
+				"variationIndex": 6,
+				"variables": {},
+				"answers": ["\\frac{1}{4}(x+2)^2-2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v6 forme développée refusée",
+				"variationIndex": 6,
+				"variables": {},
+				"answers": ["\\frac{1}{4}x^2+x-1"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v6 autre sommet (signe de alpha inversé)",
+				"variationIndex": 6,
+				"variables": {},
+				"answers": ["\\frac{1}{4}(x-2)^2-2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v7 forme canonique juste",
+				"variationIndex": 7,
+				"variables": {},
+				"answers": ["-3(x+1)^2+1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v7 forme développée refusée",
+				"variationIndex": 7,
+				"variables": {},
+				"answers": ["-3x^2-6x-2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v7 autre sommet (signe de alpha inversé)",
+				"variationIndex": 7,
+				"variables": {},
+				"answers": ["-3(x-1)^2+1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v8 forme canonique juste",
+				"variationIndex": 8,
+				"variables": {},
+				"answers": ["-\\frac{3}{4}(x+2)^2+2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v8 forme développée refusée",
+				"variationIndex": 8,
+				"variables": {},
+				"answers": ["-\\frac{3}{4}x^2-3x-1"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v8 autre sommet (signe de alpha inversé)",
+				"variationIndex": 8,
+				"variables": {},
+				"answers": ["-\\frac{3}{4}(x-2)^2+2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v9 forme canonique juste",
+				"variationIndex": 9,
+				"variables": {},
+				"answers": ["-(x-2)^2+3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v9 forme développée refusée",
+				"variationIndex": 9,
+				"variables": {},
+				"answers": ["-x^2+4x-1"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v9 autre sommet (signe de alpha inversé)",
+				"variationIndex": 9,
+				"variables": {},
+				"answers": ["-(x+2)^2+3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v10 forme canonique juste",
+				"variationIndex": 10,
+				"variables": {},
+				"answers": ["4(x+1)^2-2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v10 forme développée refusée",
+				"variationIndex": 10,
+				"variables": {},
+				"answers": ["4x^2+8x+2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v10 autre sommet (signe de alpha inversé)",
+				"variationIndex": 10,
+				"variables": {},
+				"answers": ["4(x-1)^2-2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v11 forme canonique juste",
+				"variationIndex": 11,
+				"variables": {},
+				"answers": ["-\\frac{3}{4}(x-2)^2+1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v11 forme développée refusée",
+				"variationIndex": 11,
+				"variables": {},
+				"answers": ["-\\frac{3}{4}x^2+3x-2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v11 autre sommet (signe de alpha inversé)",
+				"variationIndex": 11,
+				"variables": {},
+				"answers": ["-\\frac{3}{4}(x+2)^2+1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v12 forme canonique juste",
+				"variationIndex": 12,
+				"variables": {},
+				"answers": ["-(x+1)^2+2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v12 forme développée refusée",
+				"variationIndex": 12,
+				"variables": {},
+				"answers": ["-x^2-2x+1"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v12 autre sommet (signe de alpha inversé)",
+				"variationIndex": 12,
+				"variables": {},
+				"answers": ["-(x-1)^2+2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v13 forme canonique juste",
+				"variationIndex": 13,
+				"variables": {},
+				"answers": ["(x-1)^2-3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v13 forme développée refusée",
+				"variationIndex": 13,
+				"variables": {},
+				"answers": ["x^2-2x-2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v13 autre sommet (signe de alpha inversé)",
+				"variationIndex": 13,
+				"variables": {},
+				"answers": ["(x+1)^2-3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v14 forme canonique juste",
+				"variationIndex": 14,
+				"variables": {},
+				"answers": ["-\\frac{1}{2}(x-2)^2-1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v14 forme développée refusée",
+				"variationIndex": 14,
+				"variables": {},
+				"answers": ["-\\frac{1}{2}x^2+2x-3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v14 autre sommet (signe de alpha inversé)",
+				"variationIndex": 14,
+				"variables": {},
+				"answers": ["-\\frac{1}{2}(x+2)^2-1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v5 4(x-\\frac{1}{2})(x-\\frac{3}{2})",
+				"variationIndex": 5,
+				"variables": {},
+				"answers": ["4(x-\\frac{1}{2})(x-\\frac{3}{2})"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v5 (2x-1)(2x-3)",
+				"variationIndex": 5,
+				"variables": {},
+				"answers": ["(2x-1)(2x-3)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v13 (x-1-\\sqrt{3})(x-1+\\sqrt{3})",
+				"variationIndex": 13,
+				"variables": {},
+				"answers": ["(x-1-\\sqrt{3})(x-1+\\sqrt{3})"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v0 coefficient décimal accepté",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["-0.5(x+2)^2-1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 ordre des termes inversé accepté",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["-1-\\frac{1}{2}(x+2)^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v13 ordre des termes inversé accepté",
+				"variationIndex": 13,
+				"variables": {},
+				"answers": ["-3+(x-1)^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 (-x-2)^2 n'est pas une forme canonique",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["-\\frac{1}{2}(-x-2)^2-1"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "v13 coefficient 1 écrit : perfectible",
+				"variationIndex": 13,
+				"variables": {},
+				"answers": ["1(x-1)^2-3"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["factorOne"]
+				}
+			},
+			{
+				"description": "v0 carré divisé par 2 : juste (coefficient sous la fraction, décision de David)",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["-\\frac{(x+2)^2}{2}-1"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			}
+		]
+	}
 }
