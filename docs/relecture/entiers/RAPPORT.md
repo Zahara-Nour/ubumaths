@@ -11,8 +11,8 @@ Entiers sont celles de David (`docs/relecture/david/`).
 
 | Verdict                         | Nombre |
 | ------------------------------- | ------ |
-| Approuvée telle que transformée | 125    |
-| Corrigée puis approuvée         | 62     |
+| Approuvée telle que transformée | 127    |
+| Corrigée puis approuvée         | 60     |
 | Rejetée                         | 0      |
 | À arbitrer                      | 0      |
 
