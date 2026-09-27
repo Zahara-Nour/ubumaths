@@ -2433,6 +2433,9 @@ export function transformQuestion(
 			shared.requiredForm = requiredForm;
 		}
 
+		// Variable de fonction `x` citée par un calcul (`[_&1x_]`) : déclarée « x »
+		declareFunctionVariable(variations, shared);
+
 		// Assign category
 		const category = assignCategory(oldQuestion);
 
@@ -2493,6 +2496,66 @@ export function transformQuestion(
 			warnings: warnings.length > 0 ? warnings : undefined,
 			stats
 		};
+	}
+}
+
+// ============================================================================
+// VARIABLE DE FONCTION x
+// ============================================================================
+
+/** Contenus des `{{eval:…}}` d'un texte (accolades imbriquées comprises) */
+function evalContents(text: string): string[] {
+	const contents: string[] = [];
+	let from = 0;
+	for (;;) {
+		const start = text.indexOf('{{eval:', from);
+		if (start === -1) return contents;
+		let depth = 0;
+		let i = start;
+		for (; i < text.length; i++) {
+			if (text[i] === '{') depth++;
+			else if (text[i] === '}' && --depth === 0) break;
+		}
+		contents.push(text.slice(start + 7, i - 1));
+		from = i + 1;
+	}
+}
+
+/** Calculs d'une variation : `{{eval:…}}`, et la forme abrégée d'une variable (`eval:1x`) */
+function variationEvals(text: string): string[] {
+	const short = [...text.matchAll(/"expression":"eval:([^"]*)"/g)].map((m) => m[1]);
+	return [...evalContents(text), ...short];
+}
+
+/**
+ * Le calcul écrit la lettre `x` elle-même, seule ou collée à un coefficient (`ax`, `bx^2`) —
+ * hors `{{…}}`, commandes LaTeX et noms de fonctions (`max`, `exp`)
+ */
+function citesX(evalContent: string): boolean {
+	const bare = evalContent
+		.replace(/\{\{[^{}]*\}\}/g, ' ')
+		.replace(/\\[a-zA-Z]+/g, ' ')
+		.replace(/max|exp/g, ' ');
+	return bare.includes('x');
+}
+
+/**
+ * `{{eval:…}}` n'accepte une lettre que TIRÉE par une variable (protection contre les fautes
+ * de frappe) : `[_&1x_]` → `{{eval:a*x}}` échouait (« free variables: x »). Quand un calcul
+ * cite `x` et qu'aucune variable ne s'appelle `x`, on déclare `x` = « x » (liste à un choix).
+ */
+function declareFunctionVariable(
+	variations: QuestionVariation[],
+	shared: SharedVariationDefaults | undefined
+): void {
+	const sharedNames = new Set((shared?.variables ?? []).map((v) => v.name));
+	if (sharedNames.has('x')) return;
+	for (const variation of variations) {
+		const names = new Set((variation.variables ?? []).map((v) => v.name));
+		if (names.has('x')) continue;
+		const text = JSON.stringify([variation, shared?.variables ?? [], shared?.correction ?? null]);
+		if (!variationEvals(text).some(citesX)) continue;
+		variation.variables = [{ name: 'x', expression: 'x|x' }, ...(variation.variables ?? [])];
 	}
 }
 
