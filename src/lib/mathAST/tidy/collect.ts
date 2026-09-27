@@ -705,7 +705,9 @@ function toTerm(
 		quantity,
 		decimal: false,
 		written:
-			unitChoice === 'written' && quantity !== null ? writtenUnitOf(acc.unitSymbols, unit) : null
+			unitChoice === 'written' && unit !== null && quantity !== null
+				? writtenUnitOf(acc.unitSymbols, unit)
+				: null
 	};
 }
 
