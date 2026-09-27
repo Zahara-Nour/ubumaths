@@ -85,7 +85,11 @@ perfectible. Mesurer d'abord ce que MathLive produit au **vrai clavier**.
   - Reste pour le lot 2 (relecture de #483, écart B) : `(3[h]+20[min])*1[km/h]` → « 200 min·km/h »
     (unités de même dimension au numérateur et au dénominateur non simplifiées) — un `{{eval}}`
     produira ces calculs (`1[h]+30[min]` × 60 km/h doit donner 90 km).
-- [ ] Lot 2 — `{{eval}}`
-- [ ] Lot 4 — convertisseur
+- [x] Lot 2 — `{{eval}}` (#484) : grandeurs gardées, `;[unité]`, `;hms` (affichage seulement ;
+      interdit dans un attendu ; produit de durées refusé), zéro avec unité, attendu signé lu.
+- [x] Affichage (#486) : grandeur dans une formule d'auteur ou dans le texte → `\unit`.
+- [x] Lot 4 — convertisseur (#485) : lot Grandeurs 14 → 35/45 (+ #507–#509). Restent : #428, #429
+      (listes de grandeurs), #457–#460 (décimal `&1,&2`), #462/#464/#466 (réponse « 2 h 15 min », lot 3),
+      #508 v0 (source). À la relecture : #468 attend des minutes sans le dire ; #434 unité non annoncée.
 - [ ] Lot 3 — durées composées
 - [ ] Relecture du lot Grandeurs (#426–#470)
