@@ -2,7 +2,7 @@
 	"globalIndex": 241,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Consigne à l'impératif : « Décomposer comme dans cet exemple » → « Décompose comme dans cet exemple ». Specs : décomposition juste (avec ou sans terme nul), nombre recopié ou fraction regroupée refusés. Dénominateur 1 000 attendu avec l'espace des milliers (1000 sans espace : perfectible).",
+	"editNotes": "Consigne à l'impératif : « Décomposer comme dans cet exemple » → « Décompose comme dans cet exemple ». Specs : décomposition juste (avec ou sans terme nul), nombre recopié ou fraction regroupée refusés. Dénominateur 1 000 attendu avec l'espace des milliers (1000 sans espace : perfectible). Écriture en fractions décimales exigée (forme par motif avec les chiffres tirés, ordre des termes libre, terme nul facultatif) : 5 + 4/5 + 1/100 refusé — décision de David.",
 	"template": {
 		"title": "Décomposer en unités, dixièmes, centièmes, millièmes",
 		"description": "avec des fractions décimales",
@@ -36,7 +36,10 @@
 				],
 				"blanks": [
 					{
-						"expectedAnswer": "{{a}} + \\dfrac{{{b}}}{10} + \\dfrac{{{c}}}{100} + \\dfrac{{{d}}}{1000}"
+						"expectedAnswer": "{{a}} + \\dfrac{{{b}}}{10} + \\dfrac{{{c}}}{100} + \\dfrac{{{d}}}{1000}",
+						"requiredForm": {
+							"pattern": "{{a}} + {{b}}/10 + {{c}}/100 + {{d}}/1000"
+						}
 					}
 				]
 			},
@@ -66,7 +69,10 @@
 				],
 				"blanks": [
 					{
-						"expectedAnswer": "{{a}} + \\dfrac{{{b}}}{10} + \\dfrac{{{c}}}{100} + \\dfrac{{{d}}}{1000}"
+						"expectedAnswer": "{{a}} + \\dfrac{{{b}}}{10} + \\dfrac{{{c}}}{100} + \\dfrac{{{d}}}{1000}",
+						"requiredForm": {
+							"pattern": "{{a}} + {{c}}/100 + {{d}}/1000 + ___reste"
+						}
 					}
 				]
 			},
@@ -96,7 +102,10 @@
 				],
 				"blanks": [
 					{
-						"expectedAnswer": "{{a}} + \\dfrac{{{b}}}{10} + \\dfrac{{{c}}}{100} + \\dfrac{{{d}}}{1000}"
+						"expectedAnswer": "{{a}} + \\dfrac{{{b}}}{10} + \\dfrac{{{c}}}{100} + \\dfrac{{{d}}}{1000}",
+						"requiredForm": {
+							"pattern": "{{a}} + {{b}}/10 + {{d}}/1000 + ___reste"
+						}
 					}
 				]
 			}
@@ -217,6 +226,35 @@
 				"expected": {
 					"status": "unoptimal_form",
 					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "autre ordre des termes",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"answers": ["\\frac{4}{1\\,000}+5+\\frac{1}{100}+\\frac{8}{10}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "fraction simplifiée : pas une fraction décimale",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"answers": ["5+\\frac{4}{5}+\\frac{1}{100}+\\frac{4}{1\\,000}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
 				}
 			}
 		]

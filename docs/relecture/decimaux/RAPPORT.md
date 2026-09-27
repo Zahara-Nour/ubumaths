@@ -36,16 +36,13 @@ variation, sans marqueur brut ni zéro final.
 
 Chaque fichier `<n>.json` porte le détail dans `editNotes`.
 
-## À regarder par David (import non bloqué)
+## Décisions de David (2026-09-27)
 
-1. **Espace dans la partie décimale** : la règle « groupes de 3 dès 4 chiffres » vaut aussi après
-   la virgule : `0,1838` est perfectible, `0,183 8` est attendu (#266, #267, #280–#282, 6e).
-   Conforme à la règle ; peut pénaliser beaucoup d'élèves. Garder, ou n'exiger l'espace que dans
-   la partie entière ?
-2. **#229, #234** : « 61,97, chiffre des centaines » attend 0 (juste). Interdire 0 en tête ?
-3. **#239, #241** : « 5 + 4/5 + 1/100 » accepté pour 5,81 (fractions non simplifiées tolérées,
-   réglage TinyMath) alors que l'exercice vise les fractions décimales.
-4. **#248** : encadrement au centième en CM1, alors que #233 (millièmes) est en CM2.
+1. Espace dans la partie décimale (`0,183 8`) : **gardée**.
+2. #229, #234, 0 en tête (« 61,97, chiffre des centaines » → 0) : **gardé**.
+3. #239, #241 : **écriture en fractions décimales exigée**, ordre des termes libre, terme nul
+   facultatif (forme exigée par motif, #479) ; `5 + 4/5 + 1/100` refusé. Brouillons mis à jour.
+4. #248 (encadrement au centième en CM1) : **correct**, inchangé.
 
 ## Défauts trouvés dans le code
 
