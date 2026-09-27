@@ -23,6 +23,10 @@ import {
 	isSubtraction,
 	add,
 	opposite,
+	multiply,
+	divide,
+	number,
+	mapNodeTopDown,
 	flattenProductShallow,
 	stripUnnecessaryBrackets,
 	mapNode
@@ -271,6 +275,43 @@ function asSignedSums(node: MathNode): MathNode {
 	return mapNode(node, (n) => (isSubtraction(n) ? add(n.left, negatedTerm(n.right)) : n));
 }
 
+/** Nombre écrit, éventuellement signé, non nul : `3`, `−3`, `1.5` */
+function isSignedNonZeroNumber(node: MathNode): boolean {
+	return isNonZeroNumber(isOpposite(node) ? node.operand : node);
+}
+
+/**
+ * Coefficient écrit SOUS la fraction (décision de David) : `\\frac{c·T}{d}` → `\\frac{c}{d}·T`,
+ * `\\frac{T}{d}` → `\\frac{1}{d}·T`, `\\frac{−T}{d}` → `(−\\frac{1}{d})·T`. c et d sont des
+ * nombres écrits (d ≠ 0) ; un numérateur purement numérique (`\\frac{9}{3}`) n'est pas touché.
+ */
+function coefficientOutOfFraction(node: MathNode): MathNode | undefined {
+	if (!isDivision(node) || !isNonZeroNumber(node.denominator)) return undefined;
+	const { numerator, denominator } = node;
+	if (isNumber(numerator) || isSignedNonZeroNumber(numerator)) return undefined;
+	const over = (c: MathNode): MathNode => divide(c, denominator, 'fraction');
+	const signedOver = (c: MathNode): MathNode =>
+		isOpposite(c) ? opposite(over(c.operand)) : over(c);
+	if (isMultiplication(numerator) && isSignedNonZeroNumber(numerator.left)) {
+		return multiply(signedOver(numerator.left), numerator.right, 'implicit');
+	}
+	if (isOpposite(numerator)) {
+		return multiply(opposite(over(number('1'))), numerator.operand, 'implicit');
+	}
+	return multiply(over(number('1')), numerator, 'implicit');
+}
+
+/** Tous les termes `\\frac{c·T}{d}` (et leurs opposés) réécrits `\\frac{c}{d}·T` */
+function withCoefficientsOutOfFractions(node: MathNode): MathNode {
+	return mapNodeTopDown(node, (n) => {
+		if (isOpposite(n)) {
+			const rewritten = coefficientOutOfFraction(n.operand);
+			return rewritten ? negatedTerm(rewritten) : n;
+		}
+		return coefficientOutOfFraction(n) ?? n;
+	});
+}
+
 /** Nombre d'apparitions de chaque joker dans le motif */
 function wildcardCounts(pattern: unknown, counts = new Map<string, number>()): Map<string, number> {
 	if (Array.isArray(pattern)) pattern.forEach((p) => wildcardCounts(p, counts));
@@ -407,7 +448,7 @@ function matchesCustomPattern(node: MathNode, patternStr: string): boolean {
 		// neutres implicites (u = ±1, w = 0). Seulement ajouté : rien de reconnu ne cesse de l'être.
 		// Chaque joker doit alors valoir un nombre simple : sinon `2(x+1)^2-3(x+1)^2` ou
 		// `(x+1)^2-2\\times3` passeraient (calcul non effectué, relecture #489).
-		const signedNode = asSignedSums(looseNode);
+		const signedNode = withCoefficientsOutOfFractions(asSignedSums(looseNode));
 		return withImplicitNeutrals(loose).some((variant) => {
 			const bindings = tryMatch(variant as typeof pattern, signedNode);
 			return (

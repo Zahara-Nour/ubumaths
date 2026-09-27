@@ -65,6 +65,37 @@ describe('forme canonique u*($x+v)^2+w', () => {
 	});
 });
 
+// Décision de David : le coefficient peut s'écrire SOUS la fraction, `\frac{c·T}{d}` ≡ `\frac{c}{d}·T`
+// (c, d nombres simples, d ≠ 0). Seulement au troisième essai.
+describe('forme canonique : coefficient sous la fraction', () => {
+	it.each([
+		'-\\frac{(x+2)^2}{2}-1',
+		'\\frac{(x+2)^2}{2}-1',
+		'\\frac{3(x+2)^2}{4}-1',
+		'-\\frac{3(x+2)^2}{4}-1',
+		'\\frac{-(x+2)^2}{2}-1',
+		'-1-\\frac{(x+2)^2}{2}'
+	])('accepté : %s', (answer) => {
+		expect(requiredFormVerdict(answer, CANONICAL)).toBe('ok');
+	});
+
+	it.each([
+		["numérateur qui n'est pas u·carré", '\\frac{(x+2)^2-2}{2}'],
+		['dénominateur non numérique', '\\frac{(x+2)^2}{x}'],
+		['calcul non effectué au dénominateur', '\\frac{(x+2)^2}{2+1}'],
+		['dénominateur nul', '\\frac{(x+2)^2}{0}'],
+		['calcul non effectué au numérateur', '\\frac{2\\times3(x+2)^2}{4}-1'],
+		['somme sur la fraction', '\\frac{(x+2)^2-4}{2}+1']
+	])('refusé (%s) : %s', (_label, answer) => {
+		expect(requiredFormVerdict(answer, CANONICAL)).toBe('violated');
+	});
+
+	it('quotient 9 / 3 (#226) inchangé : \\frac{9}{3} juste, \\frac{3}{1} refusé', () => {
+		expect(requiredFormVerdict('\\frac{9}{3}', { pattern: '9 / 3' })).toBe('ok');
+		expect(requiredFormVerdict('\\frac{3}{1}', { pattern: '9 / 3' })).toBe('violated');
+	});
+});
+
 describe('soustraction lue comme somme signée', () => {
 	// Le troisième essai n'accepte que des jokers valant un nombre simple : u = z n'en est pas
 	// un, donc (z-7)^2 reste refusé pour (u+v)^2 — comportement de main, conséquence acceptée.
