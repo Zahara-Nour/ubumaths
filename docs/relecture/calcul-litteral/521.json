@@ -1,0 +1,237 @@
+{
+	"globalIndex": 521,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Variables renommées (p, q, r…) : la lettre tirée (a, b, c) portait le nom d'une variable numérique et était remplacée par sa valeur (énoncés « 81 + 81 », réponses numériques). Produits juxtaposés passés en {{eval:…}}, consignes à l'impératif (Réduis, Développe et réduis, Écris, Simplifie).",
+	"template": {
+		"title": "Réduire une expression",
+		"description": "Coefficients positifs",
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "a|b|c"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "s",
+					"expression": "a|b|c!p"
+				},
+				{
+					"name": "t",
+					"expression": "2..9"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Réduis :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:qp}}+{{eval:rp}}+{{eval:ts}}+{{eval:us}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{q}}\\textcolor{{{color:primary.0}}}{{{p}}}+{{r}}\\textcolor{{{color:primary.0}}}{{{p}}}+{{t}}\\textcolor{{{color:primary.1}}}{{{s}}}+{{u}}\\textcolor{{{color:primary.1}}}{{{s}}}               &= ({{q}}+{{r}}) \\times \\textcolor{{{color:primary.0}}}{{{p}}} + ({{t}}+{{u}}) \\times \\textcolor{{{color:primary.1}}}{{{s}}} \\\\               &= {{eval:q+r}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} + {{eval:t+u}} \\times \\textcolor{{{color:primary.1}}}{{{s}}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Réduis :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:qp}}+{{eval:ts}}+{{eval:rp}}+{{eval:us}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{q}}\\textcolor{{{color:primary.0}}}{{{p}}} + {{t}}\\textcolor{{{color:primary.1}}}{{{s}}} + {{r}}\\textcolor{{{color:primary.0}}}{{{p}}}+{{u}}\\textcolor{{{color:primary.1}}}{{{s}}}               &= ({{q}}+{{r}}) \\times \\textcolor{{{color:primary.0}}}{{{p}}} + ({{t}}+{{u}}) \\times \\textcolor{{{color:primary.1}}}{{{s}}} \\\\               &= {{eval:q+r}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} + {{eval:t+u}} \\times \\textcolor{{{color:primary.1}}}{{{s}}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Réduis :\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{eval:qp}}+{{eval:ts}}+{{eval:us}}+{{eval:rp}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{q}}\\textcolor{{{color:primary.0}}}{{{p}}} + {{t}}\\textcolor{{{color:primary.1}}}{{{s}}} + {{u}}\\textcolor{{{color:primary.1}}}{{{s}}} + {{r}}\\textcolor{{{color:primary.0}}}{{{p}}}               &= ({{q}}+{{r}}) \\times \\textcolor{{{color:primary.0}}}{{{p}}} + ({{t}}+{{u}}) \\times \\textcolor{{{color:primary.1}}}{{{s}}} \\\\               &= {{eval:q+r}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} + {{eval:t+u}} \\times \\textcolor{{{color:primary.1}}}{{{s}}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Réduction",
+		"level": 3,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse 14b+6c",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3",
+					"s": "b|b",
+					"t": "7",
+					"u": "7"
+				},
+				"answers": ["14b+6c"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 3c+3c+7b+7b",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3",
+					"s": "b|b",
+					"t": "7",
+					"u": "7"
+				},
+				"answers": ["3c+3c+7b+7b"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "6c+14b",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3",
+					"s": "b|b",
+					"t": "7",
+					"u": "7"
+				},
+				"answers": ["6c+14b"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "20bc",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3",
+					"s": "b|b",
+					"t": "7",
+					"u": "7"
+				},
+				"answers": ["20bc"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "bonne réponse 14b+6c",
+				"variationIndex": 1,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3",
+					"s": "b|b",
+					"t": "7",
+					"u": "7"
+				},
+				"answers": ["14b+6c"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 3c+7b+3c+7b",
+				"variationIndex": 1,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3",
+					"s": "b|b",
+					"t": "7",
+					"u": "7"
+				},
+				"answers": ["3c+7b+3c+7b"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "bonne réponse 14b+6c",
+				"variationIndex": 2,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3",
+					"s": "b|b",
+					"t": "7",
+					"u": "7"
+				},
+				"answers": ["14b+6c"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 3c+7b+7b+3c",
+				"variationIndex": 2,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3",
+					"s": "b|b",
+					"t": "7",
+					"u": "7"
+				},
+				"answers": ["3c+7b+7b+3c"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			}
+		]
+	}
+}

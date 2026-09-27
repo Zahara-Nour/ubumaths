@@ -1,0 +1,132 @@
+{
+	"globalIndex": 567,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne : « Résouds » → « Résous » (impératif de résoudre).",
+	"template": {
+		"title": "Addition",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "5..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "2..9!a"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$$x+{{b}}/{{a}}={{eval:b+c}}/{{a}}$$\n\n$x=?$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 x+\\frac{{{b}}}{{{a}}}=\\frac{{{eval:b+c}}}{{{a}}}               & \\quad \\lrArr \\quad x=\\frac{{{eval:b+c}}}{{{a}}}-\\frac{{{b}}}{{{a}}} \\\\               {{if:gcd({{c}}, {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= \\frac{{{c}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}               \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c/a}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$${{b}}/{{a}}+x={{eval:c+b}}/{{a}}$$\n\n$x=?$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 \\frac{{{b}}}{{{a}}} + x = \\frac{{{eval:b+c}}}{{{a}}}               & \\quad \\lrArr \\quad x=\\frac{{{eval:b+c}}}{{{a}}}-\\frac{{{b}}}{{{a}}} \\\\               {{if:gcd({{c}}, {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= \\frac{{{c}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}               \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c/a}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Dans $$\\Q$$",
+		"level": 1,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "7",
+					"c": "4"
+				},
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "non simplifiée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "7",
+					"c": "4"
+				},
+				"answers": ["\\frac{4}{6}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "somme au lieu de différence",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "7",
+					"c": "4"
+				},
+				"answers": ["\\frac{11}{6}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "entier",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "7",
+					"c": "4"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "b/a + x",
+				"variationIndex": 1,
+				"variables": {
+					"a": "6",
+					"b": "7",
+					"c": "4"
+				},
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			}
+		]
+	}
+}

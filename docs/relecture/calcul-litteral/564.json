@@ -1,0 +1,203 @@
+{
+	"globalIndex": 564,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne : « Résouds » → « Résous » (impératif de résoudre).",
+	"template": {
+		"title": "Multiplication",
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$${{a}}x={{eval:a*(b)}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{a}}x={{eval:a*(b)}}                & \\quad \\lrArr \\quad x=\\frac{{{eval:b*(a)}}}{{{a}}} \\\\               & \\quad \\lrArr \\quad  x= {{solution:0}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$${{a}}x={{eval:a*(b)}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{a}}x={{eval:a*(b)}}                & \\quad \\lrArr \\quad x=\\frac{{{eval:b*(a)}}}{{{a}}} \\\\               & \\quad \\lrArr \\quad  x= {{solution:0}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$$x*{{a}}={{eval:a*(b)}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 x \\times {{a}}={{eval:a*(b)}}                & \\quad \\lrArr \\quad x=\\frac{{{eval:b*(a)}}}{{{a}}} \\\\               & \\quad \\lrArr \\quad  x= {{solution:0}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$$x*({{a}})={{eval:a*(b)}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-9..-2"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 x \\times ({{a}})={{eval:a*(b)}}                & \\quad \\lrArr \\quad x=\\frac{{{eval:b*(a)}}}{{{a}}} \\\\               & \\quad \\lrArr \\quad  x= {{solution:0}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Dans $$\\Z$$",
+		"level": 5,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "a,b négatifs",
+				"variationIndex": 1,
+				"variables": {
+					"a": "-5",
+					"b": "-3"
+				},
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "signe",
+				"variationIndex": 1,
+				"variables": {
+					"a": "-5",
+					"b": "-3"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "x×a",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "x×(a)",
+				"variationIndex": 3,
+				"variables": {
+					"a": "-4",
+					"b": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "signe",
+				"variationIndex": 3,
+				"variables": {
+					"a": "-4",
+					"b": "9"
+				},
+				"answers": ["-9"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "quotient non calculé",
+				"variationIndex": 3,
+				"variables": {
+					"a": "-4",
+					"b": "9"
+				},
+				"answers": ["\\frac{-36}{-4}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			}
+		]
+	}
+}

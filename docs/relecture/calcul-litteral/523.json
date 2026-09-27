@@ -1,0 +1,131 @@
+{
+	"globalIndex": 523,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "$ers[1;9] converti en 1..9;± affiché avec son signe collé ({{eval:rp;+}}) ; pas d'exclusion r = -q (TinyMath n'en avait pas, comme #519). Réponse = tidy de la somme ; non réduite = bad_form. « Réduire » → « Réduis ».",
+	"template": {
+		"title": "Réduire une somme",
+		"description": "Coefficients relatifs",
+		"variations": [
+			{
+				"statement": "Réduis :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "a|b|c"
+					},
+					{
+						"name": "q",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "r",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:qp}}{{eval:rp;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{expression1}} &= ({{q}}{{eval:r;+}}) \\times {{p}} \\\\ &= {{eval:q+r}} \\times {{p}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:qp+rp}}"
+					}
+				]
+			}
+		],
+		"grades": ["3"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Réduction",
+		"level": 5,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse -13c",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "-7",
+					"r": "-6"
+				},
+				"answers": ["-13c"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "-7",
+					"r": "-6"
+				},
+				"answers": ["-7c-6c"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "signe faux -c",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "-7",
+					"r": "-6"
+				},
+				"answers": ["-c"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "bonne réponse 2c",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "5",
+					"r": "-3"
+				},
+				"answers": ["2c"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8c (signe de -3 ignoré)",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "5",
+					"r": "-3"
+				},
+				"answers": ["8c"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "somme nulle : 0",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "5",
+					"r": "-5"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,304 @@
+{
+	"globalIndex": 533,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Exclusions corrigées : s ≠ p, q, r (coefficients distincts, TinyMath excluait &1;&2;&4) — la conversion excluait la lettre. Lettre renommée k. Réponse = forme développée réduite (écrite développée, tidy ne développe pas), ordre libre ; forme factorisée recopiée = bad_form. « Développer et réduire » → « Développe et réduis ».",
+	"template": {
+		"title": "Développer un double produit",
+		"description": "Coefficients positifs",
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "1..9!p"
+				},
+				{
+					"name": "k",
+					"expression": "a|b|c|x|y|z"
+				},
+				{
+					"name": "r",
+					"expression": "1..9!p,q"
+				},
+				{
+					"name": "s",
+					"expression": "1..9!p,q,r"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Développe et réduis :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "({{p}}+{{eval:qk}})({{r}}+{{eval:sk}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} (\\textcolor{{{color:primary.0}}}{{{p}}}+\\textcolor{{{color:primary.1}}}{{{eval:qk}}})({{r}}+{{eval:sk}}) &= \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{r}} + \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{eval:sk}} + \\textcolor{{{color:primary.1}}}{{{eval:qk}}} \\times {{r}} + \\textcolor{{{color:primary.1}}}{{{eval:qk}}} \\times {{eval:sk}} \\\\ &= {{eval:p*r}} + {{eval:p*sk}} + {{eval:q*rk}} + {{eval:q*s*k^2}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q*s*k^2+(p*s+q*r)*k+p*r}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "({{eval:qk}}+{{p}})({{r}}+{{eval:sk}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} (\\textcolor{{{color:primary.1}}}{{{eval:qk}}}+\\textcolor{{{color:primary.0}}}{{{p}}})({{r}}+{{eval:sk}}) &= \\textcolor{{{color:primary.1}}}{{{eval:qk}}} \\times {{r}} + \\textcolor{{{color:primary.1}}}{{{eval:qk}}} \\times {{eval:sk}} + \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{r}} + \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{eval:sk}} \\\\ &= {{eval:q*rk}} + {{eval:q*s*k^2}} + {{eval:p*r}} + {{eval:p*sk}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q*s*k^2+(p*s+q*r)*k+p*r}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "({{p}}+{{eval:qk}})({{eval:sk}}+{{r}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} (\\textcolor{{{color:primary.0}}}{{{p}}}+\\textcolor{{{color:primary.1}}}{{{eval:qk}}})({{eval:sk}}+{{r}}) &= \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{eval:sk}} + \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{r}} + \\textcolor{{{color:primary.1}}}{{{eval:qk}}} \\times {{eval:sk}} + \\textcolor{{{color:primary.1}}}{{{eval:qk}}} \\times {{r}} \\\\ &= {{eval:p*sk}} + {{eval:p*r}} + {{eval:q*s*k^2}} + {{eval:q*rk}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q*s*k^2+(p*s+q*r)*k+p*r}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "({{eval:qk}}+{{p}})({{eval:sk}}+{{r}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} (\\textcolor{{{color:primary.1}}}{{{eval:qk}}}+\\textcolor{{{color:primary.0}}}{{{p}}})({{eval:sk}}+{{r}}) &= \\textcolor{{{color:primary.1}}}{{{eval:qk}}} \\times {{eval:sk}} + \\textcolor{{{color:primary.1}}}{{{eval:qk}}} \\times {{r}} + \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{eval:sk}} + \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{r}} \\\\ &= {{eval:q*s*k^2}} + {{eval:q*rk}} + {{eval:p*sk}} + {{eval:p*r}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q*s*k^2+(p*s+q*r)*k+p*r}}"
+					}
+				]
+			}
+		],
+		"grades": ["3"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Développement",
+		"level": 4,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"p": "9",
+					"q": "2",
+					"k": "b|b",
+					"r": "5",
+					"s": "7"
+				},
+				"answers": ["14b^2+73b+45"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre libre",
+				"variationIndex": 0,
+				"variables": {
+					"p": "9",
+					"q": "2",
+					"k": "b|b",
+					"r": "5",
+					"s": "7"
+				},
+				"answers": ["45+73b+14b^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"p": "9",
+					"q": "2",
+					"k": "b|b",
+					"r": "5",
+					"s": "7"
+				},
+				"answers": ["14b^2+73b+45"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre libre",
+				"variationIndex": 1,
+				"variables": {
+					"p": "9",
+					"q": "2",
+					"k": "b|b",
+					"r": "5",
+					"s": "7"
+				},
+				"answers": ["45+73b+14b^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bonne réponse",
+				"variationIndex": 2,
+				"variables": {
+					"p": "9",
+					"q": "2",
+					"k": "b|b",
+					"r": "5",
+					"s": "7"
+				},
+				"answers": ["14b^2+73b+45"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre libre",
+				"variationIndex": 2,
+				"variables": {
+					"p": "9",
+					"q": "2",
+					"k": "b|b",
+					"r": "5",
+					"s": "7"
+				},
+				"answers": ["45+73b+14b^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bonne réponse",
+				"variationIndex": 3,
+				"variables": {
+					"p": "9",
+					"q": "2",
+					"k": "b|b",
+					"r": "5",
+					"s": "7"
+				},
+				"answers": ["14b^2+73b+45"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre libre",
+				"variationIndex": 3,
+				"variables": {
+					"p": "9",
+					"q": "2",
+					"k": "b|b",
+					"r": "5",
+					"s": "7"
+				},
+				"answers": ["45+73b+14b^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "forme factorisée recopiée",
+				"variationIndex": 0,
+				"variables": {
+					"p": "9",
+					"q": "2",
+					"k": "b|b",
+					"r": "5",
+					"s": "7"
+				},
+				"answers": ["(9+2b)(5+7b)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "non réduite",
+				"variationIndex": 1,
+				"variables": {
+					"p": "9",
+					"q": "2",
+					"k": "b|b",
+					"r": "5",
+					"s": "7"
+				},
+				"answers": ["14b^2+63b+10b+45"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "constante fausse",
+				"variationIndex": 2,
+				"variables": {
+					"p": "9",
+					"q": "2",
+					"k": "b|b",
+					"r": "5",
+					"s": "7"
+				},
+				"answers": ["14b^2+73b+14"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "forme factorisée recopiée",
+				"variationIndex": 3,
+				"variables": {
+					"p": "9",
+					"q": "2",
+					"k": "b|b",
+					"r": "5",
+					"s": "7"
+				},
+				"answers": ["(2b+9)(7b+5)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			}
+		]
+	}
+}

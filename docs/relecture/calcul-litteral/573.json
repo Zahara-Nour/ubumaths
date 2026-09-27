@@ -1,0 +1,124 @@
+{
+	"globalIndex": 573,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne : « Résouds » → « Résous » (impératif de résoudre). Titre « Equation » → « Équation ».",
+	"template": {
+		"title": "Équation linéaire du premier degré",
+		"description": "Coefficients positifs - Second Membre nul",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9!a"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$${{a}}x+{{b}}=0$$\n\n$x=?$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{a}}x\\textcolor{{{color:primary.0}}}{+{{b}}}=0               & \\quad \\lrArr \\quad \\textcolor{{{color:primary.1}}}{{{a}}}x = \\textcolor{{{color:primary.0}}}{-{{b}}}\\\\               & \\quad \\lrArr \\quad x = \\frac{-{{b}}}{\\textcolor{{{color:primary.1}}}{{{a}}}}\\\\               {{if:gcd({{b}}, {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= -\\frac{{{b}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}              \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-b/a}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$${{b}}+{{a}}x=0$$\n\n$x=?$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 \\textcolor{{{color:primary.0}}}{{{b}}+}{{a}}x=0               & \\quad \\lrArr \\quad \\textcolor{{{color:primary.1}}}{{{a}}}x = \\textcolor{{{color:primary.0}}}{-{{b}}}\\\\               & \\quad \\lrArr \\quad x = \\frac{-{{b}}}{\\textcolor{{{color:primary.1}}}{{{a}}}}\\\\               {{if:gcd({{b}}, {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= -\\frac{{{b}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}              \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-b/a}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Linéaire du premier degré",
+		"level": 1,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["-\\frac{9}{7}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "oubli du signe",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{9}{7}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "signe au numérateur",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{-9}{7}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "b+ax",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["-\\frac{9}{7}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "entier",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "6"
+				},
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			}
+		]
+	}
+}

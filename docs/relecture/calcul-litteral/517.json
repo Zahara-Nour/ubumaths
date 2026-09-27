@@ -1,0 +1,108 @@
+{
+	"globalIndex": 517,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Variables renommées (p, q, r…) : la lettre tirée (a, b, c) portait le nom d'une variable numérique et était remplacée par sa valeur (énoncés « 81 + 81 », réponses numériques). Produits juxtaposés passés en {{eval:…}}, consignes à l'impératif (Réduis, Développe et réduis, Écris, Simplifie).",
+	"template": {
+		"title": "Simplifier un produit par $0$ ou $1$",
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "a|b|c|x|y"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Écris plus simplement cette expression littérale :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "1{{p}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}"
+					}
+				]
+			},
+			{
+				"statement": "Écris plus simplement cette expression littérale :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "0{{p}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"factorOne": "strict",
+				"factorZero": "strict"
+			}
+		},
+		"grades": ["5"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Simplification d'écriture",
+		"level": 3,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse y",
+				"variationIndex": 0,
+				"variables": {
+					"p": "y|y"
+				},
+				"answers": ["y"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 1y",
+				"variationIndex": 0,
+				"variables": {
+					"p": "y|y"
+				},
+				"answers": ["1y"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["factorOne", "form"]
+				}
+			},
+			{
+				"description": "bonne réponse 0",
+				"variationIndex": 1,
+				"variables": {
+					"p": "y|y"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 0y",
+				"variationIndex": 1,
+				"variables": {
+					"p": "y|y"
+				},
+				"answers": ["0y"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["factorZero", "form"]
+				}
+			}
+		]
+	}
+}

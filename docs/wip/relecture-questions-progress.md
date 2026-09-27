@@ -186,9 +186,19 @@ Après relecture (`code-reviewer`) :
   simplifiées, niveau de #248).
 - Base : 407 templates, tous brouillons.
 
+## Lot Calcul littéral — TERMINÉ (2026-09-27)
+
+- 68/68 relues (`docs/relecture/calcul-litteral/RAPPORT.md`) : 9 approuvées, 59 corrigées.
+  68/68 importées en brouillon (#553 après le merge de #482).
+- Moteur : #480 (calcul littéral réduit par `tidy`), #481 (lettre tirée homonyme d'une variable :
+  substitution simultanée), #482 (`requiredForm.acceptable` → perfectible).
+- Décisions de David : (7−z)² juste et (z−7)(z−7) perfectible (#553) ; étapes redondantes gardées ;
+  nombre mixte refusé. Règle globale « signe libre sous un carré » mesurée puis écartée (#609).
+- Base : 475 templates, tous brouillons.
+
 ## Prochaine étape
 
-Lots restants (228 questions) : Calcul littéral 68, Grandeurs 45 (#439), Fonctions 39,
+Lots restants (160 questions) : Grandeurs 45 (#439), Fonctions 39 (#609 : forme canonique),
 Proportionnalité 28, Puissances 21, Suites 15 (#629/#630), Racines 10, Probabilités 2.
-Défauts de conversion du lot Décimaux à corriger d'abord (liste du rapport) si les lots suivants
-les rencontrent.
+Défauts de conversion à corriger d'abord si les lots suivants les rencontrent : listes des rapports
+Décimaux et Calcul littéral (`$ers`, exclusions, produits collés, « Développer » par `{{eval}}`).

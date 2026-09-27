@@ -1,0 +1,202 @@
+{
+	"globalIndex": 513,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Substitution perdue à la conversion (letterss) et lettre tirée homonyme d'une variable numérique : variables renommées, réponse = calcul numérique avec la valeur substituée.",
+	"template": {
+		"title": "Calculer en substituant les variables",
+		"description": "Entiers naturels",
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "a|b|c"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "s",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "a|b|c!p"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule avec ${{p}}={{q}}$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:rp}}+{{s}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{r}} \\textcolor{{{color:primary.0}}}{{{p}}} + {{s}} &= {{r}} \\times \\textcolor{{{color:primary.0}}}{{{q}}} + {{s}} \\\\ &= {{eval:r*q}} + {{s}}  \\\\ &=  {{solution}}  \\\\ \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:r*q+s}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule avec ${{p}}={{q}}$\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{s}}+{{eval:rp}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{s}} + {{r}} \\textcolor{{{color:primary.0}}}{{{p}}} &= {{s}} + {{r}} \\times \\textcolor{{{color:primary.0}}}{{{q}}} \\\\ &= {{s}} + {{eval:r*q}}  \\\\ &=  {{solution}}  \\\\ \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:s+r*q}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule avec ${{p}}={{q}}$ et ${{t}}={{u}}$\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{eval:st}}+{{eval:rp}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{s}} \\textcolor{{{color:primary.1}}}{{{t}}} + {{r}} \\textcolor{{{color:primary.0}}}{{{p}}} &= {{s}} \\times \\textcolor{{{color:primary.1}}}{{{u}}} + {{r}} \\times \\textcolor{{{color:primary.0}}}{{{q}}} \\\\ &= {{eval:s*u}} + {{eval:r*q}}  \\\\ &=  {{solution}}  \\\\ \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:s*u+r*q}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Calcul littéral",
+		"domain": "Calculs",
+		"subdomain": "Par substitution",
+		"level": 3,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse 15",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3",
+					"s": "6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 3c+6",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3",
+					"s": "6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"answers": ["3c+6"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "bonne réponse 15",
+				"variationIndex": 1,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3",
+					"s": "6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 6+3c",
+				"variationIndex": 1,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3",
+					"s": "6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"answers": ["6+3c"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "bonne réponse 51",
+				"variationIndex": 2,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3",
+					"s": "6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"answers": ["51"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 6b+3c",
+				"variationIndex": 2,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3",
+					"s": "6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"answers": ["6b+3c"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

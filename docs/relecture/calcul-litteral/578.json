@@ -1,0 +1,131 @@
+{
+	"globalIndex": 578,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne : « Résouds » → « Résous » (impératif de résoudre). Titre « Equation » → « Équation ». Correction : « {{eval:(c-(d))x}} » (x en dur, 0 tirage) → variable-lettre p = « x » et {{eval:(c-(d))*p}} (rend « x »/« -x » quand c-d = ±1).",
+	"template": {
+		"title": "Équation linéaire du premier degré",
+		"description": "Coefficients relatifs - Avec second membre",
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$${{c}}x{{eval:b;+}}={{d}}x{{eval:a;+}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±!a"
+					},
+					{
+						"name": "c",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "d",
+						"expression": "2..9;±!c"
+					},
+					{
+						"name": "p",
+						"expression": "x|x"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{c}}x\\textcolor{{{color:primary.0}}}{{{eval:b;+}}}=\\textcolor{{{color:primary.1}}}{{{d}}x}{{eval:a;+}}               & \\quad \\lrArr \\quad {{c}}x \\textcolor{{{color:primary.1}}}{{{eval:-(d);+}}x} = {{a}}\\textcolor{{{color:primary.0}}}{{{eval:-(b);+}}} \\\\               & \\quad \\lrArr \\quad  \\textcolor{{{color:primary.2}}}{{{eval:(c-(d))*p}}} = {{eval:a-(b)}} \\\\                & \\quad \\lrArr \\quad  x = \\frac{{{eval:a-(b)}}}{\\textcolor{{{color:primary.2}}}{{{eval:c-(d)}}}} \\\\               {{if:gcd(abs({{a}}-({{b}})), abs({{c}}-({{d}}))) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}}}             {{if:gcd(abs({{a}}-({{b}})), abs({{c}}-({{d}}))) != 1 && ({{a}}-({{b}}))*({{c}}-({{d}}))>0|& \\quad \\lrArr \\quad  x= \\frac{{{eval:abs(a-(b))}}}{{{eval:abs(c-(d))}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}             {{if:gcd(abs({{a}}-({{b}})), abs({{c}}-({{d}}))) != 1 && ({{a}}-({{b}}))*({{c}}-({{d}}))<0|& \\quad \\lrArr \\quad  x= -\\frac{{{eval:abs(a-(b))}}}{{{eval:abs(c-(d))}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}            \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a-(b))/(c-(d))}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Linéaire du premier degré",
+		"level": 6,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "-2",
+					"c": "3",
+					"d": "-4"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "signe",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "-2",
+					"c": "3",
+					"d": "-4"
+				},
+				"answers": ["-1"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "c-d = 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "1",
+					"c": "3",
+					"d": "2"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "fraction",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "-2",
+					"c": "4",
+					"d": "-2"
+				},
+				"answers": ["\\frac{7}{6}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "non simplifiée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "-3",
+					"c": "4",
+					"d": "-2"
+				},
+				"answers": ["\\frac{8}{6}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			}
+		]
+	}
+}

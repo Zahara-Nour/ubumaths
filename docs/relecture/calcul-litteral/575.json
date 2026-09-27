@@ -1,0 +1,128 @@
+{
+	"globalIndex": 575,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne : « Résouds » → « Résous » (impératif de résoudre). Titre « Equation » → « Équation ».",
+	"template": {
+		"title": "Équation linéaire du premier degré",
+		"description": "Coefficients positifs  $ax+b=c$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:a-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}                 {{c}}x\\textcolor{{{color:primary.0}}}{+{{b}}}={{a}}               & \\quad \\lrArr \\quad {{c}}x = {{a}}\\textcolor{{{color:primary.0}}}{-{{b}}} \\\\               & \\quad \\lrArr \\quad \\textcolor{{{color:primary.1}}}{{{c}}}x = {{eval:a-b}} \\\\               {{if:gcd({{a}}-{{b}}, {{c}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= \\frac{{{eval:a-b}}}{\\textcolor{{{color:primary.1}}}{{{c}}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}              \\end{align}$$"
+				]
+			}
+		},
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$${{c}}x+{{b}}={{a}}$$\n\n$x=?$",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a-b)/c}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$${{b}}+{{c}}x={{a}}$$\n\n$x=?$",
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a-b)/c}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Linéaire du premier degré",
+		"level": 3,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "9"
+				},
+				"answers": ["\\frac{1}{9}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "ajoute au lieu de soustraire",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "9"
+				},
+				"answers": ["\\frac{13}{9}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "entier",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "3",
+					"c": "3"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "b+cx",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "9"
+				},
+				"answers": ["\\frac{1}{9}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "non simplifiée",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "3",
+					"c": "4"
+				},
+				"answers": ["\\frac{6}{4}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			}
+		]
+	}
+}

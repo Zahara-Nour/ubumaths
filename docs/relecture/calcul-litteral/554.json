@@ -1,0 +1,102 @@
+{
+	"globalIndex": 554,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Orthographe : « Résouds » → « Résous ».",
+	"template": {
+		"title": "Addition $a+x=b$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}                 x+{{a}}={{eval:a+b}}                & \\quad \\lrArr \\quad x={{eval:a+b}}-{{a}} \\\\               & \\quad \\lrArr \\quad  x= {{solution:0}}                \\end{align}$$"
+				]
+			}
+		},
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$$x+{{a}}={{eval:a+b}}$$\n\n$x=?$",
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$${{a}}+x={{eval:a+b}}$$\n\n$x=?$",
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Dans $$\\N$$",
+		"level": 1,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v0 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "8",
+					"b": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "addition au lieu de soustraction",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "9"
+				},
+				"answers": ["25"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "calcul non effectué",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "9"
+				},
+				"answers": ["17-8"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			}
+		]
+	}
+}

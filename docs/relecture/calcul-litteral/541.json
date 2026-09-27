@@ -1,0 +1,126 @@
+{
+	"globalIndex": 541,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Trouver le plus grand facteur commun",
+		"description": "Le plus grand facteur commun n'est pas apparent",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9!cd(b)"
+				},
+				{
+					"name": "d",
+					"expression": "x|y|z"
+				},
+				{
+					"name": "f",
+					"expression": "x|y|z!d"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans l'expression {{expression}} le plus grand facteur commun aux 2 produits est {{solution:0}},",
+					"car ${{eval:a*b}}{{f}}={{solution:0}}\\times{{{b}}{{f}}}$ et ${{eval:a*c}}{{d}}={{solution:0}}\\times{{{c}}{{d}}}$"
+				]
+			}
+		},
+		"variations": [
+			{
+				"statement": "Quel est le plus grand facteur commun dans ces 2 produits ?\n\n$${{eval:a*b}}{{f}}+{{eval:a*c}}{{d}}$$\n\nLe plus grand facteur commun est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le plus grand facteur commun dans ces 2 produits ?\n\n$${{eval:a*b}}{{f}}-{{eval:a*c}}{{d}}$$\n\nLe plus grand facteur commun est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Factorisation",
+		"level": 7,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v0 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4",
+					"d": "y|y",
+					"f": "x|x"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4",
+					"d": "y|y",
+					"f": "x|x"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "14 ne divise pas 63",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4",
+					"d": "y|y",
+					"f": "x|x"
+				},
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "1 refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4",
+					"d": "y|y",
+					"f": "x|x"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

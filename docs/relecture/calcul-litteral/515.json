@@ -1,0 +1,116 @@
+{
+	"globalIndex": 515,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Variables renommées (p, q, r…) : la lettre tirée (a, b, c) portait le nom d'une variable numérique et était remplacée par sa valeur (énoncés « 81 + 81 », réponses numériques). Produits juxtaposés passés en {{eval:…}}, consignes à l'impératif (Réduis, Développe et réduis, Écris, Simplifie).",
+	"template": {
+		"title": "Simplifier le symbole de multiplication",
+		"description": "Devant une lettre",
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "a|b|c|x|y"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Réécris l'expression en la simplifiant.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "q*p"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{q}}{{p}}"
+					}
+				]
+			},
+			{
+				"statement": "Réécris l'expression en la simplifiant.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "p*q"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{q}}{{p}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"products": "strict"
+			}
+		},
+		"grades": ["5"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Simplification d'écriture",
+		"level": 1,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse 3y",
+				"variationIndex": 0,
+				"variables": {
+					"p": "y|y",
+					"q": "3"
+				},
+				"answers": ["3y"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 3*y",
+				"variationIndex": 0,
+				"variables": {
+					"p": "y|y",
+					"q": "3"
+				},
+				"answers": ["3*y"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				}
+			},
+			{
+				"description": "bonne réponse 3y",
+				"variationIndex": 1,
+				"variables": {
+					"p": "y|y",
+					"q": "3"
+				},
+				"answers": ["3y"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée y*3",
+				"variationIndex": 1,
+				"variables": {
+					"p": "y|y",
+					"q": "3"
+				},
+				"answers": ["y*3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				}
+			}
+		]
+	}
+}

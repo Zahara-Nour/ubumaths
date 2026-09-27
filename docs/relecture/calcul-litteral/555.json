@@ -1,0 +1,67 @@
+{
+	"globalIndex": 555,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Orthographe : « Résouds » → « Résous ».",
+	"template": {
+		"title": "Soustraction  $x-a=b$",
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$$x-{{a}}={{b}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 x-{{a}}={{b}}                & \\quad \\lrArr \\quad x={{a}}+{{b}}\\\\               & \\quad \\lrArr \\quad  x= {{solution:0}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+b}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Dans $$\\N$$",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v0 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "9"
+				},
+				"answers": ["17"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "soustraction au lieu d'addition",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "9"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

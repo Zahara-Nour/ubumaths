@@ -1,0 +1,320 @@
+{
+	"globalIndex": 516,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Variables renommées (p, q, r…) : la lettre tirée (a, b, c) portait le nom d'une variable numérique et était remplacée par sa valeur (énoncés « 81 + 81 », réponses numériques). Produits juxtaposés passés en {{eval:…}}, consignes à l'impératif (Réduis, Développe et réduis, Écris, Simplifie).",
+	"template": {
+		"title": "Simplifier le symbole de multiplication",
+		"description": "Devant une parenthèse",
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "a|b|c|x|y"
+				},
+				{
+					"name": "q",
+					"expression": "a|b|c|x|y!p"
+				},
+				{
+					"name": "r",
+					"expression": "a|b|c|x|y"
+				},
+				{
+					"name": "s",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Simplifie l'écriture de cette expression.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "r*(p+q)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}({{p}}+{{q}})"
+					}
+				]
+			},
+			{
+				"statement": "Simplifie l'écriture de cette expression.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "r*(p+s)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}({{p}}+{{s}})"
+					}
+				]
+			},
+			{
+				"statement": "Simplifie l'écriture de cette expression.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "t*(p+q)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{t}}({{p}}+{{q}})"
+					}
+				]
+			},
+			{
+				"statement": "Simplifie l'écriture de cette expression.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "t*(p+s)"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{t}}({{p}}+{{s}})"
+					}
+				]
+			},
+			{
+				"statement": "Simplifie l'écriture de cette expression.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "(p+q)*t"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{t}}({{p}}+{{q}})"
+					}
+				]
+			},
+			{
+				"statement": "Simplifie l'écriture de cette expression.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "(p+s)*t"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{t}}({{p}}+{{s}})"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"products": "strict"
+			}
+		},
+		"grades": ["5"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Simplification d'écriture",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse a(y+a)",
+				"variationIndex": 0,
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"answers": ["a(y+a)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée a*(y+a)",
+				"variationIndex": 0,
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"answers": ["a*(y+a)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				}
+			},
+			{
+				"description": "bonne réponse a(y+6)",
+				"variationIndex": 1,
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"answers": ["a(y+6)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée a*(y+6)",
+				"variationIndex": 1,
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"answers": ["a*(y+6)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				}
+			},
+			{
+				"description": "bonne réponse 7(y+a)",
+				"variationIndex": 2,
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"answers": ["7(y+a)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 7*(y+a)",
+				"variationIndex": 2,
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"answers": ["7*(y+a)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				}
+			},
+			{
+				"description": "bonne réponse 7(y+6)",
+				"variationIndex": 3,
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"answers": ["7(y+6)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 7*(y+6)",
+				"variationIndex": 3,
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"answers": ["7*(y+6)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				}
+			},
+			{
+				"description": "bonne réponse 7(y+a)",
+				"variationIndex": 4,
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"answers": ["7(y+a)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée (y+a)*7",
+				"variationIndex": 4,
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"answers": ["(y+a)*7"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				}
+			},
+			{
+				"description": "bonne réponse 7(y+6)",
+				"variationIndex": 5,
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"answers": ["7(y+6)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée (y+6)*7",
+				"variationIndex": 5,
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"answers": ["(y+6)*7"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				}
+			}
+		]
+	}
+}

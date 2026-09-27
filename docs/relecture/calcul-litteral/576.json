@@ -1,0 +1,133 @@
+{
+	"globalIndex": 576,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne : « Résouds » → « Résous » (impératif de résoudre). Titre « Equation » → « Équation ».",
+	"template": {
+		"title": "Équation linéaire du premier degré",
+		"description": "Coefficients relatifs",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±!a"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±!b,{{eval:-(b)}}"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$${{a}}x{{eval:b;+}}={{c}}$$\n\n$x=?$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{a}}x\\textcolor{{{color:primary.0}}}{{{eval:b;+}}}={{c}}               & \\quad \\lrArr \\quad  {{a}}x = {{c}}\\textcolor{{{color:primary.0}}}{{{eval:-(b);+}}} \\\\                & \\quad \\lrArr \\quad  \\textcolor{{{color:primary.1}}}{{{a}}}x = {{eval:c-(b)}} \\\\               & \\quad \\lrArr \\quad  x = \\frac{{{eval:c-(b)}}}{\\textcolor{{{color:primary.1}}}{{{a}}}} \\\\               {{if:gcd(abs({{c}}-({{b}})), {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}}}             {{if:gcd(abs({{c}}-({{b}})), {{a}}) != 1 && ({{c}}-({{b}}))*({{a}})>0|& \\quad \\lrArr \\quad  x= \\frac{{{eval:abs(c-(b))}}}{{{eval:abs(a)}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}             {{if:gcd(abs({{c}}-({{b}})), {{a}}) != 1 && ({{c}}-({{b}}))*({{a}})<0|& \\quad \\lrArr \\quad  x= -\\frac{{{eval:abs(c-(b))}}}{{{eval:abs(a)}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}            \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c-(b))/(a)}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$${{b}}{{eval:a;+}}x={{c}}$$\n\n$x=?$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{b}}}{{eval:a;+}}x={{c}}               & \\quad \\lrArr \\quad  {{a}}x = {{c}}\\textcolor{{{color:primary.0}}}{{{eval:-(b);+}}} \\\\                & \\quad \\lrArr \\quad  \\textcolor{{{color:primary.1}}}{{{a}}}x = {{eval:c-(b)}} \\\\               & \\quad \\lrArr \\quad  x = \\frac{{{eval:c-(b)}}}{\\textcolor{{{color:primary.1}}}{{{a}}}} \\\\               {{if:gcd(abs({{c}}-({{b}})), {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}}}             {{if:gcd(abs({{c}}-({{b}})), {{a}}) != 1 && ({{c}}-({{b}}))*({{a}})>0|& \\quad \\lrArr \\quad  x= \\frac{{{eval:abs(c-(b))}}}{{{eval:abs(a)}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}             {{if:gcd(abs({{c}}-({{b}})), {{a}}) != 1 && ({{c}}-({{b}}))*({{a}})<0|& \\quad \\lrArr \\quad  x= -\\frac{{{eval:abs(c-(b))}}}{{{eval:abs(a)}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}            \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c-(b))/(a)}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Linéaire du premier degré",
+		"level": 4,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-6",
+					"b": "7",
+					"c": "-3"
+				},
+				"answers": ["\\frac{5}{3}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "signe",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-6",
+					"b": "7",
+					"c": "-3"
+				},
+				"answers": ["-\\frac{5}{3}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "non simplifiée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-6",
+					"b": "7",
+					"c": "-3"
+				},
+				"answers": ["\\frac{-10}{-6}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "b+ax",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "-9"
+				},
+				"answers": ["-\\frac{17}{7}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "oubli de changer le signe de b",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "-9"
+				},
+				"answers": ["-\\frac{1}{7}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			}
+		]
+	}
+}

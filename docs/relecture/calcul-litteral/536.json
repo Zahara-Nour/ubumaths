@@ -1,0 +1,365 @@
+{
+	"globalIndex": 536,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"editNotes": "Remarque moteur : « (9+4)7 » (facteur commun écrit après la parenthèse) est rendu incorrect alors qu'il vaut 91 — cas marginal, non bloquant.",
+	"template": {
+		"title": "Factoriser",
+		"description": "Facteur commun apparent",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "2..9!a,cd(b)"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Factorise.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*b+a*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}+\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}}+{{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}+{{c}})"
+					}
+				]
+			},
+			{
+				"statement": "Factorise.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "b*a+a*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}+\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} + \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}}+{{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}+{{c}})"
+					}
+				]
+			},
+			{
+				"statement": "Factorise.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a*b+c*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} +  {{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} +  \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}}+{{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}+{{c}})"
+					}
+				]
+			},
+			{
+				"statement": "Factorise.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "b*a+c*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} + {{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} + \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}}+{{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}+{{c}})"
+					}
+				]
+			},
+			{
+				"statement": "Factorise.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "a*b-a*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}} - {{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}-{{c}})"
+					}
+				]
+			},
+			{
+				"statement": "Factorise.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "b*a-a*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}} - {{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}-{{c}})"
+					}
+				]
+			},
+			{
+				"statement": "Factorise.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "a*b-c*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} -  {{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} -  \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}} - {{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}-{{c}})"
+					}
+				]
+			},
+			{
+				"statement": "Factorise.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "b*a-c*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} + {{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} + \\textcolor{{{color:primary.0}}}{{{a}}}  \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}} - {{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}-{{c}})"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"products": "off"
+			}
+		},
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Factorisation",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v0 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["7(9+4)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["7(9+4)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 bonne réponse",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["7(9+4)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 bonne réponse",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["7(9+4)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 bonne réponse",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["7(9-4)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5 bonne réponse",
+				"variationIndex": 5,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["7(9-4)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v6 bonne réponse",
+				"variationIndex": 6,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["7(9-4)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v7 bonne réponse",
+				"variationIndex": 7,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["7(9-4)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7(9+4)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["7(9+4)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre inversé dans la parenthèse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["7(4+9)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "calculé : pas factorisé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["91"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "7(9−4)",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["7(9-4)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7×5 : parenthèse calculée",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"answers": ["7\\times5"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,76 @@
+{
+	"globalIndex": 527,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Variables renommées (p, q, r…) : la lettre tirée (a, b, c) portait le nom d'une variable numérique et était remplacée par sa valeur (énoncés « 81 + 81 », réponses numériques). Produits juxtaposés passés en {{eval:…}}, consignes à l'impératif (Réduis, Développe et réduis, Écris, Simplifie).",
+	"template": {
+		"title": "Déterminer l'opposé d'une expression",
+		"description": "Expression simple",
+		"variations": [
+			{
+				"statement": "Quel est l'opposé de cette expression ?\n\n$${{eval:pq}}$$\n\nL'opposé est $?$.",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "q",
+						"expression": "a|b|x|y"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(p)q}}"
+					}
+				]
+			}
+		],
+		"grades": ["3"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Opposé d'une expression",
+		"level": 1,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse -9a",
+				"variationIndex": 0,
+				"variables": {
+					"p": "9",
+					"q": "a|a"
+				},
+				"answers": ["-9a"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "9a",
+				"variationIndex": 0,
+				"variables": {
+					"p": "9",
+					"q": "a|a"
+				},
+				"answers": ["9a"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "-(9a)",
+				"variationIndex": 0,
+				"variables": {
+					"p": "9",
+					"q": "a|a"
+				},
+				"answers": ["-(9a)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				}
+			}
+		]
+	}
+}

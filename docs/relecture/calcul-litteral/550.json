@@ -1,0 +1,118 @@
+{
+	"globalIndex": 550,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "La lettre tirée parmi a, b, c, x, y, z pouvait porter le nom d'une variable numérique (a, b, c) et être remplacée par sa valeur (« (7+7)(7−7) ») : lettres réduites à t, x, y, z.",
+	"template": {
+		"title": "Développer $(a-b)^2$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "t|x|y|z"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Développe et réduis.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(a-b)^2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{a}}}-\\textcolor{{{color:primary.1}}}{{{b}}})^2               &=  \\textcolor{{{color:primary.0}}}{{{a}}}^2 - 2 \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.1}}}{{{b}}} + \\textcolor{{{color:primary.1}}}{{{b}}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a^2}}-{{eval:2*a*b}}+{{b}}^2"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "(b-a)^2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{b}}} - \\textcolor{{{color:primary.1}}}{{{a}}})^2               &=  \\textcolor{{{color:primary.0}}}{{{b}}}^2 - 2 \\times \\textcolor{{{color:primary.0}}}{{{b}}} \\times \\textcolor{{{color:primary.1}}}{{{a}}} + \\textcolor{{{color:primary.1}}}{{{a}}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}^2-{{eval:2*a*b}}+{{eval:a^2}}"
+					}
+				]
+			}
+		],
+		"grades": ["2"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Identités remarquables",
+		"level": 6,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v0 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "z|z"
+				},
+				"answers": ["49-14z+z^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "z|z"
+				},
+				"answers": ["z^2-14z+49"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre décroissant",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "z|z"
+				},
+				"answers": ["z^2-14z+49"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli du double produit",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "z|z"
+				},
+				"answers": ["z^2-49"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

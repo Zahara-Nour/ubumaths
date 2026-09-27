@@ -1,0 +1,125 @@
+{
+	"globalIndex": 548,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Factoriser $a^2-b^2$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "x|y|z"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Factorise.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:a^2}}-{{eval:(bc)^2}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{eval:a^2}}-{{eval:(bc)^2}}               &=  {{a}}^2-({{eval:bc}})^2 \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "({{a}}+{{eval:bc}})({{a}}-{{eval:bc}})"
+					}
+				]
+			},
+			{
+				"statement": "Factorise.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:(bc)^2}}-{{eval:a^2}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{eval:(bc)^2}} - {{eval:a^2}}               &=  ({{eval:bc}})^2 - {{a}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "({{eval:bc}}+{{a}})({{eval:bc}}-{{a}})"
+					}
+				]
+			}
+		],
+		"grades": ["3"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Identités remarquables",
+		"level": 4,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v0 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["(7+9z)(7-9z)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["(9z+7)(9z-7)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "facteurs permutés",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["(9z-7)(9z+7)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "racine du coefficient mal prise",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["(3z+7)(3z-7)"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

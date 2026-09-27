@@ -1,0 +1,116 @@
+{
+	"globalIndex": 577,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne : « Résouds » → « Résous » (impératif de résoudre). Titre « Equation » → « Équation ». Correction : « {{eval:4x}} » (TinyMath [_&4x_] mal converti, 0 tirage) → variable-lettre p = « x » et {{eval:d*p}} (rend « x » quand d = 1) ; énoncé aussi en {{eval:d*p}} pour éviter « 1x ».",
+	"template": {
+		"title": "Équation linéaire du premier degré",
+		"description": "Coefficients positifs - Avec second membre",
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$${{c}}x+{{b}}={{eval:d*p}}+{{a}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "c",
+						"expression": "3..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:c-2}}"
+					},
+					{
+						"name": "p",
+						"expression": "x|x"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{c}}x\\textcolor{{{color:primary.0}}}{+{{b}}}=\\textcolor{{{color:primary.1}}}{{{eval:d*p}}}+{{a}}               & \\quad \\lrArr \\quad {{c}}x \\textcolor{{{color:primary.1}}}{-{{eval:d*p}}} = {{a}}\\textcolor{{{color:primary.0}}}{-{{b}}} \\\\               & \\quad \\lrArr \\quad \\textcolor{violet}{{{eval:c-d}}}x = {{eval:a-b}} \\\\               {{if:gcd({{c}}-{{d}}, {{a}}-{{b}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= \\frac{{{eval:a-b}}}{\\textcolor{violet}{{{eval:c-d}}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}              \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a-b)/(c-d)}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Linéaire du premier degré",
+		"level": 5,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "2",
+					"c": "9",
+					"d": "3"
+				},
+				"answers": ["\\frac{5}{6}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "ajoute dx au lieu de le soustraire",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "2",
+					"c": "9",
+					"d": "3"
+				},
+				"answers": ["\\frac{5}{12}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "d = 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "2",
+					"c": "9",
+					"d": "1"
+				},
+				"answers": ["\\frac{5}{8}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "non simplifiée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"c": "7",
+					"d": "3"
+				},
+				"answers": ["\\frac{6}{4}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			}
+		]
+	}
+}

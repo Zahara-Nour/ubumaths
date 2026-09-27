@@ -1,0 +1,138 @@
+{
+	"globalIndex": 572,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne : « Résouds » → « Résous » (impératif de résoudre).",
+	"template": {
+		"title": "Division (2)",
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$${{b}}/x={{c}}/{{a}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a),b"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 \\frac{{{b}}}{x}=\\frac{{{c}}}{{{a}}}               & \\quad \\lrArr \\quad \\frac{x}{\\textcolor{{{color:primary.0}}}{{{b}}}} = \\frac{{{a}}}{{{c}}} \\\\               & \\quad \\lrArr \\quad x = \\frac{{{a}}}{{{c}}} \\times \\textcolor{{{color:primary.0}}}{{{b}}} \\\\               & \\quad \\lrArr \\quad x = \\frac{{{a}} \\times {{b}}}{{{c}}} \\\\               {{if:gcd({{b}}*{{a}}, {{c}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= \\frac{{{eval:b*a}}}{{{c}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}              \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*a/c}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$${{b}}/x={{a}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 \\frac{{{b}}}{x}={{a}}               & \\quad \\lrArr \\quad \\frac{x}{\\textcolor{{{color:primary.0}}}{{{b}}}} = \\frac{1}{{{a}}} \\\\               & \\quad \\lrArr \\quad x = \\frac{1}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{b}}} \\\\               {{if:gcd({{a}}, {{b}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= \\frac{{{b}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}              \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b/a}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Dans $$\\Q$$",
+		"level": 6,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "3"
+				},
+				"answers": ["21"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "non simplifiée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "3"
+				},
+				"answers": ["\\frac{63}{3}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "inverse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "3"
+				},
+				"answers": ["\\frac{1}{21}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "b/x=a",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{9}{7}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "inverse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{7}{9}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			}
+		]
+	}
+}

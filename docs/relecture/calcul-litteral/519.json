@@ -1,0 +1,165 @@
+{
+	"globalIndex": 519,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Variables renommées (p, q, r…) : la lettre tirée (a, b, c) portait le nom d'une variable numérique et était remplacée par sa valeur (énoncés « 81 + 81 », réponses numériques). Produits juxtaposés passés en {{eval:…}}, consignes à l'impératif (Réduis, Développe et réduis, Écris, Simplifie).",
+	"template": {
+		"title": "Réduire une somme",
+		"description": "Coefficients positifs, $2$ littéraux identiques",
+		"variations": [
+			{
+				"statement": "Réduis :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "a|b|c"
+					},
+					{
+						"name": "q",
+						"expression": "1..9"
+					},
+					{
+						"name": "r",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:qp}}+{{eval:rp}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{eval:qp}}+{{eval:rp}}               &= ({{q}}+{{r}}) \\times {{p}} \\\\               &= {{eval:q+r}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Réduis :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "a|b|c"
+					},
+					{
+						"name": "q",
+						"expression": "1..8"
+					},
+					{
+						"name": "r",
+						"expression": "q..9"
+					},
+					{
+						"name": "expression2",
+						"expression": "{{eval:rp}}-{{eval:qp}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{eval:rp}}-{{eval:qp}}               &= ({{r}}-{{q}}) \\times {{p}} \\\\               &= {{eval:r-q}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Réduction",
+		"level": 1,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse 4c",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "2"
+				},
+				"answers": ["4c"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 2c+2c",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "2"
+				},
+				"answers": ["2c+2c"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "4c+0",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "2"
+				},
+				"answers": ["4c+0"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["nullTerms"]
+				}
+			},
+			{
+				"description": "bonne réponse c",
+				"variationIndex": 1,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "3"
+				},
+				"answers": ["c"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 3c-2c",
+				"variationIndex": 1,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "3"
+				},
+				"answers": ["3c-2c"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "1c",
+				"variationIndex": 1,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "3"
+				},
+				"answers": ["1c"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["factorOne"]
+				}
+			}
+		]
+	}
+}

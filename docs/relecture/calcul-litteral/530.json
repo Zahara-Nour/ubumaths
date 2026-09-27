@@ -1,0 +1,431 @@
+{
+	"globalIndex": 530,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Variables renommées (p, q, r…) : la lettre tirée (a, b, c) portait le nom d'une variable numérique et était remplacée par sa valeur (énoncés « 81 + 81 », réponses numériques). Produits juxtaposés passés en {{eval:…}}, consignes à l'impératif (Réduis, Développe et réduis, Écris, Simplifie).",
+	"template": {
+		"title": "Développer",
+		"description": "Simple - Coefficients positifs",
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..9!p"
+				},
+				{
+					"name": "r",
+					"expression": "a|b|c|x|y|z"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Développe et réduis :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "p(q+r)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{p}}}({{q}}+{{r}})               &= \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{q}} + \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{r}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:p*q}}+{{p}}{{r}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "p(r+q)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{p}}}({{r}}+{{q}})               &= \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{r}} + \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{q}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}{{r}}+{{eval:p*q}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "(q+r)*p"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{q}}+{{r}}) \\times \\textcolor{{{color:primary.0}}}{{{p}}}               &= {{q}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} + {{r}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q*p}}+{{p}}{{r}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "(r+q)*p"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{r}}+{{q}}) \\times \\textcolor{{{color:primary.0}}}{{{p}}}               &= {{r}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} + {{q}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}{{r}}+{{eval:p*q}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "p(q-r)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{p}}}({{q}}-{{r}})               &= \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{q}} - \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{r}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q*p}}-{{p}}{{r}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "p(r-q)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{p}}}({{r}}-{{q}})               &= \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{r}} - \\textcolor{{{color:primary.0}}}{{{p}}} \\times {{q}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}{{r}}-{{eval:q*p}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "(q-r)*p"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{q}}-{{r}}) \\times \\textcolor{{{color:primary.0}}}{{{p}}}               &= {{q}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} - {{r}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q*p}}-{{p}}{{r}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "(r-q)*p"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{r}}-{{q}}) \\times \\textcolor{{{color:primary.0}}}{{{p}}}               &= {{r}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} - {{q}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}{{r}}-{{eval:q*p}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Développement",
+		"level": 1,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse 27+9b",
+				"variationIndex": 0,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["27+9b"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 9(3+b)",
+				"variationIndex": 0,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["9(3+b)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "9b+27",
+				"variationIndex": 0,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["9b+27"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "9b+3",
+				"variationIndex": 0,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["9b+3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "bonne réponse 9b+27",
+				"variationIndex": 1,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["9b+27"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 9(b+3)",
+				"variationIndex": 1,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["9(b+3)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "bonne réponse 27+9b",
+				"variationIndex": 2,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["27+9b"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée (3+b)*9",
+				"variationIndex": 2,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["(3+b)*9"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				}
+			},
+			{
+				"description": "bonne réponse 9b+27",
+				"variationIndex": 3,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["9b+27"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée (b+3)*9",
+				"variationIndex": 3,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["(b+3)*9"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				}
+			},
+			{
+				"description": "bonne réponse 27-9b",
+				"variationIndex": 4,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["27-9b"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 9(3-b)",
+				"variationIndex": 4,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["9(3-b)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "bonne réponse 9b-27",
+				"variationIndex": 5,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["9b-27"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 9(b-3)",
+				"variationIndex": 5,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["9(b-3)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "bonne réponse 27-9b",
+				"variationIndex": 6,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["27-9b"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée (3-b)*9",
+				"variationIndex": 6,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["(3-b)*9"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				}
+			},
+			{
+				"description": "bonne réponse 9b-27",
+				"variationIndex": 7,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["9b-27"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée (b-3)*9",
+				"variationIndex": 7,
+				"variables": {
+					"p": "9",
+					"q": "3",
+					"r": "b|b"
+				},
+				"answers": ["(b-3)*9"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				}
+			}
+		]
+	}
+}

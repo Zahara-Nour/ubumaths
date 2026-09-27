@@ -1,0 +1,89 @@
+{
+	"globalIndex": 571,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne : « Résouds » → « Résous » (impératif de résoudre).",
+	"template": {
+		"title": "Division",
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$$x/{{b}}={{c}}/{{a}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 \\frac{x}{\\textcolor{{{color:primary.0}}}{{{b}}}}=\\frac{{{c}}}{{{a}}}               & \\quad \\lrArr \\quad x = \\frac{{{c}}}{{{a}}} \\textcolor{{{color:primary.0}}}{\\times {{b}}} \\\\               & \\quad \\lrArr \\quad x = \\frac{{{c}} \\times {{b}}}{{{a}}} \\\\               {{if:gcd({{b}}*{{c}}, {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= \\frac{{{eval:b*c}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}               \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*c/a}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Dans $$\\Q$$",
+		"level": 5,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["\\frac{81}{7}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "divise au lieu de multiplier",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["\\frac{1}{7}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "entier",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "4",
+					"c": "3"
+				},
+				"answers": ["6"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			}
+		]
+	}
+}

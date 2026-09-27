@@ -1,0 +1,289 @@
+{
+	"globalIndex": 526,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "v3 recalée sur sa correction TinyMath (&4 est le coefficient de x^2, pas un nombre au carré). Tirages excluant les sommes nulles (t ≠ -coef x^2, u ≠ -coef x, v ≠ -constante) : plus de « +16 × c 0 » ni de « 0 × c^2 ». Réponse développée réduite, ordre libre. « Réduire » → « Réduis ».",
+	"template": {
+		"title": "Réduire une expression",
+		"description": "Coefficients relatifs, expression du second degré",
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "a|b|c"
+				},
+				{
+					"name": "q",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "s",
+					"expression": "1..9;±"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Réduis :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "1..9;±!{{eval:-(q)}}"
+					},
+					{
+						"name": "u",
+						"expression": "1..9;±!{{eval:-(r)}}"
+					},
+					{
+						"name": "v",
+						"expression": "1..9;±!{{eval:-(s)}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:qp^2}}{{eval:rp;+}}{{eval:s;+}}{{eval:tp^2;+}}{{eval:up;+}}{{eval:v;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{expression1}} &= ({{q}}{{eval:t;+}}) \\times {{p}}^2 + ({{r}}{{eval:u;+}}) \\times {{p}} {{eval:s;+}} {{eval:v;+}} \\\\ &= {{eval:q+t}} \\times {{p}}^2 {{eval:r+u;+}} \\times {{p}} {{eval:s+v;+}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(q+t)*p^2+(r+u)*p+s+v}}"
+					}
+				]
+			},
+			{
+				"statement": "Réduis :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "1..9;±!{{eval:-(r)}}"
+					},
+					{
+						"name": "u",
+						"expression": "1..9;±!{{eval:-(q)}}"
+					},
+					{
+						"name": "v",
+						"expression": "1..9;±!{{eval:-(s)}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "{{eval:qp}}{{eval:rp^2;+}}{{eval:s;+}}{{eval:tp^2;+}}{{eval:up;+}}{{eval:v;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{expression2}} &= ({{r}}{{eval:t;+}}) \\times {{p}}^2 + ({{q}}{{eval:u;+}}) \\times {{p}} {{eval:s;+}} {{eval:v;+}} \\\\ &= {{eval:r+t}} \\times {{p}}^2 {{eval:q+u;+}} \\times {{p}} {{eval:s+v;+}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(r+t)*p^2+(q+u)*p+s+v}}"
+					}
+				]
+			},
+			{
+				"statement": "Réduis :\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "1..9;±!{{eval:-(s)}}"
+					},
+					{
+						"name": "u",
+						"expression": "1..9;±!{{eval:-(q)}}"
+					},
+					{
+						"name": "v",
+						"expression": "1..9;±!{{eval:-(r)}}"
+					},
+					{
+						"name": "expression3",
+						"expression": "{{eval:qp}}{{eval:r;+}}{{eval:sp^2;+}}{{eval:tp^2;+}}{{eval:up;+}}{{eval:v;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{expression3}} &= ({{s}}{{eval:t;+}}) \\times {{p}}^2 + ({{q}}{{eval:u;+}}) \\times {{p}} {{eval:r;+}} {{eval:v;+}} \\\\ &= {{eval:s+t}} \\times {{p}}^2 {{eval:q+u;+}} \\times {{p}} {{eval:r+v;+}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(s+t)*p^2+(q+u)*p+r+v}}"
+					}
+				]
+			}
+		],
+		"grades": ["2"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Réduction",
+		"level": 8,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "-7",
+					"r": "-6",
+					"s": "1",
+					"t": "4",
+					"u": "3",
+					"v": "-3"
+				},
+				"answers": ["-3c^2-3c-2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre croissant accepté",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "-7",
+					"r": "-6",
+					"s": "1",
+					"t": "4",
+					"u": "3",
+					"v": "-3"
+				},
+				"answers": ["-2-3c-3c^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "-7",
+					"r": "-6",
+					"s": "1",
+					"t": "4",
+					"u": "3",
+					"v": "-3"
+				},
+				"answers": ["-7c^2-6c+1+4c^2+3c-3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "signe faux",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "-7",
+					"r": "-6",
+					"s": "1",
+					"t": "4",
+					"u": "3",
+					"v": "-3"
+				},
+				"answers": ["-3c^2+3c-2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"p": "c|c",
+					"q": "-7",
+					"r": "-6",
+					"s": "1",
+					"t": "4",
+					"u": "3",
+					"v": "-3"
+				},
+				"answers": ["-2c^2-4c-2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée",
+				"variationIndex": 1,
+				"variables": {
+					"p": "c|c",
+					"q": "-7",
+					"r": "-6",
+					"s": "1",
+					"t": "4",
+					"u": "3",
+					"v": "-3"
+				},
+				"answers": ["-7c-6c^2+1+4c^2+3c-3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "bonne réponse",
+				"variationIndex": 2,
+				"variables": {
+					"p": "c|c",
+					"q": "-7",
+					"r": "-6",
+					"s": "1",
+					"t": "4",
+					"u": "3",
+					"v": "-3"
+				},
+				"answers": ["5c^2-4c-9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre libre",
+				"variationIndex": 2,
+				"variables": {
+					"p": "c|c",
+					"q": "-7",
+					"r": "-6",
+					"s": "1",
+					"t": "4",
+					"u": "3",
+					"v": "-3"
+				},
+				"answers": ["-4c+5c^2-9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "terme en c^2 de l'énoncé oublié",
+				"variationIndex": 2,
+				"variables": {
+					"p": "c|c",
+					"q": "-7",
+					"r": "-6",
+					"s": "1",
+					"t": "4",
+					"u": "3",
+					"v": "-3"
+				},
+				"answers": ["4c^2-4c-9"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

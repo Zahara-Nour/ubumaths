@@ -1,0 +1,191 @@
+{
+	"globalIndex": 543,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Typographie : espace avant « : ».",
+	"template": {
+		"title": "Factoriser",
+		"description": "Cas particulier",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "x|y|z"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Factorise le plus possible :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{a}}+{{eval:a*b}}{{c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{a}}+{{eval:a*b}}{{c}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times 1 + \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}{{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times (1 + {{b}}{{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}(1+{{b}}{{c}})"
+					}
+				]
+			},
+			{
+				"statement": "Factorise le plus possible :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:a*b}}{{c}}+{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{eval:a*b}}{{c}} + {{a}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}{{c}} + \\textcolor{{{color:primary.0}}}{{{a}}} \\times 1 \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}}{{c}} + 1) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}{{c}}+1)"
+					}
+				]
+			},
+			{
+				"statement": "Factorise le plus possible :\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{a}}-{{eval:a*b}}{{c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{a}} - {{eval:a*b}}{{c}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times 1 - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}{{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times (1 - {{b}}{{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}(1-{{b}}{{c}})"
+					}
+				]
+			},
+			{
+				"statement": "Factorise le plus possible :\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "{{eval:a*b}}{{c}}-{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{eval:a*b}}{{c}} - {{a}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}{{c}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times 1 \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}}{{c}} - 1) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}{{c}}-1)"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Factorisation",
+		"level": 9,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v0 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["7(1+9z)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["7(9z+1)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 bonne réponse",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["7(1-9z)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 bonne réponse",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["7(9z-1)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7(9z+1) ordre inversé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["7(9z+1)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli du 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["7\\times9z"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

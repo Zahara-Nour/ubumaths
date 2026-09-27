@@ -1,0 +1,127 @@
+{
+	"globalIndex": 512,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Substitution perdue à la conversion (letterss) et lettre tirée homonyme d'une variable numérique : variables renommées, réponse = calcul numérique avec la valeur substituée.",
+	"template": {
+		"title": "Calculer en substituant les variables",
+		"description": "Expressions simples. Simplification de la multiplication.",
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "a|b|c"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule avec ${{p}}={{q}}$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:rp}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{r}} \\textcolor{{{color:primary.0}}}{{{p}}} &= {{r}} \\times \\textcolor{{{color:primary.0}}}{{{q}}} \\\\ &=  {{solution}}  \\\\ \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:r*q}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule avec ${{p}}={{q}}$\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "r+p"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{r}} + \\textcolor{{{color:primary.0}}}{{{p}}} &= {{r}} + \\textcolor{{{color:primary.0}}}{{{q}}} \\\\ &=  {{solution}}  \\\\ \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:r+q}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Calcul littéral",
+		"domain": "Calculs",
+		"subdomain": "Par substitution",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse 9",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 3c",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3"
+				},
+				"answers": ["3c"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "bonne réponse 6",
+				"variationIndex": 1,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3"
+				},
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 3+c",
+				"variationIndex": 1,
+				"variables": {
+					"p": "c|c",
+					"q": "3",
+					"r": "3"
+				},
+				"answers": ["3+c"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,203 @@
+{
+	"globalIndex": 561,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne : « Résouds » → « Résous » (impératif de résoudre). Variation « a + x » : a négatif donnait « x = 1--6 » dans la correction ; scindée en a>0 (v1) et a<0 (nouvelle v3, « x = 1-(-6) = 1+6 »).",
+	"template": {
+		"title": "Addition",
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$$x+{{a}}={{eval:a+(b)}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 x+{{a}}={{eval:a+(b)}}                & \\quad \\lrArr \\quad x={{eval:a+(b)}}-{{a}} \\\\               & \\quad \\lrArr \\quad  x= {{solution:0}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$${{a}}+x={{eval:a+(b)}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{a}}+x={{eval:a+(b)}}                & \\quad \\lrArr \\quad x={{eval:a+(b)}}-{{a}} \\\\               & \\quad \\lrArr \\quad  x= {{solution:0}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$$x+({{a}})={{eval:a+(b)}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-9..-2"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 x+({{a}})={{eval:a+(b)}}                & \\quad \\lrArr \\quad x={{eval:a+(b)}}-({{a}}) \\\\               & \\quad \\lrArr \\quad x={{eval:a+(b)}} + {{eval:-(a)}} \\\\               & \\quad \\lrArr \\quad  x= {{solution:0}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$${{a}}+x={{eval:a+(b)}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-9..-2"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{a}}+x={{eval:a+(b)}}                & \\quad \\lrArr \\quad x={{eval:a+(b)}}-({{a}}) \\\\               & \\quad \\lrArr \\quad x={{eval:a+(b)}}+{{eval:-(a)}} \\\\               & \\quad \\lrArr \\quad  x= {{solution:0}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Dans $$\\Z$$",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "-3"
+				},
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "signe",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "-3"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "a+x, a>0",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "x+(a), a<0",
+				"variationIndex": 2,
+				"variables": {
+					"a": "-4",
+					"b": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "soustraction au lieu d'addition",
+				"variationIndex": 2,
+				"variables": {
+					"a": "-4",
+					"b": "9"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "a+x, a<0",
+				"variationIndex": 3,
+				"variables": {
+					"a": "-6",
+					"b": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "signe",
+				"variationIndex": 3,
+				"variables": {
+					"a": "-6",
+					"b": "7"
+				},
+				"answers": ["-7"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			}
+		]
+	}
+}

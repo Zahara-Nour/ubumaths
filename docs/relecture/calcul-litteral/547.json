@@ -1,0 +1,129 @@
+{
+	"globalIndex": 547,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Factoriser $a^2-b^2$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "x|y|z"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Factorise.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:a^2}}-{{c}}^2"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "({{a}}+{{c}})({{a}}-{{c}})"
+					}
+				]
+			},
+			{
+				"statement": "Factorise.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{c}}^2-{{eval:a^2}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "({{c}}+{{a}})({{c}}-{{a}})"
+					}
+				]
+			}
+		],
+		"grades": ["3"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Identités remarquables",
+		"level": 3,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v0 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["(7+z)(7-z)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["(z+7)(z-7)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "facteurs permutés",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["(7-z)(7+z)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "carré au lieu de a²−b²",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["(7-z)^2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "non factorisé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["49-z^2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			}
+		]
+	}
+}

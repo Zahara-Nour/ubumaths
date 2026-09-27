@@ -1,0 +1,162 @@
+{
+	"globalIndex": 539,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Trouver le plus grand facteur commun ",
+		"description": "Le facteur commun est apparent dans un seul des produits",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "x|y|z"
+				},
+				{
+					"name": "d",
+					"expression": "x|y|z!c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans l'expression {{expression}} le plus grand facteur commun aux 2 produits est {{solution:0}},",
+					"car ${{a}}{{c}}={{solution:0}}\\times{{{c}}}$ et ${{eval:a*b}}{{d}}={{solution:0}}\\times{{{b}}{{d}}}$"
+				]
+			}
+		},
+		"variations": [
+			{
+				"statement": "Trouve le plus grand facteur commun.\n\n$${{a}}{{c}}+{{eval:a*b}}{{d}}$$\n\nLe plus grand facteur commun est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Trouve le plus grand facteur commun.\n\n$${{a}}{{c}}-{{eval:a*b}}{{d}}$$\n\nLe plus grand facteur commun est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Trouve le plus grand facteur commun.\n\n$${{eval:a*b}}{{d}}+{{a}}{{c}}$$\n\nLe plus grand facteur commun est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Trouve le plus grand facteur commun.\n\n$${{eval:a*b}}{{d}}-{{a}}{{c}}$$\n\nLe plus grand facteur commun est $?$.",
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Factorisation",
+		"level": 5,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v0 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 bonne réponse",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 bonne réponse",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "63 : un terme, pas un facteur commun",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"answers": ["63"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "1 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

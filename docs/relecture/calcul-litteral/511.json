@@ -1,0 +1,191 @@
+{
+	"globalIndex": 511,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Substitution perdue à la conversion (letterss) : la lettre tirée pouvait s'appeler b ou c comme les variables numériques (énoncé « 9 × 9 », réponse 6a). Variables renommées (l lettre, v valeur, k coefficient), énoncés écrits en dur, réponse = eval numérique.",
+	"template": {
+		"title": "Calculer en substituant une valeur",
+		"description": "Expressions simples. Pas de simplification de la multiplication.",
+		"shared": {
+			"variables": [
+				{
+					"name": "l",
+					"expression": "a|b|c"
+				},
+				{
+					"name": "v",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule avec ${{l}}={{v}}$.\n\n$${{expression1}}$$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{k}} \\times \\textcolor{{{color:primary.0}}}{{{l}}} &= {{k}} \\times \\textcolor{{{color:primary.0}}}{{{v}}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:k*v}}"
+					}
+				],
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "k*l"
+					}
+				]
+			},
+			{
+				"statement": "Calcule avec ${{l}}={{v}}$.\n\n$${{expression2}}$$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{l}}} \\times {{k}} &= \\textcolor{{{color:primary.0}}}{{{v}}} \\times {{k}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:v*k}}"
+					}
+				],
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "l*k"
+					}
+				]
+			},
+			{
+				"statement": "Calcule avec ${{l}}={{v}}$.\n\n$${{expression3}}$$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{k}} + \\textcolor{{{color:primary.0}}}{{{l}}} &= {{k}} + \\textcolor{{{color:primary.0}}}{{{v}}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:k+v}}"
+					}
+				],
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "k+l"
+					}
+				]
+			},
+			{
+				"statement": "Calcule avec ${{l}}={{v}}$.\n\n$${{expression4}}$$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{l}}} + {{k}} &= \\textcolor{{{color:primary.0}}}{{{v}}} + {{k}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:v+k}}"
+					}
+				],
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "l+k"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Calcul littéral",
+		"domain": "Calculs",
+		"subdomain": "Par substitution",
+		"level": 1,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "6 × a avec a = 7 → 42",
+				"variationIndex": 0,
+				"variables": {
+					"l": "a|a",
+					"v": "7",
+					"k": "6"
+				},
+				"answers": ["42"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "réponse littérale non substituée refusée",
+				"variationIndex": 0,
+				"variables": {
+					"l": "a|a",
+					"v": "7",
+					"k": "6"
+				},
+				"answers": ["6a"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "c × 5 avec c = 3 → 15",
+				"variationIndex": 1,
+				"variables": {
+					"l": "c|c",
+					"v": "3",
+					"k": "5"
+				},
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "4 + b avec b = 9 → 13",
+				"variationIndex": 2,
+				"variables": {
+					"l": "b|b",
+					"v": "9",
+					"k": "4"
+				},
+				"answers": ["13"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "confusion + / × refusée",
+				"variationIndex": 2,
+				"variables": {
+					"l": "b|b",
+					"v": "9",
+					"k": "4"
+				},
+				"answers": ["36"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "c + 8 avec c = 2 → 10",
+				"variationIndex": 3,
+				"variables": {
+					"l": "c|c",
+					"v": "2",
+					"k": "8"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

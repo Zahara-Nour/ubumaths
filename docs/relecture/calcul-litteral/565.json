@@ -1,0 +1,121 @@
+{
+	"globalIndex": 565,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne : « Résouds » → « Résous » (impératif de résoudre).",
+	"template": {
+		"title": "Division",
+		"shared": {
+			"statement": "Résous cette équation.\n\n$$x/{{{a}}}={{b}}$$\n\n$x=?$"
+		},
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$$x/{{{a}}}={{b}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 \\frac{x}{{{a}}}={{b}}                & \\quad \\lrArr \\quad x={{b}} \\times {{a}} \\\\               & \\quad \\lrArr \\quad  x= {{solution:0}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(b)}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$$x/{{{a}}}={{b}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-9..-2"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 \\frac{x}{{{a}}}={{b}}                & \\quad \\lrArr \\quad x={{b}} \\times ({{a}}) \\\\               & \\quad \\lrArr \\quad  x= {{solution:0}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(b)}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Dans $$\\Z$$",
+		"level": 6,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "-3"
+				},
+				"answers": ["-21"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "signe",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "-3"
+				},
+				"answers": ["21"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "a négatif",
+				"variationIndex": 1,
+				"variables": {
+					"a": "-4",
+					"b": "9"
+				},
+				"answers": ["-36"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "signe",
+				"variationIndex": 1,
+				"variables": {
+					"a": "-4",
+					"b": "9"
+				},
+				"answers": ["36"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,102 @@
+{
+	"globalIndex": 518,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Variables renommées (p, q, r…) : la lettre tirée (a, b, c) portait le nom d'une variable numérique et était remplacée par sa valeur (énoncés « 81 + 81 », réponses numériques). Produits juxtaposés passés en {{eval:…}}, consignes à l'impératif (Réduis, Développe et réduis, Écris, Simplifie).",
+	"template": {
+		"title": "Simplifier à l'aide d'un carré ou d'un cube",
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "a|b|c|x|y"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Simplifie l'écriture de cette expression littérale :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "p*p"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}^2"
+					}
+				]
+			},
+			{
+				"statement": "Simplifie l'écriture de cette expression littérale :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "p*p*p"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}^3"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Simplification d'écriture",
+		"level": 4,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse y^2",
+				"variationIndex": 0,
+				"variables": {
+					"p": "y|y"
+				},
+				"answers": ["y^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée y*y",
+				"variationIndex": 0,
+				"variables": {
+					"p": "y|y"
+				},
+				"answers": ["y*y"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				}
+			},
+			{
+				"description": "bonne réponse y^3",
+				"variationIndex": 1,
+				"variables": {
+					"p": "y|y"
+				},
+				"answers": ["y^3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée y*y*y",
+				"variationIndex": 1,
+				"variables": {
+					"p": "y|y"
+				},
+				"answers": ["y*y*y"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				}
+			}
+		]
+	}
+}

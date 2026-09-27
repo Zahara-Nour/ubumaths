@@ -1,0 +1,216 @@
+{
+	"globalIndex": 540,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Factoriser",
+		"description": "Le facteur commun est apparent dans un seul des produits",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!cd(a)"
+				},
+				{
+					"name": "c",
+					"expression": "x|y|z"
+				},
+				{
+					"name": "d",
+					"expression": "x|y|z!c"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Factorise.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{a}}{{c}}+{{eval:a*b}}{{d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{a}}{{c}}+{{eval:a*b}}{{d}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}}+\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}{{d}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{c}} + {{b}}{{d}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{c}}+{{b}}{{d}})"
+					}
+				]
+			},
+			{
+				"statement": "Factorise.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:a*b}}{{d}}+{{a}}{{c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{eval:a*b}}{{d}} + {{a}}{{c}}              &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}{{d}} + \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}}{{d}} + {{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}{{d}}+{{c}})"
+					}
+				]
+			},
+			{
+				"statement": "Factorise.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{a}}{{c}}-{{eval:a*b}}{{d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{a}}{{c}} - {{eval:a*b}}{{d}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}{{d}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{c}} - {{b}}{{d}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{c}}-{{b}}{{d}})"
+					}
+				]
+			},
+			{
+				"statement": "Factorise.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "{{eval:a*b}}{{d}}-{{a}}{{c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 {{eval:a*b}}{{d}} - {{a}}{{c}}              &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}{{d}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}}{{d}} - {{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}{{d}}-{{c}})"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Factorisation",
+		"level": 6,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v0 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"answers": ["5(z+9y)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"answers": ["5(9y+z)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 bonne réponse",
+				"variationIndex": 2,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"answers": ["5(z-9y)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 bonne réponse",
+				"variationIndex": 3,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"answers": ["5(9y-z)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "forme développée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"answers": ["5z+45y"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "5(9y+z) ordre inversé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"answers": ["5(9y+z)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "produit explicite dans la parenthèse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"answers": ["5(z+9\\times y)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["products"]
+				}
+			}
+		]
+	}
+}

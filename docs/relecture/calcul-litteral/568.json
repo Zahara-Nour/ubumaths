@@ -1,0 +1,103 @@
+{
+	"globalIndex": 568,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne : « Résouds » → « Résous » (impératif de résoudre).",
+	"template": {
+		"title": "Soustraction",
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$$x-{{b}}/{{a}}={{c}}/{{a}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "5..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 x - \\frac{{{b}}}{{{a}}}=\\frac{{{c}}}{{{a}}}               & \\quad \\lrArr \\quad x=\\frac{{{c}}}{{{a}}}+\\frac{{{b}}}{{{a}}} \\\\               {{if:gcd({{c}}+{{b}}, {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= \\frac{{{eval:c+b}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}               \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(b+c)/a}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Dans $$\\Q$$",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["\\frac{18}{7}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "soustrait au lieu d'ajouter",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "non simplifiée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"answers": ["\\frac{8}{4}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			},
+			{
+				"description": "entier",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			}
+		]
+	}
+}

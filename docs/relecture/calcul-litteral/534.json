@@ -1,0 +1,258 @@
+{
+	"globalIndex": 534,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "(1) Réponse attendue « {{eval:{{expression}}}} » : tidy rendait le produit REFACTORISÉ « (−5z+3)(9z+4) » au lieu du développement : remplacée par l'eval de la forme développée b·f·c² + (a·f+b·d)·c + a·d, réduite par tidy (terme nul supprimé). (2) Lettre tirée parmi a, b, c, x, y, z : collision avec les variables a, b, c (énoncé « (9+49)(1−28) ») → t, x, y, z. (3) Consigne à l'impératif : « Développe et réduis : ».",
+	"template": {
+		"title": "Développer un double produit",
+		"description": "Coefficients relatifs",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±!a,{{eval:-(a)}}"
+				},
+				{
+					"name": "c",
+					"expression": "t|x|y|z"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±!a,{{eval:-(a)}},b,{{eval:-(b)}}"
+				},
+				{
+					"name": "f",
+					"expression": "1..9;±!a,{{eval:-(a)}},b,{{eval:-(b)}},d,{{eval:-(d)}}"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Développe et réduis :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "({{a}}{{eval:bc;+}})({{d}}{{eval:fc;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{a}}{{eval:bc;+}})({{d}}{{eval:fc;+}})               &= {{eval:a*(d)}} {{eval:a*(f)*c;+}} {{eval:bc*(d);+}} {{eval:bc*(f)*c;+}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*f*c^2+(a*f+b*d)*c+a*d}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "({{eval:bc}}{{eval:a;+}})({{d}}{{eval:fc;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{eval:bc}}{{eval:a;+}})({{d}}{{eval:fc;+}})               &= {{eval:bc*(d)}} {{eval:bc*(f)*c;+}} {{eval:a*(d);+}} {{eval:a*(f)*c;+}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*f*c^2+(a*f+b*d)*c+a*d}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "({{eval:bc}}{{eval:a;+}})({{eval:fc}}{{eval:d;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{eval:bc}}{{eval:a;+}})({{eval:fc}}{{eval:d;+}})               &=  {{eval:bc*(f)*c}} {{eval:bc*(d);+}} {{eval:a*(f)*c;+}} {{eval:a*(d);+}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*f*c^2+(a*f+b*d)*c+a*d}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "({{a}}{{eval:bc;+}})({{eval:fc}}{{eval:d;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{a}}{{eval:bc;+}})({{eval:fc}}{{eval:d;+}})               &=  {{eval:a*(f)*c}} {{eval:a*(d);+}} {{eval:bc*(f)*c;+}} {{eval:bc*(d);+}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*f*c^2+(a*f+b*d)*c+a*d}}"
+					}
+				]
+			}
+		],
+		"grades": ["3"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Développement",
+		"level": 5,
+		"status": "draft",
+		"delay": 40,
+		"testSpecs": [
+			{
+				"description": "(4+9z)(3−5z) = −45z²+7z+12",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "9",
+					"c": "z|z",
+					"d": "3",
+					"f": "-5"
+				},
+				"answers": ["-45z^2+7z+12"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre croissant",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "9",
+					"c": "z|z",
+					"d": "3",
+					"f": "-5"
+				},
+				"answers": ["12+7z-45z^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "non réduit",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "9",
+					"c": "z|z",
+					"d": "3",
+					"f": "-5"
+				},
+				"answers": ["12-20z+27z-45z^2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "resté factorisé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "9",
+					"c": "z|z",
+					"d": "3",
+					"f": "-5"
+				},
+				"answers": ["(4+9z)(3-5z)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "erreur de signe",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "9",
+					"c": "z|z",
+					"d": "3",
+					"f": "-5"
+				},
+				"answers": ["-45z^2-7z+12"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "terme en x nul : (2+4x)(−1+2x) = 8x²−2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "4",
+					"c": "x|x",
+					"d": "-1",
+					"f": "2"
+				},
+				"answers": ["8x^2-2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4",
+					"b": "9",
+					"c": "z|z",
+					"d": "3",
+					"f": "-5"
+				},
+				"answers": ["-45z^2+7z+12"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2",
+				"variationIndex": 2,
+				"variables": {
+					"a": "4",
+					"b": "9",
+					"c": "z|z",
+					"d": "3",
+					"f": "-5"
+				},
+				"answers": ["-45z^2+7z+12"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3",
+				"variationIndex": 3,
+				"variables": {
+					"a": "4",
+					"b": "9",
+					"c": "z|z",
+					"d": "3",
+					"f": "-5"
+				},
+				"answers": ["-45z^2+7z+12"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

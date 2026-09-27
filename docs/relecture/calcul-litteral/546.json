@@ -1,0 +1,192 @@
+{
+	"globalIndex": 546,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "La lettre tirée parmi a, b, c, x, y, z pouvait porter le nom d'une variable numérique (a, b, c) et être remplacée par sa valeur (« (7+7)(7−7) ») : lettres réduites à t, x, y, z.",
+	"template": {
+		"title": "Développer $(a+b)(a-b)$",
+		"description": "Coefficients positifs",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "t|x|y|z"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Développe et réduis :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "({{a}}+{{eval:bc}})({{a}}-{{eval:bc}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{a}}}+\\textcolor{{{color:primary.1}}}{{{eval:bc}}})(\\textcolor{{{color:primary.0}}}{{{a}}}-\\textcolor{{{color:primary.1}}}{{{eval:bc}}})               &= \\textcolor{{{color:primary.0}}}{{{a}}}^2 -(\\textcolor{{{color:primary.1}}}{{{eval:bc}}})^2 \\\\               &= {{eval:a^2}} -{{b}}^2 \\times {{c}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a^2}}-{{eval:(bc)^2}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "({{a}}-{{eval:bc}})({{a}}+{{eval:bc}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{a}}}-\\textcolor{{{color:primary.1}}}{{{eval:bc}}})(\\textcolor{{{color:primary.0}}}{{{a}}}+\\textcolor{{{color:primary.1}}}{{{eval:bc}}})               &= \\textcolor{{{color:primary.0}}}{{{a}}}^2 -(\\textcolor{{{color:primary.1}}}{{{eval:bc}}})^2 \\\\               &= {{eval:a^2}} -{{b}}^2 \\times {{c}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a^2}}-{{eval:(bc)^2}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "({{eval:bc}}+{{a}})({{eval:bc}}-{{a}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{eval:bc}}} + \\textcolor{{{color:primary.1}}}{{{a}}})(\\textcolor{{{color:primary.0}}}{{{eval:bc}}} - \\textcolor{{{color:primary.1}}}{{{a}}})               &=  (\\textcolor{{{color:primary.0}}}{{{eval:bc}}})^2 - \\textcolor{{{color:primary.1}}}{{{a}}}^2 \\\\               &= {{b}}^2 \\times {{c}}^2 - {{eval:a^2}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(bc)^2}}-{{eval:a^2}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis :\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "({{eval:bc}}-{{a}})({{eval:bc}}+{{a}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{eval:bc}}} - \\textcolor{{{color:primary.1}}}{{{a}}})(\\textcolor{{{color:primary.0}}}{{{eval:bc}}} - \\textcolor{{{color:primary.1}}}{{{a}}})               &= (\\textcolor{{{color:primary.0}}}{{{eval:bc}}})^2 - \\textcolor{{{color:primary.1}}}{{{a}}}^2 \\\\               &=  {{b}}^2 \\times {{c}}^2 - {{eval:a^2}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(bc)^2}}-{{eval:a^2}}"
+					}
+				]
+			}
+		],
+		"grades": ["3"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Identités remarquables",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v0 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["49-81z^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["49-81z^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 bonne réponse",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["81z^2-49"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 bonne réponse",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["81z^2-49"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "carré non calculé",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["(9z)^2-49"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "oubli du carré du coefficient",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"answers": ["9z^2-49"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,244 @@
+{
+	"globalIndex": 529,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "$ers[1;9] converti en 1..9;± affiché avec son signe ; lettres renommées. Réponse = forme sans parenthèses, ordre des termes libre. Contrainte brackets en strict : une réponse qui garde les parenthèses est refusée (bad_form) aussi en v1 (« + (…) »).",
+	"template": {
+		"title": "Enlever les parenthèses",
+		"shared": {
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "a|b|c"
+				},
+				{
+					"name": "r",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "m",
+					"expression": "a|b|c!k"
+				},
+				{
+					"name": "s",
+					"expression": "1..9;±"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Réécris l'expression en enlevant les parenthèses.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:qk}}+({{eval:rm}}{{eval:s;+}})"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:qk+rm+s}}"
+					}
+				]
+			},
+			{
+				"statement": "Réécris l'expression en enlevant les parenthèses.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:qk}}-({{eval:rm}}{{eval:s;+}})"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:qk-rm-s}}"
+					}
+				]
+			}
+		],
+		"grades": ["3"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Opposé d'une expression",
+		"level": 3,
+		"status": "draft",
+		"delay": 30,
+		"options": {
+			"constraints": {
+				"brackets": "strict"
+			}
+		},
+		"testSpecs": [
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"q": "4",
+					"k": "c|c",
+					"r": "9",
+					"m": "b|b",
+					"s": "-5"
+				},
+				"answers": ["4c+9b-5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre libre",
+				"variationIndex": 0,
+				"variables": {
+					"q": "4",
+					"k": "c|c",
+					"r": "9",
+					"m": "b|b",
+					"s": "-5"
+				},
+				"answers": ["9b+4c-5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "parenthèses gardées",
+				"variationIndex": 0,
+				"variables": {
+					"q": "4",
+					"k": "c|c",
+					"r": "9",
+					"m": "b|b",
+					"s": "-5"
+				},
+				"answers": ["4c+(9b-5)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["brackets", "form"]
+				}
+			},
+			{
+				"description": "signe faux",
+				"variationIndex": 0,
+				"variables": {
+					"q": "4",
+					"k": "c|c",
+					"r": "9",
+					"m": "b|b",
+					"s": "-5"
+				},
+				"answers": ["4c+9b+5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"q": "3",
+					"k": "x|x",
+					"r": "-2",
+					"m": "y|y",
+					"s": "-5"
+				},
+				"answers": ["3x-2y-5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"q": "3",
+					"k": "x|x",
+					"r": "2",
+					"m": "y|y",
+					"s": "-5"
+				},
+				"answers": ["3x-2y+5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre libre -2y+3x+5",
+				"variationIndex": 1,
+				"variables": {
+					"q": "3",
+					"k": "x|x",
+					"r": "2",
+					"m": "y|y",
+					"s": "-5"
+				},
+				"answers": ["-2y+3x+5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "parenthèses gardées",
+				"variationIndex": 1,
+				"variables": {
+					"q": "3",
+					"k": "x|x",
+					"r": "2",
+					"m": "y|y",
+					"s": "-5"
+				},
+				"answers": ["3x-(2y-5)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "signe de -5 non changé",
+				"variationIndex": 1,
+				"variables": {
+					"q": "3",
+					"k": "x|x",
+					"r": "2",
+					"m": "y|y",
+					"s": "-5"
+				},
+				"answers": ["3x-2y-5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "bonne réponse (termes négatifs)",
+				"variationIndex": 1,
+				"variables": {
+					"q": "3",
+					"k": "x|x",
+					"r": "-2",
+					"m": "y|y",
+					"s": "-5"
+				},
+				"answers": ["3x+2y+5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "seul le 1er terme changé",
+				"variationIndex": 1,
+				"variables": {
+					"q": "3",
+					"k": "x|x",
+					"r": "-2",
+					"m": "y|y",
+					"s": "-5"
+				},
+				"answers": ["3x+2y-5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

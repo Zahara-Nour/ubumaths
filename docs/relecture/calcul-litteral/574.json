@@ -1,0 +1,358 @@
+{
+	"globalIndex": 574,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Consigne : « Résouds » → « Résous » (impératif de résoudre). Titre « Equation » → « Équation ».",
+	"template": {
+		"title": "Équation linéaire du premier degré",
+		"description": "Coefficients relatifs - Second membre nul",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9!a"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Résous cette équation.\n\n$${{a}}x+{{b}}=0$$\n\n$x=?$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{a}}x\\textcolor{{{color:primary.0}}}{+{{b}}}=0               & \\quad \\lrArr \\quad  \\textcolor{{{color:primary.1}}}{{{a}}}x = \\textcolor{{{color:primary.0}}}{-{{b}}} \\\\               & \\quad \\lrArr \\quad  x = \\frac{-{{b}}}{\\textcolor{{{color:primary.1}}}{{{a}}}} \\\\               {{if:gcd({{b}}, {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= -\\frac{{{b}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}            \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-b/a}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$${{b}}+{{a}}x=0$$\n\n$x=?$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align}             \\textcolor{{{color:primary.0}}}{{{b}}}+{{a}}x=0             & \\quad \\lrArr \\quad  \\textcolor{{{color:primary.1}}}{{{a}}}x = \\textcolor{{{color:primary.0}}}{-{{b}}} \\\\             & \\quad \\lrArr \\quad  x = \\frac{-{{b}}}{\\textcolor{{{color:primary.1}}}{{{a}}}} \\\\             {{if:gcd({{b}}, {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= -\\frac{{{b}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}          \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-b/a}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$${{a}}x-{{b}}=0$$\n\n$x=?$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{a}}x\\textcolor{{{color:primary.0}}}{-{{b}}}=0               & \\quad \\lrArr \\quad  \\textcolor{{{color:primary.1}}}{{{a}}}x = \\textcolor{{{color:primary.0}}}{{{b}}} \\\\               {{if:gcd({{b}}, {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= \\frac{{{b}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}            \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b/a}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$$-{{b}}+{{a}}x=0$$\n\n$x=?$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align}             \\textcolor{{{color:primary.0}}}{-{{b}}}+{{a}}x=0             & \\quad \\lrArr \\quad  \\textcolor{{{color:primary.1}}}{{{a}}}x = \\textcolor{{{color:primary.0}}}{{{b}}} \\\\             {{if:gcd({{b}}, {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= \\frac{{{b}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}          \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b/a}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$$-{{a}}x+{{b}}=0$$\n\n$x=?$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               -{{a}}x\\textcolor{{{color:primary.0}}}{+{{b}}}=0               & \\quad \\lrArr \\quad  \\textcolor{{{color:primary.1}}}{-{{a}}}x = \\textcolor{{{color:primary.0}}}{-{{b}}} \\\\               & \\quad \\lrArr \\quad  x = \\frac{-{{b}}}{\\textcolor{{{color:primary.1}}}{-{{a}}}} \\\\               {{if:gcd({{b}}, {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution}}|& \\quad \\lrArr \\quad  x= \\frac{{{b}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution}}}}            \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b/a}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$${{b}}-{{a}}x=0$$\n\n$x=?$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align}             \\textcolor{{{color:primary.0}}}{{{b}}}-{{a}}x=0             & \\quad \\lrArr \\quad  \\textcolor{{{color:primary.1}}}{-{{a}}}x = \\textcolor{{{color:primary.0}}}{-{{b}}} \\\\             & \\quad \\lrArr \\quad  x = \\frac{-{{b}}}{\\textcolor{{{color:primary.1}}}{-{{a}}}} \\\\             {{if:gcd({{b}}, {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= \\frac{{{b}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}          \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b/a}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$$-{{a}}x-{{b}}=0$$\n\n$x=?$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               -{{a}}x\\textcolor{{{color:primary.0}}}{-{{b}}}=0               & \\quad \\lrArr \\quad  \\textcolor{{{color:primary.1}}}{-{{a}}}x = \\textcolor{{{color:primary.0}}}{{{b}}} \\\\               & \\quad \\lrArr \\quad  x = \\frac{{{b}}}{\\textcolor{{{color:primary.1}}}{-{{a}}}} \\\\               {{if:gcd({{b}}, {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= -\\frac{{{b}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}            \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-b/a}}"
+					}
+				]
+			},
+			{
+				"statement": "Résous cette équation.\n\n$$-{{b}}-{{a}}x=0$$\n\n$x=?$",
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{-{{b}}}-{{a}}x=0               & \\quad \\lrArr \\quad  \\textcolor{{{color:primary.1}}}{-{{a}}}x = \\textcolor{{{color:primary.0}}}{{{b}}} \\\\               & \\quad \\lrArr \\quad  x = \\frac{{{b}}}{\\textcolor{{{color:primary.1}}}{-{{a}}}} \\\\               {{if:gcd({{b}}, {{a}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= -\\frac{{{b}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}            \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-b/a}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Linéaire du premier degré",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v0 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["-\\frac{9}{7}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v0 signe",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{9}{7}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["-\\frac{9}{7}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v1 signe",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{9}{7}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v2 bonne réponse",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{9}{7}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v2 signe",
+				"variationIndex": 2,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["-\\frac{9}{7}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v3 bonne réponse",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{9}{7}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v3 signe",
+				"variationIndex": 3,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["-\\frac{9}{7}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v4 bonne réponse",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{9}{7}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v4 signe",
+				"variationIndex": 4,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["-\\frac{9}{7}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v5 bonne réponse",
+				"variationIndex": 5,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{9}{7}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v5 signe",
+				"variationIndex": 5,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["-\\frac{9}{7}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v6 bonne réponse",
+				"variationIndex": 6,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["-\\frac{9}{7}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v6 signe",
+				"variationIndex": 6,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{9}{7}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v7 bonne réponse",
+				"variationIndex": 7,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["-\\frac{9}{7}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "v7 signe",
+				"variationIndex": 7,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["\\frac{9}{7}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				}
+			},
+			{
+				"description": "non simplifiée",
+				"variationIndex": 2,
+				"variables": {
+					"a": "4",
+					"b": "6"
+				},
+				"answers": ["\\frac{6}{4}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				}
+			}
+		]
+	}
+}

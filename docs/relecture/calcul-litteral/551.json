@@ -1,0 +1,139 @@
+{
+	"globalIndex": 551,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "La lettre tirée parmi a, b, c, x, y, z pouvait porter le nom d'une variable numérique (a, b, c) et être remplacée par sa valeur (« (7+7)(7−7) ») : lettres réduites à t, x, y, z.",
+	"template": {
+		"title": "Développer $(a+b)^2$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..7"
+				},
+				{
+					"name": "b",
+					"expression": "1..7!a"
+				},
+				{
+					"name": "c",
+					"expression": "t|x|y|z"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Développe et réduis.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "({{a}}+{{eval:bc}})^2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{a}}} + \\textcolor{{{color:primary.1}}}{{{eval:bc}}})^2               &=  \\textcolor{{{color:primary.0}}}{{{a}}}^2 + 2 \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.1}}}{{{eval:bc}}} + (\\textcolor{{{color:primary.1}}}{{{eval:bc}}})^2 \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a^2}}+{{eval:2*a*bc}}+{{eval:(bc)^2}}"
+					}
+				]
+			},
+			{
+				"statement": "Développe et réduis.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "({{eval:bc}}+{{a}})^2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{eval:bc}}}+\\textcolor{{{color:primary.1}}}{{{a}}})^2               &=  (\\textcolor{{{color:primary.0}}}{{{eval:bc}}})^2 + 2 \\times \\textcolor{{{color:primary.0}}}{{{eval:bc}}} \\times \\textcolor{{{color:primary.1}}}{{{a}}} + \\textcolor{{{color:primary.1}}}{{{a}}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(bc)^2}}+{{eval:2*a*bc}}+{{eval:a^2}}"
+					}
+				]
+			}
+		],
+		"grades": ["2"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Identités remarquables",
+		"level": 7,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v0 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "7",
+					"c": "z|z"
+				},
+				"answers": ["25+70z+49z^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"b": "7",
+					"c": "z|z"
+				},
+				"answers": ["49z^2+70z+25"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre décroissant",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "7",
+					"c": "z|z"
+				},
+				"answers": ["49z^2+70z+25"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli du double produit",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "7",
+					"c": "z|z"
+				},
+				"answers": ["25+49z^2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "double produit sans le 2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "7",
+					"c": "z|z"
+				},
+				"answers": ["25+35z+49z^2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

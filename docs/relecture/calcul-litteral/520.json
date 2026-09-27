@@ -1,0 +1,419 @@
+{
+	"globalIndex": 520,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Variables renommées (p, q, r…) : la lettre tirée (a, b, c) portait le nom d'une variable numérique et était remplacée par sa valeur (énoncés « 81 + 81 », réponses numériques). Produits juxtaposés passés en {{eval:…}}, consignes à l'impératif (Réduis, Développe et réduis, Écris, Simplifie).",
+	"template": {
+		"title": "Réduire une somme",
+		"description": "Coefficients positifs, $2$ littéraux identiques + un entier",
+		"variations": [
+			{
+				"statement": "Réduis :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "a|b|c"
+					},
+					{
+						"name": "q",
+						"expression": "1..9"
+					},
+					{
+						"name": "r",
+						"expression": "1..9"
+					},
+					{
+						"name": "s",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{s}}+{{eval:qp}}+{{eval:rp}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{s}}+{{eval:qp}}+{{eval:rp}}               &= {{s}} + ({{q}}+{{r}}) \\times {{p}} \\\\               &= {{s}} + {{eval:q+r}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Réduis :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "a|b|c"
+					},
+					{
+						"name": "q",
+						"expression": "1..9"
+					},
+					{
+						"name": "r",
+						"expression": "1..9"
+					},
+					{
+						"name": "s",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression2",
+						"expression": "{{eval:qp}}+{{s}}+{{eval:rp}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{eval:qp}}+{{s}}+{{eval:rp}}               &= {{s}} + ({{q}}+{{r}}) \\times {{p}} \\\\               &= {{s}} + {{eval:q+r}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Réduis :\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "a|b|c"
+					},
+					{
+						"name": "q",
+						"expression": "1..9"
+					},
+					{
+						"name": "r",
+						"expression": "1..9"
+					},
+					{
+						"name": "s",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression3",
+						"expression": "{{eval:qp}}+{{eval:rp}}+{{s}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{eval:qp}}+{{eval:rp}} + {{s}}              &= ({{q}}+{{r}}) \\times {{p}} + {{s}}\\\\               &= {{eval:q+r}} \\times {{p}}  + {{s}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Réduis :\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "a|b|c"
+					},
+					{
+						"name": "q",
+						"expression": "1..8"
+					},
+					{
+						"name": "r",
+						"expression": "q..9"
+					},
+					{
+						"name": "s",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression4",
+						"expression": "{{s}}+{{eval:rp}}-{{eval:qp}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{s}}+{{eval:rp}}-{{eval:qp}}               &= {{s}} + ({{r}}-{{q}}) \\times {{p}} \\\\               &= {{s}} + {{eval:r-q}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression4}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Réduis :\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "a|b|c"
+					},
+					{
+						"name": "q",
+						"expression": "1..8"
+					},
+					{
+						"name": "r",
+						"expression": "q..9"
+					},
+					{
+						"name": "s",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression5",
+						"expression": "{{eval:rp}}+{{s}}-{{eval:qp}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{eval:rp}} + {{s}} -{{eval:qp}}               &= {{s}} + ({{r}}-{{q}}) \\times {{p}} \\\\               &= {{s}} + {{eval:r-q}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression5}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Réduis :\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "a|b|c"
+					},
+					{
+						"name": "q",
+						"expression": "1..8"
+					},
+					{
+						"name": "r",
+						"expression": "q..9"
+					},
+					{
+						"name": "s",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression6",
+						"expression": "{{eval:rp}}-{{eval:qp}}+{{s}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{eval:rp}}-{{eval:qp}} + {{s}}              &= ({{r}}-{{q}}) \\times {{p}}  + {{s}} \\\\               &= {{eval:r-q}} \\times {{p}}  + {{s}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression6}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Réduction",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "bonne réponse 4c+5",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "2",
+					"s": "5"
+				},
+				"answers": ["4c+5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 5+2c+2c",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "2",
+					"s": "5"
+				},
+				"answers": ["5+2c+2c"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "5+4c",
+				"variationIndex": 0,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "2",
+					"s": "5"
+				},
+				"answers": ["5+4c"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bonne réponse 4c+5",
+				"variationIndex": 1,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "2",
+					"s": "5"
+				},
+				"answers": ["4c+5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 2c+5+2c",
+				"variationIndex": 1,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "2",
+					"s": "5"
+				},
+				"answers": ["2c+5+2c"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "bonne réponse 4c+5",
+				"variationIndex": 2,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "2",
+					"s": "5"
+				},
+				"answers": ["4c+5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 2c+2c+5",
+				"variationIndex": 2,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "2",
+					"s": "5"
+				},
+				"answers": ["2c+2c+5"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "bonne réponse c+5",
+				"variationIndex": 3,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "3",
+					"s": "5"
+				},
+				"answers": ["c+5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 5+3c-2c",
+				"variationIndex": 3,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "3",
+					"s": "5"
+				},
+				"answers": ["5+3c-2c"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "bonne réponse c+5",
+				"variationIndex": 4,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "3",
+					"s": "5"
+				},
+				"answers": ["c+5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 3c+5-2c",
+				"variationIndex": 4,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "3",
+					"s": "5"
+				},
+				"answers": ["3c+5-2c"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "bonne réponse c+5",
+				"variationIndex": 5,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "3",
+					"s": "5"
+				},
+				"answers": ["c+5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "expression recopiée 3c-2c+5",
+				"variationIndex": 5,
+				"variables": {
+					"p": "c|c",
+					"q": "2",
+					"r": "3",
+					"s": "5"
+				},
+				"answers": ["3c-2c+5"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			}
+		]
+	}
+}
