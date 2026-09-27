@@ -1385,3 +1385,62 @@ describe('resolveVariables — une unité n’est pas une lettre', () => {
 		expect(() => resolveVariables(vars)).toThrow();
 	});
 });
+
+// La lettre tirée peut porter le nom d'une autre variable (a = « b », b = 2) : #522
+describe('resolveVariables — lettre tirée homonyme d’une variable', () => {
+	const collision: Variable[] = [
+		{ name: 'a', expression: 'b|b' },
+		{ name: 'b', expression: '2' },
+		{ name: 'c', expression: '6' }
+	];
+	const valueOf = (variables: Variable[], name: string) =>
+		resolveVariables(variables).find((v) => v.name === name)!.value;
+
+	it('expression nue a*b*c : b*2*6, pas 2*2*6', () => {
+		const vars = [...collision, { name: 'e1', expression: 'a*b*c' }];
+		expect(valueOf(vars, 'e1')).toBe('b*2*6');
+	});
+
+	it('{{eval:{{e1}}}} : 12b, pas 24', () => {
+		const vars = [
+			...collision,
+			{ name: 'e1', expression: 'a*b*c' },
+			{ name: 'r', expression: '{{eval:{{e1}}}}' }
+		];
+		expect(valueOf(vars, 'r')).toBe('12b');
+	});
+
+	it('{{eval:a*b*c}} écrit par l’auteur : 12b', () => {
+		const vars = [...collision, { name: 'r', expression: '{{eval:a*b*c}}' }];
+		expect(valueOf(vars, 'r')).toBe('12b');
+	});
+
+	it('lettre écrite par l’auteur, liée : {{eval:b*c}} vaut 12', () => {
+		const vars = [...collision, { name: 'r', expression: '{{eval:b*c}}' }];
+		expect(valueOf(vars, 'r')).toBe('12');
+	});
+});
+
+// Une variable d'une lettre peut citer une variable déclarée après elle (relecture de #481)
+describe('resolveVariables — référence en avant entre variables d’une lettre', () => {
+	const valueOf = (variables: Variable[], name: string) =>
+		resolveVariables(variables).find((v) => v.name === name)!.value;
+
+	it('k = 2*y, y = 5 : {{eval:k+1}} vaut 11', () => {
+		const vars: Variable[] = [
+			{ name: 'k', expression: '2*y' },
+			{ name: 'y', expression: '5' },
+			{ name: 'r', expression: '{{eval:k+1}}' }
+		];
+		expect(valueOf(vars, 'r')).toBe('11');
+	});
+
+	it('f = x+1, x = 3 : {{eval:f*2}} vaut 8', () => {
+		const vars: Variable[] = [
+			{ name: 'f', expression: 'x+1' },
+			{ name: 'x', expression: '3' },
+			{ name: 'r', expression: '{{eval:f*2}}' }
+		];
+		expect(valueOf(vars, 'r')).toBe('8');
+	});
+});
