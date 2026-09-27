@@ -82,6 +82,7 @@ export function containsVariable(node: MathNode, varName: string): boolean {
 			return containsVariable(node.left, varName) || containsVariable(node.right, varName);
 
 		case 'logical-not':
+		case 'percentage':
 			return containsVariable(node.operand, varName);
 
 		case 'piecewise':

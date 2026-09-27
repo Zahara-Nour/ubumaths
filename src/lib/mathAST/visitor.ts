@@ -26,6 +26,7 @@ import type {
 	DivisionNode,
 	OppositeNode,
 	PositiveNode,
+	PercentageNode,
 	FunctionNode,
 	DelimiterNode,
 	SubscriptNode,
@@ -59,6 +60,7 @@ import {
 	multiply,
 	opposite,
 	positive,
+	percentage,
 	relation,
 	subscript,
 	subtract,
@@ -201,6 +203,10 @@ export interface ASTVisitor {
 	// LogicalNot callback
 	enterLogicalNot?(node: LogicalNotNode, context: VisitorContext): EnterResult;
 	leaveLogicalNot?(node: LogicalNotNode, context: VisitorContext): void;
+
+	// Percentage callback
+	enterPercentage?(node: PercentageNode, context: VisitorContext): EnterResult;
+	leavePercentage?(node: PercentageNode, context: VisitorContext): void;
 }
 
 // =============================================================================
@@ -296,6 +302,10 @@ export interface TransformVisitor {
 	// LogicalNot callback
 	enterLogicalNot?(node: LogicalNotNode, context: VisitorContext): TransformEnterResult;
 	leaveLogicalNot?(node: LogicalNotNode, context: VisitorContext): TransformLeaveResult;
+
+	// Percentage callback
+	enterPercentage?(node: PercentageNode, context: VisitorContext): TransformEnterResult;
+	leavePercentage?(node: PercentageNode, context: VisitorContext): TransformLeaveResult;
 }
 
 // =============================================================================
@@ -315,6 +325,7 @@ const TYPE_TO_METHOD_NAME: Record<MathNode['type'], string> = {
 	division: 'Division',
 	opposite: 'Opposite',
 	positive: 'Positive',
+	percentage: 'Percentage',
 	function: 'Function',
 	delimiter: 'Delimiter',
 	subscript: 'Subscript',
@@ -384,6 +395,7 @@ function getChildrenWithPaths(node: MathNode): ChildInfo[] {
 		// Unary operations
 		case 'opposite':
 		case 'positive':
+		case 'percentage':
 			return [{ child: node.operand, pathSegments: ['operand'] }];
 
 		// Function: args array, optional power (SuperscriptNode) and base
@@ -580,6 +592,9 @@ function reconstructNode(original: MathNode, transformedChildren: Map<string, Ma
 				operatorMetadata: original.operatorMetadata,
 				metadata: original.metadata
 			});
+
+		case 'percentage':
+			return percentage(getChild('operand', original.operand), original.metadata);
 
 		// Function - need to handle args array and power specially
 		case 'function': {

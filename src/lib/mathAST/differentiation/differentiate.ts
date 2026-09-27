@@ -44,7 +44,14 @@ import {
 	simplifiedMultiply
 } from './rules';
 import { substitute } from '../eval/substitute';
-import { derivativeFunc, number, multiply, piecewise, piecewisePiece } from '../factory';
+import {
+	derivativeFunc,
+	number,
+	multiply,
+	percentage,
+	piecewise,
+	piecewisePiece
+} from '../factory';
 import { isDerivativeFunction, isInverseFunction, isZero } from '../guards';
 
 // =============================================================================
@@ -196,6 +203,10 @@ function differentiateNode(
 		case 'positive':
 			// +x has the same derivative as x
 			return differentiateNode(node.operand, variable, simplify, functions);
+
+		case 'percentage':
+			// Linéaire : (u %)' = u' %
+			return percentage(differentiateNode(node.operand, variable, simplify, functions));
 
 		case 'superscript': {
 			// Handle x^n (power)

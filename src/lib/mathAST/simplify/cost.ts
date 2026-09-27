@@ -151,6 +151,7 @@ export function computeCost(node: MathNode): number {
 		/** CE : `Negate` vaut 4. `positive` est le même signe unaire. */
 		case 'opposite':
 		case 'positive':
+		case 'percentage':
 			return 4 + childrenCost(node);
 
 		case 'multiplication':

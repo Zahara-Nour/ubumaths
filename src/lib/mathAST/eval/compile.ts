@@ -25,6 +25,7 @@ import {
 	isMultiplication,
 	isDivision,
 	isOpposite,
+	isPercentage,
 	isPositive,
 	isFunction,
 	isDelimiter,
@@ -128,6 +129,12 @@ export function compile(node: MathNode): CompiledFn {
 
 	if (isPositive(node)) {
 		return compile(node.operand);
+	}
+
+	// Pourcentage : `20 %` = 20/100
+	if (isPercentage(node)) {
+		const operand = compile(node.operand);
+		return (v) => operand(v) / 100;
 	}
 
 	if (isSuperscript(node)) {

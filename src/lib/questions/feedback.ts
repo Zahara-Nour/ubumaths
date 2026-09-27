@@ -60,12 +60,20 @@ export const CONSTRAINT_FEEDBACK: Record<ConstraintId, { single: string; multipl
 		single: 'La fraction peut être simplifiée.',
 		multiple: 'Une ou plusieurs fractions peuvent être simplifiées.'
 	},
+	// Pourcentage attendu, réponse de même valeur sans le symbole
+	percent: {
+		single: 'Écris le résultat en pourcentage.',
+		multiple: 'Écris les résultats en pourcentage.'
+	},
 	// Unit matching
 	unit: {
 		single: "L'unité n'est pas celle attendue.",
 		multiple: "L'unité n'est pas celle attendue."
 	}
 } as const;
+
+/** Pourcentage attendu, réponse fausse qui en est la valeur sans le symbole (`20` pour `20 %`) */
+export const FORGOTTEN_PERCENT_SIGN = "N'oublie pas le symbole %.";
 
 /**
  * Get feedback message for a constraint violation

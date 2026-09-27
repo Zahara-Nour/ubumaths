@@ -261,6 +261,11 @@ function printNode(node: MathNode, ctx: PrintContext, prefix: string, childPrefi
 			printUnaryOp(node, 'Positive', ctx, prefix, childPrefix);
 			break;
 
+		case 'percentage':
+			addLine(ctx, prefix, 'Percentage', node.metadata);
+			printNode(node.operand, ctx, childPrefix + TREE.last, childPrefix + TREE.space);
+			break;
+
 		// =========================================================================
 		// Function
 		// =========================================================================

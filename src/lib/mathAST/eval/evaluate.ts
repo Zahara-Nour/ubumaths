@@ -22,6 +22,7 @@ import {
 	isMultiplication,
 	isDivision,
 	isOpposite,
+	isPercentage,
 	isPositive,
 	isFunction,
 	isDelimiter,
@@ -520,6 +521,11 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 		return evaluateToRational(node.operand, depth + 1);
 	}
 
+	// PercentageNode : `20 %` = 20/100, exact
+	if (isPercentage(node)) {
+		return divRational(evaluateToRational(node.operand, depth + 1), { n: 100n, d: 1n });
+	}
+
 	// SuperscriptNode (power)
 	if (isSuperscript(node)) {
 		const base = evaluateToRational(node.base, depth + 1);
@@ -775,7 +781,7 @@ function validateEvaluable(node: MathNode, exactMode: boolean = false): void {
 	} else if (isDivision(node)) {
 		validateEvaluable(node.numerator, exactMode);
 		validateEvaluable(node.denominator, exactMode);
-	} else if (isOpposite(node) || isPositive(node)) {
+	} else if (isOpposite(node) || isPositive(node) || isPercentage(node)) {
 		validateEvaluable(node.operand, exactMode);
 	} else if (isSuperscript(node)) {
 		validateEvaluable(node.base, exactMode);

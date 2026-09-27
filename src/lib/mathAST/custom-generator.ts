@@ -33,6 +33,7 @@ import type {
 	DivisionNode,
 	OppositeNode,
 	PositiveNode,
+	PercentageNode,
 	FunctionNode,
 	DelimiterNode,
 	SubscriptNode,
@@ -50,7 +51,7 @@ import type {
 } from './types';
 import { flattenRelationChain } from './flatten';
 import { format } from './units/formatter';
-import { needsParenthesesUnderSign } from './common/sign-parentheses';
+import { needsParenthesesUnderPercent, needsParenthesesUnderSign } from './common/sign-parentheses';
 import { isGroupingBracketContent } from './parser/custom/unit-writing';
 
 // =============================================================================
@@ -301,6 +302,7 @@ function shouldWrapForFraction(node: MathNode): boolean {
 		case 'division':
 		case 'opposite':
 		case 'positive':
+		case 'percentage':
 		case 'subscript':
 		case 'superscript':
 		case 'relation':
@@ -545,6 +547,15 @@ export class CustomGenerator {
 				this.emit('+', node.operatorMetadata ?? node.metadata);
 				this.visitWithSpans(node.operand);
 				break;
+
+			case 'percentage': {
+				const wrap = needsParenthesesUnderPercent(node.operand);
+				if (wrap) this.emit('(', node.metadata);
+				this.visitWithSpans(node.operand);
+				if (wrap) this.emit(')', node.metadata);
+				this.emit('%', node.metadata);
+				break;
+			}
 
 			case 'function':
 				this.visitFunctionSpans(node);
@@ -1074,6 +1085,9 @@ export class CustomGenerator {
 			case 'positive':
 				content = this.generatePositive(node);
 				break;
+			case 'percentage':
+				content = this.generatePercentage(node);
+				break;
 			case 'function':
 				content = this.generateFunction(node);
 				break;
@@ -1306,6 +1320,12 @@ export class CustomGenerator {
 	private generatePositive(node: PositiveNode): string {
 		const operand = this.generateNode(node.operand);
 		return `+${operand}`;
+	}
+
+	/** Pourcentage : `20%` ; une expression composée est parenthésée */
+	private generatePercentage(node: PercentageNode): string {
+		const operand = this.generateNode(node.operand);
+		return needsParenthesesUnderPercent(node.operand) ? `(${operand})%` : `${operand}%`;
 	}
 
 	/**

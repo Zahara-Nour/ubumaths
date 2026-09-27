@@ -80,7 +80,7 @@ import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { parse as parseUnit } from '../units/parser';
 import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units/formatter';
-import { euler, number, opposite, piConstant } from '../factory';
+import { divide, euler, number, opposite, piConstant } from '../factory';
 import { isEulerConstant, isNumber, isOpposite } from '../guards';
 import { expandEulerPowers } from './rules/euler-power';
 import { canFactorOutNegative, isEvenFunction, isOddFunction } from './parity.js';
@@ -2255,6 +2255,10 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 			// Positive sign is identity
 			return normalizeOperand(node.operand, ctx);
 		}
+
+		// Pourcentage : `20 %` vaut 20/100 (valeur exacte, pour l'équivalence)
+		case 'percentage':
+			return normalizeOperand(divide(node.operand, number('100'), 'fraction'), ctx);
 
 		case 'opposite': {
 			// §D.2 / findings B2 et F1 — `-20[°C]` et `-(-20[°C])` sont des

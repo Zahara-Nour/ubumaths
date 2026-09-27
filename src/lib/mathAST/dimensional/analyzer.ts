@@ -999,6 +999,10 @@ function analyzeNode(
 		case 'positive':
 			return analyzePositive(node, context, errors, warnings);
 
+		// Pourcentage : un facteur 1/100, sans dimension — l'unité est celle de l'opérande
+		case 'percentage':
+			return analyzeNode(node.operand, context, errors, warnings);
+
 		case 'superscript':
 			return analyzeSuperscript(node, context, errors, warnings);
 

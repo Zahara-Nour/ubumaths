@@ -27,11 +27,12 @@ import {
 	cosmeticViolations,
 	isSimpleNumberLatex,
 	isQuantityValueLatex,
+	forgotPercentSign,
 	type ConstraintSeverity
 } from '$lib/mathAST/cosmetic-transforms';
 import { extractUnitFromLatex } from '$lib/questions/units/parser';
 import { normalizeStudentQuantity, studentNumericLatex } from '$lib/questions/units/student-input';
-import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
+import { CONSTRAINT_FEEDBACK, FORGOTTEN_PERCENT_SIGN } from '$lib/questions/feedback';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
 import {
 	getRequiredFormFeedback,
@@ -62,7 +63,8 @@ function buildConstraintSeverities(
 		'factorOne',
 		'factorZero',
 		'signs',
-		'reducedFractions'
+		'reducedFractions',
+		'percent'
 	];
 
 	for (const id of constraintIds) {
@@ -825,6 +827,13 @@ function validateSingleBlank(
 	}
 
 	if (!isCorrect) {
+		// Pourcentage attendu, symbole oublié (`20` pour `20 %`) : faux, mais on dit pourquoi
+		if (
+			blank.type !== 'text' &&
+			forgotPercentSign(userAnswerLatex || userAnswer, blank.expectedAnswer)
+		) {
+			return { isCorrect: false, feedback: FORGOTTEN_PERCENT_SIGN };
+		}
 		return { isCorrect: false };
 	}
 

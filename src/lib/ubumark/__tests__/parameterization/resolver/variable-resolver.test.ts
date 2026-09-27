@@ -1444,3 +1444,27 @@ describe('resolveVariables — référence en avant entre variables d’une lett
 		expect(valueOf(vars, 'r')).toBe('8');
 	});
 });
+
+// Pourcentage (lot Proportionnalité) : dans un calcul, `%` vaut 1/100, comme dans TinyMath
+describe('resolveVariables — pourcentage dans un calcul', () => {
+	const valueOf = (variables: Variable[], name: string) =>
+		resolveVariables(variables).find((v) => v.name === name)!.value;
+
+	it.each([
+		['{{eval:10%*50}}', '5'],
+		['{{eval:20%}}', '\\dfrac{1}{5}'],
+		['{{eval:12.5%*80;d}}', '10'],
+		['{{eval:a%*b}}', '15']
+	])('%s → %s', (expression, expected) => {
+		const vars: Variable[] = [
+			{ name: 'a', expression: '30' },
+			{ name: 'b', expression: '50' },
+			{ name: 'r', expression }
+		];
+		expect(valueOf(vars, 'r')).toBe(expected);
+	});
+
+	it('une variable nommée comme une lettre reste une erreur : {{eval:2*y}}', () => {
+		expect(() => resolveVariables([{ name: 'r', expression: '{{eval:2*y}}' }])).toThrow();
+	});
+});

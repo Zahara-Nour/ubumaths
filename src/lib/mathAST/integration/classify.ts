@@ -126,6 +126,7 @@ export function detectVariable(expr: MathNode): string | null {
 				break;
 
 			case 'logical-not':
+			case 'percentage':
 				collect(node.operand);
 				break;
 

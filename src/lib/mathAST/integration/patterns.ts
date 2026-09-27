@@ -413,6 +413,7 @@ export function findUCandidates(expr: MathNode, variable: string): MathNode[] {
 				break;
 
 			case 'logical-not':
+			case 'percentage':
 				traverse(node.operand);
 				break;
 
@@ -812,6 +813,7 @@ function containsSubexpression(expr: MathNode, target: MathNode): boolean {
 				return search(node.left) || search(node.right);
 
 			case 'logical-not':
+			case 'percentage':
 				return search(node.operand);
 
 			case 'piecewise':

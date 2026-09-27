@@ -535,6 +535,7 @@ export function substituteVariable(
 		case 'logical':
 		case 'logical-not':
 		case 'piecewise':
+		case 'percentage':
 			// Deep substitution for these types would need full implementation
 			return pattern;
 

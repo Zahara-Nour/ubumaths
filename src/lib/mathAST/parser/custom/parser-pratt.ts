@@ -596,8 +596,17 @@ class CustomPrattParser {
 	private parseFractionOperand(): MathNode {
 		let operand = this.parseAtom();
 
-		while (this.check('CARET') || this.check('UNDERSCORE') || this.checkUnitBracket()) {
-			if (this.check('CARET')) {
+		while (
+			this.check('CARET') ||
+			this.check('UNDERSCORE') ||
+			this.check('PERCENT') ||
+			this.checkUnitBracket()
+		) {
+			if (this.check('PERCENT')) {
+				// Pourcentage, postfixe : `20%`, `x^2%` = (x²) %, `(a+5)%`
+				this.advance();
+				operand = this.applyColor(MathAST.percentage(operand));
+			} else if (this.check('CARET')) {
 				this.advance();
 				operand = this.applyColor(MathAST.superscript(operand, this.parsePowerOperand()));
 			} else if (this.check('UNDERSCORE')) {

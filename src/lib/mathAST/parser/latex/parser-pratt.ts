@@ -448,6 +448,11 @@ class PrattParser {
 				if (token.value === 'unit') {
 					return this.parseUnit(left);
 				}
+				// Pourcentage, postfixe : `20\%`, `20\,\%` (l'espace fine est filtrée)
+				if (token.value === '%') {
+					this.advance();
+					return MathAST.percentage(left);
+				}
 				if (RELATION_COMMANDS.has(token.value)) {
 					const relType = RELATION_COMMAND_MAP[token.value];
 					if (relType) {
@@ -526,6 +531,10 @@ class PrattParser {
 			case 'COMMAND':
 				if (token.value === 'unit') {
 					return BP.MULTIPLY + 1; // Slightly higher than multiply to bind units
+				}
+				// `%` lie plus fort que le signe (`-20\%` = -(20 %)), moins que la puissance
+				if (token.value === '%') {
+					return BP.UNARY + 1;
 				}
 				if (RELATION_COMMANDS.has(token.value)) {
 					return BP.RELATION;

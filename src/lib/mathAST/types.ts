@@ -312,6 +312,16 @@ export interface PositiveNode extends BaseNode {
 }
 
 /**
+ * Pourcentage : `operand %` (postfixe). Vaut operand/100, mais reste un pourcentage :
+ * ni `20 × %`, ni une fraction — `tidy`/`simplify` ne le convertissent pas, et le
+ * correcteur distingue `20 %` de `0,2`.
+ */
+export interface PercentageNode extends BaseNode {
+	readonly type: 'percentage';
+	readonly operand: MathNode;
+}
+
+/**
  * Union of all unary operation node types
  */
 export type UnaryOperationNode = OppositeNode | PositiveNode;
@@ -738,6 +748,7 @@ export type MathNode =
 	| DivisionNode
 	| OppositeNode
 	| PositiveNode
+	| PercentageNode
 	| FunctionNode
 	| DelimiterNode
 	| SubscriptNode
