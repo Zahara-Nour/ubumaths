@@ -223,6 +223,32 @@ function patternWithoutParentheses(pattern: unknown): unknown {
 }
 
 /**
+ * Somme de 3 termes ou plus : motif « somme » (ordre indifférent). Lu `(5 + 8/10) + 1/100`,
+ * le motif `5 + 8/10 + 1/100` n'essayait que les permutations d'un même niveau
+ * (`\\frac{1}{100}+5+\\frac{8}{10}` refusé). Une somme de 2 termes l'est déjà.
+ */
+function asUnorderedSums(pattern: unknown): unknown {
+	if (Array.isArray(pattern)) return pattern.map(asUnorderedSums);
+	if (!pattern || typeof pattern !== 'object') return pattern;
+	const node = pattern as Record<string, unknown>;
+	if (node.type === 'addition-pattern') {
+		const terms: unknown[] = [];
+		const collect = (term: unknown) => {
+			const t = term as Record<string, unknown>;
+			if (t?.type === 'addition-pattern') {
+				collect(t.left);
+				collect(t.right);
+			} else terms.push(asUnorderedSums(term));
+		};
+		collect(node);
+		if (terms.length >= 3) return { type: 'sum-pattern', elements: terms };
+	}
+	return Object.fromEntries(
+		Object.entries(node).map(([key, value]) => [key, asUnorderedSums(value)])
+	);
+}
+
+/**
  * Checks if a node matches a custom pattern.
  *
  * Uses the pattern matching system from mathAST.
@@ -233,7 +259,7 @@ function patternWithoutParentheses(pattern: unknown): unknown {
  */
 function matchesCustomPattern(node: MathNode, patternStr: string): boolean {
 	try {
-		const pattern = P.parse(patternStr);
+		const pattern = asUnorderedSums(P.parse(patternStr)) as ReturnType<typeof P.parse>;
 		// Tel qu'écrit, OU sans parenthèses de regroupement : rien de ce qui était reconnu
 		// ne cesse de l'être (`(a)^2`, `k*(__reste)`), et `(9+2):4` ≡ `\\frac{9+2}{4}` s'ajoute
 		const loose = patternWithoutParentheses(pattern) as typeof pattern;
